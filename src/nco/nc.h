@@ -1,6 +1,6 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.42 2000-08-25 16:45:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.43 2000-08-28 17:22:13 zender Exp $ */
 
-/* Purpose: Typedefs and global variables for NCO netCDF operators */ 
+/* Purpose: Typedefs and global variables for NCO netCDF operators */
 
 /* Copyright (C) 1995--2000 Charlie Zender
 
@@ -62,7 +62,7 @@
 
 #ifdef MAIN_PROGRAM_FILE /* The current file contains main() */
 
-/* Global variables and variables with scope limited to the main.c file allocated here */ 
+/* Global variables and variables with scope limited to the main.c file allocated here */
 
 int prg;
 int prg_get(void){return prg;}
@@ -73,14 +73,14 @@ char *prg_nm_get(void){return prg_nm;}
 unsigned short dbg_lvl=0; /* Option D */
 unsigned short dbg_lvl_get(void){return dbg_lvl;}
 
-#else /* MAIN_PROGRAM_FILE is NOT defined, i.e., the current file does not contain main() */ 
+#else /* MAIN_PROGRAM_FILE is NOT defined, i.e., the current file does not contain main() */
 
 /* External references to global variables are declared as extern here.
-   Variables with local file scope in all files except the main.c file are allocated here. */ 
+   Variables with local file scope in all files except the main.c file are allocated here. */
 
 #endif /* MAIN_PROGRAM_FILE is NOT defined, i.e., the current file does not contain main() */
 
-/* Enumerate the key values for all the netCDF filters */ 
+/* Enumerate the key values for all the netCDF filters */
 #if ( ! defined SGI5 ) && ( ! defined SGI64 ) && ( ! defined SGIMP64 )
 enum prg{
   ncap,
@@ -102,7 +102,7 @@ enum{
   aed_delete,
   aed_modify,
   aed_overwrite
-}; /* end enum */ 
+}; /* end enum */
 
 enum{
   nc_op_eq,
@@ -114,8 +114,8 @@ enum{
 }; /* end enum */
 
 enum lmt_typ{
-  lmt_crd_val, /* 0 */ 
-  lmt_dmn_idx /* 1 */ 
+  lmt_crd_val, /* 0 */
+  lmt_dmn_idx /* 1 */
 }; /* end lmt_typ enum */
 
 enum nco_op_typ{
@@ -189,18 +189,18 @@ typedef struct {
   bool is_rec_dmn; /* True if record dimension, else False */
   long rec_skp_vld_prv; /* Records skipped at end of previous valid file (multi-file record dimension only) */
   long rec_skp_nsh_spf; /* Number of records skipped in initial superfluous files (multi-file record dimension only) */
-  char *min_sng; /* User-specified string for dimension minimum */ 
-  char *max_sng; /* User-specified string for dimension maximum */ 
-  char *srd_sng; /* User-specified string for dimension stride */ 
-  int id; /* Dimension ID */ 
-  long min_idx; /* Index of minimum requested value in the dimension */ 
-  long max_idx; /* Index of maximum requested value in the dimension */ 
-  double min_val; /* Double precision representation of minimum value of coordinate requested or implied */ 
-  double max_val; /* Double precision representation of maximum value of coordinate requested or implied */ 
-  long srt; /* Index to start of hyperslab */ 
-  long end; /* Index to end of hyperslab */ 
-  long cnt; /* # of valid elements in this dimension (including effects of stride and wrapping) */ 
-  long srd; /* Stride of hyperslab */ 
+  char *min_sng; /* User-specified string for dimension minimum */
+  char *max_sng; /* User-specified string for dimension maximum */
+  char *srd_sng; /* User-specified string for dimension stride */
+  int id; /* Dimension ID */
+  long min_idx; /* Index of minimum requested value in the dimension */
+  long max_idx; /* Index of maximum requested value in the dimension */
+  double min_val; /* Double precision representation of minimum value of coordinate requested or implied */
+  double max_val; /* Double precision representation of maximum value of coordinate requested or implied */
+  long srt; /* Index to start of hyperslab */
+  long end; /* Index to end of hyperslab */
+  long cnt; /* # of valid elements in this dimension (including effects of stride and wrapping) */
+  long srd; /* Stride of hyperslab */
 } lmt_sct;
 
 typedef struct{
@@ -233,13 +233,13 @@ typedef union {
 } val_unn;
 
 typedef struct{
-  char *att_nm; /* Name of attribute */ 
-  char *var_nm; /* Name of variable, or NULL for global attribute */ 
-  int id; /* Variable ID or NC_GLOBAL ( = -1) for global attribute */ 
-  long sz; /* Number of elements in attribute */ 
-  nc_type type; /* Type of attribute */ 
-  ptr_unn val; /* Pointer to attribute value */ 
-  short mode; /* action to perform with attribute */ 
+  char *att_nm; /* Name of attribute */
+  char *var_nm; /* Name of variable, or NULL for global attribute */
+  int id; /* Variable ID or NC_GLOBAL ( = -1) for global attribute */
+  long sz; /* Number of elements in attribute */
+  nc_type type; /* Type of attribute */
+  ptr_unn val; /* Pointer to attribute value */
+  short mode; /* action to perform with attribute */
 } aed_sct;
 
 typedef struct {
@@ -251,57 +251,57 @@ typedef struct {
 } att_sct;
 
 typedef struct dmn_sct_tag{
-  char *nm; /* name */ 
-  int id; /* dimension ID */ 
-  int nc_id; /* file ID */
-  long sz; /* full size of dimension in file (NOT the hyperslabbed size) */ 
-  short is_rec_dmn; /* is this the record dimension? */ 
-  short is_crd_dmn; /* is this a coordinate dimension? */ 
-  int cid; /* Variable ID of the associated coordinate, if any */ 
-  nc_type type; /* type of coordinate, if applicable */ 
-  char fmt[5]; /* hint for printf()-style formatting */ 
-  long srt; /* index to start of hyperslab */ 
-  long end; /* index to end of hyperslab */ 
-  long cnt; /* # of valid elements in this dimension (including effects of stride and wrapping) */ 
-  long srd; /* stride of hyperslab */ 
-  ptr_unn val; /* buffer to hold hyperslab */ 
-  struct dmn_sct_tag *xrf; /* cross-reference to associated dimension structure (usually the structure for the dimension on output) */ 
+  char *nm; /* Dimension name */
+  int id; /* Dimension ID */
+  int nc_id; /* File ID */
+  long sz; /* Full size of dimension in file (NOT the hyperslabbed size) */
+  short is_rec_dmn; /* Is this the record dimension? */
+  short is_crd_dmn; /* Is this a coordinate dimension? */
+  int cid; /* Variable ID of the associated coordinate, if any */
+  nc_type type; /* Type of coordinate, if applicable */
+  char fmt[5]; /* Hint for printf()-style formatting */
+  long srt; /* Index to start of hyperslab */
+  long end; /* Index to end of hyperslab */
+  long cnt; /* Number of valid elements in this dimension (including effects of stride and wrapping) */
+  long srd; /* Stride of hyperslab */
+  ptr_unn val; /* Buffer to hold hyperslab */
+  struct dmn_sct_tag *xrf; /* Cross-reference to associated dimension structure (usually the structure for the dimension on output) */
 } dmn_sct;
 
 typedef struct var_sct_tag{
-  char *nm; /* name */ 
-  int id; /* variable ID */
-  int nc_id; /* file ID */
-  nc_type type; /* type of variable */ 
-  int nbr_dim; /* number of dimensions of variable in input file */ 
-  int typ_prv; /* Contains original type iff type conversion has taken place else is 0 */
-  short is_rec_var; /* is this a record variable? */ 
-  short is_crd_var; /* is this a coordinate variable? */ 
-  long sz; /* number of elements (NOT bytes) in hyperslab (NOT full size of variable in input file!) */ 
-  long sz_rec; /* number of elements in one record of hyperslab */ 
-  int nbr_att; /* number of attributes */ 
-  int has_mss_val; /* is there a missing_value attribute? */ 
-  ptr_unn mss_val; /* value of missing_value attribute, if any (mss_val stored in this structure must be same type as variable) */ 
-  int cid; /* Dimension ID of the associated coordinate, if any */ 
-  char fmt[5]; /* hint for printf()-style formatting */ 
-  dmn_sct **dim; /* pointers to full dimension structures */ 
-  int *dmn_id; /* contiguous vector of dimension IDs */ 
-  long *srt; /* contiguous vector of indices to start of hyperslab */ 
-  long *end; /* contiguous vector of indices to end of hyperslab */ 
-  long *cnt; /* contiguous vector of lengths of hyperslab */ 
-  long *srd; /* contiguous vector of stride of hyperslab */ 
-  ptr_unn val; /* buffer to hold hyperslab */ 
-  long *tally; /* number of valid operations performed so far */ 
-  struct var_sct_tag *xrf; /* cross-reference to associated variable structure (usually the structure for the variable on output) */ 
-  int is_pck; /* Variable is packed on disk (scale_factor, add_offset, or both attributes exist) */ 
-  int has_scl_fct; /* Valid scale_factor attribute exists */ 
-  int has_add_fst; /* Valid add_offset attribute exists */ 
-  ptr_unn scl_fct; /* value of scale_factor attribute, if any (scl_fct stored in this structure must be same type as unpacked variable) */ 
-  ptr_unn add_fst; /* value of add_offset attribute, if any (add_fst stored in this structure must be same type as unpacked variable) */ 
-  nc_type type_pck; /* type of variable when packed (on disk) */ 
-  nc_type type_xpn; /* type of variable when unpacked (expanded) (in memory) */ 
+  char *nm; /* Variable name */
+  int id; /* Variable ID */
+  int nc_id; /* File ID */
+  int nbr_dim; /* Number of dimensions of variable in input file */
+  nc_type type; /* Type of variable in RAM */
+  nc_type typ_dsk; /* Type of variable on disk (never changes) */
+  short is_rec_var; /* Is this a record variable? */
+  short is_crd_var; /* Is this a coordinate variable? */
+  long sz; /* Number of elements (NOT bytes) in hyperslab (NOT full size of variable in input file!) */
+  long sz_rec; /* Number of elements in one record of hyperslab */
+  int nbr_att; /* Number of attributes */
+  int has_mss_val; /* Is there a missing_value attribute? */
+  ptr_unn mss_val; /* Value of missing_value attribute, if any (mss_val stored in this structure must be same type as variable) */
+  int cid; /* Dimension ID of the associated coordinate, if any */
+  char fmt[5]; /* Hint for printf()-style formatting */
+  dmn_sct **dim; /* Pointers to full dimension structures */
+  int *dmn_id; /* Contiguous vector of dimension IDs */
+  long *srt; /* Contiguous vector of indices to start of hyperslab */
+  long *end; /* Contiguous vector of indices to end of hyperslab */
+  long *cnt; /* Contiguous vector of lengths of hyperslab */
+  long *srd; /* Contiguous vector of stride of hyperslab */
+  ptr_unn val; /* Buffer to hold hyperslab */
+  long *tally; /* Number of valid operations performed so far */
+  struct var_sct_tag *xrf; /* Cross-reference to associated variable structure (usually the structure for the variable on output) */
+  int is_pck; /* Variable is packed on disk (scale_factor, add_offset, or both attributes exist) */
+  int has_scl_fct; /* Valid scale_factor attribute exists */
+  int has_add_fst; /* Valid add_offset attribute exists */
+  ptr_unn scl_fct; /* Value of scale_factor attribute, if any (scl_fct stored in this structure must be same type as unpacked variable) */
+  ptr_unn add_fst; /* Value of add_offset attribute, if any (add_fst stored in this structure must be same type as unpacked variable) */
+  nc_type typ_pck; /* Type of variable when packed (on disk) */
+  nc_type typ_xpn; /* Type of variable when unpacked (expanded) (in memory) */
 } var_sct;
-
+/* Note: Fortran functions are deprecated as of NCO 1.2, will be removed unless volunteer takes over their maintenance */
 #ifdef USE_FORTRAN_ARITHMETIC
 #ifdef CRAY
 #define FORTRAN_add_real ADD_REAL
@@ -317,7 +317,7 @@ typedef struct var_sct_tag{
 #define FORTRAN_multiply_double_precision MULTIPLY_DOUBLE_PRECISION
 #define FORTRAN_divide_real DIVIDE_REAL
 #define FORTRAN_divide_double_precision DIVIDE_DOUBLE_PRECISION
-#endif /* CRAY */ 
+#endif /* CRAY */
 #if ( defined RS6K ) || ( defined AIX )
 #define FORTRAN_add_real add_real
 #define FORTRAN_add_double_precision add_double_precision
@@ -332,14 +332,14 @@ typedef struct var_sct_tag{
 #define FORTRAN_multiply_double_precision multiply_double_precision
 #define FORTRAN_divide_real divide_real
 #define FORTRAN_divide_double_precision divide_double_precision
-#endif /* RS6K || AIX */ 
+#endif /* RS6K || AIX */
 /* 
    pgf90 subroutines have one underscore by default
    pgf90 underscore behavior is altered by -Mnosecond_underscore
    g77 subroutines have two underscores by default
    g77 functions (e.g., newdate()) have one underscore by default 
    g77 underscore behavior is altered by -fno-second-underscore 
-*/ 
+*/
 #ifdef LINUX 
 #define FORTRAN_add_real add_real_
 #define FORTRAN_add_double_precision add_double_precision_
@@ -354,7 +354,7 @@ typedef struct var_sct_tag{
 #define FORTRAN_multiply_double_precision multiply_double_precision_
 #define FORTRAN_divide_real divide_real_
 #define FORTRAN_divide_double_precision divide_double_precision_
-#endif /* LINUX */ 
+#endif /* LINUX */
 #if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SUN4SOL2 ) || ( defined SUNMP ) || ( defined SGI5 ) || ( defined SGI64 ) || ( defined SGIMP64 )
 #define FORTRAN_add_real add_real_
 #define FORTRAN_add_double_precision add_double_precision_
@@ -369,10 +369,10 @@ typedef struct var_sct_tag{
 #define FORTRAN_multiply_double_precision multiply_double_precision_
 #define FORTRAN_divide_real divide_real_
 #define FORTRAN_divide_double_precision divide_double_precision_
-#endif /* SUN-style */ 
+#endif /* SUN-style */
 #endif /* USE_FORTRAN_ARITHMETIC */
 
-/* Function prototypes */ 
+/* Function prototypes */
 extern bool arm_inq(int);
 extern bool ncar_csm_inq(int);
 extern char **fl_lst_mk(char **,int,int,int *,char **);
@@ -384,7 +384,7 @@ extern char *fl_mk_lcl(char *,char *,int *);
 extern char *fl_nm_prs(char *,int,int *,char **,int,char **,char *);
 extern char *fl_out_open(char *,bool,bool,int *);
 extern char *fortran_type_nm(nc_type);
-extern char *nc_type_nm(nc_type);
+extern char *nco_typ_sng(nc_type);
 extern char *nmn_get(void);
 extern char *prg_nm_get(void);
 extern char *prg_prs(char *,int *);
@@ -487,21 +487,29 @@ extern void var_zero(nc_type,long,ptr_unn);
 extern void vec_set(nc_type,long,ptr_unn,double);
 extern void zero_long(long,long *op1);
 
-extern int /* O [enm] Return code */
-nco_cnv_var_dbl  /* [fnc] Convert char, short, long, int types to doubles before arithmetic */
-(var_sct **var_prc_ptr, /* I [var] Variable */
- var_sct **var_prc_out_ptr, /* I [var] Variable */
- int nco_op_typ); /* I [enm] Operation type */ 
+extern var_sct * /* O [var] Variable after (possible) conversion */
+nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before arithmetic */
+(var_sct *var, /* I/O [var] Variable to be considered for conversion */
+ int nco_op_typ); /* I [enm] Operation type */
 
 extern int ncvarid_or_die /* O [enm] Variable ID */
-(int nc_id, /* I [enm] File ID */ 
- char *var_nm); /* I [sng] Variable name */ 
+(int nc_id, /* I [enm] File ID */
+ char *var_nm); /* I [sng] Variable name */
  
 extern var_sct * /* O [sct] Variable reverted to previous type */
-nco_cnv_dbl_var  /* [fnc] Revert variable to previous type */
+nco_cnv_var_typ_dsk  /* [fnc] Revert variable to previous type */
 (var_sct *var); /* I [sct] Variable to be reverted */
 
-#endif /* NC_H */ 
+extern bool /* O [flg] Variable is packed */
+is_var_pck /* [fnc] Check whether variable is packed */
+(int nc_id, /* I [idx] netCDF file ID */
+ var_sct *var); /* I/O [sct] Variable */
+
+extern var_sct * /* O [sct] Unpacked variable */
+var_upk /* [fnc] Unpack variable */
+(var_sct *var); /* I/O [sct] Variable to be unpacked */
+
+#endif /* NC_H */
 
 
 

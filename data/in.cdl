@@ -29,7 +29,7 @@ variables:
 	:convention = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.21 2000-08-25 16:45:14 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.22 2000-08-28 17:22:13 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -72,6 +72,11 @@ variables:
 	float val_one_mss(lat);
 	val_one_mss:long_name = "one regular value, one missing value";
 	val_one_mss:missing_value = 1.0e36f;
+
+	short pck;
+	pck:long_name = "Packed scalar variable";
+	pck:scale_factor = 2.0d;
+	pck:add_offset = 1.0d;
 
 	long val_one_lng;
 	val_one_lng:long_name = "scalar equal to 1L";
@@ -341,6 +346,7 @@ data:
 	two=2.;
 	two_dmn_var=1.5,5.5,9.5,13.5,17.5,21.5;
 	val_one_mss=1.,1.0e36;
+	pck=1;
 	val_one_lng=1;
 	val_one_one_lng=1,1;
 	val_max_max_sht=17000,17000;

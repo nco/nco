@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.23 2000-08-15 06:58:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.24 2000-08-28 17:22:13 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -46,20 +46,20 @@
    ncflint -O -w .66666 -v lcl_time_hr /data/zender/arese/crm/951030_0800_arese_crm.nc /data/zender/arese/crm/951030_1100_arese_crm.nc foo.nc; ncks -H foo.nc
 
    ncdiff -O foo.nc /data/zender/arese/crm/951030_0900_arese_crm.nc foo2.nc;ncks -H foo2.nc | m
- */ 
+ */
 
 /* Standard header files */
 #include <math.h>               /* sin cos cos sin 3.14159 */
 #include <netcdf.h>             /* netCDF definitions */
 #include <stdio.h>              /* stderr, FILE, NULL, etc. */
-#include <stdlib.h>             /* atof, atoi, malloc, getopt */ 
+#include <stdlib.h>             /* atof, atoi, malloc, getopt */
 #include <string.h>             /* strcmp. . . */
 #include <sys/stat.h>           /* stat() */
 #include <time.h>               /* machine time */
-#include <unistd.h>             /* POSIX stuff */ 
-/* #include <assert.h> */            /* assert() debugging macro */ 
-/* #include <errno.h> */             /* errno */
-/* #include <malloc.h>    */         /* malloc() stuff */
+#include <unistd.h>             /* POSIX stuff */
+/* #include <assert.h> */           /* assert() debugging macro */
+/* #include <errno.h> */            /* errno */
+/* #include <malloc.h>    */        /* malloc() stuff */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
@@ -70,47 +70,47 @@ main(int argc,char **argv)
 {
   extern var_sct *scl_dbl_mk_var(double);
 
-  bool CMD_LN_NTP_VAR=False; /* Option i */ 
-  bool CMD_LN_NTP_WGT=True; /* Option w */ 
-  bool EXCLUDE_INPUT_LIST=False; /* Option c */ 
+  bool CMD_LN_NTP_VAR=False; /* Option i */
+  bool CMD_LN_NTP_WGT=True; /* Option w */
+  bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_1_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FILE_2_RETRIEVED_FROM_REMOTE_LOCATION;
-  bool FORCE_APPEND=False; /* Option A */ 
-  bool FORCE_OVERWRITE=False; /* Option O */ 
+  bool FORCE_APPEND=False; /* Option A */
+  bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_STYLE=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
-  bool MUST_CONFORM=False; /* Must var_conform_dim() find truly conforming variables? */ 
-  bool DO_CONFORM=False; /* Did var_conform_dim() find truly conforming variables? */ 
+  bool MUST_CONFORM=False; /* Must var_conform_dim() find truly conforming variables? */
+  bool DO_CONFORM=False; /* Did var_conform_dim() find truly conforming variables? */
   bool NCAR_CSM_FORMAT;
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
-  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */ 
+  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   
   char **var_lst_in=NULL_CEWI;
   char **ntp_lst_in;
-  char **fl_lst_abb=NULL; /* Option a */ 
+  char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char *fl_in=NULL;
   char *fl_in_1;
   char *fl_in_2;
-  char *fl_pth_lcl=NULL; /* Option l */ 
+  char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[MAX_NC_DIMS];
   char *opt_sng;
   char *fl_out;
   char *fl_out_tmp;
-  char *fl_pth=NULL; /* Option p */ 
+  char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char *ntp_nm=NULL; /* Option i */ 
-  char CVS_Id[]="$Id: ncflint.c,v 1.23 2000-08-15 06:58:35 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.23 $";
+  char *ntp_nm=NULL; /* Option i */
+  char CVS_Id[]="$Id: ncflint.c,v 1.24 2000-08-28 17:22:13 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.24 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
   
-  double ntp_val_out=double_CEWI; /* Option i */ 
-  double wgt_val_1=.5; /* Option w */ 
-  double wgt_val_2=.5; /* Option w */ 
+  double ntp_val_out=double_CEWI; /* Option i */
+  double wgt_val_1=0.5; /* Option w */
+  double wgt_val_2=0.5; /* Option w */
 
   extern char *optarg;
   extern int ncopts;
@@ -127,9 +127,9 @@ main(int argc,char **argv)
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_ntp;
   int nbr_var_fl;
-  int nbr_var_fix; /* nbr_var_fix gets incremented */ 
-  int nbr_var_prc; /* nbr_var_prc gets incremented */ 
-  int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */ 
+  int nbr_var_fix; /* nbr_var_fix gets incremented */
+  int nbr_var_prc; /* nbr_var_prc gets incremented */
+  int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nbr_dmn_xtr;
   int nbr_fl=0;
   int opt;
@@ -137,7 +137,7 @@ main(int argc,char **argv)
   lmt_sct *lmt;
   
   nm_id_sct *dmn_lst;
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */ 
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */
   
   time_t clock;
   
@@ -153,7 +153,7 @@ main(int argc,char **argv)
   var_sct **var_prc_2;
   var_sct **var_prc_out;
   
-  /* Start the clock and save the command line */  
+  /* Start the clock and save the command line */ 
   cmd_ln=cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock);
@@ -168,7 +168,7 @@ main(int argc,char **argv)
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
-    case 'C': /* Extraction list should include all coordinates associated with extracted variables? */ 
+    case 'C': /* Extraction list should include all coordinates associated with extracted variables? */
       PROCESS_ASSOCIATED_COORDINATES=False;
       break;
     case 'c':
@@ -177,7 +177,7 @@ main(int argc,char **argv)
     case 'D': /* The debugging level. Default is 0. */
       dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
       break;
-    case 'd': /* Copy argument for later processing */ 
+    case 'd': /* Copy argument for later processing */
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);
       lmt_nbr++;
       break;
@@ -194,7 +194,7 @@ main(int argc,char **argv)
 	(void)fprintf(stdout,"%s: ERROR too many arguments to -i\n",prg_nm_get());
 	(void)usg_prn();
 	exit(EXIT_FAILURE);
-      } /* end if */ 
+      } /* end if */
       ntp_nm=ntp_lst_in[0];
       ntp_val_out=strtod(ntp_lst_in[1],(char **)NULL);
       CMD_LN_NTP_VAR=True;
@@ -217,11 +217,11 @@ main(int argc,char **argv)
       (void)nc_lib_vrs_prn();
       exit(EXIT_SUCCESS);
       break;
-    case 'v': /* Variables to extract/exclude */ 
+    case 'v': /* Variables to extract/exclude */
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
       break;
     case 'w':
-      /* Weight(s) for interpolation.  Default is wgt_val_1=wgt_val2=.5 */
+      /* Weight(s) for interpolation.  Default is wgt_val_1=wgt_val2=0.5 */
       ntp_lst_in=lst_prs(optarg,",",&nbr_ntp);
       if(nbr_ntp > 2){
 	(void)fprintf(stdout,"%s: ERROR too many arguments to -w\n",prg_nm_get());
@@ -232,8 +232,8 @@ main(int argc,char **argv)
 	wgt_val_2=strtod(ntp_lst_in[1],(char **)NULL);
       }else if(nbr_ntp == 1){
 	wgt_val_1=strtod(ntp_lst_in[0],(char **)NULL);
-	wgt_val_2=1.-wgt_val_1;
-      } /* end else */ 
+	wgt_val_2=1.0-wgt_val_1;
+      } /* end else */
       CMD_LN_NTP_WGT=True;
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
@@ -257,17 +257,17 @@ main(int argc,char **argv)
   /* Process positional arguments and fill in filenames */
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
   
-  /* Make uniform list of user-specified dimension limits */ 
+  /* Make uniform list of user-specified dimension limits */
   lmt=lmt_prs(lmt_nbr,lmt_arg);
   
-  /* Make netCDF errors fatal and print the diagnostic */   
+  /* Make netCDF errors fatal and print the diagnostic */  
   ncopts=NC_VERBOSE | NC_FATAL; 
   
-  /* Parse filename */ 
+  /* Parse filename */
   idx_fl=0;
   fl_in=fl_nm_prs(fl_in,idx_fl,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",idx_fl,fl_in);
-  /* Make sure file is on local system and is readable or die trying */ 
+  /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_1_RETRIEVED_FROM_REMOTE_LOCATION);
   if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
   in_id=ncopen(fl_in,NC_NOWRITE);
@@ -275,37 +275,37 @@ main(int argc,char **argv)
   /* Get the number of variables and dimensions in the file */
   (void)ncinquire(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,(int *)NULL);
   
-  /* Form initial extraction list from user input */ 
+  /* Form initial extraction list from user input */
   xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
 
-  /* Change included variables to excluded variables */ 
+  /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) xtr_lst=var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
 
-  /* Add all coordinate variables to extraction list */ 
+  /* Add all coordinate variables to extraction list */
   if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
 
-  /* Make sure coordinates associated extracted variables are also on extraction list */ 
+  /* Make sure coordinates associated extracted variables are also on extraction list */
   if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
 
-  /* Finally, heapsort the extraction list by variable ID for fastest I/O */ 
+  /* Finally, heapsort the extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
     
   /* We now have final list of variables to extract. Phew. */
   
-  /* Find coordinate/dimension values associated with user-specified limits */ 
+  /* Find coordinate/dimension values associated with user-specified limits */
   for(idx=0;idx<lmt_nbr;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
   
-  /* Find dimensions associated with variables to be extracted */ 
+  /* Find dimensions associated with variables to be extracted */
   dmn_lst=dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
 
-  /* Fill in dimension structure for all extracted dimensions */ 
+  /* Fill in dimension structure for all extracted dimensions */
   dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
   
-  /* Merge hyperslab limit information into dimension structures */ 
+  /* Merge hyperslab limit information into dimension structures */
   if(lmt_nbr > 0) (void)dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
 
-  /* Duplicate input dimension structures for output dimension structures */ 
+  /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
     dmn_out[idx]=dmn_dup(dim[idx]);
@@ -319,7 +319,7 @@ main(int argc,char **argv)
   /* Is this an NCAR CSM-format history tape? */
   NCAR_CSM_FORMAT=ncar_csm_inq(in_id);
 
-  /* Fill in variable structure list for all extracted variables */ 
+  /* Fill in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
@@ -329,52 +329,52 @@ main(int argc,char **argv)
     (void)var_dmn_xrf(var_out[idx]);
   } /* end loop over idx */
 
-  /* Divide variable lists into lists of fixed variables and variables to be processed */ 
+  /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc_1,&var_prc_out,&nbr_var_prc);
 
-  /* Open output file */ 
+  /* Open output file */
   fl_out_tmp=fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
 
-  /* Copy global attributes */ 
+  /* Copy global attributes */
   (void)att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
   
-  /* Catenate time-stamped command line to "history" global attribute */ 
+  /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)hst_att_cat(out_id,cmd_ln);
 
-  /* Define dimensions in output file */ 
+  /* Define dimensions in output file */
   (void)dmn_def(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
-  /* Define variables in output file, and copy their attributes */ 
+  /* Define variables in output file, and copy their attributes */
   (void)var_def(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,0);
 
-  /* Turn off default filling behavior to enhance efficiency */ 
+  /* Turn off default filling behavior to enhance efficiency */
 #if ( ! defined SUN4 ) && ( ! defined SUN4SOL2 ) && ( ! defined SUNMP )
   (void)ncsetfill(out_id,NC_NOFILL);
 #endif
   
-  /* Take output file out of define mode */ 
+  /* Take output file out of define mode */
   (void)ncendef(out_id);
   
-  /* Zero start vectors for all output variables */ 
+  /* Zero start vectors for all output variables */
   (void)var_srt_zero(var_out,nbr_xtr);
 
-  /* Copy variable data for non-processed variables */ 
+  /* Copy variable data for non-processed variables */
   (void)var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
 
   in_id_1=in_id;
   idx_fl=1;
   fl_in_1=(char *)strdup(fl_in);
 
-  /* Parse filename */ 
+  /* Parse filename */
   fl_in=fl_nm_prs(fl_in,idx_fl,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",idx_fl,fl_in);
-  /* Make sure file is on local system and is readable or die trying */ 
+  /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_2_RETRIEVED_FROM_REMOTE_LOCATION);
   if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
   in_id_2=ncopen(fl_in,NC_NOWRITE);
   fl_in_2=fl_in;
   
-  /* Perform various error-checks on input file */ 
+  /* Perform various error-checks on input file */
   if(False) (void)fl_cmp_err_chk();
 
   /* ncflint-specific stuff: */
@@ -396,36 +396,36 @@ main(int argc,char **argv)
     ntp_1=var_fll(in_id_1,ntp_id_1,ntp_nm,dim,nbr_dmn_xtr);
     ntp_2=var_fll(in_id_2,ntp_id_2,ntp_nm,dim,nbr_dmn_xtr);
     
-    /* Currently, only support scalar variables */ 
+    /* Currently, only support scalar variables */
     if(ntp_1->sz > 1 || ntp_2->sz > 1){
       (void)fprintf(stdout,"%s: ERROR interpolation variable %s must be scalar\n",prg_nm_get(),ntp_nm);
       exit(EXIT_FAILURE);
     } /* end if */
 
-    /* Retrieve the interpolation variable */ 
+    /* Retrieve the interpolation variable */
     (void)var_get(in_id_1,ntp_1);
     (void)var_get(in_id_2,ntp_2);
 
-    /* Weights must be NC_DOUBLE */ 
+    /* Weights must be NC_DOUBLE */
     ntp_1=var_conform_type(NC_DOUBLE,ntp_1);
     ntp_2=var_conform_type(NC_DOUBLE,ntp_2);
 
-    /* Check for degenerate case */ 
+    /* Check for degenerate case */
     if(ntp_1->val.dp[0] == ntp_2->val.dp[0]){
       (void)fprintf(stdout,"%s: ERROR %s is identical (%g) in input files\n",prg_nm_get(),ntp_nm,ntp_1->val.dp[0]);
       exit(EXIT_FAILURE);
-    } /* end if */ 
+    } /* end if */
 
     /* Turn weights into pseudo-variables */
     wgt_1=var_dup(ntp_2);
     wgt_2=var_dup(ntp_var_out);
 
-    /* Subtract to find interpolation distances */ 
+    /* Subtract to find interpolation distances */
     (void)var_subtract(ntp_1->type,ntp_1->sz,ntp_1->has_mss_val,ntp_1->mss_val,ntp_var_out->val,wgt_1->val);
     (void)var_subtract(ntp_1->type,ntp_1->sz,ntp_1->has_mss_val,ntp_1->mss_val,ntp_1->val,wgt_2->val);
     (void)var_subtract(ntp_1->type,ntp_1->sz,ntp_1->has_mss_val,ntp_1->mss_val,ntp_1->val,ntp_2->val);
 
-    /* Normalize to obtain final interpolation weights */ 
+    /* Normalize to obtain final interpolation weights */
     (void)var_divide(wgt_1->type,wgt_1->sz,wgt_1->has_mss_val,wgt_1->mss_val,ntp_2->val,wgt_1->val);
     (void)var_divide(wgt_2->type,wgt_2->sz,wgt_2->has_mss_val,wgt_2->mss_val,ntp_2->val,wgt_2->val);
 
@@ -437,14 +437,14 @@ main(int argc,char **argv)
   if(CMD_LN_NTP_WGT){
     wgt_1=scl_dbl_mk_var(wgt_val_1);
     wgt_2=scl_dbl_mk_var(wgt_val_2);
-  } /* end if CMD_LN_NTP_WGT */ 
+  } /* end if CMD_LN_NTP_WGT */
 
   if(dbg_lvl > 1) (void)fprintf(stderr,"wgt_1 = %g, wgt_2 = %g\n",wgt_1->val.dp[0],wgt_2->val.dp[0]);
 
-    /* Create a structure list for the second file */ 
+    /* Create a structure list for the second file */
   var_prc_2=(var_sct **)nco_malloc(nbr_var_prc*sizeof(var_sct *));
 
-  /* Loop over each interpolated variable */ 
+  /* Loop over each interpolated variable */
   for(idx=0;idx<nbr_var_prc;idx++){
     if(dbg_lvl > 0) (void)fprintf(stderr,"%s, ",var_prc_1[idx]->nm);
     if(dbg_lvl > 0) (void)fflush(stderr);
@@ -461,29 +461,29 @@ main(int argc,char **argv)
     var_prc_1[idx]=var_conform_type(NC_DOUBLE,var_prc_1[idx]);
     var_prc_2[idx]=var_conform_type(NC_DOUBLE,var_prc_2[idx]);
 
-    /* Allocate and, if necesssary, initialize space for processed variable */ 
+    /* Allocate and, if necesssary, initialize space for processed variable */
     var_prc_out[idx]->sz=var_prc_1[idx]->sz;
-    /* NB: must not try to free() same tally buffer twice */ 
+    /* NB: must not try to free() same tally buffer twice */
     /*    var_prc_out[idx]->tally=var_prc_1[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long));*/
     var_prc_out[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long));
     (void)zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
   
-    /* Weight the variable by taking the product of the weight and the variable */ 
+    /* Weight the variable by taking the product of the weight and the variable */
     (void)var_multiply(var_prc_1[idx]->type,var_prc_1[idx]->sz,var_prc_1[idx]->has_mss_val,var_prc_1[idx]->mss_val,wgt_out_1->val,var_prc_1[idx]->val);
     (void)var_multiply(var_prc_2[idx]->type,var_prc_2[idx]->sz,var_prc_2[idx]->has_mss_val,var_prc_2[idx]->mss_val,wgt_out_2->val,var_prc_2[idx]->val);
     (void)var_add(var_prc_1[idx]->type,var_prc_1[idx]->sz,var_prc_1[idx]->has_mss_val,var_prc_1[idx]->mss_val,var_prc_out[idx]->tally,var_prc_1[idx]->val,var_prc_2[idx]->val);
     
-    /* Recast output variable to original type */ 
+    /* Recast output variable to original type */
     var_prc_2[idx]=var_conform_type(var_prc_out[idx]->type,var_prc_2[idx]);
 
-    /* Copy interpolations to output file */ 
+    /* Copy interpolations to output file */
     if(var_prc_out[idx]->nbr_dim == 0){
       (void)ncvarput1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_2[idx]->val.vp);
-    }else{ /* end if variable is a scalar */ 
+    }else{ /* end if variable is a scalar */
       (void)ncvarput(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp);
-    } /* end else */ 
+    } /* end else */
 
-    /* Free dynamically allocated buffers */ 
+    /* Free dynamically allocated buffers */
     if(var_prc_1[idx] != NULL) var_prc_1[idx]=var_free(var_prc_1[idx]);
     if(var_prc_2[idx] != NULL) var_prc_2[idx]=var_free(var_prc_2[idx]);
     if(var_prc_out[idx] != NULL) var_prc_out[idx]=var_free(var_prc_out[idx]);
@@ -491,14 +491,14 @@ main(int argc,char **argv)
   } /* end loop over idx */
   if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
   
-  /* Close input netCDF files */ 
+  /* Close input netCDF files */
   ncclose(in_id_1);
   ncclose(in_id_2);
 
-  /* Close output file and move it from temporary to permanent location */ 
+  /* Close output file and move it from temporary to permanent location */
   (void)fl_out_cls(fl_out,fl_out_tmp,out_id);
   
-  /* Remove local copy of file */ 
+  /* Remove local copy of file */
   if(FILE_1_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in_1);
   if(FILE_2_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in_2);
   
@@ -511,9 +511,11 @@ scl_dbl_mk_var(double val)
 /* 
    double val: input double precision value to turn into netCDF variable
    scl_dbl_mk_var: output netCDF variable structure representing val
- */ 
+ */
 {
-  /* Routine to turn a scalar double into a netCDF variable */ 
+  /* Purpose: Turn a scalar double into a netCDF variable
+     Routine duplicates most functions of var_fll() 
+     Ideally both functions would share much of same initialization code */
 
   static char *var_nm="Internally generated variable";
 
@@ -530,15 +532,17 @@ scl_dbl_mk_var(double val)
   var->val.vp=(void *)nco_malloc(nctypelen(var->type));
   (void)memcpy((void *)var->val.vp,(void *)(&val),nctypelen(var->type));
 
-  /* Set defaults */ 
+  /* Set defaults */
   var->is_rec_var=False;
   var->is_crd_var=False;
   var->sz=1L;
   var->sz_rec=1L;
   var->cid=-1;
   var->has_mss_val=False;
+  /* Artificial variables have no disk representation (yet) */
+  var->typ_dsk=-1;
 
-  /* Fill in pointer values */ 
+  /* Fill in pointer values */
   var->nm=(char *)strdup(var_nm);
   var->mss_val.vp=NULL;
   var->tally=NULL;
@@ -550,5 +554,5 @@ scl_dbl_mk_var(double val)
   var->xrf=NULL;
 
   return var;
-} /* end scl_dbl_mk_var */ 
+} /* end scl_dbl_mk_var */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.23 2000-08-15 06:58:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.24 2000-08-28 17:22:13 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -98,20 +98,20 @@
    Verify results:
    ncks -C -h foo.nc | m
 
-   */ 
+   */
 
 /* Standard header files */
 #include <math.h>               /* sin cos cos sin 3.14159 */
 #include <netcdf.h>             /* netCDF definitions */
 #include <stdio.h>              /* stderr, FILE, NULL, etc. */
-#include <stdlib.h>             /* atof, atoi, malloc, getopt */ 
+#include <stdlib.h>             /* atof, atoi, malloc, getopt */
 #include <string.h>             /* strcmp. . . */
 #include <sys/stat.h>           /* stat() */
 #include <time.h>               /* machine time */
-#include <unistd.h>             /* POSIX stuff */ 
-/* #include <assert.h> */            /* assert() debugging macro */ 
-/* #include <errno.h> */             /* errno */
-/* #include <malloc.h>    */         /* malloc() stuff */
+#include <unistd.h>             /* POSIX stuff */
+/* #include <assert.h> */           /* assert() debugging macro */
+/* #include <errno.h> */            /* errno */
+/* #include <malloc.h>    */        /* malloc() stuff */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
@@ -124,24 +124,24 @@ main(int argc,char **argv)
   void aed_prc(int,int,aed_sct);
 
   bool OUTPUT_TO_NEW_NETCDF_FILE=False;
-  bool FORCE_APPEND=False; /* Option A */ 
-  bool FORCE_OVERWRITE=False; /* Option O */ 
+  bool FORCE_APPEND=False; /* Option A */
+  bool FORCE_OVERWRITE=False; /* Option O */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool HISTORY_APPEND=True; /* Option h */
-  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */ 
+  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   
-  char **fl_lst_abb=NULL; /* Option n */ 
+  char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
   char *fl_in=NULL;
   char *aed_arg[MAX_NC_ATTRS];
   char *opt_sng;
   char *fl_out;
-  char *fl_pth_lcl=NULL; /* Option l */ 
-  char *fl_pth=NULL; /* Option p */ 
+  char *fl_pth_lcl=NULL; /* Option l */
+  char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.23 2000-08-15 06:58:35 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.23 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.24 2000-08-28 17:22:13 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.24 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -160,7 +160,7 @@ main(int argc,char **argv)
 
   time_t clock;
 
-  /* Start the clock and save the command line */  
+  /* Start the clock and save the command line */ 
   cmd_ln=cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock);
@@ -175,7 +175,7 @@ main(int argc,char **argv)
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
-    case 'a': /* Copy argument for later processing */ 
+    case 'a': /* Copy argument for later processing */
       aed_arg[nbr_aed]=optarg;
       nbr_aed++;
       break;
@@ -216,16 +216,16 @@ main(int argc,char **argv)
     (void)fprintf(stdout,"%s: ERROR must specify an attribute to edit\n",prg_nm);
     usg_prn();
     exit(EXIT_FAILURE);
-  } /* end if */  
+  } /* end if */ 
 
-  /* Make a uniform list of the user-specified rename structures */ 
+  /* Make a uniform list of the user-specified rename structures */
   if(nbr_aed > 0) aed_lst=prs_aed_lst(nbr_aed,aed_arg);
 
   /* We now have the final list of attributes to edit. */
   
-  /* Parse filename */ 
+  /* Parse filename */
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
-  /* Make sure file is on local system and is readable or die trying */ 
+  /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
 
   if(OUTPUT_TO_NEW_NETCDF_FILE){
@@ -246,7 +246,7 @@ main(int argc,char **argv)
           (void)fprintf(stdout,"ncrename: overwrite %s (y/n)? ",fl_out);
 	  (void)fflush(stdout);
           usr_reply=(char)fgetc(stdin);
-        } /* end while */ 
+        } /* end while */
         
         if(usr_reply == 'n'){
           exit(EXIT_SUCCESS);
@@ -258,12 +258,12 @@ main(int argc,char **argv)
        This avoids possible XDR translation performance penalty of copying each variable with netCDF. */
     (void)fl_cp(fl_in,fl_out);
 
-  } /* end if */ 
+  } /* end if */
 
-  /* Make netCDF errors fatal and print the diagnostic */  
+  /* Make netCDF errors fatal and print the diagnostic */ 
   ncopts=NC_VERBOSE | NC_FATAL;
 
-  /* Open the file. Writing must be enabled and the file should be in define mode for renaming */ 
+  /* Open the file. Writing must be enabled and the file should be in define mode for renaming */
   nc_id=ncopen(fl_out,NC_WRITE);
   (void)ncredef(nc_id);
 
@@ -274,32 +274,32 @@ main(int argc,char **argv)
 
     if(aed_lst[idx].var_nm != NULL){
 
-      /* Is this a global attribute? */ 
+      /* Is this a global attribute? */
       if(!strcmp(aed_lst[idx].var_nm,"global")) aed_lst[idx].id=NC_GLOBAL; else aed_lst[idx].id=ncvarid(nc_id,aed_lst[idx].var_nm);
 
-      /* Edit the attribute */ 
+      /* Edit the attribute */
       (void)aed_prc(nc_id,aed_lst[idx].id,aed_lst[idx]);
 
-    }else{ /* var_nm == NULL */ 
-      /* Perform operation for every variable for which it makes sense */ 
+    }else{ /* var_nm == NULL */
+      /* Perform operation for every variable for which it makes sense */
       
-      /* Edit the attribute for every variable */ 
+      /* Edit the attribute for every variable */
       for(idx_var=0;idx_var<nbr_var_fl;idx_var++) (void)aed_prc(nc_id,idx_var,aed_lst[idx]);
 
     } /* end else var_nm == NULL */
 
-  } /* end loop over idx */ 
+  } /* end loop over idx */
   
-  /* Catenate the timestamped command line to the "history" global attribute */ 
+  /* Catenate the timestamped command line to the "history" global attribute */
   if(HISTORY_APPEND) (void)hst_att_cat(nc_id,cmd_ln);
   
-  /* Take the file out of define mode */ 
+  /* Take the file out of define mode */
   (void)ncendef(nc_id);
     
-  /* Close the open netCDF file */ 
+  /* Close the open netCDF file */
   ncclose(nc_id);
   
-  /* Remove local copy of file */ 
+  /* Remove local copy of file */
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
 
   Exit_gracefully();
@@ -312,10 +312,10 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
    int nbr_aed: input number of attributes
    char **aed_arg: input list of user-specified dimension attributes
    aed_sct *prs_aed_lst(): output structure holding user-specified strings for attributes
- */ 
+ */
 {
   /* Routine to set name, type, size, and value elements of a comma separated list of attribute info. 
-     This routine merely evaluates syntax of input expressions but does not validate attributes or variables against those present in input netCDF file. */ 
+     This routine merely evaluates syntax of input expressions but does not validate attributes or variables against those present in input netCDF file. */
 
   /* Options are:
      -a att_nm,var_nm,mode,att_typ,att_val (modifies attribute att_nm for the single variable var_nm)
@@ -348,7 +348,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
      -o: Attribute overwrite mode
      Write attribute att_nm with value att_val to variable var_nm, overwriting existing attribute att_nm, if any.
      This is the default mode.
-   */ 
+   */
 
   void usg_prn(void);
 
@@ -361,33 +361,33 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
   int idx;
   int arg_nbr;
 
-  long idx_att_val_arg=4L; /* Number of required delimiters preceding the attribute values in -a argument list */ 
+  long idx_att_val_arg=4L; /* Number of required delimiters preceding the attribute values in -a argument list */
 
   aed_lst=(aed_sct *)nco_malloc(nbr_aed*sizeof(aed_sct));
 
   for(idx=0;idx<nbr_aed;idx++){
 
-    /* Attribute edit specifications are processed as a normal text list. */ 
+    /* Attribute edit specifications are processed as a normal text list. */
     arg_lst=lst_prs(aed_arg[idx],dlm_sng,&arg_nbr);
 
-    /* Check syntax */ 
+    /* Check syntax */
     if(
-       arg_nbr < 5 || /* Need more info */ 
-       arg_lst[0] == NULL || /*  att_nm not specified */ 
-       arg_lst[2] == NULL || /*  mode not specified */ 
-       (*(arg_lst[2]) != 'd' && (arg_lst[3] == NULL || (arg_lst[idx_att_val_arg] == NULL && *(arg_lst[3]) != 'c'))) || /* att_typ and att_val must be specified when mode is not delete, except that att_val = "" is valid for character type */ 
+       arg_nbr < 5 || /* Need more info */
+       arg_lst[0] == NULL || /*  att_nm not specified */
+       arg_lst[2] == NULL || /*  mode not specified */
+       (*(arg_lst[2]) != 'd' && (arg_lst[3] == NULL || (arg_lst[idx_att_val_arg] == NULL && *(arg_lst[3]) != 'c'))) || /* att_typ and att_val must be specified when mode is not delete, except that att_val = "" is valid for character type */
        False){
       (void)fprintf(stdout,"%s: ERROR in attribute edit specification %s\n",prg_nm_get(),aed_arg[idx]);
       exit(EXIT_FAILURE);
-    } /* end if */ 
+    } /* end if */
 
-    /* Initialize structure */ 
+    /* Initialize structure */
     /* aed strings which are not explicitly set by the user will remain as NULLs,
        i.e., specifying the default setting will appear as if nothing at all was set.
        Hopefully, in the routines that follow, the branch followed by an aed for which
        all the default settings were specified (e.g.,"-a foo,,,,") will yield the same result
        as the branch for which all defaults were set.
-     */ 
+     */
     aed_lst[idx].att_nm=NULL;
     aed_lst[idx].var_nm=NULL;
     aed_lst[idx].val.vp=NULL;
@@ -396,13 +396,13 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
     aed_lst[idx].sz=-1L;
     aed_lst[idx].id=-1;
 
-    /* Fill in structure */ 
+    /* Fill in structure */
     aed_lst[idx].att_nm=arg_lst[0];
     aed_lst[idx].var_nm=arg_lst[1];
 
-    /* fxm: These switches should be changed to string comparisons someday */ 
-    /* Set mode of current aed structure */ 
-    /* Convert single letter code to mode enum */ 
+    /* fxm: These switches should be changed to string comparisons someday */
+    /* Set mode of current aed structure */
+    /* Convert single letter code to mode enum */
     /*    if(!strstr("append",arg_lst[2])){aed_lst[idx].mode=aed_append;
     }else if(!strstr("create",arg_lst[2])){aed_lst[idx].mode=aed_create;
     }else if(!strstr("delete",arg_lst[2])){aed_lst[idx].mode=aed_delete;
@@ -419,13 +419,13 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
       (void)fprintf(stderr,"%s: HINT: Valid modes are `a' = append, `c' = create,`d' = delete, `m' = modify, and `o' = overwrite",prg_nm_get());
       exit(EXIT_FAILURE);
       break;
-    } /* end switch */ 
+    } /* end switch */
 
-    /* Attribute type and value do not matter if we are deleting it */ 
+    /* Attribute type and value do not matter if we are deleting it */
     if(aed_lst[idx].mode != aed_delete){
 
-      /* Set type of current aed structure */ 
-      /* Convert single letter code to type enum */ 
+      /* Set type of current aed structure */
+      /* Convert single letter code to type enum */
       switch(*(arg_lst[3])){
       case 'f':	aed_lst[idx].type=NC_FLOAT; break;
       case 'd':	aed_lst[idx].type=NC_DOUBLE; break;
@@ -438,7 +438,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
 	(void)fprintf(stderr,"%s: HINT: Valid data types are `c' = char, `f' = float, `d' = double,`s' = short, `l' = long, `b' = byte",prg_nm_get());
 	exit(EXIT_FAILURE);
 	break;
-      } /* end switch */ 
+      } /* end switch */
       
       /* Reassemble string list values which inadvertently contain delimiters */
       if(aed_lst[idx].type == NC_CHAR && arg_nbr > idx_att_val_arg+1){
@@ -456,16 +456,16 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
       /* Replace any C language '\X' escape codes with ASCII bytes */
       if(aed_lst[idx].type == NC_CHAR) (void)sng_ascii_trn(arg_lst[idx_att_val_arg]);
 
-      /* Set size of current aed structure */ 
+      /* Set size of current aed structure */
       if(aed_lst[idx].type == NC_CHAR){
-	/* Include NUL-terminator in string length */ 
+	/* Include NUL-terminator in string length */
 	aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 0 : strlen(arg_lst[idx_att_val_arg])+1;
       }else{
-	/* Number of elements of numeric types is determined by number of delimiters */ 
+	/* Number of elements of numeric types is determined by number of delimiters */
 	aed_lst[idx].sz=arg_nbr-idx_att_val_arg;
-      } /* end else */ 
+      } /* end else */
       
-      /* Set value of current aed structure */ 
+      /* Set value of current aed structure */
       if(aed_lst[idx].type == NC_CHAR){
 	aed_lst[idx].val.cp=(signed char *)arg_lst[idx_att_val_arg];
       }else{
@@ -486,15 +486,15 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
 	case NC_SHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.sp[lmn]=val_arg_dbl[lmn];} break; 
 	case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=val_arg_dbl[lmn];} break; 
 	case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=val_arg_dbl[lmn];} break; 
-	} /* end switch */ 
+	} /* end switch */
 	
-	/* Free array used to hold double values */ 
+	/* Free array used to hold double values */
 	if(val_arg_dbl != NULL) (void)free(val_arg_dbl);
-      } /* end else */ 
-      /* Un-typecast pointer to values after access */ 
+      } /* end else */
+      /* Un-typecast pointer to values after access */
       (void)cast_nctype_void(aed_lst[idx].type,&aed_lst[idx].val);
       
-    } /* end if mode is not delete */ 
+    } /* end if mode is not delete */
   } /* end loop over aed */
   
   if(dbg_lvl == 5){
@@ -503,7 +503,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
       (void)fprintf(stderr,"aed_lst[%d].var_nm = %s\n",idx,aed_lst[idx].var_nm == NULL ? "NULL" : aed_lst[idx].var_nm);
       (void)fprintf(stderr,"aed_lst[%d].id = %i\n",idx,aed_lst[idx].id);
       (void)fprintf(stderr,"aed_lst[%d].sz = %li\n",idx,aed_lst[idx].sz);
-      (void)fprintf(stderr,"aed_lst[%d].type = %s\n",idx,nc_type_nm(aed_lst[idx].type));
+      (void)fprintf(stderr,"aed_lst[%d].type = %s\n",idx,nco_typ_sng(aed_lst[idx].type));
       /*      (void)fprintf(stderr,"aed_lst[%d].val = %s\n",idx,aed_lst[idx].val);*/
       (void)fprintf(stderr,"aed_lst[%d].mode = %i\n",idx,aed_lst[idx].mode);
     } /* end loop over idx */
@@ -511,7 +511,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
   
   return aed_lst;
   
-} /* end prs_aed_lst() */ 
+} /* end prs_aed_lst() */
 
 
 void
@@ -520,15 +520,15 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
 	int nc_id: input netCDF file ID
 	int var_id: input ID of variable on which to perform attribute editing 
 	aed_sct aed: input structure containing information necessary to edit
-     */ 
+     */
 {
-  /* Routine to perform a single attribute edit on a single variable */ 
+  /* Routine to perform a single attribute edit on a single variable */
   
   /* If var_id == NC_GLOBAL ( = -1) then a global attribute will be edited */
   
   char var_nm[MAX_NC_NAME];
   
-  /* fxm: netCDF 2 specifies att_sz should be type int, netCDF 3 uses size_t */ 
+  /* fxm: netCDF 2 specifies att_sz should be type int, netCDF 3 uses size_t */
   int att_sz;
   int nbr_att;
   int rcd;
@@ -544,7 +544,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
   }else{
     /* Get the name and number of attributes for the variable */
     (void)ncvarinq(nc_id,var_id,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
-  } /* end else */ 
+  } /* end else */
 
   ncopts=0;
   rcd=ncattinq(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
@@ -580,7 +580,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
 
     (void)fprintf(stdout,"%s: WARNING Replacing missing value data in variable %s\n",prg_nm,var_nm);
 
-    /* Take file out of define mode */ 
+    /* Take file out of define mode */
     (void)ncendef(nc_id);
   
     /* Initialize (partially) the variable structure */
@@ -610,7 +610,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     if((var->val.vp=(void *)malloc(var->sz*nctypelen(var->type))) == NULL){
       (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes in aed_prc()\n",prg_nm_get(),var->sz,nctypelen(var->type));
       exit(EXIT_FAILURE); 
-    } /* end if */ 
+    } /* end if */
     if(var->sz > 1){
       (void)ncvarget(var->nc_id,var->id,var->srt,var->cnt,var->val.vp);
     }else{
@@ -627,17 +627,17 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
       exit(EXIT_FAILURE);
     } /* end if */
 
-    /* Shortcuts to avoid indirection */ 
+    /* Shortcuts to avoid indirection */
     var_val=var->val;
     var_sz=var->sz;
 
-    /* Get new and old missing values in same type as variable */ 
+    /* Get new and old missing values in same type as variable */
     mss_val_crr.vp=(void *)nco_malloc(att_sz*nctypelen(var->type));
     mss_val_new.vp=(void *)nco_malloc(aed.sz*nctypelen(var->type));
     (void)val_conform_type(att_typ,var->mss_val,var->type,mss_val_crr);
     (void)val_conform_type(aed.type,aed.val,var->type,mss_val_new);
 
-    /* Typecast pointer to values before access */ 
+    /* Typecast pointer to values before access */
     (void)cast_void_nctype(var->type,&var_val);
     (void)cast_void_nctype(var->type,&mss_val_crr);
     (void)cast_void_nctype(var->type,&mss_val_new);
@@ -649,19 +649,19 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     case NC_SHORT: for(idx=0L;idx<var_sz;idx++) {if(var_val.sp[idx] == *mss_val_crr.sp) var_val.sp[idx]=*mss_val_new.sp;} break;
     case NC_CHAR: for(idx=0L;idx<var_sz;idx++) {if(var_val.cp[idx] == *mss_val_crr.cp) var_val.cp[idx]=*mss_val_new.cp;} break;
     case NC_BYTE: for(idx=0L;idx<var_sz;idx++) {if(var_val.bp[idx] == *mss_val_crr.bp) var_val.bp[idx]=*mss_val_new.bp;} break;
-    } /* end switch */ 
+    } /* end switch */
 
     /* Un-typecast the pointer to values after access */
     (void)cast_nctype_void(var->type,&var_val);
     (void)cast_nctype_void(var->type,&mss_val_crr);
     (void)cast_nctype_void(var->type,&mss_val_new);
 
-    /* Write to disk */ 
+    /* Write to disk */
     if(var->nbr_dim == 0){
       (void)ncvarput1(nc_id,var->id,var->srt,var->val.vp);
-    }else{ /* end if variable is a scalar */ 
+    }else{ /* end if variable is a scalar */
       (void)ncvarput(nc_id,var->id,var->srt,var->cnt,var->val.vp);
-    } /* end else */ 
+    } /* end else */
 
     /* Free memory */
     if(mss_val_crr.vp != NULL){(void)free(mss_val_crr.vp); mss_val_crr.vp=NULL;}
@@ -680,21 +680,21 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
   switch(aed.mode){
   case aed_append:	
     if(rcd != -1){
-      /* Append to existing attribute value */ 
+      /* Append to existing attribute value */
       if(aed.type != att_typ){
-	(void)fprintf(stdout,"%s: ERROR %s attribute %s is of type %s not %s, unable to append\n",prg_nm_get(),var_nm,aed.att_nm,nc_type_nm(att_typ),nc_type_nm(aed.type));
+	(void)fprintf(stdout,"%s: ERROR %s attribute %s is of type %s not %s, unable to append\n",prg_nm_get(),var_nm,aed.att_nm,nco_typ_sng(att_typ),nco_typ_sng(aed.type));
 	exit(EXIT_FAILURE);
-      } /* end if */ 
+      } /* end if */
       att_val_new=(void *)nco_malloc((att_sz+aed.sz)*nctypelen(aed.type));
       (void)ncattget(nc_id,var_id,aed.att_nm,(void *)att_val_new);
-      /* NB: Following assumes sizeof(char) = 1 byte */ 
+      /* NB: Following assumes sizeof(char) = 1 byte */
       (void)memcpy((void *)((char *)att_val_new+att_sz*nctypelen(aed.type)),
 		   (void *)aed.val.vp,
 		   aed.sz*nctypelen(aed.type));
       (void)ncattput(nc_id,var_id,aed.att_nm,aed.type,att_sz+aed.sz,att_val_new);
       if(att_val_new != NULL) (void)free(att_val_new);
     }else{
-      /* Create new attribute */ 
+      /* Create new attribute */
       (void)ncattput(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
     } /* end else */
     break;
@@ -712,6 +712,6 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     break;
   default: 
     break;
-  } /* end switch */ 
+  } /* end switch */
   
-} /* end aed_prc() */ 
+} /* end aed_prc() */

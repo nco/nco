@@ -1,6 +1,6 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.52 2000-08-15 06:58:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.53 2000-08-28 17:22:13 zender Exp $ */
 
-/* Purpose: Standalone utilities for C programs (no netCDF required) */ 
+/* Purpose: Standalone utilities for C programs (no netCDF required) */
 
 /* Copyright (C) 1995--2000 Charlie Zender
    
@@ -40,26 +40,26 @@
 /* Standard header files */
 #include <math.h>               /* sin cos cos sin 3.14159 */
 #include <stdio.h>              /* stderr, FILE, NULL, etc. */
-#include <stdlib.h>             /* atof, atoi, malloc, getopt */ 
+#include <stdlib.h>             /* atof, atoi, malloc, getopt */
 #include <string.h>             /* strcmp. . . */
 #include <sys/stat.h>           /* stat() */
 #include <time.h>               /* machine time */
-#include <unistd.h>             /* POSIX stuff */ 
-/* #include <errno.h> */             /* errno */
-/* #include <malloc.h>    */         /* malloc() stuff */
-/* #include <assert.h> */            /* assert() debugging macro */ 
+#include <unistd.h>             /* POSIX stuff */
+/* #include <errno.h> */            /* errno */
+/* #include <malloc.h>    */        /* malloc() stuff */
+/* #include <assert.h> */           /* assert() debugging macro */
 
-#include <sys/types.h>          /* needed for _res */ 
-#include <netinet/in.h>         /* needed for _res */ 
+#include <sys/types.h>          /* needed for _res */
+#include <netinet/in.h>         /* needed for _res */
 #include <pwd.h>                /* password structures for getpwuid() */
 #ifndef WIN32
-#include <arpa/nameser.h>       /* needed for _res */ 
+#include <arpa/nameser.h>       /* needed for _res */
 #include <resolv.h>             /* Internet structures for _res */
 #endif
 
 /* I'm only keeping these netCDF include files around because I'm worried that 
    function prototypes in nc.h are needed here. Eventually prototypes for these
-   routines should be broken into separate files, like csz.h... */ 
+   routines should be broken into separate files, like csz.h... */
 #include <netcdf.h>             /* netCDF definitions */
 #include "nc.h"                 /* netCDF operator universal def'ns */
 
@@ -79,7 +79,7 @@ Exit_gracefully(void)
   char *time_bfr_end;
   time_t clock;
   
-  /* end the clock */  
+  /* end the clock */ 
   
   clock=time((time_t *)NULL);
   time_bfr_end=ctime(&clock);
@@ -90,7 +90,7 @@ Exit_gracefully(void)
   (void)fclose(stdout);
 
   exit(EXIT_SUCCESS);
-} /* end Exit_gracefully() */ 
+} /* end Exit_gracefully() */
 
 char * 
 nmn_get()
@@ -105,7 +105,7 @@ cmd_ln_sng(int argc,char **argv)
    int argc: I argument count
    char **argv: I argument list
    char *cmd_ln_sng(): O command line
-*/ 
+*/
 {
   char *cmd_ln;
   
@@ -114,7 +114,7 @@ cmd_ln_sng(int argc,char **argv)
 
   for(idx=0;idx<argc;idx++){
     cmd_ln_sz+=(int)strlen(argv[idx])+1;
-  } /* end loop over args */ 
+  } /* end loop over args */
   cmd_ln=(char *)nco_malloc(cmd_ln_sz*sizeof(char));
   if(argc <= 0){
     cmd_ln=(char *)nco_malloc(sizeof(char));
@@ -124,11 +124,11 @@ cmd_ln_sng(int argc,char **argv)
     for(idx=1;idx<argc;idx++){
       (void)strcat(cmd_ln," ");
       (void)strcat(cmd_ln,argv[idx]);
-    } /* end loop over args */ 
-  } /* end else */ 
+    } /* end loop over args */
+  } /* end else */
 
   return cmd_ln;
-} /* end cmd_ln_sng() */ 
+} /* end cmd_ln_sng() */
 
 lmt_sct *
 lmt_prs(int lmt_nbr,char **lmt_arg)
@@ -136,7 +136,7 @@ lmt_prs(int lmt_nbr,char **lmt_arg)
    int lmt_nbr: I number of dimensions with limits
    char **lmt_arg: I list of user-specified dimension limits
    lmt_sct *lmt_prs(): O structure holding user-specified strings for min and max limits
- */ 
+ */
 {
   /* Purpose: Set name, min_sng, max_sng elements of 
      a comma separated list of names and ranges. This routine
@@ -161,28 +161,28 @@ lmt_prs(int lmt_nbr,char **lmt_arg)
 
   for(idx=0;idx<lmt_nbr;idx++){
 
-    /* Hyperslab specifications are processed as a normal text list */ 
+    /* Hyperslab specifications are processed as a normal text list */
     arg_lst=lst_prs(lmt_arg[idx],dlm_sng,&arg_nbr);
 
-    /* Check syntax */ 
+    /* Check syntax */
     if(
-       arg_nbr < 2 || /* Need more than just dimension name */ 
-       arg_nbr > 4 || /* Too much information */ 
-       arg_lst[0] == NULL || /* Dimension name not specified */ 
-       (arg_nbr == 3 && arg_lst[1] == NULL && arg_lst[2] == NULL) || /* No min or max when stride not specified */ 
-       (arg_nbr == 4 && arg_lst[3] == NULL) || /* Stride should be specified */ 
+       arg_nbr < 2 || /* Need more than just dimension name */
+       arg_nbr > 4 || /* Too much information */
+       arg_lst[0] == NULL || /* Dimension name not specified */
+       (arg_nbr == 3 && arg_lst[1] == NULL && arg_lst[2] == NULL) || /* No min or max when stride not specified */
+       (arg_nbr == 4 && arg_lst[3] == NULL) || /* Stride should be specified */
        False){
       (void)fprintf(stdout,"%s: ERROR in hyperslab specification for dimension %s\n",prg_nm_get(),lmt_arg[idx]);
       exit(EXIT_FAILURE);
-    } /* end if */ 
+    } /* end if */
 
-    /* Initialize structure */ 
+    /* Initialize structure */
     /* lmt strings which are not explicitly set by user remain NULL, i.e., 
        specifying default setting will appear as if nothing at all was set.
        Hopefully, in routines that follow, branch followed by a dimension for which
        all default settings were specified (e.g.,"-d foo,,,,") will yield same answer
        as branch for which no hyperslab along that dimension was set.
-     */ 
+     */
     lmt[idx].nm=NULL;
     lmt[idx].is_usr_spc_lmt=True; /* True if any part of limit is user-specified, else False */
     lmt[idx].min_sng=NULL;
@@ -191,7 +191,7 @@ lmt_prs(int lmt_nbr,char **lmt_arg)
     /* rec_skp_nsh_spf is used for record dimension in multi-file operators */
     lmt[idx].rec_skp_nsh_spf=0L; /* Number of records skipped in initial superfluous files */
 
-    /* Fill in structure */ 
+    /* Fill in structure */
     lmt[idx].nm=arg_lst[0];
     lmt[idx].min_sng=lmt[idx].max_sng=arg_lst[1];
     if(arg_nbr > 2) lmt[idx].max_sng=arg_lst[2];
@@ -203,7 +203,7 @@ lmt_prs(int lmt_nbr,char **lmt_arg)
 
   return lmt;
 
-} /* end lmt_prs() */ 
+} /* end lmt_prs() */
 
 char *
 sng_lst_prs(char **sng_lst,const long lmn_nbr, const char *dlm_sng)
@@ -212,14 +212,14 @@ sng_lst_prs(char **sng_lst,const long lmn_nbr, const char *dlm_sng)
    const char *dlm_sng: I delimiter string to use as glue
    const long lmn_nbr: O number of strings in list
    char *sng_lst_prs: O Concatenated string formed by joining all input strings
- */ 
+ */
 {
   /* Routine takes a list of strings and joins them together into one string
      Elements of input list should all be NUL-terminated strings
      Element with the value NULL, will be interpreted as strings of zero length
-  */ 
+  */
 
-  char *sng; /* Output string */ 
+  char *sng; /* Output string */
 
   int dlm_len;
   long lmn;
@@ -227,27 +227,27 @@ sng_lst_prs(char **sng_lst,const long lmn_nbr, const char *dlm_sng)
 
   if(lmn_nbr == 1L) return sng_lst[0];
 
-  /* Delimiter must be NUL-terminated (a string) so strlen() works */ 
+  /* Delimiter must be NUL-terminated (a string) so strlen() works */
   if(dlm_sng == NULL){
     (void)fprintf(stdout,"%s: ERROR sng_lst_prs() reports delimiter string is NULL\n",prg_nm_get());
     exit(EXIT_FAILURE);
   } /* end if */
   dlm_len=strlen(dlm_sng); 
 
-  /* List elements must be NUL-terminated (strings) so strlen() works */ 
+  /* List elements must be NUL-terminated (strings) so strlen() works */
   for(lmn=0L;lmn<lmn_nbr;lmn++) sng_sz+=(sng_lst[lmn] == NULL) ? 0L : strlen(sng_lst[lmn])+dlm_len;
   /* Add one for NULL byte */
   sng=(char *)nco_malloc(sizeof(char)*(sng_sz+1));
   /* NUL-terminate string for safety */
   sng[0]='\0';
   for(lmn=0L;lmn<lmn_nbr;lmn++){
-    /* List elements must be NUL-terminated (strings) so strcat() works */ 
+    /* List elements must be NUL-terminated (strings) so strcat() works */
     sng=(sng_lst[lmn] == NULL) ? sng : strcat(sng,sng_lst[lmn]);
     if(lmn != lmn_nbr-1 && dlm_len != 0) sng=strcat(sng,dlm_sng);
   } /* end loop over lmn */
 
   return sng;
-} /* end lst_prs() */ 
+} /* end lst_prs() */
 
 char **
 lst_prs(char *sng_in,const char *dlm_sng,int *nbr_lst)
@@ -256,14 +256,14 @@ lst_prs(char *sng_in,const char *dlm_sng,int *nbr_lst)
    const char *dlm_sng: I [sng] delimiter string
    int *nbr_lst: O [nbr] Number of elements in list
    char **lst_prs: O [sng] array of list elements
- */ 
+ */
 {
   /* Purpose: Create list of strings from given string and arbitrary delimiter
      This routine is often called with system memory, e.g., with strings from
      command line arguments whose memory was allocated by the shell or getopt().
      A conservative policy would be, therefore, to never modify the input string
      However, we are safe if any modifications do not extend the input string
-     Thus this routine is allowed to replace delimiter strings by NULLs */ 
+     Thus this routine is allowed to replace delimiter strings by NULLs */
 
   /* Number of list members is always one more than number of delimiters, e.g.,
      foo,,3, has 4 arguments: "foo", "", "3" and "".
@@ -281,20 +281,20 @@ lst_prs(char *sng_in,const char *dlm_sng,int *nbr_lst)
   int dlm_len;
   int idx;
 
-  /* Delimiter must be NUL-terminated (a string) so we may find its length */ 
+  /* Delimiter must be NUL-terminated (a string) so we may find its length */
   dlm_len=strlen(dlm_sng); 
 
-  /* Do not increment actual sng_in pointer while searching for delimiters---increment a dummy pointer instead. */ 
+  /* Do not increment actual sng_in pointer while searching for delimiters---increment a dummy pointer instead. */
   sng_in_ptr=sng_in; 
 
-  /* First element does not require a delimiter in front of it */ 
+  /* First element does not require a delimiter in front of it */
   *nbr_lst=1;
 
-  /* Count list members */ 
+  /* Count list members */
   while((sng_in_ptr=strstr(sng_in_ptr,dlm_sng))){
     sng_in_ptr+=dlm_len;
     (*nbr_lst)++;
-  } /* end while */ 
+  } /* end while */
 
   lst=(char **)nco_malloc(*nbr_lst*sizeof(char *));
 
@@ -302,15 +302,15 @@ lst_prs(char *sng_in,const char *dlm_sng,int *nbr_lst)
   lst[0]=sng_in;
   idx=0;
   while((sng_in_ptr=strstr(sng_in_ptr,dlm_sng))){
-    /* NUL-terminate previous arg */ 
+    /* NUL-terminate previous arg */
     *sng_in_ptr='\0';
     sng_in_ptr+=dlm_len;
     lst[++idx]=sng_in_ptr;
-  } /* end while */ 
+  } /* end while */
 
   /* Default list member is assumed when two delimiters are adjacent to eachother, 
      i.e., when length of string between delimiters is 0. 
-     If list ends with delimiter, then last element of list is also assumed to be default list member. */ 
+     If list ends with delimiter, then last element of list is also assumed to be default list member. */
   /* This loop sets default list members to NULL */
   for(idx=0;idx<*nbr_lst;idx++)
     if(strlen(lst[idx]) == 0) lst[idx]=NULL;
@@ -324,7 +324,7 @@ lst_prs(char *sng_in,const char *dlm_sng,int *nbr_lst)
   } /* end debug */
 
   return lst;
-} /* end lst_prs() */ 
+} /* end lst_prs() */
 
 char *
 fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,char **fl_lst_abb,char *fl_pth)
@@ -336,7 +336,7 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
    char **fl_lst_abb: I NINTAP-style arguments, if any
    char *fl_pth: I path prefix for files in fl_lst_in
    char *fl_nm_prs: O name of file to retrieve
- */ 
+ */
 {
   /* Routine to construct a file name from various input arguments and switches.
      This routine implements the NINTAP-style specification by using static
@@ -354,7 +354,7 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
   static int fl_nm_nbr_max;
   static int fl_nm_nbr_min;
 
-  /* Free any old filename space */ 
+  /* Free any old filename space */
   if(fl_nm != NULL) (void)free(fl_nm);
 
   /* Construct filename from NINTAP-style arguments and input name */
@@ -389,7 +389,7 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
 	fl_nm_nbr_min=1;
       } /* end if */
       
-      /* Is there a .nc, .cdf, .hdf, or .hd5 suffix? */ 
+      /* Is there a .nc, .cdf, .hdf, or .hd5 suffix? */
       if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-3,".nc",3) == 0) 
 	fl_nm_sfx_len=3;
       else if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".cdf",4) == 0)
@@ -407,14 +407,14 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
       fl_nm_nbr_crr=atoi(fl_nm_nbr_sng);
       (void)sprintf(fl_nm_nbr_sng_fmt,"%%0%dd",fl_nm_nbr_dgt);
 
-      /* First filename is always specified on command line anyway... */ 
+      /* First filename is always specified on command line anyway... */
       fl_nm=(char *)strdup(fl_lst_in[0]);
 
-      /* Set flag that this routine has already been invoked at least once */ 
+      /* Set flag that this routine has already been invoked at least once */
       FIRST_INVOCATION=False;
 
     }else{ /* end if FIRST_INVOCATION */
-      /* Create current filename from previous filename */ 
+      /* Create current filename from previous filename */
       fl_nm_nbr_crr+=fl_nm_nbr_ncr;
       if(fl_nm_nbr_max) 
 	if(fl_nm_nbr_crr > fl_nm_nbr_max) 
@@ -427,25 +427,25 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
     fl_nm=(char *)strdup(fl_lst_in[fl_nbr]);
   } /* end if no abbreviation list */
   
-  /* Prepend path prefix */ 
+  /* Prepend path prefix */
   if(fl_pth != NULL){
     char *fl_nm_stub;
 
     fl_nm_stub=fl_nm;
 
-    /* Allocate enough room for joining slash '/' and terminating NUL */ 
+    /* Allocate enough room for joining slash '/' and terminating NUL */
     fl_nm=(char *)nco_malloc((strlen(fl_nm_stub)+strlen(fl_pth)+2)*sizeof(char));
     (void)strcpy(fl_nm,fl_pth);
     (void)strcat(fl_nm,"/");
     (void)strcat(fl_nm,fl_nm_stub);
 
-    /* Free filestub space */ 
+    /* Free filestub space */
     (void)free(fl_nm_stub);
   } /* end if */
 
-  /* Return new filename */ 
+  /* Return new filename */
   return(fl_nm);
-} /* end fl_nm_prs() */ 
+} /* end fl_nm_prs() */
 
 char *
 fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
@@ -454,11 +454,11 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
    char *fl_pth_lcl: I local storage area for files retrieved from remote locations, if any
    int *FILE_RETRIEVED_FROM_REMOTE_LOCATION: O flag set if file had to be retrieved from remote system
    char *fl_mk_lcl(): O filename locally available file
-*/ 
+*/
 {
   /* Routine to locate input file, retrieve it from a remote storage system if necessary, 
      create local storage directory if neccessary, check file for read-access,
-     return name of file on local system */ 
+     return name of file on local system */
 
   FILE *fp_in;
   char *cln_ptr; /* [ptr] Colon pointer */
@@ -467,7 +467,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
   int rcd;
   struct stat stat_sct;
   
-  /* Assume local filename is input filename */ 
+  /* Assume local filename is input filename */
   fl_nm_lcl=(char *)strdup(fl_nm);
 
   /* Remove any URL and machine-name components from local filename */
@@ -475,7 +475,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     char *fl_nm_lcl_tmp;
     char *fl_pth_lcl_tmp;
 
-    /* Rearrange fl_nm_lcl to get rid of ftp://hostname part */ 
+    /* Rearrange fl_nm_lcl to get rid of ftp://hostname part */
     fl_pth_lcl_tmp=strchr(fl_nm_lcl+6,'/');
     fl_nm_lcl_tmp=fl_nm_lcl;
     fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1);
@@ -499,39 +499,39 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
       char *fl_nm_lcl_tmp;
       char *fl_pth_lcl_tmp;
       
-      /* Rearrange the fl_nm_lcl to get rid of the hostname: part */ 
+      /* Rearrange the fl_nm_lcl to get rid of the hostname: part */
       fl_pth_lcl_tmp=strchr(fl_nm_lcl+6,'/');
       fl_nm_lcl_tmp=fl_nm_lcl;
       fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1);
       (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
       (void)free(fl_nm_lcl_tmp);
     } /* endif period is three or four characters from colon */
-  } /* end if */ 
+  } /* end if */
   
-  /* Does file exist on local system? */ 
+  /* Does file exist on local system? */
   rcd=stat(fl_nm_lcl,&stat_sct);
 
   /* One exception: let DODS try to access remote HTTP protocol files as local files */
   if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl) rcd=0;
   
-  /* If not, check if file exists on local system under same path interpreted relative to current working directory */ 
+  /* If not, check if file exists on local system under same path interpreted relative to current working directory */
   if(rcd == -1){
     if(fl_nm_lcl[0] == '/'){
       rcd=stat(fl_nm_lcl+1,&stat_sct);
-    } /* end if */ 
+    } /* end if */
     if(rcd == 0){
       char *fl_nm_lcl_tmp;
       
       /* NB: simply adding one to the filename pointer is like deleting
 	 the initial slash on the filename. Without copying the new name
 	 into its own memory space, free(fl_nm_lcl) would not be able to free 
-	 the initial byte. */ 
+	 the initial byte. */
       fl_nm_lcl_tmp=(char *)strdup(fl_nm_lcl+1);
       (void)free(fl_nm_lcl);
       fl_nm_lcl=fl_nm_lcl_tmp;
       (void)fprintf(stderr,"%s: WARNING not searching for %s on remote filesystem, using local file %s instead\n",prg_nm_get(),fl_nm,fl_nm_lcl+1);
     } /* end if */
-  } /* end if */ 
+  } /* end if */
   
   /* Finally, check to see if file exists on local system in directory specified for storage of remotely retrieved files
      This would be the case if some files had already been retrieved in a previous invocation of the program */
@@ -544,19 +544,19 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
       char *fl_nm_lcl_tmp;
       
       fl_nm_lcl_tmp=fl_nm_lcl;
-      /* Allocate enough room for the joining slash '/' and the terminating NUL */ 
+      /* Allocate enough room for the joining slash '/' and the terminating NUL */
       fl_nm_lcl=(char *)nco_malloc((strlen(fl_pth_lcl)+strlen(fl_nm_stub)+2)*sizeof(char));
       (void)strcpy(fl_nm_lcl,fl_pth_lcl);
       (void)strcat(fl_nm_lcl,"/");
       (void)strcat(fl_nm_lcl,fl_nm_stub);
-      /* Free the old filename space */ 
+      /* Free the old filename space */
       (void)free(fl_nm_lcl_tmp);
-    } /* end if */ 
+    } /* end if */
     
-    /* At last, check for the file in the local storage directory */ 
+    /* At last, check for the file in the local storage directory */
     rcd=stat(fl_nm_lcl,&stat_sct);
     if (rcd != -1) (void)fprintf(stderr,"%s: WARNING not searching for %s on remote filesystem, using local file %s instead\n",prg_nm_get(),fl_nm,fl_nm_lcl);
-  } /* end if */ 
+  } /* end if */
 
   /* The file was not found locally, try to fetch it from the remote file system */
   if(rcd == -1){
@@ -579,12 +579,12 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 #endif
 
     enum {
-      synchronous, /* 0 */ 
-      asynchronous}; /* 1 */ 
+      synchronous, /* 0 */
+      asynchronous}; /* 1 */
 
     enum {
-      lcl_rmt, /* 0 */ 
-      rmt_lcl}; /* 1 */ 
+      lcl_rmt, /* 0 */
+      rmt_lcl}; /* 1 */
 
     int fl_pth_lcl_len;
     
@@ -596,19 +596,19 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     rmt_fch_cmd_sct scp={"scp -p %s %s",4,synchronous,rmt_lcl};
     rmt_fch_cmd_sct ftp={"",4,synchronous,rmt_lcl};
 
-    /* Why did the stat() command fail? */ 
+    /* Why did the stat() command fail? */
 /*    (void)perror(prg_nm_get());*/
     
-    /* The remote filename is the input filename by definition */ 
+    /* The remote filename is the input filename by definition */
     fl_nm_rmt=fl_nm;
     
-    /* A URL specifier in the filename unambiguously signals to use anonymous ftp */     if(rmt_cmd == NULL){
+    /* A URL specifier in the filename unambiguously signals to use anonymous ftp */    if(rmt_cmd == NULL){
       if(strstr(fl_nm_rmt,"ftp://") == fl_nm_rmt){
 #ifdef WIN32
       /* I have no idea how networking calls work in NT, so just exit */
       (void)fprintf(stdout,"%s: ERROR Networking required to obtain %s is not supported for Windows NT\n",prg_nm_get(),fl_nm_rmt);
       exit(EXIT_FAILURE);
-#else /* not WIN32 */ 
+#else /* not WIN32 */
 	char *fmt;
 	char *usr_nm;
 	char *host_nm_lcl;
@@ -626,34 +626,34 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 	usr_pwd=getpwuid(usr_uid);
 	usr_nm=usr_pwd->pw_name;
 	/* DEBUG: 256 should be replaced by MAXHOSTNAMELEN from <sys/param.h>, but
-	   MAXHOSTNAMELEN isn't in there on Solaris */ 
+	   MAXHOSTNAMELEN isn't in there on Solaris */
 	host_nm_lcl=(char *)nco_malloc((256+1)*sizeof(char));
 	(void)gethostname(host_nm_lcl,256+1);
 	if(strchr(host_nm_lcl,'.') == NULL){
-	  /* The returned hostname did not include the full Internet domain name */ 
+	  /* The returned hostname did not include the full Internet domain name */
 	  (void)res_init();
 	  (void)strcat(host_nm_lcl,".");
 	  (void)strcat(host_nm_lcl,_res.defdname);
-	} /* end if */ 
+	} /* end if */
 
-	/* Add one for the joining "@" and one for the NULL byte */ 
+	/* Add one for the joining "@" and one for the NULL byte */
 	usr_email=(char *)nco_malloc((strlen(usr_nm)+1+strlen(host_nm_lcl)+1)*sizeof(char));
 	(void)sprintf(usr_email,"%s@%s",usr_nm,host_nm_lcl);
-	/* Free the hostname space */ 
+	/* Free the hostname space */
 	(void)free(host_nm_lcl);
 
-	/* The remote hostname begins directly after "ftp://" */ 
+	/* The remote hostname begins directly after "ftp://" */
 	host_nm_rmt=fl_nm_rmt+6;
-	/* The filename begins right after the slash */ 
+	/* The filename begins right after the slash */
 	fl_nm_rmt=strstr(fl_nm_rmt+6,"/")+1;
 	/* NUL-terminate the hostname */
 	*(fl_nm_rmt-1)='\0';
 	
-	/* Subtract the four characters replaced by new strings, and add one for the NULL byte */ 
+	/* Subtract the four characters replaced by new strings, and add one for the NULL byte */
 	fmt=(char *)nco_malloc((strlen(fmt_template)+strlen(host_nm_rmt)+strlen(usr_email)-4+1)*sizeof(char));
 	(void)sprintf(fmt,fmt_template,host_nm_rmt,usr_email,"%s","%s");
 	rmt_cmd->fmt=fmt;
-	/* Free the space holding the user's E-mail address */ 
+	/* Free the space holding the user's E-mail address */
 	(void)free(usr_email);
 #endif /* not WIN32 */
       } /* end if */
@@ -672,7 +672,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     } /* end if */
     
     if(rmt_cmd == NULL){
-      /* Does msrcp command exist on local system? */ 
+      /* Does msrcp command exist on local system? */
       rcd=stat("/usr/local/bin/msrcp",&stat_sct); /* SCD Dataproc, Ouray */
       if(rcd != 0) rcd=stat("/usr/bin/msrcp",&stat_sct); /* ACD Linux */
       if(rcd != 0) rcd=stat("/opt/local/bin/msrcp",&stat_sct); /* CGD */
@@ -681,13 +681,13 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     } /* end if */
 	
     if(rmt_cmd == NULL){
-      /* Does msread command exist on local system? */ 
+      /* Does msread command exist on local system? */
       rcd=stat("/usr/local/bin/msread",&stat_sct);
       if(rcd == 0) rmt_cmd=&msread;
     } /* end if */
 	
     if(rmt_cmd == NULL){
-      /* Does nrnet command exist on local system? */ 
+      /* Does nrnet command exist on local system? */
       rcd=stat("/usr/local/bin/nrnet",&stat_sct);
       if(rcd == 0) rmt_cmd=&nrnet;
     } /* end if */
@@ -708,9 +708,9 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 
     /* Find the path for storing the local file */
     fl_nm_stub=strrchr(fl_nm_lcl,'/')+1;
-    /* Construct the local storage filepath name */ 
+    /* Construct the local storage filepath name */
     fl_pth_lcl_len=strlen(fl_nm_lcl)-strlen(fl_nm_stub)-1;
-    /* Allocate enough room for the terminating NUL */ 
+    /* Allocate enough room for the terminating NUL */
     fl_pth_lcl_tmp=(char *)nco_malloc((fl_pth_lcl_len+1)*sizeof(char));
     (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl,fl_pth_lcl_len);
     fl_pth_lcl_tmp[fl_pth_lcl_len]='\0';
@@ -734,14 +734,14 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 	if(fl_pth_lcl == NULL) (void)fprintf(stderr,"%s: HINT Use -l option\n",prg_nm_get());
 	exit(EXIT_FAILURE);
       } /* end if */
-      /* Free local command space */ 
+      /* Free local command space */
       (void)free(cmd_sys);
-    } /* end if */ 
+    } /* end if */
 
-    /* Free local path space, if any */ 
+    /* Free local path space, if any */
     if(fl_pth_lcl_tmp != NULL) (void)free(fl_pth_lcl_tmp);
 
-    /* Allocate enough room for joining space ' ' and terminating NUL */ 
+    /* Allocate enough room for joining space ' ' and terminating NUL */
     cmd_sys=(char *)nco_malloc((strlen(rmt_cmd->fmt)-rmt_cmd->nbr_fmt_char+strlen(fl_nm_lcl)+strlen(fl_nm_rmt)+2)*sizeof(char));
     if(rmt_cmd->file_order == lcl_rmt){
       (void)sprintf(cmd_sys,rmt_cmd->fmt,fl_nm_lcl,fl_nm_rmt);
@@ -750,12 +750,12 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     } /* end else */
     if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: Retrieving file from remote location:\n%s",prg_nm_get(),cmd_sys);
     (void)fflush(stderr);
-    /* Fetch file from remote file system */ 
+    /* Fetch file from remote file system */
     rcd=system(cmd_sys);
-    /* Free local command space */ 
+    /* Free local command space */
     (void)free(cmd_sys);
 
-    /* Free ftp script, which is the only dynamically allocated command */ 
+    /* Free ftp script, which is the only dynamically allocated command */
     if(rmt_cmd == &ftp) (void)free(rmt_cmd->fmt);
    
     if(rmt_cmd->transfer_mode == synchronous){
@@ -767,32 +767,32 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     }else{
       /* This is the appropriate place to insert a shell script invocation 
 	 of a command to retrieve the file asynchronously and return the 
-	 status to the NCO synchronously. */ 
+	 status to the NCO synchronously. */
 
       int fl_sz_crr=-2;
       int fl_sz_ntl=-1;
-      int nbr_tm=100; /* Maximum number of sleep periods before error exit */ 
+      int nbr_tm=100; /* Maximum number of sleep periods before error exit */
       int tm_idx;
-      int tm_sleep=10; /* Seconds per stat() check for successful return */ 
+      int tm_sleep=10; /* Seconds per stat() check for successful return */
 
-      /* Asynchronous retrieval uses a sleep and poll technique */ 
+      /* Asynchronous retrieval uses a sleep and poll technique */
       for(tm_idx=0;tm_idx<nbr_tm;tm_idx++){
 	rcd=stat(fl_nm_lcl,&stat_sct);
 	if(rcd == 0){
-	  /* What is current size of file? */ 
+	  /* What is current size of file? */
 	  fl_sz_ntl=fl_sz_crr;
 	  fl_sz_crr=stat_sct.st_size;
 	  /* If size of file has not changed for an entire sleep period, assume 
-	     file is completely retrieved. */ 
+	     file is completely retrieved. */
 	  if(fl_sz_ntl == fl_sz_crr){
 	    break;
 	  } /* end if */
 	} /* end if */
-	/* Sleep for specified time */ 
+	/* Sleep for specified time */
 	(void)sleep((unsigned)tm_sleep);
 	if(dbg_lvl_get() > 0) (void)fprintf(stderr,".");
 	(void)fflush(stderr);
-      } /* end for */ 
+      } /* end for */
       if(tm_idx == nbr_tm){
 	(void)fprintf(stderr,"%s: ERROR Maximum time (%d seconds = %.1f minutes) for asynchronous file retrieval exceeded.\n",prg_nm_get(),nbr_tm*tm_sleep,nbr_tm*tm_sleep/60.);
 	exit(EXIT_FAILURE);
@@ -802,7 +802,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     *FILE_RETRIEVED_FROM_REMOTE_LOCATION=True;
   }else{ /* end if input file did not exist locally */
     *FILE_RETRIEVED_FROM_REMOTE_LOCATION=False;
-  } /* end if file was already on the local system */ 
+  } /* end if file was already on the local system */
 
   /* Make sure we have read permission on local file */
   if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl){
@@ -821,21 +821,21 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
        exit(EXIT_FAILURE);
      }else{
        (void)fclose(fp_in);
-     } /* end else */ 
+     } /* end else */
    } /* end if really a local file */
   
-  /* Free input filename space */ 
+  /* Free input filename space */
   (void)free(fl_nm);
 
-  /* Return local filename */ 
+  /* Return local filename */
   return(fl_nm_lcl);
 
-} /* end fl_mk_lcl() */ 
+} /* end fl_mk_lcl() */
 
 /* indexx() is from Numerical Recipes. It computes an index table which 
    sorts the input array into ascending order. I have made the arrin argument 
-   and the local variable q integers for netCDF purposes. */ 
-/* NB: Many Numerical Recipes routines, including this one, employ "one-based" arrays */ 
+   and the local variable q integers for netCDF purposes. */
+/* NB: Many Numerical Recipes routines, including this one, employ "one-based" arrays */
 void indexx(int n,int *arrin,int *indx)
 /*     int n,indx[];*/
 /*     float arrin[];*/
@@ -871,7 +871,7 @@ void indexx(int n,int *arrin,int *indx)
     }
     indx[i]=indxt;
   }
-} /* end indexx() */ 
+} /* end indexx() */
 
 void index_alpha(int n,char **arrin,int *indx)
      /* This is indexx() from Numerical recipes hacked to alphabetize a list of strings */
@@ -908,12 +908,12 @@ void index_alpha(int n,char **arrin,int *indx)
     }
     indx[i]=indxt;
   }
-} /* end index_alpha() */ 
+} /* end index_alpha() */
 
 char *
 cvs_vrs_prs()
 {
-  /* Purpose: Return CVS version string */ 
+  /* Purpose: Return CVS version string */
   bool dly_snp;
 
   char *cvs_mjr_vrs_sng=NULL;
@@ -941,15 +941,15 @@ cvs_vrs_prs()
   long cvs_mnr_vrs=-1L;
   long cvs_pch_vrs=-1L;
 
-  /* Is cvs_Name keyword expanded? */ 
+  /* Is cvs_Name keyword expanded? */
   dlr_ptr=strstr(cvs_Name," $");
   if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports dlr_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",prg_nm_get(),prg_nm_get());
   cvs_nm_ptr=strstr(cvs_Name,"$Name: ");
   if(cvs_nm_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports cvs_nm_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",prg_nm_get(),prg_nm_get());
-  cvs_nm_sng_len=(int)(dlr_ptr-cvs_nm_ptr-7); /* 7 is strlen("$Name: ") */ 
+  cvs_nm_sng_len=(int)(dlr_ptr-cvs_nm_ptr-7); /* 7 is strlen("$Name: ") */
   if(cvs_nm_sng_len > 0) dly_snp=False; else dly_snp=True;
 
-  /* If not, this is a daily snapshot so use YYYYMMDD date for version string */ 
+  /* If not, this is a daily snapshot so use YYYYMMDD date for version string */
   if(dly_snp){
     int mth;
     int day;
@@ -959,7 +959,7 @@ cvs_vrs_prs()
 
     clock=time((time_t *)NULL);
     gmt_tm=gmtime(&clock); 
-    /* localtime() gives YYYYMMDD in MDT, but this conflicts with CVS, which uses GMT */ 
+    /* localtime() gives YYYYMMDD in MDT, but this conflicts with CVS, which uses GMT */
     /*    gmt_tm=localtime(&clock); */
 
     mth=gmt_tm->tm_mon+1;
@@ -970,14 +970,14 @@ cvs_vrs_prs()
     cvs_vrs_sng=(char *)nco_malloc(cvs_vrs_sng_len+1);
     (void)sprintf(cvs_vrs_sng,"%04i%02i%02i",yr,mth,day);
     return cvs_vrs_sng;
-  } /* endif dly_snp */ 
+  } /* endif dly_snp */
 
-  /* cvs_nm_sng is, e.g., "nco1_1" */ 
+  /* cvs_nm_sng is, e.g., "nco1_1" */
   cvs_nm_sng=(char *)nco_malloc(cvs_nm_sng_len+1);
   strncpy(cvs_nm_sng,cvs_Name+7,cvs_nm_sng_len); /* 7 is strlen("$Name: ") */
   cvs_nm_sng[cvs_nm_sng_len]='\0';
 
-  /* cvs_vrs_sng is, e.g., "1.1" */ 
+  /* cvs_vrs_sng is, e.g., "1.1" */
   nco_sng_len=strlen(nco_sng);
   nco_sng_ptr=strstr(cvs_nm_sng,nco_sng);
   if(nco_sng_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports nco_sng_ptr == NULL\n",prg_nm_get());
@@ -985,7 +985,7 @@ cvs_vrs_prs()
   if(dsh_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports dsh_ptr == NULL\n",prg_nm_get());
   usc_1_ptr=strstr(cvs_nm_sng,"_");
   if(usc_1_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports usc_1_ptr == NULL\n",prg_nm_get());
-  cvs_mjr_vrs_len=(int)(usc_1_ptr-dsh_ptr)-1; /* NB: cast pointer to int before subtracting */ 
+  cvs_mjr_vrs_len=(int)(usc_1_ptr-dsh_ptr)-1; /* NB: cast pointer to int before subtracting */
   usc_2_ptr=strstr(usc_1_ptr+1,"_");
   cvs_mjr_vrs_sng=(char *)nco_malloc(cvs_mjr_vrs_len+1);
   cvs_mjr_vrs_sng=strncpy(cvs_mjr_vrs_sng,cvs_nm_sng+nco_sng_len+1,cvs_mjr_vrs_len);
@@ -999,7 +999,7 @@ cvs_vrs_prs()
     cvs_mnr_vrs_len=usc_2_ptr-usc_1_ptr-1;
     cvs_pch_vrs_len=cvs_nm_sng_len-cvs_mjr_vrs_len-1-cvs_mnr_vrs_len-1;
     cvs_vrs_sng_len=cvs_mjr_vrs_len+1+cvs_mnr_vrs_len+1+cvs_pch_vrs_len;
-  } /* end else */ 
+  } /* end else */
   cvs_mnr_vrs_sng=(char *)nco_malloc(cvs_mnr_vrs_len+1);
   cvs_mnr_vrs_sng=strncpy(cvs_mnr_vrs_sng,usc_1_ptr+1,cvs_mnr_vrs_len);
   cvs_mnr_vrs_sng[cvs_mnr_vrs_len]='\0';
@@ -1014,7 +1014,7 @@ cvs_vrs_prs()
     (void)sprintf(cvs_vrs_sng,"%li.%li.%li",cvs_mjr_vrs,cvs_mnr_vrs,cvs_pch_vrs);
   }else{
     (void)sprintf(cvs_vrs_sng,"%li.%li",cvs_mjr_vrs,cvs_mnr_vrs);
-  }/* end else */ 
+  }/* end else */
 
   if(dbg_lvl_get() == 4){
     (void)fprintf(stderr,"NCO version %s\n",cvs_vrs_sng);
@@ -1025,7 +1025,7 @@ cvs_vrs_prs()
     (void)fprintf(stderr,"cvs_mjr_vrs %li\n",cvs_mjr_vrs);
     (void)fprintf(stderr,"cvs_mnr_vrs %li\n",cvs_mnr_vrs);
     (void)fprintf(stderr,"cvs_pch_vrs %li\n",cvs_pch_vrs);
-  } /* endif dbg */ 
+  } /* endif dbg */
 
   (void)free(cvs_mjr_vrs_sng);
   (void)free(cvs_mnr_vrs_sng);
@@ -1033,12 +1033,12 @@ cvs_vrs_prs()
   (void)free(cvs_nm_sng);
 
   return cvs_vrs_sng;
-} /* end cvs_vrs_prs() */ 
+} /* end cvs_vrs_prs() */
 
 void
 nc_lib_vrs_prn()
 {
-  /* Purpose: Print netCDF library version */ 
+  /* Purpose: Print netCDF library version */
 
   char *lib_sng;
   char *nst_sng;
@@ -1050,9 +1050,9 @@ nc_lib_vrs_prn()
   int nst_sng_len;
 
   /* Ability to compile without netCDF 3.x calls is still valuable because
-     HDF 4.x only supports netCDF 2.x library. */      
+     HDF 4.x only supports netCDF 2.x library. */     
 #ifndef NETCDF2_ONLY
-  /* As of netCDF 3.4, nc_inq_libvers() returned strings such as "3.4 of May 16 1998 14:06:16 $" */   
+  /* As of netCDF 3.4, nc_inq_libvers() returned strings such as "3.4 of May 16 1998 14:06:16 $" */  
   lib_sng=(char *)strdup(nc_inq_libvers());
   of_ptr=strstr(lib_sng," of ");
   if(of_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports of_ptr == NULL\n",prg_nm_get());
@@ -1063,16 +1063,16 @@ nc_lib_vrs_prn()
 
   dlr_ptr=strstr(lib_sng," $");
   if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports dlr_ptr == NULL\n",prg_nm_get());
-  nst_sng_len=(int)(dlr_ptr-of_ptr-4); /* 4 is the length of " of " */ 
+  nst_sng_len=(int)(dlr_ptr-of_ptr-4); /* 4 is the length of " of " */
   nst_sng=(char *)nco_malloc(nst_sng_len+1);
-  strncpy(nst_sng,of_ptr+4,nst_sng_len); /* 4 is the length of " of " */ 
+  strncpy(nst_sng,of_ptr+4,nst_sng_len); /* 4 is the length of " of " */
   nst_sng[nst_sng_len]='\0';
 
   (void)fprintf(stderr,"Linked to netCDF library version %s, compiled %s\n",vrs_sng,nst_sng);
   (void)free(vrs_sng);
   (void)free(lib_sng);
   (void)free(nst_sng);
-#endif /* NETCDF2_ONLY */ 
+#endif /* NETCDF2_ONLY */
   (void)fprintf(stdout,"NCO homepage URL is http://nco.sourceforge.net\n");
 } /* end nc_lib_vrs_prn() */
 
@@ -1081,7 +1081,7 @@ copyright_prn(char *CVS_Id,char *CVS_Revision)
 /* 
    char *CVS_Id: I [sng] CVS identification string
    char *CVS_Revision: I [sng] CVS revision string
- */ 
+ */
 {
   char *date_sng;
   char *vrs_sng;
@@ -1133,9 +1133,9 @@ fl_cp(char *fl_src,char *fl_dst)
 /* 
    char *fl_src: I [sng] Name of the source file to copy
    char *fl_dst: I [sng] Name of the destination file
- */ 
+ */
 {
-  /* Routine to copy the first file to the second */ 
+  /* Routine to copy the first file to the second */
 
   char *cp_cmd;
   char cp_cmd_fmt[]="cp %s %s";
@@ -1143,7 +1143,7 @@ fl_cp(char *fl_src,char *fl_dst)
   int rcd;
   int nbr_fmt_char=4;
   
-  /* Construct and execute the copy command */ 
+  /* Construct and execute the copy command */
   cp_cmd=(char *)nco_malloc((strlen(cp_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1)*sizeof(char));
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Copying %s to %s...",fl_src,fl_dst);
   (void)sprintf(cp_cmd,cp_cmd_fmt,fl_src,fl_dst);
@@ -1151,20 +1151,20 @@ fl_cp(char *fl_src,char *fl_dst)
   if(rcd == -1){
     (void)fprintf(stdout,"%s: ERROR fl_cp() is unable to execute cp command \"%s\"\n",prg_nm_get(),cp_cmd);
     exit(EXIT_FAILURE); 
-  } /* end if */ 
+  } /* end if */
   (void)free(cp_cmd);
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
   
-} /* end fl_cp() */ 
+} /* end fl_cp() */
 
 void
 fl_mv(char *fl_src,char *fl_dst)
 /* 
    char *fl_src: I name of the file to move
    char *fl_dst: I name of the destination file
- */ 
+ */
 {
-  /* Routine to move the first file to the second */ 
+  /* Routine to move the first file to the second */
 
   char *mv_cmd;
   char mv_cmd_fmt[]="mv -f %s %s";
@@ -1172,7 +1172,7 @@ fl_mv(char *fl_src,char *fl_dst)
   int rcd;
   int nbr_fmt_char=4;
   
-  /* Construct and execute the copy command */ 
+  /* Construct and execute the copy command */
   mv_cmd=(char *)nco_malloc((strlen(mv_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1)*sizeof(char));
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Moving %s to %s...",fl_src,fl_dst);
   (void)sprintf(mv_cmd,mv_cmd_fmt,fl_src,fl_dst);
@@ -1180,25 +1180,25 @@ fl_mv(char *fl_src,char *fl_dst)
   if(rcd == -1){
     (void)fprintf(stdout,"%s: ERROR fl_mv() is unable to execute mv command \"%s\"\n",prg_nm_get(),mv_cmd);
     exit(EXIT_FAILURE); 
-  } /* end if */ 
+  } /* end if */
   (void)free(mv_cmd);
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
   
-} /* end fl_mv() */ 
+} /* end fl_mv() */
 
 void 
 fl_rm(char *fl_nm)
 /* 
    char *fl_nm: I file to be removed
- */ 
+ */
 {
-  /* Purpose: Remove specified file from local system */ 
+  /* Purpose: Remove specified file from local system */
 
   int rcd;
   char rm_cmd_sys_dep[]="rm -f";
   char *rm_cmd;
   
-  /* Remember to add one for the space and one for the terminating NUL character */ 
+  /* Remember to add one for the space and one for the terminating NUL character */
   rm_cmd=(char *)nco_malloc((strlen(rm_cmd_sys_dep)+1+strlen(fl_nm)+1)*sizeof(char));
   (void)sprintf(rm_cmd,"%s %s",rm_cmd_sys_dep,fl_nm);
 
@@ -1208,7 +1208,7 @@ fl_rm(char *fl_nm)
 
   (void)free(rm_cmd);
 
-} /* end fl_rm() */ 
+} /* end fl_rm() */
 
 int
 sng_ascii_trn(char *sng)
@@ -1230,7 +1230,7 @@ sng_ascii_trn(char *sng)
      The address pointed to by sng does not change, but the memory at that address is altered
      when characters are "moved to the left" if C language escape sequences are embedded.
      Thus the length of the string may shrink
-   */ 
+   */
 
   bool trn_flg; /* Translate this escape sequence */
 
@@ -1245,13 +1245,13 @@ sng_ascii_trn(char *sng)
   if(sng == NULL) return trn_nbr;
   
   /* C language '\X' escape codes are always preceded by a backslash */
-  /* Check if control codes are embedded once before entering loop */ 
+  /* Check if control codes are embedded once before entering loop */
   backslash_ptr=strchr(sng,backslash_chr);
 
   while(backslash_ptr != NULL){
     /* Default is to translate this escape sequence */
     trn_flg=True;
-    /* Replace backslash character by corresponding control code */ 
+    /* Replace backslash character by corresponding control code */
     switch(*(backslash_ptr+1)){ /* man ascii:Oct   Dec   Hex   Char \X  */
     case 'a': *backslash_ptr='\a'; break; /* 007   7     07    BEL '\a' Bell */
     case 'b': *backslash_ptr='\b'; break; /* 010   8     08    BS  '\b' Backspace */
@@ -1267,7 +1267,7 @@ sng_ascii_trn(char *sng)
       /* Do not translate \0 to NUL since this would "erase" the rest of the string */
     case '0':	
       /* Do not translate \0 to NUL since this would make the rest of the string invisible to all string functions */
-      /* *backslash_ptr='\0'; */ /* 000   0     00    NUL '\0' */
+      /* *backslash_ptr='\0'; *//* 000   0     00    NUL '\0' */
       (void)fprintf(stderr,"%s: WARNING C language escape code %.2s found in string, not translating to NUL since this would make the rest of the string invisible to all string functions\n",prg_nm_get(),backslash_ptr);
       trn_flg=False;
       break;
@@ -1275,50 +1275,71 @@ sng_ascii_trn(char *sng)
       (void)fprintf(stderr,"%s: WARNING No ASCII equivalent to possible C language escape code %.2s so no action taken\n",prg_nm_get(),backslash_ptr);
       trn_flg=False;
       break;
-    } /* end switch */ 
+    } /* end switch */
     if(trn_flg){
-      /* Get rid of character after backslash character */ 
+      /* Get rid of character after backslash character */
       (void)memmove(backslash_ptr+1,backslash_ptr+2,(strlen(backslash_ptr+2)+1)*sizeof(char));
-      /* Count translations performed */ 
+      /* Count translations performed */
       trn_nbr++;
     } /* end if */
     /* Look for next backslash starting at character following current escape sequence (but remember that not all escape sequences are translated) */
     if (trn_flg) backslash_ptr=strchr(backslash_ptr+1,backslash_chr); else backslash_ptr=strchr(backslash_ptr+2,backslash_chr);
-    /* Count escape sequences */ 
+    /* Count escape sequences */
     esc_sqn_nbr++;
-  } /* end if */ 
+  } /* end if */
 
-  /* Usually there are no escape codes and sng still equals input value */ 
+  /* Usually there are no escape codes and sng still equals input value */
   if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG sng_ascii_trn() Found %d C-language escape sequences, translated %d of them\n",prg_nm_get(),esc_sqn_nbr,trn_nbr);
 
   return trn_nbr;
 
-} /* end sng_ascii_trn() */ 
+} /* end sng_ascii_trn() */
 
 void *nco_malloc(size_t size)
 {
-  /* Purpose: Custom wrapper for malloc() that won't return a NULL pointer */
-   void *ptr;
-   if(size == 0) return NULL; /* NCO sometimes employs this degenerate case behavior of malloc() to simplify code */
-   ptr=malloc(size); 
-   if(ptr == NULL)
-   {
-      printf("%s: ERROR nco_malloc() ran out of memory trying to allocate %d bytes\n",prg_nm_get(),(int)size);
-      exit(8);
-   }
-   return ptr;
-} /* nco_malloc() */ 
+  /* Purpose: Custom wrapper for malloc()
+     Routine prints error when malloc() returns a NULL pointer 
+     Routine does not call malloc() when size == 0 */
+  
+  void *ptr; /* [ptr] Pointer to new buffer */
+  
+  /* malloc(0) is ANSI-legal, albeit unnecessary
+     NCO sometimes employs this degenerate case behavior of malloc() to simplify code
+     Some debugging tools like Electric Fence consider any NULL returned by malloc() to be an error
+     So circumvent malloc() calls when size == 0 */
+  if(size == 0) return NULL;
+  
+  ptr=malloc(size); /* [ptr] Pointer to new buffer */
+  if(ptr == NULL){
+    (void)fprintf(stdout,"%s: ERROR nco_malloc() unable to allocate %d bytes\n",prg_nm_get(),(int)size);
+    /* fxm: Should be exit(8) on ENOMEM errors? */
+    exit(EXIT_FAILURE);
+  } /* endif */
+  return ptr; /* [ptr] Pointer to new buffer */
+} /* nco_malloc() */
 
 void *nco_realloc(void *ptr,size_t size)
 {
-  /* Purpose: Custom wrapper for realloc() that won't return a NULL pointer */
-   void *new_ptr;
-   new_ptr=realloc(ptr, size);
-   if(new_ptr == NULL && size != 0)
-   {
-      printf("%s: ERROR nco_realloc() ran out of memory trying to allocate %d bytes\n",prg_nm_get(),(int)size);
-      exit(8);
-   }
-   return new_ptr;
-} /* nco_realloc() */ 
-
+  /* Purpose: Custom wrapper for realloc()
+     Routine prints error when realloc() returns a NULL pointer
+     Routine does not call realloc() when size == 0 */
+  
+  void *new_ptr; /* [ptr] Pointer to new buffer */
+  
+  /* This degenerate case sometimes occurs
+     Performing realloc() call here would be ANSI-legal but would trigger Electric Fence */
+  if(ptr == NULL && size == 0) return ptr;
+  if(ptr != NULL && size == 0){
+    (void)free(ptr);
+    ptr=NULL;
+    return ptr;
+  } /* endif */
+  
+  new_ptr=realloc(ptr,size); /* [ptr] Pointer to new buffer */
+  if(new_ptr == NULL && size != 0){
+    (void)fprintf(stdout,"%s: ERROR nco_realloc() unable to realloc() %d bytes\n",prg_nm_get(),(int)size); 
+    /* fxm: Should be exit(8) on ENOMEM errors? */
+    exit(EXIT_FAILURE);
+  } /* endif */
+  return new_ptr; /* [ptr] Pointer to new buffer */
+} /* nco_realloc() */

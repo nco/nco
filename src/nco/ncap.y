@@ -1,9 +1,9 @@
 %{
-/* Begin C declarations section */ 
+/* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.8 2000-08-15 06:58:35 zender Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.9 2000-08-28 17:22:13 zender Exp $ -*-C-*- */
 
-/* Purpose: Grammar parser for ncap */ 
+/* Purpose: Grammar parser for ncap */
 
 /* Copyright (C) 1995--2000 Charlie Zender
 
@@ -46,31 +46,31 @@
      /data/zender/gcc-2.7.2/c-parse.y
      parser_build_binary_op is in /data/zender/gcc-2.7.2/c-typeck.c
      unidata ncgen.y
-  */ 
+  */
 
 /* Standard header files */
 #include <math.h>               /* sin cos cos sin 3.14159 */
-#include <stdlib.h>             /* atof, atoi, malloc, getopt */ 
+#include <stdlib.h>             /* atof, atoi, malloc, getopt */
 #include <string.h>             /* strcmp. . . */
 #include <stdio.h>              /* stderr, FILE, NULL, etc. */
 
 #include <netcdf.h>             /* netCDF definitions */
 #include "nc.h"                 /* NCO definitions */
-#include "ncap.h"               /* symbol table definition */ 
+#include "ncap.h"               /* symbol table definition */
 
-/* Turn on parser debugging option (bison man p. 85) */ 
+/* Turn on parser debugging option (bison man p. 85) */
 #define YYDEBUG 1
 int yydebug=0;
 
-/* Turns on more verbose errors than just plain "parse error" when yyerror() is called by parser */ 
+/* Turns on more verbose errors than just plain "parse error" when yyerror() is called by parser */
 #define YYERROR_VERBOSE 1
 
-/* Add descriptive info to parser debugging output (bison man p. 86) */ 
+/* Add descriptive info to parser debugging output (bison man p. 86) */
 #define YYPRINT(file,type,value) yyprint(file,type,value)
 
-/* Bison manual p. 60 describes how to call yyparse() with arguments */ 
+/* Bison manual p. 60 describes how to call yyparse() with arguments */
 /* prs_sct must be consistent between ncap.y and ncap.c 
-   fxm: Is there a way to define prs_sct in only one place? */ 
+   fxm: Is there a way to define prs_sct in only one place? */
 typedef struct{
     char *fl_in;
     int in_id;  
@@ -82,25 +82,25 @@ typedef struct{
 } prs_sct;
 #define YYPARSE_PARAM prs_arg
 
- int rcd; /* [enm] Return value for function calls */ 
+ int rcd; /* [enm] Return value for function calls */
 
-/* End C declarations section */ 
+/* End C declarations section */
 %}
-/* Begin parser declaration section */ 
+/* Begin parser declaration section */
 
-/* Request pure, reentrant parser, so we can pass a structure to parser */ 
+/* Request pure, reentrant parser, so we can pass a structure to parser */
 %pure_parser
 
 /* NB: "terminal symbol" is just a fancy name for token produced by lexer 
    Symbols defined on LHS of rules are called "non-terminal symbols" or "non-terminals" 
    Examples of non-terminals are xpr, stt, stt_lst
    Examples of terminal symbols, or tokens, are NAME, NUMBER
-   Convention is to make token names all uppercase, and non-terminals lowercase */ 
+   Convention is to make token names all uppercase, and non-terminals lowercase */
 
 /* Define YYSTYPE union (type of lex variable yylval) */
 %union{
-  double val_double; /* Store input in double precision */ 
-  sym_sct *sym; /* Pointer to entry in symbol table */ 
+  double val_double; /* Store input in double precision */
+  sym_sct *sym; /* Pointer to entry in symbol table */
   var_sct var;
 }
 
@@ -120,10 +120,10 @@ typedef struct{
 %type <sym> xpr
 /*%type <var> xpr*/
 
-/* End parser declaration section */ 
+/* End parser declaration section */
 %%
 /* Begin Rules section */
-/* Format is rule: action */ 
+/* Format is rule: action */
 
 /* yacc automatically dereferences correct member of each token's structure
    Thus, if third symbol is a NUMBER, a reference to $3 acts like $3.val_double */
@@ -147,20 +147,20 @@ typedef struct{
    $$->var->nm=$$->nm;
    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"xpr: %s+%s\n",$1->nm,$3->nm); 
    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"xpr: $$->var->nm= %s, $$->var->val.fp[0]=%g\n",$$->var->nm,$$->var->val.fp[0]); 
-   /* Now variable has been (re)defined. Save it to disk. */ 
+   /* Now variable has been (re)defined. Save it to disk. */
    /*rcd=ncap_write_var(((prs_sct *)prs_arg)->out_id,$$->var);*/
- } /* end '+' */ 
+ } /* end '+' */
 
 /*| xpr '-' xpr { $$=$1-$3; }*/
 /*| xpr '*' xpr { $$=$1*$3; }*/
 /*| xpr '/' xpr { if($3 == 0.) yyerror("divide by zero"); else $$=$1/$3; }*/
 /*| xpr '^' xpr { $$=pow($1,$3); }*/
-/* The %prec UMINUS tells YACC to use the precedence of UMINUS for this rule */ 
+/* The %prec UMINUS tells YACC to use the precedence of UMINUS for this rule */
 /*| '-' xpr %prec UMINUS { $$=-$2; }*/
 | '(' xpr ')' { $$=$2; }
-/* | NUMBER { *//* Make xpr a netCDF variable based on NUMBER see pigeon book p. 58 "...not strictly necessary..." */ 
+/* | NUMBER { *//* Make xpr a netCDF variable based on NUMBER see pigeon book p. 58 "...not strictly necessary..." */
 /*$$=scalar_mk_sym($1); }*/
-/*| NUMBER { $$=$1; }*/ /* pigeon book p. 58 "...not strictly necessary..." */
+/*| NUMBER { $$=$1; }*//* pigeon book p. 58 "...not strictly necessary..." */
 | NAME { /* Lookup undefined NAME in input file */
   if($1->var != NULL){
     $$->var=$1->var;
@@ -171,31 +171,31 @@ typedef struct{
 
     if(dbg_lvl_get() > 1) (void)fprintf(stderr,"NAME: getting %s from netCDF %s\n",$1->nm,((prs_sct *)prs_arg)->fl_in);
 
-    /* Get variable ID */ 
+    /* Get variable ID */
     var_id=ncvarid(((prs_sct *)prs_arg)->in_id,$1->nm);
     if(var_id == -1){
       (void)fprintf(stderr,"can't find %s in %s\n",$1->nm,((prs_sct *)prs_arg)->fl_in);
     }else{
       var=var_fll(((prs_sct *)prs_arg)->in_id,var_id,$1->nm,((prs_sct *)prs_arg)->dim,((prs_sct *)prs_arg)->nbr_dmn_xtr);
-      /* Allocate and initialize accumulation space for variable */ 
+      /* Allocate and initialize accumulation space for variable */
       var->tally=(long *)malloc(var->sz*nctypelen(NC_LONG));
       (void)zero_long(var->sz,var->tally);
       var->val.vp=(void *)malloc(var->sz*nctypelen(var->type));
-      /* Retrieve variable values from disk into memory */ 
+      /* Retrieve variable values from disk into memory */
       (void)var_get(((prs_sct *)prs_arg)->in_id,var);
       if(dbg_lvl_get() > 3) (void)fprintf(stderr,"var->nm=%s, var->id=%d, var->nc_id=%d\n",var->nm,var->id,var->nc_id);
       $$->var=var;
-    } /* endif */ 
-  } /* endif */ 
+    } /* endif */
+  } /* endif */
 } 
 /*| NAME '(' xpr ')' {*/
-  /* Assume name followed by parenthesized expression is function */ 
+  /* Assume name followed by parenthesized expression is function */
 /*  if($1->fnc){*/
 /*    $$=($1->fnc)($3); */
 /*  }else{*/
 /*    (void)fprintf(stderr,"%s not a function\n",$1->nm);*/
 /*    $$=0.;*/
-/*  }*/ /* end else */ 
+/*  }*//* end else */
 /*}*/
 ;
 
@@ -206,32 +206,32 @@ typedef struct{
 sym_sct *
 scalar_mk_sym(double val)
 {
-  /* Purpose: Turn scalar into netCDF variable */ 
+  /* Purpose: Turn scalar into netCDF variable */
   sym_sct *sym;
 
   sym=(sym_sct *)malloc(sizeof(sym_sct));
 
   return sym;
-} /* end scalar_mk_sym */ 
+} /* end scalar_mk_sym */
 
 int 
 yyprint(FILE *file,int type,YYSTYPE value)
 {
-  /* Purpose: Add descriptive info to parser debugging output (bison man p. 86) */ 
+  /* Purpose: Add descriptive info to parser debugging output (bison man p. 86) */
   if(type == NAME){
     fprintf(file," %s",value.sym->nm);
   }else if(type == NUMBER){
     fprintf(file," %f",value.val_double);
-  } /* end else */ 
+  } /* end else */
   return 1; /* Return an int or compiler will complain */
-} /* end yyprint() */ 
+} /* end yyprint() */
 
 sym_sct *
 sym_look(char *sym_nm)
 /* 
    char *sym_nm: input name of symbol to locate/define
    sym_sct *sym_look(): output pointer to symbol
- */ 
+ */
 {
   /* Purpose: Look up symbol table entry 
      If symbol is present, routine returns pointer to entry 
@@ -248,8 +248,8 @@ sym_look(char *sym_nm)
     if(!sym->nm){
       sym->nm=(char *)strdup(sym_nm);
       return sym;
-    } /* end if */ 
-  } /* end for */ 
+    } /* end if */
+  } /* end for */
   yyerror("Too many symbols");
   exit(EXIT_FAILURE);
 } /* end sym_look() */
@@ -257,7 +257,7 @@ sym_look(char *sym_nm)
 void
 fnc_add  /* [fnd] Add function to symbol table */
 (char *nm, /* I [sng] Name of function to add to symbol table */
- double (*fnc)()) /* I [fnc] Entry point of function */ 
+ double (*fnc)()) /* I [fnc] Entry point of function */
 {
   /* Purpose: Add function to symbol table */
 
@@ -265,6 +265,6 @@ fnc_add  /* [fnd] Add function to symbol table */
 
   sym=sym_look(nm);
   sym->fnc=fnc;
-} /* end fnc_add() */ 
+} /* end fnc_add() */
 
 /* End User Subroutines section */

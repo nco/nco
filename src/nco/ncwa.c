@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.48 2000-08-25 16:45:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.49 2000-08-28 17:22:13 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -41,27 +41,27 @@
  */
 
 /* fxm: As of 1998/12/02, -n and -W switches were deactivated but code left in place
-   while I rethink the normalization switches */ 
+   while I rethink the normalization switches */
 
 /* Usage:
    ncwa -O -a lon /home/zender/nco/data/in.nc foo.nc
    ncwa -O -R -p /ZENDER/tmp -l /home/zender/nco/data in.nc foo.nc
    ncwa -O -a lat -w gw -d lev,17 -v T -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc foo.nc
    ncwa -O -C -a lat,lon,time -w gw -v PS -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc foo.nc;ncks -H foo.nc
- */ 
+ */
 
 /* Standard header files */
 #include <math.h>               /* sin cos cos sin 3.14159 */
 #include <netcdf.h>             /* netCDF definitions */
 #include <stdio.h>              /* stderr, FILE, NULL, etc. */
-#include <stdlib.h>             /* atof, atoi, malloc, getopt */ 
+#include <stdlib.h>             /* atof, atoi, malloc, getopt */
 #include <string.h>             /* strcmp. . . */
 #include <sys/stat.h>           /* stat() */
 #include <time.h>               /* machine time */
-#include <unistd.h>             /* POSIX stuff */ 
-/* #include <assert.h> */            /* assert() debugging macro */ 
-/* #include <errno.h> */             /* errno */
-/* #include <malloc.h>    */         /* malloc() stuff */
+#include <unistd.h>             /* POSIX stuff */
+/* #include <assert.h> */           /* assert() debugging macro */
+/* #include <errno.h> */            /* errno */
+/* #include <malloc.h>    */        /* malloc() stuff */
 
 /* 3rd party vendors */
 #ifdef OMP /* OpenMP */
@@ -75,50 +75,50 @@
 int 
 main(int argc,char **argv)
 {
-  bool EXCLUDE_INPUT_LIST=False; /* Option c */ 
+  bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
-  bool FORCE_APPEND=False; /* Option A */ 
-  bool FORCE_OVERWRITE=False; /* Option O */ 
+  bool FORCE_APPEND=False; /* Option A */
+  bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_STYLE=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
-  bool MUST_CONFORM=False; /* Must var_conform_dim() find truly conforming variables? */ 
-  bool DO_CONFORM_MSK; /* Did var_conform_dim() find truly conforming variables? */ 
-  bool DO_CONFORM_WGT; /* Did var_conform_dim() find truly conforming variables? */ 
+  bool MUST_CONFORM=False; /* Must var_conform_dim() find truly conforming variables? */
+  bool DO_CONFORM_MSK; /* Did var_conform_dim() find truly conforming variables? */
+  bool DO_CONFORM_WGT; /* Did var_conform_dim() find truly conforming variables? */
   bool NCAR_CSM_FORMAT;
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
-  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */ 
-  bool NRM_BY_DNM=True; /* Option N Normalize by denominator */ 
-  bool MULTIPLY_BY_TALLY=False; /* Not currently implemented */ 
-  bool NORMALIZE_BY_TALLY=True; /* Not currently implemented */ 
-  bool NORMALIZE_BY_WEIGHT=True; /* Not currently implemented */ 
-  bool WGT_MSK_CRD_VAR=True; /* Option I */ 
+  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  bool NRM_BY_DNM=True; /* Option N Normalize by denominator */
+  bool MULTIPLY_BY_TALLY=False; /* Not currently implemented */
+  bool NORMALIZE_BY_TALLY=True; /* Not currently implemented */
+  bool NORMALIZE_BY_WEIGHT=True; /* Not currently implemented */
+  bool WGT_MSK_CRD_VAR=True; /* Option I */
   bool opt_a_flg=False; /* Option a */
 
-  char **dmn_avg_lst_in=NULL_CEWI; /* Option a */ 
+  char **dmn_avg_lst_in=NULL_CEWI; /* Option a */
   char **var_lst_in=NULL_CEWI;
-  char **fl_lst_abb=NULL; /* Option n */ 
+  char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
   char *fl_in=NULL;
-  char *fl_pth_lcl=NULL; /* Option l */ 
+  char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[MAX_NC_DIMS];
   char *opt_sng;
   char *fl_out;
   char *fl_out_tmp;
-  char *fl_pth=NULL; /* Option p */ 
+  char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *msk_nm=NULL;
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.48 2000-08-25 16:45:14 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.48 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.49 2000-08-28 17:22:13 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.49 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
   dmn_sct **dmn_avg=NULL_CEWI;
   
-  double msk_val=1.0; /* Option M */ 
+  double msk_val=1.0; /* Option M */
 
   extern char *optarg;
   extern int ncopts;
@@ -135,21 +135,21 @@ main(int argc,char **argv)
   int nbr_dmn_avg=0;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_var_fl;
-  int nbr_var_fix; /* nbr_var_fix gets incremented */ 
-  int nbr_var_prc; /* nbr_var_prc gets incremented */ 
-  int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */ 
+  int nbr_var_fix; /* nbr_var_fix gets incremented */
+  int nbr_var_prc; /* nbr_var_prc gets incremented */
+  int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nbr_dmn_out;
   int nbr_dmn_xtr;
   int nbr_fl=0;
   int nco_op_typ=nco_op_avg; /* Operation type */
   int opt;
-  int op_typ_rlt=0; /* Option o */ 
+  int op_typ_rlt=0; /* Option o */
   int rec_dmn_id=-1;
   
   lmt_sct *lmt;
   
   nm_id_sct *dmn_lst;
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */ 
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */
   nm_id_sct *dmn_avg_lst;
   
   time_t clock;
@@ -166,7 +166,7 @@ main(int argc,char **argv)
   var_sct *wgt_avg=NULL;
   var_sct *wgt_out=NULL;
   
-  /* Start the clock and save the command line */  
+  /* Start the clock and save the command line */ 
   cmd_ln=cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock);
@@ -193,7 +193,7 @@ main(int argc,char **argv)
       dmn_avg_lst_in=lst_prs(optarg,",",&nbr_dmn_avg);
       opt_a_flg=True;
       break;
-    case 'C': /* Extraction list should include all coordinates associated with extracted variables? */ 
+    case 'C': /* Extraction list should include all coordinates associated with extracted variables? */
       PROCESS_ASSOCIATED_COORDINATES=False;
       break;
     case 'c':
@@ -204,7 +204,7 @@ main(int argc,char **argv)
       dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
       break;
     case 'd':
-      /* Copy argument for later processing */ 
+      /* Copy argument for later processing */
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);
       lmt_nbr++;
       break;
@@ -262,7 +262,7 @@ main(int argc,char **argv)
        exit(EXIT_SUCCESS);
       break;
     case 'v':
-      /* Variables to extract/exclude */ 
+      /* Variables to extract/exclude */
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
       break;
     case 'W':
@@ -293,67 +293,67 @@ main(int argc,char **argv)
   if(wgt_nm != NULL && (nco_op_typ == nco_op_min || nco_op_typ == nco_op_max)){
     (void)fprintf(stdout,"%s: ERROR Weighting (-w) is not appropriate for minima and maxima searches\n",prg_nm);
     exit(EXIT_FAILURE);
-  } /* endif */ 
+  } /* endif */
 
-  /* If called without arguments, print usage and exit successfully */ 
+  /* If called without arguments, print usage and exit successfully */
   if(arg_cnt == 0){
     (void)usg_prn();
     exit(EXIT_SUCCESS);
   } /* endif */
   
-  /* Ensure we do not attempt to normalize by non-existent weight */ 
+  /* Ensure we do not attempt to normalize by non-existent weight */
   if(wgt_nm == NULL) NORMALIZE_BY_WEIGHT=False;
 
   /* Process positional arguments and fill in filenames */
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
 
-  /* Make uniform list of user-specified dimension limits */ 
+  /* Make uniform list of user-specified dimension limits */
   lmt=lmt_prs(lmt_nbr,lmt_arg);
   
-  /* Make netCDF errors fatal and print the diagnostic */   
+  /* Make netCDF errors fatal and print the diagnostic */  
   ncopts=NC_VERBOSE | NC_FATAL; 
   
-  /* Parse filename */ 
+  /* Parse filename */
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
-  /* Make sure file is on local system and is readable or die trying */ 
+  /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
-  /* Open the file for reading */ 
+  /* Open the file for reading */
   in_id=ncopen(fl_in,NC_NOWRITE);
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
   (void)ncinquire(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
   
-  /* Form initial extraction list from user input */ 
+  /* Form initial extraction list from user input */
   xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
 
-  /* Change included variables to excluded variables */ 
+  /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) xtr_lst=var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
 
-  /* Add all coordinate variables to extraction list */ 
+  /* Add all coordinate variables to extraction list */
   if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
 
-  /* Make sure coordinates associated extracted variables are also on extraction list */ 
+  /* Make sure coordinates associated extracted variables are also on extraction list */
   if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
 
-  /* Remove record coordinate, if any, from extraction list */ 
+  /* Remove record coordinate, if any, from extraction list */
   if(False) xtr_lst=var_lst_crd_xcl(in_id,rec_dmn_id,xtr_lst,&nbr_xtr);
 
-  /* Finally, heapsort the extraction list by variable ID for fastest I/O */ 
+  /* Finally, heapsort the extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
     
-  /* Find coordinate/dimension values associated with user-specified limits */ 
+  /* Find coordinate/dimension values associated with user-specified limits */
   for(idx=0;idx<lmt_nbr;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
   
-  /* Find dimensions associated with variables to be extracted */ 
+  /* Find dimensions associated with variables to be extracted */
   dmn_lst=dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
 
-  /* Fill in dimension structure for all extracted dimensions */ 
+  /* Fill in dimension structure for all extracted dimensions */
   dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
     dim[idx]=dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
   } /* end loop over idx */
   
-  /* Merge hyperslab limit information into dimension structures */ 
+  /* Merge hyperslab limit information into dimension structures */
   if(lmt_nbr > 0) (void)dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
 
   /* Not specifying any dimensions is interpreted as specifying all dimensions */
@@ -367,7 +367,7 @@ main(int argc,char **argv)
   } /* end if nbr_dmn_avg == 0 */
 
   if (nbr_dmn_avg > 0){
-    /* Form list of reducing dimensions */ 
+    /* Form list of reducing dimensions */
     dmn_avg_lst=dmn_lst_mk(in_id,dmn_avg_lst_in,nbr_dmn_avg);
 
     if(nbr_dmn_avg > nbr_dmn_xtr){
@@ -375,7 +375,7 @@ main(int argc,char **argv)
       exit(EXIT_FAILURE);
     } /* end if */
 
-    /* Form list of reducing dimensions from extracted input dimensions */ 
+    /* Form list of reducing dimensions from extracted input dimensions */
     dmn_avg=(dmn_sct **)nco_malloc(nbr_dmn_avg*sizeof(dmn_sct *));
     for(idx_avg=0;idx_avg<nbr_dmn_avg;idx_avg++){
       for(idx=0;idx<nbr_dmn_xtr;idx++){
@@ -385,15 +385,15 @@ main(int argc,char **argv)
 	dmn_avg[idx_avg]=dim[idx];
       }else{
 	(void)fprintf(stderr,"%s: WARNING reducing dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_avg_lst[idx_avg].nm);
-	/* Collapse dimension average list by omitting irrelevent dimension */ 
+	/* Collapse dimension average list by omitting irrelevent dimension */
 	(void)memmove(dmn_avg_lst,dmn_avg_lst,idx_avg*sizeof(nm_id_sct));
 	(void)memmove(dmn_avg_lst+idx_avg*sizeof(nm_id_sct),dmn_avg_lst+(idx_avg+1)*sizeof(nm_id_sct),(nbr_dmn_avg-idx_avg+1)*sizeof(nm_id_sct));
 	--nbr_dmn_avg;
 	dmn_avg_lst=(nm_id_sct *)nco_realloc(dmn_avg_lst,nbr_dmn_avg*sizeof(nm_id_sct));
-      } /* end else */ 
+      } /* end else */
     } /* end loop over idx_avg */
 
-    /* Make sure no reducing dimension is specified more than once */ 
+    /* Make sure no reducing dimension is specified more than once */
     for(idx=0;idx<nbr_dmn_avg;idx++){
       for(idx_avg=0;idx_avg<nbr_dmn_avg;idx_avg++){
 	if(idx_avg != idx){
@@ -405,7 +405,7 @@ main(int argc,char **argv)
       } /* end loop over idx_avg */
     } /* end loop over idx */
 
-    /* Dimensions to be averaged will not appear in output file */ 
+    /* Dimensions to be averaged will not appear in output file */
     dmn_out=(dmn_sct **)nco_malloc((nbr_dmn_xtr-nbr_dmn_avg)*sizeof(dmn_sct *));
     nbr_dmn_out=0;
     for(idx=0;idx<nbr_dmn_xtr;idx++){
@@ -426,7 +426,7 @@ main(int argc,char **argv)
     
   }else{
 
-    /* Duplicate input dimension structures for output dimension structures */ 
+    /* Duplicate input dimension structures for output dimension structures */
     nbr_dmn_out=nbr_dmn_xtr;
     dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_out*sizeof(dmn_sct *));
     for(idx=0;idx<nbr_dmn_out;idx++){
@@ -434,12 +434,12 @@ main(int argc,char **argv)
       (void)dmn_xrf(dim[idx],dmn_out[idx]);
     } /* end loop over idx */
 
-  } /* end if */ 
+  } /* end if */
 
   /* Is this an NCAR CSM-format history tape? */
   NCAR_CSM_FORMAT=ncar_csm_inq(in_id);
 
-  /* Fill in variable structure list for all extracted variables */ 
+  /* Fill in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
@@ -449,7 +449,7 @@ main(int argc,char **argv)
     (void)var_dmn_xrf(var_out[idx]);
   } /* end loop over idx */
 
-  /* Divide variable lists into lists of fixed variables and variables to be processed */ 
+  /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,dmn_avg,nbr_dmn_avg,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* We now have final list of variables to extract. Phew. */
@@ -459,62 +459,62 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_prc;idx++) (void)fprintf(stderr,"var_prc[%d]->nm = %s, ->id=[%d]\n",idx,var_prc[idx]->nm,var_prc[idx]->id);
   } /* end if */
   
-  /* Open output file */ 
+  /* Open output file */
   fl_out_tmp=fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
   if(dbg_lvl > 4) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
 
-  /* Copy all global attributes */ 
+  /* Copy all global attributes */
   (void)att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
   
-  /* Catenate time-stamped command line to "history" global attribute */ 
+  /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)hst_att_cat(out_id,cmd_ln);
 
-  /* Define dimensions in output file */ 
+  /* Define dimensions in output file */
   (void)dmn_def(fl_out,out_id,dmn_out,nbr_dmn_out);
 
-  /* Define variables in output file, and copy their attributes */ 
+  /* Define variables in output file, and copy their attributes */
   (void)var_def(in_id,fl_out,out_id,var_out,nbr_xtr,dmn_out,nbr_dmn_out);
 
   /* New missing values must be added to the output file in define mode */
   if(msk_nm != NULL){
     for(idx=0;idx<nbr_var_prc;idx++){
-      /* Define for var_prc_out because mss_val for var_prc will be overwritten in var_refresh */ 
+      /* Define for var_prc_out because mss_val for var_prc will be overwritten in var_refresh */
       if(!var_prc_out[idx]->has_mss_val){
 	var_prc_out[idx]->has_mss_val=True;
 	var_prc_out[idx]->mss_val=mss_val_mk(var_prc[idx]->type);
 	(void)ncattput(out_id,var_prc_out[idx]->id,"missing_value",var_prc_out[idx]->type,1,var_prc_out[idx]->mss_val.vp);
       } /* end if */
-    } /* end for */ 
+    } /* end for */
   } /* end if */
 
-  /* Turn off default filling behavior to enhance efficiency */ 
+  /* Turn off default filling behavior to enhance efficiency */
 #if ( ! defined SUN4 ) && ( ! defined SUN4SOL2 ) && ( ! defined SUNMP )
   (void)ncsetfill(out_id,NC_NOFILL);
 #endif
   
-  /* Take output file out of define mode */ 
+  /* Take output file out of define mode */
   (void)ncendef(out_id);
   
-  /* Zero start vectors for all output variables */ 
+  /* Zero start vectors for all output variables */
   (void)var_srt_zero(var_out,nbr_xtr);
 
-  /* Copy variable data for non-processed variables */ 
+  /* Copy variable data for non-processed variables */
   (void)var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
 
-  /* Close first input netCDF file */ 
+  /* Close first input netCDF file */
   ncclose(in_id);
   
-  /* Loop over input files */ 
+  /* Loop over input files */
   for(idx_fl=0;idx_fl<nbr_fl;idx_fl++){
-    /* Parse filename */ 
+    /* Parse filename */
     if(idx_fl != 0) fl_in=fl_nm_prs(fl_in,idx_fl,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
     if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",idx_fl,fl_in);
-    /* Make sure file is on local system and is readable or die trying */ 
+    /* Make sure file is on local system and is readable or die trying */
     if(idx_fl != 0) fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
     if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
     in_id=ncopen(fl_in,NC_NOWRITE);
     
-    /* Perform various error-checks on input file */ 
+    /* Perform various error-checks on input file */
     if(False) (void)fl_cmp_err_chk();
 
     /* Find weighting variable in input file */
@@ -524,12 +524,12 @@ main(int argc,char **argv)
       wgt_id=ncvarid_or_die(in_id,wgt_nm);
       wgt=var_fll(in_id,wgt_id,wgt_nm,dim,nbr_dmn_fl);
       
-      /* Retrieve weighting variable */ 
+      /* Retrieve weighting variable */
       (void)var_get(in_id,wgt);
       /* fxm: Perhaps should allocate default tally array for wgt here
        That way, when wgt conforms to the first var_prc_out and it therefore
        does not get a tally array copied by var_dup() in var_conform_dim(), 
-       it will at least have space for a tally array. TODO #114. */ 
+       it will at least have space for a tally array. TODO #114. */
 
     } /* end if */
 
@@ -540,7 +540,7 @@ main(int argc,char **argv)
       msk_id=ncvarid_or_die(in_id,msk_nm);
       msk=var_fll(in_id,msk_id,msk_nm,dim,nbr_dmn_fl);
       
-      /* Retrieve mask variable */ 
+      /* Retrieve mask variable */
       (void)var_get(in_id,msk);
     } /* end if */
 
@@ -548,44 +548,45 @@ main(int argc,char **argv)
     (void)fprintf(stderr,"%s: DEBUG Attempting OpenMP Parallelization...\n");
 #pragma omp parallel for
 #endif /* not OMP */
-    /* Process all variables in current file */ 
+    /* Process all variables in current file */
     for(idx=0;idx<nbr_var_prc;idx++){
       if(dbg_lvl > 0) (void)fprintf(stderr,"%s, ",var_prc[idx]->nm);
       if(dbg_lvl > 0) (void)fflush(stderr);
 
-      /* Allocate and, if necesssary, initialize accumulation space for all processed variables */ 
+      /* Allocate and, if necesssary, initialize accumulation space for all processed variables */
       var_prc_out[idx]->sz=var_prc[idx]->sz;
       if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)malloc(var_prc_out[idx]->sz*sizeof(long))) == NULL){
 	(void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(long)sizeof(long),var_prc_out[idx]->nm);
 	exit(EXIT_FAILURE); 
-      } /* end if */ 
+      } /* end if */
       (void)zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
       if((var_prc_out[idx]->val.vp=(void *)malloc(var_prc_out[idx]->sz*nctypelen(var_prc_out[idx]->type))) == NULL){
 	(void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,nctypelen(var_prc_out[idx]->type),var_prc_out[idx]->nm);
 	exit(EXIT_FAILURE); 
-      } /* end if */ 
+      } /* end if */
       (void)var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
       
       (void)var_refresh(in_id,var_prc[idx]);
-      /* Retrieve variable from disk into memory */ 
+      /* Retrieve variable from disk into memory */
       (void)var_get(in_id,var_prc[idx]);
       
       /* Convert char, short, long, int types to doubles before arithmetic */
-      (void)nco_cnv_var_dbl(var_prc+idx,var_prc_out+idx,nco_op_typ);
+      var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
+      var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 		
       if(msk_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
 	msk_out=var_conform_dim(var_prc[idx],msk,msk_out,MUST_CONFORM,&DO_CONFORM_MSK);
-	/* If msk and var did not conform then do not mask var! */ 
+	/* If msk and var did not conform then do not mask var! */
 	if(DO_CONFORM_MSK){
 	  msk_out=var_conform_type(var_prc[idx]->type,msk_out);
 	  
-	  /* mss_val for var_prc has been overwritten in var_refresh() */ 
+	  /* mss_val for var_prc has been overwritten in var_refresh() */
 	  if(!var_prc[idx]->has_mss_val){
 	    var_prc[idx]->has_mss_val=True;
 	    var_prc[idx]->mss_val=mss_val_mk(var_prc[idx]->type);
 	  } /* end if */
 	  
-	  /* Mask by changing variable to missing value where condition is false */ 
+	  /* Mask by changing variable to missing value where condition is false */
 	  (void)var_mask(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,msk_val,op_typ_rlt,msk_out->val,var_prc[idx]->val);
 	} /* end if */
       } /* end if */
@@ -601,7 +602,7 @@ main(int argc,char **argv)
       } /* end case */
       if(wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
 	/* fxm: var_conform_dim() has a bug where it does not allocate a tally array
-	 for weights that do already conform to var_prc. TODO #114. */ 
+	 for weights that do already conform to var_prc. TODO #114. */
 	wgt_out=var_conform_dim(var_prc[idx],wgt,wgt_out,MUST_CONFORM,&DO_CONFORM_WGT);
 	wgt_out=var_conform_type(var_prc[idx]->type,wgt_out);
 	/* fxm: can weighting be performed after avg,sqravg,rms etc.? 
@@ -609,10 +610,10 @@ main(int argc,char **argv)
 	 transformations like rms, sqrt, which should be applied to the variables
 	 before weighting and reduction. Until this is fixed sdn on spatial regions
 	 is basically worthless because, e.g., gaussian weights cannot be applied */
-	/* Weight variable by taking product of weight and variable */ 
+	/* Weight variable by taking product of weight and variable */
 	(void)var_multiply(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,wgt_out->val,var_prc[idx]->val);
       } /* end if */
-      /* Copy (masked) (weighted) values from var_prc to var_prc_out */ 
+      /* Copy (masked) (weighted) values from var_prc to var_prc_out */
       (void)memcpy((void *)(var_prc_out[idx]->val.vp),(void *)(var_prc[idx]->val.vp),var_prc_out[idx]->sz*nctypelen(var_prc_out[idx]->type));
       /* Reduce variable over specified dimensions (tally array is set here) */
       var_prc_out[idx]=var_avg(var_prc_out[idx],dmn_avg,nbr_dmn_avg,nco_op_typ);
@@ -648,17 +649,17 @@ main(int argc,char **argv)
 	  } /* end switch */
 	  /* Second mask wgt_avg where the variable is the missing value */
 	  (void)var_mask(wgt_avg->type,wgt_avg->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,mss_val_dbl,nc_op_ne,var_prc[idx]->val,wgt_avg->val);
-	} /* endif weight must be checked for missing values */ 
+	} /* endif weight must be checked for missing values */
 
 	if(msk_nm != NULL && DO_CONFORM_MSK){
-	  /* Must mask weight in same fashion as variable was masked */ 
-	  /* If msk and var did not conform then do not mask wgt */ 
-	  /* Ensure wgt_avg has a missing value */ 
+	  /* Must mask weight in same fashion as variable was masked */
+	  /* If msk and var did not conform then do not mask wgt */
+	  /* Ensure wgt_avg has a missing value */
 	  if(!wgt_avg->has_mss_val){
 	    wgt_avg->has_mss_val=True;
 	    wgt_avg->mss_val=mss_val_mk(wgt_avg->type);
 	  } /* end if */
-	  /* Mask by changing weight to missing value where condition is false */ 
+	  /* Mask by changing weight to missing value where condition is false */
 	  (void)var_mask(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,msk_val,op_typ_rlt,msk_out->val,wgt_avg->val);
 	} /* endif weight must be masked */
 
@@ -666,28 +667,28 @@ main(int argc,char **argv)
 	   wgt_avg may occasionally lack a valid tally array in ncwa because
 	   it is created, sometimes, before the tally array for var_prc_out[idx] is 
 	   created, and thus the var_dup() call in var_conform_dim() does not copy
-	   a tally array into wgt_avg. See related note about this above. TODO #114.*/ 
+	   a tally array into wgt_avg. See related note about this above. TODO #114.*/
 	if((wgt_avg->tally=(long *)nco_realloc(wgt_avg->tally,wgt_avg->sz*sizeof(long))) == NULL){
 	  (void)fprintf(stdout,"%s: ERROR Unable to realloc() %ld*%ld bytes for tally buffer for weight %s in main()\n",prg_nm_get(),wgt_avg->sz,(long)sizeof(long),wgt_avg->nm);
 	  exit(EXIT_FAILURE); 
-	} /* end if */ 
-	/* Average weight over specified dimensions (tally array is set here) */ 
+	} /* end if */
+	/* Average weight over specified dimensions (tally array is set here) */
 	wgt_avg=var_avg(wgt_avg,dmn_avg,nbr_dmn_avg,nco_op_avg);
 	if(MULTIPLY_BY_TALLY){
-	  /* Currently this is not implemented */ 
+	  /* Currently this is not implemented */
 	  /* Multiply numerator (weighted sum of variable) by tally 
-	     We deviously accomplish this by dividing the denominator by tally */ 
+	     We deviously accomplish this by dividing the denominator by tally */
 	  (void)var_normalize(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,wgt_avg->tally,wgt_avg->val);
-	} /* endif */ 
-	/* Divide numerator by denominator */ 
-	/* Diagnose problem #116 before it core dumps */ 
+	} /* endif */
+	/* Divide numerator by denominator */
+	/* Diagnose problem #116 before it core dumps */
 	if(var_prc_out[idx]->sz == 1 && var_prc_out[idx]->type == NC_LONG && var_prc_out[idx]->val.lp[0] == 0){
 	  (void)fprintf(stdout,"%s: ERROR Denominator weight = 0. Problem described in TODO #116\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
-	} /* end if */ 
-	/* Divide numerator by masked, averaged, weights */ 
+	} /* end if */
+	/* Divide numerator by masked, averaged, weights */
 	switch(nco_op_typ){
 	case nco_op_avg: /* Normalize sum by weighted tally to create mean */
-	case nco_op_sqravg: /* Normalize sum by weighted tally to create mean */ 
+	case nco_op_sqravg: /* Normalize sum by weighted tally to create mean */
 	case nco_op_avgsqr: /* Normalize sum of squares by weighted tally to create mean square */
 	case nco_op_rms: /* Normalize sum of squares by weighted tally to create mean square */
 	case nco_op_sqrt: /* Normalize sum by weighted tally to create mean */
@@ -709,7 +710,7 @@ main(int argc,char **argv)
 	   Normalization is just due to tally */
 	switch(nco_op_typ){
 	case nco_op_avg: /* Normalize sum by tally to create mean */
-	case nco_op_sqravg: /* Normalize sum by tally to create mean */ 
+	case nco_op_sqravg: /* Normalize sum by tally to create mean */
 	case nco_op_avgsqr: /* Normalize sum of squares by tally to create mean square */
 	case nco_op_rms: /* Normalize sum of squares by tally to create mean square */
 	case nco_op_sqrt: /* Normalize sum by tally to create mean */
@@ -725,7 +726,7 @@ main(int argc,char **argv)
 	  break;
 	} /* end switch */
       }else if(!NRM_BY_DNM){
-	/* Normalization has been turned off by user, we are done */ 
+	/* Normalization has been turned off by user, we are done */
 	;
       }else{
 	(void)fprintf(stdout,"%s: ERROR Unforeseen logical branch in main()\n",prg_nm);
@@ -748,16 +749,16 @@ main(int argc,char **argv)
       (void)free(var_prc_out[idx]->tally); var_prc_out[idx]->tally=NULL;
       
       /* Revert to original type if required */
-      var_prc_out[idx]=nco_cnv_dbl_var(var_prc_out[idx]);
+      var_prc_out[idx]=nco_cnv_var_typ_dsk(var_prc_out[idx]);
 	  
       /* Free current input buffer */
       (void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;	
-      /* Copy average to output file and free averaging buffer */ 
+      /* Copy average to output file and free averaging buffer */
       if(var_prc_out[idx]->nbr_dim == 0){
 	(void)ncvarput1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp);
-      }else{ /* end if variable is scalar */ 
+      }else{ /* end if variable is scalar */
 	(void)ncvarput(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp);
-      } /* end if variable is array */ 
+      } /* end if variable is array */
       (void)free(var_prc_out[idx]->val.vp);
       var_prc_out[idx]->val.vp=NULL;
       
@@ -766,7 +767,7 @@ main(int argc,char **argv)
     (void)fprintf(stderr,"%s: DEBUG End of OpenMP Parallelization...\n");
 #endif /* not OMP */
     
-    /* Free weights and masks */ 
+    /* Free weights and masks */
     if(wgt != NULL) wgt=var_free(wgt);
     if(wgt_out != NULL) wgt_out=var_free(wgt_out);
     if(wgt_avg != NULL) wgt_avg=var_free(wgt_avg);
@@ -775,15 +776,15 @@ main(int argc,char **argv)
 
     if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
     
-    /* Close input netCDF file */ 
+    /* Close input netCDF file */
     ncclose(in_id);
     
-    /* Remove local copy of file */ 
+    /* Remove local copy of file */
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
 
   } /* end loop over idx_fl */
   
-  /* Close output file and move it from temporary to permanent location */ 
+  /* Close output file and move it from temporary to permanent location */
   (void)fl_out_cls(fl_out,fl_out_tmp,out_id);
   
   Exit_gracefully();

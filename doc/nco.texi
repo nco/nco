@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.61 2000-08-25 16:45:14 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.62 2000-08-28 17:22:13 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -2336,12 +2336,14 @@ When these criteria are all met, the operator converts the variable in
 question to type @code{NC_DOUBLE}, performs all the arithmetic
 operations, casts the @code{NC_DOUBLE} type back to the original type,
 and finally writes the result to disk. 
-The result written to disk may not be what you expect. 
-To continue the example given above, the average (e.g., @samp{-y avg})
+The result written to disk may not be what you expect, because of
+incommensurate ranges represented by different types, and because of
+(lack of) rounding.
+First, continuing the example given above, the average (e.g., @samp{-y avg})
 of @code{17000s} and @code{17000s} is written to disk as @code{17000s}.
 The type conversion feature of NCO makes this possible since the
-arithmetic and intermediate values are stored as @code{NC_DOUBLES},
-i.e., @code{34000.0d} and only the final result is must be represented
+arithmetic and intermediate values are stored as @code{NC_DOUBLE}s,
+i.e., @code{34000.0d} and only the final result must be represented
 as an @code{NC_SHORT}.
 Without the type conversion feature of NCO, the average would have
 been garbage (albeit predictable garbage near @code{-15768s}). 
@@ -2349,6 +2351,27 @@ Similarly, the total (e.g., @samp{-y ttl}) of @code{17000s} and
 @code{17000s} written to disk is garbage (actually @code{-31536s}) since
 the final result (the true total) of @math{34000} is outside the range
 of type @code{NC_SHORT}.  
+
+Type conversions use the @code{floor} function to convert floating point
+number to integers.
+Type conversions do not attempt to round floating point numbers to the
+nearest integer.
+Thus the average of @code{1s} and @code{2s} is computed in double
+precisions arithmetic as 
+@math{(@code{1.0d} + @code{1.5d})/2) = @code{1.5d}}.
+This result is converted to @code{NC_SHORT} and stored on disk as 
+@math{@code{floor(1.5d)} = @code{1s}}
+@footnote{
+@cindex{C}
+The actual type conversions are handled by intrinsic C-language type
+conversion, so the @code{floor()} function is not explicitly called, but
+the results are the same as if it were.}.
+Thus no "rounding up" is performed. 
+The type conversion rules of C can be stated as follows:
+@c fxm: misplaced {} near here
+If @var{n} is an integer then any floating point value @code{x}
+satisfying @math{@var{n} <= @var{x} < @var{n+1}} will have the value
+@var{n} when converted to an integer.
 
 @node  Suppressing interactive prompts, History attribute, Type conversion, Common features
 @section Suppressing interactive prompts

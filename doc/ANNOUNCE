@@ -1,40 +1,29 @@
-The netCDF operators NCO version 1.2 are ready. 
-There are two new features and a bunch of administrative changes, 
-described in lurid detail on the new NCO homepage at 
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.2 2000-08-28 17:22:13 zender Exp $ -*-text-*-
+
+The netCDF operators NCO version 1.2.1 are ready. 
+Differences with version 1.2 include one new feature and one bugfix.
+Get the new version and read the user's guide on
 
 http://nco.sourceforge.net
 
-The new features are largely the result of contributions from the Open
-Source community. If you are interested in contributing, please visit
-the homepage to learn how.  NCO announcements will no longer be sent
-to the CCM mailing list.  There is a new, low volume, NCO announce
-mailing list, containing new release announcements only, which you can
-sign up to receive instead at
+Summary of changes:
 
-http://lists.sourceforge.net/mailman/listinfo/nco-announce
+1. Operators now perform automatic type conversion of integers to
+   doubles before arithmetic. This feature allows ncwa, ncra, and ncea
+   to handle averaging of longs, shorts, bytes, and chars in a more 
+   satisfactory manner. One immediate benefit is that ncwa no longer
+   complains when user's try to apply weights (e.g., gaussian weights) 
+   all less than one to the averaging of an integer (e.g., nlons).
+   Formerly ncwa would issue a warning, a workaround, and then dump
+   core (because weights converted to integers were all zeros). 
+   Now that arithmetic is performed in double precision (rather than 
+   in the precision of the variable), ncwa handles this situation
+   correctly.
 
-Future NCO releases will be announced there and on the netCDF list. 
+2. A bug introduced in NCO 1.2 which broke the -x switch has been fixed
 
-A short excerpt describing the new features:
-
-1. The names of three of the operators have been made somewhat obsolete
-because they are no longer just arithmetic averagers. ncra, ncea,
-and ncwa have all been given brain transplants so that the type of
-operation they perform may be specified on the command line. The
-following operations are now supported by the new -y switch: average
-(default), total, minimum, maximum, root-mean-square, square of the
-mean, mean of the squares, square root. For example,
-
-    ncra -O -y rms -n 12,4,1 h0001.nc 2000_rms.nc # Root-mean-square
-    ncea -O -y min -n 12,4,1 h0001.nc 2000_min.nc # Minimum
-    ncwa -O -y max -a lon,lat h0001.nc 200001_max_x.nc # Maxima
-
-2. All operators may now be DODS clients. DODS enables network
-transparent data access to any DODS server. Thus DODS-enabled NCO can
-operate on remote files accessible through any DODS server without
-transferring the files. Only the required data (e.g., the variable or
-hyperslab specified) are transferred. See the User's Guide for
-complete details.
+3. Thanks to Henry Butowsky for implementing the type conversion feature
+   Thanks to Ethan Davis for improving the build procedure
 
 Enjoy,
 Charlie

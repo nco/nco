@@ -1,7 +1,7 @@
 %{
-  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.7 2000-08-15 06:58:35 zender Exp $ -*-C-*- */
+  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.8 2000-08-28 17:22:13 zender Exp $ -*-C-*- */
 
-  /* Purpose: Token generator for ncap parser */ 
+  /* Purpose: Token generator for ncap parser */
 
 /* Copyright (C) 1995--2000 Charlie Zender
 
@@ -43,23 +43,23 @@
      GCC lexer is hard-coded in C for speed, but is easy to read:
      /home/thibaud/usr/local/src/gcc-2.7.2/c-lex.c
      unidata ncgen.l 
-   */ 
+   */
 
-  /* NB: flex with -Cf or -Cf not -I if this scanner will not be interactive */ 
+  /* NB: flex with -Cf or -Cf not -I if this scanner will not be interactive */
 
   /* Standard header files */
 #include <math.h>               /* sin cos cos sin 3.14159 */
-#include <stdlib.h>             /* atof, atoi, malloc, getopt */ 
+#include <stdlib.h>             /* atof, atoi, malloc, getopt */
 
   /* 3rd party vendors */
 #include <netcdf.h>             /* netCDF definitions */
 
   /* Headers specific to this program */
 #include "nc.h"                 /* NCO definitions */
-#include "ncap.h"               /* symbol table definition */ 
-#include "ncap.tab.h"           /* symbol definitions from parser */ 
+#include "ncap.h"               /* symbol table definition */
+#include "ncap.tab.h"           /* symbol definitions from parser */
 
-/* Reprototype yylex() to accept reentrant arguments (flex man p. 12, bison man p. 60) */ 
+/* Reprototype yylex() to accept reentrant arguments (flex man p. 12, bison man p. 60) */
 #define YY_DECL int yylex(lvalp) YYSTYPE *lvalp;
 
 %}
@@ -69,7 +69,7 @@
    If token matches regular expression then C-code is executed */
 %%
 
-([0-9]+|([0-9]*\.[0-9]+)([eE][dD][-+]?[0-9]+)?) { /* Process floats */ 
+([0-9]+|([0-9]*\.[0-9]+)([eE][dD][-+]?[0-9]+)?) { /* Process floats */
   /* yylval is of type YYSTYPE, itself defined by union of token types in *.y file,
      and included as an extern by *.tab.h file */
   lvalp->val_double=strtod(yytext,(char **)NULL);
@@ -77,7 +77,7 @@
   return NUMBER;
 }
 
-[ \t] { ; /* Ignore white space */ }
+[ \t] { ; /* Ignore white space */}
 
 [A-Za-z_][A-Za-z0-9_]* { /* Return symbol pointer */
   lvalp->sym=sym_look(yytext);
@@ -86,13 +86,13 @@
 
 "$" { return 0; } /* Ignore everything on a line following '$' */
 
-<<EOF>> { return 1; /* EOF encountered and yywrap() returned 1 (flex man p. 20) */ }
+<<EOF>> { return 1; /* EOF encountered and yywrap() returned 1 (flex man p. 20) */}
 
 \n | 
 . { return yytext[0]; 
     /* Lex wants | separator at end of line rather than beginning of next line */
     /* Catch-all default for unmatched input characters
-       Literal tokens ('+','-','/'...) are returned by this rule. */ }
+       Literal tokens ('+','-','/'...) are returned by this rule. */}
 
 %%
 
@@ -102,15 +102,15 @@ bool
 yywrap()
 /* 
    bool yywrap(): output flag whether lexer input is finished
- */ 
+ */
 {
   /* Purpose: Routine to replace library-defined yywrap() 
      yywrap() is called when YY_INPUT returns EOF
      Default is to return true (one) when called---this terminates scanner 
      Returning false (zero) means there is more to scan, and the input has
-     been redirected to a new source, e.g., yyin points to a new file. */ 
+     been redirected to a new source, e.g., yyin points to a new file. */
  return 1;
-} /* end yywrap() */ 
+} /* end yywrap() */
 
 /* End user subroutines section */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.19 2000-08-15 06:58:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.20 2000-08-28 17:22:13 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -42,20 +42,20 @@
 /* Usage:
    ncrename -d old_dim1,new_dim1 -v old_var1,new_var1 -v old_var2,new_var2 -a old_att1,new_att1 in.nc foo.nc
    ncrename -d lon,new_lon -v scalar_var,new_scalar_var -a long_name,new_long_name in.nc foo.nc
-   */ 
+   */
 
 /* Standard header files */
 #include <math.h>               /* sin cos cos sin 3.14159 */
 #include <netcdf.h>             /* netCDF definitions */
 #include <stdio.h>              /* stderr, FILE, NULL, etc. */
-#include <stdlib.h>             /* atof, atoi, malloc, getopt */ 
+#include <stdlib.h>             /* atof, atoi, malloc, getopt */
 #include <string.h>             /* strcmp. . . */
 #include <sys/stat.h>           /* stat() */
 #include <time.h>               /* machine time */
-#include <unistd.h>             /* POSIX stuff */ 
-/* #include <assert.h> */            /* assert() debugging macro */ 
-/* #include <errno.h> */             /* errno */
-/* #include <malloc.h>    */         /* malloc() stuff */
+#include <unistd.h>             /* POSIX stuff */
+/* #include <assert.h> */           /* assert() debugging macro */
+/* #include <errno.h> */            /* errno */
+/* #include <malloc.h>    */        /* malloc() stuff */
 /*#include <curses.h>*/
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
@@ -71,13 +71,13 @@ main(int argc,char **argv)
   rnm_sct *prs_rnm_lst(int,char **);
 
   bool OUTPUT_TO_NEW_NETCDF_FILE=False;
-  bool FORCE_APPEND=False; /* Option A */ 
-  bool FORCE_OVERWRITE=False; /* Option O */ 
+  bool FORCE_APPEND=False; /* Option A */
+  bool FORCE_OVERWRITE=False; /* Option O */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool HISTORY_APPEND=True; /* Option h */
-  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */ 
+  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   
-  char **fl_lst_abb=NULL; /* Option a */ 
+  char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char *fl_in=NULL;
   char *dmn_rnm_arg[MAX_NC_DIMS];
@@ -85,12 +85,12 @@ main(int argc,char **argv)
   char *att_rnm_arg[MAX_NC_ATTRS];
   char *opt_sng;
   char *fl_out;
-  char *fl_pth_lcl=NULL; /* Option l */ 
-  char *fl_pth=NULL; /* Option p */ 
+  char *fl_pth_lcl=NULL; /* Option l */
+  char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.19 2000-08-15 06:58:35 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.19 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.20 2000-08-28 17:22:13 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.20 $";
   
   rnm_sct *var_rnm_lst=NULL_CEWI;
   rnm_sct *dmn_rnm_lst=NULL_CEWI;
@@ -111,7 +111,7 @@ main(int argc,char **argv)
   
   time_t clock;
 
-  /* Start the clock and save the command line */  
+  /* Start the clock and save the command line */ 
   cmd_ln=cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock);
@@ -126,14 +126,14 @@ main(int argc,char **argv)
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
-    case 'a': /* Copy argument for later processing */ 
+    case 'a': /* Copy argument for later processing */
       att_rnm_arg[nbr_att_rnm]=optarg;
       nbr_att_rnm++;
       break;
     case 'D': /* Debugging level. Default is 0. */
       dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
       break;
-    case 'd': /* Copy argument for later processing */ 
+    case 'd': /* Copy argument for later processing */
       dmn_rnm_arg[nbr_dmn_rnm]=optarg;
       nbr_dmn_rnm++;
       break;
@@ -157,7 +157,7 @@ main(int argc,char **argv)
       (void)nc_lib_vrs_prn();
       exit(EXIT_SUCCESS);
       break;
-    case 'v': /* Copy argument for later processing */ 
+    case 'v': /* Copy argument for later processing */
       var_rnm_arg[nbr_var_rnm]=optarg;
       nbr_var_rnm++;
       break;
@@ -175,18 +175,18 @@ main(int argc,char **argv)
     (void)fprintf(stdout,"%s: ERROR must specify something to rename\n",prg_nm);
     usg_prn();
     exit(EXIT_FAILURE);
-  } /* end if */  
+  } /* end if */ 
 
-  /* Make a uniform list of the user-specified rename structures */ 
+  /* Make a uniform list of the user-specified rename structures */
   if(nbr_var_rnm > 0) var_rnm_lst=prs_rnm_lst(nbr_var_rnm,var_rnm_arg);
   if(nbr_dmn_rnm > 0) dmn_rnm_lst=prs_rnm_lst(nbr_dmn_rnm,dmn_rnm_arg);
   if(nbr_att_rnm > 0) att_rnm_lst=prs_rnm_lst(nbr_att_rnm,att_rnm_arg);
 
   /* We now have the final list of variables, dimensions, and attributes to rename. */
   
-  /* Parse filename */ 
+  /* Parse filename */
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
-  /* Make sure file is on local system and is readable or die trying */ 
+  /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
 
   if(OUTPUT_TO_NEW_NETCDF_FILE){
@@ -226,7 +226,7 @@ main(int argc,char **argv)
           usr_reply=(char)fgetc(stdin);
 /*          usr_reply=(char)getchar();*/
 /*          (void)read((int)stdin,&usr_reply,1);*/
-        } /* end while */ 
+        } /* end while */
         
         if(usr_reply == 'n'){
           exit(EXIT_SUCCESS);
@@ -239,16 +239,16 @@ main(int argc,char **argv)
        performance penalty of copying each variable with netCDF. */
     (void)fl_cp(fl_in,fl_out);
 
-  } /* end if */ 
+  } /* end if */
 
-  /* Make netCDF errors fatal and print the diagnostic */   
+  /* Make netCDF errors fatal and print the diagnostic */  
   ncopts=NC_VERBOSE | NC_FATAL; 
 
-  /* Open the file. Writing must be enabled and the file should be in define mode for renaming */ 
+  /* Open the file. Writing must be enabled and the file should be in define mode for renaming */
   nc_id=ncopen(fl_out,NC_WRITE);
   (void)ncredef(nc_id);
 
-  /* Without further ado, change the names */ 
+  /* Without further ado, change the names */
   for(idx=0;idx<nbr_var_rnm;idx++){
     if(var_rnm_lst[idx].old_nm[0] == '.'){
       ncopts=0;
@@ -258,13 +258,13 @@ main(int argc,char **argv)
 	if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed variable \"%s\" to \"%s\"\n",var_rnm_lst[idx].old_nm+1,var_rnm_lst[idx].new_nm);
       }else{
 	(void)fprintf(stderr,"%s: WARNING Variable \"%s\" not present in %s, skipping it.\n",prg_nm,var_rnm_lst[idx].old_nm+1,fl_in);
-      } /* end if */ 
+      } /* end if */
       ncopts=NC_VERBOSE | NC_FATAL; 
     }else{
       var_rnm_lst[idx].id=ncvarid(nc_id,var_rnm_lst[idx].old_nm);
       (void)ncvarrename(nc_id,var_rnm_lst[idx].id,var_rnm_lst[idx].new_nm);
       if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed variable \"%s\" to \"%s\"\n",var_rnm_lst[idx].old_nm,var_rnm_lst[idx].new_nm);
-    } /* end else */ 
+    } /* end else */
   } /* end loop over idx */
 
   for(idx=0;idx<nbr_dmn_rnm;idx++){
@@ -276,13 +276,13 @@ main(int argc,char **argv)
 	if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed dimension \"%s\" to \"%s\"\n",dmn_rnm_lst[idx].old_nm+1,dmn_rnm_lst[idx].new_nm);
       }else{
 	(void)fprintf(stderr,"%s: WARNING Dimension \"%s\" not present in %s, skipping it.\n",prg_nm,dmn_rnm_lst[idx].old_nm+1,fl_in);
-      } /* end if */ 
+      } /* end if */
       ncopts=NC_VERBOSE | NC_FATAL; 
     }else{
       dmn_rnm_lst[idx].id=ncdimid(nc_id,dmn_rnm_lst[idx].old_nm);
       (void)ncdimrename(nc_id,dmn_rnm_lst[idx].id,dmn_rnm_lst[idx].new_nm);
       if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed dimension \"%s\" to \"%s\"\n",dmn_rnm_lst[idx].old_nm,dmn_rnm_lst[idx].new_nm);
-    } /* end else */ 
+    } /* end else */
   } /* end loop over idx */
 
   if(nbr_att_rnm > 0){
@@ -314,7 +314,7 @@ main(int argc,char **argv)
 	    }else{
 	      if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed global attribute \"%s\" to \"%s\"\n",att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm);
 	    } /* end else */
-	  } /* end if */ 
+	  } /* end if */
 	}else{
 	  att_rnm_lst[idx].id=ncattinq(nc_id,var_id,att_rnm_lst[idx].old_nm,(nc_type *)NULL,(int *)NULL);
 	  if(att_rnm_lst[idx].id != -1){
@@ -331,11 +331,11 @@ main(int argc,char **argv)
 	    }else{
 	      if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed global attribute \"%s\" to \"%s\"\n",att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
 	    } /* end else */
-	  } /* end if */ 
-	} /* end else */ 
+	  } /* end if */
+	} /* end else */
       } /* end loop over var_id */
 
-      /* See to it that any mandatory renaming was performed, else abort. */ 
+      /* See to it that any mandatory renaming was performed, else abort. */
       if(nbr_rnm == 0){
 	if(att_rnm_lst[idx].old_nm[0] == '.'){
 	  (void)fprintf(stderr,"%s: WARNING Attribute \"%s\" not present in %s, skipping it.\n",prg_nm,att_rnm_lst[idx].old_nm+1,fl_in);
@@ -347,18 +347,18 @@ main(int argc,char **argv)
 
     } /* end loop over idx */
     ncopts=NC_VERBOSE | NC_FATAL; 
-  }/* end if */ 
+  }/* end if */
   
-  /* Catenate the timestamped command line to the "history" global attribute */ 
+  /* Catenate the timestamped command line to the "history" global attribute */
   if(HISTORY_APPEND) (void)hst_att_cat(nc_id,cmd_ln);
   
-  /* Take the file out of define mode */ 
+  /* Take the file out of define mode */
   (void)ncendef(nc_id);
     
-  /* Close the open netCDF file */ 
+  /* Close the open netCDF file */
   ncclose(nc_id);
   
-  /* Remove local copy of file */ 
+  /* Remove local copy of file */
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
 
   Exit_gracefully();
@@ -387,11 +387,11 @@ prs_rnm_lst(int nbr_rnm,char **rnm_arg)
     char *comma_1_cp;
 
     /* Find the positions of the commas and the number of characters
-       between (non-inclusive) them */ 
+       between (non-inclusive) them */
     comma_1_cp=strchr(rnm_arg[idx],',');
     
     /* Before doing any pointer arithmetic, make sure the pointers 
-       are valid. */ 
+       are valid. */
     if(comma_1_cp == NULL){
       (void)usg_prn();
       exit(EXIT_FAILURE);
@@ -400,17 +400,17 @@ prs_rnm_lst(int nbr_rnm,char **rnm_arg)
     len_arg_1=comma_1_cp-rnm_arg[idx]; 
     len_arg_2=rnm_arg[idx]+strlen(rnm_arg[idx])-comma_1_cp-1; 
     
-    /* If the length of either of the arguments is zero then exit */ 
+    /* If the length of either of the arguments is zero then exit */
     if(len_arg_1 <= 0 || len_arg_2 <= 0){
       (void)usg_prn();
       exit(EXIT_FAILURE);
-    } /* end if */ 
+    } /* end if */
     
-    /* Assign the pointers to the member of the rnm_lst */ 
+    /* Assign the pointers to the member of the rnm_lst */
     rnm_lst[idx].old_nm=rnm_arg[idx];
     rnm_lst[idx].new_nm=comma_1_cp+1;
 
-    /* Manually null-terminate the arguments */ 
+    /* Manually null-terminate the arguments */
     rnm_lst[idx].old_nm[len_arg_1]='\0';
     rnm_lst[idx].new_nm[len_arg_2]='\0';
     
@@ -424,4 +424,4 @@ prs_rnm_lst(int nbr_rnm,char **rnm_arg)
   } /* end debug */
 
   return rnm_lst;
-} /* end prs_rnm_lst() */ 
+} /* end prs_rnm_lst() */

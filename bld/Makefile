@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.73 2000-08-25 22:47:51 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.74 2000-08-28 17:22:13 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires: GNU Make. AT&T Make will not understand this.
@@ -63,16 +63,17 @@ ifdef DODS
  DODS := Y
 endif
 ifeq ($(DODS),Y)
+# Build NCO as DODS-enabled clients
 ifndef DODS_ROOT
-# Directory containing libdap++.a, libnc-dods.a
- DODS_ROOT := /usr/local/DODS
+ DODS_ROOT := /usr/local/DODS # Directory containing libdap++.a, libnc-dods.a
 endif
  NC_LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib
  NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
-
+# Get netCDF from DODS version
  NETCDF_INC=$(DODS_ROOT)/include
  NETCDF_LIB=$(DODS_ROOT)/lib
 else
+# Build NCO straight, without DODS
  NC_LDFLAGS := -L$(NETCDF_LIB)
  NC_LIBS := -lnetcdf
 endif # end DODS
@@ -547,10 +548,8 @@ endif
 # Currently this is invoked by using 'make DODS=Y' on the command
 # NB: Yes, nc-dods, dap++ must be linked twice!
 ifeq ($(DODS),Y)
-ifeq (CC,g++)
-# -lstdc++ automatically linked by g++
- LDFLAGS := $(LDFLAGS)
-else
+ifneq (CC,g++)
+# -lstdc++ automatically linked by g++, must add by hand for others
  LDFLAGS := $(LDFLAGS) -lstdc++
 endif
 endif
@@ -707,7 +706,8 @@ $(libnco).a: $(libnco).a($(MY_OBJ_DIR)/nc_utl.o) \
 	$(libnco).a($(MY_OBJ_DIR)/csz.o)
 else
 $(libnco).a: $(libnco).a($(MY_OBJ_DIR)/nc_utl.o) \
-	$(libnco).a($(MY_OBJ_DIR)/csz.o)
+	$(libnco).a($(MY_OBJ_DIR)/csz.o) \
+	$(libnco).a($(MY_OBJ_DIR)/pck.o)
 endif
 libclean: lib_cln
 lib_cln:
@@ -725,7 +725,7 @@ src_cln:
 
 # Housekeeping
 clean: cln
-cln: dat_cln dpn_cln obj_cln tst_cln
+cln: lib_cln dpn_cln obj_cln tst_cln
 	cd $(MY_DOC_DIR); rm -f nco.aux nco.cp nco.cps nco.fn nco.ky nco.log nco.pg nco.toc nco.tp nco.vr 
 debug: dbg
 dbg:
@@ -746,7 +746,7 @@ dbg:
 	printf "DODS_ROOT = $(DODS_ROOT)\n"
 	printf "MDL_RPM_NST_NM = $(MDL_RPM_NST_NM)\n"
 distclean: dst_cln
-dst_cln: cln bin_cln doc_cln lib_cln
+dst_cln: cln bin_cln doc_cln dat_cln
 	cd $(MY_BLD_DIR); rm -f *~
 	cd $(MY_DAT_DIR); rm -f in.nc *~
 tags: 

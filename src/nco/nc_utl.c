@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.88 2000-08-25 22:48:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.89 2000-08-28 17:22:13 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -40,24 +40,24 @@
 /* Standard header files */
 #include <math.h>               /* sin cos cos sin 3.14159 */
 #include <stdio.h>              /* stderr, FILE, NULL, etc. */
-#include <stdlib.h>             /* atof, atoi, malloc, getopt */ 
+#include <stdlib.h>             /* atof, atoi, malloc, getopt */
 #include <string.h>             /* strcmp. . . */
 #include <sys/stat.h>           /* stat() */
 #include <time.h>               /* machine time */
-#include <unistd.h>             /* POSIX stuff */ 
+#include <unistd.h>             /* POSIX stuff */
 
 #include <netcdf.h>             /* netCDF definitions */
 #include "nc.h"                 /* netCDF operator universal def'ns */
-/* #include <errno.h> */             /* errno */
-/* #include <malloc.h>    */         /* malloc() stuff */
-#include <assert.h>             /* assert() debugging macro */ 
+/* #include <errno.h> */            /* errno */
+/* #include <malloc.h>    */        /* malloc() stuff */
+#include <assert.h>             /* assert() debugging macro */
 
 void 
 nc_err_exit(int rcd,char *msg)
 /*  
     int rcd: I netCDF error code
     char *msg: I supplemental error message
-*/ 
+*/
 {
   /* Purpose: Print netCDF error message, routine name, and exit */
   if(rcd != NC_NOERR){
@@ -66,15 +66,15 @@ nc_err_exit(int rcd,char *msg)
 #else /* not NETCDF2_ONLY */
     (void)fprintf(stderr,"%s: ERROR %s\n%s\n",prg_nm_get(),msg,nc_strerror(rcd));
 #endif /* not NETCDF2_ONLY */
-  } /* endif error */ 
+  } /* endif error */
 } /* end nc_err_exit() */
 
 char *
-nc_type_nm(nc_type type)
+nco_typ_sng(nc_type type)
 /*  
-   nc_type type: I netCDF type
-   char *nc_type_nm(): O string describing type
-*/ 
+   nc_type type: I [enm] netCDF type
+   char *nco_typ_sng(): O [sng] string describing type
+*/
 {
   switch(type){
   case NC_FLOAT:
@@ -90,21 +90,21 @@ nc_type_nm(nc_type type)
   case NC_BYTE:
     return "NC_BYTE";
   default:
-    (void)fprintf(stdout,"%s: ERROR Unknown nc_type %d in nc_type_nm()\n",prg_nm_get(),type);
+    (void)fprintf(stdout,"%s: ERROR Unknown nc_type %d in nco_typ_sng()\n",prg_nm_get(),type);
     exit(EXIT_FAILURE);
     break;
-  } /* end switch */ 
+  } /* end switch */
 
-  /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */ 
+  /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
   return (char *)NULL;
-} /* end nc_type_nm() */ 
+} /* end nco_typ_sng() */
 
 char *
 c_type_nm(nc_type type)
 /*  
    nc_type type: I netCDF type
    char *c_type_nm(): O string describing type
-*/ 
+*/
 {
   switch(type){
   case NC_FLOAT:
@@ -123,18 +123,18 @@ c_type_nm(nc_type type)
     (void)fprintf(stdout,"%s: ERROR Unknown nc_type %d in c_type_nm()\n",prg_nm_get(),type);
     exit(EXIT_FAILURE);
     break;
-  } /* end switch */ 
+  } /* end switch */
 
-  /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */ 
+  /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
   return (char *)NULL;
-} /* end c_type_nm() */ 
+} /* end c_type_nm() */
 
 char *
 fortran_type_nm(nc_type type)
 /*  
    nc_type type: I netCDF type
    char *fortran_type_nm(): O string describing type
-*/ 
+*/
 {
   switch(type){
   case NC_FLOAT:
@@ -153,21 +153,21 @@ fortran_type_nm(nc_type type)
     (void)fprintf(stdout,"%s: ERROR Unknown nc_type %d in c_type_nm()\n",prg_nm_get(),type);
     exit(EXIT_FAILURE);
     break;
-  } /* end switch */ 
+  } /* end switch */
 
-  /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */ 
+  /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
   return (char *)NULL;
-} /* end fortran_type_nm() */ 
+} /* end fortran_type_nm() */
 
 void
 cast_void_nctype(nc_type type,ptr_unn *ptr)
 /*  
    nc_type type: I netCDF type to cast void pointer to
    ptr_unn *ptr: I/O pointer to pointer union whose vp element will be cast to type type
-*/ 
+*/
 {
   /* Routine to cast the generic pointer in the ptr_unn structure from type void
-     type to the output netCDF type. */ 
+     type to the output netCDF type. */
 
   switch(type){
   case NC_FLOAT:
@@ -188,17 +188,17 @@ cast_void_nctype(nc_type type,ptr_unn *ptr)
   case NC_BYTE:
     ptr->bp=(unsigned char *)ptr->vp;
     break;
-  } /* end switch */ 
-} /* end cast_void_nctype() */ 
+  } /* end switch */
+} /* end cast_void_nctype() */
 
 void
 cast_nctype_void(nc_type type,ptr_unn *ptr)
 /*  
    nc_type type: I netCDF type of pointer
    ptr_unn *ptr: I/O pointer to pointer union which to cast from type type to type void
-*/ 
+*/
 {
-  /* Routine to cast the generic pointer in the ptr_unn structure from type type to type void */ 
+  /* Routine to cast the generic pointer in the ptr_unn structure from type type to type void */
 
   switch(type){
   case NC_FLOAT:
@@ -219,9 +219,9 @@ cast_nctype_void(nc_type type,ptr_unn *ptr)
   case NC_BYTE:
     ptr->vp=(void *)ptr->bp;
     break;
-  } /* end switch */ 
+  } /* end switch */
 
-} /* end cast_nctype_void() */ 
+} /* end cast_nctype_void() */
 
 void 
 lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
@@ -230,20 +230,20 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
    lmt_sct *lmt_ptr: I/O [sct] Structure from lmt_prs() or from lmt_sct_mk() to hold dimension limit information
    long cnt_crr: I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators)
    bool FORTRAN_STYLE: I [flg] Switch to determine syntactical interpretation of dimensional indices
- */ 
+ */
 {
   /* Purpose: Take a parsed list of dimension names, minima, and
      maxima strings and find appropriate indices into dimensions 
-     for formulation of dimension start and count vectors, or fail trying. */ 
+     for formulation of dimension start and count vectors, or fail trying. */
 
   bool flg_no_data=False; /* True if file contains no data for hyperslab */
-  bool rec_dmn_and_mlt_fl_opr=False; /* True if record dimension in multi-file operator */ 
+  bool rec_dmn_and_mlt_fl_opr=False; /* True if record dimension in multi-file operator */
 
   dmn_sct dim;
 
   enum monotonic_direction{
-    decreasing, /* 0 */ 
-    increasing}; /* 1 */ 
+    decreasing, /* 0 */
+    increasing}; /* 1 */
 
   lmt_sct lmt;
 
@@ -263,19 +263,19 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 
   prg_id=prg_get(); /* Program ID */
 
-  /* Initialize limit structure */ 
+  /* Initialize limit structure */
   lmt.srd=1L;
   lmt.min_val=0.0;
   lmt.max_val=0.0;
 
-  /* Get dimension ID */ 
+  /* Get dimension ID */
   ncopts=0; 
   lmt.id=ncdimid(nc_id,lmt.nm);
   ncopts=NC_VERBOSE | NC_FATAL; 
   if(lmt.id == -1){
     (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",prg_nm_get(),lmt.nm);
     exit(EXIT_FAILURE);
-  } /* endif */ 
+  } /* endif */
 
   /* Logic on whether to allow skipping current file depends on whether limit
      is specified for record dimension in multi-file operators.
@@ -286,13 +286,13 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
   if(lmt.id == rec_dmn_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
   if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)) rec_dmn_and_mlt_fl_opr=True; else rec_dmn_and_mlt_fl_opr=False;
 
-  /* Get dimension size */ 
+  /* Get dimension size */
   (void)ncdiminq(nc_id,lmt.id,(char *)NULL,&dim.sz);
   
-  /* Shortcut to avoid indirection */ 
+  /* Shortcut to avoid indirection */
   dmn_sz=dim.sz;
 
-  /* Bomb if dmn_sz < 1 */ 
+  /* Bomb if dmn_sz < 1 */
   if(dmn_sz < 1){
     (void)fprintf(stdout,"%s: ERROR Size of dimension \"%s\" is %li in input file, but must be > 0 in order to apply limits.\n",prg_nm_get(),lmt.nm,dmn_sz);
     exit(EXIT_FAILURE);
@@ -315,17 +315,17 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     /* Limiting indices will be set to default extrema a bit later */
     min_lmt_typ=max_lmt_typ=lmt_dmn_idx;
   }else{
-    /* min_sng and max_sng are not both NULL */ 
+    /* min_sng and max_sng are not both NULL */
     /* Limit is coordinate value if string contains decimal point or is in exponential format 
-     Otherwise limit is interpreted as zero-based dimension offset */ 
+     Otherwise limit is interpreted as zero-based dimension offset */
   
     if(lmt.min_sng != NULL) min_lmt_typ=(strchr(lmt.min_sng,'.') || strchr(lmt.min_sng,'e') || strchr(lmt.min_sng,'E') || strchr(lmt.min_sng,'d') || strchr(lmt.min_sng,'D')) ? lmt_crd_val : lmt_dmn_idx;
     if(lmt.max_sng != NULL) max_lmt_typ=(strchr(lmt.max_sng,'.') || strchr(lmt.max_sng,'e') || strchr(lmt.max_sng,'E') || strchr(lmt.max_sng,'d') || strchr(lmt.max_sng,'D')) ? lmt_crd_val : lmt_dmn_idx;
     
-    /* Copy lmt_typ from defined limit to undefined */ 
+    /* Copy lmt_typ from defined limit to undefined */
     if(lmt.min_sng == NULL) min_lmt_typ=max_lmt_typ;
     if(lmt.max_sng == NULL) max_lmt_typ=min_lmt_typ;
-  } /* end else */ 
+  } /* end else */
   
   /* Both min_lmt_typ and max_lmt_typ are now defined
      Continue only if both limits are of the same type */
@@ -350,31 +350,31 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     long tmp_idx;
     long dmn_srt=0L;
 
-    /* Get variable ID of coordinate */ 
+    /* Get variable ID of coordinate */
     dim.cid=ncvarid_or_die(nc_id,lmt.nm);
     
     /* Get coordinate type */
     (void)ncvarinq(nc_id,dim.cid,(char *)NULL,&dim.type,(int *)NULL,(int *)NULL,(int *)NULL);
     
-    /* Warn when coordinate type is weird */ 
-    if(dim.type == NC_BYTE || dim.type == NC_CHAR) (void)fprintf(stderr,"\nWARNING: Coordinate %s is type %s. Dimension truncation is unpredictable.\n",lmt.nm,nc_type_nm(dim.type));
+    /* Warn when coordinate type is weird */
+    if(dim.type == NC_BYTE || dim.type == NC_CHAR) (void)fprintf(stderr,"\nWARNING: Coordinate %s is type %s. Dimension truncation is unpredictable.\n",lmt.nm,nco_typ_sng(dim.type));
     
-    /* Allocate enough space to hold coordinate */ 
+    /* Allocate enough space to hold coordinate */
     dim.val.vp=(void *)nco_malloc(dmn_sz*nctypelen(dim.type));
     
-    /* Retrieve coordinate */ 
+    /* Retrieve coordinate */
     ncvarget(nc_id,dim.cid,&dmn_srt,&dmn_sz,dim.val.vp);
     
-    /* Convert coordinate to double-precision if neccessary */ 
+    /* Convert coordinate to double-precision if neccessary */
     if(dim.type != NC_DOUBLE){
       ptr_unn old_val;
 
       old_val=dim.val;
       dim.val.vp=(void *)nco_malloc(dmn_sz*nctypelen(NC_DOUBLE));
-      /* Typecast old coordinate pointer union to correct type before access */ 
+      /* Typecast old coordinate pointer union to correct type before access */
       (void)cast_void_nctype(dim.type,&old_val);
 
-      /* Shortcut to avoid indirection */ 
+      /* Shortcut to avoid indirection */
       dmn_val_dp=dim.val.dp;
       switch(dim.type){
       case NC_FLOAT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.fp[idx];} break; 
@@ -383,27 +383,27 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       case NC_SHORT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.sp[idx];} break;
       case NC_CHAR: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.cp[idx];} break;
       case NC_BYTE: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.bp[idx];} break;
-      } /* end switch */ 
+      } /* end switch */
 
-      /* Un-typecast pointer to values after access */ 
+      /* Un-typecast pointer to values after access */
       (void)cast_nctype_void(dim.type,&old_val);
     
       /* Free original space allocated for dimension */
       (void)free(old_val.vp);
 
-      /* Officially change type */ 
+      /* Officially change type */
       dim.type=NC_DOUBLE;
-    } /* end type conversion */ 
+    } /* end type conversion */
 
-    /* Shortcut to avoid indirection */ 
+    /* Shortcut to avoid indirection */
     dmn_val_dp=dim.val.dp;
 
-    /* Assuming coordinate is monotonic, direction of monotonicity is determined by first two elements */ 
+    /* Assuming coordinate is monotonic, direction of monotonicity is determined by first two elements */
     if(dmn_sz == 1){
       monotonic_direction=increasing;
     }else{
       if(dmn_val_dp[0] > dmn_val_dp[1]) monotonic_direction=decreasing; else monotonic_direction=increasing;
-    } /* end else */ 
+    } /* end else */
 
     if(monotonic_direction == increasing){
       min_idx=0L;
@@ -413,18 +413,18 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       max_idx=0L;
     } /* end else */
 
-    /* Determine min and max values of entire coordinate */ 
+    /* Determine min and max values of entire coordinate */
     dmn_min=dmn_val_dp[min_idx];
     dmn_max=dmn_val_dp[max_idx];
     
-    /* Convert user-specified limits into double precision numeric values, or supply defaults */ 
+    /* Convert user-specified limits into double precision numeric values, or supply defaults */
     if(lmt.min_sng == NULL) lmt.min_val=dmn_val_dp[min_idx]; else lmt.min_val=strtod(lmt.min_sng,(char **)NULL);
     if(lmt.max_sng == NULL) lmt.max_val=dmn_val_dp[max_idx]; else lmt.max_val=strtod(lmt.max_sng,(char **)NULL);
 
-    /* Warn when min_val > max_val (i.e., wrapped coordinate)*/ 
+    /* Warn when min_val > max_val (i.e., wrapped coordinate)*/
     if(lmt.min_val > lmt.max_val) (void)fprintf(stderr,"%s: WARNING Interpreting hyperslab specifications as wrapped coordinates [%s <= %g] and [%s >= %g]\n",prg_nm_get(),lmt.nm,lmt.max_val,lmt.nm,lmt.min_val);
     
-    /* Fail when... */ 
+    /* Fail when... */
     if(
        /* Following condition added 20000508, changes behavior of single point 
 	  hyperslabs depending on whether hyperslab occurs in record dimension
@@ -455,13 +455,13 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       } /* end else */
     } /* end if */
 
-    /* Armed with target coordinate minima and maxima, we are ready to bracket user-specified range */ 
+    /* Armed with target coordinate minima and maxima, we are ready to bracket user-specified range */
     
-    /* If min_sng or max_sng were omitted, use extrema */ 
+    /* If min_sng or max_sng were omitted, use extrema */
     if(lmt.min_sng == NULL) lmt.min_idx=min_idx;
     if(lmt.max_sng == NULL) lmt.max_idx=max_idx;
     
-    /* Single slice requires finding the closest coordinate */ 
+    /* Single slice requires finding the closest coordinate */
     if(lmt.min_val == lmt.max_val){
       double dst_new;
       double dst_old;
@@ -478,7 +478,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       
     }else{ /* min_val != max_val */
       
-      /* Find brackets to specified extrema */ 
+      /* Find brackets to specified extrema */
       /* Should no coordinate values match the given criteria, flag that index with a -1L
 	 We defined the valid syntax such that a single half range with -1L is not an error
 	 This causes "-d lon,100.0,-100.0" to select [-180.0] when lon=[-180.0,-90.0,0.0,90.0] because one
@@ -488,30 +488,30 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	 The -1L flags are replaced with the correct indices (0L or dmn_sz-1L) following the search loop block
 	 Overwriting the -1L flags with 0L or dmn_sz-1L later is more heuristic than setting them = 0L here,
 	 since 0L is a valid search result.
-       */ 
+       */
       if(monotonic_direction == increasing){
 	if(lmt.min_sng != NULL){
-	  /* Find index of smallest coordinate greater than min_val */ 
+	  /* Find index of smallest coordinate greater than min_val */
 	  tmp_idx=0L;
 	  while((dmn_val_dp[tmp_idx] < lmt.min_val) && (tmp_idx < dmn_sz)) tmp_idx++;
 	  if(tmp_idx != dmn_sz) lmt.min_idx=tmp_idx; else lmt.min_idx=-1L;
 	} /* end if */
 	if(lmt.max_sng != NULL){
-	  /* Find index of largest coordinate less than max_val */ 
+	  /* Find index of largest coordinate less than max_val */
 	  tmp_idx=dmn_sz-1L;
 	  while((dmn_val_dp[tmp_idx] > lmt.max_val) && (tmp_idx > -1L)) tmp_idx--;
 	  if(tmp_idx != -1L) lmt.max_idx=tmp_idx; else lmt.max_idx=-1L;
 	} /* end if */
-	/* end if monotonic_direction == increasing */ 
+	/* end if monotonic_direction == increasing */
       }else{ /* monotonic_direction == decreasing */
 	if(lmt.min_sng != NULL){
-	  /* Find index of smallest coordinate greater than min_val */ 
+	  /* Find index of smallest coordinate greater than min_val */
 	  tmp_idx=dmn_sz-1L;
 	  while((dmn_val_dp[tmp_idx] < lmt.min_val) && (tmp_idx > -1L)) tmp_idx--;
 	  if(tmp_idx != -1L) lmt.min_idx=tmp_idx; else lmt.min_idx=-1L;
 	} /* end if */
 	if(lmt.max_sng != NULL){
-	  /* Find index of largest coordinate less than max_val */ 
+	  /* Find index of largest coordinate less than max_val */
 	  tmp_idx=0L;
 	  while((dmn_val_dp[tmp_idx] > lmt.max_val) && (tmp_idx < dmn_sz)) tmp_idx++;
 	  if(tmp_idx != dmn_sz) lmt.max_idx=tmp_idx; else lmt.max_idx=-1L;
@@ -520,7 +520,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 
       /* Case where both min_idx and max_idx = -1 was flagged as error above
 	 Case of wrapped coordinate: Either, but not both, of min_idx or max_idx will be flagged with -1
-	 See explanation above */ 
+	 See explanation above */
       if(lmt.min_idx == -1L && (lmt.min_val > lmt.max_val)) lmt.min_idx=0L;
       if(lmt.max_idx == -1L && (lmt.min_val > lmt.max_val)) lmt.max_idx=dmn_sz-1L;
     
@@ -528,7 +528,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     
     /* User-specified ranges are now bracketed */
     
-    /* Convert indices of minima and maxima to srt and end indices */ 
+    /* Convert indices of minima and maxima to srt and end indices */
     if(monotonic_direction == increasing){
       lmt.srt=lmt.min_idx;
       lmt.end=lmt.max_idx;
@@ -537,13 +537,13 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       lmt.end=lmt.min_idx;
     }  /* end else */
 
-    /* Un-typecast pointer to values after access */ 
+    /* Un-typecast pointer to values after access */
     (void)cast_nctype_void(NC_DOUBLE,&dim.val);
   
     /* Free space allocated for dimension */
     (void)free(dim.val.vp);
     
-  }else{ /* end if limit arguments were coordinate values */ 
+  }else{ /* end if limit arguments were coordinate values */
     /* Convert limit strings to zero-based indicial offsets */
     
     /* Specifying stride alone, but not min or max, is legal, e.g., -d time,,,2
@@ -562,7 +562,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
        which are only set in lmt_sct_mk() for the first file.
        In hindsight, artificially generating min_sng and max_sng may be a bad idea
     */
-    /* Following logic is messy, but hard to simplify */ 
+    /* Following logic is messy, but hard to simplify */
     if(lmt.min_sng == NULL || !lmt.is_usr_spc_lmt){
       /* No user-specified value available--generate minimal dimension index */
       if(FORTRAN_STYLE) lmt.min_idx=1L; else lmt.min_idx=0L;
@@ -578,13 +578,13 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       lmt.max_idx=strtol(lmt.max_sng,(char **)NULL,10);
     } /* end if */
 
-    /* Adjust indices if FORTRAN style input was specified */ 
+    /* Adjust indices if FORTRAN style input was specified */
     if(FORTRAN_STYLE){
       lmt.min_idx--;
       lmt.max_idx--;
     } /* end if */
     
-    /* Exit if requested indices are always invalid for all operators... */ 
+    /* Exit if requested indices are always invalid for all operators... */
     if(lmt.min_idx < 0 || lmt.max_idx < 0 || 
        /* ...or are invalid for non-record dimensions or single file operators */
        (!rec_dmn_and_mlt_fl_opr && lmt.min_idx >= dmn_sz)){
@@ -772,7 +772,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
   /* Compute cnt from srt, end, and srd
      This is fine for multi-file record dimensions since those operators read in one
      record at a time and thus never actually use lmt.cnt for the record dimension.
-   */ 
+   */
   if(lmt.srd == 1L){
     if(lmt.srt <= lmt.end) lmt.cnt=lmt.end-lmt.srt+1L; else lmt.cnt=dmn_sz-lmt.srt+lmt.end+1L;
   }else{
@@ -789,9 +789,9 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
      For these degenerate cases only, [srt,end] are not a permutation of [min_idx,max_idx]
      */
   if(
-     (lmt.srd != 1L) && /* SRD */ 
-     (lmt.srt > lmt.end) && /* WRP */ 
-     (lmt.cnt == (1L+(dmn_sz-lmt.srt-1L)/lmt.srd)) && /* dmn_cnt_1 == cnt -> dmn_cnt_2 == 0 */ 
+     (lmt.srd != 1L) && /* SRD */
+     (lmt.srt > lmt.end) && /* WRP */
+     (lmt.cnt == (1L+(dmn_sz-lmt.srt-1L)/lmt.srd)) && /* dmn_cnt_1 == cnt -> dmn_cnt_2 == 0 */
      True){
     long greatest_srd_multiplier_1st_hyp_slb; /* greatest integer m such that srt+m*srd < dmn_sz */
     long last_good_idx_1st_hyp_slb; /* C index of last valid member of 1st hyperslab (= srt+m*srd) */
@@ -807,9 +807,9 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 
     /* Conditions causing dmn_cnt_2 == 0 */
     if(first_good_idx_2nd_hyp_slb > lmt.end) lmt.end=last_good_idx_1st_hyp_slb;
-  } /* end if */ 
+  } /* end if */
 
-  /* Exit when valid bracketed range contains no coordinates */ 
+  /* Exit when valid bracketed range contains no coordinates */
   if(lmt.cnt == 0){
     if(lmt.lmt_typ == lmt_crd_val) (void)fprintf(stdout,"%s: ERROR Domain %g <= %s <= %g brackets no coordinate values.\n",prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val); 
     if(lmt.lmt_typ == lmt_dmn_idx) (void)fprintf(stdout,"%s: ERROR Empty domain for %s\n",prg_nm_get(),lmt.nm); 
@@ -869,17 +869,17 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     if(prg_id != ncks) (void)fprintf(stderr,"HINT: If operation fails, try hyperslabbing wrapped dimension using ncks instead of %s\n",prg_nm_get());
   } /* end dbg */
 
-} /* end lmt_evl() */ 
+} /* end lmt_evl() */
 
 void
 rec_var_dbg(int nc_id,char *dbg_sng)
 /* 
    int nc_id: I netCDF file ID
    char *dbg_sng: I debugging message to print
-*/ 
+*/
 {
-  /* Purpose: Aid in debugging problems with record dimension */ 
-  /* Usage: if(dbg_lvl == 73) rec_var_dbg(out_id,"After ncvarput()"); */ 
+  /* Purpose: Aid in debugging problems with record dimension */
+  /* Usage: if(dbg_lvl == 73) rec_var_dbg(out_id,"After ncvarput()"); */
   int nbr_dmn_fl;
   int nbr_var_fl;
   int rec_dmn_id=-1;
@@ -894,7 +894,7 @@ rec_var_dbg(int nc_id,char *dbg_sng)
     (void)fprintf(stderr,"%s: DBG %d dimensions, %d variables, record dimension size is %li\n",prg_nm_get(),nbr_dmn_fl,nbr_var_fl,dmn_sz);
   } /* end else */
   (void)fflush(stderr);
-} /* end rec_var_dbg() */ 
+} /* end rec_var_dbg() */
 
 void 
 att_cpy(int in_id,int out_id,int var_in_id,int var_out_id)
@@ -903,7 +903,7 @@ att_cpy(int in_id,int out_id,int var_in_id,int var_out_id)
    int out_id: I netCDF output-file ID
    int var_in_id: I netCDF input-variable ID
    int var_out_id: I netCDF output-variable ID
-*/ 
+*/
 {
   /* Routine to copy all the attributes from the input netCDF
      file to the output netCDF file. If var_in_id == NC_GLOBAL, 
@@ -918,7 +918,7 @@ att_cpy(int in_id,int out_id,int var_in_id,int var_out_id)
     (void)ncinquire(in_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
   }else{
     (void)ncvarinq(in_id,var_in_id,(char *)NULL,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
-  } /* end else */ 
+  } /* end else */
   
   for(idx=0;idx<nbr_att;idx++){
     char att_nm[MAX_NC_NAME];
@@ -929,7 +929,7 @@ att_cpy(int in_id,int out_id,int var_in_id,int var_out_id)
     rcd=ncattinq(out_id,var_out_id,att_nm,(nc_type *)NULL,(int *)NULL);
     ncopts=NC_VERBOSE | NC_FATAL; 
       
-    /* Are we about to overwrite an existing attribute? */ 
+    /* Are we about to overwrite an existing attribute? */
     if(rcd != -1){
       if(var_out_id == -1){
 	(void)fprintf(stderr,"%s: WARNING Overwriting global attribute %s\n",prg_nm_get(),att_nm);
@@ -944,7 +944,7 @@ att_cpy(int in_id,int out_id,int var_in_id,int var_out_id)
     (void)ncattcopy(in_id,var_in_id,att_nm,out_id,var_out_id);
 
   } /* end loop over attributes */
-} /* end att_cpy() */ 
+} /* end att_cpy() */
 
 var_sct *
 var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
@@ -955,9 +955,9 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
    dmn_sct **dim: I list of pointers to dimension structures
    int nbr_dim: I number of dimensions in list
    var_sct *var_fll(): O variable structure
- */ 
+ */
 {
-  /* Purpose: nco_malloc() and return a completed var_sct */ 
+  /* Purpose: nco_malloc() and return a completed var_sct */
 
   char dmn_nm[MAX_NC_NAME];
 
@@ -976,9 +976,9 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
   var->nc_id=nc_id;
 
   /* Get type and number of dimensions and attributes for variable */
-  (void)ncvarinq(var->nc_id,var->id,(char *)NULL,&var->type,&var->nbr_dim,(int *)NULL,&var->nbr_att);
+  (void)ncvarinq(var->nc_id,var->id,(char *)NULL,&var->typ_dsk,&var->nbr_dim,(int *)NULL,&var->nbr_att);
 
-  /* Allocate space for dimension information */ 
+  /* Allocate space for dimension information */
   if(var->nbr_dim > 0) var->dim=(dmn_sct **)nco_malloc(var->nbr_dim*sizeof(dmn_sct *)); else var->dim=(dmn_sct **)NULL;
   if(var->nbr_dim > 0) var->dmn_id=(int *)nco_malloc(var->nbr_dim*sizeof(int)); else var->dmn_id=(int *)NULL;
   if(var->nbr_dim > 0) var->cnt=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->cnt=(long *)NULL;
@@ -989,7 +989,9 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
   /* Get dimension IDs from input file */
   (void)ncvarinq(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,(int *)NULL,var->dmn_id,(int *)NULL);
   
-  /* Set defaults */ 
+  /* Set defaults */
+  /* Type in memory begins as same type as on disk */
+  var->type=var->typ_dsk; /* Type of variable in RAM */
   var->is_rec_var=False;
   var->is_crd_var=False;
   var->sz=1L;
@@ -1000,25 +1002,24 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
   var->val.vp=NULL;
   var->tally=NULL;
   var->xrf=NULL;
-  var->typ_prv=0;
 
   /* Refresh the number of attributes and the missing value attribute, if any */
   var->has_mss_val=mss_val_get(var->nc_id,var);
 
   for(idx=0;idx<var->nbr_dim;idx++){
 
-    /* What is the name of this dimension? */ 
+    /* What is the name of this dimension? */
     (void)ncdiminq(nc_id,var->dmn_id[idx],dmn_nm,(long *)NULL);
 
-    /* Search the input dimension list for a matching name */ 
+    /* Search the input dimension list for a matching name */
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
       if(!strcmp(dmn_nm,dim[dmn_idx]->nm)) break;
-    } /* end for */ 
+    } /* end for */
 
     if(dmn_idx == nbr_dim){
       (void)fprintf(stdout,"%s: ERROR dimension %s is not in input dimension list\n",prg_nm_get(),dmn_nm);
       exit(EXIT_FAILURE);
-    } /* end if */ 
+    } /* end if */
 
     var->dim[idx]=dim[dmn_idx];
     var->cnt[idx]=dim[dmn_idx]->cnt;
@@ -1037,14 +1038,14 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
   } /* end loop over dim */
 
   return var;
-} /* end var_fll() */ 
+} /* end var_fll() */
 
 void
 var_refresh(int nc_id,var_sct *var)
 /* 
    int nc_id: I netCDF input-file ID
    var_sct *var: I/O variable structure
- */ 
+ */
 {
   /* Purpose: Update variable ID, number of dimensions, and missing_value attribute for given variable
      var_refresh() is called in file loop in multi-file operators because each new file may have 
@@ -1057,20 +1058,20 @@ var_refresh(int nc_id,var_sct *var)
      but not others, and then processes all files in a batch.
      NCO is one of the only tool I know of which makes all of this transparent to the user
      Thus this capability is very important to maintain
-     Not sure why it is necessary refresh the number of dimensions...but it should not hurt
    */
 
-  /* Refresh variable ID */ 
+  /* Refresh variable ID */
   var->nc_id=nc_id;
   var->id=ncvarid_or_die(var->nc_id,var->nm);
 
+  /* fxm: Not sure if/why it is necessary refresh the number of dimensions...but it should not hurt */
   /* Refresh number of dimensions in variable */
   (void)ncvarinq(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,&var->nbr_dim,(int *)NULL,(int *)NULL);
 
   /* Refresh number of attributes and missing value attribute, if any */
   var->has_mss_val=mss_val_get(var->nc_id,var);
 
-} /* end var_refresh() */ 
+} /* end var_refresh() */
 
 int
 mss_val_get(int nc_id,var_sct *var)
@@ -1078,16 +1079,15 @@ mss_val_get(int nc_id,var_sct *var)
    int nc_id: I netCDF input-file ID
    var_sct *var: I/O variable structure
    int mss_val_get(): O flag whether variable has missing value on output or not
- */ 
+ */
 {
-  /* Routine to update the number of attributes and the missing_value attribute for the variable.
+  /* Purpose: Update number of attributes and missing_value attribute of variable
      No matter what the type of missing_value is as stored on disk, this routine
      ensures that the copy in mss_val in the var_sct is stored in the type as
      the host variable.
-     This machine does not all the output missing_value to have more than one element
-  */
+     Routine does not allow output missing_value to have more than one element */
 
-  /* NB: has_mss_val is defined typed as int not bool because it is often sent to Fortran routines */ 
+  /* has_mss_val is defined typed as int not bool because it is often sent to Fortran routines */
 
   char att_nm[MAX_NC_NAME];
   
@@ -1100,14 +1100,14 @@ mss_val_get(int nc_id,var_sct *var)
 
   ptr_unn mss_tmp;
   
-  /* Refresh the netCDF "mss_val" attribute for this variable */ 
+  /* Refresh the netCDF "mss_val" attribute for this variable */
   var->has_mss_val=False;
   if(var->mss_val.vp != NULL){
     (void)free(var->mss_val.vp);
     var->mss_val.vp=NULL;
-  } /* end if */ 
+  } /* end if */
 
-  /* Refresh the number of attributes for the variable. */
+  /* Refresh number of attributes for variable */
   (void)ncvarinq(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,(int *)NULL,(int *)NULL,&var->nbr_att);
 
   for(idx=0;idx<var->nbr_att;idx++){
@@ -1117,11 +1117,11 @@ mss_val_get(int nc_id,var_sct *var)
     if(att_sz != 1 && att_typ != NC_CHAR){
       (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for %s has %d elements and so will not be used\n",prg_nm_get(),att_nm,var->nm,att_sz);
       continue;
-    } /* end if */ 
-    /* if(att_typ != var->type) (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for %s will be typecast from %s to %s for arithmetic purposes\n",prg_nm_get(),att_nm,var->nm,nc_type_nm(att_typ),nc_type_nm(var->type)); */
-    /* If we got this far then try to retrieve the attribute and make sure it conforms to the variable's type */ 
+    } /* end if */
+    /* if(att_typ != var->type) (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for %s will be typecast from %s to %s for arithmetic purposes\n",prg_nm_get(),att_nm,var->nm,nco_typ_sng(att_typ),nco_typ_sng(var->type)); */
+    /* If we got this far then try to retrieve attribute and make sure it conforms to variable's type */
     var->has_mss_val=True;
-    /* Oddly, ARM uses NC_CHAR for the type of missing_value, so we must make allowances for this */ 
+    /* Oddly, ARM uses NC_CHAR for type of missing_value, so we must make allowances for this */
     att_len=att_sz*nctypelen(att_typ);
     mss_tmp.vp=(void *)nco_malloc(att_len);
     (void)ncattget(var->nc_id,var->id,att_nm,mss_tmp.vp);
@@ -1133,21 +1133,21 @@ mss_val_get(int nc_id,var_sct *var)
 	mss_tmp.cp[att_len-1]='\0';
 	/* Un-typecast pointer to values after access */
 	(void)cast_nctype_void(att_typ,&mss_tmp);
-      } /* end if */ 
-    } /* end if */ 
+      } /* end if */
+    } /* end if */
     
-    /* Ensure mss_val in memory is stored as same type as variable */ 
+    /* Ensure mss_val in memory is stored as same type as variable */
     var->mss_val.vp=(void *)nco_malloc(nctypelen(var->type));
     (void)val_conform_type(att_typ,mss_tmp,var->type,var->mss_val);
 
-    /* Free the temporary memory */ 
+    /* Release temporary memory */
     (void)free(mss_tmp.vp);
     break;
   } /* end loop over att */
 
   return var->has_mss_val;
 
-} /* end mss_val_get() */ 
+} /* end mss_val_get() */
 
 dmn_sct *
 dmn_fll(int nc_id,int dmn_id,char *dmn_nm)
@@ -1156,9 +1156,9 @@ dmn_fll(int nc_id,int dmn_id,char *dmn_nm)
    int dmn_id: I dimension ID
    char *dmn_nm: I dimension name
    dmn_sct *dmn_fll(): pointer to output dimension structure
- */ 
+ */
 {
-  /* Routine to nco_malloc() and return a completed dmn_sct */ 
+  /* Routine to nco_malloc() and return a completed dmn_sct */
 
   dmn_sct *dim;
   
@@ -1199,7 +1199,7 @@ dmn_fll(int nc_id,int dmn_id,char *dmn_nm)
   
   return dim;
   
-} /* end dmn_fll() */ 
+} /* end dmn_fll() */
 
 void
 dmn_lmt_mrg(dmn_sct **dim,int nbr_dim,lmt_sct *lmt,int lmt_nbr)
@@ -1208,16 +1208,16 @@ dmn_lmt_mrg(dmn_sct **dim,int nbr_dim,lmt_sct *lmt,int lmt_nbr)
    int nbr_dim: I number of dimension structures in structure list
    lmt_sct *lmt: I structure from lmt_evl() holding dimension limit info.
    int lmt_nbr: I number of dimensions with user-specified limits
- */ 
+ */
 {
-  /* Routine to merge the limit structure information into the dimension structures */ 
+  /* Routine to merge the limit structure information into the dimension structures */
 
   int idx;
   int lmt_idx;
 
   for(idx=0;idx<nbr_dim;idx++){
 
-    /* Decide whether this dimension has any user-specified limits */ 
+    /* Decide whether this dimension has any user-specified limits */
     for(lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
       if(lmt[lmt_idx].id == dim[idx]->id){
 	dim[idx]->cnt=lmt[lmt_idx].cnt;
@@ -1228,7 +1228,7 @@ dmn_lmt_mrg(dmn_sct **dim,int nbr_dim,lmt_sct *lmt,int lmt_nbr)
       } /* end if */
     } /* end loop over lmt_idx */
   } /* end loop over dim */
-} /* end dmn_lmt_mrg() */ 
+} /* end dmn_lmt_mrg() */
 
 nm_id_sct *
 var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,int *nbr_xtr)
@@ -1239,7 +1239,7 @@ var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,
    bool PROCESS_ALL_COORDINATES: I whether to process all coordinates
    int *nbr_xtr: I/O number of variables in current extraction list
    nm_id_sct var_lst_mk(): O extraction list
- */ 
+ */
 {
   bool err_flg=False;
   int idx;
@@ -1247,7 +1247,7 @@ var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,
   nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */
 
   if(*nbr_xtr > 0){
-    /* If user named variables with -v option then check validity of user's list and find IDs */ 
+    /* If user named variables with -v option then check validity of user's list and find IDs */
     xtr_lst=(nm_id_sct *)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
     ncopts=0; 
     for(idx=0;idx<*nbr_xtr;idx++){
@@ -1256,7 +1256,7 @@ var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,
       if(xtr_lst[idx].id == -1){
 	(void)fprintf(stdout,"%s: ERROR var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),xtr_lst[idx].nm);
 	err_flg=True;
-      } /* endif */ 
+      } /* endif */
     } /* end loop over idx */
     ncopts=NC_VERBOSE | NC_FATAL; 
     if(err_flg) exit(EXIT_FAILURE);
@@ -1264,7 +1264,7 @@ var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,
     /* If the user did not specify variables with the -v option,
        and the user did not request automatic processing of all coords,
        then extract all the variables in the file. In this case
-       we can assume the variable IDs range from 0..nbr_var-1. */ 
+       we can assume the variable IDs range from 0..nbr_var-1. */
     char var_nm[MAX_NC_NAME];
     
     *nbr_xtr=nbr_var;
@@ -1279,7 +1279,7 @@ var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,
 
   return xtr_lst;
 
-} /* end var_lst_mk() */ 
+} /* end var_lst_mk() */
 
 nm_id_sct *
 var_lst_xcl(int nc_id,int nbr_var,nm_id_sct *xtr_lst,int *nbr_xtr)
@@ -1289,12 +1289,12 @@ var_lst_xcl(int nc_id,int nbr_var,nm_id_sct *xtr_lst,int *nbr_xtr)
    nm_id_sct *xtr_lst: I/O current extraction list (destroyed)
    int *nbr_xtr: I/O number of variables in current extraction list
    nm_id_sct var_lst_xcl(): O extraction list
- */ 
+ */
 {
   /* The user wants to extract all the variables except the ones
      currently in the list. Since it's hard to edit the existing
      list, copy the existing extract list into the exclude list,
-     and construct a new list extract list from scratch. */ 
+     and construct a new list extract list from scratch. */
 
   char var_nm[MAX_NC_NAME];
 
@@ -1304,7 +1304,7 @@ var_lst_xcl(int nc_id,int nbr_var,nm_id_sct *xtr_lst,int *nbr_xtr)
 
   nm_id_sct *xcl_lst;
   
-  /* Turn the extract list into the exclude list and reallocate the extract list  */ 
+  /* Turn the extract list into the exclude list and reallocate the extract list  */
   nbr_xcl=*nbr_xtr;
   *nbr_xtr=0;
   xcl_lst=(nm_id_sct *)nco_malloc(nbr_xcl*sizeof(nm_id_sct));
@@ -1318,7 +1318,7 @@ var_lst_xcl(int nc_id,int nbr_var,nm_id_sct *xtr_lst,int *nbr_xtr)
       if(idx == xcl_lst[lst_idx].id) break;
     } /* end loop over lst_idx */
     /* If the variable was not found in the exclusion list then 
-       add it to the new list. */ 
+       add it to the new list. */
     if(lst_idx == nbr_xcl){
       xtr_lst[*nbr_xtr].nm=(char *)strdup(var_nm);
       xtr_lst[*nbr_xtr].id=idx;
@@ -1326,14 +1326,14 @@ var_lst_xcl(int nc_id,int nbr_var,nm_id_sct *xtr_lst,int *nbr_xtr)
     } /* end if */
   } /* end loop over idx */
   
-  /* Free the memory for names in the exclude list before losing the pointers to the names */ 
-  /* NB: can't free the memory if the list points to names in argv[] */ 
+  /* Free the memory for names in the exclude list before losing the pointers to the names */
+  /* NB: can't free the memory if the list points to names in argv[] */
 /*  for(idx=0;idx<nbr_xcl;idx++) (void)free(xcl_lst[idx].nm);*/
   (void)free(xcl_lst);
   
   return xtr_lst;
   
-} /* end var_lst_xcl() */ 
+} /* end var_lst_xcl() */
 
 nm_id_sct *
 var_lst_add_crd(int nc_id,int nbr_var,int nbr_dim,nm_id_sct *xtr_lst,int *nbr_xtr)
@@ -1344,7 +1344,7 @@ var_lst_add_crd(int nc_id,int nbr_var,int nbr_dim,nm_id_sct *xtr_lst,int *nbr_xt
    nm_id_sct *xtr_lst: current extraction list (destroyed)
    int *nbr_xtr: I/O number of variables in current extraction list
    nm_id_sct var_lst_add_crd(): O extraction list
- */ 
+ */
 {
   /* Find all coordinates (dimensions which are also variables) and
      add them to the list if they are not already there. */
@@ -1369,9 +1369,9 @@ var_lst_add_crd(int nc_id,int nbr_var,int nbr_dim,nm_id_sct *xtr_lst,int *nbr_xt
 	if(crd_id == xtr_lst[lst_idx].id) break;
       } /* end loop over lst_idx */
       if(lst_idx == *nbr_xtr){
-	/* Coordinate is not already on the list, put it there. */ 
+	/* Coordinate is not already on the list, put it there. */
 	if(*nbr_xtr == 0) xtr_lst=(nm_id_sct *)nco_malloc((*nbr_xtr+1)*sizeof(nm_id_sct)); else xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));
-	/* According to the man page for realloc(), this should work even when xtr_lst == NULL */ 
+	/* According to the man page for realloc(), this should work even when xtr_lst == NULL */
 /*	xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));*/
 	xtr_lst[*nbr_xtr].nm=(char *)strdup(crd_nm);
 	xtr_lst[*nbr_xtr].id=crd_id;
@@ -1382,7 +1382,7 @@ var_lst_add_crd(int nc_id,int nbr_var,int nbr_dim,nm_id_sct *xtr_lst,int *nbr_xt
   
   return xtr_lst;
   
-} /* end var_lst_add_crd() */ 
+} /* end var_lst_add_crd() */
 
 lmt_sct
 lmt_sct_mk(int nc_id,int dmn_id,lmt_sct *lmt,int lmt_nbr,bool FORTRAN_STYLE)
@@ -1393,10 +1393,10 @@ lmt_sct_mk(int nc_id,int dmn_id,lmt_sct *lmt,int lmt_nbr,bool FORTRAN_STYLE)
    int lmt_nbr: I [nbr] Number of limit structures in limit structure array
    bool FORTRAN_STYLE: I [flg] switch to determine syntactical interpretation of dimensional indices
    lmt_sct lmt_sct_mk(): O [sct] Limit structure for dimension
- */ 
+ */
 {
   /* Purpose: Create stand-alone limit structure just for given dimension 
-     lmt_sct_mk() is called by ncra() to generate limit structure for record dimension */ 
+     lmt_sct_mk() is called by ncra() to generate limit structure for record dimension */
   
   int idx;
   int rcd; /* [rcd] Return code */
@@ -1411,7 +1411,7 @@ lmt_sct_mk(int nc_id,int dmn_id,lmt_sct *lmt,int lmt_nbr,bool FORTRAN_STYLE)
   lmt_dim.rec_skp_nsh_spf=0L; /* Number of records skipped in initial superfluous files */
 
   for(idx=0;idx<lmt_nbr;idx++){
-    /* Copy user-specified limits, if any */ 
+    /* Copy user-specified limits, if any */
     if(lmt[idx].id == dmn_id){
       lmt_dim.is_usr_spc_lmt=True; /* True if any part of limit is user-specified, else False */
       if(lmt[idx].max_sng == NULL){
@@ -1439,7 +1439,7 @@ lmt_sct_mk(int nc_id,int dmn_id,lmt_sct *lmt,int lmt_nbr,bool FORTRAN_STYLE)
     long cnt;
     int max_sng_sz;
     
-    /* Fill in limits with default parsing information */ 
+    /* Fill in limits with default parsing information */
     ncopts=0; 
     rcd=ncdiminq(nc_id,dmn_id,dmn_nm,&cnt);
     ncopts=NC_VERBOSE | NC_FATAL; 
@@ -1447,7 +1447,7 @@ lmt_sct_mk(int nc_id,int dmn_id,lmt_sct *lmt,int lmt_nbr,bool FORTRAN_STYLE)
     if(rcd == -1){
       (void)fprintf(stdout,"%s: ERROR attempting to find non-existent dimension with id = %d in lmt_sct_mk()\n",prg_nm_get(),dmn_id);
       exit(EXIT_FAILURE);
-    } /* end if */ 
+    } /* end if */
 
     lmt_dim.nm=(char *)strdup(dmn_nm);
     lmt_dim.srd_sng=NULL;
@@ -1466,7 +1466,7 @@ lmt_sct_mk(int nc_id,int dmn_id,lmt_sct *lmt,int lmt_nbr,bool FORTRAN_STYLE)
        arguments with strings as if they had been read from the keyboard.
        Another solution would be to add a flag to lmt_sct indicating whether this
        limit struct had been automatically generated and then act accordingly.
-    */ 
+    */
     /* Decrement cnt to C index value if necessary */
     if(!FORTRAN_STYLE) cnt--; 
     if(cnt < 0L){
@@ -1488,7 +1488,7 @@ lmt_sct_mk(int nc_id,int dmn_id,lmt_sct *lmt,int lmt_nbr,bool FORTRAN_STYLE)
   
   return lmt_dim;
   
-} /* end lmt_sct_mk() */ 
+} /* end lmt_sct_mk() */
 
 nm_id_sct *
 var_lst_crd_xcl(int nc_id,int dmn_id,nm_id_sct *xtr_lst,int *nbr_xtr)
@@ -1498,7 +1498,7 @@ var_lst_crd_xcl(int nc_id,int dmn_id,nm_id_sct *xtr_lst,int *nbr_xtr)
    nm_id_sct *xtr_lst: current extraction list (destroyed)
    int *nbr_xtr: I/O number of variables in current extraction list
    nm_id_sct var_lst_crd_xcl(): O extraction list
- */ 
+ */
 {
   /* The following code modifies the extraction list to exclude the coordinate, 
      if any, associated with the given dimension ID */
@@ -1508,14 +1508,14 @@ var_lst_crd_xcl(int nc_id,int dmn_id,nm_id_sct *xtr_lst,int *nbr_xtr)
   int idx;
   int crd_id=-1;
   
-  /* What is the variable ID of the record coordinate, if any? */ 
+  /* What is the variable ID of the record coordinate, if any? */
   (void)ncdiminq(nc_id,dmn_id,crd_nm,(long *)NULL);
   ncopts=0; 
   crd_id=ncvarid(nc_id,crd_nm);
   ncopts=NC_VERBOSE | NC_FATAL; 
   
   if(crd_id != -1){
-    /* Is the coordinate on the extraction list? */ 
+    /* Is the coordinate on the extraction list? */
     for(idx=0;idx<*nbr_xtr;idx++){
       if(xtr_lst[idx].id == crd_id) break;
     } /* end loop over idx */
@@ -1523,12 +1523,12 @@ var_lst_crd_xcl(int nc_id,int dmn_id,nm_id_sct *xtr_lst,int *nbr_xtr)
       nm_id_sct *var_lst_tmp;
       
       var_lst_tmp=(nm_id_sct *)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
-      /* Copy the extract list to the temporary extract list and reallocate the extract list */ 
+      /* Copy the extract list to the temporary extract list and reallocate the extract list */
       (void)memcpy((void *)var_lst_tmp,(void *)xtr_lst,*nbr_xtr*sizeof(nm_id_sct));
       (*nbr_xtr)--;
       xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,*nbr_xtr*sizeof(nm_id_sct));
       /* Collapse the temporary extract list into the permanent list by copying 
-	 all but the coordinate. NB: the ordering of the list is conserved. */ 
+	 all but the coordinate. NB: the ordering of the list is conserved. */
       (void)memcpy((void *)xtr_lst,(void *)var_lst_tmp,idx*sizeof(nm_id_sct));
       (void)memcpy((void *)(xtr_lst+idx),(void *)(var_lst_tmp+idx+1),(*nbr_xtr-idx)*sizeof(nm_id_sct));
       /* Free the memory for coordinate name in the extract list before losing the pointer */
@@ -1539,7 +1539,7 @@ var_lst_crd_xcl(int nc_id,int dmn_id,nm_id_sct *xtr_lst,int *nbr_xtr)
   
   return xtr_lst;
   
-} /* end var_lst_crd_xcl() */ 
+} /* end var_lst_crd_xcl() */
 
 nm_id_sct *
 var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
@@ -1548,11 +1548,11 @@ var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
    nm_id_sct *xtr_lst: I/O current extraction list (destroyed)
    int *nbr_xtr: I/O number of variables in current extraction list
    nm_id_sct var_lst_ass_crd_add(): O extraction list
- */ 
+ */
 {
   /* Makes sure all coordinates associated with each of the variables
      to be extracted is also on the list. This helps with making concise
-     nco_malloc() calls down the road. */ 
+     nco_malloc() calls down the road. */
 
   char dmn_nm[MAX_NC_NAME];
 
@@ -1567,20 +1567,20 @@ var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
   /* Get the number of dimensions */
   (void)ncinquire(nc_id,&nbr_dim,(int *)NULL,(int *)NULL,(int *)NULL);
 
-  /* ...for each dimension in the input file... */ 
+  /* ...for each dimension in the input file... */
   for(idx_dim=0;idx_dim<nbr_dim;idx_dim++){
-    /* ...see if it is a coordinate dimension... */ 
+    /* ...see if it is a coordinate dimension... */
     (void)ncdiminq(nc_id,idx_dim,dmn_nm,(long *)NULL);
     ncopts=0; 
     crd_id=ncvarid(nc_id,dmn_nm);
     ncopts=NC_VERBOSE | NC_FATAL; 
     if(crd_id != -1){
-      /* Is this coordinate already on the extraction list? */ 
+      /* Is this coordinate already on the extraction list? */
       for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
 	if(crd_id == xtr_lst[idx_var].id) break;
       } /* end loop over idx_var */
       if(idx_var == *nbr_xtr){
-	/* ...the coordinate is not on the list, is it associated with any of the variables?... */ 
+	/* ...the coordinate is not on the list, is it associated with any of the variables?... */
 	for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
 	  /* Get number of dimensions and the dimension IDs for the variable. */
 	  (void)ncvarinq(nc_id,xtr_lst[idx_var].id,(char *)NULL,(nc_type *)NULL,&nbr_var_dim,dmn_id,(int *)NULL);
@@ -1588,21 +1588,21 @@ var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 	    if(idx_dim == dmn_id[idx_var_dim]) break;
 	  } /* end loop over idx_var_dim */
 	  if(idx_var_dim != nbr_var_dim){
-	    /* Add the coordinate to the list */ 
+	    /* Add the coordinate to the list */
 	    xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));
 	    xtr_lst[*nbr_xtr].nm=(char *)strdup(dmn_nm);
 	    xtr_lst[*nbr_xtr].id=crd_id;
 	    (*nbr_xtr)++;
 	    break;
-	  } /* end if */ 
+	  } /* end if */
 	} /* end loop over idx_var */
       } /* end if coordinate was not already on the list */
-    } /* end if dimension is a coordinate */ 
+    } /* end if dimension is a coordinate */
   } /* end loop over idx_dim */
   
   return xtr_lst;
   
-} /* end var_lst_ass_crd_add() */ 
+} /* end var_lst_ass_crd_add() */
 
 nm_id_sct *
 lst_heapsort(nm_id_sct *lst,int nbr_lst,bool ALPHABETIZE_OUTPUT)
@@ -1611,7 +1611,7 @@ lst_heapsort(nm_id_sct *lst,int nbr_lst,bool ALPHABETIZE_OUTPUT)
 	int nbr_lst: I number of members in list
 	bool ALPHABETIZE_OUTPUT): whether to alphabetize extraction list
 	nm_id_sct lst_heapsort(): O list
-     */ 
+     */
 {
   int *srt_idx; /* List to store sorted key map */
   int idx; /* Counting index */
@@ -1621,16 +1621,16 @@ lst_heapsort(nm_id_sct *lst,int nbr_lst,bool ALPHABETIZE_OUTPUT)
   lst_tmp=(nm_id_sct *)nco_malloc(nbr_lst*sizeof(nm_id_sct));
   (void)memcpy((void *)lst_tmp,(void *)lst,nbr_lst*sizeof(nm_id_sct));
   
-  /* NB: indexx employs "one-based" arrays */ 
+  /* NB: indexx employs "one-based" arrays */
   if(ALPHABETIZE_OUTPUT){
-    /* Alphabetize list by variable name. Easiest to read */ 
+    /* Alphabetize list by variable name. Easiest to read */
     char **xtr_nm;
     xtr_nm=(char **)nco_malloc(nbr_lst*sizeof(char *));
     for(idx=0;idx<nbr_lst;idx++) xtr_nm[idx]=lst[idx].nm;
     (void)index_alpha(nbr_lst,xtr_nm-1,srt_idx-1);
     (void)free(xtr_nm);
   }else{
-    /* Heapsort the list by ID. Fastest I/O */ 
+    /* Heapsort the list by ID. Fastest I/O */
     int *xtr_id;
     xtr_id=(int *)nco_malloc(nbr_lst*sizeof(int));
     for(idx=0;idx<nbr_lst;idx++) xtr_id[idx]=lst[idx].id;
@@ -1638,7 +1638,7 @@ lst_heapsort(nm_id_sct *lst,int nbr_lst,bool ALPHABETIZE_OUTPUT)
     (void)free(xtr_id);
   } /* end else */
 
-  /* NB: indexx employs "one-based" arrays */ 
+  /* NB: indexx employs "one-based" arrays */
   for(idx=0;idx<nbr_lst;idx++){
     lst[idx].id=lst_tmp[srt_idx[idx]-1].id;
     lst[idx].nm=lst_tmp[srt_idx[idx]-1].nm;
@@ -1648,7 +1648,7 @@ lst_heapsort(nm_id_sct *lst,int nbr_lst,bool ALPHABETIZE_OUTPUT)
   
   return lst;
   
-} /* end lst_heapsort() */ 
+} /* end lst_heapsort() */
 
 char *
 fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
@@ -1658,11 +1658,11 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
    bool FORCE_OVERWRITE: I Flag for overwriting existing file, if any
    int *nc_id: O File ID
    char *fl_out_open(): O Name of temporary file actually opened
- */ 
+ */
 {
   /* Open output file subject to availability and user input 
      In accord with netCDF philosophy a temporary file (based on fl_out and process ID)
-     is actually opened, so that errors can not infect intended output file */ 
+     is actually opened, so that errors can not infect intended output file */
 
   char *fl_out_tmp;
   char tmp_sng_1[]="pid"; /* Extra string appended to temporary filenames */
@@ -1705,7 +1705,7 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
   if(dbg_lvl_get() > 5) (void)fprintf(stdout,"%s: fl_out_open() reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",prg_nm_get(),(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);
   rcd=stat(fl_out_tmp,&stat_sct);
 
-  /* Free temporary memory */ 
+  /* Free temporary memory */
   (void)free(pid_sng);
 
   if(dbg_lvl_get() == 8){
@@ -1741,7 +1741,7 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
 
   if(False){
     if(prg_get() == ncrename){
-      /* ncrename is different because a single filename is allowed without question */ 
+      /* ncrename is different because a single filename is allowed without question */
       /* Incur expense of copying current file to temporary file */
       (void)fl_cp(fl_out,fl_out_tmp);
       *out_id=ncopen(fl_out_tmp,NC_WRITE); 
@@ -1770,15 +1770,15 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
       if(nbr_itr > 10){
 	(void)fprintf(stdout,"\n%s: ERROR %hd failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),nbr_itr-1);
 	exit(EXIT_FAILURE);
-      }; /* end if */ 
+      }; /* end if */
       if(nbr_itr > 1) (void)fprintf(stdout,"%s: ERROR Invalid response.\n",prg_nm_get());
       (void)fprintf(stdout,"%s: %s exists---`o'verwrite, `a'ppend/replace, or `e'xit (o/a/e)? ",prg_nm_get(),fl_out);
       (void)fflush(stdout);
       usr_reply=(char)fgetc(stdin);
-      /* Allow one carriage return per response free of charge */ 
+      /* Allow one carriage return per response free of charge */
       if(usr_reply == '\n') usr_reply=(char)fgetc(stdin);
       (void)fflush(stdin);
-    } /* end while */ 
+    } /* end while */
     
     switch(usr_reply){
     case 'e':
@@ -1796,14 +1796,14 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
       break;
     } /* end switch */
     
-  }else{ /* output file does not yet already exist */ 
+  }else{ /* output file does not yet already exist */
     *out_id=nccreate(fl_out_tmp,NC_NOCLOBBER);
     /*    rcd=nc_create(fl_out_tmp,NC_NOCLOBBER|NC_SHARE,out_id);*/
   } /* end if output file does not already exist */
   
   return fl_out_tmp;
   
-} /* end fl_out_open() */ 
+} /* end fl_out_open() */
 
 void
 fl_out_cls(char *fl_out,char *fl_out_tmp,int nc_id)
@@ -1811,20 +1811,20 @@ fl_out_cls(char *fl_out,char *fl_out_tmp,int nc_id)
    char *fl_out: I name of permanent output file
    char *fl_out_tmp: I name of temporary output file to close and move to permanent output file
    int nc_id: I file ID of fl_out_tmp
- */ 
+ */
 {
-  /* Routine to close the temporary output file and move it to the permanent output file */ 
+  /* Routine to close the temporary output file and move it to the permanent output file */
   int rcd; /* [rcd] Return code */
 
   rcd=ncclose(nc_id);
   if(rcd == -1){
     (void)fprintf(stdout,"%s: ERROR fl_out_cls() is unable to ncclose() file %s\n",prg_nm_get(),fl_out_tmp);
     exit(EXIT_FAILURE); 
-  } /* end if */ 
+  } /* end if */
   
   (void)fl_mv(fl_out_tmp,fl_out);
 
-} /* end fl_out_cls() */ 
+} /* end fl_out_cls() */
 
 void
 fl_cmp_err_chk()
@@ -1838,7 +1838,7 @@ fl_cmp_err_chk()
      and as (lat,lon)=(64,128) in another file, and a hyperslab valid in both files
      is specified, then an error will occur. */
   
-} /* end fl_cmp_err_chk() */ 
+} /* end fl_cmp_err_chk() */
 
 void
 var_val_cpy(int in_id,int out_id,var_sct **var,int nbr_var)
@@ -1851,7 +1851,7 @@ var_val_cpy(int in_id,int out_id,var_sct **var,int nbr_var)
 */
 {
   /* Copy the variable data for every variable in the input variable structure list
-     from the input file to the output file */ 
+     from the input file to the output file */
 
   int idx;
 
@@ -1860,14 +1860,14 @@ var_val_cpy(int in_id,int out_id,var_sct **var,int nbr_var)
     if(var[idx]->nbr_dim==0){
       ncvarget1(in_id,var[idx]->id,var[idx]->srt,var[idx]->val.vp);
       ncvarput1(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->val.vp);
-    }else{ /* end if variable is a scalar */ 
+    }else{ /* end if variable is a scalar */
       ncvarget(in_id,var[idx]->id,var[idx]->srt,var[idx]->cnt,var[idx]->val.vp);
       ncvarput(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->val.vp);
-    } /* end if variable is an array */ 
+    } /* end if variable is an array */
     (void)free(var[idx]->val.vp); var[idx]->xrf->val.vp=var[idx]->val.vp=NULL;
   } /* end loop over idx */
 
-} /* end var_val_cpy() */ 
+} /* end var_val_cpy() */
 
 void
 dmn_def(char *fl_nm,int nc_id,dmn_sct **dim,int nbr_dim)
@@ -1882,7 +1882,7 @@ dmn_def(char *fl_nm,int nc_id,dmn_sct **dim,int nbr_dim)
 
   for(idx=0;idx<nbr_dim;idx++){
 
-    /* See if the dimension has already been defined */ 
+    /* See if the dimension has already been defined */
     ncopts=0; 
     dim[idx]->id=ncdimid(nc_id,dim[idx]->nm);
     ncopts=NC_VERBOSE | NC_FATAL; 
@@ -1899,7 +1899,7 @@ dmn_def(char *fl_nm,int nc_id,dmn_sct **dim,int nbr_dim)
     } /* end if */
   } /* end loop over idx */
   
-} /* end dmn_def() */ 
+} /* end dmn_def() */
 
 void 
 var_copy(nc_type var_typ,long sz,ptr_unn op1,ptr_unn op2)
@@ -1921,7 +1921,7 @@ var_def(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
    int nbr_dmn_ncl: I number of dimension structures in structure list
 */
 {
-  /* Define variables in output file, and copy their attributes */ 
+  /* Define variables in output file, and copy their attributes */
 
   /* This function is unusual (for me) in that the dimension arguments are only intended
      to be used by certain programs, those that alter the rank of input variables. If a
@@ -1945,14 +1945,14 @@ var_def(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
     /* If the variable has not been defined, define it */
     if(var[idx]->id == -1){
       
-      /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of ouput dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dmn_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, var_def() was designed to call the simple branch when dmn_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in the output file, nbr_dmn_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */ 
+      /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of ouput dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dmn_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, var_def() was designed to call the simple branch when dmn_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in the output file, nbr_dmn_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */
       if(dmn_ncl != NULL || prg_get() == ncwa){
 	int nbr_var_dim=0;
 	int idx_ncl;
 
-	/* The rank of the output variable may have to be reduced. */ 
+	/* The rank of the output variable may have to be reduced. */
 	for(idx_dim=0;idx_dim<var[idx]->nbr_dim;idx_dim++){
-	  /* Is this dimension allowed in the output file? */ 
+	  /* Is this dimension allowed in the output file? */
 	  for(idx_ncl=0;idx_ncl<nbr_dmn_ncl;idx_ncl++){
 	    if(var[idx]->xrf->dim[idx_dim]->id == dmn_ncl[idx_ncl]->xrf->id) break;
 	  } /* end loop over idx_ncl */
@@ -1960,7 +1960,7 @@ var_def(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
 	} /* end loop over idx_dim */
 	var[idx]->id=ncvardef(out_id,var[idx]->nm,var[idx]->type,nbr_var_dim,dmn_id_vec);
 
-      }else{ /* Straightforward definition */ 
+      }else{ /* Straightforward definition */
 	for(idx_dim=0;idx_dim<var[idx]->nbr_dim;idx_dim++){
 	  dmn_id_vec[idx_dim]=var[idx]->dim[idx_dim]->id;
 	} /* end loop over idx_dim */
@@ -1971,22 +1971,22 @@ var_def(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
       (void)fprintf(stderr,"%s: WARNING Using existing definition of variable \"%s\" in %s\n",prg_nm_get(),var[idx]->nm,fl_out);
     } /* end if */
 
-    /* NB: var actually refers to the output variable sct, so var->xrf references the input var. sct */ 
+    /* NB: var actually refers to the output variable sct, so var->xrf references the input var. sct */
     (void)att_cpy(in_id,out_id,var[idx]->xrf->id,var[idx]->id);
   } /* end loop over idx */
   
-} /* end var_def() */ 
+} /* end var_def() */
 
 void 
 hst_att_cat(int out_id,char *hst_sng)
 /* 
    int out_id: I netCDF output-file ID
    char *hst_sng: I string to add to history attribute
-*/ 
+*/
 {
 
 /* Routine to add command line and a date stamp to existing history attribute, if any,
-   and write them to the specified output file */ 
+   and write them to the specified output file */
 
   char att_nm[MAX_NC_NAME];
   char *ctime_sng;
@@ -2002,10 +2002,10 @@ hst_att_cat(int out_id,char *hst_sng)
   
   time_t clock;
 
-  /* Create timestamp string */ 
+  /* Create timestamp string */
   clock=time((time_t *)NULL);
   ctime_sng=ctime(&clock);
-  /* Get rid of carriage return in ctime_sng */ 
+  /* Get rid of carriage return in ctime_sng */
   (void)strncpy(time_stamp_sng,ctime_sng,24);
   time_stamp_sng[24]='\0';
 
@@ -2021,16 +2021,16 @@ hst_att_cat(int out_id,char *hst_sng)
   if(idx == nbr_glb_att){
     /* history global attribute does not yet exist */
 
-    /* Add 3 for formatting characters */ 
+    /* Add 3 for formatting characters */
     history_new=(char *)nco_malloc((strlen(hst_sng)+strlen(time_stamp_sng)+3)*sizeof(char));
     (void)sprintf(history_new,"%s: %s",time_stamp_sng,hst_sng);
   }else{ 
     /* history global attribute currently exists */
   
-    /* NB: the ncattinq() call, unlike strlen(), counts the terminating NUL for stored NC_CHAR arrays */ 
+    /* NB: the ncattinq() call, unlike strlen(), counts the terminating NUL for stored NC_CHAR arrays */
     (void)ncattinq(out_id,NC_GLOBAL,"history",&att_typ,&att_sz);
     if(att_typ != NC_CHAR){
-      (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s. Therefore current command line will not be appended to %s in output file.\n",prg_nm_get(),att_nm,nc_type_nm(att_typ),nc_type_nm(NC_CHAR),att_nm);
+      (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s. Therefore current command line will not be appended to %s in output file.\n",prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),att_nm);
       return;
     } /* end if */
 
@@ -2044,7 +2044,7 @@ hst_att_cat(int out_id,char *hst_sng)
       history_crr[0]='\0';
     } /* end else */
 
-    /* Add 4 for formatting characters */ 
+    /* Add 4 for formatting characters */
     history_new=(char *)nco_malloc((strlen(history_crr)+strlen(hst_sng)+strlen(time_stamp_sng)+4)*sizeof(char));
     (void)sprintf(history_new,"%s: %s\n%s",time_stamp_sng,hst_sng,history_crr);
 
@@ -2055,7 +2055,7 @@ hst_att_cat(int out_id,char *hst_sng)
   if(history_crr != NULL) (void)free(history_crr);
   (void)free(history_new);
 
-} /* end hst_att_cat() */ 
+} /* end hst_att_cat() */
 
 nm_id_sct *
 dmn_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
@@ -2067,7 +2067,7 @@ dmn_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
    nm_id_sct *dmn_lst_ass_var(): O list of dimensions associated with input variable list
  */
 {
-  /* Routine to create a list of all the dimensions associated with the input variable list */ 
+  /* Routine to create a list of all the dimensions associated with the input variable list */
 
   bool dmn_has_been_placed_on_list;
 
@@ -2091,56 +2091,56 @@ dmn_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
   /* The number of input dimensions is an upper bound on the number of output dimensions */
   dim=(nm_id_sct *)nco_malloc(nbr_dmn_in*sizeof(nm_id_sct));
   
-  /* ...For each dimension in the file... */ 
+  /* ...For each dimension in the file... */
   for(idx_dmn_in=0;idx_dmn_in<nbr_dmn_in;idx_dmn_in++){
-    /* ...begin a search for the dimension in the dimension list by... */ 
+    /* ...begin a search for the dimension in the dimension list by... */
     dmn_has_been_placed_on_list=False;
-    /* ...looking through the set of output variables... */ 
+    /* ...looking through the set of output variables... */
     for(idx_var=0;idx_var<nbr_var;idx_var++){
-      /* ...and search each dimension of the output variable... */ 
+      /* ...and search each dimension of the output variable... */
       (void)ncvarinq(nc_id,var[idx_var].id,(char *)NULL,(nc_type *)NULL,&nbr_var_dim,dmn_id,(int *)NULL);
       for(idx_var_dim=0;idx_var_dim<nbr_var_dim;idx_var_dim++){
-	/* ...until an output variable is found which contains the input dimension... */ 
+	/* ...until an output variable is found which contains the input dimension... */
 	if(idx_dmn_in == dmn_id[idx_var_dim]){
-	  /* ...then search each member of the output dimension list... */ 
+	  /* ...then search each member of the output dimension list... */
 	  for(idx_dmn_lst=0;idx_dmn_lst<*nbr_dim;idx_dmn_lst++){
-	    /* ...until the input dimension is found... */ 
-	    if(idx_dmn_in == dim[idx_dmn_lst].id) break; /* ...then search no further... */ 
+	    /* ...until the input dimension is found... */
+	    if(idx_dmn_in == dim[idx_dmn_lst].id) break; /* ...then search no further... */
 	  } /* end loop over idx_dmn_lst */
-	  /* ...and if the dimension was not found on the output dimension list... */ 
+	  /* ...and if the dimension was not found on the output dimension list... */
 	  if(idx_dmn_lst == *nbr_dim){
-	    /* ...then add the dimension to the output dimension list... */ 
+	    /* ...then add the dimension to the output dimension list... */
 	    (void)ncdiminq(nc_id,idx_dmn_in,dmn_nm,(long *)NULL);
 	    dim[*nbr_dim].id=idx_dmn_in;
 	    dim[*nbr_dim].nm=(char *)strdup(dmn_nm);
 	    (*nbr_dim)++;
 	  } /* end if dimension was not found in current output dimension list*/
-	  /* ...call off the dogs for this input dimension... */ 
+	  /* ...call off the dogs for this input dimension... */
 	  dmn_has_been_placed_on_list=True;
 	} /* end if input dimension belongs to this output variable */
-	if(dmn_has_been_placed_on_list) break; /* break out of idx_var_dim to idx_var */ 
+	if(dmn_has_been_placed_on_list) break; /* break out of idx_var_dim to idx_var */
       } /* end loop over idx_var_dim */
-      if(dmn_has_been_placed_on_list) break; /* break out of idx_var to idx_dmn_in */ 
+      if(dmn_has_been_placed_on_list) break; /* break out of idx_var to idx_dmn_in */
     } /* end loop over idx_var */
   } /* end loop over idx_dmn_in */
   
   /* We now have the final list of dimensions to extract. Phew. */
   
-  /* Free unused space in output dimension list */ 
+  /* Free unused space in output dimension list */
   dim=(nm_id_sct *)nco_realloc((void *)dim,*nbr_dim*sizeof(nm_id_sct));
   
   return dim;
 
-} /* end dmn_lst_ass_var() */ 
+} /* end dmn_lst_ass_var() */
 
 void
 var_srt_zero(var_sct **var,int nbr_var)
 /* 
    var_sct **var: I list of pointers to variable structures whose srt elements will be zeroed
    int nbr_var: I number of structures in variable structure list
- */ 
+ */
 {
-  /* Routine to point srt element of variable structure to array of zeroes */ 
+  /* Routine to point srt element of variable structure to array of zeroes */
 
   int idx;
   int idx_dim;
@@ -2149,16 +2149,16 @@ var_srt_zero(var_sct **var,int nbr_var)
     for(idx_dim=0;idx_dim<var[idx]->nbr_dim;idx_dim++)
       var[idx]->srt[idx_dim]=0L;
 
-} /* end var_srt_zero() */ 
+} /* end var_srt_zero() */
 
 var_sct *
 var_dup(var_sct *var)
 /* 
    var_sct *var: I variable structure to duplicate
    var_sct *var_dup(): O copy of input variable structure
- */ 
+ */
 {
-  /* Purpose: nco_malloc() and return duplicate of input var_sct */ 
+  /* Purpose: nco_malloc() and return duplicate of input var_sct */
 
   var_sct *var_dup;
 
@@ -2166,12 +2166,12 @@ var_dup(var_sct *var)
 
   (void)memcpy((void *)var_dup,(void *)var,sizeof(var_sct));
 
-  /* Copy all dyamically allocated arrays currently defined in original */ 
+  /* Copy all dyamically allocated arrays currently defined in original */
   if(var->val.vp != NULL){
     if((var_dup->val.vp=(void *)malloc(var_dup->sz*nctypelen(var_dup->type))) == NULL){
       (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for value buffer for variable %s in var_dup()\n",prg_nm_get(),var_dup->sz,nctypelen(var_dup->type),var_dup->nm);
       exit(EXIT_FAILURE); 
-    } /* end if */ 
+    } /* end if */
     (void)memcpy((void *)(var_dup->val.vp),(void *)(var->val.vp),var_dup->sz*nctypelen(var_dup->type));
   } /* end if */
   if(var->mss_val.vp != NULL){
@@ -2182,7 +2182,7 @@ var_dup(var_sct *var)
     if((var_dup->tally=(long *)malloc(var_dup->sz*sizeof(long))) == NULL){
       (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in var_dup()\n",prg_nm_get(),var_dup->sz,(long)sizeof(long),var_dup->nm);
       exit(EXIT_FAILURE); 
-    } /* end if */ 
+    } /* end if */
     (void)memcpy((void *)(var_dup->tally),(void *)(var->tally),var_dup->sz*sizeof(long));
   } /* end if */
   if(var->dim != NULL){
@@ -2208,16 +2208,16 @@ var_dup(var_sct *var)
 
   return var_dup;
 
-} /* end var_dup() */ 
+} /* end var_dup() */
 
 dmn_sct *
 dmn_dup(dmn_sct *dim)
 /* 
    dmn_sct *dim: I dimension structure to duplicate
    dmn_sct *dmn_dup(): O copy of input dimension structure
- */ 
+ */
 {
-  /* Purpose: nco_malloc() and return a duplicate of input dmn_sct */ 
+  /* Purpose: nco_malloc() and return a duplicate of input dmn_sct */
 
   dmn_sct *dmn_dup;
 
@@ -2227,30 +2227,33 @@ dmn_dup(dmn_sct *dim)
 
   return dmn_dup;
 
-} /* end dmn_dup() */ 
+} /* end dmn_dup() */
 
 void
 var_get(int nc_id,var_sct *var)
 /* 
    int nc_id: I netCDF file ID
    var_sct *var: I pointer to variable structure
- */ 
+ */
 {
   /* Purpose: Allocate and retrieve given variable hyperslab from disk into memory */
 
   /* This is probably where scale_factor and add_offset unpacking should be done */
 
-  if((var->val.vp=(void *)malloc(var->sz*nctypelen(var->type))) == NULL){
+  if((var->val.vp=(void *)malloc(var->sz*nctypelen(var->typ_dsk))) == NULL){
     (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes in var_get()\n",prg_nm_get(),var->sz,nctypelen(var->type));
     exit(EXIT_FAILURE); 
-  } /* end if */ 
+  } /* end if */
   if(var->sz > 1){
     (void)ncvarget(nc_id,var->id,var->srt,var->cnt,var->val.vp);
   }else{
     (void)ncvarget1(nc_id,var->id,var->srt,var->val.vp);
   } /* end else */
+
+  /* Type in memory is now same as type on disk */
+  var->type=var->typ_dsk; /* Type of variable in RAM */
   
-} /* end var_get() */ 
+} /* end var_get() */
 
 var_sct *
 var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,bool *DO_CONFORM)
@@ -2275,15 +2278,15 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
      MUST_CONFORM is True for ncdiff: Variables of like name to be differenced must be same rank
      MUST_CONFORM is False false for ncap, ncflint, ncwa: Variables to be averaged may 
      
-     */ 
+     */
 
-  /* There are many inelegant ways to accomplish this (without using C++): */   
+  /* There are many inelegant ways to accomplish this (without using C++): */  
 
   /* Perhaps the most efficient method to accomplish this for the general case is to expand the
      weight array until it's the same size as the variable array, and then multiply the two
      together element-by-element in a highly vectorized loop, preferably in fortran. 
      To enhance speed, the (enlarged) weight-values array can be made static, and only destroyed 
-     (and then recreated) when the dimensions of one of the incoming variables change. */ 
+     (and then recreated) when the dimensions of one of the incoming variables change. */
 
   /* Another method for the general case, though an expensive one, is to use C to 
      figure out the multidimensional indices into the one dimensional hyperslab, 
@@ -2291,7 +2294,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
      element by element, choosing the appropriate index into the weight array from 
      those same multidimensional indices. This method can also create a static weight-value
      array that is only destroyed when an incoming variable changes dimensions from the
-     previous variable. */ 
+     previous variable. */
 
   /* Yet another method, which is not completely general, but which may be good enough for
      governement work, is to create fortran subroutines which expect variables of a given
@@ -2299,69 +2302,69 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
      satisfy all foreseeable situations. The branch as to which function to call would be
      done based on the number of dimensions, here in the C code. C++ function overloading
      could accomplish some of this interface more elegantly than fortran, probably at a
-     sacrifice in performance. */ 
+     sacrifice in performance. */
 
   /* An (untested) simplification to some of these methods would be to copy the 1-D array
      value pointer of the variable and cast it to an N-D array pointer. Then C should be
      able to handle the indexing for me. This method could speed development of a working,
      but non-general, code, and later be replaced by a general method. Still, implementation
      of this method would require ugly branches or hard-to-understand recursive function
-     calls. */ 
+     calls. */
   
   /* Routine assumes, WLOG, that the weight will never have more dimensions than the variable
      (otherwise which hyperslab of the weight to use would be ill-defined). However, the
      weight may (and often will) have fewer dimensions than the variable. */
 
-  bool CONFORMABLE=False; /* Whether wgt can be made to conform to var */ 
-  bool USE_DUMMY_WGT=False; /* Whether to fool NCO into thinking wgt conforms to var */ 
+  bool CONFORMABLE=False; /* Whether wgt can be made to conform to var */
+  bool USE_DUMMY_WGT=False; /* Whether to fool NCO into thinking wgt conforms to var */
 
   int idx;
   int idx_dim;
-  int wgt_var_dmn_shr_nbr=0; /* Number of dimensions shared by wgt and var */ 
+  int wgt_var_dmn_shr_nbr=0; /* Number of dimensions shared by wgt and var */
 
   var_sct *wgt_out=NULL;
 
   /* Initialize flag to false to be overwritten by true */
   *DO_CONFORM=False;
   
-  /* Does the current weight (wgt_crr) conform to the variable's dimensions? */ 
+  /* Does the current weight (wgt_crr) conform to the variable's dimensions? */
   if(wgt_crr != NULL){
     /* Test rank first because wgt_crr because of 19960218 bug (invalid dmn_id in old wgt_crr leads to match) */
     if(var->nbr_dim == wgt_crr->nbr_dim){
-      /* Test whether all wgt and var dimensions match in sequence */ 
+      /* Test whether all wgt and var dimensions match in sequence */
       for(idx=0;idx<var->nbr_dim;idx++){
 	/*	if(wgt_crr->dmn_id[idx] != var->dmn_id[idx]) break;*/
 	if(!strstr(wgt_crr->dim[idx]->nm,var->dim[idx]->nm)) break;
       } /* end loop over dimensions */
       if(idx == var->nbr_dim) *DO_CONFORM=True;
-    } /* end if */ 
+    } /* end if */
     if(*DO_CONFORM){
       wgt_out=wgt_crr;
     }else{
       wgt_crr=var_free(wgt_crr);
       wgt_out=NULL;
-    } /* end if */ 
+    } /* end if */
   } /* end if */
 
-  /* Does original weight (wgt) conform to variable's dimensions? */ 
+  /* Does original weight (wgt) conform to variable's dimensions? */
   if(wgt_out == NULL){
     if(var->nbr_dim > 0){
-      /* Test that all dimensions in wgt appear in var */ 
+      /* Test that all dimensions in wgt appear in var */
       for(idx=0;idx<wgt->nbr_dim;idx++){
         for(idx_dim=0;idx_dim<var->nbr_dim;idx_dim++){
 	  /* Compare names, not dimension IDs */
 	  if(strstr(wgt->dim[idx]->nm,var->dim[idx_dim]->nm)){
-	    wgt_var_dmn_shr_nbr++; /* wgt and var share this dimension */ 
+	    wgt_var_dmn_shr_nbr++; /* wgt and var share this dimension */
 	    break;
-	  } /* endif */ 
+	  } /* endif */
         } /* end loop over var dimensions */
       } /* end loop over wgt dimensions */
-      /* Decide whether wgt and var dimensions conform, are mutually exclusive, or are partially exclusive (an error) */  
+      /* Decide whether wgt and var dimensions conform, are mutually exclusive, or are partially exclusive (an error) */ 
       if(wgt_var_dmn_shr_nbr == wgt->nbr_dim){
-	/* wgt and var conform */ 
+	/* wgt and var conform */
 	CONFORMABLE=True;
       }else if(wgt_var_dmn_shr_nbr == 0){
-	/* Dimensions in wgt and var are mutually exclusive */ 
+	/* Dimensions in wgt and var are mutually exclusive */
 	CONFORMABLE=False;
 	if(MUST_CONFORM){
 	  (void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",prg_nm_get(),wgt->nm,var->nm);
@@ -2369,9 +2372,9 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 	}else{
 	  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %s and template %s share no dimensions: Not broadcasting %s to %s\n",prg_nm_get(),wgt->nm,var->nm,wgt->nm,var->nm);
 	  USE_DUMMY_WGT=True;
-	} /* endif */ 
+	} /* endif */
       }else if(wgt->nbr_dim > var->nbr_dim){
-	/* wgt is larger rank than var---no possibility of conforming */ 
+	/* wgt is larger rank than var---no possibility of conforming */
 	CONFORMABLE=False;
 	if(MUST_CONFORM){
 	  (void)fprintf(stdout,"%s: ERROR %s is rank %d but template %s is rank %d: Impossible to broadcast\n",prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim);
@@ -2379,9 +2382,9 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 	}else{
 	  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %s is rank %d but template %s is rank %d: Not broadcasting %s to %s\n",prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim,wgt->nm,var->nm);
 	  USE_DUMMY_WGT=True;
-	} /* endif */ 
+	} /* endif */
       }else if(wgt_var_dmn_shr_nbr > 0 && wgt_var_dmn_shr_nbr < wgt->nbr_dim){
-	/* Some, but not all, of wgt dimensions are in var */ 
+	/* Some, but not all, of wgt dimensions are in var */
 	CONFORMABLE=False;
 	if(MUST_CONFORM){
 	  (void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",prg_nm_get(),wgt_var_dmn_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dmn_shr_nbr);
@@ -2389,42 +2392,42 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 	}else{
 	  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s\n",prg_nm_get(),wgt_var_dmn_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dmn_shr_nbr,wgt->nm,var->nm);
 	  USE_DUMMY_WGT=True;
-	} /* endif */ 
+	} /* endif */
       } /* end if */
       if(USE_DUMMY_WGT){
-	/* Variables do not truly conform, but this might be OK, depending on the application, so set the conform flag to false and ... */ 
+	/* Variables do not truly conform, but this might be OK, depending on the application, so set the conform flag to false and ... */
 	*DO_CONFORM=False;
-	/* ... return a dummy weight of 1.0, which allows program logic to pretend variable is weighted, but does not change answers */  
+	/* ... return a dummy weight of 1.0, which allows program logic to pretend variable is weighted, but does not change answers */ 
 	wgt_out=var_dup(var);
 	(void)vec_set(wgt_out->type,wgt_out->sz,wgt_out->val,1.0);
       } /* endif */
       if(CONFORMABLE){
 	if(var->nbr_dim == wgt->nbr_dim){
 	  /* var and wgt conform and are same rank */
-	  /* Test whether all wgt and var dimensions match in sequence */ 
+	  /* Test whether all wgt and var dimensions match in sequence */
 	  for(idx=0;idx<var->nbr_dim;idx++){
 	    if(!strstr(wgt->dim[idx]->nm,var->dim[idx]->nm)) break;
 	       /*	    if(wgt->dmn_id[idx] != var->dmn_id[idx]) break;*/
 	  } /* end loop over dimensions */
-	  /* If so, take shortcut and copy wgt to wgt_out */ 
+	  /* If so, take shortcut and copy wgt to wgt_out */
 	  if(idx == var->nbr_dim) *DO_CONFORM=True;
 	}else{
 	  /* var and wgt conform but are not same rank, set flag to proceed to generic conform routine */
 	  *DO_CONFORM=False;
-	} /* end else */ 
-      } /* endif CONFORMABLE */ 
+	} /* end else */
+      } /* endif CONFORMABLE */
     }else{
-      /* var is scalar, if wgt is too then set flag to copy wgt to wgt_out else proceed to generic conform routine */ 
+      /* var is scalar, if wgt is too then set flag to copy wgt to wgt_out else proceed to generic conform routine */
       if(wgt->nbr_dim == 0) *DO_CONFORM=True; else *DO_CONFORM=False;
     } /* end else */
     if(CONFORMABLE && *DO_CONFORM){
       wgt_out=var_dup(wgt);
       (void)var_xrf(wgt,wgt_out);
-    } /* end if */ 
+    } /* end if */
   } /* end if */
 
   if(wgt_out == NULL){
-    /* Expand original weight (wgt) to match size of current variable */ 
+    /* Expand original weight (wgt) to match size of current variable */
     char *wgt_cp;
     char *wgt_out_cp;
 
@@ -2442,7 +2445,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
     long wgt_lmn;
     long var_sz;
 
-    /* Copy main attributes of variable into current weight */ 
+    /* Copy main attributes of variable into current weight */
     wgt_out=var_dup(var);
     (void)var_xrf(wgt,wgt_out);
 
@@ -2492,7 +2495,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 	    idx_var_wgt[idx_dim]=idx;
 	    break;
 	  } /* end if */
-	  /* Sanity check */ 
+	  /* Sanity check */
 	  if(idx_dim == var->nbr_dim-1){
 	    (void)fprintf(stdout,"%s: ERROR wgt %s has dimension %s but var %s does not deep in var_conform_dim()\n",prg_nm_get(),wgt->nm,wgt->dim[idx]->nm,var->nm);
 	    exit(EXIT_FAILURE);
@@ -2542,12 +2545,12 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
   if(*DO_CONFORM == -1){
     (void)fprintf(stdout,"%s: ERROR *DO_CONFORM == -1 on exit from var_conform_dim()\n",prg_nm_get());
     exit(EXIT_FAILURE);
-  } /* endif */ 
+  } /* endif */
   
-  /* Current weight (wgt_out) now conforms to current variable */ 
+  /* Current weight (wgt_out) now conforms to current variable */
   return wgt_out;
   
-} /* end var_conform_dim() */ 
+} /* end var_conform_dim() */
 
 void
 var_dmn_xrf(var_sct *var)
@@ -2563,7 +2566,7 @@ var_dmn_xrf(var_sct *var)
   
   for(idx=0;idx<var->nbr_dim;idx++) var->dim[idx]=var->dim[idx]->xrf;
   
-} /* end var_xrf() */ 
+} /* end var_xrf() */
 
 void
 dmn_xrf(dmn_sct *dim,dmn_sct *dmn_dup)
@@ -2572,12 +2575,12 @@ dmn_xrf(dmn_sct *dim,dmn_sct *dmn_dup)
    dmn_sct *dim: I/O pointer to dimension structure
 */
 {
-  /* Make xrf elements of dimension structures point to eachother */ 
+  /* Make xrf elements of dimension structures point to eachother */
 
   dim->xrf=dmn_dup;
   dmn_dup->xrf=dim;
 
-} /* end dmn_xrf() */ 
+} /* end dmn_xrf() */
 
 void
 var_xrf(var_sct *var,var_sct *var_dup)
@@ -2586,12 +2589,12 @@ var_xrf(var_sct *var,var_sct *var_dup)
    var_sct *var_dup: I/O pointer to variable structure
 */
 {
-  /* Make xrf elements of variable structures point to eachother */ 
+  /* Make xrf elements of variable structures point to eachother */
 
   var->xrf=var_dup;
   var_dup->xrf=var;
 
-} /* end var_xrf() */ 
+} /* end var_xrf() */
 
 var_sct *
 var_conform_type(nc_type var_out_type,var_sct *var_in)
@@ -2601,7 +2604,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
    var_sct *var_conform_type(): O pointer to variable structure of type var_out_type
 */
 {
-  /* Purpose: Return copy of input variable typecast to a desired type */ 
+  /* Purpose: Return copy of input variable typecast to a desired type */
 
   long idx;
   long sz;
@@ -2613,22 +2616,22 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
 
   var_sct *var_out;
 
-  /* Do types of variable AND its missing value already match? */ 
+  /* Do types of variable AND its missing value already match? */
   if(var_in->type == var_out_type) return var_in;
 
   var_out=var_in;
   
   var_in_type=var_in->type;
   
-  /* Simple error-checking and diagnostics */ 
+  /* Simple error-checking and diagnostics */
   if(dbg_lvl_get() > 2){
-    (void)fprintf(stderr,"%s: WARNING Converting variable %s from type %s to %s\n",prg_nm_get(),var_in->nm,nc_type_nm(var_in_type),nc_type_nm(var_out_type));
+    (void)fprintf(stderr,"%s: WARNING Converting variable %s from type %s to %s\n",prg_nm_get(),var_in->nm,nco_typ_sng(var_in_type),nco_typ_sng(var_out_type));
   } /* end if */
   
-  /* Move the current var values to swap location */ 
+  /* Move the current var values to swap location */
   val_in=var_in->val;
   
-  /* Allocate space for type-conforming values */ 
+  /* Allocate space for type-conforming values */
   var_out->type=var_out_type;
   var_out->val.vp=(void *)nco_malloc(var_out->sz*nctypelen(var_out->type));
   
@@ -2636,7 +2639,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
   sz=var_out->sz;
   val_out=var_out->val;
   
-  /* Copy and typecast missing_value attribute, if any */ 
+  /* Copy and typecast missing_value attribute, if any */
   if(var_out->has_mss_val){
     ptr_unn var_in_mss_val;
 
@@ -2644,11 +2647,11 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
     var_in_mss_val=var_out->mss_val;
     var_out->mss_val.vp=(void *)nco_malloc(nctypelen(var_out->type));
     (void)val_conform_type(var_in_type,var_in_mss_val,var_out_type,var_out->mss_val);
-    /* Free original */ 
+    /* Free original */
     (void)free(var_in_mss_val.vp);
   } /* end if */
 
-  /* Typecast pointer to values before access */ 
+  /* Typecast pointer to values before access */
   (void)cast_void_nctype(var_in->type,&val_in);
   (void)cast_void_nctype(var_out->type,&var_out->val);
   
@@ -2692,8 +2695,8 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
     } break;
   case NC_CHAR:
     switch(var_in_type){
-    case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=(signed char)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */ 
-    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=(signed char)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */ 
+    case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=(signed char)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=(signed char)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_LONG: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.lp[idx];} break;
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.cp[idx];} break;
@@ -2708,7 +2711,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.bp[idx];} break;
     } break;
-  } /* end switch */ 
+  } /* end switch */
   
   /* Un-typecast pointer to values after access */
   (void)cast_nctype_void(var_in->type,&val_in);
@@ -2719,7 +2722,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
   
   return var_out;
   
-} /* end var_conform_type() */ 
+} /* end var_conform_type() */
 
 void
 val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out)
@@ -2730,17 +2733,16 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
    ptr_unn val_out: I pointer to output value
 */
 {
-  /* Routine to fill val_out with a copy of val_in that has been typecast from 
-     type_in to type_out. The last-referenced state of both value pointers is
-     assumed to be .vp, and the val_out union is returned in that state. */
+  /* Purpose: Fill val_out with a copy of val_in that has been typecast from type_in to type_out
+     Last-referenced state of both value pointers is assumed to be .vp, and the val_out union is returned in that state */
 
-  /* It is assumed that val_out points to enough space (one element of type type_out) to hold the output */
+  /* val_out must hold enough space (one element of type type_out) to hold output */
 
-  /* Typecast pointer to values before access */ 
+  /* Typecast pointer to values before access */
   (void)cast_void_nctype(type_in,&val_in);
   (void)cast_void_nctype(type_out,&val_out);
   
-  /* Copy and typecast the single value using the implicit coercion rules of C */
+  /* Copy and typecast single value using implicit coercion rules of C */
   switch(type_out){
   case NC_FLOAT:
     switch(type_in){
@@ -2762,7 +2764,7 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
     } break;
   case NC_LONG:
     switch(type_in){
-    case NC_FLOAT: *val_out.lp=(long)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */ 
+    case NC_FLOAT: *val_out.lp=(long)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_DOUBLE: *val_out.lp=(long)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_LONG: *val_out.lp=*val_in.lp; break;
     case NC_SHORT: *val_out.lp=*val_in.sp; break;
@@ -2771,8 +2773,8 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
     } break;
   case NC_SHORT:
     switch(type_in){
-    case NC_FLOAT: *val_out.sp=(short)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */ 
-    case NC_DOUBLE: *val_out.sp=(short)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */ 
+    case NC_FLOAT: *val_out.sp=(short)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: *val_out.sp=(short)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_LONG: *val_out.sp=*val_in.lp; break;
     case NC_SHORT: *val_out.sp=*val_in.sp; break;
     case NC_CHAR: *val_out.sp=(short)strtod((const char *)val_in.cp,(char **)NULL); break; /* Coerce to avoid C++ compiler assignment warning */
@@ -2780,8 +2782,8 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
     } break;
   case NC_CHAR:
     switch(type_in){
-    case NC_FLOAT: *val_out.cp=(signed char)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */ 
-    case NC_DOUBLE: *val_out.cp=(signed char)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */ 
+    case NC_FLOAT: *val_out.cp=(signed char)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: *val_out.cp=(signed char)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_LONG: *val_out.cp=*val_in.lp; break;
     case NC_SHORT: *val_out.cp=*val_in.sp; break;
     case NC_CHAR: *val_out.cp=*val_in.cp; break;
@@ -2789,20 +2791,20 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
     } break;
   case NC_BYTE:
     switch(type_in){
-    case NC_FLOAT: *val_out.bp=(unsigned char)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */ 
-    case NC_DOUBLE: *val_out.bp=(unsigned char)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */ 
+    case NC_FLOAT: *val_out.bp=(unsigned char)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: *val_out.bp=(unsigned char)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_LONG: *val_out.bp=*val_in.lp; break;
     case NC_SHORT: *val_out.bp=*val_in.sp; break;
     case NC_CHAR: *val_out.bp=*val_in.cp; break;
     case NC_BYTE: *val_out.bp=*val_in.bp; break;
     } break;
-  } /* end switch */ 
+  } /* end switch */
   
   /* NB: There is no need to un-typecast input pointers because they were passed by
      value and are thus purely local to this routine. The only thing changed by this
      routine is the contents of the location pointed to by the pointer to the output value. */
   
-} /* end val_conform_type */ 
+} /* end val_conform_type */
 
 var_sct *
 var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
@@ -2822,9 +2824,9 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
      But to complete the averaging operation, the output variable must be normalized by its tally array
      In other words, var_normalize() should be called subsequently if normalization is desired
      Normalization is not done internally to var_avg() in order to allow the user more flexibility
-  */  
+  */ 
 
-  /* Create output variable as a duplicate of the input variable, except for dimensions which are to be averaged over */ 
+  /* Create output variable as a duplicate of the input variable, except for dimensions which are to be averaged over */
 
   /* var_avg() overwrites contents, if any, of tally array with number of valid reduction operations */
 
@@ -2832,7 +2834,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
      var: Input variable (already hyperslabbed)
      avg: A contiguous arrangement of all elements of var that contribute to a single element of fix (a quasi-hyperslab)
      fix: Output (averaged) variable
-   */ 
+   */
 
   dmn_sct **dmn_avg;
   dmn_sct **dmn_fix;
@@ -2853,7 +2855,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
 
   var_sct *fix;
 
-  /* Copy basic attributes of input variable into output (averaged) variable */ 
+  /* Copy basic attributes of input variable into output (averaged) variable */
   fix=var_dup(var);
   (void)var_xrf(fix,var->xrf);
 
@@ -2876,26 +2878,26 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
 	idx_var_avg[idx]=nbr_dmn_avg;
 	nbr_dmn_avg++;
 	break;
-      } /* end if */ 
+      } /* end if */
     } /* end loop over idx_dim */
     if(idx_dim == nbr_dim){
       dmn_fix[nbr_dmn_fix]=var->dim[idx];
       idx_fix_var[nbr_dmn_fix]=idx;
       idx_var_fix[idx]=nbr_dmn_fix;
       nbr_dmn_fix++;
-    } /* end if */ 
+    } /* end if */
   } /* end loop over idx */
 
-  /* Free extra list space */ 
+  /* Free extra list space */
   if(nbr_dmn_fix > 0) dmn_fix=(dmn_sct **)nco_realloc(dmn_fix,nbr_dmn_fix*sizeof(dmn_sct *)); else dmn_fix=(dmn_sct **)NULL;
   if(nbr_dmn_avg > 0) dmn_avg=(dmn_sct **)nco_realloc(dmn_avg,nbr_dmn_avg*sizeof(dmn_sct *)); else dmn_avg=(dmn_sct **)NULL;
 
   if(nbr_dmn_avg == 0){
     (void)fprintf(stderr,"%s: WARNING %s does not contain any averaging dimensions\n",prg_nm_get(),fix->nm);
     return (var_sct *)NULL;
-  } /* end if */ 
+  } /* end if */
 
-  /* Get rid of averaged dimensions */ 
+  /* Get rid of averaged dimensions */
   fix->nbr_dim=nbr_dmn_fix;
 
   avg_sz=1L;
@@ -2920,7 +2922,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     if(dmn_fix[0]->is_crd_dmn) 
       fix->is_crd_var=True;
 
-  /* Trim dimension arrays to their new sizes */ 
+  /* Trim dimension arrays to their new sizes */
   if(nbr_dmn_fix > 0) fix->dim=(dmn_sct **)nco_realloc(fix->dim,nbr_dmn_fix*sizeof(dmn_sct *)); else fix->dim=NULL;
   if(nbr_dmn_fix > 0) fix->dmn_id=(int *)nco_realloc(fix->dmn_id,nbr_dmn_fix*sizeof(int)); else fix->dmn_id=NULL;
   if(nbr_dmn_fix > 0) fix->srt=(long *)nco_realloc(fix->srt,nbr_dmn_fix*sizeof(long)); else fix->srt=NULL;
@@ -2937,9 +2939,9 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     fix_sz=fix->sz;
     fix_tally=fix->tally;
 
-    /* First set tally field to 1 */ 
+    /* First set tally field to 1 */
     for(idx=0;idx<fix_sz;idx++) fix_tally[idx]=1L;
-    /* Next overwrite any missing value locations with zero */ 
+    /* Next overwrite any missing value locations with zero */
     if(fix->has_mss_val){
       int val_sz_byte;
 
@@ -2954,10 +2956,10 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
       for(idx=0;idx<fix_sz;idx++,val+=val_sz_byte)
 	if(!memcmp(val,mss_val,val_sz_byte)) fix_tally[idx]=0L;
     } /* fix->has_mss_val */
-  } /* end if avg_sz == 1L */ 
+  } /* end if avg_sz == 1L */
 
   /* Starting at first element of input hyperslab, add up next stride elements
-     and place result in first element of output hyperslab. */ 
+     and place result in first element of output hyperslab. */
   if(avg_sz != 1L){
     char *avg_cp;
     char *fix_cp;
@@ -2988,16 +2990,16 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     var_cp=(char *)var->val.vp;
     var_sz=var->sz;
     
-    /* Reuse the existing value buffer (it is of size var_sz, created by var_dup())*/ 
+    /* Reuse the existing value buffer (it is of size var_sz, created by var_dup())*/
     avg_val=fix->val;
     avg_cp=(char *)avg_val.vp;
-    /* Create a new value buffer for output (averaged) size */ 
+    /* Create a new value buffer for output (averaged) size */
     fix->val.vp=(void *)nco_malloc(fix->sz*nctypelen(fix->type));
     fix_cp=(char *)fix->val.vp;
-    /* Resize (or just plain allocate) the tally array */ 
+    /* Resize (or just plain allocate) the tally array */
     fix->tally=(long *)nco_realloc(fix->tally,fix->sz*sizeof(long));
 
-    /* Re-initialize value and tally arrays */ 
+    /* Re-initialize value and tally arrays */
     (void)zero_long(fix->sz,fix->tally);
     (void)var_zero(fix->type,fix->sz,fix->val);
   
@@ -3007,13 +3009,13 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
       for(idx_dim=idx+1;idx_dim<nbr_dmn_var;idx_dim++)
 	dmn_var_map[idx]*=var->cnt[idx_dim];
     
-    /* Compute map for each dimension of output variable */ 
+    /* Compute map for each dimension of output variable */
     for(idx=0;idx<nbr_dmn_fix;idx++) dmn_fix_map[idx]=1L;
     for(idx=0;idx<nbr_dmn_fix-1;idx++)
       for(idx_dim=idx+1;idx_dim<nbr_dmn_fix;idx_dim++)
 	dmn_fix_map[idx]*=fix->cnt[idx_dim];
     
-    /* Compute map for each dimension of averaging buffer */ 
+    /* Compute map for each dimension of averaging buffer */
     for(idx=0;idx<nbr_dmn_avg;idx++) dmn_avg_map[idx]=1L;
     for(idx=0;idx<nbr_dmn_avg-1;idx++)
       for(idx_dim=idx+1;idx_dim<nbr_dmn_avg;idx_dim++)
@@ -3046,7 +3048,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
        in same order as blocks' average values will appear in output buffer. 
        An averaging routine can take advantage of this by casting avg_val to a two dimensional
        variable and averaging over inner dimension. 
-       This is where tally array is actually set */ 
+       This is where tally array is actually set */
     switch(nco_op_typ){
     case nco_op_max:
       (void)var_avg_reduce_max(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
@@ -3065,18 +3067,18 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
       break;
     } /* end case */
 
-    /* Free dynamic memory that held rearranged input variable values */ 
+    /* Free dynamic memory that held rearranged input variable values */
     (void)free(avg_val.vp);
   } /* end if avg_sz != 1 */
   
-  /* Free input variable */ 
+  /* Free input variable */
   var=var_free(var);
   (void)free(dmn_avg);
   (void)free(dmn_fix);
 
-  /* Return averaged variable */ 
+  /* Return averaged variable */
   return fix;
-} /* end var_avg() */ 
+} /* end var_avg() */
 
 var_sct *
 var_free(var_sct *var)
@@ -3084,11 +3086,11 @@ var_free(var_sct *var)
    var_sct *var: I pointer to variable structure
 */
 {
-  /* Routine to free all the space associated with a dynamically allocated variable structure */ 
+  /* Routine to free all the space associated with a dynamically allocated variable structure */
   
   /* NB: var->nm is not freed because I decided to let names be static memory, and refer to
      the optarg list if available. This assumption needs to be changed before freeing 
-     the name pointer. */ 
+     the name pointer. */
   
   if(var->val.vp != NULL){(void)free(var->val.vp); var->val.vp=NULL;}
   if(var->mss_val.vp != NULL){(void)free(var->mss_val.vp); var->mss_val.vp=NULL;}
@@ -3103,7 +3105,7 @@ var_free(var_sct *var)
 
   return NULL;
 
-} /* end var_free */ 
+} /* end var_free */
 
 bool
 arm_inq(int nc_id)
@@ -3119,7 +3121,7 @@ arm_inq(int nc_id)
   int base_time_id;
   int time_offset_id;
   
-  /* Look for the signature of an ARM file */ 
+  /* Look for the signature of an ARM file */
   ncopts=0;
   time_dmn_id=ncdimid(nc_id,"time");
   base_time_id=ncvarid(nc_id,"base_time");
@@ -3131,10 +3133,10 @@ arm_inq(int nc_id)
   }else{
     (void)fprintf(stderr,"%s: CONVENTION File convention is DOE ARM\n",prg_nm_get()); 
     ARM_FORMAT=True;
-  } /* end else */ 
+  } /* end else */
 
   return ARM_FORMAT;
-} /* end arm_inq */ 
+} /* end arm_inq */
 
 nclong
 arm_base_time_get(int nc_id)
@@ -3153,7 +3155,7 @@ arm_base_time_get(int nc_id)
   (void)ncvarget1(nc_id,base_time_id,0L,&base_time);
 
   return base_time;
-} /* end arm_base_time_get */ 
+} /* end arm_base_time_get */
 
 void
 var_max(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
@@ -3164,7 +3166,7 @@ var_max(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
 	ptr_unn mss_val: I value of missing value
 	ptr_unn op1: I values of first operand
 	ptr_unn op2: I/O values of second operand on input, values of maximium on output
-     */ 
+     */
 {
   /* Routine to find maximium value(s) of the two operands
      and store result in second operand. Operands are assumed to have conforming
@@ -3173,7 +3175,7 @@ var_max(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
   
   long idx;
   
-  /* Typecast pointer to values before access */ 
+  /* Typecast pointer to values before access */
   /* It is not necessary to untype-cast pointer types after using them as we have 
      operated on local copies of them */
   (void)cast_void_nctype(type,&op1);
@@ -3192,7 +3194,7 @@ var_max(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
 	  op2.fp[idx]=op1.fp[idx];
 	else if((op1.fp[idx] != mss_val_flt) && (op2.fp[idx] < op1.fp[idx]))
 	  op2.fp[idx]=op1.fp[idx]; 
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_DOUBLE:
@@ -3206,7 +3208,7 @@ var_max(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
 	  op2.dp[idx]=op1.dp[idx];
 	else if((op1.dp[idx] != mss_val_dbl) && (op2.dp[idx] < op1.dp[idx]))
 	  op2.dp[idx]=op1.dp[idx]; 
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_LONG:
@@ -3221,7 +3223,7 @@ var_max(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
 	  op2.lp[idx]=op1.lp[idx];
 	else if((op1.lp[idx] != mss_val_lng) && (op2.lp[idx] < op1.lp[idx]))
 	  op2.lp[idx]=op1.lp[idx]; 
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_SHORT:
@@ -3236,16 +3238,16 @@ var_max(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
 	  op2.sp[idx]=op1.sp[idx];
 	else if((op1.sp[idx] != mss_val_shrt) && (op2.sp[idx] < op1.sp[idx]))
 	  op2.sp[idx]=op1.sp[idx]; 
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_CHAR:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
   case NC_BYTE:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
-  } /* end switch */ 
+  } /* end switch */
 } /* end var_max() */
 
 void
@@ -3257,11 +3259,11 @@ var_min(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
   ptr_unn mss_val: I value of missing value
   ptr_unn op1: I values of first operand
   ptr_unn op2: I/O values of second operand on input, values of maximium on output
-*/ 
+*/
 {
   /* Purpose: Find minimium value(s) of two operands and store result in second operand. 
      Operands are assumed to have conforming dimensions, and to both be of the specified type. 
-     Operands' values are assumed to be in memory already. */ 
+     Operands' values are assumed to be in memory already. */
   long idx;
   
   /* Typecast pointer to values before access */
@@ -3284,7 +3286,7 @@ var_min(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
 	  op2.fp[idx]=op1.fp[idx];
 	else if((op1.fp[idx] != mss_val_flt) && (op2.fp[idx] > op1.fp[idx]))
 	  op2.fp[idx]=op1.fp[idx]; 
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_DOUBLE:
@@ -3298,7 +3300,7 @@ var_min(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
 	  op2.dp[idx]=op1.dp[idx];
 	else if((op1.dp[idx] != mss_val_dbl) && (op2.dp[idx] > op1.dp[idx]))
 	  op2.dp[idx]=op1.dp[idx]; 
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_LONG:
@@ -3313,7 +3315,7 @@ var_min(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
 	  op2.lp[idx]=op1.lp[idx];
 	else if((op1.lp[idx] != mss_val_lng) && (op2.lp[idx] > op1.lp[idx]))
 	  op2.lp[idx]=op1.lp[idx]; 
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_SHORT:
@@ -3327,16 +3329,16 @@ var_min(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
 	  op2.sp[idx]=op1.sp[idx];
 	else if((op1.sp[idx] != mss_val_shrt) && (op2.sp[idx] > op1.sp[idx]))
 	  op2.sp[idx]=op1.sp[idx]; 
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_CHAR:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
   case NC_BYTE:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
-  } /* end switch */ 
+  } /* end switch */
 } /* end var_min() */
 
 void
@@ -3348,18 +3350,18 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
 	ptr_unn mss_val: I value of missing value
 	ptr_unn op1: I values of first operand
 	ptr_unn op2: I/O values of second operand on input, values of product on output
-     */ 
+     */
 {
   /* Routine to multiply value of first operand by value of second operand 
      and store result in second operand. Operands are assumed to have conforming
      dimensions, and to both be of the specified type. Operands' values are 
-     assumed to be in memory already. */ 
+     assumed to be in memory already. */
   
-  /* Division is currently defined as op2:=op1*op2 */   
+  /* Division is currently defined as op2:=op1*op2 */  
   
   long idx;
   
-  /* Typecast pointer to values before access */ 
+  /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
@@ -3375,7 +3377,7 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
       float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)) op2.fp[idx]*=op1.fp[idx]; else op2.fp[idx]=mss_val_flt;
-      } /* end for */ 
+      } /* end for */
     } /* end else */
 #endif /* !USE_FORTRAN_ARITHMETIC */
     break;
@@ -3389,7 +3391,7 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
       double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if((op2.dp[idx] != mss_val_dbl) && (op1.dp[idx] != mss_val_dbl)) op2.dp[idx]*=op1.dp[idx]; else op2.dp[idx]=mss_val_dbl;
-      } /* end for */ 
+      } /* end for */
     } /* end else */
 #endif /* !USE_FORTRAN_ARITHMETIC */
     break;
@@ -3400,7 +3402,7 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
       long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if((op2.lp[idx] != mss_val_lng) && (op1.lp[idx] != mss_val_lng)) op2.lp[idx]*=op1.lp[idx]; else op2.lp[idx]=mss_val_lng;
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_SHORT:
@@ -3410,21 +3412,21 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
       long mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if((op2.sp[idx] != mss_val_shrt) && (op1.sp[idx] != mss_val_shrt)) op2.sp[idx]*=op1.sp[idx]; else op2.sp[idx]=mss_val_shrt;
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_CHAR:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
   case NC_BYTE:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
-  } /* end switch */ 
+  } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */ 
+     because we have only operated on local copies of them. */
   
-} /* end var_multiply() */ 
+} /* end var_multiply() */
 
 void
 var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
@@ -3435,18 +3437,18 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
   ptr_unn mss_val: I value of missing value
   ptr_unn op1: I values of first operand
   ptr_unn op2: I/O values of second operand on input, values of ratio on output
- */ 
+ */
 {
   /* Routine to divide value of first operand by value of second operand 
      and store result in second operand. Operands are assumed to have conforming
      dimensions, and to both be of specified type. Operands' values are 
-     assumed to be in memory already. */ 
+     assumed to be in memory already. */
 
-  /* Division is currently defined as op2:=op2/op1 */   
+  /* Division is currently defined as op2:=op2/op1 */  
 
   long idx;
   
-  /* Typecast pointer to values before access */ 
+  /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
@@ -3462,7 +3464,7 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
       float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)) op2.fp[idx]/=op1.fp[idx]; else op2.fp[idx]=mss_val_flt;
-      } /* end for */ 
+      } /* end for */
     } /* end else */
 #endif /* !USE_FORTRAN_ARITHMETIC */
     break;
@@ -3476,7 +3478,7 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
       float mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if((op2.dp[idx] != mss_val_dbl) && (op1.dp[idx] != mss_val_dbl)) op2.dp[idx]/=op1.dp[idx]; else op2.dp[idx]=mss_val_dbl;
-      } /* end for */ 
+      } /* end for */
     } /* end else */
 #endif /* !USE_FORTRAN_ARITHMETIC */
     break;
@@ -3487,7 +3489,7 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
       float mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if((op2.lp[idx] != mss_val_lng) && (op1.lp[idx] != mss_val_lng)) op2.lp[idx]/=op1.lp[idx]; else op2.lp[idx]=mss_val_lng;
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_SHORT:
@@ -3497,21 +3499,21 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
       float mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if((op2.sp[idx] != mss_val_shrt) && (op1.sp[idx] != mss_val_shrt)) op2.sp[idx]/=op1.sp[idx]; else op2.sp[idx]=mss_val_shrt;
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_CHAR:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
   case NC_BYTE:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
-  } /* end switch */ 
+  } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */ 
+     because we have only operated on local copies of them. */
   
-} /* end var_divide() */ 
+} /* end var_divide() */
 
 void
 var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
@@ -3523,18 +3525,18 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
   long *tally: I/O counter space
   ptr_unn op1: I values of first operand
   ptr_unn op2: I/O values of second operand on input, values of sum on output
- */ 
+ */
 {
   /* Routine to add value of first operand to value of second operand 
      and store result in second operand. Operands are assumed to have conforming
      dimensions, and be of the specified type. Operands' values are 
-     assumed to be in memory already. */ 
+     assumed to be in memory already. */
 
   /* Addition is currently defined as op2:=op1+op2 */
 
   long idx;
 
-  /* Typecast pointer to values before access */ 
+  /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
@@ -3548,7 +3550,7 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
       for(idx=0;idx<sz;idx++){
 	op2.fp[idx]+=op1.fp[idx];
 	tally[idx]++;
-      } /* end for */ 
+      } /* end for */
     }else{
       float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
@@ -3556,7 +3558,7 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
 	  op2.fp[idx]+=op1.fp[idx];
 	  tally[idx]++;
 	} /* end if */
-      } /* end for */ 
+      } /* end for */
     } /* end else */
 #endif /* !USE_FORTRAN_ARITHMETIC */
     break;
@@ -3568,7 +3570,7 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
       for(idx=0;idx<sz;idx++){
 	op2.dp[idx]+=op1.dp[idx];
 	tally[idx]++;
-      } /* end for */ 
+      } /* end for */
     }else{
       float mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
@@ -3576,7 +3578,7 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
 	  op2.dp[idx]+=op1.dp[idx];
 	  tally[idx]++;
 	} /* end if */
-      } /* end for */ 
+      } /* end for */
     } /* end else */
 #endif /* !USE_FORTRAN_ARITHMETIC */
     break;
@@ -3585,7 +3587,7 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
       for(idx=0;idx<sz;idx++){
 	op2.lp[idx]+=op1.lp[idx];
 	tally[idx]++;
-      } /* end for */ 
+      } /* end for */
     }else{
       float mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
@@ -3593,7 +3595,7 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
 	  op2.lp[idx]+=op1.lp[idx];
 	  tally[idx]++;
 	} /* end if */
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_SHORT:
@@ -3601,7 +3603,7 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
       for(idx=0;idx<sz;idx++){
 	op2.sp[idx]+=op1.sp[idx];
 	tally[idx]++;
-      } /* end for */ 
+      } /* end for */
     }else{
       float mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
@@ -3609,21 +3611,21 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
 	  op2.sp[idx]+=op1.sp[idx];
 	  tally[idx]++;
 	} /* end if */
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_CHAR:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
   case NC_BYTE:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
-  } /* end switch */ 
+  } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */ 
+     because we have only operated on local copies of them. */
 
-} /* end var_add() */ 
+} /* end var_add() */
 
 void
 var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
@@ -3635,17 +3637,17 @@ var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_un
   long *tally: I/O counter space
   ptr_unn op1: I values of first operand
   ptr_unn op2: O squareroot of first operand
- */ 
+ */
 {
   /* Purpose: Place squareroot of first operand in value of second operand 
      Operands are assumed to have conforming dimensions, and be of specified type 
-     Operands' values are assumed to be in memory already */ 
+     Operands' values are assumed to be in memory already */
 
   /* Square root is currently defined as op2:=sqrt(op1) */
 
   long idx;
 
-  /* Typecast pointer to values before access */ 
+  /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
@@ -3659,7 +3661,7 @@ var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_un
       for(idx=0;idx<sz;idx++){
 	op2.fp[idx]=sqrt(op1.fp[idx]);
 	tally[idx]++;
-      } /* end for */ 
+      } /* end for */
     }else{
       float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
@@ -3667,7 +3669,7 @@ var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_un
 	  op2.fp[idx]=sqrt(op1.fp[idx]);
 	  tally[idx]++;
 	} /* end if */
-      } /* end for */ 
+      } /* end for */
     } /* end else */
 #endif /* !USE_FORTRAN_ARITHMETIC */
     break;
@@ -3679,7 +3681,7 @@ var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_un
       for(idx=0;idx<sz;idx++){
 	op2.dp[idx]=sqrt(op1.dp[idx]);
 	tally[idx]++;
-      } /* end for */ 
+      } /* end for */
     }else{
       float mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
@@ -3687,7 +3689,7 @@ var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_un
 	  op2.dp[idx]=sqrt(op1.dp[idx]);
 	  tally[idx]++;
 	} /* end if */
-      } /* end for */ 
+      } /* end for */
     } /* end else */
 #endif /* !USE_FORTRAN_ARITHMETIC */
     break;
@@ -3696,7 +3698,7 @@ var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_un
       for(idx=0;idx<sz;idx++){
 	op2.lp[idx]=sqrt(op1.lp[idx]);
 	tally[idx]++;
-      } /* end for */ 
+      } /* end for */
     }else{
       float mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
@@ -3704,7 +3706,7 @@ var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_un
 	  op2.lp[idx]=sqrt(op1.lp[idx]);
 	  tally[idx]++;
 	} /* end if */
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_SHORT:
@@ -3712,7 +3714,7 @@ var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_un
       for(idx=0;idx<sz;idx++){
 	op2.sp[idx]=sqrt(op1.sp[idx]);
 	tally[idx]++;
-      } /* end for */ 
+      } /* end for */
     }else{
       float mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
@@ -3720,21 +3722,21 @@ var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_un
 	  op2.sp[idx]=sqrt(op1.sp[idx]);
 	  tally[idx]++;
 	} /* end if */
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_CHAR:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
   case NC_BYTE:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
-  } /* end switch */ 
+  } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */ 
+     because we have only operated on local copies of them. */
 
-} /* end var_sqrt() */ 
+} /* end var_sqrt() */
 
 void
 var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
@@ -3747,7 +3749,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   long *tally: I/O counter space
   ptr_unn op1: I values of first operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2))
   ptr_unn op2: O values resulting from averaging each block of input operand
- */ 
+ */
 {
   /* Purpose: Perform arithmetic operation on values in each contiguous block of first operand and place
      result in corresponding element in second operand. 
@@ -3785,7 +3787,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 
   sz_blk=sz_op1/sz_op2;
 
-  /* Typecast pointer to values before access */ 
+  /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
@@ -3809,7 +3811,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     (void)FORTRAN_avg_reduce_real(&sz_blk,&sz_op2,&has_mss_val,mss_val.fp,tally,op1.fp,op2.fp);
 #else /* !USE_FORTRAN_ARITHMETIC */
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */ 
+    /* NB: ANSI compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -3829,8 +3831,8 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_flt;
       } /* end loop over idx_op2 */
     } /* end else */
-#else /* __GNUC__ */ 
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+#else /* __GNUC__ */
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       float op1_2D[sz_op2][sz_blk];
       
@@ -3853,7 +3855,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
-#endif /* __GNUC__ */ 
+#endif /* __GNUC__ */
 #endif /* !USE_FORTRAN_ARITHMETIC */
     break;
   case NC_DOUBLE:
@@ -3861,7 +3863,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     (void)FORTRAN_avg_reduce_double_precision(&sz_blk,&sz_op2,&has_mss_val,mss_val.dp,tally,op1.dp,op2.dp);
 #else /* !USE_FORTRAN_ARITHMETIC */
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */ 
+    /* NB: ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -3882,8 +3884,8 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	if(tally[idx_op2] == 0L) op2.dp[idx_op2]=mss_val_dbl;
       } /* end loop over idx_op2 */
     } /* end else */
-#else /* __GNUC__ */ 
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+#else /* __GNUC__ */
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       double op1_2D[sz_op2][sz_blk];
       
@@ -3907,12 +3909,12 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
-#endif /* __GNUC__ */ 
+#endif /* __GNUC__ */
 #endif /* !USE_FORTRAN_ARITHMETIC */
     break;
   case NC_LONG:
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */ 
+    /* NB: ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -3933,8 +3935,8 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	if(tally[idx_op2] == 0L) op2.lp[idx_op2]=mss_val_lng;
       } /* end loop over idx_op2 */
     } /* end else */
-#else /* __GNUC__ */ 
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+#else /* __GNUC__ */
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       long op1_2D[sz_op2][sz_blk];
       
@@ -3958,11 +3960,11 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
-#endif /* __GNUC__ */ 
+#endif /* __GNUC__ */
     break;
   case NC_SHORT:
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */ 
+    /* NB: ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -3983,8 +3985,8 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	if(tally[idx_op2] == 0L) op2.sp[idx_op2]=mss_val_shrt;
       } /* end loop over idx_op2 */
     } /* end else */
-#else /* __GNUC__ */ 
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+#else /* __GNUC__ */
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       short op1_2D[sz_op2][sz_blk];
       
@@ -4008,20 +4010,20 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
-#endif /* __GNUC__ */ 
+#endif /* __GNUC__ */
     break;
   case NC_CHAR:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
   case NC_BYTE:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
-  } /* end switch */ 
+  } /* end switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */ 
+     because we have only operated on local copies of them. */
 
-} /* end var_avg_reduce_ttl() */ 
+} /* end var_avg_reduce_ttl() */
 
 void
 var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
@@ -4034,7 +4036,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   long *tally: I/O counter space
   ptr_unn op1: I values of first operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2))
   ptr_unn op2: O values resulting from averaging each block of input operand
- */ 
+ */
 {
   /* Routine to find minium values in each contiguous block of first operand and place
      result in corresponding element in second operand. Operands are assumed to have
@@ -4065,7 +4067,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   
   sz_blk=sz_op1/sz_op2;
   
-  /* Typecast pointer to values before access */ 
+  /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
@@ -4085,7 +4087,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   case NC_FLOAT:
     
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */ 
+    /* NB: ANSI compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4107,8 +4109,8 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
       } /* end loop over idx_op2 */
     } /* end else */
-#else /* __GNUC__ */ 
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+#else /* __GNUC__ */
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       float op1_2D[sz_op2][sz_blk];
       
@@ -4133,13 +4135,13 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
-#endif /* __GNUC__ */ 
+#endif /* __GNUC__ */
     
     break;
   case NC_DOUBLE:
     
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */ 
+    /* NB: ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4162,8 +4164,8 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
       } /* end loop over idx_op2 */
     } /* end else */
-#else /* __GNUC__ */ 
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+#else /* __GNUC__ */
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       double op1_2D[sz_op2][sz_blk];
       
@@ -4189,11 +4191,11 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
-#endif /* __GNUC__ */ 
+#endif /* __GNUC__ */
     break;
   case NC_LONG:
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */ 
+    /* NB: ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4217,8 +4219,8 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	if(!flg_mss) op2.lp[idx_op2]=mss_val_lng;
       } /* end loop over idx_op2 */
     } /* end else */
-#else /* __GNUC__ */ 
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+#else /* __GNUC__ */
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       long op1_2D[sz_op2][sz_blk];
       
@@ -4244,11 +4246,11 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
-#endif /* __GNUC__ */ 
+#endif /* __GNUC__ */
     break;
   case NC_SHORT:
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */ 
+    /* NB: ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4271,8 +4273,8 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	if(!flg_mss) op2.sp[idx_op2]=mss_val_shrt;
       } /* end loop over idx_op2 */
     } /* end else */
-#else /* __GNUC__ */ 
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+#else /* __GNUC__ */
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       short op1_2D[sz_op2][sz_blk];
       
@@ -4298,18 +4300,18 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
-#endif /* __GNUC__ */ 
+#endif /* __GNUC__ */
     break;
   case NC_CHAR:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
   case NC_BYTE:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
-  } /* end  switch */ 
+  } /* end  switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */ 
+     because we have only operated on local copies of them. */
   
 } /* end var_avg_reduce_min() */
 
@@ -4324,7 +4326,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   long *tally: I/O counter space
   ptr_unn op1: I values of first operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2))
   ptr_unn op2: O values resulting from averaging each block of input operand
- */ 
+ */
 {
   /* Routine to find maximium values in each contiguous block of first operand and place
      result in corresponding element in second operand. Operands are assumed to have
@@ -4356,7 +4358,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   
   sz_blk=sz_op1/sz_op2;
   
-  /* Typecast pointer to values before access */ 
+  /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
@@ -4376,7 +4378,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   case NC_FLOAT:
     
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */ 
+    /* NB: ANSI compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4398,8 +4400,8 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
       } /* end loop over idx_op2 */
     } /* end else */
-#else /* __GNUC__ */ 
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+#else /* __GNUC__ */
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       float op1_2D[sz_op2][sz_blk];
       
@@ -4424,13 +4426,13 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
-#endif /* __GNUC__ */ 
+#endif /* __GNUC__ */
     
     break;
   case NC_DOUBLE:
     
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */ 
+    /* NB: ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4453,8 +4455,8 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
       } /* end loop over idx_op2 */
     } /* end else */
-#else /* __GNUC__ */ 
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+#else /* __GNUC__ */
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       double op1_2D[sz_op2][sz_blk];
       
@@ -4480,11 +4482,11 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
-#endif /* __GNUC__ */ 
+#endif /* __GNUC__ */
     break;
   case NC_LONG:
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */ 
+    /* NB: ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4508,8 +4510,8 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	if(!flg_mss) op2.lp[idx_op2]=mss_val_lng;
       } /* end loop over idx_op2 */
     } /* end else */
-#else /* __GNUC__ */ 
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+#else /* __GNUC__ */
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       long op1_2D[sz_op2][sz_blk];
       
@@ -4535,11 +4537,11 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
-#endif /* __GNUC__ */ 
+#endif /* __GNUC__ */
     break;
   case NC_SHORT:
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */ 
+    /* NB: ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4562,8 +4564,8 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	if(!flg_mss) op2.sp[idx_op2]=mss_val_shrt;
       } /* end loop over idx_op2 */
     } /* end else */
-#else /* __GNUC__ */ 
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+#else /* __GNUC__ */
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       short op1_2D[sz_op2][sz_blk];
       
@@ -4589,35 +4591,32 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
-#endif /* __GNUC__ */ 
+#endif /* __GNUC__ */
     break;
   case NC_CHAR:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
   case NC_BYTE:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
-  } /* end  switch */ 
+  } /* end  switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */ 
+     because we have only operated on local copies of them. */
 
 } /* end var_avg_reduce_max() */
 
 void 
 nco_opr_drv(int cnt,int nco_op_typ,var_sct *var_prc_out, var_sct *var_prc)
 {
-  /* Purpose: Perform appropriate ncra/ncea operation (avg, min, max...) on operands
+  /* Purpose: Perform appropriate ncra/ncea operation (avg, min, max, ttl, ...) on operands
      nco_opr_drv() is called within the record loop of ncra, and within the file loop of ncea
      These operations perform part, but not all, of the necessary operations for each procedure
-     Most arithmetic operations require additional procedures such as normalization be performed after all files/records have been procesed */
+     Most arithmetic operations require additional procedures such as normalization be performed after all files/records have been processed */
   
-  /* fxm: combine ttl, avg, sqravg and avgsqr into one operation like in ncra */
+  /* var_prc_out->type and var_prc->type should be equal and thus interchangeable
+     var_prc_out->sz and var_prc->sz should be equal and thus interchangeable */
   switch (nco_op_typ){
-  case nco_op_avg: /* Average */
-  case nco_op_sqrt: /* Squareroot will produce the squareroot of the mean */
-    (void)var_add(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
-    break;
   case nco_op_min: /* Minimum */
     /* On first loop, simply copy variables from var_prc to var_prc_out */
     if(cnt == 0) (void)var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else	  
@@ -4628,11 +4627,11 @@ nco_opr_drv(int cnt,int nco_op_typ,var_sct *var_prc_out, var_sct *var_prc)
     if(cnt == 0) (void)var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else
       (void)var_max(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
     break;	
+  case nco_op_avg: /* Average */
+  case nco_op_sqrt: /* Squareroot will produce the squareroot of the mean */
   case nco_op_ttl: /* Total */
-    (void)var_add(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
-    break;
   case nco_op_sqravg: /* Square of the mean */
-    (void)var_add(var_prc_out->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    (void)var_add(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
   case nco_op_rms: /* Root mean square */
   case nco_op_rmssdn: /* Root mean square normalized by N-1 */
@@ -4654,16 +4653,16 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
   ptr_unn mss_val: I value of missing value
   long *tally: I counter space
   ptr_unn op1: I/O values of first operand on input, normalized result on output
-*/ 
+*/
 {
   /* Purpose: Normalize value of first operand by count in tally array 
      and store result in first operand. */
 
-  /* Normalization is currently defined as op1:=op1/tally */   
+  /* Normalization is currently defined as op1:=op1/tally */  
 
   long idx;
 
-  /* Typecast pointer to values before access */ 
+  /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
 
@@ -4678,7 +4677,7 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
       float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.fp[idx]/=tally[idx]; else op1.fp[idx]=mss_val_flt;
     } /* end else */
-#endif /* !USE_FORTRAN_ARITHMETIC */ 
+#endif /* !USE_FORTRAN_ARITHMETIC */
     break;
   case NC_DOUBLE:
 #ifdef USE_FORTRAN_ARITHMETIC
@@ -4690,7 +4689,7 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
       float mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.dp[idx]/=tally[idx]; else op1.dp[idx]=mss_val_dbl;
     } /* end else */
-#endif /* !USE_FORTRAN_ARITHMETIC */ 
+#endif /* !USE_FORTRAN_ARITHMETIC */
     break;
   case NC_LONG:
     if(!has_mss_val){
@@ -4709,17 +4708,17 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
     } /* end else */
     break;
   case NC_CHAR:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
   case NC_BYTE:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
-  } /* end switch */ 
+  } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */ 
+     because we have only operated on local copies of them. */
 
-} /* end var_normalize() */ 
+} /* end var_normalize() */
 
 void
 var_normalize_sdn(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
@@ -4730,18 +4729,18 @@ var_normalize_sdn(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tal
   ptr_unn mss_val: I value of missing value
   long *tally: I counter space
   ptr_unn op1: I/O values of first operand on input, normalized result on output
-*/ 
+*/
 {
   /* Purpose: Normalize value of first operand by count-1 in tally array 
      and store result in first operand. */
 
-  /* Normalization is currently defined as op1:=op1/(--tally) */   
+  /* Normalization is currently defined as op1:=op1/(--tally) */  
 
-  /* var_normalize_sdn() is based on var_normalize() and algorithms should be kept consistent with eachother */ 
+  /* var_normalize_sdn() is based on var_normalize() and algorithms should be kept consistent with eachother */
 
   long idx;
 
-  /* Typecast pointer to values before access */ 
+  /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
 
@@ -4779,15 +4778,15 @@ var_normalize_sdn(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tal
     } /* end else */
     break;
   case NC_CHAR:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
   case NC_BYTE:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
-  } /* end switch */ 
+  } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */ 
+     because we have only operated on local copies of them. */
 
 } /* end of var_normalize_sdn */
 
@@ -4796,7 +4795,7 @@ mss_val_mk(nc_type type)
 /* 
   nc_type type: I netCDF type of operand
   ptr_unn mss_val_mk(): O ptr_unn containing default missing value for type type
- */ 
+ */
 {
   /* Routine to return a pointer union containing default missing value for type type */
 
@@ -4804,7 +4803,7 @@ mss_val_mk(nc_type type)
 
   mss_val.vp=(void *)nco_malloc(nctypelen(type));
 
-  /* Typecast pointer to values before access */ 
+  /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&mss_val);
 
   switch(type){
@@ -4814,14 +4813,14 @@ mss_val_mk(nc_type type)
   case NC_SHORT: *mss_val.sp=FILL_SHORT; break;
   case NC_CHAR: *mss_val.cp=FILL_CHAR; break;
   case NC_BYTE: *mss_val.bp=FILL_BYTE; break;
-  } /* end switch */ 
+  } /* end switch */
 
   /* Un-typecast pointer to values after access */
   (void)cast_nctype_void(type,&mss_val);
   
   return mss_val;
 
-} /* end mss_val_mk() */ 
+} /* end mss_val_mk() */
   
 void
 mss_val_cp(var_sct *var1,var_sct *var2)
@@ -4829,7 +4828,7 @@ mss_val_cp(var_sct *var1,var_sct *var2)
   var_sct *var1: I variable structure with template missing value to copy
   var_sct *var2: I/O variable structure with missing value to fill in/overwrite
   mss_val_cp(): 
- */ 
+ */
 {
   /* Routine to copy missing value from var1 to var2
      On exit, var2 contains has_mss_val, and mss_val identical to var1
@@ -4847,7 +4846,7 @@ mss_val_cp(var_sct *var1,var_sct *var2)
     var2->has_mss_val=True;
   } /* endif var1 has mss_val */
 
-} /* end mss_val_cp() */ 
+} /* end mss_val_cp() */
   
 void
 var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_typ_rlt,ptr_unn op2,ptr_unn op3)
@@ -4860,16 +4859,16 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
   int op_typ_rlt: I type of relationship to test for between op2 and op1
   ptr_unn op2: I Value of mask field
   ptr_unn op3: I/O values of second operand on input, masked values on output
- */ 
+ */
 {
   /* Routine to mask third operand by second operand. Wherever second operand does not 
      equal first operand the third operand will be set to its missing value. */
 
-  /* Masking is currently defined as if(op2 !op_typ_rlt op1) then op3:=mss_val */   
+  /* Masking is currently defined as if(op2 !op_typ_rlt op1) then op3:=mss_val */  
 
   long idx;
 
-  /* Typecast pointer to values before access */ 
+  /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op2);
   (void)cast_void_nctype(type,&op3);
   if(has_mss_val){
@@ -4879,7 +4878,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     exit(EXIT_FAILURE);
   } /* end else */
 
-  /* NB: Explicit coercion when comparing op2 to op1 is necessary */ 
+  /* NB: Explicit coercion when comparing op2 to op1 is necessary */
   switch(type){
   case NC_FLOAT:
     switch(op_typ_rlt){
@@ -4889,7 +4888,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     case nc_op_gt: for(idx=0;idx<sz;idx++) if(op2.fp[idx] <= (float)op1) op3.fp[idx]=*mss_val.fp; break;
     case nc_op_le: for(idx=0;idx<sz;idx++) if(op2.fp[idx] >  (float)op1) op3.fp[idx]=*mss_val.fp; break;
     case nc_op_ge: for(idx=0;idx<sz;idx++) if(op2.fp[idx] <  (float)op1) op3.fp[idx]=*mss_val.fp; break;
-    } /* end switch */ 
+    } /* end switch */
     break;
   case NC_DOUBLE:
     switch(op_typ_rlt){
@@ -4899,7 +4898,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     case nc_op_gt: for(idx=0;idx<sz;idx++) if(op2.dp[idx] <= (double)op1) op3.dp[idx]=*mss_val.dp; break;
     case nc_op_le: for(idx=0;idx<sz;idx++) if(op2.dp[idx] >  (double)op1) op3.dp[idx]=*mss_val.dp; break;
     case nc_op_ge: for(idx=0;idx<sz;idx++) if(op2.dp[idx] <  (double)op1) op3.dp[idx]=*mss_val.dp; break;
-    } /* end switch */ 
+    } /* end switch */
     break;
   case NC_LONG:
     switch(op_typ_rlt){
@@ -4909,7 +4908,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     case nc_op_gt: for(idx=0;idx<sz;idx++) if(op2.lp[idx] <= (long)op1) op3.lp[idx]=*mss_val.lp; break;
     case nc_op_le: for(idx=0;idx<sz;idx++) if(op2.lp[idx] >  (long)op1) op3.lp[idx]=*mss_val.lp; break;
     case nc_op_ge: for(idx=0;idx<sz;idx++) if(op2.lp[idx] <  (long)op1) op3.lp[idx]=*mss_val.lp; break;
-    } /* end switch */ 
+    } /* end switch */
     break;
   case NC_SHORT:
     switch(op_typ_rlt){
@@ -4919,7 +4918,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     case nc_op_gt: for(idx=0;idx<sz;idx++) if(op2.sp[idx] <= (short)op1) op3.sp[idx]=*mss_val.sp; break;
     case nc_op_le: for(idx=0;idx<sz;idx++) if(op2.sp[idx] >  (short)op1) op3.sp[idx]=*mss_val.sp; break;
     case nc_op_ge: for(idx=0;idx<sz;idx++) if(op2.sp[idx] <  (short)op1) op3.sp[idx]=*mss_val.sp; break;
-    } /* end switch */ 
+    } /* end switch */
     break;
   case NC_CHAR:
     switch(op_typ_rlt){
@@ -4929,7 +4928,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     case nc_op_gt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <= (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
     case nc_op_le: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >  (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
     case nc_op_ge: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <  (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
-    } /* end switch */ 
+    } /* end switch */
     break;
   case NC_BYTE:
     switch(op_typ_rlt){
@@ -4939,14 +4938,14 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     case nc_op_gt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <= (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
     case nc_op_le: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >  (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
     case nc_op_ge: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <  (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
-    } /* end switch */ 
+    } /* end switch */
     break;
-  } /* end switch */ 
+  } /* end switch */
 
   /* It is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */ 
+     because we have only operated on local copies of them. */
 
-} /* end var_mask() */ 
+} /* end var_mask() */
 
 void
 var_zero(nc_type type,long sz,ptr_unn op1)
@@ -4954,13 +4953,13 @@ var_zero(nc_type type,long sz,ptr_unn op1)
   nc_type type: I netCDF type of operand
   long sz: I size (in elements) of operand
   ptr_unn op1: I values of first operand
- */ 
+ */
 {
   /* Routine to zero value of first operand and store result in second operand. */
 
   long idx;
 
-  /* Typecast pointer to values before access */ 
+  /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
 
   switch(type){
@@ -4977,17 +4976,17 @@ var_zero(nc_type type,long sz,ptr_unn op1)
     for(idx=0;idx<sz;idx++) op1.sp[idx]=0;
     break;
   case NC_CHAR:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
   case NC_BYTE:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
-  } /* end switch */ 
+  } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */ 
+     because we have only operated on local copies of them. */
 
-} /* end var_zero() */ 
+} /* end var_zero() */
 
 void
 vec_set(nc_type type,long sz,ptr_unn op1,double op2)
@@ -4996,13 +4995,13 @@ vec_set(nc_type type,long sz,ptr_unn op1,double op2)
   long sz: I size (in elements) of operand
   ptr_unn op1: I values of first operand
   double op2: I value to fill vector with
- */ 
+ */
 {
   /* Routine to fill every value of first operand with value of second operand */
 
   long idx;
 
-  /* Typecast pointer to values before access */ 
+  /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
 
   switch(type){
@@ -5019,24 +5018,24 @@ vec_set(nc_type type,long sz,ptr_unn op1,double op2)
     for(idx=0;idx<sz;idx++) op1.sp[idx]=(short)op2; /* Coerce to avoid C++ compiler assignment warning */
     break;
   case NC_CHAR:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
   case NC_BYTE:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
-  } /* end switch */ 
+  } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */ 
+     because we have only operated on local copies of them. */
 
-} /* end vec_set() */ 
+} /* end vec_set() */
 
 void
 zero_long(long sz,long *op1)
 /* 
   long sz: I size (in elements) of operand
   long *op1: I values of first operand
- */ 
+ */
 {
   /* Routine to zero value of first operand and store result in first operand. */
 
@@ -5044,7 +5043,7 @@ zero_long(long sz,long *op1)
 
   for(idx=0;idx<sz;idx++) op1[idx]=0L;
 
-} /* end zero_long() */ 
+} /* end zero_long() */
 
 void
 var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
@@ -5055,18 +5054,18 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
   ptr_unn mss_val: I [flg] Value of missing value
   ptr_unn op1: I [val] Values of first operand
   ptr_unn op2: I/O [val] Values of second operand on input, values of difference on output
- */ 
+ */
 {
   /* Purpose: Subtract value of first operand from value of second operand 
      and store result in second operand. 
      Operands are assumed to have conforming dimensions, and be of specified type. 
-     Operands' values are assumed to be in memory already. */ 
+     Operands' values are assumed to be in memory already. */
 
-  /* Subtraction is currently defined as op2:=op2-op1 */ 
+  /* Subtraction is currently defined as op2:=op2-op1 */
 
   long idx;
 
-  /* Typecast pointer to values before access */ 
+  /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
@@ -5082,9 +5081,9 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
       float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)) op2.fp[idx]-=op1.fp[idx]; else op2.fp[idx]=mss_val_flt;
-      } /* end for */ 
+      } /* end for */
     } /* end else */
-#endif /* !USE_FORTRAN_ARITHMETIC */ 
+#endif /* !USE_FORTRAN_ARITHMETIC */
     break;
   case NC_DOUBLE:
 #ifdef USE_FORTRAN_ARITHMETIC
@@ -5095,9 +5094,9 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
     }else{
       for(idx=0;idx<sz;idx++){
 	if((op2.dp[idx] != *mss_val.dp) && (op1.dp[idx] != *mss_val.dp)) op2.dp[idx]-=op1.dp[idx]; else op2.dp[idx]=*mss_val.dp;
-      } /* end for */ 
+      } /* end for */
     } /* end else */
-#endif /* !USE_FORTRAN_ARITHMETIC */ 
+#endif /* !USE_FORTRAN_ARITHMETIC */
     break;
   case NC_LONG:
     if(!has_mss_val){
@@ -5105,7 +5104,7 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
     }else{
       for(idx=0;idx<sz;idx++){
 	if((op2.lp[idx] != *mss_val.lp) && (op1.lp[idx] != *mss_val.lp)) op2.lp[idx]-=op1.lp[idx]; else op2.lp[idx]=*mss_val.lp;
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_SHORT:
@@ -5115,21 +5114,21 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
       float mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if((op2.sp[idx] != mss_val_shrt) && (op1.sp[idx] != mss_val_shrt)) op2.sp[idx]-=op1.sp[idx]; else op2.sp[idx]=mss_val_shrt;
-      } /* end for */ 
+      } /* end for */
     } /* end else */
     break;
   case NC_CHAR:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
   case NC_BYTE:
-    /* Do nothing */ 
+    /* Do nothing */
     break;
-  } /* end switch */ 
+  } /* end switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */ 
+     because we have only operated on local copies of them. */
   
-} /* end var_subtract() */ 
+} /* end var_subtract() */
 
 bool
 ncar_csm_inq(int nc_id)
@@ -5149,7 +5148,7 @@ ncar_csm_inq(int nc_id)
 
   nc_type att_typ;
 
-  /* Look for signature of an NCAR CSM format file */ 
+  /* Look for signature of an NCAR CSM format file */
   ncopts=0; 
   rcd=ncattinq(nc_id,NC_GLOBAL,"convention",&att_typ,&att_sz);
   ncopts=NC_VERBOSE | NC_FATAL; 
@@ -5162,13 +5161,13 @@ ncar_csm_inq(int nc_id)
     att_val[att_sz]='\0';
     if(!strcmp("NCAR-CSM",att_val)) NCAR_CSM=True;
     if(att_val != NULL) (void)free(att_val);
-  } /* endif */ 
+  } /* endif */
 
   if(NCAR_CSM) (void)fprintf(stderr,"%s: CONVENTION File convention is NCAR CSM\n",prg_nm_get()); 
 
   return NCAR_CSM;
   
-} /* end ncar_csm_inq */ 
+} /* end ncar_csm_inq */
 
 void
 ncar_csm_date(int nc_id,var_sct **var,int nbr_var)
@@ -5178,7 +5177,7 @@ ncar_csm_date(int nc_id,var_sct **var,int nbr_var)
 	int nbr_var: I number of structures in variable structure list
 	*/
 {
-  /* Routine to fix date variable in averaged CSM files */ 
+  /* Routine to fix date variable in averaged CSM files */
   char wrn_sng[1000];
 
   int day;
@@ -5200,7 +5199,7 @@ ncar_csm_date(int nc_id,var_sct **var,int nbr_var)
   if(idx == nbr_var) return; else date_idx=idx;
   if(var[date_idx]->type != NC_LONG) return;
   
-  /* Find the scalar nbdate variable (NC_LONG: base date date as 6 digit integer (YYMMDD)) */ 
+  /* Find the scalar nbdate variable (NC_LONG: base date date as 6 digit integer (YYMMDD)) */
   ncopts=0;
   nbdate_id=ncvarid(nc_id,"nbdate");
   ncopts=NC_VERBOSE | NC_FATAL; 
@@ -5208,7 +5207,7 @@ ncar_csm_date(int nc_id,var_sct **var,int nbr_var)
     (void)fprintf(stderr,"%s: WARNING NCAR CSM convention file output variable list contains \"date\" but not \"nbdate\"\n",prg_nm_get());
     (void)fprintf(stderr,"%s: %s",prg_nm_get(),wrn_sng);
     return;
-  } /* endif */ 
+  } /* endif */
   (void)ncvarget1(nc_id,nbdate_id,0L,&nbdate);
   
   /* Find the time variable (NC_DOUBLE: current day) */
@@ -5221,20 +5220,20 @@ ncar_csm_date(int nc_id,var_sct **var,int nbr_var)
     return;
   }else{
     time_idx=idx;
-  } /* endif */ 
+  } /* endif */
   
-  /* Assign the current day to the averaged day number */ 
+  /* Assign the current day to the averaged day number */
   day=(int)(var[time_idx]->val.dp[0]);
   
-  /* Recompute the date variable based on the new (averaged) day number */ 
+  /* Recompute the date variable based on the new (averaged) day number */
 #ifdef USE_FORTRAN_ARITHMETIC
   date=FORTRAN_newdate(&nbdate,&day);
 #else /* !USE_FORTRAN_ARITHMETIC */
   date=newdate(nbdate,day);
-#endif /* !USE_FORTRAN_ARITHMETIC */ 
+#endif /* !USE_FORTRAN_ARITHMETIC */
   if(var[date_idx]->val.lp != NULL) return; else var[date_idx]->val.lp[0]=date;
   
-} /* end ncar_csm_date */ 
+} /* end ncar_csm_date */
 
 double
 arm_time_mk(int nc_id,double time_offset)
@@ -5244,14 +5243,14 @@ arm_time_mk(int nc_id,double time_offset)
 	double arm_time_mk: O base_time + current time_offset
 	*/
 {
-  /* Routine to return the time corresponding to the current time offset */ 
+  /* Routine to return the time corresponding to the current time offset */
   double arm_time;
 
   int base_time_id;
 
   nclong base_time;
 
-  /* Find the base_time variable (NC_LONG: base UNIX time of file) */ 
+  /* Find the base_time variable (NC_LONG: base UNIX time of file) */
   ncopts=0;
   base_time_id=ncvarid(nc_id,"base_time");
   ncopts=NC_VERBOSE | NC_FATAL; 
@@ -5263,7 +5262,7 @@ arm_time_mk(int nc_id,double time_offset)
   arm_time=base_time+time_offset;
 
   return arm_time;
-} /* end arm_time_mk() */ 
+} /* end arm_time_mk() */
 
 void
 arm_time_install(int nc_id,nclong base_time_srt)
@@ -5272,7 +5271,7 @@ arm_time_install(int nc_id,nclong base_time_srt)
 	 nclong base_time_srt: I base_time of first input file
 	 */
 {
-  /* Routine to add time variable to concatenated ARM files */ 
+  /* Routine to add time variable to concatenated ARM files */
 
   char att_units[]="seconds since 1970/01/01 00:00:00.00";
   char att_long_name[]="UNIX time";
@@ -5287,10 +5286,10 @@ arm_time_install(int nc_id,nclong base_time_srt)
   long srt=0L;
   long cnt;
 
-  /* Synchronize output file */ 
+  /* Synchronize output file */
   (void)ncsync(nc_id);
 
-  /* Find time_offset variable */ 
+  /* Find time_offset variable */
   ncopts=0;
   time_offset_id=ncvarid(nc_id,"time_offset");
   ncopts=NC_VERBOSE | NC_FATAL; 
@@ -5299,7 +5298,7 @@ arm_time_install(int nc_id,nclong base_time_srt)
     return;
   }; /* endif */
 
-  /* See if the time variable already exists */ 
+  /* See if the time variable already exists */
   ncopts=0;
   time_id=ncvarid(nc_id,"time");
   ncopts=NC_VERBOSE | NC_FATAL; 
@@ -5308,42 +5307,42 @@ arm_time_install(int nc_id,nclong base_time_srt)
     return;
   }; /* endif */
 
-  /* See if the time dimension exists */ 
+  /* See if the time dimension exists */
   time_dmn_id=ncdimid(nc_id,"time");
   if(time_dmn_id == -1){
     (void)fprintf(stderr,"%s: WARNING ARM file does not have dimension \"time\"\n",prg_nm_get());
     return;
   }; /* endif */
-  /* Get dimension size */ 
+  /* Get dimension size */
   (void)ncdiminq(nc_id,time_dmn_id,(char *)NULL,&cnt);
 
-  /* If the time coordinate does not already exist, create it */ 
+  /* If the time coordinate does not already exist, create it */
   time_offset=(double *)nco_malloc(cnt*nctypelen(NC_DOUBLE));
 
   (void)ncvarget(nc_id,time_offset_id,&srt,&cnt,(void *)time_offset);
   for(idx=0L;idx<cnt;idx++) time_offset[idx]+=base_time_srt;
 
-  /* File must be in define mode */ 
+  /* File must be in define mode */
   (void)ncredef(nc_id);
   time_id=ncvardef(nc_id,"time",NC_DOUBLE,1,&time_dmn_id);
 
-  /* Add attributes for time variable */ 
+  /* Add attributes for time variable */
   (void)ncattput(nc_id,time_id,"units",NC_CHAR,strlen(att_units)+1,(void *)att_units);
   (void)ncattput(nc_id,time_id,"long_name",NC_CHAR,strlen(att_long_name)+1,(void *)att_long_name);
 
-  /* Catenate time-stamped reminder onto "history" global attribute */ 
+  /* Catenate time-stamped reminder onto "history" global attribute */
   (void)hst_att_cat(nc_id,"ncrcat added variable time=base_time+time_offset");
 
-  /* Take file out of define mode */ 
+  /* Take file out of define mode */
   (void)ncendef(nc_id);
 
-  /* Write time variable */ 
+  /* Write time variable */
   (void)ncvarput(nc_id,time_id,&srt,&cnt,(void *)time_offset);
 
-  /* Free time_offset buffer */ 
+  /* Free time_offset buffer */
   if(time_offset != NULL) (void)free(time_offset);
 
-} /* end arm_time_install */ 
+} /* end arm_time_install */
 
 void
 var_lst_convert(int nc_id,nm_id_sct *xtr_lst,int nbr_xtr,dmn_sct **dim,int nbr_dmn_xtr,
@@ -5369,7 +5368,7 @@ var_lst_convert(int nc_id,nm_id_sct *xtr_lst,int nbr_xtr,dmn_sct **dim,int nbr_d
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
 
-  /* Fill in variable structure list for all extracted variables */ 
+  /* Fill in variable structure list for all extracted variables */
   for(idx=0;idx<nbr_xtr;idx++){
     var[idx]=var_fll(nc_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
     var_out[idx]=var_dup(var[idx]);
@@ -5380,7 +5379,7 @@ var_lst_convert(int nc_id,nm_id_sct *xtr_lst,int nbr_xtr,dmn_sct **dim,int nbr_d
   *var_ptr=var;
   *var_out_ptr=var_out;
 
-} /* end var_lst_convert */ 
+} /* end var_lst_convert */
 
 void
 var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
@@ -5411,8 +5410,8 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
   int prg; /* Program key */
 
   enum op_typ{
-    fix, /* 0 */ 
-    prc /* 1 */ 
+    fix, /* 0 */
+    prc /* 1 */
   };
 
   int idx_dim;
@@ -5428,13 +5427,13 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
 
   prg=prg_get(); /* Program key */
 
-  /* Allocate space for too many structures, then realloc() at the end, to avoid duplication. */ 
+  /* Allocate space for too many structures, then realloc() at the end, to avoid duplication. */
   var_fix=(var_sct **)nco_malloc(MAX_NC_VARS*sizeof(var_sct *));
   var_fix_out=(var_sct **)nco_malloc(MAX_NC_VARS*sizeof(var_sct *));
   var_prc=(var_sct **)nco_malloc(MAX_NC_VARS*sizeof(var_sct *));
   var_prc_out=(var_sct **)nco_malloc(MAX_NC_VARS*sizeof(var_sct *));
 
-  /* Find operation type for each variable: for now this is either fix or prc */ 
+  /* Find operation type for each variable: for now this is either fix or prc */
   for(idx=0;idx<nbr_var;idx++){
     
     /* Initialize operation type */
@@ -5442,7 +5441,7 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
     var_nm=var[idx]->nm;
     var_type=var[idx]->type;
 
-    /* Override operation type based depending on both the variable type and program */ 
+    /* Override operation type based depending on both the variable type and program */
     switch(prg){
     case ncap:
       var_op_typ[idx]=fix;
@@ -5468,7 +5467,7 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
 	if(idx_xcl != nbr_dmn_xcl){
 	  var_op_typ[idx]=prc;
 	  break;
-	} /* end if */ 
+	} /* end if */
       } /* end loop over idx_dim */
       /* If the variable does not contain an excluded (averaged) dimension, it must be fixed */
       if(idx_dim == var[idx]->nbr_dim) var_op_typ[idx]=fix;
@@ -5479,16 +5478,16 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
     case ncecat:
       if(var[idx]->is_crd_var) var_op_typ[idx]=fix;
       break;
-    } /* end switch */ 
+    } /* end switch */
     
     if(NCAR_CSM_FORMAT){
       if(!strcmp(var_nm,"ntrm") || !strcmp(var_nm,"ntrn") || !strcmp(var_nm,"ntrk") || !strcmp(var_nm,"ndbase") || !strcmp(var_nm,"nsbase") || !strcmp(var_nm,"nbdate") || !strcmp(var_nm,"nbsec") || !strcmp(var_nm,"mdt") || !strcmp(var_nm,"mhisf")) var_op_typ[idx]=fix;
       if(prg == ncdiff && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec"))) var_op_typ[idx]=fix;
-    } /* end if NCAR_CSM_FORMAT */ 
+    } /* end if NCAR_CSM_FORMAT */
 
   } /* end loop over var */
 
-  /* Assign the list pointers based on the operation type for the variable */ 
+  /* Assign the list pointers based on the operation type for the variable */
   *nbr_var_prc=*nbr_var_fix=0;
   for(idx=0;idx<nbr_var;idx++){
     if(var_op_typ[idx] == fix){
@@ -5500,22 +5499,22 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
       var_prc_out[*nbr_var_prc]=var_out[idx];
       ++*nbr_var_prc;
 /*      if(var[idx]->type != NC_FLOAT && var[idx]->type != NC_DOUBLE && prg != ncdiff && prg != ncrcat){
-	(void)fprintf(stderr,"%s: WARNING variable \"%s\" will be coerced from %s to NC_FLOAT\n",prg_nm_get(),var[idx]->nm,nc_type_nm(var[idx]->type));
+	(void)fprintf(stderr,"%s: WARNING variable \"%s\" will be coerced from %s to NC_FLOAT\n",prg_nm_get(),var[idx]->nm,nco_typ_sng(var[idx]->type));
 	var_out[idx]->type=NC_FLOAT;
-      } */ /* end if */ 
+      } *//* end if */
       if(((var[idx]->type == NC_CHAR) || (var[idx]->type == NC_BYTE)) && ((prg != ncrcat) && (prg != ncecat))){
-	(void)fprintf(stderr,"%s: WARNING Variable %s is of type %s, for which processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var[idx]->nm,nc_type_nm(var[idx]->type));
-      } /* end if */ 
-    } /* end else */ 
-  } /* end loop over var */ 
+	(void)fprintf(stderr,"%s: WARNING Variable %s is of type %s, for which processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var[idx]->nm,nco_typ_sng(var[idx]->type));
+      } /* end if */
+    } /* end else */
+  } /* end loop over var */
   
-  /* Sanity check */ 
+  /* Sanity check */
   if(*nbr_var_prc+*nbr_var_fix != nbr_var){
     (void)fprintf(stdout,"%s: ERROR nbr_var_prc+nbr_var_fix != nbr_var\n",prg_nm_get());
     exit(EXIT_FAILURE);
   } /* end if */
 
-  /* DBG XXX: remove the ncap exception when we finish the ncap list processing */ 
+  /* DBG XXX: remove the ncap exception when we finish the ncap list processing */
   if(*nbr_var_prc==0 && prg != ncap){
     (void)fprintf(stdout,"%s: ERROR no variables fit criteria for processing\n",prg_nm_get());
     switch(prg_get()){
@@ -5542,17 +5541,17 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
     case ncecat:
       (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables in order to perform an ensemble concatenation\n",prg_nm_get());
       break;
-    } /* end switch */ 
+    } /* end switch */
     exit(EXIT_FAILURE);
   } /* end if */
 
-  /* Free unused space and save the pointers in the output variables */ 
+  /* Free unused space and save the pointers in the output variables */
   if(*nbr_var_fix > 0) *var_fix_ptr=(var_sct **)nco_realloc(var_fix,*nbr_var_fix*sizeof(var_sct *)); else *var_fix_ptr=NULL;
   if(*nbr_var_fix > 0) *var_fix_out_ptr=(var_sct **)nco_realloc(var_fix_out,*nbr_var_fix*sizeof(var_sct *)); else *var_fix_out_ptr=NULL;
   if(*nbr_var_prc > 0) *var_prc_ptr=(var_sct **)nco_realloc(var_prc,*nbr_var_prc*sizeof(var_sct *)); else *var_prc_ptr=NULL;
   if(*nbr_var_prc > 0) *var_prc_out_ptr=(var_sct **)nco_realloc(var_prc_out,*nbr_var_prc*sizeof(var_sct *)); else *var_prc_out_ptr=NULL;
 
-} /* end var_lst_divide */ 
+} /* end var_lst_divide */
 
 nm_id_sct *
 dmn_lst_mk(int nc_id,char **dmn_lst_in,int nbr_dim)
@@ -5561,7 +5560,7 @@ dmn_lst_mk(int nc_id,char **dmn_lst_in,int nbr_dim)
    char **dmn_lst_in: user specified list of dimension names
    int nbr_dim: I total number of dimensions in lst
    nm_id_sct dmn_lst_mk(): O dimension list
- */ 
+ */
 {
   int idx;
 
@@ -5576,7 +5575,7 @@ dmn_lst_mk(int nc_id,char **dmn_lst_in,int nbr_dim)
   
   return dmn_lst;
 
-} /* end dmn_lst_mk() */ 
+} /* end dmn_lst_mk() */
 
 void
 rec_crd_chk(var_sct *var,char *fl_in,char *fl_out,long idx_rec,long idx_rec_out)
@@ -5586,20 +5585,20 @@ rec_crd_chk(var_sct *var,char *fl_in,char *fl_out,long idx_rec,long idx_rec_out)
    char *fl_out: I current output filename
    int idx_rec: I current index or record coordinate in input file
    int idx_rec_out: I current index or record coordinate in output file
- */ 
+ */
 {
-  /* Routine to check for monotonicity of coordinate values */ 
+  /* Routine to check for monotonicity of coordinate values */
 
   enum monotonic_direction{
-    decreasing, /* 0 */ 
-    increasing}; /* 1 */ 
+    decreasing, /* 0 */
+    increasing}; /* 1 */
 
   static double rec_crd_val_lst;
   static double rec_crd_val_crr;
 
   static int monotonic_direction;
 
-  /* Use implicit type conversion */ 
+  /* Use implicit type conversion */
   switch(var->type){
   case NC_FLOAT: rec_crd_val_crr=var->val.fp[0]; break; 
   case NC_DOUBLE: rec_crd_val_crr=var->val.dp[0]; break; 
@@ -5607,7 +5606,7 @@ rec_crd_chk(var_sct *var,char *fl_in,char *fl_out,long idx_rec,long idx_rec_out)
   case NC_SHORT: rec_crd_val_crr=var->val.sp[0]; break;
   case NC_CHAR: rec_crd_val_crr=var->val.cp[0]; break;
   case NC_BYTE: rec_crd_val_crr=var->val.bp[0]; break;
-  } /* end switch */ 
+  } /* end switch */
   
   if(idx_rec_out > 1){
     if(((rec_crd_val_crr > rec_crd_val_lst) && monotonic_direction == decreasing) ||
@@ -5615,11 +5614,11 @@ rec_crd_chk(var_sct *var,char *fl_in,char *fl_out,long idx_rec,long idx_rec_out)
       (void)fprintf(stderr,"%s: WARNING Record coordinate \"%s\" does not monotonically %s between (input file %s record indices: %ld, %ld) (output file %s record indices %ld, %ld) record coordinate values %f, %f\n",prg_nm_get(),var->nm,(monotonic_direction == decreasing ? "decrease" : "increase"),fl_in,idx_rec-1,idx_rec,fl_out,idx_rec_out-1,idx_rec_out,rec_crd_val_lst,rec_crd_val_crr);
   }else if(idx_rec_out == 1){
     if(rec_crd_val_crr > rec_crd_val_lst) monotonic_direction=increasing; else monotonic_direction=decreasing;
-  } /* end if */ 
+  } /* end if */
     
   rec_crd_val_lst=rec_crd_val_crr;
 
-} /* end rec_crd_chk() */ 
+} /* end rec_crd_chk() */
 
 char **
 fl_lst_mk(char **argv,int argc,int arg_crr,int *nbr_fl,char **fl_out)
@@ -5630,10 +5629,10 @@ fl_lst_mk(char **argv,int argc,int arg_crr,int *nbr_fl,char **fl_out)
    int *nbr_fl: O number of files in input file list
    char **fl_out: O name of the output file
    char **fl_lst_mk(): O list of user-specified filenames
- */ 
+ */
 {
   /* Routine to parse the positional arguments on the command line.
-     The name of the calling program plays a role in this. */ 
+     The name of the calling program plays a role in this. */
 
   /* Command-line switches are expected to have been digested already (e.g., by getopt()),
      and argv[arg_crr] points to the first argument on the command line following all the
@@ -5644,14 +5643,14 @@ fl_lst_mk(char **argv,int argc,int arg_crr,int *nbr_fl,char **fl_out)
   int idx;
   int fl_nm_sz_warning=80;
 
-  /* Are there any remaining arguments that could be filenames? */ 
+  /* Are there any remaining arguments that could be filenames? */
   if(arg_crr >= argc){
     (void)fprintf(stdout,"%s: ERROR must specify filename(s)\n",prg_nm_get());
     (void)usg_prn();
     exit(EXIT_FAILURE);
-  } /* end if */ 
+  } /* end if */
 
-  /* See if there appear to be problems with any of the specified files */ 
+  /* See if there appear to be problems with any of the specified files */
   for(idx=arg_crr;idx<argc;idx++){
     if((int)strlen(argv[idx]) >= fl_nm_sz_warning) (void)fprintf(stderr,"%s: WARNING filename %s is very long (%ld characters)\n",prg_nm_get(),argv[idx],(long)strlen(argv[idx]));
   } /* end loop over idx */
@@ -5669,7 +5668,7 @@ fl_lst_mk(char **argv,int argc,int arg_crr,int *nbr_fl,char **fl_out)
     fl_lst_in[(*nbr_fl)++]=argv[arg_crr++];
     if(arg_crr == argc-1) *fl_out=argv[arg_crr]; else *fl_out=NULL;
     return fl_lst_in;
-    /*    break;*/ /* NB: putting break after return in case statement causes warning on SGI cc */ 
+    /*    break;*//* NB: putting break after return in case statement causes warning on SGI cc */
   case ncdiff:
   case ncflint:
     if(argc-arg_crr != 3){
@@ -5698,21 +5697,21 @@ fl_lst_mk(char **argv,int argc,int arg_crr,int *nbr_fl,char **fl_out)
     break;
   default:
     break;
-  } /* end switch */ 
+  } /* end switch */
 
-  /* Fill in the file list and output file */ 
+  /* Fill in the file list and output file */
   fl_lst_in=(char **)nco_malloc((argc-arg_crr-1)*sizeof(char *));
   while(arg_crr < argc-1) fl_lst_in[(*nbr_fl)++]=argv[arg_crr++];
   if(*nbr_fl == 0){
     (void)fprintf(stdout,"%s: ERROR Must specify input filename.\n",prg_nm_get());
     (void)usg_prn();
     exit(EXIT_FAILURE);
-  } /* end if */ 
+  } /* end if */
   *fl_out=argv[argc-1];
 
   return fl_lst_in;
 
-} /* end fl_lst_mk() */ 
+} /* end fl_lst_mk() */
 
 char *
 prg_prs(char *nm_in,int *prg)
@@ -5720,7 +5719,7 @@ prg_prs(char *nm_in,int *prg)
    char *nm_in: I name of program to categorize, e.g., argv[0] (might include a path prefix)
    int *prg: O enumeration number corresponding to nm_in
    char *prg_prs(): O nm_in stripped of any path (i.e., program name stub)
- */ 
+ */
 {
   /* Routine to set program name and enum */
 
@@ -5748,13 +5747,13 @@ prg_prs(char *nm_in,int *prg)
 
   return nm_out;
 
-} /* end prg_prs() */ 
+} /* end prg_prs() */
 
 void
 err_prn(char *err_msg)
 /* 
    char *err_msg: I the formatted error message to print
- */ 
+ */
 {
   /* Routine to print an error message (currently only to stdout) approximately in GNU style,
      i.e., "program_name: ERROR error message....\n". This routine is intended to make error
@@ -5769,12 +5768,12 @@ err_prn(char *err_msg)
 
   (void)fprintf(stdout,"%s: %s",prg_nm_get(),err_msg);
 
-} /* end err_prn() */ 
+} /* end err_prn() */
 
 void 
 usg_prn(void)
 {
-  /* Purpose: Print correct command-line usage of host program (currently to stdout) */ 
+  /* Purpose: Print correct command-line usage of host program (currently to stdout) */
 
   char *opt_sng=NULL_CEWI;
 
@@ -5814,11 +5813,11 @@ usg_prn(void)
     break;
   } /* end switch */
   
-  /* Public service announcements */ 
+  /* Public service announcements */
   (void)fprintf(stdout,"NCO homepage at http://nco.sourceforge.net has complete online User's Guide\n");
   (void)fprintf(stdout,"Post questions, suggestions, patches at http://sourceforge.net/projects/nco\n");
 
-  /* We now have command-specific command line option string */ 
+  /* We now have command-specific command line option string */
   (void)fprintf(stdout,"%s %s\n",prg_nm_get(),opt_sng);
 
   if(strstr(opt_sng,"-A")) (void)fprintf(stdout,"-A\t\tAppend to existing output file, if any\n");
@@ -5836,7 +5835,7 @@ usg_prn(void)
     else if(prg == ncks) (void)fprintf(stdout,"-d dim,[min][,[max]][,[stride]] Dimension's limits and stride in hyperslab\n");
     else if(prg == ncra || prg == ncrcat) (void)fprintf(stdout,"-d dim,[min][,[max]][,[stride]] Dimension's limits (any dimension) and stride (record dimension only) in hyperslab\n");
     else (void)fprintf(stdout,"-d dim,[min][,[max]] Dimension's limits in hyperslab\n");
-  } /* end if -d */ 
+  } /* end if -d */
   if(strstr(opt_sng,"-F")) (void)fprintf(stdout,"-F\t\tFortran indexing conventions (1-based) for I/O\n");
   if(strstr(opt_sng,"-H")) (void)fprintf(stdout,"-H\t\tPrint data\n");
   if(strstr(opt_sng,"-h")){
@@ -5848,11 +5847,11 @@ usg_prn(void)
   if(strstr(opt_sng,"-M")){
     if(prg == ncwa) (void)fprintf(stdout,"-M val\t\tMasking value (default is 1.0)\n");
     if(prg == ncks) (void)fprintf(stdout,"-M\t\tPrint global metadata\n");
-  } /* end if */ 
+  } /* end if */
   if(strstr(opt_sng,"-m")){
     if(prg == ncwa) (void)fprintf(stdout,"-m mask\t\tMasking variable name\n");
     if(prg == ncks) (void)fprintf(stdout,"-m\t\tPrint variable metadata\n");
-  } /* end if */ 
+  } /* end if */
   if(strstr(opt_sng,"-N")) (void)fprintf(stdout,"-N\t\tNo normalization\n");
   if(strstr(opt_sng,"-n")){
     /*    if(prg == ncwa) (void)fprintf(stdout,"-n\t\tNormalize by tally but not weight\n");*/
@@ -5884,7 +5883,7 @@ usg_prn(void)
   if(strstr(opt_sng,"out.nc")) (void)fprintf(stdout,"out.nc\t\tOutput file name\n");
 /*  if(strstr(opt_sng,"-")) (void)fprintf(stdout,"-\n");*/
 
-  /* Free the space holding the string */ 
+  /* Free the space holding the string */
   (void)free(opt_sng);
 
 } /* end usg_prn() */
@@ -5911,7 +5910,7 @@ int
 op_prs_rlt(char *op_sng)
 /* 
    char *op_sng: I string containing Fortran representation of a reltional operator ("eq","lt"...)
- */ 
+ */
 {
   /* Routine to parse the Fortran abbreviation for a relational operator into a unique numeric value
      representing that relation */
@@ -5934,9 +5933,9 @@ op_prs_rlt(char *op_sng)
     exit(EXIT_FAILURE);
   } /* end else */
 
-  /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */ 
+  /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
   return 1;
-} /* end op_prs_rlt() */ 
+} /* end op_prs_rlt() */
 
 int nd2endm(int mth,int day)
 {
@@ -5944,7 +5943,7 @@ int nd2endm(int mth,int day)
      This number added to the input arguement day gives the last day of month mth
      Original fortran: Brian Eaton cal_util.F:nd2endm()
      C version: Charlie Zender
- */ 
+ */
   int nbr_day_2_mth_end;
   int mdays[]={31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
@@ -6046,8 +6045,8 @@ nclong newdate(nclong date,int day_srt)
 } /* end newdate() */
 
 int ncvarid_or_die /* O [enm] Variable ID */
-(int nc_id, /* I [enm] File ID */ 
- char *var_nm) /* I [sng] Variable name */ 
+(int nc_id, /* I [enm] File ID */
+ char *var_nm) /* I [sng] Variable name */
 {
   /* Purpose: Return variable ID of specified variable 
      Be quiety on success but return meaningful diagnostics on failure */
@@ -6067,51 +6066,29 @@ int ncvarid_or_die /* O [enm] Variable ID */
   return var_id;
 } /* ncvarid_or_die() */
 
-int /* O [enm] Return code */
-nco_cnv_var_dbl  /* [fnc] Convert char, short, long, int types to doubles before arithmetic */
-(var_sct **var_prc_ptr, /* I [var] Variable */
- var_sct **var_prc_out_ptr, /* I [var] Variable */
- int nco_op_typ) /* I [enm] Operation type */ 
+var_sct * /* O [var] Variable after (possible) conversion */
+nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before arithmetic */
+(var_sct *var, /* I/O [var] Variable to be considered for conversion */
+ int nco_op_typ) /* I [enm] Operation type */
 {
-  /* Purpose: Convert char, short, long, int types to doubles before arithmetic
+  /* Purpose: Convert char, short, long, int types to doubles for arithmetic
      Conversions are performed unless arithmetic operation type is min or max
      Floats (and doubles, of course) are not converted for performance reason 
-     Two variables are converted, one is var_prc and the other is var_prc_out
-     var_prc_out is assumed to be a copy of var_prc
+     This routine is usually called 
      Remember to convert back after weighting and arithmetic are complete! */
 
-  int rcd=0; /* O [enm] netCDF error code */
-
-  var_sct *var_prc; /* [var] Variable */
-  var_sct *var_prc_out; /* [var] Variable */
-
-  var_prc=*var_prc_ptr;
-  var_prc_out=*var_prc_out_ptr;
-
-  if(var_prc->type != NC_FLOAT && var_prc->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max){
-    var_prc->typ_prv=var_prc->type;
-    var_prc=var_conform_type(NC_DOUBLE,var_prc);
-    var_prc_out->typ_prv=var_prc_out->type;
-    var_prc_out=var_conform_type(NC_DOUBLE,var_prc_out);
-
-    *var_prc_ptr=var_prc;
-    *var_prc_out_ptr=var_prc_out;
-
-  } /* endif */
+  if(var->type != NC_FLOAT && var->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max) var=var_conform_type(NC_DOUBLE,var);
   
-  return rcd;
-} /* nco_cnv_var_dbl() */
+  return var;
+} /* nco_typ_cnv_rth() */
 
-var_sct * /* O [sct] Variable reverted to previous type */
-nco_cnv_dbl_var  /* [fnc] Revert variable to previous type */
+var_sct * /* O [sct] Variable reverted to on-disk type */
+nco_cnv_var_typ_dsk  /* [fnc] Revert variable to on-disk type */
 (var_sct *var) /* I [sct] Variable to be reverted */
 {
-  /* Purpose: Revert variable to previous type */
+  /* Purpose: Revert variable to on-disk type */
 
-  if(var->typ_prv != 0){ /* fxm: Hardcoded 0 is unsafe */
-    var=var_conform_type(var->typ_prv,var);
-    var->typ_prv=0;
-  } /* endif */
+  if(var->type != var->typ_dsk) var=var_conform_type(var->typ_dsk,var);
 
   return var;
-} /* nco_cnv_dbl_var() */
+} /* nco_cnv_var_typ_dsk() */

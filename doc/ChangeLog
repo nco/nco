@@ -1,3 +1,32 @@
+2000-08-28  Charlie Zender  <zender@uci.edu>
+
+	* Tagged nco-1_2_1
+
+	* Will all previous changes to nco_malloc(), nco_realloc(), and
+	memory management in general, make tst now seems to be well
+	behaved with Electric Fence, and duplicates answers without
+	Electric Fence. 
+
+	* Another nco_realloc() tweak to satisfy Electric Fence:
+	Now realloc() is never called when size == 0
+
+2000-08-27  Charlie Zender  <zender@uci.edu>
+
+	* Automatic type conversions for arithmetic now work in ncwa,
+	ncea, ncra. Don't think ncflint would benefit from the capability.
+
+2000-08-26  Charlie Zender  <zender@uci.edu>
+
+	* Changed meaning and name of typ_prv to typ_dsk in var_sct
+
+	* Moved target dat_cln from cln to dst_cln, opposite for lib_cln
+
+	* Simplified internals of nco_opr_drv()
+
+	* Fixed nco_realloc() so it does not call realloc() when ptr==NULL
+	and size==0. Allowing a realloc() call in this situation is
+	ANSI-legal but triggers Electric Fence.
+
 2000-08-25  Charlie Zender  <zender@uci.edu>
 
 	* Merged Makefile refinements by Ethan Davis to better support
