@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.353 2004-07-29 23:14:40 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.354 2004-07-29 23:27:27 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -236,9 +236,8 @@ nco363. Document ncpdq in nco.texi
 nco364. Handle record dimension correctly in ncpdq
 nco365. Add ncpdq tests to nco_tst.pl
 nco366. ncpdq: Use ncwa technique to put non-dmn_rdr variables in var_fix rather than var_prc?
-nco367. fix ncwa list collapse errors once bug found in pcpdq
-nco368. ncpdq does not do IDENTITY_REORDER appropriately:
-ncpdq -C -O -D 3 -z time -v time ~/nco/data/in.nc ~/foo.nc
+nco367. fix ncwa list collapse errors once bug found in pcpdq. Unfortunately ncwa uses dim_avg_lst after it is collapsed
+nco369.
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

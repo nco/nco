@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.25 2004-07-29 23:18:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.26 2004-07-29 23:27:29 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -449,10 +449,11 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   dmn_in_nbr=var_in->nbr_dim;
   dmn_out_nbr=var_out->nbr_dim;
 
-  /* Initialize default correspondence */
+  /* Initialize default correspondence and return value in case early return desired */
   for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
     dmn_idx_out_in[dmn_in_idx]=dmn_in_idx;
-  
+  if(var_out->is_rec_var) rec_dmn_nm_out=var_in->dim[0]->nm;
+
   /* Scalars and 1-D variables are never altered by dimension re-ordering */
   if(dmn_in_nbr <= 1) return rec_dmn_nm_out;
   
@@ -478,8 +479,10 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
     } /* end loop over dmn_in */
   } /* end loop over dmn_rdr */
   
-    /* No re-ordering necessary if dmn_in and dmn_rdr share fewer than two dimensions */
-    /* fxm: this will change to one dimension when reversing is implemented */
+    /* No re-ordering is necessary if dmn_in and dmn_rdr share fewer than two dimensions
+       fxm: However, this will change to one dimension when reversing is implemented
+       fxm: Diagnostics and output may require proceeding past this point even though
+       metadata re-order per se is done */
   if(dmn_in_dmn_rdr_shr_nbr < 2) return rec_dmn_nm_out;
   
   /* Initialize output order to input order */
