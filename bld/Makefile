@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.105 2001-12-28 20:09:27 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.106 2002-01-16 23:18:16 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -35,8 +35,8 @@ ifndef MY_OBJ_DIR
 endif
 MY_DAT_DIR := ../data
 MY_DOC_DIR := ../doc
-MY_INC_DIR := 
 MY_DPN_DIR := ${MY_OBJ_DIR}
+MY_INC_DIR := 
 MY_SRC_DIR := ../src/nco
 
 # Primary tokens which determine build options
@@ -60,6 +60,9 @@ endif
 ifndef NETCDF_LIB
  NETCDF_LIB := /usr/local/lib # Directory containing libnetcdf.a
 endif
+ifndef ${OMP} # OpenMP
+ OMP := Y
+endif # endif OMP
 ifndef OPTS
  OPTS := O
 endif
@@ -233,15 +236,24 @@ ${MY_DPN_DIR}/%.d : %.cc
 
 # Works on AIX and AIX46K
 ifneq (,$(findstring AIX,${PVM_ARCH}))
+ifeq (${OMP},Y)
+ CC := xlc_r
+ FC := xlf95_r
+ OMP_FLG := -qsmp=noauto 
+else
+ CC := xlc
+ CPP_DFN += -U_OPENMP
+ FC := xlf95
+endif # endif OMP
 C++ := xlC
-CC := cc
 # Additional switch to fix compiler warnings on csz.c
 # -qmaxmem=num Limit the amount of memory used by space intensive optimizations to <num> kilobytes
 CFLAGS := -qmaxmem=8192
 CPP := cc -c
 CPPFLAGS := ${CPP_TKN} ${CPP_PTH} -I${NETCDF_INC}
-FC := xlf
-FFLAGS := -qfixed=132
+FFLAGS := ${OMP_FLG} -qmaxmem=-1 -qarch=auto -qspillsize=2500
+FIXEDFLAGS := -qsuffix=f=f:cpp=F -qfixed=132
+FREEFLAGS := -qsuffix=f=f90:cpp=F90
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
@@ -275,16 +287,20 @@ endif
 # endif AIX
 
 ifeq (${PVM_ARCH},ALPHA)
+ifeq (${OMP},Y)
+ OMP_FLG := -omp
+endif # endif OMP
 C++ := cxx
 CC := cc
+CFLAGS := ${OMP_FLG}
 CPP := cpp
 CPPFLAGS := ${CPP_PTH} -I${NETCDF_INC}
 FC := f90
-FFLAGS := -r8 -i4 -c -omp -automatic
-FIXEDFLAGS := -extend_source -omp -automatic
+FFLAGS := -r8 -i4 -c ${OMP_FLG} -automatic
+FIXEDFLAGS := -extend_source ${OMP_FLG} -automatic
 FREEFLAGS := -DHIDE_SHR_MSG -free
 LD := ld
-LDFLAGS += -omp $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+LDFLAGS += ${OMP_FLG} $(TMP_LDFLAGS) $(TMP_LIBS) -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS +=
 endif
@@ -292,13 +308,18 @@ LEX := flex
 LINT := lint
 YACC := bison
 ifeq (${OPTS},O)
- CFLAGS := -O2
- FFLAGS += -O3 -strict
+ CFLAGS += -O2 -ansi_alias
+ FFLAGS += -O3 -inline speed
 endif
 ifeq (${OPTS},D)
- CFLAGS := -g
- FFLAGS += -g
+ CFLAGS += -g -check_bounds -check -check_omp
+ FFLAGS += -g3 -C
 endif
+ifeq (${OPTS},X)
+ CFLAGS := -g -N 132
+ FFLAGS := -g -check bounds -check omp_bindings -check overflow -check underflow
+endif
+C++FLAGS := ${CFLAGS}
 ${MY_OBJ_DIR}/%.o : %.F90
 	${FC} -c ${FREEFLAGS} ${FFLAGS} ${CPPFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
 ${MY_OBJ_DIR}/%.o : %.F
@@ -385,8 +406,57 @@ ifeq (${OPTS},X)
 endif
  C++FLAGS := ${CFLAGS}
 endif
+# Intel (Kai) C Compiler
+ifeq (${CC},icc)
+ CFLAGS := 
+ OMP_FLG := -openmp
+ifeq (${OPTS},O)
+ CFLAGS += -O
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+ifeq (${OPTS},R)
+ CFLAGS +=
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g
+endif
+ C++FLAGS := ${CFLAGS}
+endif
+# Intel (Kai) Fortran Compiler
+ifeq (${FC},ifc)
+# -e95 issues warnings for non-standard fortran
+# -fpp2 necessary, but not sufficient, for  OpenMP
+ FFLAGS := -extend_source -implicitnone -vms -e95 -fpp2
+# -lVaxlib needed for iargc_, getarg_
+ LDFLAGS += -lVaxlib
+ OMP_FLG := -openmp
+ifeq (${PRC},D)
+ FFLAGS += -i4 -r8 -doubletemps
+else
+ FFLAGS += -i4
+endif
+ifeq (${OPTS},O)
+ FFLAGS += -O2
+endif
+ifeq (${OPTS},D)
+ FFLAGS += -g
+endif
+ifeq (${OPTS},R)
+ FFLAGS += 
+endif
+ifeq (${OPTS},X)
+ FFLAGS += -g -C -e95
+endif
+endif
+# Portland Group Fortran Compiler
 ifeq (${FC},pgf90)
- FFLAGS := -Mextend -Mnosecond_underscore -mp -byteswapio -Mrecursive -Mdalign -Ktrap=fp
+ FFLAGS := -Mextend -Mnosecond_underscore -byteswapio -Mrecursive -Mdalign -Ktrap=fp
+ OMP_FLG := -mp
+ifeq (${PRC},D)
+ FFLAGS += -Mr8 -Mi4
+endif
 ifeq (${OPTS},O)
  FFLAGS += -fast
 endif
@@ -400,6 +470,7 @@ ifeq (${OPTS},X)
  FFLAGS += -g -Mbounds
 endif
 endif
+# G77 Fortran compiler
 ifeq (${FC},g77)
  FFLAGS := -ffixed-line-length-132 -fno-second-underscore
 ifeq (${OPTS},O)
@@ -415,6 +486,11 @@ ifeq (${OPTS},X)
  FFLAGS := -g -O -fdebug-kludge -fbounds-check
 endif
 endif
+ifeq (${OMP},Y)
+ CFLAGS += ${OMP_FLG}
+ FFLAGS += ${OMP_FLG}
+ LDFLAGS := ${OMP_FLG} ${LDFLAGS}
+endif # endif OMP
 endif
 # endif LINUX
 
