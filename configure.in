@@ -375,28 +375,38 @@ fi
 # make defines that are currently used in nco programs based on $host_os
 case $host in
   *-*-aix*)
-    AC_DEFINE(AIX,1,AIX OS)
+    AC_DEFINE(AIX,1,IBM AIX OS)
     ;;
-  alpha*-*-*)
+  i[3456]86-*-freebsd*)
+    AC_DEFINE(FREEBSD,1,FreeBSD OS)
+    ;;   
+  alpha*-*-linux*)
+    AC_DEFINE(LINUXALPHA,1,Linux OS)
     ;;   
   i[3456]86-*-linux*)
     AC_DEFINE(LINUX,1,Linux OS)
     ;;
+  powerpc-*-linux*)
+    AC_DEFINE(LINUXPPC,1,Linux OS)
+    ;;
+  sparc64-*-linux*)
+    AC_DEFINE(LINUXSPARC64,1,Linux OS)
+    ;;
+  rs6000-*-lynxos*)
+    ;;
+  *-*-darwin*)
+    AC_DEFINE(MACOSX,1,Apple OS X)
+    ;;
   *-nec-*)
     AC_DEFINE(NECSX,1,NEC SuperX OS)
     ;;   
-  rs6000-*-lynxos*)
-    ;;
   mips*-sgi-irix*)
     AC_DEFINE(SGIMP64,1,IRIX OS)
     ;;
-  cygwin*)
-    AC_DEFINE(WIN32,1,Windows OS)
-    ;;
   sparc-*-*)
-    AC_DEFINE(SUN4SOL2,1,Solaris 2.* OS)
+    AC_DEFINE(SUNMP,1,Solaris 2.* OS)
     ;;  
-  cygwin*)
+  *-*-cygwin*)
     AC_DEFINE(WIN32,1,Windows OS)
     ;;
 esac
