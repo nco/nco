@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.2 1998-08-19 05:03:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.3 1998-10-30 03:39:50 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -2551,9 +2551,9 @@ will overwrite the corresponding global attribute from
 If the name conflict occurs for a non-record variable, then the
 dimensions and type of the variable (and of its coordinate dimensions,
 if any) must agree (conform) in both files. 
-Then the variable values (and it coordinate dimension values, if any)
+Then the variable values (and any coordinate dimension values)
 from @var{input-file} will overwrite the corresponding variable values (and
-its coordinate dimension values, if any) in @var{output-file} 
+coordinate dimension values, if any) in @var{output-file} 
 @footnote{
 Those familiar with netCDF mechanics might wish to know what is
 happening here: @code{ncks} does not attempt to redefine the variable in

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.2 1998-08-19 04:27:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.3 1998-10-30 03:39:51 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -76,8 +76,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncks.c,v 1.2 1998-08-19 04:27:27 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.2 $";
+  char rcs_Id[]="$Id: ncks.c,v 1.3 1998-10-30 03:39:51 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.3 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -1282,7 +1282,7 @@ prn_var_val_lim(int in_id,char *var_nm,lim_sct *lim,int nbr_lim,char *dlm_sng,bo
     dlm_sng=dlm_sng_tmp;
 
     /* We assume the -s argument (dlm_sng) formats the entire string.
-       Otherwise, one could assume the field will be printed with formate type_fmt_sng(var.type),
+       Otherwise, one could assume the field will be printed with format type_fmt_sng(var.type),
        and the user is only allowed to affect the text in between the fields. 
        This would be accomplished with the following: */ 
     /*    (void)sprintf(var_sng,"%s%s",type_fmt_sng(var.type),dlm_sng);*/

@@ -1,4 +1,4 @@
-c     $Header: /data/zender/nco_20150216/nco/src/nco/nc_fortran.F,v 1.2 1998-08-19 04:27:25 zender Exp $
+c     $Header: /data/zender/nco_20150216/nco/src/nco/nc_fortran.F,v 1.3 1998-10-30 03:39:51 zender Exp $
 
 c     Fortran arithmetic utilities for netCDF operators
 
@@ -11,11 +11,11 @@ c     you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance.
 
 c     Define the Fortran specification required to obtain the same type of 
 c     integer as a C "long int" on this platform.
-#if ( defined SGI64 )
+#ifdef SGI64
 #define FORTRAN_EQUIV_C_LONG_INT integer*8
-#else
+#else /* not SGI64 */
 #define FORTRAN_EQUIV_C_LONG_INT integer
-#endif
+#endif /* not SGI64 */
 
 c------------------------------Subroutine-------------------------------
       subroutine add_real(sz,has_mss_val,mss_val,cnt,
