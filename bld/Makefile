@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.65 2000-06-03 01:07:20 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.66 2000-06-03 01:14:32 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -534,9 +534,9 @@ endif
 ifeq ($(DODS),Y)
 # NB: Order is important here
 # LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lnc-dods -ldap++ -lwww -ltcl -lexpect -lz -lrx $(LDFLAGS)
- LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lnc-dods -ldap++ -lwww -ltcl -lexpect5.28 -lz -lrx $(LDFLAGS)
-# Must use g++ to link
- CC := g++
+ LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lstdc++ -lnc-dods -ldap++ -lwww -ltcl -lexpect5.28 -lz -lrx $(LDFLAGS)
+# -lstdc++ automatically called when g++ used to link 
+# CC := g++
 # LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lnc-dods -ldap++ -lwww -ltcl -lz -lrx $(LDFLAGS)
 endif
 
