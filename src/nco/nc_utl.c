@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.98 2000-09-22 00:15:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.99 2000-09-30 04:02:10 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -238,6 +238,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
    bool FORTRAN_STYLE: I [flg] Switch to determine syntactical interpretation of dimensional indices
  */
 {
+  /* Threads: Routine is thread-unsafe */
   /* Purpose: Take a parsed list of dimension names, minima, and
      maxima strings and find appropriate indices into dimensions 
      for formulation of dimension start and count vectors, or fail trying. */
@@ -1847,12 +1848,7 @@ fl_cmp_err_chk()
    fl_cmp_err_chk():
 */
 {
-  /* NB: The goal of the error checking is to guarantee that the user is getting
-     the results he thinks he is. The netCDF library calls will fail and flag most
-     of the likely errors. However, if T is stored as (lon,lat)=(128,64) in one file,
-     and as (lat,lon)=(64,128) in another file, and a hyperslab valid in both files
-     is specified, then an error will occur. */
-  
+  /* Purpose: Perform error checking on file */
 } /* end fl_cmp_err_chk() */
 
 void

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.64 2000-09-26 22:22:10 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.65 2000-09-30 04:02:09 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -38,15 +38,15 @@ scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.s
 </td></tr></table>
 
 <p><hr width="100%"></p>
-<p><h1 align=CENTER>Welcome to the NCO Homepage</h1>
+<p><h1 align=CENTER>Welcome to the netCDF Operator (NCO) Homepage</h1>
 <p><h2>Current version is <!--#include virtual="VERSION"--> released on <!--#flastmod file="VERSION"--> </h2>
 
 <p><ul>
 <li><a href="#Definition">What is NCO?</a></li>
 <li><a href="#Contribute">How to Contribute to NCO</a></li>
-<li><a href="#News">Most Recent NCO News</a></li>
-<li><a href="#Version">Version summary</a></li>
-<li><a href="#Download">Download NCO software</a></li>
+<li><a href="#News">NCO News & Announcements</a></li>
+<li><a href="#Version">Version Summary</a></li>
+<li><a href="#Download">Download/CVS NCO Software</a></li>
 <li><a href="#RTFM">NCO User's Guide</a></li>
 <li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
 <li><a href="#NCAR">Using NCO at UCI and NCAR</a></li>
@@ -126,6 +126,7 @@ instructions for helping the NCO project.
 <ul>
 <li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code now supports multithreading with OpenMP-compliant compilers</li>
 <li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code contains working packing and unpacking primitives</li>
+<li><a href="./nco_news.shtml"> Full text of past NCO announcements</a></li>
 </ul>
 <hr></p>
 
@@ -135,7 +136,7 @@ instructions for helping the NCO project.
 <li><b>NCO 1.3</b>, in alpha-testing: Add packing/unpacking
 capabilities based on <tt>scale_factor</tt> and <tt>add_offset</tt> convention
 <li><b>NCO 1.2.3</b>, in beta-testing: Add user-configurable multi-threaded
-capability to <tt>ncwa</tt>, <tt>ncea</tt>, and <tt>ncra</tt></li>
+capability to arithmetic-intensive operators <tt>ncwa</tt>, <tt>ncea</tt>, and <tt>ncra</tt></li>
 <li><b>NCO 1.2.2</b>, done, not released: Allow weights with <tt>ncwa</tt> in min/max/ttl operations</li>
 <li><b>NCO 1.2.1</b>, <a href="./nco_news.shtml#20000828">20000828</a>: Added type-conversion of integers to floating point before
 arithmetic, fixed broken <tt>-v</tt> option</li>
@@ -144,27 +145,27 @@ min,max,total,rms,rmssdn,sqrt. Added DODS compliance.</li>
 <li><b>NCO 1.1.48</b>, <a href="./nco_news.shtml#20000515">20000515</a>: Potentially serious bugfix to <tt>ncdiff</tt>, recommend upgrade</li>
 <li><b>NCO 1.1.47</b>, <a href="./nco_news.shtml#20000510">20000510</a>: Improved <tt>ncra</tt> and <tt>ncrcat</tt> to allow lazier
 specifications of input files</li> 
-<li><a href="./nco_news.shtml"> Full text of past NCO announcements</a></li>
 </ul>
 <hr></p>
 
 <dt><a name="Download"></a></dt>
-<h2>Download NCO distributions</h2>
+<h2>Download/CVS NCO Software</h2>
 
 <p>The 
 <a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> 
 contains up-to-the-minute sources and is the easiest way to stay
 synchronized with NCO features.
 
-<p>Complete source and documentation in tarball format: <a href="ftp://nco.sourceforge.net/pub/nco/nco.tar.gz">nco.tar.gz</a> (901 Kb compressed tar-file)
-<p>Complete source and documentation in <a href="http://www.rpm.org">RPM</a> format: <a href="ftp://nco.sourceforge.net/pub/nco/nco-1.2.1-1.src.rpm">nco-1.2.1-1.src.rpm</a> (1029 Kb SRPM)
+<ul>
+<li>Source and documentation of latest released version in tarball format: <a href="ftp://nco.sourceforge.net/pub/nco/nco.tar.gz">nco.tar.gz</a> (901 Kb compressed tar-file)</li>
+<li>Source and documentation in <a href="http://www.rpm.org">RPM</a> format: <a href="ftp://nco.sourceforge.net/pub/nco/nco-1.2.1-1.src.rpm">nco-1.2.1-1.src.rpm</a> (1029 Kb SRPM)</li>
+</ul>
 
-<p>Unfortunately the package versions tend to lag the most current
-tarball by a few months:
-
-<p>Those running GNU/Linux on Redhat 6.1-compatible Intel systems, should try the prebuilt binary executable <a href="http://www.rpm.org">RPM</a>: <a href="ftp://nco.sourceforge.net/pub/nco/nco-1.2.1-1.i386.rpm">nco-1.2.1-1.i386.rpm</a> (588 Kb RPM)
-
-<p>Those running GNU/Linux on Debian compatible Intel systems, should try the prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://www.debian.org/packages/unstable/math/nco.html">nco-1.1.48-1</a>
+<p>Pre-built binary executable versions tend to lag the most current tarball by a few months:
+<ul>
+<li>GNU/Linux Redhat 6.1-compatible Intel systems, prebuilt binary executable <a href="http://www.rpm.org">RPM</a>: <a href="ftp://nco.sourceforge.net/pub/nco/nco-1.2.1-1.i386.rpm">nco-1.2.1-1.i386.rpm</a> (588 Kb RPM)</li>
+<li>GNU/Linux Debian-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://www.debian.org/packages/unstable/math/nco.html">nco-1.1.48-1</a></li>
+</ul>
 <hr></p>
 
 <dt><a name="RTFM"></a></dt>
@@ -256,7 +257,7 @@ As of NCO 1.1.38, this is the default.</li>
 
 <td align="right" valign="top">
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
-[<a href="http://www.unidata.ucar.edu/packages/netcdf">DODS</a>] 
+[<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a>] 
 [<a href="http://www.cgd.ucar.edu/csm/support">CCSM Support Network</a>]
 </td></tr></table>
 

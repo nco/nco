@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.49 2000-09-26 06:19:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.50 2000-09-30 04:02:10 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.49 2000-09-26 06:19:40 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.49 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.50 2000-09-30 04:02:10 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.50 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -385,13 +385,13 @@ main(int argc,char **argv)
     in_id=ncopen(fl_in,NC_NOWRITE);
     
     /* Variables may have different IDs and missing_values in each file */
-    for(idx=0;idx<nbr_var_prc;idx++) (void)var_refresh(in_id,var_prc[idx]);
+    for(idx=0;idx<nbr_var_prc;idx++) (void)var_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
 
     /* Each file can have a different number of records to process */
-    if(prg == ncra || prg == ncrcat) (void)lmt_evl(in_id,&lmt_rec,idx_rec_out,FORTRAN_STYLE);
+    if(prg == ncra || prg == ncrcat) (void)lmt_evl(in_id,&lmt_rec,idx_rec_out,FORTRAN_STYLE); /* Routine is thread-unsafe */
     
     /* Is this an ARM-format data file? */
-    if(ARM_FORMAT) base_time_crr=arm_base_time_get(in_id);
+    if(ARM_FORMAT) base_time_crr=arm_base_time_get(in_id); /* Routine is thread-unsafe */
 
     /* Perform various error-checks on input file */
     if(False) (void)fl_cmp_err_chk();

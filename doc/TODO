@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.77 2000-09-26 21:48:31 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.78 2000-09-30 04:02:09 zender Exp $ 
 
 *************
 NCO Wish list
@@ -137,6 +137,7 @@ sudo root screws up permissions in obj/bin directories of user
 183. Figure out why makeinfo nco.texi fails
 187. Are OpenMP critical regions sufficient for netCDF or must all other threads stop completely?
 188. Make binary RPMS build with DODS option
+189. Verify ncrcat multithreading works, produced "not a netCDF file error" once
 ************************************************************************
 End NCO Wish list
 ************************************************************************
