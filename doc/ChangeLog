@@ -1,3 +1,13 @@
+2002-01-26  Charlie Zender  <zender@uci.edu>
+
+	* Cast char to unsigned char and visa versa where necessary to
+	prevent icc warnings. This solved all icc warnings on ncap, and
+	solved all IRIX cc warnings for ncap too. Since unsigned char
+	pointer and char pointer are same size, there should be no problem
+	casting between them. However, casting between unsigned char value
+	and char value could change answers. 
+	String operations should be checked to ensure they still work.
+
 2002-01-23  Charlie Zender  <zender@uci.edu>
 
 	* Fix read overflow in ncks.c:prn_var_val_lmt() where

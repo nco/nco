@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.28 2002-01-25 17:27:24 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.29 2002-01-27 06:14:05 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -297,7 +297,7 @@ pow/[ ]*\( {return POWER;}
       if (ptr_aed->type == NC_CHAR){
 	(void)cast_void_nctype(ptr_aed->type,&ptr_aed->val);
 	lvalp->str=(char *)nco_malloc((ptr_aed->sz+1)*nco_typ_lng(NC_CHAR));
-	strncpy(lvalp->str,ptr_aed->val.cp,ptr_aed->sz);
+	strncpy(lvalp->str,(char *)(ptr_aed->val.cp),ptr_aed->sz);
 	lvalp->str[ptr_aed->sz]='\0';
 	return(STRING);
       } else {
@@ -315,12 +315,12 @@ pow/[ ]*\( {return POWER;}
 	return(ATTRIBUTE);
       } /* end if */
       if(rcd == NC_NOERR){ 
-	val.vp=(void*)nco_malloc(att_sz*nco_typ_lng(type));
+	val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(type));
 	rcd=nco_get_att(prs_arg->in_id,var_id,att_nm,val.vp,type);
 	if(type == NC_CHAR){
 	  (void)cast_void_nctype(type,&val);
-	  lvalp->str=(char*)nco_malloc((att_sz+1)*sizeof(char));
-	  strncpy(lvalp->str,val.cp,att_sz);
+	  lvalp->str=(char *)nco_malloc((att_sz+1)*sizeof(char));
+	  strncpy(lvalp->str,(char *)val.cp,att_sz);
 	  lvalp->str[att_sz]='\0'; 
 	  return(STRING);
 	}else{
@@ -432,6 +432,10 @@ pow/[ ]*\( {return POWER;}
     /* Following two statements remove "defined but not used" messages in lex.yy.c */
     (void)yyunput((int)NULL,(char *)NULL);
     (void)yy_flex_realloc((void *)NULL,(size_t)NULL);
+    /* Remove warnings which only occur on SGI IRIX cc */
+    yy_full_match=yy_full_match;
+    yy_full_lp=yy_full_lp;
+    yy_full_state=yy_full_state;
   } /* endif False */
 
   /* Do not attempt arithmetic yet, just return error */

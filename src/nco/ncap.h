@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.22 2002-01-25 08:23:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.23 2002-01-27 06:14:05 zender Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -57,18 +57,18 @@ typedef struct { /* parse_sct */
 } parse_sct;      
 
 typedef struct{ /* prs_sct */
-    char *fl_in;
-    int in_id;  
-    char *fl_out;
-    int out_id;  
-    char *fl_spt; /* Instruction file to be parsed */
-    aed_sct **att_lst;
-    int *nbr_att;
-    dmn_sct **dmn;
-    int nbr_dmn_xtr;
-    sym_sct **sym_tbl;
-    int sym_tbl_nbr;
-    bool initial_scan;
+  char *fl_in; /* [sng] Input data file */
+  int in_id; /* [id] Input data file ID */
+  char *fl_out; /* [sng] Output data file */
+  int out_id; /* [id] Output data file ID */
+  char *fl_spt; /* Instruction file to be parsed */
+  aed_sct **att_lst;
+  int *nbr_att;
+  dmn_sct **dmn; /* [dmn] List of extracted dimensions */
+  int nbr_dmn_xtr; /* [nbr] Number of extracted dimensions */
+  sym_sct **sym_tbl;
+  int sym_tbl_nbr;
+  bool initial_scan;
 } prs_sct;
 
 /* These funtions are either in ncap.y or ncap_utl.c */

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.33 2002-01-25 18:11:30 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.34 2002-01-27 06:14:05 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -189,8 +189,8 @@ statement: out_att_exp '=' att_exp {
   ptr_aed=((prs_sct *)prs_arg)->att_lst[aed_idx];
   ptr_aed->type=NC_CHAR;
   ptr_aed->sz=(long)((sng_lng+1)*nco_typ_lng(NC_CHAR));
-  ptr_aed->val.cp=(char *)nco_malloc((sng_lng+1)*nco_typ_lng(NC_CHAR));
-  strcpy(ptr_aed->val.cp,$3);
+  ptr_aed->val.cp=(unsigned char *)nco_malloc((sng_lng+1)*nco_typ_lng(NC_CHAR));
+  strcpy((char *)(ptr_aed->val.cp),$3);
   (void)cast_nctype_void(NC_CHAR,&ptr_aed->val);    
   
   (void)sprintf(err_sng,"Saving attribute %s@%s=%s",$1.var_nm,$1.att_nm,$3);
@@ -281,7 +281,7 @@ statement: out_att_exp '=' att_exp {
     var->nbr_dim=0;
     var->dmn_id=(int *)NULL;
     var->sz=strlen($3)+1;
-    var->val.cp=strdup($3);
+    var->val.cp=(unsigned char *)strdup($3);
     var->type=NC_CHAR;
     (void)cast_nctype_void(NC_CHAR,&var->val);
     (void)ncap_var_write(var,(prs_sct *)prs_arg);

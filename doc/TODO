@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.114 2002-01-25 18:11:29 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.115 2002-01-27 06:14:05 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -34,6 +34,28 @@ cc-1515 cc: WARNING File = ../src/nco/ncap.y, Line = 279
           "unsigned char *".
                      var->val.cp=strdup(yyvsp[0].str);
                                 ^
+icc  -DLINUX -DNO_NETCDF_2 -DVERSION='20020126' -DHOSTNAME='lanina.ps.uci.edu' -DUSER='zender' -Di386 -I/usr/local/include -U_OPENMP  -O -c ../src/nco/ncap.tab.c -o /home/zender/obj/LINUX/ncap.tab.o
+../src/nco/ncap.tab.c:
+"../src/nco/ncap.y", line 192: warning #556: a value of type "char *" cannot be assigned to an entity of type "unsigned char *"
+    ptr_aed->val.cp=(char *)nco_malloc((sng_lng+1)*nco_typ_lng(NC_CHAR));
+                   ^
+
+"../src/nco/ncap.y", line 193: warning #167: argument of type "unsigned char *" is incompatible with parameter of type "char *"
+    strcpy(ptr_aed->val.cp,yyvsp[0].str);
+           ^
+
+"../src/nco/ncap.y", line 284: warning #556: a value of type "char *" cannot be assigned to an entity of type "unsigned char *"
+      var->val.cp=strdup(yyvsp[0].str);
+                 ^
+
+icc  -DLINUX -DNO_NETCDF_2 -DVERSION='20020126' -DHOSTNAME='lanina.ps.uci.edu' -DUSER='zender' -Di386 -I/usr/local/include -U_OPENMP  -O -c ../src/nco/ncap_lex.c -o /home/zender/obj/LINUX/ncap_lex.o
+../src/nco/ncap_lex.c:
+"../src/nco/ncap.l", line 300: warning #167: argument of type "unsigned char *" is incompatible with parameter of type "const char *"
+        strncpy(lvalp->str,ptr_aed->val.cp,ptr_aed->sz);
+
+"../src/nco/ncap.l", line 323: warning #167: argument of type "unsigned char *" is incompatible with parameter of type "const char *"
+          strncpy(lvalp->str,val.cp,att_sz);
+ 
 4. Fix memory leak in ncap_var_conform_dim() or delete routine completely after replacing it with ncap_var_stretch()	
 5. Implement convolution of non-conforming expressions in ncap_var_stretch()
 6. Handle C comments /*...*/, especially across multiple lines, in ncap scripts
@@ -44,7 +66,7 @@ ncap.tab.c:
 This must be something like
 extern int yylex(YYSTYPE *,prs_arg); /* Prototype for lexer */
 but where?
-9. SGI does not define optional math.h function gammaf()
+9. Fix warnings found with icc (shown above)
 
 Top priority items You can help with:
 41. Use GNU getopt_long()
@@ -229,3 +251,4 @@ ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
 ************************************************************************
 End NCO Wish list
 ************************************************************************
+

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile,v 1.2 2002-01-11 23:48:19 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile,v 1.3 2002-01-27 06:14:05 zender Exp $
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 
@@ -336,11 +336,12 @@ endif
 
 # Works on LINUX and LINUXALPHA
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
-C++ := 	g++
+#C++ := g++
+C++ := icc
 # 19980517 As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
-CC := gcc -ansi
-#CC := icc
-CPP := ${CC}
+#CC := gcc -ansi
+CC := icc
+CPP := ${C++}
 # HAVE_INLINE is GNU standard to activate inline functions (used by GSL)
 CPPFLAGS += ${CPP_TKN} -DHAVE_INLINE ${CPP_PTH} -I${NETCDF_INC} 
 ifeq (${PVM_ARCH},LINUX)

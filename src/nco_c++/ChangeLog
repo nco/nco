@@ -1,3 +1,7 @@
+2002-01-26  Charlie Zender  <zender@uci.edu>
+
+	* Built and tested with Linux icc
+
 2002-01-11  Charlie Zender  <zender@uci.edu>
 
 	* Announce on netcdf list

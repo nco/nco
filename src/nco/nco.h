@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.8 2002-01-23 09:24:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.9 2002-01-27 06:14:05 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -201,8 +201,8 @@ typedef union{ /* ptr_unn */
   double *dp;
   nco_long *lp; /* NC_INT is stored in native type nco_long */
   short *sp;
-  unsigned char *cp;
-  signed char *bp;
+  unsigned char *cp; /* Range of unsigned char is 0--255 */
+  signed char *bp; /* Range of signed char is -127--127 */
   void *vp;
 } ptr_unn;
 
@@ -211,8 +211,8 @@ typedef union{ /* val_unn */
   double d;
   nco_long l;
   short s;
-  unsigned char c;
-  signed char b;
+  unsigned char c; /* Range of unsigned char is 0--255 */
+  signed char b; /* Range of signed char is -127--127 */
 } val_unn;
 
 typedef struct{ /* aed_sct */

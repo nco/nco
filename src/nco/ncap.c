@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.52 2002-01-25 08:23:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.53 2002-01-27 06:14:05 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.52 2002-01-25 08:23:56 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.52 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.53 2002-01-27 06:14:05 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.53 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -320,15 +320,15 @@ main(int argc,char **argv)
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
   /* Pass information parser may need in prs_arg rather than in global variables */
-  prs_arg.fl_in=fl_in;
-  prs_arg.in_id=in_id;
-  prs_arg.fl_out=NULL;
-  prs_arg.out_id=-1;
+  prs_arg.fl_in=fl_in; /* [fl] Input data file */
+  prs_arg.in_id=in_id; /* [id] Input data file ID */
+  prs_arg.fl_out=NULL; /* [sng] Output data file */
+  prs_arg.out_id=-1; /* [id] Output data file ID */
   prs_arg.fl_spt=fl_spt;
   prs_arg.att_lst=att_lst;
   prs_arg.nbr_att=&nbr_att;
-  prs_arg.dmn=dmn;
-  prs_arg.nbr_dmn_xtr=nbr_dmn_xtr;
+  prs_arg.dmn=dmn; /* [dmn] List of extracted dimensions */
+  prs_arg.nbr_dmn_xtr=nbr_dmn_xtr; /* [nbr] Number of extracted dimensions */
   prs_arg.sym_tbl=sym_tbl;
   prs_arg.sym_tbl_nbr=sym_tbl_nbr;
   prs_arg.initial_scan=True;
