@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.97 2002-05-23 18:17:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.98 2002-05-23 18:28:41 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -2769,9 +2769,10 @@ Single line comments are preceded by @code{//} characters.
 @cindex including files
 @cindex nesting
 @cindex @code{#include}
-Files may be nested in scripts using @code{#include @var{filename}}.
+Files may be nested in scripts using @code{#include @var{script}}.
 Note that the @code{#include} command is not followed by a semi-colon
 because it is a pre-processor directive, not an assignment statement.
+The filename @file{script} is interpreted relative to the run directory.
 @item Attribute syntax
 @cindex attribute syntax
 @cindex @code{@@} (attribute)

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.96 2002-05-14 21:30:23 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.97 2002-05-23 18:28:41 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -164,6 +164,8 @@ tarballs and RPMs) because the build script, <tt>nco_dst.pl</tt>,
 fails on my development system (due to antiquated RedHat
 <tt>texinfo</tt> software, of all things!)
 The brave may retrieve these versions using CVS (tags are, e.g., <tt>nco-2_1_2</tt>).
+<li><b>NCO 2.4.2</b>, Not packaged: <tt>ncap</tt> supports nesting
+files with <tt>#include</tt>
 <li><b>NCO 2.4.0</b>, Not packaged: <tt>ncks</tt> supports writing native binary output with <tt>-b</tt> switch
 <li><b>NCO 2.2.4</b>, Not packaged: <tt>ncap</tt> fully supports
 packing and unpacking variables
