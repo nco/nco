@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.28 2002-07-03 22:40:27 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.29 2002-09-24 12:18:12 hmb Exp $ -*-C-*-
 
 // Purpose: ncap netCDF Arithmetic Processor Demonstration/Test Script
 
@@ -155,3 +155,21 @@ twenty@seven=one;
 // Use UNARY -/+ and brackets
 three= (-two_dmn_var + 5)^3;
 testa= pow(sin(four_dmn_rec_var),2) + cos(four_dmn_rec_var)^2;
+// The following conversion functions are available for
+// variables AND attributes. The standard C type conversion
+// rules are used -- So converting "down" you may get 
+// unexpected results !!
+// byte,char,short, int, float and double 
+//
+// convert float to a byte
+ex_byte = byte(two_dmn_var);
+// convert int to short
+ex_short= short(three_dmn_var_int / 5);
+// convert short to float
+ex_float = float(three_dmn_var_sht);
+// convert float to double
+ex_double = double(weight);
+// convert an attribute to double
+bnd_var@att_double = double(bnd_var@float_att); 
+// convert a double attribute to an int
+bnd_var@att_int = double(4*bnd_var@float_att); 
