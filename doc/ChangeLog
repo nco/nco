@@ -1,3 +1,10 @@
+2004-01-09  Charlie Zender  <zender@uci.edu>
+
+	* Unconditionally include nco_lst_utl.h and nco_sng_utl.h in
+	nco_att_utl.h (now that nco_prs_aed_lst() is there).
+
+	* Moved system headers from nco_lmt.c to nco_lmt.h
+
 2004-01-08  Charlie Zender  <zender@uci.edu>
 
 	* Give DODS example in -R documentation

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.109 2004-01-01 22:42:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.110 2004-01-10 04:30:29 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -65,7 +65,7 @@
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
-#include "libnco.h" /* netCDF operator library */
+#include "libnco.h" /* netCDF Operator (NCO) library */
 
 int 
 main(int argc,char **argv)
@@ -106,8 +106,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.109 2004-01-01 22:42:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.109 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.110 2004-01-10 04:30:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.110 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNo:Op:rRv:Ww:xy:-:";
   
   dmn_sct **dim=NULL_CEWI;

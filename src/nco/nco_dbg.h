@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dbg.h,v 1.5 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dbg.h,v 1.6 2004-01-10 04:30:28 zender Exp $ */
 
 /* Purpose: Debugging */
 
@@ -18,7 +18,7 @@
 /* 3rd party vendors */
 
 /* Personal headers */
-#include "nco.h" /* netCDF operator definitions */
+#include "nco.h" /* netCDF Operator (NCO) definitions */
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.272 2004-01-10 01:25:28 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.273 2004-01-10 04:30:27 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -18,23 +18,6 @@ Autoconf-build items:
 ncap-specific items:
 04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
 07. Combine binary operations into binary_op_var_var and binary_op_var_att types to reduce number of functions
-08. Cure final few bothersome compilation warnings, mainly in bison.simple.
-Note that fixing these via hardcoded prototypes should allow for pure_parser
-to be turned off, since this apparently changes the prototypes.
-ncap.tab.c (warning with Linux when compiling parser):
-/usr/lib/bison.simple:432: warning: implicit declaration of function `yylex'
-This must be something like
-extern int yylex(YYSTYPE *,prs_arg); /* Prototype for lexer */
-but where?
-ncap.tab.c (IRIX warnings caused by using IRIX cc rather than GNU gcc, so 
-function prototypes are dumbed-down in bison.simple, and size should be
-cast to (unsigned char)):
-cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 334
-  The indicated argument is incompatible with the corresponding formal parameter.
-        __yy_memcpy ((char *)yyss, (char *)yyss1, size * sizeof (*yyssp));
-cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
-  The indicated argument is incompatible with the corresponding formal parameter.
-        __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
 09. Add outer loop over files so script may apply to each file
 12. Ensure lexer does not perform un-necessary work during initial_scan (e.g., LHS casting...)
 13. Test that LHS casting works regardless of value of LHS template. If true, remove value initialization block
@@ -68,7 +51,29 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 ../src/nco/ncks.c:396: warning: implicit declaration of function `nco_msa_clc_cnt'
 ../src/nco/ncks.c:436: warning: implicit declaration of function `nco_cpy_var_val_mlt_lmt'
 ../src/nco/ncks.c:476: warning: implicit declaration of function `nco_msa_prn_var_val'
-45. 
+45. Cure final few bothersome compilation warnings, mainly in bison.simple.
+Note that fixing these via hardcoded prototypes should allow for pure_parser
+to be turned off, since this apparently changes prototypes.
+ncap_yacc.c: In function `yyparse':
+ncap_yacc.c:1216: warning: implicit declaration of function `yylex'
+ncap_lex.c:1034: warning: no previous prototype for `yylex'
+ncap_lex.l: In function `yylex':
+ncap_lex.l:670: warning: implicit declaration of function `yy_flex_realloc'
+ncap_lex.c: In function `yy_init_buffer':
+ncap_lex.c:2595: warning: implicit declaration of function `fileno'
+ncap_lex.c: At top level:
+ncap_lex.c:2840: warning: no previous prototype for `yyget_lineno'
+ncap_lex.c:2849: warning: no previous prototype for `yyget_in'
+ncap_lex.c:2857: warning: no previous prototype for `yyget_out'
+ncap_lex.c:2865: warning: no previous prototype for `yyget_leng'
+ncap_lex.c:2874: warning: no previous prototype for `yyget_text'
+ncap_lex.c:2883: warning: no previous prototype for `yyset_lineno'
+ncap_lex.c:2895: warning: no previous prototype for `yyset_in'
+ncap_lex.c:2900: warning: no previous prototype for `yyset_out'
+ncap_lex.c:2905: warning: no previous prototype for `yyget_debug'
+ncap_lex.c:2910: warning: no previous prototype for `yyset_debug'
+ncap_lex.c:2916: warning: no previous prototype for `yylex_destroy'
+46. 
 
 Highest priority NCO-wide items that You can help with:
 59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
@@ -250,8 +255,6 @@ If possible, modify so that shared-library (rather than main.c) holds
 and returns thread-specific values for each, set with, e.g., prg_set().
 Make prg, prg_nm, and dbg_lvl local to main(), not global to main.c
 295. Understand/maintain re-entrant behavior of shared library.
-297. Fix fabsf() powf() etc warnings with --enable-debug-custom
-     Warnings caused by -Wconversion
 298. Localize ncap's three globals: ncap_ncl_dpt_crr, ncap_ln_nbr_crr, ncap_fl_spt_glb?
 299. Prefix prg,prg_nm,dbg_lvl globals with nco_ for namespace cleanliness
 300. Activate ccmalloc libdl into configure.in for enable-debug-custom

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.58 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.59 2004-01-10 04:30:28 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -29,7 +29,7 @@
 #include "nco_netcdf.h" /* NCO wrappers for libnetcdf.a */
 
 /* Personal headers */
-#include "libnco.h" /* netCDF operator library */
+#include "libnco.h" /* netCDF Operator (NCO) library */
 
 #ifdef __cplusplus
 extern "C" {
@@ -152,7 +152,7 @@ ncap_var_var_dvd /* [fnc] Divide two variables (var_2/var_1) */
 bool ncap_var_stretch(var_sct **,var_sct **);
 int ncap_scv_minus(scv_sct *);
 int ncap_var_write(var_sct *,prs_sct*);
-int yyerror(char *sng);
+int yyerror(const char * const sng);
 nm_id_sct *nco_var_lst_crd_make(int,nm_id_sct *,int *);
 nm_id_sct *nco_var_lst_add(nm_id_sct *,int *,nm_id_sct *,int);
 nm_id_sct *nco_var_lst_copy(nm_id_sct *,int);

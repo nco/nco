@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.14 2004-01-05 17:29:05 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.15 2004-01-10 04:30:28 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -50,7 +50,7 @@
 
   /* Headers specific to this program */
 #include "nco.h" /* NCO definitions */
-#include "nco_netcdf.h" /* netCDF3 wrapper functions */
+#include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 #include "ncap.h" /* Symbol table definition */
 #include "ncap_yacc.h" /* Symbol definitions from parser */
 

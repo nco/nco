@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.h,v 1.7 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.h,v 1.8 2004-01-10 04:30:28 zender Exp $ */
 
 /* Purpose: Scalar utilities */
 
@@ -23,7 +23,7 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
-#include "nco_netcdf.h" /* netCDF3.0 wrapper functions */
+#include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */

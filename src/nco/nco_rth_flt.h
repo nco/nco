@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.12 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.13 2004-01-10 04:30:28 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -21,7 +21,7 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
-#include "nco_netcdf.h" /* netCDF3.0 wrapper functions */
+#include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
 /* Personal headers */
 

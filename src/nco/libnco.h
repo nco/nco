@@ -1,6 +1,6 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.29 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.30 2004-01-10 04:30:28 zender Exp $ */
 
-/* Purpose: Prototypes, typedefs, and global variables for libcsm_c++ */
+/* Purpose: netCDF Operator (NCO) library */
 
 /* Copyright (C) 1995--2004 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
@@ -9,14 +9,14 @@
 /* libnco.h headers depend on netcdf.h and nco_netcdf.h headers */
 
 /* Usage:
-   #include "libnco.h" *//* netCDF operator library */
+   #include "libnco.h" *//* netCDF Operator (NCO) library */
 
 #ifndef LIBNCO_H /* Contents have not yet been inserted in current source file */
 #define LIBNCO_H
 
 /* Core headers */
-#include "nco_netcdf.h" /* Wrappers for netCDF 3.X C-library */
-#include "nco.h" /* netCDF operator definitions */
+#include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
+#include "nco.h" /* netCDF Operator (NCO) definitions */
 
 /* Library headers */
 #include "nco_att_utl.h" /* Attribute utilities */

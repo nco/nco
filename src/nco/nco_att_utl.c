@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.28 2004-01-05 23:36:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.29 2004-01-10 04:30:28 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -397,7 +397,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
 } /* end nco_hst_att_cat() */
 
 aed_sct * /* O [sct] List of attribute edit structures */
-prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure list */
+nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure list */
 (const int nbr_aed, /* I [nbr] Number of attributes in list */
  X_CST_PTR_CST_PTR_Y(char,aed_arg)) /* I/O [sng] List of user-specified attribute edits (delimiters are changed to NULL on output */
 {
@@ -601,7 +601,7 @@ prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure list */
   
   return aed_lst;
   
-} /* end prs_aed_lst() */
+} /* end nco_prs_aed_lst() */
 
 int /* [flg] Variable and attribute names are conjoined */
 nco_prs_att /* [fnc] Parse conjoined variable and attribute names */

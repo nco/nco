@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.13 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.14 2004-01-10 04:30:28 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -23,17 +23,16 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
-#include "nco_netcdf.h" /* netCDF3.0 wrapper functions */
+#include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
 #include "nco_cnf_typ.h" /* Conform variable types */
 #include "nco_ctl.h" /* Program flow control functions */
+#include "nco_lst_utl.h" /* List utilities */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_mss_val.h" /* Missing value utilities */
-#if (!defined HAVE_STRCASECMP) || (!defined HAVE_STRDUP)
 #include "nco_sng_utl.h" /* String utilities */
-#endif /* HAVE_STRCASECMP || HAVE_STRDUP */
 
 #ifdef __cplusplus
 extern "C" {
@@ -59,7 +58,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
  const char * const hst_sng); /* I [sng] String to add to history attribute */
 
 aed_sct * /* O [sct] List of attribute edit structures */
-prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure list */
+nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure list */
 (const int nbr_aed, /* I [nbr] Number of attributes in list */
  X_CST_PTR_CST_PTR_Y(char,aed_arg)); /* I/O [sng] List of user-specified attribute edits (delimiters are changed to NULL on output */
 

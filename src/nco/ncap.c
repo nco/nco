@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.121 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.122 2004-01-10 04:30:28 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -67,7 +67,7 @@
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
 #include "ncap.h" /* ncap-specific definitions */
-#include "libnco.h" /* netCDF operator library */
+#include "libnco.h" /* netCDF Operator (NCO) library */
 
 /* Global variables */
 size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap.l) */
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.121 2004-01-05 17:29:05 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.121 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.122 2004-01-10 04:30:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.122 $";
   const char * const opt_sng="ACcD:d:Ffhl:n:Op:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */

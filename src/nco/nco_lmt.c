@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.23 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.24 2004-01-10 04:30:28 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -6,13 +6,7 @@
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h> /* Autotools tokens */
-#endif /* !HAVE_CONFIG_H */
 #include "nco_lmt.h" /* Hyperslab limits */
-#ifdef HAVE_UDUNITS_H
-#include <udunits.h> /* Unidata units library */
-#endif /* !HAVE_UDUNITS_H */
 
 lmt_sct /* [sct] Limit structure for dimension */
 nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */

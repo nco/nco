@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.64 2004-01-01 22:42:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.65 2004-01-10 04:30:28 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -113,12 +113,12 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
-#include "nco_netcdf.h" /* netCDF 3.0 wrapper functions */
+#include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
 #include "nco.h" /* NCO definitions */
-#include "libnco.h" /* netCDF operator library */
+#include "libnco.h" /* netCDF Operator (NCO) library */
 
 int 
 main(int argc,char **argv)
@@ -142,8 +142,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.64 2004-01-01 22:42:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.64 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.65 2004-01-10 04:30:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.65 $";
   const char * const opt_sng="Aa:D:hl:Op:Rr-:";
   
   extern char *optarg;
@@ -249,7 +249,7 @@ main(int argc,char **argv)
   } /* end if */ 
 
   /* Make uniform list of user-specified attribute edit structures */
-  if(nbr_aed > 0) aed_lst=prs_aed_lst(nbr_aed,aed_arg);
+  if(nbr_aed > 0) aed_lst=nco_prs_aed_lst(nbr_aed,aed_arg);
 
   /* We now have final list of attributes to edit */
   

@@ -1,22 +1,23 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.35 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.36 2004-01-10 04:30:28 zender Exp $ */
 
-/* Purpose: Wrappers for netCDF 3.X C-library */
+/* Purpose: NCO wrappers for netCDF C library */
 
 /* Copyright (C) 1995--2004 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
-#include "nco_netcdf.h" /* Wrappers for netCDF 3.X C-library */
+#include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
-/* Organization: 
-   1. Utility routines, e.g., nco_typ_lng()
-   These routines have no direct netCDF library counterpart
+/* nco_netcdf.h is completely independent of NCO and does not depend on nco.h 
+   nco_netcdf.h is an abstraction layer for netcdf.h, plus a few convenience routines:
+
+   1. Utility routines, e.g., nco_typ_lng() (routines with no netCDF library counterpart)
    2. File-routine wrappers, e.g., nco_open()
    3. Dimension-routine wrappers, e.g., nco_dimid()
    4. Variable-routine wrappers, e.g., nco_get_var()
    5. Attribute-routine wrappers, e.g., nco_put_att()
 
-   Naming Convention: Where appropriate, routine name is identical to netCDF C-library name,
+   Name Convention: Where appropriate, routine name is identical to netCDF C-library name,
    except nc_ is replaced by nco_
 
    Argument Ordering Convention: Routines follow same argument order as netCDF C-library 
@@ -30,8 +31,7 @@
    in these functions call other nco_??? routines because if everything
    starts failing then errors will produce circular diagnostics.
    To ensure this is the case, it is only safe to print diagnostics on
-   variables which are supposed to be valid on input.
-*/
+   variables which are supposed to be valid on input. */
 
 /* Utility routines not defined by netCDF library, but useful in working with it */
 void 
