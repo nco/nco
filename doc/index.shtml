@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.120 2002-09-14 18:25:00 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.121 2002-10-28 07:08:15 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -143,12 +143,15 @@ instructions for helping the NCO project.
 <dt><a name="News"></a></dt>
 <h2>NCO News & Announcements</h2>
 <ul>
+<li><tt>ncap</tt> adds user-invokable type conversion functions
+<tt>char()</tt>, <tt>short()</tt>, <tt>int()</tt>, <tt>float()</tt>,
+<tt>double()</tt>.</li>
 <li><tt>ncra</tt> versions <tt>2.4.x--2.5.5</tt> handled multifile
 averages of low precision (<tt>int, char</tt>) data incorrectly if
 the data had a <tt>missing_value</tt>. 
 Under these conditions, this bug could result in incorrect values.
 Thanks to Martin Dix for pointing this out.
-User's of this feature should definitely upgrade to <tt>2.5.6+</tt>.
+User's of this feature should definitely upgrade to <tt>2.5.6+</tt>.</li>
 <li><tt>libnco_c++</tt> reads into and writes from type <tt>long double</tt></li>
 <li>Developer code has fully integrated <tt>autoconf</tt>/<tt>libtool</tt>
 build procedure</li>
@@ -168,16 +171,18 @@ capable of performing arbitrary arithmetic operations</li>
 <dt><a name="Version"></a></dt>
 <h2>Version Summary</h2>
 <ul>
-<li>Most releases since 2.0.0 are not packaged (e.g., with
-tarballs and RPMs) because the build script, <tt>nco_dst.pl</tt>, 
-fails on my development system (due to antiquated RedHat
-<tt>texinfo</tt> software, of all things!)
+<li>Many releases since 2.0.0 are not packaged (e.g., with
+tarballs and RPMs).
 Retrieve these versions <a name="#Download">using CVS</a>.
-<li><b>NCO 2.6.3</b>, Not packaged: Mac OS X builds work seamlessly,
+<li><b>NCO 2.6.6</b>, Fix and document <tt>ncrename</tt>
+attribute renaming, add type conversion functions to <tt>ncap</tt>
+<li><b>NCO 2.6.5</b>, Cray, Sun build improvements
+<li><b>NCO 2.6.4</b>, Mac OS X, NEC, SGI build improvements
+<li><b>NCO 2.6.3</b>, Mac OS X builds work seamlessly,
 documentation fixed
-<li><b>NCO 2.6.2</b>, Not packaged: Major improvements in autotools
+<li><b>NCO 2.6.2</b>, Major improvements in autotools
 support, <tt>ncap</tt> supports user-defined dimensions
-<li><b>NCO 2.6.1</b>, Not packaged: Minor fix to unpacking support
+<li><b>NCO 2.6.1</b>, Minor fix to unpacking support
 <li><b>NCO 2.6.0</b>, Not packaged: All arithmetic operators (<tt>ncap</tt>, <tt>ncdiff</tt>, <tt>ncea</tt>, <tt>ncflint</tt>, <tt>ncra</tt>) support unpacking
 <li><b>NCO 2.5.6</b>, Not packaged: Handle <tt>missing_value</tt> 
 correctly for integer variables in <tt>ncra</tt>, merge

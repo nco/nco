@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.39 2002-10-25 20:04:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.40 2002-10-28 07:10:17 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -83,8 +83,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.39 2002-10-25 20:04:47 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.39 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.40 2002-10-28 07:10:17 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.40 $";
   
   extern char *optarg;
   
@@ -297,7 +297,9 @@ main(int argc,char **argv)
 		(void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm);
 		nbr_rnm++;
 		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed attribute \"%s\" to \"%s\" for variable \"%s\"\n",att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm,(var_nm[0] == '.' ? var_nm+1 : var_nm));
-	      } /* endif */
+	      }else{
+		(void)fprintf(stderr,"%s: WARNING Attribute \"%s\" not present in variable \"%s\"\n",prg_nm,att_rnm_lst[idx].old_nm+1,(var_nm[0] == '.' ? var_nm+1 : var_nm));
+	      } /* endelse */
 	    }else{ 
 	      rcd=nco_inq_attid(nc_id,var_id,att_rnm_lst[idx].old_nm,&att_rnm_lst[idx].id);
 	      if(rcd == NC_NOERR){
@@ -351,7 +353,7 @@ main(int argc,char **argv)
       /* See to it that any mandatory renaming was performed, else abort */
       if(nbr_rnm == 0){
 	if(att_rnm_lst[idx].old_nm[0] == '.'){
-	  (void)fprintf(stderr,"%s: WARNING Attribute \"%s\" not present in %s, skipping it.\n",prg_nm,att_rnm_lst[idx].old_nm+1,fl_in);
+	  (void)fprintf(stderr,"%s: WARNING Attribute \"%s\" not renamed because not found in searched variable(s)\n",prg_nm,att_rnm_lst[idx].old_nm+1);
 	}else{
 	  (void)fprintf(stdout,"%s: ERROR Attribute \"%s\" not present in %s, aborting.\n",prg_nm,att_rnm_lst[idx].old_nm,fl_in);
 	  nco_exit(EXIT_FAILURE);

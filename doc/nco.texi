@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.129 2002-10-25 20:04:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.130 2002-10-28 07:08:15 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -4519,13 +4519,13 @@ This option may be specified more than once.
 As mentioned above, all occurrences of the attribute of a given name
 will be renamed unless the @samp{.} form is used, with one exception.
 To change the attribute name for a particular variable, specify 
-the @var{old_name} in the format @var{old_var_name@old_att_name}.
+the @var{old_name} in the format @var{old_var_name@@old_att_name}.
 The @samp{@@} symbol serves to delimit the variable name from the
 attribute name.
 If the attribute is uniquely named (no other variables contain the
-attribute) then the @var{old_var_name@old_att_name} syntax is
+attribute) then the @var{old_var_name@@old_att_name} syntax is
 redundant. 
-The @var{var_name@att_name} syntax is accepted, but not required,
+The @var{var_name@@att_name} syntax is accepted, but not required,
 for the @var{new_name}.
 
 @item -d @var{old_name},@var{new_name}
@@ -4573,7 +4573,7 @@ which possess it), the attribute @code{units} is renamed to
  and the global attribute @code{Zaire} is renamed to @code{Congo}:  
 @example
 ncrename -a _FillValue,missing_value -a .units,CGS_units \
--a tpt@hieght,height -a prs_sfc@.hieght,height in.nc out.nc 
+-a tpt@@hieght,height -a prs_sfc@@.hieght,height in.nc out.nc 
 @end example
 The presence and absence of the @samp{.} and @samp{@@} features
 cause this command to execute successfully only if a number of 
