@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.9 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.10 2002-07-02 01:47:26 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -18,10 +18,11 @@ nco_aed_prc /* [fnc] Process a single attribute edit on a single variable */
   
   /* If var_id == NC_GLOBAL ( = -1) then global attribute will be edited */
   
+  char att_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
   
   /* fxm: netCDF 2 specifies att_sz should be type int, netCDF 3 uses size_t */
-  int nbr_att;
+  int nbr_att; /* [nbr] Number of attributes */
   int rcd=NC_NOERR; /* [rcd] Return code */
   long att_sz;
   
@@ -38,18 +39,20 @@ nco_aed_prc /* [fnc] Process a single attribute edit on a single variable */
     (void)nco_inq_var(nc_id,var_id,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
   } /* end else */
 
-  rcd=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
+  /* Query attribute metadata when attribute name was specified */
+  if(aed.att_nm) rcd=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
+
   /* Before changing metadata, change missing values to new missing value if warranted 
      This capability is an add on feature and is not implemented very cleanly or efficiently
      If, for example, every variable has a "missing_value" attribute and it is changed
      globally, then this routine will go into and out of define mode for each variable,
-     rather than collecting all the information in one pass and then replacing all the 
-     data in a second pass.
+     rather than collecting all information in first pass and then replacing all data in second pass.
      This is because ncatted was originally designed to change only metadata and so was
      architected differently from other NCO operators.
    */
   if(
-     strcmp(aed.att_nm,"missing_value") == 0 /* Current attribute is "missing_value" */
+     aed.att_nm /* Prevent core dump in strcmp() if attribute name is blank */
+     && strcmp(aed.att_nm,"missing_value") == 0 /* Current attribute is "missing_value" */
      && var_id != NC_GLOBAL /* Current attribute is not global */
      && (aed.mode == aed_modify || aed.mode == aed_overwrite)  /* Modifying or overwriting existing value */
      && rcd == NC_NOERR /* Only when existing missing_value attribute is modified */
@@ -192,7 +195,18 @@ nco_aed_prc /* [fnc] Process a single attribute edit on a single variable */
     if(rcd != NC_NOERR) (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
     break;
   case aed_delete:	
-    if(rcd == NC_NOERR) (void)nco_del_att(nc_id,var_id,aed.att_nm);
+    /* Delete specified attribute if attribute name was specified... */
+    if(aed.att_nm){
+      /* ...and if attribute is known to exist from previous inquire call... */
+      if(rcd == NC_NOERR) (void)nco_del_att(nc_id,var_id,aed.att_nm);
+    }else{
+      /* ...else delete all attributes for this variable... */
+      while(nbr_att){
+	(void)nco_inq_attname(nc_id,var_id,nbr_att-1,att_nm);
+	(void)nco_del_att(nc_id,var_id,att_nm);
+	nbr_att--;
+      } /* end while */
+    } /* end else */
     break;
   case aed_modify:	
     if(rcd == NC_NOERR) (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);

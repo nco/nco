@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.102 2002-06-17 00:41:09 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.103 2002-07-02 01:47:26 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -3097,6 +3097,9 @@ appearance.
 The value of @var{att_nm} is the name of the attribute you want to edit.
 This meaning of this should be clear to all users of the @command{ncatted}
 operator. 
+If @var{att_nm} is omitted (i.e., left blank) and @dfn{Delete} mode is
+selected, then all attributes associated with the specified variable
+will be deleted. 
 
 @cindex global attributes
 @cindex attributes, global
@@ -3142,6 +3145,8 @@ effect.
 Delete current @var{var_nm} attribute @var{att_nm}.
 If @var{var_nm} does not have an attribute @var{att_nm}, there is no
 effect. 
+If @var{att_nm} is omitted (left blank), then all attributes associated
+with the specified variable are automatically deleted. 
 When @dfn{Delete} mode is selected, the @var{att_type} and @var{att_val}
 arguments are superfluous and may be left blank.
 @item m
@@ -3305,6 +3310,14 @@ The value of @var{var_nm} was left blank in order to select all
 variables in the file.
 The values of @var{att_type} and @var{att_val} were left blank because
 they are superfluous in @dfn{Delete} mode. 
+
+Delete all attributes associated with the @code{tpt} variable:
+@example
+ncatted -O -a ,tpt,d,, in.nc
+@end example
+@noindent
+The value of @var{att_nm} was left blank in order to select all
+attributes associate with the variable.
 
 @cindex @code{units}
 Modify all existing @code{units} attributes to "meter second-1"

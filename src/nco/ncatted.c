@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.44 2002-06-16 05:12:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.45 2002-07-02 01:47:26 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -62,6 +62,9 @@
 
    Delete attribute:
    ncatted -D 5 -O -a float_att,att_var,d,,, in.nc foo.nc
+
+   Delete all attributes for given var:
+   ncatted -D 5 -O -a ,att_var,d,,, in.nc foo.nc
 
    Modify existing float:
    ncatted -D 5 -O -a float_att,att_var,m,f,74 in.nc foo.nc
@@ -140,8 +143,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.44 2002-06-16 05:12:03 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.44 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.45 2002-07-02 01:47:26 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.45 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -372,8 +375,8 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
     /* Check syntax */
     if(
        arg_nbr < 5 || /* Need more info */
-       arg_lst[0] == NULL || /*  att_nm not specified */
-       arg_lst[2] == NULL || /*  mode not specified */
+       /* arg_lst[0] == NULL || */ /* att_nm not specified */
+       arg_lst[2] == NULL || /* mode not specified */
        (*(arg_lst[2]) != 'd' && (arg_lst[3] == NULL || (arg_lst[idx_att_val_arg] == NULL && *(arg_lst[3]) != 'c'))) || /* att_typ and att_val must be specified when mode is not delete, except that att_val = "" is valid for character type */
        False){
       (void)fprintf(stdout,"%s: ERROR in attribute edit specification %s\n",prg_nm_get(),aed_arg[idx]);
@@ -381,12 +384,11 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
     } /* end if */
 
     /* Initialize structure */
-    /* aed strings which are not explicitly set by the user will remain as NULLs,
-       i.e., specifying the default setting will appear as if nothing at all was set.
-       Hopefully, in the routines that follow, the branch followed by an aed for which
-       all the default settings were specified (e.g.,"-a foo,,,,") will yield the same result
-       as the branch for which all defaults were set.
-     */
+    /* aed strings not explicitly set by user remain NULL,
+       i.e., specifying default setting appears as if nothing was set.
+       Hopefully, in routines that follow, the branch followed by an aed for which
+       all default settings were specified (e.g.,"-a foo,,,,") will yield same result
+       as branch for which all defaults were set. */
     aed_lst[idx].att_nm=NULL;
     aed_lst[idx].var_nm=NULL;
     aed_lst[idx].val.vp=NULL;
@@ -399,7 +401,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
     aed_lst[idx].att_nm=arg_lst[0];
     aed_lst[idx].var_nm=arg_lst[1];
 
-    /* fxm: These switches should be changed to string comparisons someday */
+    /* fxm: Change these switches to string comparisons someday */
     /* Set mode of current aed structure */
     /* Convert single letter code to mode enum */
     /*    if(!strstr("append",arg_lst[2])){aed_lst[idx].mode=aed_append;
@@ -408,11 +410,11 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
     }else if(!strstr("modify",arg_lst[2])){aed_lst[idx].mode=aed_modify;
     }else if(!strstr("overwrite",arg_lst[2])){aed_lst[idx].mode=aed_overwrite;} */
     switch(*(arg_lst[2])){
-    case 'a':	aed_lst[idx].mode=aed_append; break;
-    case 'c':	aed_lst[idx].mode=aed_create; break;
-    case 'd':	aed_lst[idx].mode=aed_delete; break;
-    case 'm':	aed_lst[idx].mode=aed_modify; break;
-    case 'o':	aed_lst[idx].mode=aed_overwrite; break;
+    case 'a': aed_lst[idx].mode=aed_append; break;
+    case 'c': aed_lst[idx].mode=aed_create; break;
+    case 'd': aed_lst[idx].mode=aed_delete; break;
+    case 'm': aed_lst[idx].mode=aed_modify; break;
+    case 'o': aed_lst[idx].mode=aed_overwrite; break;
     default: 
       (void)fprintf(stderr,"%s: ERROR `%s' is not a supported mode\n",prg_nm_get(),arg_lst[2]);
       (void)fprintf(stderr,"%s: HINT: Valid modes are `a' = append, `c' = create,`d' = delete, `m' = modify, and `o' = overwrite",prg_nm_get());
