@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.56 2000-08-04 23:09:01 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.57 2000-08-05 00:11:40 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -2161,11 +2161,11 @@ Averaging is the default, and will be described first so the
 terminology for the other operations will be familiar.
 
 @ifhtml
-Note for HTML user's: 
-The definition of mathematical operations involving rank reduction
+<p><b>Note for HTML user's</b>: 
+<br>The definition of mathematical operations involving rank reduction
 (e.g., averaging) relies heavily on mathematical expressions which
 cannot be easily represented in HTML.  
-See the printed manual for complete documentation.
+<b>See the printed manual for complete documentation.</b>
 @end ifhtml
 @ifinfo
 Note for Info user's: 

@@ -1,14 +1,12 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.53 2000-08-04 23:09:01 zender Exp $
-
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.54 2000-08-05 00:11:40 zender Exp $
 Purpose: NCO homepage
 
 Usage:
 http://www.cgd.ucar.edu/cms/nco/index.shtml
 file:/home/zender/nco/doc/index.shtml
 /bin/cp -f ~/nco/doc/index.shtml /web/web-data/cms/nco/index.shtml
-rcp -p ~/nco/doc/index.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/index.shtml
-scp -p ~/nco/doc/index.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/index.shtml
 
+scp -p ~/nco/doc/index.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/index.shtml
 scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.shtml
 -->
 
@@ -40,25 +38,23 @@ scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.s
 </td></tr></table>
 
 <p><hr width="100%"></p>
+<p><h1 align=CENTER>Welcome to the NCO Homepage</h1>
+<p><h2>Current version is <!--#include virtual="VERSION"--> released on <!--#flastmod file="VERSION"--> </h2>
 
-<h1 align=CENTER>Welcome to the NCO Homepage</h1>
-
-<h2>Current release is <!--#include virtual="VERSION"--> </h2>
-
-<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#Definition">What is NCO?</a> </dd>
-<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#News">NCO News</a> </dd>
-<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#Contribute">How to Contribute to NCO</a> </dd>
-<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#Download">Download NCO software</a> </dd>
-<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#RTFM">NCO User's Guide</a> </dd>
-<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a> </dd>
-<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#NCAR">Using NCO at NCAR</a> </dd>
-<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#Bugs">Known Problems</a> </dd>
-
+<p><ul>
+<li><a href="#Definition">What is NCO?</a></li>
+<li><a href="#News">NCO News</a></li>
+<li><a href="#Contribute">How to Contribute to NCO</a></li>
+<li><a href="#Download">Download NCO software</a></li>
+<li><a href="#RTFM">NCO User's Guide</a></li>
+<li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
+<li><a href="#NCAR">Using NCO at UCI and NCAR</a></li>
+<li><a href="#Bugs">Known Problems</a></li>
+</ul>
 <hr>
 
 <dt><a name="Definition"></a></dt>
 <h2>What is NCO?</h2>
-
 <p>The <a
 href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
 Operators, or NCO, are a suite of programs known as <B>operators</B>. 
@@ -89,38 +85,40 @@ NCO works on AIX, IRIX, Linux, SunOS, Solaris, tru64, UNICOS, and Windows NT.
 Each of the following operators is thoroughly described in the 
 <a href="./nco.html">NCO User's Guide</a>:
 <ul>
-<li><tt>ncatted</tt> netCDF Attribute Editor</li>
-<li><tt>ncdiff</tt> netCDF Differencer</li>
-<li><tt>ncea</tt> netCDF Ensemble Averager</li>
-<li><tt>ncecat</tt> netCDF Ensemble Concatenator</li>
-<li><tt>ncflint</tt> netCDF File Interpolator</li>
-<li><tt>ncks</tt> netCDF Kitchen Sink</li>
-<li><tt>ncra</tt> netCDF Record Averager</li>
-<li><tt>ncrcat</tt> netCDF Record Concatenator</li>
-<li><tt>ncrename</tt> netCDF Renamer</li>
-<li><tt>ncwa</tt></td> netCDF Weighted Averager</li>
+<li><b>ncatted</b> netCDF Attribute Editor</li>
+<li><b>ncdiff</b> netCDF Differencer</li>
+<li><b>ncea</b> netCDF Ensemble Averager</li>
+<li><b>ncecat</b> netCDF Ensemble Concatenator</li>
+<li><b>ncflint</b> netCDF File Interpolator</li>
+<li><b>ncks</b> netCDF Kitchen Sink</li>
+<li><b>ncra</b> netCDF Record Averager</li>
+<li><b>ncrcat</b> netCDF Record Concatenator</li>
+<li><b>ncrename</b> netCDF Renamer</li>
+<li><b>ncwa</b></td> netCDF Weighted Averager</li>
 </ul>
 <p><hr width="100%"></p>
 
 <dt><a name="News"></a></dt>
 <h2>NCO News</h2>
-
 <p>2000/07/30: 
 nco-1.2 is released. 
 Summary of new features and user-visible changes:
 <ul>
 <li>The names of three of the operators have been made somewhat obsolete
 because they are no longer just arithmetic averagers.
-<tt>ncra</tt>, <tt>ncea</tt>, and <tt>ncwa</tt> have all been given
+<b>ncra</b>, <b>ncea</b>, and <b>ncwa</b> have all been given
 brain transplants so that the type of operation they perform may be
 specified on the command line. 
 The following operations are now supported by the new 
 <tt>-y</tt> switch: average (default), total, minimum, maximum,
 root-mean-square, square of the mean, mean of the squares, square
 root.
-<p><tt>ncra -O -y rms -n 12,4,1 h0001.nc 2000_rms.nc</tt></p>
-<p><tt>ncea -O -y min -n 12,4,1 h0001.nc 2000_min.nc</tt></p>
-<p><tt>ncwa -O -y max -a lon,lat h0001.nc 200001_max_x.nc</tt></p>
+For example,
+<pre>
+ncra -O -y rms -n 12,4,1 h0001.nc 2000_rms.nc # Root-mean-square
+ncea -O -y min -n 12,4,1 h0001.nc 2000_min.nc # Minimum
+ncwa -O -y max -a lon,lat h0001.nc 200001_max_x.nc # Maxima
+</pre>
 Averaging is still the default so no existing usage needs to be modified.
 It is also possible to compute spatial and temporal variances and
 standard deviations using a combination of three or four NCO commands.</li>
@@ -177,8 +175,7 @@ modifying NCO, and discussion of specific items on the
 
 <dt><a name="Contribute"></a></dt>
 <h2>How to Contribute to NCO</h2>
-
-In March, 2000 NCO became an Open Source project hosted by
+<p>In March, 2000 NCO became an Open Source project hosted by
 SourceForge.net in order to facilitate collaboration and code
 contribution by a wide variety of people. 
 There is a <a href="./TODO">TODO list</a> over 100 items long! 
@@ -190,12 +187,10 @@ capability, we need your help!
 The <a href="http://sourceforge.net/projects/nco">NCO project
 homepage</a> contains mailing lists, discussion forums, and
 instructions for helping the NCO project.
-
 <hr></p>
 
 <dt><a name="Download"></a></dt>
 <h2>Download NCO distributions</h2>
-
 <p>Complete source and documentation in tarball format: <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz">nco.tar.gz</a> (430 Kb compressed tar-file)
 <p>Complete source and documentation in <a href="http://www.rpm.org">RPM</a> format: <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco-1.1.46-1.src.rpm">nco-1.1.46-1.src.rpm</a> (492 Kb SRPM)
 
@@ -209,7 +204,6 @@ tarball by a few months:
 
 <dt><a name="RTFM"></a></dt>
 <h2>NCO User's Guide</h2> 
-
 <p>View the NCO User's Guide in any of these formats
 <ul>
 <li><a href="./nco.dvi">DVI</a> Device Independent (<tt>xdvi</tt>)</li>
@@ -220,14 +214,11 @@ tarball by a few months:
 <li><a href="./nco.ps">Postscript</a> Printing (<tt>ghostview</tt>)</li>
 <li><a href="./nco.texi">TeXInfo</a> Documentation Source code (<tt>emacs</tt>)</h2> </li>
 </ul>
-
 <hr></p>
 
 <dt><a name="README/ChangeLog/TODO"></a></dt>
 <h2>README/ChangeLog/TODO</h2>
-
-Files containing useful information about the current NCO distribution
-
+<p>Files containing useful information about the current NCO distribution:
 <ul>
 <li><a href="./README"><tt>README</tt></a> Platforms and software requirements
 for a successful NCO installation</li>
@@ -239,45 +230,47 @@ fixes we currently have in mind for NCO.</li>
 <hr></p>
 
 <dt><a name="NCAR"></a></dt>
-<h2>Using NCO at NCAR</h2>
-<p>NCO is built at UC Irvine and distributed from NCAR.
-User's of UCI and NCAR machines should take advantage of pre-built,
-up-to-date NCO executables. 
-The NCO executables are maintained in many different locations at NCAR:
-<dd>ACD dust.acd.ucar.edu (Linux 2.2.5): /gs/zender/bin/LINUX</dd>
-<dd>ACD garcia.acd.ucar.edu (Compaq tru64): /usr/local/bin</dd>
-<dd>CGD network (Solaris 2.6): /contrib/bin</dd>
-<dd>CGD/SCD Dataproc (IRIX 6.5): /contrib/bin</dd>
-<dd>SCD Blackforest (AIX 4.0): /home/blackforest/zender/bin/AIX</dd>
-<dd>SCD Ouray (UNICOS 10.0.0): /home/ouray0/zender/bin/CRAY</dd>
-<dd>SCD Ute and Utefe (IRIX 6.5): /home/ute/zender/bin/SGIMP64</dd>
-<br>and at two locations at UCI:
-<dd>ESS dust.ps.uci.edu (Linux 2.2.12): /home/zender/bin/LINUX</dd>
-<dd>ESS krein.math.uci.edu (IRIX 6.5):
-/home/zender/zender/bin/SGIMP64</dd>
-
+<h2>Using NCO at UCI and NCAR</h2>
+<p>User's at UC Irvine and NCAR will find pre-built, up-to-date NCO
+executables in the following locations:
+<ul>
+<li>ACD <tt>dust.acd.ucar.edu</tt> (Linux 2.2.5): <tt>/gs/zender/bin/LINUX</tt></li>
+<li>ACD <tt>garcia.acd.ucar.edu</tt> (Compaq tru64): <tt>/usr/local/bin</tt></li>
+<li>CGD network (Solaris 2.6): <tt>/contrib/bin</tt></li>
+<li>CGD/SCD <tt>dataproc.ucar.edu</tt> (IRIX 6.5): <tt>/contrib/bin</tt></li>
+<li>SCD <tt>blackforest.ucar.edu</tt> (AIX 4.0): <tt>/home/blackforest/zender/bin/AIX</tt></li>
+<li>SCD <tt>ouray.ucar.edu</tt> (UNICOS 10.0.0): <tt>/home/ouray0/zender/bin/CRAY</tt></li>
+<li>SCD <tt>ute.ucar.edu</tt> and <tt>utefe.ucar.edu</tt> (IRIX 6.5): <tt>/home/ute/zender/bin/SGIMP64</tt></li>
+<li>ESS <tt>dust.ps.uci.edu</tt> (Linux 2.2.12): <tt>/home/zender/bin/LINUX</tt></li>
+<li>ESS <tt>krein.math.uci.edu</tt> (IRIX 6.5): <tt>/home/zender/zender/bin/SGIMP64</tt></li>
+</ul>
 <hr></p>
 
 <dt><a name="Bugs"></a></dt>
 <h2>Known Problems with NCO and/or netCDF:</h2>
 
-<h1>NCO problems on SGI machines?</h1>
-<p>The netCDF 3.3.x distribution suffers from unpredictable behavior on SGI machines (possibly related to NFS-mounted partitions).
-As a result, NCO operators, especially <tt>ncwa</tt>, may core dump unless you upgrade to the new netCDF3.4.x distribution.
+<ul>
+<li><b>NCO problems on SGI machines?</b>:
+<ul>
+<li>The netCDF 3.3.x distribution suffers from unpredictable behavior
+on SGI machines (possibly related to NFS-mounted partitions). 
+As a result, NCO operators, especially <b>ncwa</b>, may core dump
+unless you upgrade to the new netCDF3.4.x distribution. 
 NCAR machines have all been upgraded to netCDF3.4+.
-All users of NCO on SGI64 machines at other institutions are urged to upgrade to netCDF3.4.x which is available from URL <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z">ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z</a>.</p>
+All users of NCO on SGI64 machines at other institutions are urged to
+upgrade to netCDF3.4.x which is available from URL 
+<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z">ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z</a>.</li>
+<li>NCO may not build correctly on SGI machines unless the latest
+version of GNU make (version 3.78.1) is installed.</li>
+</ul>
 
-<p>NCO may not build correctly on SGI machines unless the latest
-version of GNU make (version 3.78.1) is installed.</p>
-
-<h1>NCO on the Cray T90</h1>
-<p>NCO should be compiled with the <tt>-DC_ONLY</tt> flag on the Cray
+<li><b>NCO on the Cray T90</b>
+NCO should be compiled with the <tt>-DC_ONLY</tt> flag on the Cray
 T90 to avoid C-Fortran interface problems; otherwise incorrect answers
 may result. 
-As of NCO 1.1.38, this is the default.
-</p>
-
-<hr></p>
+As of NCO 1.1.38, this is the default.</li>
+</ul>
+<p><hr></p>
 
 <table width="100%"><tr><td align="left" valign="top">/
 <a href="http://nco.sourceforge.net">NCO Homepage</a> /
