@@ -1,7 +1,7 @@
  %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.23 2002-01-01 01:00:10 zender Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.24 2002-01-11 23:26:20 hmb Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
@@ -120,7 +120,7 @@ char err_sng[200]; /* Error string for short error messages */
 
 %left '+' '-'
 %left '*' '/' '%'
-%left '^'
+%right '^'
 %nonassoc UMINUS
 
 /* "type" declaration sets type for non-terminal symbols which otherwise need no declaration */
@@ -309,28 +309,51 @@ att_exp: att_exp '+' att_exp {
   (void)ncap_attribute_minus(&$2);
   $$=$2;
 }
+| '+' att_exp  %prec UMINUS {
+  $$=$2;
+}
 | att_exp '^' att_exp {
+  if($1.type <= NC_FLOAT && $3.type <= NC_FLOAT) {
+    (void)ncap_attribute_conform_type(NC_FLOAT,&$1);
+    (void)ncap_attribute_conform_type(NC_FLOAT,&$3);
+    $$.val.f=powf($1.val.f,$3.val.f);
+    $$.type=NC_FLOAT;
+  } else { 
   (void)ncap_attribute_conform_type(NC_DOUBLE,&$1);
   (void)ncap_attribute_conform_type(NC_DOUBLE,&$3);
   $$.val.d=pow($1.val.d,$3.val.d);
   $$.type=NC_DOUBLE; 
+  }
+
 }
 | POWER '(' att_exp ',' att_exp ')' {
+  if($3.type <= NC_FLOAT && $5.type <= NC_FLOAT) {
+    (void)ncap_attribute_conform_type(NC_FLOAT,&$3);
+    (void)ncap_attribute_conform_type(NC_FLOAT,&$5);
+    $$.val.f=powf($3.val.f,$5.val.f);
+    $$.type=NC_FLOAT;
+  } else { 
   (void)ncap_attribute_conform_type(NC_DOUBLE,&$3);
   (void)ncap_attribute_conform_type(NC_DOUBLE,&$5);
   $$.val.d=pow($3.val.d,$5.val.d);
   $$.type=NC_DOUBLE; 
+  }
+
 }
 
 | ABS '(' att_exp ')' {
   $$=ncap_attribute_abs($3);
 }
 | FUNCTION '(' att_exp ')' {
-  (void)ncap_attribute_conform_type(NC_DOUBLE,&$3);
+  
+  if($3.type <= NC_FLOAT) {
+    (void)ncap_attribute_conform_type(NC_FLOAT,&$3);
+    $$.val.f=(*($1->fncf))($3.val.f);
+    $$.type=NC_FLOAT;
+  } else {
   $$.val.d=(*($1->fnc))($3.val.d);
   $$.type=NC_DOUBLE;
-  (void)free($1->nm);
-  (void)free($1);
+  }
 }
 | '(' att_exp ')' {$$=$2;}
 | ATTRIBUTE {$$=$1;}
@@ -445,23 +468,22 @@ var_exp: var_exp '+' var_exp {
   parse_sct minus;
   minus.val.b=-1;
   minus.type=NC_BYTE;
-  (void)ncap_attribute_conform_type($2->type,&minus);
   $$=ncap_var_attribute_multiply($2,minus);
   var_free($2);      
+}
+| '+' var_exp %prec UMINUS {
+  $$=$2;
 }
 | ABS '(' var_exp ')' {
   $$=ncap_var_abs($3);
   var_free($3);
 } 
 | FUNCTION '(' var_exp ')' {
-  $$=ncap_var_function($3,$1->fnc);
+  $$=ncap_var_function($3,$1);
   var_free($3);
-  (void)free($1->nm);
-  (void)free($1);
 }  
 | '(' var_exp ')' {
-  $$=var_dpl($2);
-  var_free($2);
+  $$=$2;
 }
 | VAR { 
   $$=ncap_var_init($1,((prs_sct*)prs_arg));
