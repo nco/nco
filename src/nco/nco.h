@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.48 2003-01-20 17:46:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.49 2003-02-18 19:38:14 hmb Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
@@ -182,9 +182,12 @@ extern "C" {
 
 /* Container for limit structures */
 typedef struct {
- char *dmn_nm; /* dimension name */
- long dmn_cnt;    /* total number of hyperslabs to extract */
- int lmt_dmn_nbr;    /* number of lmt args */
+ char *dmn_nm;      /* dimension name */
+ long dmn_cnt;      /* total number of hyperslabs to extract */
+ long dmn_sz_org;   /* size of dimension in INPUT file */
+ int lmt_dmn_nbr;   /* number of lmt args */
+ bool BASIC_DMN;    /* Limit is the same as dimension in input file */
+ bool WRP;          /* Limit is wrapped - (only true if wrapping ,lmt_dmn_nbr=2 */ 
  lmt_sct **lmt_dmn; /* list of limit structures associated with each dimension */  
 } lmt_all;
 
