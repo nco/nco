@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.11 2003-03-24 17:30:30 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.12 2003-03-24 19:33:09 rorik Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -844,16 +844,16 @@ nco_lmt_udu_cnv /* [fnc] convert from unidata units to coordinate value */
  const int dimid, /* I [idx] netCDF dimension ID */
  lmt_sct *lmt) /* I/O [sct] limit structure */
 {
-  int rcd;	/* return code */
-  static const char* att_nm="units";
-  char* dt_str;	/* date/time string */
-  long att_sz;  /* "units" attribute size */
-  nc_type att_type; /* atttribute type, probably is NC_CHAR */
 
 #ifndef HAVE_LIBUDUNITS
   (void)fprintf(stdout,"udunits library is not available.\n");
   return 1;
 #else
+  int rcd;	/* return code */
+  static const char* att_nm="units";
+  char* dt_str;	/* date/time string */
+  long att_sz;  /* "units" attribute size */
+  nc_type att_type; /* atttribute type, probably is NC_CHAR */
   utUnit unitstruct;  /* unidata units structure */
 
 #ifndef UDUNITS_DAT
@@ -914,16 +914,19 @@ nco_lmt_udu_cnv /* [fnc] convert from unidata units to coordinate value */
       /* break up the date string copy delimited by dashes */
       arg_lst=lst_prs(cur_sng,"-",&arg_nbr);
       /* fill in the year, month and day */
-      if (arg_nbr > 0 ) year =strtol(arg_lst[0],(char **)NULL,10);
-      if (arg_nbr > 1 ) month=strtol(arg_lst[1],(char **)NULL,10);
-      if (arg_nbr > 2 ) day  =strtol(arg_lst[2],(char **)NULL,10);
+      if ( (arg_nbr > 0 )  && (arg_lst[0] != NULL) )
+        year =strtol(arg_lst[0],(char **)NULL,10);
+      if ( (arg_nbr > 1 )  && (arg_lst[1] != NULL) )
+        month=strtol(arg_lst[1],(char **)NULL,10);
+      if ( (arg_nbr > 2 )  && (arg_lst[2] != NULL) )
+        day  =strtol(arg_lst[2],(char **)NULL,10);
       /* advance the pointer past the date/time delimiting space */
-      arg_lst[arg_nbr-1]=strrchr(arg_lst[arg_nbr-1],' ');
+      if (arg_lst[2] != NULL) arg_lst[2]=strrchr(arg_lst[2],' ');
       /* step past last space */
-      if (arg_lst[arg_nbr-1] != NULL) arg_lst[arg_nbr-1]++;
+      if (arg_lst[2] != NULL) arg_lst[arg_nbr-1]++;
       /* break up the remaining time string delimited by colons */
-      if (arg_lst[arg_nbr-1] != NULL) {
-        arg_lst=lst_prs(arg_lst[arg_nbr-1],":",&arg_nbr);
+      if (arg_lst[2] != NULL) {
+        arg_lst=lst_prs(arg_lst[2],":",&arg_nbr);
         /* fill in the hour, minute and second */
         if ( (arg_nbr > 0) && strlen(arg_lst[0])>2) { /* HHMM spec */
           hour=strtol(arg_lst[0],(char **)NULL,10);
@@ -932,9 +935,12 @@ nco_lmt_udu_cnv /* [fnc] convert from unidata units to coordinate value */
           min=(long)(min%100);
 	  }
         else { /* HH:MM:S.S spec */
-          if (arg_nbr > 0 ) hour=strtol(arg_lst[0],(char **)NULL,10);
-          if (arg_nbr > 1 ) min =strtol(arg_lst[1],(char **)NULL,10);
-          if (arg_nbr > 2 ) sec =strtod(arg_lst[2],(char **)NULL);
+          if ( (arg_nbr > 0 ) && (arg_lst[0] != NULL) )
+	    hour=strtol(arg_lst[0],(char **)NULL,10);
+          if ( (arg_nbr > 1 ) && (arg_lst[1] != NULL) )
+	    min =strtol(arg_lst[1],(char **)NULL,10);
+          if ( (arg_nbr > 2 ) && (arg_lst[2] != NULL) )
+	    sec =strtod(arg_lst[2],(char **)NULL);
   	  }
 	} /* if arg_lst[] != NULL */
       /* convert dates into "time since ..." value */
@@ -944,6 +950,7 @@ nco_lmt_udu_cnv /* [fnc] convert from unidata units to coordinate value */
       /* make another copy for working with */
       strcpy(cur_sng,lmt->max_sng);	    
       }
+    (void)nco_free(cur_sng);
     } /* if/else utIsTime() ... */
   (void)utTerm(); /* free memory taken by udunits library */
   return 0; 
