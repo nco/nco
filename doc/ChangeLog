@@ -1,3 +1,7 @@
+2004-08-22  Charlie Zender  <zender@uci.edu>
+
+	* Include sys/types.h prior to regex.h on Mac OS X
+
 2004-08-15  Charlie Zender  <zender@uci.edu>
 
 	* ncpdq all_new packing seems to work. Next need to get unpacking working.

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.249 2004-08-08 05:34:48 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.250 2004-08-22 20:44:53 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -185,7 +185,21 @@ donations on NCO development:
 <dt><a name="News"></a></dt>
 <h2>NCO News & Announcements</h2>
 <ul>
-<li>August&nbsp;7, 2004: <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released&mdash;performs arbitrary dimension re-ordering and reversal
+
+<li>August&nbsp;21, 2004:
+  The <a href="http://www.nsf.gov">National Science Foundation (NSF)</a> has funded the
+  <a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">NCO/SDO Proposal</a>!
+  Thanks to the wise, generous, and, need I add, good-looking, proposal
+  reviewers and staff of the Divisions of
+  <a href="http://www.cise.nsf.gov/div/index.cfm?div=iis">Information and Intelligent Systems (IIS)</a>
+  and
+  <a href="http://www.cise.nsf.gov/div/index.cfm?div=sci">Shared Cyberinfrastructure (SC)</a>
+  in the 
+  <a href="http://www.nsf.gov/home/cise">Directorate for Computer and Information Science and Engineering (CISE)</a>.
+  We will soon devise a new mechanism to update users on our plans and progress towards the proposal's milestones.
+</li>
+
+<li>August&nbsp;7, 2004: New operator <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released&mdash;performs arbitrary dimension re-ordering and reversal
 </li>
 
 <li>March&nbsp;4, 2004: Read the first 
@@ -197,7 +211,6 @@ with Subject: &ldquo;NSF SEI(GEO) NCO/SDO Proposal Endorsement&rdquo;.
 Put (at least) your Name, Title, and Institutional affiliation in the body.
 Add any additional comments. 
 It is never too late to endorse this proposal.
-If rejected, it will be recycled/expanded at the next opportunity.
 The information in your endorsement will be used to create supplementary documents to NSF and NASA for future NCO proposal advocacy.
 </li>
 <li><a href="./nco_news.shtml">Past NCO News & Announcements</a></li>
@@ -212,7 +225,7 @@ Tarballs and RPMs are no long uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.9.9</b>: (<i>In progress</i>) <tt>ncap</tt> float functions work in AIX (<a href="#bug_ncap_flt_fnc_aix">long-time bug</a>, upgrade will be required for AIX ncap users)
+<li><b>NCO 2.9.9</b>: (<i>In progress</i>) <tt>ncpdq</tt> packs/unpacks entire files, <tt>ncap</tt> float functions work in AIX (<a href="#bug_ncap_flt_fnc_aix">long-time bug</a>, upgrade will be required for AIX ncap users)
 <li><b>NCO 2.9.8</b>: <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released, <tt>ncwa --msk_sng</tt> consolidated mask switch, C99 compiler required
 <li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>, write <tt>nco_input_file_list</tt> attributes, add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++, large file support (LFS), write <tt>nco_openmp_thread_number</tt> attribute
 <li><b>NCO 2.9.6</b>: Support <tt>-o fl_out</tt> syntax, 64-bit ABI for x86_64, <a href="http://www.debian.org">Debian</a> builds libnco_c++

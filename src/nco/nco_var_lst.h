@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.21 2004-08-14 21:00:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.22 2004-08-22 20:44:54 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -21,13 +21,16 @@
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 #include <string.h> /* strcmp. . . */
 
+#ifdef HAVE_REGEX_H
+#ifdef MACOSX
+#include <sys/types.h> /* 20040822: Provide off_t required by Mac OS X regex.h */
+#endif /* !MACOSX */
+#include <regex.h> /* POSIX regular expressions library */
+#endif /* HAVE_REGEX_H */
+
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
-
-#ifdef HAVE_REGEX_H
-#include <regex.h> /* POSIX regular expressions library */
-#endif /* HAVE_REGEX_H */
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
