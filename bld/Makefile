@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.27 1999-08-30 07:07:20 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.28 1999-09-07 23:56:46 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -310,6 +310,10 @@ endif
 ifeq ($(PVM_ARCH),SGIMP64)
 NETCDF_INC := /usr/local/include
 NETCDF_LIB := /usr/local/lib64/r4i4
+ifeq ($(HOST),krein.math.uci.edu)
+NETCDF_INC := /home/ess/gudrun/didi/netcdf-3.4/include
+NETCDF_LIB := /home/ess/gudrun/didi/netcdf-3.4/lib
+endif
 C++ := c++
 CC := cc
 # spoof SGI64
