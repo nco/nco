@@ -1,0 +1,26 @@
+// Purpose: CDL file to generate large netCDF test file
+
+// Usage:
+// ncgen -b -o tst.nc big.cdl
+// ncgen -b -o ${DATA}/mie/big.nc ~/nco/data/big.cdl
+// ncks -H ${DATA}/mie/big.nc | m
+
+// One billion floats is 4*10^9 B, or 4 GB
+// 32-bit machines are unable to create or work with files exceeding ~2 GB
+// ncks -H -d wvl,999999999 ${DATA}/mie/big.nc | m
+
+netcdf big {
+dimensions:
+	wvl=1000000000;
+variables:
+	float wvl(wvl);
+//data:
+//	wvl=1;
+}
+
+
+
+
+
+
+
