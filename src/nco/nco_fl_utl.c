@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.36 2004-06-20 06:54:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.37 2004-06-20 20:00:11 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -190,10 +190,9 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	/* Assume filenames are whitespace-separated
 	   Format string "%256s\n" tells scanf() to:
 	   1. Skip any initial whitespace
-	   2. Read first block of non-whitespace characters (up to 256 of them) into buffer
-	   3. */
-	/*	while(((cnv_nbr=fscanf(fp_in,"%256s\n",bfr_in)) != EOF) && (fl_lst_in_lng < FL_LST_IN_MAX_LNG)){ */
-	while(((cnv_nbr=fscanf(fp_in,"%256s",bfr_in)) != EOF) && (fl_lst_in_lng < FL_LST_IN_MAX_LNG)){
+	   2. Read first block of non-whitespace characters (up to 256 of them) into buffer 
+	   3. The \n allows the entries to be separated by carriage returns */
+	while(((cnv_nbr=fscanf(fp_in,"%256s\n",bfr_in)) != EOF) && (fl_lst_in_lng < FL_LST_IN_MAX_LNG)){
 	  if(cnv_nbr == 0){
 	    (void)fprintf(stdout,"%s: ERROR stdin input not convertable to filename. HINT: Maximum length for input filenames is %d characters. HINT: Separate filenames with whitespace. Carriage returns are automatically stripped out.\n",prg_nm_get(),FL_NM_IN_MAX_LNG);
 	    nco_exit(EXIT_FAILURE);
@@ -201,7 +200,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	  fl_nm_lng=strlen(bfr_in);
 	  fl_lst_in_lng+=fl_nm_lng;
 	  (*fl_nbr)++;
-	  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBIG input file #%d is \"%s\", filename length=%li\n",prg_nm_get(),*fl_nbr,bfr_in,(long)fl_nm_lng);
+	  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG input file #%d is \"%s\", filename length=%li\n",prg_nm_get(),*fl_nbr,bfr_in,(long)fl_nm_lng);
 	  /* Increment file number */
 	  fl_lst_in=(char **)nco_realloc(fl_lst_in,(*fl_nbr*sizeof(char *)));
 	  fl_lst_in[(*fl_nbr)-1]=(char *)strdup(bfr_in);
@@ -210,8 +209,9 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	   C FAQ Author Steve Summit explains why not to use fflush() 
 	   and how best to manually clean stdin of unwanted residue */
 	/* Discard characters remainining in stdin */
-	/*	while((chr_foo=getchar()) != '\n' && chr_foo != EOF) continue;*/
-	while((chr_foo=getchar()) != EOF) continue;
+	while((chr_foo=getchar()) != '\n' && chr_foo != EOF){
+	  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Read and discarded \'%c\'\n",prg_nm_get(),chr_foo);
+	} /* end while */
 
 	/* Free temporary buffer */
 	bfr_in=(char *)nco_free(bfr_in);
@@ -919,6 +919,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 #define USR_RPL_MAX_LNG 10 /* [nbr] Maximum length for user reply */
 #define USR_RPL_MAX_NBR 10 /* [nbr] Maximum number of chances for user to reply */
     char usr_rpl[USR_RPL_MAX_LNG];
+    int usr_rpl_int;
     short nbr_itr=0;
     
     /* Initialize user reply string */
@@ -935,8 +936,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 
     /* Ensure one exit condition for each valid switch in following case statement */
     while(strcasecmp(usr_rpl,"o") && strcasecmp(usr_rpl,"a") && strcasecmp(usr_rpl,"e")){
-      nbr_itr++;
-      if(nbr_itr > USR_RPL_MAX_NBR){
+      if(nbr_itr++ > USR_RPL_MAX_NBR){
 	(void)fprintf(stdout,"\n%s: ERROR %hd failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),nbr_itr-1);
 	nco_exit(EXIT_FAILURE);
       } /* end if */
@@ -944,7 +944,11 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       (void)fprintf(stdout,"%s: %s exists---`o'verwrite, `a'ppend/replace, or `e'xit (o/a/e)? ",prg_nm_get(),fl_out);
       (void)fflush(stdout);
       /* fgets() reads (at most one less than USR_RPL_MAX_LNG) to first newline or EOF */
-      rcd_fgets=fgets(usr_rpl,USR_RPL_MAX_LNG,stdin);
+      /*      rcd_fgets=fgets(usr_rpl,USR_RPL_MAX_LNG,stdin);*/
+      while((rcd_fgets=fgets(usr_rpl,USR_RPL_MAX_LNG,stdin)) == NULL){
+	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Read \"%s\" while waiting for non-NULL on stdin...\n",prg_nm_get(),(rcd_fgets == NULL) ? "NULL" : usr_rpl);
+	continue;
+      } /* end while */
       /* Check that last character in input string is \n and replace that with \0 */
       if(rcd_fgets != NULL){
 	size_t usr_rpl_lng;
@@ -957,7 +961,8 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     } /* end while */
     
     /* Ensure one case statement for each exit condition in preceding while loop */
-    switch(usr_rpl[0]){
+    usr_rpl_int=(int)usr_rpl[0];
+    switch(usr_rpl_int){
     case 'E':
     case 'e':
       nco_exit(EXIT_SUCCESS);
@@ -977,7 +982,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
     
-  }else{ /* output file does not yet already exist */
+  }else{ /* Output file does not yet already exist */
     rcd=nco_create(fl_out_tmp,NC_NOCLOBBER,out_id);
     /*    rcd=nc_create(fl_out_tmp,NC_NOCLOBBER|NC_SHARE,out_id);*/
   } /* end if output file does not already exist */

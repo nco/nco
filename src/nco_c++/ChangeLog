@@ -1,3 +1,7 @@
+2004-06-20  Charlie Zender  <zender@uci.edu>
+
+	* Fix ambiguity in nco_put_att<float &>
+
 2004-06-19  Charlie Zender  <zender@uci.edu>
 
 	* Add nco_put_att<int,short,long> functions

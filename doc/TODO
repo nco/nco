@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.322 2004-06-20 07:04:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.323 2004-06-20 20:00:10 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -196,24 +196,10 @@ nco335. ncflint: implement interpolation/mss_val algorithms two and three as opt
 nco336. Allow input file lists to be specified in a text file and to supercede command line arguments. This will be useful on platforms with limited buffers for command line arguments and globbing expansions (e.g., AIX)
 nco337. When input file is a symbolic link, print name of linked-to-file as debugging information
 nco340. o/a/e stdin is overwritten when stdin input method used
-cd ~/nco/data;echo "in.nc" | ncecat -o foo.nc
+cd ~/nco/data;echo "in.nc" | ncecat -D 3 -o foo.nc
 nco341. Add _FILE_OFFSET_BITS == 64 to all compiles? Otherwise stat() call in nco_fl_mk_lcl() may fail on large files on 32 bit systems
 nco342. Get canonicalize_file_name() working in nco_fl_info_get()
-nco343. Dis-ambiguate nco_put_att() functions
-mie.cc:3508: error: call of overloaded `nco_put_att(const int&, int,
-   std::string, prc_cmp&)' is ambiguous
-/home/zender/include/nco_att.hh:53: error: candidates are: int
-   nco_put_att(const int&, const int&, const std::string&, const float&, const
-   nc_type&)
-/home/zender/include/nco_att.hh:91: error:                 int
-   nco_put_att(const int&, const int&, const std::string&, const int&, const
-   nc_type&)
-/home/zender/include/nco_att.hh:109: error:                 int
-   nco_put_att(const int&, const int&, const std::string&, const short int&,
-   const nc_type&)
-/home/zender/include/nco_att.hh:127: error:                 int
-   nco_put_att(const int&, const int&, const std::string&, const long int&,
-   const nc_type&)
+nco344. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

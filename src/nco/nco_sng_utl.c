@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.14 2004-06-15 22:37:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.15 2004-06-20 20:00:11 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -78,13 +78,15 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
   /* Purpose: Replace C language '\X' escape codes in string with ASCII bytes 
      Return number of escape sequences found and actually translated
      This should be same as number of bytes by which string length has shrunk
-     For example, consecutive characters "\n" are translated into ASCII '\n' = 10 which diminishes string length by 1
+     For example, consecutive characters "\n" are translated into ASCII '\n' = 10
+     Each such translation diminishes string length by one
      Function works for arbitrary number of escape codes in input string
      The escape sequence for NUL itself, \0, causes a warning and is not translated
      Input string must be NUL-terminated or NULL
-     Translation is done in place, so if original string is required, it should be copied prior to calling sng_ascii_trn()
-     This procedure can only diminish, not lengthen, size of input string
-     Therefore it may be performed in place safely without the need to operate on a copy of the string
+     This procedure can only diminish, not lengthen, input string size
+     Therefore it may be performed in place safely, i.e., not string copy is necessary
+     Translation is done in place so copy original prior to calling sng_ascii_trn()!!!
+
      Address pointed to by sng does not change, but memory at that address is altered
      when characters are "moved to the left" if C language escape sequences are embedded.
      Thus string length may shrink */
@@ -98,7 +100,7 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
   int trn_nbr=0; /* Number of escape sequences translated */
   
   /* ncatted allows character attributes of 0 length
-     Such "strings" do not even have a NUL-terminator and so may not safely be tested by strchr() */
+     Such "strings" do not have NUL-terminator and so may not safely be tested by strchr() */
   if(sng == NULL) return trn_nbr;
   
   /* C language '\X' escape codes are always preceded by a backslash */

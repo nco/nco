@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.cc,v 1.8 2004-06-20 06:54:27 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.cc,v 1.9 2004-06-20 20:00:12 zender Exp $ 
 
 // Implementation (declaration) of C++ interface to netCDF attribute routines
 
@@ -84,13 +84,14 @@ nco_put_att // [fnc] Create attribute
 (const int &nc_id, // I [enm] netCDF file ID
  const int &var_id, // I [id] Variable ID
  const std::string &att_nm, // I [sng] Attribute name
- const std::string &att_val) // I [frc] Attribute value
+ const double &att_val, // I [frc] Attribute value
+ const nc_type &att_typ) // I [enm] Attribute type 
 {
-  // Purpose: Wrapper for nc_put_att_text()
-  int rcd=nc_put_att_text(nc_id,var_id,att_nm.c_str(),att_val.size(),att_val.c_str());
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_att<std::string>");
+  // Purpose: Wrapper for nc_put_att_double()
+  const size_t att_sz(1);
+  int rcd=nc_put_att_double(nc_id,var_id,att_nm.c_str(),att_typ,att_sz,&(const_cast<double &>(att_val)));
   return rcd;
-} // end nco_put_att<std::string>()
+} // end nco_put_att<double>()
 
 int // O [enm] Return success code
 nco_put_att // [fnc] Create attribute
@@ -175,6 +176,19 @@ nco_put_att // [fnc] Create attribute
   int rcd=nc_put_att_long(nc_id,var_id,att_nm.c_str(),att_typ,att_sz,&(const_cast<long &>(att_val)));
   return rcd;
 } // end nco_put_att<long>()
+
+int // O [enm] Return success code
+nco_put_att // [fnc] Create attribute
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const std::string &att_nm, // I [sng] Attribute name
+ const std::string &att_val) // I [frc] Attribute value
+{
+  // Purpose: Wrapper for nc_put_att_text()
+  int rcd=nc_put_att_text(nc_id,var_id,att_nm.c_str(),att_val.size(),att_val.c_str());
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_att<std::string>");
+  return rcd;
+} // end nco_put_att<std::string>()
 
 int // O [enm] Return success code
 nco_put_att // [fnc] Create attribute
