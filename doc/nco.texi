@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.181 2003-09-04 17:32:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.182 2003-09-16 22:12:20 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1062,7 +1062,7 @@ Sequences of these commands can accomplish simple but powerful
 operations from the command line.
 
 @html
-<a name="averagers"></a>
+<a name="averagers"></a> <!-- http://nco.sf.net/nco.html#averagers -->
 @end html
 @node Averaging vs. Concatenating, Large numbers of input files, Addition Subtraction Division Multiplication and Interpolation, Strategies
 @section Averagers vs.@: Concatenators
@@ -1895,7 +1895,7 @@ that @emph{only} user-defined variables should be output.
 @command{ncap} neither accepts nor understands the @var{-x} switch.
 
 @html
-<a name="wildcarding"></a>
+<a name="wildcarding"></a> <!-- http://nco.sf.net/nco.html#wildcarding -->
 @end html
 @cindex extended regular expressions
 @cindex regular expressions
@@ -3008,6 +3008,9 @@ The first step assembles all the data into a single file.
 This may require a lot of temporary disk space, but is more or less
 required by the @command{ncbo} operation in the third step.
 
+@html
+<a name="typ_cnv"></a> <!-- http://nco.sf.net/nco.html#typ_cnv -->
+@end html
 @node Type conversion, Suppressing interactive prompts, Operation Types, Common features
 @section Type conversion
 @cindex type conversion
@@ -3016,11 +3019,12 @@ Availability: @command{ncap}, @command{ncbo}, @command{ncea},
 @command{ncra}, @command{ncwa}@* 
 Short options: None@*
 @end cartouche
-Type conversion refers to the casting of one fundamental data type 
-to another, e.g., converting @code{NC_SHORT} (2 bytes) to
-@code{NC_DOUBLE} (8 bytes). 
-As a general rule, type conversions should be avoided for at least two   
-reasons. 
+@cindex promotion
+Type conversion (often called @dfn{promotion}) refers to the casting of
+one fundamental data type to another, e.g., converting @code{NC_SHORT}
+(2 bytes) to @code{NC_DOUBLE} (8 bytes). 
+As a general rule, automatic type conversions should be avoided for at
+least two reasons. 
 First, type conversions are expensive since they require creating
 (temporary) buffers and casting each element of a variable from 
 the type it was stored at to some other type.
@@ -3028,8 +3032,8 @@ Second, the dataset's creator probably had a good reason
 for storing data as, say, @code{NC_FLOAT} rather than @code{NC_DOUBLE}. 
 In a scientific framework there is no reason to store data with more
 precision than the observations were made.  
-Thus @acronym{NCO} tries to avoid performing type conversions when performing
-arithmetic. 
+Thus @acronym{NCO} tries to avoid performing type conversions when
+performing arithmetic. 
 
 @cindex C language
 @cindex Fortran
@@ -3089,7 +3093,7 @@ the performance penalty of always doing so would outweigh the (extremely
 rare) potential benefits.  
 @end enumerate
 
-When these criteria are all met, the operator converts the variable in
+When these criteria are all met, the operator promotes the variable in
 question to type @code{NC_DOUBLE}, performs all the arithmetic
 operations, casts the @code{NC_DOUBLE} type back to the original type,
 and finally writes the result to disk. 
@@ -3393,7 +3397,7 @@ described in any detail in the sections below.
 
 @page
 @html
-<a name="ncap"></a>
+<a name="ncap"></a> <!-- http://nco.sf.net/nco.html#ncap -->
 @end html
 @node ncap netCDF Arithmetic Processor, ncatted netCDF Attribute Editor, Operator Reference Manual, Operator Reference Manual
 @section @command{ncap} netCDF Arithmetic Processor
@@ -4046,7 +4050,7 @@ ncap -O -s "uprmvprm=(u-uavg)*(v-vavg)" foo.nc foo.nc # Covariance
 
 @page
 @html
-<a name="ncatted"></a>
+<a name="ncatted"></a> <!-- http://nco.sf.net/nco.html#ncatted -->
 @end html
 @node ncatted netCDF Attribute Editor, ncbo netCDF Binary Operator, ncap netCDF Arithmetic Processor, Operator Reference Manual
 @section @command{ncatted} netCDF Attribute Editor
@@ -4383,7 +4387,7 @@ omitted in batch scripts.
 
 @page
 @html
-<a name="ncbo"></a>
+<a name="ncbo"></a> <!-- http://nco.sf.net/nco.html#ncbo -->
 @end html
 @node ncbo netCDF Binary Operator, ncea netCDF Ensemble Averager, ncatted netCDF Attribute Editor, Operator Reference Manual
 @section @command{ncbo} netCDF Binary Operator
@@ -4712,7 +4716,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 
 @page
 @html
-<a name="ncea"></a>
+<a name="ncea"></a> <!-- http://nco.sf.net/nco.html#ncea -->
 @end html
 @node ncea netCDF Ensemble Averager, ncecat netCDF Ensemble Concatenator, ncbo netCDF Binary Operator, Operator Reference Manual
 @section @command{ncea} netCDF Ensemble Averager
@@ -4803,7 +4807,7 @@ Additionally, only data inside the tropics is included.
 
 @page
 @html
-<a name="ncecat"></a>
+<a name="ncecat"></a> <!-- http://nco.sf.net/nco.html#ncecat -->
 @end html
 @node ncecat netCDF Ensemble Concatenator, ncflint netCDF File Interpolator, ncea netCDF Ensemble Averager, Operator Reference Manual
 @section @command{ncecat} netCDF Ensemble Concatenator
@@ -4877,7 +4881,7 @@ the record dimension, depending on the input files).
 
 @page
 @html
-<a name="ncflint"></a>
+<a name="ncflint"></a> <!-- http://nco.sf.net/nco.html#ncflint -->
 @end html
 @node ncflint netCDF File Interpolator, ncks netCDF Kitchen Sink, ncecat netCDF Ensemble Concatenator, Operator Reference Manual
 @section @command{ncflint} netCDF File Interpolator
@@ -5060,7 +5064,7 @@ ncatted -O -a units,prs_sfc,o,c,millibar out.nc
 
 @page
 @html
-<a name="ncks"></a>
+<a name="ncks"></a> <!-- http://nco.sf.net/nco.html#ncks -->
 @end html
 @node ncks netCDF Kitchen Sink, ncra netCDF Record Averager, ncflint netCDF File Interpolator, Operator Reference Manual
 @section @command{ncks} netCDF Kitchen Sink
@@ -5476,7 +5480,7 @@ For more details @xref{Wrapped coordinates}.
 
 @page
 @html
-<a name="ncra"></a>
+<a name="ncra"></a> <!-- http://nco.sf.net/nco.html#ncra -->
 @end html
 @node ncra netCDF Record Averager, ncrcat netCDF Record Concatenator, ncks netCDF Kitchen Sink, Operator Reference Manual
 @section @command{ncra} netCDF Record Averager
@@ -5572,7 +5576,7 @@ ncra -d time,6.,54. ??.nc 8506_8906.nc
 
 @page
 @html
-<a name="ncrcat"></a>
+<a name="ncrcat"></a> <!-- http://nco.sf.net/nco.html#ncrcat -->
 @end html
 @node ncrcat netCDF Record Concatenator, ncrename netCDF Renamer, ncra netCDF Record Averager, Operator Reference Manual
 @section @command{ncrcat} netCDF Record Concatenator
@@ -5667,7 +5671,7 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 
 @page
 @html
-<a name="ncrename"></a>
+<a name="ncrename"></a> <!-- http://nco.sf.net/nco.html#ncrename -->
 @end html
 @node ncrename netCDF Renamer, ncwa netCDF Weighted Averager, ncrcat netCDF Record Concatenator, Operator Reference Manual
 @section @command{ncrename} netCDF Renamer
@@ -5823,7 +5827,7 @@ The variable @code{prs_sfc} need not exist, and need not contain the
 
 @page
 @html
-<a name="ncwa"></a>
+<a name="ncwa"></a> <!-- http://nco.sf.net/nco.html#ncwa -->
 @end html
 @node ncwa netCDF Weighted Averager,  , ncrename netCDF Renamer, Operator Reference Manual
 @section @command{ncwa} netCDF Weighted Averager
@@ -6260,7 +6264,7 @@ Excellent bug reports.
 @c @printindex fn
 
 @html
-<a name="index"></a>
+<a name="index"></a> <!-- http://nco.sf.net/nco.html#index -->
 @end html
 @node General Index,  , Contributing, Top
 @unnumbered General Index

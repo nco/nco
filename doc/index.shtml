@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.157 2003-09-16 21:55:34 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.158 2003-09-16 22:12:20 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -123,10 +123,9 @@ Tru64, UNICOS, and Windows.
 
 The following operators are thoroughly described in the 
 <a href="./nco.html">NCO User's Guide</a>. 
-Note that the <a
-href="./nco.html#averagers">&ldquo;averagers&rdquo;</a> are misnamed
-because they perform many non-linear operations as well, e.g., total,
-minimum, maximum, RMS: 
+Note that the <a href="./nco.html#averagers">&ldquo;averagers&rdquo;</a> 
+are misnamed because they perform many non-linear operations as well,
+e.g., total, minimum, maximum, RMS: 
 <ul>
 <li><a href="./nco.html#ncap"><b>ncap</b></a> netCDF Arithmetic Processor</li>
 <li><a href="./nco.html#ncatted"><b>ncatted</b></a> netCDF Attribute Editor</li>
