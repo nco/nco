@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.37 2002-05-18 19:59:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.38 2002-06-07 07:11:10 zender Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
@@ -44,6 +44,7 @@ extern "C" {
      Note that these warning messages are compiler and OS dependent
      GCC on Alpha, e.g., emits warnings which cannot be removed by this trick */
 #define NULL_CEWI NULL
+#define byte_CEWI 0
 #define char_CEWI '\0'
 #define double_CEWI 0.0
 #define float_CEWI 0.0

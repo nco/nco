@@ -1,3 +1,13 @@
+2002-06-07  Charlie Zender  <zender@uci.edu>
+
+	* Fixed bug where mss_val_sht was being initialized with long
+	in one arithemetic routine.
+
+	* Made as many parts of arithmetic routines const as possible
+	and implemented const instantiaion outside of loops to reduce
+	dereferencing wherever possible.
+	If NCO suddenly seems faster, this is why.
+
 2002-06-06  Charlie Zender  <zender@uci.edu>
 
 	* Noticed that GCC gives warnings when printf'ing size_t with %lu
