@@ -1,4 +1,6 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.7 1998-08-20 02:15:24 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.8 1998-08-20 05:27:33 zender Exp $
+
+# Purpose: Makefile for NCO module nco
 
 MY_BLD_DIR := ../bld
 MY_DAT_DIR := ../data
@@ -51,12 +53,12 @@ NCO_DAT_STB := 85 86 87 88 89 h0001 h0002 h0003 # Symbolic links to in.nc
 NCO_DAT_STB := $(addsuffix .nc,$(NCO_DAT_STB)) # `make data' creates these files
 NCO_DAT := $(addprefix $(MY_DAT_DIR)/,$(NCO_DAT_STB)) # `make distclean' removes these files
 
-# The first LDFLAGS is for typical C programs with netCDF, math, and networking
-# The second LDFLAGS enables C/Fortran linking
 # Redefine default patterns for C compiling
 $(MY_OBJ_DIR)/%.o : %.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $(MY_OBJ_DIR)/$(notdir $@)
 
+# The first LDFLAGS is for typical C programs with netCDF, math, and networking
+# The second LDFLAGS enables C/Fortran linking
 ifeq ($(PVM_ARCH),CRAY)
 NETCDF_INC := /usr/local/include
 NETCDF_LIB := /usr/local/lib
@@ -341,21 +343,51 @@ ifeq ($(C_ONLY),Y)
  CPPFLAGS += -DC_ONLY
 endif
 
-all: bin_dir obj_dir lib_dir libnco $(NCO_BIN_TRG)
+# Define any remaining variables
+libnco := $(MY_LIB_DIR)/libnco
 
+# Default targets
+all: bin_dir obj_dir lib_dir libnco $(NCO_BIN_TRG)
 # .PHONY tells make to remake the following non-file targets 
 .PHONY: all clean distclean debug 
-
+lib_dir :
+	- if test -d $(MY_LIB_DIR); then echo ; else mkdir $(MY_LIB_DIR); fi
 bin_dir :
 	- if test -d $(MY_BIN_DIR); then echo ; else mkdir $(MY_BIN_DIR); fi
-
 obj_dir :
 	- if test -d $(MY_OBJ_DIR); then echo ; else mkdir $(MY_OBJ_DIR); fi
 
-lib_dir :
-	- if test -d $(MY_LIB_DIR); then echo ; else mkdir $(MY_LIB_DIR); fi
+# Targets in bin
+ncra:	$(MY_OBJ_DIR)/ncra.o $(libnco).a
+	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS)
+	chmod 755 $(MY_BIN_DIR)/ncra
+	cd $(MY_BIN_DIR); rm -f ncea; ln -s ncra ncea
+	cd $(MY_BIN_DIR); rm -f ncrcat; ln -s ncra ncrcat
+ncatted:	$(MY_OBJ_DIR)/ncatted.o $(libnco).a
+	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
+	chmod 755 $(MY_BIN_DIR)/$@
+ncks:	$(MY_OBJ_DIR)/ncks.o $(libnco).a
+	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
+	chmod 755 $(MY_BIN_DIR)/$@
+ncwa:	$(MY_OBJ_DIR)/ncwa.o $(libnco).a
+	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
+	chmod 755 $(MY_BIN_DIR)/$@
+ncecat:	$(MY_OBJ_DIR)/ncecat.o $(libnco).a
+	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
+	chmod 755 $(MY_BIN_DIR)/$@
+ncdiff:	$(MY_OBJ_DIR)/ncdiff.o $(libnco).a
+	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
+	chmod 755 $(MY_BIN_DIR)/$@
+ncflint:	$(MY_OBJ_DIR)/ncflint.o $(libnco).a
+	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
+	chmod 755 $(MY_BIN_DIR)/$@
+ncrename:	$(MY_OBJ_DIR)/ncrename.o $(libnco).a
+	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
+	chmod 755 $(MY_BIN_DIR)/$@
+binclean:
+	rm -f $(NCO_BIN)
 
-libnco := $(MY_LIB_DIR)/libnco
+# Targets in lib
 libnco : $(libnco).a
 ifeq ($(C_ONLY),Y)
 $(libnco).a : $(libnco).a($(MY_OBJ_DIR)/nc_utl.o) \
@@ -366,58 +398,24 @@ $(libnco).a : $(libnco).a($(MY_OBJ_DIR)/nc_utl.o) \
 	$(libnco).a($(MY_OBJ_DIR)/cal_util.o) \
 	$(libnco).a($(MY_OBJ_DIR)/csz.o)
 endif
+libclean:
+	rm -f $(libnco).a
 
-ncra:	$(MY_OBJ_DIR)/ncra.o $(libnco).a
-	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS)
-	chmod 755 $(MY_BIN_DIR)/ncra
-	cd $(MY_BIN_DIR); rm -f ncea; ln -s ncra ncea
-	cd $(MY_BIN_DIR); rm -f ncrcat; ln -s ncra ncrcat
+# Targets in obj
+objclean:
+	rm -f $(NCO_OBJ)
 
-ncatted:	$(MY_OBJ_DIR)/ncatted.o $(libnco).a
-	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
-	chmod 755 $(MY_BIN_DIR)/$@
-
-ncks:	$(MY_OBJ_DIR)/ncks.o $(libnco).a
-	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
-	chmod 755 $(MY_BIN_DIR)/$@
-
-ncwa:	$(MY_OBJ_DIR)/ncwa.o $(libnco).a
-	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
-	chmod 755 $(MY_BIN_DIR)/$@
-
-ncecat:	$(MY_OBJ_DIR)/ncecat.o $(libnco).a
-	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
-	chmod 755 $(MY_BIN_DIR)/$@
-
-ncdiff:	$(MY_OBJ_DIR)/ncdiff.o $(libnco).a
-	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
-	chmod 755 $(MY_BIN_DIR)/$@
-
-ncflint:	$(MY_OBJ_DIR)/ncflint.o $(libnco).a
-	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
-	chmod 755 $(MY_BIN_DIR)/$@
-
-ncrename:	$(MY_OBJ_DIR)/ncrename.o $(libnco).a
-	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
-	chmod 755 $(MY_BIN_DIR)/$@
-
-Srcfiles: 
-	rm -f $(MY_BLD_DIR)/Srcfiles
-	printf "$(SRC_STB_FL)" > $(MY_BLD_DIR)/Srcfiles
-
-Depends: Filepath Srcfiles 
-	rm -f $(MY_BLD_DIR)/Depends
-	cd $(MY_BLD_DIR); makdep -t $(MY_OBJ_DIR) Filepath Srcfiles > Depends
-
+# Targets in data
 data:	$(MY_DAT_DIR)/in.nc 
 	for fl in $(NCO_DAT_STB); do cd $(MY_DAT_DIR); ln -s in.nc $$fl; done
-
 $(MY_DAT_DIR)/in.nc : $(MY_DAT_DIR)/in.cdl
 	cd $(MY_DAT_DIR); ncgen -b -o in.nc in.cdl
+dataclean:
+	rm -f $(NCO_DAT)
 
-
-doc:	$(MY_DOC_DIR)/nco.dvi $(MY_DOC_DIR)/nco.ps $(MY_DOC_DIR)/nco.html $(MY_DOC_DIR)/nco.info   
+# Targets in doc
 # Each make directive line spawns a separate shell so must use `cd dir;cmd' format
+doc:	$(MY_DOC_DIR)/nco.dvi $(MY_DOC_DIR)/nco.ps $(MY_DOC_DIR)/nco.html $(MY_DOC_DIR)/nco.info   
 $(MY_DOC_DIR)/nco.ps : $(MY_DOC_DIR)/nco.texi
 	cd $(MY_DOC_DIR); dvips -o nco.ps nco.dvi
 $(MY_DOC_DIR)/nco.dvi : $(MY_DOC_DIR)/nco.texi
@@ -426,35 +424,27 @@ $(MY_DOC_DIR)/nco.info : $(MY_DOC_DIR)/nco.texi
 	cd $(MY_DOC_DIR); makeinfo nco.texi
 $(MY_DOC_DIR)/nco.html : $(MY_DOC_DIR)/nco.texi
 	cd $(MY_DOC_DIR); texi2html -monolithic -verbose nco.texi
-
-clean: objclean
-	cd $(MY_DOC_DIR); rm -f nco.aux nco.cp nco.cps nco.fn nco.ky nco.log nco.pg nco.toc nco.tp nco.vr 
-
-objclean:
-	rm -f $(NCO_OBJ)
-
 docclean:
 	cd $(MY_DOC_DIR); rm -f nco.info* nco.dvi nco.html* nco.ps *~
 
-dataclean:
-	rm -f $(NCO_DAT)
-
-binclean:
-	rm -f $(NCO_BIN)
-
-libclean:
-	rm -f $(MY_LIB_DIR)/libnco*
-
-distclean: clean docclean dataclean binclean libclean
-	cd $(MY_BLD_DIR); rm -f *~
-	cd $(MY_DAT_DIR); rm -f in.nc *~
-
+# Targets in bld
+Srcfiles: 
+	rm -f $(MY_BLD_DIR)/Srcfiles
+	printf "$(SRC_STB_FL)" > $(MY_BLD_DIR)/Srcfiles
+Depends: Filepath Srcfiles 
+	rm -f $(MY_BLD_DIR)/Depends
+	cd $(MY_BLD_DIR); makdep -t $(MY_OBJ_DIR) Filepath Srcfiles > Depends
 debug:
 	printf "VPATH = $(VPATH)\n"
 	printf "SRC_LST = $(SRC_LST)\n"
 	printf "SRC_STB_LST = $(SRC_STB_LST)\n"
 	printf "SRC_STB_FL = $(SRC_STB_FL)\n"
 	printf "NCO_OBJ = $(NCO_OBJ)\n"
+distclean: clean docclean dataclean binclean libclean
+	cd $(MY_BLD_DIR); rm -f *~
+	cd $(MY_DAT_DIR); rm -f in.nc *~
+clean: objclean
+	cd $(MY_DOC_DIR); rm -f nco.aux nco.cp nco.cps nco.fn nco.ky nco.log nco.pg nco.toc nco.tp nco.vr 
 
 # Reset internal YACC and LEX patterns
 %.c : %.y
