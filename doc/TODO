@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.107 2002-01-13 21:06:21 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.108 2002-01-13 21:22:45 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -34,9 +34,10 @@ cc-1515 cc: WARNING File = ../src/nco/ncap.y, Line = 279
           "unsigned char *".
                      var->val.cp=strdup(yyvsp[0].str);
                                 ^
-4. fix memory leak in ncap_var_conform_dim() or delete routine completely 
+4. Fix memory leak in ncap_var_conform_dim() or delete routine completely 
 after replacing it with ncap_var_stretch()	
-5. Fix parsing of mixed-rank expressions
+5. Implement convolution of non-conforming expressions in ncap_var_stretch()
+6. Handle C comments /*...*/, especially across multiple lines, in ncap scripts
 
 Top priority items You can help with:
 41. Use GNU getopt_long()

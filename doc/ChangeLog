@@ -1,5 +1,7 @@
 2002-01-13  Charlie Zender  <zender@uci.edu>
 
+	* Verified ncap script gives same answers as odxc.ncl script
+
 	* var_free() superceded variable in ncap_var_conform_dim()
 	causes core dump (why?), but not free'ing must cause memory leak 
 
