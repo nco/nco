@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.248 2004-06-30 05:24:36 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.249 2004-06-30 22:35:51 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -385,8 +385,9 @@ C++ := xlC_r
 # fxm: 20040311 should this be cpp? gcc -M?
 CPP := xlc -c -qlanglvl=extc99
 ifneq (${null},$(findstring xl,${CC}))
+# /usr/include headers must occur before Visual Age headers to prevent xlC pragma warnings
 # Visual Age compiler headers must occur before g++ headers
- CPP_TKN_OS += -I/usr/vacpp/include
+ CPP_TKN_OS += -I/usr/include -I/usr/vacpp/include
 endif # xlC compilers
 # Add /usr/local/include for libintl.h explicitly until netCDF is moved there
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I/usr/local/include

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.7 2004-06-30 19:57:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.8 2004-06-30 22:35:52 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -12,7 +12,7 @@ int /* O [enm] Return code */
 nco_openmp_ini(void) /* [fnc] Set up OpenMP multi-threading environment */
 {
   /* Purpose: Set up OpenMP multi-threading environment */
-  FILE * const fp_stderr=stderr; // [fl] stderr filehandle CEWI
+  FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   int rcd=0; /* [rcd] Return code */
 
   /* Using naked stdin/stdout/stderr in parallel region generates warning

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.109 2004-06-30 19:57:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.110 2004-06-30 22:35:52 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.109 2004-06-30 19:57:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.109 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.110 2004-06-30 22:35:52 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.110 $";
   const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:P:rRv:xy:-:";
 
   dmn_sct **dim;
@@ -130,7 +130,7 @@ main(int argc,char **argv)
 
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped shared in parallel clause */
-  FILE * const fp_stderr=stderr; // [fl] stderr filehandle CEWI
+  FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
 
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;

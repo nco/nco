@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.119 2004-06-30 19:57:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.120 2004-06-30 22:35:52 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -107,8 +107,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.119 2004-06-30 19:57:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.119 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.120 2004-06-30 22:35:52 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.120 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRt:v:Ww:xy:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -122,8 +122,8 @@ main(int argc,char **argv)
   
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped shared in parallel clause */
-  FILE * const fp_stderr=stderr; // [fl] stderr filehandle CEWI
-  FILE * const fp_stdout=stdout; // [fl] stdout filehandle CEWI
+  FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
+  FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
@@ -246,8 +246,8 @@ main(int argc,char **argv)
       break;
     case 'a': /* Dimensions over which to average hyperslab */
       if(opt_a_flg){
-	(void)fprintf(stdout,"%s: ERROR Option -a appears more than once\n",prg_nm);
-	(void)fprintf(stdout,"%s: HINT Use -a dim1,dim2,... not -a dim1 -a dim2 ...\n",prg_nm);
+	(void)fprintf(fp_stdout,"%s: ERROR Option -a appears more than once\n",prg_nm);
+	(void)fprintf(fp_stdout,"%s: HINT Use -a dim1,dim2,... not -a dim1 -a dim2 ...\n",prg_nm);
 	(void)nco_usg_prn();
 	nco_exit(EXIT_FAILURE);
       } /* endif */
@@ -292,7 +292,7 @@ main(int argc,char **argv)
       break;
     case 'n':
       NORMALIZE_BY_WEIGHT=False;
-      (void)fprintf(stdout,"%s: ERROR This option has been disabled while I rethink its implementation\n",prg_nm);
+      (void)fprintf(fp_stdout,"%s: ERROR This option has been disabled while I rethink its implementation\n",prg_nm);
       nco_exit(EXIT_FAILURE);
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
@@ -322,7 +322,7 @@ main(int argc,char **argv)
       break;
     case 'W':
       NORMALIZE_BY_TALLY=False;
-      (void)fprintf(stdout,"%s: ERROR This option has been disabled while I rethink its implementation\n",prg_nm);
+      (void)fprintf(fp_stdout,"%s: ERROR This option has been disabled while I rethink its implementation\n",prg_nm);
       nco_exit(EXIT_FAILURE);
       break;
     case 'w': /* Variable to use as weight in reducing.  Default is none */
@@ -417,7 +417,7 @@ main(int argc,char **argv)
     dmn_avg_lst=nco_dmn_lst_mk(in_id,dmn_avg_lst_in,nbr_dmn_avg);
 
     if(nbr_dmn_avg > nbr_dmn_xtr){
-      (void)fprintf(stdout,"%s: ERROR More reducing dimensions than extracted dimensions\n",prg_nm);
+      (void)fprintf(fp_stdout,"%s: ERROR More reducing dimensions than extracted dimensions\n",prg_nm);
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
@@ -444,7 +444,7 @@ main(int argc,char **argv)
       for(idx_avg=0;idx_avg<nbr_dmn_avg;idx_avg++){
 	if(idx_avg != idx){
 	  if(dmn_avg[idx]->id == dmn_avg[idx_avg]->id){
-	    (void)fprintf(stdout,"%s: ERROR %s specified more than once in reducing list\n",prg_nm,dmn_avg[idx]->nm);
+	    (void)fprintf(fp_stdout,"%s: ERROR %s specified more than once in reducing list\n",prg_nm,dmn_avg[idx]->nm);
 	    nco_exit(EXIT_FAILURE);
 	  } /* end if */
 	} /* end if */
@@ -466,7 +466,7 @@ main(int argc,char **argv)
     } /* end loop over idx_avg */
 
     if(nbr_dmn_out != nbr_dmn_xtr-nbr_dmn_avg){
-      (void)fprintf(stdout,"%s: ERROR nbr_dmn_out != nbr_dmn_xtr-nbr_dmn_avg\n",prg_nm);
+      (void)fprintf(fp_stdout,"%s: ERROR nbr_dmn_out != nbr_dmn_xtr-nbr_dmn_avg\n",prg_nm);
       nco_exit(EXIT_FAILURE);
     } /* end if */
     
@@ -629,17 +629,17 @@ main(int argc,char **argv)
 #endif /* not _OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-      if(dbg_lvl > 0) (void)fflush(stderr);
+      if(dbg_lvl > 0) (void)fflush(fp_stderr);
       
-      /* Allocate and, if necesssary, initialize accumulation space for all processed variables */
+      /* Allocate and, if necessary, initialize accumulation space for all processed variables */
       var_prc_out[idx]->sz=var_prc[idx]->sz;
       if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc_flg(var_prc_out[idx]->sz*sizeof(long))) == NULL){
-	(void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(long)sizeof(long),var_prc_out[idx]->nm);
+	(void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(long)sizeof(long),var_prc_out[idx]->nm);
 	nco_exit(EXIT_FAILURE); 
       } /* end if */
       (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
       if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
-	(void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%zu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
+	(void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%zu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
 	nco_exit(EXIT_FAILURE); 
       } /* end if */
       (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
@@ -699,6 +699,7 @@ main(int argc,char **argv)
       if(NRM_BY_DNM && DO_CONFORM_WGT && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
 	/* Duplicate wgt_out as wgt_avg so that wgt_out is not contaminated by any
 	   averaging operation and may be reused on next variable.
+	   fxm: Using wgt_out on next variable would be thread-unsafe! verify! OpenMP
 	   Free wgt_avg after each use but continue to reuse wgt_out */
 	wgt_avg=nco_var_dpl(wgt_out);
 	
@@ -741,10 +742,11 @@ main(int argc,char **argv)
 	   it is created, sometimes, before the tally array for var_prc_out[idx] is 
 	   created, and thus the nco_var_dpl() call in nco_var_cnf_dmn() does not copy
 	   a tally array into wgt_avg. See related note about this above. TODO #114.*/
-	if((wgt_avg->tally=(long *)nco_realloc(wgt_avg->tally,wgt_avg->sz*sizeof(long))) == NULL){
-	  (void)fprintf(stdout,"%s: ERROR Unable to realloc() %ld*%ld bytes for tally buffer for weight %s in main()\n",prg_nm_get(),wgt_avg->sz,(long)sizeof(long),wgt_avg->nm);
-	  nco_exit(EXIT_FAILURE); 
-	} /* end if */
+	if(wgt_avg->sz > 0)
+	  if((wgt_avg->tally=(long *)nco_realloc(wgt_avg->tally,wgt_avg->sz*sizeof(long))) == NULL){
+	    (void)fprintf(fp_stdout,"%s: ERROR Unable to realloc() %ld*%ld bytes for tally buffer for weight %s in main()\n",prg_nm_get(),wgt_avg->sz,(long)sizeof(long),wgt_avg->nm);
+	    nco_exit(EXIT_FAILURE); 
+	  } /* end if */
 	/* Average weight over specified dimensions (tally array is set here) */
 	wgt_avg=nco_var_avg(wgt_avg,dmn_avg,nbr_dmn_avg,nco_op_avg);
 	if(MULTIPLY_BY_TALLY){
@@ -756,7 +758,7 @@ main(int argc,char **argv)
 	/* Divide numerator by denominator */
 	/* Diagnose common PEBCAK before it causes core dump */
 	if(var_prc_out[idx]->sz == 1L && var_prc_out[idx]->type == NC_INT && var_prc_out[idx]->val.lp[0] == 0){
-	  (void)fprintf(stdout,"%s: ERROR Weight in denominator weight = 0.0, will cause SIGFPE\n%s: HINT Sum of masked, averaged weights must be non-zero\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
+	  (void)fprintf(fp_stdout,"%s: ERROR Weight in denominator weight = 0.0, will cause SIGFPE\n%s: HINT Sum of masked, averaged weights must be non-zero\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
 	} /* end if */
 	/* Divide numerator by masked, averaged, weights */
 	switch(nco_op_typ){
@@ -773,7 +775,7 @@ main(int argc,char **argv)
 	case nco_op_ttl: /* Total is already in buffer, do nothing */	
 	  break;
 	default:
-	  (void)fprintf(stdout,"%s: ERROR Illegal nco_op_typ in weighted normalization\n",prg_nm);
+	  (void)fprintf(fp_stdout,"%s: ERROR Illegal nco_op_typ in weighted normalization\n",prg_nm);
 	  nco_exit(EXIT_FAILURE);
 	  break;
 	} /* end switch */
@@ -799,7 +801,7 @@ main(int argc,char **argv)
 	case nco_op_ttl: /* Total is already in buffer, do nothing */	
 	  break;
 	default:
-	  (void)fprintf(stdout,"%s: ERROR Illegal nco_op_typ in non-weighted normalization\n",prg_nm);
+	  (void)fprintf(fp_stdout,"%s: ERROR Illegal nco_op_typ in non-weighted normalization\n",prg_nm);
 	  nco_exit(EXIT_FAILURE);
 	  break;
 	} /* end switch */
@@ -807,7 +809,7 @@ main(int argc,char **argv)
 	/* Normalization has been turned off by user, we are done */
 	;
       }else{
-	(void)fprintf(stdout,"%s: ERROR Unforeseen logical branch in main()\n",prg_nm);
+	(void)fprintf(fp_stdout,"%s: ERROR Unforeseen logical branch in main()\n",prg_nm);
 	nco_exit(EXIT_FAILURE);
       } /* end if */
       /* Some non-linear operations require additional processing */
@@ -854,7 +856,7 @@ main(int argc,char **argv)
     if(msk != NULL) msk=nco_var_free(msk);
     if(msk_out != NULL) msk_out=nco_var_free(msk_out);
     
-    if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
+    if(dbg_lvl > 0) (void)fprintf(fp_stderr,"\n");
     
     /* Close input netCDF file */
     nco_close(in_id);
