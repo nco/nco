@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.5 2003-02-18 19:35:48 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.6 2003-02-25 19:21:23 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -29,6 +29,8 @@
 #include "nco_bnr.h" /* Binary write utilities */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
+#include "nco_prn.h" /* print format functions */
+#include "nco_sng_utl.h" /* sng_ascii_trn */
 
 #ifdef __cplusplus
 extern "C" {
@@ -91,7 +93,7 @@ extern "C" {
   nco_msa_prn_var_val   /* [fnc] Print variable data */
   (const int in_id, /* I [id] netCDF input file ID */
    const char * const var_nm, /* I [sng] Variable name */
-   const lmt_all * const lmt_lst, /* I [sct] Dimension limits */
+    lmt_all *  const lmt_lst, /* I [sct] Dimension limits */
    const int lmt_nbr, /* I [nbr] number of dimensions with user-specified limits */
    char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
    const bool FORTRAN_STYLE, /* I [flg] Hyperslab indices obey Fortran convention */
