@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.86 2004-06-20 06:54:24 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.87 2004-06-25 17:59:44 rorik Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -110,6 +110,8 @@ AC_TYPE_UID_T
 AC_CHECK_TYPES([ptrdiff_t])
 AC_CHECK_SIZEOF(int*)
 AC_CXX_HAVE_VALARRAY
+# arrange for large-file support
+AC_SYS_LARGEFILE
 
 # Begin Mandatory Link Test with libnetcdf.a
 # Make precious variables for ./configure --help
