@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.12 2002-08-19 06:44:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.13 2002-08-21 18:09:28 rorik Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -111,6 +111,7 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   if(strrchr(nm_out,'/') != NULL) nm_out=strrchr(nm_out,'/')+1;
 
   /* Classify calling program */
+  if(!strncmp(nm_out,"lt-",3)){ nm_out+=3; } /* remove libtool prefix */
   if(!strcmp(nm_out,"ncra")){*prg=ncra;}
   else if(!strcmp(nm_out,"ncap")){*prg=ncap;}
   else if(!strcmp(nm_out,"ncea")){*prg=ncea;}
