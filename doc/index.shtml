@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.177 2003-11-25 21:01:42 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.178 2003-11-26 23:16:02 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -197,7 +197,7 @@ Tarballs and RPMs are only rarely uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.8.5</b>: (<i>in progress</i>)
+<li><b>NCO 2.8.5</b>: (<i>In progress</i>) <tt>make install</tt> works on Solaris, 
 <li><b>NCO 2.8.4</b>: Index-based hyperslabs work again (broke in 2.7.3, <b>upgrade highly recommended</b>), <tt>ncap</tt> peak memory usage reduced still more, support for AMD Opteron x86-64 architecture
 <li><b>NCO 2.8.3</b>: Fix big <tt>ncap</tt> memory leak, fix regressions, remove scary packing warnings</li>
 <li><b>NCO 2.8.2</b>: <tt>ncbo</tt> handles distinct <tt>missing_value</tt>s correctly, improve error diagnostics</li>

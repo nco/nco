@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.258 2003-11-25 21:13:41 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.259 2003-11-26 23:16:02 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -237,9 +237,6 @@ ncap -O  -D3 -s 'cp=pack(cp)' /data/zender/tmp/sum.nc /data/zender/tmp/packed_su
 ncbo -O -y add -D 3 ${HOME}/debug/hundred.nc ${HOME}/debug/hundred.nc ${HOME}/debug/sum.nc
 ncap -O -D 3 -s 'cp=pack(cp)' ${HOME}/debug/sum.nc ${HOME}/debug/pack_sum.nc
 287. Fix debug OMP OpenMP implementation in ncra
-288. Multislabbing bug?
-zender@ashes:~$ ncks -O -d time,,1 foo.nc foo.nc
-Segmentation fault
 289. 
 ************************************************************************
 End NCO Wish list

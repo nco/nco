@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.67 2003-11-26 02:06:46 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.68 2003-11-26 23:15:59 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -204,7 +204,7 @@ Linux dust.ess.uci.edu 2.4.19-pre8 #1 SMP Wed May 8 10:16:29 PDT 2002 i686 unkno
 gcc/g++ Zender uses this to install/update NCO in personal directories:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-./configure  --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 /bin/cp -f libtool libtool.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
@@ -215,7 +215,7 @@ scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo ma
 gcc/g++ Sysadmins: use this to install/update NCO in /usr/local
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-./configure  --prefix=/usr/local > configure.${GNU_TRP}.foo 2>&1
+./configure --prefix=/usr/local > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 /bin/cp -f libtool libtool.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
@@ -303,7 +303,7 @@ x86_64-unknown-linux-gnu
 gcc/g++ Regular users, sysadmins use this to install/update NCO:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure  --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 /bin/cp -f libtool libtool.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1

@@ -1,39 +1,24 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.42 2003-11-25 21:13:41 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.43 2003-11-26 23:16:01 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.8.4 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release fixes index-based hyperslabbing which broke in 2.7.3.
-This nasty bug caused index-based hyperslabs, e.g., -d lat,1, to
-behave like value-based hyperslabs, e.g., -d lat,1.0 under some
-conditions. 
-Unfortunately, the incorrect answers generated may be hard to notice!
-_Versions 2.7.3--2.8.3 are buggy and should be upgraded ASAP_.
-Re-do any data-processing that used index-based hyperslabbing with
-these versions of NCO.
-
-Thanks to Mike Page for reporting the bug and to Rorik for fixing it.
-
-User's of ncap and AMD Opteron owners will notice other improvements.
+This release...
 
 Enjoy,
 Charlie
 
 Bug-fixes:
-1. Index-based hyperslabbing works again (broke in 2.7.3)
+1. make install works on Solaris. Used to die with symlinks. (Rorik)
 
 Feature changes:
-1. Build support for AMD Opteron. 
-Compile netCDF with CFLAGS='-fPIC' or link fails.
+1. 
 
 Other user-visible changes:
-1. Better memory related diagnostics
-2. Detail ncap memory usage in manual
+1. 
 
 User-invisible changes:
-1. Test suite rewritten in perl (nco_tst.pl). Gracias Rorik.
-2. Reduced peak ncap memory usage to 2*sizeof(var) in binary
-   operations (merci beaucoups, Henri).
+1. 
 
