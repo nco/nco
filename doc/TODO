@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.450 2005-02-02 00:53:13 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.451 2005-02-06 04:44:58 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -281,7 +281,8 @@ nco482. Remove return's from void functions dated 20050109 once gcc-3.4.2 behavi
 nco483. Compiling with ABORT_ON_ERROR and calling without an option dumps core
         Fix so inputting 0 filenames merely prints usage, does not abort?
 nco484. Change -H to -P in ncks? (more intuitive, though ncpdq uses -P for packing)
-nco485. 
+nco485. Add md5sum hash functionality to ncks
+nco486. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

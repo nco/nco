@@ -1,0 +1,118 @@
+(A) REAL-TIME DEMONSTRATIONS (Organizer: Maxine Brown)
+ 
+1.  Demonstration title.
+
+OptIPuter-enabled Distributed Climate Data Reduction and Analysis
+
+2.  Primary contact person\u2019s name, institution, e-mail address.
+
+Charlie Zender
+Department of Earth System Science
+UC Irvine
+zender@uci.edu
+
+3.  Contact information for collaborators (name, institution, e-mail)
+
+Gayathri Venkitachalam
+Department of Electrical Engineering and Computer Science
+UC Irvine
+gvenkita@uci.edu
+
+Harry Mangalam
+Department of Earth System Science
+UC Irvine
+hjm@tacgi.com
+
+4.  Project Description
+      a.  One-paragraph summary of your project and its significance.
+
+Reduction and analysis of distributed climate data is a significant
+domain challenge facing geophysics researchers. 
+Climatologists typically use the central server data analysis
+paradigm---they copy all required data to local storage for analysis. 
+Recent enhancements to the Scientific Data Operators (SDO) middleware
+allow users to access specific hyperslabs of geographically
+distributed netCDF data in a network-transparent fashion.  
+Using grid services in conjunction with the high-bandwidth OptIPuter,
+we will demonstrate SDO operations which dramatically reduce barriers
+to analyzing distributed geophysical data.
+Intercomparison of two future climate simulations stored in different
+
+      b.  URL for further project documentation.
+
+http://nco.sf.net#prp_sei
+
+      c.  A graphical image (not logo) of your application (JPEG or
+      TIFF) is encouraged. 
+
+/data/zender/fgr/esmf/ipcc_ccsm_ddra.pdf
+/data/zender/fgr/esmf/ipcc_ccsm_flow.pdf
+
+      d.  How does your project utilize advanced networking? Why is
+      this important? 
+
+The Scientific Data Operator (SDO) project currently utilizes advanced 
+networking primarily by transferring large amounts of data from remote
+servers to local clients for analysis.
+
+5.  Hardware/Software requirements: Do you need to place any special
+hardware (e.g., disk stores or clusters) at GLIF sites? 
+
+Required hardware is already in place at UCI/UCSD, ESG, and NCAR
+
+Do you need computer accounts at participating sites? What software do
+you need on these machines? 
+
+While the project could pre-store and access data at GLIF sites in
+other countries, the combined software/hardware/account requirements
+for new remote machines would overwhelm our group. Next year maybe.
+We would prefer to demonstrate the project using data stored on
+reliable networks and locations, such as UCI/UCSD, ESG, and NCAR. 
+All required accounts and software exist at these locations.
+All we require for the presentation is a Linux laptop from which to 
+run the demonstration.
+
+6.  Network requirements: What networks
+    (locally/nationally/internationally) will you access? (Note: If
+    these networks are not yet in place, when are they expected to be
+    operational? And, at what speeds?) 
+
+Earth System Grid, UCSD<->UCI OptIPuter, NCAR
+
+7.  Network usage: How much bandwidth does your application use?
+ 
+fxm good question
+
+(B) SYMPOSIUM PRESENTATIONS (Organizer: Tom DeFanti)
+ 
+1.  Type of presentation
+      a.  Tutorial, workshop, or lecture?
+      b.  For a beginner, intermediate or advanced networking
+      audience? 
+      c.  If a tutorial or workshop, is it a half day or full day?
+      NOTE: Lectures will be 30 minutes to 1 hour. Actual times will
+      be determined once the Symposium\u2019s schedule is finalized. 
+
+2.  Presentation title.
+
+3.  Presenter\u2019s name, institution, e-mail address.
+
+4.  Contact information for other presenters (name, institution,
+e-mail) if a tutorial or workshop 
+
+5.  Presentation description
+      a.  One-paragraph abstract.
+      b.  URL for further presentation documentation.
+      c.  A graphical image of your presentation (JPEG, TIFF, PPT) is
+      encouraged. 
+
+6.   Audio/visual requirements: Projectors for PPT presentations will
+     be provided. Do you have any special A/V needs? 
+ 
+Submit Real-Time Demonstration and Symposium Presentation proposals
+via email by 1 February 2005 for full consideration to: 
+Maxine Brown <maxine@uic.edu>
+ 
+Proposals will be reviewed by the iGrid 2005 Program
+Committee. Further input may be requested. Results from the Program
+Committee will be distributed by mid-March 2005. 

@@ -1,3 +1,7 @@
+2005-02-04  Charlie Zender  <zender@uci.edu>
+
+	* Polished up ncap intrinsic math function definition examples
+
 2005-01-13  Charlie Zender  <zender@uci.edu>
 
 	* Added -DABORT_ON_ERROR to Makefile.am for libnco_c++ only
