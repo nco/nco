@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.368 2004-08-06 23:27:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.369 2004-08-06 23:55:55 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -238,9 +238,9 @@ nco374. ncwa: re-write ncwa so, like ncpdq, ncwa re-arranges output metadata pri
 nco375. Do something consistent with: nco_exit(EXIT_FAILURE)
 nco378. Make \dfr, \me, \mi upright characters in nco.texi
 nco379. ncpdq: Add packing/unpacking capabilities
-nco384. ncpdq fails tries to re-map variable weight dimension lat which is not a re-order dimension:
-ncpdq -D 5 -C -O -x -v three_double_dmn -a lon,time ~/nco/data/in.nc ~/foo.nc
-nco385. 
+nco385. ncpdq: dynamically allocate arrays in nco_var_dmn_rdr_mtd(), nco_var_dmn_rdr_val()?
+nco386. Remove purely diagnostic arrays from nco_var_dmn_rdr_mtd(), nco_var_dmn_rdr_val()?
+nco387. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

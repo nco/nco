@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.37 2004-08-06 23:27:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.38 2004-08-06 23:56:01 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -411,10 +411,10 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   dmn_sct **dmn_in=NULL; /* [sct] List of dimension structures in input order */
   dmn_sct **dmn_out; /* [sct] List of dimension structures in output order */
   
-  int dmn_idx_in_shr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->share */
+  int dmn_idx_in_shr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->share  Purely diagnostic */
   int dmn_idx_in_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->output */
-  int dmn_idx_in_rdr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->re-order */
-  int dmn_idx_rdr_in[NC_MAX_DIMS]; /* [idx] Dimension correspondence, re-order->input */
+  int dmn_idx_in_rdr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->re-order NB: Purely diagnostic */
+  int dmn_idx_rdr_in[NC_MAX_DIMS]; /* [idx] Dimension correspondence, re-order->input NB: Purely diagnostic */
   int dmn_idx_shr_rdr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, share->re-order */	  
   int dmn_idx_shr_in[NC_MAX_DIMS]; /* [idx] Dimension correspondence, share->input */	  
   int dmn_idx_shr_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, share->output */	  
@@ -469,11 +469,11 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
       /* ...by comparing names, not dimension IDs... */
       if(!strcmp(var_in->dim[dmn_in_idx]->nm,dmn_rdr[dmn_rdr_idx]->nm)){
-	dmn_idx_in_rdr[dmn_in_idx]=dmn_rdr_idx; /* [idx] Dimension correspondence, input->re-order */	  
-	dmn_idx_rdr_in[dmn_rdr_idx]=dmn_in_idx; /* [idx] Dimension correspondence, re-order->input */	  
-	dmn_idx_shr_rdr[dmn_shr_nbr]=dmn_rdr_idx; /* [idx] Dimension correspondence, share->re-order */	  
-	dmn_idx_shr_in[dmn_shr_nbr]=dmn_in_idx; /* [idx] Dimension correspondence, share->input */	  
-	dmn_idx_in_shr[dmn_in_idx]=dmn_shr_nbr; /* [idx] Dimension correspondence, input->share */	  
+	dmn_idx_in_rdr[dmn_in_idx]=dmn_rdr_idx;
+	dmn_idx_rdr_in[dmn_rdr_idx]=dmn_in_idx;
+	dmn_idx_shr_rdr[dmn_shr_nbr]=dmn_rdr_idx;
+	dmn_idx_shr_in[dmn_shr_nbr]=dmn_in_idx;
+	dmn_idx_in_shr[dmn_in_idx]=dmn_shr_nbr;
 	dmn_shr_nbr++; /* dmn_in and dmn_rdr share this dimension */
 	break;
       } /* endif */
@@ -661,13 +661,6 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
     var_out->srd[dmn_out_idx]=dmn_out[dmn_out_idx]->srd;
   } /* end loop over dmn_out */
   
-  if(dbg_lvl_get() > 5){
-    (void)fprintf(stdout,"%s: fxm dbg DEBUG %s Complete information on variable %s:\n",prg_nm_get(),fnc_nm,var_in->nm);
-    for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++){
-      (void)fprintf(stdout,"fxm dbg dmn_idx_out_in[%d]=%d\n",dmn_out_idx,dmn_idx_out_in[dmn_out_idx]);
-    } /* end loop over dmn_out */
-  } /* endif dbg */
-
   /* Report full metadata re-order, if requested */
   if(dbg_lvl_get() > 3){
     int dmn_idx_in_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->output */
