@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.128 2002-01-29 08:40:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.129 2002-02-12 07:49:10 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -51,13 +51,13 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
-#include "nco_netcdf.h" /* netcdf3.x wrappers */
 #ifdef _OPENMP
 #include <omp.h> /* OpenMP pragmas */
 #endif /* not _OPENMP */
 
 /* Personal headers */
 #include "nco.h" /* netCDF operator universal def'ns */
+#include "nco_netcdf.h"  /* NCO wrappers for libnetcdf.a */
 
 void
 cast_void_nctype(nc_type type,ptr_unn *ptr)

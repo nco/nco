@@ -1,3 +1,11 @@
+2002-02-11  Charlie Zender  <zender@uci.edu>
+
+	* Remove ncap dependency on getopt.o, getopt1.o since
+	getopt_long() is not currently used (but using it is on 
+	the TODO list). Re-implementing getopt_long() will be done
+	eventually, but now just make ncap easier to build to facilitate 
+	more beta testing.
+
 2002-02-04  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_2_0:

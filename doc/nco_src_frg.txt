@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.31 2002-02-03 08:40:08 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.32 2002-02-12 07:49:10 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -81,11 +81,11 @@ To build NCO on SourceForge,
 make NETCDF_LIB=/home/groups/n/nc/nco/lib/LINUX NETCDF_INC=/home/groups/n/nc/nco/include
 
 To make a new release of NCO on SourceForge:
-ncftpput download.sourceforge.net /incoming nco-2.0.0.tar.gz
-ncftpput upload.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-2.0.0-*.src.rpm /usr/src/redhat/RPMS/i386/nco-2.0.0-*.i386.rpm /usr/src/redhat/SOURCES/nco-2.0.0.tar.gz
+ncftpput download.sourceforge.net /incoming nco-2.2.0.tar.gz
+ncftpput upload.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-2.2.0-*.src.rpm /usr/src/redhat/RPMS/i386/nco-2.2.0-*.i386.rpm /usr/src/redhat/SOURCES/nco-2.2.0.tar.gz
 
 To upload to RedHat for inclusion in, e.g., rpmfind.net:
-ncftpput incoming.redhat.com /libc6 /usr/src/redhat/SRPMS/nco-2.0.0-*.src.rpm /usr/src/redhat/RPMS/i386/nco-2.0.0-*.i386.rpm
+ncftpput incoming.redhat.com /libc6 /usr/src/redhat/SRPMS/nco-2.2.0-*.src.rpm /usr/src/redhat/RPMS/i386/nco-2.2.0-*.i386.rpm
 
 Mailing lists nco-announce:
 Web page for users:
