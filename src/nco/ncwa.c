@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.30 2000-01-17 01:53:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.31 2000-04-04 02:16:00 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.30 2000-01-17 01:53:58 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.30 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.31 2000-04-04 02:16:00 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.31 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -648,7 +648,7 @@ main(int argc,char **argv)
 	if(var_prc_out[idx]->sz == 1 && var_prc_out[idx]->type == NC_LONG && var_prc_out[idx]->val.lp[0] == 0){
 	  (void)fprintf(stdout,"%s: ERROR Denominator weight = 0. Problem described in TODO #116\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
 	} /* end if */ 
-	/* This constructs the default weighted average */ 
+	/* This constructs default weighted average */ 
 	(void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
 	/* Free wgt_avg, but keep wgt_out, after each use */
 	if(wgt_avg != NULL) wgt_avg=var_free(wgt_avg);

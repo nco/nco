@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.39 2000-02-03 16:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.40 2000-04-04 02:15:59 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */ 
 
@@ -151,7 +151,7 @@ lmt_prs(int nbr_lmt,char **lmt_arg)
   int idx;
   int arg_nbr;
 
-  lmt=(lmt_sct *)malloc(nbr_lmt*sizeof(lmt_sct));
+  if(nbr_lmt > 0) lmt=(lmt_sct *)malloc(nbr_lmt*sizeof(lmt_sct));
 
   for(idx=0;idx<nbr_lmt;idx++){
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.21 2000-01-17 01:53:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.22 2000-04-04 02:16:00 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -105,8 +105,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.21 2000-01-17 01:53:56 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.21 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.22 2000-04-04 02:16:00 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.22 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -407,13 +407,14 @@ main(int argc,char **argv)
       var_prc_out[idx]=var_fll(in_id_2,ncvarid(in_id_2,var_prc[idx]->nm),var_prc[idx]->nm,dim,nbr_dim_xtr);
       (void)var_get(in_id_2,var_prc_out[idx]);
       
-      /* Now that we have the second variable, reset its dimension IDs to match those of the 
-	 corresponding dimensions in the first variable, because the var_conform_dim() routine
-	 makes the (usually true) assumption that if the dimension IDs are equal, then the
-	 dimensions conform, i.e., var_conform_dim() assumes that both the "conformee" and the
-	 "conformand" are from the same file. */ 
+      /* Now that we have the second variable, reset its dimension IDs to match 
+	 corresponding dimensions in first variable, because var_conform_dim()
+	 makes (usually true) assumption that if dimension IDs are equal, then 
+	 dimensions conform, i.e., var_conform_dim() assumes "conformee" and 
+	 "conformand" are from same file. */ 
       
-      /* This 8 line block should not be necessary when dimension names are used rather than dim IDs */
+      /* This 8 line block should not be necessary when dimension names,
+	 rather than dimension IDs, are used in var_conform_dim() */
       if(False){
 	for(idx_var_dim=0;idx_var_dim<var_prc_out[idx]->nbr_dim;idx_var_dim++){
 	  for(idx_dim=0;idx_dim<var_prc[idx]->nbr_dim;idx_dim++){
@@ -423,7 +424,7 @@ main(int argc,char **argv)
 	} /* end loop over idx_dim */ 
       } /* endif False */ 
       
-      /* Pass a dummy pointer so we do not lose track of original */ 
+      /* Pass dummy pointer so we do not lose track of original */ 
       var_tmp=var_conform_dim(var_prc[idx],var_prc_out[idx],var_tmp,MUST_CONFORM,&DO_CONFORM);
       var_prc_out[idx]=var_free(var_prc_out[idx]);
       var_prc_out[idx]=var_tmp;
@@ -437,7 +438,7 @@ main(int argc,char **argv)
     }  /* endif different type */ 
     var_prc_out[idx]=var_conform_type(var_prc[idx]->type,var_prc_out[idx]);
 
-    /* The mss_val in fl_1, if any, overrides the mss_val in fl_2 */ 
+    /* The mss_val in fl_1, if any, overrides mss_val in fl_2 */ 
     if(has_mss_val) mss_val=var_prc[idx]->mss_val; else mss_val=var_prc_out[idx]->mss_val;
     has_mss_val=has_mss_val || var_prc_out[idx]->has_mss_val; 
     
@@ -445,7 +446,7 @@ main(int argc,char **argv)
     
     (void)free(var_prc_out[idx]->val.vp);
     
-    /* Copy the differences to the output file and free the differencing buffer */ 
+    /* Copy differences to output file and free differencing buffer */ 
     if(var_prc[idx]->nbr_dim == 0){
       (void)ncvarput1(out_id,var_prc[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp);
     }else{ /* end if variable is a scalar */ 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.52 2000-03-06 04:04:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.53 2000-04-04 02:16:00 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -913,18 +913,18 @@ var_fll(int nc_id,int var_id,char *var_nm,dim_sct **dim,int nbr_dim)
   var->id=var_id;
   var->nc_id=nc_id;
 
-  /* Get the type and number of dimensions and attributes for the variable. */
+  /* Get type and number of dimensions and attributes for variable */
   (void)ncvarinq(var->nc_id,var->id,(char *)NULL,&var->type,&var->nbr_dim,(int *)NULL,&var->nbr_att);
 
-  /* Allocate space to hold the dimension information */ 
-  var->dim=(dim_sct **)malloc(var->nbr_dim*sizeof(dim_sct *));
-  var->dim_id=(int *)malloc(var->nbr_dim*sizeof(int));
-  var->cnt=(long *)malloc(var->nbr_dim*sizeof(long));
-  var->srt=(long *)malloc(var->nbr_dim*sizeof(long));
-  var->end=(long *)malloc(var->nbr_dim*sizeof(long));
-  var->srd=(long *)malloc(var->nbr_dim*sizeof(long));
+  /* Allocate space for dimension information */ 
+  if(var->nbr_dim > 0) var->dim=(dim_sct **)malloc(var->nbr_dim*sizeof(dim_sct *)); else var->dim=(dim_sct **)NULL;
+  if(var->nbr_dim > 0) var->dim_id=(int *)malloc(var->nbr_dim*sizeof(int)); else var->dim_id=(int *)NULL;
+  if(var->nbr_dim > 0) var->cnt=(long *)malloc(var->nbr_dim*sizeof(long)); else var->cnt=(long *)NULL;
+  if(var->nbr_dim > 0) var->srt=(long *)malloc(var->nbr_dim*sizeof(long)); else var->srt=(long *)NULL;
+  if(var->nbr_dim > 0) var->end=(long *)malloc(var->nbr_dim*sizeof(long)); else var->end=(long *)NULL;
+  if(var->nbr_dim > 0) var->srd=(long *)malloc(var->nbr_dim*sizeof(long)); else var->srd=(long *)NULL;
 
-  /* Get the dimension IDs from the input file */
+  /* Get dimension IDs from input file */
   (void)ncvarinq(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,(int *)NULL,var->dim_id,(int *)NULL);
   
   /* Set defaults */ 
@@ -2176,8 +2176,8 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
    var_sct *var: I pointer to variable structure to serve as template
    var_sct *wgt: I pointer to variable structure to make conform to var
    var_sct *wgt_crr: I/O pointer to existing conforming variable structure (if any) (may be destroyed)
-   bool MUST_CONFORM; input Must wgt and var must conform?
-   bool *DO_CONFORM; output Did wgt and var conform?
+   bool MUST_CONFORM; I Must wgt and var must conform?
+   bool *DO_CONFORM; O Did wgt and var conform?
    var_sct *var_conform_dim(): O pointer to conforming variable structure
 */
 {
@@ -2494,7 +2494,7 @@ void
 var_xrf(var_sct *var,var_sct *var_dup)
 /*  
    var_sct *var: I/O pointer to variable structure
-   var_sct *var: I/O pointer to variable structure
+   var_sct *var_dup: I/O pointer to variable structure
 */
 {
   /* Make xrf elements of variable structures point to eachother */ 
@@ -2761,11 +2761,11 @@ var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
 
   var_sct *fix;
 
-  /* Copy the basic attributes of the input variable into the output (averaged) variable */ 
+  /* Copy basic attributes of input variable into output (averaged) variable */ 
   fix=var_dup(var);
   (void)var_xrf(fix,var->xrf);
 
-  /* Create lists of the averaging and fixed dimensions (in order of their appearance 
+  /* Create lists of averaging and fixed dimensions (in order of their appearance 
      in the variable). We do not know a priori how many dimensions remain in the 
      output (averaged) variable, but nbr_dim_var is an upper bound. Similarly, we do
      not know a priori how many of the dimensions in the input list of averaging 
@@ -2795,8 +2795,8 @@ var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
   } /* end loop over idx */
 
   /* Free the extra list space */ 
-  dim_fix=(dim_sct **)realloc(dim_fix,nbr_dim_fix*sizeof(dim_sct *));
-  dim_avg=(dim_sct **)realloc(dim_avg,nbr_dim_avg*sizeof(dim_sct *));
+  if(nbr_dim_fix > 0) dim_fix=(dim_sct **)realloc(dim_fix,nbr_dim_fix*sizeof(dim_sct *)); else dim_fix=(dim_sct **)NULL;
+  if(nbr_dim_avg > 0) dim_avg=(dim_sct **)realloc(dim_avg,nbr_dim_avg*sizeof(dim_sct *)); else dim_avg=(dim_sct **)NULL;
 
   if(nbr_dim_avg == 0){
     (void)fprintf(stderr,"%s: WARNING %s does not contain any averaging dimensions\n",prg_nm_get(),fix->nm);
@@ -2828,12 +2828,12 @@ var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
     if(dim_fix[0]->is_crd_dim) 
       fix->is_crd_var=True;
 
-  /* Trim the dimension arrays to their new sizes */ 
-  fix->dim=(dim_sct **)realloc(fix->dim,nbr_dim_fix*sizeof(dim_sct *));
-  fix->dim_id=(int *)realloc(fix->dim_id,nbr_dim_fix*sizeof(int));
-  fix->srt=(long *)realloc(fix->srt,nbr_dim_fix*sizeof(long));
-  fix->cnt=(long *)realloc(fix->cnt,nbr_dim_fix*sizeof(long));
-  fix->end=(long *)realloc(fix->end,nbr_dim_fix*sizeof(long));
+  /* Trim dimension arrays to their new sizes */ 
+  if(nbr_dim_fix > 0) fix->dim=(dim_sct **)realloc(fix->dim,nbr_dim_fix*sizeof(dim_sct *)); else fix->dim=NULL;
+  if(nbr_dim_fix > 0) fix->dim_id=(int *)realloc(fix->dim_id,nbr_dim_fix*sizeof(int)); else fix->dim_id=NULL;
+  if(nbr_dim_fix > 0) fix->srt=(long *)realloc(fix->srt,nbr_dim_fix*sizeof(long)); else fix->srt=NULL;
+  if(nbr_dim_fix > 0) fix->cnt=(long *)realloc(fix->cnt,nbr_dim_fix*sizeof(long)); else fix->cnt=NULL;
+  if(nbr_dim_fix > 0) fix->end=(long *)realloc(fix->end,nbr_dim_fix*sizeof(long)); else fix->end=NULL;
   
   /* If the product of the sizes of all the averaging dimensions is 1, the input and output value arrays 
      should be identical. Since var->val was already copied to fix->val by var_dup() at the beginning
@@ -2899,7 +2899,7 @@ var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
     /* Reuse the existing value buffer (it is of size var_sz, created by var_dup())*/ 
     avg_val=fix->val;
     avg_cp=(char *)avg_val.vp;
-    /* Create a new value buffer for the output (averaged) size */ 
+    /* Create a new value buffer for output (averaged) size */ 
     fix->val.vp=(void *)malloc(fix->sz*nctypelen(fix->type));
     fix_cp=(char *)fix->val.vp;
     /* Resize (or just plain allocate) the tally array */ 
@@ -4031,9 +4031,13 @@ ncar_csm_inq(int nc_id)
   ncopts=NC_VERBOSE | NC_FATAL; 
 
   if(rcd != -1 && att_typ == NC_CHAR){
-    att_val=(char *)malloc(att_sz*nctypelen(att_typ));
+    /* Add one for NULL byte */
+    att_val=(char *)malloc(att_sz*nctypelen(att_typ)+1);
     (void)ncattget(nc_id,NC_GLOBAL,"convention",att_val);
+    /* NUL-terminate convention attribute before using strcmp() */
+    att_val[att_sz]='\0';
     if(!strcmp("NCAR-CSM",att_val)) NCAR_CSM=True;
+    if(att_val != NULL) (void)free(att_val);
   } /* endif */ 
 
   if(NCAR_CSM) (void)fprintf(stderr,"%s: CONVENTION File convention is NCAR CSM\n",prg_nm_get()); 
@@ -4195,7 +4199,7 @@ arm_time_install(int nc_id,nclong base_time_srt)
   (void)ncvarget(nc_id,time_offset_id,&srt,&cnt,(void *)time_offset);
   for(idx=0L;idx<cnt;idx++) time_offset[idx]+=base_time_srt;
 
-  /* The file must be in define mode */ 
+  /* File must be in define mode */ 
   (void)ncredef(nc_id);
   time_id=ncvardef(nc_id,"time",NC_DOUBLE,1,&time_dim_id);
 
@@ -4203,16 +4207,16 @@ arm_time_install(int nc_id,nclong base_time_srt)
   (void)ncattput(nc_id,time_id,"units",NC_CHAR,strlen(att_units)+1,(void *)att_units);
   (void)ncattput(nc_id,time_id,"long_name",NC_CHAR,strlen(att_long_name)+1,(void *)att_long_name);
 
-  /* Catenate a time-stamped reminder to the "history" global attribute */ 
+  /* Catenate time-stamped reminder onto "history" global attribute */ 
   (void)hst_att_cat(nc_id,"ncrcat added variable time=base_time+time_offset");
 
-  /* Take the file out of define mode */ 
+  /* Take file out of define mode */ 
   (void)ncendef(nc_id);
 
-  /* Write the time variable */ 
+  /* Write time variable */ 
   (void)ncvarput(nc_id,time_id,&srt,&cnt,(void *)time_offset);
 
-  /* Free the time_offset buffer */ 
+  /* Free time_offset buffer */ 
   if(time_offset != NULL) (void)free(time_offset);
 
 } /* end arm_time_install */ 
@@ -4419,10 +4423,10 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
   } /* end if */
 
   /* Free unused space and save the pointers in the output variables */ 
-  *var_fix_ptr=(var_sct **)realloc(var_fix,*nbr_var_fix*sizeof(var_sct *));
-  *var_fix_out_ptr=(var_sct **)realloc(var_fix_out,*nbr_var_fix*sizeof(var_sct *));
-  *var_prc_ptr=(var_sct **)realloc(var_prc,*nbr_var_prc*sizeof(var_sct *));
-  *var_prc_out_ptr=(var_sct **)realloc(var_prc_out,*nbr_var_prc*sizeof(var_sct *));
+  if(*nbr_var_fix > 0) *var_fix_ptr=(var_sct **)realloc(var_fix,*nbr_var_fix*sizeof(var_sct *)); else *var_fix_ptr=NULL;
+  if(*nbr_var_fix > 0) *var_fix_out_ptr=(var_sct **)realloc(var_fix_out,*nbr_var_fix*sizeof(var_sct *)); else *var_fix_out_ptr=NULL;
+  if(*nbr_var_prc > 0) *var_prc_ptr=(var_sct **)realloc(var_prc,*nbr_var_prc*sizeof(var_sct *)); else *var_prc_ptr=NULL;
+  if(*nbr_var_prc > 0) *var_prc_out_ptr=(var_sct **)realloc(var_prc_out,*nbr_var_prc*sizeof(var_sct *)); else *var_prc_out_ptr=NULL;
 
 } /* end var_lst_divide */ 
 
