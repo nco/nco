@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.7 1998-08-19 16:21:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.8 1998-08-19 16:55:31 zender Exp $ */
 
 /* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
@@ -760,7 +760,6 @@ cvs_vrs_prs()
   char *usc_1_ptr=NULL;
   char *usc_2_ptr=NULL;
   char cvs_Name[]="$Name: not supported by cvs2svn $"; 
-  /*  char cvs_Name[]="$Name: not supported by cvs2svn $"; */ /* For testing porpoises */ 
   char nco_sng[]="nco"; 
 
   int cvs_nm_sng_len;
@@ -776,9 +775,9 @@ cvs_vrs_prs()
 
   /* Is cvs_Name keyword expanded? */ 
   dlr_ptr=strstr(cvs_Name," $");
-  if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports dlr_ptr == NULL\n",prg_nm_get());
+  if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports dlr_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",prg_nm_get(),prg_nm_get());
   cvs_nm_ptr=strstr(cvs_Name,"$Name: ");
-  if(cvs_nm_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports cvs_nm_ptr == NULL\n",prg_nm_get());
+  if(cvs_nm_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports cvs_nm_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",prg_nm_get(),prg_nm_get());
   cvs_nm_sng_len=(int)(dlr_ptr-cvs_nm_ptr-7); /* 7 is strlen("$Name: ") */ 
   if(cvs_nm_sng_len > 0) dly_snp=False; else dly_snp=True;
 
