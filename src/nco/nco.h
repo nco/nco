@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.25 2002-05-05 17:45:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.26 2002-05-05 17:53:22 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -353,7 +353,6 @@ extern "C" {
   extern nm_id_sct *var_lst_xcl(int,int,nm_id_sct *,int *);
   extern unsigned short dbg_lvl_get(void);
   extern scv_sct ptr_unn_2_scv(nc_type,ptr_unn);
-  extern var_sct *scl_dbl_mk_var(double);
   extern var_sct *var_avg(var_sct *,dmn_sct **,int,int);
   extern var_sct *var_dpl(var_sct *);
   extern var_sct *var_fll(int,int,char *,dmn_sct **,int);
@@ -426,21 +425,6 @@ extern "C" {
   extern int /* O [enm] Return code */
   var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   (var_sct *var); /* [sct] Pointer to variable strucutre to initialize to defaults */
-  
-  extern var_sct * /* O [sct] Output netCDF variable structure representing val */
-  scl_mk_var /* [fnc] Convert scalar value of any type into NCO variable */
-  (val_unn val, /* I [frc] Scalar value to turn into netCDF variable */
-   nc_type val_typ); /* I [enm] netCDF type of value */
-  
-  extern var_sct * /* O [sct] Output netCDF variable structure representing value */
-  scl_ptr_mk_var /* [fnc] Convert void pointer to scalar of any type into NCO variable */
-  (ptr_unn val_ptr_unn, /* I [unn] Pointer union to scalar value to turn into netCDF variable */
-   nc_type val_typ); /* I [enm] netCDF type of pointer/value */
-  
-  extern double /* O [frc] Double precision representation of var->val.?p[0] */
-  ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar double */
-  (ptr_unn val, /* I [sct] Pointer union to variable values */
-   nc_type type); /* I [enm] Type of values pointed to by pointer union */
   
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -1,9 +1,18 @@
-var_sct *
-scl_dbl_mk_var(double val)
-/* double val: I double precision value to turn into netCDF variable
-   scl_dbl_mk_var: O netCDF variable structure representing val */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.2 2002-05-05 17:53:22 zender Exp $ */
+
+/* Purpose: Scalar utilities */
+
+/* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+#include "nco_scl_utl.h" /* Scalar utilities */
+
+var_sct * /* O [sct] netCDF variable structure representing val */
+scl_dbl_mk_var /* [fnc] Convert scalar double into netCDF variable */
+(const double val) /* I [frc] Double precision value to turn into netCDF variable */
 {
-  /* Purpose: Turn a scalar double into a netCDF variable
+  /* Purpose: Convert scalar double into netCDF variable
      Routine duplicates most functions of var_fll() 
      Both functions should share as much initialization code as possible */
 
@@ -26,10 +35,10 @@ scl_dbl_mk_var(double val)
   return var;
 } /* end scl_dbl_mk_var() */
 
-var_sct * /* [sct] Output netCDF variable structure representing val */
+var_sct * /* O [sct] Output netCDF variable structure representing val */
 scl_mk_var /* [fnc] Convert scalar value of any type into NCO variable */
-(val_unn val, /* I [frc] Scalar value to turn into netCDF variable */
- nc_type val_typ) /* I [enm] netCDF type of value */
+(const val_unn val, /* I [frc] Scalar value to turn into netCDF variable */
+ const nc_type val_typ) /* I [enm] netCDF type of value */
 {
   /* Purpose: Turn scalar value of any type into NCO variable
      Routine is just a wrapper for scl_ptr_mk_var()
@@ -57,10 +66,10 @@ scl_mk_var /* [fnc] Convert scalar value of any type into NCO variable */
   return var;
 } /* end scl_mk_var() */
 
-var_sct * /* [sct] Output NCO variable structure representing value */
+var_sct * /* O [sct] Output NCO variable structure representing value */
 scl_ptr_mk_var /* [fnc] Convert void pointer to scalar of any type into NCO variable */
-(ptr_unn val_ptr_unn, /* I [unn] Pointer union to scalar value to turn into netCDF variable */
- nc_type val_typ) /* I [enm] netCDF type of existing pointer/value */
+(const ptr_unn val_ptr_unn, /* I [unn] Scalar value to turn into netCDF variable */
+ const nc_type val_typ) /* I [enm] netCDF type of existing pointer/value */
 {
   /* Purpose: Convert void pointer to scalar of any type into NCO variable
      Routine duplicates many functions of var_fll() 
@@ -93,8 +102,8 @@ scl_ptr_mk_var /* [fnc] Convert void pointer to scalar of any type into NCO vari
 
 double /* O [frc] Double precision representation of var->val.?p[0] */
 ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar double */
-(ptr_unn val, /* I [sct] Pointer union to variable values */
- nc_type type) /* I [enm] Type of values pointed to by pointer union */
+(const ptr_unn val, /* I [sct] Pointer union to convert to scalar double */
+ const nc_type type) /* I [enm] Type of values pointed to by pointer union */
 {
   /* Purpose: Return first element of NCO variable converted to a scalar double */
 

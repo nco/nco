@@ -1,0 +1,54 @@
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.h,v 1.1 2002-05-05 17:53:22 zender Exp $ */
+
+/* Purpose: Scalar utilities */
+
+/* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+/* Usage:
+   #include "nco_scl_utl.h" *//* Scalar utilities */
+
+#ifndef NCO_SCL_UTL_H
+#define NCO_SCL_UTL_H
+
+/* Standard header files */
+#include <stdio.h> /* stderr, FILE, NULL, printf */
+#include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
+#include <string.h> /* strcmp. . . */
+
+/* 3rd party vendors */
+#include <netcdf.h> /* netCDF definitions */
+#include "nco_netcdf.h" /* netCDF3.0 wrapper functions */
+
+/* Personal headers */
+#include "nco.h" /* NCO definitions */
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+var_sct * /* O [sct] netCDF variable structure representing val */
+scl_dbl_mk_var /* [fnc] Convert scalar double into netCDF variable */
+(const double val); /* I [frc] Double precision value to turn into netCDF variable */
+
+var_sct * /* O [sct] Output netCDF variable structure representing val */
+scl_mk_var /* [fnc] Convert scalar value of any type into NCO variable */
+(const val_unn val, /* I [frc] Scalar value to turn into netCDF variable */
+ const nc_type val_typ); /* I [enm] netCDF type of value */
+
+var_sct * /* O [sct] Output NCO variable structure representing value */
+scl_ptr_mk_var /* [fnc] Convert void pointer to scalar of any type into NCO variable */
+(const ptr_unn val_ptr_unn, /* I [unn] Scalar value to turn into netCDF variable */
+ const nc_type val_typ); /* I [enm] netCDF type of existing pointer/value */
+
+double /* O [frc] Double precision representation of var->val.?p[0] */
+ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar double */
+(const ptr_unn val, /* I [sct] Pointer union to convert to scalar double */
+ const nc_type type); /* I [enm] Type of values pointed to by pointer union */
+
+#ifdef __cplusplus
+} /* end extern "C" */
+#endif /* __cplusplus */
+
+#endif /* NCO_SCL_UTL_H */
