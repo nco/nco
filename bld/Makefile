@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.218 2003-09-03 18:12:13 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.219 2003-09-04 17:32:05 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -345,7 +345,7 @@ else
  FC := xlf95
 endif # endif OMP
 # 20030804: Always use re-entrant (_r) compilers---Jim Edwards NCAR/IBM 
- CC := xlc_r
+ CC := xlc_r 
  C++ := xlC_r
 # -qmaxmem=num Limit amount of memory used by space intensive optimizations to <num> kilobytes
 # -qlanglvl=extended: Allow C++ constructs in C, keeps xlc from dying on type ** prototypes

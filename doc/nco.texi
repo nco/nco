@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.180 2003-09-02 17:04:58 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.181 2003-09-04 17:32:06 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1939,17 +1939,23 @@ Matches the end of a string
 Matches any single character
 @end table
 @noindent
-The most useful repetition operators are
+The most useful repetition and combination operators are
 @cindex @code{?} (wildcard character)
 @cindex @code{*} (wildcard character)
 @cindex @code{+} (wildcard character)
+@cindex @code{|} (wildcard character)
 @table @samp
 @item ?
-The preceding item is optional and matched at most once
+The preceding regular expression is optional and matched at most once
 @item *
-The preceding item will be matched zero or more times
+The preceding regular expression will be matched zero or more times
 @item +
-The preceding item will be matched one or more times
+The preceding regular expression will be matched one or more times
+@item |
+The preceding regular expression will be joined to the following regular
+expression.
+The resulting regular expression matches any string matching either
+subexpression. 
 @end table
 @noindent
 
@@ -1964,6 +1970,7 @@ ncks -v '^Q..' in.nc             # Select Q01--Q99, QAA--QZZ, etc.
 ncks -v '^Q[0-9][0-9]' in.nc     # Select Q01--Q99
 ncks -v '^Q[[:digit:]]@{2@}' in.nc # Select Q01--Q99
 ncks -v 'H2O$' in.nc             # Select Q_H2O, X_H2O 
+ncks -v 'H2O$|CO2$' in.nc        # Select Q_H2O, X_H2O, Q_CO2, X_CO2 
 ncks -v '^Q[0-9][0-9]' in.nc     # Select Q01--Q99, Q100
 ncks -v '^Q[0-9][0-9]$' in.nc    # Select Q01--Q99
 ncks -v '^[a-z]_[a-z]@{3@}$' in.nc # Select Q_H2O, X_H2O, Q_CO2, X_CO2
