@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.221 2003-06-23 22:18:23 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.222 2003-06-24 22:47:37 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -80,7 +80,6 @@ Highest priority NCO-wide items that You can help with:
 178. Make _FillValue behave same as missing_value
 191. Create short man page for ncap which points user to info pages or online manual
 212. Ensure structures are always passed by reference (default is pass by value)
-257. Create PayPal account to fund NCO development
 
 Remaining items of lesser priority:
 28. Use var.nc_id as file ID from now on and rewrite old routines to do so

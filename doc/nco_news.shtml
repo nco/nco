@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.16 2003-05-31 00:54:09 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.17 2003-06-24 22:47:37 zender Exp $
 
 Purpose: NCO news archive
 
@@ -24,6 +24,20 @@ scp -p ~/nco/doc/nco_news.shtml nco.sourceforge.net:/home/groups/n/nc/nco/htdocs
 
 <dt><a name="News"></a></dt>
 <h2>NCO News</h2>
+
+<a name="20030624"></a>
+<p>2003/06/24: A potpurri of old news which is no longer needed on the homepage
+<ul>
+<li>Developer code has fully integrated <tt>autoconf</tt>/<tt>libtool</tt>
+build procedure</li>
+<li>NCO allows <tt>ncap</tt> to unpack variables stored
+with <tt>scale_factor</tt> and <tt>add_offset</tt> convention</li>
+<li>NCO includes <tt>ncap</tt>, a scriptable operator
+capable of performing arbitrary arithmetic operations</li>
+<li>NCO code includes libnco_c++, a new C++ interface to netCDF</li>
+<li>NCO now supports multithreading with OpenMP-compliant compilers</li>
+<li>NCO code contains working packing and unpacking primitives</li>
+</ul>
 
 <a name="20020203"></a>
 <p>2002/02/03: 

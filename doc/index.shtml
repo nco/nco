@@ -1,8 +1,8 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.139 2003-06-23 22:18:23 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.140 2003-06-24 22:47:37 zender Exp $
 Purpose: NCO homepage
 
 Usage:
-http://www.ess.uci.edu/~zender/nco/index.shtml
+http://dust.ess.uci.edu/nco/index.shtml
 file:///home/zender/nco/doc/index.shtml
 
 /usr/bin/scp ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/n/nc/nco/htdocs/index.shtml
@@ -127,10 +127,10 @@ non-linear operations as well, e.g., total, minimum, maximum, RMS:
 
 <dt><a name="Contribute"></a></dt>
 <h2>How to Contribute</h2>
-<p>In March, 2000 NCO became an Open Source project hosted by
+<p>In March, 2000, NCO became an Open Source project hosted by
 SourceForge.net in order to facilitate collaboration and code
 contribution by a wide variety of people. 
-There is a <a href="./TODO">TODO list</a> about 100 items long! 
+There is a <a href="./TODO">TODO list</a> about 200 items long! 
 No matter what your programming background there is a task you can
 help with. 
 From improving this cheesy webpage, to adding documentation, 
@@ -139,6 +139,24 @@ capability, we need your help!
 The <a href="http://sourceforge.net/projects/nco">NCO project
 homepage</a> contains mailing lists, discussion forums, and
 instructions for helping the NCO project.
+<p>As of June, 2003, you may use PayPal to donate money to support NCO development.
+Your donation will be distributed to NCO developers as an incentive
+for them to tackle <a href="./TODO"><tt>TODO</tt></a> items on a
+pay-per-feature basis.
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_xclick">
+<input type="hidden" name="business" value="zender@uci.edu">
+<input type="hidden" name="item_name" value="NCO development">
+<input type="hidden" name="item_number" value="nco_dnt_dvl">
+<input type="hidden" name="no_note" value="1">
+<input type="hidden" name="currency_code" value="USD">
+<input type="hidden" name="tax" value="0">
+<input type="image" src="https://www.paypal.com/images/x-click-but04.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!">
+</form>
+We will update the following counters to track the influence of
+your philanthropy on NCO development:
+<dt>Donations received between 20030624 and 20030624: US$0.00.
+<dt>NCO features "incentivized" by these donations: None.
 <hr></p>
 
 <dt><a name="News"></a></dt>
@@ -154,17 +172,6 @@ Under these conditions, this bug could result in incorrect values.
 Thanks to Martin Dix for pointing this out.
 User's of this feature should definitely upgrade to <tt>2.5.6+</tt>.</li>
 <li><tt>libnco_c++</tt> reads into and writes from type <tt>long double</tt></li>
-<li>Developer code has fully integrated <tt>autoconf</tt>/<tt>libtool</tt>
-build procedure</li>
-<li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS
-Repository</a> code allows <tt>ncap</tt> to unpack variables stored
-with <tt>scale_factor</tt> and <tt>add_offset</tt> convention</li>
-<li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS
-Repository</a> code includes <tt>ncap</tt>, a scriptable operator
-capable of performing arbitrary arithmetic operations</li>
-<li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code includes libnco_c++, a new C++ interface to netCDF</li>
-<li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code now supports multithreading with OpenMP-compliant compilers</li>
-<li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code contains working packing and unpacking primitives</li>
 <li><a href="./nco_news.shtml"> Full text of past NCO announcements</a></li>
 </ul>
 <hr></p>

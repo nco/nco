@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.161 2003-06-16 16:37:26 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.162 2003-06-24 22:47:37 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -45,9 +45,7 @@ makeinfo --xml --no-split --output=nco.xml nco.texi
 makeinfo --docbook --no-split --output=nco.xml nco.texi
 ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
 cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco.sourceforge.net:/home/groups/n/nc/nco/htdocs;cd -
-cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml www.ess.uci.edu:/home/zender/public_html/nco;cd -
-/usr/bin/scp nco.sf.net:/home/groups/n/nc/nco/nco/doc/nco.dvi ~/nco/doc
-/usr/bin/scp /home/groups/n/nc/nco/nco/doc/nco.dvi dust.ess.uci.edu:nco/doc
+cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml dust.ess.uci.edu:/var/www/html/nco;cd -
 
 Legend (defined in "highlighting" section of TeXInfo manual):
 @code{}: Program text, e.g., @code{if(foo) x=y;}
