@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.143 2003-08-03 00:42:21 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.144 2003-08-05 00:34:34 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -57,6 +57,7 @@ Try to disable Spammers' machines:
 <p><hr width="100%"></p>
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
+If you like NCO and want to send us a little money, click here:
 <center><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 <input type="hidden" name="cmd" value="_xclick">
 <input type="hidden" name="business" value="zender@uci.edu">
@@ -68,7 +69,7 @@ Try to disable Spammers' machines:
 <input type="image" src="https://www.paypal.com/images/x-click-but04.gif" border="0" name="submit" alt="Donate to NCO with PayPal - it's fast, free and secure!">
 </form></center>
 
-<p><h2>Current version is <!--#include virtual="VERSION"--> released on <!--#flastmod file="VERSION"--> </h2>
+<p><h2>Current version is <!--#include virtual="VERSION"--> last updated on <!--#flastmod file="VERSION"--> </h2>
 
 <p><ul>
 <li><a href="#Definition">What is NCO?</a></li>
@@ -120,7 +121,7 @@ NCO works on AIX, IRIX, Linux, SunOS, Solaris, tru64, UNICOS, and Windows NT.
 
 The following operators are thoroughly described in the 
 <a href="./nco.html">NCO User's Guide</a>. 
-Note that the "averagers" are misnamed because they can perform many 
+Note that the &ldquo;averagers&rdquo; are misnamed because they can perform many 
 non-linear operations as well, e.g., total, minimum, maximum, RMS:
 <ul>
 <li><b>ncap</b> netCDF Arithmetic Processor</li>
@@ -167,18 +168,19 @@ pay-per-feature basis.
 <input type="image" src="https://www.paypal.com/images/x-click-but04.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!">
 </form>
 We will update the following counters to track the influence of
-your philanthropy on NCO development:
-<dt>Donations received between 20030624 and 20030624: US$0.00.
+monetary donations on NCO development:
+<dt>Donations received between 20030624 and 20030803: US$0.00.
 <dt>NCO features "incentivized" by these donations: None.
 <hr></p>
 
 <dt><a name="News"></a></dt>
 <h2>NCO News & Announcements</h2>
 <ul>
+<li>New &ldquo;binary&rdquo; operator <tt>ncbo</tt> does file addition, subtraction, multiplication, and division
 <li><tt>ncap</tt> adds user-invokable type conversion functions
 <tt>char()</tt>, <tt>short()</tt>, <tt>int()</tt>, <tt>float()</tt>,
 <tt>double()</tt>.</li>
-<li><tt>ncra</tt> versions <tt>2.4.x--2.5.5</tt> handled multifile
+<li><tt>ncra</tt> versions <tt>2.4.x&ndash;2.5.5</tt> handled multifile
 averages of low precision (<tt>int, char</tt>) data incorrectly if
 the data had a <tt>missing_value</tt>. 
 Under these conditions, this bug could result in incorrect values.
@@ -192,15 +194,19 @@ User's of this feature should definitely upgrade to <tt>2.5.6+</tt>.</li>
 <dt><a name="Version"></a></dt>
 <h2>Version Summary</h2>
 <ul>
-<li>Many releases since 2.0.0 are "not packaged" (i.e., no tarballs or RPMs).
+<li>Most releases since 2.0.0 are not &ldquo;packaged&rdquo;.
+This means that they are simply tagged in the CVS repository and that
+tarballs are generated and stored 
+<a href="http://dust.ess.uci.edu/nco">here</a>. 
+Tarballs are only uploaded to SourceForge, and RPMs are only
+generated, for those releases marked &ldquo;Packaged&rdquo;.
 Retrieve these versions <a name="#Download">using CVS</a> or from 
 <a href="http://dust.ess.uci.edu/nco">this anonymous FTP site</a>.
-<li><b>NCO 2.8.0</b>, New "binary" operator <tt>ncbo</tt> does file
-addition, subtraction, multiplication, and division, obsoletes <tt>ncdiff</tt>
+<li><b>NCO 2.8.0</b>, New &ldquo;binary&rdquo; operator <tt>ncbo</tt>, obsolete <tt>ncdiff</tt>
 <li><b>NCO 2.7.4</b>, Autotools build support for AIX, fix UDUnits confusion with floating point hyperslab specifications
 <li><b>NCO 2.7.3</b>, Support <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (and some <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-working.html">CF</a>) conventions, e.g., <tt>ncks -d wvl "1 picometer","1 furlong" -d time,"2001-03-19 06:00:0.0","2001-03-19 18:00:0.0"</tt> 
 <li><b>NCO 2.7.2</b>, Printing (<tt>ncks -H</tt>) plays well with multi-slabbing
-<li><b>NCO 2.7.1</b>, Fallback to B.&nbsp;Sittler's <tt>getopt()</tt> for
+<li><b>NCO 2.7.1</b>, (Packaged) Fallback to B.&nbsp;Sittler's <tt>getopt()</tt> for
 long option support. Store fixed, packed variables correctly with <tt>ncap</tt>.
 <li><b>NCO 2.7.0</b>, Support for GNU/POSIX long options,
 <tt>ncks</tt> introduces <i>multi-slabbing</i> (= multiple hyperslabs) capability
@@ -210,39 +216,39 @@ long option support. Store fixed, packed variables correctly with <tt>ncap</tt>.
 <li><b>NCO 2.6.3</b>, Mac OS X builds work seamlessly, documentation fixed
 <li><b>NCO 2.6.2</b>, Major improvements in autotools support, <tt>ncap</tt> supports user-defined dimensions
 <li><b>NCO 2.6.1</b>, Minor fix to unpacking support
-<li><b>NCO 2.6.0</b>, Not packaged: All arithmetic operators (<tt>ncap</tt>, <tt>ncdiff</tt>, <tt>ncea</tt>, <tt>ncflint</tt>, <tt>ncra</tt>) support unpacking
-<li><b>NCO 2.5.6</b>, Not packaged: Handle <tt>missing_value</tt> correctly for integer variables in <tt>ncra</tt>, merge <tt>autoconf</tt> build
-<li><b>NCO 2.5.5</b>, Not packaged: Handle files without
-existing global "<tt>History</tt>" attribute correctly
-<li><b>NCO 2.5.4</b>, Not packaged: Add support NEC-SX support, update Cray support, small build changes
-<li><b>NCO 2.5.3</b>, Not packaged: Fix native builds under MS Windows with Cygwin <tt>ncap</tt>, hint to <tt>ncwa</tt>
-<li><b>NCO 2.5.2</b>, Not packaged: Add math functions to <tt>ncap</tt>, hint to <tt>ncwa</tt>
-<li><b>NCO 2.5.1</b>, Not packaged: <tt>ncatted</tt> deletes all
+<li><b>NCO 2.6.0</b>, All arithmetic operators (<tt>ncap</tt>, <tt>ncdiff</tt>, <tt>ncea</tt>, <tt>ncflint</tt>, <tt>ncra</tt>) support unpacking
+<li><b>NCO 2.5.6</b>, Handle <tt>missing_value</tt> correctly for integer variables in <tt>ncra</tt>, merge <tt>autoconf</tt> build
+<li><b>NCO 2.5.5</b>, Handle files without
+existing global &ldquo;<tt>History</tt>&rdquo; attribute correctly
+<li><b>NCO 2.5.4</b>, Add support NEC-SX support, update Cray support, small build changes
+<li><b>NCO 2.5.3</b>, Fix native builds under MS Windows with Cygwin <tt>ncap</tt>, hint to <tt>ncwa</tt>
+<li><b>NCO 2.5.2</b>, Add math functions to <tt>ncap</tt>, hint to <tt>ncwa</tt>
+<li><b>NCO 2.5.1</b>, <tt>ncatted</tt> deletes all
 attributes of <i>att_var</i> when <i>att_nm</i> not specified
-<li><b>NCO 2.5.0</b>, Not packaged: man(1) pages from Debian distribution
-<li><b>NCO 2.4.6</b>, Not packaged: Free (speech) sort routines
-<li><b>NCO 2.4.5</b>, Not packaged: Arithmetic speedups
-<li><b>NCO 2.4.4</b>, Not packaged: 64-bit AIX builds
-<li><b>NCO 2.4.3</b>, Not packaged: Handle non-standard "History" attributes
-<li><b>NCO 2.4.2</b>, Not packaged: <tt>ncap</tt> supports nesting
+<li><b>NCO 2.5.0</b>, man(1) pages from Debian distribution
+<li><b>NCO 2.4.6</b>, Free (speech) sort routines
+<li><b>NCO 2.4.5</b>, Arithmetic speedups
+<li><b>NCO 2.4.4</b>, 64-bit AIX builds
+<li><b>NCO 2.4.3</b>, Handle non-standard &ldquo;History&rdquo; attributes
+<li><b>NCO 2.4.2</b>, <tt>ncap</tt> supports nesting
 files with <tt>#include</tt>
-<li><b>NCO 2.4.0</b>, Not packaged: <tt>ncks</tt> supports writing native binary output with <tt>-b</tt> switch
-<li><b>NCO 2.3.1</b>, Not packaged: <tt>ncap</tt> builds on all Unices
-<li><b>NCO 2.3.0</b>, Not packaged: Library redesign
-<li><b>NCO 2.2.4</b>, Not packaged: <tt>ncap</tt> fully supports packing and unpacking variables
-<li><b>NCO 2.2.3</b>, Not packaged: <tt>ncap</tt> supports manually
+<li><b>NCO 2.4.0</b>, <tt>ncks</tt> supports writing native binary output with <tt>-b</tt> switch
+<li><b>NCO 2.3.1</b>, <tt>ncap</tt> builds on all Unices
+<li><b>NCO 2.3.0</b>, Library redesign
+<li><b>NCO 2.2.4</b>, <tt>ncap</tt> fully supports packing and unpacking variables
+<li><b>NCO 2.2.3</b>, <tt>ncap</tt> supports manually
 unpacking variables stored with <tt>scale_factor</tt> and <tt>add_offset</tt> 
-<li><b>NCO 2.2.2</b>, Not packaged: fix rare <tt>ncwa</tt> crash with weights
-<li><b>NCO 2.2.1</b>, Not packaged: fix <tt>ncap</tt> divide and <tt>fmodf</tt> bugs
-<li><b>NCO 2.2.0</b>, <a href="./nco_news.shtml#20020203">20020203</a>: <tt>ncap</tt> public debut (has division error, please upgrade)
-<li><b>NCO 2.1.3</b>, Not packaged: <tt>ncap</tt> implements LHS casting
-<li><b>NCO 2.1.2</b>, Not packaged: C++ API to netcdf, libnco_c++ open for business
-<li><b>NCO 2.1.0</b>, Not packaged: <tt>ncap</tt> full lexer/parser operational
-<li><b>NCO 2.0.3</b>, Not packaged: small fixes to 2.0.0 (e.g., <tt>ncks</tt> printing)
-<li><b>NCO 2.0.2</b>, Not packaged: Add packing/unpacking capabilities based on
+<li><b>NCO 2.2.2</b>, fix rare <tt>ncwa</tt> crash with weights
+<li><b>NCO 2.2.1</b>, fix <tt>ncap</tt> divide and <tt>fmodf</tt> bugs
+<li><b>NCO 2.2.0</b>, (Packaged) <a href="./nco_news.shtml#20020203">20020203</a>: <tt>ncap</tt> public debut (has division error, please upgrade)
+<li><b>NCO 2.1.3</b>, <tt>ncap</tt> implements LHS casting
+<li><b>NCO 2.1.2</b>, C++ API to netcdf, libnco_c++ open for business
+<li><b>NCO 2.1.0</b>, <tt>ncap</tt> full lexer/parser operational
+<li><b>NCO 2.0.3</b>, small fixes to 2.0.0 (e.g., <tt>ncks</tt> printing)
+<li><b>NCO 2.0.2</b>, Add packing/unpacking capabilities based on
 <tt>scale_factor</tt> and <tt>add_offset</tt> convention</li>
-<li><b>NCO 2.0.1</b>, Not packaged: Add user-configurable multi-threaded capability to arithmetic-intensive operators <tt>ncwa</tt>, <tt>ncea</tt>, and <tt>ncra</tt></li>
-<li><b>NCO 2.0.0</b>, <a href="./nco_news.shtml#20010507">20010507</a>: Switched all internal calls to netCDF 3.x API</li>
+<li><b>NCO 2.0.1</b>, Add user-configurable multi-threaded capability to arithmetic-intensive operators <tt>ncwa</tt>, <tt>ncea</tt>, and <tt>ncra</tt></li>
+<li><b>NCO 2.0.0</b>, (Packaged) <a href="./nco_news.shtml#20010507">20010507</a>: Switched all internal calls to netCDF 3.x API</li>
 <li><b>NCO 1.2.2</b>, <a href="./nco_news.shtml#20010211">20010211</a>: Allow weights with
 <tt>ncwa</tt> in min/max/ttl operations, easier building with HDF4. 
 <tt>ncrename</tt> can now work on specific variables rather than whole file.
@@ -250,8 +256,7 @@ unpacking variables stored with <tt>scale_factor</tt> and <tt>add_offset</tt>
 <li><b>NCO 1.2.1</b>, <a href="./nco_news.shtml#20000828">20000828</a>: Added type-conversion of integers to floating point before arithmetic, fixed broken <tt>-v</tt> option</li>
 <li><b>NCO 1.2</b>, <a href="./nco_news.shtml#20000730">20000730</a>: Added non-linear operations to <tt>ncra/ncea</tt> and <tt>ncwa</tt>: min,max,total,rms,rmssdn,sqrt. Added <a href="http://www.unidata.ucar.edu/packages/dods">DODS</a> compliance.</li>
 <li><b>NCO 1.1.48</b>, <a href="./nco_news.shtml#20000515">20000515</a>: Potentially serious bugfix to <tt>ncdiff</tt>, recommend upgrade</li>
-<li><b>NCO 1.1.47</b>, <a href="./nco_news.shtml#20000510">20000510</a>: Improved <tt>ncra</tt> and <tt>ncrcat</tt> to allow lazier
-specifications of input files</li> 
+<li><b>NCO 1.1.47</b>, <a href="./nco_news.shtml#20000510">20000510</a>: Improved <tt>ncra</tt> and <tt>ncrcat</tt> to allow lazier specifications of input files</li> 
 </ul>
 <hr></p>
 

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.12 2003-05-30 20:02:05 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.13 2003-08-05 00:34:34 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 
@@ -220,8 +220,8 @@ endif # SGI
 
 # Works on AIX and AIX46K
 ifneq (,$(findstring AIX,${PVM_ARCH}))
-C++ := xlC
-CC := xlc
+C++ := xlC_r
+CC := xlc_r
 # Additional switch to fix compiler warnings on csz.c
 # -qmaxmem=num Limit the amount of memory used by space intensive optimizations to <num> kilobytes
 CFLAGS := -qmaxmem=8192

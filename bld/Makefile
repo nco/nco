@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.213 2003-08-02 23:26:56 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.214 2003-08-05 00:34:33 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -333,17 +333,17 @@ CPP_TKN_OS += -DHAVE_STRCASECMP -DHAVE_STRDUP
 # Works on AIX and AIX46K
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 ifeq (${OMP},Y)
- CC := xlc_r
  FC := xlf95_r
 # -qsmp=noauto : Turn on SMP/OMP code generation but do no automatic parallelization
 # -qsmp=omp : Use industry standard OMP without IBM extensions
  OMP_FLG := -qsmp=noauto 
 else
- CC := xlc
  CPP_DFN += -U_OPENMP
  FC := xlf95
 endif # endif OMP
-C++ := xlC
+# 20030804: Always use re-entrant (_r) compilers---Jim Edwards NCAR/IBM 
+ CC := xlc_r
+ C++ := xlC_r
 # -qmaxmem=num Limit amount of memory used by space intensive optimizations to <num> kilobytes
 # -qlanglvl=extended: Allow C++ constructs in C, keeps xlc from dying on type ** prototypes
 CFLAGS := -qmaxmem=8192 -qlanglvl=extended
