@@ -1,3 +1,9 @@
+2004-03-17  Charlie Zender  <zender@uci.edu>
+
+	* Change nco_lmt.h from HAVE_UDUNITS_H to ENABLE_UDUNITS 
+	to make bld/Makefile builds work again when udunits is not
+	installed. 
+
 2004-03-16  Charlie Zender  <zender@uci.edu>
 
 	* Correctly implement non-commutative ncap S/V division
