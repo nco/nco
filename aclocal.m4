@@ -11,7 +11,7 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-ooAC_DEFUN([AC_CXX_HAVE_VALARRAY],
+AC_DEFUN([AC_CXX_HAVE_VALARRAY],
 [AC_CACHE_CHECK(whether C++ compiler has working valarray<T>,
 ac_cv_cxx_have_valarray,
 [AC_REQUIRE([AC_CXX_NAMESPACES])
