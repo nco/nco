@@ -327,6 +327,20 @@ case $host in
 esac
 
 #############################################
+# create netCDF files for checking
+AC_PATH_PROG(path_to_ncgen,ncgen,,)
+if test  "$path_to_ncgen"; then
+  AC_MSG_NOTICE(creating netCDF data files)
+  $path_to_ncgen -b -o data/in.nc data/in.cdl
+  for fl in 85.nc 86.nc 87.nc 88.nc 89.nc h0001.nc h0002.nc h0003.nc; do
+    $LN_S in.nc data/$fl;
+  done
+else
+  echo "** I could not find 'ncgen' in your path, so the netCDF data files"
+  echo "** were not created. This will need to be done manually in the data/"
+  echo "** directory before running \"make check\" "
+fi
+#############################################
 
 AC_CONFIG_FILES([Makefile src/Makefile src/nco/Makefile  man/Makefile doc/Makefile])
 if test "$CXX" ; then
