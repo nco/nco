@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.172 2003-08-20 01:22:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.173 2003-08-26 22:30:32 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1843,25 +1843,49 @@ For @code{ncap}, the @samp{-v} switch takes no arguments and indicates
 that @emph{only} user-defined variables should be output.
 @code{ncap} neither accepts nor understands the @var{-x} switch.
 
+@cindex extended regular expressions
 @cindex regular expressions
-@cindex regex
+@cindex pattern matching
 @cindex wildcards
+@cindex @command{egrep}
+@cindex @acronym{GNU}
 As of @acronym{NCO} 2.8.1 (August, 2003), variable name arguments
-of the @samp{-v} switch may contain standard regular expressions.
-For example, @samp{-v 'DSTQ??'} selects all six-letter variables 
-whose first four letters are @code{DSTQ}.
-This capability is called @dfn{wildcarding}, and is very useful at
+of the @samp{-v} switch may contain @dfn{extended regular expressions}.
+For example, @samp{-v '^DST'} selects all variables beginning with the 
+string @code{DST}.
+Extended regular expressions are defined by the @acronym{GNU}
+@command{egrep} command.  
+The meta-characters used to express pattern matching operations are
+@samp{^$+?.*[]@{@}|}. 
+If the regular expression pattern matches @emph{any} part of a variable
+name then that variable is selected.
+This capability is called @dfn{wildcarding}, and is very useful for
 sub-setting large data files.
+
+@cindex @acronym{POSIX}
+@cindex @code{regex}
 Because of its wide availability, @acronym{NCO} uses the @acronym{POSIX} 
 regular expression library @code{regex}.  
 Regular expressions of arbitary complexity may be used.
 Since netCDF variable names are relatively simple constructs, only a 
 few varieties of variable wildcards are likely to be useful.
+Consider the variables @code{Q01}--@code{Q99}, @code{Q100},
+@code{Q_H2O}, @code{X_H2O}, @code{Q_CO2}, @code{X_CO2}.
 @example
-ncks -v 'Q*' in.nc out.nc # Select all variables starting with Q
-ncks -v 'Q??' in.nc out.nc # Select Q01--Q99, QAA--QZZ
-ncks -v 'Q[0-9][0-9]' in.nc out.nc # Select Q01--Q99
+ncks -v 'Q+' in.nc               # Select variables that start with Q
+ncks -v 'Q??' in.nc              # Select Q01--Q99, QAA--QZZ
+ncks -v 'Q[0-9][0-9]' in.nc      # Select Q01--Q99
+ncks -v 'H2O$' in.nc             # Select Q_H2O, X_H2O 
+ncks -v '^Q[0-9][0-9]' in.nc     # Select Q01--Q99, Q100
+ncks -v '^Q[0-9][0-9]$' in.nc    # Select Q01--Q99
+ncks -v '^[a-z]_[a-z]@{3@}$' in.nc # Select Q_H2O, X_H2O, Q_CO2, X_CO2
 @end example
+Beware---the repetition patter matching operator @samp{*} matches zero
+or more occurences of a regular expression.
+Thus @samp{^o*}, @samp{^t*}, and @samp{^[a-z]*} select all variables.
+The documentation for the UNIX @command{egrep} command contains the
+detailed description of the extended regular expressions that
+@acronym{NCO} supports.
 
 @cindex globbing
 @cindex shell
@@ -3827,12 +3851,12 @@ Imagine you wish to create a binary flag based on the value of
 an array.
 The flag should have value 1.0 where the array exceeds 1.0, and
 a value of 0.0 elsewhere.
-Assume the array named @coded{ORO} is in @file{in.nc}.
+Assume the array named @code{ORO} is in @file{in.nc}.
 The variable @code{ORO_flg} in @file{out.nc}
 @cindex masked average
 @findex ncecat
 @findex ncwa
-@begin example
+@example
 # Add degenerate "record" dimension to ORO for averaging
 ncecat -O -v ORO in.nc foo.nc
 # Average degenerate "record" dimension using ORO as mask
@@ -3889,11 +3913,11 @@ ncks -A -v u,v in.nc foo.nc # Place originals with time means
 ncap -O -s "uprmvprm=u*v-uavg*vavg" foo.nc foo.nc # Covariance
 ncra -O -v uprmvprm foo.nc out.nc # Time-mean covariance
 @end example
-The step involving @code{ncap} could be replaced by
+The same answer would be obtained by replacing the step involving
+@code{ncap} with
 @example
 ncap -O -s "uprmvprm=(u-uavg)*(v-vavg)" foo.nc foo.nc # Covariance
 @end example
-and still yield the same answer.
 
 @page
 @node ncatted netCDF Attribute Editor, ncbo netCDF Binary Operator, ncap netCDF Arithmetic Processor, Operator Reference Manual

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.152 2003-08-20 01:22:56 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.153 2003-08-26 22:30:32 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -205,7 +205,7 @@ Tarballs are only uploaded to SourceForge, and RPMs are only
 generated, for those releases marked &ldquo;Packaged&rdquo;.
 Retrieve these versions <a name="#Download">using CVS</a> or from 
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
-<li><b>NCO 2.8.1</b>, &ldquo;Variable wildcarding&rdquo;&mdash;regular expressions in <tt>-v var,...</tt> lists&mdash;supported by all operators
+<li><b>NCO 2.8.1</b>, &ldquo;Variable wildcarding&rdquo;&mdash;extended regular expressions in <tt>-v var,...</tt> lists&mdash;support in all operators
 <li><b>NCO 2.8.0</b>, New &ldquo;binary&rdquo; operator <tt>ncbo</tt>, obsoletes <tt>ncdiff</tt>, Debian integration
 <li><b>NCO 2.7.4</b>, Autotools build support for AIX, fix UDUnits confusion with floating point hyperslab specifications
 <li><b>NCO 2.7.3</b>, Support <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (and some <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-working.html">CF</a>) conventions, e.g., <tt>ncks -d wvl "1 picometer","1 furlong" -d time,"2001-03-19 06:00:0.0","2001-03-19 18:00:0.0"</tt> 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.61 2003-08-26 15:42:51 hmb Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.62 2003-08-26 22:30:31 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -148,12 +148,11 @@ echo "ncks 11: dimension slice using UDUnit conversion: 1.0e-06 ?=? ${avg} (fail
 
 ${MY_BIN_DIR}/ncks -O -C -v "^three_*" in.nc foo2.nc
 avg=`${MY_BIN_DIR}/ncks -H -s "%f" -C -v three foo2.nc`
-echo "ncks 12: wildcarding of variables  3 ?=? ${avg} (fails without regex library)"
+echo "ncks 12: variable wildcards: 3 ?=? ${avg} (fails without regex library)"
 
 ${MY_BIN_DIR}/ncks -O -C -v "^[a-z]{3}_[a-z]{3}_[a-z]{3,}$" in.nc foo2.nc
 avg=`${MY_BIN_DIR}/ncks -H -s "%d" -C -v val_one_int foo2.nc`
-echo "ncks 13: wildcarding of variables  1 ?=? ${avg} (fails without regex library)"
-
+echo "ncks 13: variable wildcards: 1 ?=? ${avg} (fails without regex library)"
 
 fi # end NCKS
 
