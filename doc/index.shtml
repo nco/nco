@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.74 2001-02-13 04:43:41 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.75 2001-05-08 01:36:03 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -8,6 +8,24 @@ file:/home/zender/nco/doc/index.shtml
 
 scp -p ~/nco/doc/index.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/index.shtml
 scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.shtml
+-->
+
+<!--
+Anti-Spam measures taken from
+http://ddi.digital.net/~gandalf/spamfaq.html
+
+Do unto others:
+<a href="mailto:root@[127.0.0.1]"></a>
+
+This requires Server Side includes:
+<a href="mailto:abuse@!--#echo var="REMOTE_ADDR"-- ">Anti spambot</a>
+
+Send Spam to central authority for documentation:
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+
+Try to disable Spammers' machines:
+<a href="mailto:'halt'@localhost">Lynx Users: do not follow this link</a>
+<a href="mailto:;halt;@localhost">Lynx Users: do not follow this link</a>
 -->
 
 <!doctype html public "-//W3C//DTD HTML 3.2//EN">
@@ -124,6 +142,7 @@ instructions for helping the NCO project.
 <dt><a name="News"></a></dt>
 <h2>NCO News & Announcements</h2>
 <ul>
+<li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code now uses only netCDF3 API to increase I/O performance</li>
 <li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code now supports multithreading with OpenMP-compliant compilers</li>
 <li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code contains working packing and unpacking primitives</li>
 <li>NCO is available on <tt>prospect.ucar.edu</tt>
@@ -134,10 +153,10 @@ instructions for helping the NCO project.
 <dt><a name="Version"></a></dt>
 <h2>Version Summary</h2>
 <ul>
-<li><b>NCO 1.3</b>, in alpha-testing: Add packing/unpacking
-capabilities based on <tt>scale_factor</tt> and <tt>add_offset</tt> convention
-<li><b>NCO 1.2.3</b>, in beta-testing: Add user-configurable multi-threaded
-capability to arithmetic-intensive operators <tt>ncwa</tt>, <tt>ncea</tt>, and <tt>ncra</tt></li>
+<li><b>NCO 2.0.2</b>, in alpha-testing: Add packing/unpacking capabilities based on
+<tt>scale_factor</tt> and <tt>add_offset</tt> convention</li>
+<li><b>NCO 2.0.1</b>, in beta-testing: Add user-configurable multi-threaded capability to arithmetic-intensive operators <tt>ncwa</tt>, <tt>ncea</tt>, and <tt>ncra</tt></li>
+<li><b>NCO 2.0.0</b>, <a href="./nco_news.shtml#20010507">20010507</a>: Switched all internal calls to netCDF 3.x API</li>
 <li><b>NCO 1.2.2</b>, <a href="./nco_news.shtml#20010211">20010211</a>: Allow weights with
 <tt>ncwa</tt> in min/max/ttl operations, easier building with HDF4. 
 <tt>ncrename</tt> can now work on specific variables rather than whole file.
@@ -164,7 +183,7 @@ tools and with <a href="http://www.cvshome.org">CVS</a>.
 
 <ul>
 <li>Source and documentation of latest released version in tarball format: <a href="ftp://nco.sourceforge.net/pub/nco/nco.tar.gz">nco.tar.gz</a> (901 Kb compressed tar-file)</li>
-<li>Source and documentation in <a href="http://www.rpm.org">RPM</a> format: <a href="ftp://nco.sourceforge.net/pub/nco/nco-1.2.2-1.src.rpm">nco-1.2.2-1.src.rpm</a> (1029 Kb SRPM)</li>
+<li>Source and documentation in <a href="http://www.rpm.org">RPM</a> format: <a href="ftp://nco.sourceforge.net/pub/nco/nco-2.0.0-1.src.rpm">nco-2.0.0-1.src.rpm</a> (1029 Kb SRPM)</li>
 </ul>
 
 <p>Pre-built binaries: NCO development is too shorthanded to provide
@@ -174,8 +193,8 @@ platform (currently RedHat Linux), and we are happy to link to any
 user-contributed builds for other platforms.
 These binaries tend to lag the most current tarball by a few months: 
 <ul>
-<li>GNU/Linux Redhat 7.0-compatible Intel systems, prebuilt binary executable <a href="http://www.rpm.org">RPM</a>: <a href="ftp://nco.sourceforge.net/pub/nco/nco-1.2.2-1.i386.rpm">nco-1.2.2-1.i386.rpm</a> (588 Kb RPM)</li>
-<li>GNU/Linux Debian-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://www.debian.org/packages/unstable/math/nco.html">nco-1.1.48-1</a></li>
+<li>GNU/Linux Redhat 7.0-compatible Intel systems, prebuilt binary executable <a href="http://www.rpm.org">RPM</a>: <a href="ftp://nco.sourceforge.net/pub/nco/nco-2.0.0-1.i386.rpm">nco-2.0.0-1.i386.rpm</a> (588 Kb RPM)</li>
+<li>GNU/Linux Debian-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-1.2.2</a></li>
 </ul>
 <hr></p>
 

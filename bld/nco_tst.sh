@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.35 2001-01-05 18:04:01 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.36 2001-05-08 01:36:03 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -11,6 +11,7 @@ usage () {
 }
 
 START=0
+NCKS=0
 NCWA=0
 NCRA=0
 NCEA=0
@@ -18,9 +19,9 @@ NCFLINT=0
 NCDIFF=0
 NET=0
 
-if [ $# -eq 0 ]
-then
+if [ $# -eq 0 ]; then
     START=1
+    NCKS=1
     NCWA=1
     NCRA=1
     NCEA=1
@@ -29,9 +30,12 @@ then
     NET=1
 else 
     
-    while [ $# -gt 0 ]
-    do
+    while [ $# -gt 0 ]; do
 	case $1 in
+	ncks)
+	    NCKS=1
+	    shift
+	    ;;
 	ncwa)
 	    NCWA=1
 	    shift
@@ -56,25 +60,19 @@ else
 	    NET=1
 	    shift
 	    ;;
-	    
 	  *)
 	    usage 
 	    exit 0
 	    ;;
        esac
     done 
-    
 fi    
-
-
 
 # T42-size test field named one, which is identically 1.0 in foo.nc
 cd ../data 2> foo.tst
 printf "NCO Test Suite:\n"
 
-
-if [ "$START" = 1 ]
-then
+if [ "$START" = 1 ]; then
 
 # ncks -O -v PS,gw /fs/cgd/csm/input/atm/SEP1.T42.0596.nc ~/nco/data/nco_tst.nc
 # Subtract PS from itself gives zero valued array
@@ -95,6 +93,27 @@ ncrename -O -v negative_one,zero foo.nc 2>> foo.tst
 /bin/rm -f foo2.nc 2>> foo.tst
 fi # end start
 
+# ncks testing
+if [ "$NCKS" = 1 ]
+then
+
+
+avg=`ncks -C -H -s "%c" -v fl_nm in.nc`
+echo "ncks 1: extract filename string: /home/zender/nc/nco/data/in.cdl =?= $avg"
+
+ncks -O -v lev in.nc foo2.nc
+avg=`ncks -H -C -s "%f," -v lev foo2.nc`
+echo "ncks 2: extract a dimension: 100.000000,500.000000,1000.000000 =?= $avg" 
+
+ncks -O -v three_dmn_var in.nc foo2.nc
+avg=`ncks -H -C -s "%f" -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,3,3 foo2.nc`
+echo "ncks 3: extract a variable with limits 23 =?= $avg"
+
+ncks -O -v int_var in.nc foo2.nc
+avg=`ncks -H -C -s "%d" -v int_var foo2.nc`
+echo "ncks 4: extract variable of type NC_INT 10 =?= $avg" 
+
+fi # end NCKS
 
 # Average test field
 if [ "$NCWA" = 1 ]
@@ -166,12 +185,12 @@ echo "ncwa 16: Dimension reduction with min switch and missing values: -99 =?= $
 avg=`cut -d, -f 20 foo$$`
 echo "ncwa 17: Dimension reduction with min switch : 77 =?= $avg"
 
-ncwa -O -y min -v three_dmn_var_lng -a lon in.nc foo.nc 2>>foo.tst
-ncks -C -H -s "%d," -v three_dmn_var_lng foo.nc >foo$$
+ncwa -O -y min -v three_dmn_var_int -a lon in.nc foo.nc 2>>foo.tst
+ncks -C -H -s "%d," -v three_dmn_var_int foo.nc >foo$$
 avg=`cut -d, -f 5 foo$$`
-echo "ncwa 18: Dimension reduction on type long  with min switch and missing values: -99 =?= $avg"
+echo "ncwa 18: Dimension reduction on type int with min switch and missing values: -99 =?= $avg"
 avg=`cut -d, -f 7 foo$$`
-echo "ncwa 19: Dimension reduction on type long variable: 25 =?= $avg"
+echo "ncwa 19: Dimension reduction on type int variable: 25 =?= $avg"
 
 ncwa -O -y min -v three_dmn_var_sht -a lon in.nc foo.nc 2>>foo.tst
 ncks -C -H -s "%d," -v three_dmn_var_sht foo.nc >foo$$
@@ -195,12 +214,12 @@ echo "ncwa 24: Dimension reduction on type double  variable with max switch and 
 avg=`cut -d, -f 5 foo$$`
 echo "ncwa 25: Dimension reduction on type double variable: 40 =?= $avg"
 
-ncwa -O -y max -v three_dmn_var_lng -a lat in.nc foo.nc 2>>foo.tst
-ncks -C -H -s "%d," -v three_dmn_var_lng foo.nc >foo$$
+ncwa -O -y max -v three_dmn_var_int -a lat in.nc foo.nc 2>>foo.tst
+ncks -C -H -s "%d," -v three_dmn_var_int foo.nc >foo$$
 avg=`cut -d, -f 9 foo$$`
-echo "ncwa 26: Dimension reduction on type long variable with min switch and missing values: -99 =?= $avg"
+echo "ncwa 26: Dimension reduction on type int variable with min switch and missing values: -99 =?= $avg"
 avg=`cut -d, -f 13 foo$$`
-echo "ncwa 27: Dimension reduction on type long variable: 29 =?= $avg"
+echo "ncwa 27: Dimension reduction on type int variable: 29 =?= $avg"
 
 ncwa -O -y max -v three_dmn_var_sht -a lat in.nc foo.nc 2>>foo.tst
 ncks -C -H -s "%d," -v three_dmn_var_sht foo.nc >foo$$
@@ -213,9 +232,9 @@ ncwa -O -y rms -w lat_wgt -v lat in.nc foo.nc 2>>foo.tst
 avg=`ncks -C -H -s "%f" -v lat foo.nc`
 echo "ncwa 30: rms with weights: 90 =?= $avg" 
 
-ncwa -O -w val_half_half -v val_one_one_lng in.nc foo.nc 2>>foo.tst
-avg=`ncks -C -H -s "%ld" -v val_one_one_lng foo.nc`
-echo "ncwa 31: weights would cause SIGFPE without dbl_prc patch: 1L =?= $avg" 
+ncwa -O -w val_half_half -v val_one_one_int in.nc foo.nc 2>>foo.tst
+avg=`ncks -C -H -s "%ld" -v val_one_one_int foo.nc`
+echo "ncwa 31: weights would cause SIGFPE without dbl_prc patch: 1 =?= $avg" 
 
 ncwa -O -y avg -v val_max_max_sht in.nc foo.nc 2>>foo.tst
 avg=`ncks -C -H -s "%d" -v val_max_max_sht foo.nc`
@@ -223,7 +242,7 @@ echo "ncwa 32: avg would overflow without dbl_prc patch: 17000S =?= $avg"
 
 ncwa -O -y ttl -v val_max_max_sht in.nc foo.nc 2>>foo.tst
 avg=`ncks -C -H -s "%d" -v val_max_max_sht foo.nc`
-echo "ncwa 33: ttl would overflow without dbl_prc patch, wraps anyway: -31536S =?= $avg" 
+echo "ncwa 33: ttl would overflow without dbl_prc patch, wraps anyway so exact value not important: -31536S =?= $avg" 
 ncwa -O -y min -a lat -v lat -w gw in.nc foo.nc 2>>foo.tst
 avg=`ncks -C -H -s "%g" -v lat foo.nc`
 echo "ncwa 34: min with weights: -900 =?= $avg" 
@@ -237,7 +256,7 @@ if [ "$NCRA" = 1 ]
 then
 ncra -O -v one_dmn_rec_var in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`
-echo "ncra 1: record mean of long across two files: 5 =?= $avg" 
+echo "ncra 1: record mean of int across two files: 5 =?= $avg" 
 
 ncra -O -v rec_var_flt_mss_val_dbl in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc`
@@ -279,7 +298,7 @@ if [ "$NCEA" = 1 ]
 then
 ncea -O -v one_dmn_rec_var -d time,4 in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`
-echo "ncea 1: ensemble mean of long across two files: 5 =?= $avg" 
+echo "ncea 1: ensemble mean of int across two files: 5 =?= $avg" 
 
 ncea -O -v rec_var_flt_mss_val_flt -d time,0 in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v rec_var_flt_mss_val_flt foo.nc`

@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.11 2000-09-21 16:36:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.12 2001-05-08 01:36:03 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
-/* Copyright (C) 1995--2000 Charlie Zender
+/* Copyright (C) 1995--2001 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -44,6 +44,7 @@
 #include <unistd.h>             /* POSIX stuff */
 
 #include <netcdf.h>             /* netCDF definitions */
+#include "nco_netcdf.h"         /* netCDF3.0 wrapper functions */
 #include "nc.h"                 /* netCDF operator universal def'ns */
 #include <assert.h>             /* assert() debugging macro */
 
@@ -73,9 +74,12 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  int add_fst_lng; /* [idx] Number of elements in add_offset attribute */
-  int scl_fct_lng; /* [idx] Number of elements in scale_factor attribute */
+  
   int rcd; /* [rcd] Return success code */
+
+  long add_fst_lng; /* [idx] Number of elements in add_offset attribute */
+  long scl_fct_lng; /* [idx] Number of elements in scale_factor attribute */
+
 
   nc_type add_fst_typ; /* [idx] Type of add_offset attribute */
   nc_type scl_fct_typ; /* [idx] Type of scale_factor attribute */
@@ -83,18 +87,18 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
   /* Vet scale_factor */
   
   /* netCDF 2.x ncattinq() returns -1 on failure, so compare rcd to -1 */
-  ncopts=0; 
-  rcd=ncattinq(nc_id,var->id,scl_fct_sng,&scl_fct_typ,&scl_fct_lng);
-  ncopts=NC_VERBOSE | NC_FATAL; 
+   
+  rcd=nco_inq_att_flg(nc_id,var->id,scl_fct_sng,&scl_fct_typ,&scl_fct_lng);
+  
   /* netCDF 3.x nc_inq_att() returns 0 on success, so compare rcd to NC_NOERR */
   /*  rcd=nc_inq_att(nc_id,var->id,scl_fct_sng,&scl_fct_typ,(size_t *)&scl_fct_lng);*/
-  if(rcd != -1){
+  if(rcd != NC_ENOTATT){
     if(scl_fct_typ != NC_FLOAT && scl_fct_typ != NC_DOUBLE){
       (void)fprintf(stderr,"%s: WARNING pck_dsk_inq() reports scale_factor for %s is not NC_FLOAT or NC_DOUBLE. Will not attempt to unpack using scale_factor.\n",prg_nm_get(),var->nm); 
       return False;
     } /* endif */
     if(scl_fct_lng != 1){
-      (void)fprintf(stderr,"%s: WARNING pck_dsk_inq() reports %s has scale_factor of length %d. Will not attempt to unpack using scale_factor\n",prg_nm_get(),var->nm,scl_fct_lng); 
+      (void)fprintf(stderr,"%s: WARNING pck_dsk_inq() reports %s has scale_factor of length %li. Will not attempt to unpack using scale_factor\n",prg_nm_get(),var->nm,scl_fct_lng); 
       return False;
     } /* endif */
     var->has_scl_fct=True; /* [flg] Valid scale_factor attribute exists */
@@ -102,16 +106,16 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
   } /* endif */
 
   /* Vet add_offset */
-  ncopts=0; 
-  rcd=ncattinq(nc_id,var->id,add_fst_sng,&add_fst_typ,&add_fst_lng);
-  ncopts=NC_VERBOSE | NC_FATAL; 
-  if(rcd != -1){
+  
+  rcd=nco_inq_att_flg(nc_id,var->id,add_fst_sng,&add_fst_typ,&add_fst_lng);
+  
+  if(rcd != NC_ENOTATT){
     if(add_fst_typ != NC_FLOAT && add_fst_typ != NC_DOUBLE){
       (void)fprintf(stderr,"%s: WARNING pck_dsk_inq() reports add_offset for %s is not NC_FLOAT or NC_DOUBLE. Will not attempt to unpack.\n",prg_nm_get(),var->nm); 
       return False;
     } /* endif */
     if(add_fst_lng != 1){
-      (void)fprintf(stderr,"%s: WARNING pck_dsk_inq() reports %s has add_offset of length %d. Will not attempt to unpack.\n",prg_nm_get(),var->nm,add_fst_lng); 
+      (void)fprintf(stderr,"%s: WARNING pck_dsk_inq() reports %s has add_offset of length %li. Will not attempt to unpack.\n",prg_nm_get(),var->nm,add_fst_lng); 
       return False;
     } /* endif */
     var->has_add_fst=True; /* [flg] Valid add_offset attribute exists */
@@ -164,8 +168,8 @@ var_upk /* [fnc] Unpack variable in memory */
   /* Convert scalar values of scale_factor and add_offset into NCO variables */
 
   if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
-    var->scl_fct.vp=(void *)nco_malloc(nctypelen(var->typ_upk));
-    (void)ncattget(var->nc_id,var->id,scl_fct_sng,var->scl_fct.vp);
+    var->scl_fct.vp=(void *)nco_malloc(nco_typ_lng(var->typ_upk));
+    (void)nco_get_att(var->nc_id,var->id,scl_fct_sng,var->scl_fct.vp,var->typ_upk);
     scl_fct=scl_ptr_mk_var(var->scl_fct,var->typ_upk); /* [sct] Variable structure for scale_factor */
     /* Convert var to type of scale_factor for expansion */
     var=var_conform_type(scl_fct->type,var);
@@ -174,8 +178,8 @@ var_upk /* [fnc] Unpack variable in memory */
   } /* endif has_scl_fct */
 
   if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
-    var->add_fst.vp=(void *)nco_malloc(nctypelen(var->typ_upk));
-    (void)ncattget(var->nc_id,var->id,add_fst_sng,var->add_fst.vp);
+    var->add_fst.vp=(void *)nco_malloc(nco_typ_lng(var->typ_upk));
+    (void)nco_get_att(var->nc_id,var->id,add_fst_sng,var->add_fst.vp,var->typ_upk);
     add_fst=scl_ptr_mk_var(var->add_fst,var->typ_upk); /* [sct] Variable structure for add_offset */
     /* Convert var to type of add_offset for expansion */
     if(var->type != add_fst->type) var=var_conform_type(add_fst->type,var);
@@ -228,7 +232,7 @@ var_pck /* [fnc] Pack variable in memory */
   /* Packed type must be NC_CHAR or NC_SHORT */
   if(typ_pck != NC_CHAR && typ_pck != NC_SHORT) (void)fprintf(stdout,"%s: ERROR var_pck() called with invalid packed type typ_pck = %s, \n",prg_nm_get(),nco_typ_sng(typ_pck));
 
-  /* Source type must be NC_LONG, NC_FLOAT, or NC_DOUBLE */
+  /* Source type must be NC_INT, NC_FLOAT, or NC_DOUBLE */
   if(var->type == NC_SHORT || var->type == NC_CHAR || var->type == NC_BYTE) (void)fprintf(stdout,"%s: ERROR var_pck() called with invalid source type var->type = %s, \n",prg_nm_get(),nco_typ_sng(var->type));
 
   if(USE_EXISTING_PCK){
@@ -272,10 +276,10 @@ var_pck /* [fnc] Pack variable in memory */
     /* Derive scalar values for scale_factor and add_offset */
     if(var->scl_fct.vp != NULL){(void)free(var->scl_fct.vp); var->scl_fct.vp=NULL;}
     if(var->add_fst.vp != NULL){(void)free(var->add_fst.vp); var->add_fst.vp=NULL;}
-    var->scl_fct.vp=(void *)nco_malloc(nctypelen(var->type));
-    var->add_fst.vp=(void *)nco_malloc(nctypelen(var->type));
-    ptr_unn_min.vp=(void *)nco_malloc(nctypelen(var->type));
-    ptr_unn_max.vp=(void *)nco_malloc(nctypelen(var->type));
+    var->scl_fct.vp=(void *)nco_malloc(nco_typ_lng(var->type));
+    var->add_fst.vp=(void *)nco_malloc(nco_typ_lng(var->type));
+    ptr_unn_min.vp=(void *)nco_malloc(nco_typ_lng(var->type));
+    ptr_unn_max.vp=(void *)nco_malloc(nco_typ_lng(var->type));
 
     /* Find minimum and maximum values in data */
     (void)var_avg_reduce_max(var->type,var->sz,1L,var->has_mss_val,var->mss_val,var->val,ptr_unn_min);
@@ -325,10 +329,10 @@ var_pck /* [fnc] Pack variable in memory */
       /* Variable is a constant */
       zero_var=scl_mk_var(zero_unn,var->type); /* [sct] NCO variable for value 0.0 */
       /* Set scale_factor to 0.0 */
-      (void)memcpy(var->scl_fct.vp,zero_var->val.vp,nctypelen(var->type));
+      (void)memcpy(var->scl_fct.vp,zero_var->val.vp,nco_typ_lng(var->type));
       if(zero_var != NULL) zero_var=var_free(zero_var);
       /* Set add_offset to variable value */
-      (void)memcpy(var->add_fst.vp,var->val.vp,nctypelen(var->type));
+      (void)memcpy(var->add_fst.vp,var->val.vp,nco_typ_lng(var->type));
     } /* end else */
 
     /* Free minimum and maximum values */
@@ -366,7 +370,7 @@ var_pck /* [fnc] Pack variable in memory */
   
   /* Create NCO variables for scale factor and add_offset
      This is only necessary if packing arithmetic is performed at different precision than var->type
-     This would only be the case if NC_LONG were being packed (unlikely)
+     This would only be the case if NC_INT were being packed (unlikely)
      Otherwise, just use var->scl_fct and var->add_fst directly */
 
   /*  scl_fct_var=scl_ptr_mk_var(var->scl_fct,var->type);*/

@@ -1,11 +1,11 @@
 %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.9 2000-08-28 17:22:13 zender Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.10 2001-05-08 01:36:03 zender Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
-/* Copyright (C) 1995--2000 Charlie Zender
+/* Copyright (C) 1995--2001 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -178,7 +178,7 @@ typedef struct{
     }else{
       var=var_fll(((prs_sct *)prs_arg)->in_id,var_id,$1->nm,((prs_sct *)prs_arg)->dim,((prs_sct *)prs_arg)->nbr_dmn_xtr);
       /* Allocate and initialize accumulation space for variable */
-      var->tally=(long *)malloc(var->sz*nctypelen(NC_LONG));
+      var->tally=(long *)malloc(var->sz*nctypelen(NC_INT));
       (void)zero_long(var->sz,var->tally);
       var->val.vp=(void *)malloc(var->sz*nctypelen(var->type));
       /* Retrieve variable values from disk into memory */

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.11 2001-02-13 04:43:41 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.12 2001-05-08 01:36:03 zender Exp $
 
 Purpose: NCO news archive
 
@@ -24,6 +24,17 @@ scp -p ~/nco/doc/nco_news.shtml nco.sourceforge.net:/home/groups/nco/htdocs/nco_
 
 <dt><a name="News"></a></dt>
 <h2>NCO News</h2>
+
+<a name="20010507"></a>
+<p>2001/05/07: 
+NCO version 2.0 is released.
+Differences with version 1.2.2 are completely internal and oriented
+toward enhancing I/O performance and modernizing the NCO API:
+<ul>
+<li>NCO 2.x is now completely based on the netCDF 3.x API.</li>
+NCO 1.2.x will continue to be maintained for its 
+ability to work with HDF4 files, but no new features
+will be added.
 
 <a name="20010211"></a>
 <p>2001/02/11: 

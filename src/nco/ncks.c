@@ -1,11 +1,11 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.40 2001-01-03 01:58:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.41 2001-05-08 01:36:03 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
 /* Purpose: Extract (subsets of) variables from a netCDF file 
    Print them to screen, or copy them to a new file, or both */
 
-/* Copyright (C) 1995--2000 Charlie Zender
+/* Copyright (C) 1995--2001 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -71,7 +71,8 @@
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
-#include "nc.h" /* NCO definitions */
+#include "nc.h"                 /* NCO definitions */
+#include "nco_netcdf.h"			/* netcdf3.x wrappers */
 
 int 
 main(int argc,char **argv)
@@ -106,18 +107,18 @@ main(int argc,char **argv)
   char *dlm_sng=NULL;
   char *fl_in=NULL;
   char *fl_pth_lcl=NULL; /* Option l */
-  char *lmt_arg[MAX_NC_DIMS];
+  char *lmt_arg[NC_MAX_DIMS];
   char *opt_sng;
   char *fl_out;
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.40 2001-01-03 01:58:07 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.40 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.41 2001-05-08 01:36:03 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.41 $";
   
   extern char *optarg;
-  extern int ncopts;
+  
   extern int optind;
   
   int idx;
@@ -131,7 +132,7 @@ main(int argc,char **argv)
   int nbr_fl=0;
   int opt;
   int rec_dmn_id;
-  
+    
   lmt_sct *lmt;
 
   nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */
@@ -229,18 +230,16 @@ main(int argc,char **argv)
   /* Make uniform list of user-specified dimension limits */
   lmt=lmt_prs(lmt_nbr,lmt_arg);
   
-  /* Make netCDF errors fatal and print the diagnostic */  
-  ncopts=NC_VERBOSE | NC_FATAL; 
-
+  
   /* Parse filename */
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open the file for reading */
-  in_id=ncopen(fl_in,NC_NOWRITE);
+  in_id=nco_open(fl_in,NC_NOWRITE);
   
   /* Get the number of variables, dimensions, and global attributes in the file */
-  (void)ncinquire(in_id,&nbr_dmn_fl,&nbr_var_fl,&nbr_glb_att,&rec_dmn_id);
+  (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&nbr_glb_att,&rec_dmn_id);
   
   /* Form initial extraction list from user input */
   xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
@@ -285,11 +284,11 @@ main(int argc,char **argv)
 
   /* Turn off default filling behavior to enhance efficiency */
 #if ( ! defined SUN4 ) && ( ! defined SUN4SOL2 ) && ( ! defined SUNMP )
-    (void)ncsetfill(out_id,NC_NOFILL);
+    (void)nc_set_fill(out_id,NC_NOFILL,(int *)NULL);
 #endif
   
     /* Take output file out of define mode */
-    (void)ncendef(out_id);
+    (void)nco_enddef(out_id);
     
     /* Copy the variable data */
     for(idx=0;idx<nbr_xtr;idx++){
@@ -306,13 +305,11 @@ main(int argc,char **argv)
   if(OUTPUT_GLOBAL_METADATA){
     (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, id = %i\n",fl_in,nbr_dmn_fl,nbr_var_fl,nbr_glb_att,in_id);
     if(rec_dmn_id != -1){
-      char rec_dmn_nm[MAX_NC_NAME];
-      int nbr_rec_var;
+      char rec_dmn_nm[NC_MAX_NAME];
       long rec_dmn_sz;
       
-      (void)ncdiminq(in_id,rec_dmn_id,rec_dmn_nm,&rec_dmn_sz);
-      (void)ncrecinq(in_id,&nbr_rec_var,(int *)NULL,(long *)NULL);
-      (void)fprintf(stdout,"Record dimension: name = %s, size = %li, record variables = %i\n\n",rec_dmn_nm,rec_dmn_sz,nbr_rec_var);
+      (void)nco_inq_dim(in_id,rec_dmn_id,rec_dmn_nm,&rec_dmn_sz);
+      (void)fprintf(stdout,"Record dimension: name = %s, size = %li\n\n",rec_dmn_nm,rec_dmn_sz);
     } /* end if */
     
     /* Print all global attributes */
@@ -333,7 +330,7 @@ main(int argc,char **argv)
   } /* end if OUTPUT_DATA */
   
   /* Close input netCDF file */
-  ncclose(in_id);
+  nco_close(in_id);
   
   /* Remove local copy of file */
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
@@ -354,10 +351,12 @@ type_fmt_sng(nc_type type)
     return "%g";
   case NC_DOUBLE:
     return "%g";
-  case NC_LONG:
-    return "%li";
+  case NC_INT:
+    return "%li"; /* NCO currently stores NC_INT in native type long, but this will be deprecated when netCDF supports a 64 bit integer type */
+    /*  case NC_LONG:
+	return "%li"; */
   case NC_SHORT:
-    return "%i";
+    return "%hi";
   case NC_CHAR:
     return "%c";
   case NC_BYTE:
@@ -412,20 +411,21 @@ prn_att(int in_id,int var_id)
   att_sct *att=NULL_CEWI;
 
   char dlm_sng[3];
-  char src_sng[MAX_NC_NAME];
+  char src_sng[NC_MAX_NAME];
 
-  int att_lmn;
-  int att_sz;
+  long att_lmn;
+  long att_sz;
+  
   int idx;
   int nbr_att;
 
   if(var_id == NC_GLOBAL){
     /* Get the number of global attributes for the file */
-    (void)ncinquire(in_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
+    (void)nco_inq(in_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
     (void)strcpy(src_sng,"Global");
   }else{
     /* Get the name and number of attributes for the variable */
-    (void)ncvarinq(in_id,var_id,src_sng,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
+    (void)nco_inq_var(in_id,var_id,src_sng,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
   } /* end else */
 
   /* Allocate space for the attribute names and types */
@@ -434,17 +434,17 @@ prn_att(int in_id,int var_id)
   /* Get the attributes' names, types, lengths, and values */
   for(idx=0;idx<nbr_att;idx++){
 
-    att[idx].nm=(char *)nco_malloc(MAX_NC_NAME*sizeof(char));
-    (void)ncattname(in_id,var_id,idx,att[idx].nm);
-    (void)ncattinq(in_id,var_id,att[idx].nm,&att[idx].type,&att[idx].sz);
+    att[idx].nm=(char *)nco_malloc(NC_MAX_NAME*sizeof(char));
+    (void)nco_inq_attname(in_id,var_id,idx,att[idx].nm);
+    (void)nco_inq_att(in_id,var_id,att[idx].nm,&att[idx].type,&att[idx].sz);
 
     /* Copy value to avoid indirection in loop over att_sz */
     att_sz=att[idx].sz;
 
     /* Allocate enough space to hold attribute */
-    att[idx].val.vp=(void *)nco_malloc(att_sz*nctypelen(att[idx].type));
-    (void)ncattget(in_id,var_id,att[idx].nm,att[idx].val.vp);
-    (void)fprintf(stdout,"%s attribute %i: %s, size = %i %s, value = ",src_sng,idx,att[idx].nm,att_sz,nco_typ_sng(att[idx].type));
+    att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
+    (void)nco_get_att(in_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
+    (void)fprintf(stdout,"%s attribute %i: %s, size = %li %s, value = ",src_sng,idx,att[idx].nm,att_sz,nco_typ_sng(att[idx].type));
     
     /* Typecast pointer to values before access */
     (void)cast_void_nctype(att[idx].type,&att[idx].val);
@@ -460,7 +460,7 @@ prn_att(int in_id,int var_id)
     case NC_SHORT:
       for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,"%hi%s",att[idx].val.sp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
       break;
-    case NC_LONG:
+    case NC_INT:
       for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,"%li%s",(long)att[idx].val.lp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
       break;
     case NC_CHAR:
@@ -514,21 +514,21 @@ cpy_var_dfn(int in_id,int out_id,int rec_dmn_id,char *var_nm)
   int var_in_id;
   int var_out_id;
 
-  extern int ncopts;
+  
   
   nc_type var_type;
 
-  ncopts=0; 
+  
   /* See if the requested variable is already in the output file. */
-  var_out_id=ncvarid(out_id,var_nm);
+  var_out_id=nco_inq_varid_flg(out_id,var_nm);
   if(var_out_id != -1) return var_out_id;
   /* See if the requested variable is in the input file. */
-  var_in_id=ncvarid(in_id,var_nm);
+  var_in_id=nco_inq_varid_flg(in_id,var_nm);
   if(var_in_id == -1) (void)fprintf(stdout,"%s: ERROR unable to find variable \"%s\"\n",prg_nm_get(),var_nm);
-  ncopts=NC_VERBOSE | NC_FATAL; 
+  
   
   /* Get the type of the variable and the number of dimensions. */
-  (void)ncvarinq(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dim,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dim,(int *)NULL,(int *)NULL);
   
   /* Recall:
      1. The dimensions must be defined before the variable.
@@ -539,32 +539,34 @@ cpy_var_dfn(int in_id,int out_id,int rec_dmn_id,char *var_nm)
   dmn_out_id=(int *)nco_malloc(nbr_dim*sizeof(int));
   
   /* Get the dimension IDs */
-  (void)ncvarinq(in_id,var_in_id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_in_id,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_in_id,(int *)NULL);
   
   /* Get the dimension sizes and names */
   for(idx=0;idx<nbr_dim;idx++){
-    char dmn_nm[MAX_NC_NAME];
+    char dmn_nm[NC_MAX_NAME];
     long dmn_sz;
     
-    (void)ncdiminq(in_id,dmn_in_id[idx],dmn_nm,&dmn_sz);
+    (void)nco_inq_dim(in_id,dmn_in_id[idx],dmn_nm,&dmn_sz);
     
     /* See if the dimension has already been defined */
-    ncopts=0; 
-    dmn_out_id[idx]=ncdimid(out_id,dmn_nm);
-    ncopts=NC_VERBOSE | NC_FATAL; 
+    /* ncopts=0; */
+    dmn_out_id[idx]=nco_inq_dimid_flg(out_id,dmn_nm);
+    /* ncopts=NC_VERBOSE | NC_FATAL; */
     
     /* If the dimension hasn't been defined, copy it */
     if(dmn_out_id[idx] == -1){
       if(dmn_in_id[idx] != rec_dmn_id){
-	dmn_out_id[idx]=ncdimdef(out_id,dmn_nm,dmn_sz);
+	/* dmn_out_id[idx]=ncdimdef(out_id,dmn_nm,dmn_sz); */
+	(void)nco_def_dim(out_id,dmn_nm,dmn_sz,&dmn_out_id[idx]);
       }else{
-	dmn_out_id[idx]=ncdimdef(out_id,dmn_nm,NC_UNLIMITED);
+	/* dmn_out_id[idx]=ncdimdef(out_id,dmn_nm,NC_UNLIMITED); */
+	(void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,&dmn_out_id[idx]);
       } /* end else */
     } /* end if */
   } /* end loop over dim */
   
   /* Define the variable in the output file */
-  var_out_id=ncvardef(out_id,var_nm,var_type,nbr_dim,dmn_out_id);
+  (void)nco_def_var(out_id,var_nm,var_type,nbr_dim,dmn_out_id,&var_out_id);
   
   /* Free the space holding the dimension IDs */
   (void)free(dmn_in_id);
@@ -597,21 +599,21 @@ cpy_var_dfn_lmt(int in_id,int out_id,int rec_dmn_id,char *var_nm,lmt_sct *lmt,in
   int var_in_id;
   int var_out_id;
 
-  extern int ncopts;
+  
   
   nc_type var_type;
 
   /* See if requested variable is already in output file. */
-  ncopts=0; 
-  var_out_id=ncvarid(out_id,var_nm);
+  
+  var_out_id=nco_inq_varid_flg(out_id,var_nm);
   if(var_out_id != -1) return var_out_id;
   /* See if requested variable is in input file. */
-  var_in_id=ncvarid(in_id,var_nm);
+  var_in_id=nco_inq_varid_flg(in_id,var_nm);
   if(var_in_id == -1) (void)fprintf(stdout,"%s: ERROR unable to find variable \"%s\"\n",prg_nm_get(),var_nm);
-  ncopts=NC_VERBOSE | NC_FATAL; 
+  
   
   /* Get type of variable and number of dimensions. */
-  (void)ncvarinq(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dim,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dim,(int *)NULL,(int *)NULL);
   
   /* Recall:
      1. Dimensions must be defined before variable.
@@ -622,19 +624,19 @@ cpy_var_dfn_lmt(int in_id,int out_id,int rec_dmn_id,char *var_nm,lmt_sct *lmt,in
   dmn_out_id=(int *)nco_malloc(nbr_dim*sizeof(int));
   
   /* Get dimension IDs */
-  (void)ncvarinq(in_id,var_in_id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_in_id,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_in_id,(int *)NULL);
   
   /* Get dimension sizes and names */
   for(idx=0;idx<nbr_dim;idx++){
-    char dmn_nm[MAX_NC_NAME];
+    char dmn_nm[NC_MAX_NAME];
     long dmn_sz;
     
-    (void)ncdiminq(in_id,dmn_in_id[idx],dmn_nm,&dmn_sz);
+    (void)nco_inq_dim(in_id,dmn_in_id[idx],dmn_nm,&dmn_sz);
     
     /* See if dimension has already been defined */
-    ncopts=0; 
-    dmn_out_id[idx]=ncdimid(out_id,dmn_nm);
-    ncopts=NC_VERBOSE | NC_FATAL; 
+    
+    dmn_out_id[idx]=nco_inq_dimid_flg(out_id,dmn_nm);
+    
     
     /* If dimension hasn't been defined, copy it */
     if(dmn_out_id[idx] == -1){
@@ -649,15 +651,17 @@ cpy_var_dfn_lmt(int in_id,int out_id,int rec_dmn_id,char *var_nm,lmt_sct *lmt,in
 	  } /* end if */
 	} /* end loop over lmt_idx */
 	
-	dmn_out_id[idx]=ncdimdef(out_id,dmn_nm,dmn_sz);
+	/* dmn_out_id[idx]=ncdimdef(out_id,dmn_nm,dmn_sz); */
+	(void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx );
       }else{
-	dmn_out_id[idx]=ncdimdef(out_id,dmn_nm,NC_UNLIMITED);
+	/* dmn_out_id[idx]=ncdimdef(out_id,dmn_nm,NC_UNLIMITED); */
+	(void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx );
       } /* end else */
     } /* end if */
   } /* end loop over dim */
   
   /* Define variable in output file */
-  var_out_id=ncvardef(out_id,var_nm,var_type,nbr_dim,dmn_out_id);
+  (void)nco_def_var(out_id,var_nm,var_type,nbr_dim,dmn_out_id,&var_out_id);
   
   /* Free space holding dimension IDs */
   (void)free(dmn_in_id);
@@ -696,12 +700,12 @@ cpy_var_val(int in_id,int out_id,char *var_nm)
   void *void_ptr;
 
   /* Get var_id for requested variable from both files */
-  var_in_id=ncvarid(in_id,var_nm);
-  var_out_id=ncvarid(out_id,var_nm);
+  var_in_id=nco_inq_varid(in_id,var_nm);
+  var_out_id=nco_inq_varid(out_id,var_nm);
   
   /* Get number of dimensions for variable. */
-  (void)ncvarinq(out_id,var_out_id,(char *)NULL,&var_type,&nbr_dmn_out,(int *)NULL,(int *)NULL);
-  (void)ncvarinq(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dmn_in,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_type,&nbr_dmn_out,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dmn_in,(int *)NULL,(int *)NULL);
   if(nbr_dmn_out != nbr_dmn_in){
     (void)fprintf(stderr,"%s: ERROR attempt to write %d dimensional input variable %s to %d dimensional space in output file. \nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. Read the manual to see how.\n",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out);
     exit(EXIT_FAILURE);
@@ -715,7 +719,7 @@ cpy_var_val(int in_id,int out_id,char *var_nm)
   dmn_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
   
   /* Get the dimension IDs from the input file */
-  (void)ncvarinq(in_id,var_in_id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_id,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_id,(int *)NULL);
   
   /* Get the dimension sizes from the input file */
   for(idx=0;idx<nbr_dim;idx++){
@@ -726,7 +730,7 @@ cpy_var_val(int in_id,int out_id,char *var_nm)
      until a variable has been written with that dimension. This is
      the reason for always reading the input file for the dimension
      sizes. */
-    (void)ncdiminq(in_id,dmn_id[idx],(char *)NULL,dmn_cnt+idx);
+    (void)nco_inq_dim(in_id,dmn_id[idx],(char *)NULL,dmn_cnt+idx);
 
     /* Initialize the indicial offset and stride arrays */
     dmn_srt[idx]=0L;
@@ -734,19 +738,19 @@ cpy_var_val(int in_id,int out_id,char *var_nm)
   } /* end loop over dim */
       
   /* Allocate enough space to hold the variable */
-  void_ptr=(void *)malloc(var_sz*nctypelen(var_type));
+  void_ptr=(void *)malloc(var_sz*nco_typ_lng(var_type));
   if(void_ptr == NULL){
-    (void)fprintf(stderr,"%s: ERROR unable to malloc() %ld bytes for %s\n",prg_nm_get(),var_sz*nctypelen(var_type),var_nm);
+    (void)fprintf(stderr,"%s: ERROR unable to malloc() %ld bytes for %s\n",prg_nm_get(),var_sz*nco_typ_lng(var_type),var_nm);
     exit(EXIT_FAILURE);
   } /* end if */
 
   /* Get the variable */
   if(nbr_dim==0){
-    ncvarget1(in_id,var_in_id,0L,void_ptr);
-    ncvarput1(out_id,var_out_id,0L,void_ptr);
+    nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
+    nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
   }else{ /* end if variable is a scalar */
-    ncvarget(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr);
-    ncvarput(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr);
+    nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_type);
+    nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_type);
   } /* end if variable is an array */
 
   /* Free the space that held the dimension IDs */
@@ -801,12 +805,12 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
   void *void_ptr;
 
   /* Get var_id for requested variable from both files. */
-  var_in_id=ncvarid(in_id,var_nm);
-  var_out_id=ncvarid(out_id,var_nm);
+  var_in_id=nco_inq_varid(in_id,var_nm);
+  var_out_id=nco_inq_varid(out_id,var_nm);
   
   /* Get number of dimensions for variable. */
-  (void)ncvarinq(out_id,var_out_id,(char *)NULL,&var_type,&nbr_dmn_out,(int *)NULL,(int *)NULL);
-  (void)ncvarinq(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dmn_in,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_type,&nbr_dmn_out,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dmn_in,(int *)NULL,(int *)NULL);
   if(nbr_dmn_out != nbr_dmn_in){
     (void)fprintf(stderr,"%s: ERROR attempt to write %d dimensional input variable %s to %d dimensional space in output file\n",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out);
     exit(EXIT_FAILURE);
@@ -823,7 +827,7 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
   dmn_sz=(long *)nco_malloc(nbr_dim*sizeof(long));
   
   /* Get dimension IDs from input file */
-  (void)ncvarinq(in_id,var_in_id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_id,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_id,(int *)NULL);
   
   /* Get dimension sizes from input file */
   for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
@@ -837,7 +841,7 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
        sizes. */
 
     /* dmn_cnt may be overwritten by user-specified limits */
-    (void)ncdiminq(in_id,dmn_id[dmn_idx],(char *)NULL,dmn_sz+dmn_idx);
+    (void)nco_inq_dim(in_id,dmn_id[dmn_idx],(char *)NULL,dmn_sz+dmn_idx);
 
     /* Set default start vectors: dmn_in_srt may be overwritten by user-specified limits */
     dmn_cnt[dmn_idx]=dmn_sz[dmn_idx];
@@ -862,19 +866,19 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
   } /* end loop over dim */
       
   /* Allocate enough space to hold variable */
-  void_ptr=(void *)malloc(var_sz*nctypelen(var_type));
+  void_ptr=(void *)malloc(var_sz*nco_typ_lng(var_type));
   if(void_ptr == NULL){
-    (void)fprintf(stderr,"%s: ERROR unable to malloc() %ld bytes for %s\n",prg_nm_get(),var_sz*nctypelen(var_type),var_nm);
+    (void)fprintf(stderr,"%s: ERROR unable to malloc() %ld bytes for %s\n",prg_nm_get(),var_sz*nco_typ_lng(var_type),var_nm);
     exit(EXIT_FAILURE);
   } /* end if */
 
   /* Copy variable */
   if(nbr_dim==0){ /* copy scalar */
-    ncvarget1(in_id,var_in_id,0L,void_ptr);
-    ncvarput1(out_id,var_out_id,0L,void_ptr);
+    nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
+    nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
   }else if(!WRP){ /* copy contiguous array */
-    if(!SRD) ncvarget(in_id,var_in_id,dmn_in_srt,dmn_cnt,void_ptr); else ncvargetg(in_id,var_in_id,dmn_in_srt,dmn_cnt,dmn_srd,(long *)NULL,void_ptr);
-    ncvarput(out_id,var_out_id,dmn_out_srt,dmn_cnt,void_ptr);
+    if(!SRD) nco_get_vara(in_id,var_in_id,dmn_in_srt,dmn_cnt,void_ptr,var_type); else nco_get_varm(in_id,var_in_id,dmn_in_srt,dmn_cnt,dmn_srd,(long *)NULL,void_ptr,var_type);
+    nco_put_vara(out_id,var_out_id,dmn_out_srt,dmn_cnt,void_ptr,var_type);
   }else if(WRP){ /* copy wrapped array */
     int dmn_idx;
     int lmt_idx;
@@ -899,7 +903,7 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
       
       /* dmn_cnt may be overwritten by user-specified limits */
-      (void)ncdiminq(in_id,dmn_id[dmn_idx],(char *)NULL,dmn_sz+dmn_idx);
+      (void)nco_inq_dim(in_id,dmn_id[dmn_idx],(char *)NULL,dmn_sz+dmn_idx);
       
       /* Set default vectors */
       dmn_cnt[dmn_idx]=dmn_cnt_1[dmn_idx]=dmn_cnt_2[dmn_idx]=dmn_sz[dmn_idx];
@@ -963,20 +967,20 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
       long idx;
 
       if(nbr_dim == 1){
-	char dmn_nm[MAX_NC_NAME];
+	char dmn_nm[NC_MAX_NAME];
 	
-	(void)ncdiminq(in_id,dmn_id[0],dmn_nm,(long *)NULL);
+	(void)nco_inq_dim(in_id,dmn_id[0],dmn_nm,(long *)NULL);
 	if(!strcmp(dmn_nm,var_nm)) CRD=True; else CRD=False;
       } /* end if */      
       
       if(CRD && MNT){ /* If this is a wrapped coordinate then apply monotonicity filter if requested */
-	ncvarget(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,void_ptr);
+	(void)nco_get_vara(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,void_ptr,var_type);
 	/* Convert coordinate to double */
 	for(idx=0;idx<var_sz;idx++){
 	  switch(var_type){
 	  case NC_FLOAT: /* val_dbl=void_ptr.fp[idx]; */break; 
 	  case NC_DOUBLE:
-	  case NC_LONG:
+	  case NC_INT:
 	  case NC_SHORT:
 	  case NC_CHAR:
 	  case NC_BYTE:
@@ -995,15 +999,15 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
     } /* endif False */
     
     if(!SRD){
-      ncvarget(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,void_ptr);
-      ncvarput(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr);
-      ncvarget(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,void_ptr);
-      ncvarput(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr);
+      (void)nco_get_vara(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,void_ptr,var_type);
+      (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr,var_type);
+      (void)nco_get_vara(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,void_ptr,var_type);
+      (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_type);
     }else{
-      ncvargetg(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,dmn_srd,(long *)NULL,void_ptr);
-      ncvarput(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr);
-      ncvargetg(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,dmn_srd,(long *)NULL,void_ptr);
-      ncvarput(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr);
+      (void)nco_get_varm(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,dmn_srd,(long *)NULL,void_ptr,var_type);
+      (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr,var_type);
+      (void)nco_get_varm(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,dmn_srd,(long *)NULL,void_ptr,var_type);
+      (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_type);
     } /* end else */
     
     (void)free(dmn_in_srt_1);
@@ -1039,8 +1043,7 @@ prn_var_dfn(int in_id,char *var_nm)
 /* Routine to print the variable metadata. This routine does not take into 
    account any user-specified limits, it just prints what it finds. */
 
-  extern int ncopts;
-
+  
   int *dmn_id=NULL_CEWI;
   int idx;
   int nbr_dim;
@@ -1053,13 +1056,13 @@ prn_var_dfn(int in_id,char *var_nm)
   dmn_sct *dim=NULL_CEWI;
 
   /* See if the requested variable is in the input file. */
-  var_id=ncvarid(in_id,var_nm);
+  var_id=nco_inq_varid(in_id,var_nm);
 
   /* Get the number of dimensions, type, and number of attributes for the variable. */
-  (void)ncvarinq(in_id,var_id,(char *)NULL,&var_type,&nbr_dim,(int *)NULL,&nbr_att);
+  (void)nco_inq_var(in_id,var_id,(char *)NULL,&var_type,&nbr_dim,(int *)NULL,&nbr_att);
 
   /* Get the ID of the record dimension, if any */
-  (void)ncinquire(in_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
+  (void)nco_inq(in_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
 
   /* Print the header for the variable */
   (void)fprintf(stdout,"%s: # dim. = %i, %s, # att. = %i, ID = %i\n",var_nm,nbr_dim,nco_typ_sng(var_type),nbr_att,var_id);
@@ -1071,23 +1074,23 @@ prn_var_dfn(int in_id,char *var_nm)
   } /* end if nbr_dim > 0 */
   
   /* Get dimension IDs */
-  (void)ncvarinq(in_id,var_id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_id,(int *)NULL);
+  (void)nco_inq_var(in_id,var_id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_id,(int *)NULL);
   
   /* Get dimension sizes and names */
   for(idx=0;idx<nbr_dim;idx++){
     
-    dim[idx].nm=(char *)nco_malloc(MAX_NC_NAME*sizeof(char));
+    dim[idx].nm=(char *)nco_malloc(NC_MAX_NAME*sizeof(char));
     dim[idx].id=dmn_id[idx];
-    (void)ncdiminq(in_id,dim[idx].id,dim[idx].nm,&dim[idx].sz);
+    (void)nco_inq_dim(in_id,dim[idx].id,dim[idx].nm,&dim[idx].sz);
     
     /* Is dimension a coordinate, i.e., stored as a variable? */
-    ncopts=0; 
-    dim[idx].cid=ncvarid(in_id,dim[idx].nm);
-    ncopts=NC_VERBOSE | NC_FATAL; 
+    
+    dim[idx].cid=nco_inq_varid_flg(in_id,dim[idx].nm);
+    
     
     if(dim[idx].cid != -1){
       /* Find out what type of variable the coordinate is */
-      (void)ncvarinq(in_id,dim[idx].cid,(char *)NULL,&dim[idx].type,(int *)NULL,(int *)NULL,(int *)NULL);
+      (void)nco_inq_var(in_id,dim[idx].cid,(char *)NULL,&dim[idx].type,(int *)NULL,(int *)NULL,(int *)NULL);
       (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, dim. ID = %d (CRD)",var_nm,idx,dim[idx].nm,dim[idx].sz,nco_typ_sng(dim[idx].type),dim[idx].id);
     }else{
       (void)fprintf(stdout,"%s dimension %i: %s, size = %li, dim. ID = %d",var_nm,idx,dim[idx].nm,dim[idx].sz,dim[idx].id);
@@ -1109,13 +1112,13 @@ prn_var_dfn(int in_id,char *var_nm)
       (void)sprintf(sng_foo,"%li*",dim[idx].sz);
       (void)strcat(sz_sng,sng_foo);
     } /* end loop over dim */
-    (void)sprintf(sng_foo,"%li*nctypelen(%s)",dim[idx].sz,nco_typ_sng(var_type));
+    (void)sprintf(sng_foo,"%li*nco_typ_lng(%s)",dim[idx].sz,nco_typ_sng(var_type));
     (void)strcat(sz_sng,sng_foo);
-    (void)fprintf(stdout,"%s memory size is %s = %li*%i = %li bytes\n",var_nm,sz_sng,var_sz,nctypelen(var_type),var_sz*nctypelen(var_type));
+    (void)fprintf(stdout,"%s memory size is %s = %li*%i = %li bytes\n",var_nm,sz_sng,var_sz,nco_typ_lng(var_type),var_sz*nco_typ_lng(var_type));
   }else{
     long var_sz=1L;
 
-    (void)fprintf(stdout,"%s memory size is %li*nctypelen(%s) = %li*%i = %li bytes\n",var_nm,var_sz,nco_typ_sng(var_type),var_sz,nctypelen(var_type),var_sz*nctypelen(var_type));
+    (void)fprintf(stdout,"%s memory size is %li*nco_typ_lng(%s) = %li*%i = %li bytes\n",var_nm,var_sz,nco_typ_sng(var_type),var_sz,nco_typ_lng(var_type),var_sz*nco_typ_lng(var_type));
   } /* end if variable is a scalar */
   (void)fflush(stdout);
   
@@ -1155,8 +1158,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
 #define MAX_LEN_FMT_SNG 100
   char var_sng[MAX_LEN_FMT_SNG];
 
-  extern int ncopts;
-
+  
   int *dmn_id=NULL_CEWI;
   int idx;
   
@@ -1179,10 +1181,10 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
   var.nm=(char *)strdup(var_nm);
 
   /* See if requested variable is in input file. */
-  var.id=ncvarid(in_id,var_nm);
+  var.id=nco_inq_varid(in_id,var_nm);
 
   /* Get number of dimensions and type for variable. */
-  (void)ncvarinq(in_id,var.id,(char *)NULL,&var.type,&var.nbr_dim,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(in_id,var.id,(char *)NULL,&var.type,&var.nbr_dim,(int *)NULL,(int *)NULL);
 
   if(var.nbr_dim > 0){
     /* Allocate space for dimension info */
@@ -1201,15 +1203,15 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
   } /* end if var.nbr_dim > 0 */
   
   /* Get dimension IDs */
-  (void)ncvarinq(in_id,var.id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_id,(int *)NULL);
+  (void)nco_inq_var(in_id,var.id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_id,(int *)NULL);
   
   /* Get dimension sizes and names */
   for(idx=0;idx<var.nbr_dim;idx++){
     int lmt_idx;
 
-    dim[idx].nm=(char *)nco_malloc(MAX_NC_NAME*sizeof(char));
+    dim[idx].nm=(char *)nco_malloc(NC_MAX_NAME*sizeof(char));
     dim[idx].id=dmn_id[idx];
-    (void)ncdiminq(in_id,dim[idx].id,dim[idx].nm,&dim[idx].sz);
+    (void)nco_inq_dim(in_id,dim[idx].id,dim[idx].nm,&dim[idx].sz);
     
     /* Initialize indicial offset and stride arrays */
     dmn_cnt[idx]=dim[idx].sz;
@@ -1236,20 +1238,20 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
   
     /* Is dimension a coordinate, i.e., stored as a variable? */
     dim[idx].val.vp=NULL;
-    ncopts=0; 
-    dim[idx].cid=ncvarid(in_id,dim[idx].nm);
-    ncopts=NC_VERBOSE | NC_FATAL; 
+     
+    dim[idx].cid=nco_inq_varid_flg(in_id,dim[idx].nm);
+    
     
     /* Read in coordinate dimensions */
     if(dim[idx].cid != -1){
       /* Find out what type of variable coordinate is */
-      (void)ncvarinq(in_id,dim[idx].cid,(char *)NULL,&dim[idx].type,(int *)NULL,(int *)NULL,(int *)NULL);
+      (void)nco_inq_var(in_id,dim[idx].cid,(char *)NULL,&dim[idx].type,(int *)NULL,(int *)NULL,(int *)NULL);
       
       /* Allocate enough space to hold coordinate */
-      dim[idx].val.vp=(void *)nco_malloc(dmn_cnt[idx]*nctypelen(dim[idx].type));
+      dim[idx].val.vp=(void *)nco_malloc(dmn_cnt[idx]*nco_typ_lng(dim[idx].type));
       
       /* Retrieve this coordinate */
-      if(dmn_srd[idx] == 1L) (void)ncvarget(in_id,dim[idx].cid,dmn_srt+idx,dmn_cnt+idx,dim[idx].val.vp); else ncvargetg(in_id,dim[idx].cid,dmn_srt+idx,dmn_cnt+idx,dmn_srd+idx,(long *)NULL,dim[idx].val.vp);
+      if(dmn_srd[idx] == 1L) (void)nco_get_vara(in_id,dim[idx].cid,dmn_srt+idx,dmn_cnt+idx,dim[idx].val.vp,dim[idx].type); else nco_get_varm(in_id,dim[idx].cid,dmn_srt+idx,dmn_cnt+idx,dmn_srd+idx,(long *)NULL,dim[idx].val.vp,dim[idx].type);
 
       /* Typecast pointer to values before access */
       (void)cast_void_nctype(dim[idx].type,&dim[idx].val);
@@ -1263,38 +1265,41 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
   for(idx=0;idx<var.nbr_dim;idx++) var.sz*=dmn_cnt[idx];
 
   /* Allocate enough space to hold variable */
-  var.val.vp=(void *)malloc(var.sz*nctypelen(var.type));
+  var.val.vp=(void *)malloc(var.sz*nco_typ_lng(var.type));
   if(var.val.vp == NULL){
-    (void)fprintf(stderr,"%s: ERROR unable to malloc() %ld bytes for %s\n",prg_nm_get(),var.sz*nctypelen(var.type),var.nm);
+    (void)fprintf(stderr,"%s: ERROR unable to malloc() %ld bytes for %s\n",prg_nm_get(),var.sz*nco_typ_lng(var.type),var.nm);
     exit(EXIT_FAILURE);
   } /* end if */
 
   /* Get variable */
   if(var.nbr_dim==0){
-    ncvarget1(in_id,var.id,0L,var.val.vp); 
+    nco_get_var1(in_id,var.id,0L,var.val.vp,var.type); 
   }else if(!SRD){
-    ncvarget(in_id,var.id,dmn_srt,dmn_cnt,var.val.vp);
+    nco_get_vara(in_id,var.id,dmn_srt,dmn_cnt,var.val.vp,var.type);
   }else if(SRD){
-    ncvargetg(in_id,var.id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,var.val.vp);
+    nco_get_varm(in_id,var.id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,var.val.vp,var.type);
   } /* end else */
 
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(var.type,&var.val);
 
   if(PRINT_DIMENSIONAL_UNITS){
-    int att_sz;
     int status;
+    long att_sz;
     nc_type att_typ;
 
     /* Find if this variable has an attribute named "units" */
-    ncopts=0;
-    status=ncattinq(in_id,var.id,"units",&att_typ,&att_sz);
-    ncopts=NC_VERBOSE | NC_FATAL; 
+    /* ncopts=0;
+	  status=ncattinq(in_id,var.id,"units",&att_typ,&att_sz);
+	  ncopts=NC_VERBOSE | NC_FATAL; */
+	  (void)nco_inq_attid(in_id,var.id,"units",&status);
+	  
     if(status != -1){
-      if(att_typ == NC_CHAR){
-	unit_sng=(char *)nco_malloc((att_sz+1)*nctypelen(att_typ));
-	(void)ncattget(in_id,var.id,"units",unit_sng);
-	unit_sng[(att_sz+1)*nctypelen(att_typ)-1]='\0';
+	  (void)nco_inq_att(in_id,var.id,"units",&att_typ,&att_sz);
+	   if(att_typ == NC_CHAR){
+	unit_sng=(char *)nco_malloc((att_sz+1)*nco_typ_lng(att_typ));
+	(void)nco_get_att(in_id,var.id,"units",unit_sng,att_typ);
+	unit_sng[(att_sz+1)*nco_typ_lng(att_typ)-1]='\0';
       } /* end if */
     } /* end if */
   } /* end if */
@@ -1316,7 +1321,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
       case NC_FLOAT: (void)fprintf(stdout,dlm_sng,var.val.fp[lmn]); break;
       case NC_DOUBLE: (void)fprintf(stdout,dlm_sng,var.val.dp[lmn]); break;
       case NC_SHORT: (void)fprintf(stdout,dlm_sng,var.val.sp[lmn]); break;
-      case NC_LONG: (void)fprintf(stdout,dlm_sng,var.val.lp[lmn]); break;
+      case NC_INT: (void)fprintf(stdout,dlm_sng,var.val.lp[lmn]); break;
       case NC_CHAR: (void)fprintf(stdout,dlm_sng,var.val.cp[lmn]); break;
       case NC_BYTE: (void)fprintf(stdout,dlm_sng,var.val.bp[lmn]); break;
       default: dfl_case_nctype_err(); break;
@@ -1333,7 +1338,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
     case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var.val.fp[lmn],unit_sng); break;
     case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var.val.dp[lmn],unit_sng); break;
     case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.sp[lmn],unit_sng); break;
-    case NC_LONG: (void)fprintf(stdout,var_sng,var_nm,var.val.lp[lmn],unit_sng); break;
+    case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var.val.lp[lmn],unit_sng); break;
     case NC_CHAR:
       (void)sprintf(var_sng,"%%s='%s' %%s\n",type_fmt_sng(var.type));
       (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng);
@@ -1439,7 +1444,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
 	      case NC_FLOAT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.fp[crd_idx_crr]); break;
 	      case NC_DOUBLE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.dp[crd_idx_crr]); break;
 	      case NC_SHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.sp[crd_idx_crr]); break;
-	      case NC_LONG: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.lp[crd_idx_crr]); break;
+	      case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.lp[crd_idx_crr]); break;
 	      case NC_CHAR: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]); break;
 	      case NC_BYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,(unsigned char)dim[dmn_idx].val.bp[crd_idx_crr]); break;
 	      default: dfl_case_nctype_err(); break;
@@ -1464,7 +1469,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
 	  /* Memory region is NUL-terminated, i.e., a valid string */
 	  /* Print strings inside double quotes */
 	  (void)sprintf(var_sng,"%%s%c%%li--%%li%c=\"%%s\" %%s",arr_lft_dlm,arr_rgt_dlm);
-	  /* var.val.cp is signed char * but strlen() requires const char * */
+	  /* var.val.cp is unsigned char * but strlen() requires const char * */
 	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,idx_crr+strlen((char *)var.val.cp+lmn),(char *)var.val.cp+lmn,unit_sng);
 	}else{
 	  /* Memory region is not NUL-terminated, print block of chars instead */
@@ -1486,7 +1491,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
       case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.fp[lmn],unit_sng); break;
       case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.dp[lmn],unit_sng); break;
       case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.sp[lmn],unit_sng); break;
-      case NC_LONG: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.lp[lmn],unit_sng); break;
+      case NC_INT: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.lp[lmn],unit_sng); break;
       case NC_CHAR: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.cp[lmn],unit_sng); break;
       case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,idx_crr,(unsigned char)var.val.bp[lmn],unit_sng); break;
       default: dfl_case_nctype_err(); break;
@@ -1522,3 +1527,4 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
   if(strlen(unit_sng) > 0) (void)free(unit_sng);
  
 } /* end prn_var_val_lmt() */
+

@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.67 2001-01-03 01:58:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.68 2001-05-08 01:36:03 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
-/* Copyright (C) 1995--2000 Charlie Zender
+/* Copyright (C) 1995--2001 Charlie Zender
    
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -66,6 +66,7 @@
    function prototypes in nc.h are needed here. Eventually prototypes for these
    routines should be broken into separate files, like csz.h... */
 #include <netcdf.h> /* netCDF definitions */
+#include "nco_netcdf.h" /* netCDF3.0 wrapper functions */
 #include "nc.h" /* netCDF operator universal def'ns */
 
 #ifndef bool
@@ -101,7 +102,7 @@ char * /* O [sng] Mnemonic that describes current NCO version */
 nmn_get()
 { 
   /* Purpose: Return mnemonic that describes current NCO version */
-  return "I70+I15 Roadtrip";
+  return "the great netCDF3 migration";
 } /* end nmn_get() */
 
 char * /* O [sng] Parsed command line */
@@ -810,9 +811,9 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
   /* Make sure we have read permission on local file */
   if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl){
     /* Attempt ncopen() on HTTP protocol files. Success means DODS can find file. */
-    ncopts=0;
-    rcd=ncopen(fl_nm_lcl,NC_NOWRITE);
-    ncopts=NC_VERBOSE | NC_FATAL; 
+    
+    rcd=nco_open(fl_nm_lcl,NC_NOWRITE);
+    
     if(rcd < 0){
       (void)fprintf(stderr,"%s: ERROR Attempted HTTP access protocol failed: DODS server is not responding, %s does not exist, or user does not have read permission for it\n",prg_nm_get(),fl_nm_lcl);
       exit(EXIT_FAILURE);
@@ -1045,7 +1046,6 @@ nc_lib_vrs_prn()
 {
   /* Purpose: Print netCDF library version */
 
-#ifndef NETCDF2_ONLY
   char *lib_sng;
   char *nst_sng;
   char *vrs_sng;
@@ -1054,13 +1054,7 @@ nc_lib_vrs_prn()
 
   int vrs_sng_len;
   int nst_sng_len;
-#endif /* NETCDF2_ONLY */
 
-  /* Ability to compile without netCDF 3.x calls is still valuable because
-     HDF 4.x only supports netCDF 2.x library. */     
-#ifdef NETCDF2_ONLY
-  (void)fprintf(stderr,"Compiled with netCDF library version 2.x\n");
-#else /* not NETCDF2_ONLY */
   /* As of netCDF 3.4, nc_inq_libvers() returned strings such as "3.4 of May 16 1998 14:06:16 $" */  
   lib_sng=(char *)strdup(nc_inq_libvers());
   of_ptr=strstr(lib_sng," of ");
@@ -1081,7 +1075,6 @@ nc_lib_vrs_prn()
   (void)free(vrs_sng);
   (void)free(lib_sng);
   (void)free(nst_sng);
-#endif /* not NETCDF2_ONLY */
   (void)fprintf(stdout,"NCO homepage URL is http://nco.sourceforge.net\n");
 } /* end nc_lib_vrs_prn() */
 
@@ -1129,7 +1122,7 @@ copyright_prn(char *CVS_Id,char *CVS_Revision)
   (void)fprintf(stderr,"Portions copyright 1999--2000 Regents of the University of California\n"); */
 
   (void)fprintf(stderr,"NCO netCDF Operators version %s\n",cvs_vrs_sng);
-  (void)fprintf(stderr,"Copyright (C) 1995--2000 Charlie Zender\n");
+  (void)fprintf(stderr,"Copyright (C) 1995--2001 Charlie Zender\n");
   (void)fprintf(stderr,"%s version %s (%s) \"%s\"\n",prg_nm_get(),vrs_sng,date_sng,nmn_get());
   (void)fprintf(stdout,"NCO is free software and comes with ABSOLUTELY NO WARRANTY\nNCO is distributed under the terms of the GNU General Public License\n");
 

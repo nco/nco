@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.76 2001-02-12 05:37:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.77 2001-05-08 01:36:03 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -25,7 +25,7 @@ ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAll
 cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.ps nco.info* nco.ps nco.pdf nco.sourceforge.net:/home/groups/nco/htdocs;cd -
 cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.ps nco.info* nco.ps nco.pdf www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
 
-Copyright (C) 1995--2000 Charlie Zender
+Copyright (C) 1995--2001 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1
 or any later version published by the Free Software Foundation;
@@ -60,12 +60,12 @@ END-INFO-DIR-ENTRY
 @c set smallbook
 @clear smallbook
 
-@set nco-edition 1.2.2
-@set doc-edition 1.2.2
+@set nco-edition 2.0.0
+@set doc-edition 2.0.0
 @set copyright-years 1995--2001
 @set update-year 2001
-@set update-date 10 February 2001
-@set update-month February 2001
+@set update-date 1 April 2001
+@set update-month April 2001
 
 @c Experiment with smaller amounts of whitespace between chapters and sections
 @tex
@@ -269,8 +269,9 @@ Thanks espcially to Jan Polcher, Keith Lindsay, Arlindo da Silva, John
 Sheldon, and William Weibel for stimulating suggestions and correspondence.
 Your encouragment motivated me to complete the @cite{NCO User's Guide}.
 So if you like @acronym{NCO}, send me a note!
-I should mention that @acronym{NCO} is not connected to or officially endorsed by
-Unidata, @acronym{ACD}, @acronym{ASP}, @acronym{CGD}, or Nike.@*
+I should mention that @acronym{NCO} is not connected to or officially
+endorsed by Unidata, @acronym{ACD}, @acronym{ASP}, @acronym{CGD}, or
+Nike.@* 
 @sp 1
 @noindent
 Charlie Zender@*
@@ -284,8 +285,8 @@ I suppose a major version change entitles me to write another Foreword.
 In the last five years a lot of work has been done refining @acronym{NCO}.
 @acronym{NCO} is now an honest-to-goodness open source project.
 It appears to be much healthier for it.
-The illustrious list of institutions which do not endorse @acronym{NCO} continues
-to grow, and now includes UCI.
+The illustrious list of institutions which do not endorse @acronym{NCO}
+continues to grow, and now includes @acronym{UCI}.
 @sp 1
 @noindent
 Charlie Zender@*
@@ -571,59 +572,68 @@ linked.
 @cindex netCDF 2.x
 @cindex netCDF 3.x
 netCDF version 2.x was released in 1993.
-@acronym{NCO} began with netCDF 2.x in 1994.
-netCDF 3.0 was released in 1996, and we are eager to reap the
+@acronym{NCO} (specifically @code{ncks}) began with netCDF 2.x in 1994.
+netCDF 3.0 was released in 1996, and we were eager to reap the
 performance advantages of the newer netCDF implementation.
-One netCDF 3.x interface call (@code{nc_inq_libvers}) was added to @acronym{NCO} in
-January, 1998, to aid in maintainance and debugging. 
-To support this call, @acronym{NCO} must be built with netCDF 3.x releases.
-Currently, the rest of @acronym{NCO} still uses the netCDF 2.x interface, but,
-because of the single @code{nc_inq_libvers} call, @acronym{NCO} no longer builds
-with netCDF 2.x releases. 
+One netCDF 3.x interface call (@code{nc_inq_libvers}) was added to
+@acronym{NCO} in January, 1998, to aid in maintainance and debugging. 
+In March, 2001, the final conversion of @acronym{NCO} to netCDF 3.x
+was completed (coincidentally on the same day netCDF 3.5 was released).
+@acronym{NCO} versions 2.0 and higher are built with the
+@code{-DNO_NETCDF_2} flag to ensure no netCDF 2.x interface calls 
+are used.
+@cindex @code{NO_NETCDF_2}
 
 @cindex @acronym{HDF}
 @cindex Hierarchical Data Format
-However, the ability to compile @acronym{NCO} with only netCDF 2.x calls is worth 
-maintaining because @acronym{HDF} version 4
+However, the ability to compile @acronym{NCO} with only netCDF 2.x calls 
+is worth maintaining because @acronym{HDF} version 4
 @footnote{The Hierarchical Data Format, or @acronym{HDF}, is another
 self-describing data format similar to, but more elaborate than, netCDF.}
 (available from @uref{http://hdf.ncsa.uiuc.edu, HDF})
 supports only the netCDF 2.x library calls
 (see @uref{http://hdf.ncsa.uiuc.edu/UG41r3_html/SDS_SD.fm12.html#47784}).
-If @acronym{NCO} is built with only netCDF 2.x calls then all
-@acronym{NCO} operators should work with @acronym{HDF} files as well as 
-netCDF files
+Note that there are multiple versions of @acronym{HDF}.
+Currently @acronym{HDF} version 4.x supports netCDF 2.x and thus
+@acronym{NCO} version 1.2.x. 
+If @acronym{NCO} version 1.2.x (or earlier) is built with only netCDF
+2.x calls then all @acronym{NCO} operators should work with
+@acronym{HDF4} files as well as netCDF files
 @footnote{One must link the @acronym{NCO} code to the @acronym{HDF4}
 @acronym{MFHDF} library instead of the usual netCDF library. 
 However, the @acronym{MFHDF} library only supports netCDF 2.x calls.
 Thus I will try to keep this capability in @acronym{NCO} as long as it
 is not too much trouble.}.
 @cindex @code{NETCDF2_ONLY}
-Therefore, the preprocessor token @code{NETCDF2_ONLY} has been
-implemented in @acronym{NCO} to eliminate all netCDF 3.x calls. 
-If, at compilation time, @code{NETCDF2_ONLY} is defined, then @acronym{NCO} will
-not use any netCDF 3.x calls and, if linked properly, the resulting
-@acronym{NCO} operators will work with @acronym{HDF4} files. 
-The @file{Makefile} supplied with @acronym{NCO} has been written to 
-simplify building in this @acronym{HDF} capability.
+The preprocessor token @code{NETCDF2_ONLY} exists
+in @acronym{NCO} version 1.2.x to eliminate all netCDF 3.x calls. 
+Only versions of @acronym{NCO} numbered 1.2.x and earlier have this
+capability. 
+The @acronym{NCO} 1.2.x branch will be maintained with bugfixes only
+(no new features) until @acronym{HDF} begins to fully support the
+netCDF 3.x interface (which is employed by @acronym{NCO} 2.x).
+If, at compilation time, @code{NETCDF2_ONLY} is defined, then
+@acronym{NCO} version 1.2.x will not use any netCDF 3.x calls and, if
+linked properly, the resulting @acronym{NCO} operators will work with
+@acronym{HDF4} files.  
+The @file{Makefile} supplied with @acronym{NCO} 1.2.x has been written
+to simplify building in this @acronym{HDF} capability.
 When @acronym{NCO} is built with @code{make HDF4=Y}, the @file{Makefile}
 will set all required preprocessor flags and library links to build 
-with the @acronym{HDF} libraries (which are assumed to reside under
+with the @acronym{HDF4} libraries (which are assumed to reside under 
 @code{/usr/local/hdf4}, edit the @file{Makefile} to suit your
 installation).  
 
-Note that there are multiple versions of @acronym{HDF}.
-Currently @acronym{HDF} version 4.x supports netCDF 2.x and thus
-@acronym{NCO}. 
 @acronym{HDF} version 5.x became available in 1999, but did not support
 netCDF (or, for that matter, Fortran) as of December 1999.
-Support for netCDF 3.x in @acronym{HDF} 5.x is being worked on and we
-will attempt to convert @acronym{NCO} to netCDF 3.x once this is
-complete. 
-Work is mostly complete on this interface, however, and it may be
+By early 2001, @acronym{HDF} version 5.x did support Fortran90.
+However, support for netCDF 3.x in @acronym{HDF} 5.x is incomplete.
+Much of the HDF5-netCDF3 interface is complete, however, and it may be
 separately downloaded from the
 @uref{http://hdf.ncsa.uiuc.edu/HDF5/papers/netcdfh5.html, HDF5-netCDF}
 website. 
+Now that @acronym{NCO} uses only netCDF 3.x system calls we are
+eager for HDF5 to complete their netCDF 3.x support.
 
 @node Help and Bug reports,  , netCDF 2.x vs. 3.x, Introduction
 @section Help and Bug reports
@@ -1838,7 +1848,12 @@ Identifying variables which may contain missing data.
 
 @acronym{NCO} follows the convention that missing data should be stored
 with the @var{missing_value} specified in the variable's
-@code{missing_value} attribute.  
+@code{missing_value} attribute
+@footnote{@acronym{NCO} averagers have a bug (TODO 121) which may cause
+them to behave incorrectly if the @var{missing_value} = @samp{0.0} for a 
+variable to be averaged.
+The workaround for this bug is to change @var{missing_value} to anything
+besides zero.}.
 The @emph{only} way @acronym{NCO} recognizes that a variable @emph{may} contain
 missing data is if the variable has a @code{missing_value} attribute.
 In this case, any elements of the variable which are numerically equal
@@ -2298,7 +2313,7 @@ include averaging, summation, or any "hard" arithmetic.
 Type conversion does not benefit searching for minima and maxima
 (@samp{-y min}, or @samp{-y max}).
 @item The variable on disk is of type @code{NC_BYTE}, @code{NC_CHAR},
-@code{NC_SHORT}, or @code{NC_LONG}.
+@code{NC_SHORT}, or @code{NC_INT}.
 Type @code{NC_DOUBLE} is not type converted because there is no type of
 higher precision to convert to.
 Type @code{NC_FLOAT} is not type converted because, in our judgement,
@@ -2727,7 +2742,7 @@ This is the default mode.
 @end table
 
 The value of @var{att_type} is a single character abbreviation (@code{f},
-@code{d}, @code{l}, @code{s}, @code{c}, or @code{b}) standing for one of
+@code{d}, @code{l}, @code{i}, @code{s}, @code{c}, or @code{b}) standing for one of
 the six primitive netCDF data types:@* 
 @table @code
 @item f
@@ -2738,6 +2753,10 @@ type NC_FLOAT.
 @dfn{Double}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
 type NC_DOUBLE.
+@item i
+@dfn{Integer}.
+Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
+type NC_INT.
 @item l
 @dfn{Long}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
@@ -4408,6 +4427,7 @@ Concept, design and implementation of @acronym{NCO} from 1995--2000
 Min, max, total, and non-linear operations. 
 Type conversion for arithmetic.
 Various hacks.
+Migration to netCDF3 API.
 @item Bill Kocik
 Memory management
 @item Juliana Rew

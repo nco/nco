@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.13 2000-09-05 20:40:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.14 2001-05-08 01:36:03 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
-/* Copyright (C) 1995--2000 Charlie Zender
+/* Copyright (C) 1995--2001 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License

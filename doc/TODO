@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.90 2001-01-05 18:04:01 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.91 2001-05-08 01:36:03 zender Exp $ 
 
 *************
 NCO Wish list
@@ -26,7 +26,7 @@ NCO Wish list
 94. ~/bin/sh/texi2html -monolithic nco.texi has started dumping core. adding -verbose switch fixes problem, though I've no idea why.
 95. Can Unidata udunits package accomplish CCM "time since..." conversions for ncrcat?
 97. Add x_op=average... attributes to averagers for ncar_csm
-99. Allow ncatted to print out a file in ncatted format
+99. Allow ncatted to dump file in ncatted format
 103. Implement trapezoidal rule option in ncra, ncea
 104. Investigate/Document reliability of -A operator when appending from large rank variables to small rank files. Add error message when variables are same size but one has a degenerate dimension.
 In general, adding large rank variable to small rank file does work, e.g.,
@@ -35,7 +35,6 @@ ncks -C -A -v three_dmn_rec_var in.nc foo.nc
 ncdump foo.nc
 105. Add easy-to-read tabular display option for file contents for ncks
 106. Add switch to keep degenerate dimensions with ncwa
-107. Migrate to netCDF 3.x
 109. Change copyright printing so order is NCO vrs, netCDF vrs, URL, Copyright
 111. Investigate whether using ncwa to average files where variables of type 
 NC_CHAR have a record dimension causes core dumps or other problems.
@@ -156,6 +155,12 @@ ncks -O in.nc in.hdf
 Command executes but in.hdf is full of screwy values
 198. HDF-enabled ncgen does not parse in.cdl
 199. Internationalize (i18n) NCO with gettext()
+201. Adopt new nc_type=undefined enum for nctype instantiation 
+202. Make nco_tst.sh somehow summarize its own errors, e.g., "Total errors reported = 12" so
+that regression testing is easier. Perhaps nco_tst.sh should be rewritten in Perl or Python 
+to accomplish this.
+203. Perform I/O timing tests with NCO 1.3.x vs NCO 1.2.x to see if netCDF3 interface really speeds up I/O
+204. Update user's guide to reflect new netCDF 3.x API
 ************************************************************************
 End NCO Wish list
 ************************************************************************

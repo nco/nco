@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.52 2000-10-23 22:57:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.53 2001-05-08 01:36:03 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -6,7 +6,7 @@
    specfied variables of multiple input netCDF files and output them 
    to a single file. */
 
-/* Copyright (C) 1995--2000 Charlie Zender
+/* Copyright (C) 1995--2001 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -68,9 +68,19 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
+#include "nco_netcdf.h" /* netCDF 3.0 wrapper functions */
 #ifdef _OPENMP
 #include <omp.h> /* OpenMP pragmas */
 #endif /* not _OPENMP */
+
+/* Internationalization i18n */
+#ifdef I18N
+#include <libintl.h> /* Internationalization i18n */
+#include <locale.h> /* Locale setlocale() */
+#endif /* I18N */
+#ifndef _LIBINTL_H
+# define gettext(foo) foo
+#endif /* _LIBINTL_H */
 
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
@@ -97,15 +107,15 @@ main(int argc,char **argv)
   char **fl_lst_in;
   char *fl_in=NULL;
   char *fl_pth_lcl=NULL; /* Option l */
-  char *lmt_arg[MAX_NC_DIMS];
+  char *lmt_arg[NC_MAX_DIMS];
   char *opt_sng;
   char *fl_out;
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.52 2000-10-23 22:57:34 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.52 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.53 2001-05-08 01:36:03 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.53 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -113,7 +123,6 @@ main(int argc,char **argv)
   dmn_sct **dmn_out;
   
   extern char *optarg;
-  extern int ncopts;
   extern int optind;
 
   int idx=int_CEWI;
@@ -135,14 +144,15 @@ main(int argc,char **argv)
   int nco_op_typ=nco_op_avg; /* [enm] Default operation is averaging */
   int nco_pck_typ=nco_pck_nil; /* [enm] Default packing is none */
   
+  
   lmt_sct *lmt=NULL_CEWI;
   lmt_sct lmt_rec;
   
   long idx_rec; /* [idx] Index of current record in current input file */
   long idx_rec_out=0L; /* [idx] Index of current record in output file (0 is first, ...) */
   
-  nclong base_time_srt=nclong_CEWI;
-  nclong base_time_crr=nclong_CEWI;
+  nco_long base_time_srt=nco_long_CEWI;
+  nco_long base_time_crr=nco_long_CEWI;
 
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */
@@ -156,6 +166,13 @@ main(int argc,char **argv)
   var_sct **var_prc;
   var_sct **var_prc_out;
   
+#ifdef _LIBINTL_H
+  setlocale(LC_ALL,""); /* LC_ALL sets all localization tokens to same value */
+  bindtextdomain("nco","/home/zender/share/locale"); // LOCALEDIR is e.g., /usr/share/locale
+  // MO files should be in $LOCALEDIR/es/LC_MESSAGES
+  textdomain("nco"); // PACKAGE is name of program
+#endif // not _LIBINTL_H
+
   /* Start the clock and save the command line */
   cmd_ln=cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
@@ -196,7 +213,7 @@ main(int argc,char **argv)
     case 'n': /* Get the NINTAP-style abbreviation of files to average */
       fl_lst_abb=lst_prs(optarg,",",&nbr_abb_arg);
       if(nbr_abb_arg < 1 || nbr_abb_arg > 5){
-	(void)fprintf(stdout,"%s: ERROR Incorrect abbreviation for file list\n",prg_nm);
+	(void)fprintf(stdout,gettext("%s: ERROR Incorrect abbreviation for file list\n"),prg_nm);
 	(void)usg_prn();
 	exit(EXIT_FAILURE);
       } /* end if */
@@ -243,17 +260,16 @@ main(int argc,char **argv)
   if(lmt_nbr > 0) lmt=lmt_prs(lmt_nbr,lmt_arg);
   
   /* Make netCDF errors fatal and print the diagnostic */ 
-  ncopts=NC_VERBOSE | NC_FATAL;
-    
+      
   /* Parse filename */
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open the file for reading */
-  in_id=ncopen(fl_in,NC_NOWRITE);
+  in_id=nco_open(fl_in,NC_NOWRITE);
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
-  (void)ncinquire(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
+  (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
   
   /* Form initial extraction list from user input */
   xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
@@ -298,8 +314,8 @@ main(int argc,char **argv)
   /* Create stand-alone limit structure just for record dimension */
   if(prg == ncra || prg == ncrcat){
     if(rec_dmn_id == -1){
-      (void)fprintf(stdout,"%s: ERROR input file %s lacks a record dimension\n",prg_nm_get(),fl_in);
-      if(nbr_fl == 1)(void)fprintf(stdout,"%s: HINT Use ncks instead of %s\n",prg_nm_get(),prg_nm_get());
+      (void)fprintf(stdout,gettext("%s: ERROR input file %s lacks a record dimension\n"),prg_nm_get(),fl_in);
+      if(nbr_fl == 1)(void)fprintf(stdout,gettext("%s: HINT Use ncks instead of %s\n"),prg_nm_get(),prg_nm_get());
       exit(EXIT_FAILURE);
     } /* endif */
     lmt_rec=lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_STYLE);
@@ -342,11 +358,11 @@ main(int argc,char **argv)
 
   /* Turn off default filling behavior to enhance efficiency */
 #if ( ! defined SUN4 ) && ( ! defined SUN4SOL2 ) && ( ! defined SUNMP )
-  (void)ncsetfill(out_id,NC_NOFILL);
+  (void)nc_set_fill(out_id,NC_NOFILL,(int *)NULL);
 #endif
   
   /* Take output file out of define mode */
-  (void)ncendef(out_id);
+  (void)nco_enddef(out_id);
   
   /* Zero start vectors for all output variables */
   (void)var_srt_zero(var_out,nbr_xtr);
@@ -355,7 +371,7 @@ main(int argc,char **argv)
   (void)var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
 
   /* Close first input netCDF file */
-  (void)ncclose(in_id);
+  (void)nco_close(in_id);
   
   /* Allocate and, if necesssary, initialize accumulation space for processed variables */
   for(idx=0;idx<nbr_var_prc;idx++){
@@ -366,7 +382,7 @@ main(int argc,char **argv)
     if(prg == ncra || prg == ncea){
       var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long));
       (void)zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
-      var_prc_out[idx]->val.vp=(void *)nco_malloc(var_prc_out[idx]->sz*nctypelen(var_prc_out[idx]->type));
+      var_prc_out[idx]->val.vp=(void *)nco_malloc(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type));
       (void)var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
     } /* end if */
   } /* end loop over idx */
@@ -378,11 +394,11 @@ main(int argc,char **argv)
   for(idx_fl=0;idx_fl<nbr_fl;idx_fl++){
     /* Parse filename */
     if(idx_fl != 0) fl_in=fl_nm_prs(fl_in,idx_fl,(int *)NULL,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
-    if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",idx_fl,fl_in);
+    if(dbg_lvl > 0) (void)fprintf(stderr,gettext("\nInput file %d is %s; "),idx_fl,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(idx_fl != 0) fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
-    if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
-    in_id=ncopen(fl_in,NC_NOWRITE);
+    if(dbg_lvl > 0) (void)fprintf(stderr,gettext("local file %s:\n"),fl_in);
+    in_id=nco_open(fl_in,NC_NOWRITE);
     
     /* Variables may have different IDs and missing_values in each file */
     for(idx=0;idx<nbr_var_prc;idx++) (void)var_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
@@ -398,10 +414,10 @@ main(int argc,char **argv)
 
     if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
       /* Loop over each record in current file */
-      if(lmt_rec.srt > lmt_rec.end) (void)fprintf(stdout,"%s: WARNING %s (input file %d) is superfluous\n",prg_nm_get(),fl_in,idx_fl);
+      if(lmt_rec.srt > lmt_rec.end) (void)fprintf(stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,idx_fl);
       for(idx_rec=lmt_rec.srt;idx_rec<=lmt_rec.end;idx_rec+=lmt_rec.srd){
 	/* Process all variables in current record */
-	if(dbg_lvl > 1) (void)fprintf(stderr,"Record %ld of %s is input record %ld\n",idx_rec,fl_in,idx_rec_out);
+	if(dbg_lvl > 1) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
 #ifdef _OPENMP
 #pragma omp parallel for private(idx) shared(nbr_var_prc,dbg_lvl,var_prc,idx_rec,in_id,prg,nco_op_typ,var_prc_out,idx_rec_out,rcd,ARM_FORMAT,out_id,fl_in,fl_out)
 #endif /* not _OPENMP */
@@ -435,7 +451,7 @@ main(int argc,char **argv)
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
-	    if(var_prc_out[idx]->sz_rec > 1) (void)ncvarput(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp); else (void)ncvarput1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp);
+	    if(var_prc_out[idx]->sz_rec > 1) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
 	  } /* end if ncrcat */
 
 	  /* Make sure record coordinate, if any, is monotonic */
@@ -450,11 +466,11 @@ main(int argc,char **argv)
       if(lmt_rec.lmt_typ == lmt_dmn_idx && lmt_rec.is_usr_spc_min && lmt_rec.is_usr_spc_max){
 	long rec_nbr_rqs; /* Number of records user requested */
 	rec_nbr_rqs=1L+(lmt_rec.max_idx-lmt_rec.min_idx)/lmt_rec.srd;
-	if(idx_fl == nbr_fl-1 && rec_nbr_rqs != idx_rec_out) (void)fprintf(stdout,"%s: WARNING User requested %li records but only %li were found\n",prg_nm_get(),rec_nbr_rqs,idx_rec_out);
+	if(idx_fl == nbr_fl-1 && rec_nbr_rqs != idx_rec_out) (void)fprintf(stdout,gettext("%s: WARNING User requested %li records but only %li were found\n"),prg_nm_get(),rec_nbr_rqs,idx_rec_out);
       } /* end if */
       /* Error if no records were read and final file has been processed */
       if(idx_rec_out <= 0 && idx_fl == nbr_fl-1){
-	(void)fprintf(stdout,"%s: ERROR No records lay within specified hyperslab\n",prg_nm_get());
+	(void)fprintf(stdout,gettext("%s: ERROR No records lay within specified hyperslab\n"),prg_nm_get());
 	exit(EXIT_FAILURE);
       } /* end if */
       /* End of ncra, ncrcat section */
@@ -485,7 +501,7 @@ main(int argc,char **argv)
     if(dbg_lvl > 1) (void)fprintf(stderr,"\n");
       
     /* Close input netCDF file */
-    ncclose(in_id);
+    nco_close(in_id);
     
     /* Dispose local copy of file */
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
@@ -546,11 +562,11 @@ main(int argc,char **argv)
       /* Packing/Unpacking */
       if(nco_pck_typ == nco_pck_all_new_att) var_prc_out[idx]=nco_put_var_pck(var_prc_out[idx],nco_pck_typ);
       if(var_prc_out[idx]->nbr_dim == 0){
-	(void)ncvarput1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp);
+	(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
       }else{ /* end if variable is a scalar */
 	/* Size of record dimension is 1 in output file */
 	if(prg == ncra) var_prc_out[idx]->cnt[0]=1L;
-	(void)ncvarput(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp);
+	(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
       } /* end if variable is an array */
       (void)free(var_prc_out[idx]->val.vp); var_prc_out[idx]->val.vp=NULL;
     } /* end loop over idx */
@@ -562,5 +578,3 @@ main(int argc,char **argv)
   Exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
-
-

@@ -1,11 +1,11 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.67 2000-12-30 02:23:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.68 2001-05-08 01:36:03 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
 /* Purpose: Compute averages of specified hyperslabs of specfied variables
    in a single input netCDF file and output them to a single file. */
 
-/* Copyright (C) 1995--2000 Charlie Zender
+/* Copyright (C) 1995--2001 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -64,6 +64,7 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
+#include "nco_netcdf.h" /*netCDF 3.0 wrapper functions */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
@@ -98,7 +99,7 @@ main(int argc,char **argv)
   char **fl_lst_in=NULL_CEWI;
   char *fl_in=NULL;
   char *fl_pth_lcl=NULL; /* Option l */
-  char *lmt_arg[MAX_NC_DIMS];
+  char *lmt_arg[NC_MAX_DIMS];
   char *opt_sng;
   char *fl_out;
   char *fl_out_tmp=NULL_CEWI;
@@ -108,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.67 2000-12-30 02:23:03 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.67 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.68 2001-05-08 01:36:03 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.68 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -118,7 +119,6 @@ main(int argc,char **argv)
   double msk_val=1.0; /* Option M */
 
   extern char *optarg;
-  extern int ncopts;
   extern int optind;
   
   int idx=int_CEWI;
@@ -299,18 +299,16 @@ main(int argc,char **argv)
   /* Make uniform list of user-specified dimension limits */
   lmt=lmt_prs(lmt_nbr,lmt_arg);
   
-  /* Make netCDF errors fatal and print the diagnostic */  
-  ncopts=NC_VERBOSE | NC_FATAL; 
-  
+    
   /* Parse filename */
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open the file for reading */
-  in_id=ncopen(fl_in,NC_NOWRITE);
+  in_id=nco_open(fl_in,NC_NOWRITE);
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
-  (void)ncinquire(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
+  (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
   
   /* Form initial extraction list from user input */
   xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
@@ -471,18 +469,18 @@ main(int argc,char **argv)
       if(!var_prc_out[idx]->has_mss_val){
 	var_prc_out[idx]->has_mss_val=True;
 	var_prc_out[idx]->mss_val=mss_val_mk(var_prc[idx]->type);
-	(void)ncattput(out_id,var_prc_out[idx]->id,"missing_value",var_prc_out[idx]->type,1,var_prc_out[idx]->mss_val.vp);
+	(void)nco_put_att(out_id,var_prc_out[idx]->id,"missing_value",var_prc_out[idx]->type,1,var_prc_out[idx]->mss_val.vp);
       } /* end if */
     } /* end for */
   } /* end if */
 
   /* Turn off default filling behavior to enhance efficiency */
 #if ( ! defined SUN4 ) && ( ! defined SUN4SOL2 ) && ( ! defined SUNMP )
-  (void)ncsetfill(out_id,NC_NOFILL);
+  (void)nc_set_fill(out_id,NC_NOFILL,(int *)NULL);
 #endif
   
   /* Take output file out of define mode */
-  (void)ncendef(out_id);
+  (void)nco_enddef(out_id);
   
   /* Zero start vectors for all output variables */
   (void)var_srt_zero(var_out,nbr_xtr);
@@ -491,7 +489,7 @@ main(int argc,char **argv)
   (void)var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
 
   /* Close first input netCDF file */
-  ncclose(in_id);
+  nco_close(in_id);
   
   /* Loop over input files (not currently used, nbr_fl == 1) */
   for(idx_fl=0;idx_fl<nbr_fl;idx_fl++){
@@ -501,7 +499,7 @@ main(int argc,char **argv)
     /* Make sure file is on local system and is readable or die trying */
     if(idx_fl != 0) fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
     if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
-    in_id=ncopen(fl_in,NC_NOWRITE);
+    in_id=nco_open(fl_in,NC_NOWRITE);
     
     /* Perform various error-checks on input file */
     if(False) (void)fl_cmp_err_chk();
@@ -510,7 +508,7 @@ main(int argc,char **argv)
     if(wgt_nm != NULL){
       int wgt_id;
       
-      wgt_id=ncvarid_or_die(in_id,wgt_nm);
+      wgt_id=nco_inq_varid(in_id,wgt_nm);
       wgt=var_fll(in_id,wgt_id,wgt_nm,dim,nbr_dmn_fl);
       
       /* Retrieve weighting variable */
@@ -526,7 +524,7 @@ main(int argc,char **argv)
     if(msk_nm != NULL){
       int msk_id;
       
-      msk_id=ncvarid_or_die(in_id,msk_nm);
+      msk_id=nco_inq_varid(in_id,msk_nm);
       msk=var_fll(in_id,msk_id,msk_nm,dim,nbr_dmn_fl);
       
       /* Retrieve mask variable */
@@ -582,8 +580,8 @@ main(int argc,char **argv)
 	exit(EXIT_FAILURE); 
       } /* end if */
       (void)zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
-      if((var_prc_out[idx]->val.vp=(void *)malloc(var_prc_out[idx]->sz*nctypelen(var_prc_out[idx]->type))) == NULL){
-	(void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,nctypelen(var_prc_out[idx]->type),var_prc_out[idx]->nm);
+      if((var_prc_out[idx]->val.vp=(void *)malloc(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
+	(void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
 	exit(EXIT_FAILURE); 
       } /* end if */
       (void)var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
@@ -632,7 +630,7 @@ main(int argc,char **argv)
 	(void)var_multiply(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,wgt_out->val,var_prc[idx]->val);
       } /* end if */
       /* Copy (masked) (weighted) values from var_prc to var_prc_out */
-      (void)memcpy((void *)(var_prc_out[idx]->val.vp),(void *)(var_prc[idx]->val.vp),var_prc_out[idx]->sz*nctypelen(var_prc_out[idx]->type));
+      (void)memcpy((void *)(var_prc_out[idx]->val.vp),(void *)(var_prc[idx]->val.vp),var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type));
       /* Reduce variable over specified dimensions (tally array is set here) */
       var_prc_out[idx]=var_avg(var_prc_out[idx],dmn_avg,nbr_dmn_avg,nco_op_typ);
       /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide
@@ -656,7 +654,7 @@ main(int argc,char **argv)
 	  switch(wgt_avg->type){
 	  case NC_FLOAT: mss_val_dbl=wgt_avg->mss_val.fp[0]; break; 
 	  case NC_DOUBLE: mss_val_dbl=wgt_avg->mss_val.dp[0]; break; 
-	  case NC_LONG: mss_val_dbl=wgt_avg->mss_val.lp[0]; break;
+	  case NC_INT: mss_val_dbl=wgt_avg->mss_val.lp[0]; break;
 	  case NC_SHORT: mss_val_dbl=wgt_avg->mss_val.sp[0]; break;
 	  case NC_CHAR: mss_val_dbl=wgt_avg->mss_val.cp[0]; break;
 	  case NC_BYTE: mss_val_dbl=wgt_avg->mss_val.bp[0]; break;
@@ -697,7 +695,7 @@ main(int argc,char **argv)
 	} /* endif */
 	/* Divide numerator by denominator */
 	/* Diagnose common PEBCAK before it occurs core dumps */
-	if(var_prc_out[idx]->sz == 1L && var_prc_out[idx]->type == NC_LONG && var_prc_out[idx]->val.lp[0] == 0){
+	if(var_prc_out[idx]->sz == 1L && var_prc_out[idx]->type == NC_INT && var_prc_out[idx]->val.lp[0] == 0){
 	  (void)fprintf(stdout,"%s: ERROR Weight in denominator weight = 0.0, will cause SIGFPE\n%s: HINT Sum of masked, averaged weights must be non-zero\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
 	} /* end if */
 	/* Divide numerator by masked, averaged, weights */
@@ -776,9 +774,9 @@ main(int argc,char **argv)
       { /* begin OpenMP critical */
 	/* Copy average to output file and free averaging buffer */
 	if(var_prc_out[idx]->nbr_dim == 0){
-	  (void)ncvarput1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp);
+	  (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	}else{ /* end if variable is scalar */
-	  (void)ncvarput(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp);
+	  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	} /* end if variable is array */
       } /* end OpenMP critical */
       (void)free(var_prc_out[idx]->val.vp); var_prc_out[idx]->val.vp=NULL;
@@ -795,7 +793,7 @@ main(int argc,char **argv)
     if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
     
     /* Close input netCDF file */
-    ncclose(in_id);
+    nco_close(in_id);
     
     /* Remove local copy of file */
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);

@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.57 2001-03-26 06:28:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.58 2001-05-08 01:36:03 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
-/* Copyright (C) 1995--2000 Charlie Zender
+/* Copyright (C) 1995--2001 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -40,6 +40,10 @@
 #ifndef NC_H /* Contents have not yet been inserted in current source file */
 #define NC_H
 
+/* fxm: Get rid of all nco_long references before releasing NCO 1.4 
+   NCO uses native type nco_long to store variables of type NC_INT */
+typedef long nco_long;
+
 #ifndef bool
 #define bool int
 #endif /* bool */
@@ -61,21 +65,21 @@
 #define float_CEWI 0.0
 #define int_CEWI 0
 #define long_CEWI 0L
-#define nclong_CEWI 0L
+#define nco_long_CEWI 0L
 #define short_CEWI 0
 
 #ifdef MAIN_PROGRAM_FILE /* Current file contains main() */
 
 /* Global variables and variables with scope limited to main.c allocated here */
 
-int prg; /* [enm] Program ID */
-int prg_get(void){return prg;} /* [enm] Program ID */
+int prg; // [enm] Program ID
+int prg_get(void){return prg;} // [enm] Program ID
 
-char *prg_nm; /* [sng] Program name */
-char *prg_nm_get(void){return prg_nm;} /* [sng] Program name */
+char *prg_nm; // [sng] Program name
+char *prg_nm_get(void){return prg_nm;} // [sng] Program name
 
-unsigned short dbg_lvl=0; /* [enm] Debugging level */
-unsigned short dbg_lvl_get(void){return dbg_lvl;} /* [enm] Debugging level */
+unsigned short dbg_lvl=0; // [enm] Debugging level
+unsigned short dbg_lvl_get(void){return dbg_lvl;} // [enm] Debugging level
 
 #else /* MAIN_PROGRAM_FILE is NOT defined, i.e., current file does not contain main() */
 
@@ -186,7 +190,7 @@ typedef struct{ /* rnm_sct */
 typedef union{ /* ptr_unn */
   float *fp;
   double *dp;
-  nclong *lp;
+  nco_long *lp; /* NC_INT is stored in native type nco_long */
   short *sp;
   unsigned char *cp;
   signed char *bp;
@@ -196,7 +200,7 @@ typedef union{ /* ptr_unn */
 typedef union{ /* val_unn */
   float f;
   double d;
-  nclong l;
+  nco_long l;
   short s;
   unsigned char c;
   signed char b;
@@ -215,7 +219,7 @@ typedef struct{ /* aed_sct */
 typedef struct { /* att_sct */
   char *nm;
   nc_type type;
-  int sz;
+  long sz;
   char fmt[5];
   ptr_unn val;
 } att_sct;
@@ -379,9 +383,9 @@ extern int nco_pck_typ_get(char *);
 extern int prg_get(void);
 extern lmt_sct *lmt_prs(int,char **);
 extern lmt_sct lmt_sct_mk(int,int,lmt_sct *,int,bool);
-extern nclong FORTRAN_newdate(nclong *,int *);
-extern nclong arm_base_time_get(int);
-extern nclong newdate(nclong,int);
+extern nco_long FORTRAN_newdate(nco_long *,int *);
+extern nco_long arm_base_time_get(int);
+extern nco_long newdate(nco_long,int);
 extern nm_id_sct *dmn_lst_ass_var(int,nm_id_sct *,int,int *);
 extern nm_id_sct *dmn_lst_mk(int,char **,int);
 extern nm_id_sct *lst_heapsort(nm_id_sct *,int,bool);
@@ -413,7 +417,7 @@ extern void FORTRAN_normalize_double_precision(long *,int *,double *,long *,doub
 extern void FORTRAN_normalize_real(long *,int *,float *,long *,float *);
 extern void FORTRAN_subtract_double_precision(long *,int *,double *,double *,double *);
 extern void FORTRAN_subtract_real(long *,int *,float *,float *,float *);
-extern void arm_time_install(int,nclong);
+extern void arm_time_install(int,nco_long);
 extern void att_cpy(int,int,int,int);
 extern void cast_nctype_void(nc_type,ptr_unn *);
 extern void cast_void_nctype(nc_type,ptr_unn *);

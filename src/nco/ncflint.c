@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.29 2000-10-20 23:17:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.30 2001-05-08 01:36:03 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
 /* Purpose: Linearly interpolate a third netCDF file from two input files */
 
-/* Copyright (C) 1995--2000 Charlie Zender
+/* Copyright (C) 1995--2001 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -62,7 +62,7 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
-
+#include "nco_netcdf.h" /* netCDF 3.0 wrapper functions */
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
 #include "nc.h" /* NCO definitions */
@@ -94,7 +94,7 @@ main(int argc,char **argv)
   char *fl_in_1;
   char *fl_in_2;
   char *fl_pth_lcl=NULL; /* Option l */
-  char *lmt_arg[MAX_NC_DIMS];
+  char *lmt_arg[NC_MAX_DIMS];
   char *opt_sng;
   char *fl_out;
   char *fl_out_tmp;
@@ -102,8 +102,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.29 2000-10-20 23:17:26 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.29 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.30 2001-05-08 01:36:03 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.30 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -113,7 +113,6 @@ main(int argc,char **argv)
   double wgt_val_2=0.5; /* Option w */
 
   extern char *optarg;
-  extern int ncopts;
   extern int optind;
   
   int idx;
@@ -133,7 +132,7 @@ main(int argc,char **argv)
   int nbr_dmn_xtr;
   int nbr_fl=0;
   int opt;
-  
+    
   lmt_sct *lmt;
   
   nm_id_sct *dmn_lst;
@@ -262,9 +261,7 @@ main(int argc,char **argv)
   /* Make uniform list of user-specified dimension limits */
   lmt=lmt_prs(lmt_nbr,lmt_arg);
   
-  /* Make netCDF errors fatal and print the diagnostic */  
-  ncopts=NC_VERBOSE | NC_FATAL; 
-  
+    
   /* Parse filename */
   idx_fl=0;
   fl_in=fl_nm_prs(fl_in,idx_fl,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
@@ -272,10 +269,10 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_1_RETRIEVED_FROM_REMOTE_LOCATION);
   if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
-  in_id=ncopen(fl_in,NC_NOWRITE);
+  in_id=nco_open(fl_in,NC_NOWRITE);
   
   /* Get the number of variables and dimensions in the file */
-  (void)ncinquire(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,(int *)NULL);
+  (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,(int *)NULL);
   
   /* Form initial extraction list from user input */
   xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
@@ -347,11 +344,11 @@ main(int argc,char **argv)
 
   /* Turn off default filling behavior to enhance efficiency */
 #if ( ! defined SUN4 ) && ( ! defined SUN4SOL2 ) && ( ! defined SUNMP )
-  (void)ncsetfill(out_id,NC_NOFILL);
+  (void)nc_set_fill(out_id,NC_NOFILL,(int *)NULL);
 #endif
   
   /* Take output file out of define mode */
-  (void)ncendef(out_id);
+  (void)nco_enddef(out_id);
   
   /* Zero start vectors for all output variables */
   (void)var_srt_zero(var_out,nbr_xtr);
@@ -369,7 +366,7 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_2_RETRIEVED_FROM_REMOTE_LOCATION);
   if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
-  in_id_2=ncopen(fl_in,NC_NOWRITE);
+  in_id_2=nco_open(fl_in,NC_NOWRITE);
   fl_in_2=fl_in;
   
   /* Perform various error-checks on input file */
@@ -389,8 +386,8 @@ main(int argc,char **argv)
     val_gnr_unn.d=ntp_val_out; /* Generic container for arrival point or weight */
     ntp_var_out=scl_mk_var(val_gnr_unn,NC_DOUBLE);
 
-    ntp_id_1=ncvarid_or_die(in_id_1,ntp_nm);
-    ntp_id_2=ncvarid_or_die(in_id_2,ntp_nm);
+    ntp_id_1=nco_inq_varid(in_id_1,ntp_nm);
+    ntp_id_2=nco_inq_varid(in_id_2,ntp_nm);
 
     ntp_1=var_fll(in_id_1,ntp_id_1,ntp_nm,dim,nbr_dmn_xtr);
     ntp_2=var_fll(in_id_2,ntp_id_2,ntp_nm,dim,nbr_dmn_xtr);
@@ -480,9 +477,9 @@ main(int argc,char **argv)
 
     /* Copy interpolations to output file */
     if(var_prc_out[idx]->nbr_dim == 0){
-      (void)ncvarput1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_2[idx]->val.vp);
+      (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_2[idx]->val.vp,var_prc_out[idx]->type);
     }else{ /* end if variable is a scalar */
-      (void)ncvarput(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp);
+      (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp,var_prc_out[idx]->type);
     } /* end else */
 
     /* Free dynamically allocated buffers */
@@ -494,8 +491,8 @@ main(int argc,char **argv)
   if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
   
   /* Close input netCDF files */
-  ncclose(in_id_1);
-  ncclose(in_id_2);
+  nco_close(in_id_1);
+  nco_close(in_id_2);
 
   /* Close output file and move it from temporary to permanent location */
   (void)fl_out_cls(fl_out,fl_out_tmp,out_id);

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.90 2001-03-26 06:28:11 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.91 2001-05-08 01:36:03 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -15,10 +15,8 @@
 # cd ~/nco/bld;make OPTS=D;cd -
 # DODS support:
 # cd ~/nco/bld;make DODS=Y;cd -
-# netCDF2 interface:
-# cd ~/nco/bld;make NETCDF2=Y;cd -
-# HDF4 version of netCDF libraries:
-# cd ~/nco/bld;make cln bin_cln all HDF4=Y;cd -
+# HDF5 version of netCDF libraries:
+# cd ~/nco/bld;make cln bin_cln all HDF5=Y;cd -
 
 MY_BLD_DIR := ../bld
 ifndef PVM_ARCH
@@ -66,17 +64,27 @@ ifndef NETCDF_LIB
  NETCDF_LIB := /usr/local/lib # Directory containing libnetcdf.a
 endif
 
-ifdef HDF4
- HDF4 := Y
+ifdef HDF5
+ HDF5 := Y
 else
- HDF4 := N
-endif # endif HDF4
-ifeq ($(HDF4),Y)
-# Build NCO using HDF4 netCDF interface
- HDF4_ROOT := /usr/local/hdf4
- NETCDF_INC := $(HDF4_ROOT)/include  # Directory containing HDF4 version of netcdf.h
- NETCDF_LIB := $(HDF4_ROOT)/lib -lmfhdf -ldf -ljpeg -lz # Directory containing HDF4 version of libnetcdf.a routines, order of library linkage is significant
-endif # endif HDF4
+ HDF5 := N
+endif # endif HDF5
+ifeq ($(HDF5),Y)
+# Build NCO using HDF5 netCDF interface
+ HDF5_ROOT := /usr/local/hdf5
+ NETCDF_INC := $(HDF5_ROOT)/include # Directory containing HDF5 version of netcdf.h
+ NETCDF_LIB := $(HDF5_ROOT)/lib -lmfhdf -ldf -ljpeg -lz # Directory containing HDF5 version of libnetcdf.a routines, order of library linkage is significant
+endif # endif HDF5
+
+# Internationalize NCO with i18n features
+ifndef I18N
+ I18N := N
+endif
+ifeq ($(I18N),Y)
+ MY_SHR_DIR := $(HOME)/share
+ MY_ES_DIR := $(MY_SHR_DIR)/locale/es/LC_MESSAGES
+ MY_FR_DIR := $(MY_SHR_DIR)/locale/fr/LC_MESSAGES
+endif
 
 ifdef DODS
  DODS := Y
@@ -86,7 +94,8 @@ endif
 ifeq ($(DODS),Y)
 # Build NCO as DODS-enabled clients
 ifndef DODS_ROOT
- DODS_ROOT := /usr/local/DODS # Directory containing libdap++.a, libnc-dods.a
+# Directory containing libdap++.a, libnc-dods.a
+ DODS_ROOT := /usr/local/DODS
 endif
  NC_LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib
  NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
@@ -174,6 +183,14 @@ $(MY_OBJ_DIR)/%.o : %.F
 $(MY_OBJ_DIR)/%.o : %.f
 	$(FC) -c $(FFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
 
+# Rules for installing i18n files
+%.po : %.cc
+	xgettext --default-domain=$* --join-existing $<
+$(MY_ES_DIR)/%.mo : %.po
+#	Linux version accepts more arguments than Solaris version
+#	msgfmt --output-file=$@ --statistics $<
+	msgfmt -o $@ $<
+
 # Automatically generate a dependency file for each source file
 # $* is the stem, e.g., f
 # $@ is the filename of the target, e.g., f.d
@@ -212,7 +229,7 @@ CFLAGS := -qmaxmem=8192
 CPP := cc -c
 # NB: Hack to make AIX look like LINUX (g77 + gcc + g++)
 #CPPFLAGS := -DLINUX $(CPP_PTH) -I$(NETCDF_INC)
-CPPFLAGS := -D$(PVM_ARCH) $(CPP_PTH) -I$(NETCDF_INC)
+CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 $(CPP_PTH) -I$(NETCDF_INC)
 FC := xlf
 FFLAGS := -qfixed=132
 LD := ld
@@ -251,7 +268,7 @@ ifeq ($(PVM_ARCH),ALPHA)
 C++ := cxx
 CC := cc
 CPP := cpp
-CPPFLAGS += $(CPP_PTH) -I$(NETCDF_INC)
+CPPFLAGS := $(CPP_PTH) -I$(NETCDF_INC)
 FC := f90
 FFLAGS := -r8 -i4 -c -omp -automatic
 FIXEDFLAGS := -extend_source -omp -automatic
@@ -283,7 +300,7 @@ ifeq ($(PVM_ARCH),CRAY)
 C++ := g++
 CC := cc
 CPP := cpp
-CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
+CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 -I$(NETCDF_INC)
 FC := f90
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -324,7 +341,7 @@ C++ := g++
 #CC := gcc -ansi
 CC := gcc
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS += -D$(PVM_ARCH) -Di386 -I$(NETCDF_INC)
+CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 -Di386 -I$(NETCDF_INC)
 FC := g77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -384,7 +401,7 @@ ifeq ($(PVM_ARCH),RS6K)
 C++ := g++
 CC := gcc -ansi
 CPP := /lib/cpp -P
-CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
+CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 -I$(NETCDF_INC)
 FC := xlf
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -418,9 +435,12 @@ endif
 ifneq (,$(findstring SGI,$(PVM_ARCH)))
 C++ := CC -LANG:std
 CC := cc
-CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
-# SGIs like dataproc keep omp.h in special location determined by module MIPSpro
+# 20000302: -w suppresses warnings which will swamp linker
+#C++ := g++ -w
+#CC := gcc
+CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 -I$(NETCDF_INC)
 ifdef $(MIPSPRO_SGI)
+# SGIs like dataproc keep omp.h in special location determined by module MIPSpro
  CPPFLAGS := -I$(MIPSPRO_SGI)/usr/include $(CPPFLAGS)
 endif
 FC := f90 -cpp
@@ -428,9 +448,6 @@ LD := ld
 LEX := flex
 LINT := lint
 YACC := bison
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS +=
-endif
 ifeq ($(PVM_ARCH),SGI6)
 # SGI6
 GCC_ABI_FLG := -mabi=32
@@ -441,42 +458,58 @@ else
 # SGI64, SGIMP64
 GCC_ABI_FLG := -mabi=64
 GCC_LDFLAGS_SZ_SPC := $(GCC_ABI_FLG) -mips4 -L/usr/local/lib/mabi=64
-SGI_ABI_FLG := -64 -mips4
-SGI_OMP_FLG := -mp -mpio
+SGI_ABI_FLG := -64 -mips4 -mp -mpio
 # endif SGI64, SGIMP64
 endif
-ifeq ($(CC),cc)
- LDFLAGS += $(SGI_ABI_FLG) $(SGI_OMP_FLG) $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+ifeq ($(CC),gcc)
+ LDFLAGS += $(GCC_LDFLAGS_SZ_SPC) $(TMP_LDFLAGS) $(TMP_LIBS) -lm
 ifeq ($(OPTS),O)
- CFLAGS += $(SGI_ABI_FLG) $(SGI_OMP_FLG) -O2
+ CFLAGS += $(GCC_ABI_FLG) -O2 -Wall
 endif
 ifeq ($(OPTS),R)
- CFLAGS += $(SGI_ABI_FLG) $(SGI_OMP_FLG)
+ CFLAGS += $(GCC_ABI_FLG) -Wall
 endif
 ifeq ($(OPTS),D)
- CFLAGS += $(SGI_ABI_FLG) $(SGI_OMP_FLG) -g
+ CFLAGS += $(GCC_ABI_FLG) -g -Wall
 endif
 ifeq ($(OPTS),X)
- CFLAGS += $(SGI_ABI_FLG) $(SGI_OMP_FLG) -g -trapuv
+ CFLAGS += $(GCC_ABI_FLG) -g -O -Wall
+endif
+ C++FLAGS := $(CFLAGS)
+endif
+# endif CC=gcc
+ifeq ($(CC),cc)
+ LDFLAGS += $(SGI_ABI_FLG) $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+ifeq ($(OPTS),O)
+ CFLAGS += $(SGI_ABI_FLG) -O2
+endif
+ifeq ($(OPTS),R)
+ CFLAGS += $(SGI_ABI_FLG)
+endif
+ifeq ($(OPTS),D)
+ CFLAGS += $(SGI_ABI_FLG) -g
+endif
+ifeq ($(OPTS),X)
+ CFLAGS += $(SGI_ABI_FLG) -g -trapuv
 endif
 endif
 # endif CC=cc
 # Fortran flags
 ifeq ($(OPTS),O)
- FFLAGS := $(SGI_ABI_FLG) $(SGI_OMP_FLG) -O2 -extend_source
+ FFLAGS := $(SGI_ABI_FLG) -O2 -extend_source
 endif
 ifeq ($(OPTS),R)
- FFLAGS := $(SGI_ABI_FLG) $(SGI_OMP_FLG) -extend_source
+ FFLAGS := $(SGI_ABI_FLG) -extend_source
 endif
 ifeq ($(OPTS),D)
- FFLAGS := $(SGI_ABI_FLG) $(SGI_OMP_FLG) -g -extend_source
+ FFLAGS := $(SGI_ABI_FLG) -g -extend_source
 endif
 ifeq ($(OPTS),X)
- FFLAGS := $(SGI_ABI_FLG) $(SGI_OMP_FLG) -g -extend_source -check_bounds -trapuv
-# 1998/08/20: Fortran range-checking results in unresolved symbol errors unless linking to this library
+ FFLAGS := $(SGI_ABI_FLG) -g -extend_source -check_bounds -trapuv
+endif
+# 1998/08/20: Using range checking results in unresolved symbol errors unless linking to this library
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -L/usr/lib64 -lftn
-endif
 endif
 # end fortran flags
 endif
@@ -485,7 +518,7 @@ endif
 ifeq ($(PVM_ARCH),SUN4)
 C++ := g++
 CC := acc
-CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
+CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 -I$(NETCDF_INC)
 FC := f77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -510,7 +543,7 @@ endif
 ifeq ($(PVM_ARCH),SUN4SOL2)
 C++ := g++
 CC := gcc -ansi
-CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
+CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 -I$(NETCDF_INC)
 FC := f77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lsocket -lnsl -lm
@@ -544,7 +577,7 @@ ifeq ($(PVM_ARCH),SUNMP)
 C++ := g++
 #CC := gcc -ansi -pedantic
 CC := gcc 
-CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
+CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 -I$(NETCDF_INC)
 FC := f77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lsunmath -lthread -lsocket -lnsl -lm
@@ -578,7 +611,7 @@ ifeq ($(PVM_ARCH),WIN32)
 C++ := g++
 CC := gcc -ansi
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS += -D$(PVM_ARCH) -Di386 -I$(NETCDF_INC)
+CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 -Di386 -I$(NETCDF_INC)
 FC := g77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -609,26 +642,28 @@ endif
 # Currently this is invoked by using 'make DODS=Y' on the command
 # NB: Yes, nc-dods, dap++ must be linked twice!
 ifeq ($(DODS),Y)
-ifneq (CC,g++)
+ifneq ($(CC),g++)
 # -lstdc++ automatically linked by g++, must add by hand for others
  LDFLAGS := $(LDFLAGS) -lstdc++
 endif
 endif
 # endif DODS
 
-# Test netCDF2 interface
-ifeq ($(NETCDF2),Y)
- CPPFLAGS := $(CPPFLAGS) -DNETCDF2_ONLY
+# Internationalize NCO with i18n features
+ifeq ($(I18N),Y)
+ CPPFLAGS += -DI18N
+ifneq ($(null),$(findstring SGI,$(PVM_ARCH)))
+ LDFLAGS += -lintl
 endif
-# endif NETCDF2
+endif
+# endif I18N
 
-# If intended to use for HDF files, remove all netCDF3 calls
-ifeq ($(HDF4),Y)
- CPPFLAGS := $(CPPFLAGS) -DNETCDF2_ONLY
-# No need to link to libnetcdf.a since libmfhdf.a has all netCDF2 calls
+ifeq ($(HDF5),Y)
+ CPPFLAGS += -DHDF5
+# No need to link to libnetcdf.a since libmfhdf.a has all netCDF3 calls
  LDFLAGS := $(filter-out -lnetcdf,$(LDFLAGS))
 endif
-# endif HDF4
+# endif HDF5
 
 # Link to Electric Fence library, see man efence
 ifeq ($(PVM_ARCH),LINUX)
@@ -637,6 +672,15 @@ ifneq (,$(findstring $(OPTS),DX))
 endif
 endif
 # endif LINUX
+
+# Disable OpenMP on platforms that automatically support it
+ifeq ($(OMP),N)
+ifneq (,$(findstring SGI,$(PVM_ARCH)))
+ CFLAGS := $(filter-out -mp -mpio,$(CFLAGS))
+ LDFLAGS := $(filter-out -mp -mpio,$(LDFLAGS))
+endif # endif SGI
+ CPPFLAGS += -U_OPENMP
+endif # endif OMP
 
 # Define any remaining variables
 libnco := $(MY_LIB_DIR)/libnco
@@ -707,7 +751,7 @@ bin_cln:
 buildclean: bld_cln
 bld_cln:
 	cd $(MY_BLD_DIR); rm -f TAGS
-rpm:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=1.2.2 rpm
+rpm:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.0.0 rpm
 	cd $(DATA)/tmp; \
 	/bin/rm -fr $(DATA)/tmp/nco*; \
 	cp -r $(HOME)/nco nco-$(NCO_VRS); \
@@ -717,7 +761,7 @@ rpm:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo 
 	ln -s $(HOME)/nco/bld/nco.spec /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
 	cd /usr/src/redhat/SPECS; \
 	rpm -ba nco-$(NCO_VRS).spec;
-rpmnet:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=1.2.2 rpmnet
+rpmnet:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.0.0 rpmnet
 	- if test -f /usr/src/redhat/SOURCES/nco-$(NCO_VRS).tar.gz; then printf "Using existing nco-$(NCO_VRS).tar.gz\n" ; else $(MY_BIN_DIR)/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l /usr/src/redhat/SOURCES nco-$(NCO_VRS).tar.gz; fi
 	/bin/rm -f /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
 	cd /usr/src/redhat/SOURCES; \
@@ -727,7 +771,7 @@ rpmnet:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., su
 	rpm -ba nco.spec; \
 	scp /usr/src/redhat/SRPMS/nco-$(NCO_VRS)-*.src.rpm /usr/src/redhat/RPMS/i386/nco-$(NCO_VRS)-*.i386.rpm zender@ftp.cgd.ucar.edu:/ftp/pub/zender/nco
 	scp /usr/src/redhat/SRPMS/nco-$(NCO_VRS)-*.src.rpm /usr/src/redhat/RPMS/i386/nco-$(NCO_VRS)-*.i386.rpm zender@nco.sourceforge.net:/home/groups/ftp/pub/nco
-	ncftpput upload.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-1.2.2-*.src.rpm /usr/src/redhat/RPMS/i386/nco-1.2.2-*.i386.rpm
+	ncftpput upload.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-2.0.0-*.src.rpm /usr/src/redhat/RPMS/i386/nco-2.0.0-*.i386.rpm
 rpm_cln:
 	rpm --erase $(MDL_RPM_NST_NM)
 # Targets in dat
@@ -784,6 +828,7 @@ $(libnco).a: $(libnco).a($(MY_OBJ_DIR)/nc_utl.o) \
 	$(libnco).a($(MY_OBJ_DIR)/csz.o)
 else
 $(libnco).a: $(libnco).a($(MY_OBJ_DIR)/nc_utl.o) \
+	$(libnco).a($(MY_OBJ_DIR)/nco_netcdf.o) \
 	$(libnco).a($(MY_OBJ_DIR)/csz.o) \
 	$(libnco).a($(MY_OBJ_DIR)/pck.o)
 endif
@@ -807,12 +852,18 @@ cln: lib_cln dpn_cln obj_cln tst_cln
 	cd $(MY_DOC_DIR); rm -f nco.aux nco.cp nco.cps nco.fn nco.ky nco.log nco.pg nco.toc nco.tp nco.vr 
 debug: dbg
 dbg:
-	@printf "CFLAGS = $(CFLAGS)\n"
-	@printf "CPPFLAGS = $(CPPFLAGS)\n"
+	@printf "C++ = $(C++)\n"
 	@printf "C++FLAGS = $(C++FLAGS)\n"
+	@printf "CC = $(CC)\n"
+	@printf "CFLAGS = $(CFLAGS)\n"
+	@printf "CPP = $(CPP)\n"
+	@printf "CPPFLAGS = $(CPPFLAGS)\n"
+	@printf "CPP_PTH = $(CPP_PTH)\n"
 	@printf "DODS = $(DODS)\n"
 	@printf "DODS_ROOT = $(DODS_ROOT)\n"
-	@printf "HDF4 = $(HDF4)\n"
+	@printf "FC = $(FC)\n"
+	@printf "FFLAGS = $(FFLAGS)\n"
+	@printf "HDF5 = $(HDF5)\n"
 	@printf "LDFLAGS = $(LDFLAGS)\n"
 	@printf "LEX = $(LEX)\n"
 	@printf "MDL_DPN = $(MDL_DPN)\n"
@@ -823,6 +874,7 @@ dbg:
 	@printf "NCO_VRS = $(NCO_VRS)\n"
 	@printf "NETCDF_INC = $(NETCDF_INC)\n"
 	@printf "NETCDF_LIB = $(NETCDF_LIB)\n"
+	@printf "OMP = $(OMP)\n"
 	@printf "PVM_ARCH = $(PVM_ARCH)\n"
 	@printf "SRC_LST = $(SRC_LST)\n"
 	@printf "USE_FORTRAN_ARITHMETIC = $(USE_FORTRAN_ARITHMETIC)\n"
@@ -872,13 +924,13 @@ endif
 GENNET_SRC := gennet.f
 GENNET_OBJ := $(MY_OBJ_DIR)/gennet.o
 gennet:	$(GENNET_OBJ)
-	$(F77) $(CPP_FLAGS) -o $(MY_BIN_DIR)/gennet $(GENNET_OBJ) $(LDFLAGS) 
+	$(F77) $(CPPFLAGS) -o $(MY_BIN_DIR)/gennet $(GENNET_OBJ) $(LDFLAGS) 
 	chmod 755 $(MY_BIN_DIR)/gennet
 
 READNET_SRC := readnet.f
 READNET_OBJ := $(MY_OBJ_DIR)/readnet.o
 readnet:	$(READNET_OBJ)
-	$(F77) $(CPP_FLAGS) -o $(MY_BIN_DIR)/readnet $(READNET_OBJ) $(LDFLAGS) 
+	$(F77) $(CPPFLAGS) -o $(MY_BIN_DIR)/readnet $(READNET_OBJ) $(LDFLAGS) 
 	chmod 755 $(MY_BIN_DIR)/readnet
 
 # Create dependency files only if they will not be immediately deleted

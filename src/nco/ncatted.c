@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.30 2000-12-30 02:23:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.31 2001-05-08 01:36:03 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
 /* Purpose: Add, create, delete, or overwrite attributes in a netCDF file */
 
-/* Copyright (C) 1995--2000 Charlie Zender
+/* Copyright (C) 1995--2001 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -114,6 +114,7 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
+#include "nco_netcdf.h" /* netCDF 3.0 wrapper functions */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
@@ -135,20 +136,19 @@ main(int argc,char **argv)
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
   char *fl_in=NULL;
-  char *aed_arg[MAX_NC_ATTRS];
+  char *aed_arg[NC_MAX_ATTRS];
   char *opt_sng;
   char *fl_out;
   char *fl_pth_lcl=NULL; /* Option l */
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.30 2000-12-30 02:23:03 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.30 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.31 2001-05-08 01:36:03 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.31 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
   extern char *optarg;
-  extern int ncopts;
   extern int optind;
   
   int idx;
@@ -262,22 +262,20 @@ main(int argc,char **argv)
 
   } /* end if */
 
-  /* Make netCDF errors fatal and print the diagnostic */ 
-  ncopts=NC_VERBOSE | NC_FATAL;
-
+  
   /* Open the file. Writing must be enabled and the file should be in define mode for renaming */
-  nc_id=ncopen(fl_out,NC_WRITE);
-  (void)ncredef(nc_id);
+  nc_id=nco_open(fl_out,NC_WRITE);
+  (void)nco_redef(nc_id);
 
   /* Get the number of variables in the file */
-  (void)ncinquire(nc_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
+  (void)nco_inq(nc_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
 
   for(idx=0;idx<nbr_aed;idx++){
 
     if(aed_lst[idx].var_nm != NULL){
 
       /* Is this a global attribute? */
-      if(!strcmp(aed_lst[idx].var_nm,"global")) aed_lst[idx].id=NC_GLOBAL; else aed_lst[idx].id=ncvarid(nc_id,aed_lst[idx].var_nm);
+      if(!strcmp(aed_lst[idx].var_nm,"global")) aed_lst[idx].id=NC_GLOBAL; else aed_lst[idx].id=nco_inq_varid(nc_id,aed_lst[idx].var_nm);
 
       /* Edit the attribute */
       (void)aed_prc(nc_id,aed_lst[idx].id,aed_lst[idx]);
@@ -296,10 +294,10 @@ main(int argc,char **argv)
   if(HISTORY_APPEND) (void)hst_att_cat(nc_id,cmd_ln);
   
   /* Take the file out of define mode */
-  (void)ncendef(nc_id);
+  (void)nco_enddef(nc_id);
     
   /* Close the open netCDF file */
-  ncclose(nc_id);
+  nco_close(nc_id);
   
   /* Remove local copy of file */
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
@@ -431,7 +429,8 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
       switch(*(arg_lst[3])){
       case 'f':	aed_lst[idx].type=NC_FLOAT; break;
       case 'd':	aed_lst[idx].type=NC_DOUBLE; break;
-      case 'l':	aed_lst[idx].type=NC_LONG; break;
+      case 'l':	
+      case 'i':	aed_lst[idx].type=NC_INT; break;
       case 's':	aed_lst[idx].type=NC_SHORT; break;
       case 'c':	aed_lst[idx].type=NC_CHAR; break;
       case 'b':	aed_lst[idx].type=NC_BYTE; break;
@@ -476,7 +475,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
 	long lmn;
 	
 	val_arg_dbl=(double *)nco_malloc(aed_lst[idx].sz*sizeof(double));
-	aed_lst[idx].val.vp=(void *)nco_malloc(aed_lst[idx].sz*nctypelen(aed_lst[idx].type));
+	aed_lst[idx].val.vp=(void *)nco_malloc(aed_lst[idx].sz*nco_typ_lng(aed_lst[idx].type));
 	
 	for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) val_arg_dbl[lmn]=strtod(arg_lst[idx_att_val_arg+lmn],(char **)NULL); 
 	
@@ -484,7 +483,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
 	switch(aed_lst[idx].type){
 	case NC_FLOAT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.fp[lmn]=val_arg_dbl[lmn];} break; 
 	case NC_DOUBLE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.dp[lmn]=val_arg_dbl[lmn];} break; 
-	case NC_LONG: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.lp[lmn]=val_arg_dbl[lmn];} break; 
+	case NC_INT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.lp[lmn]=val_arg_dbl[lmn];} break; 
 	case NC_SHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.sp[lmn]=val_arg_dbl[lmn];} break; 
 	case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=val_arg_dbl[lmn];} break; 
 	case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=val_arg_dbl[lmn];} break; 
@@ -529,12 +528,12 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
   
   /* If var_id == NC_GLOBAL ( = -1) then a global attribute will be edited */
   
-  char var_nm[MAX_NC_NAME];
+  char var_nm[NC_MAX_NAME];
   
   /* fxm: netCDF 2 specifies att_sz should be type int, netCDF 3 uses size_t */
-  int att_sz;
   int nbr_att;
   int rcd;
+  long att_sz;
   
   nc_type att_typ;
   
@@ -542,16 +541,17 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
   
   if(var_id == NC_GLOBAL){
     /* Get the number of global attributes for the file */
-    (void)ncinquire(nc_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
+    (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
     (void)strcpy(var_nm,"Global");
   }else{
     /* Get the name and number of attributes for the variable */
-    (void)ncvarinq(nc_id,var_id,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
+    (void)nco_inq_var(nc_id,var_id,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
   } /* end else */
 
-  ncopts=0;
-  rcd=ncattinq(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
-  ncopts=NC_VERBOSE | NC_FATAL; 
+  
+  rcd=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
+  if (rcd == NC_ENOTATT) rcd = -1;
+  
 
   /* Before changing metadata, change missing values to new missing value if warranted 
      This capability is an add on feature and is not implemented very cleanly or efficiently
@@ -584,7 +584,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     (void)fprintf(stdout,"%s: WARNING Replacing missing value data in variable %s\n",prg_nm,var_nm);
 
     /* Take file out of define mode */
-    (void)ncendef(nc_id);
+    (void)nco_enddef(nc_id);
   
     /* Initialize (partially) the variable structure */
     var=(var_sct *)nco_malloc(sizeof(var_sct));
@@ -593,15 +593,15 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     var->sz=1L;
 
     /* Get type of variable and number of dimensions */
-    (void)ncvarinq(var->nc_id,var->id,(char *)NULL,&var->type,&var->nbr_dim,(int *)NULL,(int *)NULL);
+    (void)nco_inq_var(var->nc_id,var->id,(char *)NULL,&var->type,&var->nbr_dim,(int *)NULL,(int *)NULL);
     dmn_id=(int *)nco_malloc(var->nbr_dim*sizeof(int));
     dmn_sz=(long *)nco_malloc(var->nbr_dim*sizeof(long));
     dmn_srt=(long *)nco_malloc(var->nbr_dim*sizeof(long));
-    (void)ncvarinq(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_id,(int *)NULL);
+    (void)nco_inq_var(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_id,(int *)NULL);
 
     /* Get dimension sizes and construct variable size */
     for(idx=0;idx<var->nbr_dim;idx++){
-      (void)ncdiminq(var->nc_id,dmn_id[idx],(char *)NULL,dmn_sz+idx);
+      (void)nco_inq_dim(var->nc_id,dmn_id[idx],(char *)NULL,dmn_sz+idx);
       var->sz*=dmn_sz[idx];
       dmn_srt[idx]=0L;
     } /* end loop over dim */
@@ -610,14 +610,14 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     var->srt=dmn_srt;
       
     /* Place var_get() code inline since var struct is not truly complete */
-    if((var->val.vp=(void *)malloc(var->sz*nctypelen(var->type))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes in aed_prc()\n",prg_nm_get(),var->sz,nctypelen(var->type));
+    if((var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->type))) == NULL){
+      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes in aed_prc()\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
       exit(EXIT_FAILURE); 
     } /* end if */
     if(var->sz > 1){
-      (void)ncvarget(var->nc_id,var->id,var->srt,var->cnt,var->val.vp);
+      (void)nco_get_vara(var->nc_id,var->id,var->srt,var->cnt,var->val.vp,var->type);
     }else{
-      (void)ncvarget1(var->nc_id,var->id,var->srt,var->val.vp);
+      (void)nco_get_var1(var->nc_id,var->id,var->srt,var->val.vp,var->type);
     } /* end else */
     
     /* Get current missing value attribute */
@@ -635,8 +635,8 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     var_sz=var->sz;
 
     /* Get new and old missing values in same type as variable */
-    mss_val_crr.vp=(void *)nco_malloc(att_sz*nctypelen(var->type));
-    mss_val_new.vp=(void *)nco_malloc(aed.sz*nctypelen(var->type));
+    mss_val_crr.vp=(void *)nco_malloc(att_sz*nco_typ_lng(var->type));
+    mss_val_new.vp=(void *)nco_malloc(aed.sz*nco_typ_lng(var->type));
     (void)val_conform_type(att_typ,var->mss_val,var->type,mss_val_crr);
     (void)val_conform_type(aed.type,aed.val,var->type,mss_val_new);
 
@@ -648,7 +648,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     switch(var->type){
     case NC_FLOAT: for(idx=0L;idx<var_sz;idx++) {if(var_val.fp[idx] == *mss_val_crr.fp) var_val.fp[idx]=*mss_val_new.fp;} break;
     case NC_DOUBLE: for(idx=0L;idx<var_sz;idx++) {if(var_val.dp[idx] == *mss_val_crr.dp) var_val.dp[idx]=*mss_val_new.dp;} break;
-    case NC_LONG: for(idx=0L;idx<var_sz;idx++) {if(var_val.lp[idx] == *mss_val_crr.lp) var_val.lp[idx]=*mss_val_new.lp;} break;
+    case NC_INT: for(idx=0L;idx<var_sz;idx++) {if(var_val.lp[idx] == *mss_val_crr.lp) var_val.lp[idx]=*mss_val_new.lp;} break;
     case NC_SHORT: for(idx=0L;idx<var_sz;idx++) {if(var_val.sp[idx] == *mss_val_crr.sp) var_val.sp[idx]=*mss_val_new.sp;} break;
     case NC_CHAR: for(idx=0L;idx<var_sz;idx++) {if(var_val.cp[idx] == *mss_val_crr.cp) var_val.cp[idx]=*mss_val_new.cp;} break;
     case NC_BYTE: for(idx=0L;idx<var_sz;idx++) {if(var_val.bp[idx] == *mss_val_crr.bp) var_val.bp[idx]=*mss_val_new.bp;} break;
@@ -662,9 +662,9 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
 
     /* Write to disk */
     if(var->nbr_dim == 0){
-      (void)ncvarput1(nc_id,var->id,var->srt,var->val.vp);
+      (void)nco_put_var1(nc_id,var->id,var->srt,var->val.vp,var->type);
     }else{ /* end if variable is a scalar */
-      (void)ncvarput(nc_id,var->id,var->srt,var->cnt,var->val.vp);
+      (void)nco_put_vara(nc_id,var->id,var->srt,var->cnt,var->val.vp,var->type);
     } /* end else */
 
     /* Free memory */
@@ -677,7 +677,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     if(var->cnt != NULL){(void)free(var->cnt); var->cnt=NULL;}
 
     /* Put file back in define mode */
-    (void)ncredef(nc_id);
+    (void)nco_redef(nc_id);
   } /* end if replacing missing value data */
 
   /* Change metadata (as written, this must be done after missing_value data is replaced) */
@@ -689,30 +689,30 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
 	(void)fprintf(stdout,"%s: ERROR %s attribute %s is of type %s not %s, unable to append\n",prg_nm_get(),var_nm,aed.att_nm,nco_typ_sng(att_typ),nco_typ_sng(aed.type));
 	exit(EXIT_FAILURE);
       } /* end if */
-      att_val_new=(void *)nco_malloc((att_sz+aed.sz)*nctypelen(aed.type));
-      (void)ncattget(nc_id,var_id,aed.att_nm,(void *)att_val_new);
+      att_val_new=(void *)nco_malloc((att_sz+aed.sz)*nco_typ_lng(aed.type));
+      (void)nco_get_att(nc_id,var_id,aed.att_nm,(void *)att_val_new,aed.type);
       /* NB: Following assumes sizeof(char) = 1 byte */
-      (void)memcpy((void *)((char *)att_val_new+att_sz*nctypelen(aed.type)),
+      (void)memcpy((void *)((char *)att_val_new+att_sz*nco_typ_lng(aed.type)),
 		   (void *)aed.val.vp,
-		   aed.sz*nctypelen(aed.type));
-      (void)ncattput(nc_id,var_id,aed.att_nm,aed.type,att_sz+aed.sz,att_val_new);
+		   aed.sz*nco_typ_lng(aed.type));
+      (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,att_sz+aed.sz,att_val_new);
       if(att_val_new != NULL) (void)free(att_val_new);
     }else{
       /* Create new attribute */
-      (void)ncattput(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
+      (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
     } /* end else */
     break;
   case aed_create:	
-    if(rcd == -1) (void)ncattput(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
+    if(rcd == -1) (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
     break;
   case aed_delete:	
-    if(rcd != -1) (void)ncattdel(nc_id,var_id,aed.att_nm);
+    if(rcd != -1) (void)nco_del_att(nc_id,var_id,aed.att_nm);
     break;
   case aed_modify:	
-    if(rcd != -1) (void)ncattput(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
+    if(rcd != -1) (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
     break;
   case aed_overwrite:	
-    (void)ncattput(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
+    (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
     break;
   default: 
     break;
