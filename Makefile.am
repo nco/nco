@@ -1,2 +1,2 @@
-SUBDIRS = src man doc
-EXTRA_DIST = autobld data
+SUBDIRS = src man
+EXTRA_DIST = autobld data doc
