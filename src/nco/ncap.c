@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.57 2002-02-03 08:40:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.58 2002-02-05 07:34:37 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.57 2002-02-03 08:40:08 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.57 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.58 2002-02-05 07:34:37 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.58 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -136,6 +136,19 @@ main(int argc,char **argv)
   extern char *optarg;
   extern int optind;
   
+  /* Declarations required on Sun, AIX platforms */
+  extern float acosf(float);
+  extern float asinf(float);
+  extern float atanf(float);
+  extern float cosf(float);
+  extern float expf(float);
+  extern float gammaf(float);
+  extern float logf(float);
+  extern float log10f(float);
+  extern float sinf(float);
+  extern float sqrtf(float);
+  extern float tanf(float);
+
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
   int in_id;  

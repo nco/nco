@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.13 2002-02-05 07:11:04 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.14 2002-02-05 07:34:36 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.2.0 are ready. 
 Changes since version 2.0.0 include bugfixes and a 
@@ -23,9 +23,12 @@ Thanks Henry!
 Enjoy,
 Charlie
 
-P.S. ncap requires GNU flex and bison to build.
+P.S. ncap requires GNU flex and bison to build, as well as
+an ANSI C implementation of float math functions (e.g., tanf).
 For that reason it does not build by default and you must
 specifically build ncap with "make ncap".
+ncap has only been built successfully on IRIX and Linux systems.
+ncap has not yet been built on Solaris or AIX systems.
 
 Summary of changes since 2.0.0:
 
@@ -40,10 +43,12 @@ variables, exclusive state lexing, LHS casting (Zender)
 6. libnco_c++, a C++ API for libnetcdf (Zender)
 
 A few notes on the objective of ncap: 
-ncap's objective is to solve everyday needs of recurring tasks
+NCO's objective is to solve everyday needs of recurring tasks
 in scientific data analysis without requiring tedious programming.
-The capabilities of ncap today are between those of a regular NCO
-operator and those of a full-featured, high-level, interactive
+Previously, NCO had adequate file handling capabilities but very
+limited, non-extensible, data processing capabilities. 
+ncap changes that. ncap's capabilities are between those of a regular
+NCO operator and those of a full-featured, high-level, interactive
 language (e.g., IDL, Matlab, NCL). 
 However, now that ncap has a language parser, there is no real limit
 to what syntactic features could be added. Of course the 
