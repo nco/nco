@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.18 2004-03-01 01:20:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.19 2004-03-02 01:05:42 rorik Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -86,7 +86,7 @@ nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before
      That would put them in conflict with the corresponding var_out, which is usually
      based on typ_upk
      Check this first, then proceed with normal non-float->double conversion */
-  if(var->typ_upk == NC_FLOAT && var->type != NC_FLOAT){
+  if(var->typ_upk == NC_FLOAT){
     var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
   }else{ /* Conversion only for appropriate operation types */ 
     if(var->type != NC_FLOAT && var->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max) var=nco_var_cnf_typ((nc_type)NC_DOUBLE,var);
