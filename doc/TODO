@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.336 2004-07-02 06:49:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.337 2004-07-02 22:59:55 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -212,6 +212,8 @@ cd ${DATA_MIE}/mie/${CASEID}
 ncks -H -C -v ${var_lst} ~/foo.nc > foo 2>&1
 2. Create threaded answer:
 nco351. Ask Jim Edwards to fix make test rtld errors on AIX with OpenMP
+nco352. Probably related to 351: OpenMP directive must appear in main() or ldd will not associate /usr/lib/libxlsmp.a(smprt_64.o) with executable so rtld errors occur on AIX
+nco353. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

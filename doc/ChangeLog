@@ -1,3 +1,7 @@
+2004-07-02  Charlie Zender  <zender@uci.edu>
+
+	* Change default from OMP=N to OMP=Y in old Makefile
+
 2004-07-01  Charlie Zender  <zender@uci.edu>
 
 	* Changed configure.eg to enable OpenMP on AIX. 'make' and 'make
