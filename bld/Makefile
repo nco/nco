@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.206 2003-03-24 20:30:54 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.207 2003-03-27 19:21:35 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -21,6 +21,7 @@
 # UDUNITS support:
 # cd ~/nco/bld;make UDUNITS=Y;cd -
 # 64-bit ABI on NCAR AIX and IRIX systems:
+# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 make --jobs=1 lib_cln cln all ABI=64;cd -
 # cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 make --jobs=1 lib_cln cln all ABI=64;cd -
 
 # Top-level tokens defining directory structure
@@ -88,7 +89,7 @@ ifndef OPTS
 endif
 ifndef UDUNITS
 # Use UDUNITS functionality
- UDUNITS := N
+ UDUNITS := Y
 endif
 ifndef UNAMES
  UNAMES := $(shell uname -s)
@@ -157,8 +158,12 @@ endif
 ifeq (${UDUNITS},Y)
 # Build NCO as UDUNITS-enabled clients
 # Place UDUNITS block after DODS block for both to work together
- UDUNITS_INC := /usr/local/include
- UDUNITS_LIB := /usr/local/lib
+ifndef UDUNITS_INC
+ UDUNITS_INC := /usr/local/include # Directory containing udunits.h
+endif
+ifndef UDUNITS_LIB
+ UDUNITS_LIB := /usr/local/lib # Directory containing libudunits.a
+endif
 ifneq (${UDUNITS_INC},${NETCDF_INC})
  NETCDF_INC += -I${UDUNITS_INC}
 endif # end 
