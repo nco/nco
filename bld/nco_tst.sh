@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.30 2000-09-19 15:52:47 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.31 2000-09-26 21:48:31 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -151,6 +151,14 @@ echo "ncwa 32: avg would overflow without dbl_prc patch: 17000S =?= $avg"
 ncwa -O -y ttl -v val_max_max_sht in.nc foo.nc 2>>foo.tst
 avg=`ncks -C -H -s "%d" -v val_max_max_sht foo.nc`
 echo "ncwa 33: ttl would overflow without dbl_prc patch, wraps anyway: -31536S =?= $avg" 
+
+ncwa -O -y min -a lat -v lat -w gw in.nc foo.nc 2>>foo.tst
+avg=`ncks -C -H -s "%g" -v lat foo.nc`
+echo "ncwa 34: min with weights: -900 =?= $avg" 
+
+ncwa -O -y max -a lat -v lat -w gw in.nc foo.nc 2>>foo.tst
+avg=`ncks -C -H -s "%g" -v lat foo.nc`
+echo "ncwa 35: max with weights: 900 =?= $avg" 
 
 ncra -O -v one_dmn_rec_var in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`

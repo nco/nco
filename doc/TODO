@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.76 2000-09-26 06:58:39 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.77 2000-09-26 21:48:31 zender Exp $ 
 
 *************
 NCO Wish list
@@ -135,9 +135,8 @@ sudo root screws up permissions in obj/bin directories of user
 181. Split up nc_utl.c into smaller files
 182. Add -L switch to print license terms
 183. Figure out why makeinfo nco.texi fails
-185. Limit number of spawned threads to 4 to be friendly on big machines
-186. Disable threading on ncrcat where it is useless
 187. Are OpenMP critical regions sufficient for netCDF or must all other threads stop completely?
+188. Make binary RPMS build with DODS option
 ************************************************************************
 End NCO Wish list
 ************************************************************************

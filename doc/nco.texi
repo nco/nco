@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.66 2000-09-19 15:52:55 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.67 2000-09-26 21:48:31 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -53,12 +53,12 @@ END-INFO-DIR-ENTRY
 @c set smallbook
 @clear smallbook
 
-@set nco-edition 1.2.1
-@set doc-edition 1.2.1
+@set nco-edition 1.2.2
+@set doc-edition 1.2.2
 @set copyright-years 1995--2000
 @set update-year 2000
-@set update-date 28 August 2000
-@set update-month August 2000
+@set update-date 26 September 2000
+@set update-month September 2000
 
 @c Experiment with smaller amounts of whitespace between chapters and sections
 @tex
@@ -2090,15 +2090,15 @@ switch (@pxref{ncwa netCDF Weighted Averager}).
 
 The minimum value of $x$ (@code{-y min}) is 
 $$
-\bar x_j = \min [ \mu_1 m_1 x_1, \mu_2 m_2 x_2, \ldots, \mu_N m_N x_N ] 
+\bar x_j = \min [ \mu_1 m_1 w_1 x_1, \mu_2 m_2 w_2 x_2, \ldots, \mu_N
+m_N w_N x_N ] 
 $$
 Analogously, the maximum value of $x$ (@code{-y max}) is 
 $$
-\bar x_j = \max [ \mu_1 m_1 x_1, \mu_2 m_2 x_2, \ldots, \mu_N m_N x_N ] 
+\bar x_j = \max [ \mu_1 m_1 w_1 x_1, \mu_2 m_2 w_2 x_2, \ldots, \mu_N
+m_N w_N x_N ] 
 $$
-Minima and maxima do not depend on any weights, so @code{ncwa} issues an
-error if one attempts to specify weights (with @samp{-w}) while
-computing minima or maxima. 
+Thus the minima and maxima are determined after any weights are applied.
 
 The square of the mean value of $x$ (@code{-y sqravg}) is 
 $$
@@ -2169,11 +2169,6 @@ We are open to redefining and or adding to the above.
 If you are interested in having other statistical quantities
 defined in NCO please contact the NCO project (@pxref{Help and Bug
 reports}).  
-
-At this time the weighted average option @samp{-w} does not work with
-the arithemtic operations @code{ttl}, @code{min}, and @code{max}.
-@code{ncwa} will simply exit with an error if this combination is
-attempted. 
 
 @noindent
 EXAMPLES

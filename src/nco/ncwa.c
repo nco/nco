@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.63 2000-09-26 06:19:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.64 2000-09-26 21:48:41 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.63 2000-09-26 06:19:40 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.63 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.64 2000-09-26 21:48:41 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.64 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -293,11 +293,6 @@ main(int argc,char **argv)
       break;
     } /* end switch */
   } /* end while loop */
-
-  if(wgt_nm != NULL && (nco_op_typ == nco_op_min || nco_op_typ == nco_op_max)){
-    (void)fprintf(stdout,"%s: ERROR Weighting (-w) is not appropriate for minima and maxima searches\n",prg_nm);
-    exit(EXIT_FAILURE);
-  } /* endif */
 
   /* Ensure we do not attempt to normalize by non-existent weight */
   if(wgt_nm == NULL) NORMALIZE_BY_WEIGHT=False;

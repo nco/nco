@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.62 2000-09-26 01:32:07 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.63 2000-09-26 21:48:31 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -45,7 +45,7 @@ scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.s
 <li><a href="#Definition">What is NCO?</a></li>
 <li><a href="#Contribute">How to Contribute to NCO</a></li>
 <li><a href="#Version">Version summary</a></li>
-<li><a href="#News">NCO News</a></li>
+<li><a href="#News">NCO News & Announcements</a></li>
 <li><a href="#Download">Download NCO software</a></li>
 <li><a href="#RTFM">NCO User's Guide</a></li>
 <li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
@@ -58,16 +58,20 @@ scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.s
 <h2>What is NCO?</h2>
 <p>The <a
 href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
-Operators, or NCO, are a suite of programs known as <B>operators</B>. 
+Operators, or NCO, are a suite of programs known as <b>operators</b>. 
 Each operator is a standalone, command line program which is executed at
-the UNIX (or NT) shell-level like, e.g., <TT>ls</TT> or <TT>mkdir</TT>.
+the UNIX (or NT) shell-level like, e.g., <tt>ls</tt> or <tt>mkdir</tt>.
 The operators take <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> 
 or <a href="http://hdf.ncsa.uiuc.edu">HDF4</a> files as input, then
 perform an operation (e.g., averaging, hyperslabbing, or metadata
 manipulation) and produce a 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> file
 as output. The operators are primarily designed to aid manipulation and analysis of
-gridded scientific data, and the <a href="./nco.html">NCO User's Guide</a> 
+gridded scientific data.
+The single command style of NCO allows users to manipulate and analyze
+files interactively, without recourse to a higher level programming
+environment. 
+The <a href="./nco.html">NCO User's Guide</a> 
 illustrates their use with examples from the field of climate modeling
 and analysis.</p> 
 
@@ -83,8 +87,10 @@ There are plenty of command line (i.e., runtime) options, but the defaults
 settings are often sufficient for everyday needs.
 NCO works on AIX, IRIX, Linux, SunOS, Solaris, tru64, UNICOS, and Windows NT.
 
-Each of the following operators is thoroughly described in the 
-<a href="./nco.html">NCO User's Guide</a>:
+The following operators are thoroughly described in the 
+<a href="./nco.html">NCO User's Guide</a>. 
+Note that the "averagers" are misnamed because they can perform many 
+non-linear operations as well, e.g., total, minimum, maximum, RMS:
 <ul>
 <li><b>ncatted</b> netCDF Attribute Editor</li>
 <li><b>ncdiff</b> netCDF Differencer</li>
@@ -118,119 +124,25 @@ instructions for helping the NCO project.
 <dt><a name="Version"></a></dt>
 <h2>Version Summary</h2>
 <ul>
-<li>1.1.47: Improvements to <tt>ncra</tt> and <tt>ncrcat</tt> which
-allow lazier specifications of input files</li>
-<li>1.1.48: Bugfix to <tt>ncdiff</tt></li>
-<li>1.2: Added non-linear operations <tt>ncra/ncea</tt> and <tt>ncwa</tt>:
-min,max,total,rms,rmssdn,sqrt. Added DODS compliance.</li>
-<li>1.2.1: Added type-conversion of integers to floating point before
+<li><b>NCO 1.3</b>, in alpha-testing: Add packing/unpacking
+capabilities based on <tt>scale_factor</tt> and <tt>add_offset</tt> convention
+<li><b>NCO 1.2.3</b>, in beta-testing: Add user-configurable multi-threaded
+capability to <tt>ncwa</tt>, <tt>ncea</tt>, and <tt>ncra</tt></li>
+<li><b>NCO 1.2.2</b>, done, not released: Allow weights with <tt>ncwa</tt> in min/max/ttl operations</li>
+<li><b>NCO 1.2.1</b>, <a href="./nco_news.shtml#20000828">20000828</a>: Added type-conversion of integers to floating point before
 arithmetic, fixed broken <tt>-v</tt> option</li>
-<li>1.2.2: Allow weights with <tt>ncwa</tt> and min/max/ttl operations</li>
+<li><b>NCO 1.2</b>, <a href="./nco_news.shtml#20000730">20000730</a>: Added non-linear operations <tt>ncra/ncea</tt> and <tt>ncwa</tt>:
+min,max,total,rms,rmssdn,sqrt. Added DODS compliance.</li>
+<li><b>NCO 1.1.48</b>, <a href="./nco_news.shtml#20000515">20000515</a>: Potentially serious bugfix to <tt>ncdiff</tt>, recommend upgrade</li>
+<li><b>NCO 1.1.47</b>, <a href="./nco_news.shtml#20000510">20000510</a>: Improved <tt>ncra</tt> and <tt>ncrcat</tt> to allow lazier
+specifications of input files</li> 
 </ul>
 <hr></p>
 
 <dt><a name="News"></a></dt>
-<h2>NCO News</h2>
-
-<p>2000/08/28: 
-NCO version 1.2.1 is released.
-Differences with version 1.2 include one new feature and one bugfix.
-
-<p>1. Operators now perform automatic type conversion of integers to
-doubles before arithmetic. 
-This feature allows <tt>ncwa</tt>, <tt>ncra</tt>, and <tt>ncea</tt>
-to handle averaging of longs, shorts, bytes, and chars in a more
-satisfactory manner.
-One immediate benefit is that <tt>ncwa</tt> no longer 
-complains when user's try to apply weights (e.g., gaussian weights)
-all less than one to the averaging of an integer (e.g., <tt>nlons</tt>).
-Formerly <tt>ncwa</tt> would issue a warning, a workaround, and then
-dump core (because weights converted to integers were all zeros). 
-Now that arithmetic is performed in double precision (rather than  
-in the precision of the variable), <tt>ncwa</tt> handles this
-situation correctly.
-
-<p>2. A bug introduced in NCO 1.2 which broke the <tt>-x</tt> switch has been fixed
-
-<p>3. Thanks to Henry Butowsky for implementing the type conversion feature
-<br>Thanks to Ethan Davis for improving the build procedure
-
-<p>2000/07/30: 
-nco-1.2 is released. 
-Summary of new features and user-visible changes:
-<ul>
-<li>The names of three of the operators have been made somewhat obsolete
-because they are no longer just arithmetic averagers.
-<b>ncra</b>, <b>ncea</b>, and <b>ncwa</b> have all been given
-brain transplants so that the type of operation they perform may be
-specified on the command line. 
-The following operations are now supported by the new 
-<tt>-y</tt> switch: average (default), total, minimum, maximum,
-root-mean-square, square of the mean, mean of the squares, square
-root.
-For example,
-<pre>
-ncra -O -y rms -n 12,4,1 h0001.nc 2000_rms.nc # Root-mean-square
-ncea -O -y min -n 12,4,1 h0001.nc 2000_min.nc # Minimum
-ncwa -O -y max -a lon,lat h0001.nc 200001_max_x.nc # Maxima
-</pre>
-Averaging is still the default so no existing usage needs to be modified.
-It is also possible to compute spatial and temporal variances and
-standard deviations using a combination of three or four NCO commands.</li>
-
-<li>All operators may now be 
-<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a></dd> clients.
-DODS enables network transparent data access to any DODS server.
-Thus DODS-enabled NCO can operate on remote files accessible through
-any DODS server without transferring the files.
-Only the required data (e.g., the variable or hyperslab specified) are
-transferred.
-See the <a href="./nco.html">User's Guide</a> for complete details.</li>
-
-<li>Fortran compatibility has been dropped.
-If a volunteer wants to continue to maintain the option to perform
-arithmetic in Fortran for reasons of speed, contact the project.</li>
-</ul>
-
-Summary of administrative changes:
-<ul>
-<li>NCO is now an Open Source project licensed under the GPL.
-These new capabilities are the result of contributions from Henry
-Butowski, Bill Kocik, and Roland Schweitzer.
-For more information on how to contribute to NCO,
-visit the <a href="http://sourceforge.net/projects/nco">NCO
-administration homepage</a>.</li>
-
-<li>New NCO releases and important announcements will be made on the
-netCDF list and on the new 
-<a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce"><tt>nco-announce</tt></a>
-mailing list.</li>  
-
-<li>Questions, suggestions, ideas, and pleas for help should be posted to 
-the appropriate discussion forum at the NCO administration site.
-NCO developers monitor these open forums, and your message will get a
-quicker response if it is posted on one of these forums:
-<ul>
-<li><a href="http://sourceforge.net/forum/forum.php?forum_id=9829">Open
-Discussion Forum</a>: General discussion, discussion of tips, tricks,
-future directions for NCO.</li>
-<li><a href="http://sourceforge.net/forum/forum.php?forum_id=9830">Help
-Forum</a>: Installation problems, user's questions (e.g., "How do I
-average x and y...?")</li>
-<li><a href="http://sourceforge.net/forum/forum.php?forum_id=9831">Developers
-forum</a>: Discussion of patches, technical questions related to
-modifying NCO, and discussion of specific items on the 
-<a href="./TODO">TODO list</a> and how best to address them</li>  
-</ul></li>
-</ul>
-Note: You must first 
-<a href="https://sourceforge.net/account/register.php">register</a> 
-in order to post to these forums.
-Once registered you may choose to "monitor" the forums and to receive
-email when there are any postings.
-
+<h2>NCO News & Announcements</h2>
 <p>
-<a href="./nco_news.shtml"> Older NCO news</a>  
+<a href="./nco_news.shtml"> Complete text of Past NCO announcements</a>  
 <hr></p>
 
 <dt><a name="Download"></a></dt>
