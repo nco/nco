@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.46 1999-12-06 18:55:47 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.47 1999-12-06 19:35:44 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -137,6 +137,50 @@ $(MY_DPN_DIR)/%.d : %.cc
 
 # The first LDFLAGS is for typical C programs with netCDF, math, and networking
 # The second LDFLAGS enables C/Fortran linking
+
+ifeq ($(PVM_ARCH),AIX)
+C++ := xlC
+CC := cc
+# Additional switch to fix compiler warnings on csz.c
+# -qmaxmem=num Limit the amount of memory used by space intensive optimizations to <num> kilobytes
+CFLAGS := -qmaxmem=8192
+CPP := cc -c
+# NB: Hack to make AIX look like LINUX (g77 + gcc + g++)
+#CPPFLAGS := -DLINUX $(CPP_PTH) -I$(NETCDF_INC)
+CPPFLAGS := -D$(PVM_ARCH) $(CPP_PTH) -I$(NETCDF_INC)
+FC := xlf
+FFLAGS := -qfixed=132
+LD := ld
+LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+#LDFLAGS += -lxlf90 -lxlf
+endif
+LEX := lex
+LINT := lint
+YACC := yacc
+ifeq ($(OPTS),O)
+ CFLAGS += -O
+# CPP := $(CPP) $(CPPFLAGS)
+# PREPROCESS.F := $(CPP) $(CPPFLAGS)
+ FFLAGS += -O -NS2000 -qfixed=132
+endif
+ifeq ($(OPTS),D)
+ CFLAGS += -g
+# CPP := $(CPP) $(CPPFLAGS)
+# PREPROCESS.F := $(CPP) $(CPPFLAGS)
+ FFLAGS := -g -NS2000 -qfixed=132
+endif
+# Additional flags for AIX:
+# -M Generate information to be included in a "make" description file; output goes to .u file
+# -c Do not send object files to the linkage editor
+# -P Preprocess but do not compile; output goes to .i file
+# Using -P causes additional warning messages about lm 
+# Not using -P causes *.o files to be created twice
+$(MY_DPN_DIR)/%.d : %.c
+	$(CPP) -M $(CPPFLAGS) $< ;perl -p -e 's/$*\.o/$(MY_OBJ_DIR_RX)\/$*.o $(MY_DPN_DIR_RX)\/$(notdir $@)/g;s/$(slash_rx)/\$(slash)/g' $*.u > $@ ; \
+	rm -f $*.i $*.o $*.u;
+endif
+# endif AIX
 
 ifeq ($(PVM_ARCH),ALPHA)
 C++ := g++
@@ -291,50 +335,6 @@ $(MY_OBJ_DIR)/%.o : %.F
 $(MY_OBJ_DIR)/%.o : %.f
 	$(FC) -c $(FFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
 endif
-
-ifeq ($(PVM_ARCH),AIX)
-C++ := xlC
-CC := cc
-# Additional switch to fix compiler warnings on csz.c
-# -qmaxmem=num Limit the amount of memory used by space intensive optimizations to <num> kilobytes
-CFLAGS := -qmaxmem=8192
-CPP := cc -c
-# NB: Hack to make AIX look like LINUX (g77 + gcc + g++)
-#CPPFLAGS := -DLINUX $(CPP_PTH) -I$(NETCDF_INC)
-CPPFLAGS := -D$(PVM_ARCH) $(CPP_PTH) -I$(NETCDF_INC)
-FC := xlf
-FFLAGS := -qfixed=132
-LD := ld
-LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
-#LDFLAGS += -lxlf90 -lxlf
-endif
-LEX := lex
-LINT := lint
-YACC := yacc
-ifeq ($(OPTS),O)
- CFLAGS += -O
-# CPP := $(CPP) $(CPPFLAGS)
-# PREPROCESS.F := $(CPP) $(CPPFLAGS)
- FFLAGS += -O -NS2000 -qfixed=132
-endif
-ifeq ($(OPTS),D)
- CFLAGS += -g
-# CPP := $(CPP) $(CPPFLAGS)
-# PREPROCESS.F := $(CPP) $(CPPFLAGS)
- FFLAGS := -g -NS2000 -qfixed=132
-endif
-# Additional flags for AIX:
-# -M Generate information to be included in a "make" description file; output goes to .u file
-# -c Do not send object files to the linkage editor
-# -P Preprocess but do not compile; output goes to .i file
-# Using -P causes additional warning messages about lm 
-# Not using -P causes *.o files to be created twice
-$(MY_DPN_DIR)/%.d : %.c
-	$(CPP) -M $(CPPFLAGS) $< ;perl -p -e 's/$*\.o/$(MY_OBJ_DIR_RX)\/$*.o $(MY_DPN_DIR_RX)\/$(notdir $@)/g;s/$(slash_rx)/\$(slash)/g' $*.u > $@ ; \
-	rm -f $*.i $*.o $*.u;
-endif
-# endif AIX
 
 ifeq ($(PVM_ARCH),SGI5)
 C++ := g++
