@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.94 2001-08-27 02:37:24 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.95 2001-09-06 16:12:08 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -171,8 +171,8 @@ to accomplish this.
 206. Add example NCO script, such as dst.sh, to doc directory
 207. Bug on Linux. Core dump converting datesec,date from NC_INT to NC_DOUBLE:
 ncwa -D 5 -O -a time,lat,lon -w gw $DATA/dstccm34/dstccm34_1990.nc $DATA/dstccm34/dstccm34_1990_xy.nc
-This must be a memory bug because bug disappears when -w gw removed,
-or variable list is made more specific
+This is a subtle memory bug which disappears when -w gw removed,
+or variable list is made more specific, or MALLOC_CHECK_=1 is used
 ************************************************************************
 End NCO Wish list
 ************************************************************************
