@@ -1,7 +1,7 @@
 %{
 /* Begin C declarations section */ 
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.4 2000-01-17 01:53:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.5 2000-04-05 21:41:55 zender Exp $ */
 
 /* Purpose: Grammar parser for ncap */ 
 
@@ -71,8 +71,8 @@ typedef struct{
     char *fl_out;
     int out_id;  
     char *sng;
-    dim_sct **dim;
-    int nbr_dim_xtr;
+    dmn_sct **dim;
+    int nbr_dmn_xtr;
 } prs_sct;
 #define YYPARSE_PARAM prs_arg
 
@@ -170,7 +170,7 @@ typedef struct{
     if(var_id == -1){
       (void)fprintf(stderr,"can't find %s in %s\n",$1->nm,((prs_sct *)prs_arg)->fl_in);
     }else{
-      var=var_fll(((prs_sct *)prs_arg)->in_id,var_id,$1->nm,((prs_sct *)prs_arg)->dim,((prs_sct *)prs_arg)->nbr_dim_xtr);
+      var=var_fll(((prs_sct *)prs_arg)->in_id,var_id,$1->nm,((prs_sct *)prs_arg)->dim,((prs_sct *)prs_arg)->nbr_dmn_xtr);
       /* Allocate and initialize accumulation space for the variable */ 
       var->tally=(long *)malloc(var->sz*nctypelen(NC_LONG));
       (void)zero_long(var->sz,var->tally);

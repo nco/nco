@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.14 2000-01-28 00:09:11 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.15 2000-04-05 21:41:51 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -90,8 +90,8 @@ ncdiff -O -d lon,0 -v no_mss_val in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%f" -v no_mss_val foo.nc`
 echo "ncdiff 2: difference without missing value attribute: 0 =?= $avg" 
 
-ncra -O -v one_dim_rec_var in.nc in.nc foo.nc 2>> foo.tst
-avg=`ncks -C -H -s "%d" -v one_dim_rec_var foo.nc`
+ncra -O -v one_dmn_rec_var in.nc in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`
 echo "ncra 1: record mean of float across two files: 5 =?= $avg" 
 
 ncra -O -v rec_var_flt_mss_val_dbl in.nc foo.nc 2>> foo.tst
@@ -102,8 +102,8 @@ ncra -O -v rec_var_flt_mss_val_flt in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_flt foo.nc`
 echo "ncra 3: record mean with float missing values across two files: 5 =?= $avg" 
 
-ncea -O -v one_dim_rec_var -d time,4 in.nc in.nc foo.nc 2>> foo.tst
-avg=`ncks -C -H -s "%d" -v one_dim_rec_var foo.nc`
+ncea -O -v one_dmn_rec_var -d time,4 in.nc in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`
 echo "ncea 1: ensemble mean across two files: 5 =?= $avg" 
 
 ncea -O -v rec_var_flt_mss_val_flt -d time,0 in.nc in.nc foo.nc 2>> foo.tst

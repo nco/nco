@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.18 2000-01-17 01:53:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.19 2000-04-05 21:41:55 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.18 2000-01-17 01:53:56 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.18 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.19 2000-04-05 21:41:55 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.19 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -562,9 +562,9 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
      && aed.sz == 1L /* New missing_value attribute must be of size 1 */
      ){
 
-    int *dim_id;
-    long *dim_sz;
-    long *dim_srt;
+    int *dmn_id;
+    long *dmn_sz;
+    long *dmn_srt;
     long idx;
     long var_sz;
     ptr_unn mss_val_crr;
@@ -585,20 +585,20 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
 
     /* Get type of variable and number of dimensions */
     (void)ncvarinq(var->nc_id,var->id,(char *)NULL,&var->type,&var->nbr_dim,(int *)NULL,(int *)NULL);
-    dim_id=(int *)malloc(var->nbr_dim*sizeof(int));
-    dim_sz=(long *)malloc(var->nbr_dim*sizeof(long));
-    dim_srt=(long *)malloc(var->nbr_dim*sizeof(long));
-    (void)ncvarinq(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dim_id,(int *)NULL);
+    dmn_id=(int *)malloc(var->nbr_dim*sizeof(int));
+    dmn_sz=(long *)malloc(var->nbr_dim*sizeof(long));
+    dmn_srt=(long *)malloc(var->nbr_dim*sizeof(long));
+    (void)ncvarinq(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_id,(int *)NULL);
 
     /* Get dimension sizes and construct variable size */
     for(idx=0;idx<var->nbr_dim;idx++){
-      (void)ncdiminq(var->nc_id,dim_id[idx],(char *)NULL,dim_sz+idx);
-      var->sz*=dim_sz[idx];
-      dim_srt[idx]=0L;
+      (void)ncdiminq(var->nc_id,dmn_id[idx],(char *)NULL,dmn_sz+idx);
+      var->sz*=dmn_sz[idx];
+      dmn_srt[idx]=0L;
     } /* end loop over dim */
-    var->dim_id=dim_id;
-    var->cnt=dim_sz;
-    var->srt=dim_srt;
+    var->dmn_id=dmn_id;
+    var->cnt=dmn_sz;
+    var->srt=dmn_srt;
       
     /* Place var_get() code inline since var struct is not truly complete */
     if((var->val.vp=(void *)malloc(var->sz*nctypelen(var->type))) == NULL){
@@ -662,7 +662,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     if(mss_val_new.vp != NULL){(void)free(mss_val_new.vp); mss_val_new.vp=NULL;}
     if(var->mss_val.vp != NULL){(void)free(var->mss_val.vp); var->mss_val.vp=NULL;}
     if(var->val.vp != NULL){(void)free(var->val.vp); var->val.vp=NULL;}
-    if(var->dim_id != NULL){(void)free(var->dim_id); var->dim_id=NULL;}
+    if(var->dmn_id != NULL){(void)free(var->dmn_id); var->dmn_id=NULL;}
     if(var->srt != NULL){(void)free(var->srt); var->srt=NULL;}
     if(var->cnt != NULL){(void)free(var->cnt); var->cnt=NULL;}
 

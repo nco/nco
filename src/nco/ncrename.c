@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.14 2000-01-17 01:53:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.15 2000-04-05 21:41:58 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -74,7 +74,7 @@ main(int argc,char **argv)
   char **fl_lst_abb=NULL; /* Option a */ 
   char **fl_lst_in;
   char *fl_in=NULL;
-  char *dim_rnm_arg[MAX_NC_DIMS];
+  char *dmn_rnm_arg[MAX_NC_DIMS];
   char *var_rnm_arg[MAX_NC_VARS];
   char *att_rnm_arg[MAX_NC_ATTRS];
   char *opt_sng;
@@ -83,11 +83,11 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.14 2000-01-17 01:53:58 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.14 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.15 2000-04-05 21:41:58 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.15 $";
   
   rnm_sct *var_rnm_lst=NULL_CEWI;
-  rnm_sct *dim_rnm_lst=NULL_CEWI;
+  rnm_sct *dmn_rnm_lst=NULL_CEWI;
   rnm_sct *att_rnm_lst=NULL_CEWI;
 
   extern char *optarg;
@@ -99,7 +99,7 @@ main(int argc,char **argv)
   int nbr_abb_arg=0;
   int nbr_var_rnm=0; /* Option v. NB: nbr_var_rnm gets incremented */
   int nbr_att_rnm=0; /* Option a. NB: nbr_var_rnm gets incremented */
-  int nbr_dim_rnm=0; /* Option d. NB: nbr_var_rnm gets incremented */
+  int nbr_dmn_rnm=0; /* Option d. NB: nbr_var_rnm gets incremented */
   int nbr_fl=0;
   int opt;
   
@@ -128,8 +128,8 @@ main(int argc,char **argv)
       dbg_lvl=atoi(optarg);
       break;
     case 'd': /* Copy argument for later processing */ 
-      dim_rnm_arg[nbr_dim_rnm]=optarg;
-      nbr_dim_rnm++;
+      dmn_rnm_arg[nbr_dmn_rnm]=optarg;
+      nbr_dmn_rnm++;
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
@@ -165,7 +165,7 @@ main(int argc,char **argv)
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
   if(fl_out != NULL) OUTPUT_TO_NEW_NETCDF_FILE=True; else fl_out=fl_lst_in[0];
 
-  if(nbr_var_rnm == 0 && nbr_att_rnm == 0 && nbr_dim_rnm == 0){
+  if(nbr_var_rnm == 0 && nbr_att_rnm == 0 && nbr_dmn_rnm == 0){
     (void)fprintf(stdout,"%s: ERROR must specify something to rename\n",prg_nm);
     usg_prn();
     exit(EXIT_FAILURE);
@@ -173,7 +173,7 @@ main(int argc,char **argv)
 
   /* Make a uniform list of the user-specified rename structures */ 
   if(nbr_var_rnm > 0) var_rnm_lst=prs_rnm_lst(nbr_var_rnm,var_rnm_arg);
-  if(nbr_dim_rnm > 0) dim_rnm_lst=prs_rnm_lst(nbr_dim_rnm,dim_rnm_arg);
+  if(nbr_dmn_rnm > 0) dmn_rnm_lst=prs_rnm_lst(nbr_dmn_rnm,dmn_rnm_arg);
   if(nbr_att_rnm > 0) att_rnm_lst=prs_rnm_lst(nbr_att_rnm,att_rnm_arg);
 
   /* We now have the final list of variables, dimensions, and attributes to rename. */
@@ -261,21 +261,21 @@ main(int argc,char **argv)
     } /* end else */ 
   } /* end loop over idx */
 
-  for(idx=0;idx<nbr_dim_rnm;idx++){
-    if(dim_rnm_lst[idx].old_nm[0] == '.'){
+  for(idx=0;idx<nbr_dmn_rnm;idx++){
+    if(dmn_rnm_lst[idx].old_nm[0] == '.'){
       ncopts=0;
-      dim_rnm_lst[idx].id=ncdimid(nc_id,dim_rnm_lst[idx].old_nm+1);
-      if(dim_rnm_lst[idx].id != -1){
-	(void)ncdimrename(nc_id,dim_rnm_lst[idx].id,dim_rnm_lst[idx].new_nm);
-	if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed dimension \"%s\" to \"%s\"\n",dim_rnm_lst[idx].old_nm+1,dim_rnm_lst[idx].new_nm);
+      dmn_rnm_lst[idx].id=ncdimid(nc_id,dmn_rnm_lst[idx].old_nm+1);
+      if(dmn_rnm_lst[idx].id != -1){
+	(void)ncdimrename(nc_id,dmn_rnm_lst[idx].id,dmn_rnm_lst[idx].new_nm);
+	if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed dimension \"%s\" to \"%s\"\n",dmn_rnm_lst[idx].old_nm+1,dmn_rnm_lst[idx].new_nm);
       }else{
-	(void)fprintf(stderr,"%s: WARNING Dimension \"%s\" not present in %s, skipping it.\n",prg_nm,dim_rnm_lst[idx].old_nm+1,fl_in);
+	(void)fprintf(stderr,"%s: WARNING Dimension \"%s\" not present in %s, skipping it.\n",prg_nm,dmn_rnm_lst[idx].old_nm+1,fl_in);
       } /* end if */ 
       ncopts=NC_VERBOSE | NC_FATAL; 
     }else{
-      dim_rnm_lst[idx].id=ncdimid(nc_id,dim_rnm_lst[idx].old_nm);
-      (void)ncdimrename(nc_id,dim_rnm_lst[idx].id,dim_rnm_lst[idx].new_nm);
-      if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed dimension \"%s\" to \"%s\"\n",dim_rnm_lst[idx].old_nm,dim_rnm_lst[idx].new_nm);
+      dmn_rnm_lst[idx].id=ncdimid(nc_id,dmn_rnm_lst[idx].old_nm);
+      (void)ncdimrename(nc_id,dmn_rnm_lst[idx].id,dmn_rnm_lst[idx].new_nm);
+      if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed dimension \"%s\" to \"%s\"\n",dmn_rnm_lst[idx].old_nm,dmn_rnm_lst[idx].new_nm);
     } /* end else */ 
   } /* end loop over idx */
 

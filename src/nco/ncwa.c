@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.31 2000-04-04 02:16:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.32 2000-04-05 21:41:58 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -89,7 +89,7 @@ main(int argc,char **argv)
   bool WGT_MSK_CRD_VAR=True; /* Option I */ 
   bool opt_a_flg=False; /* Option a */
 
-  char **dim_avg_lst_in=NULL_CEWI; /* Option a */ 
+  char **dmn_avg_lst_in=NULL_CEWI; /* Option a */ 
   char **var_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option n */ 
   char **fl_lst_in;
@@ -104,12 +104,12 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.31 2000-04-04 02:16:00 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.31 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.32 2000-04-05 21:41:58 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.32 $";
   
-  dim_sct **dim;
-  dim_sct **dim_out;
-  dim_sct **dim_avg=NULL_CEWI;
+  dmn_sct **dim;
+  dmn_sct **dmn_out;
+  dmn_sct **dmn_avg=NULL_CEWI;
   
   double msk_val=1.0; /* Option M */ 
 
@@ -124,25 +124,25 @@ main(int argc,char **argv)
   int in_id;  
   int out_id;  
   int nbr_abb_arg=0;
-  int nbr_dim_fl;
-  int nbr_dim_avg=0;
-  int nbr_lmt=0; /* Option d. NB: nbr_lmt gets incremented */
+  int nbr_dmn_fl;
+  int nbr_dmn_avg=0;
+  int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_var_fl;
   int nbr_var_fix; /* nbr_var_fix gets incremented */ 
   int nbr_var_prc; /* nbr_var_prc gets incremented */ 
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */ 
-  int nbr_dim_out;
-  int nbr_dim_xtr;
+  int nbr_dmn_out;
+  int nbr_dmn_xtr;
   int nbr_fl=0;
   int opt;
   int op_type=0; /* Option o */ 
-  int rec_dim_id=-1;
+  int rec_dmn_id=-1;
   
   lmt_sct *lmt;
   
-  nm_id_sct *dim_lst;
+  nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */ 
-  nm_id_sct *dim_avg_lst;
+  nm_id_sct *dmn_avg_lst;
   
   time_t clock;
   
@@ -182,7 +182,7 @@ main(int argc,char **argv)
 	(void)usg_prn();
 	exit(EXIT_FAILURE);
       } /* endif */
-      dim_avg_lst_in=lst_prs(optarg,",",&nbr_dim_avg);
+      dmn_avg_lst_in=lst_prs(optarg,",",&nbr_dmn_avg);
       opt_a_flg=True;
       break;
     case 'C': /* Extraction list should include all coordinates associated with extracted variables? */ 
@@ -197,8 +197,8 @@ main(int argc,char **argv)
       break;
     case 'd':
       /* Copy argument for later processing */ 
-      lmt_arg[nbr_lmt]=(char *)strdup(optarg);
-      nbr_lmt++;
+      lmt_arg[lmt_nbr]=(char *)strdup(optarg);
+      lmt_nbr++;
       break;
     case 'F':
       /* Toggle index convention. Default is 0-based arrays (C-style). */
@@ -291,7 +291,7 @@ main(int argc,char **argv)
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
 
   /* Make uniform list of user-specified dimension limits */ 
-  lmt=lmt_prs(nbr_lmt,lmt_arg);
+  lmt=lmt_prs(lmt_nbr,lmt_arg);
   
   /* Make netCDF errors fatal and print the diagnostic */   
   ncopts=NC_VERBOSE | NC_FATAL; 
@@ -304,7 +304,7 @@ main(int argc,char **argv)
   in_id=ncopen(fl_in,NC_NOWRITE);
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
-  (void)ncinquire(in_id,&nbr_dim_fl,&nbr_var_fl,(int *)NULL,&rec_dim_id);
+  (void)ncinquire(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
   
   /* Form initial extraction list from user input */ 
   xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
@@ -313,75 +313,75 @@ main(int argc,char **argv)
   if(EXCLUDE_INPUT_LIST) xtr_lst=var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
 
   /* Add all coordinate variables to extraction list */ 
-  if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dim_fl,xtr_lst,&nbr_xtr);
+  if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
 
   /* Make sure coordinates associated extracted variables are also on extraction list */ 
   if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
 
   /* Remove record coordinate, if any, from extraction list */ 
-  if(False) xtr_lst=var_lst_crd_xcl(in_id,rec_dim_id,xtr_lst,&nbr_xtr);
+  if(False) xtr_lst=var_lst_crd_xcl(in_id,rec_dmn_id,xtr_lst,&nbr_xtr);
 
   /* Finally, heapsort the extraction list by variable ID for fastest I/O */ 
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
     
   /* Find coordinate/dimension values associated with user-specified limits */ 
-  for(idx=0;idx<nbr_lmt;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
+  for(idx=0;idx<lmt_nbr;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
   
   /* Find dimensions associated with variables to be extracted */ 
-  dim_lst=dim_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dim_xtr);
+  dmn_lst=dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
 
   /* Fill in dimension structure for all extracted dimensions */ 
-  dim=(dim_sct **)malloc(nbr_dim_xtr*sizeof(dim_sct *));
-  for(idx=0;idx<nbr_dim_xtr;idx++){
-    dim[idx]=dim_fll(in_id,dim_lst[idx].id,dim_lst[idx].nm);
+  dim=(dmn_sct **)malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+  for(idx=0;idx<nbr_dmn_xtr;idx++){
+    dim[idx]=dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
   } /* end loop over idx */
   
   /* Merge hyperslab limit information into dimension structures */ 
-  if(nbr_lmt > 0) (void)dim_lmt_merge(dim,nbr_dim_xtr,lmt,nbr_lmt);
+  if(lmt_nbr > 0) (void)dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
 
   /* Not specifying any dimensions is interpreted as specifying all dimensions */
-  if (nbr_dim_avg == 0){
-    nbr_dim_avg=nbr_dim_xtr;
-    dim_avg_lst_in=(char **)malloc(nbr_dim_avg*sizeof(char *));
-    for(idx=0;idx<nbr_dim_avg;idx++){
-      dim_avg_lst_in[idx]=(char *)strdup(dim_lst[idx].nm);
+  if (nbr_dmn_avg == 0){
+    nbr_dmn_avg=nbr_dmn_xtr;
+    dmn_avg_lst_in=(char **)malloc(nbr_dmn_avg*sizeof(char *));
+    for(idx=0;idx<nbr_dmn_avg;idx++){
+      dmn_avg_lst_in[idx]=(char *)strdup(dmn_lst[idx].nm);
     } /* end loop over idx */
     (void)fprintf(stdout,"%s: WARNING No dimensions specified with -a, therefore averaging over all dimensions\n",prg_nm);
-  } /* end if nbr_dim_avg == 0 */
+  } /* end if nbr_dmn_avg == 0 */
 
-  if (nbr_dim_avg > 0){
+  if (nbr_dmn_avg > 0){
     /* Form list of averaging dimensions */ 
-    dim_avg_lst=dim_lst_mk(in_id,dim_avg_lst_in,nbr_dim_avg);
+    dmn_avg_lst=dmn_lst_mk(in_id,dmn_avg_lst_in,nbr_dmn_avg);
 
-    if(nbr_dim_avg > nbr_dim_xtr){
+    if(nbr_dmn_avg > nbr_dmn_xtr){
       (void)fprintf(stdout,"%s: ERROR More averaging dimensions than extracted dimensions\n",prg_nm);
       exit(EXIT_FAILURE);
     } /* end if */
 
     /* Form list of averaging dimensions from extracted input dimensions */ 
-    dim_avg=(dim_sct **)malloc(nbr_dim_avg*sizeof(dim_sct *));
-    for(idx_avg=0;idx_avg<nbr_dim_avg;idx_avg++){
-      for(idx=0;idx<nbr_dim_xtr;idx++){
-	if(!strcmp(dim_avg_lst[idx_avg].nm,dim[idx]->nm)) break;
+    dmn_avg=(dmn_sct **)malloc(nbr_dmn_avg*sizeof(dmn_sct *));
+    for(idx_avg=0;idx_avg<nbr_dmn_avg;idx_avg++){
+      for(idx=0;idx<nbr_dmn_xtr;idx++){
+	if(!strcmp(dmn_avg_lst[idx_avg].nm,dim[idx]->nm)) break;
       } /* end loop over idx_avg */
-      if(idx != nbr_dim_xtr){
-	dim_avg[idx_avg]=dim[idx];
+      if(idx != nbr_dmn_xtr){
+	dmn_avg[idx_avg]=dim[idx];
       }else{
-	(void)fprintf(stderr,"%s: WARNING averaging dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dim_avg_lst[idx_avg].nm);
+	(void)fprintf(stderr,"%s: WARNING averaging dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_avg_lst[idx_avg].nm);
 	/* Collapse dimension average list by omitting irrelevent dimension */ 
-	(void)memmove(dim_avg_lst,dim_avg_lst,idx_avg*sizeof(nm_id_sct));
-	(void)memmove(dim_avg_lst+idx_avg*sizeof(nm_id_sct),dim_avg_lst+(idx_avg+1)*sizeof(nm_id_sct),(nbr_dim_avg-idx_avg+1)*sizeof(nm_id_sct));
-	--nbr_dim_avg;
-	dim_avg_lst=(nm_id_sct *)realloc(dim_avg_lst,nbr_dim_avg*sizeof(nm_id_sct));
+	(void)memmove(dmn_avg_lst,dmn_avg_lst,idx_avg*sizeof(nm_id_sct));
+	(void)memmove(dmn_avg_lst+idx_avg*sizeof(nm_id_sct),dmn_avg_lst+(idx_avg+1)*sizeof(nm_id_sct),(nbr_dmn_avg-idx_avg+1)*sizeof(nm_id_sct));
+	--nbr_dmn_avg;
+	dmn_avg_lst=(nm_id_sct *)realloc(dmn_avg_lst,nbr_dmn_avg*sizeof(nm_id_sct));
       } /* end else */ 
     } /* end loop over idx_avg */
 
     /* Make sure no averaging dimension is specified more than once */ 
-    for(idx=0;idx<nbr_dim_avg;idx++){
-      for(idx_avg=0;idx_avg<nbr_dim_avg;idx_avg++){
+    for(idx=0;idx<nbr_dmn_avg;idx++){
+      for(idx_avg=0;idx_avg<nbr_dmn_avg;idx_avg++){
 	if(idx_avg != idx){
-	  if(dim_avg[idx]->id == dim_avg[idx_avg]->id){
-	    (void)fprintf(stdout,"%s: ERROR %s specified more than once in averaging list\n",prg_nm,dim_avg[idx]->nm);
+	  if(dmn_avg[idx]->id == dmn_avg[idx_avg]->id){
+	    (void)fprintf(stdout,"%s: ERROR %s specified more than once in averaging list\n",prg_nm,dmn_avg[idx]->nm);
 	    exit(EXIT_FAILURE);
 	  } /* end if */
 	} /* end if */
@@ -389,32 +389,32 @@ main(int argc,char **argv)
     } /* end loop over idx */
 
     /* Dimensions to be averaged will not appear in output file */ 
-    dim_out=(dim_sct **)malloc((nbr_dim_xtr-nbr_dim_avg)*sizeof(dim_sct *));
-    nbr_dim_out=0;
-    for(idx=0;idx<nbr_dim_xtr;idx++){
-      for(idx_avg=0;idx_avg<nbr_dim_avg;idx_avg++){
-	if(!strcmp(dim_avg_lst[idx_avg].nm,dim[idx]->nm)) break;
+    dmn_out=(dmn_sct **)malloc((nbr_dmn_xtr-nbr_dmn_avg)*sizeof(dmn_sct *));
+    nbr_dmn_out=0;
+    for(idx=0;idx<nbr_dmn_xtr;idx++){
+      for(idx_avg=0;idx_avg<nbr_dmn_avg;idx_avg++){
+	if(!strcmp(dmn_avg_lst[idx_avg].nm,dim[idx]->nm)) break;
       } /* end loop over idx_avg */
-      if(idx_avg == nbr_dim_avg){
-	dim_out[nbr_dim_out]=dim_dup(dim[idx]);
-	(void)dim_xrf(dim[idx],dim_out[nbr_dim_out]);
-	nbr_dim_out++;
+      if(idx_avg == nbr_dmn_avg){
+	dmn_out[nbr_dmn_out]=dmn_dup(dim[idx]);
+	(void)dmn_xrf(dim[idx],dmn_out[nbr_dmn_out]);
+	nbr_dmn_out++;
       } /* end if */
     } /* end loop over idx_avg */
 
-    if(nbr_dim_out != nbr_dim_xtr-nbr_dim_avg){
-      (void)fprintf(stdout,"%s: ERROR nbr_dim_out != nbr_dim_xtr-nbr_dim_avg\n",prg_nm);
+    if(nbr_dmn_out != nbr_dmn_xtr-nbr_dmn_avg){
+      (void)fprintf(stdout,"%s: ERROR nbr_dmn_out != nbr_dmn_xtr-nbr_dmn_avg\n",prg_nm);
       exit(EXIT_FAILURE);
     } /* end if */
     
   }else{
 
     /* Duplicate input dimension structures for output dimension structures */ 
-    nbr_dim_out=nbr_dim_xtr;
-    dim_out=(dim_sct **)malloc(nbr_dim_out*sizeof(dim_sct *));
-    for(idx=0;idx<nbr_dim_out;idx++){
-      dim_out[idx]=dim_dup(dim[idx]);
-      (void)dim_xrf(dim[idx],dim_out[idx]);
+    nbr_dmn_out=nbr_dmn_xtr;
+    dmn_out=(dmn_sct **)malloc(nbr_dmn_out*sizeof(dmn_sct *));
+    for(idx=0;idx<nbr_dmn_out;idx++){
+      dmn_out[idx]=dmn_dup(dim[idx]);
+      (void)dmn_xrf(dim[idx],dmn_out[idx]);
     } /* end loop over idx */
 
   } /* end if */ 
@@ -426,14 +426,14 @@ main(int argc,char **argv)
   var=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
-    var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dim_xtr);
+    var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
     var_out[idx]=var_dup(var[idx]);
     (void)var_xrf(var[idx],var_out[idx]);
-    (void)var_dim_xrf(var_out[idx]);
+    (void)var_dmn_xrf(var_out[idx]);
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */ 
-  (void)var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,dim_avg,nbr_dim_avg,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,dmn_avg,nbr_dmn_avg,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* We now have final list of variables to extract. Phew. */
   if(dbg_lvl > 0){
@@ -453,10 +453,10 @@ main(int argc,char **argv)
   if(HISTORY_APPEND) (void)hst_att_cat(out_id,cmd_ln);
 
   /* Define dimensions in output file */ 
-  (void)dim_def(fl_out,out_id,dim_out,nbr_dim_out);
+  (void)dmn_def(fl_out,out_id,dmn_out,nbr_dmn_out);
 
   /* Define variables in output file, and copy their attributes */ 
-  (void)var_def(in_id,fl_out,out_id,var_out,nbr_xtr,dim_out,nbr_dim_out);
+  (void)var_def(in_id,fl_out,out_id,var_out,nbr_xtr,dmn_out,nbr_dmn_out);
 
   /* New missing values must be added to the output file in define mode */
   if(msk_nm != NULL){
@@ -505,7 +505,7 @@ main(int argc,char **argv)
       int wgt_id;
       
       wgt_id=ncvarid(in_id,wgt_nm);
-      wgt=var_fll(in_id,wgt_id,wgt_nm,dim,nbr_dim_fl);
+      wgt=var_fll(in_id,wgt_id,wgt_nm,dim,nbr_dmn_fl);
       
       /* Retrieve weighting variable */ 
       (void)var_get(in_id,wgt);
@@ -521,7 +521,7 @@ main(int argc,char **argv)
       int msk_id;
       
       msk_id=ncvarid(in_id,msk_nm);
-      msk=var_fll(in_id,msk_id,msk_nm,dim,nbr_dim_fl);
+      msk=var_fll(in_id,msk_id,msk_nm,dim,nbr_dmn_fl);
       
       /* Retrieve mask variable */ 
       (void)var_get(in_id,msk);
@@ -579,7 +579,7 @@ main(int argc,char **argv)
       /* Copy (masked) (weighted) values from var_prc to var_prc_out */ 
       (void)memcpy((void *)(var_prc_out[idx]->val.vp),(void *)(var_prc[idx]->val.vp),var_prc_out[idx]->sz*nctypelen(var_prc_out[idx]->type));
       /* Average variable over specified dimensions (tally array is set here) */
-      var_prc_out[idx]=var_avg(var_prc_out[idx],dim_avg,nbr_dim_avg);
+      var_prc_out[idx]=var_avg(var_prc_out[idx],dmn_avg,nbr_dmn_avg);
       /* var_prc_out[idx]->val holds numerator of averaging expression documented in NCO User's Guide 
 	 Denominator is also tricky due to sundry normalization options 
 	 These logical switches are VERY tricky---be careful modifying them */
@@ -636,7 +636,7 @@ main(int argc,char **argv)
 	  exit(EXIT_FAILURE); 
 	} /* end if */ 
 	/* Average weight over specified dimensions (tally array is set here) */ 
-	wgt_avg=var_avg(wgt_avg,dim_avg,nbr_dim_avg);
+	wgt_avg=var_avg(wgt_avg,dmn_avg,nbr_dmn_avg);
 	if(MULTIPLY_BY_TALLY){
 	  /* Currently this is not implemented */ 
 	  /* Multiply numerator (weighted sum of variable) by tally 

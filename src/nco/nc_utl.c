@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.53 2000-04-04 02:16:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.54 2000-04-05 21:41:54 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -221,7 +221,7 @@ void
 lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 /* 
    int nc_id: I netCDF file ID
-   lmt_sct *lmt_ptr: I/O structure from lmt_prs() or from lmt_dim_mk() to hold dimension limit information
+   lmt_sct *lmt_ptr: I/O structure from lmt_prs() or from lmt_dmn_mk() to hold dimension limit information
    long cnt_crr: I number of records already processed (only used for record dimensions in multi-file operators)
    bool FORTRAN_STYLE: I switch to determine syntactical interpretation of dimensional indices
  */ 
@@ -233,7 +233,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 
   bool flg_no_data=False; /* True if file contains no data for hyperslab */
 
-  dim_sct dim;
+  dmn_sct dim;
 
   enum monotonic_direction{
     decreasing, /* 0 */ 
@@ -246,7 +246,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
   int monotonic_direction;
   
   long idx;
-  long dim_sz;
+  long dmn_sz;
   long cnt_rmn_crr=-1L; /* Records to extract from current file */
   long cnt_rmn_ttl=-1L; /* Total records remaining to be read from this and all remaining files */
   long rec_skp_prv=-1L; /* Records skipped at end of previous file (diagnostic only) */
@@ -271,11 +271,11 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
   (void)ncdiminq(nc_id,lmt.id,(char *)NULL,&dim.sz);
   
   /* Shortcut to avoid indirection */ 
-  dim_sz=dim.sz;
+  dmn_sz=dim.sz;
 
-  /* Bomb if dim_sz < 1 */ 
-  if(dim_sz < 1){
-    (void)fprintf(stdout,"%s: ERROR Size of dimension \"%s\" is %li in input file, but must be > 0 in order to apply limits.\n",prg_nm_get(),lmt.nm,dim_sz);
+  /* Bomb if dmn_sz < 1 */ 
+  if(dmn_sz < 1){
+    (void)fprintf(stdout,"%s: ERROR Size of dimension \"%s\" is %li in input file, but must be > 0 in order to apply limits.\n",prg_nm_get(),lmt.nm,dmn_sz);
     exit(EXIT_FAILURE);
   } /* end if */
   
@@ -291,17 +291,17 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     } /* end if */
   } /* end if */
 
-  /* If min_sng and max_sng are both NULL then set type to lmt_dim_idx */
+  /* If min_sng and max_sng are both NULL then set type to lmt_dmn_idx */
   if(lmt.min_sng == NULL && lmt.max_sng == NULL){
     /* Limiting indices will be set to default extrema a bit later */
-    min_lmt_typ=max_lmt_typ=lmt_dim_idx;
+    min_lmt_typ=max_lmt_typ=lmt_dmn_idx;
   }else{
     /* min_sng and max_sng are not both NULL */ 
     /* Limit is coordinate value if string contains decimal point or is in exponential format 
      Otherwise limit is interpreted as zero-based dimension offset */ 
   
-    if(lmt.min_sng != NULL) min_lmt_typ=(strchr(lmt.min_sng,'.') || strchr(lmt.min_sng,'e') || strchr(lmt.min_sng,'E') || strchr(lmt.min_sng,'d') || strchr(lmt.min_sng,'D')) ? lmt_crd_val : lmt_dim_idx;
-    if(lmt.max_sng != NULL) max_lmt_typ=(strchr(lmt.max_sng,'.') || strchr(lmt.max_sng,'e') || strchr(lmt.max_sng,'E') || strchr(lmt.max_sng,'d') || strchr(lmt.max_sng,'D')) ? lmt_crd_val : lmt_dim_idx;
+    if(lmt.min_sng != NULL) min_lmt_typ=(strchr(lmt.min_sng,'.') || strchr(lmt.min_sng,'e') || strchr(lmt.min_sng,'E') || strchr(lmt.min_sng,'d') || strchr(lmt.min_sng,'D')) ? lmt_crd_val : lmt_dmn_idx;
+    if(lmt.max_sng != NULL) max_lmt_typ=(strchr(lmt.max_sng,'.') || strchr(lmt.max_sng,'e') || strchr(lmt.max_sng,'E') || strchr(lmt.max_sng,'d') || strchr(lmt.max_sng,'D')) ? lmt_crd_val : lmt_dmn_idx;
     
     /* Copy lmt_typ from defined limit to undefined */ 
     if(lmt.min_sng == NULL) min_lmt_typ=max_lmt_typ;
@@ -321,15 +321,15 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
   lmt.lmt_typ=min_lmt_typ;
   
   if(lmt.lmt_typ == lmt_crd_val){
-    double *dim_val_dp;
+    double *dmn_val_dp;
 
-    double dim_max;
-    double dim_min;
+    double dmn_max;
+    double dmn_min;
 
     long max_idx;
     long min_idx;
     long tmp_idx;
-    long dim_srt=0L;
+    long dmn_srt=0L;
 
     char *nc_type_nm(nc_type);
     
@@ -343,29 +343,29 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     if(dim.type == NC_BYTE || dim.type == NC_CHAR) (void)fprintf(stderr,"\nWARNING: Coordinate %s is type %s. Dimension truncation is unpredictable.\n",lmt.nm,nc_type_nm(dim.type));
     
     /* Allocate enough space to hold coordinate */ 
-    dim.val.vp=(void *)malloc(dim_sz*nctypelen(dim.type));
+    dim.val.vp=(void *)malloc(dmn_sz*nctypelen(dim.type));
     
     /* Retrieve coordinate */ 
-    ncvarget(nc_id,dim.cid,&dim_srt,&dim_sz,dim.val.vp);
+    ncvarget(nc_id,dim.cid,&dmn_srt,&dmn_sz,dim.val.vp);
     
     /* Convert coordinate to double-precision if neccessary */ 
     if(dim.type != NC_DOUBLE){
       ptr_unn old_val;
 
       old_val=dim.val;
-      dim.val.vp=(void *)malloc(dim_sz*nctypelen(NC_DOUBLE));
+      dim.val.vp=(void *)malloc(dmn_sz*nctypelen(NC_DOUBLE));
       /* Typecast old coordinate pointer union to correct type before access */ 
       (void)cast_void_nctype(dim.type,&old_val);
 
       /* Shortcut to avoid indirection */ 
-      dim_val_dp=dim.val.dp;
+      dmn_val_dp=dim.val.dp;
       switch(dim.type){
-      case NC_FLOAT: for(idx=0L;idx<dim_sz;idx++) {dim_val_dp[idx]=old_val.fp[idx];} break; 
-      case NC_DOUBLE: for(idx=0L;idx<dim_sz;idx++) {dim_val_dp[idx]=old_val.dp[idx];} break; 
-      case NC_LONG: for(idx=0L;idx<dim_sz;idx++) {dim_val_dp[idx]=old_val.lp[idx];} break;
-      case NC_SHORT: for(idx=0L;idx<dim_sz;idx++) {dim_val_dp[idx]=old_val.sp[idx];} break;
-      case NC_CHAR: for(idx=0L;idx<dim_sz;idx++) {dim_val_dp[idx]=old_val.cp[idx];} break;
-      case NC_BYTE: for(idx=0L;idx<dim_sz;idx++) {dim_val_dp[idx]=old_val.bp[idx];} break;
+      case NC_FLOAT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.fp[idx];} break; 
+      case NC_DOUBLE: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.dp[idx];} break; 
+      case NC_LONG: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.lp[idx];} break;
+      case NC_SHORT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.sp[idx];} break;
+      case NC_CHAR: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.cp[idx];} break;
+      case NC_BYTE: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.bp[idx];} break;
       } /* end switch */ 
 
       /* Un-typecast pointer to values after access */ 
@@ -379,30 +379,30 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     } /* end type conversion */ 
 
     /* Shortcut to avoid indirection */ 
-    dim_val_dp=dim.val.dp;
+    dmn_val_dp=dim.val.dp;
 
     /* Assuming coordinate is monotonic, direction of monotonicity is determined by first two elements */ 
-    if(dim_sz == 1){
+    if(dmn_sz == 1){
       monotonic_direction=increasing;
     }else{
-      if(dim_val_dp[0] > dim_val_dp[1]) monotonic_direction=decreasing; else monotonic_direction=increasing;
+      if(dmn_val_dp[0] > dmn_val_dp[1]) monotonic_direction=decreasing; else monotonic_direction=increasing;
     } /* end else */ 
 
     if(monotonic_direction == increasing){
       min_idx=0L;
-      max_idx=dim_sz-1L;
+      max_idx=dmn_sz-1L;
     }else{
-      min_idx=dim_sz-1L;
+      min_idx=dmn_sz-1L;
       max_idx=0L;
     } /* end else */
 
     /* Determine min and max values of entire coordinate */ 
-    dim_min=dim_val_dp[min_idx];
-    dim_max=dim_val_dp[max_idx];
+    dmn_min=dmn_val_dp[min_idx];
+    dmn_max=dmn_val_dp[max_idx];
     
     /* Convert user-specified limits into double precision numeric values, or supply defaults */ 
-    if(lmt.min_sng == NULL) lmt.min_val=dim_val_dp[min_idx]; else lmt.min_val=atof(lmt.min_sng);
-    if(lmt.max_sng == NULL) lmt.max_val=dim_val_dp[max_idx]; else lmt.max_val=atof(lmt.max_sng);
+    if(lmt.min_sng == NULL) lmt.min_val=dmn_val_dp[min_idx]; else lmt.min_val=atof(lmt.min_sng);
+    if(lmt.max_sng == NULL) lmt.max_val=dmn_val_dp[max_idx]; else lmt.max_val=atof(lmt.max_sng);
 
     /* Warn when min_val > max_val (i.e., wrapped coordinate)*/ 
     if(lmt.min_val > lmt.max_val) (void)fprintf(stderr,"%s: WARNING Interpreting hyperslab specifications as wrapped coordinates [%s <= %g] and [%s >= %g]\n",prg_nm_get(),lmt.nm,lmt.max_val,lmt.nm,lmt.min_val);
@@ -410,11 +410,11 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     /* Fail when... */ 
     if(
        /* User did not specify single level, coordinate is not wrapped, and either extrema falls outside valid crd range */
-       ((lmt.min_val < lmt.max_val) && ((lmt.min_val > dim_max) || (lmt.max_val < dim_min))) ||
+       ((lmt.min_val < lmt.max_val) && ((lmt.min_val > dmn_max) || (lmt.max_val < dmn_min))) ||
        /* User did not specify single level, coordinate is wrapped, and both extrema fall outside valid crd range */
-       ((lmt.min_val > lmt.max_val) && ((lmt.min_val > dim_max) && (lmt.max_val < dim_min))) ||
+       ((lmt.min_val > lmt.max_val) && ((lmt.min_val > dmn_max) && (lmt.max_val < dmn_min))) ||
        False){
-      (void)fprintf(stdout,"%s: ERROR User-specified coordinate value range %g <= %s <= %g does not fall within valid range %g <= %s <= %g\n",prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val,dim_min,lmt.nm,dim_max);
+      (void)fprintf(stdout,"%s: ERROR User-specified coordinate value range %g <= %s <= %g does not fall within valid range %g <= %s <= %g\n",prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val,dmn_min,lmt.nm,dmn_max);
       exit(EXIT_FAILURE);
     } /* end if */
     
@@ -430,9 +430,9 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       double dst_old;
       
       lmt.min_idx=0L;
-      dst_old=fabs(lmt.min_val-dim_val_dp[0]);
-      for(tmp_idx=1L;tmp_idx<dim_sz;tmp_idx++){
-	if((dst_new=fabs(lmt.min_val-dim_val_dp[tmp_idx])) < dst_old){
+      dst_old=fabs(lmt.min_val-dmn_val_dp[0]);
+      for(tmp_idx=1L;tmp_idx<dmn_sz;tmp_idx++){
+	if((dst_new=fabs(lmt.min_val-dmn_val_dp[tmp_idx])) < dst_old){
 	  dst_old=dst_new;
 	  lmt.min_idx=tmp_idx;
 	} /* end if */
@@ -448,36 +448,36 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	 of the specified half-ranges is valid (there are coordinates < -100.0).
 	 However, "-d lon,100.0,-200.0" should fail when lon=[-180.0,-90.0,0.0,90.0] because both 
 	 of the specified half-ranges are invalid (no coordinate is > 100.0 or < -200.0).
-	 The -1L flags are replaced with the correct indices (0L or dim_sz-1L) following the search loop block
-	 Overwriting the -1L flags with 0L or dim_sz-1L later is more heuristic than setting them = 0L here,
+	 The -1L flags are replaced with the correct indices (0L or dmn_sz-1L) following the search loop block
+	 Overwriting the -1L flags with 0L or dmn_sz-1L later is more heuristic than setting them = 0L here,
 	 since 0L is a valid search result.
        */ 
       if(monotonic_direction == increasing){
 	if(lmt.min_sng != NULL){
 	  /* Find index of smallest coordinate greater than min_val */ 
 	  tmp_idx=0L;
-	  while((dim_val_dp[tmp_idx] < lmt.min_val) && (tmp_idx < dim_sz)) tmp_idx++;
-	  if(tmp_idx != dim_sz) lmt.min_idx=tmp_idx; else lmt.min_idx=-1L;
+	  while((dmn_val_dp[tmp_idx] < lmt.min_val) && (tmp_idx < dmn_sz)) tmp_idx++;
+	  if(tmp_idx != dmn_sz) lmt.min_idx=tmp_idx; else lmt.min_idx=-1L;
 	} /* end if */
 	if(lmt.max_sng != NULL){
 	  /* Find index of largest coordinate less than max_val */ 
-	  tmp_idx=dim_sz-1L;
-	  while((dim_val_dp[tmp_idx] > lmt.max_val) && (tmp_idx > -1L)) tmp_idx--;
+	  tmp_idx=dmn_sz-1L;
+	  while((dmn_val_dp[tmp_idx] > lmt.max_val) && (tmp_idx > -1L)) tmp_idx--;
 	  if(tmp_idx != -1L) lmt.max_idx=tmp_idx; else lmt.max_idx=-1L;
 	} /* end if */
 	/* end if monotonic_direction == increasing */ 
       }else{ /* monotonic_direction == decreasing */
 	if(lmt.min_sng != NULL){
 	  /* Find index of smallest coordinate greater than min_val */ 
-	  tmp_idx=dim_sz-1L;
-	  while((dim_val_dp[tmp_idx] < lmt.min_val) && (tmp_idx > -1L)) tmp_idx--;
+	  tmp_idx=dmn_sz-1L;
+	  while((dmn_val_dp[tmp_idx] < lmt.min_val) && (tmp_idx > -1L)) tmp_idx--;
 	  if(tmp_idx != -1L) lmt.min_idx=tmp_idx; else lmt.min_idx=-1L;
 	} /* end if */
 	if(lmt.max_sng != NULL){
 	  /* Find index of largest coordinate less than max_val */ 
 	  tmp_idx=0L;
-	  while((dim_val_dp[tmp_idx] > lmt.max_val) && (tmp_idx < dim_sz)) tmp_idx++;
-	  if(tmp_idx != dim_sz) lmt.max_idx=tmp_idx; else lmt.max_idx=-1L;
+	  while((dmn_val_dp[tmp_idx] > lmt.max_val) && (tmp_idx < dmn_sz)) tmp_idx++;
+	  if(tmp_idx != dmn_sz) lmt.max_idx=tmp_idx; else lmt.max_idx=-1L;
 	} /* end if */
       } /* end else monotonic_direction == decreasing */
 
@@ -485,7 +485,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	 Case of a wrapped coordinate: Either, but not both, of min_idx or max_idx will be flagged with -1
 	 See explanation above */ 
       if(lmt.min_idx == -1L && (lmt.min_val > lmt.max_val)) lmt.min_idx=0L;
-      if(lmt.max_idx == -1L && (lmt.min_val > lmt.max_val)) lmt.max_idx=dim_sz-1L;
+      if(lmt.max_idx == -1L && (lmt.min_val > lmt.max_val)) lmt.max_idx=dmn_sz-1L;
     
     } /* end if min_val != max_val */
     
@@ -509,22 +509,22 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
   }else{ /* end if limit arguments were coordinate values */ 
     /* Convert limit strings to zero-based indicial offsets */
     
-    int rec_dim_id;
+    int rec_dmn_id;
 
     /* Specifying stride alone, but not min or max, is legal, e.g., -d time,,,2
        Thus is_usr_spc_lmt may be True, even though one or both of min_sng, max_sng is NULL
-       Furthermore, both min_sng and max_sng are artifically created by lmt_dim_mk()
+       Furthermore, both min_sng and max_sng are artifically created by lmt_dmn_mk()
        for record dimensions when the user does not explicitly specify limits.
        In this case, min_sng_and max_sng are non-NULL though no limits were specified
        In fact, min_sng and max_sng are set to the minimum and maximum string
        values of the first file processed.
        However, we can tell if these strings were artificially generated because 
-       lmt_dim_mk() sets the is_usr_spc_lmt flag to False in such cases.
-       Subsequent files may have different numbers of records, but lmt_dim_mk()
+       lmt_dmn_mk() sets the is_usr_spc_lmt flag to False in such cases.
+       Subsequent files may have different numbers of records, but lmt_dmn_mk()
        is only called once.
        Thus we must update min_idx and max_idx here for each file
        This causes min_idx and max_idx to be out of sync with min_sng and max_sng, 
-       which are only set in lmt_dim_mk() for the first file.
+       which are only set in lmt_dmn_mk() for the first file.
        In hindsight, artificially generating min_sng and max_sng may be a bad idea
     */
     /* Following logic is messy, but hard to simplify */ 
@@ -537,7 +537,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     } /* end if */
     if(lmt.max_sng == NULL || !lmt.is_usr_spc_lmt){
       /* No user-specified value available--generate maximal dimension index */
-      if(FORTRAN_STYLE) lmt.max_idx=dim_sz; else lmt.max_idx=dim_sz-1L;
+      if(FORTRAN_STYLE) lmt.max_idx=dmn_sz; else lmt.max_idx=dmn_sz-1L;
     }else{
       /* Use user-specified limit when available */
       lmt.max_idx=atol(lmt.max_sng);
@@ -550,15 +550,15 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     } /* end if */
     
     /* Exit if requested indices are not in valid range */ 
-    if(lmt.min_idx < 0 || lmt.min_idx >= dim_sz || lmt.max_idx < 0){
-      (void)fprintf(stdout,"%s: ERROR User-specified dimension index range %li <= %s <= %li does not fall within valid dimension index range 0 <= %s <= %li\n",prg_nm_get(),lmt.min_idx,lmt.nm,lmt.max_idx,lmt.nm,dim_sz-1L);
+    if(lmt.min_idx < 0 || lmt.min_idx >= dmn_sz || lmt.max_idx < 0){
+      (void)fprintf(stdout,"%s: ERROR User-specified dimension index range %li <= %s <= %li does not fall within valid dimension index range 0 <= %s <= %li\n",prg_nm_get(),lmt.min_idx,lmt.nm,lmt.max_idx,lmt.nm,dmn_sz-1L);
       (void)fprintf(stdout,"\n");
       exit(EXIT_FAILURE);
     } /* end if */
     
     /* Might this be the record dimension in a multi-file operation? */ 
-    (void)ncinquire(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dim_id);
-    if(lmt.id == rec_dim_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
+    (void)ncinquire(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
+    if(lmt.id == rec_dmn_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
 
     if(!lmt.is_rec_dmn || !lmt.is_usr_spc_lmt || ((prg_get() != ncra) && (prg_get() != ncrcat))){
       /* For non-record dimensions and for record dimensions where limit 
@@ -594,9 +594,9 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	  lmt.srt=lmt.min_idx;
 	  if(lmt.srd == 1L){
 	    /* With unity stride, the end index is lesser of number of remaining records to read and number of records in this file */
-	    lmt.end=(lmt.max_idx < dim_sz) ? lmt.max_idx : dim_sz-1L;
+	    lmt.end=(lmt.max_idx < dmn_sz) ? lmt.max_idx : dmn_sz-1L;
 	  }else{
-	    cnt_rmn_crr=1L+(dim_sz-1L-lmt.srt)/lmt.srd;
+	    cnt_rmn_crr=1L+(dmn_sz-1L-lmt.srt)/lmt.srd;
 	    cnt_rmn_crr=(cnt_rmn_ttl < cnt_rmn_crr) ? cnt_rmn_ttl : cnt_rmn_crr;
 	    lmt.end=lmt.srt+lmt.srd*(cnt_rmn_crr-1L);
 	  } /* end else */
@@ -606,11 +606,11 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	    /* Start index is zero since contiguous records are requested */
 	    lmt.srt=0L;
 	    /* End index is lesser of number of records to read from all remaining files (including this one) and number of records in this file */
-	    lmt.end=(cnt_rmn_ttl < dim_sz) ? cnt_rmn_ttl-1L : dim_sz-1L;
+	    lmt.end=(cnt_rmn_ttl < dmn_sz) ? cnt_rmn_ttl-1L : dmn_sz-1L;
 	  }else{
 	    /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
 	    lmt.srt=lmt.srd-lmt.rec_skp-1L;
-	    cnt_rmn_crr=1L+(dim_sz-1L-lmt.srt)/lmt.srd;
+	    cnt_rmn_crr=1L+(dmn_sz-1L-lmt.srt)/lmt.srd;
 	    cnt_rmn_crr=(cnt_rmn_ttl < cnt_rmn_crr) ? cnt_rmn_ttl : cnt_rmn_crr;
 	    lmt.end=lmt.srt+lmt.srd*(cnt_rmn_crr-1L);
 	  } /* end else */
@@ -622,9 +622,9 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	  /* Start index is min_idx for first file */
 	  lmt.srt=lmt.min_idx;
 	  if(lmt.srd == 1L){
-	    lmt.end=dim_sz-1L;
+	    lmt.end=dmn_sz-1L;
 	  }else{
-	    cnt_rmn_crr=1L+(dim_sz-1L-lmt.srt)/lmt.srd;
+	    cnt_rmn_crr=1L+(dmn_sz-1L-lmt.srt)/lmt.srd;
 	    lmt.end=lmt.srt+lmt.srd*(cnt_rmn_crr-1L);
 	  } /* end else */
 	}else{
@@ -632,11 +632,11 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	  if(lmt.srd == 1L){
 	    /* Start index is zero since contiguous records are requested */
 	    lmt.srt=0L;
-	    lmt.end=dim_sz-1L;
+	    lmt.end=dmn_sz-1L;
 	  }else{
 	    /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
 	    lmt.srt=lmt.srd-lmt.rec_skp-1L;
-	    cnt_rmn_crr=1L+(dim_sz-1L-lmt.srt)/lmt.srd;
+	    cnt_rmn_crr=1L+(dmn_sz-1L-lmt.srt)/lmt.srd;
 	    lmt.end=lmt.srt+lmt.srd*(cnt_rmn_crr-1L);
 	  } /* end else */
 	} /* endif user-specified records have already been read */
@@ -648,10 +648,10 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	  lmt.srt=lmt.min_idx;
 	  if(lmt.srd == 1L){
 	    /* With unity stride, the end index is lesser of number of remaining records to read and number of records in this file */
-	    lmt.end=(lmt.max_idx < dim_sz) ? lmt.max_idx : dim_sz-1L;
+	    lmt.end=(lmt.max_idx < dmn_sz) ? lmt.max_idx : dmn_sz-1L;
 	  }else{
 	    /* Record indices in the first file are global record indices */
-	    lmt.end=(dim_sz-(dim_sz%lmt.srd));
+	    lmt.end=(dmn_sz-(dmn_sz%lmt.srd));
 	    lmt.end=(lmt.max_idx < lmt.end) ? lmt.max_idx : lmt.end;
 	  } /* end else */
 	}else{
@@ -672,12 +672,12 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	  if(lmt.srd == 1L){
 	    /* Start index is zero since contiguous records are requested */
 	    lmt.srt=0L;
-	    lmt.end=(max_idx_lcl < dim_sz) ? max_idx_lcl : dim_sz-1L;
+	    lmt.end=(max_idx_lcl < dmn_sz) ? max_idx_lcl : dmn_sz-1L;
 	  }else{
 	    /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
 	    lmt.srt=lmt.srd-lmt.rec_skp-1L;
 	    lmt.end=lmt.srt;
-	    while(lmt.end < dim_sz-lmt.srd && lmt.end < max_idx_lcl-lmt.srd){
+	    while(lmt.end < dmn_sz-lmt.srd && lmt.end < max_idx_lcl-lmt.srd){
 	      lmt.end+=lmt.srd;
 	    } /* end while */
 	  } /* end else */
@@ -689,20 +689,20 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	  /* Start index is min_idx = 0L for first file */
 	  lmt.srt=lmt.min_idx;
 	  if(lmt.srd == 1L){
-	    lmt.end=dim_sz-1L;
+	    lmt.end=dmn_sz-1L;
 	  }else{
-	    lmt.end=(dim_sz-(dim_sz%lmt.srd));
+	    lmt.end=(dmn_sz-(dmn_sz%lmt.srd));
 	  } /* end else */
 	}else{
 	  /* Records have been read from previous file(s) */
 	  if(lmt.srd == 1L){
 	    /* Start index is zero since contiguous records are requested */
 	    lmt.srt=0L;
-	    lmt.end=dim_sz-1L;
+	    lmt.end=dmn_sz-1L;
 	  }else{
 	    /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
 	    lmt.srt=lmt.srd-lmt.rec_skp-1L;
-	    cnt_rmn_crr=1L+(dim_sz-1L-lmt.srt)/lmt.srd;
+	    cnt_rmn_crr=1L+(dmn_sz-1L-lmt.srt)/lmt.srd;
 	    lmt.end=lmt.srt+lmt.srd*(cnt_rmn_crr-1L);
 	  } /* end else */
 	} /* endif user-specified records have already been read */
@@ -712,8 +712,8 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       /* Save current rec_skp for diagnostics */
       rec_skp_prv=lmt.rec_skp;
       /* rec_skp for next file is the stride minus the number of unused records
-	 at end of this file (dim_sz-1L-lmt.end) minus one */
-      lmt.rec_skp=dim_sz-1L-lmt.end;
+	 at end of this file (dmn_sz-1L-lmt.end) minus one */
+      lmt.rec_skp=dmn_sz-1L-lmt.end;
       /*      assert(lmt.rec_skp >= 0);*/
     } /* endif user-specified limits to record dimension */
     
@@ -724,15 +724,15 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
      record at a time and thus never actually use lmt.cnt for the record dimension.
    */ 
   if(lmt.srd == 1L){
-    if(lmt.srt <= lmt.end) lmt.cnt=lmt.end-lmt.srt+1L; else lmt.cnt=dim_sz-lmt.srt+lmt.end+1L;
+    if(lmt.srt <= lmt.end) lmt.cnt=lmt.end-lmt.srt+1L; else lmt.cnt=dmn_sz-lmt.srt+lmt.end+1L;
   }else{
-    if(lmt.srt <= lmt.end) lmt.cnt=1L+(lmt.end-lmt.srt)/lmt.srd; else lmt.cnt=1L+((dim_sz-lmt.srt)+lmt.end)/lmt.srd;
+    if(lmt.srt <= lmt.end) lmt.cnt=1L+(lmt.end-lmt.srt)/lmt.srd; else lmt.cnt=1L+((dmn_sz-lmt.srt)+lmt.end)/lmt.srd;
   } /* end else */
 
-  /* NB: Degenerate cases of WRP && SRD exist for which dim_cnt_2 == 0
+  /* NB: Degenerate cases of WRP && SRD exist for which dmn_cnt_2 == 0
      This occurs when srd is large enough, or max_idx small enough, 
      such that no values are selected in the second read. 
-     e.g., "-d lon,60,0,10" if sz(lon)=128 has dim_cnt_2 == 0
+     e.g., "-d lon,60,0,10" if sz(lon)=128 has dmn_cnt_2 == 0
      Since netCDF library reports an error reading and writing cnt=0 dimensions, a kludge is necessary
      Syntax ensures it is always the second read, not the first, which is obviated
      Therefore we convert these degenerate cases into non-wrapped coordinates to be processed by a single read 
@@ -741,28 +741,28 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
   if(
      (lmt.srd != 1L) && /* SRD */ 
      (lmt.srt > lmt.end) && /* WRP */ 
-     (lmt.cnt == (1L+(dim_sz-lmt.srt-1L)/lmt.srd)) && /* dim_cnt_1 == cnt -> dim_cnt_2 == 0 */ 
+     (lmt.cnt == (1L+(dmn_sz-lmt.srt-1L)/lmt.srd)) && /* dmn_cnt_1 == cnt -> dmn_cnt_2 == 0 */ 
      True){
-    long greatest_srd_multiplier_1st_hyp_slb; /* greatest integer m such that srt+m*srd < dim_sz */
+    long greatest_srd_multiplier_1st_hyp_slb; /* greatest integer m such that srt+m*srd < dmn_sz */
     long last_good_idx_1st_hyp_slb; /* C index of last valid member of 1st hyperslab (= srt+m*srd) */
     long left_over_idx_1st_hyp_slb; /* # elements from first hyperslab to count towards current stride */
     long first_good_idx_2nd_hyp_slb; /* C index of first valid member of 2nd hyperslab, if any */
 
     /* NB: Perform these operations with integer arithmatic or else! */
     /* Wrapped dimensions with a stride may not start at idx 0 on second read */
-    greatest_srd_multiplier_1st_hyp_slb=(dim_sz-lmt.srt-1L)/lmt.srd;
+    greatest_srd_multiplier_1st_hyp_slb=(dmn_sz-lmt.srt-1L)/lmt.srd;
     last_good_idx_1st_hyp_slb=lmt.srt+lmt.srd*greatest_srd_multiplier_1st_hyp_slb;
-    left_over_idx_1st_hyp_slb=dim_sz-last_good_idx_1st_hyp_slb-1L;
-    first_good_idx_2nd_hyp_slb=(last_good_idx_1st_hyp_slb+lmt.srd)%dim_sz;
+    left_over_idx_1st_hyp_slb=dmn_sz-last_good_idx_1st_hyp_slb-1L;
+    first_good_idx_2nd_hyp_slb=(last_good_idx_1st_hyp_slb+lmt.srd)%dmn_sz;
 
-    /* Conditions causing dim_cnt_2 == 0 */
+    /* Conditions causing dmn_cnt_2 == 0 */
     if(first_good_idx_2nd_hyp_slb > lmt.end) lmt.end=last_good_idx_1st_hyp_slb;
   } /* end if */ 
 
   /* Exit when valid bracketed range contains no coordinates */ 
   if(lmt.cnt == 0){
     if(lmt.lmt_typ == lmt_crd_val) (void)fprintf(stdout,"%s: ERROR Domain %g <= %s <= %g brackets no coordinate values.\n",prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val); 
-    if(lmt.lmt_typ == lmt_dim_idx) (void)fprintf(stdout,"%s: ERROR Empty domain for %s\n",prg_nm_get(),lmt.nm); 
+    if(lmt.lmt_typ == lmt_dmn_idx) (void)fprintf(stdout,"%s: ERROR Empty domain for %s\n",prg_nm_get(),lmt.nm); 
     exit(EXIT_FAILURE);
   } /* end if */
     
@@ -818,18 +818,18 @@ rec_var_dbg(int nc_id,char *dbg_sng)
 {
   /* Purpose: Aid in debugging problems with record dimension */ 
   /* Usage: if(dbg_lvl == 73) rec_var_dbg(out_id,"After ncvarput()"); */ 
-  int nbr_dim_fl;
+  int nbr_dmn_fl;
   int nbr_var_fl;
-  int rec_dim_id=-1;
-  long dim_sz;
+  int rec_dmn_id=-1;
+  long dmn_sz;
 
   (void)fprintf(stderr,"%s: DBG %s\n",prg_nm_get(),dbg_sng);
-  (void)ncinquire(nc_id,&nbr_dim_fl,&nbr_var_fl,(int *)NULL,&rec_dim_id);
-  if(rec_dim_id == -1){
-    (void)fprintf(stderr,"%s: DBG %d dimensions, %d variables, no record dimension\n",prg_nm_get(),nbr_dim_fl,nbr_var_fl);
+  (void)ncinquire(nc_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
+  if(rec_dmn_id == -1){
+    (void)fprintf(stderr,"%s: DBG %d dimensions, %d variables, no record dimension\n",prg_nm_get(),nbr_dmn_fl,nbr_var_fl);
   }else{
-    (void)ncdiminq(nc_id,rec_dim_id,(char *)NULL,&dim_sz);
-    (void)fprintf(stderr,"%s: DBG %d dimensions, %d variables, record dimension size is %li\n",prg_nm_get(),nbr_dim_fl,nbr_var_fl,dim_sz);
+    (void)ncdiminq(nc_id,rec_dmn_id,(char *)NULL,&dmn_sz);
+    (void)fprintf(stderr,"%s: DBG %d dimensions, %d variables, record dimension size is %li\n",prg_nm_get(),nbr_dmn_fl,nbr_var_fl,dmn_sz);
   } /* end else */
   (void)fflush(stderr);
 } /* end rec_var_dbg() */ 
@@ -885,28 +885,28 @@ att_cpy(int in_id,int out_id,int var_in_id,int var_out_id)
 } /* end att_cpy() */ 
 
 var_sct *
-var_fll(int nc_id,int var_id,char *var_nm,dim_sct **dim,int nbr_dim)
+var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
 /* 
    int nc_id: I netCDF file ID
    int var_id: I variable ID
    char *var_nm: I variable name
-   dim_sct **dim: I list of pointers to dimension structures
+   dmn_sct **dim: I list of pointers to dimension structures
    int nbr_dim: I number of dimensions in list
    var_sct *var_fll(): O variable structure
  */ 
 {
   /* Routine to malloc() and return a completed var_sct */ 
 
-  char dim_nm[MAX_NC_NAME];
+  char dmn_nm[MAX_NC_NAME];
 
-  int dim_idx;
+  int dmn_idx;
   int idx;
-  int rec_dim_id;
+  int rec_dmn_id;
 
   var_sct *var;
 
   /* Get the record dimension ID */
-  (void)ncinquire(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dim_id);
+  (void)ncinquire(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
   
   var=(var_sct *)malloc(sizeof(var_sct));
   var->nm=var_nm;
@@ -917,15 +917,15 @@ var_fll(int nc_id,int var_id,char *var_nm,dim_sct **dim,int nbr_dim)
   (void)ncvarinq(var->nc_id,var->id,(char *)NULL,&var->type,&var->nbr_dim,(int *)NULL,&var->nbr_att);
 
   /* Allocate space for dimension information */ 
-  if(var->nbr_dim > 0) var->dim=(dim_sct **)malloc(var->nbr_dim*sizeof(dim_sct *)); else var->dim=(dim_sct **)NULL;
-  if(var->nbr_dim > 0) var->dim_id=(int *)malloc(var->nbr_dim*sizeof(int)); else var->dim_id=(int *)NULL;
+  if(var->nbr_dim > 0) var->dim=(dmn_sct **)malloc(var->nbr_dim*sizeof(dmn_sct *)); else var->dim=(dmn_sct **)NULL;
+  if(var->nbr_dim > 0) var->dmn_id=(int *)malloc(var->nbr_dim*sizeof(int)); else var->dmn_id=(int *)NULL;
   if(var->nbr_dim > 0) var->cnt=(long *)malloc(var->nbr_dim*sizeof(long)); else var->cnt=(long *)NULL;
   if(var->nbr_dim > 0) var->srt=(long *)malloc(var->nbr_dim*sizeof(long)); else var->srt=(long *)NULL;
   if(var->nbr_dim > 0) var->end=(long *)malloc(var->nbr_dim*sizeof(long)); else var->end=(long *)NULL;
   if(var->nbr_dim > 0) var->srd=(long *)malloc(var->nbr_dim*sizeof(long)); else var->srd=(long *)NULL;
 
   /* Get dimension IDs from input file */
-  (void)ncvarinq(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,(int *)NULL,var->dim_id,(int *)NULL);
+  (void)ncvarinq(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,(int *)NULL,var->dmn_id,(int *)NULL);
   
   /* Set defaults */ 
   var->is_rec_var=False;
@@ -945,29 +945,29 @@ var_fll(int nc_id,int var_id,char *var_nm,dim_sct **dim,int nbr_dim)
   for(idx=0;idx<var->nbr_dim;idx++){
 
     /* What is the name of this dimension? */ 
-    (void)ncdiminq(nc_id,var->dim_id[idx],dim_nm,(long *)NULL);
+    (void)ncdiminq(nc_id,var->dmn_id[idx],dmn_nm,(long *)NULL);
 
     /* Search the input dimension list for a matching name */ 
-    for(dim_idx=0;dim_idx<nbr_dim;dim_idx++){
-      if(!strcmp(dim_nm,dim[dim_idx]->nm)) break;
+    for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
+      if(!strcmp(dmn_nm,dim[dmn_idx]->nm)) break;
     } /* end for */ 
 
-    if(dim_idx == nbr_dim){
-      (void)fprintf(stdout,"%s: ERROR dimension %s is not in input dimension list\n",prg_nm_get(),dim_nm);
+    if(dmn_idx == nbr_dim){
+      (void)fprintf(stdout,"%s: ERROR dimension %s is not in input dimension list\n",prg_nm_get(),dmn_nm);
       exit(EXIT_FAILURE);
     } /* end if */ 
 
-    var->dim[idx]=dim[dim_idx];
-    var->cnt[idx]=dim[dim_idx]->cnt;
-    var->srt[idx]=dim[dim_idx]->srt;
-    var->end[idx]=dim[dim_idx]->end;
-    var->srd[idx]=dim[dim_idx]->srd;
+    var->dim[idx]=dim[dmn_idx];
+    var->cnt[idx]=dim[dmn_idx]->cnt;
+    var->srt[idx]=dim[dmn_idx]->srt;
+    var->end[idx]=dim[dmn_idx]->end;
+    var->srd[idx]=dim[dmn_idx]->srd;
 
-    if(var->dim_id[idx] == rec_dim_id) var->is_rec_var=True; else var->sz_rec*=var->cnt[idx];
+    if(var->dmn_id[idx] == rec_dmn_id) var->is_rec_var=True; else var->sz_rec*=var->cnt[idx];
 
     if(var->dim[idx]->is_crd_dim && var->id == var->dim[idx]->cid){
       var->is_crd_var=True;
-      var->cid=var->dim_id[idx];
+      var->cid=var->dmn_id[idx];
     } /* end if */
 
     var->sz*=var->cnt[idx];
@@ -1074,42 +1074,42 @@ mss_val_get(int nc_id,var_sct *var)
 
 } /* end mss_val_get() */ 
 
-dim_sct *
-dim_fll(int nc_id,int dim_id,char *dim_nm)
+dmn_sct *
+dmn_fll(int nc_id,int dmn_id,char *dmn_nm)
 /* 
    int nc_id: I netCDF input-file ID
-   int dim_id: I dimension ID
-   char *dim_nm: I dimension name
-   dim_sct *dim_fll(): pointer to output dimension structure
+   int dmn_id: I dimension ID
+   char *dmn_nm: I dimension name
+   dmn_sct *dmn_fll(): pointer to output dimension structure
  */ 
 {
-  /* Routine to malloc() and return a completed dim_sct */ 
+  /* Routine to malloc() and return a completed dmn_sct */ 
 
-  dim_sct *dim;
+  dmn_sct *dim;
   
-  int rec_dim_id;
+  int rec_dmn_id;
   
-  dim=(dim_sct *)malloc(sizeof(dim_sct));
+  dim=(dmn_sct *)malloc(sizeof(dmn_sct));
   
-  dim->nm=dim_nm;
-  dim->id=dim_id;
+  dim->nm=dmn_nm;
+  dim->id=dmn_id;
   dim->nc_id=nc_id;
   dim->xrf=NULL;
   dim->val.vp=NULL;
 
   dim->is_crd_dim=False;
-  (void)ncdiminq(dim->nc_id,dim_id,(char *)NULL,&dim->sz);
+  (void)ncdiminq(dim->nc_id,dmn_id,(char *)NULL,&dim->sz);
   
   /* Get the record dimension ID */
-  (void)ncinquire(dim->nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dim_id);
-  if(dim->id == rec_dim_id){
+  (void)ncinquire(dim->nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
+  if(dim->id == rec_dmn_id){
     dim->is_rec_dim=True;
   }else{
     dim->is_rec_dim=False;
   } /* end if */
   
   ncopts=0; 
-  dim->cid=ncvarid(dim->nc_id,dim_nm);
+  dim->cid=ncvarid(dim->nc_id,dmn_nm);
   ncopts=NC_VERBOSE | NC_FATAL; 
   if(dim->cid != -1){
     dim->is_crd_dim=True;
@@ -1124,15 +1124,15 @@ dim_fll(int nc_id,int dim_id,char *dim_nm)
   
   return dim;
   
-} /* end dim_fll() */ 
+} /* end dmn_fll() */ 
 
 void
-dim_lmt_merge(dim_sct **dim,int nbr_dim,lmt_sct *lmt,int nbr_lmt)
+dmn_lmt_mrg(dmn_sct **dim,int nbr_dim,lmt_sct *lmt,int lmt_nbr)
 /* 
-   dim_sct **dim: I list of pointers to dimension structures
+   dmn_sct **dim: I list of pointers to dimension structures
    int nbr_dim: I number of dimension structures in structure list
    lmt_sct *lmt: I structure from lmt_evl() holding dimension limit info.
-   int nbr_lmt: I number of dimensions with user-specified limits
+   int lmt_nbr: I number of dimensions with user-specified limits
  */ 
 {
   /* Routine to merge the limit structure information into the dimension structures */ 
@@ -1143,7 +1143,7 @@ dim_lmt_merge(dim_sct **dim,int nbr_dim,lmt_sct *lmt,int nbr_lmt)
   for(idx=0;idx<nbr_dim;idx++){
 
     /* Decide whether this dimension has any user-specified limits */ 
-    for(lmt_idx=0;lmt_idx<nbr_lmt;lmt_idx++){
+    for(lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
       if(lmt[lmt_idx].id == dim[idx]->id){
 	dim[idx]->cnt=lmt[lmt_idx].cnt;
 	dim[idx]->srt=lmt[lmt_idx].srt;
@@ -1153,7 +1153,7 @@ dim_lmt_merge(dim_sct **dim,int nbr_dim,lmt_sct *lmt,int nbr_lmt)
       } /* end if */
     } /* end loop over lmt_idx */
   } /* end loop over dim */
-} /* end dim_lmt_merge() */ 
+} /* end dmn_lmt_mrg() */ 
 
 nm_id_sct *
 var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,int *nbr_xtr)
@@ -1312,14 +1312,14 @@ var_lst_add_crd(int nc_id,int nbr_var,int nbr_dim,nm_id_sct *xtr_lst,int *nbr_xt
 } /* end var_lst_add_crd() */ 
 
 lmt_sct
-lmt_dim_mk(int nc_id,int dim_id,lmt_sct *lmt,int nbr_lmt,bool FORTRAN_STYLE)
+lmt_dmn_mk(int nc_id,int dmn_id,lmt_sct *lmt,int lmt_nbr,bool FORTRAN_STYLE)
 /* 
    int nc_id: I netCDF file ID
-   int dim_id: I ID of the dimension for which to create a limit structure
+   int dmn_id: I ID of the dimension for which to create a limit structure
    lmt_sct *lmt: I array of limits structures from lmt_evl()
-   int nbr_lmt: I number of limit structures in limit structure array
+   int lmt_nbr: I number of limit structures in limit structure array
    bool FORTRAN_STYLE: I switch to determine syntactical interpretation of dimensional indices
-   lmt_sct lmt_dim_mk(): O limit structure for dimension
+   lmt_sct lmt_dmn_mk(): O limit structure for dimension
  */ 
 {
   /* Create a stand-alone limit structure just for the given dimension */ 
@@ -1334,9 +1334,9 @@ lmt_dim_mk(int nc_id,int dim_id,lmt_sct *lmt,int nbr_lmt,bool FORTRAN_STYLE)
   lmt_dim.is_usr_spc_max=False; /* True if user-specified, else False */
   lmt_dim.is_usr_spc_min=False; /* True if user-specified, else False */
 
-  for(idx=0;idx<nbr_lmt;idx++){
+  for(idx=0;idx<lmt_nbr;idx++){
     /* Copy user-specified limits, if any */ 
-    if(lmt[idx].id == dim_id){
+    if(lmt[idx].id == dmn_id){
       lmt_dim.is_usr_spc_lmt=True; /* True if any part of limit is user-specified, else False */
       if(lmt[idx].max_sng == NULL){
 	lmt_dim.max_sng=NULL;
@@ -1357,23 +1357,23 @@ lmt_dim_mk(int nc_id,int dim_id,lmt_sct *lmt,int nbr_lmt,bool FORTRAN_STYLE)
   } /* end loop over idx */
 
   /* If this limit was not user-specified, then ... */
-  if(idx == nbr_lmt){
+  if(idx == lmt_nbr){
     /* Create default limits to look as though user-specified them */
-    char dim_nm[MAX_NC_NAME];
+    char dmn_nm[MAX_NC_NAME];
     long cnt;
     int max_sng_sz;
     
     /* Fill in limits with default parsing information */ 
     ncopts=0; 
-    rcd=ncdiminq(nc_id,dim_id,dim_nm,&cnt);
+    rcd=ncdiminq(nc_id,dmn_id,dmn_nm,&cnt);
     ncopts=NC_VERBOSE | NC_FATAL; 
 
     if(rcd == -1){
-      (void)fprintf(stdout,"%s: ERROR attempting to find non-existent dimension with id = %d in lmt_dim_mk()\n",prg_nm_get(),dim_id);
+      (void)fprintf(stdout,"%s: ERROR attempting to find non-existent dimension with id = %d in lmt_dmn_mk()\n",prg_nm_get(),dmn_id);
       exit(EXIT_FAILURE);
     } /* end if */ 
 
-    lmt_dim.nm=(char *)strdup(dim_nm);
+    lmt_dim.nm=(char *)strdup(dmn_nm);
     lmt_dim.srd_sng=NULL;
     /* Generate min and max strings to look as if the user had specified them
        Adjust accordingly if FORTRAN_STYLE was requested for other dimensions
@@ -1384,7 +1384,7 @@ lmt_dim_mk(int nc_id,int dim_id,lmt_sct *lmt,int nbr_lmt,bool FORTRAN_STYLE)
        Otherwise, problems arise when FORTRAN_STYLE is specified by the user 
        along with explicit hypersalbs for some dimensions excluding the record
        dimension.
-       Then, when lmt_dim_mk() creates the record dimension structure, it must
+       Then, when lmt_dmn_mk() creates the record dimension structure, it must
        be created consistently with the FORTRAN_STYLE flag for the other dimensions.
        In order to do that, I must fill in the max_sng, min_sng, and srd_sng
        arguments with strings as if they had been read from the keyboard.
@@ -1394,7 +1394,7 @@ lmt_dim_mk(int nc_id,int dim_id,lmt_sct *lmt,int nbr_lmt,bool FORTRAN_STYLE)
     /* Decrement cnt to C index value if necessary */
     if(!FORTRAN_STYLE) cnt--; 
     if(cnt < 0L){
-      (void)fprintf(stdout,"%s: cnt < 0 in lmt_dim_mk()\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: cnt < 0 in lmt_dmn_mk()\n",prg_nm_get());
       exit(EXIT_FAILURE);
     } /* end if */
     /* cnt < 10 covers negative numbers and SIGFPE from log10(cnt==0) 
@@ -1412,13 +1412,13 @@ lmt_dim_mk(int nc_id,int dim_id,lmt_sct *lmt,int nbr_lmt,bool FORTRAN_STYLE)
   
   return lmt_dim;
   
-} /* end lmt_dim_mk() */ 
+} /* end lmt_dmn_mk() */ 
 
 nm_id_sct *
-var_lst_crd_xcl(int nc_id,int dim_id,nm_id_sct *xtr_lst,int *nbr_xtr)
+var_lst_crd_xcl(int nc_id,int dmn_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 /* 
    int nc_id: I netCDF file ID
-   int dim_id: I dimension ID of the coordinate to eliminate from the extraction list
+   int dmn_id: I dimension ID of the coordinate to eliminate from the extraction list
    nm_id_sct *xtr_lst: current extraction list (destroyed)
    int *nbr_xtr: I/O number of variables in current extraction list
    nm_id_sct var_lst_crd_xcl(): O extraction list
@@ -1433,7 +1433,7 @@ var_lst_crd_xcl(int nc_id,int dim_id,nm_id_sct *xtr_lst,int *nbr_xtr)
   int crd_id=-1;
   
   /* What is the variable ID of the record coordinate, if any? */ 
-  (void)ncdiminq(nc_id,dim_id,crd_nm,(long *)NULL);
+  (void)ncdiminq(nc_id,dmn_id,crd_nm,(long *)NULL);
   ncopts=0; 
   crd_id=ncvarid(nc_id,crd_nm);
   ncopts=NC_VERBOSE | NC_FATAL; 
@@ -1478,10 +1478,10 @@ var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
      to be extracted is also on the list. This helps with making concise
      malloc() calls down the road. */ 
 
-  char dim_nm[MAX_NC_NAME];
+  char dmn_nm[MAX_NC_NAME];
 
   int crd_id;
-  int dim_id[MAX_NC_DIMS];
+  int dmn_id[MAX_NC_DIMS];
   int idx_dim;
   int idx_var_dim;
   int idx_var;
@@ -1494,9 +1494,9 @@ var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
   /* ...for each dimension in the input file... */ 
   for(idx_dim=0;idx_dim<nbr_dim;idx_dim++){
     /* ...see if it is a coordinate dimension... */ 
-    (void)ncdiminq(nc_id,idx_dim,dim_nm,(long *)NULL);
+    (void)ncdiminq(nc_id,idx_dim,dmn_nm,(long *)NULL);
     ncopts=0; 
-    crd_id=ncvarid(nc_id,dim_nm);
+    crd_id=ncvarid(nc_id,dmn_nm);
     ncopts=NC_VERBOSE | NC_FATAL; 
     if(crd_id != -1){
       /* Is this coordinate already on the extraction list? */ 
@@ -1507,14 +1507,14 @@ var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 	/* ...the coordinate is not on the list, is it associated with any of the variables?... */ 
 	for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
 	  /* Get number of dimensions and the dimension IDs for the variable. */
-	  (void)ncvarinq(nc_id,xtr_lst[idx_var].id,(char *)NULL,(nc_type *)NULL,&nbr_var_dim,dim_id,(int *)NULL);
+	  (void)ncvarinq(nc_id,xtr_lst[idx_var].id,(char *)NULL,(nc_type *)NULL,&nbr_var_dim,dmn_id,(int *)NULL);
 	  for(idx_var_dim=0;idx_var_dim<nbr_var_dim;idx_var_dim++){
-	    if(idx_dim == dim_id[idx_var_dim]) break;
+	    if(idx_dim == dmn_id[idx_var_dim]) break;
 	  } /* end loop over idx_var_dim */
 	  if(idx_var_dim != nbr_var_dim){
 	    /* Add the coordinate to the list */ 
 	    xtr_lst=(nm_id_sct *)realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));
-	    xtr_lst[*nbr_xtr].nm=(char *)strdup(dim_nm);
+	    xtr_lst[*nbr_xtr].nm=(char *)strdup(dmn_nm);
 	    xtr_lst[*nbr_xtr].id=crd_id;
 	    (*nbr_xtr)++;
 	    break;
@@ -1794,11 +1794,11 @@ var_val_cpy(int in_id,int out_id,var_sct **var,int nbr_var)
 } /* end var_val_cpy() */ 
 
 void
-dim_def(char *fl_nm,int nc_id,dim_sct **dim,int nbr_dim)
+dmn_def(char *fl_nm,int nc_id,dmn_sct **dim,int nbr_dim)
 /* 
    char *fl_nm: I name of the output file
    int nc_id: I netCDF output-file ID
-   dim_sct **dim: I list of pointers to dimension structures to be defined in the output file
+   dmn_sct **dim: I list of pointers to dimension structures to be defined in the output file
    int nbr_dim: I number of dimension structures in structure list
 */
 {
@@ -1823,18 +1823,18 @@ dim_def(char *fl_nm,int nc_id,dim_sct **dim,int nbr_dim)
     } /* end if */
   } /* end loop over idx */
   
-} /* end dim_def() */ 
+} /* end dmn_def() */ 
 
 void
-var_def(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dim_sct **dim_ncl,int nbr_dim_ncl)
+var_def(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dmn_ncl,int nbr_dmn_ncl)
 /* 
    int in_id: I netCDF input-file ID
    char *fl_out: I name of the output file
    int out_id: I netCDF output-file ID
    var_sct **var: I list of pointers to variable structures to be defined in the output file
    int nbr_var: I number of variable structures in structure list
-   dim_sct **dim_ncl: I list of pointers to dimension structures allowed in the output file
-   int nbr_dim_ncl: I number of dimension structures in structure list
+   dmn_sct **dmn_ncl: I list of pointers to dimension structures allowed in the output file
+   int nbr_dmn_ncl: I number of dimension structures in structure list
 */
 {
   /* Define variables in output file, and copy their attributes */ 
@@ -1848,7 +1848,7 @@ var_def(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dim_sct **di
      without altering the variable structures. */
 
   int idx_dim;
-  int dim_id_vec[MAX_NC_DIMS];
+  int dmn_id_vec[MAX_NC_DIMS];
   int idx;
   
   for(idx=0;idx<nbr_var;idx++){
@@ -1861,26 +1861,26 @@ var_def(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dim_sct **di
     /* If the variable has not been defined, define it */
     if(var[idx]->id == -1){
       
-      /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of ouput dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dim_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, var_def() was designed to call the simple branch when dim_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in the output file, nbr_dim_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */ 
-      if(dim_ncl != NULL || prg_get() == ncwa){
+      /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of ouput dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dmn_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, var_def() was designed to call the simple branch when dmn_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in the output file, nbr_dmn_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */ 
+      if(dmn_ncl != NULL || prg_get() == ncwa){
 	int nbr_var_dim=0;
 	int idx_ncl;
 
 	/* The rank of the output variable may have to be reduced. */ 
 	for(idx_dim=0;idx_dim<var[idx]->nbr_dim;idx_dim++){
 	  /* Is this dimension allowed in the output file? */ 
-	  for(idx_ncl=0;idx_ncl<nbr_dim_ncl;idx_ncl++){
-	    if(var[idx]->xrf->dim[idx_dim]->id == dim_ncl[idx_ncl]->xrf->id) break;
+	  for(idx_ncl=0;idx_ncl<nbr_dmn_ncl;idx_ncl++){
+	    if(var[idx]->xrf->dim[idx_dim]->id == dmn_ncl[idx_ncl]->xrf->id) break;
 	  } /* end loop over idx_ncl */
-	  if(idx_ncl != nbr_dim_ncl) dim_id_vec[nbr_var_dim++]=var[idx]->dim[idx_dim]->id;
+	  if(idx_ncl != nbr_dmn_ncl) dmn_id_vec[nbr_var_dim++]=var[idx]->dim[idx_dim]->id;
 	} /* end loop over idx_dim */
-	var[idx]->id=ncvardef(out_id,var[idx]->nm,var[idx]->type,nbr_var_dim,dim_id_vec);
+	var[idx]->id=ncvardef(out_id,var[idx]->nm,var[idx]->type,nbr_var_dim,dmn_id_vec);
 
       }else{ /* Straightforward definition */ 
 	for(idx_dim=0;idx_dim<var[idx]->nbr_dim;idx_dim++){
-	  dim_id_vec[idx_dim]=var[idx]->dim[idx_dim]->id;
+	  dmn_id_vec[idx_dim]=var[idx]->dim[idx_dim]->id;
 	} /* end loop over idx_dim */
-	var[idx]->id=ncvardef(out_id,var[idx]->nm,var[idx]->type,var[idx]->nbr_dim,dim_id_vec);
+	var[idx]->id=ncvardef(out_id,var[idx]->nm,var[idx]->type,var[idx]->nbr_dim,dmn_id_vec);
       } /* end else */
 
     }else{
@@ -1974,27 +1974,27 @@ hst_att_cat(int out_id,char *hst_sng)
 } /* end hst_att_cat() */ 
 
 nm_id_sct *
-dim_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
+dmn_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
 /* 
    int nc_id: I netCDF input-file ID
    nm_id_sct *var: I variable list
    int nbr_var: I number of variables in list
    int *nbr_dim: O number of dimensions associated with input variable list
-   nm_id_sct *dim_lst_ass_var(): O list of dimensions associated with input variable list
+   nm_id_sct *dmn_lst_ass_var(): O list of dimensions associated with input variable list
  */
 {
   /* Routine to create a list of all the dimensions associated with the input variable list */ 
 
-  bool dim_has_been_placed_on_list;
+  bool dmn_has_been_placed_on_list;
 
-  char dim_nm[MAX_NC_NAME];
+  char dmn_nm[MAX_NC_NAME];
 
-  int dim_id[MAX_NC_DIMS];
-  int idx_dim_in;
+  int dmn_id[MAX_NC_DIMS];
+  int idx_dmn_in;
   int idx_var;
   int idx_var_dim;
-  int idx_dim_lst;
-  int nbr_dim_in;
+  int idx_dmn_lst;
+  int nbr_dmn_in;
   int nbr_var_dim;
   
   nm_id_sct *dim;
@@ -2002,43 +2002,43 @@ dim_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
   *nbr_dim=0;
 
   /* Get the number of dimensions */
-  (void)ncinquire(nc_id,&nbr_dim_in,(int *)NULL,(int *)NULL,(int *)NULL);
+  (void)ncinquire(nc_id,&nbr_dmn_in,(int *)NULL,(int *)NULL,(int *)NULL);
 
   /* The number of input dimensions is an upper bound on the number of output dimensions */
-  dim=(nm_id_sct *)malloc(nbr_dim_in*sizeof(nm_id_sct));
+  dim=(nm_id_sct *)malloc(nbr_dmn_in*sizeof(nm_id_sct));
   
   /* ...For each dimension in the file... */ 
-  for(idx_dim_in=0;idx_dim_in<nbr_dim_in;idx_dim_in++){
+  for(idx_dmn_in=0;idx_dmn_in<nbr_dmn_in;idx_dmn_in++){
     /* ...begin a search for the dimension in the dimension list by... */ 
-    dim_has_been_placed_on_list=False;
+    dmn_has_been_placed_on_list=False;
     /* ...looking through the set of output variables... */ 
     for(idx_var=0;idx_var<nbr_var;idx_var++){
       /* ...and search each dimension of the output variable... */ 
-      (void)ncvarinq(nc_id,var[idx_var].id,(char *)NULL,(nc_type *)NULL,&nbr_var_dim,dim_id,(int *)NULL);
+      (void)ncvarinq(nc_id,var[idx_var].id,(char *)NULL,(nc_type *)NULL,&nbr_var_dim,dmn_id,(int *)NULL);
       for(idx_var_dim=0;idx_var_dim<nbr_var_dim;idx_var_dim++){
 	/* ...until an output variable is found which contains the input dimension... */ 
-	if(idx_dim_in == dim_id[idx_var_dim]){
+	if(idx_dmn_in == dmn_id[idx_var_dim]){
 	  /* ...then search each member of the output dimension list... */ 
-	  for(idx_dim_lst=0;idx_dim_lst<*nbr_dim;idx_dim_lst++){
+	  for(idx_dmn_lst=0;idx_dmn_lst<*nbr_dim;idx_dmn_lst++){
 	    /* ...until the input dimension is found... */ 
-	    if(idx_dim_in == dim[idx_dim_lst].id) break; /* ...then search no further... */ 
-	  } /* end loop over idx_dim_lst */
+	    if(idx_dmn_in == dim[idx_dmn_lst].id) break; /* ...then search no further... */ 
+	  } /* end loop over idx_dmn_lst */
 	  /* ...and if the dimension was not found on the output dimension list... */ 
-	  if(idx_dim_lst == *nbr_dim){
+	  if(idx_dmn_lst == *nbr_dim){
 	    /* ...then add the dimension to the output dimension list... */ 
-	    (void)ncdiminq(nc_id,idx_dim_in,dim_nm,(long *)NULL);
-	    dim[*nbr_dim].id=idx_dim_in;
-	    dim[*nbr_dim].nm=(char *)strdup(dim_nm);
+	    (void)ncdiminq(nc_id,idx_dmn_in,dmn_nm,(long *)NULL);
+	    dim[*nbr_dim].id=idx_dmn_in;
+	    dim[*nbr_dim].nm=(char *)strdup(dmn_nm);
 	    (*nbr_dim)++;
 	  } /* end if dimension was not found in current output dimension list*/
 	  /* ...call off the dogs for this input dimension... */ 
-	  dim_has_been_placed_on_list=True;
+	  dmn_has_been_placed_on_list=True;
 	} /* end if input dimension belongs to this output variable */
-	if(dim_has_been_placed_on_list) break; /* break out of idx_var_dim to idx_var */ 
+	if(dmn_has_been_placed_on_list) break; /* break out of idx_var_dim to idx_var */ 
       } /* end loop over idx_var_dim */
-      if(dim_has_been_placed_on_list) break; /* break out of idx_var to idx_dim_in */ 
+      if(dmn_has_been_placed_on_list) break; /* break out of idx_var to idx_dmn_in */ 
     } /* end loop over idx_var */
-  } /* end loop over idx_dim_in */
+  } /* end loop over idx_dmn_in */
   
   /* We now have the final list of dimensions to extract. Phew. */
   
@@ -2047,7 +2047,7 @@ dim_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
   
   return dim;
 
-} /* end dim_lst_ass_var() */ 
+} /* end dmn_lst_ass_var() */ 
 
 void
 var_srt_zero(var_sct **var,int nbr_var)
@@ -2102,12 +2102,12 @@ var_dup(var_sct *var)
     (void)memcpy((void *)(var_dup->tally),(void *)(var->tally),var_dup->sz*sizeof(long));
   } /* end if */
   if(var->dim != NULL){
-    var_dup->dim=(dim_sct **)malloc(var_dup->nbr_dim*sizeof(dim_sct *));
+    var_dup->dim=(dmn_sct **)malloc(var_dup->nbr_dim*sizeof(dmn_sct *));
     (void)memcpy((void *)(var_dup->dim),(void *)(var->dim),var_dup->nbr_dim*sizeof(var->dim[0]));
   } /* end if */
-  if(var->dim_id != NULL){
-    var_dup->dim_id=(int *)malloc(var_dup->nbr_dim*sizeof(int));
-    (void)memcpy((void *)(var_dup->dim_id),(void *)(var->dim_id),var_dup->nbr_dim*sizeof(var->dim_id[0]));
+  if(var->dmn_id != NULL){
+    var_dup->dmn_id=(int *)malloc(var_dup->nbr_dim*sizeof(int));
+    (void)memcpy((void *)(var_dup->dmn_id),(void *)(var->dmn_id),var_dup->nbr_dim*sizeof(var->dmn_id[0]));
   } /* end if */
   if(var->cnt != NULL){
     var_dup->cnt=(long *)malloc(var_dup->nbr_dim*sizeof(long));
@@ -2126,24 +2126,24 @@ var_dup(var_sct *var)
 
 } /* end var_dup() */ 
 
-dim_sct *
-dim_dup(dim_sct *dim)
+dmn_sct *
+dmn_dup(dmn_sct *dim)
 /* 
-   dim_sct *dim: I dimension structure to duplicate
-   dim_sct *dim_dup(): O copy of input dimension structure
+   dmn_sct *dim: I dimension structure to duplicate
+   dmn_sct *dmn_dup(): O copy of input dimension structure
  */ 
 {
-  /* Purpose: malloc() and return a duplicate of input dim_sct */ 
+  /* Purpose: malloc() and return a duplicate of input dmn_sct */ 
 
-  dim_sct *dim_dup;
+  dmn_sct *dmn_dup;
 
-  dim_dup=(dim_sct *)malloc(sizeof(dim_sct));
+  dmn_dup=(dmn_sct *)malloc(sizeof(dmn_sct));
 
-  (void)memcpy((void *)dim_dup,(void *)dim,sizeof(dim_sct));
+  (void)memcpy((void *)dmn_dup,(void *)dim,sizeof(dmn_sct));
 
-  return dim_dup;
+  return dmn_dup;
 
-} /* end dim_dup() */ 
+} /* end dmn_dup() */ 
 
 void
 var_get(int nc_id,var_sct *var)
@@ -2230,7 +2230,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 
   int idx;
   int idx_dim;
-  int wgt_var_dim_shr_nbr=0; /* Number of dimensions shared by wgt and var */ 
+  int wgt_var_dmn_shr_nbr=0; /* Number of dimensions shared by wgt and var */ 
 
   var_sct *wgt_out=NULL;
 
@@ -2239,11 +2239,11 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
   
   /* Does the current weight (wgt_crr) conform to the variable's dimensions? */ 
   if(wgt_crr != NULL){
-    /* Test rank first because wgt_crr because of 96/02/18 bug (invalid dim_id in old wgt_crr leads to match) */
+    /* Test rank first because wgt_crr because of 96/02/18 bug (invalid dmn_id in old wgt_crr leads to match) */
     if(var->nbr_dim == wgt_crr->nbr_dim){
       /* Test whether all wgt and var dimensions match in sequence */ 
       for(idx=0;idx<var->nbr_dim;idx++){
-	/*	if(wgt_crr->dim_id[idx] != var->dim_id[idx]) break;*/
+	/*	if(wgt_crr->dmn_id[idx] != var->dmn_id[idx]) break;*/
 	if(!strstr(wgt_crr->dim[idx]->nm,var->dim[idx]->nm)) break;
       } /* end loop over dimensions */
       if(idx == var->nbr_dim) *DO_CONFORM=True;
@@ -2263,17 +2263,17 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
       for(idx=0;idx<wgt->nbr_dim;idx++){
         for(idx_dim=0;idx_dim<var->nbr_dim;idx_dim++){
 	  if(strstr(wgt->dim[idx]->nm,var->dim[idx_dim]->nm)){
-	    /*          if(wgt->dim_id[idx] == var->dim_id[idx_dim]){*/
-	    wgt_var_dim_shr_nbr++; /* wgt and var share this dimension */ 
+	    /*          if(wgt->dmn_id[idx] == var->dmn_id[idx_dim]){*/
+	    wgt_var_dmn_shr_nbr++; /* wgt and var share this dimension */ 
 	    break;
 	  } /* endif */ 
         } /* end loop over var dimensions */
       } /* end loop over wgt dimensions */
       /* Decide whether wgt and var dimensions conform, are mutually exclusive, or are partially exclusive (an error) */  
-      if(wgt_var_dim_shr_nbr == wgt->nbr_dim){
+      if(wgt_var_dmn_shr_nbr == wgt->nbr_dim){
 	/* wgt and var conform */ 
 	CONFORMABLE=True;
-      }else if(wgt_var_dim_shr_nbr == 0){
+      }else if(wgt_var_dmn_shr_nbr == 0){
 	/* Dimensions in wgt and var are mutually exclusive */ 
 	CONFORMABLE=False;
 	if(MUST_CONFORM){
@@ -2293,14 +2293,14 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 	  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %s is rank %d but template %s is rank %d: Not broadcasting %s to %s\n",prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim,wgt->nm,var->nm);
 	  USE_DUMMY_WGT=True;
 	} /* endif */ 
-      }else if(wgt_var_dim_shr_nbr > 0 && wgt_var_dim_shr_nbr < wgt->nbr_dim){
+      }else if(wgt_var_dmn_shr_nbr > 0 && wgt_var_dmn_shr_nbr < wgt->nbr_dim){
 	/* Some, but not all, of wgt dimensions are in var */ 
 	CONFORMABLE=False;
 	if(MUST_CONFORM){
-	  (void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",prg_nm_get(),wgt_var_dim_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dim_shr_nbr);
+	  (void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",prg_nm_get(),wgt_var_dmn_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dmn_shr_nbr);
 	  exit(EXIT_FAILURE);
 	}else{
-	  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s\n",prg_nm_get(),wgt_var_dim_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dim_shr_nbr,wgt->nm,var->nm);
+	  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s\n",prg_nm_get(),wgt_var_dmn_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dmn_shr_nbr,wgt->nm,var->nm);
 	  USE_DUMMY_WGT=True;
 	} /* endif */ 
       } /* end if */
@@ -2317,7 +2317,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 	  /* Test whether all wgt and var dimensions match in sequence */ 
 	  for(idx=0;idx<var->nbr_dim;idx++){
 	    if(!strstr(wgt->dim[idx]->nm,var->dim[idx]->nm)) break;
-	       /*	    if(wgt->dim_id[idx] != var->dim_id[idx]) break;*/
+	       /*	    if(wgt->dmn_id[idx] != var->dmn_id[idx]) break;*/
 	  } /* end loop over dimensions */
 	  /* If so, take shortcut and copy wgt to wgt_out */ 
 	  if(idx == var->nbr_dim) *DO_CONFORM=True;
@@ -2345,12 +2345,12 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
     int idx_var_wgt[MAX_NC_DIMS];
     int wgt_nbr_dim;
     int wgt_type_sz;
-    int var_nbr_dim_m1;
+    int var_nbr_dmn_m1;
 
     long *var_cnt;
-    long dim_ss[MAX_NC_DIMS];
-    long dim_var_map[MAX_NC_DIMS];
-    long dim_wgt_map[MAX_NC_DIMS];
+    long dmn_ss[MAX_NC_DIMS];
+    long dmn_var_map[MAX_NC_DIMS];
+    long dmn_wgt_map[MAX_NC_DIMS];
     long var_lmn;
     long wgt_lmn;
     long var_sz;
@@ -2378,13 +2378,13 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
       
       /* Create forward and reverse mappings from the variable's dimensions to the weight's:
 
-	 dim_var_map[i] is the number of elements between one value of the i_th 
+	 dmn_var_map[i] is the number of elements between one value of the i_th 
 	 dimension of the variable and the next value of the i_th dimension, i.e., the number
 	 of elements in memory between indicial increments in the i_th dimension. This is computed
 	 as the product of one (1) times the size of all the dimensions (if any) after the i_th 
 	 dimension in the variable.
 
-	 dim_wgt_map[i] contains the analogous information, except for the original weight variable.
+	 dmn_wgt_map[i] contains the analogous information, except for the original weight variable.
 
 	 idx_wgt_var[i] contains the index into the variable's dimensions of the 
 	 i_th dimension of the original weight.
@@ -2394,7 +2394,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 	 NB: Since the weight is a subset of the variable, some of the elements of idx_var_wgt
 	 may be "empty", or unused. 
 
-	 NB: Since the mapping arrays (dim_var_map and dim_wgt_map) are ultimately used for a
+	 NB: Since the mapping arrays (dmn_var_map and dmn_wgt_map) are ultimately used for a
 	 memcpy() operation, they could (read: should) be computed as byte offsets, not type
 	 offsets. This is why the netCDF generic hyperslab routines (ncvarputg(), ncvargetg())
 	 request the imap vector to specify the offset (imap) vector in bytes.
@@ -2403,7 +2403,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 
       for(idx=0;idx<wgt->nbr_dim;idx++){
 	for(idx_dim=0;idx_dim<var->nbr_dim;idx_dim++){
-	  if(var->dim_id[idx_dim] == wgt->dim_id[idx]){
+	  if(var->dmn_id[idx_dim] == wgt->dmn_id[idx]){
 	    idx_wgt_var[idx]=idx_dim;
 	    idx_var_wgt[idx_dim]=idx;
 	    break;
@@ -2412,34 +2412,34 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
       } /* end loop over weight dimensions */
       
       /* Figure out the map for each dimension of the variable */ 
-      for(idx=0;idx<var->nbr_dim;idx++)	dim_var_map[idx]=1L;
+      for(idx=0;idx<var->nbr_dim;idx++)	dmn_var_map[idx]=1L;
       for(idx=0;idx<var->nbr_dim-1;idx++)
 	for(idx_dim=idx+1;idx_dim<var->nbr_dim;idx_dim++)
-	  dim_var_map[idx]*=var->cnt[idx_dim];
+	  dmn_var_map[idx]*=var->cnt[idx_dim];
       
       /* Figure out the map for each dimension of the weight */ 
-      for(idx=0;idx<wgt->nbr_dim;idx++)	dim_wgt_map[idx]=1L;
+      for(idx=0;idx<wgt->nbr_dim;idx++)	dmn_wgt_map[idx]=1L;
       for(idx=0;idx<wgt->nbr_dim-1;idx++)
 	for(idx_dim=idx+1;idx_dim<wgt->nbr_dim;idx_dim++)
-	  dim_wgt_map[idx]*=wgt->cnt[idx_dim];
+	  dmn_wgt_map[idx]*=wgt->cnt[idx_dim];
       
       /* Define convenience variables to avoid repetitive indirect addressing */
       wgt_nbr_dim=wgt->nbr_dim;
       var_sz=var->sz;
       var_cnt=var->cnt;
-      var_nbr_dim_m1=var->nbr_dim-1;
+      var_nbr_dmn_m1=var->nbr_dim-1;
 
-      /* var_lmn is the offset into the 1-D array corresponding to the N-D indices dim_ss */
+      /* var_lmn is the offset into the 1-D array corresponding to the N-D indices dmn_ss */
       for(var_lmn=0;var_lmn<var_sz;var_lmn++){
-	dim_ss[var_nbr_dim_m1]=var_lmn%var_cnt[var_nbr_dim_m1];
-	for(idx=0;idx<var_nbr_dim_m1;idx++){
-	  dim_ss[idx]=(long)(var_lmn/dim_var_map[idx]);
-	  dim_ss[idx]%=var_cnt[idx];
+	dmn_ss[var_nbr_dmn_m1]=var_lmn%var_cnt[var_nbr_dmn_m1];
+	for(idx=0;idx<var_nbr_dmn_m1;idx++){
+	  dmn_ss[idx]=(long)(var_lmn/dmn_var_map[idx]);
+	  dmn_ss[idx]%=var_cnt[idx];
 	} /* end loop over dimensions */
 	
 	/* Map the (shared) N-D array indices into a 1-D index into the original weight data */ 
 	wgt_lmn=0L;
-	for(idx=0;idx<wgt_nbr_dim;idx++) wgt_lmn+=dim_ss[idx_wgt_var[idx]]*dim_wgt_map[idx];
+	for(idx=0;idx<wgt_nbr_dim;idx++) wgt_lmn+=dmn_ss[idx_wgt_var[idx]]*dmn_wgt_map[idx];
 	
 	(void)memcpy(wgt_out_cp+var_lmn*wgt_type_sz,wgt_cp+wgt_lmn*wgt_type_sz,wgt_type_sz);
 	
@@ -2461,7 +2461,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 } /* end var_conform_dim() */ 
 
 void
-var_dim_xrf(var_sct *var)
+var_dmn_xrf(var_sct *var)
 /*  
    var_sct *var: I pointer to variable structure
 */
@@ -2477,18 +2477,18 @@ var_dim_xrf(var_sct *var)
 } /* end var_xrf() */ 
 
 void
-dim_xrf(dim_sct *dim,dim_sct *dim_dup)
+dmn_xrf(dmn_sct *dim,dmn_sct *dmn_dup)
 /*  
-   dim_sct *dim: I/O pointer to dimension structure
-   dim_sct *dim: I/O pointer to dimension structure
+   dmn_sct *dim: I/O pointer to dimension structure
+   dmn_sct *dim: I/O pointer to dimension structure
 */
 {
   /* Make xrf elements of dimension structures point to eachother */ 
 
-  dim->xrf=dim_dup;
-  dim_dup->xrf=dim;
+  dim->xrf=dmn_dup;
+  dmn_dup->xrf=dim;
 
-} /* end dim_xrf() */ 
+} /* end dmn_xrf() */ 
 
 void
 var_xrf(var_sct *var,var_sct *var_dup)
@@ -2716,10 +2716,10 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
 } /* end val_conform_type */ 
 
 var_sct *
-var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
+var_avg(var_sct *var,dmn_sct **dim,int nbr_dim)
 /*  
    var_sct *var: I/O pointer to variable structure (destroyed)
-   dim_sct **dim: I pointer to list of dimension structures
+   dmn_sct **dim: I pointer to list of dimension structures
    int nbr_dim: I number of structures in list
    var_sct *var_avg(): O pointer to PARTIALLY (non-normalized) averaged variable
 */
@@ -2742,8 +2742,8 @@ var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
      fix: the output (averaged) variable
    */ 
 
-  dim_sct **dim_avg;
-  dim_sct **dim_fix;
+  dmn_sct **dmn_avg;
+  dmn_sct **dmn_fix;
 
   int idx_avg_var[MAX_NC_DIMS];
   int idx_var_avg[MAX_NC_DIMS];
@@ -2751,9 +2751,9 @@ var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
   int idx_var_fix[MAX_NC_DIMS];
   int idx;
   int idx_dim;
-  int nbr_dim_avg;
-  int nbr_dim_fix;
-  int nbr_dim_var;
+  int nbr_dmn_avg;
+  int nbr_dmn_fix;
+  int nbr_dmn_var;
 
   long avg_sz;
   long fix_sz;
@@ -2767,73 +2767,73 @@ var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
 
   /* Create lists of averaging and fixed dimensions (in order of their appearance 
      in the variable). We do not know a priori how many dimensions remain in the 
-     output (averaged) variable, but nbr_dim_var is an upper bound. Similarly, we do
+     output (averaged) variable, but nbr_dmn_var is an upper bound. Similarly, we do
      not know a priori how many of the dimensions in the input list of averaging 
      dimensions (dim) actually occur in the current variable, so we do not know
-     nbr_dim_avg, but nbr_dim is an upper bound on it. */
-  nbr_dim_var=var->nbr_dim;
-  nbr_dim_fix=0;
-  nbr_dim_avg=0;
-  dim_avg=(dim_sct **)malloc(nbr_dim*sizeof(dim_sct *));
-  dim_fix=(dim_sct **)malloc(nbr_dim_var*sizeof(dim_sct *));
-  for(idx=0;idx<nbr_dim_var;idx++){
+     nbr_dmn_avg, but nbr_dim is an upper bound on it. */
+  nbr_dmn_var=var->nbr_dim;
+  nbr_dmn_fix=0;
+  nbr_dmn_avg=0;
+  dmn_avg=(dmn_sct **)malloc(nbr_dim*sizeof(dmn_sct *));
+  dmn_fix=(dmn_sct **)malloc(nbr_dmn_var*sizeof(dmn_sct *));
+  for(idx=0;idx<nbr_dmn_var;idx++){
     for(idx_dim=0;idx_dim<nbr_dim;idx_dim++){
-      if(var->dim_id[idx] == dim[idx_dim]->id){
-	dim_avg[nbr_dim_avg]=dim[idx_dim];
-	idx_avg_var[nbr_dim_avg]=idx;
-	idx_var_avg[idx]=nbr_dim_avg;
-	nbr_dim_avg++;
+      if(var->dmn_id[idx] == dim[idx_dim]->id){
+	dmn_avg[nbr_dmn_avg]=dim[idx_dim];
+	idx_avg_var[nbr_dmn_avg]=idx;
+	idx_var_avg[idx]=nbr_dmn_avg;
+	nbr_dmn_avg++;
 	break;
       } /* end if */ 
     } /* end loop over idx_dim */
     if(idx_dim == nbr_dim){
-      dim_fix[nbr_dim_fix]=var->dim[idx];
-      idx_fix_var[nbr_dim_fix]=idx;
-      idx_var_fix[idx]=nbr_dim_fix;
-      nbr_dim_fix++;
+      dmn_fix[nbr_dmn_fix]=var->dim[idx];
+      idx_fix_var[nbr_dmn_fix]=idx;
+      idx_var_fix[idx]=nbr_dmn_fix;
+      nbr_dmn_fix++;
     } /* end if */ 
   } /* end loop over idx */
 
   /* Free the extra list space */ 
-  if(nbr_dim_fix > 0) dim_fix=(dim_sct **)realloc(dim_fix,nbr_dim_fix*sizeof(dim_sct *)); else dim_fix=(dim_sct **)NULL;
-  if(nbr_dim_avg > 0) dim_avg=(dim_sct **)realloc(dim_avg,nbr_dim_avg*sizeof(dim_sct *)); else dim_avg=(dim_sct **)NULL;
+  if(nbr_dmn_fix > 0) dmn_fix=(dmn_sct **)realloc(dmn_fix,nbr_dmn_fix*sizeof(dmn_sct *)); else dmn_fix=(dmn_sct **)NULL;
+  if(nbr_dmn_avg > 0) dmn_avg=(dmn_sct **)realloc(dmn_avg,nbr_dmn_avg*sizeof(dmn_sct *)); else dmn_avg=(dmn_sct **)NULL;
 
-  if(nbr_dim_avg == 0){
+  if(nbr_dmn_avg == 0){
     (void)fprintf(stderr,"%s: WARNING %s does not contain any averaging dimensions\n",prg_nm_get(),fix->nm);
     return (var_sct *)NULL;
   } /* end if */ 
 
   /* Get rid of the averaged dimensions */ 
-  fix->nbr_dim=nbr_dim_fix;
+  fix->nbr_dim=nbr_dmn_fix;
 
   avg_sz=1L;
-  for(idx=0;idx<nbr_dim_avg;idx++){
-    avg_sz*=dim_avg[idx]->cnt;
-    fix->sz/=dim_avg[idx]->cnt;
-    if(!dim_avg[idx]->is_rec_dim) fix->sz_rec/=dim_avg[idx]->cnt;
+  for(idx=0;idx<nbr_dmn_avg;idx++){
+    avg_sz*=dmn_avg[idx]->cnt;
+    fix->sz/=dmn_avg[idx]->cnt;
+    if(!dmn_avg[idx]->is_rec_dim) fix->sz_rec/=dmn_avg[idx]->cnt;
   } /* end loop over idx */
 
   fix->is_rec_var=False;
-  for(idx=0;idx<nbr_dim_fix;idx++){
-    if(dim_fix[idx]->is_rec_dim) fix->is_rec_var=True;
-    fix->dim[idx]=dim_fix[idx];
-    fix->dim_id[idx]=dim_fix[idx]->id;
+  for(idx=0;idx<nbr_dmn_fix;idx++){
+    if(dmn_fix[idx]->is_rec_dim) fix->is_rec_var=True;
+    fix->dim[idx]=dmn_fix[idx];
+    fix->dmn_id[idx]=dmn_fix[idx]->id;
     fix->srt[idx]=var->srt[idx_fix_var[idx]];
     fix->cnt[idx]=var->cnt[idx_fix_var[idx]];
     fix->end[idx]=var->end[idx_fix_var[idx]];
   } /* end loop over idx */
   
   fix->is_crd_var=False;
-  if(nbr_dim_fix == 1)
-    if(dim_fix[0]->is_crd_dim) 
+  if(nbr_dmn_fix == 1)
+    if(dmn_fix[0]->is_crd_dim) 
       fix->is_crd_var=True;
 
   /* Trim dimension arrays to their new sizes */ 
-  if(nbr_dim_fix > 0) fix->dim=(dim_sct **)realloc(fix->dim,nbr_dim_fix*sizeof(dim_sct *)); else fix->dim=NULL;
-  if(nbr_dim_fix > 0) fix->dim_id=(int *)realloc(fix->dim_id,nbr_dim_fix*sizeof(int)); else fix->dim_id=NULL;
-  if(nbr_dim_fix > 0) fix->srt=(long *)realloc(fix->srt,nbr_dim_fix*sizeof(long)); else fix->srt=NULL;
-  if(nbr_dim_fix > 0) fix->cnt=(long *)realloc(fix->cnt,nbr_dim_fix*sizeof(long)); else fix->cnt=NULL;
-  if(nbr_dim_fix > 0) fix->end=(long *)realloc(fix->end,nbr_dim_fix*sizeof(long)); else fix->end=NULL;
+  if(nbr_dmn_fix > 0) fix->dim=(dmn_sct **)realloc(fix->dim,nbr_dmn_fix*sizeof(dmn_sct *)); else fix->dim=NULL;
+  if(nbr_dmn_fix > 0) fix->dmn_id=(int *)realloc(fix->dmn_id,nbr_dmn_fix*sizeof(int)); else fix->dmn_id=NULL;
+  if(nbr_dmn_fix > 0) fix->srt=(long *)realloc(fix->srt,nbr_dmn_fix*sizeof(long)); else fix->srt=NULL;
+  if(nbr_dmn_fix > 0) fix->cnt=(long *)realloc(fix->cnt,nbr_dmn_fix*sizeof(long)); else fix->cnt=NULL;
+  if(nbr_dmn_fix > 0) fix->end=(long *)realloc(fix->end,nbr_dmn_fix*sizeof(long)); else fix->end=NULL;
   
   /* If the product of the sizes of all the averaging dimensions is 1, the input and output value arrays 
      should be identical. Since var->val was already copied to fix->val by var_dup() at the beginning
@@ -2872,16 +2872,16 @@ var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
     char *var_cp;
     
     int type_sz;
-    int nbr_dim_var_m1;
+    int nbr_dmn_var_m1;
 
     long *var_cnt;
     long avg_lmn;
     long fix_lmn;
     long var_lmn;
-    long dim_ss[MAX_NC_DIMS];
-    long dim_var_map[MAX_NC_DIMS];
-    long dim_avg_map[MAX_NC_DIMS];
-    long dim_fix_map[MAX_NC_DIMS];
+    long dmn_ss[MAX_NC_DIMS];
+    long dmn_var_map[MAX_NC_DIMS];
+    long dmn_avg_map[MAX_NC_DIMS];
+    long dmn_fix_map[MAX_NC_DIMS];
 
     nc_type avg_type;
 
@@ -2890,7 +2890,7 @@ var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
     /* Define convenience variables to avoid repetitive indirect addressing */
     avg_type=fix->type;
     fix_sz=fix->sz;
-    nbr_dim_var_m1=nbr_dim_var-1;
+    nbr_dmn_var_m1=nbr_dmn_var-1;
     type_sz=nctypelen(fix->type);
     var_cnt=var->cnt;
     var_cp=(char *)var->val.vp;
@@ -2910,40 +2910,40 @@ var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
     (void)var_zero(fix->type,fix->sz,fix->val);
   
     /* Figure out the map for each dimension of the variable */ 
-    for(idx=0;idx<nbr_dim_var;idx++) dim_var_map[idx]=1L;
-    for(idx=0;idx<nbr_dim_var-1;idx++)
-      for(idx_dim=idx+1;idx_dim<nbr_dim_var;idx_dim++)
-	dim_var_map[idx]*=var->cnt[idx_dim];
+    for(idx=0;idx<nbr_dmn_var;idx++) dmn_var_map[idx]=1L;
+    for(idx=0;idx<nbr_dmn_var-1;idx++)
+      for(idx_dim=idx+1;idx_dim<nbr_dmn_var;idx_dim++)
+	dmn_var_map[idx]*=var->cnt[idx_dim];
     
     /* Figure out the map for each dimension of the output variable */ 
-    for(idx=0;idx<nbr_dim_fix;idx++) dim_fix_map[idx]=1L;
-    for(idx=0;idx<nbr_dim_fix-1;idx++)
-      for(idx_dim=idx+1;idx_dim<nbr_dim_fix;idx_dim++)
-	dim_fix_map[idx]*=fix->cnt[idx_dim];
+    for(idx=0;idx<nbr_dmn_fix;idx++) dmn_fix_map[idx]=1L;
+    for(idx=0;idx<nbr_dmn_fix-1;idx++)
+      for(idx_dim=idx+1;idx_dim<nbr_dmn_fix;idx_dim++)
+	dmn_fix_map[idx]*=fix->cnt[idx_dim];
     
     /* Figure out the map for each dimension of the averaging buffer */ 
-    for(idx=0;idx<nbr_dim_avg;idx++) dim_avg_map[idx]=1L;
-    for(idx=0;idx<nbr_dim_avg-1;idx++)
-      for(idx_dim=idx+1;idx_dim<nbr_dim_avg;idx_dim++)
-	dim_avg_map[idx]*=dim_avg[idx_dim]->cnt;
+    for(idx=0;idx<nbr_dmn_avg;idx++) dmn_avg_map[idx]=1L;
+    for(idx=0;idx<nbr_dmn_avg-1;idx++)
+      for(idx_dim=idx+1;idx_dim<nbr_dmn_avg;idx_dim++)
+	dmn_avg_map[idx]*=dmn_avg[idx_dim]->cnt;
     
     /* var_lmn is the offset into the 1-D array */
     for(var_lmn=0;var_lmn<var_sz;var_lmn++){
 
-      /* dim_ss are the corresponding indices (subscripts) into the N-D array */
-      dim_ss[nbr_dim_var_m1]=var_lmn%var_cnt[nbr_dim_var_m1];
-      for(idx=0;idx<nbr_dim_var_m1;idx++){
-	dim_ss[idx]=(long)(var_lmn/dim_var_map[idx]);
-	dim_ss[idx]%=var_cnt[idx];
+      /* dmn_ss are the corresponding indices (subscripts) into the N-D array */
+      dmn_ss[nbr_dmn_var_m1]=var_lmn%var_cnt[nbr_dmn_var_m1];
+      for(idx=0;idx<nbr_dmn_var_m1;idx++){
+	dmn_ss[idx]=(long)(var_lmn/dmn_var_map[idx]);
+	dmn_ss[idx]%=var_cnt[idx];
       } /* end loop over dimensions */
 
       /* Map variable's N-D array indices into a 1-D index into the averaged data */ 
       fix_lmn=0L;
-      for(idx=0;idx<nbr_dim_fix;idx++) fix_lmn+=dim_ss[idx_fix_var[idx]]*dim_fix_map[idx];
+      for(idx=0;idx<nbr_dmn_fix;idx++) fix_lmn+=dmn_ss[idx_fix_var[idx]]*dmn_fix_map[idx];
       
       /* Map N-D array indices into a 1-D offset from the offset of its group */ 
       avg_lmn=0L;
-      for(idx=0;idx<nbr_dim_avg;idx++) avg_lmn+=dim_ss[idx_avg_var[idx]]*dim_avg_map[idx];
+      for(idx=0;idx<nbr_dmn_avg;idx++) avg_lmn+=dmn_ss[idx_avg_var[idx]]*dmn_avg_map[idx];
       
       /* Copy current element in the input array into its slot in the sorted avg_val */ 
       (void)memcpy(avg_cp+(fix_lmn*avg_sz+avg_lmn)*type_sz,var_cp+var_lmn*type_sz,type_sz);
@@ -2963,8 +2963,8 @@ var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
   
   /* Free the input variable */ 
   var=var_free(var);
-  (void)free(dim_avg);
-  (void)free(dim_fix);
+  (void)free(dmn_avg);
+  (void)free(dmn_fix);
 
   /* Return the averaged variable */ 
   return fix;
@@ -2986,7 +2986,7 @@ var_free(var_sct *var)
   if(var->val.vp != NULL){(void)free(var->val.vp); var->val.vp=NULL;}
   if(var->mss_val.vp != NULL){(void)free(var->mss_val.vp); var->mss_val.vp=NULL;}
   if(var->tally != NULL){(void)free(var->tally); var->tally=NULL;}
-  if(var->dim_id != NULL){(void)free(var->dim_id); var->dim_id=NULL;}
+  if(var->dmn_id != NULL){(void)free(var->dmn_id); var->dmn_id=NULL;}
   if(var->dim != NULL){(void)free(var->dim); var->dim=NULL;}
   if(var->srt != NULL){(void)free(var->srt); var->srt=NULL;}
   if(var->end != NULL){(void)free(var->end); var->end=NULL;}
@@ -3008,18 +3008,18 @@ arm_inq(int nc_id)
   /* Routine to check whether the file adheres to ARM time format */
   bool ARM_FORMAT;
 
-  int time_dim_id;
+  int time_dmn_id;
   int base_time_id;
   int time_offset_id;
   
   /* Look for the signature of an ARM file */ 
   ncopts=0;
-  time_dim_id=ncdimid(nc_id,"time");
+  time_dmn_id=ncdimid(nc_id,"time");
   base_time_id=ncvarid(nc_id,"base_time");
   time_offset_id=ncvarid(nc_id,"time_offset");
   ncopts=NC_VERBOSE | NC_FATAL; 
 
-  if(time_dim_id == -1 || base_time_id == -1 || time_offset_id == -1){
+  if(time_dmn_id == -1 || base_time_id == -1 || time_offset_id == -1){
     ARM_FORMAT=False;
   }else{
     (void)fprintf(stderr,"%s: CONVENTION File convention is DOE ARM\n",prg_nm_get()); 
@@ -4156,7 +4156,7 @@ arm_time_install(int nc_id,nclong base_time_srt)
   double *time_offset;
 
   int time_id;
-  int time_dim_id;
+  int time_dmn_id;
   int time_offset_id;
   
   long idx;
@@ -4185,13 +4185,13 @@ arm_time_install(int nc_id,nclong base_time_srt)
   };
 
   /* See if the time dimension exists */ 
-  time_dim_id=ncdimid(nc_id,"time");
-  if(time_dim_id == -1){
+  time_dmn_id=ncdimid(nc_id,"time");
+  if(time_dmn_id == -1){
     (void)fprintf(stderr,"%s: WARNING ARM file does not have dimension \"time\"\n",prg_nm_get());
     return;
   };
   /* Get dimension size */ 
-  (void)ncdiminq(nc_id,time_dim_id,(char *)NULL,&cnt);
+  (void)ncdiminq(nc_id,time_dmn_id,(char *)NULL,&cnt);
 
   /* If the time coordinate does not already exist, create it */ 
   time_offset=(double *)malloc(cnt*nctypelen(NC_DOUBLE));
@@ -4201,7 +4201,7 @@ arm_time_install(int nc_id,nclong base_time_srt)
 
   /* File must be in define mode */ 
   (void)ncredef(nc_id);
-  time_id=ncvardef(nc_id,"time",NC_DOUBLE,1,&time_dim_id);
+  time_id=ncvardef(nc_id,"time",NC_DOUBLE,1,&time_dmn_id);
 
   /* Add attributes for time variable */ 
   (void)ncattput(nc_id,time_id,"units",NC_CHAR,strlen(att_units)+1,(void *)att_units);
@@ -4222,14 +4222,14 @@ arm_time_install(int nc_id,nclong base_time_srt)
 } /* end arm_time_install */ 
 
 void
-var_lst_convert(int nc_id,nm_id_sct *xtr_lst,int nbr_xtr,dim_sct **dim,int nbr_dim_xtr,
+var_lst_convert(int nc_id,nm_id_sct *xtr_lst,int nbr_xtr,dmn_sct **dim,int nbr_dmn_xtr,
 	   var_sct ***var_ptr,var_sct ***var_out_ptr)
 /*  
    int nc_id: I netCDF file ID
    nm_id_sct *xtr_lst: I current extraction list (destroyed)
    int nbr_xtr: I total number of variables in input file
-   dim_sct **dim: I list of pointers to dimension structures associated with input variable list
-   int nbr_dim_xtr: I number of dimensions structures in list
+   dmn_sct **dim: I list of pointers to dimension structures associated with input variable list
+   int nbr_dmn_xtr: I number of dimensions structures in list
    var_sct ***var_ptr: O pointer to list of pointers to variable structures
    var_sct ***var_out_ptr: O pointer to list of pointers to duplicates of variable structures
 */
@@ -4247,10 +4247,10 @@ var_lst_convert(int nc_id,nm_id_sct *xtr_lst,int nbr_xtr,dim_sct **dim,int nbr_d
 
   /* Fill in variable structure list for all extracted variables */ 
   for(idx=0;idx<nbr_xtr;idx++){
-    var[idx]=var_fll(nc_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dim_xtr);
+    var[idx]=var_fll(nc_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
     var_out[idx]=var_dup(var[idx]);
     (void)var_xrf(var[idx],var_out[idx]);
-    (void)var_dim_xrf(var_out[idx]);
+    (void)var_dmn_xrf(var_out[idx]);
   } /* end loop over idx */
   
   *var_ptr=var;
@@ -4260,15 +4260,15 @@ var_lst_convert(int nc_id,nm_id_sct *xtr_lst,int nbr_xtr,dim_sct **dim,int nbr_d
 
 void
 var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
-	       dim_sct **dim_xcl,int nbr_dim_xcl,
+	       dmn_sct **dmn_xcl,int nbr_dmn_xcl,
 	       var_sct ***var_fix_ptr,var_sct ***var_fix_out_ptr,int *nbr_var_fix,
 	       var_sct ***var_prc_ptr,var_sct ***var_prc_out_ptr,int *nbr_var_prc)
 /*  
    var_sct **var: I list of pointers to variable structures
    var_sct **var_out: I list of pointers to duplicates of variable structures
    int nbr_var: I number of variable structures in list
-   dim_sct **dim_xcl: I list of pointers to dimensions not allowed in fixed variables
-   int nbr_dim_xcl: I number of dimension structures in list
+   dmn_sct **dmn_xcl: I list of pointers to dimensions not allowed in fixed variables
+   int nbr_dmn_xcl: I number of dimension structures in list
    bool NCAR_CSM_FORMAT: I whether the file is an NCAR CSM history tape
    var_sct ***var_fix_ptr: O pointer to list of pointers to fixed-variable structures
    var_sct ***var_fix_out_ptr: O pointer to list of pointers to duplicates of fixed-variable structures
@@ -4338,10 +4338,10 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
     case ncwa:
       /* Every variable containing an excluded (averaged) dimension must be processed */
       for(idx_dim=0;idx_dim<var[idx]->nbr_dim;idx_dim++){
-	for(idx_xcl=0;idx_xcl<nbr_dim_xcl;idx_xcl++){
-	  if(var[idx]->dim[idx_dim]->id == dim_xcl[idx_xcl]->id) break;
+	for(idx_xcl=0;idx_xcl<nbr_dmn_xcl;idx_xcl++){
+	  if(var[idx]->dim[idx_dim]->id == dmn_xcl[idx_xcl]->id) break;
 	} /* end loop over idx_xcl */
-	if(idx_xcl != nbr_dim_xcl){
+	if(idx_xcl != nbr_dmn_xcl){
 	  var_op_type[idx]=prc;
 	  break;
 	} /* end if */ 
@@ -4431,28 +4431,28 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
 } /* end var_lst_divide */ 
 
 nm_id_sct *
-dim_lst_mk(int nc_id,char **dim_lst_in,int nbr_dim)
+dmn_lst_mk(int nc_id,char **dmn_lst_in,int nbr_dim)
 /* 
    int nc_id: I netCDF file ID
-   char **dim_lst_in: user specified list of dimension names
+   char **dmn_lst_in: user specified list of dimension names
    int nbr_dim: I total number of dimensions in lst
-   nm_id_sct dim_lst_mk(): O dimension list
+   nm_id_sct dmn_lst_mk(): O dimension list
  */ 
 {
   int idx;
 
-  nm_id_sct *dim_lst;
+  nm_id_sct *dmn_lst;
   
-  dim_lst=(nm_id_sct *)malloc(nbr_dim*sizeof(nm_id_sct));
+  dmn_lst=(nm_id_sct *)malloc(nbr_dim*sizeof(nm_id_sct));
   for(idx=0;idx<nbr_dim;idx++){
     /* See if the requested dimension is in the input file */
-    dim_lst[idx].nm=dim_lst_in[idx];
-    dim_lst[idx].id=ncdimid(nc_id,dim_lst[idx].nm);
+    dmn_lst[idx].nm=dmn_lst_in[idx];
+    dmn_lst[idx].id=ncdimid(nc_id,dmn_lst[idx].nm);
   } /* end loop over idx */
   
-  return dim_lst;
+  return dmn_lst;
 
-} /* end dim_lst_mk() */ 
+} /* end dmn_lst_mk() */ 
 
 void
 rec_crd_chk(var_sct *var,char *fl_in,char *fl_out,long idx_rec,long idx_rec_out)

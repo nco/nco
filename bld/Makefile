@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.62 2000-03-09 00:22:52 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.63 2000-04-05 21:41:50 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -698,7 +698,7 @@ dst_cln: cln bin_cln doc_cln lib_cln
 	cd $(MY_BLD_DIR); rm -f *~
 	cd $(MY_DAT_DIR); rm -f in.nc *~
 tags: 
-	etags $(SRC_LST) $(MDL_DOC_SRC) $(MDL_BLD_SRC) $(MDL_NCAP_SRC)
+	etags $(MY_SRC_DIR)/nc.h $(SRC_LST) $(MDL_DOC_SRC) $(MDL_BLD_SRC) $(MDL_NCAP_SRC)
 
 # Reset internal YACC and LEX patterns
 %.c : %.y

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.40 2000-04-04 02:15:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.41 2000-04-05 21:41:53 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */ 
 
@@ -125,9 +125,9 @@ cmd_ln_sng(int argc,char **argv)
 } /* end cmd_ln_sng() */ 
 
 lmt_sct *
-lmt_prs(int nbr_lmt,char **lmt_arg)
+lmt_prs(int lmt_nbr,char **lmt_arg)
 /* 
-   int nbr_lmt: I number of dimensions with limits
+   int lmt_nbr: I number of dimensions with limits
    char **lmt_arg: I list of user-specified dimension limits
    lmt_sct *lmt_prs(): O structure holding user-specified strings for min and max limits
  */ 
@@ -151,9 +151,9 @@ lmt_prs(int nbr_lmt,char **lmt_arg)
   int idx;
   int arg_nbr;
 
-  if(nbr_lmt > 0) lmt=(lmt_sct *)malloc(nbr_lmt*sizeof(lmt_sct));
+  if(lmt_nbr > 0) lmt=(lmt_sct *)malloc(lmt_nbr*sizeof(lmt_sct));
 
-  for(idx=0;idx<nbr_lmt;idx++){
+  for(idx=0;idx<lmt_nbr;idx++){
 
     /* Hyperslab specifications are processed as a normal text list */ 
     arg_lst=lst_prs(lmt_arg[idx],dlm_sng,&arg_nbr);

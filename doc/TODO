@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.47 2000-04-04 02:15:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.48 2000-04-05 21:41:52 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -37,8 +37,8 @@ NCO Wish list (or, improvements I could make while on airplanes if only I had a 
 103. Implement trapezoidal rule option in ncra, ncea
 104. Investigate/Document reliability of -A operator when appending from large rank variables to small rank files. Add error message when variables are same size but one has a degenerate dimension.
 In general, adding large rank variable to small rank file does work, e.g.,
-ncks -C -O -v one_dim_rec_var in.nc foo.nc
-ncks -C -A -v three_dim_rec_var in.nc foo.nc
+ncks -C -O -v one_dmn_rec_var in.nc foo.nc
+ncks -C -A -v three_dmn_rec_var in.nc foo.nc
 ncdump foo.nc
 105. Add an easy-to-read tabular display option for file contents for ncks
 106. Add switch to keep degenerate dimensions with ncwa
@@ -82,8 +82,8 @@ Maybe 1.0e36d does not convert to 1.0e36f on Crays?
 138. If fastest varying dimension of NC_CHAR variable is of size one,
 then should not expect it to be NUL-terminated.
 139. ncks does not correctly print coordinate indices in hyperslabs with wrapping
-ncks -H -C -v one_dim_rec_var -d time,9,6 ~/nc/nco/data/in.nc
-Must compute dim_ss using WRP information for each dimension
+ncks -H -C -v one_dmn_rec_var -d time,9,6 ~/nc/nco/data/in.nc
+Must compute dmn_ss using WRP information for each dimension
 140. ncks prints dimensional indices relative to disk values, but
 variable index relative to hyperslab origin for all data types except
 NC_CHAR. For NC_CHAR the variable index is also relative to the disk

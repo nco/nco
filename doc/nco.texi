@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.42 2000-01-28 01:15:04 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.43 2000-04-05 21:41:52 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1408,15 +1408,15 @@ ncra -d time,5,7 85.nc 85_JJA.nc
 ncra -F -d time,6,8 85.nc 85_JJA.nc
 @end example
 
-Printing variable @var{three_dim_var} in file @file{in.nc} first with C 
+Printing variable @var{three_dmn_var} in file @file{in.nc} first with C 
 indexing conventions, then with Fortran indexing conventions results in
 the following output formats: 
 @example
-% ncks -H -v three_dim_var in.nc
-% lat[0]=-90 lev[0]=1000 lon[0]=-180 three_dim_var[0]=0 
+% ncks -H -v three_dmn_var in.nc
+% lat[0]=-90 lev[0]=1000 lon[0]=-180 three_dmn_var[0]=0 
 @dots{}
-% ncks -F -H -v three_dim_var in.nc
-% lon(1)=-180 lev(1)=1000 lat(1)=-90 three_dim_var(1)=0 
+% ncks -F -H -v three_dmn_var in.nc
+% lon(1)=-180 lev(1)=1000 lat(1)=-90 three_dmn_var(1)=0 
 @end example
 
 @node Hyperslabs, Wrapped coordinates, Fortran indexing, Common features
@@ -2913,22 +2913,22 @@ The dimension and variable indices refer to the location of the
 corresponding data element with respect to the variable as stored on
 disk (i.e., not the hyperslab).
 @example
-% ncks -H -C -v three_dim_var in.nc
-lat[0]=-90 lev[0]=100 lon[0]=0 three_dim_var[0]=0 
-lat[0]=-90 lev[0]=100 lon[1]=90 three_dim_var[1]=1 
-lat[0]=-90 lev[0]=100 lon[2]=180 three_dim_var[2]=2 
+% ncks -H -C -v three_dmn_var in.nc
+lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
+lat[0]=-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
+lat[0]=-90 lev[0]=100 lon[2]=180 three_dmn_var[2]=2 
 ...
-lat[1]=90 lev[2]=1000 lon[1]=90 three_dim_var[21]=21 
-lat[1]=90 lev[2]=1000 lon[2]=180 three_dim_var[22]=22 
-lat[1]=90 lev[2]=1000 lon[3]=270 three_dim_var[23]=23 
+lat[1]=90 lev[2]=1000 lon[1]=90 three_dmn_var[21]=21 
+lat[1]=90 lev[2]=1000 lon[2]=180 three_dmn_var[22]=22 
+lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
 @end example
 Printing the same variable with the @samp{-F} option shows the same
 variable indexed with Fortran conventions
 @example
-% ncks -F -H -C -v three_dim_var in.nc
-lon(1)=0 lev(1)=100 lat(1)=-90 three_dim_var(1)=0 
-lon(2)=90 lev(1)=100 lat(1)=-90 three_dim_var(2)=1 
-lon(3)=180 lev(1)=100 lat(1)=-90 three_dim_var(3)=2 
+% ncks -F -H -C -v three_dmn_var in.nc
+lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0 
+lon(2)=90 lev(1)=100 lat(1)=-90 three_dmn_var(2)=1 
+lon(3)=180 lev(1)=100 lat(1)=-90 three_dmn_var(3)=2 
 ...
 @end example
 Printing a hyperslab does not affect the variable or dimension indices
@@ -2937,16 +2937,16 @@ input file), and the input file has not changed.
 However, if the hypserslab is saved to an output file and those values
 are printed, the indices will change:
 @example
-% ncks -H -d lat,90.0 -d lev,1000.0 -v three_dim_var in.nc out.nc
-lat[1]=90 lev[2]=1000 lon[0]=0 three_dim_var[20]=20 
-lat[1]=90 lev[2]=1000 lon[1]=90 three_dim_var[21]=21 
-lat[1]=90 lev[2]=1000 lon[2]=180 three_dim_var[22]=22 
-lat[1]=90 lev[2]=1000 lon[3]=270 three_dim_var[23]=23 
+% ncks -H -d lat,90.0 -d lev,1000.0 -v three_dmn_var in.nc out.nc
+lat[1]=90 lev[2]=1000 lon[0]=0 three_dmn_var[20]=20 
+lat[1]=90 lev[2]=1000 lon[1]=90 three_dmn_var[21]=21 
+lat[1]=90 lev[2]=1000 lon[2]=180 three_dmn_var[22]=22 
+lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
 % ncks -H out.nc
-lat[0]=90 lev[0]=1000 lon[0]=0 three_dim_var[0]=20 
-lat[0]=90 lev[0]=1000 lon[1]=90 three_dim_var[1]=21 
-lat[0]=90 lev[0]=1000 lon[2]=180 three_dim_var[2]=22 
-lat[0]=90 lev[0]=1000 lon[3]=270 three_dim_var[3]=23 
+lat[0]=90 lev[0]=1000 lon[0]=0 three_dmn_var[0]=20 
+lat[0]=90 lev[0]=1000 lon[1]=90 three_dmn_var[1]=21 
+lat[0]=90 lev[0]=1000 lon[2]=180 three_dmn_var[2]=22 
+lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23 
 @end example
 
 @cindex @code{-M}
@@ -3004,16 +3004,16 @@ is useful (see description of @code{-a} switch).
 @cindex @code{printf()}
 @cindex @code{\n} (linefeed)
 @cindex @code{\t} (horizontal tab)
-Print variable @code{three_dim_var} from file @file{in.nc} with
+Print variable @code{three_dmn_var} from file @file{in.nc} with
 default notations. 
-Next print @code{three_dim_var} as an un-annotated text column.
-Then print @code{three_dim_var} signed with very high precision.
-Finally, print @code{three_dim_var} as a comma-separated list.
+Next print @code{three_dmn_var} as an un-annotated text column.
+Then print @code{three_dmn_var} signed with very high precision.
+Finally, print @code{three_dmn_var} as a comma-separated list.
 @example
-ncks -H -C -v three_dim_var in.nc
-ncks -s "%f\n" -H -C -v three_dim_var in.nc
-ncks -s "%+16.10f\n" -H -C -v three_dim_var in.nc
-ncks -s "%f, " -H -C -v three_dim_var in.nc
+ncks -H -C -v three_dmn_var in.nc
+ncks -s "%f\n" -H -C -v three_dmn_var in.nc
+ncks -s "%+16.10f\n" -H -C -v three_dmn_var in.nc
+ncks -s "%f, " -H -C -v three_dmn_var in.nc
 @end example
 @noindent
 The second and third options are useful when pasting data into text
@@ -3671,8 +3671,8 @@ variables:
         float lon(lon) ;
         float time(time) ;
         float scalar_var ;
-        float three_dim_var(lat, lev, lon) ;
-        float two_dim_var(lat, lev) ;
+        float three_dmn_var(lat, lev, lon) ;
+        float two_dmn_var(lat, lev) ;
         float mask(lat, lon) ;
         float gw(lat) ;
 @} 

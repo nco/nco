@@ -24,12 +24,12 @@
 
 netcdf in {
 dimensions:
-	band=2,lat=2,lev=3,rlev=3,lon=4,char_dim_lng=80,char_dim_sml=4,fl_dim=3,time=unlimited;
+	band=2,lat=2,lev=3,rlev=3,lon=4,char_dmn_lng=80,char_dmn_sml=4,fl_dim=3,time=unlimited;
 variables:
 	:convention = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.15 2000-02-03 16:56:20 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.16 2000-04-05 21:41:51 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -100,18 +100,18 @@ variables:
 	char char_var_multinul(lev);
 	char_var_multinul:long_name = "Character variable containing multiple NULs";
 
-	char fl_nm(char_dim_lng);
+	char fl_nm(char_dmn_lng);
 	fl_nm:long_name = "Variable contains a file name";
 
-	char fl_nm_arr(fl_dim,char_dim_lng);
+	char fl_nm_arr(fl_dim,char_dmn_lng);
 	fl_nm_arr:long_name = "Variable that contains a short array of file names";
 	fl_nm_arr:units = "[sng]";
 
-	char non_nul_trm_char_one_dim(char_dim_sml);
+	char non_nul_trm_char_one_dim(char_dmn_sml);
 	non_nul_trm_char_one_dim:long_name = "Variable contains a one-dimensional array of characters that is not NUL-terminated";
 	non_nul_trm_char_one_dim:units = "[chr]";
 
-	char non_nul_trm_char_two_dim(fl_dim,char_dim_sml);
+	char non_nul_trm_char_two_dim(fl_dim,char_dmn_sml);
 	non_nul_trm_char_two_dim:long_name = "Variable contains a two-dimensional array of characters that are not NUL-terminated";
 	non_nul_trm_char_two_dim:units = "[chr]";
 
@@ -152,7 +152,7 @@ variables:
 	rz:units = "meter";
 	rz:purpose = "Height stored with a monotonically decreasing coordinate";
 
-	float one_dim_var(band);
+	float one_dmn_var(band);
 
 	float att_var;
 	att_var:byte_att = '\0';
@@ -170,13 +170,13 @@ variables:
 	band_var:float_att = 73.f;
 	band_var:double_att = 73.d;
 
-	float three_dim_var(lat,lev,lon);
-	three_dim_var:long_name = "three dimensional variable";
-	three_dim_var:units = "Fraction";
+	float three_dmn_var(lat,lev,lon);
+	three_dmn_var:long_name = "three dimensional variable";
+	three_dmn_var:units = "Fraction";
 
-	float two_dim_var(lat,lev);
-	two_dim_var:long_name = "two dimensional variable";
-	two_dim_var:units = "Fraction";
+	float two_dmn_var(lat,lev);
+	two_dmn_var:long_name = "two dimensional variable";
+	two_dmn_var:units = "Fraction";
 
 	float mask(lat,lon);
 	mask:long_name = "mask variable like ORO";
@@ -200,9 +200,9 @@ variables:
 	double rec_var_dbl(time);
 	rec_var_dbl:long_name = "record variable, double";
 
-	long one_dim_rec_var(time);
-	one_dim_rec_var:long_name = "one dimensional record variable";
-	one_dim_rec_var:units = "second";
+	long one_dmn_rec_var(time);
+	one_dmn_rec_var:long_name = "one dimensional record variable";
+	one_dmn_rec_var:units = "second";
 
 	float tpt(time);
 	tpt:long_name = "one dimensional record variable";
@@ -216,26 +216,26 @@ variables:
 	rec_var_flt_mss_val_dbl:long_name = "record variable, float, with double missing values";
 	rec_var_flt_mss_val_dbl:missing_value = 1.0e36d;
 
-	char one_dim_rec_var_sng(time);
-	one_dim_rec_var_sng:long_name = "one dimensional record variable of string";
+	char one_dmn_rec_var_sng(time);
+	one_dmn_rec_var_sng:long_name = "one dimensional record variable of string";
 
 	float time_lon(time,lon);
 	time_lon:long_name = "Record variable of longitude coordinate";
 
-	char two_dim_rec_var_sng(time,lev);
-	two_dim_rec_var_sng:long_name = "two dimensional record variable of string";
+	char two_dmn_rec_var_sng(time,lev);
+	two_dmn_rec_var_sng:long_name = "two dimensional record variable of string";
 
-	float two_dim_rec_var(time,lev);
-	two_dim_rec_var:long_name = "two dimensional record variable";
-	two_dim_rec_var:units = "watt meter-2";
+	float two_dmn_rec_var(time,lev);
+	two_dmn_rec_var:long_name = "two dimensional record variable";
+	two_dmn_rec_var:units = "watt meter-2";
 
-	float three_dim_rec_var(time,lat,lon);
-	three_dim_rec_var:long_name = "three dimensional record variable";
-	three_dim_rec_var:units = "watt meter-2";
+	float three_dmn_rec_var(time,lat,lon);
+	three_dmn_rec_var:long_name = "three dimensional record variable";
+	three_dmn_rec_var:units = "watt meter-2";
 
-	float four_dim_rec_var(time,lat,lev,lon);
-	four_dim_rec_var:long_name = "four dimensional record variable";
-	four_dim_rec_var:units = "watt meter-2";
+	float four_dmn_rec_var(time,lat,lev,lon);
+	four_dmn_rec_var:long_name = "four dimensional record variable";
+	four_dmn_rec_var:units = "watt meter-2";
 
 data:
 	ORO=1.,1.,1.,1.,1.,1.,1.,1.;
@@ -270,10 +270,10 @@ data:
 	non_nul_trm_char_one_dim='a','b';
 	non_nul_trm_char_two_dim="abcd","efgh","ijkm";
 	one=1.;
-	one_dim_rec_var=1,2,3,4,5,6,7,8,9,10;
+	one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;
 	tpt=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8,273.9,273.10;
-	one_dim_rec_var_sng="Hello Wor";
-	one_dim_var=1.,10.;
+	one_dmn_rec_var_sng="Hello Wor";
+	one_dmn_var=1.,10.;
 	rec_var_dbl=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	rec_var_flt=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	rec_var_flt_mss_val_dbl=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;
@@ -283,10 +283,10 @@ data:
 	scalar_var=10.;
 	short_var=10;
 	three=3.;
-	three_dim_var=0.,1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.,16.,17.,18.,19.,20.,21.,22.,23.;
+	three_dmn_var=0.,1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.,16.,17.,18.,19.,20.,21.,22.,23.;
 	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	two=2.;
-	two_dim_var=1.5,5.5,9.5,13.5,17.5,21.5;
+	two_dmn_var=1.5,5.5,9.5,13.5,17.5,21.5;
 	val_one_mss=1.,1.0e36;
 	weight=10.,10.;
 	wgt_one=1.,1.;
@@ -308,7 +308,7 @@ data:
 			0.0,90.0,180.0,270.0,
 			0.0,90.0,180.0,270.0,
 			0.0,90.0,180.0,270.0;
-	two_dim_rec_var_sng="abc",
+	two_dmn_rec_var_sng="abc",
 				"bcd",
 				"cde",
 				"def",
@@ -318,7 +318,7 @@ data:
 				"hij",
 				"jkl",
 				"klm";
-	two_dim_rec_var=1.,2.0,3.,
+	two_dmn_rec_var=1.,2.0,3.,
 			1.,2.1,3.,
 			1.,2.2,3.,
 			1.,2.3,3.,
@@ -328,7 +328,7 @@ data:
 			1.,2.7,3.,
 			1.,2.8,3.,
 			1.,2.9,3.;
-	three_dim_rec_var= 	 1, 2, 3, 4, 5, 6, 7, 8,
+	three_dmn_rec_var= 	 1, 2, 3, 4, 5, 6, 7, 8,
 				 9,10,11,12,13,14,15,16,
 				17,18,19,20,21,22,23,24,
 				25,26,27,28,29,30,31,32,
@@ -338,7 +338,7 @@ data:
 				57,58,59,60,61,62,63,64,
 				65,66,67,68,69,70,71,72,
 				73,74,75,76,77,78,79,80;
-	four_dim_rec_var= 	  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12,
+	four_dmn_rec_var= 	  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12,
 				 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
 				 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
 				 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
@@ -359,4 +359,10 @@ data:
 				217,218,219,220,221,222,223,224,225,226,227,228,
 				229,230,231,232,233,234,235,236,237,238,239,240;
 }
+
+
+
+
+
+
 

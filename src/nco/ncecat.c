@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.15 2000-01-17 01:53:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.16 2000-04-05 21:41:56 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -76,12 +76,12 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.15 2000-01-17 01:53:57 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.15 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.16 2000-04-05 21:41:56 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.16 $";
   
-  dim_sct *rdim;
-  dim_sct **dim;
-  dim_sct **dim_out;
+  dmn_sct *rdim;
+  dmn_sct **dim;
+  dmn_sct **dmn_out;
   
   extern char *optarg;
   extern int ncopts;
@@ -92,22 +92,22 @@ main(int argc,char **argv)
   int in_id;  
   int out_id;  
   int nbr_abb_arg=0;
-  int nbr_dim_fl;
-  int nbr_lmt=0; /* Option d. NB: nbr_lmt gets incremented */
+  int nbr_dmn_fl;
+  int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_var_fl;
   int nbr_var_fix; /* nbr_var_fix gets incremented */ 
   int nbr_var_prc; /* nbr_var_prc gets incremented */ 
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */ 
-  int nbr_dim_xtr;
+  int nbr_dmn_xtr;
   int nbr_fl=0;
   int opt;
-  int rec_dim_id=-1;
+  int rec_dmn_id=-1;
   
   lmt_sct *lmt;
   
   long idx_rec_out=0L; /* idx_rec_out gets incremented */ 
   
-  nm_id_sct *dim_lst;
+  nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */ 
   
   time_t clock;
@@ -144,8 +144,8 @@ main(int argc,char **argv)
       dbg_lvl=atoi(optarg);
       break;
     case 'd': /* Copy argument for later processing */ 
-      lmt_arg[nbr_lmt]=(char *)strdup(optarg);
-      nbr_lmt++;
+      lmt_arg[lmt_nbr]=(char *)strdup(optarg);
+      lmt_nbr++;
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_STYLE=!FORTRAN_STYLE;
@@ -195,7 +195,7 @@ main(int argc,char **argv)
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
 
   /* Make uniform list of user-specified dimension limits */ 
-  lmt=lmt_prs(nbr_lmt,lmt_arg);
+  lmt=lmt_prs(lmt_nbr,lmt_arg);
   
   /* Make netCDF errors fatal and print the diagnostic */   
   ncopts=NC_VERBOSE | NC_FATAL; 
@@ -208,7 +208,7 @@ main(int argc,char **argv)
   in_id=ncopen(fl_in,NC_NOWRITE);
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
-  (void)ncinquire(in_id,&nbr_dim_fl,&nbr_var_fl,(int *)NULL,&rec_dim_id);
+  (void)ncinquire(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
   
   /* Form initial extraction list from user input */ 
   xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
@@ -217,13 +217,13 @@ main(int argc,char **argv)
   if(EXCLUDE_INPUT_LIST) xtr_lst=var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
 
   /* Add all coordinate variables to extraction list */ 
-  if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dim_fl,xtr_lst,&nbr_xtr);
+  if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
 
   /* Make sure coordinates associated extracted variables are also on extraction list */ 
   if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
 
   /* Remove record coordinate, if any, from extraction list */ 
-  if(False) xtr_lst=var_lst_crd_xcl(in_id,rec_dim_id,xtr_lst,&nbr_xtr);
+  if(False) xtr_lst=var_lst_crd_xcl(in_id,rec_dmn_id,xtr_lst,&nbr_xtr);
 
   /* Finally, heapsort the extraction list by variable ID for fastest I/O */ 
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
@@ -231,23 +231,23 @@ main(int argc,char **argv)
   /* We now have final list of variables to extract. Phew. */
   
   /* Find coordinate/dimension values associated with user-specified limits */ 
-  for(idx=0;idx<nbr_lmt;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
+  for(idx=0;idx<lmt_nbr;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
   
   /* Find dimensions associated with variables to be extracted */ 
-  dim_lst=dim_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dim_xtr);
+  dmn_lst=dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
 
   /* Fill in dimension structure for all extracted dimensions */ 
-  dim=(dim_sct **)malloc(nbr_dim_xtr*sizeof(dim_sct *));
-  for(idx=0;idx<nbr_dim_xtr;idx++) dim[idx]=dim_fll(in_id,dim_lst[idx].id,dim_lst[idx].nm);
+  dim=(dmn_sct **)malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+  for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
   
   /* Merge hyperslab limit information into dimension structures */ 
-  if(nbr_lmt > 0) (void)dim_lmt_merge(dim,nbr_dim_xtr,lmt,nbr_lmt);
+  if(lmt_nbr > 0) (void)dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
 
   /* Duplicate input dimension structures for output dimension structures */ 
-  dim_out=(dim_sct **)malloc(nbr_dim_xtr*sizeof(dim_sct *));
-  for(idx=0;idx<nbr_dim_xtr;idx++){
-    dim_out[idx]=dim_dup(dim[idx]);
-    (void)dim_xrf(dim[idx],dim_out[idx]); 
+  dmn_out=(dmn_sct **)malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+  for(idx=0;idx<nbr_dmn_xtr;idx++){
+    dmn_out[idx]=dmn_dup(dim[idx]);
+    (void)dmn_xrf(dim[idx],dmn_out[idx]); 
   } /* end loop over idx */
 
   /* Is this an NCAR CSM-format history tape? */
@@ -257,14 +257,14 @@ main(int argc,char **argv)
   var=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
-    var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dim_xtr);
+    var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
     var_out[idx]=var_dup(var[idx]);
     (void)var_xrf(var[idx],var_out[idx]);
-    (void)var_dim_xrf(var_out[idx]);
+    (void)var_dmn_xrf(var_out[idx]);
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */ 
-  (void)var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,(dim_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* Open output file */ 
   fl_out_tmp=fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
@@ -278,7 +278,7 @@ main(int argc,char **argv)
   /* ncecat-specific operations */ 
   if(True){
     /* Define the new record dimension */
-    rdim=dim_dup(dim[0]);
+    rdim=dmn_dup(dim[0]);
 
     rdim->nm="record";
     rdim->id=-1;
@@ -293,23 +293,23 @@ main(int argc,char **argv)
     rdim->end=rdim->sz-1L;
     
     /* Change any existing record dimension to be a regular dimension */
-    for(idx=0;idx<nbr_dim_xtr;idx++){
+    for(idx=0;idx<nbr_dmn_xtr;idx++){
       /* Is any input dimension a record dimension? */
-      if(dim_out[idx]->is_rec_dim){
-	dim_out[idx]->is_rec_dim=False;
+      if(dmn_out[idx]->is_rec_dim){
+	dmn_out[idx]->is_rec_dim=False;
 	break;
       } /* end if */
     } /* end loop over idx */
 
     /* Add the record dimension to the end of the dimension list */ 
-    nbr_dim_xtr++;
-    dim_out=(dim_sct **)realloc(dim_out,nbr_dim_xtr*sizeof(dim_sct **));
-    dim_out[nbr_dim_xtr-1]=rdim;
+    nbr_dmn_xtr++;
+    dmn_out=(dmn_sct **)realloc(dmn_out,nbr_dmn_xtr*sizeof(dmn_sct **));
+    dmn_out[nbr_dmn_xtr-1]=rdim;
 
   } /* end if */ 
 
   /* Define dimensions in output file */ 
-  (void)dim_def(fl_out,out_id,dim_out,nbr_dim_xtr);
+  (void)dmn_def(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
   if(True){
     /* Prepend the record dimension to the beginning of all the vectors for the processed variables */ 
@@ -319,22 +319,22 @@ main(int argc,char **argv)
       var_prc_out[idx]->sz_rec=var_prc_out[idx]->sz;
       
       /* Allocate space to hold the dimension IDs */ 
-      var_prc_out[idx]->dim=(dim_sct **)realloc(var_prc_out[idx]->dim,var_prc_out[idx]->nbr_dim*sizeof(dim_sct *));
-      var_prc_out[idx]->dim_id=(int *)realloc(var_prc_out[idx]->dim_id,var_prc_out[idx]->nbr_dim*sizeof(int));
+      var_prc_out[idx]->dim=(dmn_sct **)realloc(var_prc_out[idx]->dim,var_prc_out[idx]->nbr_dim*sizeof(dmn_sct *));
+      var_prc_out[idx]->dmn_id=(int *)realloc(var_prc_out[idx]->dmn_id,var_prc_out[idx]->nbr_dim*sizeof(int));
       var_prc_out[idx]->cnt=(long *)realloc(var_prc_out[idx]->cnt,var_prc_out[idx]->nbr_dim*sizeof(long));
       var_prc_out[idx]->srt=(long *)realloc(var_prc_out[idx]->srt,var_prc_out[idx]->nbr_dim*sizeof(long));
       var_prc_out[idx]->end=(long *)realloc(var_prc_out[idx]->end,var_prc_out[idx]->nbr_dim*sizeof(long));
       
       /* Move the current array by one to make room for the new record dimension info */ 
-      (void)memmove((void *)(var_prc_out[idx]->dim+1),(void *)(var_prc_out[idx]->dim),(var_prc_out[idx]->nbr_dim-1)*sizeof(dim_sct *));
-      (void)memmove((void *)(var_prc_out[idx]->dim_id+1),(void *)(var_prc_out[idx]->dim_id),(var_prc_out[idx]->nbr_dim-1)*sizeof(int));
+      (void)memmove((void *)(var_prc_out[idx]->dim+1),(void *)(var_prc_out[idx]->dim),(var_prc_out[idx]->nbr_dim-1)*sizeof(dmn_sct *));
+      (void)memmove((void *)(var_prc_out[idx]->dmn_id+1),(void *)(var_prc_out[idx]->dmn_id),(var_prc_out[idx]->nbr_dim-1)*sizeof(int));
       (void)memmove((void *)(var_prc_out[idx]->cnt+1),(void *)(var_prc_out[idx]->cnt),(var_prc_out[idx]->nbr_dim-1)*sizeof(long));
       (void)memmove((void *)(var_prc_out[idx]->srt+1),(void *)(var_prc_out[idx]->srt),(var_prc_out[idx]->nbr_dim-1)*sizeof(long));
       (void)memmove((void *)(var_prc_out[idx]->end+1),(void *)(var_prc_out[idx]->end),(var_prc_out[idx]->nbr_dim-1)*sizeof(long));
       
       /* Insert the value for the new record dimension */ 
       var_prc_out[idx]->dim[0]=rdim;
-      var_prc_out[idx]->dim_id[0]=rdim->id;
+      var_prc_out[idx]->dmn_id[0]=rdim->id;
       var_prc_out[idx]->cnt[0]=1L;
       var_prc_out[idx]->srt[0]=-1L;
       var_prc_out[idx]->end[0]=-1L;
@@ -344,7 +344,7 @@ main(int argc,char **argv)
   } /* end if */
 
   /* Define variables in output file, and copy their attributes */ 
-  (void)var_def(in_id,fl_out,out_id,var_out,nbr_xtr,(dim_sct **)NULL,0);
+  (void)var_def(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,0);
 
   /* Turn off default filling behavior to enhance efficiency */ 
 #if ( ! defined SUN4 ) && ( ! defined SUN4SOL2 ) && ( ! defined SUNMP )

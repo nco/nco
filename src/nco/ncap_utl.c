@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.8 2000-01-17 01:53:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.9 2000-04-05 21:41:55 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */ 
 
@@ -82,7 +82,7 @@ ncap_write_var(int nc_id,var_sct *var)
 
   /* Define the variable */ 
   (void)fprintf(stderr,"ncap_write_var(): nm = %s\n",var->nm);
-  var_id=ncvardef(nc_id,var->nm,var->type,var->nbr_dim,var->dim_id);
+  var_id=ncvardef(nc_id,var->nm,var->type,var->nbr_dim,var->dmn_id);
   /* Take output file out of define mode */ 
   (void)ncendef(nc_id);
   /* Write out data */ 

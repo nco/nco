@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.23 2000-01-17 01:53:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.24 2000-04-05 21:41:54 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */ 
 
@@ -109,7 +109,7 @@ enum{
 
 enum lmt_typ{
   lmt_crd_val, /* 0 */ 
-  lmt_dim_idx /* 1 */ 
+  lmt_dmn_idx /* 1 */ 
 }; /* end enum */
 
 #else /* SGI */
@@ -139,7 +139,7 @@ enum lmt_typ{
 #define aed_overwrite 4
 
 #define lmt_crd_val 0
-#define lmt_dim_idx 1
+#define lmt_dmn_idx 1
 #endif /* SGI */
 
 #ifndef EXIT_SUCCESS
@@ -149,7 +149,7 @@ enum lmt_typ{
 
 typedef struct {
   char *nm;
-  int lmt_typ; /* crd_val or dim_idx */
+  int lmt_typ; /* crd_val or dmn_idx */
   /* Following four flags are used only by multi-file operators ncra and ncrcat: */
   bool is_usr_spc_lmt; /* True if any part of limit is user-specified, else False */
   bool is_usr_spc_min; /* True if user-specified, else False */
@@ -217,7 +217,7 @@ typedef struct {
   ptr_unn val;
 } att_sct;
 
-typedef struct dim_sct_tag{
+typedef struct dmn_sct_tag{
   char *nm; /* name */ 
   int id; /* dimension ID */ 
   int nc_id; /* file ID */
@@ -232,8 +232,8 @@ typedef struct dim_sct_tag{
   long cnt; /* # of valid elements in this dimension (including effects of stride and wrapping) */ 
   long srd; /* stride of hyperslab */ 
   ptr_unn val; /* buffer to hold hyperslab */ 
-  struct dim_sct_tag *xrf; /* cross-reference to associated dimension structure (usually the structure for the dimension on output) */ 
-} dim_sct;
+  struct dmn_sct_tag *xrf; /* cross-reference to associated dimension structure (usually the structure for the dimension on output) */ 
+} dmn_sct;
 
 typedef struct var_sct_tag{
   char *nm; /* name */ 
@@ -250,8 +250,8 @@ typedef struct var_sct_tag{
   ptr_unn mss_val; /* value of missing_value attribute, if any (mss_val stored in this structure must be same type as variable) */ 
   int cid; /* Dimension ID of the associated coordinate, if any */ 
   char fmt[5]; /* hint for printf()-style formatting */ 
-  dim_sct **dim; /* pointers to full dimension structures */ 
-  int *dim_id; /* contiguous vector of dimension IDs */ 
+  dmn_sct **dim; /* pointers to full dimension structures */ 
+  int *dmn_id; /* contiguous vector of dimension IDs */ 
   long *srt; /* contiguous vector of indices to start of hyperslab */ 
   long *end; /* contiguous vector of indices to end of hyperslab */ 
   long *cnt; /* contiguous vector of lengths of hyperslab */ 
@@ -259,6 +259,13 @@ typedef struct var_sct_tag{
   ptr_unn val; /* buffer to hold hyperslab */ 
   long *tally; /* number of valid operations performed so far */ 
   struct var_sct_tag *xrf; /* cross-reference to associated variable structure (usually the structure for the variable on output) */ 
+  int is_pck; /* Variable is packed on disk (scale_factor, add_offset, or both attributes exist) */ 
+  int has_scl_fct; /* scale_factor attribute exists */ 
+  int has_add_fst; /* add_offset attribute exists */ 
+  ptr_unn scl_fct; /* value of scale_factor attribute, if any (scl_fct stored in this structure must be same type as unpacked variable) */ 
+  ptr_unn add_fst; /* value of add_offset attribute, if any (add_fst stored in this structure must be same type as unpacked variable) */ 
+  nc_type type_pck; /* type of variable when packed (on disk) */ 
+  nc_type type_xpn; /* type of variable when unpacked (expanded) (in memory) */ 
 } var_sct;
 
 #ifdef USE_FORTRAN_ARITHMETIC
@@ -349,20 +356,20 @@ extern char *prg_nm_get(void);
 extern char *prg_prs(char *,int *);
 extern char *sng_lst_prs(char **,const long, const char *);
 extern int sng_ascii_trn(char *);
-extern dim_sct *dim_dup(dim_sct *);
-extern dim_sct *dim_fll(int,int,char *);
+extern dmn_sct *dmn_dup(dmn_sct *);
+extern dmn_sct *dmn_fll(int,int,char *);
 extern double arm_time_mk(int,double);
 extern int mss_val_get(int,var_sct *);
 extern int nd2endm(int,int);
 extern int op_prs(char *);
 extern int prg_get(void);
 extern lmt_sct *lmt_prs(int,char **);
-extern lmt_sct lmt_dim_mk(int,int,lmt_sct *,int,bool);
+extern lmt_sct lmt_dmn_mk(int,int,lmt_sct *,int,bool);
 extern nclong FORTRAN_newdate(nclong *,int *);
 extern nclong arm_base_time_get(int);
 extern nclong newdate(nclong,int);
-extern nm_id_sct *dim_lst_ass_var(int,nm_id_sct *,int,int *);
-extern nm_id_sct *dim_lst_mk(int,char **,int);
+extern nm_id_sct *dmn_lst_ass_var(int,nm_id_sct *,int,int *);
+extern nm_id_sct *dmn_lst_mk(int,char **,int);
 extern nm_id_sct *lst_heapsort(nm_id_sct *,int,bool);
 extern nm_id_sct *var_lst_add_crd(int,int,int,nm_id_sct *,int *);
 extern nm_id_sct *var_lst_ass_crd_add(int,nm_id_sct *,int *);
@@ -372,11 +379,11 @@ extern nm_id_sct *var_lst_xcl(int,int,nm_id_sct *,int *);
 extern ptr_unn mss_val_mk(nc_type);
 extern unsigned short dbg_lvl_get(void);
 extern var_sct *scl_dbl_mk_var(double);
-extern var_sct *var_avg(var_sct *,dim_sct **,int);
+extern var_sct *var_avg(var_sct *,dmn_sct **,int);
 extern var_sct *var_conform_dim(var_sct *,var_sct *,var_sct *,bool,bool *);
 extern var_sct *var_conform_type(nc_type,var_sct *);
 extern var_sct *var_dup(var_sct *);
-extern var_sct *var_fll(int,int,char *,dim_sct **,int);
+extern var_sct *var_fll(int,int,char *,dmn_sct **,int);
 extern var_sct *var_free(var_sct *);
 extern void Exit_gracefully(void);
 extern void FORTRAN_add_double_precision(long *,int *,double *,long *,double *,double *);
@@ -396,9 +403,9 @@ extern void att_cpy(int,int,int,int);
 extern void cast_nctype_void(nc_type,ptr_unn *);
 extern void cast_void_nctype(nc_type,ptr_unn *);
 extern void copyright_prn(char *,char *);
-extern void dim_def(char *,int,dim_sct **,int);
-extern void dim_lmt_merge(dim_sct **,int,lmt_sct *,int);
-extern void dim_xrf(dim_sct *,dim_sct *);
+extern void dmn_def(char *,int,dmn_sct **,int);
+extern void dmn_lmt_mrg(dmn_sct **,int,lmt_sct *,int);
+extern void dmn_xrf(dmn_sct *,dmn_sct *);
 extern void fl_cmp_err_chk(void);
 extern void fl_cp(char *,char *);
 extern void fl_mv(char *,char *);
@@ -417,12 +424,12 @@ extern void usg_prn(void);
 extern void val_conform_type(nc_type,ptr_unn,nc_type,ptr_unn);
 extern void var_add(nc_type,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
 extern void var_avg_reduce(nc_type,long,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
-extern void var_def(int,char *,int,var_sct **,int,dim_sct **,int);
-extern void var_dim_xrf(var_sct *);
+extern void var_def(int,char *,int,var_sct **,int,dmn_sct **,int);
+extern void var_dmn_xrf(var_sct *);
 extern void var_divide(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
 extern void var_get(int,var_sct *);
-extern void var_lst_convert(int,nm_id_sct *,int,dim_sct **,int,var_sct ***,var_sct ***);
-extern void var_lst_divide(var_sct **,var_sct **,int,bool,dim_sct **,int,var_sct ***,var_sct ***,int *,var_sct ***,var_sct ***,int *);
+extern void var_lst_convert(int,nm_id_sct *,int,dmn_sct **,int,var_sct ***,var_sct ***);
+extern void var_lst_divide(var_sct **,var_sct **,int,bool,dmn_sct **,int,var_sct ***,var_sct ***,int *,var_sct ***,var_sct ***,int *);
 extern void var_mask(nc_type,long,int,ptr_unn,double,int,ptr_unn,ptr_unn);
 extern void var_multiply(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
 extern void var_normalize(nc_type,long,int,ptr_unn,long *,ptr_unn);
