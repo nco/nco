@@ -4,6 +4,8 @@
 	Changes since nco-2_6_0: 
 	Unpacking is now supported for all arithmetic operators
 
+	* Improved regression testing in configure.eg
+
 	* Eliminate unnecessary type conversion to typ_dsk in ncra, ncea, ncwa
 	This could reduce precision of answers
 	Thanks to Martin Dix for pointing this out

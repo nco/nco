@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.7 2002-08-22 06:10:19 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.8 2002-08-22 06:40:53 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -30,12 +30,13 @@ Status: Appears that /usr/local... takes precedence over $NETCDF_INC/LIB
 zender@bb0001en:/fs/cgd/home0/zender/nco$ pvmgetarch;uname -a
 AIX
 AIX bb0001en 3 4 000117924C00
-powerpc-ibm-aix4.3.3.0
-CC='xlc' CXX='xlC' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.foo 2>&1
-make > make.foo 2>&1
-scp configure.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr/configure.foo.powerpc-ibm-aix4.3.3.0
-scp config.log dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr/config.log.powerpc-ibm-aix4.3.3.0
-scp make.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr/make.foo.powerpc-ibm-aix4.3.3.0
+
+export GNU_TRP='powerpc-ibm-aix4.3.3.0'
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo
+CC='xlc' CXX='xlC' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+mv config.log config.log.${GNU_TRP}.foo
+make > make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 Old build examples:
 For ABI=32:
@@ -56,12 +57,13 @@ Status:
 zender@dust:~/nco$ pvmgetarch;uname -a
 LINUX
 Linux dust.ps.uci.edu 2.4.19-pre8 #1 SMP Wed May 8 10:16:29 PDT 2002 i686 unknown
-i686-pc-linux-gnu
-./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.foo 2>&1
-make > make.foo 2>&1
-scp configure.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr/configure.foo.i686-pc-linux-gnu
-scp config.log dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr/config.log.i686-pc-linux-gnu
-scp make.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr/make.foo.i686-pc-linux-gnu
+
+export GNU_TRP='i686-pc-linux-gnu'
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo
+./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+mv config.log config.log.${GNU_TRP}.foo
+make > make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 Old build example:
 gcc  -DLINUX -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='dust.ps.uci.edu' -DUSER='zender' -Di386 -I/usr/local/include -U_OPENMP -Wall -O -c ../src/nco/nco_att_utl.c -o /home/zender/obj/LINUX/nco_att_utl.o
@@ -80,13 +82,13 @@ Status: Tested platform needs newer g++
 zender@ess1:/usr/home/zender/nco$ pvmgetarch;uname -a
 LINUXALPHA
 Linux ess1.ps.uci.edu 2.2.15 #1 Thu May 18 17:22:29 EDT 2000 alpha unknown
-alphaev56-unknown-linux-gnu
 
-./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.foo 2>&1
-make > make.foo 2>&1
-scp configure.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr/configure.foo.alphaev56-unknown-linux-gnu
-scp config.log dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr/config.log.alphaev56-unknown-linux-gnu
-scp make.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr/make.foo.alphaev56-unknown-linux-gnu
+export GNU_TRP='alphaev56-unknown-linux-gnu'
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo
+./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.alphaev56-unknown-linux-gnu.foo 2>&1
+mv config.log config.log.alphaev56-unknown-linux-gnu.foo
+make > make.alphaev56-unknown-linux-gnu.foo 2>&1
+scp configure.alphaev56-unknown-linux-gnu.foo config.log.alphaev56-unknown-linux-gnu.foo make.alphaev56-unknown-linux-gnu.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 Old build example:
 ************************************************************************
@@ -100,13 +102,13 @@ Status: Found netcdf.h, unable to link to libnetcdf.a
 zender@krein:~/nco$ pvmgetarch;uname -a
 SGIMP64
 IRIX64 krein 6.5 10100655 IP27 mips
-mips-sgi-irix6.5
 
-CC='cc' CXX='CC -LANG:std' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.foo 2>&1
-make > make.foo 2>&1
-scp configure.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr/configure.foo.mips-sgi-irix6.5
-scp config.log dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr/config.log.mips-sgi-irix6.5
-scp make.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr/make.foo.mips-sgi-irix6.5
+export GNU_TRP='mips-sgi-irix6.5'
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo
+CC='cc' CXX='CC -LANG:std' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+mv config.log config.log.${GNU_TRP}.foo
+make > make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 Old build example: (Default is ABI64 on this platform)
 cc  -DSGIMP64 -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='krein.math.uci.edu' -DUSER='zender' -I/usr/local/include -U_OPENMP -64 -mips4 -O2 -c ../src/nco/nco_att_utl.c -o /home/ess/zender/zender/obj/SGIMP64/nco_att_utl.o
@@ -124,13 +126,13 @@ Status:
 zender@flagstaff:~/nco$ pvmgetarch;uname -a
 SUNMP
 SunOS flagstaff 5.6 Generic_105181-19 sun4u sparc SUNW,Ultra-2
-sparc-sun-solaris2.6
 
-./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.foo 2>&1
-make > make.foo 2>&1
-scp configure.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr/configure.foo.sparc-sun-solaris2.6
-scp config.log dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr/config.log.sparc-sun-solaris2.6
-scp make.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr/make.foo.sparc-sun-solaris2.6
+export GNU_TRP='sparc-sun-solaris2.6'
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo
+./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+mv config.log config.log.${GNU_TRP}.foo
+make > make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 Old build example:
 
