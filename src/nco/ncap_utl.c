@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.88 2003-11-20 21:36:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.89 2003-11-21 16:51:29 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -179,18 +179,17 @@ ncap_var_var_add /* [fnc] Add two variables */
  var_sct *var_2) /* I [sct] Input variable structure containing second operand */
 {
   /* Purpose: Add two variables */
-  var_sct *var_nsw;
+  /* Result is stored in var_2 */
   
   (void)ncap_var_retype(var_1,var_2);
-  var_nsw=nco_var_dpl(var_2);
-  (void)ncap_var_cnf_dmn(&var_1,&var_nsw);
-  /* fxm: bug in nco_var_add. missing_value is not carried over to var_nsw in result when var_1->has_mss_val is true */
+  (void)ncap_var_cnf_dmn(&var_1,&var_2);
+  /* fxm: bug in nco_var_add. missing_value is not carried over to var_2 in result when var_1->has_mss_val is true */
   if(var_1->has_mss_val){
-    (void)nco_var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
+    (void)nco_var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
   }else{
-    (void)nco_var_add(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
+    (void)nco_var_add(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
   } /* end if */
-  return var_nsw;
+  return var_2;
 } /* end ncap_var_var_add() */
 
 var_sct * /* O [frc] Remainder of input variables (var_2-var_1) */
@@ -199,17 +198,15 @@ ncap_var_var_sub /* [fnc] Subtract two variables (var_2-var_1) */
  var_sct *var_1) /* I [sct] Variable structure containing first operand */
 {
   /* Purpose: Subtract a variable from another variable */
-  var_sct *var_nsw;
   
   (void)ncap_var_retype(var_1,var_2);
-  var_nsw=nco_var_dpl(var_2);
-  (void)ncap_var_cnf_dmn(&var_1,&var_nsw);
+  (void)ncap_var_cnf_dmn(&var_1,&var_2);
   if(var_1->has_mss_val){
-    (void)nco_var_sbt(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
+    (void)nco_var_sbt(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
   }else{
-    (void)nco_var_sbt(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
+    (void)nco_var_sbt(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
   }/* end else */
-  return var_nsw;
+  return var_2;
 } /* end ncap_var_var_sub() */
 
 var_sct * /* O [sct] Product of input variables (var_1*var_2) */
@@ -220,14 +217,13 @@ ncap_var_var_mlt /* [fnc] Multiply two variables */
   /* Purpose: Multiply two variables variables (var_1*var_2) */
   var_sct *var_nsw;
   (void)ncap_var_retype(var_1,var_2);
-  var_nsw=nco_var_dpl(var_2);
-  (void)ncap_var_cnf_dmn(&var_1,&var_nsw);
+  (void)ncap_var_cnf_dmn(&var_1,&var_2);
   if(var_1->has_mss_val){
-    (void)nco_var_mlt(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
+    (void)nco_var_mlt(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
   }else{
-    (void)nco_var_mlt(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
+    (void)nco_var_mlt(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
   }
-   return var_nsw;
+   return var_2;
 } /* end ncap_var_var_mlt() */
 
 var_sct * /* O [sct] Quotient of input variables (var_2/var_1) */
@@ -236,16 +232,14 @@ ncap_var_var_dvd /* [fnc] Divide two variables (var_2/var_1) */
  var_sct *var_2) /* I [sct] Variable structure containing second operand */
 {
   /* Purpose: Divide two variables (var_2/var_1) */
-  var_sct *var_nsw;
   (void)ncap_var_retype(var_1,var_2);
-  var_nsw=nco_var_dpl(var_2);
-  (void)ncap_var_cnf_dmn(&var_1,&var_nsw);
+  (void)ncap_var_cnf_dmn(&var_1,&var_2);
   if(var_1->has_mss_val){
-    (void)nco_var_dvd(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
+    (void)nco_var_dvd(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
   }else{
-    (void)nco_var_dvd(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
+    (void)nco_var_dvd(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
   } /* end else */ 
-  return var_nsw;
+  return var_2;
 } /* end ncap_var_var_dvd() */
 
 var_sct *
@@ -256,23 +250,21 @@ ncap_var_fnc(var_sct *var_in,sym_sct *app)
   long idx;
   long sz;
   ptr_unn op1;
-  var_sct *var;
   
   /* Promote variable to NC_FLOAT */
   if(var_in->type < NC_FLOAT) var_in=nco_var_cnf_typ((nc_type)NC_FLOAT,var_in);
-  var=nco_var_dpl(var_in);
   
-  op1=var->val;
-  sz=var->sz;
-  (void)cast_void_nctype(var->type,&op1);
-  if(var->has_mss_val) (void)cast_void_nctype(var->type,&(var->mss_val));
+  op1=var_in->val;
+  sz=var_in->sz;
+  (void)cast_void_nctype(var_in->type,&op1);
+  if(var_in->has_mss_val) (void)cast_void_nctype(var_in->type,&(var_in->mss_val));
   
-  switch(var->type){ 
+  switch(var_in->type){ 
   case NC_DOUBLE: {
-    if(!var->has_mss_val){
+    if(!var_in->has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]=(*(app->fnc_dbl))(op1.dp[idx]);
     }else{
-      double mss_val_dbl=*(var->mss_val.dp); /* Temporary variable reduces dereferencing */
+      double mss_val_dbl=*(var_in->mss_val.dp); /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
         if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=(*(app->fnc_dbl))(op1.dp[idx]);
       } /* end for */
@@ -280,10 +272,10 @@ ncap_var_fnc(var_sct *var_in,sym_sct *app)
     break;
   }
   case NC_FLOAT: {
-    if(!var->has_mss_val){
+    if(!var_in->has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]=(*(app->fnc_flt))(op1.fp[idx]);
     }else{
-      float mss_val_flt=*(var->mss_val.fp); /* Temporary variable reduces dereferencing */
+      float mss_val_flt=*(var_in->mss_val.fp); /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
         if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=(*(app->fnc_flt))(op1.fp[idx]);
       } /* end for */
@@ -293,59 +285,49 @@ ncap_var_fnc(var_sct *var_in,sym_sct *app)
   default: nco_dfl_case_nc_type_err(); break;
   }/* end switch */
   
-  if(var->has_mss_val) (void)cast_nctype_void(var->type,&(var->mss_val));
-  return var;
+  if(var_in->has_mss_val) (void)cast_nctype_void(var_in->type,&(var_in->mss_val));
+  return var_in;
 } /* end ncap_var_fnc() */
 
 var_sct *
 ncap_var_scv_add(var_sct *var,scv_sct scv)
 {
   /* Purpose: add the value in scv to each element of var */
-  var_sct *var_nsw;
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-  var_nsw=nco_var_dpl(var);
-  (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&scv);
-  
-  return var_nsw;
+  (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
+  return var;
 } /* end ncap_var_scv_add() */
 
 var_sct *
 ncap_var_scv_sub(var_sct *var,scv_sct scv)
 {
   /* Purpose: Subtract value in scv from each element of var */
-  var_sct *var_nsw;
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-  var_nsw=nco_var_dpl(var);
   (void)ncap_scv_minus(&scv);
-  (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&scv);
+  (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   
-  return var_nsw;
+  return var;
 } /* end ncap_var_scv_sub() */
 
 var_sct *
 ncap_var_scv_mlt(var_sct *var,scv_sct scv)
 {
   /* Purpose: Multiply variable by value in scv */
-  var_sct *var_nsw;
+
   /* fxm: 20020421 Old method was to always convert scv to var precision 
      (void)scv_conform_type(var->type,&scv); */
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-  var_nsw=nco_var_dpl(var);
-  (void)var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&scv);
-  
-  return var_nsw;
+  (void)var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
+  return var;
 } /* end ncap_var_scv_mlt */
 
 var_sct *
 ncap_var_scv_dvd(var_sct *var,scv_sct scv)
 {
   /* Purpose: Divide each element of var by value in scv */
-  var_sct *var_nsw;
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-  var_nsw=nco_var_dpl(var);
-  (void)var_scv_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&scv);
-  
-  return var_nsw;
+  (void)var_scv_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
+  return var;
 } /* end ncap_var_scv_dvd */
 
 var_sct *
@@ -353,37 +335,30 @@ ncap_var_scv_mod(var_sct *var,scv_sct scv)
 {
   /* Purpose: var % scv, take modulus of each element of var with value in scv */
   
-  var_sct *var_nsw;
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-  var_nsw=nco_var_dpl(var);
-  (void)var_scv_mod(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&scv);
-  
-  return var_nsw;
+  (void)var_scv_mod(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
+  return var;
 } /* ncap_var_scv_mod */
 
 var_sct *
 ncap_var_abs(var_sct *var)
 {
   /* Purpose: Find absolute value of each element of var */
-  var_sct *var_nsw;
-  var_nsw=nco_var_dpl(var);
-  (void)nco_var_abs(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val);
-  return var_nsw;
+  (void)nco_var_abs(var->type,var->sz,var->has_mss_val,var->mss_val,var->val);
+  return var;
 } /* end ncap_var_abs */
 
 var_sct *
-ncap_var_scv_pwr(var_sct *var_in,scv_sct scv)
+ncap_var_scv_pwr(var_sct *var,scv_sct scv)
 {
   /* Purpose: Raise var to power in scv
      All values converted to type double before operation */
   long idx;
   long sz;
   ptr_unn op1;
-  var_sct *var;
   
   /* Promote scv and var to NC_FLOAT */
-  if(var_in->type < NC_FLOAT) var_in=nco_var_cnf_typ((nc_type)NC_FLOAT,var_in);
-  var=nco_var_dpl(var_in);
+  if(var->type < NC_FLOAT) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
   (void)scv_conform_type(var->type,&scv);
   
   op1=var->val;
