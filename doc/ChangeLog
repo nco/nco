@@ -1,3 +1,8 @@
+2003-07-04  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_7_4
+	Changes since nco-2_7_3: Better AIX autotools support, UDUnits fix
+
 2003-07-01  Charlie Zender  <zender@uci.edu>
 
 	* Add --Mtd switch for global metadata, update nco.texi accordingly
@@ -7,9 +12,6 @@
 	* Added PayPal donation button, updated homepage
 
 2003-06-23  Charlie Zender  <zender@uci.edu>
-
-	* cvs tag -c nco-2_7_4
-	Changes since nco-2_7_3: Better AIX autotools support, UDUnits fix
 
 	* Rorik fixed UDUnits handling of hyperslab specifications in
 	floating point format, e.g., 1.23e-7. 

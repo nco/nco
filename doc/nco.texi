@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.163 2003-07-01 23:00:16 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.164 2003-07-04 20:07:09 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -137,8 +137,8 @@ x
 @clear smallbook
 
 @c Define edition, date, ...
-@set nco-edition 2.7.3
-@set doc-edition 2.7.3
+@set nco-edition 2.7.4
+@set doc-edition 2.7.4
 @set copyright-years 1995--2003
 @set update-year 2003
 @set update-date 30 March 2003
