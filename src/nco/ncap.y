@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.37 2002-01-29 08:40:19 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.38 2002-01-29 08:55:35 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -63,7 +63,7 @@
 
 /* Turn on parser debugging option (Bison manual p. 85) */
 #define YYDEBUG 1
-int yydebug=1; /* 0: Normal operation. 1: Print parser rules during execution */
+int yydebug=0; /* 0: Normal operation. 1: Print parser rules during execution */
 
 /* Turns on more verbose errors than just plain "parse error" when yyerror() is called by parser */
 #define YYERROR_VERBOSE 1
