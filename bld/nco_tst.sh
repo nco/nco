@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.45 2002-08-21 11:47:37 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.46 2002-08-22 06:10:19 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -272,19 +272,27 @@ echo "ncra 2: record mean of float with double missing values: 5 =?= $avg"
 
 ${MY_BIN_DIR}/ncra -O -v rec_var_flt_mss_val_int in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_flt_mss_val_int foo.nc`
-echo "ncra 2.5: record mean of float with integer missing values: 5 =?= $avg" 
+echo "ncra 2.2: record mean of float with integer missing values: 5 =?= $avg" 
 
 ${MY_BIN_DIR}/ncra -O -v rec_var_int_mss_val_int in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%d" -v rec_var_int_mss_val_int foo.nc`
-echo "ncra 2.6: record mean of integer with integer missing values: 5 =?= $avg" 
+echo "ncra 2.3: record mean of integer with integer missing values: 5 =?= $avg" 
 
 ${MY_BIN_DIR}/ncra -O -v rec_var_int_mss_val_flt in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%d" -v rec_var_int_mss_val_flt foo.nc`
-echo "ncra 2.7: record mean of integer with float missing values: 5 =?= $avg" 
+echo "ncra 2.4: record mean of integer with float missing values: 5 =?= $avg" 
 
 ${MY_BIN_DIR}/ncra -O -v rec_var_dbl_mss_val_dbl_pck in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_dbl_mss_val_dbl_pck foo.nc`
-echo "ncra 2.8: record mean of packed double with double missing values: 5 =?= $avg"
+echo "ncra 2.5: record mean of packed double with double missing values: 5 =?= $avg"
+
+${MY_BIN_DIR}/ncra -O -v rec_var_dbl_pck in.nc foo.nc 2>> foo.tst
+avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_dbl_pck foo.nc`
+echo "ncra 2.6: record mean of packed double to test precision: 100.55 =?= $avg"
+
+${MY_BIN_DIR}/ncra -O -v rec_var_flt_pck in.nc foo.nc 2>> foo.tst
+avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_flt_pck foo.nc`
+echo "ncra 2.7: record mean of packed float to test precision: 100.55 =?= $avg"
 
 ${MY_BIN_DIR}/ncra -O -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc`

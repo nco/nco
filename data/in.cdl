@@ -14,9 +14,9 @@
 // msrcp -period 365 ~/nco/data/in.nc mss:/ZENDER/tmp/h0003.nc
 // msrcp -period 365 ~/nco/data/in.nc mss:/ZENDER/tmp/h0004.nc
 
-// WARNING: Changing values of variables below, especially coordinate variables, will affect the outcome of nco_tst.sh test script
+// WARNING: Changing values of variables below, especially coordinate variables, affects outcome of nco_tst.sh test script
 // Other programs, e.g., ~/f/fff.F90, ~/c++/ccc.cc, ~/c/c.c may also break
-// In particular, do not change the number of elements in the record coordinate, time, without simultaneously changing the number of data in all the record variables
+// In particular, do not change number of elements in record coordinate, time, without simultaneously changing number of data in all record variables
 
 // Data constants in CDL:
 // byte: 'a'
@@ -38,7 +38,7 @@ variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.38 2002-08-21 11:47:41 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.39 2002-08-22 06:10:19 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -324,6 +324,18 @@ variables:
 	rec_var_flt_mss_val_flt:long_name = "record variable, float, with float missing values";
 	rec_var_flt_mss_val_flt:missing_value = 1.0e36f;
 
+	short rec_var_flt_pck(time);
+	rec_var_flt_pck:long_name = "record variable, float, packed";
+        rec_var_flt_pck:purpose = "Demonstrate that rounding of means of packed data are handled correctly";
+        rec_var_flt_pck:scale_factor = 0.1f;
+        rec_var_flt_pck:add_offset = 100.0f;
+
+	short rec_var_dbl_pck(time);
+	rec_var_dbl_pck:long_name = "record variable, double, packed";
+        rec_var_dbl_pck:purpose = "Demonstrate that rounding of means of packed data are handled correctly";
+        rec_var_dbl_pck:scale_factor = 0.1;
+        rec_var_dbl_pck:add_offset = 100.0;
+
 	float rec_var_flt_mss_val_dbl(time);
 	rec_var_flt_mss_val_dbl:long_name = "record variable, float, with double missing values";
 	rec_var_flt_mss_val_dbl:missing_value = 1.0e36d;
@@ -436,6 +448,8 @@ data:
 	upk_arr=-32767.,0.,1.,32767.;
 	rec_var_dbl=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	rec_var_flt=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+	rec_var_flt_pck=1,2,3,4,5,6,7,8,9,10;
+	rec_var_dbl_pck=1,2,3,4,5,6,7,8,9,10;
 	rec_var_dbl_mss_val_dbl_pck=-999,32767,21845,10922,0,-10922,-21845,-32767,-999,-999;
 	rec_var_dbl_mss_val_dbl_upk=-999.,2.,3.,4.,5.,6.,7.,8.,-999.,-999.;
 	rec_var_flt_mss_val_dbl=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;

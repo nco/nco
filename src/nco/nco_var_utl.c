@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.19 2002-08-21 11:47:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.20 2002-08-22 06:10:19 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -661,14 +661,11 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   
   /* Packing/Unpacking */
   if(is_rth_opr(prg_get())){
-    /* fxm: Automatic unpacking is not debugged, just do it with ncap for now */
-    /*    if(prg_get() == ncap && dbg_lvl_get() != 3){ pck_dbg */
-    if(dbg_lvl_get() != 3){
+    /* fxm: Automatic unpacking is in beta testing for all arithmetic operators */
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
-      if(var->pck_dsk) var=nco_var_upk(var);
-    } /* endif debug */
+    if(var->pck_dsk) var=nco_var_upk(var);
   } /* endif arithmetic operator */
 
 } /* end nco_var_get() */

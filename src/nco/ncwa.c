@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.87 2002-08-21 11:47:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.88 2002-08-22 06:10:19 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.87 2002-08-21 11:47:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.87 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.88 2002-08-22 06:10:19 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.88 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -749,8 +749,8 @@ main(int argc,char **argv)
       /* Free tally buffer */
       var_prc_out[idx]->tally=(long *)nco_free(var_prc_out[idx]->tally);
       
-      /* Revert to original type if required */
-      var_prc_out[idx]=nco_cnv_var_typ_dsk(var_prc_out[idx]);
+      /* Revert any arithmetic promotion but leave unpacking (for now) */
+      var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
       
       /* Free current input buffer */
       var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);

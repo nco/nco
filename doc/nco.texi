@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.107 2002-08-13 08:00:37 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.108 2002-08-22 06:10:19 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -4919,7 +4919,7 @@ Memory management
 NECSX architecture support
 @item Juliana Rew
 Compatibility with large PIDs
-@item Keith Lindsay
+@item Keith Lindsay, Martin Dix
 Excellent bug reports
 @end table
 

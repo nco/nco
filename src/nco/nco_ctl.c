@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.13 2002-08-21 18:09:28 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.14 2002-08-22 06:10:19 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -73,7 +73,7 @@ nco_lib_vrs_prn(void) /* [fnc] Print netCDF library version */
   size_t vrs_sng_lng;
   size_t nst_sng_lng;
 
-  /* As of netCDF 3.4, nc_inq_libvers() returned strings such as "3.4 of May 16 1998 14:06:16 $" */  
+  /* As of netCDF 3.4, nc_inq_libvers() returns strings like "3.4 of May 16 1998 14:06:16 $" */  
   lib_sng=(char *)strdup(nc_inq_libvers());
   of_ptr=strstr(lib_sng," of ");
   if(of_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nco_lib_vrs_prn() reports of_ptr == NULL\n",prg_nm_get());
@@ -110,8 +110,10 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   nm_out=(char *)strdup(nm_in);
   if(strrchr(nm_out,'/') != NULL) nm_out=strrchr(nm_out,'/')+1;
 
+  /* Skip possible libtool prefix */
+  if(!strncmp(nm_out,"lt-",3)){nm_out+=3;}
+
   /* Classify calling program */
-  if(!strncmp(nm_out,"lt-",3)){ nm_out+=3; } /* remove libtool prefix */
   if(!strcmp(nm_out,"ncra")){*prg=ncra;}
   else if(!strcmp(nm_out,"ncap")){*prg=ncap;}
   else if(!strcmp(nm_out,"ncea")){*prg=ncea;}
@@ -135,7 +137,7 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
 void 
 nco_usg_prn(void)
 {
-  /* Purpose: Print correct command-line usage of host program (currently to stdout) */
+  /* Purpose: Print correct command-line usage (currently to stdout) */
 
   char *opt_sng=NULL_CEWI;
 

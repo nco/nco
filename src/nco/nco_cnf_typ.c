@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.10 2002-08-21 11:47:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.11 2002-08-22 06:10:19 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -168,7 +168,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   var_sct *var_out;
 
   /* Do types of variable AND its missing value already match?
-     (missing_value, if any, is assumed to be same type as variable in this routine) */
+     This routine assumes missing_value, if any, to be same type as variable */
   if(var_in->type == var_out_typ) return var_in;
 
   var_out=var_in;

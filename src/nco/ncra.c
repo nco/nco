@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.73 2002-08-21 11:47:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.74 2002-08-22 06:10:19 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -79,8 +79,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.73 2002-08-21 11:47:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.73 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.74 2002-08-22 06:10:19 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.74 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -522,8 +522,8 @@ main(int argc,char **argv)
   /* Copy averages to output file and free averaging buffers */
   if(prg == ncra || prg == ncea){
     for(idx=0;idx<nbr_var_prc;idx++){
-      /* Revert to original type if required */
-      var_prc_out[idx]=nco_cnv_var_typ_dsk(var_prc_out[idx]);
+      /* Revert any arithmetic promotion but leave unpacking (for now) */
+      var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
       /* Packing/Unpacking */
       if(nco_pck_typ == nco_pck_all_new_att) var_prc_out[idx]=nco_put_var_pck(out_id,var_prc_out[idx],nco_pck_typ);
       if(var_prc_out[idx]->nbr_dim == 0){
