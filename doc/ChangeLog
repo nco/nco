@@ -1,3 +1,13 @@
+2002-05-13  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_4_0
+	Changes since nco-2_3_1: Builds out of box on all Unices
+	
+	* Version now builds on AIX (even ncap.y with pure_parser)
+	as long as cc compiler, not xlc or xlC, is used. Prototype
+	warnings similar to gcc prototype warnings can be ignored.
+	All major platforms are once again working out of the box.
+	
 2002-05-11  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_3_1

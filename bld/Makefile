@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.134 2002-05-14 00:13:46 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.135 2002-05-14 00:17:26 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -382,8 +382,8 @@ C++ := g++
 #C++ := icc
 #C++ := insure
 # fxm: 19980517: As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
-#CC := g++
-CC := gcc
+CC := g++
+#CC := gcc
 #CC := icc
 #CC := insure
 CPP := ${CC}
