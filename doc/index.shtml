@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.265 2004-09-23 20:05:38 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.266 2004-10-05 01:39:03 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -220,13 +220,19 @@ in the
 NCO development was completely voluntary and without institutional
 support from its inception until September 2004.
 Hence this NSF support will dramatically change the scale and pace of
-NCO/SDO development&mdash;stay tuned.</p>
+NCO/SDO development&mdash;stay tuned.
+We will soon implement a better mechanism to update users on our plans and progress towards the proposal's objectives.
+The URL 
+<a href="http://nco.sf.net#prp_sei"><tt>http://nco.sf.net#prp_sei</tt></a> 
+will always point to the most up-to-date information on the NCO/SDO
+proposal.</p> 
 
 <p>The project provides the human and technical resources to analyze,
 design, and implement novel advanced methods for distributed 
 data analysis and reduction (DDRA) of geophysical data.
 These powerful methods will be &ldquo;grid-enabled&rdquo;, and we will
-demonstrate their efficacy with analyses of distributed climate prediction datasets.
+demonstrate their efficacy with analyses of distributed climate
+prediction and observation datasets.
 On the human side, we are recruiting talent to work full-time on
 specific areas of SDO, alongside our current and future volunteers.
 We seek a
@@ -259,12 +265,7 @@ that reside on the
 <a href="http://www.earthsystemgrid.org">Earth System Grid</a>.
 We expect our analyses to yield otherwise undiscovered patterns among
 different climate prediction scenarios for the same model, and among
-different climate models. 
-We will soon implement a better mechanism to update users on our plans and progress towards the proposal's objectives.
-The URL 
-<a href="http://nco.sf.net#prp_sei"><tt>http://nco.sf.net#prp_sei</tt></a> 
-will always point to the most up-to-date information on the NCO/SDO
-proposal.</p> 
+different climate models.</p>
 
 <p>Finally we still encourage you to e-mail NCO/SDO endorsements to
 <a href="mailto:surname@uci.edu">Charlie &ldquo;my surname is zender&rdquo; Zender</a>

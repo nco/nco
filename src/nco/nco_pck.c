@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.53 2004-09-13 18:13:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.54 2004-10-05 01:39:05 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -757,14 +757,14 @@ nco_var_pck /* [fnc] Pack variable in memory */
 
     /* Change value of missing value iff necessary to fit inside packed type */
     if(var->has_mss_val && !PURE_MSS_VAL_FLD){
-      double mss_val_dfl_dbl;
+      double mss_val_dfl_dbl=0.0; /* CEWI */
       switch(nc_typ_pck){ 
-      case NC_INT: mss_val_dfl_dbl=INT_MAX; break;
-      case NC_SHORT: mss_val_dfl_dbl=SHRT_MAX; break;
-      case NC_CHAR: mss_val_dfl_dbl=UCHAR_MAX; break;
-      case NC_BYTE: mss_val_dfl_dbl=CHAR_MAX; break;
-      case NC_FLOAT:
-      case NC_DOUBLE: 
+      case NC_FLOAT: mss_val_dfl_dbl=NC_FILL_FLOAT; break; 
+      case NC_DOUBLE: mss_val_dfl_dbl=NC_FILL_DOUBLE; break; 
+      case NC_INT: mss_val_dfl_dbl=NC_FILL_INT; break;
+      case NC_SHORT: mss_val_dfl_dbl=NC_FILL_SHORT; break;
+      case NC_CHAR: mss_val_dfl_dbl=NC_FILL_CHAR; break;
+      case NC_BYTE: mss_val_dfl_dbl=NC_FILL_BYTE; break;
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */ 
       if(dbg_lvl_get() > 3) (void)fprintf(stdout,"%s: %s mss_val_dfl = %g\n",prg_nm_get(),fnc_nm,mss_val_dfl_dbl);
