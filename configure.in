@@ -71,7 +71,7 @@ AC_FUNC_MALLOC
 AC_FUNC_MEMCMP
 AC_FUNC_STAT
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([gethostname memchr memmove pow setlocale sqrt strcasecmp strchr strdup strrchr strstr strtol])
+AC_CHECK_FUNCS([gethostname memchr memmove pow setlocale sqrt strcasecmp strchr strdup strrchr strstr strtol mkstemp])
 
 # Checks for header files.
 AC_HEADER_STDC
