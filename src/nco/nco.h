@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.41 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.42 2002-08-19 06:44:37 zender Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
@@ -217,7 +217,7 @@ extern "C" {
     long sz; /* Number of elements in attribute */
     nc_type type; /* Type of attribute */
     ptr_unn val; /* Pointer to attribute value */
-    short mode; /* action to perform with attribute */
+    short mode; /* Action to perform with attribute */
   } aed_sct;
   
   /* Attribute structure */

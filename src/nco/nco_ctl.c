@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.11 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.12 2002-08-19 06:44:37 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -36,7 +36,7 @@ nco_exit_gracefully(void) /* [fnc] Clean up timers, file descriptors, then exit 
 } /* end nco_exit_gracefully() */
 
 bool /* [flg] Program does arithmetic */
-is_arithmetic_operator /* [fnc] Query whether program does arithmetic */
+is_rth_opr /* [fnc] Query whether program does arithmetic */
 (const int prg_id) /* [enm] Program ID */
 {
   /* Purpose: Does program do arithmetic? */
@@ -57,7 +57,7 @@ is_arithmetic_operator /* [fnc] Query whether program does arithmetic */
     return False;
     break;
   } /* end switch */
-} /* end is_arithmetic_operator() */
+} /* end is_rth_opr() */
 
 void
 nco_lib_vrs_prn(void) /* [fnc] Print netCDF library version */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.16 2002-08-14 19:45:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.17 2002-08-19 06:44:37 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -647,7 +647,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   var->type=var->typ_dsk; /* Type of variable in RAM */
   
   /* Packing/Unpacking */
-  if(is_arithmetic_operator(prg_get())){
+  if(is_rth_opr(prg_get())){
     /* fxm: Automatic unpacking is not debugged, just do it with ncap for now */
     if(prg_get() == ncap && dbg_lvl_get() != 3){
 #ifdef _OPENMP
@@ -1085,7 +1085,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
     } /* end for */
     if(dmn_idx == nbr_dim){
       (void)fprintf(stdout,"%s: ERROR dimension %s is not in list of dimensions available to nco_var_fll()\n",prg_nm_get(),dmn_nm);
-      (void)fprintf(stdout,"%s: HINT This could be the problem identified in TODO #111. Workaround is to make sure each dimension in the weighting and masking variable(s) appears in a variable to be processed.\n",prg_nm_get(),dmn_nm);
+      (void)fprintf(stdout,"%s: HINT This could be the problem identified in TODO #111. Workaround is to make sure each dimension in the weighting and masking variable(s) appears in a variable to be processed.\n",prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
@@ -1112,7 +1112,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
     var->sz*=var->cnt[idx];
   } /* end loop over dim */
 
-  /* Portions of variable structure depend on packing propterties
+  /* Portions of variable structure depend on packing properties, e.g., typ_upk
      pck_dsk_inq() fills in these portions harmlessly */
   (void)pck_dsk_inq(nc_id,var);
 
@@ -1128,15 +1128,15 @@ nco_var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
   /* Purpose: Update variable ID, number of dimensions, and missing_value attribute for given variable
      nco_var_refresh() is called in file loop in multi-file operators because each new file may have 
      different variable ID and missing_value for same variable.
-     This is necessary, for example, if a computer model runs for awhile on one machine, e.g., SGI,
-     and then the run is restarted on another, e.g., Cray. 
-     Since internal floating point representations differ betwee these architectures, the missing_value
-     representation may differ. 
-     Variable IDs may changes whenever someone fiddles with original model output in some files, 
-     but not others, and then processes all files in a batch.
-     NCO is one of the only tool I know of which makes all of this transparent to the user
-     Thus this capability is very important to maintain
-   */
+     This is necessary, for example, if computer model runs on one machine, e.g., SGI,
+     and then run is restarted on another, e.g., Cray. 
+     If internal floating point representations differ between these architecture, 
+     e.g., UNICOS vs. IEEE, then missing_value representation may differ. 
+     Variable IDs may change when some but not all model output files are 
+     manipulated (i.e., variables added or deleted), followed by processing
+     all files are processed in a batch.
+     NCO is the only tool I know of which makes this all user-transparent
+     Thus this capability is very important to maintain */
 
   /* Refresh variable ID */
   var->nc_id=nc_id;
@@ -1147,13 +1147,21 @@ nco_var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
   { /* begin OpenMP critical */
     (void)nco_inq_varid(var->nc_id,var->nm,&var->id);
     
-    /* fxm: Not sure if/why it is necessary refresh number of dimensions...but it should not hurt */
+    /* fxm: Not sure if/why necessary to refresh number of dimensions...but it should not hurt */
     /* Refresh number of dimensions in variable */
     (void)nco_inq_varndims(var->nc_id,var->id,&var->nbr_dim);
     
     /* Refresh number of attributes and missing value attribute, if any */
     var->has_mss_val=nco_mss_val_get(var->nc_id,var);
   } /* end OpenMP critical */
+
+  /* PJR requested warning to be added when multiple file operators worked on 
+     variables with missing_value since so many things could go wrong */
+#if 0
+  if(is_rth_opr(prg_get()) && var->pck_dsk){
+    if(var->has_mss_val) (void)fprintf(stderr,"%s: WARNING Variable \"%s\" is packed and has valid \"missing_value\" attribute in multi-file arithmetic operator. Arithmetic on this variable will only be correct if...  \n",prg_nm_get(),var_nm);
+  } /* endif variable is packed */
+#endif /* endif False */
 
 } /* end nco_var_refresh() */
 

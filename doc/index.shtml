@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.109 2002-08-14 15:21:31 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.110 2002-08-19 06:44:37 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -167,8 +167,11 @@ tarballs and RPMs) because the build script, <tt>nco_dst.pl</tt>,
 fails on my development system (due to antiquated RedHat
 <tt>texinfo</tt> software, of all things!)
 Retrieve these versions <a name="#Download">using CVS</a>.
-<li><b>NCO 2.5.5</b>, Not packaged: Fix problem handling files without
-existing global "<tt>History</tt>" attribute
+<li><b>NCO 2.5.6</b>, Not packaged: Handle <tt>missing_value</tt> 
+correctly for integer variables in <tt>ncra</tt>, merge
+<tt>autoconf</tt> build
+<li><b>NCO 2.5.5</b>, Not packaged: Handle files without
+existing global "<tt>History</tt>" attribute correctly
 <li><b>NCO 2.5.4</b>, Not packaged: Add support NEC-SX support,
 update Cray support, small build changes
 <li><b>NCO 2.5.3</b>, Not packaged: Fix native builds under MS Windows with Cygwin

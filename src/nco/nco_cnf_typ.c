@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.8 2002-08-14 19:45:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.9 2002-08-19 06:44:37 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -94,34 +94,82 @@ nco_cnv_var_typ_dsk  /* [fnc] Revert variable to on-disk type */
   return var;
 } /* nco_cnv_var_typ_dsk() */
 
+var_sct * /* O [sct] Variable with mss_val converted to typ_upk */
+nco_cnv_mss_val_typ_upk  /* [fnc] Convert missing_value, if any, to typ_upk */
+(var_sct *var) /* I [sct] Variable with missing_value to be converted */
+{
+  /* Purpose: Convert variable missing_value field, if any, to typ_upk
+     Routine is currently called only by ncra, for following reason:
+     Most applications should call nco_var_cnf_typ() without calling nco_cnv_mss_val_typ_upk()
+     since that routine converts misssing_value type along with variable type
+     The important exception to this is ncra
+     ncra refreshes variable metadata (including missing_value, if any) 
+     once per file (naturally), but refreshes variable values once per record.
+     Current type of missing_value is not stored separately in variable structure
+     (maybe this is a mistake), so type of missing value may remain as promoted
+     type for arithmetic.
+     When next record is read and variable is promoted to arithmetic type (double),
+     this routine will automatically try to convert the missing_value, assuming
+     it is same type as variable.
+     Thus it is very important to synchronize type of variable and missing_value 
+     Better permanent solution is to add missing_value type to variable structure */
+
+  const nc_type var_in_typ=var->type; /* [enm] Type of variable and mss_val on input */
+  const nc_type var_out_typ=var->typ_upk; /* [enm] Type of variable and mss_val on output */
+
+  /* Simple error-checking and diagnostics */
+  if(dbg_lvl_get() > 2){
+    (void)fprintf(stderr,"%s: DEBUG %s missing_value attribute of variable %s from type %s to type %s\n",prg_nm_get(),var_out_typ > var_in_typ ? "Promoting" : "Demoting",var->nm,nco_typ_sng(var_in_typ),nco_typ_sng(var_out_typ));
+  } /* end if */
+  
+  /* Skip if no missing_value or if missing_value is already typ_upk */
+  if(var->has_mss_val && var_in_typ != var_out_typ){
+    ptr_unn mss_val_in;
+    ptr_unn mss_val_out;
+
+    /* Sequence of following commands is important (copy before overwriting!) */
+    mss_val_in=var->mss_val;
+    mss_val_out.vp=(void *)nco_malloc(nco_typ_lng(var_out_typ));
+    (void)val_conform_type(var_in_typ,mss_val_in,var_out_typ,mss_val_out);
+    var->mss_val=mss_val_out;
+    /* Free original */
+    mss_val_in.vp=nco_free(mss_val_in.vp);
+  } /* end if */
+  
+  return var; /* O [sct] Variable with mss_val converted to typ_upk */
+} /* nco_cnv_mss_val_typ_upk() */
+
 var_sct * /* O [sct] Pointer to variable structure of type var_out_typ */
 nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type */
 (const nc_type var_out_typ, /* I [enm] Type to convert variable structure to */
  var_sct *var_in) /* I/O [enm] Pointer to variable structure (may be destroyed) */
 {
   /* Threads: Routine is thread safe and makes no unsafe routines */
-  /* Purpose: Return copy of input variable typecast to desired type */
-
+  /* Purpose: Return copy of input variable typecast to desired type
+     Routine assumes variable and missing_value are same type in memory
+     This is currently always true except for a brief time in ncra
+     This condition is unsafe and is described more fully in nco_cnv_mss_val_typ_upk() */
   long idx;
   long sz;
   
-  nc_type var_in_type;
+  nc_type var_in_typ;
   
   ptr_unn val_in;
   ptr_unn val_out;
 
   var_sct *var_out;
 
-  /* Do types of variable AND its missing value already match? */
+  /* Do types of variable AND its missing value already match?
+     (missing_value, if any, is assumed to be same type as variable in this routine) */
   if(var_in->type == var_out_typ) return var_in;
 
   var_out=var_in;
   
-  var_in_type=var_in->type;
+  var_in_typ=var_in->type;
   
   /* Simple error-checking and diagnostics */
   if(dbg_lvl_get() > 2){
-    (void)fprintf(stderr,"%s: DEBUG %s variable %s from type %s to type %s\n",prg_nm_get(),var_out_typ > var_in_type ? "Promoting" : "Demoting",var_in->nm,nco_typ_sng(var_in_type),nco_typ_sng(var_out_typ));
+    (void)fprintf(stderr,"%s: DEBUG %s variable %s from type %s to type %s\n",prg_nm_get(),var_out_typ > var_in_typ ? "Promoting" : "Demoting",var_in->nm,nco_typ_sng(var_in_typ),nco_typ_sng(var_out_typ));
   } /* end if */
   
   /* Move the current var values to swap location */
@@ -143,7 +191,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     /* Sequence of following commands is important (copy before overwriting!) */
     var_in_mss_val=var_out->mss_val;
     var_out->mss_val.vp=(void *)nco_malloc(nco_typ_lng(var_out->type));
-    (void)val_conform_type(var_in_type,var_in_mss_val,var_out_typ,var_out->mss_val);
+    (void)val_conform_type(var_in_typ,var_in_mss_val,var_out_typ,var_out->mss_val);
     /* Free original */
     var_in_mss_val.vp=nco_free(var_in_mss_val.vp);
   } /* end if */
@@ -155,7 +203,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   /* Copy and typecast entire array of values, using C implicit coercion */
   switch(var_out_typ){
   case NC_FLOAT:
-    switch(var_in_type){
+    switch(var_in_typ){
     case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.fp[idx];} break; 
     case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.dp[idx];} break; 
     case NC_INT: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.lp[idx];} break;
@@ -165,7 +213,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     default: nco_dfl_case_nctype_err(); break;
     } break;
   case NC_DOUBLE:
-    switch(var_in_type){
+    switch(var_in_typ){
     case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.dp[idx]=val_in.fp[idx];} break; 
     case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.dp[idx]=val_in.dp[idx];} break; 
     case NC_INT: for(idx=0L;idx<sz;idx++) {val_out.dp[idx]=val_in.lp[idx];} break;
@@ -175,7 +223,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     default: nco_dfl_case_nctype_err(); break;
     } break;
   case NC_INT:
-    switch(var_in_type){
+    switch(var_in_typ){
     case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.lp[idx]=(long)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.lp[idx]=(long)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_INT: for(idx=0L;idx<sz;idx++) {val_out.lp[idx]=val_in.lp[idx];} break;
@@ -185,7 +233,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     default: nco_dfl_case_nctype_err(); break;
     } break;
   case NC_SHORT:
-    switch(var_in_type){
+    switch(var_in_typ){
     case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=(short)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=(short)(val_in.dp[idx]);} break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_INT: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.lp[idx];} break;
@@ -195,7 +243,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     default: nco_dfl_case_nctype_err(); break;
     } break;
   case NC_CHAR:
-    switch(var_in_type){
+    switch(var_in_typ){
     case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=(unsigned char)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=(unsigned char)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_INT: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.lp[idx];} break;
@@ -205,7 +253,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     default: nco_dfl_case_nctype_err(); break;
     } break;
   case NC_BYTE:
-    switch(var_in_type){
+    switch(var_in_typ){
     case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=(signed char)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=(signed char)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_INT: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.lp[idx];} break;
@@ -239,7 +287,9 @@ val_conform_type /* [fnc] Copy val_in and typecast from typ_in to typ_out */
   /* Purpose: Fill val_out with copy of val_in that has been typecast from typ_in to typ_out
      Last-referenced state of both value pointers is assumed to be .vp, and the val_out union is returned in that state */
 
-  /* val_out must hold enough space (one element of type typ_out) to hold output */
+  /* val_in and val_out should not be same pointer union since
+     val_out must hold enough space (one element of type typ_out) to hold output
+     and output type may be larger than input type */
 
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(typ_in,&val_in);

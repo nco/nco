@@ -1,3 +1,27 @@
+2002-08-18  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_5_6
+	Changes since nco-2_5_5: fixed processing of missing_values
+	for integer variables in ncra, initial auto build tools
+
+	* Merged Rorik's autobuild infrastructure. New (autobuild) and
+	old (bld/Makefile) systems both appear to work but there may
+	be some interference on ncap since ncap.l had to be renamed
+	ncap_lex.c and ncap.y is ncap_yacc.c.
+
+	* Altered pck_dsk_inq() to set var->typ_upk=var->type by default
+	so that nco_cnv_mss_val_typ_upk() has something to work with
+
+	* Fixed problem in nco_cnf_typ.c which caused failure for ncra
+	when variable had missing_value attribute and needed to be
+	promoted before arithmetic (e.g., int to float). Freeing variable
+	each record but leaving mss_val the promoted type resulted in 
+	mss_val being overwritten (usually to value of 0.0) in all
+	records but first for each file. Problem was ncra-specific and
+	is described in more detail in header of nco_cnv_mss_val_typ_upk()
+	routine. Better fix would be to carry type of missing_value as
+	separate element of var structure.
+
 2002-08-14  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_5_5

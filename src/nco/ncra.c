@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.71 2002-06-17 00:06:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.72 2002-08-19 06:44:37 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -79,8 +79,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.71 2002-06-17 00:06:02 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.71 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.72 2002-08-19 06:44:37 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.72 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -419,6 +419,8 @@ main(int argc,char **argv)
 
 	  /* Make sure record coordinate, if any, is monotonic */
 	  if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,idx_rec_out);
+	  /* Convert missing_value, if any, back to disk type */
+	  if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk) var_prc[idx]=nco_cnv_mss_val_typ_upk(var_prc[idx]);
 	  /* Free current input buffer */
 	  var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	} /* end (OpenMP parallel for) loop over variables */

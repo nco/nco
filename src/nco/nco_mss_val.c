@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.4 2002-08-14 19:45:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.5 2002-08-19 06:44:37 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -73,14 +73,14 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
      copy of mss_val in var_sct is stored as same type as host variable.
      Routine does not allow output missing_value to have more than one element */
 
-  /* has_mss_val is defined typed as int not bool because it is often sent to Fortran routines */
+  /* has_mss_val is typed as int not bool because it was sent to Fortran routines */
 
   char att_nm[NC_MAX_NAME];
   
   long att_sz;
   int idx;
   
-  long att_len;
+  long att_lng;
 
   nc_type att_typ;
 
@@ -105,15 +105,15 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
     /* If we got this far then try to retrieve attribute and make sure it conforms to variable's type */
     var->has_mss_val=True;
     /* Oddly, ARM uses NC_CHAR for type of missing_value, so we must make allowances for this */
-    att_len=att_sz*nco_typ_lng(att_typ);
-    mss_tmp.vp=(void *)nco_malloc(att_len);
+    att_lng=att_sz*nco_typ_lng(att_typ);
+    mss_tmp.vp=(void *)nco_malloc(att_lng);
     (void)nco_get_att(var->nc_id,var->id,att_nm,mss_tmp.vp,att_typ);
     if(att_typ == NC_CHAR){
       /* NUL-terminate missing value string */
-      if(mss_tmp.cp[att_len-1] != '\0'){
-	att_len++;
-	mss_tmp.vp=(void *)nco_realloc(mss_tmp.vp,att_len);
-	mss_tmp.cp[att_len-1]='\0';
+      if(mss_tmp.cp[att_lng-1] != '\0'){
+	att_lng++;
+	mss_tmp.vp=(void *)nco_realloc(mss_tmp.vp,att_lng);
+	mss_tmp.cp[att_lng-1]='\0';
 	/* Un-typecast pointer to values after access */
 	(void)cast_nctype_void(att_typ,&mss_tmp);
       } /* end if */

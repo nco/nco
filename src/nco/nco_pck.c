@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.7 2002-06-17 00:06:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.8 2002-08-19 06:44:37 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -40,8 +40,8 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
 {
   /* Purpose: Check whether variable is packed on disk and set variable members 
      pck_dsk, has_scl_fct, has_add_fst, and typ_upk accordingly
-     pck_dsk_inq() is mean to be called early in a program, e.g., in var_fll() 
-     It is best if pck_dsk_inq() is called before input list is duplicated to output list */
+     pck_dsk_inq() should be called early in application, e.g., in nco_var_fll() 
+     Call pck_dsk_inq() before copying input list to output list */
   /* ncea -O -D 3 -v pck ~/nco/data/in.nc ~/nco/data/foo.nc */
 
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
@@ -55,6 +55,16 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
   nc_type add_fst_typ; /* [idx] Type of add_offset attribute */
   nc_type scl_fct_typ; /* [idx] Type of scale_factor attribute */
 
+  /* Set some defaults in variable structure for safety in case of early return
+     Flags for variables without valid scaling information should appear 
+     same as flags for variables with _no_ scaling information
+     Set has_scl_fct, has_add_fst in var_dfl_set()
+     typ_upk:
+     1. is required by ncra nco_cnv_mss_val_typ_upk() 
+     2. depends on var->type and so should not be set in var_dfl_set()
+     3. is therefore set to default here */
+  var->typ_upk=var->type; /* [enm] Type of variable when unpacked (expanded) (in memory) */
+
   /* Vet scale_factor */
   rcd=nco_inq_att_flg(nc_id,var->id,scl_fct_sng,&scl_fct_typ,&scl_fct_lng);
   if(rcd != NC_ENOTATT){
@@ -67,7 +77,7 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
       return False;
     } /* endif */
     var->has_scl_fct=True; /* [flg] Valid scale_factor attribute exists */
-    var->typ_upk=scl_fct_typ; /* Type of variable when unpacked (expanded) (in memory) */
+    var->typ_upk=scl_fct_typ; /* [enm] Type of variable when unpacked (expanded) (in memory) */
   } /* endif */
 
   /* Vet add_offset */
@@ -82,7 +92,7 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
       return False;
     } /* endif */
     var->has_add_fst=True; /* [flg] Valid add_offset attribute exists */
-    var->typ_upk=add_fst_typ; /* Type of variable when unpacked (expanded) (in memory) */
+    var->typ_upk=add_fst_typ; /* [enm] Type of variable when unpacked (expanded) (in memory) */
   } /* endif */
 
   if(var->has_scl_fct && var->has_add_fst){
@@ -97,14 +107,19 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
     var->pck_dsk=True; /* [flg] Variable is packed on disk */
     /* If variable is packed on disk and is in memory then variable is packed in memory */
     var->pck_ram=True; /* [flg] Variable is packed in memory */
-    var->typ_upk=scl_fct_typ; /* Type of variable when unpacked (expanded) (in memory) */
-    if(is_arithmetic_operator(prg_get()) && dbg_lvl_get() > 2){
+    var->typ_upk=scl_fct_typ; /* [enm] Type of variable when unpacked (expanded) (in memory) */
+    if(is_rth_opr(prg_get()) && dbg_lvl_get() > 2){
       (void)fprintf(stderr,"%s: PACKING Variable %s is type %s packed into type %s\n",prg_nm_get(),var->nm,nco_typ_sng(var->typ_upk),nco_typ_sng(var->typ_dsk));
       (void)fprintf(stderr,"%s: WARNING Packed variables are only unpacked automatically in ncap, be careful with results\n",prg_nm_get());
     } /* endif print packing information */
-  } /* endif */
+  }else{
+    /* Variable is not packed since neither scale factor nor add_offset exist
+       Insert hooks which depend on variable not being packed here
+       Currently this is no-op */
+    ;
+  } /* end else */
 
-  return var->pck_dsk; /* Variable is packed on disk (valid scale_factor, add_offset, or both attributes exist) */
+  return var->pck_dsk; /* [flg] Variable is packed on disk (valid scale_factor, add_offset, or both attributes exist) */
   
 } /* end pck_dsk_inq() */
 
@@ -361,8 +376,8 @@ nco_var_pck /* [fnc] Pack variable in memory */
 
   /* Tell the world */
   var->pck_ram=True; /* [flg] Variable is packed in memory */
-  var->typ_pck=typ_pck; /* Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
-  var->typ_upk=var->type; /* Type of variable when unpacked (expanded) (in memory) */
+  var->typ_pck=typ_pck; /* [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
+  var->typ_upk=var->type; /* [enm] Type of variable when unpacked (expanded) (in memory) */
 
   /* Convert variable to user-specified packed type
      This is where var->type is changed from original to packed type */
@@ -406,7 +421,7 @@ nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to
   if(var->xrf->pck_dsk && !var->xrf->pck_ram) var=nco_var_pck(var,var->typ_pck,USE_EXISTING_PCK);
 
   /* Write/overwrite scale_factor and add_offset attributes */
-  if(var->pck_ram){ /* Variable is packed in memory */
+  if(var->pck_ram){ /* [flg] Variable is packed in memory */
     if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
       (void)nco_put_att(out_id,var->id,"scale_factor",var->typ_upk,1,var->scl_fct.vp);
     } /* endif has_scl_fct */

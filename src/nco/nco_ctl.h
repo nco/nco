@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.5 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.6 2002-08-19 06:44:37 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -39,7 +39,7 @@ void
 nco_exit_gracefully(void); /* [fnc] Clean up timers, file descriptors, then exit */
 
 bool /* [flg] Program does arithmetic */
-is_arithmetic_operator /* [fnc] Query whether program does arithmetic */
+is_rth_opr /* [fnc] Query whether program does arithmetic */
 (const int prg_id); /* [enm] Program ID */
 
 void

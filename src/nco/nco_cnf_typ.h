@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.9 2002-06-17 00:06:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.10 2002-08-19 06:44:37 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -52,6 +52,10 @@ var_sct * /* O [sct] Pointer to variable structure of type var_out_typ */
 nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type */
 (const nc_type var_out_typ, /* I [enm] Type to convert variable structure to */
  var_sct *var_in); /* I/O [enm] Pointer to variable structure (may be destroyed) */
+
+var_sct * /* O [sct] Variable with mss_val converted to typ_upk */
+nco_cnv_mss_val_typ_upk  /* [fnc] Convert missing_value, if any, to typ_upk */
+(var_sct *var); /* I [sct] Variable with missing_value to be converted */
 
 void
 val_conform_type /* [fnc] Copy val_in and typecast from typ_in to typ_out */

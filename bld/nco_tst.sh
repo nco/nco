@@ -1,10 +1,16 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.43 2002-08-14 19:44:59 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.44 2002-08-19 06:44:36 zender Exp $
 
 # Purpose: NCO test battery
 
 # Usage: 
+# nco_tst.sh
+
+# Notes: 
+# It would be best to number tests rationally
+# Tests which differ in functionality should get own major number
+# Tests of same functionality but for different types should change in minor number
 
 function usage {
 #    echo >&2 "Usage: ${basename $0} ncra | ncea | ncwa | ncflint | ncdiff | net"
@@ -269,11 +275,11 @@ avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_flt_mss_val_int foo.nc`
 echo "ncra 2.5: record mean of float with integer missing values: 5 =?= $avg" 
 
 ${MY_BIN_DIR}/ncra -O -v rec_var_int_mss_val_int in.nc foo.nc 2>> foo.tst
-avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_int_mss_val_int foo.nc`
+avg=`${MY_BIN_DIR}/ncks -C -H -s "%d" -v rec_var_int_mss_val_int foo.nc`
 echo "ncra 2.6: record mean of integer with integer missing values: 5 =?= $avg" 
 
 ${MY_BIN_DIR}/ncra -O -v rec_var_int_mss_val_flt in.nc foo.nc 2>> foo.tst
-avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_int_mss_val_flt foo.nc`
+avg=`${MY_BIN_DIR}/ncks -C -H -s "%d" -v rec_var_int_mss_val_flt foo.nc`
 echo "ncra 2.7: record mean of integer with float missing values: 5 =?= $avg" 
 
 ${MY_BIN_DIR}/ncra -O -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc 2>> foo.tst
