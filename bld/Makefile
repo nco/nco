@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.241 2004-05-06 06:04:08 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.242 2004-05-21 18:02:41 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -376,63 +376,72 @@ CPP_TKN_OS += -DHAVE_STRCASECMP -DHAVE_STRDUP
 
 # Works on AIX and AIX46K
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
-ifeq (${OMP},Y)
- FC := xlf95_r
-# -qsmp=noauto : Turn on SMP/OMP code generation but do no automatic parallelization
-# -qsmp=omp : Use industry standard OMP without IBM extensions
- OMP_FLG := -qsmp=noauto 
-else
- CPP_DFN += -U_OPENMP
- FC := xlf95
-endif # endif OMP
 # 20030804: Always use re-entrant (_r) compilers---Jim Edwards NCAR/IBM 
- CC := xlc_r 
- C++ := xlC_r
-# -qmaxmem=num Limit amount of memory used by space intensive optimizations to <num> kilobytes
-# -qlanglvl=extended: Allow C++ constructs in C, keeps xlc from dying on type ** prototypes
-CFLAGS := -qmaxmem=8192 -qlanglvl=extended
-CPP := xlc -c -qlanglvl=extended
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
-FFLAGS := ${OMP_FLG} -qmaxmem=-1 -qarch=auto -qspillsize=2500
-FIXEDFLAGS := -qsuffix=f=f:cpp=F -qfixed=132
-FREEFLAGS := -qsuffix=f=f90:cpp=F90
+CC := xlc_r -qlanglvl=extc99
+#CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
+C++ := xlC_r
+# C++ := g++
+# fxm: 20040311 should this be cpp? gcc -M?
+CPP := xlc -c -qlanglvl=extc99
+ifneq (${null},$(findstring xl,${CC}))
+# Visual Age compiler headers must occur before g++ headers
+ CPP_TKN_OS += -I/usr/vacpp/include
+endif # xlC compilers
+# Add /usr/local/include for libintl.h explicitly until netCDF is moved there
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I/usr/local/include
+FC := xlf95_r
 LD := ld
 # 20020422: -lC links to AIX C++ library which contains float intrinsics cosf()...
 # -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
 LDFLAGS += -bh:5 ${TMP_LDFLAGS} ${TMP_LIBS} -lm -lC
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
-#LDFLAGS += -lxlf90 -lxlf
-endif
-# 20020522: ncap_lex.l now requires flex for <EOF> handling
 LEX := flex
-YACC := bison
 LINT := lint
+YACC := bison
+# AIX VA Compiler Collection
+ifneq (${null},$(findstring xl,${CC}))
+# Additional switch to fix compiler warnings on csz.c
+# -qmaxmem=num Limit memory used by space intensive optimizations to <num> kilobytes
+# -qspill=size Size in B of register allocation spill area, mie needs > 1040 B
+ CFLAGS := -qmaxmem=8192 -qspill=2048
+ FFLAGS := -NS2000 -qfixed=132
+# -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
+ LDFLAGS += -bh:5
+#LDFLAGS += -lxlf90 # Required for linking Fortran objects
+ifeq (${OMP},Y)
+ FC := xlf95_r
+# -qsmp=noauto : Turn on SMP/OMP code generation but do no automatic parallelization
+# -qsmp=omp : Use industry standard OMP without IBM extensions
+ OMP_FLG := -qsmp=omp
+else
+ CPP_DFN += -U_OPENMP
+ FC := xlf95
+endif # endif OMP
 ifeq (${OPTS},O)
- CFLAGS += -O
- FFLAGS += -O -NS2000 -qfixed=132
+# -qstrict: Ensure that -O3 optimizations do not alter program semantics
+# -Q : Inline all appropriate subprograms
+ CFLAGS := -O5 -qstrict -Q
+ FFLAGS += -O3 -qstrict -Q
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g
- FFLAGS := -g -NS2000 -qfixed=132
+ FFLAGS += -g
 endif
 ifeq (${OPTS},X)
 # -qflttrap generates instructions for floating point exceptions
 # -qidirfirst uses headers found in -I directories first
 # -qlonglong allow long long integers
 # -qmakedep creates .d file
+# -qwarn64 check for possible long-to-integer or pointer-to-integer truncation
 # -qhalt=e stop compiler if error severity equals or exceeds i, w, e, s, u
  CFLAGS += -g -qflttrap -qidirfirst -qlonglong -qwarn64 -qcheck=all -qhalt=s
  FFLAGS += -g
 endif
-# -q64: Select 64-bit compiler mode (required for accessing large files)
-# -qwarn64: Warn on possible long-to-integer or pointer-to-integer truncation
 ifeq (${ABI},64)
  AR := ar -X 64
  CFLAGS += -q64
  FFLAGS += -q64
  LDFLAGS += -q64 
 endif # endif ABI
-C++FLAGS := ${CFLAGS}
 # Additional flags for AIX:
 # -M Generate information to be included in a "make" description file; output goes to .u file
 # -c Do not send object files to the linkage editor
@@ -442,6 +451,41 @@ C++FLAGS := ${CFLAGS}
 ${MY_DPN_DIR}/%.d : %.c
 	${MK_DPN} ${CPPFLAGS} $< ;perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' $*.u > $@ ; \
 	rm -f $*.i $*.o $*.u;
+${MY_DPN_DIR}/%.d : %.cc
+	${MK_DPN} ${CPPFLAGS} $< ;perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' $*.u > $@ ; \
+	rm -f $*.i $*.o $*.u;
+endif # endif AIX VA Compiler Collection
+# GNU Compiler Collection
+ifneq (${null},$(findstring gcc,${CC}))
+ CFLAGS := -Wall -Wunused
+ifeq (${OPTS},O)
+ CFLAGS += -O
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+ifeq (${OPTS},R)
+ CFLAGS += 
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g -O
+ LDFLAGS += /usr/local/lib/ccmalloc-g++.o -L/usr/local/lib -lccmalloc -ldl
+endif
+ifeq (${ABI},64)
+ CC += -maix64 
+ C++ += -maix64 
+endif # endif ABI
+ C++FLAGS := ${CFLAGS}
+endif # endif GNU Compiler Collection
+# -q64: Select 64-bit compiler mode (required for accessing large files)
+# -qwarn64: Warn on possible long-to-integer or pointer-to-integer truncation
+C++FLAGS := ${CFLAGS}
+ifeq (${OMP},Y)
+ CFLAGS += ${OMP_FLG}
+ C++FLAGS += ${OMP_FLG}
+ FFLAGS += ${OMP_FLG}
+ LDFLAGS := ${OMP_FLG} ${LDFLAGS}
+endif # endif OMP
 endif
 # endif AIX
 

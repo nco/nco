@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.301 2004-05-20 14:16:28 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.302 2004-05-21 18:02:46 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -242,8 +242,8 @@ bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifde
 bld23. Implement ncra i18n support I18N with autotools: Add .po files, update doc/i18n.txt
 bld29. RedHat 9 does not build with --enable-*-customize because of flex warnings.
 bld30. Search for libstdc++ with AIX/DODS/GCC breaks NCO build
-bld31. 
- 
+bld31. Implement AIX GCC switches from bld/Makefile to configure.in
+bld32. 
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -3,6 +3,8 @@
 	* cvs tag -c nco-2_9_4
 	Changes since nco-2_9_3: ncecat works on pure scalar files
 
+	* Allow AIX builds with GCC in bld/Makefile
+
 	* Rearranged nco_tst.pl, added ncecat test, activated ncbo,
 	ncea, ncflint tests
 

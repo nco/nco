@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.79 2004-05-21 16:56:31 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.80 2004-05-21 18:02:45 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.3 are ready. 
 
@@ -19,6 +19,7 @@ Bug-fixes:
 
 Build changes:
 1. Added ncecat, ncbo, ncea, ncflint tests to nco_tst.pl
+2. Support AIX GCC builds in bld/Makefile
 
 Other user-visible changes:
 1. -r reports correct version again, and with cleaner formatting
