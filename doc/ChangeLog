@@ -1,3 +1,17 @@
+2001-12-02  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_1_0
+	Changes since nco-2_0_3: ncrename interactive query limiter
+	ncap extravaganza
+
+	* Allow global:att_nm to signify global attributes in ncap
+
+	* Removed file query cruft from ncrename and added maximum
+	response count short circuit mechanism to prevent batch jobs
+	from going bonkers when -O not specified and output file exists
+
+	* Added hybrid coordinate info to in.cdl
+
 2001-11-10  Charlie Zender  <zender@uci.edu>
 
 	* Added three_dim_var_crd to check COORDS storage convention ordering

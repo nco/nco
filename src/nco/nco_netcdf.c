@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.13 2001-10-28 23:05:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.14 2001-12-03 06:14:37 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -708,7 +708,7 @@ nco_inq_att(int nc_id,int var_id,const char *att_nm,nc_type *att_typ,long *att_s
 int 
 nco_inq_att_flg(int nc_id,int var_id,const char *att_nm,nc_type *att_typ,long *att_sz) 
 {
-  /* Purpose: Wrapper for nc_inq_att_flg() */
+  /* Purpose: Wrapper for nc_inq_att() */
   int rcd=NC_NOERR;
   rcd=nc_inq_att(nc_id,var_id,att_nm,att_typ,(size_t *)att_sz);
   if(rcd == NC_ENOTATT) return rcd;

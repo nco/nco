@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.117 2001-11-29 16:01:40 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.118 2001-12-03 06:14:37 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -3372,7 +3372,7 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
      dimensions, and to both be of the specified type. Operands' values are 
      assumed to be in memory already. */
   
-  /* Division is currently defined as op2:=op1*op2 */  
+  /* Multiplication is currently defined as op2:=op1*op2 */  
   
   long idx;
   

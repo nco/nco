@@ -1,5 +1,5 @@
 %{
-  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.12 2001-11-29 16:04:53 hmb Exp $ -*-C-*- */
+  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.13 2001-12-03 06:14:37 zender Exp $ -*-C-*- */
 
   /* Purpose: Token generator for ncap parser */
 
@@ -246,7 +246,7 @@ atostr    { return ATOSTR; }
 
 [A-Za-z_][A-Za-z0-9_]*:[A-Za-z_][A-Za-z0-9_]*   { 
         int var_id;
-        int rcd;
+        int rcd=NC_NOERR; /* csz rcd may be used before it is defined */
         int rcd_out;
         int index;
         size_t slen;
@@ -272,8 +272,8 @@ atostr    { return ATOSTR; }
         att_nm = strdup(++p);
     
 
-        rcd = nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
-        
+/*        rcd = nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id); */
+        if(!strcmp(var_nm,"global")) var_id=NC_GLOBAL; else rcd = nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
        
             /* We are on the RHS of the = sign so we need to return to the parser the value */
             /* of the attribue (if its available)                                           */
@@ -319,7 +319,7 @@ atostr    { return ATOSTR; }
             if ( rcd == NC_NOERR ) {  
               rcd = nco_inq_att_flg(prs_arg->in_id,var_id,att_nm,&type,&att_sz);
               if (rcd == NC_ENOTATT) {
-              (void)sprintf(errstr,"Warning: Unable to locate attribute %s in %s. Returning a 0 byte.",yytext,prs_arg->fl_in);
+              (void)sprintf(errstr,"Warning: Unable to locate RHS attribute %s of variable %s with var ID = %d in file %s. Returning a 0 byte.",att_nm,var_nm,var_id,prs_arg->fl_in);
               (void)yyerror(errstr);
               lvalp->attribute.val.b = 0;
               lvalp->attribute.type = NC_BYTE;
@@ -347,12 +347,12 @@ atostr    { return ATOSTR; }
                 } /* end if */
               } else {
                  /* Attribute is not in table or on disk so return a 0 byte  */
-                (void)sprintf(errstr,"Warning: Unable to locate attribute %s. Returning a 0 byte.",yytext);
+                (void)sprintf(errstr,"Warning: Unable to locate RHS attribute %s of variable %s with var ID = %d in file %s. Returning a 0 byte.",att_nm,var_nm,var_id,prs_arg->fl_in);
                 (void)yyerror(errstr);
                 lvalp->attribute.val.b = 0;
                 lvalp->attribute.type = NC_BYTE;
                 return (ATTRIBUTE);
-             } 
+             } /* end if */
        }/* end if RHS */
         
         /* we are on the LHS of the = sign so we simply save the attribute information for   */

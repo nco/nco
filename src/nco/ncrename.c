@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.29 2001-10-08 07:25:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.30 2001-12-03 06:14:37 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -93,8 +93,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.29 2001-10-08 07:25:39 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.29 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.30 2001-12-03 06:14:37 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.30 $";
   
   extern char *optarg;
   
@@ -195,21 +195,6 @@ main(int argc,char **argv)
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
 
   if(OUTPUT_TO_NEW_NETCDF_FILE){
-/*    printf( "Overwrite ? [yn] " );
-    inpt = '\0';
-    if ( ( inpt = getch( ) ) == EOF ) {
-        fprintf( stdout, "EOF found on stdin\n" );
-    } else {
-        switch ( inpt ) {
-        case  'y':
-        case  'Y':
-            printf( "\nfile will be overwritten\n" );
-            break;
-        default:
-            printf( "\nfile will *NOT* be overwritten\n" );
-            break;
-        }
-    } */
 
     if(!FORCE_OVERWRITE){
       int rcd;
@@ -220,17 +205,21 @@ main(int argc,char **argv)
 
       /* If file already exists, then query the user whether to overwrite */
       if(rcd != -1){
-        char usr_reply;
-        
-        usr_reply='z';
+        char usr_reply='z';
+	short nbr_itr=0;
+
         while(usr_reply != 'n' && usr_reply != 'y'){
+	  nbr_itr++;
+	  if(nbr_itr > 10){
+	    (void)fprintf(stdout,"\n%s: ERROR %hd failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),nbr_itr-1);
+	    exit(EXIT_FAILURE);
+	  } /* end if */
           (void)fprintf(stdout,"ncrename: overwrite %s (y/n)? ",fl_out);
 	  (void)fflush(stdout);
-/*          (void)setvbuf(stdin,NULL,_IONBF,0);*/
-/*          usr_reply=(char)getc(stdin);*/
           usr_reply=(char)fgetc(stdin);
-/*          usr_reply=(char)getchar();*/
-/*          (void)read((int)stdin,&usr_reply,1);*/
+	  /* Allow one carriage return per response free of charge */
+	  if(usr_reply == '\n') usr_reply=(char)fgetc(stdin);
+	  (void)fflush(stdin);
         } /* end while */
         
         if(usr_reply == 'n'){
