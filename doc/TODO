@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.186 2002-09-14 17:25:17 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.187 2002-09-14 17:40:46 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -61,6 +61,7 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 33. Document new math/rounding functions (acosh, floor...)
 34. Make parse errors always print current line to terminal rather than silently failing
 36. cygwin builds of ncap.l and netcdf fail because of dependence on syslimits.h. non-kludge fix may require updated gcc and mingw packages
+37. Implement float function definitions in nco_rth_flt as inline to improve speed for MACOSX builds
 
 Highest priority NCO-wide items that You can help with:
 41. Use getopt_long() from FSF (has alloca()-dependency problems) or Sittler (BSD-licensed version with no problems)

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.6 2002-09-14 17:28:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.7 2002-09-14 17:40:48 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -41,6 +41,7 @@ extern "C" {
   float gammaf(float);
   float logf(float);
   float log10f(float);
+  float powf(float,float);
   float sinf(float);
   float sqrtf(float);
   float tanf(float);
