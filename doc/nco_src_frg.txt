@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.16 2000-07-28 18:41:42 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.17 2000-08-13 21:51:44 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -10,7 +10,7 @@ Shell/Web Server:   nco.sourceforge.net:/home/users/zender
 Project Websites:   http://nco.sourceforge.net
 		    http://sourceforge.net/projects/nco
 		    http://sourceforge.net/project/?group_id=3331
-Project FTP:        ftp://nco.sourceforge.net/pub
+Project FTP:        ftp://nco.sourceforge.net/pub/nco
 		    nco.sourceforge.net:/home/groups/ftp/pub/nco
 CVS:		    Anonymous check out:
 		    cvs -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco login 
@@ -41,7 +41,7 @@ in order to remain a useful and vital application.
 
 The netCDF Operators, or NCO, are a suite of programs known as
 operators. The operators facilitate manipulation and analysis of
-self-describing data stored in the netCDF or HDF formats, which are
+self-describing data stored in the netCDF or HDF4 formats, which are
 freely available (http://www.unidata.ucar.edu/packages/netcdf and
 http://hdf.ncsa.uiuc.edu, respectively). Each NCO operator (e.g., 
 ncks) takes netCDF or HDF input file(s), performs an operation (e.g.,
@@ -51,13 +51,13 @@ scientific research, these data formats, and thus NCO, are generic and
 are equally useful in fields like finance. The NCO User's Guide
 illustrates NCO use with examples from the field of climate modeling
 and analysis. The NCO homepage is currently 
-http://www.cgd.ucar.edu/cms/nco.
+http://nco.sourceforge.org
 
 To build NCO on SourceForge, 
 make NETCDF_LIB=/home/groups/nco/lib/LINUX NETCDF_INC=/home/groups/nco/include
 
 To make a new release of NCO on SourceForge:
-ncftpput -V download.sourceforge.net /incoming nco-1.1.48.tar.gz
+ncftpput -V download.sourceforge.net /incoming nco-1.2.tar.gz
 
 Mailing lists nco-announce:
 Web page for users:

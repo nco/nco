@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.70 2000-08-03 20:38:33 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.71 2000-08-13 21:51:44 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -607,7 +607,7 @@ bin_cln:
 buildclean: bld_cln
 bld_cln:
 	cd $(MY_BLD_DIR); rm -f TAGS
-rpm:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=1.1.48 rpm
+rpm:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=1.2 rpm
 	cd $(DATA)/tmp; \
 	/bin/rm -fr $(DATA)/tmp/nco*; \
 	cp -r $(HOME)/nco nco-$(NCO_VRS); \
@@ -617,7 +617,7 @@ rpm:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo 
 	ln -s $(HOME)/nco/bld/nco.spec /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
 	cd /usr/src/redhat/SPECS; \
 	rpm -ba nco-$(NCO_VRS).spec;
-rpmnet:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=1.1.48 rpmnet
+rpmnet:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=1.2 rpmnet
 	- if test -f /usr/src/redhat/SOURCES/nco-$(NCO_VRS).tar.gz; then printf "Using existing nco-$(NCO_VRS).tar.gz\n" ; else $(MY_BIN_DIR)/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l /usr/src/redhat/SOURCES nco-$(NCO_VRS).tar.gz; fi
 	/bin/rm -f /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
 	cd /usr/src/redhat/SOURCES; \

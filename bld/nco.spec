@@ -1,19 +1,20 @@
-# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.6 2000-04-24 16:48:04 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.7 2000-08-13 21:51:44 zender Exp $
 # Purpose: RPM spec file for NCO
 # Usage: 
 # Before nco.spec is invoked (with 'rpm -ba nco.spec'), the source tarball 
-# nco-1.1.46 must be in the directory /usr/src/redhat/SOURCES
-# After RPMs are built, they should be FTP'd to RedHat's contrib area
-# ftp put /usr/src/redhat/SRPMS/nco-$(NCO_VRS)-*.src.rpm /usr/src/redhat/RPMS/i386/nco-$(NCO_VRS)-*.i386.rpm incoming.redhat.com:/libc6
+# nco-1.2 must be in the directory /usr/src/redhat/SOURCES
+# After RPMs are built, upload them to RedHat's contrib area
+# ncftpput incoming.redhat.com /libc6 /usr/src/redhat/SRPMS/nco-${NCO_VRS}-*.src.rpm /usr/src/redhat/RPMS/i386/nco-${NCO_VRS}-*.i386.rpm 
+# ncftpput dust.ps.uci.edu /pub/zender/nco /usr/src/redhat/SRPMS/nco-${NCO_VRS}-*.src.rpm /usr/src/redhat/RPMS/i386/nco-${NCO_VRS}-*.i386.rpm 
 
 Summary: A suite of arithmetic and metadata operators for netCDF files
 Name: nco
-Version: 1.1.46
+Version: 1.2
 Release: 1
 Copyright: GPL
 Group: Applications/Scientific
-Source: ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco-1.1.46.tar.gz
-URl: http://www.cgd.ucar.edu/cms/nco
+Source: ftp://nco.sourceforge.net/pub/nco/nco-1.2.tar.gz
+URL: http://nco.sourceforge.net
 # Distribution: None in particular
 Vendor: Zendor
 Packager: Charlie Zender <zender@uci.edu>
@@ -32,15 +33,15 @@ file. Although most users of netCDF and HDF data are involved in
 scientific research, these data formats, and thus NCO, are generic and
 are equally useful in fields like finance. The NCO User's Guide
 illustrates NCO use with examples from the field of climate modeling
-and analysis. The NCO homepage is http://www.cgd.ucar.edu/cms/nco.
+and analysis. The NCO homepage is http://nco.sourceforge.net
 
 %prep
-rm -rf $RPM_BUILD_DIR/nco-1.1.46
-tar xvzf $RPM_SOURCE_DIR/nco-1.1.46.tar.gz
+rm -rf $RPM_BUILD_DIR/nco-1.2
+tar xvzf $RPM_SOURCE_DIR/nco-1.2.tar.gz
 
 %build
-cd nco-1.1.46/bld
-/usr/bin/env MY_BIN_DIR=/usr/bin MY_DOC_DIR=/usr/doc/nco-1.1.46 make
+cd nco-1.2/bld
+/usr/bin/env MY_BIN_DIR=/usr/bin MY_DOC_DIR=/usr/doc/nco-1.2 make
 
 # make data
 # Use make tst only when connected to the Internet
@@ -66,4 +67,4 @@ cd nco-1.1.46/bld
 /usr/bin/ncwa
 
 %clean
-/bin/rm -r nco-1.1.46
+/bin/rm -r nco-1.2
