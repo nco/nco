@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.30 2003-09-16 22:12:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.31 2003-09-16 22:14:32 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -46,7 +46,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
      Use msg to print, e.g., the name of variable which caused the error */
   char sbr_nm[]="nco_err_exit()";
   switch(rcd){
-  case NC_ERANGE: (void)fprintf(stdout,"ERROR Result not representable in output file\nHINT: This may occur when an arithmetic operation results in a value not representible by the output variable type and NCO attempts to write that variable to an output file, with, e.g., nc_put_var*(). For more details, see http://nco.sf.net/nco.html#typ_cnv\nSuggested workaround: Permanently promote the variable before attempting the arithmetic operation. For example, ncap -O -s \'foo=double(foo);\' in.nc in.nc\n"); break;
+  case NC_ERANGE: (void)fprintf(stdout,"ERROR Result not representable in output file\nHINT: This may occur when an arithmetic operation results in a value not representible by the output variable type and NCO attempts to write that variable to an output file, with, e.g., nc_put_var*(). For more details, see\nhttp://nco.sf.net/nco.html#typ_cnv\n\nPossible workaround: Permanently promote the variable before attempting the arithmetic operation. For example,\nncap -O -s \'foo=double(foo);\' in.nc in.nc\n"); break;
   } /* end switch */
   if(rcd != NC_NOERR){
     (void)fprintf(stderr,"%s: ERROR %s\n%s\n",sbr_nm,msg,nc_strerror(rcd));
