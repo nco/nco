@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.14 2004-09-18 03:23:01 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.15 2004-09-18 04:23:38 zender Exp $ 
 
 // Purpose: Implementation (declaration) of C++ interface to netCDF variable routines
 
@@ -295,7 +295,7 @@ nco_put_vara // [fnc] Write variable to netCDF file
  const float * const &var_val) // I [frc] Variable value
 {
   // Purpose: Wrapper for nc_put_vara_float()
-  int rcd=nc_put_vara_float(nc_id,var_id,&var_srt[0],&var_cnt[0],var_val);
+  int rcd=nc_put_vara_float(nc_id,var_id,&(const_cast<std::valarray<size_t> &>(var_srt)[0]),&(const_cast<std::valarray<size_t> &>(var_cnt)[0]),var_val);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara<valarray,valarray,float *> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_put_vara<valarray,valarray,float *>()
