@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.87 2002-03-01 07:50:11 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.88 2002-03-07 02:32:38 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -195,7 +195,7 @@ Being on the bleeding edge requires some familiarity with GNU build
 tools and with <a href="http://www.cvshome.org">CVS</a>. 
 
 <ul>
-<li>Source and documentation of latest released version in tarball format: <a href="ftp://nco.sourceforge.net/pub/nco/nco.tar.gz">nco.tar.gz</a> (901 Kb compressed tar-file)</li>
+<li>Source and documentation of latest released version in tarball format: <a href="ftp://nco.sourceforge.net/pub/nco/nco-2.2.0.tar.gz">nco-2.2.0.tar.gz</a> (901 Kb compressed tar-file)</li>
 <li>Source and documentation in <a href="http://www.rpm.org">RPM</a> format: <a href="ftp://nco.sourceforge.net/pub/nco/nco-2.0.0-1.src.rpm">nco-2.0.0-1.src.rpm</a> (1029 Kb SRPM)</li>
 </ul>
 
