@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.2 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.3 2002-06-07 02:42:35 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -40,7 +40,6 @@ newdate /* [fnc] Compute date a specified number of days from input date */
      C version: Charlie Zender */
 
   /* Local */
-  int date_srt; /* Initial value of date (may change sign) */
   int day_nbr_2_eom; /* Days to end of month */
   int day_crr; /* Day of date */
   int day_ncr; /* Running count of days to increment date by */
@@ -53,6 +52,7 @@ newdate /* [fnc] Compute date a specified number of days from input date */
   { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
     31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
+  nco_long date_srt; /* Initial value of date (may change sign) */
   nco_long newdate_YYMMDD; /* New date in YYMMDD format */
 
   if(day_srt == 0) return date;

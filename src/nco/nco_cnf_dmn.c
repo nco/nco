@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.4 2002-05-07 08:00:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.5 2002-06-07 02:42:35 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -181,7 +181,6 @@ var_conform_dim /* [fnc] Stretch second variable to match dimensions of first va
     int idx_wgt_var[NC_MAX_DIMS];
     /*    int idx_var_wgt[NC_MAX_DIMS];*/
     int wgt_nbr_dim;
-    int wgt_type_sz;
     int var_nbr_dmn_m1;
 
     long *var_cnt;
@@ -191,6 +190,8 @@ var_conform_dim /* [fnc] Stretch second variable to match dimensions of first va
     long var_lmn;
     long wgt_lmn;
     long var_sz;
+
+    size_t wgt_typ_sz;
 
     /* Copy main attributes of variable into current weight */
     wgt_out=var_dpl(var);
@@ -203,12 +204,12 @@ var_conform_dim /* [fnc] Stretch second variable to match dimensions of first va
     wgt_out->val.vp=(void *)nco_malloc(wgt_out->sz*nco_typ_lng(wgt_out->type));
     wgt_cp=(char *)wgt->val.vp;
     wgt_out_cp=(char *)wgt_out->val.vp;
-    wgt_type_sz=nco_typ_lng(wgt_out->type);
+    wgt_typ_sz=nco_typ_lng(wgt_out->type);
 
     if(wgt_out->nbr_dim == 0){
       /* Variable (and weight) are scalars, not arrays */
 
-      (void)memcpy(wgt_out_cp,wgt_cp,wgt_type_sz);
+      (void)memcpy(wgt_out_cp,wgt_cp,wgt_typ_sz);
 
     }else{
       /* Variable (and weight) are arrays, not scalars */
@@ -280,7 +281,7 @@ var_conform_dim /* [fnc] Stretch second variable to match dimensions of first va
 	wgt_lmn=0L;
 	for(idx=0;idx<wgt_nbr_dim;idx++) wgt_lmn+=dmn_ss[idx_wgt_var[idx]]*dmn_wgt_map[idx];
 	
-	(void)memcpy(wgt_out_cp+var_lmn*wgt_type_sz,wgt_cp+wgt_lmn*wgt_type_sz,wgt_type_sz);
+	(void)memcpy(wgt_out_cp+var_lmn*wgt_typ_sz,wgt_cp+wgt_lmn*wgt_typ_sz,wgt_typ_sz);
 	
       } /* end loop over var_lmn */
       

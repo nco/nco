@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.8 2002-05-21 03:53:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.9 2002-06-07 02:42:35 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -70,24 +70,24 @@ nco_lib_vrs_prn(void) /* [fnc] Print netCDF library version */
   char *of_ptr;
   char *dlr_ptr;
 
-  int vrs_sng_len;
-  int nst_sng_len;
+  size_t vrs_sng_lng;
+  size_t nst_sng_lng;
 
   /* As of netCDF 3.4, nc_inq_libvers() returned strings such as "3.4 of May 16 1998 14:06:16 $" */  
   lib_sng=(char *)strdup(nc_inq_libvers());
   of_ptr=strstr(lib_sng," of ");
   if(of_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nco_lib_vrs_prn() reports of_ptr == NULL\n",prg_nm_get());
-  vrs_sng_len=(int)(of_ptr-lib_sng);
-  vrs_sng=(char *)nco_malloc(vrs_sng_len+1);
-  strncpy(vrs_sng,lib_sng,vrs_sng_len);
-  vrs_sng[vrs_sng_len]='\0';
+  vrs_sng_lng=(size_t)(of_ptr-lib_sng);
+  vrs_sng=(char *)nco_malloc(vrs_sng_lng+1);
+  strncpy(vrs_sng,lib_sng,vrs_sng_lng);
+  vrs_sng[vrs_sng_lng]='\0';
 
   dlr_ptr=strstr(lib_sng," $");
   if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nco_lib_vrs_prn() reports dlr_ptr == NULL\n",prg_nm_get());
-  nst_sng_len=(int)(dlr_ptr-of_ptr-4); /* 4 is the length of " of " */
-  nst_sng=(char *)nco_malloc(nst_sng_len+1);
-  strncpy(nst_sng,of_ptr+4,nst_sng_len); /* 4 is the length of " of " */
-  nst_sng[nst_sng_len]='\0';
+  nst_sng_lng=(size_t)(dlr_ptr-of_ptr-4); /* 4 is the length of " of " */
+  nst_sng=(char *)nco_malloc(nst_sng_lng+1ul);
+  strncpy(nst_sng,of_ptr+4,nst_sng_lng); /* 4 is the length of " of " */
+  nst_sng[nst_sng_lng]='\0';
 
   (void)fprintf(stderr,"Linked to netCDF library version %s, compiled %s\n",vrs_sng,nst_sng);
   (void)fprintf(stdout,"NCO homepage URL is http://nco.sourceforge.net\n");
