@@ -1,3 +1,8 @@
+2004-05-04  Charlie Zender  <zender@uci.edu>
+
+	* Change cvs.nco.sourceforge.net to cvs.sf.net in accord
+	with new SourceForge BIND 9-induced policy
+
 2004-04-19  Charlie Zender  <zender@uci.edu>
 
 	* Build NCO on sand.ess.uci.edu, SuSE Linux 9.0 dual opteron with

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.212 2004-04-14 00:23:18 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.213 2004-05-05 00:47:29 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -288,7 +288,7 @@ Retrieving NCO requires some familiarity with GNU development tools,
 especially <a href="http://www.cvshome.org">CVS</a> and 
 <a href="http://www.gnu.org/software/make/make.html">Make</a>.
 You must first log into the NCO CVS server:
-<p><tt>cvs -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco login</tt></p>
+<p><tt>cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco login</tt></p>
 Simply hit return when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
@@ -296,10 +296,10 @@ Usually you wish to retrieve a recent tagged (i.e., released) version.
 This command retrieves and places NCO version <tt>2.9.3</tt> (which is
 tagged as <tt>nco-2_9_3</tt> due to CVS rules) into local directory
 <tt>nco-2.9.3</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -r nco-2_9_3 -d nco-2.9.3 nco</tt></p>
+<p><tt>cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -r nco-2_9_3 -d nco-2.9.3 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
-<p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco</tt></p>
+<p><tt>cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.297 2004-04-14 00:11:52 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.298 2004-05-05 00:47:28 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -190,7 +190,11 @@ nco321. Do not promote NC_FLOAT to NC_DOUBLE in ncra/ncea(?)
 nco322. Implement integer empowerment in var_scv_pwr() with, e.g., GSL
 nco323. Collect all past ANNOUNCE files and place in reverse chronological order in ANNOUNCE file
 nco324. Add release date to "Version Summary" section on homepage
-nco326. 
+nco326. Add manual override of writing *tmp* file for intermediate results
+nco327. Consolidate/coordinate letters of support for prp_nco
+nco328. Ability to reverse specified dimensions (use negative stride?)
+nco329. Ability to rearrange dimensions
+nco330. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
