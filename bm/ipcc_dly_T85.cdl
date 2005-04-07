@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/bm/ipcc_dly_T85.cdl,v 1.2 2005-03-24 22:17:22 mangalam Exp $
+// $Header: /data/zender/nco_20150216/nco/bm/ipcc_dly_T85.cdl,v 1.3 2005-04-07 04:18:35 mangalam Exp $
 // ncgen -b -o ipcc_dly_T85.nc ipcc_dly_T85.cdl (-> 1,142,957,636 bytes)
 // takes about 48 (real) sec on 900MHz/512MB a22p thinkpad, 
 // most of it waiting for disk
@@ -11,7 +11,7 @@ dimensions:
     lev=32;
     lat=128;
     lon=256;
-    time=unlimited
+    time=unlimited;
 variables:
     double time(time);  // indices all have to be ints.
     double lev(lev);
