@@ -4,7 +4,7 @@
 # this warning will be removed and the dcript will proceed without the warning that will cause
 # it to hang on startup.
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.5 2005-04-07 04:33:00 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.6 2005-04-07 19:47:20 mangalam Exp $
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
 # <BUILD_ROOT>/nco/bld/nco_bm.pl ncra # Test one operator
@@ -63,12 +63,12 @@ use vars qw($dbg_lvl $wnt_log $usg $operator @test $description $expected
 );
 
 # for hjm's test runs
-$server_name = "ibonk";
-$server_ip = "68.5.247.102";
+#$server_name = "bodi.ess.uci.edu";
+#$server_ip = "128.200.14.155";
 
 # the real udping server
-#$server_name = "sand.ess.uci.edu";
-#$server_ip = "128.200.14.132";
+$server_name = "sand.ess.uci.edu";
+$server_ip = "128.200.14.132";
 $server_port = 29659;
 $udp_reprt = 0;
 
@@ -1054,7 +1054,9 @@ sub summarize_results
   elsif ($CC =~ /icc/) {$CCinfo = "Intel C Compiler version ??";}
   
   my $reportstr = "";
-  my $idstring = `uname -a` . "using: " . $CCinfo;
+  my $udp_dta = "";
+  my $idstring = `uname -a` . "using: " . $CCinfo; chomp $idstring;
+  $udp_dta .= $idstring . "|";
   $reportstr .= "\n\nNCO Test Result Summary for:\n$idstring\n";
   $reportstr .=  "      Test                       Total Wallclock Time (s) \n";
   $reportstr .=  "=====================================================\n";
@@ -1062,8 +1064,10 @@ sub summarize_results
   for (my $i=0; $i<$NUM_FLS; $i++) {
   		$reportstr .= sprintf "Creating   %15s:           %6.4f \n", $fle_timg[$i][0], $fle_timg[$i][1];
   		$reportstr .= sprintf "Populating %15s:           %6.4f \n", $fle_timg[$i][0], $fle_timg[$i][2];
+		$udp_dta   .= sprintf "%s,%6.4f,%6.4f:",$fle_timg[$i][0], $fle_timg[$i][1], $fle_timg[$i][2];
   }
   $reportstr .= sprintf "\n\n";
+  $udp_dta   .= sprintf "|";
  
   
   foreach(@operators) 
@@ -1071,12 +1075,24 @@ sub summarize_results
     my $total = $success{$_}+$failure{$_};
     #printf "$_:\tsuccess: $success{$_} of $total\n";
 	 $reportstr .= sprintf "%10s:  success: %3d of %3d      %6.4f\n", $_, $success{$_}, $total, $totbenchmarks{$_};
+	 $udp_dta   .= sprintf "%s,%3d,%3d,%6.4f:",$_, $success{$_}, $total, $totbenchmarks{$_};
   }
   $reportstr .= sprintf "\nNB: Time in WALLCLOCK seconds, not CPU time; see instantaneous measurements for user & system CPU usage.\n";
   chdir "../bld";
   if ($dbg_lvl == 0) {print $reportstr;}
   else { &verbosity($reportstr); }
-  if ($udp_reprt) {$sock->send($reportstr);}
+  if ($udp_reprt) {
+  		$sock->send($udp_dta);
+	} else {
+		print "Can I send the benchmark result (Data starting from:\n'NCO Test Result Summary for:'\n above back to NCO Central for logging?\n[Ny] ";
+		$tmp = <STDIN>; chomp $tmp;
+		if ($tmp =~ "[nN]" || $tmp eq "") {
+			print "OK, then, BE that way...\n\n\n";
+		} else {
+			print "Thanks very much - the following is on the way:\n$udp_dta\n\n\n";
+			$sock->send($udp_dta);
+		}
+	}
 }
 
 sub set_dta_dir {
