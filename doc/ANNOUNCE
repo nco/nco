@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.138 2005-04-08 23:15:03 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.139 2005-04-08 23:41:36 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.0.1 are ready. 
 
@@ -28,7 +28,7 @@ Bug-fixes:
 1. fxm
 
 Build changes:
-1. fxm
+1. Fix Mac OS X build problem cause by struct rusage
 
 Other user-visible changes:
 1. fxm

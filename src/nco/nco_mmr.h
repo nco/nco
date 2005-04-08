@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.15 2005-03-23 03:02:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.16 2005-04-08 23:41:36 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -17,6 +17,7 @@
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 #include <string.h> /* strcmp. . . */
+#include <time.h> /* machine time (needed by Mac OS X for struct rusage) */ 
 #include <sys/resource.h> /* Resource usage and limits */
 
 /* 3rd party vendors */

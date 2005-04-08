@@ -1,5 +1,8 @@
 2005-04-08  Charlie Zender  <zender@uci.edu>
 
+	* Patch nco_mmr.h to include time.h.
+	Fixes Mac OS X build for struct rusage
+
 	* Change default printing behavior of ncks again using suggestion
 	of Takeshi Enomoto. 
 	ncks in.nc : Prints all data and metadata
