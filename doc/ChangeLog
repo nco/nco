@@ -1,3 +1,12 @@
+2005-04-08  Charlie Zender  <zender@uci.edu>
+
+	* Change default printing behavior of ncks again using suggestion
+	of Takeshi Enomoto. 
+	ncks in.nc : Prints all data and metadata
+	ncks -M in.nc : Prints only global metadata
+	ncks -m in.nc : Prints only variable metadata
+	ncks -H in.nc : Prints only variable data
+
 2005-03-27  Charlie Zender  <zender@uci.edu>
 
 	* Create lst_1D_to_2D() to replace lst_prs(), which is responsible

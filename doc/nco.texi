@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.294 2005-03-27 19:42:46 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.295 2005-04-08 23:15:19 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6423,7 +6423,7 @@ SYNTAX
 ncks [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]]
 [-F] [-H] [-h] [-l @var{path}] [-M] [-m] [-O] [-o @var{output-file}] 
-[-p @var{path}] [-Q] [-q] [-R] [-r] [-s @var{format}] [-u] 
+[-P] [-p @var{path}] [-Q] [-q] [-R] [-r] [-s @var{format}] [-u] 
 [-v @var{var}[,@dots{}]] [-x] [-Z] @var{input-file} [[@var{output-file}]]
 @end example
 
@@ -6449,8 +6449,8 @@ Option @samp{-s} (or lon options @samp{--sng}, @samp{--string},
 using C-style format strings. 
 
 Options @samp{-a}, @samp{-F} , @samp{-H}, @samp{-M}, @samp{-m},
-@samp{-Q}, @samp{-q}, @samp{-s}, and @samp{-u} (and their long option
-counterparts) control the formatted appearance of the data.
+@samp{-P}, @samp{-Q}, @samp{-q}, @samp{-s}, and @samp{-u} (and their
+long option counterparts) control the formatted appearance of the data.
 
 @cindex global attributes
 @cindex attributes, global

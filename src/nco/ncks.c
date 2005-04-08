@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.120 2005-03-28 00:04:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.121 2005-04-08 23:15:26 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.120 2005-03-28 00:04:33 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.120 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.121 2005-04-08 23:15:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.121 $";
   const char * const opt_sht_lst="aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   char *opt_crr; /* [sng] String representation of current long-option name */
@@ -435,7 +435,7 @@ main(int argc,char **argv)
     /* if(lmt_lst[idx].lmt_dmn_nbr > 1) (void)nco_msa_prn_idx(&lmt_lst[idx]); */
   } /* end loop over dimensions */
   
-  if(PRN_VRB || (fl_out == NULL && !PRN_VAR_DATA_TGL)){
+  if(PRN_VRB || (fl_out == NULL && !PRN_VAR_DATA_TGL && !PRN_VAR_METADATA_TGL && !PRN_GLB_METADATA_TGL)){
     /* Verbose printing simply means assume user wants the deluxe frills by default */
     if(PRN_DMN_UNITS_TGL) PRN_DMN_UNITS=False; else PRN_DMN_UNITS=True;
     if(PRN_VAR_DATA_TGL) PRN_VAR_DATA=False; else PRN_VAR_DATA=True;

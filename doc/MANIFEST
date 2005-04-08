@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.10 2004-01-01 20:41:43 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.11 2005-04-08 23:15:04 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -165,27 +165,27 @@ nco/src/nco/test1.sh
 nco/src/nco/test2.sh
 
 NCO C++ interface to netCDF directory:
-nco/src/nco/ChangeLog
-nco/src/nco/INSTALL
-nco/src/nco/Makefile
-nco/src/nco/Makefile.am
-nco/src/nco/Makefile.in
-nco/src/nco/Makefile.old
-nco/src/nco/README
-nco/src/nco/TODO
-nco/src/nco/libnco_c++.hh
-nco/src/nco/nco_att.cc
-nco/src/nco/nco_att.hh
-nco/src/nco/nco_dmn.cc
-nco/src/nco/nco_dmn.hh
-nco/src/nco/nco_fl.cc
-nco/src/nco/nco_fl.hh
-nco/src/nco/nco_hgh.cc
-nco/src/nco/nco_hgh.hh
-nco/src/nco/nco_utl.cc
-nco/src/nco/nco_utl.hh
-nco/src/nco/nco_var.cc
-nco/src/nco/nco_var.hh
+nco/src/nco_c++/ChangeLog
+nco/src/nco_c++/INSTALL
+nco/src/nco_c++/Makefile
+nco/src/nco_c++/Makefile.am
+nco/src/nco_c++/Makefile.in
+nco/src/nco_c++/Makefile.old
+nco/src/nco_c++/README
+nco/src/nco_c++/TODO
+nco/src/nco_c++/libnco_c++.hh
+nco/src/nco_c++/nco_att.cc
+nco/src/nco_c++/nco_att.hh
+nco/src/nco_c++/nco_dmn.cc
+nco/src/nco_c++/nco_dmn.hh
+nco/src/nco_c++/nco_fl.cc
+nco/src/nco_c++/nco_fl.hh
+nco/src/nco_c++/nco_hgh.cc
+nco/src/nco_c++/nco_hgh.hh
+nco/src/nco_c++/nco_utl.cc
+nco/src/nco_c++/nco_utl.hh
+nco/src/nco_c++/nco_var.cc
+nco/src/nco_c++/nco_var.hh
 
 
 

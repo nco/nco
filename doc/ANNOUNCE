@@ -1,74 +1,37 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.137 2005-03-24 20:48:47 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.138 2005-04-08 23:15:03 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.0.0 are ready. 
+The netCDF operators NCO version 3.0.1 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-There are few significant feature improvements in version 3.0.0.
-Most changes are mainly oriented toward optimization, stabilization,
-and benchmarking, for which Harry Mangalam deserves recognition.
+Version 3.0.1 contains mainly build and benchmarking improvements.
+The only user-visible change is one more tweak to the default ncks
+printing behavior. 
 
-1. New -Z (or --64-bit-offset) switch on all operators writes output
-   files in new 64-bit offset mode available only with netCDF 3.6.
-   See http://nco.sf.net/nco.html#lfs for details.
-
-2. New ncks printing behavior:
-   ncks prints data to screen by default if only one filename specified
-   Formerly, four ncks switches (-H -m -M -u) were required to print all
-   file data and metadata to screen. 
-   Now ncks automatically prints data to screen when no output file
-   is specified. Change scripts that rely on the old behavior!
-   The new behavior can be confusing because it is somewhat context 
-   sensitive (i.e., defaults depend on presence of output file).
-   Same old switches will toggle the (context sensitive) default state. 
-   I think you will like it once you get used to it.
-   There is also a new printing switch: -P abbreviates -C -H -M -m -u
-   -P is most useful for printing a single variable, e.g., ncks -P -v T
+1. ncks printing behavior:
+   ncks in.nc : Prints all data and metadata
+   ncks -M in.nc : Prints only global metadata
+   ncks -m in.nc : Prints only variable metadata
+   ncks -H in.nc : Prints only variable data
    See http://nco.sf.net/nco.html#ncks for details.
 
-3. New benchmark infrastructure in the bm directory. (Harry Mangalam)
-   These are considered beta-level and preliminary.
-   Stabilizing them will be the focus of some 3.0.x releases.
-
-4. Improved OPeNDAP configurability in autotools builds (Harry Mangalam)
-
-5. libnco_c++ incorporates nco_put_vara() overloads, works with g++ 3.4.
-
-Peaking into the future, we are working on benchmarking the operators
-on local machines, clusters, and to distributed sites across the
-Internet and the OptIPuter. 
-The first operator has been MPI-enabled.
-We expect to release the full MPI-enabled suite this summer and will
-demonstrate all this at the iGrid conference in San Diego in September. 
-There is so much development going on that I wanted to get version
-3.0 out before we de-stabilize the code.
+2. Benchmarks (Harry Mangalam):
 
 Enjoy,
 Charlie
 
 Feature changes:
-1. Support 64-bit-offset mode of netCDF 3.6
-2. ncks printing defaults change slightly: -P switch = -C -H -M -m -u
-3. libnco_c++ incorporates nco_put_vara() overloads
+1. fxm
 
 Bug-fixes:
-1. Fixed gaping memory in ncap_var_stretch() during LHS-casting
+1. fxm
 
 Build changes:
-1. Build improvements in configure.in improve NEC SX compatibility
-2. Updated config.sub and config.guess to most recent FSF sources
-3. NCO 3.0 _requires_ netCDF 3.6 by default
-4. OPeNDAP configuration improvements
+1. fxm
 
 Other user-visible changes:
-1. ncks prints data to screen by default if only one filename specified
-2. Remove extra carriage returns from ncks global metadata printing
-3. Add help error message when ncks -b specified without -o file
-4. ncks prints units, when present, by default (-u toggles this off)
+1. fxm
 
 User-invisible changes:
-1. libnco_c++ builds with g++-3.4
-2. Arithemetic operator speed enhancements from removing "reverse
-   mapping" overhead from scalar variable broadcasting and stretching 
-3. Speed enhancements from zeroing buffers with memset()
+1. fxm
