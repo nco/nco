@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.27 2005-04-09 05:15:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.28 2005-04-09 05:20:26 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -117,7 +117,15 @@ lst_prs_1D /* [fnc] Create list of strings from given string and arbitrary delim
      NB: Function takes single string as input and returns "list of strings" 
      However, this list of strings was not obtained by malloc'ing each string 
      It was obtained by inserting delimiters in a single string 
-     Hence do not try to separately free() each member of list of strings */
+     Hence do not try to separately free() each member of list of strings
+
+     Contrasting lst_prs_1D() to successor lst_prs_2D():
+     lst_prs_2D() creates two-dimensional output string list, i.e., list of pointers to separately malloc()'d buffers
+     lst_prs_2D() does not modify input
+     lst_prs_2D() output list should be free'd by nco_sng_lst_free()
+     lst_prs_1D() creates one-dimensional string list by inserting NULs into single buffer
+     lst_prs_1D() modifies input (by inserting NULs)
+     lst_prs_1D() output list may be free'd by nco_free() */
 
   /* Number of list members is always one more than number of delimiters, e.g.,
      foo,,3, has 4 arguments: "foo", "", "3" and "".
@@ -196,11 +204,12 @@ lst_prs_2D /* [fnc] Create list of strings from given string and arbitrary delim
      then appends new string to output list
      Output list has no delimiter strings
      Contrasting lst_prs_2D() to predecessor lst_prs_1D():
-     lst_prs_2D() creates truly two-dimensional output string list
-     lst_prs_2D() does not modify input at all
-     lst_prs_1D() modifies input
-     lst_prs_1D() creates one-dimensional string list by inserting NULs into buffer
-     Output list may be free'd by nco_sng_lst_free() */
+     lst_prs_2D() creates two-dimensional output string list, i.e., list of pointers to separately malloc()'d buffers
+     lst_prs_2D() does not modify input
+     lst_prs_2D() output list should be free'd by nco_sng_lst_free()
+     lst_prs_1D() creates one-dimensional string list by inserting NULs into single buffer
+     lst_prs_1D() modifies input (by inserting NULs)
+     lst_prs_1D() output list may be free'd by nco_free() */
 
   /* Number of list members is always one more than number of delimiters, e.g.,
      foo,,3, has 4 arguments: "foo", "", "3" and "".
