@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.66 2005-04-09 05:08:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.67 2005-04-09 05:15:11 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.66 2005-04-09 05:08:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.66 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.67 2005-04-09 05:15:11 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.67 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -237,9 +237,9 @@ main(int argc,char **argv)
     case 'a': /* Re-order dimensions */
       optarg_lcl=(char *)strdup(optarg);
 #if 1
-      dmn_rdr_lst_in=lst_prs_old(optarg_lcl,",",&dmn_rdr_nbr);
+      dmn_rdr_lst_in=lst_prs_1D(optarg_lcl,",",&dmn_rdr_nbr);
 #else
-      dmn_rdr_lst_in=lst_1D_to_2D(optarg_lcl,",",&dmn_rdr_nbr);
+      dmn_rdr_lst_in=lst_prs_2D(optarg_lcl,",",&dmn_rdr_nbr);
       optarg_lcl=(char *)nco_free(optarg_lcl);
 #endif
       break;
@@ -299,7 +299,7 @@ main(int argc,char **argv)
       /* Replace commas with hashes when within braces (convert back later) */
       optarg_lcl=(char *)strdup(optarg);
       (void)nco_lst_comma2hash(optarg_lcl);
-      var_lst_in=lst_prs_old(optarg_lcl,",",&nbr_xtr);
+      var_lst_in=lst_prs_1D(optarg_lcl,",",&nbr_xtr);
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.26 2005-04-09 05:08:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.27 2005-04-09 05:15:11 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -102,7 +102,7 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
 } /* end lst_heapsort() */
 
 char ** /* O [sng] Array of list elements */
-lst_prs_old /* [fnc] Create list of strings from given string and arbitrary delimiter */
+lst_prs_1D /* [fnc] Create list of strings from given string and arbitrary delimiter */
 (char * const sng_in, /* I/O [sng] Delimited argument list (delimiters are changed to NULL on output */
  const char * const dlm_sng, /* I [sng] delimiter string */
  int * const nbr_lst) /* O [nbr] number of elements in list */
@@ -153,7 +153,7 @@ lst_prs_old /* [fnc] Create list of strings from given string and arbitrary deli
      ==32444== 4 bytes in 1 blocks are definitely lost in loss record 1 of 6
      ==32444==    at 0x1B906EDD: malloc (vg_replace_malloc.c:131)
      ==32444==    by 0x8055DE9: nco_malloc (nco_mmr.c:85)
-     ==32444==    by 0x8055A2C: lst_prs_old (nco_lst_utl.c:147)
+     ==32444==    by 0x8055A2C: lst_prs_1D (nco_lst_utl.c:147)
      ==32444==    by 0x8049D3B: main (ncpdq.c:272) */
   lst=(char **)nco_malloc(*nbr_lst*sizeof(char *));
 
@@ -183,10 +183,10 @@ lst_prs_old /* [fnc] Create list of strings from given string and arbitrary deli
   } /* end debug */
 
   return lst;
-} /* end lst_prs_old() */
+} /* end lst_prs_1D() */
 
 char ** /* O [sng] List of strings */
-lst_1D_to_2D /* [fnc] Create list of strings from given string and arbitrary delimiter */
+lst_prs_2D /* [fnc] Create list of strings from given string and arbitrary delimiter */
 (const char * const sng_in, /* I [sng] Delimited argument list */
  const char * const dlm_sng, /* I [sng] delimiter string */
  int * const nbr_lst) /* O [nbr] number of elements in list */
@@ -195,11 +195,11 @@ lst_1D_to_2D /* [fnc] Create list of strings from given string and arbitrary del
      Algorithm recursively copies all text up to delimiter into new string and
      then appends new string to output list
      Output list has no delimiter strings
-     Contrasting lst_1D_to_2D() to predecessor lst_prs_old():
-     lst_1D_to_2D() creates truly two-dimensional output string list
-     lst_1D_to_2D() does not modify input at all
-     lst_prs_old() modifies input
-     lst_prs_old() creates one-dimensional string list by inserting NULs into buffer
+     Contrasting lst_prs_2D() to predecessor lst_prs_1D():
+     lst_prs_2D() creates truly two-dimensional output string list
+     lst_prs_2D() does not modify input at all
+     lst_prs_1D() modifies input
+     lst_prs_1D() creates one-dimensional string list by inserting NULs into buffer
      Output list may be free'd by nco_sng_lst_free() */
 
   /* Number of list members is always one more than number of delimiters, e.g.,
@@ -261,7 +261,7 @@ lst_1D_to_2D /* [fnc] Create list of strings from given string and arbitrary del
     if(strlen(sng_lst_out[idx]) == 0) sng_lst_out[idx]=NULL;
 
   if(dbg_lvl_get() == 5){
-    (void)fprintf(stderr,"lst_1D_to_2D() reports %d elements in list delimited by \"%s\"\n",*nbr_lst,dlm_sng);
+    (void)fprintf(stderr,"lst_prs_2D() reports %d elements in list delimited by \"%s\"\n",*nbr_lst,dlm_sng);
     for(idx=0;idx<*nbr_lst;idx++) 
       (void)fprintf(stderr,"sng_lst_out[%d] = %s\n",idx,(sng_lst_out[idx] == NULL) ? "NULL" : sng_lst_out[idx]);
     (void)fprintf(stderr,"\n");
@@ -272,7 +272,7 @@ lst_1D_to_2D /* [fnc] Create list of strings from given string and arbitrary del
   sng_in_cpy=(char *)nco_free(sng_in_cpy); 
 
   return sng_lst_out;
-} /* end lst_1D_to_2D() */
+} /* end lst_prs_2D() */
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_chr /* [fnc] Compare two characters */
