@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.67 2005-04-09 05:15:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.68 2005-04-09 05:48:18 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.67 2005-04-09 05:15:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.67 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.68 2005-04-09 05:48:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.68 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -299,7 +299,12 @@ main(int argc,char **argv)
       /* Replace commas with hashes when within braces (convert back later) */
       optarg_lcl=(char *)strdup(optarg);
       (void)nco_lst_comma2hash(optarg_lcl);
+#if 1
       var_lst_in=lst_prs_1D(optarg_lcl,",",&nbr_xtr);
+#else
+      var_lst_in=lst_prs_2D(optarg_lcl,",",&nbr_xtr);
+      optarg_lcl=(char *)nco_free(optarg_lcl);
+#endif
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
@@ -836,7 +841,12 @@ main(int argc,char **argv)
   /* Free lists of strings */
   if(fl_lst_abb != NULL) fl_lst_abb=(char **)nco_free(fl_lst_abb);
   if(fl_lst_in != NULL) fl_lst_in=(char **)nco_free(fl_lst_in);
+#if 1
   if(var_lst_in != NULL) var_lst_in=(char **)nco_free(var_lst_in);
+#else
+  /* fxm: at this point nbr_xtr enumerates var, not var_lst_in */
+  if(var_lst_in != NULL) var_lst_in=nco_sng_lst_free(var_lst_in,nbr_xtr);
+#endif
   /* Free individual strings */
   if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);

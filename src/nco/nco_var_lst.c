@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.44 2005-03-28 00:04:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.45 2005-04-09 05:48:17 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -61,7 +61,7 @@ nm_id_sct * /* O [sct] Variable extraction list */
 nco_var_lst_mk /* [fnc] Create variable extraction list using regular expressions */
 (const int nc_id, /* I [enm] netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
- char **var_lst_in, /* I [sng] User-specified list of variable names */
+ CST_X_PTR_CST_PTR_CST_Y(char,var_lst_in), /* I [sng] User-specified list of variable names and rx's */
  const bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
 {
@@ -80,24 +80,24 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
   nm_id_sct *in_lst=NULL; 
   bool *in_bool=NULL;
 
-  /* Create list of all vars in input file */
+  /* Create list of all variables in input file */
   char var_nm[NC_MAX_NAME];
     
   in_lst=(nm_id_sct *)nco_malloc(nbr_var*sizeof(nm_id_sct));
   for(idx=0;idx<nbr_var;idx++){
-    /* Get name of each variable. */
+    /* Get name of each variable */
     (void)nco_inq_varname(nc_id,idx,var_nm);
     in_lst[idx].nm=(char *)strdup(var_nm);
     in_lst[idx].id=idx;
   } /* end loop over idx */
   
-    /* Return all variables if .. */
+  /* Return all variables if .. */
   if(*nbr_xtr==0 && !EXTRACT_ALL_COORDINATES){
     *nbr_xtr=nbr_var;
     return in_lst;
   } /* end if */     
       
-  /* intialize and alloc  bool array to all False */
+  /* Initialize and allocacte bool array to all False */
   in_bool=(bool *)nco_calloc((size_t)nbr_var,sizeof(bool));
   
   /* Loop through var_lst_in */
@@ -124,17 +124,18 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
      } /* end if regular expression */
     
-    /* Normal variable so search through var array */
+     /* Normal variable so search through var array */
      for(jdx=0;jdx<nbr_var;jdx++)
        if(!strcmp(var_sng,in_lst[jdx].nm)) break;
-       /* No matches found so die gently */
+     /* No matches found so die gently */
      if(jdx==nbr_var){
        (void)fprintf(stdout,"%s: ERROR nco_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
        nco_exit(EXIT_FAILURE);
      }else{
        in_bool[jdx]=True;
      } /* end else */
-  }
+  } /* end loop over var_lst_in */
+
   /* Create final list of vars using var list and bool array */
 
   /* malloc() xtr_lst to maximium size(nbr_var) */
@@ -158,7 +159,7 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
 
   *nbr_xtr=nbr_tmp;    
   return xtr_lst;
-} /* end nco_var_lst_mk_meta() */
+} /* end nco_var_lst_mk() */
 
 /* Compile only if regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
@@ -179,9 +180,9 @@ nco_var_meta_search /* [fnc] Search for pattern matches in var string list */
   size_t no_sub;
   
   regmatch_t *result;
-  regex_t *r;
+  regex_t *rx;
 
-  r=(regex_t *)nco_malloc(sizeof(regex_t));
+  rx=(regex_t *)nco_malloc(sizeof(regex_t));
 
   /* Choose RE_SYNTAX_POSIX_EXTENDED regular expression type */
   cflags=(REG_EXTENDED | REG_NEWLINE);
@@ -189,7 +190,7 @@ nco_var_meta_search /* [fnc] Search for pattern matches in var string list */
   eflags=0;
 
   /* Compile regular expression */
-  if((err_no=regcomp(r,rexp,cflags)) != 0){ /* Compile regular expression */
+  if((err_no=regcomp(rx,rexp,cflags)) != 0){ /* Compile regular expression */
     char const * rx_err_sng;  
     /* POSIX regcomp return error codes */
     switch(err_no){
@@ -211,24 +212,24 @@ nco_var_meta_search /* [fnc] Search for pattern matches in var string list */
     nco_exit(EXIT_FAILURE);
   } /* end if err */
 
-  no_sub=r->re_nsub+1; /* How many matches are there in a line? */
+  no_sub=rx->re_nsub+1; /* How many matches are there in a line? */
 
   /* Search string */
   result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*no_sub);
 
   /* Search each var string for matches */
   for(idx=0;idx<nbr_var;idx++){  
-    if(!regexec(r, in_lst[idx].nm,no_sub,result,eflags)){
+    if(!regexec(rx,in_lst[idx].nm,no_sub,result,eflags)){
       in_bool[idx]=True;
       nbr_mtch++;
     } /* end if */
   } /* end loop over variables */
 
-  regfree(r); /* Free regular expression data structure */
-  (void *)nco_free(r);
+  regfree(rx); /* Free regular expression data structure */
+  (void *)nco_free(rx);
   (void *)nco_free(result);
 
-   return nbr_mtch;
+  return nbr_mtch;
 } /* end nco_var_meta_search() */
 
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
