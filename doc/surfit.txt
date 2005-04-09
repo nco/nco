@@ -1,0 +1,38 @@
+# Purpose: Project description for 2005 UCI Calit2 Surf-IT program 
+# (Summer Undergraduate Research Fellowships in Information Technologies)
+
+Distributed Data Reduction Techniques Applied to 
+    California Climate Change Simulations
+
+PI: Charlie Zender, Department of Earth System Science
+
+Description:
+Climate simulations prepared for the Fourth Assessment Report (AR4) of
+the Intergovernmental Panel on Climate Change (IPCC) reside on a
+distributed network of storage archives known as the Earth System Grid
+(ESG).  This project will use new Distributed Data Reduction and
+Analysis (DDRA) techniques to characterize the envelop of future
+Californian climate contained within these datasets. Our goals are
+two-fold: 1. To quantify the Californian climate expected under a
+variety of IPCC forcing scenarios. 2. To benchmark, characterize, and
+reduce bottlenecks encountered in DDRA of geophysical datasets.
+
+Recent Californian climate assessments are based on data from
+incomplete ranges of climate scenarios, and on simulations from
+out-of-date models because the storage to hold all the relevent
+simulations from state-of-the-art models does not exist at any one
+facility. Hence the DDRA techniques being developed as part of our
+NCO/SCO project will improve our understanding California's climate
+pathways. These DDRA techniques have never been applied to terascale
+ESG data. During this novel application, we will identify,
+characterize, and try to reduce DDRA bottlenecks encountered.
+
+We seek an upper division undergraduate to use the computer resources
+of the Earth System Modeling Facility (ESMF) to perform this research.
+The student will gain skills and understanding of high-performance
+computing, data analysis, and climate change.   
+The student will work in a UNIX/Linux research environment and should
+have prior experience with data analysis, and environmental science.
+Further information about this project is available at
+http://nco.sf.net#prp_sei
+
