@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.25 2005-03-28 00:04:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.26 2005-04-09 05:08:27 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -192,11 +192,14 @@ lst_1D_to_2D /* [fnc] Create list of strings from given string and arbitrary del
  int * const nbr_lst) /* O [nbr] number of elements in list */
 {
   /* Purpose: Create list of strings from given string and arbitrary delimiter
-     Algorithm recursively copies all text up to delimiter into a new string and
-     appends the new string to the output list
+     Algorithm recursively copies all text up to delimiter into new string and
+     then appends new string to output list
      Output list has no delimiter strings
-     lst_1D_to_2D() is similar to it predecessor, lst_prs_old(), except it creates
-     a truly two-dimensional output string list and does modify the input.
+     Contrasting lst_1D_to_2D() to predecessor lst_prs_old():
+     lst_1D_to_2D() creates truly two-dimensional output string list
+     lst_1D_to_2D() does not modify input at all
+     lst_prs_old() modifies input
+     lst_prs_old() creates one-dimensional string list by inserting NULs into buffer
      Output list may be free'd by nco_sng_lst_free() */
 
   /* Number of list members is always one more than number of delimiters, e.g.,

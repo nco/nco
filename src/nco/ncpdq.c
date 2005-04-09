@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.65 2005-03-28 00:04:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.66 2005-04-09 05:08:28 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.65 2005-03-28 00:04:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.65 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.66 2005-04-09 05:08:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.66 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -236,7 +236,12 @@ main(int argc,char **argv)
       break;
     case 'a': /* Re-order dimensions */
       optarg_lcl=(char *)strdup(optarg);
+#if 1
       dmn_rdr_lst_in=lst_prs_old(optarg_lcl,",",&dmn_rdr_nbr);
+#else
+      dmn_rdr_lst_in=lst_1D_to_2D(optarg_lcl,",",&dmn_rdr_nbr);
+      optarg_lcl=(char *)nco_free(optarg_lcl);
+#endif
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
       EXTRACT_ASSOCIATED_COORDINATES=False;
@@ -396,6 +401,7 @@ main(int argc,char **argv)
       if(dmn_rdr_lst_in[idx_rdr][0] == '-'){
 	dmn_rvr_rdr[idx_rdr]=True;
 	/* Move name pointer one past negative sign (lose one byte) */
+#if 1
 	if(idx_rdr == 0){
 	  /* Copy string to new memory to avoid losing byte */
 	  optarg_lcl=dmn_rdr_lst_in[idx_rdr];
@@ -404,6 +410,12 @@ main(int argc,char **argv)
 	}else{
 	  dmn_rdr_lst_in[idx_rdr]++;
 	} /* end else */
+#else
+	/* Copy string to new memory to avoid losing byte */
+	optarg_lcl=dmn_rdr_lst_in[idx_rdr];
+	dmn_rdr_lst_in[idx_rdr]=(char *)strdup(optarg_lcl+1);
+	optarg_lcl=(char *)nco_free(optarg_lcl);
+#endif
       }else{
 	dmn_rvr_rdr[idx_rdr]=False;
       } /* end else */
@@ -799,7 +811,11 @@ main(int argc,char **argv)
     if(dmn_idx_out_in != NULL) dmn_idx_out_in=(int **)nco_free(dmn_idx_out_in);
     if(dmn_rvr_in != NULL) dmn_rvr_in=(bool **)nco_free(dmn_rvr_in);
     if(dmn_rvr_rdr != NULL) dmn_rvr_rdr=(bool *)nco_free(dmn_rvr_rdr);
+#if 1
     if(dmn_rdr_lst_in != NULL) dmn_rdr_lst_in=(char **)nco_free(dmn_rdr_lst_in);
+#else
+    if(dmn_rdr_nbr > 0) dmn_rdr_lst_in=nco_sng_lst_free(dmn_rdr_lst_in,dmn_rdr_nbr);
+#endif
     /* Free dimension list pointers */
     dmn_rdr=(dmn_sct **)nco_free(dmn_rdr);
     /* Dimension structures in dmn_rdr are owned by dmn and dmn_out, free'd later */
