@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.51 2005-03-27 21:11:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.52 2005-04-10 07:04:25 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -257,9 +257,10 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   default: nco_dfl_case_prg_id_err(); break;
   } /* end switch */
   
-    /* If input files are required but have not been obtained yet from stdin */
+  /* If input files are required but have not been obtained yet from stdin */
   if(!*FL_LST_IN_FROM_STDIN){ 
     /* Fill in input file list from positional arguments */
+    /* fxm: valgrind unfree'd memory in nco_fl_lst_mk() (nco_fl_utl.c:264) */
     fl_lst_in=(char **)nco_malloc((psn_arg_nbr-1+psn_arg_fst)*sizeof(char *));
     while(arg_crr < argc-1+psn_arg_fst) fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
   } /* FL_LST_IN_FROM_STDIN */

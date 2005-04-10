@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.465 2005-04-09 05:08:20 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.466 2005-04-10 07:04:22 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -286,9 +286,9 @@ nco488. ncatted: Deleting global attributes doesn't work unless 'global' specifi
         ncatted -a Conventions,global,d,, in.nc foo.nc (works)
 nco490. regression in ncwa when freeing var->nm in nco_var_free():
         ncwa -D 2 -O -a lat -w gw ~/nco/data/in.nc ~/foo.nc
-nco493. Finish implementation of lst_1D_to_2D()
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt ncpdq -O -D 3 -a lat,lev,lon -v three_dmn_var ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
 nco494. Implement gzip library wrapper library build option for znetCDF?
+nco495. Transition all other operators to lst_prs_2D()
+nco496. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

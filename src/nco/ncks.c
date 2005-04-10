@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.122 2005-04-09 05:15:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.123 2005-04-10 07:04:25 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.122 2005-04-09 05:15:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.122 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.123 2005-04-10 07:04:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.123 $";
   const char * const opt_sht_lst="aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   char *opt_crr; /* [sng] String representation of current long-option name */
@@ -131,6 +131,7 @@ main(int argc,char **argv)
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_dmn_fl;
   int nbr_var_fl;
+  int var_lst_in_nbr=0;
   int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
   int opt;
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
@@ -319,7 +320,9 @@ main(int argc,char **argv)
       /* Replace commas with hashes when within braces (convert back later) */
       optarg_lcl=(char *)strdup(optarg);
       (void)nco_lst_comma2hash(optarg_lcl);
-      var_lst_in=lst_prs_1D(optarg_lcl,",",&nbr_xtr);
+      var_lst_in=lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
+      optarg_lcl=(char *)nco_free(optarg_lcl);
+      nbr_xtr=var_lst_in_nbr;
        break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;

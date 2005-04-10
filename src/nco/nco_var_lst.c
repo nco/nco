@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.45 2005-04-09 05:48:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.46 2005-04-10 07:04:25 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -66,23 +66,23 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
  int * const nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
 {
   /* Purpose: Create variable extraction list with or without regular expressions */
-
+  
   int idx;
   int jdx;
   int nbr_tmp;
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
   int rx_mch_nbr;
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
-
+  
   char *var_sng;
-
+  
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
   nm_id_sct *in_lst=NULL; 
   bool *in_bool=NULL;
-
+  
   /* Create list of all variables in input file */
   char var_nm[NC_MAX_NAME];
-    
+  
   in_lst=(nm_id_sct *)nco_malloc(nbr_var*sizeof(nm_id_sct));
   for(idx=0;idx<nbr_var;idx++){
     /* Get name of each variable */
@@ -92,52 +92,52 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
   } /* end loop over idx */
   
   /* Return all variables if .. */
-  if(*nbr_xtr==0 && !EXTRACT_ALL_COORDINATES){
+  if(*nbr_xtr == 0 && !EXTRACT_ALL_COORDINATES){
     *nbr_xtr=nbr_var;
     return in_lst;
   } /* end if */     
-      
+  
   /* Initialize and allocacte bool array to all False */
   in_bool=(bool *)nco_calloc((size_t)nbr_var,sizeof(bool));
   
   /* Loop through var_lst_in */
   for(idx=0;idx<*nbr_xtr;idx++){
-     var_sng=var_lst_in[idx];
-
-     /* Convert pounds (#s) back to commas */
-     while(*var_sng){
-       if (*var_sng=='#') *var_sng=',';
-       var_sng++;
-     } /* end while */
-     var_sng=var_lst_in[idx];
-
-     /* If var_sng is regular expression... */
-     if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
-       /* ...and regular expression library is present */
-#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
-       rx_mch_nbr=nco_var_meta_search(nbr_var,in_lst,var_sng,in_bool);
-       if(rx_mch_nbr==0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: http://nco.sf.net/nco.html#rx",prg_nm_get(),var_sng); 
-       continue;
-#else
-      (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) is not available, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
-       nco_exit(EXIT_FAILURE);
-#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
-     } /* end if regular expression */
+    var_sng=var_lst_in[idx];
     
-     /* Normal variable so search through var array */
-     for(jdx=0;jdx<nbr_var;jdx++)
-       if(!strcmp(var_sng,in_lst[jdx].nm)) break;
-     /* No matches found so die gently */
-     if(jdx==nbr_var){
-       (void)fprintf(stdout,"%s: ERROR nco_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
-       nco_exit(EXIT_FAILURE);
-     }else{
-       in_bool[jdx]=True;
-     } /* end else */
+    /* Convert pounds (#s) back to commas */
+    while(*var_sng){
+      if(*var_sng == '#') *var_sng=',';
+      var_sng++;
+    } /* end while */
+    var_sng=var_lst_in[idx];
+    
+    /* If var_sng is regular expression... */
+    if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
+      /* ...and regular expression library is present */
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+      rx_mch_nbr=nco_var_meta_search(nbr_var,in_lst,var_sng,in_bool);
+      if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: http://nco.sf.net/nco.html#rx",prg_nm_get(),var_sng); 
+      continue;
+#else
+      (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) is unavailable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
+      nco_exit(EXIT_FAILURE);
+#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
+    } /* end if regular expression */
+    
+    /* Normal variable so search through var array */
+    for(jdx=0;jdx<nbr_var;jdx++)
+      if(!strcmp(var_sng,in_lst[jdx].nm)) break;
+    /* No matches found so die gently */
+    if(jdx == nbr_var){
+      (void)fprintf(stdout,"%s: ERROR nco_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
+      nco_exit(EXIT_FAILURE);
+    }else{
+      in_bool[jdx]=True;
+    } /* end else */
   } /* end loop over var_lst_in */
-
+  
   /* Create final list of vars using var list and bool array */
-
+  
   /* malloc() xtr_lst to maximium size(nbr_var) */
   xtr_lst=(nm_id_sct *)nco_malloc(nbr_var*sizeof(nm_id_sct));
   nbr_tmp=0; /* nbr_tmp is incremented */
@@ -150,7 +150,7 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
     } /* end if */
     (void)nco_free(in_lst[idx].nm);
   } /* end loop over var */
-
+  
   /* realloc() list to actual size */  
   xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,nbr_tmp*sizeof(nm_id_sct));
 

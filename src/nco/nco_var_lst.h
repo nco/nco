@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.27 2005-04-09 05:48:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.28 2005-04-10 07:04:26 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -35,6 +35,7 @@
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_ctl.h" /* Program flow control functions */
+#include "nco_lst_utl.h" /* List utilities */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_var_utl.h" /* Variable utilities */
 

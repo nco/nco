@@ -1,3 +1,15 @@
+2005-04-09  Charlie Zender  <zender@uci.edu>
+
+	* Simplify nco_lmt_udu_cnv() because of new lst_prs_2D() list processing
+
+	* Transition all of NCO from lst_prs_1D() to lst_prs_2D()
+	All operators still pass regression test
+
+	* Use nco_sng_lst_free() to free fl_lst_in in ncpdq
+
+	* Transition ncpdq from lst_prs_1D() to lst_prs_2D()
+	All operators still pass regression test
+
 2005-04-08  Charlie Zender  <zender@uci.edu>
 
 	* Patch nco_mmr.h to include time.h.

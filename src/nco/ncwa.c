@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.156 2005-04-09 05:15:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.157 2005-04-10 07:04:26 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.156 2005-04-09 05:15:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.156 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.157 2005-04-10 07:04:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.157 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -150,6 +150,7 @@ main(int argc,char **argv)
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
+  int var_lst_in_nbr=0;
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nco_op_typ=nco_op_avg; /* Operation type */
   int op_typ_rlt=0; /* Option o */
@@ -270,8 +271,7 @@ main(int argc,char **argv)
 	(void)nco_usg_prn();
 	nco_exit(EXIT_FAILURE);
       } /* endif */
-      optarg_lcl=(char *)strdup(optarg);
-      dmn_avg_lst_in=lst_prs_1D(optarg_lcl,",",&nbr_dmn_avg);
+      dmn_avg_lst_in=lst_prs_2D(optarg,",",&nbr_dmn_avg);
       opt_a_flg=True;
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
@@ -342,7 +342,9 @@ main(int argc,char **argv)
       /* Replace commas with hashes when within braces (convert back later) */
       optarg_lcl=(char *)strdup(optarg);
       (void)nco_lst_comma2hash(optarg_lcl);
-      var_lst_in=lst_prs_1D(optarg_lcl,",",&nbr_xtr);
+      var_lst_in=lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
+      optarg_lcl=(char *)nco_free(optarg_lcl);
+      nbr_xtr=var_lst_in_nbr;
       break;
     case 'W':
       NORMALIZE_BY_TALLY=False;

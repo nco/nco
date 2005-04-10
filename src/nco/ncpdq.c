@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.68 2005-04-09 05:48:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.69 2005-04-10 07:04:26 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.68 2005-04-09 05:48:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.68 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.69 2005-04-10 07:04:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.69 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -129,6 +129,7 @@ main(int argc,char **argv)
 
   int abb_arg_nbr=0;
   int dmn_rdr_nbr=0; /* [nbr] Number of dimension to re-order */
+  int dmn_rdr_nbr_in=0; /* [nbr] Original number of dimension to re-order */
   int dmn_rdr_nbr_utl=0; /* [nbr] Number of dimension to re-order, utilized */
   int fl_idx=int_CEWI;
   int fl_nbr=0;
@@ -143,6 +144,7 @@ main(int argc,char **argv)
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
+  int var_lst_in_nbr=0;
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nco_pck_map=nco_pck_map_flt_sht; /* [enm] Packing map */
   int nco_pck_plc=nco_pck_plc_nil; /* [enm] Packing policy */
@@ -235,13 +237,8 @@ main(int argc,char **argv)
       FORCE_APPEND=!FORCE_APPEND;
       break;
     case 'a': /* Re-order dimensions */
-      optarg_lcl=(char *)strdup(optarg);
-#if 1
-      dmn_rdr_lst_in=lst_prs_1D(optarg_lcl,",",&dmn_rdr_nbr);
-#else
-      dmn_rdr_lst_in=lst_prs_2D(optarg_lcl,",",&dmn_rdr_nbr);
-      optarg_lcl=(char *)nco_free(optarg_lcl);
-#endif
+      dmn_rdr_lst_in=lst_prs_2D(optarg,",",&dmn_rdr_nbr_in);
+      dmn_rdr_nbr=dmn_rdr_nbr_in;
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
       EXTRACT_ASSOCIATED_COORDINATES=False;
@@ -299,12 +296,9 @@ main(int argc,char **argv)
       /* Replace commas with hashes when within braces (convert back later) */
       optarg_lcl=(char *)strdup(optarg);
       (void)nco_lst_comma2hash(optarg_lcl);
-#if 1
-      var_lst_in=lst_prs_1D(optarg_lcl,",",&nbr_xtr);
-#else
-      var_lst_in=lst_prs_2D(optarg_lcl,",",&nbr_xtr);
+      var_lst_in=lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
       optarg_lcl=(char *)nco_free(optarg_lcl);
-#endif
+      nbr_xtr=var_lst_in_nbr;
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
@@ -405,22 +399,10 @@ main(int argc,char **argv)
     for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
       if(dmn_rdr_lst_in[idx_rdr][0] == '-'){
 	dmn_rvr_rdr[idx_rdr]=True;
-	/* Move name pointer one past negative sign (lose one byte) */
-#if 1
-	if(idx_rdr == 0){
-	  /* Copy string to new memory to avoid losing byte */
-	  optarg_lcl=dmn_rdr_lst_in[idx_rdr];
-	  dmn_rdr_lst_in[idx_rdr]=(char *)strdup(optarg_lcl+1);
-	  optarg_lcl=(char *)nco_free(optarg_lcl);
-	}else{
-	  dmn_rdr_lst_in[idx_rdr]++;
-	} /* end else */
-#else
-	/* Copy string to new memory to avoid losing byte */
+	/* Copy string to new memory one past negative sign to avoid losing byte */
 	optarg_lcl=dmn_rdr_lst_in[idx_rdr];
 	dmn_rdr_lst_in[idx_rdr]=(char *)strdup(optarg_lcl+1);
 	optarg_lcl=(char *)nco_free(optarg_lcl);
-#endif
       }else{
 	dmn_rvr_rdr[idx_rdr]=False;
       } /* end else */
@@ -816,11 +798,7 @@ main(int argc,char **argv)
     if(dmn_idx_out_in != NULL) dmn_idx_out_in=(int **)nco_free(dmn_idx_out_in);
     if(dmn_rvr_in != NULL) dmn_rvr_in=(bool **)nco_free(dmn_rvr_in);
     if(dmn_rvr_rdr != NULL) dmn_rvr_rdr=(bool *)nco_free(dmn_rvr_rdr);
-#if 1
-    if(dmn_rdr_lst_in != NULL) dmn_rdr_lst_in=(char **)nco_free(dmn_rdr_lst_in);
-#else
-    if(dmn_rdr_nbr > 0) dmn_rdr_lst_in=nco_sng_lst_free(dmn_rdr_lst_in,dmn_rdr_nbr);
-#endif
+    if(dmn_rdr_nbr_in > 0) dmn_rdr_lst_in=nco_sng_lst_free(dmn_rdr_lst_in,dmn_rdr_nbr_in);
     /* Free dimension list pointers */
     dmn_rdr=(dmn_sct **)nco_free(dmn_rdr);
     /* Dimension structures in dmn_rdr are owned by dmn and dmn_out, free'd later */
@@ -840,13 +818,8 @@ main(int argc,char **argv)
   /* NCO-generic clean-up */
   /* Free lists of strings */
   if(fl_lst_abb != NULL) fl_lst_abb=(char **)nco_free(fl_lst_abb);
-  if(fl_lst_in != NULL) fl_lst_in=(char **)nco_free(fl_lst_in);
-#if 1
-  if(var_lst_in != NULL) var_lst_in=(char **)nco_free(var_lst_in);
-#else
-  /* fxm: at this point nbr_xtr enumerates var, not var_lst_in */
-  if(var_lst_in != NULL) var_lst_in=nco_sng_lst_free(var_lst_in,nbr_xtr);
-#endif
+  if(fl_nbr > 0) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr);
+  if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
   /* Free individual strings */
   if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);

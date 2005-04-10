@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.36 2005-04-09 05:15:08 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.37 2005-04-10 07:04:25 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -602,7 +602,7 @@ M_PI {return NAMED_CONSTANT;}
   sbs_sng=(char *)nco_malloc(yyleng*sizeof(char));
   strcpy(sbs_sng,&yytext[1]);
   sbs_sng[yyleng-2]='\0';  
-  sbs_lst=lst_prs_1D(sbs_sng,sbs_dlm,&dmn_nbr);
+  sbs_lst=lst_prs_2D(sbs_sng,sbs_dlm,&dmn_nbr);
 
   dmn=(dmn_sct **)nco_malloc(dmn_nbr*sizeof(dmn_sct *));
   (void)nco_redef(prs_arg->out_id);
@@ -938,7 +938,7 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
       lst_t=lst_d;
       lst_t_nbr=lst_t_nbr;
       lst_d=nco_var_lst_add(lst_d,&lst_d_nbr,lval.sbs_lst->lst,lval.sbs_lst->nbr);
-      if(lst_t_nbr >0) (void)nco_var_lst_free(lst_t,lst_t_nbr);
+      if(lst_t_nbr > 0) (void)nco_var_lst_free(lst_t,lst_t_nbr);
       break;
     default: 
       /* Tokens that fall through are perfectly safe and normal

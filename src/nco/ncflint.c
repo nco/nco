@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.90 2005-04-09 05:15:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.91 2005-04-10 07:04:25 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -103,8 +103,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.90 2005-04-09 05:15:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.90 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.91 2005-04-10 07:04:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.91 $";
   const char * const opt_sht_lst="ACcD:d:Fhi:l:Oo:p:rRv:xw:Z-:";
   
   dmn_sct **dim;
@@ -132,6 +132,7 @@ main(int argc,char **argv)
   int nbr_var_fl;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_prc; /* nbr_var_prc gets incremented */
+  int var_lst_in_nbr=0;
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nbr_dmn_xtr;
   int fl_nbr=0;
@@ -232,8 +233,7 @@ main(int argc,char **argv)
       break;
     case 'i':
       /* Name of variable to guide interpolation. Default is none */
-      optarg_lcl=(char *)strdup(optarg);
-      ntp_lst_in=lst_prs_1D(optarg_lcl,",",&nbr_ntp);
+      ntp_lst_in=lst_prs_2D(optarg,",",&nbr_ntp);
       if(nbr_ntp > 2){
 	(void)fprintf(stdout,"%s: ERROR too many arguments to -i\n",prg_nm_get());
 	(void)nco_usg_prn();
@@ -268,12 +268,13 @@ main(int argc,char **argv)
       /* Replace commas with hashes when within braces (convert back later) */
       optarg_lcl=(char *)strdup(optarg);
       (void)nco_lst_comma2hash(optarg_lcl);
-      var_lst_in=lst_prs_1D(optarg_lcl,",",&nbr_xtr);
+      var_lst_in=lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
+      optarg_lcl=(char *)nco_free(optarg_lcl);
+      nbr_xtr=var_lst_in_nbr;
       break;
     case 'w':
       /* Weight(s) for interpolation.  Default is wgt_val_1=wgt_val_2=0.5 */
-      optarg_lcl=(char *)strdup(optarg);
-      ntp_lst_in=lst_prs_1D(optarg_lcl,",",&nbr_ntp);
+      ntp_lst_in=lst_prs_2D(optarg,",",&nbr_ntp);
       if(nbr_ntp > 2){
 	(void)fprintf(stdout,"%s: ERROR too many arguments to -w\n",prg_nm_get());
 	(void)nco_usg_prn();

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.151 2005-04-09 05:15:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.152 2005-04-10 07:04:25 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.151 2005-04-09 05:15:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.151 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.152 2005-04-10 07:04:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.152 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -300,8 +300,7 @@ main(int argc,char **argv)
     case 'n': /* NINTAP-style abbreviation of files to process */
       /* Currently not used in ncap but should be to allow processing multiple input files by same script */
       (void)fprintf(stderr,"%s: ERROR %s does not currently implement -n option\n",prg_nm_get(),prg_nm_get());
-      optarg_lcl=(char *)strdup(optarg);
-      fl_lst_abb=lst_prs_1D(optarg_lcl,",",&abb_arg_nbr);
+      fl_lst_abb=lst_prs_2D(optarg,",",&abb_arg_nbr);
       if(abb_arg_nbr < 1 || abb_arg_nbr > 3){
 	(void)fprintf(stderr,"%s: ERROR Incorrect abbreviation for file list\n",prg_nm);
 	(void)nco_usg_prn();

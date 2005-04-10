@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.28 2005-04-09 05:20:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.29 2005-04-10 07:04:25 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -102,9 +102,9 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
 } /* end lst_heapsort() */
 
 char ** /* O [sng] Array of list elements */
-lst_prs_1D /* [fnc] Create list of strings from given string and arbitrary delimiter */
+lst_prs_1D /* [fnc] Create 1D array of strings from given string and delimiter */
 (char * const sng_in, /* I/O [sng] Delimited argument list (delimiters are changed to NULL on output */
- const char * const dlm_sng, /* I [sng] delimiter string */
+ const char * const dlm_sng, /* I [sng] Delimiter string */
  int * const nbr_lst) /* O [nbr] number of elements in list */
 {
   /* Purpose: Create list of strings from given string and arbitrary delimiter
@@ -157,12 +157,6 @@ lst_prs_1D /* [fnc] Create list of strings from given string and arbitrary delim
     (*nbr_lst)++;
   } /* end while */
 
-  /* valgrind fxm: 20040814 valgrind reports: 
-     ==32444== 4 bytes in 1 blocks are definitely lost in loss record 1 of 6
-     ==32444==    at 0x1B906EDD: malloc (vg_replace_malloc.c:131)
-     ==32444==    by 0x8055DE9: nco_malloc (nco_mmr.c:85)
-     ==32444==    by 0x8055A2C: lst_prs_1D (nco_lst_utl.c:147)
-     ==32444==    by 0x8049D3B: main (ncpdq.c:272) */
   lst=(char **)nco_malloc(*nbr_lst*sizeof(char *));
 
   sng_in_ptr=sng_in; 
@@ -183,7 +177,7 @@ lst_prs_1D /* [fnc] Create list of strings from given string and arbitrary delim
     if(strlen(lst[idx]) == 0) lst[idx]=NULL;
 
   if(dbg_lvl_get() == 5){
-    (void)fprintf(stderr,"%d elements in list delimited by \"%s\"\n",*nbr_lst,dlm_sng);
+    (void)fprintf(stderr,"lst_prs_1d() reports %d elements in list delimited by \"%s\"\n",*nbr_lst,dlm_sng);
     for(idx=0;idx<*nbr_lst;idx++) 
       (void)fprintf(stderr,"lst[%d] = %s\n",idx,(lst[idx] == NULL) ? "NULL" : lst[idx]);
     (void)fprintf(stderr,"\n");
@@ -194,9 +188,9 @@ lst_prs_1D /* [fnc] Create list of strings from given string and arbitrary delim
 } /* end lst_prs_1D() */
 
 char ** /* O [sng] List of strings */
-lst_prs_2D /* [fnc] Create list of strings from given string and arbitrary delimiter */
+lst_prs_2D /* [fnc] Create list of strings from given string and delimiter */
 (const char * const sng_in, /* I [sng] Delimited argument list */
- const char * const dlm_sng, /* I [sng] delimiter string */
+ const char * const dlm_sng, /* I [sng] Delimiter string */
  int * const nbr_lst) /* O [nbr] number of elements in list */
 {
   /* Purpose: Create list of strings from given string and arbitrary delimiter
@@ -234,7 +228,7 @@ lst_prs_2D /* [fnc] Create list of strings from given string and arbitrary delim
   /* Create duplicate to search, modify, copy, and free */
   sng_in_cpy=(char *)strdup(sng_in); 
 
-  /* Increment temporary dummy pointer in strstr() search loops */
+  /* Increment temporary dummy pointer dlm_ptr_crr in strstr() search loops */
   dlm_ptr_crr=sng_in_cpy;
 
   /* First element does not require preceding delimiter */
@@ -253,14 +247,17 @@ lst_prs_2D /* [fnc] Create list of strings from given string and arbitrary delim
   sng_out_srt=sng_in_cpy;
   idx=0;
   while((dlm_ptr_crr=strstr(sng_out_srt,dlm_sng))){
+    /* This loop brackets and grabs "previous" arguments
+       Grab final argument after loop */
     /* NUL-terminate previous arg */
     *dlm_ptr_crr='\0';
     /* Calling routine has responsibility to free this memory */
     sng_lst_out[idx++]=(char *)strdup(sng_out_srt);
     sng_out_srt=dlm_ptr_crr+dlm_lng;
   } /* end while */
-  /* Handle case of string with no delimiters */
-  if(idx == 0) sng_lst_out[idx++]=(char *)strdup(sng_in_cpy);
+  /* Grab final argument after last delimiter
+     This also handles case of string with no delimiters */
+  sng_lst_out[idx++]=(char *)strdup(sng_out_srt);
 
   /* Assume default list member when two delimiters are adjacent to eachother, 
      i.e., when length of string between delimiters is 0. 
