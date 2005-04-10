@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.152 2005-04-10 07:04:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.153 2005-04-10 18:52:52 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -111,14 +111,13 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *fl_spt_usr=NULL; /* Option s */
   char *lmt_arg[NC_MAX_DIMS];
-  char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 #define NCAP_SPT_NBR_MAX 100
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.152 2005-04-10 07:04:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.152 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.153 2005-04-10 18:52:52 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.153 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */

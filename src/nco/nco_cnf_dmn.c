@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.41 2005-03-21 04:56:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.42 2005-04-10 18:52:53 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -197,7 +197,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
     (void)nco_xrf_var(wgt,wgt_out);
 
     /* Modify a few elements of weight array */
-    wgt_out->nm=wgt->nm;
+    wgt_out->nm=(char *)strdup(wgt->nm);
     wgt_out->id=wgt->id;
     wgt_out->type=wgt->type;
     wgt_out->val.vp=(void *)nco_malloc(wgt_out->sz*nco_typ_lng(wgt_out->type));

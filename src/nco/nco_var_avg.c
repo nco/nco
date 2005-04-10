@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.21 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.22 2005-04-10 18:52:53 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -9,7 +9,7 @@
 #include "nco_var_avg.h" /* Average variables */
 
 var_sct * /* O [sct] Partially (non-normalized) reduced variable */
-nco_var_avg /* [fnc] reduce given variable over specified dimensions */
+nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 (var_sct *var, /* I/O [sct] Variable to reduce (e.g., average) (destroyed) */
  dmn_sct * const * const dim, /* I [sct] Dimensions over which to reduce variable */
  const int nbr_dim, /* I [sct] Number of dimensions to reduce variable over */

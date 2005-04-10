@@ -1,3 +1,16 @@
+2005-04-10  Charlie Zender  <zender@uci.edu>
+
+	* ncpdq is offiically leak-free! The first leak-free operator
+
+	* var_nm is finally free'd, takes care of TODO nco224
+
+	* Fixed bug in nco_var_cnf_dmn() and nco_var_stretch() where
+	var->nm pointer was being copied instead of deep-copying
+	This appears to have fixed ncwa regression TODO nco490
+	
+	* Verified that var->nm freeing is last obstacle to perfect memory
+	releases in ncpdq
+
 2005-04-09  Charlie Zender  <zender@uci.edu>
 
 	* Simplify nco_lmt_udu_cnv() because of new lst_prs_2D() list processing

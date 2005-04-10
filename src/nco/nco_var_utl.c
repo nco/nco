@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.70 2005-04-10 07:04:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.71 2005-04-10 18:52:53 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -680,8 +680,7 @@ nco_var_free /* [fnc] Free all memory associated with variable structure */
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Free all memory associated with a dynamically allocated variable structure */
 
-  /* fxm: Free'ing var_nm causes ncwa regression TODO nco490 */
-  /*  var->nm=(char *)nco_free(var->nm);*/
+  var->nm=(char *)nco_free(var->nm);
   var->val.vp=nco_free(var->val.vp);
   var->mss_val.vp=nco_free(var->mss_val.vp);
   var->tally=(long *)nco_free(var->tally);

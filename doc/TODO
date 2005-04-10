@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.467 2005-04-10 07:07:09 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.468 2005-04-10 18:52:48 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -139,7 +139,6 @@ nco209. Add rules to automagically make MANIFEST and update Sourceforge download
 nco214. Disable threads > 1 on SGI temporarily because thread #0 does all work, why?
 nco215. nco_var_cnf_dmn() does not abort when variables do not conform because dimension list of one is subset of other but ORDER of dimensions differs, e.g., a(lat,lev,lon) !~ b(lon,lev). Attempting this will return incorrect answers!
 nco222. Warn when ncea/ncra/ncrcat/ncecat operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
-nco224. Copy var_nm from command line so program, not system, owns memory. Then modify nco_var_free() to release var_nm structure member, and nco_var_dpl() to copy it. Same for dimension names and nco_dmn_dpl()
 nco225. Pass aed by reference in nco_aed_prc()
 nco226. Is xrf in nco_var_cnf_dmn() is really necessary? If not, remove it and make wgt arg const var_sct * const
 nco228. g++ linking requiring #ifndef GNUC++ around fabsf,fmodf defs in nco_var_scv.c
@@ -284,8 +283,6 @@ nco488. ncatted: Deleting global attributes doesn't work unless 'global' specifi
         ncatted -O -a Conventions,,d,, ~/nco/data/in.nc ~/foo.nc (fails)
         ncks ~/foo.nc | m
         ncatted -a Conventions,global,d,, in.nc foo.nc (works)
-nco490. regression in ncwa when freeing var->nm in nco_var_free():
-        ncwa -D 2 -O -a lat -w gw ~/nco/data/in.nc ~/foo.nc
 nco494. Implement gzip library wrapper library build option for znetCDF?
 nco496. 
 

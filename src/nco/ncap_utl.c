@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.113 2005-03-25 21:57:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.114 2005-04-10 18:52:52 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -944,7 +944,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
     (void)nco_xrf_var(var_lsr,var_lsr_out);
     
     /* Modify elements of lesser variable array */
-    var_lsr_out->nm=var_lsr->nm;
+    var_lsr_out->nm=(char *)strdup(var_lsr->nm);
     var_lsr_out->id=var_lsr->id;
     var_lsr_out->type=var_lsr->type;
     /* Added 20050323: 
