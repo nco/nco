@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.37 2005-04-10 07:04:25 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.38 2005-04-10 19:45:49 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -938,7 +938,7 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
       lst_t=lst_d;
       lst_t_nbr=lst_t_nbr;
       lst_d=nco_var_lst_add(lst_d,&lst_d_nbr,lval.sbs_lst->lst,lval.sbs_lst->nbr);
-      if(lst_t_nbr > 0) (void)nco_var_lst_free(lst_t,lst_t_nbr);
+      if(lst_t_nbr > 0) (void)nco_nm_id_lst_free(lst_t,lst_t_nbr);
       break;
     default: 
       /* Tokens that fall through are perfectly safe and normal

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.68 2005-01-07 23:54:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.69 2005-04-10 19:45:49 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -179,13 +179,12 @@ bool ncap_var_stretch(var_sct **,var_sct **);
 dmn_sct **nco_dmn_out_grow(prs_sct *);
 int ncap_scv_minus(scv_sct *);
 int ncap_var_write(var_sct *,prs_sct*);
-nm_id_sct *nco_var_lst_crd_make(int,nm_id_sct *,int *);
+nm_id_sct *nco_nm_id_lst_crd_make(int,nm_id_sct *,int *);
 nm_id_sct *nco_var_lst_add(nm_id_sct *,int *,nm_id_sct *,int);
 nm_id_sct *nco_var_lst_copy(nm_id_sct *,int);
-nm_id_sct *nco_var_lst_free(nm_id_sct *,int);
 nm_id_sct *nco_var_lst_sub(nm_id_sct *,int *,nm_id_sct *,int);
 nm_id_sct *nco_dmn_lst(const int, int * const);
-nm_id_sct *nco_att_lst_mk(int, int,aed_sct** ,int ,int *);
+nm_id_sct *nco_att_lst_mk(int,int,aed_sct **,int,int *);
 ptr_unn ncap_scv_2_ptr_unn(scv_sct); 
 scv_sct ncap_scv_abs(scv_sct);
 scv_sct ncap_scv_clc(scv_sct,const char,scv_sct);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.153 2005-04-10 18:52:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.154 2005-04-10 19:45:49 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.153 2005-04-10 18:52:52 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.153 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.154 2005-04-10 19:45:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.154 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -178,8 +178,8 @@ main(int argc,char **argv)
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_prc; /* nbr_var_prc gets incremented */
   int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
-  int nbr_dmn_in=int_CEWI; /* number of dims in dim_in */
-  int nbr_dmn_ass=int_CEWI;/* number of dims in temporary list */
+  int nbr_dmn_in=int_CEWI; /* Number of dimensions in dim_in */
+  int nbr_dmn_ass=int_CEWI;/* Number of dimensions in temporary list */
   int fl_nbr=0;
   int nbr_lst_a=0; /* size of xtr_lst_a */
   int opt;
@@ -478,6 +478,7 @@ main(int argc,char **argv)
   
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+  cmd_ln=(char *)nco_free(cmd_ln);
   
   (void)nco_enddef(out_id);
   
@@ -572,7 +573,7 @@ main(int argc,char **argv)
   (void)nco_redef(out_id);
   
   /* Free current list of all dimensions in input file */
-  dmn_lst=(nm_id_sct *)nco_free(dmn_lst);
+  dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_in);
 
   /* Make list of dimensions of variables in xtr_lst */
   if(nbr_xtr > 0) dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_ass);
@@ -592,6 +593,9 @@ main(int argc,char **argv)
       } /* endif */
     } /* end loop over jdx */
   
+  /* Free current list of all dimensions in input file */
+  dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_ass);
+
   /* Dimensions for manually specified extracted variables are now defined in output file
      Add coordinate variables to extraction list
      If EXTRACT_ALL_COORDINATES then write associated dimension to output */
@@ -679,9 +683,37 @@ main(int argc,char **argv)
   
   /* NCO-generic clean-up */
   /* Free lists of strings */
-  if(fl_lst_in != NULL) fl_lst_in=(char **)nco_free(fl_lst_in);
-  /* Free lists of structures */
-  dmn_lst=(nm_id_sct *)nco_free(dmn_lst);
+  if(fl_lst_abb != NULL) fl_lst_abb=(char **)nco_free(fl_lst_abb);
+  if(fl_nbr > 0) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr);
+  /* Free individual strings */
+  if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
+  if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
+  if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+  /* Free limits */
+  for(idx=0;idx<lmt_nbr;idx++){
+    lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+  } /* end loop over idx */
+  if(lmt_nbr > 0) lmt=(lmt_sct *)nco_free(lmt);
+#if 0
+  for(idx=0;idx<nbr_dmn_xtr;idx++){
+    dim[idx]=nco_dmn_free(dim[idx]);
+    dmn_out[idx]=nco_dmn_free(dmn_out[idx]);
+  } /* end loop over idx */
+  dim=(dmn_sct **)nco_free(dim);
+  dmn_out=(dmn_sct **)nco_free(dmn_out);
+  /* Variables have their own free() routine */
+  for(idx=0;idx<nbr_xtr;idx++){
+    if(dbg_lvl >= 5) (void)fprintf(stderr,"%s: main() free()'ing variable %s\n",prg_nm,var[idx]->nm);
+    var[idx]=nco_var_free(var[idx]);
+    var_out[idx]=nco_var_free(var_out[idx]);
+  } /* end loop over idx */
+  var=(var_sct **)nco_free(var);
+  var_out=(var_sct **)nco_free(var_out);
+  var_prc=(var_sct **)nco_free(var_prc);
+  var_prc_out=(var_sct **)nco_free(var_prc_out);
+  var_fix=(var_sct **)nco_free(var_fix);
+  var_fix_out=(var_sct **)nco_free(var_fix_out);
+#endif
 
   nco_exit_gracefully();
   return EXIT_SUCCESS;

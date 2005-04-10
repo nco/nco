@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.21 2005-04-10 07:04:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.22 2005-04-10 19:45:50 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -91,9 +91,19 @@ nco_cmp_ptr_unn /* Compare values of two pointer unions of same type */
  const ptr_unn op1, /* I [sct] First operand to compare */
  const ptr_unn op2); /* I [sct] Second operand to compare */
 
+dmn_sct ** /* O [sct] Pointer to free'd structure list */
+nco_dmn_lst_free /* [fnc] Free memory associated with dimension structure list */
+(dmn_sct **dmn_lst, /* I/O [sct] Dimension struture list to free */
+ const int dmn_nbr); /* I [nbr] Number of dimension strutures in list */
+
 void 
 nco_lst_comma2hash /* [fnc] Convert {...,...} to {...#...} in regular expressions */
 (char * const rx_sng); /* [sng] Regular expression */
+
+lmt_sct * /* O [sct] Pointer to free'd structure list */
+nco_lmt_lst_free /* [fnc] Free memory associated with limit structure list */
+(lmt_sct *lmt_lst, /* I/O [sct] Limit struture list to free */
+ const int lmt_nbr); /* I [nbr] Number of limit strutures in list */
 
 nm_id_sct * /* O [sct] Sorted output list */
 nco_lst_srt_nm_id /* [fnc] Sort name/ID input list numerically or alphabetically */
@@ -110,6 +120,11 @@ char ** /* O [sng] Pointer to free'd string list */
 nco_sng_lst_free /* [fnc] Free memory associated with string list */
 (char **sng_lst, /* I/O [sng] String list to free */
  const int sng_nbr); /* I [nbr] Number of strings in list */
+
+var_sct ** /* O [sct] Pointer to free'd structure list */
+nco_var_lst_free /* [fnc] Free memory associated with variable structure list */
+(var_sct **var_lst, /* I/O [sct] Variable struture list to free */
+ const int var_nbr); /* I [nbr] Number of variable strutures in list */
 
 char * /* O [sng] Concatenated string formed by joining all input strings */
 sng_lst_cat /* [fnc] Join list of strings together into one string */

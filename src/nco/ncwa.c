@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.157 2005-04-10 07:04:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.158 2005-04-10 19:45:50 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.157 2005-04-10 07:04:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.157 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.158 2005-04-10 19:45:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.158 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -163,7 +163,7 @@ main(int argc,char **argv)
   lmt_sct *lmt;
   
   nm_id_sct *dmn_lst;
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst may bealloc()'d from NULL with -c option */
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
   nm_id_sct *dmn_avg_lst;
   
   time_t time_crr_time_t;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.114 2005-04-10 18:52:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.115 2005-04-10 19:45:49 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -588,18 +588,6 @@ nco_var_lst_copy(nm_id_sct *xtr_lst,int lst_nbr)
 } /* end nco_var_lst_copy() */
 
 nm_id_sct *
-nco_var_lst_free(nm_id_sct *xtr_lst,int lst_nbr)
-{
-  /* Purpose: free xtr_lst and return null pointer */
-  int idx;
-  
-  for(idx=0;idx<lst_nbr;idx++) nco_free(xtr_lst[idx].nm);
-  nco_free(xtr_lst);
-  
-  return NULL;
-} /* end nco_var_lst_free() */
-
-nm_id_sct *
 nco_var_lst_sub(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst_b)
 {
   /* Purpose: Subtract from xtr_lst any elements from xtr_lst_b which are present and return new list */
@@ -664,7 +652,7 @@ nco_var_lst_add(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int nbr_lst
 } /* nco_var_lst_add */
 
 nm_id_sct *
-nco_var_lst_crd_make
+nco_nm_id_lst_crd_make
 (int nc_id,
  nm_id_sct *xtr_lst,
  int *nbr_xtr)
@@ -672,7 +660,7 @@ nco_var_lst_crd_make
 	int nc_id: I netCDF file ID
 	nm_id_sct *xtr_lst: I/O current extraction list 
 	int *nbr_xtr: I/O number of variables in current extraction list: Overwritten by new list 
-	nm_id_sct nco_var_lst_crd_make: list of coordinate dimensions 
+	nm_id_sct nco_nm_id_lst_crd_make: list of coordinate dimensions 
      */
 {
   /* Purpose: Make list co-ordinate dimensions from list of ordinary and co-ordinate variables */
@@ -710,7 +698,7 @@ nco_var_lst_crd_make
   
   *nbr_xtr=nbr_new_lst;
   return new_lst;
-} /* end nco_var_lst_crd_make() */
+} /* end nco_nm_id_lst_crd_make() */
 
 nm_id_sct * /* O [sct] List of dimensions associated with input variable list */
 nco_dmn_lst /* [fnc] Create list of all dimensions in file  */

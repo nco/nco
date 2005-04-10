@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.29 2005-04-10 07:04:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.30 2005-04-10 19:45:49 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -444,6 +444,64 @@ nco_lst_srt_nm_id /* [fnc] Sort name/ID input list numerically or alphabetically
   } /* end else */
   return lst;
 } /* end nco_lst_srt_nm_id() */
+
+lmt_sct * /* O [sct] Pointer to free'd structure list */
+nco_lmt_lst_free /* [fnc] Free memory associated with limit structure list */
+(lmt_sct *lmt_lst, /* I/O [sct] Limit struture list to free */
+ const int lmt_nbr) /* I [nbr] Number of limit strutures in list */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Free all memory associated with dynamically allocated limit structure list */
+  /* fxm: limit structures may contain some double-free'd memory */
+  int idx;
+
+  for(idx=0;idx<lmt_nbr;idx++){
+    lmt_lst[idx].nm=(char *)nco_free(lmt_lst[idx].nm);
+  } /* end loop over idx */
+
+  /* Free structure pointer last */
+  lmt_lst=(lmt_sct *)nco_free(lmt_lst);
+
+  return lmt_lst;
+} /* end nco_lmt_lst_free() */
+
+dmn_sct ** /* O [sct] Pointer to free'd structure list */
+nco_dmn_lst_free /* [fnc] Free memory associated with dimension structure list */
+(dmn_sct **dmn_lst, /* I/O [sct] Dimension struture list to free */
+ const int dmn_nbr) /* I [nbr] Number of dimension strutures in list */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Free all memory associated with dynamically allocated dimension structure list */
+  int idx;
+
+  for(idx=0;idx<dmn_nbr;idx++){
+    dmn_lst[idx]=nco_dmn_free(dmn_lst[idx]);
+  } /* end loop over idx */
+
+  /* Free structure pointer last */
+  dmn_lst=(dmn_sct **)nco_free(dmn_lst);
+
+  return dmn_lst;
+} /* end nco_dmn_lst_free() */
+
+var_sct ** /* O [sct] Pointer to free'd structure list */
+nco_var_lst_free /* [fnc] Free memory associated with variable structure list */
+(var_sct **var_lst, /* I/O [sct] Variable struture list to free */
+ const int var_nbr) /* I [nbr] Number of variable strutures in list */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Free all memory associated with dynamically allocated variable structure list */
+  int idx;
+
+  for(idx=0;idx<var_nbr;idx++){
+    var_lst[idx]=nco_var_free(var_lst[idx]);
+  } /* end loop over idx */
+
+  /* Free structure pointer last */
+  var_lst=(var_sct **)nco_free(var_lst);
+
+  return var_lst;
+} /* end nco_var_lst_free() */
 
 nm_id_sct * /* O [sct] Pointer to free'd structure list */
 nco_nm_id_lst_free /* [fnc] Free memory associated with name-ID structure list */

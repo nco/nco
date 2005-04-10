@@ -1,6 +1,15 @@
 2005-04-10  Charlie Zender  <zender@uci.edu>
 
-	* ncpdq is offiically leak-free! The first leak-free operator
+	* Changed names of ncap routines that maniputlated nm_id structures
+	These routines used the *_var_* nomenclature, e.g., nco_var_lst_free(), 
+	even though they manipulated lists of nm_id_sct structures.
+	Changed *_var_* to *_nm_id_* in these functions so that routines
+	are named after structure types which they manipulate, rather than
+	what their contents are
+	
+	* Created new routines to free lists of lmt, dmn, var structures
+
+	* ncpdq is officially leak-free! The first leak-free operator
 
 	* var_nm is finally free'd, takes care of TODO nco224
 
