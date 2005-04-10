@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.466 2005-04-10 07:04:22 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.467 2005-04-10 07:07:09 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -287,7 +287,6 @@ nco488. ncatted: Deleting global attributes doesn't work unless 'global' specifi
 nco490. regression in ncwa when freeing var->nm in nco_var_free():
         ncwa -D 2 -O -a lat -w gw ~/nco/data/in.nc ~/foo.nc
 nco494. Implement gzip library wrapper library build option for znetCDF?
-nco495. Transition all other operators to lst_prs_2D()
 nco496. 
 
 ncap-specific items:
