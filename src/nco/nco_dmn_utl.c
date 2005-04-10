@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.19 2005-03-28 00:04:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.20 2005-04-10 22:53:29 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -217,6 +217,25 @@ nco_dmn_lst_ass_var /* [fnc] Create list of all dimensions associated with input
   
   return dmn;
 } /* end nco_dmn_lst_ass_var() */
+
+dmn_sct ** /* O [sct] Pointer to free'd structure list */
+nco_dmn_lst_free /* [fnc] Free memory associated with dimension structure list */
+(dmn_sct **dmn_lst, /* I/O [sct] Dimension struture list to free */
+ const int dmn_nbr) /* I [nbr] Number of dimension strutures in list */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Free all memory associated with dynamically allocated dimension structure list */
+  int idx;
+
+  for(idx=0;idx<dmn_nbr;idx++){
+    dmn_lst[idx]=nco_dmn_free(dmn_lst[idx]);
+  } /* end loop over idx */
+
+  /* Free structure pointer last */
+  dmn_lst=(dmn_sct **)nco_free(dmn_lst);
+
+  return dmn_lst;
+} /* end nco_dmn_lst_free() */
 
 nm_id_sct * /* O [sct] Dimension list */
 nco_dmn_lst_mk /* [fnc] Attach dimension IDs to dimension list */

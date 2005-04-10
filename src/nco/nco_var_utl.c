@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.71 2005-04-10 18:52:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.72 2005-04-10 22:53:29 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -698,6 +698,25 @@ nco_var_free /* [fnc] Free all memory associated with variable structure */
 
   return NULL;
 } /* end nco_var_free() */
+
+var_sct ** /* O [sct] Pointer to free'd structure list */
+nco_var_lst_free /* [fnc] Free memory associated with variable structure list */
+(var_sct **var_lst, /* I/O [sct] Variable struture list to free */
+ const int var_nbr) /* I [nbr] Number of variable strutures in list */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Free all memory associated with dynamically allocated variable structure list */
+  int idx;
+
+  for(idx=0;idx<var_nbr;idx++){
+    var_lst[idx]=nco_var_free(var_lst[idx]);
+  } /* end loop over idx */
+
+  /* Free structure pointer last */
+  var_lst=(var_sct **)nco_free(var_lst);
+
+  return var_lst;
+} /* end nco_var_lst_free() */
 
 int /* O [enm] Return code */
 var_dfl_set /* [fnc] Set defaults for each member of variable structure */
