@@ -1,5 +1,9 @@
 2005-04-10  Charlie Zender  <zender@uci.edu>
 
+	* Implement preliminary memory free routines in ncap
+
+	* Move list free functions to respective utility routine files
+
 	* Changed names of ncap routines that maniputlated nm_id structures
 	These routines used the *_var_* nomenclature, e.g., nco_var_lst_free(), 
 	even though they manipulated lists of nm_id_sct structures.

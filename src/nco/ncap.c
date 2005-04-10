@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.154 2005-04-10 19:45:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.155 2005-04-10 23:24:45 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.154 2005-04-10 19:45:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.154 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.155 2005-04-10 23:24:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.155 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -681,6 +681,9 @@ main(int argc,char **argv)
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
+  /* ncap-unique memory */
+  /* fxm: put ncap-specific memory freeing statement heres */
+
   /* NCO-generic clean-up */
   /* Free lists of strings */
   if(fl_lst_abb != NULL) fl_lst_abb=(char **)nco_free(fl_lst_abb);
@@ -690,30 +693,18 @@ main(int argc,char **argv)
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
   if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
   /* Free limits */
-  for(idx=0;idx<lmt_nbr;idx++){
-    lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-  } /* end loop over idx */
+  for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
   if(lmt_nbr > 0) lmt=(lmt_sct *)nco_free(lmt);
-#if 0
-  for(idx=0;idx<nbr_dmn_xtr;idx++){
-    dim[idx]=nco_dmn_free(dim[idx]);
-    dmn_out[idx]=nco_dmn_free(dmn_out[idx]);
-  } /* end loop over idx */
-  dim=(dmn_sct **)nco_free(dim);
-  dmn_out=(dmn_sct **)nco_free(dmn_out);
-  /* Variables have their own free() routine */
-  for(idx=0;idx<nbr_xtr;idx++){
-    if(dbg_lvl >= 5) (void)fprintf(stderr,"%s: main() free()'ing variable %s\n",prg_nm,var[idx]->nm);
-    var[idx]=nco_var_free(var[idx]);
-    var_out[idx]=nco_var_free(var_out[idx]);
-  } /* end loop over idx */
-  var=(var_sct **)nco_free(var);
-  var_out=(var_sct **)nco_free(var_out);
+  /* Free dimension lists */
+  if(nbr_dmn_in > 0) dmn_in=nco_dmn_lst_free(dmn_in,nbr_dmn_in);
+  if(nbr_dmn_out > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_out);
+  /* Free variable lists */
+  if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
+  if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);
   var_prc=(var_sct **)nco_free(var_prc);
   var_prc_out=(var_sct **)nco_free(var_prc_out);
   var_fix=(var_sct **)nco_free(var_fix);
   var_fix_out=(var_sct **)nco_free(var_fix_out);
-#endif
 
   nco_exit_gracefully();
   return EXIT_SUCCESS;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.69 2005-04-10 07:04:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.70 2005-04-10 23:24:45 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.69 2005-04-10 07:04:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.69 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.70 2005-04-10 23:24:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.70 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -825,24 +825,14 @@ main(int argc,char **argv)
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
   if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
   /* Free limits */
-  for(idx=0;idx<lmt_nbr;idx++){
-    lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-  } /* end loop over idx */
+  for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
   if(lmt_nbr > 0) lmt=(lmt_sct *)nco_free(lmt);
-  for(idx=0;idx<nbr_dmn_xtr;idx++){
-    dim[idx]=nco_dmn_free(dim[idx]);
-    dmn_out[idx]=nco_dmn_free(dmn_out[idx]);
-  } /* end loop over idx */
-  dim=(dmn_sct **)nco_free(dim);
-  dmn_out=(dmn_sct **)nco_free(dmn_out);
-  /* Variables have their own free() routine */
-  for(idx=0;idx<nbr_xtr;idx++){
-    if(dbg_lvl >= 5) (void)fprintf(stderr,"%s: main() free()'ing variable %s\n",prg_nm,var[idx]->nm);
-    var[idx]=nco_var_free(var[idx]);
-    var_out[idx]=nco_var_free(var_out[idx]);
-  } /* end loop over idx */
-  var=(var_sct **)nco_free(var);
-  var_out=(var_sct **)nco_free(var_out);
+  /* Free dimension lists */
+  if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
+  if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr);
+  /* Free variable lists */
+  if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
+  if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);
   var_prc=(var_sct **)nco_free(var_prc);
   var_prc_out=(var_sct **)nco_free(var_prc_out);
   var_fix=(var_sct **)nco_free(var_fix);
