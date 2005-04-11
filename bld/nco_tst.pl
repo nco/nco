@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_tst.pl # Tests all operators
