@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.470 2005-04-10 23:24:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.471 2005-04-11 03:32:53 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -287,9 +287,13 @@ nco494. Implement gzip library wrapper library build option for znetCDF?
 nco496. ncwa: See if recent bugfix fixes nco354
 nco497. create consistent structure list-freeing routines
 nco498. implement consistent structure list-freeing routines
-nco499. ncwa: perfect memory usage like ncpdq
-valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt ncwa -O -C -a lat,lon,time -w gw -v PS ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
-
+nco499. ncwa: perfect memory usage like ncpdq: No hyperslabs
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt ncwa -O -C -a lat,lon,time -w gw -v PS ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
+nco500. ncwa: perfect memory usage like ncpdq: Hyperslabs
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt ncwa -O-C -a lat,lon,time -d lon,1 -d lat,1 -w gw ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
+nco501. ncra: perfect memory usage like ncpdq: 
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt ncra -O-C ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
+nco502. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

@@ -1,6 +1,15 @@
 2005-04-10  Charlie Zender  <zender@uci.edu>
 
-	* Implement preliminary memory free routines in ncap
+	* Implement preliminary memory free routines in ncra
+	Fairly straightforward---best place to start now that ncpdq is done
+
+	* Implement preliminary memory free routines in ncwa
+	Clear that limit structures will need some deep work
+	Genuine memory errors do occur and give hope that ultimately
+	ridding all ncwa problems may be possible by fixing leaks
+	
+	* Implement preliminary memory free routines in ncap and
+	immediately give up due to size and scope of job
 
 	* Move list free functions to respective utility routine files
 
