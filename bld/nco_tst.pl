@@ -114,6 +114,12 @@ $expected="meter second-1";
 ####################
 $operator="ncbo";
 ####################
+$test[0]='ncbo -O --op_typ="-" -v mss_val_scl in.nc in.nc foo.nc';
+$test[1]='ncks -C -H -s "%g" -v mss_val_scl foo.nc';
+$description=" difference scalar missing value";
+$expected= 1.0e36 ; 
+&go();
+
 $test[0]='ncbo -O --op_typ="-" -d lon,1 -v mss_val in.nc in.nc foo.nc';
 $test[1]='ncks -C -H -s "%g" -v mss_val foo.nc';
 $description=" difference with missing value attribute";
@@ -248,74 +254,79 @@ $expected= "100.000000,500.000000,1000.000000" ;
 
 $test[0]='ncks -O -v three_dmn_var in.nc foo.nc';
 $test[1]='ncks -C -H -s "%f" -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,3,3 foo.nc';
-$description="ncks 3: extract a variable with limits";
+$description=" extract a variable with limits";
 $expected= 23;
 &go();
 
 $test[0]='ncks -O -v int_var in.nc foo.nc';
 $test[1]='ncks -C -H -s "%d" -v int_var foo.nc';
-$description="ncks 4: extract variable of type NC_INT";
+$description=" extract variable of type NC_INT";
 $expected= "10" ;
 &go();
 
 $test[0]='ncks -O -C -v three_dmn_var -d lat,1,1 -d lev,0,0 -d lev,2,2 -d lon,0,,2 -d lon,1,,2 in.nc foo.nc';
 $test[1]='ncks -C -H -s "%4.1f," -v three_dmn_var foo.nc';
-$description="ncks 5: Multi-slab lat and lon with srd";
+$description=" Multi-slab lat and lon with srd";
 $expected= "12.0,13.0,14.0,15.0,20.0,21.0,22.0,23.0";
 &go();
 
 $test[0]='ncks -O -C -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,0,3 -d lon,1,3 in.nc foo.nc';
 $test[1]='ncks -C -H -s "%4.1f," -v three_dmn_var foo.nc';
-$description="ncks 6: Multi-slab with redundant hyperslabs";
+$description=" Multi-slab with redundant hyperslabs";
 $expected= "20.0,21.0,22.0,23.0";
 &go();
 
 $test[0]='ncks -O -C -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,0.,,2 -d lon,90.,,2 in.nc foo.nc';
 $test[1]='ncks -C -H -s "%4.1f," -v three_dmn_var foo.nc';
-$description="ncks 7: Multi-slab with coordinates";
+$description=" Multi-slab with coordinates";
 $expected= "20.0,21.0,22.0,23.0";
 &go();
 
 $test[0]='ncks -O -C -v three_dmn_var -d lat,1,1 -d lev,800.,200. -d lon,270.,0. in.nc foo.nc';
 $test[1]='ncks -C -H -s "%4.1f," -v three_dmn_var foo.nc';
-$description="ncks 8: Double-wrapped hyperslab";
+$description=" Double-wrapped hyperslab";
 $expected= "23.0,20.0,15.0,12.0";
 &go();
 
 $test[0]='ncks -O -C -v three_double_dmn -d lon,2,2 -d time,8,8  in.nc foo.nc';
 $test[1]='ncks -C -H -s "%f," -v three_double_dmn foo.nc';
-$description="ncks 9: Hyperslab of a variable that has two identical dims";
+$description=" Hyperslab of a variable that has two identical dims";
 $expected= 59.5;
 &go();
 
 $test[0]='ncks -O -C -d time_udunits,"1999-12-08 12:00:0.0","1999-12-09 00:00:0.0" in.nc foo.nc';
 $test[1]='ncks -C -H -s "%6.0f" -d time_udunits,"1999-12-08 18:00:0.0","1999-12-09 12:00:0.0",2 -v time_udunits in.nc';
-$description="ncks 10: dimension slice using UDUnits library (fails without UDUnits library support)";
+$description=" dimension slice using UDUnits library (fails without UDUnits library support)";
 $expected= 876018;
 &go();
 
 $test[0]='ncks -O -C -d wvl,"0.1 micron","1 micron" in.nc foo.nc';
 $test[1]='ncks -C -H -d wvl,"0.6 micron","1 micron" -s "%3.1e" -v wvl in.nc';
-$description="ncks 11: dimension slice using UDUnit conversion (fails without UDUnits library support)";
+$description=" dimension slice using UDUnit conversion (fails without UDUnits library support)";
 $expected= 1.0e-06;
 &go();
 
 $test[0]='ncks -O -C -v "^three_*" in.nc foo.nc';
 $test[1]='ncks -C -H -s "%f" -C -v three foo.nc';
-$description="ncks 12: variable wildcards (fails without regex library)";
+$description=" variable wildcards (fails without regex library)";
 $expected= 3 ;
 &go();
 
 $test[0]='ncks -O -C -v "^[a-z]{3}_[a-z]{3}_[a-z]{3,}$" in.nc foo.nc';
 $test[1]='ncks -C -H -s "%d" -C -v val_one_int foo.nc';
-$description="ncks 13: variable wildcards (fails without regex library)";
+$description=" variable wildcards (fails without regex library)";
 $expected= 1;
 &go();
 
 $test[0]='ncks -O -C -d time,0,1 -v time in.nc foo.nc';
 $test[1]='ncks -C -H -s "%g" -C -d time,2, foo.nc';
-$description="ncks 14: Offset past end of file";
+$description=" Offset past end of file";
 $expected='ncks: ERROR User-specified dimension index range 2 <= time <=  does not fall within valid dimension index range 0 <= time <= 1';
+&go();
+
+$test[0]='ncks -C -H -s "%d" -v byte_var in.nc';
+$description=" Print byte value";
+$expected= 122 ;
 &go();
 
 ####################
