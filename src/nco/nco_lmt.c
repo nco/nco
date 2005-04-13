@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.34 2005-04-10 07:04:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.35 2005-04-13 06:13:23 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -7,6 +7,46 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_lmt.h" /* Hyperslab limits */
+
+lmt_sct * /* O [sct] Pointer to free'd structure */
+nco_lmt_free /* [fnc] Free memory associated with limit structure */
+(lmt_sct *lmt) /* I/O [sct] Limit structure to free */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Free all memory associated with dynamically allocated limit structure */
+  /* fxm: limit structures may contain some double-free'd memory */
+  lmt->nm=(char *)nco_free(lmt->nm);
+  lmt->min_sng=(char *)nco_free(lmt->min_sng);
+  lmt->max_sng=(char *)nco_free(lmt->max_sng);
+  lmt->srd_sng=(char *)nco_free(lmt->srd_sng);
+
+  lmt=(lmt_sct *)nco_free(lmt);
+
+  return lmt;
+} /* end nco_lmt_free() */
+
+lmt_sct * /* O [sct] Pointer to free'd structure list */
+nco_lmt_lst_free /* [fnc] Free memory associated with limit structure list */
+(lmt_sct *lmt_lst, /* I/O [sct] Limit structure list to free */
+ const int lmt_nbr) /* I [nbr] Number of limit structures in list */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Free all memory associated with dynamically allocated limit structure list */
+  int idx;
+
+  for(idx=0;idx<lmt_nbr;idx++){
+    lmt_lst[idx].nm=(char *)nco_free(lmt_lst[idx].nm);
+    lmt_lst[idx].min_sng=(char *)nco_free(lmt_lst[idx].min_sng);
+    lmt_lst[idx].max_sng=(char *)nco_free(lmt_lst[idx].max_sng);
+    lmt_lst[idx].srd_sng=(char *)nco_free(lmt_lst[idx].srd_sng);
+    /*    lmt_lst[idx]=nco_lmt_free(lmt_lst[idx]);*/
+  } /* end loop over idx */
+
+  /* Free structure pointer last */
+  lmt_lst=(lmt_sct *)nco_free(lmt_lst);
+
+  return lmt_lst;
+} /* end nco_lmt_lst_free() */
 
 lmt_sct /* [sct] Limit structure for dimension */
 nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */

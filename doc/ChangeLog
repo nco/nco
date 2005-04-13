@@ -1,3 +1,15 @@
+2005-04-12  Charlie Zender  <zender@uci.edu>
+
+	* Free() dmn_lst in all applicable operators
+
+	* Free() xtr_lst in all applicable operators
+
+	* Free() cmd_ln in all operators
+
+	* NULL'ify var_prc_out[idx]->tally when free'ing
+	var_prc[idx]->tally in ncra. This fixes double free() condition
+	caused because these both point to same buffer.
+
 2005-04-10  Charlie Zender  <zender@uci.edu>
 
 	* Implement preliminary memory free routines in ncra

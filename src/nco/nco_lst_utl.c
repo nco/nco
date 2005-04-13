@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.31 2005-04-10 22:53:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.32 2005-04-13 06:13:23 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -445,30 +445,10 @@ nco_lst_srt_nm_id /* [fnc] Sort name/ID input list numerically or alphabetically
   return lst;
 } /* end nco_lst_srt_nm_id() */
 
-lmt_sct * /* O [sct] Pointer to free'd structure list */
-nco_lmt_lst_free /* [fnc] Free memory associated with limit structure list */
-(lmt_sct *lmt_lst, /* I/O [sct] Limit struture list to free */
- const int lmt_nbr) /* I [nbr] Number of limit strutures in list */
-{
-  /* Threads: Routine is thread safe and calls no unsafe routines */
-  /* Purpose: Free all memory associated with dynamically allocated limit structure list */
-  /* fxm: limit structures may contain some double-free'd memory */
-  int idx;
-
-  for(idx=0;idx<lmt_nbr;idx++){
-    lmt_lst[idx].nm=(char *)nco_free(lmt_lst[idx].nm);
-  } /* end loop over idx */
-
-  /* Free structure pointer last */
-  lmt_lst=(lmt_sct *)nco_free(lmt_lst);
-
-  return lmt_lst;
-} /* end nco_lmt_lst_free() */
-
 nm_id_sct * /* O [sct] Pointer to free'd structure list */
 nco_nm_id_lst_free /* [fnc] Free memory associated with name-ID structure list */
-(nm_id_sct *nm_id_lst, /* I/O [sct] Name-ID struture list to free */
- const int nm_id_nbr) /* I [nbr] Number of name-ID strutures in list */
+(nm_id_sct *nm_id_lst, /* I/O [sct] Name-ID structure list to free */
+ const int nm_id_nbr) /* I [nbr] Number of name-ID structures in list */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Free all memory associated with dynamically allocated name-ID structure list */

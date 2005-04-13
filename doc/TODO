@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.471 2005-04-11 03:32:53 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.472 2005-04-13 06:13:18 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -292,8 +292,10 @@ nco499. ncwa: perfect memory usage like ncpdq: No hyperslabs
 nco500. ncwa: perfect memory usage like ncpdq: Hyperslabs
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt ncwa -O-C -a lat,lon,time -d lon,1 -d lat,1 -w gw ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
 nco501. ncra: perfect memory usage like ncpdq: 
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt ncra -O-C ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
-nco502. 
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt ncra -O -C ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
+nco502. Pass limits by reference rather than value to simplify memory management
+nco503. Finish limit free()ing: lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+nco504. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

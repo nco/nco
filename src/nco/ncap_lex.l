@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.38 2005-04-10 19:45:49 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.39 2005-04-13 06:13:22 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -118,7 +118,7 @@
   /* Is lexer on left or right hand side of equals sign?
      LHS should contain only a variable or attribute
      In this case return variable/attribute name to parser
-     If on RHS then return attribute value or variable struture
+     If on RHS then return attribute value or variable structure
      Initialize to false, change to true if token is '=', false is token is ';' */
   static bool RHS=False; /* [flg] Is lexer on RHS of '=' sign? */
 

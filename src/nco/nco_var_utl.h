@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.29 2005-04-10 22:53:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.30 2005-04-13 06:13:24 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -134,8 +134,8 @@ extern "C" {
   
   var_sct ** /* O [sct] Pointer to free'd structure list */
   nco_var_lst_free /* [fnc] Free memory associated with variable structure list */
-  (var_sct **var_lst, /* I/O [sct] Variable struture list to free */
-   const int var_nbr); /* I [nbr] Number of variable strutures in list */
+  (var_sct **var_lst, /* I/O [sct] Variable structure list to free */
+   const int var_nbr); /* I [nbr] Number of variable structures in list */
 
   void
   nco_var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */

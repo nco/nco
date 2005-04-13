@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.123 2005-04-10 07:04:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.124 2005-04-13 06:13:23 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.123 2005-04-10 07:04:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.123 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.124 2005-04-13 06:13:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.124 $";
   const char * const opt_sht_lst="aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   char *opt_crr; /* [sng] String representation of current long-option name */
@@ -473,6 +473,7 @@ main(int argc,char **argv)
     
     /* Catenate timestamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+  cmd_ln=(char *)nco_free(cmd_ln);
     
     for(idx=0;idx<nbr_xtr;idx++){
       int var_out_id;
@@ -540,6 +541,8 @@ main(int argc,char **argv)
   if(PRN_VAR_DATA){
     for(idx=0;idx<nbr_xtr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL);
   } /* end if PRN_VAR_DATA */
+  /* Extraction list no longer needed */
+  xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
   
   /* Close input netCDF file */
   nco_close(in_id);
