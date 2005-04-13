@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.473 2005-04-13 22:21:32 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.474 2005-04-13 22:22:24 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -296,6 +296,9 @@ nco501. ncra: perfect memory usage like ncpdq:
 nco502. Pass limits by reference rather than value to simplify memory management
 nco503. Finish limit free()ing: lmt=nco_lmt_lst_free(lmt,lmt_nbr);
 nco504. 
+nco505. ncra: perfect memory usage like ncpdq:
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt ncbo -O -C ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ncra ${HOME}/nco/data/foo.nc > ~/foo 2>&1
+nco506. Fix ncks printing byte variables on AIX
 nco508. Fix ncwa double-free's seen on soot
 
 ncap-specific items:
