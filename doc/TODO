@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.472 2005-04-13 06:13:18 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.473 2005-04-13 22:21:32 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -296,6 +296,7 @@ nco501. ncra: perfect memory usage like ncpdq:
 nco502. Pass limits by reference rather than value to simplify memory management
 nco503. Finish limit free()ing: lmt=nco_lmt_lst_free(lmt,lmt_nbr);
 nco504. 
+nco508. Fix ncwa double-free's seen on soot
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
