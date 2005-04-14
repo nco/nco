@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.270 2005-04-14 01:05:09 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.271 2005-04-14 01:28:41 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -417,12 +417,14 @@ CC := xlc_r -qlanglvl=extc99
 #CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
 CXX := xlC_r
 # CXX := g++
+# fxm: 20040311 should this be cpp? gcc -M?
+# fxm: poe stuff only needed by gayathri
+CPP := xlc -c -qlanglvl=extc99 -I/usr/lpp/ppe.poe/include
 else
 CC := mpcc_r -qlanglvl=extc99
 CXX := mpCC_r -qlanglvl=extc99
+CPP := mpcc_r -c -qlanglvl=extc99
 endif
-# fxm: 20040311 should this be cpp? gcc -M?
-CPP := xlc -c -qlanglvl=extc99
 ifneq (${null},$(findstring xl,${CC}))
 # /usr/include headers must occur before Visual Age headers to prevent xlC pragma warnings
 # Visual Age compiler headers must occur before g++ headers
