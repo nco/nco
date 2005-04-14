@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.39 2005-04-13 22:21:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.40 2005-04-14 00:58:23 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.39 2005-04-13 22:21:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.39 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.40 2005-04-14 00:58:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.40 $";
   const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim;
@@ -573,7 +573,6 @@ main(int argc,char **argv)
   /* Free lists of strings */
   if(fl_lst_abb != NULL) fl_lst_abb=(char **)nco_free(fl_lst_abb);
   if(fl_nbr > 0) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr);
-#if 0
   if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
   /* Free limits */
   for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
@@ -588,7 +587,6 @@ main(int argc,char **argv)
   var_prc_out=(var_sct **)nco_free(var_prc_out);
   var_fix=(var_sct **)nco_free(var_fix);
   var_fix_out=(var_sct **)nco_free(var_fix_out);
-#endif
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
