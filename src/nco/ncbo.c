@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.40 2005-04-14 00:58:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.41 2005-04-14 05:45:33 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.40 2005-04-14 00:58:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.40 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.41 2005-04-14 05:45:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.41 $";
   const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim;
@@ -565,6 +565,9 @@ main(int argc,char **argv)
   if(FILE_1_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_1);
   if(FILE_2_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_2);
   
+  /* ncra-unique memory */
+  if(fl_in_1 != NULL) fl_in_1=(char *)nco_free(fl_in_1);
+
   /* NCO-generic clean-up */
   /* Free individual strings */
   if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);

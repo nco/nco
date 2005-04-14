@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.271 2005-04-14 01:28:41 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.272 2005-04-14 05:45:31 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -402,6 +402,9 @@ endif # !(AIX || SGI)
 ifeq (${DODS},Y)
  CPP_TKN_OS += -DENABLE_DODS
 endif # !DODS
+ifeq (${MPI},Y)
+ CPP_TKN_OS += -DENABLE_MPI
+endif # endif MPI
 ifeq (${UDUNITS},Y)
  CPP_TKN_OS += -DENABLE_UDUNITS -DHAVE_UDUNITS_H
 endif # !UDUNITS
@@ -417,13 +420,13 @@ CC := xlc_r -qlanglvl=extc99
 #CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
 CXX := xlC_r
 # CXX := g++
-# fxm: 20040311 should this be cpp? gcc -M?
-# fxm: poe stuff only needed by gayathri
 CPP := xlc -c -qlanglvl=extc99 -I/usr/lpp/ppe.poe/include
+FC := xlf95_r
 else
 CC := mpcc_r -qlanglvl=extc99
 CXX := mpCC_r -qlanglvl=extc99
 CPP := mpcc_r -c -qlanglvl=extc99
+FC := mpxlf95_r
 endif
 ifneq (${null},$(findstring xl,${CC}))
 # /usr/include headers must occur before Visual Age headers to prevent xlC pragma warnings
@@ -432,7 +435,6 @@ ifneq (${null},$(findstring xl,${CC}))
 endif # xlC compilers
 # Add /usr/local/include for libintl.h explicitly until netCDF is moved there
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I/usr/local/include -DNEED_LOGF
-FC := xlf95_r
 LD := ld
 # 20020422: -lC links to AIX C++ library which contains float intrinsics cosf()...
 # -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
