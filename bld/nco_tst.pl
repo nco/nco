@@ -643,7 +643,7 @@ $expected= 17000 ;
 
 $test[0]='ncwa -O -y ttl -v val_max_max_sht in.nc foo.nc 2> foo.tst';
 $test[1]='ncks -C -H -s "%d" -v val_max_max_sht foo.nc';
-$description=" ttl would overflow without dbl_prc patch, wraps anyway so exact value not important (failure on AIX, SUNMP expected/OK because of different wrap behavior)";
+$description=" ttl would overflow without dbl_prc patch, wraps anyway so exact value not important (failure on AIX, LINUX, SUNMP expected/OK because of different wrap behavior)";
 $expected= -32768 ; 
 &go();
 $test[0]='ncwa -O -y min -a lat -v lat -w gw in.nc foo.nc';

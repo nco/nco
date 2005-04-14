@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.272 2005-04-14 05:45:31 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.273 2005-04-14 06:22:50 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -416,17 +416,17 @@ CPP_TKN_OS +=
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 # 20030804: Always use re-entrant (_r) compilers---Jim Edwards NCAR/IBM 
 ifneq (${MPI},Y)
-CC := xlc_r -qlanglvl=extc99
+ CC := xlc_r -qlanglvl=extc99
 #CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
-CXX := xlC_r
+ CXX := xlC_r
 # CXX := g++
-CPP := xlc -c -qlanglvl=extc99 -I/usr/lpp/ppe.poe/include
-FC := xlf95_r
+ CPP := xlc -c -qlanglvl=extc99 -I/usr/lpp/ppe.poe/include
+ FC := xlf95_r
 else
-CC := mpcc_r -qlanglvl=extc99
-CXX := mpCC_r -qlanglvl=extc99
-CPP := mpcc_r -c -qlanglvl=extc99
-FC := mpxlf95_r
+ CC := mpcc_r -qlanglvl=extc99
+ CXX := mpCC_r -qlanglvl=extc99
+ CPP := mpcc_r -c -qlanglvl=extc99
+ FC := mpxlf95_r
 endif
 ifneq (${null},$(findstring xl,${CC}))
 # /usr/include headers must occur before Visual Age headers to prevent xlC pragma warnings
