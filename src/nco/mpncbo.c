@@ -1,11 +1,11 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.1 2005-04-14 00:58:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.2 2005-04-14 01:40:00 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
 /* Purpose: Compute sum, difference, product, or ratio of specified hyperslabs of specfied variables
    from two input netCDF files and output them to a single file. */
 
-/* Copyright (C) 1995--2004 Charlie Zender
+/* Copyright (C) 1995--2005 Charlie Zender
    
 This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
 The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
@@ -97,6 +97,7 @@ main(int argc,char **argv)
   bool FILE_1_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FILE_2_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  bool FORCE_64BIT_OFFSET=False; /* Option Z */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_IDX_CNV=False; /* Option F */
@@ -104,8 +105,8 @@ main(int argc,char **argv)
   bool MUST_CONFORM=True; /* Must nco_var_cnf_dmn() find truly conforming variables? */
   bool DO_CONFORM; /* Did nco_var_cnf_dmn() find truly conforming variables? */
   bool NCAR_CCSM_FORMAT;
-  bool PROCESS_ALL_COORDINATES=False; /* Option c */
-  bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
+  bool EXTRACT_ALL_COORDINATES=False; /* Option c */
+  bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   
   bool TOKEN_FREE = True; /* GV - To give sequential file write access to nodes */
@@ -125,11 +126,12 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
+  char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.1 2005-04-14 00:58:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.1 $";
-  const char * const opt_sng="ACcD:d:Fhl:Oo:p:rRt:v:xy:-:";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.2 2005-04-14 01:40:00 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.2 $";
+  const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -156,6 +158,7 @@ main(int argc,char **argv)
   int nbr_var_fl;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_prc; /* nbr_var_prc gets incremented */
+  int var_lst_in_nbr=0;
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nbr_dmn_xtr;
   int fl_nbr=0;
@@ -221,6 +224,7 @@ main(int argc,char **argv)
       {"xcl",no_argument,0,'x'},
       {"operation",required_argument,0,'y'},
       {"op_typ",required_argument,0,'y'},
+      {"64-bit-offset",no_argument,0,'Z'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -245,16 +249,16 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
   
   /* Parse command line arguments */
-  while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
+  while((opt = getopt_long(argc,argv,opt_sht_lst,opt_lng,&opt_idx)) != EOF){
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
-      PROCESS_ASSOCIATED_COORDINATES=False;
+      EXTRACT_ASSOCIATED_COORDINATES=False;
       break;
     case 'c':
-      PROCESS_ALL_COORDINATES=True;
+      EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* The debugging level. Default is 0. */
       dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
@@ -270,7 +274,7 @@ main(int argc,char **argv)
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
-      fl_pth_lcl=optarg;
+      fl_pth_lcl=(char *)strdup(optarg);
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
@@ -279,7 +283,7 @@ main(int argc,char **argv)
       fl_out=(char *)strdup(optarg);
       break;
     case 'p': /* Common file path */
-      fl_pth=optarg;
+      fl_pth=(char *)strdup(optarg);
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
@@ -294,8 +298,11 @@ main(int argc,char **argv)
       break;
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */
-      (void)nco_lst_comma2hash(optarg);
-      var_lst_in=lst_prs(optarg,",",&nbr_xtr);
+      optarg_lcl=(char *)strdup(optarg);
+      (void)nco_lst_comma2hash(optarg_lcl);
+      var_lst_in=lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
+      optarg_lcl=(char *)nco_free(optarg_lcl);
+      nbr_xtr=var_lst_in_nbr;
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
@@ -303,6 +310,9 @@ main(int argc,char **argv)
     case 'y': /* User-specified operation type overrides invocation default */
       nco_op_typ_sng=(char *)strdup(optarg);
       nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
+      break;
+    case 'Z': /* [flg] Create output file with 64-bit offsets */
+      FORCE_64BIT_OFFSET=True;
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
@@ -338,16 +348,16 @@ main(int argc,char **argv)
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,(int *)NULL);
   
   /* Form initial extraction list which may include extended regular expressions */
-  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
+  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXTRACT_ALL_COORDINATES,&nbr_xtr);
   
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
   
   /* Add all coordinate variables to extraction list */
-  if(PROCESS_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_dmn_fl,xtr_lst,&nbr_xtr);
+  if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_dmn_fl,xtr_lst,&nbr_xtr);
   
   /* Make sure coordinates associated extracted variables are also on extraction list */
-  if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
+  if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
   
   /* Sort extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,nbr_xtr,False);
@@ -363,6 +373,8 @@ main(int argc,char **argv)
   /* Fill in dimension structure for all extracted dimensions */
   dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
+  /* Dimension list no longer needed */
+  dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr);
   
   /* Merge hyperslab limit information into dimension structures */
   if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
@@ -390,6 +402,8 @@ main(int argc,char **argv)
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
+  /* Extraction list no longer needed */
+  xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
   
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
@@ -410,6 +424,7 @@ main(int argc,char **argv)
   
     /* Catenate time-stamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+    cmd_ln=(char *)nco_free(cmd_ln);
   
     /* Initialize thread information 
     thr_nbr=nco_openmp_ini(thr_nbr);
@@ -483,12 +498,9 @@ main(int argc,char **argv)
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
-  
   /* Make sure file is on local system and is readable or die trying */
-
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_2_RETRIEVED_FROM_REMOTE_LOCATION);
   if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
-
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id_2);
   fl_in_2=fl_in;
   
@@ -771,5 +783,4 @@ main(int argc,char **argv)
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
   return EXIT_SUCCESS;
-
 } /* end main() */
