@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.477 2005-04-14 05:45:32 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.478 2005-04-14 06:21:05 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -288,15 +288,15 @@ nco496. ncwa: See if recent bugfix fixes nco354
 nco497. create consistent structure list-freeing routines
 nco498. implement consistent structure list-freeing routines
 nco499. ncwa: perfect memory usage like ncpdq: No hyperslabs
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt ncwa -O -C -a lat,lon,time -w gw -v PS ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -O -C -a lat,lon,time -w gw -v PS ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
 nco500. ncwa: perfect memory usage like ncpdq: Hyperslabs
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt ncwa -O-C -a lat,lon,time -d lon,1 -d lat,1 -w gw ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -O -C -a lat,lon,time -d lon,1 -d lat,1 -w gw ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
 nco501. ncra: perfect memory usage like ncpdq: 
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncra -O -C ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
 nco502. Pass limits by reference rather than value to simplify memory management
 nco503. Finish limit free()ing: lmt=nco_lmt_lst_free(lmt,lmt_nbr);
 nco504. ncbo: perfect memory usage like ncpdq: 
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt ncbo -O -C ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncbo -O -C ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
 nco505. ncbo: perfect memory usage like ncpdq:
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncbo -O -C ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
 nco506. Fix ncks printing byte variables on AIX

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.19 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.20 2005-04-14 06:21:05 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -127,11 +127,12 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
   case NC_CHAR:
     return "%c";
   case NC_BYTE:
-    /* return "%c"; */ /* Default */
+    /* return "%c"; *//* Default */
     /* Formats useful in printing byte data as decimal notation */
-    /*    return "%u";*/
-    /* NB: Uncertain wheter %hhi is ANSI standard or GNU extension */
-    return "%hhi"; /* Takes unsigned char as arg and prints 0..255 */
+    return "%i";
+    /* NB: %hhi is GNU extension, not ANSI standard */
+    /* return "%hhi"; */ /* Takes signed char as arg and prints 0..255 (unfortunately) */
+    /* return "%hhu"; */ /* Takes unsigned char as arg and prints 0..255 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
