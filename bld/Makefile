@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.269 2005-03-12 21:46:54 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.270 2005-04-14 01:05:09 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -83,6 +83,9 @@ ifndef MK_DPN
  MK_DPN = ${CPP} -M # NB: Recursive expansion required
  MK_DPN_CXX = ${CXX} -M # NB: Recursive expansion required
 endif # endif MK_DPN
+ifndef ${MPI} # MPI
+ MPI := N
+endif # endif MPI
 ifndef NCO_VRS
 # Used for RPM building
  NCO_VRS := $(shell cat ${MY_DOC_DIR}/VERSION)
@@ -161,6 +164,19 @@ ifeq (${I18N},Y)
  MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
 endif
 
+# Message Passing Interface
+ifeq (${MPI},Y)
+ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
+ifndef LINUX_CC
+ifndef MPI
+ LINUX_CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
+else
+ LINUX_CC := mpicc -std=c99 -pedantic -D_BSD_SOURCE
+endif
+endif # endif LINUX_FC
+endif # endif LINUX
+endif # endif MPI
+
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
 # Decide among the plethora of Linux compilers
 ifndef LINUX_CXX
@@ -195,7 +211,7 @@ endif # endif LINUXAMD64
 ifeq (${PVM_ARCH},LINUXALPHA)
  LINUX_FC := g77
 endif # endif LINUXALPHA
-endif # endif LINUX_FC
+endif # endif LINUX_CC
 endif # endif LINUX
 
 ifeq (${RPM},Y)
@@ -274,7 +290,11 @@ VPATH := $(subst ${space},:,${MDL_PTH})
 CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 
 # Variables having to do with binary executables created by module
+ifeq (${MPI},Y)
+MDL_BIN_TRG := mpncbo ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
+else
 MDL_BIN_TRG := ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
+endif # endif MPI
 MDL_BIN_SYM_LNK := ncdiff ncea ncrcat # Symbolic links
 MDL_BIN_STB := ${MDL_BIN_TRG} ${MDL_BIN_SYM_LNK} # All NCO files in MY_BIN_DIR
 MDL_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_BIN_STB}) # distclean removes these files
@@ -392,10 +412,15 @@ CPP_TKN_OS +=
 # Works on AIX and AIX46K
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 # 20030804: Always use re-entrant (_r) compilers---Jim Edwards NCAR/IBM 
+ifneq (${MPI},Y)
 CC := xlc_r -qlanglvl=extc99
 #CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
 CXX := xlC_r
 # CXX := g++
+else
+CC := mpcc_r -qlanglvl=extc99
+CXX := mpCC_r -qlanglvl=extc99
+endif
 # fxm: 20040311 should this be cpp? gcc -M?
 CPP := xlc -c -qlanglvl=extc99
 ifneq (${null},$(findstring xl,${CC}))
@@ -1166,6 +1191,10 @@ ${MY_BIN_DIR}/ncbo:	${MY_OBJ_DIR}/ncbo.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f ncdiff; ln -s -f ncbo ncdiff
+mpncbo:   ${MY_BIN_DIR}/mpncbo
+${MY_BIN_DIR}/mpncbo:	${MY_OBJ_DIR}/mpncbo.o lib
+	${CC} -o $@ $< ${LDFLAGS}
+	chmod 755 $@${BNR_SFX}
 ncecat:   ${MY_BIN_DIR}/ncecat
 ${MY_BIN_DIR}/ncecat:	${MY_OBJ_DIR}/ncecat.o lib
 	${CC} -o $@ $< ${LDFLAGS}
