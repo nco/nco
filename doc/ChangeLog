@@ -1,3 +1,13 @@
+2005-04-15  Charlie Zender  <zender@uci.edu>
+
+	* Gayathri noted problem with missing_value inconsistency between
+	var_prc and var_prc_out for identical input files on both packed
+	and unpacked variables. Still investigating.
+
+	* Case where var2 did and var1 did not have missing_value was
+	treated incorrectly in ncbo.c and inconsistently in
+	nco_mss_val_cnf(). Fixed.
+
 2005-04-14  Charlie Zender  <zender@uci.edu>
 
 	* Noticed that Fedora core 2 glibc automatically warns about

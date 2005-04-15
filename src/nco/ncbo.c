@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.41 2005-04-14 05:45:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.42 2005-04-15 23:28:29 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.41 2005-04-14 05:45:33 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.41 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.42 2005-04-15 23:28:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.42 $";
   const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim;
@@ -518,7 +518,7 @@ main(int argc,char **argv)
     has_mss_val=nco_mss_val_cnf(var_prc[idx],var_prc_out[idx]);
     
     /* mss_val in fl_1, if any, overrides mss_val in fl_2 */
-    if(has_mss_val) mss_val=var_prc[idx]->mss_val; else mss_val=var_prc_out[idx]->mss_val;
+    if(has_mss_val) mss_val=var_prc[idx]->mss_val;
     
     /* Perform specified binary operation */
     switch(nco_op_typ){

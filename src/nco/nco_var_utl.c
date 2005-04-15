@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.73 2005-04-13 06:13:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.74 2005-04-15 23:28:29 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -630,8 +630,8 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
      fxm nco457: Why not always convert missing_value to variable type, 
      even when variable is not packed? Answer: because doing this appears
      to break some ncra tests */
-    if(var->pck_dsk) var=nco_cnv_mss_val_typ(var,var->typ_dsk);
-    /*    var=nco_cnv_mss_val_typ(var,var->typ_dsk);*/
+  if(var->pck_dsk) var=nco_cnv_mss_val_typ(var,var->typ_dsk);
+  /*    var=nco_cnv_mss_val_typ(var,var->typ_dsk);*/
 
   /* Type of variable and missing value in memory are now same as type on disk */
   var->type=var->typ_dsk; /* [enm] Type of variable in RAM */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.19 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.20 2005-04-15 23:28:29 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -44,7 +44,8 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
 (var_sct * const var1, /* I [sct] Variable with template missing value to copy */
  var_sct * const var2) /* I/O [sct] Variable with missing value to fill in/overwrite */
 {
-  /* Purpose: Change missing_value of var2 to missing_value of var1 */
+  /* Purpose: Change missing_value of var2 to missing_value of var1 when both exist 
+     Change missing_value of var1 to missing_value of var2 when only var2 has a missing_value */
   int has_mss_val=False; /* [flg] One or both operands have missing value */
   bool MSS_VAL_EQL=False; /* [flg] Missing values of input operands are identical */
   long idx;
@@ -129,6 +130,12 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
+  /* Handle case where var2 has missing_value and var1 does not
+     In this case, copy missing_value from var2 to var1 to ensure binary arithmetic 
+     (which uses var1's missing_value) handles missing_value's correctly
+     Assume var1 and var2 already have same type */
+  if(!var1->has_mss_val && var2->has_mss_val) (void)nco_mss_val_cp(var2,var1);
+
   /* Un-typecast the pointer to values after access */
   (void)cast_nctype_void(var_typ,&var2->val);
   (void)cast_nctype_void(var_typ,&var1->mss_val);
