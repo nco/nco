@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.478 2005-04-14 06:21:05 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.479 2005-04-15 00:51:11 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -299,12 +299,9 @@ nco504. ncbo: perfect memory usage like ncpdq:
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncbo -O -C ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
 nco505. ncbo: perfect memory usage like ncpdq:
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncbo -O -C ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
-nco506. Fix ncks printing byte variables on AIX
-        ncks -P -v byte_var ~/nco/data/in.nc
-        AIX result: byte_var = hi
-        LINUX result: byte_var = 122
 nco508. Fix ncwa double-free's seen on soot
-nco509. 
+nco509. Copy new regression tests from nco_tst.pl to nco_bm.pl
+nco510. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

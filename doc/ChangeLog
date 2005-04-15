@@ -1,3 +1,20 @@
+2005-04-14  Charlie Zender  <zender@uci.edu>
+
+	* Noticed that Fedora core 2 glibc automatically warns about
+	double free()s etc and that regression test doesn't look so
+	hot when all these are printed. More reasons to fix the remaining
+	memory problems...
+
+	* Fixed AIX regression for printing bytes by moving from
+	non-standard %hhi format (which printed all bytes as "hi" on AIX) 
+	to standard %c format, which is lame and does not print signed
+	integer values for bytes. Now it should not trigger regressions.
+
+	* Added mpncbo.c as MPI-enable ncbo alternative
+	Builds only with bld/Makefile using make MPI=Y switch
+	and requires MPI packages (e.g., mpich) and access to mpi.h
+	Has not been verified not to break autotools builds yet
+	
 2005-04-13  Charlie Zender  <zender@uci.edu>
 
 	* Fixed all memory leaks in simplest ncbo calls
