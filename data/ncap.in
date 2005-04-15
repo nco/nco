@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.33 2004-06-05 00:32:39 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.34 2005-04-15 13:03:51 hmb Exp $ -*-C-*-
 
 // Purpose: ncap netCDF Arithmetic Processor Demonstration/Test Script
 
@@ -152,6 +152,13 @@ twenty@four="Hello"+"\t World\n";
 twenty@five=fl_nm;
 twenty@six=mss_val;
 twenty@seven=one;
+//Put an attribute/number  into a variable
+thirty=1.e19f;
+thirtyone=one@one;
+// With a string ONLY the first char is put into varible
+thirtytwo="Hello world";
+// use varibles defined in output
+thirtythree=twentyfive*4.001;
 // Use UNARY -/+ and brackets
 three=(-two_dmn_var+5)^3;
 testa=pow(sin(four_dmn_rec_var),2)+cos(four_dmn_rec_var)^2;
