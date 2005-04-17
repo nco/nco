@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.481 2005-04-17 06:09:56 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.482 2005-04-17 06:24:05 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -287,17 +287,19 @@ nco494. Implement gzip library wrapper library build option for znetCDF?
 nco496. ncwa: See if recent bugfix fixes nco354
 nco497. create consistent structure list-freeing routines
 nco498. implement consistent structure list-freeing routines
-nco499. ncwa: perfect memory usage like ncpdq: No hyperslabs
+nco499. ncwa: perfect memory usage: No hyperslabs
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -D 3 -O -C -a lat,lon,time -w gw -v PS ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
-nco500. ncwa: perfect memory usage like ncpdq: Hyperslabs
+nco500. ncwa: perfect memory usage: Hyperslabs
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -O -C -a lat,lon,time -d lon,1 -d lat,1 -w gw ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
-nco501. ncra: perfect memory usage like ncpdq: -D 3 
+nco501. ncra: perfect memory usage
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncra -O -C -D 3 -d lon,1 -v one_dmn_rec_var_sng ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
-nco505. ncbo: perfect memory usage like ncpdq:
+nco505. ncbo: perfect memory usage
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncbo -O -C -d lon,1 ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
 nco508. Fix ncwa double-free's seen on soot
 nco511. Copy new regression tests from nco_tst.pl to nco_bm.pl
-nco512. 
+nco512. ncflint: perfect memory usage
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncflint -O -C -d lon,1 ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
+nco513. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

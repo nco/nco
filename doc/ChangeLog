@@ -1,5 +1,7 @@
 2005-04-16  Charlie Zender  <zender@uci.edu>
 
+	* Initial memory work on ncflint
+
 	* Currently, memory in ncpdq and ncbo appears faultless
 	memory in ncra has one problem when up-converting char to double
 	for averaging

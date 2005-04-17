@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.93 2005-04-17 06:09:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.94 2005-04-17 06:24:06 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -103,8 +103,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.93 2005-04-17 06:09:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.93 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.94 2005-04-17 06:24:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.94 $";
   const char * const opt_sht_lst="ACcD:d:Fhi:l:Oo:p:rRv:xw:Z-:";
   
   dmn_sct **dim;
@@ -567,6 +567,35 @@ main(int argc,char **argv)
   if(FILE_1_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_1);
   if(FILE_2_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_2);
   
+  /* ncflint-unique memory */
+  if(fl_in_1 != NULL) fl_in_1=(char *)nco_free(fl_in_1);
+  if(fl_in_2 != NULL) fl_in_1=(char *)nco_free(fl_in_2);
+  var_prc_1=(var_sct **)nco_free(var_prc_1);
+  var_prc_2=(var_sct **)nco_free(var_prc_2);
+
+  /* NCO-generic clean-up */
+  /* Free individual strings */
+  if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
+  if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+  /* Free lists of strings */
+  if(fl_lst_abb != NULL) fl_lst_abb=(char **)nco_free(fl_lst_abb);
+  if(fl_nbr > 0) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr);
+  if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
+  /* Free limits */
+  for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+  /* Free dimension lists */
+  if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
+  if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr);
+  /* Free variable lists */
+#if 0
+  if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
+  if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);
+  var_prc_out=(var_sct **)nco_free(var_prc_out);
+  var_fix=(var_sct **)nco_free(var_fix);
+  var_fix_out=(var_sct **)nco_free(var_fix_out);
+#endif
+
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
   return EXIT_SUCCESS;
