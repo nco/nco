@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.35 2005-04-13 06:13:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.36 2005-04-17 06:09:59 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -25,34 +25,28 @@ nco_lmt_free /* [fnc] Free memory associated with limit structure */
   return lmt;
 } /* end nco_lmt_free() */
 
-lmt_sct * /* O [sct] Pointer to free'd structure list */
+lmt_sct ** /* O [sct] Pointer to free'd structure list */
 nco_lmt_lst_free /* [fnc] Free memory associated with limit structure list */
-(lmt_sct *lmt_lst, /* I/O [sct] Limit structure list to free */
+(lmt_sct **lmt_lst, /* I/O [sct] Limit structure list to free */
  const int lmt_nbr) /* I [nbr] Number of limit structures in list */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Free all memory associated with dynamically allocated limit structure list */
   int idx;
 
-  for(idx=0;idx<lmt_nbr;idx++){
-    lmt_lst[idx].nm=(char *)nco_free(lmt_lst[idx].nm);
-    lmt_lst[idx].min_sng=(char *)nco_free(lmt_lst[idx].min_sng);
-    lmt_lst[idx].max_sng=(char *)nco_free(lmt_lst[idx].max_sng);
-    lmt_lst[idx].srd_sng=(char *)nco_free(lmt_lst[idx].srd_sng);
-    /*    lmt_lst[idx]=nco_lmt_free(lmt_lst[idx]);*/
-  } /* end loop over idx */
+  for(idx=0;idx<lmt_nbr;idx++) lmt_lst[idx]=nco_lmt_free(lmt_lst[idx]);
 
   /* Free structure pointer last */
-  lmt_lst=(lmt_sct *)nco_free(lmt_lst);
+  lmt_lst=(lmt_sct **)nco_free(lmt_lst);
 
   return lmt_lst;
 } /* end nco_lmt_lst_free() */
 
-lmt_sct /* [sct] Limit structure for dimension */
+lmt_sct * /* [sct] Limit structure for dimension */
 nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */
 (const int nc_id, /* I [idx] netCDF file ID */
  const int dmn_id, /* I [idx] ID of dimension for this limit structure */
- const lmt_sct * const lmt, /* I [sct] Array of limit structures from nco_lmt_evl() */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_sct,lmt), /* I [sct] Array of limit structures from nco_lmt_evl() */ 
  int lmt_nbr, /* I [nbr] Number of limit structures */
  const bool FORTRAN_IDX_CNV) /* I [flg] Hyperslab indices obey Fortran convention */
 {
@@ -62,33 +56,35 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
   int idx;
   int rcd; /* [rcd] Return code */
   
-  lmt_sct lmt_dim;
+  lmt_sct *lmt_dim;
   
+  lmt_dim=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+
   /* Initialize defaults to False, override later if warranted */
-  lmt_dim.is_usr_spc_lmt=False; /* True if any part of limit is user-specified, else False */
-  lmt_dim.is_usr_spc_max=False; /* True if user-specified, else False */
-  lmt_dim.is_usr_spc_min=False; /* True if user-specified, else False */
+  lmt_dim->is_usr_spc_lmt=False; /* True if any part of limit is user-specified, else False */
+  lmt_dim->is_usr_spc_max=False; /* True if user-specified, else False */
+  lmt_dim->is_usr_spc_min=False; /* True if user-specified, else False */
   /* rec_skp_nsh_spf is used for record dimension in multi-file operators */
-  lmt_dim.rec_skp_nsh_spf=0L; /* Number of records skipped in initial superfluous files */
+  lmt_dim->rec_skp_nsh_spf=0L; /* Number of records skipped in initial superfluous files */
   
   for(idx=0;idx<lmt_nbr;idx++){
     /* Copy user-specified limits, if any */
-    if(lmt[idx].id == dmn_id){
-      lmt_dim.is_usr_spc_lmt=True; /* True if any part of limit is user-specified, else False */
-      if(lmt[idx].max_sng == NULL){
-	lmt_dim.max_sng=NULL;
+    if(lmt[idx]->id == dmn_id){
+      lmt_dim->is_usr_spc_lmt=True; /* True if any part of limit is user-specified, else False */
+      if(lmt[idx]->max_sng == NULL){
+	lmt_dim->max_sng=NULL;
       }else{
-	lmt_dim.max_sng=(char *)strdup(lmt[idx].max_sng);
-	lmt_dim.is_usr_spc_max=True; /* True if user-specified, else False */
+	lmt_dim->max_sng=(char *)strdup(lmt[idx]->max_sng);
+	lmt_dim->is_usr_spc_max=True; /* True if user-specified, else False */
       } /* end if */
-      if(lmt[idx].min_sng == NULL){
-	lmt_dim.min_sng=NULL;
+      if(lmt[idx]->min_sng == NULL){
+	lmt_dim->min_sng=NULL;
       }else{
-	lmt_dim.min_sng=(char *)strdup(lmt[idx].min_sng);
-	lmt_dim.is_usr_spc_min=True; /* True if user-specified, else False */
+	lmt_dim->min_sng=(char *)strdup(lmt[idx]->min_sng);
+	lmt_dim->is_usr_spc_min=True; /* True if user-specified, else False */
       } /* end if */
-      if(lmt[idx].srd_sng != NULL) lmt_dim.srd_sng=(char *)strdup(lmt[idx].srd_sng); else lmt_dim.srd_sng=NULL;
-      lmt_dim.nm=(char *)strdup(lmt[idx].nm);
+      if(lmt[idx]->srd_sng != NULL) lmt_dim->srd_sng=(char *)strdup(lmt[idx]->srd_sng); else lmt_dim->srd_sng=NULL;
+      lmt_dim->nm=(char *)strdup(lmt[idx]->nm);
       break;
     } /* end if */
   } /* end loop over idx */
@@ -108,8 +104,8 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
       nco_exit(EXIT_FAILURE);
     } /* end if */
     
-    lmt_dim.nm=(char *)strdup(dmn_nm);
-    lmt_dim.srd_sng=NULL;
+    lmt_dim->nm=(char *)strdup(dmn_nm);
+    lmt_dim->srd_sng=NULL;
     /* Generate min and max strings to look as if user had specified them
        Adjust accordingly if FORTRAN_IDX_CNV was requested for other dimensions
        These sizes will later be decremented in nco_lmt_evl() where all information
@@ -135,12 +131,12 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
        Adding 1 is required for cnt=10,100,1000... */
     if(cnt < 10L) max_sng_sz=1; else max_sng_sz=1+(int)ceil(log10((double)cnt));
     /* Add one for NUL terminator */
-    lmt_dim.max_sng=(char *)nco_malloc(sizeof(char)*(max_sng_sz+1));
-    (void)sprintf(lmt_dim.max_sng,"%ld",cnt);
+    lmt_dim->max_sng=(char *)nco_malloc(sizeof(char)*(max_sng_sz+1));
+    (void)sprintf(lmt_dim->max_sng,"%ld",cnt);
     if(FORTRAN_IDX_CNV){
-      lmt_dim.min_sng=(char *)strdup("1");
+      lmt_dim->min_sng=(char *)strdup("1");
     }else{
-      lmt_dim.min_sng=(char *)strdup("0");
+      lmt_dim->min_sng=(char *)strdup("0");
     } /* end else */
   } /* end if user did not explicity specify limits for this dimension */
   
@@ -797,10 +793,10 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   
 } /* end nco_lmt_evl() */
 
-lmt_sct * /* O [sct] Structure with user-specified strings for min and max limits */
+lmt_sct ** /* O [sct] Structure list with user-specified strings for min and max limits */
 nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng elements */
 (const int lmt_nbr, /* I [nbr] number of dimensions with limits */
- char * const * const lmt_arg) /* I [sng] list of user-specified dimension limits */
+ CST_X_PTR_CST_PTR_CST_Y(char,lmt_arg)) /* I [sng] List of user-specified dimension limits */
 {
   /* Purpose: Set name, min_sng, max_sng elements of 
      comma separated list of names and ranges. This routine
@@ -816,16 +812,15 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
   
   const char dlm_sng[]=",";
   
-  lmt_sct *lmt=NULL_CEWI;
+  lmt_sct **lmt=NULL_CEWI;
   
   int idx;
   int arg_nbr;
   
-  if(lmt_nbr > 0) lmt=(lmt_sct *)nco_malloc(lmt_nbr*sizeof(lmt_sct));
-  
+  if(lmt_nbr > 0) lmt=(lmt_sct **)nco_malloc(lmt_nbr*sizeof(lmt_sct *));
   for(idx=0;idx<lmt_nbr;idx++){
-    
     /* Process hyperslab specifications as normal text list */
+    /* fxm: probably need to free arg_lst sometime... */
     arg_lst=lst_prs_2D(lmt_arg[idx],dlm_sng,&arg_nbr);
     
     /* Check syntax */
@@ -846,23 +841,32 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
        Hopefully, in routines that follow, branch followed when dimension has
        all default settings specified (e.g.,"-d foo,,,,") yields same answer
        as branch for which no hyperslab along that dimension was set. */
-    lmt[idx].nm=NULL;
-    lmt[idx].is_usr_spc_lmt=True; /* True if any part of limit is user-specified, else False */
-    lmt[idx].min_sng=NULL;
-    lmt[idx].max_sng=NULL;
-    lmt[idx].srd_sng=NULL;
+    lmt[idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+    lmt[idx]->nm=NULL;
+    lmt[idx]->is_usr_spc_lmt=True; /* True if any part of limit is user-specified, else False */
+    lmt[idx]->min_sng=NULL;
+    lmt[idx]->max_sng=NULL;
+    lmt[idx]->srd_sng=NULL;
     /* rec_skp_nsh_spf is used for record dimension in multi-file operators */
-    lmt[idx].rec_skp_nsh_spf=0L; /* Number of records skipped in initial superfluous files */
+    lmt[idx]->rec_skp_nsh_spf=0L; /* Number of records skipped in initial superfluous files */
     
     /* Fill in structure */
-    lmt[idx].nm=arg_lst[0];
-    lmt[idx].min_sng=lmt[idx].max_sng=arg_lst[1];
-    if(arg_nbr > 2) lmt[idx].max_sng=arg_lst[2];
-    if(arg_nbr > 3) lmt[idx].srd_sng=arg_lst[3];
+    lmt[idx]->nm=arg_lst[0];
+    lmt[idx]->min_sng=arg_lst[1];
+    /* Setting min_sng and max_sng to same pointer would lead to dangerous double-free() condition */
+    if(arg_nbr <= 2) lmt[idx]->max_sng=(char *)strdup(arg_lst[1]);
+    if(arg_nbr > 2) lmt[idx]->max_sng=arg_lst[2]; 
+    if(arg_nbr > 3) lmt[idx]->srd_sng=arg_lst[3];
     
-    if(lmt[idx].max_sng == NULL) lmt[idx].is_usr_spc_max=False; else lmt[idx].is_usr_spc_max=True;
-    if(lmt[idx].min_sng == NULL) lmt[idx].is_usr_spc_min=False; else lmt[idx].is_usr_spc_min=True;
-  } /* End loop over lmt */
+    if(lmt[idx]->max_sng == NULL) lmt[idx]->is_usr_spc_max=False; else lmt[idx]->is_usr_spc_max=True;
+    if(lmt[idx]->min_sng == NULL) lmt[idx]->is_usr_spc_min=False; else lmt[idx]->is_usr_spc_min=True;
+    
+    /* Free current pointer array to strings
+       Strings themselves are untouched and will be free()'d with limit structures 
+       in nco_lmt_lst_free() */
+    arg_lst=(char **)nco_free(arg_lst);
+
+  } /* End loop over lmt structure list */
   
   return lmt;
   
@@ -1006,9 +1010,9 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
 #endif /* !ENABLE_UDUNITS */
 }  /* end nco_lmt_udu_cnv() */
 
-int
+int /* O [enm] Limit type */
 nco_lmt_typ /* [fnc] Determine limit type */
-(char* sng) /* I [ptr] pointer to limit string */
+(char *sng) /* I [ptr] Pointer to limit string */
 {
   /* Purpose: Determine type of user-specified limit */
   
@@ -1025,7 +1029,7 @@ nco_lmt_typ /* [fnc] Determine limit type */
   if(strchr(sng,'-') && ((char*)strchr(sng,'-') != (char*)sng))
     /* Non-leading dash indicates dates  */
     return lmt_crd_val;
-     /* Default: Limit is dimension index */
+  /* Default: Limit is dimension index */
   return lmt_dmn_idx;
 
 } /* end nco_lmt_typ() */

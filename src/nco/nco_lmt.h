@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.20 2005-04-13 06:13:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.21 2005-04-17 06:09:59 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -57,23 +57,27 @@ lmt_sct * /* O [sct] Pointer to free'd structure */
 nco_lmt_free /* [fnc] Free memory associated with limit structure */
 (lmt_sct *lmt); /* I/O [sct] Limit structure to free */
 
-lmt_sct * /* O [sct] Pointer to free'd structure list */
+lmt_sct ** /* O [sct] Pointer to free'd structure list */
 nco_lmt_lst_free /* [fnc] Free memory associated with limit structure list */
-(lmt_sct *lmt_lst, /* I/O [sct] Limit structure list to free */
+(lmt_sct **lmt_lst, /* I/O [sct] Limit structure list to free */
  const int lmt_nbr); /* I [nbr] Number of limit structures in list */
 
-lmt_sct * /* O [sct] Structure with user-specified strings for min and max limits */
+lmt_sct ** /* O [sct] Structure list with user-specified strings for min and max limits */
 nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng elements */
 (const int lmt_nbr, /* I [nbr] number of dimensions with limits */
- char * const * const lmt_arg); /* I [sng] list of user-specified dimension limits */
+ CST_X_PTR_CST_PTR_CST_Y(char,lmt_arg)); /* I [sng] List of user-specified dimension limits */
 
-lmt_sct /* [sct] Limit structure for dimension */
+lmt_sct * /* [sct] Limit structure for dimension */
 nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */
 (const int nc_id, /* I [idx] netCDF file ID */
  const int dmn_id, /* I [idx] ID of dimension for this limit structure */
- const lmt_sct * const lmt, /* I [sct] Array of limit structures from nco_lmt_evl() */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_sct,lmt), /* I [sct] Array of limit structures from nco_lmt_evl() */ 
  int lmt_nbr, /* I [nbr] Number of limit structures */
  const bool FORTRAN_IDX_CNV); /* I [flg] Hyperslab indices obey Fortran convention */
+
+int /* O [enm] Limit type */
+nco_lmt_typ /* [fnc] Determine limit type */
+(char *sng);/* I [ptr] Pointer to limit string */
 
 int /* [rcd] Successful conversion returns 0 */
 nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
@@ -81,10 +85,6 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
  const int dmn_id, /* I [idx] netCDF dimension ID */
  char *lmt_sng, /* I [ptr] Limit string */
  double *lmt_val); /* O [val] Limit coordinate value */ 
-
-int /* 0 [enum] returns the limit type */
-nco_lmt_typ /* [fnc] determine limit type */
-(char* sng);/* I [ptr] pointer to the limit string */
 
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -1,3 +1,17 @@
+2005-04-16  Charlie Zender  <zender@uci.edu>
+
+	* Currently, memory in ncpdq and ncbo appears faultless
+	memory in ncra has one problem when up-converting char to double
+	for averaging
+
+	* Tighten up memory in ncwa by free()ing dimension lists
+	
+	* Changed limit (lmt) memory paradigm from 1D to 2D structure list
+	in accord with all string, variable, and dimension lists.
+	This makes handling limits easier, at the expense of more indirect
+	referencing in metadata routines. Replace lmt[idx]. with lmt[idx]->
+	All lmt-related memory leaks appear to be gone
+	
 2005-04-15  Charlie Zender  <zender@uci.edu>
 
 	* Gayathri noted problem with missing_value inconsistency between

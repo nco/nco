@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.156 2005-04-11 03:32:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.157 2005-04-17 06:09:58 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.156 2005-04-11 03:32:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.156 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.157 2005-04-17 06:09:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.157 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -191,7 +191,7 @@ main(int argc,char **argv)
   int sym_tbl_nbr; /* [nbr] Size of symbol table */
   int sym_idx=0; /* [idx] Counter for symbols */
   
-  lmt_sct *lmt=NULL_CEWI;
+  lmt_sct **lmt=NULL_CEWI;
   
   nm_id_sct *dmn_lst=NULL;
   nm_id_sct *xtr_lst=NULL; /* Non-processed variables to copy to OUTPUT */
@@ -694,7 +694,7 @@ main(int argc,char **argv)
   if(fl_nbr > 0) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr);
   /* Free limits */
   for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-  if(lmt_nbr > 0) lmt=(lmt_sct *)nco_free(lmt);
+  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
   /* Free dimension lists */
   if(nbr_dmn_in > 0) dmn_in=nco_dmn_lst_free(dmn_in,nbr_dmn_in);
   if(nbr_dmn_out > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_out);

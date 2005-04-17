@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.72 2005-04-13 06:13:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.73 2005-04-17 06:09:59 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.72 2005-04-13 06:13:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.72 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.73 2005-04-17 06:09:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.73 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -156,7 +156,7 @@ main(int argc,char **argv)
   int dmn_out_idx_rec_in=NCO_REC_DMN_UNDEFINED; /* [idx] Record dimension index in output dimension list, original */
   int thr_nbr=0; /* [nbr] Thread number Option t */
   
-  lmt_sct *lmt;
+  lmt_sct **lmt;
   
   nm_id_sct *dmn_lst;
   nm_id_sct *dmn_rdr_lst;
@@ -353,7 +353,7 @@ main(int argc,char **argv)
   if(nbr_xtr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,nbr_xtr,False);
     
   /* Find coordinate/dimension values associated with user-specified limits */
-  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_IDX_CNV);
+  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
   
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
@@ -822,7 +822,7 @@ main(int argc,char **argv)
   if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
   /* Free limits */
   for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-  if(lmt_nbr > 0) lmt=(lmt_sct *)nco_free(lmt);
+  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
   /* Free dimension lists */
   if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
   if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr);

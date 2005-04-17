@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.91 2005-04-13 06:13:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.92 2005-04-17 06:09:58 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.91 2005-04-13 06:13:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.91 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.92 2005-04-17 06:09:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.92 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRv:xZ-:";
 
   dmn_sct *rec_dmn;
@@ -117,7 +117,7 @@ main(int argc,char **argv)
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
  
-  lmt_sct *lmt;
+  lmt_sct **lmt;
   
   long idx_rec_out=0L; /* idx_rec_out gets incremented */
   
@@ -299,7 +299,7 @@ main(int argc,char **argv)
   /* We now have final list of variables to extract. Phew. */
   
   /* Find coordinate/dimension values associated with user-specified limits */
-  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_IDX_CNV);
+  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
   
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);

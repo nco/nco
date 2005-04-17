@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.21 2005-04-13 06:13:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.22 2005-04-17 06:09:59 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -123,7 +123,7 @@ void
 nco_dmn_lmt_mrg /* [fnc] Merge limit structure information into dimension structures */
 (dmn_sct ** const dmn, /* I [sct] Dimension structures to modify */
  const int nbr_dmn, /* I [nbr] Number of dimension structures in structure list */
- const lmt_sct * const lmt, /* I [sct] Dimension limit information */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_sct,lmt), /* I [sct] Dimension limit information */
  const int lmt_nbr) /* I [nbr] Number of dimensions with user-specified limits */
 {
   /* Purpose: Merge limit structure information into dimension structures */
@@ -132,14 +132,13 @@ nco_dmn_lmt_mrg /* [fnc] Merge limit structure information into dimension struct
   int lmt_idx;
 
   for(idx=0;idx<nbr_dmn;idx++){
-
     /* Decide whether this dimension has any user-specified limits */
     for(lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
-      if(lmt[lmt_idx].id == dmn[idx]->id){
-	dmn[idx]->cnt=lmt[lmt_idx].cnt;
-	dmn[idx]->srt=lmt[lmt_idx].srt;
-	dmn[idx]->end=lmt[lmt_idx].end;
-	dmn[idx]->srd=lmt[lmt_idx].srd;
+      if(lmt[lmt_idx]->id == dmn[idx]->id){
+	dmn[idx]->cnt=lmt[lmt_idx]->cnt;
+	dmn[idx]->srt=lmt[lmt_idx]->srt;
+	dmn[idx]->end=lmt[lmt_idx]->end;
+	dmn[idx]->srd=lmt[lmt_idx]->srd;
 	break;
       } /* end if */
     } /* end loop over lmt_idx */

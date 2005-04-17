@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.22 2005-04-10 18:52:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.23 2005-04-17 06:09:59 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -42,7 +42,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   /*  int idx_var_fix[NC_MAX_DIMS];*/ /* Variable is unused but instructive anyway */
   int idx;
   int idx_dmn;
-  int nbr_dmn_avg;
+  int dmn_avg_nbr;
   int nbr_dmn_fix;
   int nbr_dmn_var;
 
@@ -61,10 +61,10 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
      output (averaged) variable, but nbr_dmn_var is an upper bound. Similarly, we do
      not know a priori how many of the dimensions in the input list of averaging 
      dimensions (dim) actually occur in the current variable, so we do not know
-     nbr_dmn_avg, but nbr_dim is an upper bound on it. */
+     dmn_avg_nbr, but nbr_dim is an upper bound on it. */
   nbr_dmn_var=var->nbr_dim;
   nbr_dmn_fix=0;
-  nbr_dmn_avg=0;
+  dmn_avg_nbr=0;
   dmn_avg=(dmn_sct **)nco_malloc(nbr_dim*sizeof(dmn_sct *));
   dmn_fix=(dmn_sct **)nco_malloc(nbr_dmn_var*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_var;idx++){
@@ -73,10 +73,10 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 	/* Although structures in dim are never altered, linking them into
 	   dmn_avg list makes them vulnerable to manipulation and forces 
 	   dim to lose const protection in prototype */
-	dmn_avg[nbr_dmn_avg]=dim[idx_dmn];
-	idx_avg_var[nbr_dmn_avg]=idx;
-	/*	idx_var_avg[idx]=nbr_dmn_avg;*/ /* Variable is unused but instructive anyway */
-	nbr_dmn_avg++;
+	dmn_avg[dmn_avg_nbr]=dim[idx_dmn];
+	idx_avg_var[dmn_avg_nbr]=idx;
+	/*	idx_var_avg[idx]=dmn_avg_nbr;*/ /* Variable is unused but instructive anyway */
+	dmn_avg_nbr++;
 	break;
       } /* end if */
     } /* end loop over idx_dmn */
@@ -90,9 +90,9 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 
   /* Free extra list space */
   if(nbr_dmn_fix > 0) dmn_fix=(dmn_sct **)nco_realloc(dmn_fix,nbr_dmn_fix*sizeof(dmn_sct *)); else dmn_fix=(dmn_sct **)NULL;
-  if(nbr_dmn_avg > 0) dmn_avg=(dmn_sct **)nco_realloc(dmn_avg,nbr_dmn_avg*sizeof(dmn_sct *)); else dmn_avg=(dmn_sct **)NULL;
+  if(dmn_avg_nbr > 0) dmn_avg=(dmn_sct **)nco_realloc(dmn_avg,dmn_avg_nbr*sizeof(dmn_sct *)); else dmn_avg=(dmn_sct **)NULL;
 
-  if(nbr_dmn_avg == 0){
+  if(dmn_avg_nbr == 0){
     (void)fprintf(stderr,"%s: WARNING %s does not contain any averaging dimensions\n",prg_nm_get(),fix->nm);
     return (var_sct *)NULL;
   } /* end if */
@@ -101,7 +101,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   fix->nbr_dim=nbr_dmn_fix;
 
   avg_sz=1L;
-  for(idx=0;idx<nbr_dmn_avg;idx++){
+  for(idx=0;idx<dmn_avg_nbr;idx++){
     avg_sz*=dmn_avg[idx]->cnt;
     fix->sz/=dmn_avg[idx]->cnt;
     if(!dmn_avg[idx]->is_rec_dmn) fix->sz_rec/=dmn_avg[idx]->cnt;
@@ -209,9 +209,9 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 	dmn_fix_map[idx]*=fix->cnt[idx_dmn];
     
     /* Compute map for each dimension of averaging buffer */
-    for(idx=0;idx<nbr_dmn_avg;idx++) dmn_avg_map[idx]=1L;
-    for(idx=0;idx<nbr_dmn_avg-1;idx++)
-      for(idx_dmn=idx+1;idx_dmn<nbr_dmn_avg;idx_dmn++)
+    for(idx=0;idx<dmn_avg_nbr;idx++) dmn_avg_map[idx]=1L;
+    for(idx=0;idx<dmn_avg_nbr-1;idx++)
+      for(idx_dmn=idx+1;idx_dmn<dmn_avg_nbr;idx_dmn++)
 	dmn_avg_map[idx]*=dmn_avg[idx_dmn]->cnt;
     
     /* var_lmn is offset into 1-D array */
@@ -230,7 +230,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
       
       /* Map N-D array indices into 1-D offset from group offset */
       avg_lmn=0L;
-      for(idx=0;idx<nbr_dmn_avg;idx++) avg_lmn+=dmn_ss[idx_avg_var[idx]]*dmn_avg_map[idx];
+      for(idx=0;idx<dmn_avg_nbr;idx++) avg_lmn+=dmn_ss[idx_avg_var[idx]]*dmn_avg_map[idx];
       
       /* Copy current element in input array into its slot in sorted avg_val */
       (void)memcpy(avg_cp+(fix_lmn*avg_sz+avg_lmn)*typ_sz,var_cp+var_lmn*typ_sz,(size_t)typ_sz);

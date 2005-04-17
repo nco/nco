@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.42 2005-04-15 23:28:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.43 2005-04-17 06:09:58 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.42 2005-04-15 23:28:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.42 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.43 2005-04-17 06:09:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.43 $";
   const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim;
@@ -151,7 +151,7 @@ main(int argc,char **argv)
   int rcd=NC_NOERR; /* [rcd] Return code */
   int thr_nbr=0; /* [nbr] Thread number Option t */
   
-  lmt_sct *lmt;
+  lmt_sct **lmt;
   
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may bealloc()'d from NULL with -c option */
@@ -327,7 +327,7 @@ main(int argc,char **argv)
   /* We now have final list of variables to extract. Phew. */
   
   /* Find coordinate/dimension values associated with user-specified limits */
-  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_IDX_CNV);
+  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
   
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
@@ -579,7 +579,7 @@ main(int argc,char **argv)
   if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
   /* Free limits */
   for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-  if(lmt_nbr > 0) lmt=(lmt_sct *)nco_free(lmt);
+  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
   /* Free dimension lists */
   if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
   if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr);

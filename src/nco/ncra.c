@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.133 2005-04-13 06:13:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.134 2005-04-17 06:09:59 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.133 2005-04-13 06:13:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.133 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.134 2005-04-17 06:09:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.134 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
 
   dmn_sct **dim;
@@ -153,8 +153,8 @@ main(int argc,char **argv)
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int thr_nbr=0; /* [nbr] Thread number Option t */
   
-  lmt_sct *lmt=NULL_CEWI;
-  lmt_sct lmt_rec;
+  lmt_sct **lmt=NULL_CEWI;
+  lmt_sct *lmt_rec=NULL_CEWI;
   
   long idx_rec; /* [idx] Index of current record in current input file */
   long idx_rec_out=0L; /* [idx] Index of current record in output file (0 is first, ...) */
@@ -373,7 +373,7 @@ main(int argc,char **argv)
   /* We now have final list of variables to extract. Phew. */
   
   /* Find coordinate/dimension values associated with user-specified limits */
-  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_IDX_CNV);
+  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
 
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
@@ -492,7 +492,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
 
     /* Each file can have a different number of records to process */
-    if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,&lmt_rec,idx_rec_out,FORTRAN_IDX_CNV); /* Routine is thread-unsafe */
+    if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,idx_rec_out,FORTRAN_IDX_CNV); /* Routine is thread-unsafe */
     
     /* Is this an ARM-format data file? */
     if(ARM_FORMAT) base_time_crr=arm_base_time_get(in_id); /* Routine is thread-unsafe */
@@ -502,8 +502,8 @@ main(int argc,char **argv)
 
     if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
       /* Loop over each record in current file */
-      if(lmt_rec.srt > lmt_rec.end) (void)fprintf(stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
-      for(idx_rec=lmt_rec.srt;idx_rec<=lmt_rec.end;idx_rec+=lmt_rec.srd){
+      if(lmt_rec->srt > lmt_rec->end) (void)fprintf(stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
+      for(idx_rec=lmt_rec->srt;idx_rec<=lmt_rec->end;idx_rec+=lmt_rec->srd){
 	/* Process all variables in current record */
 	if(dbg_lvl > 1) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
 #ifdef _OPENMP
@@ -553,9 +553,9 @@ main(int argc,char **argv)
 	if(dbg_lvl > 2) (void)fprintf(stderr,"\n");
       } /* end loop over idx_rec */
       /* Warn if fewer than number of requested records were read and final file has been processed */
-      if(lmt_rec.lmt_typ == lmt_dmn_idx && lmt_rec.is_usr_spc_min && lmt_rec.is_usr_spc_max){
+      if(lmt_rec->lmt_typ == lmt_dmn_idx && lmt_rec->is_usr_spc_min && lmt_rec->is_usr_spc_max){
 	long rec_nbr_rqs; /* Number of records user requested */
-	rec_nbr_rqs=1L+(lmt_rec.max_idx-lmt_rec.min_idx)/lmt_rec.srd;
+	rec_nbr_rqs=1L+(lmt_rec->max_idx-lmt_rec->min_idx)/lmt_rec->srd;
 	if(fl_idx == fl_nbr-1 && rec_nbr_rqs != idx_rec_out) (void)fprintf(stdout,gettext("%s: WARNING User requested %li records but only %li were found\n"),prg_nm_get(),rec_nbr_rqs,idx_rec_out);
       } /* end if */
       /* Error if no records were read and final file has been processed */
@@ -668,8 +668,7 @@ main(int argc,char **argv)
   
   /* ncra-unique memory */
   /* fxm: ncra-specific memory freeing instructions go here */
-  /*  lmt_rec=nco_lmt_lst_free(&lmt_rec,1);*/
-  lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+  lmt_rec=nco_lmt_free(lmt_rec);
 
   /* NCO-generic clean-up */
   /* Free individual strings */
@@ -682,7 +681,7 @@ main(int argc,char **argv)
   if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
   /* Free limits */
   for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-  if(lmt_nbr > 0) lmt=(lmt_sct *)nco_free(lmt);
+  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
   /* Free dimension lists */
   if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
   if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.124 2005-04-13 06:13:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.125 2005-04-17 06:09:59 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.124 2005-04-13 06:13:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.124 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.125 2005-04-17 06:09:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.125 $";
   const char * const opt_sht_lst="aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   char *opt_crr; /* [sng] String representation of current long-option name */
@@ -136,7 +136,7 @@ main(int argc,char **argv)
   int opt;
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
     
-  lmt_sct *lmt;
+  lmt_sct **lmt;
 
   lmt_all_sct *lmt_lst; /* Container for lmt */
   lmt_all_sct *lmt_tmp; /* Temporary pointer */
@@ -406,23 +406,23 @@ main(int argc,char **argv)
   /* Add user specified limits lmt_lst */
   for(idx=0;idx<lmt_nbr;idx++){
     /* Find coordinate/dimension values associated with user-specified limits */
-    (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_IDX_CNV);
+    (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
     for(jdx=0;jdx<nbr_dmn_fl;jdx++) {
-      if(!strcmp(lmt[idx].nm,lmt_lst[jdx].dmn_nm)){   
+      if(!strcmp(lmt[idx]->nm,lmt_lst[jdx].dmn_nm)){   
 	lmt_tmp=&lmt_lst[jdx];
 	lmt_tmp->BASIC_DMN=False;
 	if(lmt_tmp->lmt_dmn[0]->lmt_typ == -1) { 
-	  lmt_tmp->lmt_dmn[0]=lmt+idx; 
+	  lmt_tmp->lmt_dmn[0]=lmt[idx]; 
 	}else{ 
 	  lmt_tmp->lmt_dmn=(lmt_sct **)nco_realloc(lmt_tmp->lmt_dmn,((lmt_tmp->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
-	  lmt_tmp->lmt_dmn[(lmt_tmp->lmt_dmn_nbr)++]=lmt+idx;
+	  lmt_tmp->lmt_dmn[(lmt_tmp->lmt_dmn_nbr)++]=lmt[idx];
 	} /* endif */
 	break;
       } /* end if */
     } /* end loop over dimensions */
     /* dimension in limit not found */
     if(jdx == nbr_dmn_fl){
-      (void)fprintf(stderr,"Unable to find limit dimension %s in list\n ",lmt[idx].nm);
+      (void)fprintf(stderr,"Unable to find limit dimension %s in list\n ",lmt[idx]->nm);
       nco_exit(EXIT_FAILURE);
     } /* end if err */
   } /* end loop over idx */       

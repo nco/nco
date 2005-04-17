@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.480 2005-04-15 23:28:29 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.481 2005-04-17 06:09:56 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -288,20 +288,14 @@ nco496. ncwa: See if recent bugfix fixes nco354
 nco497. create consistent structure list-freeing routines
 nco498. implement consistent structure list-freeing routines
 nco499. ncwa: perfect memory usage like ncpdq: No hyperslabs
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -O -C -a lat,lon,time -w gw -v PS ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -D 3 -O -C -a lat,lon,time -w gw -v PS ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
 nco500. ncwa: perfect memory usage like ncpdq: Hyperslabs
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -O -C -a lat,lon,time -d lon,1 -d lat,1 -w gw ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
-nco501. ncra: perfect memory usage like ncpdq: 
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncra -O -C ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
-nco502. Pass limits by reference rather than value to simplify memory management
-nco503. Finish limit free()ing: lmt=nco_lmt_lst_free(lmt,lmt_nbr);
-nco504. ncbo: perfect memory usage like ncpdq: 
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncbo -O -C ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
+nco501. ncra: perfect memory usage like ncpdq: -D 3 
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncra -O -C -D 3 -d lon,1 -v one_dmn_rec_var_sng ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
 nco505. ncbo: perfect memory usage like ncpdq:
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncbo -O -C ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncbo -O -C -d lon,1 ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
 nco508. Fix ncwa double-free's seen on soot
-nco509. nco_mss_val_cnf() does not treat mss_val symmetrically between var_1 and var_2
-nco510. ncbo lin 521 else clause is no-op since mss_val not used when has_mss_val is false
 nco511. Copy new regression tests from nco_tst.pl to nco_bm.pl
 nco512. 
 
