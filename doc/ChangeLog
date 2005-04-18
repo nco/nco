@@ -23,11 +23,11 @@
 	The upside is that it is memory-efficient and fast.
 	This problem is serious and needs careful fixes.
 
-	Problem #3: ncap. I have not examined ncap since fixing the
-	ncap_var_stretch() leak. There seem to be a lot of leaks related
-	to the flex and bison-generated code, which surprises me.
+	Problem #3: ncap. I have not examined ncap since fixing the huge
+	ncap_var_stretch() leak. There seem to be many tiny leaks
+	in the flex and bison-generated code, which surprises me.
 	If these really are leaks, not sure what we can do beyond 
-	creating a valgrind suppression file for them.
+	creating a valgrind suppression file for them. 
 	
 2005-04-17  Charlie Zender  <zender@uci.edu>
 
