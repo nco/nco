@@ -1,3 +1,34 @@
+2005-04-18  Charlie Zender  <zender@uci.edu>
+
+	* Memory status:
+	The only commonly used code which has leaks/errors in the arithmetic
+	operators (excluding ncap) appears to be the dimension conformance
+	code, i.e., broadcasting. ncwa highlights these problems.
+	ncbo, ncea, ncflint, ncpdq, ncra, ncrcat are either memory-clean
+	or causes of problems are known and await resolution.
+	ncecat has yet to be examined but is expected to respond well to 
+	same treatment given to ncea/ncra/ncrcat.
+
+	Problem #1: Promotion of char->double (and byte->double?) uses
+	uninitialized memory. This may be a C-language or libc problem,
+	ultimately, which we can do nothing about. Not sure. It is not
+	serious because promotion of char->double for arithmetic is
+	intrinsically ill-defined and rarely used. It would be helpful
+	to document this problem in the manual, and possibly give users
+	some control over code paths, e.g.,
+	--disable_promote_char_double. 
+
+	Problem #2: nco_var_cnf_dmn(), in its various incarnations and
+	uses, leaks worse than Harry's roof. 
+	The upside is that it is memory-efficient and fast.
+	This problem is serious and needs careful fixes.
+
+	Problem #3: ncap. I have not examined ncap since fixing the
+	ncap_var_stretch() leak. There seem to be a lot of leaks related
+	to the flex and bison-generated code, which surprises me.
+	If these really are leaks, not sure what we can do beyond 
+	creating a valgrind suppression file for them.
+	
 2005-04-17  Charlie Zender  <zender@uci.edu>
 
 	* Clean up leaks in file name code when abbreviation lists used
