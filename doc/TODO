@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.483 2005-04-18 03:57:47 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.484 2005-04-18 06:30:16 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -291,7 +291,7 @@ nco499. ncwa: perfect memory usage: No hyperslabs
 nco500. ncwa: perfect memory usage: Hyperslabs
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -O -C -a lat,lon,time -d lon,1 -d lat,1 -w gw ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
 nco501. ncra: perfect memory usage
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncra -O -C -D 3 -d lon,1 -v one_dmn_rec_var_sng ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncra -O -C -D 3 -d lon,1 -n 3,4,1 -v one_dmn_rec_var_sng -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc foo.nc > ~/foo 2>&1
 nco505. ncbo: perfect memory usage
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncbo -O -C -d lon,1 ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
 nco508. Fix ncwa double-free's seen on soot

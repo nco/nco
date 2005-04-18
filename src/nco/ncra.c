@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.135 2005-04-18 03:52:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.136 2005-04-18 06:30:19 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -32,17 +32,15 @@
    Irvine, CA 92697-3100 */
 
 /* Usage:
-   ncra -n 3,4,1 -p ${DATA}/tmp h0001.nc foo.nc
-   ncra -n 3,4,1 -p ${DATA}/tmp -l ${DATA}/tmp/rmt h0001.nc foo.nc
-   ncra -n 3,4,1 -p /ZENDER/tmp -l ${DATA}/tmp h0001.nc foo.nc
-   ncra -n 3,4,1 -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc foo.nc
+   ncra -n 3,4,1 -p ${HOME}/nco/data h0001.nc foo.nc
+   ncra -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc foo.nc
+   ncra -n 3,4,1 -p /ZENDER/tmp -l ${HOME}/nco/data h0001.nc foo.nc
    scp ~/nco/src/nco/ncra.c esmf.ess.uci.edu:nco/src/nco
 
    ncea in.nc in.nc foo.nc
-   ncea -n 3,4,1 -p ${DATA}/tmp h0001.nc foo.nc
-   ncea -n 3,4,1 -p ${DATA}/tmp -l ${DATA}/tmp/rmt h0001.nc foo.nc
-   ncea -n 3,4,1 -p /ZENDER/tmp -l ${DATA}/tmp/rmt h0001.nc foo.nc
-   ncea -n 3,4,1 -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc foo.nc */
+   ncea -n 3,4,1 -p ${HOME}/nco/data h0001.nc foo.nc
+   ncea -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc foo.nc
+   ncea -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc foo.nc */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h> /* Autotools tokens */
@@ -117,8 +115,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.135 2005-04-18 03:52:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.135 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.136 2005-04-18 06:30:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.136 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
 
   dmn_sct **dim;
@@ -668,7 +666,7 @@ main(int argc,char **argv)
   
   /* ncra-unique memory */
   /* ncra-specific memory freeing instructions go here */
-  lmt_rec=nco_lmt_free(lmt_rec);
+  if(prg == ncra || prg == ncrcat) lmt_rec=nco_lmt_free(lmt_rec);
 
   /* NCO-generic clean-up */
   /* Free individual strings */
