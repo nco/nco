@@ -1,3 +1,9 @@
+2005-04-18  Gayathri Venkitachalam  <gvenkita@uci.edu>
+
+	* Checked in mpncbo.c & nco_att_utl.c after updating them to
+	compile with MPI=Y. Compiling with MPI=N still behaves the way it
+	used to.
+	
 2005-04-18  Charlie Zender  <zender@uci.edu>
 
 	* Memory status:

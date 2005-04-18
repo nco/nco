@@ -1,6 +1,6 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.2 2005-04-14 01:40:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.3 2005-04-18 19:29:45 gayathri_aiyar Exp $ */
 
-/* ncbo -- netCDF binary operator */
+/* mpncbo -- netCDF binary operator - MPI */
 
 /* Purpose: Compute sum, difference, product, or ratio of specified hyperslabs of specfied variables
    from two input netCDF files and output them to a single file. */
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.2 2005-04-14 01:40:00 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.2 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.3 2005-04-18 19:29:45 gayathri_aiyar Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.3 $";
   const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim;
@@ -413,7 +413,7 @@ main(int argc,char **argv)
   /* GV - Only Manager needs to do these stuff */
   if(my_id == 0){
     /* Open output file */
-    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
+    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FORCE_64BIT_OFFSET,&out_id);
     /* printf("DEBUG: node: %d has opened file : %s and tmp_file : %s (file id: %d) \n",my_id, fl_out, fl_out_tmp, out_id);*/
   	
     /* Obtain the length of output file name in order to broadcast it to workers */
@@ -519,7 +519,7 @@ main(int argc,char **argv)
 #endif  not _OPENMP */
 
   if(my_id == 0){ /* Manager */
-    nbr_var_wrt=-nbr_proc+1;
+    nbr_var_wrt=-nbr_proc+1; /* Since WORK_REQUEST mesg increments the nbr_var_wrt, the first message from each Worker should be subtracted from the total to get the right answer */
     idx=0;
 
     /* printf("DEBUG: nbr_var_prc: %d\n", nbr_var_prc);*/
@@ -630,7 +630,6 @@ main(int argc,char **argv)
 	    strcmp(var_prc_out[idx]->dim[dmn_idx]->nm,var_prc[idx]->dim[dmn_idx]->nm) || /* Dimension names do not match */
 	   (var_prc_out[idx]->dim[dmn_idx]->cnt != var_prc[idx]->dim[dmn_idx]->cnt) || /* Dimension sizes do not match */
 	   False){
-	    
 	    (void)fprintf(fp_stdout,"%s: ERROR Variables do not conform:\nFile %s variable %s dimension %d is %s with size %li and count %li\nFile %s variable %s dimension %d is %s with size %li and count %li\n",prg_nm,fl_in_1,var_prc[idx]->nm,dmn_idx,var_prc[idx]->dim[dmn_idx]->nm,var_prc[idx]->dim[dmn_idx]->sz,var_prc[idx]->dim[dmn_idx]->cnt,fl_in_2,var_prc_out[idx]->nm,dmn_idx,var_prc_out[idx]->dim[dmn_idx]->nm,var_prc_out[idx]->dim[dmn_idx]->sz,var_prc_out[idx]->dim[dmn_idx]->cnt);
 	    nco_exit(EXIT_FAILURE);
 	  } /* endif */
@@ -680,7 +679,6 @@ main(int argc,char **argv)
     
       /* Perform specified binary operation */
       switch(nco_op_typ){
-	
     	case nco_op_add: /* [enm] Add file_1 to file_2 */
       	  (void)nco_var_add(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val); break;
     	case nco_op_mlt: /* [enm] Multiply file_1 by file_2 */
@@ -722,24 +720,21 @@ main(int argc,char **argv)
 	/* printf("DEBUG: node: %d, Obtained token, attempting to write data to file id: %d %s \n", my_id, out_id, fl_out_tmp); */
      
 	/* Copy result to output file and free workspace buffer */
-      		
 	if(var_prc[idx]->nbr_dim == 0)
 	  (void)nco_put_var1(out_id,var_prc[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc[idx]->type);
-			
 	else{ /* end if variable is scalar */
 	  (void)nco_put_vara(out_id,var_prc[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc[idx]->type);
       	} /* end else */
 
+	/* GV - Each worker should close the output file after writing, for the next worker to open it for writing*/
 	nco_close(out_id);
 
 	/* GV - just to keep track of each node's workload */
 	nbr_var_wrt++;
 	printf("DEBUG: node %d has written data (index: %d, file: %d) nbr_var_wrt %d\n", my_id, idx, out_id, nbr_var_wrt); 
-
       } /* end-file write */
 
       var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
-
     } /* End-while loop requesting work/token */
 
   } /* End-Worker */
@@ -765,6 +760,7 @@ main(int argc,char **argv)
 
     /* Close output file and move it from temporary to permanent location */
     /* (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);*/
+    /* GV - Output file is closed by the workers, so just move it from temporary to permanent location */
     (void)nco_fl_mv(fl_out_tmp, fl_out);
   
     printf("DEBUG: output file renamed\n");
@@ -779,6 +775,32 @@ main(int argc,char **argv)
   printf("Time taken: %f\n", MPI_Wtime() - srt_tm);
 
   MPI_Finalize();
+
+  /* ncra-unique memory */
+  if(fl_in_1 != NULL) fl_in_1=(char *)nco_free(fl_in_1);
+
+  /* NCO-generic clean-up */
+  /* Free individual strings */
+  if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
+  if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
+  if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+  /* Free lists of strings */
+  if(fl_lst_abb != NULL) fl_lst_abb=(char **)nco_free(fl_lst_abb);
+  if(fl_nbr > 0) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr);
+  if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
+  /* Free limits */
+  for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+  if(lmt_nbr > 0) lmt=(lmt_sct *)nco_free(lmt);
+  /* Free dimension lists */
+  if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
+  if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr);
+  /* Free variable lists */
+  if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
+  if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);
+  var_prc=(var_sct **)nco_free(var_prc);
+  var_prc_out=(var_sct **)nco_free(var_prc_out);
+  var_fix=(var_sct **)nco_free(var_fix);
+  var_fix_out=(var_sct **)nco_free(var_fix_out);
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
