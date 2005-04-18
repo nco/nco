@@ -1,3 +1,7 @@
+2005-04-17  Charlie Zender  <zender@uci.edu>
+
+	* Fix off-by-two error in memmove() in ncwa
+
 2005-04-16  Charlie Zender  <zender@uci.edu>
 
 	* Initial memory work on ncflint

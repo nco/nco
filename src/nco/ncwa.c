@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.161 2005-04-17 06:09:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.162 2005-04-18 02:40:04 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.161 2005-04-17 06:09:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.161 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.162 2005-04-18 02:40:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.162 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -489,12 +489,10 @@ main(int argc,char **argv)
       }else{
 	(void)fprintf(stderr,"%s: WARNING reducing dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_avg_lst[idx_avg].nm);
 	/* Collapse dimension average list by omitting irrelevent dimension */
-	(void)memmove(dmn_avg_lst+idx_avg*sizeof(nm_id_sct),dmn_avg_lst+(idx_avg+1)*sizeof(nm_id_sct),(dmn_avg_nbr-idx_avg+1)*sizeof(nm_id_sct));
-	/* fxm: Possible bug since dmn_avg_nbr decremented before dmn_avg filled TODO nco367 */
+	(void)memmove(dmn_avg_lst+idx_avg*sizeof(nm_id_sct),dmn_avg_lst+(idx_avg+1)*sizeof(nm_id_sct),(dmn_avg_nbr-idx_avg-1)*sizeof(nm_id_sct));
 	--dmn_avg_nbr;
 	dmn_avg_lst=(nm_id_sct *)nco_realloc(dmn_avg_lst,dmn_avg_nbr*sizeof(nm_id_sct));
-	/* fxm: This seem reasonable */
-	/* dmn_avg=(dmn_sct **)nco_realloc(dmn_avg,dmn_avg_nbr*sizeof(dmn_sct *)); */
+	dmn_avg=(dmn_sct **)nco_realloc(dmn_avg,dmn_avg_nbr*sizeof(dmn_sct *)); 
       } /* end else */
     } /* end loop over idx_avg */
 
@@ -928,7 +926,10 @@ main(int argc,char **argv)
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
   /* ncwa-unique memory */
-  /* fxm: ncwa-specific memory freeing instructions go here */
+  if(wgt_nm != NULL) wgt_nm=(char *)nco_free(wgt_nm);
+  if(msk_nm != NULL) msk_nm=(char *)nco_free(msk_nm);
+  if(msk_sng != NULL) msk_sng=(char *)nco_free(msk_sng);
+  if(dmn_avg_nbr > 0) dmn_avg=(dmn_sct **)nco_free(dmn_avg);
 
   /* NCO-generic clean-up */
   /* Free individual strings */
