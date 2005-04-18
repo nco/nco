@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.52 2005-04-10 07:04:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.53 2005-04-18 03:52:44 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -708,7 +708,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
 (char *fl_nm, /* I/O [sng] Current filename, if any */
  const int fl_idx, /* I [nbr] Ordinal index of file in input file list */
  int * const fl_nbr, /* I/O [nbr] Number of files to be processed */
- char * const * const fl_lst_in, /* I [sng] User-specified filenames */
+ CST_X_PTR_CST_PTR_CST_Y(char,fl_lst_in), /* I [sng] User-specified filenames */
  const int abb_arg_nbr, /* I [nbr] Number of abbreviation arguments */
  CST_X_PTR_CST_PTR_CST_Y(char,fl_lst_abb), /* I [sng] NINTAP-style arguments, if any */
  const char * const fl_pth) /* I [sng] Path prefix for files in fl_lst_in */
@@ -728,6 +728,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
   static int fl_nm_nbr_ncr;
   static int fl_nm_nbr_max;
   static int fl_nm_nbr_min;
+  static int fl_nm_nbr_ttl;
 
   /* Free any old filename space */
   fl_nm=(char *)nco_free(fl_nm);
@@ -739,6 +740,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
       
       /* Parse abbreviation list analogously to CCM Processor ICP "NINTAP" */
       if(fl_nbr != NULL) *fl_nbr=(int)strtol(fl_lst_abb[0],(char **)NULL,10);
+      fl_nm_nbr_ttl=*fl_nbr;
       
       if(abb_arg_nbr > 1){
 	fl_nm_nbr_dgt=(int)strtol(fl_lst_abb[1],(char **)NULL,10);
@@ -797,6 +799,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
       (void)sprintf(fl_nm_nbr_sng,fl_nm_nbr_sng_fmt,fl_nm_nbr_crr);
       fl_nm=(char *)strdup(fl_lst_in[0]);
       (void)strncpy(fl_nm+(fl_nm_1st_dgt-fl_lst_in[0]),fl_nm_nbr_sng,(size_t)fl_nm_nbr_dgt);
+      if(fl_idx == fl_nm_nbr_ttl-1) fl_nm_nbr_sng=(char *)nco_free(fl_nm_nbr_sng);
     } /* end if not FIRST_INVOCATION */
   }else{ /* end if abbreviation list */
     fl_nm=(char *)strdup(fl_lst_in[fl_idx]);

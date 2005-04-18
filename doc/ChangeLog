@@ -1,5 +1,9 @@
 2005-04-17  Charlie Zender  <zender@uci.edu>
 
+	* Clean up leaks in file name code when abbreviation lists used
+	Solving leak in nco_fl_nm_prs() was rather contorted but appears
+	to work
+	
 	* Fix off-by-two error in memmove() in ncwa
 
 2005-04-16  Charlie Zender  <zender@uci.edu>
