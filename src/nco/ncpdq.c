@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.74 2005-04-18 03:52:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.75 2005-04-18 06:33:27 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.74 2005-04-18 03:52:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.74 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.75 2005-04-18 06:33:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.75 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -784,7 +784,7 @@ main(int argc,char **argv)
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
-  /* ncpdq-unique memory */
+  /* ncpdq-specific memory cleanup */
   if(dmn_rdr_nbr > 0){
     /* Free dimension correspondence list */
     for(idx=0;idx<nbr_var_prc;idx++){

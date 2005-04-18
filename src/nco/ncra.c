@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.136 2005-04-18 06:30:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.137 2005-04-18 06:33:27 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.136 2005-04-18 06:30:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.136 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.137 2005-04-18 06:33:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.137 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
 
   dmn_sct **dim;
@@ -664,8 +664,7 @@ main(int argc,char **argv)
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
-  /* ncra-unique memory */
-  /* ncra-specific memory freeing instructions go here */
+  /* ncra-specific memory cleanup */
   if(prg == ncra || prg == ncrcat) lmt_rec=nco_lmt_free(lmt_rec);
 
   /* NCO-generic clean-up */
