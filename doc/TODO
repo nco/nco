@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.482 2005-04-17 06:24:05 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.483 2005-04-18 03:57:47 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -229,7 +229,6 @@ nco358. Document ncwa -z switch: Get rid of separate -M -m -T?
 nco359. Allow spaces between variables names in -v var_lst arguments (assuming list whitespace is quoted, of course)
 nco362. reduce memory during run by free()'ing var_fix[idx],var_fix_out[idx],var_prc[idx],var_prc_out[idx] after writes
 nco363. ncpdq: document netCDF limitations in nco.texi
-nco367. fix ncwa list collapse errors. Unfortunately ncwa uses dim_avg_lst after it is collapsed
 nco375. Do something more consistent with: nco_exit(EXIT_FAILURE)
 nco385. ncpdq: dynamically allocate arrays in nco_var_dmn_rdr_mtd(), nco_var_dmn_rdr_val()?
 nco386. Remove purely diagnostic arrays from nco_var_dmn_rdr_mtd(), nco_var_dmn_rdr_val()?
