@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.26 2005-03-23 06:44:24 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.27 2005-04-19 11:34:48 hmb Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -171,6 +171,7 @@ stmt_lst stmt ';' {
 | stmt_lst error ';' {(void)nco_var_free_wrp(&((prs_sct *)prs_arg)->var_LHS);}
 | stmt ';' {(void)nco_var_free_wrp(&((prs_sct *)prs_arg)->var_LHS);}
 | error ';' {(void)nco_var_free_wrp(&((prs_sct *)prs_arg)->var_LHS);}
+
 /* Catch most errors then read up to next semi-colon */
 ; /* end stmt_lst */
 
@@ -260,84 +261,65 @@ PRINT '(' var_xpr ')' ';' {
 } /* end out_att_xpr '=' var_xpr */
 | out_var_xpr '=' var_xpr 
 {
-  int rcd_lcl;
-  int var_id;
-  $3->nm=strdup($1);
-  /* Is variable already in output file? */
-  rcd_lcl=nco_inq_varid_flg(((prs_sct *)prs_arg)->out_id,$3->nm,&var_id);
-  if(rcd_lcl == NC_NOERR){
-    (void)sprintf(ncap_err_sng,"Warning: Variable %s has aleady been saved in %s",$3->nm,((prs_sct *)prs_arg)->fl_out);
-    (void)yyerror(ncap_err_sng);                                   
-  }else{  
-    (void)ncap_var_write($3,(prs_sct *)prs_arg);
-    if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$3->nm,((prs_sct *)prs_arg)->fl_out);
+   $3->nm=strdup($1);
+  (void)ncap_var_write($3,(prs_sct *)prs_arg);
+
+  if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(ncap_err_sng);
-  } /* end else */
-  $1=(char *)nco_free($1);
-  (void)nco_var_free($3);
+  
 } /* end out_var_xpr '=' var_xpr */
 | out_var_xpr '=' scv_xpr
 {
-  int rcd_lcl;
-  int var_id;
   var_sct *var;
-  rcd_lcl=nco_inq_varid_flg(((prs_sct *)prs_arg)->out_id,$1,&var_id);
-  if(dbg_lvl_get() > 5) (void)fprintf(stderr,"%s: DEBUG out_var_xpr = scv_xpr rule for %s\n",prg_nm_get(),$1);
-  if(rcd_lcl == NC_NOERR){
-    (void)sprintf(ncap_err_sng,"Warning: Variable %s has aleady been saved in %s",$1,((prs_sct *)prs_arg)->fl_out);
-    (void)yyerror(ncap_err_sng);
-  }else{  
-    /* Turn attribute into temporary variable for writing */
-    var=(var_sct *)nco_malloc(sizeof(var_sct));
-    /* Set defaults */
-    (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
-    /* Overwrite with attribute expression information */
-    var->nm=strdup($1);
-    var->nbr_dim=0;
-    var->sz=1;
-    var->val=ncap_scv_2_ptr_unn($3);
-    var->type=$3.type;
 
-    if(((prs_sct *)prs_arg)->var_LHS != NULL){
+  if(dbg_lvl_get() > 5) (void)fprintf(stderr,"%s: DEBUG out_var_xpr = scv_xpr rule for %s\n",prg_nm_get(),$1);
+
+   /* Turn attribute into temporary variable for writing */
+   var=(var_sct *)nco_malloc(sizeof(var_sct));
+   /* Set defaults */
+   (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
+    /* Overwrite with attribute expression information */
+   var->nm=strdup($1);
+   var->nbr_dim=0;
+   var->sz=1;
+   var->val=ncap_scv_2_ptr_unn($3);
+   var->type=$3.type;
+
+   if(((prs_sct *)prs_arg)->var_LHS != NULL){
       /* User intends LHS to cast RHS to same dimensionality
 	 Stretch newly initialized variable to size of LHS template */
       /*    (void)ncap_var_cnf_dmn(&$$,&(((prs_sct *)prs_arg)->var_LHS));*/
       (void)ncap_var_stretch(&var,&(((prs_sct *)prs_arg)->var_LHS));
       
       if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching former scv_xpr defining %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$1,((prs_sct *)prs_arg)->var_LHS->nm,((prs_sct *)prs_arg)->var_LHS->nbr_dim,((prs_sct *)prs_arg)->var_LHS->sz);
-      
     } /* endif LHS_cst */
     
-    (void)ncap_var_write(var,(prs_sct *)prs_arg);
-    (void)nco_var_free(var);
-    if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
+   (void)ncap_var_write(var,(prs_sct *)prs_arg);
+
+   if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(ncap_err_sng);
-  } /* endif */
+ 
+
   $1=(char *)nco_free($1);
 } /* end out_var_xpr '=' scv_xpr */
 | out_var_xpr '=' sng_xpr
 {
-  int rcd_lcl;
-  int var_id;
+
   var_sct *var;
-  rcd_lcl=nco_inq_varid_flg(((prs_sct *)prs_arg)->out_id,$1,&var_id);
-  if(rcd_lcl == NC_NOERR){
-    (void)sprintf(ncap_err_sng,"Warning: Variable %s has aleady been saved in %s",$1,((prs_sct *)prs_arg)->fl_out);
-    (void)yyerror(ncap_err_sng);  
-  }else{  
-    var=(var_sct *)nco_calloc((size_t)1,sizeof(var_sct));
-    var->nm=strdup($1);
-    var->nbr_dim=0;
-    var->dmn_id=(int *)NULL;
-    var->sz=strlen($3)+1;
-    var->val.cp=(unsigned char *)strdup($3);
-    var->type=NC_CHAR;
-    (void)cast_nctype_void((nc_type)NC_CHAR,&var->val);
-    (void)ncap_var_write(var,(prs_sct *)prs_arg);
-    (void)nco_var_free(var);
-    if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
-    (void)yyerror(ncap_err_sng);
-  } /* endelse */
+
+  var=(var_sct *)nco_calloc((size_t)1,sizeof(var_sct));
+  var->nm=strdup($1);
+  var->nbr_dim=0;
+  var->dmn_id=(int *)NULL;
+  var->sz=strlen($3)+1;
+  var->val.cp=(unsigned char *)strdup($3);
+  var->type=NC_CHAR;
+  (void)cast_nctype_void((nc_type)NC_CHAR,&var->val);
+  (void)ncap_var_write(var,(prs_sct *)prs_arg);
+  
+  if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
+  (void)yyerror(ncap_err_sng);
+
   $1=(char *)nco_free($1);
   $3=(char *)nco_free($3);
 } /* end out_var_xpr '=' sng_xpr */
@@ -579,7 +561,7 @@ var_xpr '+' var_xpr { /* Begin Addition */
   $$=ncap_var_abs($3);
 } /* end ABS */
 | RDC '(' var_xpr ')' {
-  $$=ncap_var_abs($3);
+   $$=ncap_var_abs($3);
   /* fxm Finish avg,min,max,ttl */
   /* $$=nco_var_avg($3,dim,dmn_nbr,nco_op_typ); */
   /* if(prs_arg->nco_op_typ == nco_op_avg) (void)nco_var_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val); */
@@ -667,6 +649,40 @@ ncap_aed_lookup /* [fnc] Find location of existing attribute or add new attribut
   return (*(prs_arg->att_lst))[size];
 } /* end ncap_aed_lookup() */
 
+
+
+var_sct *                      /*I [sct] varibale in list */
+ncap_var_lookup
+( var_sct *var,   /* I  [sct] variable  */
+ prs_sct *prs_arg,             /* I/O [sct] contains var list */
+ const bool add)              /* I if not in list then add to list */          
+{
+  int idx;
+  int size;
+
+  var_sct *ptr_var; 
+  
+  size = *(prs_arg->nbr_var);
+
+  for(idx=0; idx<size ; idx++) {
+    ptr_var=(*(prs_arg->var_lst))[idx];
+
+    if( ptr_var==NULL || ptr_var->nm==NULL || strcmp(var->nm,ptr_var->nm)) continue;    
+        
+    return ptr_var;
+  }     
+  if(!add) return NULL;
+
+  *(prs_arg->var_lst)=(var_sct **)nco_realloc(*(prs_arg->var_lst),(size+1)*sizeof(var_sct*));
+  ++*(prs_arg->nbr_var);
+  (*(prs_arg->var_lst))[size]=var;
+   
+  return NULL;
+}
+
+
+
+ 
 int /* [rcd] Return code */
 yyerror /* [fnc] Print error/warning/info messages generated by parser */
 (const char * const err_sng_lcl) /* [sng] Message to print */
