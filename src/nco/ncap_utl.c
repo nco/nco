@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.115 2005-04-10 19:45:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.116 2005-04-19 11:30:04 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -7,6 +7,8 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "ncap.h" /* netCDF arithmetic processor */
+extern char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in ncap_lex.l) */
+
 
 var_sct *
 ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
@@ -23,14 +25,56 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
   int rcd;
   int fl_id;
 
+  bool DEF_VAR=False;
+
   dmn_sct *dmn_in; 
   dmn_sct **dim_new=NULL_CEWI;
   
+  var_sct var_lkp;
   var_sct *var;
+  
+  /* we have several possiblilties here */
+  /* var NOT in I or O
+     var in I
+     var in O (defined and filled)
+     var in 0 (defined but empty)
+
+     we need to handle the case 
+     var in I, var in O (defined & empty) with care.
+     This can occur when a var is on the LHS and RHS ie
+     two=two^6
+
+     INITIAL SCAN
+     check var list for var -- 
+     if present fill with nulls and return
+     Not present check output then input
+     
+     FINAL SCAN
+     check var list for var -- 
+     if present & defined + filled return var from output
+     if present & defined + unfilled reurn var from input if defined
+     Not present check output then input
+  */     
+     
+  var_lkp.nm=strdup(var_nm);
+  var=ncap_var_lookup(&var_lkp,((prs_sct*)prs_arg), False);
+  
+  (void)nco_free(var_lkp.nm);
+
+  if(prs_arg->ntl_scn && var) {
+    /* with nulls */
+    var->val.vp = (void *)nco_calloc((size_t)var->sz,nco_typ_lng(var->type));
+       return var;	
+  }
+
+  /* check if var in list has been defined but NOT filled */
+  if(!prs_arg->ntl_scn && var && var->sz >0 ) DEF_VAR=True; 
+       	 
+
 
   /* Check output file for var */  
   rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
-  if(rcd == NC_NOERR){
+  if(rcd == NC_NOERR && !DEF_VAR){
     fl_id=prs_arg->out_id;
   }else{
     /* Check input file for ID */
@@ -110,6 +154,7 @@ ncap_var_write
 (var_sct *var,
  prs_sct *prs_arg)
 {
+
   /* Purpose: Define variable in output file and write variable */
   const char mss_val_sng[]="missing_value"; /* [sng] Unidata standard string for missing value */
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
@@ -117,30 +162,83 @@ ncap_var_write
   int fll_md_old; /* [enm] Old fill mode */
   int rcd; /* [rcd] Return code */
   int var_out_id;
+
+  var_sct var_lkp;
+  var_sct *ptr_var;
+
+  bool DEF_VAR; /* True if var has been defined in O in initial scan */
+  
   
 #ifdef NCO_RUSAGE_DBG
   long maxrss; /* [B] Maximum resident set size */
 #endif /* !NCO_RUSAGE_DBG */
 
-  /* Put file in define mode to allow metadata writing */
-  (void)nco_redef(prs_arg->out_id);
+  /* if inital scan save var in list, free vp */
+  if(prs_arg->ntl_scn) {
+    var->val.vp = nco_free(var->val.vp);
+    (void)ncap_var_lookup(var,((prs_sct*)prs_arg), True);
+    return True;
+  }  
   
-  /* Define variable */   
-  (void)nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
-  /* Put missing value */  
-  if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,mss_val_sng,var->type,1,var->mss_val.vp);
+  /* proceed with final scan */
+
+  /* check if var is in table AND has been defined */  
+  /* note var & ptr_var are different */
+  var_lkp.nm=strdup(var->nm);
+  ptr_var= ncap_var_lookup(&var_lkp,((prs_sct*)prs_arg), False);
+
+  DEF_VAR = ( ptr_var && ptr_var->sz > 0  ? True : False );
+
+
+  rcd=nco_inq_varid_flg(((prs_sct *)prs_arg)->out_id,var->nm,&var_out_id);
+
+  if(!DEF_VAR) { 
+  /* Check to see if variable has already been defined & written */
+    if(rcd == NC_NOERR){
+    (void)sprintf(ncap_err_sng,"Warning: Variable %s has aleady been saved in %s",var->nm,((prs_sct *)prs_arg)->fl_out);
+    (void)yyerror(ncap_err_sng);
+    var = nco_var_free(var);
+    return False;
+    }
+  }
+
   
-  /* Write/overwrite scale_factor and add_offset attributes */
-  if(var->pck_ram){ /* Variable is packed in memory */
-    if(var->has_scl_fct) (void)nco_put_att(prs_arg->out_id,var_out_id,scl_fct_sng,var->typ_upk,1,var->scl_fct.vp);
-    if(var->has_add_fst) (void)nco_put_att(prs_arg->out_id,var_out_id,add_fst_sng,var->typ_upk,1,var->add_fst.vp);
-  } /* endif pck_ram */
+  if(DEF_VAR && (var->pck_ram || var->has_mss_val) ) {
+       /* Put file in define mode to allow metadata writing */
+       (void)nco_redef(prs_arg->out_id);
 
-  /* Turn off default filling behavior to enhance efficiency */
-  rcd=nco_set_fill(prs_arg->out_id,NC_NOFILL,&fll_md_old);
+       /* Put missing value */  
+	if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,mss_val_sng,var->type,1,var->mss_val.vp);
+  
+       /* Write/overwrite scale_factor and add_offset attributes */
+       if(var->pck_ram){ /* Variable is packed in memory */
+	 if(var->has_scl_fct) (void)nco_put_att(prs_arg->out_id,var_out_id,scl_fct_sng,var->typ_upk,1,var->scl_fct.vp);
+	  if(var->has_add_fst) (void)nco_put_att(prs_arg->out_id,var_out_id,add_fst_sng,var->typ_upk,1,var->add_fst.vp);
+	} /* endif pck_ram */
+	
+        /* Take output file out of define mode */
+       (void)nco_enddef(prs_arg->out_id);
+      
+  }
 
-  /* Take output file out of define mode */
-  (void)nco_enddef(prs_arg->out_id);
+  if(!DEF_VAR) {
+      /* Put file in define mode to allow metadata writing */
+      (void)nco_redef(prs_arg->out_id);
+  
+      /* Define variable */   
+      (void)nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
+      /* Put missing value */  
+      if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,mss_val_sng,var->type,1,var->mss_val.vp);
+  
+      /* Write/overwrite scale_factor and add_offset attributes */
+      if(var->pck_ram){ /* Variable is packed in memory */
+	if(var->has_scl_fct) (void)nco_put_att(prs_arg->out_id,var_out_id,scl_fct_sng,var->typ_upk,1,var->scl_fct.vp);
+	if(var->has_add_fst) (void)nco_put_att(prs_arg->out_id,var_out_id,add_fst_sng,var->typ_upk,1,var->add_fst.vp);
+      } /* endif pck_ram */
+
+      /* Take output file out of define mode */
+      (void)nco_enddef(prs_arg->out_id);
+    } /* end if */
   
   /* Write variable */ 
   if(var->nbr_dim == 0){
@@ -156,9 +254,14 @@ ncap_var_write
   maxrss=nco_mmr_rusage_prn((int)0);
 #endif /* !NCO_RUSAGE_DBG */
 
+  /* finally free varible */
+  var = nco_var_free(var);
+
+  /* use sz to keep track of defined & written variables */
+  if(DEF_VAR) ptr_var->sz=-1;
   return rcd;
 } /* end ncap_var_write() */
-
+  
 sym_sct *
 ncap_sym_init
 (const char * const sym_nm,
