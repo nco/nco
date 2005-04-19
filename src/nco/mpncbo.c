@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.3 2005-04-18 19:29:45 gayathri_aiyar Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.4 2005-04-19 04:37:22 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator - MPI */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.3 2005-04-18 19:29:45 gayathri_aiyar Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.3 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.4 2005-04-19 04:37:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.4 $";
   const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim;
@@ -179,7 +179,7 @@ main(int argc,char **argv)
 
   int a[2], b[2], c[1]; /* GV - buffers for MPI_Send, Recv */
 
-  lmt_sct *lmt;
+  lmt_sct **lmt;
   
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may bealloc()'d from NULL with -c option */
@@ -365,7 +365,7 @@ main(int argc,char **argv)
   /* We now have final list of variables to extract. Phew. */
   
   /* Find coordinate/dimension values associated with user-specified limits */
-  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_IDX_CNV);
+  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
   
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
@@ -784,13 +784,16 @@ main(int argc,char **argv)
   if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
   if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+  if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
+  if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
   /* Free lists of strings */
-  if(fl_lst_abb != NULL) fl_lst_abb=(char **)nco_free(fl_lst_abb);
-  if(fl_nbr > 0) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr);
+  if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+  if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+  if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
   if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
   /* Free limits */
   for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-  if(lmt_nbr > 0) lmt=(lmt_sct *)nco_free(lmt);
+  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
   /* Free dimension lists */
   if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
   if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.19 2005-01-07 23:54:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.20 2005-04-19 04:37:22 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -62,6 +62,11 @@ void
 nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
 (const int out_id, /* I [id] netCDF output-file ID */
  const char * const hst_sng); /* I [sng] String to add to history attribute */
+
+void 
+nco_mpi_att_cat /* [fnc] Add MPI tasks global attribute */
+(const int out_id, /* I [id] netCDF output-file ID */
+ const int mpi_nbr); /* I [nbr] MPI nodes/tasks number */
 
 aed_sct * /* O [sct] List of attribute edit structures */
 nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure list */

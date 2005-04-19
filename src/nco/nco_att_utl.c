@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.49 2005-04-18 19:29:46 gayathri_aiyar Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.50 2005-04-19 04:37:22 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -804,8 +804,6 @@ nco_thr_att_cat /* [fnc] Add threading global attribute */
 
 } /* end nco_thr_att_cat() */
  
-/* GV - MPI */
-#ifdef ENABLE_MPI
 void 
 nco_mpi_att_cat /* [fnc] Add MPI tasks global attribute */
 (const int out_id, /* I [id] netCDF output-file ID */
@@ -813,7 +811,7 @@ nco_mpi_att_cat /* [fnc] Add MPI tasks global attribute */
 {
   /* Purpose: Write number of tasks information to global metadata */
   aed_sct mpi_nbr_aed;
-  char att_nm_nbr[]="nco_mpi_tasks_number";
+  char att_nm_nbr[]="nco_mpi_task_number";
   nco_long mpi_nbr_lng; /* [nbr] MPI tasks number copy */
   ptr_unn att_val;
   
@@ -821,7 +819,7 @@ nco_mpi_att_cat /* [fnc] Add MPI tasks global attribute */
   mpi_nbr_lng=mpi_nbr;
   /* Insert tasks number into value */
   att_val.lp=&mpi_nbr_lng;
-  /* Initialize nco_openmp_thread_number attribute edit structure */
+  /* Initialize nco_mpi_task_number attribute edit structure */
   mpi_nbr_aed.att_nm=att_nm_nbr;
   mpi_nbr_aed.var_nm=NULL;
   mpi_nbr_aed.id=NC_GLOBAL;
@@ -834,4 +832,3 @@ nco_mpi_att_cat /* [fnc] Add MPI tasks global attribute */
   (void)nco_aed_prc(out_id,NC_GLOBAL,mpi_nbr_aed);
 
 } /* end nco_mpi_att_cat() */
-#endif /* ENABLE_MPI */

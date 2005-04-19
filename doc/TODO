@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.484 2005-04-18 06:30:16 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.485 2005-04-19 04:37:20 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -298,7 +298,10 @@ nco508. Fix ncwa double-free's seen on soot
 nco511. Copy new regression tests from nco_tst.pl to nco_bm.pl
 nco512. ncflint: perfect memory usage
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncflint -O -C -d lon,1 ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
-nco513. 
+nco513. MPI test fails when hyperslabbing
+        mpirun -np 2 ${MY_BIN_DIR}/mpncbo -O -C -d lon,1 ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
+nco514. Unresolved problem with MPI builds calling superfluous linker steps
+        make MPI=Y > foo 2>&1
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

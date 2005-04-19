@@ -1,3 +1,23 @@
+2005-04-18  Charlie Zender  <zender@uci.edu>
+
+	* With following six modifications, mpncbo compiles, runs and
+	gives apparently correct results on my laptop with default run.
+	However, mpncbo exits with errors when hyperslabs are specified,
+	e.g., mpncbo -d lon,1 ...
+	
+	* Synchronize mpncbo memory clean-up with latest ncbo
+
+	* Fix lmt handling in mpncbo as per 20050416 changes
+
+	* Add prototype for nco_mpi_att_cat() to nco_att_utl.h
+
+	* Add mpncbo synonym for ncbo in prg_prs() and nco_op_typ_get()
+
+	* Remove #ifdefs around nco_mpi_att_cat() which requires no
+	additional MPI-specific headers so is always safe to compile
+
+	* Change MPI attribute to nco_mpi_task_number
+
 2005-04-18  Gayathri Venkitachalam  <gvenkita@uci.edu>
 
 	* Checked in mpncbo.c & nco_att_utl.c after updating them to
