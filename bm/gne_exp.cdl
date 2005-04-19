@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/bm/gne_exp.cdl,v 1.2 2005-03-23 01:06:03 mangalam Exp $
+// $Header: /data/zender/nco_20150216/nco/bm/gne_exp.cdl,v 1.3 2005-04-19 21:19:49 mangalam Exp $
 // Purpose: CDL file to generate a netCDF file that approximates a gene expression data set.
 
 // Usage:
@@ -21,15 +21,15 @@ dimensions:
     cell=4;
 //# of parameters per 'gene' or ge_atom)
     params=10;
-//# of genes thingies tested for - this might be unlimited for later additions
-    ge_atoms=56000;
+//# of genes thingies tested for - let it grow
+    ge_atoms=unlimited;
     
 variables:
-    int rep(rep);
-    int treat(treat);
-    int cell(cell);
-    int params(params);
-    int ge_atoms(ge_atoms);
-    float base(rep,treat,cell,params,ge_atoms);
+    double ge_atoms(ge_atoms);
+    double rep(rep);
+    double treat(treat);
+    double cell(cell);
+    double params(params);
+    float base(ge_atoms,rep,treat,cell,params);
 data:
 }

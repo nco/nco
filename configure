@@ -22145,7 +22145,7 @@ echo "$as_me: Bad news: Simple program does not compile and link to libnetcdf.a 
 		case ${CC} in
 # Pass -X 64 to symbol extractor or libtool fails
 		    gcc ) CFLAGS="${CFLAGS} -maix64" ; ;;
-		    xlc* ) CFLAGS="${CFLAGS} -q64" ; LDFLAGS="${LDFLAGS} -q64" ; AR="ar -X 64" ; NM="nm -B -X 64" ; ;;
+		    xlc* ) CFLAGS="${CFLAGS} -q64" ; CXXFLAGS="${CXXFLAGS} -q64 "; LDFLAGS="${LDFLAGS} -q64 " ; AR="ar -X 64" ; NM="nm -B -X 64" ; ;;
 		esac
 		;;
 	    sparc-sun-solaris2 )
@@ -28168,3 +28168,11 @@ echo "CXX	= ${CXX}"
 echo "CXXFLAGS  = ${CXXFLAGS}"
 echo "HOST	= ${HOST}"
 echo "LDFLAGS   = ${LDFLAGS}"
+
+# Inform users of the very useful configure.eg
+echo ""
+echo "*******************************************************************"
+echo "If the build process fails, please examine the file 'configure.eg'"
+echo "in the top-evel directory.  It contains additional info about"
+echo "building NCO for various platforms and compilers."
+echo "*******************************************************************"

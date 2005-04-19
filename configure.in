@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.113 2005-03-31 01:02:07 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.114 2005-04-19 21:19:42 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -172,7 +172,7 @@ AC_CHECK_LIB([netcdf],[nc_open],[
 		case ${CC} in 
 # Pass -X 64 to symbol extractor or libtool fails
 		    gcc ) CFLAGS="${CFLAGS} -maix64" ; ;;
-		    xlc* ) CFLAGS="${CFLAGS} -q64" ; LDFLAGS="${LDFLAGS} -q64" ; AR="ar -X 64" ; NM="nm -B -X 64" ; ;;
+		    xlc* ) CFLAGS="${CFLAGS} -q64 " ; CXXFLAGS="${CXXFLAGS} -q64 "; LDFLAGS="${LDFLAGS} -q64 " ; AR="ar -X 64" ; NM="nm -B -X 64" ; ;;
 		esac
 		;;
 	    sparc-sun-solaris2 ) 
@@ -454,12 +454,12 @@ case ${host} in
 # -qmaxmem=num Limit memory used by space intensive optimizations to <num> kilobytes
 # -qspill=size Size in B of register allocation spill area, mie needs > 1040 B
 # -qlanglvl=extc99: Include orthogonal extensions to C99 standard
-	    xlc* ) CFLAGS="${CFLAGS} -qlanglvl=extc99 -qmaxmem=8192 -qspill=2048" ; ;;
+	    xlc* ) CFLAGS="${CFLAGS} -qlanglvl=extc99 -qmaxmem=8192 -qspill=2048 -q64" ; ;;
 #    CPPFLAGS="${CPPFLAGS} -qlanglvl=extended" 
 	esac
 	case ${CXX} in 
 # -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
-	    xlC* ) LDFLAGS="${LDFLAGS} -bh:5" ; ;;
+	    xlC* ) LDFLAGS="${LDFLAGS} -bh:5" ;  ; ;;
 	esac
 esac
 # End Default OS-specific Compiler Arguments
@@ -737,3 +737,11 @@ echo "CXX	= ${CXX}"
 echo "CXXFLAGS  = ${CXXFLAGS}"
 echo "HOST	= ${HOST}"
 echo "LDFLAGS   = ${LDFLAGS}"
+
+# Inform users of the very useful configure.eg
+echo ""
+echo "*******************************************************************"
+echo "If the build process fails, please examine the file 'configure.eg'"
+echo "in the top-evel directory.  It contains additional info about"
+echo "building NCO for various platforms and compilers."
+echo "*******************************************************************"
