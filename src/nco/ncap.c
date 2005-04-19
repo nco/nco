@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.158 2005-04-18 03:52:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.159 2005-04-19 11:27:07 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -74,6 +74,10 @@ size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremente
 size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap_lex.l) */
 char **ncap_fl_spt_glb; /* [fl] Script file */
 
+void glb_init_free(bool action); 
+
+
+
 int 
 main(int argc,char **argv)
 {
@@ -116,8 +120,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.158 2005-04-18 03:52:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.158 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.159 2005-04-19 11:27:07 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.159 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -177,6 +181,7 @@ main(int argc,char **argv)
   int nbr_var_fl;/* number of vars in a file */
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_prc; /* nbr_var_prc gets incremented */
+  int nbr_var_ycc=0; /* nbr of vars to be defined after 1st parse */
   int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
   int nbr_dmn_in=int_CEWI; /* Number of dimensions in dim_in */
   int nbr_dmn_ass=int_CEWI;/* Number of dimensions in temporary list */
@@ -208,7 +213,8 @@ main(int argc,char **argv)
   var_sct **var_out;
   var_sct **var_prc;
   var_sct **var_prc_out;
-  
+  var_sct **var_ycc=NULL;  
+
   aed_sct **att_lst=NULL;
   
   prs_sct prs_arg; /* [sct] Global information required in parser routines */
@@ -482,7 +488,7 @@ main(int argc,char **argv)
   
   (void)nco_enddef(out_id);
   
-  /* Set arguments for second scan and script execution */
+  /* Set arguments for  script execution */
   prs_arg.fl_in=fl_in; /* [sng] Input data file */
   prs_arg.in_id=in_id; /* [id] Input data file ID */
   prs_arg.fl_out=fl_out; /* [sng] Output data file */
@@ -495,14 +501,23 @@ main(int argc,char **argv)
   prs_arg.nbr_dmn_out=&nbr_dmn_out; /* number of dims in above list */
   prs_arg.sym_tbl=sym_tbl; /* [fnc] Symbol table for functions */
   prs_arg.sym_tbl_nbr=sym_tbl_nbr; /* [nbr] Number of functions in table */
-  prs_arg.ntl_scn=False; /* [flg] Initial scan of script */
+  /* prs_arg.ntl_scn=False;   [flg] Initial scan of script */
   prs_arg.var_LHS=NULL; /* [var] LHS cast variable */
+  prs_arg.var_lst=&var_ycc; /* list of variables to be defined after 1st parse */
+  prs_arg.nbr_var=&nbr_var_ycc; /* [nbr] number in above list */
   prs_arg.nco_op_typ=nco_op_nil; /* [enm] Operation type */
+
   
-  /* Initialize line counter */
-  ncap_ln_nbr_crr=(size_t *)nco_realloc(ncap_ln_nbr_crr,ncap_ncl_dpt_crr+1UL); 
-  ncap_ln_nbr_crr[ncap_ncl_dpt_crr]=1UL; /* [cnt] Line number incremented in ncap_lex.l */
-  if(fl_spt_usr == NULL){
+
+
+  /* Do two parses. 1st parse define vars in output file 
+     2nd parse initialize vars */
+  for(jdx=0; jdx < 2 ; jdx++){
+
+    prs_arg.ntl_scn = (jdx==0 ? True: False);
+      
+    
+if(fl_spt_usr == NULL){
     /* No script file specified, look for command-line scripts */
     if(nbr_spt == 0){
       (void)fprintf(stderr,"%s: ERROR no script file or command line scripts specified\n",prg_nm_get());
@@ -527,12 +542,35 @@ main(int argc,char **argv)
     } /* end if */
   } /* end else script file */
   
-  /* Copy script file name to global variable */
-  ncap_fl_spt_glb=(char **)nco_realloc(ncap_fl_spt_glb,ncap_ncl_dpt_crr+1UL); 
-  ncap_fl_spt_glb[ncap_ncl_dpt_crr]=fl_spt_usr;
   
+
+  /* Initialize line counter etc */
+ (void)glb_init_free(True); 
+  ncap_fl_spt_glb[ncap_ncl_dpt_crr]=fl_spt_usr;
+
   /* Invoke parser */
   rcd=yyparse((void *)&prs_arg);
+
+  /* tidy up */  
+  if(nbr_spt >0 ) fl_spt_usr=nco_free(fl_spt_usr);
+  (void)glb_init_free(False); 
+
+
+  if(!prs_arg.ntl_scn) continue;
+
+  
+  (void)nco_redef(out_id);
+   for(idx=0 ; idx < nbr_var_ycc ; idx++) { 
+    /* define variables in output */
+     printf("defined in output %s\n", var_ycc[idx]->nm);
+     (void)nco_def_var(out_id,var_ycc[idx]->nm,var_ycc[idx]->type,var_ycc[idx]->nbr_dim,var_ycc[idx]->dmn_id,&var_id);
+     var_ycc[idx]->val.vp= nco_free(var_ycc[idx]->val.vp);
+   }
+  (void)nco_enddef(out_id);
+
+
+ 
+  } /* end for(jdx */
   
   /* Get number of variables in output file */
   rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int*)NULL);
@@ -712,3 +750,26 @@ main(int argc,char **argv)
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
+
+
+
+/* initialize & free Global variables (line numbers and include stuff)*/
+void
+glb_init_free(
+bool action)
+{
+ 
+  if(action){
+    ncap_ncl_dpt_crr=0UL; 
+    ncap_ln_nbr_crr=(size_t *)nco_realloc(ncap_ln_nbr_crr,ncap_ncl_dpt_crr+1UL); 
+    ncap_ln_nbr_crr[ncap_ncl_dpt_crr]=1UL; 
+    ncap_fl_spt_glb=(char **)nco_realloc(ncap_fl_spt_glb,ncap_ncl_dpt_crr+1UL); 
+  }
+
+  if(!action) {
+    ncap_ncl_dpt_crr=0UL; 
+    ncap_ln_nbr_crr = nco_free(ncap_ln_nbr_crr);
+    ncap_fl_spt_glb=nco_free(ncap_fl_spt_glb);
+  }
+
+}
