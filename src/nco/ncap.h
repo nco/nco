@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.69 2005-04-10 19:45:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.70 2005-04-19 11:26:09 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -92,6 +92,8 @@ typedef struct{ /* prs_sct */
   int sym_tbl_nbr; /* [nbr] Number of functions in table */
   bool ntl_scn; /* [flg] Initial scan of script */
   var_sct *var_LHS; /* [var] LHS cast variable */
+  var_sct ***var_lst; /* list of variables to be defined in O */
+  int *nbr_var;        /* [nbr] of variables in above list */ 
   int nco_op_typ; /* [enm] Operation type */
 } prs_sct;
 
@@ -131,7 +133,16 @@ ncap_aed_lookup /* [fnc] Find location of existing attribute or add new attribut
  prs_sct * const prs_arg,  /* I/O [sct] contains attribute list  */
  const bool update); /* I [flg] Delete existing value or add new attribute to list */
 
+
+var_sct *                      /*I [sct] varibale in list */
+ncap_var_lookup
+(var_sct *var,   /* I  [sct] variable  */
+ prs_sct *prs_arg,             /* I/O [sct] contains var list */
+ const bool add);              /* I if not in list then add to list */          
+
+
 void nco_var_free_wrp(var_sct **);
+
 
 nodeType * /* O [unn] Syntax tree node */
 opr_ctl /* [fnc] Operation controller function Nie02 opr() */
