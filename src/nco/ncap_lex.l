@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.39 2005-04-13 06:13:22 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.40 2005-04-19 11:31:49 hmb Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -458,7 +458,7 @@ M_PI {return NAMED_CONSTANT;}
   if(!strcmp(var_nm,"global")) var_id=NC_GLOBAL; else rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
   
   /* We are on RHS so return value of attribute (if available) to parser
-     During initial scan, just return attributes on RHS */
+     During initial scan, just return attributes on RHS 
   if(prs_arg->ntl_scn){
     if(!RHS){
       lval_ptr->aed.att_nm=(char *)strdup(att_nm);
@@ -466,9 +466,10 @@ M_PI {return NAMED_CONSTANT;}
       return OUT_ATT;
     }else{
       return IGNORE;
-    } /* endelse */
-  } /* endif */
-  
+    } 
+  } 
+  */  
+
   if(RHS){
     /* First check if attribute has already been saved in symbol table
        If so then obtain and return value, else check input file
@@ -597,7 +598,7 @@ M_PI {return NAMED_CONSTANT;}
   if(dbg_lvl_get() > 2) (void)fprintf(stderr,"Interpreting %s as LHS_SUBSCRIPT\n",yytext);
   if(yyleng < 3) goto end_LHS_sbs;
 
-  if(prs_arg->ntl_scn) goto end_LHS_sbs;  
+  /* if(prs_arg->ntl_scn) goto end_LHS_sbs; */  
   /* Copy token into user memory and turn into list of dimension names */
   sbs_sng=(char *)nco_malloc(yyleng*sizeof(char));
   strcpy(sbs_sng,&yytext[1]);
