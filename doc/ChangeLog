@@ -1,10 +1,17 @@
+2005-04-19  Charlie Zender  <zender@uci.edu>
+
+	* Changed/added 'make tst' targets in bld/Makefile to use
+	nco_bm.pl instead of nco_tst.pl
+
+	* Finished ncecat cleanup
+
 2005-04-19  Gayathri Venkitachalam  <gvenkita@uci.edu>
 
 	* (Apparently) fixed the bug in mpncbo while hyperslabbing
 
 2005-04-19  Charlie Zender  <zender@soot.ess.uci.edu>
 
-	* Inital ncecat memory cleanup---still one problem with dimension list
+	* Initial ncecat memory cleanup---still one problem with dimension list
 
 2005-04-19  Harry Mangalam <hjm@tacgi.com>
 	* Large cleanup of benchmark code.

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.94 2005-04-20 04:41:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.95 2005-04-20 05:32:49 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.94 2005-04-20 04:41:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.94 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.95 2005-04-20 05:32:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.95 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRv:xZ-:";
 
   dmn_sct *rec_dmn;
@@ -503,7 +503,7 @@ main(int argc,char **argv)
   for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
   if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
   /* Free dimension lists */
-  if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr-1); /* NB: ncecat has -1 here */
+  if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr-1); /* NB: ncecat has one fewer input than output dimension */
   if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr); 
   /* Free variable lists */
   if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);

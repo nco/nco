@@ -4,7 +4,7 @@
 # this warning will be removed and the script will proceed without the warning that will cause
 # it to hang on startup.
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.8 2005-04-19 21:19:49 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.9 2005-04-20 05:32:48 zender Exp $
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
 # <BUILD_ROOT>/nco/bld/nco_bm.pl ncra # Test one operator
@@ -986,7 +986,7 @@ $expected= 900 ;
 $operator="net";
 ####################
 $test[0]='/bin/rm -f foo.nc;mv in.nc in_tmp.nc';
-$test[1]='ncks -O -v one -p ftp://sand.ess.uci.edu/pub/zender/nco -l ./ in.nc foo.nc';
+$test[1]='ncks -O -v one -p ftp://dust.ess.uci.edu/pub/zender/nco -l ./ in.nc foo.nc';
 $test[2]='ncks -C -H -s "%e" -v one foo.nc';
 $test[3]='mv in_tmp.nc in.nc';
 $description="nco 1: FTP protocol (fails if unable to anonymous FTP to dust.ess.uci.edu)";
@@ -1008,7 +1008,7 @@ $description="nco 3: msrcp protocol(fails if not at NCAR)";
 $expected= 1; 
 &go();
 $test[0]='/bin/rm -f foo.nc;mv in.nc in_tmp.nc';
-$test[0]='ncks -O -v one -p http://sand.ess.uci.edu/pub/zender/nco -l ./ in.nc foo.nc';
+$test[0]='ncks -O -v one -p http://dust.ess.uci.edu/pub/zender/nco -l ./ in.nc foo.nc';
 $test[1]='ncks -C -H -s "%e" -v one foo.nc';
 $test[3]='mv in_tmp.nc in.nc';
 $description="nco 4: HTTP protocol (Will always fail until HTTP implemented in NCO) ";

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.273 2005-04-14 06:22:50 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.274 2005-04-20 05:32:46 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1274,6 +1274,23 @@ rpmnet:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., su
 	ncftpput upload.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-2.5.1-*.src.rpm /usr/src/redhat/RPMS/i386/nco-2.5.1-*.i386.rpm /usr/src/redhat/SOURCES/nco-2.5.1.tar.gz
 rpm_cln:
 	rpm --erase $(MDL_RPM_NST_NM)
+# Targets in bm
+bench:	bm
+bnch:	bm
+bm:	
+	cd ${MY_BLD_DIR}; \
+	env MY_BIN_DIR=${MY_BIN_DIR} MY_DAT_DIR=${MY_DAT_DIR} ../bm/nco_bm.pl --bench --udpreport
+file:	fl
+fl:	
+	cd ${MY_BLD_DIR}; \
+	env MY_BIN_DIR=${MY_BIN_DIR} MY_DAT_DIR=${MY_DAT_DIR} ../bm/nco_bm.pl --test_files=A --udpreport
+regression:	tst
+rgr:	tst
+test:	tst
+tst:	dat
+#	env MY_BIN_DIR=${MY_BIN_DIR} MY_DAT_DIR=${MY_DAT_DIR} ./nco_tst.pl
+	cd ${MY_BLD_DIR}; \
+	env MY_BIN_DIR=${MY_BIN_DIR} MY_DAT_DIR=${MY_DAT_DIR} ../bm/nco_bm.pl --regress --udpreport
 # Targets in dat
 data:	dat
 dat:	${MY_DAT_DIR}/in.nc
@@ -1284,10 +1301,6 @@ dataclean: dat_cln
 dat_cln:
 	rm -f $(MDL_DAT)
 	cd ${MY_DAT_DIR}; rm -f foo*
-test:	tst
-tst:	dat
-	cd ${MY_BLD_DIR}; \
-	env MY_BIN_DIR=${MY_BIN_DIR} MY_DAT_DIR=${MY_DAT_DIR} ./nco_tst.pl
 tst_ftp:	dat
 	- if test -f ${MY_DAT_DIR}/nco_tst.nc; then printf "" ; else ${MY_BIN_DIR}/ncks -q -R -p ftp://dust.ess.uci.edu/pub/zender/nco -l ${MY_DAT_DIR} nco_tst.nc; if [ $? != 0 ]; then printf "WARNING: Unable to retrieve ftp://dust.ess.uci.edu/pub/zender/nco/nco_tst.nc required for self-test, possible problem with getting through your firewall? Manually download and install in directory ../data to continue self test...\n"; fi; fi
 	cd ${MY_BLD_DIR}; \
