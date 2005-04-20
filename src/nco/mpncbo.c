@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.4 2005-04-19 04:37:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.5 2005-04-20 00:32:15 gayathri_aiyar Exp $ */
 
 /* mpncbo -- netCDF binary operator - MPI */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.4 2005-04-19 04:37:22 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.4 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.5 2005-04-20 00:32:15 gayathri_aiyar Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.5 $";
   const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim;
@@ -460,10 +460,12 @@ main(int argc,char **argv)
 
   MPI_Bcast(fl_out_tmp, fl_nm_lng+1, MPI_CHAR, 0, MPI_COMM_WORLD); 
 
+  /* GV - 04-19-05; was called only by Manager earlier - probably led to hyperslab errors */
+  /* Zero start vectors for all output variables */
+  (void)nco_var_srt_zero(var_out,nbr_xtr);
+
   /* GV - Manager only; Copy variable data for non-processed variables */
   if(my_id == 0){
-    /* Zero start vectors for all output variables */
-    (void)nco_var_srt_zero(var_out,nbr_xtr);
     TOKEN_FREE=False;
     (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
     TOKEN_FREE=True;

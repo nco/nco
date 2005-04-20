@@ -1,3 +1,7 @@
+2005-04-19  Gayathri Venkitachalam  <gvenkita@uci.edu>
+
+	* (Apparently) fixed the bug in mpncbo while hyperslabbing
+
 2005-04-19  Charlie Zender  <zender@soot.ess.uci.edu>
 
 	* Inital ncecat memory cleanup---still one problem with dimension list
