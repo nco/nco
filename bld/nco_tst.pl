@@ -664,7 +664,7 @@ $expected= 900 ;
 $operator="net";
 ####################
 $test[0]='/bin/rm -f foo.nc;mv in.nc in_tmp.nc';
-$test[1]='ncks -O -v one -p ftp://dust.ps.uci.edu/pub/zender/nco -l ./ in.nc foo.nc';
+$test[1]='ncks -O -v one -p ftp://dust.ess.uci.edu/pub/zender/nco -l ./ in.nc foo.nc';
 $test[2]='ncks -C -H -s "%e" -v one foo.nc';
 $test[3]='mv in_tmp.nc in.nc';
 $description="nco 1: FTP protocol (fails if unable to anonymous FTP to dust.ess.uci.edu)";
@@ -686,7 +686,7 @@ $description="nco 3: msrcp protocol(fails if not at NCAR)";
 $expected= 1; 
 &go();
 $test[0]='/bin/rm -f foo.nc;mv in.nc in_tmp.nc';
-$test[0]='ncks -O -v one -p http://dust.ps.uci.edu/pub/zender/nco -l ./ in.nc foo.nc';
+$test[0]='ncks -O -v one -p http://dust.ess.uci.edu/pub/zender/nco -l ./ in.nc foo.nc';
 $test[1]='ncks -C -H -s "%e" -v one foo.nc';
 $test[3]='mv in_tmp.nc in.nc';
 $description="nco 4: HTTP protocol (Will always fail until HTTP implemented in NCO) ";
