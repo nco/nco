@@ -1,10 +1,6 @@
 #!/usr/bin/env perl
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.10 2005-04-20 19:14:22 mangalam Exp $
 
-# 04-05-05: This modification of nco_tst.pl is NOT READY FOR general use yet.  When it is, 
-# this warning will be removed and the script will proceed without the warning that will cause
-# it to hang on startup.
-
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.9 2005-04-20 05:32:48 zender Exp $
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
 # <BUILD_ROOT>/nco/bld/nco_bm.pl ncra # Test one operator
@@ -24,13 +20,6 @@ use vars qw($dbg_lvl $wnt_log $usg $operator @test $description $expected
  @bm_cmd_ary @ifls $localhostname $notbodi $prfxd $prefix $thr_nbr $cmd_ln $arg_nbr
 );
 
-# @ifls = ( # file names for passing to benchmarks
-# 	"gne_exp.nc",
-# 	"sml_stl.nc",
-# 	"stl_5km.nc",
-# 	"ipcc_dly_T85.nc",
-# );
-
 my @fle_cre_dta;  # holds the strings for the fle_cre8() routine 
 my @fle_timg; # holds the timing data for the fle_cre8() routines.
 
@@ -41,14 +30,17 @@ $cmd_ln = "$0 "; $arg_nbr = @ARGV;
 for (my $i=0; $i<$arg_nbr; $i++){ $cmd_ln .= "$ARGV[$i] ";}
 
 $bm_dir = `pwd`; chomp $bm_dir;
+# option flag inits
 $dbg_lvl = 0; # [enm] Print tests during execution for debugging
 $wnt_log = 0;
 $usg   = 0;
 $tst_fle_cr8 = "0";
 $que = 0;
 $udp_reprt = 0;
+
+# other inits
 $localhostname = `hostname`;
-$notbodi = 0;
+$notbodi = 0; # specific for hjm's puny laptop
 $prfxd = 0;
 $prefix = "";
 if ($localhostname !~ "bodi") {$notbodi = 1} # spare the poor laptop
@@ -91,10 +83,6 @@ if ($iosockfound == 0) {
 } else {
     print "IO::Socket ... found!\n\n";
 }
-
-# for hjm's test runs
-#$server_name = "bodi.ess.uci.edu";
-#$server_ip = "128.200.14.155";
 
 # the real udping server
 $server_name = "sand.ess.uci.edu";
@@ -166,13 +154,14 @@ if ($tst_fle_cr8 ne "0"){
 	if ($notbodi && $tst_fle_cr8 =~ /4/) { fle_cre8(3); $fc++; }	
 #	print "Summarizing results of file creation\n";
 	if ($fc >0) {smrz_fle_cre_rslt(); } # prints and udpreports file creation timing
-} elsif (!$rgr) { # just for now - will be removed
-	print "\nFile creation tests skipped.\n\n";
-}
+} #elsif (!$rgr) { # just for now - will be removed
+#	print "\nFile creation tests skipped.\n\n";
+#}
 
 # and now, the REAL benchmarks, set up as the regression tests below to use go() and smrz_rgr_rslt()
 if ($bm) {
 	$prefix = "$timr_app $MY_BIN_DIR"; $prfxd = 1; #embed the timer command and local bin in cmd
+	
 	#################### begin cz benchmark list #8
 	$operator="ncpdq";
 	$description = "ncpdq dimension-order reversal the file ";
@@ -182,10 +171,6 @@ if ($bm) {
 	$test[1] = "$prefix/ncks -C -H -s \"%f\" -v dopey $dta_dir/ipcc_dly_T85-ncpdq.nc"; 
 	$expected = "0.800000";
 	go();
-
-#print "# 8 done - waiting\n";	
-#my $tmp = <STDIN>;
-	
 	
 	#################### begin cz benchmark list #7
 	$operator="ncpdq";
@@ -196,11 +181,6 @@ if ($bm) {
 	$test[1] = "$prefix/ncks -C -H -s \"%f\" -v dopey $dta_dir/ipcc_dly_T85-ncpdq.nc"; 
 	$expected = "0.000000";
 	go();
-#print "#7 done - waiting\n";	
-#my $tmp = <STDIN>;
-
-
-#ncpdq -P all_new ~/nco_test/ipcc_dly_T85.nc ipcc_packed.nc
 	
 	#################### begin cz benchmark list #6
 	$operator="ncap";
@@ -220,9 +200,6 @@ if ($bm) {
 	$test[1] = "$prefix/ncks -C -H -s \"%f\" -v sleepy $dta_dir/ipcc_dly_T85-ncbo.nc";
 	$expected = "0.640000";	
 	go();
-
-#ncap -O -s "nu_var[time,lat,lon,lev]=d4_01*d4_02*(d4_03**2)-(d4_05/d4_06)" ~/nco_test/ipcc_dly_T85.nc  ipcc_dly_T85-ncapped.nc
-
 
 	#################### begin cz benchmark list #3
 	$operator="ncea";
@@ -261,7 +238,6 @@ if ($bm) {
 		$expected = "1.800001";
 		go();
 	}
-	#################### end cz benchmark list #2
 
 	#################### begin cz benchmark list #1
 	$operator="ncwa";
@@ -286,28 +262,10 @@ if ($bm) {
 	$expected = "0.800000";
 	go();
 	
-	
-
 	smrz_rgr_rslt(); # and summarize the benchmarks
 }	
 
 $prfxd = 0;
-# benchmark 1 - ncwa averaging all variables to scalars 
-# maybe pass in the names of the appro files as args?
-
-sub bm_exe{
-	foreach my $cmd (@bm_cmd_ary){
-		my @lary = split /\s/,$cmd;
-		$operator = $lary[0]; # all commnads have to start with the operator command
-# 		foreach my $op (@all_operators) {
-# 			if ($cmd =~ m/^$op/) {
-		$cmd = "$MY_BIN_DIR/$cmd" ;
-# 			}
-# 		}
-		print "$cmd\n";
-	}
-}
-
 
 sub go {
 
