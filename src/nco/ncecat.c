@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.92 2005-04-17 06:09:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.93 2005-04-20 00:09:23 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.92 2005-04-17 06:09:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.92 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.93 2005-04-20 00:09:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.93 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRv:xZ-:";
 
   dmn_sct *rec_dmn;
@@ -485,6 +485,36 @@ main(int argc,char **argv)
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
+  /* ncecat-specific memory cleanup */
+  if(rec_dmn != NULL) rec_dmn=nco_dmn_free(rec_dmn);
+  /* if(prg == ncra || prg == ncrcat) lmt_rec=nco_lmt_free(lmt_rec); */
+
+  /* NCO-generic clean-up */
+  /* Free individual strings */
+  if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
+  if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
+  if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+  if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
+  if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+  /* Free lists of strings */
+  if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+  if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+  if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+  if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
+  /* Free limits */
+  for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+  /* Free dimension lists */
+  /* if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr); */
+  /* if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr); */
+  /* Free variable lists */
+  if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
+  if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);
+  var_prc=(var_sct **)nco_free(var_prc);
+  var_prc_out=(var_sct **)nco_free(var_prc_out);
+  var_fix=(var_sct **)nco_free(var_fix);
+  var_fix_out=(var_sct **)nco_free(var_fix_out);
+ 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
   return EXIT_SUCCESS;

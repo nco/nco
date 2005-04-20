@@ -1,3 +1,7 @@
+2005-04-19  Charlie Zender  <zender@soot.ess.uci.edu>
+
+	* Inital ncecat memory cleanup---still one problem with dimension list
+
 2005-04-19  Harry Mangalam <hjm@tacgi.com>
 	* Large cleanup of benchmark code.
 	* integrated file build, benchmark, and regression testing
