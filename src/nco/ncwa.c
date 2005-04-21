@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.163 2005-04-18 03:52:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.164 2005-04-21 01:15:52 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.163 2005-04-18 03:52:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.163 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.164 2005-04-21 01:15:52 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.164 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -950,7 +950,8 @@ main(int argc,char **argv)
   if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
   if(nbr_dmn_out > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_out);
   /* Free variable lists */
-  if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
+  /* fxm: next line causes memory error */
+  /* if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr); */
   /* fxm: next line breaks regression test */
   /*  if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);*/
   /* fxm: next line breaks regression test */
