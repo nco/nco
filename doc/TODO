@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.487 2005-04-20 05:32:48 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.488 2005-04-22 16:54:22 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -220,11 +220,10 @@ nco351. Ask Jim Edwards to fix make test rtld errors on AIX with OpenMP Related 
 nco352. Probably related to 351: OpenMP directive must appear in main() or ldd will not associate /usr/lib/libxlsmp.a(smprt_64.o) with executable so rtld errors occur on AIX
 ************** Important ***************************
 nco354. ncwa dumps core on AIX ESMF on large files regardless of OpenMP (related to nco334, nco345): 
-ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA_MIE}/mie/mie_1000000.nc ${DATA_MIE}/mie/foo_avg_1000000.nc (works)
-ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA_MIE}/mie/mie_10000000.nc ${DATA_MIE}/mie/foo_avg_10000000.nc (fails)
+ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA}/mie/mie_1000000.nc ${DATA}/mie/foo_avg_1000000.nc (works)
+ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA}/mie/mie_10000000.nc ${DATA}/mie/foo_avg_10000000.nc (fails)
 fails with 
 Segmentation fault (core dumped)
-nco357. Add OpenMP robustness test to nco_bnch.sh
 nco358. Document ncwa -z switch: Get rid of separate -M -m -T?
 nco359. Allow spaces between variables names in -v var_lst arguments (assuming list whitespace is quoted, of course)
 nco362. reduce memory during run by free()'ing var_fix[idx],var_fix_out[idx],var_prc[idx],var_prc_out[idx] after writes
@@ -243,7 +242,6 @@ nco402. Leave alone [un-]packing of fixed variables in arithmetic operators
         See notes about this in nco_var_dfn()
 nco404. Does Ersoy's XML stylesheet nco.css work?
 nco406. Add advantages/disadvantages of NCO (compared to e.g., ANTS) description?
-nco408. How to get new SDO tasks done? How to advertise pay-per-feature requests? How to evaluate responses? GNOME has something similar
 nco421. ncpdq: Make packing offer to move missing value to inside range
 nco425. ncpdq: Make unpacking offer to unpack missing value to preserve its usefulness
 nco426. ncpdq: Make packing offer to pack missing value to the packed type to preserve its usefulness
@@ -283,7 +281,6 @@ nco488. ncatted: Deleting global attributes doesn't work unless 'global' specifi
         ncks ~/foo.nc | m
         ncatted -a Conventions,global,d,, in.nc foo.nc (works)
 nco494. Implement gzip library wrapper library build option for znetCDF?
-nco496. ncwa: See if recent bugfix fixes nco354
 nco499. ncwa: perfect memory usage: No hyperslabs
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -D 3 -O -C -a lat,lon,time -w gw -v PS ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
 nco500. ncwa: perfect memory usage: Hyperslabs
@@ -292,13 +289,13 @@ nco501. ncra: perfect memory usage
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncra -O -C -D 3 -d lon,1 -n 3,4,1 -v one_dmn_rec_var_sng -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc foo.nc > ~/foo 2>&1
 nco505. ncbo: perfect memory usage
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncbo -O -C -d lon,1 ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
-nco508. Fix ncwa double-free's seen on soot
-nco511. Copy new regression tests from nco_tst.pl to nco_bm.pl
 nco512. ncflint: perfect memory usage
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncflint -O -C -d lon,1 ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
-nco514. Unresolved problem with MPI builds calling superfluous linker steps
+nco514. My MPI builds call superfluous linker steps:
         make MPI=Y > foo 2>&1
-nco516. 
+nco516. Implement SDO-wide data pipes, e.g., ncra in*.nc | ncwa | ncrename t,tpt foo.nc
+        This would bring us one step closer to grid services, too
+nco517. 
 
 MPI:
 Archive MPI tests which appear to run correctly 

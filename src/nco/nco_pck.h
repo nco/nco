@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.36 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.37 2005-04-22 16:54:39 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -44,7 +44,7 @@ enum nco_pck_plc{ /* [enm] Packing policy */
 /* Packing type maps: */
 enum nco_pck_map{ /* [enm] Packing conversion map */
   /* NB: Packing to NC_CHAR is implemented but not advertised or supported because 
-     (char)0 == NUL, a special value with implicit conversion rules that are difficult to deal with.
+     (char)0 == NUL, a special value with difficult implicit conversion rules.
      We recommend always packing to type NC_BYTE rather than NC_CHAR */
   nco_pck_map_nil, /* 0 [enm] Do not convert anything, i.e., all types remain unchanged */
   nco_pck_map_hgh_sht, /* 1 [enm] Pack higher precision types to NC_SHORT, pack nothing else
