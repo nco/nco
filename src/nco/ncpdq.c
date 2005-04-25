@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.75 2005-04-18 06:33:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.76 2005-04-25 01:33:39 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -70,7 +70,11 @@ main(int argc,char **argv)
   aed_sct *aed_lst_add_fst=NULL_CEWI;
   aed_sct *aed_lst_scl_fct=NULL_CEWI;
 
+  bool **dmn_rvr_in=NULL; /* [flg] Reverse dimension */
+  bool *dmn_rvr_rdr=NULL; /* [flg] Reverse dimension */
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
+  bool EXTRACT_ALL_COORDINATES=False; /* Option c */
+  bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   bool FORCE_64BIT_OFFSET=False; /* Option Z */
@@ -79,13 +83,8 @@ main(int argc,char **argv)
   bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool NCAR_CCSM_FORMAT;
-  bool EXTRACT_ALL_COORDINATES=False; /* Option c */
-  bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REDEFINED_RECORD_DIMENSION=False; /* [flg] Re-defined record dimension */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
-
-  bool **dmn_rvr_in=NULL; /* [flg] Reverse dimension */
-  bool *dmn_rvr_rdr=NULL; /* [flg] Reverse dimension */
 
   char **dmn_rdr_lst_in=NULL_CEWI; /* Option a */
   char **fl_lst_abb=NULL; /* Option n */
@@ -109,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.75 2005-04-18 06:33:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.75 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.76 2005-04-25 01:33:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.76 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.95 2005-04-20 05:32:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.96 2005-04-25 01:33:38 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -61,17 +61,17 @@ int
 main(int argc,char **argv)
 {
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
+  bool EXTRACT_ALL_COORDINATES=False; /* Option c */
+  bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
-  bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   bool FL_LST_IN_APPEND=True; /* Option H */
+  bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   bool FORCE_64BIT_OFFSET=False; /* Option Z */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool NCAR_CCSM_FORMAT;
-  bool EXTRACT_ALL_COORDINATES=False; /* Option c */
-  bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
 
   char **fl_lst_abb=NULL; /* Option a */
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.95 2005-04-20 05:32:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.95 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.96 2005-04-25 01:33:38 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.96 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRv:xZ-:";
 
   dmn_sct *rec_dmn;

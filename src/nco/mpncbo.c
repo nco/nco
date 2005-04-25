@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.6 2005-04-22 00:27:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.7 2005-04-25 01:33:38 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator - MPI */
 
@@ -7,28 +7,28 @@
 
 /* Copyright (C) 1995--2005 Charlie Zender
    
-This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
-The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
-and in the file nco/doc/LICENSE in the NCO source distribution.
-
-As a special exception to the terms of the GPL, you are permitted 
-to link the NCO source code with the DODS, HDF, netCDF, and UDUnits
-libraries and to distribute the resulting executables under the terms 
-of the GPL, but in addition obeying the extra stipulations of the 
-DODS, HDF, netCDF, and UDUnits licenses.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-See the GNU General Public License for more details.
-
-The original author of this software, Charlie Zender, wants to improve it
-with the help of your suggestions, improvements, bug-reports, and patches.
-Please contact the NCO project at http://nco.sf.net or by writing
-Charlie Zender
-Department of Earth System Science
-University of California at Irvine
-Irvine, CA 92697-3100 */
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
+   The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
+   and in the file nco/doc/LICENSE in the NCO source distribution.
+   
+   As a special exception to the terms of the GPL, you are permitted 
+   to link the NCO source code with the DODS, HDF, netCDF, and UDUnits
+   libraries and to distribute the resulting executables under the terms 
+   of the GPL, but in addition obeying the extra stipulations of the 
+   DODS, HDF, netCDF, and UDUnits licenses.
+   
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+   See the GNU General Public License for more details.
+   
+   The original author of this software, Charlie Zender, wants to improve it
+   with the help of your suggestions, improvements, bug-reports, and patches.
+   Please contact the NCO project at http://nco.sf.net or by writing
+   Charlie Zender
+   Department of Earth System Science
+   University of California at Irvine
+   Irvine, CA 92697-3100 */
 
 /* Usage:
    ncbo -O in.nc in.nc foo.nc
@@ -91,7 +91,10 @@ Irvine, CA 92697-3100 */
 int 
 main(int argc,char **argv)
 {
+  bool DO_CONFORM; /* Did nco_var_cnf_dmn() find truly conforming variables? */
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
+  bool EXTRACT_ALL_COORDINATES=False; /* Option c */
+  bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   bool FILE_1_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FILE_2_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
@@ -101,15 +104,10 @@ main(int argc,char **argv)
   bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool MUST_CONFORM=True; /* Must nco_var_cnf_dmn() find truly conforming variables? */
-  bool DO_CONFORM; /* Did nco_var_cnf_dmn() find truly conforming variables? */
   bool NCAR_CCSM_FORMAT;
-  bool EXTRACT_ALL_COORDINATES=False; /* Option c */
-  bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
-  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
-  
-  bool TOKEN_FREE = True; /* GV - To give sequential file write access to nodes */
   bool NO_MORE_WORK = False; /* GV - To let the workers know when work is over */
-  int fl_nm_lng; /* GV - used to pass the output file name to other nodes */
+  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  bool TOKEN_FREE = True; /* GV - To give sequential file write access to nodes */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -127,13 +125,15 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.6 2005-04-22 00:27:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.6 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.7 2005-04-25 01:33:38 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.7 $";
   const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
   
+  double srt_tm; /* GV - Start the clock */
+
   extern char *optarg;
   extern int optind;
   
@@ -142,28 +142,28 @@ main(int argc,char **argv)
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
-  double srt_tm; /* GV - Start the clock */
+  int abb_arg_nbr=0;
+  int fl_idx;
+  int fl_nbr=0;
+  int fl_nm_lng; /* GV - used to pass the output file name to other nodes */
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
-  int fl_idx;
   int in_id;  
   int in_id_1;  
   int in_id_2;  
-  int out_id;  
-  int abb_arg_nbr=0;
-  int nbr_dmn_fl;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int nbr_var_fl;
-  int nbr_var_fix; /* nbr_var_fix gets incremented */
-  int nbr_var_prc; /* nbr_var_prc gets incremented */
-  int var_lst_in_nbr=0;
-  int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
+  int nbr_dmn_fl;
   int nbr_dmn_xtr;
-  int fl_nbr=0;
+  int nbr_var_fix; /* nbr_var_fix gets incremented */
+  int nbr_var_fl;
+  int nbr_var_prc; /* nbr_var_prc gets incremented */
+  int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nco_op_typ=nco_op_nil; /* [enm] Operation type */
   int opt;
+  int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
   int thr_nbr=0; /* [nbr] Thread number Option t */
+  int var_lst_in_nbr=0;
 
   int nbr_var_wrt=0; /* [nbr] Variables written to output file until now */
   int wrk_id; /* [id] Sender node ID */

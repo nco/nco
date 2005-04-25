@@ -1,3 +1,7 @@
+2005-04-23  Charlie Zender  <zender@uci.edu>
+
+	* Clean up main.c headers a little
+
 2005-04-20  Charlie Zender  <zender@uci.edu>
 
 	* cd to bm for all bm targets in bld/Makefile
@@ -28,7 +32,7 @@
 	ones failed.
 	* added nco commandline to UDP report so can verify timing exactly. 
 	* added --thr_nbr to option list to set # of threads to use (not
-   implemented internally yet tho)
+          implemented internally yet tho)
 	* finished adding those benchmarks that CZ wants added:
 		1 - ncwa averaging all variables to scalars 
 		2 - ncra time-averaging 2^5 (i.e., one month) files (using symlinks)

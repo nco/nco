@@ -1,12 +1,19 @@
-# $Header: /data/zender/nco_20150216/nco/doc/dods.sh,v 1.10 2005-03-07 07:57:30 zender Exp $
+#!/bin/sh
+
+# $Header: /data/zender/nco_20150216/nco/doc/dods.sh,v 1.11 2005-04-25 01:33:22 zender Exp $
 
 # Purpose: Install DODS prior to building NCO as DODS-enabled clients
 
 # Testing: 
 # NCO/SDO DODS server/repositories are at 
 # soot.ess.uci.edu:/var/www/html/dodsdata
+# dust.ess.uci.edu:/var/www/html/dodsdata
 # http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata/
 # http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata/
+
+# Example DODS commands:
+# ncra -O -C -l /tmp -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
+# ncwa -O -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l /tmp -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface pres.sfc.1969.nc ~/foo.nc
 
 # Usage: 
 # Set installation directory below ($DODS_ROOT)
@@ -29,11 +36,16 @@ tar xvzf DODS-packages-3.4.?.tar.gz # Provides libcurl.a, libxml2.a
 #    tar xvzf ${fl}
 #done
 
+# Copy patched code with gcc-3.4-compliant fixes before building
+scp dust.ess.uci.edu:/data/zender/tmp/DODS/src/dap-3.4.5/RValue.cc ${DATA}/tmp/DODS/src/dap-3.4.5
+scp dust.ess.uci.edu:/data/zender/tmp/DODS/src/dap-3.4.5/Byte.cc ${DATA}/tmp/DODS/src/dap-3.4.5
+scp dust.ess.uci.edu:/data/zender/tmp/DODS/src/dap-3.4.5/Operators.h ${DATA}/tmp/DODS/src/dap-3.4.5
+
 # Go to common source directory shared by all DODS packages
-cd DODS
+cd ${DATA}/tmp/DODS
 # Set permanent installation directory (/tmp is not permanent!)
 #DODS_ROOT=/usr/local # For server (rather than private) installs
-DODS_ROOT=`pwd` 
+export DODS_ROOT=`pwd` 
 # Set compiler environment variables CC and CXX before executing this
 # You cannot do it on the command line like with NCO 
 # On Linux, it defaults to gcc and g++

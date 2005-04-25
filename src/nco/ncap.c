@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.159 2005-04-19 11:27:07 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.160 2005-04-25 01:33:38 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -76,8 +76,6 @@ char **ncap_fl_spt_glb; /* [fl] Script file */
 
 void glb_init_free(bool action); 
 
-
-
 int 
 main(int argc,char **argv)
 {
@@ -90,6 +88,8 @@ main(int argc,char **argv)
   extern FILE *yyin; /* [fl] Input script file */
   
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
+  bool EXTRACT_ALL_COORDINATES=False; /* Option c */
+  bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   bool FORCE_64BIT_OFFSET=False; /* Option Z */
@@ -98,11 +98,9 @@ main(int argc,char **argv)
   bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool NCAR_CCSM_FORMAT;
-  bool EXTRACT_ALL_COORDINATES=False; /* Option c */
-  bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
-  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
-  bool PROCESS_ALL_VARS=True; /* Option v */  
   bool PRN_FNC_TBL=False; /* Option f */  
+  bool PROCESS_ALL_VARS=True; /* Option v */  
+  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
@@ -120,16 +118,14 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.159 2005-04-19 11:27:07 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.159 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.160 2005-04-25 01:33:38 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.160 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
   dmn_sct **dmn_out=NULL_CEWI; /* [lst] Dimensions written to output file */
   dmn_sct **dmn_new=NULL_CEWI; /* [lst] Temporary dimensions to reduce referencing */
 
-  int nbr_dmn_out=0; /* [nbr] Number of dimensions in list dmn_out */
-  
   extern char *optarg;
   extern int optind;
   
@@ -170,27 +166,28 @@ main(int argc,char **argv)
   extern float roundf(float);
   extern float truncf(float);
   
+  int abb_arg_nbr=0;
+  int fl_nbr=0;
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
-  int jdx;
   int in_id;  
-  int out_id;  
-  int abb_arg_nbr=0;
+  int jdx;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
+  int nbr_att=0; /* [nbr] Number of attributes in script */
+  int nbr_dmn_ass=int_CEWI;/* Number of dimensions in temporary list */
+  int nbr_dmn_in=int_CEWI; /* Number of dimensions in dim_in */
+  int nbr_dmn_out=0; /* [nbr] Number of dimensions in list dmn_out */
+  int nbr_lst_a=0; /* size of xtr_lst_a */
   int nbr_spt=0; /* Option s. NB: nbr_spt gets incremented */
-  int nbr_var_fl;/* number of vars in a file */
   int nbr_var_fix; /* nbr_var_fix gets incremented */
+  int nbr_var_fl;/* number of vars in a file */
   int nbr_var_prc; /* nbr_var_prc gets incremented */
   int nbr_var_ycc=0; /* nbr of vars to be defined after 1st parse */
   int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
-  int nbr_dmn_in=int_CEWI; /* Number of dimensions in dim_in */
-  int nbr_dmn_ass=int_CEWI;/* Number of dimensions in temporary list */
-  int fl_nbr=0;
-  int nbr_lst_a=0; /* size of xtr_lst_a */
   int opt;
+  int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
   int var_id;
-  int nbr_att=0; /* [nbr] Number of attributes in script */
   
   sym_sct **sym_tbl; /* [fnc] Symbol table for functions */
   int sym_tbl_nbr; /* [nbr] Size of symbol table */

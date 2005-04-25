@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.137 2005-04-18 06:33:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.138 2005-04-25 01:33:39 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -85,7 +85,10 @@
 int 
 main(int argc,char **argv)
 {
+  bool ARM_FORMAT=int_CEWI;
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
+  bool EXTRACT_ALL_COORDINATES=False; /* Option c */
+  bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_APPEND=True; /* Option H */
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
@@ -94,10 +97,7 @@ main(int argc,char **argv)
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
-  bool ARM_FORMAT=int_CEWI;
   bool NCAR_CCSM_FORMAT=int_CEWI;
-  bool EXTRACT_ALL_COORDINATES=False; /* Option c */
-  bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
 
   char **fl_lst_abb=NULL; /* Option n */
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.137 2005-04-18 06:33:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.137 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.138 2005-04-25 01:33:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.138 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
 
   dmn_sct **dim;
@@ -141,7 +141,6 @@ main(int argc,char **argv)
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
-  int var_lst_in_nbr=0;
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nco_op_typ=nco_op_avg; /* [enm] Default operation is averaging */
   int nco_pck_plc=nco_pck_plc_nil; /* [enm] Default packing is none */
@@ -150,6 +149,7 @@ main(int argc,char **argv)
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int thr_nbr=0; /* [nbr] Thread number Option t */
+  int var_lst_in_nbr=0;
   
   lmt_sct **lmt=NULL_CEWI;
   lmt_sct *lmt_rec=NULL_CEWI;

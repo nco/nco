@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.125 2005-04-17 06:09:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.126 2005-04-25 01:33:38 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -81,17 +81,17 @@ main(int argc,char **argv)
   bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool NCO_BNR_WRT=False; /* [flg] Write binary file */
-  bool PRN_QUIET=False; /* [flg] Turn off all printing to screen */
-  bool PRN_VAR_DATA=False; /* [flg] Print variable data */
-  bool PRN_VAR_METADATA=False; /* [flg] Print variable metadata */
-  bool PRN_GLB_METADATA=False; /* [flg] Print global metadata */
-  bool PRN_VAR_DATA_TGL=False; /* [flg] Toggle print variable data Option H */
-  bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
-  bool PRN_GLB_METADATA_TGL=False; /* [flg] Toggle print global metadata Option M */
-  bool PRN_VRB=False; /* [flg] Print data and metadata by default */
+  bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
   bool PRN_DMN_UNITS=False; /* [flg] Print dimensional units Option u */
   bool PRN_DMN_UNITS_TGL=False; /* [flg] Toggle print dimensional units Option u */
-  bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
+  bool PRN_GLB_METADATA=False; /* [flg] Print global metadata */
+  bool PRN_GLB_METADATA_TGL=False; /* [flg] Toggle print global metadata Option M */
+  bool PRN_QUIET=False; /* [flg] Turn off all printing to screen */
+  bool PRN_VAR_DATA=False; /* [flg] Print variable data */
+  bool PRN_VAR_DATA_TGL=False; /* [flg] Toggle print variable data Option H */
+  bool PRN_VAR_METADATA=False; /* [flg] Print variable metadata */
+  bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
+  bool PRN_VRB=False; /* [flg] Print data and metadata by default */
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
@@ -108,14 +108,15 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
+  char *opt_crr; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
+  char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.125 2005-04-17 06:09:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.125 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.126 2005-04-25 01:33:38 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.126 $";
   const char * const opt_sht_lst="aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
-  char *opt_crr; /* [sng] String representation of current long-option name */
   extern char *optarg;
   extern int optind;
   
@@ -131,17 +132,16 @@ main(int argc,char **argv)
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_dmn_fl;
   int nbr_var_fl;
-  int var_lst_in_nbr=0;
   int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
   int opt;
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
+  int var_lst_in_nbr=0;
     
   lmt_sct **lmt;
 
   lmt_all_sct *lmt_lst; /* Container for lmt */
   lmt_all_sct *lmt_tmp; /* Temporary pointer */
 
-  char dmn_nm[NC_MAX_NAME];
   long dmn_sz;
 
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */

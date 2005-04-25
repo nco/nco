@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.73 2005-03-27 00:42:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.74 2005-04-25 01:33:39 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -65,40 +65,40 @@
 int 
 main(int argc,char **argv)
 {
-  bool OUTPUT_TO_NEW_NETCDF_FILE=False;
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
   bool HISTORY_APPEND=True; /* Option h */
+  bool OUTPUT_TO_NEW_NETCDF_FILE=False;
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
-  char *fl_in=NULL;
-  char *dmn_rnm_arg[NC_MAX_DIMS];
-  char *var_rnm_arg[NC_MAX_VARS];
   char *att_rnm_arg[NC_MAX_ATTRS];
-  char *fl_out=NULL; /* Option o */
-  char *fl_pth_lcl=NULL; /* Option l */
-  char *fl_pth=NULL; /* Option p */
-  char *time_bfr_srt;
   char *cmd_ln;
+  char *dmn_rnm_arg[NC_MAX_DIMS];
+  char *fl_in=NULL;
+  char *fl_out=NULL; /* Option o */
+  char *fl_pth=NULL; /* Option p */
+  char *fl_pth_lcl=NULL; /* Option l */
+  char *time_bfr_srt;
+  char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.73 2005-03-27 00:42:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.73 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.74 2005-04-25 01:33:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.74 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:Z-:";
 
   extern char *optarg;
   extern int optind;
   
-  int idx;
-  int nc_id;  
   int abb_arg_nbr=0;
-  int nbr_var_rnm=0; /* Option v. NB: nbr_var_rnm gets incremented */
+  int fl_nbr=0;
+  int idx;
   int nbr_att_rnm=0; /* Option a. NB: nbr_att_rnm gets incremented */
   int nbr_dmn_rnm=0; /* Option d. NB: nbr_dmn_rnm gets incremented */
-  int fl_nbr=0;
+  int nbr_var_rnm=0; /* Option v. NB: nbr_var_rnm gets incremented */
+  int nc_id;  
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int thr_nbr=0; /* [nbr] Thread number Option t */
