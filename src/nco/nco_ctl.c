@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.88 2005-04-19 04:37:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.89 2005-04-26 23:50:51 gayathri_aiyar Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -290,6 +290,7 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   else if(!strcmp(nm_out_tmp,"ncdivide")){*prg_lcl=ncbo;}
   /* End synonyms for ncbo */
   else if(!strcmp(nm_out_tmp,"ncflint")){*prg_lcl=ncflint;}
+  else if(!strcmp(nm_out_tmp,"mpncflint")){*prg_lcl=ncflint;}
   else if(!strcmp(nm_out_tmp,"ncwa")){*prg_lcl=ncwa;}
   else if(!strcmp(nm_out_tmp,"ncrcat")){*prg_lcl=ncrcat;}
   else if(!strcmp(nm_out_tmp,"ncecat")){*prg_lcl=ncecat;}

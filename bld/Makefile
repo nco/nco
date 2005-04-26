@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.275 2005-04-20 16:51:18 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.276 2005-04-26 23:50:47 gayathri_aiyar Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -292,9 +292,9 @@ CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 
 # Variables having to do with binary executables created by module
 ifeq (${MPI},Y)
-MDL_BIN_TRG := mpncbo ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
+MDL_BIN_TRG := mpncbo mpncflint ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
 else
-MDL_BIN_TRG := ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
+MDL_BIN_TRG := mpncbo ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
 endif # endif MPI
 MDL_BIN_SYM_LNK := ncdiff ncea ncrcat # Symbolic links
 MDL_BIN_STB := ${MDL_BIN_TRG} ${MDL_BIN_SYM_LNK} # All NCO files in MY_BIN_DIR
@@ -1198,6 +1198,10 @@ ${MY_BIN_DIR}/ncbo:	${MY_OBJ_DIR}/ncbo.o lib
 	cd ${MY_BIN_DIR}; rm -f ncdiff; ln -s -f ncbo ncdiff
 mpncbo:   ${MY_BIN_DIR}/mpncbo
 ${MY_BIN_DIR}/mpncbo:	${MY_OBJ_DIR}/mpncbo.o lib
+	${CC} -o $@ $< ${LDFLAGS}
+	chmod 755 $@${BNR_SFX}
+mpncflint:   ${MY_BIN_DIR}/mpncflint
+${MY_BIN_DIR}/mpncflint:	${MY_OBJ_DIR}/mpncflint.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 ncecat:   ${MY_BIN_DIR}/ncecat
