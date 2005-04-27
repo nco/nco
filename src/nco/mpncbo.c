@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.8 2005-04-26 23:50:51 gayathri_aiyar Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.9 2005-04-27 01:05:22 gayathri_aiyar Exp $ */
 
 /* mpncbo -- netCDF binary operator - MPI */
 
@@ -107,14 +107,9 @@ main(int argc,char **argv)
   bool HISTORY_APPEND=True; /* Option h */
   bool MUST_CONFORM=True; /* Must nco_var_cnf_dmn() find truly conforming variables? */
   bool NCAR_CCSM_FORMAT;
-  bool NO_MORE_WORK = False; /* GV - To let the workers know when work is over */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
-<<<<<<< mpncbo.c
   bool TOKEN_FREE = True; /* Allows output file write access to workers in MPI */
   bool NO_MORE_WORK = False; /* Lets the workers know when all variables processed in MPI */
-=======
-  bool TOKEN_FREE = True; /* GV - To give sequential file write access to nodes */
->>>>>>> 1.7
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -132,20 +127,15 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.8 2005-04-26 23:50:51 gayathri_aiyar Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.8 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.9 2005-04-27 01:05:22 gayathri_aiyar Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.9 $";
   const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
   
-<<<<<<< mpncbo.c
   double srt_tm; /* Start the clock */
 
-=======
-  double srt_tm; /* GV - Start the clock */
-
->>>>>>> 1.7
   extern char *optarg;
   extern int optind;
   
@@ -154,19 +144,18 @@ main(int argc,char **argv)
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
-<<<<<<< mpncbo.c
-=======
   int abb_arg_nbr=0;
   int fl_idx;
   int fl_nbr=0;
-  int fl_nm_lng; /* GV - used to pass the output file name to other nodes */
->>>>>>> 1.7
+  int fl_nm_lng; /* [nbr] output file name length */
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
   int in_id;  
   int in_id_1;  
   int in_id_2;  
+  int info_bfr[3]; /* Buffer containing var, idx & tkn_rsp details in MPI communication */
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
+  int msg_typ; /* [enm] MPI Tag message type information */
   int nbr_dmn_fl;
   int nbr_dmn_xtr;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
@@ -176,23 +165,16 @@ main(int argc,char **argv)
   int nco_op_typ=nco_op_nil; /* [enm] Operation type */
   int opt;
   int out_id;  
+  int proc_id; /* [id] Process ID */
+  int proc_nbr=0; /* [nbr] Number of MPI processes */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int thr_nbr=0; /* [nbr] Thread number Option t */
-<<<<<<< mpncbo.c
-  int var_wrt_nbr=0; /* [nbr] Variables written to output file until now */
-=======
-  int var_lst_in_nbr=0;
-
-  int nbr_var_wrt=0; /* [nbr] Variables written to output file until now */
->>>>>>> 1.7
-  int wrk_id; /* [id] Sender node ID */
-  int msg_typ; /* [enm] MPI Tag message type information */
   int tkn_rsp; /* [enm] Mangager response [0,1] = [Wait,Allow] */
-  int proc_nbr=0; /* [nbr] Number of MPI processes */
-  int proc_id; /* [id] Process ID */
-  int fl_nm_lng; /* Length of output file name, used to broadcast the name to workers */
+  int var_wrt_nbr=0; /* [nbr] Variables written to output file until now */
+  int var_lst_in_nbr=0;
+  int wrk_id; /* [id] Sender node ID */
   int wrk_id_bfr[1]; /* Buffer storing wrk_id in MPI communication */
-  int info_bfr[3]; /* Buffer containing var, idx & tkn_rsp details in MPI communication */
+
   lmt_sct **lmt;
 #ifdef ENABLE_MPI
   MPI_Status status; /* Status checking, to decode msg_typ in MPI */
