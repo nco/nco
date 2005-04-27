@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.488 2005-04-22 16:54:22 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.489 2005-04-27 01:08:18 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -226,7 +226,7 @@ fails with
 Segmentation fault (core dumped)
 nco358. Document ncwa -z switch: Get rid of separate -M -m -T?
 nco359. Allow spaces between variables names in -v var_lst arguments (assuming list whitespace is quoted, of course)
-nco362. reduce memory during run by free()'ing var_fix[idx],var_fix_out[idx],var_prc[idx],var_prc_out[idx] after writes
+nco362. mmr: reduce memory during run by free()'ing var_fix[idx],var_fix_out[idx],var_prc[idx],var_prc_out[idx] after writes
 nco363. ncpdq: document netCDF limitations in nco.texi
 nco375. Do something more consistent with: nco_exit(EXIT_FAILURE)
 nco385. ncpdq: dynamically allocate arrays in nco_var_dmn_rdr_mtd(), nco_var_dmn_rdr_val()?
@@ -295,7 +295,11 @@ nco514. My MPI builds call superfluous linker steps:
         make MPI=Y > foo 2>&1
 nco516. Implement SDO-wide data pipes, e.g., ncra in*.nc | ncwa | ncrename t,tpt foo.nc
         This would bring us one step closer to grid services, too
-nco517. 
+nco517. DODS/OPeNDAP fails on our local servers but not all servers:
+	ncra -O -C -l /tmp -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
+	ncra -O -C -l /tmp -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
+	ncra -O -C -l /tmp -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface pres.sfc.1969.nc ~/foo.nc
+nco518. 
 
 MPI:
 Archive MPI tests which appear to run correctly 
