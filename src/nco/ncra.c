@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.138 2005-04-25 01:33:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.139 2005-04-28 01:03:48 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.138 2005-04-25 01:33:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.138 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.139 2005-04-28 01:03:48 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.139 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
 
   dmn_sct **dim;
@@ -506,7 +506,7 @@ main(int argc,char **argv)
 	if(dbg_lvl > 1) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx) shared(ARM_FORMAT,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,in_id,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
-#endif /* not _OPENMP */
+#endif /* !_OPENMP */
 	for(idx=0;idx<nbr_var_prc;idx++){
 	  if(dbg_lvl > 2) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	  if(dbg_lvl > 0) (void)fflush(fp_stderr);
@@ -565,7 +565,7 @@ main(int argc,char **argv)
     }else{ /* ncea */
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx) shared(dbg_lvl,fl_idx,fp_stderr,in_id,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out)
-#endif /* not _OPENMP */
+#endif /* !_OPENMP */
       for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 	if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	if(dbg_lvl > 0) (void)fflush(fp_stderr);
@@ -600,7 +600,7 @@ main(int argc,char **argv)
   if(prg == ncra || prg == ncea){
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx) shared(nbr_var_prc,nco_op_typ,var_prc,var_prc_out)
-#endif /* not _OPENMP */
+#endif /* !_OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){
       switch(nco_op_typ) {
       case nco_op_avg: /* Normalize sum by tally to create mean */

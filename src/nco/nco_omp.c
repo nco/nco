@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.17 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.18 2005-04-28 01:03:47 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -144,10 +144,10 @@ nco_var_prc_crr_prn /* [fnc] Print name of current variable */
 
 #ifdef _OPENMP
   (void)fprintf(stderr,"%s: INFO Thread #%d processing var_prc[%d] = \"%s\"\n",prg_nm_get(),omp_get_thread_num(),idx,var_nm);
-#else /* not _OPENMP */
+#else /* !_OPENMP */
   rcd+=idx*0; /* CEWI */
   (void)fprintf(stderr,"%s, ",var_nm);
-#endif /* not _OPENMP */
+#endif /* !_OPENMP */
 
   return rcd;
 } /* end nco_var_prc_crr_prn() */

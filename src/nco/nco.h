@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.69 2005-03-27 01:04:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.70 2005-04-28 01:03:47 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -40,7 +40,7 @@ extern "C" {
 /* NCO uses native type nco_long to store variables of type NC_INT */
   typedef long nco_long;
   
-/* Uncomment next line to remove C99 restrict type qualifier from all source */
+/* Uncomment next line to remove C99 restrict type-qualifier from all source */
 /*#define restrict*/
 
 /* Replace restrict by __restrict in g++ compiler
@@ -93,8 +93,21 @@ extern "C" {
 
 #ifdef MAIN_PROGRAM_FILE /* Current file contains main() */
   
-  /* Global variables and variables with scope limited to main.c allocated here */
+  /* Tokens and variables with scope limited to main.c, and global variables allocated here */
   
+  /* Tags used for MPI Communication */
+#ifdef ENABLE_MPI
+#ifdef _OPENMP
+ERROR: Hybrid configurations of MPI and OpenMP parallelism not yet supported
+#endif/* !_OPENMP */ 
+#define TOKEN_ALLOC 1
+#define TOKEN_REQUEST 300
+#define TOKEN_RESULT 500
+#define TOKEN_WAIT 0
+#define WORK_ALLOC 400
+#define WORK_REQUEST 100
+#endif /* !ENABLE_MPI */
+
   int prg; /* [enm] Program ID */
   int prg_get(void){return prg;} /* [enm] Program ID */
   

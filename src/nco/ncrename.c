@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.74 2005-04-25 01:33:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.75 2005-04-28 01:03:48 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -85,8 +85,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.74 2005-04-25 01:33:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.74 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.75 2005-04-28 01:03:48 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.75 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:Z-:";
 
   extern char *optarg;
@@ -412,7 +412,7 @@ main(int argc,char **argv)
 #ifdef _OPENMP
   /* fxm: hack to get libxlsmp library linked in */
   (void)omp_in_parallel();
-#endif /* not _OPENMP */
+#endif /* !_OPENMP */
 
   /* Take file out of define mode */
   (void)nco_enddef(nc_id);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.165 2005-04-25 01:33:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.166 2005-04-28 01:03:48 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.165 2005-04-25 01:33:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.165 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.166 2005-04-28 01:03:48 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.166 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -679,7 +679,7 @@ main(int argc,char **argv)
      shared(): msk and wgt are not altered within loop
      private(): wgt_avg does not need initialization */
 #pragma omp parallel for default(none) firstprivate(msk_out,wgt_out) private(DO_CONFORM_MSK,DO_CONFORM_WGT,idx,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,fp_stderr,fp_stdout,in_id,msk,msk_nm,msk_val,dmn_avg_nbr,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
-#endif /* not _OPENMP */
+#endif /* !_OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
       if(dbg_lvl > 0) (void)fflush(fp_stderr);

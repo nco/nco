@@ -1,6 +1,6 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.9 2005-04-27 01:05:22 gayathri_aiyar Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.10 2005-04-28 01:03:47 zender Exp $ */
 
-/* mpncbo -- netCDF binary operator - MPI */
+/* mpncbo -- netCDF binary operator */
 
 /* Purpose: Compute sum, difference, product, or ratio of specified hyperslabs of specfied variables
    from two input netCDF files and output them to a single file. */
@@ -62,9 +62,6 @@
 #include <string.h> /* strcmp. . . */
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
-#ifdef ENABLE_MPI
-#include <mpi.h> /*  MPI */
-#endif 
 #include <unistd.h> /* all sorts of POSIX stuff */
 #ifndef HAVE_GETOPT_LONG
 #include "nco_getopt.h"
@@ -76,19 +73,14 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
+#ifdef ENABLE_MPI
+#include <mpi.h> /* MPI definitions */
+#endif /* !ENABLE_MPI */
 
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
 #include "libnco.h" /* netCDF Operator (NCO) library */
-
-/* Tags used for MPI Comm */
-#define TOKEN_ALLOC 1
-#define TOKEN_REQUEST 300
-#define TOKEN_RESULT 500
-#define TOKEN_WAIT 0
-#define WORK_ALLOC 400
-#define WORK_REQUEST 100
 
 int 
 main(int argc,char **argv)
@@ -108,8 +100,8 @@ main(int argc,char **argv)
   bool MUST_CONFORM=True; /* Must nco_var_cnf_dmn() find truly conforming variables? */
   bool NCAR_CCSM_FORMAT;
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
-  bool TOKEN_FREE = True; /* Allows output file write access to workers in MPI */
-  bool NO_MORE_WORK = False; /* Lets the workers know when all variables processed in MPI */
+  bool TOKEN_FREE=True; /* [flg] Allow MPI workers write-access to output file */
+  bool NO_MORE_WORK=False; /* [flg] All MPI variables processed */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -127,8 +119,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.9 2005-04-27 01:05:22 gayathri_aiyar Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.9 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.10 2005-04-28 01:03:47 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.10 $";
   const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim;
@@ -153,9 +145,9 @@ main(int argc,char **argv)
   int in_id;  
   int in_id_1;  
   int in_id_2;  
-  int info_bfr[3]; /* Buffer containing var, idx & tkn_rsp details in MPI communication */
+  int info_bfr[3]; /* [bfr] Buffer containing var, idx, tkn_rsp */
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int msg_typ; /* [enm] MPI Tag message type information */
+  int msg_typ; /* [enm] MPI message type */
   int nbr_dmn_fl;
   int nbr_dmn_xtr;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
@@ -173,12 +165,13 @@ main(int argc,char **argv)
   int var_wrt_nbr=0; /* [nbr] Variables written to output file until now */
   int var_lst_in_nbr=0;
   int wrk_id; /* [id] Sender node ID */
-  int wrk_id_bfr[1]; /* Buffer storing wrk_id in MPI communication */
+  int wrk_id_bfr[1]; /* [bfr] Buffer for wrk_id */
 
   lmt_sct **lmt;
+
 #ifdef ENABLE_MPI
-  MPI_Status status; /* Status checking, to decode msg_typ in MPI */
-#endif
+  MPI_Status status; /* [enm] Status check to decode msg_typ */
+#endif /* !ENABLE_MPI */
   
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may bealloc()'d from NULL with -c option */
@@ -235,7 +228,7 @@ main(int argc,char **argv)
   MPI_Comm_size(MPI_COMM_WORLD,&proc_nbr);
   MPI_Comm_rank(MPI_COMM_WORLD,&proc_id);
   srt_tm=MPI_Wtime();
-#endif
+#endif /* !ENABLE_MPI */
 
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
@@ -409,9 +402,8 @@ main(int argc,char **argv)
   (void)nco_var_srt_zero(var_out,nbr_xtr);
 
 #ifdef ENABLE_MPI 
-  /* MPI Manager code */
-  if(proc_id == 0){
-#endif /* !MPI */
+  if(proc_id == 0){ /* MPI manager code */
+#endif /* !ENABLE_MPI */
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FORCE_64BIT_OFFSET,&out_id);
     
@@ -430,9 +422,9 @@ main(int argc,char **argv)
     if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
     
 #ifdef ENABLE_MPI 
-    /* Initialize MPI tasks information */
+    /* Initialize MPI task information */
     if(proc_nbr > 0 && HISTORY_APPEND) (void)nco_mpi_att_cat(out_id,proc_nbr);
-#endif /* !MPI */
+#endif /* !ENABLE_MPI */
     
     /* Define dimensions in output file*/ 
     (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
@@ -447,25 +439,24 @@ main(int argc,char **argv)
     (void)nco_enddef(out_id);
 
 #ifdef ENABLE_MPI
-  } /* end - MPI Manager */
+  } /* end MPI manager code */
   
   /* Manager broadcasting the output filename length & the filename to workers */
-  MPI_Bcast(&fl_nm_lng, 1, MPI_INT, 0, MPI_COMM_WORLD);
-  if(proc_id != 0)
-    fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
-  MPI_Bcast(fl_out_tmp, fl_nm_lng+1, MPI_CHAR, 0, MPI_COMM_WORLD); 
+  MPI_Bcast(&fl_nm_lng,1,MPI_INT,0,MPI_COMM_WORLD);
+  if(proc_id != 0) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
+  MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,0,MPI_COMM_WORLD); 
   
-  /* Manager only for MPI, copy variable data for non-processed variables to output file*/
-  if(proc_id == 0){
+  if(proc_id == 0){ /* MPI manager code */
     TOKEN_FREE=False;
-#endif /* !MPI */
+#endif /* !ENABLE_MPI */
+    /* Copy variable data for non-processed variables */
     (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
 #ifdef ENABLE_MPI
     TOKEN_FREE=True;
-    /* Closing output file so the workers can open it */
+    /* Close output file so workers can open it */
     nco_close(out_id);
   } /* proc_id != 0 */
-#endif /* end - MPI Manager */
+#endif /* !ENABLE_MPI */
   
   /* The code for ncbo() has been similar to ncea() (and ncra()) wherever possible
      The major differences occur where performance would otherwise suffer
@@ -512,174 +503,172 @@ main(int argc,char **argv)
 #endif/* not _OPENMP */ 
  
 #ifdef ENABLE_MPI
-  if(proc_id == 0){ /* Manager */
-    var_wrt_nbr=-proc_nbr+1; /* Since WORK_REQUEST mesg increments the var_wrt_nbr, the first message from each worker should be subtracted from the total to get the right answer */
+  if(proc_id == 0){ /* MPI manager code */
+    /* Compensate for incrementing on each worker's first message */
+    var_wrt_nbr=-proc_nbr+1;
     idx=0;
-    while(var_wrt_nbr < nbr_var_prc){ /* When variables remain to be processed or written */
-      /* MPI_Recv mesg from any worker */
-      MPI_Recv(wrk_id_bfr, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-      msg_typ=status.MPI_TAG; /* Need to get the tag from status variable */
-      wrk_id=wrk_id_bfr[0]; /* Worker sending a message puts his proc_id in the buffer */ 
+    /* While variables remain to be processed or written... */
+    while(var_wrt_nbr < nbr_var_prc){
+      /* Receive message from any worker */
+      MPI_Recv(wrk_id_bfr,1,MPI_INT,MPI_ANY_SOURCE,MPI_ANY_TAG,MPI_COMM_WORLD,&status);
+      /* Obtain MPI message type */
+      msg_typ=status.MPI_TAG;
+      /* Get sender's proc_id */ 
+      wrk_id=wrk_id_bfr[0];
       
-      if(msg_typ == WORK_REQUEST){ /* Allocate work if remaining, else ask to quit */
-	var_wrt_nbr++; /* To keep track of the number of variables written until now */
-	TOKEN_FREE=True; /* WORK_REQUEST from a worker indicates closing of output file after writing the previous var */
+      /* Allocate next variable, if any, to worker */
+      if(msg_typ == WORK_REQUEST){
+	var_wrt_nbr++; /* [nbr] Number of variables written */
+	/* Worker closed output file before sending WORK_REQUEST */
+	TOKEN_FREE=True;
 	
 	if(idx > nbr_var_prc-1){
-	  /* Send NO_MORE_WORK mesg by sending -1 for idx */
-	  info_bfr[0]=-1; /* var to be processed */
-	  info_bfr[1]=out_id; /* file id of output file */
-	}
-	else{
-	  /* Send var alloc mesg to requesting worker, idx into the list of vars */
-	  info_bfr[0]=idx; /* var to be processed */
-	  info_bfr[1]=out_id; /* file id of output file */
-	  info_bfr[2]=var_prc_out[idx]->id; /* var id for output file */
-	  idx++;
-	}
-	MPI_Send(info_bfr, 3, MPI_INT, wrk_id, WORK_ALLOC, MPI_COMM_WORLD);
-      } /* msg_typ != WORK_REQUEST */
-
-      else if(msg_typ == TOKEN_REQUEST){ 
-	/* Allocate token if free, else ask worker to wait & try again */
+	  /* Variable index = -1 indicates NO_MORE_WORK */
+	  info_bfr[0]=-1; /* [idx] Variable to be processed */
+	  info_bfr[1]=out_id; /* Output file ID */
+	}else{
+	  /* Tell requesting worker to allocate space for next variable */
+	  info_bfr[0]=idx; /* [idx] Variable to be processed */
+	  info_bfr[1]=out_id; /* Output file ID */
+	  info_bfr[2]=var_prc_out[idx]->id; /* [id] Variable ID in output file */
+	  /* Point to next variable on list */
+	  idx++; 
+	} /* endif idx */
+	MPI_Send(info_bfr,3,MPI_INT,wrk_id,WORK_ALLOC,MPI_COMM_WORLD);
+	/* msg_typ != WORK_REQUEST */
+      }else if(msg_typ == TOKEN_REQUEST){ 
+	/* Allocate token if free, else ask worker to try later */
 	if(TOKEN_FREE){
 	  TOKEN_FREE=False;
 	  info_bfr[0]=1; /* Allow */
-	}
-	else{
+	}else{
 	  info_bfr[0]=0; /* Wait */
-	}
-	MPI_Send(info_bfr, 3, MPI_INT, wrk_id, TOKEN_RESULT, MPI_COMM_WORLD);
+	} /* !TOKEN_FREE */
+	MPI_Send(info_bfr,3,MPI_INT,wrk_id,TOKEN_RESULT,MPI_COMM_WORLD);
       } /* msg_typ != TOKEN_REQUEST */
-
-    } /* var_wrt_nbr !< nbr_var_prc, all variables allocated */
-
-  } /* end - Manager */
-  else{ /* Worker */
+    } /* end while var_wrt_nbr < nbr_var_prc */
+  }else{ /* proc_id != 0, end Manager code begin Worker code */
     wrk_id_bfr[0]=proc_id;
     while(1){
       /* Send WORK_REQUEST */
       wrk_id_bfr[0]=proc_id;
-      MPI_Send(wrk_id_bfr, 1, MPI_INT, 0, WORK_REQUEST, MPI_COMM_WORLD);
-
-      /* Recv WORK_ALLOC */
-      MPI_Recv(info_bfr, 3, MPI_INT, 0, WORK_ALLOC, MPI_COMM_WORLD, &status);
+      MPI_Send(wrk_id_bfr,1,MPI_INT,0,WORK_REQUEST,MPI_COMM_WORLD);
+      /* Receive WORK_ALLOC */
+      MPI_Recv(info_bfr,3,MPI_INT,0,WORK_ALLOC,MPI_COMM_WORLD,&status);
       idx=info_bfr[0];
       out_id=info_bfr[1];
-      if(idx != -1) var_prc_out[idx]->id=info_bfr[2];
-      else NO_MORE_WORK=True;
-
-      if(NO_MORE_WORK) break; /* Get out of worker-while loop since all the variables are processed */
-#endif /* !MPI */
-
+      if(idx != -1) var_prc_out[idx]->id=info_bfr[2]; else NO_MORE_WORK=True;
+      if(NO_MORE_WORK) break;
+      /* Process this variable same as UP code */
+#endif /* !ENABLE_MPI */
 #ifndef ENABLE_MPI
-  /* Loop over each differenced variable if not MPI */ 
-      for(idx=0;idx<nbr_var_prc;idx++) {
-#endif /* end Not MPI */
-
-      int var_id; /* [id] Variable ID */
-      int has_mss_val=False;
-      ptr_unn mss_val;
-      if(dbg_lvl > 0) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
-      if(dbg_lvl > 0) (void)fflush(fp_stderr);
+      /* Loop over each differenced variable if not MPI */ 
+  for(idx=0;idx<nbr_var_prc;idx++) {
+#endif /* ENABLE_MPI */
+    /* Common variable processing code for UP, SMP, and MPI */
+    int var_id; /* [id] Variable ID */
+    int has_mss_val=False;
+    ptr_unn mss_val;
+    if(dbg_lvl > 0) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
+    if(dbg_lvl > 0) (void)fflush(fp_stderr);
     
-      (void)nco_var_refresh(in_id_1,var_prc[idx]); /* Routine contains OpenMP critical regions */
-      has_mss_val=var_prc[idx]->has_mss_val; 
-      (void)nco_var_get(in_id_1,var_prc[idx]); /* Routine contains OpenMP critical regions */
+    (void)nco_var_refresh(in_id_1,var_prc[idx]); /* Routine contains OpenMP critical regions */
+    has_mss_val=var_prc[idx]->has_mss_val; 
+    (void)nco_var_get(in_id_1,var_prc[idx]); /* Routine contains OpenMP critical regions */
     
-      /* Save output variable ID from being overwritten in refresh call */
-      var_prc[idx]->id=var_prc_out[idx]->id;
-      (void)nco_var_refresh(in_id_2,var_prc_out[idx]);
+    /* Save output variable ID from being overwritten in refresh call */
+    var_prc[idx]->id=var_prc_out[idx]->id;
+    (void)nco_var_refresh(in_id_2,var_prc_out[idx]);
     
-      /* Determine whether var1 and var2 conform */
-      if(var_prc_out[idx]->nbr_dim == var_prc[idx]->nbr_dim){
-      	nc_type var_type;
-      	int dmn_idx;
-      	long *lp;
-      	/* Routine nco_var_refresh() does not set type for var_prc_out, do so manually */
-      	(void)nco_inq_varid(in_id_2,var_prc_out[idx]->nm,&var_id);
-      	(void)nco_inq_vartype(in_id_2,var_id,&var_type);
-      	var_prc_out[idx]->type=var_type;
+    /* Determine whether var1 and var2 conform */
+    if(var_prc_out[idx]->nbr_dim == var_prc[idx]->nbr_dim){
+      nc_type var_type;
+      int dmn_idx;
+      long *lp;
+      /* Routine nco_var_refresh() does not set type for var_prc_out, do so manually */
+      (void)nco_inq_varid(in_id_2,var_prc_out[idx]->nm,&var_id);
+      (void)nco_inq_vartype(in_id_2,var_id,&var_type);
+      var_prc_out[idx]->type=var_type;
       
-      	/* Do all dimensions match in sequence? */
-      	for(dmn_idx=0;dmn_idx<var_prc[idx]->nbr_dim;dmn_idx++){
-	  if(
-	    strcmp(var_prc_out[idx]->dim[dmn_idx]->nm,var_prc[idx]->dim[dmn_idx]->nm) || /* Dimension names do not match */
+      /* Do all dimensions match in sequence? */
+      for(dmn_idx=0;dmn_idx<var_prc[idx]->nbr_dim;dmn_idx++){
+	if(
+	   strcmp(var_prc_out[idx]->dim[dmn_idx]->nm,var_prc[idx]->dim[dmn_idx]->nm) || /* Dimension names do not match */
 	   (var_prc_out[idx]->dim[dmn_idx]->cnt != var_prc[idx]->dim[dmn_idx]->cnt) || /* Dimension sizes do not match */
 	   False){
-	    (void)fprintf(fp_stdout,"%s: ERROR Variables do not conform:\nFile %s variable %s dimension %d is %s with size %li and count %li\nFile %s variable %s dimension %d is %s with size %li and count %li\n",prg_nm,fl_in_1,var_prc[idx]->nm,dmn_idx,var_prc[idx]->dim[dmn_idx]->nm,var_prc[idx]->dim[dmn_idx]->sz,var_prc[idx]->dim[dmn_idx]->cnt,fl_in_2,var_prc_out[idx]->nm,dmn_idx,var_prc_out[idx]->dim[dmn_idx]->nm,var_prc_out[idx]->dim[dmn_idx]->sz,var_prc_out[idx]->dim[dmn_idx]->cnt);
-	    nco_exit(EXIT_FAILURE);
-	  } /* endif */
-      	} /* end loop over dmn_idx */
+	  (void)fprintf(fp_stdout,"%s: ERROR Variables do not conform:\nFile %s variable %s dimension %d is %s with size %li and count %li\nFile %s variable %s dimension %d is %s with size %li and count %li\n",prg_nm,fl_in_1,var_prc[idx]->nm,dmn_idx,var_prc[idx]->dim[dmn_idx]->nm,var_prc[idx]->dim[dmn_idx]->sz,var_prc[idx]->dim[dmn_idx]->cnt,fl_in_2,var_prc_out[idx]->nm,dmn_idx,var_prc_out[idx]->dim[dmn_idx]->nm,var_prc_out[idx]->dim[dmn_idx]->sz,var_prc_out[idx]->dim[dmn_idx]->cnt);
+	  nco_exit(EXIT_FAILURE);
+	} /* endif */
+      } /* end loop over dmn_idx */
       
       	/* Temporarily set srt vector to account for hyperslabs while reading */
-      	lp=var_prc_out[idx]->srt;
-      	var_prc_out[idx]->srt=var_prc[idx]->srt;
-      	(void)nco_var_get(in_id_2,var_prc_out[idx]);
-      	/* Reset srt vector to zeros for eventual output */
-      	var_prc_out[idx]->srt=lp;
-      }
-      else{ /* var_prc_out[idx]->nbr_dim != var_prc[idx]->nbr_dim) */
-      	/* Number of dimensions do not match, attempt to broadcast variables */
-      	var_sct *var_tmp=NULL;
+      lp=var_prc_out[idx]->srt;
+      var_prc_out[idx]->srt=var_prc[idx]->srt;
+      (void)nco_var_get(in_id_2,var_prc_out[idx]);
+      /* Reset srt vector to zeros for eventual output */
+      var_prc_out[idx]->srt=lp;
+    }else{ /* var_prc_out[idx]->nbr_dim != var_prc[idx]->nbr_dim) */
+      /* Number of dimensions do not match, attempt to broadcast variables */
+      var_sct *var_tmp=NULL;
       
-      	/* fxm: TODO 268 allow var1 or var2 to be broadcast */
-      	/* var1 and var2 have differing numbers of dimensions so make var2 conform to var1 */
-      	var_prc_out[idx]=nco_var_free(var_prc_out[idx]);
-      	(void)nco_inq_varid(in_id_2,var_prc[idx]->nm,&var_id);
-      	var_prc_out[idx]=nco_var_fll(in_id_2,var_id,var_prc[idx]->nm,dim,nbr_dmn_xtr);
-      	(void)nco_var_get(in_id_2,var_prc_out[idx]);
+      /* fxm: TODO 268 allow var1 or var2 to be broadcast */
+      /* var1 and var2 have differing numbers of dimensions so make var2 conform to var1 */
+      var_prc_out[idx]=nco_var_free(var_prc_out[idx]);
+      (void)nco_inq_varid(in_id_2,var_prc[idx]->nm,&var_id);
+      var_prc_out[idx]=nco_var_fll(in_id_2,var_id,var_prc[idx]->nm,dim,nbr_dmn_xtr);
+      (void)nco_var_get(in_id_2,var_prc_out[idx]);
+      
+      /* Pass dummy pointer so we do not lose track of original */
+      var_tmp=nco_var_cnf_dmn(var_prc[idx],var_prc_out[idx],var_tmp,MUST_CONFORM,&DO_CONFORM);
+      var_prc_out[idx]=nco_var_free(var_prc_out[idx]);
+      var_prc_out[idx]=var_tmp;
+    } /* end else */
+    
+    /* var2 now conforms in size to var1, and is in memory */
+    
+    /* fxm: TODO 268 allow var1 or var2 to typecast */
+    /* Make sure var2 conforms to type of var1 */
+    if(var_prc_out[idx]->type != var_prc[idx]->type){
+      (void)fprintf(fp_stderr,"%s: WARNING Input variables do not conform in type:\nFile 1 = %s variable %s has type %s\nFile 2 = %s variable %s has type %s\nFile 3 = %s variable %s will have type %s\n",prg_nm,fl_in_1,var_prc[idx]->nm,nco_typ_sng(var_prc[idx]->type),fl_in_2,var_prc_out[idx]->nm,nco_typ_sng(var_prc_out[idx]->type),fl_out,var_prc[idx]->nm,nco_typ_sng(var_prc[idx]->type));
+    }  /* endif different type */
+    var_prc_out[idx]=nco_var_cnf_typ(var_prc[idx]->type,var_prc_out[idx]);
+    
+    /* Change missing_value of var_prc_out, if any, to missing_value of var_prc, if any */
+    has_mss_val=nco_mss_val_cnf(var_prc[idx],var_prc_out[idx]);
+    
+    /* mss_val in fl_1, if any, overrides mss_val in fl_2 */
+    if(has_mss_val) mss_val=var_prc[idx]->mss_val; else mss_val=var_prc_out[idx]->mss_val;
+    
+    /* Perform specified binary operation */
+    switch(nco_op_typ){
+    case nco_op_add: /* [enm] Add file_1 to file_2 */
+      (void)nco_var_add(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val); break;
+    case nco_op_mlt: /* [enm] Multiply file_1 by file_2 */
+      (void)nco_var_mlt(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val); break;
+    case nco_op_dvd: /* [enm] Divide file_1 by file_2 */
+      (void)nco_var_dvd(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val); break;
+    case nco_op_sbt: /* [enm] Subtract file_2 from file_1 */
+      (void)nco_var_sbt(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val); break;
+    default: /* Other defined nco_op_typ values are valid for ncra(), ncrcat(), ncwa(), not ncbo() */
+      (void)fprintf(fp_stdout,"%s: ERROR Illegal nco_op_typ in binary operation\n",prg_nm);
+      nco_exit(EXIT_FAILURE);
+      break;
+    } /* end case */
+    
+    var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
 
-      	/* Pass dummy pointer so we do not lose track of original */
-      	var_tmp=nco_var_cnf_dmn(var_prc[idx],var_prc_out[idx],var_tmp,MUST_CONFORM,&DO_CONFORM);
-      	var_prc_out[idx]=nco_var_free(var_prc_out[idx]);
-      	var_prc_out[idx]=var_tmp;
-      } /* end else */
-    
-      /* var2 now conforms in size to var1, and is in memory */
-    
-      /* fxm: TODO 268 allow var1 or var2 to typecast */
-      /* Make sure var2 conforms to type of var1 */
-      if(var_prc_out[idx]->type != var_prc[idx]->type){
-      	(void)fprintf(fp_stderr,"%s: WARNING Input variables do not conform in type:\nFile 1 = %s variable %s has type %s\nFile 2 = %s variable %s has type %s\nFile 3 = %s variable %s will have type %s\n",prg_nm,fl_in_1,var_prc[idx]->nm,nco_typ_sng(var_prc[idx]->type),fl_in_2,var_prc_out[idx]->nm,nco_typ_sng(var_prc_out[idx]->type),fl_out,var_prc[idx]->nm,nco_typ_sng(var_prc[idx]->type));
-      }  /* endif different type */
-      var_prc_out[idx]=nco_var_cnf_typ(var_prc[idx]->type,var_prc_out[idx]);
-    
-      /* Change missing_value of var_prc_out, if any, to missing_value of var_prc, if any */
-      has_mss_val=nco_mss_val_cnf(var_prc[idx],var_prc_out[idx]);
-    
-      /* mss_val in fl_1, if any, overrides mss_val in fl_2 */
-      if(has_mss_val) mss_val=var_prc[idx]->mss_val; else mss_val=var_prc_out[idx]->mss_val;
-    
-      /* Perform specified binary operation */
-      switch(nco_op_typ){
-    	case nco_op_add: /* [enm] Add file_1 to file_2 */
-      	  (void)nco_var_add(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val); break;
-    	case nco_op_mlt: /* [enm] Multiply file_1 by file_2 */
-      	  (void)nco_var_mlt(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val); break;
-    	case nco_op_dvd: /* [enm] Divide file_1 by file_2 */
-      	  (void)nco_var_dvd(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val); break;
-    	case nco_op_sbt: /* [enm] Subtract file_2 from file_1 */
-      	  (void)nco_var_sbt(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val); break;
-    	default: /* Other defined nco_op_typ values are valid for ncra(), ncrcat(), ncwa(), not ncbo() */
-      	  (void)fprintf(fp_stdout,"%s: ERROR Illegal nco_op_typ in binary operation\n",prg_nm);
-      	  nco_exit(EXIT_FAILURE);
-      	  break;
-      } /* end case */
-    
-      var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
-
+    /* CSZ got to here editing */
 #ifdef ENABLE_MPI
-      while(1){ /* TOKEN_REQUEST is sent repeatedly till token is obtained */
-	/* Send TOKEN_REQUEST */
-	wrk_id_bfr[0]=proc_id;
-        MPI_Send(wrk_id_bfr, 1, MPI_INT, 0, TOKEN_REQUEST, MPI_COMM_WORLD);
-	/* Recv TOKEN_RESULT (1,0)=(ALLOW,WAIT) */
-	MPI_Recv(info_bfr, 3, MPI_INT, 0, TOKEN_RESULT, MPI_COMM_WORLD, &status);
-	tkn_rsp=info_bfr[0];
-
-	if(tkn_rsp == TOKEN_WAIT) /* wait for a while and send request again */
-	  sleep(0.04);
+    while(1){ /* TOKEN_REQUEST is sent repeatedly till token is obtained */
+      /* Send TOKEN_REQUEST */
+      wrk_id_bfr[0]=proc_id;
+      MPI_Send(wrk_id_bfr, 1, MPI_INT, 0, TOKEN_REQUEST, MPI_COMM_WORLD);
+      /* Recv TOKEN_RESULT (1,0)=(ALLOW,WAIT) */
+      MPI_Recv(info_bfr, 3, MPI_INT, 0, TOKEN_RESULT, MPI_COMM_WORLD, &status);
+      tkn_rsp=info_bfr[0];
+      
+      if(tkn_rsp == TOKEN_WAIT) /* wait for a while and send request again */
+	sleep(0.04);
 	else 
 	  break; /* Get out of while loop; token available, so write */
       } /* end TOKEN_REQUEST-while loop */
@@ -726,19 +715,19 @@ main(int argc,char **argv)
 #endif /* end - not MPI */
 
 #ifdef ENABLE_MPI 
-  if(proc_id == 0){ /* Only Manager */
+  if(proc_id == 0){ /* MPI manager code */
     /* Output file is closed by workers, so just move it from temporary to permanent location */
     (void)nco_fl_mv(fl_out_tmp, fl_out);
-  } /* end - Manager */
+  } /* proc_id != 0 */
 
   MPI_Finalize();
-#endif /* !MPI */
+#endif /* !ENABLE_MPI */
 
   /* Remove local copy of file */
   if(FILE_1_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_1);
   if(FILE_2_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_2);
 
-  /* ncra-unique memory */
+  /* ncbo-unique memory */
   if(fl_in_1 != NULL) fl_in_1=(char *)nco_free(fl_in_1);
 
   /* NCO-generic clean-up */
