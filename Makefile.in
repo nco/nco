@@ -626,9 +626,37 @@ uninstall-info: uninstall-info-recursive
 	tags tags-recursive uninstall uninstall-am uninstall-info-am
 
 
+# new version to use 
 test:
-	$(MAKE) check
-	cd bld && env MY_BIN_DIR=../src/nco ./nco_tst.pl
+	cd bm \
+	&& export MY_BIN_DIR=../src/nco \
+	&& export DATA="/tmp" \
+	&& chmod +x nco_bm.pl \
+	&&./nco_bm.pl --regress 
+	
+files:
+	cd bm \
+	&& export MY_BIN_DIR=../src/nco \
+	&& export DATA="/tmp" \
+	&& chmod +x nco_bm.pl \
+	&&./nco_bm.pl --test_files="a"
+	
+regress: test
+
+benchmark:
+	cd bm \
+	&& export MY_BIN_DIR=../src/nco \
+	&& export DATA="/tmp" \
+	&& chmod +x nco_bm.pl \
+	&&./nco_bm.pl --bench
+	
+bench-report:
+	cd bm \
+	&& export MY_BIN_DIR=../src/nco \
+	&& export DATA="/tmp" \
+	&& chmod +x nco_bm.pl \
+	&&./nco_bm.pl --bench --udpreport
+
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

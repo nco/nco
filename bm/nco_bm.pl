@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.10 2005-04-20 19:14:22 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.11 2005-04-28 03:47:00 mangalam Exp $
 
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
@@ -145,7 +145,7 @@ if ($bm && $tst_fle_cr8 == 0) {
 # file creation tests
 if ($tst_fle_cr8 ne "0"){
 #	set_dta_dir();      # examine env DATA and talk to user to figure where $DATA  should be
-	# so want to so some
+	# so want to so some - check for disk space on DATA dir 1st - nah - assume personal responsibility
 	my $fc = 0;
 	if ($tst_fle_cr8 =~ "[Aa]") { $tst_fle_cr8 = "1234";}
 	if ($tst_fle_cr8 =~ /1/){ fle_cre8(0); $fc++; }
