@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.11 2005-04-28 18:55:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.12 2005-04-29 18:54:59 gayathri_aiyar Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -77,6 +77,7 @@
 #include <mpi.h> /* MPI definitions */
 #endif /* !ENABLE_MPI */
 
+
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
@@ -101,7 +102,6 @@ main(int argc,char **argv)
   bool NCAR_CCSM_FORMAT;
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   bool TOKEN_FREE=True; /* [flg] Allow MPI workers write-access to output file */
-  bool NO_MORE_WORK=False; /* [flg] All MPI variables processed */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -119,9 +119,12 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.11 2005-04-28 18:55:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.11 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.12 2005-04-29 18:54:59 gayathri_aiyar Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.12 $";
   const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
+  const double sleep_tm=0.04; /* [time] interval between successive token requests */
+  const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
+  const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -510,7 +513,7 @@ main(int argc,char **argv)
     /* While variables remain to be processed or written... */
     while(var_wrt_nbr < nbr_var_prc){
       /* Receive message from any worker */
-      MPI_Recv(wrk_id_bfr,1,MPI_INT,MPI_ANY_SOURCE,MPI_ANY_TAG,MPI_COMM_WORLD,&mpi_stt);
+      MPI_Recv(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,MPI_ANY_SOURCE,MPI_ANY_TAG,MPI_COMM_WORLD,&mpi_stt);
       /* Obtain MPI message type */
       msg_typ=mpi_stt.MPI_TAG;
       /* Get sender's proc_id */ 
@@ -524,7 +527,7 @@ main(int argc,char **argv)
 	
 	if(idx > nbr_var_prc-1){
 	  /* Variable index = -1 indicates NO_MORE_WORK */
-	  info_bfr[0]=-1; /* [idx] Variable to be processed */
+	  info_bfr[0]=NO_MORE_WORK; /* [idx] -1 */
 	  info_bfr[1]=out_id; /* Output file ID */
 	}else{
 	  /* Tell requesting worker to allocate space for next variable */
@@ -534,7 +537,7 @@ main(int argc,char **argv)
 	  /* Point to next variable on list */
 	  idx++; 
 	} /* endif idx */
-	MPI_Send(info_bfr,3,MPI_INT,wrk_id,WORK_ALLOC,MPI_COMM_WORLD);
+	MPI_Send(info_bfr,info_bfr_lng,MPI_INT,wrk_id,WORK_ALLOC,MPI_COMM_WORLD);
 	/* msg_typ != WORK_REQUEST */
       }else if(msg_typ == TOKEN_REQUEST){ 
 	/* Allocate token if free, else ask worker to try later */
@@ -544,7 +547,7 @@ main(int argc,char **argv)
 	}else{
 	  info_bfr[0]=0; /* Wait */
 	} /* !TOKEN_FREE */
-	MPI_Send(info_bfr,3,MPI_INT,wrk_id,TOKEN_RESULT,MPI_COMM_WORLD);
+	MPI_Send(info_bfr,info_bfr_lng,MPI_INT,wrk_id,TOKEN_RESULT,MPI_COMM_WORLD);
       } /* msg_typ != TOKEN_REQUEST */
     } /* end while var_wrt_nbr < nbr_var_prc */
   }else{ /* proc_id != 0, end Manager code begin Worker code */
@@ -552,20 +555,21 @@ main(int argc,char **argv)
     while(1){ /* While work remains... */
       /* Send WORK_REQUEST */
       wrk_id_bfr[0]=proc_id;
-      MPI_Send(wrk_id_bfr,1,MPI_INT,0,WORK_REQUEST,MPI_COMM_WORLD);
+      MPI_Send(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,mgr_id,WORK_REQUEST,MPI_COMM_WORLD);
       /* Receive WORK_ALLOC */
-      MPI_Recv(info_bfr,3,MPI_INT,0,WORK_ALLOC,MPI_COMM_WORLD,&mpi_stt);
+      MPI_Recv(info_bfr,info_bfr_lng,MPI_INT,0,WORK_ALLOC,MPI_COMM_WORLD,&mpi_stt);
       idx=info_bfr[0];
       out_id=info_bfr[1];
-      if(idx != -1) var_prc_out[idx]->id=info_bfr[2]; else NO_MORE_WORK=True;
-      if(NO_MORE_WORK) break;
+      if(idx == NO_MORE_WORK) break;
+      else{ 
+	var_prc_out[idx]->id=info_bfr[2];
       /* Process this variable same as UP code */
 #endif /* !ENABLE_MPI */
 #ifndef ENABLE_MPI
       /* UP and SMP codes main loop over variables */ 
       for(idx=0;idx<nbr_var_prc;idx++){
 #endif /* ENABLE_MPI */
-	/* Common code for UP, SMP, and MPI */ /* fxm: requires C99 as is? */
+	/* Common code for UP, SMP, and MPI */ /* fxm: requires C99 as is? */ /* fxm: for the decl to be at the beginning of scope, another ifdef MPI below the decl should have the prev stmt? */
 	int var_id; /* [id] Variable ID */
 	int has_mss_val=False;
 	ptr_unn mss_val;
@@ -662,12 +666,12 @@ main(int argc,char **argv)
 	/* Obtain token and prepare to write */
 	while(1){ /* Send TOKEN_REQUEST repeatedly until token obtained */
 	  wrk_id_bfr[0]=proc_id;
-	  MPI_Send(wrk_id_bfr,1,MPI_INT,0,TOKEN_REQUEST,MPI_COMM_WORLD);
+	  MPI_Send(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,mgr_id,TOKEN_REQUEST,MPI_COMM_WORLD);
 	  /* Receive TOKEN_RESULT (1,0)=(ALLOW,WAIT) */
-	  MPI_Recv(info_bfr,3,MPI_INT,0,TOKEN_RESULT,MPI_COMM_WORLD,&mpi_stt);
+	  MPI_Recv(info_bfr,info_bfr_lng,MPI_INT,mgr_id,TOKEN_RESULT,MPI_COMM_WORLD,&mpi_stt);
 	  tkn_rsp=info_bfr[0];
 	  /* Wait then re-send request */
-	  if(tkn_rsp == TOKEN_WAIT) sleep(0.04); else break;
+	  if(tkn_rsp == TOKEN_WAIT) sleep(sleep_tm); else break;
 	} /* end while loop waiting for write token */
 	
 	/* Worker has token---prepare to write */
@@ -694,6 +698,7 @@ main(int argc,char **argv)
 	  nco_close(out_id);
 	  var_wrt_nbr++;
 	} /* endif TOKEN_ALLOC */
+      } /* end else !NO_MORE_WORK */
       } /* end while loop requesting work/token */
     } /* endif Worker */
 #else /* !ENABLE_MPI */

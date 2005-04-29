@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.70 2005-04-28 01:03:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.71 2005-04-29 18:54:59 gayathri_aiyar Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -107,6 +107,9 @@ ERROR: Hybrid configurations of MPI and OpenMP parallelism not yet supported
 #define WORK_ALLOC 400
 #define WORK_REQUEST 100
 #endif /* !ENABLE_MPI */
+
+  const int mgr_id=0; /* [ID] used in MPI communication */
+  const int NO_MORE_WORK=-1; /* [flg] All MPI variables processed */
 
   int prg; /* [enm] Program ID */
   int prg_get(void){return prg;} /* [enm] Program ID */

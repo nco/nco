@@ -1,3 +1,7 @@
+2005-04-29  Gayathri Venkitachalam  <gvenkita@uci.edu>
+
+	* Cleaning up mpncbo.c prior to replacing ncbo.c
+
 2005-04-27  Charlie Zender  <zender@uci.edu>
 
 	* Cleaning up mpncbo.c prior to replacing ncbo.c
