@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.97 2005-04-25 01:33:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.98 2005-05-03 17:32:02 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -103,9 +103,9 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.97 2005-04-25 01:33:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.97 $";
-  const char * const opt_sht_lst="ACcD:d:Fhi:l:Oo:p:rRv:xw:Z-:";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.98 2005-05-03 17:32:02 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.98 $";
+  const char * const opt_sht_lst="ACcD:d:Fhi:l:Oo:p:rRt:v:xw:Z-:";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -117,6 +117,10 @@ main(int argc,char **argv)
   extern char *optarg;
   extern int optind;
   
+  /* Using naked stdin/stdout/stderr in parallel region generates warning
+     Copy appropriate filehandle to variable scoped shared in parallel clause */
+  FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
+
   int abb_arg_nbr=0;
   int fl_idx;
   int fl_nbr=0;
@@ -137,6 +141,7 @@ main(int argc,char **argv)
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
+  int thr_nbr=0; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
     
   lmt_sct **lmt;
@@ -187,6 +192,7 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
+      {"thr_nbr",required_argument,0,'t'},
       {"variable",required_argument,0,'v'},
       {"version",no_argument,0,'r'},
       {"vrs",no_argument,0,'r'},
@@ -263,6 +269,9 @@ main(int argc,char **argv)
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lbr_vrs_prn();
       nco_exit(EXIT_SUCCESS);
+      break;
+    case 't': /* Thread number */
+      thr_nbr=(int)strtol(optarg,(char **)NULL,10);
       break;
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */
@@ -402,6 +411,10 @@ main(int argc,char **argv)
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
   cmd_ln=(char *)nco_free(cmd_ln);
 
+  /* Initialize thread information */
+  thr_nbr=nco_openmp_ini(thr_nbr);
+  if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
+  
   /* Define dimensions in output file */
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
@@ -507,15 +520,21 @@ main(int argc,char **argv)
   var_prc_2=(var_sct **)nco_malloc(nbr_var_prc*sizeof(var_sct *));
 
   /* Loop over each interpolated variable */
+#ifdef _OPENMP
+  /* OpenMP notes:
+     shared(): msk and wgt are not altered within loop
+     private(): wgt_avg does not need initialization */
+#pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,MUST_CONFORM,idx,has_mss_val) shared(dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1,in_id_2,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
+#endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc;idx++){
-    if(dbg_lvl > 0) (void)fprintf(stderr,"%s, ",var_prc_1[idx]->nm);
-    if(dbg_lvl > 0) (void)fflush(stderr);
+    if(dbg_lvl > 0) (void)fprintf(fp_stderr,"%s, ",var_prc_1[idx]->nm);
+    if(dbg_lvl > 0) (void)fflush(fp_stderr);
 
     var_prc_2[idx]=nco_var_dpl(var_prc_1[idx]);
-    (void)nco_var_refresh(in_id_2,var_prc_2[idx]);
+    (void)nco_var_refresh(in_id_2,var_prc_2[idx]); /* Routine contains OpenMP critical regions */
 
-    (void)nco_var_get(in_id_1,var_prc_1[idx]);
-    (void)nco_var_get(in_id_2,var_prc_2[idx]);
+    (void)nco_var_get(in_id_1,var_prc_1[idx]); /* Routine contains OpenMP critical regions */
+    (void)nco_var_get(in_id_2,var_prc_2[idx]); /* Routine contains OpenMP critical regions */
     
     wgt_out_1=nco_var_cnf_dmn(var_prc_1[idx],wgt_1,wgt_out_1,MUST_CONFORM,&DO_CONFORM);
     wgt_out_2=nco_var_cnf_dmn(var_prc_2[idx],wgt_2,wgt_out_2,MUST_CONFORM,&DO_CONFORM);
@@ -541,19 +560,24 @@ main(int argc,char **argv)
     /* Re-cast output variable to original type */
     var_prc_2[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc_2[idx]);
 
-    /* Copy interpolations to output file */
-    if(var_prc_out[idx]->nbr_dim == 0){
-      (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_2[idx]->val.vp,var_prc_out[idx]->type);
-    }else{ /* end if variable is a scalar */
-      (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp,var_prc_out[idx]->type);
-    } /* end else */
-
+#ifdef _OPENMP
+#pragma omp critical
+#endif /* _OPENMP */
+    { /* begin OpenMP critical */
+      /* Copy interpolations to output file */
+      if(var_prc_out[idx]->nbr_dim == 0){
+	(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_2[idx]->val.vp,var_prc_out[idx]->type);
+      }else{ /* end if variable is a scalar */
+	(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp,var_prc_out[idx]->type);
+      } /* end else */
+    } /* end OpenMP critical */
+    
     /* Free dynamically allocated buffers */
     if(var_prc_1[idx] != NULL) var_prc_1[idx]=nco_var_free(var_prc_1[idx]);
     if(var_prc_2[idx] != NULL) var_prc_2[idx]=nco_var_free(var_prc_2[idx]);
     if(var_prc_out[idx] != NULL) var_prc_out[idx]=nco_var_free(var_prc_out[idx]);
     
-  } /* end loop over idx */
+  } /* end (OpenMP parallel for) loop over idx */
   if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
   
   /* Close input netCDF files */
