@@ -1,3 +1,7 @@
+2005-05-03  zender  <zender@uci.edu>
+
+	* Threaded ncflint. Not tested yet.
+
 2005-04-29  Gayathri Venkitachalam  <gvenkita@uci.edu>
 
 	* Cleaning up mpncbo.c prior to replacing ncbo.c

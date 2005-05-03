@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.166 2005-04-28 01:03:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.167 2005-05-03 18:20:10 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.166 2005-04-28 01:03:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.166 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.167 2005-05-03 18:20:10 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.167 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -652,7 +652,7 @@ main(int argc,char **argv)
 
      cd ~/nco/data
      ncks -O -v one,two,three,four in.nc omp.nc
-     ncks -O -v one one.nc omp.nc
+     ncks -O -v one omp.nc one.nc
 
      ncks -O -v one one.nc two.nc
      ncrename -v one,two two.nc

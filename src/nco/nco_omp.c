@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.18 2005-04-28 01:03:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.19 2005-05-03 18:20:09 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -114,9 +114,6 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     (void)omp_set_num_threads(thr_nbr_rqs); 
     if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO nco_omp_ini() requested %d threads from system\n",prg_nm_get(),thr_nbr_rqs);
   } /* end error */
-
-  if(!USR_SPC_THR_RQS){
-  } /* USR_SPC_THR_RQS */
 
 #pragma omp parallel default(none) shared(fp_stderr,thr_nbr_act)
   { /* begin OpenMP parallel */
