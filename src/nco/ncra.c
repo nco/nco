@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.140 2005-05-04 06:13:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.141 2005-05-04 06:15:47 zender Exp $ */
 
 /* ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.140 2005-05-04 06:13:57 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.140 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.141 2005-05-04 06:15:47 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.141 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
 
   dmn_sct **dim;
@@ -634,7 +634,6 @@ main(int argc,char **argv)
       default:
 	break;
       } /* end switch */
-      /* fxm: 20050412 should free var_prc_out[idx]->tally too? */
       var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_free(var_prc[idx]->tally);
     } /* end (OpenMP parallel for) loop over variables */
   } /* end if */
