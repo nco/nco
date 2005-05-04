@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.71 2005-04-29 18:54:59 gayathri_aiyar Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.72 2005-05-04 12:30:05 hmb Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -343,6 +343,7 @@ ERROR: Hybrid configurations of MPI and OpenMP parallelism not yet supported
     int pck_ram; /* [flg] Variable is packed in memory (valid scale_factor, add_offset, or both attributes exist) */
     int has_scl_fct; /* [flg] Valid scale_factor attribute exists */
     int has_add_fst; /* [flg] Valid add_offset attribute exists */
+    int undefined;   /* used in parser if true var undefined in first parse */
     ptr_unn scl_fct; /* [frc] Value of scale_factor attribute of type typ_upk */
     ptr_unn add_fst; /* [frc] Value of add_offset attribute of type typ_upk */
     nc_type typ_pck; /* [enm] Type of variable when packed (on disk). typ_pck = typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
