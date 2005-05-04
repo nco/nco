@@ -1,6 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.139 2005-04-28 01:03:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.140 2005-05-04 06:13:57 zender Exp $ */
 
-/* ncra -- netCDF running averager */
+/* ncra -- netCDF running averager
+   ncea -- netCDF ensemble averager
+   ncrcat -- netCDF record concatenator */
 
 /* Purpose: Compute averages or extract series of specified hyperslabs of 
    specfied variables of multiple input netCDF files and output them 
@@ -115,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.139 2005-04-28 01:03:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.139 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.140 2005-05-04 06:13:57 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.140 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
 
   dmn_sct **dim;
