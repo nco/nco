@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.27 2005-04-19 11:34:48 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.28 2005-05-04 12:22:25 hmb Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -45,7 +45,7 @@
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strcmp. . . */
-
+#include <assert.h>
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
@@ -246,7 +246,7 @@ PRINT '(' var_xpr ')' ';' {
     ptr_aed=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg),True);
     ptr_aed->sz=$3->sz;
     ptr_aed->type=$3->type;
-    ptr_aed->val.vp=(void*)nco_malloc((ptr_aed->sz)*nco_typ_lng(ptr_aed->type));
+     ptr_aed->val.vp=(void*)nco_malloc((ptr_aed->sz)*nco_typ_lng(ptr_aed->type));
     (void)var_copy(ptr_aed->type,ptr_aed->sz,$3->val,ptr_aed->val);
     /* cast_nctype_void($3->type,&ptr_aed->val); */
     if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s %d dimensional variable",$1.var_nm,$1.att_nm,$3->nbr_dim);
@@ -264,9 +264,10 @@ PRINT '(' var_xpr ')' ';' {
    $3->nm=strdup($1);
   (void)ncap_var_write($3,(prs_sct *)prs_arg);
 
-  if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
+  /* print mess only for defined vars */
+  if(dbg_lvl_get() > 0 && !$3->undefined ){ (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(ncap_err_sng);
-  
+  }
 } /* end out_var_xpr '=' var_xpr */
 | out_var_xpr '=' scv_xpr
 {
@@ -282,8 +283,8 @@ PRINT '(' var_xpr ')' ';' {
    var->nm=strdup($1);
    var->nbr_dim=0;
    var->sz=1;
-   var->val=ncap_scv_2_ptr_unn($3);
    var->type=$3.type;
+   var->val=ncap_scv_2_ptr_unn($3);
 
    if(((prs_sct *)prs_arg)->var_LHS != NULL){
       /* User intends LHS to cast RHS to same dimensionality
@@ -293,10 +294,10 @@ PRINT '(' var_xpr ')' ';' {
       
       if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching former scv_xpr defining %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$1,((prs_sct *)prs_arg)->var_LHS->nm,((prs_sct *)prs_arg)->var_LHS->nbr_dim,((prs_sct *)prs_arg)->var_LHS->sz);
     } /* endif LHS_cst */
-    
+
    (void)ncap_var_write(var,(prs_sct *)prs_arg);
 
-   if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
+   if(dbg_lvl_get() > 0 ) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(ncap_err_sng);
  
 
@@ -572,12 +573,24 @@ var_xpr '+' var_xpr { /* Begin Addition */
   /* Packing variable does not create duplicate so DO NOT free $3 */
   const nc_type nc_typ_pck_dfl=NC_SHORT; /* [enm] Default type to pack to */
   bool PCK_VAR_WITH_NEW_PCK_ATT;
-  $$=nco_var_pck($3,nc_typ_pck_dfl,&PCK_VAR_WITH_NEW_PCK_ATT);
-  PCK_VAR_WITH_NEW_PCK_ATT=PCK_VAR_WITH_NEW_PCK_ATT; /* CEWI */
+
+  if( ((prs_sct*)prs_arg)->ntl_scn){
+    $3->undefined=True;
+    $$= $3;
+  }else{ 
+    $$=nco_var_pck($3,nc_typ_pck_dfl,&PCK_VAR_WITH_NEW_PCK_ATT);
+    PCK_VAR_WITH_NEW_PCK_ATT=PCK_VAR_WITH_NEW_PCK_ATT; /* CEWI */
+  }
 } /* end PACK */
 | UNPACK '(' var_xpr ')' {
   /* Unpacking variable does not create duplicate so DO NOT free $3 */
-  $$=nco_var_upk($3);
+  /* Don't unpack on first pass */
+  if( ((prs_sct*)prs_arg)->ntl_scn){
+    $3->undefined=True;
+    $$= $3;
+  }else{ 
+      $$=nco_var_upk($3);
+  }
 } /* end UNPACK */
 | FUNCTION '(' var_xpr ')' {
   $$=ncap_var_fnc($3,$1);
@@ -592,19 +605,42 @@ var_xpr '+' var_xpr { /* Begin Addition */
   /* fxm: Allow commands like a=M_PI*rds^2; to work */
 }
 | VAR { /* Terminal symbol action */
-  $$=ncap_var_init($1,(prs_sct *)prs_arg);
 
-  if((((prs_sct *)prs_arg)->var_LHS) != NULL){
+  var_sct *var;
+  var_sct *var_tmp;
+  prs_sct *prs_drf; /*Pointer for dereferencing */
+
+  prs_drf=(prs_sct*)prs_arg;
+
+  var=ncap_var_init($1,prs_drf);
+  var->undefined=False;
+
+  if(prs_drf->ntl_scn == True && prs_drf->var_LHS != NULL){
+	var_tmp=nco_var_dpl(prs_drf->var_LHS);
+	var_tmp->id=var->id;
+	var_tmp->nm=strdup($1);
+	var_tmp->type=var->type;
+	var_tmp->typ_dsk=var->typ_dsk;
+	var_tmp->undefined=False;
+        var_tmp->val.vp=(void*)NULL;
+	var=nco_var_free(var);
+	var=var_tmp;
+  }  
+	
+  if(prs_drf->ntl_scn == False && prs_drf->var_LHS != NULL){
+
     /* User intends LHS to cast RHS to same dimensionality
        Stretch newly initialized variable to size of LHS template */
     /*    (void)ncap_var_cnf_dmn(&$$,&(((prs_sct *)prs_arg)->var_LHS));*/
-    (void)ncap_var_stretch(&$$,&(((prs_sct *)prs_arg)->var_LHS));
+      (void)ncap_var_stretch(&var,&(prs_drf->var_LHS));
 
-    if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching variable %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$$->nm,((prs_sct *)prs_arg)->var_LHS->nm,((prs_sct *)prs_arg)->var_LHS->nbr_dim,((prs_sct *)prs_arg)->var_LHS->sz);
+      if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching variable %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),var->nm,prs_drf->var_LHS->nm,prs_drf->var_LHS->nbr_dim,prs_drf->var_LHS->sz);
 
-  } /* endif LHS_cst */
-
-  /* Sanity check */
+   } /* endif LHS_cst */
+  
+ 
+  $$=var;
+ /* Sanity check */
   if ($$==(var_sct *)NULL) YYERROR;
 } /* end VAR terminal symbol */
 ; /* end var_xpr */
@@ -651,7 +687,7 @@ ncap_aed_lookup /* [fnc] Find location of existing attribute or add new attribut
 
 
 
-var_sct *                      /*I [sct] varibale in list */
+var_sct *                     /*I [sct] varibale in list */
 ncap_var_lookup
 ( var_sct *var,   /* I  [sct] variable  */
  prs_sct *prs_arg,             /* I/O [sct] contains var list */
@@ -665,19 +701,25 @@ ncap_var_lookup
   size = *(prs_arg->nbr_var);
 
   for(idx=0; idx<size ; idx++) {
-    ptr_var=(*(prs_arg->var_lst))[idx];
 
-    if( ptr_var==NULL || ptr_var->nm==NULL || strcmp(var->nm,ptr_var->nm)) continue;    
-        
+    ptr_var=(*(prs_arg->var_lst))[idx];
+    /*
+    assert(var->nm);
+    assert(ptr_var->nm);
+    if(!strcmp(var->nm,ptr_var->nm)) return ptr_var;    
+    */
+    if(ptr_var==NULL || strcmp(var->nm,ptr_var->nm) ) continue;
+
     return ptr_var;
   }     
-  if(!add) return NULL;
+
+  if(!add) return (var_sct *)NULL;
 
   *(prs_arg->var_lst)=(var_sct **)nco_realloc(*(prs_arg->var_lst),(size+1)*sizeof(var_sct*));
   ++*(prs_arg->nbr_var);
   (*(prs_arg->var_lst))[size]=var;
-   
-  return NULL;
+
+  return (var_sct *)NULL;
 }
 
 
