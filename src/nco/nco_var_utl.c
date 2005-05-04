@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.74 2005-04-15 23:28:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.75 2005-05-04 12:17:24 hmb Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1231,8 +1231,10 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
 
   /* Portions of variable structure depend on packing properties, e.g., typ_upk
      nco_pck_dsk_inq() fills in these portions harmlessly */
-  (void)nco_pck_dsk_inq(nc_id,var);
-
+    (void)nco_pck_dsk_inq(nc_id,var);
+  
+  /* used when parsing script in ncap */
+    var->undefined=False;
   return var;
 } /* end nco_var_fll() */
 
