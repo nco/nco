@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.160 2005-04-25 01:33:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.161 2005-05-04 12:25:16 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.160 2005-04-25 01:33:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.160 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.161 2005-05-04 12:25:16 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.161 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -484,6 +484,13 @@ main(int argc,char **argv)
   cmd_ln=(char *)nco_free(cmd_ln);
   
   (void)nco_enddef(out_id);
+
+  /* define first element in list var_ycc 
+  var_ycc=(var_sct**)nco_calloc(1,sizeof(var_sct*));
+  nbr_var_ycc=1;
+  var_ycc[0]=(var_sct*)NULL;
+  */  
+
   
   /* Set arguments for  script execution */
   prs_arg.fl_in=fl_in; /* [sng] Input data file */
@@ -505,7 +512,6 @@ main(int argc,char **argv)
   prs_arg.nco_op_typ=nco_op_nil; /* [enm] Operation type */
 
   
-
 
   /* Do two parses. 1st parse define vars in output file 
      2nd parse initialize vars */
@@ -557,17 +563,22 @@ if(fl_spt_usr == NULL){
 
   
   (void)nco_redef(out_id);
-   for(idx=0 ; idx < nbr_var_ycc ; idx++) { 
-    /* define variables in output */
-     printf("defined in output %s\n", var_ycc[idx]->nm);
+   for(idx=0 ; idx < nbr_var_ycc ; idx++) {
+   /* define variables in output */
+   /* kill variables classified as undefined */
+     if(var_ycc[idx]->undefined) {
+       var_ycc[idx]=(var_sct*)nco_var_free(var_ycc[idx]);
+       continue;
+     }
+    
+     //printf("defined in output %s\n", var_ycc[idx]->nm);
      (void)nco_def_var(out_id,var_ycc[idx]->nm,var_ycc[idx]->type,var_ycc[idx]->nbr_dim,var_ycc[idx]->dmn_id,&var_id);
-     var_ycc[idx]->val.vp= nco_free(var_ycc[idx]->val.vp);
+    var_ycc[idx]->val.vp= nco_free(var_ycc[idx]->val.vp);
    }
   (void)nco_enddef(out_id);
 
 
- 
-  } /* end for(jdx */
+ } /* end for(jdx */
   
   /* Get number of variables in output file */
   rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int*)NULL);
