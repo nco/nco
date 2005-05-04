@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.40 2005-04-19 11:31:49 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.41 2005-05-04 12:20:49 hmb Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -505,7 +505,7 @@ M_PI {return NAMED_CONSTANT;}
 	  (void)cast_void_nctype(type,&val);
 	  lval_ptr->sng=(char *)nco_malloc((att_sz+1)*sizeof(char));
 	  strncpy(lval_ptr->sng,(char *)val.cp,(size_t)att_sz);
-	  lval_ptr->sng[att_sz]='\0'; 
+	  lval_ptr->sng[att_sz]='\0';; 
 	  return SNG;
 	}else{
 	  lval_ptr->scv=ptr_unn_2_scv(type,val);
@@ -681,6 +681,14 @@ M_PI {return NAMED_CONSTANT;}
     var->sz*=var->cnt[idx];
   } /* end loop over dim */
   
+  
+  /* don't initalize val in intial scan */
+  if(prs_arg->ntl_scn) {
+    var->val.vp=(void*)NULL;
+    goto end_var;
+  }
+
+
   /* Allocate space for variable values 
      fxm: more efficient and safer to use nco_calloc() and not fill with values? */
   if((var->val.vp=(void *)nco_malloc_flg(var->sz*nco_typ_lng(var->type))) == NULL){
@@ -702,7 +710,8 @@ M_PI {return NAMED_CONSTANT;}
     var_val_cp=(char *)var->val.vp;
     for(idx=0;idx<var_sz;idx++) (void)memcpy(var_val_cp+idx,(void *)(&val),var_typ_sz);
   } /* end scope */
-  
+ end_var:
+
   /* Link variable into yylex() argument for use in parser */
   prs_arg->var_LHS=var;
   
