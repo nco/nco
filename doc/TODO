@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.491 2005-05-04 18:16:17 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.492 2005-05-05 06:07:17 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -296,8 +296,11 @@ nco514. My MPI builds call superfluous linker steps:
 nco516. Implement SDO-wide data pipes, e.g., ncra in*.nc | ncwa | ncrename t,tpt foo.nc
         This would bring us one step closer to grid services, too
 nco517. DODS/OPeNDAP fails on our local servers but not all servers:
-	ncra -O -C -l /tmp -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
 	ncra -O -C -l /tmp -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
+	ncra -O -C -l /tmp -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
+	ncra -O -C -l /tmp -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata/in.nc http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata/in.nc ~/foo.nc
+	ncwa -O -C -l /tmp -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata latvert.nc ~/out.nc
+	ncwa -O http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata/latvert.nc ~/out.nc
 	ncra -O -C -l /tmp -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface pres.sfc.1969.nc ~/foo.nc
 nco518. Remove OpenMP critical regions from nco_var_get()? i.e., is reading critical?
 nco519. ncrcat: perfect memory usage and fix memory leak?
