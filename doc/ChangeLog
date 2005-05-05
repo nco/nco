@@ -1,3 +1,8 @@
+2005-05-05  Charlie Zender  <zender@uci.edu>
+
+	* Comment out three_double_dmn from in.cdl to avoid triggering
+	errors in DODS server and/or netCDF client library
+
 2005-05-03  zender  <zender@uci.edu>
 
 	* Threaded ncflint. Not tested yet.
