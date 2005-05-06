@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.28 2005-05-04 12:22:25 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.29 2005-05-06 12:44:26 hmb Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -615,6 +615,7 @@ var_xpr '+' var_xpr { /* Begin Addition */
   var=ncap_var_init($1,prs_drf);
   var->undefined=False;
 
+  
   if(prs_drf->ntl_scn == True && prs_drf->var_LHS != NULL){
 	var_tmp=nco_var_dpl(prs_drf->var_LHS);
 	var_tmp->id=var->id;
@@ -626,7 +627,7 @@ var_xpr '+' var_xpr { /* Begin Addition */
 	var=nco_var_free(var);
 	var=var_tmp;
   }  
-	
+  	
   if(prs_drf->ntl_scn == False && prs_drf->var_LHS != NULL){
 
     /* User intends LHS to cast RHS to same dimensionality
@@ -635,7 +636,7 @@ var_xpr '+' var_xpr { /* Begin Addition */
       (void)ncap_var_stretch(&var,&(prs_drf->var_LHS));
 
       if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching variable %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),var->nm,prs_drf->var_LHS->nm,prs_drf->var_LHS->nbr_dim,prs_drf->var_LHS->sz);
-
+      var->undefined=False;
    } /* endif LHS_cst */
   
  
