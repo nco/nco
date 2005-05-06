@@ -1,3 +1,6 @@
+2005-05-06 Henry Butowsky <henryb@ntlworld>
+	* Cleaned up double parsing in ncap.c,ncap_*.[hc] 
+	  now passes basic tests
 2005-05-05  Charlie Zender  <zender@uci.edu>
 
 	* Comment out three_double_dmn from in.cdl to avoid triggering
