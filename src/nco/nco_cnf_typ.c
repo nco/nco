@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.24 2005-04-18 03:52:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.25 2005-05-06 12:49:05 hmb Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -174,6 +174,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
      This condition is unsafe and is described more fully in nco_cnv_mss_val_typ() */
   long idx;
   long sz;
+  long sz_msk;  /* used when called with var_in->val.vp==NULL to hold value */
   
   nc_type var_in_typ;
   
@@ -185,6 +186,13 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   /* Do types of variable AND its missing value already match?
      This routine assumes missing_value, if any, to be same type as variable */
   if(var_in->type == var_out_typ) return var_in;
+
+
+  /* If variable has no data  ie var_in.val.vp==NULL then we still want to be able to call this function to convert missing values. It seems we can achive this by temporaraly setting var_in0>sz=0, then restoring the value at the end of the function */
+  if(var_in->val.vp==NULL) {
+    sz_msk=var_in->sz;
+    var_in->sz=0L;
+  }
 
   var_out=var_in;
   
@@ -292,7 +300,10 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   /* Un-typecast pointer to values after access */
   (void)cast_nctype_void(var_in->type,&val_in);
   (void)cast_nctype_void(var_out->type,&var_out->val);
-  
+
+  /* if var_in.vp empty then unmask sz */
+  if(val_in.vp==NULL) var_out->sz=sz_msk;
+
   /* Free input variable data */
   val_in.vp=nco_free(val_in.vp);
   
