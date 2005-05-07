@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.25 2005-05-06 12:49:05 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.26 2005-05-07 07:10:41 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -174,7 +174,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
      This condition is unsafe and is described more fully in nco_cnv_mss_val_typ() */
   long idx;
   long sz;
-  long sz_msk;  /* used when called with var_in->val.vp==NULL to hold value */
+  long sz_msk=long_CEWI; /* Holds value when called with var_in->val.vp==NULL */
   
   nc_type var_in_typ;
   
@@ -187,12 +187,14 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
      This routine assumes missing_value, if any, to be same type as variable */
   if(var_in->type == var_out_typ) return var_in;
 
-
-  /* If variable has no data  ie var_in.val.vp==NULL then we still want to be able to call this function to convert missing values. It seems we can achive this by temporaraly setting var_in0>sz=0, then restoring the value at the end of the function */
-  if(var_in->val.vp==NULL) {
+  if(var_in->val.vp==NULL){
+    /* Variable has no data when var_in.val.vp==NULL
+       In this case function should only convert missing values 
+       Accomplish this by temporarily setting var_in->sz=0
+       Restore correct value at function end */
     sz_msk=var_in->sz;
     var_in->sz=0L;
-  }
+  } /* endif NULL */
 
   var_out=var_in;
   
@@ -203,7 +205,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     (void)fprintf(stderr,"%s: DEBUG %s variable %s from type %s to type %s\n",prg_nm_get(),var_out_typ > var_in_typ ? "Promoting" : "Demoting",var_in->nm,nco_typ_sng(var_in_typ),nco_typ_sng(var_out_typ));
   } /* end if */
   
-  /* Move the current var values to swap location */
+  /* Move current variable values to swap location */
   val_in=var_in->val;
   
   /* Allocate space for type-conforming values */
@@ -301,7 +303,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   (void)cast_nctype_void(var_in->type,&val_in);
   (void)cast_nctype_void(var_out->type,&var_out->val);
 
-  /* if var_in.vp empty then unmask sz */
+  /* If var_in.vp empty then unmask sz */
   if(val_in.vp==NULL) var_out->sz=sz_msk;
 
   /* Free input variable data */

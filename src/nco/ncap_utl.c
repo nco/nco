@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.117 2005-05-06 12:42:14 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.118 2005-05-07 07:10:39 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -10,11 +10,10 @@
 #include "ncap.h" /* netCDF arithmetic processor */
 extern char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in ncap_lex.l) */
 
-
 var_sct *
-//ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
-ncap_var_init( char *var_nm,prs_sct *prs_arg)
-
+/* fxm: which prototype to use? */
+/* ncap_var_init(const char * const var_nm,prs_sct *prs_arg) */
+ncap_var_init(char *var_nm,prs_sct *prs_arg)
 {
   /* Purpose: Initialize variable structure, retrieve variable values from disk
      Parser calls ncap_var_init() when it encounters a new RHS variable */
@@ -64,17 +63,14 @@ ncap_var_init( char *var_nm,prs_sct *prs_arg)
   var_lst=ncap_var_lookup(&var_lkp,((prs_sct*)prs_arg), False);
   (void)nco_free(var_lkp.nm);
 
-
-  if(prs_arg->ntl_scn && var_lst) {
-
+  if(prs_arg->ntl_scn && var_lst){
     var=nco_var_dpl(var_lst);
     var->val.vp=NULL;
     return var;	
-  }
+  } /* endif */
 
   /* check if var in list has been defined but NOT filled */
   if(!prs_arg->ntl_scn && var_lst && var_lst->sz >0 ) DEF_VAR=True; 
-
 
   /* Check output file for var */  
   rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
