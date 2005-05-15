@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.493 2005-05-05 17:32:15 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.494 2005-05-15 06:24:33 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -295,22 +295,13 @@ nco514. My MPI builds call superfluous linker steps:
         make MPI=Y > foo 2>&1
 nco516. Implement SDO-wide data pipes, e.g., ncra in*.nc | ncwa | ncrename t,tpt foo.nc
         This would bring us one step closer to grid services, too
-nco517. DODS/OPeNDAP fails on our local servers but not all servers:
-	ncra -O -C -l /tmp -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
-	ncra -O -C -l /tmp -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
-	ncra -O -C -l /tmp -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata/in.nc http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata/in.nc ~/foo.nc
-	ncwa -O -C -l /tmp -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata latvert.nc ~/out.nc
-	ncwa -O http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata/latvert.nc ~/out.nc
-	ncra -O -C -l /tmp -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface pres.sfc.1969.nc ~/foo.nc
 nco518. Remove OpenMP critical regions from nco_var_get()? i.e., is reading critical?
-nco519. ncrcat: perfect memory usage and fix memory leak?
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncrcat -O -C -D 3 -d lon,1 -n 3,4,1 -v one_dmn_rec_var -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc foo.nc > ~/foo 2>&1
-nco520. PMEL-reported memory usage: allocations accumulate in main loop before being free()'d, but not a leak per se?
-        ncrcat -D 5 -c -O -F -d time,1,200 -d lon,240,360 -d lat,120,180 -v thetao -p http://data1.gfdl.noaa.gov:8080/thredds/dodsC -l /tmp ipcc_h2_ocean_tripolar_tracers ~/foo.nc 
-        ncrcat -D 5 -c -O -F -p http://data1.gfdl.noaa.gov:8080/thredds/dodsC -l /tmp ipcc_h2_ocean_tripolar_tracers ~/foo.nc 
-        ncrcat -D 5 -c -O -F -p http://data1.gfdl.noaa.gov:8080/thredds/dodsC -l /tmp ipcc_h2_ocean_tripolar_tracers ~/foo.nc 
-	ncrcat -D 5 -O -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l /tmp ipcc_dly_T85.nc ipcc_dly_T85.nc ipcc_dly_T85.nc ipcc_dly_T85.nc ipcc_dly_T85.nc ipcc_dly_T85.nc ipcc_dly_T85.nc ipcc_dly_T85.nc ipcc_dly_T85.nc ~/foo.nc
-nco521. 
+nco521. DODS/OPeNDAP fails on our local servers but not all servers:
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncrcat -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l /tmp/data in.nc foo.nc > ~/foo 2>&1
+	ncrcat -O -C -l /tmp -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
+	ncrcat -O -C -l /tmp -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
+nco522. Send not to ask netCDF to supply nc_var_copy() functiona
+nco523. 
 
 MPI:
 Archive MPI tests which appear to run correctly 
