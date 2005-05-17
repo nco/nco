@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.167 2005-05-03 18:20:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.168 2005-05-17 06:21:04 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.167 2005-05-03 18:20:10 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.167 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.168 2005-05-17 06:21:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.168 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -699,9 +699,9 @@ main(int argc,char **argv)
       
       (void)nco_var_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
       /* Retrieve variable from disk into memory */
-      if(dbg_lvl > 2) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 About to nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
+      if(dbg_lvl > 4) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 About to nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
       (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
-      if(dbg_lvl > 2) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 Finished nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
+      if(dbg_lvl > 4) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 Finished nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
       
       /* Convert char, short, long, int types to doubles before arithmetic */
       var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
@@ -747,6 +747,7 @@ main(int argc,char **argv)
       /* Copy (masked) (weighted) values from var_prc to var_prc_out */
       (void)memcpy((void *)(var_prc_out[idx]->val.vp),(void *)(var_prc[idx]->val.vp),var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type));
       /* Reduce variable over specified dimensions (tally array is set here) */
+      /* 20050516: fxm: destruction of var_prc_out in nco_var_avg() leaves dangling pointers in var_out? */
       var_prc_out[idx]=nco_var_avg(var_prc_out[idx],dmn_avg,dmn_avg_nbr,nco_op_typ);
       /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide
 	 Denominator is also tricky due to sundry normalization options
@@ -950,8 +951,9 @@ main(int argc,char **argv)
   if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
   if(nbr_dmn_out > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_out);
   /* Free variable lists */
-  /* fxm: next line causes memory error */
-  /* if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr); */
+  /* fxm: next line causes memory error due to double free of tally buffer.
+     var and var_out share tally buffer which is first free()'d in nco_var_avg() */
+  /*if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr); */
   /* fxm: next line breaks regression test */
   /*  if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);*/
   /* fxm: next line breaks regression test */

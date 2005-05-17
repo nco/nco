@@ -1,3 +1,9 @@
+2005-05-16  Charlie Zender  <zender@uci.edu>
+
+	* Stop cross-referencing fix with var->xrf->xrf=fix in nco_var_avg()
+
+	* Make nco_bm.pl output format for regression test look like configure
+
 2005-05-07  Charlie Zender  <zender@uci.edu>
 
 	* Reduced default verbosity of nco_bm.pl

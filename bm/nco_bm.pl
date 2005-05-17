@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.12 2005-05-07 07:10:36 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.13 2005-05-17 06:21:00 zender Exp $
 
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
@@ -13,7 +13,8 @@ use Cwd 'abs_path';
 use Getopt::Long; #qw(:config no_ignore_case bundling);
 use strict;
 
-#declare vars for strict
+# Declare vars for strict
+use vars qw($dsc_lng_max $dot_nbr $dot_nbr_min $dot_fmt $dot_sng $dsc_fmt $tst_fmt);
 use vars qw($dbg_lvl $wnt_log $usg $operator @test $description $expected
 	    @all_operators @operators $MY_BIN_DIR %sym_link %testnum %success %failure
 	    %testnum $result $server_name $server_ip $server_port $sock $udp_reprt $tst_fle_cr8
@@ -313,9 +314,18 @@ sub go {
 	$testcnt++;
     } # end loop over sub-tests
     # csz++
-    print STDERR "\t$operator test $t: $description....... \n";
+    $dot_sng=".....................................................................";
+    $dsc_lng_max=50;
+    $dot_nbr_min=3;
+    $dot_nbr=$dot_nbr_min;
+    if($dsc_lng_max-length($description)>0){$dot_nbr+=$dsc_lng_max-length($description);}
+    $dsc_fmt=sprintf("%%.%ds",$dsc_lng_max);
+    $dot_fmt=sprintf("%%.%ds",$dot_nbr);
+    $tst_fmt="%s test %d: $dsc_fmt$dot_fmt";
+    #printf STDERR ("%s test %d: %.50s...",$operator,$t,$description);
+    printf STDERR ($tst_fmt,$operator,$t,$description,$dot_sng);
     # csz--
-    if($dbg_lvl > 2){print STDERR "\ttotal time for $operator [$t] =  $subbenchmarks{$operator} s \n\n";}
+    if($dbg_lvl > 2){print STDERR "\tTotal time for $operator [$t] = $subbenchmarks{$operator} s \n\n";}
     $totbenchmarks{$operator} += $subbenchmarks{$operator};
     
     # Remove trailing newline for easier regex comparison
@@ -327,9 +337,11 @@ sub go {
 	if ($result == $expected)
 	{
 	    $success{$operator}++;
+	    printf STDERR ("ok\n");
 	    &verbosity("\n\tPASSED - Numeric output: [$operator]:\n");
 	} elsif (abs($result - $expected) < 0.00001)   {
 	    $success{$operator}++;
+	    printf STDERR ("ok\n");
 	    &verbosity("\n\t!!!! PASSED PROVISIONALLY ($expected vs $result) - Numeric output: [$operator]:\n");
 	} else {
 	    &failed($expected);
@@ -343,6 +355,7 @@ sub go {
 	if (substr($result,0,length($expected)) eq $expected)
 	{
 	    $success{$operator}++;
+	    printf STDERR ("ok\n");
 	    &verbosity("\n\tPASSED Alphabetic output: [$operator]:\n");
 	} else {
 	    &failed($expected);

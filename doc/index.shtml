@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.281 2005-04-08 23:15:04 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.282 2005-05-17 06:21:03 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -587,19 +587,13 @@ Moreover they may be compiled with debugging enabled and thus may be
 Users at NCAR should try the <i>supported</i> executables in
 <tt>/usr/local/bin</tt> first. 
 <ul>
-<li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.4.20): <tt>/home/zender/bin/LINUX</tt></li>
+<li>ESS <tt>soot.ess.uci.edu</tt> (Linux 2.6.10): <tt>/home/zender/bin/LINUX</tt></li>
 <li>ESS <tt>esmf.ess.uci.edu</tt> (AIX 5.1.0.0): <tt>/home/zender/bin/AIX</tt></li>
-<li>ESS <tt>krein.math.uci.edu</tt> (IRIX 6.5): <tt>/home/zender/zender/bin/SGIMP64</tt></li>
-<li>ESS <tt>sand.ess.uci.edu</tt> (Linux 2.4.21): <tt>/home/zender/bin/LINUXAMD64</tt></li>
+<li>ESS <tt>sand.ess.uci.edu</tt> (Linux 2.6.10): <tt>/home/zender/bin/LINUXAMD64</tt></li>
 <li>CGD network (Solaris 2.7): <tt>/home/zender/bin/SUNMP</tt></li>
-<li>CGD/SCD <tt>dataproc.ucar.edu</tt> (IRIX 6.5): <tt>/home/dataproc/zender/bin/SGIMP64</tt></li>
-<li>SCD <tt>babyblue.ucar.edu</tt> (AIX 5.1.0.35): <tt>/home/babyblue/zender/bin/AIX</tt></li>
-<li>SCD <tt>blackforest.ucar.edu</tt> (AIX 5.1.0.35): <tt>/home/blackforest/zender/bin/AIX</tt></li>
-<li>SCD <tt>bluesky.ucar.edu</tt> (AIX 5.1.0.35): <tt>/home/bluesky/zender/bin/AIX</tt></li>
-<li>SCD <tt>dave.ucar.edu</tt> (AIX 5.1.0.35): <tt>/home/dave/zender/bin/AIX</tt></li>
-<li>SCD <tt>longs.ucar.edu</tt> (Linux 2.4.18): <tt>/fs/cgd/home0/zender/bin/LINUX</tt></li>
-<li>SCD <tt>utefe.ucar.edu</tt> (IRIX 6.5): <tt>/home/ute/zender/bin/SGIMP64</tt></li>
-<li>SDSC <tt>horizon.npaci.edu</tt> (AIX 5.0): <tt>/paci/uci/ux453797/bin/AIX</tt></li>
+<li>SCD <tt>bluesky.ucar.edu</tt> (AIX 5.1.0.35): <tt>/usr/local/bin</tt></li>
+<li>SCD <tt>lightning.ucar.edu</tt> (???): <tt>/usr/local/bin</tt></li>
+<li>SCD <tt>tempest.ucar.edu</tt> (???): <tt>/usr/local/bin</tt></li>
 </ul>
 <hr></p>
 

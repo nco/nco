@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.23 2005-04-17 06:09:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.24 2005-05-17 06:21:04 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -54,7 +54,6 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 
   /* Copy basic attributes of input variable into output (averaged) variable */
   fix=nco_var_dpl(var);
-  (void)nco_xrf_var(fix,var->xrf);
 
   /* Create lists of averaging and fixed dimensions (in order of their appearance 
      in the variable). We do not know a priori how many dimensions remain in the 
