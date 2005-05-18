@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.42 2005-04-10 18:52:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.43 2005-05-18 21:33:20 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -23,34 +23,34 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
      Dimensions in var which are not in wgt will be present in wgt_out, with values
      replicated from existing dimensions in wgt.
      By default, wgt's dimensions must be subset of var's dimensions (MUST_CONFORM=true)
-     If it is permissible for wgt not to conform to var then set MUST_CONFORM=false before calling this routine
-     In this case when wgt and var do not conform then then nco_var_cnf_dmn sets *DO_CONFORM=False and returns a copy of var with all values set to 1.0
-     The calling procedure can then decide what to do with the output
+     Calling routine should set MUST_CONFORM=false if wgt and var need not conform
+     When wgt and var do not conform then then nco_var_cnf_dmn sets *DO_CONFORM=False and returns copy of var with all values set to 1.0
+     Calling procedure then decides what to do with unity output
      MUST_CONFORM is True for ncbo: Variables of like name to be, e.g., differenced, must be same rank
-     MUST_CONFORM is False false for ncap, ncflint, ncwa: Some variables to be averaged may not conform to the specified weight, e.g., lon will not conform to gw. This is fine and the returned wgt_out may not be used. */
+     MUST_CONFORM is False false for ncap, ncflint, ncwa: Some variables to be averaged may not conform to the specified weight, e.g., lon will not conform to gw. This is fine and returned wgt_out may not discarded. */
 
   /* There are many inelegant ways to accomplish this (without using C++): */  
 
-  /* Perhaps most efficient method to accomplish this in general case is to expand 
-     weight array until it is same size as variable array, and then multiply these
-     together element-by-element in highly vectorized loop, preferably in Fortran. 
-     To enhance speed, (enlarged) weight-values array could be static, only remade
+  /* Perhaps most efficient method in general case is to expand weight array until
+     it is same size as variable array, and then multiply these arrays together 
+     element-by-element in highly vectorized loop (possibly in Fortran or BLAS). 
+     To enhance speed, (enlarged) weight-values array could be static, only re-made
      when dimensions of incoming variables change. */
 
-  /* Another method for the general case, though an expensive one, is to use C to 
-     figure out the multidimensional indices into the one dimensional hyperslab, 
-     a la ncks. Knowing these indices, one can loop over the one-dimensional array
+  /* Another general method, though more expensive, is to use C to figure out the 
+     multidimensional indices into the one dimensional hyperslab, a la ncks. 
+     Knowing these indices, routine could loop over the one-dimensional array
      element by element, choosing the appropriate index into the weight array from 
-     those same multidimensional indices. This method can also create a static weight-value
-     array that is only destroyed when an incoming variable changes dimensions from the
-     previous variable. */
+     those same multidimensional indices. 
+     This method can also create a static weight-value array that is only destroyed 
+     when an incoming variable changes dimensions from the previous variable. */
 
-  /* Yet another method, which is not completely general, but which may be good enough for
-     governement work, is to create fortran subroutines which expect variables of a given
-     number of dimensions as input. Creating these functions for up to five dimensions would
-     satisfy all foreseeable situations. The branch as to which function to call would be
-     done based on number of dimensions, here in the C code. C++ or Fortran9x overloading
-     could accomplish some of this interface more elegantly. */
+  /* Another method, which is not completely general, but which may be good enough for
+     governement work, is to create Fortran subroutines which expect variables of 
+     a given number of dimensions as input. 
+     Creating these functions for up to five dimensions would satisfy most situations
+     C code would determine which branch to call based on number of dimensions
+     C++ or Fortran9x overloading could construct this interface more elegantly */
 
   /* An (untested) simplification to some of these methods is to copy the 1-D array
      value pointer of variable and cast it to an N-D array pointer
@@ -197,9 +197,11 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
     (void)nco_xrf_var(wgt,wgt_out);
 
     /* Modify a few elements of weight array */
+    wgt_out->nm=(char *)nco_free(wgt_out->nm);
     wgt_out->nm=(char *)strdup(wgt->nm);
     wgt_out->id=wgt->id;
     wgt_out->type=wgt->type;
+    wgt_out->val.vp=(void *)nco_free(wgt_out->val.vp);
     wgt_out->val.vp=(void *)nco_malloc(wgt_out->sz*nco_typ_lng(wgt_out->type));
     wgt_cp=(char *)wgt->val.vp;
     wgt_out_cp=(char *)wgt_out->val.vp;

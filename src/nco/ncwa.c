@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.170 2005-05-18 06:14:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.171 2005-05-18 21:33:20 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.170 2005-05-18 06:14:14 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.170 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.171 2005-05-18 21:33:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.171 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -758,7 +758,6 @@ main(int argc,char **argv)
       if(NRM_BY_DNM && DO_CONFORM_WGT && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
 	/* Duplicate wgt_out as wgt_avg so that wgt_out is not contaminated by any
 	   averaging operation and may be reused on next variable.
-	   fxm: Using wgt_out on next variable would be thread-unsafe! verify! OpenMP
 	   Free wgt_avg after each use but continue to reuse wgt_out */
 	wgt_avg=nco_var_dpl(wgt_out);
 	
@@ -797,10 +796,10 @@ main(int argc,char **argv)
 	} /* endif weight must be masked */
 	
 	/* fxm: temporary kludge to make sure weight has tally space
-	   wgt_avg may occasionally lack a valid tally array in ncwa because
-	   it is created, sometimes, before the tally array for var_prc_out[idx] is 
-	   created, and thus the nco_var_dpl() call in nco_var_cnf_dmn() does not copy
-	   a tally array into wgt_avg. See related note about this above. TODO #114.*/
+	   wgt_avg may lack valid tally array in ncwa because wgt_avg is created, 
+	   sometimes, before the tally array for var_prc_out[idx] is created. 
+	   When this occurs the nco_var_dpl() call in nco_var_cnf_dmn() does not copy
+	   tally array into wgt_avg. See related note about this above. TODO #114.*/
 	if(wgt_avg->sz > 0)
 	  if((wgt_avg->tally=(long *)nco_realloc(wgt_avg->tally,wgt_avg->sz*sizeof(long))) == NULL){
 	    (void)fprintf(fp_stdout,"%s: ERROR Unable to realloc() %ld*%ld bytes for tally buffer for weight %s in main()\n",prg_nm_get(),wgt_avg->sz,(long)sizeof(long),wgt_avg->nm);
@@ -911,8 +910,8 @@ main(int argc,char **argv)
     
     /* Free weights and masks */
     if(wgt != NULL) wgt=nco_var_free(wgt);
-    if(wgt_out != NULL) wgt_out=nco_var_free(wgt_out);
     if(wgt_avg != NULL) wgt_avg=nco_var_free(wgt_avg);
+    if(wgt_out != NULL) wgt_out=nco_var_free(wgt_out);
     if(msk != NULL) msk=nco_var_free(msk);
     if(msk_out != NULL) msk_out=nco_var_free(msk_out);
     
@@ -955,7 +954,7 @@ main(int argc,char **argv)
   if(nbr_dmn_out > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_out);
   /* Free variable lists */
   if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr); 
-  /* ncwa uses nco_var_lst_free() on var_prc_out because */
+  /* ncwa uses nco_var_lst_free() on var_prc_out because var_out has dangling pointers */
   if(nbr_var_fix > 0) var_fix_out=nco_var_lst_free(var_fix_out,nbr_var_fix);
   if(nbr_var_prc > 0) var_prc_out=nco_var_lst_free(var_prc_out,nbr_var_prc);
   var_prc=(var_sct **)nco_free(var_prc);

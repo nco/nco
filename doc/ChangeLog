@@ -1,3 +1,10 @@
+2005-05-18  Charlie Zender  <zender@uci.edu>
+
+	* All arithmetic operators except ncap now have no known memory
+	leaks or errors
+
+	* Finished memory cleanup on ncwa
+
 2005-05-17  Charlie Zender  <zender@uci.edu>
 
 	* Appear to have fixed all leaks in nco_var_avg()
@@ -83,17 +90,22 @@
 	* Initial ncecat memory cleanup---still one problem with dimension list
 
 2005-04-19  Harry Mangalam <hjm@tacgi.com>
-	* Large cleanup of benchmark code.
-	* integrated file build, benchmark, and regression testing
-	* udp reporting only by request
+
+	* Large cleanup of benchmark code
+	  integrated file build, benchmark, and regression testing
+	  udp reporting only by request
+
 	* added --queue to denote submission to queue (loadleveller, etc)
 	which kills off script if the proper env vars aren't set.  If --queue
 	isn't set, and env vars aren't set, script will prompt for correct paths
-	* added Failure column to summary output to make it easier to see which
+	added Failure column to summary output to make it easier to see which
 	ones failed.
+
 	* added nco commandline to UDP report so can verify timing exactly. 
+
 	* added --thr_nbr to option list to set # of threads to use (not
           implemented internally yet tho)
+
 	* finished adding those benchmarks that CZ wants added:
 		1 - ncwa averaging all variables to scalars 
 		2 - ncra time-averaging 2^5 (i.e., one month) files (using symlinks)
@@ -103,6 +115,7 @@
 		6 - ncap long algebraic operation 
 		7 - ncpdq packing the file 
 		8 - ncpdq dimension-order reversal the file 
+
 	* above benchmarks complete cleanly on sand and on those that can be done
 	  on bodi
 

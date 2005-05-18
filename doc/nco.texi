@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.296 2005-04-28 01:03:40 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.297 2005-05-18 21:33:16 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5906,10 +5906,13 @@ This examples works assuming @file{85_0112.nc} has dimensions
 @code{time} and @code{lon}, and that @file{85_x.nc} has no @code{time}
 or @code{lon} dimension.
 
-As a final example, say we have five years of monthly data (i.e., @w{60
-months}) stored in @file{8501_8912.nc} and we wish to create a file 
-which contains the twelve month seasonal cycle of the average monthly
-anomaly from the five-year mean of this data. 
+@html
+<a name="csn_anm"></a> <!-- http://nco.sf.net/nco.html#csn_anm -->
+@end html
+As a final example, say we have five years of monthly data (i.e., 
+@w{60 months}) stored in @file{8501_8912.nc} and we wish to create a
+file which contains the twelve month seasonal cycle of the average
+monthly anomaly from the five-year mean of this data. 
 The following method is just one permutation of many which will
 accomplish the same result.
 First use @command{ncwa} to create the five-year mean: 
@@ -5952,7 +5955,7 @@ two commands inside the loop may be combined into the single command
 ncra -F -d time,$@{idx@},,12 t_anm_8501_8912.nc foo.$@{idx@}
 @end example
 @noindent
-Finally, use @command{ncrcat} to concatenate the 12 average monthly
+Finally, use @command{ncrcat} to concatenate the @w{12 average} monthly  
 anomaly files into one twelve-record file which contains the entire
 seasonal cycle of the monthly anomalies:
 @example
