@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.25 2005-05-18 06:14:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.26 2005-05-18 06:42:56 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -99,8 +99,8 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   } /* end if */
 
   /* Free extra list space */
-  if(nbr_dmn_fix > 0) dmn_fix=(dmn_sct **)nco_realloc(dmn_fix,nbr_dmn_fix*sizeof(dmn_sct *)); else dmn_fix=(dmn_sct **)NULL;
-  if(dmn_avg_nbr > 0) dmn_avg=(dmn_sct **)nco_realloc(dmn_avg,dmn_avg_nbr*sizeof(dmn_sct *)); else dmn_avg=(dmn_sct **)NULL;
+  dmn_fix=(dmn_sct **)nco_realloc(dmn_fix,nbr_dmn_fix*sizeof(dmn_sct *));
+  dmn_avg=(dmn_sct **)nco_realloc(dmn_avg,dmn_avg_nbr*sizeof(dmn_sct *));
 
   /* Get rid of averaged dimensions */
   fix->nbr_dim=nbr_dmn_fix;
@@ -130,11 +130,11 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
       fix->is_crd_var=True;
 
   /* Trim dimension arrays to their new sizes */
-  if(nbr_dmn_fix > 0) fix->dim=(dmn_sct **)nco_realloc(fix->dim,nbr_dmn_fix*sizeof(dmn_sct *)); else fix->dim=NULL;
-  if(nbr_dmn_fix > 0) fix->dmn_id=(int *)nco_realloc(fix->dmn_id,nbr_dmn_fix*sizeof(int)); else fix->dmn_id=NULL;
-  if(nbr_dmn_fix > 0) fix->srt=(long *)nco_realloc(fix->srt,nbr_dmn_fix*sizeof(long)); else fix->srt=NULL;
-  if(nbr_dmn_fix > 0) fix->cnt=(long *)nco_realloc(fix->cnt,nbr_dmn_fix*sizeof(long)); else fix->cnt=NULL;
-  if(nbr_dmn_fix > 0) fix->end=(long *)nco_realloc(fix->end,nbr_dmn_fix*sizeof(long)); else fix->end=NULL;
+  fix->dim=(dmn_sct **)nco_realloc(fix->dim,nbr_dmn_fix*sizeof(dmn_sct *));
+  fix->dmn_id=(int *)nco_realloc(fix->dmn_id,nbr_dmn_fix*sizeof(int));
+  fix->srt=(long *)nco_realloc(fix->srt,nbr_dmn_fix*sizeof(long));
+  fix->cnt=(long *)nco_realloc(fix->cnt,nbr_dmn_fix*sizeof(long));
+  fix->end=(long *)nco_realloc(fix->end,nbr_dmn_fix*sizeof(long));
   
   /* If product of sizes of all averaging dimensions is 1, input and output value arrays should be identical 
      Since var->val was already copied to fix->val by nco_var_dpl() at the beginning
