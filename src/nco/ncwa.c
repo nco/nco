@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.168 2005-05-17 06:21:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.169 2005-05-18 00:56:42 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.168 2005-05-17 06:21:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.168 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.169 2005-05-18 00:56:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.169 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -686,7 +686,9 @@ main(int argc,char **argv)
       
       /* Allocate and, if necessary, initialize accumulation space for all processed variables */
       var_prc_out[idx]->sz=var_prc[idx]->sz;
-      if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc_flg(var_prc_out[idx]->sz*sizeof(long))) == NULL){
+      /*      if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc_flg(var_prc_out[idx]->sz*sizeof(long))) == NULL){*/
+      /* fxm: verify that var_prc->tally is not needed */
+      if((var_prc_out[idx]->tally=(long *)nco_malloc_flg(var_prc_out[idx]->sz*sizeof(long))) == NULL){
 	(void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(long)sizeof(long),var_prc_out[idx]->nm);
 	nco_exit(EXIT_FAILURE); 
       } /* end if err */
@@ -746,8 +748,8 @@ main(int argc,char **argv)
       } /* end if weight was specified and then tested for conformance */
       /* Copy (masked) (weighted) values from var_prc to var_prc_out */
       (void)memcpy((void *)(var_prc_out[idx]->val.vp),(void *)(var_prc[idx]->val.vp),var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type));
-      /* Reduce variable over specified dimensions (tally array is set here) */
       /* 20050516: fxm: destruction of var_prc_out in nco_var_avg() leaves dangling pointers in var_out? */
+      /* Reduce variable over specified dimensions (tally array is set here) */
       var_prc_out[idx]=nco_var_avg(var_prc_out[idx],dmn_avg,dmn_avg_nbr,nco_op_typ);
       /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide
 	 Denominator is also tricky due to sundry normalization options
@@ -953,7 +955,7 @@ main(int argc,char **argv)
   /* Free variable lists */
   /* fxm: next line causes memory error due to double free of tally buffer.
      var and var_out share tally buffer which is first free()'d in nco_var_avg() */
-  /*if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr); */
+  if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr); 
   /* fxm: next line breaks regression test */
   /*  if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);*/
   /* fxm: next line breaks regression test */
