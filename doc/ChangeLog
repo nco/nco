@@ -1,5 +1,17 @@
 2005-05-17  Charlie Zender  <zender@uci.edu>
 
+	* Fix problem with dangling pointers in var_out caused by
+	destruction/creation of var_prc_out in nco_var_avg().
+	Solution adopted is somewhat hackish: rearranging nco_var_lst_free()s
+	Perhaps better solution would be to copy new var_prc_out pointers into
+	var_out, the free() memory normally.
+
+	* Plug leak when nco_var_avg() called with variables without
+	averaging dimensions (i.e., fixed variables). When this occurs,
+	return copy of original input instead of NULL (old method).
+
+	* Add cleanup_and_exit branch to nco_var_avg()
+
 	* Never allocate tally array for var_prc[idx] in ncwa, since it is
 	never used and caused double free() problems when it share the 
 	var_prc_out[idx] tally buffer

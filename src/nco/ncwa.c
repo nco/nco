@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.169 2005-05-18 00:56:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.170 2005-05-18 06:14:14 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.169 2005-05-18 00:56:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.169 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.170 2005-05-18 06:14:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.170 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -749,7 +749,8 @@ main(int argc,char **argv)
       /* Copy (masked) (weighted) values from var_prc to var_prc_out */
       (void)memcpy((void *)(var_prc_out[idx]->val.vp),(void *)(var_prc[idx]->val.vp),var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type));
       /* 20050516: fxm: destruction of var_prc_out in nco_var_avg() leaves dangling pointers in var_out? */
-      /* Reduce variable over specified dimensions (tally array is set here) */
+      /* Reduce variable over specified dimensions (tally array is set here)
+	 NB: var_prc_out[idx] is new, so corresponding var_out[idx] is dangling */
       var_prc_out[idx]=nco_var_avg(var_prc_out[idx],dmn_avg,dmn_avg_nbr,nco_op_typ);
       /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide
 	 Denominator is also tricky due to sundry normalization options
@@ -953,17 +954,13 @@ main(int argc,char **argv)
   if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
   if(nbr_dmn_out > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_out);
   /* Free variable lists */
-  /* fxm: next line causes memory error due to double free of tally buffer.
-     var and var_out share tally buffer which is first free()'d in nco_var_avg() */
   if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr); 
-  /* fxm: next line breaks regression test */
-  /*  if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);*/
-  /* fxm: next line breaks regression test */
-  /*  var_prc=(var_sct **)nco_free(var_prc);*/
-  /* fxm: next line breaks regression test */
-  /*  var_prc_out=(var_sct **)nco_free((void *)var_prc_out);*/
+  /* ncwa uses nco_var_lst_free() on var_prc_out because */
+  if(nbr_var_fix > 0) var_fix_out=nco_var_lst_free(var_fix_out,nbr_var_fix);
+  if(nbr_var_prc > 0) var_prc_out=nco_var_lst_free(var_prc_out,nbr_var_prc);
+  var_prc=(var_sct **)nco_free(var_prc);
   var_fix=(var_sct **)nco_free(var_fix);
-  var_fix_out=(var_sct **)nco_free(var_fix_out);
+  var_out=(var_sct **)nco_free(var_out);
 
   nco_exit_gracefully();
   return EXIT_SUCCESS;

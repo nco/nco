@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.24 2005-05-17 06:21:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.25 2005-05-18 06:14:14 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -87,14 +87,20 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     } /* end if */
   } /* end loop over idx */
 
+  if(dmn_avg_nbr == 0){
+    /* 20050517: ncwa only calls nco_var_avg() with variables containing averaging dimensions
+       Variables without averaging dimensions are in the var_fix list 
+       We preserve the capability of nco_var_avg() to work on var_fix variables for future flexibility */
+    (void)fprintf(stderr,"%s: WARNING %s does not contain any averaging dimensions\n",prg_nm_get(),fix->nm);
+    /* Variable does not contain any averaging dimensions so we are done
+       For consistency, return copy of variable held in fix and free() original
+       Hence, nco_var_avg() always destroys original input and returns valid output */
+    goto cln_and_xit;
+  } /* end if */
+
   /* Free extra list space */
   if(nbr_dmn_fix > 0) dmn_fix=(dmn_sct **)nco_realloc(dmn_fix,nbr_dmn_fix*sizeof(dmn_sct *)); else dmn_fix=(dmn_sct **)NULL;
   if(dmn_avg_nbr > 0) dmn_avg=(dmn_sct **)nco_realloc(dmn_avg,dmn_avg_nbr*sizeof(dmn_sct *)); else dmn_avg=(dmn_sct **)NULL;
-
-  if(dmn_avg_nbr == 0){
-    (void)fprintf(stderr,"%s: WARNING %s does not contain any averaging dimensions\n",prg_nm_get(),fix->nm);
-    return (var_sct *)NULL;
-  } /* end if */
 
   /* Get rid of averaged dimensions */
   fix->nbr_dim=nbr_dmn_fix;
@@ -262,6 +268,9 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     avg_val.vp=nco_free(avg_val.vp);
   } /* end if avg_sz != 1 */
   
+  /* Jump here if variable is not averaged */
+ cln_and_xit:
+
   /* Free input variable */
   var=nco_var_free(var);
   dmn_avg=(dmn_sct **)nco_free(dmn_avg);
