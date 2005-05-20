@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.282 2005-05-17 06:21:03 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.283 2005-05-20 18:04:36 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -304,7 +304,7 @@ Instead, retrieve all recently tagged versions
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
 <li><b>NCO/SDO 3.1.x</b>: (<i>In progress, development branch</i>) MPI versions of all operators, <tt>ncap</tt> control structures (conditionals, loops, etc.)
-<li><b>NCO 3.0.1</b>: (<i>In progress, stable branch</i>) performance benchmarks, threading <tt>ncap</tt>, <tt>ncpdq</tt> and <tt>ncap</tt> packing improve <tt>missing_value</tt> handling, <tt>ncks</tt> printing tweaks
+<li><b>NCO 3.0.1</b>: (<i>In progress, stable branch</i>) performance benchmarks, threading <tt>ncap</tt>, <tt>ncpdq</tt> and <tt>ncap</tt> packing improve <tt>missing_value</tt> handling, <tt>ncks</tt> printing tweaks, memory cleanup, 
 <li><b>NCO 3.0.0</b>: New <tt>ncks -P</tt> print switch, <tt>ncap</tt> optimizations, <tt>-Z</tt> option supports 64-bit offsets (requires netCDF&nbsp;3.6), NEC&nbsp;SX build improvements, support GCC&nbsp;3.4.X, <tt>nco_put_vara()</tt> overloads in <tt>libnco_c++</tt>
 <li><b>NCO 2.9.9</b>: <tt>ncpdq</tt> packs/unpacks entire files, <tt>ncbo</tt> is threaded
 <li><b>NCO 2.9.8</b>: <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released, <tt>ncwa --msk_sng</tt> consolidated mask switch, C99 compiler required
