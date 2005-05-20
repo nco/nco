@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.495 2005-05-18 21:33:16 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.496 2005-05-20 00:01:55 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -39,8 +39,6 @@ wvl_1e6 = 1
 wvl_1e7 = 1
 wvl_1e8 = 0.167772 (NB: this is approximately 1/6)
 nco405. Modify multi-slabbing so that it places the output slabs in the order in which they were specified rather than the order they appear in the input file (Martin Schultz)
-nco491. Change lst_prs() to return true two-dimensional lists rather
-        than filling 1-d list with NULs. It's confusing.
 
 NCO-wide items of lesser priority:
 nco28. Use var.nc_id as file ID from now on and rewrite old routines to do so
@@ -215,7 +213,7 @@ nco342. Get canonicalize_file_name() working in nco_fl_info_get()
 nco344. Create sophisticated etags regular expressions for change version number in all documentation tags_doc.sh
 ************** Important ***************************
 nco345. OpenMP implementation in ncwa core dumps on AIX ESMF: wgt_avg problem?
-ncwa -D 5 -O -C -a wvl -v ss_co_alb ${DATA_MIE}/mie/mie_1.nc ${DATA_MIE}/mie/foo_avg_1.nc    
+ncwa -t 2 -D 5 -O -C -a wvl -v ss_co_alb ${DATA}/mie/mie_1.nc ${DATA}/mie/foo_avg_1.nc    
 nco351. Ask Jim Edwards to fix make test rtld errors on AIX with OpenMP Related to nco352. 
 nco352. Probably related to 351: OpenMP directive must appear in main() or ldd will not associate /usr/lib/libxlsmp.a(smprt_64.o) with executable so rtld errors occur on AIX
 ************** Important ***************************

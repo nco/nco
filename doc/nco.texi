@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.297 2005-05-18 21:33:16 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.298 2005-05-20 00:01:55 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2749,9 +2749,8 @@ variables containing @samp{Q} (the @samp{+} ensures the preceding item
 matches at least once).
 To match zero or one occurence of the preceding regular expression,   
 use @samp{?}.
-Thus @samp{Q?} selects all variables, @samp{Q+.?} selects all
-Documentation for the @acronym{UNIX} @command{egrep} command details the extended
-regular expressions that @acronym{NCO} supports.
+Documentation for the @acronym{UNIX} @command{egrep} command details the
+extended regular expressions which @acronym{NCO} supports.
 
 @cindex globbing
 @cindex shell

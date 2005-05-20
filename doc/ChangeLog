@@ -1,3 +1,16 @@
+2005-05-19  Charlie Zender  <zender@uci.edu>
+
+	* Change nco_get_var*() routines in nco_var_get() from SMP
+	critical to non-critical. Not sure why they were originally
+	critical.
+
+	* Change nco_var_upk*() routine in nco_var_get() from SMP
+	critical to non-critical. Not sure why it was originally
+	critical.
+
+	* Make nco_var_refresh() routine from SMP non-critical. 
+	Not sure why it was originally critical.
+
 2005-05-18  Charlie Zender  <zender@uci.edu>
 
 	* All arithmetic operators except ncap now have no known memory

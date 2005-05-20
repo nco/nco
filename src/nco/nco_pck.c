@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.55 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.56 2005-05-20 00:01:56 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -926,7 +926,7 @@ var_sct * /* O [sct] Unpacked variable */
 nco_var_upk /* [fnc] Unpack variable in memory */
 (var_sct *var) /* I/O [sct] Variable to be unpacked */
 {
-  /* Threads: Routine is thread-unsafe */
+  /* Threads: Routine is thread-safe */
   /* Purpose: Unpack variable
      Routine is inverse of nco_var_pck(): nco_var_upk[nco_var_pck(var)]=var
      Routine handles missing_value's implicitly:
