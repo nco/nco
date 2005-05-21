@@ -1,3 +1,7 @@
+2005-05-21  Charlie Zender  <zender@uci.edu>
+
+	* Re-tweak print formatting in nco_bm.pl
+
 2005-05-19  Charlie Zender  <zender@uci.edu>
 
 	* Change nco_get_var*() routines in nco_var_get() from SMP

@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.14 2005-05-20 19:41:21 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.15 2005-05-21 21:33:55 zender Exp $
 
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
@@ -15,17 +15,18 @@ use strict;
 
 # Declare vars for strict
 use vars qw($dsc_lng_max $dot_nbr $dot_nbr_min $dot_fmt $dot_sng $dsc_fmt $tst_fmt
+	    $spc_fmt $spc_nbr $spc_nbr_min $spc_sng $opr_lng_max $opr_fmt $tst_id_sng $tst_idx
  $dbg_lvl $wnt_log $usg $operator @test $description $expected
  @all_operators @operators $MY_BIN_DIR %sym_link %testnum %success %failure
- %testnum $result $server_name $server_ip $server_port $sock $udp_reprt $tst_fle_cr8
- $dta_dir $bm_dir $timr_app %subbenchmarks %totbenchmarks $que $rgr $bm $itmp 
+ %testnum $result $server_name $server_ip $server_port $sock $udp_reprt $tst_fl_cr8
+ $dta_dir $bm_dir $tmr_app %subbenchmarks %totbenchmarks $que $rgr $bm $itmp 
  @bm_cmd_ary @ifls $localhostname $notbodi $prfxd $prefix $thr_nbr $cmd_ln $arg_nbr
  $omp_flg $dodods $fl_pth
 );
 
 
-my @fle_cre_dta;  # holds the strings for the fle_cre8() routine 
-my @fle_timg; # holds the timing data for the fle_cre8() routines.
+my @fl_cr8_dat;  # holds the strings for the fl_cr8() routine 
+my @fl_tmg; # holds the timing data for the fl_cr8() routines.
 
 
 # initializations
@@ -38,7 +39,7 @@ $bm_dir = `pwd`; chomp $bm_dir;
 $dbg_lvl = 0; # [enm] Print tests during execution for debugging
 $wnt_log = 0;
 $usg   = 0;
-$tst_fle_cr8 = "0";
+$tst_fl_cr8 = "0";
 $que = 0;
 $udp_reprt = 0;
 $thr_nbr = 0; # if zero, don't want to do threads 
@@ -60,7 +61,7 @@ if ($ARGV == 0) {usage(); die "We need some more info to be a useful member of s
 	"debug=i"      => \$dbg_lvl,    # debug level
 	"log"          => \$wnt_log,    # set if want output logged
 	"udpreport"    => \$udp_reprt,  # punt the timing data back to udpserver on sand
-	"test_files=s" => \$tst_fle_cr8,    # create the test files "134" does 1,3,4
+	"test_files=s" => \$tst_fl_cr8,    # create the test files "134" does 1,3,4
 	"regress"      => \$rgr,        # test regression 
 	#if dods is set && string is NULL do tests with sand / DODS instead of local files , 
 	#if string is NOT NULL, use URL to grab files.
@@ -119,7 +120,7 @@ if ($thr_nbr >= 2) { $omp_flg = " -t=$thr_nbr ";} # thread of 1 doesn't help thi
 else { $omp_flg = "";}
 
 # examine env DATA and talk to user to figure where $DATA  should be
-set_dta_dir(); # now $dta_dir is set to 
+set_dat_dir(); # now $dta_dir is set to 
 
 if ($dodods eq "") {
 	$fl_pth = "$dta_dir";
@@ -137,13 +138,13 @@ initialize();
 
 # also want to try to grok /usr/bin/time, as in the shell scripts
 if (-e "/usr/bin/time" && -x "/usr/bin/time") {
-	$timr_app = "/usr/bin/time";
-	if (`uname` =~ "inux" && $dbg_lvl > 1) { $timr_app .= " -v ";}
+	$tmr_app = "/usr/bin/time";
+	if (`uname` =~ "inux" && $dbg_lvl > 1) { $tmr_app .= " -v ";}
 } else { # just use whatever the shell thinks is the time app
-	$timr_app = "time"; #could be the bash builtin or another 'time'-like app (AIX)
+	$tmr_app = "time"; #could be the bash builtin or another 'time'-like app (AIX)
 }
 
-#set_dta_dir(); # examine env DATA and talk to user to figure where $DATA  should be
+#set_dat_dir(); # examine env DATA and talk to user to figure where $DATA  should be
 
 if ($rgr){  # if want regression tests 
 	perform_tests();
@@ -151,41 +152,41 @@ if ($rgr){  # if want regression tests
 }
 
 # test to see if the necessary files are available - if so, can skip the creation tests
-fle_cre_dta_init(); # initialize the data strings & timing array for files
+fl_cr8_dat_init(); # initialize the data strings & timing array for files
 
 # checks if files have already been created.  If so, can skip file creation if not requested
-if ($bm && $tst_fle_cr8 == 0) { 
+if ($bm && $tst_fl_cr8 == 0) { 
 	for (my $i = 0; $i < $NUM_FLS; $i++) {
-		my $fl = $fle_cre_dta[$i][2] . ".nc"; #file root name stored in $fle_cre_dta[$i][2] 
+		my $fl = $fl_cr8_dat[$i][2] . ".nc"; #file root name stored in $fl_cr8_dat[$i][2] 
 		if (-e "$dta_dir/$fl" && -r "$dta_dir/$fl") {
 			print "$fl exists - can skip creation\n";
 		} else {
 			my $e = $i+1;
-			$tst_fle_cr8 .= "$e";
+			$tst_fl_cr8 .= "$e";
 		}
 	}
 }
 
 
 # file creation tests
-if ($tst_fle_cr8 ne "0"){
-#	set_dta_dir();      # examine env DATA and talk to user to figure where $DATA  should be
+if ($tst_fl_cr8 ne "0"){
+#	set_dat_dir();      # examine env DATA and talk to user to figure where $DATA  should be
     # so want to so some - check for disk space on DATA dir 1st - nah - assume personal responsibility
     my $fc = 0;
-    if ($tst_fle_cr8 =~ "[Aa]") { $tst_fle_cr8 = "1234";}
-    if ($tst_fle_cr8 =~ /1/){ fle_cre8(0); $fc++; }
-    if ($tst_fle_cr8 =~ /2/){ fle_cre8(1); $fc++; }
-    if ($tst_fle_cr8 =~ /3/){ fle_cre8(2); $fc++; }
-    if ($notbodi && $tst_fle_cr8 =~ /4/) { fle_cre8(3); $fc++; }	
+    if ($tst_fl_cr8 =~ "[Aa]") { $tst_fl_cr8 = "1234";}
+    if ($tst_fl_cr8 =~ /1/){ fl_cr8(0); $fc++; }
+    if ($tst_fl_cr8 =~ /2/){ fl_cr8(1); $fc++; }
+    if ($tst_fl_cr8 =~ /3/){ fl_cr8(2); $fc++; }
+    if ($notbodi && $tst_fl_cr8 =~ /4/) { fl_cr8(3); $fc++; }	
 #	print "Summarizing results of file creation\n";
-    if ($fc >0) {smrz_fle_cre_rslt(); } # prints and udpreports file creation timing
+    if ($fc >0) {smrz_fl_cr8_rslt(); } # prints and udpreports file creation timing
 } #elsif (!$rgr) { # just for now - will be removed
 #	print "\nFile creation tests skipped.\n\n";
 #}
 
 # and now, the REAL benchmarks, set up as the regression tests below to use go() and smrz_rgr_rslt()
 if ($bm) {
-	$prefix = "$timr_app $MY_BIN_DIR"; $prfxd = 1; #embed the timer command and local bin in cmd
+	$prefix = "$tmr_app $MY_BIN_DIR"; $prfxd = 1; #embed the timer command and local bin in cmd
 	print "\nStarting Benchmarks now\n";
 	#################### begin cz benchmark list #8
 	$operator="ncpdq";
@@ -243,14 +244,14 @@ if ($bm) {
 	# have to set up the symlinks for the benchmark
 	# do this initially for all files, use only small ones initially then maybe the larger files
 	for (my $f=0; $f<$NUM_FLS; $f++) {
-		my $rel_fle = "$dta_dir/$fle_cre_dta[$f][2]" . ".nc" ;
+		my $rel_fle = "$dta_dir/$fl_cr8_dat[$f][2]" . ".nc" ;
 		my $ldz = "0"; # leading zero for #s < 10
 		if ($dbg_lvl > 0) {print "\tsymlinking $rel_fle\n";}
 		for (my $n=0; $n<32; $n ++) {
 			if ($n>9) {$ldz ="";}
-			my $lnk_fle_nme = "$dta_dir/$fle_cre_dta[$f][2]" . "_" . "$ldz" . "$n" . ".nc";
+			my $lnk_fl_nme = "$dta_dir/$fl_cr8_dat[$f][2]" . "_" . "$ldz" . "$n" . ".nc";
 			if (-r $rel_fle && -d $dta_dir && -w $dta_dir){
-				symlink $rel_fle, $lnk_fle_nme;
+				symlink $rel_fle, $lnk_fl_nme;
 			}
 		}
 	}
@@ -325,7 +326,6 @@ sub go {
 	}
 	# Perform an individual test
 	&verbosity("\tFull commandline for [$operator]:\n\t$_\n");
-	print "\n";
 	# timing code using Time::HiRes
 	my $t0;
 	if ($hiresfound) {$t0 = [gettimeofday];}
@@ -339,25 +339,33 @@ sub go {
 	
 #	 print "inter benchmark for $operator = $subbenchmarks{$operator} \n";
 	$subbenchmarks{$operator} += $elapsed;
-	$t = $testnum{$operator} - 1;
+	$tst_idx = $testnum{$operator}-1;
 	if($dbg_lvl > 3){print "\t$operator subtest [$t] took $elapsed seconds\n";}
 	&verbosity("\t$result");
 	$testcnt++;
     } # end loop over sub-tests
     # csz++
-    $dot_sng=".....................................................................";
-    $dsc_lng_max=50;
-    $dot_nbr_min=3;
-    $dot_nbr=$dot_nbr_min;
+    $dot_nbr_min=3; # Minimum number of dots between description and "ok" result
+    $dot_sng='.....................................................................';
+    $dsc_lng_max=50; # Maximum length of description printed
+    $opr_lng_max=7; # Maximum length of operator name
+    $spc_nbr_min=1; # Minimum number of spaces between test ID and description
+    $spc_sng='       ';
+
+    $dot_nbr=$dot_nbr_min; # Number of dots printed
+    $spc_nbr=$spc_nbr_min; # Number of spaces printed
+    $opr_fmt=sprintf("%%.%ds",$opr_lng_max);
+    if($opr_lng_max-length($operator)>0){$spc_nbr+=$opr_lng_max-length($operator);}
+    $spc_fmt=sprintf("%%.%ds",$spc_nbr);
+    $tst_id_sng=sprintf("$opr_fmt$spc_fmt test %02d: ",$operator,$spc_sng,$tst_idx);
     if($dsc_lng_max-length($description)>0){$dot_nbr+=$dsc_lng_max-length($description);}
     $dsc_fmt=sprintf("%%.%ds",$dsc_lng_max);
     $dot_fmt=sprintf("%%.%ds",$dot_nbr);
-    $tst_fmt="%s test %d: $dsc_fmt$dot_fmt";
-    #printf STDERR ("%s test %d: %.50s...",$operator,$t,$description);
-    printf STDERR ($tst_fmt,$operator,$t,$description,$dot_sng,"\n");
+    $tst_fmt="$tst_id_sng$dsc_fmt$dot_fmt";
+    printf STDERR ($tst_fmt,$description,$dot_sng);
     # csz--
-    if($dbg_lvl > 2){print STDERR "\tTotal time for $operator [$t] = $subbenchmarks{$operator} s \n\n";}
-    $totbenchmarks{$operator} += $subbenchmarks{$operator};
+    if($dbg_lvl > 2){print STDERR "\tTotal time for $operator [$tst_idx] = $subbenchmarks{$operator} s\n\n";}
+    $totbenchmarks{$operator}+=$subbenchmarks{$operator};
     
     # Remove trailing newline for easier regex comparison
     chomp $result;
@@ -365,10 +373,12 @@ sub go {
     # Compare numeric results
 	if ($expected =~/\d/) { # && it equals the expected value
 		if ($expected == $result) {
-      	$success{$operator}++;
+		    $success{$operator}++;
+			printf STDERR ("ok\n");
 	 		&verbosity("\n\tPASSED - Numeric output: [$operator]:\n");
 		} elsif (abs($result - $expected) < 0.02) {
 			$success{$operator}++;
+			printf STDERR ("ok\n");
 	 		&verbosity("\n\t!!!! PASSED PROVISIONALLY ($expected vs $result) - Numeric output: [$operator]:\n");
 		} else {
       	&failed($expected);
@@ -1165,7 +1175,7 @@ sub failed {
 }
 
 ####################
-sub smrz_fle_cre_rslt {
+sub smrz_fl_cr8_rslt {
     if ($dbg_lvl > 0) { print "Summarizing results of file creation\n";}
     my $CC = `../src/nco/ncks --compiler`;
     my $CCinfo = "";
@@ -1174,27 +1184,27 @@ sub smrz_fle_cre_rslt {
     elsif ($CC =~ /icc/) {$CCinfo = "Intel C Compiler version ??";}
     
     my $reportstr = "";
-    my $udp_dta = "";
+    my $udp_dat = "";
     my $idstring = `uname -a` . "using: " . $CCinfo; chomp $idstring;
-    $udp_dta .= $idstring . "|";
+    $udp_dat .= $idstring . "|";
     $reportstr .= "\n\nNCO Test Result Summary for:\n$idstring\n";
     $reportstr .=  "      Test                       Total Wallclock Time (s) \n";
     $reportstr .=  "=====================================================\n";
     
     for (my $i=0; $i<$NUM_FLS; $i++) {
-	$reportstr .= sprintf "Creating   %15s:           %6.4f \n", $fle_timg[$i][0], $fle_timg[$i][1];
-	$reportstr .= sprintf "Populating %15s:           %6.4f \n", $fle_timg[$i][0], $fle_timg[$i][2];
-	$udp_dta   .= sprintf "%s,%6.4f,%6.4f:",$fle_timg[$i][0], $fle_timg[$i][1], $fle_timg[$i][2];
+	$reportstr .= sprintf "Creating   %15s:           %6.4f \n", $fl_tmg[$i][0], $fl_tmg[$i][1];
+	$reportstr .= sprintf "Populating %15s:           %6.4f \n", $fl_tmg[$i][0], $fl_tmg[$i][2];
+	$udp_dat   .= sprintf "%s,%6.4f,%6.4f:",$fl_tmg[$i][0], $fl_tmg[$i][1], $fl_tmg[$i][2];
     }
     $reportstr .= sprintf "\n\n";
-    $udp_dta   .= sprintf "@";
+    $udp_dat   .= sprintf "@";
     
     print $reportstr;
     if ($udp_reprt) { 
-	$sock->send($udp_dta); 
-	if ($dbg_lvl > 0) { print "File Creation: udp stream sent:\n$udp_dta\n";}
+	$sock->send($udp_dat); 
+	if ($dbg_lvl > 0) { print "File Creation: udp stream sent:\n$udp_dat\n";}
     } # and send it back separately
-} # end of smrz_fle_cre_rslt 
+} # end of smrz_fl_cr8_rslt 
 
 sub smrz_bm_rslt {
     
@@ -1212,9 +1222,9 @@ sub smrz_rgr_rslt {
 	if ($thr_nbr > 1 ) {$reportstr .= "   (OMP threads = $thr_nbr)\n";}
 	else {$reportstr .= "\n";}
 	
-	my $udp_dta = "";
+	my $udp_dat = "";
 	my $idstring = `uname -a` . "using: " . $CCinfo; chomp $idstring;
-	$udp_dta .= $idstring . "|" . $cmd_ln . "|";
+	$udp_dat .= $idstring . "|" . $cmd_ln . "|";
     
 	foreach(@operators) {
 		my $total = $success{$_}+$failure{$_};
@@ -1224,21 +1234,21 @@ sub smrz_rgr_rslt {
 		#printf "$_:\tsuccess: $success{$_} of $total\n";
 		if ($total > 0) {
 			$reportstr .= sprintf "%10s:      %3d        %3s     %3d     %6.4f \n", $_, $success{$_},  $fal_cnt, $total, $totbenchmarks{$_};
-			$udp_dta   .= sprintf "%s,%3d,%3d,%6.4f:",$_, $success{$_}, $total, $totbenchmarks{$_};
+			$udp_dat   .= sprintf "%s,%3d,%3d,%6.4f:",$_, $success{$_}, $total, $totbenchmarks{$_};
 		}
 	}
 	$reportstr .= sprintf "\nNB: Time in WALLCLOCK seconds, not CPU time; see instantaneous measurements for user & system CPU usage.\n";
 	chdir "../bld";
 	if ($dbg_lvl == 0) {print $reportstr;}
 	else { &verbosity($reportstr); }
-	$udp_dta .= "@";  # use an infrequent char as separator token
+	$udp_dat .= "@";  # use an infrequent char as separator token
 	if ($udp_reprt) { 
-		$sock->send($udp_dta); 
-		if ($dbg_lvl > 0) { print "Regression: udp stream sent:\n$udp_dta\n";}
+		$sock->send($udp_dat); 
+		if ($dbg_lvl > 0) { print "Regression: udp stream sent:\n$udp_dat\n";}
 	}
 } # end of sub smrz_rgr_rslt
 
-sub set_dta_dir {
+sub set_dat_dir {
     my $tmp;
     my $datadir;
 #	umask 0000;
@@ -1303,33 +1313,33 @@ sub set_dta_dir {
     } else {
 	die "You MUST define a DATA environment variable to run this in a queue\n";
     }
-} # end of sub set_dta_dir
+} # end of sub set_dat_dir
 
-sub fle_cre_dta_init {
+sub fl_cr8_dat_init {
     for (my $i = 0; $i < $NUM_FLS; $i++) {
-	$fle_timg[$i][1] = $fle_timg[$i][2] = " omitted "; 
+	$fl_tmg[$i][1] = $fl_tmg[$i][2] = " omitted "; 
     }
     
-    $fle_cre_dta[0][0] = "example gene expression"; # option descriptor
-    $fle_cre_dta[0][1] = "~50MB";                   # file size
-    $fle_cre_dta[0][2] = $fle_timg[0][0] = "gne_exp";                 # file name root
-    $fle_cre_dta[0][3] = "\'base[ge_atoms,rep,treat,cell,params]=5.67f\'";
+    $fl_cr8_dat[0][0] = "example gene expression"; # option descriptor
+    $fl_cr8_dat[0][1] = "~50MB";                   # file size
+    $fl_cr8_dat[0][2] = $fl_tmg[0][0] = "gne_exp";                 # file name root
+    $fl_cr8_dat[0][3] = "\'base[ge_atoms,rep,treat,cell,params]=5.67f\'";
     
-    $fle_cre_dta[1][0] = "small satellite";         # option descriptor
-    $fle_cre_dta[1][1] = "~100MB";                  # file size
-    $fle_cre_dta[1][2] = $fle_timg[1][0] = "sml_stl";                 # file name root
-    $fle_cre_dta[1][3] = "\'d2_00[lat,lon]=16.37f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=3.8f;\'";
+    $fl_cr8_dat[1][0] = "small satellite";         # option descriptor
+    $fl_cr8_dat[1][1] = "~100MB";                  # file size
+    $fl_cr8_dat[1][2] = $fl_tmg[1][0] = "sml_stl";                 # file name root
+    $fl_cr8_dat[1][3] = "\'d2_00[lat,lon]=16.37f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=3.8f;\'";
     
-    $fle_cre_dta[2][0] = "5km satellite";           # option descriptor
-    $fle_cre_dta[2][1] = "~300MB";                  # file size
-    $fle_cre_dta[2][2] = $fle_timg[2][0] = "stl_5km";                 # file name root
-    $fle_cre_dta[2][3] = "\'d2_00[lat,lon]=2.8f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=2.8f;d2_03[lat,lon]=2.8f;d2_04[lat,lon]=2.8f;d2_05[lat,lon]=2.8f;d2_06[lat,lon]=2.8f;d2_07[lat,lon]=2.8f;\'";
+    $fl_cr8_dat[2][0] = "5km satellite";           # option descriptor
+    $fl_cr8_dat[2][1] = "~300MB";                  # file size
+    $fl_cr8_dat[2][2] = $fl_tmg[2][0] = "stl_5km";                 # file name root
+    $fl_cr8_dat[2][3] = "\'d2_00[lat,lon]=2.8f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=2.8f;d2_03[lat,lon]=2.8f;d2_04[lat,lon]=2.8f;d2_05[lat,lon]=2.8f;d2_06[lat,lon]=2.8f;d2_07[lat,lon]=2.8f;\'";
     
-    $fle_cre_dta[3][0] = "IPCC Daily";              # option descriptor
-    $fle_cre_dta[3][1] = "~4GB";                    # file size
-    $fle_cre_dta[3][2] = $fle_timg[3][0] = "ipcc_dly_T85";            # file name root
-    $fle_cre_dta[3][3] = "\'weepy=0.8f;dopey=0.8f;sleepy=0.8f;grouchy=0.8f;sneezy=0.8f;doc=0.8f;wanky=0.8f;skanky=0.8f;d1_00[time]=1.8f;d1_01[time]=1.8f;d1_02[time]=1.8f;d1_03[time]=1.8f;d1_04[time]=1.8f;d1_05[time]=1.8f;d1_06[time]=1.8f;d1_07[time]=1.8f;d2_00[lat,lon]=16.2f;d2_01[lat,lon]=16.2f;d2_02[lat,lon]=16.2f;d2_03[lat,lon]=16.2f;d2_04[lat,lon]=16.2f;d2_05[lat,lon]=16.2f;d2_06[lat,lon]=16.2f;d2_07[lat,lon]=16.2f;d2_08[lat,lon]=16.2f;d2_09[lat,lon]=16.2f;d2_10[lat,lon]=16.2f;d2_11[lat,lon]=16.2f;d2_12[lat,lon]=16.2f;d2_13[lat,lon]=16.2f;d2_14[lat,lon]=16.2f;d2_15[lat,lon]=16.2f;d3_00[time,lat,lon]=64.0f;d3_01[time,lat,lon]=64.0f;d3_02[time,lat,lon]=64.0f;d3_03[time,lat,lon]=64.0f;d3_04[time,lat,lon]=64.0f;d3_05[time,lat,lon]=64.0f;d3_06[time,lat,lon]=64.0f;d3_07[time,lat,lon]=64.0f;d3_08[time,lat,lon]=64.0f;d3_09[time,lat,lon]=64.0f;d3_10[time,lat,lon]=64.0f;d3_11[time,lat,lon]=64.0f;d3_12[time,lat,lon]=64.0f;d3_13[time,lat,lon]=64.0f;d3_14[time,lat,lon]=64.0f;d3_15[time,lat,lon]=64.0f;d3_16[time,lat,lon]=64.0f;d3_17[time,lat,lon]=64.0f;d3_18[time,lat,lon]=64.0f;d3_19[time,lat,lon]=64.0f;d3_20[time,lat,lon]=64.0f;d3_21[time,lat,lon]=64.0f;d3_22[time,lat,lon]=64.0f;d3_23[time,lat,lon]=64.0f;d3_24[time,lat,lon]=64.0f;d3_25[time,lat,lon]=64.0f;d3_26[time,lat,lon]=64.0f;d3_27[time,lat,lon]=64.0f;d3_28[time,lat,lon]=64.0f;d3_29[time,lat,lon]=64.0f;d3_30[time,lat,lon]=64.0f;d3_31[time,lat,lon]=64.0f;d3_32[time,lat,lon]=64.0f;d3_33[time,lat,lon]=64.0f;d3_34[time,lat,lon]=64.0f;d3_35[time,lat,lon]=64.0f;d3_36[time,lat,lon]=64.0f;d3_37[time,lat,lon]=64.0f;d3_38[time,lat,lon]=64.0f;d3_39[time,lat,lon]=64.0f;d3_40[time,lat,lon]=64.0f;d3_41[time,lat,lon]=64.0f;d3_42[time,lat,lon]=64.0f;d3_43[time,lat,lon]=64.0f;d3_44[time,lat,lon]=64.0f;d3_45[time,lat,lon]=64.0f;d3_46[time,lat,lon]=64.0f;d3_47[time,lat,lon]=64.0f;d3_48[time,lat,lon]=64.0f;d3_49[time,lat,lon]=64.0f;d3_50[time,lat,lon]=64.0f;d3_51[time,lat,lon]=64.0f;d3_52[time,lat,lon]=64.0f;d3_53[time,lat,lon]=64.0f;d3_54[time,lat,lon]=64.0f;d3_55[time,lat,lon]=64.0f;d3_56[time,lat,lon]=64.0f;d3_57[time,lat,lon]=64.0f;d3_58[time,lat,lon]=64.0f;d3_59[time,lat,lon]=64.0f;d3_60[time,lat,lon]=64.0f;d3_61[time,lat,lon]=64.0f;d3_62[time,lat,lon]=64.0f;d3_63[time,lat,lon]=64.0f;d4_00[time,lev,lat,lon]=1.1f;d4_01[time,lev,lat,lon]=1.2f;d4_02[time,lev,lat,lon]=1.3f;d4_03[time,lev,lat,lon]=1.4f;d4_04[time,lev,lat,lon]=1.5f;d4_05[time,lev,lat,lon]=1.6f;d4_06[time,lev,lat,lon]=1.7f;d4_07[time,lev,lat,lon]=1.8f;d4_08[time,lev,lat,lon]=1.9f;d4_09[time,lev,lat,lon]=1.11f;d4_10[time,lev,lat,lon]=1.12f;d4_11[time,lev,lat,lon]=1.13f;d4_12[time,lev,lat,lon]=1.14f;d4_13[time,lev,lat,lon]=1.15f;d4_14[time,lev,lat,lon]=1.16f;d4_15[time,lev,lat,lon]=1.17f;d4_16[time,lev,lat,lon]=1.18f;d4_17[time,lev,lat,lon]=1.19f;d4_18[time,lev,lat,lon]=1.21f;d4_19[time,lev,lat,lon]=1.22f;d4_20[time,lev,lat,lon]=1.23f;d4_21[time,lev,lat,lon]=1.24f;d4_22[time,lev,lat,lon]=1.25f;d4_23[time,lev,lat,lon]=1.26f;d4_24[time,lev,lat,lon]=1.27f;d4_25[time,lev,lat,lon]=1.28f;d4_26[time,lev,lat,lon]=1.29f;d4_27[time,lev,lat,lon]=1.312f;d4_28[time,lev,lat,lon]=1.322f;d4_29[time,lev,lat,lon]=1.332f;d4_30[time,lev,lat,lon]=1.342f;d4_31[time,lev,lat,lon]=1.352f;\'";
-}; # end of fle_cre_dta_init()
+    $fl_cr8_dat[3][0] = "IPCC Daily";              # option descriptor
+    $fl_cr8_dat[3][1] = "~4GB";                    # file size
+    $fl_cr8_dat[3][2] = $fl_tmg[3][0] = "ipcc_dly_T85";            # file name root
+    $fl_cr8_dat[3][3] = "\'weepy=0.8f;dopey=0.8f;sleepy=0.8f;grouchy=0.8f;sneezy=0.8f;doc=0.8f;wanky=0.8f;skanky=0.8f;d1_00[time]=1.8f;d1_01[time]=1.8f;d1_02[time]=1.8f;d1_03[time]=1.8f;d1_04[time]=1.8f;d1_05[time]=1.8f;d1_06[time]=1.8f;d1_07[time]=1.8f;d2_00[lat,lon]=16.2f;d2_01[lat,lon]=16.2f;d2_02[lat,lon]=16.2f;d2_03[lat,lon]=16.2f;d2_04[lat,lon]=16.2f;d2_05[lat,lon]=16.2f;d2_06[lat,lon]=16.2f;d2_07[lat,lon]=16.2f;d2_08[lat,lon]=16.2f;d2_09[lat,lon]=16.2f;d2_10[lat,lon]=16.2f;d2_11[lat,lon]=16.2f;d2_12[lat,lon]=16.2f;d2_13[lat,lon]=16.2f;d2_14[lat,lon]=16.2f;d2_15[lat,lon]=16.2f;d3_00[time,lat,lon]=64.0f;d3_01[time,lat,lon]=64.0f;d3_02[time,lat,lon]=64.0f;d3_03[time,lat,lon]=64.0f;d3_04[time,lat,lon]=64.0f;d3_05[time,lat,lon]=64.0f;d3_06[time,lat,lon]=64.0f;d3_07[time,lat,lon]=64.0f;d3_08[time,lat,lon]=64.0f;d3_09[time,lat,lon]=64.0f;d3_10[time,lat,lon]=64.0f;d3_11[time,lat,lon]=64.0f;d3_12[time,lat,lon]=64.0f;d3_13[time,lat,lon]=64.0f;d3_14[time,lat,lon]=64.0f;d3_15[time,lat,lon]=64.0f;d3_16[time,lat,lon]=64.0f;d3_17[time,lat,lon]=64.0f;d3_18[time,lat,lon]=64.0f;d3_19[time,lat,lon]=64.0f;d3_20[time,lat,lon]=64.0f;d3_21[time,lat,lon]=64.0f;d3_22[time,lat,lon]=64.0f;d3_23[time,lat,lon]=64.0f;d3_24[time,lat,lon]=64.0f;d3_25[time,lat,lon]=64.0f;d3_26[time,lat,lon]=64.0f;d3_27[time,lat,lon]=64.0f;d3_28[time,lat,lon]=64.0f;d3_29[time,lat,lon]=64.0f;d3_30[time,lat,lon]=64.0f;d3_31[time,lat,lon]=64.0f;d3_32[time,lat,lon]=64.0f;d3_33[time,lat,lon]=64.0f;d3_34[time,lat,lon]=64.0f;d3_35[time,lat,lon]=64.0f;d3_36[time,lat,lon]=64.0f;d3_37[time,lat,lon]=64.0f;d3_38[time,lat,lon]=64.0f;d3_39[time,lat,lon]=64.0f;d3_40[time,lat,lon]=64.0f;d3_41[time,lat,lon]=64.0f;d3_42[time,lat,lon]=64.0f;d3_43[time,lat,lon]=64.0f;d3_44[time,lat,lon]=64.0f;d3_45[time,lat,lon]=64.0f;d3_46[time,lat,lon]=64.0f;d3_47[time,lat,lon]=64.0f;d3_48[time,lat,lon]=64.0f;d3_49[time,lat,lon]=64.0f;d3_50[time,lat,lon]=64.0f;d3_51[time,lat,lon]=64.0f;d3_52[time,lat,lon]=64.0f;d3_53[time,lat,lon]=64.0f;d3_54[time,lat,lon]=64.0f;d3_55[time,lat,lon]=64.0f;d3_56[time,lat,lon]=64.0f;d3_57[time,lat,lon]=64.0f;d3_58[time,lat,lon]=64.0f;d3_59[time,lat,lon]=64.0f;d3_60[time,lat,lon]=64.0f;d3_61[time,lat,lon]=64.0f;d3_62[time,lat,lon]=64.0f;d3_63[time,lat,lon]=64.0f;d4_00[time,lev,lat,lon]=1.1f;d4_01[time,lev,lat,lon]=1.2f;d4_02[time,lev,lat,lon]=1.3f;d4_03[time,lev,lat,lon]=1.4f;d4_04[time,lev,lat,lon]=1.5f;d4_05[time,lev,lat,lon]=1.6f;d4_06[time,lev,lat,lon]=1.7f;d4_07[time,lev,lat,lon]=1.8f;d4_08[time,lev,lat,lon]=1.9f;d4_09[time,lev,lat,lon]=1.11f;d4_10[time,lev,lat,lon]=1.12f;d4_11[time,lev,lat,lon]=1.13f;d4_12[time,lev,lat,lon]=1.14f;d4_13[time,lev,lat,lon]=1.15f;d4_14[time,lev,lat,lon]=1.16f;d4_15[time,lev,lat,lon]=1.17f;d4_16[time,lev,lat,lon]=1.18f;d4_17[time,lev,lat,lon]=1.19f;d4_18[time,lev,lat,lon]=1.21f;d4_19[time,lev,lat,lon]=1.22f;d4_20[time,lev,lat,lon]=1.23f;d4_21[time,lev,lat,lon]=1.24f;d4_22[time,lev,lat,lon]=1.25f;d4_23[time,lev,lat,lon]=1.26f;d4_24[time,lev,lat,lon]=1.27f;d4_25[time,lev,lat,lon]=1.28f;d4_26[time,lev,lat,lon]=1.29f;d4_27[time,lev,lat,lon]=1.312f;d4_28[time,lev,lat,lon]=1.322f;d4_29[time,lev,lat,lon]=1.332f;d4_30[time,lev,lat,lon]=1.342f;d4_31[time,lev,lat,lon]=1.352f;\'";
+}; # end of fl_cr8_dat_init()
 
 # tst_hirez just excercises the hirez perl timer to make sure that there's no funny biz going on.
 sub tst_hirez{
@@ -1350,40 +1360,40 @@ sub tst_hirez{
     if ($dbg_lvl == 1) {die "that's all folk!!\n";}
 }
 
-# fle_cre8 does the file creation to provide populated files for the benchmarks
-sub fle_cre8 {
+# fl_cr8 does the file creation to provide populated files for the benchmarks
+sub fl_cr8 {
     my $idx = shift;
     my $t0;
     my $elapsed;
     
-    my $in_fl = my $out_fl = "$dta_dir/$fle_cre_dta[$idx][2].nc" ;
-    print "==== Creating $fle_cre_dta[$idx][0] data file from template in [$dta_dir]\n";
-    print "Executing : $timr_app ncgen -b -o $out_fl   $bm_dir/$fle_cre_dta[$idx][2].cdl\n";
+    my $fl_in = my $fl_out = "$dta_dir/$fl_cr8_dat[$idx][2].nc" ;
+    print "==== Creating $fl_cr8_dat[$idx][0] data file from template in [$dta_dir]\n";
+    print "Executing : $tmr_app ncgen -b -o $fl_out   $bm_dir/$fl_cr8_dat[$idx][2].cdl\n";
     
     if ($hiresfound) {$t0 = [gettimeofday];}
     else {$t0 = time;}
     # File creation now timed
-    system  "$timr_app ncgen -b -o $out_fl   $bm_dir/$fle_cre_dta[$idx][2].cdl";
+    system  "$tmr_app ncgen -b -o $fl_out   $bm_dir/$fl_cr8_dat[$idx][2].cdl";
     if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
     else {$elapsed = time - $t0;}
     # log it to common timing array
-    $fle_timg[$idx][0] = "$fle_cre_dta[$idx][2]"; # name root
-    $fle_timg[$idx][1] = $elapsed; # creation time	
-    print "\n==== Populating $out_fl file.\nTiming results:\n";
+    $fl_tmg[$idx][0] = "$fl_cr8_dat[$idx][2]"; # name root
+    $fl_tmg[$idx][1] = $elapsed; # creation time	
+    print "\n==== Populating $fl_out file.\nTiming results:\n";
 #	print "the -s script chunk is:\n";
-    print "Executing: $timr_app ncap -O -s $fle_cre_dta[$idx][3] $in_fl $out_fl\n";
+    print "Executing: $tmr_app ncap -O -s $fl_cr8_dat[$idx][3] $fl_in $fl_out\n";
     
     if ($hiresfound) {$t0 = [gettimeofday];}
     else {$t0 = time;}
-    system "$timr_app ncap -O -s $fle_cre_dta[$idx][3] $in_fl $out_fl";
+    system "$tmr_app ncap -O -s $fl_cr8_dat[$idx][3] $fl_in $fl_out";
     if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
     else {$elapsed = time - $t0;}
     
-    $fle_timg[$idx][2] = $elapsed; # population time
+    $fl_tmg[$idx][2] = $elapsed; # population time
     
     
-    print "==========================\nEnd of $fle_cre_dta[$idx][2] section\n==========================\n\n\n";
-} # end sub fle_cre8
+    print "==========================\nEnd of $fl_cr8_dat[$idx][2] section\n==========================\n\n\n";
+} # end sub fl_cr8
 
 # this next bit is for later  too many niggly bits to play with right now.
 ## try to get a sense of system load with 'top -b -n1' 
