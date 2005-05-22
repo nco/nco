@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.16 2005-05-21 21:53:12 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.17 2005-05-22 02:14:33 zender Exp $
 
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
@@ -357,7 +357,7 @@ sub go {
     $opr_fmt=sprintf("%%.%ds",$opr_lng_max);
     if($opr_lng_max-length($opr_nm)>0){$spc_nbr+=$opr_lng_max-length($opr_nm);}
     $spc_fmt=sprintf("%%.%ds",$spc_nbr);
-    $tst_id_sng=sprintf("$opr_fmt$spc_fmt test %02d: ",$opr_nm,$spc_sng,$tst_idx);
+    $tst_id_sng=sprintf("$opr_fmt$spc_fmt",$opr_nm,$spc_sng).sprintf("test %02d: ",$tst_idx);
     if($dsc_lng_max-length($dsc_sng)>0){$dot_nbr+=$dsc_lng_max-length($dsc_sng);}
     $dsc_fmt=sprintf('%%.%ds',$dsc_lng_max);
     $dot_fmt=sprintf("%%.%ds",$dot_nbr);
@@ -968,8 +968,10 @@ sub perform_tests
     $tst_cmd[0]='ncwa -O -y ttl -v val_max_max_sht in.nc foo.nc 2> foo.tst';
     $tst_cmd[1]='ncks -C -H -s "%d" -v val_max_max_sht foo.nc';
     $dsc_sng='ttl would overflow without dbl_prc patch, wraps anyway so exact value not important (failure on AIX, LINUX, SUNMP expected/OK because of different wrap behavior)';
-    $nsr_xpc= -32768 ; 
+    $nsr_xpc= -31536 ; # Expected on Pentium IV GCC 3.4, PowerPC xlc
+#    $nsr_xpc= -32768 ; # Expected on fxm
     &go();
+
     $tst_cmd[0]='ncwa -O -y min -a lat -v lat -w gw in.nc foo.nc';
     $tst_cmd[1]='ncks -C -H -s "%g" -v lat foo.nc';
     $dsc_sng='min with weights';
@@ -1160,7 +1162,7 @@ sub failed {
     my $nsr_xpc = shift;
     
     $failure{$opr_nm}++;
-    print '\tFAILED[$opr_nm]: $dsc_sng\n';
+    print "FAILED\n$opr_nm failure: $dsc_sng\n";
     foreach(@tst_cmd) {
 	print "\t$_\n";
     }
