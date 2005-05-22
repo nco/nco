@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.26 2005-05-07 07:10:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.27 2005-05-22 05:09:35 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -165,7 +165,7 @@ nco_cnv_mss_val_typ  /* [fnc] Convert missing_value, if any, to mss_val_out_typ 
 var_sct * /* O [sct] Pointer to variable structure of type var_out_typ */
 nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type */
 (const nc_type var_out_typ, /* I [enm] Type to convert variable structure to */
- var_sct *var_in) /* I/O [enm] Pointer to variable structure (may be destroyed) */
+ var_sct * const var_in) /* I/O [enm] Pointer to variable structure (may be destroyed) */
 {
   /* Threads: Routine is thread safe and makes no unsafe routines */
   /* Purpose: Return copy of input variable typecast to desired type
@@ -231,7 +231,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
 
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(var_in->type,&val_in);
-  (void)cast_void_nctype(var_out->type,&var_out->val);
+  (void)cast_void_nctype(var_out->type,&val_out);
   
   /* Copy and typecast entire array of values, using C implicit coercion */
   switch(var_out_typ){
@@ -301,7 +301,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   
   /* Un-typecast pointer to values after access */
   (void)cast_nctype_void(var_in->type,&val_in);
-  (void)cast_nctype_void(var_out->type,&var_out->val);
+  (void)cast_nctype_void(var_out->type,&val_out);
 
   /* If var_in.vp empty then unmask sz */
   if(val_in.vp==NULL) var_out->sz=sz_msk;
