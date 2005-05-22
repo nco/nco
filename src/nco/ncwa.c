@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.172 2005-05-22 02:56:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.173 2005-05-22 03:43:04 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.172 2005-05-22 02:56:30 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.172 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.173 2005-05-22 03:43:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.173 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -886,6 +886,7 @@ main(int argc,char **argv)
       /* Free tally buffer */
       var_prc_out[idx]->tally=(long *)nco_free(var_prc_out[idx]->tally);
       
+      if(dbg_lvl > 3) (void)fprintf(stdout,"%s: DEBUG: fxm TODO nco523. Calling nco_var_cnf_typ() for variable %s with var_id=%d, var_val->dp[0]=%g, var_typ = %s, var_typ_upk = %s,\n",prg_nm_get(),var_prc_out[idx]->nm,var_prc_out[idx]->id,var_prc_out[idx]->val.dp[0],nco_typ_sng(var_prc_out[idx]->type),nco_typ_sng(var_prc_out[idx]->typ_upk));
       /* Revert any arithmetic promotion but leave unpacked (for now) */
       var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
       

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.497 2005-05-22 02:32:45 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.498 2005-05-22 03:43:04 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -286,6 +286,11 @@ nco516. Implement SDO-wide data pipes, e.g., ncra in*.nc | ncwa | ncrename t,tpt
 nco523. Threaded ncwa fails on ESMF, OpenMP:
 ncwa -t 1 -D 5 -O -C ~/nco/data/in.nc ~/foo.nc # Works
 ncwa -t 2 -D 5 -O -C ~/nco/data/in.nc ~/foo.nc # Fails
+ncwa -t 2 -D 4 -O -C -v '^rec+.*' ~/nco/data/in.nc ~/foo.nc # Fails
+# Breaks with any two one dimensional variables so long as at least one is NC_INT, neither needs missing_values (phew, ruling that out is helpful)
+ncwa -t 2 -D 4 -O -C -v date,one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc # Fails
+ncwa -t 2 -D 4 -O -C -v one_dmn_int_val_one,one_dmn_int_val_two ~/nco/data/in.nc ~/foo.nc # Fails
+
 nco524. DODS/OPeNDAP memory leak
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncrcat -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l /tmp/data in.nc in.nc foo.nc > ~/foo 2>&1
 	ncrcat -O -C -l /tmp -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc

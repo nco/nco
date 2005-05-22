@@ -40,7 +40,7 @@ variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.57 2005-05-05 22:25:37 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.58 2005-05-22 03:43:04 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -271,6 +271,9 @@ variables:
 
 	float one_dmn_var(bnd);
 
+	int one_dmn_int_val_one(lat);
+	int one_dmn_int_val_two(lat);
+
 	float att_var;
 	att_var:byte_att = '\0';
 	att_var:char_att = "Sentence one.\nSentence two.\n";
@@ -497,6 +500,8 @@ data:
 	one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;
 	one_dmn_rec_var_sng="Hello Wor";
 	one_dmn_var=1.,10.;
+	one_dmn_int_val_one=1,1;
+	one_dmn_int_val_two=2,2;
 	pck=1;
 	pck_arr=-32767,0,1,32767;
 	upk=3.;
