@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.496 2005-05-20 00:01:55 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.497 2005-05-22 02:32:45 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -283,13 +283,14 @@ nco514. My MPI builds call superfluous linker steps:
         make MPI=Y > foo 2>&1
 nco516. Implement SDO-wide data pipes, e.g., ncra in*.nc | ncwa | ncrename t,tpt foo.nc
         This would bring us one step closer to grid services, too
-nco518. Remove OpenMP critical regions from nco_var_get()? i.e., is reading critical?
-nco521. DODS/OPeNDAP fails on our local servers but not all servers:
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncrcat -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l /tmp/data in.nc foo.nc > ~/foo 2>&1
+nco523. Threaded ncwa fails on ESMF, OpenMP:
+ncwa -t 1 -D 5 -O -C ~/nco/data/in.nc ~/foo.nc # Works
+ncwa -t 2 -D 5 -O -C ~/nco/data/in.nc ~/foo.nc # Fails
+nco524. DODS/OPeNDAP memory leak
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncrcat -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l /tmp/data in.nc in.nc foo.nc > ~/foo 2>&1
 	ncrcat -O -C -l /tmp -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
 	ncrcat -O -C -l /tmp -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
-nco522. Send not to ask netCDF to supply nc_var_copy() functiona
-nco523. 
+nco525. 
 
 MPI:
 Archive MPI tests which appear to run correctly 
