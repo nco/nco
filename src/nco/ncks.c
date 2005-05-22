@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.127 2005-05-22 21:34:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.128 2005-05-22 22:19:54 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -108,13 +108,13 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
-  char *opt_crr; /* [sng] String representation of current long-option name */
+  char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.127 2005-05-22 21:34:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.127 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.128 2005-05-22 22:19:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.128 $";
   const char * const opt_sht_lst="aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   extern char *optarg;
@@ -224,8 +224,8 @@ main(int argc,char **argv)
     /* getopt_long_only() allows a single dash '-' to prefix long options as well */
     opt=getopt_long(argc,argv,opt_sht_lst,opt_lng,&opt_idx);
     /* NB: access to opt_crr is only valid when long_opt was detected */
-    opt_crr=(char *)strdup(opt_lng[opt_idx].name);
     if(opt == EOF) break; /* Parse positional arguments once getopt_long() returns EOF */
+    opt_crr=(char *)strdup(opt_lng[opt_idx].name);
 
     /* Process long options without short option counterparts */
     if(opt == 0){
@@ -233,6 +233,7 @@ main(int argc,char **argv)
 	 Let this serve as a template for more such options */
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"compiler")){
 	(void)fprintf(stdout,"%s\n",nco_cmp_get());
+	if(opt_crr != NULL) opt_crr=(char *)nco_free(opt_crr);
 	nco_exit(EXIT_SUCCESS);
       } /* endif "cmp" */
     } /* opt != 0 */
@@ -344,6 +345,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     } /* end switch */
+    if(opt_crr != NULL) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
 
   /* Process positional arguments and fill in filenames */
@@ -379,7 +381,7 @@ main(int argc,char **argv)
     
   /* We now have final list of variables to extract. Phew. */
   
-  /* Place all dims in lmt_lst */
+  /* Place all dimensions in lmt_lst */
   lmt_lst=(lmt_all_sct *)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct));
 
   for(idx=0;idx<nbr_dmn_fl;idx++){
@@ -552,7 +554,7 @@ main(int argc,char **argv)
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
 
   /* ncks-unique memory */
-  /*  if(fl_in_1 != NULL) fl_in_1=(char *)nco_free(fl_in_1);*/
+  if(fl_bnr != NULL) fl_bnr=(char *)nco_free(fl_bnr);
 
   /* NCO-generic clean-up */
   /* Free individual strings */
