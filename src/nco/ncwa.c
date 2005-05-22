@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.174 2005-05-22 03:51:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.175 2005-05-22 04:31:14 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.174 2005-05-22 03:51:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.174 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.175 2005-05-22 04:31:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.175 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -676,7 +676,7 @@ main(int argc,char **argv)
      firstprivate(): msk_out and wgt_out must be NULL on first call to nco_var_cnf_dmn()
      shared(): msk and wgt are not altered within loop
      private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) firstprivate(msk_out,wgt_out) private(DO_CONFORM_MSK,DO_CONFORM_WGT,idx,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,fp_stderr,fp_stdout,in_id,msk,msk_nm,msk_val,dmn_avg_nbr,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
+#pragma omp parallel for default(none) firstprivate(msk_out,wgt_out) private(DO_CONFORM_MSK,DO_CONFORM_WGT,idx,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,fp_stderr,fp_stdout,in_id,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
 #endif /* !_OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
@@ -765,7 +765,7 @@ main(int argc,char **argv)
 	     If this is accomplished by setting weight to missing value wherever variable is missing value
 	     then weight must not be re-used by next variable (which might conform but have missing values in different locations)
 	     This is one good reason to copy wgt_out into disposable wgt_avg for each new variable */
-	  /* First make sure wgt_avg has same missing value as variable */
+	  /* First, make sure wgt_avg has same missing value as variable */
 	  (void)nco_mss_val_cp(var_prc[idx],wgt_avg);
 	  /* Copy missing value into double precision variable */
 	  switch(wgt_avg->type){
@@ -777,10 +777,13 @@ main(int argc,char **argv)
 	  case NC_BYTE: mss_val_dbl=wgt_avg->mss_val.bp[0]; break;
 	  default: nco_dfl_case_nc_type_err(); break;
 	  } /* end switch */
-	  /* Second mask wgt_avg where variable is missing value */
+	  /* Second, mask wgt_avg where variable is missing value */
 	  (void)nco_var_msk(wgt_avg->type,wgt_avg->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,mss_val_dbl,nco_op_ne,var_prc[idx]->val,wgt_avg->val);
 	} /* endif weight must be checked for missing values */
 	
+	/* Free current input buffer */
+	var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+
 	if(msk_nm != NULL && DO_CONFORM_MSK){
 	  /* Must mask weight in same fashion as variable was masked
 	     If msk and var did not conform then do not mask wgt
@@ -884,25 +887,28 @@ main(int argc,char **argv)
       /* Free tally buffer */
       var_prc_out[idx]->tally=(long *)nco_free(var_prc_out[idx]->tally);
       
-      /* Unfortunately, this debugging line seems to fix nco523 for two threads */
+#if 0
+      /* Unfortunately, this debugging line seems to fix nco523 for two threads
+	 This often happens with SMP bugs that are timing-dependent */
       if(dbg_lvl > 3) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco523. Calling nco_var_cnf_typ() for variable %s with var_id=%d, var_val->dp[0]=%g, var_typ = %s, var_typ_upk = %s,\n",prg_nm_get(),var_prc_out[idx]->nm,var_prc_out[idx]->id,var_prc_out[idx]->val.dp[0],nco_typ_sng(var_prc_out[idx]->type),nco_typ_sng(var_prc_out[idx]->typ_upk));
+#endif /* !0 */
       /* Revert any arithmetic promotion but leave unpacked (for now) */
       var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
       
-      /* Free current input buffer */
-      var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
-
 #ifdef _OPENMP
 #pragma omp critical
-#endif /* _OPENMP */
       { /* begin OpenMP critical */
+#endif /* _OPENMP */
 	/* Copy average to output file then free averaging buffer */
 	if(var_prc_out[idx]->nbr_dim == 0){
 	  (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	}else{ /* end if variable is scalar */
 	  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	} /* end if variable is array */
+#ifdef _OPENMP
       } /* end OpenMP critical */
+#endif /* _OPENMP */
+
       /* Free current output buffer */
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
       

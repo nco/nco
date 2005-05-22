@@ -1,5 +1,9 @@
 2005-05-21  Charlie Zender  <zender@uci.edu>
 
+	* Debug statements for TODO nco523, vexing SMP OpenMP thread bug
+
+	* Execute free(var_prc[idx]) sooner in ncwa
+
 	* Re-tweak print formatting in nco_bm.pl
 
 2005-05-19  Charlie Zender  <zender@uci.edu>
