@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.28 2005-05-22 16:44:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.29 2005-05-22 21:34:27 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -306,7 +306,9 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
-  /* Un-typecast pointer to values after access */
+  /* NB: we operated on local copies of val_in and val_out
+     It is only neccessary to un-typecast pointer to val_in because we access it one more time
+     Un-typecast pointer to val_out for symmetry */
   (void)cast_nctype_void(var_in_typ,&val_in);
   (void)cast_nctype_void(var_out_typ,&val_out);
 

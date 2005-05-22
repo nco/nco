@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.126 2005-04-25 01:33:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.127 2005-05-22 21:34:27 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -104,7 +104,7 @@ main(int argc,char **argv)
   char *fl_bnr=NULL; /* [sng] Unformatted binary output file */
   char *fl_in=NULL;
   char *fl_out=NULL; /* Option o */
-  char *fl_out_tmp;
+  char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.126 2005-04-25 01:33:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.126 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.127 2005-05-22 21:34:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.127 $";
   const char * const opt_sht_lst="aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   extern char *optarg;
@@ -134,13 +134,14 @@ main(int argc,char **argv)
   int nbr_var_fl;
   int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
   int opt;
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int var_lst_in_nbr=0;
     
   lmt_sct **lmt;
 
   lmt_all_sct *lmt_lst; /* Container for lmt */
-  lmt_all_sct *lmt_tmp; /* Temporary pointer */
+  lmt_all_sct *lmt_crr; /* Current limit structure */
 
   long dmn_sz;
 
@@ -356,7 +357,7 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open file for reading */
-  nco_open(fl_in,NC_NOWRITE,&in_id);
+  rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
   /* Get number of variables, dimensions, and global attributes in file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&glb_att_nbr,&rec_dmn_id);
@@ -383,24 +384,24 @@ main(int argc,char **argv)
 
   for(idx=0;idx<nbr_dmn_fl;idx++){
     (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
-    lmt_tmp=&lmt_lst[idx];
-    lmt_tmp->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
-    lmt_tmp->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-    lmt_tmp->dmn_nm=strdup(dmn_nm);
-    lmt_tmp->lmt_dmn_nbr=1;
-    lmt_tmp->dmn_sz_org=dmn_sz;
-    lmt_tmp->WRP=False;
-    lmt_tmp->BASIC_DMN=True;
+    lmt_crr=lmt_lst+idx;
+    lmt_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
+    lmt_crr->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+    lmt_crr->dmn_nm=strdup(dmn_nm);
+    lmt_crr->lmt_dmn_nbr=1;
+    lmt_crr->dmn_sz_org=dmn_sz;
+    lmt_crr->WRP=False;
+    lmt_crr->BASIC_DMN=True;
     /* Initialize lmt struct */
-    lmt_tmp->lmt_dmn[0]->nm=lmt_tmp->dmn_nm;
-    lmt_tmp->lmt_dmn[0]->id=idx;
-    lmt_tmp->lmt_dmn[0]->is_rec_dmn=(idx == rec_dmn_id ? True : False);
-    lmt_tmp->lmt_dmn[0]->srt=0L;
-    lmt_tmp->lmt_dmn[0]->end=dmn_sz-1L;
-    lmt_tmp->lmt_dmn[0]->cnt=dmn_sz;
-    lmt_tmp->lmt_dmn[0]->srd=1L;
+    lmt_crr->lmt_dmn[0]->nm=lmt_crr->dmn_nm;
+    lmt_crr->lmt_dmn[0]->id=idx;
+    lmt_crr->lmt_dmn[0]->is_rec_dmn=(idx == rec_dmn_id ? True : False);
+    lmt_crr->lmt_dmn[0]->srt=0L;
+    lmt_crr->lmt_dmn[0]->end=dmn_sz-1L;
+    lmt_crr->lmt_dmn[0]->cnt=dmn_sz;
+    lmt_crr->lmt_dmn[0]->srd=1L;
     /* Flag to show that struct has been inialized. fxm: A HACK */
-    lmt_tmp->lmt_dmn[0]->lmt_typ=-1;
+    lmt_crr->lmt_dmn[0]->lmt_typ=-1;
   } /* end loop over dimensions */
 
   /* Add user specified limits lmt_lst */
@@ -409,18 +410,18 @@ main(int argc,char **argv)
     (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
     for(jdx=0;jdx<nbr_dmn_fl;jdx++) {
       if(!strcmp(lmt[idx]->nm,lmt_lst[jdx].dmn_nm)){   
-	lmt_tmp=&lmt_lst[jdx];
-	lmt_tmp->BASIC_DMN=False;
-	if(lmt_tmp->lmt_dmn[0]->lmt_typ == -1) { 
-	  lmt_tmp->lmt_dmn[0]=lmt[idx]; 
+	lmt_crr=lmt_lst+jdx;
+	lmt_crr->BASIC_DMN=False;
+	if(lmt_crr->lmt_dmn[0]->lmt_typ == -1) { 
+	  lmt_crr->lmt_dmn[0]=lmt[idx]; 
 	}else{ 
-	  lmt_tmp->lmt_dmn=(lmt_sct **)nco_realloc(lmt_tmp->lmt_dmn,((lmt_tmp->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
-	  lmt_tmp->lmt_dmn[(lmt_tmp->lmt_dmn_nbr)++]=lmt[idx];
+	  lmt_crr->lmt_dmn=(lmt_sct **)nco_realloc(lmt_crr->lmt_dmn,((lmt_crr->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
+	  lmt_crr->lmt_dmn[(lmt_crr->lmt_dmn_nbr)++]=lmt[idx];
 	} /* endif */
 	break;
       } /* end if */
     } /* end loop over dimensions */
-    /* dimension in limit not found */
+    /* Dimension in limit not found */
     if(jdx == nbr_dmn_fl){
       (void)fprintf(stderr,"Unable to find limit dimension %s in list\n ",lmt[idx]->nm);
       nco_exit(EXIT_FAILURE);
@@ -485,7 +486,7 @@ main(int argc,char **argv)
     } /* end loop over idx */
     
     /* Turn off default filling behavior to enhance efficiency */
-    nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+    rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
   
     /* Take output file out of define mode */
     (void)nco_enddef(out_id);
@@ -549,6 +550,27 @@ main(int argc,char **argv)
   
   /* Remove local copy of file */
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
+
+  /* ncks-unique memory */
+  /*  if(fl_in_1 != NULL) fl_in_1=(char *)nco_free(fl_in_1);*/
+
+  /* NCO-generic clean-up */
+  /* Free individual strings */
+  if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
+  if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
+  if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+  if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
+  if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+  /* Free lists of strings */
+  if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+  if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+  if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+  if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
+  /* Free limits */
+  for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */

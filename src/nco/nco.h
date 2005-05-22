@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.72 2005-05-04 12:30:05 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.73 2005-05-22 21:34:27 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -225,7 +225,7 @@ ERROR: Hybrid configurations of MPI and OpenMP parallelism not yet supported
     long dmn_sz_org; /* [nbr] Size of dimension in INPUT file */
     int lmt_dmn_nbr; /* [nbr] Number of lmt args */
     bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
-    bool WRP; /* [flg] Limit is wrapped - (only true if wrapping ,lmt_dmn_nbr=2 */ 
+    bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
     lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with each dimension */  
   } lmt_all_sct;
   
@@ -343,11 +343,11 @@ ERROR: Hybrid configurations of MPI and OpenMP parallelism not yet supported
     int pck_ram; /* [flg] Variable is packed in memory (valid scale_factor, add_offset, or both attributes exist) */
     int has_scl_fct; /* [flg] Valid scale_factor attribute exists */
     int has_add_fst; /* [flg] Valid add_offset attribute exists */
-    int undefined;   /* used in parser if true var undefined in first parse */
     ptr_unn scl_fct; /* [frc] Value of scale_factor attribute of type typ_upk */
     ptr_unn add_fst; /* [frc] Value of add_offset attribute of type typ_upk */
     nc_type typ_pck; /* [enm] Type of variable when packed (on disk). typ_pck = typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
     nc_type typ_upk; /* [enm] Type of variable when unpacked (expanded) (in memory) */
+    int undefined; /* [flg] Variable is still undefined (in first parser pass) */
   } var_sct; /* end var_sct_tag */
   
 #ifdef __cplusplus

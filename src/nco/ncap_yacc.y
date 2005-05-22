@@ -1,11 +1,11 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.29 2005-05-06 12:44:26 hmb Exp $ -*-C-*- */
-
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.30 2005-05-22 21:34:27 zender Exp $ -*-C-*- */
+  
 /* Begin C declarations section */
- 
+  
 /* Purpose: Grammar parser for ncap */
-
+  
 /* Copyright (C) 1995--2005 Charlie Zender
-
+     
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
@@ -194,16 +194,16 @@ PRINT '(' var_xpr ')' ';' {
 } /* end PRINT '(' var_xpr ')' */
 | out_att_xpr '=' scv_xpr { 
   aed_sct *ptr_aed;
-
+  
   ptr_aed=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg),True);
-
+  
   ptr_aed->val=ncap_scv_2_ptr_unn($3);
   ptr_aed->type=$3.type;
   ptr_aed->sz=1L;
   (void)cast_nctype_void(ptr_aed->type,&ptr_aed->val);    
   if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s to %s",$1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->fl_out);
   (void)yyerror(ncap_err_sng);
-
+  
   if(dbg_lvl_get() > 1){
     (void)fprintf(stderr,"Saving in array attribute %s@%s=",$1.var_nm,$1.att_nm);
     switch($3.type){
@@ -246,7 +246,7 @@ PRINT '(' var_xpr ')' ';' {
     ptr_aed=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg),True);
     ptr_aed->sz=$3->sz;
     ptr_aed->type=$3->type;
-     ptr_aed->val.vp=(void*)nco_malloc((ptr_aed->sz)*nco_typ_lng(ptr_aed->type));
+    ptr_aed->val.vp=(void*)nco_malloc((ptr_aed->sz)*nco_typ_lng(ptr_aed->type));
     (void)var_copy(ptr_aed->type,ptr_aed->sz,$3->val,ptr_aed->val);
     /* cast_nctype_void($3->type,&ptr_aed->val); */
     if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s %d dimensional variable",$1.var_nm,$1.att_nm,$3->nbr_dim);
@@ -261,53 +261,53 @@ PRINT '(' var_xpr ')' ';' {
 } /* end out_att_xpr '=' var_xpr */
 | out_var_xpr '=' var_xpr 
 {
-   $3->nm=strdup($1);
+  $3->nm=strdup($1);
   (void)ncap_var_write($3,(prs_sct *)prs_arg);
-
-  /* print mess only for defined vars */
-  if(dbg_lvl_get() > 0 && !$3->undefined ){ (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
-    (void)yyerror(ncap_err_sng);
-  }
+  
+  /* Print mess only for defined variables */
+  if(dbg_lvl_get() > 0 && !$3->undefined){(void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
+  (void)yyerror(ncap_err_sng);
+  } /* endif */
 } /* end out_var_xpr '=' var_xpr */
 | out_var_xpr '=' scv_xpr
 {
   var_sct *var;
-
+  
   if(dbg_lvl_get() > 5) (void)fprintf(stderr,"%s: DEBUG out_var_xpr = scv_xpr rule for %s\n",prg_nm_get(),$1);
-
-   /* Turn attribute into temporary variable for writing */
-   var=(var_sct *)nco_malloc(sizeof(var_sct));
-   /* Set defaults */
-   (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
-    /* Overwrite with attribute expression information */
-   var->nm=strdup($1);
-   var->nbr_dim=0;
-   var->sz=1;
-   var->type=$3.type;
-   var->val=ncap_scv_2_ptr_unn($3);
-
-   if(((prs_sct *)prs_arg)->var_LHS != NULL){
-      /* User intends LHS to cast RHS to same dimensionality
-	 Stretch newly initialized variable to size of LHS template */
-      /*    (void)ncap_var_cnf_dmn(&$$,&(((prs_sct *)prs_arg)->var_LHS));*/
-      (void)ncap_var_stretch(&var,&(((prs_sct *)prs_arg)->var_LHS));
-      
-      if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching former scv_xpr defining %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$1,((prs_sct *)prs_arg)->var_LHS->nm,((prs_sct *)prs_arg)->var_LHS->nbr_dim,((prs_sct *)prs_arg)->var_LHS->sz);
-    } /* endif LHS_cst */
-
-   (void)ncap_var_write(var,(prs_sct *)prs_arg);
-
-   if(dbg_lvl_get() > 0 ) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
-    (void)yyerror(ncap_err_sng);
- 
-
+  
+  /* Turn attribute into temporary variable for writing */
+  var=(var_sct *)nco_malloc(sizeof(var_sct));
+  /* Set defaults */
+  (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
+  /* Overwrite with attribute expression information */
+  var->nm=strdup($1);
+  var->nbr_dim=0;
+  var->sz=1;
+  var->type=$3.type;
+  var->val=ncap_scv_2_ptr_unn($3);
+  
+  if(((prs_sct *)prs_arg)->var_LHS != NULL){
+    /* User intends LHS to cast RHS to same dimensionality
+       Stretch newly initialized variable to size of LHS template */
+    /*    (void)ncap_var_cnf_dmn(&$$,&(((prs_sct *)prs_arg)->var_LHS));*/
+    (void)ncap_var_stretch(&var,&(((prs_sct *)prs_arg)->var_LHS));
+    
+    if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching former scv_xpr defining %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$1,((prs_sct *)prs_arg)->var_LHS->nm,((prs_sct *)prs_arg)->var_LHS->nbr_dim,((prs_sct *)prs_arg)->var_LHS->sz);
+  } /* endif LHS_cst */
+  
+  (void)ncap_var_write(var,(prs_sct *)prs_arg);
+  
+  if(dbg_lvl_get() > 0 ) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
+  (void)yyerror(ncap_err_sng);
+  
+  
   $1=(char *)nco_free($1);
 } /* end out_var_xpr '=' scv_xpr */
 | out_var_xpr '=' sng_xpr
 {
-
+  
   var_sct *var;
-
+  
   var=(var_sct *)nco_calloc((size_t)1,sizeof(var_sct));
   var->nm=strdup($1);
   var->nbr_dim=0;
@@ -320,7 +320,7 @@ PRINT '(' var_xpr ')' ';' {
   
   if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
   (void)yyerror(ncap_err_sng);
-
+  
   $1=(char *)nco_free($1);
   $3=(char *)nco_free($3);
 } /* end out_var_xpr '=' sng_xpr */
@@ -408,7 +408,7 @@ out_var_xpr: OUT_VAR {$$=$1;}
 
 out_att_xpr: OUT_ATT {$$=$1;}
 ;
-      
+
 sng_xpr: /* sng_xpr is any combination of sng_xpr or attribute */
 sng_xpr '+' sng_xpr {
   size_t sng_lng;
@@ -562,7 +562,7 @@ var_xpr '+' var_xpr { /* Begin Addition */
   $$=ncap_var_abs($3);
 } /* end ABS */
 | RDC '(' var_xpr ')' {
-   $$=ncap_var_abs($3);
+  $$=ncap_var_abs($3);
   /* fxm Finish avg,min,max,ttl */
   /* $$=nco_var_avg($3,dim,dmn_nbr,nco_op_typ); */
   /* if(prs_arg->nco_op_typ == nco_op_avg) (void)nco_var_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val); */
@@ -573,8 +573,8 @@ var_xpr '+' var_xpr { /* Begin Addition */
   /* Packing variable does not create duplicate so DO NOT free $3 */
   const nc_type nc_typ_pck_dfl=NC_SHORT; /* [enm] Default type to pack to */
   bool PCK_VAR_WITH_NEW_PCK_ATT;
-
-  if( ((prs_sct*)prs_arg)->ntl_scn){
+  
+  if(((prs_sct*)prs_arg)->ntl_scn){
     $3->undefined=True;
     $$= $3;
   }else{ 
@@ -585,11 +585,11 @@ var_xpr '+' var_xpr { /* Begin Addition */
 | UNPACK '(' var_xpr ')' {
   /* Unpacking variable does not create duplicate so DO NOT free $3 */
   /* Don't unpack on first pass */
-  if( ((prs_sct*)prs_arg)->ntl_scn){
+  if(((prs_sct*)prs_arg)->ntl_scn){
     $3->undefined=True;
     $$= $3;
   }else{ 
-      $$=nco_var_upk($3);
+    $$=nco_var_upk($3);
   }
 } /* end UNPACK */
 | FUNCTION '(' var_xpr ')' {
@@ -605,43 +605,40 @@ var_xpr '+' var_xpr { /* Begin Addition */
   /* fxm: Allow commands like a=M_PI*rds^2; to work */
 }
 | VAR { /* Terminal symbol action */
-
+  
   var_sct *var;
   var_sct *var_tmp;
   prs_sct *prs_drf; /*Pointer for dereferencing */
-
+  
   prs_drf=(prs_sct*)prs_arg;
-
+  
   var=ncap_var_init($1,prs_drf);
   var->undefined=False;
-
   
   if(prs_drf->ntl_scn == True && prs_drf->var_LHS != NULL){
-	var_tmp=nco_var_dpl(prs_drf->var_LHS);
-	var_tmp->id=var->id;
-	var_tmp->nm=strdup($1);
-	var_tmp->type=var->type;
-	var_tmp->typ_dsk=var->typ_dsk;
-	var_tmp->undefined=False;
-        var_tmp->val.vp=(void*)NULL;
-	var=nco_var_free(var);
-	var=var_tmp;
-  }  
-  	
+    var_tmp=nco_var_dpl(prs_drf->var_LHS);
+    var_tmp->id=var->id;
+    var_tmp->nm=strdup($1);
+    var_tmp->type=var->type;
+    var_tmp->typ_dsk=var->typ_dsk;
+    var_tmp->undefined=False;
+    var_tmp->val.vp=(void*)NULL;
+    var=nco_var_free(var);
+    var=var_tmp;
+  } /* endif ntl_scn */
+  
   if(prs_drf->ntl_scn == False && prs_drf->var_LHS != NULL){
-
     /* User intends LHS to cast RHS to same dimensionality
        Stretch newly initialized variable to size of LHS template */
     /*    (void)ncap_var_cnf_dmn(&$$,&(((prs_sct *)prs_arg)->var_LHS));*/
-      (void)ncap_var_stretch(&var,&(prs_drf->var_LHS));
-
-      if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching variable %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),var->nm,prs_drf->var_LHS->nm,prs_drf->var_LHS->nbr_dim,prs_drf->var_LHS->sz);
-      var->undefined=False;
-   } /* endif LHS_cst */
+    (void)ncap_var_stretch(&var,&(prs_drf->var_LHS));
+    
+    if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching variable %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),var->nm,prs_drf->var_LHS->nm,prs_drf->var_LHS->nbr_dim,prs_drf->var_LHS->sz);
+    var->undefined=False;
+  } /* endif LHS_cst */
   
- 
   $$=var;
- /* Sanity check */
+  /* Sanity check */
   if ($$==(var_sct *)NULL) YYERROR;
 } /* end VAR terminal symbol */
 ; /* end var_xpr */
@@ -660,29 +657,29 @@ ncap_aed_lookup /* [fnc] Find location of existing attribute or add new attribut
   int idx;
   int size;
   aed_sct *ptr_aed;
-
+  
   size=*(prs_arg->nbr_att);
-
+  
   for(idx=0;idx<size;idx++){
     ptr_aed=(*(prs_arg->att_lst))[idx];
     
     if(strcmp(ptr_aed->att_nm,att_nm) || strcmp(ptr_aed->var_nm,var_nm)) 
-       continue; 
-
+      continue; 
+    
     if(update) ptr_aed->val.vp=nco_free(ptr_aed->val.vp);   
     /* Return pointer to list element */
     return ptr_aed;
-
+    
   } /* end for */
-   
+  
   if(!update) return (aed_sct *)NULL;
-
+  
   *(prs_arg->att_lst)=(aed_sct **)nco_realloc(*(prs_arg->att_lst),(size+1)*sizeof(aed_sct*));
   ++*(prs_arg->nbr_att);
   (*(prs_arg->att_lst))[size]=(aed_sct *)nco_malloc(sizeof(aed_sct));
   (*(prs_arg->att_lst))[size]->var_nm=strdup(var_nm);
   (*(prs_arg->att_lst))[size]->att_nm=strdup(att_nm);
-
+  
   return (*(prs_arg->att_lst))[size];
 } /* end ncap_aed_lookup() */
 
@@ -691,41 +688,41 @@ ncap_aed_lookup /* [fnc] Find location of existing attribute or add new attribut
 var_sct *                     /*I [sct] varibale in list */
 ncap_var_lookup
 ( var_sct *var,   /* I  [sct] variable  */
- prs_sct *prs_arg,             /* I/O [sct] contains var list */
- const bool add)              /* I if not in list then add to list */          
+  prs_sct *prs_arg,             /* I/O [sct] contains var list */
+  const bool add)              /* I if not in list then add to list */          
 {
   int idx;
   int size;
-
+  
   var_sct *ptr_var; 
   
   size = *(prs_arg->nbr_var);
-
+  
   for(idx=0; idx<size ; idx++) {
-
+    
     ptr_var=(*(prs_arg->var_lst))[idx];
     /*
-    assert(var->nm);
-    assert(ptr_var->nm);
-    if(!strcmp(var->nm,ptr_var->nm)) return ptr_var;    
+      assert(var->nm);
+      assert(ptr_var->nm);
+      if(!strcmp(var->nm,ptr_var->nm)) return ptr_var;    
     */
     if(ptr_var==NULL || strcmp(var->nm,ptr_var->nm) ) continue;
-
+    
     return ptr_var;
   }     
-
+  
   if(!add) return (var_sct *)NULL;
-
+  
   *(prs_arg->var_lst)=(var_sct **)nco_realloc(*(prs_arg->var_lst),(size+1)*sizeof(var_sct*));
   ++*(prs_arg->nbr_var);
   (*(prs_arg->var_lst))[size]=var;
-
+  
   return (var_sct *)NULL;
 }
 
 
 
- 
+
 int /* [rcd] Return code */
 yyerror /* [fnc] Print error/warning/info messages generated by parser */
 (const char * const err_sng_lcl) /* [sng] Message to print */
@@ -733,7 +730,7 @@ yyerror /* [fnc] Print error/warning/info messages generated by parser */
   /* Purpose: Print error/warning/info messages generated by parser
      Use eprokoke_skip to skip error message after sending error message from yylex()
      Stop provoked error message from yyparse being printed */
-
+  
   static bool eprovoke_skip;
   
   /* if(eprovoke_skip){eprovoke_skip=False ; return 0;} */
@@ -743,7 +740,7 @@ yyerror /* [fnc] Print error/warning/info messages generated by parser */
     (void)fprintf(stderr,"\n");
     (void)fflush(stderr);
   } /* endif dbg */
- 
+  
   if(err_sng_lcl[0] == '#') eprovoke_skip=True;
   eprovoke_skip=eprovoke_skip; /* Do nothing except avoid compiler warnings */
   return 0;
@@ -769,7 +766,7 @@ opr_ctl /* [fnc] Operation controller function Nie02 opr() */
   nodeType *nod; /* [sct] Syntax tree node */
   size_t nod_sz; /* [nbr] Node size */
   int arg_idx; /* [idx] Argument index */
-
+  
   /* Operator node requires space for token and arguments */
   nod_sz=sizeof(opr_nod_sct)+(arg_nbr-1)*sizeof(nodeType *);
   nod=(nodeType *)nco_malloc(nod_sz);
@@ -791,9 +788,9 @@ freeNode /* [fnc] Free syntax tree node Nie02 freeNode() */
 {
   /* Purpose: Free syntax tree node */
   int arg_idx; /* [idx] Argument index */
-
+  
   if(!nod) return;
-
+  
   /* Operator nodes have copies of arguments. Free these first. */
   if(nod->nod_typ == typ_opr){
     /* Recursive call to freeNode continue until statement is reduced */
@@ -801,7 +798,7 @@ freeNode /* [fnc] Free syntax tree node Nie02 freeNode() */
   } /* endif */
   /* Free node itself */
   nod=(nodeType *)nco_free(nod);
-
+  
   return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
 } /* end freeNode() */
 
