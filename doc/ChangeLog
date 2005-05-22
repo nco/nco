@@ -1,3 +1,7 @@
+2005-05-22  Charlie Zender  <zender@uci.edu>
+
+	* Fix union type-casting in nco_var_cnf_typ()
+
 2005-05-21  Charlie Zender  <zender@uci.edu>
 
 	* Debug statements for TODO nco523, vexing SMP OpenMP thread bug

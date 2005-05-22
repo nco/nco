@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.27 2005-05-22 05:09:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.28 2005-05-22 16:44:51 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -169,6 +169,8 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
 {
   /* Threads: Routine is thread safe and makes no unsafe routines */
   /* Purpose: Return copy of input variable typecast to desired type
+     Actually, routine saves time by returning original original variable structure
+     with val and type members changed as necessary
      Routine assumes variable and missing_value are same type in memory
      This is currently always true except briefly in ncra (and possibly ncpdq)
      This condition is unsafe and is described more fully in nco_cnv_mss_val_typ() */
@@ -190,12 +192,16 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   if(var_in->val.vp==NULL){
     /* Variable has no data when var_in.val.vp==NULL
        In this case function should only convert missing values 
-       Accomplish this by temporarily setting var_in->sz=0
-       Restore correct value at function end */
+       Accomplish this by temporarily masking off val_in by setting var_in->sz=0
+       Restore correct size at function end
+       fxm: 20050521 Which operators take advantage of this behavior? */
     sz_msk=var_in->sz;
     var_in->sz=0L;
   } /* endif NULL */
 
+  /* Setting output pointer equal to input pointer is confusing
+     Theoretical advantage is that it speeds up routine 
+     Nevertheless, be careful... */
   var_out=var_in;
   
   var_in_typ=var_in->type;
@@ -229,9 +235,10 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     var_in_mss_val.vp=nco_free(var_in_mss_val.vp);
   } /* end if */
 
-  /* Typecast pointer to values before access */
-  (void)cast_void_nctype(var_in->type,&val_in);
-  (void)cast_void_nctype(var_out->type,&val_out);
+  /* Typecast pointer to values before access 
+     There is only one var structure so use shortcut, de-referenced types */
+  (void)cast_void_nctype(var_in_typ,&val_in);
+  (void)cast_void_nctype(var_out_typ,&val_out);
   
   /* Copy and typecast entire array of values, using C implicit coercion */
   switch(var_out_typ){
@@ -300,8 +307,8 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   } /* end switch */
   
   /* Un-typecast pointer to values after access */
-  (void)cast_nctype_void(var_in->type,&val_in);
-  (void)cast_nctype_void(var_out->type,&val_out);
+  (void)cast_nctype_void(var_in_typ,&val_in);
+  (void)cast_nctype_void(var_out_typ,&val_out);
 
   /* If var_in.vp empty then unmask sz */
   if(val_in.vp==NULL) var_out->sz=sz_msk;
