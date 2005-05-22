@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.171 2005-05-18 21:33:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.172 2005-05-22 02:56:30 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.171 2005-05-18 21:33:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.171 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.172 2005-05-22 02:56:30 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.172 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -908,13 +908,6 @@ main(int argc,char **argv)
       
     } /* end (OpenMP parallel for) loop over idx */
     
-    /* Free weights and masks */
-    if(wgt != NULL) wgt=nco_var_free(wgt);
-    if(wgt_avg != NULL) wgt_avg=nco_var_free(wgt_avg);
-    if(wgt_out != NULL) wgt_out=nco_var_free(wgt_out);
-    if(msk != NULL) msk=nco_var_free(msk);
-    if(msk_out != NULL) msk_out=nco_var_free(msk_out);
-    
     if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
     
     /* Close input netCDF file */
@@ -929,10 +922,15 @@ main(int argc,char **argv)
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
   /* ncwa-unique memory */
-  if(wgt_nm != NULL) wgt_nm=(char *)nco_free(wgt_nm);
-  if(msk_nm != NULL) msk_nm=(char *)nco_free(msk_nm);
-  if(msk_sng != NULL) msk_sng=(char *)nco_free(msk_sng);
   if(dmn_avg_nbr > 0) dmn_avg=(dmn_sct **)nco_free(dmn_avg);
+  if(msk != NULL) msk=nco_var_free(msk);
+  if(msk_nm != NULL) msk_nm=(char *)nco_free(msk_nm);
+  if(msk_out != NULL) msk_out=nco_var_free(msk_out);
+  if(msk_sng != NULL) msk_sng=(char *)nco_free(msk_sng);
+  if(wgt != NULL) wgt=nco_var_free(wgt);
+  if(wgt_avg != NULL) wgt_avg=nco_var_free(wgt_avg);
+  if(wgt_nm != NULL) wgt_nm=(char *)nco_free(wgt_nm);
+  if(wgt_out != NULL) wgt_out=nco_var_free(wgt_out);
 
   /* NCO-generic clean-up */
   /* Free individual strings */
