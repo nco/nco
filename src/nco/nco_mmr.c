@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.21 2005-05-23 15:39:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.22 2005-05-23 15:40:27 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -307,7 +307,7 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
 
   /* fxm: CEWI, not necessary */
   rcd+=rusage_who;
-  /* fxm: use input argument instead or RUSAGE_SELF */
+  /* fxm: use input argument rusage_who instead or RUSAGE_SELF */
   rcd=getrusage(RUSAGE_SELF,&usg);
   
 #ifdef AIX
