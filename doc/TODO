@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.506 2005-05-23 06:48:33 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.507 2005-05-23 07:10:55 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -303,7 +303,10 @@ nco527. Purify ncatted memory:
 # Commas at end of following aed_sct appear never to be free()'d, are responsible for three unfree'd bytes
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,att_var,d,, -p ${HOME}/nco/data-l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 nco528. ncks: convert lmt_lst to lmt_all_sct **
-nco529. 
+nco529. ncrename: double free() bug in 
+        ncks -O -v mss_val_fst ~/nco/data/in.nc ~/foo.nc;
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncrename -O -v mss_val_fst,mss_val ~/foo.nc > ~/foo 2>&1
+
 
 MPI:
 Archive MPI tests which appear to run correctly 
