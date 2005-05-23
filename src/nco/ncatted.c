@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.77 2005-04-25 01:33:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.78 2005-05-23 01:04:37 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.77 2005-04-25 01:33:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.77 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.78 2005-05-23 01:04:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.78 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:RrZ-:";
   
   extern char *optarg;
@@ -324,6 +324,7 @@ main(int argc,char **argv)
   
   /* Catenate the timestamped command line to the "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);
+  cmd_ln=(char *)nco_free(cmd_ln);
   
   /* Take file out of define mode */
   (void)nco_enddef(nc_id);
@@ -333,6 +334,26 @@ main(int argc,char **argv)
   
   /* Remove local copy of file */
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
+
+  /* ncatted-unique memory */
+  for(idx=0;idx<nbr_aed;idx++) aed_arg[idx]=(char *)nco_free(aed_arg[idx]);
+  for(idx=0;idx<nbr_aed;idx++){
+    if(aed_lst[idx].att_nm != NULL) aed_lst[idx].att_nm=(char *)nco_free(aed_lst[idx].att_nm);
+    if(aed_lst[idx].var_nm != NULL) aed_lst[idx].var_nm=(char *)nco_free(aed_lst[idx].var_nm);
+    aed_lst[idx].val.vp=(void *)nco_free(aed_lst[idx].val.vp);
+  } /* end for */
+  if(nbr_aed > 0) aed_lst=(aed_sct *)nco_free(aed_lst);
+
+  /* NCO-generic clean-up */
+  /* Free individual strings */
+  if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
+  if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
+  if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
+  if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+  /* Free lists of strings */
+  if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+  if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+  if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.50 2005-04-19 04:37:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.51 2005-05-23 01:04:37 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -526,7 +526,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 
   for(idx=0;idx<nbr_aed;idx++){
 
-    /* Attribute edit specifications are processed as normal text list */
+    /* Process attribute edit specifications as normal text list */
     arg_lst=lst_prs_2D(aed_arg[idx],dlm_sng,&arg_nbr);
 
     /* Check syntax */
@@ -555,8 +555,8 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
     aed_lst[idx].id=-1;
 
     /* Fill in structure */
-    aed_lst[idx].att_nm=arg_lst[0];
-    aed_lst[idx].var_nm=arg_lst[1];
+    if(arg_lst[0] != NULL) aed_lst[idx].att_nm=strdup(arg_lst[0]);
+    if(arg_lst[1] != NULL) aed_lst[idx].var_nm=strdup(arg_lst[1]);
 
     /* fxm: Change these switches to string comparisons someday */
     /* Set mode of current aed structure */
@@ -626,7 +626,10 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       
       /* Set value of current aed structure */
       if(aed_lst[idx].type == NC_CHAR){
-	aed_lst[idx].val.cp=(unsigned char *)arg_lst[idx_att_val_arg];
+	/* fxm: TODO nco527 purify ncatted double-free() problem
+	   fxm: Why unsigned char? */
+	/* aed_lst[idx].val.cp=(unsigned char *)arg_lst[idx_att_val_arg];*/
+	aed_lst[idx].val.cp=(unsigned char *)strdup(arg_lst[idx_att_val_arg]);
       }else{
 	double *val_arg_dbl=NULL_CEWI;
 	
@@ -635,7 +638,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	val_arg_dbl=(double *)nco_malloc(aed_lst[idx].sz*sizeof(double));
 	aed_lst[idx].val.vp=(void *)nco_malloc(aed_lst[idx].sz*nco_typ_lng(aed_lst[idx].type));
 	
-	for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) val_arg_dbl[lmn]=strtod(arg_lst[idx_att_val_arg+lmn],(char **)NULL); 
+	for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) val_arg_dbl[lmn]=strtod(arg_lst[idx_att_val_arg+lmn],(char **)NULL);
 	
 	/* Copy and typecast entire array of values, using implicit coercion rules of C */
 	/* 20011001: Use explicit coercion rules to quiet C++ compiler warnings */
@@ -656,6 +659,10 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       (void)cast_nctype_void(aed_lst[idx].type,&aed_lst[idx].val);
       
     } /* end if mode is not delete */
+
+    /* fxm: TODO nco527 purify ncatted requires this */
+    arg_lst=nco_sng_lst_free(arg_lst,arg_nbr);
+
   } /* end loop over aed */
   
   if(dbg_lvl_get() == 5){
