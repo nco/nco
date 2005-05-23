@@ -1,5 +1,7 @@
 2005-05-22  Charlie Zender  <zender@uci.edu>
 
+	* Nearly purified ncatted memory
+
 	* Purified ncrename memory
 
 	* Began ncks memory cleanup

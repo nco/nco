@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.51 2005-05-23 01:04:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.52 2005-05-23 01:08:43 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -626,9 +626,6 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       
       /* Set value of current aed structure */
       if(aed_lst[idx].type == NC_CHAR){
-	/* fxm: TODO nco527 purify ncatted double-free() problem
-	   fxm: Why unsigned char? */
-	/* aed_lst[idx].val.cp=(unsigned char *)arg_lst[idx_att_val_arg];*/
 	aed_lst[idx].val.cp=(unsigned char *)strdup(arg_lst[idx_att_val_arg]);
       }else{
 	double *val_arg_dbl=NULL_CEWI;
@@ -660,7 +657,6 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       
     } /* end if mode is not delete */
 
-    /* fxm: TODO nco527 purify ncatted requires this */
     arg_lst=nco_sng_lst_free(arg_lst,arg_nbr);
 
   } /* end loop over aed */
