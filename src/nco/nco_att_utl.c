@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.52 2005-05-23 01:08:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.53 2005-05-23 06:48:42 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -606,6 +606,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	lmn_nbr=arg_nbr-idx_att_val_arg; 
 	if(dbg_lvl_get() >= 2) (void)fprintf(stdout,"%s: WARNING NC_CHAR (string) attribute is embedded with %li literal element delimiters (\"%s\"), re-assembling...\n",prg_nm_get(),lmn_nbr-1L,dlm_sng);
 	/* Rewrite list, splicing in original delimiter string */
+	/* fxm: TODO nco527 this is probably where ncatted memory is lost */
 	arg_lst[idx_att_val_arg]=sng_lst_cat(arg_lst+idx_att_val_arg,lmn_nbr,dlm_sng);
 	/* Keep bookkeeping straight, just in case */
 	arg_nbr=idx_att_val_arg+1L;
@@ -618,7 +619,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       /* Set size of current aed structure */
       if(aed_lst[idx].type == NC_CHAR){
 	/* Include NUL-terminator in string length */
-	aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 0 : strlen(arg_lst[idx_att_val_arg])+1;
+	aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 0L : strlen(arg_lst[idx_att_val_arg])+1L;
       }else{
 	/* Number of elements of numeric types is determined by number of delimiters */
 	aed_lst[idx].sz=arg_nbr-idx_att_val_arg;

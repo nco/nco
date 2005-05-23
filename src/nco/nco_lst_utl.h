@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.24 2005-04-13 06:13:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.25 2005-05-23 06:48:42 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -117,10 +117,10 @@ nco_sng_lst_free /* [fnc] Free memory associated with string list */
  const int sng_nbr); /* I [nbr] Number of strings in list */
 
 char * /* O [sng] Concatenated string formed by joining all input strings */
-sng_lst_cat /* [fnc] Join list of strings together into one string */
-(X_CST_PTR_CST_PTR_Y(char,sng_lst), /* I [sng] List of pointers to strings to join together */
- const long lmn_nbr, /* O [nbr] Number of strings in list */
- const char * const dlm_sng); /* I [sng] delimiter string to use as glue */
+sng_lst_cat /* [fnc] Join string list together into one string, delete originals */
+(char ** const sng_lst, /* I/O [sng] List of pointers to strings to join together */
+ const long lmn_nbr, /* I [nbr] Number of strings in list */
+ const char * const dlm_sng); /* I [sng] Delimiter string to use as glue */
 
 #ifdef __cplusplus
 } /* end extern "C" */

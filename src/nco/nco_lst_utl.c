@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.32 2005-04-13 06:13:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.33 2005-05-23 06:48:42 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -465,12 +465,13 @@ nco_nm_id_lst_free /* [fnc] Free memory associated with name-ID structure list *
 } /* end nco_nm_id_lst_free() */
 
 char * /* O [sng] Concatenated string formed by joining all input strings */
-sng_lst_cat /* [fnc] Join list of strings together into one string */
-(X_CST_PTR_CST_PTR_Y(char,sng_lst), /* I [sng] List of pointers to strings to join together */
- const long lmn_nbr, /* O [nbr] Number of strings in list */
- const char * const dlm_sng) /* I [sng] delimiter string to use as glue */
+sng_lst_cat /* [fnc] Join string list together into one string, delete originals */
+(char ** const sng_lst, /* I/O [sng] List of pointers to strings to join together */
+ const long lmn_nbr, /* I [nbr] Number of strings in list */
+ const char * const dlm_sng) /* I [sng] Delimiter string to use as glue */
 {
   /* Purpose: Join list of strings together into one string
+     Delete original string list
      Elements of input list should all be NUL-terminated strings
      Elements with value NUL are interpreted as strings of zero length */
 
@@ -480,7 +481,10 @@ sng_lst_cat /* [fnc] Join list of strings together into one string */
   long lmn;
   long sng_sz=0L; /* NB: sng_sz get incremented */
 
-  if(lmn_nbr == 1L) return sng_lst[0];
+  if(lmn_nbr == 1L){
+    sng=(char *)strdup(sng_lst[0]);
+    goto cln_and_xit;
+  } /* lmn_nbr != 1L */
 
   /* Delimiter must be NUL-terminated (a string) so strlen() works */
   if(dlm_sng == NULL){
@@ -492,13 +496,19 @@ sng_lst_cat /* [fnc] Join list of strings together into one string */
   /* List elements must be NUL-terminated (strings) so strlen() works */
   for(lmn=0L;lmn<lmn_nbr;lmn++) sng_sz+=(sng_lst[lmn] == NULL) ? 0L : strlen(sng_lst[lmn])+dlm_lng;
   /* Add one for NUL byte */
-  sng=(char *)nco_malloc(sizeof(char)*(sng_sz+1));
+  sng=(char *)nco_malloc(sizeof(char)*(sng_sz+1L));
   /* NUL-terminate string for safety */
   sng[0]='\0';
   for(lmn=0L;lmn<lmn_nbr;lmn++){
     /* List elements must be NUL-terminated (strings) so strcat() works */
     sng=(sng_lst[lmn] == NULL) ? sng : strcat(sng,sng_lst[lmn]);
     if(lmn != lmn_nbr-1L && dlm_lng != 0) sng=strcat(sng,dlm_sng);
+  } /* end loop over lmn */
+
+  /* Jump here if only one string */
+ cln_and_xit:
+  for(lmn=0L;lmn<lmn_nbr;lmn++){
+    if(sng_lst[lmn] != NULL) sng_lst[lmn]=(char *)nco_free(sng_lst[lmn]);
   } /* end loop over lmn */
 
   return sng;

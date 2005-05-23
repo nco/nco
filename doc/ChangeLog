@@ -1,5 +1,7 @@
 2005-05-22  Charlie Zender  <zender@uci.edu>
 
+	* Add memory cleanup to sng_lst_cat()
+
 	* Nearly purified ncatted memory
 
 	* Purified ncrename memory
