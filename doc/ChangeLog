@@ -1,5 +1,7 @@
 2005-05-23  Charlie Zender  <zender@uci.edu>
 
+	* Touch parameter rusage_who for CEWI in nco_mmr_rusage_prn()
+
 	* Fix double-free() problem in ncrename
 
 2005-05-22  Charlie Zender  <zender@uci.edu>
