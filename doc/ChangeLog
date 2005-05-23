@@ -1,5 +1,7 @@
 2005-05-22  Charlie Zender  <zender@uci.edu>
 
+	* Purified ncrename memory
+
 	* Began ncks memory cleanup
 
 	* Fix union type-casting in nco_var_cnf_typ()

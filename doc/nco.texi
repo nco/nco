@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.298 2005-05-20 00:01:55 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.299 2005-05-23 00:11:57 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7654,10 +7654,11 @@ ncrename -d lon,longitude -v lon,longitude in.nc
 @cindex @code{_FillValue}
 @cindex @code{missing_value}
 Create netCDF @file{out.nc} identical to @file{in.nc} except the
-attribute @code{_FillValue} is changed to @code{missing_value}
-which possess it), the attribute @code{units} is renamed to
-@code{CGS_units} (but only in those variables which possess it)
- and the global attribute @code{Zaire} is renamed to @code{Congo}:  
+attribute @code{_FillValue} is changed to @code{missing_value}, 
+the attribute @code{units} is changed to @code{CGS_units} (but only in
+those variables which possess it), the attribute @code{hieght} is
+changed to @code{height} in the variable @code{tpt}, and in the
+variable @code{prs_sfc}, if it exists.
 @example
 ncrename -a _FillValue,missing_value -a .units,CGS_units \
 -a tpt@@hieght,height -a prs_sfc@@.hieght,height in.nc out.nc 

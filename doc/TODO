@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.501 2005-05-22 22:19:54 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.502 2005-05-23 00:11:57 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -300,8 +300,8 @@ nco526. Purify ncrename memory:
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncrename -O -D 3 -d lon,new_lon -v scalar_var,new_scalar_var -a long_name,new_long_name -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 nco527. Purify ncatted memory: 
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,,c,f,74 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
-nco528. 
-
+nco528. ncks: convert lmt_lst to lmt_all_sct **
+nco529. 
 
 MPI:
 Archive MPI tests which appear to run correctly 
