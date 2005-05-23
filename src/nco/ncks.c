@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.128 2005-05-22 22:19:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.129 2005-05-23 00:12:53 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.128 2005-05-22 22:19:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.128 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.129 2005-05-23 00:12:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.129 $";
   const char * const opt_sht_lst="aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   extern char *optarg;
@@ -140,8 +140,8 @@ main(int argc,char **argv)
     
   lmt_sct **lmt;
 
-  lmt_all_sct *lmt_lst; /* Container for lmt */
-  lmt_all_sct *lmt_crr; /* Current limit structure */
+  lmt_all_sct *lmt_all_lst; /* Container for lmt structure */
+  lmt_all_sct *lmt_all_crr; /* Current lmt_all structure */
 
   long dmn_sz;
 
@@ -381,44 +381,44 @@ main(int argc,char **argv)
     
   /* We now have final list of variables to extract. Phew. */
   
-  /* Place all dimensions in lmt_lst */
-  lmt_lst=(lmt_all_sct *)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct));
+  /* Place all dimensions in lmt_all_lst */
+  lmt_all_lst=(lmt_all_sct *)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct));
 
   for(idx=0;idx<nbr_dmn_fl;idx++){
     (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
-    lmt_crr=lmt_lst+idx;
-    lmt_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
-    lmt_crr->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-    lmt_crr->dmn_nm=strdup(dmn_nm);
-    lmt_crr->lmt_dmn_nbr=1;
-    lmt_crr->dmn_sz_org=dmn_sz;
-    lmt_crr->WRP=False;
-    lmt_crr->BASIC_DMN=True;
+    lmt_all_crr=lmt_all_lst+idx;
+    lmt_all_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
+    lmt_all_crr->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+    lmt_all_crr->dmn_nm=strdup(dmn_nm);
+    lmt_all_crr->lmt_dmn_nbr=1;
+    lmt_all_crr->dmn_sz_org=dmn_sz;
+    lmt_all_crr->WRP=False;
+    lmt_all_crr->BASIC_DMN=True;
     /* Initialize lmt struct */
-    lmt_crr->lmt_dmn[0]->nm=lmt_crr->dmn_nm;
-    lmt_crr->lmt_dmn[0]->id=idx;
-    lmt_crr->lmt_dmn[0]->is_rec_dmn=(idx == rec_dmn_id ? True : False);
-    lmt_crr->lmt_dmn[0]->srt=0L;
-    lmt_crr->lmt_dmn[0]->end=dmn_sz-1L;
-    lmt_crr->lmt_dmn[0]->cnt=dmn_sz;
-    lmt_crr->lmt_dmn[0]->srd=1L;
+    lmt_all_crr->lmt_dmn[0]->nm=lmt_all_crr->dmn_nm;
+    lmt_all_crr->lmt_dmn[0]->id=idx;
+    lmt_all_crr->lmt_dmn[0]->is_rec_dmn=(idx == rec_dmn_id ? True : False);
+    lmt_all_crr->lmt_dmn[0]->srt=0L;
+    lmt_all_crr->lmt_dmn[0]->end=dmn_sz-1L;
+    lmt_all_crr->lmt_dmn[0]->cnt=dmn_sz;
+    lmt_all_crr->lmt_dmn[0]->srd=1L;
     /* Flag to show that struct has been inialized. fxm: A HACK */
-    lmt_crr->lmt_dmn[0]->lmt_typ=-1;
+    lmt_all_crr->lmt_dmn[0]->lmt_typ=-1;
   } /* end loop over dimensions */
 
-  /* Add user specified limits lmt_lst */
+  /* Add user specified limits lmt_all_lst */
   for(idx=0;idx<lmt_nbr;idx++){
     /* Find coordinate/dimension values associated with user-specified limits */
     (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
     for(jdx=0;jdx<nbr_dmn_fl;jdx++) {
-      if(!strcmp(lmt[idx]->nm,lmt_lst[jdx].dmn_nm)){   
-	lmt_crr=lmt_lst+jdx;
-	lmt_crr->BASIC_DMN=False;
-	if(lmt_crr->lmt_dmn[0]->lmt_typ == -1) { 
-	  lmt_crr->lmt_dmn[0]=lmt[idx]; 
+      if(!strcmp(lmt[idx]->nm,lmt_all_lst[jdx].dmn_nm)){   
+	lmt_all_crr=lmt_all_lst+jdx;
+	lmt_all_crr->BASIC_DMN=False;
+	if(lmt_all_crr->lmt_dmn[0]->lmt_typ == -1) { 
+	  lmt_all_crr->lmt_dmn[0]=lmt[idx]; 
 	}else{ 
-	  lmt_crr->lmt_dmn=(lmt_sct **)nco_realloc(lmt_crr->lmt_dmn,((lmt_crr->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
-	  lmt_crr->lmt_dmn[(lmt_crr->lmt_dmn_nbr)++]=lmt[idx];
+	  lmt_all_crr->lmt_dmn=(lmt_sct **)nco_realloc(lmt_all_crr->lmt_dmn,((lmt_all_crr->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
+	  lmt_all_crr->lmt_dmn[(lmt_all_crr->lmt_dmn_nbr)++]=lmt[idx];
 	} /* endif */
 	break;
       } /* end if */
@@ -432,13 +432,13 @@ main(int argc,char **argv)
   
   /* Split up wrapped limits */
   for(idx=0;idx<nbr_dmn_fl;idx++)
-    if(lmt_lst[idx].BASIC_DMN == False)
-      (void)nco_msa_wrp_splt(lmt_lst+idx);
+    if(lmt_all_lst[idx].BASIC_DMN == False)
+      (void)nco_msa_wrp_splt(lmt_all_lst+idx);
   
   /* Find and store final size of each dimension */
   for(idx=0;idx<nbr_dmn_fl;idx++){
-    (void)nco_msa_clc_cnt(lmt_lst+idx);
-    /* if(lmt_lst[idx].lmt_dmn_nbr > 1) (void)nco_msa_prn_idx(&lmt_lst[idx]); */
+    (void)nco_msa_clc_cnt(lmt_all_lst+idx);
+    /* if(lmt_all_lst[idx].lmt_dmn_nbr > 1) (void)nco_msa_prn_idx(&lmt_all_lst[idx]); */
   } /* end loop over dimensions */
   
   if(PRN_VRB || (fl_out == NULL && !PRN_VAR_DATA_TGL && !PRN_VAR_METADATA_TGL && !PRN_GLB_METADATA_TGL)){
@@ -482,7 +482,7 @@ main(int argc,char **argv)
       int var_out_id;
 
       /* Define variable in output file */
-      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm);
+      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm);
       /* Copy variable's attributes */
       (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,True);
     } /* end loop over idx */
@@ -503,7 +503,7 @@ main(int argc,char **argv)
       /* Old hyperslab routines */
       /* if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm); */
       /* Multi-slab routines */
-      if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm);
+      if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm);
     } /* end loop over idx */
 
     /* [fnc] Close unformatted binary data file */
@@ -542,7 +542,7 @@ main(int argc,char **argv)
     } */
 
   if(PRN_VAR_DATA){
-    for(idx=0;idx<nbr_xtr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL);
+    for(idx=0;idx<nbr_xtr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL);
   } /* end if PRN_VAR_DATA */
   /* Extraction list no longer needed */
   xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
@@ -555,6 +555,9 @@ main(int argc,char **argv)
 
   /* ncks-unique memory */
   if(fl_bnr != NULL) fl_bnr=(char *)nco_free(fl_bnr);
+  if(lmt_all_lst != NULL) lmt_all_lst=(lmt_all_sct *)nco_free(lmt_all_lst);
+  /* fxm: convert lmt_lst to lmt_all_sct ** so can use this routine to free() */
+  /*  if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_lst,nbr_dmn_fl);*/
 
   /* NCO-generic clean-up */
   /* Free individual strings */

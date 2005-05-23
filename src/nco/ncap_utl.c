@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.118 2005-05-07 07:10:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.119 2005-05-23 00:12:53 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -163,7 +163,6 @@ ncap_var_write
   const char mss_val_sng[]="missing_value"; /* [sng] Unidata standard string for missing value */
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
-  int fll_md_old; /* [enm] Old fill mode */
   int rcd; /* [rcd] Return code */
   int var_out_id;
 
@@ -171,45 +170,39 @@ ncap_var_write
   var_sct *var_dpl;
   bool DEF_VAR; /* True if var has been defined in O in initial scan */
   
-  
 #ifdef NCO_RUSAGE_DBG
   long maxrss; /* [B] Maximum resident set size */
 #endif /* !NCO_RUSAGE_DBG */
 
-  /* if inital scan duplicate then save in  list, free val.vp */
+  /* If inital scan duplicate then save in list, free val.vp */
   if(prs_arg->ntl_scn){
-    var->val.vp = nco_free(var->val.vp);
+    var->val.vp=nco_free(var->val.vp);
     var_dpl=nco_var_dpl(var);
     assert(var_dpl->nm);
-    if( ncap_var_lookup(var_dpl,((prs_sct*)prs_arg), True) != NULL)
+    if(ncap_var_lookup(var_dpl,((prs_sct*)prs_arg),True) != NULL)
       (void)fprintf(stdout,"%s: variable %s defined\n",prg_nm_get(),var->nm);
     (void)nco_var_free(var);
     return True;
-  }
+  } /* endif ntl_scn */
 
-
-  /* check if var is in table AND has been defined */  
-  /* note var & ptr_var are different */
-
-  ptr_var= ncap_var_lookup(var,((prs_sct*)prs_arg), False);
-
-  DEF_VAR = ( ptr_var && ptr_var->sz > 0  ? True : False );
-
+  /* Check if var is in table AND has been defined
+     NB: var and ptr_var are different */
+  ptr_var=ncap_var_lookup(var,((prs_sct*)prs_arg),False);
+  DEF_VAR=(ptr_var && ptr_var->sz > 0 ? True : False);
 
   rcd=nco_inq_varid_flg(((prs_sct *)prs_arg)->out_id,var->nm,&var_out_id);
 
-  if(!DEF_VAR) { 
-  /* Check to see if variable has already been defined & written */
+  if(!DEF_VAR){ 
+    /* Check to see if variable has already been defined and written */
     if(rcd == NC_NOERR){
     (void)sprintf(ncap_err_sng,"Warning: Variable %s has aleady been saved in %s",var->nm,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(ncap_err_sng);
     var = nco_var_free(var);
     return False;
     }
-  }
-
+  } /* DEF_VAR */
   
-  if(DEF_VAR && (var->pck_ram || var->has_mss_val) ) {
+  if(DEF_VAR && (var->pck_ram || var->has_mss_val)){
        /* Put file in define mode to allow metadata writing */
        (void)nco_redef(prs_arg->out_id);
 
@@ -224,10 +217,9 @@ ncap_var_write
 	
         /* Take output file out of define mode */
        (void)nco_enddef(prs_arg->out_id);
-      
-  }
+  } /* endif DEF_VAR... */
 
-  if(!DEF_VAR) {
+  if(!DEF_VAR){
       /* Put file in define mode to allow metadata writing */
       (void)nco_redef(prs_arg->out_id);
   
@@ -260,10 +252,10 @@ ncap_var_write
   maxrss=nco_mmr_rusage_prn((int)0);
 #endif /* !NCO_RUSAGE_DBG */
 
-  /* finally free varible */
-  var = nco_var_free(var);
+  /* Free varible */
+  var=nco_var_free(var);
 
-  /* use sz to keep track of defined & written variables */
+  /* Use sz to keep track of defined and written variables */
   if(DEF_VAR) ptr_var->sz=-1;
   
   return rcd;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.21 2005-04-17 06:09:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.22 2005-05-23 00:12:53 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -61,6 +61,15 @@ lmt_sct ** /* O [sct] Pointer to free'd structure list */
 nco_lmt_lst_free /* [fnc] Free memory associated with limit structure list */
 (lmt_sct **lmt_lst, /* I/O [sct] Limit structure list to free */
  const int lmt_nbr); /* I [nbr] Number of limit structures in list */
+
+lmt_all_sct * /* O [sct] Pointer to free'd structure */
+nco_lmt_all_free /* [fnc] Free memory associated with lmt_all structure */
+(lmt_all_sct *lmt_all); /* I/O [sct] Limit structure to free */
+
+lmt_all_sct ** /* O [sct] Pointer to free'd structure list */
+nco_lmt_all_lst_free /* [fnc] Free memory associated with lmt_all structure list */
+(lmt_all_sct **lmt_all_lst, /* I/O [sct] Limit structure list to free */
+ const int lmt_all_nbr); /* I [nbr] Number of limit structures in list */
 
 lmt_sct ** /* O [sct] Structure list with user-specified strings for min and max limits */
 nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng elements */

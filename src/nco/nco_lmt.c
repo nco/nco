@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.36 2005-04-17 06:09:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.37 2005-05-23 00:12:53 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -14,7 +14,6 @@ nco_lmt_free /* [fnc] Free memory associated with limit structure */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Free all memory associated with dynamically allocated limit structure */
-  /* fxm: limit structures may contain some double-free'd memory */
   lmt->nm=(char *)nco_free(lmt->nm);
   lmt->min_sng=(char *)nco_free(lmt->min_sng);
   lmt->max_sng=(char *)nco_free(lmt->max_sng);
@@ -41,6 +40,38 @@ nco_lmt_lst_free /* [fnc] Free memory associated with limit structure list */
 
   return lmt_lst;
 } /* end nco_lmt_lst_free() */
+
+lmt_all_sct * /* O [sct] Pointer to free'd structure */
+nco_lmt_all_free /* [fnc] Free memory associated with limit structure */
+(lmt_all_sct *lmt_all) /* I/O [sct] Limit structure to free */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Free all memory associated with dynamically allocated lmt_all structure */
+  lmt_all->dmn_nm=(char *)nco_free(lmt_all->dmn_nm);
+  lmt_all->lmt_dmn[0]=(lmt_sct *)nco_free(lmt_all->lmt_dmn[0]);
+  lmt_all->lmt_dmn=(lmt_sct **)nco_free(lmt_all->lmt_dmn);
+
+  lmt_all=(lmt_all_sct *)nco_free(lmt_all);
+
+  return lmt_all;
+} /* end nco_lmt_all_free() */
+
+lmt_all_sct ** /* O [sct] Pointer to free'd structure list */
+nco_lmt_all_lst_free /* [fnc] Free memory associated with lmt_all structure list */
+(lmt_all_sct **lmt_all_lst, /* I/O [sct] Limit structure list to free */
+ const int lmt_all_nbr) /* I [nbr] Number of limit structures in list */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Free all memory associated with dynamically allocated limit structure list */
+  int idx;
+
+  for(idx=0;idx<lmt_all_nbr;idx++) lmt_all_lst[idx]=nco_lmt_all_free(lmt_all_lst[idx]);
+
+  /* Free structure pointer last */
+  lmt_all_lst=(lmt_all_sct **)nco_free(lmt_all_lst);
+
+  return lmt_all_lst;
+} /* end nco_lmt_all_lst_free() */
 
 lmt_sct * /* [sct] Limit structure for dimension */
 nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */
