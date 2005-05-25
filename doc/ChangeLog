@@ -1,3 +1,10 @@
+2005-05-24  Charlie Zender  <zender@uci.edu>
+
+	* Changed from ctime() to re-entrant ctime_r() with ncatted
+	Does not help reduce unfree()'d system memory according to
+	valgrind 3.0 development branch. Does not hurt, either.
+	How portable is ctime_r()? SUS, yes, but POSIX?
+	
 2005-05-23  Charlie Zender  <zender@uci.edu>
 
 	* Touch parameter rusage_who for CEWI in nco_mmr_rusage_prn()
