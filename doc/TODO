@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.507 2005-05-23 07:10:55 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.508 2005-05-25 01:26:37 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -326,6 +326,7 @@ valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgri
 4. ncwa
 valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -D 3 -O -C -a lat,lon,time -w gw -m gw -v PS -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 callgrind ncwa -D 3 -O -C -w gw -m gw -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+kcachegrind ncwa &
 5. ncra
 valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncra -O -C -D 3 -d lon,1 -n 3,4,1 -v one_dmn_rec_var_sng -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc foo.nc > ~/foo 2>&1
 6. ncflint
