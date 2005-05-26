@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.26 2005-04-14 06:21:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.27 2005-05-26 16:13:31 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -458,7 +458,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
  const bool NCO_BNR_WRT, /* I [flg] Write binary file */
  char *var_nm, /* I [sng] Variable name */
- lmt_all_sct * const lmt_lst, /* I multi-hyperslab limits */
+ lmt_all_sct * const * lmt_lst, /* I multi-hyperslab limits */
  int nbr_dmn_fl) /* I [nbr] Number of multi-hyperslab limits */
 {
   /* Purpose: Copy variable data from input netCDF file to output netCDF file 
@@ -528,8 +528,8 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   /* Get dimension sizes from input file */
   for(idx=0;idx<nbr_dim;idx++){
     for(jdx=0;jdx<nbr_dmn_fl;jdx++){
-      if(dmn_id[idx] == lmt_lst[jdx].lmt_dmn[0]->id){
-	lmt_mult[idx]=&lmt_lst[jdx];
+      if(dmn_id[idx] == lmt_lst[jdx]->lmt_dmn[0]->id){
+	lmt_mult[idx]=lmt_lst[jdx];
         break;
       } /* end if */
     } /* end loop over jdx */
@@ -580,7 +580,7 @@ void
 nco_msa_prn_var_val   /* [fnc] Print variable data */
 (const int in_id, /* I [id] netCDF input file ID */
  const char * const var_nm, /* I [sng] Variable name */
- lmt_all_sct * const lmt_lst, /* I [sct] Dimension limits */
+ lmt_all_sct * const *lmt_lst, /* I [sct] Dimension limits */
  const int lmt_nbr, /* I [nbr] number of dimensions with user-specified limits */
  char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
  const bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
@@ -645,8 +645,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* Get dimension sizes from input file */
   for(idx=0;idx< var.nbr_dim;idx++)
     for(jdx=0;jdx< lmt_nbr;jdx++){
-      if(dmn_id[idx] == lmt_lst[jdx].lmt_dmn[0]->id){
-	lmt_mult[idx]=&lmt_lst[jdx];
+      if(dmn_id[idx] == lmt_lst[jdx]->lmt_dmn[0]->id){
+	lmt_mult[idx]=lmt_lst[jdx];
         break;
       } /* end if */
     } /* end loop over jdx */
