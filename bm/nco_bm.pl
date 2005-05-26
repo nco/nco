@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.18 2005-05-22 02:20:45 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.19 2005-05-26 23:23:52 mangalam Exp $
 
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
@@ -14,6 +14,7 @@ use Getopt::Long; #qw(:config no_ignore_case bundling);
 use strict;
 
 # Declare vars for strict
+
 use vars qw($dsc_lng_max $dot_nbr $dot_nbr_min $dot_fmt $dot_sng $dsc_fmt $tst_fmt
 	    $spc_fmt $spc_nbr $spc_nbr_min $spc_sng $opr_lng_max $opr_fmt $tst_id_sng $tst_idx
  $dbg_lvl $wnt_log $usg $opr_nm @tst_cmd $dsc_sng $nsr_xpc
@@ -23,7 +24,6 @@ use vars qw($dsc_lng_max $dot_nbr $dot_nbr_min $dot_fmt $dot_sng $dsc_fmt $tst_f
  @bm_cmd_ary @ifls $localhostname $notbodi $prfxd $prefix $thr_nbr $cmd_ln $arg_nbr
  $omp_flg $dodods $fl_pth
 );
-
 
 my @fl_cr8_dat;  # holds the strings for the fl_cr8() routine 
 my @fl_tmg; # holds the timing data for the fl_cr8() routines.
@@ -56,7 +56,6 @@ $ARGV = @ARGV;
 if ($ARGV == 0) {usage(); die "We need some more info to be a useful member of society\n"; }
 
 # set up options and switches
-
 &GetOptions(
 	"debug=i"      => \$dbg_lvl,    # debug level
 	"log"          => \$wnt_log,    # set if want output logged
@@ -1397,54 +1396,3 @@ sub fl_cr8 {
     print "==========================\nEnd of $fl_cr8_dat[$idx][2] section\n==========================\n\n\n";
 } # end sub fl_cr8
 
-# this next bit is for later  too many niggly bits to play with right now.
-## try to get a sense of system load with 'top -b -n1' 
-## probably only works with Linux tho...
-#my $uname = `uname -a`;
-#print "uname = $uname \n";
-#my %sys_stats;
-#my $top_stats;
-#if ($uname =~ "inux"){
-#	$tmp = `top -b -n1 |head -7`;
-#	print $tmp;
-#	my $lincnt;
-#	my @top_lines;
-#	$lincnt = @top_lines = split("\n",$tmp);
-#	print "lincnt = $lincnt\n";
-#	for (my $i=0; $i<$lincnt; $i++){
-#		print "working on: $top_lines[$i]\n";
-#		if ($top_lines[$i] =~ /\S+/) { # if it matches nonwhitespace
-#			
-#		}
-#	}
-#	
-#}
-
-
-#	if (0) { # to fold this out of the way
-#bench1("ipcc_dly_T85.nc");
-# benchmark 2 - ncra time-averaging 2^5 (i.e., one month) files 
-#   so have to create 32 symlinks to the files and then perform the benchmark
-#bench2();
-# benchmark 3 - ncea averaging 2^5 files 
-#bench3();
-# benchmark 4 - ncbo differencing two files 
-#bench4();
-# benchmark 5 - ncks multi-slabbing many separate regions (re-create Martin Schultz 
-#  scenario in TODO nco258) - temporarily omit
-#bench5();
-# benchmark 6 - ncap long algebraic operation 
-#bench6();
-# benchmark 7 - ncpdq packing the file 
-#bench7();
-# benchmark 8 - ncpdq dimension-order reversal the file 
-#bench8();
-#	}
-
-# TODO 
-# - add thr_nbr passthru to Makefile so can call this script with the right number of threads
-# - the protocol for calling bms is differnt than calling regressions (appending different files
-#   won't work, cuz they're not done by individual nco_tst
-# - add routine to actually COPY the files to defeat caching effect of calling the same file repeatedly
-# 
-  

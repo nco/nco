@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.114 2005-04-19 21:19:42 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.115 2005-05-26 23:23:52 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -454,12 +454,12 @@ case ${host} in
 # -qmaxmem=num Limit memory used by space intensive optimizations to <num> kilobytes
 # -qspill=size Size in B of register allocation spill area, mie needs > 1040 B
 # -qlanglvl=extc99: Include orthogonal extensions to C99 standard
-	    xlc* ) CFLAGS="${CFLAGS} -qlanglvl=extc99 -qmaxmem=8192 -qspill=2048 -q64" ; ;;
+	    xlc* ) CFLAGS="${CFLAGS} -O3 -g -qstrict -Q -qsmp=omp -qlanglvl=extc99 -qmaxmem=8192 -qspill=2048 -q64" ; ;;
 #    CPPFLAGS="${CPPFLAGS} -qlanglvl=extended" 
 	esac
 	case ${CXX} in 
 # -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
-	    xlC* ) LDFLAGS="${LDFLAGS} -bh:5" ;  ; ;;
+	    xlC* ) LDFLAGS="${LDFLAGS} -bh:5" ;  
 	esac
 esac
 # End Default OS-specific Compiler Arguments
