@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.31 2005-04-28 01:03:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.32 2005-05-26 16:16:47 hmb Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -54,7 +54,7 @@ extern "C" {
    const int out_id, /* I [id] netCDF output file ID */
    const int rec_dmn_id, /* I [id] Input file record dimension ID  */
    const char * const var_nm, /* I [sng] Input variable name */
-   const lmt_all_sct * const lmt_lst, /* I [sct] Hyperslab limits */
+   const lmt_all_sct **lmt_lst, /* I [sct] Hyperslab limits */
    const int lmt_lst_nbr); /* I [nbr] Number of hyperslab limits */
 
   void
