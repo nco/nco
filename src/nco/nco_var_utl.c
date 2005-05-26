@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.76 2005-05-20 00:01:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.77 2005-05-26 16:15:34 hmb Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -88,7 +88,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
  const int out_id, /* I [id] netCDF output file ID */
  const int rec_dmn_id, /* I [id] Input file record dimension ID  */
  const char * const var_nm, /* I [sng] Input variable name */
- const lmt_all_sct * const lmt_lst, /* I [sct] Hyperslab limits */
+ const lmt_all_sct **lmt_lst, /* I [sct] Hyperslab limits */
  const int lmt_lst_nbr) /* I [nbr] Number of hyperslab limits */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
@@ -144,8 +144,8 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
 
 	/* Decide whether this dimension has any user-specified limits */
 	for(lmt_idx=0;lmt_idx<lmt_lst_nbr;lmt_idx++){
-	  if(lmt_lst[lmt_idx].lmt_dmn[0]->id == dmn_in_id[idx]){
-	    dmn_sz=lmt_lst[lmt_idx].dmn_cnt;
+	  if(lmt_lst[lmt_idx]->lmt_dmn[0]->id == dmn_in_id[idx]){
+	    dmn_sz=lmt_lst[lmt_idx]->dmn_cnt;
 	    break;
 	  } /* end if */
 	} /* end loop over lmt_idx */
