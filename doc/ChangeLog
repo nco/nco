@@ -1,3 +1,6 @@
+2005-05-26 Henry Butowsky <henryb@ntlworld>
+	* Changed in ncks.c lmt_all_lst from a 1D to a 2D variable
+	   also changed associated functions in nco_msa.[ch]
 2005-05-24  Charlie Zender  <zender@uci.edu>
 
 	* Changed from ctime() to re-entrant ctime_r() with ncatted
