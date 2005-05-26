@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.129 2005-05-23 00:12:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.130 2005-05-26 16:10:17 hmb Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.129 2005-05-23 00:12:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.129 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.130 2005-05-26 16:10:17 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.130 $";
   const char * const opt_sht_lst="aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   extern char *optarg;
@@ -140,7 +140,7 @@ main(int argc,char **argv)
     
   lmt_sct **lmt;
 
-  lmt_all_sct *lmt_all_lst; /* Container for lmt structure */
+  lmt_all_sct **lmt_all_lst; /* Container for *lmt structure */
   lmt_all_sct *lmt_all_crr; /* Current lmt_all structure */
 
   long dmn_sz;
@@ -381,12 +381,13 @@ main(int argc,char **argv)
     
   /* We now have final list of variables to extract. Phew. */
   
-  /* Place all dimensions in lmt_all_lst */
-  lmt_all_lst=(lmt_all_sct *)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct));
+  /* Place all dimensions in lmt_all_lst. A 2D variable */
+  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct*));
 
   for(idx=0;idx<nbr_dmn_fl;idx++){
     (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
-    lmt_all_crr=lmt_all_lst+idx;
+    lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
+    lmt_all_crr=lmt_all_lst[idx];
     lmt_all_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
     lmt_all_crr->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
     lmt_all_crr->dmn_nm=strdup(dmn_nm);
@@ -411,8 +412,8 @@ main(int argc,char **argv)
     /* Find coordinate/dimension values associated with user-specified limits */
     (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
     for(jdx=0;jdx<nbr_dmn_fl;jdx++) {
-      if(!strcmp(lmt[idx]->nm,lmt_all_lst[jdx].dmn_nm)){   
-	lmt_all_crr=lmt_all_lst+jdx;
+      if(!strcmp(lmt[idx]->nm,lmt_all_lst[jdx]->dmn_nm)){   
+	lmt_all_crr=lmt_all_lst[jdx];
 	lmt_all_crr->BASIC_DMN=False;
 	if(lmt_all_crr->lmt_dmn[0]->lmt_typ == -1) { 
 	  lmt_all_crr->lmt_dmn[0]=lmt[idx]; 
@@ -432,13 +433,12 @@ main(int argc,char **argv)
   
   /* Split up wrapped limits */
   for(idx=0;idx<nbr_dmn_fl;idx++)
-    if(lmt_all_lst[idx].BASIC_DMN == False)
-      (void)nco_msa_wrp_splt(lmt_all_lst+idx);
+    if(lmt_all_lst[idx]->BASIC_DMN == False)
+      (void)nco_msa_wrp_splt(lmt_all_lst[idx]);
   
   /* Find and store final size of each dimension */
   for(idx=0;idx<nbr_dmn_fl;idx++){
-    (void)nco_msa_clc_cnt(lmt_all_lst+idx);
-    /* if(lmt_all_lst[idx].lmt_dmn_nbr > 1) (void)nco_msa_prn_idx(&lmt_all_lst[idx]); */
+    (void)nco_msa_clc_cnt(lmt_all_lst[idx]);
   } /* end loop over dimensions */
   
   if(PRN_VRB || (fl_out == NULL && !PRN_VAR_DATA_TGL && !PRN_VAR_METADATA_TGL && !PRN_GLB_METADATA_TGL)){
@@ -555,9 +555,9 @@ main(int argc,char **argv)
 
   /* ncks-unique memory */
   if(fl_bnr != NULL) fl_bnr=(char *)nco_free(fl_bnr);
-  if(lmt_all_lst != NULL) lmt_all_lst=(lmt_all_sct *)nco_free(lmt_all_lst);
-  /* fxm: convert lmt_lst to lmt_all_sct ** so can use this routine to free() */
-  /*  if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_lst,nbr_dmn_fl);*/
+  /*if(lmt_all_lst != NULL) lmt_all_lst=(lmt_all_sct *)nco_free(lmt_all_lst);*/
+  /*  fxm: convert lmt_lst to lmt_all_sct ** so can use this routine to free() */
+  //if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
 
   /* NCO-generic clean-up */
   /* Free individual strings */
