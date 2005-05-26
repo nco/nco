@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.130 2005-05-26 16:10:17 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.131 2005-05-26 17:56:11 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.130 2005-05-26 16:10:17 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.130 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.131 2005-05-26 17:56:11 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.131 $";
   const char * const opt_sht_lst="aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   extern char *optarg;
@@ -381,9 +381,9 @@ main(int argc,char **argv)
     
   /* We now have final list of variables to extract. Phew. */
   
-  /* Place all dimensions in lmt_all_lst. A 2D variable */
-  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct*));
-
+  /* fxm: subroutineize this code block */
+  /* Place all dimensions in lmt_all_lst */
+  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
   for(idx=0;idx<nbr_dmn_fl;idx++){
     (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
     lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
@@ -396,17 +396,22 @@ main(int argc,char **argv)
     lmt_all_crr->WRP=False;
     lmt_all_crr->BASIC_DMN=True;
     /* Initialize lmt struct */
-    lmt_all_crr->lmt_dmn[0]->nm=lmt_all_crr->dmn_nm;
+    /* fxm: Initialization of lmt structure should be common to nco_lmt_prs() */
+    lmt_all_crr->lmt_dmn[0]->nm=strdup(lmt_all_crr->dmn_nm);
     lmt_all_crr->lmt_dmn[0]->id=idx;
     lmt_all_crr->lmt_dmn[0]->is_rec_dmn=(idx == rec_dmn_id ? True : False);
     lmt_all_crr->lmt_dmn[0]->srt=0L;
     lmt_all_crr->lmt_dmn[0]->end=dmn_sz-1L;
     lmt_all_crr->lmt_dmn[0]->cnt=dmn_sz;
     lmt_all_crr->lmt_dmn[0]->srd=1L;
-    /* Flag to show that struct has been inialized. fxm: A HACK */
+    lmt_all_crr->lmt_dmn[0]->min_sng=NULL;
+    lmt_all_crr->lmt_dmn[0]->max_sng=NULL;
+    lmt_all_crr->lmt_dmn[0]->srd_sng=NULL;
+    /* Flag to show that struct has been iniatalized. fxm: A HACK */
     lmt_all_crr->lmt_dmn[0]->lmt_typ=-1;
   } /* end loop over dimensions */
 
+  /* subroutineize this code block */
   /* Add user specified limits lmt_all_lst */
   for(idx=0;idx<lmt_nbr;idx++){
     /* Find coordinate/dimension values associated with user-specified limits */
@@ -476,7 +481,7 @@ main(int argc,char **argv)
     
     /* Catenate timestamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-  cmd_ln=(char *)nco_free(cmd_ln);
+    cmd_ln=(char *)nco_free(cmd_ln);
     
     for(idx=0;idx<nbr_xtr;idx++){
       int var_out_id;
@@ -556,8 +561,8 @@ main(int argc,char **argv)
   /* ncks-unique memory */
   if(fl_bnr != NULL) fl_bnr=(char *)nco_free(fl_bnr);
   /*if(lmt_all_lst != NULL) lmt_all_lst=(lmt_all_sct *)nco_free(lmt_all_lst);*/
-  /*  fxm: convert lmt_lst to lmt_all_sct ** so can use this routine to free() */
-  //if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
+  /* fxm: convert lmt_lst to lmt_all_sct ** so can use this routine to free() */
+  if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
 
   /* NCO-generic clean-up */
   /* Free individual strings */

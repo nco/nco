@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.77 2005-05-26 16:15:34 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.78 2005-05-26 17:56:12 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -88,8 +88,8 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
  const int out_id, /* I [id] netCDF output file ID */
  const int rec_dmn_id, /* I [id] Input file record dimension ID  */
  const char * const var_nm, /* I [sng] Input variable name */
- const lmt_all_sct **lmt_lst, /* I [sct] Hyperslab limits */
- const int lmt_lst_nbr) /* I [nbr] Number of hyperslab limits */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
+ const int lmt_all_lst_nbr) /* I [nbr] Number of hyperslab limits */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
      This routine truncates dimensions in variable definition in output file according to user-specified limits.
@@ -140,18 +140,18 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
     /* If dimension has not been defined, copy it */
     if(rcd_lcl != NC_NOERR){
       if(dmn_in_id[idx] != rec_dmn_id){
-	int lmt_idx;
+	int lmt_all_idx;
 
 	/* Decide whether this dimension has any user-specified limits */
-	for(lmt_idx=0;lmt_idx<lmt_lst_nbr;lmt_idx++){
-	  if(lmt_lst[lmt_idx]->lmt_dmn[0]->id == dmn_in_id[idx]){
-	    dmn_sz=lmt_lst[lmt_idx]->dmn_cnt;
+	for(lmt_all_idx=0;lmt_all_idx<lmt_all_lst_nbr;lmt_all_idx++){
+	  if(lmt_all_lst[lmt_all_idx]->lmt_dmn[0]->id == dmn_in_id[idx]){
+	    dmn_sz=lmt_all_lst[lmt_all_idx]->dmn_cnt;
 	    break;
 	  } /* end if */
-	} /* end loop over lmt_idx */
-	(void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx );
+	} /* end loop over lmt_all_idx */
+	(void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx);
       }else{
-	(void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx );
+	(void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx);
       } /* end else */
     } /* end if */
   } /* end loop over dim */

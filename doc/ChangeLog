@@ -1,6 +1,16 @@
+2005-05-26  Charlie Zender  <zender@uci.edu>
+
+	* More fully initialize lmt_all_crr->lmt_dmn[0] to enable
+	subsequent free()ing with nco_lmt_free()
+
+	* Tidy up nco_cpy_var_dfn_lmt() prototype and use lmt_all
+	rather than lmt to designate lmt_all rather than lmt structures
+
 2005-05-26 Henry Butowsky <henryb@ntlworld>
+
 	* Changed in ncks.c lmt_all_lst from a 1D to a 2D variable
-	   also changed associated functions in nco_msa.[ch]
+	also changed associated functions in nco_msa.[ch]
+
 2005-05-24  Charlie Zender  <zender@uci.edu>
 
 	* Changed from ctime() to re-entrant ctime_r() with ncatted
