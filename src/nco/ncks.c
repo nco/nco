@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.132 2005-05-26 22:21:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.133 2005-05-29 14:03:13 hmb Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.132 2005-05-26 22:21:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.132 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.133 2005-05-29 14:03:13 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.133 $";
   const char * const opt_sht_lst="aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   extern char *optarg;
@@ -139,6 +139,7 @@ main(int argc,char **argv)
   int var_lst_in_nbr=0;
     
   lmt_sct **lmt;
+  lmt_sct **lmt_rgr; /* hold regular limits */
 
   lmt_all_sct **lmt_all_lst; /* Container for *lmt structure */
   lmt_all_sct *lmt_all_crr; /* Current lmt_all structure */
@@ -384,31 +385,38 @@ main(int argc,char **argv)
   /* fxm: subroutineize this code block */
   /* Place all dimensions in lmt_all_lst */
   lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
+
+  /* Place  for unlimited dims (regular dims)*/
+  lmt_rgr = (lmt_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_sct*));
+
   for(idx=0;idx<nbr_dmn_fl;idx++){
     (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
     lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
     lmt_all_crr=lmt_all_lst[idx];
     lmt_all_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
-    lmt_all_crr->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
     lmt_all_crr->dmn_nm=strdup(dmn_nm);
     lmt_all_crr->lmt_dmn_nbr=1;
     lmt_all_crr->dmn_sz_org=dmn_sz;
     lmt_all_crr->WRP=False;
     lmt_all_crr->BASIC_DMN=True;
-    /* Initialize lmt struct */
-    /* fxm: Initialization of lmt structure should be common to nco_lmt_prs() */
-    lmt_all_crr->lmt_dmn[0]->nm=strdup(lmt_all_crr->dmn_nm);
-    lmt_all_crr->lmt_dmn[0]->id=idx;
-    lmt_all_crr->lmt_dmn[0]->is_rec_dmn=(idx == rec_dmn_id ? True : False);
-    lmt_all_crr->lmt_dmn[0]->srt=0L;
-    lmt_all_crr->lmt_dmn[0]->end=dmn_sz-1L;
-    lmt_all_crr->lmt_dmn[0]->cnt=dmn_sz;
-    lmt_all_crr->lmt_dmn[0]->srd=1L;
-    lmt_all_crr->lmt_dmn[0]->min_sng=NULL;
-    lmt_all_crr->lmt_dmn[0]->max_sng=NULL;
-    lmt_all_crr->lmt_dmn[0]->srd_sng=NULL;
-    /* Flag to show that struct has been iniatalized. fxm: A HACK */
-    lmt_all_crr->lmt_dmn[0]->lmt_typ=-1;
+
+    /* Initialize lmt_rgr struct */
+    lmt_rgr[idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+    lmt_rgr[idx]->nm=strdup(lmt_all_crr->dmn_nm);
+    lmt_rgr[idx]->id=idx;
+    lmt_rgr[idx]->is_rec_dmn=(idx == rec_dmn_id ? True : False);
+    lmt_rgr[idx]->srt=0L;
+    lmt_rgr[idx]->end=dmn_sz-1L;
+    lmt_rgr[idx]->cnt=dmn_sz;
+    lmt_rgr[idx]->srd=1L;
+    lmt_rgr[idx]->min_sng=NULL;
+    lmt_rgr[idx]->max_sng=NULL;
+    lmt_rgr[idx]->srd_sng=NULL;
+    /* A hack so we know struct has been initialized */
+    lmt_rgr[idx]->lmt_typ=-1;
+  
+    lmt_all_crr->lmt_dmn[0]=lmt_rgr[idx];
+
   } /* end loop over dimensions */
 
   /* subroutineize this code block */
@@ -560,8 +568,9 @@ main(int argc,char **argv)
 
   /* ncks-unique memory */
   if(fl_bnr != NULL) fl_bnr=(char *)nco_free(fl_bnr);
-  /* fxm: fxm TODO nco525 */
+
   if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
+  if(nbr_dmn_fl > 0) lmt_rgr=nco_lmt_lst_free(lmt_rgr,nbr_dmn_fl);
   if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
 
   /* NCO-generic clean-up */
