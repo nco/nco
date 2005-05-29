@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.38 2005-05-26 17:56:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.39 2005-05-29 14:05:10 hmb Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -48,8 +48,8 @@ nco_lmt_all_free /* [fnc] Free memory associated with limit structure */
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Free all memory associated with dynamically allocated lmt_all structure */
   lmt_all->dmn_nm=(char *)nco_free(lmt_all->dmn_nm);
-  /* fxm: lmt_dmn[0] is not free()able here */
-  /* lmt_all->lmt_dmn[0]=(lmt_sct *)nco_lmt_free(lmt_all->lmt_dmn[0]);*/
+  /* fxm: lmt_dmn[0] is free'd else where with call to nco_lmt_lst_free */
+
   lmt_all->lmt_dmn=(lmt_sct **)nco_free(lmt_all->lmt_dmn);
 
   lmt_all=(lmt_all_sct *)nco_free(lmt_all);
