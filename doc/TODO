@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.511 2005-05-26 17:58:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.512 2005-05-30 03:50:30 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -287,15 +287,13 @@ nco523. Threaded ncwa fails on ESMF, OpenMP:
         ncwa -t 1 -D 5 -O -C ~/nco/data/in.nc ~/foo.nc # Works
         ncwa -t 2 -D 5 -O -C ~/nco/data/in.nc ~/foo.nc # Fails
         ncwa -t 2 -D 4 -O -C -v '^rec+.*' ~/nco/data/in.nc ~/foo.nc # Fails
-# Breaks with any two one dimensional variables so long as at least one is NC_INT, neither needs missing_values (phew, ruling that out is helpful)
+# Breaks with any two one dimensional variables so long as at least one is NC_INT, neither needs missing_values (phew, ruling out missing values is helpful)
         ncwa -t 2 -D 4 -O -C -v date,one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc # Fails
         ncwa -t 2 -D 4 -O -C -v one_dmn_int_val_one,one_dmn_int_val_two ~/nco/data/in.nc ~/foo.nc # Fails
 nco524. DODS/OPeNDAP memory leak
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncrcat -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l /tmp/data in.nc in.nc foo.nc > ~/foo 2>&1
 	ncrcat -O -C -l /tmp -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
 	ncrcat -O -C -l /tmp -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
-nco525. Purify ncks memory: de-allocate lmt_all_sct's
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncks -O -C -d lon,1 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 nco527. Purify ncatted memory: 
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,,c,f,74 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncatted -D 5 -O -a char_att,att_var,a,c,"and appended Sentence three,with,lots,of,commas" -a short_att,att_var,c,s,37,38,39 -a float_att,att_var,d,,, -a long_att,att_var,o,l,37 -a new_att,att_var,o,d,73,74,75 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
@@ -303,8 +301,12 @@ nco527. Purify ncatted memory:
 # Commas at end of following aed_sct appear never to be free()'d, are responsible for three unfree'd bytes
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,att_var,d,,, -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 nco530. change all ctime() to ctime_r() like in ncatted?
-nco531. ncks: free'ing lmt list and lmt_all list separately causes double-free()s, untangle them
-nco532. 
+nco532. Purify ncap memory:
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncap -O -S ${HOME}/nco/data/ncap.in -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+nco533. ncap bug: var_ycc[idx]->undefined is uninitiasized for some idx
+==14858== 
+==14858== Conditional jump or move depends on uninitialised value(s)
+==14858==    at 0x804B29F: main (ncap.c:564)
 
 MPI:
 Archive MPI tests which appear to run correctly 
@@ -331,7 +333,7 @@ valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgri
 6. ncflint
 valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncflint -O -C -d lon,1 -p ${HOME}/nco/data -l /tmp in.nc in.nc ~/foo.nc > ~/foo 2>&1
 7. ncks
-valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncks -O -C -d lon,1 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncks -O -C -d lat,1,1 -d lev,2,2 -d lon,0,3 -d lon,1,3 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 8. ncrename
 valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncrename -O -D 3 -d lon,new_lon -v scalar_var,new_scalar_var -a long_name,new_long_name -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 

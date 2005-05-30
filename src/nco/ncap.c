@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.161 2005-05-04 12:25:16 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.162 2005-05-30 03:50:32 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -72,9 +72,11 @@
 /* Global variables */
 size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap_lex.l) */
 size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap_lex.l) */
-char **ncap_fl_spt_glb; /* [fl] Script file */
+char **ncap_fl_spt_glb=NULL; /* [fl] Script file */
 
-void glb_init_free(bool action); 
+void 
+glb_init_free /* [fnc] Initialize and free global variables (line numbers and include stuff) */
+(bool action); /* I [flg] Initialize */
 
 int 
 main(int argc,char **argv)
@@ -118,8 +120,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.161 2005-05-04 12:25:16 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.161 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.162 2005-05-30 03:50:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.162 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -490,7 +492,6 @@ main(int argc,char **argv)
   nbr_var_ycc=1;
   var_ycc[0]=(var_sct*)NULL;
   */  
-
   
   /* Set arguments for  script execution */
   prs_arg.fl_in=fl_in; /* [sng] Input data file */
@@ -511,74 +512,67 @@ main(int argc,char **argv)
   prs_arg.nbr_var=&nbr_var_ycc; /* [nbr] number in above list */
   prs_arg.nco_op_typ=nco_op_nil; /* [enm] Operation type */
 
-  
-
   /* Do two parses. 1st parse define vars in output file 
      2nd parse initialize vars */
-  for(jdx=0; jdx < 2 ; jdx++){
-
-    prs_arg.ntl_scn = (jdx==0 ? True: False);
+  for(jdx=0;jdx<2;jdx++){
+    
+    prs_arg.ntl_scn=(jdx==0 ? True : False);
+    
+    if(fl_spt_usr == NULL){
+      /* No script file specified, look for command-line scripts */
+      if(nbr_spt == 0){
+	(void)fprintf(stderr,"%s: ERROR no script file or command line scripts specified\n",prg_nm_get());
+	(void)fprintf(stderr,"%s: HINT Use, e.g., -s \"foo=bar\"\n",prg_nm_get());
+	nco_exit(EXIT_FAILURE);
+      } /* end if */
       
+      /* Print all command-line scripts */
+      if(dbg_lvl_get() > 0){
+	for(idx=0;idx<nbr_spt;idx++) (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
+      } /* endif debug */
+      
+      /* Parse command line scripts */
+      fl_spt_usr=(char *)strdup("Command-line script");
+      yy_scan_string(spt_arg_cat);
+      
+    }else{ /* ...endif command-line scripts, begin script file... */
+      /* Open script file for reading */
+      if((yyin=fopen(fl_spt_usr,"r")) == NULL){
+	(void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt_usr);
+	nco_exit(EXIT_FAILURE);
+      } /* end if */
+    } /* end else script file */
     
-if(fl_spt_usr == NULL){
-    /* No script file specified, look for command-line scripts */
-    if(nbr_spt == 0){
-      (void)fprintf(stderr,"%s: ERROR no script file or command line scripts specified\n",prg_nm_get());
-      (void)fprintf(stderr,"%s: HINT Use, e.g., -s \"foo=bar\"\n",prg_nm_get());
-      nco_exit(EXIT_FAILURE);
-    } /* end if */
+    /* Initialize global variables */
+    (void)glb_init_free(True); 
+    ncap_fl_spt_glb[ncap_ncl_dpt_crr]=fl_spt_usr;
     
-    /* Print all command-line scripts */
-    if(dbg_lvl_get() > 0){
-      for(idx=0;idx<nbr_spt;idx++) (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
-    } /* endif debug */
+    /* Invoke parser */
+    rcd=yyparse((void *)&prs_arg);
     
-    /* Parse command line scripts */
-    fl_spt_usr=(char *)strdup("Command-line script");
-    yy_scan_string(spt_arg_cat);
+    /* Tidy up */  
+    if(nbr_spt > 0) fl_spt_usr=nco_free(fl_spt_usr);
+    (void)glb_init_free(False); 
     
-  }else{ /* ...endif command-line scripts, begin script file... */
-    /* Open script file for reading */
-    if((yyin=fopen(fl_spt_usr,"r")) == NULL){
-      (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt_usr);
-      nco_exit(EXIT_FAILURE);
-    } /* end if */
-  } /* end else script file */
-  
-  
-
-  /* Initialize line counter etc */
- (void)glb_init_free(True); 
-  ncap_fl_spt_glb[ncap_ncl_dpt_crr]=fl_spt_usr;
-
-  /* Invoke parser */
-  rcd=yyparse((void *)&prs_arg);
-
-  /* tidy up */  
-  if(nbr_spt >0 ) fl_spt_usr=nco_free(fl_spt_usr);
-  (void)glb_init_free(False); 
-
-
-  if(!prs_arg.ntl_scn) continue;
-
-  
-  (void)nco_redef(out_id);
-   for(idx=0 ; idx < nbr_var_ycc ; idx++) {
-   /* define variables in output */
-   /* kill variables classified as undefined */
-     if(var_ycc[idx]->undefined) {
-       var_ycc[idx]=(var_sct*)nco_var_free(var_ycc[idx]);
-       continue;
-     }
+    if(!prs_arg.ntl_scn) continue;
     
-     //printf("defined in output %s\n", var_ycc[idx]->nm);
-     (void)nco_def_var(out_id,var_ycc[idx]->nm,var_ycc[idx]->type,var_ycc[idx]->nbr_dim,var_ycc[idx]->dmn_id,&var_id);
-    var_ycc[idx]->val.vp= nco_free(var_ycc[idx]->val.vp);
-   }
-  (void)nco_enddef(out_id);
-
-
- } /* end for(jdx */
+    (void)nco_redef(out_id);
+    for(idx=0;idx<nbr_var_ycc;idx++){
+      /* Define variables in output */
+      /* Kill variables classified as undefined */
+      if(dbg_lvl > 0) (void)fprintf(stdout,"%s: Checking var_ycc[%d]->undefined for variable %s...\n",prg_nm_get(),idx,var_ycc[idx]->nm);
+      if(var_ycc[idx]->undefined){
+	var_ycc[idx]=nco_var_free(var_ycc[idx]);
+	continue;
+      } /* endif */
+      
+      /* printf("defined in output %s\n", var_ycc[idx]->nm); */
+      (void)nco_def_var(out_id,var_ycc[idx]->nm,var_ycc[idx]->type,var_ycc[idx]->nbr_dim,var_ycc[idx]->dmn_id,&var_id);
+      var_ycc[idx]->val.vp=nco_free(var_ycc[idx]->val.vp);
+    } /* end loop over idx */
+    (void)nco_enddef(out_id);
+    
+  } /* end loop over jdx */
   
   /* Get number of variables in output file */
   rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int*)NULL);
@@ -596,7 +590,7 @@ if(fl_spt_usr == NULL){
     /* Make list of variables of new attributes whose parent variable is only in input file */
     xtr_lst=nco_att_lst_mk(in_id,out_id,att_lst,nbr_att,&nbr_xtr);
   } /* endif */
-
+  
     /* Find dimensions associated with xtr_lst */
     /* Write to O only new dims
        Add apropriate coordinate variables to extraction list 
@@ -759,25 +753,23 @@ if(fl_spt_usr == NULL){
   return EXIT_SUCCESS;
 } /* end main() */
 
-
-
-/* initialize & free Global variables (line numbers and include stuff)*/
 void
-glb_init_free(
-bool action)
+glb_init_free /* [fnc] Initialize and free global variables (line numbers and include stuff) */
+(bool action) /* I [flg] Initialize */
 {
+/* Purpose: Initialize and free global variables (line numbers and include stuff) */
  
   if(action){
     ncap_ncl_dpt_crr=0UL; 
-    ncap_ln_nbr_crr=(size_t *)nco_realloc(ncap_ln_nbr_crr,ncap_ncl_dpt_crr+1UL); 
+    ncap_ln_nbr_crr=(size_t *)nco_realloc(ncap_ln_nbr_crr,(ncap_ncl_dpt_crr+1UL)*sizeof(size_t)); 
     ncap_ln_nbr_crr[ncap_ncl_dpt_crr]=1UL; 
-    ncap_fl_spt_glb=(char **)nco_realloc(ncap_fl_spt_glb,ncap_ncl_dpt_crr+1UL); 
-  }
+    ncap_fl_spt_glb=(char **)nco_realloc(ncap_fl_spt_glb,(ncap_ncl_dpt_crr+1UL)*sizeof(char *)); 
+  } /* endif action */
 
-  if(!action) {
+  if(!action){
     ncap_ncl_dpt_crr=0UL; 
-    ncap_ln_nbr_crr = nco_free(ncap_ln_nbr_crr);
-    ncap_fl_spt_glb=nco_free(ncap_fl_spt_glb);
-  }
+    ncap_ln_nbr_crr=(size_t *)nco_free(ncap_ln_nbr_crr);
+    ncap_fl_spt_glb=(char **)nco_free(ncap_fl_spt_glb);
+  } /* endif not action */
 
-}
+} /* end glb_init_free() */

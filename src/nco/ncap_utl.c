@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.119 2005-05-23 00:12:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.120 2005-05-30 03:50:32 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -60,7 +60,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   */     
      
   var_lkp.nm=strdup(var_nm);
-  var_lst=ncap_var_lookup(&var_lkp,((prs_sct*)prs_arg), False);
+  var_lst=ncap_var_lookup(&var_lkp,((prs_sct*)prs_arg),False);
   (void)nco_free(var_lkp.nm);
 
   if(prs_arg->ntl_scn && var_lst){
@@ -133,7 +133,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
     var->val.vp=(void*)NULL;
   }else{
     (void)nco_var_get(fl_id,var);
-  }
+  } /* end else */
   /* (void)nco_var_free(var_nm);*/
   /* (void)nco_free(var_nm->nm);*/
   /* var=nco_var_upk(var); */
@@ -144,7 +144,7 @@ dmn_sct **
 nco_dmn_out_grow
 (prs_sct * prs_arg)
 {
-  /* Purpose: Expand dimension list by 1 and return pointer to newly created member */
+  /* Purpose: Expand dimension list by one and return pointer to newly created member */
   int *size;
   size=prs_arg->nbr_dmn_out;
   

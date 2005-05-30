@@ -1,5 +1,10 @@
 2005-05-29  Charlie Zender  <zender@uci.edu>
 
+	* Account for typesize in allocation of ncap_ln_nbr_crr and
+	ncap_fl_spt_glb in glb_init_free(). Fixes memory read/write error.
+
+	* Began purifying ncap memory
+
 	* ncks appears to be memory-pure!
 
 	* Leak-proofed nco_msa.c 
