@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.133 2005-05-29 14:03:13 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.134 2005-05-30 01:05:22 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.133 2005-05-29 14:03:13 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.133 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.134 2005-05-30 01:05:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.134 $";
   const char * const opt_sht_lst="aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   extern char *optarg;
@@ -139,9 +139,9 @@ main(int argc,char **argv)
   int var_lst_in_nbr=0;
     
   lmt_sct **lmt;
-  lmt_sct **lmt_rgr; /* hold regular limits */
+  lmt_sct **lmt_rgl; /* Regular limits */
 
-  lmt_all_sct **lmt_all_lst; /* Container for *lmt structure */
+  lmt_all_sct **lmt_all_lst; /* List of *lmt_all structures */
   lmt_all_sct *lmt_all_crr; /* Current lmt_all structure */
 
   long dmn_sz;
@@ -386,13 +386,12 @@ main(int argc,char **argv)
   /* Place all dimensions in lmt_all_lst */
   lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
 
-  /* Place  for unlimited dims (regular dims)*/
-  lmt_rgr = (lmt_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_sct*));
+  /* Unlimited dimensions are stored in */
+  lmt_rgl=(lmt_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_sct*));
 
   for(idx=0;idx<nbr_dmn_fl;idx++){
     (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
-    lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
-    lmt_all_crr=lmt_all_lst[idx];
+    lmt_all_crr=lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
     lmt_all_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
     lmt_all_crr->dmn_nm=strdup(dmn_nm);
     lmt_all_crr->lmt_dmn_nbr=1;
@@ -400,23 +399,22 @@ main(int argc,char **argv)
     lmt_all_crr->WRP=False;
     lmt_all_crr->BASIC_DMN=True;
 
-    /* Initialize lmt_rgr struct */
-    lmt_rgr[idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-    lmt_rgr[idx]->nm=strdup(lmt_all_crr->dmn_nm);
-    lmt_rgr[idx]->id=idx;
-    lmt_rgr[idx]->is_rec_dmn=(idx == rec_dmn_id ? True : False);
-    lmt_rgr[idx]->srt=0L;
-    lmt_rgr[idx]->end=dmn_sz-1L;
-    lmt_rgr[idx]->cnt=dmn_sz;
-    lmt_rgr[idx]->srd=1L;
-    lmt_rgr[idx]->min_sng=NULL;
-    lmt_rgr[idx]->max_sng=NULL;
-    lmt_rgr[idx]->srd_sng=NULL;
+    /* Initialize lmt_rgl struct */
+    lmt_rgl[idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+    lmt_rgl[idx]->nm=strdup(lmt_all_crr->dmn_nm);
+    lmt_rgl[idx]->id=idx;
+    lmt_rgl[idx]->is_rec_dmn=(idx == rec_dmn_id ? True : False);
+    lmt_rgl[idx]->srt=0L;
+    lmt_rgl[idx]->end=dmn_sz-1L;
+    lmt_rgl[idx]->cnt=dmn_sz;
+    lmt_rgl[idx]->srd=1L;
+    lmt_rgl[idx]->min_sng=NULL;
+    lmt_rgl[idx]->max_sng=NULL;
+    lmt_rgl[idx]->srd_sng=NULL;
     /* A hack so we know struct has been initialized */
-    lmt_rgr[idx]->lmt_typ=-1;
+    lmt_rgl[idx]->lmt_typ=-1;
   
-    lmt_all_crr->lmt_dmn[0]=lmt_rgr[idx];
-
+    lmt_all_crr->lmt_dmn[0]=lmt_rgl[idx];
   } /* end loop over dimensions */
 
   /* subroutineize this code block */
@@ -568,10 +566,8 @@ main(int argc,char **argv)
 
   /* ncks-unique memory */
   if(fl_bnr != NULL) fl_bnr=(char *)nco_free(fl_bnr);
-
   if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
-  if(nbr_dmn_fl > 0) lmt_rgr=nco_lmt_lst_free(lmt_rgr,nbr_dmn_fl);
-  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+  if(nbr_dmn_fl > 0) lmt_rgl=nco_lmt_lst_free(lmt_rgl,nbr_dmn_fl);
 
   /* NCO-generic clean-up */
   /* Free individual strings */
@@ -587,6 +583,7 @@ main(int argc,char **argv)
   if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
   /* Free limits */
   for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();

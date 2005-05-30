@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.39 2005-05-29 14:05:10 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.40 2005-05-30 01:05:22 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -48,8 +48,7 @@ nco_lmt_all_free /* [fnc] Free memory associated with limit structure */
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Free all memory associated with dynamically allocated lmt_all structure */
   lmt_all->dmn_nm=(char *)nco_free(lmt_all->dmn_nm);
-  /* fxm: lmt_dmn[0] is free'd else where with call to nco_lmt_lst_free */
-
+  /* NB: lmt_dmn[idx] are free'd by nco_lmt_lst_free() in calling routine */
   lmt_all->lmt_dmn=(lmt_sct **)nco_free(lmt_all->lmt_dmn);
 
   lmt_all=(lmt_all_sct *)nco_free(lmt_all);
@@ -60,7 +59,7 @@ nco_lmt_all_free /* [fnc] Free memory associated with limit structure */
 lmt_all_sct ** /* O [sct] Pointer to free'd structure list */
 nco_lmt_all_lst_free /* [fnc] Free memory associated with lmt_all structure list */
 (lmt_all_sct **lmt_all_lst, /* I/O [sct] Limit structure list to free */
- const int lmt_all_nbr) /* I [nbr] Number of limit structures in list */
+ const int lmt_all_nbr) /* I [nbr] Number of limit strucgtures in list */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Free all memory associated with dynamically allocated limit structure list */

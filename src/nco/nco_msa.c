@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.27 2005-05-26 16:13:31 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.28 2005-05-30 01:05:22 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -114,9 +114,10 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
       } /* end while */
     } /* end else */  
  
-    (void)nco_free(indices);
-    (void)nco_free(cp_sz);
-    for(idx=0;idx<nbr_slb;idx++) (void)nco_free(cp_wrp[idx]);
+    indices=(long *)nco_free(indices);
+    cp_sz=(long *)nco_free(cp_sz);
+    for(idx=0;idx<nbr_slb;idx++) cp_wrp[idx]=(char *)nco_free(cp_wrp[idx]);
+    cp_wrp=(char **)nco_free(cp_wrp);
     
     vara->sz=var_sz;
     return vp;
@@ -142,7 +143,7 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
       mult_srd*=lmt[idx]->srd;
     } /* end loop over idx */
     
-    vp=(void*)nco_malloc(var_sz *nco_typ_lng(vara->type));
+    vp=(void *)nco_malloc(var_sz*nco_typ_lng(vara->type));
     
     /* Check for stride */
     if(mult_srd == 1L)
@@ -150,8 +151,13 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     else
       (void)nco_get_varm(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,vp,vara->type);
     
+    dmn_srt=(long *)nco_free(dmn_srt);
+    dmn_cnt=(long *)nco_free(dmn_cnt);
+    dmn_srd=(long *)nco_free(dmn_srd);
+    
     /* Put size into vara */
     vara->sz=var_sz;
+
     return vp;
   }/* end read_lbl */
   
@@ -190,7 +196,8 @@ nco_msa_clc_idx
      So the stride is ALWAYS 1 */
   int sz_idx;
   int size=lmt_a->lmt_dmn_nbr;
-  bool *min;
+  bool *mnm;
+  bool rcd;
   
   int prv_slb=0;
   int crr_slb=0;
@@ -198,25 +205,27 @@ nco_msa_clc_idx
   long prv_idx=long_CEWI;
   long cnt=0L;
   
-  min=(bool*)nco_malloc(size*sizeof(bool));
+  mnm=(bool *)nco_malloc(size*sizeof(bool));
   
   lmt->srt=-1L;
   lmt->cnt=0L;
   lmt->srd=0L;
   
   while(++cnt){
-    crr_idx=nco_msa_min_idx(indices,min,size);
+    crr_idx=nco_msa_min_idx(indices,mnm,size);
     
     crr_slb=-1;
     for(sz_idx=0;sz_idx<size;sz_idx++)
-      if(min[sz_idx]){crr_slb=sz_idx;break;}
+      if(mnm[sz_idx]){crr_slb=sz_idx;break;}
     
     if(crr_slb == -1){
-      if(lmt->srt == -1) return False;
-      else break;
+      if(lmt->srt == -1){
+	rcd=False;
+	goto cln_and_xit;
+      }else break;
     } /* endif */
     
-    if(min[prv_slb]) crr_slb=prv_slb;
+    if(mnm[prv_slb]) crr_slb=prv_slb;
     
     if(lmt->srt > -1 && crr_slb != prv_slb) break;
     
@@ -239,7 +248,7 @@ nco_msa_clc_idx
     } /* end if */
     
     for(sz_idx=0;sz_idx<size;sz_idx++){
-      if(min[sz_idx]){
+      if(mnm[sz_idx]){
 	indices[sz_idx]+=lmt_a->lmt_dmn[sz_idx]->srd;
 	if(indices[sz_idx] > lmt_a->lmt_dmn[sz_idx]->end) indices[sz_idx]=-1;
       }
@@ -256,26 +265,33 @@ nco_msa_clc_idx
     lmt->end=(lmt->end-lmt_a->lmt_dmn[*slb]->srt)/(lmt_a->lmt_dmn[*slb]->srd);
     lmt->srd=1L;
   } /* end if */
-  return True;
+
+  rcd=True;
+
+  /* Jump here if only one string */
+ cln_and_xit:
+  mnm=(bool *)nco_free(mnm);
+
+  return rcd;
 } /* end nco_msa_clc_idx() */
 
 void
-nco_msa_ram_2_dsk(  /* convert hyperslab indices (in RAM) to hyperlsab indices relative */
-		  long *dmn_sbs_ram,   /* to disk. */
-lmt_all_sct **lmt_mult, 
-int nbr_dim,
-long *dmn_sbs_dsk,
-bool FREE){
-  /*  It doenst really convert RAM indices to disk indices , but given a set 
-      of RAM indices finds the next set of dsk incdices. So it only works if 
-      the indices fed to it are continuous */
+nco_msa_ram_2_dsk /* convert hyperslab indices (in RAM) to hyperlsab indices relative */
+(long *dmn_sbs_ram,   /* to disk. */
+ lmt_all_sct **lmt_mult, 
+ int nbr_dim,
+ long *dmn_sbs_dsk,
+ bool FREE){
+  /*  It does not really convert RAM indices to disk indices, but given a set 
+      of RAM indices finds the next set of dsk incdices. 
+      So it only works if the indices fed to it are continuous */
   int idx;
   int jdx;
   int size;
   static int initialize;
   static long **dmn_indices;
   static long *dmn_sbs_prv;
-  static bool min[100];
+  static bool mnm[100];
 
   if(!initialize){
     dmn_sbs_prv=(long *)nco_malloc(nbr_dim*sizeof(long));
@@ -314,10 +330,10 @@ bool FREE){
      continue;
      }
          
-    dmn_sbs_dsk[idx]=nco_msa_min_idx(dmn_indices[idx],min,size);
+    dmn_sbs_dsk[idx]=nco_msa_min_idx(dmn_indices[idx],mnm,size);
 
     for(jdx=0;jdx<size;jdx++){
-      if(min[jdx]){
+      if(mnm[jdx]){
 	dmn_indices[idx][jdx]+=lmt_mult[idx]->lmt_dmn[jdx]->srd;
 	if(dmn_indices[idx][jdx] > lmt_mult[idx]->lmt_dmn[jdx]->end) dmn_indices[idx][jdx]=-1;
       }
@@ -341,24 +357,26 @@ nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
 {
   int idx;
   long cnt=0;
-  int  size=lmt_lst->lmt_dmn_nbr;
+  int size=lmt_lst->lmt_dmn_nbr;
   long *indices;
-  bool *min;
+  bool *mnm;
   
-  indices=(long *)nco_malloc(size*sizeof(long));
-  min=(bool *)nco_malloc(size*sizeof(bool));
-  
+  /* Degenerate case */
   if(size == 1){
     lmt_lst->dmn_cnt=lmt_lst->lmt_dmn[0]->cnt;
     return;
   } /* end if */
-  /* initialise indices with srt from    */
-  for(idx=0;idx<size;idx++)
+
+  indices=(long *)nco_malloc(size*sizeof(long));
+  mnm=(bool *)nco_malloc(size*sizeof(bool));
+  
+  /* Initialize indices with srt */
+  for(idx=0;idx<size;idx++) 
     indices[idx]=lmt_lst->lmt_dmn[idx]->srt;
   
-  while(nco_msa_min_idx(indices,min,size) != LONG_MAX){
+  while(nco_msa_min_idx(indices,mnm,size) != LONG_MAX){
     for(idx=0;idx<size;idx++){
-      if(min[idx]){
+      if(mnm[idx]){
 	indices[idx]+=lmt_lst->lmt_dmn[idx]->srd;
 	if(indices[idx] > lmt_lst->lmt_dmn[idx]->end) indices[idx]=-1;
       } /* end if */
@@ -366,6 +384,9 @@ nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
     cnt++;
   } /* end while */
   lmt_lst->dmn_cnt=cnt;
+
+  indices=(long *)nco_free(indices);
+  mnm=(bool *)nco_free(mnm);
 
   return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
 } /* end nco_msa_clc_cnt() */
@@ -433,20 +454,20 @@ nco_msa_wrp_splt /* [fnc] Split wrapped dimensions */
   if(size==1 && lmt_lst->lmt_dmn_nbr==2) lmt_lst->WRP=True;
 } /* end nco_msa_wrp_splt() */
 
-long
-nco_msa_min_idx /* [fnc] Find minimum values in current */
-(long *current, /* [idx] Current indices */
- bool *min, /* [flg] Minimum */
- int size) /* [nbr] Size of current and min */
+long /* O [idx] Minimum value */
+nco_msa_min_idx /* [fnc] Find minimum values in current and return minimum value */
+(const long * const current, /* I [idx] Current indices */
+ bool * const mnm, /* O [flg] Minimum */
+ const int size) /* I [nbr] Size of current and mnm */
 {
   int sz_idx;
   long min_val=LONG_MAX;
   
   for(sz_idx=0;sz_idx<size;sz_idx++)
-    if(current[sz_idx] != -1 && current[sz_idx]<min_val) min_val=current[sz_idx];
+    if(current[sz_idx] != -1 && current[sz_idx] < min_val) min_val=current[sz_idx];
   
   for(sz_idx=0;sz_idx<size;sz_idx++)
-    min[sz_idx]=((current[sz_idx] != -1 && current[sz_idx]== min_val) ? True : False);
+    mnm[sz_idx]=((current[sz_idx] != -1 && current[sz_idx] == min_val) ? True : False);
   
   return min_val;
 } /* end nco_msa_min_idx() */

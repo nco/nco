@@ -1,8 +1,17 @@
+2005-05-29  Charlie Zender  <zender@uci.edu>
+
+	* ncks appears to be memory-pure!
+
+	* Leak-proofed nco_msa.c 
+
 2005-05-26  Hary Mangalam <hjm@tacgi.com>
+
 	* finally brought in ncecat in OMP form
+
 	* changed configure.in configure scripts to reflect sync with
 	bld/Makefile flags; (again) noted problem with static/shared and 
 	DODS in configure.eg
+
 	* accepted CZ's peculiar variable naming in bm script.
 
 2005-05-26  Charlie Zender  <zender@uci.edu>
