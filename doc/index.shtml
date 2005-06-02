@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.283 2005-05-20 18:04:36 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.284 2005-06-02 15:37:44 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -603,6 +603,7 @@ Users at NCAR should try the <i>supported</i> executables in
 
 <ul><b>Generic Build Problems:</b>
 
+<!-- http://nco.sf.net#bld_cnf -->
 <a name="bld_cnf"></a>
 <li><i>Using <tt>./configure</tt> build mechanism:</i>
 The file <tt>configure.eg</tt> contains a table which describes the 
@@ -621,24 +622,44 @@ The gory details of the failed (and successful) builds are in the
 <a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>.
 </li>
 
+<!-- http://nco.sf.net#bld_chn -->
 <a name="bld_chn"></a>
 <li><i>Build Chain Version Incompatibilities:</i>
-NCO requires netCDF version &ge;&nbsp;3.5.0 for support of <tt>nc_type NC_NAT</tt> in NCO source code.
-NCO requires GNU <tt>make</tt> version &ge;&nbsp;3.78.1 for support of target-specific variable values in <tt>bld/Makefile</tt>.
+NCO requires GNU <tt>make</tt> version &ge;&nbsp;3.78.1 to support target-specific variable values in <tt>bld/Makefile</tt>.
 NCO often fails to build because <tt>ncap</tt> fails to build.
 Two of the most common reasons that <tt>ncap</tt> fails to build are
 (1)&nbsp;GNU <tt>bison</tt> is out-of-date (upgrade <tt>bison</tt>)
 and (2)&nbsp;<tt>--enable-optimize-*</tt> is specified to 
-<tt>configure</tt> (do not specify it).
+<tt>configure</tt> (do not specify it).<br>
 
-By default, NCO versions &ge;&nbsp;3.0.0 require netCDF versions
+<!-- http://nco.sf.net#bld_c99 -->
+<a name="bld_c99"></a>
+<i>C99-compliance &amp; old compilers:</i>
+NCO versions &ge;&nbsp;2.9.8 requires compilers which
+support the 1999 ISO C-Standard called C99.
+Currently, the only C99 feature NCO takes advantage of is restricted
+pointers. 
+To build NCO versions &ge;&nbsp;2.9.8 without a C99-compliant
+compiler, simply undefine the <tt>restrict</tt> type qualifier 
+before compiling NCO.
+Do this, e.g., with <tt>CPPFLAGS='-Drestrict='</tt>.
+More details on C99 compatibility are in the header file
+<tt>nco/src/nco/nco.h</tt>.<br>
+
+<!-- http://nco.sf.net#bld_netcdf -->
+<a name="bld_netcdf"></a>
+<i>Old netCDF libraries:</i>
+NCO versions &ge;&nbsp;3.0.0 require netCDF versions
 &ge;&nbsp;3.6 to take advantage of the new 64-bit offset file type.  
 To build NCO versions &ge;&nbsp;3.0.0 with netCDF versions
 &lt;&nbsp;3.6, simply define the pre-processor token
 <tt>NC_64BIT_OFFSET</tt> to <tt>0</tt> before compiling NCO.
 Do this, e.g., with <tt>CPPFLAGS='-DNC_64BIT_OFFSET=0'</tt>.
+All modern NCO versions require netCDF versions &ge;&nbsp;3.5.0 to
+support <tt>nc_type NC_NAT</tt> in NCO source code.  
 </li>
 
+<!-- http://nco.sf.net#bld_ncap -->
 <a name="bld_ncap"></a>
 <li><i><tt>ncap</tt> build problems:</i>
 <tt>ncap</tt> requires <tt>flex</tt> to build correctly.
@@ -652,6 +673,7 @@ Please upgrade <tt>bison</tt> to the latest version (e.g., 1.875+)
 before reporting <tt>ncap</tt> build problems.
 </li>
 
+<!-- http://nco.sf.net#bld_DODS -->
 <a name="bld_DODS"></a><a name="bld_OPeNDAP"></a>
 <li><i>Build Problems with DODS/OPeNDAP:</i>
 NCO versions prior to 2.8.5 link with the
@@ -666,6 +688,7 @@ No other version combination is supported.
 </ul>
 
 <ul><b>Platform-Specific Build Problems:</b>
+<!-- http://nco.sf.net#bld_aix -->
 <a name="bld_aix"></a>
 <li><i>AIX build problems:</i>
 NCO versions 2.8.7+ do not build with autotools under AIX when
@@ -677,15 +700,25 @@ by OpenMP directives.
 The workaround is to build with <tt>--disable-shared</tt>.
 </li>
 
+<!-- http://nco.sf.net#bld_irix -->
+<a name="bld_irix"></a>
+<li><i>Irix build problems:</i>
+The most common problem with building on Irix with SGI's
+<tt>cc</tt>/<tt>CC</tt> is that they are not
+<a href="http://nco.sf.net#bld_c99">C99-compliant</a>.
+</li>
+
+<!-- http://nco.sf.net#bld_osx -->
 <a name="bld_osx"></a>
 <li><i>Mac OS&nbsp;X build problems:</i>
 Mac OS&nbsp;X users report success building NCO without patches so
 long as they (1)&nbsp;Install the latest version of <tt>bison</tt>,
-(2)&nbsp;Diable shared libraries and (3)&nbsp;Diable extended regular
+(2)&nbsp;Disable shared libraries and (3)&nbsp;Disable extended regular
 expressions. This is done with 
 <tt>./configure --disable-regex --disable-shared</tt>
 </li>
 
+<!-- http://nco.sf.net#bld_slr -->
 <a name="bld_slr"></a>
 <li><i>Solaris build problems:</i>
 All recent NCO versions build with autotools on Solaris 2.7+.
@@ -694,13 +727,25 @@ The most common problem with building on Solaris with
 Install an up-to-date <tt>bison</tt> (e.g., 1.875+).
 </li>
 
+<!-- http://nco.sf.net#bld_sx -->
 <a name="bld_sx"></a>
-<li><i>NEC SX build problems:</i>
+<li><i>SX build problems:</i>
 NEC&nbsp;SX does not understand the <tt>S_ISLNK</tt> macro, 
 preferring instead the (non-POSIX) <tt>S_IFLNK</tt> macro.
 This macro appears in the file <tt>nco_fl_utl.c</tt>.
 The patch I wrote for this may be broken.
 Will someone with NEC&nbsp;SX please send us a working patch?
+</li>
+
+<!-- http://nco.sf.net#bld_wnd -->
+<a name="bld_wnd"></a>
+<li><i>Windows build problems:</i>
+Building on Microsoft Windows is possible with Cygwin.
+The resulting executables will behave normally on local files,
+but will not have most of NCO's network functionality
+(e.g., <tt>scp</tt>, OPeNDAP).
+See the <a href="http://nco.sf.net/nco.html#wnd">User's Guide</a>
+for more details.
 </li>
 </ul>
 
