@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.120 2005-05-30 03:50:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.121 2005-06-02 14:11:02 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -432,6 +432,9 @@ ncap_var_var_pwr /* [fnc] Empowerment of two variables */
   if(var_1->undefined) var_2->undefined=True;
   if(var_2->undefined) return var_2;
 
+  
+  /* make sure vars are at least float */
+  if(var_1 ->type < NC_FLOAT && var_2->type <NC_FLOAT ) var_1=nco_var_cnf_typ((nc_type)NC_FLOAT,var_1);
   (void)ncap_var_retype(var_1,var_2);
 
   /* Handle initial scan */
