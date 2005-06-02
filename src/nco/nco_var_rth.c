@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.30 2005-03-22 07:53:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.31 2005-06-02 14:09:22 hmb Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -1172,21 +1172,21 @@ nco_var_pwr /* [fnc] Raise first operand to power of second operand */
   switch(type){ 
   case NC_FLOAT:
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.fp[idx]=powf(op1.fp[idx],op2.fp[idx]);
+      for(idx=0;idx<sz;idx++) op2.fp[idx]=powf(op1.fp[idx],op2.fp[idx]);
     }else{
       float mss_val_flt=*mss_val.fp; /* Temporary variable reduces de-referencing */
       for(idx=0;idx<sz;idx++){
-        if((op1.fp[idx] != mss_val_flt) && (op2.fp[idx] != mss_val_flt)) op1.fp[idx]=powf(op1.fp[idx],op2.fp[idx]); else op2.fp[idx]=mss_val_flt;
+        if((op1.fp[idx] != mss_val_flt) && (op2.fp[idx] != mss_val_flt)) op2.fp[idx]=powf(op1.fp[idx],op2.fp[idx]); else op2.fp[idx]=mss_val_flt;
       } /* end for */
     } /* end else */
     break; /* end NC_FLOAT */
   case NC_DOUBLE:
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.dp[idx]=pow(op1.dp[idx],op2.dp[idx]);
+      for(idx=0;idx<sz;idx++) op2.dp[idx]=pow(op1.dp[idx],op2.dp[idx]);
     }else{
       double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces de-referencing */
       for(idx=0;idx<sz;idx++){
-        if((op1.dp[idx] != mss_val_dbl) && (op2.dp[idx] != mss_val_dbl)) op1.dp[idx]=pow(op1.dp[idx],op2.dp[idx]); else op2.dp[idx]=mss_val_dbl;
+        if((op1.dp[idx] != mss_val_dbl) && (op2.dp[idx] != mss_val_dbl)) op2.dp[idx]=pow(op1.dp[idx],op2.dp[idx]); else op2.dp[idx]=mss_val_dbl;
       } /* end for */
     } /* end else */
     break; /* end NC_DOUBLE */
