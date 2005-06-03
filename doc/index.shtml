@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.285 2005-06-03 00:12:14 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.286 2005-06-03 05:45:41 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -304,8 +304,8 @@ Instead, retrieve all recently tagged versions
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
 <li><b>NCO/SDO 3.1.x</b>: (<i>In progress, development branch</i>) MPI versions of all operators, <tt>ncap</tt> control structures (conditionals, loops, etc.)
-<li><b>NCO 3.0.1</b>: (<i>In progress, stable branch</i>) performance benchmarks, threading <tt>ncap</tt>, <tt>ncpdq</tt> and <tt>ncap</tt> packing improve <tt>missing_value</tt> handling, <tt>ncks</tt> printing tweaks, memory cleanup, 
-<li><b>NCO 3.0.0</b>: New <tt>ncks -P</tt> print switch, <tt>ncap</tt> optimizations, <tt>-Z</tt> option supports 64-bit offsets (requires netCDF&nbsp;3.6), NEC&nbsp;SX build improvements, support GCC&nbsp;3.4.X, <tt>nco_put_vara()</tt> overloads in <tt>libnco_c++</tt>
+<li><b>NCO 3.0.1</b>: (<i>In progress, stable branch</i>) performance benchmarks, threading <tt>ncap</tt>, <tt>ncpdq</tt> and <tt>ncap</tt> packing improve <tt>missing_value</tt> handling, <tt>ncks</tt> printing tweaks, memory cleanup, <tt>ncap</tt> <a href="bug_ncap_cmt">exponentiation bugfix</a>
+  <li><b>NCO 3.0.0</b>: New <tt>ncks -P</tt> print switch, <tt>ncap</tt> optimizations, <tt>-Z</tt> option supports 64-bit offsets (requires netCDF&nbsp;3.6), NEC&nbsp;SX build improvements, support GCC&nbsp;3.4.X, <tt>nco_put_vara()</tt> overloads in <tt>libnco_c++</tt>
 <li><b>NCO 2.9.9</b>: <tt>ncpdq</tt> packs/unpacks entire files, <tt>ncbo</tt> is threaded
 <li><b>NCO 2.9.8</b>: <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released, <tt>ncwa --msk_sng</tt> consolidated mask switch, C99 compiler required
 <li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>, write <tt>nco_input_file_list</tt> attributes, add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++, large file support (LFS), write <tt>nco_openmp_thread_number</tt> attribute
@@ -759,6 +759,7 @@ for more details.
 </ul>
 
 <ul><b>Generic Run-time Problems:</b>
+<!-- http://nco.sf.net#bug_idx_hyp -->
 <a name="bug_idx_hyp"></a>
 <li><i>Index-based hyperslab problems:</i>
 NCO versions 2.7.3&mdash;2.8.3 have a nasty bug that cause
@@ -777,9 +778,14 @@ these versions of NCO.
 </ul>
 
 <ul><b>Operator-specific Run-time Problems:</b>
+<!-- http://nco.sf.net#bug_ncap_cmt -->
 <a name="bug_ncap_cmt"></a>
 <li><i>Arithmetic problems with <tt>ncap</tt> division, modulo, and exponentiation:</i>
-<tt>ncap</tt> versions up to 2.9.1 incorrectly handle division,
+<tt>ncap</tt> versions &lt;&nbsp;3.0.1 incorrectly exponentiation 
+of a variable to a variable power (<tt>V^V</tt>).
+We recommend that all <tt>ncap</tt> users upgrade.<br>
+  
+  <tt>ncap</tt> versions up to 2.9.1 incorrectly handle division,
 modulo, and exponentiation operations of the form <tt>S/V</tt>,
 <tt>S%V</tt>, and <tt>S^V</tt> where first operand (<tt>S</tt>) is 
 scalar (i.e., either typed directly in the <tt>ncap</tt> script or 
@@ -797,6 +803,7 @@ affected.
 We recommend that all <tt>ncap</tt> users upgrade.
 </li>
 
+<!-- http://nco.sf.net#bug_ncflint_mss_val -->
 <a name="bug_ncflint_mss_val"></a>
 <li><i>Problems with <tt>ncflint</tt> and <tt>missing_value</tt>s:</i>
 The algorithm <tt>ncflint</tt> used to perform interpolation in
@@ -810,6 +817,7 @@ As of version 2.9.5, <tt>ncflint</tt> always returns
 Possible future implementations are discussed 
 <a href="http://nco.sf.net/nco.html#ncflint">here</a>.
 
+<!-- http://nco.sf.net#bug_mss_val_zro_ncra -->
 <a name="bug_mss_val_zro_ncra"></a>
 <li><i>Problems with <tt>ncra</tt> and <tt>ncea</tt> when <tt>missing_value</tt> = 0.0:</i>
 The algorithm <tt>ncra</tt> and <tt>ncea</tt> used to perform
@@ -837,6 +845,7 @@ The new algorithm compares only the new record to the
 <tt>missing_value</tt>. 
 This fixes both problems and is faster, to boot. 
 
+<!-- http://nco.sf.net#bug_pck_ncwa -->
 <a name="bug_pck_ncwa"></a>
 <li><i>Packing problems with <tt>ncwa</tt>:</i>
 NCO versions ???&mdash;2.9.0 have a bug that causes <tt>ncwa</tt>
@@ -847,6 +856,7 @@ netCDF climate datasets served by OPeNDAP are packed <tt>NC_FLOAT</tt>s.
 Upgrade to&nbsp;2.9.1 if you use <tt>ncwa</tt> on packed data.
 </li>
 
+<!-- http://nco.sf.net#bug_pck -->
 <a name="bug_pck"></a>
 <li><i>Packing problems with <tt>ncap</tt>:</i>
 NCO versions 2.8.4&mdash;2.8.6 have a bug that causes the <tt>ncap</tt>

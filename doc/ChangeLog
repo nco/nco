@@ -1,3 +1,9 @@
+2005-06-02  Charlie Zender  <zender@uci.edu>
+
+	* Henry implemented ncap exponentiation bugfix. 
+	Versions < 3.0.1 incorrectly handle exponentiation of a variable
+	to a variable power (V^V). 
+
 2005-05-29  Charlie Zender  <zender@uci.edu>
 
 	* Account for typesize in allocation of ncap_ln_nbr_crr and

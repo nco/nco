@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.140 2005-06-03 00:12:14 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.141 2005-06-03 05:45:40 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.0.1 are ready. 
 
@@ -19,7 +19,9 @@ ncap users should upgrade.
 
 2. Benchmarks (Harry Mangalam):
 
-3. ncap bugfix
+3. ncap exponentiation bugfix. Versions < 3.0.1 incorrectly
+   handle exponentiation of a variable to a variable power
+   (V^V). We recommend that all ncap users upgrade.
 
 Enjoy,
 Charlie
@@ -28,7 +30,7 @@ Feature changes:
 1. fxm
 
 Bug-fixes:
-1. ncap fxm
+1. ncap exponentiation bugfix
 
 Build changes:
 1. Fix Mac OS X build problem cause by struct rusage
