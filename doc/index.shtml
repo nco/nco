@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.284 2005-06-02 15:37:44 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.285 2005-06-03 00:12:14 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -479,7 +479,7 @@ href="src/nco_3.0.0-1_i386.changes">nco_3.0.0-1_i386.changes</a> (<!--#fsize fil
 <a name="osx"></a>
 <h3><a href="http://www.apple.com/macosx/">Mac&nbsp;OS&nbsp;X/Darwin</a></h3>
 <ul>
-<a href="http://fink.sf.net/pdb/package.php/nco"">Mac&nbsp;OS&nbsp;X/Darwin homepage for NCO</a>.
+<a href="http://fink.sf.net/pdb/package.php/nco">Mac&nbsp;OS&nbsp;X/Darwin homepage for NCO</a>.
 <a href="http://fink.sf.net">Fink packages</a> by Takeshi Enomoto:
 <li><a href="http://fink.sf.net/pdb/package.php/nco">nco-2.9.9-darwin-powerpc.deb</a>: Mac&nbsp;OS&nbsp;X&nbsp;10.3, PowerPC package</li>
 </ul>
@@ -685,6 +685,15 @@ NCO versions 2.8.5+ support automatic building and linking
 for OPeNDAP versions&nbsp;3.4+ and GCC versions&nbsp;3.3+.
 No other version combination is supported.
 </li>
+
+<!-- http://nco.sf.net#bld_nco_c++ -->
+<a name="bld_nco_c++"></a>
+<li><i><tt>libnco_c++</tt> build problems:</i>
+<tt>libnco_c++</tt> requires a good C++ compiler to build correctly.
+Few people need <tt>libnco_c++</tt>, so the workaround is not to build it.
+This is done by configuring with <tt>--disable-nco_cplusplus</tt>.
+</li>
+
 </ul>
 
 <ul><b>Platform-Specific Build Problems:</b>
@@ -697,7 +706,7 @@ The workaround is to not use <tt>--enable-optimize-*</tt>.
 NCO versions 2.9.7+ do not build shared libraries with AIX xlc
 compilers because of silly AIX library dependencies activated
 by OpenMP directives.
-The workaround is to build with <tt>--disable-shared</tt>.
+The workaround is to configure with <tt>--disable-shared</tt>.
 </li>
 
 <!-- http://nco.sf.net#bld_irix -->

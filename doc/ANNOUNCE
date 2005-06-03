@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.139 2005-04-08 23:41:36 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.140 2005-06-03 00:12:14 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.0.1 are ready. 
 
@@ -7,7 +7,8 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 Version 3.0.1 contains mainly build and benchmarking improvements.
 The only user-visible change is one more tweak to the default ncks
-printing behavior. 
+printing behavior. There is an important bug-fix for ncap.
+ncap users should upgrade.
 
 1. ncks printing behavior:
    ncks in.nc : Prints all data and metadata
@@ -18,6 +19,8 @@ printing behavior.
 
 2. Benchmarks (Harry Mangalam):
 
+3. ncap bugfix
+
 Enjoy,
 Charlie
 
@@ -25,7 +28,7 @@ Feature changes:
 1. fxm
 
 Bug-fixes:
-1. fxm
+1. ncap fxm
 
 Build changes:
 1. Fix Mac OS X build problem cause by struct rusage
@@ -34,4 +37,7 @@ Other user-visible changes:
 1. fxm
 
 User-invisible changes:
-1. fxm
+1. All operators except for ncap have been memory-purified
+   This means there are no known memory errors, memory leaks,
+   or unfree()'d memory.
+   
