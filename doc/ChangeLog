@@ -1,6 +1,9 @@
 2005-06-05  Charlie Zender  <zender@uci.edu>
 
-	* Added ncap regression tests for modulo and exponentiation operations
+	* gamma() function appears broken in ncap regression test 07
+
+	* Added ncap regression tests for modulo, exponentiation, sin,
+	cos, atan operations
 
 2005-06-02  Charlie Zender  <zender@uci.edu>
 

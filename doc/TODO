@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.514 2005-06-05 20:12:50 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.515 2005-06-05 22:25:20 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -393,7 +393,8 @@ ncap69. ncap bug: valgrind says var_ycc[idx]->undefined is uninitiasized for som
 ==14858== 
 ==14858== Conditional jump or move depends on uninitialised value(s)
 ==14858==    at 0x804B29F: main (ncap.c:564)
-ncap70. 
+ncap70. gamma() function appears broken in ncap regression test 07
+ncap71. 
 
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.

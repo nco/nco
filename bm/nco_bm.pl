@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.21 2005-06-05 20:22:34 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.22 2005-06-05 22:25:19 zender Exp $
 
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
@@ -439,6 +439,36 @@ sub perform_tests
     $nsr_xpc ="1.000000000000";
     &go();
     
+    $tst_cmd[0]='ncap -O -C -v -s "foo=4*atan(1)" in.nc foo.nc';
+    $tst_cmd[1]='ncks -C -H -s "%.12f\n" foo.nc';
+    $dsc_sng='Testing foo=4*atan(1)';
+    $nsr_xpc ="3.141592741013";
+    &go();
+
+    $tst_cmd[0]='ncap -O -C -v -s "foo=erf(1)" in.nc foo.nc';
+    $tst_cmd[1]='ncks -C -H -s "%.12f\n" foo.nc';
+    $dsc_sng='Testing foo=erf(1)';
+    $nsr_xpc ="0.842701";
+    &go();
+
+    $tst_cmd[0]='ncap -O -C -v -s "foo=gamma(0.5)" in.nc foo.nc';
+    $tst_cmd[1]='ncks -C -H -s "%.12f\n" foo.nc';
+    $dsc_sng='Testing foo=gamma(0.5)';
+    $nsr_xpc ="1.772453851";
+    &go();
+    
+    $tst_cmd[0]='ncap -O -C -v -s "pi=4*atan(1);foo=sin(pi/2)" in.nc foo.nc';
+    $tst_cmd[1]='ncks -C -H -v foo -s "%.12f\n" foo.nc';
+    $dsc_sng='Testing foo=sin(pi/2)';
+    $nsr_xpc ="1.000000000000";
+    &go();
+
+    $tst_cmd[0]='ncap -O -C -v -s "pi=4*atan(1);foo=cos(pi)" in.nc foo.nc';
+    $tst_cmd[1]='ncks -C -H -v foo -s "%.12f\n" foo.nc';
+    $dsc_sng='Testing foo=cos(pi)';
+    $nsr_xpc ="-1.000000000000";
+    &go();
+
 ####################
 #### ncatted tests #
 ####################
