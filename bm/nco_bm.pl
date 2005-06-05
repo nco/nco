@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.20 2005-06-05 20:12:45 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.21 2005-06-05 20:22:34 zender Exp $
 
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
@@ -429,7 +429,7 @@ sub perform_tests
     
     $tst_cmd[0]='ncap -O -C -v -s "foo=log(e_flt)^1" in.nc foo.nc';
     $tst_cmd[1]='ncks -C -H -s "%.6f\n" foo.nc';
-    $dsc_sng='Testing foo=log(e_flt)^1';
+    $dsc_sng='Testing foo=log(e_flt)^1 (fails on AIX TODO ncap57)';
     $nsr_xpc ="1.000000";
     &go();
     
