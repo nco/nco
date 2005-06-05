@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.19 2005-05-26 23:23:52 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.20 2005-06-05 20:12:45 zender Exp $
 
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
@@ -419,6 +419,24 @@ sub perform_tests
     $tst_cmd[0]='ncap -O -v -S ncap.in in.nc foo.nc';
     $dsc_sng='running ncap.in script into nco_tst.pl';
     $nsr_xpc ="ncap: WARNING Replacing missing value data in variable val_half_half";
+    &go();
+
+    $tst_cmd[0]='ncap -O -C -v -s "tpt_mod=tpt%273.0f" in.nc foo.nc';
+    $tst_cmd[1]='ncks -C -H -s "%.1f " foo.nc';
+    $dsc_sng='Testing float modulo float';
+    $nsr_xpc ="0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0";
+    &go();
+    
+    $tst_cmd[0]='ncap -O -C -v -s "foo=log(e_flt)^1" in.nc foo.nc';
+    $tst_cmd[1]='ncks -C -H -s "%.6f\n" foo.nc';
+    $dsc_sng='Testing foo=log(e_flt)^1';
+    $nsr_xpc ="1.000000";
+    &go();
+    
+    $tst_cmd[0]='ncap -O -C -v -s "foo=log(e_dbl)^1" in.nc foo.nc';
+    $tst_cmd[1]='ncks -C -H -s "%.12f\n" foo.nc';
+    $dsc_sng='Testing foo=log(e_dbl)^1';
+    $nsr_xpc ="1.000000000000";
     &go();
     
 ####################
