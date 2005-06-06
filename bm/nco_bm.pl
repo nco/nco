@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.22 2005-06-05 22:25:19 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.23 2005-06-06 06:36:45 zender Exp $
 
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
@@ -671,8 +671,7 @@ sub perform_tests
     $nsr_xpc= 876018;
     &go();
     
-    $tst_cmd[0]='ncks -O -C -d wvl,"0.1 micron","1 micron" in.nc foo.nc';
-    $tst_cmd[1]='ncks -C -H -d wvl,"0.6 micron","1 micron" -s "%3.1e" -v wvl in.nc';
+    $tst_cmd[0]='ncks -O -C -H -v wvl -d wvl,"0.4 micron","0.7 micron" -s "%3.1e" in.nc';
     $dsc_sng='dimension slice using UDUnit conversion (fails without UDUnits library support)';
     $nsr_xpc= 1.0e-06;
     &go();

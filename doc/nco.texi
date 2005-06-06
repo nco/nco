@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.299 2005-05-23 00:11:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.300 2005-06-06 06:36:47 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3090,7 +3090,7 @@ In the following example, the user extracts all wavelengths
 in the visible portion of the spectrum in terms of the units
 very frequently used in visible spectroscopy, microns:
 @example
-% ncks -O -C -v wvl -d wvl,"0.4 micron","0.7 micron" in.nc
+% ncks -O -C -H -v wvl -d wvl,"0.4 micron","0.7 micron" in.nc
 wvl[0]=5e-07 meter
 @end example
 @noindent
