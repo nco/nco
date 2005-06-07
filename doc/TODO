@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.516 2005-06-07 05:26:36 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.517 2005-06-07 06:26:40 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -395,7 +395,9 @@ ncap69. ncap bug: valgrind says var_ycc[idx]->undefined is uninitiasized for som
 ==14858== Conditional jump or move depends on uninitialised value(s)
 ==14858==    at 0x804B29F: main (ncap.c:564)
 ncap70. gamma() function broken on AIX
-ncap71. 
+ncap71. Remove erf and gamma functions from AIX build
+ncap72. Stop linking to -lC on AIX. Get all float math functions by casting double versions
+ncap73. 
 
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
