@@ -1,3 +1,11 @@
+2005-06-06  Charlie Zender  <zender@uci.edu>
+
+	* Add THR_NBR option to bld/Makefile to pass to nco_bm.pl
+
+	* Learned that Linux gamma() function is just plain broken
+	and obsoleted, at least in C99, by tgamma() function.
+	Linking gamma() symbol to tgamma() intrinsic solves Linux problem
+	
 2005-06-05  Charlie Zender  <zender@uci.edu>
 
 	* gamma() function appears broken in ncap regression test 07

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.277 2005-05-04 18:16:16 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.278 2005-06-07 05:04:44 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -214,6 +214,15 @@ ifeq (${PVM_ARCH},LINUXALPHA)
 endif # endif LINUXALPHA
 endif # endif LINUX_CC
 endif # endif LINUX
+
+# OpenMP
+ifeq (${OMP},Y)
+ifdef ${THR_NBR}
+ THR_NBR_SNG := "--thr_nbr=${THR_NBR}"
+else # endif THR_NBR
+ THR_NBR_SNG :=
+endif # endif THR_NBR
+endif # endif OMP
 
 ifeq (${RPM},Y)
 # rpm command, and thus RPM variables only guaranteed in RedHat Linux
@@ -1284,17 +1293,17 @@ bench:	bm
 bnch:	bm
 bm:	
 	cd ${MY_BLD_DIR}; \
-	env MY_BIN_DIR=${MY_BIN_DIR} ./nco_bm.pl --bench --udpreport
+	env MY_BIN_DIR=${MY_BIN_DIR} ./nco_bm.pl --bench --udpreport ${THR_NBR_SNG}
 file:	fl
 fl:	
 	cd ${MY_BM_DIR}; \
-	env MY_BIN_DIR=${MY_BIN_DIR} ./nco_bm.pl --test_files=A --udpreport
+	env MY_BIN_DIR=${MY_BIN_DIR} ./nco_bm.pl --test_files=A --udpreport ${THR_NBR_SNG}
 regression:	tst
 rgr:	tst
 test:	tst
 tst:	dat
 	cd ${MY_BM_DIR}; \
-	env MY_BIN_DIR=${MY_BIN_DIR} ./nco_bm.pl --regress --udpreport
+	env MY_BIN_DIR=${MY_BIN_DIR} ./nco_bm.pl --regress --udpreport ${THR_NBR_SNG}
 # Targets in dat
 data:	dat
 dat:	${MY_DAT_DIR}/in.nc
@@ -1453,6 +1462,8 @@ dbg:
 	@printf "PVM_ARCH = ${PVM_ARCH}\n"
 	@printf "RPM = ${RPM}\n"
 	@printf "SRC_LST = $(SRC_LST)\n"
+	@printf "THR_NBR = ${THR_NBR}\n"
+	@printf "THR_NBR_SNG = ${THR_NBR_SNG}\n"
 	@printf "TMP_LDFLAGS = $(TMP_LDFLAGS)\n"
 	@printf "TMP_LIBS = $(TMP_LIBS)\n"
 	@printf "UDUNITS = $(UDUNITS)\n"

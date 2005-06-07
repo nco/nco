@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #currently on esmf only
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.25 2005-06-06 23:58:11 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.26 2005-06-07 05:04:45 zender Exp $
 
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
@@ -42,7 +42,7 @@ $usg   = 0;
 $tst_fl_cr8 = "0";
 $que = 0;
 $udp_reprt = 0;
-$thr_nbr = 0; # if zero, don't want to do threads 
+$thr_nbr = 0; # if zero, do not do threads 
 $dodods = "";  $fl_pth = "";
 
 # other inits
@@ -447,13 +447,13 @@ sub perform_tests
 
     $tst_cmd[0]='ncap -O -C -v -s "foo=erf(1)" in.nc foo.nc';
     $tst_cmd[1]='ncks -C -H -s "%.12f\n" foo.nc';
-    $dsc_sng='Testing foo=erf(1)';
+    $dsc_sng='Testing foo=erf(1) (fails on AIX)';
     $nsr_xpc ="0.842701";
     &go();
 
     $tst_cmd[0]='ncap -O -C -v -s "foo=gamma(0.5)" in.nc foo.nc';
     $tst_cmd[1]='ncks -C -H -s "%.12f\n" foo.nc';
-    $dsc_sng='Testing foo=gamma(0.5)';
+    $dsc_sng='Testing foo=gamma(0.5) (fails on AIX)';
     $nsr_xpc ="1.772453851";
     &go();
     

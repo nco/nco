@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.162 2005-05-30 03:50:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.163 2005-06-07 05:04:46 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.162 2005-05-30 03:50:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.162 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.163 2005-06-07 05:04:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.163 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -423,7 +423,7 @@ main(int argc,char **argv)
   /* Advanced math: erf, erfc, gamma */
   sym_tbl[sym_idx++]=ncap_sym_init("erf",erf,erff);
   sym_tbl[sym_idx++]=ncap_sym_init("erfc",erfc,erfcf);
-  sym_tbl[sym_idx++]=ncap_sym_init("gamma",gamma,gammaf);
+  sym_tbl[sym_idx++]=ncap_sym_init("gamma",tgamma,tgammaf);
   
   /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
   sym_tbl[sym_idx++]=ncap_sym_init("acosh",acosh,acoshf);
