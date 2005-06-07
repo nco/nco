@@ -5,6 +5,9 @@
 	* Learned that Linux gamma() function is just plain broken
 	and obsoleted, at least in C99, by tgamma() function.
 	Linking gamma() symbol to tgamma() intrinsic solves Linux problem
+	Note that tgamma() is a C99 feature
+	Referencing tgamma() in the code is the second C99 feature,
+	after the restrict type keyword.
 	
 2005-06-05  Charlie Zender  <zender@uci.edu>
 

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.278 2005-06-07 05:04:44 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.279 2005-06-07 05:22:17 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -217,7 +217,7 @@ endif # endif LINUX
 
 # OpenMP
 ifeq (${OMP},Y)
-ifdef ${THR_NBR}
+ifdef THR_NBR
  THR_NBR_SNG := "--thr_nbr=${THR_NBR}"
 else # endif THR_NBR
  THR_NBR_SNG :=

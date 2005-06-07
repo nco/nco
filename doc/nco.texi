@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.300 2005-06-06 06:36:47 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.301 2005-06-07 05:26:36 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -626,8 +626,8 @@ more details and exact settings.
 Until recently (and not even yet), @acronym{ANSI}-compliant has meant
 compliance with the 1989 @acronym{ISO} C-standard, usually called C89 (with
 minor revisions made in 1994 and 1995).
-C89 lacks variable-size arrays, restricted pointers, and some useful
-@code{printf} formats.   
+C89 lacks variable-size arrays, restricted pointers, some useful
+@code{printf} formats, and many mathematical special functions.
 @cindex C99
 These are valuable features of C99, the 1999 @acronym{ISO} C-standard. 
 @acronym{NCO} is C99-compliant where possible and C89-compliant where
@@ -669,9 +669,15 @@ Subsequently, @acronym{NCO} requires a C99 compiler to build correctly
 @acronym{ANSI} or @acronym{ISO} C89 or C94/95-compliant compiler if the
 @w{C pre-processor} undefines the @code{restrict} type qualifier, e.g.,
 by invoking the compiler with @samp{-Drestrict=''}.}.
+
+@cindex @var{gamma}
+In June 2005, @acronym{NCO} version 3.0.1 began to take advantage
+of C99 mathematical special functions.
+These include the standarized gamma function (called @code{tgamma()} 
+for ``true gamma''). 
 @cindex automagic
-Furthermore, @acronym{NCO} automagically takes advantage of extensions
-to @w{@acronym{ANSI} C} when compiled with the @acronym{GNU} Compiler
+@acronym{NCO} may automagically takes advantage of some extensions
+to @w{@acronym{ANSI} C} when compiled with the @acronym{GNU} Compiler 
 Collection, @acronym{GCC}. 
 
 As of July 2000 and @acronym{NCO} @w{version 1.2}, @acronym{NCO} no

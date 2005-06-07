@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.515 2005-06-05 22:25:20 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.516 2005-06-07 05:26:36 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -301,7 +301,8 @@ nco527. Purify ncatted memory:
 # Commas at end of following aed_sct appear never to be free()'d, are responsible for three unfree'd bytes
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,att_var,d,,, -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 nco530. change all ctime() to ctime_r() like in ncatted?
-nco533.
+nco533. Implement C99 mathematical special functions: lgamma_r, j0, j1, jn, y0, y1, yn
+nco534. 
 
 MPI:
 Archive MPI tests which appear to run correctly 
@@ -393,7 +394,7 @@ ncap69. ncap bug: valgrind says var_ycc[idx]->undefined is uninitiasized for som
 ==14858== 
 ==14858== Conditional jump or move depends on uninitialised value(s)
 ==14858==    at 0x804B29F: main (ncap.c:564)
-ncap70. gamma() function appears broken in ncap regression test 07
+ncap70. gamma() function broken on AIX
 ncap71. 
 
 Build items:
