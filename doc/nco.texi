@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.301 2005-06-07 05:26:36 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.302 2005-06-08 17:55:12 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1342,6 +1342,9 @@ data on different realizations of the same variables.
 of @command{ncecat}. 
 
 @cindex @command{ncpdq}
+@html
+<a name="dmn_cat"></a> <!-- http://nco.sf.net/nco.html#dmn_cat -->
+@end html
 @command{ncpdq} makes it possible to concatenate files along any
 dimension, not just the record dimension.
 First, use @command{ncpdq} to convert the dimension to be concatenated
@@ -2853,7 +2856,7 @@ transposes of eachother.
 Note that record variables contain the record dimension as the most
 slowly varying dimension.  
 See @ref{ncpdq netCDF Permute Dimensions Quickly} for techniques
-to re-order (including transposes) dimensionse and to reverse data
+to re-order (including transpose) dimensions and to reverse data
 storage order.
 
 @cindex record dimension
@@ -6156,6 +6159,9 @@ The output file, @file{85.nc}, is five times the size as a single
 It contains @w{60 months} of data (which might or might not be stored in
 the record dimension, depending on the input files).
 
+@html
+<a name="dmn_rcd_rm"></a> <!-- http://nco.sf.net/nco.html#dmn_rcd_rm -->
+@end html
 @cindex record dimension
 Consider a file with an existing record dimension named @code{time}. 
 and suppose the user wishes to convert @code{time} from a record
@@ -6171,7 +6177,7 @@ ncwa -a record in.nc out.nc # Remove new degenerate record dimension
 @noindent
 The second step removes the degenerate record dimension.
 See @ref{ncpdq netCDF Permute Dimensions Quickly} for other methods
-changing variable dimensionality, including the record dimension.
+of changing variable dimensionality, including the record dimension.
 
 @page
 @html
@@ -7230,6 +7236,7 @@ The first command re-orders every variable in the input file.
 The second command extracts and re-orders only the variable
 @code{three_dmn_var}. 
 
+@cindex reverse dimensions
 Suppose the dimension @code{lat} represents latitude and monotonically 
 increases increases from south to north. 
 Reversing the @code{lat} dimension means re-ordering the data so that
@@ -7259,6 +7266,7 @@ ncpdq -a lon,-lat in.nc out.nc # OK. No whitespace before "-"
 ncpdq --rdr=-lat in.nc out.nc # Preferred. Uses "=" not whitespace
 @end example
 
+@cindex reverse dimensions
 To create the mathematical transpose of a variable, place all its
 dimensions in the dimension re-order list in reversed order.
 This example creates the transpose of @code{three_dmn_var}: 
@@ -7282,6 +7290,7 @@ lon[3]=270 lev[2]=1000 lat[0]=-90 three_dmn_var[22]=11
 lon[3]=270 lev[2]=1000 lat[1]=90 three_dmn_var[23]=23
 @end example
 
+@cindex reverse data
 To completely reverse the storage order of a variable, include
 all its dimensions in the re-order list, each prefixed by a negative
 sign. 
@@ -7305,6 +7314,38 @@ lat[1]=-90 lev[2]=100 lon[1]=180 three_dmn_var[21]=2
 lat[1]=-90 lev[2]=100 lon[2]=90 three_dmn_var[22]=1
 lat[1]=-90 lev[2]=100 lon[3]=0 three_dmn_var[23]=0
 @end example
+
+@html
+<a name="dmn_rcd_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_rcd_mk -->
+@end html
+@cindex record dimension
+Consider a file with all dimensions, including @code{time}, fixed
+(non-record).
+Suppose the user wishes to convert @code{time} from a fixed dimension to  
+a record dimension. 
+This may be useful, for example, when the user wishes to append
+additional time slices to the data.
+The procedure is to use @command{ncecat} followed by @command{ncpdq}
+and then @command{ncwa}:
+@cindex degenerate dimension
+@example
+ncecat -O in.nc out.nc # Add degenerate record dimension named "record"
+ncpdq -O -a time,record out.nc out.nc # Switch "record" and "time"
+ncwa -O -a record out.nc out.nc # Average out degenerate "record"
+@end example
+@noindent
+The first step creates a degenerate (size equals one) record dimension.
+The second step swaps the ordering of the dimensions named @code{time}
+and @code{record}.
+Since @code{time} now occupies the position of the first (least rapidly
+varying) dimension, it becomes the record dimension.
+The dimension named @code{record} is no longer a record dimension.
+The third step averages over the degenerate @code{record} dimension.
+Averaging over a degenerate dimension does not alter the data.
+The ordering of other dimensions in the file (@code{lat}, @code{lon},
+etc.) is immaterial to this procedure. 
+See @ref{ncecat netCDF Ensemble Concatenator} for other methods of
+changing variable dimensionality, including the record dimension. 
 
 @page
 @html
