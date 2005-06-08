@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.h,v 1.12 2005-04-28 01:03:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.h,v 1.13 2005-06-08 23:59:16 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -27,6 +27,7 @@
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
+#include "nco_ctl.h" /* Program flow control functions */
 
 #ifdef __cplusplus
 extern "C" {
