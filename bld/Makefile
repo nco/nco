@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.279 2005-06-07 05:22:17 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.280 2005-06-08 23:31:16 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -192,7 +192,7 @@ ifndef LINUX_CC
 # C compiler for Linux
  LINUX_CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
  #LINUX_CC := como --c99
- #LINUX_CC := icc
+ #LINUX_CC := icc -std=c99
  #LINUX_CC := insure
  #LINUX_CC := pgcc
 endif # endif LINUX_CC

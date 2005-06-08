@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.89 2005-04-26 23:50:51 gayathri_aiyar Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.90 2005-06-08 23:31:33 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -17,11 +17,12 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   static const char cmp_nm[]="xlc"; /* [sng] Compiler name */
   static const char cmp_sng[]="Token _AIX_ defined in main(), probably compiled with xlc"; /* [sng] Compiler string */
 #endif /* !_AIX */
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)
   static const char cmp_nm[]="gcc"; /* [sng] Compiler name */
   static const char cmp_sng[]="Token __GNUC__ defined in main(), probably compiled with gcc"; /* [sng] Compiler string */
 #endif /* !__GNUC__ */
 #ifdef __INTEL_COMPILER
+  /* Some compilers, including icc, also define __GNUC__ by default */
   static const char cmp_nm[]="icc";
   static const char cmp_sng[]="Token __INTEL_COMPILER defined in main(), probably compiled with icc"; /* [sng] Compiler string */
 #endif /* !__INTEL_COMPILER */

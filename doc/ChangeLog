@@ -1,5 +1,10 @@
 2005-06-08  Charlie Zender  <zender@uci.edu>
 
+	* Prohibit double definition of cmp_nm with icc
+
+	* Updated installation and bld/Makefile to work better for
+	CC=icc -std=c99 and CXX=icc
+
 	* Changed default compiler on Ubuntu to GCC-4.0
 	Fixed new CEWI warnings resulting from change
 	Testing shows no new regressions

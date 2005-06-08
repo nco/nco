@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.302 2005-06-08 17:55:12 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.303 2005-06-08 23:31:32 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -595,7 +595,7 @@ Comeau Computing (@samp{como --c99}),
 Cray (@samp{cc}),
 @acronym{HP}/Compaq/@acronym{DEC} (@samp{cc}),
 @acronym{IBM} (@samp{xlc -c -qlanglvl=extc99}),
-Intel (@samp{icc}),
+Intel (@samp{icc -std=c99}),
 @acronym{NEC} (@samp{cc}),
 @acronym{SGI} (@samp{cc -LANG:std}),
 and
