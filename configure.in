@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.115 2005-05-26 23:23:52 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.116 2005-06-08 23:43:37 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -448,6 +448,11 @@ fi
 # Perform standard additions to compilers and preprocessor flags before testing anything
 # NB: These flags take effect regardless of enable-[debug/optimize]-custom setting
 case ${host} in
+    i*86-*-linux-gnu )
+	case ${CC} in
+	    icc ) CFLAGS="${CFLAGS} -std=c99" ; ;;
+	esac
+	;;
     powerpc-ibm-aix* ) 
 	case ${CC} in 
 	    gcc ) CFLAGS="${CFLAGS} -maix64" ; ;;

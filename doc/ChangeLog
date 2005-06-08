@@ -2,8 +2,8 @@
 
 	* Prohibit double definition of cmp_nm with icc
 
-	* Updated installation and bld/Makefile to work better for
-	CC=icc -std=c99 and CXX=icc
+	* Updated bld/Makefile and configure.in to work better for
+	icc by making -std=c99 standard switch
 
 	* Changed default compiler on Ubuntu to GCC-4.0
 	Fixed new CEWI warnings resulting from change
