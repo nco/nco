@@ -1,5 +1,9 @@
 2005-06-08  Charlie Zender  <zender@uci.edu>
 
+	* Changed default compiler on Ubuntu to GCC-4.0
+	Fixed new CEWI warnings resulting from change
+	Testing shows no new regressions
+
 	* Reverting the 20050519 critical region patches fixes ncra
 	regressions on AIX OpenMP. Hypothesis that libnetcdf.a is not
 	thread-safe on reads (or writes) gains considerable weight,

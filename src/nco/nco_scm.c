@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.21 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.22 2005-06-08 22:53:31 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -26,8 +26,13 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
   char *usc_1_ptr=NULL;
   char *usc_2_ptr=NULL;
 
+  /* Unexpanded cvs keywords in cvs_Name trigger GCC 4.0+ warning
+     "./src/nco/nco_scm.c:81: warning: offset outside bounds of constant string"
+     because routine looks for cvs_Name+7 later on */
   const char cvs_Name[]="$Name: not supported by cvs2svn $";
+  const char dlr_nm_cln_spc[]="$Name: "; 
   const char nco_sng[]="nco"; 
+  const char spc_dlr[]=" $"; 
 
   int cvs_nm_sng_len;
   int cvs_vrs_sng_len;
@@ -41,11 +46,11 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
   long cvs_pch_vrs=-1L;
 
   /* Is cvs_Name keyword expanded? */
-  dlr_ptr=strstr(cvs_Name," $");
+  dlr_ptr=(char *)strstr(cvs_Name,spc_dlr);
   if(dlr_ptr == NULL && dbg_lvl_get() > 3)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports dlr_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",prg_nm_get(),prg_nm_get());
-  cvs_nm_ptr=strstr(cvs_Name,"$Name: ");
+  cvs_nm_ptr=(char *)strstr(cvs_Name,dlr_nm_cln_spc);
   if(cvs_nm_ptr == NULL && dbg_lvl_get() > 3)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports cvs_nm_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",prg_nm_get(),prg_nm_get());
-  cvs_nm_sng_len=(int)(dlr_ptr-cvs_nm_ptr-7); /* 7 is strlen("$Name: ") */
+  cvs_nm_sng_len=(int)(dlr_ptr-cvs_nm_ptr-strlen(dlr_nm_cln_spc)); /* 7 is strlen("$Name: ") */
   if(cvs_nm_sng_len > 0) dly_snp=False; else dly_snp=True;
 
   /* If not, this is daily snapshot so use YYYYMMDD date for version string */
@@ -73,7 +78,7 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
 
   /* cvs_nm_sng is, e.g., "nco1_1" */
   cvs_nm_sng=(char *)nco_malloc((size_t)cvs_nm_sng_len+1);
-  strncpy(cvs_nm_sng,cvs_Name+7,(size_t)cvs_nm_sng_len); /* 7 is strlen("$Name: ") */
+  cvs_nm_sng=strncpy(cvs_nm_sng,cvs_Name+strlen(dlr_nm_cln_spc),(size_t)cvs_nm_sng_len); /* 7 is strlen("$Name: ") */
   cvs_nm_sng[cvs_nm_sng_len]='\0';
 
   /* cvs_vrs_sng is, e.g., "1.1" */

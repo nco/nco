@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.22 2005-05-23 15:40:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.23 2005-06-08 22:53:30 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -306,7 +306,7 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
   sz_pg=getpagesize();
 
   /* fxm: CEWI, not necessary */
-  rcd+=rusage_who;
+  rcd=rusage_who;
   /* fxm: use input argument rusage_who instead or RUSAGE_SELF */
   rcd=getrusage(RUSAGE_SELF,&usg);
   
