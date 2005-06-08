@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #currently on esmf only
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.27 2005-06-08 22:04:54 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.28 2005-06-08 23:54:50 zender Exp $
 
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
@@ -1013,8 +1013,8 @@ sub perform_tests
     
     $tst_cmd[0]='ncwa ' . $omp_flg . ' -O -y ttl -v val_max_max_sht in.nc foo.nc 2> foo.tst';
     $tst_cmd[1]='ncks -C -H -s "%d" -v val_max_max_sht foo.nc';
-    $dsc_sng='ttl would overflow without dbl_prc patch, wraps anyway so exact value not important (failure on expected/OK on Xeon chips because of different wrap behavior)';
-    $nsr_xpc= -31536 ; # Expected on Pentium IV GCC Debian 3.4.3-13, PowerPC xlc
+    $dsc_sng='ttl would overflow without dbl_prc patch, wraps anyway so exact value not important (failure expected on Xeon w/GCC because of different wrap behavior)';
+    $nsr_xpc= -31536 ; # Expected on Pentium IV GCC Debian 3.4.3-13, PowerPC xlc, Xeon icc 8.1
 #    $nsr_xpc= -32768 ; # Expected on Xeon GCC Fedora 3.4.2-6.fc3
     &go();
 

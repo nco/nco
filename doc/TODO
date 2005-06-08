@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.517 2005-06-07 06:26:40 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.518 2005-06-08 23:54:51 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -287,7 +287,7 @@ nco523. Threaded ncwa fails on ESMF, OpenMP:
         ncwa -t 1 -D 5 -O -C ~/nco/data/in.nc ~/foo.nc # Works
         ncwa -t 2 -D 5 -O -C ~/nco/data/in.nc ~/foo.nc # Fails
         ncwa -t 2 -D 4 -O -C -v '^rec+.*' ~/nco/data/in.nc ~/foo.nc # Fails
-# Breaks with any two one dimensional variables so long as at least one is NC_INT, neither needs missing_values (phew, ruling out missing values is helpful)
+# Breaks with AIX with any two one dimensional variables so long as at least one is NC_INT, neither needs missing_values (phew, ruling out missing values is helpful)
         ncwa -t 2 -D 4 -O -C -v date,one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc # Fails
         ncwa -t 2 -D 4 -O -C -v one_dmn_int_val_one,one_dmn_int_val_two ~/nco/data/in.nc ~/foo.nc # Fails
 nco524. DODS/OPeNDAP memory leak

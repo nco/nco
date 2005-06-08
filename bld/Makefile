@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.280 2005-06-08 23:31:16 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.281 2005-06-08 23:54:50 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -753,9 +753,9 @@ endif # endif LINUXAMD64
  CXXFLAGS := ${CFLAGS}
 endif # endif GNU Compiler Collection
 # Intel (Kai) C Compiler
-ifeq (${CC},icc)
+ifneq (${null},$(findstring icc,${CC}))
  CFLAGS := 
- OMP_FLG := -openmp
+ OMP_FLG := -openmp -openmp_report0
 ifeq (${OPTS},O)
  CFLAGS += -O -g
 endif

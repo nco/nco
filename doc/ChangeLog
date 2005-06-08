@@ -1,5 +1,7 @@
 2005-06-08  Charlie Zender  <zender@uci.edu>
 
+	* icc-compiled version passes regression test perfectly on soot
+
 	* Prohibit double definition of cmp_nm with icc
 
 	* Updated bld/Makefile and configure.in to work better for
