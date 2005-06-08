@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.141 2005-06-03 05:45:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.142 2005-06-08 23:10:08 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.0.1 are ready. 
 
@@ -22,6 +22,14 @@ ncap users should upgrade.
 3. ncap exponentiation bugfix. Versions < 3.0.1 incorrectly
    handle exponentiation of a variable to a variable power
    (V^V). We recommend that all ncap users upgrade.
+
+4. All operators except ncap are now memory pure.
+   No uninitialized memory is referenced, and
+   no unfree'd or "still reachable" memory exists at operator exit.
+   valgrind is used to verify this.
+   Actually, system libraries and libnetcdf.a have minor
+   memory transgressions.
+   The point is that NCO causes no memory leaks.
 
 Enjoy,
 Charlie
