@@ -1,11 +1,16 @@
 2005-06-08  Charlie Zender  <zender@uci.edu>
 
+	* Reverting the 20050519 critical region patches fixes ncra
+	regressions on AIX OpenMP. Hypothesis that libnetcdf.a is not
+	thread-safe on reads (or writes) gains considerable weight,
+	since all the patches do, I think, is make reads critical.
+
 	* Reverted 20050519 critical region patches
 
 	* About to revert patches of 20050519 which removed critical
 	regions from NCO read routines
 
-	* Added example on changing non-record to record dimensions
+	* Added nco.texi example on changing non-record to record dimensions
 
 2005-06-07  Charlie Zender  <zender@uci.edu>
 
