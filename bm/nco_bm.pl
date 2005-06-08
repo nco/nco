@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #currently on esmf only
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.26 2005-06-07 05:04:45 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.27 2005-06-08 22:04:54 zender Exp $
 
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
@@ -429,7 +429,7 @@ sub perform_tests
     
     $tst_cmd[0]='ncap -O -C -v -s "foo=log(e_flt)^1" in.nc foo.nc';
     $tst_cmd[1]='ncks -C -H -s "%.6f\n" foo.nc';
-    $dsc_sng='Testing foo=log(e_flt)^1 (fails on AIX TODO ncap57)';
+    $dsc_sng='Testing foo=log(e_flt)^1 (fails on AIX TODO ncap57,72)';
     $nsr_xpc ="1.000000";
     &go();
     
@@ -447,13 +447,13 @@ sub perform_tests
 
     $tst_cmd[0]='ncap -O -C -v -s "foo=erf(1)" in.nc foo.nc';
     $tst_cmd[1]='ncks -C -H -s "%.12f\n" foo.nc';
-    $dsc_sng='Testing foo=erf(1) (fails on AIX)';
+    $dsc_sng='Testing foo=erf(1) (fails on AIX TODO ncap71,72)';
     $nsr_xpc ="0.842701";
     &go();
 
     $tst_cmd[0]='ncap -O -C -v -s "foo=gamma(0.5)" in.nc foo.nc';
     $tst_cmd[1]='ncks -C -H -s "%.12f\n" foo.nc';
-    $dsc_sng='Testing foo=gamma(0.5) (fails on AIX)';
+    $dsc_sng='Testing foo=gamma(0.5) (fails on AIX TODO ncap70,72)';
     $nsr_xpc ="1.772453851";
     &go();
     

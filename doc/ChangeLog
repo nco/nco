@@ -1,5 +1,7 @@
 2005-06-08  Charlie Zender  <zender@uci.edu>
 
+	* Reverted 20050519 critical region patches
+
 	* About to revert patches of 20050519 which removed critical
 	regions from NCO read routines
 
