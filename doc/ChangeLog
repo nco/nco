@@ -5,7 +5,7 @@
 	* Change DO_CONFORM_MSK,DO_CONFORM_WGT from private to
 	firstprivate and make sure both always have default values
 	This fixed all ncwa regressions with threads!
-	Discovered one double free with ncra though...
+	Discovered memory problems with ncbo with threads though...
 	
 	* icc-compiled version passes regression test perfectly on soot
 	only when threading is disabled at compile time, e.g., OMP=N.

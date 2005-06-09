@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.519 2005-06-09 00:44:35 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.520 2005-06-09 01:06:03 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -302,9 +302,15 @@ nco527. Purify ncatted memory:
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,att_var,d,,, -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 nco530. change all ctime() to ctime_r() like in ncatted?
 nco533. Implement C99 mathematical special functions: lgamma_r, j0, j1, jn, y0, y1, yn
-nco534. icc valgrind ncwa problems: Failure is the rule, not the exception!
-        ncwa -t 1 -D 4 -O -C -v lat ~/nco/data/in.nc ~/foo.nc # Fails
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -t 1 -D 4 -O -C -v lat ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
+nco535. icc valgrind ncbo problem: 
+	ncra -Y ncrcat -O -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/nco/data/in.nc ~/foo1.nc
+	ncra -O -y avg -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/nco/data/in.nc ~/foo2.nc
+	ncwa -O -a time ~/foo2.nc ~/foo3.nc
+	ncdiff -O -v rec_var_flt_mss_val_dbl ~/foo1.nc ~/foo3.nc ~/foo4.nc
+	ncra -O -y rms -v rec_var_flt_mss_val_dbl ~/foo4.nc ~/foo5.nc
+	ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl ~/foo5.nc
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncdiff -O -v rec_var_flt_mss_val_dbl ~/foo1.nc ~/foo3.nc ~/foo4.nc > ~/foo 2>&1
+nco536.
 
 MPI:
 Archive MPI tests which appear to run correctly 
