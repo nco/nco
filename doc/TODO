@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.518 2005-06-08 23:54:51 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.519 2005-06-09 00:44:35 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -302,7 +302,9 @@ nco527. Purify ncatted memory:
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,att_var,d,,, -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 nco530. change all ctime() to ctime_r() like in ncatted?
 nco533. Implement C99 mathematical special functions: lgamma_r, j0, j1, jn, y0, y1, yn
-nco534. 
+nco534. icc valgrind ncwa problems: Failure is the rule, not the exception!
+        ncwa -t 1 -D 4 -O -C -v lat ~/nco/data/in.nc ~/foo.nc # Fails
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -t 1 -D 4 -O -C -v lat ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
 
 MPI:
 Archive MPI tests which appear to run correctly 
