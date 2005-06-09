@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.79 2005-06-08 22:05:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.80 2005-06-09 05:33:50 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -470,7 +470,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
 	  case NC_CHAR:
 	  case NC_BYTE:
 	  default:
-	    (void)fprintf(stdout,"%s: ERROR Unknown nc_type %d in %s\n",prg_nm_get(),var_type,fnc_nm);
+	    (void)fprintf(stdout,"%s: ERROR Unknown nc_type %u in %s\n",prg_nm_get(),var_type,fnc_nm);
 	    nco_exit(EXIT_FAILURE);
 	    break;
 	  } /* end switch */

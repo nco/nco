@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.21 2005-06-09 05:27:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.22 2005-06-09 05:33:50 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -369,7 +369,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
   /* Allocate enough space to hold variable */
   var.val.vp=(void *)nco_malloc(var.sz*nco_typ_lng(var.type));
   if(var.val.vp == NULL){
-    (void)fprintf(stderr,"%s: ERROR unable to malloc() %lu bytes for %s\n",prg_nm_get(),var.sz*nco_typ_lng(var.type),var.nm);
+    (void)fprintf(stderr,"%s: ERROR unable to malloc() %lu bytes for %s\n",prg_nm_get(),(unsigned long)var.sz*nco_typ_lng(var.type),var.nm);
     nco_exit(EXIT_FAILURE);
   } /* end if */
 
