@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.520 2005-06-09 01:06:03 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.521 2005-06-09 01:07:48 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -310,7 +310,8 @@ nco535. icc valgrind ncbo problem:
 	ncra -O -y rms -v rec_var_flt_mss_val_dbl ~/foo4.nc ~/foo5.nc
 	ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl ~/foo5.nc
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncdiff -O -v rec_var_flt_mss_val_dbl ~/foo1.nc ~/foo3.nc ~/foo4.nc > ~/foo 2>&1
-nco536.
+nco536. test un-reverting critical patches now that threads are working
+nco537. 
 
 MPI:
 Archive MPI tests which appear to run correctly 
