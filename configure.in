@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.116 2005-06-08 23:43:37 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.117 2005-06-09 18:45:00 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -450,7 +450,7 @@ fi
 case ${host} in
     i*86-*-linux-gnu )
 	case ${CC} in
-	    icc ) CFLAGS="${CFLAGS} -std=c99" ; ;;
+	    icc ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -no-gcc" ; ;;
 	esac
 	;;
     powerpc-ibm-aix* ) 

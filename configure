@@ -26122,7 +26122,7 @@ fi
 case ${host} in
     i*86-*-linux-gnu )
 	case ${CC} in
-	    icc ) CFLAGS="${CFLAGS} -std=c99" ; ;;
+	    icc ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -no-gcc" ; ;;
 	esac
 	;;
     powerpc-ibm-aix* )
