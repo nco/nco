@@ -1,8 +1,16 @@
 2005-06-08  Charlie Zender  <zender@uci.edu>
 
-	* Code compiles as clean as possible with icc 8.1 and gcc 4.0
-
 	* icc-compiled version passes regression test perfectly on soot
+	only when threading is disabled at compile time, e.g., OMP=N.
+	With threading enabled, code fails many tests (1 ncra and 22 ncwa)
+	....regardless of thread number! Not requesting any threads,
+	(i.e., -t 0 or no -t specification), requesting one thread (-t 1),
+	or requesting more threads breaks regression tests.	
+	Lots of juiciness in error messages!
+	Interesting that AIX version passes all, and icc fails many,
+	regressions when threading enabled with one thread.
+
+	* Code compiles as clean as possible with icc 8.1 and gcc 4.0
 
 	* Prohibit double definition of cmp_nm with icc
 
