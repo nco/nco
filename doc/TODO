@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.523 2005-06-09 05:51:51 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.524 2005-06-09 07:01:37 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -120,7 +120,6 @@ nco177. Make RPM production allowable by non-root, since building RPMs as sudo r
 nco179. Add netCDF to required packages list in RPM build?
 nco182. Add -L, --license switch to print license terms (as suggested by GNU coding style)
 nco187. Are OpenMP critical regions sufficient for netCDF or must all other threads stop completely?
-nco189. Verify ncrcat multithreading works, produced "not a netCDF file error" once
 nco190. Make typ_pck et al. use nc_type enum or something sane for default
 nco192. ncdiff will sometimes subtract files of incommensurate sizes without complaint
 ncks -O -v one_dmn_rec_var -d time,0,1 in.nc foo1.nc
@@ -134,7 +133,6 @@ nco199. Internationalize (i18n) NCO with gettext()
 nco203. Perform benchmarking tests to quantify arithmetic performance improvements, I/O bottlenecks, etc.
 nco206. Add sample NCO script, such as dst.sh, to doc directory
 nco209. Add rules to automagically make MANIFEST and update Sourceforge download area
-nco214. Disable threads > 1 on SGI temporarily because thread #0 does all work, why?
 nco215. nco_var_cnf_dmn() does not abort when variables do not conform because dimension list of one is subset of other but ORDER of dimensions differs, e.g., a(lat,lev,lon) !~ b(lon,lev). Attempting this will return incorrect answers!
 nco222. Warn when ncea/ncra/ncrcat/ncecat operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
 nco225. Pass aed by reference in nco_aed_prc()
@@ -203,7 +201,6 @@ nco324. Add release date to "Version Summary" section on homepage
 nco326. Add manual override of writing *tmp* file for intermediate results?
 nco328. Ability to reverse specified dimensions (use negative stride?)
 nco333. Clean up preprocessor symbols with cd ~/nco/src/nco;ifnames *.c
-nco334. Same as nco354. 
 nco335. ncflint: implement interpolation/mss_val algorithms two and three as options?
 nco336. Allow input file lists to be specified in a text file and to supercede command line arguments. This will be useful on platforms with limited buffers for command line arguments and globbing expansions (e.g., AIX)
 nco337. When input file is a symbolic link, print name of linked-to-file as debugging information
@@ -211,13 +208,10 @@ nco340. o/a/e stdin is overwritten when stdin input method used
 cd ~/nco/data;echo "in.nc" | ncecat -D 3 -o foo.nc
 nco342. Get canonicalize_file_name() working in nco_fl_info_get()
 nco344. Create sophisticated etags regular expressions for change version number in all documentation tags_doc.sh
-************** Important ***************************
-nco345. OpenMP implementation in ncwa core dumps on AIX ESMF: wgt_avg problem?
-ncwa -t 2 -D 5 -O -C -a wvl -v ss_co_alb ${DATA}/mie/mie_1.nc ${DATA}/mie/foo_avg_1.nc    
 nco351. Ask Jim Edwards to fix make test rtld errors on AIX with OpenMP Related to nco352. 
 nco352. Probably related to 351: OpenMP directive must appear in main() or ldd will not associate /usr/lib/libxlsmp.a(smprt_64.o) with executable so rtld errors occur on AIX
 ************** Important ***************************
-nco354. ncwa dumps core on AIX ESMF on large files regardless of OpenMP (related to nco334, nco345): 
+nco354. ncwa dumps core on AIX ESMF on large files regardless of OpenMP (related to nco334): 
 ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA}/mie/mie_1000000.nc ${DATA}/mie/foo_avg_1000000.nc (works)
 ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA}/mie/mie_10000000.nc ${DATA}/mie/foo_avg_10000000.nc (fails)
 fails with 
@@ -232,7 +226,6 @@ nco386. Remove purely diagnostic arrays from nco_var_dmn_rdr_mtd(), nco_var_dmn_
 nco389. ncpdq: Single dimension in re-order list with no negative sign is always identity transformation, warn? exit?
 nco390. ncpdq: make -a optional? (all switches are optional in all other operators)
 nco392. OpenMP: thread main loop of ncatted
-nco393. OpenMP: thread main loop of ncflint
 nco395. ncpdq: document rdr shr lists
 nco396. free() memory at end of each operator
 nco397. make ncpack symbolic link to ncpdq? Re-order/pack are completely independent yet need same structure of program
@@ -283,13 +276,6 @@ nco514. My MPI builds call superfluous linker steps:
         make MPI=Y > foo 2>&1
 nco516. Implement SDO-wide data pipes, e.g., ncra in*.nc | ncwa | ncrename t,tpt foo.nc
         This would bring us one step closer to grid services, too
-nco523. Threaded ncwa fails on ESMF, OpenMP:
-        ncwa -t 1 -D 5 -O -C ~/nco/data/in.nc ~/foo.nc # Works
-        ncwa -t 2 -D 5 -O -C ~/nco/data/in.nc ~/foo.nc # Fails
-        ncwa -t 2 -D 4 -O -C -v '^rec+.*' ~/nco/data/in.nc ~/foo.nc # Fails
-# Breaks with AIX with any two one dimensional variables so long as at least one is NC_INT, neither needs missing_values (phew, ruling out missing values is helpful)
-        ncwa -t 2 -D 4 -O -C -v date,one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc # Fails
-        ncwa -t 2 -D 4 -O -C -v one_dmn_int_val_one,one_dmn_int_val_two ~/nco/data/in.nc ~/foo.nc # Fails
 nco524. DODS/OPeNDAP memory leak
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncrcat -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l /tmp/data in.nc in.nc foo.nc > ~/foo 2>&1
 	ncrcat -O -C -l /tmp -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
@@ -302,17 +288,9 @@ nco527. Purify ncatted memory:
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,att_var,d,,, -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 nco530. change all ctime() to ctime_r() like in ncatted?
 nco533. Implement C99 mathematical special functions: lgamma_r, j0, j1, jn, y0, y1, yn
-nco535. icc valgrind ncbo problem: 
-	ncra -Y ncrcat -O -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/nco/data/in.nc ~/foo1.nc
-	ncra -O -y avg -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/nco/data/in.nc ~/foo2.nc
-	ncwa -O -a time ~/foo2.nc ~/foo3.nc
-	ncdiff -O -v rec_var_flt_mss_val_dbl ~/foo1.nc ~/foo3.nc ~/foo4.nc
-	ncra -O -y rms -v rec_var_flt_mss_val_dbl ~/foo4.nc ~/foo5.nc
-	ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl ~/foo5.nc
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncdiff -O -v rec_var_flt_mss_val_dbl ~/foo1.nc ~/foo3.nc ~/foo4.nc > ~/foo 2>&1
 nco536. test un-reverting critical patches now that threads are working
-nco537. ncwa still has lost memory:
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -D 3 -O -C -a lat,lon,time -w gw -m gw -v PS -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+nco537. ncwa may still lose some memory, but only when threading enabled:
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -t 2 -D 3 -O -C -a lat,lon,time -w gw -m gw -v PS -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 nco538. review ncecat threading: why are fl_lst_in,in_id,var_prc firstprivate not shared?
 nco539. 
 
@@ -326,20 +304,20 @@ Valgrind:
 Archive valgrind commands which are memory-error and leak-free
 These form regression test for memory problems
 1. ncbo
-valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncbo -O -C -d lon,1 -p ${HOME}/nco/data -l /tmp in.nc in.nc ~/foo.nc > ~/foo 2>&1
+valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncbo -t 2 -O -C -d lon,1 -p ${HOME}/nco/data -l /tmp in.nc in.nc ~/foo.nc > ~/foo 2>&1
 2. ncecat
-valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncecat -O -C -D 3 -d lon,1 -n 3,4,1 -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc ~/foo.nc > ~/foo 2>&1
+valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncecat -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc ~/foo.nc > ~/foo 2>&1
 3. ncpdq
-valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncpdq -O -D 3 -a lat,lev,lon -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -P ~/foo.nc > ~/foo 2>&1
+valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncpdq -t 2 -O -D 3 -a lat,lev,lon -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -P ~/foo.nc > ~/foo 2>&1
 4. ncwa
-valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -D 3 -O -C -a lat,lon,time -w gw -m gw -v PS -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
-callgrind ncwa -D 3 -O -C -w gw -m gw -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
-valgrind --suppressions=${HOME}/c++/valgrind.txt --tool=callgrind ncwa -D 3 -O -C -a lat,lon,time -w gw -m gw -v PS -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -D 3 -t 2 -O -C -a lat,lon,time -w gw -m gw -v PS -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+callgrind ncwa -D 3 -t 2 -O -C -w gw -m gw -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+valgrind --suppressions=${HOME}/c++/valgrind.txt --tool=callgrind ncwa -D 3 -t 2 -O -C -a lat,lon,time -w gw -m gw -v PS -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 kcachegrind ncwa &
 5. ncra
-valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncra -O -C -D 3 -d lon,1 -n 3,4,1 -v one_dmn_rec_var_sng -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc foo.nc > ~/foo 2>&1
+valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncra -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -v one_dmn_rec_var_sng -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc foo.nc > ~/foo 2>&1
 6. ncflint
-valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncflint -O -C -d lon,1 -p ${HOME}/nco/data -l /tmp in.nc in.nc ~/foo.nc > ~/foo 2>&1
+valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncflint -t 2 -O -C -d lon,1 -p ${HOME}/nco/data -l /tmp in.nc in.nc ~/foo.nc > ~/foo 2>&1
 7. ncks
 valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncks -O -C -d lat,1,1 -d lev,2,2 -d lon,0,3 -d lon,1,3 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 8. ncrename

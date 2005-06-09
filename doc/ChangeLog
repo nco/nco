@@ -1,18 +1,36 @@
 2005-06-08  Charlie Zender  <zender@uci.edu>
 
+	* Change thr_nbr_max_fsh from 1 to 2 for ncrcat
+
+	* Change thr_nbr_max_fsh from unlimited to 2 for ncecat
+	
+	* Change thr_nbr_max_fsh from 1 to unlimited for ncwa
+
+	* Change thr_nbr_max_fsh from 4 to unlimited for ncbo
+
+	* Marked TODO nco325, nco345, nco523, nco189, nco214 as resolved
+
+	* Re-ran all valgrind tests on soot with two threads enabled
+	All operator appear memory clean in NCO portions except ncwa
+	ncwa may have a few unfree()d buffers but hard to tell with
+	valgrind version 2.2 which does not have good tracebacks.
+	Threading library has plenty of unfree'd memory which apparently 
+	is harmless and there's nothing to be done about that anyway.
+
+	* ncbo memory problems disappeared
+
 	* Add calls to nco_omp_ini() and nco_thr_att_cat() in ncecat
 	This fixes problem where thr_nbr was being set but not used
 
 	* Use icc warnings to improve printf() formatting in nco_prn.c
 
-	* Optimizid bld/Makefile icc switches for OPTS=O,R,D,X
+	* Optimize bld/Makefile icc switches for OPTS=O,R,D,X
 
 	* Do not pass --thr_nbr to ncatted in nco_bm.pl
 
 	* Change DO_CONFORM_MSK,DO_CONFORM_WGT from private to
 	firstprivate and make sure both always have default values
 	This fixed all ncwa regressions with threads!
-	Discovered memory problems with ncbo with threads though...
 	
 	* icc-compiled version passes regression test perfectly on soot
 	only when threading is disabled at compile time, e.g., OMP=N.

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.176 2005-06-09 00:44:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.177 2005-06-09 07:01:47 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.176 2005-06-09 00:44:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.176 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.177 2005-06-09 07:01:47 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.177 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -887,11 +887,6 @@ main(int argc,char **argv)
       /* Free tally buffer */
       var_prc_out[idx]->tally=(long *)nco_free(var_prc_out[idx]->tally);
       
-#if 0
-      /* Unfortunately, this debugging line seems to fix nco523 for two threads
-	 This often happens with SMP bugs that are timing-dependent */
-      if(dbg_lvl > 3) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco523. Calling nco_var_cnf_typ() for variable %s with var_id=%d, var_val->dp[0]=%g, var_typ = %s, var_typ_upk = %s,\n",prg_nm_get(),var_prc_out[idx]->nm,var_prc_out[idx]->id,var_prc_out[idx]->val.dp[0],nco_typ_sng(var_prc_out[idx]->type),nco_typ_sng(var_prc_out[idx]->typ_upk));
-#endif /* !0 */
       /* Revert any arithmetic promotion but leave unpacked (for now) */
       var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
       
