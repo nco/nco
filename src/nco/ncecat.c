@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.97 2005-05-26 23:23:53 mangalam Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.98 2005-06-09 05:51:52 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.97 2005-05-26 23:23:53 mangalam Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.97 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.98 2005-06-09 05:51:52 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.98 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRv:xt:Z-:";
 
   dmn_sct *rec_dmn;
@@ -395,6 +395,10 @@ main(int argc,char **argv)
 
   } /* end if */
 
+  /* Initialize thread information */
+  thr_nbr=nco_openmp_ini(thr_nbr);
+  if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
+  
   /* Define dimensions in output file */
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
@@ -471,56 +475,56 @@ main(int argc,char **argv)
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
 
-/* OpenMP with threading over variables, not files */
+    /* OpenMP with threading over variables, not files */
+    /* fxm: TODO nco539: why are fl_lst_in,in_id,var_prc firstprivate not shared? */
 #ifdef _OPENMP
-#pragma omp parallel for default(none) firstprivate(fl_lst_in,in_id,var_prc) private(idx) shared(fl_nbr, nbr_var_prc, dbg_lvl, var_prc_out, idx_rec_out, out_id)
-#endif    /* !_OPENMP */
-	 
+#pragma omp parallel for default(none) firstprivate(fl_lst_in,in_id,var_prc) private(idx) shared(fl_nbr,nbr_var_prc,dbg_lvl,var_prc_out,idx_rec_out,out_id)
+#endif /* !_OPENMP */
+    
     /* Process all variables in current file */
-	for(idx=0;idx<nbr_var_prc;idx++){
-		if(dbg_lvl > 1) (void)fprintf(fd_stderr,"%s, ",var_prc[idx]->nm);
-		if(dbg_lvl > 0) (void)fflush(fd_stderr);
-		/* Variables may have different IDs and missing_values in each file */
-		(void)nco_var_refresh(in_id,var_prc[idx]);
-		/* Retrieve variable from disk into memory */
-		(void)nco_var_get(in_id,var_prc[idx]);
-		/* Size of record dimension is 1 in output file */
-		var_prc_out[idx]->cnt[0]=1L;
-		var_prc_out[idx]->srt[0]=idx_rec_out;
-		/* Write variable into current record in output file */
-
+    for(idx=0;idx<nbr_var_prc;idx++){
+      if(dbg_lvl > 1) (void)fprintf(fd_stderr,"%s, ",var_prc[idx]->nm);
+      if(dbg_lvl > 0) (void)fflush(fd_stderr);
+      /* Variables may have different IDs and missing_values in each file */
+      (void)nco_var_refresh(in_id,var_prc[idx]);
+      /* Retrieve variable from disk into memory */
+      (void)nco_var_get(in_id,var_prc[idx]);
+      /* Size of record dimension is 1 in output file */
+      var_prc_out[idx]->cnt[0]=1L;
+      var_prc_out[idx]->srt[0]=idx_rec_out;
+      /* Write variable into current record in output file */
+      
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
-		{ /* begin OpenMP critical bc need to sync threads to write */
-			if(var_prc[idx]->nbr_dim == 0){
-				(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc[idx]->type);
-			}else{ /* end if variable is a scalar */
-				(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc[idx]->type);
-			} /* end if variable is array */
-			/* Free current input buffer */
-			var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
-		}/* end OpenMP critical */
-			
-	} /* end loop over idx */
-	/*	return to single thread execution*/
-    idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
-    
+      { /* begin OpenMP critical */
+	if(var_prc[idx]->nbr_dim == 0){
+	  (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc[idx]->type);
+	}else{ /* end if variable is a scalar */
+	  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc[idx]->type);
+	} /* end if variable is array */
+	/* Free current input buffer */
+	var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+      } /* end OpenMP critical */
+      
+    } /* end (OpenMP parallel for) loop over idx */
     if(dbg_lvl > 1) (void)fprintf(stderr,"\n");
+
+    idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
     
     /* Close input netCDF file */
     nco_close(in_id);
     
     /* Remove local copy of file */
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
-
+    
   } /* end loop over fl_idx */
   
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
   /* ncecat-specific memory cleanup */
-
+  
   /* NCO-generic clean-up */
   /* Free individual strings */
   if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);

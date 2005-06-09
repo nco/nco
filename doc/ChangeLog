@@ -1,5 +1,10 @@
 2005-06-08  Charlie Zender  <zender@uci.edu>
 
+	* 
+
+	* Add calls to nco_omp_ini() and nco_thr_att_cat() in ncecat
+	This fixes problem where thr_nbr was being set but not used
+
 	* Use icc warnings to improve printf() formatting in nco_prn.c
 
 	* Optimizid bld/Makefile icc switches for OPTS=O,R,D,X

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.522 2005-06-09 05:27:22 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.523 2005-06-09 05:51:51 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -313,7 +313,8 @@ nco535. icc valgrind ncbo problem:
 nco536. test un-reverting critical patches now that threads are working
 nco537. ncwa still has lost memory:
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -D 3 -O -C -a lat,lon,time -w gw -m gw -v PS -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
-nco538. 
+nco538. review ncecat threading: why are fl_lst_in,in_id,var_prc firstprivate not shared?
+nco539. 
 
 MPI:
 Archive MPI tests which appear to run correctly 
