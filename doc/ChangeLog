@@ -1,7 +1,12 @@
 2005-06-09  Charlie Zender  <zender@uci.edu>
 
+	* Revert patches to known working state (i.e., make reads critical) 
+	
 	* Temporarily un-revert critical region patches in nco_var_get.c
-
+	With icc and xlc_r, this causes variable numbers of ncra and ncwa 
+	regressions. Usually many more ncra than ncwa.
+	icc/valgrind combination gives capability to narrow down causes.
+	
 2005-06-08  Charlie Zender  <zender@uci.edu>
 
 	* Change thr_nbr_max_fsh from 1 to 2 for ncrcat
