@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.521 2005-06-09 01:07:48 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.522 2005-06-09 05:27:22 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -311,7 +311,9 @@ nco535. icc valgrind ncbo problem:
 	ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl ~/foo5.nc
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncdiff -O -v rec_var_flt_mss_val_dbl ~/foo1.nc ~/foo3.nc ~/foo4.nc > ~/foo 2>&1
 nco536. test un-reverting critical patches now that threads are working
-nco537. 
+nco537. ncwa still has lost memory:
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -D 3 -O -C -a lat,lon,time -w gw -m gw -v PS -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+nco538. 
 
 MPI:
 Archive MPI tests which appear to run correctly 

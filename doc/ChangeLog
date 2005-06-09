@@ -1,5 +1,9 @@
 2005-06-08  Charlie Zender  <zender@uci.edu>
 
+	* Use icc warnings to improve printf() formatting in nco_prn.c
+
+	* Optimizid bld/Makefile icc switches for OPTS=O,R,D,X
+
 	* Do not pass --thr_nbr to ncatted in nco_bm.pl
 
 	* Change DO_CONFORM_MSK,DO_CONFORM_WGT from private to

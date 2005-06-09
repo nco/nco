@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.20 2005-04-14 06:21:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.21 2005-06-09 05:27:22 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -219,7 +219,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   }else{
     long var_sz=1L;
 
-    (void)fprintf(stdout,"%s memory size is %ld*nco_typ_lng(%s) = %ld*%lu = %ld bytes\n",var_nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
+    (void)fprintf(stdout,"%s memory size is %ld*nco_typ_lng(%s) = %ld*%lu = %lu bytes\n",var_nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
   } /* end if variable is a scalar */
   (void)fflush(stdout);
   
@@ -369,7 +369,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
   /* Allocate enough space to hold variable */
   var.val.vp=(void *)nco_malloc(var.sz*nco_typ_lng(var.type));
   if(var.val.vp == NULL){
-    (void)fprintf(stderr,"%s: ERROR unable to malloc() %ld bytes for %s\n",prg_nm_get(),var.sz*nco_typ_lng(var.type),var.nm);
+    (void)fprintf(stderr,"%s: ERROR unable to malloc() %lu bytes for %s\n",prg_nm_get(),var.sz*nco_typ_lng(var.type),var.nm);
     nco_exit(EXIT_FAILURE);
   } /* end if */
 

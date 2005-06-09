@@ -1,8 +1,9 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.281 2005-06-08 23:54:50 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.282 2005-06-09 05:27:10 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
 # scp ~/nco/bld/Makefile dust.ess.uci.edu:nco/bld
+# scp ~/nco/bld/Makefile soot.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile esmf.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile goldhill.cgd.ucar.edu:nco/bld
 
@@ -754,19 +755,20 @@ endif # endif LINUXAMD64
 endif # endif GNU Compiler Collection
 # Intel (Kai) C Compiler
 ifneq (${null},$(findstring icc,${CC}))
- CFLAGS := 
+ CFLAGS := -Wall -wd810,981,1572
+ CPPFLAGS += -no-gcc
  OMP_FLG := -openmp -openmp_report0
 ifeq (${OPTS},O)
- CFLAGS += -O -g
+ CFLAGS += -O3 -g -ipo
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g
 endif
 ifeq (${OPTS},R)
- CFLAGS +=
+ CFLAGS += 
 endif
 ifeq (${OPTS},X)
- CFLAGS += -g -inline_debug_info
+ CFLAGS += -g -Wall -inline_debug_info
 endif
  CXXFLAGS := ${CFLAGS}
 endif # endif Intel (Kai) C Compiler

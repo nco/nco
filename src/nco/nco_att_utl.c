@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.53 2005-05-23 06:48:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.54 2005-06-09 05:27:22 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -508,8 +508,6 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
      Write attribute att_nm with value att_val to variable var_nm, overwriting existing attribute att_nm, if any.
      This is default mode.
    */
-
-  void nco_usg_prn(void);
 
   char **arg_lst;
 
