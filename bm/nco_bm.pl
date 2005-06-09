@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #currently on esmf only
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.28 2005-06-08 23:54:50 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.29 2005-06-09 00:48:34 zender Exp $
 
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
@@ -474,7 +474,7 @@ sub perform_tests
 ####################
     $opr_nm='ncatted';
 ####################
-    $tst_cmd[0]='ncatted ' . $omp_flg . ' -O -a units,,m,c,"meter second-1" in.nc foo.nc';
+    $tst_cmd[0]='ncatted -O -a units,,m,c,"meter second-1" in.nc foo.nc';
     $tst_cmd[1]='ncks -C -H -s "%s" -v lev foo.nc | grep units | cut -d " " -f 11-12';
     $dsc_sng='Modify all existing units attributes to meter second-1';
     $nsr_xpc="meter second-1";

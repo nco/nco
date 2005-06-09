@@ -1,8 +1,12 @@
 2005-06-08  Charlie Zender  <zender@uci.edu>
 
+	* Do not pass --thr_nbr to ncatted in nco_bm.pl
+
 	* Change DO_CONFORM_MSK,DO_CONFORM_WGT from private to
 	firstprivate and make sure both always have default values
-
+	This fixed all ncwa regressions with threads!
+	Discovered one double free with ncra though...
+	
 	* icc-compiled version passes regression test perfectly on soot
 	only when threading is disabled at compile time, e.g., OMP=N.
 	With threading enabled, code fails many tests (1 ncra and 22 ncwa)
