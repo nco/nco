@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.80 2005-06-09 05:33:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.81 2005-06-09 17:34:19 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -607,16 +607,16 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   if(False) (void)fprintf(stdout,"%s: DEBUG: fxm TODO nco354. Calling nco_get_vara() for variable %s with nc_id=%d, var_id=%d, var_srt=%li, var_cnt = %li, var_val = %g, var_typ = %s\n",prg_nm_get(),var->nm,nc_id,var->id,var->srt[0],var->cnt[0],var->val.dp[0],nco_typ_sng(var->typ_dsk));
   /* 20050519: Not sure why I originally following nco_get_var*() routines SMP-critical
      netCDF library interface is designed to allow parallel reads */
-#ifdef _OPENMP
-#pragma omp critical
-#endif /* _OPENMP */
-  { /* begin OpenMP critical */
+  //  #ifdef _OPENMP
+  //  #pragma omp critical
+  //  #endif /* _OPENMP */
+  //  { /* begin OpenMP critical */
     if(var->sz > 1){
       (void)nco_get_vara(nc_id,var->id,var->srt,var->cnt,var->val.vp,var->typ_dsk);
     }else{
       (void)nco_get_var1(nc_id,var->id,var->srt,var->val.vp,var->typ_dsk);
     } /* end else */
-  } /* end OpenMP critical */
+    //  } /* end OpenMP critical */
   
   /* Packing properties initially obtained by nco_pck_dsk_inq() in nco_var_fll()
      Multi-file operators (MFOs) call nco_var_get() multiple times for each variable
@@ -647,9 +647,9 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
     /* Arithmetic operators must unpack variables before performing arithmetic
        Otherwise arithmetic will produce garbage results */
     /* 20050519: Not sure why I originally made nco_var_upk() call SMP-critical */
-#ifdef _OPENMP
-#pragma omp critical
-#endif /* _OPENMP */
+    //#ifdef _OPENMP
+    //#pragma omp critical
+    //#endif /* _OPENMP */
     if(var->pck_dsk) var=nco_var_upk(var);
   } /* endif arithmetic operator */
   
@@ -1264,10 +1264,10 @@ nco_var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
   var->nc_id=nc_id;
 
   /* 20050519: Not sure why I originally made next three calls SMP-critical */
-#ifdef _OPENMP
-#pragma omp critical
-#endif /* _OPENMP */
-  { /* begin OpenMP critical */
+  //#ifdef _OPENMP
+  //#pragma omp critical
+  //#endif /* _OPENMP */
+  //  { /* begin OpenMP critical */
     (void)nco_inq_varid(var->nc_id,var->nm,&var->id);
     
     /* fxm: Not sure if/why necessary to refresh number of dimensions...but it should not hurt */
@@ -1276,7 +1276,7 @@ nco_var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
     
     /* Refresh number of attributes and missing value attribute, if any */
     var->has_mss_val=nco_mss_val_get(var->nc_id,var);
-  } /* end OpenMP critical */
+    //  } /* end OpenMP critical */
   
   /* PJR requested warning to be added when multiple file operators worked on 
      variables with missing_value since so many things could go wrong */

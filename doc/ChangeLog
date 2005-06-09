@@ -1,3 +1,7 @@
+2005-06-09  Charlie Zender  <zender@uci.edu>
+
+	* Temporarily un-revert critical region patches in nco_var_get.c
+
 2005-06-08  Charlie Zender  <zender@uci.edu>
 
 	* Change thr_nbr_max_fsh from 1 to 2 for ncrcat
