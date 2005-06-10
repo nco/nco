@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.285 2005-06-10 04:15:50 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.286 2005-06-10 04:19:28 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -220,7 +220,6 @@ endif # endif LINUXAMD64
 ifeq (${PVM_ARCH},LINUXALPHA)
  LINUX_FC := g77
 endif # endif LINUXALPHA
-endif # endif LINUX_CC
 endif # endif LINUX
 
 # OpenMP

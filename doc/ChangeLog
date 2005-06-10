@@ -1,5 +1,7 @@
 2005-06-09  Charlie Zender  <zender@uci.edu>
 
+	* Change default AMD64 compiler to gcc-4.0
+
 	* Revert patches to known working state (i.e., make reads critical) 
 	
 	* Temporarily un-revert critical region patches in nco_var_get.c

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.30 2005-01-10 07:36:59 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.31 2005-06-10 04:22:39 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -148,16 +148,22 @@ ifndef LINUX_FC
  #LINUX_FC := lf95
  #LINUX_FC := ifort
  #LINUX_FC := pgf90
+endif # endif LINUX_CC
 ifeq (${PVM_ARCH},LINUXAMD64)
+ifndef LINUX_CXX
 # GCC 3.3 fails in atomicity.h with -O, -O0, and -O2 so use 3.4 instead 
- LINUX_CXX := g++-3.4
- LINUX_CC := gcc-3.4 -std=c99 -pedantic -D_BSD_SOURCE
+ LINUX_CXX := g++-4.0
+endif # endif LINUX_CXX
+ifndef LINUX_CC
+ LINUX_CC := gcc-4.0 -std=c99 -pedantic -D_BSD_SOURCE
+endif # endif LINUX_CC
+ifndef LINUX_FC
  LINUX_FC := g95
+endif # endif LINUX_FC
 endif # endif LINUXAMD64
 ifeq (${PVM_ARCH},LINUXALPHA)
  LINUX_FC := g77
 endif # endif LINUXALPHA
-endif # endif LINUX_FC
 endif # endif LINUX
 ifeq (${PRC},D)
  USR_TKN := -DPRC_DBL ${USR_TKN}
