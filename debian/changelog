@@ -1,3 +1,9 @@
+nco (3.0.1-1) unstable; urgency=medium
+
+  * Memory purification, ncap exponentiation bugfix, threading bugfix
+
+ -- Charlie Zender <zender@uci.edu>  Fri, 10 Jun 2005 10:46:09 -0700
+
 nco (3.0.0-1) unstable; urgency=low
 
   *  1. ncap bugfix 2. Add benchmarking	3. libnco_c++ implements nco_var_puta()

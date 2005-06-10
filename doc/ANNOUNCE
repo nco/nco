@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.143 2005-06-09 18:51:36 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.144 2005-06-10 18:08:43 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.0.1 are ready. 
 
@@ -9,6 +9,9 @@ Version 3.0.1 contains mainly build and benchmarking improvements.
 The only user-visible change is one more tweak to the default ncks
 printing behavior. There is an important bug-fix for ncap so
 ncap users should upgrade. 
+Threading is much improved and has been enabled on all arithmetic
+operators. Users with SMP machines and OpenMP compilers who want
+faster processing should upgrade too.
 
 1. ncks printing behavior:
    ncks in.nc : Prints all data and metadata
@@ -17,38 +20,33 @@ ncap users should upgrade.
    ncks -H in.nc : Prints only variable data
    See http://nco.sf.net/nco.html#ncks for details.
 
-2. Benchmarks (Harry Mangalam):
+2. Benchmarks (Harry Mangalam): nco/bm/nco_bm.pl benchmarks NCO.
+   It also runs the regression tests. Running nco_bm.pl, e.g., with
 
-3. ncap exponentiation bugfix. Versions < 3.0.1 incorrectly
+   nco_bm.pl --bench --udpreport
+   nco_bm.pl --regress --udpreport
+
+   exercises NCO and sends the timing reports and your credit card
+   infomation back to NCO central. Remove --udpreport if worried.
+
+3. ncap exponentiation (Henry Butowsky): Versions < 3.0.1 incorrectly 
    handle exponentiation of a variable to a variable power
    (V^V). We recommend that all ncap users upgrade.
 
 4. All operators except ncap are now memory pure.
-   No uninitialized memory is referenced, and
-   no unfree'd or "still reachable" memory exists at operator exit.
-   valgrind is used to verify this.
-   Actually, system libraries and libnetcdf.a have minor
-   memory transgressions.
-   The point is that NCO causes no memory leaks.
+   No uninitialized memory is referenced, and no unfree'd or "still
+   reachable" memory exists at operator exit, according to valgrind.
+   Actually, system libraries and libnetcdf.a have minor memory
+   transgressions. The point is that NCO causes no memory leaks.
+
+5. Threading: ncwa is now threaded by default, with potentially 
+   large performance benefits. Many more operators have threading 
+   enabled with smaller benefits. Next version we will try to remove
+   remaining critical regions for increased performance.
+
+Future: We anticipate one more stability-oriented release (3.0.2),
+followed by the MPI-enabled NCO (3.1).
 
 Enjoy,
 Charlie
-
-Feature changes:
-1. Numerous improvements to threading all operators
-
-Bug-fixes:
-1. ncap exponentiation bugfix
-
-Build changes:
-1. Fix Mac OS X build problem cause by struct rusage
-2. Improve intel compiler support
-
-Other user-visible changes:
-1. fxm
-
-User-invisible changes:
-1. All operators except for ncap have been memory-purified
-   This means there are no known memory errors, memory leaks,
-   or unfree()'d memory.
    

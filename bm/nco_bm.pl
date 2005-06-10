@@ -1,10 +1,12 @@
 #!/usr/bin/env perl
-#currently on esmf only
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.29 2005-06-09 00:48:34 zender Exp $
+# Currently env needed on esmf only
+
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.30 2005-06-10 18:08:42 zender Exp $
 
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
 # <BUILD_ROOT>/nco/bld/nco_bm.pl ncra # Test one operator
+# scp ~/nco/bm/nco_bm.pl esmf.ess.uci.edu:nco/bm
 
 # NB: When adding tests, _be sure to use -O to overwrite files_
 # Otherwise, script hangs waiting for interactive response to overwrite queries
@@ -429,7 +431,7 @@ sub perform_tests
     
     $tst_cmd[0]='ncap -O -C -v -s "foo=log(e_flt)^1" in.nc foo.nc';
     $tst_cmd[1]='ncks -C -H -s "%.6f\n" foo.nc';
-    $dsc_sng='Testing foo=log(e_flt)^1 (fails on AIX TODO ncap57,72)';
+    $dsc_sng='Testing foo=log(e_flt)^1 (known failure on AIX TODO ncap57,72)';
     $nsr_xpc ="1.000000";
     &go();
     
@@ -447,13 +449,13 @@ sub perform_tests
 
     $tst_cmd[0]='ncap -O -C -v -s "foo=erf(1)" in.nc foo.nc';
     $tst_cmd[1]='ncks -C -H -s "%.12f\n" foo.nc';
-    $dsc_sng='Testing foo=erf(1) (fails on AIX TODO ncap71,72)';
+    $dsc_sng='Testing foo=erf(1) (Feature :) Only works on Linux, TODO ncap71,72)';
     $nsr_xpc ="0.842701";
     &go();
 
     $tst_cmd[0]='ncap -O -C -v -s "foo=gamma(0.5)" in.nc foo.nc';
     $tst_cmd[1]='ncks -C -H -s "%.12f\n" foo.nc';
-    $dsc_sng='Testing foo=gamma(0.5) (fails on AIX TODO ncap70,72)';
+    $dsc_sng='Testing foo=gamma(0.5) (Feature :) Only works on Linux, TODO ncap70,72)';
     $nsr_xpc ="1.772453851";
     &go();
     

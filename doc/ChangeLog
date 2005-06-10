@@ -1,3 +1,18 @@
+2005-06-10  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-3_0_1
+	Changes since nco-3_0_0: 1. ncap exponentiation 2. ncwa threading
+	3. intel icc compatibility 4. Improved benchmarking
+
+	* Simplify treatment of math symbol table
+	C99 mandates support for 
+	erf(), erfc(),tgamma(), acosh(), asinh(), atanh(), cosh(), sinh(), tanh()
+	Some OS's, like Linux, Solaris, provide these without C99.
+	Many others (AIX, SGI*, WIN32) do not.
+	Complicating things, many C99 implementations, e.g., AIX xlc, do
+	not yet support these functions.
+	Hence, ncap only supports them on Linux machines.
+	
 2005-06-09  Charlie Zender  <zender@uci.edu>
 
 	* Change default AMD64 compiler to gcc-4.0

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.164 2005-06-10 16:49:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.165 2005-06-10 18:09:01 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -33,7 +33,7 @@
    ncap -O -D 1 -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
    ncap -O -D 1 -s a=b+c -s "b=c-d/2." -S ncap.in in.nc foo.nc
    ncap -O -D 1 -s two=one+two in.nc foo.nc
-   scp ~/nco/src/nco/ncap.c dataproc.ucar.edu:nco/src/nco/ncap.c */
+   scp ~/nco/src/nco/ncap.c esmf.ess.uci.edu:nco/src/nco/ncap.c */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h> /* Autotools tokens */
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.164 2005-06-10 16:49:15 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.164 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.165 2005-06-10 18:09:01 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.165 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -415,21 +415,29 @@ main(int argc,char **argv)
      LINUX*, MACOSX*, and SUN* provide these functions with C89
      20020122 and 20020422: AIX, CRAY, SGI*, WIN32 do not define erff(), erfcf(), gammaf() with C89
      20050610: C99 mandates support for erf(), erfc(), tgamma()
-     Users without C99 will have to forego ncap */
+     Eventually users without C99 will forego ncap */
+#if defined(LINUX) || defined(LINUXAMD64)
   sym_tbl[sym_idx++]=ncap_sym_init("erf",erf,erff);
   sym_tbl[sym_idx++]=ncap_sym_init("erfc",erfc,erfcf);
   sym_tbl[sym_idx++]=ncap_sym_init("gamma",tgamma,tgammaf);
-  
+#else /* !LINUX */
+  sym_tbl_nbr-=3; /* Advanced math: erf, erfc, gamma */
+#endif /* !LINUX */
+
   /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh
      20020703: AIX, SGI*, WIN32 do not define acoshf, asinhf, atanhf
      20050610: C99 mandates support for acosh(), asinh(), atanh(), cosh(), sinh(), tanh()
-     Users without C99 will have to forego ncap */
+     Eventually users without C99 will forego ncap */
+#if defined(LINUX) || defined(LINUXAMD64)
   sym_tbl[sym_idx++]=ncap_sym_init("acosh",acosh,acoshf);
   sym_tbl[sym_idx++]=ncap_sym_init("asinh",asinh,asinhf);
   sym_tbl[sym_idx++]=ncap_sym_init("atanh",atanh,atanhf);
   sym_tbl[sym_idx++]=ncap_sym_init("cosh",cosh,coshf);
   sym_tbl[sym_idx++]=ncap_sym_init("sinh",sinh,sinhf);
   sym_tbl[sym_idx++]=ncap_sym_init("tanh",tanh,tanhf);
+#else /* !LINUX */
+  sym_tbl_nbr-=6; /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
+#endif /* !LINUX */
   
   /* 20020703: AIX, MACOSX, SGI*, WIN32 do not define rintf
      Only LINUX* supplies all of these and I do not care about them enough
