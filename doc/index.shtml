@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.287 2005-06-10 18:08:44 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.288 2005-06-11 00:07:13 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -662,6 +662,7 @@ support <tt>nc_type NC_NAT</tt> in NCO source code.
 <!-- http://nco.sf.net#bld_ncap -->
 <a name="bld_ncap"></a>
 <li><i><tt>ncap</tt> build problems:</i>
+<tt>ncap</tt> is a very sophisticated and fragile program.
 <tt>ncap</tt> requires <tt>flex</tt> to build correctly.
 AT&T <tt>lex</tt> will not work because it does not understand
 <tt>EOF</tt> rules that <tt>ncap_lex.l</tt> uses.
@@ -671,6 +672,8 @@ later versions of <tt>bison</tt> work correctly.
 <tt>bison</tt> version 1.25 will not build <tt>ncap</tt> on Solaris.
 Please upgrade <tt>bison</tt> to the latest version (e.g., 1.875+)
 before reporting <tt>ncap</tt> build problems.
+If <tt>ncap</tt> keeps you from building NCO, and you do not need
+<tt>ncap</tt>, try configuring with <tt>--disable-ncap</tt>.
 </li>
 
 <!-- http://nco.sf.net#bld_DODS -->
