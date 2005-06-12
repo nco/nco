@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.100 2005-06-11 00:07:08 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.101 2005-06-12 21:09:43 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -525,16 +525,14 @@ Works fine with native compilers
 ************************************************************************
 zender@flagstaff:~/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess
 SUNMP
-SunOS goldhill 5.6 Generic_105181-19 sun4u sparc SUNW,Ultra-2
-bash-2.03$ pvmgetarch;uname -a;~/nco/autobld/config.guess
-SUNMP
-SunOS usf-cf-sparc-solaris-2 5.8 Generic_108528-15 sun4u sparc SUNW,Ultra-60
+SunOS goldhill 5.9 Generic_117171-12 sun4u sparc SUNW,Ultra-60
+sparc-sun-solaris2.9
 
 For ABI=64:
 cc/CC:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='/opt/SUNWspro/bin/cc' CXX='/opt/SUNWspro/bin/CC' FC='/opt/SUNWspro/bin/f90' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > nco.configure.${GNU_TRP}.foo 2>&1
+CC='/opt/SUNWspro/bin/cc' CPPFLAGS='-DNC_64BIT_OFFSET=0' CXX='/opt/SUNWspro/bin/CC' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1

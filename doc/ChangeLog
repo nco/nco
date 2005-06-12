@@ -1,3 +1,9 @@
+2005-06-12  Charlie Zender  <zender@uci.edu>
+
+	* Do not call ncap with threads in nco_bm.pl fl_cr8()
+
+	* Allow nco_bm.pl to run locally from bld/Makefile
+
 2005-06-10  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-3_0_1

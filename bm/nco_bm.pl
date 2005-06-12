@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 # Currently env needed on esmf only
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.30 2005-06-10 18:08:42 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.31 2005-06-12 21:09:54 zender Exp $
 
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
@@ -1431,11 +1431,11 @@ sub fl_cr8 {
     $fl_tmg[$idx][1] = $elapsed; # creation time	
     print "\n==== Populating $fl_out file.\nTiming results:\n";
 #	print "the -s script chunk is:\n";
-    print "Executing: $tmr_app ncap ' . $omp_flg . ' -O -s $fl_cr8_dat[$idx][3] $fl_in $fl_out\n";
+    print "Executing: $tmr_app ncap -O -s $fl_cr8_dat[$idx][3] $fl_in $fl_out\n";
     
     if ($hiresfound) {$t0 = [gettimeofday];}
     else {$t0 = time;}
-    system "$tmr_app ncap ' . $omp_flg . ' -O -s $fl_cr8_dat[$idx][3] $fl_in $fl_out";
+    system "$tmr_app ncap -O -s $fl_cr8_dat[$idx][3] $fl_in $fl_out";
     if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
     else {$elapsed = time - $t0;}
     

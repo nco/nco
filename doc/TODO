@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.524 2005-06-09 07:01:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.525 2005-06-12 21:09:54 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -270,7 +270,7 @@ nco487. Add ncks option to suppress over-writing attributes in output file by at
 nco488. ncatted: Deleting global attributes doesn't work unless 'global' specified
         ncatted -O -a Conventions,,d,, ~/nco/data/in.nc ~/foo.nc (fails)
         ncks ~/foo.nc | m
-        ncatted -a Conventions,global,d,, in.nc foo.nc (works)
+        ncatted -a Conventions,global,d,, ~/nco/data/in.nc ~/foo.nc (works)
 nco494. Implement gzip library wrapper library build option for znetCDF?
 nco514. My MPI builds call superfluous linker steps:
         make MPI=Y > foo 2>&1
@@ -288,10 +288,7 @@ nco527. Purify ncatted memory:
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,att_var,d,,, -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 nco530. change all ctime() to ctime_r() like in ncatted?
 nco533. Implement C99 mathematical special functions: lgamma_r, j0, j1, jn, y0, y1, yn
-nco536. test un-reverting critical patches now that threads are working
-nco537. ncwa may still lose some memory, but only when threading enabled:
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -t 2 -D 3 -O -C -a lat,lon,time -w gw -m gw -v PS -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
-nco538. review ncecat threading: why are fl_lst_in,in_id,var_prc firstprivate not shared?
+nco538. Stabilize ncecat threading: why are fl_lst_in,in_id,var_prc firstprivate not shared?
 nco539. 
 
 MPI:

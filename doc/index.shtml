@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.288 2005-06-11 00:07:13 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.289 2005-06-12 21:09:55 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -93,7 +93,9 @@ little money, click on the PayPal button:
 <h2>NCO News &amp; Announcements</h2>
 
 <ul>
-<li>March&nbsp;24, 2005: NCO 3.0.1 released</li>
+<li>June&nbsp;10, 2005: NCO 3.0.1 released</li>
+
+<li>March&nbsp;24, 2005: NCO 3.0.0 released</li>
 
 <li>September&nbsp;7, 2004: NCO 2.9.9 released&mdash;<tt>ncpdq</tt> now packs data quietly</li>
 
@@ -304,8 +306,9 @@ Instead, retrieve all recently tagged versions
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
 <li><b>NCO/SDO 3.1.x</b>: (<i>In progress, development branch</i>) MPI versions of all operators, <tt>ncap</tt> control structures (conditionals, loops, etc.)
-<li><b>NCO 3.0.1</b>: (<i>In progress, stable branch</i>) performance benchmarks, threading <tt>ncap</tt>, <tt>ncpdq</tt> and <tt>ncap</tt> packing improve <tt>missing_value</tt> handling, <tt>ncks</tt> printing tweaks, memory cleanup, <tt>ncap</tt> <a href="bug_ncap_cmt">exponentiation bugfix</a>
-  <li><b>NCO 3.0.0</b>: New <tt>ncks -P</tt> print switch, <tt>ncap</tt> optimizations, <tt>-Z</tt> option supports 64-bit offsets (requires netCDF&nbsp;3.6), NEC&nbsp;SX build improvements, support GCC&nbsp;3.4.X, <tt>nco_put_vara()</tt> overloads in <tt>libnco_c++</tt>
+<li><b>NCO 3.0.2</b>: (<i>In progress, stable branch</i>) threading <tt>ncap</tt>, improve <tt>ncpdq</tt> and <tt>ncap</tt> packing <tt>missing_value</tt> handling, reduce critical regions for threading
+<li><b>NCO 3.0.1</b>: benchmarks, <tt>ncks</tt> printing tweaks, memory cleanup, <tt>ncap</tt> double-parse speedup and <a href="bug_ncap_cmt">exponentiation bugfix</a>, thread operators by default
+<li><b>NCO 3.0.0</b>: New <tt>ncks -P</tt> print switch, <tt>ncap</tt> optimizations, <tt>-Z</tt> option supports 64-bit offsets (requires netCDF&nbsp;3.6), NEC&nbsp;SX build improvements, support GCC&nbsp;3.4.X, <tt>nco_put_vara()</tt> overloads in <tt>libnco_c++</tt>
 <li><b>NCO 2.9.9</b>: <tt>ncpdq</tt> packs/unpacks entire files, <tt>ncbo</tt> is threaded
 <li><b>NCO 2.9.8</b>: <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released, <tt>ncwa --msk_sng</tt> consolidated mask switch, C99 compiler required
 <li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>, write <tt>nco_input_file_list</tt> attributes, add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++, large file support (LFS), write <tt>nco_openmp_thread_number</tt> attribute
