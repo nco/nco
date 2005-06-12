@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.287 2005-06-12 18:35:42 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.288 2005-06-12 18:38:49 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1300,7 +1300,7 @@ rpm_cln:
 bench:	bm
 bnch:	bm
 bm:	
-	cd ${MY_BLD_DIR}; \
+	cd ${MY_BM_DIR}; \
 	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --bench --udpreport ${THR_NBR_SNG}
 file:	fl
 fl:	
