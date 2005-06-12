@@ -1,5 +1,14 @@
 2005-06-12  Charlie Zender  <zender@uci.edu>
 
+	* Ran benchmarks on laptop (elnino), desktop (soot), supercomputer
+	(esmf). Noted that file creation is sickeningly slow on laptop and
+	desktop, takes thousands of seconds. Fast on ESMF. Same on
+	benchmarks: very slow on laptop and desktop, fast on ESMF
+	interactive node. 
+
+	* Add -t thr_nbr to nco_usg_prn() and nco.texi for newly threaded
+	operators
+
 	* Do not call ncap with threads in nco_bm.pl fl_cr8()
 
 	* Allow nco_bm.pl to run locally from bld/Makefile

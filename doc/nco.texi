@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.304 2005-06-10 18:08:45 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.305 2005-06-12 23:29:52 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1875,8 +1875,9 @@ We hope to produce foreign language string catalogues in 2004.
 @cindex @code{--omp_num_threads @var{thr_nbr}}
 @cindex @code{-t @var{thr_nbr}}
 @cartouche
-Availability: @command{ncbo}, @command{ncea}, @command{ncpdq},
-@command{ncra}, @command{ncrcat}, @command{ncwa}@* 
+Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
+@command{ncflint}, @command{ncpdq}, @command{ncra}, @command{ncrcat},
+@command{ncwa}@*
 Short options: @samp{-t}@*
 Long options: @samp{--thr_nbr}, @samp{--threads},
 @samp{--omp_num_threads}@* 
@@ -1903,9 +1904,15 @@ Certain operators contain hard-code limits to the number of threads they
 request.
 We base these limits on our experience and common sense, and to reduce
 potentially wasteful system usage by inexperienced users.
-For example, @code{ncrcat} is extremely I/O-intensive.
-No one has demonstrated that threading improves @code{ncrcat}
-performance so we restrict @math{@var{thr_nbr} <= 1} for @code{ncrcat}.
+For example, @code{ncrcat} is extremely I/O-intensive so we restrict
+@math{@var{thr_nbr} <= 2} for @code{ncrcat}.
+This is based on the notion that the best performance that can be
+expected from an operator which does no arithmetic is to have one thread
+reading and one thread writing simultaneously.
+In the future (perhaps with netCDF @w{version 4}), we hope to
+demonstrate significant threading improvements with operators
+like @code{ncrcat} by performing multiple simultaneous writes.
+
 Compute-intensive operators (@code{ncwa} and @code{ncpdq})
 are expected to benefit the most from threading.
 The greatest increases in throughput due to threading will occur on
@@ -1913,7 +1920,7 @@ large dataset where each thread performs millions or more floating
 point operations.
 Otherwise, the system overhead of setting up threads may outweigh
 the theoretical speed enhancements due to @acronym{SMP} parallelism.
-However, no one has ever demonstrated that the @acronym{SMP} parallelism 
+However, we have not yet demonstrated that the @acronym{SMP} parallelism
 scales well beyone four threads for these operators.
 Hence we restrict @math{@var{thr_nbr} <= 4} for all operators.
 We encourage users to play with these limits (edit file
@@ -6088,7 +6095,8 @@ SYNTAX
 ncecat [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[-v @var{var}[,@dots{}]] [-x] [-Z] [@var{input-files}] [@var{output-file}]
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-Z] 
+[@var{input-files}] [@var{output-file}]
 @end example
 
 @noindent
@@ -6197,7 +6205,7 @@ SYNTAX
 ncflint [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-i @var{var},@var{val3}]
 [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] 
-[-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-x] [-Z]
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-x] [-Z]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
 
@@ -7469,7 +7477,8 @@ SYNTAX
 ncrcat [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
-[-v @var{var}[,@dots{}]] [-x] [-Z] [@var{input-files}] [@var{output-file}]
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-Z] 
+[@var{input-files}] [@var{output-file}]
 @end example
 
 @noindent

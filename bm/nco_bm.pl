@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 # Currently env needed on esmf only
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.31 2005-06-12 21:09:54 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.32 2005-06-12 23:29:50 zender Exp $
 
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
@@ -44,7 +44,7 @@ $usg   = 0;
 $tst_fl_cr8 = "0";
 $que = 0;
 $udp_reprt = 0;
-$thr_nbr = 0; # if zero, do not do threads 
+$thr_nbr=0; # If zero, do passing explicit threading argument 
 $dodods = "";  $fl_pth = "";
 
 # other inits
@@ -69,7 +69,7 @@ if ($ARGV == 0) {usage(); die "We need some more info to be a useful member of s
 	"dods=s"       => \$dodods,     
 	"benchmark"    => \$bm,         # do the real benchmarks 
 	"queue"        => \$que,        # if set, bypasses all interactive stuff
-	"thr_nbr=i"    => \$thr_nbr,    # number of threads to use in benchmark (not in regress)
+	"thr_nbr=i"    => \$thr_nbr,    # Number of threads to use
 	"usage"        => \$usg,        # explains how to use this thang
 	"help"         => \$usg,        # explains how to use this thang
 	"h"            => \$usg,        # explains how to use this thang
@@ -117,8 +117,7 @@ if ($wnt_log) {
 }
 
 # check for requested threads.
-if ($thr_nbr > 0) { $omp_flg = " --thr_nbr=$thr_nbr ";} # thread of 1 doesn't help things
-else { $omp_flg = "";}
+if ($thr_nbr > 0) { $omp_flg = "--thr_nbr=$thr_nbr ";} else { $omp_flg = "";}
 
 # examine env DATA and talk to user to figure where $DATA  should be
 set_dat_dir(); # now $dta_dir is set to 
@@ -1108,8 +1107,7 @@ where (options) are:
                             3 - 5km Satellite data set   ~300MB  ~min
                             4 - IPCC Daily T85 data set  ~  4GB  ~several min
                             A - All 
-    --thr_nbr{#>2}....sets the # of threads to use in the benchmarks, if running them.
-	                 has no effect on regression tests (yet) 
+    --thr_nbr{#>0}....Number of threads to use
     --regress.......do the regression tests
     --benchmark.....do the benchmarks
 
@@ -1122,7 +1120,7 @@ In nco debug/testing  mode, it tries to validate the NCO's for both
 accuracy and robustness.  It also can collect benchmark statistics via
 sending test results to a UDP server.
 
-NB: When adding tests, be sure to use ' . $omp_flg . ' -O to overwrite files.
+NB: When adding tests, be sure to use -O to overwrite files.
 Otherwise, script hangs waiting for interactive response to
 overwrite queries.
 
@@ -1269,7 +1267,7 @@ sub smrz_rgr_rslt {
 	elsif ($CC =~ /icc/) {$CCinfo = "Intel C Compiler version ??";}
   
 	my $reportstr = "\n      Test   Success    Failure   Total       Time";
-	if ($thr_nbr > 1 ) {$reportstr .= "   (OMP threads = $thr_nbr)\n";}
+	if ($thr_nbr > 0) {$reportstr .= "   (OMP threads = $thr_nbr)\n";}
 	else {$reportstr .= "\n";}
 	
 	my $udp_dat = "";
@@ -1418,7 +1416,7 @@ sub fl_cr8 {
     
     my $fl_in = my $fl_out = "$dta_dir/$fl_cr8_dat[$idx][2].nc" ;
     print "==== Creating $fl_cr8_dat[$idx][0] data file from template in [$dta_dir]\n";
-    print "Executing : $tmr_app ncgen -b -o $fl_out   $bm_dir/$fl_cr8_dat[$idx][2].cdl\n";
+    print "Executing: $tmr_app ncgen -b -o $fl_out $bm_dir/$fl_cr8_dat[$idx][2].cdl\n";
     
     if ($hiresfound) {$t0 = [gettimeofday];}
     else {$t0 = time;}

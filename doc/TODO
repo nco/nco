@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.525 2005-06-12 21:09:54 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.526 2005-06-12 23:29:52 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -289,7 +289,8 @@ nco527. Purify ncatted memory:
 nco530. change all ctime() to ctime_r() like in ncatted?
 nco533. Implement C99 mathematical special functions: lgamma_r, j0, j1, jn, y0, y1, yn
 nco538. Stabilize ncecat threading: why are fl_lst_in,in_id,var_prc firstprivate not shared?
-nco539. 
+nco539. Creating ipcc_dly_T85.nc takes ~20 minutes on x86 again. Why?
+nco540. 
 
 MPI:
 Archive MPI tests which appear to run correctly 
