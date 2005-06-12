@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.286 2005-06-10 04:19:28 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.287 2005-06-12 18:35:42 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1301,17 +1301,17 @@ bench:	bm
 bnch:	bm
 bm:	
 	cd ${MY_BLD_DIR}; \
-	env MY_BIN_DIR=${MY_BIN_DIR} ./nco_bm.pl --bench --udpreport ${THR_NBR_SNG}
+	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --bench --udpreport ${THR_NBR_SNG}
 file:	fl
 fl:	
 	cd ${MY_BM_DIR}; \
-	env MY_BIN_DIR=${MY_BIN_DIR} ./nco_bm.pl --test_files=A --udpreport ${THR_NBR_SNG}
+	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --test_files=A --udpreport ${THR_NBR_SNG}
 regression:	tst
 rgr:	tst
 test:	tst
 tst:	dat
 	cd ${MY_BM_DIR}; \
-	env MY_BIN_DIR=${MY_BIN_DIR} ./nco_bm.pl --regress --udpreport ${THR_NBR_SNG}
+	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --regress --udpreport ${THR_NBR_SNG}
 # Targets in dat
 data:	dat
 dat:	${MY_DAT_DIR}/in.nc
