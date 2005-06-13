@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 # Currently env needed on esmf only
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.33 2005-06-13 03:43:19 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.34 2005-06-13 06:15:42 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -162,10 +162,11 @@ if ($rgr){  # if want regression tests
 	smrz_rgr_rslt();
 }
 
-# test to see if the necessary files are available - if so, can skip the creation tests
+# Test if necessary files are available - if so, may skip creation tests
 fl_cr8_dat_init(); # initialize the data strings & timing array for files
 
-# checks if files have already been created.  If so, can skip file creation if not requested
+# Check if files have already been created
+# If so, skip file creation if not requested
 if ($bm && $tst_fl_cr8 == 0) { 
 	for (my $i = 0; $i < $NUM_FLS; $i++) {
 		my $fl = $fl_cr8_dat[$i][2] . ".nc"; #file root name stored in $fl_cr8_dat[$i][2] 
@@ -203,7 +204,7 @@ if ($bm) {
 	$opr_nm='ncpdq';
 	$dsc_sng = 'ncpdq dimension-order reversal the file ';
 	####################	
-	$tst_cmd[0] = "$prefix/ncpdq -O $omp_flg -a -lat -p $fl_pth ipcc_dly_T85.nc  $dta_dir/ipcc_dly_T85-ncpdq.nc";
+	$tst_cmd[0] = "$prefix/ncpdq -O $omp_flg -a -lat -p $fl_pth ipcc_dly_T85.nc $dta_dir/ipcc_dly_T85-ncpdq.nc";
 	# ~2m on sand
 	$tst_cmd[1] = "$prefix/ncks -C -H -s \"%f\" -v dopey $dta_dir/ipcc_dly_T85-ncpdq.nc"; 
 	$nsr_xpc = "0.800000";
@@ -213,7 +214,7 @@ if ($bm) {
 	$opr_nm='ncpdq';
 	$dsc_sng = 'ncpdq packing a file';
 	####################	
-	$tst_cmd[0] = "$prefix/ncpdq -O $omp_flg -P all_new  -p $fl_pth ipcc_dly_T85.nc  $dta_dir/ipcc_dly_T85-ncpdq.nc";
+	$tst_cmd[0] = "$prefix/ncpdq -O $omp_flg -P all_new -p $fl_pth ipcc_dly_T85.nc  $dta_dir/ipcc_dly_T85-ncpdq.nc";
 	# ~41 s on sand
 	$tst_cmd[1] = "$prefix/ncks -C -H -s \"%f\" -v dopey $dta_dir/ipcc_dly_T85-ncpdq.nc"; 
 	$nsr_xpc = "0.000000";
@@ -1330,15 +1331,15 @@ sub set_dat_dir {
     # writable to be usable for these tests, so if it isn't just bail, with a nasty msg
     if (defined $ENV{'DATA'}) { # then is it readwritable?
 	if (-w $ENV{'DATA'} && -r $ENV{'DATA'}) {
-	    if ($que == 0) {print "Using your environment variable DATA ($ENV{'DATA'}) as the root DATA dir for this series of tests\n\n";}
+	    if ($que == 0) {print "Using your environment variable DATA ($ENV{'DATA'}) as the root DATA directory for this series of tests\n\n";}
 	    $dta_dir = "$ENV{'DATA'}/nco_test";
 	    mkdir "$dta_dir",0777;
 	} else {
-	    die "You've defined a DATA dir ($ENV{'DATA'}) that can't be written to or read\nfrom or both - please try again.\n\n";
+	    die "You have defined a DATA dir ($ENV{'DATA'}) that cannot be written to or read\nfrom or both - please try again.\n\n";
 	}
     } elsif ($que == 0) {
 	$tmp = 'notset';
-	print "You don't have a DATA dir defined and some of the test files can be several GB. \nWhere would you like to write the test data?  It'll be placed in the indicated dir,\nunder nco_test. \n[$ENV{'HOME'}]  ";
+	print "You do not have a DATA dir defined and some of the test files can be several GB. \nWhere would you like to write the test data?  It will be placed in the indicated directory,\nunder nco_test. \n[$ENV{'HOME'}]  ";
 	$tmp = <STDIN>;
 	chomp $tmp;
 #		print "You entered [$tmp] \n";
@@ -1362,7 +1363,7 @@ sub set_dat_dir {
 	    $dta_dir = "$tmp/nco_test"; 
 	    # and now test it
 	    if (-w $dta_dir && -r $dta_dir) {
-		print "OK - we'll use [$dta_dir] to write to.\n\n";
+		print "OK - we will use [$dta_dir] to write to.\n\n";
 	    } else { # we'll have to make it
 		print "[$dta_dir] doesn't exist - will try to make it.\n";
 		"$dta_dir",0777;
@@ -1424,7 +1425,7 @@ sub tst_hirez{
     if ($dbg_lvl == 1) {die "that's all folk!!\n";}
 }
 
-# fl_cr8 does the file creation to provide populated files for the benchmarks
+# fl_cr8 creates populated files for the benchmarks
 sub fl_cr8 {
     my $idx = shift;
     my $t0;
@@ -1437,7 +1438,7 @@ sub fl_cr8 {
     if ($hiresfound) {$t0 = [gettimeofday];}
     else {$t0 = time;}
     # File creation now timed
-    system  "$tmr_app ncgen -b -o $fl_out   $bm_dir/$fl_cr8_dat[$idx][2].cdl";
+    system  "$tmr_app ncgen -b -o $fl_out $bm_dir/$fl_cr8_dat[$idx][2].cdl";
     if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
     else {$elapsed = time - $t0;}
     # log it to common timing array

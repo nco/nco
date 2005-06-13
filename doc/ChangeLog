@@ -1,5 +1,12 @@
 2005-06-12  Charlie Zender  <zender@uci.edu>
 
+	* Noticed that regression tests in nco_bm.pl report some 
+	apparent successes as failures on SUNMP, e.g., 
+	Result: [1e+36] != Expected: [1e+36]
+	always recorded as failure. 
+	Seems like any "Expected's" containing "+" string may fail.
+	Perl problem?
+
 	* Ran benchmarks on laptop (elnino), desktop (soot), supercomputer
 	(esmf). Noted that file creation is sickeningly slow on laptop and
 	desktop, takes thousands of seconds. Fast on ESMF. Same on

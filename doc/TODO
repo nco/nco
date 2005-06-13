@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.526 2005-06-12 23:29:52 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.527 2005-06-13 06:15:47 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -290,7 +290,15 @@ nco530. change all ctime() to ctime_r() like in ncatted?
 nco533. Implement C99 mathematical special functions: lgamma_r, j0, j1, jn, y0, y1, yn
 nco538. Stabilize ncecat threading: why are fl_lst_in,in_id,var_prc firstprivate not shared?
 nco539. Creating ipcc_dly_T85.nc takes ~20 minutes on x86 again. Why?
-nco540. 
+nco540. bm: regression tests report some apparent successes as failures on SUNMP, e.g., 
+	Result: [1e+36] != Expected: [1e+36]
+	always recorded as failure. 
+	Seems like any "Expected's" containing "+" string may fail.
+	Perl problem?
+nco541. bm: 
+        Bareword "gettimeofday" not allowed while "strict subs" in use at /ptmp/zender/nco_bm/nco_bm01/
+        nco_bm.pl line 344.
+nco542. 
 
 MPI:
 Archive MPI tests which appear to run correctly 

@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.2 2005-06-13 03:45:54 zender Exp $ -*-shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.3 2005-06-13 06:15:42 zender Exp $ -*-shell-script-*-
 
 # Purpose: Run NCO benchmark script in batch environment
 
@@ -120,7 +120,7 @@ FL_NM_PL='nco_bm.pl' # [sng] Perl batch script name
 CASEID='nco_bm01' # [sng] Case ID
 XPT_DSC='NCO benchmark script' # [sng] Experiment description
 # Derive data paths
-export DATA_NCO=${DATA}/aca
+export DATA_NCO=${DATA}/nco_test
 export DATA_OUT=${DATA}/${PRG_NM}/${CASEID}
 # Run program
 if [ ! -d ${DATA_OUT} ]; then
@@ -157,7 +157,7 @@ case "${PVM_ARCH}" in
 	if [ ${NTASKS} -gt 1 ]; then
 	    poe ${CMD_LN} > ${FL_STDOUT} 2>&1
 	else
-	    env MY_BIN_DIR=${MY_BIN_DIR} OMP_NUM_THREADS="${NTHREADS}" PATH=/usr/local/bin\:${DATA_OUT}\:${PATH} ${CMD_LN} > ${FL_STDOUT} 2>&1
+	    env MY_BIN_DIR="${MY_BIN_DIR}" OMP_NUM_THREADS="${NTHREADS}" PATH=/usr/local/bin\:${DATA_OUT}\:${PATH} ${CMD_LN} > ${FL_STDOUT} 2>&1
 	fi # end else OpenMP
 	;; # endif AIX*
     LINUX* ) 
