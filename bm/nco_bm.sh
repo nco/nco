@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.1 2005-06-13 03:43:19 zender Exp $ -*-shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.2 2005-06-13 03:45:54 zender Exp $ -*-shell-script-*-
 
 # Purpose: Run NCO benchmark script in batch environment
 
@@ -134,8 +134,8 @@ FL_PL=${DATA_OUT}/${FL_NM_PL}
 /bin/cp -f -p ~/nco/bm/${FL_NM_PL} ${DATA_OUT} || exit 1
 /bin/cp -f -p ~/nco/bm/${FL_NM_SH} ${DATA_OUT} || exit 1
 # Copy from Production lines in nco_bm.pl:
-CMD_LN="${FL_PL} --bch --dbg=0 --thr_nbr=1 --xpt_dsc=\"${XPT_DSC}\" --regress --udpreport"
-#CMD_LN="${FL_PL} --bch --dbg=0 --thr_nbr=1 --xpt_dsc=\"${XPT_DSC}\" --benchmark --udpreport"
+CMD_LN="${FL_PL} --bch --dbg=1 --thr_nbr=1 --xpt_dsc=\"${XPT_DSC}\" --regress --udpreport"
+#CMD_LN="${FL_PL} --bch --dbg=1 --thr_nbr=1 --xpt_dsc=\"${XPT_DSC}\" --benchmark --udpreport"
 FL_STDOUT="${PRG_NM}.log.${LID}"
 
 echo "Timestamp ${LID}"
