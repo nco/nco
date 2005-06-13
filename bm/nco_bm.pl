@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 # Currently env needed on esmf only
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.34 2005-06-13 06:15:42 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.35 2005-06-13 19:50:15 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -13,13 +13,14 @@
 # Otherwise, script hangs waiting for interactive response to overwrite queries
 require 5.6.1 or die "This script requires Perl version >= 5.6.1";
 use Cwd 'abs_path';
-use Getopt::Long; #qw(:config no_ignore_case bundling);
-use strict;
+use English; # WCS96 p. 403
+use Getopt::Long; # GNU-style getopt #qw(:config no_ignore_case bundling);
+use strict; # Protect all namespaces
 
 # Declare vars for strict
 use vars qw($dsc_lng_max $dot_nbr $dot_nbr_min $dot_fmt $dot_sng $dsc_fmt $tst_fmt
 	    $spc_fmt $spc_nbr $spc_nbr_min $spc_sng $opr_lng_max $opr_fmt $tst_id_sng $tst_idx
- $xpt_dsc $bch_flg $prg_nm
+ $xpt_dsc $bch_flg $prg_nm $rcd
  $dbg_lvl $wnt_log $usg $opr_nm @tst_cmd $dsc_sng $nsr_xpc
  @opr_lst_all @opr_lst $MY_BIN_DIR %sym_link %tst_nbr %success %failure
  $result $server_name $server_ip $server_port $sock $udp_rpt $tst_fl_cr8
@@ -42,15 +43,16 @@ $bm_dir = `pwd`; chomp $bm_dir;
 # Set defaults for command line arguments
 $bch_flg=0; # [flg] Batch behavior
 $dbg_lvl = 0; # [enm] Print tests during execution for debugging
-# If dods is set && string is NULL do tests with sand / DODS instead of local files
-# If string is NOT NULL, use URL to grab files.
+my $nvr_data=$ENV{'DATA'} ? $ENV{'DATA'} : '';
+my $nvr_home=$ENV{'HOME'} ? $ENV{'HOME'} : '';
+my $nvr_my_bin_dir=$ENV{'MY_BIN_DIR'} ? $ENV{'MY_BIN_DIR'} : '';
 $dodods = '';
 $fl_pth = '';
 $que = 0;
 $thr_nbr=0; # If not zero, pass explicit threading argument 
 $tst_fl_cr8 = "0";
 $udp_rpt = 0;
-$usg   = 0;
+$usg = 0;
 $wnt_log = 0;
 
 # other inits
@@ -61,9 +63,9 @@ $prefix = '';
 if ($localhostname !~ "bodi") {$notbodi = 1} # spare the poor laptop
 $ARGV = @ARGV;
 
-if ($ARGV == 0) {usage(); die "We need some more info to be a useful member of society\n"; }
+if ($ARGV == 0){usage(); die "We need some more info to be a useful member of society\n";}
 
-# set up options and switches
+$rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 &GetOptions(
 	'bch_flg!'     => \$bch_flg,    # [flg] Batch behavior
 	'benchmark'    => \$bm,         # do the real benchmarks 
@@ -85,11 +87,20 @@ if ($ARGV == 0) {usage(); die "We need some more info to be a useful member of s
 	'xpt_dsc=s'    => \$xpt_dsc,    # [sng] Experiment description
 );
 
-my $NUM_FLS = 4; # max number of files in the file creation series
+my $NUM_FLS = 4; # max number of files in file creation series
 
 #test nonfatally for useful modules
 my $hiresfound;
 if($dbg_lvl > 0){printf ("$prg_nm: \$cmd_ln = $cmd_ln\n");} # endif dbg
+if($dbg_lvl > 0){printf ("$prg_nm: \$xpt_dsc = $xpt_dsc\n");} # endif dbg
+if($dbg_lvl > 0){printf ("$prg_nm: \$rgr = $rgr\n");} # endif dbg
+if($dbg_lvl > 0){printf ("$prg_nm: \$bm = $bm\n");} # endif dbg
+if($dbg_lvl > 0){printf ("$prg_nm: \$bch_flg = $bch_flg\n");} # endif dbg
+if($dbg_lvl > 0){printf ("$prg_nm: \$nvr_data = $nvr_data\n");} # endif dbg
+if($dbg_lvl > 0){printf ("$prg_nm: \$nvr_home = $nvr_home\n");} # endif dbg
+if($dbg_lvl > 0){printf ("$prg_nm: \$nvr_my_bin_dir = $nvr_my_bin_dir\n");} # endif dbg
+if($dbg_lvl > 0){printf ("$prg_nm: \@ENV = @ENV\n");} # endif dbg
+
 print "\n===== Testing for required modules\n";
 BEGIN {eval "use Time::HiRes qw(usleep ualarm gettimeofday tv_interval)"; $hiresfound = $@ ? 0 : 1}
 #$hiresfound = 0;  # uncomment to simulate not found
@@ -128,11 +139,15 @@ if ($wnt_log) {
 }
 
 # Pass explicit threading argument
-if ($thr_nbr > 0) { $omp_flg = "--thr_nbr=$thr_nbr ";} else { $omp_flg = '';}
+if ($thr_nbr > 0){$omp_flg="--thr_nbr=$thr_nbr ";}else{$omp_flg='';}
 
-# examine env DATA and talk to user to figure where $DATA  should be
-set_dat_dir(); # now $dta_dir is set to 
+# Determine where $DATA should be, prompt user if necessary
+if($dbg_lvl > 0){printf ("$prg_nm: Calling set_dat_dir()...\n");}
+set_dat_dir(); # Set $dta_dir
 
+# If dods is not set then test with local files
+# If dods is set and string is NULL, then test with DODS files on sand.ess.uci.edu
+# If string is NOT NULL, use URL to grab files
 if ($dodods eq '') {
 	$fl_pth = "$dta_dir";
 } elsif ($dodods =~ /http:\/\//) {
@@ -142,34 +157,34 @@ if ($dodods eq '') {
 	$fl_pth = "$dta_dir";
 }
 
-#initialize & set up some vars
-initialize();
-# now start the real tests
-# first the file creation tests:
+# Initialize & set up some variables
+if($dbg_lvl > 0){printf ("$prg_nm: Calling initialize()...\n");}
+initialize($bch_flg,$dbg_lvl);
 
-# also want to try to grok /usr/bin/time, as in the shell scripts
+# Grok /usr/bin/time, as in shell scripts
 if (-e "/usr/bin/time" && -x "/usr/bin/time") {
 	$tmr_app = "/usr/bin/time";
-	if (`uname` =~ "inux" && $dbg_lvl > 1) { $tmr_app .= " -v ";}
+	if (`uname` =~ "inux" && $dbg_lvl > 1){$tmr_app.=" -v ";}
 } else { # just use whatever the shell thinks is the time app
-	$tmr_app = "time"; #could be the bash builtin or another 'time'-like app (AIX)
-}
+	$tmr_app = "time"; # bash builtin or other 'time'-like application (AIX)
+} # endif time
 
-#set_dat_dir(); # examine env DATA and talk to user to figure where $DATA  should be
-
-if ($rgr){  # if want regression tests 
+# Regression tests 
+if ($rgr){
 	perform_tests();
 	smrz_rgr_rslt();
-}
+} # endif rgr
 
+# Start real benchmark tests
 # Test if necessary files are available - if so, may skip creation tests
+if($dbg_lvl > 0){printf ("$prg_nm: Calling fl_cr8_dat_init()...\n");}
 fl_cr8_dat_init(); # initialize the data strings & timing array for files
 
 # Check if files have already been created
 # If so, skip file creation if not requested
 if ($bm && $tst_fl_cr8 == 0) { 
 	for (my $i = 0; $i < $NUM_FLS; $i++) {
-		my $fl = $fl_cr8_dat[$i][2] . ".nc"; #file root name stored in $fl_cr8_dat[$i][2] 
+		my $fl = $fl_cr8_dat[$i][2] . ".nc"; # file root name stored in $fl_cr8_dat[$i][2] 
 		if (-e "$dta_dir/$fl" && -r "$dta_dir/$fl") {
 			print "$fl exists - can skip creation\n";
 		} else {
@@ -1143,26 +1158,23 @@ Copyright © 1994-2005 Charlie 'my surname is' Zender (surname@uci.edu)
 
 USAGE
 exit(0);
-} # end of usage()
+} # end usage()
     
 ####################
-    sub initialize
+    sub initialize($$)
     {
-	# list below enumerates the nco's to be tested; does not set up the tests for the
-	# operators.
+	my $bch_flg; # [flg] Batch behavior
+	my $dbg_lvl; # [flg] Debugging level
+	($bch_flg,$dbg_lvl)=@_;
+	if($dbg_lvl > 0){printf ("$prg_nm: initialize() reports \$bch_flg = $bch_flg...\n");}
+	
+	# Enumerate operators to test
 	@opr_lst_all = qw( ncap ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa);
-	if (scalar @ARGV > 0) 
-	{
-	    @opr_lst=@ARGV;
-	} else {
-	    @opr_lst=@opr_lst_all;
-	}
-	if (defined $ENV{MY_BIN_DIR})
-	{
-	    $MY_BIN_DIR=$ENV{MY_BIN_DIR};
-	} else {
+	if (scalar @ARGV > 0){@opr_lst=@ARGV;}else{@opr_lst=@opr_lst_all;}
+	if (defined $ENV{'MY_BIN_DIR'}){$MY_BIN_DIR=$ENV{'MY_BIN_DIR'};}
+	else{
 	    # Set and verify MY_BIN_DIR
-	    printf "MY_BIN_DIR not specified, "; 
+	    printf "\$MY_BIN_DIR not specified, "; 
 	    if($bch_flg){
 		die "unable to continue in batch mode without MY_BIN_DIR";
 	    }else{ # !bch_flg
@@ -1172,50 +1184,55 @@ exit(0);
 		chomp $ans;
 		$MY_BIN_DIR = $ans unless (lc($ans) eq "y" || lc($ans) eq '');
 	    } # !bch_flg
-	}
+	} # !$MY_BIN_DIR
+	if($dbg_lvl > 0){printf ("$prg_nm: initialize() reports blurp1\n");}
+	if($dbg_lvl > 0){printf ("$prg_nm: initialize() reports \$MY_BIN_DIR = $MY_BIN_DIR, \$opr_lst[0] = $opr_lst[0], \@opr_lst=@opr_lst\n");}
 	# Die if this path still does not work
-	die "$MY_BIN_DIR/$opr_lst[0] doesn't exist\n" unless (-e "$MY_BIN_DIR/$opr_lst[0]");
+	die "$MY_BIN_DIR/$opr_lst[0] does not exist\n" unless (-e "$MY_BIN_DIR/$opr_lst[0]");
 	
-	# create symbolic links for testing
-	# if shared libraries were created, then the real executables are
-	# in src/nco/.libs, so point to them instead
+	if($dbg_lvl > 0){printf ("$prg_nm: initialize() reports blurp2\n");}
+	# Create symbolic links for testing
+	# If libtool created shared libraries, then point to real executables 
+	# in ../src/nco/.libs 
 	my $dotlib = '';
 	$dotlib = ".libs/lt-" if `head -1 $MY_BIN_DIR/ncatted` =~ m/sh/;
         $sym_link{ncdiff}=$dotlib . "ncbo";
 	$sym_link{ncea}=$dotlib . "ncra";
 	$sym_link{ncrcat}=$dotlib . "ncra";
+	if($dbg_lvl > 0){printf ("$prg_nm: initialize() reports blurp3\n");}
 	foreach(keys %sym_link) {
-	    system("cd $MY_BIN_DIR && ln -s -f $sym_link{$_} $_ || (rm -f $_ && ln -s -f $sym_link{$_} $_)");
+	    system("cd $MY_BIN_DIR && ln -s -f $sym_link{$_} $_ || (/bin/rm -f $_ && ln -s -f $sym_link{$_} $_)");
 	}
 	
 # Go to data directory where tests are actually run
 	my $data_dir = "../data";
 	
-	chdir $data_dir or die "$!\n";
+	if($dbg_lvl > 0){printf ("$prg_nm: initialize() reports blurp4\n");}
+	chdir $data_dir or die "$OS_ERROR\n";
 	
 	# Make sure in.nc exists, make it if possible, or die
+	if($dbg_lvl > 0){printf ("$prg_nm: initialize() reports blurp5\n");}
 	unless (-e "in.nc") {
 	    system("ncgen -o in.nc in.cdl") if (`which ncgen` and -e "in.cdl");
 	}
 	
-	die "The netCDF file \"in.nc\" is necessary for testing NCO, however, it could not be found in \"$data_dir\".  Also, it could not be generated because \"ncgen\" could not be found in your path and/or the file \"$data_dir/in.cdl\" does not exist.\n"
-	    unless (-e "in.nc");
+	die "The netCDF file \"in.nc\" is necessary for testing NCO, however, it could not be found in \"$data_dir\".  Also, it could not be generated because \"ncgen\" could not be found in your path and/or the file \"$data_dir/in.cdl\" does not exist.\n" unless (-e "in.nc");
 	
-	# Initialize some hashes for each operator that will be tested
+	# Initialize hashes for each operator to test
 	foreach(@opr_lst) 
 	{
 	    $tst_nbr{$_}=0;
 	    $success{$_}=0;
 	    $failure{$_}=0;
 	}
-#  print "***NCO Test Suite***\n";
+
     } # end of initialize()
 
 ####################
 sub verbosity {
     my $ts = shift;
     if($dbg_lvl > 0){printf ("$ts");}
-    if ($wnt_log) {printf (LOG "$ts");}
+    if($wnt_log){printf (LOG "$ts");}
 } # end of verbosity()
 
 ####################
@@ -1241,7 +1258,7 @@ sub failed {
 
 ####################
 sub smrz_fl_cr8_rslt {
-    if ($dbg_lvl > 0) { print "Summarizing results of file creation\n";}
+    if ($dbg_lvl > 0){print "Summarizing results of file creation\n";}
     my $CC = `../src/nco/ncks --compiler`;
     my $CCinfo = '';
     if ($CC =~ /gcc/) {$CCinfo = `gcc --version |grep -i gcc`;}
@@ -1327,9 +1344,10 @@ sub set_dat_dir {
 	print "$dsk_spc\n";
 	print "Based on the free space above, make sure that the test data will be written\nto a filesystem that can hold it or the test will fail.\n\n";
     }
-    # does user have a DATA dir defined in his env?  It has to be readable and 
-    # writable to be usable for these tests, so if it isn't just bail, with a nasty msg
-    if (defined $ENV{'DATA'}) { # then is it readwritable?
+
+    # Does user have DATA dir defined?
+    if (defined $ENV{'DATA'}) {
+	# It must be readable and writable---otherwise bail with nasty message
 	if (-w $ENV{'DATA'} && -r $ENV{'DATA'}) {
 	    if ($que == 0) {print "Using your environment variable DATA ($ENV{'DATA'}) as the root DATA directory for this series of tests\n\n";}
 	    $dta_dir = "$ENV{'DATA'}/nco_test";
@@ -1375,10 +1393,10 @@ sub set_dat_dir {
 		}
 	    }
 	}
-    } else {
+    } else { # que != 0
 	die "You MUST define a DATA environment variable to run this in a queue\n";
-    }
-} # end of sub set_dat_dir
+    } # !defined $ENV{'DATA'})
+} # end set_dat_dir()
 
 sub fl_cr8_dat_init {
     for (my $i = 0; $i < $NUM_FLS; $i++) {

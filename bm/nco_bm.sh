@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.3 2005-06-13 06:15:42 zender Exp $ -*-shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.4 2005-06-13 19:50:15 zender Exp $ -*-shell-script-*-
 
 # Purpose: Run NCO benchmark script in batch environment
 
@@ -11,7 +11,6 @@
 # UCI Linux: nco_bm.sh >nco_bm.txt 2>&1 &
 # UCI SGI: qsub -q q4 -o ~/nco/bm/nco_bm.txt nco_bm.sh
 # scp ~/nco/bm/nco_bm.sh ~/nco/bm/nco_bm.pl esmf.ess.uci.edu:nco/bm
-# scp ~/nco/bm/nco_bm.sh ~/nco/bm/nco_bm.pl goldhill.cgd.ucar.edu:/fs/cgd/home0/zender/nco/bm
 
 # AIX LoadLeveler batch system
 # class: Queue name. "llclass" lists available queues.
@@ -118,7 +117,8 @@ PRG_NM='nco_bm' # [sng] Program name, semantic identifier
 FL_NM_SH='nco_bm.sh' # [sng] Shell batch script name
 FL_NM_PL='nco_bm.pl' # [sng] Perl batch script name
 CASEID='nco_bm01' # [sng] Case ID
-XPT_DSC='NCO benchmark script' # [sng] Experiment description
+# NB: fxm: Whitespace in this string breaks nco_bm.pl because Getopt does not ingest it properly
+XPT_DSC='NCO_benchmark_script' # [sng] Experiment description
 # Derive data paths
 export DATA_NCO=${DATA}/nco_test
 export DATA_OUT=${DATA}/${PRG_NM}/${CASEID}
@@ -126,7 +126,7 @@ export DATA_OUT=${DATA}/${PRG_NM}/${CASEID}
 if [ ! -d ${DATA_OUT} ]; then
     mkdir -p ${DATA_OUT}
 fi # endif
-cd ${DATA_OUT}
+#cd ${DATA_OUT}
 export LID="`date +%Y%m%d-%H%M%S`"
 #EXE=${DATA_OUT}/${PRG_NM}
 FL_PL=${DATA_OUT}/${FL_NM_PL}
@@ -134,8 +134,8 @@ FL_PL=${DATA_OUT}/${FL_NM_PL}
 /bin/cp -f -p ~/nco/bm/${FL_NM_PL} ${DATA_OUT} || exit 1
 /bin/cp -f -p ~/nco/bm/${FL_NM_SH} ${DATA_OUT} || exit 1
 # Copy from Production lines in nco_bm.pl:
-CMD_LN="${FL_PL} --bch --dbg=1 --thr_nbr=1 --xpt_dsc=\"${XPT_DSC}\" --regress --udpreport"
-#CMD_LN="${FL_PL} --bch --dbg=1 --thr_nbr=1 --xpt_dsc=\"${XPT_DSC}\" --benchmark --udpreport"
+CMD_LN="${FL_PL} --bch --dbg=1 --thr_nbr=1 --xpt_dsc='${XPT_DSC}' --regress --udpreport"
+#CMD_LN="${FL_PL} --bch --dbg=1 --thr_nbr=1 --xpt_dsc='${XPT_DSC}' --benchmark --udpreport"
 FL_STDOUT="${PRG_NM}.log.${LID}"
 
 echo "Timestamp ${LID}"
@@ -157,7 +157,7 @@ case "${PVM_ARCH}" in
 	if [ ${NTASKS} -gt 1 ]; then
 	    poe ${CMD_LN} > ${FL_STDOUT} 2>&1
 	else
-	    env MY_BIN_DIR="${MY_BIN_DIR}" OMP_NUM_THREADS="${NTHREADS}" PATH=/usr/local/bin\:${DATA_OUT}\:${PATH} ${CMD_LN} > ${FL_STDOUT} 2>&1
+	    env OMP_NUM_THREADS="${NTHREADS}" PATH=/usr/local/bin\:${DATA_OUT}\:${PATH} ${CMD_LN} > ${FL_STDOUT} 2>&1
 	fi # end else OpenMP
 	;; # endif AIX*
     LINUX* ) 
