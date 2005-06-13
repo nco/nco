@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.41 2005-05-04 12:20:49 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.42 2005-06-13 11:00:14 hmb Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -682,12 +682,12 @@ M_PI {return NAMED_CONSTANT;}
   } /* end loop over dim */
   
   
-  /* don't initalize val in intial scan */
+  /* don't initalize val in intial scan  */
   if(prs_arg->ntl_scn) {
     var->val.vp=(void*)NULL;
     goto end_var;
   }
-
+  
 
   /* Allocate space for variable values 
      fxm: more efficient and safer to use nco_calloc() and not fill with values? */
@@ -728,7 +728,10 @@ M_PI {return NAMED_CONSTANT;}
   } /* endif False */
   
   /* Free dimension list memory */
-  (void)nco_free(sbs_sng);    
+  (void)nco_free(sbs_sng); 
+  /* char list */
+  if(dmn_nbr > 0) sbs_lst=nco_sng_lst_free(sbs_lst,dmn_nbr);
+   
  end_LHS_sbs: /* Errors encountered during LHS processing jump to here */
   /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
   BEGIN INITIAL;
