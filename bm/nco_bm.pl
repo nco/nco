@@ -1,11 +1,12 @@
 #!/usr/bin/env perl
 # Currently env needed on esmf only
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.32 2005-06-12 23:29:50 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.33 2005-06-13 03:43:19 zender Exp $
 
-# Usage:  (see usage() below for more info)
-# <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
-# <BUILD_ROOT>/nco/bld/nco_bm.pl ncra # Test one operator
+# Usage:  usage(), below, has more information
+# ~/nco/bld/nco_bm.pl # Tests all operators
+# ~/nco/bld/nco_bm.pl ncra # Test one operator
+# ~/nco/bld/nco_bm.pl --thr_nbr=2 --regress --udpreport
 # scp ~/nco/bm/nco_bm.pl esmf.ess.uci.edu:nco/bm
 
 # NB: When adding tests, _be sure to use -O to overwrite files_
@@ -16,12 +17,12 @@ use Getopt::Long; #qw(:config no_ignore_case bundling);
 use strict;
 
 # Declare vars for strict
-
 use vars qw($dsc_lng_max $dot_nbr $dot_nbr_min $dot_fmt $dot_sng $dsc_fmt $tst_fmt
 	    $spc_fmt $spc_nbr $spc_nbr_min $spc_sng $opr_lng_max $opr_fmt $tst_id_sng $tst_idx
+ $xpt_dsc $bch_flg $prg_nm
  $dbg_lvl $wnt_log $usg $opr_nm @tst_cmd $dsc_sng $nsr_xpc
  @opr_lst_all @opr_lst $MY_BIN_DIR %sym_link %tst_nbr %success %failure
- $result $server_name $server_ip $server_port $sock $udp_reprt $tst_fl_cr8
+ $result $server_name $server_ip $server_port $sock $udp_rpt $tst_fl_cr8
  $dta_dir $bm_dir $tmr_app %subbenchmarks %totbenchmarks $que $rgr $bm $itmp 
  @bm_cmd_ary @ifls $localhostname $notbodi $prfxd $prefix $thr_nbr $cmd_ln $arg_nbr
  $omp_flg $dodods $fl_pth
@@ -30,28 +31,33 @@ use vars qw($dsc_lng_max $dot_nbr $dot_nbr_min $dot_fmt $dot_sng $dsc_fmt $tst_f
 my @fl_cr8_dat;  # holds the strings for the fl_cr8() routine 
 my @fl_tmg; # holds the timing data for the fl_cr8() routines.
 
-
-# initializations
-# re-constitute the commandline
+# Initializations
+# Re-constitute commandline
+$prg_nm=$0; # $0 is program name Camel p. 136
 $cmd_ln = "$0 "; $arg_nbr = @ARGV;
 for (my $i=0; $i<$arg_nbr; $i++){ $cmd_ln .= "$ARGV[$i] ";}
 
 $bm_dir = `pwd`; chomp $bm_dir;
-# option flag inits
+
+# Set defaults for command line arguments
+$bch_flg=0; # [flg] Batch behavior
 $dbg_lvl = 0; # [enm] Print tests during execution for debugging
-$wnt_log = 0;
-$usg   = 0;
-$tst_fl_cr8 = "0";
+# If dods is set && string is NULL do tests with sand / DODS instead of local files
+# If string is NOT NULL, use URL to grab files.
+$dodods = '';
+$fl_pth = '';
 $que = 0;
-$udp_reprt = 0;
-$thr_nbr=0; # If zero, do passing explicit threading argument 
-$dodods = "";  $fl_pth = "";
+$thr_nbr=0; # If not zero, pass explicit threading argument 
+$tst_fl_cr8 = "0";
+$udp_rpt = 0;
+$usg   = 0;
+$wnt_log = 0;
 
 # other inits
 $localhostname = `hostname`;
 $notbodi = 0; # specific for hjm's puny laptop
 $prfxd = 0;
-$prefix = "";
+$prefix = '';
 if ($localhostname !~ "bodi") {$notbodi = 1} # spare the poor laptop
 $ARGV = @ARGV;
 
@@ -59,26 +65,31 @@ if ($ARGV == 0) {usage(); die "We need some more info to be a useful member of s
 
 # set up options and switches
 &GetOptions(
-	"debug=i"      => \$dbg_lvl,    # debug level
-	"log"          => \$wnt_log,    # set if want output logged
-	"udpreport"    => \$udp_reprt,  # punt the timing data back to udpserver on sand
-	"test_files=s" => \$tst_fl_cr8,    # create the test files "134" does 1,3,4
-	"regress"      => \$rgr,        # test regression 
-	#if dods is set && string is NULL do tests with sand / DODS instead of local files , 
-	#if string is NOT NULL, use URL to grab files.
-	"dods=s"       => \$dodods,     
-	"benchmark"    => \$bm,         # do the real benchmarks 
-	"queue"        => \$que,        # if set, bypasses all interactive stuff
-	"thr_nbr=i"    => \$thr_nbr,    # Number of threads to use
-	"usage"        => \$usg,        # explains how to use this thang
-	"help"         => \$usg,        # explains how to use this thang
-	"h"            => \$usg,        # explains how to use this thang
+	'bch_flg!'     => \$bch_flg,    # [flg] Batch behavior
+	'benchmark'    => \$bm,         # do the real benchmarks 
+	'bm'           => \$bm,         # do the real benchmarks 
+	'dbg_lvl=i'    => \$dbg_lvl,  # debug level
+	'debug=i'      => \$dbg_lvl,    # debug level
+	'dods=s'       => \$dodods,     
+	'h'            => \$usg,        # explains how to use this thang
+	'help'         => \$usg,        # explains how to use this thang
+	'log'          => \$wnt_log,    # set if want output logged
+	'queue'        => \$que,        # if set, bypasses all interactive stuff
+	'regress'      => \$rgr,        # test regression 
+	'rgr'          => \$rgr,        # test regression 
+	'test_files=s' => \$tst_fl_cr8, # Create test files "134" does 1,3,4
+	'tst_fl=s'     => \$tst_fl_cr8, # Create test files "134" does 1,3,4
+	'thr_nbr=i'    => \$thr_nbr,    # Number of threads to use
+	'udpreport'    => \$udp_rpt,  # punt the timing data back to udpserver on sand
+	'usage'        => \$usg,        # explains how to use this thang
+	'xpt_dsc=s'    => \$xpt_dsc,    # [sng] Experiment description
 );
 
 my $NUM_FLS = 4; # max number of files in the file creation series
 
 #test nonfatally for useful modules
 my $hiresfound;
+if($dbg_lvl > 0){printf ("$prg_nm: \$cmd_ln = $cmd_ln\n");} # endif dbg
 print "\n===== Testing for required modules\n";
 BEGIN {eval "use Time::HiRes qw(usleep ualarm gettimeofday tv_interval)"; $hiresfound = $@ ? 0 : 1}
 #$hiresfound = 0;  # uncomment to simulate not found
@@ -96,7 +107,7 @@ if ($iosockfound == 0) {
     print "IO::Socket ... found!\n\n";
 }
 
-# the real udping server
+# Real udp'ing server
 $server_name = "sand.ess.uci.edu";
 $server_ip = "128.200.14.132";
 $server_port = 29659;
@@ -110,24 +121,24 @@ if ($iosockfound) {
 				   PeerAddr => $server_ip,
 				   PeerPort => $server_port
 				   ) or die "\nCan't get the socket!\n\n";
-} else {$udp_reprt = 0;}
+} else {$udp_rpt = 0;}
 
 if ($wnt_log) { 
-    open(LOG, ">nctest.log") or die "\nCan't open the log file 'nctest.log' - check permissions on it \nor the directory you're in.\n\n";
+    open(LOG, ">nctest.log") or die "\nUnable to open log file 'nctest.log' - check permissions on it\nor the directory you are in.\n\n";
 }
 
-# check for requested threads.
-if ($thr_nbr > 0) { $omp_flg = "--thr_nbr=$thr_nbr ";} else { $omp_flg = "";}
+# Pass explicit threading argument
+if ($thr_nbr > 0) { $omp_flg = "--thr_nbr=$thr_nbr ";} else { $omp_flg = '';}
 
 # examine env DATA and talk to user to figure where $DATA  should be
 set_dat_dir(); # now $dta_dir is set to 
 
-if ($dodods eq "") {
+if ($dodods eq '') {
 	$fl_pth = "$dta_dir";
 } elsif ($dodods =~ /http:\/\//) {
 	$fl_pth = "$dodods";
 } else {
-	print "'--dods' option ($dodods) doesn't tastelike a real URL - typo or thinko?\nContinuing by trying to find the local files in the $dta_dir dir.\n"; 
+	print "'--dods' option ($dodods) does not taste like a real URL - typo or thinko?\nContinuing by trying to find the local files in $dta_dir directory.\n"; 
 	$fl_pth = "$dta_dir";
 }
 
@@ -184,9 +195,9 @@ if ($tst_fl_cr8 ne "0"){
 #	print "\nFile creation tests skipped.\n\n";
 #}
 
-# and now, the REAL benchmarks, set up as the regression tests below to use go() and smrz_rgr_rslt()
+# REAL benchmarks, set up as regression tests below to use go() and smrz_rgr_rslt()
 if ($bm) {
-	$prefix = "$tmr_app $MY_BIN_DIR"; $prfxd = 1; #embed the timer command and local bin in cmd
+        $prefix = "$tmr_app $MY_BIN_DIR"; $prfxd = 1; #embed the timer command and local bin in cmd
 	print "\nStarting Benchmarks now\n";
 	#################### begin cz benchmark list #8
 	$opr_nm='ncpdq';
@@ -248,7 +259,7 @@ if ($bm) {
 		my $ldz = "0"; # leading zero for #s < 10
 		if ($dbg_lvl > 0) {print "\tsymlinking $rel_fle\n";}
 		for (my $n=0; $n<32; $n ++) {
-			if ($n>9) {$ldz ="";}
+			if ($n>9) {$ldz ='';}
 			my $lnk_fl_nme = "$dta_dir/$fl_cr8_dat[$f][2]" . "_" . "$ldz" . "$n" . ".nc";
 			if (-r $rel_fle && -d $dta_dir && -w $dta_dir){
 				symlink $rel_fle, $lnk_fl_nme;
@@ -1149,12 +1160,17 @@ exit(0);
 	{
 	    $MY_BIN_DIR=$ENV{MY_BIN_DIR};
 	} else {
-	    # set and verify MY_BIN_DIR
-	    $MY_BIN_DIR = abs_path("../src/nco");
-	    print "MY_BIN_DIR not specified, use $MY_BIN_DIR? ('y' or specify) ";
-	    my $ans = <STDIN>;
-	    chomp $ans;
-	    $MY_BIN_DIR = $ans unless (lc($ans) eq "y" ||lc($ans) eq "");
+	    # Set and verify MY_BIN_DIR
+	    printf "MY_BIN_DIR not specified, "; 
+	    if($bch_flg){
+		die "unable to continue in batch mode without MY_BIN_DIR";
+	    }else{ # !bch_flg
+                printf "use $MY_BIN_DIR? ('y' or specify)\n";
+		$MY_BIN_DIR = abs_path("../src/nco");
+		my $ans = <STDIN>;
+		chomp $ans;
+		$MY_BIN_DIR = $ans unless (lc($ans) eq "y" || lc($ans) eq '');
+	    } # !bch_flg
 	}
 	# Die if this path still does not work
 	die "$MY_BIN_DIR/$opr_lst[0] doesn't exist\n" unless (-e "$MY_BIN_DIR/$opr_lst[0]");
@@ -1162,7 +1178,7 @@ exit(0);
 	# create symbolic links for testing
 	# if shared libraries were created, then the real executables are
 	# in src/nco/.libs, so point to them instead
-	my $dotlib = "";
+	my $dotlib = '';
 	$dotlib = ".libs/lt-" if `head -1 $MY_BIN_DIR/ncatted` =~ m/sh/;
         $sym_link{ncdiff}=$dotlib . "ncbo";
 	$sym_link{ncea}=$dotlib . "ncra";
@@ -1226,13 +1242,13 @@ sub failed {
 sub smrz_fl_cr8_rslt {
     if ($dbg_lvl > 0) { print "Summarizing results of file creation\n";}
     my $CC = `../src/nco/ncks --compiler`;
-    my $CCinfo = "";
+    my $CCinfo = '';
     if ($CC =~ /gcc/) {$CCinfo = `gcc --version |grep -i gcc`;}
     elsif ($CC =~ /xlc/) {$CCinfo = "xlc version ??";}
     elsif ($CC =~ /icc/) {$CCinfo = "Intel C Compiler version ??";}
     
-    my $reportstr = "";
-    my $udp_dat = "";
+    my $reportstr = '';
+    my $udp_dat = '';
     my $idstring = `uname -a` . "using: " . $CCinfo; chomp $idstring;
     $udp_dat .= $idstring . "|";
     $reportstr .= "\n\nNCO Test Result Summary for:\n$idstring\n";
@@ -1248,7 +1264,7 @@ sub smrz_fl_cr8_rslt {
     $udp_dat   .= sprintf "@";
     
     print $reportstr;
-    if ($udp_reprt) { 
+    if ($udp_rpt) { 
 	$sock->send($udp_dat); 
 	if ($dbg_lvl > 0) { print "File Creation: udp stream sent:\n$udp_dat\n";}
     } # and send it back separately
@@ -1261,7 +1277,7 @@ sub smrz_bm_rslt {
 sub smrz_rgr_rslt {
 
 	my $CC = `../src/nco/ncks --compiler`;
-	my $CCinfo = "";
+	my $CCinfo = '';
 	if ($CC =~ /gcc/) {$CCinfo = `gcc --version |grep -i gcc`;}
 	elsif ($CC =~ /xlc/) {$CCinfo = "xlc version ??";}
 	elsif ($CC =~ /icc/) {$CCinfo = "Intel C Compiler version ??";}
@@ -1270,13 +1286,13 @@ sub smrz_rgr_rslt {
 	if ($thr_nbr > 0) {$reportstr .= "   (OMP threads = $thr_nbr)\n";}
 	else {$reportstr .= "\n";}
 	
-	my $udp_dat = "";
+	my $udp_dat = '';
 	my $idstring = `uname -a` . "using: " . $CCinfo; chomp $idstring;
 	$udp_dat .= $idstring . "|" . $cmd_ln . "|";
     
 	foreach(@opr_lst) {
 		my $total = $success{$_}+$failure{$_};
-		my $fal_cnt = "";
+		my $fal_cnt = '';
 		if ($failure{$_} == 0){	$fal_cnt = "   "; }
 		else {$fal_cnt = sprintf "%3d", $failure{$_};}
 		#printf "$_:\tsuccess: $success{$_} of $total\n";
@@ -1290,7 +1306,7 @@ sub smrz_rgr_rslt {
 	if ($dbg_lvl == 0) {print $reportstr;}
 	else { &verbosity($reportstr); }
 	$udp_dat .= "@";  # use an infrequent char as separator token
-	if ($udp_reprt) { 
+	if ($udp_rpt) { 
 		$sock->send($udp_dat); 
 		if ($dbg_lvl > 0) { print "Regression: udp stream sent:\n$udp_dat\n";}
 	}
@@ -1326,13 +1342,13 @@ sub set_dat_dir {
 	$tmp = <STDIN>;
 	chomp $tmp;
 #		print "You entered [$tmp] \n";
-	if ($tmp eq "") {
+	if ($tmp eq '') {
 	    $dta_dir = "$ENV{'HOME'}/nco_test";
 	    if (-e "$ENV{'HOME'}/nco_test") {
 		print "[$ENV{'HOME'}/nco_test] already exists - OK to re-use?\n[N/y]";
 		$tmp = <STDIN>;
 		chomp $tmp;
-		if ($tmp =~ "[nN]" || $tmp eq "") {
+		if ($tmp =~ "[nN]" || $tmp eq '') {
 		    die "\nFine - decide what to use and start over again - bye!\n";
 		} else {
 		    print "\n";
