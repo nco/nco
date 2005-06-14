@@ -1,14 +1,16 @@
 2005-06-13  Charlie Zender  <zender@uci.edu>
 
+	* Improve threading code intention comments in nco_omp.c
+
 	* Still need to tweak run and data directories in nco_bm.pl and nco_bm.sh
 
 	* nco_bm.pl and nco_bm.sh appear to work with loadleveler
 	Solution is not general yet because unable to pass environment
 	variables (except DATA and HOME) through scripts for now
 	
-	* nco_bm.sh: Do not pass strings with whitespace through Perl Getopt
+	* nco_bm.sh: Never pass strings with whitespace through Perl Getopt
 
-	* nco_bm.pl: Add single quotes in ENV{'MY_BIN_DIR'}
+	* nco_bm.pl: Print many arguments when dbg_lvl=1
 
 2005-06-12  Charlie Zender  <zender@uci.edu>
 

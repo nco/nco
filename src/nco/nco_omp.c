@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.20 2005-06-09 07:01:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.21 2005-06-14 05:23:56 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -22,14 +22,14 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
      Copy appropriate filehandle to variable scoped shared in parallel clause */
 
 #ifdef _OPENMP
-  /* System allocates OMP_NUM_THREADS if possible
-     ncwa is I/O bottlenecked beyond about thr_nbr_max_fsh=4 threads
-     If OMP_NUM_THREADS > 4 then NCO will not be using threads efficiently
-     Strategy: Determine maximum number of threads system will allocate (thr_nbr_max)
-     Reduce maximum number of threads available to system to thr_nbr_max_fsh
+  /* Strategy: 
+     0. Determine maximum number of threads system will allocate (thr_nbr_max)
+     1. Command-line thread request, if any, overrides automatic algorithm
+     2. If no command-line request then system allocates OMP_NUM_THREADS if possible
+     3. Reduce maximum number of threads available to system to thr_nbr_max_fsh
+     Many operators cannot use more than thr_nbr_max_fsh ~ 2--4 threads efficiently
      Play nice: Set dynamic threading so that system can make efficiency decisions
-     When dynamic threads are set, then system will never allocate more than thr_nbr_max_fsh
-  */
+     When dynamic threads are set, system never allocates more than thr_nbr_max_fsh */
   bool USR_SPC_THR_RQS=False;
   const int dyn_thr=1; /* [flg] Allow system to dynamically set number of threads */
   int thr_nbr_max_fsh=4; /* [nbr] Maximum number of threads program can use efficiently */
@@ -52,7 +52,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
   } /* endif dbg */
 
   if(USR_SPC_THR_RQS){
-    /* Honor user-specified thread request... */
+    /* Always try to honor user-specified thread request... */
     thr_nbr_rqs=thr_nbr; /* [nbr] Number of threads to request */
     /* ...if possible... */
     if(dbg_lvl_get() > 2) (void)fprintf(fp_stderr,"%s: INFO User requested %d threads\n",prg_nm_get(),thr_nbr);
@@ -60,8 +60,8 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
       (void)fprintf(fp_stderr,"%s: WARNING Reducing user-requested thread number = %d to maximum thread number allowed = %d\n",prg_nm_get(),thr_nbr,thr_nbr_max);
       thr_nbr_rqs=thr_nbr_max; /* [nbr] Number of threads to request */
     } /* endif */
-  }else{
-    /* Automatic thread allocation algorithm */
+  }else{ /* !USR_SPC_THR_RQS */
+    /* Otherwise use automatic thread allocation algorithm */
 
     /* Request maximum number of threads permitted */
     thr_nbr_rqs=thr_nbr_max; /* [nbr] Number of threads to request */
@@ -75,7 +75,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
 	 Maximum efficiency when one thread reads from input file while other writes to output file */
       thr_nbr_max_fsh=2;
       break;
-      /* Operators without pre-set thread limit (NB: not all of these are threaded!)*/
+      /* Operators without maximum pre-set thread limit (NB: not all of these are threaded!) */
     case ncap: 
     case ncbo: 
     case ncatted: 
@@ -90,16 +90,16 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     default: nco_dfl_case_prg_id_err(); break;
     } /* end case */
     
-    /* Play nice with others */
+    /* Automatic algorithm tries to play nice with others */
     (void)omp_set_dynamic(dyn_thr); /* [flg] Allow system to dynamically set number of threads */
     if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO Allowing OS to dynamically set threads\n",prg_nm_get());
 
     /* Apply program/system limitations */
     if(thr_nbr_max > thr_nbr_max_fsh){
-      if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO Reducing default thread number from %d to %d, a \"play-nice\" number set in nco_openmp_ini()\n",prg_nm_get(),thr_nbr_max,thr_nbr_max_fsh);
+      if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO Reducing default thread number from %d to %d, an operator-dependent \"play-nice\" number set in nco_openmp_ini()\n",prg_nm_get(),thr_nbr_max,thr_nbr_max_fsh);
       thr_nbr_rqs=thr_nbr_max_fsh; /* [nbr] Number of threads to request */
     } /* endif */      
-  } /* endif */      
+  } /* !USR_SPC_THR_RQS */
 
   /* Set thread number */
   if(omp_in_parallel()){
