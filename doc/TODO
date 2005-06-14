@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.527 2005-06-13 06:15:47 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.528 2005-06-14 00:33:24 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -270,7 +270,7 @@ nco487. Add ncks option to suppress over-writing attributes in output file by at
 nco488. ncatted: Deleting global attributes doesn't work unless 'global' specified
         ncatted -O -a Conventions,,d,, ~/nco/data/in.nc ~/foo.nc (fails)
         ncks ~/foo.nc | m
-        ncatted -a Conventions,global,d,, ~/nco/data/in.nc ~/foo.nc (works)
+        ncatted -O -a Conventions,global,d,, ~/nco/data/in.nc ~/foo.nc (works)
 nco494. Implement gzip library wrapper library build option for znetCDF?
 nco514. My MPI builds call superfluous linker steps:
         make MPI=Y > foo 2>&1
@@ -295,10 +295,8 @@ nco540. bm: regression tests report some apparent successes as failures on SUNMP
 	always recorded as failure. 
 	Seems like any "Expected's" containing "+" string may fail.
 	Perl problem?
-nco541. bm: 
-        Bareword "gettimeofday" not allowed while "strict subs" in use at /ptmp/zender/nco_bm/nco_bm01/
-        nco_bm.pl line 344.
-nco542. 
+nco542. Put batch scripts, executables in ${DATA}/nco_bm/CASEID? Where to put created files
+nco543. 
 
 MPI:
 Archive MPI tests which appear to run correctly 

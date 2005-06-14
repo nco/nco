@@ -1,3 +1,15 @@
+2005-06-13  Charlie Zender  <zender@uci.edu>
+
+	* Still need to tweak run and data directories in nco_bm.pl and nco_bm.sh
+
+	* nco_bm.pl and nco_bm.sh appear to work with loadleveler
+	Solution is not general yet because unable to pass environment
+	variables (except DATA and HOME) through scripts for now
+	
+	* nco_bm.sh: Do not pass strings with whitespace through Perl Getopt
+
+	* nco_bm.pl: Add single quotes in ENV{'MY_BIN_DIR'}
+
 2005-06-12  Charlie Zender  <zender@uci.edu>
 
 	* Noticed that regression tests in nco_bm.pl report some 
