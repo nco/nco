@@ -1,6 +1,6 @@
-#! /bin/sh
+#!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.4 2005-06-13 19:50:15 zender Exp $ -*-shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.5 2005-06-14 00:24:03 zender Exp $ -*-shell-script-*-
 
 # Purpose: Run NCO benchmark script in batch environment
 
@@ -24,6 +24,8 @@
 # queue: Tells Loadleveler to submit job
 
 #@ job_name       = nco_bm01
+##@ class          = com_rg1
+##@ class          = com_rg4
 #@ class          = com_rg8
 ##@ class          = com_rg32
 ##@ class          = com_node03
@@ -80,6 +82,7 @@ HOST=`hostname`
 case "${PVM_ARCH}" in 
     AIX* ) 
 	export DATA=/ptmp/${USER}
+	export MY_BIN_DIR=/u/${USER}/bin/AIX
 	case "${HOST}" in 
 	    esmf* ) # UCI
 		case "${HOST}" in 
@@ -98,12 +101,14 @@ case "${PVM_ARCH}" in
 	;; # endif AIX*
     LINUX* ) 
 	export DATA=/data/${USER}
+	export MY_BIN_DIR=/home/${USER}/bin/LINUX
 	export NTHREADS=2
 # Attempt to get sufficient stack memory
 	ulimit -s unlimited
     ;; # endif LIN*
     SGI* )
 	export DATA=/data/${USER}
+	export MY_BIN_DIR=/home/${USER}/bin/SGIMP64
 	export NTHREADS=4
     ;; # endif SGI
     * )
@@ -131,11 +136,14 @@ export LID="`date +%Y%m%d-%H%M%S`"
 #EXE=${DATA_OUT}/${PRG_NM}
 FL_PL=${DATA_OUT}/${FL_NM_PL}
 #/bin/cp -f -p ~/bin/${PVM_ARCH}/${PRG_NM} ${DATA_OUT} || exit 1
+/bin/rm -f ${DATA_OUT}/${FL_NM_PL} || exit 1
+/bin/rm -f ${DATA_OUT}/${FL_NM_SH} || exit 1
 /bin/cp -f -p ~/nco/bm/${FL_NM_PL} ${DATA_OUT} || exit 1
 /bin/cp -f -p ~/nco/bm/${FL_NM_SH} ${DATA_OUT} || exit 1
 # Copy from Production lines in nco_bm.pl:
-CMD_LN="${FL_PL} --bch --dbg=1 --thr_nbr=1 --xpt_dsc='${XPT_DSC}' --regress --udpreport"
-#CMD_LN="${FL_PL} --bch --dbg=1 --thr_nbr=1 --xpt_dsc='${XPT_DSC}' --benchmark --udpreport"
+#CMD_LN="${FL_PL} --bch --dbg=0 --thr_nbr=${NTHREADS} --xpt_dsc='${XPT_DSC}' --regress --udpreport"
+#CMD_LN="${FL_PL} --bch --dbg=0 --thr_nbr=${NTHREADS} --xpt_dsc='${XPT_DSC}' --benchmark --udpreport"
+CMD_LN="${FL_PL} --bch --dbg=0 --thr_nbr=${NTHREADS} --xpt_dsc='${XPT_DSC}' --benchmark --regress --udpreport"
 FL_STDOUT="${PRG_NM}.log.${LID}"
 
 echo "Timestamp ${LID}"
@@ -157,7 +165,7 @@ case "${PVM_ARCH}" in
 	if [ ${NTASKS} -gt 1 ]; then
 	    poe ${CMD_LN} > ${FL_STDOUT} 2>&1
 	else
-	    env OMP_NUM_THREADS="${NTHREADS}" PATH=/usr/local/bin\:${DATA_OUT}\:${PATH} ${CMD_LN} > ${FL_STDOUT} 2>&1
+	    env MY_BIN_DIR="${MY_BIN_DIR}" OMP_NUM_THREADS="${NTHREADS}" PATH=/usr/local/bin\:${DATA_OUT}\:${PATH} ${CMD_LN} > ${FL_STDOUT} 2>&1
 	fi # end else OpenMP
 	;; # endif AIX*
     LINUX* ) 

@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 # Currently env needed on esmf only
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.35 2005-06-13 19:50:15 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.36 2005-06-14 00:24:03 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -11,7 +11,7 @@
 
 # NB: When adding tests, _be sure to use -O to overwrite files_
 # Otherwise, script hangs waiting for interactive response to overwrite queries
-require 5.6.1 or die "This script requires Perl version >= 5.6.1";
+require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use Cwd 'abs_path';
 use English; # WCS96 p. 403
 use Getopt::Long; # GNU-style getopt #qw(:config no_ignore_case bundling);
@@ -26,7 +26,7 @@ use vars qw($dsc_lng_max $dot_nbr $dot_nbr_min $dot_fmt $dot_sng $dsc_fmt $tst_f
  $result $server_name $server_ip $server_port $sock $udp_rpt $tst_fl_cr8
  $dta_dir $bm_dir $tmr_app %subbenchmarks %totbenchmarks $que $rgr $bm $itmp 
  @bm_cmd_ary @ifls $localhostname $notbodi $prfxd $prefix $thr_nbr $cmd_ln $arg_nbr
- $omp_flg $dodods $fl_pth
+ $omp_flg $dodap $fl_pth
 );
 
 my @fl_cr8_dat;  # holds the strings for the fl_cr8() routine 
@@ -46,7 +46,7 @@ $dbg_lvl = 0; # [enm] Print tests during execution for debugging
 my $nvr_data=$ENV{'DATA'} ? $ENV{'DATA'} : '';
 my $nvr_home=$ENV{'HOME'} ? $ENV{'HOME'} : '';
 my $nvr_my_bin_dir=$ENV{'MY_BIN_DIR'} ? $ENV{'MY_BIN_DIR'} : '';
-$dodods = '';
+$dodap = '';
 $fl_pth = '';
 $que = 0;
 $thr_nbr=0; # If not zero, pass explicit threading argument 
@@ -63,16 +63,18 @@ $prefix = '';
 if ($localhostname !~ "bodi") {$notbodi = 1} # spare the poor laptop
 $ARGV = @ARGV;
 
-if ($ARGV == 0){usage(); die "We need some more info to be a useful member of society\n";}
+if ($ARGV == 0){usage(); die "We need some more info to be a useful member of society\n, stopped";}
 
 $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 &GetOptions(
 	'bch_flg!'     => \$bch_flg,    # [flg] Batch behavior
-	'benchmark'    => \$bm,         # do the real benchmarks 
-	'bm'           => \$bm,         # do the real benchmarks 
-	'dbg_lvl=i'    => \$dbg_lvl,  # debug level
+	'benchmark'    => \$bm,         # Run benchmarks 
+	'bm'           => \$bm,         # Run benchmarks 
+	'dbg_lvl=i'    => \$dbg_lvl,    # debug level
 	'debug=i'      => \$dbg_lvl,    # debug level
-	'dods=s'       => \$dodods,     
+	'dods=s'       => \$dodap,     
+	'dap=s'        => \$dodap,     
+	'opendap=s'    => \$dodap,     
 	'h'            => \$usg,        # explains how to use this thang
 	'help'         => \$usg,        # explains how to use this thang
 	'log'          => \$wnt_log,    # set if want output logged
@@ -131,11 +133,11 @@ if ($iosockfound) {
 				   Proto    => 'udp',
 				   PeerAddr => $server_ip,
 				   PeerPort => $server_port
-				   ) or die "\nCan't get the socket!\n\n";
+				   ) or die "\nCannot get the socket!\n stopped";
 } else {$udp_rpt = 0;}
 
 if ($wnt_log) { 
-    open(LOG, ">nctest.log") or die "\nUnable to open log file 'nctest.log' - check permissions on it\nor the directory you are in.\n\n";
+    open(LOG, ">nctest.log") or die "\nUnable to open log file 'nctest.log' - check permissions on it\nor the directory you are in.\n stopped";
 }
 
 # Pass explicit threading argument
@@ -145,15 +147,15 @@ if ($thr_nbr > 0){$omp_flg="--thr_nbr=$thr_nbr ";}else{$omp_flg='';}
 if($dbg_lvl > 0){printf ("$prg_nm: Calling set_dat_dir()...\n");}
 set_dat_dir(); # Set $dta_dir
 
-# If dods is not set then test with local files
-# If dods is set and string is NULL, then test with DODS files on sand.ess.uci.edu
+# If dodap is not set then test with local files
+# If dodap is set and string is NULL, then test with OPeNDAP files on sand.ess.uci.edu
 # If string is NOT NULL, use URL to grab files
-if ($dodods eq '') {
+if ($dodap eq '') {
 	$fl_pth = "$dta_dir";
-} elsif ($dodods =~ /http:\/\//) {
-	$fl_pth = "$dodods";
+} elsif ($dodap =~ /http:\/\//) {
+	$fl_pth = "$dodap";
 } else {
-	print "'--dods' option ($dodods) does not taste like a real URL - typo or thinko?\nContinuing by trying to find the local files in $dta_dir directory.\n"; 
+	print "'--dodap' option ($dodap) does not taste like a real URL - typo or thinko?\nContinuing by trying to find the local files in $dta_dir directory.\n"; 
 	$fl_pth = "$dta_dir";
 }
 
@@ -178,7 +180,7 @@ if ($rgr){
 # Start real benchmark tests
 # Test if necessary files are available - if so, may skip creation tests
 if($dbg_lvl > 0){printf ("$prg_nm: Calling fl_cr8_dat_init()...\n");}
-fl_cr8_dat_init(); # initialize the data strings & timing array for files
+fl_cr8_dat_init(); # Initialize data strings & timing array for files
 
 # Check if files have already been created
 # If so, skip file creation if not requested
@@ -637,9 +639,10 @@ sub perform_tests
     $tst_cmd[1]='ncrename  -O -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon foo_T42.nc';
     $tst_cmd[2]='ncap -O -s "one[lat,lon]=lat*lon*0.0+1.0" -s "zero[lat,lon]=lat*lon*0.0" foo_T42.nc foo_T42.nc';
     $tst_cmd[3]='ncks -C -H -s "%g" -v one -F -d lon,128 -d lat,64 foo_T42.nc';
-    $nsr_xpc="1";
     $dsc_sng='Create T42 variable named one, uniformly 1.0 over globe in foo_T42.nc';
+    $nsr_xpc="1";
     &go();
+
     $tst_cmd[0]='ncks -C -H -s "%c" -v fl_nm in.nc';
     $dsc_sng='extract filename string';
     $nsr_xpc= "/home/zender/nco/data/in.cdl" ;
@@ -861,16 +864,17 @@ sub perform_tests
     $nsr_xpc= 1;
     &go();
     
-#${MY_BIN_DIR}/ncwa -n ' . $omp_flg . ' -O -a lat,lon -w gw foo_T42.nc foo.nc';
+#$tst_cmd[0]='ncwa -n ' . $omp_flg . ' -O -a lat,lon -w gw foo_T42.nc foo.nc';
 #$tst_cmd[1]='ncks -C -H -s "%f" -v one foo.nc';
 #$dsc_sng='normalize by tally but not weight';
 #$nsr_xpc= 0.0312495 ; 
 #&go();
-#${MY_BIN_DIR}/ncwa -W ' . $omp_flg . ' -O -a lat,lon -w gw foo_T42.nc foo.nc';
+#$tst_cmd[0]='ncwa -W ' . $omp_flg . ' -O -a lat,lon -w gw foo_T42.nc foo.nc';
 #$tst_cmd[1]='ncks -C -H -s "%f" -v one foo.nc';
 #$dsc_sng='normalize by weight but not tally';
 #$nsr_xpc= 8192 ; 
 #&go();
+
     $tst_cmd[0]='ncwa -N ' . $omp_flg . ' -O -a lat,lon -w gw in.nc foo.nc';
     $tst_cmd[1]='ncks -C -H -s "%f" -v mask foo.nc';
     $dsc_sng='do not normalize by denominator';
@@ -1097,7 +1101,7 @@ sub perform_tests
     $tst_cmd[0]='ncks -C -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc foo.nc';
     $tst_cmd[1]='ncks -C -H -s "%e" -v lon foo.nc';
     $tst_cmd[3]='mv in_tmp.nc in.nc';
-    $dsc_sng='nco 5: HTTP/DODS protocol (fails if not compiled on Linux with make DODS=Y)';
+    $dsc_sng='nco 5: HTTP/OPeNDAP protocol (fails if not compiled on Linux with make DODS=Y)';
     $nsr_xpc= 0;
     &go();
 } # end of perform_test()
@@ -1116,8 +1120,7 @@ where (options) are:
     --usage || -h ...dumps this help
     --debug {1-3) ...puts the script into debug mode; emits more and (hopefully)
                      more useful info.
-    --dods {DODS url} ...do the tests with files retrieved from DODS rather than with 
-	                       local files.
+    --dap {OPeNDAP url} ...retrieve test files from OPeNDAP server
     --log ..........requests that the debug info is logged to 'nctest.log'
                      as well as spat to STDOUT.
     --udpreport.....requests that the test results are communicated back to
@@ -1166,8 +1169,6 @@ exit(0);
 	my $bch_flg; # [flg] Batch behavior
 	my $dbg_lvl; # [flg] Debugging level
 	($bch_flg,$dbg_lvl)=@_;
-	if($dbg_lvl > 0){printf ("$prg_nm: initialize() reports \$bch_flg = $bch_flg...\n");}
-	
 	# Enumerate operators to test
 	@opr_lst_all = qw( ncap ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa);
 	if (scalar @ARGV > 0){@opr_lst=@ARGV;}else{@opr_lst=@opr_lst_all;}
@@ -1176,21 +1177,19 @@ exit(0);
 	    # Set and verify MY_BIN_DIR
 	    printf "\$MY_BIN_DIR not specified, "; 
 	    if($bch_flg){
-		die "unable to continue in batch mode without MY_BIN_DIR";
+		die "unable to continue in batch mode without MY_BIN_DIR\n stopped";
 	    }else{ # !bch_flg
+		$MY_BIN_DIR=abs_path("../src/nco");
                 printf "use $MY_BIN_DIR? ('y' or specify)\n";
-		$MY_BIN_DIR = abs_path("../src/nco");
 		my $ans = <STDIN>;
 		chomp $ans;
 		$MY_BIN_DIR = $ans unless (lc($ans) eq "y" || lc($ans) eq '');
 	    } # !bch_flg
 	} # !$MY_BIN_DIR
-	if($dbg_lvl > 0){printf ("$prg_nm: initialize() reports blurp1\n");}
 	if($dbg_lvl > 0){printf ("$prg_nm: initialize() reports \$MY_BIN_DIR = $MY_BIN_DIR, \$opr_lst[0] = $opr_lst[0], \@opr_lst=@opr_lst\n");}
 	# Die if this path still does not work
-	die "$MY_BIN_DIR/$opr_lst[0] does not exist\n" unless (-e "$MY_BIN_DIR/$opr_lst[0]");
+	die "$MY_BIN_DIR/$opr_lst[0] does not exist\n stopped" unless (-e "$MY_BIN_DIR/$opr_lst[0]");
 	
-	if($dbg_lvl > 0){printf ("$prg_nm: initialize() reports blurp2\n");}
 	# Create symbolic links for testing
 	# If libtool created shared libraries, then point to real executables 
 	# in ../src/nco/.libs 
@@ -1199,7 +1198,6 @@ exit(0);
         $sym_link{ncdiff}=$dotlib . "ncbo";
 	$sym_link{ncea}=$dotlib . "ncra";
 	$sym_link{ncrcat}=$dotlib . "ncra";
-	if($dbg_lvl > 0){printf ("$prg_nm: initialize() reports blurp3\n");}
 	foreach(keys %sym_link) {
 	    system("cd $MY_BIN_DIR && ln -s -f $sym_link{$_} $_ || (/bin/rm -f $_ && ln -s -f $sym_link{$_} $_)");
 	}
@@ -1207,16 +1205,12 @@ exit(0);
 # Go to data directory where tests are actually run
 	my $data_dir = "../data";
 	
-	if($dbg_lvl > 0){printf ("$prg_nm: initialize() reports blurp4\n");}
-	chdir $data_dir or die "$OS_ERROR\n";
+	chdir $data_dir or die "$OS_ERROR\n stopped";
 	
 	# Make sure in.nc exists, make it if possible, or die
-	if($dbg_lvl > 0){printf ("$prg_nm: initialize() reports blurp5\n");}
-	unless (-e "in.nc") {
+	unless (-e "in.nc"){
 	    system("ncgen -o in.nc in.cdl") if (`which ncgen` and -e "in.cdl");
-	}
-	
-	die "The netCDF file \"in.nc\" is necessary for testing NCO, however, it could not be found in \"$data_dir\".  Also, it could not be generated because \"ncgen\" could not be found in your path and/or the file \"$data_dir/in.cdl\" does not exist.\n" unless (-e "in.nc");
+	}die "The netCDF file \"in.nc\" is necessary for testing NCO, however, it could not be found in \"$data_dir\".  Also, it could not be generated because \"ncgen\" could not be found in your path and/or the file \"$data_dir/in.cdl\" does not exist.\n stopped" unless (-e "in.nc");
 	
 	# Initialize hashes for each operator to test
 	foreach(@opr_lst) 
@@ -1353,7 +1347,7 @@ sub set_dat_dir {
 	    $dta_dir = "$ENV{'DATA'}/nco_test";
 	    mkdir "$dta_dir",0777;
 	} else {
-	    die "You have defined a DATA dir ($ENV{'DATA'}) that cannot be written to or read\nfrom or both - please try again.\n\n";
+	    die "You have defined a DATA dir ($ENV{'DATA'}) that cannot be written to or read\nfrom or both - please try again.\n stopped";
 	}
     } elsif ($que == 0) {
 	$tmp = 'notset';
@@ -1368,7 +1362,7 @@ sub set_dat_dir {
 		$tmp = <STDIN>;
 		chomp $tmp;
 		if ($tmp =~ "[nN]" || $tmp eq '') {
-		    die "\nFine - decide what to use and start over again - bye!\n";
+		    die "\nFine - decide what to use and start over again - bye! stopped";
 		} else {
 		    print "\n";
 		}
@@ -1389,12 +1383,12 @@ sub set_dat_dir {
 		if (-w $dta_dir && -r $dta_dir) {
 		    print "OK - [$dta_dir] is available to write to\n";
 		} else {
-		    die "ERROR - [$dta_dir] could not be made - check this and try again.\n\n\n";
+		    die "ERROR - [$dta_dir] could not be made - check this and try again.\n stopped";
 		}
 	    }
 	}
     } else { # que != 0
-	die "You MUST define a DATA environment variable to run this in a queue\n";
+	die "You MUST define a DATA environment variable to run this in a queue\n stopped";
     } # !defined $ENV{'DATA'})
 } # end set_dat_dir()
 
@@ -1440,7 +1434,7 @@ sub tst_hirez{
 	else {$elapsed = time - $t0;}
 	print " Run $W - Elapsed time =  $elapsed \n" ; 
     }
-    if ($dbg_lvl == 1) {die "that's all folk!!\n";}
+    if ($dbg_lvl == 1) {die "that's all folks!!\n stopped";}
 }
 
 # fl_cr8 creates populated files for the benchmarks
