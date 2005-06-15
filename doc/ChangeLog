@@ -1,3 +1,19 @@
+2005-06-15  Harry Mangalam <hjm@tacgi.com>
+    * MD5 version of nco_bm.pl checked in - works on SV (Single Values) on 
+    x86-32, x86-64, esmf.  Passes benchmarks on all these platforms. 
+    on x86-32, passes all regressions except for funny-wrap-on-Intel regression,
+               passes all MD5 & WC tests for regression (except noted above)
+               passes all benchmarks with MD5, WC, SV
+    on x86-64, passes all regressions except ncap funny business (fails 3)
+               passes all but 4 MD5 checks (makes sense in terms of what fails)
+               passes all benchmarks on SV but fails all MD5 checks
+    on AIX-64  passes all regressions but 4 of the ncaps tests
+               passes all MD5 & WC tests for regression (except noted above)
+               passes all benchmarks on SV but fails all MD5 checks
+    - picks up DATA and MY_BIN_DIR correctly now.
+    - reduced number of debugging cruft, tho in debug mode, it still burps text
+      in ugly ways.
+
 2005-06-15  Charlie Zender  <zender@uci.edu>
 
 	* Add MD5 and SHA1 digests of nco.tar.gz to index.shtml
