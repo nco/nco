@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.289 2005-06-12 21:09:55 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.290 2005-06-15 15:42:53 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -388,7 +388,11 @@ The best way to acquire NCO sources is with <a href="http://www.cvshome.org">CVS
 The second best way is to download the source and documentation as a compressed tarfile:
 <ul>
 <li>
-<a href="nco.tar.gz">nco.tar.gz</a> (<!--#fsize file="nco.tar.gz"--> compressed tar-file)</li>
+<a href="nco.tar.gz">nco.tar.gz</a> 
+(<!--#fsize file="nco.tar.gz"--> compressed tar-file)<br>
+<!--#exec cmd="openssl dgst -md5 nco.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha1 nco.tar.gz"--> 
+</li>
 </ul>
 
 <p>The 
