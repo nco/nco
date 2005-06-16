@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.29 2005-05-22 21:34:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.30 2005-06-16 23:35:43 gayathri_aiyar Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -140,8 +140,8 @@ nco_cnv_mss_val_typ  /* [fnc] Convert missing_value, if any, to mss_val_out_typ 
 
   var_in_typ=var->type; /* [enm] Type of variable and mss_val on input */
 
-  /* Skip if no missing_value or if missing_value is already typ_upk */
-  if(!var->has_mss_val || var_in_typ == mss_val_out_typ) return var;
+  /* Skip if no missing_value or if missing_value is already typ_upk */ 
+  if(!var->has_mss_val || var_in_typ == mss_val_out_typ) return var; 
 
   /* Simple error-checking and diagnostics */
   if(dbg_lvl_get() > 2){

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.91 2005-06-12 23:29:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.92 2005-06-16 23:35:43 gayathri_aiyar Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -293,11 +293,14 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   else if(!strcmp(nm_out_tmp,"ncflint")){*prg_lcl=ncflint;}
   else if(!strcmp(nm_out_tmp,"mpncflint")){*prg_lcl=ncflint;}
   else if(!strcmp(nm_out_tmp,"ncwa")){*prg_lcl=ncwa;}
+  else if(!strcmp(nm_out_tmp,"mpncwa")){*prg_lcl=ncwa;}
   else if(!strcmp(nm_out_tmp,"ncrcat")){*prg_lcl=ncrcat;}
   else if(!strcmp(nm_out_tmp,"ncecat")){*prg_lcl=ncecat;}
+  else if(!strcmp(nm_out_tmp,"mpncecat")){*prg_lcl=ncecat;}
   else if(!strcmp(nm_out_tmp,"ncks")){*prg_lcl=ncks;}
   else if(!strcmp(nm_out_tmp,"ncpdq")){*prg_lcl=ncpdq;}
   /* Synonyms for ncpdq: These are acceptable symbolic links for ncpdq */
+  else if(!strcmp(nm_out_tmp,"mpncpdq")){*prg_lcl=ncpdq;}
   else if(!strcmp(nm_out_tmp,"ncpack")){*prg_lcl=ncpdq;}
   else if(!strcmp(nm_out_tmp,"ncunpack")){*prg_lcl=ncpdq;}
   /* End synonyms for ncpdq */

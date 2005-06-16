@@ -1,3 +1,11 @@
+2005-06-16  Gayathri Venkitachalam  <gvenkita@uci.edu>
+
+	* Added new operators mpncwa, mpncpdq, mpncecat
+	
+	* Modified mpncbo so that all processes do the final clean-up
+	
+	* Modified nco_ctl.c and nco_pck.c to accommodate new MPI operators
+
 2005-06-15  Gayathri Venkitachalam  <gvenkita@uci.edu>
 
 	* Added a couple of tests for ncra (average

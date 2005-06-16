@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.289 2005-06-14 00:33:32 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.290 2005-06-16 23:35:32 gayathri_aiyar Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -308,7 +308,7 @@ CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 
 # Variables having to do with binary executables created by module
 ifeq (${MPI},Y)
-MDL_BIN_TRG := mpncbo mpncflint ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
+MDL_BIN_TRG := mpncbo mpncecat mpncflint mpncpdq mpncwa ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
 else
 MDL_BIN_TRG := ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
 endif # endif MPI
@@ -1204,6 +1204,28 @@ obj_dir:
 	-mkdir -p ${MY_OBJ_DIR}
 # Targets in bin
 .PHONY:  ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa
+mpncbo:   ${MY_BIN_DIR}/mpncbo
+${MY_BIN_DIR}/mpncbo:	${MY_OBJ_DIR}/mpncbo.o lib
+	${CC} -o $@ $< ${LDFLAGS}
+	chmod 755 $@${BNR_SFX}
+mpncecat:   ${MY_BIN_DIR}/mpncecat
+${MY_BIN_DIR}/mpncecat:	${MY_OBJ_DIR}/mpncecat.o lib
+	${CC} -o $@ $< ${LDFLAGS}
+	chmod 755 $@${BNR_SFX}
+mpncflint:   ${MY_BIN_DIR}/mpncflint
+${MY_BIN_DIR}/mpncflint:	${MY_OBJ_DIR}/mpncflint.o lib
+	${CC} -o $@ $< ${LDFLAGS}
+	chmod 755 $@${BNR_SFX}
+mpncpdq:   ${MY_BIN_DIR}/mpncpdq
+${MY_BIN_DIR}/mpncpdq:	${MY_OBJ_DIR}/mpncpdq.o lib
+	${CC} -o $@ $< ${LDFLAGS}
+	chmod 755 $@${BNR_SFX}
+#	cd ${MY_BIN_DIR}; rm -f ncunpack; ln -s -f ncpdq ncunpack
+#	cd ${MY_BIN_DIR}; rm -f ncpack; ln -s -f ncpdq ncpack
+mpncwa:   ${MY_BIN_DIR}/mpncwa
+${MY_BIN_DIR}/mpncwa:	${MY_OBJ_DIR}/mpncwa.o ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o lib
+	${CC} -o $@ $<  ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o ${LDFLAGS}
+	chmod 755 $@${BNR_SFX}
 ncatted:   ${MY_BIN_DIR}/ncatted
 ${MY_BIN_DIR}/ncatted:	${MY_OBJ_DIR}/ncatted.o lib
 	${CC} -o $@ $< ${LDFLAGS}
@@ -1213,14 +1235,6 @@ ${MY_BIN_DIR}/ncbo:	${MY_OBJ_DIR}/ncbo.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f ncdiff; ln -s -f ncbo ncdiff
-mpncbo:   ${MY_BIN_DIR}/mpncbo
-${MY_BIN_DIR}/mpncbo:	${MY_OBJ_DIR}/mpncbo.o lib
-	${CC} -o $@ $< ${LDFLAGS}
-	chmod 755 $@${BNR_SFX}
-mpncflint:   ${MY_BIN_DIR}/mpncflint
-${MY_BIN_DIR}/mpncflint:	${MY_OBJ_DIR}/mpncflint.o lib
-	${CC} -o $@ $< ${LDFLAGS}
-	chmod 755 $@${BNR_SFX}
 ncecat:   ${MY_BIN_DIR}/ncecat
 ${MY_BIN_DIR}/ncecat:	${MY_OBJ_DIR}/ncecat.o lib
 	${CC} -o $@ $< ${LDFLAGS}

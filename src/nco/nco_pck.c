@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.56 2005-05-20 00:01:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.57 2005-06-16 23:35:43 gayathri_aiyar Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -177,6 +177,11 @@ nco_pck_plc_get /* [fnc] Convert user-specified packing policy to key */
 
   if(nco_pck_plc_sng == NULL){
     if(!strcmp(prg_nm,"ncpdq")){
+      (void)fprintf(stdout,"%s: INFO %s reports %s invoked without explicit packing or dimension permutation options. Defaulting to packing policy \"all_new\".\n",prg_nm,fnc_nm,prg_nm);
+      return nco_pck_plc_all_new_att;
+    } /* endif */
+    /* 06-09-05; added by GV */
+    if(!strcmp(prg_nm,"mpncpdq")){
       (void)fprintf(stdout,"%s: INFO %s reports %s invoked without explicit packing or dimension permutation options. Defaulting to packing policy \"all_new\".\n",prg_nm,fnc_nm,prg_nm);
       return nco_pck_plc_all_new_att;
     } /* endif */

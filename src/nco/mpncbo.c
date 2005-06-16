@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.12 2005-04-29 18:54:59 gayathri_aiyar Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.13 2005-06-16 23:35:42 gayathri_aiyar Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.12 2005-04-29 18:54:59 gayathri_aiyar Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.12 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.13 2005-06-16 23:35:42 gayathri_aiyar Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.13 $";
   const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   const double sleep_tm=0.04; /* [time] interval between successive token requests */
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
@@ -713,7 +713,6 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI 
   /* Manager moves output file (closed by workers) from temporary to permanent location */
   if(proc_id == 0) (void)nco_fl_mv(fl_out_tmp,fl_out);
-  MPI_Finalize();
 #else /* !ENABLE_MPI */
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id); 
@@ -751,6 +750,10 @@ main(int argc,char **argv)
   var_prc_out=(var_sct **)nco_free(var_prc_out);
   var_fix=(var_sct **)nco_free(var_fix);
   var_fix_out=(var_sct **)nco_free(var_fix_out);
+
+#ifdef ENABLE_MPI 
+  MPI_Finalize();
+#endif /* !ENABLE_MPI */
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();

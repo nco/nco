@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.1 2005-04-26 23:56:57 gayathri_aiyar Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.2 2005-06-16 23:35:43 gayathri_aiyar Exp $ */
 
 /* mpncflint -- netCDF file interpolator - MPI */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.1 2005-04-26 23:56:57 gayathri_aiyar Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.1 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.2 2005-06-16 23:35:43 gayathri_aiyar Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.2 $";
   const char * const opt_sht_lst="ACcD:d:Fhi:l:Oo:p:rRv:xw:Z-:";
   
   dmn_sct **dim;
@@ -594,7 +594,6 @@ main(int argc,char **argv)
         TOKEN_FREE=True;
 
         if(idx > nbr_var_prc - 1){
-          printf("DEBUG: idx=%d > (nbr_var_prc-1)=%d\n", idx, nbr_var_prc-1);
           /* MPI_Send NO_MORE_WORK/Quit mesg, -1 could indicate it */
           b[0]=-1; /* var to be processed */
           b[1]=out_id; /* file id of file3 */
@@ -607,7 +606,6 @@ main(int argc,char **argv)
           b[2]=var_prc_out[idx]->id; /* var id for file3 */
           idx++;
         }
-        printf("Sending index: %d to node: %d \n", b[0], wrk_id);
         MPI_Send(b, 3, MPI_INT, wrk_id, WORK_ALLOC, MPI_COMM_WORLD);
 
       }
@@ -724,7 +722,6 @@ main(int argc,char **argv)
 
     /* GV - just to keep track of each node's workload */
     nbr_var_wrt++;
-    printf("DEBUG: node %d has written data (index: %d, file: %d) nbr_var_wrt %d\n", my_id, idx, out_id, nbr_var_wrt);
     } /* end-file write */
 
     /*    var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);*/
@@ -752,18 +749,11 @@ main(int argc,char **argv)
     /* GV - Output file is closed by the workers, so just move it from temporary to permanent location */
     (void)nco_fl_mv(fl_out_tmp, fl_out);
 
-    printf("DEBUG: output file renamed\n");
-
     /* Remove local copy of file */
     if(FILE_1_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_1);
     if(FILE_2_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_2);
 
   }
-
-  printf("DEBUG: Node %d, nbr_var_wrt %d\n", my_id, nbr_var_wrt);
-  printf("Time taken: %f\n", MPI_Wtime() - srt_tm);
-
-  MPI_Finalize();
    
   /* ncflint-unique memory */
   if(fl_in_1 != NULL) fl_in_1=(char *)nco_free(fl_in_1);
@@ -799,6 +789,10 @@ main(int argc,char **argv)
   var_prc_out=(var_sct **)nco_free(var_prc_out);
   if(nbr_var_fix > 0) var_fix=nco_var_lst_free(var_fix,nbr_var_fix);
   if(nbr_var_fix > 0) var_fix_out=nco_var_lst_free(var_fix_out,nbr_var_fix);
+
+#ifdef ENABLE_MPI
+  MPI_Finalize();
+#endif /* !ENABLE_MPI */
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
