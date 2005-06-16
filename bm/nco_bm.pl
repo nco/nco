@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.38 2005-06-16 00:39:18 gayathri_aiyar Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.39 2005-06-16 01:27:53 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -488,7 +488,7 @@ my $doit=1; # for skipping various tests
 
 # and now, the REAL benchmarks, set up as the regression tests below to use go() and smrz_rgr_rslt()
 if ($bm) {
-#	$prefix = "$tmr_app $MY_BIN_DIR"; $prfxd = 1; #embed the timer command and local bin in cmd
+        $prefix = "$tmr_app $MY_BIN_DIR"; $prfxd = 1; # Embed timer command and local binary directory in command
 	print "\nStarting Benchmarks now\n";
 	if($dbg_lvl > 0){print "bm: prefix = $prefix\n";}
 
