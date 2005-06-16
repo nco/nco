@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.39 2005-06-16 01:27:53 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.40 2005-06-16 01:39:00 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -1132,7 +1132,7 @@ sub perform_tests
 	
 	$tst_cmd[0]="ncra  $omp_flg  -h -O -v rec_var_int_mss_val_int in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_int $outfile";
-	$dsc_sng="record mean of integer with integer missing values with 2 identical input files";
+	$dsc_sng="record mean of integer with integer missing values across two files (TODO nco543)";
 	$nsr_xpc= 5 ; 
 	&go();
 
@@ -1144,7 +1144,7 @@ sub perform_tests
 	
 	$tst_cmd[0]="ncra  $omp_flg  -h -O -v rec_var_int_mss_val_flt in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_flt $outfile";
-	$dsc_sng="record mean of integer with float missing values with 2 identical input files";
+	$dsc_sng="record mean of integer with float missing values across two files (TODO nco543)";
 	$nsr_xpc= 5 ; 
 	&go();
 	

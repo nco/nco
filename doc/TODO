@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.528 2005-06-14 00:33:24 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.529 2005-06-16 01:39:01 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -296,7 +296,12 @@ nco540. bm: regression tests report some apparent successes as failures on SUNMP
 	Seems like any "Expected's" containing "+" string may fail.
 	Perl problem?
 nco542. Put batch scripts, executables in ${DATA}/nco_bm/CASEID? Where to put created files
-nco543. 
+nco543. ncra regression test 5 and 7 fail:
+        ncra -O -C -v rec_var_int_mss_val_int -p ~/nco/data in.nc in.nc ~/foo.nc
+        ncks -C -H -s '%d\n' -v rec_var_int_mss_val_int ~/foo.nc
+        ncra -O -C -v rec_var_int_mss_val_flt -p ~/nco/data in.nc in.nc ~/foo.nc
+        ncks -C -H -s '%d\n' -v rec_var_int_mss_val_flt ~/foo.nc
+nco544. 
 
 MPI:
 Archive MPI tests which appear to run correctly 
