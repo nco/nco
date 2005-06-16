@@ -1,3 +1,9 @@
+2005-06-15  Gayathri Venkitachalam  <gvenkita@uci.edu>
+
+	* Added a couple of tests for ncra (average
+	(i)rec_var_int_mss_val_int (ii)rec_var_int_mss_val_flt across 2
+	identical input files) in nco_bm.pl which seem to fail
+
 2005-06-15  Harry Mangalam <hjm@tacgi.com>
     * MD5 version of nco_bm.pl checked in - works on SV (Single Values) on 
     x86-32, x86-64, esmf.  Passes benchmarks on all these platforms. 
