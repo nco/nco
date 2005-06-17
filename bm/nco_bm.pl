@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.41 2005-06-16 06:19:42 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.42 2005-06-17 01:33:44 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -926,6 +926,12 @@ sub perform_tests
 	$nsr_xpc= 3 ; 
 	&go();
 	
+	$tst_cmd[0]="ncra -Y ncea $omp_flg -h -O -v rec_var_int_mss_val_int in.nc in.nc $outfile";
+	$tst_cmd[1]="ncks -C -H -s '%d ' -v rec_var_int_mss_val_int $outfile";
+	$dsc_sng="ensemble mean of integer with integer missing values across two files";
+	$nsr_xpc= '-999 2 3 4 5 6 7 8 -999 -999' ; 
+	&go();
+
 ####################
 ## ncecat tests ####
 ####################

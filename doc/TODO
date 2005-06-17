@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.530 2005-06-16 06:19:47 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.531 2005-06-17 01:33:46 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -306,7 +306,9 @@ nco543. ncra regression test 5 and 7 fail.
         ncra -O -C -v rec_var_int_mss_val_flt -p ~/nco/data in.nc in.nc ~/foo.nc
         ncks -C -H -s '%d\n' -v rec_var_int_mss_val_flt ~/foo.nc
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncra -O -C -v rec_var_int_mss_val_int -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-nco544. 
+nco544. ncea regression test fail
+        ncea -O -C -v rec_var_int_mss_val_int -p ~/nco/data in.nc in.nc ~/foo.nc
+        ncks -C -H -s '%d ' -v rec_var_int_mss_val_int ~/foo.nc
 
 MPI:
 Archive MPI tests which appear to run correctly 

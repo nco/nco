@@ -1,5 +1,13 @@
 2005-06-16  Charlie Zender  <zender@uci.edu>
 
+	* Added ncea regression test similar to current failing ncra TODO nco543
+	
+	* Removed call to nco_typ_cnv_rth() for var_prc[idx] in ncra and ncea
+	Call appears redundant since variable is converted to output
+	type with nco_var_cnf_typ() two lines later anyway.
+	Removing nco_typ_cnv_rth() for var_prc[idx] causes no new failures 
+	in regression tests.
+
 	* Set default packing policy for all potential MPI ncpdq operators
 
 2005-06-16  Gayathri Venkitachalam  <gvenkita@uci.edu>

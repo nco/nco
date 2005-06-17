@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.30 2005-06-16 23:35:43 gayathri_aiyar Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.31 2005-06-17 01:33:46 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -124,13 +124,13 @@ nco_cnv_mss_val_typ  /* [fnc] Convert missing_value, if any, to mss_val_out_typ 
      When next record is read and variable is promoted to arithmetic type (double),
      this routine will automatically try to convert the missing_value, assuming
      it is same type as variable.
-     Performing type conversion on memory already converted is a no-no
-     It will result in unpredictable and incorrect answers
+     Performing type conversion on memory already converted is a no-no!
+     And it results in unpredictable and incorrect answers
      Thus it is very important to synchronize type of variable and missing_value 
      In the case described above, ncra simply calls this routine to convert 
      missing_value to typ_upk at the end of each record.
      Routine is dangerous because it _allows_ mss_val and variable to be different types
-     Make sure you have a very good reason to ask it to do this!
+     Make sure you have a (very) good reason to do this!
      Better permanent solution is to add missing_value type to variable structure */
 
   nc_type var_in_typ; /* [enm] Type of variable and mss_val on input */
@@ -169,9 +169,10 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
 {
   /* Threads: Routine is thread safe and makes no unsafe routines */
   /* Purpose: Return copy of input variable typecast to desired type
-     Actually, routine saves time by returning original original variable structure
+     Routine converts missing_value, if any, to output type
+     Routine saves time by returning original variable structure
      with val and type members changed as necessary
-     Routine assumes variable and missing_value are same type in memory
+     Routine assumes variable and missing_value, if any, are same type in memory
      This is currently always true except briefly in ncra (and possibly ncpdq)
      This condition is unsafe and is described more fully in nco_cnv_mss_val_typ() */
   long idx;
