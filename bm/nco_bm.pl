@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.42 2005-06-17 01:33:44 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.43 2005-06-17 19:06:26 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -553,7 +553,6 @@ if ($doit) { # cheesy way to skip selected stanzas in the dev process
 		}
 	}
 	
-	
 	if ($doit) {
 	#################### begin cz benchmark list #4
 	$opr_nm='ncbo';
@@ -566,7 +565,6 @@ if ($doit) { # cheesy way to skip selected stanzas in the dev process
 	$nsr_xpc = "0.640000";	
 	go();
 	}
-
 		
 	if ($doit) {
 	#################### begin cz benchmark list #3

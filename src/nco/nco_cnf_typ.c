@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.31 2005-06-17 01:33:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.32 2005-06-17 19:06:35 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -114,16 +114,16 @@ nco_cnv_mss_val_typ  /* [fnc] Convert missing_value, if any, to mss_val_out_typ 
   /* Purpose: Convert variable missing_value field, if any, to mss_val_out_typ
      Routine is currently called only by ncra and by nco_var_get(), for following reason:
      Most applications should call nco_var_cnf_typ() without calling nco_cnv_mss_val_typ()
-     since nco_var_cnf_typ() converts misssing_value type along with variable type
+     since nco_var_cnf_typ() converts misssing_value type along with variable type.
      The important exception to this is ncra
      ncra refreshes variable metadata (including missing_value, if any) 
      once per file (naturally), but refreshes variable values once per record.
      Current type of missing_value is not stored separately in variable structure
      (maybe this is a mistake), so type of missing value may remain as promoted
      type for arithmetic.
-     When next record is read and variable is promoted to arithmetic type (double),
-     this routine will automatically try to convert the missing_value, assuming
-     it is same type as variable.
+     When next record is read and nco_typ_cnf_rth() promotion of new input 
+     to arithmetic type (double, if necessary) will fail when it tries to
+     convert the missing_value, if any, which _was already promoted_.
      Performing type conversion on memory already converted is a no-no!
      And it results in unpredictable and incorrect answers
      Thus it is very important to synchronize type of variable and missing_value 

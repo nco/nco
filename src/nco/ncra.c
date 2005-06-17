@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.142 2005-06-17 01:33:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.143 2005-06-17 19:06:35 zender Exp $ */
 
 /* ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
@@ -99,6 +99,7 @@ main(int argc,char **argv)
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
+  bool LAST_RECORD=False;
   bool NCAR_CCSM_FORMAT=int_CEWI;
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
 
@@ -117,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.142 2005-06-17 01:33:46 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.142 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.143 2005-06-17 19:06:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.143 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
 
   dmn_sct **dim;
@@ -504,10 +505,11 @@ main(int argc,char **argv)
       /* Loop over each record in current file */
       if(lmt_rec->srt > lmt_rec->end) (void)fprintf(stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
       for(idx_rec=lmt_rec->srt;idx_rec<=lmt_rec->end;idx_rec+=lmt_rec->srd){
+	if(fl_idx == fl_nbr-1 && idx_rec >= 1L+lmt_rec->end-lmt_rec->srd) LAST_RECORD=True;
 	/* Process all variables in current record */
 	if(dbg_lvl > 1) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx) shared(ARM_FORMAT,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,in_id,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx) shared(ARM_FORMAT,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,in_id,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
 #endif /* !_OPENMP */
 	for(idx=0;idx<nbr_var_prc;idx++){
 	  if(dbg_lvl > 2) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
@@ -545,8 +547,11 @@ main(int argc,char **argv)
 
 	  /* Warn if record coordinate, if any, is not monotonic */
 	  if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,idx_rec_out);
-	  /* Convert missing_value, if any, back to disk type */
-	  if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk) var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
+	  /* Convert missing_value, if any, back to disk type
+	     Otherwise missing_value will be double-promoted when next record read 
+	     Do not convert after last record otherwise normalization fails 
+	     due to wrong missing_value type (needs memory type, not disk type) */
+	  if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk && !LAST_RECORD) var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
 	  /* Free current input buffer */
 	  var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	} /* end (OpenMP parallel for) loop over variables */

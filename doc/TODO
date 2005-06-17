@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.531 2005-06-17 01:33:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.532 2005-06-17 19:06:30 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -309,6 +309,7 @@ nco543. ncra regression test 5 and 7 fail.
 nco544. ncea regression test fail
         ncea -O -C -v rec_var_int_mss_val_int -p ~/nco/data in.nc in.nc ~/foo.nc
         ncks -C -H -s '%d ' -v rec_var_int_mss_val_int ~/foo.nc
+nco545. 
 
 MPI:
 Archive MPI tests which appear to run correctly 

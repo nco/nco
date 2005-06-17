@@ -1,8 +1,15 @@
+2005-06-17  Charlie Zender  <zender@uci.edu>
+
+	* Convert var_prc[idx]->mss_val back to on-disk type after every
+	record _except_ the last record in ncra. 
+	This fixes valgrind memory error associated with TODO nco543
+	Regression test is still not passed, though no new regressions introduced
+
 2005-06-16  Charlie Zender  <zender@uci.edu>
 
 	* Added ncea regression test similar to current failing ncra TODO nco543
 	
-	* Removed call to nco_typ_cnv_rth() for var_prc[idx] in ncra and ncea
+	* Remove call to nco_typ_cnv_rth() for var_prc[idx] in ncra and ncea
 	Call appears redundant since variable is converted to output
 	type with nco_var_cnf_typ() two lines later anyway.
 	Removing nco_typ_cnv_rth() for var_prc[idx] causes no new failures 

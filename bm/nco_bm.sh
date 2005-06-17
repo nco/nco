@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.5 2005-06-14 00:24:03 zender Exp $ -*-shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.6 2005-06-17 19:06:27 zender Exp $ -*-shell-script-*-
 
 # Purpose: Run NCO benchmark script in batch environment
 
@@ -87,7 +87,7 @@ case "${PVM_ARCH}" in
 	    esmf* ) # UCI
 		case "${HOST}" in 
 		    esmf0[1-7]* ) # UCI
-		    export NTHREADS=8 # OpenMP
+		    export NTHREADS=2 # OpenMP
 		    ;; # endif UCI
 		    esmf0[8]* ) # UCI
 		    export NTHREADS=32 # OpenMP
