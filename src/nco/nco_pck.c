@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.57 2005-06-16 23:35:43 gayathri_aiyar Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.58 2005-06-17 00:54:29 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -176,17 +176,12 @@ nco_pck_plc_get /* [fnc] Convert user-specified packing policy to key */
   prg_nm=prg_nm_get(); /* [sng] Program name */
 
   if(nco_pck_plc_sng == NULL){
-    if(!strcmp(prg_nm,"ncpdq")){
+    if(strstr(prg_nm,"ncpdq")){
       (void)fprintf(stdout,"%s: INFO %s reports %s invoked without explicit packing or dimension permutation options. Defaulting to packing policy \"all_new\".\n",prg_nm,fnc_nm,prg_nm);
       return nco_pck_plc_all_new_att;
     } /* endif */
-    /* 06-09-05; added by GV */
-    if(!strcmp(prg_nm,"mpncpdq")){
-      (void)fprintf(stdout,"%s: INFO %s reports %s invoked without explicit packing or dimension permutation options. Defaulting to packing policy \"all_new\".\n",prg_nm,fnc_nm,prg_nm);
-      return nco_pck_plc_all_new_att;
-    } /* endif */
-    if(!strcmp(prg_nm,"ncpack")) return nco_pck_plc_all_new_att;
-    if(!strcmp(prg_nm,"ncunpack")) return nco_pck_plc_upk;
+    if(strstr(prg_nm,"ncpack")) return nco_pck_plc_all_new_att;
+    if(strstr(prg_nm,"ncunpack")) return nco_pck_plc_upk;
     (void)fprintf(stderr,"%s: ERROR %s reports empty user-specified packing string in conjunction with unknown or ambiguous executable name %s\n",prg_nm,fnc_nm,prg_nm);
     nco_exit(EXIT_FAILURE);
   } /* endif */
