@@ -467,7 +467,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CPP CXXCPP LEX LEXLIB LEX_OUTPUT_ROOT YACC LN_S EGREP ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB F77 FFLAGS ac_ct_F77 LIBTOOL BUILD_YACC_SOURCE_TRUE BUILD_YACC_SOURCE_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBOBJS POW_LIB NETCDF_INC NETCDF_LIB NCO_NEED_GETOPT_LONG_TRUE NCO_NEED_GETOPT_LONG_FALSE DODS_ROOT TEST_DODS_TRUE TEST_DODS_FALSE HDF5_ROOT I18N_SHARE UDUNITS_PATH path_to_ncgen NCO_CXX LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CPP CXXCPP LEX LEXLIB LEX_OUTPUT_ROOT YACC LN_S EGREP ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB F77 FFLAGS ac_ct_F77 LIBTOOL BUILD_YACC_SOURCE_TRUE BUILD_YACC_SOURCE_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBOBJS POW_LIB DODS_ROOT TEST_DODS_TRUE TEST_DODS_FALSE NETCDF_INC NETCDF_LIB NCO_NEED_GETOPT_LONG_TRUE NCO_NEED_GETOPT_LONG_FALSE HDF5_ROOT I18N_SHARE UDUNITS_PATH path_to_ncgen NCO_CXX LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -948,6 +948,10 @@ ac_env_FFLAGS_set=${FFLAGS+set}
 ac_env_FFLAGS_value=$FFLAGS
 ac_cv_env_FFLAGS_set=${FFLAGS+set}
 ac_cv_env_FFLAGS_value=$FFLAGS
+ac_env_DODS_ROOT_set=${DODS_ROOT+set}
+ac_env_DODS_ROOT_value=$DODS_ROOT
+ac_cv_env_DODS_ROOT_set=${DODS_ROOT+set}
+ac_cv_env_DODS_ROOT_value=$DODS_ROOT
 ac_env_NETCDF_INC_set=${NETCDF_INC+set}
 ac_env_NETCDF_INC_value=$NETCDF_INC
 ac_cv_env_NETCDF_INC_set=${NETCDF_INC+set}
@@ -956,10 +960,6 @@ ac_env_NETCDF_LIB_set=${NETCDF_LIB+set}
 ac_env_NETCDF_LIB_value=$NETCDF_LIB
 ac_cv_env_NETCDF_LIB_set=${NETCDF_LIB+set}
 ac_cv_env_NETCDF_LIB_value=$NETCDF_LIB
-ac_env_DODS_ROOT_set=${DODS_ROOT+set}
-ac_env_DODS_ROOT_value=$DODS_ROOT
-ac_cv_env_DODS_ROOT_set=${DODS_ROOT+set}
-ac_cv_env_DODS_ROOT_value=$DODS_ROOT
 ac_env_HDF5_ROOT_set=${HDF5_ROOT+set}
 ac_env_HDF5_ROOT_value=$HDF5_ROOT
 ac_cv_env_HDF5_ROOT_set=${HDF5_ROOT+set}
@@ -1109,9 +1109,9 @@ Some influential environment variables:
   CXXCPP      C++ preprocessor
   F77         Fortran 77 compiler command
   FFLAGS      Fortran 77 compiler flags
+  DODS_ROOT   Root of DODS installation (compile-time)
   NETCDF_INC  Location of netCDF headers (compile-time)
   NETCDF_LIB  Location of netCDF library (compile-time)
-  DODS_ROOT   Root of DODS installation (compile-time)
   HDF5_ROOT   Location of HDF5 libraries (compile-time)
   I18N_SHARE  Root of internationalization (i18n) locale directories
               (run-time)
@@ -21872,10 +21872,172 @@ rm -f conftest*
 fi
 
 
+# Begin DODS support
+# store pre-DODS LIBS value to restore from later
+nco_old_LIBS="${LIBS}"
+
+# New home for OPeNDAP (aka DODS) support. Check for OPeNDAP netcdf
+# library before checking for the real netCDF library. jhrg 05/26/05
+
+# DODS_ROOT is now the value of '$prefix' as set when the OPeNDAP code
+# is built and installed (e.g. /usr/local/). The scripts dap-config
+# and ncdap-config can be found in $prefix/bin. Use them to find where things
+# are installed and how to link for this particular build. jhrg 5/25/05
+#
+# Note that libnc-dap 3.5.1 uses netcdf 3.5; use Charlie's hack of supplying
+# the definition for NC_64BIT_OFFSET here. This should be fixed in nc-dap 3.6.
+# Sorry about the version numbers being confusing... jhrg 6/3/05
+
+
+# Check whether --enable-dods or --disable-dods was given.
+if test "${enable_dods+set}" = set; then
+  enableval="$enable_dods"
+  enable_dods=${enableval}
+else
+  enable_dods=yes
+fi;
+# Check for DODS libraries unless told not to
+if test "${enable_dods}" != 'no'; then
+    if which ncdap-config > /dev/null; then
+	CPPFLAGS="${CPPFLAGS} `ncdap-config --cflags`"
+	nc_dap_ver=`ncdap-config --version`
+	nc_dap_ver_M=`echo $nc_dap_ver | sed 's@^libnc-dap \([0-9]\)*\.\([0-9]*\)\.\([0-9]*\)$@\1@'`
+	nc_dap_ver_m=`echo $nc_dap_ver | sed 's@^libnc-dap \([0-9]\)*\.\([0-9]*\)\.\([0-9]*\)$@\2@'`
+	if test $nc_dap_ver_M -le 3 -a $nc_dap_ver_m -le 5; then
+	    CPPFLAGS="${CPPFLAGS} -DNC_64BIT_OFFSET=0"
+	fi
+	LIBS="`ncdap-config --libs` ${LIBS}"
+    fi
+
+    ac_ext=cc
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
+
+echo "$as_me:$LINENO: checking for nc_open in -lnc-dap" >&5
+echo $ECHO_N "checking for nc_open in -lnc-dap... $ECHO_C" >&6
+if test "${ac_cv_lib_nc_dap_nc_open+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lnc-dap  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char nc_open ();
+int
+main ()
+{
+nc_open ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_cxx_werror_flag"			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_nc_dap_nc_open=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_lib_nc_dap_nc_open=no
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_nc_dap_nc_open" >&5
+echo "${ECHO_T}$ac_cv_lib_nc_dap_nc_open" >&6
+if test $ac_cv_lib_nc_dap_nc_open = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBNC_DAP 1
+_ACEOF
+
+  LIBS="-lnc-dap $LIBS"
+
+else
+  enable_dods=no
+fi
+
+    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+    LIBS="${LIBS} -lstdc++"
+
+    if test "${enable_dods}" = 'no'; then
+	{ echo "$as_me:$LINENO: WARNING: DODS support disabled (missing libraries)" >&5
+echo "$as_me: WARNING: DODS support disabled (missing libraries)" >&2;}
+	LIBS="${nco_old_LIBS}"
+    elif test "${enable_dods}" = 'yes'; then
+
+cat >>confdefs.h <<\_ACEOF
+#define ENABLE_DODS 1
+_ACEOF
+
+	{ echo "$as_me:$LINENO: DODS support enabled" >&5
+echo "$as_me: DODS support enabled" >&6;}
+# libtool cleans up duplicate library links (e.g., dap++, nc-dods) unless told not to.
+# I think is now OK; the new (3.5.0++) version of libnc-dap doesn't require the
+# duplicate libraries. jhrg 6/3/05
+	LIBTOOL="${LIBTOOL} --preserve-dup-deps"
+    fi
+fi
+
+
+if test "${enable_dods}" = 'yes'; then
+  TEST_DODS_TRUE=
+  TEST_DODS_FALSE='#'
+else
+  TEST_DODS_TRUE='#'
+  TEST_DODS_FALSE=
+fi
+
+# End DODS support
 
 # Begin Mandatory Link Test with libnetcdf.a
 # Make precious variables for ./configure --help
 
+
+
+# if enable_dods is true, don't look for the real netCDF library.
+# jhrg 05/26/05
+
+if test "$enable_dods" = 'no'; then
 
 # Add user-specified netCDF locations, if any, else add /usr/local/ locations if they exist
 if test "${NETCDF_LIB}"; then
@@ -21900,6 +22062,9 @@ else
 	CPPFLAGS="-I/usr/local/include ${CPPFLAGS}"
     fi
 fi
+
+fi # if enable_dods
+
 
 for ac_header in netcdf.h
 do
@@ -22054,6 +22219,9 @@ done
 cat >>confdefs.h <<\_ACEOF
 #define NO_NETCDF_2 1
 _ACEOF
+
+
+if test "$enable_dods" = 'no'; then
 
 # Check for 'nc_open()' using default compiler flags
 # If this fails, check for 'nc_close()' with 64-bit ABI flags (if known)
@@ -22246,6 +22414,8 @@ fi
 fi
 
 # End Mandatory Link Test with libnetcdf.a
+
+fi # enable_dods
 
 # Begin Library checks
 # Check for libraries, add to link path if found
@@ -23897,607 +24067,9 @@ fi
 # End Library checks
 
 # Begin DODS support
-# store pre-DODS LIBS value to restore from later
 
-# Check whether --enable-dods or --disable-dods was given.
-if test "${enable_dods+set}" = set; then
-  enableval="$enable_dods"
-  enable_dods=${enableval}
-else
-  enable_dods=yes
-fi;
-# Check for DODS libraries unless told not to
-if test "${enable_dods}" != 'no'; then
-# Add ${DODS_ROOT} to search path if present
-    if test "${DODS_ROOT}"; then
- 	   LDFLAGS="${LDFLAGS} -L${DODS_ROOT}/lib"
-    fi
-# Following tests are mutually exclusive
-# DODS version 3.2.x tests:
-#  AC_CHECK_LIB([z],[inflate],,enable_dods=no)
-#  AC_CHECK_LIB([www],[HTLibInit],,enable_dods=no)
-#  AC_CHECK_LIB([rx],[main],,enable_dods=no)
-# DODS version 3.4.x tests:
-# These must all be present for DODS to work
-    { echo "$as_me:$LINENO: NB: Following seven libraries required for DODS/OPeNDAP clients:" >&5
-echo "$as_me: NB: Following seven libraries required for DODS/OPeNDAP clients:" >&6;}
-
-echo "$as_me:$LINENO: checking for inflate in -lz" >&5
-echo $ECHO_N "checking for inflate in -lz... $ECHO_C" >&6
-if test "${ac_cv_lib_z_inflate+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lz  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char inflate ();
-int
-main ()
-{
-inflate ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_z_inflate=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_lib_z_inflate=no
-fi
-rm -f conftest.err conftest.$ac_objext \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_z_inflate" >&5
-echo "${ECHO_T}$ac_cv_lib_z_inflate" >&6
-if test $ac_cv_lib_z_inflate = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBZ 1
-_ACEOF
-
-  LIBS="-lz $LIBS"
-
-else
-  enable_dods=no
-fi
-
-
-echo "$as_me:$LINENO: checking for dlopen in -ldl" >&5
-echo $ECHO_N "checking for dlopen in -ldl... $ECHO_C" >&6
-if test "${ac_cv_lib_dl_dlopen+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-ldl  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char dlopen ();
-int
-main ()
-{
-dlopen ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_dl_dlopen=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_lib_dl_dlopen=no
-fi
-rm -f conftest.err conftest.$ac_objext \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_dl_dlopen" >&5
-echo "${ECHO_T}$ac_cv_lib_dl_dlopen" >&6
-if test $ac_cv_lib_dl_dlopen = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBDL 1
-_ACEOF
-
-  LIBS="-ldl $LIBS"
-
-else
-  enable_dods=no
-fi
-
-
-echo "$as_me:$LINENO: checking for pthread_once in -lpthread" >&5
-echo $ECHO_N "checking for pthread_once in -lpthread... $ECHO_C" >&6
-if test "${ac_cv_lib_pthread_pthread_once+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lpthread  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char pthread_once ();
-int
-main ()
-{
-pthread_once ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_pthread_pthread_once=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_lib_pthread_pthread_once=no
-fi
-rm -f conftest.err conftest.$ac_objext \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_pthread_pthread_once" >&5
-echo "${ECHO_T}$ac_cv_lib_pthread_pthread_once" >&6
-if test $ac_cv_lib_pthread_pthread_once = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBPTHREAD 1
-_ACEOF
-
-  LIBS="-lpthread $LIBS"
-
-else
-  enable_dods=no
-fi
-
-    echo "$as_me:$LINENO: checking for SSL_new in -lssl" >&5
-echo $ECHO_N "checking for SSL_new in -lssl... $ECHO_C" >&6
-if test "${ac_cv_lib_ssl_SSL_new+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lssl  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char SSL_new ();
-int
-main ()
-{
-SSL_new ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_ssl_SSL_new=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_lib_ssl_SSL_new=no
-fi
-rm -f conftest.err conftest.$ac_objext \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_ssl_SSL_new" >&5
-echo "${ECHO_T}$ac_cv_lib_ssl_SSL_new" >&6
-if test $ac_cv_lib_ssl_SSL_new = yes; then
-  LIBS="-lcurl -lssl ${LIBS}"
-else
-  enable_dods=no
-fi
-
-
-echo "$as_me:$LINENO: checking for curl_easy_init in -lcurl" >&5
-echo $ECHO_N "checking for curl_easy_init in -lcurl... $ECHO_C" >&6
-if test "${ac_cv_lib_curl_curl_easy_init+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lcurl  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char curl_easy_init ();
-int
-main ()
-{
-curl_easy_init ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_curl_curl_easy_init=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_lib_curl_curl_easy_init=no
-fi
-rm -f conftest.err conftest.$ac_objext \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_curl_curl_easy_init" >&5
-echo "${ECHO_T}$ac_cv_lib_curl_curl_easy_init" >&6
-if test $ac_cv_lib_curl_curl_easy_init = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBCURL 1
-_ACEOF
-
-  LIBS="-lcurl $LIBS"
-
-else
-  enable_dods=no
-fi
-
-
-echo "$as_me:$LINENO: checking for xmlParseDocument in -lxml2" >&5
-echo $ECHO_N "checking for xmlParseDocument in -lxml2... $ECHO_C" >&6
-if test "${ac_cv_lib_xml2_xmlParseDocument+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lxml2  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char xmlParseDocument ();
-int
-main ()
-{
-xmlParseDocument ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_xml2_xmlParseDocument=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_lib_xml2_xmlParseDocument=no
-fi
-rm -f conftest.err conftest.$ac_objext \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_xml2_xmlParseDocument" >&5
-echo "${ECHO_T}$ac_cv_lib_xml2_xmlParseDocument" >&6
-if test $ac_cv_lib_xml2_xmlParseDocument = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBXML2 1
-_ACEOF
-
-  LIBS="-lxml2 $LIBS"
-
-else
-  enable_dods=no
-fi
-
-# If all libraries were present, enable_dods=yes
-# If not, restore LIBS to previous value
-    nco_old_LIBS="${LIBS}"
-
-# use AC_LANG_PUSH & AC_LANG_POP to allow nc-dods to resolve libdap++ symbols    # This causes libstdc++ to be linked in for (only) this link
-    ac_ext=cc
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-
-    LIBS=" -ldap++ -lnc-dods -ldap++ ${LIBS}"
-
-echo "$as_me:$LINENO: checking for nc_open in -lnc-dods" >&5
-echo $ECHO_N "checking for nc_open in -lnc-dods... $ECHO_C" >&6
-if test "${ac_cv_lib_nc_dods_nc_open+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnc-dods  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char nc_open ();
-int
-main ()
-{
-nc_open ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_cxx_werror_flag"			 || test ! -s conftest.err'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_nc_dods_nc_open=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_cv_lib_nc_dods_nc_open=no
-fi
-rm -f conftest.err conftest.$ac_objext \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_nc_dods_nc_open" >&5
-echo "${ECHO_T}$ac_cv_lib_nc_dods_nc_open" >&6
-if test $ac_cv_lib_nc_dods_nc_open = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBNC_DODS 1
-_ACEOF
-
-  LIBS="-lnc-dods $LIBS"
-
-else
-  enable_dods=no
-fi
-
-    ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
-
-# Assume stdc++ is available, (fxm: how to look for it automatically?)
-# NB: -lstdc++ automatically linked by g++, add by hand for other compilers
-# hjm: no, it's not (on linux anyway).  Use AC_LANG_PUSH & AC_LANG_POP
-# as above to link it in portably.
-    LIBS="-lstdc++ ${LIBS}"
-# Duplicate library links required to resolve dependencies when -lnc-dods is used
-# hjm: I'm not sure that the duplicate links are needed anymore (w/ gcc >3.4)
-#   tried form the commandline and it doesn't, but will leave alone for now.
-#    LIBS="-ldap++ -lnc-dods -ldap++ ${LIBS}"
-# hjm: AC_CHECK_LIB line is commented out, so we shouldn't need the preceding
-#   LIBS line either
-#    AC_CHECK_LIB([nc-dods],[nc_open],,enable_dods=no)
-    if test "${enable_dods}" = 'no'; then
-	{ echo "$as_me:$LINENO: WARNING: DODS support disabled (missing libraries)" >&5
-echo "$as_me: WARNING: DODS support disabled (missing libraries)" >&2;}
-	LIBS="${nco_old_LIBS}"
-    elif test "${enable_dods}" = 'yes'; then
-
-cat >>confdefs.h <<\_ACEOF
-#define ENABLE_DODS 1
-_ACEOF
-
-	{ echo "$as_me:$LINENO: DODS support enabled" >&5
-echo "$as_me: DODS support enabled" >&6;}
-# libtool cleans up duplicate library links (e.g., dap++, nc-dods) unless told not to
-	LIBTOOL="${LIBTOOL} --preserve-dup-deps"
-    fi
-fi
-
-
-if test "${enable_dods}" = 'yes'; then
-  TEST_DODS_TRUE=
-  TEST_DODS_FALSE='#'
-else
-  TEST_DODS_TRUE='#'
-  TEST_DODS_FALSE=
-fi
-
-# End DODS support
+# OPeNDAP (aka DODS) support used to be here. I moved it up
+# so that it will precede the netcdf library tests. jhrg 05/26/05
 
 # Begin Fortran
 # If --enable-fortran define USE_FORTRAN_ARITHMETIC
@@ -26795,17 +26367,17 @@ echo "$as_me: error: conditional \"MAINTAINER_MODE\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
-if test -z "${NCO_NEED_GETOPT_LONG_TRUE}" && test -z "${NCO_NEED_GETOPT_LONG_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"NCO_NEED_GETOPT_LONG\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"NCO_NEED_GETOPT_LONG\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
 if test -z "${TEST_DODS_TRUE}" && test -z "${TEST_DODS_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"TEST_DODS\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"TEST_DODS\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${NCO_NEED_GETOPT_LONG_TRUE}" && test -z "${NCO_NEED_GETOPT_LONG_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"NCO_NEED_GETOPT_LONG\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"NCO_NEED_GETOPT_LONG\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -27425,13 +26997,13 @@ s,@MAINTAINER_MODE_FALSE@,$MAINTAINER_MODE_FALSE,;t t
 s,@MAINT@,$MAINT,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@POW_LIB@,$POW_LIB,;t t
+s,@DODS_ROOT@,$DODS_ROOT,;t t
+s,@TEST_DODS_TRUE@,$TEST_DODS_TRUE,;t t
+s,@TEST_DODS_FALSE@,$TEST_DODS_FALSE,;t t
 s,@NETCDF_INC@,$NETCDF_INC,;t t
 s,@NETCDF_LIB@,$NETCDF_LIB,;t t
 s,@NCO_NEED_GETOPT_LONG_TRUE@,$NCO_NEED_GETOPT_LONG_TRUE,;t t
 s,@NCO_NEED_GETOPT_LONG_FALSE@,$NCO_NEED_GETOPT_LONG_FALSE,;t t
-s,@DODS_ROOT@,$DODS_ROOT,;t t
-s,@TEST_DODS_TRUE@,$TEST_DODS_TRUE,;t t
-s,@TEST_DODS_FALSE@,$TEST_DODS_FALSE,;t t
 s,@HDF5_ROOT@,$HDF5_ROOT,;t t
 s,@I18N_SHARE@,$I18N_SHARE,;t t
 s,@UDUNITS_PATH@,$UDUNITS_PATH,;t t
@@ -28165,14 +27737,15 @@ fi
 # Echo build parameters for debugging
 echo "Configuration Parameters:"
 echo "AR_FLAGS  = ${AR_FLAGS}"
-echo "CC 	= ${CC}"
-echo "CFLAGS	= ${CFLAGS}"
-echo "CPP	= ${CPP}"
+echo "CC        = ${CC}"
+echo "CFLAGS    = ${CFLAGS}"
+echo "CPP       = ${CPP}"
 echo "CPPFLAGS  = ${CPPFLAGS}"
-echo "CXX	= ${CXX}"
+echo "CXX       = ${CXX}"
 echo "CXXFLAGS  = ${CXXFLAGS}"
-echo "HOST	= ${HOST}"
+echo "HOST      = ${HOST}"
 echo "LDFLAGS   = ${LDFLAGS}"
+echo "LIBS      = ${LIBS}"
 
 # Inform users of the very useful configure.eg
 echo ""

@@ -1,3 +1,9 @@
+2005-06-17  Harry Mangalam <hjm@tacgi.com>
+	* Tested NCO with new (3.5.1) version of DAP/NC-DAP, with netcdf 3.6. 
+	Seems to work for small transfers but hangs with large transfers from sand's
+	DODS server.  Still testing. Brought configure and Makefile and .in's up 
+	to date with the new DAP.  May have to drop back to netcdf 3.5 tho.
+
 2005-06-17  Gayathri Venkitachalam  <gvenkita@uci.edu>
 
 	* Cleaned up mpncflint 
