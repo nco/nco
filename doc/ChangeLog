@@ -1,8 +1,24 @@
+2005-06-17  Charlie Zender  <zender@uci.edu>
+
+	* Revert ncra input variable structure to unpacked type at end of 
+	record loop
+	Reverting input values is not necessary since those are free()d next
+	However, type member of structure must be unpacked value so that 
+	cast of new missing_value in nco_mss_val_get() in next 
+	nco_var_refresh() call (i.e., next file)
+	This solves TODO nco543 but will break when variables are different
+	unpacked types between files and both files contain missing values.
+	Better solution is to refresh variable type in nco_var_refresh()
+	Will commit this first then try that next
+	Best solution is to carry missing_value type in variable structure?
+
 2005-06-17  Harry Mangalam <hjm@tacgi.com>
+
 	* Tested NCO with new (3.5.1) version of DAP/NC-DAP, with netcdf 3.6. 
-	Seems to work for small transfers but hangs with large transfers from sand's
-	DODS server.  Still testing. Brought configure and Makefile and .in's up 
-	to date with the new DAP.  May have to drop back to netcdf 3.5 tho.
+	Seems to work for small transfers but hangs with large transfers 
+	from sand's DODS server. Still testing. 
+	Brought configure and Makefile and .in's up to date with new DAP. 
+	May have to drop back to netcdf 3.5 tho.
 
 2005-06-17  Gayathri Venkitachalam  <gvenkita@uci.edu>
 
@@ -13,7 +29,7 @@
 	* Convert var_prc[idx]->mss_val back to on-disk type after every
 	record _except_ the last record in ncra. 
 	This fixes valgrind memory error associated with TODO nco543
-	Regression test is still not passed, though no new regressions introduced
+	Regression test still not passed, though no new regressions introduced
 
 2005-06-16  Charlie Zender  <zender@uci.edu>
 

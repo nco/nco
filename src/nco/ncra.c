@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.143 2005-06-17 19:06:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.144 2005-06-18 05:19:13 zender Exp $ */
 
 /* ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.143 2005-06-17 19:06:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.143 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.144 2005-06-18 05:19:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.144 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
 
   dmn_sct **dim;
@@ -524,7 +524,7 @@ main(int argc,char **argv)
 	  if(prg == ncra){
 	    /* Convert char, short, long, int types to doubles before arithmetic */
 	    /* fxm: TODO543 200506116 is this conversion necessary given nco_var_cnf_typ() call in two lines? */
-	    /*	    var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);*/
+	    /*    	    var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);*/
 	    /* Output variable type is "sticky" so only convert on first record */
 	    if(idx_rec_out == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 	    /* Convert var_prc to type of var_prc_out in case type of variable on disk has changed */
@@ -552,6 +552,15 @@ main(int argc,char **argv)
 	     Do not convert after last record otherwise normalization fails 
 	     due to wrong missing_value type (needs memory type, not disk type) */
 	  if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk && !LAST_RECORD) var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
+	  /* Revert input variable structure to unpacked type 
+	     Reverting input values is not necessary since those are free()d next
+	     However, type member of structure must be unpacked value so that 
+	     cast of new missing_value in nco_mss_val_get() in next 
+	     nco_var_refresh() call (i.e., next file)
+	     This solves NCO TODO 543 but will break when variables are different
+	     unpacked types between files and both files contain missing values.
+	     Better solution is to refresh variable type in nco_var_refresh() */
+	  var_prc[idx]->type=var_prc[idx]->typ_upk;
 	  /* Free current input buffer */
 	  var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	} /* end (OpenMP parallel for) loop over variables */

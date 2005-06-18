@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.82 2005-06-09 17:42:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.83 2005-06-18 05:19:13 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1249,7 +1249,7 @@ nco_var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
   /* Threads: Routine contains thread-unsafe calls protected by critical regions */
   /* Purpose: Update variable ID, number of dimensions, and missing_value attribute for given variable
      nco_var_refresh() is called in file loop in multi-file operators because each new file may have 
-     different variable ID and missing_value for same variable.
+     different variable ID, type, and missing_value for same variable.
      This is necessary, for example, if computer model runs on one machine, e.g., SGI,
      and then run is restarted on another, e.g., Cray. 
      If internal floating point representations differ between these architecture, 
@@ -1257,8 +1257,9 @@ nco_var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
      Variable IDs may change when some but not all model output files are 
      manipulated (i.e., variables added or deleted), followed by processing
      all files are processed in a batch.
-     NCO is the only tool I know of which makes this all user-transparent
-     Thus this capability is very important to maintain */
+     NCO is only known tool that makes this all user-transparent
+     Thus this capability is very important to maintain
+     fxm: why isn't variable type set here? */
 
   /* Refresh variable ID */
   var->nc_id=nc_id;
@@ -1274,6 +1275,9 @@ nco_var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
     /* Refresh number of dimensions in variable */
     (void)nco_inq_varndims(var->nc_id,var->id,&var->nbr_dim);
     
+    /* fxm: TODO nco543 try setting type */
+    /*    (void)nco_inq_vartype(var->nc_id,var->id,&var->type);*/
+
     /* Refresh number of attributes and missing value attribute, if any */
     var->has_mss_val=nco_mss_val_get(var->nc_id,var);
   } /* end OpenMP critical */
@@ -1283,7 +1287,7 @@ nco_var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
   /* fxm: This should be un-necessary since multi-file packing ostensibly works */
 #if 0
   if(nco_is_rth_opr(prg_get()) && var->pck_dsk){
-    if(var->has_mss_val) (void)fprintf(stdout,"%s: WARNING Variable \"%s\" is packed and has valid \"missing_value\" attribute in multi-file arithmetic operator. Arithmetic on this variable will only be correct if...  \n",prg_nm_get(),var_nm);
+    if(var->has_mss_val) (void)fprintf(stdout,"%s: WARNING Variable \"%s\" is packed and has valid \"missing_value\" attribute in multi-file arithmetic operator. Arithmetic on this variable will only be correct if...\n",prg_nm_get(),var_nm);
   } /* endif variable is packed */
 #endif /* endif False */
 

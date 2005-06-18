@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.32 2005-06-17 19:06:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.33 2005-06-18 05:19:13 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -83,7 +83,7 @@ nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before
      Thus var may have typ_upk=NC_FLOAT and type=NC_SHORT
      In that case, promote based on typ_upk rather than on type
      Otherwise most var's that had been unpacked would be converted to NC_DOUBLE here
-     That would put them in conflict with the corresponding var_out, which is usually
+     That would put them in conflict with corresponding var_out, which is usually
      based on typ_upk
      Check this first, then proceed with normal non-float->double conversion */
   if(var->typ_upk == NC_FLOAT){
@@ -224,7 +224,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   val_out=var_out->val;
   
   /* Copy and typecast missing_value attribute, if any */
-  /* fxm: 20020814: ncra bug here since this tries to re-convert missing values that have already been promoted to double during arithmetic pck_dbg */
+  /* Calling routine must avoid re-promoting missing values already promoted during arithmetic */
   if(var_out->has_mss_val){
     ptr_unn var_in_mss_val;
 
