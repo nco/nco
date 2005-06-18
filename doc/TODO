@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.532 2005-06-17 19:06:30 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.533 2005-06-18 05:54:28 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -296,19 +296,6 @@ nco540. bm: regression tests report some apparent successes as failures on SUNMP
 	Seems like any "Expected's" containing "+" string may fail.
 	Perl problem?
 nco542. Put batch scripts, executables in ${DATA}/nco_bm/CASEID? Where to put created files
-nco543. ncra regression test 5 and 7 fail. 
-        missing value conversion in multiple file integer variables
-        leads to breakage
-        maybe conversions need to be done for each file rather than
-        just at idx_rec_out=0 for initial file?
-        ncra -O -C -v rec_var_int_mss_val_int -p ~/nco/data in.nc in.nc ~/foo.nc
-        ncks -C -H -s '%d\n' -v rec_var_int_mss_val_int ~/foo.nc
-        ncra -O -C -v rec_var_int_mss_val_flt -p ~/nco/data in.nc in.nc ~/foo.nc
-        ncks -C -H -s '%d\n' -v rec_var_int_mss_val_flt ~/foo.nc
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncra -O -C -v rec_var_int_mss_val_int -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-nco544. ncea regression test fail
-        ncea -O -C -v rec_var_int_mss_val_int -p ~/nco/data in.nc in.nc ~/foo.nc
-        ncks -C -H -s '%d ' -v rec_var_int_mss_val_int ~/foo.nc
 nco545. 
 
 MPI:
@@ -325,7 +312,8 @@ valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgri
 2. ncecat
 valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncecat -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc ~/foo.nc > ~/foo 2>&1
 3. ncpdq
-valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncpdq -t 2 -O -D 3 -a lat,lev,lon -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -P ~/foo.nc > ~/foo 2>&1
+valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncpdq -t 2 -O -D 3 -a lat,lev,lon -v three_dmn_var ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
+valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncpdq -t 2 -O -D 3 -P all_new -v three_dmn_var ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
 4. ncwa
 valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncwa -D 3 -t 2 -O -C -a lat,lon,time -w gw -m gw -v PS -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 callgrind ncwa -D 3 -t 2 -O -C -w gw -m gw -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
@@ -341,6 +329,8 @@ valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgri
 valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncrename -O -D 3 -d lon,new_lon -v scalar_var,new_scalar_var -a long_name,new_long_name -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 9. ncap
 valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncap -O -S ${HOME}/nco/data/ncap.in -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+10. ncea
+valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncea -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -v one_dmn_rec_var_sng -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc foo.nc > ~/foo 2>&1
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

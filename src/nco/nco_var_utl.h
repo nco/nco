@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.34 2005-06-18 05:40:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.35 2005-06-18 05:54:29 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -138,7 +138,7 @@ extern "C" {
    const int var_nbr); /* I [nbr] Number of variable structures in list */
 
   void
-  nco_var_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, type) */
+  nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, type) */
   (const int nc_id, /* I [id] netCDF input-file ID */
    var_sct * const var); /* I/O [sct] Variable to update */
   

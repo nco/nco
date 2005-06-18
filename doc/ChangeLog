@@ -1,9 +1,15 @@
 2005-06-17  Charlie Zender  <zender@uci.edu>
 
+	* Verified that nco_var_refresh() change does not introduce any
+	memory errors on any operator. Marking TODO nco543 as closed.
+	
+	* Re-name nco_var_refresh() to nco_var_mtd_refresh() to better
+	describe functionality (metadata, not data, is refreshed).
+
 	* Refresh variable type in nco_var_refresh()
 	Previously, only ID, nbr_dims, and mss_val were refreshed
 	Now type is also refreshed. Was not sure full implications of this.
-	It appears to work and causes no regressions or memory errors
+	It appears to work and causes no regressions
 	Hence back out previous fix for nco543 and handle this way
 	This is cleaner and more robust to varying variable types with
 	each input file

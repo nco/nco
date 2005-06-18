@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.177 2005-06-09 07:01:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.178 2005-06-18 05:54:29 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.177 2005-06-09 07:01:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.177 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.178 2005-06-18 05:54:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.178 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -578,7 +578,7 @@ main(int argc,char **argv)
   /* Add new missing values to output file while in define mode */
   if(msk_nm != NULL){
     for(idx=0;idx<nbr_var_prc;idx++){
-      /* Define for var_prc_out because mss_val for var_prc will be overwritten in nco_var_refresh */
+      /* Define for var_prc_out because mss_val for var_prc will be overwritten in nco_var_mtd_refresh() */
       if(!var_prc_out[idx]->has_mss_val){
 	var_prc_out[idx]->has_mss_val=True;
 	var_prc_out[idx]->mss_val=nco_mss_val_mk(var_prc[idx]->type);
@@ -697,7 +697,7 @@ main(int argc,char **argv)
       } /* end if err */
       (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
       
-      (void)nco_var_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
+      (void)nco_var_mtd_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
       /* Retrieve variable from disk into memory */
       if(dbg_lvl > 4) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 About to nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
       (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
@@ -713,7 +713,7 @@ main(int argc,char **argv)
 	if(DO_CONFORM_MSK){
 	  msk_out=nco_var_cnf_typ(var_prc[idx]->type,msk_out);
 	  
-	  /* mss_val for var_prc has been overwritten in nco_var_refresh() */
+	  /* mss_val for var_prc has been overwritten in nco_var_mtd_refresh() */
 	  if(!var_prc[idx]->has_mss_val){
 	    var_prc[idx]->has_mss_val=True;
 	    var_prc[idx]->mss_val=nco_mss_val_mk(var_prc[idx]->type);

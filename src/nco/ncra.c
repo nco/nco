@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.145 2005-06-18 05:40:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.146 2005-06-18 05:54:29 zender Exp $ */
 
 /* ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.145 2005-06-18 05:40:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.145 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.146 2005-06-18 05:54:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.146 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
 
   dmn_sct **dim;
@@ -490,7 +490,7 @@ main(int argc,char **argv)
     rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
     
     /* Variables may have different IDs and missing_values in each file */
-    for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
+    for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_mtd_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
 
     /* Each file can have a different number of records to process */
     if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,idx_rec_out,FORTRAN_IDX_CNV); /* Routine is thread-unsafe */

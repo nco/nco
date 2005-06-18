@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.84 2005-06-18 05:40:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.85 2005-06-18 05:54:29 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1242,13 +1242,13 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
 } /* end nco_var_fll() */
 
 void
-nco_var_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, type) */
+nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, type) */
 (const int nc_id, /* I [id] netCDF input-file ID */
  var_sct * const var) /* I/O [sct] Variable to update */
 {
   /* Threads: Routine contains thread-unsafe calls protected by critical regions */
   /* Purpose: Update variable ID, number of dimensions, and missing_value attribute for given variable
-     nco_var_refresh() is called in file loop in multi-file operators because each new file may have 
+     nco_var_mtd_refresh() is called in file loop in multi-file operators because each new file may have 
      different variable ID, type, and missing_value for same variable.
      This is necessary, for example, if computer model runs on one machine, e.g., SGI,
      and then run is restarted on another, e.g., Cray. 
@@ -1275,8 +1275,7 @@ nco_var_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, type) *
     /* Refresh number of dimensions in variable */
     (void)nco_inq_varndims(var->nc_id,var->id,&var->nbr_dim);
     
-    /* fxm: TODO nco543 try Set variable type here so following nco_mss_val_get()
-       casts missing value to correct type */
+    /* Set variable type so following nco_mss_val_get() casts missing_value to correct type */
     (void)nco_inq_vartype(var->nc_id,var->id,&var->type);
 
     /* Refresh number of attributes and missing value attribute, if any */
@@ -1292,7 +1291,7 @@ nco_var_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, type) *
   } /* endif variable is packed */
 #endif /* endif False */
 
-} /* end nco_var_refresh() */
+} /* end nco_var_mtd_refresh() */
 
 void
 nco_var_srt_zero /* [fnc] Zero srt array of variable structure */
