@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.85 2005-06-18 05:54:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.86 2005-06-18 06:11:34 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1271,7 +1271,7 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
   { /* begin OpenMP critical */
     (void)nco_inq_varid(var->nc_id,var->nm,&var->id);
     
-    /* fxm: Not sure if/why necessary to refresh number of dimensions...but it should not hurt */
+    /* fxm: Not sure if/why necessary to refresh number of dimensions...though it should not hurt */
     /* Refresh number of dimensions in variable */
     (void)nco_inq_varndims(var->nc_id,var->id,&var->nbr_dim);
     
@@ -1282,10 +1282,11 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
     var->has_mss_val=nco_mss_val_get(var->nc_id,var);
   } /* end OpenMP critical */
   
-  /* PJR requested warning to be added when multiple file operators worked on 
-     variables with missing_value since so many things could go wrong */
-  /* fxm: This should be un-necessary since multi-file packing ostensibly works */
 #if 0
+  /* PJR requested warning to be added when multiple file operators worked on 
+     variables with missing_value since so many things could go wrong
+     Now un-necessary since multi-file packing ostensibly works
+     Leave code here in case we find it does not work */
   if(nco_is_rth_opr(prg_get()) && var->pck_dsk){
     if(var->has_mss_val) (void)fprintf(stdout,"%s: WARNING Variable \"%s\" is packed and has valid \"missing_value\" attribute in multi-file arithmetic operator. Arithmetic on this variable will only be correct if...\n",prg_nm_get(),var_nm);
   } /* endif variable is packed */

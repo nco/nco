@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.144 2005-06-10 18:08:43 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.145 2005-06-18 06:11:33 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.0.1 are ready. 
 
@@ -13,38 +13,22 @@ Threading is much improved and has been enabled on all arithmetic
 operators. Users with SMP machines and OpenMP compilers who want
 faster processing should upgrade too.
 
-1. ncks printing behavior:
-   ncks in.nc : Prints all data and metadata
-   ncks -M in.nc : Prints only global metadata
-   ncks -m in.nc : Prints only variable metadata
-   ncks -H in.nc : Prints only variable data
-   See http://nco.sf.net/nco.html#ncks for details.
+1. ncra bug: Versions < 3.0.2 could produce incorrect answers in
+   unusual corner cases involving non-floating-point data and missing
+   values spread amongst multiple files.
 
-2. Benchmarks (Harry Mangalam): nco/bm/nco_bm.pl benchmarks NCO.
-   It also runs the regression tests. Running nco_bm.pl, e.g., with
+2. Benchmarks (Harry Mangalam): 
+   Additional benchmark verification options: word count, MD5
 
-   nco_bm.pl --bench --udpreport
-   nco_bm.pl --regress --udpreport
+3. ncap (Henry Butowsky): Memory handling is much cleaner
 
-   exercises NCO and sends the timing reports and your credit card
-   infomation back to NCO central. Remove --udpreport if worried.
+4. Small additional memory leaks found and fixed in corner cases
 
-3. ncap exponentiation (Henry Butowsky): Versions < 3.0.1 incorrectly 
-   handle exponentiation of a variable to a variable power
-   (V^V). We recommend that all ncap users upgrade.
+5. MPI (Gayathri Venkitachalam): 
 
-4. All operators except ncap are now memory pure.
-   No uninitialized memory is referenced, and no unfree'd or "still
-   reachable" memory exists at operator exit, according to valgrind.
-   Actually, system libraries and libnetcdf.a have minor memory
-   transgressions. The point is that NCO causes no memory leaks.
+6. OpenDAP (Harry Mangalam): Support OPeNDAP version 3.5.0+
 
-5. Threading: ncwa is now threaded by default, with potentially 
-   large performance benefits. Many more operators have threading 
-   enabled with smaller benefits. Next version we will try to remove
-   remaining critical regions for increased performance.
-
-Future: We anticipate one more stability-oriented release (3.0.2),
+Future: We anticipate one more stability-oriented release (3.0.3),
 followed by the MPI-enabled NCO (3.1).
 
 Enjoy,
