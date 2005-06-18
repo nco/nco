@@ -1,5 +1,13 @@
 2005-06-17  Charlie Zender  <zender@uci.edu>
 
+	* Refresh variable type in nco_var_refresh()
+	Previously, only ID, nbr_dims, and mss_val were refreshed
+	Now type is also refreshed. Was not sure full implications of this.
+	It appears to work and causes no regressions or memory errors
+	Hence back out previous fix for nco543 and handle this way
+	This is cleaner and more robust to varying variable types with
+	each input file
+	
 	* Revert ncra input variable structure to unpacked type at end of 
 	record loop
 	Reverting input values is not necessary since those are free()d next
@@ -8,7 +16,7 @@
 	nco_var_refresh() call (i.e., next file)
 	This solves TODO nco543 but will break when variables are different
 	unpacked types between files and both files contain missing values.
-	Better solution is to refresh variable type in nco_var_refresh()
+	Better solution is to refresh variable type in nco_var_refresh()?
 	Will commit this first then try that next
 	Best solution is to carry missing_value type in variable structure?
 

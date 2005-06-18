@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.83 2005-06-18 05:19:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.84 2005-06-18 05:40:25 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1242,7 +1242,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
 } /* end nco_var_fll() */
 
 void
-nco_var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
+nco_var_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, type) */
 (const int nc_id, /* I [id] netCDF input-file ID */
  var_sct * const var) /* I/O [sct] Variable to update */
 {
@@ -1275,8 +1275,9 @@ nco_var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
     /* Refresh number of dimensions in variable */
     (void)nco_inq_varndims(var->nc_id,var->id,&var->nbr_dim);
     
-    /* fxm: TODO nco543 try setting type */
-    /*    (void)nco_inq_vartype(var->nc_id,var->id,&var->type);*/
+    /* fxm: TODO nco543 try Set variable type here so following nco_mss_val_get()
+       casts missing value to correct type */
+    (void)nco_inq_vartype(var->nc_id,var->id,&var->type);
 
     /* Refresh number of attributes and missing value attribute, if any */
     var->has_mss_val=nco_mss_val_get(var->nc_id,var);

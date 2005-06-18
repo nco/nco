@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.144 2005-06-18 05:19:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.145 2005-06-18 05:40:25 zender Exp $ */
 
 /* ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.144 2005-06-18 05:19:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.144 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.145 2005-06-18 05:40:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.145 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
 
   dmn_sct **dim;
@@ -522,12 +522,9 @@ main(int argc,char **argv)
 	  (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
 	  
 	  if(prg == ncra){
-	    /* Convert char, short, long, int types to doubles before arithmetic */
-	    /* fxm: TODO543 200506116 is this conversion necessary given nco_var_cnf_typ() call in two lines? */
-	    /*    	    var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);*/
-	    /* Output variable type is "sticky" so only convert on first record */
+	    /* Convert char, short, long, int types to doubles before arithmetic
+	       Output variable type is "sticky" so only convert on first record */
 	    if(idx_rec_out == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
-	    /* Convert var_prc to type of var_prc_out in case type of variable on disk has changed */
 	    var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
 	    /* Perform arithmetic operations: avg, min, max, ttl, ... */
 	    nco_opr_drv(idx_rec_out,nco_op_typ,var_prc[idx],var_prc_out[idx]);
@@ -547,20 +544,11 @@ main(int argc,char **argv)
 
 	  /* Warn if record coordinate, if any, is not monotonic */
 	  if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,idx_rec_out);
-	  /* Convert missing_value, if any, back to disk type
+	  /* Convert missing_value, if any, back to unpacked type
 	     Otherwise missing_value will be double-promoted when next record read 
 	     Do not convert after last record otherwise normalization fails 
-	     due to wrong missing_value type (needs memory type, not disk type) */
+	     due to wrong missing_value type (needs promoted type, not unpacked type) */
 	  if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk && !LAST_RECORD) var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
-	  /* Revert input variable structure to unpacked type 
-	     Reverting input values is not necessary since those are free()d next
-	     However, type member of structure must be unpacked value so that 
-	     cast of new missing_value in nco_mss_val_get() in next 
-	     nco_var_refresh() call (i.e., next file)
-	     This solves NCO TODO 543 but will break when variables are different
-	     unpacked types between files and both files contain missing values.
-	     Better solution is to refresh variable type in nco_var_refresh() */
-	  var_prc[idx]->type=var_prc[idx]->typ_upk;
 	  /* Free current input buffer */
 	  var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	} /* end (OpenMP parallel for) loop over variables */
@@ -589,12 +577,9 @@ main(int argc,char **argv)
 	/* Retrieve variable from disk into memory */
 	(void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
 	
-	/* Convert char, short, long, int types to doubles before arithmetic */
-	/* fxm: TODO543 200506116 is this conversion necessary given nco_var_cnf_typ() call in two lines? */
-	/*	var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);*/
-	/* Output variable type is "sticky" so only convert on first record */
+	/* Convert char, short, long, int types to doubles before arithmetic
+	   Output variable type is "sticky" so only convert on first record */
 	if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
-	/* Convert var_prc to type of var_prc_out in case type of variable on disk has changed */
 	var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
 	/* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not idx_rec_out! */
 	nco_opr_drv(fl_idx,nco_op_typ,var_prc[idx],var_prc_out[idx]);
