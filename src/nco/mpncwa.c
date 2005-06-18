@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.1 2005-06-17 23:30:45 gayathri_aiyar Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.2 2005-06-18 06:22:23 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.1 2005-06-17 23:30:45 gayathri_aiyar Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.1 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.2 2005-06-18 06:22:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.2 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   const double sleep_tm=0.04; /* [time] interval between successive token requests */
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
@@ -622,7 +622,7 @@ main(int argc,char **argv)
   /* Add new missing values to output file while in define mode */
   if(msk_nm != NULL){
     for(idx=0;idx<nbr_var_prc;idx++){
-      /* Define for var_prc_out because mss_val for var_prc will be overwritten in nco_var_refresh */
+      /* Define for var_prc_out because mss_val for var_prc will be overwritten in nco_var_mtd_refresh */
       if(!var_prc_out[idx]->has_mss_val){
 	var_prc_out[idx]->has_mss_val=True;
 	var_prc_out[idx]->mss_val=nco_mss_val_mk(var_prc[idx]->type);
@@ -829,7 +829,7 @@ main(int argc,char **argv)
 	    } /* end if err */
 	    (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
       
-	    (void)nco_var_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
+	    (void)nco_var_mtd_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
 	    /* Retrieve variable from disk into memory */
 	    if(dbg_lvl > 4) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 About to nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
 	    (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
@@ -845,7 +845,7 @@ main(int argc,char **argv)
 	      if(DO_CONFORM_MSK){
 		msk_out=nco_var_cnf_typ(var_prc[idx]->type,msk_out);
 	  
-		/* mss_val for var_prc has been overwritten in nco_var_refresh() */
+		/* mss_val for var_prc has been overwritten in nco_var_mtd_refresh() */
 		if(!var_prc[idx]->has_mss_val){
 		  var_prc[idx]->has_mss_val=True;
 		  var_prc[idx]->mss_val=nco_mss_val_mk(var_prc[idx]->type);

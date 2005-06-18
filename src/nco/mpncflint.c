@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.3 2005-06-17 23:30:45 gayathri_aiyar Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.4 2005-06-18 06:22:23 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -107,8 +107,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.3 2005-06-17 23:30:45 gayathri_aiyar Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.3 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.4 2005-06-18 06:22:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.4 $";
   const char * const opt_sht_lst="ACcD:d:Fhi:l:Oo:p:rRt:v:xw:Z-:";
   const double sleep_tm=0.04; /* [time] interval between successive token requests */
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
@@ -652,7 +652,7 @@ main(int argc,char **argv)
 	  if(dbg_lvl > 0) (void)fflush(stderr);
 
 	  var_prc_2[idx]=nco_var_dpl(var_prc_1[idx]);
-	  (void)nco_var_refresh(in_id_2,var_prc_2[idx]); /* Routine contains OpenMP critical regions */
+	  (void)nco_var_mtd_refresh(in_id_2,var_prc_2[idx]); /* Routine contains OpenMP critical regions */
 
 	  (void)nco_var_get(in_id_1,var_prc_1[idx]); /* Routine contains OpenMP critical regions */
 	  (void)nco_var_get(in_id_2,var_prc_2[idx]); /* Routine contains OpenMP critical regions */

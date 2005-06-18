@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.1 2005-06-16 23:35:42 gayathri_aiyar Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.2 2005-06-18 06:22:23 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.1 2005-06-16 23:35:42 gayathri_aiyar Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.1 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.2 2005-06-18 06:22:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.2 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRv:xZ-:";
   const double sleep_tm=0.04; /* [time] interval between successive token requests */
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
@@ -598,8 +598,8 @@ main(int argc,char **argv)
        /* Common code for UP and MPI */ /* fxm: requires C99 as is? */
 	    if(dbg_lvl > 1) (void)fprintf(stderr,"%s, ",var_prc[idx]->nm);
 	    if(dbg_lvl > 0) (void)fflush(stderr);
-	    /* Variables may have different IDs and missing_values in each file */
-	    (void)nco_var_refresh(in_id,var_prc[idx]);
+	    /* Variables may have different ID, missing_value, type, in each file */
+	    (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
 	    /* Retrieve variable from disk into memory */
 	    (void)nco_var_get(in_id,var_prc[idx]);
 	    /* Size of record dimension is 1 in output file */

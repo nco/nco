@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.13 2005-06-16 23:35:42 gayathri_aiyar Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.14 2005-06-18 06:22:23 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.13 2005-06-16 23:35:42 gayathri_aiyar Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.13 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.14 2005-06-18 06:22:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.14 $";
   const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   const double sleep_tm=0.04; /* [time] interval between successive token requests */
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
@@ -576,23 +576,18 @@ main(int argc,char **argv)
 	if(dbg_lvl > 0) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
 	if(dbg_lvl > 0) (void)fflush(fp_stderr);
 	
-	(void)nco_var_refresh(in_id_1,var_prc[idx]); /* Routine contains OpenMP critical regions */
+	(void)nco_var_mtd_refresh(in_id_1,var_prc[idx]); /* Routine contains OpenMP critical regions */
 	has_mss_val=var_prc[idx]->has_mss_val; 
 	(void)nco_var_get(in_id_1,var_prc[idx]); /* Routine contains OpenMP critical regions */
 	
 	/* Save output variable ID from being overwritten in refresh call */
 	var_prc[idx]->id=var_prc_out[idx]->id;
-	(void)nco_var_refresh(in_id_2,var_prc_out[idx]);
+	(void)nco_var_mtd_refresh(in_id_2,var_prc_out[idx]);
 	
 	/* Determine whether var1 and var2 conform */
 	if(var_prc_out[idx]->nbr_dim == var_prc[idx]->nbr_dim){
-	  nc_type var_type;
 	  int dmn_idx;
 	  long *lp;
-	  /* Routine nco_var_refresh() does not set type for var_prc_out, do so manually */
-	  (void)nco_inq_varid(in_id_2,var_prc_out[idx]->nm,&var_id);
-	  (void)nco_inq_vartype(in_id_2,var_id,&var_type);
-	  var_prc_out[idx]->type=var_type;
 	  
 	  /* Do all dimensions match in sequence? */
 	  for(dmn_idx=0;dmn_idx<var_prc[idx]->nbr_dim;dmn_idx++){

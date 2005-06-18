@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.99 2005-06-18 05:54:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.100 2005-06-18 06:22:23 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.99 2005-06-18 05:54:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.99 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.100 2005-06-18 06:22:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.100 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRv:xt:Z-:";
 
   dmn_sct *rec_dmn;
@@ -485,7 +485,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_prc;idx++){
       if(dbg_lvl > 1) (void)fprintf(fd_stderr,"%s, ",var_prc[idx]->nm);
       if(dbg_lvl > 0) (void)fflush(fd_stderr);
-      /* Variables may have different IDs and missing_values in each file */
+      /* Variables may have different ID, missing_value, type, in each file */
       (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
       /* Retrieve variable from disk into memory */
       (void)nco_var_get(in_id,var_prc[idx]);
