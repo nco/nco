@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.533 2005-06-18 05:54:28 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.534 2005-06-20 06:17:03 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -277,7 +277,7 @@ nco514. My MPI builds call superfluous linker steps:
 nco516. Implement SDO-wide data pipes, e.g., ncra in*.nc | ncwa | ncrename t,tpt foo.nc
         This would bring us one step closer to grid services, too
 nco524. DODS/OPeNDAP memory leak
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncrcat -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l /tmp/data in.nc in.nc foo.nc > ~/foo 2>&1
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncrcat -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l /tmp in.nc in.nc ~/foo.nc > ~/foo 2>&1
 	ncrcat -O -C -l /tmp -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
 	ncrcat -O -C -l /tmp -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
 nco527. Purify ncatted memory: 

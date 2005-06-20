@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.305 2005-06-12 23:29:52 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.306 2005-06-20 06:17:03 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2530,9 +2530,9 @@ Then it sends the hyperslab to the local @command{ncwa} client which
 computes and stores (locally) the regional mean surface pressure 
 @w{(in Pa)}. 
 @example
-ncwa -O -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l ./ -p \
+ncwa -O -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l /tmp -p \
 http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
-pres.sfc.1969.nc foo.nc
+pres.sfc.1969.nc ~/foo.nc
 @end example
 @noindent
 @cindex packing
