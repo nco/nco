@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.43 2005-06-17 19:06:26 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.44 2005-06-21 21:42:00 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -1537,16 +1537,17 @@ sub initialize($$){
 	if (defined $ENV{'MY_BIN_DIR'} &&  $ENV{'MY_BIN_DIR'} ne ""){$MY_BIN_DIR=$ENV{'MY_BIN_DIR'};}
 	else{
 		# Set and verify MY_BIN_DIR
-		printf "ENV var 'MY_BIN_DIR' not specified, "; 
-		if($bch_flg){
-			die "unable to continue in batch mode without MY_BIN_DIR\n stopped\n";
-		}else{ # !bch_flg
-			$MY_BIN_DIR=abs_path("../src/nco");
-			printf "use $MY_BIN_DIR?\n['y' or specify] ";
-			my $ans = <STDIN>;
-			chomp $ans;
-			$MY_BIN_DIR = $ans unless (lc($ans) eq "y" || lc($ans) eq '');
-		} # !bch_flg
+		$MY_BIN_DIR=abs_path("../src/nco");
+		printf "ENV var 'MY_BIN_DIR' not specified, so using default\n"; 
+#		if($bch_flg){
+#			die "unable to continue in batch mode without MY_BIN_DIR\n stopped\n";
+#		}else{ # !bch_flg
+#			$MY_BIN_DIR=abs_path("../src/nco");
+#			printf "use $MY_BIN_DIR?\n['y' or specify] ";
+#			my $ans = <STDIN>;
+#			chomp $ans;
+#			$MY_BIN_DIR = $ans unless (lc($ans) eq "y" || lc($ans) eq '');
+#		} # !bch_flg
 	} # !$MY_BIN_DIR
 	if($dbg_lvl > 0){printf ("$prg_nm: initialize() reports \$MY_BIN_DIR = $MY_BIN_DIR, \$opr_lst[0] = $opr_lst[0], \@opr_lst=@opr_lst\n");}
 	# Die if this path still does not work

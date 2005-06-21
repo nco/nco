@@ -1,3 +1,15 @@
+2005-06-21  Harry Mangalam <hjm@tacgi.com>
+
+	*fixed Makefile.in and nco_bm.pl to work with:
+	make test      does regression test with no debug info
+	make devtest   does regression test with debug info and udpreporting
+	make benchmark runs benchmark with udpreporting
+	make files     creates the benchmark files
+
+	* nco_bm.pl now defaults to <nco_root>/src/nco as MY_BIN_DIR (if no
+	environment var set) instead of going thru the dialog.
+
+
 2005-06-17  Charlie Zender  <zender@uci.edu>
 
 	* Verified that nco_var_refresh() change does not introduce any
