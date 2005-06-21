@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.290 2005-06-16 23:35:32 gayathri_aiyar Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.291 2005-06-21 01:28:55 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1443,6 +1443,11 @@ root_cln:
 src: ${MDL_NCAP}
 src_cln:
 	rm -f ${MDL_NCAP}
+# Targets in /usr/local
+sys: ${MDL_BIN_TRG}
+	- cd ${MY_BIN_DIR}; sudo /bin/cp -f ${MDL_BIN_TRG} /usr/local/bin; cd /usr/local/bin; sudo rm -f ncdiff ncea ncrcat ncunpack; sudo ln -s -f ncbo ncdiff; sudo ln -s -f ncra ncea; sudo ln -s -f ncra ncrcat; sudo ln -s -f ncpdq ncunpack; sudo ln -s -f ncpdq ncpack
+sys_cln:
+	- cd /usr/local/bin;rm -f ${MDL_BIN_TRG}
 
 # Housekeeping
 clean: cln
