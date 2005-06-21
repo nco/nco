@@ -1,3 +1,10 @@
+2005-06-21  Charlie Zender  <zender@uci.edu>
+
+	* Add ${MDL_BIN_TRG} to .PHONY in bld/Makefile
+
+	* Change configure.in 'case' statement from sparc-sun-solaris2
+	to sparc-sun-solaris2* to handle newer solaris triplets
+
 2005-06-21  Harry Mangalam <hjm@tacgi.com>
 
 	*fixed Makefile.in and nco_bm.pl to work with:
@@ -9,6 +16,10 @@
 	* nco_bm.pl now defaults to <nco_root>/src/nco as MY_BIN_DIR (if no
 	environment var set) instead of going thru the dialog.
 
+2005-06-20  Charlie Zender  <zender@uci.edu>
+
+	* Add sys target to bld/Makefile. 
+	'make sys' installs executables in $MY_BIN_DIR to /usr/local/bin
 
 2005-06-17  Charlie Zender  <zender@uci.edu>
 
