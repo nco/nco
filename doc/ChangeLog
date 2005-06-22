@@ -1,5 +1,9 @@
 2005-06-21  Charlie Zender  <zender@uci.edu>
 
+	* Make LINUX_CC more MPI-friendly for both gcc and icc
+	'make MPI=Y' just works on my Debian machines now when
+	MPICH_CC=gcc and fails when MPICH_CC=icc
+	
 	* Set OMP=N when MPI=Y in bld/Makefile
 
 	* Add ${MDL_BIN_TRG} to .PHONY in bld/Makefile to solve problems

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.293 2005-06-22 00:03:50 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.294 2005-06-22 06:52:52 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -171,13 +171,12 @@ ifeq (${MPI},Y)
 # Prohibit hybrid code for now---turn off OpenMP
  OMP := N
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
-ifndef LINUX_CC
-ifndef MPI
- LINUX_CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
+ifdef LINUX_CC
+ LINUX_CC := $(subst icc,mpicc,${LINUX_CC})
+ LINUX_CC := $(subst gcc,mpicc,${LINUX_CC})
 else
  LINUX_CC := mpicc -std=c99 -pedantic -D_BSD_SOURCE
-endif
-endif # endif LINUX_FC
+endif # endif LINUX_CC
 endif # endif LINUX
 endif # endif MPI
 
@@ -309,10 +308,10 @@ VPATH := $(subst ${space},:,${MDL_PTH})
 CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 
 # Variables having to do with binary executables created by module
-ifeq (${MPI},Y)
-MDL_BIN_TRG := mpncbo mpncecat mpncflint mpncpdq mpncwa ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
-else
 MDL_BIN_TRG := ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
+ifeq (${MPI},Y)
+ MDL_MPI_TRG := mpncbo mpncecat mpncflint mpncpdq mpncwa # MPI binary targets
+ MDL_BIN_TRG := ${MDL_BIN_TRG} ${MDL_MPI_TRG} # NCO binary targets
 endif # endif MPI
 MDL_BIN_SYM_LNK := ncdiff ncea ncrcat # Symbolic links
 MDL_BIN_STB := ${MDL_BIN_TRG} ${MDL_BIN_SYM_LNK} # All NCO files in MY_BIN_DIR
@@ -762,7 +761,7 @@ endif # endif LINUXAMD64
  CXXFLAGS := ${CFLAGS}
 endif # endif GNU Compiler Collection
 # Intel (Kai) C Compiler
-ifneq (${null},$(findstring icc,${CC}))
+ifeq (icc,$(firstword ${CC}))
  CFLAGS := -w1
  CPPFLAGS += -no-gcc
  OMP_FLG := -openmp -openmp_report0
@@ -1205,7 +1204,7 @@ obj_dir:
 #	-install -d ${MY_BIN_DIR}
 	-mkdir -p ${MY_OBJ_DIR}
 # Targets in bin
-.PHONY:  ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa
+.PHONY: ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa
 mpncbo:   ${MY_BIN_DIR}/mpncbo
 ${MY_BIN_DIR}/mpncbo:	${MY_OBJ_DIR}/mpncbo.o lib
 	${CC} -o $@ $< ${LDFLAGS}
@@ -1460,14 +1459,14 @@ dbg:
 	@printf "ABI = ${ABI}\n"
 	@printf "AR = ${AR}\n"
 	@printf "BNR_SFX = ${BNR_SFX}\n"
-	@printf "CXX = ${CXX}\n"
-	@printf "CXXFLAGS = ${CXXFLAGS}\n"
 	@printf "CC = ${CC}\n"
 	@printf "CFLAGS = ${CFLAGS}\n"
 	@printf "CPP = ${CPP}\n"
 	@printf "CPPFLAGS = ${CPPFLAGS}\n"
 	@printf "CPP_PTH = ${CPP_PTH}\n"
 	@printf "CPP_TKN = ${CPP_TKN}\n"
+	@printf "CXX = ${CXX}\n"
+	@printf "CXXFLAGS = ${CXXFLAGS}\n"
 	@printf "DBG = ${DBG}\n"
 	@printf "DODS = ${DODS}\n"
 	@printf "DODS_ROOT = ${DODS_ROOT}\n"
@@ -1477,7 +1476,9 @@ dbg:
 	@printf "HDF5 = ${HDF5}\n"
 	@printf "LDFLAGS = ${LDFLAGS}\n"
 	@printf "LEX = $(LEX)\n"
+	@printf "MDL_BIN_TRG = ${MDL_BIN_TRG}\n"
 	@printf "MDL_DPN = ${MDL_DPN}\n"
+	@printf "MDL_MPI_TRG = ${MDL_MPI_TRG}\n"
 	@printf "MDL_OBJ = ${MDL_OBJ}\n"
 	@printf "MDL_PTH = ${MDL_PTH}\n"
 	@printf "MDL_RPM_NST_NM = $(MDL_RPM_NST_NM)\n"
@@ -1541,7 +1542,7 @@ ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 ifneq (${null},$(findstring xl,${CC}))
 # Target-specific variable values syntax TARGET ... : VARIABLE-ASSIGNMENT
 # Remember to use tabs not spaces as this is a rule
-ncap:	LDFLAGS += -lC
+	ncap:	LDFLAGS += -lC
 endif # endif AIX VA Compiler Collection
 endif # endif AIX
 # For some reason, ncap_lex.c is not remade when I expect it to be, so I explicitly remove the object file every time
