@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.121 2005-06-02 14:11:02 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.122 2005-06-22 18:39:07 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -873,6 +873,11 @@ nco_var_lst_sub(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst
     xtr_new_lst[xtr_nbr_new].nm=(char *)strdup(xtr_lst[idx].nm);
     xtr_new_lst[xtr_nbr_new++].id=xtr_lst[idx].id;
   } /* end loop over idx */
+  /* realloc to actual size */
+  xtr_new_lst=(nm_id_sct*)nco_realloc(xtr_new_lst,xtr_nbr_new*sizeof(nm_id_sct)); 
+  /* free old list */
+  xtr_lst=nco_nm_id_lst_free(xtr_lst,*nbr_xtr);
+
   *nbr_xtr=xtr_nbr_new;
   return xtr_new_lst;     
 }/* end nco_var_lst_sub */
