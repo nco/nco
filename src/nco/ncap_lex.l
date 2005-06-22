@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.42 2005-06-13 11:00:14 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.43 2005-06-22 19:28:58 hmb Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -435,8 +435,8 @@ M_PI {return NAMED_CONSTANT;}
   /* Recognize variable attributes, e.g., var_nm@att_nm */
   aed_sct *ptr_aed;
   char *amp_ptr;
-  char *att_nm;
-  char *var_nm;
+  char att_nm[NC_MAX_NAME];
+  char var_nm[NC_MAX_NAME];
   int rcd=NC_NOERR;
   int rcd_out;
   int var_id;
@@ -449,10 +449,10 @@ M_PI {return NAMED_CONSTANT;}
   amp_ptr=strchr(yytext,'@');
   sng_lng=amp_ptr-yytext;
   
-  var_nm=(char *)nco_malloc((sng_lng+1)*sizeof(char));
-  strncpy(var_nm,yytext,sng_lng);
+    strncpy(var_nm,yytext,sng_lng);
   var_nm[sng_lng]='\0';
-  att_nm=(char *)strdup(++amp_ptr);
+  
+  strcpy(att_nm,++amp_ptr);
   
   /* Assume global attribute when variable name is "global" */
   if(!strcmp(var_nm,"global")) var_id=NC_GLOBAL; else rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
