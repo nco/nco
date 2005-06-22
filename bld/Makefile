@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.294 2005-06-22 06:52:52 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.295 2005-06-22 22:16:55 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1184,7 +1184,7 @@ libnco := ${MY_LIB_DIR}/libnco
 all: dir lib ${MDL_BIN_TRG} data
 non_ncap: dir lib $(filter-out ncap,${MDL_BIN_TRG}) data
 # .PHONY tells make to remake the following non-file targets 
-.PHONY: all cln dst_cln dbg ${MDL_BIN_TRG}
+.PHONY: all cln dst_cln dbg
 # Delete default suffixes---this should increase speed
 .SUFFIXES: 
 # Define suffixes which matter
@@ -1204,7 +1204,6 @@ obj_dir:
 #	-install -d ${MY_BIN_DIR}
 	-mkdir -p ${MY_OBJ_DIR}
 # Targets in bin
-.PHONY: ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa
 mpncbo:   ${MY_BIN_DIR}/mpncbo
 ${MY_BIN_DIR}/mpncbo:	${MY_OBJ_DIR}/mpncbo.o lib
 	${CC} -o $@ $< ${LDFLAGS}
@@ -1541,8 +1540,8 @@ endif
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 ifneq (${null},$(findstring xl,${CC}))
 # Target-specific variable values syntax TARGET ... : VARIABLE-ASSIGNMENT
-# Remember to use tabs not spaces as this is a rule
-	ncap:	LDFLAGS += -lC
+# Rules begin in leftmost column else interpreted as commands
+ncap : LDFLAGS += -lC
 endif # endif AIX VA Compiler Collection
 endif # endif AIX
 # For some reason, ncap_lex.c is not remade when I expect it to be, so I explicitly remove the object file every time

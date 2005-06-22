@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.102 2005-06-21 23:44:13 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.103 2005-06-22 22:16:50 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -543,7 +543,7 @@ For ABI=32:
 cc/CC:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='/opt/SUNWspro/bin/cc' CXX='/opt/SUNWspro/bin/CC' LD='/usr/ccs/bin/ld -z muldefs' LDFLAGS='-z muldefs -L/opt/SUNWspro/lib' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+CC='/opt/SUNWspro/bin/cc' CPPFLAGS='-DNC_64BIT_OFFSET=0' CXX='/opt/SUNWspro/bin/CC' LD='/usr/ccs/bin/ld -z muldefs' LDFLAGS='-z muldefs -L/opt/SUNWspro/lib' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
@@ -553,73 +553,12 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TR
 gcc/g++:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='gcc' CXX='g++' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+CC='gcc' CPPFLAGS='-DNC_64BIT_OFFSET=0' CXX='g++' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
-
-Old build example:
-
-New build example:
-gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I/home/zender/include -g -O2 -MT nco_fl_utl.lo -MD -MP -MF
- .deps/nco_fl_utl.Tpo -c nco_fl_utl.c  -fPIC -DPIC -o .libs/nco_fl_utl.o
-In file included from nco_fl_utl.h:24,
-                 from nco_fl_utl.c:9:
-/usr/include/sys/stat.h:253: parse error before "blksize_t"
-/usr/include/sys/stat.h:257: parse error before '}' token
-/usr/include/sys/stat.h:313: parse error before "blksize_t"
-/usr/include/sys/stat.h:314: conflicting types for `st_blocks'
-/usr/include/sys/stat.h:254: previous declaration of `st_blocks'
-/usr/include/sys/stat.h:317: parse error before '}' token
-nco_fl_utl.c: In function `nco_fl_mk_lcl':
-nco_fl_utl.c:186: storage size of `stat_sct' isn't known
-nco_fl_utl.c: In function `nco_fl_out_open':
-nco_fl_utl.c:702: storage size of `stat_sct' isn't known
-
-zender@goldhill:~/nco/src/nco_c++$ make check
-/opt/SUNWspro/bin/CC -g -o tst tst.o  -L/home/zender/lib/SUNMP /home/zender/lib/SUNMP/libnco_c++.so -lthread -lsocket -lresolv -lintl -lsunmath -lm -lnetcdf -R/home/zender/lib/SUNMP -R/home/zender/lib/SUNMP
-ild: (undefined symbol) void __Crun::register_exit_code(void(*)()extern"C") -- referenced in the text segment of /opt/SUNWspro/WS6U2/lib/libCstd.a(pVW_T97SXgbY0vyFZNUb.o)
-ild: (undefined symbol) void __Crun::register_exit_code(void(*)()extern"C") -- referenced in the text segment of /opt/SUNWspro/WS6U2/lib/libCstd.a(2yi5kEpmEtUw_3Zz13e2.o)
-ild: (undefined symbol) void __Crun::register_exit_code(void(*)()extern"C") -- referenced in the text segment of /opt/SUNWspro/WS6U2/lib/libCstd.a(locale.o)
-ild: (undefined symbol) void __Crun::register_exit_code(void(*)()extern"C") -- referenced in the text segment of /opt/SUNWspro/WS6U2/lib/libCstd.a(ios.o)
-ild: (undefined symbol) void __Crun::register_exit_code(void(*)()extern"C") -- referenced in the text segment of /opt/SUNWspro/WS6U2/lib/libCstd.a(stdexcept.o)
-make[1]: *** [tst] Error 5
-make[1]: Leaving directory `/fs/cgd/home0/zender/nco/src/nco_c++'
-make: *** [check-am] Error 2
-
-
-g++ -DHAVE_CONFIG_H -I. -I. -I../..   -I/home/zender/include  -g -O2 -c tst.cc
-nco_var.hh: In function `int nco_put_var<prc_cmp>(const int &, const basic_string<char,string_char_traits<char>,__default_alloc_template<false,0> > &, const valarray<float> &)':
-tst.cc:155:   instantiated from here
-nco_var.hh:270: non-lvalue in unary `&'
-In file included from /usr/include/arpa/nameser.h:454,
-                 from ../src/nco/nco_fl_utl.h:31,
-                 from ../src/nco/nco_fl_utl.c:9:
-/usr/include/arpa/nameser_compat.h:93: parse error before string constant
-
-New build example:
-When changing from the Workshop 5.0 C++ compiler and the Workshop 6 compiler you get this linker error:
-
-    Undefined                       first referenced
-     symbol                             in file
-    void __Crun::register_exit_code(void(*)()extern"C")
-    obj/sunos5_optimized/MainWin.o
-    ld: fatal: Symbol referencing errors. No output written to
-    run/sunos5/MyApplication
-
-    FATAL ERROR:** Command: 'CC' failed/aborted.
-    exiting ...
-
-This symbol is defined in:
-
-    ..../SUNWspro/WS6/lib/libCrun.a
-
-in the 6.0 compiler but not in WS5.0 compiler. If you remove obj/sunos5_optimized/MainWin.o (and all other object files generated by the previous compiler) this should take care of the error.
-
-This error can also occur if you build objects with the 6.0 compiler but do not modify your LD_LIBRARY_PATH to point to the '..../SUNWspro/WS6/lib' directory in the 6.0 installation.
-
 ************************************************************************
 End SUNMP
 ************************************************************************

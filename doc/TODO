@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.535 2005-06-22 06:52:55 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.536 2005-06-22 22:16:56 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -388,10 +388,6 @@ ncap65. mmr: memory leak in ncap_lex.l with var->nm
 ncap66. make ncap errors fatal, either in yyerror(), or call nco_error_exit()
 ncap68. Purify ncap memory:
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncap -O -S ${HOME}/nco/data/ncap.in -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
-ncap69. ncap bug: valgrind says var_ycc[idx]->undefined is uninitiasized for some idx
-==14858== 
-==14858== Conditional jump or move depends on uninitialised value(s)
-==14858==    at 0x804B29F: main (ncap.c:564)
 ncap70. gamma() function broken on AIX
 ncap71. Remove erf and gamma functions from AIX build
 ncap72. Stop linking to -lC on AIX. Get all float math functions by casting double versions
