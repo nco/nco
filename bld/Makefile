@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.295 2005-06-22 22:16:55 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.296 2005-06-22 22:18:30 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1184,7 +1184,7 @@ libnco := ${MY_LIB_DIR}/libnco
 all: dir lib ${MDL_BIN_TRG} data
 non_ncap: dir lib $(filter-out ncap,${MDL_BIN_TRG}) data
 # .PHONY tells make to remake the following non-file targets 
-.PHONY: all cln dst_cln dbg
+.PHONY: all cln dst_cln dbg ${MDL_BIN_TRG}
 # Delete default suffixes---this should increase speed
 .SUFFIXES: 
 # Define suffixes which matter
