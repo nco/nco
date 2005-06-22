@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.31 2005-05-30 03:50:32 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.32 2005-06-22 18:41:41 hmb Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -294,7 +294,8 @@ PRINT '(' var_xpr ')' ';' {
     
     if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching former scv_xpr defining %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$1,((prs_sct *)prs_arg)->var_LHS->nm,((prs_sct *)prs_arg)->var_LHS->nbr_dim,((prs_sct *)prs_arg)->var_LHS->sz);
   } /* endif LHS_cst */
-  
+
+  var->undefined=False;
   (void)ncap_var_write(var,(prs_sct *)prs_arg);
   
   if(dbg_lvl_get() > 0 ) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
@@ -315,6 +316,7 @@ PRINT '(' var_xpr ')' ';' {
   var->sz=strlen($3)+1;
   var->val.cp=(unsigned char *)strdup($3);
   var->type=NC_CHAR;
+  var->undefined=False;
   (void)cast_nctype_void((nc_type)NC_CHAR,&var->val);
   (void)ncap_var_write(var,(prs_sct *)prs_arg);
   
