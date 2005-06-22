@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.292 2005-06-21 23:44:19 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.293 2005-06-22 00:03:50 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -168,6 +168,8 @@ endif
 
 # Message Passing Interface
 ifeq (${MPI},Y)
+# Prohibit hybrid code for now---turn off OpenMP
+ OMP := N
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
 ifndef LINUX_CC
 ifndef MPI
@@ -201,8 +203,8 @@ ifndef LINUX_FC
 # Fortran compiler for Linux
  LINUX_FC := g95
  #LINUX_FC := gfortran
- #LINUX_FC := lf95
  #LINUX_FC := ifort
+ #LINUX_FC := lf95
  #LINUX_FC := pgf90
 endif # endif LINUX_CC
 ifeq (${PVM_ARCH},LINUXAMD64)

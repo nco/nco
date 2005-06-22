@@ -1,13 +1,16 @@
 2005-06-21  Charlie Zender  <zender@uci.edu>
 
-	* Add ${MDL_BIN_TRG} to .PHONY in bld/Makefile
+	* Set OMP=N when MPI=Y in bld/Makefile
+
+	* Add ${MDL_BIN_TRG} to .PHONY in bld/Makefile to solve problems
+	with building MPI executables
 
 	* Change configure.in 'case' statement from sparc-sun-solaris2
 	to sparc-sun-solaris2* to handle newer solaris triplets
 
 2005-06-21  Harry Mangalam <hjm@tacgi.com>
 
-	*fixed Makefile.in and nco_bm.pl to work with:
+	* fixed Makefile.in and nco_bm.pl to work with:
 	make test      does regression test with no debug info
 	make devtest   does regression test with debug info and udpreporting
 	make benchmark runs benchmark with udpreporting
