@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.86 2005-06-18 06:11:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.87 2005-06-22 19:46:28 hmb Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -758,6 +758,7 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   var->srt=(long *)NULL;
   var->end=(long *)NULL;
   var->srd=(long *)NULL;
+  var->undefined=False;
 
   /* Members related to packing */
   var->has_scl_fct=False; /* [flg] Valid scale_factor attribute exists */
