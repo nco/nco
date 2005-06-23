@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.43 2005-06-22 19:28:58 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.44 2005-06-23 11:57:02 hmb Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -287,7 +287,8 @@ XPN [eE][+-]?[0-9]+
   
   /* Replace C-language escape codes with actual byte values */
   (void)sng_ascii_trn(bfr);
-  lval_ptr->sng=strdup(bfr);       
+  lval_ptr->sng=strdup(bfr);
+  bfr=(char*)nco_free(bfr);
   if(dbg_lvl_get() > 3){
     (void)fprintf(stderr,"Lexing string: %s\n",yytext);
     (void)fprintf(stderr,"Made   string: %s\n",lval_ptr->sng);
@@ -505,10 +506,12 @@ M_PI {return NAMED_CONSTANT;}
 	  (void)cast_void_nctype(type,&val);
 	  lval_ptr->sng=(char *)nco_malloc((att_sz+1)*sizeof(char));
 	  strncpy(lval_ptr->sng,(char *)val.cp,(size_t)att_sz);
-	  lval_ptr->sng[att_sz]='\0';; 
+	  lval_ptr->sng[att_sz]='\0';;
+          val.vp=(void*)nco_free(val.vp); 
 	  return SNG;
 	}else{
 	  lval_ptr->scv=ptr_unn_2_scv(type,val);
+	  val.vp=(void*)nco_free(val.vp); 
 	  return SCV;   
 	} /* end else */ 
       } /* end if */
