@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.290 2005-06-15 15:42:53 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.291 2005-06-23 03:06:55 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -451,6 +451,9 @@ testing and porting of NCO on the
 -->
 <a href="http://packages.debian.org/unstable/math/nco.html">Debian GNU/Linux homepage for NCO</a>.
 <a href="http://www.debian.org">debs</a> by Rorik Peterson and Charlie Zender:
+<li><i>We cannot produce up-to-date Debian NCO packages until the Debian
+netCDF maintainer upgrades the netCDF package to version&nbsp;3.6.
+Links to the Debian NCO packages below will remain broken until that time.</i></li>
 <li><a href="src/nco_3.0.1-1_i386.deb">nco_3.0.1-1_i386.deb</a> (<!--#fsize file="src/nco_3.0.1-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
 <li><a href="src/nco_3.0.1-1.dsc">nco_3.0.1-1.dsc</a> (<!--#fsize file="src/nco_3.0.1-1.dsc"-->): Description</li>
 <li><a href="src/nco_3.0.1-1.tar.gz">nco_3.0.1-1.tar.gz</a> (<!--#fsize file="src/nco_3.0.1-1.tar.gz"-->): Gzipped Source Tarball</li>
