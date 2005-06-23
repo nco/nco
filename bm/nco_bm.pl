@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.44 2005-06-21 21:42:00 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.45 2005-06-23 17:26:13 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -249,7 +249,7 @@ my %MD5_table = ( # holds md5 hashes for each test
 "rms with weights_0" => "4efa5f65ddfa4dd571c1073d8e877bf9", #MD5
 "weights would cause SIGFPE without dbl_prc patch_0" => "6a3e8ecb9768cb2a5132637e6a28a17b", #MD5
 "avg would overflow without dbl_prc patch_0" => "e4d70a9fd9b8b823cf43301555434e2c", #MD5
-"ttl would overflow without dbl_prc patch, wraps anyway so exact value not important (failure on expected/OK on Xeonchips because of different wrap behavior)_0" => "d12212aa41e3fef4ea7c2cdb718ee647", #MD5
+"ttl would overflow without dbl_prc patch, wraps anyway so exact value not important (failure expected/OK on Xeon chips because of different wrap behavior)_0" => "d12212aa41e3fef4ea7c2cdb718ee647", #MD5
 "min with weights_0" => "0fcc1eb5239a4658cf8af2a0692fb5bf", #MD5
 "max with weights_0" => "7855d7111ad8d937fa9ab4df171f2902", #MD5
 "running ncap.in script into nco_tst.pl_0" => "", #MD5
@@ -362,7 +362,7 @@ my %wcTable = ( # word count table for $dta_dir/wc_out
 "rms with weights_0" => "11 95 570", #wc
 "weights would cause SIGFPE without dbl_prc patch_0" => "17 144 860", #wc
 "avg would overflow without dbl_prc patch_0" => "17 144 879", #wc
-"ttl would overflow without dbl_prc patch, wraps anyway so exact value not important (failure on expected/OK on Xeonchips because of different wrap behavior)_0" => "17 144 880", #wc
+"ttl would overflow without dbl_prc patch, wraps anyway so exact value not important (failure expected/OK on Xeon chips because of different wrap behavior)_0" => "17 144 880", #wc
 "min with weights_0" => "11 95 572", #wc
 "max with weights_0" => "11 95 571", #wc
 );
@@ -1405,7 +1405,7 @@ sub perform_tests
 	
 	$tst_cmd[0]="ncwa $omp_flg -h -O -y ttl -v val_max_max_sht in.nc $outfile 2> $foo_tst";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v val_max_max_sht $outfile";
-	$dsc_sng="ttl would overflow without dbl_prc patch, wraps anyway so exact value not important (failure on expected/OK on Xeon chips because of different wrap behavior)";
+	$dsc_sng="ttl would overflow without dbl_prc patch, wraps anyway so exact value not important (failure expected/OK on Xeon chips because of different wrap behavior)";
 	$nsr_xpc= -31536 ; # Expected on Pentium IV GCC Debian 3.4.3-13, PowerPC xlc
 #    $nsr_xpc= -32768 ; # Expected on Xeon GCC Fedora 3.4.2-6.fc3
 #    $nsr_xpc= -32768 ; # Expected on PentiumIII (Coppermine) gcc 3.4 MEPIS 
