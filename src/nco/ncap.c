@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.166 2005-06-13 11:00:47 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.167 2005-06-23 12:24:07 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.166 2005-06-13 11:00:47 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.166 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.167 2005-06-23 12:24:07 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.167 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -690,8 +690,6 @@ main(int argc,char **argv)
     (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
   
-  /* Extraction list is no longer needed */
-  xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
 
   /* NB: ncap is not well-suited for nco_var_lst_dvd() */
   /* Divide variable lists into lists of fixed variables and variables to be processed */
@@ -738,6 +736,8 @@ main(int argc,char **argv)
 
   if(fl_spt_usr != NULL) fl_spt_usr=(char *)nco_free(fl_spt_usr);
 
+  
+
   /* Free variable list --some vars in var_ycc may have  
      been previously free'd */
   if(nbr_var_ycc > 0) var_ycc=nco_var_lst_free(var_ycc,nbr_var_ycc);
@@ -747,13 +747,12 @@ main(int argc,char **argv)
     att_lst[idx]->att_nm=(char*)nco_free(att_lst[idx]->att_nm);
     att_lst[idx]->var_nm=(char*)nco_free(att_lst[idx]->var_nm);
     att_lst[idx]->val.vp=(void*)nco_free(att_lst[idx]->val.vp);
+    att_lst[idx]=(aed_sct*)nco_free(att_lst[idx]);
   }
   if(nbr_att >0 ) att_lst=(aed_sct**)nco_free(att_lst);
 
-  /* xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
-   for(idx=0;idx<nbr_xtr ; idx++)
-     xtr_lst[idx].nm=(char*)nco_free(xtr_lst[idx].nm);
-     xtr_lst=(nm_id_sct*)nco_free(xtr_lst); */
+  /* free extraction list */ 
+  xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
 
   /* Free command line algebraic arguments - if any*/
   if(nbr_spt >0) {
@@ -767,6 +766,7 @@ main(int argc,char **argv)
   */
   /* NCO-generic clean-up */
   /* Free individual strings */
+  if(fl_in != NULL) fl_in=(char*)nco_free(fl_in);
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
   if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
   if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
