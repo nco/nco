@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.22 2005-06-08 22:53:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.23 2005-06-26 06:18:47 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -29,10 +29,10 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
   /* Unexpanded cvs keywords in cvs_Name trigger GCC 4.0+ warning
      "./src/nco/nco_scm.c:81: warning: offset outside bounds of constant string"
      because routine looks for cvs_Name+7 later on */
-  const char cvs_Name[]="$Name: not supported by cvs2svn $";
-  const char dlr_nm_cln_spc[]="$Name: "; 
+  char cvs_Name[]="$Name: not supported by cvs2svn $";
+  const char dlr_nm_cln_spc[]="$Name: "; /* [sng] Dollar name colon space */
   const char nco_sng[]="nco"; 
-  const char spc_dlr[]=" $"; 
+  const char spc_dlr[]=" $"; /* [sng] Space dollar */
 
   int cvs_nm_sng_len;
   int cvs_vrs_sng_len;
@@ -78,7 +78,7 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
 
   /* cvs_nm_sng is, e.g., "nco1_1" */
   cvs_nm_sng=(char *)nco_malloc((size_t)cvs_nm_sng_len+1);
-  cvs_nm_sng=strncpy(cvs_nm_sng,cvs_Name+strlen(dlr_nm_cln_spc),(size_t)cvs_nm_sng_len); /* 7 is strlen("$Name: ") */
+  cvs_nm_sng=strncpy(cvs_nm_sng,cvs_Name+strlen(dlr_nm_cln_spc),(size_t)cvs_nm_sng_len); /* strlen("$Name: ") = 7 */
   cvs_nm_sng[cvs_nm_sng_len]='\0';
 
   /* cvs_vrs_sng is, e.g., "1.1" */

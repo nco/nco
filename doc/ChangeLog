@@ -1,3 +1,7 @@
+2005-06-25  Charlie Zender  <zender@uci.edu>
+
+	* Un-constify cvs_Name to workaround gcc-4.0+ warnings
+
 2005-06-22  Charlie Zender  <zender@uci.edu>
 
 	* Fix bld/Makefile indent that caused make to treat ncap: as

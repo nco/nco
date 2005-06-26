@@ -111,9 +111,6 @@
 /* Define to 1 if you have the `ccmalloc' library (-lccmalloc). */
 #undef HAVE_LIBCCMALLOC
 
-/* Define to 1 if you have the `curl' library (-lcurl). */
-#undef HAVE_LIBCURL
-
 /* Define to 1 if you have the `dl' library (-ldl). */
 #undef HAVE_LIBDL
 
@@ -129,14 +126,11 @@
 /* Define to 1 if you have the `nco' library (-lnco). */
 #undef HAVE_LIBNCO
 
-/* Define to 1 if you have the `nc-dods' library (-lnc-dods). */
-#undef HAVE_LIBNC_DODS
+/* Define to 1 if you have the `nc-dap' library (-lnc-dap). */
+#undef HAVE_LIBNC_DAP
 
 /* Define to 1 if you have the `nsl' library (-lnsl). */
 #undef HAVE_LIBNSL
-
-/* Define to 1 if you have the `pthread' library (-lpthread). */
-#undef HAVE_LIBPTHREAD
 
 /* Define to 1 if you have the `resolv' library (-lresolv). */
 #undef HAVE_LIBRESOLV
@@ -155,12 +149,6 @@
 
 /* Define to 1 if you have the `udunits' library (-ludunits). */
 #undef HAVE_LIBUDUNITS
-
-/* Define to 1 if you have the `xml2' library (-lxml2). */
-#undef HAVE_LIBXML2
-
-/* Define to 1 if you have the `z' library (-lz). */
-#undef HAVE_LIBZ
 
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
