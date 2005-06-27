@@ -1,3 +1,7 @@
+2005-06-27  Charlie Zender  <zender@uci.edu>
+
+	* Merge CCSM data processing example into nco.texi
+
 2005-06-25  Charlie Zender  <zender@uci.edu>
 
 	* Un-constify cvs_Name to workaround gcc-4.0+ warnings

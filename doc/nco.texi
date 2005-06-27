@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.306 2005-06-20 06:17:03 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.307 2005-06-27 18:13:33 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -365,6 +365,7 @@ Charlie Zender
 * Common features::             
 * Operator Reference Manual::   
 * Contributing::                
+* CCSM Example::                
 * General Index::               
 @end menu
 
@@ -8136,7 +8137,7 @@ where @math{@var{thr_min} <= @var{msk_var} <= @var{thr_max}}.
 @html
 <a name="ctr"></a> <!-- http://nco.sf.net/nco.html#ctr -->
 @end html
-@node Contributing, General Index, Operator Reference Manual, Top
+@node Contributing, CCSM Example, Operator Reference Manual, Top
 @chapter Contributing
 @cindex contributing
 We welcome contributions from anyone.
@@ -8281,13 +8282,212 @@ Please contact us if you wish to be involved with any future
 @acronym{NCO}-related proposals.  
 Comments on the proposals and letters of support are also very welcome.
 
-@c @ignore
-@c @node CCSM Example, General Index, Operators, Top
-@c @chapter Example: Analyzing a @acronym{CCSM} run
+@html
+<a name="ccsm"></a> <!-- http://nco.sf.net/nco.html#ccsm -->
+@end html
+@node CCSM Example, General Index, Contributing, Top
+@chapter CCSM Example
+@cindex CCSM
 
-@c This chapter presents an in depth example of using @acronym{NCO} to
-@c analyze the results of a @acronym{CCSM} run.
-@c @end ignore
+This chapter presents an in depth example of using @acronym{NCO} to
+process and analyze the results of a @acronym{CCSM} climate simulation.
+@example
+************************************************************************
+Task 0: Finding input files
+************************************************************************
+The CCSM model outputs files to a local directory like:
+
+/ptmp/zender/archive/T42x1_40
+
+Each component model has its own subdirectory, e.g., 
+
+/ptmp/zender/archive/T42x1_40/atm
+/ptmp/zender/archive/T42x1_40/cpl
+/ptmp/zender/archive/T42x1_40/ice
+/ptmp/zender/archive/T42x1_40/lnd
+/ptmp/zender/archive/T42x1_40/ocn
+
+within which model output is tagged with the particular model name
+
+/ptmp/zender/archive/T42x1_40/atm/T42x1_40.cam2.h0.0001-01.nc
+/ptmp/zender/archive/T42x1_40/atm/T42x1_40.cam2.h0.0001-02.nc
+/ptmp/zender/archive/T42x1_40/atm/T42x1_40.cam2.h0.0001-03.nc
+...
+/ptmp/zender/archive/T42x1_40/atm/T42x1_40.cam2.h0.0001-12.nc
+/ptmp/zender/archive/T42x1_40/atm/T42x1_40.cam2.h0.0002-01.nc
+/ptmp/zender/archive/T42x1_40/atm/T42x1_40.cam2.h0.0002-02.nc
+...
+
+or 
+
+/ptmp/zender/archive/T42x1_40/lnd/T42x1_40.clm2.h0.0001-01.nc
+/ptmp/zender/archive/T42x1_40/lnd/T42x1_40.clm2.h0.0001-02.nc
+/ptmp/zender/archive/T42x1_40/lnd/T42x1_40.clm2.h0.0001-03.nc
+...
+
+************************************************************************
+Task 1: Regional processing
+************************************************************************
+The first task in data processing is often creating seasonal cycles.
+Imagine a 100-year simulation with its 1200 monthly mean files.
+Our goal is to create a single file containing 12 months of data.
+Each month in the output file is the mean of 100 input files.
+
+Normally, we store the "reduced" data in a smaller, local directory.
+
+CASEID='T42x1_40'
+#drc_in="$@{DATA@}/archive/$@{CASEID@}/atm"
+drc_in="$@{DATA@}/$@{CASEID@}"
+drc_out="$@{DATA@}/$@{CASEID@}"
+mkdir -p $@{drc_out@}
+cd $@{drc_out@}
+
+Method 1: Assume all data in directory applies
+for mth in @{01..12@}; do
+  MM=`printf "%02d" $mth`
+  ncra -O -D 1 -o $@{drc_out@}/$@{CASEID@}_clm$@{MM@}.nc \
+    $@{drc_in@}/$@{CASEID@}.cam2.h0.*-$@{MM@}.nc 
+done # end loop over mth
+
+Method 2: Use shell 'globbing' to construct input filenames
+for mth in @{01..12@}; do
+  MM=`printf "%02d" $mth`
+  ncra -O -D 1 -o $@{drc_out@}/$@{CASEID@}_clm$@{MM@}.nc \
+    $@{drc_in@}/$@{CASEID@}.cam2.h0.00??-$@{MM@}.nc \
+    $@{drc_in@}/$@{CASEID@}.cam2.h0.0100-$@{MM@}.nc
+done # end loop over mth
+
+Method 3: Construct input filename list explicitly
+for mth in @{01..12@}; do
+  MM=`printf "%02d" $mth`
+  fl_lst_in=''
+  for yr in @{0001..0100@}; do
+    YYYY=`printf "%04d" $yr`
+    fl_in=$@{CASEID@}.cam2.h0.$@{YYYY@}-$@{MM@}.nc
+    fl_lst_in="$@{fl_lst_in@} $@{CASEID@}.cam2.h0.$@{YYYY@}-$@{MM@}.nc"
+  done # end loop over yr
+  ncra -O -D 1 -o $@{drc_out@}/$@{CASEID@}_clm$@{MM@}.nc -p $@{drc_in@} \
+    $@{fl_lst_in@}
+done # end loop over mth
+
+Make sure the output file averages correct input files!
+ncks -M prints global metadata: 
+
+  ncks -M $@{drc_out@}/$@{CASEID@}_clm01.nc
+
+The input files ncra used to create the climatological monthly mean
+will appear in the global attribute named 'history'.
+
+Use ncrcat to aggregate the climatological monthly means
+
+  ncrcat -O -D 1 \
+    $@{drc_out@}/$@{CASEID@}_clm??.nc $@{drc_out@}/$@{CASEID@}_clm_0112.nc
+
+Finally, create climatological means for reference.
+The climatological time-mean:
+
+  ncra -O -D 1 \
+    $@{drc_out@}/$@{CASEID@}_clm_0112.nc $@{drc_out@}/$@{CASEID@}_clm.nc
+
+The climatological zonal-mean:
+
+  ncwa -O -D 1 -a lon \
+    $@{drc_out@}/$@{CASEID@}_clm.nc $@{drc_out@}/$@{CASEID@}_clm_x.nc
+
+The climatological time- and spatial-mean:
+
+  ncwa -O -D 1 -a lon,lat -w gw \
+    $@{drc_out@}/$@{CASEID@}_clm.nc $@{drc_out@}/$@{CASEID@}_clm_xy.nc
+
+This file contains only scalars, e.g., "global mean temperature",
+used for summarizing global results of a climate experiment.
+
+************************************************************************
+Task 2: Correcting monthly averages
+************************************************************************
+The previous step appoximates all months as being equal, so, e.g.,
+February weighs slightly too much in the climatological mean.
+This approximation can be removed by weighting months appropriately.
+We must add the number of days per month to the monthly mean files.
+First, create a shell variable dpm:
+
+unset dpm # Days per month
+declare -a dpm
+dpm=(0 31 28.25 31 30 31 30 31 31 30 31 30 31) # Allows 1-based indexing
+
+Method 1: Create dpm directly in climatological monthly means
+for mth in @{01..12@}; do
+  MM=`printf "%02d" $@{mth@}`
+  ncap -O -s "dpm=0.0*date+$@{dpm[$@{mth@}]@}" \
+    $@{drc_out@}/$@{CASEID@}_clm$@{MM@}.nc $@{drc_out@}/$@{CASEID@}_clm$@{MM@}.nc
+done # end loop over mth
+
+Method 2: Create dpm by aggregating small files
+for mth in @{01..12@}; do
+  MM=`printf "%02d" $@{mth@}`
+  ncap -O -v -s "dpm=$@{dpm[$@{mth@}]@}" ~/nco/data/in.nc \
+    $@{drc_out@}/foo_$@{MM@}.nc
+done # end loop over mth
+ncecat -O -D 1 -p $@{drc_out@} -n 12,2,2 foo_$@{MM@}.nc foo.nc
+ncrename -O -D 1 -d record,time $@{drc_out@}/foo.nc
+ncatted -O -h \
+  -a long_name,dpm,o,c,"Days per month" \
+  -a units,dpm,o,c,"days" \
+  $@{drc_out@}/$@{CASEID@}_clm_0112.nc
+ncks -A -v dpm $@{drc_out@}/foo.nc $@{drc_out@}/$@{CASEID@}_clm_0112.nc
+
+Method 3: Create small netCDF file using ncgen
+cat > foo.cdl << EOF
+netcdf foo @{ 
+dimensions:
+	time=unlimited;
+variables:
+	float dpm(time);
+	dpm:long_name="Days per month";
+	dpm:units="days";
+data:
+	dpm=31,28.25,31,30,31,30,31,31,30,31,30,31;
+@}
+EOF
+ncgen -b -o foo.nc foo.cdl
+ncks -A -v dpm $@{drc_out@}/foo.nc $@{drc_out@}/$@{CASEID@}_clm_0112.nc
+
+Another way to get correct monthly weighting is to average daily
+output files, if available.  
+
+************************************************************************
+Task 3: Regional processing
+************************************************************************
+Let's say you are interested in examining the California region.
+Hyperslab your dataset to isolate the appropriate latitude/longitudes.
+
+  ncks -O -D 1 -d lat,30.0,37.0 -d lon,240.0,270.0 \ 
+    $@{drc_out@}/$@{CASEID@}_clm_0112.nc $@{drc_out@}/$@{CASEID@}_clm_0112_Cal.nc
+
+The dataset is now much smaller!
+To examine particular metrics.
+
+************************************************************************
+Task 4: Accessing data stored remotely
+************************************************************************
+The Earth System Grid: http://www.earthsystemgrid.org
+
+CASEID='b30.025.ES01' 
+CCSM3.0 1% increasing CO2 run, T42_gx1v3, 200 years starting in year 400
+Atmospheric post-processed data, monthly averages, e.g.,
+/data/zender/tmp/b30.025.ES01.cam2.h0.TREFHT.0400-01_cat_0449-12.nc
+/data/zender/tmp/b30.025.ES01.cam2.h0.TREFHT.0400-01_cat_0599-12.nc
+
+OPeNDAP servers:
+ncrcat -O -C -D 3 -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata \
+  -l /tmp in.nc in.nc ~/foo.nc 
+ncrcat -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata \
+  -l /tmp in.nc in.nc ~/foo.nc
+
+ncwa -O -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l /tmp -p \
+http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
+pres.sfc.1969.nc ~/foo.nc
+@end example
 
 @c @node Name Index, General Index, Operators, Top
 @c @unnumbered Function and Variable Index
@@ -8298,7 +8498,7 @@ Comments on the proposals and letters of support are also very welcome.
 <a name="index"></a> <!-- http://nco.sf.net/nco.html#index -->
 <a name="idx"></a> <!-- http://nco.sf.net/nco.html#idx -->
 @end html
-@node General Index,  , Contributing, Top
+@node General Index,  , CCSM Example, Top
 @unnumbered General Index
 
 @syncodeindex fn cp
