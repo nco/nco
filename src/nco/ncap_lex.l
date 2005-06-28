@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.44 2005-06-23 11:57:02 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.45 2005-06-28 13:56:30 hmb Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -445,16 +445,20 @@ M_PI {return NAMED_CONSTANT;}
   nc_type type;
   ptr_unn val;
   size_t sng_lng;
+  bool blkp;
+  var_sct var_lkp; /* for us when calling lookup vars on first pass only */
   
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing attribute %s\n",yytext);
   amp_ptr=strchr(yytext,'@');
   sng_lng=amp_ptr-yytext;
   
-    strncpy(var_nm,yytext,sng_lng);
+  strncpy(var_nm,yytext,sng_lng);
   var_nm[sng_lng]='\0';
   
   strcpy(att_nm,++amp_ptr);
   
+  var_lkp.nm=var_nm; 
+
   /* Assume global attribute when variable name is "global" */
   if(!strcmp(var_nm,"global")) var_id=NC_GLOBAL; else rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
   
@@ -528,8 +532,15 @@ M_PI {return NAMED_CONSTANT;}
   /* We are on LHS so simply save information for later processing by parser
      Atrribute is valid if its associated variable is in input or output file */
   if(!RHS){
+
+    if(prs_arg->ntl_scn) 
+      blkp= ( ncap_var_lookup(&var_lkp,prs_arg,False) !=NULL) ;
+    else blkp=False;
+
     rcd_out=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
-    if(rcd == NC_NOERR || rcd_out == NC_NOERR){
+
+
+    if(rcd == NC_NOERR || rcd_out == NC_NOERR || blkp ){
       lval_ptr->aed.att_nm=(char *)strdup(att_nm);
       lval_ptr->aed.var_nm=(char *)strdup(var_nm);
       return OUT_ATT;
