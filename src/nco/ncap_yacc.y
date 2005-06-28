@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.32 2005-06-22 18:41:41 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.33 2005-06-28 13:54:51 hmb Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -171,7 +171,6 @@ stmt_lst stmt ';' {
 | stmt_lst error ';' {(void)nco_var_free_wrp(&((prs_sct *)prs_arg)->var_LHS);}
 | stmt ';' {(void)nco_var_free_wrp(&((prs_sct *)prs_arg)->var_LHS);}
 | error ';' {(void)nco_var_free_wrp(&((prs_sct *)prs_arg)->var_LHS);}
-
 /* Catch most errors then read up to next semi-colon */
 ; /* end stmt_lst */
 
@@ -246,8 +245,13 @@ PRINT '(' var_xpr ')' ';' {
     ptr_aed=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg),True);
     ptr_aed->sz=$3->sz;
     ptr_aed->type=$3->type;
+    /* if inital scan then fill attribute with zeros */
+    if( ((prs_sct*)prs_arg)->ntl_scn) {
+    ptr_aed->val.vp=(void*)nco_calloc( ptr_aed->sz,nco_typ_lng(ptr_aed->type));
+    } else {
     ptr_aed->val.vp=(void*)nco_malloc((ptr_aed->sz)*nco_typ_lng(ptr_aed->type));
     (void)var_copy(ptr_aed->type,ptr_aed->sz,$3->val,ptr_aed->val);
+    }
     /* cast_nctype_void($3->type,&ptr_aed->val); */
     if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s %d dimensional variable",$1.var_nm,$1.att_nm,$3->nbr_dim);
     (void)yyerror(ncap_err_sng); 
@@ -261,6 +265,7 @@ PRINT '(' var_xpr ')' ';' {
 } /* end out_att_xpr '=' var_xpr */
 | out_var_xpr '=' var_xpr 
 {
+  ($3->nm)=(char*)nco_free($3->nm);
   $3->nm=strdup($1);
   (void)ncap_var_write($3,(prs_sct *)prs_arg);
   
@@ -268,6 +273,7 @@ PRINT '(' var_xpr ')' ';' {
   if(dbg_lvl_get() > 0 && !$3->undefined){(void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
   (void)yyerror(ncap_err_sng);
   } /* endif */
+  $1=(char *)nco_free($1);
 } /* end out_var_xpr '=' var_xpr */
 | out_var_xpr '=' scv_xpr
 {
@@ -620,6 +626,7 @@ var_xpr '+' var_xpr { /* Begin Addition */
   if(prs_drf->ntl_scn == True && prs_drf->var_LHS != NULL){
     var_tmp=nco_var_dpl(prs_drf->var_LHS);
     var_tmp->id=var->id;
+    var_tmp->nm=(char*)nco_free(var_tmp->nm);
     var_tmp->nm=strdup($1);
     var_tmp->type=var->type;
     var_tmp->typ_dsk=var->typ_dsk;
@@ -638,7 +645,7 @@ var_xpr '+' var_xpr { /* Begin Addition */
     if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching variable %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),var->nm,prs_drf->var_LHS->nm,prs_drf->var_LHS->nbr_dim,prs_drf->var_LHS->sz);
     var->undefined=False;
   } /* endif LHS_cst */
-  
+  $1=(char*)nco_free($1);
   $$=var;
   /* Sanity check */
   if ($$==(var_sct *)NULL) YYERROR;
