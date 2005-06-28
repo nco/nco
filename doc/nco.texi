@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.307 2005-06-27 18:13:33 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.308 2005-06-28 06:43:59 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -77,7 +77,7 @@ Legend (defined in "highlighting" section of TeXInfo manual):
 @option{}: Command-line option, e.g., @option{--dbg}
 @samp{}: Extended commands, character sequences, e.g., @samp{ncra in.nc out.nc}
 @uref{}: URL with optional alternate text, e.g., @uref{http://nco.sf.net,NCO homepage}
-@url{}: Uniform resource locator, e.g., @url{http://nco.sf.net}
+@url{}: URL, synonym for @uref
 @var{}: Metasyntactic variable, e.g., @var{}
 @w{}: Unbreakable text, e.g., @w{of 1}
 
@@ -1177,8 +1177,7 @@ interactive keyboard input.
 @end html
 @node Appending, Addition Subtraction Division Multiplication and Interpolation, Output files, Strategies
 @section Appending variables to a file
-@w{A frequently} useful operation is adding variables from one file to
-another. 
+Adding variables from one file to another is often desirable.
 @cindex concatenation
 @cindex appending variables
 @cindex merging files
@@ -4370,10 +4369,11 @@ described in any detail in the sections below.
 @cindex arithmetic processor
 @findex ncap
 
+@c fxm: TODO nco549 hyper-link all switches to explanatory sections?
 @noindent
 SYNTAX
 @example
-ncap [-A] [-C] [-c] [-D @var{dbg}] 
+ncap [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-f]
 [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-s @var{algebra}] [-S @var{fl.nco}] [-v] [-Z]
