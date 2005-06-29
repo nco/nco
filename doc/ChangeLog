@@ -1,3 +1,13 @@
+2005-06-29  Charlie Zender  <zender@uci.edu>
+
+	* Explicitly cast NC_CHAR type as "unsigned char" (rather than
+	just "char") in nco_netcdf.c.
+
+	* Removed two of three critical regions in nco_var_utl.c
+	Removing these causes no regressions with SMP on icc/x86 or xlc/Power4
+	Final critical region is, well, critical
+	Region contains the nco_get_vara()/nco_get_var1() calls themselves
+
 2005-06-28  Charlie Zender  <zender@uci.edu>
 
 	* Conditionally free both $1 and $3 in var,var addition in ncap_yacc.y

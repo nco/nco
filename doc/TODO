@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.541 2005-06-29 21:35:40 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.542 2005-06-29 23:19:35 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -211,7 +211,7 @@ nco344. Create sophisticated etags regular expressions for change version number
 nco351. Ask Jim Edwards to fix make test rtld errors on AIX with OpenMP Related to nco352. 
 nco352. Probably related to 351: OpenMP directive must appear in main() or ldd will not associate /usr/lib/libxlsmp.a(smprt_64.o) with executable so rtld errors occur on AIX
 ************** Important ***************************
-nco354. ncwa dumps core on AIX ESMF on large files regardless of OpenMP (related to nco334): 
+nco354. ncwa dumps core on AIX ESMF on large files regardless of OpenMP: 
 ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA}/mie/mie_1000000.nc ${DATA}/mie/foo_avg_1000000.nc (works)
 ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA}/mie/mie_10000000.nc ${DATA}/mie/foo_avg_10000000.nc (fails)
 fails with 
@@ -244,7 +244,6 @@ nco441. Packing NC_DOUBLE->NC_CHAR, NC_INT->NC_CHAR, or
         ncks -m -H -v three_dmn_var_dbl ~/foo.nc
         ncpdq -D 3 -O -C -P upk ~/foo.nc ~/foo_upk.nc
         ncks -m -H -v three_dmn_var_dbl ~/foo_upk.nc
-nco450. Run ncra on two multiple record files with packed variables and look for pck_dbg memory problems with valgrind
 nco453. Re-think handling of dangling pointers in nco_pck_val()?
 nco454. ncpdq: Combine nco_pck_map,nco_pck_typ into new nco_pck_sct to avoid proliferation of argument passing
 nco457. ncpdq: missing_value is not converted to variable type when variable is not packed three_dmn_var_dbl. How to reconcile with nco427?
@@ -289,7 +288,6 @@ nco527. Purify ncatted memory:
 nco530. change all ctime() to ctime_r() like in ncatted?
 nco533. Implement C99 mathematical special functions: lgamma_r, j0, j1, jn, y0, y1, yn
 nco538. Stabilize ncecat threading: why are fl_lst_in,in_id,var_prc firstprivate not shared?
-nco539. Creating ipcc_dly_T85.nc takes ~20 minutes on x86 again. Why?
 nco540. bm: regression tests report some apparent successes as failures on SUNMP, e.g., 
 	Result: [1e+36] != Expected: [1e+36]
 	always recorded as failure. 
