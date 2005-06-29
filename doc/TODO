@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.540 2005-06-29 16:27:19 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.541 2005-06-29 21:35:40 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -392,8 +392,8 @@ ncap68. Purify ncap memory:
 ncap70. gamma() function broken on AIX
 ncap71. Remove erf and gamma functions from AIX build
 ncap72. Stop linking to -lC on AIX. Get all float math functions by casting double versions
-ncap73. ncap: ncap_var_stretch()/ncap_var_cnf_dmn leaks when variables already conform:
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncap -O -v -s "foo=one+two" -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
+ncap73. ncap: ncap_var_cnf_dmn() leaks:
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncap -O -v -s "foo=one+one" -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 ncap74. 
 
 

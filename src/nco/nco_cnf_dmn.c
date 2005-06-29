@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.44 2005-06-29 16:27:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.45 2005-06-29 21:35:45 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -83,14 +83,14 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 	if(strcmp(wgt_crr->dim[idx]->nm,var->dim[idx]->nm)) break;
       } /* end loop over dimensions */
       if(idx == var->nbr_dim) *DO_CONFORM=True;
-    } /* end if */
+    } /* end if ranks are equal */
     if(*DO_CONFORM){
       wgt_out=wgt_crr;
     }else{
       wgt_crr=nco_var_free(wgt_crr);
       wgt_out=NULL;
-    } /* end if */
-  } /* end if */
+    } /* !*DO_CONFORM */
+  } /* wgt_crr == NULL */
 
   /* Does original weight (wgt) conform to variable's dimensions? */
   if(wgt_out == NULL){
@@ -192,11 +192,14 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 
     size_t wgt_typ_sz;
 
-    /* Copy main attributes of variable into current weight */
+    /* Copy main attributes of variable into ouput weight */
     wgt_out=nco_var_dpl(var);
     (void)nco_xrf_var(wgt,wgt_out);
 
-    /* Modify a few elements of weight array */
+    /* wgt_out variable was copied from template var
+       Modify key fields so its name and type are based on wgt, not var
+       wgt_out will then be hybrid between wgt and var 
+       Remainder of routine fills wgt_out's var-dimensionality with wgt-values */
     wgt_out->nm=(char *)nco_free(wgt_out->nm);
     wgt_out->nm=(char *)strdup(wgt->nm);
     wgt_out->id=wgt->id;
@@ -220,7 +223,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 	(void)memcpy(wgt_out_cp+var_lmn*wgt_typ_sz,wgt_cp,wgt_typ_sz);      
       } /* end loop over var_lmn */
     }else{
-      /* Variable (and weight) are arrays, not scalars */
+      /* Variable (and therefore wgt_out) are arrays, not scalars */
       
       /* Create forward and reverse mappings from variable's dimensions to weight's dimensions:
 
@@ -240,8 +243,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 	 Since mapping arrays (dmn_var_map and dmn_wgt_map) are ultimately used for a
 	 memcpy() operation, they could (read: should) be computed as byte offsets, not type offsets. 
 	 This is why netCDF generic hyperslab routines (ncvarputg(), ncvargetg())
-	 request imap vector to specify offset (imap) vector in bytes.
-      */
+	 request imap vector to specify offset (imap) vector in bytes. */
 
       for(idx=0;idx<wgt->nbr_dim;idx++){
 	for(idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
@@ -313,8 +315,12 @@ ncap_var_cnf_dmn /* [fnc] Broadcast smaller variable into larger */
 (var_sct **var_1, /* I/O [ptr] First variable */
  var_sct **var_2) /* I/O [ptr] Second variable */
 {
-  /* Purpose: Return conforming variables. If this is not possible then die. 
-     Routine is a wrapper for nco_var_cnf_dmn() which does the hard work */
+  /* Purpose: Conform lesser ranked to greater ranked variable, so that
+     both variables are equal size on return.
+     If this is possible then return true, otherwise die.
+     Routine wraps nco_var_cnf_dmn(), which does the hard work
+     If an input variable is replaced by a broadcast version of itself,
+     then the original version should be free()d or this routine will leak. */
 
   bool DO_CONFORM; /* [flg] Do var_1 and var_2 conform after processing? */
   bool MUST_CONFORM=True; /* [flg] Must var_1 and var_2 conform? */
