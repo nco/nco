@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.33 2005-06-28 13:54:51 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.34 2005-06-29 16:27:41 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -472,7 +472,11 @@ var_xpr: /* var_xpr results from RHS action which involves a var_xpr, i.e.,
 	    OP var, var OP var, var OP att, att OP var */
 var_xpr '+' var_xpr { /* Begin Addition */
   $$=ncap_var_var_add($1,$3); 
-  nco_var_free($1);
+  /* 20050628: Original cleanup always free()d $1 with nco_var_free($1)
+     However, $3 would not be free()d if it were also $$ 
+     Hence try new cleanup where both $1 and $3 may be free()'d */
+  if($$ != $1) nco_var_free($1);
+  if($$ != $3) nco_var_free($3);
 }
 | var_xpr '+' scv_xpr {
   $$=ncap_var_scv_add($1,$3);

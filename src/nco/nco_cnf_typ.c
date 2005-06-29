@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.33 2005-06-18 05:19:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.34 2005-06-29 16:27:41 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -491,6 +491,7 @@ ncap_var_retype /* [fnc] Promote variable to higher common precision */
 {
   /* Purpose: Convert variable, if necessary, so variables are of same type */
   if(var_1->type == var_2->type) return var_1->type;
+  /* fxm: Unsafe assumption that netCDF types are enumerated in increasing order of precision */
   if(var_1->type > var_2->type){
     var_2=nco_var_cnf_typ(var_1->type,var_2);
     return var_1->type;

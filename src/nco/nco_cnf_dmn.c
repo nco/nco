@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.43 2005-05-18 21:33:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.44 2005-06-29 16:27:41 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -27,7 +27,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
      When wgt and var do not conform then then nco_var_cnf_dmn sets *DO_CONFORM=False and returns copy of var with all values set to 1.0
      Calling procedure then decides what to do with unity output
      MUST_CONFORM is True for ncbo: Variables of like name to be, e.g., differenced, must be same rank
-     MUST_CONFORM is False false for ncap, ncflint, ncwa: Some variables to be averaged may not conform to the specified weight, e.g., lon will not conform to gw. This is fine and returned wgt_out may not discarded. */
+     MUST_CONFORM is False false for ncap, ncflint, ncwa: Some variables to be averaged may not conform to the specified weight, e.g., lon will not conform to gw. This is fine and returned wgt_out may be discarded. */
 
   /* There are many inelegant ways to accomplish this (without using C++): */  
 
@@ -329,15 +329,15 @@ ncap_var_cnf_dmn /* [fnc] Broadcast smaller variable into larger */
   /* fxm: Memory leak?
      nco_var_cnf_dmn() does not do its own memory handling
      If original var_1 or var_2 was overwritten (replaced by conforming variable),
-     then original must be free()'d now before its location is lost.
-     Test for equality between pointers on entry and exit, and
-     nco_var_free() calling variable if it changed 
-     20020114: Freeing variables here causes core dump, not sure why */
+     then free() original now before its location is lost.
+     Inequality between pointers on entry and exit indicates variable was promoted
+     20020114: Freeing variables here causes core dump, not sure why
+     20050628: Attempting to free these again to fix TODO ncap73 */
   /*  if(*var_1 != var_1_org) var_1_org=nco_var_free(var_1_org);*/
   /*  if(*var_2 != var_2_org) var_2_org=nco_var_free(var_2_org);*/
 
   if(!DO_CONFORM){
-    (void)fprintf(stderr,"%s: Variables do not have have conforming dimensions. Cannot proceed with operation\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: ncap_var_cnf_dmn() reports that variables %s and %s do not have have conforming dimensions. Cannot proceed with operation\n",prg_nm_get(),(*var_1)->nm,(*var_2)->nm);
     nco_exit(EXIT_FAILURE);
   } /* endif */
 

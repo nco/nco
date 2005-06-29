@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.308 2005-06-28 06:43:59 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.309 2005-06-29 16:27:19 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4370,6 +4370,10 @@ described in any detail in the sections below.
 @findex ncap
 
 @c fxm: TODO nco549 hyper-link all switches to explanatory sections?
+@c Problem is that only works well in HTML mode
+@c TeXInfo has no native mode for concise hyperlinks in text mode
+@c Currently in TeX/PDF mode, TeXInfo opens browser to find link,
+@c rather than jumping to internal link within document
 @noindent
 SYNTAX
 @example

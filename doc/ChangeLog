@@ -1,3 +1,10 @@
+2005-06-28  Charlie Zender  <zender@uci.edu>
+
+	* Conditionally free both $1 and $3 in var,var addition in ncap_yacc.y
+
+	* Try and fail to free input variables if they were promoted in
+	ncap_var_cnf_dmn(). Not sure what prevents this from working.
+
 2005-06-27  Charlie Zender  <zender@uci.edu>
 
 	* Merge CCSM data processing example into nco.texi
