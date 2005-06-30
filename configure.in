@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.120 2005-06-21 23:44:14 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.121 2005-06-30 21:48:50 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -11,6 +11,13 @@
 # autoconf
 # cd ~/nco;aclocal;autoheader;automake --foreign;autoconf
 # cd ~/nco;make distclean;aclocal;autoheader;automake --foreign;autoconf;configure;make install
+
+# NB: Different versions of the GNU toolchain produce different (but equivalent)
+# configure scripts from the same autotools inputs. 
+# To keep proliferation of different but equivalent versions of automatically 
+# generated scripts (e.g., configure, Makefile.in) from cluttering repository,
+# please try to generate scripts only from current autotools distributions
+# on machines running an up-to-date version of Debian Linux, preferably Sid.
 
 # GNU autotools rely on ~/nco/autobld/config.[guess,sub]
 # Auto-configuration fails if these routines cannot detect your machine type
