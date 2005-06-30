@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.20 2005-01-07 23:54:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.21 2005-06-30 18:34:03 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
@@ -55,7 +55,7 @@ var_scv_add /* [fnc] Add scalar to variable */
     break;
   } /* endif NC_DOUBLE */
   case NC_INT:{
-    const nco_long scv_lng=scv->val.l;
+    const nco_int scv_lng=scv->val.l;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]+=scv_lng;
     }else{
@@ -139,7 +139,7 @@ var_scv_sub /* [fnc] Subtract scalar from variable */
     break;
   }
   case NC_INT:{
-    const nco_long scv_lng=scv->val.l;
+    const nco_int scv_lng=scv->val.l;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]-=scv_lng;
     }else{
@@ -223,7 +223,7 @@ var_scv_mlt /* [fnc] Multiply variable by scalar */
     break;
   }
   case NC_INT:{
-    const nco_long scv_lng=scv->val.l;
+    const nco_int scv_lng=scv->val.l;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]*=scv_lng;
     }else{
@@ -307,7 +307,7 @@ var_scv_dvd /* [fnc] Divide variable by scalar */
     break;
   } /* endif NC_DOUBLE */
   case NC_INT:{
-    const nco_long scv_lng=scv->val.l;
+    const nco_int scv_lng=scv->val.l;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]/=scv_lng;
     }else{
@@ -391,7 +391,7 @@ scv_var_dvd /* [fnc] Divide scalar by variable */
     break;
   } /* endif NC_DOUBLE */
   case NC_INT:{
-    const nco_long scv_lng=scv->val.l;
+    const nco_int scv_lng=scv->val.l;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.lp[idx]=scv_lng/op2.lp[idx];
     }else{
@@ -489,7 +489,7 @@ var_scv_mod /* [fnc] Modulo variable by scalar */
     break;
   } /* endif NC_DOUBLE */
   case NC_INT:{
-    const nco_long scv_lng=scv->val.l;
+    const nco_int scv_lng=scv->val.l;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]%=scv_lng;
     }else{
@@ -584,7 +584,7 @@ scv_var_mod /* [fnc] Modulo scalar by variable */
     break;
   } /* endif NC_DOUBLE */
   case NC_INT:{
-    const nco_long scv_lng=scv->val.l;
+    const nco_int scv_lng=scv->val.l;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.lp[idx]=scv_lng%op2.lp[idx];
     }else{

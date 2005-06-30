@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.23 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.24 2005-06-30 18:34:03 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -18,6 +18,9 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
+
+/* Personal headers */
+#include "nco_typ.h" /* Type definitions, opaque types */
 
 #ifdef __cplusplus
 extern "C" {

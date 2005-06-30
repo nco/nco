@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.54 2005-06-09 05:27:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.55 2005-06-30 18:34:02 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -332,7 +332,7 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
   char att_nm_nbr[]="nco_input_file_number";
   char spc_sng[]=" "; /* [sng] Intervening space */
   char *fl_in_lst_sng;
-  nco_long fl_nbr_lng; /* [nbr] Number of files in input file list */
+  nco_int fl_nbr_lng; /* [nbr] Number of files in input file list */
   int fl_idx;
   size_t fl_in_lst_sng_lng; /* [nbr] Filename list string length */
   ptr_unn att_val;
@@ -785,7 +785,7 @@ nco_thr_att_cat /* [fnc] Add threading global attribute */
   /* Purpose: Write thread information to global metadata */
   aed_sct thr_nbr_aed;
   char att_nm_nbr[]="nco_openmp_thread_number";
-  nco_long thr_nbr_lng; /* [nbr] Thread number copy */
+  nco_int thr_nbr_lng; /* [nbr] Thread number copy */
   ptr_unn att_val;
   
   /* Copy thr_nbr so can take address without endangering number */
@@ -814,7 +814,7 @@ nco_mpi_att_cat /* [fnc] Add MPI tasks global attribute */
   /* Purpose: Write number of tasks information to global metadata */
   aed_sct mpi_nbr_aed;
   char att_nm_nbr[]="nco_mpi_task_number";
-  nco_long mpi_nbr_lng; /* [nbr] MPI tasks number copy */
+  nco_int mpi_nbr_lng; /* [nbr] MPI tasks number copy */
   ptr_unn att_val;
   
   /* Copy mpi_nbr so can take address without endangering number */

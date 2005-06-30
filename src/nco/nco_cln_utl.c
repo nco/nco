@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.9 2005-01-07 23:54:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.10 2005-06-30 18:34:02 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -30,9 +30,9 @@ nco_nd2endm /* [fnc] Compute number of days to end of month */
   return nbr_day_2_mth_end;
 } /* nco_nd2endm */
 
-nco_long /* O [YYMMDD] Date a specified number of days from input date */
+nco_int /* O [YYMMDD] Date a specified number of days from input date */
 nco_newdate /* [fnc] Compute date a specified number of days from input date */
-(const nco_long date, /* I [YYMMDD] Date */
+(const nco_int date, /* I [YYMMDD] Date */
  const long day_srt) /* I [day] Days ahead of input date */
 {
   /* Purpose: Find date a specified number of days (possibly negative) from given date 
@@ -53,8 +53,8 @@ nco_newdate /* [fnc] Compute date a specified number of days from input date */
   long mth_tmp; /* Current month as we increment date */
   long yr_crr; /* Year of date */
 
-  nco_long date_srt; /* Initial value of date (may change sign) */
-  nco_long newdate_YYMMDD; /* New date in YYMMDD format */
+  nco_int date_srt; /* Initial value of date (may change sign) */
+  nco_int newdate_YYMMDD; /* New date in YYMMDD format */
 
   if(day_srt == 0L) return date;
 

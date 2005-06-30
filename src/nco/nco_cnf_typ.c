@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.34 2005-06-29 16:27:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.35 2005-06-30 18:34:02 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -22,7 +22,7 @@ cast_void_nctype /* [fnc] Cast generic pointer to netCDF type */
     ptr->dp=(double *)ptr->vp;
     break;
   case NC_INT:
-    ptr->lp=(nco_long *)ptr->vp;
+    ptr->lp=(nco_int *)ptr->vp;
     break;
   case NC_SHORT:
     ptr->sp=(short *)ptr->vp;

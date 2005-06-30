@@ -1,3 +1,9 @@
+2005-06-30  Charlie Zender  <zender@soot.ess.uci.edu>
+
+	* Change nco_long to nco_int to allow for future 64-bit type called nco_long
+
+	* Abstract opaque types into new header nco_typ.h
+
 2005-06-29  Charlie Zender  <zender@uci.edu>
 
 	* Explicitly cast NC_CHAR type as "char" (rather than "unsigned

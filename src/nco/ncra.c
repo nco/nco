@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.147 2005-06-18 06:22:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.148 2005-06-30 18:34:03 zender Exp $ */
 
 /* ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.147 2005-06-18 06:22:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.147 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.148 2005-06-30 18:34:03 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.148 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
 
   dmn_sct **dim;
@@ -160,8 +160,8 @@ main(int argc,char **argv)
   long idx_rec; /* [idx] Index of current record in current input file */
   long idx_rec_out=0L; /* [idx] Index of current record in output file (0 is first, ...) */
   
-  nco_long base_time_srt=nco_long_CEWI;
-  nco_long base_time_crr=nco_long_CEWI;
+  nco_int base_time_srt=nco_int_CEWI;
+  nco_int base_time_crr=nco_int_CEWI;
 
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may bealloc()'d from NULL with -c option */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.74 2005-06-30 00:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.75 2005-06-30 18:34:02 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -19,6 +19,7 @@
 #include <netcdf.h> /* netCDF definitions and C library */
 
 /* Personal headers */
+#include "nco_typ.h" /* Type definitions, opaque types */
 
 /* Encapsulate C++ const usage in C99-safe macro 
    C++ compilers will use type-safe version
@@ -37,9 +38,6 @@
 extern "C" {
 #endif /* !__cplusplus */
 
-/* NCO uses native type nco_long to store variables of type NC_INT */
-  typedef long nco_long;
-  
 /* Uncomment next line to remove C99 restrict type-qualifier from all source */
 /*#define restrict*/
 
@@ -76,7 +74,7 @@ extern "C" {
 #define float_CEWI 0.0
 #define int_CEWI 0
 #define long_CEWI 0L
-#define nco_long_CEWI 0L
+#define nco_int_CEWI 0L
 #define short_CEWI 0
 #define size_t_CEWI 0UL
   
@@ -246,9 +244,9 @@ ERROR: Hybrid configurations of MPI and OpenMP parallelism not yet supported
   typedef union{ /* ptr_unn */
     float * restrict fp;
     double * restrict dp;
-    nco_long * restrict lp; /* NC_INT is stored in native type nco_long */
+    nco_int * restrict lp; /* NC_INT is stored in native type nco_int */
     short * restrict sp;
-    char * restrict cp; /* Range of unsigned char is 0--255 */
+    nco_char * restrict cp; /* Range of unsigned char is 0--255 */
     signed char * restrict bp; /* Range of signed char is -127--127 */
     void * restrict vp;
   } ptr_unn;
@@ -257,9 +255,9 @@ ERROR: Hybrid configurations of MPI and OpenMP parallelism not yet supported
   typedef union{ /* val_unn */
     float f;
     double d;
-    nco_long l;
+    nco_int l;
     short s;
-    char c; /* Range of unsigned char is 0--255 */
+    nco_char c; /* Range of unsigned char is 0--255 */
     signed char b; /* Range of signed char is -127--127 */
   } val_unn;
 

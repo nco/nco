@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.16 2005-01-10 02:22:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.17 2005-06-30 18:34:02 zender Exp $ */
 
 /* Purpose: CCSM conventions */
 
@@ -65,8 +65,8 @@ nco_ncar_csm_date /* [fnc] Fix date variable in averaged CCSM files */
 
   int nbdate_id;
   
-  nco_long nbdate;
-  nco_long date;
+  nco_int nbdate;
+  nco_int date;
   
   (void)sprintf(wrn_sng,"Most, but not all, CCSM files which are in CCM format contain the fields \"nbdate\", \"time\", and \"date\". When the \"date\" field is present but either \"nbdate\" or \"time\" is missing, then %s is unable to construct a meaningful average \"date\" to store in the output file. Therefore the \"date\" variable in your output file may be meaningless.\n",prg_nm_get());
 

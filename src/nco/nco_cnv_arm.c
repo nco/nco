@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.8 2005-01-10 02:22:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.9 2005-06-30 18:34:02 zender Exp $ */
 
 /* Purpose: ARM conventions */
 
@@ -51,7 +51,7 @@ arm_time_mk /* [fnc] Return time corresponding to current time offset */
   int base_time_id;
   int rcd=NC_NOERR; /* [rcd] Return code */
 
-  nco_long base_time;
+  nco_int base_time;
 
   /* Find base_time variable (NC_INT: base UNIX time of file) */
   rcd=nco_inq_varid_flg(nc_id,"base_time",&base_time_id);
@@ -68,7 +68,7 @@ arm_time_mk /* [fnc] Return time corresponding to current time offset */
 void
 nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
 (const int nc_id, /* I [id] netCDF file ID */
- const nco_long base_time_srt) /* I [s] base_time of first input file */
+ const nco_int base_time_srt) /* I [s] base_time of first input file */
 {
   /* Purpose: Add time variable to concatenated ARM files */
 
@@ -144,14 +144,14 @@ nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
 } /* end nco_arm_time_install */
 
-nco_long /* O [s] Value of base_time variable */
+nco_int /* O [s] Value of base_time variable */
 arm_base_time_get /* [fnc] Get base_time variable from ARM file */
 (const int nc_id) /* I [id] netCDF file ID */
 {
   /* Purpose: Get base_time variable from ARM file */
   int base_time_id;
 
-  nco_long base_time;
+  nco_int base_time;
 
   (void)nco_inq_varid(nc_id,"base_time",&base_time_id);
   (void)nco_get_var1(nc_id,base_time_id,0L,&base_time,NC_INT);

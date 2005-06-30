@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.88 2005-06-29 23:04:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.89 2005-06-30 18:34:03 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -648,10 +648,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
     /* Arithmetic operators must unpack variables before performing arithmetic
        Otherwise arithmetic will produce garbage results */
     /* 20050519: Not sure why I originally made nco_var_upk() call SMP-critical
-       20050629: Removing this critical region appears to cause no problems */
-    //#ifdef _OPENMP
-    //#pragma omp critical
-    //#endif /* _OPENMP */
+       20050629: Making this region multi-threaded appears to cause no problems */
     if(var->pck_dsk) var=nco_var_upk(var);
   } /* endif arithmetic operator */
   
@@ -1267,24 +1264,19 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
   /* Refresh variable ID */
   var->nc_id=nc_id;
 
-  /* 20050519: Not sure why I originally made next three calls SMP-critical
-     20050629: Removing this critical region appears to cause no problems */
-  //#ifdef _OPENMP
-  //#pragma omp critical
-  //#endif /* _OPENMP */
-  //  { /* begin OpenMP critical */
-    (void)nco_inq_varid(var->nc_id,var->nm,&var->id);
+  /* 20050519: Not sure why I originally made next four lines SMP-critical
+     20050629: Making next four lines multi-threaded appears to cause no problems */
+  (void)nco_inq_varid(var->nc_id,var->nm,&var->id);
     
-    /* fxm: Not sure if/why necessary to refresh number of dimensions...though it should not hurt */
-    /* Refresh number of dimensions in variable */
-    (void)nco_inq_varndims(var->nc_id,var->id,&var->nbr_dim);
+  /* fxm: Not sure if/why necessary to refresh number of dimensions...though it should not hurt */
+  /* Refresh number of dimensions in variable */
+  (void)nco_inq_varndims(var->nc_id,var->id,&var->nbr_dim);
     
-    /* Set variable type so following nco_mss_val_get() casts missing_value to correct type */
-    (void)nco_inq_vartype(var->nc_id,var->id,&var->type);
+  /* Set variable type so following nco_mss_val_get() casts missing_value to correct type */
+  (void)nco_inq_vartype(var->nc_id,var->id,&var->type);
 
-    /* Refresh number of attributes and missing value attribute, if any */
-    var->has_mss_val=nco_mss_val_get(var->nc_id,var);
-    //  } /* end OpenMP critical */
+  /* Refresh number of attributes and missing value attribute, if any */
+  var->has_mss_val=nco_mss_val_get(var->nc_id,var);
   
 #if 0
   /* PJR requested warning to be added when multiple file operators worked on 

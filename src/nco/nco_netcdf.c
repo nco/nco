@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.47 2005-06-30 00:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.48 2005-06-30 18:34:02 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -8,11 +8,11 @@
 
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
-/* nco_netcdf.h is completely independent of NCO and does not depend on nco.h 
+/* nco_netcdf.h is (nearly) independent of NCO and does not depend on nco.h 
    nco_netcdf.h is an abstraction layer for netcdf.h, plus a few convenience routines
    A similar abstraction layer must exist for each NCO storage backend, e.g., nco_hdf.h
 
-   1. Utility routines, e.g., nco_typ_lng() (routines with no netCDF library counterpart)
+   1. Utility routines, e.g., nco_typ_lng(), c_typ_nm() (routines with no netCDF library counterpart)
    2. File-routine wrappers, e.g., nco_open()
    3. Dimension-routine wrappers, e.g., nco_dimid()
    4. Variable-routine wrappers, e.g., nco_get_var()
@@ -33,29 +33,6 @@
    starts failing then errors will produce circular diagnostics.
    To ensure this is the case, it is only safe to print diagnostics on
    variables which are supposed to be valid on input. */
-
-/* byte and char types are the most confusing part of netCDF:
-
-   netCDF manual p. 20:
-   char: 8-bit characters intended for representing text
-   byte: 8-bit signed or unsigned integers
-   "It is possible to interpret byte data as either signed (-128 to 127) or 
-   unsigned (0 to 255). However, when reading byte data to be converted into other 
-   numeric types, it is interpreted as signed."
-
-   NCO treats NC_BYTE as C-type "signed char".
-   NCO treats NC_CHAR as C-type "char".
-   C-Type "char" equals C-type "unsigned char" on most compilers/OSs
-
-   NCO reads/writes NC_BYTE using nc_put/get_var*_schar() functions
-   NCO reads/writes NC_CHAR using nc_put/get_var*_text() functions
-   NCO does not use nc_put/get_var*_uchar() functions for anything
-
-   netCDF manual p. 102:
-   "The byte type differs from the char type in that it is intended for eight-bit data 
-    and the zero byte has no special significance, as it may for character data.
-    The ncgen utility converts byte declarations to char declarations in the output 
-    C code." */
 
 /* Utility routines not defined by netCDF library, but useful in working with it */
 void 
@@ -109,20 +86,22 @@ nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
 (const nc_type nco_typ) /* I [enm] netCDF type */
 { 
   /* Purpose: Return native size of specified netCDF type
-     Routine is used to determine memory required to store variables in RAM */
+     Routine is used to determine memory required to store variables in RAM
+     This is only routine in nco_netcdf which needs NCO opaque type definitions
+     nco_byte, nco_char, and nco_int defined in nco_typ.h */
   switch(nco_typ){ 
   case NC_FLOAT: 
     return sizeof(float); 
   case NC_DOUBLE: 
     return sizeof(double); 
   case NC_INT: 
-    return sizeof(long); 
+    return sizeof(nco_int); 
   case NC_SHORT: 
     return sizeof(short); 
   case NC_CHAR: 
-    return sizeof(char); 
+    return sizeof(nco_char); 
   case NC_BYTE: 
-    return sizeof(signed char); 
+    return sizeof(nco_byte); 
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */ 
   
@@ -159,7 +138,9 @@ c_typ_nm /* [fnc] Return string describing native C type */
 (const nc_type type) /* O [enm] netCDF type */
 {
   /* Purpose: Divine internal (native) C type string from netCDF external type enum
-     fxm: This breaks on Crays where both NC_FLOAT and NC_DOUBLE are native type float */
+     fxm: This breaks on Crays where both NC_FLOAT and NC_DOUBLE are native type float
+     fxm: Modify this to handle different opaque types correctly 
+     This may mean defining tokens containing opaque type names in nco_typ.h */
   switch(type){
   case NC_FLOAT:
     return "float";
