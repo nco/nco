@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.55 2005-06-30 18:34:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.56 2005-06-30 21:27:58 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -367,7 +367,7 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
   (void)nco_aed_prc(out_id,NC_GLOBAL,fl_in_nbr_aed);
 
   /* Insert file list into value */
-  att_val.cp=(unsigned char *)fl_in_lst_sng;
+  att_val.cp=(nco_char *)fl_in_lst_sng;
   /* Initialize nco_input_file_list attribute edit structure */
   fl_in_lst_aed.att_nm=att_nm_lst;
   fl_in_lst_aed.var_nm=NULL;
@@ -625,7 +625,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       
       /* Set value of current aed structure */
       if(aed_lst[idx].type == NC_CHAR){
-	aed_lst[idx].val.cp=(unsigned char *)strdup(arg_lst[idx_att_val_arg]);
+	aed_lst[idx].val.cp=(nco_char *)strdup(arg_lst[idx_att_val_arg]);
       }else{
 	double *val_arg_dbl=NULL_CEWI;
 	
@@ -643,7 +643,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	case NC_DOUBLE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.dp[lmn]=(double)val_arg_dbl[lmn];} break; 
 	case NC_INT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.lp[lmn]=(long)val_arg_dbl[lmn];} break; 
 	case NC_SHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.sp[lmn]=(short)val_arg_dbl[lmn];} break; 
-	case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=(unsigned char)val_arg_dbl[lmn];} break; 
+	case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=(nco_char)val_arg_dbl[lmn];} break; 
 	case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=(signed char)val_arg_dbl[lmn];} break; 
 	default: nco_dfl_case_nc_type_err(); break;
 	} /* end switch */

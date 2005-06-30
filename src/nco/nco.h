@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.75 2005-06-30 18:34:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.76 2005-06-30 21:27:58 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -244,10 +244,10 @@ ERROR: Hybrid configurations of MPI and OpenMP parallelism not yet supported
   typedef union{ /* ptr_unn */
     float * restrict fp;
     double * restrict dp;
-    nco_int * restrict lp; /* NC_INT is stored in native type nco_int */
+    nco_int * restrict lp;
     short * restrict sp;
-    nco_char * restrict cp; /* Range of unsigned char is 0--255 */
-    signed char * restrict bp; /* Range of signed char is -127--127 */
+    nco_char * restrict cp;
+    nco_byte * restrict bp;
     void * restrict vp;
   } ptr_unn;
 
@@ -257,8 +257,8 @@ ERROR: Hybrid configurations of MPI and OpenMP parallelism not yet supported
     double d;
     nco_int l;
     short s;
-    nco_char c; /* Range of unsigned char is 0--255 */
-    signed char b; /* Range of signed char is -127--127 */
+    nco_char c;
+    nco_byte b;
   } val_unn;
 
   /* Scalar value structure */

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.45 2005-06-28 13:56:30 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.46 2005-06-30 21:27:58 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -331,7 +331,7 @@ XPN [eE][+-]?[0-9]+
     lval_ptr->scv.type=NC_DOUBLE;
     return SCV;
   }else{
-    lval_ptr->scv.val.l=(nco_long)dbl_tkn;
+    lval_ptr->scv.val.l=(nco_int)dbl_tkn;
     lval_ptr->scv.type=NC_INT;
     return SCV;
   } /* end else */

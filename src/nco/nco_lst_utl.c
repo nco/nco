@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.34 2005-06-30 18:34:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.35 2005-06-30 21:27:59 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -379,14 +379,14 @@ nco_cmp_ptr_unn /* Compare values of two pointer unions of same type */
     {const nco_int * const op1_lp=op1.lp;
     const nco_int * const op2_lp=op2.lp;
     return *op1_lp < *op2_lp ? -1 : (*op1_lp > *op2_lp);}
-  case NC_BYTE: break;
-    {const signed char * const op1_bp=op1.bp;
-    const signed char * const op2_bp=op2.bp;
-    return *op1_bp < *op2_bp ? -1 : (*op1_bp > *op2_bp);}
   case NC_CHAR: break;
-    {const unsigned char * const op1_cp=op1.cp;
-    const unsigned char * const op2_cp=op2.cp;
+    {const nco_char * const op1_cp=op1.cp;
+    const nco_char * const op2_cp=op2.cp;
     return *op1_cp < *op2_cp ? -1 : (*op1_cp > *op2_cp);}
+  case NC_BYTE: break;
+    {const nco_byte * const op1_bp=op1.bp;
+    const nco_byte * const op2_bp=op2.bp;
+    return *op1_bp < *op2_bp ? -1 : (*op1_bp > *op2_bp);}
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 

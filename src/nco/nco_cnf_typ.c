@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.35 2005-06-30 18:34:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.36 2005-06-30 21:27:59 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -28,10 +28,10 @@ cast_void_nctype /* [fnc] Cast generic pointer to netCDF type */
     ptr->sp=(short *)ptr->vp;
     break;
   case NC_CHAR:
-    ptr->cp=(unsigned char *)ptr->vp;
+    ptr->cp=(nco_char *)ptr->vp;
     break;
   case NC_BYTE:
-    ptr->bp=(signed char *)ptr->vp;
+    ptr->bp=(nco_byte *)ptr->vp;
     break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -286,8 +286,8 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     } break;
   case NC_CHAR:
     switch(var_in_typ){
-    case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=(unsigned char)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=(unsigned char)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=(nco_char)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=(nco_char)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_INT: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.lp[idx];} break;
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.cp[idx];} break;
@@ -296,8 +296,8 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     } break;
   case NC_BYTE:
     switch(var_in_typ){
-    case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=(signed char)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=(signed char)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=(nco_byte)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=(nco_byte)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_INT: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.lp[idx];} break;
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.cp[idx];} break;
@@ -386,8 +386,8 @@ nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
     } break;
   case NC_CHAR:
     switch(typ_in){
-    case NC_FLOAT: *val_out.cp=(unsigned char)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_DOUBLE: *val_out.cp=(unsigned char)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_FLOAT: *val_out.cp=(nco_char)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: *val_out.cp=(nco_char)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_INT: *val_out.cp=*val_in.lp; break;
     case NC_SHORT: *val_out.cp=*val_in.sp; break;
     case NC_CHAR: *val_out.cp=*val_in.cp; break;
@@ -396,8 +396,8 @@ nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
     } break;
   case NC_BYTE:
     switch(typ_in){
-    case NC_FLOAT: *val_out.bp=(signed char)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_DOUBLE: *val_out.bp=(signed char)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_FLOAT: *val_out.bp=(nco_byte)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: *val_out.bp=(nco_byte)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_INT: *val_out.bp=*val_in.lp; break;
     case NC_SHORT: *val_out.bp=*val_in.sp; break;
     case NC_CHAR: *val_out.bp=*val_in.cp; break;
@@ -426,8 +426,8 @@ nco_scv_cnf_typ /* [fnc] Convert scalar attribute to typ_new using C implicit co
   switch (typ_new){ 
   case NC_BYTE:
     switch(typ_old){
-    case NC_FLOAT: scv_new.val.b=(signed char)(scv_old->val).f; break;
-    case NC_DOUBLE: scv_new.val.b=(signed char)(scv_old->val).d; break;
+    case NC_FLOAT: scv_new.val.b=(nco_byte)(scv_old->val).f; break;
+    case NC_DOUBLE: scv_new.val.b=(nco_byte)(scv_old->val).d; break;
     case NC_INT: scv_new.val.b=(scv_old->val).l; break;
     case NC_SHORT: scv_new.val.b=(scv_old->val).s; break;
     case NC_BYTE: scv_new.val.b=(scv_old->val).b; break;

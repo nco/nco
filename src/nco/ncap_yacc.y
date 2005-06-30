@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.34 2005-06-29 16:27:41 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.35 2005-06-30 21:27:58 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -226,7 +226,7 @@ PRINT '(' var_xpr ')' ';' {
   ptr_aed=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg),True);
   ptr_aed->type=NC_CHAR;
   ptr_aed->sz=(long)((sng_lng+1)*nco_typ_lng(NC_CHAR));
-  ptr_aed->val.cp=(unsigned char *)nco_malloc((sng_lng+1)*nco_typ_lng(NC_CHAR));
+  ptr_aed->val.cp=(nco_char *)nco_malloc((sng_lng+1)*nco_typ_lng(NC_CHAR));
   strcpy((char *)(ptr_aed->val.cp),$3);
   (void)cast_nctype_void((nc_type)NC_CHAR,&ptr_aed->val);    
   
@@ -320,7 +320,7 @@ PRINT '(' var_xpr ')' ';' {
   var->nbr_dim=0;
   var->dmn_id=(int *)NULL;
   var->sz=strlen($3)+1;
-  var->val.cp=(unsigned char *)strdup($3);
+  var->val.cp=(nco_char *)strdup($3);
   var->type=NC_CHAR;
   var->undefined=False;
   (void)cast_nctype_void((nc_type)NC_CHAR,&var->val);
