@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.36 2005-06-30 21:27:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.37 2005-06-30 21:42:13 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -366,11 +366,11 @@ nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
     } break;
   case NC_INT:
     switch(typ_in){
-    case NC_FLOAT: *val_out.lp=(long)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_DOUBLE: *val_out.lp=(long)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_FLOAT: *val_out.lp=(nco_int)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: *val_out.lp=(nco_int)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_INT: *val_out.lp=*val_in.lp; break;
     case NC_SHORT: *val_out.lp=*val_in.sp; break;
-    case NC_CHAR: *val_out.lp=(long)strtod((const char *)val_in.cp,(char **)NULL); break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_CHAR: *val_out.lp=(nco_int)strtod((const char *)val_in.cp,(char **)NULL); break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_BYTE: *val_out.lp=*val_in.bp; break;
     default: nco_dfl_case_nc_type_err(); break;
     } break;
@@ -449,8 +449,8 @@ nco_scv_cnf_typ /* [fnc] Convert scalar attribute to typ_new using C implicit co
     } break;
   case NC_INT:
     switch(typ_old){
-    case NC_FLOAT: scv_new.val.l=(long)(scv_old->val).f; break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_DOUBLE: scv_new.val.l=(long)(scv_old->val).d; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_FLOAT: scv_new.val.l=(nco_int)(scv_old->val).f; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: scv_new.val.l=(nco_int)(scv_old->val).d; break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_INT: scv_new.val.l =scv_old->val.l; break;
     case NC_SHORT: scv_new.val.l=(scv_old->val).s; break;
     case NC_BYTE: scv_new.val.l=(scv_old->val).b; break;
