@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.46 2005-06-29 23:19:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.47 2005-06-30 00:02:18 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -33,6 +33,29 @@
    starts failing then errors will produce circular diagnostics.
    To ensure this is the case, it is only safe to print diagnostics on
    variables which are supposed to be valid on input. */
+
+/* byte and char types are the most confusing part of netCDF:
+
+   netCDF manual p. 20:
+   char: 8-bit characters intended for representing text
+   byte: 8-bit signed or unsigned integers
+   "It is possible to interpret byte data as either signed (-128 to 127) or 
+   unsigned (0 to 255). However, when reading byte data to be converted into other 
+   numeric types, it is interpreted as signed."
+
+   NCO treats NC_BYTE as C-type "signed char".
+   NCO treats NC_CHAR as C-type "char".
+   C-Type "char" equals C-type "unsigned char" on most compilers/OSs
+
+   NCO reads/writes NC_BYTE using nc_put/get_var*_schar() functions
+   NCO reads/writes NC_CHAR using nc_put/get_var*_text() functions
+   NCO does not use nc_put/get_var*_uchar() functions for anything
+
+   netCDF manual p. 102:
+   "The byte type differs from the char type in that it is intended for eight-bit data 
+    and the zero byte has no special significance, as it may for character data.
+    The ncgen utility converts byte declarations to char declarations in the output 
+    C code." */
 
 /* Utility routines not defined by netCDF library, but useful in working with it */
 void 
@@ -97,7 +120,7 @@ nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
   case NC_SHORT: 
     return sizeof(short); 
   case NC_CHAR: 
-    return sizeof(unsigned char); 
+    return sizeof(char); 
   case NC_BYTE: 
     return sizeof(signed char); 
   default: nco_dfl_case_nc_type_err(); break;
@@ -147,7 +170,7 @@ c_typ_nm /* [fnc] Return string describing native C type */
   case NC_SHORT:
     return "signed short int";
   case NC_CHAR:
-    return "unsigned char";
+    return "char";
   case NC_BYTE:
     return "signed char";
   default: nco_dfl_case_nc_type_err(); break;
@@ -628,7 +651,7 @@ nco_get_var1(const int nc_id,const int var_id,const long * const srt,void * cons
   case NC_DOUBLE: rcd=nc_get_var1_double(nc_id,var_id,(const size_t *)srt,(double *)vp); break;
   case NC_INT: rcd=nc_get_var1_long(nc_id,var_id,(const size_t *)srt,(long *)vp); break;
   case NC_SHORT: rcd=nc_get_var1_short(nc_id,var_id,(const size_t *)srt,(short *)vp); break;
-  case NC_CHAR: rcd=nc_get_var1_text(nc_id,var_id,(const size_t *)srt,(unsigned char *)vp); break;
+  case NC_CHAR: rcd=nc_get_var1_text(nc_id,var_id,(const size_t *)srt,(char *)vp); break;
   case NC_BYTE: rcd=nc_get_var1_schar(nc_id,var_id,(const size_t *)srt,(signed char *)vp); break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -646,7 +669,7 @@ nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void 
   case NC_DOUBLE: rcd=nc_put_var1_double(nc_id,var_id,(const size_t *)srt,(const double *)vp); break;
   case NC_INT: rcd=nc_put_var1_long(nc_id,var_id,(const size_t *)srt,(const long *)vp); break;
   case NC_SHORT: rcd=nc_put_var1_short(nc_id,var_id,(const size_t *)srt,(const short *)vp); break;
-  case NC_CHAR: rcd=nc_put_var1_text(nc_id,var_id,(const size_t *)srt,(const unsigned char *)vp); break;
+  case NC_CHAR: rcd=nc_put_var1_text(nc_id,var_id,(const size_t *)srt,(const char *)vp); break;
   case NC_BYTE: rcd=nc_put_var1_schar(nc_id,var_id,(const size_t *)srt,(const signed char *)vp); break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -664,7 +687,7 @@ nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long 
   case NC_DOUBLE: rcd=nc_get_vara_double(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(double *)vp); break;
   case NC_INT: rcd=nc_get_vara_long(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(long *)vp); break;
   case NC_SHORT: rcd=nc_get_vara_short(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(short *)vp); break;
-  case NC_CHAR: rcd=nc_get_vara_text(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(unsigned char *)vp); break;
+  case NC_CHAR: rcd=nc_get_vara_text(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(char *)vp); break;
   case NC_BYTE: rcd=nc_get_vara_schar(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(signed char *)vp); break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -682,7 +705,7 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
   case NC_DOUBLE: rcd=nc_put_vara_double(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const double *)vp); break;
   case NC_INT: rcd=nc_put_vara_long(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const long *)vp); break;
   case NC_SHORT: rcd=nc_put_vara_short(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const short *)vp); break;
-  case NC_CHAR: rcd=nc_put_vara_text(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const unsigned char *)vp); break;
+  case NC_CHAR: rcd=nc_put_vara_text(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const char *)vp); break;
   case NC_BYTE: rcd=nc_put_vara_schar(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const signed char *)vp); break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -701,7 +724,7 @@ nco_get_varm(const int nc_id,const int var_id,const long * const srt,const long 
   case NC_DOUBLE: rcd=nc_get_varm_double(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(double *)vp); break;
   case NC_INT: rcd=nc_get_varm_long(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(long *)vp); break;
   case NC_SHORT: rcd=nc_get_varm_short(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(short *)vp); break;
-  case NC_CHAR: rcd=nc_get_varm_text(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(unsigned char *)vp); break;
+  case NC_CHAR: rcd=nc_get_varm_text(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(char *)vp); break;
   case NC_BYTE: rcd=nc_get_varm_schar(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(signed char *)vp); break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -719,7 +742,7 @@ nco_put_varm(const int nc_id,const int var_id,const long * const srt,const long 
   case NC_DOUBLE: rcd=nc_put_varm_double(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(const double *)vp); break;
   case NC_INT: rcd=nc_put_varm_long(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(const long *)vp); break;
   case NC_SHORT: rcd=nc_put_varm_short(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(const short *)vp); break;
-  case NC_CHAR: rcd=nc_put_varm_text(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(const unsigned char *)vp); break;
+  case NC_CHAR: rcd=nc_put_varm_text(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(const char *)vp); break;
   case NC_BYTE: rcd=nc_put_varm_schar(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(const signed char *)vp); break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -853,7 +876,7 @@ nco_put_att(const int nc_id,const int var_id,const char * const att_nm,const nc_
   case NC_DOUBLE: rcd=nc_put_att_double(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const double *)vp); break;
   case NC_INT: rcd=nc_put_att_long(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const long *)vp); break;
   case NC_SHORT: rcd=nc_put_att_short(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const short *)vp); break;
-  case NC_CHAR: rcd=nc_put_att_text(nc_id,var_id,att_nm,(size_t)att_len,(const unsigned char *)vp); break;
+  case NC_CHAR: rcd=nc_put_att_text(nc_id,var_id,att_nm,(size_t)att_len,(const char *)vp); break;
   case NC_BYTE: rcd=nc_put_att_schar(nc_id,var_id,att_nm,att_typ,(size_t) att_len,(const signed char *)vp); break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -871,7 +894,7 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
   case NC_DOUBLE: rcd=nc_get_att_double(nc_id,var_id,att_nm,(double *)vp); break;
   case NC_INT: rcd=nc_get_att_long(nc_id,var_id,att_nm,(long *)vp); break;
   case NC_SHORT: rcd=nc_get_att_short(nc_id,var_id,att_nm,(short *)vp); break;
-  case NC_CHAR: rcd=nc_get_att_text(nc_id,var_id,att_nm,(unsigned char *)vp); break;
+  case NC_CHAR: rcd=nc_get_att_text(nc_id,var_id,att_nm,(char *)vp); break;
   case NC_BYTE: rcd=nc_get_att_schar(nc_id,var_id,att_nm,(signed char *)vp); break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */

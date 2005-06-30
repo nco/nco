@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.73 2005-05-22 21:34:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.74 2005-06-30 00:02:17 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -248,7 +248,7 @@ ERROR: Hybrid configurations of MPI and OpenMP parallelism not yet supported
     double * restrict dp;
     nco_long * restrict lp; /* NC_INT is stored in native type nco_long */
     short * restrict sp;
-    unsigned char * restrict cp; /* Range of unsigned char is 0--255 */
+    char * restrict cp; /* Range of unsigned char is 0--255 */
     signed char * restrict bp; /* Range of signed char is -127--127 */
     void * restrict vp;
   } ptr_unn;
@@ -259,7 +259,7 @@ ERROR: Hybrid configurations of MPI and OpenMP parallelism not yet supported
     double d;
     nco_long l;
     short s;
-    unsigned char c; /* Range of unsigned char is 0--255 */
+    char c; /* Range of unsigned char is 0--255 */
     signed char b; /* Range of signed char is -127--127 */
   } val_unn;
 

@@ -1,7 +1,9 @@
 2005-06-29  Charlie Zender  <zender@uci.edu>
 
-	* Explicitly cast NC_CHAR type as "unsigned char" (rather than
-	just "char") in nco_netcdf.c.
+	* Explicitly cast NC_CHAR type as "char" (rather than "unsigned
+	char") in nco_netcdf.c and nco.h. Previously, there were a mixture
+	of "char" and "unsigned char" occurances. 
+	Not sure if this helps anything except consistency
 
 	* Removed two of three critical regions in nco_var_utl.c
 	Removing these causes no regressions with SMP on icc/x86 or xlc/Power4
