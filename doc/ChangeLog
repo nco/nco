@@ -1,3 +1,7 @@
+2005-06-30  Charlie Zender  <zender@uci.edu>
+
+	* Finish making opaque types nco_byte, nco_char, nco_int self-consistent
+
 2005-06-30  Charlie Zender  <zender@soot.ess.uci.edu>
 
 	* Change nco_long to nco_int to allow for future 64-bit type called nco_long

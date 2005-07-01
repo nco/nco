@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.56 2005-06-30 21:27:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.57 2005-07-01 05:33:11 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -641,10 +641,10 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	switch(aed_lst[idx].type){
 	case NC_FLOAT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.fp[lmn]=(float)val_arg_dbl[lmn];} break; 
 	case NC_DOUBLE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.dp[lmn]=(double)val_arg_dbl[lmn];} break; 
-	case NC_INT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.lp[lmn]=(long)val_arg_dbl[lmn];} break; 
+	case NC_INT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.lp[lmn]=(nco_int)val_arg_dbl[lmn];} break; 
 	case NC_SHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.sp[lmn]=(short)val_arg_dbl[lmn];} break; 
 	case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=(nco_char)val_arg_dbl[lmn];} break; 
-	case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=(signed char)val_arg_dbl[lmn];} break; 
+	case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=(nco_byte)val_arg_dbl[lmn];} break; 
 	default: nco_dfl_case_nc_type_err(); break;
 	} /* end switch */
 	

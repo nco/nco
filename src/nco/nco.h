@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.76 2005-06-30 21:27:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.77 2005-07-01 05:33:11 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -68,12 +68,13 @@ extern "C" {
      Note that these warning messages are compiler and OS dependent
      GCC on Alpha, e.g., emits warnings which cannot be removed by this trick */
 #define NULL_CEWI NULL
-#define byte_CEWI 0
 #define char_CEWI '\0'
 #define double_CEWI 0.0
 #define float_CEWI 0.0
 #define int_CEWI 0
 #define long_CEWI 0L
+#define nco_byte_CEWI 0
+#define nco_char_CEWI '\0'
 #define nco_int_CEWI 0L
 #define short_CEWI 0
 #define size_t_CEWI 0UL
@@ -96,8 +97,8 @@ extern "C" {
   /* Tags used for MPI Communication */
 #ifdef ENABLE_MPI
 #ifdef _OPENMP
-ERROR: Hybrid configurations of MPI and OpenMP parallelism not yet supported
-#endif/* !_OPENMP */ 
+#error "ERROR: Hybrid configurations of MPI and OpenMP parallelism not yet supported"
+#endif /* !_OPENMP */ 
 #define TOKEN_ALLOC 1
 #define TOKEN_REQUEST 300
 #define TOKEN_RESULT 500

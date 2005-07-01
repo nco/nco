@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.542 2005-06-29 23:19:35 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.543 2005-07-01 05:33:08 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -298,7 +298,8 @@ nco545. Get mpicc working with MPICH_CC=icc
 nco546. Use makeatletter command in CCSM example in nco.texi?
 nco547. Format CCSM example in nco.texi
 nco548. Hyper-link all switches to explanatory sections?
-nco549. 
+nco549. Automagically generate opaque-type I/O symbols in nco_typ.h
+nco550. 
 
 MPI:
 Archive MPI tests which appear to run correctly 

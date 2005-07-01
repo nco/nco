@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.27 2005-06-30 18:34:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.28 2005-07-01 05:33:11 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -321,8 +321,8 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
   long idx_blk;
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
-  unsigned char mss_val_chr;
-  signed char mss_val_byt;
+  nco_char mss_val_chr;
+  nco_byte mss_val_byt;
   nco_int mss_val_lng=nco_int_CEWI;
   short mss_val_sht=short_CEWI;
 
@@ -587,8 +587,8 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
   float mss_val_flt=float_CEWI;
   nco_int mss_val_lng=nco_int_CEWI;
   short mss_val_sht=short_CEWI;
-  unsigned char mss_val_chr;
-  signed char mss_val_byt;
+  nco_char mss_val_chr;
+  nco_byte mss_val_byt;
   
   bool flg_mss=False; /* [flg] Block has valid (non-missing) values */
   
@@ -872,8 +872,8 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
   float mss_val_flt=float_CEWI;
   nco_int mss_val_lng=nco_int_CEWI;
   short mss_val_sht=short_CEWI;
-  unsigned char mss_val_chr;
-  signed char mss_val_byt;
+  nco_char mss_val_chr;
+  nco_byte mss_val_byt;
   
   bool flg_mss=False;
   

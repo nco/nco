@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.32 2005-06-30 18:34:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.33 2005-07-01 05:33:11 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -914,8 +914,8 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
   long idx;
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
-  unsigned char mss_val_chr=char_CEWI;
-  signed char mss_val_byt=byte_CEWI;
+  nco_char mss_val_chr=nco_char_CEWI;
+  nco_byte mss_val_byt=nco_byte_CEWI;
   nco_int mss_val_lng=nco_int_CEWI;
   short mss_val_sht=short_CEWI;
 
@@ -985,22 +985,22 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
     break;
   case NC_CHAR:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.cp[idx] != (unsigned char)op1) op3.cp[idx]=mss_val_chr; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.cp[idx] == (unsigned char)op1) op3.cp[idx]=mss_val_chr; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >= (unsigned char)op1) op3.cp[idx]=mss_val_chr; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <= (unsigned char)op1) op3.cp[idx]=mss_val_chr; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >  (unsigned char)op1) op3.cp[idx]=mss_val_chr; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <  (unsigned char)op1) op3.cp[idx]=mss_val_chr; break;
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.cp[idx] != (nco_char)op1) op3.cp[idx]=mss_val_chr; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.cp[idx] == (nco_char)op1) op3.cp[idx]=mss_val_chr; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >= (nco_char)op1) op3.cp[idx]=mss_val_chr; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <= (nco_char)op1) op3.cp[idx]=mss_val_chr; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >  (nco_char)op1) op3.cp[idx]=mss_val_chr; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <  (nco_char)op1) op3.cp[idx]=mss_val_chr; break;
     } /* end switch */
     break;
   case NC_BYTE:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.bp[idx] != (signed char)op1) op3.bp[idx]=mss_val_byt; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.bp[idx] == (signed char)op1) op3.bp[idx]=mss_val_byt; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >= (signed char)op1) op3.bp[idx]=mss_val_byt; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <= (signed char)op1) op3.bp[idx]=mss_val_byt; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >  (signed char)op1) op3.bp[idx]=mss_val_byt; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <  (signed char)op1) op3.bp[idx]=mss_val_byt; break;
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.bp[idx] != (nco_byte)op1) op3.bp[idx]=mss_val_byt; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.bp[idx] == (nco_byte)op1) op3.bp[idx]=mss_val_byt; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >= (nco_byte)op1) op3.bp[idx]=mss_val_byt; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <= (nco_byte)op1) op3.bp[idx]=mss_val_byt; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >  (nco_byte)op1) op3.bp[idx]=mss_val_byt; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <  (nco_byte)op1) op3.bp[idx]=mss_val_byt; break;
     } /* end switch */
     break;
   default: nco_dfl_case_nc_type_err(); break;

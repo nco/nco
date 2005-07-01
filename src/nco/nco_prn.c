@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.22 2005-06-09 05:33:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.23 2005-07-01 05:33:11 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -569,7 +569,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 	  /* Memory region is NUL-terminated, i.e., a valid string */
 	  /* Print strings inside double quotes */
 	  (void)sprintf(var_sng,"%%s%c%%ld--%%ld%c=\"%%s\" %%s",arr_lft_dlm,arr_rgt_dlm);
-	  /* var.val.cp is unsigned char * but strlen() requires const char * */
+	  /* var.val.cp is type nco_char and strlen() requires const char * */
 	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,idx_crr+strlen((char *)var.val.cp+lmn),(char *)var.val.cp+lmn,unit_sng);
 	}else{
 	  /* Memory region is not NUL-terminated, print block of chars instead */
