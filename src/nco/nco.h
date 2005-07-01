@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.77 2005-07-01 05:33:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.78 2005-07-01 06:02:55 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -107,7 +107,7 @@ extern "C" {
 #define WORK_REQUEST 100
 #endif /* !ENABLE_MPI */
 
-  const int mgr_id=0; /* [ID] used in MPI communication */
+  const int mgr_id=0; /* [ID] Manager ID */
   const int NO_MORE_WORK=-1; /* [flg] All MPI variables processed */
 
   int prg; /* [enm] Program ID */
