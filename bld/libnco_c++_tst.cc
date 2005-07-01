@@ -16,10 +16,7 @@
    xlC_r -bnoquiet -o libnco_c++_tst libnco_c++_tst.o -L${NETCDF_LIB} -lnco_c++ -lnetcdf
 
    ld -o libnco_c++_tst libnco_c++_tst.o -L${MY_LIB_DIR},-lnco_c++
-   ld -o libnco_c++_tst libnco_c++_tst.o -L${MY_LIB_DIR},-lnco_c++ -L/usr/lpp/xlopt,-lxlopt,-lc libnco_c++_tst.o /lib/crt0_64.o
-
-  libnco_c++_tst
-*/
+   ld -o libnco_c++_tst libnco_c++_tst.o -L${MY_LIB_DIR},-lnco_c++ -L/usr/lpp/xlopt,-lxlopt,-lc libnco_c++_tst.o /lib/crt0_64.o */
 
 #include <iostream> // Standard C++ I/O streams cout, cin
 #include <string> // Standard C++ string class

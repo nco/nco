@@ -1,7 +1,23 @@
 2005-06-30  Charlie Zender  <zender@uci.edu>
 
-	* Finish making opaque types nco_byte, nco_char, nco_int self-consistent
+	* Critical region on OpenMP reads nco_get_vara() are still necessary
+	Want to establish if this is NCO or netCDF problem
+	Testing for reproducibility, following regressions on soot, esmf:
 
+	Run        ncra		           ncwa
+	soot 1     01                      01,13
+	soot 2     02,06,10,11             none
+	soot 3     01,04                   01
+	esmf 1     01,02,11,12             none
+	esmf 2     04,05,06,07,10,11,12,16 none
+	esmf 3     02,03,04,09,15,16       13
+
+	Regressions are non-reproducible, characteristics of threads
+	over-writing eachother due to random timing conflicts
+	Hard to debug because of irreproducibility
+	
+	* Finish making opaque types nco_byte, nco_char, nco_int self-consistent
+	
 2005-06-30  Charlie Zender  <zender@soot.ess.uci.edu>
 
 	* Change nco_long to nco_int to allow for future 64-bit type called nco_long

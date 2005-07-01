@@ -1,11 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.145 2005-06-18 06:11:33 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.146 2005-07-01 06:52:02 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.0.1 are ready. 
+The netCDF operators NCO version 3.0.2 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Version 3.0.1 contains mainly build and benchmarking improvements.
+Version 3.0.2 contains mainly build and benchmarking improvements.
 The only user-visible change is one more tweak to the default ncks
 printing behavior. There is an important bug-fix for ncap so
 ncap users should upgrade. 
@@ -13,23 +13,18 @@ Threading is much improved and has been enabled on all arithmetic
 operators. Users with SMP machines and OpenMP compilers who want
 faster processing should upgrade too.
 
-1. ncra bug: Versions < 3.0.2 could produce incorrect answers in
-   unusual corner cases involving non-floating-point data and missing
-   values spread amongst multiple files.
+1. OpenMP: Only one remaining critical region on reads
 
 2. Benchmarks (Harry Mangalam): 
-   Additional benchmark verification options: word count, MD5
 
-3. ncap (Henry Butowsky): Memory handling is much cleaner
+3. ncap (Henry Butowsky): Improved memroy efficiency
 
-4. Small additional memory leaks found and fixed in corner cases
+4. MPI (Gayathri Venkitachalam): New MPI-enabled operators
+   mpncflint, mpncecat, mpncwa, mpncpdq, mpncra, 
 
-5. MPI (Gayathri Venkitachalam): 
+5. OpenDAP (Harry Mangalam): Support OPeNDAP version 3.5.0+
 
-6. OpenDAP (Harry Mangalam): Support OPeNDAP version 3.5.0+
-
-Future: We anticipate one more stability-oriented release (3.0.3),
-followed by the MPI-enabled NCO (3.1).
+Future: The next release (3.1) will concentrate MPI-enabled NCO.
 
 Enjoy,
 Charlie

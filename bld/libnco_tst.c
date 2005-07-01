@@ -16,18 +16,15 @@
    xlc_r -bnoquiet -o libnco_tst libnco_tst.o -L${NETCDF_LIB} -lnco -lnetcdf
 
    ld -o libnco_tst libnco_tst.o -L${MY_LIB_DIR},-lnco
-   ld -o libnco_tst libnco_tst.o -L${MY_LIB_DIR},-lnco -L/usr/lpp/xlopt,-lxlopt,-lc libnco_tst.o /lib/crt0_64.o
-
-  libnco_tst
-*/
+   ld -o libnco_tst libnco_tst.o -L${MY_LIB_DIR},-lnco -L/usr/lpp/xlopt,-lxlopt,-lc libnco_tst.o /lib/crt0_64.o */
 
 #include <stdio.h>
 #define MAIN_PROGRAM_FILE
 #include "libnco.h" /* netCDF Operator (NCO) library */
 int main()
 {
-  const char * const CVS_Id="$Id: libnco_tst.c,v 1.2 2004-06-16 22:39:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.2 $";
+  const char * const CVS_Id="$Id: libnco_tst.c,v 1.3 2005-07-01 06:51:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.3 $";
   (void)copyright_prn(CVS_Id,CVS_Revision);
 }
 
