@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.89 2005-06-30 18:34:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.90 2005-07-01 06:20:00 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -605,7 +605,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   var->val.vp=(void *)nco_malloc_dbg(var->sz*nco_typ_lng(var->typ_dsk),"Unable to malloc() value buffer when retrieving variable from disk",fnc_nm);
 
   if(False) (void)fprintf(stdout,"%s: DEBUG: fxm TODO nco354. Calling nco_get_vara() for variable %s with nc_id=%d, var_id=%d, var_srt=%li, var_cnt = %li, var_val = %g, var_typ = %s\n",prg_nm_get(),var->nm,nc_id,var->id,var->srt[0],var->cnt[0],var->val.dp[0],nco_typ_sng(var->typ_dsk));
-  /* 20050519: Not sure why I originally following nco_get_var*() routines SMP-critical
+  /* 20050519: Not sure why following nco_get_var*() routines are SMP-critical
      netCDF library interface is designed to allow parallel reads
      20050629: Removing this critical region causes multiple ncwa/ncra regressions */
 #ifdef _OPENMP
@@ -648,7 +648,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
     /* Arithmetic operators must unpack variables before performing arithmetic
        Otherwise arithmetic will produce garbage results */
     /* 20050519: Not sure why I originally made nco_var_upk() call SMP-critical
-       20050629: Making this region multi-threaded appears to cause no problems */
+       20050629: Making this region multi-threaded causes no problems */
     if(var->pck_dsk) var=nco_var_upk(var);
   } /* endif arithmetic operator */
   
@@ -1265,7 +1265,7 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
   var->nc_id=nc_id;
 
   /* 20050519: Not sure why I originally made next four lines SMP-critical
-     20050629: Making next four lines multi-threaded appears to cause no problems */
+     20050629: Making next four lines multi-threaded causes no problems */
   (void)nco_inq_varid(var->nc_id,var->nm,&var->id);
     
   /* fxm: Not sure if/why necessary to refresh number of dimensions...though it should not hurt */
