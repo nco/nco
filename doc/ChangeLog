@@ -13,8 +13,20 @@
 	esmf 3     02,03,04,09,15,16       13
 
 	Regressions are non-reproducible, characteristics of threads
-	over-writing eachother due to random timing conflicts
+	over-writing eachother due to random timing conflicts.
 	Hard to debug because of irreproducibility
+
+	Q: NCO calls nco_get_vara() in many routines---why is the call in
+	nco_var_get() the only one that needs to be critical?
+	A: Probably because it is that most important, done on every
+	variable
+
+	Options:
+	1. Ask Unidata whether they have tested SMP robustness of netCDF 
+	reads under demanding battery of conditions? 
+	2. Scrutinize uninitialized data reported by icc/valgrind? 
+	3. Write own SMP on read test?
+	4. ???
 	
 	* Finish making opaque types nco_byte, nco_char, nco_int self-consistent
 	
