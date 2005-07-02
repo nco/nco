@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.146 2005-07-01 06:52:02 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.147 2005-07-02 21:48:34 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.0.2 are ready. 
 
@@ -13,16 +13,18 @@ Threading is much improved and has been enabled on all arithmetic
 operators. Users with SMP machines and OpenMP compilers who want
 faster processing should upgrade too.
 
-1. OpenMP: Only one remaining critical region on reads
+1. OpenMP: Only one critical region remains in netCDF reads
 
 2. Benchmarks (Harry Mangalam): 
 
-3. ncap (Henry Butowsky): Improved memroy efficiency
+3. ncap (Henry Butowsky): Improved memory efficiency
 
 4. MPI (Gayathri Venkitachalam): New MPI-enabled operators
    mpncflint, mpncecat, mpncwa, mpncpdq, mpncra, 
 
-5. OpenDAP (Harry Mangalam): Support OPeNDAP version 3.5.0+
+5. OpenDAP: 
+   ./configure supports OPeNDAP version 3.5.0+
+   doc/opendap.sh demonstrates installing OPeNDAP netCDF client library
 
 Future: The next release (3.1) will concentrate MPI-enabled NCO.
 

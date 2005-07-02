@@ -1,3 +1,8 @@
+2005-07-02  Charlie Zender  <zender@uci.edu>
+
+	* Re-write dods.sh for OPeNDAP 3.5.x terminology and save in new
+	file opendap.sh
+
 2005-06-30  Charlie Zender  <zender@uci.edu>
 
 	* Critical region on OpenMP reads nco_get_vara() are still necessary
