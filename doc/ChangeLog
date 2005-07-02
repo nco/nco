@@ -1,5 +1,10 @@
 2005-07-02  Charlie Zender  <zender@uci.edu>
 
+	* Change 'DODS' to 'DAP' or 'OPeNDAP' where possible in codbase, 
+	e.g., 'enable-dap', make DAP=Y, ENABLE_DAP
+
+	* Support OPeNDAP 3.5.x in bld/Makefile
+
 	* Re-write dods.sh for OPeNDAP 3.5.x terminology and save in new
 	file opendap.sh
 

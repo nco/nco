@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.103 2005-06-22 22:16:50 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.104 2005-07-02 22:55:37 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -14,7 +14,7 @@ ftp://ftp.gnu.org/pub/gnu/config/config.[guess,sub]
 NCO successfully builds (e.g., with bld/Makefile) and runs on virtually all OSs.
 This table tracks how well NCO _autobuilds_ (./configure's) on various OSs.
 GNU Autotools seem to require a lot of hand tuning on non-LINUX platforms...
-Architecture	ABI32	ABI64	DODS	I18N	OpenMP	nco_c++	check
+Architecture	ABI32	ABI64	DAP	I18N	OpenMP	nco_c++	check
 AIX		Y	Y                       Y       Y	Y
 ALPHA		Y					Y	Y
 CRAY
@@ -234,7 +234,7 @@ i686-pc-linux-gnu
 
 gcc/g++ Zender uses this to install/update NCO in personal directories:
 export GNU_TRP=`~/nco/autobld/config.guess`
-export DODS_ROOT="${DATA}/tmp/DODS"
+export DAP_ROOT="${DATA}/tmp/DAP"
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='gcc' CXX='g++' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo

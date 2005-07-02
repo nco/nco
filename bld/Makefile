@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.296 2005-06-22 22:18:30 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.297 2005-07-02 22:55:38 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -21,8 +21,8 @@
 # cd ~/nco/bld;make dbg;cd -
 # Enable symbols for debugging
 # cd ~/nco/bld;make OPTS=D;cd -
-# DODS support:
-# cd ~/nco/bld;make DODS=Y;cd -
+# DAP support:
+# cd ~/nco/bld;make DAP=Y;cd -
 # HDF5 version of netCDF libraries:
 # cd ~/nco/bld;make cln bin_cln all HDF5=Y;cd -
 # UDUnits support:
@@ -33,7 +33,7 @@
 # cd ~/nco/bld;NETCDF_LIB=/usr/local/lib32/r4i4 UDUNITS_INC=/contrib/include UDUNITS_LIB=/contrib/lib make --jobs=1 lib_cln cln all ABI=32;cd -
 
 # Top-level tokens defining directory structure
-# These tokens may be over-ridden by environment variables or when invoking make, e.g., make DODS=Y
+# These tokens may be over-ridden by environment variables or when invoking make, e.g., make DAP=Y
 MY_BLD_DIR := ../bld
 ifndef PVM_ARCH
  PVM_ARCH := $(shell ${MY_BLD_DIR}/pvmgetarch)
@@ -60,7 +60,7 @@ MY_INC_DIR := ${MY_SRC_DIR}
 NCO_CXX_SRC_DIR := ${MY_SRC_DIR}/../nco_c++
 
 # Primary tokens which determine build options
-# Specify non-default when invoking make, e.g. make DODS=Y
+# Specify non-default when invoking make, e.g. make DAP=Y
 ifndef ${ABI}
 # 32 vs. 64 bit ABI: 32=32 bit mode, 64=64 bit mode (default) if available
  ABI := 64
@@ -69,8 +69,8 @@ ifndef ${DBG}
 # Debugging token N=No (default) Y=Yes
  DBG := N
 endif # endif DBG
-ifndef DODS
- DODS := N
+ifndef DAP
+ DAP := N
 endif
 ifndef GCC_RCH_ARG
  GCC_RCH_ARG :=
@@ -130,27 +130,29 @@ endif # endif VRS_SNG
 # NB: CPP_TKN is recursively expanded variable, define only when components are ready
 CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
 
-ifeq (${DODS},Y)
-# Build NCO as DODS-enabled clients
-# fxm: DODS bloats executables, should automagically enable stripping
+ifeq (${DAP},Y)
+# Build NCO as DAP-enabled clients
+# fxm: OPeNDAP bloats executables, should automagically enable stripping
 # http://www.unidata.ucar.edu/packages/dods/user/guide-html/guide_28.html
-ifndef DODS_ROOT
-# Directory containing libdap++.a, libnc-dods.a
- DODS_ROOT := /usr/local/DODS
+ifndef DAP_ROOT
+# Directory containing libdap++.a, libnc-dap.a
+ DAP_ROOT := /usr/local
 endif
- NC_LDFLAGS := -L${DODS_ROOT}/lib
+ NC_LDFLAGS := -L${DAP_ROOT}/lib
 # DODS 3.3-
 # NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
-# DODS 3.4+-
- NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lxml2 -lcurl -lpthread -ldl -lz
-# Get netCDF from DODS version
- NETCDF_INC=${DODS_ROOT}/include
- NETCDF_LIB=${DODS_ROOT}/lib
+# DODS 3.4.X
+# NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lxml2 -lcurl -lpthread -ldl -lz
+# DAP 3.5+
+ NC_LIBS := -lnc-dap -ldap++ -lxml2 -lcurl
+# Get netCDF from OPeNDAP version
+ NETCDF_INC=${DAP_ROOT}/include/libnc-dap
+ NETCDF_LIB=${DAP_ROOT}/lib
 else
-# Build NCO straight, without DODS
+# Build NCO straight, without DAP
  NC_LDFLAGS := -L${NETCDF_LIB}
  NC_LIBS := -lnetcdf
-endif # end DODS
+endif # end DAP
 
 ifeq (${HDF5},Y)
 # Build NCO using HDF5 netCDF interface
@@ -247,7 +249,7 @@ endif
 
 ifeq (${UDUNITS},Y)
 # Build UDUnits-enabled NCO 
-# Place UDUNITS block after DODS block for both to work together
+# Place UDUNITS block after DAP block for both to work together
 ifndef UDUNITS_INC
  UDUNITS_INC := /usr/local/include # Directory containing udunits.h
 endif
@@ -263,7 +265,7 @@ endif # end
  NC_LIBS += -ludunits
 endif # end if UDUNITS
 
-# TMP_* and NCO_* are required to play nicely with DODS flags
+# TMP_* and NCO_* are required to play nicely with DAP flags
 NCO_LDFLAGS := -L${MY_LIB_DIR}
 NCO_LIBS := -lnco
 TMP_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS}
@@ -331,7 +333,7 @@ MDL_DAT_STB := $(addsuffix .nc,$(MDL_DAT_STB)) # `make data' creates these files
 MDL_DAT := $(addprefix ${MY_DAT_DIR}/,$(MDL_DAT_STB)) # `make distclean' removes these files
 
 # Variables having to do with NCO documentation
-MDL_DOC_SRC := $(addprefix ../,acinclude.m4 configure.in configure.eg Makefile.am) $(addprefix ${MY_DOC_DIR}/,nco.texi ANNOUNCE MANIFEST NEWS README TODO VERSION debian.txt dods.sh index.shtml ncap.txt nco_news.shtml nco_src_frg.txt) $(addprefix ${MY_DBN_DIR}/,changelog compat control convert copyright docs files info postinst postrm prerm rules nco.doc-base) # `make tags' includes these files
+MDL_DOC_SRC := $(addprefix ../,acinclude.m4 configure.in configure.eg Makefile.am) $(addprefix ${MY_DOC_DIR}/,nco.texi ANNOUNCE MANIFEST NEWS README TODO VERSION debian.txt dods.sh opendap.sh index.shtml ncap.txt nco_news.shtml nco_src_frg.txt) $(addprefix ${MY_DBN_DIR}/,changelog compat control convert copyright docs files info postinst postrm prerm rules nco.doc-base) # `make tags' includes these files
 MDL_DOC_TRG := nco.dvi nco.html nco.info nco.pdf nco.ps nco.txt nco.xml # `make doc' creates these files
 MDL_DOC := $(addprefix ${MY_DOC_DIR}/,$(MDL_DOC_TRG)) # `make distclean' removes these files
 
@@ -417,9 +419,9 @@ endif # !LINUX
 ifneq (${null},$(findstring ${PVM_ARCH},AIXSGIMP64))
  CPP_TKN_OS += -DNEED_GETOPT_LONG
 endif # !(AIX || SGI)
-ifeq (${DODS},Y)
- CPP_TKN_OS += -DENABLE_DODS
-endif # !DODS
+ifeq (${DAP},Y)
+ CPP_TKN_OS += -DENABLE_DAP
+endif # !DAP
 ifeq (${MPI},Y)
  CPP_TKN_OS += -DENABLE_MPI
 endif # endif MPI
@@ -1129,16 +1131,16 @@ ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  CPPFLAGS += -DUSE_FORTRAN_ARITHMETIC
 endif
 
-# Link to DODS libraries first, see DODS User's Guide
-# Currently this is invoked by using 'make DODS=Y' on the command
+# Link to DAP libraries first, see OPeNDAP User's Guide
+# Currently this is invoked by using 'make DAP=Y' on the command
 # NB: Yes, nc-dods, dap++ must be linked twice!
-ifeq (${DODS},Y)
+ifeq (${DAP},Y)
 ifneq (${CC},g++)
 # -lstdc++ automatically linked by g++, must add by hand for others
  LDFLAGS := ${LDFLAGS} -lstdc++
 endif
 endif
-# endif DODS
+# endif DAP
 
 # Internationalize NCO with i18n features
 ifeq (${I18N},Y)
@@ -1466,9 +1468,9 @@ dbg:
 	@printf "CPP_TKN = ${CPP_TKN}\n"
 	@printf "CXX = ${CXX}\n"
 	@printf "CXXFLAGS = ${CXXFLAGS}\n"
+	@printf "DAP = ${DAP}\n"
+	@printf "DAP_ROOT = ${DAP_ROOT}\n"
 	@printf "DBG = ${DBG}\n"
-	@printf "DODS = ${DODS}\n"
-	@printf "DODS_ROOT = ${DODS_ROOT}\n"
 	@printf "FC = ${FC}\n"
 	@printf "FFLAGS = ${FFLAGS}\n"
 	@printf "GCC_RCH_ARG = ${GCC_RCH_ARG}\n"

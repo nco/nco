@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.35 2005-06-30 21:27:58 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.36 2005-07-02 22:55:40 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -11,10 +11,10 @@
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
    As a special exception to the terms of the GPL, you are permitted 
-   to link the NCO source code with the DODS, HDF, netCDF, and UDUnits
+   to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
    libraries and to distribute the resulting executables under the terms 
    of the GPL, but in addition obeying the extra stipulations of the 
-   DODS, HDF, netCDF, and UDUnits licenses.
+   HDF, netCDF, OPeNDAP, and UDUnits licenses.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of

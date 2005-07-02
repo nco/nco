@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.77 2005-04-28 01:03:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.78 2005-07-02 22:55:57 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -11,10 +11,10 @@
    and in the file nco/doc/LICENSE in the NCO source distribution.
 
    As a special exception to the terms of the GPL, you are permitted 
-   to link the NCO source code with the DODS, HDF, netCDF, and UDUnits
+   to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
    libraries and to distribute the resulting executables under the terms 
    of the GPL, but in addition obeying the extra stipulations of the 
-   DODS, HDF, netCDF, and UDUnits licenses.
+   HDF, netCDF, OPeNDAP, and UDUnits licenses.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.77 2005-04-28 01:03:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.77 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.78 2005-07-02 22:55:57 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.78 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;

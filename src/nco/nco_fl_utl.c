@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.53 2005-04-18 03:52:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.54 2005-07-02 22:55:57 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -311,7 +311,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
   }else if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl){
     
-    /* If file is http protocol then pass file name on unaltered and let DODS deal with it */
+    /* If file is http protocol then pass file name on unaltered and let DAP deal with it */
     
   }else if((cln_ptr=strchr(fl_nm_lcl,':'))){
     /* 19990804
@@ -338,7 +338,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   /* Does file exist on local system? */
   rcd=stat(fl_nm_lcl,&stat_sct);
   
-  /* One exception: let DODS try to access remote HTTP protocol files as local files */
+  /* One exception: let DAP try to access remote HTTP protocol files as local files */
   if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl) rcd=0;
   
   /* If not, check if file exists on local system under same path interpreted relative to current working directory */
@@ -642,13 +642,13 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
   /* Make sure we have read permission on local file */
   if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl){
-    /* Attempt nc_open() on HTTP protocol files. Success means DODS found file. */
+    /* Attempt nc_open() on HTTP protocol files. Success means DAP found file. */
     int in_id; /* [id] Temporary input file ID */
     
     rcd=nco_open(fl_nm_lcl,NC_NOWRITE,&in_id);
     
     if(rcd != NC_NOERR){
-      (void)fprintf(stderr,"%s: ERROR Attempted HTTP access protocol failed: DODS server is not responding, %s does not exist, or user does not have read permission\n",prg_nm_get(),fl_nm_lcl);
+      (void)fprintf(stderr,"%s: ERROR Attempted HTTP access protocol failed: DAP server is not responding, %s does not exist, or user does not have read permission\n",prg_nm_get(),fl_nm_lcl);
       nco_exit(EXIT_FAILURE);
     } /* end if err */
     

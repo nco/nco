@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.78 2005-05-23 07:15:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.79 2005-07-02 22:55:57 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -11,10 +11,10 @@
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
    As a special exception to the terms of the GPL, you are permitted 
-   to link the NCO source code with the DODS, HDF, netCDF, and UDUnits
+   to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
    libraries and to distribute the resulting executables under the terms 
    of the GPL, but in addition obeying the extra stipulations of the 
-   DODS, HDF, netCDF, and UDUnits licenses.
+   HDF, netCDF, OPeNDAP, and UDUnits licenses.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -85,8 +85,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.78 2005-05-23 07:15:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.78 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.79 2005-07-02 22:55:57 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.79 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:Z-:";
 
   extern char *optarg;

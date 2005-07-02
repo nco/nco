@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.291 2005-06-23 03:06:55 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.292 2005-07-02 22:55:39 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -626,8 +626,7 @@ However, this method does not support shared libraries and other nice
 features that come automagically with Autotools.
 So please send in the patches required to get the <tt>./configure</tt> 
 mechanism working properly for NCO, <tt>nco_c++</tt>, and
-<a href="http://opendap.org">OPeNDAP</a> on your
-platform.  
+<a href="http://opendap.org">OPeNDAP</a> on your platform.  
 The gory details of the failed (and successful) builds are in the
 <a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>.
 </li>
@@ -686,17 +685,16 @@ If <tt>ncap</tt> keeps you from building NCO, and you do not need
 <tt>ncap</tt>, try configuring with <tt>--disable-ncap</tt>.
 </li>
 
-<!-- http://nco.sf.net#bld_DODS -->
-<a name="bld_DODS"></a><a name="bld_OPeNDAP"></a>
-<li><i>Build Problems with DODS/OPeNDAP:</i>
-NCO versions prior to 2.8.5 link with the
-<a href="http://opendap.org">OPeNDAP</a> netCDF
-library when compiled with GCC&nbsp;2.95 (on Linux).
-NCO prior to 2.8.5 does not link to OPeNDAP when compiled with versions
-greater than GCC&nbsp;3.1+.
+<!-- http://nco.sf.net#bld_DAP -->
+</a><a name="bld_dap"></a></a><a name="bld_DAP"></a><a name="bld_DODS"></a><a name="bld_OPeNDAP">
+<li><i>Build Problems with OPeNDAP/DODS:</i>
+NCO versions 3.0.1+ support automatic building and linking
+for <a href="http://opendap.org">OPeNDAP</a> versions&nbsp;3.5+ and
+GCC versions&nbsp;3.4+. 
 NCO versions 2.8.5+ support automatic building and linking
-for OPeNDAP versions&nbsp;3.4+ and GCC versions&nbsp;3.3+.
-No other version combination is supported.
+for <a href="http://opendap.org">OPeNDAP</a> versions&nbsp;3.4+ and
+GCC versions&nbsp;3.3+. 
+No other version combinations are supported.
 </li>
 
 <!-- http://nco.sf.net#bld_nco_c++ -->
@@ -765,7 +763,7 @@ Will someone with NEC&nbsp;SX please send us a working patch?
 Building on Microsoft Windows is possible with Cygwin.
 The resulting executables will behave normally on local files,
 but will not have most of NCO's network functionality
-(e.g., <tt>scp</tt>, OPeNDAP).
+(e.g., <tt>scp</tt>, <a href="http://opendap.org">OPeNDAP</a>).
 See the <a href="http://nco.sf.net/nco.html#wnd">User's Guide</a>
 for more details.
 </li>
@@ -864,8 +862,11 @@ This fixes both problems and is faster, to boot.
 NCO versions ???&mdash;2.9.0 have a bug that causes <tt>ncwa</tt>
 to fail (produce garbage answers) when processing packed
 <tt>NC_FLOAT</tt> data.  Version 2.9.1 fixes this problem.
-This problem may have been noticed most by OPeNDAP users since many
-netCDF climate datasets served by OPeNDAP are packed <tt>NC_FLOAT</tt>s.
+This problem may have been noticed most by
+<a href="http://opendap.org">OPeNDAP</a> users since many 
+netCDF climate datasets served by
+<a href="http://opendap.org">OPeNDAP</a> are packed
+<tt>NC_FLOAT</tt>s.  
 Upgrade to&nbsp;2.9.1 if you use <tt>ncwa</tt> on packed data.
 </li>
 

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.121 2005-06-30 21:48:50 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.122 2005-07-02 22:55:37 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -127,26 +127,23 @@ AC_CXX_HAVE_VALARRAY
 # Arrange for large file support (LFS)
 AC_SYS_LARGEFILE
 
-# Begin DODS support
-# store pre-DODS LIBS value to restore from later
-nco_old_LIBS="${LIBS}"
+# Begin DAP (aka DODS) support
+# Store pre-DAP LIBS value to restore from later
+nco_LIBS_no_DAP="${LIBS}"
+# Find OPeNDAP netcdf library before real netCDF library. jhrg 05/26/05
 
-# New home for OPeNDAP (aka DODS) support. Check for OPeNDAP netcdf 
-# library before checking for the real netCDF library. jhrg 05/26/05
+# DAP_ROOT is value of "${prefix}" set when building/installing OPeNDAP code
+# Scripts dap-config and ncdap-config are in ${prefix}/bin
+# Use them to find how to link for this particular build. jhrg 5/25/05 
 
-# DODS_ROOT is now the value of '$prefix' as set when the OPeNDAP code
-# is built and installed (e.g. /usr/local/). The scripts dap-config
-# and ncdap-config can be found in $prefix/bin. Use them to find where things
-# are installed and how to link for this particular build. jhrg 5/25/05
-#
-# Note that libnc-dap 3.5.1 uses netcdf 3.5; use Charlie's hack of supplying
-# the definition for NC_64BIT_OFFSET here. This should be fixed in nc-dap 3.6.
-# Sorry about the version numbers being confusing... jhrg 6/3/05
+# libnc-dap 3.5.1 uses netcdf 3.5; use Charlie's hack of supplying
+# definition for NC_64BIT_OFFSET here. This should be fixed in nc-dap 3.6.
+# Sorry about version numbers being confusing... jhrg 6/3/05
 
-AC_ARG_VAR([DODS_ROOT],[Root of DODS installation] (compile-time))
-AC_ARG_ENABLE(dods,AS_HELP_STRING([--enable-dods],[Build DODS/OpenDAP clients if possible [[default=yes]]]),enable_dods=${enableval},enable_dods=yes)
-# Check for DODS libraries unless told not to
-if test "${enable_dods}" != 'no'; then
+AC_ARG_VAR([DAP_ROOT],[Root of DAP installation] (compile-time))
+AC_ARG_ENABLE(dap,AS_HELP_STRING([--enable-dap],[Build OPeNDAP/DODS-enabled clients if possible [[default=yes]]]),enable_dap=${enableval},enable_dap=yes)
+# Check for DAP libraries unless told not to
+if test "${enable_dap}" != 'no'; then
     if which ncdap-config > /dev/null; then
 	CPPFLAGS="${CPPFLAGS} `ncdap-config --cflags`"
 	nc_dap_ver=`ncdap-config --version`
@@ -159,35 +156,34 @@ if test "${enable_dods}" != 'no'; then
     fi
 
     AC_LANG_PUSH([C++])
-    AC_CHECK_LIB([nc-dap],[nc_open],,enable_dods=no)
+    AC_CHECK_LIB([nc-dap],[nc_open],,enable_dap=no)
     AC_LANG_POP
 
     LIBS="${LIBS} -lstdc++"
 
-    if test "${enable_dods}" = 'no'; then
-	AC_MSG_WARN([DODS support disabled (missing libraries)])
-	LIBS="${nco_old_LIBS}"
-    elif test "${enable_dods}" = 'yes'; then
-	AC_DEFINE(ENABLE_DODS,1,Compile operators with DODS/OpenDAP support)
-	AC_MSG_NOTICE([DODS support enabled])
-# libtool cleans up duplicate library links (e.g., dap++, nc-dods) unless told not to.
-# I think is now OK; the new (3.5.0++) version of libnc-dap doesn't require the 
-# duplicate libraries. jhrg 6/3/05
+    if test "${enable_dap}" = 'no'; then
+	AC_MSG_WARN([DAP support disabled (missing libraries)])
+	LIBS="${nco_LIBS_no_DAP}"
+    elif test "${enable_dap}" = 'yes'; then
+	AC_DEFINE(ENABLE_DAP,1,Compile operators with OPeNDAP/DODS support)
+	AC_MSG_NOTICE([DAP support enabled])
+# libtool cleans up duplicate library links (e.g., dap++, nc-dap) unless told not to
+# New (3.5.0+) version of libnc-dap does not require duplicate libraries jhrg 6/3/05
 	LIBTOOL="${LIBTOOL} --preserve-dup-deps"
     fi
 fi
-AM_CONDITIONAL(TEST_DODS,[test "${enable_dods}" = 'yes'])
-# End DODS support
+AM_CONDITIONAL(TEST_DAP,[test "${enable_dap}" = 'yes'])
+# End DAP support
 
 # Begin Mandatory Link Test with libnetcdf.a
 # Make precious variables for ./configure --help
 AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
 AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
 
-# if enable_dods is true, don't look for the real netCDF library. 
+# if enable_dap is true, don't look for the real netCDF library. 
 # jhrg 05/26/05
 
-if test "$enable_dods" = 'no'; then
+if test "$enable_dap" = 'no'; then
 
 # Add user-specified netCDF locations, if any, else add /usr/local/ locations if they exist
 if test "${NETCDF_LIB}"; then
@@ -213,13 +209,13 @@ else
     fi
 fi
 
-fi # if enable_dods
+fi # if enable_dap
 
 AC_CHECK_HEADERS([netcdf.h])
 # NCO does not support netCDF2
 AC_DEFINE(NO_NETCDF_2,1,No netCDF version 2.x API)
 
-if test "$enable_dods" = 'no'; then
+if test "$enable_dap" = 'no'; then
 
 # Check for 'nc_open()' using default compiler flags
 # If this fails, check for 'nc_close()' with 64-bit ABI flags (if known)
@@ -271,7 +267,7 @@ AC_CHECK_LIB([netcdf],[nc_open],[
 )
 # End Mandatory Link Test with libnetcdf.a
 
-fi # enable_dods
+fi # enable_dap
 
 # Begin Library checks
 # Check for libraries, add to link path if found
@@ -297,10 +293,8 @@ AC_CHECK_LIB([nsl],[main])
 AC_CHECK_LIB([nco],[nco_open])
 # End Library checks
 
-# Begin DODS support
-  
-# OPeNDAP (aka DODS) support used to be here. I moved it up
-# so that it will precede the netcdf library tests. jhrg 05/26/05 
+# OPeNDAP (aka DAP) support was here 
+# I moved it up to precede netcdf library tests jhrg 05/26/05 
 
 # Begin Fortran
 # If --enable-fortran define USE_FORTRAN_ARITHMETIC

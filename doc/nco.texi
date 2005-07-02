@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.309 2005-06-29 16:27:19 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.310 2005-07-02 22:55:40 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2422,6 +2422,8 @@ recommended as it is syntactically more clear.
 @end menu
 
 @html
+<a name="dap"></a> <!-- http://nco.sf.net/nco.html#dap -->
+<a name="DAP"></a> <!-- http://nco.sf.net/nco.html#DAP -->
 <a name="DODS"></a> <!-- http://nco.sf.net/nco.html#DODS -->
 <a name="OPeNDAP"></a> <!-- http://nco.sf.net/nco.html#OPeNDAP -->
 <a name="dods"></a> <!-- http://nco.sf.net/nco.html#dods -->
@@ -2429,6 +2431,7 @@ recommended as it is syntactically more clear.
 @end html
 @node OPeNDAP,  , Remote storage, Remote storage
 @subsection @acronym{OPeNDAP}
+@cindex @acronym{DAP}
 @cindex @acronym{DODS}
 @cindex @acronym{HTTP} protocol
 @cindex @env{DODS_ROOT}
@@ -2451,9 +2454,9 @@ In recognition of this, the data access protocol underlying
 renamed the Open-source Project for a Network Data Access Protocol, 
 @acronym{OPeNDAP}.
 We use the terms @acronym{DODS} and @acronym{OPeNDAP} interchangeably,
-and often write @acronym{DODS}/@acronym{OPeNDAP} for now. 
+and often write @acronym{OPeNDAP}/@acronym{DODS} for now. 
 In the future we will deprecate @acronym{DODS} in favor of
-@acronym{OPeNDAP}
+@acronym{DAP} or @acronym{OPeNDAP}, as appropriate
 @footnote{
 @cindex @acronym{NVODS}
 @cindex National Virtual Ocean Data System
@@ -2472,7 +2475,7 @@ maintains, develops, and promulgates the @acronym{DAP} standard.
 @acronym{OPeNDAP} and @acronym{DAP} really are interchangeable.
 Got it yet?}.
 
-@acronym{NCO} may be @acronym{OPeNDAP}-enabled by linking
+@acronym{NCO} may be @acronym{DAP}-enabled by linking
 @acronym{NCO} to the @acronym{OPeNDAP} libraries. 
 @cindex @file{Makefile}
 This is described in the @acronym{OPeNDAP} documentation and
@@ -2516,7 +2519,7 @@ If you know more about this, please consider writing a section
 on "@acronym{OPeNDAP} Capabilities of Interest to @acronym{NCO} Users"
 for incorporation in the @cite{NCO User's Guide}.}.
 
-Once @acronym{NCO} is @acronym{OPeNDAP}-enabled the operators are
+Once @acronym{NCO} is @acronym{DAP}-enabled the operators are
 @acronym{OPeNDAP} clients.  
 All @acronym{OPeNDAP} clients have network transparent access to
 any files controlled by a @acronym{OPeNDAP} server. 
@@ -2615,9 +2618,9 @@ the current directory.
 
 @cindex @acronym{DODS}
 @cindex server
-If your @acronym{NCO} is @acronym{OPeNDAP}-enabled (@pxref{OPeNDAP}),
+If your @acronym{NCO} is @acronym{DAP}-enabled (@pxref{OPeNDAP}),
 then you may use @acronym{NCO} to retrieve any files (including netCDF,
-@acronym{HDF}, etc.) served by a @acronym{OPeNDAP} server to your local
+@acronym{HDF}, etc.) served by an @acronym{OPeNDAP} server to your local 
 machine. 
 For example, 
 @example

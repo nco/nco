@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.14 2005-06-18 06:22:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.15 2005-07-02 22:55:40 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -12,10 +12,10 @@
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
    As a special exception to the terms of the GPL, you are permitted 
-   to link the NCO source code with the DODS, HDF, netCDF, and UDUnits
+   to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
    libraries and to distribute the resulting executables under the terms 
    of the GPL, but in addition obeying the extra stipulations of the 
-   DODS, HDF, netCDF, and UDUnits licenses.
+   HDF, netCDF, OPeNDAP, and UDUnits licenses.
    
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.14 2005-06-18 06:22:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.14 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.15 2005-07-02 22:55:40 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.15 $";
   const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   const double sleep_tm=0.04; /* [time] interval between successive token requests */
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */

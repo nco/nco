@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.543 2005-07-01 05:33:08 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.544 2005-07-02 22:55:39 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -75,7 +75,7 @@ nco114. Fix nco_var_cnf_dmn() so that returned weight always has same size tally
 nco115. SIGFPE when sum of denominator in ncwa (i.e., sum of weight) is zero
 Users should not be doing weighted averages if denominator sums to zero, but...
 Desired fix here is a graceful exit instead of core dump
-nco123. Add HTTP protocol to fl_get() (independent of DODS)
+nco123. Add HTTP protocol to fl_get() (independent of DAP)
 nco127. Make mss: signal retrieval from NCAR mass store
 nco134. Problem on CRAY with ncra test #2, averaging float whose
 missing value is double:
@@ -275,7 +275,7 @@ nco514. My MPI builds call superfluous linker steps:
         make MPI=Y > foo 2>&1
 nco516. Implement SDO-wide data pipes, e.g., ncra in*.nc | ncwa | ncrename t,tpt foo.nc
         This would bring us one step closer to grid services, too
-nco524. DODS/OPeNDAP memory leak
+nco524. OPeNDAP/DODS memory leak
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncrcat -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l /tmp in.nc in.nc ~/foo.nc > ~/foo 2>&1
 	ncrcat -O -C -l /tmp -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
 	ncrcat -O -C -l /tmp -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc

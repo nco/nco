@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.147 2005-07-02 21:48:34 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.148 2005-07-02 22:55:39 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.0.2 are ready. 
 
@@ -22,8 +22,8 @@ faster processing should upgrade too.
 4. MPI (Gayathri Venkitachalam): New MPI-enabled operators
    mpncflint, mpncecat, mpncwa, mpncpdq, mpncra, 
 
-5. OpenDAP: 
-   ./configure supports OPeNDAP version 3.5.0+
+5. OPeNDAP (Harry Mangalam and James Gallagher): 
+   Makefiles support OPeNDAP version 3.5.0+ by default
    doc/opendap.sh demonstrates installing OPeNDAP netCDF client library
 
 Future: The next release (3.1) will concentrate MPI-enabled NCO.
