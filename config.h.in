@@ -3,14 +3,14 @@
 /* Compatibility pvmgetarch token for AIX on IBM PowerPC */
 #undef AIX
 
+/* Compile operators with OPeNDAP/DODS support */
+#undef ENABLE_DAP
+
 /* Custom debugging: Pedantic, bounds checking (slowest execution) */
 #undef ENABLE_DEBUG_CUSTOM
 
 /* Debugging symbols: Produce symbols for debuggers (e.g., dbx, gdb) */
 #undef ENABLE_DEBUG_SYMBOLS
-
-/* Compile operators with DODS/OpenDAP support */
-#undef ENABLE_DODS
 
 /* Enable Large File Support (LFS) */
 #undef ENABLE_LARGEFILE

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.104 2005-07-02 22:55:37 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.105 2005-07-03 04:04:33 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -234,7 +234,6 @@ i686-pc-linux-gnu
 
 gcc/g++ Zender uses this to install/update NCO in personal directories:
 export GNU_TRP=`~/nco/autobld/config.guess`
-export DAP_ROOT="${DATA}/tmp/DAP"
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='gcc' CXX='g++' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
