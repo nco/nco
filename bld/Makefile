@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.299 2005-07-03 04:39:33 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.300 2005-07-03 04:42:30 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -132,13 +132,14 @@ CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNA
 
 ifeq (${DAP},Y)
 # Build NCO as DAP-enabled clients
-# fxm: OPeNDAP bloats executables, should automagically enable stripping
-# http://www.unidata.ucar.edu/packages/dods/user/guide-html/guide_28.html
+# fxm: OPeNDAP bloats executables, should automagically enable stripping?
+# http://www.opendap.org/user/guide-html/guide_28.html
 ifndef DAP_ROOT
 # Directory containing libdap++.a, libnc-dap.a
  DAP_ROOT := /usr/local
 endif
  NC_LDFLAGS := -L${DAP_ROOT}/lib
+# NB: nc-dods, dap++ prior to version 3.5.X must be linked twice!
 # DODS 3.3-
 # NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
 # DODS 3.4.X
@@ -1132,8 +1133,7 @@ ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 endif
 
 # Link to DAP libraries first, see OPeNDAP User's Guide
-# Currently this is invoked by using 'make DAP=Y' on the command
-# NB: Yes, nc-dods, dap++ must be linked twice!
+# Currently this is invoked by using 'make DAP=Y'
 ifeq (${DAP},Y)
  CPPFLAGS += -DNC_64BIT_OFFSET=0
 ifneq (${CC},g++)
