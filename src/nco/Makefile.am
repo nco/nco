@@ -10,10 +10,10 @@ else
   NCWA=
 endif 
 
-if TEST_DODS
-  DODS_TESTS=test2.sh
+if TEST_DAP
+  DAP_TESTS=test2.sh
 else
-  DODS_TESTS=
+  DAP_TESTS=
 endif
 
 if NCO_NEED_GETOPT_LONG
@@ -76,7 +76,7 @@ nco_lst_utl.c nco_mmr.c nco_msa.c nco_mss_val.c nco_netcdf.c nco_omp.c nco_pck.c
 nco_prn.c nco_rec_var.c nco_rth_utl.c nco_scl_utl.c nco_scm.c nco_sng_utl.c \
 nco_var_avg.c nco_var_lst.c nco_var_rth.c nco_var_scv.c nco_var_utl.c $(HEADER_SRC)
 
-TESTS = test1.sh ${DODS_TESTS}
+TESTS = test1.sh ${DAP_TESTS}
 
 EXTRA_DIST = nco_getopt.c
 
