@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.94 2005-07-03 04:32:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.95 2005-07-03 04:58:41 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -202,16 +202,16 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 #else /* !I18N */
 		"No",
 #endif /* !I18N */
-#if defined(ENABLE_DAP) && (ENABLE_DAP)
-		"Yes",
-#else /* !ENABLE_DAP */
-		"No",
-#endif /* !ENABLE_DAP */
 #if defined(NC_64BIT_OFFSET) && (NC_64BIT_OFFSET != 0)
 		"Yes",
 #else /* !NC_64BIT_OFFSET */
 		"No",
 #endif /* !NC_64BIT_OFFSET */
+#if defined(ENABLE_DAP) && (ENABLE_DAP)
+		"Yes",
+#else /* !ENABLE_DAP */
+		"No",
+#endif /* !ENABLE_DAP */
 #if defined(_OPENMP) && (_OPENMP)
 		"Yes",
 #else /* !_OPENMP */
@@ -243,7 +243,6 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 		"No",
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 		""); /* End of print statement marker */
-
   (void)fprintf(stderr,"\n%s",nco_nmn_get());
 
   lbr_vrs_sng=(char *)nco_free(lbr_vrs_sng);

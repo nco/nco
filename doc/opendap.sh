@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.2 2005-07-02 22:55:40 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.3 2005-07-03 04:58:41 zender Exp $
 
 # Purpose: Install OPeNDAP prior to building NCO as DAP-enabled clients
 
@@ -65,4 +65,4 @@ make
 sudo make install
 
 # Keep DAP libraries in ${DAP_ROOT} so NCO finds them and in the darkness binds them 
-printf "DAP-enabled NCO may now be built. To do so, set environment variable\nDAP_ROOT=${DAP_ROOT}\nand then re-build NCO.\n"
+printf "OPeNDAP installed. DAP-enabled NCO may now be built.\n"

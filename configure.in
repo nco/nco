@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.123 2005-07-03 04:32:01 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.124 2005-07-03 04:58:40 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -140,6 +140,7 @@ nco_LIBS_no_DAP="${LIBS}"
 # definition for NC_64BIT_OFFSET here. This should be fixed in nc-dap 3.6.
 # Sorry about version numbers being confusing... jhrg 6/3/05
 
+# fxm: is DAP_ROOT (or DODS_ROOT) an obselete variable in DAP 3.5+?
 AC_ARG_VAR([DAP_ROOT],[Root of DAP installation] (compile-time))
 AC_ARG_ENABLE(dap,AS_HELP_STRING([--enable-dap],[Build OPeNDAP/DODS-enabled clients if possible [[default=yes]]]),enable_dap=${enableval},enable_dap=yes)
 # Check for DAP libraries unless told not to
@@ -180,36 +181,32 @@ AM_CONDITIONAL(TEST_DAP,[test "${enable_dap}" = 'yes'])
 AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
 AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
 
-# if enable_dap is true, don't look for the real netCDF library. 
-# jhrg 05/26/05
-
+# Look for real netCDF library only if enable_dap is false. jhrg 05/26/05
 if test "$enable_dap" = 'no'; then
-
-# Add user-specified netCDF locations, if any, else add /usr/local/ locations if they exist
-if test "${NETCDF_LIB}"; then
-    if test -d "${NETCDF_LIB}"; then
-	LDFLAGS="${LDFLAGS} -L${NETCDF_LIB}"
+# Add user-specified netCDF locations, if any, else add /usr/local locations if they exist
+    if test "${NETCDF_LIB}"; then
+	if test -d "${NETCDF_LIB}"; then
+	    LDFLAGS="${LDFLAGS} -L${NETCDF_LIB}"
+	else
+	    echo "WARNING: NETCDF_LIB location \"${NETCDF_LIB}\" does not exist!"
+	fi
     else
-	echo "WARNING: NETCDF_LIB location \"${NETCDF_LIB}\" does not exist!"
-    fi
-else
-    if test -d "/usr/local/lib"; then
-	LDFLAGS="-L/usr/local/lib ${LDFLAGS}"
-    fi
-fi
-if test "${NETCDF_INC}"; then
-    if test -d "${NETCDF_INC}"; then
-	CPPFLAGS="${CPPFLAGS} -I${NETCDF_INC}"
+	if test -d "/usr/local/lib"; then
+	    LDFLAGS="-L/usr/local/lib ${LDFLAGS}"
+	fi
+    fi # !NETCDF_LIB
+    if test "${NETCDF_INC}"; then
+	if test -d "${NETCDF_INC}"; then
+	    CPPFLAGS="${CPPFLAGS} -I${NETCDF_INC}"
+	else
+	    echo "WARNING: NETCDF_INC location \"${NETCDF_INC}\" does not exist!"
+	fi
     else
-	echo "WARNING: NETCDF_INC location \"${NETCDF_INC}\" does not exist!"
-    fi
-else
-    if test -d "/usr/local/include"; then
-	CPPFLAGS="-I/usr/local/include ${CPPFLAGS}"
-    fi
-fi
-
-fi # if enable_dap
+	if test -d "/usr/local/include"; then
+	    CPPFLAGS="-I/usr/local/include ${CPPFLAGS}"
+	fi
+    fi # !NETCDF_INC
+fi # enable_dap
 
 AC_CHECK_HEADERS([netcdf.h])
 # NCO does not support netCDF2

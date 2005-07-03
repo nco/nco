@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.545 2005-07-03 04:32:02 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.546 2005-07-03 04:58:40 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -415,6 +415,8 @@ bld42. Adopt orphaned Debian NCO http://bugs.debian.org/cgi-bin/bugreport.cgi?bu
 bld43. Implement Martin Schmidt's suggestion for AIX autoconf builds posted to developer's forum 20050201: {$CC} is not tested for xlc* but for (arbitrary_path/xlc*)
 bld44. Add support for autopackage format: http://www.wildgardenseed.com/apkg/
 bld45. Replace ENABLE_LARGEFILE with test for 64-bit offset support (i.e., netCDF 3.6) in configure.in and nco_ctl.c
+bld46. Is DAP_ROOT (or DODS_ROOT) an obselete variable in DAP 3.5+? if so obsolete it in configure.in, nco.texi
+bld47. 
 ************************************************************************
 End NCO Wish list
 ************************************************************************
