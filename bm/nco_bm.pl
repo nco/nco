@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.46 2005-07-03 06:12:44 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.47 2005-07-03 06:13:11 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -897,7 +897,7 @@ sub perform_tests
 	$tst_cmd[0]="ncra $omp_flg -h -O -v rec_var_flt_mss_val_dbl in.nc foo_avg.nc";
 	$tst_cmd[1]="ncbo $omp_flg -h -O -v rec_var_flt_mss_val_dbl in.nc foo_avg.nc foo.nc";
 	$tst_cmd[1]="ncks -C -H -d time,3 -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
-	$dsc_sng="Difference file with mean to test broadcasting";
+	$dsc_sng="Difference file with mean to test broadcasting (TODO nco550)";
 	$nsr_xpc= -1.0 ; 
 	&go();
 

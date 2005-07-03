@@ -1,5 +1,14 @@
 2005-07-02  Charlie Zender  <zender@uci.edu>
 
+	* Remove thr_nbr argument from ncatted in nco_bm.pl
+
+	* DAP 3.5.1 triggers reproducible double-free() memory error in
+	ncbo step of ncra regression test 16.
+	Problem occurs regardless of OpenMP (soot,elnino) and compiler (gcc,icc)
+	ncra -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
+	ncbo -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
+	free(): invalid pointer 0x80e4a98!
+	
 	* Verified DAP 3.5.1 works with both build mechanisms with
 	gcc NCO/gcc DAP (Debian elnino), and with icc NCO/gcc DAP
 

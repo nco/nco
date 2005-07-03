@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.3 2005-07-03 04:58:41 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.4 2005-07-03 06:12:46 zender Exp $
 
 # Purpose: Install OPeNDAP prior to building NCO as DAP-enabled clients
 
@@ -53,14 +53,18 @@ cd ${DATA}/tmp/libdap-3.5.1
 export DAP_ROOT=/usr/local # For server (rather than private) installs
 #export DAP_ROOT=`pwd` 
 # Set compiler environment variables CC and CXX before building
-# On Opteron, may want to set 64-bit?
+# export OBJECT_MODE='64' # AIX-specific hack
+# AIX:
+# CC='xlc_r' CFLAGS='-qsmp=omp' CXX='xlC_r' LDFLAGS='-brtl' FC='g95' ./configure --prefix=${DAP_ROOT}
+# LINUX:
+FC='g95' ./configure --prefix=${DAP_ROOT}
+# LINUXAMD64: Explicitly set 64-bit?
 # CFLAGS='-m64' CXXFLAGS='-m64' ./configure --prefix=${DAP_ROOT}
-CC='gcc' CXX='g++' FC='g95' ./configure --prefix=${DAP_ROOT}
 # Build necessary libraries
 make
 sudo make install
 cd ${DATA}/tmp/libnc-dap-3.5.1
-CC='gcc' CXX='g++' FC='g95' ./configure --prefix=${DAP_ROOT}
+FC='g95' ./configure --prefix=${DAP_ROOT}
 make
 sudo make install
 

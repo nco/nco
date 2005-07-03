@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.546 2005-07-03 04:58:40 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.547 2005-07-03 06:12:46 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -299,7 +299,11 @@ nco546. Use makeatletter command in CCSM example in nco.texi?
 nco547. Format CCSM example in nco.texi
 nco548. Hyper-link all switches to explanatory sections?
 nco549. Automagically generate opaque-type I/O symbols in nco_typ.h
-nco550. 
+nco550. DAP 3.5.1 triggers reproducible double-free() memory error in
+	ncbo step of ncra regression test 16.
+	Problem occurs regardless of OpenMP (soot,elnino) and compiler (gcc,icc):
+	ncra -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
+	ncbo -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
 
 MPI:
 Archive MPI tests which appear to run correctly 
@@ -416,7 +420,8 @@ bld43. Implement Martin Schmidt's suggestion for AIX autoconf builds posted to d
 bld44. Add support for autopackage format: http://www.wildgardenseed.com/apkg/
 bld45. Replace ENABLE_LARGEFILE with test for 64-bit offset support (i.e., netCDF 3.6) in configure.in and nco_ctl.c
 bld46. Is DAP_ROOT (or DODS_ROOT) an obselete variable in DAP 3.5+? if so obsolete it in configure.in, nco.texi
-bld47. 
+bld47. Add regression test for -Z capability
+bld48. 
 ************************************************************************
 End NCO Wish list
 ************************************************************************
