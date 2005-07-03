@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.122 2005-07-02 22:55:37 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.123 2005-07-03 04:32:01 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -369,6 +369,7 @@ fi
 
 # Begin largefile
 # If --enable-largefile define ENABLE_LARGEFILE
+# fxm: TODO bld45 Obsolete! Replace with test for 64-bit offset support (i.e., netCDF 3.6)
 if test "${enable_largefile}" = 'yes'; then
     AC_DEFINE(ENABLE_LARGEFILE,1,Enable Large File Support (LFS))
 fi

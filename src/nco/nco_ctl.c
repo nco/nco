@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.93 2005-07-02 22:55:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.94 2005-07-03 04:32:02 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -181,12 +181,12 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
   (void)fprintf(stderr,"Linked to netCDF library version %s, compiled %s\n",lbr_vrs_sng,cmp_dat_sng);
   (void)fprintf(stdout,"Homepage URL: http://nco.sf.net\n");
   (void)fprintf(stdout,"User's Guide: http://nco.sf.net/nco.html\n");
-  /* TKN2YESNO is insufficient when TKN is undefined
+  /* fxm: TKN2YESNO breaks when TKN is undefined
      Full macro language like M4 might be useful here, though probably too much trouble */
 #define TKN2YESNO(x) ((x+0) ? ("No"):("Yes"))
   /* Configuration option tokens must be consistent among configure.in, bld/Makefile, and nco_ctl.c
      Arrange tokens alphabetically by first word in English text description */
-  (void)fprintf(stderr,"Configuration Option:\tActive?\tMeaning or Reference:\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nOPeNDAP/DODS clients\t%s\thttp://nco.sf.net/nco.html#DAP\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nLarge File Support\t%s\thttp://nco.sf.net/nco.html#lfs\nOpenMP threading\t%s\thttp://nco.sf.net/nco.html#omp (beta testing)\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nShared libraries built\t%s\tSmall, dynamically linked executables\nStatic libraries built\t%s\tLarge executables with private namespaces\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#UDUnits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
+  (void)fprintf(stderr,"Configuration Option:\tActive?\tMeaning or Reference:\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nnetCDF 64-bit files\t%s\thttp://nco.sf.net/nco.html#lfs\nOPeNDAP/DODS clients\t%s\thttp://nco.sf.net/nco.html#dap\nOpenMP threading\t%s\thttp://nco.sf.net/nco.html#omp\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nShared libraries built\t%s\tSmall, dynamically linked executables\nStatic libraries built\t%s\tLarge executables with private namespaces\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#udunits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
 #if defined(ENABLE_DEBUG_CUSTOM) && (ENABLE_DEBUG_CUSTOM)
 		"Yes",
 #else /* !ENABLE_DEBUG_CUSTOM */
@@ -197,21 +197,21 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 #else /* !ENABLE_DEBUG_SYMBOLS */
 		"No",
 #endif /* !ENABLE_DEBUG_SYMBOLS */
-#if defined(ENABLE_DAP) && (ENABLE_DAP)
-		"Yes",
-#else /* !ENABLE_DAP */
-		"No",
-#endif /* !ENABLE_DAP */
 #if defined(I18N) && (I18N)
 		"Yes",
 #else /* !I18N */
 		"No",
 #endif /* !I18N */
-#if defined(ENABLE_LARGEFILE) && (ENABLE_LARGEFILE)
+#if defined(ENABLE_DAP) && (ENABLE_DAP)
 		"Yes",
-#else /* !ENABLE_LARGEFILE */
+#else /* !ENABLE_DAP */
 		"No",
-#endif /* !ENABLE_LARGEFILE */
+#endif /* !ENABLE_DAP */
+#if defined(NC_64BIT_OFFSET) && (NC_64BIT_OFFSET != 0)
+		"Yes",
+#else /* !NC_64BIT_OFFSET */
+		"No",
+#endif /* !NC_64BIT_OFFSET */
 #if defined(_OPENMP) && (_OPENMP)
 		"Yes",
 #else /* !_OPENMP */

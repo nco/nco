@@ -1,5 +1,8 @@
 2005-07-02  Charlie Zender  <zender@uci.edu>
 
+	* Report NC_64BIT_OFFSET rather than old-fashioned LARGEFILE test
+	with -r option in nco_lbr_vrs_prn()
+
 	* Change 'DODS' to 'DAP' or 'OPeNDAP' where possible in codbase, 
 	e.g., 'enable-dap', make DAP=Y, ENABLE_DAP
 
