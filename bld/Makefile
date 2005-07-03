@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.298 2005-07-03 04:32:01 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.299 2005-07-03 04:39:33 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1135,7 +1135,7 @@ endif
 # Currently this is invoked by using 'make DAP=Y' on the command
 # NB: Yes, nc-dods, dap++ must be linked twice!
 ifeq (${DAP},Y)
- CPPFLAGS+=' -DNC_64BIT_OFFSET=0'
+ CPPFLAGS += -DNC_64BIT_OFFSET=0
 ifneq (${CC},g++)
 # g++ automatically links to -lstdc++, other compilers may need help
  LDFLAGS := ${LDFLAGS} -lstdc++
