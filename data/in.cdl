@@ -40,7 +40,7 @@ variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.60 2005-06-05 22:25:19 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.61 2005-07-03 06:12:45 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -372,6 +372,7 @@ variables:
 	float rec_var_flt_mss_val_dbl(time);
 	rec_var_flt_mss_val_dbl:long_name = "record variable, float, with double missing values";
 	rec_var_flt_mss_val_dbl:missing_value = 1.0e36d;
+	rec_var_flt_mss_val_dbl:note = "The correct average of this variable is 5.0";
 
 	float rec_var_flt_mss_val_int(time);
 	rec_var_flt_mss_val_int:long_name = "record variable, float, with integer missing values";
