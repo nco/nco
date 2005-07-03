@@ -1,5 +1,8 @@
 2005-07-02  Charlie Zender  <zender@uci.edu>
 
+	* Verified DAP 3.5.1 works with both build mechanisms with
+	gcc NCO/gcc DAP (Debian elnino), and with icc NCO/gcc DAP
+
 	* Report NC_64BIT_OFFSET rather than old-fashioned LARGEFILE test
 	with -r option in nco_lbr_vrs_prn()
 
