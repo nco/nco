@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.57 2005-07-01 05:33:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.58 2005-07-04 18:07:52 hmb Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -164,6 +164,8 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     var->dmn_id=(int *)nco_free(var->dmn_id);
     var->srt=(long *)nco_free(var->srt);
     var->cnt=(long *)nco_free(var->cnt);
+    /* 20050704 try and use nco_free() to avoid valgrind error message */
+    var=nco_free(var);
 
     /* Put file back in define mode */
     (void)nco_redef(nc_id);
