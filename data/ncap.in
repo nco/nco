@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.34 2005-04-15 13:03:51 hmb Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.35 2005-07-04 14:30:22 hmb Exp $ -*-C-*-
 
 // Purpose: ncap netCDF Arithmetic Processor Demonstration/Test Script
 
@@ -100,6 +100,7 @@ a3[lat,lon,lev]=one;
 a4[lat,lon,lev]=1.0f-one;
 a5=time;
 a6=time+one_dmn_rec_var;
+a7[time,lat,lev]=3.141d;
 prs_mdp[time,lat,lon,lev]=P0*hyam+hybm*PS; // Works because prs_mdp in LHS cast
 //prs_mdp=P0*hyam+hybm*PS; // Fails because prs_mdp dimension ordering is ambiguous
 //prs_mdp=(four_dmn_rec_var-four_dmn_rec_var+1)*P0*hyam+(four_dmn_rec_var-four_dmn_rec_var+1)*hybm*PS; // Works because prs_mdp is typecast on RHS
