@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.547 2005-07-03 06:12:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.548 2005-07-04 04:45:30 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -301,9 +301,13 @@ nco548. Hyper-link all switches to explanatory sections?
 nco549. Automagically generate opaque-type I/O symbols in nco_typ.h
 nco550. DAP 3.5.1 triggers reproducible double-free() memory error in
 	ncbo step of ncra regression test 16.
-	Problem occurs regardless of OpenMP (soot,elnino) and compiler (gcc,icc):
-	ncra -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
+	Problem occurs regardless of OpenMP (soot,elnino) or compiler (gcc,icc):
+        This DAP problem lead me to discover the following, probably related, problem
+nco551. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
+	ncwa -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
 	ncbo -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
+        nco_err_exit(): ERROR nco_get_vara
+nco552. 
 
 MPI:
 Archive MPI tests which appear to run correctly 

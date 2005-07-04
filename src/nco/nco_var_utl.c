@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.90 2005-07-01 06:20:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.91 2005-07-04 04:45:35 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -604,7 +604,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
 
   var->val.vp=(void *)nco_malloc_dbg(var->sz*nco_typ_lng(var->typ_dsk),"Unable to malloc() value buffer when retrieving variable from disk",fnc_nm);
 
-  if(False) (void)fprintf(stdout,"%s: DEBUG: fxm TODO nco354. Calling nco_get_vara() for variable %s with nc_id=%d, var_id=%d, var_srt=%li, var_cnt = %li, var_val = %g, var_typ = %s\n",prg_nm_get(),var->nm,nc_id,var->id,var->srt[0],var->cnt[0],var->val.dp[0],nco_typ_sng(var->typ_dsk));
+  if(False) (void)fprintf(stdout,"%s: DEBUG: fxm TODO nco354. Calling nco_get_vara() for variable %s with nc_id=%d, var_id=%d, var_srt=%li, var_cnt = %li, var_val = %g, var_typ = %s\n",prg_nm_get(),var->nm,nc_id,var->id,var->srt[0],var->cnt[0],var->val.fp[0],nco_typ_sng(var->typ_dsk));
   /* 20050519: Not sure why following nco_get_var*() routines are SMP-critical
      netCDF library interface is designed to allow parallel reads
      20050629: Removing this critical region causes multiple ncwa/ncra regressions */
