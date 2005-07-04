@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.91 2005-07-04 04:45:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.92 2005-07-04 06:01:54 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -739,7 +739,7 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   var->typ_upk=NC_NAT; /* Type of variable when unpacked (expanded) (in memory) */
   var->is_rec_var=False;
   var->is_crd_var=False;
-  /* Size of 1 is assumed in nco_var_fll() */
+  /* nco_var_fll() assumes size of 1 */
   var->sz=1L;
   var->sz_rec=1L;
   var->cid=-1;

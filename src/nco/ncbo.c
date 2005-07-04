@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.52 2005-07-02 22:55:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.53 2005-07-04 06:01:53 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.52 2005-07-02 22:55:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.52 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.53 2005-07-04 06:01:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.53 $";
   const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim;
@@ -459,6 +459,7 @@ main(int argc,char **argv)
     
     /* Save output variable ID from being overwritten in refresh call */
     var_prc[idx]->id=var_prc_out[idx]->id;
+    /* Find and set variable dmn_nbr, ID, mss_val, type in second file */
     (void)nco_var_mtd_refresh(in_id_2,var_prc_out[idx]);
     
     /* Determine whether var1 and var2 conform */
@@ -469,6 +470,7 @@ main(int argc,char **argv)
       /* Do all dimensions match in sequence? */
       for(dmn_idx=0;dmn_idx<var_prc[idx]->nbr_dim;dmn_idx++){
 	if(
+	   /* fxm: TODO nco551: compare var_1 vs. var_2 dim's here, not var_1 vs. var_out */
 	   strcmp(var_prc_out[idx]->dim[dmn_idx]->nm,var_prc[idx]->dim[dmn_idx]->nm) || /* Dimension names do not match */
 	   (var_prc_out[idx]->dim[dmn_idx]->cnt != var_prc[idx]->dim[dmn_idx]->cnt) || /* Dimension sizes do not match */
 	   False){

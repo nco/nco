@@ -1,3 +1,11 @@
+2005-07-03  Charlie Zender  <zender@uci.edu>
+
+	* Realized that ncbo bug is longstanding/systemic and may
+	require re-writing approach to determining confmormality of var_2. 
+	Current code is expected to break when second file has same name
+	but different-sized dimensions, or has same-sized dimensions in
+	different order, i.e., all sort of corner-cases.
+	
 2005-07-02  Charlie Zender  <zender@uci.edu>
 
 	* Remove thr_nbr argument from ncatted in nco_bm.pl

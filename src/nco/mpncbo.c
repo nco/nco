@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.15 2005-07-02 22:55:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.16 2005-07-04 06:01:53 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.15 2005-07-02 22:55:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.15 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.16 2005-07-04 06:01:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.16 $";
   const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   const double sleep_tm=0.04; /* [time] interval between successive token requests */
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
@@ -582,6 +582,7 @@ main(int argc,char **argv)
 	
 	/* Save output variable ID from being overwritten in refresh call */
 	var_prc[idx]->id=var_prc_out[idx]->id;
+	/* Find and set variable dmn_nbr, ID, mss_val, type in second file */
 	(void)nco_var_mtd_refresh(in_id_2,var_prc_out[idx]);
 	
 	/* Determine whether var1 and var2 conform */

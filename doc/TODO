@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.548 2005-07-04 04:45:30 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.549 2005-07-04 06:01:53 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -304,10 +304,14 @@ nco550. DAP 3.5.1 triggers reproducible double-free() memory error in
 	Problem occurs regardless of OpenMP (soot,elnino) or compiler (gcc,icc):
         This DAP problem lead me to discover the following, probably related, problem
 nco551. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
-	ncwa -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
+	ncra -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
 	ncbo -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
         nco_err_exit(): ERROR nco_get_vara
-nco552. 
+        This should print non-conforming dimensions
+nco552. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
+	ncwa -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
+	ncbo -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
+
 
 MPI:
 Archive MPI tests which appear to run correctly 
