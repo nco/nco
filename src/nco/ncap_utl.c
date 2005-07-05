@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.122 2005-06-22 18:39:07 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.123 2005-07-05 14:50:23 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -310,28 +310,36 @@ ncap_var_var_add /* [fnc] Add two variables */
   /* Purpose: Add two variables */
   /* Store result in var_2 */
   if(var_1->undefined) var_2->undefined=True;
-  if(var_2->undefined) return var_2;
-
+    if(var_2->undefined) {
+    var_1=nco_var_free(var_1);
+    return var_2;
+  }
   (void)ncap_var_retype(var_1,var_2);
    
   /* Handle initial scan */
   if(var_1->val.vp==(void*)NULL ) {
     if(var_1->nbr_dim > var_2->nbr_dim) {
-
       var_2=nco_var_free(var_2);
-      var_2=nco_var_dpl(var_1);
+      return var_1;
+    }else{
+      var_1=nco_var_free(var_1);
+      return var_2;
     }
-    return var_2;
-  }
-    
+  } 
 
   (void)ncap_var_cnf_dmn(&var_1,&var_2);
+  
+  //  if(var_1 != var_chk1) var_chk1 = (var_sct*)nco_var_free(var_chk1);
+  //if(var_2 != var_chk2) var_chk2 = (var_sct*)nco_var_free(var_chk2);
+
   /* fxm: bug in nco_var_add()? missing_value is not carried over to var_2 in result when var_1->has_mss_val is true */
   if(var_1->has_mss_val){
     (void)nco_var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
   }else{
     (void)nco_var_add(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
   } /* end if */
+
+  var_1=nco_var_free(var_1);
   return var_2;
 } /* end ncap_var_var_add() */
 
@@ -342,18 +350,25 @@ ncap_var_var_dvd /* [fnc] Divide two variables (var_2/var_1) */
 {
   /* Purpose: Divide two variables (var_2/var_1) */
 
+  /* Purpose: Divide two variables */
+  /* Store result in var_2 */
   if(var_1->undefined) var_2->undefined=True;
-  if(var_2->undefined) return var_2;
+    if(var_2->undefined) {
+    var_1=nco_var_free(var_1);
+    return var_2;
+  }
   (void)ncap_var_retype(var_1,var_2);
- 
+   
   /* Handle initial scan */
-  if(var_1->val.vp==NULL) {
+  if(var_1->val.vp==(void*)NULL ) {
     if(var_1->nbr_dim > var_2->nbr_dim) {
       var_2=nco_var_free(var_2);
-      var_2=nco_var_dpl(var_1);
+      return var_1;
+    }else{
+      var_1=nco_var_free(var_1);
+      return var_2;
     }
-    return var_2;
-  }  
+  } 
    
 
   (void)ncap_var_cnf_dmn(&var_1,&var_2);
@@ -362,6 +377,8 @@ ncap_var_var_dvd /* [fnc] Divide two variables (var_2/var_1) */
   }else{
     (void)nco_var_dvd(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
   } /* end else */
+
+  var_1=nco_var_free(var_1);
   return var_2;
 } /* end ncap_var_var_dvd() */
 
@@ -370,27 +387,35 @@ ncap_var_var_mlt /* [fnc] Multiply two variables */
 (var_sct *var_1, /* I [sct] Variable structure containing first operand */
  var_sct *var_2) /* I [sct] Variable structure containing second operand */
 {
-  /* Purpose: Multiply two variables variables (var_1*var_2) */
+
+  /* Purpose: Multiply two variables */
+  /* Store result in var_2 */
   if(var_1->undefined) var_2->undefined=True;
-  if(var_2->undefined) return var_2;
-
+    if(var_2->undefined) {
+    var_1=nco_var_free(var_1);
+    return var_2;
+  }
   (void)ncap_var_retype(var_1,var_2);
-
+   
   /* Handle initial scan */
-  if(var_1->val.vp==NULL) {
+  if(var_1->val.vp==(void*)NULL ) {
     if(var_1->nbr_dim > var_2->nbr_dim) {
       var_2=nco_var_free(var_2);
-      var_2=nco_var_dpl(var_1);
+      return var_1;
+    }else{
+      var_1=nco_var_free(var_1);
+      return var_2;
     }
-    return var_2;
-  }  
- 
+  } 
+
   (void)ncap_var_cnf_dmn(&var_1,&var_2);
   if(var_1->has_mss_val){
     (void)nco_var_mlt(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
   }else{
     (void)nco_var_mlt(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
   } /* end else */
+
+  var_1=nco_var_free(var_1);
    return var_2;
 } /* end ncap_var_var_mlt() */
 
@@ -400,19 +425,26 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
  var_sct *var_2) /* I [sct] Variable structure containing divisor */
 {
   /* Purpose: Remainder (modulo) operation of two variables (var_1%var_2) */
+  /* Store result in var_2 */
   if(var_1->undefined) var_2->undefined=True;
-  if(var_2->undefined) return var_2;
-
+    if(var_2->undefined) {
+    var_1=nco_var_free(var_1);
+    return var_2;
+  }
   (void)ncap_var_retype(var_1,var_2);
-
+   
   /* Handle initial scan */
-  if(var_1->val.vp==NULL) {
+  if(var_1->val.vp==(void*)NULL ) {
     if(var_1->nbr_dim > var_2->nbr_dim) {
       var_2=nco_var_free(var_2);
-      var_2=nco_var_dpl(var_1);
+      return var_1;
+    }else{
+      var_1=nco_var_free(var_1);
+      return var_2;
     }
-    return var_2;
-  }  
+  } 
+
+
  
   (void)ncap_var_cnf_dmn(&var_1,&var_2);
   if(var_1->has_mss_val){
@@ -420,6 +452,8 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
   }else{
     (void)nco_var_mod(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
   } /* end else */
+   
+   var_1=nco_var_free(var_1);
    return var_2;
 } /* end ncap_var_var_mod() */
 
@@ -429,23 +463,34 @@ ncap_var_var_pwr /* [fnc] Empowerment of two variables */
  var_sct *var_2) /* I [sct] Variable structure containing exponent */
 {
   /* Purpose: Empower two variables (var_1^var_2) */
-  if(var_1->undefined) var_2->undefined=True;
-  if(var_2->undefined) return var_2;
 
-  
+
+
+
+
+  /* Purpose: Add two variables */
+  /* Store result in var_2 */
+  if(var_1->undefined) var_2->undefined=True;
+    if(var_2->undefined) {
+    var_1=nco_var_free(var_1);
+    return var_2;
+  }
   /* make sure vars are at least float */
   if(var_1 ->type < NC_FLOAT && var_2->type <NC_FLOAT ) var_1=nco_var_cnf_typ((nc_type)NC_FLOAT,var_1);
-  (void)ncap_var_retype(var_1,var_2);
+
+  (void)ncap_var_retype(var_1,var_2);   
 
   /* Handle initial scan */
-  if(var_1->val.vp==NULL) {
+  if(var_1->val.vp==(void*)NULL ) {
     if(var_1->nbr_dim > var_2->nbr_dim) {
       var_2=nco_var_free(var_2);
-      var_2=nco_var_dpl(var_1);
+      return var_1;
+    }else{
+      var_1=nco_var_free(var_1);
+      return var_2;
     }
-    return var_2;
-  }  
- 
+  } 
+
   (void)ncap_var_cnf_dmn(&var_1,&var_2);
   if(var_1->has_mss_val){
     (void)nco_var_pwr(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
@@ -461,22 +506,26 @@ ncap_var_var_sub /* [fnc] Subtract two variables (var_2-var_1) */
  var_sct *var_1) /* I [sct] Variable structure containing first operand */
 {
   /* Purpose: Subtract a variable from another variable */
-  
+
+  /* Purpose: Add two variables */
+  /* Store result in var_2 */
   if(var_1->undefined) var_2->undefined=True;
-  if(var_2->undefined) return var_2;
-  
+    if(var_2->undefined) {
+    var_1=nco_var_free(var_1);
+    return var_2;
+  }
   (void)ncap_var_retype(var_1,var_2);
-
-
+   
   /* Handle initial scan */
-  if(var_1->val.vp==NULL) {
+  if(var_1->val.vp==(void*)NULL ) {
     if(var_1->nbr_dim > var_2->nbr_dim) {
       var_2=nco_var_free(var_2);
-      var_2=nco_var_dpl(var_1);
+      return var_1;
+    }else{
+      var_1=nco_var_free(var_1);
+      return var_2;
     }
-    return var_2;
-  }  
-   
+  } 
 
   (void)ncap_var_cnf_dmn(&var_1,&var_2);
   if(var_1->has_mss_val){
@@ -484,6 +533,7 @@ ncap_var_var_sub /* [fnc] Subtract two variables (var_2-var_1) */
   }else{
     (void)nco_var_sbt(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
   }/* end else */
+  var_1=nco_var_free(var_1);
   return var_2;
 } /* end ncap_var_var_sub() */
 
