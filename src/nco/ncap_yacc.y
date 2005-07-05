@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.36 2005-07-02 22:55:40 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.37 2005-07-05 14:58:53 hmb Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -278,7 +278,7 @@ PRINT '(' var_xpr ')' ';' {
 | out_var_xpr '=' scv_xpr
 {
   var_sct *var;
-  
+  var_sct *var_tmp;  
   if(dbg_lvl_get() > 5) (void)fprintf(stderr,"%s: DEBUG out_var_xpr = scv_xpr rule for %s\n",prg_nm_get(),$1);
   
   /* Turn attribute into temporary variable for writing */
@@ -296,8 +296,13 @@ PRINT '(' var_xpr ')' ';' {
     /* User intends LHS to cast RHS to same dimensionality
        Stretch newly initialized variable to size of LHS template */
     /*    (void)ncap_var_cnf_dmn(&$$,&(((prs_sct *)prs_arg)->var_LHS));*/
-    (void)ncap_var_stretch(&var,&(((prs_sct *)prs_arg)->var_LHS));
-    
+    var_tmp=var;
+    (void)ncap_var_stretch(&var_tmp,&(((prs_sct *)prs_arg)->var_LHS));
+    if(var_tmp != var) {
+      var=nco_var_free(var);
+      var=var_tmp;
+	}
+
     if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching former scv_xpr defining %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$1,((prs_sct *)prs_arg)->var_LHS->nm,((prs_sct *)prs_arg)->var_LHS->nbr_dim,((prs_sct *)prs_arg)->var_LHS->sz);
   } /* endif LHS_cst */
 
@@ -338,7 +343,7 @@ scv_xpr: /* scv_xpr results from RHS action which involves only scv_xpr's
 	    One action exists for each binary and unary attribute-valid operator */
 scv_xpr '+' scv_xpr {
   (void)ncap_scv_scv_cnf_typ_hgh_prc(&$1,&$3);
-  $$=ncap_scv_clc($1,'+',$3);                                
+  $$=ncap_scv_clc($1,'+',$3);                            
 }
 | scv_xpr '-' scv_xpr {
   (void)ncap_scv_scv_cnf_typ_hgh_prc(&$1,&$3); 
@@ -472,11 +477,6 @@ var_xpr: /* var_xpr results from RHS action which involves a var_xpr, i.e.,
 	    OP var, var OP var, var OP att, att OP var */
 var_xpr '+' var_xpr { /* Begin Addition */
   $$=ncap_var_var_add($1,$3); 
-  /* 20050628: Original cleanup always free()d $1 with nco_var_free($1)
-     However, $3 would not be free()d if it were also $$ 
-     Hence try new cleanup where both $1 and $3 may be free()'d */
-  if($$ != $1) nco_var_free($1);
-  if($$ != $3) nco_var_free($3);
 }
 | var_xpr '+' scv_xpr {
   $$=ncap_var_scv_add($1,$3);
@@ -487,7 +487,6 @@ var_xpr '+' var_xpr { /* Begin Addition */
 }  /* End Addition */
 | var_xpr '-' var_xpr { /* Begin Subtraction */
   $$=ncap_var_var_sub($1,$3);
-  nco_var_free($3);
 }
 | var_xpr '-' scv_xpr {
   $$=ncap_var_scv_sub($1,$3);
@@ -504,7 +503,6 @@ var_xpr '+' var_xpr { /* Begin Addition */
 } /* End Subtraction */
 | var_xpr '*' var_xpr { /* Begin Multiplication */
   $$=ncap_var_var_mlt($1,$3); 
-  nco_var_free($1); 
 }
 | var_xpr '*' scv_xpr {
   $$=ncap_var_scv_mlt($1,$3);
@@ -518,18 +516,16 @@ var_xpr '+' var_xpr { /* Begin Addition */
      This is no longer true with ncbo
      Maybe rewrite to keep argument ordering consitent with multiplication, addition */
   $$=ncap_var_var_dvd($3,$1);
-  nco_var_free($3); 
 }
 | var_xpr '/' scv_xpr { /* Keep V as I/O */
   $$=ncap_var_scv_dvd($1,$3);
 }
 | scv_xpr '/' var_xpr {
-  /* Division is non-commutative, use S/V not V/S division function */
+ /* Division is non-commutative, use S/V not V/S division function */
   $$=ncap_scv_var_dvd($1,$3);
 } /* End Division */
 | var_xpr '%' var_xpr { /* Begin Modulo */
   $$=ncap_var_var_mod($1,$3);
-  nco_var_free($1); 
 }
 | var_xpr '%' scv_xpr {
   $$=ncap_var_scv_mod($1,$3);
@@ -540,7 +536,6 @@ var_xpr '+' var_xpr { /* Begin Addition */
 } /* End Modulo */
 | var_xpr '^' var_xpr { /* Begin Empowerment of form x^y */
   $$=ncap_var_var_pwr($1,$3);
-  nco_var_free($1); 
 }
 | var_xpr '^' scv_xpr {
   $$=ncap_var_scv_pwr($1,$3);
@@ -552,7 +547,6 @@ var_xpr '+' var_xpr { /* Begin Addition */
 | POWER '(' var_xpr ',' var_xpr ')' { /* Begin Empowerment of form pow(x,y) */
   /* fxm: TODO ncap52 Combine pow() with ^ parsing in parser ncap_yacc.y */
   $$=ncap_var_var_pwr($3,$5);
-  nco_var_free($3); 
 }
 | POWER '(' var_xpr ',' scv_xpr ')' {
   $$=ncap_var_scv_pwr($3,$5);
@@ -644,8 +638,13 @@ var_xpr '+' var_xpr { /* Begin Addition */
     /* User intends LHS to cast RHS to same dimensionality
        Stretch newly initialized variable to size of LHS template */
     /*    (void)ncap_var_cnf_dmn(&$$,&(((prs_sct *)prs_arg)->var_LHS));*/
-    (void)ncap_var_stretch(&var,&(prs_drf->var_LHS));
-    
+    var_tmp=var;
+    (void)ncap_var_stretch(&var_tmp,&(prs_drf->var_LHS));
+    if(var_tmp != var) { 
+      var=nco_var_free(var); 
+      var=var_tmp;
+    }
+  
     if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching variable %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),var->nm,prs_drf->var_LHS->nm,prs_drf->var_LHS->nbr_dim,prs_drf->var_LHS->sz);
     var->undefined=False;
   } /* endif LHS_cst */
