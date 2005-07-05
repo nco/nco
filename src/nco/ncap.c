@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.169 2005-07-02 22:55:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.170 2005-07-05 14:48:26 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.169 2005-07-02 22:55:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.169 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.170 2005-07-05 14:48:26 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.170 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -747,8 +747,9 @@ main(int argc,char **argv)
   } /* end loop */
   if(nbr_att >0 ) att_lst=(aed_sct **)nco_free(att_lst);
 
-  /* Free extraction list */ 
+  /* Free extraction lists */ 
   xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
+  xtr_lst_a=nco_nm_id_lst_free(xtr_lst_a,nbr_lst_a);
 
   /* Free command line algebraic arguments, if any */
   for(idx=0;idx<nbr_spt;idx++) spt_arg[idx]=(char *)nco_free(spt_arg[idx]);
