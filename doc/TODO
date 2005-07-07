@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.549 2005-07-04 06:01:53 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.550 2005-07-07 01:12:31 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -403,10 +403,9 @@ ncap68. Purify ncap memory:
 ncap70. gamma() function broken on AIX
 ncap71. Remove erf and gamma functions from AIX build
 ncap72. Stop linking to -lC on AIX. Get all float math functions by casting double versions
-ncap73. ncap: ncap_var_cnf_dmn() leaks:
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncap -O -v -s "foo=one+one" -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
-ncap74. 
-
+ncap74. ncap: ncap_var_stretch() leaks:
+        valgrind --leak-check=yes --show-reachable=yes --tool=memcheck ncap -O -v -s "a7[time,lat,lon]=3.14d" ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
+ncap75. 
 
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
