@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.53 2005-07-04 06:01:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.54 2005-07-07 18:23:12 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -114,11 +114,12 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.53 2005-07-04 06:01:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.53 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.54 2005-07-07 18:23:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.54 $";
   const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
-  dmn_sct **dim;
+  dmn_sct **dim_1;
+  dmn_sct **dmn_2;
   dmn_sct **dmn_out;
   
   extern char *optarg;
@@ -139,7 +140,8 @@ main(int argc,char **argv)
   int in_id_2;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_dmn_fl;
-  int nbr_dmn_xtr;
+  int nbr_dmn_xtr_1;
+  int nbr_dmn_xtr_2;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
@@ -154,7 +156,7 @@ main(int argc,char **argv)
   lmt_sct **lmt;
   
   nm_id_sct *dmn_lst;
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst may bealloc()'d from NULL with -c option */
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
   
   time_t time_crr_time_t;
   
@@ -330,22 +332,22 @@ main(int argc,char **argv)
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
   
   /* Find dimensions associated with variables to be extracted */
-  dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
+  dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr_1);
   
   /* Fill in dimension structure for all extracted dimensions */
-  dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
+  dim_1=(dmn_sct **)nco_malloc(nbr_dmn_xtr_1*sizeof(dmn_sct *));
+  for(idx=0;idx<nbr_dmn_xtr_1;idx++) dim_1[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
   /* Dimension list no longer needed */
-  dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr);
+  dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr_1);
   
   /* Merge hyperslab limit information into dimension structures */
-  if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
+  if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim_1,nbr_dmn_xtr_1,lmt,lmt_nbr);
   
   /* Duplicate input dimension structures for output dimension structures */
-  dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_xtr;idx++){
-    dmn_out[idx]=nco_dmn_dpl(dim[idx]);
-    (void)nco_dmn_xrf(dim[idx],dmn_out[idx]); 
+  dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr_1*sizeof(dmn_sct *));
+  for(idx=0;idx<nbr_dmn_xtr_1;idx++){
+    dmn_out[idx]=nco_dmn_dpl(dim_1[idx]);
+    (void)nco_dmn_xrf(dim_1[idx],dmn_out[idx]); 
   } /* end loop over idx */
   
   if(dbg_lvl > 3){
@@ -359,7 +361,7 @@ main(int argc,char **argv)
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
-    var[idx]=nco_var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
+    var[idx]=nco_var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim_1,nbr_dmn_xtr_1);
     var_out[idx]=nco_var_dpl(var[idx]);
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
@@ -385,7 +387,7 @@ main(int argc,char **argv)
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
   
   /* Define dimensions in output file */
-  (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
+  (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr_1);
   
   /* Define variables in output file, copy their attributes */
   (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil);
@@ -444,7 +446,7 @@ main(int argc,char **argv)
   /* OpenMP notes:
      shared(): msk and wgt are not altered within loop
      private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) private(DO_CONFORM,MUST_CONFORM,idx) shared(dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1,in_id_2,nbr_dmn_xtr,nbr_var_prc,nco_op_typ,out_id,prg_nm,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(DO_CONFORM,MUST_CONFORM,idx) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1,in_id_2,nbr_dmn_xtr_1,nbr_var_prc,nco_op_typ,out_id,prg_nm,var_prc,var_prc_out)
 #endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc;idx++){
     int var_id; /* [id] Variable ID */
@@ -493,7 +495,7 @@ main(int argc,char **argv)
       /* var1 and var2 have differing numbers of dimensions so make var2 conform to var1 */
       var_prc_out[idx]=nco_var_free(var_prc_out[idx]);
       (void)nco_inq_varid(in_id_2,var_prc[idx]->nm,&var_id);
-      var_prc_out[idx]=nco_var_fll(in_id_2,var_id,var_prc[idx]->nm,dim,nbr_dmn_xtr);
+      var_prc_out[idx]=nco_var_fll(in_id_2,var_id,var_prc[idx]->nm,dim_1,nbr_dmn_xtr_1);
       (void)nco_var_get(in_id_2,var_prc_out[idx]);
       
       /* Pass dummy pointer so we do not lose track of original */
@@ -581,8 +583,8 @@ main(int argc,char **argv)
   for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
   if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
   /* Free dimension lists */
-  if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
-  if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr);
+  if(nbr_dmn_xtr_1 > 0) dim_1=nco_dmn_lst_free(dim_1,nbr_dmn_xtr_1);
+  if(nbr_dmn_xtr_1 > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr_1);
   /* Free variable lists */
   if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
   if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);

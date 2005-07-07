@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.46 2005-04-10 07:04:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.47 2005-07-07 18:23:13 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -21,7 +21,7 @@ nco_var_lst_mk_old /* [fnc] Create variable extraction list */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int idx;
 
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst may bealloc()'d from NULL with -c option */
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
 
   if(*nbr_xtr > 0){
     /* If user named variables with -v option then check validity of user's list and find IDs */

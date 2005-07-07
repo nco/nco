@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.22 2005-04-17 06:09:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.23 2005-07-07 18:23:13 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -132,9 +132,11 @@ nco_dmn_lmt_mrg /* [fnc] Merge limit structure information into dimension struct
   int lmt_idx;
 
   for(idx=0;idx<nbr_dmn;idx++){
-    /* Decide whether this dimension has any user-specified limits */
+    /* Does this dimension have user-specified limits? */
     for(lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
-      if(lmt[lmt_idx]->id == dmn[idx]->id){
+      /* 20050707: Match on name not ID so nco_dmn_lmt_mrg() works with single
+	 limit list applied to any input file */
+      if(!strcmp(lmt[lmt_idx]->nm,dmn[idx]->nm)){
 	dmn[idx]->cnt=lmt[lmt_idx]->cnt;
 	dmn[idx]->srt=lmt[lmt_idx]->srt;
 	dmn[idx]->end=lmt[lmt_idx]->end;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.78 2005-07-01 06:02:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.79 2005-07-07 18:23:13 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -194,7 +194,7 @@ extern "C" {
   
   /* Limit structure */
   typedef struct { /* lmt_sct */
-    char *nm; /* [sng] Variable name */
+    char *nm; /* [sng] Dimension name */
     int lmt_typ; /* crd_val or dmn_idx */
     /* Following four flags are used only by multi-file operators ncra and ncrcat: */
     bool is_usr_spc_lmt; /* True if any part of limit is user-specified, else False */
