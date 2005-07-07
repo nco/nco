@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.550 2005-07-07 01:12:31 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.551 2005-07-07 19:08:35 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -311,7 +311,8 @@ nco551. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
 nco552. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
 	ncwa -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
 	ncbo -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
-
+nco553. ncap stretch multiple problems TODO ncap75
+nco554. 
 
 MPI:
 Archive MPI tests which appear to run correctly 
@@ -405,7 +406,13 @@ ncap71. Remove erf and gamma functions from AIX build
 ncap72. Stop linking to -lC on AIX. Get all float math functions by casting double versions
 ncap74. ncap: ncap_var_stretch() leaks:
         valgrind --leak-check=yes --show-reachable=yes --tool=memcheck ncap -O -v -s "a7[time,lat,lon]=3.14d" ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
-ncap75. 
+ncap75. ncap stretch multiple problem: 1. Operations fail. 2. Multiplication and addition cause different errors
+
+        ncap -O -v -s "var_txyz[time,lon,lat,lev]=txyz*tx/td;" ~/nco/data/in.nc ~/foo.nc
+	ncap: ERROR 1 dimensions of td belong to template tx but 1 dimensions do not
+
+        ncap -O -v -s "var_txyz[time,lon,lat,lev]=txyz+tx+td;" ~/nco/data/in.nc ~/foo.nc
+	Segmentation fault
 
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
