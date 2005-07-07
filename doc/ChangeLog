@@ -1,5 +1,7 @@
 2005-07-07  Charlie Zender  <zender@uci.edu>
 
+	* Add td,tx,ty,tz,txyz variables to in.cdl
+
 	* Match limit with dimension based on name not ID so
 	 nco_dmn_lmt_mrg() works with single limit list on any input file
 
