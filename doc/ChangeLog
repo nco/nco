@@ -1,9 +1,17 @@
 2005-07-07  Charlie Zender  <zender@uci.edu>
 
+	* Fix small leak in ncap_var_stretch() TODO ncap74
+	ncap now appears to be leak-proofed!
+	
+	* Added lots or mirror fl_1=fl_2 code to ncbo in preparation 
+	for attempted solution to subtraction problems related to
+	asymmetry. In plain English: copied lots of code, didn't solve any
+	problems yet.
+
 	* Add td,tx,ty,tz,txyz variables to in.cdl
 
 	* Match limit with dimension based on name not ID so
-	 nco_dmn_lmt_mrg() works with single limit list on any input file
+	nco_dmn_lmt_mrg() works with single limit list on any input file
 
 2005-07-03  Charlie Zender  <zender@uci.edu>
 

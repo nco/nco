@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.551 2005-07-07 19:08:35 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.552 2005-07-08 00:06:18 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -311,7 +311,6 @@ nco551. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
 nco552. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
 	ncwa -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
 	ncbo -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
-nco553. ncap stretch multiple problems TODO ncap75
 nco554. 
 
 MPI:
@@ -349,7 +348,6 @@ valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgri
 valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncea -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -v one_dmn_rec_var_sng -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc foo.nc > ~/foo 2>&1
 
 ncap-specific items:
-ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
 ncap07. Combine binary operations into binary_op_var_var and binary_op_var_att types to reduce number of functions
 ncap09. Add outer loop over files so script may apply to each file
 ncap12. Ensure lexer does not perform un-necessary work during initial_scan (e.g., LHS casting...)
@@ -394,18 +392,13 @@ ncap -D 1 -O -v -s "foo=log(e_flt+0.01f)^1" ~/nco/data/in.nc ~/foo.nc
 # Works on AIX
 ncap -D 1 -O -v -s "foo=log(e_dbl)^1" ~/nco/data/in.nc ~/foo.nc
 ncap -D 1 -O -v -s "foo=sin(e_dbl)^1" ~/nco/data/in.nc ~/foo.nc
-ncap58. Implement ncap test script in nco_tst.pl format so that errors are flagged at build-time.
 ncap59. ncap always gives points in first quadrant for
 ncap -O -v -s 'water_dir=(180/4*atan(1))*(atan(water_v/water_u) + 4 * atan(1) * ((water_u-abs(water_u))/(-2*water_u)))'
 ncap60. Add capability to create character string variables that contain any string, given only a pre-existing dimension size capable of holding the string
 ncap66. make ncap errors fatal, either in yyerror(), or call nco_error_exit()
-ncap68. Purify ncap memory:
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncap -O -S ${HOME}/nco/data/ncap.in -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 ncap70. gamma() function broken on AIX
 ncap71. Remove erf and gamma functions from AIX build
 ncap72. Stop linking to -lC on AIX. Get all float math functions by casting double versions
-ncap74. ncap: ncap_var_stretch() leaks:
-        valgrind --leak-check=yes --show-reachable=yes --tool=memcheck ncap -O -v -s "a7[time,lat,lon]=3.14d" ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
 ncap75. ncap stretch multiple problem: 1. Operations fail. 2. Multiplication and addition cause different errors
 
         ncap -O -v -s "var_txyz[time,lon,lat,lev]=txyz*tx/td;" ~/nco/data/in.nc ~/foo.nc
