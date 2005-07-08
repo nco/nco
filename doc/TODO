@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.553 2005-07-08 00:32:45 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.554 2005-07-08 00:37:03 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -406,6 +406,8 @@ ncap75. ncap stretch multiple problems: 1. Operations fail. 2. Multiplication an
 
         ncap -O -v -s "var_txyz[time,lon,lat,lev]=txyz+tx+td;" ~/nco/data/in.nc ~/foo.nc
 	Segmentation fault
+	
+
 ncap76. 
 
 Build items:
