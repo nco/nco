@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.552 2005-07-08 00:06:18 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.553 2005-07-08 00:32:45 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -399,13 +399,14 @@ ncap66. make ncap errors fatal, either in yyerror(), or call nco_error_exit()
 ncap70. gamma() function broken on AIX
 ncap71. Remove erf and gamma functions from AIX build
 ncap72. Stop linking to -lC on AIX. Get all float math functions by casting double versions
-ncap75. ncap stretch multiple problem: 1. Operations fail. 2. Multiplication and addition cause different errors
+ncap75. ncap stretch multiple problems: 1. Operations fail. 2. Multiplication and addition cause different errors
 
         ncap -O -v -s "var_txyz[time,lon,lat,lev]=txyz*tx/td;" ~/nco/data/in.nc ~/foo.nc
 	ncap: ERROR 1 dimensions of td belong to template tx but 1 dimensions do not
 
         ncap -O -v -s "var_txyz[time,lon,lat,lev]=txyz+tx+td;" ~/nco/data/in.nc ~/foo.nc
 	Segmentation fault
+ncap76. 
 
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
