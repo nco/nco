@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.46 2005-07-05 14:52:16 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.47 2005-07-08 00:11:53 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -332,76 +332,19 @@ ncap_var_cnf_dmn /* [fnc] Broadcast smaller variable into larger */
   var_1_org=*var_1; /* [ptr] Original location of var_1 */
   var_2_org=*var_2; /* [ptr] Original location of var_2 */
   
-
-  if(var_1_org->nbr_dim > var_2_org->nbr_dim) {
+  if(var_1_org->nbr_dim > var_2_org->nbr_dim){
     var_tmp=nco_var_cnf_dmn(var_1_org,var_2_org,var_tmp,MUST_CONFORM,&DO_CONFORM);
-    if( var_2_org != var_tmp) {
+    if(var_2_org != var_tmp){
       var_2_org=nco_var_free(var_2_org);
       *var_2=var_tmp;
-    }
+    } /* endif replace var_2 */
   }else{ 
     var_tmp=nco_var_cnf_dmn(var_2_org,var_1_org,var_tmp,MUST_CONFORM,&DO_CONFORM);
-    if( var_1_org != var_tmp) {
+    if(var_1_org != var_tmp){
       var_1_org=nco_var_free(var_1_org);
       *var_1=var_tmp;
-    }
-  }
-  /* fxm: Memory leak?
-     nco_var_cnf_dmn() does not do its own memory handling
-     If original var_1 or var_2 was overwritten (replaced by conforming variable),
-     then free() original now before its location is lost.
-     Inequality between pointers on entry and exit indicates variable was promoted
-     20020114: Freeing variables here causes core dump, not sure why
-     20050628: Attempting to free these again to fix TODO ncap73 */
-  /*  if(*var_1 != var_1_org) var_1_org=nco_var_free(var_1_org);*/
-  /*  if(*var_2 != var_2_org) var_2_org=nco_var_free(var_2_org);*/
-
-  if(!DO_CONFORM){
-    (void)fprintf(stderr,"%s: ncap_var_cnf_dmn() reports that variables %s and %s do not have have conforming dimensions. Cannot proceed with operation\n",prg_nm_get(),(*var_1)->nm,(*var_2)->nm);
-    nco_exit(EXIT_FAILURE);
-  } /* endif */
-
-  return DO_CONFORM; /* [flg] Do var_1 and var_2 conform after processing? */
-} /* end ncap_var_cnf_dmn() */
-
-
-
-
-bool /* [flg] var_1 and var_2 conform after processing */
-ncap_var_cnf_dmn_old /* [fnc] Broadcast smaller variable into larger */
-(var_sct **var_1, /* I/O [ptr] First variable */
- var_sct **var_2) /* I/O [ptr] Second variable */
-{
-  /* Purpose: Conform lesser ranked to greater ranked variable, so that
-     both variables are equal size on return.
-     If this is possible then return true, otherwise die.
-     Routine wraps nco_var_cnf_dmn(), which does the hard work
-     If an input variable is replaced by a broadcast version of itself,
-     then the original version should be free()d or this routine will leak. */
-
-  bool DO_CONFORM; /* [flg] Do var_1 and var_2 conform after processing? */
-  bool MUST_CONFORM=True; /* [flg] Must var_1 and var_2 conform? */
-  var_sct *var_1_org; /* [ptr] Original location of var_1 */
-  var_sct *var_2_org; /* [ptr] Original location of var_2 */
-
-  var_1_org=*var_1; /* [ptr] Original location of var_1 */
-  var_2_org=*var_2; /* [ptr] Original location of var_2 */
-  
-
-  if(var_1_org->nbr_dim > var_2_org->nbr_dim) 
-    *var_2=nco_var_cnf_dmn(var_1_org,var_2_org,NULL,MUST_CONFORM,&DO_CONFORM); 
-  else 
-    *var_1=nco_var_cnf_dmn(var_2_org,var_1_org,NULL,MUST_CONFORM,&DO_CONFORM);
-  
-  /* fxm: Memory leak?
-     nco_var_cnf_dmn() does not do its own memory handling
-     If original var_1 or var_2 was overwritten (replaced by conforming variable),
-     then free() original now before its location is lost.
-     Inequality between pointers on entry and exit indicates variable was promoted
-     20020114: Freeing variables here causes core dump, not sure why
-     20050628: Attempting to free these again to fix TODO ncap73 */
-  /*  if(*var_1 != var_1_org) var_1_org=nco_var_free(var_1_org);*/
-  /*  if(*var_2 != var_2_org) var_2_org=nco_var_free(var_2_org);*/
+    } /* endif replace var_1 */
+  } /* endif var_1 > var_2 */
 
   if(!DO_CONFORM){
     (void)fprintf(stderr,"%s: ncap_var_cnf_dmn() reports that variables %s and %s do not have have conforming dimensions. Cannot proceed with operation\n",prg_nm_get(),(*var_1)->nm,(*var_2)->nm);
