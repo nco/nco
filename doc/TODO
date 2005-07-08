@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.554 2005-07-08 00:37:03 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.555 2005-07-08 00:48:56 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -399,15 +399,6 @@ ncap66. make ncap errors fatal, either in yyerror(), or call nco_error_exit()
 ncap70. gamma() function broken on AIX
 ncap71. Remove erf and gamma functions from AIX build
 ncap72. Stop linking to -lC on AIX. Get all float math functions by casting double versions
-ncap75. ncap stretch multiple problems: 1. Operations fail. 2. Multiplication and addition cause different errors
-
-        ncap -O -v -s "var_txyz[time,lon,lat,lev]=txyz*tx/td;" ~/nco/data/in.nc ~/foo.nc
-	ncap: ERROR 1 dimensions of td belong to template tx but 1 dimensions do not
-
-        ncap -O -v -s "var_txyz[time,lon,lat,lev]=txyz+tx+td;" ~/nco/data/in.nc ~/foo.nc
-	Segmentation fault
-	
-
 ncap76. 
 
 Build items:

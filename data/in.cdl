@@ -40,7 +40,7 @@ variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.62 2005-07-07 18:43:49 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.63 2005-07-08 00:48:44 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -698,7 +698,7 @@ data:
 			15,16,
 			17,18,
 			19,20;
-	tx=		1,2,3,
+	tz=		1,2,3,
 			4,5,6,
 			7,8,9,
 			10,11,12,
