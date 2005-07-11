@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.301 2005-07-11 02:22:38 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.302 2005-07-11 07:01:45 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -787,7 +787,7 @@ ifeq (icc,$(firstword ${CC}))
  CPPFLAGS += -no-gcc
  OMP_FLG := -openmp -openmp_report0
 ifeq (${OPTS},O)
- CFLAGS += -O3 -g -ipo ${ICC_RCH_ARG}
+ CFLAGS += -O3 -g ${ICC_RCH_ARG}
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g
@@ -1256,6 +1256,10 @@ ${MY_BIN_DIR}/ncbo:	${MY_OBJ_DIR}/ncbo.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f ncdiff; ln -s -f ncbo ncdiff
+# 20050710: -axW flag causes icc to die compiling ncecat 
+ifeq (icc,$(firstword ${CC}))
+ncecat : CFLAGS := $(filter-out -axW,${CFLAGS})
+endif # endif Intel (Kai) C Compiler
 ncecat:   ${MY_BIN_DIR}/ncecat
 ${MY_BIN_DIR}/ncecat:	${MY_OBJ_DIR}/ncecat.o lib
 	${CC} -o $@ $< ${LDFLAGS}

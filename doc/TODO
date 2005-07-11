@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.555 2005-07-08 00:48:56 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.556 2005-07-11 07:01:46 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -422,7 +422,8 @@ bld44. Add support for autopackage format: http://www.wildgardenseed.com/apkg/
 bld45. Replace ENABLE_LARGEFILE with test for 64-bit offset support (i.e., netCDF 3.6) in configure.in and nco_ctl.c
 bld46. Is DAP_ROOT (or DODS_ROOT) an obselete variable in DAP 3.5+? if so obsolete it in configure.in, nco.texi
 bld47. Add regression test for -Z capability
-bld48. 
+bld48. Implement icc/icpc optimization switches
+bld49. 
 ************************************************************************
 End NCO Wish list
 ************************************************************************

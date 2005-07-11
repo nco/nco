@@ -1,3 +1,14 @@
+2005-07-10  Charlie Zender  <zender@uci.edu>
+
+	* Verified icc passes regressions tests and icpc-compiled
+	libnco_c++.a works as intended. Have not tried with autotools yet.
+	Nor have I tested MPI programs with icc.
+
+	* -axW flag causes icc to die compiling ncecat 
+	Implement target-specific workaround in bld/Makefile
+
+	* Implement Intel 8.1 compiler compatibility
+
 2005-07-07  Charlie Zender  <zender@uci.edu>
 
 	* Fix small leak in ncap_var_stretch() TODO ncap74

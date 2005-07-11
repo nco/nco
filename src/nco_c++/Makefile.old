@@ -1,9 +1,10 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.32 2005-06-10 04:35:47 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.33 2005-07-11 07:01:47 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
-# scp ~/nco/src/nco_c++/Makefile.old goldhill.cgd.ucar.edu:nco/src/nco_c++
 # scp ~/nco/src/nco_c++/Makefile.old esmf.ess.uci.edu:nco/src/nco_c++
+# scp ~/nco/src/nco_c++/Makefile.old soot.ess.uci.edu:nco/src/nco_c++
+# scp ~/nco/src/nco_c++/Makefile.old goldhill.cgd.ucar.edu:nco/src/nco_c++
 
 # Copyright (C) 1994--2004 Charlie Zender
 # This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
@@ -70,23 +71,26 @@ ifndef ${DBG}
 # Debugging token N=No (default) Y=Yes
  DBG := N
 endif # endif DBG
-ifndef I18N
- I18N := Y
- MY_SHR_DIR := ${HOME}/share
- MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
- MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
-endif # endif I18N
 ifndef GCC_RCH_ARG
  GCC_RCH_ARG :=
 endif # endif GCC_RCH_ARG
+ifndef I18N
 ifdef GSL_LIB
  GSL_LIB := -L${GSL_LIB}
 else
  GSL_LIB := $(shell gsl-config --libs)
 endif # endif GSL_LIB
+ I18N := Y
+ MY_SHR_DIR := ${HOME}/share
+ MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
+ MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
+endif # endif I18N
+ifndef ICC_RCH_ARG
+ ICC_RCH_ARG :=
+endif # endif ICC_RCH_ARG
 ifndef MK_DPN
  MK_DPN = ${CPP} -M # NB: Recursive expansion required
- MK_DPN_C++ = ${C++} -M # NB: Recursive expansion required
+ MK_DPN_CXX = ${CXX} -M # NB: Recursive expansion required
 endif # endif MK_DPN
 ifndef NETCDF_INC
  NETCDF_INC := /usr/local/include 
@@ -129,7 +133,7 @@ ifndef LINUX_CXX
 # C++ compiler for Linux
  LINUX_CXX := g++
  #LINUX_CXX := como
- #LINUX_CXX := icc
+ #LINUX_CXX := icpc
  #LINUX_CXX := insure
  #LINUX_CXX := pgCC
 endif # endif LINUX_CXX
@@ -219,7 +223,7 @@ MDL_INC = $(addprefix ${MY_INC_DIR}/,${MDL_INC_STB}) # dst_cln removes these fil
 ${MY_OBJ_DIR}/%.o : %.c
 	${CC} ${CPPFLAGS} ${CFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
 ${MY_OBJ_DIR}/%.o : %.cc
-	${C++} ${CPPFLAGS} ${C++FLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
 
 # Default Fortran pattern rules: CRAY and RS6K must override these rules
 ${MY_OBJ_DIR}/%.o : %.F
@@ -267,10 +271,10 @@ ${MY_DPN_DIR}/%.d : %.c
 	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
 
 ${MY_DPN_DIR}/%.d : %.cc
-# NB: Use ${C++} rather than ${CPP} on C++ files for now because, e.g., SUNMP cpp does not 
+# NB: Use ${CXX} rather than ${CPP} on C++ files for now because, e.g., SUNMP cpp does not 
 # preprocess .cc files quite correctly
 #	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$*.o $@/g;' > $@
-	${C++} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
+	${CXX} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
 
 # The first LDFLAGS is for typical C programs with netCDF, math, and networking
 # The second LDFLAGS enables C/Fortran linking
@@ -291,8 +295,8 @@ ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 # 20030804: Always use re-entrant (_r) compilers---Jim Edwards NCAR/IBM 
 CC := xlc_r -qlanglvl=extc99
 #CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
-C++ := xlC_r
-# C++ := g++
+CXX := xlC_r
+# CXX := g++
 # fxm: 20040311 should this be cpp? gcc -M?
 CPP := xlc -c -qlanglvl=extc99
 ifneq (${null},$(findstring xl,${CC}))
@@ -387,16 +391,16 @@ ifeq (${OPTS},X)
 endif
 ifeq (${ABI},64)
  CC += -maix64 
- C++ += -maix64 
+ CXX += -maix64 
 endif # endif ABI
- C++FLAGS := ${CFLAGS}
+ CXXFLAGS := ${CFLAGS}
 endif # endif GNU Compiler Collection
 # -q64: Select 64-bit compiler mode (required for accessing large files)
 # -qwarn64: Warn on possible long-to-integer or pointer-to-integer truncation
-C++FLAGS := ${CFLAGS}
+CXXFLAGS := ${CFLAGS}
 ifeq (${OMP},Y)
  CFLAGS += ${OMP_FLG_C}
- C++FLAGS += ${OMP_FLG_C}
+ CXXFLAGS += ${OMP_FLG_C}
  FFLAGS += ${OMP_FLG_F}
 # LD behavior assumes C source code
  LDFLAGS := ${OMP_FLG_C} ${LDFLAGS}
@@ -408,8 +412,8 @@ ifeq (${PVM_ARCH},ALPHA)
 ifeq (${OMP},Y)
  OMP_FLG := -omp
 endif # endif OMP
-C++ := cxx -std strict_ansi
-#C++ := cxx -std ansi -D__NO_USE_STD_IOSTREAM
+CXX := cxx -std strict_ansi
+#CXX := cxx -std ansi -D__NO_USE_STD_IOSTREAM
 CC := cc
 CFLAGS := ${OMP_FLG}
 # OSF1 is for CCM compatibility
@@ -438,7 +442,7 @@ ifeq (${OPTS},X)
  CFLAGS := -g -N 132
  FFLAGS := -g -check bounds -check omp_bindings -check overflow -check underflow
 endif
-C++FLAGS := ${CFLAGS}
+CXXFLAGS := ${CFLAGS}
 ${MY_OBJ_DIR}/%.o : %.F90
 	${FC} -c ${FREEFLAGS} ${FFLAGS} ${CPPFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
 ${MY_OBJ_DIR}/%.o : %.F
@@ -447,7 +451,7 @@ endif
 # endif ALPHA
 
 ifeq (${PVM_ARCH},CRAY)
-C++ := g++
+CXX := g++
 CC := cc
 CPP := cpp
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
@@ -484,9 +488,9 @@ endif
 
 # Works on LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSD))
-C++ := ${LINUX_CXX}
+CXX := ${LINUX_CXX}
 CC := ${LINUX_CC}
-CPP := ${C++}
+CPP := ${CXX}
 # HAVE_INLINE is GNU standard to activate inline functions (used by GSL)
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DHAVE_INLINE ${CPP_PTH} -I${NETCDF_INC} 
 FC := ${LINUX_FC}
@@ -496,7 +500,7 @@ LEX := flex
 LINT := lint
 YACC := bison
 # Comeau C Compiler
-ifeq (${C++},como)
+ifeq (${CXX},como)
  CFLAGS := 
  LDFLAGS := ${COMOROOT}/libcomo/libcomo.a ${LDFLAGS}
 ifeq (${OPTS},O)
@@ -511,7 +515,7 @@ endif
 ifeq (${OPTS},X)
  CFLAGS += -g
 endif
- C++FLAGS := ${CFLAGS}
+ CXXFLAGS := ${CFLAGS}
 endif # endif Comeau C Compiler
 # GNU Compiler Collection
 ifneq (${null},$(findstring gcc,${CC}))
@@ -564,17 +568,41 @@ ifeq (${ABI},64)
  LDFLAGS += -m64
 endif # endif ABI
 endif # endif LINUXAMD64
- C++FLAGS := ${CFLAGS}
+ CXXFLAGS := ${CFLAGS}
 endif # endif GNU Compiler Collection
 # Intel (Kai) C++ Compiler
-ifeq (${CC},icc)
- CFLAGS := -Wall
- CPPFLAGS += -I${IA32ROOT}/include
-ifdef OMP
- OMP_FLG := -openmp -openmp_report0
+ifeq (icpc,$(firstword ${CXX}))
+# -cxxlib-gcc: link using C++ run-time libraries provided with GCC
+# -cxxlib-icc: link using C++ run-time libraries provided by Intel
+# -fast: enable -xP -O3 -ipo -static
+# -ipo[n]: enable multi-file IP optimizations (between files)
+# -no-gcc: do not define  __GNUC__, __GNUC_MINOR__, and __GNUC_PATCHLEVEL__ macros
+# -static: prevents linking with shared libraries
+# -std=c99: Enable C99 support for C programs
+# -aX<codes>: generate generic IA32 code and code specialized for processors specified by <codes> where codes are one or more of following:
+# B: Intel Pentium M and compatible Intel processors
+# K: Intel Pentium III and compatible Intel processors
+# N: Intel Pentium 4 and compatible Intel processors
+# P: Intel Pentium 4 processors with SSE3 extensions
+# W: Intel Pentium 4 and compatible Intel processors
+# -x<codes>: same as -aX only no generic code, run exclusively on <codes>
+# -Wall: enable all warnings
+# -Werror:force warnings to be reported as errors
+# -w0: display errors (same as -w)
+# -w1: display warnings and errors (DEFAULT)
+# -w2: display remarks, warnings, and errors
+# -wd<L1>[,<L2>,...] disable diagnostics L1 through LN
+# remark #981: operands are evaluated in unspecified order
+# remark #810: conversion from "double" to "float" may lose significant bits
+# remark #1572: floating-point equality and inequality comparisons are unreliable
+ CFLAGS := -w1
+ CPPFLAGS += -I${IA32ROOT}/include -I${IA32ROOT}/include/c++
+ LDFLAGS += -cxxlib-icc
+ifeq (${OMP},Y)
+ OMP_FLG_C := -openmp -openmp_report0
 endif # endif OMP
 ifeq (${OPTS},O)
- CFLAGS += -O
+ CFLAGS += -O3 -g ${ICC_RCH_ARG}
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g
@@ -583,25 +611,39 @@ ifeq (${OPTS},R)
  CFLAGS +=
 endif
 ifeq (${OPTS},X)
- CFLAGS += -g
+ CFLAGS += -g -Wall -wd810,981,1572 -inline_debug_info
 endif
- C++FLAGS := ${CFLAGS}
+ CXXFLAGS := ${CFLAGS}
 endif # endif Intel (Kai) C++ Compiler
 # Intel (Kai) Fortran Compiler
-ifeq (${FC},ifc)
-# -e95 issues warnings for non-standard fortran
-# -fpp2 necessary, but not sufficient, for  OpenMP
- FFLAGS := -extend_source -implicitnone -vms -e95 -fpp2
-# -lVaxlib needed for iargc_, getarg_
- LDFLAGS += -lVaxlib
- OMP_FLG := -openmp
+ifeq (${FC},ifort)
+# -132: specify 132 column lines for fixed form sources (same as -extend_source)
+# -axW: generate generic IA32 code and specialized code exclusively for Pentium 4 processors (requires linking to libsvml.a)
+# -fast: enable -xP -O3 -ipo -static
+# -fpconstant: extend precision of single precision constants assigned to double precision variables to double precision
+# -fpp2: necessary, but not sufficient, for  OpenMP
+# -ftz: enable/disable flush denormal results to zero
+# -ip: enable single-file IP optimizations
+# -ipo: enable multi-file IP optimizations
+# -module: specifies path to place .mod files
+# -mp: maintain floating point precision (disables some optimizations)
+# -nus: do not append an underscore to external subroutine names
+# -vec_report1: indicate vectorized loops (DEFAULT)
+# -tune pn4: optimize for Pentium(R) 4 processor (DEFAULT)
+# -us: append an underscore to external subroutine names
+# -vms: enable VMS and DEC statement extensions
+# -w95: supress warnings for non-standard fortran (which includes OpenMP)
+ FFLAGS := -extend_source -fpconstant -fpp2 -implicitnone -us -w95 -mp
+# -lsvml needed with -[a]xW
+ LDFLAGS += -lsvml
+ OMP_FLG_F := -openmp
 ifeq (${PRC},D)
- FFLAGS += -i4 -r8 -doubletemps
+ FFLAGS += -i4 -r8
 else
  FFLAGS += -i4
 endif
 ifeq (${OPTS},O)
- FFLAGS += -O2
+ FFLAGS += -O3 -g -vec_report1 -ftz ${ICC_RCH_ARG}
 endif
 ifeq (${OPTS},D)
  FFLAGS += -g
@@ -610,11 +652,13 @@ ifeq (${OPTS},R)
  FFLAGS += 
 endif
 ifeq (${OPTS},X)
+# -C: extensive runtime diagnostics
+# -e95 issues warnings for non-standard fortran (which includes OpenMP)
  FFLAGS += -g -C -e95
 endif
-endif # endif Intel (Kai) Fortran Compiler
+endif # end Intel (Kai) Fortran Compiler
 # Portland Group C++ Compiler
-ifeq (${C++},pgCC)
+ifeq (${CXX},pgCC)
 # Enable Large File Support (LFS) by default
  CFLAGS := -Mlfs
  LDFLAGS += -Mlfs
@@ -631,7 +675,7 @@ endif
 ifeq (${OPTS},X)
  CFLAGS += -g -Mbounds
 endif
- C++FLAGS := ${CFLAGS}
+ CXXFLAGS := ${CFLAGS}
 endif # endif Portland Group C++ Compiler
 # Portland Group Fortran Compiler
 ifeq (${FC},pgf90)
@@ -678,7 +722,7 @@ endif
 # endif LINUX
 
 ifeq (${PVM_ARCH},MACOSX)
-C++ := c++
+CXX := c++
 CC := cc
 CFLAGS := -Wall
 CPP := ${CC}
@@ -702,7 +746,7 @@ ifeq (${OPTS},X)
  CFLAGS += -g -O
  LDFLAGS += /usr/local/lib/ccmalloc-gcc.o -L/usr/local/lib -lccmalloc -ldl
 endif
-C++FLAGS := ${CFLAGS}
+CXXFLAGS := ${CFLAGS}
 ifeq (${OMP},Y)
  CFLAGS += ${OMP_FLG}
  FFLAGS += ${OMP_FLG}
@@ -715,7 +759,7 @@ ifeq (${PVM_ARCH},NECSX)
 ifeq (${OMP},Y)
  OMP_FLG := -Popenmp
 endif # endif OMP
-C++ := c++
+CXX := c++
 #CC := c++ -Xa
 CC := cc
 CPP := c++ -E
@@ -751,7 +795,7 @@ endif
 # endif NECSX
 
 ifeq (${PVM_ARCH},RS6K)
-C++ := g++
+CXX := g++
 CC := gcc -ansi
 CPP := /lib/cpp -P
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
@@ -786,10 +830,10 @@ endif
 
 # SGI6, SGI64, SGIMP64
 ifneq (,$(findstring SGI,${PVM_ARCH}))
-#C++ := CC -LANG:std
+#CXX := CC -LANG:std
 #CC := cc
 # 20000302: -w suppresses warnings which will swamp linker
-C++ := g++ -w
+CXX := g++ -w
 CC := gcc
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90 -cpp
@@ -826,7 +870,7 @@ endif
 ifeq (${OPTS},X)
  CFLAGS += -g -O
 endif
- C++FLAGS := ${CFLAGS}
+ CXXFLAGS := ${CFLAGS}
 endif
 # endif CC=gcc
 ifeq (${CC},cc)
@@ -866,9 +910,9 @@ endif
 # endif SGI6, SGI64, SGIMP64
 
 ifeq (${UNAMES},SunOS) 
-#C++ := CC
+#CXX := CC
 #CC := cc
-C++ := g++
+CXX := g++
 CC := gcc
 CFLAGS := -Wall
 CPP := cpp
@@ -912,12 +956,12 @@ ifeq (${FC},f77)
  FFLAGS += -C
 endif
 endif
- C++FLAGS := ${CFLAGS}
+ CXXFLAGS := ${CFLAGS}
 endif
 # endif SunOS=SUN4SOL2,SUNMP
 
 ifeq (${PVM_ARCH},WIN32)
-C++ := g++-2
+CXX := g++-2
 CC := gcc-2 -ansi
 CPP := cpp-2
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
@@ -973,7 +1017,7 @@ obj_dir :
 TST_OBJ := ${MY_OBJ_DIR}/tst.o
 tst:	lib ${MY_BIN_DIR}/tst
 ${MY_BIN_DIR}/tst:	$(TST_OBJ)
-	${C++} -o $@ $(TST_OBJ) ${LDFLAGS}
+	${CXX} -o $@ $(TST_OBJ) ${LDFLAGS}
 	chmod 755 $@
 
 bin : ${MDL_BIN_TRG}
@@ -1021,20 +1065,22 @@ clean : cln
 cln : dat_cln dpn_cln obj_cln
 debug: dbg
 dbg:
-	@printf "C++ = ${C++}\n"
-	@printf "C++FLAGS = ${C++FLAGS}\n"
 	@printf "CC = ${CC}\n"
 	@printf "CFLAGS = ${CFLAGS}\n"
 	@printf "CPP = ${CPP}\n"
 	@printf "CPPFLAGS = ${CPPFLAGS}\n"
 	@printf "CPP_PTH = ${CPP_PTH}\n"
 	@printf "CPP_TKN = ${CPP_TKN}\n"
+	@printf "CXX = ${CXX}\n"
+	@printf "CXXFLAGS = ${CXXFLAGS}\n"
 	@printf "DBG = ${DBG}\n"
 	@printf "FC = ${FC}\n"
 	@printf "FFLAGS = ${FFLAGS}\n"
+	@printf "GCC_RCH_ARG = ${GCC_RCH_ARG}\n"
 	@printf "GSL_LIB = ${GSL_LIB}\n"
 	@printf "HOST = ${HOST}\n"
 	@printf "HOSTNAME = ${HOSTNAME}\n"
+	@printf "ICC_RCH_ARG = ${ICC_RCH_ARG}\n"
 	@printf "LDFLAGS = ${LDFLAGS}\n"
 	@printf "MDL_DPN = ${MDL_DPN}\n"
 	@printf "MDL_OBJ = ${MDL_OBJ}\n"
