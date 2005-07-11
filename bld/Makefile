@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.300 2005-07-03 04:42:30 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.301 2005-07-11 02:22:38 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -189,7 +189,7 @@ ifndef LINUX_CXX
 # C++ compiler for Linux
  LINUX_CXX := g++
  #LINUX_CXX := como
- #LINUX_CXX := icc
+ #LINUX_CXX := icpc
  #LINUX_CXX := insure
  #LINUX_CXX := pgCC
 endif # endif LINUX_CXX
@@ -765,11 +765,29 @@ endif # endif LINUXAMD64
 endif # endif GNU Compiler Collection
 # Intel (Kai) C Compiler
 ifeq (icc,$(firstword ${CC}))
+# -fast: enable -xP -O3 -ipo -static
+# -ipo[n]: enable multi-file IP optimizations (between files)
+# -no-gcc: do not define  __GNUC__, __GNUC_MINOR__, and __GNUC_PATCHLEVEL__ macros
+# -static: prevents linking with shared libraries
+# -std=c99: Enable C99 support for C programs
+# -xB: specialize code to run exclusively on Intel Pentium M and compatible Intel processors
+# -xK: specialize code to run exclusively on Intel Pentium III and compatible Intel processors
+# -xN: specialize code to run exclusively on Intel Pentium 4 and compatible Intel processors
+# -xP: specialize code to run exclusively on Intel Pentium 4 processors with SSE3 extensions
+# -Wall: enable all warnings
+# -Werror:force warnings to be reported as errors
+# -w0: display errors (same as -w)
+# -w1: display warnings and errors (DEFAULT)
+# -w2: display remarks, warnings, and errors
+# -wd<L1>[,<L2>,...] disable diagnostics L1 through LN
+# remark #981: operands are evaluated in unspecified order
+# remark #810: conversion from "double" to "float" may lose significant bits
+# remark #1572: floating-point equality and inequality comparisons are unreliable
  CFLAGS := -w1
  CPPFLAGS += -no-gcc
  OMP_FLG := -openmp -openmp_report0
 ifeq (${OPTS},O)
- CFLAGS += -O3 -g
+ CFLAGS += -O3 -g -ipo ${ICC_RCH_ARG}
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g
