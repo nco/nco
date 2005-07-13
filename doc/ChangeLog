@@ -2,11 +2,12 @@
 
 	* Verified icc passes regressions tests and icpc-compiled
 	libnco_c++.a works as intended. Have not tried with autotools yet.
-	Nor have I tested MPI programs with icc.
+	Have not yet tested MPI programs with icc.
 
 	* -axW flag causes icc to die compiling ncecat 
+	This appears to be an icc bug
 	Implement target-specific workaround in bld/Makefile
-
+	
 	* Implement Intel 8.1 compiler compatibility
 
 2005-07-07  Charlie Zender  <zender@uci.edu>
