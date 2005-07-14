@@ -1,5 +1,20 @@
 2005-07-14  Charlie Zender  <zender@uci.edu>
 
+	* Put more icc flags in configure.in
+
+	* MPI NCO with icc successfully compiles and execute on Fedora
+	It failed to execute with message "lamd not running"
+	until "lamboot" command was executed first to setup LAM/MPI
+	environment. Debian machines need no such initial setup.
+	After logging out and in once, MPI NCO ran fine without having
+	to run lamboot first. Apparently it's just a one-time setup
+	(per machine? or per user?)
+
+	* Verified that MPI NCO works with GCC on dual opteron machines
+
+	* Add -D_POSIX_SOURCE to default gcc and icc flags to fix compiler
+	warnings in ncap_lex.l
+
 	* Add -D_BSD_SOURCE to default icc flags to fix MPI with icc
 
 2005-07-10  Charlie Zender  <zender@uci.edu>

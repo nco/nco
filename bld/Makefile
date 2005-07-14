@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.304 2005-07-14 20:37:25 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.305 2005-07-14 21:40:00 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -181,7 +181,7 @@ ifdef LINUX_CC
  LINUX_CC := $(subst icc,mpicc,${LINUX_CC})
  LINUX_CC := $(subst gcc,mpicc,${LINUX_CC})
 else
- LINUX_CC := mpicc -std=c99 -pedantic -D_BSD_SOURCE
+ LINUX_CC := mpicc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
 endif # endif LINUX_CC
 endif # endif LINUX
 endif # endif MPI
@@ -217,17 +217,6 @@ ifndef LINUX_CXX
 # GCC 3.3 fails in atomicity.h with -O, -O0, and -O2 so use 3.4 instead 
  LINUX_CXX := g++
 endif # endif LINUX_CXX
-ifndef LINUX_CC
- LINUX_CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
-endif # endif LINUX_CC
-ifndef LINUX_FC
- LINUX_FC := g95
-endif # endif LINUX_FC
-endif # endif LINUXAMD64
-ifeq (${PVM_ARCH},LINUXALPHA)
- LINUX_FC := g77
-endif # endif LINUXALPHA
-endif # endif LINUX
 
 # OpenMP
 ifeq (${OMP},Y)
@@ -441,7 +430,7 @@ ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 # 20030804: Always use re-entrant (_r) compilers---Jim Edwards NCAR/IBM 
 ifneq (${MPI},Y)
  CC := xlc_r -qlanglvl=extc99
-#CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
+#CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
  CXX := xlC_r
 # CXX := g++
  CPP := xlc -c -qlanglvl=extc99 -I/usr/lpp/ppe.poe/include

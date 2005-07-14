@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.33 2005-07-11 07:01:47 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.34 2005-07-14 21:40:01 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -139,9 +139,9 @@ ifndef LINUX_CXX
 endif # endif LINUX_CXX
 ifndef LINUX_CC
 # C compiler for Linux
- LINUX_CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
+ LINUX_CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
  #LINUX_CC := como --c99
- #LINUX_CC := icc -std=c99
+ #LINUX_CC := icc -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE
  #LINUX_CC := insure
  #LINUX_CC := pgcc
 endif # endif LINUX_CC
@@ -156,10 +156,10 @@ endif # endif LINUX_CC
 ifeq (${PVM_ARCH},LINUXAMD64)
 ifndef LINUX_CXX
 # GCC 3.3 fails in atomicity.h with -O, -O0, and -O2 so use 3.4 instead 
- LINUX_CXX := g++-4.0
+ LINUX_CXX := g++
 endif # endif LINUX_CXX
 ifndef LINUX_CC
- LINUX_CC := gcc-4.0 -std=c99 -pedantic -D_BSD_SOURCE
+ LINUX_CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
 endif # endif LINUX_CC
 ifndef LINUX_FC
  LINUX_FC := g95
@@ -294,7 +294,7 @@ endif # SGI
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 # 20030804: Always use re-entrant (_r) compilers---Jim Edwards NCAR/IBM 
 CC := xlc_r -qlanglvl=extc99
-#CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
+#CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
 CXX := xlC_r
 # CXX := g++
 # fxm: 20040311 should this be cpp? gcc -M?
