@@ -1,3 +1,7 @@
+2005-07-14  Charlie Zender  <zender@uci.edu>
+
+	* Add -D_BSD_SOURCE to default icc flags to fix MPI with icc
+
 2005-07-10  Charlie Zender  <zender@uci.edu>
 
 	* Verified icc passes regressions tests and icpc-compiled

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.556 2005-07-11 07:01:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.557 2005-07-14 20:37:26 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -317,7 +317,7 @@ MPI:
 Archive MPI tests which appear to run correctly 
 These form initial regression test for MPI
 1. ncbo
-mpirun -np 2 ${MY_BIN_DIR}/mpncbo -O -C -d lon,1 ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc > ~/foo 2>&1
+mpirun -np 2 ${MY_BIN_DIR}/mpncbo -O -C -d lon,1 ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
 
 Valgrind:
 Archive valgrind commands which are memory-error and leak-free
