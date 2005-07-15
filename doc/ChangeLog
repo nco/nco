@@ -1,10 +1,14 @@
 2005-07-14  Charlie Zender  <zender@uci.edu>
 
+	* MPI NCO with icc 9.0 appears to work on dual Opterons!
+
+	* OpenMP NCO with icc 9.0 passes regression tests on dual Opterons!
+
 	* Change nco_mmr_typ to enumerated type to fix icc warning on Opteron
 
 	* Put more icc flags in configure.in
 
-	* MPI NCO with icc successfully compiles and execute on Fedora
+	* MPI NCO with icc 8.1 successfully compiles and execute on Fedora
 	It failed to execute with message "lamd not running"
 	until "lamboot" command was executed first to setup LAM/MPI
 	environment. Debian machines need no such initial setup.
