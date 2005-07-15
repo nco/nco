@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/mk_bm_plots.pl,v 1.1 2005-07-15 18:05:22 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/mk_bm_plots.pl,v 1.2 2005-07-15 18:37:00 mangalam Exp $
 
 # use this script to plot the data from the daemon-recorded benchmark info
 # located at: sand:/var/log/nco_benchmark.log
@@ -8,7 +8,10 @@
 # typically by host, 'bench', possibly specific operator or thread number.
 # The filtered data can be piped into this script which currently expects a data format like:
 # commandline|timing data (the last 2 fields of the nco_benchmark.log) like so
-# grep sand nco_benchmark.log |grep bench|cut -d'|' -f'3,4' | ./mk_bm_plots.pl
+# grep sand nco_benchmark.log |grep bench|cut -d'|' -f'2,3' | ./mk_bm_plots.pl
+
+# NB: tho note that the format of the UDP records is changing so there will probably be failures if 
+# the UDP format and this file are not kep in sync.
 
 # Currently runs gnuplot on the datafiles it generates to produce a postscript file 
 # that is date-stamped in the filename and noted at the end of the run eg:
@@ -34,10 +37,12 @@ use strict; # Protect all namespaces
 # Declare vars for strict
 use vars qw( @cmdline @nco_tim_info $thr_num %nc %tim_dta $num_nco_stz @nco_stz @clin_bits
 $num_bits @nco_stz $num_nco_stz $nco_name @nco_tim_dta $gnuplot_data_file @nco_name_array
-$tim_dta_end $cmdfile $ps_file
+$tim_dta_end $cmdfile $ps_file $filetimestamp
 );
 $thr_num = 0;   
 $tim_dta_end = 5; # number of variables to be plotted (to expand if start adding more rusage() vars)
+$filetimestamp = `date +%F_%T`; chomp $filetimestamp;
+$filetimestamp =~ s/://g; # ':' interfere with scp
 
 #grep bench nco_benchmark_log_file |grep AIX (or whatever OS you want) | scut --c1="2 3" --id1='\|' --od='\' > output_file
 # will yeild : commandline  ]  nco timing stuff
@@ -127,7 +132,6 @@ sub write_nco_data {
 # thread   wall  real  user  sys   and   other   rusage   params    spread    across    the    top
 # and then 1 gnuplot command file to read them all in and plot them
 	#open the file
-	my $filetimestamp = `date +%F+%R`; chomp $filetimestamp;
 	for (my $r=0; $r<$num_nco_stz;$r++) {
 		$nco_name = $nco_name_array[$r];
 		my $datafile = "$nco_name.$filetimestamp.gnuplot";
@@ -150,7 +154,6 @@ sub write_nco_data {
 sub write_gnuplot_cmds {
 	# need to write 1 command file that plots all the files to a single postscript file
 	#open file
-	my $filetimestamp = `date +%F+%R`; chomp $filetimestamp;
 	$cmdfile = "nco_bm.$filetimestamp.gnuplot";
 	$ps_file = "nco.benchmarks_$filetimestamp.ps";
 	print "cmdfile name: $cmdfile\n\n";
