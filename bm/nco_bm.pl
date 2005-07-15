@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.49 2005-07-04 06:01:35 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.50 2005-07-15 18:05:22 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -28,7 +28,8 @@ $md5 $MY_BIN_DIR $notbodi $nsr_xpc $omp_flg $opr_fmt $opr_lng_max @opr_lst
 $result $rgr $server_ip $server_name $server_port $sock $spc_fmt $spc_nbr
 $spc_nbr_min $spc_sng %subbenchmarks %success %sym_link $thr_nbr $tmr_app
 %totbenchmarks @tst_cmd $tst_fl_cr8 $tst_fmt $tst_id_sng $tst_idx %tst_nbr
-$udp_reprt $udp_rpt $usg $wnt_log $xpt_dsc
+$udp_reprt $udp_rpt $usg $wnt_log $xpt_dsc $timed $sys_time @sys_tim_arr
+%real_tme %usr_tme %sys_tme $mpi @opr_lst_mpi $mpi_prefix  $timestamp
 );
  
 my @fl_cr8_dat;  # holds the strings for the fl_cr8() routine 
@@ -51,12 +52,14 @@ $MY_BIN_DIR = $nvr_my_bin_dir;
 $dodap = '';
 $fl_pth = '';
 $que = 0;
-$thr_nbr=0; # If not zero, pass explicit threading argument 
+$thr_nbr = 0; # If not zero, pass explicit threading argument 
 $tst_fl_cr8 = "0";
 $udp_rpt = 0;
 $usg = 0;
 $wnt_log = 0;
 $md5 = 0;
+$mpi = 0;
+$timestamp = `date -u "+%x %R"`; chomp $timestamp;
 
 # other inits
 $localhostname = `hostname`;
@@ -75,21 +78,23 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'bm'           => \$bm,         # Run benchmarks 
 	'dbg_lvl=i'    => \$dbg_lvl,    # debug level
 	'debug=i'      => \$dbg_lvl,    # debug level
-	'dods=s'       => \$dodap,     
-	'dap=s'        => \$dodap,     
-	'opendap=s'    => \$dodap,     
+	'dods=s'       => \$dodap,      # string is the URL to the DODs data
+	'dap=s'        => \$dodap,      #  "
+	'opendap=s'    => \$dodap,      #  "
 	'h'            => \$usg,        # explains how to use this thang
-	'help'         => \$usg,        # explains how to use this thang
+	'help'         => \$usg,        #            ditto
 	'log'          => \$wnt_log,    # set if want output logged
+	'mpi'          => \$mpi,        # set number of mpi processes
 	'queue'        => \$que,        # if set, bypasses all interactive stuff
 	'regress'      => \$rgr,        # test regression 
 	'rgr'          => \$rgr,        # test regression 
 	'test_files=s' => \$tst_fl_cr8, # Create test files "134" does 1,3,4
 	'tst_fl=s'     => \$tst_fl_cr8, # Create test files "134" does 1,3,4
-	'thr_nbr=i'    => \$thr_nbr,    # Number of threads to use
-	'udpreport'    => \$udp_rpt,  # punt the timing data back to udpserver on sand
+	'thr_nbr=i'    => \$thr_nbr,    # Number of OMP threads to use
+	'udpreport'    => \$udp_rpt,    # punt the timing data back to udpserver on sand
 	'usage'        => \$usg,        # explains how to use this thang
-	'xpt_dsc=s'    => \$xpt_dsc,    # [sng] Experiment description
+	'caseid=s'     => \$xpt_dsc,    # short string to tag test dir and batch queue
+	'xpt_dsc=s'    => \$xpt_dsc,    #                   ditto
 	'md5'          => \$md5,        # requests md5 checksumming results (longer but more exacting)
 );
 
@@ -106,6 +111,14 @@ if($dbg_lvl > 0){printf ("$prg_nm: \$nvr_data = $nvr_data\n");} # endif dbg
 if($dbg_lvl > 0){printf ("$prg_nm: \$nvr_home = $nvr_home\n");} # endif dbg
 if($dbg_lvl > 0){printf ("$prg_nm: \$nvr_my_bin_dir = $nvr_my_bin_dir\n");} # endif dbg
 if($dbg_lvl > 0){printf ("$prg_nm: \@ENV = @ENV\n");} # endif dbg
+
+# resolve conflicts early
+if ($mpi > 0 && $thr_nbr > 0) {die "\nThe  '--mpi' option and '--thr_nbr' (OMP) option are mutaully exclusive.\nPlease decide which you want to run and try again.\n";}
+
+# any irrationally exuberant values?
+if ($mpi > 16) {die "\nThe '--mpi' value was set to an irrationally exuberant [$mpi].  Try a lower value\n ";}
+if ($thr_nbr > 16) {die "\nThe '--thr_nbr' value was set to an irrationally exuberant [$thr_nbr].  Try a lower value\n ";}
+if (length($xpt_dsc) > 80) {die "\nThe caseid string is > 80 characters - please reduce it to less than 80 chars.\nIt's used to create file and directory names, so it has to be relatively short\n";}
 
 print "\n===== Testing for required modules\n";
 BEGIN {eval "use Time::HiRes qw(usleep ualarm gettimeofday tv_interval)"; $hiresfound = $@ ? 0 : 1}
@@ -144,19 +157,27 @@ if ($md5 == 1) {
 # also have to change the benchmarks to add this flag.
 my %MD5_table = ( # holds md5 hashes for each test 
 # Benchmark entries
-"ncpdq dimension-order reversal the file_0" => "2a64ad855e82d3460499c03d65c3b120", #MD5
-"ncpdq packing a file_0" => "de9314449ca9225de39ad4fb83b9a527", #MD5
-"ncap long algebraic operation_0" => "6ba4b2664b24d34c4f7a8eeaf10e356d", #MD5
-"ncap long algebraic operation_1" => "59cb076a7941044c9e5d94fc2602bdeb", #MD5
-"ncbo differencing two files_0" => "293ec43832d8c1e3cb1e7aa87e694b8a", #MD5
-"ncea averaging 2^5 files_0" => "95d4efc0fd03f820cf37b6ea07cd4348", #MD5
-"ncea averaging 2^5 files_1" => "690cc95daef68d893378cefa3b4b140d", #MD5
-"ncra time-averaging 2^5 (i.e. one month) ipcc files_0" => "697fe217beb9a33f6cf4bca1599deb57", #MD5
-"ncwa averaging all variables to scalars - sml_stl.nc & sqrt_0" => "4d79d6b23d1c1534d41d58ca03d5689f", #MD5
-"ncwa averaging all variables to scalars - sml_stl.nc & rms_0" => "414b5fe059bba923fa3dd8e8ab1ce210", #MD5
-"ncwa averaging all variables to scalars - ipcc_dly_T85.nc & sqt_0" => "69d37f3be592426bb44f7e265029156a", #MD5
+"ncap long algebraic operation_0" => "7037002c30744e71565bc3f07bfe718a", #MD5
+"ncap long algebraic operation_1" => "fceea540e58e657e0c4f16bb8928f447", #MD5
+"ncbo differencing two files_0" => "9fb75945653ce8fafb74eca0997fcc3d", #MD5
+"ncea averaging 2^5 files_0" => "fe74d3a77118b7d5a66ab9fa0fea03ae", #MD5
+"ncea averaging 2^5 files_1" => "f58c721ff4d2d5f13949ab3f3ecf8453", #MD5
+"ncecat joining 2^5 files_0" => "e311755e9f01e427418ef8020155d8b1", #MD5
+"ncecat joining 2^5 files_1" => "fbb1b621cdfe1daa1841727423a24138", #MD5
+"ncflint weight-averaging 2 files_0" => "7037002c30744e71565bc3f07bfe718a", #MD5
+"ncflint weight-averaging 2 files_1" => "38ee6518c570a9aa59f4aaa9d93d801d", #MD5
+"ncpdq dimension-order reversal_0" => "1999df64e07a9346eb12da4219156b1d", #MD5
+"ncpdq dimension-order re-ordering_0" => "1999df64e07a9346eb12da4219156b1d", #MD5
+"ncpdq dimension-order re-ordering & reversing_0" => "da972b99c8cb2b059d4d54b346f59cc3", #MD5
+"ncpdq packing a file_0" => "da41b3b24dfe369097c68dea9521119c", #MD5
+"ncra time-averaging 2^5 (i.e. one month) ipcc files_0" => "e2853478c04242b29c74bf983b38e5e4", #MD5
+"ncrcat joining 2^5 files_0" => "4f3582ac41db57a506be62efae964d4d", #MD5
+"ncrcat joining 2^5 files_1" => "b1656d04ce999855f09a58b3fedef4f3", #MD5
+"ncwa averaging all variables to scalars - stl_5km.nc & sqrt_0" => "b6cb85aceb699670c2eca197ebbe10b4", #MD5
+"ncwa averaging all variables to scalars - stl_5km.nc & rms_0" => "250352270a64b65194000165061b1df1",#MD5
+"ncwa averaging all variables to scalars - ipcc_dly_T85.nc & sqt_0" => "38ee6518c570a9aa59f4aaa9d93d801d", #MD5
 
-# Test entries
+# Regression entries
 "Testing float modulo float_0" => "8887503481d53aa13ea8bab73bca280e", #MD5
 "Testing foo=log(e_flt)^1 (fails on AIX TODO ncap57)_0" => "551d25425d4c9bd69932ccbbe6b3e63c", #MD5
 "Testing foo=log(e_dbl)^1_0" => "3bca0c79dec8371bf39f3059a4d2c078", #MD5
@@ -183,9 +204,9 @@ my %MD5_table = ( # holds md5 hashes for each test
 "identity weighting_0" => "4cc63c64f5bf6147a979ce5bccf00337", #MD5
 "identity interpolation_1" => "abc71f105ac3a450086b6c86731c77f5", #MD5
 "identity interpolation_2" => "daf6017dc89568c34573569bf077636c", #MD5
-"Create T42 variable named one, uniformly 1.0 over globe in /home/hjm/nco_test/foo.nc_0" => "1318ba0f045ebb96283f1d9984b97c97", #MD5
-"Create T42 variable named one, uniformly 1.0 over globe in /home/hjm/nco_test/foo.nc_1" => "16b03dc221613d911e32215203207e58", #MD5
-"Create T42 variable named one, uniformly 1.0 over globe in /home/hjm/nco_test/foo.nc_2" => "84ea0b4116e01c03be5250d7023ec717", #MD5
+"Create T42 variable named one, uniformly 1.0 over globe_0" => "1318ba0f045ebb96283f1d9984b97c97", #MD5
+"Create T42 variable named one, uniformly 1.0 over globe_1" => "16b03dc221613d911e32215203207e58", #MD5
+"Create T42 variable named one, uniformly 1.0 over globe_2" => "84ea0b4116e01c03be5250d7023ec717", #MD5
 "extract a dimension_0" => "f8634d6bef601cda97cff5f487114baf", #MD5
 "extract a variable with limits_0" => "fe01ea80027e2988f345eb831edc7477", #MD5
 "extract variable of type NC_INT_0" => "b861ca6eddfc8199cd18c0fe1b935eaa", #MD5
@@ -257,19 +278,27 @@ my %MD5_table = ( # holds md5 hashes for each test
 
 my %wcTable = ( # word count table for $dta_dir/wc_out
 # Benchmark entries
-"ncpdq dimension-order reversal the file_0" => "111111 338736 5871507", #wc
-"ncpdq packing a file_0" => "111111 339824 4960693", #wc
-"ncap long algebraic operation_0" => "111111 338736 5869651", #wc
-"ncap long algebraic operation_1" => "9479 30723 406696", #wc
-"ncbo differencing two files_0" => "111111 338736 6090259", #wc
-"ncea averaging 2^5 files_0" => "111111 333677 5528138", #wc
-"ncea averaging 2^5 files_1" => "46 302 1492", #wc
-"ncra time-averaging 2^5 (i.e. one month) ipcc files_0" => "111111 338792 5871236", #wc
-"ncwa averaging all variables to scalars - sml_stl.nc & sqrt_0" => "22 146 735", #wc
-"ncwa averaging all variables to scalars - sml_stl.nc & rms_0" => "22 146 735", #wc
-"ncwa averaging all variables to scalars - ipcc_dly_T85.nc & sqt_0" => "9478 30700 406496", #wc
+"ncap long algebraic operation_0" => "111111 338754 5872990", #wc
+"ncap long algebraic operation_1" => "9480 30734 410027", #wc
+"ncbo differencing two files_0" => "111111 338754 5542049", #wc
+"ncea averaging 2^5 files_0" => "111111 333695 5528455", #wc
+"ncea averaging 2^5 files_1" => "47 323 1862", #wc
+"ncecat joining 2^5 files_0" => "111111 333665 4667532", #wc
+"ncecat joining 2^5 files_1" => "42 302 2000", #wc
+"ncflint weight-averaging 2 files_0" => "111111 338754 5872990", #wc
+"ncflint weight-averaging 2 files_1" => "9479 30721 409885", #wc
+"ncpdq dimension-order reversal_0" => "111111 338754 5872990", #wc
+"ncpdq dimension-order re-ordering_0" => "111111 338754 5872990", #wc
+"ncpdq dimension-order re-ordering & reversing_0" => "111111 338754 5873056", #wc
+"ncpdq packing a file_0" => "111111 339842 4964039", #wc
+"ncrcat joining 2^5 files_0" => "111111 222534 3556822", #wc
+"ncrcat joining 2^5 files_1" => "42 302 2007", #wc
+"ncra time-averaging 2^5 (i.e. one month) ipcc files_0" => "111111 338810 5874572", #wc
+"ncwa averaging all variables to scalars - stl_5km.nc & sqrt_0" => "47 323 1862", #wc
+"ncwa averaging all variables to scalars - stl_5km.nc & rms_0" => "47 323 1869", #wc
+"ncwa averaging all variables to scalars - ipcc_dly_T85.nc & sqt_0" => "9479 30721 409885", #wc
 
-# Test entries
+# Regression entries
 "Testing float modulo float_0" => "24 131 947", #wc
 "Testing foo=log(e_flt)^1 (fails on AIX TODO ncap57)_0" => "11 95 569", #wc
 "Testing foo=log(e_dbl)^1_0" => "11 95 571", #wc
@@ -296,9 +325,9 @@ my %wcTable = ( # word count table for $dta_dir/wc_out
 "identity weighting_0" => "12 106 627", #wc
 "identity interpolation_1" => "2188 12862 114282", #wc
 "identity interpolation_2" => "12 106 627", #wc
-"Create T42 variable named one, uniformly 1.0 over globe in /home/hjm/nco_test/foo.nc_0" => "280 586 8245", #wc
-"Create T42 variable named one, uniformly 1.0 over globe in /home/hjm/nco_test/foo.nc_1" => "280 586 6909", #wc
-"Create T42 variable named one, uniformly 1.0 over globe in /home/hjm/nco_test/foo.nc_2" => "16676 49836 750137", #wc
+"Create T42 variable named one, uniformly 1.0 over globe_0" => "280 586 8245", #wc
+"Create T42 variable named one, uniformly 1.0 over globe_1" => "280 586 6909", #wc
+"Create T42 variable named one, uniformly 1.0 over globe_2" => "16676 49836 750137", #wc
 "extract a dimension_0" => "23 202 1224", #wc
 "extract a variable with limits_0" => "72 492 3666", #wc
 "extract variable of type NC_INT_0" => "12 106 640", #wc
@@ -374,7 +403,8 @@ set_dat_dir(); # Set $dta_dir
 # also want to try to grok /usr/bin/time, as in the shell scripts
 if (-e "/usr/bin/time" && -x "/usr/bin/time") {
 	$tmr_app = "/usr/bin/time";
-	if (`uname` =~ "inux" && $dbg_lvl > 1) { $tmr_app .= " -v ";}
+#	# if use time -p get 'POSIX' style time output; if '-v', get verbose (long!) output
+	if (`uname` =~ "inux") { $tmr_app .= " -p ";} 
 } else { # just use whatever the shell thinks is the time app
 	$tmr_app = "time"; #could be the bash builtin or another 'time'-like app (AIX)
 }
@@ -383,8 +413,15 @@ if (-e "/usr/bin/time" && -x "/usr/bin/time") {
 if($dbg_lvl > 0){printf ("$prg_nm: Calling initialize()...\n");}
 initialize($bch_flg,$dbg_lvl);
 
-if ($dbg_lvl < 2) {$prefix = "$MY_BIN_DIR"; $prfxd = 1;}
-else {$prefix = "$tmr_app $MY_BIN_DIR"; $prfxd = 1;}
+#if ($dbg_lvl < 1) {$prefix = "$MY_BIN_DIR"; $prfxd = 1;}
+#else {
+	$prefix = "$tmr_app $MY_BIN_DIR"; $prfxd = 1; $timed = 1;
+#}
+
+# test for MPI desire
+if ($mpi > 0) {
+	$mpi_prefix = "$tmr_app  mpirun yadda yadda $MY_BIN_DIR"; $prfxd = 1; $timed = 1;
+}
 
 # Use variables for file names in regressions; some of these could be collapsed into
 # fewer ones, no doubt, but keep them separate until whole shebang starts working correctly
@@ -463,7 +500,7 @@ if ($bm && $tst_fl_cr8 == 0) {
 	for (my $i = 0; $i < $NUM_FLS; $i++) {
 		my $fl = $fl_cr8_dat[$i][2] . ".nc"; # file root name stored in $fl_cr8_dat[$i][2] 
 		if (-e "$dta_dir/$fl" && -r "$dta_dir/$fl") {
-			print "$fl exists - can skip creation\n";
+			printf ("%16s exists - can skip creation\n", $fl);
 		} else {
 			my $e = $i+1;
 			$tst_fl_cr8 .= "$e";
@@ -488,58 +525,149 @@ my $doit=1; # for skipping various tests
 
 # and now, the REAL benchmarks, set up as the regression tests below to use go() and smrz_rgr_rslt()
 if ($bm) {
-        $prefix = "$tmr_app $MY_BIN_DIR"; $prfxd = 1; # Embed timer command and local binary directory in command
 	print "\nStarting Benchmarks now\n";
 	if($dbg_lvl > 0){print "bm: prefix = $prefix\n";}
 
-if ($doit) { # cheesy way to skip selected stanzas in the dev process
-	#################### begin cz benchmark list #8
-	$opr_nm='ncpdq';
-	$dsc_sng = 'ncpdq dimension-order reversal the file';
+	################### Set up the symlinks ###################
+	if ($dbg_lvl > 0) {print "\n\nSetting up symlinks for test nc files\n";}
+	for (my $f=0; $f<$NUM_FLS; $f++) {
+		my $rel_fle = "$dta_dir/$fl_cr8_dat[$f][2]" . ".nc" ;
+		my $ldz = "0"; # leading zero for #s < 10
+		if ($dbg_lvl > 0) {print "\tsymlinking $rel_fle\n";}
+		for (my $n=0; $n<32; $n ++) {
+			if ($n>9) {$ldz ="";}
+			my $lnk_fl_nme = "$dta_dir/$fl_cr8_dat[$f][2]" . "_" . "$ldz" . "$n" . ".nc";
+			if (-r $rel_fle && -d $dta_dir && -w $dta_dir){
+				symlink $rel_fle, $lnk_fl_nme;
+			}
+		}
+	}	
+	if (0) { }# 0 /1 skip this bit
+	#################### begin ncap benchmark hjm - needs to be verified.
+	$opr_nm='ncap';
+	$dsc_sng = 'ncap long algebraic operation';
+	###################
+	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+	$tst_cmd[0] = "ncap -h -O -s  \"nu_var1[time,lat,lon,lev]=d4_01*d4_02*(d4_03**2)-(d4_05/d4_06)\" 	-s \"nu_var2[lat,time,lev,lon]=(d4_13/d4_02)*((d4_03**2)-(d4_05/d4_06))\" -s \"nu_var3[time,lat,lon]=(d3_08*3d_01)-(3d_05**3)-(3d_11*3d_16)\" -s \"nu_var4[lon,lat,time]=(d3_08+3d_01)-(3d_05*3)-3d_11-17.33)\"  -p $fl_pth ipcc_dly_T85.nc  $outfile";
+	$tst_cmd[1] = "ncwa -O $omp_flg -y sqrt -a lat,lon $outfile  $outfile";
+	$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00  $outfile"; 
+	$nsr_xpc = "4.024271";
+	go();
+	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng]\n";}
+	
+	
+	#################### begin ncbo benchmark
+	$opr_nm='ncbo';
+	$dsc_sng = 'ncbo differencing two files';
+	####################
+	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+	$tst_cmd[0] = "ncbo -h -O $omp_flg --op_typ='-' -p $fl_pth ipcc_dly_T85.nc ipcc_dly_T85_00.nc $outfile";
+	if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
+	$tst_cmd[1] = "ncks -C -H -s '%f' -v sleepy $outfile";
+	$nsr_xpc = "0.000000";	
+	go();
+	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng]\n";}
+	
+	
+	#################### begin ncea benchmark 
+	$opr_nm='ncea';
+	$dsc_sng = 'ncea averaging 2^5 files';
 	####################	
-	if ($dbg_lvl > 0) {print "\n\nBenchmark:  $dsc_sng\n";}
+	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+	$tst_cmd[0] = "ncea -h -O $omp_flg  $fl_pth/stl_5km_*.nc $outfile";
+	if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
+	$tst_cmd[1] = "ncwa -h -O $omp_flg -y sqrt -a lat,lon $outfile $outfile";
+	$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00  $outfile"; 
+	$nsr_xpc = "1.604304";
+	go();
+	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	
+	
+	
+	#################### begin ncecat benchmark 
+	$opr_nm='ncecat';
+	$dsc_sng = 'ncecat joining 2^5 files'; # skn_lgs.nc * 32 = 1.51GB
+	####################	
+	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+	$tst_cmd[0] = "ncecat -h -O $omp_flg  $fl_pth/skn_lgs_*.nc $outfile";
+	$tst_cmd[1] = "ncwa -h -O $omp_flg  $outfile $outfile";
+	$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2  $outfile"; 
+	$nsr_xpc = "12.759310";
+	go();
+	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	
+	
+	#################### begin ncflint benchmark  - needs to be verified and md5/wc sums created.
+	$opr_nm='ncflint';
+	$dsc_sng = 'ncflint weight-averaging 2 files';
+	####################	
+	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+	$tst_cmd[0] = "ncflint -h -O   -w '0.5'  $fl_pth/ipcc_dly_T85_0[12].nc $outfile";
+	if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
+	$tst_cmd[1] = "ncwa -h -O $omp_flg -y sqrt -a lat,lon $outfile $outfile";	
+#	$tst_cmd[1] = "ncflint -h -O $omp_flg -y sqrt -a lat,lon $outfile $outfile";
+	$tst_cmd[2] = "ncks -C -H -s '%f ' -v d1_00  $outfile"; 
+	$nsr_xpc = "1.800000 1.800000 1.800000 1.800000 1.800000 1.800000 1.800000 1.800000"; 
+	go();
+	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	
+	
+	#################### begin ncpdq benchmark - reversal
+	$opr_nm='ncpdq';
+	$dsc_sng = 'ncpdq dimension-order reversal';
+	####################	
+	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 	#!!WARN - change back to testing the ipcc file after verify
 #	$tst_cmd[0] = "ncpdq -h -O $omp_flg -a -lat -p $fl_pth  sml_stl.nc  $outfile";
-	$tst_cmd[0] = "ncpdq -h -O $omp_flg -a -lat -p $fl_pth  ipcc_dly_T85.nc  $outfile";
+	$tst_cmd[0] = "ncpdq -h -O $omp_flg -a -time -lev -lat -lon -p $fl_pth  ipcc_dly_T85.nc  $outfile";
+#	$tst_cmd[0] = "ncpdq -h -O $omp_flg -a -lat -p $fl_pth  ipcc_dly_T85.nc  $outfile";
 	# ~2m on sand for ipcc_dly_T85.nc
-	print "entire cmd: $tst_cmd[0]\n";
 #	$tst_cmd[1] = "ncks -C -H -s '%f' -v weepy  $outfile"; # sml_stl
 #	$nsr_xpc = "1.234560"; #sml_stl
 	$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";  #ipcc
 	$nsr_xpc = "0.800000"; #ipcc
 	go();
+	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 
-	if($dbg_lvl > 0){print "\n\n\t[past  the 1st benchmark stanza]\n";}
+	
+	#################### next ncpdq benchmark - re-ordering
+	$opr_nm='ncpdq';
+	$dsc_sng = 'ncpdq dimension-order re-ordering';
+	####################	
+	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+	$tst_cmd[0] = "ncpdq -h -O $omp_flg -a lon time lev lat -p $fl_pth  ipcc_dly_T85.nc  $outfile";
+	$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";  #ipcc
+	$nsr_xpc = "0.800000"; #ipcc
+	go();
+	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	
+	#################### next ncpdq benchmark - re-ordering & reversing
+	$opr_nm='ncpdq';
+	$dsc_sng = 'ncpdq dimension-order re-ordering & reversing';
+	####################	
+	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+	$tst_cmd[0] = "ncpdq -h -O $omp_flg -a -lon -time -lev -lat -p $fl_pth  ipcc_dly_T85.nc  $outfile";
+	$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";  #ipcc
+	$nsr_xpc = "0.800000"; #ipcc
+	go();
+	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	
 
-	if ($doit) {
-	#################### begin cz benchmark list #7
+	#################### next ncpdq benchmark 
 	$opr_nm='ncpdq';
 	$dsc_sng = 'ncpdq packing a file';
 	####################	
-	if ($dbg_lvl > 0) {print "\n\nBenchmark:  $dsc_sng\n";}
+	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 	$tst_cmd[0] = "ncpdq -h -O $omp_flg -P all_new  -p $fl_pth  ipcc_dly_T85.nc  $outfile";
 	$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile"; 
 	$nsr_xpc = "0.000000";
 	go();
-	}
+	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 
-	if($dbg_lvl > 0){print "\n\n\t[past  the 2nd benchmark stanza]\n";}
-}
-	if ($doit) {
-	#################### begin cz benchmark list #6
-	$opr_nm='ncap';
-	$dsc_sng = 'ncap long algebraic operation';
-	###################
-	if ($dbg_lvl > 0) {print "\n\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncap -h -O -s  \"nu_var[time,lat,lon,lev]=d4_01*d4_02*(d4_03**2)-(d4_05/d4_06)\"   -p $fl_pth ipcc_dly_T85.nc  $outfile";
-	$tst_cmd[1] = "ncwa -O $omp_flg -y sqrt -a lat,lon $outfile  $outfile";
-	$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00  $outfile"; 
-	$nsr_xpc = "4.024271";
-	go();
-	if($dbg_lvl > 0){print "\n\n\t[past  the 3rd benchmark stanza]\n";}
-	}
+	
 
 	################### Set up the symlinks ###################
+	if ($dbg_lvl > 0) {print "\n\nSetting up symlinks for test nc files\n";}
 	for (my $f=0; $f<$NUM_FLS; $f++) {
 		my $rel_fl = "$dta_dir/$fl_cr8_dat[$f][2]" . ".nc" ;
 		my $ldz = "0"; # leading zero for #s < 10
@@ -553,104 +681,93 @@ if ($doit) { # cheesy way to skip selected stanzas in the dev process
 		}
 	}
 	
-	if ($doit) {
-	#################### begin cz benchmark list #4
-	$opr_nm='ncbo';
-	$dsc_sng = 'ncbo differencing two files';
-	####################
-	if ($dbg_lvl > 0) {print "\n\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncbo -h -O $omp_flg --op_typ='*' -p $fl_pth ipcc_dly_T85.nc ipcc_dly_T85_00.nc $outfile";
-	print "entire cmd: $tst_cmd[0]\n";
-	$tst_cmd[1] = "ncks -C -H -s '%f' -v sleepy $outfile";
-	$nsr_xpc = "0.640000";	
-	go();
-	}
 		
-	if ($doit) {
-	#################### begin cz benchmark list #3
-	$opr_nm='ncea';
-	$dsc_sng = 'ncea averaging 2^5 files';
-	####################	
-	if ($dbg_lvl > 0) {print "\n\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncea -h -O $omp_flg  $fl_pth/stl_5km_*.nc $outfile";
-	if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
-	$tst_cmd[1] = "ncwa -h -O $omp_flg -y sqrt -a lat,lon $outfile $outfile";
-	print "entire cmd: $tst_cmd[1]\n";
-	$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00  $outfile"; 
-	$nsr_xpc = "1.604304";
-	go();
-	}
-
-	if ($doit) {
 	#################### begin cz benchmark list #2
 	$opr_nm='ncra';
 	$dsc_sng = 'ncra time-averaging 2^5 (i.e. one month) ipcc files';
 	####################	
 	if ($notbodi) { # too big for bodi
-		if ($dbg_lvl > 0) {print "\n\nBenchmark:  $dsc_sng\n";}
+		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 		$tst_cmd[0] = "ncra -h -O $omp_flg $fl_pth/ipcc_dly_T85_*.nc $outfile";
 		# ~4m on sand.
-		print "entire cmd: $tst_cmd[0]\n";
 		$tst_cmd[1] =  "ncks -C -H -s '%f' -v d1_03    $outfile ";
 		$nsr_xpc = "1.800001";
 		go();
 	}
-	}
+	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 
-	if ($doit){
-	#################### begin cz benchmark list #1a
-	$opr_nm='ncwa';
-	$dsc_sng = 'ncwa averaging all variables to scalars - sml_stl.nc & sqrt';
+	
+	#################### begin ncecat benchmark 
+	$opr_nm='ncrcat';
+	$dsc_sng = 'ncrcat joining 2^5 files'; # skn_lgs.nc * 32 = 1.51GB
 	####################	
-	if ($dbg_lvl > 0) {print "\n\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncwa -h -O $omp_flg -y sqrt -a lat,lon -p $fl_pth sml_stl.nc $outfile";
-	print "entire cmd: $tst_cmd[0]\n";
-	$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02  $outfile";
-	$nsr_xpc = "1.974842";
+	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+	$tst_cmd[0] = "ncrcat -h -O $omp_flg  $fl_pth/skn_lgs_*.nc $outfile";
+	$tst_cmd[1] = "ncwa -h -O $omp_flg  $outfile $outfile";
+	$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2  $outfile"; 
+	$nsr_xpc = "12.759310";
 	go();
-	}
+	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	
 
-	# following fails on numeric cmp but why should the result the same?
-	#################### begin cz benchmark list #1b
+	#################### begin ncwa benchmark list #1a
 	$opr_nm='ncwa';
-	$dsc_sng = 'ncwa averaging all variables to scalars - sml_stl.nc & rms';
+	$dsc_sng = 'ncwa averaging all variables to scalars - stl_5km.nc & sqrt';
+	####################	
+	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+	$tst_cmd[0] = "ncwa -h -O $omp_flg -y sqrt -a lat,lon -p $fl_pth stl_5km.nc $outfile";
+	$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02  $outfile";
+	$nsr_xpc = "1.604304";  # was 1.974842
+	go();
+	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+
+	
+	# following fails on numeric cmp but why should the result the same?
+	#################### begin ncwa benchmark list #1b
+	$opr_nm='ncwa';
+	$dsc_sng = 'ncwa averaging all variables to scalars - stl_5km.nc & rms';
 	####################
-	if ($dbg_lvl > 0) {print "\n\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncwa -h -O $omp_flg -y rms -a lat,lon -p $fl_pth sml_stl.nc $outfile";
-	print "entire cmd: $tst_cmd[0]\n";
+	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+	$tst_cmd[0] = "ncwa -h -O $omp_flg -y rms -a lat,lon -p $fl_pth stl_5km.nc $outfile";
 	$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02  $outfile";
 #	$nsr_xpc = "1.974842"; original
-	$nsr_xpc = "3.939694"; # past result
+	$nsr_xpc = "2.826392"; # past result = 3.939694
 	go();
+	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 
-	# using stl_5km.nc
-	$tst_cmd[0] = "ncwa -O $omp_flg -y rms  -a lat,lon -p $fl_pth stl_5km.nc 	$dta_dir/stl_5km-ncwa.nc";
-	$tst_cmd[1] = "ncks -C -H -s \"%f\" -v d2_03  $dta_dir/stl_5km-ncwa.nc"; 
-	$nsr_xpc = "2.826392";
-	go();
+
+#	# using stl_5km.nc
+#	$tst_cmd[0] = "ncwa -O $omp_flg -y rms  -a lat,lon -p $fl_pth stl_5km.nc 	$dta_dir/stl_5km-ncwa.nc";
+#	$tst_cmd[1] = "ncks -C -H -s \"%f\" -v d2_03  $dta_dir/stl_5km-ncwa.nc"; 
+#	$nsr_xpc = "2.826392";
+#	go();
 
 	if ($notbodi) { #  ipcc too big for bodi
-		#################### begin cz benchmark list #1c
+		#################### begin ncwa benchmark list #1c
 		$opr_nm='ncwa';
 		$dsc_sng = 'ncwa averaging all variables to scalars - ipcc_dly_T85.nc & sqt';
 		####################
-		if ($dbg_lvl > 0) {print "\n\nBenchmark:  $dsc_sng\n";}
+		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 		$tst_cmd[0] = "ncwa -h -O $omp_flg -y sqrt   -a lat,lon -p $fl_pth ipcc_dly_T85.nc $outfile";
-		print "entire cmd: $tst_cmd[0]\n";
 		$tst_cmd[1] = "ncks -C -H -s '%f' -v skanky  $outfile"; 
 		$nsr_xpc = "0.800000";
 		go();
-	}  
+	}
 	smrz_rgr_rslt(); # and summarize the benchmarks 
 }
 
 
 sub go {
-	if($dbg_lvl > 0){ print "\ngo(pre): prefix = $prefix\n";	}
+#	if($dbg_lvl > 0){ print "\ngo($opr_nm): timed = $timed\n";	}
 	
 # Perform tests of requested operator; default is all
 	if (!defined $tst_nbr{$opr_nm}) { 
 		@tst_cmd=();  # Clear test array
+		# and init the timing hashes
+		if($dbg_lvl > 0){ print "\ngo($opr_nm): clearing timing arrays\n";	}
+		$real_tme{$opr_nm} = 0;
+		$usr_tme{$opr_nm}  = 0;
+		$sys_tme{$opr_nm}  = 0;
 		return; 
 	}
 	
@@ -687,23 +804,35 @@ sub go {
 	
 	foreach (@tst_cmd){
 		my $md5_chk = 1;
-		&verbosity("\n\n\t## Part $tst_cmdcnt ## \n");
+		&verbosity("\n  ## Part $tst_cmdcnt ## \n");
 		if ($_ !~ /foo.nc/) {$md5_chk = 0;}
 		my $opcnt = 0;
 		my $md5_dsc_sng = $dsc_sng . "_$tst_cmdcnt";
 		# Add $prefix only to NCO operator commands, not things like 'cut'
 		foreach my $op (@opr_lst_all) {
 			if ($_ =~ m/^$op/ ) {$_ = "$prefix/$_" ;}
-		}	
+		}
+		foreach my $op (@opr_lst_mpi) {
+			if ($_ =~ m/^$op/ ) {$_ = "$mpi_prefix/$_" ;}
+		}
 		# Perform an individual test
-		&verbosity("\tFull commandline for [$opr_nm]:\n\t$_\n");
+		&verbosity("   Full commandline for [$opr_nm]:\n   $_\n");
 		# timing code using Time::HiRes
 		my $t0;
 		if ($hiresfound) {$t0 = [gettimeofday];}
 		else {$t0 = time;}
-		# and execute the command
-		$result=`$_` ;
+		# and execute the command, splitting off stderr to file 'nco-stderror'
+		$result=`($_) 2> nco-stderror`; # stderr should contain timing info if it exists.
 		chomp $result;
+		if ($timed) {
+			$sys_time = `cat nco-stderror`;
+			$sys_time =~ s/\n/ /g;
+			@sys_tim_arr = split(" ", $sys_time); # [0]real [1]0.00 [2]user [3]0.00 [4]sys [5]0.00
+			$real_tme{$opr_nm} += $sys_tim_arr[1];
+			$usr_tme{$opr_nm}  += $sys_tim_arr[3];
+			$sys_tme{$opr_nm}  += $sys_tim_arr[5];
+		}
+#my $wait = <STDIN>;
 		my $elapsed;
 		if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
 		else {$elapsed = time - $t0;}
@@ -723,6 +852,11 @@ sub go {
 		
 		# else the oldstyle check has already been done and the results are in $result, so process normally
 		$tst_cmdcnt++;
+		if ($dbg_lvl > 2) {
+			print "\ngo: test cycle held - hit <Enter> to continue\n"; 
+			my $wait = <STDIN>;
+		}
+
 	} # end loop over sub-tests
 	 
 	if($dbg_lvl > 2){print STDERR "\tTotal time for $opr_nm [$tst_nbr{$opr_nm}] = $subbenchmarks{$opr_nm} s\n\n";}
@@ -773,6 +907,7 @@ sub perform_tests
 # - $dsc_sng holds test description line
 # - $nsr_xpc is string or expression that is correct result of command
 # - go() is function which executes each test
+
 
 #if (0) {
 ####################
@@ -1086,6 +1221,7 @@ sub perform_tests
 ####################
     $opr_nm='ncpdq';
 ####################
+
 	$tst_cmd[0]="ncpdq $omp_flg -h -O -a -lat -v lat in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%g' -v lat -d lat,0 $outfile";
 	$dsc_sng="reverse coordinate";
@@ -1488,9 +1624,15 @@ where (options) are:
     --usage || -h ...dumps this help
     --debug {1-3) ...puts the script into debug mode; emits more and (hopefully)
                      more useful info.
-    --dap {OPeNDAP url} ...retrieve test files from OPeNDAP server
+    --caseid {short id string} 
+                     this string can be used to identity and separate results 
+                     from differnt runs.
+    --dap {OPeNDAP url} ...retrieve test files from OPeNDAP server URL
+    --dods    "               "
+    --opendap "               "
     --log ..........requests that the debug info is logged to 'nctest.log'
                      as well as spat to STDOUT.
+    --mpi {#>0}.....number of MPI processes to spawn (incompatible with --thr_nbr)
     --udpreport.....requests that the test results are communicated back to
                      NCO Central to add your test, timing, and build results.
                             NB: This option uses udp port 29659 and may set off
@@ -1505,7 +1647,7 @@ where (options) are:
                             3 - 5km Satellite data set   ~300MB  ~min
                             4 - IPCC Daily T85 data set  ~  4GB  ~several min
                             A - All 
-    --thr_nbr{#>0}....Number of threads to use
+    --thr_nbr {#>0}....Number of OMP threads to use (incompatible with --mpi)
     --regress.......do the regression tests
     --benchmark.....do the benchmarks
 
@@ -1539,6 +1681,7 @@ sub initialize($$){
 	($bch_flg,$dbg_lvl)=@_;
 	# Enumerate operators to test
 	@opr_lst_all = qw( ncap ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa);
+	@opr_lst_mpi = qw(mncbo mpncecat mpncflint mpncpdq mpncra  mpncwa);
 	if (scalar @ARGV > 0){@opr_lst=@ARGV;}else{@opr_lst=@opr_lst_all;}
 	if (defined $ENV{'MY_BIN_DIR'} &&  $ENV{'MY_BIN_DIR'} ne ""){$MY_BIN_DIR=$ENV{'MY_BIN_DIR'};}
 	else{
@@ -1619,20 +1762,19 @@ sub smrz_fl_cr8_rslt {
 	elsif ($CC =~ /xlc/) {$CCinfo = "xlc version ??";}
 	elsif ($CC =~ /icc/) {$CCinfo = "Intel C Compiler version ??";}
 	my $reportstr = '';
-	my $udp_dat = '';
 	my $idstring = `uname -a` . "using: " . $CCinfo; chomp $idstring;
-	$udp_dat .= $idstring . "|";
-	$reportstr .= "\n\nNCO Test Result Summary for:\n$idstring\n";
+	my $udp_dat = "File Creation | $timestamp | $idstring | ";
+	$reportstr .= "\n\nNCO File Creation Test Result Summary: [$timestamp]\n$idstring\n";
 	$reportstr .=  "      Test                       Total Wallclock Time (s) \n";
 	$reportstr .=  "=====================================================\n";
 
 	for (my $i=0; $i<$NUM_FLS; $i++) {
 		$reportstr .= sprintf "Creating   %15s:           %6.4f \n", $fl_tmg[$i][0], $fl_tmg[$i][1];
 		$reportstr .= sprintf "Populating %15s:           %6.4f \n", $fl_tmg[$i][0], $fl_tmg[$i][2];
-		$udp_dat   .= sprintf "%s,%6.4f,%6.4f:",$fl_tmg[$i][0], $fl_tmg[$i][1], $fl_tmg[$i][2];
+		$udp_dat   .= sprintf "%s : %6.4f : %6.4f",$fl_tmg[$i][0], $fl_tmg[$i][1], $fl_tmg[$i][2];
 	}
 	$reportstr .= sprintf "\n\n";
-	$udp_dat   .= sprintf "@";
+#	$udp_dat   .= sprintf "@"; # not needed anymore - ends up being a single line
 	print $reportstr;
 	if ($udp_rpt) { 
 		$sock->send($udp_dat); 
@@ -1642,17 +1784,23 @@ sub smrz_fl_cr8_rslt {
 
 
 sub smrz_rgr_rslt {
-	my $CC = `../src/nco/ncks --compiler`;
+	my $CC = `$MY_BIN_DIR/ncks --compiler`;
 	my $CCinfo = '';
 	if ($CC =~ /gcc/) {$CCinfo = `gcc --version |grep -i gcc`;}
 	elsif ($CC =~ /xlc/) {$CCinfo = "xlc version ??";}
-	elsif ($CC =~ /icc/) {$CCinfo = "Intel C Compiler version ??";}
-	my $reportstr = "\n      Test   Success    Failure   Total       Time";
+	elsif ($CC =~ /icc/) {
+		my $icc_ver = `icc --version`; chomp $icc_ver;
+		$CCinfo = "Intel C Compiler version $icc_ver";
+	}
+	chomp $CCinfo;
+	my $idstring = `uname -a`; chomp($idstring);
+	my $reportstr = "\n\n" . $idstring . "; " . $CCinfo . "; " . $timestamp . "\n";
+	$reportstr .= "\n                    Test Results                Seconds to complete\n";    
+	$reportstr .=      "             --------------------------   --------------------------------\n";    
+	$reportstr .=      "      Test   Success    Failure   Total   WallClock    Real   User  System";
 	if ($thr_nbr > 0) {$reportstr .= "   (OMP threads = $thr_nbr)\n";}
 	else {$reportstr .= "\n";}
-	my $udp_dat = '';
-	my $idstring = `uname -a` . "using: " . $CCinfo; chomp $idstring;
-	$udp_dat .= $idstring . "|" . $cmd_ln . "|";
+	my $udp_dat = $idstring . " using: " . $CCinfo . "|" . $cmd_ln . "|";
 	foreach(@opr_lst) {
 		my $total = $success{$_}+$failure{$_};
 		my $fal_cnt = '';
@@ -1660,17 +1808,19 @@ sub smrz_rgr_rslt {
 		else {$fal_cnt = sprintf "%3d", $failure{$_};}
 		#printf "$_:\tsuccess: $success{$_} of $total\n";
 		if ($total > 0) {
-			$reportstr .= sprintf "%10s:      %3d        %3s     %3d     %6.4f \n", $_, $success{$_},  $fal_cnt, $total, $totbenchmarks{$_};
-			$udp_dat   .= sprintf "%s,%3d,%3d,%6.4f:",$_, $success{$_}, $total, $totbenchmarks{$_};
+			$reportstr .= sprintf "%10s:      %3d        %3s     %3d     %6.2f   %6.2f %6.2f  %6.2f\n", $_, $success{$_},  $fal_cnt, $total, $totbenchmarks{$_}, $real_tme{$_}, $usr_tme{$_}, $sys_tme{$_} ;
+			$udp_dat   .= sprintf "%s %3d %3d %6.2f %6.2f %6.2f %6.2f:",$_, $success{$_}, $total, $totbenchmarks{$_},$real_tme{$_}, $usr_tme{$_}, $sys_tme{$_} ;
+			# above line uses whitespace sep, with ':' separating test names.
 		}
 	}
-	$reportstr .= sprintf "\nNB: Time in WALLCLOCK seconds, not CPU time;\nsee instantaneous measurements for user & system CPU usage.\nMD5: test passes MD5 checksum on file(s) May be more than one intermediate file.\nSVx: test passes single terminal value check SVn=numeric, SVa=alphabetic\n";
+	$reportstr .= sprintf "\nNB:MD5: test passes MD5 checksum on file(s) May be more than one intermediate file.\nSVx: test passes single terminal value check SVn=numeric, SVa=alphabetic\n";
 	chdir "../bld";
 	if ($dbg_lvl == 0) {print $reportstr;}
 	else { &verbosity($reportstr); }
-	$udp_dat .= "@";  # use an infrequent char as separator token
+#	$udp_dat .= "@";  # use an infrequent char as separator token
+print "Regression: udp stream sent:\n$udp_dat\n";
 	if ($udp_rpt) { 
-		$sock->send($udp_dat); 
+#		$sock->send($udp_dat); 
 		if ($dbg_lvl > 0) { print "Regression: udp stream sent:\n$udp_dat\n";}
 	}
 } # end of sub smrz_rgr_rslt
@@ -1681,42 +1831,60 @@ sub set_dat_dir {
 #	umask 0000;
     my $umask = umask;
     # does user have a DATA dir defined in his env?  It has to be readable and 
-    # writable to be usable for these tests, so if it isn't just bail, with a nasty msgif
+    # writable to be usable for these tests, so if it isn't just bail, with a nasty msg
+	if ($xpt_dsc ne "") {
+		$xpt_dsc =~ s/[^\w]/_/g;
+#		print "converted idstring = $xpt_dsc\n";
+	}
+
 	if (defined $ENV{'DATA'} && $ENV{'DATA'} ne "") { # then is it readwritable?
 		if (-w $ENV{'DATA'} && -r $ENV{'DATA'}) {
-	    if ($que == 0) {print "Using your environment variable DATA ($ENV{'DATA'}) as the root DATA directory for this series of tests\n\n";}
-			$dta_dir = "$ENV{'DATA'}/nco_test";
-			mkdir "$dta_dir",0777;
+			if ($que == 0) {print "Using your environment variable DATA ($ENV{'DATA'}) as the root DATA directory for this series of tests\n\n";}
+			if ($xpt_dsc ne "") {
+				$dta_dir = "$ENV{'DATA'}/nco_bm/$xpt_dsc";
+				my $err = `mkdir -p -m0777 $dta_dir`;
+				if ($err ne "") {die "mkdir err: $dta_dir\n";}
+				# mkdir "$dta_dir",0777 or die "Can't make $dta_dir\n";
+			} else { # just dump it into nco_bm
+				$dta_dir = "$ENV{'DATA'}/nco_bm";
+				my $err = `mkdir -p -m0777 $dta_dir`;
+				if ($err ne "") {die "mkdir err: $dta_dir\n";}
+				#mkdir "$dta_dir",0777 or die "Can't make $dta_dir\n";;
+			}
 		} else {
 			die "You have defined a DATA dir ($ENV{'DATA'}) that cannot be written to or read\nfrom or both - please try again.\n stopped";
 		}
 	} elsif ($que == 0) {
 		$tmp = 'notset';
-		print "You do not have a DATA dir defined and some of the test files can be several GB. \nWhere would you like to write the test data?  It will be placed in the indicated directory,\nunder nco_test. \n[$ENV{'HOME'}] or specify: ";
+		print "You do not have a DATA dir defined and some of the test files can be several GB. \nWhere would you like to write the test data?  It will be placed in the indicated directory,\nunder nco_bm, using the '--caseid' option to set the name of the subdirectory. \n[$ENV{'HOME'}] or specify: ";
 		$tmp = <STDIN>;
 		chomp $tmp;
-#		print "You entered [$tmp] \n";
+		print "You entered [$tmp] \n";
 		if ($tmp eq '') {
-			$dta_dir = "$ENV{'HOME'}/nco_test";
-			if (-e "$ENV{'HOME'}/nco_test") {
-				print "[$ENV{'HOME'}/nco_test] already exists - OK to re-use?\n[N/y] ";
+			$dta_dir = "$ENV{'HOME'}/nco_bm/$xpt_dsc";  # if $xpt_dsc not set, then it decays to $ENV{'HOME'}/nco_bm/
+			if (-e "$dta_dir") {
+				print "$dta_dir already exists - OK to re-use?\n[N/y] ";
 				$tmp = <STDIN>;
 				chomp $tmp;
 				if ($tmp =~ "[nN]" || $tmp eq '') {
 					die "\nFine - decide what to use and start over again - bye! stopped";
 				} else { print "\n";	}
 			} else { # have to make it
-				print "Making $ENV{'HOME'}/nco_test & continuing\n";
-				mkdir "$ENV{'HOME'}/nco_test",0777;
+				print "Making $dta_dir & continuing\n";
+				my $err = `mkdir -p -m0777 $dta_dir`;
+				if ($err ne "") {die "mkdir err: $dta_dir\n";}
+				#mkdir "$dta_dir",0777;
 			}
 		} else {
-			$dta_dir = "$tmp/nco_test"; 
+			$dta_dir = "$tmp/nco_bm/$xpt_dsc"; 
 			# and now test it
 			if (-w $dta_dir && -r $dta_dir) {
 				print "OK - we will use [$dta_dir] to write to.\n\n";
 			} else { # we'll have to make it
 				print "[$dta_dir] doesn't exist - will try to make it.\n";
-				mkdir("$dta_dir",0777);
+				my $err = `mkdir -p -m0777 $dta_dir`;
+				if ($err ne "") {die "mkdir err: $dta_dir\n";}
+				#mkdir("$dta_dir",0777);
 				if (-w $dta_dir && -r $dta_dir) {
 					print "OK - [$dta_dir] is available to write to\n";
 				} else {
@@ -1732,10 +1900,15 @@ sub set_dat_dir {
 sub fl_cr8_dat_init {
 	for (my $i = 0; $i < $NUM_FLS; $i++) { $fl_tmg[$i][1] = $fl_tmg[$i][2] = " omitted "; }
 
-	$fl_cr8_dat[0][0] = "example gene expression"; # option descriptor
-	$fl_cr8_dat[0][1] = "~50MB";                   # file size
-	$fl_cr8_dat[0][2] = $fl_tmg[0][0] = "gne_exp";                 # file name root
-	$fl_cr8_dat[0][3] = "\'base[ge_atoms,rep,treat,cell,params]=5.67f\'";
+#	$fl_cr8_dat[0][0] = "example gene expression"; # option descriptor
+#	$fl_cr8_dat[0][1] = "~50MB";                   # file size
+#	$fl_cr8_dat[0][2] = $fl_tmg[0][0] = "gne_exp";                 # file name root
+#	$fl_cr8_dat[0][3] = "\'base[ge_atoms,rep,treat,cell,params]=5.67f\'";
+	
+	$fl_cr8_dat[0][0] = "long skinny file"; # option descriptor
+	$fl_cr8_dat[0][1] = "~52MB";                   # file size
+	$fl_cr8_dat[0][2] = $fl_tmg[0][0] = "skn_lgs";                 # file name root
+	$fl_cr8_dat[0][3] = "\'time[time]=1.0f;hmdty[time]=98.3f;PO2[time]=18.7f;PCO2[time]=1.92f;PN2[time]=77.4f;w_vel[time]=14.8f;w_dir[time]=321.3f;temp[time]=23.5f;lmbda_260[time]=684.2f\'";
 	
 	$fl_cr8_dat[1][0] = "small satellite";         # option descriptor
 	$fl_cr8_dat[1][1] = "~100MB";                  # file size
@@ -1752,22 +1925,6 @@ sub fl_cr8_dat_init {
 	$fl_cr8_dat[3][2] = $fl_tmg[3][0] = "ipcc_dly_T85";            # file name root
 	$fl_cr8_dat[3][3] = "\'weepy=0.8f;dopey=0.8f;sleepy=0.8f;grouchy=0.8f;sneezy=0.8f;doc=0.8f;wanky=0.8f;skanky=0.8f;d1_00[time]=1.8f;d1_01[time]=1.8f;d1_02[time]=1.8f;d1_03[time]=1.8f;d1_04[time]=1.8f;d1_05[time]=1.8f;d1_06[time]=1.8f;d1_07[time]=1.8f;d2_00[lat,lon]=16.2f;d2_01[lat,lon]=16.2f;d2_02[lat,lon]=16.2f;d2_03[lat,lon]=16.2f;d2_04[lat,lon]=16.2f;d2_05[lat,lon]=16.2f;d2_06[lat,lon]=16.2f;d2_07[lat,lon]=16.2f;d2_08[lat,lon]=16.2f;d2_09[lat,lon]=16.2f;d2_10[lat,lon]=16.2f;d2_11[lat,lon]=16.2f;d2_12[lat,lon]=16.2f;d2_13[lat,lon]=16.2f;d2_14[lat,lon]=16.2f;d2_15[lat,lon]=16.2f;d3_00[time,lat,lon]=64.0f;d3_01[time,lat,lon]=64.0f;d3_02[time,lat,lon]=64.0f;d3_03[time,lat,lon]=64.0f;d3_04[time,lat,lon]=64.0f;d3_05[time,lat,lon]=64.0f;d3_06[time,lat,lon]=64.0f;d3_07[time,lat,lon]=64.0f;d3_08[time,lat,lon]=64.0f;d3_09[time,lat,lon]=64.0f;d3_10[time,lat,lon]=64.0f;d3_11[time,lat,lon]=64.0f;d3_12[time,lat,lon]=64.0f;d3_13[time,lat,lon]=64.0f;d3_14[time,lat,lon]=64.0f;d3_15[time,lat,lon]=64.0f;d3_16[time,lat,lon]=64.0f;d3_17[time,lat,lon]=64.0f;d3_18[time,lat,lon]=64.0f;d3_19[time,lat,lon]=64.0f;d3_20[time,lat,lon]=64.0f;d3_21[time,lat,lon]=64.0f;d3_22[time,lat,lon]=64.0f;d3_23[time,lat,lon]=64.0f;d3_24[time,lat,lon]=64.0f;d3_25[time,lat,lon]=64.0f;d3_26[time,lat,lon]=64.0f;d3_27[time,lat,lon]=64.0f;d3_28[time,lat,lon]=64.0f;d3_29[time,lat,lon]=64.0f;d3_30[time,lat,lon]=64.0f;d3_31[time,lat,lon]=64.0f;d3_32[time,lat,lon]=64.0f;d3_33[time,lat,lon]=64.0f;d3_34[time,lat,lon]=64.0f;d3_35[time,lat,lon]=64.0f;d3_36[time,lat,lon]=64.0f;d3_37[time,lat,lon]=64.0f;d3_38[time,lat,lon]=64.0f;d3_39[time,lat,lon]=64.0f;d3_40[time,lat,lon]=64.0f;d3_41[time,lat,lon]=64.0f;d3_42[time,lat,lon]=64.0f;d3_43[time,lat,lon]=64.0f;d3_44[time,lat,lon]=64.0f;d3_45[time,lat,lon]=64.0f;d3_46[time,lat,lon]=64.0f;d3_47[time,lat,lon]=64.0f;d3_48[time,lat,lon]=64.0f;d3_49[time,lat,lon]=64.0f;d3_50[time,lat,lon]=64.0f;d3_51[time,lat,lon]=64.0f;d3_52[time,lat,lon]=64.0f;d3_53[time,lat,lon]=64.0f;d3_54[time,lat,lon]=64.0f;d3_55[time,lat,lon]=64.0f;d3_56[time,lat,lon]=64.0f;d3_57[time,lat,lon]=64.0f;d3_58[time,lat,lon]=64.0f;d3_59[time,lat,lon]=64.0f;d3_60[time,lat,lon]=64.0f;d3_61[time,lat,lon]=64.0f;d3_62[time,lat,lon]=64.0f;d3_63[time,lat,lon]=64.0f;d4_00[time,lev,lat,lon]=1.1f;d4_01[time,lev,lat,lon]=1.2f;d4_02[time,lev,lat,lon]=1.3f;d4_03[time,lev,lat,lon]=1.4f;d4_04[time,lev,lat,lon]=1.5f;d4_05[time,lev,lat,lon]=1.6f;d4_06[time,lev,lat,lon]=1.7f;d4_07[time,lev,lat,lon]=1.8f;d4_08[time,lev,lat,lon]=1.9f;d4_09[time,lev,lat,lon]=1.11f;d4_10[time,lev,lat,lon]=1.12f;d4_11[time,lev,lat,lon]=1.13f;d4_12[time,lev,lat,lon]=1.14f;d4_13[time,lev,lat,lon]=1.15f;d4_14[time,lev,lat,lon]=1.16f;d4_15[time,lev,lat,lon]=1.17f;d4_16[time,lev,lat,lon]=1.18f;d4_17[time,lev,lat,lon]=1.19f;d4_18[time,lev,lat,lon]=1.21f;d4_19[time,lev,lat,lon]=1.22f;d4_20[time,lev,lat,lon]=1.23f;d4_21[time,lev,lat,lon]=1.24f;d4_22[time,lev,lat,lon]=1.25f;d4_23[time,lev,lat,lon]=1.26f;d4_24[time,lev,lat,lon]=1.27f;d4_25[time,lev,lat,lon]=1.28f;d4_26[time,lev,lat,lon]=1.29f;d4_27[time,lev,lat,lon]=1.312f;d4_28[time,lev,lat,lon]=1.322f;d4_29[time,lev,lat,lon]=1.332f;d4_30[time,lev,lat,lon]=1.342f;d4_31[time,lev,lat,lon]=1.352f;\'";
 }; # end of fl_cr8_dat_init()
-
-# tst_hirez just excercises the hirez perl timer to make sure that there's no funny biz going on.
-sub tst_hirez{
-	for (my $W=0; $W<50; $W++) {
-		my $t0;
-		if ($hiresfound) {$t0 = [gettimeofday];}
-		else {$t0 = time;}
-		my $E = 0.0;
-		for (my $R=0; $R<999999; $R++) { my $E = $E * 1.788830478347; }
-		my $elapsed;
-		if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
-		else {$elapsed = time - $t0;}
-		print " Run $W - Elapsed time =  $elapsed \n" ; 
-	}
-	if ($dbg_lvl == 1) {die "that's all folks!!\n stopped";}
-}
 
 # fl_cr8 creates populated files for the benchmarks
 sub fl_cr8 {
@@ -1787,12 +1944,21 @@ sub fl_cr8 {
 	# log it to common timing array
 	$fl_tmg[$idx][0] = "$fl_cr8_dat[$idx][2]"; # name root
 	$fl_tmg[$idx][1] = $elapsed; # creation time	
+	if ($idx == 0) { # skn_lgs needs some extra massaging
+		if ($dbg_lvl > 0) {print "\nextra steps for skn_lgs - ncecat...\n";}
+		system "$prefix/ncecat -O -h                         $fl_in    $fl_out";  # inserts a record dimension
+		if ($dbg_lvl > 0) {print "\nncpdq...\n";}
+		system "$prefix/ncpdq -O -h -a time,record             $fl_in    $fl_out"; # swaps time and 'record'
+		if ($dbg_lvl > 0) {print "\nncwa...\n";}
+		system "$prefix/ncwa -O -h -a record   $fl_in    $fl_out"; # renames 'record' out of the way
+		# now skn_lgs ready for ncap'ing
+	}
 	print "\n==== Populating $fl_out file.\nTiming results:\n";
 	#print "fl_cr8: prefix = $prefix\n";
-	print "Executing: $tmr_app $prefix/ncap -O -s $fl_cr8_dat[$idx][3] $fl_in $fl_out\n";
+	print "Executing: $tmr_app $prefix/ncap -h -O -s $fl_cr8_dat[$idx][3] $fl_in $fl_out\n";
 	if ($hiresfound) {$t0 = [gettimeofday];}
 	else {$t0 = time;}
-	system "$tmr_app $prefix/ncap -O -s $fl_cr8_dat[$idx][3] $fl_in $fl_out";
+	system "$tmr_app $prefix/ncap -O -h -s $fl_cr8_dat[$idx][3] $fl_in $fl_out";
 	if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
 	else {$elapsed = time - $t0;}
 	$fl_tmg[$idx][2] = $elapsed; # population time
@@ -1828,21 +1994,37 @@ sub check_nco_results {
 	if ($md5found == 1) { 
 		if ( $MD5_table{$testtype} eq $hash ) { print " MD5"; verbosity " MD5"; } 
 		else {
-			print " MD5 FAIL,"; verbosity " MD5 FAIL,";  # test: $testtype\n";
+			print " MD5 fail,"; verbosity " MD5 fail,";  # test: $testtype\n";
 			if ($dbg_lvl > 1) {verbosity "MD5 sig: $hash should be: $MD5_table{$testtype}\n";}
 			if ($wc eq $wcTable{$testtype}) { print "WC PASS "; verbosity "WC PASS "; } 
-			else { print " WC FAIL,"; verbosity " WC FAIL,"; }
+			else { print " WC fail,"; verbosity " WC fail,"; }
 			my $errfile = "$file" . ".MD5.err"; # will get overwritten; halt test if want to keep it.
 			system("cp $file $errfile");
 		}
 	} else {
 		if ($wcTable{$testtype} eq $wc) { print "passed wc \n"; verbosity "passed wc \n"; } 
 		else {
-			print " WC FAIL,";verbosity " WC FAIL,";
+			print " WC fail,";verbosity " WC fail,";
 			my $errfile = "$testtype" . ".wc.err";
 			system("cp $fl_pth/out $fl_pth/$errfile");
 		}
 	}
 	return $hash;
 } # end check_nco_results()
+
+# tst_hirez just excercises the hirez perl timer to make sure that there's no funny biz going on.
+sub tst_hirez{
+	for (my $W=0; $W<50; $W++) {
+		my $t0;
+		if ($hiresfound) {$t0 = [gettimeofday];}
+		else {$t0 = time;}
+		my $E = 0.0;
+		for (my $R=0; $R<999999; $R++) { my $E = $E * 1.788830478347; }
+		my $elapsed;
+		if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
+		else {$elapsed = time - $t0;}
+		print " Run $W - Elapsed time =  $elapsed \n" ; 
+	}
+	if ($dbg_lvl == 1) {die "that's all folks!!\n stopped";}
+}
 
