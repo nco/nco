@@ -1,3 +1,9 @@
+2005-07-15  Harry Mangalam  <hjm@tacgi.com>
+	* few changes to UDP log format from nco_bm.pl to make for better parsing
+	* added new script to bm dir (mk_bm_plots.pl) to convert UDP data to
+	  postscript plots for each operator (currently wall, real, sys, user time)
+	  but can add output of rusage if it looks useful as well.
+
 2005-07-14  Charlie Zender  <zender@uci.edu>
 
 	* MPI NCO with icc 9.0 appears to work on dual Opterons!
