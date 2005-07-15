@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.305 2005-07-14 21:40:00 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.306 2005-07-15 00:12:19 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -212,11 +212,7 @@ ifndef LINUX_FC
  #LINUX_FC := lf95
  #LINUX_FC := pgf90
 endif # endif LINUX_CC
-ifeq (${PVM_ARCH},LINUXAMD64)
-ifndef LINUX_CXX
-# GCC 3.3 fails in atomicity.h with -O, -O0, and -O2 so use 3.4 instead 
- LINUX_CXX := g++
-endif # endif LINUX_CXX
+endif # endif LINUX
 
 # OpenMP
 ifeq (${OMP},Y)
