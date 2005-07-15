@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.16 2005-04-08 23:41:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.17 2005-07-15 01:02:19 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -31,13 +31,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-enum nco_mmr_typ{ /* [enm] Memory allocation type */
-  nco_mmr_calloc, /* [enm] nco_calloc() */
-  nco_mmr_free, /* [enm] nco_free() */
-  nco_mmr_malloc, /* [enm] nco_malloc() */
-  nco_mmr_realloc /* [enm] nco_realloc() */
-}; /* end nco_mmr_typ enum */
 
 void * /* O [ptr] Pointer to calloc'd memory */
 nco_calloc /* [fnc] Wrapper for calloc() */
@@ -72,12 +65,12 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
 
 long /* O [nbr] Net memory currently allocated */
 nco_mmr_stt /* [fnc] Track memory statistics */
-(const int nco_mmr_typ, /* I [enm] Memory allocation type */
+(const nco_mmr_typ_enm nco_mmr_typ, /* I [enm] Memory allocation type */
  const size_t sz); /* I [B] Bytes allocated, deallocated, or reallocated */
 
-const char * /* O [sng] String describing type */
-nco_mmr_typ_sng /* [fnc] Convert netCDF type enum to string */
-(nc_type type); /* I [enm] netCDF type */
+const char * /* O [sng] String describing memory type */
+nco_mmr_typ_sng /* [fnc] Convert NCO memory management type enum to string */
+(const nco_mmr_typ_enm nco_mmr_typ); /* I [enm] NCO memory management type */
 
 void * /* O [ptr] Pointer to re-allocated memory */
 nco_realloc /* [fnc] Wrapper for realloc() */

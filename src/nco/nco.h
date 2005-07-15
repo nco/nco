@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.79 2005-07-07 18:23:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.80 2005-07-15 01:02:18 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -184,7 +184,7 @@ extern "C" {
     nco_op_nil /* [enm] Nil or undefined operation type  */
   }; /* end nco_op_typ enum */
 
-  /* Following typedef's from Nie02 */
+  /* Following typedef from Nie02 */
   typedef enum { /* [enm] Node enumerator Nie02 nodeEnum */
     typ_scv, /* [enm] Scalar value */
     typ_sym, /* [enm] Symbol identifier */
@@ -192,6 +192,13 @@ extern "C" {
   } nod_typ_enm;
   /* end enumeration section */
   
+  typedef enum { /* [enm] Memory allocation type */
+    nco_mmr_calloc, /* [enm] nco_calloc() */
+    nco_mmr_free, /* [enm] nco_free() */
+    nco_mmr_malloc, /* [enm] nco_malloc() */
+    nco_mmr_realloc /* [enm] nco_realloc() */
+  } nco_mmr_typ_enm; /* end nco_mmr_typ enum */
+
   /* Limit structure */
   typedef struct { /* lmt_sct */
     char *nm; /* [sng] Dimension name */

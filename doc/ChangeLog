@@ -1,5 +1,7 @@
 2005-07-14  Charlie Zender  <zender@uci.edu>
 
+	* Change nco_mmr_typ to enumerated type to fix icc warning on Opteron
+
 	* Put more icc flags in configure.in
 
 	* MPI NCO with icc successfully compiles and execute on Fedora

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.23 2005-06-08 22:53:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.24 2005-07-15 01:02:19 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -169,12 +169,12 @@ nco_malloc_err_hnt_prn /* [fnc] Explain meaning and workarounds for malloc() fai
 } /* nco_malloc_err_hnt_prn() */
 
 /* fxm: when are const qualifiers on return values legal? is this a GNUism? */
-const char * /* O [sng] String describing type */
-nco_mmr_typ_sng /* [fnc] Convert netCDF type enum to string */
-(nc_type type) /* I [enm] netCDF type */
+const char * /* O [sng] String describing memory type */
+nco_mmr_typ_sng /* [fnc] Convert NCO memory management type enum to string */
+(const nco_mmr_typ_enm nco_mmr_typ) /* I [enm] NCO memory management type */
 {
   /* Purpose: Return name of memory function invoked */
-  switch(type){
+  switch(nco_mmr_typ){
   case nco_mmr_calloc:
     return "nco_mmr_calloc";
   case nco_mmr_free:
@@ -192,7 +192,7 @@ nco_mmr_typ_sng /* [fnc] Convert netCDF type enum to string */
   static const char * const nco_mmr_malloc_sng="nco_mmr_malloc_sng";
   static const char * const nco_mmr_realloc_sng="nco_mmr_realloc_sng";
 
-  switch(type){
+  switch(nco_mmr_typ){
   case nco_mmr_calloc:
     return nco_mmr_calloc_sng;
   case nco_mmr_free:
@@ -247,7 +247,7 @@ nco_realloc /* [fnc] Wrapper for realloc() */
 
 long /* O [nbr] Net memory currently allocated */
 nco_mmr_stt /* [fnc] Track memory statistics */
-(const int nco_mmr_typ, /* I [enm] Memory allocation type */
+(const nco_mmr_typ_enm nco_mmr_typ, /* I [enm] Memory management type */
  const size_t sz) /* I [B] Bytes allocated, deallocated, or reallocated */
 {
   /* Purpose: Track memory statistics */
