@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.310 2005-07-02 22:55:40 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.311 2005-07-16 01:17:15 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2526,9 +2526,9 @@ any files controlled by a @acronym{OPeNDAP} server.
 Simply specify the input file path(s) in @acronym{URL} notation and all 
 @acronym{NCO} operations may be performed on remote files made
 accessible by a @acronym{OPeNDAP} server. 
-For example, this extracts (remotely) an equatorial hyperslab,
-from @acronym{NCEP daily reanalyses} data of the year 1969 made freely   
-available by a @acronym{NOAA} @acronym{OPeNDAP} server.
+For example, the next command extracts (remotely) an equatorial
+hyperslab, from @acronym{NCEP daily reanalyses} data of the year 1969
+made freely available by a @acronym{NOAA} @acronym{OPeNDAP} server.
 Then it sends the hyperslab to the local @command{ncwa} client which
 computes and stores (locally) the regional mean surface pressure 
 @w{(in Pa)}. 

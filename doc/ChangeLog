@@ -35,7 +35,7 @@
 	libnco_c++.a works as intended. Have not tried with autotools yet.
 	Have not yet tested MPI programs with icc.
 
-	* -axW flag causes icc to die compiling ncecat 
+	* -axW flag causes icc 8.1 to die compiling ncecat 
 	This appears to be an icc bug
 	Implement target-specific workaround in bld/Makefile
 	

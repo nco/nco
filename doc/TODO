@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.557 2005-07-14 20:37:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.558 2005-07-16 01:17:15 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -275,10 +275,6 @@ nco514. My MPI builds call superfluous linker steps:
         make MPI=Y > foo 2>&1
 nco516. Implement SDO-wide data pipes, e.g., ncra in*.nc | ncwa | ncrename t,tpt foo.nc
         This would bring us one step closer to grid services, too
-nco524. OPeNDAP/DODS memory leak
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncrcat -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l /tmp in.nc in.nc ~/foo.nc > ~/foo 2>&1
-	ncrcat -O -C -l /tmp -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
-	ncrcat -O -C -l /tmp -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc in.nc ~/foo.nc
 nco527. Purify ncatted memory: 
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,,c,f,74 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncatted -D 5 -O -a char_att,att_var,a,c,"and appended Sentence three,with,lots,of,commas" -a short_att,att_var,c,s,37,38,39 -a float_att,att_var,d,,, -a long_att,att_var,o,l,37 -a new_att,att_var,o,d,73,74,75 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
@@ -311,7 +307,12 @@ nco551. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
 nco552. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
 	ncwa -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
 	ncbo -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
-nco554. 
+nco554. Add new, simpler DAP example to manual:
+A more bas
+@example
+ncea -O -C -l /tmp -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc ~/foo.nc
+@end example
+
 
 MPI:
 Archive MPI tests which appear to run correctly 
