@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.558 2005-07-16 01:17:15 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.559 2005-07-18 20:20:26 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -307,12 +307,7 @@ nco551. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
 nco552. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
 	ncwa -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
 	ncbo -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
-nco554. Add new, simpler DAP example to manual:
-A more bas
-@example
-ncea -O -C -l /tmp -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc ~/foo.nc
-@end example
-
+nco555.
 
 MPI:
 Archive MPI tests which appear to run correctly 

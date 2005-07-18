@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.311 2005-07-16 01:17:15 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.312 2005-07-18 20:20:26 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2526,12 +2526,26 @@ any files controlled by a @acronym{OPeNDAP} server.
 Simply specify the input file path(s) in @acronym{URL} notation and all 
 @acronym{NCO} operations may be performed on remote files made
 accessible by a @acronym{OPeNDAP} server. 
-For example, the next command extracts (remotely) an equatorial
-hyperslab, from @acronym{NCEP daily reanalyses} data of the year 1969
-made freely available by a @acronym{NOAA} @acronym{OPeNDAP} server.
-Then it sends the hyperslab to the local @command{ncwa} client which
-computes and stores (locally) the regional mean surface pressure 
-@w{(in Pa)}. 
+This command tests the basic functionality of @acronym{OPeNDAP}-enabled  
+@acronym{NCO} clients: 
+@example
+% ncks -o ~/foo.nc -O -C -H -v one -C -l /tmp \
+-p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
+one = 1
+% ncks -H -v one ~/foo.nc
+one = 1
+@end example
+The @code{one = 1} outputs confirm (first) that @command{ncks} retrieved
+data correct via the  @acronym{OPeNDAP} protocol and (second) that 
+@command{ncks} created a valid local copy of the subsetted remote file.
+
+The next command is a more advanced example which demonstrates the real
+power of @acronym{OPeNDAP}-enabled @acronym{NCO} clients.
+The @command{ncwa} client requests an equatorial hyperslab from remotely
+stored @acronym{NCEP reanalyses data} of the @w{year 1969}.
+The @acronym{NOAA} @acronym{OPeNDAP} server (hopefully!) serves these data. 
+The local @command{ncwa} client then computes and stores (locally) the
+regional mean surface pressure @w{(in Pa)}. 
 @example
 ncwa -O -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l /tmp -p \
 http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
