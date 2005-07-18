@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.50 2005-07-15 18:05:22 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.51 2005-07-18 19:56:09 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -1778,7 +1778,7 @@ sub smrz_fl_cr8_rslt {
 	print $reportstr;
 	if ($udp_rpt) { 
 		$sock->send($udp_dat); 
-		if ($dbg_lvl > 0) { print "File Creation: udp stream sent:\n$udp_dat\n";}
+		if ($dbg_lvl > 0) { print "File Creation: udp stream sent to $server_ip:\n$udp_dat\n";}
 	} # and send it back separately
 } # end of smrz_fl_cr8_rslt 
 
@@ -1820,8 +1820,8 @@ sub smrz_rgr_rslt {
 #	$udp_dat .= "@";  # use an infrequent char as separator token
 print "Regression: udp stream sent:\n$udp_dat\n";
 	if ($udp_rpt) { 
-#		$sock->send($udp_dat); 
-		if ($dbg_lvl > 0) { print "Regression: udp stream sent:\n$udp_dat\n";}
+		$sock->send($udp_dat); 
+		if ($dbg_lvl > 0) { print "Regression: udp stream sent to $server_ip:\n$udp_dat\n";}
 	}
 } # end of sub smrz_rgr_rslt
 
