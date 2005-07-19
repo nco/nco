@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.312 2005-07-18 20:20:26 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.313 2005-07-19 00:35:08 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2535,8 +2535,8 @@ one = 1
 % ncks -H -v one ~/foo.nc
 one = 1
 @end example
-The @code{one = 1} outputs confirm (first) that @command{ncks} retrieved
-data correct via the  @acronym{OPeNDAP} protocol and (second) that 
+The @code{one = 1} outputs confirm (first) that @command{ncks} correctly
+retrieved data via the  @acronym{OPeNDAP} protocol and (second) that 
 @command{ncks} created a valid local copy of the subsetted remote file.
 
 The next command is a more advanced example which demonstrates the real
@@ -8491,14 +8491,6 @@ To examine particular metrics.
 ************************************************************************
 Task 4: Accessing data stored remotely
 ************************************************************************
-The Earth System Grid: http://www.earthsystemgrid.org
-
-CASEID='b30.025.ES01' 
-CCSM3.0 1% increasing CO2 run, T42_gx1v3, 200 years starting in year 400
-Atmospheric post-processed data, monthly averages, e.g.,
-/data/zender/tmp/b30.025.ES01.cam2.h0.TREFHT.0400-01_cat_0449-12.nc
-/data/zender/tmp/b30.025.ES01.cam2.h0.TREFHT.0400-01_cat_0599-12.nc
-
 OPeNDAP servers:
 ncrcat -O -C -D 3 -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata \
   -l /tmp in.nc in.nc ~/foo.nc 
@@ -8508,6 +8500,21 @@ ncrcat -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata \
 ncwa -O -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l /tmp -p \
 http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
 pres.sfc.1969.nc ~/foo.nc
+
+The Earth System Grid (ESG): http://www.earthsystemgrid.org
+
+CASEID='b30.025.ES01' 
+CCSM3.0 1% increasing CO2 run, T42_gx1v3, 200 years starting in year 400
+Atmospheric post-processed data, monthly averages, e.g.,
+/data/zender/tmp/b30.025.ES01.cam2.h0.TREFHT.0400-01_cat_0449-12.nc
+/data/zender/tmp/b30.025.ES01.cam2.h0.TREFHT.0400-01_cat_0599-12.nc
+
+ESG supports password-protected FTP access by registered users
+NCO does currently supports only anonymous FTP access
+NCO has plans to support password-protected FTP access with this syntax:
+ncks --usr=zender --pw=foo -O -D 3 \
+  -p ftp://climate.llnl.gov/sresa1b/atm/mo/tas/ncar_ccsm3_0/run1 \
+  -l /tmp tas_A1.SRESA1B_1.CCSM.atmm.2000-01_cat_2099-12.nc ~/foo.nc 
 @end example
 
 @c @node Name Index, General Index, Operators, Top

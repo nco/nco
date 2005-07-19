@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.54 2005-07-02 22:55:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.55 2005-07-19 00:35:12 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -473,7 +473,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 /* #endif HAVE_RES_ */
 	} /* end if */
 
-	/* Add one for the joining "@" and one for the NULL byte */
+	/* Add one for joining "@" and one for NUL byte */
 	usr_email=(char *)nco_malloc((strlen(usr_nm)+1UL+strlen(host_nm_lcl)+1UL)*sizeof(char));
 	(void)sprintf(usr_email,"%s@%s",usr_nm,host_nm_lcl);
 	/* Free the hostname space */
