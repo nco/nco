@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.55 2005-07-19 00:35:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.56 2005-07-19 06:11:03 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -299,7 +299,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   fl_nm_lcl=(char *)strdup(fl_nm);
   
   /* Remove any URL and machine-name components from local filename */
-  if(strstr(fl_nm_lcl,"ftp://") == fl_nm_lcl){
+  if(strstr(fl_nm_lcl,"sftp://") == fl_nm_lcl){
+    /* fxm */
+  }else if(strstr(fl_nm_lcl,"ftp://") == fl_nm_lcl){
     char *fl_nm_lcl_tmp;
     char *fl_pth_lcl_tmp;
     
@@ -311,7 +313,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
   }else if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl){
     
-    /* If file is http protocol then pass file name on unaltered and let DAP deal with it */
+    /* If file is http protocol then pass unadulterated file name and let DAP deal with it */
     
   }else if((cln_ptr=strchr(fl_nm_lcl,':'))){
     /* 19990804
@@ -326,7 +328,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       char *fl_nm_lcl_tmp;
       char *fl_pth_lcl_tmp;
       
-      /* Rearrange the fl_nm_lcl to get rid of the hostname: part */
+      /* Rearrange fl_nm_lcl to get rid of hostname: part */
       fl_pth_lcl_tmp=strchr(fl_nm_lcl+6,'/');
       fl_nm_lcl_tmp=fl_nm_lcl;
       fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
@@ -424,6 +426,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     rmt_fch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,lcl_rmt};
     /* rmt_fch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,rmt_lcl};*/
     rmt_fch_cmd_sct scp={"scp -p %s %s",4,synchronous,rmt_lcl};
+    /*    rmt_fch_cmd_sct sftp={"sftp -p %s %s",4,synchronous,rmt_lcl};*/
     /* Fill in ftp structure fmt element dynamically later */
     rmt_fch_cmd_sct ftp={"",4,synchronous,rmt_lcl};
 
@@ -448,7 +451,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	char *host_nm_rmt;
 	char *usr_email;
 
-	const char fmt_ftp_tpl[]="ftp -n << END\nopen %s\nuser anonymous %s\nbin\nget %s %s\nquit\nEND";
+	const char fmt_ftp_tpl[]="ftp -i -n << END\nopen %s\nuser anonymous %s\nbin\nget %s %s\nquit\nEND";
 
 	struct passwd *usr_pwd;
 
@@ -498,7 +501,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
     /* Otherwise, single colon preceded by period in filename unambiguously signals to use rcp or scp */
     /* Determining whether to try scp instead of rcp is difficult
-       Ideally, NCO would test remote machine for rcp/scp priveleges with a system command like, e.g., "ssh echo ok"
+       Ideally, NCO would test remote machine for rcp/scp priveleges with system command like, e.g., "ssh echo ok"
        To start with, we use scp which has its own fall through to rcp */
     if(rmt_cmd == NULL){
       if((cln_ptr=strchr(fl_nm_rmt,':')))

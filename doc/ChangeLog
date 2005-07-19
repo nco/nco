@@ -1,5 +1,9 @@
 2005-07-18  Charlie Zender  <zender@uci.edu>
 
+	* Add .netrc information to FTP description in manual, 
+
+	* Add hooks for sftp support in nco_fl_utl()
+
 	* Improve OPeNDAP examples in manual
 
 2005-07-15  Harry Mangalam  <hjm@tacgi.com>

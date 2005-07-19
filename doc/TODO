@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.560 2005-07-19 00:35:08 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.561 2005-07-19 06:10:57 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -309,7 +309,9 @@ nco552. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
 	ncbo -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
 nco555. Add username/password argument options for FTP,scp access, e.g., to ESG:
 	ncks --usr=zender --pw=foo -O -D 3 -p ftp://climate.llnl.gov/sresa1b/atm/mo/tas/ncar_ccsm3_0/run1 -l /tmp tas_A1.SRESA1B_1.CCSM.atmm.2000-01_cat_2099-12.nc ~/foo.nc
-nco556. 
+        Implement this in .netrc?
+nco556. Add sftp protocol---should work just like scp once sftp:// syntax stripped out
+nco557. 
 
 MPI:
 Archive MPI tests which appear to run correctly 

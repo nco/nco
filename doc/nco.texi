@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.313 2005-07-19 00:35:08 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.314 2005-07-19 06:10:57 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2321,6 +2321,7 @@ Compilers and linkers are usually invoked this way.
 @cindex @code{--lcl @var{output-path}}
 @cindex @code{--local @var{output-path}}
 @cindex @code{-l @var{output-path}}
+@cindex @file{.netrc}
 @cartouche
 Availability: All operators@*
 Short options: @samp{-p}, @samp{-l}@*
@@ -2330,9 +2331,29 @@ All @acronym{NCO} operators can retrieve files from remote sites as well
 as from the local file system.
 @w{A remote} site can be an anonymous @acronym{FTP} server, a machine on
 which the user has @command{rcp} or @command{scp} privileges, or
-@acronym{NCAR}'s Mass Storage System (@acronym{MSS}).  
+@acronym{NCAR}'s Mass Storage System (@acronym{MSS}), or an
+@acronym{OPeNDAP} server.
+Examples of each are given below, following a brief description of the 
+particular access protocol.
+
 To access a file via an anonymous @acronym{FTP} server, supply the
 remote file's @acronym{URL}.
+@acronym{FTP} is an intrinsically insecure protocol because it transfers
+passwords in plain text format. 
+Users should access sites using anonymous @acronym{FTP} when possible. 
+Some @acronym{FTP} servers require a login/password combination for a
+valid user account.
+@acronym{NCO} allows these transactions so long as the required
+information is stored in the @file{.netrc} file. 
+Usually this information is the remote machine name, login, and
+password, in plain text, separated by those very keywords, e.g.,
+@example
+machine dust.ess.uci.edu login zender password bushlied
+@end example
+Eschew using valuable passwords for @acronym{FTP} transactions, since
+@file{.netrc} passwords are potentially exposed to eavesdropping
+software. 
+
 To access a file using @command{rcp} or @command{scp}, specify the
 Internet address of the remote file.
 Of course in this case you must have @command{rcp} or @command{scp}
@@ -2344,8 +2365,8 @@ be set accordingly on both local and remote machines.
 @cindex @command{msrcp}
 @cindex @command{msread}
 @cindex @command{nrnet}
-To access a file on @acronym{NCAR}'s @acronym{MSS}, specify the full @acronym{MSS} pathname of the
-remote file. 
+To access a file on @acronym{NCAR}'s @acronym{MSS}, specify the full
+@acronym{MSS} pathname of the remote file. 
 @acronym{NCO} will attempt to detect whether the local machine has direct
 (synchronous) @acronym{MSS} access. 
 In this case, @acronym{NCO} attempts to use the @acronym{NCAR}
@@ -2362,22 +2383,21 @@ The following examples show how one might analyze files stored on
 remote systems.
 @example
 ncks -l ./ ftp://dust.ess.uci.edu/pub/zender/nco/in.nc
-ncks -l ./ dust.ess.uci.edu:/home/zender/nco/in.nc
+ncks -l ./ dust.ess.uci.edu:/home/zender/nco/data/in.nc
 ncks -l ./ /ZENDER/nco/in.nc 
 ncks -l ./ mss:/ZENDER/nco/in.nc
-ncks -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/\
-ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc
+ncks -l ./ http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata/in.nc 
 @end example
 @noindent
-The first example will work verbatim on your system if your system is
-connected to the Internet and is not behind a firewall.
-The second example will work on your system if you have @command{rcp}
-or @command{scp} access to the machine @code{dust.ess.uci.edu}.
-The third example will work from @acronym{NCAR} computers with local
-access to  the @command{msrcp}, @command{msread}, or @command{nrnet}
-commands. 
-The fourth command will work if your local version of @acronym{NCO} was  
-built with @acronym{OPeNDAP} capability (@pxref{OPeNDAP}). 
+The first example works verbatim if your system is connected to the
+Internet and is not behind a firewall. 
+The second example works if you have @command{rcp} or @command{scp}
+access to the machine @code{dust.ess.uci.edu}. 
+The third and fourth examples work on @acronym{NCAR} computers with
+local access to the @command{msrcp}, @command{msread}, or
+@command{nrnet} commands. 
+The fifth command works if your local version of @acronym{NCO} is
+@acronym{OPeNDAP}-enabled (this is fully described in @ref{OPeNDAP}).  
 The above commands can be rewritten using the @samp{-p @var{input-path}} 
 option as follows: 
 @cindex @code{-p @var{input-path}}
@@ -2389,6 +2409,8 @@ ncks -p ftp://dust.ess.uci.edu/pub/zender/nco -l ./ in.nc
 ncks -p dust.ess.uci.edu:/home/zender/nco -l ./ in.nc
 ncks -p /ZENDER/nco -l ./ in.nc 
 ncks -p mss:/ZENDER/nco -l ./ in.nc
+ncks -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata \ 
+     -l ./ in.nc
 @end example
 @noindent
 Using @samp{-p} is recommended because it clearly separates the
