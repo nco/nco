@@ -1,6 +1,6 @@
 #!/bin/sh
 test="test1.sh"
-program="ncks"
+program="./ncks"
 datfile="nco_tst.nc"
 datdir="../../data"
 options="-R -p ftp://dust.ess.uci.edu/pub/zender/nco -l ${datdir} ${datfile}"
