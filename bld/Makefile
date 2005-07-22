@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.306 2005-07-15 00:12:19 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.307 2005-07-22 22:18:20 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -301,7 +301,7 @@ CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 # Variables having to do with binary executables created by module
 MDL_BIN_TRG := ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
 ifeq (${MPI},Y)
- MDL_MPI_TRG := mpncbo mpncecat mpncflint mpncpdq mpncwa # MPI binary targets
+ MDL_MPI_TRG := mpncbo mpncecat mpncflint mpncpdq mpncra mpncwa # MPI binary targets
  MDL_BIN_TRG := ${MDL_BIN_TRG} ${MDL_MPI_TRG} # NCO binary targets
 endif # endif MPI
 MDL_BIN_SYM_LNK := ncdiff ncea ncrcat # Symbolic links
@@ -1217,6 +1217,7 @@ mpncbo:   ${MY_BIN_DIR}/mpncbo
 ${MY_BIN_DIR}/mpncbo:	${MY_OBJ_DIR}/mpncbo.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
+	cd ${MY_BIN_DIR}; rm -f mpncdiff; ln -s -f mpncbo mpncdiff
 mpncecat:   ${MY_BIN_DIR}/mpncecat
 ${MY_BIN_DIR}/mpncecat:	${MY_OBJ_DIR}/mpncecat.o lib
 	${CC} -o $@ $< ${LDFLAGS}
@@ -1229,8 +1230,14 @@ mpncpdq:   ${MY_BIN_DIR}/mpncpdq
 ${MY_BIN_DIR}/mpncpdq:	${MY_OBJ_DIR}/mpncpdq.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
-#	cd ${MY_BIN_DIR}; rm -f ncunpack; ln -s -f ncpdq ncunpack
-#	cd ${MY_BIN_DIR}; rm -f ncpack; ln -s -f ncpdq ncpack
+#	cd ${MY_BIN_DIR}; rm -f mpncunpack; ln -s -f mpncpdq mpncunpack
+#	cd ${MY_BIN_DIR}; rm -f mpncpack; ln -s -f mpncpdq mpncpack
+mpncra:   ${MY_BIN_DIR}/mpncra
+${MY_BIN_DIR}/mpncra:	${MY_OBJ_DIR}/mpncra.o lib
+	${CC} -o $@ $< ${LDFLAGS}
+	chmod 755 $@${BNR_SFX}
+	cd ${MY_BIN_DIR}; rm -f mpncea; ln -s -f mpncra mpncea
+	cd ${MY_BIN_DIR}; rm -f mpncrcat; ln -s -f mpncra mpncrcat
 mpncwa:   ${MY_BIN_DIR}/mpncwa
 ${MY_BIN_DIR}/mpncwa:	${MY_OBJ_DIR}/mpncwa.o ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o lib
 	${CC} -o $@ $<  ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o ${LDFLAGS}

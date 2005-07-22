@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.1 2005-07-22 08:40:30 gayathri_aiyar Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.2 2005-07-22 22:18:30 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.1 2005-07-22 08:40:30 gayathri_aiyar Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.1 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.2 2005-07-22 22:18:30 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.2 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
   const double sleep_tm=0.04; /* [time] interval between successive token requests */
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
@@ -187,11 +187,11 @@ main(int argc,char **argv)
   MPI_Status mpi_stt; /* [enm] Status check to decode msg_typ */
 #endif /* !ENABLE_MPI */
   
-  nco_long base_time_srt=nco_long_CEWI;
-  nco_long base_time_crr=nco_long_CEWI;
+  nco_int base_time_srt=nco_int_CEWI;
+  nco_int base_time_crr=nco_int_CEWI;
 
   nm_id_sct *dmn_lst;
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst may bealloc()'d from NULL with -c option */
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
   
   time_t time_crr_time_t;
   

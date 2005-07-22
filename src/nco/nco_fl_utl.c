@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.57 2005-07-22 20:43:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.58 2005-07-22 22:18:30 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -289,36 +289,32 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
      return name of file on local system */
   
   FILE *fp_in;
-  bool FTP_OR_SFTP_URL=False;
+  bool FTP_URL=False;
+  bool SFTP_URL=False;
+  bool FTP_OR_SFTP_URL;
   char *cln_ptr; /* [ptr] Colon pointer */
   char *fl_nm_lcl;
   char *fl_nm_stub;
-  int rcd;
-  struct stat stat_sct;
   const char ftp_url_sng[]="ftp://";
-  const char ftp_cmd[]="ftp";
-  const char sftp_cmd[]="sftp";
-  const size_t ftp_url_sng_lng=strlen(ftp_url_sng);
   const char sftp_url_sng[]="sftp://";
-  const size_t sftp_url_sng_lng=strlen(sftp_url_sng);
-  size_t url_sng_lng;
+  int rcd;
+  size_t url_sng_lng=0L; /* CEWI */
+  struct stat stat_sct;
   
   /* Assume local filename is input filename */
   fl_nm_lcl=(char *)strdup(fl_nm);
   
   /* Remove any URL and machine-name components from local filename */
   if(strstr(fl_nm_lcl,sftp_url_sng) == fl_nm_lcl){
-    url_sng_lng=sftp_url_sng_lng;
-    FTP_OR_SFTP_URL=True;
-    /* fxm--follow through and complete sftp logic */
-    (void)fprintf(stdout,"%s: ERROR nco_fl_mk_lcl() does not support sftp protocol yet for retrieving file %s\n",prg_nm_get(),fl_nm_lcl);
-    nco_exit(EXIT_FAILURE); 
+    SFTP_URL=True;
+    url_sng_lng=strlen(sftp_url_sng);
   }else if(strstr(fl_nm_lcl,ftp_url_sng) == fl_nm_lcl){
-    FTP_OR_SFTP_URL=True;
-    url_sng_lng=ftp_url_sng_lng;
+    FTP_URL=True;
+    url_sng_lng=strlen(ftp_url_sng);
   } /* end else contains *ftp URL */
+  FTP_OR_SFTP_URL=FTP_URL || SFTP_URL;
 
-  if(FTP_OR_SFTP_URL){
+  if(FTP_URL){
     char *fl_nm_lcl_tmp;
     char *fl_pth_lcl_tmp;
     
@@ -443,7 +439,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     rmt_fch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,lcl_rmt};
     /* rmt_fch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,rmt_lcl};*/
     rmt_fch_cmd_sct scp={"scp -p %s %s",4,synchronous,rmt_lcl};
-    /*    rmt_fch_cmd_sct sftp={"sftp -p %s %s",4,synchronous,rmt_lcl};*/
+    rmt_fch_cmd_sct sftp={"sftp %s %s",4,synchronous,rmt_lcl};
     /* Fill in ftp structure fmt element dynamically later */
     rmt_fch_cmd_sct ftp={"",4,synchronous,rmt_lcl};
 
@@ -453,9 +449,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     /* Remote filename is input filename by definition */
     fl_nm_rmt=fl_nm;
     
-    /* URL specifier in filename unambiguously signals to use anonymous ftp */    
+    /* URL specifier in filename unambiguously signals to use anonymous FTP */
     if(rmt_cmd == NULL){
-      if(FTP_OR_SFTP_URL){
+      if(FTP_URL){
 	/* fxm: use autoconf HAVE_XXX rather than WIN32 to handle this */
 #ifdef WIN32
 /* #ifndef HAVE_NETWORK fxm */
@@ -468,11 +464,16 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	char *host_nm_rmt;
 	char *usr_email;
 
-	const char fmt_ftp_tpl[]="ftp -i -n << END\nopen %s\nuser anonymous %s\nbin\nget %s %s\nquit\nEND";
+	const char ftp_cmd_sng[]="ftp -i -n";
+	const char sftp_cmd_sng[]="sftp";
+	const char fmt_ftp_tpl[]="%s << END\nopen %s\nuser anonymous %s\nbin\nget %s %s\nquit\nEND";
 
 	struct passwd *usr_pwd;
 
 	uid_t usr_uid;
+
+	/* NB: Derived variable, order is important */
+	const char *ftp_cmd=(FTP_URL ? ftp_cmd_sng : sftp_cmd_sng);
 
 	rmt_cmd=&ftp;
 
@@ -481,8 +482,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	usr_nm=usr_pwd->pw_name;
 	/* DEBUG: 256 should be replaced by MAXHOSTNAMELEN from <sys/param.h>, but
 	   MAXHOSTNAMELEN isn't in there on Solaris */
-	host_nm_lcl=(char *)nco_malloc((256+1)*sizeof(char));
-	(void)gethostname(host_nm_lcl,256+1);
+	host_nm_lcl=(char *)nco_malloc((256UL+1UL)*sizeof(char));
+	(void)gethostname(host_nm_lcl,256UL+1UL);
 	/* fxm: move to gethostbyname() next */
 	if(strchr(host_nm_lcl,'.') == NULL){
 /* #ifdef HAVE_RES_ */
@@ -503,17 +504,28 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	host_nm_rmt=fl_nm_rmt+url_sng_lng;
 	/* Filename begins after slash */
 	fl_nm_rmt=strstr(fl_nm_rmt+url_sng_lng,"/")+1UL;
-	/* NUL-terminate hostname */
+	/* NUL-terminate hostname
+	 This NUL byte intended to overwrite colon in hostname:/filename syntax */
 	*(fl_nm_rmt-1)='\0';
 	
-	/* Subtract four characters replaced by new strings, add one for NUL byte */
-	fmt_ftp=(char *)nco_malloc((strlen(fmt_ftp_tpl)+strlen(host_nm_rmt)+strlen(usr_email)-4UL+1UL)*sizeof(char));
-	(void)sprintf(fmt_ftp,fmt_ftp_tpl,host_nm_rmt,usr_email,"%s","%s");
+	/* Subtract six characters for three "percent s" formats replaced by new strings, add one for NUL byte */
+	fmt_ftp=(char *)nco_malloc((strlen(fmt_ftp_tpl)+strlen(ftp_cmd)+strlen(host_nm_rmt)+strlen(usr_email)-6UL+1UL)*sizeof(char));
+	(void)sprintf(fmt_ftp,fmt_ftp_tpl,ftp_cmd,host_nm_rmt,usr_email,"%s","%s");
 	rmt_cmd->fmt=fmt_ftp;
 	/* Free space holding user's E-mail address */
 	usr_email=(char *)nco_free(usr_email);
 #endif /* !WIN32 */
-      } /* end if [S]FTP */
+      } /* end if FTP_URL */
+    } /* end if rmt_cmd */
+
+    /* Currently, sftp transfers are indicated by FTP-style URLS
+       NB: SFTP does not have a recognized URL format like FTP 
+       Hence actual transfer via SFTP uses scp syntax (for single files)
+       Multiple file transfer via SFTP can use FTP-like scripts, requires more work */
+    if(rmt_cmd == NULL){
+      if(SFTP_URL){
+	rmt_cmd=&sftp;
+      } /* end if SFTP_URL */
     } /* end if rmt_cmd */
 
     /* Otherwise, single colon preceded by period in filename unambiguously signals to use rcp or scp */
@@ -579,7 +591,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     /* If not, then create the local filepath */
     if(rcd != 0){
       /* Allocate enough room for joining space ' ' and terminating NUL */
-      cmd_sys=(char *)nco_malloc((strlen(cmd_mkdir)+fl_pth_lcl_lng+2)*sizeof(char));
+      cmd_sys=(char *)nco_malloc((strlen(cmd_mkdir)+fl_pth_lcl_lng+2UL)*sizeof(char));
       (void)strcpy(cmd_sys,cmd_mkdir);
       (void)strcat(cmd_sys," ");
       (void)strcat(cmd_sys,fl_pth_lcl_tmp);
@@ -611,7 +623,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     /* Free local command space */
     cmd_sys=(char *)nco_free(cmd_sys);
 
-    /* Free dynamically allocated ftp script memory */
+    /* Free dynamically allocated FTP script memory */
     if(rmt_cmd == &ftp) fmt_ftp=(char *)nco_free(fmt_ftp);
    
     if(rmt_cmd->transfer_mode == synchronous){

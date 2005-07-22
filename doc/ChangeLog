@@ -1,6 +1,15 @@
+2005-07-22  Charlie Zender  <zender@uci.edu>
+
+	* Add Gayathri's latest mpncra.c to distribution and Makefile
+
+2005-07-21  Charlie Zender  <zender@uci.edu>
+
+	* Change test1.sh to use CWD ncks so cygwin works
+	We should deprecate the FTP and DODS tests and move to nco_bm.pl
+
 2005-07-18  Charlie Zender  <zender@uci.edu>
 
-	* Add .netrc information to FTP description in manual, 
+	* Add .netrc information to FTP description in manual
 
 	* Add hooks for sftp support in nco_fl_utl()
 
