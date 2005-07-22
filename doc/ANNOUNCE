@@ -1,17 +1,12 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.148 2005-07-02 22:55:39 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.149 2005-07-22 06:09:08 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.0.2 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Version 3.0.2 contains mainly build and benchmarking improvements.
-The only user-visible change is one more tweak to the default ncks
-printing behavior. There is an important bug-fix for ncap so
-ncap users should upgrade. 
-Threading is much improved and has been enabled on all arithmetic
-operators. Users with SMP machines and OpenMP compilers who want
-faster processing should upgrade too.
+Version 3.0.2 contains mainly internal changes such as build,
+benchmarking, memory usage, and documentation improvements.
 
 1. OpenMP: Only one critical region remains in netCDF reads
 
@@ -19,14 +14,18 @@ faster processing should upgrade too.
 
 3. ncap (Henry Butowsky): Improved memory efficiency
 
-4. MPI (Gayathri Venkitachalam): New MPI-enabled operators
-   mpncflint, mpncecat, mpncwa, mpncpdq, mpncra, 
+4. MPI (Gayathri Venkitachalam): Beta-version MPI-enabled operators
+   mpncflint, mpncecat, mpncwa, mpncpdq, mpncra, mpncrcat, mpncea
+   Build them with 'cd ~/nco/bld;make MPI=Y' and run them with mpirun! 
 
 5. OPeNDAP (Harry Mangalam and James Gallagher): 
    Makefiles support OPeNDAP version 3.5.0+ by default
    doc/opendap.sh demonstrates installing OPeNDAP netCDF client library
 
-Future: The next release (3.1) will concentrate MPI-enabled NCO.
+6. Compiler support: Intel icc and icpc 8.1 and 9.0 are fully
+   supported on x86 and x86_64 architectures
+
+Future: The next release (3.1) will concentrate on MPI-enabled NCO.
 
 Enjoy,
 Charlie
