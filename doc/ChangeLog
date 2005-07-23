@@ -1,5 +1,9 @@
 2005-07-22  Charlie Zender  <zender@uci.edu>
 
+	* Finished SFTP support in nco_fl_mk_lcl()
+	Syntax is sftp://hostname:/filename
+	Updated manual accordingly
+
 	* Add Gayathri's latest mpncra.c to distribution and Makefile
 
 2005-07-21  Charlie Zender  <zender@uci.edu>

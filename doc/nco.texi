@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.314 2005-07-19 06:10:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.315 2005-07-23 00:49:53 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -769,10 +769,11 @@ Internet features of @acronym{NCO} (see below).
 @findex @file{<resolv.h>}
 The least portable section of the code is the use of standard
 @acronym{UNIX} and Internet protocols (e.g., @code{ftp}, @code{rcp},
-@code{scp}, @code{getuid}, @code{gethostname}, and header files
-@file{<arpa/nameser.h>} and 
+@code{scp}, @code{sftp}, @code{getuid}, @code{gethostname}, and header
+files @file{<arpa/nameser.h>} and 
 @file{<resolv.h>}). 
 @cindex @code{ftp}
+@cindex @code{sftp}
 @cindex @code{rcp}
 @cindex @code{scp}
 @cindex @acronym{SSH}
@@ -2313,6 +2314,7 @@ Compilers and linkers are usually invoked this way.
 @cindex Mass Store System
 @cindex @acronym{URL}
 @cindex @code{ftp}
+@cindex @code{sftp}
 @cindex remote files
 @cindex synchronous file access
 @cindex asynchronous file access
@@ -2330,9 +2332,9 @@ Long options: @samp{--pth}, @samp{--path}, @samp{--lcl}, @samp{--local}@*
 All @acronym{NCO} operators can retrieve files from remote sites as well 
 as from the local file system.
 @w{A remote} site can be an anonymous @acronym{FTP} server, a machine on
-which the user has @command{rcp} or @command{scp} privileges, or
-@acronym{NCAR}'s Mass Storage System (@acronym{MSS}), or an
-@acronym{OPeNDAP} server.
+which the user has @command{rcp}, @command{scp}, or @command{sftp}
+privileges, or @acronym{NCAR}'s Mass Storage System (@acronym{MSS}), or
+an @acronym{OPeNDAP} server.
 Examples of each are given below, following a brief description of the 
 particular access protocol.
 
@@ -2353,6 +2355,18 @@ machine dust.ess.uci.edu login zender password bushlied
 Eschew using valuable passwords for @acronym{FTP} transactions, since
 @file{.netrc} passwords are potentially exposed to eavesdropping
 software. 
+
+@acronym{SFTP}, i.e., secure @acronym{FTP}, uses @acronym{SSH}-based 
+security protocols that solve the security issues associated with
+plain @acronym{FTP}.  
+@acronym{NCO} supports @acronym{SFTP} protocol access to files
+specified with a homebrew syntax of the form
+@example
+sftp://machine.domain.tld:/path/to/filename
+@end example
+Note the second colon following the top-level-domain (tld).
+This syntax is a hybrid between an @acronym{FTP URL} and a standard
+remote file syntax.
 
 To access a file using @command{rcp} or @command{scp}, specify the
 Internet address of the remote file.
@@ -2383,6 +2397,7 @@ The following examples show how one might analyze files stored on
 remote systems.
 @example
 ncks -l ./ ftp://dust.ess.uci.edu/pub/zender/nco/in.nc
+ncks -l ./ sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco/in.nc
 ncks -l ./ dust.ess.uci.edu:/home/zender/nco/data/in.nc
 ncks -l ./ /ZENDER/nco/in.nc 
 ncks -l ./ mss:/ZENDER/nco/in.nc
@@ -2391,12 +2406,14 @@ ncks -l ./ http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata/in.nc
 @noindent
 The first example works verbatim if your system is connected to the
 Internet and is not behind a firewall. 
-The second example works if you have @command{rcp} or @command{scp}
+The second example works if you have @command{sftp} access to the
+machine @code{dust.ess.uci.edu}.
+The third example works if you have @command{rcp} or @command{scp}
 access to the machine @code{dust.ess.uci.edu}. 
-The third and fourth examples work on @acronym{NCAR} computers with
+The fourth and fifth examples work on @acronym{NCAR} computers with
 local access to the @command{msrcp}, @command{msread}, or
 @command{nrnet} commands. 
-The fifth command works if your local version of @acronym{NCO} is
+The sixth command works if your local version of @acronym{NCO} is
 @acronym{OPeNDAP}-enabled (this is fully described in @ref{OPeNDAP}).  
 The above commands can be rewritten using the @samp{-p @var{input-path}} 
 option as follows: 
@@ -2406,6 +2423,7 @@ option as follows:
 @cindex @var{output-path}
 @example
 ncks -p ftp://dust.ess.uci.edu/pub/zender/nco -l ./ in.nc
+ncks -p sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco -l ./ in.nc
 ncks -p dust.ess.uci.edu:/home/zender/nco -l ./ in.nc
 ncks -p /ZENDER/nco -l ./ in.nc 
 ncks -p mss:/ZENDER/nco -l ./ in.nc

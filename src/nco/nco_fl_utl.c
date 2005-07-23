@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.58 2005-07-22 22:18:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.59 2005-07-23 00:49:57 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -297,7 +297,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   char *fl_nm_stub;
   const char ftp_url_sng[]="ftp://";
   const char sftp_url_sng[]="sftp://";
-  int rcd;
+  int rcd; 
   size_t url_sng_lng=0L; /* CEWI */
   struct stat stat_sct;
   
@@ -308,18 +308,20 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   if(strstr(fl_nm_lcl,sftp_url_sng) == fl_nm_lcl){
     SFTP_URL=True;
     url_sng_lng=strlen(sftp_url_sng);
-  }else if(strstr(fl_nm_lcl,ftp_url_sng) == fl_nm_lcl){
+  }else if(strstr(fl_nm_lcl,ftp_url_sng) == fl_nm_lcl){ /* !sftp */
     FTP_URL=True;
     url_sng_lng=strlen(ftp_url_sng);
-  } /* end else contains *ftp URL */
+  } /* !ftp */
   FTP_OR_SFTP_URL=FTP_URL || SFTP_URL;
-
-  if(FTP_URL){
+  
+  if(FTP_OR_SFTP_URL){
     char *fl_nm_lcl_tmp;
     char *fl_pth_lcl_tmp;
     
-    /* Rearrange fl_nm_lcl to get rid of [s]ftp://hostname part */
-    fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
+    /* If FTP rearrange fl_nm_lcl to get rid of ftp://hostname part, and
+       if SFTP rearrange fl_nm_lcl to get rid of sftp://hostname: part, 
+       before searching for file on local disk */
+    fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/'); 
     fl_nm_lcl_tmp=fl_nm_lcl;
     fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
@@ -330,7 +332,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     
   }else if((cln_ptr=strchr(fl_nm_lcl,':'))){
     /* 19990804
-       Colon separates machine name from filename in rcp and scp requests
+       Colon separates machine name from filename in rcp, scp, and sftp requests
        However, colon is also legal in _any_ UNIX filename
        Thus whether colon signifies rcp or scp request is somewhat ambiguous 
        NCO treats names with more than one colon as regular filenames
@@ -521,23 +523,34 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     /* Currently, sftp transfers are indicated by FTP-style URLS
        NB: SFTP does not have a recognized URL format like FTP 
        Hence actual transfer via SFTP uses scp syntax (for single files)
-       Multiple file transfer via SFTP can use FTP-like scripts, requires more work */
+       Multiple file transfer via SFTP can use FTP-like scripts, requires more work
+       SFTP file specification must contain colon to separate hostname from filename */
     if(rmt_cmd == NULL){
       if(SFTP_URL){
-	rmt_cmd=&sftp;
-      } /* end if SFTP_URL */
+	/* Remote filename begins after URL but includes hostname */
+	fl_nm_rmt+=url_sng_lng;
+	/* Make sure that SFTP hostname looks like a hostname */
+	if((cln_ptr=strchr(fl_nm_rmt,':'))){
+	  if(((cln_ptr-4 >= fl_nm_rmt) && *(cln_ptr-4) == '.') ||
+	     ((cln_ptr-3 >= fl_nm_rmt) && *(cln_ptr-3) == '.')){
+	    rmt_cmd=&sftp;
+	  } /* end if */
+	} /* end if colon */
+      } /* end if SFTP */
     } /* end if rmt_cmd */
 
-    /* Otherwise, single colon preceded by period in filename unambiguously signals to use rcp or scp */
-    /* Determining whether to try scp instead of rcp is difficult
+    /* Otherwise, single colon preceded by period in filename unambiguously signals to use rcp or scp
+       Determining whether to try scp instead of rcp is difficult
        Ideally, NCO would test remote machine for rcp/scp priveleges with system command like, e.g., "ssh echo ok"
        To start with, we use scp which has its own fall through to rcp */
     if(rmt_cmd == NULL){
-      if((cln_ptr=strchr(fl_nm_rmt,':')))
+      if((cln_ptr=strchr(fl_nm_rmt,':'))){
 	if(((cln_ptr-4 >= fl_nm_rmt) && *(cln_ptr-4) == '.') ||
-	   ((cln_ptr-3 >= fl_nm_rmt) && *(cln_ptr-3) == '.'))
+	   ((cln_ptr-3 >= fl_nm_rmt) && *(cln_ptr-3) == '.')){
 	  rmt_cmd=&scp;
-    } /* end if */
+	} /* end if */
+      } /* end if colon */
+    } /* end if rmt_cmd */
     
     if(rmt_cmd == NULL){
       /* Does msrcp command exist on local system? */
