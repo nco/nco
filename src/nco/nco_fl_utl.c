@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.59 2005-07-23 00:49:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.60 2005-07-25 22:37:49 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -290,11 +290,13 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   
   FILE *fp_in;
   bool FTP_URL=False;
+  bool FTP_NETRC=False;
   bool SFTP_URL=False;
   bool FTP_OR_SFTP_URL;
   char *cln_ptr; /* [ptr] Colon pointer */
   char *fl_nm_lcl;
   char *fl_nm_stub;
+  const char fnc_nm[]="nco_fl_mk_lcl"; /* [sng] Function name */
   const char ftp_url_sng[]="ftp://";
   const char sftp_url_sng[]="sftp://";
   int rcd; 
@@ -451,7 +453,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     /* Remote filename is input filename by definition */
     fl_nm_rmt=fl_nm;
     
-    /* URL specifier in filename unambiguously signals to use anonymous FTP */
+    /* URL specifier in filename unambiguously signals to use FTP */
     if(rmt_cmd == NULL){
       if(FTP_URL){
 	/* fxm: use autoconf HAVE_XXX rather than WIN32 to handle this */
@@ -464,67 +466,123 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	char *usr_nm;
 	char *host_nm_lcl;
 	char *host_nm_rmt;
-	char *usr_email;
+	char *usr_email=NULL; /* CEWI */
+	char *fl_nm_netrc;
 
-	const char ftp_cmd_sng[]="ftp -i -n";
-	const char sftp_cmd_sng[]="sftp";
-	const char fmt_ftp_tpl[]="%s << END\nopen %s\nuser anonymous %s\nbin\nget %s %s\nquit\nEND";
+	const char fl_stb_netrc[]="/.netrc";
+	const char ftp_cmd_anonymous[]="ftp -i -n"; /* -n turns off using .netrc */
+	const char ftp_cmd_netrc[]="ftp -i"; /* Allow FTP to use .netrc */
+	const char fmt_ftp_anonymous_tpl[]="%s %s << END\nuser anonymous %s\nbin\nget %s %s\nquit\nEND";
+	const char fmt_ftp_netrc_tpl[]="%s %s << END\nbin\nget %s %s\nquit\nEND";
 
 	struct passwd *usr_pwd;
 
 	uid_t usr_uid;
 
-	/* NB: Derived variable, order is important */
-	const char *ftp_cmd=(FTP_URL ? ftp_cmd_sng : sftp_cmd_sng);
-
 	rmt_cmd=&ftp;
 
+	/* Get UID to get password structure which contains home directory, login name
+	   Home directory needed to search for .netrc 
+	   Login name used to construct e-mail address for anonymous FTP */
 	usr_uid=getuid();
 	usr_pwd=getpwuid(usr_uid);
 	usr_nm=usr_pwd->pw_name;
-	/* DEBUG: 256 should be replaced by MAXHOSTNAMELEN from <sys/param.h>, but
-	   MAXHOSTNAMELEN isn't in there on Solaris */
-	host_nm_lcl=(char *)nco_malloc((256UL+1UL)*sizeof(char));
-	(void)gethostname(host_nm_lcl,256UL+1UL);
-	/* fxm: move to gethostbyname() next */
-	if(strchr(host_nm_lcl,'.') == NULL){
-/* #ifdef HAVE_RES_ */
-	  /* Returned hostname did not include fully qualified Internet domain name (FQDN) */
-	  (void)res_init();
-	  (void)strcat(host_nm_lcl,".");
-	  (void)strcat(host_nm_lcl,_res.defdname);
-/* #endif HAVE_RES_ */
-	} /* end if */
 
-	/* Add one for joining "@" and one for NUL byte */
-	usr_email=(char *)nco_malloc((strlen(usr_nm)+1UL+strlen(host_nm_lcl)+1UL)*sizeof(char));
-	(void)sprintf(usr_email,"%s@%s",usr_nm,host_nm_lcl);
-	/* Free the hostname space */
-	host_nm_lcl=(char *)nco_free(host_nm_lcl);
+	/* Construct remote hostname and filename now since:
+	   1. .netrc, if any, will soon be searched for remote hostname 
+	   2. Remote hostname and filename always needed for remote retrieval */
 
 	/* Remote hostname begins directly after "[s]ftp://" */
 	host_nm_rmt=fl_nm_rmt+url_sng_lng;
 	/* Filename begins after slash */
 	fl_nm_rmt=strstr(fl_nm_rmt+url_sng_lng,"/")+1UL;
-	/* NUL-terminate hostname
-	 This NUL byte intended to overwrite colon in hostname:/filename syntax */
+	/* NUL-terminate hostname by overwriting colon in hostname:/filename syntax */
 	*(fl_nm_rmt-1)='\0';
-	
-	/* Subtract six characters for three "percent s" formats replaced by new strings, add one for NUL byte */
-	fmt_ftp=(char *)nco_malloc((strlen(fmt_ftp_tpl)+strlen(ftp_cmd)+strlen(host_nm_rmt)+strlen(usr_email)-6UL+1UL)*sizeof(char));
-	(void)sprintf(fmt_ftp,fmt_ftp_tpl,ftp_cmd,host_nm_rmt,usr_email,"%s","%s");
+
+	/* Use anonymous FTP unless .netrc file exists on local system */
+	fl_nm_netrc=(char *)strdup(usr_pwd->pw_dir);
+	/* Create space for full path to ${HOME}/.netrc */
+	fl_nm_netrc=(char *)nco_realloc(fl_nm_netrc,(strlen(fl_nm_netrc)+strlen(fl_stb_netrc)+2UL)*sizeof(char));
+	fl_nm_netrc=(char *)strcat(fl_nm_netrc,fl_stb_netrc);
+	rcd=stat(fl_nm_netrc,&stat_sct);
+	if(!rcd){
+	  /* Search .netrc file for remote host name */
+	  char *host_nm_rmt_psn;
+	  char *fl_netrc_bfr;
+	  FILE *fp_netrc; /* [fl] .netrc inpu file handle */
+	  if((fp_netrc=fopen(fl_nm_netrc,"r")) == NULL){
+	    (void)fprintf(stderr,"%s: ERROR unable to open user's .netrc file %s\n",prg_nm_get(),fl_nm_netrc);
+	    /* Why did fopen() command fail? */
+	    (void)perror(prg_nm_get());
+	    nco_exit(EXIT_FAILURE);
+	  } /* end if */
+	  /* Add one for NUL-terminator */
+	  fl_netrc_bfr=(char *)nco_malloc((1UL+stat_sct.st_size)*sizeof(char));
+	  /* NUL-terminate buffer */
+	  fl_netrc_bfr[stat_sct.st_size]='\0';
+	  rcd=fread((void *)fl_netrc_bfr,stat_sct.st_size,1,fp_netrc);
+	  if(rcd <= 0){
+	    (void)fprintf(stderr,"%s: ERROR reading %s\n",prg_nm_get(),fl_nm_netrc);
+	    /* Why did fread() command fail? */
+	    (void)perror(prg_nm_get());
+	    /* Check for feof() vs. ferror() here? */
+	    rcd=fclose(fp_netrc);
+	    nco_exit(EXIT_FAILURE);
+	  } /* end if */
+	  rcd=fclose(fp_netrc);
+	  host_nm_rmt_psn=strstr(fl_netrc_bfr,host_nm_rmt);
+	  if(host_nm_rmt_psn){
+	    FTP_NETRC=True;
+	    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s() will use .netrc file at %s instead of anonymous FTP\n",prg_nm_get(),fnc_nm,fl_nm_netrc);
+	  } /* endif host_nm_rmt_psn */
+	  fl_netrc_bfr=(char *)nco_free(fl_netrc_bfr);
+	} /* endif rcd */
+
+	if(!FTP_NETRC){
+	  /* DEBUG: 256 should be replaced by MAXHOSTNAMELEN from <sys/param.h>, but
+	     MAXHOSTNAMELEN isn't in there on Solaris */
+	  host_nm_lcl=(char *)nco_malloc((256UL+1UL)*sizeof(char));
+	  (void)gethostname(host_nm_lcl,256UL+1UL);
+	  /* fxm: move to gethostbyname() next */
+	  if(strchr(host_nm_lcl,'.') == NULL){
+/* #ifdef HAVE_RES_ */
+	    /* Returned hostname did not include fully qualified Internet domain name (FQDN) */
+	    (void)res_init();
+	    (void)strcat(host_nm_lcl,".");
+	    (void)strcat(host_nm_lcl,_res.defdname);
+/* #endif HAVE_RES_ */
+	  } /* end if */
+
+	  /* Add one for joining "@" and one for NUL byte */
+	  usr_email=(char *)nco_malloc((strlen(usr_nm)+1UL+strlen(host_nm_lcl)+1UL)*sizeof(char));
+	  (void)sprintf(usr_email,"%s@%s",usr_nm,host_nm_lcl);
+	  /* Free hostname space */
+	  host_nm_lcl=(char *)nco_free(host_nm_lcl);
+	} /* FTP_NETRC */
+
+	if(FTP_NETRC){
+	  /* Subtract four characters for two "percent s" formats replaced by new strings, add one for NUL byte */
+	  fmt_ftp=(char *)nco_malloc((strlen(fmt_ftp_netrc_tpl)+strlen(ftp_cmd_netrc)+strlen(host_nm_rmt)-4UL+1UL)*sizeof(char));
+	  (void)sprintf(fmt_ftp,fmt_ftp_netrc_tpl,ftp_cmd_netrc,host_nm_rmt,"%s","%s");
+	}else{
+	  /* Subtract six characters for three "percent s" formats replaced by new strings, add one for NUL byte */
+	  fmt_ftp=(char *)nco_malloc((strlen(fmt_ftp_anonymous_tpl)+strlen(ftp_cmd_anonymous)+strlen(host_nm_rmt)+strlen(usr_email)-6UL+1UL)*sizeof(char));
+	  (void)sprintf(fmt_ftp,fmt_ftp_anonymous_tpl,ftp_cmd_anonymous,host_nm_rmt,usr_email,"%s","%s");
+	} /* !FTP_NETRC */
 	rmt_cmd->fmt=fmt_ftp;
-	/* Free space holding user's E-mail address */
-	usr_email=(char *)nco_free(usr_email);
+	/* Free space, if any, holding user's E-mail address */
+	if(!FTP_NETRC) usr_email=(char *)nco_free(usr_email);
+	/* Always free .netrc filename space */
+	fl_nm_netrc=(char *)nco_free(fl_nm_netrc);
 #endif /* !WIN32 */
       } /* end if FTP_URL */
     } /* end if rmt_cmd */
 
-    /* Currently, sftp transfers are indicated by FTP-style URLS
-       NB: SFTP does not have a recognized URL format like FTP 
+    /* Currently, sftp transfers are indicated by FTP-style URLs
+       NB: Unlike FTP, SFTP does not have a recognized URL format
        Hence actual transfer via SFTP uses scp syntax (for single files)
        Multiple file transfer via SFTP can use FTP-like scripts, requires more work
-       SFTP file specification must contain colon to separate hostname from filename */
+       NCO SFTP file specification must have colon separating hostname from filename */
     if(rmt_cmd == NULL){
       if(SFTP_URL){
 	/* Remote filename begins after URL but includes hostname */

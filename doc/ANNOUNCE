@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.150 2005-07-23 00:49:53 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.151 2005-07-25 22:37:44 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.0.2 are ready. 
 
@@ -25,8 +25,11 @@ benchmarking, memory usage, and documentation improvements.
 6. Compiler support: Intel icc and icpc 8.1 and 9.0 are fully
    supported on x86 and x86_64 architectures
 
-7. Secure FTP (SFTP) access support, e.g.,
+7. Support secure FTP (SFTP) access, e.g.,
    ncks -l ./ sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco/in.nc
+
+8. FTP file access uses .netrc file, if present, for passwords
+   (useful for Earth System Grid access)
 
 Future: The next release (3.1) will concentrate on MPI-enabled NCO.
 

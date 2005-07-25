@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.315 2005-07-23 00:49:53 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.316 2005-07-25 22:37:45 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2324,6 +2324,7 @@ Compilers and linkers are usually invoked this way.
 @cindex @code{--local @var{output-path}}
 @cindex @code{-l @var{output-path}}
 @cindex @file{.netrc}
+@cindex @code{history}
 @cartouche
 Availability: All operators@*
 Short options: @samp{-p}, @samp{-l}@*
@@ -2354,7 +2355,12 @@ machine dust.ess.uci.edu login zender password bushlied
 @end example
 Eschew using valuable passwords for @acronym{FTP} transactions, since
 @file{.netrc} passwords are potentially exposed to eavesdropping
-software. 
+software
+@footnote{@acronym{NCO} does not implement command line options to
+specify @acronym{FTP} logins and passwords because of the extra security
+copying those data into the @code{history} global attribute in the
+output file (done by default) poses an unacceptable security risk.
+}. 
 
 @acronym{SFTP}, i.e., secure @acronym{FTP}, uses @acronym{SSH}-based 
 security protocols that solve the security issues associated with
@@ -2396,12 +2402,12 @@ through the (asynchronous) Masnet Interface Gateway System
 The following examples show how one might analyze files stored on  
 remote systems.
 @example
-ncks -l ./ ftp://dust.ess.uci.edu/pub/zender/nco/in.nc
-ncks -l ./ sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco/in.nc
-ncks -l ./ dust.ess.uci.edu:/home/zender/nco/data/in.nc
-ncks -l ./ /ZENDER/nco/in.nc 
-ncks -l ./ mss:/ZENDER/nco/in.nc
-ncks -l ./ http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata/in.nc 
+ncks -l . ftp://dust.ess.uci.edu/pub/zender/nco/in.nc
+ncks -l . sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco/in.nc
+ncks -l . dust.ess.uci.edu:/home/zender/nco/data/in.nc
+ncks -l . /ZENDER/nco/in.nc 
+ncks -l . mss:/ZENDER/nco/in.nc
+ncks -l . http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata/in.nc 
 @end example
 @noindent
 The first example works verbatim if your system is connected to the
@@ -2422,13 +2428,13 @@ option as follows:
 @cindex @code{-l @var{output-path}}
 @cindex @var{output-path}
 @example
-ncks -p ftp://dust.ess.uci.edu/pub/zender/nco -l ./ in.nc
-ncks -p sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco -l ./ in.nc
-ncks -p dust.ess.uci.edu:/home/zender/nco -l ./ in.nc
-ncks -p /ZENDER/nco -l ./ in.nc 
-ncks -p mss:/ZENDER/nco -l ./ in.nc
+ncks -p ftp://dust.ess.uci.edu/pub/zender/nco -l . in.nc
+ncks -p sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco -l . in.nc
+ncks -p dust.ess.uci.edu:/home/zender/nco -l . in.nc
+ncks -p /ZENDER/nco -l . in.nc 
+ncks -p mss:/ZENDER/nco -l . in.nc
 ncks -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata \ 
-     -l ./ in.nc
+     -l . in.nc
 @end example
 @noindent
 Using @samp{-p} is recommended because it clearly separates the
@@ -2660,7 +2666,7 @@ Often this method is quicker than using a browser, or running an
 For example, say you want to obtain a @acronym{JPEG} file from a weather
 server. 
 @example
-ncks -R -p ftp://weather.edu/pub/pix/jpeg -l ./ storm.jpg
+ncks -R -p ftp://weather.edu/pub/pix/jpeg -l . storm.jpg
 @end example
 @noindent
 In this example, @command{ncks} automatically performs an anonymous
@@ -2678,7 +2684,7 @@ then you may use @acronym{NCO} to retrieve any files (including netCDF,
 machine. 
 For example, 
 @example
-ncks -R -l ./ -p \
+ncks -R -l . -p \
 http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
 pres.sfc.1969.nc
 @end example

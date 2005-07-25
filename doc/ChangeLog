@@ -1,3 +1,14 @@
+2005-07-25  Charlie Zender  <zender@uci.edu>
+
+	* Re-coded so NCO uses .netrc, if present, only when .netrc is
+	read-able and contains remote host name.
+	Anonymous FTP is automatically invoked if .netrc does exist or
+	does not contain remote host name.
+	Henceforth NCO access to password protected FTP sites (like ESG) is scriptable!
+
+	* FTP uses .netrc, if present, in all cases instead of anonymous FTP
+	This essentially breaks anonymous FTP 
+	
 2005-07-22  Charlie Zender  <zender@uci.edu>
 
 	* Finished SFTP support in nco_fl_mk_lcl()
