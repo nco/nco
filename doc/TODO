@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.562 2005-07-25 22:37:44 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.563 2005-07-25 22:45:43 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -307,35 +307,10 @@ nco551. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
 nco552. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
 	ncwa -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
 	ncbo -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
-nco555. Add username/password argument options for FTP,scp access, e.g., to ESG:
-        Method 1: more command line arguments (ugh):
-	ncks --usr=zender --pw=foo -O -D 3 -p ftp://climate.llnl.gov/sresa1b/atm/mo/tas/ncar_ccsm3_0/run1 -l /tmp tas_A1.SRESA1B_1.CCSM.atmm.2000-01_cat_2099-12.nc ~/foo.nc
-        Method 2: Use .netrc 
-	ncks -O -D 3 -p ftp://climate.llnl.gov/sresa1b/atm/mo/tas/ncar_ccsm3_0/run1 -l /tmp tas_A1.SRESA1B_1.CCSM.atmm.2000-01_cat_2099-12.nc ~/foo.nc
-	Verify that anonymous FTP still works:
-        ncks -O -D 3 -l ./ ftp://dust.ess.uci.edu/pub/zender/nco/in.nc
-
-zender@ashes:~/nco/bld$ ncks -O -D 3 -p ftp://climate.llnl.gov/sresa1b/atm/mo/tas/ncar_ccsm3_0/run1 -l /tmp tas_A1.SRESA1B_1.CCSM.atmm.2000-01_cat_2099-12.nc ~/foo.nc
-ncks: INFO nco_fl_mk_lcl()() will use .netrc file at /home/zender/.netrc instead of anonymous FTP
-ncks: Retrieving file from remote location:
-ftp -i << END
-open climate.llnl.gov
-bin
-get sresa1b/atm/mo/tas/ncar_ccsm3_0/run1/tas_A1.SRESA1B_1.CCSM.atmm.2000-01_cat_2099-12.nc /tmp/tas_A1.SRESA1B_1.CCSM.atmm.2000-01_cat_2099-12.nc
-quit
-ENDLogin incorrect.
-Login failed.
-Please login with USER and PASS.
-Please login with USER and PASS.
-ftp: bind: Address already in use
-
-ncks: ERROR User does not have read permission for /tmp/tas_A1.SRESA1B_1.CCSM.atmm.2000-01_cat_2099-12.nc, or file does not exist
-ncks: ERROR exiting through nco_exit() which will now call abort()
-Aborted
-
 nco557. ashes FTP resolver does not find domain (sends "user anonymous zender@ashes.")
-nco558. Use .netrc for FTP iff netrc contains host_nm_rmt (i.e., search .netrc)
-nco559. 
+nco559. bm: Add bm for ESG access?
+        ncks -O -D 3 -p ftp://climate.llnl.gov/sresa1b/atm/mo/tas/ncar_ccsm3_0/run1 -l /tmp tas_A1.SRESA1B_1.CCSM.atmm.2000-01_cat_2099-12.nc ~/foo.nc
+nco560. 
 
 MPI:
 Archive MPI tests which appear to run correctly 
