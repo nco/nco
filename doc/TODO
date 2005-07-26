@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.563 2005-07-25 22:45:43 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.564 2005-07-26 01:25:58 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -310,7 +310,15 @@ nco552. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
 nco557. ashes FTP resolver does not find domain (sends "user anonymous zender@ashes.")
 nco559. bm: Add bm for ESG access?
         ncks -O -D 3 -p ftp://climate.llnl.gov/sresa1b/atm/mo/tas/ncar_ccsm3_0/run1 -l /tmp tas_A1.SRESA1B_1.CCSM.atmm.2000-01_cat_2099-12.nc ~/foo.nc
-nco560. 
+nco560. Change FTP access script to facilitate mget *? e.g.,
+	ftp -i climate.llnl.gov << END
+	bin
+	cd sresa1b/atm/mo/tas/ncar_ccsm3_0/run2
+	lcd /data/zender/sresa1b/atm/mo/tas/ncar_ccsm3_0/run2
+	mget *
+	quit
+	END
+nco561. Change FTP access script to, e.g.,
 
 MPI:
 Archive MPI tests which appear to run correctly 

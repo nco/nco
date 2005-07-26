@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.316 2005-07-25 22:37:45 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.317 2005-07-26 01:25:58 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2339,6 +2339,7 @@ an @acronym{OPeNDAP} server.
 Examples of each are given below, following a brief description of the 
 particular access protocol.
 
+<a name="ftp"></a> <!-- http://nco.sf.net/nco.html#ftp -->
 To access a file via an anonymous @acronym{FTP} server, supply the
 remote file's @acronym{URL}.
 @acronym{FTP} is an intrinsically insecure protocol because it transfers
@@ -2362,6 +2363,7 @@ copying those data into the @code{history} global attribute in the
 output file (done by default) poses an unacceptable security risk.
 }. 
 
+<a name="sftp"></a> <!-- http://nco.sf.net/nco.html#sftp -->
 @acronym{SFTP}, i.e., secure @acronym{FTP}, uses @acronym{SSH}-based 
 security protocols that solve the security issues associated with
 plain @acronym{FTP}.  
@@ -2374,6 +2376,8 @@ Note the second colon following the top-level-domain (tld).
 This syntax is a hybrid between an @acronym{FTP URL} and a standard
 remote file syntax.
 
+<a name="rcp"></a> <!-- http://nco.sf.net/nco.html#rcp -->
+<a name="scp"></a> <!-- http://nco.sf.net/nco.html#scp -->
 To access a file using @command{rcp} or @command{scp}, specify the
 Internet address of the remote file.
 Of course in this case you must have @command{rcp} or @command{scp}
@@ -2385,6 +2389,10 @@ be set accordingly on both local and remote machines.
 @cindex @command{msrcp}
 @cindex @command{msread}
 @cindex @command{nrnet}
+<a name="mss"></a> <!-- http://nco.sf.net/nco.html#mss -->
+<a name="msrcp"></a> <!-- http://nco.sf.net/nco.html#msrcp -->
+<a name="msread"></a> <!-- http://nco.sf.net/nco.html#msread -->
+<a name="nrnet"></a> <!-- http://nco.sf.net/nco.html#nrnet -->
 To access a file on @acronym{NCAR}'s @acronym{MSS}, specify the full
 @acronym{MSS} pathname of the remote file. 
 @acronym{NCO} will attempt to detect whether the local machine has direct
@@ -8556,11 +8564,27 @@ Atmospheric post-processed data, monthly averages, e.g.,
 /data/zender/tmp/b30.025.ES01.cam2.h0.TREFHT.0400-01_cat_0599-12.nc
 
 ESG supports password-protected FTP access by registered users
-NCO does currently supports only anonymous FTP access
-NCO has plans to support password-protected FTP access with this syntax:
-ncks --usr=zender --pw=foo -O -D 3 \
+NCO uses the .netrc file, if present, for password-protected FTP access 
+Syntax for accessing single file is, e.g.,
+ncks -O -D 3 \
   -p ftp://climate.llnl.gov/sresa1b/atm/mo/tas/ncar_ccsm3_0/run1 \
   -l /tmp tas_A1.SRESA1B_1.CCSM.atmm.2000-01_cat_2099-12.nc ~/foo.nc 
+
+# Average surface air temperature tas for SRESA1B scenario
+for var in 'tas'; do
+for scn in 'sresa1b'; do
+for mdl in 'cccma_cgcm3_1 cccma_cgcm3_1_t63 cnrm_cm3 csiro_mk3_0 \
+gfdl_cm2_0 gfdl_cm2_1 giss_aom giss_model_e_h giss_model_e_r \
+iap_fgoals1_0_g inmcm3_0 ipsl_cm4 miroc3_2_hires miroc3_2_medres \
+miub_echo_g mpi_echam5 mri_cgcm2_3_2a ncar_ccsm3_0 ncar_pcm1 \
+ukmo_hadcm3 ukmo_hadgem1'; do
+for run in '1'; do
+        ncks -R -O -D 3 -p ftp://climate.llnl.gov/${scn}/atm/mo/${var}/${mdl}/run${run} -l ${DATA}/${scn}/atm/mo/${var}/${mdl}/run${run} '*' ${scn}_${mdl}_${run}_${var}.nc
+done # end loop over run
+done # end loop over mdl
+done # end loop over scn
+done # end loop over var
+
 @end example
 
 @c @node Name Index, General Index, Operators, Top
