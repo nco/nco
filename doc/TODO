@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.564 2005-07-26 01:25:58 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.565 2005-07-26 16:10:28 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -318,7 +318,8 @@ nco560. Change FTP access script to facilitate mget *? e.g.,
 	mget *
 	quit
 	END
-nco561. Change FTP access script to, e.g.,
+nco561. deprecate ctime_r() in favor of ctime() for Solaris10 compatibility
+nco562. 
 
 MPI:
 Archive MPI tests which appear to run correctly 

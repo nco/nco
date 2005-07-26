@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.295 2005-07-25 22:37:45 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.296 2005-07-26 16:10:28 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -741,10 +741,14 @@ expressions. This is done with
 <!-- http://nco.sf.net#bld_slr -->
 <a name="bld_slr"></a>
 <li><i>Solaris build problems:</i>
-All recent NCO versions build with autotools on Solaris 2.7+.
+All recent NCO versions build with autotools on Solaris 2.7&mdash;2.9.
 The most common problem with building on Solaris with
 <tt>cc</tt>/<tt>CC</tt> is that <tt>bison</tt> may be out-of-date.
 Install an up-to-date <tt>bison</tt> (e.g., 1.875+).
+Solaris 2.10, i.e., Solaris10, had the audacity to change the
+prototype of the <tt>ctime_r()</tt> function and so does not build
+NCO&nbsp;3.0.1.
+The fix is to upgrade to NCO&nbsp;3.0.2.
 </li>
 
 <!-- http://nco.sf.net#bld_sx -->
