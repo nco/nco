@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.565 2005-07-26 16:10:28 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.566 2005-07-27 01:28:40 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -304,13 +304,14 @@ nco551. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
 	ncbo -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
         nco_err_exit(): ERROR nco_get_vara
         This should print non-conforming dimensions
-nco552. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
-	ncwa -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
-	ncbo -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
+nco552. ncbo bug comes down to this: ncbo is not symmetric w/r/t fl_1, fl_2
 nco557. ashes FTP resolver does not find domain (sends "user anonymous zender@ashes.")
 nco559. bm: Add bm for ESG access?
         ncks -O -D 3 -p ftp://climate.llnl.gov/sresa1b/atm/mo/tas/ncar_ccsm3_0/run1 -l /tmp tas_A1.SRESA1B_1.CCSM.atmm.2000-01_cat_2099-12.nc ~/foo.nc
-nco560. Change FTP access script to facilitate mget *? e.g.,
+nco560. Change FTP access script to facilitate mget *?
+	NCO cannot process files obtained this way unless mget feeds
+	information on files obtained back to main()
+	Script modification would be simple:
 	ftp -i climate.llnl.gov << END
 	bin
 	cd sresa1b/atm/mo/tas/ncar_ccsm3_0/run2
