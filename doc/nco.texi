@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.317 2005-07-26 01:25:58 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.318 2005-07-29 01:10:52 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -8579,12 +8579,68 @@ iap_fgoals1_0_g inmcm3_0 ipsl_cm4 miroc3_2_hires miroc3_2_medres \
 miub_echo_g mpi_echam5 mri_cgcm2_3_2a ncar_ccsm3_0 ncar_pcm1 \
 ukmo_hadcm3 ukmo_hadgem1'; do
 for run in '1'; do
-        ncks -R -O -D 3 -p ftp://climate.llnl.gov/${scn}/atm/mo/${var}/${mdl}/run${run} -l ${DATA}/${scn}/atm/mo/${var}/${mdl}/run${run} '*' ${scn}_${mdl}_${run}_${var}.nc
+        ncks -R -O -D 3 -p ftp://climate.llnl.gov/$@{scn@}/atm/mo/$@{var@}/$@{mdl@}/run$@{run@} -l $@{DATA@}/$@{scn@}/atm/mo/$@{var@}/$@{mdl@}/run$@{run@} '*' $@{scn@}_$@{mdl@}_$@{run@}_$@{var@}_$@{yyyymm@}_$@{yyyymm@}.nc
 done # end loop over run
 done # end loop over mdl
 done # end loop over scn
 done # end loop over var
 
+cd sresa1b/atm/mo/tas/ukmo_hadcm3/run1/
+ncks -H -m -v lat,lon,lat_bnds,lon_bnds -M tas_A1.nc | m
+bds -x 096 -y 073 -m 33 -o $@{DATA@}/data/dst_3.75x2.5.nc # ukmo_hadcm3
+ncview $@{DATA@}/data/dst_3.75x2.5.nc
+
+# msk_rgn is California mask on ukmo_hadcm3 grid
+# area is correct area weight on ukmo_hadcm3 grid
+ncks -A -v area,msk_rgn $@{DATA@}/data/dst_3.75x2.5.nc \
+$@{DATA@}/sresa1b/atm/mo/tas/ukmo_hadcm3/run1/area_msk_ukmo_hadcm3.nc
+
+Template for standardized data:
+$@{scn@}_$@{mdl@}_$@{run@}_$@{var@}_$@{yyyymm@}_$@{yyyymm@}.nc
+
+e.g., raw data
+$@{DATA@}/sresa1b/atm/mo/tas/ukmo_hadcm3/run1/tas_A1.nc
+becomes standardized data
+
+Level 0: raw from IPCC site--no changes except for name 
+         Make symbolic link name match raw data
+Template: $@{scn@}_$@{mdl@}_$@{run@}_$@{var@}_$@{yyyymm@}_$@{yyyymm@}.nc
+
+ln -s -f tas_A1.nc sresa1b_ukmo_hadcm3_run1_tas_200101_209911.nc
+area_msk_ukmo_hadcm3.nc
+
+Level I: Add all variables (but not standardized in time)
+         to file containing msk_rgn and area
+Template: $@{scn@}_$@{mdl@}_$@{run@}_$@{yyyymm@}_$@{yyyymm@}.nc
+
+/bin/cp area_msk_ukmo_hadcm3.nc sresa1b_ukmo_hadcm3_run1_200101_209911.nc
+ncks -A -v tas sresa1b_ukmo_hadcm3_run1_tas_200101_209911.nc \
+               sresa1b_ukmo_hadcm3_run1_200101_209911.nc
+ncks -A -v pr  sresa1b_ukmo_hadcm3_run1_pr_200101_209911.nc \
+               sresa1b_ukmo_hadcm3_run1_200101_209911.nc
+
+If already have file then:
+mv sresa1b_ukmo_hadcm3_run1_200101_209911.nc foo.nc
+/bin/cp area_msk_ukmo_hadcm3.nc sresa1b_ukmo_hadcm3_run1_200101_209911.nc
+ncks -A -v tas,pr foo.nc sresa1b_ukmo_hadcm3_run1_200101_209911.nc
+
+Level II: Correct # years, months
+Template: $@{scn@}_$@{mdl@}_$@{run@}_$@{var@}_$@{yyyymm@}_$@{yyyymm@}.nc
+
+ncks -d time,....... file1.nc file2.nc 
+ncrcat file2.nc file3.nc sresa1b_ukmo_hadcm3_run1_200001_209912.nc
+
+Level III: Many derived products from level II, e.g., 
+
+      A. Global mean timeseries
+      ncwa -w area -a lat,lon \
+           sresa1b_ukmo_hadcm3_run1_200001_209912.nc \
+	   sresa1b_ukmo_hadcm3_run1_200001_209912_xy.nc
+
+      B. Califoria average timeseries
+      ncwa -m msk_rgn -w area -a lat,lon \
+           sresa1b_ukmo_hadcm3_run1_200001_209912.nc \
+	   sresa1b_ukmo_hadcm3_run1_200001_209912_xy_Cal.nc
 @end example
 
 @c @node Name Index, General Index, Operators, Top
