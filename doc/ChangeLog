@@ -1,3 +1,7 @@
+2005-08-03  Charlie Zender  <zender@uci.edu>
+
+	* Added msk_* to ncbo's do not touch list for CF
+
 2005-08-02  Charlie Zender  <zender@uci.edu>
 
 	* Added area, lat_bnds, lon_bnds to ncbo's do not touch list for CF

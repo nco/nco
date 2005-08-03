@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.319 2005-08-03 01:04:37 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.320 2005-08-03 18:07:59 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4261,6 +4261,7 @@ may amount to many thousands of filenames in a metadata attribute.
 @cindex @code{hybm}
 @cindex @code{lat_bnds}
 @cindex @code{lon_bnds}
+@cindex @code{msk_*}
 @cartouche
 Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncra}, @command{ncwa}@*
@@ -4323,6 +4324,8 @@ specially, because of their meaning in @acronym{CF} files.
 @code{nbdate}, @code{nbsec}, @code{mdt}, @code{mhisf}.
 These variables contain scalar metadata such as the resolution of the
 host geophysical model and it makes no sense to change their values.
+
+@cindex non-coordinate grid properties
 Furthermore, the @command{ncbo} operator does not operate on (i.e., add,
 subtract, etc.) the following variables: 
 @code{ORO}, 
@@ -4335,13 +4338,25 @@ subtract, etc.) the following variables:
 @code{hybi}. 
 @code{hybm}, 
 @code{lat_bnds}, 
-@code{lon_bnds}. 
+@code{lon_bnds},
+@code{msk_*}.
 These variables represent the Gaussian weights, the orography field,
-time fields, and hybrid pressure coefficients.
-These are fields which you virtually always want to remain unaltered in
-the output file.
-If you decide you would like any of the above @acronym{CF} fields
-processed, you must spoof @acronym{NCO}.
+time fields, hybrid pressure coefficients, and latititude/longitude
+boundaries.
+We call these fields non-coordinate @dfn{grid properties}.
+Coordinate grid properties are easy to identify because they are 
+coordinate variables such as @code{latitude} and @code{longitude}.
+
+Users usually want @emph{all} grid properties to remain unaltered in the
+output file. 
+To be treated as a grid property, the variable name must @emph{exactly}
+match one of the names in the above list, or be a coordinate variable. 
+The handling of @code{msk_*} is exceptional in that @emph{any} variable 
+name beginning with the string @code{msk_} is considered to be a
+``mask'' and is thus preserved (not operated on arithmetically).
+
+You must spoof @acronym{NCO} if you would like any grid properties
+or other special @acronym{CF} fields processed normally.
 For example rename the variables first with @command{ncrename}, 
 or alter the @code{convention} attribute.
 
