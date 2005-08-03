@@ -1,3 +1,9 @@
+2005-08-02  Charlie Zender  <zender@uci.edu>
+
+	* Added area, lat_bnds, lon_bnds to ncbo's do not touch list for CF
+
+	* Re-wrote Conventions section in terms of CF rather than CCSM
+
 2005-07-25  Charlie Zender  <zender@uci.edu>
 
 	* Re-coded so NCO uses .netrc, if present, only when .netrc is

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.318 2005-07-29 01:10:52 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.319 2005-08-03 01:04:37 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -382,8 +382,8 @@ Thinking they might prove useful as tools or templates to others,
 it is my pleasure to provide them freely to the scientific community.  
 Many users (most of whom I have never met) have encouraged the
 development of @acronym{NCO}.  
-Thanks espcially to Jan Polcher, Keith Lindsay, Arlindo da Silva, John
-Sheldon, and William Weibel for stimulating suggestions and
+Thanks espcially to Jan Polcher, Keith Lindsay, Arlindo @w{da Silva},
+John Sheldon, and William Weibel for stimulating suggestions and
 correspondence. 
 Your encouragment motivated me to complete the @cite{NCO User's Guide}.
 So if you like @acronym{NCO}, send me a note!
@@ -1836,7 +1836,7 @@ feature is automatic and cannot be controlled by the user.
 * Suppressing interactive prompts::  
 * History attribute::           
 * Input file list attributes::  
-* NCAR CCSM Conventions::       
+* CF Conventions::              
 * ARM Conventions::             
 * Operator version::            
 @end menu
@@ -2904,8 +2904,8 @@ without having to know their names.
 <a name="-F"></a> <!-- http://nco.sf.net/nco.html#-F -->
 @end html
 @node Fortran indexing, Hyperslabs, Coordinate variables, Common features
-@section C & Fortran index conventions
-@cindex index conventions
+@section C & Fortran index convention
+@cindex index convention
 @cindex Fortran index convention
 @cindex C index convention
 @cindex @code{-F}
@@ -2919,7 +2919,7 @@ Long options: @samp{--fortran}@*
 @end cartouche
 @cindex I/O
 The @samp{-F} switch changes @acronym{NCO} to read and write with
-Fortran index conventions. 
+the Fortran index convention. 
 By default, @acronym{NCO} uses C-style (0-based) indices for all I/O. 
 @w{In C}, indices count @w{from 0} (rather @w{than 1}), and
 dimensions are ordered from slowest (inner-most) to fastest
@@ -2948,7 +2948,7 @@ ncra -F -d time,6,8 85.nc 85_JJA.nc
 @end example
 
 Printing variable @var{three_dmn_var} in file @file{in.nc} first with
-@w{C indexing} conventions, then with Fortran indexing conventions
+the @w{C indexing} convention, then with Fortran indexing convention
 results in the following output formats: 
 @example
 % ncks -v three_dmn_var in.nc
@@ -3264,12 +3264,12 @@ passes @acronym{NCO} arugment fragments which will not parse as
 intended. 
 
 @cindex Climate and Forecast Metadata Convention
-@cindex CF convention
+@cindex CF conventions
 The @uref{http://www.unidata.ucar.edu/packages/udunits, UDUnits}
 package documentation describes the supported formats of time
 dimensions. 
 Among the metadata conventions which adhere to these formats are the  
-@uref{http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-working.html, 
+@uref{http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html, 
 Climate and Forecast (CF) Conventions} and the 
 @uref{http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html,
 Cooperative Ocean/Atmosphere Research Data Service (COARDS) Conventions}.
@@ -4195,7 +4195,7 @@ Note that the @samp{-h} switch also turns off writing the
 @html
 <a name="fl_lst_in_att"></a> <!-- http://nco.sf.net/nco.html#fl_lst_in_att -->
 @end html
-@node Input file list attributes, NCAR CCSM Conventions, History attribute, Common features
+@node Input file list attributes, CF Conventions, History attribute, Common features
 @section Input file list attributes
 @cindex @code{nco_input_file_list}
 @cindex @code{nco_input_file_number}
@@ -4241,30 +4241,45 @@ Hence both switches allows space-conscious users to avoid storing what
 may amount to many thousands of filenames in a metadata attribute.
 
 @html
+<a name="CF"></a> <!-- http://nco.sf.net/nco.html#CF -->
+<a name="cnv_CF"></a> <!-- http://nco.sf.net/nco.html#cnv_CF -->
 <a name="cnv_CCSM"></a> <!-- http://nco.sf.net/nco.html#cnv_CCSM -->
 @end html
-@node NCAR CCSM Conventions, ARM Conventions, Input file list attributes, Common features
-@section @acronym{NCAR CCSM} Conventions
-@cindex @acronym{NCAR CCSM} conventions
+@node CF Conventions, ARM Conventions, Input file list attributes, Common features
+@section @acronym{CF} Convention
+@cindex @acronym{CF} conventions
 @cindex @acronym{CCSM} conventions
 @cindex UDUnits
-@cindex @code{gw}
 @cindex @code{ORO}
-@cindex @code{date}
+@cindex @code{area}
 @cindex @code{datesec}
-@cindex @code{time}
+@cindex @code{date}
+@cindex @code{gw}
+@cindex @code{hyai}
+@cindex @code{hyam}
+@cindex @code{hybi}
+@cindex @code{hybm}
+@cindex @code{lat_bnds}
+@cindex @code{lon_bnds}
 @cartouche
 Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncra}, @command{ncwa}@*
 Short options: None@*
 @end cartouche
-@acronym{NCO} recognizes @acronym{NCAR CCSM} history tapes, and treats
-them specially. 
-If you do not work with @acronym{NCAR CCSM} data then you may skip this
+@acronym{NCO} recognizes the Climate and Forecast (@acronym{CF})
+metadata conventions, and treats such data (often called history tapes), 
+specially.  
+@acronym{NCO} handles older @acronym{NCAR} model datasets, such as
+@acronym{CCM} and early @acronym{CCSM} datasets, with the @acronym{CF}   
+rules even though the earlier data may not contain an explicit
+@code{Convention} attribute (such as @code{CF-1.0}).
+We collectively refer to all such data as @acronym{CF} data.
+If you do not work with @acronym{CF} data then you may skip this
 section. 
-The @acronym{CCSM} netCDF convention is described at
-@uref{http://www.cgd.ucar.edu/csm/experiments/output.format.html}.
-Most of the @acronym{CCSM} netCDF convention is transparent to
+
+The @acronym{CF} netCDF conventions are described at
+@uref{http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html}. 
+Most of the @acronym{CF} netCDF conventions are transparent to
 @acronym{NCO} 
 @footnote{
 The exception is appending/altering the attributes @code{x_op},
@@ -4273,11 +4288,12 @@ averaged across space and time dimensions.
 This feature is scheduled for future inclusion in @acronym{NCO}.
 }.
 There are no known pitfalls associated with using any @acronym{NCO}
-operator on files adhering to this convention
+operator on files adhering to these conventions
 @footnote{
-The @acronym{CCSM} convention recommends @code{time} be stored in the format
-@var{time} since @var{base_time}, e.g., the @code{units} attribute of
-@code{time} might be @samp{days since 1992-10-8 15:15:42.5 -6:00}. 
+The @acronym{CF} conventions recommend @code{time} be stored in the
+format @var{time} since @var{base_time}, e.g., the @code{units}
+attribute of @code{time} might be 
+@samp{days since 1992-10-8 15:15:42.5 -6:00}. 
 @w{A problem} with this format occurs when using @command{ncrcat} to
 concatenate multiple files together, each with a different
 @var{base_time}. 
@@ -4286,36 +4302,45 @@ be concatenated should be corrected to the @var{base_time} offset
 specified in the @code{units} attribute of @code{time} from the first
 file. 
 The analogous problem has been fixed in @acronym{ARM} files 
-(@pxref{ARM Conventions}) and could be fixed for @acronym{CCSM} files if
+(@pxref{ARM Conventions}) and could be fixed for @acronym{CF} files if
 there is sufficient lobbying.
 }.
 However, to facilitate maximum user friendliness, @acronym{NCO} does
-treat certain variables in some @acronym{CCSM} files specially. 
-The special functions are not required by the @acronym{CCSM} netCDF
-convention, but experience has shown they do make life easier.
+treat certain variables in some @acronym{CF} files specially. 
+The special functions are not required by the @acronym{CF} netCDF
+conventions, but experience has shown they do make life easier.
 
 Currently, @acronym{NCO} determines whether a datafile is a
-@acronym{CCSM} output datafile simply by checking whether value of the
+@acronym{CF} output datafile simply by checking whether value of the
 global attribute @code{convention} (if it exists) equals
-@samp{NCAR-CSM}.   
-Should @code{convention} equal @samp{NCAR-CSM} in the (first)
+@samp{CF-1.0} or @samp{NCAR-CSM}.   
+Should @code{convention} equal either of these in the (first)
 @var{input-file}, @acronym{NCO} will attempt to treat certain variables
-specially, because of their meaning in @acronym{CCSM} files. 
+specially, because of their meaning in @acronym{CF} files. 
 @acronym{NCO} will not average the following variables often found in
-@acronym{CCSM} files: 
+@acronym{CF} files: 
 @code{ntrm}, @code{ntrn}, @code{ntrk}, @code{ndbase}, @code{nsbase},
 @code{nbdate}, @code{nbsec}, @code{mdt}, @code{mhisf}.
 These variables contain scalar metadata such as the resolution of the
-host @acronym{CCSM} model and it makes no sense to change their values.
+host geophysical model and it makes no sense to change their values.
 Furthermore, the @command{ncbo} operator does not operate on (i.e., add,
 subtract, etc.) the following variables: 
-@code{gw}, @code{ORO}, @code{date}, @code{datesec}, @code{hyam},
-@code{hybm}, @code{hyai}, @code{hybi}. 
+@code{ORO}, 
+@code{area}, 
+@code{datesec}, 
+@code{date}, 
+@code{gw}, 
+@code{hyai}, 
+@code{hyam},
+@code{hybi}. 
+@code{hybm}, 
+@code{lat_bnds}, 
+@code{lon_bnds}. 
 These variables represent the Gaussian weights, the orography field,
 time fields, and hybrid pressure coefficients.
 These are fields which you virtually always want to remain unaltered in
 the output file.
-If you decide you would like any of the above @acronym{CCSM} fields
+If you decide you would like any of the above @acronym{CF} fields
 processed, you must spoof @acronym{NCO}.
 For example rename the variables first with @command{ncrename}, 
 or alter the @code{convention} attribute.
@@ -4323,7 +4348,7 @@ or alter the @code{convention} attribute.
 @html
 <a name="cnv_ARM"></a> <!-- http://nco.sf.net/nco.html#cnv_ARM -->
 @end html
-@node ARM Conventions, Operator version, NCAR CCSM Conventions, Common features
+@node ARM Conventions, Operator version, CF Conventions, Common features
 @section @acronym{ARM} Conventions
 @cindex @acronym{ARM} conventions
 @cindex @code{time_offset}
@@ -4358,7 +4383,7 @@ necessarily, also appearing in the @var{output-file}).
 Second, if a coordinate variable named @code{time} is not found in the
 @var{input-files}, then @command{ncrcat} automatically creates the
 @code{time} coordinate in the @var{output-file}.  
-The values of @code{time} are defined by the @acronym{ARM} convention
+The values of @code{time} are defined by the @acronym{ARM} conventions 
 @math{@var{time} = @var{base_time} + @var{time_offset}}.
 Thus, if @var{output-file} contains the @code{time_offset}
 variable, it will also contain the @code{time} coordinate.
@@ -5930,11 +5955,11 @@ of type @code{NC_CHAR} or @code{NC_BYTE}.
 This ensures that coordinates like (e.g., latitude and longitude) are 
 physically meaningful in the output file, @var{file_3}. 
 This behavior is hardcoded.
-@cindex @acronym{NCAR CCSM} conventions
-@cindex @acronym{CCSM} conventions
-@command{ncbo} applies special rules to some @acronym{NCAR CCSM} fields
-(e.g., @code{ORO}).
-See @ref{NCAR CCSM Conventions} for a complete description.
+@cindex @acronym{CF} conventions
+@command{ncbo} applies special rules to some 
+@acronym{CF}-defined (and/or @acronym{NCAR CCSM} or @acronym{NCAR CCM} 
+fields) such as @code{ORO}.
+See @ref{CF Conventions} for a complete description.
 Finally, we note that @command{ncflint} (@pxref{ncflint netCDF File
 Interpolator}) is designed for file interpolation.
 As such, it also performs file subtraction, addition, multiplication,
@@ -8113,8 +8138,8 @@ Here the tally is simply the size of @code{lon}, or 128.
 @cindex climate model
 Compute the meridional (latitudinal) mean, with values weighted by
 the corresponding element of @var{gw}
-@footnote{@code{gw} stands for @dfn{Gaussian weight} in the
-@acronym{NCAR} climate model.}: 
+@footnote{@code{gw} stands for @dfn{Gaussian weight} in many
+climate models.}: 
 @example
 ncwa -w gw -a lat in.nc out.nc
 @end example
@@ -8152,8 +8177,7 @@ $ORO < 0.5$
 @var{ORO} < 0.5
 @clear flg
 @end ifset
-@footnote{@code{ORO} stands for @dfn{Orography} in the @acronym{NCAR}
-climate model. 
+@footnote{@code{ORO} stands for @dfn{Orography} in some climate models.  
 @math{@var{ORO} < 0.5} selects the gridpoints which are covered by
 ocean.}: 
 @example
@@ -8593,7 +8617,7 @@ ncview $@{DATA@}/data/dst_3.75x2.5.nc
 # msk_rgn is California mask on ukmo_hadcm3 grid
 # area is correct area weight on ukmo_hadcm3 grid
 ncks -A -v area,msk_rgn $@{DATA@}/data/dst_3.75x2.5.nc \
-$@{DATA@}/sresa1b/atm/mo/tas/ukmo_hadcm3/run1/area_msk_ukmo_hadcm3.nc
+$@{DATA@}/sresa1b/atm/mo/tas/ukmo_hadcm3/run1/area_msk_ukmo_hadcm3.nc 
 
 Template for standardized data:
 $@{scn@}_$@{mdl@}_$@{run@}_$@{var@}_$@{yyyymm@}_$@{yyyymm@}.nc
