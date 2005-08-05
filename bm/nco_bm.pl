@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.51 2005-07-18 19:56:09 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.52 2005-08-05 22:18:50 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -19,7 +19,7 @@ use strict; # Protect all namespaces
 # Declare vars for strict
 
 use vars qw(
-$arg_nbr $bch_flg $bm @bm_cmd_ary $bm_dir $cmd_ln $dbg_lvl $dodap $dodods
+$arg_nbr $bch_flg $bm @bm_cmd_ary $bm_dir $cmd_ln $dbg_lvl $dodap $fl_cnt
 $dot_fmt $dot_nbr $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng $dta_dir
 %failure $fl_pth $foo1_fl $foo2_fl $foo_fl $foo_T42_fl $foo_tst $foo_x_fl
 $foo_xy_fl $foo_xymyx_fl $foo_y_fl $foo_yx_fl @ifls $itmp $localhostname
@@ -47,9 +47,9 @@ $bch_flg=0; # [flg] Batch behavior
 $dbg_lvl = 0; # [enm] Print tests during execution for debugging
 my $nvr_data=$ENV{'DATA'} ? $ENV{'DATA'} : '';
 my $nvr_home=$ENV{'HOME'} ? $ENV{'HOME'} : '';
+my $USER = $ENV{'USER'};
 my $nvr_my_bin_dir=$ENV{'MY_BIN_DIR'} ? $ENV{'MY_BIN_DIR'} : '';
 $MY_BIN_DIR = $nvr_my_bin_dir;
-$dodap = '';
 $fl_pth = '';
 $que = 0;
 $thr_nbr = 0; # If not zero, pass explicit threading argument 
@@ -60,6 +60,8 @@ $wnt_log = 0;
 $md5 = 0;
 $mpi = 0;
 $timestamp = `date -u "+%x %R"`; chomp $timestamp;
+$dodap = "FALSE"; # Unless redefined bythe cmdline, it doesn't get set
+$fl_cnt = 32; # nbr of files to process (reduced to 4 if using remote/dods files
 
 # other inits
 $localhostname = `hostname`;
@@ -78,9 +80,9 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'bm'           => \$bm,         # Run benchmarks 
 	'dbg_lvl=i'    => \$dbg_lvl,    # debug level
 	'debug=i'      => \$dbg_lvl,    # debug level
-	'dods=s'       => \$dodap,      # string is the URL to the DODs data
-	'dap=s'        => \$dodap,      #  "
-	'opendap=s'    => \$dodap,      #  "
+	'dods:s'       => \$dodap,      # string is the URL to the DODs data
+	'dap:s'        => \$dodap,      #  "
+	'opendap:s'    => \$dodap,      #  "
 	'h'            => \$usg,        # explains how to use this thang
 	'help'         => \$usg,        #            ditto
 	'log'          => \$wnt_log,    # set if want output logged
@@ -400,6 +402,8 @@ my %wcTable = ( # word count table for $dta_dir/wc_out
 if($dbg_lvl > 0){printf ("$prg_nm: Calling set_dat_dir()...\n");}
 set_dat_dir(); # Set $dta_dir
 
+# make sure that the $fl_pth gets set to a reasonable defalt
+$fl_pth = "$dta_dir";
 # also want to try to grok /usr/bin/time, as in the shell scripts
 if (-e "/usr/bin/time" && -x "/usr/bin/time") {
 	$tmr_app = "/usr/bin/time";
@@ -464,12 +468,22 @@ if ($thr_nbr > 0){$omp_flg="--thr_nbr=$thr_nbr ";} else {$omp_flg='';}
 # If dodap is not set then test with local files
 # If dodap is set and string is NULL, then test with OPeNDAP files on sand.ess.uci.edu
 # If string is NOT NULL, use URL to grab files
-if ($dodap eq '') { $fl_pth = "$dta_dir";} 
-elsif ($dodap =~ /http:\/\//) { $fl_pth = "$dodap";}
-else {
-	print "'--dodap' option ($dodap) doesn't seem like a real URL - typo or thinko?\nContinuing by trying to find the local files in $dta_dir directory.\n"; 
-	$fl_pth = "$dta_dir";
+
+#print "before dodap, fl_pth = $fl_pth\n";
+# $dodap asks for and if defined, carries, the URL that's inserted in the '-p' place in nco cmdlines
+if ($dodap ne "FALSE") { 
+	if ($dodap eq "") { 
+		$fl_pth = "http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata";
+		$fl_cnt = 4;
+	} elsif ($dodap =~ /http/) { 
+		$fl_pth = $dodap; 
+		$fl_cnt = 4;
+	} else {
+		die "\nThe URL specified with the --dods option:\n $dodap \ndoesn't look like a valid URL.\nTry again\n\n";
+	}
 }
+#print "after dodap, fl_pth = $fl_pth\n";
+
 
 # Initialize & set up some variables
 #if($dbg_lvl > 0){printf ("$prg_nm: Calling initialize()...\n");}
@@ -491,12 +505,14 @@ if ($rgr){
 
 # Start real benchmark tests
 # Test if necessary files are available - if so, may skip creation tests
-if($dbg_lvl > 0 && $bm ){printf ("$prg_nm: Calling fl_cr8_dat_init()...\n");}
-fl_cr8_dat_init(); # Initialize data strings & timing array for files
-
+if($bm && $dodap eq "FALSE"){
+	if($dbg_lvl > 0){printf ("$prg_nm: Calling fl_cr8_dat_init()...\n");}
+	fl_cr8_dat_init(); # Initialize data strings & timing array for files
+}
+	
 # Check if files have already been created
 # If so, skip file creation if not requested
-if ($bm && $tst_fl_cr8 == 0) { 
+if ($bm && $tst_fl_cr8 == 0 && $dodap eq "FALSE") { 
 	for (my $i = 0; $i < $NUM_FLS; $i++) {
 		my $fl = $fl_cr8_dat[$i][2] . ".nc"; # file root name stored in $fl_cr8_dat[$i][2] 
 		if (-e "$dta_dir/$fl" && -r "$dta_dir/$fl") {
@@ -527,6 +543,12 @@ my $doit=1; # for skipping various tests
 if ($bm) {
 	print "\nStarting Benchmarks now\n";
 	if($dbg_lvl > 0){print "bm: prefix = $prefix\n";}
+	
+my $in_pth = " -p ../data ";
+print "";
+if ($dodap ne "" && $fl_pth =~ /http/ ) { $in_pth = " -p $fl_pth "; }
+if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata "; } 
+	
 
 	################### Set up the symlinks ###################
 	if ($dbg_lvl > 0) {print "\n\nSetting up symlinks for test nc files\n";}
@@ -542,7 +564,7 @@ if ($bm) {
 			}
 		}
 	}	
-	if (0) { }# 0 /1 skip this bit
+	if (0) { # 0 /1 skip this bit
 	#################### begin ncap benchmark hjm - needs to be verified.
 	$opr_nm='ncap';
 	$dsc_sng = 'ncap long algebraic operation';
@@ -568,13 +590,14 @@ if ($bm) {
 	go();
 	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng]\n";}
 	
-	
+}
+
 	#################### begin ncea benchmark 
 	$opr_nm='ncea';
 	$dsc_sng = 'ncea averaging 2^5 files';
 	####################	
-	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncea -h -O $omp_flg  $fl_pth/stl_5km_*.nc $outfile";
+	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng, files=$fl_cnt\n";}
+	$tst_cmd[0] = "ncea -h -O $omp_flg -n 30,2,1 -p $fl_pth stl_5km_00.nc $outfile";
 	if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
 	$tst_cmd[1] = "ncwa -h -O $omp_flg -y sqrt -a lat,lon $outfile $outfile";
 	$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00  $outfile"; 
@@ -583,26 +606,27 @@ if ($bm) {
 	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	
 	
-	
 	#################### begin ncecat benchmark 
 	$opr_nm='ncecat';
 	$dsc_sng = 'ncecat joining 2^5 files'; # skn_lgs.nc * 32 = 1.51GB
 	####################	
-	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncecat -h -O $omp_flg  $fl_pth/skn_lgs_*.nc $outfile";
+	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng, files=$fl_cnt\n";}
+	$tst_cmd[0] = "ncecat -h -O $omp_flg -n $fl_cnt,2,1 -p $fl_pth skn_lgs_00.nc $outfile";
 	$tst_cmd[1] = "ncwa -h -O $omp_flg  $outfile $outfile";
 	$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2  $outfile"; 
 	$nsr_xpc = "12.759310";
 	go();
 	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
-	
-	
+		
+# skip this bit
+
+
 	#################### begin ncflint benchmark  - needs to be verified and md5/wc sums created.
 	$opr_nm='ncflint';
 	$dsc_sng = 'ncflint weight-averaging 2 files';
 	####################	
 	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncflint -h -O   -w '0.5'  $fl_pth/ipcc_dly_T85_0[12].nc $outfile";
+	$tst_cmd[0] = "ncflint -h -O   -w '0.5' -p $fl_pth ipcc_dly_T85_00.nc  ipcc_dly_T85_01.nc  $outfile";
 	if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
 	$tst_cmd[1] = "ncwa -h -O $omp_flg -y sqrt -a lat,lon $outfile $outfile";	
 #	$tst_cmd[1] = "ncflint -h -O $omp_flg -y sqrt -a lat,lon $outfile $outfile";
@@ -611,7 +635,7 @@ if ($bm) {
 	go();
 	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	
-	
+
 	#################### begin ncpdq benchmark - reversal
 	$opr_nm='ncpdq';
 	$dsc_sng = 'ncpdq dimension-order reversal';
@@ -635,7 +659,7 @@ if ($bm) {
 	$dsc_sng = 'ncpdq dimension-order re-ordering';
 	####################	
 	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncpdq -h -O $omp_flg -a lon time lev lat -p $fl_pth  ipcc_dly_T85.nc  $outfile";
+	$tst_cmd[0] = "ncpdq -h -O $omp_flg -a 'lon,time,lev,lat' -p $fl_pth  ipcc_dly_T85.nc  $outfile";
 	$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";  #ipcc
 	$nsr_xpc = "0.800000"; #ipcc
 	go();
@@ -646,7 +670,7 @@ if ($bm) {
 	$dsc_sng = 'ncpdq dimension-order re-ordering & reversing';
 	####################	
 	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncpdq -h -O $omp_flg -a -lon -time -lev -lat -p $fl_pth  ipcc_dly_T85.nc  $outfile";
+	$tst_cmd[0] = "ncpdq -h -O $omp_flg -a '-lon,-time,-lev,-lat' -p $fl_pth  ipcc_dly_T85.nc  $outfile";
 	$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";  #ipcc
 	$nsr_xpc = "0.800000"; #ipcc
 	go();
@@ -667,20 +691,23 @@ if ($bm) {
 	
 
 	################### Set up the symlinks ###################
-	if ($dbg_lvl > 0) {print "\n\nSetting up symlinks for test nc files\n";}
-	for (my $f=0; $f<$NUM_FLS; $f++) {
-		my $rel_fl = "$dta_dir/$fl_cr8_dat[$f][2]" . ".nc" ;
-		my $ldz = "0"; # leading zero for #s < 10
-		if ($dbg_lvl > 0) {print "\tsymlinking $rel_fl\n";}
-		for (my $n=0; $n<32; $n ++) {
-			if ($n>9) {$ldz ="";}
-			my $lnk_fl_nme = "$dta_dir/$fl_cr8_dat[$f][2]" . "_" . "$ldz" . "$n" . ".nc";
-			if (-r $rel_fl && -d $dta_dir && -w $dta_dir){
-				symlink $rel_fl, $lnk_fl_nme;
+	if ($dbg_lvl > 0 && $dodap eq "FALSE") {print "\n\nSetting up local symlinks for test nc files\n";}
+	if ($dodap eq "FALSE") {
+		for (my $f=0; $f<$NUM_FLS; $f++) {
+			my $rel_fl = "$dta_dir/$fl_cr8_dat[$f][2]" . ".nc" ;
+			my $ldz = "0"; # leading zero for #s < 10
+			if ($dbg_lvl > 0) {print "\tsymlinking $rel_fl\n";}
+			for (my $n=0; $n<32; $n ++) {
+				if ($n>9) {$ldz ="";}
+				my $lnk_fl_nme = "$dta_dir/$fl_cr8_dat[$f][2]" . "_" . "$ldz" . "$n" . ".nc";
+				if (-r $rel_fl && -d $dta_dir && -w $dta_dir){
+					symlink $rel_fl, $lnk_fl_nme;
+				}
 			}
 		}
+	} elsif ($dbg_lvl > 0) {
+		print "\n\nSkipping local symlinks for test nc files (using remote files).\n";
 	}
-	
 		
 	#################### begin cz benchmark list #2
 	$opr_nm='ncra';
@@ -688,28 +715,31 @@ if ($bm) {
 	####################	
 	if ($notbodi) { # too big for bodi
 		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncra -h -O $omp_flg $fl_pth/ipcc_dly_T85_*.nc $outfile";
+		$tst_cmd[0] = "ncra -h -O $omp_flg -n $fl_cnt,2,1 -p $fl_pth ipcc_dly_T85_00.nc $outfile";
 		# ~4m on sand.
 		$tst_cmd[1] =  "ncks -C -H -s '%f' -v d1_03    $outfile ";
 		$nsr_xpc = "1.800001";
 		go();
 	}
 	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
-
 	
-	#################### begin ncecat benchmark 
+	if ($dodap eq "FALSE") { # only if not being done by remote
+	#################### begin ncrcat benchmark 
 	$opr_nm='ncrcat';
 	$dsc_sng = 'ncrcat joining 2^5 files'; # skn_lgs.nc * 32 = 1.51GB
 	####################	
 	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncrcat -h -O $omp_flg  $fl_pth/skn_lgs_*.nc $outfile";
+	$tst_cmd[0] = "ncrcat -h -O $omp_flg -n $fl_cnt,2,1 -p $fl_pth skn_lgs_00.nc $outfile";
 	$tst_cmd[1] = "ncwa -h -O $omp_flg  $outfile $outfile";
 	$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2  $outfile"; 
 	$nsr_xpc = "12.759310";
 	go();
 	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	} else {
+		print "\nNB: ncrcat benchmark skipped for OpenDAP test - takes too long.\n\n";
+	}
+#}
 	
-
 	#################### begin ncwa benchmark list #1a
 	$opr_nm='ncwa';
 	$dsc_sng = 'ncwa averaging all variables to scalars - stl_5km.nc & sqrt';
@@ -764,7 +794,6 @@ sub go {
 	if (!defined $tst_nbr{$opr_nm}) { 
 		@tst_cmd=();  # Clear test array
 		# and init the timing hashes
-		if($dbg_lvl > 0){ print "\ngo($opr_nm): clearing timing arrays\n";	}
 		$real_tme{$opr_nm} = 0;
 		$usr_tme{$opr_nm}  = 0;
 		$sys_tme{$opr_nm}  = 0;
@@ -907,7 +936,10 @@ sub perform_tests
 # - $dsc_sng holds test description line
 # - $nsr_xpc is string or expression that is correct result of command
 # - go() is function which executes each test
-
+my $in_pth = " -p ../data ";
+print "";
+if ($dodap ne "" && $fl_pth =~ /http/ ) { $in_pth = " -p $fl_pth "; }
+if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata "; } 
 
 #if (0) {
 ####################
@@ -915,55 +947,55 @@ sub perform_tests
 ####################
     $opr_nm='ncap';
 #################### 
-	$tst_cmd[0]="ncap -h -O -v -S ncap.in in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O -v -S ncap.in $in_pth in.nc  $outfile";
 	$dsc_sng="running ncap.in script into nco_tst.pl";
 	$nsr_xpc ="ncap: WARNING Replacing missing value data in variable val_half_half";
 	&go();
 	
-	$tst_cmd[0]="ncap -h -O -C -v -s 'tpt_mod=tpt%273.0f' in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O -C -v -s 'tpt_mod=tpt%273.0f' $in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%.1f'  $outfile";
 	$dsc_sng="Testing float modulo float";
 	$nsr_xpc ="0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0";
 	&go();
 	
-	$tst_cmd[0]="ncap -h -O -C -v -s 'foo=log(e_flt)^1' in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O -C -v -s 'foo=log(e_flt)^1'$in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%.6f\n'  $outfile";
 	$dsc_sng="Testing foo=log(e_flt)^1 (fails on AIX TODO ncap57)";
 	$nsr_xpc ="1.000000";
 	&go();
 	
-	$tst_cmd[0]="ncap -h -O -C -v -s 'foo=log(e_dbl)^1' in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O -C -v -s 'foo=log(e_dbl)^1' $in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%.12f\n'  $outfile";
 	$dsc_sng="Testing foo=log(e_dbl)^1";
 	$nsr_xpc ="1.000000000000";
 	&go();
 	
-	$tst_cmd[0]="ncap -h -O -C -v -s 'foo=4*atan(1)' in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O -C -v -s 'foo=4*atan(1)' $in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%.12f\n'  $outfile";
 	$dsc_sng="Testing foo=4*atan(1)";
 	$nsr_xpc ="3.141592741013";
 	&go();
 	
-	$tst_cmd[0]="ncap -h -O -C -v -s 'foo=erf(1)' in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O -C -v -s 'foo=erf(1)' $in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%.12f\n'  $outfile";
 	$dsc_sng="Testing foo=erf(1)";
 	$nsr_xpc ="0.842701";
 	&go();
 	
 	#fails - wrong result
-	$tst_cmd[0]="ncap -h -O -C -v -s 'foo=gamma(0.5)' in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O -C -v -s 'foo=gamma(0.5)' $in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%.12f\n'  $outfile";
 	$dsc_sng="Testing foo=gamma(0.5)";
 	$nsr_xpc ="1.772453851";
 	&go();
 	
-	$tst_cmd[0]="ncap -h -O -C -v -s 'pi=4*atan(1);foo=sin(pi/2)' in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O -C -v -s 'pi=4*atan(1);foo=sin(pi/2)' $in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -v foo -s '%.12f\n'  $outfile";
 	$dsc_sng="Testing foo=sin(pi/2)";
 	$nsr_xpc ="1.000000000000";
 	&go();
 	
-	$tst_cmd[0]="ncap -h -O -C -v -s 'pi=4*atan(1);foo=cos(pi)' in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O -C -v -s 'pi=4*atan(1);foo=cos(pi)' $in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -v foo -s '%.12f\n'  $outfile";
 	$dsc_sng="Testing foo=cos(pi)";
 	$nsr_xpc ="-1.000000000000";
@@ -974,7 +1006,7 @@ sub perform_tests
 ####################
     $opr_nm="ncatted";
 ####################
-	$tst_cmd[0]="ncatted -h -O -a units,,m,c,'meter second-1' in.nc  $outfile";
+	$tst_cmd[0]="ncatted -h -O -a units,,m,c,'meter second-1' $in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%s' -v lev  $outfile | grep units | cut -d' ' -f 11-12";
 	$dsc_sng="Modify all existing units attributes to meter second-1";
 	$nsr_xpc="meter second-1";
@@ -1578,13 +1610,19 @@ sub perform_tests
 	$dsc_sng="nco 1: FTP protocol (fails if unable to anonymous FTP to dust.ess.uci.edu)";
 	$nsr_xpc= 1;
 	&go();
-	$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-	$tst_cmd[1]="ncks -h -O -v one -p goldhill.cgd.ucar.edu:/home/zender/nco/data -l ./ in.nc $outfile";;
-	$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";;
-	$tst_cmd[3]="mv in_tmp.nc in.nc";
-	$dsc_sng="nco 2: scp/rcp protocol(fails if no SSH/RSH access to goldhill.cgd.ucar.edu)";
-	$nsr_xpc= 1;
-	&go();
+	
+	# should this still be in the test suite?  CZ is the only person who can test it.
+	if ($USER eq "zender"){
+		$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
+		$tst_cmd[1]="ncks -h -O -v one -p goldhill.cgd.ucar.edu:/home/zender/nco/data -l ./ in.nc $outfile";;
+		$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";;
+		$tst_cmd[3]="mv in_tmp.nc in.nc";
+		$dsc_sng="nco 2: scp/rcp protocol(fails if no SSH/RSH access to goldhill.cgd.ucar.edu)";
+		$nsr_xpc= 1;
+		&go();
+	} else {
+		print "\nskipping net test requiring goldhill login - only for zender\n";
+	}
 	
 	$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
 	$tst_cmd[0]="ncks -h -O -v one -p mss:/ZENDER/nc -l ./ in.nc $outfile";;
@@ -1628,7 +1666,6 @@ where (options) are:
                      this string can be used to identity and separate results 
                      from differnt runs.
     --dap {OPeNDAP url} ...retrieve test files from OPeNDAP server URL
-    --dods    "               "
     --opendap "               "
     --log ..........requests that the debug info is logged to 'nctest.log'
                      as well as spat to STDOUT.
@@ -1680,7 +1717,7 @@ sub initialize($$){
 	my $dbg_lvl; # [flg] Debugging level
 	($bch_flg,$dbg_lvl)=@_;
 	# Enumerate operators to test
-	@opr_lst_all = qw( ncap ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa);
+	@opr_lst_all = qw( ncap ncdiff ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa);
 	@opr_lst_mpi = qw(mncbo mpncecat mpncflint mpncpdq mpncra  mpncwa);
 	if (scalar @ARGV > 0){@opr_lst=@ARGV;}else{@opr_lst=@opr_lst_all;}
 	if (defined $ENV{'MY_BIN_DIR'} &&  $ENV{'MY_BIN_DIR'} ne ""){$MY_BIN_DIR=$ENV{'MY_BIN_DIR'};}
@@ -1700,7 +1737,7 @@ sub initialize($$){
 	} # !$MY_BIN_DIR
 	if($dbg_lvl > 0){printf ("$prg_nm: initialize() reports \$MY_BIN_DIR = $MY_BIN_DIR, \$opr_lst[0] = $opr_lst[0], \@opr_lst=@opr_lst\n");}
 	# Die if this path still does not work
-	die "$MY_BIN_DIR/$opr_lst[0] does not exist\n stopped" unless (-e "$MY_BIN_DIR/$opr_lst[0]");
+	die "$MY_BIN_DIR/$opr_lst[0] does not exist\n stopped" unless (-e "$MY_BIN_DIR/$opr_lst[0]" || $opr_lst[0] eq "net");
 	
 	# Create symbolic links for testing
 	# If libtool created shared libraries, then point to real executables 

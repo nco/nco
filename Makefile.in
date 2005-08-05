@@ -622,8 +622,9 @@ uninstall-info: uninstall-info-recursive
 
 
 test:
-	$(MAKE) check
-	cd bld && env MY_BIN_DIR=../src/nco ./nco_tst.pl
+	$(MAKE) all
+	cd bm && MY_BIN_DIR=../src/nco && DATA=/tmp ./nco_bm.pl --regress 
+
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
