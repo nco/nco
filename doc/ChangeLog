@@ -1,3 +1,9 @@
+2005-08-08  Harry Mangalam  <hjm@tacgi.com>
+	* final updates to nco_bm.pl for testing DAP (reduced number of 
+		files requested under DAP (also becasue of bug in DAP that
+		refuses > 30 files at once in some cases.
+	* changed Makefile.in to work with 'make test' & 'make devtest'
+
 2005-08-05  Harry Mangalam  <hjm@tacgi.com>
 	* cleaned out refs to '-n' in ncflint.c (doesn't support it)
 	* major mods to nco_bm.pl to add DODS support to testing

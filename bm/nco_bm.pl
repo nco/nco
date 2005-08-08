@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.52 2005-08-05 22:18:50 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.53 2005-08-08 18:49:38 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -469,7 +469,7 @@ if ($thr_nbr > 0){$omp_flg="--thr_nbr=$thr_nbr ";} else {$omp_flg='';}
 # If dodap is set and string is NULL, then test with OPeNDAP files on sand.ess.uci.edu
 # If string is NOT NULL, use URL to grab files
 
-#print "before dodap, fl_pth = $fl_pth\n";
+print "before dodap, fl_pth = $fl_pth\n";
 # $dodap asks for and if defined, carries, the URL that's inserted in the '-p' place in nco cmdlines
 if ($dodap ne "FALSE") { 
 	if ($dodap eq "") { 
@@ -482,7 +482,7 @@ if ($dodap ne "FALSE") {
 		die "\nThe URL specified with the --dods option:\n $dodap \ndoesn't look like a valid URL.\nTry again\n\n";
 	}
 }
-#print "after dodap, fl_pth = $fl_pth\n";
+print "after dodap, fl_pth = $fl_pth\n";
 
 
 # Initialize & set up some variables
@@ -551,19 +551,22 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	
 
 	################### Set up the symlinks ###################
-	if ($dbg_lvl > 0) {print "\n\nSetting up symlinks for test nc files\n";}
-	for (my $f=0; $f<$NUM_FLS; $f++) {
-		my $rel_fle = "$dta_dir/$fl_cr8_dat[$f][2]" . ".nc" ;
-		my $ldz = "0"; # leading zero for #s < 10
-		if ($dbg_lvl > 0) {print "\tsymlinking $rel_fle\n";}
-		for (my $n=0; $n<32; $n ++) {
-			if ($n>9) {$ldz ="";}
-			my $lnk_fl_nme = "$dta_dir/$fl_cr8_dat[$f][2]" . "_" . "$ldz" . "$n" . ".nc";
-			if (-r $rel_fle && -d $dta_dir && -w $dta_dir){
-				symlink $rel_fle, $lnk_fl_nme;
+	
+	if ($bm && $dodap eq "FALSE") {
+		if ($dbg_lvl > 0) {print "\n\nSetting up symlinks for test nc files\n";}
+		for (my $f=0; $f<$NUM_FLS; $f++) {
+			my $rel_fle = "$dta_dir/$fl_cr8_dat[$f][2]" . ".nc" ;
+			my $ldz = "0"; # leading zero for #s < 10
+			if ($dbg_lvl > 0) {print "\tsymlinking $rel_fle\n";}
+			for (my $n=0; $n<32; $n ++) {
+				if ($n>9) {$ldz ="";}
+				my $lnk_fl_nme = "$dta_dir/$fl_cr8_dat[$f][2]" . "_" . "$ldz" . "$n" . ".nc";
+				if (-r $rel_fle && -d $dta_dir && -w $dta_dir){
+					symlink $rel_fle, $lnk_fl_nme;
+				}
 			}
 		}
-	}	
+	}
 	if (0) { # 0 /1 skip this bit
 	#################### begin ncap benchmark hjm - needs to be verified.
 	$opr_nm='ncap';
@@ -590,14 +593,14 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	go();
 	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng]\n";}
 	
-}
+
 
 	#################### begin ncea benchmark 
 	$opr_nm='ncea';
 	$dsc_sng = 'ncea averaging 2^5 files';
 	####################	
 	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng, files=$fl_cnt\n";}
-	$tst_cmd[0] = "ncea -h -O $omp_flg -n 30,2,1 -p $fl_pth stl_5km_00.nc $outfile";
+	$tst_cmd[0] = "ncea -h -O $omp_flg -n $fl_cnt,2,1 -p $fl_pth stl_5km_00.nc $outfile";
 	if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
 	$tst_cmd[1] = "ncwa -h -O $omp_flg -y sqrt -a lat,lon $outfile $outfile";
 	$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00  $outfile"; 
@@ -605,6 +608,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	go();
 	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	
+}
 	
 	#################### begin ncecat benchmark 
 	$opr_nm='ncecat';
@@ -614,7 +618,9 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	$tst_cmd[0] = "ncecat -h -O $omp_flg -n $fl_cnt,2,1 -p $fl_pth skn_lgs_00.nc $outfile";
 	$tst_cmd[1] = "ncwa -h -O $omp_flg  $outfile $outfile";
 	$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2  $outfile"; 
-	$nsr_xpc = "12.759310";
+	# following required due to shortened length of test under dap.
+	if ($dodap eq "FALSE") { $nsr_xpc = "12.759310";}
+	else { $nsr_xpc = "18.106375";}
 	go();
 	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 		

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.106 2005-07-11 07:01:24 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.107 2005-08-08 18:49:35 mangalam Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -303,7 +303,7 @@ End LINUX
 
 ************************************************************************
 Start LINUXAMD64
-Status: Appears to work. Make sure to compile netCDF with CFLAGS+='-fPIC'
+Status: Appears to work. Make sure to compile netCDF and DAP with CFLAGS+='-fPIC'
 ************************************************************************
 zender@sand:~/nco/bld$ ./pvmgetarch;uname -a;~/nco/autobld/config.guess
 LINUXAMD64

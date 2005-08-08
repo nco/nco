@@ -94,6 +94,9 @@ CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
+# next 2 vars are the default for the regression and benchmark tests.
+export MY_BIN_DIR = ../src/nco
+export DATA = /tmp
 DAP_ROOT = @DAP_ROOT@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -621,10 +624,13 @@ uninstall-info: uninstall-info-recursive
 	tags tags-recursive uninstall uninstall-am uninstall-info-am
 
 
-test:
-	$(MAKE) all
+test: all
 	cd bm && MY_BIN_DIR=../src/nco && DATA=/tmp ./nco_bm.pl --regress 
+
+devtest: all
+	 cd bm && MY_BIN_DIR=../src/nco && DATA=/tmp  ./nco_bm.pl --regress --debug=1 --udpreport --md5
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
+
