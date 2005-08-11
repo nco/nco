@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.60 2005-07-25 22:37:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.61 2005-08-11 22:05:13 mangalam Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -470,8 +470,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	char *fl_nm_netrc;
 
 	const char fl_stb_netrc[]="/.netrc";
-	const char ftp_cmd_anonymous[]="ftp -i -n"; /* -n turns off using .netrc */
-	const char ftp_cmd_netrc[]="ftp -i"; /* Allow FTP to use .netrc */
+	const char ftp_cmd_anonymous[]="ftp -i -p -n"; /* -n turns off using .netrc */
+	const char ftp_cmd_netrc[]="ftp -i -p"; /* Allow FTP to use .netrc */
 	const char fmt_ftp_anonymous_tpl[]="%s %s << END\nuser anonymous %s\nbin\nget %s %s\nquit\nEND";
 	const char fmt_ftp_netrc_tpl[]="%s %s << END\nbin\nget %s %s\nquit\nEND";
 

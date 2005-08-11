@@ -1,4 +1,10 @@
 2005-08-08  Harry Mangalam  <hjm@tacgi.com>
+	* change nco_fl_utl.c to use passive ftp rather than active
+		(many ftp servers no longer work with active requests)
+	* change nco_bm.pl to do net tests (except for those requiring a 
+		specific login	or location).  Tests ftp (see 1st change) and 
+		DODS if compiled with DODS/DAP.
+2005-08-08  Harry Mangalam  <hjm@tacgi.com>
 	* final updates to nco_bm.pl for testing DAP (reduced number of 
 		files requested under DAP (also becasue of bug in DAP that
 		refuses > 30 files at once in some cases.

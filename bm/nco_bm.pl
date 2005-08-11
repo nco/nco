@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.53 2005-08-08 18:49:38 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.54 2005-08-11 22:05:13 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -399,7 +399,7 @@ my %wcTable = ( # word count table for $dta_dir/wc_out
 );
 
 # Determine where $DATA should be, prompt user if necessary
-if($dbg_lvl > 0){printf ("$prg_nm: Calling set_dat_dir()...\n");}
+if($dbg_lvl > 1){printf ("$prg_nm: Calling set_dat_dir()...\n");}
 set_dat_dir(); # Set $dta_dir
 
 # make sure that the $fl_pth gets set to a reasonable defalt
@@ -414,7 +414,7 @@ if (-e "/usr/bin/time" && -x "/usr/bin/time") {
 }
 
 # Initialize & set up some variables
-if($dbg_lvl > 0){printf ("$prg_nm: Calling initialize()...\n");}
+if($dbg_lvl > 1){printf ("$prg_nm: Calling initialize()...\n");}
 initialize($bch_flg,$dbg_lvl);
 
 #if ($dbg_lvl < 1) {$prefix = "$MY_BIN_DIR"; $prfxd = 1;}
@@ -542,7 +542,7 @@ my $doit=1; # for skipping various tests
 # and now, the REAL benchmarks, set up as the regression tests below to use go() and smrz_rgr_rslt()
 if ($bm) {
 	print "\nStarting Benchmarks now\n";
-	if($dbg_lvl > 0){print "bm: prefix = $prefix\n";}
+	if($dbg_lvl > 1){print "bm: prefix = $prefix\n";}
 	
 my $in_pth = " -p ../data ";
 print "";
@@ -567,7 +567,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 			}
 		}
 	}
-	if (0) { # 0 /1 skip this bit
+	if (1) { # 0 /1 skip this bit
 	#################### begin ncap benchmark hjm - needs to be verified.
 	$opr_nm='ncap';
 	$dsc_sng = 'ncap long algebraic operation';
@@ -876,7 +876,7 @@ sub go {
 		$subbenchmarks{$opr_nm} += $elapsed;
 #		$tst_idx = $tst_nbr{$opr_nm}-1;
 		if($dbg_lvl > 3){print "\t$opr_nm subtest [$t] took $elapsed seconds\n";}
-		&verbosity("\t$result");
+		&verbosity("\tResult = $result");
 		
 		#and here, check results by md5 checksum for each step - insert guts of check_nco_results()
 		# have to mod the input string -  suffix with the cycle#
@@ -903,6 +903,7 @@ sub go {
     
 	# Compare numeric results
 	if ($nsr_xpc =~/\d/) { # && it equals the expected value
+		if ($dbg_lvl > 1){print STDERR "\$nsr_xpc assumed to be numeric: $nsr_xpc\n\$result = $result\n";}
 		if ($nsr_xpc == $result) {
 			$success{$opr_nm}++;
 			printf STDERR (" SVn ok\n");
@@ -916,6 +917,7 @@ sub go {
 			&verbosity("\n\tFAILED (expected: $nsr_xpc vs result: $result)- Numeric output: [$opr_nm]:\n");
 		}
 	} elsif ($nsr_xpc =~/\D/)  {# Compare non-numeric tests
+		if ($dbg_lvl > 1){print STDERR "\$nsr_xpc assumed to be alphabetic: $nsr_xpc\n\$result = $result\n";}
 		# Compare $result with $nsr_xpc
 		if (substr($result,0,length($nsr_xpc)) eq $nsr_xpc) {
 			$success{$opr_nm}++;
@@ -1612,11 +1614,12 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
 	$tst_cmd[1]="ncks -h -O -v one -p ftp://dust.ess.uci.edu/pub/zender/nco -l ./ in.nc $outfile";;
 	$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";;
-	$tst_cmd[3]="mv in_tmp.nc in.nc";
+#	$tst_cmd[3]="mv in_tmp.nc in.nc";
 	$dsc_sng="nco 1: FTP protocol (fails if unable to anonymous FTP to dust.ess.uci.edu)";
-	$nsr_xpc= 1;
+	$nsr_xpc= 1.000000e+00;
 	&go();
-	
+
+		
 	# should this still be in the test suite?  CZ is the only person who can test it.
 	if ($USER eq "zender"){
 		$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
@@ -1627,31 +1630,39 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 		$nsr_xpc= 1;
 		&go();
 	} else {
-		print "\nskipping net test requiring goldhill login - only for zender\n";
+		print "skipping net test requiring goldhill login - only for zender\n";
 	}
 	
+
+	if (0) {	
 	$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-	$tst_cmd[0]="ncks -h -O -v one -p mss:/ZENDER/nc -l ./ in.nc $outfile";;
-	$tst_cmd[1]="ncks -C -H -s '%e' -v one $outfile";;
-	$tst_cmd[3]="mv in_tmp.nc in.nc";
+	$tst_cmd[1]="ncks -h -O -v one -p mss:/ZENDER/nc -l ./ in.nc $outfile";;
+	$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";;
+#	$tst_cmd[3]="mv in_tmp.nc in.nc";
 	$dsc_sng="nco 3: msrcp protocol(fails if not at NCAR)";
 	$nsr_xpc= 1; 
 	&go();
+	} else { print "skipping net test mss: retrieval - not at NCAR.\n";}
+	
+	
 	$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-	$tst_cmd[0]="ncks -h -O -v one -p http://dust.ess.uci.edu/pub/zender/nco -l ./ in.nc $outfile";;
-	$tst_cmd[1]="ncks -C -H -s '%e' -v one $outfile";;
-	$tst_cmd[3]="mv in_tmp.nc in.nc";
+#	$tst_cmd[0]="ncks -h -O -v one -p http://dust.ess.uci.edu/cgpub/zender/nco -l ./ in.nc $outfile";;
+	$tst_cmd[1]="ncks -h -O -v one -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l ./ in.nc $outfile";;
+	$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";;
+#	$tst_cmd[3]="mv in_tmp.nc in.nc";
 	$dsc_sng="nco 4: HTTP protocol (Will always fail until HTTP implemented in NCO) ";
 	$nsr_xpc= 1; 
 	&go();
 	
+	
 	$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-	$tst_cmd[0]="ncks -C -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc $outfile";;
-	$tst_cmd[1]="ncks -C -H -s '%e' -v lon $outfile";;
-	$tst_cmd[3]="mv in_tmp.nc in.nc";
+	$tst_cmd[1]="ncks -C -O -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc $outfile";;
+	$tst_cmd[2]="ncks -C -H -s '%e' -v lon $outfile";;
+#	$tst_cmd[3]="mv in_tmp.nc in.nc";
 	$dsc_sng="nco 5: HTTP/DODS protocol (fails if not compiled on Linux with make DODS=Y)";
 	$nsr_xpc= 0;
-	&go();
+	&go();	
+	
 } # end of perform_test()
 
 # usage - informational blurb for script
@@ -1662,7 +1673,7 @@ Usage:
 nco_bm.pl (options) [list of operators to test from the following list]
 
 ncap ncatted ncbo ncflint ncea ncecat
-ncks ncpdq ncra ncrcat ncrename ncwa          (default tests all)
+ncks ncpdq ncra ncrcat ncrename ncwa net      (default tests all)
 
 where (options) are:
     --usage || -h ...dumps this help
@@ -1670,7 +1681,7 @@ where (options) are:
                      more useful info.
     --caseid {short id string} 
                      this string can be used to identity and separate results 
-                     from differnt runs.
+                     from different runs.
     --dap {OPeNDAP url} ...retrieve test files from OPeNDAP server URL
     --opendap "               "
     --log ..........requests that the debug info is logged to 'nctest.log'
@@ -1723,7 +1734,7 @@ sub initialize($$){
 	my $dbg_lvl; # [flg] Debugging level
 	($bch_flg,$dbg_lvl)=@_;
 	# Enumerate operators to test
-	@opr_lst_all = qw( ncap ncdiff ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa);
+	@opr_lst_all = qw( ncap ncdiff ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa net);
 	@opr_lst_mpi = qw(mncbo mpncecat mpncflint mpncpdq mpncra  mpncwa);
 	if (scalar @ARGV > 0){@opr_lst=@ARGV;}else{@opr_lst=@opr_lst_all;}
 	if (defined $ENV{'MY_BIN_DIR'} &&  $ENV{'MY_BIN_DIR'} ne ""){$MY_BIN_DIR=$ENV{'MY_BIN_DIR'};}
