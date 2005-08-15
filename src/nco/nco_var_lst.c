@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.51 2005-08-03 18:16:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.52 2005-08-15 01:48:02 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -7,55 +7,6 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_var_lst.h" /* Variable list utilities */
-
-nm_id_sct * /* O [sct] Variable extraction list */
-nco_var_lst_mk_old /* [fnc] Create variable extraction list */
-(const int nc_id, /* I [enm] netCDF file ID */
- const int nbr_var, /* I [nbr] Number of variables in input file */
- CST_X_PTR_CST_PTR_CST_Y(char,var_lst_in), /* I [sng] User-specified list of variable names */
- const bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
- int * const nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
-{
-  /* Purpose: Create variable extraction list */
-  bool err_flg=False;
-  int rcd=NC_NOERR; /* [rcd] Return code */
-  int idx;
-
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
-
-  if(*nbr_xtr > 0){
-    /* If user named variables with -v option then check validity of user's list and find IDs */
-    xtr_lst=(nm_id_sct *)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
-     
-    for(idx=0;idx<*nbr_xtr;idx++){
-      xtr_lst[idx].nm=(char *)strdup(var_lst_in[idx]);
-      rcd=nco_inq_varid_flg(nc_id,xtr_lst[idx].nm,&xtr_lst[idx].id);
-      if(rcd != NC_NOERR){
-	(void)fprintf(stdout,"%s: ERROR nco_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),xtr_lst[idx].nm);
-	err_flg=True;
-      } /* endif */
-    } /* end loop over idx */
-    
-    if(err_flg) nco_exit(EXIT_FAILURE);
-  }else if(!EXTRACT_ALL_COORDINATES){
-    /* If the user did not specify variables with the -v option,
-       and the user did not request automatic processing of all coords,
-       then extract all variables in file. In this case
-       we can assume variable IDs range from 0..nbr_var-1. */
-    char var_nm[NC_MAX_NAME];
-    
-    *nbr_xtr=nbr_var;
-    xtr_lst=(nm_id_sct *)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
-    for(idx=0;idx<nbr_var;idx++){
-      /* Get name of each variable. */
-      (void)nco_inq_varname(nc_id,idx,var_nm);
-      xtr_lst[idx].nm=(char *)strdup(var_nm);
-      xtr_lst[idx].id=idx;
-    } /* end loop over idx */
-  } /* end else */
-
-  return xtr_lst;
-} /* end nco_var_lst_mk_old() */
 
 nm_id_sct * /* O [sct] Variable extraction list */
 nco_var_lst_mk /* [fnc] Create variable extraction list using regular expressions */
@@ -161,7 +112,58 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
   return xtr_lst;
 } /* end nco_var_lst_mk() */
 
-/* Compile only if regular expression library is present */
+nm_id_sct * /* O [sct] Variable extraction list */
+nco_var_lst_mk_old /* [fnc] Create variable extraction list */
+(const int nc_id, /* I [enm] netCDF file ID */
+ const int nbr_var, /* I [nbr] Number of variables in input file */
+ CST_X_PTR_CST_PTR_CST_Y(char,var_lst_in), /* I [sng] User-specified list of variable names */
+ const bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
+ int * const nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
+{
+  /* Purpose: Create variable extraction list 
+     NB: Routine is deprecated in favor of nco_var_lst_mk() */
+
+  bool err_flg=False;
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int idx;
+
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
+
+  if(*nbr_xtr > 0){
+    /* If user named variables with -v option then check validity of user's list and find IDs */
+    xtr_lst=(nm_id_sct *)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
+     
+    for(idx=0;idx<*nbr_xtr;idx++){
+      xtr_lst[idx].nm=(char *)strdup(var_lst_in[idx]);
+      rcd=nco_inq_varid_flg(nc_id,xtr_lst[idx].nm,&xtr_lst[idx].id);
+      if(rcd != NC_NOERR){
+	(void)fprintf(stdout,"%s: ERROR nco_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),xtr_lst[idx].nm);
+	err_flg=True;
+      } /* endif */
+    } /* end loop over idx */
+    
+    if(err_flg) nco_exit(EXIT_FAILURE);
+  }else if(!EXTRACT_ALL_COORDINATES){
+    /* If the user did not specify variables with the -v option,
+       and the user did not request automatic processing of all coords,
+       then extract all variables in file. In this case
+       we can assume variable IDs range from 0..nbr_var-1. */
+    char var_nm[NC_MAX_NAME];
+    
+    *nbr_xtr=nbr_var;
+    xtr_lst=(nm_id_sct *)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
+    for(idx=0;idx<nbr_var;idx++){
+      /* Get name of each variable. */
+      (void)nco_inq_varname(nc_id,idx,var_nm);
+      xtr_lst[idx].nm=(char *)strdup(var_nm);
+      xtr_lst[idx].id=idx;
+    } /* end loop over idx */
+  } /* end else */
+
+  return xtr_lst;
+} /* end nco_var_lst_mk_old() */
+
+/* Compile following routines only if regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
 
 int /* O [nbr] Number of matches found */
@@ -232,7 +234,7 @@ nco_var_meta_search /* [fnc] Search for pattern matches in var string list */
   return nbr_mtch;
 } /* end nco_var_meta_search() */
 
-#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
+#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 
 nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
@@ -267,8 +269,7 @@ nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
     for(lst_idx=0;lst_idx<nbr_xcl;lst_idx++){
       if(idx == xcl_lst[lst_idx].id) break;
     } /* end loop over lst_idx */
-    /* If variable was not found in the exclusion list then 
-       add it to the new list. */
+    /* If variable is not in exclusion list then add it to new list */
     if(lst_idx == nbr_xcl){
       xtr_lst[*nbr_xtr].nm=(char *)strdup(var_nm);
       xtr_lst[*nbr_xtr].id=idx;
@@ -367,7 +368,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 (var_sct * const * const var, /* I [sct] Variable list (input file) */
  var_sct * const * const var_out, /* I [sct] Variable list (output file) */
  const int nbr_var, /* I [nbr] Number of variables */
- const bool NCAR_CCSM_FORMAT, /* I [flg] File adheres to NCAR CCSM conventions */
+ const bool CNV_CCM_CCSM_CF, /* I [flg] File adheres to NCAR CCSM conventions */
  const int nco_pck_map, /* I [enm] Packing map */
  const int nco_pck_plc, /* I [enm] Packing policy */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
@@ -489,11 +490,11 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     default: nco_dfl_case_prg_id_err(); break;
     } /* end switch */
     
-    if(NCAR_CCSM_FORMAT){
+    if(CNV_CCM_CCSM_CF){
       if(!strcmp(var_nm,"ntrm") || !strcmp(var_nm,"ntrn") || !strcmp(var_nm,"ntrk") || !strcmp(var_nm,"ndbase") || !strcmp(var_nm,"nsbase") || !strcmp(var_nm,"nbdate") || !strcmp(var_nm,"nbsec") || !strcmp(var_nm,"mdt") || !strcmp(var_nm,"mhisf")) var_op_typ[idx]=fix;
       /* NB: all !strcmp()'s except "msk_" which uses strstr() */
       if(prg == ncbo && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm))) var_op_typ[idx]=fix;
-    } /* end if NCAR_CCSM_FORMAT */
+    } /* end if CNV_CCM_CCSM_CF */
 
   } /* end loop over var */
 
@@ -569,4 +570,56 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   *var_prc_out_ptr=(var_sct **)nco_realloc(var_prc_out,*nbr_var_prc*sizeof(var_sct *));
 
 } /* end nco_var_lst_dvd */
+
+int /* O [enm] Return code */
+nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
+(var_sct *** var_1_ptr, /* I/O [sct] Variable list 1 */
+ var_sct *** var_2_ptr, /* I/O [sct] Variable list 2 */
+ int * const var_nbr_1, /* I/O [nbr] Number of variables in list 1 */
+ int * const var_nbr_2) /* I/O [nbr] Number of variables in list 2 */
+{
+  /* Purpose: Merge two variable lists into same order
+     NB: Routine design is open-ended with maximum flexibility
+     Initial functionality will simply sort list two into list one order and
+     destroy original (un-merged) list two on output
+     Refinements could include changing number of variables in each list
+     This would allow symmetric list merges */
+
+  const char fnc_nm[]="nco_var_lst_mrg()"; /* [sng] Function name */
+
+  int idx_1;
+  int idx_2;
+  int rcd=0; /* [rcd] Return code */
+
+  var_sct **var_1;
+  var_sct **var_2;
+  var_sct **var_out;
+
+  var_1=*var_1_ptr;
+  var_2=*var_2_ptr;
+
+  var_out=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
+
+  /* ...For each variable in first list... */
+  for(idx_1=0;idx_1<*var_nbr_1;idx_1++){
+    /* ...search through second list... */
+    for(idx_2=0;idx_2<*var_nbr_2;idx_2++){
+      /* ...until variable with same name is found... */
+      if(!strcmp(var_1[idx_1]->nm,var_2[idx_2]->nm)) break; /* ...then search no further... */
+    } /* end loop over idx_2 */
+    /* ...and if variable was not found in second list... */
+    if(idx_2 == *var_nbr_2){
+      (void)fprintf(stderr,"%s: ERROR %s variable \"%s\" is in list one and not in list two\n",prg_nm_get(),fnc_nm,var_1[idx_1]->nm);
+      nco_exit(EXIT_FAILURE);
+    } /* end if variable was not found in second list */
+    /* ...otherwise assign variable to correct slot in output list */
+    var_out[idx_1]=var_2[idx_2];
+  } /* end loop over idx_1 */
+
+  /* Free un-merged list before overwriting with merged list */
+  var_2=(var_sct **)nco_free(var_2);
+  *var_2_ptr=(var_sct **)nco_realloc(var_out,*var_nbr_2*sizeof(var_sct *));
+
+  return rcd;
+} /* end nco_var_lst_mrg() */
 

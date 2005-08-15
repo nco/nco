@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.320 2005-08-03 18:07:59 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.321 2005-08-15 01:48:01 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -20,8 +20,9 @@ http://www.gnu.ai.mit.edu/copyleft/fdl.html
 
 The original author of this software, Charlie Zender, wants to improve it
 with the help of your suggestions, improvements, bug-reports, and patches.
-Charlie Zender <zender at uci dot edu>
+Charlie Zender <surname at uci dot edu> (yes, my surname is zender)
 Department of Earth System Science
+3228 Croul Hall
 University of California at Irvine
 Irvine, CA 92697-3100
 
@@ -67,7 +68,7 @@ Legend (defined in "highlighting" section of TeXInfo manual):
 @code{}: Program text, e.g., @code{if(foo) x=y;}
 @command{}: Commands, e.g., @command{ncra}
 @dfn{}: Define use of term, e.g., @dfn{supercalifragilisticexpialidocious}
-@email{}: E-mail address, e.g., @email{zender at uci dot edu}
+@email{}: E-mail address, e.g., @email{surname at uci dot edu}
 @env{}: Environment variable, e.g., @env{HOME}
 @file{}: Filename, e.g., @file{in.nc}
 @html: Text until @end html passed without translation
@@ -101,8 +102,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.0.1
 @set copyright-years 1995--2005
 @set update-year 2005
-@set update-date 10 June 2005
-@set update-month June 2005
+@set update-date 3 August 2005
+@set update-month August 2005
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -231,7 +232,8 @@ Texts. The license is available online at
 
 The original author of this software, Charlie Zender, wants to improve it
 with the help of your suggestions, improvements, bug-reports, and patches.@*
-Charlie Zender <zender at uci dot edu>@*
+Charlie Zender <surname at uci dot edu> (yes, my surname is zender)@*
+3228 Croul Hall@*
 Department of Earth System Science@*
 University of California at Irvine@*
 Irvine, CA 92697-3100@*
@@ -285,6 +287,7 @@ and is consistent with @w{version 2} of @file{texinfo.tex}.
 
 Published by Charlie Zender@*
 Department of Earth System Science@*
+3228 Croul Hall@*
 University of California at Irvine@*
 Irvine, CA 92697-3100 USA@*
 
@@ -297,8 +300,9 @@ Texts. The license is available online at
 @sp 2
 The original author of this software, Charlie Zender, wants to improve it
 with the help of your suggestions, improvements, bug-reports, and patches.@*
-Charlie Zender <zender at uci dot edu>@*
+Charlie Zender <surname at uci dot edu> (yes, my surname is zender)@*
 Department of Earth System Science@*
+3228 Croul Hall@*
 University of California at Irvine@*
 Irvine, CA 92697-3100@*
 @sp 2
@@ -335,21 +339,21 @@ of complex mathematical expressions.
 The netCDF Operators, or @acronym{NCO}, are a suite of programs known as 
 operators. 
 The operators facilitate manipulation and analysis of self-describing
-data stored in the netCDF or HDF4 formats, which are freely available
-(@uref{http://www.unidata.ucar.edu/packages/netcdf} and
-@uref{http://hdf.ncsa.uiuc.edu}, respectively). 
-Each @acronym{NCO} operator (e.g., ncks) takes netCDF or HDF input
+data stored in the netCDF format, which is freely available
+(@uref{http://www.unidata.ucar.edu/packages/netcdf}).
+Each @acronym{NCO} operator (e.g., ncks) takes netCDF input
 file(s), performs an operation (e.g., averaging, hyperslabbing, or
 renaming), and outputs a processed netCDF file. 
-Although most users of netCDF and HDF data are involved in scientific
-research, these data formats, and thus @acronym{NCO}, are generic and
-are equally useful in fields like finance. 
+Although most users of netCDF data are involved in scientific research,
+these data formats, and thus @acronym{NCO}, are generic and are equally
+useful in fields like finance.  
 The @acronym{NCO} User's Guide illustrates @acronym{NCO} use with
 examples from the field of climate modeling and analysis. 
 The @acronym{NCO} homepage is @uref{http://nco.sf.net}, and
 there is a mirror at @uref{http://dust.ess.uci.edu/nco}.
 
 This documentation is for @acronym{NCO} version @value{nco-edition}.
+It was last updated @value{update-date}.
 Corrections, additions, and rewrites of this documentation are very
 welcome.
 
@@ -433,15 +437,16 @@ This manual describes @acronym{NCO}, which stands for netCDF Operators.
 @acronym{NCO} is a suite of programs known as @dfn{operators}.
 Each operator is a standalone, command line program executed at the
 shell-level like, e.g., @command{ls} or @command{mkdir}.  
-The operators take netCDF file(s) (or @acronym{HDF4} files) as input,
-perform an operation (e.g., averaging or hyperslabbing), and produce a 
-netCDF file as output. 
+The operators take netCDF files (including @acronym{HDF5} files
+constructed using the netCDF @acronym{API}) as input, perform an
+operation (e.g., averaging or hyperslabbing), and produce a netCDF file 
+as output.  
 The operators are primarily designed to aid manipulation and analysis of 
 data.
 The examples in this documentation are typical applications of the
 operators for processing climate model output. 
-This reflects their origin, but the operators are as general as netCDF
-itself.
+This stems from their origin, though the operators are as general as
+netCDF itself.
 
 @html
 <a name="ntr"></a> <!-- http://nco.sf.net/nco.html#ntr -->
@@ -1850,8 +1855,6 @@ feature is automatic and cannot be controlled by the user.
 @cindex I18N
 @cartouche
 Availability: All operators@*
-Short options: All@*
-Long options: All@*
 @end cartouche
 @cindex L10N
 @acronym{NCO} support for @dfn{internationalization} of textual input
@@ -1957,15 +1960,15 @@ This information is also useful for benchmarking.
 @cindex @code{--64-bit-offset}
 @cartouche
 Availability: All operators@*
-Short options: All, @samp{-Z}@*
-Long options: All, @samp{--64-bit-offset}@*
+Short options: @samp{-Z}@*
+Long options: @samp{--64-bit-offset}@*
 @end cartouche
 @acronym{NCO} support for large files is in place and works but is not
 well documented yet. 
 @acronym{NCO} honors @acronym{LFS} capabilities on platforms which
 support them
 @footnote{
-Linux and @acronym{AIX} are know to support @acronym{LFS}.}.
+Linux and @acronym{AIX} are known to support @acronym{LFS}.}.
 
 The netCDF large file support FAQ at
 @uref{http://my.unidata.ucar.edu/content/software/netcdf/faq-lfs.html}
@@ -1995,6 +1998,33 @@ Users are advised to use the default classic format until
 @w{netCDF 3.6} is more widespread.
 
 @html
+<a name="hdf"></a> <!-- http://nco.sf.net/nco.html#hdf -->
+<a name="netcdf4"></a> <!-- http://nco.sf.net/nco.html#netcdf4 -->
+@end html
+@node HDF support
+@section HDF support
+@cindex HDF support
+@cindex netCDF4 support
+@cindex @code{-4}
+@cindex @code{--hdf}
+@cindex @code{--netcdf4}
+@cartouche
+Availability: All operators@*
+Short options: @samp{-4}@*
+Long options: @samp{--hdf}, @samp{--netcdf4}@*
+@end cartouche
+@acronym{NCO} supports the new netCDF4 file storage format which is 
+based on @acronym{HDF}.
+
+All operators write classic (32-bit offset) format files unless
+told otherwise by toggling the @samp{-4} switch (or it long option
+equivalents @samp{--hdf}, @samp{netcdf4}). 
+@acronym{NCO} must be built with @w{netCDF 4.0} or higher to read or
+write files in the new @acronym{HDF}-based format.
+Users are advised to use the default classic format until 
+@w{netCDF 4.0} is more widespread.
+
+@html
 <a name="cmd_ln"></a> <!-- http://nco.sf.net/nco.html#cmd_ln -->
 @end html
 @node Command line options, Specifying input files, Large File Support, Common features
@@ -2002,8 +2032,6 @@ Users are advised to use the default classic format until
 @cindex command line options
 @cartouche
 Availability: All operators@*
-Short options: All@*
-Long options: All@*
 @end cartouche
 @cindex @acronym{POSIX}
 @cindex @acronym{UNIX}
@@ -4246,7 +4274,7 @@ may amount to many thousands of filenames in a metadata attribute.
 <a name="cnv_CCSM"></a> <!-- http://nco.sf.net/nco.html#cnv_CCSM -->
 @end html
 @node CF Conventions, ARM Conventions, Input file list attributes, Common features
-@section @acronym{CF} Convention
+@section @acronym{CF} Conventions
 @cindex @acronym{CF} conventions
 @cindex @acronym{CCSM} conventions
 @cindex UDUnits
@@ -4274,8 +4302,8 @@ specially.
 @acronym{CCM} and early @acronym{CCSM} datasets, with the @acronym{CF}   
 rules even though the earlier data may not contain an explicit
 @code{Convention} attribute (such as @code{CF-1.0}).
-We collectively refer to all such data as @acronym{CF} data.
-If you do not work with @acronym{CF} data then you may skip this
+We refer to all such data collectively as @acronym{CF} data.
+If you do not work with @acronym{CF} datasets then you may skip this 
 section. 
 
 The @acronym{CF} netCDF conventions are described at
@@ -4488,7 +4516,7 @@ described in any detail in the sections below.
 @noindent
 SYNTAX
 @example
-ncap [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] [-D @var{dbg}] 
+ncap [-4] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-f]
 [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-s @var{algebra}] [-S @var{fl.nco}] [-v] [-Z]
@@ -5409,7 +5437,7 @@ Knowing when to use @command{ncwa -a time} rather than the default
 @noindent
 SYNTAX
 @example
-ncatted [-a @var{att_dsc}] [-a @dots{}] [-D @var{dbg}] [-h]
+ncatted [-4] [-a @var{att_dsc}] [-a @dots{}] [-D @var{dbg}] [-h]
 [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-Z]
 @var{input-file} [[@var{output-file}]]
 @end example
@@ -5773,7 +5801,7 @@ omitted in batch scripts.
 @noindent
 SYNTAX
 @example 
-ncbo [-A] [-C] [-c] [-D @var{dbg}] 
+ncbo [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] 
 [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] [-Z]
@@ -6107,7 +6135,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 @noindent
 SYNTAX
 @example
-ncea [-A] [-C] [-c] [-D @var{dbg}] 
+ncea [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] [-Z]
@@ -6208,7 +6236,7 @@ Additionally, only data inside the tropics is included.
 @noindent
 SYNTAX
 @example
-ncecat [-A] [-C] [-c] [-D @var{dbg}] 
+ncecat [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-Z] 
@@ -6318,7 +6346,7 @@ of changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-ncflint [-A] [-C] [-c] [-D @var{dbg}] 
+ncflint [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-i @var{var},@var{val3}]
 [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] 
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-x] [-Z]
@@ -6550,7 +6578,7 @@ ncatted -O -a units,prs_sfc,o,c,millibar out.nc
 @noindent
 SYNTAX
 @example
-ncks [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] [-D @var{dbg}] 
+ncks [-4] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]]
 [-F] [-H] [-h] [-l @var{path}] [-M] [-m] [-O] [-o @var{output-file}] 
 [-P] [-p @var{path}] [-Q] [-q] [-R] [-r] [-s @var{format}] [-u] 
@@ -7005,7 +7033,7 @@ For more details @xref{Wrapped coordinates}.
 @noindent
 SYNTAX
 @example
-ncpdq [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
+ncpdq [-4] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-M @var{pck_map}] [-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] 
 [-R] [-r] [-t @var{thr_nbr}] [-U] [-v @var{var}[,@dots{}]] [-x] [-Z]
@@ -7486,7 +7514,7 @@ changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-ncra [-A] [-C] [-c] [-D @var{dbg}] 
+ncra [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] [-Z]
@@ -7590,7 +7618,7 @@ ncra -d time,6.,54. ??.nc 8506_8906.nc
 @noindent
 SYNTAX
 @example
-ncrcat [-A] [-C] [-c] [-D @var{dbg}] 
+ncrcat [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-Z] 
@@ -7701,7 +7729,7 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 @noindent
 SYNTAX
 @example
-ncrename [-a @var{old_name},@var{new_name}] [-a @dots{}] [-D @var{dbg}] 
+ncrename [-4] [-a @var{old_name},@var{new_name}] [-a @dots{}] [-D @var{dbg}] 
 [-d @var{old_name},@var{new_name}] [-d @dots{}] [-h] [-l @var{path}]
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-v @var{old_name},@var{new_name}] [-v @dots{}] [-Z]
@@ -7862,7 +7890,7 @@ The variable @code{prs_sfc} need not exist, and need not contain the
 @noindent
 SYNTAX
 @example
-ncwa [-A] [-a @var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
+ncwa [-4] [-A] [-a @var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-I] [-l @var{path}] 
 [-M @var{mask_val}] [-m @var{mask_var}] [-N] [-n] [-O] 
 [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-T @var{condition}]

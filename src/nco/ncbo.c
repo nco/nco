@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.55 2005-07-07 23:52:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.56 2005-08-15 01:48:01 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -95,7 +95,7 @@ main(int argc,char **argv)
   bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool MUST_CONFORM=True; /* Must nco_var_cnf_dmn() find truly conforming variables? */
-  bool NCAR_CCSM_FORMAT;
+  bool CNV_CCM_CCSM_CF;
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   
   char **fl_lst_abb=NULL; /* Option a */
@@ -113,9 +113,9 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.55 2005-07-07 23:52:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.55 $";
-  const char * const opt_sht_lst="ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.56 2005-08-15 01:48:01 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.56 $";
+  const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim_1;
   dmn_sct **dim_2;
@@ -142,9 +142,11 @@ main(int argc,char **argv)
   int nbr_dmn_xtr_1;
   int nbr_dmn_xtr_2;
   int nbr_var_fix_1; /* nbr_var_fix_1 gets incremented */
+  int nbr_var_fix_2; /* nbr_var_fix_2 gets incremented */
   int nbr_var_fl_1;
   int nbr_var_fl_2;
   int nbr_var_prc_1; /* nbr_var_prc_1 gets incremented */
+  int nbr_var_prc_2; /* nbr_var_prc_2 gets incremented */
   int nbr_xtr_1=0; /* nbr_xtr_1 won't otherwise be set for -c with no -v */
   int nbr_xtr_2=0; /* nbr_xtr_2 won't otherwise be set for -c with no -v */
   int nco_op_typ=nco_op_nil; /* [enm] Operation type */
@@ -166,9 +168,11 @@ main(int argc,char **argv)
   var_sct **var_1;
   var_sct **var_2;
   var_sct **var_fix_1;
+  var_sct **var_fix_2;
   var_sct **var_fix_out;
   var_sct **var_out;
   var_sct **var_prc_1;
+  var_sct **var_prc_2;
   var_sct **var_prc_out;
   
   static struct option opt_lng[]=
@@ -270,7 +274,7 @@ main(int argc,char **argv)
       (void)nco_lst_comma2hash(optarg_lcl);
       var_lst_in=lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
       optarg_lcl=(char *)nco_free(optarg_lcl);
-      nbr_xtr_1=var_lst_in_nbr;
+      nbr_xtr_1=nbr_xtr_2=var_lst_in_nbr;
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
@@ -381,8 +385,8 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_xtr_1;idx++) (void)fprintf(stderr,"xtr_lst_1[%d].nm = %s, .id= %d\n",idx,xtr_lst_1[idx].nm,xtr_lst_1[idx].id);
   } /* end if */
   
-  /* Is this an NCAR CCSM-format history tape? */
-  NCAR_CCSM_FORMAT=nco_ncar_csm_inq(in_id_1);
+  /* Is this an CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id_1);
   
   /* Fill in variable structure list for all extracted variables */
   var_1=(var_sct **)nco_malloc(nbr_xtr_1*sizeof(var_sct *));
@@ -399,10 +403,17 @@ main(int argc,char **argv)
   xtr_lst_1=nco_nm_id_lst_free(xtr_lst_1,nbr_xtr_1);
   xtr_lst_2=nco_nm_id_lst_free(xtr_lst_2,nbr_xtr_2);
   
-  /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var_1,var_out,nbr_xtr_1,NCAR_CCSM_FORMAT,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix_1,&var_fix_out,&nbr_var_fix_1,&var_prc_1,&var_prc_out,&nbr_var_prc_1);
+  /* Divide variable lists into lists of fixed variables and variables to be processed
+     Create lists from file_1 last so those values remain in *_out arrays */
+  (void)nco_var_lst_dvd(var_2,var_out,nbr_xtr_2,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix_2,&var_fix_out,&nbr_var_fix_2,&var_prc_2,&var_prc_out,&nbr_var_prc_2);
+  /* Avoid double-free() condition */
+  var_fix_out=(var_sct **)nco_free(var_fix_out);
+  var_prc_out=(var_sct **)nco_free(var_prc_out);
+  (void)nco_var_lst_dvd(var_1,var_out,nbr_xtr_1,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix_1,&var_fix_out,&nbr_var_fix_1,&var_prc_1,&var_prc_out,&nbr_var_prc_1);
   
-  /* fxm: Make sure lists are in same order */
+  /* fxm: TODO 268/550 merge max_dim_sz/list(var_1,var_2) into var_out */
+  /* Merge two variable lists into same order */
+  rcd=nco_var_lst_mrg(&var_prc_1,&var_prc_2,&nbr_var_prc_1,&nbr_var_prc_2); 
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FORCE_64BIT_OFFSET,&out_id);
@@ -421,6 +432,7 @@ main(int argc,char **argv)
   /* Define dimensions in output file */
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr_1);
   
+  /* fxm: TODO 550 put max_dim_sz/list(var_1,var_2) into var_def(var_out) */
   /* Define variables in output file, copy their attributes */
   (void)nco_var_dfn(in_id_1,fl_out,out_id,var_out,nbr_xtr_1,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil);
   
@@ -436,12 +448,12 @@ main(int argc,char **argv)
   /* Copy variable data for non-processed variables */
   (void)nco_var_val_cpy(in_id_1,out_id,var_fix_1,nbr_var_fix_1);
   
-  /* The code for ncbo() has been similar to ncea() (and ncra()) wherever possible
-     The major differences occur where performance would otherwise suffer
-     From now on, however, the binary-file and binary-operation nature of ncbo()
+  /* ncbo() code has been similar to ncea() (and ncra()) wherever possible
+     Major differences occur where performance would otherwise suffer
+     From now on, however, binary-file and binary-operation nature of ncbo()
      is too different from ncea() paradigm to justify following ncea() style.
-     Instead, symmetric nomenclature of file_1, file_2 is adopted, and 
-     differences are performed variable by variable so peak memory usage goes as
+     Instead, we adopt symmetric nomenclature (e.g., file_1, file_2), and 
+     perform differences variable-by-variable so peak memory usage goes as
      Order(2*maximum variable size) rather than Order(3*maximum record size) or
      Order(3*file size) 
      
@@ -465,10 +477,9 @@ main(int argc,char **argv)
   /* OpenMP notes:
      shared(): msk and wgt are not altered within loop
      private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) private(DO_CONFORM,MUST_CONFORM,idx) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1,in_id_2,nbr_dmn_xtr_1,nbr_var_prc_1,nco_op_typ,out_id,prg_nm,var_prc_1,var_prc_out)
+#pragma omp parallel for default(none) private(DO_CONFORM,MUST_CONFORM,idx) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1,in_id_2,nbr_dmn_xtr_1,nbr_var_prc_1,nbr_var_prc_2,nco_op_typ,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
 #endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc_1;idx++){
-    int var_id; /* [id] Variable ID */
     int has_mss_val=False;
     ptr_unn mss_val;
     if(dbg_lvl > 0) (void)fprintf(fp_stderr,"%s, ",var_prc_1[idx]->nm);
@@ -478,62 +489,43 @@ main(int argc,char **argv)
     has_mss_val=var_prc_1[idx]->has_mss_val; 
     (void)nco_var_get(in_id_1,var_prc_1[idx]); /* Routine contains OpenMP critical regions */
     
-    /* Save output variable ID from being overwritten in refresh call */
-    var_prc_1[idx]->id=var_prc_out[idx]->id;
     /* Find and set variable dmn_nbr, ID, mss_val, type in second file */
-    (void)nco_var_mtd_refresh(in_id_2,var_prc_out[idx]);
+    (void)nco_var_mtd_refresh(in_id_2,var_prc_2[idx]);
     
     /* Determine whether var1 and var2 conform */
-    if(var_prc_out[idx]->nbr_dim == var_prc_1[idx]->nbr_dim){
+    if(var_prc_1[idx]->nbr_dim == var_prc_2[idx]->nbr_dim){
       int dmn_idx;
-      long *lp;
-      
       /* Do all dimensions match in sequence? */
       for(dmn_idx=0;dmn_idx<var_prc_1[idx]->nbr_dim;dmn_idx++){
 	if(
-	   /* fxm: TODO nco551: compare var_1 vs. var_2 dim's here, not var_1 vs. var_out */
-	   strcmp(var_prc_out[idx]->dim[dmn_idx]->nm,var_prc_1[idx]->dim[dmn_idx]->nm) || /* Dimension names do not match */
-	   (var_prc_out[idx]->dim[dmn_idx]->cnt != var_prc_1[idx]->dim[dmn_idx]->cnt) || /* Dimension sizes do not match */
+	   strcmp(var_prc_1[idx]->dim[dmn_idx]->nm,var_prc_2[idx]->dim[dmn_idx]->nm) || /* Dimension names do not match */
+	   (var_prc_1[idx]->dim[dmn_idx]->cnt != var_prc_2[idx]->dim[dmn_idx]->cnt) || /* Dimension sizes do not match */
 	   False){
-	  (void)fprintf(fp_stdout,"%s: ERROR Variables do not conform:\nFile %s variable %s dimension %d is %s with size %li and count %li\nFile %s variable %s dimension %d is %s with size %li and count %li\n",prg_nm,fl_in_1,var_prc_1[idx]->nm,dmn_idx,var_prc_1[idx]->dim[dmn_idx]->nm,var_prc_1[idx]->dim[dmn_idx]->sz,var_prc_1[idx]->dim[dmn_idx]->cnt,fl_in_2,var_prc_out[idx]->nm,dmn_idx,var_prc_out[idx]->dim[dmn_idx]->nm,var_prc_out[idx]->dim[dmn_idx]->sz,var_prc_out[idx]->dim[dmn_idx]->cnt);
+	  (void)fprintf(fp_stdout,"%s: ERROR Variables do not conform:\nFile %s variable %s dimension %d is %s with size %li and count %li\nFile %s variable %s dimension %d is %s with size %li and count %li\n",prg_nm,fl_in_1,var_prc_1[idx]->nm,dmn_idx,var_prc_1[idx]->dim[dmn_idx]->nm,var_prc_1[idx]->dim[dmn_idx]->sz,var_prc_1[idx]->dim[dmn_idx]->cnt,fl_in_2,var_prc_2[idx]->nm,dmn_idx,var_prc_2[idx]->dim[dmn_idx]->nm,var_prc_2[idx]->dim[dmn_idx]->sz,var_prc_2[idx]->dim[dmn_idx]->cnt);
+	  if(var_prc_1[idx]->dim[dmn_idx]->cnt == 1 || var_prc_2[idx]->dim[dmn_idx]->cnt == 1) (void)fprintf(fp_stdout,"%s: HINT If a dimension is present in both files, it must be the same size. %s will not attempt to broadcast a degenerate (i.e., size 1) dimension (e.g., a single timestep) to a non-degenerate size. If one of the dimensions is degenerate, try removing it completely (e.g., by averaging over it with ncwa) before invoking %s\n",prg_nm,prg_nm,prg_nm);
 	  nco_exit(EXIT_FAILURE);
 	} /* endif */
       } /* end loop over dmn_idx */
       
-      /* Temporarily set srt vector to account for hyperslabs while reading */
-      lp=var_prc_out[idx]->srt;
-      var_prc_out[idx]->srt=var_prc_1[idx]->srt;
-      (void)nco_var_get(in_id_2,var_prc_out[idx]);
-      /* Reset srt vector to zeros for eventual output */
-      var_prc_out[idx]->srt=lp;
+      /* Read hyperslab from second file */
+      (void)nco_var_get(in_id_2,var_prc_2[idx]);
     }else{ /* var_prc_out[idx]->nbr_dim != var_prc_1[idx]->nbr_dim) */
       /* Number of dimensions do not match, attempt to broadcast variables */
-      var_sct *var_tmp=NULL;
-      
-      /* fxm: TODO 268 allow var1 or var2 to be broadcast */
-      /* var1 and var2 have differing numbers of dimensions so make var2 conform to var1 */
-      var_prc_out[idx]=nco_var_free(var_prc_out[idx]);
-      (void)nco_inq_varid(in_id_2,var_prc_1[idx]->nm,&var_id);
-      var_prc_out[idx]=nco_var_fll(in_id_2,var_id,var_prc_1[idx]->nm,dim_1,nbr_dmn_xtr_1);
-      (void)nco_var_get(in_id_2,var_prc_out[idx]);
-      
-      /* Pass dummy pointer so we do not lose track of original */
-      var_tmp=nco_var_cnf_dmn(var_prc_1[idx],var_prc_out[idx],var_tmp,MUST_CONFORM,&DO_CONFORM);
-      var_prc_out[idx]=nco_var_free(var_prc_out[idx]);
-      var_prc_out[idx]=var_tmp;
+      (void)nco_var_get(in_id_2,var_prc_2[idx]);
+      (void)ncap_var_cnf_dmn(&var_prc_1[idx],&var_prc_2[idx]);
     } /* end else */
     
     /* var2 now conforms in size to var1, and is in memory */
     
     /* fxm: TODO 268 allow var1 or var2 to typecast */
     /* Make sure var2 conforms to type of var1 */
-    if(var_prc_out[idx]->type != var_prc_1[idx]->type){
-      (void)fprintf(fp_stderr,"%s: WARNING Input variables do not conform in type:\nFile 1 = %s variable %s has type %s\nFile 2 = %s variable %s has type %s\nFile 3 = %s variable %s will have type %s\n",prg_nm,fl_in_1,var_prc_1[idx]->nm,nco_typ_sng(var_prc_1[idx]->type),fl_in_2,var_prc_out[idx]->nm,nco_typ_sng(var_prc_out[idx]->type),fl_out,var_prc_1[idx]->nm,nco_typ_sng(var_prc_1[idx]->type));
+    if(var_prc_1[idx]->type != var_prc_2[idx]->type){
+      (void)fprintf(fp_stderr,"%s: WARNING Input variables do not conform in type:\nFile 1 = %s variable %s has type %s\nFile 2 = %s variable %s has type %s\nFile 3 = %s variable %s will have type %s\n",prg_nm,fl_in_1,var_prc_1[idx]->nm,nco_typ_sng(var_prc_1[idx]->type),fl_in_2,var_prc_2[idx]->nm,nco_typ_sng(var_prc_2[idx]->type),fl_out,var_prc_1[idx]->nm,nco_typ_sng(var_prc_1[idx]->type));
     }  /* endif different type */
-    var_prc_out[idx]=nco_var_cnf_typ(var_prc_1[idx]->type,var_prc_out[idx]);
+    var_prc_2[idx]=nco_var_cnf_typ(var_prc_1[idx]->type,var_prc_2[idx]);
     
-    /* Change missing_value of var_prc_out, if any, to missing_value of var_prc_1, if any */
-    has_mss_val=nco_mss_val_cnf(var_prc_1[idx],var_prc_out[idx]);
+    /* Change missing_value of var_prc_2, if any, to missing_value of var_prc_1, if any */
+    has_mss_val=nco_mss_val_cnf(var_prc_1[idx],var_prc_2[idx]);
     
     /* mss_val in fl_1, if any, overrides mss_val in fl_2 */
     if(has_mss_val) mss_val=var_prc_1[idx]->mss_val;
@@ -541,20 +533,20 @@ main(int argc,char **argv)
     /* Perform specified binary operation */
     switch(nco_op_typ){
     case nco_op_add: /* [enm] Add file_1 to file_2 */
-      (void)nco_var_add(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc_1[idx]->val); break;
+      (void)nco_var_add(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,mss_val,var_prc_1[idx]->val,var_prc_2[idx]->val); break;
     case nco_op_mlt: /* [enm] Multiply file_1 by file_2 */
-      (void)nco_var_mlt(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc_1[idx]->val); break;
+      (void)nco_var_mlt(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,mss_val,var_prc_1[idx]->val,var_prc_2[idx]->val); break;
     case nco_op_dvd: /* [enm] Divide file_1 by file_2 */
-      (void)nco_var_dvd(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc_1[idx]->val); break;
+      (void)nco_var_dvd(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,mss_val,var_prc_1[idx]->val,var_prc_2[idx]->val); break;
     case nco_op_sbt: /* [enm] Subtract file_2 from file_1 */
-      (void)nco_var_sbt(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc_1[idx]->val); break;
+      (void)nco_var_sbt(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,mss_val,var_prc_1[idx]->val,var_prc_2[idx]->val); break;
     default: /* Other defined nco_op_typ values are valid for ncra(), ncrcat(), ncwa(), not ncbo() */
       (void)fprintf(fp_stdout,"%s: ERROR Illegal nco_op_typ in binary operation\n",prg_nm);
       nco_exit(EXIT_FAILURE);
       break;
     } /* end case */
     
-    var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
+    var_prc_1[idx]->val.vp=nco_free(var_prc_1[idx]->val.vp);
 
 #ifdef _OPENMP
 #pragma omp critical
@@ -562,12 +554,12 @@ main(int argc,char **argv)
     { /* begin OpenMP critical */
       /* Copy result to output file and free workspace buffer */
       if(var_prc_1[idx]->nbr_dim == 0){
-	(void)nco_put_var1(out_id,var_prc_1[idx]->id,var_prc_out[idx]->srt,var_prc_1[idx]->val.vp,var_prc_1[idx]->type);
+	(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_2[idx]->val.vp,var_prc_out[idx]->type);
       }else{ /* end if variable is scalar */
-	(void)nco_put_vara(out_id,var_prc_1[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_1[idx]->val.vp,var_prc_1[idx]->type);
+	(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp,var_prc_out[idx]->type);
       } /* end else */
     } /* end OpenMP critical */
-    var_prc_1[idx]->val.vp=nco_free(var_prc_1[idx]->val.vp);
+    var_prc_2[idx]->val.vp=nco_free(var_prc_2[idx]->val.vp);
     
   } /* end (OpenMP parallel for) loop over idx */
   if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
@@ -603,13 +595,18 @@ main(int argc,char **argv)
   if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
   /* Free dimension lists */
   if(nbr_dmn_xtr_1 > 0) dim_1=nco_dmn_lst_free(dim_1,nbr_dmn_xtr_1);
+  if(nbr_dmn_xtr_2 > 0) dim_2=nco_dmn_lst_free(dim_2,nbr_dmn_xtr_2);
   if(nbr_dmn_xtr_1 > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr_1);
   /* Free variable lists */
   if(nbr_xtr_1 > 0) var_1=nco_var_lst_free(var_1,nbr_xtr_1);
+  /* fxm: TODO 550 double-free when variables do not conform */
+  /*  if(nbr_xtr_2 > 0) var_2=nco_var_lst_free(var_2,nbr_xtr_2);*/
   if(nbr_xtr_1 > 0) var_out=nco_var_lst_free(var_out,nbr_xtr_1);
   var_prc_1=(var_sct **)nco_free(var_prc_1);
+  var_prc_2=(var_sct **)nco_free(var_prc_2);
   var_prc_out=(var_sct **)nco_free(var_prc_out);
   var_fix_1=(var_sct **)nco_free(var_fix_1);
+  var_fix_2=(var_sct **)nco_free(var_fix_2);
   var_fix_out=(var_sct **)nco_free(var_fix_out);
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");

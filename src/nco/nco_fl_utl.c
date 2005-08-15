@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.61 2005-08-11 22:05:13 mangalam Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.62 2005-08-15 01:48:02 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -659,7 +659,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
     /* Does local filepath already exist on local system? */
     rcd=stat(fl_pth_lcl_tmp,&stat_sct);
-    /* If not, then create the local filepath */
+    /* If not, then create local filepath */
     if(rcd != 0){
       /* Allocate enough room for joining space ' ' and terminating NUL */
       cmd_sys=(char *)nco_malloc((strlen(cmd_mkdir)+fl_pth_lcl_lng+2UL)*sizeof(char));
@@ -936,8 +936,8 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
  int * const out_id) /* O [id] File ID */
 {
   /* Purpose: Open output file subject to availability and user input 
-     In accord with netCDF philosophy a temporary file (based on fl_out and process ID)
-     is actually opened, so that errors can not infect intended output file
+     In accord with netCDF philosophy, open temporary file named according
+     to fl_out and process ID so that errors cannot infect intended output file.
      Calling routine has responsibility to close and free fl_out_tmp */
 
   char *fl_out_tmp;
@@ -1028,13 +1028,13 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     /* Default create mode creates 32-bit offset (classic) file */
     if(FORCE_64BIT_OFFSET) nccreate_mode|=NC_64BIT_OFFSET;
     rcd=nco_create(fl_out_tmp,nccreate_mode,out_id);
-    /*    rcd=nco_create(fl_out_tmp,NC_CLOBBER|NC_SHARE,out_id);*/
+    /*    rcd=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
     return fl_out_tmp;
   } /* end if */
 
   if(False){
     if(prg_get() == ncrename){
-      /* ncrename is different because a single filename is allowed without question */
+      /* ncrename and ncatted allow single filename without question */
       /* Incur expense of copying current file to temporary file */
       (void)nco_fl_cp(fl_out,fl_out_tmp);
       rcd=nco_open(fl_out_tmp,NC_WRITE,out_id); 
@@ -1106,7 +1106,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       /* Default create mode creates 32-bit offset (classic) file */
       if(FORCE_64BIT_OFFSET) nccreate_mode|=NC_64BIT_OFFSET;
       rcd=nco_create(fl_out_tmp,nccreate_mode,out_id);
-      /*    rcd=nco_create(fl_out_tmp,NC_CLOBBER|NC_SHARE,out_id);*/
+      /*    rcd=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
       break;
     case 'A':
     case 'a':
@@ -1122,7 +1122,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     nccreate_mode=NC_NOCLOBBER;
     if(FORCE_64BIT_OFFSET) nccreate_mode|=NC_64BIT_OFFSET;
     rcd=nco_create(fl_out_tmp,nccreate_mode,out_id);
-    /*    rcd=nco_create(fl_out_tmp,NC_NOCLOBBER|NC_SHARE,out_id);*/
+    /*    rcd=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
   } /* end if output file does not already exist */
   
   return fl_out_tmp;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.18 2005-08-03 01:04:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.19 2005-08-15 01:48:01 zender Exp $ */
 
 /* Purpose: CCSM conventions */
 
@@ -9,7 +9,7 @@
 #include "nco_cnv_csm.h" /* CCSM conventions */
 
 bool /* O [flg] File obeys CCSM conventions */
-nco_ncar_csm_inq /* O [fnc] Check if file obeys CCSM conventions */
+nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCSM conventions */
 (const int nc_id) /* I [id] netCDF file ID */
 {
   /* Purpose: Check if file adheres to NCAR CCSM history tape format */
@@ -45,10 +45,10 @@ nco_ncar_csm_inq /* O [fnc] Check if file obeys CCSM conventions */
 
   return NCAR_CCSM;
   
-} /* end nco_ncar_csm_inq */
+} /* end nco_cnv_ccm_ccsm_cf_inq */
 
 void
-nco_ncar_csm_date /* [fnc] Fix date variable in averaged CCSM files */
+nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCSM files */
 (const int nc_id, /* I [id] netCDF file ID */
  X_CST_PTR_CST_PTR_Y(var_sct,var), /* I/O [sct] Variables in output file */
  const int nbr_var) /* I [nbr] Number of variables in list */
@@ -110,5 +110,5 @@ nco_ncar_csm_date /* [fnc] Fix date variable in averaged CCSM files */
   if(var[date_idx]->val.lp != NULL) return; else var[date_idx]->val.lp[0]=date;
   
   return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
-} /* end nco_ncar_csm_date */
+} /* end nco_cnv_ccm_ccsm_cf_date */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.47 2005-07-08 00:11:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.48 2005-08-15 01:48:01 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -310,7 +310,6 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
   
 } /* end nco_var_cnf_dmn() */
 
-
 bool /* [flg] var_1 and var_2 conform after processing */
 ncap_var_cnf_dmn /* [fnc] Broadcast smaller variable into larger */
 (var_sct **var_1, /* I/O [ptr] First variable */
@@ -321,7 +320,7 @@ ncap_var_cnf_dmn /* [fnc] Broadcast smaller variable into larger */
      If this is possible then return true, otherwise die.
      Routine wraps nco_var_cnf_dmn(), which does the hard work
      If an input variable is replaced by a broadcast version of itself,
-     then the original version should be free()d or this routine will leak. */
+     then calling routine must free original version or it will leak. */
 
   bool DO_CONFORM; /* [flg] Do var_1 and var_2 conform after processing? */
   bool MUST_CONFORM=True; /* [flg] Must var_1 and var_2 conform? */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.80 2005-07-02 22:55:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.81 2005-08-15 01:48:01 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -127,6 +127,7 @@ main(int argc,char **argv)
 
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  bool FORCE_64BIT_OFFSET=False; /* Option Z */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
   bool HISTORY_APPEND=True; /* Option h */
@@ -141,11 +142,11 @@ main(int argc,char **argv)
   char *fl_out=NULL; /* Option o */
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
-  char time_bfr_srt[26]="";
+  char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.80 2005-07-02 22:55:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.80 $";
-  const char * const opt_sht_lst="Aa:D:hl:Oo:p:RrZ-:";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.81 2005-08-15 01:48:01 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.81 $";
+  const char * const opt_sht_lst="4Aa:D:hl:Oo:p:RrZ-:";
   
   extern char *optarg;
   extern int optind;
@@ -157,6 +158,7 @@ main(int argc,char **argv)
   int nbr_aed=0; /* Option a. NB: nbr_var_aed gets incremented */
   int nbr_var_fl;
   int nc_id;  
+  int ncopen_mode=NC_WRITE; /* [enm] Mode flag for nco_open() call */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
 
@@ -181,6 +183,7 @@ main(int argc,char **argv)
       {"rtn",no_argument,0,'R'},
       {"version",no_argument,0,'r'},
       {"vrs",no_argument,0,'r'},
+      {"64-bit-offset",no_argument,0,'Z'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -189,8 +192,6 @@ main(int argc,char **argv)
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   time_crr_time_t=time((time_t *)NULL);
-  ctime_r(&time_crr_time_t,time_bfr_srt); 
-  time_bfr_srt[24] = '\0'; /* Remove newline */
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
@@ -230,6 +231,9 @@ main(int argc,char **argv)
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lbr_vrs_prn();
       nco_exit(EXIT_SUCCESS);
+      break;
+    case 'Z': /* [flg] Create output file with 64-bit offsets */
+      FORCE_64BIT_OFFSET=True;
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
@@ -296,7 +300,8 @@ main(int argc,char **argv)
   } /* end if */
 
   /* Open file. Writing must be enabled and file should be in define mode for renaming */
-  rcd=nco_open(fl_out,NC_WRITE,&nc_id);
+  if(dbg_lvl == 8) ncopen_mode|=NC_SHARE;
+  rcd=nco_open(fl_out,ncopen_mode,&nc_id);
   (void)nco_redef(nc_id);
 
   /* Get number of variables in file */

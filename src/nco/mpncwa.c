@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.3 2005-07-02 22:55:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.4 2005-08-15 01:48:01 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -92,7 +92,7 @@ main(int argc,char **argv)
   bool HISTORY_APPEND=True; /* Option h */
   bool MULTIPLY_BY_TALLY=False; /* Not currently implemented */
   bool MUST_CONFORM=False; /* [flg] Must nco_var_cnf_dmn() find truly conforming variables? */
-  bool NCAR_CCSM_FORMAT;
+  bool CNV_CCM_CCSM_CF;
   bool NORMALIZE_BY_TALLY=True; /* Not currently implemented */
   bool NORMALIZE_BY_WEIGHT=True; /* Not currently implemented */
   bool NRM_BY_DNM=True; /* Option N Normalize by denominator */
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.3 2005-07-02 22:55:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.3 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.4 2005-08-15 01:48:01 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.4 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   const double sleep_tm=0.04; /* [time] interval between successive token requests */
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
@@ -558,8 +558,8 @@ main(int argc,char **argv)
     
   } /* dmn_avg_nbr <= 0 */
 
-  /* Is this an NCAR CCSM-format history tape? */
-  NCAR_CCSM_FORMAT=nco_ncar_csm_inq(in_id);
+  /* Is this an CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
 
   /* Fill in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
@@ -574,7 +574,7 @@ main(int argc,char **argv)
   xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,nco_pck_plc_nil,nco_pck_map_nil,dmn_avg,dmn_avg_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,dmn_avg,dmn_avg_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* We now have final list of variables to extract. Phew. */
   if(dbg_lvl > 0){

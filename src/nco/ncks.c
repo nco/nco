@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.135 2005-07-02 22:55:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.136 2005-08-15 01:48:01 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -75,6 +75,7 @@ main(int argc,char **argv)
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  bool FL_OUT_NETCDF4_HDF=False; /* [flg] Output netCDF4/HDF storage format */
   bool FORCE_64BIT_OFFSET=False; /* Option Z */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
@@ -113,9 +114,9 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.135 2005-07-02 22:55:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.135 $";
-  const char * const opt_sht_lst="aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
+  const char * const CVS_Id="$Id: ncks.c,v 1.136 2005-08-15 01:48:01 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.136 $";
+  const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   extern char *optarg;
   extern int optind;
@@ -156,6 +157,8 @@ main(int argc,char **argv)
       {"cmp",no_argument,0,0},
       {"compiler",no_argument,0,0},
       /* Long options with short counterparts */
+      {"netcdf4",no_argument,0,'4'},
+      {"hdf",no_argument,0,'4'},
       {"abc",no_argument,0,'a'},
       {"alphabetize",no_argument,0,'a'},
       {"append",no_argument,0,'A'},
@@ -240,6 +243,9 @@ main(int argc,char **argv)
     } /* opt != 0 */
     switch(opt){
     case 0: /* Long options have already been processed, return */
+      break;
+    case '4': /* [flg] Output netCDF4/HDF storage format */
+      FL_OUT_NETCDF4_HDF=True;
       break;
     case 'a': /* Toggle ALPHABETIZE_OUTPUT */
       ALPHABETIZE_OUTPUT=!ALPHABETIZE_OUTPUT;

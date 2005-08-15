@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.170 2005-07-05 14:48:26 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.171 2005-08-15 01:48:01 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -99,7 +99,7 @@ main(int argc,char **argv)
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
-  bool NCAR_CCSM_FORMAT;
+  bool CNV_CCM_CCSM_CF;
   bool PRN_FNC_TBL=False; /* Option f */  
   bool PROCESS_ALL_VARS=True; /* Option v */  
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
@@ -120,9 +120,9 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.170 2005-07-05 14:48:26 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.170 $";
-  const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
+  const char * const CVS_Id="$Id: ncap.c,v 1.171 2005-08-15 01:48:01 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.171 $";
+  const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
   dmn_sct **dmn_out=NULL_CEWI; /* [lst] Dimensions written to output file */
@@ -677,8 +677,8 @@ main(int argc,char **argv)
   /* Sort extraction list for faster I/O */
   if(nbr_xtr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,nbr_xtr,False);
   
-  /* Is this an NCAR CCSM-format history tape? */
-  NCAR_CCSM_FORMAT=nco_ncar_csm_inq(in_id);
+  /* Is this an CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
   
   /* Write "fixed" variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
@@ -693,7 +693,7 @@ main(int argc,char **argv)
 
   /* NB: ncap is not well-suited for nco_var_lst_dvd() */
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,(int)0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,(int)0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
   
   /* csz: Why not call this with var_fix? */
   /* Define non-processed vars */

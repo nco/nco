@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.9 2005-06-30 18:34:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.10 2005-08-15 01:48:01 zender Exp $ */
 
 /* Purpose: ARM conventions */
 
@@ -13,7 +13,7 @@ arm_inq /* O [fnc] Check if file obeys ARM conventions */
 (const int nc_id) /* I [id] netCDF file ID */
 {
   /* Purpose: Check whether file adheres to ARM time format */
-  bool ARM_FORMAT;
+  bool CNV_ARM;
 
   const char time_sng[]="time"; /* CEWI */
   const char base_time_sng[]="base_time"; /* CEWI */
@@ -31,13 +31,13 @@ arm_inq /* O [fnc] Check if file obeys ARM conventions */
   
   /* All three IDs must be valid to handle ARM format */
   if(rcd != NC_NOERR){
-    ARM_FORMAT=False;
+    CNV_ARM=False;
   }else{
     if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: CONVENTION File convention is DOE ARM\n",prg_nm_get()); 
-    ARM_FORMAT=True;
+    CNV_ARM=True;
   } /* end else */
 
-  return ARM_FORMAT;
+  return CNV_ARM;
 } /* end arm_inq */
 
 double /* O [s] base_time + current time_offset */ 

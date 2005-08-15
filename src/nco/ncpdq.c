@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.78 2005-07-02 22:55:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.79 2005-08-15 01:48:02 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -82,7 +82,7 @@ main(int argc,char **argv)
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
-  bool NCAR_CCSM_FORMAT;
+  bool CNV_CCM_CCSM_CF;
   bool REDEFINED_RECORD_DIMENSION=False; /* [flg] Re-defined record dimension */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
 
@@ -108,9 +108,9 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.78 2005-07-02 22:55:57 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.78 $";
-  const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.79 2005-08-15 01:48:02 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.79 $";
+  const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -441,8 +441,8 @@ main(int argc,char **argv)
 
   } /* dmn_rdr_nbr <= 0 */
 
-  /* Is this an NCAR CCSM-format history tape? */
-  NCAR_CCSM_FORMAT=nco_ncar_csm_inq(in_id);
+  /* Is this an CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
 
   /* Fill in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
@@ -457,7 +457,7 @@ main(int argc,char **argv)
   xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
   
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* We now have final list of variables to extract. Phew. */
   if(dbg_lvl > 2){

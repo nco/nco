@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.2 2005-07-22 22:18:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.3 2005-08-15 01:48:01 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -89,7 +89,7 @@
 int 
 main(int argc,char **argv)
 {
-  bool ARM_FORMAT=int_CEWI;
+  bool CNV_ARM=int_CEWI;
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -102,7 +102,7 @@ main(int argc,char **argv)
   bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool LAST_RECORD=False;
-  bool NCAR_CCSM_FORMAT=int_CEWI;
+  bool CNV_CCM_CCSM_CF=int_CEWI;
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   bool TOKEN_FREE=True; /* [flg] Allow MPI workers write-access to output file */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.2 2005-07-22 22:18:30 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.2 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.3 2005-08-15 01:48:01 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.3 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
   const double sleep_tm=0.04; /* [time] interval between successive token requests */
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
@@ -441,12 +441,12 @@ main(int argc,char **argv)
     lmt_rec=nco_lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_IDX_CNV);
   } /* endif */
 
-  /* Is this an NCAR CCSM-format history tape? */
-  NCAR_CCSM_FORMAT=nco_ncar_csm_inq(in_id);
+  /* Is this an CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
 
   /* Is this an ARM-format data file? */
-  ARM_FORMAT=arm_inq(in_id);
-  if(ARM_FORMAT) base_time_srt=arm_base_time_get(in_id);
+  CNV_ARM=arm_inq(in_id);
+  if(CNV_ARM) base_time_srt=arm_base_time_get(in_id);
 
   /* Fill in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
@@ -461,7 +461,7 @@ main(int argc,char **argv)
   xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,nco_pck_plc_nil,nco_pck_map_nil,NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
 #ifdef ENABLE_MPI
   if(proc_id == 0){ /* MPI manager code */
@@ -555,7 +555,7 @@ main(int argc,char **argv)
   if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,idx_rec_out,FORTRAN_IDX_CNV); /* Routine is thread-unsafe */
     
   /* Is this an ARM-format data file? */
-  if(ARM_FORMAT) base_time_crr=arm_base_time_get(in_id); /* Routine is thread-unsafe */
+  if(CNV_ARM) base_time_crr=arm_base_time_get(in_id); /* Routine is thread-unsafe */
 
   /* Perform various error-checks on input file */
   if(False) (void)nco_fl_cmp_err_chk();
@@ -651,7 +651,7 @@ main(int argc,char **argv)
 	    var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=idx_rec_out;
 	    var_prc_out[idx]->cnt[0]=1L;
 	    /* Replace this time_offset value with time_offset from initial file base_time */
-	    if(ARM_FORMAT && !strcmp(var_prc[idx]->nm,"time_offset")) var_prc[idx]->val.dp[0]+=(base_time_crr-base_time_srt);
+	    if(CNV_ARM && !strcmp(var_prc[idx]->nm,"time_offset")) var_prc[idx]->val.dp[0]+=(base_time_crr-base_time_srt);
 
 	    /* Obtain token and prepare to write */
 	    while(1){ /* Send TOKEN_REQUEST repeatedly until token obtained */
@@ -794,7 +794,7 @@ main(int argc,char **argv)
       if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,idx_rec_out,FORTRAN_IDX_CNV); /* Routine is thread-unsafe */
 
       /* Is this an ARM-format data file? */
-      if(ARM_FORMAT) base_time_crr=arm_base_time_get(in_id); /* Routine is thread-unsafe */
+      if(CNV_ARM) base_time_crr=arm_base_time_get(in_id); /* Routine is thread-unsafe */
 
       /* Perform various error-checks on input file */
       if(False) (void)nco_fl_cmp_err_chk();
@@ -852,7 +852,7 @@ main(int argc,char **argv)
 		if(dbg_lvl > 1) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx) shared(ARM_FORMAT,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,in_id,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,in_id,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
 #endif /* !_OPENMP */
 #ifndef ENABLE_MPI
 		/* UP and SMP codes main loop over variables */
@@ -882,7 +882,7 @@ main(int argc,char **argv)
 		    var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=idx_rec_out;
 		    var_prc_out[idx]->cnt[0]=1L;
 		    /* Replace this time_offset value with time_offset from initial file base_time */
-		    if(ARM_FORMAT && !strcmp(var_prc[idx]->nm,"time_offset")) var_prc[idx]->val.dp[0]+=(base_time_crr-base_time_srt);
+		    if(CNV_ARM && !strcmp(var_prc[idx]->nm,"time_offset")) var_prc[idx]->val.dp[0]+=(base_time_crr-base_time_srt);
 
 #ifdef ENABLE_MPI
 		    /* Obtain token and prepare to write */
@@ -1056,11 +1056,11 @@ main(int argc,char **argv)
     printf("proc_id %d opened out file\n",proc_id);
 #endif /* !ENABLE_MPI */
   /* Manually fix YYMMDD date which was mangled by averaging */
-  if(NCAR_CCSM_FORMAT && prg == ncra) (void)nco_ncar_csm_date(out_id,var_out,nbr_xtr);
+  if(CNV_CCM_CCSM_CF && prg == ncra) (void)nco_cnv_ccm_ccsm_cf_date(out_id,var_out,nbr_xtr);
   printf("DEBUG: fixed YYMMDD date\n");
   
   /* Add time variable to output file */
-  if(ARM_FORMAT && prg == ncrcat) (void)nco_arm_time_install(out_id,base_time_srt);
+  if(CNV_ARM && prg == ncrcat) (void)nco_arm_time_install(out_id,base_time_srt);
 #ifdef ENABLE_MPI
     nco_close(out_id); 
     printf("DEBUG: Mgr proc_id %d closed out file %d after fixing date, time \n", proc_id, out_id);

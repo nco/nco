@@ -1,18 +1,46 @@
+2005-08-13  Charlie Zender  <zender@uci.edu>
+
+	* Finished ncbo heart transplant: Symmetric subtraction still not working
+	Regression tests appears to be no worse than before (ncbo causes 2 fails)
+	Valgrind indicates new code is leak-proof except for one
+	double-free() caused by ncap_var_cnf_dmn()
+	Code appears to be commit-able since it's cleaner and extensible
+	
+	* Extended dual list method into heart of ncbo
+	Saved last known working version as ~/ncbo.last_known_working.c
+	
+	* Change NCAR_CCSM_FORMAT to CNV_CCM_CCSM_CF, ARM_FORMAT to CNV_ARM
+
+2005-08-11  Charlie Zender  <zender@uci.edu>
+
+	* Implement -Z/--64-bit-offset switch in ncatted and ncrename
+
+	* Deprecate ctime_r() code ncatted, put it (deprecated) into ncra
+
+	* Add -4, --hdf, --netcdf4 switches to request HDF storage format
+
 2005-08-08  Harry Mangalam  <hjm@tacgi.com>
+
 	* change nco_fl_utl.c to use passive ftp rather than active
 		(many ftp servers no longer work with active requests)
+
 	* change nco_bm.pl to do net tests (except for those requiring a 
 		specific login	or location).  Tests ftp (see 1st change) and 
 		DODS if compiled with DODS/DAP.
 2005-08-08  Harry Mangalam  <hjm@tacgi.com>
+
 	* final updates to nco_bm.pl for testing DAP (reduced number of 
 		files requested under DAP (also becasue of bug in DAP that
 		refuses > 30 files at once in some cases.
+
 	* changed Makefile.in to work with 'make test' & 'make devtest'
 
 2005-08-05  Harry Mangalam  <hjm@tacgi.com>
+
 	* cleaned out refs to '-n' in ncflint.c (doesn't support it)
+
 	* major mods to nco_bm.pl to add DODS support to testing
+
 	* may be a bug in DODS server code that doesn't allow >30 files in 
 		one session - posted.
 

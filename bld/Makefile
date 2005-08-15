@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.307 2005-07-22 22:18:20 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.308 2005-08-15 01:48:00 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -6,6 +6,9 @@
 # scp ~/nco/bld/Makefile soot.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile esmf.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile goldhill.cgd.ucar.edu:nco/bld
+
+# Test netCDF4:
+# sudo ln -s -f /usr/local/lib/libnetcdf4.a.gcc-g95 /usr/local/lib/libnetcdf.a
 
 # Copyright (C) 1994--2004 Charlie Zender
 # This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)

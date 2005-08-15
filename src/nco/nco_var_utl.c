@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.92 2005-07-04 06:01:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.93 2005-08-15 01:48:02 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -710,9 +710,7 @@ nco_var_lst_free /* [fnc] Free memory associated with variable structure list */
   /* Purpose: Free all memory associated with dynamically allocated variable structure list */
   int idx;
 
-  for(idx=0;idx<var_nbr;idx++){
-    var_lst[idx]=nco_var_free(var_lst[idx]);
-  } /* end loop over idx */
+  for(idx=0;idx<var_nbr;idx++) var_lst[idx]=nco_var_free(var_lst[idx]);
 
   /* Free structure pointer last */
   var_lst=(var_sct **)nco_free(var_lst);

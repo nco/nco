@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.566 2005-07-27 01:28:40 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.567 2005-08-15 01:48:01 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -122,10 +122,10 @@ nco182. Add -L, --license switch to print license terms (as suggested by GNU cod
 nco187. Are OpenMP critical regions sufficient for netCDF or must all other threads stop completely?
 nco190. Make typ_pck et al. use nc_type enum or something sane for default
 nco192. ncdiff will sometimes subtract files of incommensurate sizes without complaint
-ncks -O -v one_dmn_rec_var -d time,0,1 in.nc foo1.nc
-ncks -O -v one_dmn_rec_var -d time,0,2 in.nc foo2.nc
-ncdiff -O foo1.nc foo2.nc foo3.nc
-This may make sense, e.g., for 1-D record variables of different lengths, but not for multidimensional variables
+        ncks -O -v one_dmn_rec_var -d time,0,1 in.nc foo1.nc
+        ncks -O -v one_dmn_rec_var -d time,0,2 in.nc foo2.nc
+        ncdiff -O foo1.nc foo2.nc foo3.nc
+        This may make sense, e.g., for 1-D record variables of different lengths, but not for multidimensional variables
 Former case should print warning, latter case should exit with error
 nco193. Convert dimension sizes from type "long int" to type "size_t"?
 nco195. Itanium builds!
@@ -149,7 +149,7 @@ nco244. Get builds working on testdrive.hp.com
 nco245. Eliminate all instances of passing naked constants
 nco246. Deprecate USE_FORTRAN_ARITHMETIC from Makefile
 nco250. ncks -s should refuse to print strings formatted with %s unless they contain NUL-terminator. This will avoid segfaults like
-nconcks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
+        nconcks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 nco251. Does ncks -B correctly write packed variables in binary format?
 nco255. Desktop icon for NCO gui interface
 nco256. Turn udunits into .deb
@@ -165,19 +165,13 @@ nco270. Automate uploading of tagged .deb builds to ftp://ftp.debian.org
 nco275. Use nco_mss_val_cnf() in ncflint
 nco276. Use nco_mss_val_cnf() in ncap
 nco277. Use nco_mss_val_cnf() in ncwa
-nco285. Kevin: ncap segfaults on packing segfault.tar.gz 
-I cannot replicate this bug
-ncbo -O -y add -D 3 -d date,0,100 /data/zender/tmp/convecPrecip00z.nc /data/zender/tmp/convecPrecip00z.nc /data/zender/tmp/sum.nc
-ncap -O  -D3 -s 'cp=pack(cp)' /data/zender/tmp/sum.nc /data/zender/tmp/packed_sum.nc
-ncbo -O -y add -D 3 ${HOME}/debug/hundred.nc ${HOME}/debug/hundred.nc ${HOME}/debug/sum.nc
-ncap -O -D 3 -s 'cp=pack(cp)' ${HOME}/debug/sum.nc ${HOME}/debug/pack_sum.nc
 nco287. Develop dianostics for OMP OpenMP implementation in ncra
 nco292. nco_fl_utl.c: Use autoconf HAVE_NETWORK instead of WIN32
 nco293. nco_fl_utl.c: Use autoconf HAVE_MKDIR_M instead of SUN4
 nco294. Globals variable in NCO operators are prg, prg_nm, dbg_lvl 
-If possible, modify so that shared-library (rather than main.c) holds
-and returns thread-specific values for each, set with, e.g., prg_set().
-Make prg, prg_nm, and dbg_lvl local to main(), not global to main.c
+        If possible, modify so that shared-library (rather than main.c) holds
+        and returns thread-specific values for each, set with, e.g., prg_set().
+        Make prg, prg_nm, and dbg_lvl local to main(), not global to main.c
 nco295. Understand/maintain re-entrant behavior of shared library.
 nco298. Localize ncap's three globals: ncap_ncl_dpt_crr, ncap_ln_nbr_crr, ncap_fl_spt_glb?
 nco299. Prefix prg,prg_nm,dbg_lvl globals with nco_ for namespace cleanliness
@@ -205,17 +199,16 @@ nco335. ncflint: implement interpolation/mss_val algorithms two and three as opt
 nco336. Allow input file lists to be specified in a text file and to supercede command line arguments. This will be useful on platforms with limited buffers for command line arguments and globbing expansions (e.g., AIX)
 nco337. When input file is a symbolic link, print name of linked-to-file as debugging information
 nco340. o/a/e stdin is overwritten when stdin input method used
-cd ~/nco/data;echo "in.nc" | ncecat -D 3 -o foo.nc
+        cd ~/nco/data;echo "in.nc" | ncecat -D 3 -o foo.nc
 nco342. Get canonicalize_file_name() working in nco_fl_info_get()
 nco344. Create sophisticated etags regular expressions for change version number in all documentation tags_doc.sh
-nco351. Ask Jim Edwards to fix make test rtld errors on AIX with OpenMP Related to nco352. 
 nco352. Probably related to 351: OpenMP directive must appear in main() or ldd will not associate /usr/lib/libxlsmp.a(smprt_64.o) with executable so rtld errors occur on AIX
 ************** Important ***************************
 nco354. ncwa dumps core on AIX ESMF on large files regardless of OpenMP: 
-ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA}/mie/mie_1000000.nc ${DATA}/mie/foo_avg_1000000.nc (works)
-ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA}/mie/mie_10000000.nc ${DATA}/mie/foo_avg_10000000.nc (fails)
-fails with 
-Segmentation fault (core dumped)
+        ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA}/mie/mie_1000000.nc ${DATA}/mie/foo_avg_1000000.nc (works)
+        ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA}/mie/mie_10000000.nc ${DATA}/mie/foo_avg_10000000.nc (fails)
+        fails with 
+        Segmentation fault (core dumped)
 nco358. Document ncwa -z switch: Get rid of separate -M -m -T?
 nco359. Allow spaces between variables names in -v var_lst arguments (assuming list whitespace is quoted, of course)
 nco362. mmr: reduce memory during run by free()'ing var_fix[idx],var_fix_out[idx],var_prc[idx],var_prc_out[idx] after writes
@@ -281,7 +274,6 @@ nco527. Purify ncatted memory:
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,,a,f,74,75,76 -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 # Commas at end of following aed_sct appear never to be free()'d, are responsible for three unfree'd bytes
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,att_var,d,,, -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
-nco530. change all ctime() to ctime_r() like in ncatted?
 nco533. Implement C99 mathematical special functions: lgamma_r, j0, j1, jn, y0, y1, yn
 nco538. Stabilize ncecat threading: why are fl_lst_in,in_id,var_prc firstprivate not shared?
 nco540. bm: regression tests report some apparent successes as failures on SUNMP, e.g., 
@@ -290,20 +282,15 @@ nco540. bm: regression tests report some apparent successes as failures on SUNMP
 	Seems like any "Expected's" containing "+" string may fail.
 	Perl problem?
 nco542. Put batch scripts, executables in ${DATA}/nco_bm/CASEID? Where to put created files
-nco545. Get mpicc working with MPICH_CC=icc
 nco546. Use makeatletter command in CCSM example in nco.texi?
 nco547. Format CCSM example in nco.texi
 nco548. Hyper-link all switches to explanatory sections?
 nco549. Automagically generate opaque-type I/O symbols in nco_typ.h
 nco550. DAP 3.5.1 triggers reproducible double-free() memory error in
 	ncbo step of ncra regression test 16.
-	Problem occurs regardless of OpenMP (soot,elnino) or compiler (gcc,icc):
-        This DAP problem lead me to discover the following, probably related, problem
-nco551. ncbo bug: Regardless of DAP, OpenMP, compiler, ncbo has broadcast bug:
-	ncra -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
+	ncwa -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
 	ncbo -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
-        nco_err_exit(): ERROR nco_get_vara
-        This should print non-conforming dimensions
+        Segmentation fault
 nco552. ncbo bug comes down to this: ncbo is not symmetric w/r/t fl_1, fl_2
 nco557. ashes FTP resolver does not find domain (sends "user anonymous zender@ashes.")
 nco559. bm: Add bm for ESG access?
@@ -319,8 +306,18 @@ nco560. Change FTP access script to facilitate mget *?
 	mget *
 	quit
 	END
-nco561. deprecate ctime_r() in favor of ctime() for Solaris10 compatibility
-nco562. 
+nco562. ncatted extra header space option to alleviate Keith Dixon's woes
+        nc_enddef(ncid) is equivalent to nc__enddef(ncid, 0, 4, 0, 4).
+nco563. Implement -4 switch to use netCDF4/HDF output format
+nco564. Implement -Z switch in ncatted
+nco565. bm: Add ncatted bm to quantify nc__create() tuning improvements
+nco566. Implement -Z switch in ncrename
+nco567. Add option to turn off default-creation of .tmp file?
+nco568. bm: test NC_SHARE in ncatted/ncrename?
+nco569. bm: Add SRB test
+nco570. Merge ncatted/ncrename file opens into nco_fl_out_open()
+nco571. ncbo fix double-free() caused by ncap_var_cnf_dmn() (related to TODO 550)
+nco572. 
 
 MPI:
 Archive MPI tests which appear to run correctly 
