@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.171 2005-08-15 01:48:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.172 2005-08-15 05:12:09 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -94,7 +94,7 @@ main(int argc,char **argv)
   bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  bool FORCE_64BIT_OFFSET=False; /* Option Z */
+  bool FMT_64BIT=False; /* Option Z */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_IDX_CNV=False; /* Option F */
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.171 2005-08-15 01:48:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.171 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.172 2005-08-15 05:12:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.172 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -345,7 +345,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     case 'Z': /* [flg] Create output file with 64-bit offsets */
-      FORCE_64BIT_OFFSET=True;
+      FMT_64BIT=True;
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
@@ -482,7 +482,7 @@ main(int argc,char **argv)
   if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dmn_in,nbr_dmn_in,lmt,lmt_nbr);
   
   /* Open output file */
-  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FORCE_64BIT_OFFSET,&out_id);
+  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FMT_64BIT,&out_id);
   
   /* Copy global attributes */
   (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);

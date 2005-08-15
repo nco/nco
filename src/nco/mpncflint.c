@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.7 2005-08-15 01:48:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.8 2005-08-15 05:12:09 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -80,7 +80,7 @@ main(int argc,char **argv)
   bool FILE_1_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FILE_2_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  bool FORCE_64BIT_OFFSET=False; /* Option Z */
+  bool FMT_64BIT=False; /* Option Z */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_IDX_CNV=False; /* Option F */
@@ -107,8 +107,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.7 2005-08-15 01:48:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.7 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.8 2005-08-15 05:12:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.8 $";
   const char * const opt_sht_lst="ACcD:d:Fhi:l:Oo:p:rRt:v:xw:Z-:";
   const double sleep_tm=0.04; /* [time] interval between successive token requests */
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
@@ -330,7 +330,7 @@ main(int argc,char **argv)
       EXCLUDE_INPUT_LIST=True;
       break;
     case 'Z': /* [flg] Create output file with 64-bit offsets */
-      FORCE_64BIT_OFFSET=True;
+      FMT_64BIT=True;
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
@@ -437,7 +437,7 @@ main(int argc,char **argv)
   if(proc_id == 0){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
     /* Open output file */
-    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FORCE_64BIT_OFFSET,&out_id);
+    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FMT_64BIT,&out_id);
 
     /* Obtain the length of output file name in order to broadcast it to workers */
     fl_nm_lng=(int)strlen(fl_out_tmp);

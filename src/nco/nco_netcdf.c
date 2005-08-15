@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.49 2005-07-01 05:33:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.50 2005-08-15 05:12:09 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -322,6 +322,23 @@ nco_enddef(const int nc_id)
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_enddef");
   return rcd;
 } /* end nco_enddef */
+
+int /* O [enm] netCDF error code */ 
+nco__enddef /* [fnc] Wrapper for nc__enddef */
+(const int nc_id, /* [ID] netCDF ID */
+ const size_t hdr_pad) /* [B] Pad at end of header section */
+{
+  /* Purpose: Wrapper for nc__enddef() */
+  int rcd;
+  /* hdr_pad is netCDF library h_minfree variable */
+  const size_t v_align=4UL; /* [B] Alignment of beginning of data section for fixed variables */
+  const size_t v_minfree=0UL; /* [B] Pad at end of data section for fixed size variables */
+  const size_t r_align=4UL; /* [B] Alignment of beginning of data section for record variables */
+  /* nc_enddef(ncid) is equivalent to nc__enddef(ncid,0,4,0,4) */
+  rcd=nc__enddef(nc_id,hdr_pad,v_align,v_minfree,r_align);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco__enddef");
+  return rcd;
+} /* end nco__enddef */
 
 int 
 nco_sync(const int nc_id)

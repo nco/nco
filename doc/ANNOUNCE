@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.153 2005-08-03 18:12:27 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.154 2005-08-15 05:12:08 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.0.2 are ready. 
 
@@ -36,6 +36,10 @@ benchmarking, memory usage, and documentation improvements.
 9. Enhance CF-1.0 Convention support by adding various fields to 
    "do not touch" grid property list including: area, [lat,lon]_bnds,
    msk_* 
+
+10. Add --hdr/--header option to ncks to pad output file header
+    This improves I/O on files requiring multiple metadata changes
+    See http://nco.sf.net/nco.html#hdr for more info
 
 Future: The next release (3.1) will concentrate on MPI-enabled NCO.
 

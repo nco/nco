@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.136 2005-08-15 01:48:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.137 2005-08-15 05:12:09 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -75,8 +75,11 @@ main(int argc,char **argv)
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  bool FL_OUT_NETCDF4_HDF=False; /* [flg] Output netCDF4/HDF storage format */
-  bool FORCE_64BIT_OFFSET=False; /* Option Z */
+#ifdef NETCDF4
+  bool FL_OUT_FMT=NC_FORMAT_CLASSIC; /* [enm] Output file format */
+#endif /* !NETCDF4 */
+  bool FMT_NETCDF4=False; /* [flg] Output netCDF4/HDF storage format */
+  bool FMT_64BIT=False; /* Option Z */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_IDX_CNV=False; /* Option F */
@@ -114,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.136 2005-08-15 01:48:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.136 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.137 2005-08-15 05:12:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.137 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   extern char *optarg;
@@ -149,13 +152,20 @@ main(int argc,char **argv)
 
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
 
+  size_t hdr_pad=0UL; /* [B] Pad at end of header section */
+
   time_t time_crr_time_t;
 
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
-      /* Long options with argument */
+      /* Long options with no argument */
       {"cmp",no_argument,0,0},
       {"compiler",no_argument,0,0},
+      /* Long options with argument */
+      {"hdr",required_argument,0,0},
+      {"header",required_argument,0,0},
+      {"fl_fmt",required_argument,0,0},
+      {"file_format",required_argument,0,0},
       /* Long options with short counterparts */
       {"netcdf4",no_argument,0,'4'},
       {"hdf",no_argument,0,'4'},
@@ -237,15 +247,32 @@ main(int argc,char **argv)
 	 Let this serve as a template for more such options */
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"compiler")){
 	(void)fprintf(stdout,"%s\n",nco_cmp_get());
-	if(opt_crr != NULL) opt_crr=(char *)nco_free(opt_crr);
 	nco_exit(EXIT_SUCCESS);
       } /* endif "cmp" */
+#ifdef NETCDF4
+      if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")){
+	if(!strstr(opt_crr,"classic")){
+	  FL_OUT_FMT=NC_FORMAT_CLASSIC;
+	}else if(!strstr(opt_crr,"64bit")){
+	  FL_OUT_FMT=NC_FORMAT_64BIT;
+	}else if(!strstr(opt_crr,"netcdf4")){
+	  FL_OUT_FMT=NC_FORMAT_NETCDF4;
+	}else if(!strstr(opt_crr,"netcdf4_classic")){
+	  FL_OUT_FMT=NC_FORMAT_NETCDF4_CLASSIC;
+	}else{
+	  (void)fprintf(stderr,"%s: ERROR Unknown output file format specified. Valid formats are \"classic\", \"64bit\", \"netcdf4\", and \"netcdf4_classic\".\n",prg_nm_get());
+	  nco_exit(EXIT_FAILURE);
+	} /* endif */
+      } /* endif "fl_fmt" */
+#endif /* !NETCDF4 */
+      if(!strcmp(opt_crr,"hdr") || !strcmp(opt_crr,"header")) hdr_pad=strtoul(optarg,(char **)NULL,10);
+      if(opt_crr != NULL) opt_crr=(char *)nco_free(opt_crr);
     } /* opt != 0 */
     switch(opt){
     case 0: /* Long options have already been processed, return */
       break;
     case '4': /* [flg] Output netCDF4/HDF storage format */
-      FL_OUT_NETCDF4_HDF=True;
+      FMT_NETCDF4=True;
       break;
     case 'a': /* Toggle ALPHABETIZE_OUTPUT */
       ALPHABETIZE_OUTPUT=!ALPHABETIZE_OUTPUT;
@@ -337,7 +364,7 @@ main(int argc,char **argv)
       EXCLUDE_INPUT_LIST=True;
       break;
     case 'Z': /* [flg] Create output file with 64-bit offsets */
-      FORCE_64BIT_OFFSET=True;
+      FMT_64BIT=True;
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
@@ -486,7 +513,7 @@ main(int argc,char **argv)
     int out_id;  
     
     /* Open output file */
-    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FORCE_64BIT_OFFSET,&out_id);
+    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FMT_64BIT,&out_id);
     
     /* Copy global attributes */
     (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
@@ -508,7 +535,12 @@ main(int argc,char **argv)
     rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
   
     /* Take output file out of define mode */
-    (void)nco_enddef(out_id);
+    if(hdr_pad == 0UL){
+      (void)nco_enddef(out_id);
+    }else{
+      (void)nco__enddef(out_id,hdr_pad);
+      if(dbg_lvl > 1) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes \n",prg_nm_get(),(unsigned long)hdr_pad);
+    } /* hdr_pad */
     
     /* [fnc] Open unformatted binary data file for writing */
     if(NCO_BNR_WRT) fp_bnr=nco_bnr_open(fl_bnr);

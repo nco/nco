@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.567 2005-08-15 01:48:01 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.568 2005-08-15 05:12:08 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -308,6 +308,10 @@ nco560. Change FTP access script to facilitate mget *?
 	END
 nco562. ncatted extra header space option to alleviate Keith Dixon's woes
         nc_enddef(ncid) is equivalent to nc__enddef(ncid, 0, 4, 0, 4).
+        ncks -O ~/nco/data/in.nc ~/foo.nc
+        ls -l ~/foo.nc
+        ncks -O --hdr=1000 ~/nco/data/in.nc ~/foo.nc
+        ls -l ~/foo.nc
 nco563. Implement -4 switch to use netCDF4/HDF output format
 nco564. Implement -Z switch in ncatted
 nco565. bm: Add ncatted bm to quantify nc__create() tuning improvements
@@ -317,7 +321,9 @@ nco568. bm: test NC_SHARE in ncatted/ncrename?
 nco569. bm: Add SRB test
 nco570. Merge ncatted/ncrename file opens into nco_fl_out_open()
 nco571. ncbo fix double-free() caused by ncap_var_cnf_dmn() (related to TODO 550)
-nco572. 
+nco572. document ncks --hdr/--header option at http://nco.sf.net/nco.html#hdr
+nco573. Consolidate -4, -Z into one option a la ncks --fl_fmt
+nco574. 
 
 MPI:
 Archive MPI tests which appear to run correctly 

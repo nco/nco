@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.62 2005-08-15 01:48:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.63 2005-08-15 05:12:09 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -932,7 +932,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 (const char * const fl_out, /* I [sng] Name of file to open */
  const bool FORCE_APPEND, /* I [flg] Append to existing file, if any */
  const bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
- const bool FORCE_64BIT_OFFSET, /* I [flg] Create output file with 64-bit offsets */
+ const bool FMT_64BIT, /* I [flg] Create output file with 64-bit offsets */
  int * const out_id) /* O [id] File ID */
 {
   /* Purpose: Open output file subject to availability and user input 
@@ -1026,7 +1026,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 
   if(FORCE_OVERWRITE){
     /* Default create mode creates 32-bit offset (classic) file */
-    if(FORCE_64BIT_OFFSET) nccreate_mode|=NC_64BIT_OFFSET;
+    if(FMT_64BIT) nccreate_mode|=NC_64BIT_OFFSET;
     rcd=nco_create(fl_out_tmp,nccreate_mode,out_id);
     /*    rcd=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
     return fl_out_tmp;
@@ -1104,7 +1104,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     case 'O':
     case 'o':
       /* Default create mode creates 32-bit offset (classic) file */
-      if(FORCE_64BIT_OFFSET) nccreate_mode|=NC_64BIT_OFFSET;
+      if(FMT_64BIT) nccreate_mode|=NC_64BIT_OFFSET;
       rcd=nco_create(fl_out_tmp,nccreate_mode,out_id);
       /*    rcd=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
       break;
@@ -1120,7 +1120,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     
   }else{ /* Output file does not yet already exist */
     nccreate_mode=NC_NOCLOBBER;
-    if(FORCE_64BIT_OFFSET) nccreate_mode|=NC_64BIT_OFFSET;
+    if(FMT_64BIT) nccreate_mode|=NC_64BIT_OFFSET;
     rcd=nco_create(fl_out_tmp,nccreate_mode,out_id);
     /*    rcd=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
   } /* end if output file does not already exist */

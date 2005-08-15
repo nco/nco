@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.81 2005-08-15 01:48:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.82 2005-08-15 05:12:09 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -127,7 +127,7 @@ main(int argc,char **argv)
 
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  bool FORCE_64BIT_OFFSET=False; /* Option Z */
+  bool FMT_64BIT=False; /* Option Z */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
   bool HISTORY_APPEND=True; /* Option h */
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.81 2005-08-15 01:48:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.81 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.82 2005-08-15 05:12:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.82 $";
   const char * const opt_sht_lst="4Aa:D:hl:Oo:p:RrZ-:";
   
   extern char *optarg;
@@ -233,7 +233,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_SUCCESS);
       break;
     case 'Z': /* [flg] Create output file with 64-bit offsets */
-      FORCE_64BIT_OFFSET=True;
+      FMT_64BIT=True;
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();

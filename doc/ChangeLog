@@ -1,3 +1,11 @@
+2005-08-14  Charlie Zender  <zender@uci.edu>
+
+	* Implement --hdr/--header options to ncks with nco__enddef()
+
+	* Add hooks for output file-mode specification to ncks.c
+	This may break compatibility with netCDF nersion 3.5.x and hence OPeNDAP
+	Currently shrouded by #ifdef NETCDF4 tokens
+	
 2005-08-13  Charlie Zender  <zender@uci.edu>
 
 	* Finished ncbo heart transplant: Symmetric subtraction still not working
@@ -15,7 +23,7 @@
 
 	* Implement -Z/--64-bit-offset switch in ncatted and ncrename
 
-	* Deprecate ctime_r() code ncatted, put it (deprecated) into ncra
+	* Deprecate ctime_r() code from ncatted, put it (deprecated) into ncra
 
 	* Add -4, --hdf, --netcdf4 switches to request HDF storage format
 

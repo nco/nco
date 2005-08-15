@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.24 2005-06-30 18:34:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.25 2005-08-15 05:12:09 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -27,7 +27,8 @@ extern "C" {
 #endif /* __cplusplus */
 
 /* Definitions */
-/* nco_fl_typ provides hooks for accessing non-netCDF files with nco_* routines */
+/* nco_fl_typ provides hooks for accessing non-netCDF files with nco_* routines
+   fxm: deprecate this in favor of new netCDF4 formats */
 enum nco_fl_typ{ /* [enm] File type */
   nco_fl_typ_nc, /* 0, netCDF file */
   nco_fl_typ_hd5 /* 1, HDF5 file */
@@ -74,6 +75,7 @@ int nco_open(const char * const fl_nm,const int mode,int * const nc_id);
 int nco_redef(const int nc_id);
 int nco_set_fill(const int nc_id,const int fill_mode,int * const old_mode);
 int nco_enddef(const int nc_id);
+int nco__enddef(const int nc_id,const size_t hdr_pad);
 int nco_sync(const int nc_id);
 int nco_abort(const int nc_id);
 int nco_close(const int nc_id);
