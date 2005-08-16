@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.568 2005-08-15 05:12:08 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.569 2005-08-16 17:35:28 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -57,60 +57,54 @@ nco92. ncrcat -O -v base_time,time_offset arm.cdf arm.cdf foo.nc;ncks -H -C -h f
 nco99. Allow ncatted to dump file in ncatted format
 nco103. Implement trapezoidal rule option in ncra, ncea
 nco104. Investigate/Document reliability of -A operator when appending from large rank variables to small rank files. Add error message when variables are same size but one has a degenerate dimension.
-In general, adding large rank variable to small rank file does work, e.g.,
-ncks -C -O -v one_dmn_rec_var in.nc foo.nc
-ncks -C -A -v three_dmn_rec_var in.nc foo.nc
-ncdump foo.nc
+        In general, adding large rank variable to small rank file does work, e.g.,
+        ncks -C -O -v one_dmn_rec_var in.nc foo.nc
+        ncks -C -A -v three_dmn_rec_var in.nc foo.nc
+        ncdump foo.nc
 nco105. Add easy-to-read tabular display option for file contents for ncks, i.e, allow ncks -s to print multiple variables in column format
 nco106. Add switch to keep degenerate dimensions with ncwa, remove them from ncra
 nco111. Investigate whether using ncwa to average files where variables of type 
-NC_CHAR have a record dimension causes core dumps or other problems.
-i.e., LSM variable timecom caused subtle ncra problems for a while.
-Problem caused when weight or mask has dimension not in dimension extraction list
-ncwa -O -C -D 5 -v fl_nm -w gw ~/nco/data/in.nc ~/foo.nc
-fails because fl_nm has dimension char_dmn_lng but gw has dimension lat
-call to nco_var_fll() for gw requires that lat be in dmn_lst
+        NC_CHAR have a record dimension causes core dumps or other problems.
+        i.e., LSM variable timecom caused subtle ncra problems for a while.
+        Problem caused when weight or mask has dimension not in dimension extraction list
+        ncwa -O -C -D 5 -v fl_nm -w gw ~/nco/data/in.nc ~/foo.nc
+        fails because fl_nm has dimension char_dmn_lng but gw has dimension lat
+        call to nco_var_fll() for gw requires that lat be in dmn_lst
 nco113. Rethink normalization switch options in ncwa
 nco114. Fix nco_var_cnf_dmn() so that returned weight always has same size tally array as template variable
 nco115. SIGFPE when sum of denominator in ncwa (i.e., sum of weight) is zero
-Users should not be doing weighted averages if denominator sums to zero, but...
-Desired fix here is a graceful exit instead of core dump
+        Users should not be doing weighted averages if denominator sums to zero, but...
+        Desired fix here is graceful exit instead of core dump
 nco123. Add HTTP protocol to fl_get() (independent of DAP)
 nco127. Make mss: signal retrieval from NCAR mass store
-nco134. Problem on CRAY with ncra test #2, averaging float whose
-missing value is double:
-ncra -O -C -v rec_var_flt_mss_val_dbl in.nc foo.nc;ncks -H foo.nc
-ncra -O -C -d time,0,1 -v rec_var_flt_mss_val_dbl in.nc foo.nc ; ncks -H foo.nc
-Not too worried about this since it is Cray specific, 
-Maybe 1.0e36d does not convert to 1.0e36f on Crays?
 nco143. Add -W or -q switch to turn off squelch most warning messages in ncra, ncrcat (especially warnings about non-monotonicity)
 nco144. Add option(s) to select all N-D variables where N=0,1,2...
 nco145. Talk to Brian and implement latest netCDF and CF conventions, e.g., time_op
 nco146. Allow proxies for coordinate variables so that, e.g., hyperslabs
-may be specified for "date" even though "time" is the coordinate. 
-Proxies must be one dimensional and monotonic, of course.
+        may be specified for "date" even though "time" is the coordinate. 
+        Proxies must be one dimensional and monotonic, of course.
 nco147. Use builtin mkstemp() so file is built in fast directory rather than, say, NFS-mounted directory like /fs/cgd  
 nco148. Put in more useful error diagnostics for Schweitzer's data holes
-These only appear in ncra/ncrcat because ncks treats same hyperslab as a wrap!
-Must define a consistent convention here
-cd ~/nco/data
-ncks -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
-ncrcat -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
+        These only appear in ncra/ncrcat because ncks treats same hyperslab as a wrap!
+        Must define a consistent convention here
+        cd ~/nco/data
+        ncks -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
+        ncrcat -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
 nco149. Add ncks hyperslab tests to nco_tst.pl to catch inconsistencies like #148
 nco151. Dynamically modify web pages so files with changing version numbers can be directly linked
 nco154. Add mirror capability to web pages
 nco158. Add policy for hyperslabbing single level values to User's Guide
-Multi-file operators with record coordinate
-treat single point hyperslabs differently than single file operators 
-or than any operators with single point cuts on non-record coordinates.
-See explanatory notes in nco_lmt_evl().
+        Multi-file operators with record coordinate
+        treat single point hyperslabs differently than single file operators 
+        or than any operators with single point cuts on non-record coordinates.
+        See explanatory notes in nco_lmt_evl().
 nco159. Add capability to handle superfluous intermediate files to ncra,
-ncrcat when lmt_typ = dim_idx.
-This would allow these multifile operators to handle hyperslabs where,
-for example, every other file was not needed. This capability is already
-implemented for lmt_typ = crd_val. 
-This is an issue only when stride is non-unity.
-Does multislabbing algorithm fix this?
+        ncrcat when lmt_typ = dim_idx.
+        This would allow these multifile operators to handle hyperslabs where,
+        for example, every other file was not needed. This capability is already
+        implemented for lmt_typ = crd_val. 
+        This is an issue only when stride is non-unity.
+        Does multislabbing algorithm fix this?
 nco162. Add GiNaC (Computer Algebra System) support to ncap www.ginac.de (maybe?)
 nco166. Document 'make test' so people know it exists and use it
 nco173. Add switch to ncra which allows user to remove degenerate time dimension from result
@@ -126,7 +120,7 @@ nco192. ncdiff will sometimes subtract files of incommensurate sizes without com
         ncks -O -v one_dmn_rec_var -d time,0,2 in.nc foo2.nc
         ncdiff -O foo1.nc foo2.nc foo3.nc
         This may make sense, e.g., for 1-D record variables of different lengths, but not for multidimensional variables
-Former case should print warning, latter case should exit with error
+        Former case should print warning, latter case should exit with error
 nco193. Convert dimension sizes from type "long int" to type "size_t"?
 nco195. Itanium builds!
 nco199. Internationalize (i18n) NCO with gettext()
@@ -314,7 +308,7 @@ nco562. ncatted extra header space option to alleviate Keith Dixon's woes
         ls -l ~/foo.nc
 nco563. Implement -4 switch to use netCDF4/HDF output format
 nco564. Implement -Z switch in ncatted
-nco565. bm: Add ncatted bm to quantify nc__create() tuning improvements
+nco565. bm: Add ncatted bm to quantify nc__enddef() tuning improvements
 nco566. Implement -Z switch in ncrename
 nco567. Add option to turn off default-creation of .tmp file?
 nco568. bm: test NC_SHARE in ncatted/ncrename?
@@ -323,7 +317,12 @@ nco570. Merge ncatted/ncrename file opens into nco_fl_out_open()
 nco571. ncbo fix double-free() caused by ncap_var_cnf_dmn() (related to TODO 550)
 nco572. document ncks --hdr/--header option at http://nco.sf.net/nco.html#hdr
 nco573. Consolidate -4, -Z into one option a la ncks --fl_fmt
-nco574. 
+nco574. Find why ncrcat spends time in nco_var_add_tll_ncra():
+        $ opreport -l /usr/local/bin/ncrcat
+          samples  %        symbol name
+          1535815  54.5255  nco_var_add_tll_ncra
+          746694   26.5096  swapn4b
+nco575. 
 
 MPI:
 Archive MPI tests which appear to run correctly 
@@ -358,6 +357,8 @@ valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgri
 valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncap -O -S ${HOME}/nco/data/ncap.in -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 10. ncea
 valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncea -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -v one_dmn_rec_var_sng -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc foo.nc > ~/foo 2>&1
+11. ncrcat
+valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncrcat -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -v one_dmn_rec_var_sng -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc foo.nc > ~/foo 2>&1
 
 ncap-specific items:
 ncap07. Combine binary operations into binary_op_var_var and binary_op_var_att types to reduce number of functions

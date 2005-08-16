@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.33 2005-07-01 05:33:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.34 2005-08-16 17:35:29 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -96,8 +96,8 @@ nco_var_add /* [fnc] Add first operand to second operand */
   /* Purpose: Add value of first operand to value of second operand 
      and store result in second operand. 
      Assume operands conform, are same type, and are in memory
-     nco_var_add() does not increment a tally counter
-     nco_var_add_tll_ncra() does increment a tally counter */
+     nco_var_add() does _not_ increment tally counter
+     nco_var_add_tll_ncra() does increment tally counter */
 
   /* Addition is currently defined as op2:=op1+op2 */
 
@@ -176,8 +176,8 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
   /* Purpose: Add value of first operand to value of second operand 
      and store result in second operand. 
      Assume operands conform, are same type, and are in memory
-     nco_var_add() does not increment a tally counter
-     nco_var_add_tll_ncflint() does increment a tally counter */
+     nco_var_add() does _not_ increment tally counter
+     nco_var_add_tll_ncflint() does increment tally counter */
 
   /* Addition is currently defined as op2:=op1+op2 */
 
@@ -369,8 +369,8 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
   /* Purpose: Add value of first operand to value of second operand 
      and store result in second operand. 
      Assume operands conform, are same type, and are in memory
-     nco_var_add() adds if neither operand equals missing_value
-     nco_var_add() does not increment tally counter.
+     nco_var_add() adds to tally if neither operand equals missing_value
+     nco_var_add() does _not_ increment tally counter.
      nco_var_add_tll_ncflint() adds if neither operand equals missing value
      nco_var_add_tll_ncflint() does increment tally counter (unlike nco_var_add())
      nco_var_add_tll_ncra() adds if op1 does not equal missing value
@@ -383,16 +383,16 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
         Note that missing_value is associated with op1, i.e., new record, not running sum
      5. Accumulate running sum only if new record is valid
      6. Increment tally
-  The only difference between nco_var_add_tll_ncra() and nco_var_add_tll_ncflint() is that 
+  Difference between nco_var_add_tll_ncra() and nco_var_add_tll_ncflint() is that
   nco_var_add_tll_ncflint() checks both operands against the missing_value, whereas 
-  nco_var_add_tll_ncra() checks only the first operand (the new record) against the missing_value
-  The nco_var_add_tll_ncflint() algorithm fails as a running average algorithm when
-  the missing value is zero because the running sum is bootstrapped to zero which 
-  causes the comparison to missing_value to always be true.
-  nco_var_add_tll_ncflint() also fails as a running average algorithm whenever the
-  running sum happens to equal the missing_value (regardless if the missing value is zero).
+  nco_var_add_tll_ncra() only checks first operand (new record) against missing_value
+  nco_var_add_tll_ncflint() algorithm fails as running average algorithm when
+  missing value is zero because running sum is bootstrapped to zero and this
+  causes comparison to missing_value to always be true.
+  nco_var_add_tll_ncflint() also fails as running average algorithm whenever
+  running sum happens to equal missing_value (regardless if missing value is zero).
   NCO uses nco_var_add_tll_ncflint() only for ncflint
-  NCO uses nco_var_add_tll_ncra() only for ncra */
+  NCO uses nco_var_add_tll_ncra() only for ncra/ncea */
 
   /* Addition is currently defined as op2:=op1+op2 */
 
