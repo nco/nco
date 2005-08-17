@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.297 2005-08-03 18:12:28 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.298 2005-08-17 12:02:21 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -48,7 +48,7 @@ Try to disable Spammers' machines:
 </td>
 
 <td align="right" valign="top">
-[<a href="http://www.cgd.ucar.edu/csm/support">CCSM Support Network</a>]
+[<a href="http://www.ncl.ucar.edu">NCL</a>]
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 
@@ -123,9 +123,8 @@ Operators, or NCO, are a suite of programs known as <b>operators</b>.
 Each operator is a standalone, command line program which is executed at
 the UNIX shell-level like, e.g., <tt>ls</tt> or <tt>mkdir</tt>.
 The operators take <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> 
-or <a href="http://hdf.ncsa.uiuc.edu">HDF4</a> files as input, then
-perform a set of operations (e.g., deriving new data, averaging, 
-hyperslabbing, or metadata manipulation) and produce a 
+files as input, then perform a set of operations (e.g., deriving new
+data, averaging, hyperslabbing, or metadata manipulation) and produce a 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> file
 as output. 
 The operators are primarily designed to aid manipulation and analysis of
@@ -133,29 +132,8 @@ gridded scientific data.
 The single command style of NCO allows users to manipulate and analyze
 files interactively and with simple scripts, avoiding the overhead
 (and some of the power) of a higher level programming environment. 
-The <a href="./nco.html">NCO User's Guide</a> 
-illustrates their use with examples from the field of climate modeling
-and analysis.</p> 
-
-<p>The operators are as general as 
-<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
-itself: there are no restrictions on the contents of the 
-<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> or 
-<a href="http://hdf.ncsa.uiuc.edu">HDF4</a> file(s) used as input. 
-The internal routines of NCO are completely dynamic which means that
-NCO imposes no limit on the number or sizes of dimensions, variables,
-and files.
-NCO is designed to be used both interactively and with large batch jobs.
-The default operator behavior is often sufficient for everyday needs, 
-and there are numerous command line (i.e., run-time) options, for
-special cases.
-NCO works well on all modern operating systems, including:
-Apple OS&nbsp;X, *BSD, Cray UNICOS, DEC Tru64, IBM AIX, HPUX,
-Linux, Microsoft Windows, NEC Super&nbsp;UX, SGI IRIX, and Sun
-Solaris.   
-
-The following operators are thoroughly described in the 
-<a href="./nco.html">NCO User's Guide</a>. 
+The <a href="./nco.html">NCO User's Guide</a> illustrates their use
+with examples from the field of climate modeling and analysis.
 Note that the <a href="./nco.html#averagers">&ldquo;averagers&rdquo;</a> 
 are misnamed because they perform many non-linear operations as well,
 e.g., total, minimum, maximum, RMS: 
@@ -173,6 +151,23 @@ e.g., total, minimum, maximum, RMS:
 <li><a href="./nco.html#ncrename"><b>ncrename</b></a> netCDF Renamer</li>
 <li><a href="./nco.html#ncwa"><b>ncwa</b></a></td> netCDF Weighted Averager</li>
 </ul>
+
+<p>The operators are as general as 
+<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
+itself: there are no restrictions on the contents of the 
+<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
+file(s) used as input.
+NCO's internal routines are completely dynamic and impose no limit on
+the number or sizes of dimensions, variables, and files.
+NCO is designed to be used both interactively and with large batch jobs.
+The default operator behavior is often sufficient for everyday needs, 
+and there are numerous command line (i.e., run-time) options, for
+special cases.
+NCO works well on all modern operating systems, including:
+Apple OS&nbsp;X, *BSD, Cray UNICOS, DEC Tru64, IBM AIX, HPUX,
+Linux, Microsoft Windows, NEC Super&nbsp;UX, SGI IRIX, and Sun
+Solaris.</p>
+
 <p><hr width="100%"></p>
 
 <!-- http://nco.sf.net#Contribute -->
@@ -205,7 +200,7 @@ pay-per-feature basis.
 </form>
 These homepage donation counters track the influence of your monetary
 donations on NCO development: 
-<dt>Donations received between 20030624 and 20040807: US$10.00.</dt>
+<dt>Donations received between 20030624 and 20040815: US$10.00.</dt>
 <dt>NCO features "incentivized" by these donations: None.</dt>
 <hr></p>
 
@@ -305,46 +300,46 @@ Instead, retrieve all recently tagged versions
 <a name="#Download">with CVS</a> or from    
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO/SDO 3.1.x</b>: (<i>In progress, development branch</i>) MPI versions of all operators, <tt>ncap</tt> control structures (conditionals, loops, etc.)
-<li><b>NCO 3.0.2</b>: (<i>In progress, stable branch</i>) only one critical region left, all known memory leaks plugged, MPI operators <tt>mpncflint</tt>, <tt>mpncecat</tt>, <tt>mpncpdq</tt>, <tt>mpncra</tt>, <tt>mpncwa</tt>, <tt>mpncea</tt>, <tt>mpncrcat</tt>, update Intel compiler support, <tt>sftp</tt> protocol support, FTP file access supports <tt>.netrc</tt>, add variables to grid property exception list
-  <li><b>NCO 3.0.1</b>: benchmarks, <tt>ncks</tt> printing tweaks, memory cleanup, <tt>ncap</tt> double-parse speedup and <a href="bug_ncap_cmt">exponentiation bugfix</a>, thread operators by default
-<li><b>NCO 3.0.0</b>: New <tt>ncks -P</tt> print switch, <tt>ncap</tt> optimizations, <tt>-Z</tt> option supports 64-bit offsets (requires netCDF&nbsp;3.6), NEC&nbsp;SX build improvements, support GCC&nbsp;3.4.X, <tt>nco_put_vara()</tt> overloads in <tt>libnco_c++</tt>
-<li><b>NCO 2.9.9</b>: <tt>ncpdq</tt> packs/unpacks entire files, <tt>ncbo</tt> is threaded
-<li><b>NCO 2.9.8</b>: <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released, <tt>ncwa --msk_sng</tt> consolidated mask switch, C99 compiler required
-<li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>, write <tt>nco_input_file_list</tt> attributes, add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++, large file support (LFS), write <tt>nco_openmp_thread_number</tt> attribute
-<li><b>NCO 2.9.6</b>: Support <tt>-o fl_out</tt> syntax, 64-bit ABI for x86_64, <a href="http://www.debian.org">Debian</a> builds libnco_c++
+<li><b>NCO/SDO 3.1.x</b>: (<i>In progress, development branch</i>) MPI operators <tt>mpncflint</tt>, <tt>mpncecat</tt>, <tt>mpncpdq</tt>, <tt>mpncra</tt>, <tt>mpncwa</tt>, <tt>mpncea</tt>, <tt>mpncrcat</tt>; <tt>ncap</tt> control structures (conditionals, loops, etc.)
+<li><b>NCO 3.0.2</b>: (<i>In progress, stable branch</i>) Fewer critical regions; all known memory leaks plugged; better Intel compiler support; <tt>sftp</tt> protocol support; FTP file access supports <tt>.netrc</tt>; more grid property awareness (e.g., <tt>lat_bnds</tt>); <tt>ncatted</tt>, <tt>ncks</tt>, <tt>ncrename</tt> support metadata header padding with <tt>--hdr</tt>
+<li><b>NCO 3.0.1</b>: benchmarks; <tt>ncks</tt> printing tweaks; memory cleanup; <tt>ncap</tt> double-parse speedup and <a href="bug_ncap_cmt">exponentiation bugfix</a>; thread operators by default
+<li><b>NCO 3.0.0</b>: New <tt>ncks -P</tt> print switch; <tt>ncap</tt> optimizations; <tt>-Z</tt> option supports 64-bit offsets (requires netCDF&nbsp;3.6); NEC&nbsp;SX build improvements; support GCC&nbsp;3.4.X; <tt>nco_put_vara()</tt> overloads in <tt>libnco_c++</tt>
+<li><b>NCO 2.9.9</b>: <tt>ncpdq</tt> packs/unpacks entire files; <tt>ncbo</tt> is threaded
+<li><b>NCO 2.9.8</b>: <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released; <tt>ncwa --msk_sng</tt> consolidated mask switch; C99 compiler required
+<li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>; write <tt>nco_input_file_list</tt> attributes; add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++; large file support (LFS); write <tt>nco_openmp_thread_number</tt> attribute
+<li><b>NCO 2.9.6</b>: Support <tt>-o fl_out</tt> syntax; 64-bit ABI for x86_64; <a href="http://www.debian.org">Debian</a> builds libnco_c++
 <li><b>NCO 2.9.5</b>: <tt>ncflint</tt> handles <tt>missing_value</tt> data better, is commutative when weights are equal
-<li><b>NCO 2.9.4</b>: <tt>ncecat</tt> works on pure scalar files, change to <tt>cvs.sf.net</tt>, AIX GCC builds
+<li><b>NCO 2.9.4</b>: <tt>ncecat</tt> works on pure scalar files; change to <tt>cvs.sf.net</tt>; AIX GCC builds
 <li><b>NCO 2.9.3</b>: <tt>ncra</tt> and <tt>ncea</tt> now <a name="bug_mss_val_zro_ncra">work correctly</a> when <tt>missing_value</tt> equals zero or any intermediate sums
 <li><b>NCO 2.9.2</b>: <tt>ncap</tt> <tt>S/V</tt>, <tt>S%V</tt>, and <tt>S^V</tt> <a href="#bug_ncap_cmt">operations fixed</a> (<tt>S</tt> = scalar, <tt>V</tt> = variable)
-<li><b>NCO 2.9.1</b>: <tt>ncwa</tt> works again on packed <tt>NC_FLOAT</tt> data (<a href="#bug_pck_ncwa">broke when?</a>),
-<li><b>NCO 2.9.0</b>: Complete <tt>ncap</tt> modulo operator (<tt>V%S</tt>) and generic exponentiation (<tt>V^S</tt>), scalar divided by variable (<tt>S/V</tt>), workaround stack memory problem with GCC extensions, fix <tt>make check</tt>
+<li><b>NCO 2.9.1</b>: <tt>ncwa</tt> works again on packed <tt>NC_FLOAT</tt> data (<a href="#bug_pck_ncwa">broke when?</a>)
+<li><b>NCO 2.9.0</b>: Complete <tt>ncap</tt> modulo operator (<tt>V%S</tt>) and generic exponentiation (<tt>V^S</tt>), scalar divided by variable (<tt>S/V</tt>); workaround stack memory problem with GCC extensions; fix <tt>make check</tt>
 <li><b>NCO 2.8.8</b>: <tt>--enable-[optimize/debug]-custom</tt> options for GCC work again (broke in 2.8.6)
-<li><b>NCO 2.8.7</b>: <tt>ncap</tt> packing works again (<a href="#bug_pck">broke in 2.8.4</a>), Cygwin builds work again
-<li><b>NCO 2.8.6</b>: AIX and IRIX builds work again, custom GCC builds with <tt>-Werror</tt>
-<li><b>NCO 2.8.5</b>: Solaris <tt>make install</tt> works, <tt>ncap</tt> changes attribute values correctly, <a href="#bld_DODS">Support DODS 3.4+, deprecate 3.3-</a>, add <tt>--enable-[optimize/debug]-custom</tt> options to <tt>./configure</tt>
-<li><b>NCO 2.8.4</b>: Index-based hyperslabs work again (<a href="#bug_idx_hyp">broke in 2.7.3</a>, <b><i>upgrade highly recommended</i></b>), <tt>ncap</tt> peak memory usage reduced still more, support for AMD Opteron x86-64 architecture
-<li><b>NCO 2.8.3</b>: Fix big <tt>ncap</tt> memory leak, fix regressions, remove scary packing warnings</li>
-<li><b>NCO 2.8.2</b>: <tt>ncbo</tt> handles distinct <tt>missing_value</tt>s correctly, improve error diagnostics</li>
+<li><b>NCO 2.8.7</b>: <tt>ncap</tt> packing works again (<a href="#bug_pck">broke in 2.8.4</a>); Cygwin builds work again
+<li><b>NCO 2.8.6</b>: AIX and IRIX builds work again; custom GCC builds with <tt>-Werror</tt>
+<li><b>NCO 2.8.5</b>: Solaris <tt>make install</tt> works; <tt>ncap</tt> changes attribute values correctly; <a href="#bld_DODS">Support DODS 3.4+, deprecate 3.3-</a>; add <tt>--enable-[optimize/debug]-custom</tt> options to <tt>./configure</tt>
+<li><b>NCO 2.8.4</b>: Index-based hyperslabs work again (<a href="#bug_idx_hyp">broke in 2.7.3</a>, <b><i>upgrade highly recommended</i></b>); <tt>ncap</tt> peak memory usage reduced still more; support for AMD Opteron x86_64 architecture
+<li><b>NCO 2.8.3</b>: Fix big <tt>ncap</tt> memory leak; fix regressions; remove scary packing warnings</li>
+<li><b>NCO 2.8.2</b>: <tt>ncbo</tt> handles distinct <tt>missing_value</tt>s correctly; improve error diagnostics</li>
 <li><b>NCO 2.8.1</b>: <a href="./nco.html#rx">&ldquo;Variable wildcarding&rdquo;</a>&mdash;extended regular expressions in <tt>-v var,...</tt> lists&mdash;support in all operators</li>
-<li><b>NCO 2.8.0</b>: New &ldquo;binary&rdquo; operator <a href="./nco.html#ncbo"><tt>ncbo</tt></a>, obsoletes <tt>ncdiff</tt>, <a href="http://www.debian.org">Debian</a> integration</li>
-<li><b>NCO 2.7.4</b>: Autotools build support for AIX, fix UDUnits confusion with floating point hyperslab specifications</li>
+<li><b>NCO 2.8.0</b>: New &ldquo;binary&rdquo; operator <a href="./nco.html#ncbo"><tt>ncbo</tt></a>, obsoletes <tt>ncdiff</tt>; <a href="http://www.debian.org">Debian</a> integration</li>
+<li><b>NCO 2.7.4</b>: Autotools build support for AIX; fix UDUnits confusion with floating point hyperslab specifications</li>
 <li><b>NCO 2.7.3</b>: Support <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (and some <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-working.html">CF</a>) conventions, e.g., <tt>ncks -d wvl "1 picometer","1 furlong" -d time,"2001-03-19 06:00:0.0","2001-03-19 18:00:0.0"</tt></li>
 <li><b>NCO 2.7.2</b>: Printing (<tt>ncks -H</tt>) plays well with multi-slabbing</li>
-<li><b>NCO 2.7.1</b>: (Packaged) Fallback to B.&nbsp;Sittler's <tt>getopt()</tt> for long option support. Store fixed, packed variables correctly with <tt>ncap</tt>.</li>
-<li><b>NCO 2.7.0</b>: Support for GNU/POSIX long options, <tt>ncks</tt> introduces <i>multi-slabbing</i> (= multiple hyperslabs) capability</li>
-<li><b>NCO 2.6.6</b>: Fix and document <tt>ncrename</tt> attribute renaming, add type conversion functions to <tt>ncap</tt></li>
+<li><b>NCO 2.7.1</b>: (Packaged) Fallback to B.&nbsp;Sittler's <tt>getopt()</tt> for long option support; store fixed, packed variables correctly with <tt>ncap</tt>.</li>
+<li><b>NCO 2.7.0</b>: Support for GNU/POSIX long options; <tt>ncks</tt> introduces <i>multi-slabbing</i> (= multiple hyperslabs) capability</li>
+<li><b>NCO 2.6.6</b>: Fix and document <tt>ncrename</tt> attribute renaming; add type conversion functions to <tt>ncap</tt></li>
 <li><b>NCO 2.6.5</b>: Cray, Sun build improvements</li>
-<li><b>NCO 2.6.4</b>: Mac OS X, NEC, SGI build improvements</li>
-<li><b>NCO 2.6.3</b>: Mac OS X builds work seamlessly, documentation fixed</li>
-<li><b>NCO 2.6.2</b>: Major improvements in autotools support, <tt>ncap</tt> supports user-defined dimensions</li>
+<li><b>NCO 2.6.4</b>: Mac OS&nbsp;X, NEC, SGI build improvements</li>
+<li><b>NCO 2.6.3</b>: Mac OS&nbsp;X builds work seamlessly; documentation fixed</li>
+<li><b>NCO 2.6.2</b>: Major improvements in autotools support; <tt>ncap</tt> supports user-defined dimensions</li>
 <li><b>NCO 2.6.1</b>: Minor fix to unpacking support</li>
 <li><b>NCO 2.6.0</b>: All arithmetic operators (<tt>ncap</tt>, <tt>ncdiff</tt>, <tt>ncea</tt>, <tt>ncflint</tt>, <tt>ncra</tt>) support unpacking</li>
 <li><b>NCO 2.5.6</b>: Handle <tt>missing_value</tt> correctly for integer variables in <tt>ncra</tt>, merge <tt>autoconf</tt> build</li>
 <li><b>NCO 2.5.5</b>: Handle files without existing global &ldquo;<tt>History</tt>&rdquo; attribute correctly</li>
-<li><b>NCO 2.5.4</b>: Add support NEC-SX support, update Cray support, small build changes</li>
-<li><b>NCO 2.5.3</b>: Fix native builds under MS Windows with Cygwin <tt>ncap</tt>, hint to <tt>ncwa</tt></li>
-<li><b>NCO 2.5.2</b>: Add math functions to <tt>ncap</tt>, hint to <tt>ncwa</tt></li>
+<li><b>NCO 2.5.4</b>: Add support NEC-SX support; update Cray support; small build changes</li>
+<li><b>NCO 2.5.3</b>: Fix native builds under MS Windows with Cygwin <tt>ncap</tt>; hint to <tt>ncwa</tt></li>
+<li><b>NCO 2.5.2</b>: Add math functions to <tt>ncap</tt>; hint to <tt>ncwa</tt></li>
 <li><b>NCO 2.5.1</b>: <tt>ncatted</tt> deletes all attributes of <tt>att_var</tt> when <tt>att_nm</tt> not specified</li>
 <li><b>NCO 2.5.0</b>: man(1) pages from <a href="http://www.debian.org">Debian</a> distribution</li>
 <li><b>NCO 2.4.6</b>: Free (speech) sort routines</li>
@@ -361,17 +356,17 @@ Instead, retrieve all recently tagged versions
 <li><b>NCO 2.2.1</b>: fix <tt>ncap</tt> divide and <tt>fmodf</tt> bugs</li>
 <li><b>NCO 2.2.0</b>: (RPM available) <a href="./nco_news.shtml#20020203">20020203</a>: <tt>ncap</tt> public debut (has division error, please upgrade)</li>
 <li><b>NCO 2.1.3</b>: <tt>ncap</tt> implements LHS casting</li>
-<li><b>NCO 2.1.2</b>: C++ API to netcdf, libnco_c++ open for business</li>
+<li><b>NCO 2.1.2</b>: C++ API to netcdf; libnco_c++ open for business</li>
 <li><b>NCO 2.1.0</b>: <tt>ncap</tt> full lexer/parser operational</li>
 <li><b>NCO 2.0.3</b>: small fixes to 2.0.0 (e.g., <tt>ncks</tt> printing)</li>
 <li><b>NCO 2.0.2</b>: Add packing/unpacking capabilities based on <tt>scale_factor</tt> and <tt>add_offset</tt> convention</li>
 <li><b>NCO 2.0.1</b>: Add user-configurable multi-threaded capability to arithmetic-intensive operators <tt>ncwa</tt>, <tt>ncea</tt>, and <tt>ncra</tt></li>
 <li><b>NCO 2.0.0</b>: (RPM available) <a href="./nco_news.shtml#20010507">20010507</a>: Switched all internal calls to netCDF 3.x API</li>
 <li><b>NCO 1.2.2</b>: <a href="./nco_news.shtml#20010211">20010211</a>: Allow weights with
-<tt>ncwa</tt> in min/max/ttl operations, easier building with HDF4. 
+<tt>ncwa</tt> in min/max/ttl operations; easier building with HDF4. 
 <tt>ncrename</tt> can now work on specific variables rather than whole file.
 <tt>ncks</tt> has <tt>-q</tt> option for cleaner printing</li>
-<li><b>NCO 1.2.1</b>: <a href="./nco_news.shtml#20000828">20000828</a>: Added type-conversion of integers to floating point before arithmetic, fixed broken <tt>-v</tt> option</li>
+<li><b>NCO 1.2.1</b>: <a href="./nco_news.shtml#20000828">20000828</a>: Added type-conversion of integers to floating point before arithmetic; fixed broken <tt>-v</tt> option</li>
 <li><b>NCO 1.2</b>: <a href="./nco_news.shtml#20000730">20000730</a>: Added non-linear operations to <tt>ncra/ncea</tt> and <tt>ncwa</tt>: min,max,total,rms,rmssdn,sqrt. Added <a href="http://opendap.org">DODS</a> compliance.</li>
 <li><b>NCO 1.1.48</b>: <a href="./nco_news.shtml#20000515">20000515</a>: Potentially serious bugfix to <tt>ncdiff</tt>, recommend upgrade</li>
 <li><b>NCO 1.1.47</b>: <a href="./nco_news.shtml#20000510">20000510</a>: Improved <tt>ncra</tt> and <tt>ncrcat</tt> to allow lazier specifications of input files</li> 
@@ -562,9 +557,9 @@ personal home directories listed below (AIX, IRIX).
 At NCAR, first try <tt>/usr/local/bin</tt> (AIX, IRIX).
 Otherwise, you are on your own.</li>
 <li><i>Does NCAR support NCO?</i>
-The NCAR SCD Technical Consulting Group (TCG) support NCO like other
+The NCAR SCD Technical Consulting Group (TCG) supports NCO like other
 community software packages such as <tt>lapack</tt>. 
-No other NCAR division that I am aware of has coordinated NCO support.
+No other NCAR division has coordinated NCO support.
 The NCAR SCD-suported executables are in <tt>/usr/local/bin</tt>.
 If you notice problems with the NCO installation on SCD machines,
 or if you would benefit from a more recent release or patch, then
@@ -588,8 +583,8 @@ This list is for NCO-related announcements, not for questions.
 <p>Users at UC Irvine, NCAR, and SDSC <i>may</i> find pre-built,
 <i>almost</i> up-to-date NCO executables in the following locations.
 These executables are <i>unsupported</i> and are almost
-<i>guaranteed</i> to be from different NCO versions and thus to behave
-slightly differently.
+<i>guaranteed</i> to hail from different NCO versions and thus to
+behave slightly differently.
 (They are built from the main trunk, not a tagged version, and
 currently it is impossible to tell exactly what version they are). 
 Moreover they may be compiled with debugging enabled and thus may be
@@ -599,7 +594,7 @@ Users at NCAR should try the <i>supported</i> executables in
 <ul>
 <li>ESS <tt>soot.ess.uci.edu</tt> (Linux 2.6.10): <tt>/home/zender/bin/LINUX</tt></li>
 <li>ESS <tt>esmf.ess.uci.edu</tt> (AIX 5.1.0.0): <tt>/home/zender/bin/AIX</tt></li>
-<li>ESS <tt>sand.ess.uci.edu</tt> (Linux 2.6.10): <tt>/home/zender/bin/LINUXAMD64</tt></li>
+<li>ESS <tt>sand.ess.uci.edu</tt> (Linux 2.6.11): <tt>/home/zender/bin/LINUXAMD64</tt></li>
 <li>CGD network (Solaris 2.7): <tt>/home/zender/bin/SUNMP</tt></li>
 <li>SCD <tt>bluesky.ucar.edu</tt> (AIX 5.1.0.35): <tt>/usr/local/bin</tt></li>
 <li>SCD <tt>lightning.ucar.edu</tt> (???): <tt>/usr/local/bin</tt></li>
@@ -635,7 +630,7 @@ The gory details of the failed (and successful) builds are in the
 <a name="bld_chn"></a>
 <li><i>Build Chain Version Incompatibilities:</i>
 NCO requires GNU <tt>make</tt> version &ge;&nbsp;3.78.1 to support target-specific variable values in <tt>bld/Makefile</tt>.
-NCO often fails to build because <tt>ncap</tt> fails to build.
+NCO most often fails to build because <tt>ncap</tt> fails to build.
 Two of the most common reasons that <tt>ncap</tt> fails to build are
 (1)&nbsp;GNU <tt>bison</tt> is out-of-date (upgrade <tt>bison</tt>)
 and (2)&nbsp;<tt>--enable-optimize-*</tt> is specified to 
@@ -645,7 +640,7 @@ and (2)&nbsp;<tt>--enable-optimize-*</tt> is specified to
 <a name="bld_c99"></a>
 <i>C99-compliance &amp; old compilers:</i>
 NCO versions &ge;&nbsp;2.9.8 requires compilers which
-support the 1999 ISO C-Standard called C99.
+support the 1999 ISO C-Standard called&nbsp;C99.
 Currently, the only C99 feature NCO takes advantage of is restricted
 pointers. 
 To build NCO versions &ge;&nbsp;2.9.8 without a C99-compliant
@@ -671,13 +666,14 @@ support <tt>nc_type NC_NAT</tt> in NCO source code.
 <!-- http://nco.sf.net#bld_ncap -->
 <a name="bld_ncap"></a>
 <li><i><tt>ncap</tt> build problems:</i>
-<tt>ncap</tt> is a very sophisticated and fragile program.
+<tt>ncap</tt> is a very sophisticated and somewhat fragile program.
 <tt>ncap</tt> requires <tt>flex</tt> to build correctly.
 AT&T <tt>lex</tt> will not work because it does not understand
 <tt>EOF</tt> rules that <tt>ncap_lex.l</tt> uses.
-<tt>bison</tt> version 1.29 (the default version on Mac OS&nbsp;X) is
-buggy and does not parse <tt>ncap_yacc.y</tt> correctly; previous and
-later versions of <tt>bison</tt> work correctly.
+<tt>bison</tt> version 1.29 (the default version on early
+Mac OS&nbsp;X) is buggy and does not parse <tt>ncap_yacc.y</tt>
+correctly; previous and later versions of <tt>bison</tt> work
+correctly. 
 <tt>bison</tt> version 1.25 will not build <tt>ncap</tt> on Solaris.
 Please upgrade <tt>bison</tt> to the latest version (e.g., 1.875+)
 before reporting <tt>ncap</tt> build problems.
@@ -722,8 +718,8 @@ The workaround is to configure with <tt>--disable-shared</tt>.
 
 <!-- http://nco.sf.net#bld_irix -->
 <a name="bld_irix"></a>
-<li><i>Irix build problems:</i>
-The most common problem with building on Irix with SGI's
+<li><i>IRIX build problems:</i>
+The most common problem with building on IRIX with SGI's
 <tt>cc</tt>/<tt>CC</tt> is that they are not
 <a href="http://nco.sf.net#bld_c99">C99-compliant</a>.
 </li>
@@ -736,6 +732,12 @@ long as they (1)&nbsp;Install the latest version of <tt>bison</tt>,
 (2)&nbsp;Disable shared libraries and (3)&nbsp;Disable extended regular
 expressions. This is done with 
 <tt>./configure --disable-regex --disable-shared</tt>
+
+Building NCO with shared libraries on Mac OS&nbsp;X on may be possible.
+To try, first re-build and re-install the netCDF library using
+<tt>CFLAGS=-fno-common</tt>.
+Apparently netCDF, unlike most codes, does not set this automatically.
+Then build NCO normally.
 </li>
 
 <!-- http://nco.sf.net#bld_slr -->
@@ -948,7 +950,7 @@ site.</li>
 </td>
 
 <td align="right" valign="top">
-[<a href="http://www.cgd.ucar.edu/csm/support">CCSM Support Network</a>]
+[<a href="http://www.ncl.ucar.edu">NCL</a>]
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 

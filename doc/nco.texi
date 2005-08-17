@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.321 2005-08-15 01:48:01 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.322 2005-08-17 12:02:21 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -459,7 +459,7 @@ netCDF itself.
 * Availability::                
 * Compatability::               
 * Libraries::                   
-* netCDF 2.x vs. 3.x and HDF Support::  
+* netCDF2 vs. netCDF3 and HDF Support::  
 * Help and Bug reports::        
 @end menu
 
@@ -796,7 +796,7 @@ The @acronym{NCO} operators should behave identically on Windows and
 @html
 <a name="lbr"></a> <!-- http://nco.sf.net/nco.html#lbr -->
 @end html
-@node Libraries, netCDF 2.x vs. 3.x and HDF Support, Compatability, Introduction
+@node Libraries, netCDF2 vs. netCDF3 and HDF Support, Compatability, Introduction
 @section Libraries
 @cindex libraries
 @cindex @code{LD_LIBRARY_PATH}
@@ -828,60 +828,60 @@ simply need to alter your library search path.
 As a final remedy, you may re-compile and install @acronym{NCO} with all
 operators statically linked.  
 
-@node netCDF 2.x vs. 3.x and HDF Support, Help and Bug reports, Libraries, Introduction
-@section netCDF 2.x vs.@: 3.x and HDF Support
-@cindex netCDF 2.x
-@cindex netCDF 3.x
-netCDF @w{version 2.x} was released in 1993.
+@node netCDF2 vs. netCDF3 and HDF Support, Help and Bug reports, Libraries, Introduction
+@section netCDF2 vs.@: netCDF3 and HDF Support
+@cindex netCDF2
+@cindex netCDF3
+netCDF @w{version 2} was released in 1993.
 @acronym{NCO} (specifically @command{ncks}) began soon after this in 1994.  
 @w{netCDF 3.0} was released in 1996, and we were eager to reap the
 performance advantages of the newer netCDF implementation.
-One @w{netCDF 3.x} interface call (@code{nc_inq_libvers}) was added to 
+One @w{netCDF3} interface call (@code{nc_inq_libvers}) was added to 
 @acronym{NCO} in January, 1998, to aid in maintainance and debugging. 
-In March, 2001, the final conversion of @acronym{NCO} to @w{netCDF 3.x} 
+In March, 2001, the final conversion of @acronym{NCO} to @w{netCDF3} 
 was completed (coincidentally on the same day @w{netCDF 3.5} was
 released). 
 @acronym{NCO} @w{versions 2.0} and higher are built with the
-@code{-DNO_NETCDF_2} flag to ensure no @w{netCDF 2.x} interface calls  
+@code{-DNO_NETCDF_2} flag to ensure no @w{netCDF2} interface calls   
 are used.
 @cindex @code{NO_NETCDF_2}
 
 @cindex @acronym{HDF}
 @cindex Hierarchical Data Format
 @cindex Mike Folk
-However, the ability to compile @acronym{NCO} with only @w{netCDF 2.x}
+However, the ability to compile @acronym{NCO} with only @w{netCDF2}
 calls is worth maintaining because @acronym{HDF} @w{version 4}
 @footnote{The Hierarchical Data Format, or @acronym{HDF}, is another
 self-describing data format similar to, but more elaborate than,
 netCDF.} 
 (available from @uref{http://hdf.ncsa.uiuc.edu, HDF})
-supports only the @w{netCDF 2.x} library calls
+supports only the @w{netCDF2} library calls
 (see @uref{http://hdf.ncsa.uiuc.edu/UG41r3_html/SDS_SD.fm12.html#47784}).
 Note that there are multiple versions of @acronym{HDF}.
-Currently @acronym{HDF} @w{version 4.x} supports @w{netCDF 2.x} and thus 
+Currently @acronym{HDF} @w{version 4.x} supports @w{netCDF2} and thus 
 @acronym{NCO} @w{version 1.2.x}. 
 If @acronym{NCO} @w{version 1.2.x} (or earlier) is built with only
-@w{netCDF 2.x} calls then all @acronym{NCO} operators should work with 
+@w{netCDF2} calls then all @acronym{NCO} operators should work with 
 @acronym{HDF4} files as well as netCDF files
 @footnote{One must link the @acronym{NCO} code to the @acronym{HDF4}
 @acronym{MFHDF} library instead of the usual netCDF library. 
 Does @samp{MF} stands for Mike Folk?
 Perhaps. 
-In any case, the @acronym{MFHDF} library only supports @w{netCDF 2.x}
+In any case, the @acronym{MFHDF} library only supports @w{netCDF2}
 calls. 
 Thus I will try to keep this capability in @acronym{NCO} as long as it
 is not too much trouble.}.
 @cindex @code{NETCDF2_ONLY}
 The preprocessor token @code{NETCDF2_ONLY} exists
-in @acronym{NCO} @w{version 1.2.x} to eliminate all @w{netCDF 3.x}
+in @acronym{NCO} @w{version 1.2.x} to eliminate all @w{netCDF3}
 calls.  
 Only versions of @acronym{NCO} numbered 1.2.x and earlier have this
 capability. 
 The @w{@acronym{NCO} 1.2.x} branch will be maintained with bugfixes only  
 (no new features) until @acronym{HDF} begins to fully support the
-@w{netCDF 3.x} interface (which is employed by @w{@acronym{NCO} 2.x}).
+@w{netCDF3} interface (which is employed by @w{@acronym{NCO} 2.x}).
 If, at compilation time, @code{NETCDF2_ONLY} is defined, then
-@acronym{NCO} @w{version 1.2.x} will not use any @w{netCDF 3.x} calls
+@acronym{NCO} @w{version 1.2.x} will not use any @w{netCDF3} calls
 and, if linked properly, the resulting @acronym{NCO} operators will work
 with @acronym{HDF4} files.  
 @cindex @file{Makefile}
@@ -895,26 +895,25 @@ installation).
 
 @cindex Unidata
 @cindex @acronym{NCSA}
-@acronym{HDF} @w{version 5.x} became available in 1999, but did not
+@acronym{HDF} @w{version 5} became available in 1999, but did not
 support netCDF (or, for that matter, Fortran) as of December 1999.
-By early 2001, @acronym{HDF} @w{version 5.x} did support Fortran90.
-However, support for @w{netCDF 3.x} in @w{@acronym{HDF} 5.x} is
-incomplete. 
-Much of the HDF5-netCDF3 interface is complete, however, and it may be
+By early 2001, @acronym{HDF5} did support Fortran90.
+However, support for netCDF4 in @acronym{HDF5} is incomplete. 
+Much of the HDF5-netCDF interface is complete, however, and it may be
 separately downloaded from the
-@uref{http://hdf.ncsa.uiuc.edu/HDF5/papers/netcdfh5.html,HDF5-netCDF}
+@uref{http://my.unidata.ucar.edu/content/software/netcdf/netcdf-4,netCDF4}
 website. 
-Now that @acronym{NCO} uses only @w{netCDF 3.x} system calls we are
-eager for HDF5 to add complete @w{netCDF 3.x} support.
-This is scheduled to occur sometime in 2005, with the release of netCDF 
-@w{version 4}, a collaboration between Unidata and @acronym{NCSA}.
+We are eager for HDF5 to complete netCDF support.
+This is scheduled to occur sometime in 2005, with the releases of 
+HDF @w{version 1.8} and netCDF @w{version 4}, which are collaborations
+between Unidata and @acronym{NCSA}. 
 
 @html
 <a name="help"></a> <!-- http://nco.sf.net/nco.html#help -->
 <a name="hlp"></a> <!-- http://nco.sf.net/nco.html#hlp -->
 <a name="bug"></a> <!-- http://nco.sf.net/nco.html#bug -->
 @end html
-@node Help and Bug reports,  , netCDF 2.x vs. 3.x and HDF Support, Introduction
+@node Help and Bug reports,  , netCDF2 vs. netCDF3 and HDF Support, Introduction
 @section Help and Bug reports
 @cindex reporting bugs
 @cindex bugs, reporting
@@ -1820,8 +1819,10 @@ feature is automatic and cannot be controlled by the user.
 
 @menu
 * Internationalization::        
+* Metadata Optimization::       
 * OpenMP threading::            
 * Large File Support::          
+* netCDF4 and HDF support::     
 * Command line options::        
 * Specifying input files::      
 * Specifying output files::     
@@ -1849,7 +1850,7 @@ feature is automatic and cannot be controlled by the user.
 @html
 <a name="i18n"></a> <!-- http://nco.sf.net/nco.html#i18n -->
 @end html
-@node Internationalization, OpenMP threading, Common features, Common features
+@node Internationalization, Metadata Optimization, Common features, Common features
 @section Internationalization
 @cindex Internationalization
 @cindex I18N
@@ -1863,10 +1864,46 @@ We hope to produce foreign language string catalogues in 2004.
 @c fxm: Work on this section
 
 @html
+<a name="hdr"></a> <!-- http://nco.sf.net/nco.html#hdr -->
+@end html
+@node Metadata Optimization, OpenMP threading, Internationalization, Common features
+@section Metadata Optimization
+@cindex metadata optimization
+@cindex performance
+@cindex operator speed
+@cindex speed
+@cindex execution time
+@cindex @code{nc__enddef()}
+@cindex @code{--hdr_pad @var{hdr_pad}}
+@cindex @code{--header_pad @var{hdr_pad}}
+@cartouche
+Availability: @command{ncatted}, @command{ncks}, @command{ncrename}@*
+Short options: None@*
+Long options: @samp{--hdr_pad}, @samp{--header_pad}@* 
+@end cartouche
+@acronym{NCO} supports padding headers to improve the speed of future
+metadata operations.
+Use the @samp{--hdr_pad} and @samp{--header_pad} switches to request
+that @var{hdr_pad} bytes be inserted into the metadata section of the
+output file.
+Future metadata expansions will not incur the performance penalty of
+copying the entire output file unless the expansion exceeds the amount 
+of header padding exceeded.
+This can be beneficial when it is known that some metadata will be added
+at a future date.
+
+This optimization exploits the netCDF library @code{nc__enddef()}
+function, which behaves differently with different versions of netCDF.
+It will improve speed of future metadata expansion with @code{CLASSIC}
+and @code{64bit} netCDF files, but not necessarily with @code{NETCDF4} 
+files, i.e., those created by the netCDF interface to the @acronym{HDF}
+library (@pxref{netCDF4 and HDF support}).
+
+@html
 <a name="omp"></a> <!-- http://nco.sf.net/nco.html#omp -->
 <a name="openmp"></a> <!-- http://nco.sf.net/nco.html#openmp -->
 @end html
-@node OpenMP threading, Large File Support, Internationalization, Common features
+@node OpenMP threading, Large File Support, Metadata Optimization, Common features
 @section OpenMP threading
 @cindex OpenMP
 @cindex threads
@@ -1913,7 +1950,7 @@ For example, @code{ncrcat} is extremely I/O-intensive so we restrict
 This is based on the notion that the best performance that can be
 expected from an operator which does no arithmetic is to have one thread
 reading and one thread writing simultaneously.
-In the future (perhaps with netCDF @w{version 4}), we hope to
+In the future (perhaps with netCDF4), we hope to
 demonstrate significant threading improvements with operators
 like @code{ncrcat} by performing multiple simultaneous writes.
 
@@ -1952,7 +1989,7 @@ This information is also useful for benchmarking.
 @html
 <a name="lfs"></a> <!-- http://nco.sf.net/nco.html#lfs -->
 @end html
-@node Large File Support, Command line options, OpenMP threading, Common features
+@node Large File Support, netCDF4 and HDF support, OpenMP threading, Common features
 @section Large File Support
 @cindex LFS
 @cindex Large File Support
@@ -1990,7 +2027,7 @@ Values of @samp{C D F 001} and @samp{C D F 002} indicate 32-bit
 (classic) and 64-bit formats, respectively.
 
 All operators write classic (32-bit offset) format files unless
-told otherwise by toggling the @samp{-Z} switch (or it long option
+told otherwise by toggling the @samp{-Z} switch (or its long option
 equivalent @samp{--64-bit-offset}). 
 @acronym{NCO} must be built with @w{netCDF 3.6} or higher to honor  
 64-bit offset file formats. 
@@ -2001,10 +2038,16 @@ Users are advised to use the default classic format until
 <a name="hdf"></a> <!-- http://nco.sf.net/nco.html#hdf -->
 <a name="netcdf4"></a> <!-- http://nco.sf.net/nco.html#netcdf4 -->
 @end html
-@node HDF support
-@section HDF support
-@cindex HDF support
-@cindex netCDF4 support
+@node netCDF4 and HDF support, Command line options, Large File Support, Common features
+@section netCDF4 and HDF support
+@cindex HDF
+@cindex netCDF2
+@cindex netCDF3
+@cindex netCDF4
+@cindex @code{NETCDF4_CLASSIC} files
+@cindex @code{NETCDF4} files
+@cindex @code{CLASSIC} files
+@cindex @code{64BIT} files
 @cindex @code{-4}
 @cindex @code{--hdf}
 @cindex @code{--netcdf4}
@@ -2013,21 +2056,39 @@ Availability: All operators@*
 Short options: @samp{-4}@*
 Long options: @samp{--hdf}, @samp{--netcdf4}@*
 @end cartouche
-@acronym{NCO} supports the new netCDF4 file storage format which is 
-based on @acronym{HDF}.
+@acronym{NCO} supports the new netCDF4 file storage format.
 
-All operators write classic (32-bit offset) format files unless
-told otherwise by toggling the @samp{-4} switch (or it long option
-equivalents @samp{--hdf}, @samp{netcdf4}). 
-@acronym{NCO} must be built with @w{netCDF 4.0} or higher to read or
-write files in the new @acronym{HDF}-based format.
+netCDF supports four types of files: @code{CLASSIC}, @code{64BIT},
+@code{NETCDF4}, and @code{NETCDF4_CLASSIC}, 
+The @code{CLASSIC} format is the traditional 32-bit offset written by
+netCDF2 and netCDF3.
+As of 2005, the vast majority of netCDF data are stored in
+@code{CLASSIC} format. 
+The @code{64BIT} format was added in 2004.
+
+The @code{NETCDF4} format stores files in @acronym{HDF5} format,
+although the files are created, accessed, and manipulated using the 
+traditional netCDF3 @acronym{API} (with some extensions).
+The @code{NETCDF4_CLASSIC} format applies to files created with the
+@code{NC_STRICT_NC3} mask.
+@acronym{NCO} must be built with @w{netCDF4} to read or write files in 
+the new @code{NETCDF4} formats. 
 Users are advised to use the default classic format until 
-@w{netCDF 4.0} is more widespread.
+netCDF4 is more widespread.
+
+All @acronym{NCO} operators write @code{CLASSIC} format files
+unless told otherwise.
+If the user toggles the @samp{-Z} switch (or its long option equivalents 
+@samp{--hdf}, @samp{netcdf4}), then @acronym{NCO} will create a
+@code{64BIT} output file.
+If the user toggles the @samp{-4} switch (or its long option equivalents
+@samp{--hdf}, @samp{netcdf4}), then @acronym{NCO} will create a
+@code{NETCDF4} output file.
 
 @html
 <a name="cmd_ln"></a> <!-- http://nco.sf.net/nco.html#cmd_ln -->
 @end html
-@node Command line options, Specifying input files, Large File Support, Common features
+@node Command line options, Specifying input files, netCDF4 and HDF support, Common features
 @section Command line options
 @cindex command line options
 @cartouche

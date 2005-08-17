@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.569 2005-08-16 17:35:28 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.570 2005-08-17 12:02:20 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -300,29 +300,40 @@ nco560. Change FTP access script to facilitate mget *?
 	mget *
 	quit
 	END
-nco562. ncatted extra header space option to alleviate Keith Dixon's woes
-        nc_enddef(ncid) is equivalent to nc__enddef(ncid, 0, 4, 0, 4).
-        ncks -O ~/nco/data/in.nc ~/foo.nc
-        ls -l ~/foo.nc
-        ncks -O --hdr=1000 ~/nco/data/in.nc ~/foo.nc
-        ls -l ~/foo.nc
 nco563. Implement -4 switch to use netCDF4/HDF output format
-nco564. Implement -Z switch in ncatted
+nco564. Implement -Z switch in ncatted?
 nco565. bm: Add ncatted bm to quantify nc__enddef() tuning improvements
-nco566. Implement -Z switch in ncrename
+nco566. Implement -Z switch in ncrename?
 nco567. Add option to turn off default-creation of .tmp file?
 nco568. bm: test NC_SHARE in ncatted/ncrename?
 nco569. bm: Add SRB test
+        Sifang Lu <sifang@sdsc.edu>
+        /home/zender.uci-esmf/zender/nco/data/in.nc
+        Sinit -v
+        Scd zender
+        Sls
+        Sput ~/nco/data/in.nc nco/data
+        Sget nco/data/in.nc
 nco570. Merge ncatted/ncrename file opens into nco_fl_out_open()
 nco571. ncbo fix double-free() caused by ncap_var_cnf_dmn() (related to TODO 550)
-nco572. document ncks --hdr/--header option at http://nco.sf.net/nco.html#hdr
 nco573. Consolidate -4, -Z into one option a la ncks --fl_fmt
 nco574. Find why ncrcat spends time in nco_var_add_tll_ncra():
         $ opreport -l /usr/local/bin/ncrcat
           samples  %        symbol name
           1535815  54.5255  nco_var_add_tll_ncra
           746694   26.5096  swapn4b
-nco575. 
+nco575. Add --hdr/--header options to syntax in nco_ctl.c and nco.texi
+        How to do this for options without short counterparts?
+        Also --cmp/--compiler for ncks
+nco576. 
+
+OPeNDAP:
+Archive sample DAP accesses:
+ncks -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l . in.nc
+ncks -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l . in.nc
+ncks -p https://srb.npaci.edu/mysrb331all.shtml/home/zender.uci-esmf/zender/nco/data -l . in.nc
+http://sasa.sdsc.edu:8003/cgi-bin/nph-dods/data/nccoos-duck-codar-latest.nc.html
+http://orion.sdsc.edu:8003/cgi-bin/nph-dods/data/nccoos-duck-codar-latest.nc.html
 
 MPI:
 Archive MPI tests which appear to run correctly 
