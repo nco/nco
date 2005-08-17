@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.137 2005-08-15 05:12:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.138 2005-08-17 13:02:11 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.137 2005-08-15 05:12:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.137 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.138 2005-08-17 13:02:11 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.138 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   extern char *optarg;
@@ -162,8 +162,8 @@ main(int argc,char **argv)
       {"cmp",no_argument,0,0},
       {"compiler",no_argument,0,0},
       /* Long options with argument */
-      {"hdr",required_argument,0,0},
-      {"header",required_argument,0,0},
+      {"hdr_pad",required_argument,0,0},
+      {"header_pad",required_argument,0,0},
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
       /* Long options with short counterparts */
@@ -243,8 +243,6 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
-      /* NB: This is the sole long-option-without-short-counterpart in NCO 
-	 Let this serve as a template for more such options */
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"compiler")){
 	(void)fprintf(stdout,"%s\n",nco_cmp_get());
 	nco_exit(EXIT_SUCCESS);
@@ -265,9 +263,9 @@ main(int argc,char **argv)
 	} /* endif */
       } /* endif "fl_fmt" */
 #endif /* !NETCDF4 */
-      if(!strcmp(opt_crr,"hdr") || !strcmp(opt_crr,"header")) hdr_pad=strtoul(optarg,(char **)NULL,10);
-      if(opt_crr != NULL) opt_crr=(char *)nco_free(opt_crr);
+      if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")) hdr_pad=strtoul(optarg,(char **)NULL,10);
     } /* opt != 0 */
+    /* Process short options */
     switch(opt){
     case 0: /* Long options have already been processed, return */
       break;

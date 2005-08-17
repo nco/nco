@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.82 2005-08-15 05:12:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.83 2005-08-17 13:02:11 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -142,10 +142,11 @@ main(int argc,char **argv)
   char *fl_out=NULL; /* Option o */
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
+  char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.82 2005-08-15 05:12:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.82 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.83 2005-08-17 13:02:11 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.83 $";
   const char * const opt_sht_lst="4Aa:D:hl:Oo:p:RrZ-:";
   
   extern char *optarg;
@@ -162,10 +163,16 @@ main(int argc,char **argv)
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
 
+  size_t hdr_pad=0UL; /* [B] Pad at end of header section */
+
   time_t time_crr_time_t;
 
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
+      /* Long options with argument */
+      {"hdr_pad",required_argument,0,0},
+      {"header_pad",required_argument,0,0},
+      /* Long options with short counterparts */
       {"append",no_argument,0,'A'},
       {"attribute",required_argument,0,'a'},
       {"debug",required_argument,0,'D'},
@@ -192,13 +199,27 @@ main(int argc,char **argv)
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   time_crr_time_t=time((time_t *)NULL);
+  time_bfr_srt=ctime(&time_crr_time_t); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  while((opt = getopt_long(argc,argv,opt_sht_lst,opt_lng,&opt_idx)) != EOF){
+  while(1){
+    /* getopt_long_only() allows a single dash '-' to prefix long options as well */
+    opt=getopt_long(argc,argv,opt_sht_lst,opt_lng,&opt_idx);
+    /* NB: access to opt_crr is only valid when long_opt was detected */
+    if(opt == EOF) break; /* Parse positional arguments once getopt_long() returns EOF */
+    opt_crr=(char *)strdup(opt_lng[opt_idx].name);
+
+    /* Process long options without short option counterparts */
+    if(opt == 0){
+      if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")) hdr_pad=strtoul(optarg,(char **)NULL,10);
+    } /* opt != 0 */
+    /* Process short options */
     switch(opt){
+    case 0: /* Long options have already been processed, return */
+      break;
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
@@ -247,6 +268,7 @@ main(int argc,char **argv)
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* end switch */
+    if(opt_crr != NULL) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
   
   /* Process positional arguments and fill in filenames */
@@ -334,6 +356,14 @@ main(int argc,char **argv)
   
   /* Take file out of define mode */
   (void)nco_enddef(nc_id);
+    
+  /* Take output file out of define mode */
+  if(hdr_pad == 0UL){
+    (void)nco_enddef(nc_id);
+  }else{
+    (void)nco__enddef(nc_id,hdr_pad);
+    if(dbg_lvl > 1) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes \n",prg_nm_get(),(unsigned long)hdr_pad);
+  } /* hdr_pad */
     
   /* Close the open netCDF file */
   nco_close(nc_id);
