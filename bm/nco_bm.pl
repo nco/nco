@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.55 2005-08-17 20:37:57 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.56 2005-08-17 22:27:30 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -30,7 +30,7 @@ $spc_nbr_min $spc_sng %subbenchmarks %success %sym_link $thr_nbr $tmr_app
 %totbenchmarks @tst_cmd $tst_fl_cr8 $tst_fmt $tst_id_sng $tst_idx %tst_nbr
 $udp_reprt $udp_rpt $usg $wnt_log $xpt_dsc $timed $sys_time @sys_tim_arr
 %real_tme %usr_tme %sys_tme $mpi_prc @opr_lst_mpi $mpi_prfx  $timestamp
-$opr_sng_mpi
+$opr_sng_mpi $nco_D_flg
 );
  
 my @fl_cr8_dat;  # holds the strings for the fl_cr8() routine 
@@ -46,6 +46,7 @@ $bm_dir = `pwd`; chomp $bm_dir;
 # Set defaults for command line arguments
 $bch_flg=0; # [flg] Batch behavior
 $dbg_lvl = 0; # [enm] Print tests during execution for debugging
+$nco_D_flg = "";
 my $nvr_data=$ENV{'DATA'} ? $ENV{'DATA'} : '';
 my $nvr_home=$ENV{'HOME'} ? $ENV{'HOME'} : '';
 my $USER = $ENV{'USER'};
@@ -400,6 +401,8 @@ my %wcTable = ( # word count table for $dta_dir/wc_out
 "max with weights_0" => "11 95 571", #wc
 );
 
+if($dbg_lvl > 0){$nco_D_flg = "-D" .  "$dbg_lvl";}
+
 # Determine where $DATA should be, prompt user if necessary
 if($dbg_lvl > 1){printf ("$prg_nm: Calling set_dat_dir()...\n");}
 set_dat_dir(); # Set $dta_dir
@@ -420,10 +423,10 @@ if($dbg_lvl > 1){printf ("$prg_nm: Calling initialize()...\n");}
 initialize($bch_flg,$dbg_lvl);
 
 # Pass in the MPI prefix if --mpi is set. Should be able to just plug into the commandline
-# MPI'ed nco's: mpirun -np=4 mpncbo etc
+# MPI'ed nco's: mpirun -np 4 mpncbo etc
 #                MPI prefix <--++--> regular command line
 # note that $prefix contains both MPI and non-MPI commands from here on - $mpi_prfx isn't nec.
-$mpi_prfx = "$tmr_app mpirun -np=$mpi_prc  $MY_BIN_DIR/mp"; $prfxd = 1; $timed = 1;
+$mpi_prfx = "$tmr_app mpirun -np $mpi_prc  $MY_BIN_DIR/mp"; $prfxd = 1; $timed = 1;
 $prefix   = "$tmr_app $MY_BIN_DIR/"; $prfxd = 1; $timed = 1;
 
 # Use variables for file names in regressions; some of these could be collapsed into
@@ -576,7 +579,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 #if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-		$tst_cmd[0] = "ncap -h -O -s  \"nu_var1[time,lat,lon,lev]=d4_01*d4_02*(d4_03**2)-(d4_05/d4_06)\" 	-s \"nu_var2[lat,time,lev,lon]=(d4_13/d4_02)*((d4_03**2)-(d4_05/d4_06))\" -s \"nu_var3[time,lat,lon]=(d3_08*3d_01)-(3d_05**3)-(3d_11*3d_16)\" -s \"nu_var4[lon,lat,time]=(d3_08+3d_01)-(3d_05*3)-3d_11-17.33)\"  -p $fl_pth ipcc_dly_T85.nc  $outfile";
+		$tst_cmd[0] = "ncap -h -O $nco_D_flg -s  \"nu_var1[time,lat,lon,lev]=d4_01*d4_02*(d4_03**2)-(d4_05/d4_06)\" 	-s \"nu_var2[lat,time,lev,lon]=(d4_13/d4_02)*((d4_03**2)-(d4_05/d4_06))\" -s \"nu_var3[time,lat,lon]=(d3_08*3d_01)-(3d_05**3)-(3d_11*3d_16)\" -s \"nu_var4[lon,lat,time]=(d3_08+3d_01)-(3d_05*3)-3d_11-17.33)\"  -p $fl_pth ipcc_dly_T85.nc  $outfile";
 		$tst_cmd[1] = "ncwa -O $omp_flg -y sqrt -a lat,lon $outfile  $outfile";
 		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00  $outfile"; 
 		$nsr_xpc = "4.024271";
@@ -591,7 +594,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncbo -h -O $omp_flg --op_typ='-' -p $fl_pth ipcc_dly_T85.nc ipcc_dly_T85_00.nc $outfile";
+		$tst_cmd[0] = "ncbo -h -O $nco_D_flg $omp_flg --op_typ='-' -p $fl_pth ipcc_dly_T85.nc ipcc_dly_T85_00.nc $outfile";
 		if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
 		$tst_cmd[1] = "ncks -C -H -s '%f' -v sleepy $outfile";
 		$nsr_xpc = "0.000000";	
@@ -606,9 +609,9 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	####################	
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng, files=$fl_cnt\n";}
-		$tst_cmd[0] = "ncea -h -O $omp_flg -n $fl_cnt,2,1 -p $fl_pth stl_5km_00.nc $outfile";
+		$tst_cmd[0] = "ncea -h -O $nco_D_flg $omp_flg -n $fl_cnt,2,1 -p $fl_pth stl_5km_00.nc $outfile";
 		if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
-		$tst_cmd[1] = "ncwa -h -O $omp_flg -y sqrt -a lat,lon $outfile $outfile";
+		$tst_cmd[1] = "ncwa -h -O $nco_D_flg $omp_flg -y sqrt -a lat,lon $outfile $outfile";
 		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00  $outfile"; 
 		$nsr_xpc = "1.604304";
 		go();
@@ -622,8 +625,8 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	####################	
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng, files=$fl_cnt\n";}
-		$tst_cmd[0] = "ncecat -h -O $omp_flg -n $fl_cnt,2,1 -p $fl_pth skn_lgs_00.nc $outfile";
-		$tst_cmd[1] = "ncwa -h -O $omp_flg  $outfile $outfile";
+		$tst_cmd[0] = "ncecat -h -O $nco_D_flg $omp_flg -n $fl_cnt,2,1 -p $fl_pth skn_lgs_00.nc $outfile";
+		$tst_cmd[1] = "ncwa -h -O $nco_D_flg $omp_flg  $outfile $outfile";
 		$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2  $outfile"; 
 		# following required due to shortened length of test under dap.
 		if ($dodap eq "FALSE") { $nsr_xpc = "12.759310";}
@@ -639,9 +642,9 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	####################	
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncflint -h -O   -w '0.5' -p $fl_pth ipcc_dly_T85_00.nc  ipcc_dly_T85_01.nc  $outfile";
+		$tst_cmd[0] = "ncflint -h -O $nco_D_flg   -w '0.5' -p $fl_pth ipcc_dly_T85_00.nc  ipcc_dly_T85_01.nc  $outfile";
 		if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
-		$tst_cmd[1] = "ncwa -h -O $omp_flg -y sqrt -a lat,lon $outfile $outfile";	
+		$tst_cmd[1] = "ncwa -h -O $nco_D_flg $omp_flg -y sqrt -a lat,lon $outfile $outfile";	
 		$tst_cmd[2] = "ncks -C -H -s '%f ' -v d1_00  $outfile"; 
 		$nsr_xpc = "1.800000 1.800000 1.800000 1.800000 1.800000 1.800000 1.800000 1.800000"; 
 		go();
@@ -656,7 +659,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 		#!!WARN - change back to testing the ipcc file after verify
-		$tst_cmd[0] = "ncpdq -h -O $omp_flg -a -time -lev -lat -lon -p $fl_pth  ipcc_dly_T85.nc  $outfile";
+		$tst_cmd[0] = "ncpdq -h -O $nco_D_flg $omp_flg -a -time -lev -lat -lon -p $fl_pth  ipcc_dly_T85.nc  $outfile";
 		# ~2m on sand for ipcc_dly_T85.nc
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";  #ipcc
 		$nsr_xpc = "0.800000"; #ipcc
@@ -671,7 +674,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	####################	
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncpdq -h -O $omp_flg -a 'lon,time,lev,lat' -p $fl_pth  ipcc_dly_T85.nc  $outfile";
+		$tst_cmd[0] = "ncpdq -h -O $nco_D_flg $omp_flg -a 'lon,time,lev,lat' -p $fl_pth  ipcc_dly_T85.nc  $outfile";
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";  #ipcc
 		$nsr_xpc = "0.800000"; #ipcc
 		go();
@@ -685,7 +688,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	####################	
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncpdq -h -O $omp_flg -a '-lon,-time,-lev,-lat' -p $fl_pth  ipcc_dly_T85.nc  $outfile";
+		$tst_cmd[0] = "ncpdq -h -O $nco_D_flg $omp_flg -a '-lon,-time,-lev,-lat' -p $fl_pth  ipcc_dly_T85.nc  $outfile";
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";  #ipcc
 		$nsr_xpc = "0.800000"; #ipcc
 		go();
@@ -699,7 +702,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	####################	
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncpdq -h -O $omp_flg -P all_new  -p $fl_pth  ipcc_dly_T85.nc  $outfile";
+		$tst_cmd[0] = "ncpdq -h -O $nco_D_flg $omp_flg -P all_new  -p $fl_pth  ipcc_dly_T85.nc  $outfile";
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile"; 
 		$nsr_xpc = "0.000000";
 		go();
@@ -732,7 +735,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	if ($notbodi) { # too big for bodi
 		if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #			if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-			$tst_cmd[0] = "ncra -h -O $omp_flg -n $fl_cnt,2,1 -p $fl_pth ipcc_dly_T85_00.nc $outfile";
+			$tst_cmd[0] = "ncra -h -O $nco_D_flg $omp_flg -n $fl_cnt,2,1 -p $fl_pth ipcc_dly_T85_00.nc $outfile";
 			# ~4m on sand.
 			$tst_cmd[1] =  "ncks -C -H -s '%f' -v d1_03    $outfile ";
 			$nsr_xpc = "1.800001";
@@ -749,8 +752,8 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	####################	
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncrcat -h -O $omp_flg -n $fl_cnt,2,1 -p $fl_pth skn_lgs_00.nc $outfile";
-		$tst_cmd[1] = "ncwa -h -O $omp_flg  $outfile $outfile";
+		$tst_cmd[0] = "ncrcat -h -O $nco_D_flg $omp_flg -n $fl_cnt,2,1 -p $fl_pth skn_lgs_00.nc $outfile";
+		$tst_cmd[1] = "ncwa -h -O $nco_D_flg $omp_flg  $outfile $outfile";
 		$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2  $outfile"; 
 		$nsr_xpc = "12.759310";
 		go();
@@ -767,7 +770,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	####################	
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncwa -h -O $omp_flg -y sqrt -a lat,lon -p $fl_pth stl_5km.nc $outfile";
+		$tst_cmd[0] = "ncwa -h -O $nco_D_flg $omp_flg -y sqrt -a lat,lon -p $fl_pth stl_5km.nc $outfile";
 		$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02  $outfile";
 		$nsr_xpc = "1.604304";  # was 1.974842
 		go();
@@ -782,7 +785,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncwa -h -O $omp_flg -y rms -a lat,lon -p $fl_pth stl_5km.nc $outfile";
+		$tst_cmd[0] = "ncwa -h -O $nco_D_flg $omp_flg -y rms -a lat,lon -p $fl_pth stl_5km.nc $outfile";
 		$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02  $outfile";
 		$nsr_xpc = "2.826392"; # past result = 3.939694
 		go();
@@ -797,7 +800,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 			$dsc_sng = 'ncwa averaging all variables to scalars - ipcc_dly_T85.nc & sqt';
 			####################
 #			if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-			$tst_cmd[0] = "ncwa -h -O $omp_flg -y sqrt   -a lat,lon -p $fl_pth ipcc_dly_T85.nc $outfile";
+			$tst_cmd[0] = "ncwa -h -O $nco_D_flg $omp_flg -y sqrt   -a lat,lon -p $fl_pth ipcc_dly_T85.nc $outfile";
 			$tst_cmd[1] = "ncks -C -H -s '%f' -v skanky  $outfile"; 
 			$nsr_xpc = "0.800000";
 			go();
@@ -971,55 +974,55 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 ####################
     $opr_nm='ncap';
 #################### 
-	$tst_cmd[0]="ncap -h -O -v -S ncap.in $in_pth in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O $nco_D_flg -v -S ncap.in $in_pth in.nc  $outfile";
 	$dsc_sng="running ncap.in script into nco_tst.pl";
 	$nsr_xpc ="ncap: WARNING Replacing missing value data in variable val_half_half";
 	&go();
 	
-	$tst_cmd[0]="ncap -h -O -C -v -s 'tpt_mod=tpt%273.0f' $in_pth in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O $nco_D_flg -C -v -s 'tpt_mod=tpt%273.0f' $in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%.1f'  $outfile";
 	$dsc_sng="Testing float modulo float";
 	$nsr_xpc ="0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0";
 	&go();
 	
-	$tst_cmd[0]="ncap -h -O -C -v -s 'foo=log(e_flt)^1'$in_pth in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O $nco_D_flg -C -v -s 'foo=log(e_flt)^1'$in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%.6f\n'  $outfile";
 	$dsc_sng="Testing foo=log(e_flt)^1 (fails on AIX TODO ncap57)";
 	$nsr_xpc ="1.000000";
 	&go();
 	
-	$tst_cmd[0]="ncap -h -O -C -v -s 'foo=log(e_dbl)^1' $in_pth in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O $nco_D_flg -C -v -s 'foo=log(e_dbl)^1' $in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%.12f\n'  $outfile";
 	$dsc_sng="Testing foo=log(e_dbl)^1";
 	$nsr_xpc ="1.000000000000";
 	&go();
 	
-	$tst_cmd[0]="ncap -h -O -C -v -s 'foo=4*atan(1)' $in_pth in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O $nco_D_flg -C -v -s 'foo=4*atan(1)' $in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%.12f\n'  $outfile";
 	$dsc_sng="Testing foo=4*atan(1)";
 	$nsr_xpc ="3.141592741013";
 	&go();
 	
-	$tst_cmd[0]="ncap -h -O -C -v -s 'foo=erf(1)' $in_pth in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O $nco_D_flg -C -v -s 'foo=erf(1)' $in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%.12f\n'  $outfile";
 	$dsc_sng="Testing foo=erf(1)";
 	$nsr_xpc ="0.842701";
 	&go();
 	
 	#fails - wrong result
-	$tst_cmd[0]="ncap -h -O -C -v -s 'foo=gamma(0.5)' $in_pth in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O $nco_D_flg -C -v -s 'foo=gamma(0.5)' $in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%.12f\n'  $outfile";
 	$dsc_sng="Testing foo=gamma(0.5)";
 	$nsr_xpc ="1.772453851";
 	&go();
 	
-	$tst_cmd[0]="ncap -h -O -C -v -s 'pi=4*atan(1);foo=sin(pi/2)' $in_pth in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O $nco_D_flg -C -v -s 'pi=4*atan(1);foo=sin(pi/2)' $in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -v foo -s '%.12f\n'  $outfile";
 	$dsc_sng="Testing foo=sin(pi/2)";
 	$nsr_xpc ="1.000000000000";
 	&go();
 	
-	$tst_cmd[0]="ncap -h -O -C -v -s 'pi=4*atan(1);foo=cos(pi)' $in_pth in.nc  $outfile";
+	$tst_cmd[0]="ncap -h -O $nco_D_flg -C -v -s 'pi=4*atan(1);foo=cos(pi)' $in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -v foo -s '%.12f\n'  $outfile";
 	$dsc_sng="Testing foo=cos(pi)";
 	$nsr_xpc ="-1.000000000000";
@@ -1030,7 +1033,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 ####################
     $opr_nm="ncatted";
 ####################
-	$tst_cmd[0]="ncatted -h -O -a units,,m,c,'meter second-1' $in_pth in.nc  $outfile";
+	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a units,,m,c,'meter second-1' $in_pth in.nc  $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%s' -v lev  $outfile | grep units | cut -d' ' -f 11-12";
 	$dsc_sng="Modify all existing units attributes to meter second-1";
 	$nsr_xpc="meter second-1";
@@ -1041,52 +1044,52 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 ####################
     $opr_nm="ncbo";
 ####################
-	$tst_cmd[0]="ncbo $omp_flg -h -O --op_typ='-' -v mss_val_scl in.nc in.nc $outfile";;
+	$tst_cmd[0]="ncbo $omp_flg -h -O $nco_D_flg --op_typ='-' -v mss_val_scl in.nc in.nc $outfile";;
 	$tst_cmd[1]="ncks -C -H -s '%g' -v mss_val_scl $outfile";
 	$dsc_sng="difference scalar missing value";
 	$nsr_xpc= 1.0e36 ; 
 	&go();
 	
-	$tst_cmd[0]="ncbo $omp_flg -h -O --op_typ='-' -d lon,1 -v mss_val in.nc in.nc $outfile";
+	$tst_cmd[0]="ncbo $omp_flg -h -O $nco_D_flg --op_typ='-' -d lon,1 -v mss_val in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%g' -v mss_val $outfile";
 	$dsc_sng="difference with missing value attribute";
 	$nsr_xpc= 1.0e36 ; 
 	&go();
 	
-	$tst_cmd[0]="ncbo $omp_flg -h -O --op_typ='-' -d lon,0 -v no_mss_val in.nc in.nc $outfile";
+	$tst_cmd[0]="ncbo $omp_flg -h -O $nco_D_flg --op_typ='-' -d lon,0 -v no_mss_val in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v no_mss_val $outfile";
 	$dsc_sng="difference without missing value attribute";
 	$nsr_xpc= 0 ; 
 	&go();
 	
-	$tst_cmd[0]="ncks -h -O -v mss_val_fst in.nc $outfile";
-	$tst_cmd[1]="ncrename -h -O -v mss_val_fst,mss_val $outfile";
-	$tst_cmd[2]="ncbo $omp_flg  -h -O -y '-' -v mss_val $outfile in.nc $outfile 2> $foo_tst";
+	$tst_cmd[0]="ncks -h -O $nco_D_flg -v mss_val_fst in.nc $outfile";
+	$tst_cmd[1]="ncrename -h -O $nco_D_flg -v mss_val_fst,mss_val $outfile";
+	$tst_cmd[2]="ncbo $omp_flg  -h -O $nco_D_flg -y '-' -v mss_val $outfile in.nc $outfile 2> $foo_tst";
 	$tst_cmd[3]="ncks -C -H -s '%f,' -v mss_val $outfile";
 	$dsc_sng="missing_values differ between files";
 	$nsr_xpc= "-999,-999,-999,-999" ; 
 	&go();	 
 	 
-	$tst_cmd[0]="ncdiff $omp_flg -h -O -d lon,1 -v mss_val in.nc in.nc $outfile";
+	$tst_cmd[0]="ncdiff $omp_flg -h -O $nco_D_flg -d lon,1 -v mss_val in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%g' -v mss_val $outfile";
 	$dsc_sng="ncdiff symbolically linked to ncbo";
 	$nsr_xpc= 1.0e36 ; 
 	&go();
 	
-	$tst_cmd[0]="ncdiff $omp_flg -h -O -d lon,1 -v mss_val in.nc in.nc $outfile";
+	$tst_cmd[0]="ncdiff $omp_flg -h -O $nco_D_flg -d lon,1 -v mss_val in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%g' -v mss_val $outfile";
 	$dsc_sng="difference with missing value attribute";
 	$nsr_xpc= 1.0e36 ; 
 	&go();
 	
-	$tst_cmd[0]="ncdiff $omp_flg -h -O -d lon,0 -v no_mss_val in.nc in.nc $outfile";
+	$tst_cmd[0]="ncdiff $omp_flg -h -O $nco_D_flg -d lon,0 -v no_mss_val in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v no_mss_val $outfile";
 	$dsc_sng="difference without missing value attribute";
 	$nsr_xpc= 0 ; 
 	&go();
 
-	$tst_cmd[0]="ncwa $omp_flg -h -O -v rec_var_flt_mss_val_dbl in.nc foo_avg.nc";
-	$tst_cmd[1]="ncbo $omp_flg -h -O -v rec_var_flt_mss_val_dbl in.nc foo_avg.nc foo.nc";
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl in.nc foo_avg.nc";
+	$tst_cmd[1]="ncbo $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl in.nc foo_avg.nc foo.nc";
 	$tst_cmd[1]="ncks -C -H -d time,3 -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="Difference which tests broadcasting (TODO nco550,551,552)";
 	$nsr_xpc= -1.0 ; 
@@ -1097,31 +1100,31 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 ####################
     $opr_nm='ncea';
 ####################
-	$tst_cmd[0]="ncra -Y ncea $omp_flg -h -O -v one_dmn_rec_var -d time,4 in.nc in.nc $outfile";
+	$tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $nco_D_flg -v one_dmn_rec_var -d time,4 in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var $outfile";
 	$dsc_sng="ensemble mean of int across two files";
 	$nsr_xpc= 5 ; 
 	&go();
 	
-	$tst_cmd[0]="ncra -Y ncea $omp_flg -h -O -v rec_var_flt_mss_val_flt -d time,0 in.nc in.nc $outfile";
+	$tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_flt -d time,0 in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%g' -v rec_var_flt_mss_val_flt $outfile";
 	$dsc_sng="ensemble mean with missing values across two files";
 	$nsr_xpc= 1.0e36 ; 
 	&go();
 	
-	$tst_cmd[0]="ncra -Y ncea $omp_flg -h -O -y min -v rec_var_flt_mss_val_dbl -d time,1 in.nc in.nc $outfile";
+	$tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $nco_D_flg -y min -v rec_var_flt_mss_val_dbl -d time,1 in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%e' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="ensemble min of float across two files";
 	$nsr_xpc= 2 ; 
 	&go();
 	
-	$tst_cmd[0]="ncra -Y ncea $omp_flg -h -O -C -v pck in.nc $outfile";
+	$tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $nco_D_flg -C -v pck in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%e' -v pck $outfile";
 	$dsc_sng="scale factor + add_offset packing/unpacking";
 	$nsr_xpc= 3 ; 
 	&go();
 	
-	$tst_cmd[0]="ncra -Y ncea $omp_flg -h -O -v rec_var_int_mss_val_int in.nc in.nc $outfile";
+	$tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $nco_D_flg -v rec_var_int_mss_val_int in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d ' -v rec_var_int_mss_val_int $outfile";
 	$dsc_sng="ensemble mean of integer with integer missing values across two files";
 	$nsr_xpc= '-999 2 3 4 5 6 7 8 -999 -999' ; 
@@ -1132,9 +1135,9 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 ####################
     $opr_nm='ncecat';
 ####################
-	$tst_cmd[0]="ncks -h -O -v one in.nc $foo1_fl";
-	$tst_cmd[1]="ncks -h -O -v one in.nc $foo2_fl";
-	$tst_cmd[2]="ncecat $omp_flg -h -O $foo1_fl $foo2_fl $outfile";
+	$tst_cmd[0]="ncks -h -O $nco_D_flg -v one in.nc $foo1_fl";
+	$tst_cmd[1]="ncks -h -O $nco_D_flg -v one in.nc $foo2_fl";
+	$tst_cmd[2]="ncecat $omp_flg -h -O $nco_D_flg $foo1_fl $foo2_fl $outfile";
 	$tst_cmd[3]="ncks -C -H -s '%f, ' -v one $outfile";
 	$dsc_sng="concatenate two files containing only scalar variables";
 	$nsr_xpc= "1, 1" ; 
@@ -1145,25 +1148,25 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 ####################
     $opr_nm='ncflint';
 ####################
-	$tst_cmd[0]="ncflint $omp_flg -h -O -w 3,-2 -v one in.nc in.nc $outfile";
+	$tst_cmd[0]="ncflint $omp_flg -h -O $nco_D_flg -w 3,-2 -v one in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%e' -v one $outfile";
 	$dsc_sng="identity weighting";
 	$nsr_xpc= 1.0 ; 
 	&go();
 	
-	$tst_cmd[0]="ncrename -h -O -v zero,foo in.nc $foo1_fl";
-	$tst_cmd[1]="ncrename -h -O -v one,foo in.nc $outfile";
-	$tst_cmd[2]="ncflint $omp_flg -h -O -i foo,0.5 -v two $foo1_fl $outfile $outfile";
+	$tst_cmd[0]="ncrename -h -O $nco_D_flg -v zero,foo in.nc $foo1_fl";
+	$tst_cmd[1]="ncrename -h -O $nco_D_flg -v one,foo in.nc $outfile";
+	$tst_cmd[2]="ncflint $omp_flg -h -O $nco_D_flg -i foo,0.5 -v two $foo1_fl $outfile $outfile";
 	$tst_cmd[3]="ncks -C -H -s '%e' -v two $outfile";
 	$dsc_sng="identity interpolation";
 	$nsr_xpc= 2.0 ; 
 	&go();
 	
-	$tst_cmd[0]="ncks -h -O -C -d lon,1 -v mss_val in.nc $foo_x_fl";
-	$tst_cmd[1]="ncks -h -O -C -d lon,0 -v mss_val in.nc $foo_y_fl";
-	$tst_cmd[2]="ncflint $omp_flg -h -O -w 0.5,0.5 $foo_x_fl $foo_y_fl $foo_xy_fl";
-	$tst_cmd[3]="ncflint $omp_flg -h -O -w 0.5,0.5 $foo_y_fl $foo_x_fl $foo_yx_fl";
-	$tst_cmd[4]="ncdiff $omp_flg -h -O $foo_xy_fl $foo_yx_fl $foo_xymyx_fl";
+	$tst_cmd[0]="ncks -h -O $nco_D_flg -C -d lon,1 -v mss_val in.nc $foo_x_fl";
+	$tst_cmd[1]="ncks -h -O $nco_D_flg -C -d lon,0 -v mss_val in.nc $foo_y_fl";
+	$tst_cmd[2]="ncflint $omp_flg -h -O $nco_D_flg -w 0.5,0.5 $foo_x_fl $foo_y_fl $foo_xy_fl";
+	$tst_cmd[3]="ncflint $omp_flg -h -O $nco_D_flg -w 0.5,0.5 $foo_y_fl $foo_x_fl $foo_yx_fl";
+	$tst_cmd[4]="ncdiff $omp_flg -h -O $nco_D_flg $foo_xy_fl $foo_yx_fl $foo_xymyx_fl";
 	$tst_cmd[5]="ncks -C -H -s '%g' -v mss_val $foo_xymyx_fl";
 	$dsc_sng="switch order of occurrence to test for commutivity";
 	$nsr_xpc= 1e+36 ; 
@@ -1174,9 +1177,9 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 ####################
     $opr_nm='ncks';
 ####################
-	$tst_cmd[0]="ncks -h -O -v lat_T42,lon_T42,gw_T42 in.nc $foo_T42_fl";
-	$tst_cmd[1]="ncrename -h -O -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon $foo_T42_fl";
-	$tst_cmd[2]="ncap -h -O -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' $foo_T42_fl $foo_T42_fl";
+	$tst_cmd[0]="ncks -h -O $nco_D_flg -v lat_T42,lon_T42,gw_T42 in.nc $foo_T42_fl";
+	$tst_cmd[1]="ncrename -h -O $nco_D_flg -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon $foo_T42_fl";
+	$tst_cmd[2]="ncap -h -O $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' $foo_T42_fl $foo_T42_fl";
 	$tst_cmd[3]="ncks -C -H -s '%g' -v one -F -d lon,128 -d lat,64 $foo_T42_fl";
 	$nsr_xpc="1";
 	$dsc_sng="Create T42 variable named one, uniformly 1.0 over globe in $foo_T42_fl ";
@@ -1188,80 +1191,80 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	$nsr_xpc= "/home/zender/nco/data/in.cdl" ;
 	&go();
 	
-	$tst_cmd[0]="ncks -h -O -v lev in.nc $outfile";
+	$tst_cmd[0]="ncks -h -O $nco_D_flg -v lev in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f,' -v lev $outfile";
 	$dsc_sng="extract a dimension";
 	$nsr_xpc= "100.000000,500.000000,1000.000000" ; 
 	&go();
 	
-	$tst_cmd[0]="ncks -h -O -v three_dmn_var in.nc $outfile";
+	$tst_cmd[0]="ncks -h -O $nco_D_flg -v three_dmn_var in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,3,3 $outfile";
 	$dsc_sng="extract a variable with limits";
 	$nsr_xpc= 23;
 	&go();
 	
-	$tst_cmd[0]="ncks -h -O -v int_var in.nc $outfile";
+	$tst_cmd[0]="ncks -h -O $nco_D_flg -v int_var in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v int_var $outfile";
 	$dsc_sng="extract variable of type NC_INT";
 	$nsr_xpc= "10" ;
 	&go();
 	
-	$tst_cmd[0]="ncks -h -O -C -v three_dmn_var -d lat,1,1 -d lev,0,0 -d lev,2,2 -d lon,0,,2 -d lon,1,,2 in.nc $outfile";
+	$tst_cmd[0]="ncks -h -O $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,0,0 -d lev,2,2 -d lon,0,,2 -d lon,1,,2 in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%4.1f,' -v three_dmn_var $outfile";
 	$dsc_sng="Multi-slab lat and lon with srd";
 	$nsr_xpc= "12.0,13.0,14.0,15.0,20.0,21.0,22.0,23.0";
 	&go();
 	
-	$tst_cmd[0]="ncks -h -O -C -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,0,3 -d lon,1,3 in.nc $outfile";
+	$tst_cmd[0]="ncks -h -O $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,0,3 -d lon,1,3 in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%4.1f,' -v three_dmn_var $outfile";
 	$dsc_sng="Multi-slab with redundant hyperslabs";
 	$nsr_xpc= "20.0,21.0,22.0,23.0";
 	&go();
 	
-	$tst_cmd[0]="ncks -h -O -C -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,0.,,2 -d lon,90.,,2 in.nc $outfile";
+	$tst_cmd[0]="ncks -h -O $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,0.,,2 -d lon,90.,,2 in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%4.1f,' -v three_dmn_var $outfile";
 	$dsc_sng="Multi-slab with coordinates";
 	$nsr_xpc= "20.0,21.0,22.0,23.0";
 	&go();
 	
-	$tst_cmd[0]="ncks -h -O -C -v three_dmn_var -d lat,1,1 -d lev,800.,200. -d lon,270.,0. in.nc $outfile";
+	$tst_cmd[0]="ncks -h -O $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,800.,200. -d lon,270.,0. in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%4.1f,' -v three_dmn_var $outfile";
 	$dsc_sng="Double-wrapped hyperslab";
 	$nsr_xpc= "23.0,20.0,15.0,12.0";
 	&go();
     
-# $tst_cmd[0]="ncks -h -O -C -v three_double_dmn -d lon,2,2 -d time,8,8  in.nc $outfile";
+# $tst_cmd[0]="ncks -h -O $nco_D_flg -C -v three_double_dmn -d lon,2,2 -d time,8,8  in.nc $outfile";
 # $tst_cmd[1]="ncks -C -H -s '%f,' -v three_double_dmn $outfile";
 # $dsc_sng="Hyperslab of a variable that has two identical dims";
 # $nsr_xpc= 59.5;
 # &go();
     
-	$tst_cmd[0]="ncks -h -O -C -d time_udunits,'1999-12-08 12:00:0.0','1999-12-09 00:00:0.0' in.nc $outfile";
+	$tst_cmd[0]="ncks -h -O $nco_D_flg -C -d time_udunits,'1999-12-08 12:00:0.0','1999-12-09 00:00:0.0' in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%6.0f' -d time_udunits,'1999-12-08 18:00:0.0','1999-12-09 12:00:0.0',2 -v time_udunits in.nc";
 	$dsc_sng="dimension slice using UDUnits library (fails without UDUnits library support)";
 	$nsr_xpc= 876018;
 	&go();
 	
-	$tst_cmd[0]="ncks -h -O -C -H -v wvl -d wvl,'0.4 micron','0.7 micron' -s '%3.1e' in.nc";
+	$tst_cmd[0]="ncks -h -O $nco_D_flg -C -H -v wvl -d wvl,'0.4 micron','0.7 micron' -s '%3.1e' in.nc";
 	$dsc_sng="dimension slice using UDUnit conversion (fails without UDUnits library support)";
 	$nsr_xpc= 1.0e-06;
 	&go();
 	
 	#fails
-	$tst_cmd[0]="ncks -h -O -C -v '^three_*' in.nc $outfile";
+	$tst_cmd[0]="ncks -h -O $nco_D_flg -C -v '^three_*' in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f'-C -v three $outfile";
 	$dsc_sng="variable wildcards A (fails without regex library)";
 	$nsr_xpc= 3 ;
 	&go();
 	
-	$tst_cmd[0]="ncks -h -O -C -v '^[a-z]{3}_[a-z]{3}_[a-z]{3,}\$' in.nc $outfile";
+	$tst_cmd[0]="ncks -h -O $nco_D_flg -C -v '^[a-z]{3}_[a-z]{3}_[a-z]{3,}\$' in.nc $outfile";
 	# for this test, the regex is mod'ed                       ^
 	$tst_cmd[1]="ncks -C -H -s '%d' -C -v val_one_int $outfile";
 	$dsc_sng="variable wildcards B (fails without regex library)";
 	$nsr_xpc= 1;
 	&go();
 	
-	$tst_cmd[0]="ncks -h -O -C -d time,0,1 -v time in.nc $outfile";
+	$tst_cmd[0]="ncks -h -O $nco_D_flg -C -d time,0,1 -v time in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%g' -C -d time,2, $outfile";
 	$dsc_sng="Offset past end of file";
 	$nsr_xpc="ncks: ERROR User-specified dimension index range 2 <= time <=  does not fall within valid dimension index range 0 <= time <= 1";
@@ -1278,26 +1281,26 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
     $opr_nm='ncpdq';
 ####################
 
-	$tst_cmd[0]="ncpdq $omp_flg -h -O -a -lat -v lat in.nc $outfile";
+	$tst_cmd[0]="ncpdq $omp_flg -h -O $nco_D_flg -a -lat -v lat in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%g' -v lat -d lat,0 $outfile";
 	$dsc_sng="reverse coordinate";
 	$nsr_xpc= 90 ; 
 	&go();
 	
-	$tst_cmd[0]="ncpdq $omp_flg -h -O -a -lat,-lev,-lon -v three_dmn_var in.nc $outfile";
+	$tst_cmd[0]="ncpdq $omp_flg -h -O $nco_D_flg -a -lat,-lev,-lon -v three_dmn_var in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var -d lat,0 -d lev,0 -d lon,0 $outfile";
 	$dsc_sng="reverse three dimensional variable";
 	$nsr_xpc= 23 ; 
 	&go();
 	
-	$tst_cmd[0]="ncpdq $omp_flg -h -O -a lon,lat -v three_dmn_var in.nc $outfile";
+	$tst_cmd[0]="ncpdq $omp_flg -h -O $nco_D_flg -a lon,lat -v three_dmn_var in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var -d lat,0 -d lev,2 -d lon,3 $outfile";
 	$dsc_sng="re-order three dimensional variable";
 	$nsr_xpc= 11 ; 
 	&go();
 	
-	$tst_cmd[0]="ncpdq $omp_flg -h -O -P all_new -v upk in.nc $outfile";
-	$tst_cmd[1]="ncpdq $omp_flg -h -O -P upk -v upk $outfile $outfile";
+	$tst_cmd[0]="ncpdq $omp_flg -h -O $nco_D_flg -P all_new -v upk in.nc $outfile";
+	$tst_cmd[1]="ncpdq $omp_flg -h -O $nco_D_flg -P upk -v upk $outfile $outfile";
 	$tst_cmd[2]="ncks -C -H -s '%g' -v upk $outfile";
 	$dsc_sng="Pack and then unpack scalar (uses only add_offset)";
 	$nsr_xpc= 3 ; 
@@ -1308,103 +1311,103 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 ####################
     $opr_nm='ncra';
 ####################
-	$tst_cmd[0]="ncra $omp_flg -h -O -v one_dmn_rec_var in.nc in.nc $outfile";
+	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -v one_dmn_rec_var in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var $outfile";
 	$dsc_sng="record mean of int across two files";
 	$nsr_xpc= 5 ; 
 	&go();
 	
-	$tst_cmd[0]="ncra $omp_flg -h -O -v rec_var_flt_mss_val_dbl in.nc $outfile";
+	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="record mean of float with double missing values";
 	$nsr_xpc= 5 ; 
 	&go();
 	
-	$tst_cmd[0]="ncra $omp_flg -h -O -v rec_var_flt_mss_val_int in.nc $outfile";
+	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_int in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_int $outfile";
 	$dsc_sng="record mean of float with integer missing values";
 	$nsr_xpc= 5 ; 
 	&go();
 	
-	$tst_cmd[0]="ncra $omp_flg -h -O -v rec_var_int_mss_val_int in.nc $outfile";
+	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -v rec_var_int_mss_val_int in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_int $outfile";
 	$dsc_sng="record mean of integer with integer missing values";
 	$nsr_xpc= 5 ; 
 	&go();
 	
-	$tst_cmd[0]="ncra $omp_flg -h -O -v rec_var_int_mss_val_int in.nc in.nc $outfile";
+	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -v rec_var_int_mss_val_int in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_int $outfile";
 	$dsc_sng="record mean of integer with integer missing values across two files (TODO nco543)";
 	$nsr_xpc= 5 ; 
 	&go();
 
-	$tst_cmd[0]="ncra $omp_flg -h -O -v rec_var_int_mss_val_flt in.nc $outfile";
+	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -v rec_var_int_mss_val_flt in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_flt $outfile";
 	$dsc_sng="record mean of integer with float missing values";
 	$nsr_xpc= 5 ; 
 	&go();
 	
-	$tst_cmd[0]="ncra $omp_flg -h -O -v rec_var_int_mss_val_flt in.nc in.nc $outfile";
+	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -v rec_var_int_mss_val_flt in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_flt $outfile";
 	$dsc_sng="record mean of integer with float missing values across two files (TODO nco543)";
 	$nsr_xpc= 5 ; 
 	&go();
 	
-	$tst_cmd[0]="ncra $omp_flg -h -O -v rec_var_dbl_mss_val_dbl_pck in.nc $outfile";
+	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -v rec_var_dbl_mss_val_dbl_pck in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck $outfile";
 	$dsc_sng="record mean of packed double with double missing values";
 	$nsr_xpc= 5 ;
 	&go();
 	
-	$tst_cmd[0]="ncra $omp_flg -h -O -v rec_var_dbl_pck in.nc $outfile";
+	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -v rec_var_dbl_pck in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_dbl_pck $outfile";
 	$dsc_sng="record mean of packed double to test precision";
 	$nsr_xpc= 100.55 ;
 	&go();
 	
-	$tst_cmd[0]="ncra $omp_flg -h -O -v rec_var_flt_pck in.nc $outfile";
+	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -v rec_var_flt_pck in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%3.2f' -v rec_var_flt_pck $outfile";
 	$dsc_sng="record mean of packed float to test precision";
 	$nsr_xpc= 100.55 ;
 	&go();
 	
-	$tst_cmd[0]="ncra $omp_flg -h -O -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc $outfile";
+	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="record mean of float with double missing values across two files";
 	$nsr_xpc= 5 ; 
 	&go();
 	
-	$tst_cmd[0]="ncra $omp_flg -h -O -y min -v rec_var_flt_mss_val_dbl in.nc in.nc $outfile";
+	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -y min -v rec_var_flt_mss_val_dbl in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="record min of float with double missing values across two files";
 	$nsr_xpc= 2 ; 
 	&go();
 	
-	$tst_cmd[0]="ncra $omp_flg -h -O -y max -v rec_var_flt_mss_val_dbl in.nc in.nc $outfile";
+	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -y max -v rec_var_flt_mss_val_dbl in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="record max of float with double missing values across two files";
 	$nsr_xpc= 8 ; 
 	&go();
 	
-	$tst_cmd[0]="ncra $omp_flg -h -O -y ttl -v rec_var_flt_mss_val_dbl in.nc in.nc $outfile";
+	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -y ttl -v rec_var_flt_mss_val_dbl in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="record ttl of float with double missing values across two files";
 	$nsr_xpc= 70 ;
 	&go();
 	
-	$tst_cmd[0]="ncra $omp_flg -h -O -y rms -v rec_var_flt_mss_val_dbl in.nc in.nc $outfile";
+	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -y rms -v rec_var_flt_mss_val_dbl in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%1.5f' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="record rms of float with double missing values across two files";
 	$nsr_xpc= 5.38516 ;
 	&go();
 	
 	$outfile =  $foo1_fl;
-	$tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O -v rec_var_flt_mss_val_dbl in.nc in.nc $outfile 2>$foo_tst";
+	$tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl in.nc in.nc $outfile 2>$foo_tst";
 	$outfile =  $orig_outfile;
-	$tst_cmd[1]="ncra $omp_flg -h -O -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc $outfile";
-	$tst_cmd[2]="ncwa $omp_flg -h -O -a time $outfile $outfile";
-	$tst_cmd[3]="ncdiff $omp_flg -h -O -v rec_var_flt_mss_val_dbl $foo1_fl $outfile $outfile";
-	$tst_cmd[4]="ncra $omp_flg -h -O -y rms -v rec_var_flt_mss_val_dbl $outfile $outfile";
+	$tst_cmd[1]="ncra $omp_flg -h -O $nco_D_flg -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc $outfile";
+	$tst_cmd[2]="ncwa $omp_flg -h -O $nco_D_flg -a time $outfile $outfile";
+	$tst_cmd[3]="ncdiff $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl $foo1_fl $outfile $outfile";
+	$tst_cmd[4]="ncra $omp_flg -h -O $nco_D_flg -y rms -v rec_var_flt_mss_val_dbl $outfile $outfile";
 	$tst_cmd[5]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="record sdn of float with double missing values across two files";
 	$nsr_xpc= 2 ;
@@ -1416,96 +1419,96 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 ####################
     $opr_nm='ncwa';
 ####################
-	$tst_cmd[0]="ncwa $omp_flg -h -O -a lat,lon -w gw -d lat,0.0,90.0 $foo_T42_fl $outfile";
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -a lat,lon -w gw -d lat,0.0,90.0 $foo_T42_fl $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%g' -v one $outfile";
 	$dsc_sng="normalize by denominator upper hemisphere";
 	$nsr_xpc= 1;
 	&go();
     
-#${MY_BIN_DIR}/ncwa -n $omp_flg -h -O -a lat,lon -w gw $foo_T42_fl$outfile";
+#${MY_BIN_DIR}/ncwa -n $omp_flg -h -O $nco_D_flg -a lat,lon -w gw $foo_T42_fl$outfile";
 #$tst_cmd[1]="ncks -C -H -s '%f' -v one $outfile";
 #$dsc_sng="normalize by tally but not weight";
 #$nsr_xpc= 0.0312495 ; 
 #&go();
-#${MY_BIN_DIR}/ncwa -W $omp_flg -h -O -a lat,lon -w gw $foo_T42_fl$outfile";
+#${MY_BIN_DIR}/ncwa -W $omp_flg -h -O $nco_D_flg -a lat,lon -w gw $foo_T42_fl$outfile";
 #$tst_cmd[1]="ncks -C -H -s '%f' -v one $outfile";
 #$dsc_sng="normalize by weight but not tally";
 #$nsr_xpc= 8192 ; 
 #&go();
     
-	$tst_cmd[0]="ncwa -N $omp_flg -h -O -a lat,lon -w gw in.nc $outfile";
+	$tst_cmd[0]="ncwa -N $omp_flg -h -O $nco_D_flg -a lat,lon -w gw in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v mask $outfile";
 	$dsc_sng="do not normalize by denominator";
 	$nsr_xpc= 50 ; 
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -a lon -v mss_val in.nc $outfile";
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -a lon -v mss_val in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v mss_val $outfile";
 	$dsc_sng="average with missing value attribute";
 	$nsr_xpc= 73 ; 
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -a lon -v no_mss_val in.nc $outfile";
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -a lon -v no_mss_val in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%g' -v no_mss_val $outfile";
 	$dsc_sng="average without missing value attribute";
 	$nsr_xpc= 5.0e35 ; 
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -v lat -m lat -M 90.0 -T eq -a lat in.nc $outfile"; 
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -v lat -m lat -M 90.0 -T eq -a lat in.nc $outfile"; 
 	$tst_cmd[1]="ncks -C -H -s '%e' -v lat $outfile";
 	$dsc_sng="average masked coordinate";
 	$nsr_xpc= 90.0 ; 
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -v lat_var -m lat -M 90.0 -T eq -a lat in.nc $outfile"; 
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -v lat_var -m lat -M 90.0 -T eq -a lat in.nc $outfile"; 
 	$tst_cmd[1]="ncks -C -H -s '%e' -v lat_var $outfile";
 	$dsc_sng="average masked variable";
 	$nsr_xpc= 2.0 ; 
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -v lev -m lev -M 100.0 -T eq -a lev -w lev_wgt in.nc $outfile"; 
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -v lev -m lev -M 100.0 -T eq -a lev -w lev_wgt in.nc $outfile"; 
 	$tst_cmd[1]="ncks -C -H -s '%e' -v lev $outfile";
 	$dsc_sng="average masked, weighted coordinate";
 	$nsr_xpc= 100.0 ; 
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -v lev_var -m lev -M 100.0 -T gt -a lev -w lev_wgt in.nc $outfile";
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -v lev_var -m lev -M 100.0 -T gt -a lev -w lev_wgt in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%e' -v lev_var $outfile";
 	$dsc_sng="average masked, weighted variable";
 	$nsr_xpc= 666.6667 ; 
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -v lat -a lat -w gw -d lat,0 in.nc $outfile"; 
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -v lat -a lat -w gw -d lat,0 in.nc $outfile"; 
 	$tst_cmd[1]="ncks -C -H -s '%e' -v lat $outfile";
 	$dsc_sng="weight conforms to var first time";
 	$nsr_xpc= -90.0 ; 
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -v mss_val_all -a lon -w lon in.nc $outfile"; 
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -v mss_val_all -a lon -w lon in.nc $outfile"; 
 	$tst_cmd[1]="ncks -C -H -s '%g' -v mss_val_all $outfile";
 	$dsc_sng="average all missing values with weights";
 	$nsr_xpc= 1.0e36 ; 
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -v val_one_mss -a lat -w wgt_one in.nc $outfile"; 
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -v val_one_mss -a lat -w wgt_one in.nc $outfile"; 
 	$tst_cmd[1]="ncks -C -H -s '%e' -v val_one_mss $outfile";
 	$dsc_sng="average some missing values with unity weights";
 	$nsr_xpc= 1.0 ; 
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -v msk_prt_mss_prt -m msk_prt_mss_prt -M 1.0 -T lt -a lon in.nc $outfile"; 
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -v msk_prt_mss_prt -m msk_prt_mss_prt -M 1.0 -T lt -a lon in.nc $outfile"; 
 	$tst_cmd[1]="ncks -C -H -s '%e' -v msk_prt_mss_prt $outfile";
 	$dsc_sng="average masked variable with some missing values";
 	$nsr_xpc= 0.5 ; 
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -y min -v rec_var_flt_mss_val_dbl in.nc $outfile 2>$foo_tst";
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y min -v rec_var_flt_mss_val_dbl in.nc $outfile 2>$foo_tst";
 	$tst_cmd[1]="ncks -C -H -s '%e' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="min switch on type double, some missing values";
 	$nsr_xpc= 2 ; 
 	&go();	 
 		
-	$tst_cmd[0]="ncwa $omp_flg  -h -O -y min -v three_dmn_var_dbl -a lon in.nc $outfile";
+	$tst_cmd[0]="ncwa $omp_flg  -h -O $nco_D_flg -y min -v three_dmn_var_dbl -a lon in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f,' -v three_dmn_var_dbl $outfile >$foo_fl";
 	$tst_cmd[2]="cut -d, -f 7 $foo_fl";
 	$dsc_sng="Dimension reduction with min switch and missing values";
@@ -1516,7 +1519,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	$nsr_xpc= 77 ;
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -y min -v three_dmn_var_int -a lon in.nc $outfile";
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y min -v three_dmn_var_int -a lon in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d,' -v three_dmn_var_int $outfile >$foo_fl";
 	$tst_cmd[2]="cut -d, -f 5 $foo_fl";
 	$dsc_sng="Dimension reduction on type int with min switch and missing values";
@@ -1527,7 +1530,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	$nsr_xpc= 25 ;
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -y min -v three_dmn_var_sht -a lon in.nc $outfile";
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y min -v three_dmn_var_sht -a lon in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d,' -v three_dmn_var_sht $outfile >$foo_fl";
 	$tst_cmd[2]="cut -d, -f 20 $foo_fl";
 	$dsc_sng="Dimension reduction on type short variable with min switch and missing values";
@@ -1538,19 +1541,19 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	$nsr_xpc= 29 ;
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -y min -v three_dmn_rec_var in.nc $outfile 2>$foo_tst";
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y min -v three_dmn_rec_var in.nc $outfile 2>$foo_tst";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_rec_var $outfile";
 	$dsc_sng="Dimension reduction with min flag on type float variable";
 	$nsr_xpc= 1 ;
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -y max -v four_dmn_rec_var in.nc $outfile 2> $foo_tst";
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y max -v four_dmn_rec_var in.nc $outfile 2> $foo_tst";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v four_dmn_rec_var $outfile";
 	$dsc_sng="Max flag on type float variable";
 	$nsr_xpc= 240 ;
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -y max -v three_dmn_var_dbl -a lat,lon in.nc $outfile";
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y max -v three_dmn_var_dbl -a lat,lon in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f,' -v three_dmn_var_dbl $outfile >$foo_fl";
 	$tst_cmd[2]="cut -d, -f 4 $foo_fl";
 	$dsc_sng="Dimension reduction on type double variable with max switch and missing values";
@@ -1561,7 +1564,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	$nsr_xpc= 40 ;
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -y max -v three_dmn_var_int -a lat in.nc $outfile";;
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y max -v three_dmn_var_int -a lat in.nc $outfile";;
 	$tst_cmd[1]="ncks -C -H -s '%d,' -v three_dmn_var_int $outfile >$foo_fl";
 	$tst_cmd[2]="cut -d, -f 9 $foo_fl";
 	$dsc_sng="Dimension reduction on type int variable with min switch and missing values";
@@ -1572,7 +1575,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	$nsr_xpc= 29 ;
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -y max -v three_dmn_var_sht -a lat in.nc $outfile";;
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y max -v three_dmn_var_sht -a lat in.nc $outfile";;
 	$tst_cmd[1]="ncks -C -H -s '%d,' -v three_dmn_var_sht $outfile >$foo_fl";
 	$tst_cmd[2]="cut -d, -f 37 $foo_fl";
 	$dsc_sng="Dimension reduction on type short variable with max switch and missing values";
@@ -1583,25 +1586,25 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	$nsr_xpc= 69 ;
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -y rms -w lat_wgt -v lat in.nc $outfile 2>$foo_tst";
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y rms -w lat_wgt -v lat in.nc $outfile 2>$foo_tst";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v lat $outfile";;
 	$dsc_sng="rms with weights";
 	$nsr_xpc= 90 ; 
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -w val_half_half -v val_one_one_int in.nc $outfile 2> $foo_tst";
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -w val_half_half -v val_one_one_int in.nc $outfile 2> $foo_tst";
 	$tst_cmd[1]="ncks -C -H -s '%ld' -v val_one_one_int $outfile";;
 	$dsc_sng="weights would cause SIGFPE without dbl_prc patch";
 	$nsr_xpc= 1 ; 
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -y avg -v val_max_max_sht in.nc $outfile 2> $foo_tst";
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y avg -v val_max_max_sht in.nc $outfile 2> $foo_tst";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v val_max_max_sht $outfile";;
 	$dsc_sng="avg would overflow without dbl_prc patch";
 	$nsr_xpc= 17000 ; 
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -y ttl -v val_max_max_sht in.nc $outfile 2> $foo_tst";
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y ttl -v val_max_max_sht in.nc $outfile 2> $foo_tst";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v val_max_max_sht $outfile";
 	$dsc_sng="ttl would overflow without dbl_prc patch, wraps anyway so exact value not important (failure expected/OK on Xeon chips because of different wrap behavior)";
 	$nsr_xpc= -31536 ; # Expected on Pentium IV GCC Debian 3.4.3-13, PowerPC xlc
@@ -1609,13 +1612,13 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 #    $nsr_xpc= -32768 ; # Expected on PentiumIII (Coppermine) gcc 3.4 MEPIS 
 	&go();
 
-	$tst_cmd[0]="ncwa $omp_flg -h -O -y min -a lat -v lat -w gw in.nc $outfile";;
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y min -a lat -v lat -w gw in.nc $outfile";;
 	$tst_cmd[1]="ncks -C -H -s '%g' -v lat $outfile";;
 	$dsc_sng="min with weights";
 	$nsr_xpc= -900 ; 
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O -y max -a lat -v lat -w gw in.nc $outfile";;
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y max -a lat -v lat -w gw in.nc $outfile";;
 	$tst_cmd[1]="ncks -C -H -s '%g' -v lat $outfile";;
 	$dsc_sng="max with weights";
 	$nsr_xpc= 900 ; 
@@ -1628,7 +1631,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
     $opr_nm='net';
 ####################
 	$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-	$tst_cmd[1]="ncks -h -O -v one -p ftp://dust.ess.uci.edu/pub/zender/nco -l ./ in.nc $outfile";;
+	$tst_cmd[1]="ncks -h -O $nco_D_flg -v one -p ftp://dust.ess.uci.edu/pub/zender/nco -l ./ in.nc $outfile";;
 	$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";;
 #	$tst_cmd[3]="mv in_tmp.nc in.nc";
 	$dsc_sng="nco 1: FTP protocol (fails if unable to anonymous FTP to dust.ess.uci.edu)";
@@ -1639,7 +1642,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	# should this still be in the test suite?  CZ is the only person who can test it.
 	if ($USER eq "zender"){
 		$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-		$tst_cmd[1]="ncks -h -O -v one -p goldhill.cgd.ucar.edu:/home/zender/nco/data -l ./ in.nc $outfile";;
+		$tst_cmd[1]="ncks -h -O $nco_D_flg -v one -p goldhill.cgd.ucar.edu:/home/zender/nco/data -l ./ in.nc $outfile";;
 		$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";;
 		$tst_cmd[3]="mv in_tmp.nc in.nc";
 		$dsc_sng="nco 2: scp/rcp protocol(fails if no SSH/RSH access to goldhill.cgd.ucar.edu)";
@@ -1652,7 +1655,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 
 	if (0) {	
 	$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-	$tst_cmd[1]="ncks -h -O -v one -p mss:/ZENDER/nc -l ./ in.nc $outfile";;
+	$tst_cmd[1]="ncks -h -O $nco_D_flg -v one -p mss:/ZENDER/nc -l ./ in.nc $outfile";;
 	$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";;
 #	$tst_cmd[3]="mv in_tmp.nc in.nc";
 	$dsc_sng="nco 3: msrcp protocol(fails if not at NCAR)";
@@ -1662,8 +1665,8 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	
 	
 	$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-#	$tst_cmd[0]="ncks -h -O -v one -p http://dust.ess.uci.edu/cgpub/zender/nco -l ./ in.nc $outfile";;
-	$tst_cmd[1]="ncks -h -O -v one -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l ./ in.nc $outfile";;
+#	$tst_cmd[0]="ncks -h -O $nco_D_flg -v one -p http://dust.ess.uci.edu/cgpub/zender/nco -l ./ in.nc $outfile";;
+	$tst_cmd[1]="ncks -h -O $nco_D_flg -v one -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l ./ in.nc $outfile";;
 	$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";;
 #	$tst_cmd[3]="mv in_tmp.nc in.nc";
 	$dsc_sng="nco 4: HTTP protocol (Will always fail until HTTP implemented in NCO) ";
@@ -1694,7 +1697,8 @@ ncks ncpdq ncra ncrcat ncrename ncwa net      (default tests all)
 where (options) are:
     --usage || -h ...dumps this help
     --debug {1-3) ...puts the script into debug mode; emits more and (hopefully)
-                     more useful info.
+                     more useful info.  Also inserts the comparable -D flag into
+                     the nco commandline.
     --caseid {short id string} 
                      this string can be used to identity and separate results 
                      from different runs.
@@ -2029,7 +2033,7 @@ sub fl_cr8 {
 	}
 	print "\n==== Populating $fl_out file.\nTiming results:\n";
 	#print "fl_cr8: prefix = $prefix\n";
-	print "Executing: $tmr_app $prefix/ncap -h -O -s $fl_cr8_dat[$idx][3] $fl_in $fl_out\n";
+	print "Executing: $tmr_app $prefix/ncap -h -O $nco_D_flg -s $fl_cr8_dat[$idx][3] $fl_in $fl_out\n";
 	if ($hiresfound) {$t0 = [gettimeofday];}
 	else {$t0 = time;}
 	system "$tmr_app $prefix/ncap -O -h -s $fl_cr8_dat[$idx][3] $fl_in $fl_out";
