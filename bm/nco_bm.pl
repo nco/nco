@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.54 2005-08-11 22:05:13 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.55 2005-08-17 20:37:57 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -29,7 +29,8 @@ $result $rgr $server_ip $server_name $server_port $sock $spc_fmt $spc_nbr
 $spc_nbr_min $spc_sng %subbenchmarks %success %sym_link $thr_nbr $tmr_app
 %totbenchmarks @tst_cmd $tst_fl_cr8 $tst_fmt $tst_id_sng $tst_idx %tst_nbr
 $udp_reprt $udp_rpt $usg $wnt_log $xpt_dsc $timed $sys_time @sys_tim_arr
-%real_tme %usr_tme %sys_tme $mpi @opr_lst_mpi $mpi_prefix  $timestamp
+%real_tme %usr_tme %sys_tme $mpi_prc @opr_lst_mpi $mpi_prfx  $timestamp
+$opr_sng_mpi
 );
  
 my @fl_cr8_dat;  # holds the strings for the fl_cr8() routine 
@@ -58,7 +59,8 @@ $udp_rpt = 0;
 $usg = 0;
 $wnt_log = 0;
 $md5 = 0;
-$mpi = 0;
+$mpi_prc = 0; # by default, don't want no steekin MPI 
+$mpi_prfx = "";
 $timestamp = `date -u "+%x %R"`; chomp $timestamp;
 $dodap = "FALSE"; # Unless redefined bythe cmdline, it doesn't get set
 $fl_cnt = 32; # nbr of files to process (reduced to 4 if using remote/dods files
@@ -86,7 +88,7 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'h'            => \$usg,        # explains how to use this thang
 	'help'         => \$usg,        #            ditto
 	'log'          => \$wnt_log,    # set if want output logged
-	'mpi'          => \$mpi,        # set number of mpi processes
+	'mpi=i'        => \$mpi_prc,    # set number of mpi processes
 	'queue'        => \$que,        # if set, bypasses all interactive stuff
 	'regress'      => \$rgr,        # test regression 
 	'rgr'          => \$rgr,        # test regression 
@@ -115,10 +117,10 @@ if($dbg_lvl > 0){printf ("$prg_nm: \$nvr_my_bin_dir = $nvr_my_bin_dir\n");} # en
 if($dbg_lvl > 0){printf ("$prg_nm: \@ENV = @ENV\n");} # endif dbg
 
 # resolve conflicts early
-if ($mpi > 0 && $thr_nbr > 0) {die "\nThe  '--mpi' option and '--thr_nbr' (OMP) option are mutaully exclusive.\nPlease decide which you want to run and try again.\n";}
+if ($mpi_prc > 0 && $thr_nbr > 0) {die "\nThe  '--mpi' option and '--thr_nbr' (OMP) option are mutaully exclusive.\nPlease decide which you want to run and try again.\n";}
 
 # any irrationally exuberant values?
-if ($mpi > 16) {die "\nThe '--mpi' value was set to an irrationally exuberant [$mpi].  Try a lower value\n ";}
+if ($mpi_prc > 16) {die "\nThe '--mpi' value was set to an irrationally exuberant [$mpi_prc].  Try a lower value\n ";}
 if ($thr_nbr > 16) {die "\nThe '--thr_nbr' value was set to an irrationally exuberant [$thr_nbr].  Try a lower value\n ";}
 if (length($xpt_dsc) > 80) {die "\nThe caseid string is > 80 characters - please reduce it to less than 80 chars.\nIt's used to create file and directory names, so it has to be relatively short\n";}
 
@@ -417,30 +419,27 @@ if (-e "/usr/bin/time" && -x "/usr/bin/time") {
 if($dbg_lvl > 1){printf ("$prg_nm: Calling initialize()...\n");}
 initialize($bch_flg,$dbg_lvl);
 
-#if ($dbg_lvl < 1) {$prefix = "$MY_BIN_DIR"; $prfxd = 1;}
-#else {
-	$prefix = "$tmr_app $MY_BIN_DIR"; $prfxd = 1; $timed = 1;
-#}
-
-# test for MPI desire
-if ($mpi > 0) {
-	$mpi_prefix = "$tmr_app  mpirun yadda yadda $MY_BIN_DIR"; $prfxd = 1; $timed = 1;
-}
+# Pass in the MPI prefix if --mpi is set. Should be able to just plug into the commandline
+# MPI'ed nco's: mpirun -np=4 mpncbo etc
+#                MPI prefix <--++--> regular command line
+# note that $prefix contains both MPI and non-MPI commands from here on - $mpi_prfx isn't nec.
+$mpi_prfx = "$tmr_app mpirun -np=$mpi_prc  $MY_BIN_DIR/mp"; $prfxd = 1; $timed = 1;
+$prefix   = "$tmr_app $MY_BIN_DIR/"; $prfxd = 1; $timed = 1;
 
 # Use variables for file names in regressions; some of these could be collapsed into
 # fewer ones, no doubt, but keep them separate until whole shebang starts working correctly
 $outfile       = "$dta_dir/foo.nc"; # replaces outfile in tests, typically 'foo.nc'
 $orig_outfile  = "$dta_dir/foo.nc";
-$foo_fl       = "$dta_dir/foo";
+$foo_fl        = "$dta_dir/foo";
 $foo_tst       = "$dta_dir/foo.tst";
-$foo1_fl      = "$dta_dir/foo1.nc";
-$foo2_fl      = "$dta_dir/foo2.nc";
-$foo_x_fl     = "$dta_dir/foo_x.nc";
-$foo_y_fl     = "$dta_dir/foo_y.nc";
-$foo_xy_fl    = "$dta_dir/foo_xy.nc";
-$foo_yx_fl    = "$dta_dir/foo_yx.nc";
-$foo_xymyx_fl = "$dta_dir/foo_xymyx.nc";
-$foo_T42_fl   = "$dta_dir/foo_T42.nc";
+$foo1_fl       = "$dta_dir/foo1.nc";
+$foo2_fl       = "$dta_dir/foo2.nc";
+$foo_x_fl      = "$dta_dir/foo_x.nc";
+$foo_y_fl      = "$dta_dir/foo_y.nc";
+$foo_xy_fl     = "$dta_dir/foo_xy.nc";
+$foo_yx_fl     = "$dta_dir/foo_yx.nc";
+$foo_xymyx_fl  = "$dta_dir/foo_xymyx.nc";
+$foo_T42_fl    = "$dta_dir/foo_T42.nc";
 
 # the real udping server
 $server_name = "sand.ess.uci.edu";
@@ -465,11 +464,12 @@ if ($wnt_log) {
 # Pass explicit threading argument
 if ($thr_nbr > 0){$omp_flg="--thr_nbr=$thr_nbr ";} else {$omp_flg='';}
 
+# does dodap require that we ignore both MPI and OpenMP?  Let's leave it in for now.
 # If dodap is not set then test with local files
 # If dodap is set and string is NULL, then test with OPeNDAP files on sand.ess.uci.edu
 # If string is NOT NULL, use URL to grab files
 
-print "before dodap, fl_pth = $fl_pth\n";
+if ($dbg_lvl > 1 ) {print "before dodap, fl_pth = $fl_pth\n";}
 # $dodap asks for and if defined, carries, the URL that's inserted in the '-p' place in nco cmdlines
 if ($dodap ne "FALSE") { 
 	if ($dodap eq "") { 
@@ -482,7 +482,7 @@ if ($dodap ne "FALSE") {
 		die "\nThe URL specified with the --dods option:\n $dodap \ndoesn't look like a valid URL.\nTry again\n\n";
 	}
 }
-print "after dodap, fl_pth = $fl_pth\n";
+if ($dbg_lvl > 1 ) {print "after dodap, fl_pth = $fl_pth\n";}
 
 
 # Initialize & set up some variables
@@ -567,134 +567,145 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 			}
 		}
 	}
-	if (1) { # 0 /1 skip this bit
+
+
 	#################### begin ncap benchmark hjm - needs to be verified.
 	$opr_nm='ncap';
 	$dsc_sng = 'ncap long algebraic operation';
 	###################
-	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncap -h -O -s  \"nu_var1[time,lat,lon,lev]=d4_01*d4_02*(d4_03**2)-(d4_05/d4_06)\" 	-s \"nu_var2[lat,time,lev,lon]=(d4_13/d4_02)*((d4_03**2)-(d4_05/d4_06))\" -s \"nu_var3[time,lat,lon]=(d3_08*3d_01)-(3d_05**3)-(3d_11*3d_16)\" -s \"nu_var4[lon,lat,time]=(d3_08+3d_01)-(3d_05*3)-3d_11-17.33)\"  -p $fl_pth ipcc_dly_T85.nc  $outfile";
-	$tst_cmd[1] = "ncwa -O $omp_flg -y sqrt -a lat,lon $outfile  $outfile";
-	$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00  $outfile"; 
-	$nsr_xpc = "4.024271";
-	go();
-	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng]\n";}
-	
-	
+#if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+
+	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
+		$tst_cmd[0] = "ncap -h -O -s  \"nu_var1[time,lat,lon,lev]=d4_01*d4_02*(d4_03**2)-(d4_05/d4_06)\" 	-s \"nu_var2[lat,time,lev,lon]=(d4_13/d4_02)*((d4_03**2)-(d4_05/d4_06))\" -s \"nu_var3[time,lat,lon]=(d3_08*3d_01)-(3d_05**3)-(3d_11*3d_16)\" -s \"nu_var4[lon,lat,time]=(d3_08+3d_01)-(3d_05*3)-3d_11-17.33)\"  -p $fl_pth ipcc_dly_T85.nc  $outfile";
+		$tst_cmd[1] = "ncwa -O $omp_flg -y sqrt -a lat,lon $outfile  $outfile";
+		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00  $outfile"; 
+		$nsr_xpc = "4.024271";
+		go();
+		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng]\n";}
+	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
+
+
 	#################### begin ncbo benchmark
 	$opr_nm='ncbo';
 	$dsc_sng = 'ncbo differencing two files';
 	####################
-	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncbo -h -O $omp_flg --op_typ='-' -p $fl_pth ipcc_dly_T85.nc ipcc_dly_T85_00.nc $outfile";
-	if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
-	$tst_cmd[1] = "ncks -C -H -s '%f' -v sleepy $outfile";
-	$nsr_xpc = "0.000000";	
-	go();
-	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng]\n";}
-	
+	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
+#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+		$tst_cmd[0] = "ncbo -h -O $omp_flg --op_typ='-' -p $fl_pth ipcc_dly_T85.nc ipcc_dly_T85_00.nc $outfile";
+		if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
+		$tst_cmd[1] = "ncks -C -H -s '%f' -v sleepy $outfile";
+		$nsr_xpc = "0.000000";	
+		go();
+		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng]\n";}
+	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
 
 	#################### begin ncea benchmark 
 	$opr_nm='ncea';
 	$dsc_sng = 'ncea averaging 2^5 files';
 	####################	
-	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng, files=$fl_cnt\n";}
-	$tst_cmd[0] = "ncea -h -O $omp_flg -n $fl_cnt,2,1 -p $fl_pth stl_5km_00.nc $outfile";
-	if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
-	$tst_cmd[1] = "ncwa -h -O $omp_flg -y sqrt -a lat,lon $outfile $outfile";
-	$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00  $outfile"; 
-	$nsr_xpc = "1.604304";
-	go();
-	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
-	
-}
+	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
+#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng, files=$fl_cnt\n";}
+		$tst_cmd[0] = "ncea -h -O $omp_flg -n $fl_cnt,2,1 -p $fl_pth stl_5km_00.nc $outfile";
+		if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
+		$tst_cmd[1] = "ncwa -h -O $omp_flg -y sqrt -a lat,lon $outfile $outfile";
+		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00  $outfile"; 
+		$nsr_xpc = "1.604304";
+		go();
+		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
+
 	
 	#################### begin ncecat benchmark 
 	$opr_nm='ncecat';
 	$dsc_sng = 'ncecat joining 2^5 files'; # skn_lgs.nc * 32 = 1.51GB
 	####################	
-	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng, files=$fl_cnt\n";}
-	$tst_cmd[0] = "ncecat -h -O $omp_flg -n $fl_cnt,2,1 -p $fl_pth skn_lgs_00.nc $outfile";
-	$tst_cmd[1] = "ncwa -h -O $omp_flg  $outfile $outfile";
-	$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2  $outfile"; 
-	# following required due to shortened length of test under dap.
-	if ($dodap eq "FALSE") { $nsr_xpc = "12.759310";}
-	else { $nsr_xpc = "18.106375";}
-	go();
-	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
-		
-# skip this bit
+	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
+#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng, files=$fl_cnt\n";}
+		$tst_cmd[0] = "ncecat -h -O $omp_flg -n $fl_cnt,2,1 -p $fl_pth skn_lgs_00.nc $outfile";
+		$tst_cmd[1] = "ncwa -h -O $omp_flg  $outfile $outfile";
+		$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2  $outfile"; 
+		# following required due to shortened length of test under dap.
+		if ($dodap eq "FALSE") { $nsr_xpc = "12.759310";}
+		else { $nsr_xpc = "18.106375";}
+		go();
+		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
 
 	#################### begin ncflint benchmark  - needs to be verified and md5/wc sums created.
 	$opr_nm='ncflint';
 	$dsc_sng = 'ncflint weight-averaging 2 files';
 	####################	
-	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncflint -h -O   -w '0.5' -p $fl_pth ipcc_dly_T85_00.nc  ipcc_dly_T85_01.nc  $outfile";
-	if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
-	$tst_cmd[1] = "ncwa -h -O $omp_flg -y sqrt -a lat,lon $outfile $outfile";	
-#	$tst_cmd[1] = "ncflint -h -O $omp_flg -y sqrt -a lat,lon $outfile $outfile";
-	$tst_cmd[2] = "ncks -C -H -s '%f ' -v d1_00  $outfile"; 
-	$nsr_xpc = "1.800000 1.800000 1.800000 1.800000 1.800000 1.800000 1.800000 1.800000"; 
-	go();
-	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
-	
+	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
+#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+		$tst_cmd[0] = "ncflint -h -O   -w '0.5' -p $fl_pth ipcc_dly_T85_00.nc  ipcc_dly_T85_01.nc  $outfile";
+		if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
+		$tst_cmd[1] = "ncwa -h -O $omp_flg -y sqrt -a lat,lon $outfile $outfile";	
+		$tst_cmd[2] = "ncks -C -H -s '%f ' -v d1_00  $outfile"; 
+		$nsr_xpc = "1.800000 1.800000 1.800000 1.800000 1.800000 1.800000 1.800000 1.800000"; 
+		go();
+		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
+
 
 	#################### begin ncpdq benchmark - reversal
 	$opr_nm='ncpdq';
 	$dsc_sng = 'ncpdq dimension-order reversal';
 	####################	
-	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-	#!!WARN - change back to testing the ipcc file after verify
-#	$tst_cmd[0] = "ncpdq -h -O $omp_flg -a -lat -p $fl_pth  sml_stl.nc  $outfile";
-	$tst_cmd[0] = "ncpdq -h -O $omp_flg -a -time -lev -lat -lon -p $fl_pth  ipcc_dly_T85.nc  $outfile";
-#	$tst_cmd[0] = "ncpdq -h -O $omp_flg -a -lat -p $fl_pth  ipcc_dly_T85.nc  $outfile";
-	# ~2m on sand for ipcc_dly_T85.nc
-#	$tst_cmd[1] = "ncks -C -H -s '%f' -v weepy  $outfile"; # sml_stl
-#	$nsr_xpc = "1.234560"; #sml_stl
-	$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";  #ipcc
-	$nsr_xpc = "0.800000"; #ipcc
-	go();
-	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
+#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+		#!!WARN - change back to testing the ipcc file after verify
+		$tst_cmd[0] = "ncpdq -h -O $omp_flg -a -time -lev -lat -lon -p $fl_pth  ipcc_dly_T85.nc  $outfile";
+		# ~2m on sand for ipcc_dly_T85.nc
+		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";  #ipcc
+		$nsr_xpc = "0.800000"; #ipcc
+		go();
+		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
-	
+
 	#################### next ncpdq benchmark - re-ordering
 	$opr_nm='ncpdq';
 	$dsc_sng = 'ncpdq dimension-order re-ordering';
 	####################	
-	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncpdq -h -O $omp_flg -a 'lon,time,lev,lat' -p $fl_pth  ipcc_dly_T85.nc  $outfile";
-	$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";  #ipcc
-	$nsr_xpc = "0.800000"; #ipcc
-	go();
-	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
-	
+	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
+#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+		$tst_cmd[0] = "ncpdq -h -O $omp_flg -a 'lon,time,lev,lat' -p $fl_pth  ipcc_dly_T85.nc  $outfile";
+		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";  #ipcc
+		$nsr_xpc = "0.800000"; #ipcc
+		go();
+		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
+
+
 	#################### next ncpdq benchmark - re-ordering & reversing
 	$opr_nm='ncpdq';
 	$dsc_sng = 'ncpdq dimension-order re-ordering & reversing';
 	####################	
-	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncpdq -h -O $omp_flg -a '-lon,-time,-lev,-lat' -p $fl_pth  ipcc_dly_T85.nc  $outfile";
-	$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";  #ipcc
-	$nsr_xpc = "0.800000"; #ipcc
-	go();
-	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
-	
+	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
+#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+		$tst_cmd[0] = "ncpdq -h -O $omp_flg -a '-lon,-time,-lev,-lat' -p $fl_pth  ipcc_dly_T85.nc  $outfile";
+		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";  #ipcc
+		$nsr_xpc = "0.800000"; #ipcc
+		go();
+		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
+
 
 	#################### next ncpdq benchmark 
 	$opr_nm='ncpdq';
 	$dsc_sng = 'ncpdq packing a file';
 	####################	
-	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncpdq -h -O $omp_flg -P all_new  -p $fl_pth  ipcc_dly_T85.nc  $outfile";
-	$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile"; 
-	$nsr_xpc = "0.000000";
-	go();
-	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
+#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+		$tst_cmd[0] = "ncpdq -h -O $omp_flg -P all_new  -p $fl_pth  ipcc_dly_T85.nc  $outfile";
+		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile"; 
+		$nsr_xpc = "0.000000";
+		go();
+		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
-	
 
 	################### Set up the symlinks ###################
 	if ($dbg_lvl > 0 && $dodap eq "FALSE") {print "\n\nSetting up local symlinks for test nc files\n";}
@@ -711,90 +722,94 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 				}
 			}
 		}
-	} elsif ($dbg_lvl > 0) {
-		print "\n\nSkipping local symlinks for test nc files (using remote files).\n";
-	}
-		
+	} elsif ($dbg_lvl > 0) {print "\n\nSkipping local symlinks for test nc files (using remote files).\n";}
+
+
 	#################### begin cz benchmark list #2
 	$opr_nm='ncra';
 	$dsc_sng = 'ncra time-averaging 2^5 (i.e. one month) ipcc files';
 	####################	
 	if ($notbodi) { # too big for bodi
-		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncra -h -O $omp_flg -n $fl_cnt,2,1 -p $fl_pth ipcc_dly_T85_00.nc $outfile";
-		# ~4m on sand.
-		$tst_cmd[1] =  "ncks -C -H -s '%f' -v d1_03    $outfile ";
-		$nsr_xpc = "1.800001";
-		go();
+		if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
+#			if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+			$tst_cmd[0] = "ncra -h -O $omp_flg -n $fl_cnt,2,1 -p $fl_pth ipcc_dly_T85_00.nc $outfile";
+			# ~4m on sand.
+			$tst_cmd[1] =  "ncks -C -H -s '%f' -v d1_03    $outfile ";
+			$nsr_xpc = "1.800001";
+			go();
+			if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+		} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 	}
-	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
-	
+
+
 	if ($dodap eq "FALSE") { # only if not being done by remote
 	#################### begin ncrcat benchmark 
 	$opr_nm='ncrcat';
 	$dsc_sng = 'ncrcat joining 2^5 files'; # skn_lgs.nc * 32 = 1.51GB
 	####################	
-	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncrcat -h -O $omp_flg -n $fl_cnt,2,1 -p $fl_pth skn_lgs_00.nc $outfile";
-	$tst_cmd[1] = "ncwa -h -O $omp_flg  $outfile $outfile";
-	$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2  $outfile"; 
-	$nsr_xpc = "12.759310";
-	go();
-	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
-	} else {
-		print "\nNB: ncrcat benchmark skipped for OpenDAP test - takes too long.\n\n";
-	}
-#}
-	
+	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
+#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+		$tst_cmd[0] = "ncrcat -h -O $omp_flg -n $fl_cnt,2,1 -p $fl_pth skn_lgs_00.nc $outfile";
+		$tst_cmd[1] = "ncwa -h -O $omp_flg  $outfile $outfile";
+		$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2  $outfile"; 
+		$nsr_xpc = "12.759310";
+		go();
+		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+		} else {
+			print "\nNB: ncrcat benchmark skipped for OpenDAP test - takes too long.\n\n";
+		}
+	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
+
+
 	#################### begin ncwa benchmark list #1a
 	$opr_nm='ncwa';
 	$dsc_sng = 'ncwa averaging all variables to scalars - stl_5km.nc & sqrt';
 	####################	
-	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncwa -h -O $omp_flg -y sqrt -a lat,lon -p $fl_pth stl_5km.nc $outfile";
-	$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02  $outfile";
-	$nsr_xpc = "1.604304";  # was 1.974842
-	go();
-	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
+#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+		$tst_cmd[0] = "ncwa -h -O $omp_flg -y sqrt -a lat,lon -p $fl_pth stl_5km.nc $outfile";
+		$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02  $outfile";
+		$nsr_xpc = "1.604304";  # was 1.974842
+		go();
+		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
-	
+
 	# following fails on numeric cmp but why should the result the same?
 	#################### begin ncwa benchmark list #1b
 	$opr_nm='ncwa';
 	$dsc_sng = 'ncwa averaging all variables to scalars - stl_5km.nc & rms';
 	####################
-	if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-	$tst_cmd[0] = "ncwa -h -O $omp_flg -y rms -a lat,lon -p $fl_pth stl_5km.nc $outfile";
-	$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02  $outfile";
-#	$nsr_xpc = "1.974842"; original
-	$nsr_xpc = "2.826392"; # past result = 3.939694
-	go();
-	if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
-
-
-#	# using stl_5km.nc
-#	$tst_cmd[0] = "ncwa -O $omp_flg -y rms  -a lat,lon -p $fl_pth stl_5km.nc 	$dta_dir/stl_5km-ncwa.nc";
-#	$tst_cmd[1] = "ncks -C -H -s \"%f\" -v d2_03  $dta_dir/stl_5km-ncwa.nc"; 
-#	$nsr_xpc = "2.826392";
-#	go();
-
-	if ($notbodi) { #  ipcc too big for bodi
-		#################### begin ncwa benchmark list #1c
-		$opr_nm='ncwa';
-		$dsc_sng = 'ncwa averaging all variables to scalars - ipcc_dly_T85.nc & sqt';
-		####################
-		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncwa -h -O $omp_flg -y sqrt   -a lat,lon -p $fl_pth ipcc_dly_T85.nc $outfile";
-		$tst_cmd[1] = "ncks -C -H -s '%f' -v skanky  $outfile"; 
-		$nsr_xpc = "0.800000";
+	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
+#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+		$tst_cmd[0] = "ncwa -h -O $omp_flg -y rms -a lat,lon -p $fl_pth stl_5km.nc $outfile";
+		$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02  $outfile";
+		$nsr_xpc = "2.826392"; # past result = 3.939694
 		go();
-	}
-	smrz_rgr_rslt(); # and summarize the benchmarks 
+		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
+
+
+	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
+		if ($notbodi) { #  ipcc too big for bodi
+			#################### begin ncwa benchmark list #1c
+			$opr_nm='ncwa';
+			$dsc_sng = 'ncwa averaging all variables to scalars - ipcc_dly_T85.nc & sqt';
+			####################
+#			if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+			$tst_cmd[0] = "ncwa -h -O $omp_flg -y sqrt   -a lat,lon -p $fl_pth ipcc_dly_T85.nc $outfile";
+			$tst_cmd[1] = "ncks -C -H -s '%f' -v skanky  $outfile"; 
+			$nsr_xpc = "0.800000";
+			go();
+		}
+	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
+	
+	# and summarize the benchmarks results
+	smrz_rgr_rslt(); 
 }
 
 
 sub go {
-#	if($dbg_lvl > 0){ print "\ngo($opr_nm): timed = $timed\n";	}
 	
 # Perform tests of requested operator; default is all
 	if (!defined $tst_nbr{$opr_nm}) { 
@@ -839,19 +854,20 @@ sub go {
 	
 	foreach (@tst_cmd){
 		my $md5_chk = 1;
-		&verbosity("\n  ## Part $tst_cmdcnt ## \n");
+		&verbosity("\n\n## Part $tst_cmdcnt ## \n");
 		if ($_ !~ /foo.nc/) {$md5_chk = 0;}
 		my $opcnt = 0;
 		my $md5_dsc_sng = $dsc_sng . "_$tst_cmdcnt";
-		# Add $prefix only to NCO operator commands, not things like 'cut'
-		foreach my $op (@opr_lst_all) {
-			if ($_ =~ m/^$op/ ) {$_ = "$prefix/$_" ;}
+		# Add $prefix only to NCO operator commands, not things like 'cut'.  
+		foreach my $op (@opr_lst_all) { 
+			if ($_ =~ m/^$op/ ) { # if the op is in the main list
+				if ($mpi_prc > 0 && $opr_sng_mpi =~ /$op/) { $_ = $mpi_prfx . $_; } # and in the mpi list
+				else { $_ = $prefix . $_; } # the std prefix
+			}
 		}
-		foreach my $op (@opr_lst_mpi) {
-			if ($_ =~ m/^$op/ ) {$_ = "$mpi_prefix/$_" ;}
-		}
+		
 		# Perform an individual test
-		&verbosity("   Full commandline for [$opr_nm]:\n   $_\n");
+		&verbosity("  Full commandline:\n   $_\n");
 		# timing code using Time::HiRes
 		my $t0;
 		if ($hiresfound) {$t0 = [gettimeofday];}
@@ -876,7 +892,7 @@ sub go {
 		$subbenchmarks{$opr_nm} += $elapsed;
 #		$tst_idx = $tst_nbr{$opr_nm}-1;
 		if($dbg_lvl > 3){print "\t$opr_nm subtest [$t] took $elapsed seconds\n";}
-		&verbosity("\tResult = $result");
+		&verbosity("  Result = $result");
 		
 		#and here, check results by md5 checksum for each step - insert guts of check_nco_results()
 		# have to mod the input string -  suffix with the cycle#
@@ -907,14 +923,14 @@ sub go {
 		if ($nsr_xpc == $result) {
 			$success{$opr_nm}++;
 			printf STDERR (" SVn ok\n");
-	 		&verbosity("\n\tPASSED - Numeric output: [$opr_nm]:\n");
+	 		&verbosity("\n   PASSED - Numeric output: [$opr_nm]:\n");
 		} elsif (abs($result - $nsr_xpc) < 0.02) {
 			$success{$opr_nm}++;
 			printf STDERR (" SVn prov. ok\n");
-	 		&verbosity("\n\t!!!! PASSED PROVISIONALLY ($nsr_xpc vs $result) - Numeric output: [$opr_nm]:\n");
+	 		&verbosity("\n   PASSED PROVISIONALLY ($nsr_xpc vs $result) - Numeric output: [$opr_nm]:\n");
 		} else {
       	&failed($nsr_xpc);
-			&verbosity("\n\tFAILED (expected: $nsr_xpc vs result: $result)- Numeric output: [$opr_nm]:\n");
+			&verbosity("\n   FAILED (expected: $nsr_xpc vs result: $result)- Numeric output: [$opr_nm]:\n");
 		}
 	} elsif ($nsr_xpc =~/\D/)  {# Compare non-numeric tests
 		if ($dbg_lvl > 1){print STDERR "\$nsr_xpc assumed to be alphabetic: $nsr_xpc\n\$result = $result\n";}
@@ -922,14 +938,14 @@ sub go {
 		if (substr($result,0,length($nsr_xpc)) eq $nsr_xpc) {
 			$success{$opr_nm}++;
 			printf STDERR (" SVa ok\n");
-			&verbosity("\n\tPASSED Alphabetic output: [$opr_nm]:\n");
+			&verbosity("\n   PASSED Alphabetic output: [$opr_nm]:\n");
 		} else {
 			&failed($nsr_xpc);
-			&verbosity("\n\tFAILED (expected: $nsr_xpc vs result: $result) Alphabetic output: [$opr_nm]\n");
+			&verbosity("\n   FAILED (expected: $nsr_xpc vs result: $result) Alphabetic output: [$opr_nm]\n");
 		}
 	}  else {  # No result at all?
 		&failed();
-		&verbosity("\nFAILED - No result from [$opr_nm]\n");
+		&verbosity("\n   FAILED - No result from [$opr_nm]\n");
 	}
 	@tst_cmd=(); # Clear test
 	print Total $totbenchmarks{$opr_nm}
@@ -1734,8 +1750,10 @@ sub initialize($$){
 	my $dbg_lvl; # [flg] Debugging level
 	($bch_flg,$dbg_lvl)=@_;
 	# Enumerate operators to test
-	@opr_lst_all = qw( ncap ncdiff ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa net);
-	@opr_lst_mpi = qw(mncbo mpncecat mpncflint mpncpdq mpncra  mpncwa);
+	@opr_lst_all = qw( ncap ncdiff ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa net );
+	@opr_lst_mpi = qw( ncbo ncecat ncflint ncpdq ncra  ncwa );
+	$opr_sng_mpi = "ncbo ncecat ncflint ncpdq ncra  ncwa";
+	
 	if (scalar @ARGV > 0){@opr_lst=@ARGV;}else{@opr_lst=@opr_lst_all;}
 	if (defined $ENV{'MY_BIN_DIR'} &&  $ENV{'MY_BIN_DIR'} ne ""){$MY_BIN_DIR=$ENV{'MY_BIN_DIR'};}
 	else{
@@ -1850,8 +1868,8 @@ sub smrz_rgr_rslt {
 	my $idstring = `uname -a`; chomp($idstring);
 	my $reportstr = "\n\n" . $idstring . "; " . $CCinfo . "; " . $timestamp . "\n";
 	$reportstr .= "\n                    Test Results                Seconds to complete\n";    
-	$reportstr .=      "             --------------------------   --------------------------------\n";    
-	$reportstr .=      "      Test   Success    Failure   Total   WallClock    Real   User  System";
+	$reportstr .=      "             --------------------------   ----------------------------------------\n";    
+	$reportstr .=      "      Test   Success    Failure   Total   WallClock    Real   User  System    Diff";
 	if ($thr_nbr > 0) {$reportstr .= "   (OMP threads = $thr_nbr)\n";}
 	else {$reportstr .= "\n";}
 	my $udp_dat = $idstring . " using: " . $CCinfo . "|" . $cmd_ln . "|";
@@ -1862,8 +1880,10 @@ sub smrz_rgr_rslt {
 		else {$fal_cnt = sprintf "%3d", $failure{$_};}
 		#printf "$_:\tsuccess: $success{$_} of $total\n";
 		if ($total > 0) {
-			$reportstr .= sprintf "%10s:      %3d        %3s     %3d     %6.2f   %6.2f %6.2f  %6.2f\n", $_, $success{$_},  $fal_cnt, $total, $totbenchmarks{$_}, $real_tme{$_}, $usr_tme{$_}, $sys_tme{$_} ;
-			$udp_dat   .= sprintf "%s %3d %3d %6.2f %6.2f %6.2f %6.2f:",$_, $success{$_}, $total, $totbenchmarks{$_},$real_tme{$_}, $usr_tme{$_}, $sys_tme{$_} ;
+			my $io_tm = $real_tme{$_} - $usr_tme{$_} - $sys_tme{$_};
+			$reportstr .= sprintf "%10s:      %3d        %3s     %3d     %6.2f   %6.2f %6.2f  %6.2f  %6.2f\n", $_, $success{$_},  $fal_cnt, $total, $totbenchmarks{$_}, $real_tme{$_}, $usr_tme{$_}, $sys_tme{$_}, $io_tm;
+			
+			$udp_dat   .= sprintf "%s %3d %3d %6.2f %6.2f %6.2f %6.2f %6.2f:",$_, $success{$_}, $total, $totbenchmarks{$_},$real_tme{$_}, $usr_tme{$_}, $sys_tme{$_}, $io_tm ;
 			# above line uses whitespace sep, with ':' separating test names.
 		}
 	}

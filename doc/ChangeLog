@@ -1,3 +1,7 @@
+2005-08-17  Harry Mangalam  <hjm@tacgi.com>
+	* Add MPI bits to nco_bm.pl to test the MPI'ed versions of the 
+        operators.
+        
 2005-08-17  Charlie Zender  <zender@uci.edu>
 
 	* Add --hdr/--header options to ncatted and ncrename
@@ -12,6 +16,10 @@
 	This may break compatibility with netCDF nersion 3.5.x and hence OPeNDAP
 	Currently shrouded by #ifdef NETCDF4 tokens
 	
+2005-08-12  Harry Mangalam  <hjm@tacgi.com>
+	* small mods to nco_bm.pl to track diff in wall vs (sys+user) to 
+		get idea of how much time is lost to I/O (theoretically)
+        
 2005-08-13  Charlie Zender  <zender@uci.edu>
 
 	* Finished ncbo heart transplant: Symmetric subtraction still not working
@@ -32,6 +40,7 @@
 	* Deprecate ctime_r() code from ncatted, put it (deprecated) into ncra
 
 	* Add -4, --hdf, --netcdf4 switches to request HDF storage format
+
 
 2005-08-08  Harry Mangalam  <hjm@tacgi.com>
 
