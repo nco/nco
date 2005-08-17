@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.56 2005-08-17 22:27:30 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.57 2005-08-17 22:45:33 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -595,7 +595,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 		$tst_cmd[0] = "ncbo -h -O $nco_D_flg $omp_flg --op_typ='-' -p $fl_pth ipcc_dly_T85.nc ipcc_dly_T85_00.nc $outfile";
-		if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
+		if($dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
 		$tst_cmd[1] = "ncks -C -H -s '%f' -v sleepy $outfile";
 		$nsr_xpc = "0.000000";	
 		go();
@@ -610,7 +610,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng, files=$fl_cnt\n";}
 		$tst_cmd[0] = "ncea -h -O $nco_D_flg $omp_flg -n $fl_cnt,2,1 -p $fl_pth stl_5km_00.nc $outfile";
-		if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
+		if($dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
 		$tst_cmd[1] = "ncwa -h -O $nco_D_flg $omp_flg -y sqrt -a lat,lon $outfile $outfile";
 		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00  $outfile"; 
 		$nsr_xpc = "1.604304";
@@ -643,7 +643,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 		$tst_cmd[0] = "ncflint -h -O $nco_D_flg   -w '0.5' -p $fl_pth ipcc_dly_T85_00.nc  ipcc_dly_T85_01.nc  $outfile";
-		if($dbg_lvl > 0){print "entire cmd: $tst_cmd[0]\n";}
+		if($dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
 		$tst_cmd[1] = "ncwa -h -O $nco_D_flg $omp_flg -y sqrt -a lat,lon $outfile $outfile";	
 		$tst_cmd[2] = "ncks -C -H -s '%f ' -v d1_00  $outfile"; 
 		$nsr_xpc = "1.800000 1.800000 1.800000 1.800000 1.800000 1.800000 1.800000 1.800000"; 
