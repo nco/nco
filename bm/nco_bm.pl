@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.60 2005-08-18 23:19:57 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.61 2005-08-18 23:41:40 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -1630,20 +1630,16 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 ####################
     $opr_nm='net';
 ####################
-	$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-	$tst_cmd[1]="ncks -h -O $nco_D_flg -v one -p ftp://dust.ess.uci.edu/pub/zender/nco -l ./ in.nc $outfile";
-	$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";
-#	$tst_cmd[3]="mv in_tmp.nc in.nc";
+	$tst_cmd[0]="/bin/rm -f /tmp/in.nc";
+	$tst_cmd[1]="ncks -H -O $nco_D_flg -s '%e' -v one -p ftp://dust.ess.uci.edu/pub/zender/nco -l /tmp in.nc";
 	$dsc_sng="nco 1: FTP protocol (fails if unable to anonymous FTP to dust.ess.uci.edu)";
 	$nsr_xpc= 1.000000e+00;
 	&go();
 
 	# should this still be in the test suite?  Yes, we should test all access methods and make the test passable by anyone by overriding dust.ess.uci.edu with command line argument for $hst_rmt_scp_tst
 	if ($USER eq "zender"){
-		$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-		$tst_cmd[1]="ncks -h -O $nco_D_flg -v one -p dust.ess.uci.edu:nco/data -l ./ in.nc $outfile";
-		$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";
-		$tst_cmd[3]="mv in_tmp.nc in.nc";
+	    $tst_cmd[0]="/bin/rm -f /tmp/in.nc";
+		$tst_cmd[1]="ncks -H -O $nco_D_flg  -s '%e' -v one -p dust.ess.uci.edu:nco/data -l /tmp in.nc";
 		$dsc_sng="nco 2: scp/rcp protocol(fails if no SSH/RSH access to dust.ess.uci.edu)";
 		$nsr_xpc= 1;
 		&go();
@@ -1652,30 +1648,23 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	}
 
 	if (0) {	
-	$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-	$tst_cmd[1]="ncks -h -O $nco_D_flg -v one -p mss:/ZENDER/nc -l ./ in.nc $outfile";
+	    $tst_cmd[0]="/bin/rm -f /tmp/in.nc";
+	$tst_cmd[1]="ncks -H -O $nco_D_flg -v one -p mss:/ZENDER/nc -l /tmp in.nc";
 	$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";
-#	$tst_cmd[3]="mv in_tmp.nc in.nc";
 	$dsc_sng="nco 3: msrcp protocol(fails if not at NCAR)";
 	$nsr_xpc= 1; 
 	&go();
 	} else { print "skipping net test mss: retrieval - not at NCAR.\n";}
 	
 	
-	$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-#	$tst_cmd[0]="ncks -h -O $nco_D_flg -v one -p http://dust.ess.uci.edu/cgpub/zender/nco -l ./ in.nc $outfile";
-	$tst_cmd[1]="ncks -h -O $nco_D_flg -v one -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l ./ in.nc $outfile";
-	$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";
-#	$tst_cmd[3]="mv in_tmp.nc in.nc";
+	    $tst_cmd[0]="/bin/rm -f /tmp/in.nc";
+	$tst_cmd[1]="ncks -H -O $nco_D_flg -s '%e' -v one -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l /tmp in.nc";
 	$dsc_sng="nco 4: HTTP protocol (Will always fail until HTTP implemented in NCO) ";
 	$nsr_xpc= 1; 
 	&go();
 	
 	
-	$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-	$tst_cmd[1]="ncks -C -O -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc $outfile";
-	$tst_cmd[2]="ncks -C -H -s '%e' -v lon $outfile";
-#	$tst_cmd[3]="mv in_tmp.nc in.nc";
+	$tst_cmd[0]="ncks -C -O -d lon,0 -s '%e' -v lon -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc";
 	$dsc_sng="nco 5: HTTP/DODS protocol (fails if not compiled on Linux with make DODS=Y)";
 	$nsr_xpc= 0;
 	&go();	
