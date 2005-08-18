@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.57 2005-08-17 22:45:33 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.58 2005-08-18 00:22:22 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -1756,7 +1756,7 @@ sub initialize($$){
 	# Enumerate operators to test
 	@opr_lst_all = qw( ncap ncdiff ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa net );
 	@opr_lst_mpi = qw( ncbo ncecat ncflint ncpdq ncra  ncwa );
-	$opr_sng_mpi = "ncbo ncecat ncflint ncpdq ncra  ncwa";
+	$opr_sng_mpi = "ncbo ncecat ncflint ncwa"; # ncra, ncpdq MPI'ed but fail
 	
 	if (scalar @ARGV > 0){@opr_lst=@ARGV;}else{@opr_lst=@opr_lst_all;}
 	if (defined $ENV{'MY_BIN_DIR'} &&  $ENV{'MY_BIN_DIR'} ne ""){$MY_BIN_DIR=$ENV{'MY_BIN_DIR'};}
