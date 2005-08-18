@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.61 2005-08-18 23:41:40 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.62 2005-08-18 23:49:47 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -21,6 +21,7 @@ use strict; # Protect all namespaces
 use vars qw(
 $arg_nbr $bch_flg $bm @bm_cmd_ary $bm_dir $cmd_ln $dbg_lvl $dodap $fl_cnt
 $dot_fmt $dot_nbr $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng $dta_dir
+$pth_rmt_scp_tst
 %failure $fl_pth $foo1_fl $foo2_fl $foo_fl $foo_T42_fl $foo_tst $foo_x_fl
 $foo_xy_fl $foo_xymyx_fl $foo_y_fl $foo_yx_fl @ifls $itmp $localhostname
 $md5 $MY_BIN_DIR $notbodi $nsr_xpc $omp_flg $opr_fmt $opr_lng_max @opr_lst
@@ -65,6 +66,7 @@ $mpi_prfx = "";
 $timestamp = `date -u "+%x %R"`; chomp $timestamp;
 $dodap = "FALSE"; # Unless redefined bythe cmdline, it doesn't get set
 $fl_cnt = 32; # nbr of files to process (reduced to 4 if using remote/dods files
+$pth_rmt_scp_tst='dust.ess.uci.edu:/var/www/html/dodsdata';
 
 # other inits
 $localhostname = `hostname`;
@@ -91,6 +93,7 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'log'          => \$wnt_log,    # set if want output logged
 	'mpi_prc=i'    => \$mpi_prc,    # set number of mpi processes
 	'queue'        => \$que,        # if set, bypasses all interactive stuff
+        'pth_rmt_scp_tst' => \$pth_rmt_scp_tst, # [drc] Path to scp regression test file
 	'regress'      => \$rgr,        # test regression 
 	'rgr'          => \$rgr,        # test regression 
 	'test_files=s' => \$tst_fl_cr8, # Create test files "134" does 1,3,4
@@ -1636,16 +1639,11 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	$nsr_xpc= 1.000000e+00;
 	&go();
 
-	# should this still be in the test suite?  Yes, we should test all access methods and make the test passable by anyone by overriding dust.ess.uci.edu with command line argument for $hst_rmt_scp_tst
-	if ($USER eq "zender"){
-	    $tst_cmd[0]="/bin/rm -f /tmp/in.nc";
-		$tst_cmd[1]="ncks -H -O $nco_D_flg  -s '%e' -v one -p dust.ess.uci.edu:nco/data -l /tmp in.nc";
-		$dsc_sng="nco 2: scp/rcp protocol(fails if no SSH/RSH access to dust.ess.uci.edu)";
-		$nsr_xpc= 1;
-		&go();
-	} else {
-		print "skipping net test requiring dust login - only for zender\n";
-	}
+        $tst_cmd[0]="/bin/rm -f /tmp/in.nc";
+	$tst_cmd[1]="ncks -H -O $nco_D_flg  -s '%e' -v one -p $pth_rmt_scp_tst -l /tmp in.nc";
+	$dsc_sng="nco 2: scp/rcp protocol(fails if no SSH/RSH access to dust.ess.uci.edu)";
+	$nsr_xpc= 1;
+	&go();
 
 	if (0) {	
 	    $tst_cmd[0]="/bin/rm -f /tmp/in.nc";
