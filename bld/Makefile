@@ -1,7 +1,8 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.309 2005-08-15 05:12:08 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.310 2005-08-18 03:20:42 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
-# Requires GNU Make. AT&T Make will not process this file.
+# Requires GNU Make---AT&T Make chokes on this file syntax
+
 # scp ~/nco/bld/Makefile dust.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile soot.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile esmf.ess.uci.edu:nco/bld
@@ -11,7 +12,7 @@
 # sudo ln -s -f /usr/local/lib/libnetcdf4.a.gcc-g95 /usr/local/lib/libnetcdf.a
 # make USR_TKN=-DNETCDF4
 
-# Copyright (C) 1994--2004 Charlie Zender
+# Copyright (C) 1994--2005 Charlie Zender
 # This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
 # See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text
 
@@ -180,6 +181,11 @@ endif
 ifeq (${MPI},Y)
 # Prohibit hybrid code for now---turn off OpenMP
  OMP := N
+ifdef MPI_PRC
+ MPI_PRC_SNG := "--mpi_prc=${MPI_PRC}"
+else # endif MPI_PRC
+ MPI_PRC_SNG :=
+endif # endif MPI_PRC
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
 ifdef LINUX_CC
  LINUX_CC := $(subst icc,mpicc,${LINUX_CC})
@@ -1339,17 +1345,17 @@ bench:	bm
 bnch:	bm
 bm:	
 	cd ${MY_BM_DIR}; \
-	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --dbg=0 --bench --udpreport ${THR_NBR_SNG}
+	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --dbg=0 --bench --udpreport ${THR_NBR_SNG} ${MPI_PRC_SNG}
 file:	fl
 fl:	
 	cd ${MY_BM_DIR}; \
-	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --dbg=0 --test_files=A --udpreport ${THR_NBR_SNG}
+	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --dbg=0 --test_files=A --udpreport ${THR_NBR_SNG} ${MPI_PRC_SNG}
 regression:	tst
 rgr:	tst
 test:	tst
 tst:	dat
 	cd ${MY_BM_DIR}; \
-	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --dbg=0 --regress --udpreport ${THR_NBR_SNG}
+	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --dbg=0 --regress --udpreport ${THR_NBR_SNG} ${MPI_PRC_SNG}
 # Targets in dat
 data:	dat
 dat:	${MY_DAT_DIR}/in.nc
@@ -1506,6 +1512,8 @@ dbg:
 	@printf "MDL_PTH = ${MDL_PTH}\n"
 	@printf "MDL_RPM_NST_NM = $(MDL_RPM_NST_NM)\n"
 	@printf "MDL_SRC = ${MDL_SRC}\n"
+	@printf "MPI_PRC = ${MPI_PRC}\n"
+	@printf "MPI_PRC_SNG = ${MPI_PRC_SNG}\n"
 	@printf "NCO_VRS = ${NCO_VRS}\n"
 	@printf "NC_LDFLAGS = $(NC_LDFLAGS)\n"
 	@printf "NC_LIBS = $(NC_LIBS)\n"

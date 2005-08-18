@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.58 2005-08-18 00:22:22 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.59 2005-08-18 03:20:43 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -89,7 +89,7 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'h'            => \$usg,        # explains how to use this thang
 	'help'         => \$usg,        #            ditto
 	'log'          => \$wnt_log,    # set if want output logged
-	'mpi=i'        => \$mpi_prc,    # set number of mpi processes
+	'mpi_prc=i'    => \$mpi_prc,    # set number of mpi processes
 	'queue'        => \$que,        # if set, bypasses all interactive stuff
 	'regress'      => \$rgr,        # test regression 
 	'rgr'          => \$rgr,        # test regression 
@@ -1044,7 +1044,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 ####################
     $opr_nm="ncbo";
 ####################
-	$tst_cmd[0]="ncbo $omp_flg -h -O $nco_D_flg --op_typ='-' -v mss_val_scl in.nc in.nc $outfile";;
+	$tst_cmd[0]="ncbo $omp_flg -h -O $nco_D_flg --op_typ='-' -v mss_val_scl in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%g' -v mss_val_scl $outfile";
 	$dsc_sng="difference scalar missing value";
 	$nsr_xpc= 1.0e36 ; 
@@ -1564,7 +1564,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	$nsr_xpc= 40 ;
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y max -v three_dmn_var_int -a lat in.nc $outfile";;
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y max -v three_dmn_var_int -a lat in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d,' -v three_dmn_var_int $outfile >$foo_fl";
 	$tst_cmd[2]="cut -d, -f 9 $foo_fl";
 	$dsc_sng="Dimension reduction on type int variable with min switch and missing values";
@@ -1575,7 +1575,7 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	$nsr_xpc= 29 ;
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y max -v three_dmn_var_sht -a lat in.nc $outfile";;
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y max -v three_dmn_var_sht -a lat in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d,' -v three_dmn_var_sht $outfile >$foo_fl";
 	$tst_cmd[2]="cut -d, -f 37 $foo_fl";
 	$dsc_sng="Dimension reduction on type short variable with max switch and missing values";
@@ -1587,19 +1587,19 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	&go();
 	
 	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y rms -w lat_wgt -v lat in.nc $outfile 2>$foo_tst";
-	$tst_cmd[1]="ncks -C -H -s '%f' -v lat $outfile";;
+	$tst_cmd[1]="ncks -C -H -s '%f' -v lat $outfile";
 	$dsc_sng="rms with weights";
 	$nsr_xpc= 90 ; 
 	&go();
 	
 	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -w val_half_half -v val_one_one_int in.nc $outfile 2> $foo_tst";
-	$tst_cmd[1]="ncks -C -H -s '%ld' -v val_one_one_int $outfile";;
+	$tst_cmd[1]="ncks -C -H -s '%ld' -v val_one_one_int $outfile";
 	$dsc_sng="weights would cause SIGFPE without dbl_prc patch";
 	$nsr_xpc= 1 ; 
 	&go();
 	
 	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y avg -v val_max_max_sht in.nc $outfile 2> $foo_tst";
-	$tst_cmd[1]="ncks -C -H -s '%d' -v val_max_max_sht $outfile";;
+	$tst_cmd[1]="ncks -C -H -s '%d' -v val_max_max_sht $outfile";
 	$dsc_sng="avg would overflow without dbl_prc patch";
 	$nsr_xpc= 17000 ; 
 	&go();
@@ -1612,14 +1612,14 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 #    $nsr_xpc= -32768 ; # Expected on PentiumIII (Coppermine) gcc 3.4 MEPIS 
 	&go();
 
-	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y min -a lat -v lat -w gw in.nc $outfile";;
-	$tst_cmd[1]="ncks -C -H -s '%g' -v lat $outfile";;
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y min -a lat -v lat -w gw in.nc $outfile";
+	$tst_cmd[1]="ncks -C -H -s '%g' -v lat $outfile";
 	$dsc_sng="min with weights";
 	$nsr_xpc= -900 ; 
 	&go();
 	
-	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y max -a lat -v lat -w gw in.nc $outfile";;
-	$tst_cmd[1]="ncks -C -H -s '%g' -v lat $outfile";;
+	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -y max -a lat -v lat -w gw in.nc $outfile";
+	$tst_cmd[1]="ncks -C -H -s '%g' -v lat $outfile";
 	$dsc_sng="max with weights";
 	$nsr_xpc= 900 ; 
 	&go();
@@ -1631,32 +1631,30 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
     $opr_nm='net';
 ####################
 	$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-	$tst_cmd[1]="ncks -h -O $nco_D_flg -v one -p ftp://dust.ess.uci.edu/pub/zender/nco -l ./ in.nc $outfile";;
-	$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";;
+	$tst_cmd[1]="ncks -h -O $nco_D_flg -v one -p ftp://dust.ess.uci.edu/pub/zender/nco -l ./ in.nc $outfile";
+	$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";
 #	$tst_cmd[3]="mv in_tmp.nc in.nc";
 	$dsc_sng="nco 1: FTP protocol (fails if unable to anonymous FTP to dust.ess.uci.edu)";
 	$nsr_xpc= 1.000000e+00;
 	&go();
 
-		
-	# should this still be in the test suite?  CZ is the only person who can test it.
+	# should this still be in the test suite?  Yes, we should test all access methods and make the test passable by anyone by overriding dust.ess.uci.edu with command line argument for $hst_rmt_scp_tst
 	if ($USER eq "zender"){
 		$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-		$tst_cmd[1]="ncks -h -O $nco_D_flg -v one -p goldhill.cgd.ucar.edu:/home/zender/nco/data -l ./ in.nc $outfile";;
-		$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";;
+		$tst_cmd[1]="ncks -h -O $nco_D_flg -v one -p dust.ess.uci.edu:nco/data -l ./ in.nc $outfile";
+		$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";
 		$tst_cmd[3]="mv in_tmp.nc in.nc";
-		$dsc_sng="nco 2: scp/rcp protocol(fails if no SSH/RSH access to goldhill.cgd.ucar.edu)";
+		$dsc_sng="nco 2: scp/rcp protocol(fails if no SSH/RSH access to dust.ess.uci.edu)";
 		$nsr_xpc= 1;
 		&go();
 	} else {
-		print "skipping net test requiring goldhill login - only for zender\n";
+		print "skipping net test requiring dust login - only for zender\n";
 	}
-	
 
 	if (0) {	
 	$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-	$tst_cmd[1]="ncks -h -O $nco_D_flg -v one -p mss:/ZENDER/nc -l ./ in.nc $outfile";;
-	$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";;
+	$tst_cmd[1]="ncks -h -O $nco_D_flg -v one -p mss:/ZENDER/nc -l ./ in.nc $outfile";
+	$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";
 #	$tst_cmd[3]="mv in_tmp.nc in.nc";
 	$dsc_sng="nco 3: msrcp protocol(fails if not at NCAR)";
 	$nsr_xpc= 1; 
@@ -1665,9 +1663,9 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	
 	
 	$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-#	$tst_cmd[0]="ncks -h -O $nco_D_flg -v one -p http://dust.ess.uci.edu/cgpub/zender/nco -l ./ in.nc $outfile";;
-	$tst_cmd[1]="ncks -h -O $nco_D_flg -v one -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l ./ in.nc $outfile";;
-	$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";;
+#	$tst_cmd[0]="ncks -h -O $nco_D_flg -v one -p http://dust.ess.uci.edu/cgpub/zender/nco -l ./ in.nc $outfile";
+	$tst_cmd[1]="ncks -h -O $nco_D_flg -v one -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l ./ in.nc $outfile";
+	$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";
 #	$tst_cmd[3]="mv in_tmp.nc in.nc";
 	$dsc_sng="nco 4: HTTP protocol (Will always fail until HTTP implemented in NCO) ";
 	$nsr_xpc= 1; 
@@ -1675,8 +1673,8 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	
 	
 	$tst_cmd[0]="/bin/rm -f $outfile;mv in.nc in_tmp.nc";
-	$tst_cmd[1]="ncks -C -O -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc $outfile";;
-	$tst_cmd[2]="ncks -C -H -s '%e' -v lon $outfile";;
+	$tst_cmd[1]="ncks -C -O -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc $outfile";
+	$tst_cmd[2]="ncks -C -H -s '%e' -v lon $outfile";
 #	$tst_cmd[3]="mv in_tmp.nc in.nc";
 	$dsc_sng="nco 5: HTTP/DODS protocol (fails if not compiled on Linux with make DODS=Y)";
 	$nsr_xpc= 0;
@@ -1927,7 +1925,7 @@ sub set_dat_dir {
 				$dta_dir = "$ENV{'DATA'}/nco_bm";
 				my $err = `mkdir -p -m0777 $dta_dir`;
 				if ($err ne "") {die "mkdir err: $dta_dir\n";}
-				#mkdir "$dta_dir",0777 or die "Can't make $dta_dir\n";;
+				#mkdir "$dta_dir",0777 or die "Can't make $dta_dir\n";
 			}
 		} else {
 			die "You have defined a DATA dir ($ENV{'DATA'}) that cannot be written to or read\nfrom or both - please try again.\n stopped";
