@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.62 2005-08-18 23:49:47 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.63 2005-08-19 01:59:58 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -22,7 +22,7 @@ use vars qw(
 $arg_nbr $bch_flg $bm @bm_cmd_ary $bm_dir $cmd_ln $dbg_lvl $dodap $fl_cnt
 $dot_fmt $dot_nbr $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng $dta_dir
 $pth_rmt_scp_tst
-%failure $fl_pth $foo1_fl $foo2_fl $foo_fl $foo_T42_fl $foo_tst $foo_x_fl
+%failure $fl_pth $foo1_fl $foo2_fl $foo_fl $foo_avg_fl $foo_T42_fl $foo_tst $foo_x_fl
 $foo_xy_fl $foo_xymyx_fl $foo_y_fl $foo_yx_fl @ifls $itmp $localhostname
 $md5 $MY_BIN_DIR $notbodi $nsr_xpc $omp_flg $opr_fmt $opr_lng_max @opr_lst
 @opr_lst_all $opr_nm $orig_outfile $outfile $prefix $prfxd $prg_nm $que $rcd
@@ -437,6 +437,7 @@ $prefix   = "$tmr_app $MY_BIN_DIR/"; $prfxd = 1; $timed = 1;
 $outfile       = "$dta_dir/foo.nc"; # replaces outfile in tests, typically 'foo.nc'
 $orig_outfile  = "$dta_dir/foo.nc";
 $foo_fl        = "$dta_dir/foo";
+$foo_avg_fl    = "$dta_dir/foo_avg.nc";
 $foo_tst       = "$dta_dir/foo.tst";
 $foo1_fl       = "$dta_dir/foo1.nc";
 $foo2_fl       = "$dta_dir/foo2.nc";
@@ -1091,8 +1092,8 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	$nsr_xpc= 0 ; 
 	&go();
 
-	$tst_cmd[0]="ncwa $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl in.nc foo_avg.nc";
-	$tst_cmd[1]="ncbo $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl in.nc foo_avg.nc foo.nc";
+	$tst_cmd[0]="ncwa $omp_flg -C -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl in.nc $foo_avg_fl";
+	$tst_cmd[1]="ncbo $omp_flg -C -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl in.nc $foo_avg_fl $outfile";
 	$tst_cmd[2]="ncks -C -H -d time,3 -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="Difference which tests broadcasting (TODO nco550,551,552)";
 	$nsr_xpc= -1.0 ; 
@@ -1635,37 +1636,49 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 ####################
 	$tst_cmd[0]="/bin/rm -f /tmp/in.nc";
 	$tst_cmd[1]="ncks -H -O $nco_D_flg -s '%e' -v one -p ftp://dust.ess.uci.edu/pub/zender/nco -l /tmp in.nc";
-	$dsc_sng="nco 1: FTP protocol (fails if unable to anonymous FTP to dust.ess.uci.edu)";
+	$dsc_sng="Anonymous FTP protocol (requires anonymous FTP access to dust.ess.uci.edu)";
+	$nsr_xpc= 1.000000e+00;
+	&go();
+
+	$tst_cmd[0]="/bin/rm -f /tmp/in.nc";
+	$tst_cmd[1]="ncks -H -O $nco_D_flg -s '%e' -v one -p sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco -l /tmp in.nc";
+	$dsc_sng="Secure FTP (SFTP) protocol (requires SFTP access to dust.ess.uci.edu)";
 	$nsr_xpc= 1.000000e+00;
 	&go();
 
         $tst_cmd[0]="/bin/rm -f /tmp/in.nc";
 	$tst_cmd[1]="ncks -H -O $nco_D_flg  -s '%e' -v one -p $pth_rmt_scp_tst -l /tmp in.nc";
-	$dsc_sng="nco 2: scp/rcp protocol(fails if no SSH/RSH access to dust.ess.uci.edu)";
+	$dsc_sng="scp/rcp protocol (requires authorized SSH/RSH access to dust.ess.uci.edu)";
 	$nsr_xpc= 1;
 	&go();
 
-	if (0) {	
-	    $tst_cmd[0]="/bin/rm -f /tmp/in.nc";
-	$tst_cmd[1]="ncks -H -O $nco_D_flg -v one -p mss:/ZENDER/nc -l /tmp in.nc";
-	$tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";
-	$dsc_sng="nco 3: msrcp protocol(fails if not at NCAR)";
-	$nsr_xpc= 1; 
-	&go();
-	} else { print "skipping net test mss: retrieval - not at NCAR.\n";}
-	
-	
-	    $tst_cmd[0]="/bin/rm -f /tmp/in.nc";
-	$tst_cmd[1]="ncks -H -O $nco_D_flg -s '%e' -v one -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l /tmp in.nc";
-	$dsc_sng="nco 4: HTTP protocol (Will always fail until HTTP implemented in NCO) ";
-	$nsr_xpc= 1; 
-	&go();
-	
-	
 	$tst_cmd[0]="ncks -C -O -d lon,0 -s '%e' -v lon -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc";
-	$dsc_sng="nco 5: HTTP/DODS protocol (fails if not compiled on Linux with make DODS=Y)";
+	$dsc_sng="OPeNDAP protocol (requires OPeNDAP/DODS-enabled NCO)";
 	$nsr_xpc= 0;
 	&go();	
+	
+	if($USER eq 'zender'){	
+	    $tst_cmd[0]="/bin/rm -f /tmp/etr_A4.SRESA1B_9.CCSM.atmd.2000_cat_2099.nc";
+	    $tst_cmd[1]="ncks -H -O $nco_D_flg -s '%e' -d time,0 -v time -p ftp://climate.llnl.gov//sresa1b/atm/yr/etr/ncar_ccsm3_0/run9 -l /tmp etr_A4.SRESA1B_9.CCSM.atmd.2000_cat_2099.nc";
+	    $dsc_sng="Password-protected FTP protocol (requires .netrc-based FTP access to climate.llnl.gov)";
+	    $nsr_xpc= 182.5;
+	    &go();
+
+	    $tst_cmd[0]="/bin/rm -f /tmp/in.nc";
+	    $tst_cmd[1]="ncks -H -O $nco_D_flg -v one -p mss:/ZENDER/nc -l /tmp in.nc";
+	    $tst_cmd[2]="ncks -C -H -s '%e' -v one $outfile";
+	    $dsc_sng="msrcp protocol (requires msrcp and authorized access to NCAR MSS)";
+	    $nsr_xpc= 1; 
+	    &go();
+	} else { print "Skipping net tests of mss: and password protected FTP protocol retrieval---user not zender\n";}
+
+	if($USER eq 'zender' || $USER eq 'hjm'){	
+	    $tst_cmd[0]="/bin/rm -f /tmp/in.nc";
+	    $tst_cmd[1]="ncks -H -O $nco_D_flg -s '%e' -v one -p wget://dust.ess.uci.edu/nco -l /tmp in.nc";
+	    $dsc_sng="HTTP protocol (requires developers to implement wget in NCO nudge nudge wink wink)";
+	    $nsr_xpc= 1; 
+	    &go();
+	} else { print "Skipping net test wget: protocol retrieval---user not zender or hjm\n";}
 	
 } # end of perform_test()
 

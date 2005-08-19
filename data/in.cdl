@@ -40,14 +40,18 @@ variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.64 2005-07-09 00:38:53 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.65 2005-08-19 01:59:58 zender Exp $";
 
 	float lat(lat);
+	lat:long_name = "Latitude";
+	lat:units = "degrees_north";
+
 	float lat_var(lat);
 	float lat_wgt(lat);
-	float lev(lev);
 	float lon_T42(lon_T42);
 	float lat_T42(lat_T42);
+
+	float lev(lev);
 	lev:purpose = "Monotonically increasing coordinate pressure";
 	lev:units = "hybrid_sigma_pressure";
 	lev:positive = "down";
@@ -56,9 +60,14 @@ variables:
 	lev:P0_var = "P0";
 	lev:PS_var = "PS";
 	lev:bounds = "ilev";
+
 	float rlev(rlev);
 	rlev:purpose = "Monotonically decreasing coordinate pressure";
+
 	float lon(lon);
+	lon:long_name = "Latitude";
+	lon:units = "degrees_north";
+
 	double time(time);
 	float lsmlev(lsmlev);
 	lsmlev:purpose = "Homebrew level coordinate for LSM";

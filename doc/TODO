@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.571 2005-08-17 13:02:11 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.572 2005-08-19 01:59:58 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -284,7 +284,9 @@ nco550. DAP 3.5.1 triggers reproducible double-free() memory error in
 	ncbo step of ncra regression test 16.
 	ncwa -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
 	ncbo -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
-        Segmentation fault
+        ncks -C -H -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc
+        ncks -C -H -v rec_var_flt_mss_val_dbl ~/foo_avg.nc
+        ncks -C -H -d time,3 -v rec_var_flt_mss_val_dbl ~/foo.nc
 nco552. ncbo bug comes down to this: ncbo is not symmetric w/r/t fl_1, fl_2
 nco557. ashes FTP resolver does not find domain (sends "user anonymous zender@ashes.")
 nco559. bm: Add bm for ESG access?
