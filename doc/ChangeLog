@@ -1,3 +1,8 @@
+2005-08-19  Harry Mangalam  <hjm@tacgi.com>
+
+	* Mods to nco_bm.pl to include but skip flaky mpi versions of ncpdq ncra
+	* added alias line to accept mpncra
+
 2005-08-19 Charlie Zender <zender@uci.edu>
 
 	* Invert order of operands given to nco_var_sbt by ncbo

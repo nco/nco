@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.22 2005-04-19 04:37:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.23 2005-08-19 20:47:24 mangalam Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -68,6 +68,7 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
        then operation type may be implied by program name itself */
     if(!strcmp(prg_nm,"ncadd")) return nco_op_add;
     if(!strcmp(prg_nm,"mpncbo")) return nco_op_sbt;
+    if(!strcmp(prg_nm,"mpncdiff")) return nco_op_sbt;
     if(!strcmp(prg_nm,"ncbo")) return nco_op_sbt;
     if(!strcmp(prg_nm,"ncdiff")) return nco_op_sbt;
     if(!strcmp(prg_nm,"ncsub")) return nco_op_sbt;

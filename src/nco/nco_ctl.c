@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.97 2005-08-15 01:48:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.98 2005-08-19 20:47:24 mangalam Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -283,6 +283,7 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   else if(!strcmp(nm_out_tmp,"mpncbo")){*prg_lcl=ncbo;}
   else if(!strcmp(nm_out_tmp,"ncadd")){*prg_lcl=ncbo;}
   else if(!strcmp(nm_out_tmp,"ncdiff")){*prg_lcl=ncbo;}
+  else if(!strcmp(nm_out_tmp,"mpncdiff")){*prg_lcl=ncbo;}
   else if(!strcmp(nm_out_tmp,"ncsub")){*prg_lcl=ncbo;}
   else if(!strcmp(nm_out_tmp,"ncsubtract")){*prg_lcl=ncbo;}
   else if(!strcmp(nm_out_tmp,"ncmult")){*prg_lcl=ncbo;}
@@ -291,6 +292,7 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   /* End synonyms for ncbo */
   else if(!strcmp(nm_out_tmp,"ncflint")){*prg_lcl=ncflint;}
   else if(!strcmp(nm_out_tmp,"mpncflint")){*prg_lcl=ncflint;}
+  else if(!strcmp(nm_out_tmp,"mpncra")){*prg_lcl=ncra;}
   else if(!strcmp(nm_out_tmp,"ncwa")){*prg_lcl=ncwa;}
   else if(!strcmp(nm_out_tmp,"mpncwa")){*prg_lcl=ncwa;}
   else if(!strcmp(nm_out_tmp,"ncrcat")){*prg_lcl=ncrcat;}
