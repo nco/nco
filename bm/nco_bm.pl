@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.64 2005-08-19 20:47:24 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.65 2005-08-19 21:58:23 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -1644,24 +1644,24 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 	$tst_cmd[0]="/bin/rm -f /tmp/in.nc";
 	$tst_cmd[1]="ncks -H -O $nco_D_flg -s '%e' -v one -p ftp://dust.ess.uci.edu/pub/zender/nco -l /tmp in.nc";
 	$dsc_sng="Anonymous FTP protocol (requires anonymous FTP access to dust.ess.uci.edu)";
-	$nsr_xpc= 1.000000e+00;
+	$nsr_xpc= 1.000000e+00 ;
 	&go();
 
 	$tst_cmd[0]="/bin/rm -f /tmp/in.nc";
 	$tst_cmd[1]="ncks -H -O $nco_D_flg -s '%e' -v one -p sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco -l /tmp in.nc";
 	$dsc_sng="Secure FTP (SFTP) protocol (requires SFTP access to dust.ess.uci.edu)";
-	$nsr_xpc= 1.000000e+00;
+	$nsr_xpc= 1.000000e+00 ;
 	&go();
 
 	$tst_cmd[0]="/bin/rm -f /tmp/in.nc";
 	$tst_cmd[1]="ncks -H -O $nco_D_flg  -s '%e' -v one -p $pth_rmt_scp_tst -l /tmp in.nc";
-	$dsc_sng="scp/rcp protocol (requires authorized SSH/RSH access to dust.ess.uci.edu)";
-	$nsr_xpc= 1;
+	$dsc_sng="SSH protocol (requires authorized SSH/scp access to dust.ess.uci.edu)";
+	$nsr_xpc= 1 ;
 	&go();
 
 	$tst_cmd[0]="ncks -C -O -d lon,0 -s '%e' -v lon -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc";
 	$dsc_sng="OPeNDAP protocol (requires OPeNDAP/DODS-enabled NCO)";
-	$nsr_xpc= 0;
+	$nsr_xpc= 0 ;
 	&go();	
 	
 	if($USER eq 'zender'){	

@@ -1,15 +1,20 @@
 2005-08-19  Harry Mangalam  <hjm@tacgi.com>
 
 	* Mods to nco_bm.pl to include but skip flaky mpi versions of ncpdq ncra
+
 	* added alias line to accept mpncra
 
 2005-08-19 Charlie Zender <zender@uci.edu>
 
-	* Invert order of operands given to nco_var_sbt by ncbo
+	* Invert order of operands given to nco_var_sbt() by ncbo
 	This fixes numerics of ncbo regression TODO 550
+	However, operand order to nco_var_[sbt,dvd,...] is non-intuitive
+	and should be reversed NCO-wide in the future (now TODO 576)	
 	Memory leak caused by two list re-write remains
 
 2005-08-18 Charlie Zender <zender@uci.edu>
+
+	* Add SFTP and .netrc-based password-protected FTP regression tests
 
 	* Add SFTP and .netrc-based password-protected FTP (to ESG) regression tests
 	
@@ -40,6 +45,7 @@
 	Currently shrouded by #ifdef NETCDF4 tokens
 	
 2005-08-12  Harry Mangalam  <hjm@tacgi.com>
+
 	* small mods to nco_bm.pl to track diff in wall vs (sys+user) to 
 		get idea of how much time is lost to I/O (theoretically)
         
