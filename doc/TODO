@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.573 2005-08-19 20:22:04 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.574 2005-08-19 22:20:13 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -321,6 +321,10 @@ nco575. Add --hdr/--header options to syntax in nco_ctl.c and nco.texi
         How to do this for options without short counterparts?
         Also --cmp/--compiler for ncks
 nco576. Re-order arguments so var_sbt computes op2:=op1-op2 rather than op2:=op2-op1
+nco577. ncbo: get rid of dangling pointers in var_1, var_2 after ncap_var_cnf_dmn()
+nco578. Use ncbo.c as template for [mp]ncflint re-write
+nco579. Merge ncbo.c changes into mpncbo.c
+nco580. 
 
 OPeNDAP:
 Archive sample DAP accesses:
