@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.58 2005-08-19 20:22:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.59 2005-08-19 21:59:38 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.58 2005-08-19 20:22:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.58 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.59 2005-08-19 21:59:38 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.59 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim_1;
@@ -492,6 +492,9 @@ main(int argc,char **argv)
     /* Find and set variable dmn_nbr, ID, mss_val, type in second file */
     (void)nco_var_mtd_refresh(in_id_2,var_prc_2[idx]);
     
+    /* Read hyperslab from second file */
+    (void)nco_var_get(in_id_2,var_prc_2[idx]);
+
     /* Determine whether var1 and var2 conform */
     if(var_prc_1[idx]->nbr_dim == var_prc_2[idx]->nbr_dim){
       int dmn_idx;
@@ -506,12 +509,9 @@ main(int argc,char **argv)
 	  nco_exit(EXIT_FAILURE);
 	} /* endif */
       } /* end loop over dmn_idx */
-      
-      /* Read hyperslab from second file */
-      (void)nco_var_get(in_id_2,var_prc_2[idx]);
     }else{ /* var_prc_out[idx]->nbr_dim != var_prc_1[idx]->nbr_dim) */
-      /* Number of dimensions do not match, attempt to broadcast variables */
-      (void)nco_var_get(in_id_2,var_prc_2[idx]);
+      /* Number of dimensions do not match, attempt to broadcast variables 
+	 fxm: broadcasting here leads to memory leak later since var_[1,2] does not know */
       (void)ncap_var_cnf_dmn(&var_prc_1[idx],&var_prc_2[idx]);
     } /* end else */
     
@@ -598,16 +598,27 @@ main(int argc,char **argv)
   if(nbr_dmn_xtr_2 > 0) dim_2=nco_dmn_lst_free(dim_2,nbr_dmn_xtr_2);
   if(nbr_dmn_xtr_1 > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr_1);
   /* Free variable lists */
-  if(nbr_xtr_1 > 0) var_1=nco_var_lst_free(var_1,nbr_xtr_1);
-  /* fxm: TODO 550 double-free when variables do not conform */
-  /*  if(nbr_xtr_2 > 0) var_2=nco_var_lst_free(var_2,nbr_xtr_2);*/
+  /* fxm: TODO 550 double-free when variables do not conform
+     Memory had no leak when variables do conform */
+  if(nbr_var_prc_1 > 0) var_prc_1=nco_var_lst_free(var_prc_1,nbr_var_prc_1);
+  if(nbr_var_fix_1 > 0) var_fix_1=nco_var_lst_free(var_fix_1,nbr_var_fix_1);
+  if(nbr_var_prc_2 > 0) var_prc_2=nco_var_lst_free(var_prc_2,nbr_var_prc_2);
+  if(nbr_var_fix_2 > 0) var_fix_2=nco_var_lst_free(var_fix_2,nbr_var_fix_2);
+  var_1=(var_sct **)nco_free(var_1);
+  var_2=(var_sct **)nco_free(var_2);
+  if(nbr_xtr_1 > 0) var_out=nco_var_lst_free(var_out,nbr_xtr_1);
+  var_prc_out=(var_sct **)nco_free(var_prc_out);
+  var_fix_out=(var_sct **)nco_free(var_fix_out);
+
+  /*  if(nbr_xtr_1 > 0) var_1=nco_var_lst_free(var_1,nbr_xtr_1);
+  if(nbr_xtr_2 > 0) var_2=nco_var_lst_free(var_2,nbr_xtr_2);
   if(nbr_xtr_1 > 0) var_out=nco_var_lst_free(var_out,nbr_xtr_1);
   var_prc_1=(var_sct **)nco_free(var_prc_1);
   var_prc_2=(var_sct **)nco_free(var_prc_2);
   var_prc_out=(var_sct **)nco_free(var_prc_out);
   var_fix_1=(var_sct **)nco_free(var_fix_1);
   var_fix_2=(var_sct **)nco_free(var_fix_2);
-  var_fix_out=(var_sct **)nco_free(var_fix_out);
+  var_fix_out=(var_sct **)nco_free(var_fix_out); */
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
