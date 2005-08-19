@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.60 2005-08-19 22:20:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.61 2005-08-19 22:21:56 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -82,7 +82,6 @@
 int 
 main(int argc,char **argv)
 {
-  bool DO_CONFORM; /* Did nco_var_cnf_dmn() find truly conforming variables? */
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -94,7 +93,6 @@ main(int argc,char **argv)
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
-  bool MUST_CONFORM=True; /* Must nco_var_cnf_dmn() find truly conforming variables? */
   bool CNV_CCM_CCSM_CF;
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   
@@ -113,8 +111,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.60 2005-08-19 22:20:15 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.60 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.61 2005-08-19 22:21:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.61 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim_1;
@@ -477,7 +475,7 @@ main(int argc,char **argv)
   /* OpenMP notes:
      shared(): msk and wgt are not altered within loop
      private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) private(DO_CONFORM,MUST_CONFORM,idx) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1,in_id_2,nbr_dmn_xtr_1,nbr_var_prc_1,nbr_var_prc_2,nco_op_typ,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
+#pragma omp parallel for default(none) private(idx) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1,in_id_2,nbr_dmn_xtr_1,nbr_var_prc_1,nbr_var_prc_2,nco_op_typ,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
 #endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc_1;idx++){
     int has_mss_val=False;
