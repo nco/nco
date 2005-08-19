@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.57 2005-08-15 05:12:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.58 2005-08-19 20:22:04 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.57 2005-08-15 05:12:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.57 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.58 2005-08-19 20:22:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.58 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim_1;
@@ -533,20 +533,20 @@ main(int argc,char **argv)
     /* Perform specified binary operation */
     switch(nco_op_typ){
     case nco_op_add: /* [enm] Add file_1 to file_2 */
-      (void)nco_var_add(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,mss_val,var_prc_1[idx]->val,var_prc_2[idx]->val); break;
+      (void)nco_var_add(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,mss_val,var_prc_2[idx]->val,var_prc_1[idx]->val); break;
     case nco_op_mlt: /* [enm] Multiply file_1 by file_2 */
-      (void)nco_var_mlt(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,mss_val,var_prc_1[idx]->val,var_prc_2[idx]->val); break;
+      (void)nco_var_mlt(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,mss_val,var_prc_2[idx]->val,var_prc_1[idx]->val); break;
     case nco_op_dvd: /* [enm] Divide file_1 by file_2 */
-      (void)nco_var_dvd(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,mss_val,var_prc_1[idx]->val,var_prc_2[idx]->val); break;
+      (void)nco_var_dvd(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,mss_val,var_prc_2[idx]->val,var_prc_1[idx]->val); break;
     case nco_op_sbt: /* [enm] Subtract file_2 from file_1 */
-      (void)nco_var_sbt(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,mss_val,var_prc_1[idx]->val,var_prc_2[idx]->val); break;
+      (void)nco_var_sbt(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,mss_val,var_prc_2[idx]->val,var_prc_1[idx]->val); break;
     default: /* Other defined nco_op_typ values are valid for ncra(), ncrcat(), ncwa(), not ncbo() */
       (void)fprintf(fp_stdout,"%s: ERROR Illegal nco_op_typ in binary operation\n",prg_nm);
       nco_exit(EXIT_FAILURE);
       break;
     } /* end case */
     
-    var_prc_1[idx]->val.vp=nco_free(var_prc_1[idx]->val.vp);
+    var_prc_2[idx]->val.vp=nco_free(var_prc_2[idx]->val.vp);
 
 #ifdef _OPENMP
 #pragma omp critical
@@ -554,12 +554,12 @@ main(int argc,char **argv)
     { /* begin OpenMP critical */
       /* Copy result to output file and free workspace buffer */
       if(var_prc_1[idx]->nbr_dim == 0){
-	(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_2[idx]->val.vp,var_prc_out[idx]->type);
+	(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_1[idx]->val.vp,var_prc_out[idx]->type);
       }else{ /* end if variable is scalar */
-	(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp,var_prc_out[idx]->type);
+	(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_1[idx]->val.vp,var_prc_out[idx]->type);
       } /* end else */
     } /* end OpenMP critical */
-    var_prc_2[idx]->val.vp=nco_free(var_prc_2[idx]->val.vp);
+    var_prc_1[idx]->val.vp=nco_free(var_prc_1[idx]->val.vp);
     
   } /* end (OpenMP parallel for) loop over idx */
   if(dbg_lvl > 0) (void)fprintf(stderr,"\n");

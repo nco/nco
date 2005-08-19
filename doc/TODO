@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.572 2005-08-19 01:59:58 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.573 2005-08-19 20:22:04 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -289,8 +289,6 @@ nco550. DAP 3.5.1 triggers reproducible double-free() memory error in
         ncks -C -H -d time,3 -v rec_var_flt_mss_val_dbl ~/foo.nc
 nco552. ncbo bug comes down to this: ncbo is not symmetric w/r/t fl_1, fl_2
 nco557. ashes FTP resolver does not find domain (sends "user anonymous zender@ashes.")
-nco559. bm: Add bm for ESG access?
-        ncks -O -R -D 3 -p ftp://climate.llnl.gov/sresa1b/atm/mo/tas/ncar_ccsm3_0/run1 -l /tmp tas_A1.SRESA1B_1.CCSM.atmm.2000-01_cat_2099-12.nc ~/foo.nc
 nco560. Change FTP access script to facilitate mget *?
 	NCO cannot process files obtained this way unless mget feeds
 	information on files obtained back to main()
@@ -322,7 +320,7 @@ nco573. Consolidate -4, -Z into one option a la ncks --fl_fmt
 nco575. Add --hdr/--header options to syntax in nco_ctl.c and nco.texi
         How to do this for options without short counterparts?
         Also --cmp/--compiler for ncks
-nco576. 
+nco576. Re-order arguments so var_sbt computes op2:=op1-op2 rather than op2:=op2-op1
 
 OPeNDAP:
 Archive sample DAP accesses:
