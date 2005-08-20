@@ -1,13 +1,21 @@
 2005-08-19 Charlie Zender  <zender@uci.edu>
 
-	* Plug memory leak caused by ncbo two list re-write
-	ncbo works better than ever as far as I can tell. Now it:
+	* ncbo status: Works better than ever as far as I can tell. Now it:
 	1. Correctly handles cases where input variable orders are different
 	2. Correctly diagnoses (and attempts to broadcast) mis-matched dimensions
 	3. Can serve as template for similar [mp]ncflint re-write (TODO 578)
 	4. Improved logic needs to be merged into mpncbo.c so mpncbo 
-	passes (currently deprecated) regression test ncbo #8 (TODO 579).
-	
+	   passes (currently deprecated) regression test ncbo #8 (TODO 579).
+	5. Works well when nbr_xtr_1>nbr_xtr_2 so long as discrepant
+	   variables are type fix not type prc but needs list merge to
+	   work when nbr_xtr_1<nbr_xtr_2 (TODO 581).
+	6. Works for rank(var_1) > rank(var_2), not rank(var_2) > rank(var_1) 
+	   Pre-compute broadcast size before var_def(out_id,var_out) (TODO 552)
+
+	* Completely fixes TODO 550. Serial NCO regression test is spotless again.
+
+	* Plug memory leak caused by ncbo two list re-write 
+
 2005-08-19  Harry Mangalam  <hjm@tacgi.com>
 
 	* Mods to nco_bm.pl to include but skip flaky mpi versions of ncpdq ncra
