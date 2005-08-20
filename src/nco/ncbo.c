@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.63 2005-08-20 03:22:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.64 2005-08-20 03:26:19 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.63 2005-08-20 03:22:52 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.63 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.64 2005-08-20 03:26:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.64 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim_1;
@@ -512,7 +512,7 @@ main(int argc,char **argv)
 
       /* Die gracefully on unsupported features... */
       if(var_prc_1[idx]->nbr_dim < var_prc_2[idx]->nbr_dim){
-	(void)fprintf(fp_stdout,"%s: ERROR Variable %s in first file has lesser rank than variable %s in second file (%d < %d). This feature is NCO TODO 552.\n",prg_nm,var_prc_1[idx]->nm,var_prc_1[idx]->nbr_dim,var_prc_2[idx]->nbr_dim);
+	(void)fprintf(fp_stdout,"%s: ERROR Variable %s has lesser rank in first file than in second file (%d < %d). This feature is NCO TODO 552.\n",prg_nm,var_prc_1[idx]->nm,var_prc_1[idx]->nbr_dim,var_prc_2[idx]->nbr_dim);
 	nco_exit(EXIT_FAILURE);
       } /* endif */
 
