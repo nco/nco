@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.66 2005-08-19 22:04:14 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.67 2005-08-20 00:26:09 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -1098,10 +1098,10 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 	$tst_cmd[0]="ncwa $omp_flg -C -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl in.nc $foo_avg_fl";
 	$tst_cmd[1]="ncbo $omp_flg -C -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl in.nc $foo_avg_fl $outfile";
 	$tst_cmd[2]="ncks -C -H -d time,3 -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
-	$dsc_sng="Difference which tests broadcasting (TODO nco550,551,552)";
+	$dsc_sng="Difference which tests broadcasting and changing variable IDs";
 	$nsr_xpc= -1.0 ; 
 	&go();
-	} else { print "NB: for MPI, last ncra test skipped due to ncbo failure.\n";}
+	} else { print "NB: for MPI, last ncbo test skipped due to mpncwa failure.\n";}
 
 }
 

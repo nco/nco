@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.574 2005-08-19 22:20:13 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.575 2005-08-20 00:26:09 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -279,16 +279,23 @@ nco542. Put batch scripts, executables in ${DATA}/nco_bm/CASEID? Where to put cr
 nco546. Use makeatletter command in CCSM example in nco.texi?
 nco547. Format CCSM example in nco.texi
 nco548. Hyper-link all switches to explanatory sections?
-nco549. Automagically generate opaque-type I/O symbols in nco_typ.h
+nco549. Automagically generate opaque-type I/O symbols in nco_typ.h: Pending deluge of new types in netCDF4 makes this highly desirable
 nco550. DAP 3.5.1 triggers reproducible double-free() memory error in
 	ncbo step of ncra regression test 16.
-	ncwa -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc
-	ncbo -O -C -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
-        ncks -C -H -v rec_var_flt_mss_val_dbl ~/nco/data/in.nc
+        ncra -Y ncrcat -h -O -v rec_var_flt_mss_val_dbl -p ~/nco/data in.nc in.nc ~/foo_cat.nc
+        ncks -C -H -v rec_var_flt_mss_val_dbl ~/foo_cat.nc
+        ncra -h -O -y avg -v rec_var_flt_mss_val_dbl -p ~/nco/data in.nc in.nc ~/foo_avg.nc
         ncks -C -H -v rec_var_flt_mss_val_dbl ~/foo_avg.nc
-        ncks -C -H -d time,3 -v rec_var_flt_mss_val_dbl ~/foo.nc
-nco552. ncbo bug comes down to this: ncbo is not symmetric w/r/t fl_1, fl_2
-nco557. ashes FTP resolver does not find domain (sends "user anonymous zender@ashes.")
+        ncwa -h -O -a time ~/foo_avg.nc ~/foo_avg.nc
+        ncks -C -H -v rec_var_flt_mss_val_dbl ~/foo_avg.nc
+        ncbo -h -O -v rec_var_flt_mss_val_dbl ~/foo_cat.nc ~/foo_avg.nc ~/foo.nc
+        ncks -C -H -v rec_var_flt_mss_val_dbl ~/foo.nc
+        ncra -h -O -y rms -v rec_var_flt_mss_val_dbl ~/foo.nc ~/foo.nc
+        ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl ~/foo.nc
+
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncbo -h -O -v rec_var_flt_mss_val_dbl ~/foo_cat.nc ~/foo_avg.nc ~/foo.nc > ~/foo 2>&1
+
+nco552. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 1: allow smaller variables to be in file_1 (pre-compute broadcast size and place in var_out before var_def(out_id,var_out))
 nco560. Change FTP access script to facilitate mget *?
 	NCO cannot process files obtained this way unless mget feeds
 	information on files obtained back to main()
@@ -315,16 +322,17 @@ nco569. bm: Add SRB test
         Sput ~/nco/data/in.nc nco/data
         Sget nco/data/in.nc
 nco570. Merge ncatted/ncrename file opens into nco_fl_out_open()
-nco571. ncbo fix double-free() caused by ncap_var_cnf_dmn() (related to TODO 550)
 nco573. Consolidate -4, -Z into one option a la ncks --fl_fmt
 nco575. Add --hdr/--header options to syntax in nco_ctl.c and nco.texi
         How to do this for options without short counterparts?
         Also --cmp/--compiler for ncks
 nco576. Re-order arguments so var_sbt computes op2:=op1-op2 rather than op2:=op2-op1
 nco577. ncbo: get rid of dangling pointers in var_1, var_2 after ncap_var_cnf_dmn()
-nco578. Use ncbo.c as template for [mp]ncflint re-write
-nco579. Merge ncbo.c changes into mpncbo.c
-nco580. 
+nco578. ncbo: Use ncbo.c as template for [mp]ncflint re-write
+nco579. ncbo: Merge ncbo.c changes into mpncbo.c
+nco580. fl_mk_lcl(): Add wget protocol to handle non-Opendap HTTP
+nco581. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 2: allow nbr_xtr_out=max(nbr_xtr_1,nbr_xtr_2) when nbr_xtr_2>nbr_xtr_1 if discrepant variables are type fix (e.g., grid properties) not type prc (NB: already works for nbr_xtr_1>nbr_xtr_2)
+nco582. 
 
 OPeNDAP:
 Archive sample DAP accesses:
