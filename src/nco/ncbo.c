@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.61 2005-08-19 22:21:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.62 2005-08-20 00:26:10 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.61 2005-08-19 22:21:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.61 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.62 2005-08-20 00:26:10 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.62 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim_1;
@@ -392,12 +392,15 @@ main(int argc,char **argv)
   var_out=(var_sct **)nco_malloc(nbr_xtr_1*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr_1;idx++){
     var_1[idx]=nco_var_fll(in_id_1,xtr_lst_1[idx].id,xtr_lst_1[idx].nm,dim_1,nbr_dmn_xtr_1);
-    var_2[idx]=nco_var_fll(in_id_2,xtr_lst_2[idx].id,xtr_lst_2[idx].nm,dim_2,nbr_dmn_xtr_2);
     var_out[idx]=nco_var_dpl(var_1[idx]);
     (void)nco_xrf_var(var_1[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
-  /* Extraction list no longer needed */
+  for(idx=0;idx<nbr_xtr_2;idx++){
+    var_2[idx]=nco_var_fll(in_id_2,xtr_lst_2[idx].id,xtr_lst_2[idx].nm,dim_2,nbr_dmn_xtr_2);
+  } /* end loop over idx */
+
+  /* Extraction lists no longer needed */
   xtr_lst_1=nco_nm_id_lst_free(xtr_lst_1,nbr_xtr_1);
   xtr_lst_2=nco_nm_id_lst_free(xtr_lst_2,nbr_xtr_2);
   
@@ -453,17 +456,8 @@ main(int argc,char **argv)
      Instead, we adopt symmetric nomenclature (e.g., file_1, file_2), and 
      perform differences variable-by-variable so peak memory usage goes as
      Order(2*maximum variable size) rather than Order(3*maximum record size) or
-     Order(3*file size) 
+     Order(3*file size) */
      
-     ncbo tries hard (probably too hard) to save memory
-     ncbo is a three file operator (input, input, output) but manages to get by 
-     with only two lists of variable structures at any given time.
-     The resulting is fairly convoluted and hard to maintain
-     A re-write would be beneficial
-     ncbo overwrites variable structure from file_2 with structure for file_3 (output file)
-     but, at the same time, it writes value array for file_3 into value part of file_1
-     variable structures. */
-  
   /* Perform various error-checks on input file */
   if(False) (void)nco_fl_cmp_err_chk();
   
