@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.62 2005-08-20 00:26:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.63 2005-08-20 03:22:52 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.62 2005-08-20 00:26:10 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.62 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.63 2005-08-20 03:22:52 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.63 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim_1;
@@ -411,8 +411,13 @@ main(int argc,char **argv)
   var_fix_out=(var_sct **)nco_free(var_fix_out);
   var_prc_out=(var_sct **)nco_free(var_prc_out);
   (void)nco_var_lst_dvd(var_1,var_out,nbr_xtr_1,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix_1,&var_fix_out,&nbr_var_fix_1,&var_prc_1,&var_prc_out,&nbr_var_prc_1);
-  
-  /* fxm: TODO 268/550 merge max_dim_sz/list(var_1,var_2) into var_out */
+
+  /* Die gracefully on unsupported features... */
+  if(nbr_var_fix_1 < nbr_var_fix_2){
+    (void)fprintf(fp_stdout,"%s: ERROR First file has fewer fixed variables than second file (%d < %d). This feature is NCO TODO 581.\n",prg_nm,nbr_var_fix_1,nbr_var_fix_2);
+      nco_exit(EXIT_FAILURE);
+  } /* endif */
+
   /* Merge two variable lists into same order */
   rcd=nco_var_lst_mrg(&var_prc_1,&var_prc_2,&nbr_var_prc_1,&nbr_var_prc_2); 
 
@@ -504,6 +509,13 @@ main(int argc,char **argv)
     }else{ /* var_prc_out[idx]->nbr_dim != var_prc_1[idx]->nbr_dim) */
       /* Number of dimensions do not match, attempt to broadcast variables 
 	 fxm: broadcasting here leads to memory leak later since var_[1,2] does not know */
+
+      /* Die gracefully on unsupported features... */
+      if(var_prc_1[idx]->nbr_dim < var_prc_2[idx]->nbr_dim){
+	(void)fprintf(fp_stdout,"%s: ERROR Variable %s in first file has lesser rank than variable %s in second file (%d < %d). This feature is NCO TODO 552.\n",prg_nm,var_prc_1[idx]->nm,var_prc_1[idx]->nbr_dim,var_prc_2[idx]->nbr_dim);
+	nco_exit(EXIT_FAILURE);
+      } /* endif */
+
       (void)ncap_var_cnf_dmn(&var_prc_1[idx],&var_prc_2[idx]);
     } /* end else */
     

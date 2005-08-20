@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.576 2005-08-20 00:26:31 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.577 2005-08-20 03:22:52 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -154,7 +154,6 @@ nco260. Warn (but work) when coordinate variable has more than two dimensions
 nco261. Switch from toggling defaults to --no-option format for all Booleans. e.g., --abc should ensure alphabetization is True, and --no-abc should ensure it is false, rather than toggling.
 nco265. ncbo: Promote before operations using nco_typ_cnv_rth() in ncbo
 nco266. ncbo: Finish ncbo.1 manpage
-nco268. ncbo: use ncap var_cnf_dmn() technique so fl_1 fl_2 broadcast interchangeably
 nco270. Automate uploading of tagged .deb builds to ftp://ftp.debian.org
 nco275. Use nco_mss_val_cnf() in ncflint
 nco276. Use nco_mss_val_cnf() in ncap

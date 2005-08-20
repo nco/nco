@@ -6,9 +6,9 @@
 	3. Can serve as template for similar [mp]ncflint re-write (TODO 578)
 	4. Improved logic needs to be merged into mpncbo.c so mpncbo 
 	   passes (currently deprecated) regression test ncbo #8 (TODO 579).
-	5. Works well when nbr_xtr_1>nbr_xtr_2 so long as discrepant
+	5. Works well when nbr_var_fix_1>nbr_var_fix_2 so long as discrepant
 	   variables are type fix not type prc but needs list merge to
-	   work when nbr_xtr_1<nbr_xtr_2 (TODO 581).
+	   work when nbr_var_fix_1<nbr_var_fix_2 (TODO 581).
 	6. Works for rank(var_1) > rank(var_2), not rank(var_2) > rank(var_1) 
 	   Pre-compute broadcast size before var_def(out_id,var_out) (TODO 552)
 
