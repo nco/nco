@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.577 2005-08-20 03:22:52 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.578 2005-08-22 22:17:05 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -316,7 +316,11 @@ nco578. ncbo: Use ncbo.c as template for [mp]ncflint re-write
 nco579. ncbo: Merge ncbo.c changes into mpncbo.c
 nco580. fl_mk_lcl(): Add wget protocol to handle non-Opendap HTTP
 nco581. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 2: allow nbr_xtr_out=max(nbr_xtr_1,nbr_xtr_2) when nbr_xtr_2>nbr_xtr_1 if discrepant variables are type fix (e.g., grid properties) not type prc (NB: already works for nbr_xtr_1>nbr_xtr_2)
-nco582. 
+nco582. New ncks/ncatted/ncrename changes require netcdf 3.6?
+        ncatted -h -O -a missing_value,val_one_mss,m,f,0.0 ~/nco/data/in.nc ~/foo.nc
+	ncks -C -m -H -v val_one_mss ~/nco/data/in.nc
+	ncks -C -m -H -v val_one_mss ~/foo.nc
+nco583. 
 
 OPeNDAP:
 Archive sample DAP accesses:

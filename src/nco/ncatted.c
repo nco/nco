@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.83 2005-08-17 13:02:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.84 2005-08-22 22:17:05 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.83 2005-08-17 13:02:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.83 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.84 2005-08-22 22:17:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.84 $";
   const char * const opt_sht_lst="4Aa:D:hl:Oo:p:RrZ-:";
   
   extern char *optarg;
@@ -354,9 +354,6 @@ main(int argc,char **argv)
   if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);
   cmd_ln=(char *)nco_free(cmd_ln);
   
-  /* Take file out of define mode */
-  (void)nco_enddef(nc_id);
-    
   /* Take output file out of define mode */
   if(hdr_pad == 0UL){
     (void)nco_enddef(nc_id);

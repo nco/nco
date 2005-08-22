@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.81 2005-08-17 13:02:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.82 2005-08-22 22:17:05 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.81 2005-08-17 13:02:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.81 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.82 2005-08-22 22:17:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.82 $";
   const char * const opt_sht_lst="4a:D:d:hl:Oo:p:rv:Z-:";
 
   extern char *optarg;
@@ -436,9 +436,6 @@ main(int argc,char **argv)
   (void)omp_in_parallel();
 #endif /* !_OPENMP */
 
-  /* Take file out of define mode */
-  (void)nco_enddef(nc_id);
-    
   /* Take output file out of define mode */
   if(hdr_pad == 0UL){
     (void)nco_enddef(nc_id);
