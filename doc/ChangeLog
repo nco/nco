@@ -1,5 +1,7 @@
 2005-08-22 Charlie Zender  <zender@uci.edu>
 
+	* Add regression tests for ncatted mss_val and hdr_pad features
+
 	* Remove duplicate nc_enddef() from ncatted and ncrename
 
 2005-08-19 Charlie Zender  <zender@uci.edu>

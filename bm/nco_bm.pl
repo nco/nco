@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.67 2005-08-20 00:26:09 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.68 2005-08-22 23:01:17 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bld/nco_bm.pl # Tests all operators
@@ -1041,6 +1041,19 @@ if ($dodap eq "") { $in_pth = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dod
 	$tst_cmd[1]="ncks -C -H -s '%s' -v lev  $outfile | grep units | cut -d' ' -f 11-12";
 	$dsc_sng="Modify all existing units attributes to meter second-1";
 	$nsr_xpc="meter second-1";
+	&go();
+
+        $tst_cmd[0]="ncatted -h -O $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth in.nc $outfile";
+	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v val_one_mss $outfile";
+	$dsc_sng="Change missing_value attribute from 1.0e36 to 0.0";
+	$nsr_xpc= 0 ;
+	&go();
+	 
+        $tst_cmd[0]="ncatted -O --hdr_pad=1000 $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth in.nc $outfile";
+	$tst_cmd[1]="ncks -M $outfile | grep hdr_pad | wc >$foo_fl";
+        $tst_cmd[2]="cut -d' ' -f 13-14 -s $foo_fl";
+	$dsc_sng="Pad header with 1000 extra bytes for future metadata";
+	$nsr_xpc= 24 ;
 	&go();
 	 
 ####################
