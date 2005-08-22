@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.298 2005-08-17 12:02:21 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.299 2005-08-22 07:23:49 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -294,16 +294,16 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 <h2>Version Summary</h2>
 New releases receive unique CVS tags and their tarballs and stored  
 <a href="http://dust.ess.uci.edu/nco/src">here</a>. 
-Tarballs and RPMs are no longer debut on SourceForge 
+Tarballs and RPMs no longer debut on SourceForge 
 (because SF's upload mechanism is too time-consuming).
 Instead, retrieve all recently tagged versions 
 <a name="#Download">with CVS</a> or from    
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
 <li><b>NCO/SDO 3.1.x</b>: (<i>In progress, development branch</i>) MPI operators <tt>mpncflint</tt>, <tt>mpncecat</tt>, <tt>mpncpdq</tt>, <tt>mpncra</tt>, <tt>mpncwa</tt>, <tt>mpncea</tt>, <tt>mpncrcat</tt>; <tt>ncap</tt> control structures (conditionals, loops, etc.)
-<li><b>NCO 3.0.2</b>: (<i>In progress, stable branch</i>) Fewer critical regions; all known memory leaks plugged; better Intel compiler support; <tt>sftp</tt> protocol support; FTP file access supports <tt>.netrc</tt>; more grid property awareness (e.g., <tt>lat_bnds</tt>); <tt>ncatted</tt>, <tt>ncks</tt>, <tt>ncrename</tt> support metadata header padding with <tt>--hdr</tt>
+<li><b>NCO 3.0.2</b>: (<i>In progress, stable branch</i>) Fewer critical regions; all known memory leaks plugged; better Intel compiler support; <tt>SFTP</tt> protocol support; FTP protocol supports <tt>.netrc</tt>-based passwords; better model grid-property-awareness (e.g., <tt>lat_bnds</tt>); <tt>ncatted</tt>, <tt>ncks</tt>, <tt>ncrename</tt> support metadata header padding with <tt>--hdr</tt>, <tt>ncbo</tt> supports heterogeneous variable ordering
 <li><b>NCO 3.0.1</b>: benchmarks; <tt>ncks</tt> printing tweaks; memory cleanup; <tt>ncap</tt> double-parse speedup and <a href="bug_ncap_cmt">exponentiation bugfix</a>; thread operators by default
-<li><b>NCO 3.0.0</b>: New <tt>ncks -P</tt> print switch; <tt>ncap</tt> optimizations; <tt>-Z</tt> option supports 64-bit offsets (requires netCDF&nbsp;3.6); NEC&nbsp;SX build improvements; support GCC&nbsp;3.4.X; <tt>nco_put_vara()</tt> overloads in <tt>libnco_c++</tt>
+  <li><b>NCO 3.0.0</b>: New <tt>ncks -P</tt> print switch; <tt>ncap</tt> optimizations; <tt>-Z</tt> option supports 64-bit offsets (requires netCDF&nbsp;3.6); NEC&nbsp;SX build improvements; support GCC&nbsp;3.4.X; <tt>nco_put_vara()</tt> overloads in <tt>libnco_c++</tt>
 <li><b>NCO 2.9.9</b>: <tt>ncpdq</tt> packs/unpacks entire files; <tt>ncbo</tt> is threaded
 <li><b>NCO 2.9.8</b>: <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released; <tt>ncwa --msk_sng</tt> consolidated mask switch; C99 compiler required
 <li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>; write <tt>nco_input_file_list</tt> attributes; add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++; large file support (LFS); write <tt>nco_openmp_thread_number</tt> attribute
@@ -658,7 +658,9 @@ NCO versions &ge;&nbsp;3.0.0 require netCDF versions
 To build NCO versions &ge;&nbsp;3.0.0 with netCDF versions
 &lt;&nbsp;3.6, simply define the pre-processor token
 <tt>NC_64BIT_OFFSET</tt> to <tt>0</tt> before compiling NCO.
-Do this, e.g., with <tt>CPPFLAGS='-DNC_64BIT_OFFSET=0'</tt>.
+Do this, e.g., with <tt>CPPFLAGS='-DNC_64BIT_OFFSET=0'</tt> or
+<tt>USR_TKN='-DNC_64BIT_OFFSET=0'</tt> if you use <tt>configure</tt> 
+or <tt>bld/Makefile</tt>, respectively.
 All modern NCO versions require netCDF versions &ge;&nbsp;3.5.0 to
 support <tt>nc_type NC_NAT</tt> in NCO source code.  
 </li>

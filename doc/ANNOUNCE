@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.154 2005-08-15 05:12:08 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.155 2005-08-22 07:23:49 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.0.2 are ready. 
 
@@ -40,6 +40,8 @@ benchmarking, memory usage, and documentation improvements.
 10. Add --hdr/--header option to ncks to pad output file header
     This improves I/O on files requiring multiple metadata changes
     See http://nco.sf.net/nco.html#hdr for more info
+
+11. ncbo works better with incommensurate files
 
 Future: The next release (3.1) will concentrate on MPI-enabled NCO.
 
