@@ -1,16 +1,17 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.155 2005-08-22 07:23:49 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.156 2005-08-23 06:51:40 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.0.2 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Version 3.0.2 contains mainly internal changes such as build,
-benchmarking, memory usage, and documentation improvements.
+Version 3.0.2 contains a sprinkling of internal changes (build,
+benchmarking, memory usage, and documentation improvements),
+new I/O features, and convenience routines for IPCC processing.
 
 1. OpenMP: Only one critical region remains in netCDF reads
 
-2. Benchmarks (Harry Mangalam): 
+2. Benchmarks (Harry Mangalam): Work across OPeNDAP
 
 3. ncap (Henry Butowsky): Improved memory efficiency
 
@@ -43,7 +44,13 @@ benchmarking, memory usage, and documentation improvements.
 
 11. ncbo works better with incommensurate files
 
+12. Preliminary IPCC dataset data reduction chapter in manual
+
+One bugfix in 3.0.2: Certain ncatted invocations failed on Fedora due
+to a double-free() error caught by Fedora's security-harded glibc. 
+
 Future: The next release (3.1) will concentrate on MPI-enabled NCO.
+I keep saying that, so don't hold your breath.
 
 Enjoy,
 Charlie

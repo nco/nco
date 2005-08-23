@@ -1,8 +1,16 @@
 2005-08-22 Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-3_0_2
+	Changes since nco-3_0_1: icc, OPeNDAP, ftp, sftp, .netrc, hdr_pad,
+	cf, bm for MPI + OPeNDAP 
+
 	* Plug two small leaks in ncks when printing and fl_out=NULL
 
 	* Plug double-free() error when fl_out=NULL in ncatted
+	Double-free() errors tend cause operator failure on Fedora, which 
+	has a security-hardened glibc. Hence this was probably an
+	unreported headache for many Fedora NCO users since 3.0.0 or
+	3.0.1. Recommend they upgrade and this spurs release of 3.0.2.
 
 	* Add regression tests for ncatted mss_val and hdr_pad features
 

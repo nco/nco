@@ -1,3 +1,9 @@
+nco (3.0.2-1) unstable; urgency=low
+
+  * icc, OPeNDAP, ftp, sftp, .netrc, hdr_pad, cf, bm for MPI + OPeNDAP
+
+ -- Charlie Zender <zender@uci.edu>  Mon, 22 Aug 2005 23:49:39 -0700
+
 nco (3.0.1-1) unstable; urgency=medium
 
   * Memory purification, ncap exponentiation bugfix, threading bugfix

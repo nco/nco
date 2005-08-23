@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.107 2005-08-08 18:49:35 mangalam Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.108 2005-08-23 06:51:40 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -157,10 +157,6 @@ make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
-
-Old build example:
-
-New build example:
 ************************************************************************
 End ALPHA
 ************************************************************************
@@ -183,9 +179,6 @@ make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo config.status.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
-
-Old build example:
-New build example:
 ************************************************************************
 End FREEBSD
 ************************************************************************
@@ -215,10 +208,6 @@ make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
-
-Old build example:
-
-New build example:
 ************************************************************************
 End HPPA
 ************************************************************************
@@ -292,11 +281,6 @@ make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
-
-Old build example:
-gcc  -DLINUX -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='dust.ess.uci.edu' -DUSER='zender' -Di386 -I/usr/local/include -U_OPENMP -Wall -O -c ../src/nco/nco_att_utl.c -o /home/zender/obj/LINUX/nco_att_utl.o
-New build example:
-gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I/usr/local/include -g -O2 -c nco_att_utl.c  -fPIC -DPIC -o .libs/nco_att_utl.lo
 ************************************************************************
 End LINUX
 ************************************************************************
@@ -364,8 +348,6 @@ make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
-
-Old build example:
 ************************************************************************
 End LINUXALPHA
 ************************************************************************
@@ -387,20 +369,6 @@ make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
-
-Old build example:
-New build example:
-make[3]: Entering directory `/home/users/z/ze/zender/nco/src/nco_c++'
-libnco_c++ version "2.6.2" built Aug 27 2002 on usf-cf-ppc-1-1 by zender
-nco_err_exit(): ERROR netCDF library returned error code 2
-nco_err_exit(): ERROR nco_open
-No such file or directory
-nco_err_exit(): Failed to open in.nc
-FAIL: tst
-===================
-1 of 1 tests failed
-===================
-
 ************************************************************************
 End LINUXPPC
 ************************************************************************
@@ -422,9 +390,6 @@ make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
-
-Old build example:
-New build example:
 ************************************************************************
 End LINUXSPARC64
 ************************************************************************
@@ -446,10 +411,6 @@ make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
-
-Old build example:
-
-New build example:
 ************************************************************************
 End MACOSX
 ************************************************************************
@@ -491,28 +452,6 @@ make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
-
-Old build example: (Default is ABI64 on this platform)
-cc  -DSGIMP64 -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='krein.math.uci.edu' -DUSER='zender' -I/usr/local/include -U_OPENMP -64 -mips4 -O2 -c ../src/nco/nco_att_utl.c -o /home/ess/zender/zender/obj/SGIMP64/nco_att_utl.o
-cc -o /home/ess/zender/zender/bin/SGIMP64/ncbo /home/ess/zender/zender/obj/SGIMP64/ncbo.o -64 -mips4 -L/home/ess/zender/zender/lib/SGIMP64 -L/usr/local/lib -lnco -lnetcdf -lm
-
-New build example:
-cc/CC:
-CC -64 -mips4 -o .libs/tst tst.o  -L/usr/local/lib /home/ess/zender/zender/nco/src/nco_c++/.libs/libnco_c++.so -lsocket -lintl -lm -lnetcdf -Wl,-rpath -Wl,/home/ess/zender/zender/lib/SGIMP64
-ld64: WARNING 84 : /usr/lib64/libsocket.so is not used for resolving any symbol.
-ld64: WARNING 84 : /usr/local/lib/libintl.a is not used for resolving any symbol.
-ld64: WARNING 84 : /usr/lib64/mips4/libm.so is not used for resolving any symbol.
-ld64: WARNING 84 : /usr/local/lib/libnetcdf.a is not used for resolving any symbol.
-ld64: ERROR   33 : Unresolved text symbol "std::ios_base::_M_throw_failure(void)" -- 1st referenced by tst.o.
-
-
-gcc/g++: Unable to compile ncap_yacc because of bison prototype problems
-zender@krein:~/nco/src/nco$ gcc -DHAVE_CONFIG_H -I. -I. -I../..   -I/usr/local/include  -g -O2 -mabi=64 -c ncap_yacc.c
-/usr/freeware/share/bison.simple: In function `yyparse':
-/usr/freeware/share/bison.simple:219: number of arguments doesn't match prototype
-/usr/freeware/share/bison.simple:153: prototype declaration
-ze
-
 ************************************************************************
 End SGIMP64
 ************************************************************************
