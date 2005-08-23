@@ -1,5 +1,9 @@
 2005-08-22 Charlie Zender  <zender@uci.edu>
 
+	* Plug two small leaks in ncks when printing and fl_out=NULL
+
+	* Plug double-free() error when fl_out=NULL in ncatted
+
 	* Add regression tests for ncatted mss_val and hdr_pad features
 
 	* Remove duplicate nc_enddef() from ncatted and ncrename

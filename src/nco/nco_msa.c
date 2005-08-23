@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.28 2005-05-30 01:05:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.29 2005-08-23 01:23:05 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -617,6 +617,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
      if PRN_DMN_IDX_CRD_VAL then read in co-ord dims
      if PRN.. = True print var taking account of FORTRAN (Use dims to calculate var indices */
   
+  bool MALLOC_UNITS_SNG=False; /* [flg] Allocated memory for units string */
   char nul_chr='\0';
   char var_sng[MAX_LEN_FMT_SNG];
   char *unit_sng;
@@ -717,6 +718,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	unit_sng=(char *)nco_malloc((att_sz+1)*nco_typ_lng(att_typ));
 	(void)nco_get_att(in_id,var.id,units_nm,unit_sng,att_typ);
 	unit_sng[(att_sz+1)*nco_typ_lng(att_typ)-1]='\0';
+	MALLOC_UNITS_SNG=True; /* [flg] Allocated memory for units string */
       } /* end if */
     } /* end if */
   } /* end if PRN_DMN_UNITS */
@@ -934,6 +936,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   var.val.vp=nco_free(var.val.vp);
   var.nm=(char *)nco_free(var.nm);
  
+  if(MALLOC_UNITS_SNG) unit_sng=(char *)nco_free(unit_sng);
   if(var.nbr_dim > 0){
     (void)nco_free(dmn_id);
     (void)nco_free(lmt_mult);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.84 2005-08-22 22:17:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.85 2005-08-23 01:23:05 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.84 2005-08-22 22:17:05 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.84 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.85 2005-08-23 01:23:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.85 $";
   const char * const opt_sht_lst="4Aa:D:hl:Oo:p:RrZ-:";
   
   extern char *optarg;
@@ -273,7 +273,7 @@ main(int argc,char **argv)
   
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
-  if(fl_out != NULL) OUTPUT_TO_NEW_NETCDF_FILE=True; else fl_out=fl_lst_in[0];
+  if(fl_out != NULL) OUTPUT_TO_NEW_NETCDF_FILE=True; else fl_out=(char *)strdup(fl_lst_in[0]);
 
   if(nbr_aed == 0){
     (void)fprintf(stdout,"%s: ERROR must specify an attribute to edit\n",prg_nm);
