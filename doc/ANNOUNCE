@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.156 2005-08-23 06:51:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.157 2005-08-23 07:01:40 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.0.2 are ready. 
 
@@ -11,7 +11,7 @@ new I/O features, and convenience routines for IPCC processing.
 
 1. OpenMP: Only one critical region remains in netCDF reads
 
-2. Benchmarks (Harry Mangalam): Work across OPeNDAP
+2. Benchmarks (Harry Mangalam): Work with OPeNDAP, MPI
 
 3. ncap (Henry Butowsky): Improved memory efficiency
 
