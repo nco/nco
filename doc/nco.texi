@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.323 2005-08-23 06:51:40 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.324 2005-08-24 06:52:12 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6663,8 +6663,8 @@ netCDF format to @var{output-file}.
 @command{ncks} prints data in a tabular format intended to be easy to
 search for the data you want, one datum per screen line, with all
 dimension subscripts and coordinate values (if any) preceding the datum.
-Option @samp{-s} (or lon options @samp{--sng}, @samp{--string},
-@samp{--fmt}, or @samp{--format}) allows the user the format the data
+Option @samp{-s} (or long options @samp{--sng}, @samp{--string},
+@samp{--fmt}, or @samp{--format}) lets the user format the data
 using C-style format strings. 
 
 Options @samp{-a}, @samp{-F} , @samp{-H}, @samp{-M}, @samp{-m},
