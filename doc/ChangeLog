@@ -49,8 +49,6 @@
 
 2005-08-18 Charlie Zender <zender@uci.edu>
 
-	* Add SFTP and .netrc-based password-protected FTP regression tests
-
 	* Add SFTP and .netrc-based password-protected FTP (to ESG) regression tests
 	
 	* Add stub for wget-based regression test
