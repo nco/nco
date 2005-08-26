@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.4 2005-07-03 06:12:46 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.5 2005-08-26 16:16:04 zender Exp $
 
 # Purpose: Install OPeNDAP prior to building NCO as DAP-enabled clients
 
@@ -34,9 +34,8 @@
 cd ${DATA}/tmp
 # Remove debris from last DAP install
 /bin/rm -r -f DODS* libnc-dap* libdap*
-# Get about 2.5 more MB than we need
-wget http://www.opendap.org/pub/3.5/source/libdap-3.5.1.tar.gz
-wget http://www.opendap.org/pub/3.5/source/libnc-dap-3.5.1.tar.gz
+wget http://www.opendap.org/pub/3.5/source/libdap-3.5.2.tar.gz
+wget http://www.opendap.org/pub/3.5/source/libnc-dap-3.5.2.tar.gz
 # Resolve DAP dependencies on external libraries
 apt-file search libcurl.a
 sudo apt-get install libcurl3-dev          
@@ -44,11 +43,11 @@ apt-file search libxml2.a
 sudo apt-get install libxml2-dev
 # Assume tar is GNU tar, otherwise must gunzip tarballs first
 # NCO only needs these packages pre-installed to enable NCO as DAP clients...
-tar xvzf libdap-3.5.1.tar.gz # Provides libdap++.a
-tar xvzf libnc-dap-3.5.1.tar.gz # Provides libnc-dap.a
+tar xvzf libdap-3.5.2.tar.gz # Provides libdap++.a
+tar xvzf libnc-dap-3.5.2.tar.gz # Provides libnc-dap.a
 
 # Go to common source directory shared by all DAP packages
-cd ${DATA}/tmp/libdap-3.5.1
+cd ${DATA}/tmp/libdap-3.5.2
 # Set permanent installation directory (/tmp is not permanent!)
 export DAP_ROOT=/usr/local # For server (rather than private) installs
 #export DAP_ROOT=`pwd` 
@@ -63,7 +62,7 @@ FC='g95' ./configure --prefix=${DAP_ROOT}
 # Build necessary libraries
 make
 sudo make install
-cd ${DATA}/tmp/libnc-dap-3.5.1
+cd ${DATA}/tmp/libnc-dap-3.5.2
 FC='g95' ./configure --prefix=${DAP_ROOT}
 make
 sudo make install
