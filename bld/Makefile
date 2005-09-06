@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.310 2005-08-18 03:20:42 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.311 2005-09-06 19:49:41 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this file syntax
@@ -182,18 +182,11 @@ ifeq (${MPI},Y)
 # Prohibit hybrid code for now---turn off OpenMP
  OMP := N
 ifdef MPI_PRC
+# Pass this MPI argument to nco_bm.pl
  MPI_PRC_SNG := "--mpi_prc=${MPI_PRC}"
 else # endif MPI_PRC
  MPI_PRC_SNG :=
 endif # endif MPI_PRC
-ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
-ifdef LINUX_CC
- LINUX_CC := $(subst icc,mpicc,${LINUX_CC})
- LINUX_CC := $(subst gcc,mpicc,${LINUX_CC})
-else
- LINUX_CC := mpicc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
-endif # endif LINUX_CC
-endif # endif LINUX
 endif # endif MPI
 
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
@@ -227,6 +220,7 @@ endif # endif LINUX
 # OpenMP
 ifeq (${OMP},Y)
 ifdef THR_NBR
+# Pass this OpenMP argument to nco_bm.pl
  THR_NBR_SNG := "--thr_nbr=${THR_NBR}"
 else # endif THR_NBR
  THR_NBR_SNG :=
@@ -707,6 +701,9 @@ endif
 endif # endif Comeau C Compiler
 # GNU Compiler Collection
 ifneq (${null},$(findstring gcc,${CC}))
+ifeq (${MPI},Y)
+ CC := $(subst gcc,mpicc,${LINUX_CC})
+endif # endif MPI
  CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
  CFLAGS := -Wall
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
@@ -781,6 +778,9 @@ ifeq (icc,$(firstword ${CC}))
 # remark #981: operands are evaluated in unspecified order
 # remark #810: conversion from "double" to "float" may lose significant bits
 # remark #1572: floating-point equality and inequality comparisons are unreliable
+ifeq (${MPI},Y)
+ CC := $(subst icc,mpicc,${LINUX_CC})
+endif # endif MPI
  CFLAGS := -w1
  CPPFLAGS += -no-gcc
  OMP_FLG := -openmp -openmp_report0
@@ -825,7 +825,7 @@ ifeq (${OPTS},X)
 endif
 endif # endif Intel (Kai) Fortran Compiler
 # Portland Group C++ Compiler
-ifeq (${CXX},pgCC)
+ifeq (${CC},pgcc)
 # Enable Large File Support (LFS) by default
  CFLAGS := -Mlfs
  LDFLAGS += -Mlfs
@@ -1505,6 +1505,8 @@ dbg:
 	@printf "HDF5 = ${HDF5}\n"
 	@printf "LDFLAGS = ${LDFLAGS}\n"
 	@printf "LEX = $(LEX)\n"
+	@printf "LINUX_CC = $(LINUX_CC)\n"
+	@printf "LINUX_CXX = $(LINUX_CXX)\n"
 	@printf "MDL_BIN_TRG = ${MDL_BIN_TRG}\n"
 	@printf "MDL_DPN = ${MDL_DPN}\n"
 	@printf "MDL_MPI_TRG = ${MDL_MPI_TRG}\n"
@@ -1512,6 +1514,8 @@ dbg:
 	@printf "MDL_PTH = ${MDL_PTH}\n"
 	@printf "MDL_RPM_NST_NM = $(MDL_RPM_NST_NM)\n"
 	@printf "MDL_SRC = ${MDL_SRC}\n"
+	@printf "MPICH_CC = ${MPICH_CC}\n"
+	@printf "MPICH_CCC = ${MPICH_CCC}\n"
 	@printf "MPI_PRC = ${MPI_PRC}\n"
 	@printf "MPI_PRC_SNG = ${MPI_PRC_SNG}\n"
 	@printf "NCO_VRS = ${NCO_VRS}\n"

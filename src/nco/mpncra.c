@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.4 2005-08-15 05:12:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.5 2005-09-06 19:49:41 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.4 2005-08-15 05:12:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.4 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.5 2005-09-06 19:49:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.5 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
   const double sleep_tm=0.04; /* [time] interval between successive token requests */
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
@@ -148,8 +148,7 @@ main(int argc,char **argv)
   int idx=int_CEWI;
   int in_id;  
   int info_bfr[3]; /* [bfr] Buffer containing var, idx, tkn_rsp */
-  int jdx=0; /* [idx] For MPI indexing local variables */
-  int kdx=0;
+  int jdx=0; /* [idx] MPI index for local variables */
   int lcl_idx_lst[60]; /* [arr] Array containing indices of variables processed at each Worker */
   int lcl_nbr_var=0; /* [nbr] Count of variables processes at each Worker */
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
@@ -170,7 +169,6 @@ main(int argc,char **argv)
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int thr_nbr=0; /* [nbr] Thread number Option t */
   int tkn_alloc_id=0; /* [id] To track write permission for ncrcat */
-  int tkn_req_nbr=0; /* [nbr] GV - Counter for output file write in ncrcat */
   int tkn_rsp; /* [enm] Mangager response [0,1] = [Wait,Allow] */
   int var_lst_in_nbr=0;
   int var_wrt_nbr=0; /* [nbr] Variables written to output file until now */
@@ -689,7 +687,7 @@ main(int argc,char **argv)
 	idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
     } /* endif Worker */
     printf("DEBUG: End of first pass of ncra/ncrcat at node %d\n",proc_id);
-    //MPI_Barrier(MPI_COMM_WORLD);
+    /* MPI_Barrier(MPI_COMM_WORLD); */
 
     /* End of ncra, ncrcat section */
     }else{ /* ncea */
@@ -748,7 +746,7 @@ main(int argc,char **argv)
 	    (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
 	
 	    /* Convert char, short, long, int types to doubles before arithmetic */
-	    //var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
+	    // var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
 	    /* Output variable type is "sticky" so only convert on first record */
 	    if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 	    /* Convert var_prc to type of var_prc_out in case type of variable on disk has changed */
@@ -776,7 +774,7 @@ main(int argc,char **argv)
     /* Loop over input files */
     for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
 #ifdef ENABLE_MPI
-      //MPI_Barrier(MPI_COMM_WORLD);
+      // MPI_Barrier(MPI_COMM_WORLD);
 #endif /* !ENABLE_MPI */
       /* Parse filename */
       if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
@@ -806,7 +804,7 @@ main(int argc,char **argv)
 		if(fl_idx == fl_nbr-1 && idx_rec >= 1L+lmt_rec->end-lmt_rec->srd) LAST_RECORD=True;
 
 #ifdef ENABLE_MPI
-		//MPI_Barrier(MPI_COMM_WORLD);
+    //MPI_Barrier(MPI_COMM_WORLD);
     if(fl_idx == 0 && idx_rec == lmt_rec->srt) continue;
     else{ /* a loop of idx = stored indices */    
      if(proc_id == 0){ /* For ncrcat, Manager gives write access for each record in each file */
@@ -1083,7 +1081,7 @@ main(int argc,char **argv)
 //	printf("DEBUG: After nco_var_cnf_typ proc_id %d var val %f\n",proc_id,var_prc_out[idx]->val.lp[0]);
         /* Packing/Unpacking */
         if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(out_id,var_prc_out[idx],nco_pck_plc);
-	printf("DEBUG: proc_id %d to write var %s with idx %d val %d\n",proc_id,var_prc_out[idx]->nm,idx,var_prc_out[idx]->val.lp[0]);
+	printf("DEBUG: proc_id %d to write var %s with idx %d val %ld\n",proc_id,var_prc_out[idx]->nm,idx,var_prc_out[idx]->val.lp[0]);
         if(var_prc_out[idx]->nbr_dim == 0){
           (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
         }else{ /* end if variable is a scalar */
@@ -1097,7 +1095,7 @@ main(int argc,char **argv)
 
     /* Close output file */
     nco_close(out_id); 
-    printf("DEBUG: proc_id %d closed out file after writing\n");
+    printf("DEBUG: proc_id %d closed out file after writing\n",proc_id);
     if(proc_id == proc_nbr-1) /* Send Token to Manager */
       MPI_Send(info_bfr,info_bfr_lng,MPI_INT,mgr_id,TOKEN_RESULT,MPI_COMM_WORLD);
     else

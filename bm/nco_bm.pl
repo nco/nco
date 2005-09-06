@@ -1,14 +1,14 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.69 2005-08-23 01:23:04 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.70 2005-09-06 19:49:41 zender Exp $
 
 # Usage:  usage(), below, has more information
-# ~/nco/bld/nco_bm.pl # Tests all operators
-# ~/nco/bld/nco_bm.pl ncra # Test one operator
-# ~/nco/bld/nco_bm.pl --thr_nbr=2 --regress --udpreport # Test OpenMP
-# ~/nco/bld/nco_bm.pl --mpi_prc=2 --regress --udpreport # Test MPI
-# ~/nco/bld/nco_bm.pl --dap --regress --udpreport # Test OPeNDAP on sand
-# ~/nco/bld/nco_bm.pl --dap=http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata --regress --udpreport # Test OPeNDAP on soot
+# ~/nco/bm/nco_bm.pl # Tests all operators
+# ~/nco/bm/nco_bm.pl ncra # Test one operator
+# ~/nco/bm/nco_bm.pl --thr_nbr=2 --regress --udpreport # Test OpenMP
+# ~/nco/bm/nco_bm.pl --mpi_prc=2 --regress --udpreport # Test MPI
+# ~/nco/bm/nco_bm.pl --dap --regress --udpreport # Test OPeNDAP on sand
+# ~/nco/bm/nco_bm.pl --dap=http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata --regress --udpreport # Test OPeNDAP on soot
 # scp ~/nco/bm/nco_bm.pl esmf.ess.uci.edu:nco/bm
 
 # NB: When adding tests, _be sure to use -O to overwrite files_
