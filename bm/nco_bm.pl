@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.72 2005-09-07 23:00:28 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.73 2005-09-07 23:10:47 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -1662,7 +1662,8 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 	&go();
 
 	$tst_cmd[0]="/bin/rm -f /tmp/in.nc";
-	$tst_cmd[1]="ncks -H -O $nco_D_flg -s '%e' -v one -p sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco -l /tmp in.nc";
+	$tst_cmd[1]="ncks -O $nco_D_flg -v one -p sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco -l /tmp in.nc";
+	$tst_cmd[2]="ncks -H $nco_D_flg -s '%e' -v one -l /tmp in.nc";
 	$dsc_sng="Secure FTP (SFTP) protocol (requires SFTP access to dust.ess.uci.edu)";
 	$nsr_xpc= 1.000000e+00 ;
 	&go();
