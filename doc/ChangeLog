@@ -1,3 +1,10 @@
+2005-09-07  Charlie Zender  <zender@uci.edu>
+
+	* Change sftp regression test to succeed by breaking into two steps
+	so that automatic sftp "Fetching..." string does not confuse tester
+
+	* Allow mpncbo regression test to fail TODO 579
+
 2005-09-06  Charlie Zender  <zender@uci.edu>
 
 	* mpncra.c: Correct printf arguments for type
