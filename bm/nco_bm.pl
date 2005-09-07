@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.76 2005-09-07 23:21:55 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.77 2005-09-07 23:26:46 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -1110,8 +1110,8 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 	&go();
 
 	
-	$tst_cmd[0]="ncwa $omp_flg -C -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl in.nc $foo_avg_fl";
-	$tst_cmd[1]="ncbo $omp_flg -C -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl in.nc $foo_avg_fl $outfile";
+	$tst_cmd[0]="ncwa $omp_flg -C -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth in.nc $foo_avg_fl";
+	$tst_cmd[1]="ncbo $omp_flg -C -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth in.nc $foo_avg_fl $outfile";
 	$tst_cmd[2]="ncks -C -H -d time,3 -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="Difference which tests broadcasting and changing variable IDs";
 	if($mpi_prc > 0){$dsc_sng.=" Known bug with mpncbo: fix is TODO nco579";}
