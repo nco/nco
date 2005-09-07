@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.70 2005-09-06 19:49:41 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.71 2005-09-07 22:58:23 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -1110,16 +1110,12 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 	&go();
 
 	
-	if ($mpi_prc == 0) {  #FXM - commented 8.19.05 - mpncwa causes this to hang on following ncks
 	$tst_cmd[0]="ncwa $omp_flg -C -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl in.nc $foo_avg_fl";
 	$tst_cmd[1]="ncbo $omp_flg -C -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl in.nc $foo_avg_fl $outfile";
 	$tst_cmd[2]="ncks -C -H -d time,3 -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="Difference which tests broadcasting and changing variable IDs";
 	$nsr_xpc= -1.0 ; 
 	&go();
-	} else { print "NB: for MPI, last ncbo test skipped due to mpncwa failure.\n";}
-
-}
 
 ####################
 #### ncea tests ####
@@ -1427,7 +1423,7 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 	$nsr_xpc= 5.38516 ;
 	&go();
 		
-	if ($mpi_prc == 0) {  #FXM - commented 8.19.05 - related to ncbo failure with diff sized files
+	if ($mpi_prc < 101) {  #FXM - commented 8.19.05 - related to ncbo failure with diff sized files
 	$outfile =  $foo1_fl;
 	$tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl  $in_pth in.nc in.nc $outfile 2>$foo_tst";
 	$outfile =  $orig_outfile;
