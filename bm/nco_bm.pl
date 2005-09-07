@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.71 2005-09-07 22:58:23 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.72 2005-09-07 23:00:28 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -1116,6 +1116,8 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 	$dsc_sng="Difference which tests broadcasting and changing variable IDs";
 	$nsr_xpc= -1.0 ; 
 	&go();
+
+} # endif $mpi_prc == 0...
 
 ####################
 #### ncea tests ####
