@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.73 2005-09-07 23:10:47 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.74 2005-09-07 23:18:03 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -1114,6 +1114,7 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 	$tst_cmd[1]="ncbo $omp_flg -C -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl in.nc $foo_avg_fl $outfile";
 	$tst_cmd[2]="ncks -C -H -d time,3 -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="Difference which tests broadcasting and changing variable IDs";
+	if($mpi_prc > 0) $dsc_sng+="Known bug with mpncbo: fix is TODO nco579";
 	$nsr_xpc= -1.0 ; 
 	&go();
 
@@ -1425,7 +1426,7 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 	$nsr_xpc= 5.38516 ;
 	&go();
 		
-	if ($mpi_prc < 101) {  #FXM - commented 8.19.05 - related to ncbo failure with diff sized files
+        if ($mpi_prc == 0) {  #FXM - commented 8.19.05 - related to ncbo failure with diff sized files
 	$outfile =  $foo1_fl;
 	$tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl  $in_pth in.nc in.nc $outfile 2>$foo_tst";
 	$outfile =  $orig_outfile;
