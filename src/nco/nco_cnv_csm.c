@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.19 2005-08-15 01:48:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.20 2005-09-08 00:13:22 zender Exp $ */
 
 /* Purpose: CCSM conventions */
 
@@ -39,7 +39,7 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCSM conventions */
     if(strstr(att_val,"NCAR-CSM") != NULL) NCAR_CCSM=True; /* Backwards compatibility */
     /* Climate-Forecast conventions */
     if(strstr(att_val,"CF-1.0") != NULL) NCAR_CCSM=True; /* NB: Not fully implemented TODO nco145 */
-    if(NCAR_CCSM && dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: CONVENTION File convention is %s. As part of adhering to this convenction, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"date\" or \"gw\". For a full list of exceptions, see the manual\n",prg_nm_get(),att_val);
+    if(NCAR_CCSM && dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: CONVENTION File convention is %s. As part of adhering to this convention, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"date\" or \"gw\". For a full list of exceptions, see the manual\n",prg_nm_get(),att_val);
     att_val=(char *)nco_free(att_val);
   } /* endif */
 
