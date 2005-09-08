@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.78 2005-09-07 23:44:44 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.79 2005-09-08 00:45:03 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -1334,10 +1334,38 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 	&go();
     
 ####################
+#### ncrcat tests ##
+####################
+    $opr_nm='ncrcat';
+####################
+        if ($mpi_prc == 0) { # fxm test hangs because of ncrcat TODO 585
+	$tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc $outfile 2>$foo_tst";
+	$tst_cmd[1]="ncks -C -H -d time,11 -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
+	$dsc_sng="Concatenate float with double missing values across two files";
+	$nsr_xpc= 2 ;
+	&go();
+    } else { print "NB: for MPI, last ncrcat test skipped because it hangs fxm TODO 585.\n";}
+
+####################
 #### ncra tests ####
 ####################
     $opr_nm='ncra';
 ####################
+
+        if ($mpi_prc == 0) { # test hangs because of ncrcat TODO 585 and, when that is fixed, test will fail because of mpncbo TODO 579
+	$outfile =  $foo1_fl;
+	$tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc $outfile 2>$foo_tst";
+	$outfile =  $orig_outfile;
+	$tst_cmd[1]="ncra $omp_flg -h -O $nco_D_flg -y avg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc $outfile";
+	$tst_cmd[2]="ncwa $omp_flg -h -O $nco_D_flg -a time $outfile $outfile";
+	$tst_cmd[3]="ncdiff $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl $foo1_fl $outfile $outfile";
+	$tst_cmd[4]="ncra $omp_flg -h -O $nco_D_flg -y rms -v rec_var_flt_mss_val_dbl $outfile $outfile";
+	$tst_cmd[5]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
+	$dsc_sng="record sdn of float with double missing values across two files";
+	$nsr_xpc= 2 ;
+	&go();
+    } else { print "NB: for MPI, last ncra test skipped fxm  TODO 585, TODO 579.\n";}
+    
 	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -v one_dmn_rec_var  $in_pth_arg in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var $outfile";
 	$dsc_sng="record mean of int across two files";
@@ -1428,20 +1456,6 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 	$nsr_xpc= 5.38516 ;
 	&go();
 		
-        if ($mpi_prc == 0) {  #FXM - commented 8.19.05 - related to ncbo failure with diff sized files
-	$outfile =  $foo1_fl;
-	$tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc $outfile 2>$foo_tst";
-	$outfile =  $orig_outfile;
-	$tst_cmd[1]="ncra $omp_flg -h -O $nco_D_flg -y avg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc $outfile";
-	$tst_cmd[2]="ncwa $omp_flg -h -O $nco_D_flg -a time $outfile $outfile";
-	$tst_cmd[3]="ncdiff $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl $foo1_fl $outfile $outfile";
-	$tst_cmd[4]="ncra $omp_flg -h -O $nco_D_flg -y rms -v rec_var_flt_mss_val_dbl $outfile $outfile";
-	$tst_cmd[5]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
-	$dsc_sng="record sdn of float with double missing values across two files";
-	$nsr_xpc= 2 ;
-	&go();
-   } else { print "NB: for MPI, last ncra test skipped due to ncbo failure.\n";}
-    
 ####################
 #### ncwa tests ####
 ####################
@@ -1778,7 +1792,7 @@ sub initialize($$){
 	($bch_flg,$dbg_lvl)=@_;
 	# Enumerate operators to test
 	@opr_lst_all = qw( ncap ncdiff ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa net );
-	@opr_lst_mpi = qw( ncbo ncecat ncflint ncpdq ncra  ncwa ncpdq ncra);
+	@opr_lst_mpi = qw( ncbo ncecat ncflint ncpdq ncra ncwa ncpdq ncra);
 	$opr_sng_mpi = "ncbo ncdiff ncecat ncflint ncwa ncpdq ncra"; # ncpdq ncra MPI, but fail bench
 	$opr_rgr_mpi = "ncbo ncdiff ncecat ncflint ncpdq ncea ncrcat ncra ncwa"; # need all of them for regression 
 	

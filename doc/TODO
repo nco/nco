@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.581 2005-08-23 01:31:04 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.582 2005-09-08 00:45:03 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -316,7 +316,9 @@ nco578. ncbo: Use ncbo.c as template for [mp]ncflint re-write
 nco579. ncbo: Merge ncbo.c changes into mpncbo.c
 nco580. fl_mk_lcl(): Add wget protocol to handle non-Opendap HTTP
 nco581. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 2: allow nbr_xtr_out=max(nbr_xtr_1,nbr_xtr_2) when nbr_xtr_2>nbr_xtr_1 if discrepant variables are type fix (e.g., grid properties) not type prc (NB: already works for nbr_xtr_1>nbr_xtr_2)
-nco585. 
+nco585. mpncrcat bug: mpncrcat hangs while reading records
+        mpirun -np 3 $MY_BIN_DIR/mpncra -Y ncrcat -h -O -D 5 -v rec_var_flt_mss_val_dbl -p ~/nco/data in.nc in.nc ~/foo.nc 
+nco586. 
 
 OPeNDAP:
 Archive sample DAP accesses:

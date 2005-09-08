@@ -1,5 +1,9 @@
 2005-09-07  Charlie Zender  <zender@uci.edu>
 
+	* Add ncrcat to regression test. Test chosen hangs with MPI.
+
+	* Make mpncra regression first ncra test for faster failure
+
 	* Change sftp regression test to succeed by breaking into two steps
 	so that automatic sftp "Fetching..." string does not confuse tester
 
