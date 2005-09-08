@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.324 2005-08-24 06:52:12 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.325 2005-09-08 22:00:22 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4360,17 +4360,15 @@ Short options: None@*
 metadata conventions, and treats such data (often called history tapes), 
 specially.  
 @acronym{NCO} handles older @acronym{NCAR} model datasets, such as
-@acronym{CCM} and early @acronym{CCSM} datasets, with the @acronym{CF}   
+@acronym{CCM} and early @acronym{CCSM} datasets, with its @acronym{CF}    
 rules even though the earlier data may not contain an explicit
-@code{Convention} attribute (such as @code{CF-1.0}).
+@code{Convention} attribute (e.g., @samp{CF-1.0}).
 We refer to all such data collectively as @acronym{CF} data.
-If you do not work with @acronym{CF} datasets then you may skip this 
-section. 
+Skip this section if you never work with @acronym{CF} data.
 
 The @acronym{CF} netCDF conventions are described at
 @uref{http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html}. 
-Most of the @acronym{CF} netCDF conventions are transparent to
-@acronym{NCO} 
+Most @acronym{CF} netCDF conventions are transparent to @acronym{NCO}  
 @footnote{
 The exception is appending/altering the attributes @code{x_op},
 @code{y_op}, @code{z_op}, and @code{t_op} for variables which have been
@@ -4398,7 +4396,7 @@ there is sufficient lobbying.
 However, to facilitate maximum user friendliness, @acronym{NCO} does
 treat certain variables in some @acronym{CF} files specially. 
 The special functions are not required by the @acronym{CF} netCDF
-conventions, but experience has shown they do make life easier.
+conventions, but experience shows they simplify data analysis.
 
 Currently, @acronym{NCO} determines whether a datafile is a
 @acronym{CF} output datafile simply by checking whether value of the
