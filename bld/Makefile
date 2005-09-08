@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.312 2005-09-07 23:10:47 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.313 2005-09-08 21:22:43 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this file syntax
@@ -420,7 +420,9 @@ ifeq (${DAP},Y)
  CPP_TKN_OS += -DENABLE_DAP
 endif # !DAP
 ifeq (${MPI},Y)
+ifneq (${FAKE_MPI},Y)
  CPP_TKN_OS += -DENABLE_MPI
+endif # endif FAKE_MPI
 endif # endif MPI
 ifeq (${UDUNITS},Y)
  CPP_TKN_OS += -DENABLE_UDUNITS -DHAVE_UDUNITS_H
