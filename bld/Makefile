@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.313 2005-09-08 21:22:43 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.314 2005-09-08 21:42:39 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this file syntax
@@ -183,15 +183,17 @@ endif
 
 # Message Passing Interface
 ifeq (${MPI},Y)
+ifneq (${FAKE_MPI},Y)
 # Prohibit hybrid code for now---turn off OpenMP
  OMP := N
+endif # FAKE_MPI
 ifdef MPI_PRC
 # Pass this MPI argument to nco_bm.pl
  MPI_PRC_SNG := "--mpi_prc=${MPI_PRC}"
-else # endif MPI_PRC
+else # !MPI_PRC
  MPI_PRC_SNG :=
-endif # endif MPI_PRC
-endif # endif MPI
+endif # !MPI_PRC
+endif # !MPI
 
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
 # Decide among the plethora of Linux compilers
@@ -422,8 +424,8 @@ endif # !DAP
 ifeq (${MPI},Y)
 ifneq (${FAKE_MPI},Y)
  CPP_TKN_OS += -DENABLE_MPI
-endif # endif FAKE_MPI
-endif # endif MPI
+endif # FAKE_MPI
+endif # !MPI
 ifeq (${UDUNITS},Y)
  CPP_TKN_OS += -DENABLE_UDUNITS -DHAVE_UDUNITS_H
 endif # !UDUNITS
@@ -1190,7 +1192,7 @@ endif
 # endif LINUX
 
 # Disable OpenMP on platforms that automatically support it
-ifeq (${OMP},N)
+ifneq (${OMP},Y)
 ifneq (${null},$(findstring SGI,${PVM_ARCH}))
  CFLAGS := $(filter-out -mp -mpio,${CFLAGS})
  LDFLAGS := $(filter-out -mp -mpio,${LDFLAGS})
