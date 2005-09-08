@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.79 2005-09-08 00:45:03 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.80 2005-09-08 16:34:16 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -1364,7 +1364,7 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 	$dsc_sng="record sdn of float with double missing values across two files";
 	$nsr_xpc= 2 ;
 	&go();
-    } else { print "NB: for MPI, last ncra test skipped fxm  TODO 585, TODO 579.\n";}
+    } else { print "NB: for MPI, last ncra test skipped because it hangs fxm TODO 585, TODO 579.\n";}
     
 	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -v one_dmn_rec_var  $in_pth_arg in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var $outfile";

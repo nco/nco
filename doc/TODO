@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.582 2005-09-08 00:45:03 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.583 2005-09-08 16:34:16 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -313,7 +313,7 @@ nco575. Add --hdr/--header options to syntax in nco_ctl.c and nco.texi
 nco576. Re-order arguments so var_sbt computes op2:=op1-op2 rather than op2:=op2-op1
 nco577. ncbo: get rid of dangling pointers in var_1, var_2 after ncap_var_cnf_dmn()
 nco578. ncbo: Use ncbo.c as template for [mp]ncflint re-write
-nco579. ncbo: Merge ncbo.c changes into mpncbo.c
+nco579. mpncbo: Merge recent ncbo.c re-write into mpncbo.c to improve commutivity
 nco580. fl_mk_lcl(): Add wget protocol to handle non-Opendap HTTP
 nco581. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 2: allow nbr_xtr_out=max(nbr_xtr_1,nbr_xtr_2) when nbr_xtr_2>nbr_xtr_1 if discrepant variables are type fix (e.g., grid properties) not type prc (NB: already works for nbr_xtr_1>nbr_xtr_2)
 nco585. mpncrcat bug: mpncrcat hangs while reading records
