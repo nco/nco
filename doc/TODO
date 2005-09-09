@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.585 2005-09-09 00:14:03 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.586 2005-09-09 00:28:35 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -327,9 +327,11 @@ nco586. mbncbo: hangs while differencing
         /bin/rm $MY_OBJ_DIR/mpncbo.o;make MPI=Y mpncbo
         mpirun -np 3 $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc (hangs)
         mpirun -np 3 /usr/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-        ~/nco/bm/nco_bm.pl 
+        ~/nco/bm/nco_bm.pl --mpi=3 --regress ncbo
 nco587. Get command line MPI working on AIX with POE
-nco588. 
+nco588. MPI debugging with LAM-MPI: http://www.lam-mpi.org/faq/category6.php3
+        mpirun N -x DISPLAY run_gdb.csh my_program_name
+nco589. 
 
 OPeNDAP:
 Archive sample DAP accesses:

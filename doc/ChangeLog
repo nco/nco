@@ -1,10 +1,14 @@
 2005-09-08  Charlie Zender  <zender@uci.edu>
 
+	* Change CPP consistently with CC for Linux MPI compiles
+
 	* Add FAKE_MPI switch to compile MPI executables without MPI
 
 	* Fix sundry compiler warnings with MPI front end codes
 
-	* Port ncbo commutivity changes to mpncbo
+	* Port ncbo commutivity changes to mpncbo.c
+	  Resulting SPMD executable mpncbo hangs where previous mpncbo works
+          Refrain from committing new mpncbo.c until it works
 
 2005-09-07  Charlie Zender  <zender@uci.edu>
 
