@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.325 2005-09-08 22:00:22 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.326 2005-09-09 22:34:33 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -22,7 +22,7 @@ The original author of this software, Charlie Zender, wants to improve it
 with the help of your suggestions, improvements, bug-reports, and patches.
 Charlie Zender <surname at uci dot edu> (yes, my surname is zender)
 Department of Earth System Science
-3228 Croul Hall
+3200 Croul Hall
 University of California at Irvine
 Irvine, CA 92697-3100
 
@@ -233,7 +233,7 @@ Texts. The license is available online at
 The original author of this software, Charlie Zender, wants to improve it
 with the help of your suggestions, improvements, bug-reports, and patches.@*
 Charlie Zender <surname at uci dot edu> (yes, my surname is zender)@*
-3228 Croul Hall@*
+3200 Croul Hall@*
 Department of Earth System Science@*
 University of California at Irvine@*
 Irvine, CA 92697-3100@*
@@ -287,7 +287,7 @@ and is consistent with @w{version 2} of @file{texinfo.tex}.
 
 Published by Charlie Zender@*
 Department of Earth System Science@*
-3228 Croul Hall@*
+3200 Croul Hall@*
 University of California at Irvine@*
 Irvine, CA 92697-3100 USA@*
 
@@ -302,7 +302,7 @@ The original author of this software, Charlie Zender, wants to improve it
 with the help of your suggestions, improvements, bug-reports, and patches.@*
 Charlie Zender <surname at uci dot edu> (yes, my surname is zender)@*
 Department of Earth System Science@*
-3228 Croul Hall@*
+3200 Croul Hall@*
 University of California at Irvine@*
 Irvine, CA 92697-3100@*
 @sp 2
