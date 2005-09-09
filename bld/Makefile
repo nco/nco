@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.314 2005-09-08 21:42:39 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.315 2005-09-09 00:16:54 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this file syntax
@@ -711,6 +711,7 @@ endif # endif Comeau C Compiler
 ifneq (${null},$(findstring gcc,${CC}))
 ifeq (${MPI},Y)
  CC := $(subst gcc,mpicc,${LINUX_CC})
+ CPP := ${CC}
 endif # endif MPI
  CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
  CFLAGS := -Wall
@@ -788,6 +789,7 @@ ifeq (icc,$(firstword ${CC}))
 # remark #1572: floating-point equality and inequality comparisons are unreliable
 ifeq (${MPI},Y)
  CC := $(subst icc,mpicc,${LINUX_CC})
+ CPP := ${CC}
 endif # endif MPI
  CFLAGS := -w1
  CPPFLAGS += -no-gcc
