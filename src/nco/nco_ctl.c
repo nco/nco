@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.99 2005-08-23 06:51:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.100 2005-09-09 22:19:07 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -186,7 +186,7 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 #define TKN2YESNO(x) ((x+0) ? ("No"):("Yes"))
   /* Configuration option tokens must be consistent among configure.in, bld/Makefile, and nco_ctl.c
      Arrange tokens alphabetically by first word in English text description */
-  (void)fprintf(stderr,"Configuration Option:\tActive?\tMeaning or Reference:\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nnetCDF 64-bit files\t%s\thttp://nco.sf.net/nco.html#lfs\nOPeNDAP/DODS clients\t%s\thttp://nco.sf.net/nco.html#dap\nOpenMP threading\t%s\thttp://nco.sf.net/nco.html#omp\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nShared libraries built\t%s\tSmall, dynamically linked executables\nStatic libraries built\t%s\tLarge executables with private namespaces\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#udunits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
+  (void)fprintf(stderr,"Configuration Option:\tActive?\tMeaning or Reference:\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nMPI parallelization\t%s\thttp://nco.sf.net/nco.html#mpi (alpha)\nnetCDF 64-bit files\t%s\thttp://nco.sf.net/nco.html#lfs\nOPeNDAP/DODS clients\t%s\thttp://nco.sf.net/nco.html#dap\nOpenMP threading\t%s\thttp://nco.sf.net/nco.html#omp\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nShared libraries built\t%s\tSmall, dynamically linked executables\nStatic libraries built\t%s\tLarge executables with private namespaces\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#udunits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
 #if defined(ENABLE_DEBUG_CUSTOM) && (ENABLE_DEBUG_CUSTOM)
 		"Yes",
 #else /* !ENABLE_DEBUG_CUSTOM */
@@ -207,6 +207,11 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 #else /* !NC_64BIT_OFFSET */
 		"No",
 #endif /* !NC_64BIT_OFFSET */
+#if defined(ENABLE_MPI) && (ENABLE_MPI)
+		"Yes",
+#else /* !ENABLE_MPI */
+		"No",
+#endif /* !ENABLE_MPI */
 #if defined(ENABLE_DAP) && (ENABLE_DAP)
 		"Yes",
 #else /* !ENABLE_DAP */
@@ -254,7 +259,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Boy or Girl?";
+  return "It's a Girl! 8 lbs. 9 oz.\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
@@ -275,38 +280,48 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   if(!strncmp(nm_out_tmp,"lt-",3)){nm_out_tmp+=3;}
 
   /* Classify calling program */
-  if(!strcmp(nm_out_tmp,"ncra")){*prg_lcl=ncra;}
-  else if(!strcmp(nm_out_tmp,"ncap")){*prg_lcl=ncap;}
-  else if(!strcmp(nm_out_tmp,"ncea")){*prg_lcl=ncea;}
-  else if(!strcmp(nm_out_tmp,"ncbo")){*prg_lcl=ncbo;}
-  /* Synonyms for ncbo: These are acceptable symbolic links for ncbo */
+  /* ncap and acceptable synonyms (symbolic links): */
+  if(!strcmp(nm_out_tmp,"ncap")){*prg_lcl=ncap;}
+  /* ncatted and acceptable synonyms (symbolic links): */
+  else if(!strcmp(nm_out_tmp,"ncatted")){*prg_lcl=ncatted;}
+  /* ncbo and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"mpncbo")){*prg_lcl=ncbo;}
-  else if(!strcmp(nm_out_tmp,"ncadd")){*prg_lcl=ncbo;}
-  else if(!strcmp(nm_out_tmp,"ncdiff")){*prg_lcl=ncbo;}
   else if(!strcmp(nm_out_tmp,"mpncdiff")){*prg_lcl=ncbo;}
-  else if(!strcmp(nm_out_tmp,"ncsub")){*prg_lcl=ncbo;}
-  else if(!strcmp(nm_out_tmp,"ncsubtract")){*prg_lcl=ncbo;}
+  else if(!strcmp(nm_out_tmp,"ncadd")){*prg_lcl=ncbo;}
+  else if(!strcmp(nm_out_tmp,"ncbo")){*prg_lcl=ncbo;}
+  else if(!strcmp(nm_out_tmp,"ncdiff")){*prg_lcl=ncbo;}
+  else if(!strcmp(nm_out_tmp,"ncdivide")){*prg_lcl=ncbo;}
   else if(!strcmp(nm_out_tmp,"ncmult")){*prg_lcl=ncbo;}
   else if(!strcmp(nm_out_tmp,"ncmultiply")){*prg_lcl=ncbo;}
-  else if(!strcmp(nm_out_tmp,"ncdivide")){*prg_lcl=ncbo;}
-  /* End synonyms for ncbo */
-  else if(!strcmp(nm_out_tmp,"ncflint")){*prg_lcl=ncflint;}
-  else if(!strcmp(nm_out_tmp,"mpncflint")){*prg_lcl=ncflint;}
-  else if(!strcmp(nm_out_tmp,"mpncra")){*prg_lcl=ncra;}
-  else if(!strcmp(nm_out_tmp,"ncwa")){*prg_lcl=ncwa;}
-  else if(!strcmp(nm_out_tmp,"mpncwa")){*prg_lcl=ncwa;}
-  else if(!strcmp(nm_out_tmp,"ncrcat")){*prg_lcl=ncrcat;}
+  else if(!strcmp(nm_out_tmp,"ncsub")){*prg_lcl=ncbo;}
+  else if(!strcmp(nm_out_tmp,"ncsubtract")){*prg_lcl=ncbo;}
+  /* ncea and acceptable synonyms (symbolic links): */
+  else if(!strcmp(nm_out_tmp,"ncea")){*prg_lcl=ncea;}
+  else if(!strcmp(nm_out_tmp,"mpncea")){*prg_lcl=ncea;}
+  /* ncecat and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncecat")){*prg_lcl=ncecat;}
   else if(!strcmp(nm_out_tmp,"mpncecat")){*prg_lcl=ncecat;}
+  /* ncflint and acceptable synonyms (symbolic links): */
+  else if(!strcmp(nm_out_tmp,"ncflint")){*prg_lcl=ncflint;}
+  else if(!strcmp(nm_out_tmp,"mpncflint")){*prg_lcl=ncflint;}
+  /* ncks and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncks")){*prg_lcl=ncks;}
+  /* ncpdq and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncpdq")){*prg_lcl=ncpdq;}
-  /* Synonyms for ncpdq: These are acceptable symbolic links for ncpdq */
   else if(!strcmp(nm_out_tmp,"mpncpdq")){*prg_lcl=ncpdq;}
   else if(!strcmp(nm_out_tmp,"ncpack")){*prg_lcl=ncpdq;}
   else if(!strcmp(nm_out_tmp,"ncunpack")){*prg_lcl=ncpdq;}
-  /* End synonyms for ncpdq */
+  /* ncra and acceptable synonyms (symbolic links): */
+  else if(!strcmp(nm_out_tmp,"ncra")){*prg_lcl=ncra;}
+  else if(!strcmp(nm_out_tmp,"mpncra")){*prg_lcl=ncra;}
+  /* ncrcat and acceptable synonyms (symbolic links): */
+  else if(!strcmp(nm_out_tmp,"ncrcat")){*prg_lcl=ncrcat;}
+  else if(!strcmp(nm_out_tmp,"mpncrcat")){*prg_lcl=ncrcat;}
+  /* ncrename and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncrename")){*prg_lcl=ncrename;}
-  else if(!strcmp(nm_out_tmp,"ncatted")){*prg_lcl=ncatted;}
+  /* ncwa and acceptable synonyms (symbolic links): */
+  else if(!strcmp(nm_out_tmp,"ncwa")){*prg_lcl=ncwa;}
+  else if(!strcmp(nm_out_tmp,"mpncwa")){*prg_lcl=ncwa;}
   else{
     (void)fprintf(stdout,"%s: ERROR executable name %s not registered in prg_prs()\n",nm_out_tmp,nm_out_tmp);
     nco_exit(EXIT_FAILURE);
