@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.8 2005-08-15 05:12:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.9 2005-09-09 00:19:58 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -99,7 +99,7 @@ main(int argc,char **argv)
   char *fl_in_1;
   char *fl_in_2;
   char *fl_out=NULL; /* Option o */
-  char *fl_out_tmp;
+  char *fl_out_tmp=NULL; /* MPI CEWI */
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
@@ -107,10 +107,12 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.8 2005-08-15 05:12:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.8 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.9 2005-09-09 00:19:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.9 $";
   const char * const opt_sht_lst="ACcD:d:Fhi:l:Oo:p:rRt:v:xw:Z-:";
-  const double sleep_tm=0.04; /* [time] interval between successive token requests */
+
+  const double sleep_tm=0.04; /* [s] Token request interval */
+
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
   const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
   
@@ -132,7 +134,7 @@ main(int argc,char **argv)
   int abb_arg_nbr=0;
   int fl_idx;
   int fl_nbr=0;
-  int fl_nm_lng; /* [nbr] output file name length */
+  int fl_nm_lng; /* [nbr] Output file name length */
   int fll_md_old; /* [enm] Old fill mode */
   int has_mss_val=False;
   int idx;
@@ -439,9 +441,6 @@ main(int argc,char **argv)
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FMT_64BIT,&out_id);
 
-    /* Obtain the length of output file name in order to broadcast it to workers */
-    fl_nm_lng=(int)strlen(fl_out_tmp);
-
     /* Copy global attributes */
     (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
   
@@ -473,7 +472,8 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
   } /* proc_id != 0 */
 
-  /* Manager broadcasts output filename length and filename to workers */
+  /* Manager broadcasts output filename to workers */
+  fl_nm_lng=(int)strlen(fl_out_tmp);
   MPI_Bcast(&fl_nm_lng,1,MPI_INT,0,MPI_COMM_WORLD);
   if(proc_id != 0) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
   MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,0,MPI_COMM_WORLD);
@@ -648,8 +648,8 @@ main(int argc,char **argv)
 	/* UP and SMP codes main loop over variables */
 	for(idx=0;idx<nbr_var_prc;idx++){
 #endif /* ENABLE_MPI */
-	  if(dbg_lvl > 0) (void)fprintf(stderr,"%s, ",var_prc_1[idx]->nm);
-	  if(dbg_lvl > 0) (void)fflush(stderr);
+	  if(dbg_lvl > 0) (void)fprintf(fp_stderr,"%s, ",var_prc_1[idx]->nm);
+	  if(dbg_lvl > 0) (void)fflush(fp_stderr);
 
 	  var_prc_2[idx]=nco_var_dpl(var_prc_1[idx]);
 	  (void)nco_var_mtd_refresh(in_id_2,var_prc_2[idx]); /* Routine contains OpenMP critical regions */

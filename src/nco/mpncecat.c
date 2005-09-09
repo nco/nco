@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.6 2005-08-15 05:12:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.7 2005-09-09 00:19:58 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -84,17 +84,17 @@ main(int argc,char **argv)
   char *cmd_ln;
   char *fl_in=NULL;
   char *fl_out=NULL; /* Option o */
-  char *fl_out_tmp;
+  char *fl_out_tmp=NULL; /* MPI CEWI */
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.6 2005-08-15 05:12:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.6 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.7 2005-09-09 00:19:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.7 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRv:xZ-:";
-  const double sleep_tm=0.04; /* [time] interval between successive token requests */
+  const double sleep_tm=0.04; /* [s] Token request interval */
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
   const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
 
@@ -128,7 +128,7 @@ main(int argc,char **argv)
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nbr_dmn_xtr;
   int fl_nbr=0;
-  int fl_nm_lng; /* [nbr] output file name length */
+  int fl_nm_lng; /* [nbr] Output file name length */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
@@ -374,9 +374,6 @@ main(int argc,char **argv)
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FMT_64BIT,&out_id);
 
-  /* Obtain the length of output file name in order to broadcast it to workers */
-  fl_nm_lng=(int)strlen(fl_out_tmp);
-
   /* Copy global attributes */
   (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
   
@@ -495,7 +492,8 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
   } /* proc_id != 0 */
 
-  /* Manager broadcasts output filename length and filename to workers */
+  /* Manager broadcasts output filename to workers */
+  fl_nm_lng=(int)strlen(fl_out_tmp);
   MPI_Bcast(&fl_nm_lng,1,MPI_INT,0,MPI_COMM_WORLD);
   if(proc_id != 0) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
   MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,0,MPI_COMM_WORLD);

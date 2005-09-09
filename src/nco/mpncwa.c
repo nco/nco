@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.5 2005-08-15 05:12:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.6 2005-09-09 00:19:58 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -119,10 +119,12 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.5 2005-08-15 05:12:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.5 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.6 2005-09-09 00:19:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.6 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
-  const double sleep_tm=0.04; /* [time] interval between successive token requests */
+
+  const double sleep_tm=0.04; /* [s] Token request interval */
+
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
   const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
   
@@ -144,7 +146,7 @@ main(int argc,char **argv)
   int abb_arg_nbr=0;
   int fl_idx=int_CEWI;
   int fl_nbr=0;
-  int fl_nm_lng; /* [nbr] output file name length */
+  int fl_nm_lng; /* [nbr] Output file name length */
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
   int idx_avg;
@@ -590,9 +592,6 @@ main(int argc,char **argv)
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FMT_64BIT,&out_id);
   if(dbg_lvl > 4) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
 
-  /* Obtain the length of output file name in order to broadcast it to workers */
-  fl_nm_lng=(int)strlen(fl_out_tmp);
-
   /* Copy all global attributes */
   (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
   
@@ -647,7 +646,8 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
   } /* proc_id != 0 */
 
-  /* Manager broadcasts output filename length and filename to workers */ 
+  /* Manager broadcasts output filename to workers */ 
+  fl_nm_lng=(int)strlen(fl_out_tmp);
   MPI_Bcast(&fl_nm_lng,1,MPI_INT,0,MPI_COMM_WORLD);
   if(proc_id != 0) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
   MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,0,MPI_COMM_WORLD);
