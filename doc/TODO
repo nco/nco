@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.587 2005-09-09 22:34:33 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.588 2005-09-10 07:25:32 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -334,38 +334,38 @@ nco588. MPI debugging with LAM-MPI: http://www.lam-mpi.org/faq/category6.php3
         mpirun 3 -x ashes:0 /usr/bin/ddd --gdb --debugger "gdb" $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc
 nco589. valgrind with LAM-MPI: http://www.lam-mpi.org/faq/category6.php3
         mpirun -np 3 /usr/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-nco590. 
+nco590. icc MPI NCO not linking on elnino: rebuild libnetcdf.a with icc optimization?
+nco591. 
 
-OPeNDAP:
-Archive sample DAP accesses:
+MPI: Archive of quickie MPI tests
+NB: mpirun requires explicit path to executable
+In following bug reports, 
+"debian" = Ubuntu/Libranet, gcc 3.4/4.0, pentium/opteron (ashes, elnino, sand)
+"fedora" = Fedora with icc 8.1 on pentium (soot)
+1. mpncbo (debian: dies with p4_error: interrupt SIGSEGV: 11, fedora: succeeds)
+   mpirun -np 3 ${MY_BIN_DIR}/mpncbo -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
+2. mpncea (debian: hangs just before write, fedora: fails with glibc detected *** double free or corruption (!prev))
+   mpirun -np 3 ${MY_BIN_DIR}/mpncea -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
+3. mpncecat (debian: dies with p4_error: interrupt SIGSEGV: 11, fedora: One of the processes started by mpirun has exited with a nonzero exit)
+   mpirun -np 3 ${MY_BIN_DIR}/mpncecat -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
+4. mpncpdq (debian: both invocations hang, fedora: both succeed)
+   mpirun -np 3 ${MY_BIN_DIR}/mpncpdq -O -D 3 -a lat,lev,lon -p ${HOME}/nco/data in.nc ~/foo.nc > ~/foo 2>&1
+   mpirun -np 3 ${MY_BIN_DIR}/mpncpdq -O -D 3 -P all_new -p ${HOME}/nco/data in.nc ~/foo.nc > ~/foo 2>&1
+5. mpncra (debian: hangs early, fedora: glibc detected *** double free or corruption (!prev))
+   mpirun -np 3 ${MY_BIN_DIR}/mpncra -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
+6. mpncrcat (debian: hangs just before write, fedora: succeeds)
+   mpirun -np 3 ${MY_BIN_DIR}/mpncrcat -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
+7. mpncwa (appears to work, fedora: one of the processes started by mpirun has exited with a nonzero exit code.)
+   mpirun -np 3 ${MY_BIN_DIR}/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc > ~/foo 2>&1
+
+OPeNDAP: Archive of quickie DAP tests:
 ncks -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l . in.nc
 ncks -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l . in.nc
 ncks -p https://srb.npaci.edu/mysrb331all.shtml/home/zender.uci-esmf/zender/nco/data -l . in.nc
 http://sasa.sdsc.edu:8003/cgi-bin/nph-dods/data/nccoos-duck-codar-latest.nc.html
 http://orion.sdsc.edu:8003/cgi-bin/nph-dods/data/nccoos-duck-codar-latest.nc.html
 
-MPI:
-Archive quickie MPI tests
-NB: mpirun requires explicit path to executable
-1. mpncbo (dies with p4_error: interrupt SIGSEGV: 11)
-   mpirun -np 3 ${MY_BIN_DIR}/mpncbo -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-2. mpncea (hangs just before write)
-   mpirun -np 3 ${MY_BIN_DIR}/mpncea -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-3. mpncecat (dies with p4_error: interrupt SIGSEGV: 11)
-   mpirun -np 3 ${MY_BIN_DIR}/mpncecat -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-4. mpncpdq (both invocations hang)
-   mpirun -np 3 ${MY_BIN_DIR}/mpncpdq -O -D 3 -a lat,lev,lon -p ${HOME}/nco/data in.nc ~/foo.nc > ~/foo 2>&1
-   mpirun -np 3 ${MY_BIN_DIR}/mpncpdq -O -D 3 -P all_new -p ${HOME}/nco/data in.nc ~/foo.nc > ~/foo 2>&1
-5. mpncra (hangs early)
-   mpirun -np 3 ${MY_BIN_DIR}/mpncra -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-6. mpncrcat (hangs just before write)
-   mpirun -np 3 ${MY_BIN_DIR}/mpncrcat -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-7. mpncwa (appears to work)
-   mpirun -np 3 ${MY_BIN_DIR}/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc > ~/foo 2>&1
-
-Valgrind:
-Archive valgrind commands which are memory-error and leak-free
-These form regression test for memory problems
+Valgrind: Archive of valgrind tests which are memory-error and leak-free
 1. ncap
    valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncap -O -S ${HOME}/nco/data/ncap.in -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 2. ncbo

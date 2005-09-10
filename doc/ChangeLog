@@ -2,6 +2,7 @@
 
 	* Found that many/most MPI tests complete successfully on soot (fedora)
 	MPI failures on debian may be temporary/unreliable
+	Documented different test results in MPI section of TODO
 
 	* Committed recent mpncbo.c commutivity changes
 	
