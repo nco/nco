@@ -1,5 +1,7 @@
 2005-09-11  Charlie Zender  <zender@uci.edu>
 
+	* Update bld/Makefile to work with MPICH2 rather than MPICH
+
 	* Add doc/mpi.txt to document MPI environments for NCO
 
 2005-09-10  Charlie Zender  <zender@uci.edu>

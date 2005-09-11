@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.316 2005-09-11 07:46:26 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.317 2005-09-11 08:12:52 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -712,6 +712,7 @@ endif # endif Comeau C Compiler
 ifneq (${null},$(findstring gcc,${CC}))
 ifeq (${MPI},Y)
  CC := $(subst gcc,mpicc,${LINUX_CC})
+ CXX := $(subst gcc,mpicxx,${LINUX_CXX})
  CPP := ${CC}
 endif # endif MPI
  CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
@@ -772,6 +773,7 @@ endif # endif GNU Compiler Collection
 ifeq (icc,$(firstword ${CC}))
 ifeq (${MPI},Y)
  CC := $(subst icc,mpicc,${LINUX_CC})
+ CXX := $(subst icpc,mpicxx,${LINUX_CXX})
  CPP := ${CC}
 endif # endif MPI
 # -fast: enable -xP -O3 -ipo -static
@@ -1526,7 +1528,7 @@ dbg:
 	@printf "MDL_RPM_NST_NM = $(MDL_RPM_NST_NM)\n"
 	@printf "MDL_SRC = ${MDL_SRC}\n"
 	@printf "MPICH_CC = ${MPICH_CC}\n"
-	@printf "MPICH_CCC = ${MPICH_CCC}\n"
+	@printf "MPICH_CXX = ${MPICH_CXX}\n"
 	@printf "MPI_PRC = ${MPI_PRC}\n"
 	@printf "MPI_PRC_SNG = ${MPI_PRC_SNG}\n"
 	@printf "NCO_VRS = ${NCO_VRS}\n"
