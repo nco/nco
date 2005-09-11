@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.64 2005-08-20 03:26:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.65 2005-09-11 01:13:08 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.64 2005-08-20 03:26:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.64 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.65 2005-09-11 01:13:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.65 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
   
   dmn_sct **dim_1;
@@ -466,10 +466,10 @@ main(int argc,char **argv)
   /* Perform various error-checks on input file */
   if(False) (void)nco_fl_cmp_err_chk();
   
-  /* Default operation type depends on invocation name */
+  /* Default operation depends on invocation name */
   if(nco_op_typ_sng == NULL) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
     
-  /* Loop over each differenced variable */
+  /* Loop over variables */
 #ifdef _OPENMP
   /* OpenMP notes:
      shared(): msk and wgt are not altered within loop
