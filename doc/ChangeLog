@@ -1,5 +1,7 @@
 2005-09-10  Charlie Zender  <zender@uci.edu>
 
+	* Pruned chapter/section/node titles
+
 	* Found that many/most MPI tests complete successfully on soot (fedora)
 	MPI failures on debian may be temporary/unreliable
 	Documented different test results in MPI section of TODO

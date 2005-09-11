@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.326 2005-09-09 22:34:33 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.327 2005-09-11 01:03:35 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -579,7 +579,7 @@ Unidata has shown a commitment to maintaining netCDF and UDUnits on all
 popular @acronym{UNIX} platforms, and is moving towards full support for 
 the Microsoft Windows operating system (@acronym{OS}).
 Given this, the only difficulty in implementing @acronym{NCO} on a
-particular platform is standardization of various C and Fortran
+particular platform is standardization of various @w{C and} Fortran
 interface and system calls.
 @acronym{NCO} code is tested for @acronym{ANSI} compliance by
 compiling with @w{C compilers} including those from 
@@ -1041,27 +1041,27 @@ differences between these files and your own.
 
 @menu
 * Philosophy::                  
-* Climate model paradigm::      
-* Output files::                
-* Appending::                   
-* Addition Subtraction Division Multiplication and Interpolation::  
+* Climate Model Paradigm::      
+* Temporary Output Files::      
+* Appending Variables::         
+* Simple Arithmetic and Interpolation::  
 * Averaging vs. Concatenating::  
-* Large numbers of input files::  
-* Large Datasets and Memory::   
-* Memory usage::                
-* Operator limitations::        
+* Large Numbers of Files::      
+* Large Datasets::              
+* Memory Requirements::         
+* Performance Limitations::     
 @end menu
 
 @html
 <a name="phl"></a> <!-- http://nco.sf.net/nco.html#phl -->
 @end html
-@node Philosophy, Climate model paradigm, Strategies, Strategies
-@section @acronym{NCO} operator philosophy
+@node Philosophy, Climate Model Paradigm, Strategies, Strategies
+@section Philosophy
 @cindex philosophy
 @cindex climate model
 
-The main design goal has been to produce operators that can be invoked
-from the command line to perform useful operations on netCDF files. 
+The main design goal is command line operators which perform useful,
+scriptable operations on netCDF files.  
 Many scientists work with models and observations which produce too much
 data to analyze in tabular format.
 Thus, it is often natural to reduce and massage this raw or primary
@@ -1090,13 +1090,13 @@ shell script or batch file.
 Finally, @acronym{NCO} was written to consume the absolute minimum
 amount of system memory required to perform a given job.
 The arithmetic operators are extremely efficient; their exact memory
-usage is detailed in @ref{Memory usage}.
+usage is detailed in @ref{Memory Requirements}.
 
 @html
 <a name="clm"></a> <!-- http://nco.sf.net/nco.html#clm -->
 @end html
-@node Climate model paradigm, Output files, Philosophy, Strategies
-@section Climate model paradigm
+@node Climate Model Paradigm, Temporary Output Files, Philosophy, Strategies
+@section Climate Model Paradigm
 @cindex climate model
 @cindex @acronym{NCAR}
 @cindex @acronym{GCM}
@@ -1114,8 +1114,8 @@ environment are as easy to visualize for the layman as the expert.
 @html
 <a name="out"></a> <!-- http://nco.sf.net/nco.html#out -->
 @end html
-@node Output files, Appending, Climate model paradigm, Strategies
-@section Temporary output files 
+@node Temporary Output Files, Appending Variables, Climate Model Paradigm, Strategies
+@section Temporary Output Files 
 @cindex data safety
 @cindex error tolerance
 @cindex safeguards
@@ -1180,8 +1180,8 @@ interactive keyboard input.
 @html
 <a name="apn"></a> <!-- http://nco.sf.net/nco.html#apn -->
 @end html
-@node Appending, Addition Subtraction Division Multiplication and Interpolation, Output files, Strategies
-@section Appending variables to a file
+@node Appending Variables, Simple Arithmetic and Interpolation, Temporary Output Files, Strategies
+@section Appending Variables
 Adding variables from one file to another is often desirable.
 @cindex concatenation
 @cindex appending variables
@@ -1237,11 +1237,11 @@ same name but different sizes.
 @html
 <a name="bnr"></a> <!-- http://nco.sf.net/nco.html#bnr -->
 @end html
-@node Addition Subtraction Division Multiplication and Interpolation, Averaging vs. Concatenating, Appending, Strategies
-@section Addition Subtraction Division Multiplication and Interpolation
+@node Simple Arithmetic and Interpolation, Averaging vs. Concatenating, Appending Variables, Strategies
+@section Simple Arithmetic and Interpolation
 
 Users comfortable with @acronym{NCO} semantics may find it easier to
-perform some simple mathematical operations in @acronym{NCO} rather than 
+perform some simple mathematical operations in @acronym{NCO} rather than  
 higher level languages. 
 @command{ncbo} (@pxref{ncbo netCDF Binary Operator}) does file
 addition, subtraction, multiplication, division, and broadcasting. 
@@ -1253,7 +1253,7 @@ operations from the command line.
 @html
 <a name="averagers"></a> <!-- http://nco.sf.net/nco.html#averagers -->
 @end html
-@node Averaging vs. Concatenating, Large numbers of input files, Addition Subtraction Division Multiplication and Interpolation, Strategies
+@node Averaging vs. Concatenating, Large Numbers of Files, Simple Arithmetic and Interpolation, Strategies
 @section Averagers vs.@: Concatenators
 
 @html
@@ -1428,8 +1428,8 @@ units.
 @html
 <a name="lrg"></a> <!-- http://nco.sf.net/nco.html#lrg -->
 @end html
-@node Large numbers of input files, Large Datasets and Memory, Averaging vs. Concatenating, Strategies
-@section Working with large numbers of input files
+@node Large Numbers of Files, Large Datasets, Averaging vs. Concatenating, Strategies
+@section Large Numbers of Files
 @cindex files, numerous input
 @cindex @code{-n @var{loop}}
 
@@ -1439,13 +1439,13 @@ hundreds or thousands of input files.
 @cindex @acronym{NASA EOSDIS}
 Unfortunately, data archives (e.g., @acronym{NASA EOSDIS}) may not
 name netCDF files in a format understood by the @samp{-n @var{loop}}
-switch (@pxref{Specifying input files}) that automagically generates
+switch (@pxref{Specifying Input Files}) that automagically generates
 arbitrary numbers of input filenames. 
 The @samp{-n @var{loop}} switch has the virtue of being concise,
 and of minimizing the command line.
 This helps keeps output file small since the command line is stored
 as metadata in the @code{history} attribute 
-(@pxref{History attribute}). 
+(@pxref{History Attribute}). 
 However, the @samp{-n @var{loop}} switch is useless when there is no
 simple, arithmetic pattern to the input filenames (e.g.,
 @file{h00001.nc}, @file{h00002.nc}, @w{@dots{} @file{h90210.nc}}).
@@ -1482,7 +1482,7 @@ feature, aka @code{stdin}:
 This method avoids all constraints on command line size imposed by
 the operating system. 
 A drawback to this method is that the @code{history} attribute
-(@pxref{History attribute}) does not record the name of any input 
+(@pxref{History Attribute}) does not record the name of any input 
 files since the names were not passed on the command line.
 This makes determining the data provenance at a later date difficult.
 @cindex @code{nco_input_file_number}
@@ -1491,7 +1491,7 @@ This makes determining the data provenance at a later date difficult.
 To remedy this situation, multi-file operators store the number of
 input files in the @code{nco_input_file_number} global attribute and the
 input file list itself in the @code{nco_input_file_list} global attribute
-(@pxref{Input file list attributes}).
+(@pxref{File List Attributes}).
 Although this does not preserve the exact command used to generate the
 file, it does retains all the information required to reconstruct the
 command and determine the data provenance.
@@ -1512,7 +1512,7 @@ If the shell buffer can not hold the results of the corresponding
 globbing operator, @file{??????.nc}, then the filename globbing
 technique will fail. 
 Instead we express the filename pattern as an extended regular 
-expression, @file{......\.nc} (@pxref{Variable subsetting}).
+expression, @file{......\.nc} (@pxref{Subsetting Variables}).
 We use @command{grep} to filter the directory listing for this pattern
 and to pipe the results to @command{xargs} which, in turn, passes the
 matching filenames to an @acronym{NCO} multi-file operator, e.g.,
@@ -1570,12 +1570,12 @@ This circumvents any @acronym{OS} and shell limits on command line size.
 The symbolic links are easily removed once @acronym{NCO} is finished.
 @cindex @code{history}
 One drawback to this method is that the @code{history} attribute
-(@pxref{History attribute}) retains the filename list of the symbolic
+(@pxref{History Attribute}) retains the filename list of the symbolic
 links, rather than the data files themselves. 
 This makes it difficult to determine the data provenance at a later date.
 
-@node Large Datasets and Memory, Memory usage, Large numbers of input files, Strategies
-@section Working with large datasets
+@node Large Datasets, Memory Requirements, Large Numbers of Files, Strategies
+@section Large Datasets
 @cindex large datasets
 @cindex LFS
 @cindex Large File Support
@@ -1641,13 +1641,13 @@ Choose a @var{debug-level} @w{between 1} @w{and 3} for most situations,
 e.g., @code{ncea -D 2 85.nc 86.nc 8586.nc}.
 @w{A full} description of how to estimate the actual amount of memory the
 multi-file @acronym{NCO} operators consume is given in 
-@ref{Memory usage}. 
+@ref{Memory Requirements}. 
 
 @html
 <a name="mmr"></a> <!-- http://nco.sf.net/nco.html#mmr -->
 @end html
-@node Memory usage, Operator limitations, Large Datasets and Memory, Strategies
-@section Approximate @acronym{NCO} memory requirements
+@node Memory Requirements, Performance Limitations, Large Datasets, Strategies
+@section Memory Requirements
 @cindex memory requirements
 @cindex memory available
 @cindex RAM
@@ -1670,19 +1670,19 @@ operation.
 The required memory is based on the underlying algorithms.
 The description below is the memory usage per thread.
 Users with shared memory machines may use the threaded @acronym{NCO}
-operators (@pxref{OpenMP threading}).
+operators (@pxref{OpenMP Threading}).
 The peak and sustained memory usage will scale accordingly,
 i.e., by the number of threads.
 Memory consumption patterns of all operators are similar, with
 the exception of @command{ncap}.
 
 @menu
-* Memory Usage of Single and Multi-file Operators::  
-* Memory Usage of ncap::        
+* Single and Multi-file Operators::  
+* Memory for ncap::             
 @end menu
 
-@node Memory Usage of Single and Multi-file Operators, Memory Usage of ncap, Memory usage, Memory usage
-@subsection Memory Usage of Single and Multi-file Operators
+@node Single and Multi-file Operators, Memory for ncap, Memory Requirements, Memory Requirements
+@subsection Single and Multi-file Operators
 
 @cindex multi-file operators
 The multi-file operators currently comprise the record operators,
@@ -1722,10 +1722,10 @@ The operators have the following memory requirements:
 Note that only variables which are processed, i.e., averaged or
 concatenated, contribute to @math{MS}.
 Memory is never allocated to hold variables which do not appear in the 
-output file (@pxref{Variable subsetting}). 
+output file (@pxref{Subsetting Variables}). 
 
-@node Memory Usage of ncap,  , Memory Usage of Single and Multi-file Operators, Memory usage
-@subsection Memory Usage of @command{ncap}
+@node Memory for ncap,  , Single and Multi-file Operators, Memory Requirements
+@subsection Memory for @command{ncap}
 @cindex @command{ncap}
 @cindex binary operations
 @cindex unary operations
@@ -1760,8 +1760,8 @@ is ultimately due to an @acronym{NCO} memory leak (rather than
 inadequate @acronym{RAM} on your system), then we would be very
 interested in receiving a detailed bug report. 
 
-@node Operator limitations,  , Memory usage, Strategies
-@section Performance limitations of the operators
+@node Performance Limitations,  , Memory Requirements, Strategies
+@section Performance Limitations
 
 @enumerate
 @item 
@@ -1805,7 +1805,7 @@ The cause for this is not understood at present.
 <a name="ftr"></a> <!-- http://nco.sf.net/nco.html#ftr -->
 @end html
 @node Common features, Operator Reference Manual, Strategies, Top
-@chapter Features common to most operators
+@chapter NCO Features
 
 Many features have been implemented in more than one operator and are
 described here for brevity. 
@@ -1820,31 +1820,31 @@ feature is automatic and cannot be controlled by the user.
 @menu
 * Internationalization::        
 * Metadata Optimization::       
-* OpenMP threading::            
+* OpenMP Threading::            
 * Large File Support::          
 * netCDF4 and HDF support::     
-* Command line options::        
-* Specifying input files::      
-* Specifying output files::     
+* Command Line Options::        
+* Specifying Input Files::      
+* Specifying Output Files::     
 * Remote storage::              
-* File retention::              
-* Variable subsetting::         
-* Coordinate variables::        
-* Fortran indexing::            
+* Retaining Retrieved Files::   
+* Subsetting Variables::        
+* Subsetting Coordinate Variables::  
+* C and Fortran Index Conventions::  
 * Hyperslabs::                  
 * Multislabs::                  
 * UDUnits Support::             
-* Wrapped coordinates::         
+* Wrapped Coordinates::         
 * Stride::                      
-* Missing values::              
+* Missing Values::              
 * Operation Types::             
-* Type conversion::             
-* Suppressing interactive prompts::  
-* History attribute::           
-* Input file list attributes::  
+* Type Conversion::             
+* Batch Mode::                  
+* History Attribute::           
+* File List Attributes::        
 * CF Conventions::              
 * ARM Conventions::             
-* Operator version::            
+* Operator Version::            
 @end menu
 
 @html
@@ -1866,7 +1866,7 @@ We hope to produce foreign language string catalogues in 2004.
 @html
 <a name="hdr"></a> <!-- http://nco.sf.net/nco.html#hdr -->
 @end html
-@node Metadata Optimization, OpenMP threading, Internationalization, Common features
+@node Metadata Optimization, OpenMP Threading, Internationalization, Common features
 @section Metadata Optimization
 @cindex metadata optimization
 @cindex performance
@@ -1903,8 +1903,8 @@ library (@pxref{netCDF4 and HDF support}).
 <a name="omp"></a> <!-- http://nco.sf.net/nco.html#omp -->
 <a name="openmp"></a> <!-- http://nco.sf.net/nco.html#openmp -->
 @end html
-@node OpenMP threading, Large File Support, Metadata Optimization, Common features
-@section OpenMP threading
+@node OpenMP Threading, Large File Support, Metadata Optimization, Common features
+@section OpenMP Threading
 @cindex OpenMP
 @cindex threads
 @cindex @acronym{SMP}
@@ -1989,7 +1989,7 @@ This information is also useful for benchmarking.
 @html
 <a name="lfs"></a> <!-- http://nco.sf.net/nco.html#lfs -->
 @end html
-@node Large File Support, netCDF4 and HDF support, OpenMP threading, Common features
+@node Large File Support, netCDF4 and HDF support, OpenMP Threading, Common features
 @section Large File Support
 @cindex LFS
 @cindex Large File Support
@@ -2038,7 +2038,7 @@ Users are advised to use the default classic format until
 <a name="hdf"></a> <!-- http://nco.sf.net/nco.html#hdf -->
 <a name="netcdf4"></a> <!-- http://nco.sf.net/nco.html#netcdf4 -->
 @end html
-@node netCDF4 and HDF support, Command line options, Large File Support, Common features
+@node netCDF4 and HDF support, Command Line Options, Large File Support, Common features
 @section netCDF4 and HDF support
 @cindex HDF
 @cindex netCDF2
@@ -2079,17 +2079,17 @@ netCDF4 is more widespread.
 All @acronym{NCO} operators write @code{CLASSIC} format files
 unless told otherwise.
 If the user toggles the @samp{-Z} switch (or its long option equivalents 
-@samp{--hdf}, @samp{netcdf4}), then @acronym{NCO} will create a
+@samp{--hdf}, @samp{--netcdf4}), then @acronym{NCO} will create a
 @code{64BIT} output file.
 If the user toggles the @samp{-4} switch (or its long option equivalents
-@samp{--hdf}, @samp{netcdf4}), then @acronym{NCO} will create a
+@samp{--hdf}, @samp{--netcdf4}), then @acronym{NCO} will create a
 @code{NETCDF4} output file.
 
 @html
 <a name="cmd_ln"></a> <!-- http://nco.sf.net/nco.html#cmd_ln -->
 @end html
-@node Command line options, Specifying input files, netCDF4 and HDF support, Common features
-@section Command line options
+@node Command Line Options, Specifying Input Files, netCDF4 and HDF support, Common features
+@section Command Line Options
 @cindex command line options
 @cartouche
 Availability: All operators@*
@@ -2200,8 +2200,8 @@ name that most suits their taste.
 <a name="in"></a> <!-- http://nco.sf.net/nco.html#in -->
 <a name="input"></a> <!-- http://nco.sf.net/nco.html#input -->
 @end html
-@node Specifying input files, Specifying output files, Command line options, Common features
-@section Specifying input files
+@node Specifying Input Files, Specifying Output Files, Command Line Options, Common features
+@section Specifying Input Files
 @cindex input files
 @cindex globbing
 @cindex regular expressions
@@ -2345,8 +2345,8 @@ automatically generate, in order, the filenames @file{85_12.nc},
 <a name="out"></a> <!-- http://nco.sf.net/nco.html#out -->
 <a name="output"></a> <!-- http://nco.sf.net/nco.html#output -->
 @end html
-@node Specifying output files, Remote storage, Specifying input files, Common features
-@section Specifying output files
+@node Specifying Output Files, Remote storage, Specifying Input Files, Common features
+@section Specifying Output Files
 @cindex output file
 @cindex input files
 @cindex positional arguments
@@ -2380,7 +2380,7 @@ files is their position.
 @cindex @command{xargs}
 @cindex input files
 Second, specification of a long list of input files may be difficult
-(@pxref{Large numbers of input files}).
+(@pxref{Large Numbers of Files}).
 Making the input file list the final argument to an operator facilitates 
 using @command{xargs} for this purpose.
 Some alternatives to @command{xargs} are very ugly and undesirable.
@@ -2393,8 +2393,8 @@ Compilers and linkers are usually invoked this way.
 @html
 <a name="rmt"></a> <!-- http://nco.sf.net/nco.html#rmt -->
 @end html
-@node Remote storage, File retention, Specifying output files, Common features
-@section Accessing files stored remotely
+@node Remote storage, Retaining Retrieved Files, Specifying Output Files, Common features
+@section Accessing Remote Files
 @cindex @code{rcp}
 @cindex @code{scp}
 @cindex @file{.rhosts}
@@ -2428,7 +2428,9 @@ an @acronym{OPeNDAP} server.
 Examples of each are given below, following a brief description of the 
 particular access protocol.
 
+@html
 <a name="ftp"></a> <!-- http://nco.sf.net/nco.html#ftp -->
+@end html
 To access a file via an anonymous @acronym{FTP} server, supply the
 remote file's @acronym{URL}.
 @acronym{FTP} is an intrinsically insecure protocol because it transfers
@@ -2452,7 +2454,9 @@ copying those data into the @code{history} global attribute in the
 output file (done by default) poses an unacceptable security risk.
 }. 
 
+@html
 <a name="sftp"></a> <!-- http://nco.sf.net/nco.html#sftp -->
+@end html
 @acronym{SFTP}, i.e., secure @acronym{FTP}, uses @acronym{SSH}-based 
 security protocols that solve the security issues associated with
 plain @acronym{FTP}.  
@@ -2465,8 +2469,10 @@ Note the second colon following the top-level-domain (tld).
 This syntax is a hybrid between an @acronym{FTP URL} and a standard
 remote file syntax.
 
+@html
 <a name="rcp"></a> <!-- http://nco.sf.net/nco.html#rcp -->
 <a name="scp"></a> <!-- http://nco.sf.net/nco.html#scp -->
+@end html
 To access a file using @command{rcp} or @command{scp}, specify the
 Internet address of the remote file.
 Of course in this case you must have @command{rcp} or @command{scp}
@@ -2720,8 +2726,8 @@ large files stored at remote locations.
 @html
 <a name="rtn"></a> <!-- http://nco.sf.net/nco.html#rtn -->
 @end html
-@node File retention, Variable subsetting, Remote storage, Common features
-@section Retention of remotely retrieved files
+@node Retaining Retrieved Files, Subsetting Variables, Remote storage, Common features
+@section Retaining Retrieved Files
 @cindex file deletion
 @cindex file removal
 @cindex file retention
@@ -2795,8 +2801,8 @@ when your other preferred methods are not available locally.
 @html
 <a name="var"></a> <!-- http://nco.sf.net/nco.html#var -->
 @end html
-@node Variable subsetting, Coordinate variables, File retention, Common features
-@section Including/Excluding specific variables
+@node Subsetting Variables, Subsetting Coordinate Variables, Retaining Retrieved Files, Common features
+@section Subsetting Variables
 @cindex @code{-v @var{var}}
 @cindex @code{--variable @var{var}}
 @cindex @code{-x}
@@ -2809,9 +2815,11 @@ Availability: (@command{ncap}), @command{ncbo}, @command{ncea},
 Short options: @samp{-v}, @samp{-x}@*
 Long options: @samp{--variable}, @samp{--exclude} or @samp{--xcl}@*
 @end cartouche
-Variable subsetting is implemented with the @samp{-v
-@var{var}[,@dots{}]} and @samp{-x} options. 
-@w{A list} of variables to extract is specified following the @samp{-v}
+Subsetting variables refers to explicitly specifying variables to be
+included or excluded from operator actions.
+Subsetting is implemented with the @samp{-v @var{var}[,@dots{}]} and
+@samp{-x} options.  
+@w{A list} of variables to extract is specified following the @samp{-v} 
 option, e.g., @samp{-v time,lat,lon}.
 Not using the @samp{-v} option is equivalent to specifying all
 variables.  
@@ -2823,7 +2831,7 @@ half of the variables in a file.
 Remember, if averaging or concatenating large files stresses your
 systems memory or disk resources, then the easiest solution is often to
 use the @samp{-v} option to retain only the variables you 
-really need (@pxref{Memory usage}).
+really need (@pxref{Memory Requirements}).
 Note that, due to its special capabilities, @command{ncap} interprets
 the @samp{-v} switch differently
 (@pxref{ncap netCDF Arithmetic Processor}).
@@ -2956,8 +2964,8 @@ filename expansion (globbing).
 <a name="-C"></a> <!-- http://nco.sf.net/nco.html#-C -->
 <a name="-c"></a> <!-- http://nco.sf.net/nco.html#-c -->
 @end html
-@node Coordinate variables, Fortran indexing, Variable subsetting, Common features
-@section Including/Excluding coordinate variables
+@node Subsetting Coordinate Variables, C and Fortran Index Conventions, Subsetting Variables, Common features
+@section Subsetting Coordinate Variables
 @cindex @code{-C}
 @cindex @code{-c}
 @cindex @code{--no-coords}
@@ -2992,8 +3000,8 @@ without having to know their names.
 <a name="ftn"></a> <!-- http://nco.sf.net/nco.html#ftn -->
 <a name="-F"></a> <!-- http://nco.sf.net/nco.html#-F -->
 @end html
-@node Fortran indexing, Hyperslabs, Coordinate variables, Common features
-@section C & Fortran index convention
+@node C and Fortran Index Conventions, Hyperslabs, Subsetting Coordinate Variables, Common features
+@section C and Fortran Index conventions
 @cindex index convention
 @cindex Fortran index convention
 @cindex C index convention
@@ -3052,7 +3060,7 @@ lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0
 <a name="dmn"></a> <!-- http://nco.sf.net/nco.html#dmn -->
 <a name="-d"></a> <!-- http://nco.sf.net/nco.html#-d -->
 @end html
-@node Hyperslabs, Multislabs, Fortran indexing, Common features
+@node Hyperslabs, Multislabs, C and Fortran Index Conventions, Common features
 @section Hyperslabs 
 @cindex hyperslab
 @cindex dimension limits
@@ -3114,7 +3122,7 @@ results are unpredictable.
 @cindex wrapped coordinates
 The relative magnitude of @var{min} and @var{max} indicate to the
 operator whether to expect a @dfn{wrapped coordinate}
-(@pxref{Wrapped coordinates}), such as longitude.
+(@pxref{Wrapped Coordinates}), such as longitude.
 If @math{@var{min} > @var{max}}, the @acronym{NCO} expects the
 coordinate to be wrapped, and a warning message will be printed.
 When this occurs, @acronym{NCO} selects all values outside the domain
@@ -3231,7 +3239,7 @@ future.
 @html
 <a name="UDUnits"></a> <!-- http://nco.sf.net/nco.html#UDUnits -->
 @end html
-@node UDUnits Support, Wrapped coordinates, Multislabs, Common features
+@node UDUnits Support, Wrapped Coordinates, Multislabs, Common features
 @section UDUnits Support 
 @cindex UDUnits
 @cindex Unidata
@@ -3391,8 +3399,8 @@ esoteric units (e.g., furlongs, pounds per square inch, fortnights).
 @html
 <a name="wrp"></a> <!-- http://nco.sf.net/nco.html#wrp -->
 @end html
-@node Wrapped coordinates, Stride, UDUnits Support, Common features
-@section Wrapped coordinates
+@node Wrapped Coordinates, Stride, UDUnits Support, Common features
+@section Wrapped Coordinates
 @cindex wrapped coordinates
 @cindex longitude
 @cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
@@ -3461,7 +3469,7 @@ values (@pxref{Hyperslabs}).
 @html
 <a name="srd"></a> <!-- http://nco.sf.net/nco.html#srd -->
 @end html
-@node Stride, Missing values, Wrapped coordinates, Common features
+@node Stride, Missing Values, Wrapped Coordinates, Common features
 @section Stride 
 @cindex stride
 @cindex @code{-d @var{dim},[@var{min}],[@var{max}],@var{stride}}
@@ -3508,7 +3516,7 @@ the starting index @w{as 1,} i.e., @samp{-d time,1,,2}.
 For example, consider a file @file{8501_8912.nc} which contains 60
 consecutive months of data. 
 Say you wish to obtain just the March data from this file.
-Using 0-based subscripts (@pxref{Fortran indexing}) these
+Using 0-based subscripts (@pxref{C and Fortran Index Conventions}) these 
 data are stored in records @w{2, 14, @dots{} 50} so the desired
 @var{stride} @w{is 12.}
 Without the @var{stride} option, the procedure is very awkward.
@@ -3545,7 +3553,7 @@ ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 @html
 <a name="mss_val"></a> <!-- http://nco.sf.net/nco.html#mss_val -->
 @end html
-@node Missing values, Operation Types, Stride, Common features
+@node Missing Values, Operation Types, Stride, Common features
 @section Missing values
 @cindex missing values
 @cindex data, missing 
@@ -3675,7 +3683,7 @@ important information from being lost.
 @html
 <a name="op_typ"></a> <!-- http://nco.sf.net/nco.html#op_typ -->
 @end html
-@node Operation Types, Type conversion, Missing values, Common features
+@node Operation Types, Type Conversion, Missing Values, Common features
 @section Operation Types
 @cindex operation types
 @cindex @code{avg}
@@ -3796,7 +3804,7 @@ $\xxx_{\jjj}$ except in two conditions:
 @cindex missing values
 @enumerate
 @item $\xxx_{\idx}$ equals the @var{missing value} 
-(@pxref{Missing values}) for the variable. 
+(@pxref{Missing Values}) for the variable. 
 @item $\xxx_{\idx}$ is located at a point where the mask condition 
 (@pxref{Mask condition}) is false.
 @end enumerate
@@ -3807,7 +3815,7 @@ We now define these criteria more rigorously.
 Each~$\xxx_{\idx}$ has an associated Boolean weight~$\mssflg_{\idx}$
 whose value is~0 or~1 (false or true). 
 The value of~$\mssflg_{\idx}$ is~1 (true) unless $\xxx_{\idx}$ equals
-the @var{missing value} (@pxref{Missing values}) for the variable. 
+the @var{missing value} (@pxref{Missing Values}) for the variable. 
 Thus, for a variable with no @code{missing_value} attribute,
 $\mssflg_{\idx}$~is always~1.
 All @acronym{NCO} arithmetic operators (@command{ncbo},
@@ -4029,8 +4037,8 @@ required by the @command{ncbo} operation in the third step.
 @html
 <a name="typ_cnv"></a> <!-- http://nco.sf.net/nco.html#typ_cnv -->
 @end html
-@node Type conversion, Suppressing interactive prompts, Operation Types, Common features
-@section Type conversion
+@node Type Conversion, Batch Mode, Operation Types, Common features
+@section Type Conversion
 @cindex type conversion
 @cartouche
 Availability: @command{ncap}, @command{ncbo}, @command{ncea},
@@ -4057,7 +4065,7 @@ which manual type conversion is advantageous.
 * Manual type conversion::      
 @end menu
 
-@node Automatic type conversion, Manual type conversion, Type conversion, Type conversion
+@node Automatic type conversion, Manual type conversion, Type Conversion, Type Conversion
 @subsection Automatic type conversion
 
 As a general rule, automatic type conversions should be avoided for at
@@ -4185,7 +4193,7 @@ $n \le x < n+1$
 @end ifset
 will have the value @var{n} when converted to an integer.
 
-@node Manual type conversion,  , Automatic type conversion, Type conversion
+@node Manual type conversion,  , Automatic type conversion, Type Conversion
 @subsection Manual type conversion
 @cindex @command{ncap}
 @command{ncap} provides intrinsic functions for performing manual type
@@ -4201,8 +4209,9 @@ ncap -O -s "tpt=short(tpt);prs=double(prs);" in.nc out.nc
 @html
 <a name="ovr"></a> <!-- http://nco.sf.net/nco.html#ovr -->
 @end html
-@node Suppressing interactive prompts, History attribute, Type conversion, Common features
-@section Suppressing interactive prompts
+@node Batch Mode, History Attribute, Type Conversion, Common features
+@section Batch Mode
+@cindex batch mode
 @cindex overwriting files
 @cindex appending to files
 @cindex force overwrite
@@ -4222,8 +4231,8 @@ If the @var{output-file} specified for a command is a pre-existing file,
 then the operator will prompt the user whether to overwrite (erase) the
 existing @var{output-file}, attempt to append to it, or abort the
 operation. 
-However, in processing large amounts of data, too many interactive
-questions can be a curse to productivity.
+However, interactive questions reduce productivity when processing large
+amounts of data.
 Therefore @acronym{NCO} also implements two ways to override its own safety
 features, the @samp{-O} and @samp{-A} switches.
 Specifying @samp{-O} tells the operator to overwrite any existing
@@ -4237,8 +4246,8 @@ interactive keyboard input.
 <a name="hst"></a> <!-- http://nco.sf.net/nco.html#hst -->
 <a name="-h"></a> <!-- http://nco.sf.net/nco.html#-h -->
 @end html
-@node History attribute, Input file list attributes, Suppressing interactive prompts, Common features
-@section History attribute
+@node History Attribute, File List Attributes, Batch Mode, Common features
+@section History Attribute
 @cindex @code{history}
 @cindex timestamp
 @cindex global attributes
@@ -4279,13 +4288,13 @@ automatically appending the @code{history} attribute
 (@pxref{ncatted netCDF Attribute Editor}).   
 Note that the @samp{-h} switch also turns off writing the
 @code{nco_input_file_list} attribute for multi-file operators
-(@pxref{Input file list attributes}).
+(@pxref{File List Attributes}).
 
 @html
 <a name="fl_lst_in_att"></a> <!-- http://nco.sf.net/nco.html#fl_lst_in_att -->
 @end html
-@node Input file list attributes, CF Conventions, History attribute, Common features
-@section Input file list attributes
+@node File List Attributes, CF Conventions, History Attribute, Common features
+@section File List Attributes
 @cindex @code{nco_input_file_list}
 @cindex @code{nco_input_file_number}
 @cindex @code{stdin}
@@ -4301,7 +4310,7 @@ Long options: @samp{--fl_lst_in}, @samp{--file_list}@*
 @end cartouche
 Many methods of specifying large numbers of input file names pass
 these names via pipes, encodings, or argument transfer programs
-(@pxref{Large numbers of input files}).
+(@pxref{Large Numbers of Files}).
 When these methods are used, the input file list is not explicitly
 passed on the command line.
 This results in a loss of information since the @code{history}
@@ -4325,7 +4334,7 @@ The @samp{-H} switch overrides (turns off) the default behavior of
 writing the input file list global attributes when input is from
 @code{stdin}. 
 The @samp{-h} switch does this too, and turns off the @code{history}
-attribute as well (@pxref{History attribute}).
+attribute as well (@pxref{History Attribute}).
 Hence both switches allows space-conscious users to avoid storing what
 may amount to many thousands of filenames in a metadata attribute.
 
@@ -4334,7 +4343,7 @@ may amount to many thousands of filenames in a metadata attribute.
 <a name="cnv_CF"></a> <!-- http://nco.sf.net/nco.html#cnv_CF -->
 <a name="cnv_CCSM"></a> <!-- http://nco.sf.net/nco.html#cnv_CCSM -->
 @end html
-@node CF Conventions, ARM Conventions, Input file list attributes, Common features
+@node CF Conventions, ARM Conventions, File List Attributes, Common features
 @section @acronym{CF} Conventions
 @cindex @acronym{CF} conventions
 @cindex @acronym{CCSM} conventions
@@ -4450,7 +4459,7 @@ or alter the @code{convention} attribute.
 @html
 <a name="cnv_ARM"></a> <!-- http://nco.sf.net/nco.html#cnv_ARM -->
 @end html
-@node ARM Conventions, Operator version, CF Conventions, Common features
+@node ARM Conventions, Operator Version, CF Conventions, Common features
 @section @acronym{ARM} Conventions
 @cindex @acronym{ARM} conventions
 @cindex @code{time_offset}
@@ -4498,8 +4507,8 @@ whenever these @acronym{ARM}-specific procedures are executed.
 @html
 <a name="vrs"></a> <!-- http://nco.sf.net/nco.html#vrs -->
 @end html
-@node Operator version,  , ARM Conventions, Common features
-@section Operator version
+@node Operator Version,  , ARM Conventions, Common features
+@section Operator Version
 @cindex version
 @cindex @acronym{RCS}
 @cindex @code{-r}
@@ -4529,7 +4538,7 @@ This tells you @command{ncks} contains all patches up to version
 <a name="rfr"></a> <!-- http://nco.sf.net/nco.html#rfr -->
 @end html
 @node Operator Reference Manual, Contributing, Common features, Top
-@chapter Reference manual for all operators
+@chapter Operator Reference Manual
 
 This chapter presents reference pages for each of the operators
 individually. 
@@ -4600,13 +4609,13 @@ filename where (usually multiple) scripting commands are pre-stored.
 @command{ncap} was written to perform arbitrary albebraic
 transformations of data and archive the results as easily as possible.
 @cindex derived fields
-@xref{Missing values}, for treatment of missing values.
+@xref{Missing Values}, for treatment of missing values.
 The results of the algebraic manipulations are called 
 @dfn{derived fields}. 
 
 Unlike the other operators, @command{ncap} does not accept a list of
 variables to be operated on as an argument to @samp{-v} 
-(@pxref{Variable subsetting}).
+(@pxref{Subsetting Variables}).
 Rather, the @samp{-v} switch takes no arguments and indicates
 that @command{ncap} should output @emph{only} user-defined variables.
 @command{ncap} does not accept or understand the @var{-x} switch.
@@ -4867,7 +4876,7 @@ Converts @var{x} to external type @code{NC_INT}, a C-type @code{int}.
 @dfn{Convert to @code{NC_SHORT}}
 Converts @var{x} to external type @code{NC_SHORT}, a C-type @code{short}.
 @end table
-@xref{Type conversion}, for more details on automatic and manual type conversion.
+@xref{Type Conversion}, for more details on automatic and manual type conversion.
 
 @html
 <a name="mth"></a> <!-- http://nco.sf.net/nco.html#mth -->
@@ -5195,7 +5204,7 @@ nearbyint$(0.1) = 0.0$
 Value of @var{x} is raised to the power of @var{y}.
 Exceptions are raised for @dfn{domain errors}.
 Due to type-limitations in the @w{C language} @code{pow} function,
-integer arguments are promoted (@pxref{Type conversion}) to type
+integer arguments are promoted (@pxref{Type Conversion}) to type
 @code{NC_FLOAT} before evaluation. 
 Example: 
 @tex
@@ -5476,9 +5485,9 @@ in the input file.
 Thus the append (@command{ncks -A}) command would be undefined (and
 should fail) in this case. 
 @cindex @code{-C}
-Equally important is the @samp{-C} argument (@pxref{Coordinate
-variables}) to @command{ncwa} to prevent any scalar @var{time} variable
-from being written to the output file.  
+Equally important is the @samp{-C} argument 
+(@pxref{Subsetting Coordinate Variables}) to @command{ncwa} to prevent
+any scalar @var{time} variable from being written to the output file.  
 Knowing when to use @command{ncwa -a time} rather than the default
 @command{ncra} for time-averaging takes, well, time.
 
@@ -5519,7 +5528,7 @@ Note that @command{ncatted} interprets character attributes
 @cindex @code{history}
 @cindex @code{-h}
 Because repeated use of @command{ncatted} can considerably increase the size
-of the @code{history} global attribute (@pxref{History attribute}), the
+of the @code{history} global attribute (@pxref{History Attribute}), the
 @samp{-h} switch is provided to override automatically appending the
 command to the @code{history} global attribute in the @var{output-file}.
 
@@ -5535,7 +5544,7 @@ This allows @command{ncatted} to change the missing values in files from
 different machines to a single value so that the files may then be 
 concatenated together, e.g., by @command{ncrcat}, without losing any
 information.   
-@xref{Missing values}, for more information.
+@xref{Missing Values}, for more information.
 
 The key to mastering @command{ncatted} is understanding the meaning of the
 structure describing the attribute modification, @var{att_dsc} specified by the required option @samp{-a} or @samp{--attribute}.
@@ -5875,7 +5884,7 @@ and the corresponding variables (those with the same name) in
 @var{file_2} and stores the results in @var{file_3}. 
 The binary operation operates on the entire files (modulo any excluded
 variables). 
-@xref{Missing values}, for treatment of missing values.
+@xref{Missing Values}, for treatment of missing values.
 One of the four standard arithmetic binary operations currently
 supported must be selected with the @samp{-y @var{op_typ}} switch (or
 long options @samp{--op_typ} or @samp{--operation}).
@@ -6226,7 +6235,7 @@ distinctions between the various averagers and concatenators.
 As a multi-file operator, @command{ncea} will read the list of
 @var{input-files} from @code{stdin} if they are not specified 
 as positional arguments on the command line 
-(@pxref{Large numbers of input files}).
+(@pxref{Large Numbers of Files}).
 
 The file is the logical unit of organization for the results of many
 scientific studies.
@@ -6262,7 +6271,7 @@ ncea -n 5,2,1 85_01.nc 85.nc
 @end example
 @noindent
 These three commands produce identical answers.
-@xref{Specifying input files}, for an explanation of the distinctions
+@xref{Specifying Input Files}, for an explanation of the distinctions
 between these methods.
 The output file, @file{85.nc}, is the same size as the inputs files.
 It contains 12 months of data (which might or might not be stored in the 
@@ -6328,7 +6337,7 @@ distinctions between the various averagers and concatenators.
 As a multi-file operator, @command{ncecat} will read the list of
 @var{input-files} from @code{stdin} if they are not specified 
 as positional arguments on the command line 
-(@pxref{Large numbers of input files}).
+(@pxref{Large Numbers of Files}).
 
 @cindex climate model
 Consider five realizations, @file{85a.nc}, @file{85b.nc}, 
@@ -6363,7 +6372,7 @@ ncecat -n 5,2,1 85_01.nc 85.nc
 @end example
 @noindent
 These three commands produce identical answers.
-@xref{Specifying input files}, for an explanation of the distinctions
+@xref{Specifying Input Files}, for an explanation of the distinctions
 between these methods.
 The output file, @file{85.nc}, is five times the size as a single
 @var{input-file}. 
@@ -6914,7 +6923,7 @@ different dimensions.
 Turn off all printing to screen.
 This overrides the setting of all print-related switches, equivalent to
 @kbd{-H -M -m} when in single-file printing mode. 
-When invoked with @code{-R} (@pxref{File retention}), @command{ncks}
+When invoked with @code{-R} (@pxref{Retaining Retrieved Files}), @command{ncks}
 automatically sets @code{-q}. 
 This allows @command{ncks} to retrieve remote files without
 automatically trying to print them.
@@ -6957,7 +6966,7 @@ Now the file @file{out.nc} contains all the data from @file{in.nc}.
 There are, however, two differences between @file{in.nc} and
 @file{out.nc}.
 @cindex @code{history}
-First, the @code{history} global attribute (@pxref{History attribute})
+First, the @code{history} global attribute (@pxref{History Attribute})
 will contain the command used to create @file{out.nc}.
 @cindex alphabetize output
 @cindex sort alphabetically
@@ -7068,7 +7077,7 @@ the easternmost longitude as @var{max}, as follows:
 @example
 ncks -d lon,260.0,45.0 in.nc out.nc
 @end example
-For more details @xref{Wrapped coordinates}.
+For more details @xref{Wrapped Coordinates}.
 
 @page
 @html
@@ -7299,7 +7308,7 @@ files along any dimension.
 See @ref{Concatenation} for a detailed example.
 @cindex record variable
 The record dimension is always the most slowly varying dimension in a
-record variable (@pxref{Fortran indexing}).
+record variable (@pxref{C and Fortran Index Conventions}).
 The specified re-ordering fails if it requires creating more than
 one record dimension amongst all the output variables
 @footnote{This limitation, imposed by the netCDF storage layer,
@@ -7314,7 +7323,8 @@ re-order list in their original order, and prefix each dimension name
 with the negative sign.  
 @cindex transpose
 Second, it may useful to transpose a variable's storage order, e.g.,
-@w{from C} to Fortran data storage order (@pxref{Fortran indexing}).
+@w{from C} to Fortran data storage order 
+(@pxref{C and Fortran Index Conventions}).
 To do this, include all the variable's dimensions in the dimension
 re-order list in reversed order.
 Explicit examples of these two techniques appear below.
@@ -7434,7 +7444,7 @@ ncpdq -P all_xst -M hgh_byt in.nc out.nc
 @cindex @samp{-v}
 Many different packing maps may be used to construct a given file 
 by performing the packing on subsets of variables (e.g., with @samp{-v}) 
-and using the append feature with @samp{-A} (@pxref{Appending}).
+and using the append feature with @samp{-A} (@pxref{Appending Variables}).
 
 Re-order file @file{in.nc} so that the dimension @code{lon} always
 precedes the dimension @code{lat} and store the results in
@@ -7597,7 +7607,7 @@ distinctions between the various averagers and concatenators.
 As a multi-file operator, @command{ncra} will read the list of
 @var{input-files} from @code{stdin} if they are not specified 
 as positional arguments on the command line 
-(@pxref{Large numbers of input files}).
+(@pxref{Large Numbers of Files}).
 
 Input files may vary in size, but each must have a record dimension.
 The record coordinate, if any, should be monotonic for (or else
@@ -7631,7 +7641,7 @@ ncra 8[56789].nc 8589.nc
 ncra -n 5,2,1 85.nc 8589.nc
 @end example
 These three methods produce identical answers.
-@xref{Specifying input files}, for an explanation of the distinctions
+@xref{Specifying Input Files}, for an explanation of the distinctions
 between these methods.
 
 @cindex Fortran
@@ -7700,7 +7710,7 @@ distinctions between the various averagers and concatenators.
 As a multi-file operator, @command{ncrcat} will read the list of
 @var{input-files} from @code{stdin} if they are not specified 
 as positional arguments on the command line 
-(@pxref{Large numbers of input files}).
+(@pxref{Large Numbers of Files}).
 
 Input files may vary in size, but each must have a record dimension.
 The record coordinate, if any, should be monotonic (or else non-fatal
@@ -7734,7 +7744,7 @@ ncrcat -n 5,2,1 85.nc 8589.nc
 @end example
 @noindent
 These three methods produce identical answers.
-@xref{Specifying input files}, for an explanation of the distinctions
+@xref{Specifying Input Files}, for an explanation of the distinctions
 between these methods.
 
 @cindex Fortran
