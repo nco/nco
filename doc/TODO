@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.589 2005-09-11 07:46:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.590 2005-09-11 07:49:51 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -348,6 +348,13 @@ NB: mpirun requires explicit path to executable
 In following bug reports, 
 "debian" = Ubuntu/Libranet, gcc 3.4/4.0, pentium/opteron (ashes, elnino, sand)
 "fedora" = Fedora with icc 8.1 on pentium (soot)
+Status 20050910: 
+1. LAM-MPI fails on all Debian environments (ashes, elnino, sand...)
+2. MPICH seems to work on Fedora (only tested with icc)
+3. MPICH2 seems to work on Debian. Tested with icc (elnino) and gcc (ashes)
+Hence currently recommend running with MPICH2.
+See ~/doc/mpi.txt for MPICH2 installation details.
+
 1. mpncbo (debian: dies with p4_error: interrupt SIGSEGV: 11, fedora: succeeds)
    mpirun -np 3 ${MY_BIN_DIR}/mpncbo -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 2. mpncea (debian: hangs just before write, fedora: fails with glibc detected *** double free or corruption (!prev))

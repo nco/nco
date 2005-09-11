@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.1 2005-09-11 07:06:49 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.2 2005-09-11 07:46:26 zender Exp $ -*-text-*-
 
 Installing an MPI Environment for NCO:
 
@@ -19,7 +19,9 @@ MPICH2 Instructions:
 2. Install .mpd.conf in ${HOME} or set START="yes" in /etc/default/mpd
 
 3. Start mpd if not already running:
-   mpd &
-   mpdtrace
-   mpdallexit
+   mpd & # Start MPD
+   mpdtrace # Test MPD
+   mpdallexit # Exit MPD
 
+4. With mpd running, test MPI NCO
+   make MPI_PRC=3 MPI=Y tst
