@@ -1,0 +1,25 @@
+$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.1 2005-09-11 07:06:49 zender Exp $ -*-text-*-
+
+Installing an MPI Environment for NCO:
+
+Choose an MPI distribution: MPICH2 (recommenede), MPICH, or LAM-MPI
+
+MPICH2 Instructions:
+1. Install MPICH2, which depends on python
+   scp 'dust.ess.uci.edu:/data/zender/tmp/*mpich2*' ${DATA}/tmp
+   cd ${DATA}/tmp
+   sudo dpkg --install \
+   libmpich2-1.0_1.0.2-3_i386.deb \
+   mpich2-doc_1.0.2-3_i386.deb \
+   mpich2_1.0.2-3_i386.deb \
+   mpich2-mpd_1.0.2-3_i386.deb \
+   mpich2-dev_1.0.2-3_i386.deb
+   cd -
+
+2. Install .mpd.conf in ${HOME} or set START="yes" in /etc/default/mpd
+
+3. Start mpd if not already running:
+   mpd &
+   mpdtrace
+   mpdallexit
+
