@@ -1,8 +1,13 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.315 2005-09-09 00:16:54 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.316 2005-09-11 07:46:26 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
-# Requires GNU Make---AT&T Make chokes on this file syntax
+# Requires GNU Make---AT&T Make chokes on this make syntax
 
+# Copyright (C) 1994--2005 Charlie Zender
+# This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+# See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text
+
+# Quickie test copies:
 # scp ~/nco/bld/Makefile dust.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile soot.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile esmf.ess.uci.edu:nco/bld
@@ -10,15 +15,11 @@
 
 # MPI regression test:
 # make MPI=Y MPI_PRC=3 tst
-# OpenMP regressin test:
+# OpenMP regression test:
 # make THR_NBR=2 tst
 # Test netCDF4:
 # sudo ln -s -f /usr/local/lib/libnetcdf4.a.gcc-g95 /usr/local/lib/libnetcdf.a
 # make USR_TKN=-DNETCDF4
-
-# Copyright (C) 1994--2005 Charlie Zender
-# This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
-# See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text
 
 # Usage: 
 # make
@@ -769,6 +770,10 @@ endif # endif LINUXAMD64
 endif # endif GNU Compiler Collection
 # Intel (Kai) C Compiler
 ifeq (icc,$(firstword ${CC}))
+ifeq (${MPI},Y)
+ CC := $(subst icc,mpicc,${LINUX_CC})
+ CPP := ${CC}
+endif # endif MPI
 # -fast: enable -xP -O3 -ipo -static
 # -ipo[n]: enable multi-file IP optimizations (between files)
 # -no-gcc: do not define  __GNUC__, __GNUC_MINOR__, and __GNUC_PATCHLEVEL__ macros
@@ -787,10 +792,6 @@ ifeq (icc,$(firstword ${CC}))
 # remark #981: operands are evaluated in unspecified order
 # remark #810: conversion from "double" to "float" may lose significant bits
 # remark #1572: floating-point equality and inequality comparisons are unreliable
-ifeq (${MPI},Y)
- CC := $(subst icc,mpicc,${LINUX_CC})
- CPP := ${CC}
-endif # endif MPI
  CFLAGS := -w1
  CPPFLAGS += -no-gcc
  OMP_FLG := -openmp -openmp_report0
