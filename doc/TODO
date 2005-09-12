@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.590 2005-09-11 07:49:51 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.591 2005-09-12 23:11:03 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -331,7 +331,7 @@ nco587. Get command line MPI working on AIX with POE
 nco588. MPI debugging with DDD (http://www.lam-mpi.org/faq/category6.php3)
         mpirun N -x DISPLAY run_gdb.csh my_program_name
         mpirun -np 3 /usr/bin/ddd $MY_BIN_DIR/mpncbo (starts multiple DDDs but mpncbo's are not connected)
-        mpirun -np 3 /usr/bin/ddd $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc
+        mpirun -np 3 /usr/bin/ddd /home/zender/bin/LINUX/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc
         MPICH2:
         mpirun -np 3 -gdb $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc
         MPICH:
