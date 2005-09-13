@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.8 2005-09-13 00:00:56 zender Exp $ -*-shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.9 2005-09-13 00:55:58 zender Exp $ -*-shell-script-*-
 
 # Purpose: Run NCO benchmark script in batch environment
 
@@ -141,17 +141,17 @@ FL_PL=${DATA_OUT}/${FL_NM_PL}
 /bin/cp -f -p ~/nco/bm/${FL_NM_PL} ${DATA_OUT} || exit 1
 /bin/cp -f -p ~/nco/bm/${FL_NM_SH} ${DATA_OUT} || exit 1
 # Copy from Production lines in nco_bm.pl:
-#CMD_LN="${FL_PL} --bch --dbg=0 --thr_nbr=${NTHREADS} --xpt_dsc='${XPT_DSC}' --regress --udpreport"
-CMD_LN="${FL_PL} --bch --dbg=0 --mpi_prc=${NTASKS} --xpt_dsc='${XPT_DSC}' --regress --udpreport"
-#CMD_LN="${FL_PL} --bch --dbg=0 --thr_nbr=${NTHREADS} --xpt_dsc='${XPT_DSC}' --benchmark --udpreport"
-#CMD_LN="${FL_PL} --bch --dbg=0 --mpi_prc=${NTASKS} --xpt_dsc='${XPT_DSC}' --benchmark --udpreport"
+#CMD_LN="${FL_PL} --bch --dbg=0 --thr_nbr=${NTHREADS} --caseid='${CASEID}' --xpt_dsc='${XPT_DSC}' --regress --udpreport"
+CMD_LN="${FL_PL} --bch --dbg=0 --mpi_prc=${NTASKS} --caseid='${CASEID}' --xpt_dsc='${XPT_DSC}'--regress --udpreport"
+#CMD_LN="${FL_PL} --bch --dbg=0 --thr_nbr=${NTHREADS} --caseid='${CASEID}' --xpt_dsc='${XPT_DSC}'--benchmark --udpreport"
+#CMD_LN="${FL_PL} --bch --dbg=0 --mpi_prc=${NTASKS} --caseid='${CASEID}' --xpt_dsc='${XPT_DSC}'--benchmark --udpreport"
 FL_STDOUT="${PRG_NM}.log.${LID}"
 
 echo "Timestamp ${LID}"
 echo "Batch shell script $0 running CASEID = ${CASEID} on machine ${HOST}"
 echo "Invoking executable with ${CMD_LN}"
 echo "STDOUT/STDERR re-directed to file:"
-echo "/bin/more ${DATA_OUT}/${FL_STDOUT}"
+echo "/bin/more \${HOME}/nco/bm/${FL_STDOUT}"
 case "${PVM_ARCH}" in 
     AIX* ) 
 # Set POE environment for interactive jobs  
