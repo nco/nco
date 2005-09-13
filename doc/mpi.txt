@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.3 2005-09-12 23:11:03 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.4 2005-09-13 21:33:15 zender Exp $ -*-text-*-
 
 Installing an MPI Environment for NCO:
 
@@ -22,7 +22,9 @@ MPICH2 Instructions:
    mpd & # Start MPD
    mpdtrace # Test MPD
    mpdallexit # Exit MPD
+   mpich2version # Report MPICH2 version
 
 4. With mpd running, test MPI NCO
+   
    make MPI_PRC=3 MPI=Y tst
    ~/nco/bm/nco_bm.pl --mpi=3 --regress

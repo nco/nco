@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.9 2005-09-13 00:55:58 zender Exp $ -*-shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.10 2005-09-13 21:33:15 zender Exp $ -*-shell-script-*-
 
 # Purpose: Run NCO benchmark script in batch environment
 
@@ -166,7 +166,7 @@ case "${PVM_ARCH}" in
 	if [ ${NTASKS} -gt 1 ]; then
 	    poe ${CMD_LN} > ${FL_STDOUT} 2>&1
 	else
-	    env MY_BIN_DIR="${MY_BIN_DIR}" OMP_NUM_THREADS="${NTHREADS}" PATH=/usr/local/bin\:${DATA_OUT}\:${PATH} ${CMD_LN} > ${FL_STDOUT} 2>&1
+	    env MY_BIN_DIR="${MY_BIN_DIR}" OMP_NUM_THREADS="${NTHREADS}" PATH="/usr/local/bin\:${DATA_OUT}\:${PATH}" ${CMD_LN} > ${FL_STDOUT} 2>&1
 	fi # end else OpenMP
 	;; # endif AIX*
     LINUX* ) 

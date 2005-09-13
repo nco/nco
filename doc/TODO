@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.592 2005-09-13 01:42:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.593 2005-09-13 21:33:15 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -316,9 +316,8 @@ nco578. ncbo: Use ncbo.c as template for [mp]ncflint re-write
 nco579. mpncbo: Merge recent ncbo.c re-write into mpncbo.c to improve commutivity
 nco580. fl_mk_lcl(): Add wget protocol to handle non-Opendap HTTP
 nco581. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 2: allow nbr_xtr_out=max(nbr_xtr_1,nbr_xtr_2) when nbr_xtr_2>nbr_xtr_1 if discrepant variables are type fix (e.g., grid properties) not type prc (NB: already works for nbr_xtr_1>nbr_xtr_2)
-nco585. mpncrcat: hangs while reading records
-        MPI debugging with LAM-MPI: http://www.lam-mpi.org/faq/category6.php3
-        mpirun -np 3 $MY_BIN_DIR/mpncra -Y ncrcat -O -D 5 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc 
+nco585. mpncrcat: hangs while reading records (verified 20050913)
+        mpirun -np 3 $MY_BIN_DIR/mpncrcat -O -D 5 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc 
 nco586. mbncbo: hangs while differencing
 	ncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc (works)
         /bin/rm $MY_OBJ_DIR/mpncbo.o;make MPI=Y FAKE_MPI=Y mpncbo
