@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.591 2005-09-12 23:11:03 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.592 2005-09-13 01:42:49 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -327,16 +327,20 @@ nco586. mbncbo: hangs while differencing
         /bin/rm $MY_OBJ_DIR/mpncbo.o;make MPI=Y mpncbo
         mpirun -np 3 $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc (hangs)
         ~/nco/bm/nco_bm.pl --mpi=3 --regress ncbo
-nco587. Get command line MPI working on AIX with POE
+nco587. Command line MPI on AIX with POE
+	Promising documentation at:
+        http://publib.boulder.ibm.com/infocenter/clresctr/index.jsp?topic=/com.ibm.cluster.pe.doc/pe_42/am10600203.html
+        poe -hostfile=NULL -node=1 -tasks_per_node=3 $MY_BIN_DIR/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc
+        ERROR: 0031-808  Hostfile or pool must be used to request nodes
 nco588. MPI debugging with DDD (http://www.lam-mpi.org/faq/category6.php3)
         mpirun N -x DISPLAY run_gdb.csh my_program_name
-        mpirun -np 3 /usr/bin/ddd $MY_BIN_DIR/mpncbo (starts multiple DDDs but mpncbo's are not connected)
-        mpirun -np 3 /usr/bin/ddd /home/zender/bin/LINUX/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc
+        mpirun -np 3 /usr/bin/ddd $MY_BIN_DIR/mpncbo # (may work: starts multiple DDDs, then must manually begin runs?)
+        mpirun -np 3 /usr/bin/ddd /home/zender/bin/LINUX/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc # fails due to NCO command line arguments
         MPICH2:
-        mpirun -np 3 -gdb $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc
+        mpirun -np 3 -gdb $MY_BIN_DIR/mpncbo
         MPICH:
-        mpirun -np 3 -dbg=ddd $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc
-        mpirun -np 3 -x ashes:0 /usr/bin/ddd $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc
+        mpirun -np 3 -dbg=ddd $MY_BIN_DIR/mpncbo
+        mpirun -np 3 -x ashes:0 /usr/bin/ddd $MY_BIN_DIR/mpncbo
         LAM-MPI:
         mpirun -np 3 -x ashes:0 /usr/bin/ddd --gdb --debugger "gdb" $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc
 nco589. MPI with valgrind (http://www.lam-mpi.org/faq/category6.php3)
@@ -349,7 +353,7 @@ In following bug reports,
 "debian" = Ubuntu/Libranet, gcc 3.4/4.0, pentium/opteron (ashes, elnino, sand)
 "fedora" = Fedora with icc 8.1 on pentium (soot)
 Status 20050910: 
-1. LAM-MPI fails on all Debian environments (ashes, elnino, sand...)
+1. LAM-MPI fails (hangs a lot) on all Debian environments (ashes, elnino, sand...)
 2. MPICH seems to work on Fedora (only tested with icc)
 3. MPICH2 seems to work on Debian. Tested with icc (elnino) and gcc (ashes)
 Hence currently recommend running with MPICH2.
