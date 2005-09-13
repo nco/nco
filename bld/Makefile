@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.318 2005-09-13 01:11:34 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.319 2005-09-13 22:32:33 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -13,30 +13,30 @@
 # scp ~/nco/bld/Makefile esmf.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile goldhill.cgd.ucar.edu:nco/bld
 
-# MPI regression test:
-# make MPI=Y MPI_PRC=3 tst
-# OpenMP regression test:
-# make THR_NBR=2 tst
+# Usage (testing):
+# make MPI=Y MPI_PRC=3 tst           # MPI regression test
+# make THR_NBR=2 tst                 # OpenMP regression test
+# make THR_NBR=2 bm                  # OpenMP benchmarks
 # Test netCDF4:
 # sudo ln -s -f /usr/local/lib/libnetcdf4.a.gcc-g95 /usr/local/lib/libnetcdf.a
-# make USR_TKN=-DNETCDF4
+# make USR_TKN=-DNETCDF4             # Pass user-defined tokens to CC & CPP
 
-# Usage: 
-# make
-# If this fails, try
-# make dir all
-# Clean all dependencies for fresh build
-# cd ~/nco/bld;make cln bin_cln;cd -
-# Print make diagnostics
-# cd ~/nco/bld;make dbg;cd -
-# Enable symbols for debugging
-# cd ~/nco/bld;make OPTS=D;cd -
-# DAP support:
-# cd ~/nco/bld;make DAP=Y;cd -
-# HDF5 version of netCDF libraries:
-# cd ~/nco/bld;make cln bin_cln all HDF5=Y;cd -
-# UDUnits support:
-# cd ~/nco/bld;make UDUNITS=Y;cd -
+# Usage (Compilation):
+# cd ~/nco/bld;make;cd -             # Default build
+# cd ~/nco/bld;make dir all; cd -    # Create target directories then build
+# cd ~/nco/bld;make cln bin_cln;cd - # Clean all dependencies for fresh build
+# cd ~/nco/bld;make DAP=Y;cd -       # DAP support
+# cd ~/nco/bld;make dbg;cd -         # Print make diagnostics
+# cd ~/nco/bld;make lib_cln;cd -     # Clean libraries
+# cd ~/nco/bld;make OMP=Y;cd -       # OpenMP support
+# cd ~/nco/bld;make OPTS=D;cd -      # "Debugging": Enable symbols for debugging
+# cd ~/nco/bld;make OPTS=O;cd -      # "Optimize": For production (includes symbols)
+# cd ~/nco/bld;make OPTS=R;cd -      # "Regular": No optimization or debugging
+# cd ~/nco/bld;make OPTS=X;cd -      # "eXtreme": All debugging switches available
+# cd ~/nco/bld;make MPI=Y;cd -       # MPI support
+# cd ~/nco/bld;make MPI_FAKE=Y;cd -  # MPI spoof
+# cd ~/nco/bld;make UDUNITS=Y;cd -   # UDUnits support
+# cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
 # 32-bit ABI on NCAR AIX systems:
 # cd ~/nco/bld;NETCDF_LIB=/usr/local/lib32/r4i4 make --jobs=1 lib_cln cln all ABI=32 UDUNITS=N;cd -
 # 32-bit ABI on NCAR IRIX systems:
@@ -101,6 +101,9 @@ endif # endif MK_DPN
 ifndef ${MPI} # MPI
  MPI := N
 endif # endif MPI
+ifndef ${MPI_FAKE} # MPI
+ MPI_FAKE := N
+endif # endif MPI_FAKE
 ifndef NCO_VRS
 # Used for RPM building
  NCO_VRS := $(shell cat ${MY_DOC_DIR}/VERSION)
@@ -183,11 +186,16 @@ ifeq (${I18N},Y)
 endif
 
 # Message Passing Interface
+ifeq (${MPI_FAKE},Y)
+# Use non-MPI (i.e., serial or threaded) code instead of MPI code
+# but compile and link with MPI compiler
+ MPI := Y
+endif # MPI_FAKE
 ifeq (${MPI},Y)
-ifneq (${FAKE_MPI},Y)
+ifneq (${MPI_FAKE},Y)
 # Prohibit hybrid code for now---turn off OpenMP
  OMP := N
-endif # FAKE_MPI
+endif # MPI_FAKE
 ifdef MPI_PRC
 # Pass this MPI argument to nco_bm.pl
  MPI_PRC_SNG := "--mpi_prc=${MPI_PRC}"
@@ -423,9 +431,9 @@ ifeq (${DAP},Y)
  CPP_TKN_OS += -DENABLE_DAP
 endif # !DAP
 ifeq (${MPI},Y)
-ifneq (${FAKE_MPI},Y)
+ifneq (${MPI_FAKE},Y)
  CPP_TKN_OS += -DENABLE_MPI
-endif # FAKE_MPI
+endif # MPI_FAKE
 endif # !MPI
 ifeq (${UDUNITS},Y)
  CPP_TKN_OS += -DENABLE_UDUNITS -DHAVE_UDUNITS_H

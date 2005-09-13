@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.20 2005-09-10 07:25:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.21 2005-09-13 22:32:33 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -98,7 +98,6 @@ main(int argc,char **argv)
   bool HISTORY_APPEND=True; /* Option h */
   bool CNV_CCM_CCSM_CF;
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
-  bool TOKEN_FREE=True; /* [flg] Allow MPI workers write-access to output file */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -115,14 +114,10 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.20 2005-09-10 07:25:10 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.20 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.21 2005-09-13 22:32:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.21 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
 
-  const double sleep_tm=0.04; /* [s] Token request interval */
-  const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
-  const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
-  
   dmn_sct **dim_1;
   dmn_sct **dim_2;
   dmn_sct **dmn_out;
@@ -138,14 +133,11 @@ main(int argc,char **argv)
   int abb_arg_nbr=0;
   int fl_idx;
   int fl_nbr=0;
-  int fl_nm_lng; /* [nbr] Output file name length */
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
   int in_id_1;  
   int in_id_2;  
-  int info_bfr[3]; /* [bfr] Buffer containing var, idx, tkn_rsp */
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int msg_typ; /* [enm] MPI message type */
   int nbr_dmn_fl_1;
   int nbr_dmn_fl_2;
   int nbr_dmn_xtr_1;
@@ -161,22 +153,12 @@ main(int argc,char **argv)
   int nco_op_typ=nco_op_nil; /* [enm] Operation type */
   int opt;
   int out_id;  
-  int proc_id; /* [id] Process ID */
-  int proc_nbr=0; /* [nbr] Number of MPI processes */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int thr_nbr=0; /* [nbr] Thread number Option t */
-  int tkn_rsp; /* [enm] Mangager response [0,1] = [Wait,Allow] */
-  int var_wrt_nbr=0; /* [nbr] Variables written to output file until now */
   int var_lst_in_nbr=0;
-  int wrk_id; /* [id] Sender node ID */
-  int wrk_id_bfr[1]; /* [bfr] Buffer for wrk_id */
 
   lmt_sct **lmt;
 
-#ifdef ENABLE_MPI
-  MPI_Status mpi_stt; /* [enm] Status check to decode msg_typ */
-#endif /* !ENABLE_MPI */
-  
   nm_id_sct *dmn_lst_1;
   nm_id_sct *dmn_lst_2;
   nm_id_sct *xtr_lst_1=NULL; /* xtr_lst_1 may be alloc()'d from NULL with -c option */
@@ -193,6 +175,28 @@ main(int argc,char **argv)
   var_sct **var_prc_1;
   var_sct **var_prc_2;
   var_sct **var_prc_out;
+  
+#ifdef ENABLE_MPI
+  /* Declare all MPI-specific variables here */
+  MPI_Status mpi_stt; /* [enm] Status check to decode msg_typ */
+
+  bool TOKEN_FREE=True; /* [flg] Allow MPI workers write-access to output file */
+
+  const double sleep_tm=0.04; /* [s] Token request interval */
+
+  const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
+  const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
+
+  int fl_nm_lng; /* [nbr] Output file name length */
+  int info_bfr[3]; /* [bfr] Buffer containing var, idx, tkn_rsp */
+  int msg_typ; /* [enm] MPI message type */
+  int proc_id; /* [id] Process ID */
+  int proc_nbr=0; /* [nbr] Number of MPI processes */
+  int tkn_rsp; /* [enm] Mangager response [0,1] = [Wait,Allow] */
+  int var_wrt_nbr=0; /* [nbr] Variables written to output file until now */
+  int wrk_id; /* [id] Sender node ID */
+  int wrk_id_bfr[1]; /* [bfr] Buffer for wrk_id */
+#endif /* !ENABLE_MPI */
   
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */

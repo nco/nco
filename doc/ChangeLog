@@ -1,3 +1,12 @@
+2005-09-13  Charlie Zender  <zender@uci.edu>
+
+	* Declare all MPI-specific variables in one place in mpncbo.c
+	This removes all warnings when spoofing MPI with MPI_FAKE
+	
+	* Clean up bld/Makefile header
+
+	* Rename FAKE_MPI switch to MPI_FAKE in bld/Makefile
+
 2005-09-12  Charlie Zender  <zender@uci.edu>
 
 	* Change $caseid and $xpt_dsc to traditional meanings in nco_bm.pl
