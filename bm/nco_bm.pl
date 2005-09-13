@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.81 2005-09-13 00:09:57 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.82 2005-09-13 00:12:50 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -32,7 +32,7 @@ $md5 $MY_BIN_DIR $notbodi $nsr_xpc $omp_flg $opr_fmt $opr_lng_max @opr_lst
 $result $rgr $server_ip $server_name $server_port $sock $spc_fmt $spc_nbr
 $spc_nbr_min $spc_sng %subbenchmarks %success %sym_link $thr_nbr $tmr_app
 %totbenchmarks @tst_cmd $tst_fl_cr8 $tst_fmt $tst_id_sng $tst_idx %tst_nbr
-$udp_reprt $udp_rpt $usg $wnt_log $xpt_dsc $timed $sys_time @sys_tim_arr
+$udp_reprt $udp_rpt $usg $wnt_log $caseid $xpt_dsc $timed $sys_time @sys_tim_arr
 %real_tme %usr_tme %sys_tme $mpi_prc @opr_lst_mpi $mpi_prfx  $timestamp
 $opr_sng_mpi $nco_D_flg $opr_rgr_mpi
 );
