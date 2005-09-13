@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.80 2005-09-08 16:34:16 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.81 2005-09-13 00:09:57 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -104,8 +104,8 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'thr_nbr=i'    => \$thr_nbr,    # Number of OMP threads to use
 	'udpreport'    => \$udp_rpt,    # punt the timing data back to udpserver on sand
 	'usage'        => \$usg,        # explains how to use this thang
-	'caseid=s'     => \$xpt_dsc,    # short string to tag test dir and batch queue
-	'xpt_dsc=s'    => \$xpt_dsc,    #                   ditto
+	'caseid=s'     => \$caseid,     # short string to tag test dir and batch queue
+	'xpt_dsc=s'    => \$xpt_dsc,    # long string to describe experiment
 	'md5'          => \$md5,        # requests md5 checksumming results (longer but more exacting)
 );
 
@@ -114,7 +114,7 @@ my $NUM_FLS = 4; # max number of files in the file creation series
 #test nonfatally for useful modules
 my $hiresfound;
 if($dbg_lvl > 0){printf ("$prg_nm: \$cmd_ln = $cmd_ln\n");} # endif dbg
-if($dbg_lvl > 0){printf ("$prg_nm: \$xpt_dsc = $xpt_dsc\n");} # endif dbg
+if($dbg_lvl > 0){printf ("$prg_nm: \$caseid = $caseid\n");} # endif dbg
 if($dbg_lvl > 0){printf ("$prg_nm: \$rgr = $rgr\n");} # endif dbg
 if($dbg_lvl > 0){printf ("$prg_nm: \$bm = $bm\n");} # endif dbg
 if($dbg_lvl > 0){printf ("$prg_nm: \$bch_flg = $bch_flg\n");} # endif dbg
@@ -129,7 +129,7 @@ if ($mpi_prc > 0 && $thr_nbr > 0) {die "\nThe  '--mpi' option and '--thr_nbr' (O
 # any irrationally exuberant values?
 if ($mpi_prc > 16) {die "\nThe '--mpi' value was set to an irrationally exuberant [$mpi_prc].  Try a lower value\n ";}
 if ($thr_nbr > 16) {die "\nThe '--thr_nbr' value was set to an irrationally exuberant [$thr_nbr].  Try a lower value\n ";}
-if (length($xpt_dsc) > 80) {die "\nThe caseid string is > 80 characters - please reduce it to less than 80 chars.\nIt's used to create file and directory names, so it has to be relatively short\n";}
+if (length($caseid) > 80) {die "\nThe caseid string is > 80 characters - please reduce it to less than 80 chars.\nIt's used to create file and directory names, so it has to be relatively short\n";}
 
 print "\n===== Testing for required modules\n";
 BEGIN {eval "use Time::HiRes qw(usleep ualarm gettimeofday tv_interval)"; $hiresfound = $@ ? 0 : 1}
@@ -1948,16 +1948,16 @@ sub set_dat_dir {
     my $umask = umask;
     # does user have a DATA dir defined in his env?  It has to be readable and 
     # writable to be usable for these tests, so if it isn't just bail, with a nasty msg
-	if ($xpt_dsc ne "") {
-		$xpt_dsc =~ s/[^\w]/_/g;
-#		print "converted idstring = $xpt_dsc\n";
+	if ($caseid ne "") {
+		$caseid =~ s/[^\w]/_/g;
+#		print "converted idstring = $caseid\n";
 	}
 
 	if (defined $ENV{'DATA'} && $ENV{'DATA'} ne "") { # then is it readwritable?
 		if (-w $ENV{'DATA'} && -r $ENV{'DATA'}) {
 			if ($que == 0) {print "Using your environment variable DATA ($ENV{'DATA'}) as the root DATA directory for this series of tests\n\n";}
-			if ($xpt_dsc ne "") {
-				$dta_dir = "$ENV{'DATA'}/nco_bm/$xpt_dsc";
+			if ($caseid ne "") {
+				$dta_dir = "$ENV{'DATA'}/nco_bm/$caseid";
 				my $err = `mkdir -p -m0777 $dta_dir`;
 				if ($err ne "") {die "mkdir err: $dta_dir\n";}
 				# mkdir "$dta_dir",0777 or die "Can't make $dta_dir\n";
@@ -1977,7 +1977,7 @@ sub set_dat_dir {
 		chomp $tmp;
 		print "You entered [$tmp] \n";
 		if ($tmp eq '') {
-			$dta_dir = "$ENV{'HOME'}/nco_bm/$xpt_dsc";  # if $xpt_dsc not set, then it decays to $ENV{'HOME'}/nco_bm/
+			$dta_dir = "$ENV{'HOME'}/nco_bm/$caseid";  # if $caseid not set, then it decays to $ENV{'HOME'}/nco_bm/
 			if (-e "$dta_dir") {
 				print "$dta_dir already exists - OK to re-use?\n[N/y] ";
 				$tmp = <STDIN>;
@@ -1992,7 +1992,7 @@ sub set_dat_dir {
 				#mkdir "$dta_dir",0777;
 			}
 		} else {
-			$dta_dir = "$tmp/nco_bm/$xpt_dsc"; 
+			$dta_dir = "$tmp/nco_bm/$caseid"; 
 			# and now test it
 			if (-w $dta_dir && -r $dta_dir) {
 				print "OK - we will use [$dta_dir] to write to.\n\n";

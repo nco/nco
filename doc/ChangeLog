@@ -1,5 +1,7 @@
 2005-09-12  Charlie Zender  <zender@uci.edu>
 
+	* Change $caseid and $xpt_dsc to traditional meanings in nco_bm.pl
+
 	* Add MPI CMD_LN's to nco_bm.sh for MPI regressions/bm's in loadleveler
 
 	* Change pvmgetarch location from ~/bin/sh to ~/sh everywhere
