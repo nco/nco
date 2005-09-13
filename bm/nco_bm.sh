@@ -1,15 +1,15 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.7 2005-06-24 00:14:18 zender Exp $ -*-shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.8 2005-09-13 00:00:56 zender Exp $ -*-shell-script-*-
 
 # Purpose: Run NCO benchmark script in batch environment
 
 # Usage:
-# NCAR AIX: llsubmit nco_bm.sh (monitor with llq, kill with llcancel)
-# NCAR Cray: qsub nco_bm.sh 
-# NCAR SGI: npri -h 250 nco_bm.sh >nco_bm.txt 2>&1 &
-# UCI Linux: nco_bm.sh >nco_bm.txt 2>&1 &
-# UCI SGI: qsub -q q4 -o ~/nco/bm/nco_bm.txt nco_bm.sh
+# AIX: llsubmit ~/nco/bm/nco_bm.sh (monitor with llq, kill with llcancel)
+# NCAR Cray: qsub ~/nco/bm/nco_bm.sh 
+# NCAR SGI: npri -h 250 ~/nco/bm/nco_bm.sh >nco_bm.txt 2>&1 &
+# UCI Linux: ~/nco/bm/nco_bm.sh > ~/nco_bm.txt 2>&1 &
+# UCI SGI: qsub -q q4 -o ~/nco/bm/nco_bm.txt ~/nco/bm/nco_bm.sh
 # scp ~/nco/bm/nco_bm.sh ~/nco/bm/nco_bm.pl esmf.ess.uci.edu:nco/bm
 
 # AIX LoadLeveler batch system
@@ -23,7 +23,7 @@
 # node_usage: not_shared acquires dedicated access to nodes
 # queue: Tells Loadleveler to submit job
 
-#@ job_name       = nco_bm01
+#@ job_name       = nco_bm03
 ##@ class          = com_rg1
 ##@ class          = com_rg4
 #@ class          = com_rg8
@@ -75,8 +75,8 @@ date
 unalias -a # Turn off aliases
 
 # OS-generic
-export NTASKS=1 # MPI
-PVM_ARCH=`~zender/bin/sh/pvmgetarch`
+export NTASKS=3 # MPI
+PVM_ARCH=`~zender/sh/pvmgetarch`
 HOST=`hostname`
 # OS-specific
 case "${PVM_ARCH}" in 
@@ -87,7 +87,7 @@ case "${PVM_ARCH}" in
 	    esmf* ) # UCI
 		case "${HOST}" in 
 		    esmf0[1-7]* ) # UCI
-		    export NTHREADS=2 # OpenMP
+		    export NTHREADS=8 # OpenMP
 		    ;; # endif UCI
 		    esmf0[8]* ) # UCI
 		    export NTHREADS=32 # OpenMP
@@ -121,7 +121,7 @@ esac # endcase ${PVM_ARCH}
 PRG_NM='nco_bm' # [sng] Program name, semantic identifier
 FL_NM_SH='nco_bm.sh' # [sng] Shell batch script name
 FL_NM_PL='nco_bm.pl' # [sng] Perl batch script name
-CASEID='nco_bm01' # [sng] Case ID
+CASEID='nco_bm03' # [sng] Case ID
 # NB: fxm: Whitespace in this string breaks nco_bm.pl because Getopt does not ingest it properly
 XPT_DSC='NCO_benchmark_script' # [sng] Experiment description
 # Derive data paths
@@ -142,8 +142,9 @@ FL_PL=${DATA_OUT}/${FL_NM_PL}
 /bin/cp -f -p ~/nco/bm/${FL_NM_SH} ${DATA_OUT} || exit 1
 # Copy from Production lines in nco_bm.pl:
 #CMD_LN="${FL_PL} --bch --dbg=0 --thr_nbr=${NTHREADS} --xpt_dsc='${XPT_DSC}' --regress --udpreport"
+CMD_LN="${FL_PL} --bch --dbg=0 --mpi_prc=${NTASKS} --xpt_dsc='${XPT_DSC}' --regress --udpreport"
 #CMD_LN="${FL_PL} --bch --dbg=0 --thr_nbr=${NTHREADS} --xpt_dsc='${XPT_DSC}' --benchmark --udpreport"
-CMD_LN="${FL_PL} --bch --dbg=0 --thr_nbr=${NTHREADS} --xpt_dsc='${XPT_DSC}' --benchmark --udpreport"
+#CMD_LN="${FL_PL} --bch --dbg=0 --mpi_prc=${NTASKS} --xpt_dsc='${XPT_DSC}' --benchmark --udpreport"
 FL_STDOUT="${PRG_NM}.log.${LID}"
 
 echo "Timestamp ${LID}"
