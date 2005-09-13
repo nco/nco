@@ -1,3 +1,9 @@
+2005-09-12  Charlie Zender  <zender@uci.edu>
+
+	* Add MPI CMD_LN's to nco_bm.sh for MPI regressions/bm's in loadleveler
+
+	* Change pvmgetarch location from ~/bin/sh to ~/sh everywhere
+
 2005-09-11  Charlie Zender  <zender@uci.edu>
 
 	* Update bld/Makefile to work with MPICH2 rather than MPICH
