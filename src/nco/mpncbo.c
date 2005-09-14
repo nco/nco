@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.22 2005-09-14 02:31:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.23 2005-09-14 06:23:59 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.22 2005-09-14 02:31:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.22 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.23 2005-09-14 06:23:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.23 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
 
   dmn_sct **dim_1;
@@ -188,7 +188,7 @@ main(int argc,char **argv)
   const int mpi_rnk_root=0; /* [enm] Rank of broadcast root */
   const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
 
-  int fl_nm_lng; /* [nbr] Output file name length */
+  int fl_nm_lng; /* [nbr] Output file name length CEWI */
   int info_bfr[3]; /* [bfr] Buffer containing var, idx, tkn_rsp */
   int msg_typ; /* [enm] MPI message type */
   int proc_id; /* [id] Process ID */
@@ -496,7 +496,7 @@ main(int argc,char **argv)
   } /* proc_id != 0 */
   
   /* Manager broadcasts output filename to workers */
-  fl_nm_lng=(int)strlen(fl_out_tmp); 
+  if(proc_id == 0) fl_nm_lng=(int)strlen(fl_out_tmp); 
   MPI_Bcast(&fl_nm_lng,1,MPI_INT,mpi_rnk_root,MPI_COMM_WORLD);
   if(proc_id != 0) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
   MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,mpi_rnk_root,MPI_COMM_WORLD); 
