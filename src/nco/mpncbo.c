@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.21 2005-09-13 22:32:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.22 2005-09-14 02:31:12 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.21 2005-09-13 22:32:33 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.21 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.22 2005-09-14 02:31:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.22 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
 
   dmn_sct **dim_1;
@@ -185,6 +185,7 @@ main(int argc,char **argv)
   const double sleep_tm=0.04; /* [s] Token request interval */
 
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
+  const int mpi_rnk_root=0; /* [enm] Rank of broadcast root */
   const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
 
   int fl_nm_lng; /* [nbr] Output file name length */
@@ -496,9 +497,9 @@ main(int argc,char **argv)
   
   /* Manager broadcasts output filename to workers */
   fl_nm_lng=(int)strlen(fl_out_tmp); 
-  MPI_Bcast(&fl_nm_lng,1,MPI_INT,0,MPI_COMM_WORLD);
+  MPI_Bcast(&fl_nm_lng,1,MPI_INT,mpi_rnk_root,MPI_COMM_WORLD);
   if(proc_id != 0) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
-  MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,0,MPI_COMM_WORLD); 
+  MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,mpi_rnk_root,MPI_COMM_WORLD); 
   
   if(proc_id == 0){ /* MPI manager code */
     TOKEN_FREE=False;
@@ -506,9 +507,9 @@ main(int argc,char **argv)
     /* Copy variable data for non-processed variables */
     (void)nco_var_val_cpy(in_id_1,out_id,var_fix_1,nbr_var_fix_1);
 #ifdef ENABLE_MPI
-    TOKEN_FREE=True;
     /* Close output file so workers can open it */
     nco_close(out_id);
+    TOKEN_FREE=True;
   } /* proc_id != 0 */
 #endif /* !ENABLE_MPI */
   

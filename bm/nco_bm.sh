@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.10 2005-09-13 21:33:15 zender Exp $ -*-shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.11 2005-09-14 02:31:11 zender Exp $ -*-shell-script-*-
 
 # Purpose: Run NCO benchmark script in batch environment
 
@@ -25,12 +25,12 @@
 
 #@ job_name       = nco_bm03
 ##@ class          = com_rg1
-##@ class          = com_rg4
-#@ class          = com_rg8
+#@ class          = com_rg4
+##@ class          = com_rg8
 ##@ class          = com_rg32
 ##@ class          = com_node03
 #@ node           = 1
-#@ tasks_per_node = 1
+#@ tasks_per_node = 3
 #@ output         = $(job_name).txt
 #@ error          = $(job_name).txt
 #@ job_type       = parallel
@@ -142,9 +142,9 @@ FL_PL=${DATA_OUT}/${FL_NM_PL}
 /bin/cp -f -p ~/nco/bm/${FL_NM_SH} ${DATA_OUT} || exit 1
 # Copy from Production lines in nco_bm.pl:
 #CMD_LN="${FL_PL} --bch --dbg=0 --thr_nbr=${NTHREADS} --caseid='${CASEID}' --xpt_dsc='${XPT_DSC}' --regress --udpreport"
-CMD_LN="${FL_PL} --bch --dbg=0 --mpi_prc=${NTASKS} --caseid='${CASEID}' --xpt_dsc='${XPT_DSC}'--regress --udpreport"
-#CMD_LN="${FL_PL} --bch --dbg=0 --thr_nbr=${NTHREADS} --caseid='${CASEID}' --xpt_dsc='${XPT_DSC}'--benchmark --udpreport"
-#CMD_LN="${FL_PL} --bch --dbg=0 --mpi_prc=${NTASKS} --caseid='${CASEID}' --xpt_dsc='${XPT_DSC}'--benchmark --udpreport"
+CMD_LN="${FL_PL} --bch --dbg=0 --mpi_prc=${NTASKS} --caseid='${CASEID}' --xpt_dsc='${XPT_DSC}' --regress --udpreport"
+#CMD_LN="${FL_PL} --bch --dbg=0 --thr_nbr=${NTHREADS} --caseid='${CASEID}' --xpt_dsc='${XPT_DSC}' --benchmark --udpreport"
+#CMD_LN="${FL_PL} --bch --dbg=0 --mpi_prc=${NTASKS} --caseid='${CASEID}' --xpt_dsc='${XPT_DSC}' --benchmark --udpreport"
 FL_STDOUT="${PRG_NM}.log.${LID}"
 
 echo "Timestamp ${LID}"
@@ -159,12 +159,13 @@ case "${PVM_ARCH}" in
 # MP_NODES is node number
 # XLSMPOPTS thread stack size
 	export MP_EUILIB='us'
-	export MP_NODES="${NTASKS}"
-	export MP_TASKS_PER_NODE='1'
+	export MP_NODES='1'
+	export MP_TASKS_PER_NODE=${NTASKS}
 	export MP_RMPOOL='1'
 	export XLSMPOPTS='stack=86000000'
+#	echo ${HOST} > ./host.list
 	if [ ${NTASKS} -gt 1 ]; then
-	    poe ${CMD_LN} > ${FL_STDOUT} 2>&1
+	    poe -hostfile=NULL -node=1 -tasks_per_node=${NTASKS} ${CMD_LN} > ${FL_STDOUT} 2>&1
 	else
 	    env MY_BIN_DIR="${MY_BIN_DIR}" OMP_NUM_THREADS="${NTHREADS}" PATH="/usr/local/bin\:${DATA_OUT}\:${PATH}" ${CMD_LN} > ${FL_STDOUT} 2>&1
 	fi # end else OpenMP

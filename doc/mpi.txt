@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.5 2005-09-14 00:57:38 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.6 2005-09-14 02:31:11 zender Exp $ -*-text-*-
 
 Installing an MPI Environment for NCO:
 
@@ -31,4 +31,10 @@ MPICH2 Instructions:
 
 AIX Parallel Environment (PE):
 1. poe requires a hostfile. hostfile defaults to ./host.list.
+   Create host.list with, e.g.,
+
+   echo ${HOST} > ./host.list
+
+2. 
+
 poe -hostfile=~/nco/bld/host.list -node=1 -tasks_per_node=3 $MY_BIN_DIR/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc

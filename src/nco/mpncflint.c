@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.9 2005-09-09 00:19:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.10 2005-09-14 02:31:12 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -107,8 +107,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.9 2005-09-09 00:19:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.9 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.10 2005-09-14 02:31:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.10 $";
   const char * const opt_sht_lst="ACcD:d:Fhi:l:Oo:p:rRt:v:xw:Z-:";
 
   const double sleep_tm=0.04; /* [s] Token request interval */
@@ -484,9 +484,9 @@ main(int argc,char **argv)
     /* Copy variable data for non-processed variables */
     (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
 #ifdef ENABLE_MPI
-    TOKEN_FREE=True;
     /* Close output file so workers can open it */
     nco_close(out_id);
+    TOKEN_FREE=True;
   } /* proc_id != 0 */
 #endif /* !ENABLE_MPI */
 

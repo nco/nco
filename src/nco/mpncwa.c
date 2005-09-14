@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.6 2005-09-09 00:19:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.7 2005-09-14 02:31:12 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.6 2005-09-09 00:19:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.6 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.7 2005-09-14 02:31:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.7 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
 
   const double sleep_tm=0.04; /* [s] Token request interval */
@@ -658,9 +658,9 @@ main(int argc,char **argv)
     /* Copy variable data for non-processed variables */
     (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
 #ifdef ENABLE_MPI
-    TOKEN_FREE=True;
     /* Close output file so workers can open it */
     nco_close(out_id);
+    TOKEN_FREE=True;
   } /* proc_id != 0 */
 #endif /* !ENABLE_MPI */
   
