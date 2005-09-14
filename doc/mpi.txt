@@ -1,9 +1,71 @@
-$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.7 2005-09-14 06:23:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.8 2005-09-14 19:42:20 zender Exp $ -*-text-*-
 
 Installing an MPI Environment for NCO:
 
-Choose an MPI distribution: MPICH2 (recommeneded), MPICH, or LAM-MPI
+Choose an MPI distribution: LAM-MPI, MPICH, MPICH2 (recommeneded), 
+and PE (AIX only)
 
+MPI distribution-specific instructions are given below, in
+alphabetical order of distribution for these parallel environments:
+LAM, MPICH, MPICH2, and PE (AIX only).
+
+Once one of these environments is installed, test NCO.
+
+************************************************************************
+Determining the Parallel Environment
+************************************************************************
+Linux in particular has a large number of available MPI environments.
+Determining which environment is active may be necessary.
+The active MPI environment provides mpicc, necessary for building NCO.
+
+mpicc --version # All MPIs: Show compiler underlying mpicc
+mpicxx --version # MPICH2 (only): Show compiler underlying mpicxx
+mpiCC --version  # LAM-MPI (only): Show compiler underlying mpiCC
+mpic++ --version  # LAM-MPI (only): Show compiler underlying mpic++
+mpicc --showme  # LAM-MPI (only): C   compilation switches
+mpiCC --showme  # LAM-MPI (only): C++ compilation switches
+mpic++ --showme  # LAM-MPI (only): C++ compilation switches
+
+************************************************************************
+Testing NCO in a parallel environment
+************************************************************************
+1. Start any required process management daemons
+These are lamd (LAM), mpd (MPICH/MPICH2), and pm_manager (PE).
+   
+2. Run NCO regression tests in parallel mode
+   make MPI_PRC=3 MPI=Y tst
+   ~/nco/bm/nco_bm.pl --mpi=3 --regress ncbo
+
+************************************************************************
+MPI Distribution-specific Instructions
+************************************************************************
+LAM Instructions:
+LAM-MPI, as distributed in RPM and Deb format, at any rate, appears to 
+tie the compiler underlying mpicc directly to that which compiled LAM.
+There no known way to tell mpicc to use alternate compilers like icc.
+Hence LAM is very rigid and is not recommended.
+(LAM features are included Open MPI, which has not reached 1.0 yet.)
+
+0. Remove LAM-MPI packages
+   sudo apt-get remove lam4 lam4-dev lam-mpidoc lam-runtime
+   sudo rpm -e lam
+   sudo yum remove lam
+
+1. Install LAM-MPI packages
+   sudo apt-get install lam4 lam4-dev lam-mpidoc lam-runtime
+   sudo rpm -i lam-7.0.6-3.i386.rpm
+
+************************************************************************
+MPICH (version 1) Instructions:
+1. Install MPICH packages
+   sudo apt-get install mpich mpich-common
+   sudo rpm -i mpich mpich-doc
+   sudo yum install mpich mpich-doc
+   sudo rpm -i mpich2 mpich2-doc
+   sudo yum install mpich2
+   sudo rpm -i mpich-1.2.5.2-1mdk.i586.rpm
+
+************************************************************************
 MPICH2 Instructions:
 1. Install MPICH2 (requires python 2.3 or 2.4)
    scp 'dust.ess.uci.edu:/data/zender/tmp/*mpich2*' ${DATA}/tmp
@@ -24,12 +86,8 @@ MPICH2 Instructions:
    mpdallexit # Exit MPD
    mpich2version # Report MPICH2 version
 
-4. With mpd running, test MPI NCO
-   
-   make MPI_PRC=3 MPI=Y tst
-   ~/nco/bm/nco_bm.pl --mpi=3 --regress ncbo
-
-AIX Parallel Environment (PE):
+************************************************************************
+Parallel Environment (PE) (AIX only):
 1. poe requires a hostfile. hostfile defaults to ./host.list.
    Create host.list with, e.g.,
 
@@ -37,4 +95,4 @@ AIX Parallel Environment (PE):
 
 2. 
 
-poe -hostfile=~/nco/bld/host.list -node=1 -tasks_per_node=3 $MY_BIN_DIR/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc
+   poe -hostfile=~/nco/bld/host.list -node=1 -tasks_per_node=3 $MY_BIN_DIR/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc

@@ -1,5 +1,8 @@
 2005-09-14  Charlie Zender  <zender@uci.edu>
 
+	* Regression test shows mpncbo commutivity modifications work!
+	Same two-file framework should be implemented in ncflint/mpncflint
+
 	* Only allow master MPI process to strlen(fl_out_tmp) 
 	This fixes nasty regressions which I introduced into Gayathri's codes
 	Still need to understand why it caused the bug in the first place
