@@ -1,0 +1,362 @@
+# $Header: /data/zender/nco_20150216/nco/doc/valgrind.txt,v 1.1 2005-09-14 23:36:10 zender Exp $
+
+# Purpose: Suppression file for valgrind
+# Default suppressed warnings in /usr/local/lib/valgrind/default.supp
+
+# Usage:
+# Use existing suppressions file on program:
+# valgrind --suppressions=${HOME}/c++/valgrind.txt ccc > ~/foo 2>&1
+
+# More verbose output for leak checks
+# valgrind --leak-check=yes --suppressions=${HOME}/c++/valgrind.txt
+# ccc > ~/foo 2>&1
+# Show reachable blocks during leak detection
+# valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt ccc > ~/foo 2>&1
+
+# Ask valgrind to help by generating more suppresions:
+# valgrind --gen-suppressions=yes --suppressions=${HOME}/c++/valgrind.txt ccc > ~/foo 2>&1
+# valgrind --gen-suppressions=yes --suppressions=${HOME}/c++/valgrind.txt --suppressions=/usr/lib/valgrind/default.supp ccc > ~/foo 2>&1
+
+# File Format is:
+# {
+#     name_of_suppression
+#     tool_name:supp_kind
+#         "For memcheck, supp_kinds are
+#	  Param Value1 Value2 Value4 Value8 Value16
+#	  Free Addr1 Addr2 Addr4 Addr8 Addr16
+#	  Cond (previously known as Value0)
+#	  (if Param: name of system call param, if Free: name of free-ing fn)"
+#     caller0 name, or /name/of/so/file.so
+#     caller1 name, or ditto
+#     (optionally: caller2 name)
+#     (optionally: caller3 name)
+#  }
+
+# Valid example from /usr/lib/valgrind/default.supp
+{
+   Debian_dlopen4
+   Memcheck:Addr1
+   obj:/lib/ld-2.3.2.so
+   fun:_dl_check_map_versions
+   fun:dl_open_worker
+   fun:_dl_catch_error
+}
+
+# First, error suppressions on my personal code
+# Suppress warnings associated with touching system memory by
+# accessing command line arguments
+# ==2904== Invalid read of size 4
+# ==2904==    at 0x807B1A1: cmd_ln_sng(int, char const* const*) (utl.cc:435)
+# ==2904==  Address 0x4FC2CC20 is on thread 1's stack
+{
+   Questionable_read4_warning_from_libcsz_c++_utl_cc_cmd_ln_sng
+   Memcheck:Addr4
+   fun:_Z10cmd_ln_sngiPKPKc
+}
+
+# Suppress common problem found with ccc 20040707:
+# ==22906== Invalid write of size 4
+# ==22906==    at 0x804E20C: main (ccc.cc:118)
+# ==22906==    by 0x4044A507: __libc_start_main (../sysdeps/generic/libc-start.c:129)
+# ==22906==    by 0x804E0E1: strcpy@@GLIBC_2.0 (in /home/zender/bin/LINUX/ccc)
+# ==22906==    by <bogus frame pointer> ???
+# ==22906==    Address 0xBFC2DF34 is on thread 1's stack
+# {
+#    strcpy/*libc_start_main*(Addr4)
+#    Memcheck:Addr4
+#    fun:*main*
+#    fun:*libc_start_main*
+#    fun:strcpy*
+# }
+
+# Suppress common problem found with ccc 20040707:
+# ==7359== Invalid write of size 4
+# ==7359==    at 0x804BBBF: main (stl_alloc.h:652)
+# ==7359==  Address 0x4FC2CBA0 is on thread 1's stack
+{
+   Questionable_write4_warning_from_ccc_main
+   Memcheck:Addr4
+   fun:main
+}
+
+# Suppress common problem found with ccc 20040707:
+# ==7359== Invalid read of size 4
+# ==7359==    at 0x3C4630C7: getenv (in /lib/tls/libc-2.3.2.so)
+# ==7359==  Address 0x4FC2CBA0 is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_main_getenv
+   Memcheck:Addr4
+   fun:getenv
+}
+
+# Suppress common problem found with ccc 20040707:
+# ==7359== Invalid read of size 4
+# ==7359==    at 0x3C3CE60E: std::string::string(char const*, std::allocator<char> const&) (in /usr/lib/libstdc++.so.5.0.6)
+# ==7359==  Address 0x4FC2CBA4 is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_libstdc++_string_string
+   Memcheck:Addr4
+   fun:_ZNSsC1EPKcRKSaIcE
+}
+
+# Suppress common problem found with ccc 20040707:
+# ==7440== Invalid write of size 4
+# ==7440==    at 0x3C3CDFB9: std::string::_Alloc_hider::_Alloc_hider(char*, std::allocator<char> const&) (in /usr/lib/libstdc++.so.5.0.6)
+# ==7440==  Address 0x4FFFDE10 is on thread 1's stack
+{
+   Questionable_write4_warning_from_ccc_libstdc++_alloc_hider
+   Memcheck:Addr4
+   fun:_ZNSs12_Alloc_hiderC1EPcRKSaIcE
+}
+
+# Suppress common problem found with ccc 20040707:
+# ==7445== Invalid read of size 4
+# ==7445==    at 0x3C4CD8D2: time (in /lib/tls/libc-2.3.2.so)
+# ==7445==  Address 0x4FC2CBA0 is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_libc_time
+   Memcheck:Addr4
+   fun:time
+}
+
+# Suppress common problem found with ccc 20040707:
+# ==7445== Invalid read of size 4
+# ==7445==    at 0x3C4CCF33: ctime (in /lib/tls/libc-2.3.2.so)
+# ==7445==  Address 0x4FC2CBA0 is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_libc_ctime
+   Memcheck:Addr4
+   fun:ctime
+}
+
+# Suppress common problem found with ccc 20040707:
+# ==7445== Invalid read of size 4
+# ==7445==    at 0x3C4CE7EF: (within /lib/tls/libc-2.3.2.so)
+# ==7445==  Address 0x4FC2CFBC is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_libc
+   Memcheck:Addr4
+   obj:/lib/tls/libc-2.3.2.so
+}
+
+# Suppress common problem found with ccc 20040707:
+# ==7451== Invalid read of size 4
+# ==7451==    at 0x3C3C327C: std::basic_ostream<char, std::char_traits<char> >& std::operator<< <std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*) (in /usr/lib/libstdc++.so.5.0.6)
+# ==7451==  Address 0x4FC2CB60 is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_libstdc++_ostream1
+   Memcheck:Addr4
+   fun:_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc
+}
+
+# Suppress common problem found with ccc 20040707:
+# ==7472== Invalid read of size 4
+# ==7472==    at 0x3C3C090C: std::basic_ostream<char, std::char_traits<char> >& std::operator<< <char, std::char_traits<char>, std::allocator<char> >(std::basic_ostream<char, std::char_traits<char> >&, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (in /usr/lib/libstdc++.so.5.0.6)
+# ==7472==  Address 0x4FC2CB60 is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_libstdc++_ostream2
+   Memcheck:Addr4
+   fun:_ZStlsIcSt11char_traitsIcESaIcEERSt13basic_ostreamIT_T0_ES7_RKSbIS4_S5_T1_E
+}
+
+# Suppress common problem found with ccc 20040707:
+# ==7472== Invalid read of size 4
+# ==7472==    at 0x3C020A33: strrchr (mac_replace_strmem.c:119)
+# ==7472==  Address 0x4FC2CB60 is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_strrchr
+   Memcheck:Addr4
+   fun:strrchr
+}
+
+# Suppress common problem found with ccc 20040707:
+# ==7477== Invalid read of size 1
+# ==7477==    at 0x3C020A36: strrchr (mac_replace_strmem.c:118)
+# ==7477==  Address 0x4FC2CB64 is on thread 1's stack
+{
+   Questionable_read1_warning_from_ccc_strrchr
+   Memcheck:Addr1
+   fun:strrchr
+}
+
+# Suppress common problem found with ccc 20040707:
+# ==7472== Invalid read of size 4
+# ==7472==    at 0x3C3D0F59: std::string::compare(char const*) const (in /usr/lib/libstdc++.so.5.0.6)
+# ==7472==  Address 0x4FC2CB60 is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_libstdc++_string_compare
+   Memcheck:Addr4
+   fun:_ZNKSs7compareEPKc
+}
+
+# Suppress common problem found with ccc 20040707:
+# ==7472== Invalid read of size 4
+# ==7472==    at 0x3C3C1676: std::ostream::operator<<(std::ostream& (*)(std::ostream&)) (in /usr/lib/libstdc++.so.5.0.6)
+# ==7472==  Address 0x4FC2CB60 is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_libstdc++_ostream3
+   Memcheck:Addr4
+   fun:_ZNSolsEPFRSoS_E
+}
+
+# Suppress common problem found with ccc 20050417:
+# ==9911== Invalid read of size 4
+# ==9911==    at 0x1BB7A326: std::string::length() const (in /usr/lib/libstdc++.so.6.0.3)
+# ==9911==  Address 0x52BFDE00 is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_libstdc++_string_length
+   Memcheck:Addr4
+   fun:_ZNKSs6lengthEv
+}
+
+# Suppress common problem found with ccc 20050417:
+# ==9911== Invalid read of size 4
+# ==9911==    at 0x1BB7B893: std::string::assign(char const*, unsigned) (in /usr/lib/libstdc++.so.6.0.3)
+#==9911==  Address 0x52BFDD30 is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_libstdc++_string_assign
+   Memcheck:Addr4
+   fun:_ZNSs6assignEPKcj
+}
+
+# Suppress common problem found with ccc 20050417:
+# ==9911== Invalid read of size 4
+# ==9911==    at 0x1BB7B56C: std::string::_M_mutate(unsigned, unsigned, unsigned) (in /usr/lib/libstdc++.so.6.0.3)
+# ==9911==  Address 0x52BFDD30 is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_libstdc++_string_M_mutate
+   Memcheck:Addr4
+   fun:_ZNSs9_M_mutateEjjj
+}
+
+# Suppress common problem found with ccc 20050417:
+# ==11077== Invalid read of size 4
+# ==11077==    at 0x1BB7B2AF: std::string::assign(std::string const&) (in /usr/lib/libstdc++.so.6.0.3)
+# ==11077==  Address 0x52BFDD20 is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_libstdc++_string_assign
+   Memcheck:Addr4
+   fun:_ZNSs6assignERKSs
+}
+
+# Suppress common problem found with ccc 20050417:
+# ==11577== Invalid read of size 4
+# ==11577==    at 0x1BB7A46B: std::string::find(char const*, unsigned, unsigned) const (in /usr/lib/libstdc++.so.6.0.3)
+# ==11577==  Address 0x52BFDD20 is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_libstdc++_string_find
+   Memcheck:Addr4
+   fun:_ZNKSs4findEPKcjj
+}
+
+# Suppress common problem found with ccc 20050417:
+# ==11577== Invalid read of size 4
+# ==11577==    at 0x1BB7A702: std::string::find_first_of(char const*, unsigned, unsigned) const (in /usr/lib/libstdc++.so.6.0.3)
+# ==11577==  Address 0x52BFDD20 is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_libstdc++_string_find_first_of
+   Memcheck:Addr4
+   fun:_ZNKSs13find_first_ofEPKcjj
+}
+
+# Suppress common problem found with ccc 20050417:
+# ==11577== Invalid read of size 4
+# ==11577==    at 0x1BB7D712: std::string::substr(unsigned, unsigned) const (in /usr/lib/libstdc++.so.6.0.3)
+# ==11577==  Address 0x52BFDD20 is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_libstdc++_string_substr
+   Memcheck:Addr4
+   fun:_ZNKSs6substrEjj
+}
+
+# Suppress common problem found with ccc 20050417:
+# ==12886== Invalid read of size 4
+# ==12886==    at 0x1BB7D67C: std::string::string(std::string const&, unsigned, unsigned) (in /usr/lib/libstdc++.so.6.0.3)
+# ==12886==  Address 0x52BFDD20 is on thread 1's stack
+{
+   Questionable_read4_warning_from_ccc_libstdc++_string_string
+   Memcheck:Addr4
+   fun:_ZNSsC1ERKSsjj
+}
+
+# Suppress common problem found in NCO mpncbo with mpich2-1.0.2 valgrind-2.2 gcc-4.0.0 20050914:
+# ==1151== Syscall param writev(vector[...]) contains uninitialised or unaddressable byte(s)
+# ==1151==    at 0x1B8E4C02: (within /lib/ld-2.3.2.so)
+# ==1151==  Address 0x1BB0A718 is 32 bytes inside a block of size 72 alloc'd
+{
+   Questionable_writev_warning_from_nco_mpich2-1.0.2_valgrind-2.2_gcc-4.0.0_problem1
+   Memcheck:Param
+   writev(vector[...])
+   obj:/lib/ld-2.3.2.so
+   fun:MPIDU_Socki_handle_write
+   fun:MPIDU_Sock_wait
+   fun:MPIDI_CH3_Progress_wait
+}
+
+# Suppress common problem found in NCO mpncbo with mpich2-1.0.2 valgrind-2.2 gcc-4.0.0 20050914:
+# ==1164== Syscall param writev(vector[...]) contains uninitialised or unaddressable byte(s)
+# ==1164==    at 0x1B8E4C02: (within /lib/ld-2.3.2.so)
+# ==1164==  Address 0x52BFCFB4 is on thread 1's stack
+{
+   Questionable_writev_warning_from_nco_mpich2-1.0.2_valgrind-2.2_gcc-4.0.0_problem2
+   Memcheck:Param
+   writev(vector[...])
+   obj:/lib/ld-2.3.2.so
+   fun:MPIDU_Sock_writev
+   fun:MPIDI_CH3_iStartMsgv
+   fun:MPID_Send
+}
+
+# Suppress common problem found in NCO mpncbo with mpich2-1.0.2 valgrind-2.2 gcc-4.0.0 20050914:
+# ==1164== Syscall param write(buf) contains uninitialised or unaddressable byte(s)
+# ==1164==    at 0x1B8E4C02: (within /lib/ld-2.3.2.so)
+# ==1164==  Address 0x52BFD108 is on thread 1's stack
+{
+   Questionable_writev_warning_from_nco_mpich2-1.0.2_valgrind-2.2_gcc-4.0.0_problem3
+   Memcheck:Param
+   write(buf)
+   obj:/lib/ld-2.3.2.so
+   fun:MPIDU_Sock_write
+   fun:MPIDI_CH3_iStartMsg
+   fun:MPID_VCRT_Release
+}
+
+# Suppress common problem found in NCO mpncbo with mpich2-1.0.2 valgrind-2.2 gcc-4.0.0 20050914:
+# ==1185== Syscall param write(buf) contains uninitialised or unaddressable byte(s)
+# ==1185==    at 0x1B8E4C02: (within /lib/ld-2.3.2.so)
+# ==1185==  Address 0x52BFCEA8 is on thread 1's stack
+{
+   Questionable_writev_warning_from_nco_mpich2-1.0.2_valgrind-2.2_gcc-4.0.0_problem4
+   Memcheck:Param
+   write(buf)
+   obj:/lib/ld-2.3.2.so
+   fun:MPIDU_Sock_write
+   fun:MPIDI_CH3_iStartMsg
+   fun:MPIDI_CH3U_Handle_recv_pkt
+}
+
+# Suppress common problem found in NCO mpncbo with mpich2-1.0.2 valgrind-3.0.1 icc-8.1 20050914:
+# ==18618== Conditional jump or move depends on uninitialised value(s)
+# ==18618==    at 0x1B8EC7D3: (within /lib/ld-2.3.5.so)
+{
+   Questionable_writev_warning_from_nco_mpich2-1.0.2_valgrind-2.2_gcc-4.0.0_problem4
+   Memcheck:Cond
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+}
+
+# Suppress common problem found in NCO mpncbo with mpich2-1.0.2 valgrind-3.0.1 icc-8.1 20050914:
+# ==20985== Invalid read of size 8
+# ==20985==    at 0x80E5D88: (within /data/zender/bin/LINUX/mpncbo)
+# ==20985==  Address 0x1BB06278 is 176 bytes inside a block of size 180 alloc'd
+# ==20985==    at 0x1B8FF8A6: malloc (vg_replace_malloc.c:149)
+# ==20985==    by 0x807F52E: new_x_NC_attr (attr.c:73)
+{
+   Questionable_read8_warning_from_libnetcdf_new_x_NC_attr
+   Memcheck:Addr8
+   obj:/data/zender/bin/LINUX/mpncbo
+}

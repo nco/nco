@@ -1,13 +1,13 @@
-$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.8 2005-09-14 19:42:20 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.9 2005-09-14 23:36:10 zender Exp $ -*-text-*-
 
 Installing an MPI Environment for NCO:
 
 Choose an MPI distribution: LAM-MPI, MPICH, MPICH2 (recommeneded), 
-and PE (AIX only)
+and PPE (AIX only)
 
 MPI distribution-specific instructions are given below, in
 alphabetical order of distribution for these parallel environments:
-LAM, MPICH, MPICH2, and PE (AIX only).
+LAM, MPICH, MPICH2, and PPE (AIX only).
 
 Once one of these environments is installed, test NCO.
 
@@ -30,7 +30,7 @@ mpic++ --showme  # LAM-MPI (only): C++ compilation switches
 Testing NCO in a parallel environment
 ************************************************************************
 1. Start any required process management daemons
-These are lamd (LAM), mpd (MPICH/MPICH2), and pm_manager (PE).
+These are lamd (LAM), mpd (MPICH/MPICH2), and pmd (PPE).
    
 2. Run NCO regression tests in parallel mode
    make MPI_PRC=3 MPI=Y tst
@@ -87,7 +87,7 @@ MPICH2 Instructions:
    mpich2version # Report MPICH2 version
 
 ************************************************************************
-Parallel Environment (PE) (AIX only):
+Parallel Programming Environment (PPE) (AIX only):
 1. poe requires a hostfile. hostfile defaults to ./host.list.
    Create host.list with, e.g.,
 

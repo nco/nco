@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.597 2005-09-14 21:02:55 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.598 2005-09-14 23:36:10 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -11,6 +11,9 @@ Question marks indicate items or implementations are debatable
 Please help out wherever your experience allows.
 ******************************************************************************
 
+************************************************************************
+Begin ncoXXX TODOs
+************************************************************************
 Highest priority NCO-wide items that You can help with:
 nco59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
 nco97. Add x_op=average... attributes to averagers for ncar_csm
@@ -313,23 +316,15 @@ nco575. Add --hdr/--header options to syntax in nco_ctl.c and nco.texi
 nco576. Re-order arguments so var_sbt computes op2:=op1-op2 rather than op2:=op2-op1
 nco577. ncbo: get rid of dangling pointers in var_1, var_2 after ncap_var_cnf_dmn()
 nco578. ncbo: Use ncbo.c as template for [mp]ncflint re-write
-nco579. mpncbo: Merge recent ncbo.c re-write into mpncbo.c to improve commutivity
 nco580. fl_mk_lcl(): Add wget protocol to handle non-Opendap HTTP
 nco581. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 2: allow nbr_xtr_out=max(nbr_xtr_1,nbr_xtr_2) when nbr_xtr_2>nbr_xtr_1 if discrepant variables are type fix (e.g., grid properties) not type prc (NB: already works for nbr_xtr_1>nbr_xtr_2)
 nco585. mpncrcat: hangs while reading records (verified 20050913)
         mpirun -np 3 $MY_BIN_DIR/mpncrcat -O -D 5 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc 
-nco586. mbncbo: hangs while differencing
-	ncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc (works)
-        /bin/rm $MY_OBJ_DIR/mpncbo.o;make MPI=Y FAKE_MPI=Y mpncbo
-	mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc (works)
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1 (perfect)
-        /bin/rm $MY_OBJ_DIR/mpncbo.o;make MPI=Y mpncbo
-        mpirun -np 3 $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc (hangs)
-        ~/nco/bm/nco_bm.pl --mpi=3 --regress ncbo
 nco587. Command line MPI on AIX with POE
 	Promising documentation at:
         http://publib.boulder.ibm.com/infocenter/clresctr/index.jsp?topic=/com.ibm.cluster.pe.doc/pe_42/am10600203.html
-        poe -hostfile=~/nco/bld/host.list -node=1 -tasks_per_node=3 $MY_BIN_DIR/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc
+	echo ${HOST} > ~/nco/bld/host.list
+        cd ~/nco/bld;poe -hostfile=~/nco/bld/host.list -node=1 -tasks_per_node=3 $MY_BIN_DIR/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc
         ERROR: 0031-808  Hostfile or pool must be used to request nodes
 nco588. MPI debugging with DDD (http://www.lam-mpi.org/faq/category6.php3)
         mpirun N -x DISPLAY run_gdb.csh my_program_name
@@ -342,47 +337,70 @@ nco588. MPI debugging with DDD (http://www.lam-mpi.org/faq/category6.php3)
         mpirun -np 3 -x ashes:0 /usr/bin/ddd $MY_BIN_DIR/mpncbo
         LAM-MPI:
         mpirun -np 3 -x ashes:0 /usr/bin/ddd --gdb --debugger "gdb" $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc
-nco589. MPI with valgrind (http://www.lam-mpi.org/faq/category6.php3)
-        mpirun -np 3 /usr/bin/valgrind --gen-suppressions=yes --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-        mpirun -np 3 /usr/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-nco591. Change bld/Makefile to use mpicc only with mp*.c operators
-nco592. 
+nco592. mpncecat: fails while concatenating
+        ncks -O -v one -p ../data in.nc ~/foo1.nc
+        ncks -O -v one -p ../data in.nc ~/foo2.nc
+	mpirun -np 3 mpncecat -O -D 5 ~/foo1.nc ~/foo2.nc ~/foo.nc
+        /bin/rm $MY_OBJ_DIR/mpncecat.o;make MPI=Y FAKE_MPI=Y mpncecat
+	mpncecat -O -D 5 ~/foo1.nc ~/foo2.nc ~/foo.nc
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck mpncecat -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1 (perfect)
+        /bin/rm $MY_OBJ_DIR/mpncecat.o;make MPI=Y mpncecat
+        mpirun -np 3 $MY_BIN_DIR/mpncecat -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc (hangs)
+        ~/nco/bm/nco_bm.pl --mpi=3 --regress ncecat
+nco593. 
+************************************************************************
+End ncoXXX TODOs
+************************************************************************
 
+************************************************************************
+Begin MPI section
+************************************************************************
 MPI: Archive of quickie MPI tests
 NB: mpirun requires explicit path to executable
-In following bug reports, 
-"debian" = Ubuntu/Libranet, gcc 3.4/4.0, pentium/opteron (ashes, elnino, sand)
-"fedora" = Fedora with icc 8.1 on pentium (soot)
-Status 20050910: 
+Status 20050914: 
 1. LAM-MPI fails (hangs a lot) on all Debian environments (ashes, elnino, sand...)
 2. MPICH seems to work on Fedora (only tested with icc)
 3. MPICH2 seems to work on Debian. Tested with icc (elnino) and gcc (ashes)
 Hence currently recommend running with MPICH2.
 See ~/doc/mpi.txt for MPICH2 installation details.
 
-1. mpncbo (debian: dies with p4_error: interrupt SIGSEGV: 11, fedora: succeeds)
+0. MPI with valgrind example
+   mpirun -np 3 /usr/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck mpirun -np 3 ${MY_BIN_DIR}/mpncbo -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
+1. mpncbo
    mpirun -np 3 ${MY_BIN_DIR}/mpncbo -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-2. mpncea (debian: hangs just before write, fedora: fails with glibc detected *** double free or corruption (!prev))
+2. mpncea
    mpirun -np 3 ${MY_BIN_DIR}/mpncea -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-3. mpncecat (debian: dies with p4_error: interrupt SIGSEGV: 11, fedora: One of the processes started by mpirun has exited with a nonzero exit)
+3. mpncecat (fails)
    mpirun -np 3 ${MY_BIN_DIR}/mpncecat -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-4. mpncpdq (debian: both invocations hang, fedora: both succeed)
+4. mpncpdq
    mpirun -np 3 ${MY_BIN_DIR}/mpncpdq -O -D 3 -a lat,lev,lon -p ${HOME}/nco/data in.nc ~/foo.nc > ~/foo 2>&1
    mpirun -np 3 ${MY_BIN_DIR}/mpncpdq -O -D 3 -P all_new -p ${HOME}/nco/data in.nc ~/foo.nc > ~/foo 2>&1
-5. mpncra (debian: hangs early, fedora: glibc detected *** double free or corruption (!prev))
+5. mpncra
    mpirun -np 3 ${MY_BIN_DIR}/mpncra -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-6. mpncrcat (debian: hangs just before write, fedora: succeeds)
+6. mpncrcat (hangs just before write)
    mpirun -np 3 ${MY_BIN_DIR}/mpncrcat -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-7. mpncwa (appears to work, fedora: one of the processes started by mpirun has exited with a nonzero exit code.)
+7. mpncwa
    mpirun -np 3 ${MY_BIN_DIR}/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc > ~/foo 2>&1
+************************************************************************
+End MPI section
+************************************************************************
 
+************************************************************************
+Begin OPeNDAP section
+************************************************************************
 OPeNDAP: Archive of quickie DAP tests:
 ncks -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l . in.nc
 ncks -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata -l . in.nc
 ncks -p https://srb.npaci.edu/mysrb331all.shtml/home/zender.uci-esmf/zender/nco/data -l . in.nc
 http://sasa.sdsc.edu:8003/cgi-bin/nph-dods/data/nccoos-duck-codar-latest.nc.html
 http://orion.sdsc.edu:8003/cgi-bin/nph-dods/data/nccoos-duck-codar-latest.nc.html
+************************************************************************
+End OPeNDAP section
+************************************************************************
 
+************************************************************************
+Begin valgrind section
+************************************************************************
 Valgrind: Archive of valgrind tests which are memory-error and leak-free
 1. ncap
    valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck ncap -O -S ${HOME}/nco/data/ncap.in -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
@@ -410,7 +428,13 @@ Valgrind: Archive of valgrind tests which are memory-error and leak-free
     callgrind ncwa -D 3 -t 2 -O -C -w gw -m gw -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
     valgrind --suppressions=${HOME}/c++/valgrind.txt --tool=callgrind ncwa -D 3 -t 2 -O -C -a lat,lon,time -w gw -m gw -v PS -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
     kcachegrind ncwa &
+************************************************************************
+End valgrind section
+************************************************************************
 
+************************************************************************
+Begin ncapXXX TODOs
+************************************************************************
 ncap-specific items:
 ncap07. Combine binary operations into binary_op_var_var and binary_op_var_att types to reduce number of functions
 ncap09. Add outer loop over files so script may apply to each file
@@ -464,7 +488,13 @@ ncap70. gamma() function broken on AIX
 ncap71. Remove erf and gamma functions from AIX build
 ncap72. Stop linking to -lC on AIX. Get all float math functions by casting double versions
 ncap76. 
+************************************************************************
+End ncapXXX TODOs
+************************************************************************
 
+************************************************************************
+Begin bldXXX TODOs
+************************************************************************
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
 bld23. Implement ncra i18n support I18N with autotools: Add .po files, update doc/i18n.txt
@@ -488,6 +518,10 @@ bld46. Is DAP_ROOT (or DODS_ROOT) an obselete variable in DAP 3.5+? if so obsole
 bld47. Add regression test for -Z capability
 bld48. Implement icc/icpc optimization switches
 bld49. 
+************************************************************************
+End bldXXX TODOs
+************************************************************************
+
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -1,6 +1,9 @@
 2005-09-14  Charlie Zender  <zender@uci.edu>
 
 	* New MPICC, MPICXX logic in Makefile simplifies OS-specific sections
+	AIX MPI builds must be done from scratch, i.e., make cln;make MPI=Y
+	AIX MPI builds break non-MPI operators
+	Hence a complete set of AIX executables requires two makes
 
 	* Add valgrind suppressions for MPICH2 to ~/c++/valgrind.txt
 	With these suppressed, valgrind finds no NCO-caused leaks in mpncbo
