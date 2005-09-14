@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/valgrind.txt,v 1.1 2005-09-14 23:36:10 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/valgrind.txt,v 1.2 2005-09-14 23:59:17 zender Exp $
 
 # Purpose: Suppression file for valgrind
 # Default suppressed warnings in /usr/local/lib/valgrind/default.supp
@@ -339,7 +339,7 @@
 # ==18618== Conditional jump or move depends on uninitialised value(s)
 # ==18618==    at 0x1B8EC7D3: (within /lib/ld-2.3.5.so)
 {
-   Questionable_writev_warning_from_nco_mpich2-1.0.2_valgrind-2.2_gcc-4.0.0_problem4
+   Questionable_writev_warning_from_nco_mpich2-1.0.2_valgrind-3.0.1_icc-8.1_problem1
    Memcheck:Cond
    obj:/lib/ld-2.3.5.so
    obj:/lib/ld-2.3.5.so
@@ -360,3 +360,4 @@
    Memcheck:Addr8
    obj:/data/zender/bin/LINUX/mpncbo
 }
+
