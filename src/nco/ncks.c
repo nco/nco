@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.139 2005-08-23 01:23:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.140 2005-09-14 20:38:29 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.139 2005-08-23 01:23:05 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.139 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.140 2005-09-14 20:38:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.140 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   extern char *optarg;
@@ -600,13 +600,13 @@ main(int argc,char **argv)
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
 
   /* ncks-unique memory */
-  if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
   if(fl_bnr != NULL) fl_bnr=(char *)nco_free(fl_bnr);
   if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
   if(nbr_dmn_fl > 0) lmt_rgl=nco_lmt_lst_free(lmt_rgl,nbr_dmn_fl);
 
   /* NCO-generic clean-up */
   /* Free individual strings */
+  if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
   if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
   if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);

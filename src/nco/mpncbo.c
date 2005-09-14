@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.23 2005-09-14 06:23:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.24 2005-09-14 20:38:29 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.23 2005-09-14 06:23:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.23 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.24 2005-09-14 20:38:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.24 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
 
   dmn_sct **dim_1;
@@ -468,7 +468,6 @@ main(int argc,char **argv)
     
     /* Catenate time-stamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-    cmd_ln=(char *)nco_free(cmd_ln);
     
     /* Initialize thread information */
     thr_nbr=nco_openmp_ini(thr_nbr);
@@ -495,7 +494,7 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
   } /* proc_id != 0 */
   
-  /* Manager broadcasts output filename to workers */
+  /* Manager obtains output filename and broadcasts to workers */
   if(proc_id == 0) fl_nm_lng=(int)strlen(fl_out_tmp); 
   MPI_Bcast(&fl_nm_lng,1,MPI_INT,mpi_rnk_root,MPI_COMM_WORLD);
   if(proc_id != 0) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
@@ -740,10 +739,9 @@ main(int argc,char **argv)
   if(fl_in_1 != NULL) fl_in_1=(char *)nco_free(fl_in_1);
   if(fl_in_2 != NULL) fl_in_2=(char *)nco_free(fl_in_2);
 
-  /* fxm csz go to here porting */
-	
   /* NCO-generic clean-up */
   /* Free individual strings */
+  if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
   if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
   if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.85 2005-08-23 01:23:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.86 2005-09-14 20:38:29 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.85 2005-08-23 01:23:05 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.85 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.86 2005-09-14 20:38:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.86 $";
   const char * const opt_sht_lst="4Aa:D:hl:Oo:p:RrZ-:";
   
   extern char *optarg;
@@ -352,7 +352,6 @@ main(int argc,char **argv)
   
   /* Catenate the timestamped command line to the "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);
-  cmd_ln=(char *)nco_free(cmd_ln);
   
   /* Take output file out of define mode */
   if(hdr_pad == 0UL){
@@ -379,6 +378,7 @@ main(int argc,char **argv)
 
   /* NCO-generic clean-up */
   /* Free individual strings */
+  if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
   if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
   if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);

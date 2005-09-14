@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.16 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.17 2005-09-14 20:38:29 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -54,13 +54,14 @@ nco_cmd_ln_sng /* [fnc] Re-construct command line from arguments */
   int idx;
 
   for(idx=0;idx<argc;idx++){
+    /* Add one to size of each argument for a space character */
     cmd_ln_sz+=(int)strlen(argv[idx])+1;
   } /* end loop over args */
-  cmd_ln=(char *)nco_malloc(cmd_ln_sz*sizeof(char));
   if(argc <= 0){
     cmd_ln=(char *)nco_malloc(sizeof(char));
     cmd_ln[0]='\0';
   }else{
+    cmd_ln=(char *)nco_malloc(cmd_ln_sz*sizeof(char));
     (void)strcpy(cmd_ln,argv[0]);
     for(idx=1;idx<argc;idx++){
       (void)strcat(cmd_ln," ");

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.82 2005-08-22 22:17:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.83 2005-09-14 20:38:29 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.82 2005-08-22 22:17:05 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.82 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.83 2005-09-14 20:38:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.83 $";
   const char * const opt_sht_lst="4a:D:d:hl:Oo:p:rv:Z-:";
 
   extern char *optarg;
@@ -425,7 +425,6 @@ main(int argc,char **argv)
   
   /* Catenate timestamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);
-  cmd_ln=(char *)nco_free(cmd_ln);
   
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
@@ -460,6 +459,7 @@ main(int argc,char **argv)
 
   /* NCO-generic clean-up */
   /* Free individual strings */
+  if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
   if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
   if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);

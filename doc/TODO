@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.595 2005-09-14 02:31:11 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.596 2005-09-14 20:38:29 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -343,6 +343,7 @@ nco588. MPI debugging with DDD (http://www.lam-mpi.org/faq/category6.php3)
         LAM-MPI:
         mpirun -np 3 -x ashes:0 /usr/bin/ddd --gdb --debugger "gdb" $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc
 nco589. MPI with valgrind (http://www.lam-mpi.org/faq/category6.php3)
+        mpirun -np 3 /usr/bin/valgrind --gen-suppressions=yes --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
         mpirun -np 3 /usr/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 nco591. 
 
