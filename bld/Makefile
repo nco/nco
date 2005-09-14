@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.321 2005-09-14 22:43:13 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.322 2005-09-14 23:06:12 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -445,19 +445,12 @@ CPP_TKN_OS +=
 # Works on AIX and AIX46K
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 # 20030804: Always use re-entrant (_r) compilers---Jim Edwards NCAR/IBM 
-ifneq (${MPI},Y)
  CC := xlc_r -qlanglvl=extc99
 #CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
  CXX := xlC_r
 # CXX := g++
  CPP := xlc -c -qlanglvl=extc99 -I/usr/lpp/ppe.poe/include
  FC := xlf95_r
-else
- CC := mpcc_r -qlanglvl=extc99
- CXX := mpCC_r -qlanglvl=extc99
- CPP := mpcc_r -c -qlanglvl=extc99
- FC := mpxlf95_r
-endif
 ifneq (${null},$(findstring xl,${CC}))
 # /usr/include headers must occur before Visual Age headers to prevent xlC pragma warnings
 # Visual Age compiler headers must occur before g++ headers
@@ -1201,8 +1194,8 @@ MPICXX := ${CXX}
 ifeq (${MPI},Y)
 ifneq (${null},$(findstring xl,${CC}))
 # NB: AIX is not debugged yet
- MPICC := $(subst xlc,mpxlc,${CC})
- MPICXX := $(subst xlC,mpxlC,${CXX})
+ MPICC := $(subst xlc,mpcc,${CC})
+ MPICXX := $(subst xlC,mpCC,${CXX})
 endif # endif AIX VA Compiler Collection
 ifneq (${null},$(findstring gcc,${CC}))
  MPICC := $(subst gcc,mpicc,${CC})
