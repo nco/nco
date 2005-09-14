@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.83 2005-09-13 00:55:58 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.84 2005-09-14 07:27:39 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -1339,7 +1339,7 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 ####################
     $opr_nm='ncrcat';
 ####################
-        if ($mpi_prc == 0) { # fxm test hangs because of ncrcat TODO 585
+        if ($mpi_prc > 0) { # fxm test hangs because of ncrcat TODO 585
 	$tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc $outfile 2>$foo_tst";
 	$tst_cmd[1]="ncks -C -H -d time,11 -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="Concatenate float with double missing values across two files";
@@ -1353,7 +1353,7 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
     $opr_nm='ncra';
 ####################
 
-        if ($mpi_prc == 0) { # test hangs because of ncrcat TODO 585 and, when that is fixed, test will fail because of mpncbo TODO 579
+        if ($mpi_prc > 0) { # test hangs because of ncrcat TODO 585 and, when that is fixed, test will fail because of mpncbo TODO 579
 	$outfile =  $foo1_fl;
 	$tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc $outfile 2>$foo_tst";
 	$outfile =  $orig_outfile;
