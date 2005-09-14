@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.596 2005-09-14 20:38:29 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.597 2005-09-14 21:02:55 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -345,7 +345,8 @@ nco588. MPI debugging with DDD (http://www.lam-mpi.org/faq/category6.php3)
 nco589. MPI with valgrind (http://www.lam-mpi.org/faq/category6.php3)
         mpirun -np 3 /usr/bin/valgrind --gen-suppressions=yes --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
         mpirun -np 3 /usr/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/c++/valgrind.txt --tool=memcheck $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-nco591. 
+nco591. Change bld/Makefile to use mpicc only with mp*.c operators
+nco592. 
 
 MPI: Archive of quickie MPI tests
 NB: mpirun requires explicit path to executable
