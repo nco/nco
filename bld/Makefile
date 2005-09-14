@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.319 2005-09-13 22:32:33 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.320 2005-09-14 21:32:38 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -718,11 +718,6 @@ endif
 endif # endif Comeau C Compiler
 # GNU Compiler Collection
 ifneq (${null},$(findstring gcc,${CC}))
-ifeq (${MPI},Y)
- CC := $(subst gcc,mpicc,${LINUX_CC})
- CXX := $(subst g++,mpicxx,${LINUX_CXX})
- CPP := ${CC}
-endif # endif MPI
  CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
  CFLAGS := -Wall
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
@@ -779,11 +774,6 @@ endif # endif LINUXAMD64
 endif # endif GNU Compiler Collection
 # Intel (Kai) C Compiler
 ifeq (icc,$(firstword ${CC}))
-ifeq (${MPI},Y)
- CC := $(subst icc,mpicc,${LINUX_CC})
- CXX := $(subst icpc,mpicxx,${LINUX_CXX})
- CPP := ${CC}
-endif # endif MPI
 # -fast: enable -xP -O3 -ipo -static
 # -ipo[n]: enable multi-file IP optimizations (between files)
 # -no-gcc: do not define  __GNUC__, __GNUC_MINOR__, and __GNUC_PATCHLEVEL__ macros
@@ -1204,6 +1194,24 @@ endif
 endif
 # endif LINUX
 
+# Replace CC, CPP, CXX as appropriate for MPI-enabled operators
+ifeq (${MPI},Y)
+ifneq (${null},$(findstring xl,${CC}))
+# NB: AIX is not debugged yet
+${MDL_MPI_TRG} : MPICC := $(subst xlc,mpxlc,${CC})
+${MDL_MPI_TRG} : MPICXX := $(subst xlC,mpxlC,${CXX})
+endif # endif AIX VA Compiler Collection
+ifneq (${null},$(findstring gcc,${CC}))
+${MDL_MPI_TRG} : MPICC := $(subst gcc,mpicc,${CC})
+${MDL_MPI_TRG} : MPICXX := $(subst g++,mpicxx,${CXX})
+endif # endif GNU Compiler Collection
+ifeq (icpc,$(firstword ${CXX}))
+${MDL_MPI_TRG} : MPICC := $(subst icc,mpicc,${CC})
+${MDL_MPI_TRG} : MPICXX := $(subst icpc,mpicxx,${CXX})
+endif # endif Intel (Kai) C++ Compiler
+${MDL_MPI_TRG} : CPP := ${MPICC}
+endif # endif MPI
+
 # Disable OpenMP on platforms that automatically support it
 ifneq (${OMP},Y)
 ifneq (${null},$(findstring SGI,${PVM_ARCH}))
@@ -1246,32 +1254,32 @@ obj_dir:
 # Targets in bin
 mpncbo:   ${MY_BIN_DIR}/mpncbo
 ${MY_BIN_DIR}/mpncbo:	${MY_OBJ_DIR}/mpncbo.o lib
-	${CC} -o $@ $< ${LDFLAGS}
+	${MPICC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f mpncdiff; ln -s -f mpncbo mpncdiff
 mpncecat:   ${MY_BIN_DIR}/mpncecat
 ${MY_BIN_DIR}/mpncecat:	${MY_OBJ_DIR}/mpncecat.o lib
-	${CC} -o $@ $< ${LDFLAGS}
+	${MPICC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 mpncflint:   ${MY_BIN_DIR}/mpncflint
 ${MY_BIN_DIR}/mpncflint:	${MY_OBJ_DIR}/mpncflint.o lib
-	${CC} -o $@ $< ${LDFLAGS}
+	${MPICC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 mpncpdq:   ${MY_BIN_DIR}/mpncpdq
 ${MY_BIN_DIR}/mpncpdq:	${MY_OBJ_DIR}/mpncpdq.o lib
-	${CC} -o $@ $< ${LDFLAGS}
+	${MPICC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 #	cd ${MY_BIN_DIR}; rm -f mpncunpack; ln -s -f mpncpdq mpncunpack
 #	cd ${MY_BIN_DIR}; rm -f mpncpack; ln -s -f mpncpdq mpncpack
 mpncra:   ${MY_BIN_DIR}/mpncra
 ${MY_BIN_DIR}/mpncra:	${MY_OBJ_DIR}/mpncra.o lib
-	${CC} -o $@ $< ${LDFLAGS}
+	${MPICC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f mpncea; ln -s -f mpncra mpncea
 	cd ${MY_BIN_DIR}; rm -f mpncrcat; ln -s -f mpncra mpncrcat
 mpncwa:   ${MY_BIN_DIR}/mpncwa
 ${MY_BIN_DIR}/mpncwa:	${MY_OBJ_DIR}/mpncwa.o ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o lib
-	${CC} -o $@ $<  ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o ${LDFLAGS}
+	${MPICC} -o $@ $<  ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 ncatted:   ${MY_BIN_DIR}/ncatted
 ${MY_BIN_DIR}/ncatted:	${MY_OBJ_DIR}/ncatted.o lib
@@ -1535,6 +1543,8 @@ dbg:
 	@printf "MDL_PTH = ${MDL_PTH}\n"
 	@printf "MDL_RPM_NST_NM = $(MDL_RPM_NST_NM)\n"
 	@printf "MDL_SRC = ${MDL_SRC}\n"
+	@printf "MPICC = ${MPICC}\n"
+	@printf "MPICXX = ${MPICXX}\n"
 	@printf "MPICH_CC = ${MPICH_CC}\n"
 	@printf "MPICH_CXX = ${MPICH_CXX}\n"
 	@printf "MPI_PRC = ${MPI_PRC}\n"
