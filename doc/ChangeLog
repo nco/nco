@@ -1,3 +1,9 @@
+2005-09-14  Charlie Zender  <zender@uci.edu>
+
+	* Only allow master MPI process to strlen(fl_out_tmp) 
+	This fixes nasty regressions which I introduced into Gayathri's codes
+	Still need to understand why it caused the bug in the first place
+
 2005-09-13  Charlie Zender  <zender@uci.edu>
 
 	* Move TOKEN_FREE=True to after nco_close() after nco_var_val_cpy()
