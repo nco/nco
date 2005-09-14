@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.320 2005-09-14 21:32:38 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.321 2005-09-14 22:43:13 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -1194,25 +1194,31 @@ endif
 endif
 # endif LINUX
 
-# Replace CC, CPP, CXX as appropriate for MPI-enabled operators
+# Default to MPICC, MPICXX to CC, CXX and cross your fingers
+MPICC := ${CC}
+MPICXX := ${CXX}
+# Manipulate CC, CPP, CXX as appropriate for MPI-enabled operators
 ifeq (${MPI},Y)
 ifneq (${null},$(findstring xl,${CC}))
 # NB: AIX is not debugged yet
-${MDL_MPI_TRG} : MPICC := $(subst xlc,mpxlc,${CC})
-${MDL_MPI_TRG} : MPICXX := $(subst xlC,mpxlC,${CXX})
+ MPICC := $(subst xlc,mpxlc,${CC})
+ MPICXX := $(subst xlC,mpxlC,${CXX})
 endif # endif AIX VA Compiler Collection
 ifneq (${null},$(findstring gcc,${CC}))
-${MDL_MPI_TRG} : MPICC := $(subst gcc,mpicc,${CC})
-${MDL_MPI_TRG} : MPICXX := $(subst g++,mpicxx,${CXX})
+ MPICC := $(subst gcc,mpicc,${CC})
+ MPICXX := $(subst g++,mpicxx,${CXX})
 endif # endif GNU Compiler Collection
 ifeq (icpc,$(firstword ${CXX}))
-${MDL_MPI_TRG} : MPICC := $(subst icc,mpicc,${CC})
-${MDL_MPI_TRG} : MPICXX := $(subst icpc,mpicxx,${CXX})
+ MPICC := $(subst icc,mpicc,${CC})
+ MPICXX := $(subst icpc,mpicxx,${CXX})
 endif # endif Intel (Kai) C++ Compiler
-${MDL_MPI_TRG} : CPP := ${MPICC}
+ CPP := ${MPICC}
 endif # endif MPI
+# Use MPI modifications, if any, to build all objects
+CC := ${MPICC}
+CXX := ${MPICXX}
 
-# Disable OpenMP on platforms that automatically support it
+# Disable OpenMP on platforms which automatically support it
 ifneq (${OMP},Y)
 ifneq (${null},$(findstring SGI,${PVM_ARCH}))
  CFLAGS := $(filter-out -mp -mpio,${CFLAGS})

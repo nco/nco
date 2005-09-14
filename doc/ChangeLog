@@ -1,8 +1,10 @@
 2005-09-14  Charlie Zender  <zender@uci.edu>
 
-	* Added valgrind suppressions for MPICH2 to ~/c++/valgrind.txt
-	With these suppressed, valgrind finds no NCO-caused leaks in mpncbo.
-	MPID_* appears to cause a few harmless leaks.
+	* New MPICC, MPICXX logic in Makefile simplifies OS-specific sections
+
+	* Add valgrind suppressions for MPICH2 to ~/c++/valgrind.txt
+	With these suppressed, valgrind finds no NCO-caused leaks in mpncbo
+	MPID_* appears to cause a few harmless leaks
 
 	* Move nco_free(cmd_ln) from master processor code to NCO-generic
 	memory clean-up to avoid small leak in MPI'd operators
