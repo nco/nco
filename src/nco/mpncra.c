@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.11 2005-09-15 05:29:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.12 2005-09-15 21:43:56 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -25,7 +25,7 @@ See the GNU General Public License for more details.
 
 The original author of this software, Charlie Zender, wants to improve it
 with the help of your suggestions, improvements, bug-reports, and patches.
-Please contact the NCO project at http://nco.sf.net or by writing
+Please contact the NCO project at http://nco.sf.net or write to
 Charlie Zender
 Department of Earth System Science
 University of California at Irvine
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.11 2005-09-15 05:29:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.11 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.12 2005-09-15 21:43:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.12 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
   
   dmn_sct **dim;

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.37 2005-07-05 14:58:53 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.38 2005-09-15 21:43:56 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -23,7 +23,7 @@
    
    The original author of this software, Charlie Zender, wants to improve it
    with the help of your suggestions, improvements, bug-reports, and patches.
-   Please contact the NCO project at http://nco.sf.net or by writing
+   Please contact the NCO project at http://nco.sf.net or write to
    Charlie Zender
    Department of Earth System Science
    University of California at Irvine

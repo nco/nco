@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.83 2005-09-14 20:38:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.84 2005-09-15 21:43:56 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -23,7 +23,7 @@
    
    The original author of this software, Charlie Zender, wants to improve it
    with the help of your suggestions, improvements, bug-reports, and patches.
-   Please contact the NCO project at http://nco.sf.net or by writing
+   Please contact the NCO project at http://nco.sf.net or write to
    Charlie Zender
    Department of Earth System Science
    University of California at Irvine
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.83 2005-09-14 20:38:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.83 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.84 2005-09-15 21:43:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.84 $";
   const char * const opt_sht_lst="4a:D:d:hl:Oo:p:rv:Z-:";
 
   extern char *optarg;

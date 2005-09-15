@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.86 2005-09-14 20:38:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.87 2005-09-15 21:43:56 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -23,7 +23,7 @@
    
    The original author of this software, Charlie Zender, wants to improve it
    with the help of your suggestions, improvements, bug-reports, and patches.
-   Please contact the NCO project at http://nco.sf.net or by writing
+   Please contact the NCO project at http://nco.sf.net or write to
    Charlie Zender
    Department of Earth System Science
    University of California at Irvine
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.86 2005-09-14 20:38:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.86 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.87 2005-09-15 21:43:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.87 $";
   const char * const opt_sht_lst="4Aa:D:hl:Oo:p:RrZ-:";
   
   extern char *optarg;

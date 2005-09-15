@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.182 2005-09-14 20:38:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.183 2005-09-15 21:43:56 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -24,7 +24,7 @@
    
    The original author of this software, Charlie Zender, wants to improve it
    with the help of your suggestions, improvements, bug-reports, and patches.
-   Please contact the NCO project at http://nco.sf.net or by writing
+   Please contact the NCO project at http://nco.sf.net or write to
    Charlie Zender
    Department of Earth System Science
    University of California at Irvine
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.182 2005-09-14 20:38:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.182 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.183 2005-09-15 21:43:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.183 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;

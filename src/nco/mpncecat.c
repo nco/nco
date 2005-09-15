@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.11 2005-09-15 21:35:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.12 2005-09-15 21:43:56 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -23,7 +23,7 @@
    
    The original author of this software, Charlie Zender, wants to improve it
    with the help of your suggestions, improvements, bug-reports, and patches.
-   Please contact the NCO project at http://nco.sf.net or by writing
+   Please contact the NCO project at http://nco.sf.net or write to
    Charlie Zender
    Department of Earth System Science
    University of California at Irvine
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.11 2005-09-15 21:35:30 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.11 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.12 2005-09-15 21:43:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.12 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRv:xZ-:";
   const double sleep_tm=0.04; /* [s] Token request interval */
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
@@ -106,6 +106,10 @@ main(int argc,char **argv)
 
   extern char *optarg;
   extern int optind;
+
+  /* Using naked stdin/stdout/stderr in parallel region generates warning
+     Copy appropriate filehandle to variable scoped shared in parallel clause */
+  FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
 
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
@@ -519,10 +523,10 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
     /* Parse filename */
     if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-    if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
+    if(dbg_lvl > 0) (void)fprintf(fp_stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
-    if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
+    if(dbg_lvl > 0) (void)fprintf(fp_stderr,"local file %s:\n",fl_in);
     rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
     
     /* Perform various error-checks on input file */
@@ -598,8 +602,8 @@ main(int argc,char **argv)
 	  for(idx=0;idx<nbr_var_prc;idx++){
 #endif /* ENABLE_MPI */
        /* Common code for UP and MPI */ /* fxm: requires C99 as is? */
-	    if(dbg_lvl > 1) (void)fprintf(stderr,"%s, ",var_prc[idx]->nm);
-	    if(dbg_lvl > 0) (void)fflush(stderr);
+	    if(dbg_lvl > 1) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
+	    if(dbg_lvl > 0) (void)fflush(fp_stderr);
 	    /* Variables may have different ID, missing_value, type, in each file */
 	    (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
 	    /* Retrieve variable from disk into memory */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.106 2005-09-15 21:35:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.107 2005-09-15 21:43:56 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -23,7 +23,7 @@
    
    The original author of this software, Charlie Zender, wants to improve it
    with the help of your suggestions, improvements, bug-reports, and patches.
-   Please contact the NCO project at http://nco.sf.net or by writing
+   Please contact the NCO project at http://nco.sf.net or write to
    Charlie Zender
    Department of Earth System Science
    University of California at Irvine
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.106 2005-09-15 21:35:30 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.106 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.107 2005-09-15 21:43:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.107 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRv:xt:Z-:";
 
   dmn_sct *rec_dmn;
@@ -100,7 +100,7 @@ main(int argc,char **argv)
   
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped shared in parallel clause */
-  FILE * const fd_stderr=stderr; /* [fl] stderr filehandle CEWI */
+  FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
 
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
@@ -458,17 +458,17 @@ main(int argc,char **argv)
 	 private(fl_in,fl_idx,in_id)
 	 shared(fl_nbr, nbr_var_prc, abb_arg_nbr, fl_lst_abb, fl_pth, dbg_lvl, )
 	 
-	 dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,fd_stderr,in_id_1,in_id_2,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out
+	 dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1,in_id_2,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out
 #endif */  /* !_OPENMP */
   
   /* Loop over input files */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
     if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL, fl_lst_in, abb_arg_nbr, fl_lst_abb, fl_pth);
-    if(dbg_lvl > 0) (void)fprintf(fd_stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
+    if(dbg_lvl > 0) (void)fprintf(fp_stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
-    if(dbg_lvl > 0) (void)fprintf(fd_stderr,"local file %s:\n",fl_in);
+    if(dbg_lvl > 0) (void)fprintf(fp_stderr,"local file %s:\n",fl_in);
     rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
     
     /* Perform various error-checks on input file */
@@ -482,8 +482,8 @@ main(int argc,char **argv)
     
     /* Process all variables in current file */
     for(idx=0;idx<nbr_var_prc;idx++){
-      if(dbg_lvl > 1) (void)fprintf(fd_stderr,"%s, ",var_prc[idx]->nm);
-      if(dbg_lvl > 0) (void)fflush(fd_stderr);
+      if(dbg_lvl > 1) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
+      if(dbg_lvl > 0) (void)fflush(fp_stderr);
       /* Variables may have different ID, missing_value, type, in each file */
       (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
       /* Retrieve variable from disk into memory */
