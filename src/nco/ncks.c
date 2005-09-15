@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.140 2005-09-14 20:38:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.141 2005-09-15 21:14:54 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.140 2005-09-14 20:38:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.140 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.141 2005-09-15 21:14:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.141 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   extern char *optarg;
@@ -161,6 +161,7 @@ main(int argc,char **argv)
       /* Long options with no argument */
       {"cmp",no_argument,0,0},
       {"compiler",no_argument,0,0},
+      {"mpi_implementation",no_argument,0,0},
       /* Long options with argument */
       {"hdr_pad",required_argument,0,0},
       {"header_pad",required_argument,0,0},
@@ -247,6 +248,10 @@ main(int argc,char **argv)
 	(void)fprintf(stdout,"%s\n",nco_cmp_get());
 	nco_exit(EXIT_SUCCESS);
       } /* endif "cmp" */
+      if(!strcmp(opt_crr,"mpi_implementation")){
+	(void)fprintf(stdout,"%s\n",nco_mpi_get());
+	nco_exit(EXIT_SUCCESS);
+      } /* endif "mpi" */
 #ifdef NETCDF4
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")){
 	if(!strstr(opt_crr,"classic")){

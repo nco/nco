@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.325 2005-09-15 18:17:15 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.326 2005-09-15 21:14:54 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -14,7 +14,8 @@
 # scp ~/nco/bld/Makefile soot.ess.uci.edu:nco/bld
 
 # Usage (testing):
-# make MPI=Y MPI_PRC=3 tst           # MPI regression test
+# make MPI_PRC=3 tst                 # MPI regression test
+# make MPI_PRC=3 bm                  # MPI benchmarks
 # make THR_NBR=2 tst                 # OpenMP regression test
 # make THR_NBR=2 bm                  # OpenMP benchmarks
 # Test netCDF4:
@@ -192,18 +193,21 @@ ifeq (${MPI_FAKE},Y)
 # This tests compile, link, execution of MPI mpnc*.c code without using any MPI calls
  MPI := Y
 endif # MPI_FAKE
-ifeq (${MPI},Y)
-ifneq (${MPI_FAKE},Y)
-# Prohibit hybrid code for now---turn off OpenMP
-# OMP := N
-endif # MPI_FAKE
 ifdef MPI_PRC
+# MPI_PRC tells test scripts how many MPI processes to spawn
 # Pass this MPI argument to nco_bm.pl
  MPI_PRC_SNG := "--mpi_prc=${MPI_PRC}"
+# MPI_PRC implies MPI
+ MPI := Y
 else # !MPI_PRC
  MPI_PRC_SNG :=
 endif # !MPI_PRC
-endif # !MPI
+#ifeq (${MPI},Y)
+#ifneq (${MPI_FAKE},Y)
+# Prohibit hybrid code for now---turn off OpenMP
+# OMP := N
+#endif # MPI_FAKE
+#endif # !MPI
 
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
 # Decide among the plethora of Linux compilers

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.17 2005-02-14 02:14:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.18 2005-09-15 21:14:54 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -24,6 +24,9 @@
 #include <unistd.h> /* POSIX stuff */
 
 /* 3rd party vendors */
+#ifdef ENABLE_MPI
+#include <mpi.h> /* MPI definitions */
+#endif /* !ENABLE_MPI */
 #include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
@@ -55,6 +58,9 @@ nco_is_mlt_fl_opr /* [fnc] Query whether program is multi-file operator */
 
 void
 nco_lbr_vrs_prn(void); /* [fnc] Print netCDF library version */
+
+const char * /* O [sng] MPI implementation */
+nco_mpi_get(void); /* [fnc] Return MPI implementation */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
 prg_prs /* [fnc] Strip program name to stub and return program ID */

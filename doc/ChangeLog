@@ -1,5 +1,18 @@
 2005-09-15  Charlie Zender  <zender@uci.edu>
 
+	* Use nco_mpi_get() to return MPI implementation information
+	Invoke with undocumented ncks --mpi switch
+	This (unwisely?) introduces mpi.h into libnco.a via nco_ctl.h 
+	Formerly, mpi.h only appeared in front-end codes
+	Still no MPI _calls_ are in libnco.a, just header information
+	
+	* Allow MPI and OpenMP to both be true
+	Now MPI_FAKE tests OpenMP so that MPI_FAKE operators are
+	plug-compatible replacements for UP/SMP operators.
+	No code actually takes advantage hybrid MPI/OMP since the MPI and
+	OpenMP implementations are currently orthogonal in mpnc*.c level. 
+	This may change if benchmarks uncover good reasons to hybridize
+	
 	* Accomodate LAM MPI environment
 	No difference between regressions with LAM and with MPICH2
 

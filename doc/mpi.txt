@@ -1,15 +1,17 @@
-$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.10 2005-09-15 07:35:51 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.11 2005-09-15 21:14:54 zender Exp $ -*-text-*-
 
 Installing an MPI Environment for NCO:
 
-Choose an MPI distribution: LAM-MPI, MPICH, MPICH2 (recommeneded), 
+Choose an MPI distribution: LAM-MPI, MPICH, MPICH2 (recommended), 
 and PPE (AIX only)
 
 MPI distribution-specific instructions are given below, in
 alphabetical order of distribution for these parallel environments:
 LAM, MPICH, MPICH2, and PPE (AIX only).
+We intend to support Open MPI when it reaches version 1.0.
+No other MPI environments are supported.
 
-Once one of these environments is installed, test NCO.
+Test NCO once one of these environments is installed. 
 
 ************************************************************************
 Determining the Parallel Environment
@@ -29,12 +31,14 @@ mpic++ --showme  # LAM-MPI (only): C++ compilation switches
 ************************************************************************
 Testing NCO in a parallel environment
 ************************************************************************
-1. Start any required process management daemons
-These are lamd (LAM), mpd (MPICH/MPICH2), and pmd (PPE).
+1. Start any required process management daemon
+Typically, these are lamd (LAM), mpd (MPICH/MPICH2), and pmd (PPE).
    
 2. Run NCO regression tests in parallel mode
-   make MPI_PRC=3 MPI=Y tst
-   ~/nco/bm/nco_bm.pl --mpi=3 --regress ncbo
+These two commands are equivalent (Makefile translates the first): 
+
+   make MPI_PRC=3 tst
+   ~/nco/bm/nco_bm.pl --mpi=3 --regress --udp
 
 ************************************************************************
 MPI Distribution-specific Instructions
