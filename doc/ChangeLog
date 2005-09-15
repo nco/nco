@@ -1,5 +1,8 @@
 2005-09-14  Charlie Zender  <zender@uci.edu>
 
+	* Change all valgrind suppressions examples to use
+	${HOME}/nco/doc/valgrind.txt, a direct copy of ${HOME}/c++/valgrind.txt
+
 	* New MPICC, MPICXX logic in Makefile simplifies OS-specific sections
 	AIX MPI builds must be done from scratch, i.e., make cln;make MPI=Y
 	AIX MPI builds break non-MPI operators
