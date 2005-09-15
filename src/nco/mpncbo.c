@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.24 2005-09-14 20:38:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.25 2005-09-15 21:25:18 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.24 2005-09-14 20:38:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.24 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.25 2005-09-15 21:25:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.25 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:Z-:";
 
   dmn_sct **dim_1;
@@ -528,12 +528,14 @@ main(int argc,char **argv)
   if(nco_op_typ_sng == NULL) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
   
   /* Loop over variables */
+#ifndef ENABLE_MPI
 #ifdef _OPENMP
      /* OpenMP notes:
      shared(): msk and wgt are not altered within loop
      private(): wgt_avg does not need initialization */
 #pragma omp parallel for default(none) private(idx) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1,in_id_2,nbr_dmn_xtr_1,nbr_var_prc_1,nbr_var_prc_2,nco_op_typ,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
 #endif /* !_OPENMP */
+#endif /* ENABLE_MPI */
  
 #ifdef ENABLE_MPI
   if(proc_id == 0){ /* MPI manager code */
@@ -692,9 +694,11 @@ main(int argc,char **argv)
 	  rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
 #endif /* !ENABLE_MPI */
 	  
+#ifndef ENABLE_MPI
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* !_OPENMP */ 
+#endif /* ENABLE_MPI */
 	  /* Common code for UP, SMP, and MPI */
 	  { /* begin OpenMP critical */ 
 	    /* Copy result to output file and free workspace buffer */

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.326 2005-09-15 21:14:54 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.327 2005-09-15 21:25:18 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -1294,8 +1294,8 @@ ${MY_BIN_DIR}/ncbo:	${MY_OBJ_DIR}/ncbo.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f ncdiff; ln -s -f ncbo ncdiff
-# 20050710: -axW flag causes icc to die compiling ncecat 
-ifeq (icc,$(firstword ${CC}))
+# 20050710: -axW flag causes icc to die compiling ncecat (re-verified 20050915)
+ifeq (icc,$(firstword ${LINUX_CC}))
 ncecat : CFLAGS := $(filter-out -axW,${CFLAGS})
 endif # endif Intel (Kai) C Compiler
 ncecat:   ${MY_BIN_DIR}/ncecat

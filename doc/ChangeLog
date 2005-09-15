@@ -1,5 +1,7 @@
 2005-09-15  Charlie Zender  <zender@uci.edu>
 
+	* Implement icc ncecat bld/Makefile compilation fix for mpicc too 
+
 	* Use nco_mpi_get() to return MPI implementation information
 	Invoke with undocumented ncks --mpi switch
 	This (unwisely?) introduces mpi.h into libnco.a via nco_ctl.h 
