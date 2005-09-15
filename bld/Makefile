@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.324 2005-09-15 07:35:51 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.325 2005-09-15 18:17:15 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -195,7 +195,7 @@ endif # MPI_FAKE
 ifeq (${MPI},Y)
 ifneq (${MPI_FAKE},Y)
 # Prohibit hybrid code for now---turn off OpenMP
- OMP := N
+# OMP := N
 endif # MPI_FAKE
 ifdef MPI_PRC
 # Pass this MPI argument to nco_bm.pl
