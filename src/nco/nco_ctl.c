@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.100 2005-09-09 22:19:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.101 2005-09-15 07:35:52 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -29,10 +29,30 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   /* In case none of the above tokens matched */
 #if !defined(_AIX) && !defined(__GNUC__) && !defined(__INTEL_COMPILER)
   /* Unknown compiler */
-  static const char cmp_nm[]="Unknown compiler tokens in nco_cmp_get(), compiler is unknown"; /* [sng] Compiler name */
-  static const char cmp_sng[]="unknown"; /* [sng] Compiler string */
+  static const char cmp_nm[]="unknown"; /* [sng] Compiler name */
+  static const char cmp_sng[]="Unknown compiler tokens in nco_cmp_get(), compiler is unknown"; /* [sng] Compiler string */
 #endif /* !unknown */
   if(dbg_lvl_get() > 4) (void)fprintf(stderr,"%s: INFO %s reports compiler name is %s, compiler string is %s\n",prg_nm_get(),fnc_nm,cmp_nm,cmp_sng);
+
+#ifdef _H_MPI
+  static const char mpi_nm[]="PPE"; /* [sng] MPI name */
+  static const char mpi_sng[]="AIX PPE MPI"; /* [sng] MPI string */
+#endif /* !_H_MPI */
+#ifdef LAM_MPI
+  static const char mpi_nm[]="LAM"; /* [sng] MPI name */
+  static const char mpi_sng[]="LAM-MPI"; /* [sng] MPI string */
+#endif /* !LAM_MPI */
+#ifdef MPICH2
+  static const char mpi_nm[]="MPICH2"; /* [sng] MPI name */
+  static const char mpi_sng[]="MPICH2"; /* [sng] MPI string */
+#endif /* !MPICH2 */
+  /* In case none of the above tokens matched */
+#if !defined(_H_MPI) && !defined(LAM_MPI) && !defined(MPICH2)
+  /* Unknown MPI implementation */
+  static const char mpi_nm[]="unknown"; /* [sng] MPI name */
+  static const char mpi_sng[]="Unknown MPI environment in nco_cmp_get()"; /* [sng] MPI string */
+#endif /* !unknown */
+
   return cmp_nm;
 } /* end nco_cmp_get() */
 

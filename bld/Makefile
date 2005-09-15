@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.323 2005-09-15 02:04:25 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.324 2005-09-15 07:35:51 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -9,9 +9,9 @@
 
 # Quickie test copies:
 # scp ~/nco/bld/Makefile dust.ess.uci.edu:nco/bld
-# scp ~/nco/bld/Makefile soot.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile esmf.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile goldhill.cgd.ucar.edu:nco/bld
+# scp ~/nco/bld/Makefile soot.ess.uci.edu:nco/bld
 
 # Usage (testing):
 # make MPI=Y MPI_PRC=3 tst           # MPI regression test
@@ -1532,6 +1532,10 @@ dbg:
 	@printf "FFLAGS = ${FFLAGS}\n"
 	@printf "GCC_RCH_ARG = ${GCC_RCH_ARG}\n"
 	@printf "HDF5 = ${HDF5}\n"
+	@printf "HOST = ${HOST}\n"
+	@printf "ICC_RCH_ARG = ${ICC_RCH_ARG}\n"
+	@printf "LAMMPICC = ${LAMMPICC}\n"
+	@printf "LAMMPICXX = ${LAMMPICXX}\n"
 	@printf "LDFLAGS = ${LDFLAGS}\n"
 	@printf "LEX = $(LEX)\n"
 	@printf "LINUX_CC = $(LINUX_CC)\n"

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.9 2005-09-14 23:36:10 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.10 2005-09-15 07:35:51 zender Exp $ -*-text-*-
 
 Installing an MPI Environment for NCO:
 
@@ -40,10 +40,7 @@ These are lamd (LAM), mpd (MPICH/MPICH2), and pmd (PPE).
 MPI Distribution-specific Instructions
 ************************************************************************
 LAM Instructions:
-LAM-MPI, as distributed in RPM and Deb format, at any rate, appears to 
-tie the compiler underlying mpicc directly to that which compiled LAM.
-There no known way to tell mpicc to use alternate compilers like icc.
-Hence LAM is very rigid and is not recommended.
+Up-to-date versions of LAM-MPI are distributed in RPM and Deb formats.
 (LAM features are included Open MPI, which has not reached 1.0 yet.)
 
 0. Remove LAM-MPI packages
