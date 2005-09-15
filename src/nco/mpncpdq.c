@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.9 2005-09-15 21:43:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.10 2005-09-15 22:29:27 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.9 2005-09-15 21:43:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.9 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.10 2005-09-15 22:29:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.10 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
 
   const double sleep_tm=0.04; /* [s] Token request interval */
@@ -755,14 +755,6 @@ main(int argc,char **argv)
     if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
     rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
     
-#ifdef _OPENMP
-  /* OpenMP notes:
-     firstprivate(): 
-     shared(): 
-     private(): */
-#pragma omp parallel for default(none) private(idx) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,fp_stderr,fp_stdout,in_id,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out)
-#endif /* !_OPENMP */
-
 #ifdef ENABLE_MPI
     if(proc_id == 0){ /* MPI manager code */
       /* Compensate for incrementing on each worker's first message */
@@ -824,14 +816,16 @@ main(int argc,char **argv)
           lcl_nbr_var++;
           var_prc_out[idx]->id=info_bfr[2];
           /* Process this variable same as UP code */
-#endif /* !ENABLE_MPI */
-#ifndef ENABLE_MPI
+#else /* !ENABLE_MPI */
+#ifdef _OPENMP
+#pragma omp parallel for default(none) private(idx) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,fp_stderr,fp_stdout,in_id,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out)
+#endif /* !_OPENMP */
           /* UP and SMP codes main loop over variables */
           for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 #endif /* ENABLE_MPI */
 
-      if(dbg_lvl > 1) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-      if(dbg_lvl > 0) (void)fflush(fp_stderr);
+	    if(dbg_lvl > 1) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	    if(dbg_lvl > 0) (void)fflush(fp_stderr);
       
       /* Retrieve variable from disk into memory */
       (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
@@ -874,11 +868,11 @@ main(int argc,char **argv)
       /* Worker has token---prepare to write */
       if(tkn_rsp == TOKEN_ALLOC){
 	rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
-#endif /* !ENABLE_MPI */
-
+#else /* !ENABLE_MPI */
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
+#endif /* !ENABLE_MPI */
       { /* begin OpenMP critical */
 	/* Common code for UP, SMP, and MPI */
 	/* Copy variable to output file then free value buffer */
