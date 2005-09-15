@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.183 2005-09-15 21:43:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.184 2005-09-15 22:47:29 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.183 2005-09-15 21:43:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.183 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.184 2005-09-15 22:47:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.184 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -643,33 +643,6 @@ main(int argc,char **argv)
       (void)nco_var_get(in_id,msk); /* Routine contains OpenMP critical regions */
     } /* end if */
 
-  /* Test OpenMP parallelization:
-     cd ~/nco/bld;make OPTS=D;cd -
-     cd ~/nco/data;ncwa -D 1 -O in.nc foo.nc 2>&1 | m;cd -
-
-     cd ~/nco/data
-     ncks -O -v one,two,three,four in.nc omp.nc
-     ncks -O -v one omp.nc one.nc
-
-     ncks -O -v one one.nc two.nc
-     ncrename -v one,two two.nc
-     ncflint -O -v two -w 2.0,0.0 two.nc two.nc two.nc
-     ncks -A -C -v two two.nc omp.nc
-     
-     ncks -O -v one one.nc three.nc
-     ncrename -v one,three three.nc
-     ncflint -O -v three -w 3.0,0.0 three.nc three.nc three.nc
-     ncks -A -C -v three three.nc omp.nc
-
-     ncks -O -v one one.nc four.nc
-     ncrename -v one,four four.nc
-     ncflint -O -v four -w 4.0,0.0 four.nc four.nc four.nc
-     ncks -A -C -v four four.nc omp.nc
-
-     ncks -H -C -v one,two,three,four omp.nc | m
-     ncwa -D 1 -O omp.nc foo.nc 2>&1 | m
-     ncks -H -C -v one,two,three,four foo.nc | m
-  */
 #ifdef _OPENMP
   /* OpenMP notes:
      firstprivate(): msk_out and wgt_out must be NULL on first call to nco_var_cnf_dmn()
@@ -891,17 +864,15 @@ main(int argc,char **argv)
       
 #ifdef _OPENMP
 #pragma omp critical
-      { /* begin OpenMP critical */
 #endif /* _OPENMP */
+      { /* begin OpenMP critical */
 	/* Copy average to output file then free averaging buffer */
 	if(var_prc_out[idx]->nbr_dim == 0){
 	  (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	}else{ /* end if variable is scalar */
 	  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	} /* end if variable is array */
-#ifdef _OPENMP
       } /* end OpenMP critical */
-#endif /* _OPENMP */
 
       /* Free current output buffer */
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
