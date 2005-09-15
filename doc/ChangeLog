@@ -4,9 +4,9 @@
 	FAKE_MPI mpncea fails one test (TODO594) (regardless of thr_nbr)
 	FAKE_MPI mpncwa fails 22/33 tests (TODO nco595) (thr_nbr > 1)
 
-	* Implement/Fix OpenMP in MPI_FAKE portions of all mpnc*.c codes
+	* Implement/fix OpenMP in MPI_FAKE portions of all mpnc*.c codes
 
-	* Implement icc ncecat bld/Makefile compilation fix for mpicc too 
+	* Use icc ncecat bld/Makefile compilation fix for mpicc too 
 
 	* Use nco_mpi_get() to return MPI implementation information
 	Invoke with undocumented ncks --mpi switch
