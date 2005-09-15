@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.153 2005-09-14 20:38:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.154 2005-09-15 02:04:26 zender Exp $ */
 
 /* ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
@@ -88,6 +88,7 @@ int
 main(int argc,char **argv)
 {
   bool CNV_ARM=int_CEWI;
+  bool CNV_CCM_CCSM_CF=int_CEWI;
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -100,7 +101,6 @@ main(int argc,char **argv)
   bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool LAST_RECORD=False;
-  bool CNV_CCM_CCSM_CF=int_CEWI;
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
 
   char **fl_lst_abb=NULL; /* Option n */
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.153 2005-09-14 20:38:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.153 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.154 2005-09-15 02:04:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.154 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
 
   dmn_sct **dim;

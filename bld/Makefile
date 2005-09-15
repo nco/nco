@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.322 2005-09-14 23:06:12 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.323 2005-09-15 02:04:25 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -185,10 +185,11 @@ ifeq (${I18N},Y)
  MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
 endif
 
-# Message Passing Interface
+# Message Passing Interface (MPI)
 ifeq (${MPI_FAKE},Y)
-# Use non-MPI (i.e., serial or threaded) code instead of MPI code
-# but compile and link with MPI compiler
+# MPI_FAKE instructs make to compile mpnc*.c operators without defining ENABLE_MPI
+# Resulting executables use UP or SMP code not MPI code
+# This tests compile, link, execution of MPI mpnc*.c code without using any MPI calls
  MPI := Y
 endif # MPI_FAKE
 ifeq (${MPI},Y)

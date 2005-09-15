@@ -1,5 +1,13 @@
 2005-09-14  Charlie Zender  <zender@uci.edu>
 
+	* ncea regression test 3 is bizarre: ncea and MPI mpncea pass it,
+	MPI_FAKE mpncea fails it. This is TODO nco594.
+
+	* Verify UP and SMP mpncra execute successfully while MPI mpncra
+	still hangs just before writing output file
+	
+	* Clean up mpncra.c to build cleanly with MPI_FAKE
+
 	* Fix mpncecat (same ole' strlen(fl_out_tmp) bug)
 
 	* Change all valgrind suppressions examples to use

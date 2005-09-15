@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.600 2005-09-15 00:22:55 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.601 2005-09-15 02:04:26 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -318,8 +318,6 @@ nco577. ncbo: get rid of dangling pointers in var_1, var_2 after ncap_var_cnf_dm
 nco578. ncbo: Use ncbo.c as template for [mp]ncflint re-write
 nco580. fl_mk_lcl(): Add wget protocol to handle non-Opendap HTTP
 nco581. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 2: allow nbr_xtr_out=max(nbr_xtr_1,nbr_xtr_2) when nbr_xtr_2>nbr_xtr_1 if discrepant variables are type fix (e.g., grid properties) not type prc (NB: already works for nbr_xtr_1>nbr_xtr_2)
-nco585. mpncrcat: hangs while reading records (verified 20050913)
-        mpirun -np 3 $MY_BIN_DIR/mpncrcat -O -D 5 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc 
 nco587. Command line MPI on AIX with POE
 	Promising documentation at:
         http://publib.boulder.ibm.com/infocenter/clresctr/index.jsp?topic=/com.ibm.cluster.pe.doc/pe_42/am10600203.html
@@ -337,17 +335,21 @@ nco588. MPI debugging with DDD (http://www.lam-mpi.org/faq/category6.php3)
         mpirun -np 3 -x ashes:0 /usr/bin/ddd $MY_BIN_DIR/mpncbo
         LAM-MPI:
         mpirun -np 3 -x ashes:0 /usr/bin/ddd --gdb --debugger "gdb" $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc
-nco592. mpncecat: fails while concatenating
-        ncks -O -v one -p ../data in.nc ~/foo1.nc
-        ncks -O -v one -p ../data in.nc ~/foo2.nc
-	mpirun -np 3 mpncecat -O -D 5 ~/foo1.nc ~/foo2.nc ~/foo.nc
-        /bin/rm $MY_OBJ_DIR/mpncecat.o;make MPI=Y FAKE_MPI=Y mpncecat
-	mpncecat -O -D 5 ~/foo1.nc ~/foo2.nc ~/foo.nc
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpncecat -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1 (perfect)
-        /bin/rm $MY_OBJ_DIR/mpncecat.o;make MPI=Y mpncecat
-        mpirun -np 3 $MY_BIN_DIR/mpncecat -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc (hangs)
-        ~/nco/bm/nco_bm.pl --mpi=3 --regress ncecat
-nco593. 
+nco593. mpncrcat: fails while concatenating
+        ncrcat -O -D 5 -p ~/nco/data in.nc in.nc ~/foo.nc (works)
+	mpirun -np 3 mpncrcat -O -D 5 -p ~/nco/data in.nc in.nc ~/foo.nc
+        /bin/rm $MY_OBJ_DIR/mpncra.o;make MPI_FAKE=Y mpncra
+	mpncrcat -O -D 5 -p ~/nco/data in.nc in.nc ~/foo.nc
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpncrcat -O -D 5 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1 (perfect)
+        /bin/rm $MY_OBJ_DIR/mpncra.o;make MPI=Y mpncra
+        mpirun -np 3 $MY_BIN_DIR/mpncrcat -O -D 5 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc (hangs)
+        ~/nco/bm/nco_bm.pl --mpi=3 --regress ncrcat
+nco594. MPI_FAKE mpncea fails ncea regression test 3
+        ncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc in.nc ~/foo.nc (works)
+        mpncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc in.nc ~/foo.nc (fails)
+        mpirun -np 3 $MY_BIN_DIR/mpncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc in.nc ~/foo.nc (works)
+        ncks -C -H -s '%e' -v rec_var_flt_mss_val_dbl ~/foo.nc
+nco595. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
@@ -370,8 +372,7 @@ See ~/doc/mpi.txt for MPICH2 installation details.
    mpirun -np 3 ${MY_BIN_DIR}/mpncbo -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 2. mpncea
    mpirun -np 3 ${MY_BIN_DIR}/mpncea -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-3. mpncecat (fails)
-   mpirun -np 3 /usr/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpirun -np 3 ${MY_BIN_DIR}/mpncecat -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
+3. mpncecat
    mpirun -np 3 ${MY_BIN_DIR}/mpncecat -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 4. mpncpdq
    mpirun -np 3 ${MY_BIN_DIR}/mpncpdq -O -D 3 -a lat,lev,lon -p ${HOME}/nco/data in.nc ~/foo.nc > ~/foo 2>&1
