@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.13 2005-09-15 21:43:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.14 2005-09-15 22:25:47 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -107,8 +107,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.13 2005-09-15 21:43:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.13 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.14 2005-09-15 22:25:47 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.14 $";
   const char * const opt_sht_lst="ACcD:d:Fhi:l:Oo:p:rRt:v:xw:Z-:";
 
   const double sleep_tm=0.04; /* [s] Token request interval */
@@ -576,13 +576,6 @@ main(int argc,char **argv)
   var_prc_2=(var_sct **)nco_malloc(nbr_var_prc*sizeof(var_sct *));
 
   /* Loop over each interpolated variable */
-#ifdef _OPENMP
-  /* OpenMP notes:
-     shared(): msk and wgt are not altered within loop
-     private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,MUST_CONFORM,idx,has_mss_val) shared(dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1,in_id_2,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
-#endif /* !_OPENMP */
-
 #ifdef ENABLE_MPI
   if(proc_id == 0){ /* MPI manager code */
     /* Compensate for incrementing on each worker's first message */
@@ -642,11 +635,16 @@ main(int argc,char **argv)
       else{
         var_prc_out[idx]->id=info_bfr[2];
 	/* Process this variable same as UP code */
-#endif /* !ENABLE_MPI */
-#ifndef ENABLE_MPI
+#else /* !ENABLE_MPI */
+#ifdef _OPENMP
+	/* OpenMP notes:
+	   shared(): msk and wgt are not altered within loop
+	   private(): wgt_avg does not need initialization */
+#pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,MUST_CONFORM,idx,has_mss_val) shared(dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1,in_id_2,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
+#endif /* !_OPENMP */
 	/* UP and SMP codes main loop over variables */
 	for(idx=0;idx<nbr_var_prc;idx++){
-#endif /* ENABLE_MPI */
+#endif /* !ENABLE_MPI */
 	  if(dbg_lvl > 0) (void)fprintf(fp_stderr,"%s, ",var_prc_1[idx]->nm);
 	  if(dbg_lvl > 0) (void)fflush(fp_stderr);
 
@@ -695,10 +693,11 @@ main(int argc,char **argv)
 	  /* Worker has token---prepare to write */
 	  if(tkn_rsp == TOKEN_ALLOC){
 	    rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
-#endif /* !ENABLE_MPI */
+#else /* !ENABLE_MPI */
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
+#endif /* !ENABLE_MPI */
             /* Common code for UP, SMP, and MPI */
 	    { /* begin OpenMP critical */
 	      /* Copy interpolations to output file */
