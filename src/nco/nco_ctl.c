@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.101 2005-09-15 07:35:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.102 2005-09-15 07:48:29 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -42,12 +42,16 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   static const char mpi_nm[]="LAM"; /* [sng] MPI name */
   static const char mpi_sng[]="LAM-MPI"; /* [sng] MPI string */
 #endif /* !LAM_MPI */
+#if MPICH_NAME == '1'
+  static const char mpi_nm[]="MPICH"; /* [sng] MPI name */
+  static const char mpi_sng[]="MPICH version 1"; /* [sng] MPI string */
+#endif /* !MPICH_NAME */
 #ifdef MPICH2
   static const char mpi_nm[]="MPICH2"; /* [sng] MPI name */
-  static const char mpi_sng[]="MPICH2"; /* [sng] MPI string */
+  static const char mpi_sng[]="MPICH version 2"; /* [sng] MPI string */
 #endif /* !MPICH2 */
   /* In case none of the above tokens matched */
-#if !defined(_H_MPI) && !defined(LAM_MPI) && !defined(MPICH2)
+#if !defined(_H_MPI) && !defined(LAM_MPI) && (MPICH_NAME != '1') && !defined(MPICH2)
   /* Unknown MPI implementation */
   static const char mpi_nm[]="unknown"; /* [sng] MPI name */
   static const char mpi_sng[]="Unknown MPI environment in nco_cmp_get()"; /* [sng] MPI string */
