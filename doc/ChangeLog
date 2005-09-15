@@ -1,5 +1,11 @@
 2005-09-14  Charlie Zender  <zender@uci.edu>
 
+	* Remaining MPI bugs do not appear to be NCO-caused memory problems
+
+	* valgrind.txt suppressions are complete for default MPI
+	configurations on ashes (mpich2, valgrind 2.2, gcc 4.0.0) and
+	elnino (mpich2, valgrind 3.0.1, icc 8.1)
+
 	* Make LAST_RECORD shared in OpenMP portion of mpncra.c
 
 	* ncea regression test 3 is bizarre: ncea and MPI mpncea pass it,
