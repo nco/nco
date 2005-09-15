@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.12 2005-09-15 21:43:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.13 2005-09-15 22:43:55 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -7,29 +7,29 @@
    to a single file. */
 
 /* Copyright (C) 1995--2005 Charlie Zender
+
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
+   The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
+   and in the file nco/doc/LICENSE in the NCO source distribution.
    
-This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
-The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
-and in the file nco/doc/LICENSE in the NCO source distribution.
+   As a special exception to the terms of the GPL, you are permitted 
+   to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
+   libraries and to distribute the resulting executables under the terms 
+   of the GPL, but in addition obeying the extra stipulations of the 
+   HDF, netCDF, OPeNDAP, and UDUnits licenses.
 
-As a special exception to the terms of the GPL, you are permitted 
-to link the NCO source code with the DODS, HDF, netCDF, and UDUnits
-libraries and to distribute the resulting executables under the terms 
-of the GPL, but in addition obeying the extra stipulations of the 
-DODS, HDF, netCDF, and UDUnits licenses.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-See the GNU General Public License for more details.
-
-The original author of this software, Charlie Zender, wants to improve it
-with the help of your suggestions, improvements, bug-reports, and patches.
-Please contact the NCO project at http://nco.sf.net or write to
-Charlie Zender
-Department of Earth System Science
-University of California at Irvine
-Irvine, CA 92697-3100 */
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+   See the GNU General Public License for more details.
+   
+   The original author of this software, Charlie Zender, wants to improve it
+   with the help of your suggestions, improvements, bug-reports, and patches.
+   Please contact the NCO project at http://nco.sf.net or write to
+   Charlie Zender
+   Department of Earth System Science
+   University of California at Irvine
+   Irvine, CA 92697-3100 */
 
 /* Usage:
    ncra -n 3,4,1 -p ${HOME}/nco/data h0001.nc foo.nc
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.12 2005-09-15 21:43:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.12 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.13 2005-09-15 22:43:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.13 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
   
   dmn_sct **dim;
@@ -848,14 +848,13 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
 	      /* Process all variables in current record */
 	      if(dbg_lvl > 1) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
-	      
+#ifndef ENABLE_MPI
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,in_id,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
 #endif /* !_OPENMP */
-#ifndef ENABLE_MPI
 	      /* UP and SMP codes main loop over variables */
 	      for(idx=0;idx<nbr_var_prc;idx++){
-#endif /* !ENABLE_MPI */
+#endif /* ENABLE_MPI */
 		if(dbg_lvl > 2) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 		if(dbg_lvl > 0) (void)fflush(fp_stderr);
 		/* Update hyperslab start indices to current record for each variable */
@@ -897,11 +896,11 @@ main(int argc,char **argv)
 		    /* Worker has token---prepare to write */
 		  if(tkn_rsp == TOKEN_ALLOC){
 		    rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
-#endif /* !ENABLE_MPI */
-		    
+#else /* !ENABLE_MPI */
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
+#endif /* !ENABLE_MPI */
 		    if(var_prc_out[idx]->sz_rec > 1) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
 		    else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
 #ifdef ENABLE_MPI
@@ -955,9 +954,6 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
 	/* End of ncra, ncrcat section */
       }else{ /* ncea */
-#ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx) shared(dbg_lvl,fl_idx,fp_stderr,in_id,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out)
-#endif /* !_OPENMP */
 #ifdef ENABLE_MPI
 	if(proc_id != 0){ /* Only Worker does the ncea processing */
 	  if(fl_idx == 0){
@@ -966,6 +962,9 @@ main(int argc,char **argv)
 	    for(jdx=0;jdx<lcl_nbr_var;jdx++){
 	      idx=lcl_idx_lst[jdx];
 #else /* !ENABLE_MPI */
+#ifdef _OPENMP
+#pragma omp parallel for default(none) private(idx) shared(dbg_lvl,fl_idx,fp_stderr,in_id,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out)
+#endif /* !_OPENMP */
 	      for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 #endif /* !ENABLE_MPI */	
 		if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
@@ -986,7 +985,7 @@ main(int argc,char **argv)
 		var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	      } /* end (OpenMP parallel for) loop over idx */
 #ifdef ENABLE_MPI
-	    } /* end-else !fl_idx=0 */
+	    } /* end else !fl_idx=0 */
 	  } /* !Worker */
 #endif /* !ENABLE_MPI */
 	} /* end else ncea */
@@ -1006,14 +1005,14 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
       /* Normalize, multiply, etc where necessary */
       if(prg == ncra || prg == ncea){
-#ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx) shared(nbr_var_prc,nco_op_typ,var_prc,var_prc_out)
-#endif /* !_OPENMP */
 #ifdef ENABLE_MPI
 	if(proc_id != 0){ /* Only workers have indices of variables to process */
 	  for(jdx=0;jdx<lcl_nbr_var;jdx++){
 	    idx=lcl_idx_lst[jdx];
 #else /* !ENABLE_MPI */
+#ifdef _OPENMP
+#pragma omp parallel for default(none) private(idx) shared(nbr_var_prc,nco_op_typ,var_prc,var_prc_out)
+#endif /* !_OPENMP */
 	    /* NB: Emacs indentation thinks for loops are nested and gets confused */
 	    for(idx=0;idx<nbr_var_prc;idx++){
 #endif /* !ENABLE_MPI */
