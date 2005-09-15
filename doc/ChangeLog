@@ -1,3 +1,8 @@
+2005-09-15  Charlie Zender  <zender@uci.edu>
+
+	* Accomodate LAM MPI environment
+	No difference between regressions with LAM and with MPICH2
+
 2005-09-14  Charlie Zender  <zender@uci.edu>
 
 	* Remaining MPI bugs do not appear to be NCO-caused memory problems
