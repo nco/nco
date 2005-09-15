@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.327 2005-09-15 21:25:18 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.328 2005-09-15 22:21:34 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -192,7 +192,7 @@ ifeq (${MPI_FAKE},Y)
 # Resulting executables use UP or SMP code not MPI code
 # This tests compile, link, execution of MPI mpnc*.c code without using any MPI calls
  MPI := Y
-endif # MPI_FAKE
+endif # !MPI_FAKE
 ifdef MPI_PRC
 # MPI_PRC tells test scripts how many MPI processes to spawn
 # Pass this MPI argument to nco_bm.pl
@@ -1261,6 +1261,14 @@ ${MY_BIN_DIR}/mpncbo:	${MY_OBJ_DIR}/mpncbo.o lib
 	${MPICC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f mpncdiff; ln -s -f mpncbo mpncdiff
+# 20050710: icc 8.1 dies compiling ncecat with -axW flag
+# 20050915: Same problem occurs with MPI_FAKE version of mpncecat
+ifeq (icc,$(firstword ${LINUX_CC}))
+ncecat : CFLAGS := $(filter-out -axW,${CFLAGS})
+ifeq (${MPI_FAKE},Y)
+mpncecat : CFLAGS := $(filter-out -axW,${CFLAGS})
+endif # !MPI_FAKE
+endif # endif Intel (Kai) C Compiler
 mpncecat:   ${MY_BIN_DIR}/mpncecat
 ${MY_BIN_DIR}/mpncecat:	${MY_OBJ_DIR}/mpncecat.o lib
 	${MPICC} -o $@ $< ${LDFLAGS}
@@ -1294,10 +1302,6 @@ ${MY_BIN_DIR}/ncbo:	${MY_OBJ_DIR}/ncbo.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f ncdiff; ln -s -f ncbo ncdiff
-# 20050710: -axW flag causes icc to die compiling ncecat (re-verified 20050915)
-ifeq (icc,$(firstword ${LINUX_CC}))
-ncecat : CFLAGS := $(filter-out -axW,${CFLAGS})
-endif # endif Intel (Kai) C Compiler
 ncecat:   ${MY_BIN_DIR}/ncecat
 ${MY_BIN_DIR}/ncecat:	${MY_OBJ_DIR}/ncecat.o lib
 	${CC} -o $@ $< ${LDFLAGS}

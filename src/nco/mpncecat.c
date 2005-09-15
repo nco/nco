@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.12 2005-09-15 21:43:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.13 2005-09-15 22:21:35 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.12 2005-09-15 21:43:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.12 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.13 2005-09-15 22:21:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.13 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRv:xZ-:";
   const double sleep_tm=0.04; /* [s] Token request interval */
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
@@ -591,8 +591,7 @@ main(int argc,char **argv)
 	else{
 	  var_prc_out[idx]->id=info_bfr[2];
 	  /* Process this variable same as UP code */
-#endif /* !ENABLE_MPI */
-#ifndef ENABLE_MPI
+#else /* !ENABLE_MPI */
 	  /* OpenMP with threading over variables, not files */
 	  /* fxm: TODO nco539: why are fl_lst_in,in_id,var_prc firstprivate not shared? */
 #ifdef _OPENMP
@@ -600,7 +599,7 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
 	  /* Process all variables in current file */
 	  for(idx=0;idx<nbr_var_prc;idx++){
-#endif /* ENABLE_MPI */
+#endif /* !ENABLE_MPI */
        /* Common code for UP and MPI */ /* fxm: requires C99 as is? */
 	    if(dbg_lvl > 1) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
 	    if(dbg_lvl > 0) (void)fflush(fp_stderr);
