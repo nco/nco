@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.81 2005-09-15 21:14:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.82 2005-09-15 23:26:09 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -96,9 +96,6 @@ extern "C" {
   
   /* Tags used for MPI Communication */
 #ifdef ENABLE_MPI
-  /* #ifdef _OPENMP
-#error "ERROR: Hybrid configurations of MPI and OpenMP parallelism not yet supported"
-#endif */ /* !_OPENMP */ 
 #define TOKEN_ALLOC 1
 #define TOKEN_REQUEST 300
 #define TOKEN_RESULT 500

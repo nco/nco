@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.11 2005-09-15 21:14:54 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.12 2005-09-15 23:26:09 zender Exp $ -*-text-*-
 
 Installing an MPI Environment for NCO:
 
@@ -38,7 +38,7 @@ Typically, these are lamd (LAM), mpd (MPICH/MPICH2), and pmd (PPE).
 These two commands are equivalent (Makefile translates the first): 
 
    make MPI_PRC=3 tst
-   ~/nco/bm/nco_bm.pl --mpi=3 --regress --udp
+   ~/nco/bm/nco_bm.pl --dbg=0 --mpi=3 --regress --udp
 
 ************************************************************************
 MPI Distribution-specific Instructions

@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.85 2005-09-14 22:43:13 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.86 2005-09-15 23:26:09 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -124,8 +124,6 @@ if($dbg_lvl > 0){printf ("$prg_nm: \$nvr_my_bin_dir = $nvr_my_bin_dir\n");} # en
 #if($dbg_lvl > 0){printf ("$prg_nm: \@ENV = @ENV\n");} # endif dbg
 
 # Resolve conflicts early
-if ($mpi_prc > 0 && $thr_nbr > 0) {die "\nThe  '--mpi_prc' (MPI) and '--thr_nbr' (OpenMP) options are mutually exclusive.\nPlease decide which you want to run and try again.\n";}
-
 # Any irrationally exuberant values?
 if ($mpi_prc > 16) {die "\nThe '--mpi_prc' value was set to an irrationally exuberant [$mpi_prc].  Try a lower value\n ";}
 if ($thr_nbr > 16) {die "\nThe '--thr_nbr' value was set to an irrationally exuberant [$thr_nbr].  Try a lower value\n ";}
