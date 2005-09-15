@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.10 2005-09-15 00:22:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.11 2005-09-15 21:35:30 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.10 2005-09-15 00:22:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.10 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.11 2005-09-15 21:35:30 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.11 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRv:xZ-:";
   const double sleep_tm=0.04; /* [s] Token request interval */
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
@@ -589,9 +589,14 @@ main(int argc,char **argv)
 	  /* Process this variable same as UP code */
 #endif /* !ENABLE_MPI */
 #ifndef ENABLE_MPI
-	  /* UP code main loop over variables */
+	  /* OpenMP with threading over variables, not files */
+	  /* fxm: TODO nco539: why are fl_lst_in,in_id,var_prc firstprivate not shared? */
+#ifdef _OPENMP
+#pragma omp parallel for default(none) firstprivate(fl_lst_in,in_id,var_prc) private(idx) shared(fl_nbr,nbr_var_prc,dbg_lvl,var_prc_out,idx_rec_out,out_id)
+#endif /* !_OPENMP */
+	  /* Process all variables in current file */
 	  for(idx=0;idx<nbr_var_prc;idx++){
-#endif /* !ENABLE_MPI */
+#endif /* ENABLE_MPI */
        /* Common code for UP and MPI */ /* fxm: requires C99 as is? */
 	    if(dbg_lvl > 1) (void)fprintf(stderr,"%s, ",var_prc[idx]->nm);
 	    if(dbg_lvl > 0) (void)fflush(stderr);
@@ -618,16 +623,21 @@ main(int argc,char **argv)
 	    /* Worker has token---prepare to write */
 	    if(tkn_rsp == TOKEN_ALLOC){
 	      rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
+#else /* !ENABLE_MPI */
+#ifdef _OPENMP
+#pragma omp critical
+#endif /* _OPENMP */
 #endif /* !ENABLE_MPI */
-	      /* Write variable into current record in output file */
-	      if(var_prc[idx]->nbr_dim == 0){
-		(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc[idx]->type);
-	      }else{ /* end if variable is a scalar */
-		(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc[idx]->type);
-	      } /* end if variable is array */
-
-	  /* Free current input buffer */
-	  var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+	      { /* begin OpenMP critical */
+		/* Write variable into current record in output file */
+		if(var_prc[idx]->nbr_dim == 0){
+		  (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc[idx]->type);
+		}else{ /* end if variable is a scalar */
+		  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc[idx]->type);
+		} /* end if variable is array */
+		/* Free current input buffer */
+		var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+	      } /* end OpenMP critical */
 #ifdef ENABLE_MPI
 	      /* Close output file and increment written counter */
 	      nco_close(out_id);
@@ -637,7 +647,7 @@ main(int argc,char **argv)
 	} /* end while loop requesting work/token */
       } /* endif Worker */
 #else /* !ENABLE_MPI */
-    }  /* end for loop over idx */
+    } /* end (OpenMP parallel for) loop over idx */
 #endif /* !ENABLE_MPI */
       
     idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */

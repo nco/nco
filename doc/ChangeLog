@@ -1,5 +1,7 @@
 2005-09-15  Charlie Zender  <zender@uci.edu>
 
+	* Implement OpenMP in MPI_FAKE portion of mpncecat.c
+
 	* Implement icc ncecat bld/Makefile compilation fix for mpicc too 
 
 	* Use nco_mpi_get() to return MPI implementation information

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.105 2005-09-14 20:38:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.106 2005-09-15 21:35:30 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.105 2005-09-14 20:38:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.105 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.106 2005-09-15 21:35:30 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.106 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRv:xt:Z-:";
 
   dmn_sct *rec_dmn;
@@ -492,7 +492,6 @@ main(int argc,char **argv)
       var_prc_out[idx]->cnt[0]=1L;
       var_prc_out[idx]->srt[0]=idx_rec_out;
       /* Write variable into current record in output file */
-      
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
