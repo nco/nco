@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.599 2005-09-15 00:15:20 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.600 2005-09-15 00:22:55 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -371,6 +371,7 @@ See ~/doc/mpi.txt for MPICH2 installation details.
 2. mpncea
    mpirun -np 3 ${MY_BIN_DIR}/mpncea -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 3. mpncecat (fails)
+   mpirun -np 3 /usr/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpirun -np 3 ${MY_BIN_DIR}/mpncecat -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
    mpirun -np 3 ${MY_BIN_DIR}/mpncecat -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 4. mpncpdq
    mpirun -np 3 ${MY_BIN_DIR}/mpncpdq -O -D 3 -a lat,lev,lon -p ${HOME}/nco/data in.nc ~/foo.nc > ~/foo 2>&1

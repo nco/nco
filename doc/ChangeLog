@@ -1,5 +1,7 @@
 2005-09-14  Charlie Zender  <zender@uci.edu>
 
+	* Fix mpncecat (same ole' strlen(fl_out_tmp) bug)
+
 	* Change all valgrind suppressions examples to use
 	${HOME}/nco/doc/valgrind.txt, a direct copy of ${HOME}/c++/valgrind.txt
 
