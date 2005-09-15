@@ -1,5 +1,7 @@
 2005-09-14  Charlie Zender  <zender@uci.edu>
 
+	* Make LAST_RECORD shared in OpenMP portion of mpncra.c
+
 	* ncea regression test 3 is bizarre: ncea and MPI mpncea pass it,
 	MPI_FAKE mpncea fails it. This is TODO nco594.
 

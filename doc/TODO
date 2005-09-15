@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.601 2005-09-15 02:04:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.602 2005-09-15 05:29:37 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -346,9 +346,13 @@ nco593. mpncrcat: fails while concatenating
         ~/nco/bm/nco_bm.pl --mpi=3 --regress ncrcat
 nco594. MPI_FAKE mpncea fails ncea regression test 3
         ncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc in.nc ~/foo.nc (works)
+        /bin/rm $MY_OBJ_DIR/mpncra.o;make MPI_FAKE=Y mpncra
         mpncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc in.nc ~/foo.nc (fails)
+        /bin/rm $MY_OBJ_DIR/mpncra.o;make MPI=Y mpncra
         mpirun -np 3 $MY_BIN_DIR/mpncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc in.nc ~/foo.nc (works)
         ncks -C -H -s '%e' -v rec_var_flt_mss_val_dbl ~/foo.nc
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpirun -np 3 $MY_BIN_DIR/mpncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 nco595. 
 ************************************************************************
 End ncoXXX TODOs

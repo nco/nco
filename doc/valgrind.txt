@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/valgrind.txt,v 1.3 2005-09-15 00:14:57 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/valgrind.txt,v 1.4 2005-09-15 05:29:37 zender Exp $
 
 # Purpose: Suppression file for valgrind
 # Default suppressed warnings in /usr/local/lib/valgrind/default.supp
@@ -483,4 +483,88 @@
    fun:main.J
    fun:__libc_start_main
    obj:/data/zender/bin/LINUX/mpncbo
+}
+
+# Suppress common problem found in NCO mpncra with mpich2-1.0.2 valgrind-3.0.1 icc-8.1 20050914:
+# ==8563== Conditional jump or move depends on uninitialised value(s)
+# ==8563==    at 0x1B8F4DEE: (within /lib/ld-2.3.5.so)
+# ==8563==    by 0x1B9C9CA1: getpwuid (in /lib/tls/libc-2.3.5.so)
+{
+   Questionable_cond_warning_from_nco_mpich2-1.0.2_valgrind-3.0.1_icc-8.1_getpwuid
+   Memcheck:Cond
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/tls/libc-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   fun:_dl_open
+   obj:/lib/tls/libc-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   fun:__libc_dlopen_mode
+   fun:__nss_lookup_function
+   obj:/lib/tls/libc-2.3.5.so
+   fun:__nss_passwd_lookup
+   fun:getpwuid_r
+   fun:getpwuid
+}
+
+# Suppress common problem found in NCO mpncra with mpich2-1.0.2 valgrind-3.0.1 icc-8.1 20050914:
+# ==8563== Conditional jump or move depends on uninitialised value(s)
+# ==8563==    at 0x1B8F4F7C: (within /lib/ld-2.3.5.so)
+# ==8563==    by 0x1BA1DBCF: __nss_passwd_lookup (in /lib/tls/libc-2.3.5.so)
+{
+   Questionable_cond_warning_from_nco_mpich2-1.0.2_valgrind-3.0.1_icc-8.1_passwd_lookup
+   Memcheck:Cond
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/tls/libc-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   fun:_dl_open
+   obj:/lib/tls/libc-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   fun:__libc_dlopen_mode
+   fun:__nss_lookup_function
+   obj:/lib/tls/libc-2.3.5.so
+   fun:__nss_passwd_lookup
+}
+
+# Suppress common problem found in NCO mpncra with mpich2-1.0.2 valgrind-3.0.1 icc-8.1 20050914:
+# =9343== Invalid read of size 4
+# ==9343==    at 0x1B8F4F89: (within /lib/ld-2.3.5.so)
+# ==9343==    by 0x1BA411DD: __libc_dlopen_mode (in /lib/tls/libc-2.3.5.so)
+{
+   Questionable_read4_warning_from_nco_mpich2-1.0.2_valgrind-3.0.1_icc-8.1_dlopen_mode
+   Memcheck:Addr4
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/tls/libc-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   fun:_dl_open
+   obj:/lib/tls/libc-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   fun:__libc_dlopen_mode
+}
+
+# Suppress common problem found in NCO mpncra with mpich2-1.0.2 valgrind-3.0.1 icc-8.1 20050914:
+# ==9343== Invalid read of size 4
+# ==9343==    at 0x1B8F4FA0: (within /lib/ld-2.3.5.so)
+# ==9343==    by 0x1B906DFC: _nss_compat_getpwuid_r (in /lib/tls/libnss_compat-2.3.5.so)
+{
+   Questionable_read4_warning_from_nco_mpich2-1.0.2_valgrind-3.0.1_icc-8.1_getpwuid_r
+   Memcheck:Addr4
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/tls/libc-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   fun:_dl_open
+   obj:/lib/tls/libc-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   fun:__libc_dlopen_mode
+   fun:__nss_lookup_function
+   obj:/lib/tls/libnss_compat-2.3.5.so
+   fun:_nss_compat_getpwuid_r
 }

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.10 2005-09-15 02:04:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.11 2005-09-15 05:29:37 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.10 2005-09-15 02:04:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.10 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.11 2005-09-15 05:29:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.11 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
   
   dmn_sct **dim;
@@ -820,12 +820,11 @@ main(int argc,char **argv)
 		msg_typ=mpi_stt.MPI_TAG;
 		/* Get sender's proc_id */
 		wrk_id=wrk_id_bfr[0];
-		if(msg_typ == WORK_DONE)
-		  TOKEN_FREE=True;
+		if(msg_typ == WORK_DONE) TOKEN_FREE=True;
 		if(msg_typ == TOKEN_REQUEST){
 		  if(wrk_id == tkn_alloc_id){ /* Prev write completed */
 		    TOKEN_FREE=True;
-		  }
+		  } /* wrk_id != tkn_alloc_id */
 		  /* Allocate token if free, else ask worker to try later */
 		  if(TOKEN_FREE){
 		    TOKEN_FREE=False;
@@ -838,13 +837,12 @@ main(int argc,char **argv)
 		  MPI_Send(info_bfr,info_bfr_lng,MPI_INT,wrk_id,TOKEN_RESULT,MPI_COMM_WORLD);
 		} /* msg_typ != TOKEN_REQUEST */
 	      } /* End-while token request loop */
-	    } /* end-ncrcat */
+	    } /* !ncrcat */
 	  }else{ /* proc_id != 0, end Manager code begin Worker code */
             wrk_id_bfr[0]=proc_id;
 	    var_wrt_nbr=0;
-
-	    /*	    if(fl_idx == 0 && idx_rec == lmt_rec->srt) continue;
-		    else{  a loop of idx = stored indices */    
+	    /* if(fl_idx == 0 && idx_rec == lmt_rec->srt) continue;
+	       else  a loop of idx = stored indices */    
 	    for(jdx=0;jdx<lcl_nbr_var;jdx++){
 	      idx=lcl_idx_lst[jdx];
 #endif /* !ENABLE_MPI */
@@ -852,7 +850,7 @@ main(int argc,char **argv)
 	      if(dbg_lvl > 1) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
 	      
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,in_id,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,in_id,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
 #endif /* !_OPENMP */
 #ifndef ENABLE_MPI
 	      /* UP and SMP codes main loop over variables */
@@ -932,7 +930,7 @@ main(int argc,char **argv)
 	      if(dbg_lvl > 2) (void)fprintf(stderr,"\n");
 #ifdef ENABLE_MPI
 	    } /* !Worker */
-	  } /* end-else ! fl_idx=0,idx_rec=srt */
+	  } /* end else ! fl_idx=0,idx_rec=srt */
 	    /* MPI_Barrier(MPI_COMM_WORLD); */
 #endif /* !ENABLE_MPI */
 	} /* end loop over idx_rec */
@@ -1016,6 +1014,7 @@ main(int argc,char **argv)
 	  for(jdx=0;jdx<lcl_nbr_var;jdx++){
 	    idx=lcl_idx_lst[jdx];
 #else /* !ENABLE_MPI */
+	    /* NB: Emacs indentation thinks for loops are nested and gets confused */
 	    for(idx=0;idx<nbr_var_prc;idx++){
 #endif /* !ENABLE_MPI */
 	      switch(nco_op_typ){
@@ -1048,15 +1047,14 @@ main(int argc,char **argv)
 	      default:
 		break;
 	      } /* end switch */
-	      /* fxm: 20050412 should free var_prc_out[idx]->tally too? */
 	      var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_free(var_prc[idx]->tally);
 	    } /* end (OpenMP parallel for) loop over variables */
 #ifdef ENABLE_MPI
 	    printf("DEBUG: End of Normzn at proc_id %d\n",proc_id);
-	  } /* ! proc_id != 0 */
+	  } /* proc_id == 0 */
 	  printf("DEBUG: Mgr shud prnt this too, proc_id %d\n",proc_id);
-#endif
-	} /* end if ncra/ncea */
+#endif /* !ENABLE_MPI */
+	} /* !ncra/ncea */
 #ifdef ENABLE_MPI
 	printf("DEBUG: After all processing; Before barrier, proc_id %d\n",proc_id);
 	/* MPI_Barrier(MPI_COMM_WORLD); */
@@ -1074,8 +1072,7 @@ main(int argc,char **argv)
 	  printf("DEBUG: Mgr proc_id %d closed out file %d after fixing date, time \n", proc_id, out_id);
 	  MPI_Send(info_bfr,info_bfr_lng,MPI_INT,proc_id+1,TOKEN_RESULT,MPI_COMM_WORLD);
 	  printf("DEBUG: Mgr sent token to worker 1 to write\n");
-	} /* proc_id != 0 */
-	else{ /* Workers */
+	}else{ /* Workers */
 	  printf("DEBUG: proc_id %d waiting for msg from Mgr for final write\n",proc_id);
 	  MPI_Recv(info_bfr,info_bfr_lng,MPI_INT,proc_id-1,TOKEN_RESULT,MPI_COMM_WORLD,&mpi_stt);
 	  printf("DEBUG: proc_id %d got token to write to %d\n",proc_id, out_id);
@@ -1106,10 +1103,8 @@ main(int argc,char **argv)
 	  /* Close output file */
 	  nco_close(out_id); 
 	  printf("DEBUG: proc_id %d closed out file after writing\n",proc_id);
-	  if(proc_id == proc_nbr-1) /* Send Token to Manager */
-	    MPI_Send(info_bfr,info_bfr_lng,MPI_INT,mgr_id,TOKEN_RESULT,MPI_COMM_WORLD);
-	  else
-	    MPI_Send(info_bfr,info_bfr_lng,MPI_INT,proc_id+1,TOKEN_RESULT,MPI_COMM_WORLD);
+	  /* Send Token to Manager */
+	  if(proc_id == proc_nbr-1) MPI_Send(info_bfr,info_bfr_lng,MPI_INT,mgr_id,TOKEN_RESULT,MPI_COMM_WORLD); else MPI_Send(info_bfr,info_bfr_lng,MPI_INT,proc_id+1,TOKEN_RESULT,MPI_COMM_WORLD);
 	} /* !Workers */
 	if(proc_id == 0){ /* Only Manager */
 	  MPI_Recv(info_bfr,info_bfr_lng,MPI_INT,proc_nbr-1,TOKEN_RESULT,MPI_COMM_WORLD,&mpi_stt);
