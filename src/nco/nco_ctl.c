@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.103 2005-09-15 21:14:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.104 2005-09-16 05:54:47 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -15,16 +15,16 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   const char fnc_nm[]="nco_cmp_get()";
 #ifdef _AIX
   static const char cmp_nm[]="xlc"; /* [sng] Compiler name */
-  static const char cmp_sng[]="Token _AIX_ defined in main(), probably compiled with xlc"; /* [sng] Compiler string */
+  static const char cmp_sng[]="Token _AIX_ defined in nco_cmp_get(), probably compiled with xlc"; /* [sng] Compiler string */
 #endif /* !_AIX */
 #if defined(__GNUC__) && !defined(__INTEL_COMPILER)
   static const char cmp_nm[]="gcc"; /* [sng] Compiler name */
-  static const char cmp_sng[]="Token __GNUC__ defined in main(), probably compiled with gcc"; /* [sng] Compiler string */
+  static const char cmp_sng[]="Token __GNUC__ defined in nco_cmp_get(), probably compiled with gcc"; /* [sng] Compiler string */
 #endif /* !__GNUC__ */
 #ifdef __INTEL_COMPILER
   /* Some compilers, including icc, also define __GNUC__ by default */
   static const char cmp_nm[]="icc";
-  static const char cmp_sng[]="Token __INTEL_COMPILER defined in main(), probably compiled with icc"; /* [sng] Compiler string */
+  static const char cmp_sng[]="Token __INTEL_COMPILER defined in nco_cmp_get(), probably compiled with icc"; /* [sng] Compiler string */
 #endif /* !__INTEL_COMPILER */
   /* In case none of the above tokens matched */
 #if !defined(_AIX) && !defined(__GNUC__) && !defined(__INTEL_COMPILER)
@@ -33,30 +33,6 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   static const char cmp_sng[]="Unknown compiler tokens in nco_cmp_get(), compiler is unknown"; /* [sng] Compiler string */
 #endif /* !unknown */
   if(dbg_lvl_get() > 4) (void)fprintf(stderr,"%s: INFO %s reports compiler name is %s, compiler string is %s\n",prg_nm_get(),fnc_nm,cmp_nm,cmp_sng);
-
-#ifdef _H_MPI
-  static const char mpi_nm[]="PPE"; /* [sng] MPI name */
-  static const char mpi_sng[]="AIX PPE MPI"; /* [sng] MPI string */
-#endif /* !_H_MPI */
-#ifdef LAM_MPI
-  static const char mpi_nm[]="LAM"; /* [sng] MPI name */
-  static const char mpi_sng[]="LAM-MPI"; /* [sng] MPI string */
-#endif /* !LAM_MPI */
-#if MPICH_NAME == '1'
-  static const char mpi_nm[]="MPICH"; /* [sng] MPI name */
-  static const char mpi_sng[]="MPICH version 1"; /* [sng] MPI string */
-#endif /* !MPICH_NAME */
-#ifdef MPICH2
-  static const char mpi_nm[]="MPICH2"; /* [sng] MPI name */
-  static const char mpi_sng[]="MPICH version 2"; /* [sng] MPI string */
-#endif /* !MPICH2 */
-  /* In case none of the above tokens matched */
-#if !defined(_H_MPI) && !defined(LAM_MPI) && (MPICH_NAME != '1') && !defined(MPICH2)
-  /* Unknown MPI implementation */
-  static const char mpi_nm[]="unknown"; /* [sng] MPI name */
-  static const char mpi_sng[]="Unknown MPI environment in nco_cmp_get()"; /* [sng] MPI string */
-#endif /* !unknown */
-  if(dbg_lvl_get() > 4) (void)fprintf(stderr,"%s: INFO %s reports MPI implementation name is %s, MPI implementation string is %s\n",prg_nm_get(),fnc_nm,mpi_nm,mpi_sng);
 
   return cmp_nm;
 } /* end nco_cmp_get() */
@@ -69,26 +45,34 @@ nco_mpi_get(void) /* [fnc] Return MPI implementation */
 
 #ifdef _H_MPI
   static const char mpi_nm[]="PPE"; /* [sng] MPI name */
-  static const char mpi_sng[]="AIX PPE MPI"; /* [sng] MPI string */
+  static const char mpi_sng[]="Token _H_MPI defined in nco_mpi_get(), MPI environment is probably AIX PPE MPI"; /* [sng] MPI string */
 #endif /* !_H_MPI */
 #ifdef LAM_MPI
   static const char mpi_nm[]="LAM"; /* [sng] MPI name */
-  static const char mpi_sng[]="LAM-MPI"; /* [sng] MPI string */
+  static const char mpi_sng[]="Token LAM_MPI defined in nco_mpi_get(), MPI environment is probably LAM-MPI"; /* [sng] MPI string */
 #endif /* !LAM_MPI */
 #if MPICH_NAME == '1'
   static const char mpi_nm[]="MPICH"; /* [sng] MPI name */
-  static const char mpi_sng[]="MPICH version 1"; /* [sng] MPI string */
+  static const char mpi_sng[]="Token MPICH_NAME defined to 1 in nco_mpi_get(), MPI environment is probably MPICH version 1"; /* [sng] MPI string */
 #endif /* !MPICH_NAME */
 #ifdef MPICH2
   static const char mpi_nm[]="MPICH2"; /* [sng] MPI name */
-  static const char mpi_sng[]="MPICH version 2"; /* [sng] MPI string */
+  static const char mpi_sng[]="Token MPICH2 defined in nco_mpi_get(), MPI environment is probably MPICH2, i.e., MPICH version 2"; /* [sng] MPI string */
 #endif /* !MPICH2 */
-  /* In case none of the above tokens matched */
+
+  /* In case no token matched */
 #if !defined(_H_MPI) && !defined(LAM_MPI) && (MPICH_NAME != '1') && !defined(MPICH2)
+#ifndef MPI_VERSION
+  /* MPI is not installed */
+  static const char mpi_nm[]="none"; /* [sng] MPI name */
+  static const char mpi_sng[]="No MPI tokens found in nco_cmp_get(), MPI environment is not active"; /* [sng] MPI string */
+#else /* MPI_VERSION */
   /* Unknown MPI implementation */
   static const char mpi_nm[]="unknown"; /* [sng] MPI name */
-  static const char mpi_sng[]="Unknown MPI environment in nco_mpi_get()"; /* [sng] MPI string */
+  static const char mpi_sng[]="Unknown MPI tokens found in nco_cmp_get(), MPI environment is present but of unknown pedigree"; /* [sng] MPI string */
+#endif /* MPI_VERSION */
 #endif /* !unknown */
+
   if(dbg_lvl_get() > 4) (void)fprintf(stderr,"%s: INFO %s reports MPI implementation name is %s, MPI implementation string is %s\n",prg_nm_get(),fnc_nm,mpi_nm,mpi_sng);
   return mpi_nm;
 } /* end nco_mpi_get() */
