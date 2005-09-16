@@ -1,5 +1,8 @@
 2005-09-15  Charlie Zender  <zender@uci.edu>
 
+	* Port ncwa 20050608 bugfix for DO_CONFORM_[MSK,WGT] to mpncwa
+	This fixes TODO nco595
+	
 	* mpncea hangs on ncea regression test 4 (on sand with LAM) TODO nco597
 
 	* Use fake end scopes to correct Emacs indentation in mpncra.c, mpncpdq.c
