@@ -21871,7 +21871,11 @@ fi
 rm -f conftest*
 fi
 
-
+echo ""
+echo "########################################"
+echo "#  Testing for DAP (aka DODS) support  #"
+echo "########################################"
+echo ""
 # Begin DAP (aka DODS) support
 # Store pre-DAP LIBS value to restore from later
 nco_LIBS_no_DAP="${LIBS}"
@@ -25180,6 +25184,12 @@ _ACEOF
 fi
 
 fi
+
+echo ""
+echo "########################################"
+echo "#     Testing for UDUNITS support      #"
+echo "########################################"
+echo ""
 
 # Check whether --enable-udunits or --disable-udunits was given.
 if test "${enable_udunits+set}" = set; then

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.126 2005-08-23 06:51:40 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.127 2005-09-16 21:23:35 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -127,6 +127,11 @@ AC_CXX_HAVE_VALARRAY
 # Arrange for large file support (LFS)
 AC_SYS_LARGEFILE
 
+echo ""
+echo "########################################"
+echo "#  Testing for DAP (aka DODS) support  #"
+echo "########################################"
+echo ""
 # Begin DAP (aka DODS) support
 # Store pre-DAP LIBS value to restore from later
 nco_LIBS_no_DAP="${LIBS}"
@@ -405,6 +410,11 @@ if test "${enable_static}" = 'yes'; then
     AC_DEFINE(ENABLE_STATIC,1,Enable static libraries)
 fi
 # End Static
+
+echo ""
+echo "########################################"
+echo "#     Testing for UDUNITS support      #"
+echo "########################################"
 
 # Begin UDUnits
 # MacOS X requires libudport for threaded functions

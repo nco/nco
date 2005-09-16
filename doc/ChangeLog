@@ -23,7 +23,8 @@
 	* the only thing that definitely does not work at this point is the
 		MD5 checking due to some particulary hairy namespace problems.
 	
-	* the MPI versions of the checks have not been tested yet either.
+	* the MPI versions of the checks have not been tested yet either, 
+		altho the commandlines it generates are correct.
 
 	* I belive it is up to date with the latest regression tests and 
 		benchmarks.  The relevant bits were diffed against the current code

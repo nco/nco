@@ -14,7 +14,7 @@ package NCO_bm;
 #   smrz_rgr_rslt()......summarizes the results of both regression and benchmark tests
 #   check_nco_results()..checks the output via md5/wc validation
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.1 2005-09-16 19:12:34 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.2 2005-09-16 21:23:35 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -39,7 +39,7 @@ our @EXPORT = qw (
 	wat4inpt
 	dbg_msg
 
-	@fl_cr8_dat @fl_tmg $prefix $opr_nm $opr_sng_mpi $md5 $md5found $bm_dir
+	@fl_cr8_dat @fl_tmg $prefix $opr_nm $opr_sng_mpi $md5 $md5found $bm_dir $mpi_prc
 	$nsr_xpc @tst_cmd %tst_nbr $dbg_lvl $wnt_log $dsc_sng $outfile $fl_pth $tmr_app
 );
 
@@ -497,6 +497,9 @@ sub go {
 		my $opcnt = 0;
 		my $md5_dsc_sng = $dsc_sng . "_$tst_cmdcnt";
 		# Add $prefix only to NCO operator commands, not things like 'cut'.
+
+		dbg_msg(1,"\$prefix = $prefix, \$mpi_prc = $mpi_prc, \$mpi_prfx = $mpi_prfx");
+
 		foreach my $op (@opr_lst_all) {
 			if ($_ =~ m/^$op/ ) { # if the op is in the main list
 				if ($mpi_prc > 0 && $opr_sng_mpi =~ /$op/) { $_ = $tmr_app . $mpi_prfx . '/' . $_; } # and in the mpi list
