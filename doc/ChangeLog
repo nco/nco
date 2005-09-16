@@ -1,3 +1,32 @@
+
+2005-09-16  Harry Mangalam <hjm@tacgi.com>
+	* Re-org of regression and benchmarking script.  nco_bm.pl has
+	been broken into 4 files:
+	- nco_bm.pl - now does initialization and calls control scripts for
+		benchmarking and regression
+	- NCO_bm.pm - a Perl module that contains most of the functions
+		except the regression tests.
+	- NCO_rgr.pm - a Perl Module that contains only the regression tests
+		to isolate them and make it easier to find the right one.
+	- nco_bm_benchmarks.pl - the code chunk which is do-included that
+		contains all the benchmark code.
+
+	* the error/debug  messages have been cleaned up considerably and now
+		are pumped out (mostly) at the end of each test if asked for.
+
+	* a LOT of cruft was stripped out.  There was quite a bit of duplicate
+		code, commented out code, 	code that didn't seem to be perl code.
+		It's not all gone, but a lot of it is.
+
+	* the only thing that definitely does not work at this point is the
+		MD5 checking due to some particulary hairy namespace problems.
+	
+	* the MPI versions of the checks have not been tested yet either.
+
+	* I belive it is up to date with the latest regression tests and 
+		benchmarks.  The relevant bits were diffed against the current code
+		and they appear to be in sync.
+
 2005-09-15  Charlie Zender  <zender@uci.edu>
 
 	* 
