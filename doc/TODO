@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.605 2005-09-16 00:00:57 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.606 2005-09-16 00:37:24 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -364,7 +364,8 @@ nco595. MPI_FAKE mpncwa fails 22/33 ncwa regression tests (only when thr_nbr > 1
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpncwa -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc ~/foo.nc > ~/foo 2>&1
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpirun -np 3 $MY_BIN_DIR/mpncwa -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc ~/foo.nc > ~/foo 2>&1
 nco596. Find way to please Emacs indentation in gnarly MPI codes
-nco597. 
+nco597. mpncea hangs on ncea regression test 4 (on sand with LAM)
+nco598. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
@@ -529,12 +530,12 @@ bld40. Automate splicing trailer ~/nco/doc/man_end.txt to man pages
 bld41.Add configure check for libssl functionality, if not found (Fedora) to explicitly adding libssl
 bld42. Adopt orphaned Debian NCO http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=273322
 bld43. Implement Martin Schmidt's suggestion for AIX autoconf builds posted to developer's forum 20050201: {$CC} is not tested for xlc* but for (arbitrary_path/xlc*)
-bld44. Add support for autopackage format: http://www.wildgardenseed.com/apkg/
+bld44. Add support for autopackage format? http://www.wildgardenseed.com/apkg/
 bld45. Replace ENABLE_LARGEFILE with test for 64-bit offset support (i.e., netCDF 3.6) in configure.in and nco_ctl.c
 bld46. Is DAP_ROOT (or DODS_ROOT) an obselete variable in DAP 3.5+? if so obsolete it in configure.in, nco.texi
 bld47. Add regression test for -Z capability
-bld48. Implement icc/icpc optimization switches
-bld49. 
+bld49. Add --mpi_fake option to run nco_bm.pl on mpnc* binaries instead of nc* binaries
+bld50. 
 ************************************************************************
 End bldXXX TODOs
 ************************************************************************

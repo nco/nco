@@ -1,5 +1,7 @@
 2005-09-15  Charlie Zender  <zender@uci.edu>
 
+	* mpncea hangs on ncea regression test 4 (on sand with LAM) TODO nco597
+
 	* Use fake end scopes to correct Emacs indentation in mpncra.c, mpncpdq.c
 
 	* Test all FAKE_MPI mpnc* operators in place of nc* counterparts
