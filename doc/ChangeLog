@@ -1,15 +1,15 @@
 2005-09-15  Charlie Zender  <zender@uci.edu>
 
+	* 
+
 	* Port ncwa 20050608 bugfix for DO_CONFORM_[MSK,WGT] to mpncwa
-	This fixes TODO nco595
 	
 	* mpncea hangs on ncea regression test 4 (on sand with LAM) TODO nco597
 
 	* Use fake end scopes to correct Emacs indentation in mpncra.c, mpncpdq.c
 
 	* Test all FAKE_MPI mpnc* operators in place of nc* counterparts
-	FAKE_MPI mpncea fails one test (TODO594) (regardless of thr_nbr)
-	FAKE_MPI mpncwa fails 22/33 tests (TODO nco595) (thr_nbr > 1)
+	FAKE_MPI mpncea fails one test (TODO nco594) (regardless of thr_nbr)
 
 	* Implement/fix OpenMP in MPI_FAKE portions of all mpnc*.c codes
 

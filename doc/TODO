@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.607 2005-09-16 00:43:22 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.608 2005-09-16 01:27:46 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -335,7 +335,7 @@ nco588. MPI debugging with DDD (http://www.lam-mpi.org/faq/category6.php3)
         mpirun -np 3 -x ashes:0 /usr/bin/ddd $MY_BIN_DIR/mpncbo
         LAM-MPI:
         mpirun -np 3 -x ashes:0 /usr/bin/ddd --gdb --debugger "gdb" $MY_BIN_DIR/mpncbo -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc
-nco593. mpncrcat: fails while concatenating
+nco593. mpncrcat: hang while concatenating
         ncrcat -O -D 5 -p ~/nco/data in.nc in.nc ~/foo.nc (works)
 	mpirun -np 3 mpncrcat -O -D 5 -p ~/nco/data in.nc in.nc ~/foo.nc
         /bin/rm $MY_OBJ_DIR/mpncra.o;make MPI_FAKE=Y mpncra
@@ -354,16 +354,6 @@ nco594. MPI_FAKE mpncea fails ncea regression test 3
         ncks -C -H -s '%e' -v rec_var_flt_mss_val_dbl ~/foo.nc
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpirun -np 3 $MY_BIN_DIR/mpncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-nco595. MPI_FAKE mpncwa fails 22/33 ncwa regression tests (soot, only thr_nbr > 1)
-        Consistent with OpenMP implementation problem in mpncwa.c
-        ncwa -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc ~/foo.nc (works)
-        /bin/rm $MY_OBJ_DIR/mpncra.o;make MPI_FAKE=Y mpncra
-        mpncwa -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc ~/foo.nc (fails)
-        /bin/rm $MY_OBJ_DIR/mpncra.o;make MPI=Y mpncra
-        mpirun -np 3 $MY_BIN_DIR/mpncwa -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc ~/foo.nc (works)
-        ncks -C -H -s '%e' -v rec_var_flt_mss_val_dbl ~/foo.nc
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpncwa -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc ~/foo.nc > ~/foo 2>&1
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpirun -np 3 $MY_BIN_DIR/mpncwa -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc ~/foo.nc > ~/foo 2>&1
 nco597. mpncea hangs on ncea regression test 4 (on sand with LAM)
 nco598. 
 ************************************************************************
