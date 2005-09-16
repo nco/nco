@@ -1,7 +1,7 @@
 
 2005-09-16  Harry Mangalam <hjm@tacgi.com>
 	* Re-org of regression and benchmarking script.  nco_bm.pl has
-	been broken into 4 files:
+	been broken into 5 files:
 	- nco_bm.pl - now does initialization and calls control scripts for
 		benchmarking and regression
 	- NCO_bm.pm - a Perl module that contains most of the functions
@@ -10,6 +10,8 @@
 		to isolate them and make it easier to find the right one.
 	- nco_bm_benchmarks.pl - the code chunk which is do-included that
 		contains all the benchmark code.
+	- nco_bm_md5wc_tbl.pl - the code chunk that contains all the md5 & wc
+		checksums. (currently NOT working - see below)
 
 	* the error/debug  messages have been cleaned up considerably and now
 		are pumped out (mostly) at the end of each test if asked for.
