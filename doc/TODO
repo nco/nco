@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.608 2005-09-16 01:27:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.609 2005-09-16 22:13:47 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -318,12 +318,14 @@ nco577. ncbo: get rid of dangling pointers in var_1, var_2 after ncap_var_cnf_dm
 nco578. ncbo: Use ncbo.c as template for [mp]ncflint re-write
 nco580. fl_mk_lcl(): Add wget protocol to handle non-Opendap HTTP
 nco581. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 2: allow nbr_xtr_out=max(nbr_xtr_1,nbr_xtr_2) when nbr_xtr_2>nbr_xtr_1 if discrepant variables are type fix (e.g., grid properties) not type prc (NB: already works for nbr_xtr_1>nbr_xtr_2)
-nco587. Command line MPI on AIX with POE
+nco587. Command line MPI on AIX PPE with poe
 	Promising documentation at:
         http://publib.boulder.ibm.com/infocenter/clresctr/index.jsp?topic=/com.ibm.cluster.pe.doc/pe_42/am10600203.html
 	echo ${HOST} > ~/nco/bld/host.list
         cd ~/nco/bld;poe -hostfile=~/nco/bld/host.list -node=1 -tasks_per_node=3 $MY_BIN_DIR/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc
-        ERROR: 0031-808  Hostfile or pool must be used to request nodes
+        zender@esmf04m:~/nco/bld$ cd ~/nco/bld;poe -hostfile=~/nco/bld/host.list -node=1 -tasks_per_node=3 $MY_BIN_DIR/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc
+        ERROR: 0031-212  pmd: node esmf04m: user zender denied from access from host esmf04m
+        ERROR: 0031-024  esmf04m: no response; rc = -1
 nco588. MPI debugging with DDD (http://www.lam-mpi.org/faq/category6.php3)
         mpirun N -x DISPLAY run_gdb.csh my_program_name
         mpirun -np 3 /usr/bin/ddd $MY_BIN_DIR/mpncbo # (may work: starts multiple DDDs, then must manually begin runs?)
