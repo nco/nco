@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.13 2005-09-16 00:37:25 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.14 2005-09-16 19:01:31 zender Exp $ -*-text-*-
 
 Installing an MPI Environment for NCO:
 
@@ -72,7 +72,7 @@ MPICH (version 1) Instructions:
    sudo rpm -i mpich-1.2.5.2-1mdk.i586.rpm
 
 ************************************************************************
-MPICH2 Instructions:
+MPICH2 (i.e., MPICH version 2) Instructions:
 1. Install MPICH2 (requires python 2.3 or 2.4)
    scp 'dust.ess.uci.edu:/data/zender/tmp/*mpich2*' ${DATA}/tmp
    cd ${DATA}/tmp

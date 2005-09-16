@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.329 2005-09-15 23:26:09 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.330 2005-09-16 19:01:31 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -318,11 +318,15 @@ CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 
 # Variables having to do with binary executables created by module
 MDL_BIN_TRG := ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
+MDL_BIN_SYM_LNK := ncdiff ncea ncrcat # Symbolic links
 ifeq (${MPI},Y)
  MDL_MPI_TRG := mpncbo mpncecat mpncflint mpncpdq mpncra mpncwa # MPI binary targets
- MDL_BIN_TRG := ${MDL_BIN_TRG} ${MDL_MPI_TRG} # NCO binary targets
+ MDL_MPI_SYM_LNK := mpncdiff mpncea mpncrcat # MPI Symbolic links
+ MDL_MPI_STB := ${MDL_MPI_TRG} ${MDL_MPI_SYM_LNK} # All MPI files in MY_BIN_DIR
+ MDL_MPI_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_MPI_TRG}) # mpi_cln removes these files
+ MDL_BIN_TRG += ${MDL_MPI_TRG} # NCO binary targets
+ MDL_BIN_SYM_LNK += ${MDL_MPI_SYM_LNK} # Symbolic links
 endif # endif MPI
-MDL_BIN_SYM_LNK := ncdiff ncea ncrcat # Symbolic links
 MDL_BIN_STB := ${MDL_BIN_TRG} ${MDL_BIN_SYM_LNK} # All NCO files in MY_BIN_DIR
 MDL_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_BIN_STB}) # distclean removes these files
 
@@ -1250,12 +1254,16 @@ obj_dir:
 #	-install -d ${MY_BIN_DIR}
 	-mkdir -p ${MY_OBJ_DIR}
 # Targets in bin
+mpi:   mpi_nco
+mpinco:   mpi_nco
+mpnco:   mpi_nco
+mpi_nco:   ${MDL_MPI_TRG}
 mpncbo:   ${MY_BIN_DIR}/mpncbo
 ${MY_BIN_DIR}/mpncbo:	${MY_OBJ_DIR}/mpncbo.o lib
 	${MPICC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f mpncdiff; ln -s -f mpncbo mpncdiff
-# 20050710: icc 8.1 dies compiling ncecat with -axW flag
+# 20050710: icc 8.1 with -axW flag dies compiling ncecat
 # 20050915: Same problem occurs with MPI_FAKE version of mpncecat
 ifeq (icc,$(firstword ${LINUX_CC}))
 ncecat : CFLAGS := $(filter-out -axW,${CFLAGS})
