@@ -1,5 +1,7 @@
 2005-09-15  Charlie Zender  <zender@uci.edu>
 
+	* Use fake end scopes to correct Emacs indentation in mpncra.c
+
 	* Test all FAKE_MPI mpnc* operators in place of nc* counterparts
 	FAKE_MPI mpncea fails one test (TODO594) (regardless of thr_nbr)
 	FAKE_MPI mpncwa fails 22/33 tests (TODO nco595) (thr_nbr > 1)

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.604 2005-09-15 23:26:09 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.605 2005-09-16 00:00:57 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -363,7 +363,8 @@ nco595. MPI_FAKE mpncwa fails 22/33 ncwa regression tests (only when thr_nbr > 1
         ncks -C -H -s '%e' -v rec_var_flt_mss_val_dbl ~/foo.nc
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpncwa -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc ~/foo.nc > ~/foo 2>&1
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpirun -np 3 $MY_BIN_DIR/mpncwa -O -y min -v rec_var_flt_mss_val_dbl -d time,1 -p ~/nco/data in.nc ~/foo.nc > ~/foo 2>&1
-nco596. 
+nco596. Find way to please Emacs indentation in gnarly MPI codes
+nco597. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
