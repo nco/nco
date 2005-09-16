@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.1 2005-09-16 19:12:34 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.2 2005-09-16 22:29:53 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -194,7 +194,6 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 	$tst_cmd[1]="ncbo $omp_flg -C -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth/in.nc $foo_avg_fl $outfile";
 	$tst_cmd[2]="ncks -C -H -d time,3 -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="Difference which tests broadcasting and changing variable IDs";
-	if($mpi_prc > 0){$dsc_sng.=" Known bug with mpncbo: fix is TODO nco579";}
 	$nsr_xpc= -1.0 ;
  go();
 
@@ -416,13 +415,13 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 ####################
     $opr_nm='ncrcat';
 ####################
-        if ($mpi_prc == 0) { # fxm test hangs because of ncrcat TODO 585
+        if ($mpi_prc == 0) { # fxm test hangs because of ncrcat TODO 593
 	$tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc $outfile 2>$foo_tst";
 	$tst_cmd[1]="ncks -C -H -d time,11 -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="Concatenate float with double missing values across two files";
 	$nsr_xpc= 2 ;
  go();
-    } else { print "NB: for MPI, last ncrcat test skipped because it hangs fxm TODO 585.\n";}
+    } else { print "NB: Current mpncrcat test skipped because it hangs fxm TODO nco593.\n";}
 
 ####################
 #### ncra tests ####
@@ -430,7 +429,7 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
     $opr_nm='ncra';
 ####################
 
-        if ($mpi_prc == 0) { # test hangs because of ncrcat TODO 585 and, when that is fixed, test will fail because of mpncbo TODO 579
+        if ($mpi_prc == 0) { # test hangs because of ncrcat TODO nco593
 	$outfile =  $foo1_fl;
 	$tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc $outfile 2>$foo_tst";
 	$outfile =  $orig_outfile;
@@ -442,7 +441,7 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 	$dsc_sng="record sdn of float with double missing values across two files";
 	$nsr_xpc= 2 ;
  go();
-    } else { print "NB: for MPI, last ncra test skipped because it hangs fxm TODO 585, TODO 579.\n";}
+    } else { print "NB: Current mpncra test skipped because mpncrcat step hangs fxm TODO nco593\n";}
 
 	$tst_cmd[0]="ncra $omp_flg -h -O $nco_D_flg -v one_dmn_rec_var  $in_pth_arg in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var $outfile";
@@ -787,7 +786,7 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 	    $dsc_sng="msrcp protocol (requires msrcp and authorized access to NCAR MSS)";
 	    $nsr_xpc= 1;
         go();
-} else { print "WARN: Skipping net tests of mss: and password protected FTP protocol retrieval---user not zender\n";}
+	} else { print "WARN: Skipping net tests of mss: and password protected FTP protocol retrieval---user not zender\n";}
 
 	if($USER eq 'zender' || $USER eq 'hjm'){
 	    $tst_cmd[0]="/bin/rm -f /tmp/in.nc";
@@ -795,6 +794,6 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 	    $dsc_sng="HTTP protocol (requires developers to implement wget in NCO nudge nudge wink wink)";
 	    $nsr_xpc= 1;
         go();
-} else { print "WARN: Skipping net test wget: protocol retrieval---user not zender or hjm\n";}
+	} else { print "WARN: Skipping net test wget: protocol retrieval---user not zender or hjm\n";}
 
 } # end of perform_test()

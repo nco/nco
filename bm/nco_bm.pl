@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.89 2005-09-16 19:12:34 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.90 2005-09-16 22:30:21 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -148,9 +148,6 @@ if($dbg_lvl > 0){
 }
 
 if ($ARGV == 0) {	usage();}
-
-# Resolve conflicts early
-if ($mpi_prc > 0 && $thr_nbr > 0) {die "\nThe  '--mpi_prc' (MPI) and '--thr_nbr' (OpenMP) options are mutually exclusive.\nPlease decide which you want to run and try again.\n";}
 
 # Any irrationally exuberant values?
 if ($mpi_prc > 16) {die "\nThe '--mpi_prc' value was set to an irrationally exuberant [$mpi_prc].  Try a lower value\n ";}
