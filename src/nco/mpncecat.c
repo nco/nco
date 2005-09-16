@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.13 2005-09-15 22:21:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.14 2005-09-16 00:07:49 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -77,7 +77,7 @@ main(int argc,char **argv)
   bool CNV_CCM_CCSM_CF;
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   bool TOKEN_FREE=True; /* [flg] Allow MPI workers write-access to output file */
-
+  
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char **var_lst_in=NULL_CEWI;
@@ -90,27 +90,27 @@ main(int argc,char **argv)
   char *lmt_arg[NC_MAX_DIMS];
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
-
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.13 2005-09-15 22:21:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.13 $";
+  
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.14 2005-09-16 00:07:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.14 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRv:xZ-:";
   const double sleep_tm=0.04; /* [s] Token request interval */
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
   const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
-
+  
   dmn_sct *rec_dmn;
   dmn_sct **dim;
   dmn_sct **dmn_out;
- 
+  
   double srt_tm; /* Start the clock */
-
+  
   extern char *optarg;
   extern int optind;
-
+  
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
-
+  
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
   int fl_idx;
@@ -138,11 +138,11 @@ main(int argc,char **argv)
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int wrk_id; /* [id] Sender node ID */
   int wrk_id_bfr[1]; /* [bfr] Buffer for wrk_id */
- 
+  
   lmt_sct **lmt;
   
   long idx_rec_out=0L; /* idx_rec_out gets incremented */
-
+  
 #ifdef ENABLE_MPI
   MPI_Status mpi_stt; /* [enm] Status check to decode msg_typ */
 #endif /* !ENABLE_MPI */
@@ -197,7 +197,7 @@ main(int argc,char **argv)
       {0,0,0,0}
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
-
+  
 #ifdef ENABLE_MPI
   /* MPI Initialization */
   MPI_Init(&argc,&argv);
@@ -205,7 +205,7 @@ main(int argc,char **argv)
   MPI_Comm_rank(MPI_COMM_WORLD,&proc_id);
   srt_tm=MPI_Wtime();
 #endif /* !ENABLE_MPI */
-
+  
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   time_crr_time_t=time((time_t *)NULL);
@@ -213,7 +213,7 @@ main(int argc,char **argv)
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
-
+  
   /* Parse command line arguments */
   while((opt = getopt_long(argc,argv,opt_sht_lst,opt_lng,&opt_idx)) != EOF){
     switch(opt){
@@ -301,10 +301,10 @@ main(int argc,char **argv)
   
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
-
+  
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
-    
+  
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
@@ -317,19 +317,19 @@ main(int argc,char **argv)
   
   /* Form initial extraction list which may include extended regular expressions */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXTRACT_ALL_COORDINATES,&nbr_xtr);
-
+  
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
-
+  
   /* Add all coordinate variables to extraction list */
   if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_dmn_fl,xtr_lst,&nbr_xtr);
-
+  
   /* Make sure coordinates associated extracted variables are also on extraction list */
   if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
-
+  
   /* Sort extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,nbr_xtr,False);
-    
+  
   /* We now have final list of variables to extract. Phew. */
   
   /* Find coordinate/dimension values associated with user-specified limits */
@@ -337,7 +337,7 @@ main(int argc,char **argv)
   
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
-
+  
   /* Fill in dimension structure for all extracted dimensions */
   dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
@@ -346,17 +346,17 @@ main(int argc,char **argv)
   
   /* Merge hyperslab limit information into dimension structures */
   if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
-
+  
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
     dmn_out[idx]=nco_dmn_dpl(dim[idx]);
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]); 
   } /* end loop over idx */
-
+  
   /* Is this an CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
-
+  
   /* Fill in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
@@ -368,37 +368,37 @@ main(int argc,char **argv)
   } /* end loop over idx */
   /* Extraction list no longer needed */
   xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
-
+  
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
-
+  
 #ifdef ENABLE_MPI
   if(proc_id == 0){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
-  /* Open output file */
-  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FMT_64BIT,&out_id);
-
-  /* Copy global attributes */
-  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
-  
-  /* Catenate time-stamped command line to "history" global attribute */
-  if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-
+    /* Open output file */
+    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FMT_64BIT,&out_id);
+    
+    /* Copy global attributes */
+    (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
+    
+    /* Catenate time-stamped command line to "history" global attribute */
+    if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+    
 #ifdef ENABLE_MPI
-  /* Initialize MPI task information */
-  if(proc_nbr > 0 && HISTORY_APPEND) (void)nco_mpi_att_cat(out_id,proc_nbr);
+    /* Initialize MPI task information */
+    if(proc_nbr > 0 && HISTORY_APPEND) (void)nco_mpi_att_cat(out_id,proc_nbr);
 #endif /* !ENABLE_MPI */
-
-  /* Add input file list global attribute */
-  if(FL_LST_IN_APPEND  && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
-
+    
+    /* Add input file list global attribute */
+    if(FL_LST_IN_APPEND  && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
+    
 #ifdef ENABLE_MPI
   } /* proc_id != 0 */
 #endif /* !ENABLE_MPI */
-
+  
   /* ncecat-specific operations */
   if(True){
-
+    
     /* Always construct new "record" dimension from scratch */
     rec_dmn=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
     rec_dmn->nm=(char *)strdup("record");
@@ -412,7 +412,7 @@ main(int argc,char **argv)
     rec_dmn->cnt=0L;
     rec_dmn->srt=0L;
     rec_dmn->end=rec_dmn->sz-1L;
-      
+    
     /* Change existing record dimension, if any, to regular dimension */
     for(idx=0;idx<nbr_dmn_xtr;idx++){
       /* Is any input dimension a record dimension? */
@@ -421,23 +421,23 @@ main(int argc,char **argv)
 	break;
       } /* end if */
     } /* end loop over idx */
-
+    
     /* Add record dimension to end of dimension list */
     nbr_dmn_xtr++;
     dmn_out=(dmn_sct **)nco_realloc(dmn_out,nbr_dmn_xtr*sizeof(dmn_sct **));
     dmn_out[nbr_dmn_xtr-1]=rec_dmn;
-
+    
   } /* end if */
-
+  
 #ifdef ENABLE_MPI
   if(proc_id == 0){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
-  /* Define dimensions in output file */
-  (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
+    /* Define dimensions in output file */
+    (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 #ifdef ENABLE_MPI
   } /* proc_id != 0 */
 #endif /* !ENABLE_MPI */
-
+  
   if(True){
     /* Prepend record dimension to beginning of all vectors for processed variables */
     for(idx=0;idx<nbr_var_prc;idx++){
@@ -465,42 +465,42 @@ main(int argc,char **argv)
       var_prc_out[idx]->cnt[0]=1L;
       var_prc_out[idx]->srt[0]=-1L;
       var_prc_out[idx]->end[0]=-1L;
-		    
+      
     } /* end loop over idx */
     
   } /* end if */
-
+  
 #ifdef ENABLE_MPI
   if(proc_id == 0){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
-  /* Define variables in output file, copy their attributes */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil);
+    /* Define variables in output file, copy their attributes */
+    (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil);
 #ifdef ENABLE_MPI
   } /* proc_id != 0 */
 #endif /* !ENABLE_MPI */
-
+  
   /* Zero start vectors for all output variables */
   (void)nco_var_srt_zero(var_out,nbr_xtr);
-
+  
 #ifdef ENABLE_MPI
   if(proc_id == 0){ /* proc_id != 0 */
 #endif /* !ENABLE_MPI */
-
-  /* Turn off default filling behavior to enhance efficiency */
-  rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
-  
-  /* Take output file out of define mode */
-  (void)nco_enddef(out_id);
-  
+    
+    /* Turn off default filling behavior to enhance efficiency */
+    rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+    
+    /* Take output file out of define mode */
+    (void)nco_enddef(out_id);
+    
 #ifdef ENABLE_MPI
   } /* proc_id != 0 */
-
+  
   /* Manager obtains output filename and broadcasts to workers */
   if(proc_id == 0) fl_nm_lng=(int)strlen(fl_out_tmp);
   MPI_Bcast(&fl_nm_lng,1,MPI_INT,0,MPI_COMM_WORLD);
   if(proc_id != 0) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
   MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,0,MPI_COMM_WORLD);
-
+  
   if(proc_id == 0){ /* MPI manager code */
     TOKEN_FREE=False;
 #endif /* !ENABLE_MPI */
@@ -512,7 +512,7 @@ main(int argc,char **argv)
     TOKEN_FREE=True;
   } /* proc_id != 0 */
 #endif /* !ENABLE_MPI */
-
+  
   /* Close first input netCDF file */
   (void)nco_close(in_id);
   
@@ -531,7 +531,7 @@ main(int argc,char **argv)
     
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
-
+    
 #ifdef ENABLE_MPI
     if(proc_id == 0){ /* MPI manager code */
       /* Compensate for incrementing on each worker's first message */
@@ -545,13 +545,13 @@ main(int argc,char **argv)
 	msg_typ=mpi_stt.MPI_TAG;
 	/* Get sender's proc_id */
 	wrk_id=wrk_id_bfr[0];
-
+	
 	/* Allocate next variable, if any, to worker */
 	if(msg_typ == WORK_REQUEST){
 	  var_wrt_nbr++; /* [nbr] Number of variables written */
 	  /* Worker closed output file before sending WORK_REQUEST */
 	  TOKEN_FREE=True;
-
+	  
 	  if(idx > nbr_var_prc-1){
 	    /* Variable index = -1 indicates NO_MORE_WORK */
 	    info_bfr[0]=NO_MORE_WORK; /* [idx] -1 */
@@ -610,7 +610,7 @@ main(int argc,char **argv)
 	    /* Size of record dimension is 1 in output file */
 	    var_prc_out[idx]->cnt[0]=1L;
 	    var_prc_out[idx]->srt[0]=idx_rec_out;
-      
+	    
 #ifdef ENABLE_MPI
 	    /* Obtain token and prepare to write */
 	    while(1){ /* Send TOKEN_REQUEST repeatedly until token obtained */
@@ -622,7 +622,7 @@ main(int argc,char **argv)
 	      /* Wait then re-send request */
 	      if(tkn_rsp == TOKEN_WAIT) sleep(sleep_tm); else break;
 	    } /* end while loop waiting for write token */
-
+	    
 	    /* Worker has token---prepare to write */
 	    if(tkn_rsp == TOKEN_ALLOC){
 	      rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
@@ -652,13 +652,13 @@ main(int argc,char **argv)
 #else /* !ENABLE_MPI */
     } /* end (OpenMP parallel for) loop over idx */
 #endif /* !ENABLE_MPI */
-      
+    
     idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
     if(dbg_lvl > 1) (void)fprintf(stderr,"\n");
     
     /* Close input netCDF file */
     nco_close(in_id);
-
+    
     /* Remove local copy of file */
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
 #ifdef ENABLE_MPI
@@ -667,15 +667,15 @@ main(int argc,char **argv)
   } /* end loop over fl_idx */
   
 #ifdef ENABLE_MPI
-    /* Manager moves output file (closed by workers) from temporary to permanent location */
-    if(proc_id == 0) (void)nco_fl_mv(fl_out_tmp,fl_out);
+  /* Manager moves output file (closed by workers) from temporary to permanent location */
+  if(proc_id == 0) (void)nco_fl_mv(fl_out_tmp,fl_out);
 #else /* !ENABLE_MPI */
-    /* Close output file and move it from temporary to permanent location */
-    (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
+  /* Close output file and move it from temporary to permanent location */
+  (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 #endif /* end !ENABLE_MPI */
-    
+  
   /* ncecat-specific memory cleanup */
-
+  
   /* NCO-generic clean-up */
   /* Free individual strings */
   if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
@@ -702,11 +702,11 @@ main(int argc,char **argv)
   var_prc_out=(var_sct **)nco_free(var_prc_out);
   var_fix=(var_sct **)nco_free(var_fix);
   var_fix_out=(var_sct **)nco_free(var_fix_out);
- 
+  
 #ifdef ENABLE_MPI
   MPI_Finalize();
 #endif /* !ENABLE_MPI */
-
+  
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
   return EXIT_SUCCESS;

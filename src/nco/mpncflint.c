@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.14 2005-09-15 22:25:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.15 2005-09-16 00:07:49 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -35,8 +35,7 @@
    ncflint -O -w 0.66666,0.33333 -v lcl_time_hr /data/zender/arese/crm/951030_0800_arese_crm.nc /data/zender/arese/crm/951030_1100_arese_crm.nc foo.nc; ncks -H foo.nc
    ncflint -O -w 0.66666 -v lcl_time_hr /data/zender/arese/crm/951030_0800_arese_crm.nc /data/zender/arese/crm/951030_1100_arese_crm.nc foo.nc; ncks -H foo.nc
 
-   ncdiff -O foo.nc /data/zender/arese/crm/951030_0900_arese_crm.nc foo2.nc;ncks -H foo2.nc | m
- */
+   ncdiff -O foo.nc /data/zender/arese/crm/951030_0900_arese_crm.nc foo2.nc;ncks -H foo2.nc | m */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h> /* Autotools tokens */
@@ -106,13 +105,13 @@ main(int argc,char **argv)
   char *ntp_nm=NULL; /* Option i */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
-
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.14 2005-09-15 22:25:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.14 $";
+  
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.15 2005-09-16 00:07:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.15 $";
   const char * const opt_sht_lst="ACcD:d:Fhi:l:Oo:p:rRt:v:xw:Z-:";
-
+  
   const double sleep_tm=0.04; /* [s] Token request interval */
-
+  
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
   const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
   
@@ -123,14 +122,14 @@ main(int argc,char **argv)
   double srt_tm; /* Start the clock */
   double wgt_val_1=0.5; /* Option w */
   double wgt_val_2=0.5; /* Option w */
-
+  
   extern char *optarg;
   extern int optind;
-
+  
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
-
+  
   int abb_arg_nbr=0;
   int fl_idx;
   int fl_nbr=0;
@@ -162,9 +161,9 @@ main(int argc,char **argv)
   int var_wrt_nbr=0; /* [nbr] Variables written to output file until now */
   int wrk_id; /* [id] Sender node ID */
   int wrk_id_bfr[1]; /* [bfr] Buffer for wrk_id */
-    
+  
   lmt_sct **lmt;
-
+  
 #ifdef ENABLE_MPI
   MPI_Status mpi_stt; /* [enm] Status check to decode msg_typ */
 #endif /* !ENABLE_MPI */
@@ -175,7 +174,7 @@ main(int argc,char **argv)
   time_t time_crr_time_t;
   
   val_unn val_gnr_unn; /* Generic container for arrival point or weight */
-
+  
   var_sct *wgt_1=NULL_CEWI;
   var_sct *wgt_2=NULL_CEWI;
   var_sct *wgt_out_1=NULL;
@@ -226,7 +225,7 @@ main(int argc,char **argv)
       {0,0,0,0}
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
-
+  
 #ifdef ENABLE_MPI
   /* MPI Initialization */
   MPI_Init(&argc,&argv);
@@ -234,7 +233,7 @@ main(int argc,char **argv)
   MPI_Comm_rank(MPI_COMM_WORLD,&proc_id);
   srt_tm=MPI_Wtime();
 #endif /* !ENABLE_MPI */
-
+  
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   time_crr_time_t=time((time_t *)NULL);
@@ -242,7 +241,7 @@ main(int argc,char **argv)
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
-
+  
   /* Parse command line arguments */
   while((opt = getopt_long(argc,argv,opt_sht_lst,opt_lng,&opt_idx)) != EOF){
     switch(opt){
@@ -356,13 +355,13 @@ main(int argc,char **argv)
     (void)fprintf(stdout,"%s: ERROR interpolating variable (-i) or fixed weight(s) (-w) must be set\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* end else */
-
+  
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
-    
+  
   /* Parse filename */
   fl_idx=0;
   fl_in=nco_fl_nm_prs(fl_in,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
@@ -377,19 +376,19 @@ main(int argc,char **argv)
   
   /* Form initial extraction list which may include extended regular expressions */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXTRACT_ALL_COORDINATES,&nbr_xtr);
-
+  
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
-
+  
   /* Add all coordinate variables to extraction list */
   if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_dmn_fl,xtr_lst,&nbr_xtr);
-
+  
   /* Make sure coordinates associated extracted variables are also on extraction list */
   if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
-
+  
   /* Sort extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,nbr_xtr,False);
-
+  
   /* We now have final list of variables to extract. Phew. */
   
   /* Find coordinate/dimension values associated with user-specified limits */
@@ -397,7 +396,7 @@ main(int argc,char **argv)
   
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
-
+  
   /* Fill in dimension structure for all extracted dimensions */
   dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
@@ -406,17 +405,17 @@ main(int argc,char **argv)
   
   /* Merge hyperslab limit information into dimension structures */
   if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
-
+  
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
     dmn_out[idx]=nco_dmn_dpl(dim[idx]);
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]); 
   } /* end loop over idx */
-
+  
   /* Is this an CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
-
+  
   /* Fill in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
@@ -428,55 +427,55 @@ main(int argc,char **argv)
   } /* end loop over idx */
   /* Extraction list no longer needed */
   xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
-
+  
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc_1,&var_prc_out,&nbr_var_prc);
-
+  
   /* Zero start vectors for all output variables */
   (void)nco_var_srt_zero(var_out,nbr_xtr);
-
+  
 #ifdef ENABLE_MPI
   if(proc_id == 0){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FMT_64BIT,&out_id);
-
+    
     /* Copy global attributes */
     (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
-  
+    
     /* Catenate time-stamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-
+    
     /* Initialize thread information */
     thr_nbr=nco_openmp_ini(thr_nbr);
     if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
-
+    
 #ifdef ENABLE_MPI
     /* Initialize MPI task information */
     if(proc_nbr > 0 && HISTORY_APPEND) (void)nco_mpi_att_cat(out_id,proc_nbr);
 #endif /* !ENABLE_MPI */
-
+    
     /* Define dimensions in output file */
     (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
-
+    
     /* Define variables in output file, copy their attributes */
     (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil);
-
+    
     /* Turn off default filling behavior to enhance efficiency */
     rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
-  
+    
     /* Take output file out of define mode */
     (void)nco_enddef(out_id);
-
+    
 #ifdef ENABLE_MPI
   } /* proc_id != 0 */
-
+  
   /* Manager obtains output filename and broadcasts to workers */
   if(proc_id == 0) fl_nm_lng=(int)strlen(fl_out_tmp); 
   MPI_Bcast(&fl_nm_lng,1,MPI_INT,0,MPI_COMM_WORLD);
   if(proc_id != 0) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
   MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,0,MPI_COMM_WORLD);
-
+  
   if(proc_id == 0){ /* MPI manager code */
     TOKEN_FREE=False;
 #endif /* !ENABLE_MPI */
@@ -488,11 +487,11 @@ main(int argc,char **argv)
     TOKEN_FREE=True;
   } /* proc_id != 0 */
 #endif /* !ENABLE_MPI */
-
+  
   in_id_1=in_id;
   fl_idx=1;
   fl_in_1=(char *)strdup(fl_in);
-
+  
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
@@ -504,7 +503,7 @@ main(int argc,char **argv)
   
   /* Perform various error-checks on input file */
   if(False) (void)nco_fl_cmp_err_chk();
-
+  
   /* ncflint-specific stuff: */
   /* Find the weighting variable in input file */
   if(CMD_LN_NTP_VAR){
@@ -514,14 +513,14 @@ main(int argc,char **argv)
     var_sct *ntp_1;
     var_sct *ntp_2;
     var_sct *ntp_var_out;
-
+    
     /* Turn arrival point into pseudo-variable */
     val_gnr_unn.d=ntp_val_out; /* Generic container for arrival point or weight */
     ntp_var_out=scl_mk_var(val_gnr_unn,NC_DOUBLE);
-
+    
     rcd=nco_inq_varid(in_id_1,ntp_nm,&ntp_id_1);
     rcd=nco_inq_varid(in_id_2,ntp_nm,&ntp_id_2);
-
+    
     ntp_1=nco_var_fll(in_id_1,ntp_id_1,ntp_nm,dim,nbr_dmn_xtr);
     ntp_2=nco_var_fll(in_id_2,ntp_id_2,ntp_nm,dim,nbr_dmn_xtr);
     
@@ -530,51 +529,51 @@ main(int argc,char **argv)
       (void)fprintf(stdout,"%s: ERROR interpolation variable %s must be scalar\n",prg_nm_get(),ntp_nm);
       nco_exit(EXIT_FAILURE);
     } /* end if */
-
+    
     /* Retrieve interpolation variable */
     (void)nco_var_get(in_id_1,ntp_1);
     (void)nco_var_get(in_id_2,ntp_2);
-
+    
     /* Weights must be NC_DOUBLE */
     ntp_1=nco_var_cnf_typ((nc_type)NC_DOUBLE,ntp_1);
     ntp_2=nco_var_cnf_typ((nc_type)NC_DOUBLE,ntp_2);
-
+    
     /* Check for degenerate case */
     if(ntp_1->val.dp[0] == ntp_2->val.dp[0]){
       (void)fprintf(stdout,"%s: ERROR Interpolation variable %s is identical (%g) in input files, therefore unable to interpolate.\n",prg_nm_get(),ntp_nm,ntp_1->val.dp[0]);
       nco_exit(EXIT_FAILURE);
     } /* end if */
-
+    
     /* Turn weights into pseudo-variables */
     wgt_1=nco_var_dpl(ntp_2);
     wgt_2=nco_var_dpl(ntp_var_out);
-
+    
     /* Subtract to find interpolation distances */
     (void)nco_var_sbt(ntp_1->type,ntp_1->sz,ntp_1->has_mss_val,ntp_1->mss_val,ntp_var_out->val,wgt_1->val);
     (void)nco_var_sbt(ntp_1->type,ntp_1->sz,ntp_1->has_mss_val,ntp_1->mss_val,ntp_1->val,wgt_2->val);
     (void)nco_var_sbt(ntp_1->type,ntp_1->sz,ntp_1->has_mss_val,ntp_1->mss_val,ntp_1->val,ntp_2->val);
-
+    
     /* Normalize to obtain final interpolation weights */
     (void)nco_var_dvd(wgt_1->type,wgt_1->sz,wgt_1->has_mss_val,wgt_1->mss_val,ntp_2->val,wgt_1->val);
     (void)nco_var_dvd(wgt_2->type,wgt_2->sz,wgt_2->has_mss_val,wgt_2->mss_val,ntp_2->val,wgt_2->val);
-
+    
     if(ntp_1 != NULL) ntp_1=nco_var_free(ntp_1);
     if(ntp_2 != NULL) ntp_2=nco_var_free(ntp_2);
     if(ntp_var_out != NULL) ntp_var_out=nco_var_free(ntp_var_out);
   } /* end if CMD_LN_NTP_VAR */
-
+  
   if(CMD_LN_NTP_WGT){
     val_gnr_unn.d=wgt_val_1; /* Generic container for arrival point or weight */
     wgt_1=scl_mk_var(val_gnr_unn,NC_DOUBLE);
     val_gnr_unn.d=wgt_val_2; /* Generic container for arrival point or weight */
     wgt_2=scl_mk_var(val_gnr_unn,NC_DOUBLE);
   } /* end if CMD_LN_NTP_WGT */
-
+  
   if(dbg_lvl > 1) (void)fprintf(stderr,"wgt_1 = %g, wgt_2 = %g\n",wgt_1->val.dp[0],wgt_2->val.dp[0]);
-
+  
   /* Create structure list for second file */
   var_prc_2=(var_sct **)nco_malloc(nbr_var_prc*sizeof(var_sct *));
-
+  
   /* Loop over each interpolated variable */
 #ifdef ENABLE_MPI
   if(proc_id == 0){ /* MPI manager code */
@@ -589,13 +588,13 @@ main(int argc,char **argv)
       msg_typ=mpi_stt.MPI_TAG;
       /* Get sender's proc_id */
       wrk_id=wrk_id_bfr[0];
-
+      
       /* Allocate next variable, if any, to worker */
       if(msg_typ == WORK_REQUEST){
         var_wrt_nbr++; /* [nbr] Number of variables written */
         /* Worker closed output file before sending WORK_REQUEST */
         TOKEN_FREE=True;
-
+	
         if(idx > nbr_var_prc-1){
           /* Variable index = -1 indicates NO_MORE_WORK */
           info_bfr[0]=NO_MORE_WORK; /* [idx] -1 */
@@ -647,26 +646,26 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
 	  if(dbg_lvl > 0) (void)fprintf(fp_stderr,"%s, ",var_prc_1[idx]->nm);
 	  if(dbg_lvl > 0) (void)fflush(fp_stderr);
-
+	  
 	  var_prc_2[idx]=nco_var_dpl(var_prc_1[idx]);
 	  (void)nco_var_mtd_refresh(in_id_2,var_prc_2[idx]); /* Routine contains OpenMP critical regions */
-
+	  
 	  (void)nco_var_get(in_id_1,var_prc_1[idx]); /* Routine contains OpenMP critical regions */
 	  (void)nco_var_get(in_id_2,var_prc_2[idx]); /* Routine contains OpenMP critical regions */
-    
+	  
 	  wgt_out_1=nco_var_cnf_dmn(var_prc_1[idx],wgt_1,wgt_out_1,MUST_CONFORM,&DO_CONFORM);
 	  wgt_out_2=nco_var_cnf_dmn(var_prc_2[idx],wgt_2,wgt_out_2,MUST_CONFORM,&DO_CONFORM);
-
+	  
 	  var_prc_1[idx]=nco_var_cnf_typ((nc_type)NC_DOUBLE,var_prc_1[idx]);
 	  var_prc_2[idx]=nco_var_cnf_typ((nc_type)NC_DOUBLE,var_prc_2[idx]);
-
+	  
 	  /* Allocate and, if necesssary, initialize space for processed variable */
 	  var_prc_out[idx]->sz=var_prc_1[idx]->sz;
 	  /* NB: must not try to free() same tally buffer twice */
 	  /*    var_prc_out[idx]->tally=var_prc_1[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long));*/
 	  var_prc_out[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long));
 	  (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
-  
+	  
 	  /* Weight variable by taking product of weight with variable */
 	  (void)nco_var_mlt(var_prc_1[idx]->type,var_prc_1[idx]->sz,var_prc_1[idx]->has_mss_val,var_prc_1[idx]->mss_val,wgt_out_1->val,var_prc_1[idx]->val);
 	  (void)nco_var_mlt(var_prc_2[idx]->type,var_prc_2[idx]->sz,var_prc_2[idx]->has_mss_val,var_prc_2[idx]->mss_val,wgt_out_2->val,var_prc_2[idx]->val);
@@ -674,10 +673,10 @@ main(int argc,char **argv)
 	  has_mss_val=nco_mss_val_cnf(var_prc_1[idx],var_prc_2[idx]);
 	  /* NB: fxm: use tally to determine when to "unweight" answer? TODO  */
 	  (void)nco_var_add_tll_ncflint(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,var_prc_1[idx]->mss_val,var_prc_out[idx]->tally,var_prc_1[idx]->val,var_prc_2[idx]->val);
-    
+	  
 	  /* Re-cast output variable to original type */
 	  var_prc_2[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc_2[idx]);
-
+	  
 #ifdef ENABLE_MPI
 	  /* Obtain token and prepare to write */
 	  while(1){ /* Send TOKEN_REQUEST repeatedly until token obtained */
@@ -689,7 +688,7 @@ main(int argc,char **argv)
 	    /* Wait then re-send request */
 	    if(tkn_rsp == TOKEN_WAIT) sleep(sleep_tm); else break;
 	  } /* end while loop waiting for write token */
-
+	  
 	  /* Worker has token---prepare to write */
 	  if(tkn_rsp == TOKEN_ALLOC){
 	    rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
@@ -707,12 +706,12 @@ main(int argc,char **argv)
 		(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp,var_prc_out[idx]->type);
 	      } /* end else */
 	    } /* end OpenMP critical */
- 
-/* Free dynamically allocated buffers */
+	    
+	    /* Free dynamically allocated buffers */
 	    if(var_prc_1[idx] != NULL) var_prc_1[idx]=nco_var_free(var_prc_1[idx]);
 	    if(var_prc_2[idx] != NULL) var_prc_2[idx]=nco_var_free(var_prc_2[idx]);
 	    if(var_prc_out[idx] != NULL) var_prc_out[idx]=nco_var_free(var_prc_out[idx]);
-
+	    
 #ifdef ENABLE_MPI
 	    /* Close output file and increment written counter */
 	    nco_close(out_id);
@@ -724,13 +723,13 @@ main(int argc,char **argv)
 #else /* !ENABLE_MPI */
   } /* end (OpenMP parallel for) loop over idx */
 #endif /* !ENABLE_MPI */
-
+  
   if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
-
+  
   /* Close input netCDF files */
   nco_close(in_id_1);
   nco_close(in_id_2);
-
+  
 #ifdef ENABLE_MPI
   /* Manager moves output file (closed by workers) from temporary to permanent location */
   if(proc_id == 0) (void)nco_fl_mv(fl_out_tmp,fl_out);
@@ -738,11 +737,11 @@ main(int argc,char **argv)
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 #endif /* end !ENABLE_MPI */
-
+  
   /* Remove local copy of file */
   if(FILE_1_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_1);
   if(FILE_2_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_2);
-
+  
   /* ncflint-unique memory */
   if(fl_in_1 != NULL) fl_in_1=(char *)nco_free(fl_in_1);
   if(fl_in_2 != NULL) fl_in_2=(char *)nco_free(fl_in_2);
@@ -752,7 +751,7 @@ main(int argc,char **argv)
   if(wgt_2 != NULL) wgt_2=(var_sct *)nco_var_free(wgt_2);
   if(wgt_out_1 != NULL) wgt_out_1=(var_sct *)nco_var_free(wgt_out_1);
   if(wgt_out_2 != NULL) wgt_out_2=(var_sct *)nco_var_free(wgt_out_2);
-
+  
   /* NCO-generic clean-up */
   /* Free individual strings */
   if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
@@ -778,11 +777,11 @@ main(int argc,char **argv)
   var_prc_out=(var_sct **)nco_free(var_prc_out);
   if(nbr_var_fix > 0) var_fix=nco_var_lst_free(var_fix,nbr_var_fix);
   if(nbr_var_fix > 0) var_fix_out=nco_var_lst_free(var_fix_out,nbr_var_fix);
-
+  
 #ifdef ENABLE_MPI
   MPI_Finalize();
 #endif /* !ENABLE_MPI */
-
+  
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
   return EXIT_SUCCESS;

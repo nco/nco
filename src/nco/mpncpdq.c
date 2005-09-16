@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.10 2005-09-15 22:29:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.11 2005-09-16 00:07:49 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -72,7 +72,7 @@ main(int argc,char **argv)
 {
   aed_sct *aed_lst_add_fst=NULL_CEWI;
   aed_sct *aed_lst_scl_fct=NULL_CEWI;
-
+  
   bool **dmn_rvr_in=NULL; /* [flg] Reverse dimension */
   bool *dmn_rvr_rdr=NULL; /* [flg] Reverse dimension */
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
@@ -89,7 +89,7 @@ main(int argc,char **argv)
   bool REDEFINED_RECORD_DIMENSION=False; /* [flg] Re-defined record dimension */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   bool TOKEN_FREE=True; /* [flg] Allow MPI workers write-access to output file */
-
+  
   char **dmn_rdr_lst_in=NULL_CEWI; /* Option a */
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in=NULL_CEWI;
@@ -111,20 +111,20 @@ main(int argc,char **argv)
   
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
-
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.10 2005-09-15 22:29:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.10 $";
+  
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.11 2005-09-16 00:07:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.11 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
-
+  
   const double sleep_tm=0.04; /* [s] Token request interval */
-
+  
   const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
   const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
   dmn_sct **dmn_rdr=NULL; /* [sct] Dimension structures to be re-ordered */
-
+  
   double srt_tm; /* Start the clock */
   
   extern char *optarg;
@@ -134,9 +134,9 @@ main(int argc,char **argv)
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
-
+  
   int **dmn_idx_out_in=NULL; /* [idx] Dimension correspondence, output->input CEWI */
-
+  
   int abb_arg_nbr=0;
   int dmn_rdr_nbr=0; /* [nbr] Number of dimension to re-order */
   int dmn_rdr_nbr_in=0; /* [nbr] Original number of dimension to re-order */
@@ -179,7 +179,7 @@ main(int argc,char **argv)
   int wrk_id_bfr[1]; /* [bfr] Buffer for wrk_id */
   
   lmt_sct **lmt;
-
+  
 #ifdef ENABLE_MPI
   MPI_Status mpi_stt; /* [enm] Status check to decode msg_typ */
 #endif /* !ENABLE_MPI */
@@ -245,7 +245,7 @@ main(int argc,char **argv)
       {0,0,0,0}
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
-
+  
 #ifdef ENABLE_MPI
   /* MPI Initialization */
   MPI_Init(&argc,&argv);
@@ -253,17 +253,17 @@ main(int argc,char **argv)
   MPI_Comm_rank(MPI_COMM_WORLD,&proc_id);
   srt_tm=MPI_Wtime();
 #endif /* !ENABLE_MPI */
-
+  
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   time_crr_time_t=time((time_t *)NULL);
   time_bfr_srt=ctime(&time_crr_time_t); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
-
+  
   time_bfr_srt=time_bfr_srt; /* CEWI: Avert compiler warning that variable is set but never used */
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
-
+  
   /* Parse command line arguments */
   while((opt = getopt_long(argc,argv,opt_sht_lst,opt_lng,&opt_idx)) != EOF){
     switch(opt){
@@ -318,7 +318,7 @@ main(int argc,char **argv)
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lbr_vrs_prn();
-       nco_exit(EXIT_SUCCESS);
+      nco_exit(EXIT_SUCCESS);
       break;
     case 't': /* Thread number */
       thr_nbr=(int)strtol(optarg,(char **)NULL,10);
@@ -354,13 +354,13 @@ main(int argc,char **argv)
       break;
     } /* end switch */
   } /* end while loop */
-
+  
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
-
+  
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
-    
+  
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
@@ -373,25 +373,25 @@ main(int argc,char **argv)
   
   /* Form initial extraction list which may include extended regular expressions */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXTRACT_ALL_COORDINATES,&nbr_xtr);
-
+  
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
-
+  
   /* Add all coordinate variables to extraction list */
   if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_dmn_fl,xtr_lst,&nbr_xtr);
-
+  
   /* Make sure coordinates associated extracted variables are also on extraction list */
   if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
-
+  
   /* Sort extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,nbr_xtr,False);
-    
+  
   /* Find coordinate/dimension values associated with user-specified limits */
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
   
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
-
+  
   /* Fill in dimension structure for all extracted dimensions */
   dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
@@ -400,7 +400,7 @@ main(int argc,char **argv)
   
   /* Merge hyperslab limit information into dimension structures */
   if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
-
+  
   /* Duplicate input dimension structures for output dimension structures */
   nbr_dmn_out=nbr_dmn_xtr;
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_out*sizeof(dmn_sct *));
@@ -408,23 +408,23 @@ main(int argc,char **argv)
     dmn_out[idx]=nco_dmn_dpl(dim[idx]);
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
   } /* end loop over idx */
-
+  
   /* No re-order dimensions specified implies packing request */
   if(dmn_rdr_nbr == 0){
     if(nco_pck_plc == nco_pck_plc_nil) nco_pck_plc=nco_pck_plc_get(nco_pck_plc_sng);
     if(dbg_lvl > 0) (void)fprintf(stderr,"%s: DEBUG Packing map is %s and packing policy is %s\n",prg_nm_get(),nco_pck_map_sng_get(nco_pck_map),nco_pck_plc_sng_get(nco_pck_plc));
   } /* endif */
-
+  
   /* From this point forward, assume ncpdq operator packs or re-orders, not both */
   if(dmn_rdr_nbr > 0 && nco_pck_plc != nco_pck_plc_nil){
     (void)fprintf(fp_stdout,"%s: ERROR %s does not support simultaneous dimension re-ordering  (-a switch) and packing (-P switch).\nHINT: Invoke %s twice, once to re-order (with -a), and once to pack (with -P).\n",prg_nm,prg_nm,prg_nm);
     nco_exit(EXIT_FAILURE);
   } /* end if */
-
+  
   if(dmn_rdr_nbr > 0){
     /* NB: Same logic as in ncwa, perhaps combine into single function, nco_dmn_avg_rdr_prp()? */
     /* Make list of user-specified dimension re-orders */
-
+    
     /* Create reversed dimension list */
     dmn_rvr_rdr=(bool *)nco_malloc(dmn_rdr_nbr*sizeof(bool));
     for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
@@ -438,10 +438,10 @@ main(int argc,char **argv)
 	dmn_rvr_rdr[idx_rdr]=False;
       } /* end else */
     } /* end loop over idx_rdr */
-
+    
     /* Create structured list of re-ordering dimension names and IDs */
     dmn_rdr_lst=nco_dmn_lst_mk(in_id,dmn_rdr_lst_in,dmn_rdr_nbr);
-
+    
     /* Form list of re-ordering dimensions from extracted input dimensions */
     dmn_rdr=(dmn_sct **)nco_malloc(dmn_rdr_nbr*sizeof(dmn_sct *));
     /* Loop over original number of re-order dimensions */
@@ -456,7 +456,7 @@ main(int argc,char **argv)
     dmn_rdr=(dmn_sct **)nco_realloc(dmn_rdr,dmn_rdr_nbr*sizeof(dmn_sct *));
     /* Dimension list in name-ID format is no longer needed */
     dmn_rdr_lst=nco_nm_id_lst_free(dmn_rdr_lst,dmn_rdr_nbr);
-
+    
     /* Make sure no re-ordering dimension is specified more than once */
     for(idx=0;idx<dmn_rdr_nbr;idx++){
       for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
@@ -468,17 +468,17 @@ main(int argc,char **argv)
 	} /* end if */
       } /* end loop over idx_rdr */
     } /* end loop over idx */
-
+    
     if(dmn_rdr_nbr > nbr_dmn_xtr){
       (void)fprintf(fp_stdout,"%s: ERROR More re-ordering dimensions than extracted dimensions\n",prg_nm);
       nco_exit(EXIT_FAILURE);
     } /* end if */
-
+    
   } /* dmn_rdr_nbr <= 0 */
-
+  
   /* Is this an CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
-
+  
   /* Fill in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
@@ -493,37 +493,37 @@ main(int argc,char **argv)
   
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
-
+  
   /* We now have final list of variables to extract. Phew. */
   if(dbg_lvl > 2){
     for(idx=0;idx<nbr_xtr;idx++) (void)fprintf(stderr,"var[%d]->nm = %s, ->id=[%d]\n",idx,var[idx]->nm,var[idx]->id);
     for(idx=0;idx<nbr_var_fix;idx++) (void)fprintf(stderr,"var_fix[%d]->nm = %s, ->id=[%d]\n",idx,var_fix[idx]->nm,var_fix[idx]->id);
     for(idx=0;idx<nbr_var_prc;idx++) (void)fprintf(stderr,"var_prc[%d]->nm = %s, ->id=[%d]\n",idx,var_prc[idx]->nm,var_prc[idx]->id);
   } /* end if */
-
+  
 #ifdef ENABLE_MPI
   if(proc_id == 0){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
-  /* Open output file */
-  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FMT_64BIT,&out_id);
-  if(dbg_lvl > 4) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
-
-  /* Copy global attributes */
-  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
-  
-  /* Catenate time-stamped command line to "history" global attribute */
-  if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-
-  /* Initialize thread information */
-  thr_nbr=nco_openmp_ini(thr_nbr);
-  if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
-
+    /* Open output file */
+    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FMT_64BIT,&out_id);
+    if(dbg_lvl > 4) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
+    
+    /* Copy global attributes */
+    (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
+    
+    /* Catenate time-stamped command line to "history" global attribute */
+    if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+    
+    /* Initialize thread information */
+    thr_nbr=nco_openmp_ini(thr_nbr);
+    if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
+    
 #ifdef ENABLE_MPI
-  /* Initialize MPI task information */
-  if(proc_nbr > 0 && HISTORY_APPEND) (void)nco_mpi_att_cat(out_id,proc_nbr);
+    /* Initialize MPI task information */
+    if(proc_nbr > 0 && HISTORY_APPEND) (void)nco_mpi_att_cat(out_id,proc_nbr);
   } /* !proc_id == 0 */
 #endif /* !ENABLE_MPI */
-
+  
   /* If re-ordering, then in files with record dimension... */
   if(dmn_rdr_nbr > 0 && rec_dmn_id_in != NCO_REC_DMN_UNDEFINED){
     /* ...which, if any, output dimension structure currently holds record dimension? */
@@ -608,7 +608,7 @@ main(int argc,char **argv)
 	} /* endif status changing from non-record to record */
       } /* endif variable will be record variable */
     } /* end loop over var_fix */
-
+    
     /* Update is_rec_var flag for var_prc */
     for(idx=0;idx<nbr_var_prc;idx++){
       /* Search all dimensions in variable for new record dimension */
@@ -677,12 +677,12 @@ main(int argc,char **argv)
       } /* endif variable will be record variable */
     } /* end loop over var_prc */
   } /* !REDEFINED_RECORD_DIMENSION */
-
+  
 #ifdef ENABLE_MPI
   if(proc_id == 0){ /* Defining dimension in output file done by Manager alone */
 #endif /* !ENABLE_MPI */
-  /* Once new record dimension, if any, is known, define dimensions in output file */
-  (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_out);
+    /* Once new record dimension, if any, is known, define dimensions in output file */
+    (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_out);
 #ifdef ENABLE_MPI
   } /* proc_id != 0 */
 #endif /* !ENABLE_MPI */
@@ -703,32 +703,32 @@ main(int argc,char **argv)
       } /* endif packing */
     } /* end loop over var_prc */
   } /* nco_pck_plc == nco_pck_plc_nil */
-
+  
 #ifdef ENABLE_MPI
   if(proc_id == 0){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
-  /* Define variables in output file, copy their attributes */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_map,nco_pck_plc);
-  
-  /* Turn off default filling behavior to enhance efficiency */
-  rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
-  
-  /* Take output file out of define mode */
-  (void)nco_enddef(out_id);
+    /* Define variables in output file, copy their attributes */
+    (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_map,nco_pck_plc);
+    
+    /* Turn off default filling behavior to enhance efficiency */
+    rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+    
+    /* Take output file out of define mode */
+    (void)nco_enddef(out_id);
 #ifdef ENABLE_MPI
   } /* proc_id != 0 */
-
+  
   /* Manager obtains output filename and broadcasts to workers */
   if(proc_id == 0) fl_nm_lng=(int)strlen(fl_out_tmp); 
   MPI_Bcast(&fl_nm_lng,1,MPI_INT,0,MPI_COMM_WORLD);
   if(proc_id != 0) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
   MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,0,MPI_COMM_WORLD);
-
+  
 #endif /* !ENABLE_MPI */
   
   /* Zero start vectors for all output variables */
   (void)nco_var_srt_zero(var_out,nbr_xtr);
-
+  
 #ifdef ENABLE_MPI
   if(proc_id == 0){ /* MPI manager code */
     TOKEN_FREE=False;
@@ -741,7 +741,7 @@ main(int argc,char **argv)
     TOKEN_FREE=True;
   } /* proc_id != 0 */
 #endif /* !ENABLE_MPI */
-
+  
   /* Close first input netCDF file */
   nco_close(in_id);
   
@@ -768,13 +768,13 @@ main(int argc,char **argv)
         msg_typ=mpi_stt.MPI_TAG;
         /* Get sender's proc_id */
         wrk_id=wrk_id_bfr[0];
-
+	
         /* Allocate next variable, if any, to worker */
         if(msg_typ == WORK_REQUEST){
           var_wrt_nbr++; /* [nbr] Number of variables written */
           /* Worker closed output file before sending WORK_REQUEST */
           TOKEN_FREE=True;
-
+	  
           if(idx > nbr_var_prc-1){
             /* Variable index = -1 indicates NO_MORE_WORK */
             info_bfr[0]=NO_MORE_WORK; /* [idx] -1 */
@@ -816,167 +816,172 @@ main(int argc,char **argv)
           lcl_nbr_var++;
           var_prc_out[idx]->id=info_bfr[2];
           /* Process this variable same as UP code */
+#if 0
+	      /* NB: Immediately preceding MPI else scope confounds Emacs indentation
+		 Fake end scope restores correct indentation, simplifies code-checking */
+	} /* fake end else */
+#endif /* !0 */
 #else /* !ENABLE_MPI */
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,fp_stderr,fp_stdout,in_id,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out)
 #endif /* !_OPENMP */
-          /* UP and SMP codes main loop over variables */
-          for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
+	/* UP and SMP codes main loop over variables */
+	for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 #endif /* ENABLE_MPI */
-
-	    if(dbg_lvl > 1) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	    if(dbg_lvl > 0) (void)fflush(fp_stderr);
-      
-      /* Retrieve variable from disk into memory */
-      (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
-      
-      if(dmn_rdr_nbr > 0){
-	if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
-	  (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
-	  nco_exit(EXIT_FAILURE); 
-	} /* endif err */
-
-	/* Change dimensionionality of values */
-	rcd=nco_var_dmn_rdr_val(var_prc[idx],var_prc_out[idx],dmn_idx_out_in[idx],dmn_rvr_in[idx]);
-	/* Re-ordering required two value buffers, time to free input buffer */
-	var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
-	/* Free current dimension correspondence */
-	dmn_idx_out_in[idx]=nco_free(dmn_idx_out_in[idx]);
-	dmn_rvr_in[idx]=nco_free(dmn_rvr_in[idx]);
-      } /* endif dmn_rdr_nbr > 0 */
-
-      if(nco_pck_plc != nco_pck_plc_nil){
-	/* Copy input variable buffer to processed variable buffer */
-	/* fxm: this is dangerous and leads to double free()'ing variable buffer */
-	var_prc_out[idx]->val=var_prc[idx]->val;
-	/* (Un-)Pack variable according to packing specification */
-	nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_plc,aed_lst_add_fst+idx,aed_lst_scl_fct+idx);
-      } /* endif dmn_rdr_nbr > 0 */
-
+	    
+	  if(dbg_lvl > 1) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	  if(dbg_lvl > 0) (void)fflush(fp_stderr);
+	  
+	  /* Retrieve variable from disk into memory */
+	  (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
+	  
+	  if(dmn_rdr_nbr > 0){
+	    if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
+	      (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
+	      nco_exit(EXIT_FAILURE); 
+	    } /* endif err */
+	    
+	      /* Change dimensionionality of values */
+	    rcd=nco_var_dmn_rdr_val(var_prc[idx],var_prc_out[idx],dmn_idx_out_in[idx],dmn_rvr_in[idx]);
+	    /* Re-ordering required two value buffers, time to free input buffer */
+	    var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+	    /* Free current dimension correspondence */
+	    dmn_idx_out_in[idx]=nco_free(dmn_idx_out_in[idx]);
+	    dmn_rvr_in[idx]=nco_free(dmn_rvr_in[idx]);
+	  } /* endif dmn_rdr_nbr > 0 */
+	  
+	  if(nco_pck_plc != nco_pck_plc_nil){
+	    /* Copy input variable buffer to processed variable buffer */
+	    /* fxm: this is dangerous and leads to double free()'ing variable buffer */
+	    var_prc_out[idx]->val=var_prc[idx]->val;
+	    /* (Un-)Pack variable according to packing specification */
+	    nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_plc,aed_lst_add_fst+idx,aed_lst_scl_fct+idx);
+	  } /* endif dmn_rdr_nbr > 0 */
+	  
 #ifdef ENABLE_MPI
-      /* Obtain token and prepare to write */
-      while(1){ /* Send TOKEN_REQUEST repeatedly until token obtained */
-	wrk_id_bfr[0]=proc_id;
-	MPI_Send(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,mgr_id,TOKEN_REQUEST,MPI_COMM_WORLD);
-	/* Receive TOKEN_RESULT (1,0)=(ALLOW,WAIT) */
-	MPI_Recv(info_bfr,info_bfr_lng,MPI_INT,mgr_id,TOKEN_RESULT,MPI_COMM_WORLD,&mpi_stt);
-	tkn_rsp=info_bfr[0];
-	/* Wait then re-send request */
-	if(tkn_rsp == TOKEN_WAIT) sleep(sleep_tm); else break;
-      } /* end while loop waiting for write token */
-
-      /* Worker has token---prepare to write */
-      if(tkn_rsp == TOKEN_ALLOC){
-	rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
+	  /* Obtain token and prepare to write */
+	  while(1){ /* Send TOKEN_REQUEST repeatedly until token obtained */
+	    wrk_id_bfr[0]=proc_id;
+	    MPI_Send(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,mgr_id,TOKEN_REQUEST,MPI_COMM_WORLD);
+	    /* Receive TOKEN_RESULT (1,0)=(ALLOW,WAIT) */
+	    MPI_Recv(info_bfr,info_bfr_lng,MPI_INT,mgr_id,TOKEN_RESULT,MPI_COMM_WORLD,&mpi_stt);
+	    tkn_rsp=info_bfr[0];
+	    /* Wait then re-send request */
+	    if(tkn_rsp == TOKEN_WAIT) sleep(sleep_tm); else break;
+	  } /* end while loop waiting for write token */
+	  
+	    /* Worker has token---prepare to write */
+	  if(tkn_rsp == TOKEN_ALLOC){
+	    rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
 #else /* !ENABLE_MPI */
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
 #endif /* !ENABLE_MPI */
-      { /* begin OpenMP critical */
-	/* Common code for UP, SMP, and MPI */
-	/* Copy variable to output file then free value buffer */
-	if(var_prc_out[idx]->nbr_dim == 0){
-	  (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
-	}else{ /* end if variable is scalar */
-	  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
-	} /* end if variable is array */
-      } /* end OpenMP critical */
-      /* Free current output buffer */
-      var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
-
+	    { /* begin OpenMP critical */
+	      /* Common code for UP, SMP, and MPI */
+	      /* Copy variable to output file then free value buffer */
+	      if(var_prc_out[idx]->nbr_dim == 0){
+		(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+	      }else{ /* end if variable is scalar */
+		(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+	      } /* end if variable is array */
+	    } /* end OpenMP critical */
+	      /* Free current output buffer */
+	    var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
+	    
 #ifdef ENABLE_MPI
-      /* Close output file and increment written counter */
-      nco_close(out_id);
-      var_wrt_nbr++;
-      } /* endif TOKEN_ALLOC */
-          } /* end else !NO_MORE_WORK */
-        } /* end while loop requesting work/token */
-      } /* endif Worker */
+	    /* Close output file and increment written counter */
+	    nco_close(out_id);
+	    var_wrt_nbr++;
+	  } /* endif TOKEN_ALLOC */
+	} /* end else !NO_MORE_WORK */
+      } /* end while loop requesting work/token */
+    } /* endif Worker */
 #else /* !ENABLE_MPI */
-    }  /* end (OpenMP parallel for) loop over idx */
+  }  /* end (OpenMP parallel for) loop over idx */
+#endif /* !ENABLE_MPI */
+  
+  if(dbg_lvl > 0) (void)fprintf(fp_stderr,"\n");
+  
+#ifdef ENABLE_MPI
+  MPI_Barrier(MPI_COMM_WORLD);
+  if(proc_id == 0) { /* Manager only */
+    MPI_Send(info_bfr,info_bfr_lng,MPI_INT,proc_id+1,TOKEN_RESULT,MPI_COMM_WORLD);
+  } /* ! proc_id == 0 */
+  else{ /* Workers */
+    MPI_Recv(info_bfr,info_bfr_lng,MPI_INT,proc_id-1,TOKEN_RESULT,MPI_COMM_WORLD,&mpi_stt);
 #endif /* !ENABLE_MPI */
     
-    if(dbg_lvl > 0) (void)fprintf(fp_stderr,"\n");
-
-#ifdef ENABLE_MPI
-    MPI_Barrier(MPI_COMM_WORLD);
-    if(proc_id == 0) { /* Manager only */
-      MPI_Send(info_bfr,info_bfr_lng,MPI_INT,proc_id+1,TOKEN_RESULT,MPI_COMM_WORLD);
-    } /* ! proc_id == 0 */
-    else{ /* Workers */
-      MPI_Recv(info_bfr,info_bfr_lng,MPI_INT,proc_id-1,TOKEN_RESULT,MPI_COMM_WORLD,&mpi_stt);
-#endif /* !ENABLE_MPI */
-
     /* Write/overwrite packing attributes for newly packed and re-packed variables 
        Logic here should nearly mimic logic in nco_var_dfn() */
     if(nco_pck_plc != nco_pck_plc_nil && nco_pck_plc != nco_pck_plc_upk){
       bool nco_pck_plc_alw; /* [flg] Packing policy allows packing nc_typ_in */
       /* ...put file in define mode to allow metadata writing... */
-	rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
+      rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
       (void)nco_redef(out_id);
       /* ...loop through all variables that may have been packed... */
 #ifdef ENABLE_MPI
-	for(jdx=0;jdx<lcl_nbr_var;jdx++){
-	  idx=lcl_idx_lst[jdx];
+      for(jdx=0;jdx<lcl_nbr_var;jdx++){
+	idx=lcl_idx_lst[jdx];
 #else /* !ENABLE_MPI */
-      for(idx=0;idx<nbr_var_prc;idx++){
+	for(idx=0;idx<nbr_var_prc;idx++){
 #endif /* !ENABLE_MPI */
-	/* nco_var_dfn() pre-defined dummy packing attributes in output file 
-	   only for input variables considered "packable" */
-	if((nco_pck_plc_alw=nco_pck_plc_typ_get(nco_pck_map,var_prc[idx]->typ_upk,(nc_type *)NULL))){
-	  /* Verify input variable was newly packed by this operator
-	     Writing pre-existing (non-re-packed) attributes here would fail because
-	     nco_pck_dsk_inq() never fills in var->scl_fct.vp and var->add_fst.vp
-	     Logic is same as in nco_var_dfn() (except var_prc[] instead of var[])
-	     If operator newly packed this particular variable... */
-	  if(
-	     /* ...either because operator newly packs all variables... */
-	     (nco_pck_plc == nco_pck_plc_all_new_att) ||
-	     /* ...or because operator newly packs un-packed variables like this one... */
-	     (nco_pck_plc == nco_pck_plc_all_xst_att && !var_prc[idx]->pck_ram) ||
-	     /* ...or because operator re-packs packed variables like this one... */
-	     (nco_pck_plc == nco_pck_plc_xst_new_att && var_prc[idx]->pck_ram)
-	     ){
-	    /* Replace dummy packing attributes with final values, or delete them */
-	    if(dbg_lvl >= 5) (void)fprintf(stderr,"%s: main() replacing dummy packing attribute values for variable %s\n",prg_nm,var_prc[idx]->nm);
-	    (void)nco_aed_prc(out_id,aed_lst_add_fst[idx].id,aed_lst_add_fst[idx]);
-	    (void)nco_aed_prc(out_id,aed_lst_scl_fct[idx].id,aed_lst_scl_fct[idx]);
-	  } /* endif variable is newly packed by this operator */
-	} /* endif nco_pck_plc_alw */
-      } /* end loop over var_prc */
-      (void)nco_enddef(out_id);
-      nco_close(out_id);
-    } /* nco_pck_plc == nco_pck_plc_nil || nco_pck_plc == nco_pck_plc_upk */
-
+	  /* nco_var_dfn() pre-defined dummy packing attributes in output file 
+	     only for input variables considered "packable" */
+	  if((nco_pck_plc_alw=nco_pck_plc_typ_get(nco_pck_map,var_prc[idx]->typ_upk,(nc_type *)NULL))){
+	    /* Verify input variable was newly packed by this operator
+	       Writing pre-existing (non-re-packed) attributes here would fail because
+	       nco_pck_dsk_inq() never fills in var->scl_fct.vp and var->add_fst.vp
+	       Logic is same as in nco_var_dfn() (except var_prc[] instead of var[])
+	       If operator newly packed this particular variable... */
+	    if(
+	       /* ...either because operator newly packs all variables... */
+	       (nco_pck_plc == nco_pck_plc_all_new_att) ||
+	       /* ...or because operator newly packs un-packed variables like this one... */
+	       (nco_pck_plc == nco_pck_plc_all_xst_att && !var_prc[idx]->pck_ram) ||
+	       /* ...or because operator re-packs packed variables like this one... */
+	       (nco_pck_plc == nco_pck_plc_xst_new_att && var_prc[idx]->pck_ram)
+	       ){
+	      /* Replace dummy packing attributes with final values, or delete them */
+	      if(dbg_lvl >= 5) (void)fprintf(stderr,"%s: main() replacing dummy packing attribute values for variable %s\n",prg_nm,var_prc[idx]->nm);
+	      (void)nco_aed_prc(out_id,aed_lst_add_fst[idx].id,aed_lst_add_fst[idx]);
+	      (void)nco_aed_prc(out_id,aed_lst_scl_fct[idx].id,aed_lst_scl_fct[idx]);
+	    } /* endif variable is newly packed by this operator */
+	  } /* endif nco_pck_plc_alw */
+	} /* end loop over var_prc */
+	(void)nco_enddef(out_id);
+	nco_close(out_id);
+      } /* nco_pck_plc == nco_pck_plc_nil || nco_pck_plc == nco_pck_plc_upk */
+      
 #ifdef ENABLE_MPI
-	if(proc_id == proc_nbr-1) /* Send Token to Manager */
-	  MPI_Send(info_bfr,info_bfr_lng,MPI_INT,mgr_id,TOKEN_RESULT,MPI_COMM_WORLD);
-	else
-	  MPI_Send(info_bfr,info_bfr_lng,MPI_INT,proc_id+1,TOKEN_RESULT,MPI_COMM_WORLD);
+      if(proc_id == proc_nbr-1) /* Send Token to Manager */
+	MPI_Send(info_bfr,info_bfr_lng,MPI_INT,mgr_id,TOKEN_RESULT,MPI_COMM_WORLD);
+      else
+	MPI_Send(info_bfr,info_bfr_lng,MPI_INT,proc_id+1,TOKEN_RESULT,MPI_COMM_WORLD);
     } /* !Workers */
     if(proc_id == 0){ /* Only Manager */
       MPI_Recv(info_bfr,info_bfr_lng,MPI_INT,proc_nbr-1,TOKEN_RESULT,MPI_COMM_WORLD,&mpi_stt);
     } /* proc_id != 0 */
 #endif /* !ENABLE_MPI */
-
+    
     /* Close input netCDF file */
     nco_close(in_id);
-
+    
     /* Remove local copy of file */
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
-
+    
   } /* end loop over fl_idx */
-
+  
 #ifdef ENABLE_MPI
   MPI_Barrier(MPI_COMM_WORLD);
-    /* Manager moves output file (closed by workers) from temporary to permanent location */
-    if(proc_id == 0) (void)nco_fl_mv(fl_out_tmp,fl_out);
+  /* Manager moves output file (closed by workers) from temporary to permanent location */
+  if(proc_id == 0) (void)nco_fl_mv(fl_out_tmp,fl_out);
 #else /* !ENABLE_MPI */
-    /* Close output file and move it from temporary to permanent location */
-    (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
+  /* Close output file and move it from temporary to permanent location */
+  (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 #endif /* end !ENABLE_MPI */
-    
+  
   /* ncpdq-specific memory cleanup */
   if(dmn_rdr_nbr > 0){
     /* Free dimension correspondence list */
@@ -1003,9 +1008,9 @@ main(int argc,char **argv)
       aed_lst_scl_fct=(aed_sct *)nco_free(aed_lst_scl_fct);
     } /* nco_pck_plc == nco_pck_plc_upk */
   } /* nco_pck_plc == nco_pck_plc_nil */
-
-  /* NCO-generic clean-up */
-  /* Free individual strings */
+  
+    /* NCO-generic clean-up */
+    /* Free individual strings */
   if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
   if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
@@ -1030,11 +1035,11 @@ main(int argc,char **argv)
   var_prc_out=(var_sct **)nco_free(var_prc_out);
   var_fix=(var_sct **)nco_free(var_fix);
   var_fix_out=(var_sct **)nco_free(var_fix_out);
-
+  
 #ifdef ENABLE_MPI
-    MPI_Finalize();
+  MPI_Finalize();
 #endif /* !ENABLE_MPI */
-
+  
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
