@@ -1,3 +1,10 @@
+2005-09-16  Harry Mangalam <hjm@tacgi.com>
+
+	* added --mpi_fake (aka -mpi_fke aka --fake_mpi)  to allow running of
+		the mpi executables as single processes.  Since my laptop cannnot yet
+		generate valid MPI apps, I can't tell what the real reulst of running
+		them is but the commandlines look right.
+
 2005-09-16  Charlie Zender  <zender@uci.edu>
 
 	* Move mpncra.c nco_var_srt_zero() from MPI to common code so

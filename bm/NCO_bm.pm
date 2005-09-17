@@ -14,7 +14,7 @@ package NCO_bm;
 #   smrz_rgr_rslt()......summarizes the results of both regression and benchmark tests
 #   check_nco_results()..checks the output via md5/wc validation
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.2 2005-09-16 21:23:35 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.3 2005-09-17 00:22:26 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -39,15 +39,15 @@ our @EXPORT = qw (
 	wat4inpt
 	dbg_msg
 
-	@fl_cr8_dat @fl_tmg $prefix $opr_nm $opr_sng_mpi $md5 $md5found $bm_dir $mpi_prc
-	$nsr_xpc @tst_cmd %tst_nbr $dbg_lvl $wnt_log $dsc_sng $outfile $fl_pth $tmr_app
+	@fl_cr8_dat @fl_tmg $prefix $opr_nm $opr_sng_mpi $md5 $md5found $bm_dir $mpi_prc $mpi_fke
+	$nsr_xpc @tst_cmd %tst_nbr $dbg_lvl $wnt_log $dsc_sng $outfile $fl_pth $tmr_app $fke_prefix
 );
 
 use vars qw(
 	$dbg_lvl  $dot_fmt  $dot_nbr  $dot_nbr_min  $dot_sng  $dsc_fmt
-	$dsc_lng_max  $dsc_sng  $hiresfound  $md5  $mpi_prc  $mpi_prfx
+	$dsc_lng_max  $dsc_sng $fke_prefix $hiresfound  $md5  $mpi_prc  $mpi_prfx
 	$MY_BIN_DIR  $nsr_xpc  $opr_fmt  $opr_lng_max  @opr_lst
-	@opr_lst_all  @opr_lst_mpi  $opr_nm  $opr_rgr_mpi  $opr_sng_mpi
+	@opr_lst_all  @opr_lst_mpi $mpi_fke $opr_nm  $opr_rgr_mpi  $opr_sng_mpi
 	$outfile  $prefix  %real_tme  $result  $spc_fmt  $spc_nbr
 	$spc_nbr_min  $spc_sng  %subbenchmarks  %success  @sys_tim_arr
 	$sys_time  %sys_tme  $timed  %totbenchmarks  @tst_cmd  $tst_fmt
@@ -92,23 +92,24 @@ $prg_nm=$0; # $0 is program name Camel p. 136
 $cmd_ln = "$0 "; $arg_nbr = @ARGV;
 for (my $i=0; $i<$arg_nbr; $i++){ $cmd_ln .= "$ARGV[$i] ";}
 
-# Determine where $DATA should be, prompt user if necessary
-#if($dbg_lvl > 1){printf ("$prg_nm: Calling set_dat_dir()...\n");}
-#set_dat_dir(); # Set $dta_dir
-
 # make sure that the $fl_pth gets set to a reasonable defalt
 $fl_pth = "$dta_dir";
 
-# Pass in the MPI prefix if --mpi is set. Should be able to just plug into the commandline
-# MPI'ed nco's: mpirun -np 4 mpncbo etc
-#                MPI prefix <--++--> regular command line
-# note that $prefix contains both MPI and non-MPI commands from here on - $mpi_prfx isn't nec.
-$nvr_my_bin_dir=$ENV{'MY_BIN_DIR'} ? $ENV{'MY_BIN_DIR'} : '';
-$MY_BIN_DIR = $nvr_my_bin_dir;
-$mpi_prfx = " mpirun -np $mpi_prc  $MY_BIN_DIR/mp"; $prfxd = 1; $timed = 1;
-$prefix   = " $MY_BIN_DIR"; $prfxd = 1; $timed = 1;
-
-#print "\n\n\$tmr_app = $tmr_app and  \$prefix = $prefix\n\n";
+# # Pass in the MPI prefix if --mpi is set. Should be able to just plug into the commandline
+# # MPI'ed nco's: mpirun -np 4 mpncbo etc
+# #               MPI prefix <--++--> regular command line
+# $nvr_my_bin_dir=$ENV{'MY_BIN_DIR'} ? $ENV{'MY_BIN_DIR'} : '';
+# $MY_BIN_DIR = $nvr_my_bin_dir;
+#
+# # set the $fke_prefix to allow for running the mpnc* as a non-mpi'ed  executable
+# $fke_prefix = " $MY_BIN_DIR/mp";
+# # $prefix expects to find an regular nco in MY_BIN_DIR
+# $prefix = " $MY_BIN_DIR/";
+# #  $mpi_prfx will always have the mpirun directive.PLUS the MPI'ed nco
+# $mpi_prfx = " mpirun -np $mpi_prc  $MY_BIN_DIR/mp";
+# $prfxd = 1; $timed = 1;
+#
+# dbg_msg(1, "*\$tmr_app = $tmr_app, \$prefix = $prefix,\$mpi_fke = $mpi_fke, \$mpi_prfx = $mpi_prfx");
 
 #wat4inpt(__LINE__,"NCO_bm.pm inits finished.");
 
@@ -440,13 +441,13 @@ sub set_dat_dir {
 sub go {
 	$dbg_sgn = "";
 	$err_sgn = "";
-#	BEGIN {eval "use Time::HiRes qw(usleep ualarm gettimeofday tv_interval)"; $hiresfound = $@ ? 0 : 1}
-#	#$hiresfound = 0;  # uncomment to simulate not found
-#	if ($hiresfound == 0) {
-#		print "\nOoops! Time::HiRes (needed for accurate timing) not found\nContinuing without timing.";
-#	} else {
-#	} # $hiresfound
 
+	# twiddle the $prefix to allow for running the mpnc* as a non-mpi'ed  executable
+	if ($mpi_fke) {$fke_prefix = " $MY_BIN_DIR/mp"; }
+	else {         $prefix = " $MY_BIN_DIR";}
+	#  $mpi_prfx will always have the mpirun directive.
+	$mpi_prfx = " mpirun -np $mpi_prc  $MY_BIN_DIR/mp";
+	$prfxd = 1; $timed = 1;
 
 # Perform tests of requested operator; default is all
 	if (!defined $tst_nbr{$opr_nm}) {
@@ -498,15 +499,18 @@ sub go {
 		my $md5_dsc_sng = $dsc_sng . "_$tst_cmdcnt";
 		# Add $prefix only to NCO operator commands, not things like 'cut'.
 
-		dbg_msg(1,"\$prefix = $prefix, \$mpi_prc = $mpi_prc, \$mpi_prfx = $mpi_prfx");
 
 		foreach my $op (@opr_lst_all) {
+#			print "\$op = $op\n";
 			if ($_ =~ m/^$op/ ) { # if the op is in the main list
-				if ($mpi_prc > 0 && $opr_sng_mpi =~ /$op/) { $_ = $tmr_app . $mpi_prfx . '/' . $_; } # and in the mpi list
-				else { $_ = $tmr_app . $prefix . '/' .$_; } # the std prefix
+				if ($mpi_prc > 0 && $opr_sng_mpi =~ /$op/) { $_ = $tmr_app . $mpi_prfx . $_; } # and in the mpi list
+				elsif ($mpi_fke  && $opr_sng_mpi =~ /$op/) { $_ = $tmr_app . $fke_prefix . $_; } # the fake prefix
+				else  { $_ = $tmr_app . $prefix . $_; } # the std prefix
+				dbg_msg(2, "URGENT:cmdline= $_ \n");
 			}
 		}
-wat4inpt(__LINE__);
+
+#wat4inpt(__LINE__);
 
 		$dbg_sgn .= "DEBUG:$_\n";
 

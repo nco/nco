@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.90 2005-09-16 22:30:21 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.91 2005-09-17 00:22:26 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -27,19 +27,23 @@ use strict; # Protect all namespaces
 
 # Declare vars for strict
 use vars qw(
-$arg_nbr $bch_flg $bm @bm_cmd_ary $bm_dir $cmd_ln $dbg_lvl $dodap $fl_cnt
-$dot_fmt $dot_nbr $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng $dta_dir
-$pth_rmt_scp_tst %MD5_tbl %wc_tbl $hiresfound $NUM_FLS
-%failure $fl_pth $foo1_fl $foo2_fl $foo_fl $foo_avg_fl $foo_T42_fl $foo_tst $foo_x_fl
-$foo_xy_fl $foo_xymyx_fl $foo_y_fl $foo_yx_fl @ifls $itmp $localhostname
-$md5 $md5found $MY_BIN_DIR $notbodi $nsr_xpc $omp_flg $opr_fmt $opr_lng_max @opr_lst
-@opr_lst_all $opr_nm $orig_outfile $outfile $prfxd $prg_nm $que $rcd
-$result $rgr $server_ip $server_name $server_port $sock $spc_fmt $spc_nbr
-$spc_nbr_min $spc_sng %subbenchmarks %success %sym_link $thr_nbr $tmr_app
-%totbenchmarks @tst_cmd $tst_fl_cr8 $tst_fmt $tst_id_sng $tst_idx %tst_nbr
-$udp_reprt $udp_rpt $usg $wnt_log $caseid $xpt_dsc $timed $sys_time @sys_tim_arr
-%real_tme %usr_tme %sys_tme $mpi_prc @opr_lst_mpi $mpi_prfx  $timestamp
-$opr_sng_mpi $nco_D_flg $opr_rgr_mpi $nvr_my_bin_dir @fl_cr8_dat @fl_tmg $USER $pwd
+$arg_nbr  $bch_flg  $bm  @bm_cmd_ary  $bm_dir  $caseid  $cmd_ln
+$dbg_lvl  $dodap  $dot_fmt  $dot_nbr  $dot_nbr_min  $dot_sng  $dsc_fmt
+$dsc_lng_max  $dsc_sng  $dta_dir  %failure  $fl_cnt  @fl_cr8_dat
+$fl_pth  @fl_tmg  $foo1_fl  $foo2_fl  $foo_avg_fl  $foo_fl  $foo_T42_fl
+$foo_tst  $foo_x_fl  $foo_xy_fl  $foo_xymyx_fl  $foo_y_fl  $foo_yx_fl
+$hiresfound  @ifls  $itmp  $localhostname  $md5  $md5found  %MD5_tbl
+$mpi_fke  $mpi_prc  $mpi_prfx  $MY_BIN_DIR  $nco_D_flg  $notbodi
+$nsr_xpc  $NUM_FLS  $nvr_my_bin_dir  $omp_flg  $opr_fmt  $opr_lng_max
+@opr_lst  @opr_lst_all  @opr_lst_mpi  $opr_nm  $opr_rgr_mpi
+$opr_sng_mpi  $orig_outfile  $outfile  $prfxd  $prg_nm
+$pth_rmt_scp_tst  $pwd  $que  $rcd  %real_tme  $result  $rgr
+$server_ip  $server_name  $server_port  $sock  $spc_fmt  $spc_nbr
+$spc_nbr_min  $spc_sng  %subbenchmarks  %success  %sym_link
+@sys_tim_arr  $sys_time  %sys_tme  $thr_nbr  $timed  $timestamp
+$tmr_app  %totbenchmarks  @tst_cmd  $tst_fl_cr8  $tst_fmt  $tst_id_sng
+$tst_idx  %tst_nbr  $udp_reprt  $udp_rpt  $USER  $usg  %usr_tme
+%wc_tbl  $wnt_log  $xpt_dsc
 );
 
 # Initializations
@@ -62,6 +66,7 @@ $thr_nbr = 0; # If not zero, pass explicit threading argument
 $tst_fl_cr8 = "0";
 $udp_rpt = 0;
 $usg = 0;
+$mpi_fke = 0;
 $wnt_log = 0;
 $md5 = 0;
 $mpi_prc = 0; # by default, don't want no steekin MPI
@@ -102,6 +107,9 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'help'         => \$usg,        #            ditto
 	'log'          => \$wnt_log,    # set if want output logged
 	'mpi_prc=i'    => \$mpi_prc,    # set number of mpi processes
+	'mpi_fake'		=> \$mpi_fke,    # run the mpi executable as a single process for debugging.
+	'fake_mpi'		=> \$mpi_fke,    # run the mpi executable as a single process for debugging.
+	'mpi_fke'		=> \$mpi_fke,    # run the mpi executable as a single process for debugging.
 	'queue'        => \$que,        # if set, bypasses all interactive stuff
 	'pth_rmt_scp_tst' => \$pth_rmt_scp_tst, # [drc] Path to scp regression test file
 	'regress'      => \$rgr,        # test regression
@@ -148,6 +156,14 @@ if($dbg_lvl > 0){
 }
 
 if ($ARGV == 0) {	usage();}
+
+# Resolve conflicts early
+if ($mpi_prc > 0 && $thr_nbr > 0) {die "\nThe  '--mpi_prc' (MPI) and '--thr_nbr' (OpenMP) options are mutually exclusive.\nPlease decide which you want to run and try again.\n\n";}
+
+# do $mpi_prc and $mpi_fke conflict?
+if ($mpi_prc > 0 && $mpi_fke) {
+	die "\nERR: You requested both an MPI run (--mpi_prc) as well as a FAKE MPI run (--mpi_fake)\n\tMake up your mind!\n\n";
+}
 
 # Any irrationally exuberant values?
 if ($mpi_prc > 16) {die "\nThe '--mpi_prc' value was set to an irrationally exuberant [$mpi_prc].  Try a lower value\n ";}
