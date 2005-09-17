@@ -1,3 +1,7 @@
+2005-09-16  Charlie Zender  <zender@uci.edu>
+
+	* Move mpncra.c nco_var_srt_zero() from MPI to common code so
+	UP/SMP executables zero start vectors. Fixes mpncea bug TODO nco594. 
 
 2005-09-16  Harry Mangalam <hjm@tacgi.com>
 	* Re-org of regression and benchmarking script.  nco_bm.pl has
@@ -31,8 +35,6 @@
 		and they appear to be in sync.
 
 2005-09-15  Charlie Zender  <zender@uci.edu>
-
-	* 
 
 	* Port ncwa 20050608 bugfix for DO_CONFORM_[MSK,WGT] to mpncwa
 	
