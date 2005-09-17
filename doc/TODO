@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.610 2005-09-17 00:19:03 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.611 2005-09-17 00:20:11 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -347,26 +347,6 @@ nco593. mpncrcat: (sometimes) hangs while concatenating
         mpirun -np 2 $MY_BIN_DIR/mpncrcat -O -D 5 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc (hangs)
         ~/nco/bm/nco_bm.pl --mpi=3 --regress ncrcat
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpirun -np 2 mpirun -np 2 $MY_BIN_DIR/mpncrcat -O -D 5 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-nco594. MPI_FAKE mpncea fails ncea regression test 3
-	mpncea appears to write an extra (zeroth) record in output files whenever hyperslabs are specified
-        problem occurs only for certain hyperslabs X of format -d time,X
-	X=0 (works)
-	X=1 (fails) These single digit hyperslabs all write X+1 records to output
-	X=2 (fails)
-	X=3 (fails)
-	X=4 (fails)
-	X=3,3 (fails) Double digit hyperslabs of format X,X also fail, and write X+1 records
-	X=4,4 (fails) Double digit hyperslabs of format X,X also fail, and write X+1 records
-	In all cases, nco_lmt_evl() diagnostics show correct parsing of hyperslab argument string
-
-        ncea -O -C -y min -v one_dmn_rec_var -d time,1 -p ~/nco/data in.nc ~/foo.nc (works)
-        /bin/rm $MY_OBJ_DIR/mpncra.o;make MPI_FAKE=Y mpncra
-        mpncea -O -C -y min -v one_dmn_rec_var -d time,1 -p ~/nco/data in.nc ~/foo.nc (fails)
-        /bin/rm $MY_OBJ_DIR/mpncra.o;make MPI=Y mpncra
-        mpirun -np 2 $MY_BIN_DIR/mpncea -O -C -y min -v one_dmn_rec_var -d time,1 -p ~/nco/data in.nc ~/foo.nc (works)
-        ncks -C -H -s '%d' -v one_dmn_rec_var ~/foo.nc
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpncea -O -C -y min -v one_dmn_rec_var -d time,1 -p ~/nco/data in.nc ~/foo.nc > ~/foo 2>&1
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpirun -np 2 $MY_BIN_DIR/mpncea -O -C -y min -v one_dmn_rec_var -d time,1 -p ~/nco/data in.nc ~/foo.nc > ~/foo 2>&1
 nco597. mpncea hangs on ncea regression test 4 (on sand with LAM)
 nco598. 
 ************************************************************************

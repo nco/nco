@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.14 2005-09-16 19:01:31 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.15 2005-09-17 00:19:03 zender Exp $ -*-text-*-
 
 Installing an MPI Environment for NCO:
 
@@ -18,15 +18,18 @@ Determining the Parallel Environment
 ************************************************************************
 Linux in particular has a large number of available MPI environments.
 Determining which environment is active may be necessary.
-The active MPI environment provides mpicc, necessary for building NCO.
+The active MPI environment provides a C-compiler wrapper (usually
+called mpicc) which simplifies building C programs like NCO. 
 
-mpicc --version # All MPIs: Show compiler underlying mpicc
-mpicxx --version # MPICH2 (only): Show compiler underlying mpicxx
-mpiCC --version  # LAM-MPI (only): Show compiler underlying mpiCC
-mpic++ --version  # LAM-MPI (only): Show compiler underlying mpic++
-mpicc --showme  # LAM-MPI (only): C   compilation switches
-mpiCC --showme  # LAM-MPI (only): C++ compilation switches
-mpic++ --showme  # LAM-MPI (only): C++ compilation switches
+mpicc --version # LAM, MPICH, MPICH2: C  Compiler/version
+mpicxx --version # MPICH2 (only): C++ Compiler/version
+mpiCC --version # LAM-MPI (only): C++ Compiler/version
+mpic++ --version # LAM-MPI (only): C++ Compiler/version
+mpicc --showme # LAM-MPI (only): C   compilation switches
+mpiCC --showme # LAM-MPI (only): C++ compilation switches
+mpic++ --showme # LAM-MPI (only): C++ compilation switches
+mpcc -v # PPE (only): C   compilation switches
+mpCC -v # PPE (only): C++ compilation switches
 
 ************************************************************************
 Testing NCO in a parallel environment
