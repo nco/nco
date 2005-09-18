@@ -1,13 +1,17 @@
+2005-09-18  Charlie Zender  <zender@uci.edu>
+
+	* Fix SMP mpncpdq TODO nco598 by calling nco_close() once not twice
+
 2005-09-17  Charlie Zender  <zender@uci.edu>
 
 	* SMP mpncpdq fails ncpdq regression test 4. This is TODO nco598.
-
+	
 	* Add mpi_cln target to bld/Makefile to remove MPI executables
 	This makes it simple to build/erase all MPI_FAKE executables	
 
 	* Yesterday's MPI_FAKE mpncea fix broke MPI mpncea regression test 1
 	Today's fix works with SMP and MPI mpncea/mpncra/mpncrcat
-	Testing shows this fix does nothing about ncrcat hanging TODOs
+	Testing shows this fix does nothing about ncrcat hanging TODO nco593
 	
 	* Add $HOME/nco/bm to Perl @INC so nco_bm.pl runs from directories
 	(e.g., bld) from which bm is ../bm
