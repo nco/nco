@@ -1,5 +1,9 @@
 2005-09-18  Charlie Zender  <zender@uci.edu>
 
+	* Hack nco_bm* to pass thr_nbr,omp_flg,dodap,nco_D_flg
+
+        * Re-remove prohibition on mpi_prc and thr_nbr simultaneously defined
+
 	* Add mpi_fake_cp target to overwrite nc* with mpnc* (for AIX tests)
 
 	* SMP mpncwa fails regression test 4 when thr_nbr > 1. TODO nco604.

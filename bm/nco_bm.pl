@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.92 2005-09-18 01:13:51 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.93 2005-09-18 21:51:53 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -97,7 +97,6 @@ if ($iosockfound == 0) {
     print "\tIO::Socket  ... found.\n";
 }
 
-
 $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 &GetOptions(
 	'bch_flg!'     => \$bch_flg,    # [flg] Batch behavior
@@ -160,9 +159,6 @@ if($dbg_lvl > 0){
 
 if ($ARGV == 0) {	usage();}
 
-# Resolve conflicts early
-if ($mpi_prc > 0 && $thr_nbr > 0) {die "\nThe  '--mpi_prc' (MPI) and '--thr_nbr' (OpenMP) options are mutually exclusive.\nPlease decide which you want to run and try again.\n\n";}
-
 # do $mpi_prc and $mpi_fke conflict?
 if ($mpi_prc > 0 && $mpi_fke) {
 	die "\nERR: You requested both an MPI run (--mpi_prc) as well as a FAKE MPI run (--mpi_fake)\n\tMake up your mind!\n\n";
@@ -178,7 +174,7 @@ if (length($caseid) > 80) {die "\nThe caseid string is > 80 characters - please 
 if ($md5 == 1) {
 	do "nco_bm_md5wc_tbl.pl" or die "Can't find the validation data (nco_bm_md5wc_tbl.pl).\n";
 }
-$nco_D_flg = "-D" . "$dbg_lvl";
+$nco_D_flg = "-D $dbg_lvl";
 
 dbg_msg(3,"\$nco_D_flg = $nco_D_flg");
 
@@ -234,7 +230,7 @@ if ($wnt_log) {
 }
 
 # Pass explicit threading argument
-if ($thr_nbr > 0){$omp_flg="--thr_nbr=$thr_nbr ";} else {$omp_flg='';}
+if ($thr_nbr > 0){$omp_flg="--thr_nbr=$thr_nbr";} else {$omp_flg='';}
 
 # does dodap require that we ignore both MPI and OpenMP?  Let's leave it in for now.
 # If dodap is not set then test with local files

@@ -14,7 +14,7 @@ package NCO_bm;
 #   smrz_rgr_rslt()......summarizes the results of both regression and benchmark tests
 #   check_nco_results()..checks the output via md5/wc validation
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.4 2005-09-18 01:13:51 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.5 2005-09-18 21:51:52 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -135,7 +135,7 @@ where (options) are:
     --opendap "               "
     --log ..........requests that the debug info is logged to 'nctest.log'
                      as well as spat to STDOUT.
-    --mpi {#>0}.....number of MPI processes to spawn (incompatible with --thr_nbr)
+    --mpi_prc {#>0}.....number of MPI processes to spawn
     --udpreport.....requests that the test results are communicated back to
                      NCO Central to add your test, timing, and build results.
                             NB: This option uses udp port 29659 and may set off
@@ -150,7 +150,7 @@ where (options) are:
                             3 - 5km Satellite data set   ~300MB  ~min
                             4 - IPCC Daily T85 data set  ~  4GB  ~several min
                             A - All
-    --thr_nbr {#>0}....Number of OMP threads to use (incompatible with --mpi)
+    --thr_nbr {#>0}....Number of OpenMP threads to use
     --regress.......do the regression tests
     --benchmark.....do the benchmarks
 
@@ -638,7 +638,10 @@ sub smrz_rgr_rslt {
 	$reportstr .= "\n                    Test Results                Seconds to complete\n";
 	$reportstr .=      "             --------------------------   ----------------------------------------\n";
 	$reportstr .=      "      Test   Success    Failure   Total   WallClock    Real   User  System    Diff";
-	if ($thr_nbr > 0) {$reportstr .= "   (OMP threads = $thr_nbr)\n";}
+# csz++
+	*thr_nbr=*main::thr_nbr;
+# csz--
+	if ($thr_nbr > 0) {$reportstr .= " (OpenMP threads = $thr_nbr)\n";}
 	else {$reportstr .= "\n";}
 	my $udp_dat = $idstring . " using: " . $CCinfo . "|" . $cmd_ln . "|";
 	foreach(@opr_lst) {
