@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.14 2005-09-16 00:07:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.15 2005-09-18 16:56:37 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -76,7 +76,6 @@ main(int argc,char **argv)
   bool HISTORY_APPEND=True; /* Option h */
   bool CNV_CCM_CCSM_CF;
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
-  bool TOKEN_FREE=True; /* [flg] Allow MPI workers write-access to output file */
   
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -91,18 +90,13 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.14 2005-09-16 00:07:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.14 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.15 2005-09-18 16:56:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.15 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRv:xZ-:";
-  const double sleep_tm=0.04; /* [s] Token request interval */
-  const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
-  const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
   
   dmn_sct *rec_dmn;
   dmn_sct **dim;
   dmn_sct **dmn_out;
-  
-  double srt_tm; /* Start the clock */
   
   extern char *optarg;
   extern int optind;
@@ -111,41 +105,28 @@ main(int argc,char **argv)
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   
+  int abb_arg_nbr=0;
+  int fl_idx;
+  int fl_nbr=0;
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
-  int fl_idx;
   int in_id;  
-  int info_bfr[3]; /* [bfr] Buffer containing var, idx, tkn_rsp */
-  int out_id;
-  int proc_id; /* [id] Process ID */
-  int proc_nbr=0; /* [nbr] Number of MPI processes */
-  int abb_arg_nbr=0;
-  int nbr_dmn_fl;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int msg_typ; /* [enm] MPI message type */  
-  int nbr_var_fl;
-  int nbr_var_fix; /* nbr_var_fix gets incremented */
-  int nbr_var_prc; /* nbr_var_prc gets incremented */
-  int tkn_rsp; /* [enm] Mangager response [0,1] = [Wait,Allow] */
-  int var_wrt_nbr=0; /* [nbr] Variables written to output file until now */
-  int var_lst_in_nbr=0;
-  int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
+  int nbr_dmn_fl;
   int nbr_dmn_xtr;
-  int fl_nbr=0;
-  int fl_nm_lng; /* [nbr] Output file name length */
+  int nbr_var_fix; /* nbr_var_fix gets incremented */
+  int nbr_var_fl;
+  int nbr_var_prc; /* nbr_var_prc gets incremented */
+  int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int opt;
+  int out_id;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
-  int wrk_id; /* [id] Sender node ID */
-  int wrk_id_bfr[1]; /* [bfr] Buffer for wrk_id */
+  int var_lst_in_nbr=0;
   
   lmt_sct **lmt;
   
   long idx_rec_out=0L; /* idx_rec_out gets incremented */
-  
-#ifdef ENABLE_MPI
-  MPI_Status mpi_stt; /* [enm] Status check to decode msg_typ */
-#endif /* !ENABLE_MPI */
   
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
@@ -159,6 +140,28 @@ main(int argc,char **argv)
   var_sct **var_prc;
   var_sct **var_prc_out;
   
+#ifdef ENABLE_MPI
+  /* Declare all MPI-specific variables here */
+  MPI_Status mpi_stt; /* [enm] Status check to decode msg_typ */
+
+  bool TOKEN_FREE=True; /* [flg] Allow MPI workers write-access to output file */
+  
+  const double sleep_tm=0.04; /* [s] Token request interval */
+  
+  const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
+  const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
+
+  int fl_nm_lng; /* [nbr] Output file name length */
+  int info_bfr[3]; /* [bfr] Buffer containing var, idx, tkn_rsp */
+  int msg_typ; /* [enm] MPI message type */
+  int proc_id; /* [id] Process ID */
+  int proc_nbr=0; /* [nbr] Number of MPI processes */
+  int tkn_rsp; /* [enm] Mangager response [0,1] = [Wait,Allow] */
+  int var_wrt_nbr=0; /* [nbr] Variables written to output file until now */
+  int wrk_id; /* [id] Sender node ID */
+  int wrk_id_bfr[1]; /* [bfr] Buffer for wrk_id */
+#endif /* !ENABLE_MPI */
+
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       {"append",no_argument,0,'A'},
@@ -203,7 +206,6 @@ main(int argc,char **argv)
   MPI_Init(&argc,&argv);
   MPI_Comm_size(MPI_COMM_WORLD,&proc_nbr);
   MPI_Comm_rank(MPI_COMM_WORLD,&proc_id);
-  srt_tm=MPI_Wtime();
 #endif /* !ENABLE_MPI */
   
   /* Start clock and save command line */ 

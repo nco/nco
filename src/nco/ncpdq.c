@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.83 2005-09-15 22:29:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.84 2005-09-18 16:56:37 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.83 2005-09-15 22:29:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.83 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.84 2005-09-18 16:56:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.84 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -127,6 +127,8 @@ main(int argc,char **argv)
   int **dmn_idx_out_in=NULL; /* [idx] Dimension correspondence, output->input CEWI */
 
   int abb_arg_nbr=0;
+  int dmn_out_idx; /* [idx] Index over output dimension list */
+  int dmn_out_idx_rec_in=NCO_REC_DMN_UNDEFINED; /* [idx] Record dimension index in output dimension list, original */
   int dmn_rdr_nbr=0; /* [nbr] Number of dimension to re-order */
   int dmn_rdr_nbr_in=0; /* [nbr] Original number of dimension to re-order */
   int dmn_rdr_nbr_utl=0; /* [nbr] Number of dimension to re-order, utilized */
@@ -143,7 +145,6 @@ main(int argc,char **argv)
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
-  int var_lst_in_nbr=0;
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nco_pck_map=nco_pck_map_flt_sht; /* [enm] Packing map */
   int nco_pck_plc=nco_pck_plc_nil; /* [enm] Packing policy */
@@ -151,9 +152,8 @@ main(int argc,char **argv)
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id_in=NCO_REC_DMN_UNDEFINED; /* [id] Record dimension ID in input file */
-  int dmn_out_idx; /* [idx] Index over output dimension list */
-  int dmn_out_idx_rec_in=NCO_REC_DMN_UNDEFINED; /* [idx] Record dimension index in output dimension list, original */
   int thr_nbr=0; /* [nbr] Thread number Option t */
+  int var_lst_in_nbr=0;
   
   lmt_sct **lmt;
   

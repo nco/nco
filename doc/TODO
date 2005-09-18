@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.614 2005-09-18 07:49:47 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.615 2005-09-18 16:56:37 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -353,7 +353,8 @@ nco600. Change definitions so SMP mpncecat compiles cleanly
 nco601. Change definitions so SMP mpncflint compiles cleanly
 nco602. Change definitions so SMP mpncpdq compiles cleanly
 nco603. Change definitions so SMP mpncwa compiles cleanly
-nco604. 
+nco604. SMP mpncwa fails regression test 4 when thr_nbr > 1
+nco605. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

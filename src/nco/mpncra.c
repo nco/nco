@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.17 2005-09-18 02:26:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.18 2005-09-18 16:56:37 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.17 2005-09-18 02:26:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.17 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.18 2005-09-18 16:56:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.18 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
   
   dmn_sct **dim;
@@ -162,6 +162,21 @@ main(int argc,char **argv)
   long idx_rec; /* [idx] Index of current record in current input file */
   long idx_rec_out=0L; /* [idx] Index of current record in output file (0 is first, ...) */
   
+  nco_int base_time_srt=nco_int_CEWI;
+  nco_int base_time_crr=nco_int_CEWI;
+  
+  nm_id_sct *dmn_lst;
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
+  
+  time_t time_crr_time_t;
+  
+  var_sct **var;
+  var_sct **var_fix;
+  var_sct **var_fix_out;
+  var_sct **var_out=NULL_CEWI;
+  var_sct **var_prc;
+  var_sct **var_prc_out;
+  
 #ifdef ENABLE_MPI
   /* Declare all MPI-specific variables here */
   MPI_Status mpi_stt; /* [enm] Status check to decode msg_typ */
@@ -186,23 +201,7 @@ main(int argc,char **argv)
   int var_wrt_nbr=0; /* [nbr] Variables written to output file until now */
   int wrk_id; /* [id] Sender node ID */
   int wrk_id_bfr[1]; /* [bfr] Buffer for wrk_id */
-  
 #endif /* !ENABLE_MPI */
-  
-  nco_int base_time_srt=nco_int_CEWI;
-  nco_int base_time_crr=nco_int_CEWI;
-  
-  nm_id_sct *dmn_lst;
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
-  
-  time_t time_crr_time_t;
-  
-  var_sct **var;
-  var_sct **var_fix;
-  var_sct **var_fix_out;
-  var_sct **var_out=NULL_CEWI;
-  var_sct **var_prc;
-  var_sct **var_prc_out;
   
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */

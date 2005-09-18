@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.12 2005-09-18 07:37:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.13 2005-09-18 16:56:37 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -88,7 +88,6 @@ main(int argc,char **argv)
   bool CNV_CCM_CCSM_CF;
   bool REDEFINED_RECORD_DIMENSION=False; /* [flg] Re-defined record dimension */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
-  bool TOKEN_FREE=True; /* [flg] Allow MPI workers write-access to output file */
   
   char **dmn_rdr_lst_in=NULL_CEWI; /* Option a */
   char **fl_lst_abb=NULL; /* Option n */
@@ -112,20 +111,13 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.12 2005-09-18 07:37:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.12 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.13 2005-09-18 16:56:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.13 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
-  
-  const double sleep_tm=0.04; /* [s] Token request interval */
-  
-  const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
-  const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
   dmn_sct **dmn_rdr=NULL; /* [sct] Dimension structures to be re-ordered */
-  
-  double srt_tm; /* Start the clock */
   
   extern char *optarg;
   extern int optind;
@@ -138,51 +130,35 @@ main(int argc,char **argv)
   int **dmn_idx_out_in=NULL; /* [idx] Dimension correspondence, output->input CEWI */
   
   int abb_arg_nbr=0;
+  int dmn_out_idx; /* [idx] Index over output dimension list */
+  int dmn_out_idx_rec_in=NCO_REC_DMN_UNDEFINED; /* [idx] Record dimension index in output dimension list, original */
   int dmn_rdr_nbr=0; /* [nbr] Number of dimension to re-order */
   int dmn_rdr_nbr_in=0; /* [nbr] Original number of dimension to re-order */
   int dmn_rdr_nbr_utl=0; /* [nbr] Number of dimension to re-order, utilized */
   int fl_idx=int_CEWI;
   int fl_nbr=0;
-  int fl_nm_lng; /* [nbr] Output file name length */
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
   int idx_rdr=int_CEWI;
   int in_id=int_CEWI;  
-  int info_bfr[3]; /* [bfr] Buffer containing var, idx, tkn_rsp */
-  int jdx=0; /* [idx] For MPI indexing local variables */
-  int lcl_idx_lst[60]; /* [arr] Array containing indices of variables processed at each Worker */
-  int lcl_nbr_var=0; /* [nbr] Count of variables processes at each Worker */
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int msg_typ; /* [enm] MPI message type */
   int nbr_dmn_fl;
   int nbr_dmn_out;
   int nbr_dmn_xtr;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
-  int var_lst_in_nbr=0;
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nco_pck_map=nco_pck_map_flt_sht; /* [enm] Packing map */
   int nco_pck_plc=nco_pck_plc_nil; /* [enm] Packing policy */
   int opt;
   int out_id;  
-  int proc_id; /* [id] Process ID */
-  int proc_nbr=0; /* [nbr] Number of MPI processes */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id_in=NCO_REC_DMN_UNDEFINED; /* [id] Record dimension ID in input file */
-  int dmn_out_idx; /* [idx] Index over output dimension list */
-  int dmn_out_idx_rec_in=NCO_REC_DMN_UNDEFINED; /* [idx] Record dimension index in output dimension list, original */
   int thr_nbr=0; /* [nbr] Thread number Option t */
-  int tkn_rsp; /* [enm] Mangager response [0,1] = [Wait,Allow] */
-  int var_wrt_nbr=0; /* [nbr] Variables written to output file until now */
-  int wrk_id; /* [id] Sender node ID */
-  int wrk_id_bfr[1]; /* [bfr] Buffer for wrk_id */
+  int var_lst_in_nbr=0;
   
   lmt_sct **lmt;
-  
-#ifdef ENABLE_MPI
-  MPI_Status mpi_stt; /* [enm] Status check to decode msg_typ */
-#endif /* !ENABLE_MPI */
   
   nm_id_sct *dmn_lst;
   nm_id_sct *dmn_rdr_lst;
@@ -197,6 +173,31 @@ main(int argc,char **argv)
   var_sct **var_prc;
   var_sct **var_prc_out;
   
+#ifdef ENABLE_MPI
+  /* Declare all MPI-specific variables here */
+  MPI_Status mpi_stt; /* [enm] Status check to decode msg_typ */
+
+  bool TOKEN_FREE=True; /* [flg] Allow MPI workers write-access to output file */
+  
+  const double sleep_tm=0.04; /* [s] Token request interval */
+  
+  const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
+  const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
+
+  int fl_nm_lng; /* [nbr] Output file name length */
+  int info_bfr[3]; /* [bfr] Buffer containing var, idx, tkn_rsp */
+  int jdx=0; /* [idx] For MPI indexing local variables */
+  int lcl_idx_lst[60]; /* [arr] Array containing indices of variables processed at each Worker */
+  int lcl_nbr_var=0; /* [nbr] Count of variables processes at each Worker */
+  int msg_typ; /* [enm] MPI message type */
+  int proc_id; /* [id] Process ID */
+  int proc_nbr=0; /* [nbr] Number of MPI processes */
+  int tkn_rsp; /* [enm] Mangager response [0,1] = [Wait,Allow] */
+  int var_wrt_nbr=0; /* [nbr] Variables written to output file until now */
+  int wrk_id; /* [id] Sender node ID */
+  int wrk_id_bfr[1]; /* [bfr] Buffer for wrk_id */
+#endif /* !ENABLE_MPI */
+
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       {"append",no_argument,0,'A'},
@@ -251,7 +252,6 @@ main(int argc,char **argv)
   MPI_Init(&argc,&argv);
   MPI_Comm_size(MPI_COMM_WORLD,&proc_nbr);
   MPI_Comm_rank(MPI_COMM_WORLD,&proc_id);
-  srt_tm=MPI_Wtime();
 #endif /* !ENABLE_MPI */
   
   /* Start clock and save command line */ 

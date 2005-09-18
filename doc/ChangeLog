@@ -1,5 +1,9 @@
 2005-09-18  Charlie Zender  <zender@uci.edu>
 
+	* SMP mpncwa fails regression test 4 when thr_nbr > 1. TODO nco604.
+
+	* All SMP mpnc*.c codes now compile cleanly
+
 	* Fix SMP mpncpdq TODO nco598 by calling nco_close() once not twice
 
 2005-09-17  Charlie Zender  <zender@uci.edu>
