@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.616 2005-09-18 21:58:30 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.617 2005-09-18 22:10:24 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -351,7 +351,8 @@ nco597. mpncea hangs on ncea regression test 4 (on sand with LAM)
 nco599. Allow Makefile variables to be determined by targets so, e.g., 'make mpi' automagically defines MPI=Y
 nco604. SMP mpncwa fails regression test 4 when thr_nbr > 1?
 nco605. ncpdq: speed up end of program by padding metadata intially
-nco606. 
+nco606. ncatted regression test 3 fails
+nco607. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
