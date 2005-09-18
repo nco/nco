@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.331 2005-09-18 02:26:12 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.332 2005-09-18 20:57:20 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -321,6 +321,7 @@ MDL_BIN_TRG := ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # 
 MDL_BIN_SYM_LNK := ncdiff ncea ncrcat # Symbolic links
 ifeq (${MPI},Y)
  MDL_MPI_TRG := mpncbo mpncecat mpncflint mpncpdq mpncra mpncwa # MPI binary targets
+ MDL_MPI_TRG_SMP := ncbo ncecat ncflint ncpdq ncra ncwa # MPI binary targets
  MDL_MPI_SYM_LNK := mpncdiff mpncea mpncrcat # MPI Symbolic links
  MDL_MPI_STB := ${MDL_MPI_TRG} ${MDL_MPI_SYM_LNK} # All MPI files in MY_BIN_DIR
  MDL_MPI_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_MPI_TRG}) # mpi_cln removes these files
@@ -341,16 +342,16 @@ MDL_INC = $(addprefix ${MY_INC_DIR}/,${MDL_INC_STB}) # dst_cln removes these fil
 
 # Variables having to do with NCO data
 MDL_DAT_STB := 85 86 87 88 89 h0001 h0002 h0003 # Symbolic links to in.nc
-MDL_DAT_STB := $(addsuffix .nc,$(MDL_DAT_STB)) # `make data' creates these files
-MDL_DAT := $(addprefix ${MY_DAT_DIR}/,$(MDL_DAT_STB)) # `make distclean' removes these files
+MDL_DAT_STB := $(addsuffix .nc,${MDL_DAT_STB}) # `make data' creates these files
+MDL_DAT := $(addprefix ${MY_DAT_DIR}/,${MDL_DAT_STB}) # `make distclean' removes these files
 
 # Variables having to do with NCO documentation
 MDL_DOC_SRC := $(addprefix ../,acinclude.m4 configure.in configure.eg Makefile.am) $(addprefix ${MY_DOC_DIR}/,nco.texi ANNOUNCE MANIFEST NEWS README TODO VERSION debian.txt dods.sh opendap.sh index.shtml ncap.txt nco_news.shtml nco_src_frg.txt) $(addprefix ${MY_DBN_DIR}/,changelog compat control convert copyright docs files info postinst postrm prerm rules nco.doc-base) # `make tags' includes these files
 MDL_DOC_TRG := nco.dvi nco.html nco.info nco.pdf nco.ps nco.txt nco.xml # `make doc' creates these files
-MDL_DOC := $(addprefix ${MY_DOC_DIR}/,$(MDL_DOC_TRG)) # `make distclean' removes these files
+MDL_DOC := $(addprefix ${MY_DOC_DIR}/,${MDL_DOC_TRG}) # `make distclean' removes these files
 
 MDL_MAN = $(wildcard ${MDL_MAN_DIR}/*.1)
-MDL_MAN := $(notdir $(MDL_MAN))
+MDL_MAN := $(notdir ${MDL_MAN})
 MDL_MAN := $(addprefix ${MY_MAN_DIR}/,${MDL_MAN}) # distclean removes these files
 
 # Variables having to do with NCO build
@@ -359,7 +360,7 @@ MDL_BLD_SRC := $(addprefix ${MY_BLD_DIR}/,libnco_tst.c libnco_c++_tst.cc Makefil
 # Variables having to do with ncap
 MDL_NCAP_SRC := $(addprefix ${MY_SRC_DIR}/,ncap_yacc.y ncap_lex.l ncap.h) # `make tags' includes these files
 MDL_NCAP_TRG := ncap_yacc.c ncap_yacc.h ncap_lex.c # `make ncap' creates these files
-MDL_NCAP := $(addprefix ${MY_SRC_DIR}/,$(MDL_NCAP_TRG)) # `make distclean' removes these files
+MDL_NCAP := $(addprefix ${MY_SRC_DIR}/,${MDL_NCAP_TRG}) # `make distclean' removes these files
 
 # Redefine default C and C++ pattern rules
 ${MY_OBJ_DIR}/%.o : %.c
@@ -1344,6 +1345,10 @@ bin_cln:
 mpiclean: mpi_cln
 mpi_cln: 
 	rm -f ${MDL_MPI_BIN} ${MDL_MPI_OBJ}
+mpi_fake_cp: ${MDL_MPI_TRG}
+	- for fl in ${MDL_MPI_TRG_SMP}; do /bin/cp -f ${MY_BIN_DIR}/$$fl ${MY_BIN_DIR}/mp$$fl; done
+#	20050916 fxm: not sure why simpler substitution method does not work
+#	- for fl in ${MDL_MPI_TRG}; do /bin/cp -f ${MY_BIN_DIR}/$$fl ${MY_BIN_DIR}/$(subst mp,,$$fl); done
 strip: 
 	- printf "Before stripping...\n";ls -l ${MDL_BIN};strip ${MDL_BIN};printf "After stripping...\n";ls -l ${MDL_BIN}
 # Targets in bld
@@ -1382,7 +1387,7 @@ rpmnet:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., su
 	scp /usr/src/redhat/SRPMS/nco-${NCO_VRS}-*.src.rpm /usr/src/redhat/RPMS/i386/nco-${NCO_VRS}-*.i386.rpm zender@nco.sourceforge.net:/home/groups/ftp/pub/nco
 	ncftpput upload.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-2.5.1-*.src.rpm /usr/src/redhat/RPMS/i386/nco-2.5.1-*.i386.rpm /usr/src/redhat/SOURCES/nco-2.5.1.tar.gz
 rpm_cln:
-	rpm --erase $(MDL_RPM_NST_NM)
+	rpm --erase ${MDL_RPM_NST_NM}
 # Targets in bm
 bench:	bm
 bnch:	bm
@@ -1402,12 +1407,12 @@ tst:	dat
 # Targets in dat
 data:	dat
 dat:	${MY_DAT_DIR}/in.nc
-	-for fl in $(MDL_DAT_STB); do cd ${MY_DAT_DIR}; ln -s -f in.nc $$fl; done
+	-for fl in ${MDL_DAT_STB}; do cd ${MY_DAT_DIR}; ln -s -f in.nc $$fl; done
 ${MY_DAT_DIR}/in.nc: ${MY_DAT_DIR}/in.cdl
 	cd ${MY_DAT_DIR}; ncgen -b -o in.nc in.cdl
 dataclean: dat_cln
 dat_cln:
-	rm -f $(MDL_DAT)
+	rm -f ${MDL_DAT}
 	cd ${MY_DAT_DIR}; rm -f foo*
 tst_ftp:	dat
 	- if test -f ${MY_DAT_DIR}/nco_tst.nc; then printf "" ; else ${MY_BIN_DIR}/ncks -q -R -p ftp://dust.ess.uci.edu/pub/zender/nco -l ${MY_DAT_DIR} nco_tst.nc; if [ $? != 0 ]; then printf "WARNING: Unable to retrieve ftp://dust.ess.uci.edu/pub/zender/nco/nco_tst.nc required for self-test, possible problem with getting through your firewall? Manually download and install in directory ../data to continue self test...\n"; fi; fi
@@ -1559,7 +1564,7 @@ dbg:
 	@printf "MDL_MPI_TRG = ${MDL_MPI_TRG}\n"
 	@printf "MDL_OBJ = ${MDL_OBJ}\n"
 	@printf "MDL_PTH = ${MDL_PTH}\n"
-	@printf "MDL_RPM_NST_NM = $(MDL_RPM_NST_NM)\n"
+	@printf "MDL_RPM_NST_NM = ${MDL_RPM_NST_NM}\n"
 	@printf "MDL_SRC = ${MDL_SRC}\n"
 	@printf "MPICC = ${MPICC}\n"
 	@printf "MPICXX = ${MPICXX}\n"
