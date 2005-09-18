@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.91 2005-09-17 00:22:26 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.92 2005-09-18 01:13:51 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -84,6 +84,11 @@ if ($localhostname !~ "bodi") {$notbodi = 1} # spare the poor laptop
 $ARGV = @ARGV;
 
 my $iosockfound;
+
+BEGIN{
+    unshift @INC,$ENV{'HOME'}.'/nco/bm'; # Location of NCO_rgr.pm, NCO_bm.pm
+} # end BEGIN
+
 BEGIN {eval "use IO::Socket"; $iosockfound = $@ ? 0 : 1}
 #$iosockfound = 0;  # uncomment to simulate not found
 if ($iosockfound == 0) {
@@ -135,8 +140,6 @@ if ($md5 == 1) {
 } else {
 	print "\tMD5 NOT requested; continuing with ncks checking of single values.\n";
 }
-
-
 
 $NUM_FLS = 4; # max number of files in the file creation series
 

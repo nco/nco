@@ -1,9 +1,20 @@
+2005-09-17  Charlie Zender  <zender@uci.edu>
+
+	* MPI_FAKE mpncea fix broke MPI mpncea regression test 1
+
+	* Add $HOME/nco/bm to Perl @INC so nco_bm.pl can run from
+	directories other than nco/bm and still find modules
+
+	* Verify icc 9.0-compiled NCO works in UP/SMP/MPI modes
+
+	* Add '/' to $prefix so nco_bm.pl works when $MY_BIN_DIR defined
+
 2005-09-16  Harry Mangalam <hjm@tacgi.com>
 
 	* added --mpi_fake (aka -mpi_fke aka --fake_mpi)  to allow running of
-		the mpi executables as single processes.  Since my laptop cannnot yet
-		generate valid MPI apps, I can't tell what the real reulst of running
-		them is but the commandlines look right.
+	the mpi executables as single processes.  Since my laptop cannnot yet
+	generate valid MPI apps, I can't tell what the real reulst of running
+	them is but the commandlines look right.
 
 2005-09-16  Charlie Zender  <zender@uci.edu>
 
@@ -25,21 +36,21 @@
 		checksums. (currently NOT working - see below)
 
 	* the error/debug  messages have been cleaned up considerably and now
-		are pumped out (mostly) at the end of each test if asked for.
+	are pumped out (mostly) at the end of each test if asked for.
 
 	* a LOT of cruft was stripped out.  There was quite a bit of duplicate
-		code, commented out code, 	code that didn't seem to be perl code.
-		It's not all gone, but a lot of it is.
+	code, commented out code, 	code that didn't seem to be perl code.
+	It's not all gone, but a lot of it is.
 
 	* the only thing that definitely does not work at this point is the
-		MD5 checking due to some particulary hairy namespace problems.
+	MD5 checking due to some particulary hairy namespace problems.
 	
 	* the MPI versions of the checks have not been tested yet either, 
-		altho the commandlines it generates are correct.
+	altho the commandlines it generates are correct.
 
 	* I belive it is up to date with the latest regression tests and 
-		benchmarks.  The relevant bits were diffed against the current code
-		and they appear to be in sync.
+	benchmarks.  The relevant bits were diffed against the current code
+	and they appear to be in sync.
 
 2005-09-15  Charlie Zender  <zender@uci.edu>
 

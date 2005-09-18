@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.2 2005-09-16 22:29:53 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.3 2005-09-18 01:13:51 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -50,8 +50,8 @@ my $in_pth_arg = " -p $in_pth ";
 dbg_msg(4,"in package NCO_rgr, \$dodap = $dodap");
 
 if ($dodap ne "FALSE") {
-	if ($dodap ne "" && $fl_pth =~ /http/ ) { $in_pth_arg = " -p $fl_pth "; }
-	if ($dodap eq "") { $in_pth_arg = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata "; }
+	if ($dodap ne "" && $fl_pth =~ /http/ ) { $in_pth_arg = "-p $fl_pth "; }
+	if ($dodap eq "") { $in_pth_arg = "-p http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata "; }
 }
 dbg_msg(1,"-------------  REGRESSION TESTS STARTED from perform_tests()  -------------");
 

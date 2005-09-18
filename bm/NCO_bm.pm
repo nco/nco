@@ -14,7 +14,7 @@ package NCO_bm;
 #   smrz_rgr_rslt()......summarizes the results of both regression and benchmark tests
 #   check_nco_results()..checks the output via md5/wc validation
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.3 2005-09-17 00:22:26 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.4 2005-09-18 01:13:51 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -443,10 +443,10 @@ sub go {
 	$err_sgn = "";
 
 	# twiddle the $prefix to allow for running the mpnc* as a non-mpi'ed  executable
-	if ($mpi_fke) {$fke_prefix = " $MY_BIN_DIR/mp"; }
-	else {         $prefix = " $MY_BIN_DIR";}
+	if ($mpi_fke) {$fke_prefix = "$MY_BIN_DIR/mp"; }
+	else {         $prefix = "$MY_BIN_DIR/";}
 	#  $mpi_prfx will always have the mpirun directive.
-	$mpi_prfx = " mpirun -np $mpi_prc  $MY_BIN_DIR/mp";
+	$mpi_prfx = " mpirun -np $mpi_prc $MY_BIN_DIR/mp";
 	$prfxd = 1; $timed = 1;
 
 # Perform tests of requested operator; default is all
@@ -676,7 +676,7 @@ sub check_nco_results {
 	my $file = shift;  # 1st arg
 	my $testtype = shift; # 2nd arg
 # 	my $md5found = shift; # 3rd arg
-	my $prefix = "$MY_BIN_DIR"; $prfxd = 1; #embed the timer command and local bin in cmd
+	my $prefix = "$MY_BIN_DIR/"; $prfxd = 1; #embed the timer command and local bin in cmd
 	my $cmdline = $_;
 	my $return_value = $result; # this should be the return value of executing the non-terminal cmds
 	my $hash = "";
@@ -686,7 +686,7 @@ sub check_nco_results {
 		print LOG "NonZero return value = $cmdline\n";
 } else {
 # 1st do an ncks dump on the 1st 111111 lines (will cause a sig13 due to the head cmd)
-		system("$prefix/ncks -P  $file |head -111111  > $fl_pth/wc_out");
+		system("$prefix/ncks -P $file |head -111111 > $fl_pth/wc_out");
 		@wc_lst = split(/\s+/, `wc $fl_pth/wc_out`);
 		$wc = $wc_lst[1] . " " . $wc_lst[2] . " " . $wc_lst[3];
 
