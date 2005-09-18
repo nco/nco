@@ -2,13 +2,15 @@
 
 	* MPI_FAKE mpncea fix broke MPI mpncea regression test 1
 
-	* Add $HOME/nco/bm to Perl @INC so nco_bm.pl can run from
-	directories other than nco/bm and still find modules
+	* Add $HOME/nco/bm to Perl @INC so nco_bm.pl runs from directories
+	(e.g., bld) from which bm is ../bm
 
 	* Verify icc 9.0-compiled NCO works in UP/SMP/MPI modes
 
-	* Add '/' to $prefix so nco_bm.pl works when $MY_BIN_DIR defined
-
+	* Add '/' to $prefix so nco_bm.pl works when executables in $MY_BIN_DIR 
+	NB: nco_bm.pl does not run for me unless $MY_BIN_DIR is defined
+	Probably same for other bld/Makefile users.
+	
 2005-09-16  Harry Mangalam <hjm@tacgi.com>
 
 	* added --mpi_fake (aka -mpi_fke aka --fake_mpi)  to allow running of
