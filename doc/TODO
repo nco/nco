@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.613 2005-09-18 07:37:53 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.614 2005-09-18 07:49:47 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -348,17 +348,12 @@ nco593. mpncrcat: (sometimes) hangs while concatenating
         ~/nco/bm/nco_bm.pl --mpi=3 --regress ncrcat
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpirun -np 2 mpirun -np 2 $MY_BIN_DIR/mpncrcat -O -D 5 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 nco597. mpncea hangs on ncea regression test 4 (on sand with LAM)
-nco598. SMP mpncpdq fails ncpdq regression test 4
-        ncpdq -O -D 5 -P all_new -v upk -p ~/nco/data in.nc ~/foo.nc (works)
-	mpirun -np 2 mpncpdq -O -D 5 -P all_new -v upk -p ~/nco/data in.nc ~/foo.nc (works)
-        cd ~/nco/bld;/bin/rm $MY_OBJ_DIR/mpncpdq.o;make MPI_FAKE=Y mpncpdq
-	mpncpdq -O -D 5 -P all_new -v upk -p ~/nco/data in.nc ~/foo.nc
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpncpdq -O -D 5 -P all_new -v upk -p ~/nco/data in.nc ~/foo.nc > ~/foo 2>&1 (perfect)
-        /bin/rm $MY_OBJ_DIR/mpncpdq.o;make MPI=Y mpncpdq
-        mpirun -np 2 $MY_BIN_DIR/mpncpdq -O -D 5 -P all_new -v upk -p ~/nco/data in.nc ~/foo.nc (hangs)
-        ~/nco/bm/nco_bm.pl --mpi=3 --regress ncpdq
-        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpirun -np 2 mpirun -np 2 $MY_BIN_DIR/mpncpdq -O -D 5 -P all_new -v upk -p ~/nco/data in.nc ~/foo.nc > ~/foo 2>&1
-nco599. 
+nco599. Allow Makefile variables to be determined by targets so, e.g., 'make mpi' automagically defines MPI=Y
+nco600. Change definitions so SMP mpncecat compiles cleanly
+nco601. Change definitions so SMP mpncflint compiles cleanly
+nco602. Change definitions so SMP mpncpdq compiles cleanly
+nco603. Change definitions so SMP mpncwa compiles cleanly
+nco604. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
