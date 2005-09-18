@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.16 2005-09-18 01:13:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.17 2005-09-18 02:26:13 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.16 2005-09-18 01:13:51 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.16 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.17 2005-09-18 02:26:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.17 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
   
   dmn_sct **dim;
@@ -498,7 +498,6 @@ main(int argc,char **argv)
     
     /* Take output file out of define mode */
     (void)nco_enddef(out_id);
-    
 #ifdef ENABLE_MPI
   } /* proc_id != 0 */
   
@@ -507,11 +506,15 @@ main(int argc,char **argv)
   MPI_Bcast(&fl_nm_lng,1,MPI_INT,0,MPI_COMM_WORLD);
   if(proc_id != 0) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
   MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,0,MPI_COMM_WORLD);
-  
-  /* Original location (breaks SMP mpncea test 3) */
+#endif /* !ENABLE_MPI */
+
+  /* Pre-processor token spaghetti here is necessary so that 
+     1. UP/SMP/MPI codes all zero srt vectors before calling nco_var_val_cpy() 
+     2. No codes zero srt vectors more than once */
   /* Zero start vectors for all output variables */
   (void)nco_var_srt_zero(var_out,nbr_xtr);
-  
+
+#ifdef ENABLE_MPI
   if(proc_id == 0){ /* MPI manager code */
     TOKEN_FREE=False;
 #endif /* !ENABLE_MPI */
@@ -523,10 +526,6 @@ main(int argc,char **argv)
     TOKEN_FREE=True;
   } /* proc_id != 0 */
 #endif /* !ENABLE_MPI */
-  
-  /* New location (breaks MPI mpncea test 1) */
-  /* Zero start vectors for all output variables */
-  /*  (void)nco_var_srt_zero(var_out,nbr_xtr);*/
   
   /* Close first input netCDF file */
   (void)nco_close(in_id);

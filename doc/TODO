@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.611 2005-09-17 00:20:11 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.612 2005-09-18 02:26:13 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -348,7 +348,8 @@ nco593. mpncrcat: (sometimes) hangs while concatenating
         ~/nco/bm/nco_bm.pl --mpi=3 --regress ncrcat
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpirun -np 2 mpirun -np 2 $MY_BIN_DIR/mpncrcat -O -D 5 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 nco597. mpncea hangs on ncea regression test 4 (on sand with LAM)
-nco598. 
+nco598. SMP mpncpdq fails ncpdq regression test 4
+nco599. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

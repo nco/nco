@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.330 2005-09-16 19:01:31 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.331 2005-09-18 02:26:12 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -324,6 +324,7 @@ ifeq (${MPI},Y)
  MDL_MPI_SYM_LNK := mpncdiff mpncea mpncrcat # MPI Symbolic links
  MDL_MPI_STB := ${MDL_MPI_TRG} ${MDL_MPI_SYM_LNK} # All MPI files in MY_BIN_DIR
  MDL_MPI_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_MPI_TRG}) # mpi_cln removes these files
+ MDL_MPI_OBJ := $(addsuffix .o,$(addprefix ${MY_OBJ_DIR}/,${MDL_MPI_TRG})) # mpi_cln removes these files
  MDL_BIN_TRG += ${MDL_MPI_TRG} # NCO binary targets
  MDL_BIN_SYM_LNK += ${MDL_MPI_SYM_LNK} # Symbolic links
 endif # endif MPI
@@ -1340,6 +1341,9 @@ bin: ${MDL_BIN_TRG}
 binclean: bin_cln
 bin_cln: 
 	rm -f ${MDL_BIN}
+mpiclean: mpi_cln
+mpi_cln: 
+	rm -f ${MDL_MPI_BIN} ${MDL_MPI_OBJ}
 strip: 
 	- printf "Before stripping...\n";ls -l ${MDL_BIN};strip ${MDL_BIN};printf "After stripping...\n";ls -l ${MDL_BIN}
 # Targets in bld
