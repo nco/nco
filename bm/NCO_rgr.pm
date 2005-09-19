@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.4 2005-09-18 21:51:53 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.5 2005-09-19 06:59:05 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -143,7 +143,7 @@ dbg_msg(1,"-------------  REGRESSION TESTS STARTED from perform_tests()  -------
 	$tst_cmd[1]="ncks -M $outfile | grep hdr_pad | wc >$foo_fl";
 	$tst_cmd[2]="cut -d' ' -f 13-14 -s $foo_fl";
 	$dsc_sng="Pad header with 1000 extra bytes for future metadata";
-	$nsr_xpc= 24 ;
+	$nsr_xpc= 26 ;
  go();
 
 ####################

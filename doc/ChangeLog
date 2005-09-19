@@ -1,6 +1,8 @@
 2005-09-18  Charlie Zender  <zender@uci.edu>
 
-	* Hack nco_bm* to pass thr_nbr,omp_flg,dodap,nco_D_flg
+	* Tweak ncatted expected answer to pass hdr_pad test with new nco_bm.pl
+
+	* Hack nco_bm* to pass thr_nbr,omp_flg,nco_D_flg
 
         * Re-remove prohibition on mpi_prc and thr_nbr simultaneously defined
 
