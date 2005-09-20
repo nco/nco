@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.327 2005-09-11 01:03:35 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.328 2005-09-20 17:57:36 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5347,6 +5347,9 @@ for netCDF variables of intrinsic type @code{NC_FLOAT} and @code{NC_DOUBLE}.
 other OSs.}
 
 @noindent
+@html
+<a name="xmp_ncap"></a> <!-- http://nco.sf.net/nco.html#xmp_ncap -->
+@end html
 EXAMPLES
 
 Define new attribute @var{new} for existing variable @var{one}
@@ -5774,6 +5777,9 @@ type @code{NC_CHAR} to store data, rather than text strings, you should use
 @command{ncatted} with care.
 
 @noindent
+@html
+<a name="xmp_ncatted"></a> <!-- http://nco.sf.net/nco.html#xmp_ncatted -->
+@end html
 EXAMPLES
 
 Append the string "Data version 2.0.\n" to the global attribute
@@ -6077,6 +6083,9 @@ As such, it also performs file subtraction, addition, multiplication,
 albeit in a more convoluted way than @command{ncbo}.
 
 @noindent
+@html
+<a name="xmp_ncks"></a> <!-- http://nco.sf.net/nco.html#xmp_ncbo -->
+@end html
 EXAMPLES
 
 Say files @file{85_0112.nc} and @file{86_0112.nc} each contain 12 months
@@ -6253,6 +6262,9 @@ Instead, @command{ncea} copies the values of the coordinate variables
 from the first input file to the output file.
 
 @noindent
+@html
+<a name="xmp_ncea"></a> <!-- http://nco.sf.net/nco.html#xmp_ncea -->
+@end html
 EXAMPLES
 
 Consider a model experiment which generated five realizations of one
@@ -6570,6 +6582,9 @@ willing to implement the other approaches as options if there is enough
 interest. 
 
 @noindent
+@html
+<a name="xmp_ncflint"></a> <!-- http://nco.sf.net/nco.html#xmp_ncflint -->
+@end html
 EXAMPLES
 
 Although it has other uses, the interpolation feature was designed 
@@ -6950,6 +6965,9 @@ Also @samp{--units}.
 @end table
 
 @noindent
+@html
+<a name="xmp_ncks"></a> <!-- http://nco.sf.net/nco.html#xmp_ncks -->
+@end html
 EXAMPLES
 
 View all data in netCDF @file{in.nc}, printed with Fortran indexing
@@ -7412,6 +7430,9 @@ $\dmnsubnnnprm = \shrsubsss$.
 @c fxm: discuss netCDF-imposed constraints here
 
 @noindent
+@html
+<a name="xmp_ncpdq"></a> <!-- http://nco.sf.net/nco.html#xmp_ncpdq -->
+@end html
 EXAMPLES
 
 Pack and unpack all variables in file @file{in.nc} and store the results
@@ -7627,6 +7648,9 @@ coordinate is irregularly spaced and thus would require a weighted
 average in order to be a true time average.
 
 @noindent
+@html
+<a name="xmp_ncra"></a> <!-- http://nco.sf.net/nco.html#xmp_ncra -->
+@end html
 EXAMPLES
 
 Average files @file{85.nc}, @file{86.nc}, @w{@dots{} @file{89.nc}}
@@ -7729,6 +7753,9 @@ fields (e.g., @code{time_offset}).
 See @ref{ARM Conventions} for a complete description.
 
 @noindent
+@html
+<a name="xmp_ncrcat"></a> <!-- http://nco.sf.net/nco.html#xmp_ncrcat -->
+@end html
 EXAMPLES
 
 Concatenate files @file{85.nc}, @file{86.nc}, @w{@dots{} @file{89.nc}}
@@ -7892,6 +7919,9 @@ This option may be specified more than once.
 @end table
 
 @noindent
+@html
+<a name="xmp_ncrename"></a> <!-- http://nco.sf.net/nco.html#xmp_ncrename -->
+@end html
 EXAMPLES
 
 Rename the variable @code{p} to @code{pressure} and @code{t} to
@@ -8206,6 +8236,9 @@ sophisticated averages (and integrals) from the command line.
 @end ignore
 
 @noindent
+@html
+<a name="xmp_ncwa"></a> <!-- http://nco.sf.net/nco.html#xmp_ncwa -->
+@end html
 EXAMPLES
 
 Given file @file{85_0112.nc}:

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.302 2005-09-16 22:13:47 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.303 2005-09-20 17:57:35 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -140,18 +140,18 @@ Note that the <a href="./nco.html#averagers">&ldquo;averagers&rdquo;</a>
 are misnamed because they perform many non-linear operations as well,
 e.g., total, minimum, maximum, RMS: 
 <ul>
-<li><a href="./nco.html#ncap"><b>ncap</b></a> netCDF Arithmetic Processor</li>
-<li><a href="./nco.html#ncatted"><b>ncatted</b></a> netCDF Attribute Editor</li>
-<li><a href="./nco.html#ncbo"><b>ncbo</b></a> netCDF Binary Operator (includes <tt>ncadd</tt>, <tt>ncsubtract</tt>, <tt>ncmultiply</tt>, <tt>ncdivide</tt>)</li>
-<li><a href="./nco.html#ncea"><b>ncea</b></a> netCDF Ensemble Averager</li>
-<li><a href="./nco.html#ncecat"><b>ncecat</b></a> netCDF Ensemble Concatenator</li>
-<li><a href="./nco.html#ncflint"><b>ncflint</b></a> netCDF File Interpolator</li>
-<li><a href="./nco.html#ncks"><b>ncks</b></a> netCDF Kitchen Sink</li>
-<li><a href="./nco.html#ncpdq"><b>ncpdq</b></a> netCDF Permute Dimensions Quickly, Pack Data Quietly</li>
-<li><a href="./nco.html#ncra"><b>ncra</b></a> netCDF Record Averager</li>
-<li><a href="./nco.html#ncrcat"><b>ncrcat</b></a> netCDF Record Concatenator</li>
-<li><a href="./nco.html#ncrename"><b>ncrename</b></a> netCDF Renamer</li>
-<li><a href="./nco.html#ncwa"><b>ncwa</b></a></td> netCDF Weighted Averager</li>
+<li><a href="./nco.html#ncap"><b>ncap</b></a> netCDF Arithmetic Processor</li> (<a href="./nco.html#xmp_ncap">examples</b>)
+<li><a href="./nco.html#ncatted"><b>ncatted</b></a> netCDF Attribute Editor</li> (<a href="./nco.html#xmp_ncatted">examples</b>)
+<li><a href="./nco.html#ncbo"><b>ncbo</b></a> netCDF Binary Operator (includes <tt>ncadd</tt>, <tt>ncsubtract</tt>, <tt>ncmultiply</tt>, <tt>ncdivide</tt>)</li> (<a href="./nco.html#xmp_ncbo">examples</b>)
+<li><a href="./nco.html#ncea"><b>ncea</b></a> netCDF Ensemble Averager</li> (<a href="./nco.html#xmp_ncea">examples</b>)
+<li><a href="./nco.html#ncecat"><b>ncecat</b></a> netCDF Ensemble Concatenator</li> (<a href="./nco.html#xmp_ncecat">examples</b>)
+<li><a href="./nco.html#ncflint"><b>ncflint</b></a> netCDF File Interpolator</li> (<a href="./nco.html#xmp_ncflint">examples</b>)
+<li><a href="./nco.html#ncks"><b>ncks</b></a> netCDF Kitchen Sink</li> (<a href="./nco.html#xmp_ncks">examples</b>)
+<li><a href="./nco.html#ncpdq"><b>ncpdq</b></a> netCDF Permute Dimensions Quickly, Pack Data Quietly</li> (<a href="./nco.html#xmp_ncpdq">examples</b>)
+<li><a href="./nco.html#ncra"><b>ncra</b></a> netCDF Record Averager</li> (<a href="./nco.html#xmp_ncra">examples</b>)
+<li><a href="./nco.html#ncrcat"><b>ncrcat</b></a> netCDF Record Concatenator</li> (<a href="./nco.html#xmp_ncrcat">examples</b>)
+<li><a href="./nco.html#ncrename"><b>ncrename</b></a> netCDF Renamer</li> (<a href="./nco.html#xmp_ncrename">examples</b>)
+<li><a href="./nco.html#ncwa"><b>ncwa</b></a></td> netCDF Weighted Averager</li> (<a href="./nco.html#xmp_ncwa">examples</b>)
 </ul>
 
 <p>The operators are as general as 
