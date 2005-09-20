@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.303 2005-09-20 17:57:35 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.304 2005-09-20 23:51:26 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -84,7 +84,7 @@ little money, click on the PayPal button:
 <li><a href="#FAQ">FAQ</a></li>
 <li><a href="#NCAR">Using NCO at UCI, NCAR, and other HPCCs</a></li>
 <li><a href="#Bugs">Common NCO Build/Run Problems</a></li>
-<li><a href="#Contacting Us">Contacting us</a></li>
+<li><a href="#Contact">Contacting us</a></li>
 </ul>
 <hr>
 
@@ -552,7 +552,7 @@ But they are more predictable:
 <ul>
 <li><i>I still have questions, how do I contact the NCO project?</i>
 The NCO project has various Q&amp;A and discussion forums described
-<a href="#Contacting Us">below</a>.  
+<a href="#Contact">below</a>.  
 </li>
 <li><i>Where can I find prebuilt NCO executables?</i>
 Pre-built executables of some versions of NCO for the operating
@@ -926,13 +926,17 @@ Bug-fixes:
 </ul>
 <p><hr></p>
 
-<!-- http://nco.sf.net#contact -->
-<dt><a name="Contacting Us"></a></dt>
+<!-- http://nco.sf.net#Contact -->
+<!-- http://nco.sf.net#help -->
+<dt><a name="Contact"></a></dt>
 <h2>Contacting Us:</h2>
-<p>Contact us through one of these forums so other users can benefit
-from and contribute to our exchange.
+<p>Contact us through the Project Forums (rather than personal e-mail)
+so other users can benefit from and contribute to our exchange.
 Let us know how NCO is working for you&mdash;we'd like to hear.
-Have you read the <a href="#RTFM">documentation</a> and browsed the forums to see if your question/comment has been reported before?
+Have you read the <a href="#RTFM">documentation</a> and browsed the
+forums to see if your question/comment has been reported before?
+Please read the Guide's suggestions for productive
+<a href="./nco.html#help">Help Requests and Bug Reports</a>.
 <ul>
 <li><i>Where should I ask my questions on how to use NCO?</i>
 On the <a href="http://sf.net/forum/forum.php?forum_id=9830">Help</a> site.

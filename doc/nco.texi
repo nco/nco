@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.328 2005-09-20 17:57:36 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.329 2005-09-20 23:51:26 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -460,7 +460,7 @@ netCDF itself.
 * Compatability::               
 * Libraries::                   
 * netCDF2 vs. netCDF3 and HDF Support::  
-* Help and Bug reports::        
+* Help Requests and Bug Reports::  
 @end menu
 
 @node Availability, Compatability, Introduction, Introduction
@@ -828,7 +828,7 @@ simply need to alter your library search path.
 As a final remedy, you may re-compile and install @acronym{NCO} with all
 operators statically linked.  
 
-@node netCDF2 vs. netCDF3 and HDF Support, Help and Bug reports, Libraries, Introduction
+@node netCDF2 vs. netCDF3 and HDF Support, Help Requests and Bug Reports, Libraries, Introduction
 @section netCDF2 vs.@: netCDF3 and HDF Support
 @cindex netCDF2
 @cindex netCDF3
@@ -913,8 +913,8 @@ between Unidata and @acronym{NCSA}.
 <a name="hlp"></a> <!-- http://nco.sf.net/nco.html#hlp -->
 <a name="bug"></a> <!-- http://nco.sf.net/nco.html#bug -->
 @end html
-@node Help and Bug reports,  , netCDF2 vs. netCDF3 and HDF Support, Introduction
-@section Help and Bug reports
+@node Help Requests and Bug Reports,  , netCDF2 vs. netCDF3 and HDF Support, Introduction
+@section Help Requests and Bug Reports
 @cindex reporting bugs
 @cindex bugs, reporting
 @cindex core dump
@@ -927,14 +927,16 @@ great and it saves me more time everyday than it took to write this
 note" are a distant fourth.
 
 There is a different protocol for each type of request.
-The common procedural etiquette is to communicate with us via
-@acronym{NCO} Project Forums.
-Unless your request comes with money or you have damaging information
-about our personal lives, use the Forums.
-They preserve a record of the questions and answers so that others
-might learn from our exchange.
-Also, should @acronym{NCO} ever be funded (as is our hope), this record
-will provide program officers with information they need to evaluate us.
+The preferred etiquette for all communications is via @acronym{NCO}
+Project Forums. 
+Do not contact project members via personal e-mail unless your request
+comes with money or you have damaging information about our personal
+lives.
+@emph{Please use the Forums}---they preserve a record of the questions
+and answers so that others can learn from our exchange.
+Also, since @acronym{NCO} is government-funded, this record helps us
+provide program officers with information they need to evaluate our
+project. 
 
 Before posting to the @acronym{NCO} forums described below, you might
 first @uref{https://sf.net/account/register.php, register}
@@ -3926,7 +3928,7 @@ computations within the @acronym{NCO} framework.
 We are open to redefining and or adding to the above. 
 If you are interested in having other statistical quantities
 defined in @acronym{NCO} please contact the @acronym{NCO} project
-(@pxref{Help and Bug reports}).  
+(@pxref{Help Requests and Bug Reports}).  
 
 @noindent
 EXAMPLES

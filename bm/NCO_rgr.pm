@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.5 2005-09-19 06:59:05 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.6 2005-09-20 23:51:26 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -223,20 +223,23 @@ if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 	$nsr_xpc= 1.0e36 ;
  go();
 
-	$tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $nco_D_flg -y min -v rec_var_flt_mss_val_dbl -d time,1 $in_pth_arg in.nc in.nc $outfile";
-	$tst_cmd[1]="ncks -C -H -s '%e' -v rec_var_flt_mss_val_dbl $outfile";
+        $tst_cmd[0]="/bin/rm -f $outfile";
+	$tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $nco_D_flg -y min -v rec_var_flt_mss_val_dbl -d time,1 $in_pth_arg in.nc in.nc $outfile";
+	$tst_cmd[2]="ncks -C -H -s '%e' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="ensemble min of float across two files";
 	$nsr_xpc= 2 ;
  go();
 
-	$tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $nco_D_flg -C -v pck $in_pth_arg in.nc $outfile";
-	$tst_cmd[1]="ncks -C -H -s '%e' -v pck $outfile";
+        $tst_cmd[0]="/bin/rm -f $outfile";
+	$tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $nco_D_flg -C -v pck $in_pth_arg in.nc $outfile";
+	$tst_cmd[2]="ncks -C -H -s '%e' -v pck $outfile";
 	$dsc_sng="scale factor + add_offset packing/unpacking";
 	$nsr_xpc= 3 ;
  go();
 
-	$tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc in.nc $outfile";
-	$tst_cmd[1]="ncks -C -H -s '%d ' -v rec_var_int_mss_val_int $outfile";
+        $tst_cmd[0]="/bin/rm -f $outfile";
+	$tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc in.nc $outfile";
+	$tst_cmd[2]="ncks -C -H -s '%d ' -v rec_var_int_mss_val_int $outfile";
 	$dsc_sng="ensemble mean of integer with integer missing values across two files";
 	$nsr_xpc= '-999 2 3 4 5 6 7 8 -999 -999' ;
  go();
