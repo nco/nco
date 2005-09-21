@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.622 2005-09-21 17:37:41 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.623 2005-09-21 20:04:25 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -339,7 +339,9 @@ nco588. MPI debugging with DDD (http://www.lam-mpi.org/faq/category6.php3)
         mpirun -np 2 -x ashes:0 /usr/bin/ddd --gdb --debugger "gdb" $MY_BIN_DIR/mpncrcat -O -D 5 -p ~/nco/data in.nc in.nc ~/foo.nc
 nco593. mpncrcat "sometimes" hangs while concatenating
 	command line: -np 2 seems to always work on sand, ashes, elnino
-	command line: -np 3 always hangs on ashes, usually hangs on sand, never hangs on elnino
+	command line: -np 3 rarely hangs on ashes, usually hangs on sand, never hangs on elnino
+                      When it does hang on ashes, it hangs after this message:
+                      DEBUG: proc_id 1 waiting for msg from Mgr for final write
 	command line: -np 4 always hangs on ashes and sand, never hangs on elnino
         ncrcat -O -D 5 -p ~/nco/data in.nc in.nc ~/foo.nc (works)
 	mpirun -np 2 mpncrcat -O -D 5 -p ~/nco/data in.nc in.nc ~/foo.nc (fails, depending on np and machine)
@@ -354,8 +356,9 @@ nco597. mpncea hangs on ncea regression test 4 (on sand with LAM)
 	Hangs occur _only_ on sand with LAM in nco_bm.pl, not from command line!
 	valgrind shows no NCO-related memory problems on sand with -np 2 or 3
         ~/nco/bm/nco_bm.pl --mpi_prc=3 --regress ncea
-        mpirun -np 2 /home/zender/bin/LINUXAMD64/mpncea -O -D 5 -C -v pck -p ~/nco/data in.nc ~/foo.nc
-        mpirun -np 2 /usr/local/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck $MY_BIN_DIR/mpncea -O -D 5 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
+        ncea -O -D 5 -C -v one -p ~/nco/data in.nc ~/foo.nc (works)
+        mpirun -np 2 /home/zender/bin/LINUXAMD64/mpncea -O -D 5 -C -v one -p ~/nco/data in.nc ~/foo.nc (leaves processes hanging in nco_free(var_out[0]))
+        mpirun -np 2 /usr/local/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck $MY_BIN_DIR/mpncea -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 nco599. Allow Makefile variables to be determined by targets so, e.g., 'make mpi' automagically defines MPI=Y
 nco605. ncpdq: speed up end of program by padding metadata intially?
 nco607. 
@@ -518,10 +521,10 @@ bld33. Use PACKAGE_BUGREPORT, PACKAGE_NAME, PACKAGE_STRING, PACKAGE_TARNAME, PAC
 bld35. Add pgcc, pgCC switches to configure.in 
 bld36. Improve precision/wording of nco_ctl.c tokens on shared/static libraries
 bld37. Ensure C99 used by compilers with AX_CFLAGS_SUN_OPTION AX_CFLAGS_HPUX_OPTION AX_CFLAGS_AIX_OPTION AX_CFLAGS_IRIX_OPTION
-bld38. Use OPeNDAP 3.4.4 opendap-config script to ease build process, e.g., `opendap-config --cxx --cflags --libs` -o sample sample.c
+bld38. Use OPeNDAP opendap-config script to ease build process, e.g., `opendap-config --cxx --cflags --libs` -o sample sample.c
 bld39. Fix autoconf build warnings (from including ncap_yacc in ncwa?):
-Makefile:472: warning: overriding commands for target `ncap_yacc.h'
-Makefile:440: warning: ignoring old commands for target `ncap_yacc.h'
+       Makefile:472: warning: overriding commands for target `ncap_yacc.h'
+       Makefile:440: warning: ignoring old commands for target `ncap_yacc.h'
 bld40. Automate splicing trailer ~/nco/doc/man_end.txt to man pages
 bld41.Add configure check for libssl functionality, if not found (Fedora) to explicitly adding libssl
 bld42. Adopt orphaned Debian NCO http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=273322

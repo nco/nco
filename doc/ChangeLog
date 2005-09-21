@@ -1,8 +1,29 @@
+2005-09-21  Charlie Zender  <zender@uci.edu>
+
+	* Tokenize/variable-ize various static MPI-related constants
+	This is intended to improved readability and literate programming-ness
+	Replaced naked constants with following compile-time tokens/enums:
+	mgr_id
+
+	* Create new header nco_mpi.h for all MPI-specific header information
+	Currently this header is only accessed by main() MPI programs 
+	Hence it is not (yet) part of libnco.a
+	Header assumes its inclusion is already conditional on ENABLE_MPI
+	This is currently a header mostly for pre-processor tokens 
+	with few odd file scope constants needed by MPI routines 
+	There are no functions yet
+	Adding functions would require creating a corresponding *.c file
+	Adding *.c file requires including it in libnco.a or separately linking
+	MPI executables to it, i.e., slightly complicating the build procedure.
+	I'm not yet sure I want _any_ MPI link dependencies in libnco.a 
+	Cross-platform link weirdness (e.g., AIX) makes this something to avoid
+	as long as possible
+
 2005-09-20  Harry Mangalam <hjm@tacgi.com>
 
 	* added --xdata to nco_bm.pl to allow commandline data path to be entered
-		(to allow benchmarking on different filesystems without resetting
-		DATA env var).
+	(to allow benchmarking on different filesystems without resetting
+	DATA env var).
 
 2005-09-18  Charlie Zender  <zender@uci.edu>
 
@@ -53,6 +74,7 @@
 	UP/SMP executables zero start vectors. Fixes mpncea bug TODO nco594. 
 
 2005-09-16  Harry Mangalam <hjm@tacgi.com>
+
 	* Re-org of regression and benchmarking script.  nco_bm.pl has
 	been broken into 5 files:
 	- nco_bm.pl - now does initialization and calls control scripts for

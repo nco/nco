@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.14 2005-09-18 16:56:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.15 2005-09-21 20:04:26 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -63,6 +63,7 @@
 #include <netcdf.h> /* netCDF definitions and C library */
 #ifdef ENABLE_MPI
 #include <mpi.h> /* MPI definitions */
+#include "nco_mpi.h" /* MPI utilities */
 #endif /* !ENABLE_MPI */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
@@ -118,8 +119,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.14 2005-09-18 16:56:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.14 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.15 2005-09-21 20:04:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.15 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -587,7 +588,7 @@ main(int argc,char **argv)
   } /* end if */
   
 #ifdef ENABLE_MPI
-  if(proc_id == 0){ /* MPI manager code */
+  if(proc_id == mgr_id){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FMT_64BIT,&out_id);
@@ -615,7 +616,7 @@ main(int argc,char **argv)
     (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,dmn_out,nbr_dmn_out,nco_pck_plc_nil,nco_pck_map_nil);
     
 #ifdef ENABLE_MPI
-  } /* proc_id != 0 */
+  } /* proc_id != mgr_id */
 #endif /* !ENABLE_MPI */
   
   /* Add new missing values to output file while in define mode */
@@ -626,7 +627,7 @@ main(int argc,char **argv)
 	var_prc_out[idx]->has_mss_val=True;
 	var_prc_out[idx]->mss_val=nco_mss_val_mk(var_prc[idx]->type);
 #ifdef ENABLE_MPI
-	if(proc_id == 0)
+	if(proc_id == mgr_id)
 #endif /* !ENABLE_MPI */
 	  (void)nco_put_att(out_id,var_prc_out[idx]->id,"missing_value",var_prc_out[idx]->type,1,var_prc_out[idx]->mss_val.vp);
       } /* end if */
@@ -634,7 +635,7 @@ main(int argc,char **argv)
   } /* end if */
   
 #ifdef ENABLE_MPI
-  if(proc_id == 0){ /* MPI manager code */
+  if(proc_id == mgr_id){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
     
     /* Turn off default filling behavior to enhance efficiency */
@@ -644,15 +645,15 @@ main(int argc,char **argv)
     (void)nco_enddef(out_id);
     
 #ifdef ENABLE_MPI
-  } /* proc_id != 0 */
+  } /* proc_id != mgr_id */
   
   /* Manager obtains output filename and broadcasts to workers */ 
-  if(proc_id == 0) fl_nm_lng=(int)strlen(fl_out_tmp); 
+  if(proc_id == mgr_id) fl_nm_lng=(int)strlen(fl_out_tmp); 
   MPI_Bcast(&fl_nm_lng,1,MPI_INT,0,MPI_COMM_WORLD);
-  if(proc_id != 0) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
+  if(proc_id != mgr_id) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
   MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,0,MPI_COMM_WORLD);
   
-  if(proc_id == 0){ /* MPI manager code */
+  if(proc_id == mgr_id){ /* MPI manager code */
     TOKEN_FREE=False;
 #endif /* !ENABLE_MPI */
     /* Copy variable data for non-processed variables */
@@ -661,7 +662,7 @@ main(int argc,char **argv)
     /* Close output file so workers can open it */
     nco_close(out_id);
     TOKEN_FREE=True;
-  } /* proc_id != 0 */
+  } /* proc_id != mgr_id */
 #endif /* !ENABLE_MPI */
   
   /* Zero start vectors for all output variables */
@@ -713,7 +714,7 @@ main(int argc,char **argv)
     } /* end if */
     
 #ifdef ENABLE_MPI
-    if(proc_id == 0){ /* MPI manager code */
+    if(proc_id == mgr_id){ /* MPI manager code */
       /* Compensate for incrementing on each worker's first message */
       var_wrt_nbr=-proc_nbr+1;
       idx=0;
@@ -757,7 +758,7 @@ main(int argc,char **argv)
 	  MPI_Send(info_bfr,info_bfr_lng,MPI_INT,wrk_id,TOKEN_RESULT,MPI_COMM_WORLD);
 	} /* msg_typ != TOKEN_REQUEST */
       } /* end while var_wrt_nbr < nbr_var_prc */
-    }else{ /* proc_id != 0, end Manager code begin Worker code */
+    }else{ /* proc_id != mgr_id, end Manager code begin Worker code */
       wrk_id_bfr[0]=proc_id;
       while(1){ /* While work remains... */
 	/* Send WORK_REQUEST */
@@ -1050,7 +1051,7 @@ main(int argc,char **argv)
     
 #ifdef ENABLE_MPI
     /* Manager moves output file (closed by workers) from temporary to permanent location */
-    if(proc_id == 0) (void)nco_fl_mv(fl_out_tmp,fl_out);
+    if(proc_id == mgr_id) (void)nco_fl_mv(fl_out_tmp,fl_out);
 #else /* !ENABLE_MPI */
     /* Close output file and move it from temporary to permanent location */
     (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);

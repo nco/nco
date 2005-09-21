@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.82 2005-09-15 23:26:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.83 2005-09-21 20:04:26 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -94,19 +94,6 @@ extern "C" {
   
   /* Tokens and variables with scope limited to main.c, and global variables allocated here */
   
-  /* Tags used for MPI Communication */
-#ifdef ENABLE_MPI
-#define TOKEN_ALLOC 1
-#define TOKEN_REQUEST 300
-#define TOKEN_RESULT 500
-#define TOKEN_WAIT 0
-#define WORK_ALLOC 400
-#define WORK_REQUEST 100
-#endif /* !ENABLE_MPI */
-
-  const int mgr_id=0; /* [ID] Manager ID */
-  const int NO_MORE_WORK=-1; /* [flg] All MPI variables processed */
-
   int prg; /* [enm] Program ID */
   int prg_get(void){return prg;} /* [enm] Program ID */
   

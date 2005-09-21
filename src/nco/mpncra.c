@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.19 2005-09-21 07:04:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.20 2005-09-21 20:04:26 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -78,7 +78,7 @@
 #include <netcdf.h> /* netCDF definitions and C library */
 #ifdef ENABLE_MPI
 #include <mpi.h> /* MPI definitions */
-#define WORK_DONE 600 /* Move this to nco.h if its required */
+#include "nco_mpi.h" /* MPI utilities */
 #endif /* !ENABLE_MPI */
 
 /* Personal headers */
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.19 2005-09-21 07:04:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.19 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.20 2005-09-21 20:04:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.20 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
   
   dmn_sct **dim;
@@ -463,7 +463,7 @@ main(int argc,char **argv)
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
   
 #ifdef ENABLE_MPI
-  if(proc_id == 0){ /* MPI manager code */
+  if(proc_id == mgr_id){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FMT_64BIT,&out_id);
@@ -498,12 +498,12 @@ main(int argc,char **argv)
     /* Take output file out of define mode */
     (void)nco_enddef(out_id);
 #ifdef ENABLE_MPI
-  } /* proc_id != 0 */
+  } /* proc_id != mgr_id */
   
   /* Manager obtains output filename and broadcasts to workers */
-  if(proc_id == 0) fl_nm_lng=(int)strlen(fl_out_tmp); 
+  if(proc_id == mgr_id) fl_nm_lng=(int)strlen(fl_out_tmp); 
   MPI_Bcast(&fl_nm_lng,1,MPI_INT,0,MPI_COMM_WORLD);
-  if(proc_id != 0) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
+  if(proc_id != mgr_id) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
   MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,0,MPI_COMM_WORLD);
 #endif /* !ENABLE_MPI */
 
@@ -514,7 +514,7 @@ main(int argc,char **argv)
   (void)nco_var_srt_zero(var_out,nbr_xtr);
 
 #ifdef ENABLE_MPI
-  if(proc_id == 0){ /* MPI manager code */
+  if(proc_id == mgr_id){ /* MPI manager code */
     TOKEN_FREE=False;
 #endif /* !ENABLE_MPI */
     /* Copy variable data for non-processed variables */
@@ -523,7 +523,7 @@ main(int argc,char **argv)
     /* Close output file so workers can open it */
     nco_close(out_id);
     TOKEN_FREE=True;
-  } /* proc_id != 0 */
+  } /* proc_id != mgr_id */
 #endif /* !ENABLE_MPI */
   
   /* Close first input netCDF file */
@@ -572,7 +572,7 @@ main(int argc,char **argv)
     /* Process all variables in first record */
     if(dbg_lvl > 1) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
     
-    if(proc_id == 0){ /* MPI manager code */
+    if(proc_id == mgr_id){ /* MPI manager code */
       /* Compensate for incrementing on each worker's first message */
       var_wrt_nbr=-proc_nbr+1;
       idx=0;
@@ -616,7 +616,7 @@ main(int argc,char **argv)
 	  MPI_Send(info_bfr,info_bfr_lng,MPI_INT,wrk_id,TOKEN_RESULT,MPI_COMM_WORLD);
 	} /* msg_typ != TOKEN_REQUEST */
       } /* end while var_wrt_nbr < nbr_var_prc */
-    }else{ /* proc_id != 0, end Manager code begin Worker code */
+    }else{ /* proc_id != mgr_id, end Manager code begin Worker code */
       /* csz: fxm delete redundant statement with two lines further down */
       wrk_id_bfr[0]=proc_id;
       var_wrt_nbr=0;
@@ -627,11 +627,13 @@ main(int argc,char **argv)
         /* Receive WORK_ALLOC */
         MPI_Recv(info_bfr,info_bfr_lng,MPI_INT,mgr_id,WORK_ALLOC,MPI_COMM_WORLD,&mpi_stt);
         idx=info_bfr[0];
+	/* csz: fxm dangerous---workers must get and use their own out_id's, not master's out_id */
         out_id=info_bfr[1];
         if(idx == NO_MORE_WORK){
 	  break;
 	}else{ /* idx != NO_MORE_WORK */
-	  lcl_idx_lst[lcl_nbr_var]=idx; /* storing the indices for subsequent processing by the worker */
+	  /* Assign this variable to this worker for rest of program */
+	  lcl_idx_lst[lcl_nbr_var]=idx;
 	  /* csz: got to here reading logic */
 	  lcl_nbr_var++;
           var_prc_out[idx]->id=info_bfr[2];
@@ -701,7 +703,7 @@ main(int argc,char **argv)
     /* End of ncra, ncrcat section */
   }else{ /* ncea */
     
-    if(proc_id == 0){ /* MPI manager code */
+    if(proc_id == mgr_id){ /* MPI manager code */
       /* Compensate for incrementing on each worker's first message */
       var_wrt_nbr=-proc_nbr+1;
       idx=0;
@@ -735,7 +737,7 @@ main(int argc,char **argv)
 	  MPI_Send(info_bfr,info_bfr_lng,MPI_INT,wrk_id,WORK_ALLOC,MPI_COMM_WORLD);
 	} /* msg_typ != WORK_REQUEST */
       } /* end while var_wrt_nbr < nbr_var_prc */
-    }else{ /* proc_id != 0, end Manager code begin Worker code */
+    }else{ /* proc_id != mgr_id, end Manager code begin Worker code */
       while(1){ /* While work remains... */
 	/* Send WORK_REQUEST */
 	wrk_id_bfr[0]=proc_id;
@@ -820,7 +822,7 @@ main(int argc,char **argv)
 	if(fl_idx == 0 && idx_rec == lmt_rec->srt){
 	  continue;
 	}else{ /* a loop of idx = stored indices */    
-	  if(proc_id == 0){ /* For ncrcat, Manager gives write access for each record in each file */
+	  if(proc_id == mgr_id){ /* For ncrcat, Manager gives write access for each record in each file */
 	    if(prg == ncrcat){ /* Give Write access to write current record */
 	      /* var_wrt_nbr=-proc_nbr+1; */
 	      var_wrt_nbr=0;
@@ -849,7 +851,7 @@ main(int argc,char **argv)
 		} /* msg_typ != TOKEN_REQUEST */
 	      } /* End-while token request loop */
 	    } /* !ncrcat */
-	  }else{ /* proc_id != 0, end Manager code begin Worker code */
+	  }else{ /* proc_id != mgr_id, end Manager code begin Worker code */
             wrk_id_bfr[0]=proc_id;
 	    var_wrt_nbr=0;
 	    /* if(fl_idx == 0 && idx_rec == lmt_rec->srt) continue;
@@ -950,7 +952,7 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
       } /* end loop over idx_rec */
 #ifdef ENABLE_MPI
-      if(proc_id != 0){ /* Only Worker */
+      if(proc_id != mgr_id){ /* Only Worker */
 #endif /* !ENABLE_MPI */
 	/* Warn if fewer than number of requested records were read and final file has been processed */
 	if(lmt_rec->lmt_typ == lmt_dmn_idx && lmt_rec->is_usr_spc_min && lmt_rec->is_usr_spc_max){
@@ -971,7 +973,7 @@ main(int argc,char **argv)
       /* End of ncra, ncrcat section */
     }else{ /* ncea */
 #ifdef ENABLE_MPI
-      if(proc_id != 0){ /* Only Worker does the ncea processing */
+      if(proc_id != mgr_id){ /* Only Worker does the ncea processing */
 	if(fl_idx == 0){
 	  continue;
 	}else{ /* a loop of idx = stored indices */
@@ -1022,7 +1024,7 @@ main(int argc,char **argv)
     /* Normalize, multiply, etc where necessary */
     if(prg == ncra || prg == ncea){
 #ifdef ENABLE_MPI
-      if(proc_id != 0){ /* Only workers have indices of variables to process */
+      if(proc_id != mgr_id){ /* Only workers have indices of variables to process */
 	for(jdx=0;jdx<lcl_nbr_var;jdx++){
 	  idx=lcl_idx_lst[jdx];
 #if 0
@@ -1071,14 +1073,14 @@ main(int argc,char **argv)
       } /* end (OpenMP parallel for) loop over variables */
 #ifdef ENABLE_MPI
       printf("DEBUG: End of Normzn at proc_id %d\n",proc_id);
-    } /* proc_id == 0 */
+    } /* proc_id == mgr_id */
     printf("DEBUG: Mgr shud prnt this too, proc_id %d\n",proc_id);
 #endif /* !ENABLE_MPI */
   } /* !ncra/ncea */
 #ifdef ENABLE_MPI
   printf("DEBUG: After all processing; Before barrier, proc_id %d\n",proc_id);
   /* MPI_Barrier(MPI_COMM_WORLD); */
-  if(proc_id == 0){ /* Only Manager */
+  if(proc_id == mgr_id){ /* Only Manager */
     rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
     printf("proc_id %d opened out file\n",proc_id);
 #endif /* !ENABLE_MPI */
@@ -1126,7 +1128,7 @@ main(int argc,char **argv)
     /* Send Token to Manager */
     if(proc_id == proc_nbr-1) MPI_Send(info_bfr,info_bfr_lng,MPI_INT,mgr_id,TOKEN_RESULT,MPI_COMM_WORLD); else MPI_Send(info_bfr,info_bfr_lng,MPI_INT,proc_id+1,TOKEN_RESULT,MPI_COMM_WORLD);
   } /* !Workers */
-  if(proc_id == 0){ /* Only Manager */
+  if(proc_id == mgr_id){ /* Only Manager */
     MPI_Recv(info_bfr,info_bfr_lng,MPI_INT,proc_nbr-1,TOKEN_RESULT,MPI_COMM_WORLD,&mpi_stt);
     (void)nco_fl_mv(fl_out_tmp,fl_out);
   } /* !Manager */
