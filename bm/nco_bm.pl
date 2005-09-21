@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.93 2005-09-18 21:51:53 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.94 2005-09-21 18:37:24 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -43,7 +43,7 @@ $spc_nbr_min  $spc_sng  %subbenchmarks  %success  %sym_link
 @sys_tim_arr  $sys_time  %sys_tme  $thr_nbr  $timed  $timestamp
 $tmr_app  %totbenchmarks  @tst_cmd  $tst_fl_cr8  $tst_fmt  $tst_id_sng
 $tst_idx  %tst_nbr  $udp_reprt  $udp_rpt  $USER  $usg  %usr_tme
-%wc_tbl  $wnt_log  $xpt_dsc
+%wc_tbl  $wnt_log $xdta_pth $xpt_dsc
 );
 
 # Initializations
@@ -75,6 +75,7 @@ $timestamp = `date -u "+%x %R"`; chomp $timestamp;
 $dodap = "FALSE"; # Unless redefined by the command line, it does not get set
 $fl_cnt = 32; # nbr of files to process (reduced to 4 if using remote/dods files
 $pth_rmt_scp_tst='dust.ess.uci.edu:/var/www/html/dodsdata';
+$xdta_pth = ''; # explicit data path that user can set from cmdline; more powerful than $dta_dir
 
 # other inits
 $localhostname = `hostname`;
@@ -103,7 +104,7 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'benchmark'    => \$bm,         # Run benchmarks
 	'bm'           => \$bm,         # Run benchmarks
 	'dbg_lvl=i'    => \$dbg_lvl,    # debug level - # is now optional
-	'debug:i'      => \$dbg_lvl,    # debug level
+	'debug=i'      => \$dbg_lvl,    # debug level
 	'dods:s'       => \$dodap,      # string is the URL to the DODs data
 	'dap:s'        => \$dodap,      #  "
 	'opendap:s'    => \$dodap,      #  "
@@ -111,9 +112,8 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'help'         => \$usg,        #            ditto
 	'log'          => \$wnt_log,    # set if want output logged
 	'mpi_prc=i'    => \$mpi_prc,    # set number of mpi processes
-	'mpi_fake'		=> \$mpi_fke,    # run the mpi executable as a single process for debugging.
-	'fake_mpi'		=> \$mpi_fke,    # run the mpi executable as a single process for debugging.
-	'mpi_fke'		=> \$mpi_fke,    # run the mpi executable as a single process for debugging.
+	'mpi_fake'	=> \$mpi_fke,    # run the mpi executable as a single process for debugging.
+	'fake_mpi'	=> \$mpi_fke,    # run the mpi executable as a single process for debugging.
 	'queue'        => \$que,        # if set, bypasses all interactive stuff
 	'pth_rmt_scp_tst' => \$pth_rmt_scp_tst, # [drc] Path to scp regression test file
 	'regress'      => \$rgr,        # test regression
@@ -124,6 +124,7 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'udpreport'    => \$udp_rpt,    # punt the timing data back to udpserver on sand
 	'usage'        => \$usg,        # explains how to use this thang
 	'caseid=s'     => \$caseid,     # short string to tag test dir and batch queue
+	'xdata=s'		=> \$xdta_pth,   # explicit data path set form cmdline
 	'xpt_dsc=s'    => \$xpt_dsc,    # long string to describe experiment
 #BROKEN - FXM hjm	'md5'          => \$md5,        # requests md5 checksumming results (longer but more exacting)
 );
@@ -131,31 +132,25 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 BEGIN {eval "use Digest::MD5"; $md5found = $@ ? 0 : 1}
 # $md5found = 0;  # uncomment to simulate no MD5
 if ($md5 == 1) {
-	if ($md5found == 0) {
-		print "\nOoops! Digest::MD5 module not found - continuing with simpler error checking\n\n" ;
-} else {
-		print "\tDigest::MD5 ... found.\n";
-}
-} else {
-	print "\tMD5 NOT requested; continuing with ncks checking of single values.\n";
-}
+	if ($md5found == 0) {print "\nOoops! Digest::MD5 module not found - continuing with simpler error checking\n\n" ;	}
+	else                {print "\tDigest::MD5 ... found.\n";}
+} else {	print "\tMD5 NOT requested; continuing with ncks checking of single values.\n";}
 
 $NUM_FLS = 4; # max number of files in the file creation series
 
-if($dbg_lvl > 0){
-	print "\nDEBUG[1]: $prg_nm:\n";
-	printf ("\t \$cmd_ln = $cmd_ln\n");
-	printf ("\t \$caseid = $caseid\n");
-	printf ("\t \$rgr = $rgr\n");
-	printf ("\t \$bm = $bm\n");
-	printf ("\t \$bch_flg = $bch_flg\n");
-	printf ("\t \$nvr_data = $nvr_data\n");
-	printf ("\t \$nvr_home = $nvr_home\n");
-	printf ("\t \$nvr_my_bin_dir = $nvr_my_bin_dir\n");
-	printf ("\t \@ENV = @ENV\n");
-	printf ("\t \@INC:\n");
-	foreach my $subpth (@INC) {print "\t   $subpth\n"}
-}
+my $lcl_vars = "\n\t \$cmd_ln = $cmd_ln\n";
+$lcl_vars .=   "\t \$caseid = $caseid\n";
+$lcl_vars .=   "\t \$rgr = $rgr\n" ;
+$lcl_vars .=   "\t \$bm = $bm\n" ;
+$lcl_vars .=    "\t \$bch_flg = $bch_flg\n";
+$lcl_vars .=    "\t \$nvr_data = $nvr_data\n";
+$lcl_vars .=    "\t \$nvr_home = $nvr_home\n";
+$lcl_vars .=    "\t \$nvr_my_bin_dir = $nvr_my_bin_dir\n";
+$lcl_vars .=    "\t \$nvr_my_bin_dir = $nvr_my_bin_dir\n";
+$lcl_vars .=    "\t \@ENV = @ENV\n";
+$lcl_vars .=    "\t \@INC:\n";
+foreach my $subpth (@INC) {$lcl_vars .= "\t   $subpth\n"}
+dbg_msg(2,$lcl_vars); # spit the whole thing out.
 
 if ($ARGV == 0) {	usage();}
 
@@ -170,17 +165,23 @@ if ($thr_nbr > 16) {die "\nThe '--thr_nbr' value was set to an irrationally exub
 if (length($caseid) > 80) {die "\nThe caseid string is > 80 characters - please reduce it to less than 80 chars.\nIt's used to create file and directory names, so it has to be relatively short\n";}
 
 # Slurp in data for the checksum hashes
+if ($md5 == 1) {	do "nco_bm_md5wc_tbl.pl" or die "Can't find the validation data (nco_bm_md5wc_tbl.pl).\n";}
 
-if ($md5 == 1) {
-	do "nco_bm_md5wc_tbl.pl" or die "Can't find the validation data (nco_bm_md5wc_tbl.pl).\n";
-}
 $nco_D_flg = "-D $dbg_lvl";
-
 dbg_msg(3,"\$nco_D_flg = $nco_D_flg");
 
 # Determine where $DATA should be, prompt user if necessary
-dbg_msg(2, "$prg_nm: Calling set_dat_dir()");
-set_dat_dir(); # Set $dta_dir
+if ($xdta_pth eq '') {
+	dbg_msg(2, "$prg_nm: Calling set_dat_dir()");
+	set_dat_dir(); # Set $dta_dir
+} else { #validate $xdta_pth
+	if (-e $xdta_pth && -w $xdta_pth){ #if it exists and is writable,, spit out a debug message
+		dbg_msg(1,"User-specified DATA path ($xdta_pth) exists and is writable.");
+		$dta_dir = $xdta_pth; # and assign it to the previously coded variable.
+	} else {
+		die "FATAL(bm): The directory you specified on the commandline ($xdta_pth) doesn't exist or isn't writable by you.\n";
+	}
+}
 
 # make sure that the $fl_pth gets set to a reasonable defalt
 $fl_pth = "$dta_dir";

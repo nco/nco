@@ -14,7 +14,7 @@ package NCO_bm;
 #   smrz_rgr_rslt()......summarizes the results of both regression and benchmark tests
 #   check_nco_results()..checks the output via md5/wc validation
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.5 2005-09-18 21:51:52 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.6 2005-09-21 18:37:24 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -132,10 +132,12 @@ where (options) are:
                      this string can be used to identity and separate results
                      from different runs.
     --dap {OPeNDAP url} ...retrieve test files from OPeNDAP server URL
-    --opendap "               "
+    --opendap..............             ditto
     --log ..........requests that the debug info is logged to 'nctest.log'
                      as well as spat to STDOUT.
-    --mpi_prc {#>0}.....number of MPI processes to spawn
+    --mpi_prc {#>0}..number of MPI processes to spawn
+    --mpi_fake.......run the mpi executable as a single process for debugging.
+    --fake_mpi.......                   ditto
     --udpreport.....requests that the test results are communicated back to
                      NCO Central to add your test, timing, and build results.
                             NB: This option uses udp port 29659 and may set off
@@ -151,6 +153,8 @@ where (options) are:
                             4 - IPCC Daily T85 data set  ~  4GB  ~several min
                             A - All
     --thr_nbr {#>0}....Number of OpenMP threads to use
+    --xdata.........explicit data path set from cmdline
+                    (overrides DATA environment variable)
     --regress.......do the regression tests
     --benchmark.....do the benchmarks
 
@@ -171,7 +175,7 @@ appending history to file.
 This script is part of the netCDF Operators package:
   http://nco.sourceforge.net
 
-Copyright © 1994-2005 Charlie 'my surname is' Zender (surname@uci.edu)
+Copyright  1994-2005 Charlie 'my surname is' Zender (surname@uci.edu)
 
 USAGE
 exit(0);
@@ -444,10 +448,13 @@ sub go {
 
 	# twiddle the $prefix to allow for running the mpnc* as a non-mpi'ed  executable
 	if ($mpi_fke) {$fke_prefix = "$MY_BIN_DIR/mp"; }
-	else {         $prefix = "$MY_BIN_DIR/";}
+#	else {         $prefix = "$MY_BIN_DIR/";}
+	$prefix = "$MY_BIN_DIR/";
 	#  $mpi_prfx will always have the mpirun directive.
 	$mpi_prfx = " mpirun -np $mpi_prc $MY_BIN_DIR/mp";
 	$prfxd = 1; $timed = 1;
+
+	dbg_msg(2,"\$prefix=$prefix | \$mpi_prfx=$mpi_prfx | \$fke_prefix=$fke_prefix");
 
 # Perform tests of requested operator; default is all
 	if (!defined $tst_nbr{$opr_nm}) {
@@ -490,6 +497,7 @@ sub go {
 	$tst_fmt="$tst_id_sng$dsc_fmt$dot_fmt";
 	printf STDERR ($tst_fmt,$dsc_sng,$dot_sng);
 	# csz--
+
 	foreach (@tst_cmd){
 		my $md5_chk = 1;
 		$dbg_sgn .= "\nDEBUG: Full commandline for part $tst_cmdcnt:\n";
@@ -498,7 +506,6 @@ sub go {
 		my $opcnt = 0;
 		my $md5_dsc_sng = $dsc_sng . "_$tst_cmdcnt";
 		# Add $prefix only to NCO operator commands, not things like 'cut'.
-
 
 		foreach my $op (@opr_lst_all) {
 #			print "\$op = $op\n";
@@ -639,7 +646,7 @@ sub smrz_rgr_rslt {
 	$reportstr .=      "             --------------------------   ----------------------------------------\n";
 	$reportstr .=      "      Test   Success    Failure   Total   WallClock    Real   User  System    Diff";
 # csz++
-	*thr_nbr=*main::thr_nbr;
+#	*thr_nbr=*main::thr_nbr;
 # csz--
 	if ($thr_nbr > 0) {$reportstr .= " (OpenMP threads = $thr_nbr)\n";}
 	else {$reportstr .= "\n";}
@@ -738,7 +745,7 @@ sub dbg_msg {
 	my $okdbg = shift;
 	my $msg = shift;
 	if ($dbg_lvl >= $okdbg) {
-		print "\nDEBUG[$okdbg]: $msg\n\n";
+		print "\nDEBUG[bm:$okdbg]: $msg\n\n";
 	}
 }
 

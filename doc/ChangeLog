@@ -1,3 +1,9 @@
+2005-09-20  Harry Mangalam <hjm@tacgi.com>
+
+	* added --xdata to nco_bm.pl to allow commandline data path to be entered
+		(to allow benchmarking on different filesystems without resetting
+		DATA env var).
+
 2005-09-18  Charlie Zender  <zender@uci.edu>
 
 	* Tweak ncatted expected answer to pass hdr_pad test with new nco_bm.pl
