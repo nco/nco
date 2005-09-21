@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.18 2005-09-18 16:56:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.19 2005-09-21 07:04:37 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.18 2005-09-18 16:56:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.18 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.19 2005-09-21 07:04:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.19 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
   
   dmn_sct **dim;
@@ -527,12 +527,13 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
   
   /* Close first input netCDF file */
+  /* csz fxm: close file for SMP only? since MPI code immediate re-opens? */
   (void)nco_close(in_id);
   
   /* Allocate and, if necesssary, initialize accumulation space for processed variables */
   for(idx=0;idx<nbr_var_prc;idx++){
     if(prg == ncra || prg == ncrcat){
-      /* Only allocate space for one record */
+      /* Allocate space for only one record */
       var_prc_out[idx]->sz=var_prc[idx]->sz=var_prc[idx]->sz_rec;
     } /* endif */
     if(prg == ncra || prg == ncea){
@@ -544,6 +545,10 @@ main(int argc,char **argv)
   } /* end loop over idx */
   
 #ifdef ENABLE_MPI
+  /* csz: Parallelization for ncea, ncra, ncrcat requires two passes
+     NB: Only manager code is allowed to manipulate value of TOKEN_FREE
+     Pass 1: Open first file 
+     Pass 2: */
   fl_idx=0;
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
@@ -573,7 +578,7 @@ main(int argc,char **argv)
       idx=0;
       /* While variables remain to be processed or written... */
       while(var_wrt_nbr < nbr_var_prc){
-	/* Receive message from any worker */
+	/* Receive any message from any worker */
 	MPI_Recv(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,MPI_ANY_SOURCE,MPI_ANY_TAG,MPI_COMM_WORLD,&mpi_stt);
 	/* Obtain MPI message type */
 	msg_typ=mpi_stt.MPI_TAG;
@@ -593,6 +598,7 @@ main(int argc,char **argv)
 	  }else{
 	    /* Tell requesting worker to allocate space for next variable */
 	    info_bfr[0]=idx; /* [idx] Variable to be processed */
+	    /* csz: fxm Why on Earth do workers need to know Master's out_id? */
 	    info_bfr[1]=out_id; /* Output file ID */
 	    info_bfr[2]=var_prc_out[idx]->id; /* [id] Variable ID in output file */
 	    /* Point to next variable on list */
@@ -611,6 +617,7 @@ main(int argc,char **argv)
 	} /* msg_typ != TOKEN_REQUEST */
       } /* end while var_wrt_nbr < nbr_var_prc */
     }else{ /* proc_id != 0, end Manager code begin Worker code */
+      /* csz: fxm delete redundant statement with two lines further down */
       wrk_id_bfr[0]=proc_id;
       var_wrt_nbr=0;
       while(1){ /* While work remains... */
@@ -625,6 +632,7 @@ main(int argc,char **argv)
 	  break;
 	}else{ /* idx != NO_MORE_WORK */
 	  lcl_idx_lst[lcl_nbr_var]=idx; /* storing the indices for subsequent processing by the worker */
+	  /* csz: got to here reading logic */
 	  lcl_nbr_var++;
           var_prc_out[idx]->id=info_bfr[2];
 	  if(dbg_lvl > 2) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
