@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.332 2005-09-18 20:57:20 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.333 2005-09-21 20:23:09 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -356,6 +356,8 @@ MDL_MAN := $(addprefix ${MY_MAN_DIR}/,${MDL_MAN}) # distclean removes these file
 
 # Variables having to do with NCO build
 MDL_BLD_SRC := $(addprefix ${MY_BLD_DIR}/,libnco_tst.c libnco_c++_tst.cc Makefile nco.spec nco_dst.pl nco_tst.pl) # `make tags' includes these files
+# Files, if any, to exclude from tags
+TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc
 
 # Variables having to do with ncap
 MDL_NCAP_SRC := $(addprefix ${MY_SRC_DIR}/,ncap_yacc.y ncap_lex.l ncap.h) # `make tags' includes these files
@@ -1597,7 +1599,7 @@ dst_cln: cln bin_cln dat_cln doc_cln root_cln
 	cd ${MY_BLD_DIR}; rm -f *~
 	cd ${MY_DAT_DIR}; rm -f in.nc *~
 tags: 
-	etags ${MY_SRC_DIR}/*.h ${SRC_LST} ${MDL_DOC_SRC} ${MDL_BLD_SRC} ${MDL_NCAP_SRC}
+	etags ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_BLD_SRC} ${MDL_NCAP_SRC}
 
 # Reset internal YACC and LEX patterns
 %.c : %.y
