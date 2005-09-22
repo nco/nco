@@ -1,16 +1,15 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.2 2005-09-22 01:02:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.3 2005-09-22 07:10:01 zender Exp $ */
 
 /* Purpose: MPI utilities */
 
 /* NB: Currently this header is only accessed by main() MPI programs 
    Hence it is not (yet) part of libnco.a
    Header assumes its inclusion is already conditional on ENABLE_MPI
-   This is currently a header mostly for pre-processor tokens 
-   with few odd file scope constants needed by MPI routines 
-   No functions yet
-   Adding functions would require creating a corresponding *.c file
-   Adding a *.c file would require including that in libnco.a or separately linking
-   the MPI executables to it, i.e., slightly complicating the build procedure.
+   This is currently a header mostly for file-scope constants needed by MPI routines 
+   No functions (yet) but some will eventually live here after MPI functionalization
+   Adding functions will require creating a corresponding *.c file
+   *.c files must reside in libnco.a or link separately to MPI executables
+   The latter would slightly complicate the build procedure
    I'm not yet sure I want _any_ MPI dependencies in libnco.a 
    Cross-platform link weirdness (e.g., AIX) makes this something to avoid if possible */
 
@@ -50,6 +49,7 @@ extern "C" {
   const int idx_all_wrk_ass=-1; /* [flg] All variables already assigned */
 
   /* NB: Message fields must begin in location zero */
+  /* fxm: Define message structures rather than int arrays */
   const int msg_lmn_tkn_wrt_rsp=0; /* [idx] Location of response */
 
   /* Requests for the write token have two possible responses */

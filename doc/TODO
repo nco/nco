@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.624 2005-09-22 01:02:34 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.625 2005-09-22 07:10:01 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -359,9 +359,10 @@ nco597. mpncea hangs on ncea regression test 4 (on sand with LAM)
         ncea -O -D 5 -C -v one -p ~/nco/data in.nc ~/foo.nc (works)
         mpirun -np 2 /home/zender/bin/LINUXAMD64/mpncea -O -D 5 -C -v one -p ~/nco/data in.nc ~/foo.nc (leaves processes hanging in nco_free(var_out[0]))
         mpirun -np 2 /usr/local/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck $MY_BIN_DIR/mpncea -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-nco599. Allow Makefile variables to be determined by targets so, e.g., 'make mpi' automagically defines MPI=Y
+nco599. Allow targets to determine Makefile variables so, e.g., 'make mpi' automagically defines MPI=Y
 nco605. ncpdq: speed up end of program by padding metadata intially?
-nco607. 
+nco607. mpnc*: Define structures (rather than int arrays) for MPI messages
+nco608. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
@@ -373,7 +374,7 @@ MPI: Archive of quickie MPI tests
 NB: mpirun requires explicit path to executable
 Status 20050920: 
 1. LAM-MPI, MPICH, MPICH2 all work fine
-   Currently recommend running with MPICH2
+   Currently recommend running with MPICH2, though LAM is easier since it's in Ubuntu
    See ~/doc/mpi.txt for installation details.
 2. Charlie's default compilation/testing environments:
    ashes: Ubuntu, x86, LAM-MPI, gcc-4.0
