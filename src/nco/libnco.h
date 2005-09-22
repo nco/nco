@@ -1,6 +1,6 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.32 2005-01-07 23:54:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.33 2005-09-22 01:02:34 zender Exp $ */
 
-/* Purpose: netCDF Operator (NCO) library */
+/* Purpose: netCDxF Operator (NCO) library */
 
 /* Copyright (C) 1995--2005 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.1 2005-09-21 20:06:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.2 2005-09-22 01:02:34 zender Exp $ */
 
 /* Purpose: MPI utilities */
 
@@ -30,21 +30,43 @@
 
 /* Personal headers */
 
-/* Tags used for MPI Communication */
-#define TOKEN_ALLOC 1
-#define TOKEN_REQUEST 300
-#define TOKEN_RESULT 500
-#define TOKEN_WAIT 0
-#define WORK_ALLOC 400
-#define WORK_DONE 600
-#define WORK_REQUEST 100
-
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-const int mgr_id=0; /* [ID] Manager ID */
-const int NO_MORE_WORK=-1; /* [flg] All MPI variables processed */
+  const int msg_bfr_lng=3; /* [nbr] Number of elements in msg_bfr */
+  const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
+
+  /* Sleep interval between successive write token requests */
+  const double tkn_wrt_rqs_ntv=0.04; /* [s] Token request interval */
+  
+  /* Convention is to assign manager responsibilities to rank 0 process
+     NB: Manager rank must be < number of processes */
+  const int rnk_mgr=0; /* [idx] Manager rank */
+
+  /* Pass idx_all_wrk_ass in place of variable ID when all variables assigned
+     Values for idx_all_wrk_ass must be exclusive of valid variable IDs
+     Hence use a negative integer to signify idx_all_wrk_ass */
+  const int idx_all_wrk_ass=-1; /* [flg] All variables already assigned */
+
+  /* NB: Message fields must begin in location zero */
+  const int msg_lmn_tkn_wrt_rsp=0; /* [idx] Location of response */
+
+  /* Requests for the write token have two possible responses */
+  enum tkn_wrt_rsp_val{ /* [enm] Valid responses to write token requests */
+    tkn_wrt_rqs_dny, /* Request for write token denied (must wait and re-request) */
+    tkn_wrt_rqs_xcp /* Request for write token accepted, OK to write */
+  }; /* end tkn_wrt_rsp_val enum */
+
+  /* These (and MPI_ANY_TAG) are valid entries for the MPI message tag field 
+     Processes may request to filter messages based on any of these tags */
+  enum nco_msg_tag_typ{ /* [enm] MPI message tag */
+    msg_tag_wrk_done, /* Notification that work is complete */
+    msg_tag_wrk_rqs, /* Request for work */
+    msg_tag_wrk_rsp, /* Response to work request */
+    msg_tag_tkn_wrt_rqs, /* Request for write token */
+    msg_tag_tkn_wrt_rsp  /* Response to write token request */
+  }; /* end nco_msg_tag_typ enum */
 
 #ifdef __cplusplus
 } /* end extern "C" */

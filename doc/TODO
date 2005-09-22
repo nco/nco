@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.623 2005-09-21 20:04:25 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.624 2005-09-22 01:02:34 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -341,7 +341,7 @@ nco593. mpncrcat "sometimes" hangs while concatenating
 	command line: -np 2 seems to always work on sand, ashes, elnino
 	command line: -np 3 rarely hangs on ashes, usually hangs on sand, never hangs on elnino
                       When it does hang on ashes, it hangs after this message:
-                      DEBUG: proc_id 1 waiting for msg from Mgr for final write
+                      DEBUG: prc_rnk 1 waiting for msg from Mgr for final write
 	command line: -np 4 always hangs on ashes and sand, never hangs on elnino
         ncrcat -O -D 5 -p ~/nco/data in.nc in.nc ~/foo.nc (works)
 	mpirun -np 2 mpncrcat -O -D 5 -p ~/nco/data in.nc in.nc ~/foo.nc (fails, depending on np and machine)

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.14 2005-09-21 20:04:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.15 2005-09-22 01:02:34 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.14 2005-09-21 20:04:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.14 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.15 2005-09-22 01:02:34 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.15 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -176,27 +176,23 @@ main(int argc,char **argv)
   
 #ifdef ENABLE_MPI
   /* Declare all MPI-specific variables here */
-  MPI_Status mpi_stt; /* [enm] Status check to decode msg_typ */
+  MPI_Status mpi_stt; /* [enm] Status check to decode msg_tag_typ */
 
-  bool TOKEN_FREE=True; /* [flg] Allow MPI workers write-access to output file */
+  bool TKN_WRT_FREE=True; /* [flg] Write-access to output file is available */
   
-  const double sleep_tm=0.04; /* [s] Token request interval */
-  
-  const int info_bfr_lng=3; /* [nbr] Number of elements in info_bfr */
-  const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
-
   int fl_nm_lng; /* [nbr] Output file name length */
-  int info_bfr[3]; /* [bfr] Buffer containing var, idx, tkn_rsp */
+  int msg_bfr[msg_bfr_lng]; /* [bfr] Buffer containing var, idx, tkn_wrt_rsp */
   int jdx=0; /* [idx] For MPI indexing local variables */
+  /* csz: fxm why 60? make dynamic? */
   int lcl_idx_lst[60]; /* [arr] Array containing indices of variables processed at each Worker */
   int lcl_nbr_var=0; /* [nbr] Count of variables processes at each Worker */
-  int msg_typ; /* [enm] MPI message type */
-  int proc_id; /* [id] Process ID */
-  int proc_nbr=0; /* [nbr] Number of MPI processes */
-  int tkn_rsp; /* [enm] Mangager response [0,1] = [Wait,Allow] */
+  int msg_tag_typ; /* [enm] MPI message tag type */
+  int prc_rnk; /* [idx] Process rank */
+  int prc_nbr=0; /* [nbr] Number of MPI processes */
+  int tkn_wrt_rsp; /* [enm] Response to request for write token */
   int var_wrt_nbr=0; /* [nbr] Variables written to output file until now */
-  int wrk_id; /* [id] Sender node ID */
-  int wrk_id_bfr[1]; /* [bfr] Buffer for wrk_id */
+  int rnk_wrk; /* [idx] Worker rank */
+  int wrk_id_bfr[wrk_id_bfr_lng]; /* [bfr] Buffer for rnk_wrk */
 #endif /* !ENABLE_MPI */
 
   static struct option opt_lng[]=
@@ -251,8 +247,8 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
   /* MPI Initialization */
   MPI_Init(&argc,&argv);
-  MPI_Comm_size(MPI_COMM_WORLD,&proc_nbr);
-  MPI_Comm_rank(MPI_COMM_WORLD,&proc_id);
+  MPI_Comm_size(MPI_COMM_WORLD,&prc_nbr);
+  MPI_Comm_rank(MPI_COMM_WORLD,&prc_rnk);
 #endif /* !ENABLE_MPI */
   
   /* Start clock and save command line */ 
@@ -503,7 +499,7 @@ main(int argc,char **argv)
   } /* end if */
   
 #ifdef ENABLE_MPI
-  if(proc_id == mgr_id){ /* MPI manager code */
+  if(prc_rnk == rnk_mgr){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FMT_64BIT,&out_id);
@@ -521,8 +517,8 @@ main(int argc,char **argv)
     
 #ifdef ENABLE_MPI
     /* Initialize MPI task information */
-    if(proc_nbr > 0 && HISTORY_APPEND) (void)nco_mpi_att_cat(out_id,proc_nbr);
-  } /* !proc_id == mgr_id */
+    if(prc_nbr > 0 && HISTORY_APPEND) (void)nco_mpi_att_cat(out_id,prc_nbr);
+  } /* !prc_rnk == rnk_mgr */
 #endif /* !ENABLE_MPI */
   
   /* If re-ordering, then in files with record dimension... */
@@ -680,12 +676,12 @@ main(int argc,char **argv)
   } /* !REDEFINED_RECORD_DIMENSION */
   
 #ifdef ENABLE_MPI
-  if(proc_id == mgr_id){ /* Defining dimension in output file done by Manager alone */
+  if(prc_rnk == rnk_mgr){ /* Defining dimension in output file done by Manager alone */
 #endif /* !ENABLE_MPI */
     /* Once new record dimension, if any, is known, define dimensions in output file */
     (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_out);
 #ifdef ENABLE_MPI
-  } /* proc_id != mgr_id */
+  } /* prc_rnk != rnk_mgr */
 #endif /* !ENABLE_MPI */
   
   /* Alter metadata for variables that will be packed */
@@ -706,7 +702,7 @@ main(int argc,char **argv)
   } /* nco_pck_plc == nco_pck_plc_nil */
   
 #ifdef ENABLE_MPI
-  if(proc_id == mgr_id){ /* MPI manager code */
+  if(prc_rnk == rnk_mgr){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
     /* Define variables in output file, copy their attributes */
     (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_map,nco_pck_plc);
@@ -717,12 +713,12 @@ main(int argc,char **argv)
     /* Take output file out of define mode */
     (void)nco_enddef(out_id);
 #ifdef ENABLE_MPI
-  } /* proc_id != mgr_id */
+  } /* prc_rnk != rnk_mgr */
   
   /* Manager obtains output filename and broadcasts to workers */
-  if(proc_id == mgr_id) fl_nm_lng=(int)strlen(fl_out_tmp); 
+  if(prc_rnk == rnk_mgr) fl_nm_lng=(int)strlen(fl_out_tmp); 
   MPI_Bcast(&fl_nm_lng,1,MPI_INT,0,MPI_COMM_WORLD);
-  if(proc_id != mgr_id) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
+  if(prc_rnk != rnk_mgr) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
   MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,0,MPI_COMM_WORLD);
   
 #endif /* !ENABLE_MPI */
@@ -731,16 +727,16 @@ main(int argc,char **argv)
   (void)nco_var_srt_zero(var_out,nbr_xtr);
   
 #ifdef ENABLE_MPI
-  if(proc_id == mgr_id){ /* MPI manager code */
-    TOKEN_FREE=False;
+  if(prc_rnk == rnk_mgr){ /* MPI manager code */
+    TKN_WRT_FREE=False;
 #endif /* !ENABLE_MPI */
     /* Copy variable data for non-processed variables */
     (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
 #ifdef ENABLE_MPI
     /* Close output file so workers can open it */
     nco_close(out_id);
-    TOKEN_FREE=True;
-  } /* proc_id != mgr_id */
+    TKN_WRT_FREE=True;
+  } /* prc_rnk != rnk_mgr */
 #endif /* !ENABLE_MPI */
   
   /* Close first input netCDF file */
@@ -757,65 +753,64 @@ main(int argc,char **argv)
     rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
     
 #ifdef ENABLE_MPI
-    if(proc_id == mgr_id){ /* MPI manager code */
+    if(prc_rnk == rnk_mgr){ /* MPI manager code */
       /* Compensate for incrementing on each worker's first message */
-      var_wrt_nbr=-proc_nbr+1;
+      var_wrt_nbr=-prc_nbr+1;
       idx=0;
       /* While variables remain to be processed or written... */
       while(var_wrt_nbr < nbr_var_prc){
         /* Receive message from any worker */
         MPI_Recv(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,MPI_ANY_SOURCE,MPI_ANY_TAG,MPI_COMM_WORLD,&mpi_stt);
-        /* Obtain MPI message type */
-        msg_typ=mpi_stt.MPI_TAG;
-        /* Get sender's proc_id */
-        wrk_id=wrk_id_bfr[0];
+        /* Obtain MPI message tag type */
+        msg_tag_typ=mpi_stt.MPI_TAG;
+        /* Get sender's prc_rnk */
+        rnk_wrk=wrk_id_bfr[0];
 	
         /* Allocate next variable, if any, to worker */
-        if(msg_typ == WORK_REQUEST){
+        if(msg_tag_typ == msg_tag_wrk_rqs){
           var_wrt_nbr++; /* [nbr] Number of variables written */
-          /* Worker closed output file before sending WORK_REQUEST */
-          TOKEN_FREE=True;
+          /* Worker closed output file before sending msg_tag_wrk_rqs */
+          TKN_WRT_FREE=True;
 	  
           if(idx > nbr_var_prc-1){
-            /* Variable index = -1 indicates NO_MORE_WORK */
-            info_bfr[0]=NO_MORE_WORK; /* [idx] -1 */
-            info_bfr[1]=out_id; /* Output file ID */
+            msg_bfr[0]=idx_all_wrk_ass; /* [idx] -1 */
+            msg_bfr[1]=out_id; /* Output file ID */
           }else{
             /* Tell requesting worker to allocate space for next variable */
-            info_bfr[0]=idx; /* [idx] Variable to be processed */
-            info_bfr[1]=out_id; /* Output file ID */
-            info_bfr[2]=var_prc_out[idx]->id; /* [id] Variable ID in output file */
+            msg_bfr[0]=idx; /* [idx] Variable to be processed */
+            msg_bfr[1]=out_id; /* Output file ID */
+            msg_bfr[2]=var_prc_out[idx]->id; /* [id] Variable ID in output file */
             /* Point to next variable on list */
             idx++;
           } /* endif idx */
-          MPI_Send(info_bfr,info_bfr_lng,MPI_INT,wrk_id,WORK_ALLOC,MPI_COMM_WORLD);
-          /* msg_typ != WORK_REQUEST */
-        }else if(msg_typ == TOKEN_REQUEST){
+          MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,rnk_wrk,msg_tag_wrk_rsp,MPI_COMM_WORLD);
+          /* msg_tag_typ != msg_tag_wrk_rqs */
+        }else if(msg_tag_typ == msg_tag_tkn_wrt_rqs){
           /* Allocate token if free, else ask worker to try later */
-          if(TOKEN_FREE){
-            TOKEN_FREE=False;
-            info_bfr[0]=1; /* Allow */
+          if(TKN_WRT_FREE){
+            TKN_WRT_FREE=False;
+            msg_bfr[0]=tkn_wrt_rqs_xcp; /* Request for write token accepted */
           }else{
-            info_bfr[0]=0; /* Wait */
-          } /* !TOKEN_FREE */
-          MPI_Send(info_bfr,info_bfr_lng,MPI_INT,wrk_id,TOKEN_RESULT,MPI_COMM_WORLD);
-        } /* msg_typ != TOKEN_REQUEST */
+            msg_bfr[0]=tkn_wrt_rqs_dny; /* Request for write token denied */
+          } /* !TKN_WRT_FREE */
+          MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,rnk_wrk,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD);
+        } /* msg_tag_typ != msg_tag_tkn_wrt_rqs */
       } /* end while var_wrt_nbr < nbr_var_prc */
-    }else{ /* proc_id != mgr_id, end Manager code begin Worker code */
-      wrk_id_bfr[0]=proc_id;
+    }else{ /* prc_rnk != rnk_mgr, end Manager code begin Worker code */
+      wrk_id_bfr[0]=prc_rnk;
       while(1){ /* While work remains... */
-        /* Send WORK_REQUEST */
-        wrk_id_bfr[0]=proc_id;
-        MPI_Send(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,mgr_id,WORK_REQUEST,MPI_COMM_WORLD);
-        /* Receive WORK_ALLOC */
-        MPI_Recv(info_bfr,info_bfr_lng,MPI_INT,0,WORK_ALLOC,MPI_COMM_WORLD,&mpi_stt);
-        idx=info_bfr[0];
-        out_id=info_bfr[1];
-        if(idx == NO_MORE_WORK) break;
+        /* Send msg_tag_wrk_rqs */
+        wrk_id_bfr[0]=prc_rnk;
+        MPI_Send(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,rnk_mgr,msg_tag_wrk_rqs,MPI_COMM_WORLD);
+        /* Receive msg_tag_wrk_rsp */
+        MPI_Recv(msg_bfr,msg_bfr_lng,MPI_INT,0,msg_tag_wrk_rsp,MPI_COMM_WORLD,&mpi_stt);
+        idx=msg_bfr[0];
+        out_id=msg_bfr[1];
+        if(idx == idx_all_wrk_ass) break;
         else{
 	  lcl_idx_lst[lcl_nbr_var]=idx; /* storing the indices for subsequent processing by the worker */
           lcl_nbr_var++;
-          var_prc_out[idx]->id=info_bfr[2];
+          var_prc_out[idx]->id=msg_bfr[2];
           /* Process this variable same as UP code */
 #if 0
 	      /* NB: Immediately preceding MPI else scope confounds Emacs indentation
@@ -861,18 +856,17 @@ main(int argc,char **argv)
 	  
 #ifdef ENABLE_MPI
 	  /* Obtain token and prepare to write */
-	  while(1){ /* Send TOKEN_REQUEST repeatedly until token obtained */
-	    wrk_id_bfr[0]=proc_id;
-	    MPI_Send(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,mgr_id,TOKEN_REQUEST,MPI_COMM_WORLD);
-	    /* Receive TOKEN_RESULT (1,0)=(ALLOW,WAIT) */
-	    MPI_Recv(info_bfr,info_bfr_lng,MPI_INT,mgr_id,TOKEN_RESULT,MPI_COMM_WORLD,&mpi_stt);
-	    tkn_rsp=info_bfr[0];
+	  while(1){ /* Send msg_tag_tkn_wrt_rqs repeatedly until token obtained */
+	    wrk_id_bfr[0]=prc_rnk;
+	    MPI_Send(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,rnk_mgr,msg_tag_tkn_wrt_rqs,MPI_COMM_WORLD);
+	    MPI_Recv(msg_bfr,msg_bfr_lng,MPI_INT,rnk_mgr,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD,&mpi_stt);
+	    tkn_wrt_rsp=msg_bfr[0];
 	    /* Wait then re-send request */
-	    if(tkn_rsp == TOKEN_WAIT) sleep(sleep_tm); else break;
+	    if(tkn_wrt_rsp == tkn_wrt_rqs_dny) sleep(tkn_wrt_rqs_ntv); else break;
 	  } /* end while loop waiting for write token */
 	  
 	    /* Worker has token---prepare to write */
-	  if(tkn_rsp == TOKEN_ALLOC){
+	  if(tkn_wrt_rsp == tkn_wrt_rqs_xcp){
 	    rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
 #else /* !ENABLE_MPI */
 #ifdef _OPENMP
@@ -895,8 +889,8 @@ main(int argc,char **argv)
 	    /* Close output file and increment written counter */
 	    nco_close(out_id);
 	    var_wrt_nbr++;
-	  } /* endif TOKEN_ALLOC */
-	} /* end else !NO_MORE_WORK */
+	  } /* endif tkn_wrt_rqs_xcp */
+	} /* end else !idx_all_wrk_ass */
       } /* end while loop requesting work/token */
     } /* endif Worker */
 #else /* !ENABLE_MPI */
@@ -907,11 +901,11 @@ main(int argc,char **argv)
   
 #ifdef ENABLE_MPI
   MPI_Barrier(MPI_COMM_WORLD);
-  if(proc_id == mgr_id) { /* Manager only */
-    MPI_Send(info_bfr,info_bfr_lng,MPI_INT,proc_id+1,TOKEN_RESULT,MPI_COMM_WORLD);
-  } /* ! proc_id == mgr_id */
+  if(prc_rnk == rnk_mgr) { /* Manager only */
+    MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,prc_rnk+1,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD);
+  } /* ! prc_rnk == rnk_mgr */
   else{ /* Workers */
-    MPI_Recv(info_bfr,info_bfr_lng,MPI_INT,proc_id-1,TOKEN_RESULT,MPI_COMM_WORLD,&mpi_stt);
+    MPI_Recv(msg_bfr,msg_bfr_lng,MPI_INT,prc_rnk-1,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD,&mpi_stt);
 #endif /* !ENABLE_MPI */
     
     /* Write/overwrite packing attributes for newly packed and re-packed variables 
@@ -958,14 +952,14 @@ main(int argc,char **argv)
       } /* nco_pck_plc == nco_pck_plc_nil || nco_pck_plc == nco_pck_plc_upk */
       
 #ifdef ENABLE_MPI
-      if(proc_id == proc_nbr-1) /* Send Token to Manager */
-	MPI_Send(info_bfr,info_bfr_lng,MPI_INT,mgr_id,TOKEN_RESULT,MPI_COMM_WORLD);
+      if(prc_rnk == prc_nbr-1) /* Send Token to Manager */
+	MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,rnk_mgr,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD);
       else
-	MPI_Send(info_bfr,info_bfr_lng,MPI_INT,proc_id+1,TOKEN_RESULT,MPI_COMM_WORLD);
+	MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,prc_rnk+1,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD);
     } /* !Workers */
-    if(proc_id == mgr_id){ /* Only Manager */
-      MPI_Recv(info_bfr,info_bfr_lng,MPI_INT,proc_nbr-1,TOKEN_RESULT,MPI_COMM_WORLD,&mpi_stt);
-    } /* proc_id != mgr_id */
+    if(prc_rnk == rnk_mgr){ /* Only Manager */
+      MPI_Recv(msg_bfr,msg_bfr_lng,MPI_INT,prc_nbr-1,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD,&mpi_stt);
+    } /* prc_rnk != rnk_mgr */
 #endif /* !ENABLE_MPI */
     
     /* Close input netCDF file */
@@ -979,7 +973,7 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
   MPI_Barrier(MPI_COMM_WORLD);
   /* Manager moves output file (closed by workers) from temporary to permanent location */
-  if(proc_id == mgr_id) (void)nco_fl_mv(fl_out_tmp,fl_out);
+  if(prc_rnk == rnk_mgr) (void)nco_fl_mv(fl_out_tmp,fl_out);
 #else /* !ENABLE_MPI */
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
