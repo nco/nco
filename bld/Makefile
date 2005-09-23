@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.334 2005-09-23 19:20:22 mangalam Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.335 2005-09-23 20:09:40 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -154,29 +154,31 @@ ifeq (${DAP},Y)
 ifndef DAP_ROOT
 # Directory containing libdap++.a, libnc-dap.a
  DAP_ROOT := /usr/local
-endif
+endif # DAP_ROOT
  NC_LDFLAGS := -L${DAP_ROOT}/lib
 # NB: nc-dods, dap++ prior to version 3.5.X must be linked twice!
-# DODS 3.3-
+# Required libraries for
+# DODS 3.3-:
 # NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
-# DODS 3.4.X
+# DODS 3.4.X:
 # NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lxml2 -lcurl -lpthread -ldl -lz
-# DAP 3.5+
+# DAP 3.5+:
  NC_LIBS := -lnc-dap -ldap++ -lxml2 -lcurl
 # Get netCDF from OPeNDAP version
  NETCDF_INC=${DAP_ROOT}/include/libnc-dap
  NETCDF_LIB=${DAP_ROOT}/lib
-else
+else # !DAP
 # Build NCO straight, without DAP
  NC_LDFLAGS := -L${NETCDF_LIB}
- NC_LIBS := -lnetcdf -lmpe -llmpe -ltmpe -lampe
-endif # end DAP
+# NC_LIBS := -lnetcdf -lmpe -llmpe -ltmpe -lampe
+ NC_LIBS := -lnetcdf
+endif # !DAP
 
 ifeq (${HDF5},Y)
 # Build NCO using HDF5 netCDF interface
  HDF5_ROOT := /usr/local/hdf5
- NETCDF_INC := $(HDF5_ROOT)/include # Directory containing HDF5 version of netcdf.h
- NETCDF_LIB := $(HDF5_ROOT)/lib -lmfhdf -ldf -ljpeg -lz # Directory containing HDF5 version of libnetcdf.a routines, order of library linkage is significant
+ NETCDF_INC := ${HDF5_ROOT}/include # Directory containing HDF5 version of netcdf.h
+ NETCDF_LIB := ${HDF5_ROOT}/lib -lmfhdf -ldf -ljpeg -lz # Directory containing HDF5 version of libnetcdf.a routines, order of library linkage is significant
 endif # endif HDF5
 
 # Internationalize NCO with i18n features
