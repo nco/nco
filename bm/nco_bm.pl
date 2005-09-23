@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.95 2005-09-23 19:20:23 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.96 2005-09-23 19:59:24 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -166,12 +166,14 @@ if ($mpi_prc > 0 && $mpi_fke) {
 # FXM - hjm still need to figure this out for AIX.
 
 	if ($mpi_prc > 0 && $os_nme =~ /inux/) {
+		my $lam_ok = 0;
+		my $mpich_ok = 0;
 		my $myhostname_ip = "";
 		my $myif_ip = "";
 	# have to check that hostname matches IP number in /etc/hosts for mpd to allow connections correctly;
 	# maybe for LAM as well
 		dbg_msg(2,"Determining IP and hostname info.\nMay timeout if /etc/hosts, ifconfig, and hostname disagree.");
-		$myhostname_ip = `ping -c1 \`hostname\` |grep from |cut -d' ' -f 4|cut -d':' -f1`; chomp $myhostname_ip;
+		$myhostname_ip = `ping -c1 \`hostname\` |grep PING |cut -d' ' -f 3|cut -d'(' -f2 |cut -d')' -f1`; chomp $myhostname_ip;
 		$myif_ip = `/sbin/ifconfig |grep 'inet addr' |cut -d':' -f2 |cut -d' ' -f1 |grep -v '127.0.0.1' `; chomp $myif_ip;
 		dbg_msg(1,"\$localhostname = $localhostname\n\t     \$myhostname_ip = $myhostname_ip\n\t           \$myif_ip = $myif_ip ");
 		if ($myif_ip ne $myhostname_ip) {
@@ -179,11 +181,14 @@ if ($mpi_prc > 0 && $mpi_fke) {
 		} else {dbg_msg(1,"Good!  Your interface IP # ($myif_ip) equals your \nhostname IP number ($myhostname_ip). mpd will be happy!")}
 
 	if (-e '/etc/lam/conf.lamd' && -r '/etc/lam/conf.lamd') {# if you've got a conf.lamd, maybe you're runnning LAM?
-		my $lamd_usr = `ps aux |grep lamd | grep -v grep | cut -d' ' -f1`;  $lamd_usr = s/\n/' '/;
+		my $lamd_usr = `ps aux |grep lamd | grep -v grep | cut -d' ' -f1`;  chomp $lamd_usr; $lamd_usr =~ s/\n/ /g;
 		dbg_msg(2,"Testing for a running lamd:USER = [$ENV{'USER'}] and \$lamd_usr = [$lamd_usr]");
 		if ( $lamd_usr !~ /$ENV{'USER'}/ )  {
 				print "\nWARN: You might be trying to run LAM_MPI without a running lamd.\nIf the run fails, try running 'lamboot'\n\n";
-		} else {dbg_msg(1,"OK! You seem to be using LAM_MPI and at least one lamd seems to be owned by you");}
+		} else {
+			dbg_msg(1,"OK! You seem to be using LAM_MPI and at least one lamd seems to be owned by you");
+			$lam_ok = 1;
+		}
 	}
 	if (-e '/etc/mpicc.conf' && -r '/etc/mpich') { # you might be using the mpich MPI system
 		my $mpd_usr = `ps aux |grep mpd | grep -v grep | cut -d' ' -f1`;
@@ -192,8 +197,13 @@ if ($mpi_prc > 0 && $mpi_fke) {
 		dbg_msg(2,"Testing for a running mpd: USER = [$ENV{'USER'}] and \$mpd_usr = [$mpd_usr]");
 		if ( $mpd_usr !~ /$ENV{'USER'}/ )  {
 			print "\nWARN: You might be trying to run MPICH without a running mpd.\nIf the run fails, try running 'mpd &'\n\n";
-		} else {	dbg_msg(1,"OK! You seem to be using MPICH and at least one mpd seems to be owned by you")}
-	} else {
+		} else {
+			dbg_msg(1,"OK! You seem to be using MPICH and at least one mpd seems to be owned by you");
+			$mpich_ok = 1;
+		}
+	}
+
+	if (!$lam_ok && !$mpich_ok) {
 		print "\nWARN: you asked for an MPI run (--mpi_prc=$mpi_prc) but you don't seem to be running either LAM-MPI or MPICH.\nIf the run fails, you might try running either of those 2 MPI systems.\n";
 	}
 }

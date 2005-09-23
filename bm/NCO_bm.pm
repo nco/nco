@@ -14,7 +14,7 @@ package NCO_bm;
 #   smrz_rgr_rslt()......summarizes the results of both regression and benchmark tests
 #   check_nco_results()..checks the output via md5/wc validation
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.7 2005-09-23 19:20:23 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.8 2005-09-23 19:59:24 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -448,7 +448,6 @@ sub go {
 
 	# twiddle the $prefix to allow for running the mpnc* as a non-mpi'ed  executable
 	if ($mpi_fke) {$fke_prefix = "$MY_BIN_DIR/mp"; }
-#	else {         $prefix = "$MY_BIN_DIR/";}
 	$prefix = "$MY_BIN_DIR/";
 	#  $mpi_prfx will always have the mpirun directive.
 	$mpi_prfx = " mpirun -np $mpi_prc $MY_BIN_DIR/mp";
