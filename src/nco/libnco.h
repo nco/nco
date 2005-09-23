@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.33 2005-09-22 01:02:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.34 2005-09-23 19:30:40 zender Exp $ */
 
 /* Purpose: netCDxF Operator (NCO) library */
 
@@ -25,7 +25,7 @@
 #include "nco_cnf_dmn.h" /* Conform dimensions */
 #include "nco_cnf_typ.h" /* Conform variable types */
 #include "nco_cnv_arm.h" /* ARM conventions */
-#include "nco_cnv_csm.h" /* CCSM conventions */
+#include "nco_cnv_csm.h" /* CCM/CCSM/CF conventions */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_dbg.h" /* Debugging */
 #include "nco_dmn_utl.h" /* Dimension utilities */

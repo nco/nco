@@ -1,20 +1,20 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.21 2005-09-08 00:45:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.22 2005-09-23 19:30:40 zender Exp $ */
 
-/* Purpose: CCSM conventions */
+/* Purpose: CCM/CCSM/CF conventions */
 
 /* Copyright (C) 1995--2005 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
-#include "nco_cnv_csm.h" /* CCSM conventions */
+#include "nco_cnv_csm.h" /* CCM/CCSM/CF conventions */
 
-bool /* O [flg] File obeys CCSM conventions */
-nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCSM conventions */
+bool /* O [flg] File obeys CCM/CCSM/CF conventions */
+nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions */
 (const int nc_id) /* I [id] netCDF file ID */
 {
-  /* Purpose: Check if file adheres to NCAR CCSM history tape format */
+  /* Purpose: Check if file adheres to CCM/CCSM/CF history tape format */
 
-  bool NCAR_CCSM=False;
+  bool CNV_CCM_CCSM_CF=False;
 
   char *att_val;
 
@@ -26,34 +26,38 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCSM conventions */
 
   nc_type att_typ;
 
-  /* Look for signature of an NCAR CCSM format file */
+  /* Look for signature of an CCM/CCSM/CF format file */
   rcd=nco_inq_att_flg(nc_id,NC_GLOBAL,cnv_sng,&att_typ,&att_sz);
 
   if(rcd == NC_NOERR && att_typ == NC_CHAR){
-    /* Add one for NULL byte */
+    /* Add one for NUL byte */
     att_val=(char *)nco_malloc(att_sz*nco_typ_lng(att_typ)+1);
     (void)nco_get_att(nc_id,NC_GLOBAL,cnv_sng,att_val,att_typ);
     /* NUL-terminate convention attribute before using strcmp() */
     att_val[att_sz]='\0';
     /* CCM3, CCSM1 conventions */
-    if(strstr(att_val,"NCAR-CSM") != NULL) NCAR_CCSM=True; /* Backwards compatibility */
+    if(strstr(att_val,"NCAR-CSM") != NULL) CNV_CCM_CCSM_CF=True; /* Backwards compatibility */
     /* Climate-Forecast conventions */
-    if(strstr(att_val,"CF-1.0") != NULL) NCAR_CCSM=True; /* NB: Not fully implemented TODO nco145 */
-    if(NCAR_CCSM && dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: CONVENTION File convention is %s. As part of adhering to this convention, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"date\" or \"gw\". For a full list of exceptions, see the manual http://nco.sf.net/nco.html#CF\n",prg_nm_get(),att_val);
+    if(strstr(att_val,"CF-1.0") != NULL) CNV_CCM_CCSM_CF=True; /* NB: Not fully implemented TODO nco145 */
+    if(CNV_CCM_CCSM_CF && dbg_lvl_get() > 0){
+      (void)fprintf(stderr,"%s: CONVENTION File Convention attribute is \"%s\".",prg_nm_get(),att_val);
+      if(dbg_lvl_get() > 1) (void)fprintf(stderr," NCO has a unified (but incomplete) treatment of many related (official and unoffical) conventions such as CCM, CCSM, and CF. As part of adhering to this convention, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"date\" or \"gw\". For a full list of exceptions, see the manual http://nco.sf.net/nco.html#CF");
+      (void)fprintf(stderr,"\n");
+    } /* endif dbg */
     att_val=(char *)nco_free(att_val);
   } /* endif */
 
-  return NCAR_CCSM;
+  return CNV_CCM_CCSM_CF;
   
 } /* end nco_cnv_ccm_ccsm_cf_inq */
 
 void
-nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCSM files */
+nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF files */
 (const int nc_id, /* I [id] netCDF file ID */
  X_CST_PTR_CST_PTR_Y(var_sct,var), /* I/O [sct] Variables in output file */
  const int nbr_var) /* I [nbr] Number of variables in list */
 {
-  /* Purpose: Fix date variable in averaged CCSM files */
+  /* Purpose: Fix date variable in averaged CCM/CCSM/CF files */
   char wrn_sng[1000];
 
   int date_idx;
@@ -68,7 +72,7 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCSM files */
   nco_int nbdate;
   nco_int date;
   
-  (void)sprintf(wrn_sng,"Most, but not all, CCSM files which are in CCM format contain the fields \"nbdate\", \"time\", and \"date\". When the \"date\" field is present but either \"nbdate\" or \"time\" is missing, then %s is unable to construct a meaningful average \"date\" to store in the output file. Therefore the \"date\" variable in your output file may be meaningless.\n",prg_nm_get());
+  (void)sprintf(wrn_sng,"Most, but not all, CCM/CCSM/CF files which are in CCM format contain the fields \"nbdate\", \"time\", and \"date\". When the \"date\" field is present but either \"nbdate\" or \"time\" is missing, then %s is unable to construct a meaningful average \"date\" to store in the output file. Therefore the \"date\" variable in your output file may be meaningless.\n",prg_nm_get());
 
   /* Find date variable (NC_INT: current date as 6 digit integer (YYMMDD)) */
   for(idx=0;idx<nbr_var;idx++){
@@ -80,7 +84,7 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCSM files */
   /* Find scalar nbdate variable (NC_INT: base date date as 6 digit integer (YYMMDD)) */
   rcd=nco_inq_varid_flg(nc_id,"nbdate",&nbdate_id);
   if(rcd != NC_NOERR){
-    (void)fprintf(stderr,"%s: WARNING NCAR CCSM convention file output variable list contains \"date\" but not \"nbdate\"\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: WARNING CCM/CCSM/CF convention file output variable list contains \"date\" but not \"nbdate\"\n",prg_nm_get());
     (void)fprintf(stderr,"%s: %s",prg_nm_get(),wrn_sng);
     return;
   } /* endif */
@@ -91,7 +95,7 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCSM files */
     if(!strcmp(var[idx]->nm,"time")) break;
   } /* end loop over idx */
   if(idx == nbr_var){
-    (void)fprintf(stderr,"%s: WARNING NCAR CCSM convention file output variable list contains \"date\" but not \"time\"\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: WARNING CCM/CCSM/CF convention file output variable list contains \"date\" but not \"time\"\n",prg_nm_get());
     (void)fprintf(stderr,"%s: %s",prg_nm_get(),wrn_sng);
     return;
   }else{

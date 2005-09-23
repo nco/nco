@@ -1,13 +1,13 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.14 2005-08-15 01:48:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.15 2005-09-23 19:30:40 zender Exp $ */
 
-/* Purpose: CCSM conventions */
+/* Purpose: CCM/CCSM/CF conventions */
 
 /* Copyright (C) 1995--2005 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Usage:
-   #include "nco_cnv_csm.h" *//* CCSM conventions */
+   #include "nco_cnv_csm.h" *//* CCM/CCSM/CF conventions */
 
 #ifndef NCO_CNV_CCSM_H
 #define NCO_CNV_CCSM_H
@@ -29,8 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
-bool /* O [flg] File obeys CCSM conventions */
-nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCSM conventions */
+bool /* O [flg] File obeys CCM/CCSM/CF conventions */
+nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions */
 (const int nc_id); /* I [id] netCDF file ID */
 
 void
