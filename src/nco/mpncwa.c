@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.16 2005-09-22 01:02:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.17 2005-09-23 22:20:18 wangd Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -76,6 +76,7 @@ size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremente
 size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap.l) */
 char **ncap_fl_spt_glb; /* [fl] Script file */
 
+
 int 
 main(int argc,char **argv)
 {
@@ -119,9 +120,9 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.16 2005-09-22 01:02:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.16 $";
-  const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.17 2005-09-23 22:20:18 wangd Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.17 $";
+  const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out=NULL_CEWI;
@@ -240,6 +241,7 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
+      {"suspend", no_argument,0,'S'},
       {"truth_condition",required_argument,0,'T'},
       {"msk_cmp_typ",required_argument,0,'T'},
       {"op_rlt",required_argument,0,'T'},
@@ -357,6 +359,12 @@ main(int argc,char **argv)
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lbr_vrs_prn();
       nco_exit(EXIT_SUCCESS);
+      break;
+    case 'S': /* halt before actually starting, so to wait for ddd/gdb to attach. */
+      /* install a signal handler to wait for user signal */
+      if (signal(SIGUSR1, continue_running) == SIG_ERR)
+	(void)fprintf(fp_stdout,"%s: ERROR Couldn't install suspend handler.\n",prg_nm);
+      while(nco_wai_var == 0) usleep(100); /* spinlock.  should probably insert a sched_yield */
       break;
     case 'T': /* Relational operator type. Default is 0, eq, equality */
       op_typ_rlt=nco_op_prs_rlt(optarg);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.3 2005-09-22 07:10:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.4 2005-09-23 22:20:18 wangd Exp $ */
 
 /* Purpose: MPI utilities */
 
@@ -24,6 +24,7 @@
 #define NCO_MPI_H
 
 /* Standard header files */
+#include <signal.h> /* signal handling */
 
 /* 3rd party vendors */
 
@@ -67,6 +68,10 @@ extern "C" {
     msg_tag_tkn_wrt_rqs, /* Request for write token */
     msg_tag_tkn_wrt_rsp  /* Response to write token request */
   }; /* end nco_msg_tag_typ enum */
+
+int nco_wai_var = 0; /* [nbr] a synchronization var for suspend/resume */
+void continue_running(int signo) { nco_wai_var = 1; } /* sig handler */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */
