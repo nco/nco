@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.94 2005-09-21 18:37:24 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.95 2005-09-23 19:20:23 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -34,7 +34,7 @@ $fl_pth  @fl_tmg  $foo1_fl  $foo2_fl  $foo_avg_fl  $foo_fl  $foo_T42_fl
 $foo_tst  $foo_x_fl  $foo_xy_fl  $foo_xymyx_fl  $foo_y_fl  $foo_yx_fl
 $hiresfound  @ifls  $itmp  $localhostname  $md5  $md5found  %MD5_tbl
 $mpi_fke  $mpi_prc  $mpi_prfx  $MY_BIN_DIR  $nco_D_flg  $notbodi
-$nsr_xpc  $NUM_FLS  $nvr_my_bin_dir  $omp_flg  $opr_fmt  $opr_lng_max
+$nsr_xpc  $NUM_FLS  $nvr_my_bin_dir  $omp_flg $os_nme $opr_fmt  $opr_lng_max
 @opr_lst  @opr_lst_all  @opr_lst_mpi  $opr_nm  $opr_rgr_mpi
 $opr_sng_mpi  $orig_outfile  $outfile  $prfxd  $prg_nm
 $pth_rmt_scp_tst  $pwd  $que  $rcd  %real_tme  $result  $rgr
@@ -76,9 +76,10 @@ $dodap = "FALSE"; # Unless redefined by the command line, it does not get set
 $fl_cnt = 32; # nbr of files to process (reduced to 4 if using remote/dods files
 $pth_rmt_scp_tst='dust.ess.uci.edu:/var/www/html/dodsdata';
 $xdta_pth = ''; # explicit data path that user can set from cmdline; more powerful than $dta_dir
+$os_nme = "";
 
 # other inits
-$localhostname = `hostname`;
+$localhostname = `hostname`; chomp $localhostname;
 $notbodi = 0; # specific for hjm's puny laptop
 my $prfxd = 0;
 if ($localhostname !~ "bodi") {$notbodi = 1} # spare the poor laptop
@@ -154,9 +155,47 @@ dbg_msg(2,$lcl_vars); # spit the whole thing out.
 
 if ($ARGV == 0) {	usage();}
 
+	$os_nme = `uname`; chomp $os_nme;
+
 # do $mpi_prc and $mpi_fke conflict?
 if ($mpi_prc > 0 && $mpi_fke) {
 	die "\nERR: You requested both an MPI run (--mpi_prc) as well as a FAKE MPI run (--mpi_fake)\n\tMake up your mind!\n\n";
+}
+
+# if wanted an MPI run, figure out what MPI variant and check to see that the right MPI daemon is running
+# FXM - hjm still need to figure this out for AIX.
+
+	if ($mpi_prc > 0 && $os_nme =~ /inux/) {
+		my $myhostname_ip = "";
+		my $myif_ip = "";
+	# have to check that hostname matches IP number in /etc/hosts for mpd to allow connections correctly;
+	# maybe for LAM as well
+		dbg_msg(2,"Determining IP and hostname info.\nMay timeout if /etc/hosts, ifconfig, and hostname disagree.");
+		$myhostname_ip = `ping -c1 \`hostname\` |grep from |cut -d' ' -f 4|cut -d':' -f1`; chomp $myhostname_ip;
+		$myif_ip = `/sbin/ifconfig |grep 'inet addr' |cut -d':' -f2 |cut -d' ' -f1 |grep -v '127.0.0.1' `; chomp $myif_ip;
+		dbg_msg(1,"\$localhostname = $localhostname\n\t     \$myhostname_ip = $myhostname_ip\n\t           \$myif_ip = $myif_ip ");
+		if ($myif_ip ne $myhostname_ip) {
+			print "WARN: Your interface IP # ($myif_ip) is different than your \nhostname IP number ($myhostname_ip) that is set in /etc/hosts.\nThe mpd (and maybe lamd) will timeout and fail unless they agree."
+		} else {dbg_msg(1,"Good!  Your interface IP # ($myif_ip) equals your \nhostname IP number ($myhostname_ip). mpd will be happy!")}
+
+	if (-e '/etc/lam/conf.lamd' && -r '/etc/lam/conf.lamd') {# if you've got a conf.lamd, maybe you're runnning LAM?
+		my $lamd_usr = `ps aux |grep lamd | grep -v grep | cut -d' ' -f1`;  $lamd_usr = s/\n/' '/;
+		dbg_msg(2,"Testing for a running lamd:USER = [$ENV{'USER'}] and \$lamd_usr = [$lamd_usr]");
+		if ( $lamd_usr !~ /$ENV{'USER'}/ )  {
+				print "\nWARN: You might be trying to run LAM_MPI without a running lamd.\nIf the run fails, try running 'lamboot'\n\n";
+		} else {dbg_msg(1,"OK! You seem to be using LAM_MPI and at least one lamd seems to be owned by you");}
+	}
+	if (-e '/etc/mpicc.conf' && -r '/etc/mpich') { # you might be using the mpich MPI system
+		my $mpd_usr = `ps aux |grep mpd | grep -v grep | cut -d' ' -f1`;
+		$mpd_usr =~ s/\n/ /;
+#		print "\n\n__ $mpd_usr __\n\n";
+		dbg_msg(2,"Testing for a running mpd: USER = [$ENV{'USER'}] and \$mpd_usr = [$mpd_usr]");
+		if ( $mpd_usr !~ /$ENV{'USER'}/ )  {
+			print "\nWARN: You might be trying to run MPICH without a running mpd.\nIf the run fails, try running 'mpd &'\n\n";
+		} else {	dbg_msg(1,"OK! You seem to be using MPICH and at least one mpd seems to be owned by you")}
+	} else {
+		print "\nWARN: you asked for an MPI run (--mpi_prc=$mpi_prc) but you don't seem to be running either LAM-MPI or MPICH.\nIf the run fails, you might try running either of those 2 MPI systems.\n";
+	}
 }
 
 # Any irrationally exuberant values?
@@ -264,6 +303,10 @@ if (-e "/usr/bin/time" && -x "/usr/bin/time") {
 } else { # just use whatever the shell thinks is the time app
 	$tmr_app = "time"; # bash builtin or other 'time'-like application (AIX)
 } # endif time
+
+if ($dbg_lvl > 1) {print "\nAbout to begin requested tests; waiting for keypress to proceed.\n"}
+my $tmp = <STDIN>;
+
 
 # Regression tests
 if ($rgr){

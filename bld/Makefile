@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.333 2005-09-21 20:23:09 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.334 2005-09-23 19:20:22 mangalam Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -169,7 +169,7 @@ endif
 else
 # Build NCO straight, without DAP
  NC_LDFLAGS := -L${NETCDF_LIB}
- NC_LIBS := -lnetcdf
+ NC_LIBS := -lnetcdf -lmpe -llmpe -ltmpe -lampe
 endif # end DAP
 
 ifeq (${HDF5},Y)
