@@ -1,8 +1,24 @@
 #!/usr/bin/env python
 # spawns a ddd session for each one found in mpilistjobs
 # nco-specific: sends SIGUSR1 to nodeid>0 processes
-# $id$ 
+# $Id: ddd_mpd.py,v 1.2 2005-09-26 23:13:38 wangd Exp $ 
 
+# Usage:
+#    ./ddd_mpd.py
+#         -- spawn ddd sessions for each MPI process found via
+# mpdlistjobs for a particular MPI job.  Before spawning, send SIGUSR1
+# to the processes of rank > 0 (the non-manager nodes) to reduce user
+# tedium.  If multiple jobs are found on MPD, prompt user to select
+# one of jobs.
+#         -- If no jobs owned by the current user are found in mpd,
+# complain and exit.
+#
+# Prefer something else than ddd? Try changing the argument at the
+# call to mainthing(...).  Support hasn't been checked for
+# command-line arguments other than ddd/gdb, so you may have to hack
+# spawnDebugger(...) as a short-term solution.
+# 
+# Please direct feedback to the sourceforge forums for NCO.  Thanks, -Daniel
 
 from  os import environ, getuid, getpid, path, getcwd, popen3
 import os
@@ -124,7 +140,7 @@ def spawnDebugger(progname, joblist, debug):
     print shE.read().strip()
     
 
-def mainthing():
+def mainthing(dbgprogname):
     joblist = readJobListMPD()
     #joblist = makeSampleJobList() # for simple testing
     # now, go ahead and spawn ddd jobs.
@@ -146,13 +162,19 @@ def mainthing():
     if len(jobids) > 1:
         joblist = cutoutJobs(joblist, jobids, paths)
 
-    spawnDebugger("ddd", joblist, False) #False for no debug
+    spawnDebugger(dbgprogname, joblist, False) #False for no debug
         
 
 ## -----------------
 ## main program body
 ## -----------------
-mainthing()
+mainthing("ddd")
 
+# if you like gdb or dbx, you may wish to try something like:
+#
+# mainthing ("xterm -e gdb")
+#
+# You will probably want to spawn xterms for each gdb to avoid
+# managing multiple gdb sessions from a single terminal window.
 
     
