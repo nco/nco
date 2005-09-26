@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.17 2005-09-26 07:00:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.18 2005-09-26 22:59:02 wangd Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -112,9 +112,9 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.17 2005-09-26 07:00:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.17 $";
-  const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.18 2005-09-26 22:59:02 wangd Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.18 $";
+  const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:RrSt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -230,6 +230,7 @@ main(int argc,char **argv)
       {"revision",no_argument,0,'r'},
       {"version",no_argument,0,'r'},
       {"vrs",no_argument,0,'r'},
+      {"suspend", no_argument,0,'S'},
       {"thr_nbr",required_argument,0,'t'},
       {"threads",required_argument,0,'t'},
       {"omp_num_threads",required_argument,0,'t'},
@@ -316,6 +317,10 @@ main(int argc,char **argv)
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lbr_vrs_prn();
       nco_exit(EXIT_SUCCESS);
+      break;
+    case 'S': /* Suspend with signal handler to facilitate debugging */
+      if(signal(SIGUSR1,continue_running) == SIG_ERR) (void)fprintf(fp_stdout,"%s: ERROR Could not install suspend handler.\n",prg_nm);
+      while(nco_wai_var == 0) usleep(100); /* Spinlock. fxm: should probably insert a sched_yield */
       break;
     case 't': /* Thread number */
       thr_nbr=(int)strtol(optarg,(char **)NULL,10);

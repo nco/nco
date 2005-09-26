@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.20 2005-09-26 07:00:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.21 2005-09-26 22:59:02 wangd Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -105,9 +105,9 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.20 2005-09-26 07:00:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.20 $";
-  const char * const opt_sht_lst="ACcD:d:Fhi:l:Oo:p:rRt:v:xw:Z-:";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.21 2005-09-26 22:59:02 wangd Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.21 $";
+  const char * const opt_sht_lst="ACcD:d:Fhi:l:Oo:p:rRSt:v:xw:Z-:";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -122,6 +122,7 @@ main(int argc,char **argv)
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
+  FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
   
   int abb_arg_nbr=0;
   int fl_idx;
@@ -216,6 +217,7 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
+      {"suspend", no_argument,0,'S'},
       {"thr_nbr",required_argument,0,'t'},
       {"variable",required_argument,0,'v'},
       {"version",no_argument,0,'r'},
@@ -300,6 +302,10 @@ main(int argc,char **argv)
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lbr_vrs_prn();
       nco_exit(EXIT_SUCCESS);
+      break;
+    case 'S': /* Suspend with signal handler to facilitate debugging */
+      if(signal(SIGUSR1,continue_running) == SIG_ERR) (void)fprintf(fp_stdout,"%s: ERROR Could not install suspend handler.\n",prg_nm);
+      while(nco_wai_var == 0) usleep(100); /* Spinlock. fxm: should probably insert a sched_yield */
       break;
     case 't': /* Thread number */
       thr_nbr=(int)strtol(optarg,(char **)NULL,10);

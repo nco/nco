@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.19 2005-09-26 07:00:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.20 2005-09-26 22:59:02 wangd Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -91,9 +91,9 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.19 2005-09-26 07:00:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.19 $";
-  const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRv:xZ-:";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.20 2005-09-26 22:59:02 wangd Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.20 $";
+  const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRSv:xZ-:";
   
   dmn_sct *rec_dmn;
   dmn_sct **dim;
@@ -105,7 +105,8 @@ main(int argc,char **argv)
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
-  
+  FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
+
   int abb_arg_nbr=0;
   int fl_idx;
   int fl_nbr=0;
@@ -191,6 +192,7 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
+      {"suspend", no_argument,0,'S'},
       {"variable",required_argument,0,'v'},
       {"version",no_argument,0,'r'},
       {"vrs",no_argument,0,'r'},
@@ -272,6 +274,10 @@ main(int argc,char **argv)
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lbr_vrs_prn();
       nco_exit(EXIT_SUCCESS);
+      break;
+    case 'S': /* Suspend with signal handler to facilitate debugging */
+      if(signal(SIGUSR1,continue_running) == SIG_ERR) (void)fprintf(fp_stdout,"%s: ERROR Could not install suspend handler.\n",prg_nm);
+      while(nco_wai_var == 0) usleep(100); /* Spinlock. fxm: should probably insert a sched_yield */
       break;
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */
