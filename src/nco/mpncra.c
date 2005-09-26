@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.22 2005-09-26 01:18:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.23 2005-09-26 07:00:39 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.22 2005-09-26 01:18:16 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.22 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.23 2005-09-26 07:00:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.23 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:Z-:";
   
   dmn_sct **dim;
@@ -608,9 +608,9 @@ main(int argc,char **argv)
 	  /* Allocate token if free, else ask worker to try later */
 	  if(TKN_WRT_FREE){
 	    TKN_WRT_FREE=False;
-	    msg_bfr[0]=tkn_wrt_rqs_xcp; /* Request for write token accepted */
+	    msg_bfr[0]=tkn_wrt_rqs_xcp; /* Accept request for write token */
 	  }else{
-	    msg_bfr[0]=tkn_wrt_rqs_dny; /* Request for write token denied */
+	    msg_bfr[0]=tkn_wrt_rqs_dny; /* Deny request for write token */
 	  } /* !TKN_WRT_FREE */
 	  MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,rnk_wrk,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD);
 	} /* msg_tag_typ != msg_tag_tkn_wrt_rqs */
@@ -841,11 +841,11 @@ main(int argc,char **argv)
 		  /* Allocate token if free, else ask worker to try later */
 		  if(TKN_WRT_FREE){
 		    TKN_WRT_FREE=False;
-		    msg_bfr[0]=tkn_wrt_rqs_xcp; /* Request for write token accepted */
+		    msg_bfr[0]=tkn_wrt_rqs_xcp; /* Accept request for write token */
 		    tkn_wrt_rnk=rnk_wrk; /* To track who has the token */
 		    var_wrt_nbr++;
 		  }else{
-		    msg_bfr[0]=tkn_wrt_rqs_dny; /* Request for write token denied */
+		    msg_bfr[0]=tkn_wrt_rqs_dny; /* Deny request for write token */
 		  } /* !TKN_WRT_FREE */
 		  MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,rnk_wrk,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD);
 		} /* msg_tag_typ != msg_tag_tkn_wrt_rqs */
@@ -1083,7 +1083,7 @@ main(int argc,char **argv)
   /* MPI_Barrier(MPI_COMM_WORLD); */
   if(prc_rnk == rnk_mgr){ /* Only Manager */
     rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE|NC_SHARE,&out_id);
-    printf("prc_rnk %d opened out file\n",prc_rnk);
+    printf("DEBUG: prc_rnk %d opened out file\n",prc_rnk);
 #endif /* !ENABLE_MPI */
     /* Manually fix YYMMDD date which was mangled by averaging */
     if(CNV_CCM_CCSM_CF && prg == ncra) (void)nco_cnv_ccm_ccsm_cf_date(out_id,var_out,nbr_xtr);
@@ -1116,7 +1116,7 @@ main(int argc,char **argv)
 	if(var_prc_out[idx]->nbr_dim == 0){
 	  (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	}else{ /* end if variable is a scalar */
-	  /* Size of record dimension is 1 in output file */
+	  /* Size of record dimension is one in output file */
 	  if(prg == ncra) var_prc_out[idx]->cnt[0]=1L;
 	  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	} /* end if variable is an array */

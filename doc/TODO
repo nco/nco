@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.628 2005-09-26 01:18:16 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.629 2005-09-26 07:00:38 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -352,6 +352,10 @@ nco593. mpncrcat "sometimes" hangs while concatenating
         Shorten for GDB:
         ncks -O -C -d time,0,1 -v one_dmn_rec_var ~/nco/data/in.nc ~/in_short.nc
         mpirun -np 3 $MY_BIN_DIR/mpncrcat -O -C -D 1 -v one_dmn_rec_var ~/in_short.nc ~/foo3.nc (hangs)
+        DEBUG: input file opened in prc_rnk 0 inside the loop
+        **** prc 0 hangs here ***
+        DEBUG: prc_rnk 0 at the end of ncra/rcat
+        DEBUG: prc_rnk 0 is out of file idx loop
         ~/nco/bm/nco_bm.pl --mpi_prc=3 --regress ncrcat
         mpirun -np 2 /usr/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck $MY_BIN_DIR/mpncrcat -O -D 5 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 nco597. mpncea hangs on ncea regression test 4 (on sand with LAM)

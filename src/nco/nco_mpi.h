@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.5 2005-09-26 01:18:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.6 2005-09-26 07:00:39 zender Exp $ */
 
 /* Purpose: MPI utilities */
 
@@ -56,8 +56,8 @@ extern "C" {
 
   /* Requests for the write token have two possible responses */
   enum tkn_wrt_rsp_val{ /* [enm] Valid responses to write token requests */
-    tkn_wrt_rqs_dny, /* Request for write token denied (must wait and re-request) */
-    tkn_wrt_rqs_xcp /* Request for write token accepted, OK to write */
+    tkn_wrt_rqs_dny, /* Deny request for write token (must wait and re-request) */
+    tkn_wrt_rqs_xcp /* Accept request for write token, OK to write */
   }; /* end tkn_wrt_rsp_val enum */
 
   /* These (and MPI_ANY_TAG) are valid entries for the MPI message tag field 

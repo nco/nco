@@ -1,3 +1,9 @@
+2005-09-25  Charlie Zender  <zender@uci.edu>
+
+	* Move final worker open/close calls to with ncra/ncea block
+
+	* Change NC_WRITE to NC_WRITE|NC_SHARE in MPI codes
+
 2005-09-24  Charlie Zender  <zender@uci.edu>
 
 	* Include Daniel's signal suspend code (-S switch) in mpncra

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.18 2005-09-26 01:18:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.19 2005-09-26 07:00:39 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.18 2005-09-26 01:18:16 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.18 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.19 2005-09-26 07:00:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.19 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -751,9 +751,9 @@ main(int argc,char **argv)
 	  /* Allocate token if free, else ask worker to try later */
 	  if(TKN_WRT_FREE){
 	    TKN_WRT_FREE=False;
-	    msg_bfr[0]=tkn_wrt_rqs_xcp; /* Request for write token accepted */
+	    msg_bfr[0]=tkn_wrt_rqs_xcp; /* Accept request for write token */
 	  }else{
-	    msg_bfr[0]=tkn_wrt_rqs_dny; /* Request for write token denied */
+	    msg_bfr[0]=tkn_wrt_rqs_dny; /* Deny request for write token */
 	  } /* !TKN_WRT_FREE */
 	  MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,rnk_wrk,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD);
 	} /* msg_tag_typ != msg_tag_tkn_wrt_rqs */
