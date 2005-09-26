@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.17 2005-09-23 22:20:18 wangd Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.18 2005-09-26 01:18:16 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -30,8 +30,7 @@
    University of California at Irvine
    Irvine, CA 92697-3100 */
 
-/* fxm: 19981202 -n and -W switches were deactivated but code left in place
-   while I rethink the normalization switches */
+/* fxm: 19981202 Deactivated -n and -W switches while I rethink the normalization switches */
 
 /* Usage:
    ncwa -O -a lon ~/nco/data/in.nc foo.nc
@@ -66,6 +65,7 @@
 #include "nco_mpi.h" /* MPI utilities */
 #endif /* !ENABLE_MPI */
 
+/* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
 #include "ncap.h" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
@@ -75,7 +75,6 @@
 size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap.l) */
 size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap.l) */
 char **ncap_fl_spt_glb; /* [fl] Script file */
-
 
 int 
 main(int argc,char **argv)
@@ -120,8 +119,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.17 2005-09-23 22:20:18 wangd Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.17 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.18 2005-09-26 01:18:16 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.18 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -360,11 +359,9 @@ main(int argc,char **argv)
       (void)nco_lbr_vrs_prn();
       nco_exit(EXIT_SUCCESS);
       break;
-    case 'S': /* halt before actually starting, so to wait for ddd/gdb to attach. */
-      /* install a signal handler to wait for user signal */
-      if (signal(SIGUSR1, continue_running) == SIG_ERR)
-	(void)fprintf(fp_stdout,"%s: ERROR Couldn't install suspend handler.\n",prg_nm);
-      while(nco_wai_var == 0) usleep(100); /* spinlock.  should probably insert a sched_yield */
+    case 'S': /* Suspend with signal handler to facilitate debugging */
+      if(signal(SIGUSR1,continue_running) == SIG_ERR) (void)fprintf(fp_stdout,"%s: ERROR Could not install suspend handler.\n",prg_nm);
+      while(nco_wai_var == 0) usleep(100); /* Spinlock. fxm: should probably insert a sched_yield */
       break;
     case 'T': /* Relational operator type. Default is 0, eq, equality */
       op_typ_rlt=nco_op_prs_rlt(optarg);
@@ -733,7 +730,8 @@ main(int argc,char **argv)
 	/* Allocate next variable, if any, to worker */
 	if(msg_tag_typ == msg_tag_wrk_rqs){
 	  var_wrt_nbr++; /* [nbr] Number of variables written */
-	  /* Worker closed output file before sending msg_tag_wrk_rqs */
+	  /* Workers close output file before sending next msg_tag_wrk_rqs */
+	  /* fxm csz 20050924: Safe? Can't other process have write token here? */
 	  TKN_WRT_FREE=True;
 	  
 	  if(idx > nbr_var_prc-1){
@@ -993,11 +991,6 @@ main(int argc,char **argv)
 	    /* Free tally buffer */
 	    var_prc_out[idx]->tally=(long *)nco_free(var_prc_out[idx]->tally);
 	    
-#if 0
-	    /* Unfortunately, this debugging line seems to fix nco523 for two threads
-	       This often happens with SMP bugs that are timing-dependent */
-	    if(dbg_lvl > 3) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco523. Calling nco_var_cnf_typ() for variable %s with var_id=%d, var_val->dp[0]=%g, var_typ = %s, var_typ_upk = %s,\n",prg_nm_get(),var_prc_out[idx]->nm,var_prc_out[idx]->id,var_prc_out[idx]->val.dp[0],nco_typ_sng(var_prc_out[idx]->type),nco_typ_sng(var_prc_out[idx]->typ_upk));
-#endif /* !0 */
 	    /* Revert any arithmetic promotion but leave unpacked (for now) */
 	    var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
 	    
@@ -1014,7 +1007,9 @@ main(int argc,char **argv)
 	    
 	    /* Worker has token---prepare to write */
 	    if(tkn_wrt_rsp == tkn_wrt_rqs_xcp){
-	      rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
+	      rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE|NC_SHARE,&out_id);
+	      /* Turn off default filling behavior to enhance efficiency */
+	      rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 #endif /* !ENABLE_MPI */
 	      
 #ifdef _OPENMP
@@ -1053,11 +1048,11 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
     /* Manager moves output file (closed by workers) from temporary to permanent location */
     if(prc_rnk == rnk_mgr) (void)nco_fl_mv(fl_out_tmp,fl_out);
+    if(prc_rnk == rnk_mgr) /* This if statement conditions nco_fl_rm() below */
 #else /* !ENABLE_MPI */
     /* Close output file and move it from temporary to permanent location */
     (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 #endif /* end !ENABLE_MPI */
-    
     /* Remove local copy of file */
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
     

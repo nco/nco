@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.4 2005-09-23 22:20:18 wangd Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.5 2005-09-26 01:18:16 zender Exp $ */
 
 /* Purpose: MPI utilities */
 
@@ -37,7 +37,8 @@ extern "C" {
   const int msg_bfr_lng=3; /* [nbr] Number of elements in msg_bfr */
   const int wrk_id_bfr_lng=1; /* [nbr] Number of elements in wrk_id_bfr */
 
-  /* Sleep interval between successive write token requests */
+  /* Sleep interval between successive write token requests
+     fxm: TODO nco609 tune or remove this */
   const double tkn_wrt_rqs_ntv=0.04; /* [s] Token request interval */
   
   /* Convention is to assign manager responsibilities to rank 0 process
@@ -69,9 +70,8 @@ extern "C" {
     msg_tag_tkn_wrt_rsp  /* Response to write token request */
   }; /* end nco_msg_tag_typ enum */
 
-int nco_wai_var = 0; /* [nbr] a synchronization var for suspend/resume */
-void continue_running(int signo) { nco_wai_var = 1; } /* sig handler */
-
+  int nco_wai_var = 0; /* [nbr] Synchronization var for suspend/resume */
+  void continue_running(int signo){nco_wai_var=1;} /* Signal handler */
 
 #ifdef __cplusplus
 } /* end extern "C" */

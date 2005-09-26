@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.627 2005-09-24 01:18:06 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.628 2005-09-26 01:18:16 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -349,7 +349,9 @@ nco593. mpncrcat "sometimes" hangs while concatenating
 	mpncrcat -O -D 5 -p ~/nco/data in.nc in.nc ~/foo.nc (works)
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpncrcat -O -D 5 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1 (perfect)
         /bin/rm $MY_OBJ_DIR/mpncra.o;make MPI=Y mpncra
-        mpirun -np 2 $MY_BIN_DIR/mpncrcat -O -D 5 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc (hangs)
+        Shorten for GDB:
+        ncks -O -C -d time,0,1 -v one_dmn_rec_var ~/nco/data/in.nc ~/in_short.nc
+        mpirun -np 3 $MY_BIN_DIR/mpncrcat -O -C -D 1 -v one_dmn_rec_var ~/in_short.nc ~/foo3.nc (hangs)
         ~/nco/bm/nco_bm.pl --mpi_prc=3 --regress ncrcat
         mpirun -np 2 /usr/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck $MY_BIN_DIR/mpncrcat -O -D 5 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 nco597. mpncea hangs on ncea regression test 4 (on sand with LAM)
@@ -364,14 +366,17 @@ nco605. ncpdq: speed up end of program by padding metadata intially?
 nco607. mpnc*: Define structures (rather than int arrays) for MPI messages
 nco608. mpnc*: File size differences in UP/SMP vs. MPI outputs:
 	Difference occur regardless of presence of hung processes
-	Consistent with processes exiting before final nco_close()?
-        ncwa -O -D 1 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo1.nc
-        mpirun -np 2 mpncwa -O -D 1 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo2.nc
-        mpirun -np 3 mpncwa -O -D 1 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo3.nc
+        Size looks correct (~500 B) immediately after master writes fixed variables
+        Final size becomes 4096 B immediately after worker writes average to fl_out
+        ncwa -O -C -D 1 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo1.nc
+        mpirun -np 2 mpncwa -O -C -D 1 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo2.nc
+        mpirun -np 3 mpncwa -O -C -D 1 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo3.nc
         ls -l ~/foo1.nc
         ls -l ~/foo2.nc
         ls -l ~/foo3.nc
-nco609. 
+nco609. Tune (or remove?) sleep interval in MPI operators
+nco610. Try NC_SHARE to reduce buffer/block size
+nco611. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

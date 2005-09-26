@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.63 2005-08-15 05:12:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.64 2005-09-26 01:18:16 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1140,7 +1140,7 @@ nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output
 
   rcd=nco_close(nc_id);
   if(rcd != NC_NOERR){
-    (void)fprintf(stdout,"%s: ERROR nco_fl_out_cls() is unable to ncclose() file %s\n",prg_nm_get(),fl_out_tmp);
+    (void)fprintf(stdout,"%s: ERROR nco_fl_out_cls() is unable to nco_close() file %s\n",prg_nm_get(),fl_out_tmp);
     nco_exit(EXIT_FAILURE); 
   } /* end if */
   

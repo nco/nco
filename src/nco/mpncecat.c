@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.17 2005-09-22 01:02:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.18 2005-09-26 01:18:16 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.17 2005-09-22 01:02:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.17 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.18 2005-09-26 01:18:16 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.18 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRv:xZ-:";
   
   dmn_sct *rec_dmn;
@@ -626,7 +626,9 @@ main(int argc,char **argv)
 	    
 	    /* Worker has token---prepare to write */
 	    if(tkn_wrt_rsp == tkn_wrt_rqs_xcp){
-	      rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
+	      rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE,&out_id);
+	      /* Turn off default filling behavior to enhance efficiency */
+	      rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 #else /* !ENABLE_MPI */
 #ifdef _OPENMP
 #pragma omp critical

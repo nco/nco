@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.15 2005-09-22 01:02:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.16 2005-09-26 01:18:16 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.15 2005-09-22 01:02:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.15 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.16 2005-09-26 01:18:16 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.16 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -867,7 +867,9 @@ main(int argc,char **argv)
 	  
 	    /* Worker has token---prepare to write */
 	  if(tkn_wrt_rsp == tkn_wrt_rqs_xcp){
-	    rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
+	    rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE,&out_id);
+	    /* Turn off default filling behavior to enhance efficiency */
+	    rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 #else /* !ENABLE_MPI */
 #ifdef _OPENMP
 #pragma omp critical

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.21 2005-09-22 01:02:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.22 2005-09-26 01:18:16 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -120,9 +120,9 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.21 2005-09-22 01:02:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.21 $";
-  const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.22 2005-09-26 01:18:16 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.22 $";
+  const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:Z-:";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -227,6 +227,7 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
+      {"suspend", no_argument,0,'S'},
       {"thr_nbr",required_argument,0,'t'},
       {"threads",required_argument,0,'t'},
       {"omp_num_threads",required_argument,0,'t'},
@@ -326,6 +327,10 @@ main(int argc,char **argv)
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lbr_vrs_prn();
       nco_exit(EXIT_SUCCESS);
+      break;
+    case 'S': /* Suspend with signal handler to facilitate debugging */
+      if(signal(SIGUSR1,continue_running) == SIG_ERR) (void)fprintf(fp_stderr,"%s: ERROR Could not install suspend handler.\n",prg_nm);
+      while(nco_wai_var == 0) usleep(100); /* Spinlock. fxm: should probably insert a sched_yield */
       break;
     case 't': /* Thread number */
       thr_nbr=(int)strtol(optarg,(char **)NULL,10);
@@ -541,7 +546,7 @@ main(int argc,char **argv)
   
 #ifdef ENABLE_MPI
   /* csz: Parallelization for ncea, ncra, ncrcat requires two passes
-     NB: Only manager code is allowed to manipulate value of TKN_WRT_FREE
+     NB: Only manager code manipulates value of TKN_WRT_FREE
      Pass 1: Open first file 
      Pass 2: */
   fl_idx=0;
@@ -668,7 +673,9 @@ main(int argc,char **argv)
 	    
 	    /* Worker has token---prepare to write */
 	    if(tkn_wrt_rsp == tkn_wrt_rqs_xcp){
-	      rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
+	      rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE|NC_SHARE,&out_id);
+	      /* Turn off default filling behavior to enhance efficiency */
+	      rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 	      if(var_prc_out[idx]->sz_rec > 1) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
 	      else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
 	      /* Close output file and increment written counter */
@@ -812,6 +819,7 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
 	/* MPI_Barrier(MPI_COMM_WORLD); */
 	if(fl_idx == 0 && idx_rec == lmt_rec->srt){
+	  /* MPI operators processed first record in first-stage loop */
 	  continue;
 	}else{ /* a loop of idx = stored indices */    
 	  if(prc_rnk == rnk_mgr){ /* For ncrcat, Manager gives write access for each record in each file */
@@ -904,7 +912,9 @@ main(int argc,char **argv)
 		
 		/* Worker has token---prepare to write */
 		if(tkn_wrt_rsp == tkn_wrt_rqs_xcp){
-		  rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
+		  rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE|NC_SHARE,&out_id);
+		  /* Turn off default filling behavior to enhance efficiency */
+		  rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 #else /* !ENABLE_MPI */
 #ifdef _OPENMP
 #pragma omp critical
@@ -929,7 +939,7 @@ main(int argc,char **argv)
 	    } /* end (OpenMP Parallel for) loop over variables */
 #ifdef ENABLE_MPI
 	    if(prg == ncrcat){
-	      /* After writing the last variable of the record, if the worker doesnt return the token, others just wait */
+	      /* Return token after writing record's last variable */
 	      wrk_id_bfr[0]=prc_rnk;
 	      MPI_Send(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,rnk_mgr,msg_tag_wrk_done,MPI_COMM_WORLD);
 	    } /* !ncrcat */
@@ -1072,7 +1082,7 @@ main(int argc,char **argv)
   printf("DEBUG: After all processing; Before barrier, prc_rnk %d\n",prc_rnk);
   /* MPI_Barrier(MPI_COMM_WORLD); */
   if(prc_rnk == rnk_mgr){ /* Only Manager */
-    rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
+    rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE|NC_SHARE,&out_id);
     printf("prc_rnk %d opened out file\n",prc_rnk);
 #endif /* !ENABLE_MPI */
     /* Manually fix YYMMDD date which was mangled by averaging */
@@ -1083,16 +1093,17 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
     nco_close(out_id); 
     printf("DEBUG: Mgr prc_rnk %d closed out file %d after fixing date, time \n", prc_rnk, out_id);
+    /* fxm: csz What this message's purpose? Why send something specifically to rank 1? */
     MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,prc_rnk+1,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD);
-    printf("DEBUG: Mgr sent token to worker 1 to write\n");
+    printf("DEBUG: Mgr sent token to worker 1 for final write\n");
   }else{ /* Workers */
     printf("DEBUG: prc_rnk %d waiting for msg from Mgr for final write\n",prc_rnk);
     MPI_Recv(msg_bfr,msg_bfr_lng,MPI_INT,prc_rnk-1,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD,&mpi_stt);
-    printf("DEBUG: prc_rnk %d got token to write to %d\n",prc_rnk, out_id);
-    rcd=nco_open(fl_out_tmp,NC_WRITE,&out_id);
-    printf("DEBUG: prc_rnk %d opened output file write\n",prc_rnk);
-    /* Copy averages to output file and free averaging buffers */
+    printf("DEBUG: prc_rnk %d got token for final write to %d\n",prc_rnk, out_id);
     if(prg == ncra || prg == ncea){
+      /* Copy averages to output file and free averaging buffers */
+      rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE|NC_SHARE,&out_id);
+      printf("DEBUG: prc_rnk %d opened output file for final write\n",prc_rnk);
       for(jdx=0;jdx<lcl_nbr_var;jdx++){
 	idx=lcl_idx_lst[jdx];
 	/* Revert any arithmetic promotion but leave unpacking (for now) */
@@ -1101,7 +1112,7 @@ main(int argc,char **argv)
 	/*        printf("DEBUG: After nco_var_cnf_typ prc_rnk %d var val %f\n",prc_rnk,var_prc_out[idx]->val.lp[0]); */
 	/* Packing/Unpacking */
 	if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(out_id,var_prc_out[idx],nco_pck_plc);
-	printf("DEBUG: prc_rnk %d to write var %s with idx %d val %ld\n",prc_rnk,var_prc_out[idx]->nm,idx,var_prc_out[idx]->val.lp[0]);
+	printf("DEBUG: prc_rnk %d to final write var %s with idx %d val %g\n",prc_rnk,var_prc_out[idx]->nm,idx,var_prc_out[idx]->val.fp[0]);
 	if(var_prc_out[idx]->nbr_dim == 0){
 	  (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	}else{ /* end if variable is a scalar */
@@ -1111,12 +1122,11 @@ main(int argc,char **argv)
 	} /* end if variable is an array */
 	var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
       } /* end loop over jdx */
-    } /* end if */
-    
       /* Close output file */
-    nco_close(out_id); 
-    printf("DEBUG: prc_rnk %d closed out file after writing\n",prc_rnk);
-    /* Send Token to Manager */
+      nco_close(out_id); 
+      printf("DEBUG: prc_rnk %d closed out file after writing\n",prc_rnk);
+      /* Send Token to Manager */
+    } /* end if */
     if(prc_rnk == prc_nbr-1) MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,rnk_mgr,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD); else MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,prc_rnk+1,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD);
   } /* !Workers */
   if(prc_rnk == rnk_mgr){ /* Only Manager */
@@ -1146,7 +1156,7 @@ main(int argc,char **argv)
     } /* end loop over idx */
   } /* end if */
   
-    /* Close output file and move it from temporary to permanent location */
+  /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
 #endif /* !ENABLE_MPI */
@@ -1184,6 +1194,3 @@ main(int argc,char **argv)
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
-
-
-
