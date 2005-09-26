@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.97 2005-09-26 22:35:17 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.98 2005-09-26 22:43:16 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -238,7 +238,7 @@ $fl_pth = "$dta_dir";
 # Initialize & set up some variables
 if($dbg_lvl >=0 ){printf ("$prg_nm: Calling initialize()...\n");}
 initialize($bch_flg,$dbg_lvl);
-print "lll";
+
 # Use variables for file names in regressions; some of these could be collapsed into
 # fewer ones, no doubt, but keep them separate until whole shebang starts working correctly
 $outfile       = "$dta_dir/foo.nc"; # replaces outfile in tests, typically 'foo.nc'
