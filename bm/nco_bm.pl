@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.96 2005-09-23 19:59:24 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.97 2005-09-26 22:35:17 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -236,9 +236,9 @@ if ($xdta_pth eq '') {
 $fl_pth = "$dta_dir";
 
 # Initialize & set up some variables
-if($dbg_lvl > 1){printf ("$prg_nm: Calling initialize()...\n");}
+if($dbg_lvl >=0 ){printf ("$prg_nm: Calling initialize()...\n");}
 initialize($bch_flg,$dbg_lvl);
-
+print "lll";
 # Use variables for file names in regressions; some of these could be collapsed into
 # fewer ones, no doubt, but keep them separate until whole shebang starts working correctly
 $outfile       = "$dta_dir/foo.nc"; # replaces outfile in tests, typically 'foo.nc'
@@ -314,8 +314,11 @@ if (-e "/usr/bin/time" && -x "/usr/bin/time") {
 	$tmr_app = "time"; # bash builtin or other 'time'-like application (AIX)
 } # endif time
 
-if ($dbg_lvl > 1) {print "\nAbout to begin requested tests; waiting for keypress to proceed.\n"}
-my $tmp = <STDIN>;
+if ($dbg_lvl > 1) {
+	print "\nAbout to begin requested tests; waiting for keypress to proceed.\n";
+	my $tmp = <STDIN>;
+}
+
 
 
 # Regression tests
