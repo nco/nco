@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.335 2005-09-23 20:09:40 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.336 2005-09-27 07:06:58 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -903,7 +903,8 @@ endif
 
 ifeq (${PVM_ARCH},MACOSX)
 CXX := c++
-CC := cc
+# NB: -D_POSIX_SOURCE breaks MACOSX build in nco_fl_utl.c
+CC := cc -std=c99 -pedantic -D_BSD_SOURCE
 CFLAGS := -Wall
 CPP := ${CC}
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
