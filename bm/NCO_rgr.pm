@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.7 2005-09-21 18:37:24 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.8 2005-09-27 00:11:43 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -211,11 +211,12 @@ dbg_msg(1,"-------------  REGRESSION TESTS STARTED from perform_tests()  -------
 ####################
     $opr_nm='ncea';
 ####################
-	$tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $nco_D_flg -C -v pck $in_pth_arg in.nc $outfile";
+# this is a duplicate of test 04 - only here to run 1st under explict editing.
+$tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $nco_D_flg -C -v pck $in_pth_arg in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%e' -v pck $outfile";
 	$dsc_sng="scale factor + add_offset packing/unpacking";
 	$nsr_xpc= 3 ;
-# go();
+# go(); # uncomment this line to fire this test
 
 	$tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $nco_D_flg -v one_dmn_rec_var -d time,4 $in_pth_arg in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var $outfile";
@@ -246,7 +247,6 @@ dbg_msg(1,"-------------  REGRESSION TESTS STARTED from perform_tests()  -------
 	$tst_cmd[0]="/bin/rm -f $outfile";
 	$tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc in.nc $outfile";
 	$tst_cmd[2]="ncks -C -H -s '%d ' -v rec_var_int_mss_val_int $outfile";
-
 	$dsc_sng="ensemble mean of integer with integer missing values across two files";
 	$nsr_xpc= '-999 2 3 4 5 6 7 8 -999 -999' ;
  go();
