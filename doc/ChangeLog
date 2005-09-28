@@ -1,3 +1,7 @@
+2005-09-27  Charlie Zender  <zender@uci.edu>
+
+	* Implement static executable option to bld/Makefile with STC=Y
+
 2005-09-25  Charlie Zender  <zender@uci.edu>
 
 	* Move final worker open/close calls to with ncra/ncea block
@@ -16,7 +20,7 @@
 
 2005-09-23  Harry Mangalam <hjm@tacgi.com>
 
-	* added checking for IP#/hostname conflicts, LAM/lamd,
+	* Check for IP#/hostname conflicts, LAM/lamd,
 	 and MPICH/mpd in nco_bm.pl to help debug MPI errors.
 
 2005-09-22  Charlie Zender  <zender@uci.edu>

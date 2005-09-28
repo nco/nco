@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.336 2005-09-27 07:06:58 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.337 2005-09-28 03:23:02 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -124,6 +124,10 @@ endif
 ifndef RPM
  RPM := N
 endif # endif RPM
+ifndef STC
+# Created statically linked executable
+ STC := N
+endif
 ifndef UDUNITS
 # Use UDUnits functionality
  UDUNITS := Y
@@ -1230,6 +1234,11 @@ endif # endif SGI
  CPPFLAGS += -U_OPENMP
 endif # endif OMP
 
+ifeq (${STC},Y)
+# Created statically linked executable
+ LDFLAGS := -static ${LDFLAGS}
+endif # endif STC
+
 # Define CPPCXXFLAGS after making all possible modifications to CPPFLAGS
 # Add nco_c++ to directory search path
 CXXCPPFLAGS := ${CPPFLAGS} -I${NCO_CXX_SRC_DIR}
@@ -1586,6 +1595,7 @@ dbg:
 	@printf "PVM_ARCH = ${PVM_ARCH}\n"
 	@printf "RPM = ${RPM}\n"
 	@printf "SRC_LST = $(SRC_LST)\n"
+	@printf "STC = ${STC}\n"
 	@printf "THR_NBR = ${THR_NBR}\n"
 	@printf "THR_NBR_SNG = ${THR_NBR_SNG}\n"
 	@printf "TMP_LDFLAGS = $(TMP_LDFLAGS)\n"
