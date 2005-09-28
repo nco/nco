@@ -14,7 +14,7 @@ package NCO_bm;
 #   smrz_rgr_rslt()......summarizes the results of both regression and benchmark tests
 #   check_nco_results()..checks the output via md5/wc validation
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.9 2005-09-27 00:11:43 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.10 2005-09-28 19:17:03 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -30,7 +30,7 @@ our @EXPORT = qw (
 	verbosity
 	failed
 	smrz_rgr_rslt
-	set_dat_dir $dta_dir
+	set_dat_dir
 	usage
 	smrz_fl_cr8_rslt
 	check_nco_results
@@ -39,8 +39,10 @@ our @EXPORT = qw (
 	wat4inpt
 	dbg_msg
 
-	@fl_cr8_dat @fl_tmg $prefix $opr_nm $opr_sng_mpi $md5 $md5found $bm_dir $mpi_prc $mpi_fke
-	$nsr_xpc @tst_cmd %tst_nbr $dbg_lvl $wnt_log $dsc_sng $outfile $fl_pth $tmr_app $fke_prefix
+
+	@fl_cr8_dat @fl_tmg $prefix $opr_nm $opr_sng_mpi $md5 $md5found $bm_dir $mpi_prc $mpi_fke $dta_dir
+	$nsr_xpc @tst_cmd %tst_nbr $dbg_lvl $wnt_log $dsc_sng $outfile $fl_pth $tmr_app $fke_prefix $NUM_FLS
+	$udp_rpt $sock
 );
 
 use vars qw(
@@ -54,7 +56,7 @@ use vars qw(
 	$tst_id_sng  %tst_nbr  %usr_tme $wnt_log $timestamp
 	$bm_dir $caseid $cmd_ln $dta_dir @fl_cr8_dat $fl_pth @fl_tmg $md5found
 	%MD5_tbl $nco_D_flg $NUM_FLS $prfxd $que $server_ip $sock $thr_nbr $dbg_sgn $err_sgn
-	$tmr_app $udp_rpt %wc_tbl $prfxd $nvr_my_bin_dir $prg_nm $arg_nbr @fl_cr8_dat @fl_tmg
+	$tmr_app $udp_rpt %wc_tbl $prfxd $nvr_my_bin_dir $prg_nm $arg_nbr @fl_tmg
 );
 
 print "\nINFO: Testing for required modules\n";
@@ -103,8 +105,9 @@ $fl_pth = "$dta_dir";
 #
 # # set the $fke_prefix to allow for running the mpnc* as a non-mpi'ed  executable
 # $fke_prefix = " $MY_BIN_DIR/mp";
+
 # # $prefix expects to find an regular nco in MY_BIN_DIR
-# $prefix = " $MY_BIN_DIR/";
+$prefix = " $MY_BIN_DIR";
 # #  $mpi_prfx will always have the mpirun directive.PLUS the MPI'ed nco
 # $mpi_prfx = " mpirun -np $mpi_prc  $MY_BIN_DIR/mp";
 # $prfxd = 1; $timed = 1;
@@ -269,6 +272,14 @@ sub verbosity {
 ##
 
 sub fl_cr8_dat_init {
+
+	dbg_msg(2,"fl_cr8_dat_init: \$NUM_FLS = $NUM_FLS");
+
+if ($dbg_lvl > 2) {
+	print "\nWaiting for keypress to proceed.\n";
+	my $tmp = <STDIN>;
+}
+
 	for (my $i = 0; $i < $NUM_FLS; $i++) { $fl_tmg[$i][1] = $fl_tmg[$i][2] = " omitted "; }
 
 #	$fl_cr8_dat[0][0] = "example gene expression"; # option descriptor
@@ -303,7 +314,18 @@ sub fl_cr8_dat_init {
 ##
 
 sub fl_cr8 {
-#print "fl_cr8: prefix=$prefix\n";
+# 	our @EXPORT = qw (
+# 		fl_cr8_dat_init
+# 		@fl_cr8_dat $dta_dir
+# 	);
+
+	$prefix = "$MY_BIN_DIR";
+
+if ($dbg_lvl > 2) {
+	print "\nWaiting for keypress to proceed.\n";
+	my $tmp = <STDIN>;
+}
+
 	my $idx = shift;
 	my $t0;
 	my $elapsed;

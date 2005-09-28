@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.98 2005-09-26 22:43:16 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.99 2005-09-28 19:17:03 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -217,7 +217,7 @@ if (length($caseid) > 80) {die "\nThe caseid string is > 80 characters - please 
 if ($md5 == 1) {	do "nco_bm_md5wc_tbl.pl" or die "Can't find the validation data (nco_bm_md5wc_tbl.pl).\n";}
 
 $nco_D_flg = "-D $dbg_lvl";
-dbg_msg(3,"\$nco_D_flg = $nco_D_flg");
+dbg_msg(1,"WARN: Using the --debug flag set to greater than 0 will cause the NCO commandline \n-D flag to be set tothe corresponding number as well, which will cause some of the \ntests to fail, as the output will be different also.\nIt is creently set to \$nco_D_flg = $nco_D_flg");
 
 # Determine where $DATA should be, prompt user if necessary
 if ($xdta_pth eq '') {
@@ -236,7 +236,7 @@ if ($xdta_pth eq '') {
 $fl_pth = "$dta_dir";
 
 # Initialize & set up some variables
-if($dbg_lvl >=0 ){printf ("$prg_nm: Calling initialize()...\n");}
+if($dbg_lvl > 0 ){printf ("$prg_nm: Calling initialize()...\n");}
 initialize($bch_flg,$dbg_lvl);
 
 # Use variables for file names in regressions; some of these could be collapsed into
@@ -262,6 +262,7 @@ use NCO_rgr; # module that contains perform_tests()
 # the real udping server
 $server_name = "sand.ess.uci.edu";
 $server_ip = "128.200.14.132";
+
 $server_port = 29659;
 
 if ($usg) { usage()};   # dump usage blurb
@@ -330,14 +331,14 @@ if ($rgr){
 # Start real benchmark tests
 # Test if necessary files are available - if so, may skip creation tests
 
-if($bm && $dodap eq "FALSE"){
+if( $tst_fl_cr8 ne "0"  ||( $bm && $dodap eq "FALSE")){
 	if($dbg_lvl > 1){printf ("\n$prg_nm: Calling fl_cr8_dat_init()...\n");}
-	fl_cr8_dat_init(); # Initialize data strings & timing array for files
+	fl_cr8_dat_init(@fl_cr8_dat); # Initialize data strings & timing array for files
 }
 
 # Check if files have already been created
 # If so, skip file creation if not requested
-if ($bm && $tst_fl_cr8 == 0 && $dodap eq "FALSE") {
+if ($bm && $tst_fl_cr8 eq "0" && $dodap eq "FALSE") {
 	if ($dbg_lvl> 0){print "\nINFO: File creation tests:\n";}
 	for (my $i = 0; $i < $NUM_FLS; $i++) {
 		my $fl = $fl_cr8_dat[$i][2] . ".nc"; # file root name stored in $fl_cr8_dat[$i][2]

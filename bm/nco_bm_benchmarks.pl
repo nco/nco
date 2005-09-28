@@ -4,7 +4,7 @@
 # for the NCO benchmark script nco_bm.pl
 # It must maintain Perl semantics for Perl code.
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_benchmarks.pl,v 1.1 2005-09-16 19:12:34 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_benchmarks.pl,v 1.2 2005-09-28 19:17:03 mangalam Exp $
 
 	print "\nINFO: Starting Benchmarks now\n";
 	if($dbg_lvl > 1){print "bm: prefix = $prefix\n";}
@@ -206,7 +206,9 @@
 	}
 
 
-	if ($dodap eq "FALSE") { # only if not being done by remote
+# the 1st and last lines of this stanza are commented for testing the benchmarks on the Gb net
+# but it's incredibly slow - order of several hours even if done on the same machine
+ 	if ($dodap eq "FALSE") { # only if not being done by remote
 	#################### begin ncrcat benchmark
 	$opr_nm='ncrcat';
 	$dsc_sng = 'ncrcat joining 2^5 files'; # skn_lgs.nc * 32 = 1.51GB
@@ -219,10 +221,8 @@
 		$nsr_xpc = "12.759310";
 		go();
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
-		} else {
-			print "\nNB: ncrcat benchmark skipped for OpenDAP test - takes too long.\n\n";
-		}
-	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
+	} else {	print "\nNB: ncrcat benchmark skipped for OpenDAP test - takes too long.\n\n"; }
+ 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
 
 	#################### begin ncwa benchmark list #1a
