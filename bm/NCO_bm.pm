@@ -14,7 +14,7 @@ package NCO_bm;
 #   smrz_rgr_rslt()......summarizes the results of both regression and benchmark tests
 #   check_nco_results()..checks the output via md5/wc validation
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.10 2005-09-28 19:17:03 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.11 2005-09-28 21:07:06 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -38,7 +38,6 @@ our @EXPORT = qw (
 	fl_cr8_dat_init
 	wat4inpt
 	dbg_msg
-
 
 	@fl_cr8_dat @fl_tmg $prefix $opr_nm $opr_sng_mpi $md5 $md5found $bm_dir $mpi_prc $mpi_fke $dta_dir
 	$nsr_xpc @tst_cmd %tst_nbr $dbg_lvl $wnt_log $dsc_sng $outfile $fl_pth $tmr_app $fke_prefix $NUM_FLS
@@ -136,6 +135,7 @@ where (options) are:
                      from different runs.
     --dap {OPeNDAP url} ...retrieve test files from OPeNDAP server URL
     --opendap..............             ditto
+    --dust_user.....use this to define a user who CAN log into dust for testing
     --log ..........requests that the debug info is logged to 'nctest.log'
                      as well as spat to STDOUT.
     --mpi_prc {#>0}..number of MPI processes to spawn

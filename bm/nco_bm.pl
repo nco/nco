@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.99 2005-09-28 19:17:03 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.100 2005-09-28 21:07:06 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -29,7 +29,7 @@ use strict; # Protect all namespaces
 use vars qw(
 $arg_nbr  $bch_flg  $bm  @bm_cmd_ary  $bm_dir  $caseid  $cmd_ln
 $dbg_lvl  $dodap  $dot_fmt  $dot_nbr  $dot_nbr_min  $dot_sng  $dsc_fmt
-$dsc_lng_max  $dsc_sng  $dta_dir  %failure  $fl_cnt  @fl_cr8_dat
+$dsc_lng_max  $dsc_sng  $dta_dir $dust_usr  %failure  $fl_cnt  @fl_cr8_dat
 $fl_pth  @fl_tmg  $foo1_fl  $foo2_fl  $foo_avg_fl  $foo_fl  $foo_T42_fl
 $foo_tst  $foo_x_fl  $foo_xy_fl  $foo_xymyx_fl  $foo_y_fl  $foo_yx_fl
 $hiresfound  @ifls  $itmp  $localhostname  $md5  $md5found  %MD5_tbl
@@ -75,6 +75,7 @@ $timestamp = `date -u "+%x %R"`; chomp $timestamp;
 $dodap = "FALSE"; # Unless redefined by the command line, it does not get set
 $fl_cnt = 32; # nbr of files to process (reduced to 4 if using remote/dods files
 $pth_rmt_scp_tst='dust.ess.uci.edu:/var/www/html/dodsdata';
+$dust_usr = "";
 $xdta_pth = ''; # explicit data path that user can set from cmdline; more powerful than $dta_dir
 $os_nme = "";
 
@@ -109,12 +110,13 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'dods:s'       => \$dodap,      # string is the URL to the DODs data
 	'dap:s'        => \$dodap,      #  "
 	'opendap:s'    => \$dodap,      #  "
+	'dust_user=s'  => \$dust_usr,    #  #
 	'h'            => \$usg,        # explains how to use this thang
 	'help'         => \$usg,        #            ditto
 	'log'          => \$wnt_log,    # set if want output logged
 	'mpi_prc=i'    => \$mpi_prc,    # set number of mpi processes
-	'mpi_fake'	=> \$mpi_fke,    # run the mpi executable as a single process for debugging.
-	'fake_mpi'	=> \$mpi_fke,    # run the mpi executable as a single process for debugging.
+	'mpi_fake'	   => \$mpi_fke,    # run the mpi executable as a single process for debugging.
+	'fake_mpi'	   => \$mpi_fke,    # run the mpi executable as a single process for debugging.
 	'queue'        => \$que,        # if set, bypasses all interactive stuff
 	'pth_rmt_scp_tst' => \$pth_rmt_scp_tst, # [drc] Path to scp regression test file
 	'regress'      => \$rgr,        # test regression
@@ -155,7 +157,7 @@ dbg_msg(2,$lcl_vars); # spit the whole thing out.
 
 if ($ARGV == 0) {	usage();}
 
-	$os_nme = `uname`; chomp $os_nme;
+$os_nme = `uname`; chomp $os_nme;
 
 # do $mpi_prc and $mpi_fke conflict?
 if ($mpi_prc > 0 && $mpi_fke) {

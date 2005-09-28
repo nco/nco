@@ -4,7 +4,7 @@
 # for the NCO benchmark script nco_bm.pl
 # It must maintain Perl semantics for Perl code.
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_benchmarks.pl,v 1.2 2005-09-28 19:17:03 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_benchmarks.pl,v 1.3 2005-09-28 21:07:06 mangalam Exp $
 
 	print "\nINFO: Starting Benchmarks now\n";
 	if($dbg_lvl > 1){print "bm: prefix = $prefix\n";}
@@ -205,23 +205,22 @@
 		} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 	}
 
-
 # the 1st and last lines of this stanza are commented for testing the benchmarks on the Gb net
 # but it's incredibly slow - order of several hours even if done on the same machine
  	if ($dodap eq "FALSE") { # only if not being done by remote
-	#################### begin ncrcat benchmark
-	$opr_nm='ncrcat';
-	$dsc_sng = 'ncrcat joining 2^5 files'; # skn_lgs.nc * 32 = 1.51GB
-	####################
-	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncrcat -h -O $nco_D_flg $omp_flg -n $fl_cnt,2,1 -p $fl_pth skn_lgs_00.nc $outfile";
-		$tst_cmd[1] = "ncwa -h -O $nco_D_flg $omp_flg  $outfile $outfile";
-		$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2  $outfile";
-		$nsr_xpc = "12.759310";
-		go();
-		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
-	} else {	print "\nNB: ncrcat benchmark skipped for OpenDAP test - takes too long.\n\n"; }
+		#################### begin ncrcat benchmark
+		$opr_nm='ncrcat';
+		$dsc_sng = 'ncrcat joining 2^5 files'; # skn_lgs.nc * 32 = 1.51GB
+		####################
+		if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
+	#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+			$tst_cmd[0] = "ncrcat -h -O $nco_D_flg $omp_flg -n $fl_cnt,2,1 -p $fl_pth skn_lgs_00.nc $outfile";
+			$tst_cmd[1] = "ncwa -h -O $nco_D_flg $omp_flg  $outfile $outfile";
+			$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2  $outfile";
+			$nsr_xpc = "12.759310";
+			go();
+			if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+		} else {	print "\nNB: ncrcat benchmark skipped for OpenDAP test - takes too long.\n\n"; }
  	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
 

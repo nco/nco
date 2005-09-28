@@ -1,5 +1,8 @@
 2005-09-28  Harry Mangalam <hjm@tacgi.com>
 
+	* Added --dust_user to allow setting a user that can log
+		into dust for testing (hmangalm@esmf -> hjm@dust)
+
 	* Fixed file tests broken in nc_bm.pl re-org.
 	
 	* Fixed udp reporting as per ditto.

@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.9 2005-09-28 19:17:03 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.10 2005-09-28 21:07:06 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -18,7 +18,7 @@ our @ISA = qw(Exporter);
 our @EXPORT = qw (
 	perform_tests
 
-	$prefix $opr_nm $opr_sng_mpi $dodap $pth_rmt_scp_tst
+	$dust_usr $prefix $opr_nm $opr_sng_mpi $dodap $pth_rmt_scp_tst
 	$nsr_xpc @tst_cmd %tst_nbr $dbg_lvl $localhostname $wnt_log $dsc_sng
 	$outfile $orig_outfile  $foo_fl $foo_avg_fl $foo_tst $foo1_fl $foo2_fl $foo_x_fl
 	$foo_y_fl $foo_xy_fl $foo_yx_fl $foo_xymyx_fl $foo_T42_fl
@@ -26,7 +26,7 @@ our @EXPORT = qw (
 );
 
 use vars qw(
-    $dodap $dsc_sng $fl_pth $foo1_fl $foo2_fl $foo_avg_fl
+    $dodap $dsc_sng $dust_usr $fl_pth $foo1_fl $foo2_fl $foo_avg_fl
     $foo_fl $foo_T42_fl $foo_tst $foo_x_fl $foo_xy_fl
     $foo_xymyx_fl $foo_y_fl $foo_yx_fl $mpi_prc $nco_D_flg $localhostname
     $nsr_xpc $omp_flg $opr_nm $opr_rgr_mpi $orig_outfile
@@ -772,12 +772,23 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $nco_D_flg -C -v pck $in_pth_arg in.nc 
 	$nsr_xpc= 1.000000e+00 ;
  go();
 
+	my $sftp_url = "sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco";
+
+	if ($dust_usr ne ""){ # if we need to connect as another user (hmangalm@esmf -> hjm@dust))
+		 $sftp_url =~ s/dust/$dust_usr\@dust/;
+	}
+
+#sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco
 	$tst_cmd[0]="/bin/rm -f /tmp/in.nc";
-	$tst_cmd[1]="ncks -O $nco_D_flg -v one -p sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco -l /tmp in.nc";
+	$tst_cmd[1]="ncks -O $nco_D_flg -v one -p $sftp_url -l /tmp in.nc";
 	$tst_cmd[2]="ncks -H $nco_D_flg -s '%e' -v one -l /tmp in.nc";
 	$dsc_sng="Secure FTP (SFTP) protocol (requires SFTP access to dust.ess.uci.edu)";
 	$nsr_xpc= 1.000000e+00 ;
  go();
+
+if ($dust_usr ne ""){ # if we need to connect as another user (hmangalm@esmf -> hjm@dust))
+	$pth_rmt_scp_tst = $dust_usr . '@' . $pth_rmt_scp_tst;
+}
 
 	$tst_cmd[0]="/bin/rm -f /tmp/in.nc";
 	$tst_cmd[1]="ncks -H -O $nco_D_flg  -s '%e' -v one -p $pth_rmt_scp_tst -l /tmp in.nc";
@@ -811,6 +822,6 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $nco_D_flg -C -v pck $in_pth_arg in.nc 
 	    $dsc_sng="HTTP protocol (requires developers to implement wget in NCO nudge nudge wink wink)";
 	    $nsr_xpc= 1;
         go();
-	} else { print "WARN: Skipping net test wget: protocol retrieval---user not zender or hjm\n";}
+	} else { print "WARN: Skipping net test wget: protocol retrieval---not implemented yet\n";}
 
 } # end of perform_test()
