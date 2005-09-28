@@ -1,0 +1,28 @@
+// $Header Exp $
+// when sent thru ncgen:
+// ncgen -b -o skn_lgs.nc skn_lgs.cdl 
+
+// this netCDF template should yeild a file size of initially 10.5MB
+// and then finally ~52.5MB, after the other variables have been added.
+
+// ../src/nco/ncecat -O skn_lgs.nc skn_lgs.nc
+// ../src/nco/ncpdq -O -a time,record skn_lgs.nc skn_lgs.nc
+// ../src/nco/ncrename -O -v record,species_id skn_lgs.nc skn_lgs.nc
+// ../src/nco/ncap -O -s "hmdty[time]=98.3f;PCO2[time]=1.92f;PN2[time]=77.4f;w_vel[time]=14.8f;w_dir[time]=321.3f;temp[time]=23.5f;lmbda_260[time]=684.2f" skn_lgs.nc skn_lgs.nc
+//~50s altogether (much longer than the creation of the non-record time series)
+
+// Valid CDF/netCDF files need not have any defined variable or data
+// Use ncap LHS-casting to define variables with big dimensions
+netcdf skn_lgs{
+dimensions:
+    time=1314900; // sampling 8 vars at 1Hz for a year 1314900
+variables:
+//indices
+    double time(time);	 
+
+// 1D vars of dim 1314900
+    float PO2(time);
+
+// need to define the values for time dimension, but is there a way to do it by 
+// iteration or script rather than by explicit assignment
+}
