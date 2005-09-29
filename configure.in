@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.127 2005-09-16 21:23:35 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.128 2005-09-29 20:25:17 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -768,6 +768,6 @@ echo "LIBS      = ${LIBS}"
 echo ""
 echo "*******************************************************************"
 echo "If the build process fails, please examine the file 'configure.eg'"
-echo "in the top-evel directory.  It contains additional info about"
-echo "building NCO for various platforms and compilers."
+echo "in the top-level NCO directory.  It contains examples known to"
+echo "build NCO for various platforms and compilers."
 echo "*******************************************************************"

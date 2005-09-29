@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.35 2005-06-30 21:27:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.36 2005-09-29 20:25:17 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -343,9 +343,9 @@ nco_cmp_nm_id_id /* [fnc] Compare two nm_id_sct's by ID member */
   /* Purpose: Compare two nm_id_sct's by ID structure member
      NB: This function uses a method which is, in general, unsafe
      By performing casts and then subracting, we are subject to overflow
-     conditions should the integer values by close to INT_MAX or INT_MIN.
+     conditions should integer values be close to INT_MAX or INT_MIN.
      However, we know that nm_id_sct.id values are always small
-     Thus we use this slightly unsafe method in order to show that a 
+     Thus we use this slightly unsafe method in order to show that
      comparison function may be written (albeit unsafely) in one line. */
   return (*(nm_id_sct const *)val_1).id-(*(nm_id_sct const *)val_2).id;
 } /* end nco_cmp_nm_id_nm() */

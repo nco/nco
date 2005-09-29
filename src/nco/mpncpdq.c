@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.18 2005-09-26 22:59:02 wangd Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.19 2005-09-29 20:25:17 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.18 2005-09-26 22:59:02 wangd Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.18 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.19 2005-09-29 20:25:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.19 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:RrSt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -778,7 +778,7 @@ main(int argc,char **argv)
           TKN_WRT_FREE=True;
 	  
           if(idx > nbr_var_prc-1){
-            msg_bfr[0]=idx_all_wrk_ass; /* [idx] -1 */
+            msg_bfr[0]=idx_all_wrk_ass; /* [enm] All variables already assigned */
             msg_bfr[1]=out_id; /* Output file ID */
           }else{
             /* Tell requesting worker to allocate space for next variable */

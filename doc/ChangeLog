@@ -1,9 +1,15 @@
+2005-09-29  Charlie Zender  <zender@uci.edu>
+
+	* Clean up mpncra.c by removing barriers, adding comments
+
+	* Remove superfluous close/open fl_in for MPI mpncra/mpncrcat/mpncea
+
 2005-09-28  Harry Mangalam <hjm@tacgi.com>
 
 	* Added --dust_user to allow setting a user that can log
 		into dust for testing (hmangalm@esmf -> hjm@dust)
 
-	* Fixed file tests broken in nc_bm.pl re-org.
+	* Fixed file tests broken in nco_bm.pl re-org.
 	
 	* Fixed udp reporting as per ditto.
 

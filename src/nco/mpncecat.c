@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.20 2005-09-26 22:59:02 wangd Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.21 2005-09-29 20:25:17 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.20 2005-09-26 22:59:02 wangd Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.20 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.21 2005-09-29 20:25:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.21 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRSv:xZ-:";
   
   dmn_sct *rec_dmn;
@@ -562,7 +562,7 @@ main(int argc,char **argv)
 	  TKN_WRT_FREE=True;
 	  
 	  if(idx > nbr_var_prc-1){
-	    msg_bfr[0]=idx_all_wrk_ass; /* [idx] -1 */
+	    msg_bfr[0]=idx_all_wrk_ass; /* [enm] All variables already assigned */
 	    msg_bfr[1]=out_id; /* Output file ID */
 	  }else{
 	    /* Tell requesting worker to allocate space for next variable */

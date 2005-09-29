@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.19 2005-09-26 07:00:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.20 2005-09-29 20:25:17 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.19 2005-09-26 07:00:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.19 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.20 2005-09-29 20:25:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.20 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -735,7 +735,7 @@ main(int argc,char **argv)
 	  TKN_WRT_FREE=True;
 	  
 	  if(idx > nbr_var_prc-1){
-	    msg_bfr[0]=idx_all_wrk_ass; /* [idx] -1 */
+	    msg_bfr[0]=idx_all_wrk_ass; /* [enm] All variables already assigned */
 	    msg_bfr[1]=out_id; /* Output file ID */
 	  }else{
 	    /* Tell requesting worker to allocate space for next variable */

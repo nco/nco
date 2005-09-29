@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.338 2005-09-28 19:17:03 mangalam Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.339 2005-09-29 20:25:17 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -8,6 +8,7 @@
 # See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text
 
 # Quickie test copies:
+# scp ~/nco/bld/Makefile cg1.calit2.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile dust.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile esmf.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile goldhill.cgd.ucar.edu:nco/bld
@@ -432,7 +433,7 @@ CPP_TKN_OS := -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY
 ifneq (${PVM_ARCH},CRAY)
  CPP_TKN_OS += -DHAVE_MKSTEMP
 endif # CRAY
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDWIN32))
+ifneq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSXWIN32))
  CPP_TKN_OS += -DHAVE_GETOPT_H -DHAVE_GETOPT_LONG
 # UDUNITS_DAT OK to be empty for now
 endif # !LINUX
@@ -1476,7 +1477,7 @@ ifeq (${PVM_ARCH},MACOSX)
 endif # endif LINUX
 # ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/ncap_utl.o)
 # If not using glibc, build Sittler's getopt() and getopt_long() functions
-ifeq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDWIN32))
+ifeq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSXWIN32))
 ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_getopt.o)
 endif # endif not glibc
 ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \

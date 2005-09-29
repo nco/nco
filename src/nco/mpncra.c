@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.23 2005-09-26 07:00:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.24 2005-09-29 20:25:17 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.23 2005-09-26 07:00:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.23 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.24 2005-09-29 20:25:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.24 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:Z-:";
   
   dmn_sct **dim;
@@ -524,11 +524,10 @@ main(int argc,char **argv)
     nco_close(out_id);
     TKN_WRT_FREE=True;
   } /* prc_rnk != rnk_mgr */
-#endif /* !ENABLE_MPI */
-  
-  /* Close first input netCDF file */
-  /* csz fxm: close file for SMP only? since MPI code immediate re-opens? */
+#else /* !ENABLE_MPI */
+  /* Close first input netCDF file (SMP only since MPI code immediate re-opens) */
   (void)nco_close(in_id);
+#endif /* !ENABLE_MPI */
   
   /* Allocate and, if necesssary, initialize accumulation space for processed variables */
   for(idx=0;idx<nbr_var_prc;idx++){
@@ -545,12 +544,26 @@ main(int argc,char **argv)
   } /* end loop over idx */
   
 #ifdef ENABLE_MPI
-  /* csz: Parallelization for ncea, ncra, ncrcat requires two passes
-     NB: Only manager code manipulates value of TKN_WRT_FREE
-     Pass 1: Open first file 
-     Pass 2: */
+  /* NB: Only manager code manipulates value of TKN_WRT_FREE
+     Pass 1: Workers construct local persistant variable lists
+             Open first file
+             mpncra and mpncrcat process first record only
+	     mpncea ingests complete file
+	     Workers create local list of their variables 
+     Pass 2: Complete record/file loops with local variable lists
+             Workers skip first timestep (mpncra/mpncrcat) 
+             Workers process only variables in their local list from Pass 1 
+             This variable persistance is necessary for mpncra and mpncea
+	     since their workers must maintain running tallies for each variable.
+             Variable persistance is not necessary for mpncrcat 
+	     However, we do it anyway to keep mpncrcat and mpncra similar
+	     mpncrcat writes records as it reads them and finishes after pass 2
+     Pass 3: 
+             mpncea and mpncra require a final loop to normalize and write
+             Write-token for this loop is passed sequentially through the ranks */
+
+  /* Begin Pass 1: Workers construct local persistant variable lists */
   fl_idx=0;
-  rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
   /* Variables may have different ID, missing_value, type, in each file */
   for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_mtd_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
@@ -592,12 +605,12 @@ main(int argc,char **argv)
 	  if(prg == ncrcat) TKN_WRT_FREE=True; /* File written to at this point only for ncrcat */
 	  
 	  if(idx > nbr_var_prc-1){
-	    msg_bfr[0]=idx_all_wrk_ass; /* [idx] -1 */
+	    msg_bfr[0]=idx_all_wrk_ass; /* [enm] All variables already assigned */
 	    msg_bfr[1]=out_id; /* Output file ID */
 	  }else{
 	    /* Tell requesting worker to allocate space for next variable */
 	    msg_bfr[0]=idx; /* [idx] Variable to be processed */
-	    /* csz: fxm Why on Earth do workers need to know Master's out_id? */
+	    /* csz: fxm Workers do not need to know Master's out_id */
 	    msg_bfr[1]=out_id; /* Output file ID */
 	    msg_bfr[2]=var_prc_out[idx]->id; /* [id] Variable ID in output file */
 	    /* Point to next variable on list */
@@ -698,7 +711,6 @@ main(int argc,char **argv)
       idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
     } /* endif Worker */
     printf("DEBUG: End of first pass of ncra/ncrcat at node %d\n",prc_rnk);
-    /* MPI_Barrier(MPI_COMM_WORLD); */
     
     /* End of ncra, ncrcat section */
   }else{ /* ncea */
@@ -723,7 +735,7 @@ main(int argc,char **argv)
 	  /* TKN_WRT_FREE=True; ncea does not do file write here */
 	  
 	  if(idx > nbr_var_prc-1){
-	    msg_bfr[0]=idx_all_wrk_ass; /* [idx] -1 */
+	    msg_bfr[0]=idx_all_wrk_ass; /* [enm] All variables already assigned */
 	    msg_bfr[1]=out_id; /* Output file ID */
 	  }else{
 	    /* Tell requesting worker to allocate space for next variable */
@@ -776,17 +788,14 @@ main(int argc,char **argv)
   /* Close input netCDF file */
   nco_close(in_id);
   
-  /* End of pass 1 - fl_idx = 0, rec_idx = srt; now workers will have their list of vars */
-  /* GV - actual loop, indices are stored at workers' in the case of MPI */
+  /* End Pass 1: Workers construct local persistant variable lists */
   printf("DEBUG: prc_rnk %d is done with 1st pass\n",prc_rnk);
+  /* Begin Pass 2: Complete record/file loops with local variable lists */
   
 #endif /* !ENABLE_MPI */
   
   /* Loop over input files */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
-#ifdef ENABLE_MPI
-    /* MPI_Barrier(MPI_COMM_WORLD); */
-#endif /* !ENABLE_MPI */
     /* Parse filename */
     if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
     if(dbg_lvl > 0) (void)fprintf(stderr,gettext("\nInput file %d is %s; "),fl_idx,fl_in);
@@ -817,7 +826,6 @@ main(int argc,char **argv)
 	if(fl_idx == fl_nbr-1 && idx_rec >= 1L+lmt_rec->end-lmt_rec->srd) LAST_RECORD=True;
 	
 #ifdef ENABLE_MPI
-	/* MPI_Barrier(MPI_COMM_WORLD); */
 	if(fl_idx == 0 && idx_rec == lmt_rec->srt){
 	  /* MPI operators processed first record in first-stage loop */
 	  continue;
@@ -949,7 +957,6 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
 	  } /* !Worker */
 	} /* end else ! fl_idx=0,idx_rec=srt */
-	/* MPI_Barrier(MPI_COMM_WORLD); */
 #endif /* !ENABLE_MPI */
       } /* end loop over idx_rec */
 #ifdef ENABLE_MPI
@@ -968,7 +975,6 @@ main(int argc,char **argv)
 	} /* end if */
 #ifdef ENABLE_MPI
       } /* !Worker */
-	/* MPI_Barrier(MPI_COMM_WORLD); */
       printf("DEBUG: prc_rnk %d at the end of ncra/rcat\n",prc_rnk);
 #endif /* !ENABLE_MPI */
       /* End of ncra, ncrcat section */
@@ -1014,13 +1020,11 @@ main(int argc,char **argv)
       /* Close input netCDF file */
       nco_close(in_id);
       
-      /* MPI_Barrier(MPI_COMM_WORLD); */
       /* Dispose local copy of file */
       if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
     } /* end loop over fl_idx */
 #ifdef ENABLE_MPI
     printf("DEBUG: prc_rnk %d is out of file idx loop\n",prc_rnk); 
-    /* MPI_Barrier(MPI_COMM_WORLD); */
 #endif /* !ENABLE_MPI */
     /* Normalize, multiply, etc where necessary */
     if(prg == ncra || prg == ncea){
@@ -1080,7 +1084,6 @@ main(int argc,char **argv)
   } /* !ncra/ncea */
 #ifdef ENABLE_MPI
   printf("DEBUG: After all processing; Before barrier, prc_rnk %d\n",prc_rnk);
-  /* MPI_Barrier(MPI_COMM_WORLD); */
   if(prc_rnk == rnk_mgr){ /* Only Manager */
     rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE|NC_SHARE,&out_id);
     printf("DEBUG: prc_rnk %d opened out file\n",prc_rnk);
@@ -1088,12 +1091,15 @@ main(int argc,char **argv)
     /* Manually fix YYMMDD date which was mangled by averaging */
     if(CNV_CCM_CCSM_CF && prg == ncra) (void)nco_cnv_ccm_ccsm_cf_date(out_id,var_out,nbr_xtr);
     
+    /* End Pass 2: Complete record/file loops with local variable lists */
+    /* Begin Pass 3:  */
+    /* End Pass 3:  */
+
     /* Add time variable to output file */
     if(CNV_ARM && prg == ncrcat) (void)nco_arm_time_install(out_id,base_time_srt);
 #ifdef ENABLE_MPI
     nco_close(out_id); 
     printf("DEBUG: Mgr prc_rnk %d closed out file %d after fixing date, time \n", prc_rnk, out_id);
-    /* fxm: csz What this message's purpose? Why send something specifically to rank 1? */
     MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,prc_rnk+1,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD);
     printf("DEBUG: Mgr sent token to worker 1 for final write\n");
   }else{ /* Workers */
@@ -1134,7 +1140,6 @@ main(int argc,char **argv)
     (void)nco_fl_mv(fl_out_tmp,fl_out);
   } /* !Manager */
   
-    /* MPI_Barrier(MPI_COMM_WORLD); */
   MPI_Finalize();
   
 #else /* !ENABLE_MPI */

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.109 2005-08-23 07:01:40 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.110 2005-09-29 20:25:17 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -398,14 +398,16 @@ End LINUXSPARC64
 Start MACOSX
 Status: works.  rorik Thu Oct 30 12:09:15 AKST 2003
 ************************************************************************
-bash-2.05a$ ./pvmgetarch;uname -a;~/nco/autobld/config.guess
-UNKNOWN
-Darwin usf-cf-ppc-macosx-1 5.5 Darwin Kernel Version 5.5: Thu May 30 14:51:26 PDT 2002; root:xnu/xnu-201.42.3.obj~1/RELEASE_PPC  Power Macintosh powerpc
+zender@cg1:~/nco/bld$ ~/sh/pvmgetarch;uname -a;~/nco/autobld/config.guess
+MACOSX
+Darwin cg1.calit2.uci.edu 8.2.0 Darwin Kernel Version 8.2.0: Fri Jun 24 17:46:54 PDT 2005; root:xnu-792.2.4.obj~3/RELEASE_PPC Power Macintosh powerpc
+powerpc-apple-darwin8.2.0
 
 gcc/g++:
+export PVM_ARCH=`~/nco/bld/pvmgetarch`
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+NETCDF_INC=/usr/include NETCDF_LIB=/usr/lib ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${PVM_ARCH} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${PVM_ARCH} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1

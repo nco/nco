@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.33 2005-09-26 22:59:02 wangd Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.34 2005-09-29 20:25:17 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.33 2005-09-26 22:59:02 wangd Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.33 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.34 2005-09-29 20:25:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.34 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRSt:v:xy:Z-:";
   
   dmn_sct **dim_1;
@@ -556,7 +556,7 @@ main(int argc,char **argv)
 	  /* Point to next variable on list */
 	  idx++; 
 	}else{
-	  msg_bfr[0]=idx_all_wrk_ass; /* [idx] -1 */
+	  msg_bfr[0]=idx_all_wrk_ass; /* [enm] All variables already assigned */
 	  msg_bfr[1]=out_id; /* Output file ID */
 	} /* endif idx */
 	MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,rnk_wrk,msg_tag_wrk_rsp,MPI_COMM_WORLD);

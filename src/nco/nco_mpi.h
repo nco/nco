@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.6 2005-09-26 07:00:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.7 2005-09-29 20:25:17 zender Exp $ */
 
 /* Purpose: MPI utilities */
 
@@ -48,7 +48,7 @@ extern "C" {
   /* Pass idx_all_wrk_ass in place of variable ID when all variables assigned
      Values for idx_all_wrk_ass must be exclusive of valid variable IDs
      Hence use a negative integer to signify idx_all_wrk_ass */
-  const int idx_all_wrk_ass=-1; /* [flg] All variables already assigned */
+  const int idx_all_wrk_ass=-1; /* [enm] All variables already assigned */
 
   /* NB: Message fields must begin in location zero */
   /* fxm: Define message structures rather than int arrays */
