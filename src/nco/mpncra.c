@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.24 2005-09-29 20:25:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.25 2005-09-29 20:28:24 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.24 2005-09-29 20:25:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.24 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.25 2005-09-29 20:28:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.25 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:Z-:";
   
   dmn_sct **dim;
@@ -686,7 +686,7 @@ main(int argc,char **argv)
 	    
 	    /* Worker has token---prepare to write */
 	    if(tkn_wrt_rsp == tkn_wrt_rqs_xcp){
-	      rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE|NC_SHARE,&out_id);
+	      rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE,&out_id);
 	      /* Turn off default filling behavior to enhance efficiency */
 	      rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 	      if(var_prc_out[idx]->sz_rec > 1) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
@@ -920,7 +920,7 @@ main(int argc,char **argv)
 		
 		/* Worker has token---prepare to write */
 		if(tkn_wrt_rsp == tkn_wrt_rqs_xcp){
-		  rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE|NC_SHARE,&out_id);
+		  rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE,&out_id);
 		  /* Turn off default filling behavior to enhance efficiency */
 		  rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 #else /* !ENABLE_MPI */
@@ -1085,7 +1085,7 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
   printf("DEBUG: After all processing; Before barrier, prc_rnk %d\n",prc_rnk);
   if(prc_rnk == rnk_mgr){ /* Only Manager */
-    rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE|NC_SHARE,&out_id);
+    rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE,&out_id);
     printf("DEBUG: prc_rnk %d opened out file\n",prc_rnk);
 #endif /* !ENABLE_MPI */
     /* Manually fix YYMMDD date which was mangled by averaging */
@@ -1108,7 +1108,7 @@ main(int argc,char **argv)
     printf("DEBUG: prc_rnk %d got token for final write to %d\n",prc_rnk, out_id);
     if(prg == ncra || prg == ncea){
       /* Copy averages to output file and free averaging buffers */
-      rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE|NC_SHARE,&out_id);
+      rcd=nco_open(fl_out_tmp,NC_WRITE|NC_SHARE,&out_id);
       printf("DEBUG: prc_rnk %d opened output file for final write\n",prc_rnk);
       for(jdx=0;jdx<lcl_nbr_var;jdx++){
 	idx=lcl_idx_lst[jdx];
