@@ -1,3 +1,7 @@
+2005-09-30  Daniel Wang  <wangd@uci.edu>
+
+	* Branch mpncra.c to reorganize and understand nco593
+
 2005-09-29  Charlie Zender  <zender@uci.edu>
 
 	* Clean up mpncra.c by removing barriers, adding comments
