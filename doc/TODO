@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.630 2005-09-26 07:26:50 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.631 2005-10-03 23:54:17 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -116,7 +116,6 @@ nco176. Replace Bison, Flex components of ncap with smaller C++ parser?
 nco177. Make RPM production allowable by non-root, since building RPMs as sudo root screws up permissions in obj/bin directories of user
 nco179. Add netCDF to required packages list in RPM build?
 nco182. Add -L, --license switch to print license terms (as suggested by GNU coding style)
-nco187. Are OpenMP critical regions sufficient for netCDF or must all other threads stop completely?
 nco190. Make typ_pck et al. use nc_type enum or something sane for default
 nco192. ncdiff will sometimes subtract files of incommensurate sizes without complaint
         ncks -O -v one_dmn_rec_var -d time,0,1 in.nc foo1.nc
@@ -360,7 +359,8 @@ nco599. Allow targets to determine Makefile variables so, e.g., 'make mpi' autom
 nco605. ncpdq: speed up end of program by padding metadata intially?
 nco607. mpnc*: Define structures (rather than int arrays) for MPI messages
 nco609. Tune (or remove?) sleep interval in MPI operators
-nco611. 
+nco611. Expand threaded region in SMP codes to include file open()s
+nco612. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

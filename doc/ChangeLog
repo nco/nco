@@ -1,3 +1,7 @@
+2005-10-03  Charlie Zender  <zender@uci.edu>
+
+	* Add hooks to move ncra.c threading to embrace file opens
+
 2005-09-30  Daniel Wang  <wangd@uci.edu>
 
 	* Branch mpncra.c to reorganize and understand nco593

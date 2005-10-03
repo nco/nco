@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.156 2005-09-21 07:04:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.157 2005-10-03 23:54:17 zender Exp $ */
 
 /* ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.156 2005-09-21 07:04:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.156 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.157 2005-10-03 23:54:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.157 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
 
   dmn_sct **dim;
@@ -490,6 +490,13 @@ main(int argc,char **argv)
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
     if(dbg_lvl > 0) (void)fprintf(stderr,gettext("local file %s:\n"),fl_in);
+    /* 20051004 fxm: TODO nco611 */
+#undef PARALLELIZE_OVER_CL1
+#ifdef PARALLELIZE_OVER_CL1
+#pragma omp parallel for default(none) private(idx) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,in_id,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
+#endif /* !PARALLELIZE_OVER_CL1 */
+#ifdef _OPENMP
+#endif /* !_OPENMP */
     rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
     
     /* Variables may have different ID, missing_value, type, in each file */
@@ -511,8 +518,14 @@ main(int argc,char **argv)
 	if(fl_idx == fl_nbr-1 && idx_rec >= 1L+lmt_rec->end-lmt_rec->srd) LAST_RECORD=True;
 	/* Process all variables in current record */
 	if(dbg_lvl > 1) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
+	/* 20051004 fxm: TODO nco611 Operators were historically threaded in the variable loop rather than the record loop. However, buffer conflicts during reads make this not so great */
+#ifndef PARALLELIZE_OVER_CL1
+#define PARALLELIZE_OVER_CL2 1
+#endif /* PARALLELIZE_OVER_CL1 */
 #ifdef _OPENMP
+#ifdef PARALLELIZE_OVER_CL2
 #pragma omp parallel for default(none) private(idx) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,in_id,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
+#endif /* !PARALLELIZE_OVER_CL2 */
 #endif /* !_OPENMP */
 	for(idx=0;idx<nbr_var_prc;idx++){
 	  if(dbg_lvl > 2) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
