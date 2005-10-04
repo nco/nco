@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.100 2005-09-28 21:07:06 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.101 2005-10-04 16:35:55 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -179,7 +179,7 @@ if ($mpi_prc > 0 && $mpi_fke) {
 		$myif_ip = `/sbin/ifconfig |grep 'inet addr' |cut -d':' -f2 |cut -d' ' -f1 |grep -v '127.0.0.1' `; chomp $myif_ip;
 		dbg_msg(1,"\$localhostname = $localhostname\n\t     \$myhostname_ip = $myhostname_ip\n\t           \$myif_ip = $myif_ip ");
 		if ($myif_ip ne $myhostname_ip) {
-			print "WARN: Your interface IP # ($myif_ip) is different than your \nhostname IP number ($myhostname_ip) that is set in /etc/hosts.\nThe mpd (and maybe lamd) will timeout and fail unless they agree."
+			print "WARN: Your interface IP # ($myif_ip) is different than your \nhostname IP number ($myhostname_ip) that is set in /etc/hosts.\nThe mpd (and maybe lamd) may timeout and fail unless they agree.\n"
 		} else {dbg_msg(1,"Good!  Your interface IP # ($myif_ip) equals your \nhostname IP number ($myhostname_ip). mpd will be happy!")}
 
 	if (-e '/etc/lam/conf.lamd' && -r '/etc/lam/conf.lamd') {# if you've got a conf.lamd, maybe you're runnning LAM?
@@ -192,15 +192,17 @@ if ($mpi_prc > 0 && $mpi_fke) {
 			$lam_ok = 1;
 		}
 	}
-	if (-e '/etc/mpicc.conf' && -r '/etc/mpich') { # you might be using the mpich MPI system
-		my $mpd_usr = `ps aux |grep mpd | grep -v grep | cut -d' ' -f1`;
-		$mpd_usr =~ s/\n/ /;
+	my $mpd_usr = `ps aux |grep mpd | grep -v grep | cut -d' ' -f1`;
+	$mpd_usr =~ s/\n/ /;
+	if ($mpd_usr ne "") { # you might be using the mpich MPI system
+#		my $mpd_usr = `ps aux |grep mpd | grep -v grep | cut -d' ' -f1`;
+#		$mpd_usr =~ s/\n/ /;
 #		print "\n\n__ $mpd_usr __\n\n";
-		dbg_msg(2,"Testing for a running mpd: USER = [$ENV{'USER'}] and \$mpd_usr = [$mpd_usr]");
+		dbg_msg(2,"Testing for a correctly owned running mpd: USER = [$ENV{'USER'}] and \$mpd_usr = [$mpd_usr]");
 		if ( $mpd_usr !~ /$ENV{'USER'}/ )  {
 			print "\nWARN: You might be trying to run MPICH without a running mpd.\nIf the run fails, try running 'mpd &'\n\n";
 		} else {
-			dbg_msg(1,"OK! You seem to be using MPICH and at least one mpd seems to be owned by you");
+			dbg_msg(1,"OK! You seem to be using MPICH and at least one mpd seems to be owned by you.");
 			$mpich_ok = 1;
 		}
 	}
@@ -219,7 +221,7 @@ if (length($caseid) > 80) {die "\nThe caseid string is > 80 characters - please 
 if ($md5 == 1) {	do "nco_bm_md5wc_tbl.pl" or die "Can't find the validation data (nco_bm_md5wc_tbl.pl).\n";}
 
 $nco_D_flg = "-D $dbg_lvl";
-dbg_msg(1,"WARN: Using the --debug flag set to greater than 0 will cause the NCO commandline \n-D flag to be set tothe corresponding number as well, which will cause some of the \ntests to fail, as the output will be different also.\nIt is creently set to \$nco_D_flg = $nco_D_flg");
+dbg_msg(1,"WARN: Using the --debug flag set to greater than 0 will cause the NCO\n  commandline -D flag to be set to the corresponding number as well, which will cause\n  some of the tests to fail, as the output will be different also.\n  It is currently set to \$nco_D_flg = $nco_D_flg");
 
 # Determine where $DATA should be, prompt user if necessary
 if ($xdta_pth eq '') {
@@ -238,7 +240,7 @@ if ($xdta_pth eq '') {
 $fl_pth = "$dta_dir";
 
 # Initialize & set up some variables
-if($dbg_lvl > 0 ){printf ("$prg_nm: Calling initialize()...\n");}
+dbg_msg(3, "Calling initialize().");
 initialize($bch_flg,$dbg_lvl);
 
 # Use variables for file names in regressions; some of these could be collapsed into

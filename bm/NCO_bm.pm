@@ -14,7 +14,7 @@ package NCO_bm;
 #   smrz_rgr_rslt()......summarizes the results of both regression and benchmark tests
 #   check_nco_results()..checks the output via md5/wc validation
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.11 2005-09-28 21:07:06 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.12 2005-10-04 16:35:55 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -206,7 +206,7 @@ sub initialize($$){
 	else{
 # Set and verify MY_BIN_DIR
 		$MY_BIN_DIR=abs_path("../src/nco");
-		printf "ENV var 'MY_BIN_DIR' not specified, so using default\n";
+		dbg_msg(2, "ENV var 'MY_BIN_DIR' not specified, so using default [$MY_BIN_DIR].");
 #		if($bch_flg){
 #			die "unable to continue in batch mode without MY_BIN_DIR\n stopped\n";
 #		}else{ # !bch_flg
