@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.83 2005-09-21 20:04:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.84 2005-10-06 22:21:16 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -110,11 +110,30 @@ extern "C" {
   
 #endif /* MAIN_PROGRAM_FILE is NOT defined, i.e., the current file does not contain main() */
   
+  /* Define compatibility tokens when user does not have netCDF4 */
+#ifndef ENABLE_NETCDF4
+/* Single compatibility token new to netCDF4 netcdf.h */
+#define NC_NETCDF4     (0x1000) /* Use netCDF-4/HDF5 format */
+/* Four compatibility tokens from netCDF3.6 netcdf.h */
+#ifndef NC_FORMAT_CLASSIC
+# define NC_FORMAT_CLASSIC (1)
+#endif
+#ifndef NC_FORMAT_64BIT
+# define NC_FORMAT_64BIT   (2)
+#endif
+#ifndef NC_FORMAT_NETCDF4
+#define NC_FORMAT_NETCDF4 (3)
+#endif
+#ifndef NC_FORMAT_NETCDF4_CLASSIC
+#define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_STRICT_NC3. */
+#endif
+#endif /* !ENABLE_NETCDF4 */
+
 #ifndef EXIT_SUCCESS /* Most likely this is a SUN4 machine */
-#define EXIT_SUCCESS 0
+# define EXIT_SUCCESS 0
 #endif /* SUN4 */
 #ifndef EXIT_FAILURE /* Most likely this is a SUN4 machine */
-#define EXIT_FAILURE 1
+# define EXIT_FAILURE 1
 #endif /* SUN4 */
 
   enum prg{ /* [enm] Key value for all netCDF operators */

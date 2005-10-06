@@ -1,3 +1,10 @@
+2005-10-06  Charlie Zender  <zender@uci.edu>
+
+	* Add netCDF4 file writing capability to ncks
+	Compatibility tokens are in nco.h so netCDF3 libraries do not complain
+
+	* Change NETCDF4 to ENABLE_NETCDF4
+
 2005-10-03  Charlie Zender  <zender@uci.edu>
 
 	* Add hooks to move ncra.c threading to embrace file opens

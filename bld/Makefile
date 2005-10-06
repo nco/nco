@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.339 2005-09-29 20:25:17 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.340 2005-10-06 22:21:16 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -361,7 +361,8 @@ MDL_MAN := $(notdir ${MDL_MAN})
 MDL_MAN := $(addprefix ${MY_MAN_DIR}/,${MDL_MAN}) # distclean removes these files
 
 # Variables having to do with NCO build
-MDL_BLD_SRC := $(addprefix ${MY_BLD_DIR}/,libnco_tst.c libnco_c++_tst.cc Makefile nco.spec nco_dst.pl nco_tst.pl) # `make tags' includes these files
+MDL_BLD_SRC := $(addprefix ${MY_BLD_DIR}/,libnco_tst.c libnco_c++_tst.cc Makefile nco.spec nco_dst.pl) # `make tags' includes these files
+MDL_BLD_SRC += $(addprefix ${MY_BM_DIR}/,NCO_bm.pm NCO_rgr.pm nco_bm.pl nco_bm.sh) # `make tags' includes these files
 # Files, if any, to exclude from tags
 TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc
 
