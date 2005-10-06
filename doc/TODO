@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.631 2005-10-03 23:54:17 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.632 2005-10-06 04:07:02 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -360,7 +360,8 @@ nco605. ncpdq: speed up end of program by padding metadata intially?
 nco607. mpnc*: Define structures (rather than int arrays) for MPI messages
 nco609. Tune (or remove?) sleep interval in MPI operators
 nco611. Expand threaded region in SMP codes to include file open()s
-nco612. 
+nco612. ncks ncdump-like features for netcdf4 files structures
+nco613. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
@@ -533,7 +534,8 @@ bld45. Replace ENABLE_LARGEFILE with test for 64-bit offset support (i.e., netCD
 bld46. Is DAP_ROOT (or DODS_ROOT) an obsolete variable in DAP 3.5+? if so obsolete it in configure.in, nco.texi
 bld47. Add regression test for -Z capability
 bld50. Eliminate -D_POSIX_SOURCE on MAC OS X builds
-bld51. 
+bld51. Add --enable-netcdf4 configure option to NCO
+bld52. 
 ************************************************************************
 End bldXXX TODOs
 ************************************************************************
