@@ -1,6 +1,8 @@
 #!/usr/bin/env perl
+# the shebang line above may have to be set explicitly to /usr/local/bin/perl
+# on the esmf when running in the queue.  Otherwise it may not pick up the right perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.101 2005-10-04 16:35:55 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.102 2005-10-06 16:16:30 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -17,7 +19,7 @@
 # NB: when adding debugging messages, use dgb_msg(#,message);, where
 #	# = the debug level at which the message should be emitted (2 will be seen at --debug=2)
 #	message = a valid perl string to print. ie: "just before foo, \$blah = $blah"
-#		the sub will prifix the message with DEBUG[#] and take care of adding a newline
+#		the sub will prefix the message with DEBUG[#] and take care of adding a newline
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use Cwd 'abs_path';
