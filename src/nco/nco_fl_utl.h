@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.27 2005-10-06 22:21:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.28 2005-10-07 19:31:22 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -44,6 +44,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+int /* O [enm] Mode flag for nco_create() call */
+nco_create_mode_get /* [fnc] Merge clobber mode with user-specified file format */
+(const int clobber_mode, /* I [enm] Clobber mode (NC_CLOBBER or NC_NOCLOBBER) */
+ const int FL_OUT_FMT); /* I [enm] Output file format */
 
 void
 nco_fl_cmp_err_chk(void); /* [fnc] Perform error checking on file */
