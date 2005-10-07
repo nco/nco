@@ -1,5 +1,7 @@
 2005-10-07  Charlie Zender  <zender@uci.edu>
 
+	* Support netCDF4 in bld/Makefile
+
 	* nco_create_mode_prs() interprets user-specified file format
 
 	* nco_create_mode_mrg() merges clobber mode with user-specified file format
