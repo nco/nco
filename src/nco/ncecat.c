@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.107 2005-09-15 21:43:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.108 2005-10-07 20:29:45 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -66,7 +66,6 @@ main(int argc,char **argv)
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_APPEND=True; /* Option H */
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  bool FMT_64BIT=False; /* Option Z */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_IDX_CNV=False; /* Option F */
@@ -87,8 +86,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.107 2005-09-15 21:43:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.107 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.108 2005-10-07 20:29:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.108 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRv:xt:Z-:";
 
   dmn_sct *rec_dmn;
@@ -102,6 +101,7 @@ main(int argc,char **argv)
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
 
+  int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
   int fl_idx;
@@ -259,7 +259,7 @@ main(int argc,char **argv)
       EXCLUDE_INPUT_LIST=True;
       break;
     case 'Z': /* [flg] Create output file with 64-bit offsets */
-      FMT_64BIT=True;
+      fl_out_fmt=NC_FORMAT_NETCDF4; /* [enm] Output file format */
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
@@ -350,7 +350,7 @@ main(int argc,char **argv)
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* Open output file */
-  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FMT_64BIT,&out_id);
+  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
 
   /* Copy global attributes */
   (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);

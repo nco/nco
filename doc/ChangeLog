@@ -1,7 +1,8 @@
 2005-10-07  Charlie Zender  <zender@uci.edu>
 
-	* Add nco_create_mode_get() to merge clobber mode with
-	user-specified file format
+	* nco_create_mode_prs() interprets user-specified file format
+
+	* nco_create_mode_mrg() merges clobber mode with user-specified file format
 
 2005-10-06  Charlie Zender  <zender@uci.edu>
 

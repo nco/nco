@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.87 2005-09-15 21:43:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.88 2005-10-07 20:29:45 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -127,7 +127,6 @@ main(int argc,char **argv)
 
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  bool FMT_64BIT=False; /* Option Z */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
   bool HISTORY_APPEND=True; /* Option h */
@@ -145,8 +144,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.87 2005-09-15 21:43:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.87 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.88 2005-10-07 20:29:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.88 $";
   const char * const opt_sht_lst="4Aa:D:hl:Oo:p:RrZ-:";
   
   extern char *optarg;
@@ -154,6 +153,7 @@ main(int argc,char **argv)
   
   int abb_arg_nbr=0;
   int fl_nbr=0;
+  int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   int idx;
   int idx_var;
   int nbr_aed=0; /* Option a. NB: nbr_var_aed gets incremented */
@@ -254,7 +254,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_SUCCESS);
       break;
     case 'Z': /* [flg] Create output file with 64-bit offsets */
-      FMT_64BIT=True;
+      fl_out_fmt=NC_FORMAT_NETCDF4; /* [enm] Output file format */
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();

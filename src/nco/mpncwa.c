@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.20 2005-09-29 20:25:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.21 2005-10-07 20:29:45 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -86,7 +86,6 @@ main(int argc,char **argv)
   bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  bool FMT_64BIT=False; /* Option Z */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_IDX_CNV=False; /* Option F */
@@ -119,8 +118,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.20 2005-09-29 20:25:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.20 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.21 2005-10-07 20:29:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.21 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -141,6 +140,7 @@ main(int argc,char **argv)
   int dmn_avg_nbr=0;
   int fl_idx=int_CEWI;
   int fl_nbr=0;
+  int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
   int idx_avg;
@@ -396,7 +396,7 @@ main(int argc,char **argv)
       msk_sng=(char *)strdup(optarg);
       break;
     case 'Z': /* [flg] Create output file with 64-bit offsets */
-      FMT_64BIT=True;
+      fl_out_fmt=NC_FORMAT_NETCDF4; /* [enm] Output file format */
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
@@ -591,7 +591,7 @@ main(int argc,char **argv)
   if(prc_rnk == rnk_mgr){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
     /* Open output file */
-    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FMT_64BIT,&out_id);
+    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
     if(dbg_lvl > 4) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
     
     /* Copy all global attributes */

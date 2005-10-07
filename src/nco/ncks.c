@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.143 2005-10-06 22:21:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.144 2005-10-07 20:29:45 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -75,7 +75,6 @@ main(int argc,char **argv)
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  bool FL_OUT_FMT=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_IDX_CNV=False; /* Option F */
@@ -113,8 +112,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.143 2005-10-06 22:21:16 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.143 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.144 2005-10-07 20:29:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.144 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   extern char *optarg;
@@ -124,6 +123,7 @@ main(int argc,char **argv)
 
   int abb_arg_nbr=0;
   int fl_nbr=0;
+  int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int glb_att_nbr;
   int idx;
@@ -244,38 +244,19 @@ main(int argc,char **argv)
 	(void)fprintf(stdout,"%s\n",nco_cmp_get());
 	nco_exit(EXIT_SUCCESS);
       } /* endif "cmp" */
+      if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(opt_crr,&fl_out_fmt);
+      if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")) hdr_pad=strtoul(optarg,(char **)NULL,10);
       if(!strcmp(opt_crr,"mpi_implementation")){
 	(void)fprintf(stdout,"%s\n",nco_mpi_get());
 	nco_exit(EXIT_SUCCESS);
       } /* endif "mpi" */
-      if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")){
-	if(!strstr(opt_crr,"classic")){
-	  FL_OUT_FMT=NC_FORMAT_CLASSIC;
-	}else if(!strstr(opt_crr,"64bit")){
-	  FL_OUT_FMT=NC_FORMAT_64BIT;
-	}else if(!strstr(opt_crr,"netcdf4") || !strstr(opt_crr,"netcdf4_classic")){
-#ifdef ENABLE_NETCDF4
-	  if(!strstr(opt_crr,"netcdf4")){
-	    FL_OUT_FMT=NC_FORMAT_NETCDF4;
-	  }else if(!strstr(opt_crr,"netcdf4_classic")){
-	    FL_OUT_FMT=NC_FORMAT_NETCDF4_CLASSIC;
-	  } /* endif NETCDF4 */
-#else
-	  (void)fprintf(stderr,"%s: ERROR This NCO was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try without specifying file format, or specifying file_format as \"classic\" or \"64bit\".\n",prg_nm_get());
-#endif /* !ENABLE_NETCDF4 */
-	}else{
-	  (void)fprintf(stderr,"%s: ERROR Unknown output file format specified. Valid formats are \"classic\", \"64bit\", \"netcdf4\", and \"netcdf4_classic\".\n",prg_nm_get());
-	  nco_exit(EXIT_FAILURE);
-	} /* endif FL_OUT_FMT */
-      } /* endif "fl_fmt" */
-      if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")) hdr_pad=strtoul(optarg,(char **)NULL,10);
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
     case 0: /* Long options have already been processed, return */
       break;
     case '4': /* [flg] Output netCDF4/HDF storage format */
-      FL_OUT_FMT=NC_FORMAT_NETCDF4; /* [enm] Output file format */
+      fl_out_fmt=NC_FORMAT_NETCDF4; /* [enm] Output file format */
       break;
     case 'a': /* Toggle ALPHABETIZE_OUTPUT */
       ALPHABETIZE_OUTPUT=!ALPHABETIZE_OUTPUT;
@@ -367,7 +348,7 @@ main(int argc,char **argv)
       EXCLUDE_INPUT_LIST=True;
       break;
     case 'Z': /* [flg] Create output file with 64-bit offsets */
-      FL_OUT_FMT=NC_FORMAT_64BIT; /* [enm] Output file format */
+      fl_out_fmt=NC_FORMAT_64BIT; /* [enm] Output file format */
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
@@ -516,7 +497,7 @@ main(int argc,char **argv)
     int out_id;  
     
     /* Open output file */
-    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FL_OUT_FMT,&out_id);
+    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
     
     /* Copy global attributes */
     (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);

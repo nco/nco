@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.66 2005-10-07 19:31:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.67 2005-10-07 20:29:45 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -9,11 +9,11 @@
 #include "nco_fl_utl.h" /* File manipulation */
 
 int /* O [enm] Mode flag for nco_create() call */
-nco_create_mode_get /* [fnc] Merge clobber mode with user-specified file format */
+nco_create_mode_mrg /* [fnc] Merge clobber mode with user-specified file format */
 (const int clobber_mode, /* I [enm] Clobber mode (NC_CLOBBER or NC_NOCLOBBER) */
- const int FL_OUT_FMT) /* I [enm] Output file format */
+ const int fl_out_fmt) /* I [enm] Output file format */
 {
-  /* Purpose: Merge clobber mode with flag determined by FL_OUT_FMT 
+  /* Purpose: Merge clobber mode with flag determined by fl_out_fmt 
      to produce output mode flag 
      clobber_mode: Either NC_CLOBBER or NC_NOCLOBBER
      nccreate_mode: clobber_mode OR'd with (user-specified) file format mode */
@@ -21,21 +21,50 @@ nco_create_mode_get /* [fnc] Merge clobber mode with user-specified file format 
   int nccreate_mode; /* O [enm] Mode flag for nco_create() call */
 
   if(clobber_mode != NC_CLOBBER && clobber_mode != NC_NOCLOBBER){
-    (void)fprintf(stderr,"%s: ERROR nco_create_mode_get() received unknown clobber_mode\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR nco_create_mode_mrg() received unknown clobber_mode\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif */
 
   nccreate_mode=clobber_mode;
-  if(FL_OUT_FMT == NC_FORMAT_64BIT){
+  if(fl_out_fmt == NC_FORMAT_64BIT){
     nccreate_mode|=NC_64BIT_OFFSET;
-  }else if(FL_OUT_FMT == NC_FORMAT_NETCDF4){
+  }else if(fl_out_fmt == NC_FORMAT_NETCDF4){
     nccreate_mode|=NC_NETCDF4;
-  }else if(FL_OUT_FMT == NC_FORMAT_NETCDF4_CLASSIC){
+  }else if(fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     nccreate_mode|=NC_NETCDF4|NC_STRICT_NC3;
-  } /* end else FL_OUT_FMT */
+  } /* end else fl_out_fmt */
 
   return nccreate_mode;
-} /* end nco_create_mode_get() */
+} /* end nco_create_mode_mrg() */
+
+int /* [rcd] Return code */
+nco_create_mode_prs /* [fnc] Parse user-specified file format */
+(const char * const fl_fmt_sng, /* [sng] User-specified file format string */
+ int * const fl_fmt_enm) /* I [enm] Output file format */
+{
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  
+  if(!strstr(fl_fmt_sng,"classic")){
+    *fl_fmt_enm=NC_FORMAT_CLASSIC;
+  }else if(!strstr(fl_fmt_sng,"64bit")){
+    *fl_fmt_enm=NC_FORMAT_64BIT;
+  }else if(!strstr(fl_fmt_sng,"netcdf4") || !strstr(fl_fmt_sng,"netcdf4_classic")){
+#ifdef ENABLE_NETCDF4
+    if(!strstr(fl_fmt_sng,"netcdf4")){
+      *fl_fmt_enm=NC_FORMAT_NETCDF4;
+    }else if(!strstr(fl_fmt_sng,"netcdf4_classic")){
+      *fl_fmt_enm=NC_FORMAT_NETCDF4_CLASSIC;
+    } /* endif NETCDF4 */
+#else
+    (void)fprintf(stderr,"%s: ERROR This NCO was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try without specifying file format, or specifying file_format as \"classic\" or \"64bit\".\n",prg_nm_get());
+#endif /* !ENABLE_NETCDF4 */
+  }else{
+    (void)fprintf(stderr,"%s: ERROR Unknown output file format specified. Valid formats are \"classic\", \"64bit\", \"netcdf4\", and \"netcdf4_classic\".\n",prg_nm_get());
+    nco_exit(EXIT_FAILURE);
+  } /* endif fl_fmt_enm */
+  
+  return rcd; /* [rcd] Return code */
+} /* end nco_create_mode_prs() */
 
 void
 nco_fl_cmp_err_chk(void) /* [fnc] Perform error checking on file */
@@ -961,7 +990,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 (const char * const fl_out, /* I [sng] Name of file to open */
  const bool FORCE_APPEND, /* I [flg] Append to existing file, if any */
  const bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
- const int FL_OUT_FMT, /* I [enm] Output file format */
+ const int fl_out_fmt, /* I [enm] Output file format */
  int * const out_id) /* O [id] File ID */
 {
   /* Purpose: Open output file subject to availability and user input 
@@ -990,7 +1019,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   nccreate_mode=NC_CLOBBER; /* [enm] Mode flag for nco_create() call */
 
   /* [fnc] Merge clobber mode with user-specified file format */
-  nccreate_mode=nco_create_mode_get(nccreate_mode,FL_OUT_FMT);
+  nccreate_mode=nco_create_mode_mrg(nccreate_mode,fl_out_fmt);
 
   if(FORCE_OVERWRITE && FORCE_APPEND){
     (void)fprintf(stdout,"%s: ERROR FORCE_OVERWRITE and FORCE_APPEND are both set\n",prg_nm_get());
@@ -1151,7 +1180,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     
   }else{ /* Output file does not yet already exist */
     nccreate_mode=NC_NOCLOBBER;
-    nccreate_mode=nco_create_mode_get(nccreate_mode,FL_OUT_FMT);
+    nccreate_mode=nco_create_mode_mrg(nccreate_mode,fl_out_fmt);
     rcd=nco_create(fl_out_tmp,nccreate_mode,out_id);
     /*    rcd=nco_create(fl_out_tmp,nccreate_mode|NC_SHARE,out_id);*/
   } /* end if output file does not already exist */
