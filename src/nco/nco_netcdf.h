@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.25 2005-08-15 05:12:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.26 2005-10-07 20:32:46 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -27,12 +27,6 @@ extern "C" {
 #endif /* __cplusplus */
 
 /* Definitions */
-/* nco_fl_typ provides hooks for accessing non-netCDF files with nco_* routines
-   fxm: deprecate this in favor of new netCDF4 formats */
-enum nco_fl_typ{ /* [enm] File type */
-  nco_fl_typ_nc, /* 0, netCDF file */
-  nco_fl_typ_hd5 /* 1, HDF5 file */
-}; /* end nco_fl_typ enum */
 
 /* Begin Utility Routines */
 const char * /* O [sng] Native C type */

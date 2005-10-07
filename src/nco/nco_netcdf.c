@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.50 2005-08-15 05:12:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.51 2005-10-07 20:31:35 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -259,11 +259,6 @@ nco_create(const char * const fl_nm,const int cmode,int * const nc_id)
   if(fl_in_typ == nco_fl_typ_nc){
     rcd=nc_create(fl_nm,cmode,nc_id);
     if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
-#ifdef HDF5
-  }else if(fl_in_typ == nco_fl_typ_hdf5){
-    hid_t hdf_out; /* [hnd] HDF file handle */
-    hdf_out=H5Fcreate(fl_nm,H5F_ACC_TRUNC,H5P_DEFAULT,H5P_DEFAULT);
-#endif /* HDF5 */
   }else{
     (void)fprintf(stderr,"ERROR: %s reports unknown fl_typ = %d\n",fnc_nm,fl_in_typ);
     nco_err_exit(rcd,fnc_nm);
@@ -281,11 +276,6 @@ nco_open(const char * const fl_nm,const int mode,int * const nc_id)
   if(fl_in_typ == nco_fl_typ_nc){
     rcd=nc_open(fl_nm,mode,nc_id);
     if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
-#ifdef HDF5
-  }else if(fl_in_typ == nco_fl_typ_hdf5){
-    hid_t hdf_out; /* [hnd] HDF file handle */
-    hdf_out=H5Fopen(fl_nm,H5F_ACC_RDWR,H5P_DEFAULT);
-#endif /* HDF5 */
   }else{
     (void)fprintf(stderr,"ERROR: %s reports unknown fl_typ = %d\n",fnc_nm,fl_in_typ);
     nco_err_exit(rcd,fnc_nm);
@@ -370,11 +360,6 @@ nco_close(const int nc_id)
   if(fl_in_typ == nco_fl_typ_nc){
     rcd=nc_close(nc_id);
     if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
-#ifdef HDF5
-  }else if(fl_in_typ == nco_fl_typ_hdf5){
-    herr_t rcd_hdf; /* [enm] Return success code */
-    hdf_out=H5Fclose(nc_id);
-#endif /* HDF5 */
   }else{
     (void)fprintf(stderr,"ERROR: %s reports unknown fl_typ = %d\n",fnc_nm,fl_in_typ);
     nco_err_exit(rcd,fnc_nm);
