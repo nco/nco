@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.340 2005-10-06 22:21:16 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.341 2005-10-07 21:04:11 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -21,7 +21,7 @@
 # make THR_NBR=2 bm                  # OpenMP benchmarks
 # Test netCDF4:
 # sudo ln -s -f /usr/local/lib/libnetcdf4.a.gcc-g95 /usr/local/lib/libnetcdf.a
-# make USR_TKN=-DNETCDF4             # Pass user-defined tokens to CC & CPP
+# make NETCDF4=Y                     # netCDF4 options
 
 # Usage (Compilation):
 # cd ~/nco/bld;make;cd -             # Default build
@@ -87,9 +87,6 @@ endif
 ifndef GCC_RCH_ARG
  GCC_RCH_ARG :=
 endif # endif GCC_RCH_ARG
-ifndef HDF5
- HDF5 := N
-endif # endif HDF5
 ifndef ICC_RCH_ARG
  ICC_RCH_ARG :=
 endif # endif ICC_RCH_ARG
@@ -110,11 +107,20 @@ ifndef NCO_VRS
 # Used for RPM building
  NCO_VRS := $(shell cat ${MY_DOC_DIR}/VERSION)
 endif
+ifndef ${NETCDF4} # netCDF4 support
+ NETCDF4 := N
+endif # endif NETCDF4
+ifndef NETCDF_ROOT
+ NETCDF_ROOT := /usr/local
+endif
+ifndef NETCDF4_ROOT
+ NETCDF4_ROOT := ${NETCDF_ROOT}
+endif
 ifndef NETCDF_INC
- NETCDF_INC := /usr/local/include # Directory containing netcdf.h
+ NETCDF_INC := ${NETCDF_ROOT}/include # Directory containing netcdf.h
 endif
 ifndef NETCDF_LIB
- NETCDF_LIB := /usr/local/lib # Directory containing libnetcdf.a
+ NETCDF_LIB := ${NETCDF_ROOT}/lib # Directory containing libnetcdf.a
 endif
 ifndef ${OMP} # OpenMP
  OMP := Y
@@ -178,13 +184,6 @@ else # !DAP
  NC_LIBS := -lnetcdf 
 endif # end DAP
 
-ifeq (${HDF5},Y)
-# Build NCO using HDF5 netCDF interface
- HDF5_ROOT := /usr/local/hdf5
- NETCDF_INC := ${HDF5_ROOT}/include # Directory containing HDF5 version of netcdf.h
- NETCDF_LIB := ${HDF5_ROOT}/lib -lmfhdf -ldf -ljpeg -lz # Directory containing HDF5 version of libnetcdf.a routines, order of library linkage is significant
-endif # endif HDF5
-
 # Internationalize NCO with i18n features
 ifeq (${I18N},Y)
  MY_SHR_DIR := ${HOME}/share
@@ -208,6 +207,12 @@ ifdef MPI_PRC
 else # !MPI_PRC
  MPI_PRC_SNG :=
 endif # !MPI_PRC
+
+ifeq (${NETCDF4},Y)
+# Enable netCDF4 functionality
+ NETCDF_INC := ${NETCDF4_ROOT}/include # Directory containing NETCDF4 version of netcdf.h
+ NETCDF_LIB := ${NETCDF4_ROOT}/lib -lnetcdf -lhdf5 -lhdf5_hl # Directory containing NETCDF4 version of libnetcdf.a routines, order of library linkage is significant
+endif # endif NETCDF4
 
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
 # Decide among the plethora of Linux compilers
@@ -1187,12 +1192,10 @@ endif
 endif
 # endif I18N
 
-ifeq (${HDF5},Y)
- CPPFLAGS += -DHDF5
-# No need to link to libnetcdf.a since libmfhdf.a has all netCDF3 calls
- LDFLAGS := $(filter-out -lnetcdf,${LDFLAGS})
+ifeq (${NETCDF4},Y)
+ CPPFLAGS += -DENABLE_NETCDF4
 endif
-# endif HDF5
+# endif NETCDF4
 
 # Link to Electric Fence library, see man efence
 ifeq (${PVM_ARCH},LINUX)
@@ -1565,7 +1568,6 @@ dbg:
 	@printf "FC = ${FC}\n"
 	@printf "FFLAGS = ${FFLAGS}\n"
 	@printf "GCC_RCH_ARG = ${GCC_RCH_ARG}\n"
-	@printf "HDF5 = ${HDF5}\n"
 	@printf "HOST = ${HOST}\n"
 	@printf "ICC_RCH_ARG = ${ICC_RCH_ARG}\n"
 	@printf "LAMMPICC = ${LAMMPICC}\n"
@@ -1590,6 +1592,9 @@ dbg:
 	@printf "NCO_VRS = ${NCO_VRS}\n"
 	@printf "NC_LDFLAGS = $(NC_LDFLAGS)\n"
 	@printf "NC_LIBS = $(NC_LIBS)\n"
+	@printf "NETCDF4 = ${NETCDF4}\n"
+	@printf "NETCDF_ROOT = ${NETCDF_ROOT}\n"
+	@printf "NETCDF4_ROOT = ${NETCDF4_ROOT}\n"
 	@printf "NETCDF_INC = ${NETCDF_INC}\n"
 	@printf "NETCDF_LIB = ${NETCDF_LIB}\n"
 	@printf "OMP = ${OMP}\n"

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.67 2005-10-07 20:29:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.68 2005-10-07 21:04:11 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -44,7 +44,9 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
 {
   int rcd=NC_NOERR; /* [rcd] Return code */
   
-  if(!strstr(fl_fmt_sng,"classic")){
+  /* Careful! Some valid format strings are subsets of other valid format strings */
+  if(!strstr(fl_fmt_sng,"classic") && strstr(fl_fmt_sng,"netcdf4")){
+    /* If string contains "classic" but not "netcdf4" */
     *fl_fmt_enm=NC_FORMAT_CLASSIC;
   }else if(!strstr(fl_fmt_sng,"64bit")){
     *fl_fmt_enm=NC_FORMAT_64BIT;

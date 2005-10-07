@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.632 2005-10-06 04:07:02 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.633 2005-10-07 21:04:11 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -293,7 +293,7 @@ nco560. Change FTP access script to facilitate mget *?
 	mget *
 	quit
 	END
-nco563. Implement -4 switch to use netCDF4/HDF output format
+nco563. Implement -4 switch to use netCDF4/HDF output format?
 nco564. Implement -Z switch in ncatted?
 nco565. bm: Add ncatted bm to quantify nc__enddef() tuning improvements
 nco566. Implement -Z switch in ncrename?
@@ -361,7 +361,13 @@ nco607. mpnc*: Define structures (rather than int arrays) for MPI messages
 nco609. Tune (or remove?) sleep interval in MPI operators
 nco611. Expand threaded region in SMP codes to include file open()s
 nco612. ncks ncdump-like features for netcdf4 files structures
-nco613. 
+nco613. Test --fl_fmt switch for netCDF4 capability
+	ncks -O --fl_fmt=classic ~/nco/in.nc ~/foo_3c.nc # netCDF3 classic
+	ncks -O --fl_fmt=64bit ~/nco/in.nc ~/foo_3_64.nc # netCDF3 64bit
+	ncks -O --fl_fmt=netcdf4 ~/nco/in.nc ~/foo_4.nc # netCDF4 
+	ncks -O --fl_fmt=netcdf4_classic ~/nco/in.nc ~/foo_4c.nc # netCDF4 classic
+nco614. Re-think/merge/deprecate -Z/-4/-fl_fmt switches for netCDF4/HDF
+
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
