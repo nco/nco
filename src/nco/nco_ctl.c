@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.104 2005-09-16 05:54:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.105 2005-10-08 04:24:41 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -227,7 +227,7 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 #define TKN2YESNO(x) ((x+0) ? ("No"):("Yes"))
   /* Configuration option tokens must be consistent among configure.in, bld/Makefile, and nco_ctl.c
      Arrange tokens alphabetically by first word in English text description */
-  (void)fprintf(stderr,"Configuration Option:\tActive?\tMeaning or Reference:\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nMPI parallelization\t%s\thttp://nco.sf.net/nco.html#mpi (alpha)\nnetCDF 64-bit files\t%s\thttp://nco.sf.net/nco.html#lfs\nOPeNDAP/DODS clients\t%s\thttp://nco.sf.net/nco.html#dap\nOpenMP threading\t%s\thttp://nco.sf.net/nco.html#omp\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nShared libraries built\t%s\tSmall, dynamically linked executables\nStatic libraries built\t%s\tLarge executables with private namespaces\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#udunits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
+  (void)fprintf(stderr,"Configuration Option:\tActive?\tMeaning or Reference:\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nMPI parallelization\t%s\thttp://nco.sf.net/nco.html#mpi (alpha)\nnetCDF3 64-bit files\t%s\thttp://nco.sf.net/nco.html#lfs\nnetCDF4/HDF\t%s\thttp://nco.sf.net/nco.html#netcdf4\nOPeNDAP/DODS clients\t%s\thttp://nco.sf.net/nco.html#dap\nOpenMP SMP threading\t%s\thttp://nco.sf.net/nco.html#omp\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nShared libraries built\t%s\tSmall, dynamically linked executables\nStatic libraries built\t%s\tLarge executables with private namespaces\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#udunits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
 #if defined(ENABLE_DEBUG_CUSTOM) && (ENABLE_DEBUG_CUSTOM)
 		"Yes",
 #else /* !ENABLE_DEBUG_CUSTOM */
@@ -243,16 +243,21 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 #else /* !I18N */
 		"No",
 #endif /* !I18N */
-#if defined(NC_64BIT_OFFSET) && (NC_64BIT_OFFSET != 0)
-		"Yes",
-#else /* !NC_64BIT_OFFSET */
-		"No",
-#endif /* !NC_64BIT_OFFSET */
 #if defined(ENABLE_MPI) && (ENABLE_MPI)
 		"Yes",
 #else /* !ENABLE_MPI */
 		"No",
 #endif /* !ENABLE_MPI */
+#if defined(NC_64BIT_OFFSET) && (NC_64BIT_OFFSET)
+		"Yes",
+#else /* !NC_64BIT_OFFSET */
+		"No",
+#endif /* !NC_64BIT_OFFSET */
+#if defined(ENABLE_NETCDF4) && (ENABLE_NETCDF4)
+		"Yes",
+#else /* !ENABLE_NETCDF4 */
+		"No",
+#endif /* !ENABLE_NETCDF4 */
 #if defined(ENABLE_DAP) && (ENABLE_DAP)
 		"Yes",
 #else /* !ENABLE_DAP */

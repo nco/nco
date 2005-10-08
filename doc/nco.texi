@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.329 2005-09-20 23:51:26 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.330 2005-10-08 04:24:41 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2064,19 +2064,27 @@ netCDF supports four types of files: @code{CLASSIC}, @code{64BIT},
 @code{NETCDF4}, and @code{NETCDF4_CLASSIC}, 
 The @code{CLASSIC} format is the traditional 32-bit offset written by
 netCDF2 and netCDF3.
-As of 2005, the vast majority of netCDF data are stored in
-@code{CLASSIC} format. 
-The @code{64BIT} format was added in 2004.
+As of 2005, most netCDF datasets are in @code{CLASSIC} format. 
+The @code{64BIT} format was added in Fall, 2004.
 
 The @code{NETCDF4} format stores files in @acronym{HDF5} format,
 although the files are created, accessed, and manipulated using the 
-traditional netCDF3 @acronym{API} (with some extensions).
-The @code{NETCDF4_CLASSIC} format applies to files created with the
-@code{NC_STRICT_NC3} mask.
-@acronym{NCO} must be built with @w{netCDF4} to read or write files in 
-the new @code{NETCDF4} formats. 
-Users are advised to use the default classic format until 
-netCDF4 is more widespread.
+traditional netCDF3 @acronym{API} (with numerous extensions).
+The @code{NETCDF4_CLASSIC} format refers to netCDF4 files created with
+the @code{NC_STRICT_NC3} mask.
+Such files use @acronym{HDF5} as the back-end storage format (unlike
+netCDF3), and incorporate only netCDF3 features.
+Hence @code{NETCDF4_CLASSIC} files are perfectly readable by
+applications which use only the netCDF3 @acronym{API}.
+@acronym{NCO} must be built with @w{netCDF4} to write files in the new
+@code{NETCDF4} and @code{NETCDF4_CLASSIC} formats, and to read files in
+the new @code{NETCDF4} format. 
+Users are advised to use the default @code{CLASSIC} format or the
+@code{NETCDF4_CLASSIC} format until netCDF4 is more widespread.
+Widespread support for @code{NETCDF4} format files is not expected for a
+few years, 2007--2008, say.
+@code{NETCDF4_CLASSIC} format should give better performance than
+@code{CLASSIC} format files.
 
 All @acronym{NCO} operators write @code{CLASSIC} format files
 unless told otherwise.
