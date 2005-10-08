@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.635 2005-10-08 19:30:50 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.636 2005-10-08 20:04:33 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -362,9 +362,13 @@ nco611. Expand threaded region in SMP codes to include file open()s
 nco612. ncks ncdump-like features for netcdf4 files structures
 nco613. Test --fl_fmt switch for netCDF4 capability
 	ncks -O --fl_fmt=classic ~/nco/data/in.nc ~/foo_3c.nc # netCDF3 classic
-	ncks -O --fl_fmt=64bit ~/nco/data/in.nc ~/foo_3_64.nc # netCDF3 64bit
+	ncks -O --fl_fmt=64bit ~/nco/data/in.nc ~/foo_364.nc # netCDF3 64bit
 	ncks -O --fl_fmt=netcdf4 ~/nco/data/in.nc ~/foo_4.nc # netCDF4 
 	ncks -O --fl_fmt=netcdf4_classic ~/nco/data/in.nc ~/foo_4c.nc # netCDF4 classic
+	od -An -c -N4 ~/foo_3c.nc
+	od -An -c -N4 ~/foo_364.nc
+	od -An -c -N4 ~/foo_4.nc
+	od -An -c -N4 ~/foo_4c.nc
 nco614. Re-think/merge/deprecate -Z/-4/-fl_fmt switches for netCDF4/HDF
 nco615. netcdf4 causes ncpdq failure
 	ncpdq -O -D 0 -P all_new -v upk ~/nco/data/in.nc ~/foo.nc

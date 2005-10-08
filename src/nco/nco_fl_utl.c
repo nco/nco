@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.68 2005-10-07 21:04:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.69 2005-10-08 20:04:34 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -45,23 +45,26 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
   int rcd=NC_NOERR; /* [rcd] Return code */
   
   /* Careful! Some valid format strings are subsets of other valid format strings */
-  if(!strstr(fl_fmt_sng,"classic") && strstr(fl_fmt_sng,"netcdf4")){
-    /* If string contains "classic" but not "netcdf4" */
+  if(strstr("classic",fl_fmt_sng) && !strstr(fl_fmt_sng,"netcdf4")){
+    /* If "classic" contains string and string does not contain "netcdf4" */
     *fl_fmt_enm=NC_FORMAT_CLASSIC;
-  }else if(!strstr(fl_fmt_sng,"64bit")){
+  }else if(strstr("64bit",fl_fmt_sng)){
+    /* If "64bit" contains string */
     *fl_fmt_enm=NC_FORMAT_64BIT;
-  }else if(!strstr(fl_fmt_sng,"netcdf4") || !strstr(fl_fmt_sng,"netcdf4_classic")){
+  }else if(strstr(fl_fmt_sng,"netcdf4")){
 #ifdef ENABLE_NETCDF4
-    if(!strstr(fl_fmt_sng,"netcdf4")){
+    if(strstr("netcdf4",fl_fmt_sng)){
+      /* If "netcdf4" contains string */
       *fl_fmt_enm=NC_FORMAT_NETCDF4;
-    }else if(!strstr(fl_fmt_sng,"netcdf4_classic")){
+    }else if(strstr("netcdf4_classic",fl_fmt_sng)){
+      /* If "netcdf4_classic" contains string */
       *fl_fmt_enm=NC_FORMAT_NETCDF4_CLASSIC;
     } /* endif NETCDF4 */
 #else
     (void)fprintf(stderr,"%s: ERROR This NCO was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try without specifying file format, or specifying file_format as \"classic\" or \"64bit\".\n",prg_nm_get());
 #endif /* !ENABLE_NETCDF4 */
   }else{
-    (void)fprintf(stderr,"%s: ERROR Unknown output file format specified. Valid formats are \"classic\", \"64bit\", \"netcdf4\", and \"netcdf4_classic\".\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR Unknown output file format \"%s\" requested. Valid formats are (unambiguous leading characters of) \"classic\", \"64bit\", \"netcdf4\", and \"netcdf4_classic\".\n",prg_nm_get(),fl_fmt_sng);
     nco_exit(EXIT_FAILURE);
   } /* endif fl_fmt_enm */
   
