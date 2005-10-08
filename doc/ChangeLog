@@ -1,6 +1,6 @@
 2005-10-08  Charlie Zender  <zender@uci.edu>
 
-	* netCDF4 causes a regression in ncpdq packing/unpacking
+	* netCDF4 causes a regression in ncpdq packing/unpacking TODO nco615
 
 2005-10-07  Charlie Zender  <zender@uci.edu>
 
