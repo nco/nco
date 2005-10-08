@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.342 2005-10-08 04:47:02 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.343 2005-10-08 19:30:49 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -154,6 +154,10 @@ endif # endif VRS_SNG
 # NB: CPP_TKN is recursively expanded variable, define only when components are ready
 CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
 
+# Default NCO build. May be overwritten by DAP and NETCDF4 clauses
+NC_LDFLAGS := -L${NETCDF_LIB}
+NC_LIBS := -lnetcdf 
+
 ifeq (${DAP},Y)
 # Build NCO as DAP-enabled clients
 # fxm: OPeNDAP bloats executables, should automagically enable stripping?
@@ -174,10 +178,6 @@ endif # DAP_ROOT
 # Get netCDF from OPeNDAP version
  NETCDF_INC=${DAP_ROOT}/include/libnc-dap
  NETCDF_LIB=${DAP_ROOT}/lib
-else # !DAP
-# Build NCO straight, without DAP
- NC_LDFLAGS := -L${NETCDF_LIB}
- NC_LIBS := -lnetcdf 
 endif # end DAP
 
 # Internationalize NCO with i18n features
@@ -207,7 +207,9 @@ endif # !MPI_PRC
 ifeq (${NETCDF4},Y)
 # Enable netCDF4 functionality
  NETCDF_INC := ${NETCDF4_ROOT}/include
- NETCDF_LIB := ${NETCDF4_ROOT}/lib -lnetcdf -lhdf5 -lhdf5_hl
+ NETCDF_LIB := ${NETCDF4_ROOT}/lib
+ NC_LDFLAGS := -L${NETCDF_LIB}
+ NC_LIBS := -lnetcdf -lhdf5 -lhdf5_hl
 endif # endif NETCDF4
 
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.634 2005-10-07 22:54:01 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.635 2005-10-08 19:30:50 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -293,7 +293,6 @@ nco560. Change FTP access script to facilitate mget *?
 	mget *
 	quit
 	END
-nco563. Implement -4 switch to use netCDF4/HDF output format?
 nco564. Implement -Z switch in ncatted?
 nco565. bm: Add ncatted bm to quantify nc__enddef() tuning improvements
 nco566. Implement -Z switch in ncrename?
@@ -367,7 +366,11 @@ nco613. Test --fl_fmt switch for netCDF4 capability
 	ncks -O --fl_fmt=netcdf4 ~/nco/data/in.nc ~/foo_4.nc # netCDF4 
 	ncks -O --fl_fmt=netcdf4_classic ~/nco/data/in.nc ~/foo_4c.nc # netCDF4 classic
 nco614. Re-think/merge/deprecate -Z/-4/-fl_fmt switches for netCDF4/HDF
-
+nco615. netcdf4 causes ncpdq failure
+	ncpdq -O -D 0 -P all_new -v upk ~/nco/data/in.nc ~/foo.nc
+	ncpdq -O -D 0 -P upk -v upk ~/foo.nc ~/foo.nc
+	ncks -C -H -s '%g' -v upk ~/foo.nc
+        ERR::EXPLAIN: Result: [0] != Expected: [3]
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
@@ -532,7 +535,7 @@ bld39. Fix autoconf build warnings (from including ncap_yacc in ncwa?):
        Makefile:472: warning: overriding commands for target `ncap_yacc.h'
        Makefile:440: warning: ignoring old commands for target `ncap_yacc.h'
 bld40. Automate splicing trailer ~/nco/doc/man_end.txt to man pages
-bld41.Add configure check for libssl functionality, if not found (Fedora) to explicitly adding libssl
+bld41. Add configure check for libssl functionality, if not found (Fedora) to explicitly adding libssl
 bld42. Adopt orphaned Debian NCO http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=273322
 bld43. Implement Martin Schmidt's suggestion for AIX autoconf builds posted to developer's forum 20050201: {$CC} is not tested for xlc* but for (arbitrary_path/xlc*)
 bld44. Add support for autopackage format? http://www.wildgardenseed.com/apkg/
@@ -540,8 +543,9 @@ bld45. Replace ENABLE_LARGEFILE with test for 64-bit offset support (i.e., netCD
 bld46. Is DAP_ROOT (or DODS_ROOT) an obsolete variable in DAP 3.5+? if so obsolete it in configure.in, nco.texi
 bld47. Add regression test for -Z capability
 bld50. Eliminate -D_POSIX_SOURCE on MAC OS X builds
-bld51. Add --enable-netcdf4 configure option to NCO
-bld52. 
+bld51. hjm Add --enable-netcdf4 configure option to NCO
+bld52. hjm Add --enable-mpi configure option to NCO
+bld53. 
 ************************************************************************
 End bldXXX TODOs
 ************************************************************************
