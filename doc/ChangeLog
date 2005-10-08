@@ -1,5 +1,7 @@
 2005-10-07  Charlie Zender  <zender@uci.edu>
 
+	* Remove USE_FORTRAN_ARITHMETIC from bld/Makefile
+
 	* Support netCDF4 in bld/Makefile
 
 	* nco_create_mode_prs() interprets user-specified file format

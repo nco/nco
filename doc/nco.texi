@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.330 2005-10-08 04:24:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.331 2005-10-08 04:47:03 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2083,17 +2083,17 @@ Users are advised to use the default @code{CLASSIC} format or the
 @code{NETCDF4_CLASSIC} format until netCDF4 is more widespread.
 Widespread support for @code{NETCDF4} format files is not expected for a
 few years, 2007--2008, say.
-@code{NETCDF4_CLASSIC} format should give better performance than
-@code{CLASSIC} format files.
+If performance or coolness are issues, then use @code{NETCDF4_CLASSIC}  
+instead of @code{CLASSIC} format files.
 
-All @acronym{NCO} operators write @code{CLASSIC} format files
-unless told otherwise.
+All @acronym{NCO} operators write @code{CLASSIC} format files by
+default. 
 If the user toggles the @samp{-Z} switch (or its long option equivalents 
-@samp{--hdf}, @samp{--netcdf4}), then @acronym{NCO} will create a
-@code{64BIT} output file.
+@samp{--hdf}, @samp{--netcdf4}), then @acronym{NCO} creates a
+@code{64BIT}-format output file.
 If the user toggles the @samp{-4} switch (or its long option equivalents
 @samp{--hdf}, @samp{--netcdf4}), then @acronym{NCO} will create a
-@code{NETCDF4} output file.
+@code{NETCDF4}-format output file.
 
 @html
 <a name="cmd_ln"></a> <!-- http://nco.sf.net/nco.html#cmd_ln -->

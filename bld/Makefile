@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.341 2005-10-07 21:04:11 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.342 2005-10-08 04:47:02 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -21,7 +21,7 @@
 # make THR_NBR=2 bm                  # OpenMP benchmarks
 # Test netCDF4:
 # sudo ln -s -f /usr/local/lib/libnetcdf4.a.gcc-g95 /usr/local/lib/libnetcdf.a
-# make NETCDF4=Y                     # netCDF4 options
+# make NETCDF4=Y                     # netCDF4 features
 
 # Usage (Compilation):
 # cd ~/nco/bld;make;cd -             # Default build
@@ -142,10 +142,6 @@ endif
 ifndef UNAMES
  UNAMES := $(shell uname -s)
 endif
-ifndef USE_FORTRAN_ARITHMETIC
-# Whether or not to use Fortran arithmetic routines (feature deprecated in 2001)
- USE_FORTRAN_ARITHMETIC := N
-endif
 ifndef USR_TKN
  USR_TKN :=
 endif # endif USR_TKN
@@ -210,8 +206,8 @@ endif # !MPI_PRC
 
 ifeq (${NETCDF4},Y)
 # Enable netCDF4 functionality
- NETCDF_INC := ${NETCDF4_ROOT}/include # Directory containing NETCDF4 version of netcdf.h
- NETCDF_LIB := ${NETCDF4_ROOT}/lib -lnetcdf -lhdf5 -lhdf5_hl # Directory containing NETCDF4 version of libnetcdf.a routines, order of library linkage is significant
+ NETCDF_INC := ${NETCDF4_ROOT}/include
+ NETCDF_LIB := ${NETCDF4_ROOT}/lib -lnetcdf -lhdf5 -lhdf5_hl
 endif # endif NETCDF4
 
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
@@ -279,7 +275,7 @@ ifneq (${UDUNITS_INC},${NETCDF_INC})
 endif # end 
 ifneq (${UDUNITS_LIB},${NETCDF_LIB})
  NC_LDFLAGS += -L${UDUNITS_LIB}
-endif # end 
+endif # end if
  NC_LIBS += -ludunits
 endif # end if UDUNITS
 
@@ -308,12 +304,8 @@ MY_DPN_DIR_RX := $(subst ${slash},${slash_rx},${MY_DPN_DIR})
 
 # Directories to search for source files
 MDL_PTH := ./ ${MY_SRC_DIR}
-# Find all C++, C, and Fortran files in a given directory
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- FIND_FNC = $(wildcard ${dir}/*.cc ${dir}/*.c ${dir}/*.F) # Compile Fortran only if necessary
-else
- FIND_FNC = $(wildcard ${dir}/*.cc ${dir}/*.c)
-endif
+# Find all C and C++ files in given directory
+FIND_FNC = $(wildcard ${dir}/*.cc ${dir}/*.c)
 # Assemble source files from all directories
 SRC_LST = $(foreach dir, ${MDL_PTH},$(FIND_FNC))
 # Source file names with directories removed
@@ -595,9 +587,6 @@ FIXEDFLAGS := -extend_source ${OMP_FLG} -automatic
 FREEFLAGS := -DHIDE_SHR_MSG -free
 LD := ld
 LDFLAGS += ${OMP_FLG} ${TMP_LDFLAGS} ${TMP_LIBS} -lm
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS +=
-endif
 LEX := flex
 LINT := lint
 YACC := bison
@@ -632,9 +621,6 @@ FC := f90
 FFLAGS := -N 132 -F -dp
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS += -L/lib -lf
-endif
 LEX := flex
 LINT := lint
 YACC := bison
@@ -668,10 +654,7 @@ CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f77
 LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lnsl -lm
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS += -lF77 -lM77
-endif
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lnsl -lm
 LDFLAGS += 
 LEX := flex
 LINT := lint
@@ -702,9 +685,6 @@ CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := ${LINUX_FC}
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS +=
-endif
 LEX := flex
 LINT := lint
 YACC := bison
@@ -959,9 +939,6 @@ CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
-# LDFLAGS += -L/lib -lf
-endif
 LEX := flex
 LINT := lint
 YACC := bison
@@ -993,9 +970,6 @@ CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := xlf
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS += -lxlf90 -lxlf
-endif
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1098,10 +1072,6 @@ endif
 ifeq (${OPTS},X)
  FFLAGS := ${SGI_ABI_FLG} -g -extend_source -check_bounds -trapuv
 endif
-# 1998/08/20: Using range checking results in unresolved symbol errors unless linking to this library
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS += -L/usr/lib64 -lftn
-endif
 # end fortran flags
 endif
 # endif SGI6, SGI64, SGIMP64
@@ -1149,9 +1119,6 @@ CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := g77
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS +=
-endif
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1167,10 +1134,6 @@ ${MY_OBJ_DIR}/%.o : %.f
 	${FC} -c ${FFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
 endif
 # endif WIN32
-
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- CPPFLAGS += -DUSE_FORTRAN_ARITHMETIC
-endif
 
 # Link to DAP libraries first, see OPeNDAP User's Guide
 # Currently this is invoked by using 'make DAP=Y'
@@ -1584,19 +1547,21 @@ dbg:
 	@printf "MDL_RPM_NST_NM = ${MDL_RPM_NST_NM}\n"
 	@printf "MDL_SRC = ${MDL_SRC}\n"
 	@printf "MPICC = ${MPICC}\n"
-	@printf "MPICXX = ${MPICXX}\n"
 	@printf "MPICH_CC = ${MPICH_CC}\n"
 	@printf "MPICH_CXX = ${MPICH_CXX}\n"
+	@printf "MPICXX = ${MPICXX}\n"
 	@printf "MPI_PRC = ${MPI_PRC}\n"
 	@printf "MPI_PRC_SNG = ${MPI_PRC_SNG}\n"
+	@printf "NCO_LDFLAGS = $(NCO_LDFLAGS)\n"
+	@printf "NCO_LIBS = $(NCO_LIBS)\n"
 	@printf "NCO_VRS = ${NCO_VRS}\n"
 	@printf "NC_LDFLAGS = $(NC_LDFLAGS)\n"
 	@printf "NC_LIBS = $(NC_LIBS)\n"
 	@printf "NETCDF4 = ${NETCDF4}\n"
-	@printf "NETCDF_ROOT = ${NETCDF_ROOT}\n"
 	@printf "NETCDF4_ROOT = ${NETCDF4_ROOT}\n"
 	@printf "NETCDF_INC = ${NETCDF_INC}\n"
 	@printf "NETCDF_LIB = ${NETCDF_LIB}\n"
+	@printf "NETCDF_ROOT = ${NETCDF_ROOT}\n"
 	@printf "OMP = ${OMP}\n"
 	@printf "PVM_ARCH = ${PVM_ARCH}\n"
 	@printf "RPM = ${RPM}\n"
@@ -1604,12 +1569,11 @@ dbg:
 	@printf "STC = ${STC}\n"
 	@printf "THR_NBR = ${THR_NBR}\n"
 	@printf "THR_NBR_SNG = ${THR_NBR_SNG}\n"
-	@printf "TMP_LDFLAGS = $(TMP_LDFLAGS)\n"
-	@printf "TMP_LIBS = $(TMP_LIBS)\n"
+	@printf "TMP_LDFLAGS = ${TMP_LDFLAGS}\n"
+	@printf "TMP_LIBS = ${TMP_LIBS}\n"
 	@printf "UDUNITS = $(UDUNITS)\n"
 	@printf "UDUNITS_INC = $(UDUNITS_INC)\n"
 	@printf "UDUNITS_LIB = $(UDUNITS_LIB)\n"
-	@printf "USE_FORTRAN_ARITHMETIC = $(USE_FORTRAN_ARITHMETIC)\n"
 	@printf "VPATH = ${VPATH}\n"
 	@printf "VRS_SNG = ${VRS_SNG}\n"
 	@printf "YACC = ${YACC}\n"
