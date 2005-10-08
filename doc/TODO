@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.636 2005-10-08 20:04:33 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.637 2005-10-08 20:05:57 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -549,7 +549,8 @@ bld47. Add regression test for -Z capability
 bld50. Eliminate -D_POSIX_SOURCE on MAC OS X builds
 bld51. hjm Add --enable-netcdf4 configure option to NCO
 bld52. hjm Add --enable-mpi configure option to NCO
-bld53. 
+bld53. hjm Add --fl_fmt option to nco_bm.pl (to invoke netCDF4...)
+bld54. 
 ************************************************************************
 End bldXXX TODOs
 ************************************************************************
