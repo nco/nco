@@ -1,56 +1,38 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.157 2005-08-23 07:01:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.158 2005-10-11 16:37:09 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.0.2 are ready. 
+The netCDF operators NCO version 3.1.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Version 3.0.2 contains a sprinkling of internal changes (build,
+Version 3.1.0 contains many internal changes (build,
 benchmarking, memory usage, and documentation improvements),
 new I/O features, and convenience routines for IPCC processing.
 
-1. OpenMP: Only one critical region remains in netCDF reads
+1. OpenMP: No more critical regions in netCDF reads.
+   This improves performance on multi-CPU nodes and over OPeNDAP
 
-2. Benchmarks (Harry Mangalam): Work with OPeNDAP, MPI
+2. MPI builds (Harry Mangalam): Support configure --enable-mpi
 
-3. ncap (Henry Butowsky): Improved memory efficiency
+3. MPI: MPI-enabled operators have ZKB (zero-known bugs)!
+   Builds them with 'cd ~/nco/bld;make MPI=Y' and run them with mpirun! 
 
-4. MPI (Gayathri Venkitachalam): Beta-version MPI-enabled operators
-   mpncflint, mpncecat, mpncwa, mpncpdq, mpncra, mpncrcat, mpncea
-   Build them with 'cd ~/nco/bld;make MPI=Y' and run them with mpirun! 
+4. netCDF4 builds (Harry Mangalam): Support configure --enable-netcdf4
 
-5. OPeNDAP (Harry Mangalam and James Gallagher): 
-   Makefiles support OPeNDAP version 3.5.0+ by default
-   doc/opendap.sh demonstrates installing OPeNDAP netCDF client library
+5. netCDF4: New options -4,--fl_fmt,--netcdf4 for file format
+   NB: The -Z switch has been replaced by --64!
+   See http://nco.sf.net/nco.html#netcdf4 for more info
 
 6. Compiler support: Intel icc and icpc 8.1 and 9.0 are fully
    supported on x86 and x86_64 architectures
 
-7. Support secure FTP (SFTP) access, e.g.,
-   ncks -l ./ sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco/in.nc
-   See http://nco.sf.net/nco.html#sftp for more info
+7. Support HTML access when OPeNDAP not installed, e.g.,
+   ncks -l ./ http://dust.ess.uci.edu/nco/in.nc
+   See http://nco.sf.net/nco.html#html for more info
 
-8. FTP file access uses .netrc file, if present, for passwords
-   (useful for Earth System Grid access)
-   See http://nco.sf.net/nco.html#ftp for more info
+11. ncflint works better with incommensurate files (fxm)
 
-9. Enhance CF-1.0 Convention support by adding various fields to 
-   "do not touch" grid property list including: area, [lat,lon]_bnds,
-   msk_* 
-
-10. Add --hdr/--header option to ncks to pad output file header
-    This improves I/O on files requiring multiple metadata changes
-    See http://nco.sf.net/nco.html#hdr for more info
-
-11. ncbo works better with incommensurate files
-
-12. Preliminary IPCC dataset data reduction chapter in manual
-
-One bugfix in 3.0.2: Certain ncatted invocations failed on Fedora due
-to a double-free() error caught by Fedora's security-harded glibc. 
-
-Future: The next release (3.1) will concentrate on MPI-enabled NCO.
-I keep saying that, so don't hold your breath.
+12. IPCC dataset data reduction chapter in manual is more extensive
 
 Enjoy,
 Charlie

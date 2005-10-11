@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.638 2005-10-11 02:53:36 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.639 2005-10-11 16:37:09 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -293,9 +293,9 @@ nco560. Change FTP access script to facilitate mget *?
 	mget *
 	quit
 	END
-nco564. Implement -Z switch in ncatted?
+nco564. Implement --64bit switch in ncatted?
 nco565. bm: Add ncatted bm to quantify nc__enddef() tuning improvements
-nco566. Implement -Z switch in ncrename?
+nco566. Implement --64bit switch in ncrename?
 nco567. Add option to turn off default-creation of .tmp file?
 nco568. bm: test NC_SHARE in ncatted/ncrename?
 nco569. bm: Add SRB test
@@ -307,7 +307,7 @@ nco569. bm: Add SRB test
         Sput ~/nco/data/in.nc nco/data
         Sget nco/data/in.nc
 nco570. Merge ncatted/ncrename file opens into nco_fl_out_open()
-nco573. Consolidate -4, -Z into one option a la ncks --fl_fmt
+nco573. Consolidate -4, --64bit into one option a la ncks --fl_fmt
 nco575. Add --hdr/--header options to syntax in nco_ctl.c and nco.texi
         How to do this for options without short counterparts?
         Also --cmp/--compiler for ncks
@@ -360,24 +360,14 @@ nco607. mpnc*: Define structures (rather than int arrays) for MPI messages
 nco609. Tune (or remove?) sleep interval in MPI operators
 nco611. Expand threaded region in SMP codes to include file open()s
 nco612. ncks ncdump-like features for netcdf4 files structures
-nco613. Test --fl_fmt switch for netCDF4 capability
-	ncks -O --fl_fmt=classic ~/nco/data/in.nc ~/foo_3c.nc # netCDF3 classic
-	ncks -O --fl_fmt=64bit ~/nco/data/in.nc ~/foo_364.nc # netCDF3 64bit
-	ncks -O --fl_fmt=netcdf4 ~/nco/data/in.nc ~/foo_4.nc # netCDF4 
-	ncks -O --fl_fmt=netcdf4_classic ~/nco/data/in.nc ~/foo_4c.nc # netCDF4 classic
-	od -An -c -N4 ~/foo_3c.nc
-	od -An -c -N4 ~/foo_364.nc
-	od -An -c -N4 ~/foo_4.nc
-	od -An -c -N4 ~/foo_4c.nc
 nco614. Re-think/merge/deprecate -Z/-4/-fl_fmt switches for netCDF4/HDF
-nco615. ncpdq regression?
-	ncpdq -O -D 0 -P all_new -v upk ~/nco/data/in.nc ~/foo.nc
-	ncpdq -O -D 0 -P upk -v upk ~/foo.nc ~/foo.nc
-	ncks -C -H -s '%g' -v upk ~/foo.nc
-        ERR::EXPLAIN: Result: [0] != Expected: [3]
-nco614. Remove assumption that type_id is proxy for precision (breaks in netCDF4)
-nco615. Document od results for netCDF4
-nco616. 
+nco616. Remove assumption that type_id is proxy for precision (breaks in netCDF4)
+nco617. Document od results for netCDF4
+nco618. XML data discovery on NCAR CDP via Luca Cinquini protocol?
+nco619. Send Russ Rew 1-2 MB IPCC dataset
+nco620. Document fl_fmt arugments in nco.texi
+nco621. Replace -Z with --64bit in source/documentation
+nco622. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
@@ -548,7 +538,7 @@ bld43. Implement Martin Schmidt's suggestion for AIX autoconf builds posted to d
 bld44. Add support for autopackage format? http://www.wildgardenseed.com/apkg/
 bld45. Replace ENABLE_LARGEFILE with test for 64-bit offset support (i.e., netCDF 3.6) in configure.in and nco_ctl.c
 bld46. Is DAP_ROOT (or DODS_ROOT) an obsolete variable in DAP 3.5+? if so obsolete it in configure.in, nco.texi
-bld47. Add regression test for -Z capability
+bld47. Add regression test for 64bit file format capability
 bld50. Eliminate -D_POSIX_SOURCE on MAC OS X builds
 bld51. hjm Add --enable-mpi configure option
 bld52. hjm Add --enable-netcdf4 configure option
@@ -557,11 +547,15 @@ bld54. hjm Version/date-stamp benchmarks
 bld55. hjm Add benchmarks to homepage
 bld56. hjm Zero time axis on benchmarks
 bld57. hjm Compute regression to get "exact" scaling, add to plots
-bld58. hjm Re-run benchmarks with netCDF4, compare to netCDF3
+bld58. hjm Run benchmarks with netCDF4, compare to netCDF3
 bld59. hjm Add THREDDS DAP server to sand
 bld60. hjm Benchmark THREDDS vs. Opendap
-bld61. 
-
+bld61. hjm Verify netCDF4 benchmarks work for Ed Hartnett
+bld62. hjm Make regressions fail when input file not created but re-used from previous test (remove false negatives)
+bld63. hjm Install OpenDAP at UCSD
+bld64. hjm Benchmark ESMF->UCSD over OpenDAP
+bld65. stromberg Install DAP (THREDDS if necessary) on ESMF UCI
+bld66. 
 ************************************************************************
 End bldXXX TODOs
 ************************************************************************

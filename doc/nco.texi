@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.331 2005-10-08 04:47:03 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.332 2005-10-11 16:37:09 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2013,12 +2013,14 @@ The netCDF large file support FAQ at
 @uref{http://my.unidata.ucar.edu/content/software/netcdf/faq-lfs.html}
 describes the various file size limitations imposed by different
 versions of the netCDF standard.
-To discover whether a netCDF file is a classic (32-bit offset) format
-or newer 64-bit offset file format file, examine it with the 
-(octal dump) command.
+To discover whether a netCDF file is a classic (32-bit offset) 
+or newer 64-bit offset netCDF3 format, or is netCDF4 format, examine it 
+with the (octal dump) command.
 @cindex @command{od} 
 @cindex octal dump
-@cindex classic files format
+@cindex netCDF3 classic file format
+@cindex netCDF4 classic file format
+@cindex netCDF4 file format
 @cindex 32-bit offset file format
 @cindex 64-bit offset file format
 @example
@@ -2026,15 +2028,16 @@ or newer 64-bit offset file format file, examine it with the
    C   D   F 001
 @end example
 Values of @samp{C D F 001} and @samp{C D F 002} indicate 32-bit
-(classic) and 64-bit formats, respectively.
+(classic) and 64-bit netCDF3 formats, respectively, while values of
+@samp{211 H D F} indicate the newer netCDF4 file format.
 
 All operators write classic (32-bit offset) format files unless
 told otherwise by toggling the @samp{-Z} switch (or its long option
 equivalent @samp{--64-bit-offset}). 
 @acronym{NCO} must be built with @w{netCDF 3.6} or higher to honor  
 64-bit offset file formats. 
-Users are advised to use the default classic format until 
-@w{netCDF 3.6} is more widespread.
+Casual users are advised to use the default netCDF3 classic format until  
+@w{netCDF 3.6} and @w{netCDF 4.0} are more widespread.
 
 @html
 <a name="hdf"></a> <!-- http://nco.sf.net/nco.html#hdf -->
@@ -2088,12 +2091,37 @@ instead of @code{CLASSIC} format files.
 
 All @acronym{NCO} operators write @code{CLASSIC} format files by
 default. 
-If the user toggles the @samp{-Z} switch (or its long option equivalents 
+If the user toggles the @samp{-Z} switch (or its long option equivalents
 @samp{--hdf}, @samp{--netcdf4}), then @acronym{NCO} creates a
 @code{64BIT}-format output file.
 If the user toggles the @samp{-4} switch (or its long option equivalents
-@samp{--hdf}, @samp{--netcdf4}), then @acronym{NCO} will create a
+@samp{--hdf}, @samp{--netcdf4}), then @acronym{NCO} creates a
 @code{NETCDF4}-format output file.
+
+@acronym{NCO} can convert a file in any netCDF format into any other
+netCDF format (subject to limits of the format).
+@example
+ncks -O --fl_fmt=classic in.nc foo_3c.nc # netCDF3 classic
+ncks -O --fl_fmt=64bit in.nc foo_364.nc # netCDF3 64bit
+ncks -O --fl_fmt=netcdf4 in.nc foo_4.nc # netCDF4 
+ncks -O --fl_fmt=netcdf4_classic in.nc foo_4c.nc # netCDF4 classic
+% od -An -c -N4 ~/nco/data/foo_3c.nc
+   C   D   F 001
+% od -An -c -N4 foo_364.nc
+   C   D   F 002
+% od -An -c -N4 foo_4.nc
+ 211   H   D   F
+% od -An -c -N4 foo_4c.nc
+ 211   H   D   F
+@end example
+Note that @code{NETCDF4} and @code{NETCDF4_CLASSIC} are the same
+formats. 
+The latter simply causes an application to fail if it attempts to
+write a @code{NETCDF4} file that cannot be completely read by the
+netCDF3 library. 
+As of October, 2005, @acronym{NCO} writes no netCDF4-specific data
+structures and so always succeeds at writing @code{NETCDF4_CLASSIC}  
+files.
 
 @html
 <a name="cmd_ln"></a> <!-- http://nco.sf.net/nco.html#cmd_ln -->
