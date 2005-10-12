@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.88 2005-10-07 20:29:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.89 2005-10-12 21:37:12 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -144,16 +144,15 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.88 2005-10-07 20:29:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.88 $";
-  const char * const opt_sht_lst="4Aa:D:hl:Oo:p:RrZ-:";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.89 2005-10-12 21:37:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.89 $";
+  const char * const opt_sht_lst="4Aa:D:hl:Oo:p:Rr-:";
   
   extern char *optarg;
   extern int optind;
   
   int abb_arg_nbr=0;
   int fl_nbr=0;
-  int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   int idx;
   int idx_var;
   int nbr_aed=0; /* Option a. NB: nbr_var_aed gets incremented */
@@ -169,7 +168,8 @@ main(int argc,char **argv)
 
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
-      /* Long options with argument */
+      /* Long options with no argument, no short option counterpart */
+      /* Long options with argument, no short option counterpart */
       {"hdr_pad",required_argument,0,0},
       {"header_pad",required_argument,0,0},
       /* Long options with short counterparts */
@@ -190,7 +190,6 @@ main(int argc,char **argv)
       {"rtn",no_argument,0,'R'},
       {"version",no_argument,0,'r'},
       {"vrs",no_argument,0,'r'},
-      {"64-bit-offset",no_argument,0,'Z'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -206,9 +205,9 @@ main(int argc,char **argv)
 
   /* Parse command line arguments */
   while(1){
-    /* getopt_long_only() allows a single dash '-' to prefix long options as well */
+    /* getopt_long_only() allows one dash to prefix long options */
     opt=getopt_long(argc,argv,opt_sht_lst,opt_lng,&opt_idx);
-    /* NB: access to opt_crr is only valid when long_opt was detected */
+    /* NB: access to opt_crr is only valid when long_opt is detected */
     if(opt == EOF) break; /* Parse positional arguments once getopt_long() returns EOF */
     opt_crr=(char *)strdup(opt_lng[opt_idx].name);
 
@@ -252,9 +251,6 @@ main(int argc,char **argv)
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lbr_vrs_prn();
       nco_exit(EXIT_SUCCESS);
-      break;
-    case 'Z': /* [flg] Create output file with 64-bit offsets */
-      fl_out_fmt=NC_FORMAT_NETCDF4; /* [enm] Output file format */
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();

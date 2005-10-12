@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.332 2005-10-11 16:37:09 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.333 2005-10-12 21:37:12 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -102,8 +102,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.0.2
 @set copyright-years 1995--2005
 @set update-year 2005
-@set update-date 22 August 2005
-@set update-month August 2005
+@set update-date 12 October 2005
+@set update-month October 2005
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -1823,8 +1823,8 @@ feature is automatic and cannot be controlled by the user.
 * Internationalization::        
 * Metadata Optimization::       
 * OpenMP Threading::            
-* Large File Support::          
 * netCDF4 and HDF support::     
+* Large File Support::          
 * Command Line Options::        
 * Specifying Input Files::      
 * Specifying Output Files::     
@@ -1905,7 +1905,7 @@ library (@pxref{netCDF4 and HDF support}).
 <a name="omp"></a> <!-- http://nco.sf.net/nco.html#omp -->
 <a name="openmp"></a> <!-- http://nco.sf.net/nco.html#openmp -->
 @end html
-@node OpenMP Threading, Large File Support, Metadata Optimization, Common features
+@node OpenMP Threading, netCDF4 and HDF support, Metadata Optimization, Common features
 @section OpenMP Threading
 @cindex OpenMP
 @cindex threads
@@ -1989,61 +1989,11 @@ non-threaded operators are equal to within machine precision.
 This information is also useful for benchmarking.
 
 @html
-<a name="lfs"></a> <!-- http://nco.sf.net/nco.html#lfs -->
-@end html
-@node Large File Support, netCDF4 and HDF support, OpenMP Threading, Common features
-@section Large File Support
-@cindex LFS
-@cindex Large File Support
-@cindex @code{-Z}
-@cindex @code{--64-bit-offset}
-@cartouche
-Availability: All operators@*
-Short options: @samp{-Z}@*
-Long options: @samp{--64-bit-offset}@*
-@end cartouche
-@acronym{NCO} support for large files is in place and works but is not
-well documented yet. 
-@acronym{NCO} honors @acronym{LFS} capabilities on platforms which
-support them
-@footnote{
-Linux and @acronym{AIX} are known to support @acronym{LFS}.}.
-
-The netCDF large file support FAQ at
-@uref{http://my.unidata.ucar.edu/content/software/netcdf/faq-lfs.html}
-describes the various file size limitations imposed by different
-versions of the netCDF standard.
-To discover whether a netCDF file is a classic (32-bit offset) 
-or newer 64-bit offset netCDF3 format, or is netCDF4 format, examine it 
-with the (octal dump) command.
-@cindex @command{od} 
-@cindex octal dump
-@cindex netCDF3 classic file format
-@cindex netCDF4 classic file format
-@cindex netCDF4 file format
-@cindex 32-bit offset file format
-@cindex 64-bit offset file format
-@example
-% od -An -c -N4 ~/nco/data/in.nc
-   C   D   F 001
-@end example
-Values of @samp{C D F 001} and @samp{C D F 002} indicate 32-bit
-(classic) and 64-bit netCDF3 formats, respectively, while values of
-@samp{211 H D F} indicate the newer netCDF4 file format.
-
-All operators write classic (32-bit offset) format files unless
-told otherwise by toggling the @samp{-Z} switch (or its long option
-equivalent @samp{--64-bit-offset}). 
-@acronym{NCO} must be built with @w{netCDF 3.6} or higher to honor  
-64-bit offset file formats. 
-Casual users are advised to use the default netCDF3 classic format until  
-@w{netCDF 3.6} and @w{netCDF 4.0} are more widespread.
-
-@html
 <a name="hdf"></a> <!-- http://nco.sf.net/nco.html#hdf -->
+<a name="64bit"></a> <!-- http://nco.sf.net/nco.html#64bit -->
 <a name="netcdf4"></a> <!-- http://nco.sf.net/nco.html#netcdf4 -->
 @end html
-@node netCDF4 and HDF support, Command Line Options, Large File Support, Common features
+@node netCDF4 and HDF support, Large File Support, OpenMP Threading, Common features
 @section netCDF4 and HDF support
 @cindex HDF
 @cindex netCDF2
@@ -2054,14 +2004,29 @@ Casual users are advised to use the default netCDF3 classic format until
 @cindex @code{CLASSIC} files
 @cindex @code{64BIT} files
 @cindex @code{-4}
-@cindex @code{--hdf}
+@cindex @code{--4}
 @cindex @code{--netcdf4}
+@cindex @code{--fl_fmt}
+@cindex @code{--file_format}
+@cindex @code{--64-bit-offset}
+@cindex @code{--64bit}
 @cartouche
-Availability: All operators@*
+Availability: @command{ncap}, @command{ncbo}, @command{ncea},
+@command{ncecat}, @command{ncflint}, @command{ncpdq}, @command{ncra},
+@command{ncrcat}, @command{ncwa}@*
 Short options: @samp{-4}@*
-Long options: @samp{--hdf}, @samp{--netcdf4}@*
+Long options: @samp{--4}, @samp{--64-bit-offset}, @samp{--fl_fmt},
+@samp{--netcdf4}@*  
 @end cartouche
-@acronym{NCO} supports the new netCDF4 file storage format.
+All @acronym{NCO} operators support (read and write) all three (or four,
+depending on how one counts) file formats supported by netCDF4.
+Most operators (those listed under ``Availability'' above) allow
+the user to specify the output file format independent of the input file  
+format. 
+These operators allow the user to convert between the various file
+formats. 
+The operators @command{ncatted} and @command{ncrename} always write the
+output netCDF file in the same format as the input netCDF file.
 
 netCDF supports four types of files: @code{CLASSIC}, @code{64BIT},
 @code{NETCDF4}, and @code{NETCDF4_CLASSIC}, 
@@ -2098,6 +2063,32 @@ If the user toggles the @samp{-4} switch (or its long option equivalents
 @samp{--hdf}, @samp{--netcdf4}), then @acronym{NCO} creates a
 @code{NETCDF4}-format output file.
 
+To discover whether a netCDF file is a classic (32-bit offset) 
+or newer 64-bit offset netCDF3 format, or is netCDF4 format, examine it 
+with the (octal dump) command.
+@cindex @command{od} 
+@cindex octal dump
+@cindex netCDF3 classic file format
+@cindex netCDF4 classic file format
+@cindex netCDF4 file format
+@cindex 32-bit offset file format
+@cindex 64-bit offset file format
+@example
+% od -An -c -N4 ~/nco/data/in.nc
+   C   D   F 001
+@end example
+Values of @samp{C D F 001} and @samp{C D F 002} indicate 32-bit
+(classic) and 64-bit netCDF3 formats, respectively, while values of
+@samp{211 H D F} indicate the newer netCDF4 file format.
+
+All operators write classic (32-bit offset) format files unless
+told otherwise by toggling the @samp{-Z} switch (or its long option
+equivalent @samp{--64-bit-offset}). 
+@acronym{NCO} must be built with @w{netCDF 3.6} or higher to honor  
+64-bit offset file formats. 
+Casual users are advised to use the default netCDF3 classic format until  
+@w{netCDF 3.6} and @w{netCDF 4.0} are more widespread.
+
 @acronym{NCO} can convert a file in any netCDF format into any other
 netCDF format (subject to limits of the format).
 @example
@@ -2124,9 +2115,51 @@ structures and so always succeeds at writing @code{NETCDF4_CLASSIC}
 files.
 
 @html
+<a name="lfs"></a> <!-- http://nco.sf.net/nco.html#lfs -->
+@end html
+@node Large File Support, Command Line Options, netCDF4 and HDF support, Common features
+@section Large File Support
+@cindex LFS
+@cindex Large File Support
+@cartouche
+Availability: All operators@*
+Short options: none@*
+Long options: none@*
+@end cartouche
+@acronym{NCO} has Large File Support (@acronym{LFS}), meaning that 
+@acronym{NCO} can write files larger than @w{2 GB} on some 32-bit
+operating systems with netCDF libraries earlier than @w{version 3.6}. 
+If desired, LFS support must be configured when both netCDF and
+@acronym{NCO} are installed.
+netCDF @w{versions 3.6} and higher support 64-bit file addresses as part
+of the netCDF standard.
+We recommend that users ignore LFS support which is difficult to
+configure and is implemented in @acronym{NCO} only to support netCDF
+versions prior @w{to 3.6}.  
+This obviates the need for configuring explicit LFS support in
+applications (such as @acronym{NCO}) which now support 64-bit files   
+directly through the netCDF interface.
+See @ref{netCDF4 and HDF support} for instructions on accessing 
+the different file formats, including 64-bit files, supported by the
+modern netCDF interface. 
+
+If you are still interesting in explicit LFS support for netCDF versions
+prior @w{to 3.6}, know that LFS support depends on a complex,
+interlocking set of operating system  
+@footnote{
+Linux and @acronym{AIX} are known to support @acronym{LFS}.}
+and netCDF suppport issues.
+The netCDF LFS FAQ at
+@uref{http://my.unidata.ucar.edu/content/software/netcdf/faq-lfs.html}
+describes the various file size limitations imposed by different
+versions of the netCDF standard.
+@acronym{NCO} and netCDF automatically attempt to configure LFS at
+build time. 
+
+@html
 <a name="cmd_ln"></a> <!-- http://nco.sf.net/nco.html#cmd_ln -->
 @end html
-@node Command Line Options, Specifying Input Files, netCDF4 and HDF support, Common features
+@node Command Line Options, Specifying Input Files, Large File Support, Common features
 @section Command Line Options
 @cindex command line options
 @cartouche
@@ -5546,7 +5579,7 @@ Knowing when to use @command{ncwa -a time} rather than the default
 @noindent
 SYNTAX
 @example
-ncatted [-4] [-a @var{att_dsc}] [-a @dots{}] [-D @var{dbg}] [-h]
+ncatted [-a @var{att_dsc}] [-a @dots{}] [-D @var{dbg}] [-h]
 [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-Z]
 @var{input-file} [[@var{output-file}]]
 @end example
@@ -7863,7 +7896,7 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 @noindent
 SYNTAX
 @example
-ncrename [-4] [-a @var{old_name},@var{new_name}] [-a @dots{}] [-D @var{dbg}] 
+ncrename [-a @var{old_name},@var{new_name}] [-a @dots{}] [-D @var{dbg}] 
 [-d @var{old_name},@var{new_name}] [-d @dots{}] [-h] [-l @var{path}]
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-v @var{old_name},@var{new_name}] [-v @dots{}] [-Z]

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.84 2005-09-15 21:43:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.85 2005-10-12 21:37:12 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -86,9 +86,9 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.84 2005-09-15 21:43:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.84 $";
-  const char * const opt_sht_lst="4a:D:d:hl:Oo:p:rv:Z-:";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.85 2005-10-12 21:37:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.85 $";
+  const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
   extern char *optarg;
   extern int optind;
@@ -114,7 +114,8 @@ main(int argc,char **argv)
 
   static struct option opt_lng[] =
     { /* Structure ordered by short option key if possible */
-      /* Long options with argument */
+      /* Long options with no argument, no short option counterpart */
+      /* Long options with argument, no short option counterpart */
       {"hdr_pad",required_argument,0,0},
       {"header_pad",required_argument,0,0},
       /* Long options with short counterparts */
@@ -151,9 +152,9 @@ main(int argc,char **argv)
 
   /* Parse command line arguments */
   while(1){
-    /* getopt_long_only() allows a single dash '-' to prefix long options as well */
+    /* getopt_long_only() allows one dash to prefix long options */
     opt=getopt_long(argc,argv,opt_sht_lst,opt_lng,&opt_idx);
-    /* NB: access to opt_crr is only valid when long_opt was detected */
+    /* NB: access to opt_crr is only valid when long_opt is detected */
     if(opt == EOF) break; /* Parse positional arguments once getopt_long() returns EOF */
     opt_crr=(char *)strdup(opt_lng[opt_idx].name);
 

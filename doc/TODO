@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.639 2005-10-11 16:37:09 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.640 2005-10-12 21:37:12 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -367,7 +367,9 @@ nco618. XML data discovery on NCAR CDP via Luca Cinquini protocol?
 nco619. Send Russ Rew 1-2 MB IPCC dataset
 nco620. Document fl_fmt arugments in nco.texi
 nco621. Replace -Z with --64bit in source/documentation
-nco622. 
+nco622. NULLify opt_crr unless opt_lng detected?
+nco623. netcdf4 builds in particular order seem to trigger bogus ncpdq regression
+nco624. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

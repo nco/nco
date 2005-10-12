@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.175 2005-10-07 20:29:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.176 2005-10-12 21:37:12 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -114,14 +114,15 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *fl_spt_usr=NULL; /* Option s */
   char *lmt_arg[NC_MAX_DIMS];
+  char *opt_crr=NULL; /* [sng] String representation of current long-option name */
 #define NCAP_SPT_NBR_MAX 100
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.175 2005-10-07 20:29:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.175 $";
-  const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
+  const char * const CVS_Id="$Id: ncap.c,v 1.176 2005-10-12 21:37:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.176 $";
+  const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
   dmn_sct **dmn_out=NULL_CEWI; /* [lst] Dimensions written to output file */
@@ -220,6 +221,15 @@ main(int argc,char **argv)
   
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
+      /* Long options with no argument, no short option counterpart */
+      /* Long options with argument, no short option counterpart */
+      {"fl_fmt",required_argument,0,0},
+      {"file_format",required_argument,0,0},
+      /* Long options with short counterparts */
+      {"4",no_argument,0,'4'},
+      {"64bit",no_argument,0,'4'},
+      {"64-bit-offset",no_argument,0,'4'},
+      {"netcdf4",no_argument,0,'4'},
       {"append",no_argument,0,'A'},
       {"coords",no_argument,0,'c'},
       {"crd",no_argument,0,'c'},
@@ -256,7 +266,6 @@ main(int argc,char **argv)
       {"vrs",no_argument,0,'r'},
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
-      {"64-bit-offset",no_argument,0,'Z'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -271,8 +280,24 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
   
   /* Parse command line arguments */
-  while((opt = getopt_long(argc,argv,opt_sht_lst,opt_lng,&opt_idx)) != EOF){
+  while(1){
+    /* getopt_long_only() allows one dash to prefix long options */
+    opt=getopt_long(argc,argv,opt_sht_lst,opt_lng,&opt_idx);
+    /* NB: access to opt_crr is only valid when long_opt is detected */
+    if(opt == EOF) break; /* Parse positional arguments once getopt_long() returns EOF */
+    opt_crr=(char *)strdup(opt_lng[opt_idx].name);
+
+    /* Process long options without short option counterparts */
+    if(opt == 0){
+      if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+    } /* opt != 0 */
+    /* Process short options */
     switch(opt){
+    case 0: /* Long options have already been processed, return */
+      break;
+    case '4': /* [flg] Catch-all to prescribe output storage format */
+      if(!strcmp(opt_crr,"64bit") || !strcmp(opt_crr,"64-bit-offset")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
+      break;
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
@@ -344,9 +369,6 @@ main(int argc,char **argv)
       if(EXCLUDE_INPUT_LIST) (void)fprintf(stderr,"%s: ERROR %s does not currently implement -x option\n",prg_nm_get(),prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
-    case 'Z': /* [flg] Create output file with 64-bit offsets */
-      fl_out_fmt=NC_FORMAT_NETCDF4; /* [enm] Output file format */
-      break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
       nco_exit(EXIT_SUCCESS);
@@ -360,6 +382,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     } /* end switch */
+    if(opt_crr != NULL) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
   
   /* Append ";\n" to command-script arguments, then concatenate them */

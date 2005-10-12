@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.304 2005-09-20 23:51:26 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.305 2005-10-12 21:37:12 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -303,6 +303,11 @@ Instead, retrieve all recently tagged versions
 <ul>
 <li><b>NCO/SDO 3.1.x</b>: (<i>In progress, development branch</i>) MPI operators <tt>mpncflint</tt>, <tt>mpncecat</tt>, <tt>mpncpdq</tt>, <tt>mpncra</tt>, <tt>mpncwa</tt>, <tt>mpncea</tt>, <tt>mpncrcat</tt>; <tt>ncap</tt> control structures (conditionals, loops, etc.)
 <li><b>NCO 3.0.3</b>: (<i>In progress, stable branch</i>) 
+Accelerate SMP operators by removing last critical read region,
+build with netCDF4 alpha,
+read netCDF4/HDF files automatically,
+write netCDF4/HDF files <a href="http://nco.sf.net/nco.html#netcdf4">on request</a>,
+
 <li><b>NCO 3.0.2</b>: Fewer critical regions; all known memory leaks plugged; better Intel compiler support; <tt>SFTP</tt> protocol support; FTP protocol supports <tt>.netrc</tt>-based passwords; better model grid-property-awareness (e.g., <tt>lat_bnds</tt>); <tt>ncatted</tt>, <tt>ncks</tt>, <tt>ncrename</tt> support metadata header padding with <tt>--hdr</tt>, <tt>ncbo</tt> supports heterogeneous variable ordering, <tt>ncatted</tt> bugfix
   <li><b>NCO 3.0.1</b>: benchmarks; <tt>ncks</tt> printing tweaks; memory cleanup; <tt>ncap</tt> double-parse speedup and <a href="bug_ncap_cmt">exponentiation bugfix</a>; thread operators by default
   <li><b>NCO 3.0.0</b>: New <tt>ncks -P</tt> print switch; <tt>ncap</tt> optimizations; <tt>-Z</tt> option supports 64-bit offsets (requires netCDF&nbsp;3.6); NEC&nbsp;SX build improvements; support GCC&nbsp;3.4.X; <tt>nco_put_vara()</tt> overloads in <tt>libnco_c++</tt>

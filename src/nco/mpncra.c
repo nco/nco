@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.26 2005-10-07 20:29:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.27 2005-10-12 21:37:12 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -116,12 +116,13 @@ main(int argc,char **argv)
   char *lmt_arg[NC_MAX_DIMS];
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type Option y */
   char *nco_pck_plc_sng=NULL_CEWI; /* [sng] Packing policy Option P */
+  char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.26 2005-10-07 20:29:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.26 $";
-  const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:Z-:";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.27 2005-10-12 21:37:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.27 $";
+  const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -200,6 +201,15 @@ main(int argc,char **argv)
   
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
+      /* Long options with no argument, no short option counterpart */
+      /* Long options with argument, no short option counterpart */
+      {"fl_fmt",required_argument,0,0},
+      {"file_format",required_argument,0,0},
+      /* Long options with short counterparts */
+      {"4",no_argument,0,'4'},
+      {"64bit",no_argument,0,'4'},
+      {"64-bit-offset",no_argument,0,'4'},
+      {"netcdf4",no_argument,0,'4'},
       {"append",no_argument,0,'A'},
       {"coords",no_argument,0,'c'},
       {"crd",no_argument,0,'c'},
@@ -240,7 +250,6 @@ main(int argc,char **argv)
       {"program",required_argument,0,'Y'},
       {"prg_nm",required_argument,0,'Y'},
       {"math",required_argument,0,'y'},
-      {"64-bit-offset",no_argument,0,'Z'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -269,8 +278,24 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
   
   /* Parse command line arguments */
-  while((opt = getopt_long(argc,argv,opt_sht_lst,opt_lng,&opt_idx)) != EOF){
+  while(1){
+    /* getopt_long_only() allows one dash to prefix long options */
+    opt=getopt_long(argc,argv,opt_sht_lst,opt_lng,&opt_idx);
+    /* NB: access to opt_crr is only valid when long_opt is detected */
+    if(opt == EOF) break; /* Parse positional arguments once getopt_long() returns EOF */
+    opt_crr=(char *)strdup(opt_lng[opt_idx].name);
+
+    /* Process long options without short option counterparts */
+    if(opt == 0){
+      if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+    } /* opt != 0 */
+    /* Process short options */
     switch(opt){
+    case 0: /* Long options have already been processed, return */
+      break;
+    case '4': /* [flg] Catch-all to prescribe output storage format */
+      if(!strcmp(opt_crr,"64bit") || !strcmp(opt_crr,"64-bit-offset")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
+      break;
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
@@ -355,9 +380,6 @@ main(int argc,char **argv)
       nco_op_typ_sng=(char *)strdup(optarg);
       if(prg == ncra || prg == ncea ) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
       break;
-    case 'Z': /* [flg] Create output file with 64-bit offsets */
-      fl_out_fmt=NC_FORMAT_NETCDF4; /* [enm] Output file format */
-      break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
       nco_exit(EXIT_SUCCESS);
@@ -371,6 +393,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     } /* end switch */
+    if(opt_crr != NULL) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
   
   /* Process positional arguments and fill in filenames */
