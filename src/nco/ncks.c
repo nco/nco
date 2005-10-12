@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.146 2005-10-11 16:37:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.147 2005-10-12 03:26:58 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.146 2005-10-11 16:37:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.146 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.147 2005-10-12 03:26:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.147 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
   extern char *optarg;
@@ -155,19 +155,19 @@ main(int argc,char **argv)
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       /* Long options with no argument */
-      {"64bit",no_argument,0,0},
-      {"64-bit-offset",no_argument,0,0},
       {"cmp",no_argument,0,0},
       {"compiler",no_argument,0,0},
       {"mpi_implementation",no_argument,0,0},
       /* Long options with argument */
-      {"hdr_pad",required_argument,0,0},
-      {"header_pad",required_argument,0,0},
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
       {"format",required_argument,0,0},
+      {"hdr_pad",required_argument,0,0},
+      {"header_pad",required_argument,0,0},
       /* Long options with short counterparts */
       {"4",no_argument,0,'4'},
+      {"64bit",no_argument,0,'4'},
+      {"64-bit-offset",no_argument,0,'4'},
       {"netcdf4",no_argument,0,'4'},
       {"abc",no_argument,0,'a'},
       {"alphabetize",no_argument,0,'a'},
@@ -246,7 +246,6 @@ main(int argc,char **argv)
 	(void)fprintf(stdout,"%s\n",nco_cmp_get());
 	nco_exit(EXIT_SUCCESS);
       } /* endif "cmp" */
-      if(!strcmp(opt_crr,"64bit") || !strcmp(opt_crr,"64-bit-offset")) fl_out_fmt=NC_FORMAT_64BIT;
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format") || !strcmp(opt_crr,"format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")) hdr_pad=strtoul(optarg,(char **)NULL,10);
       if(!strcmp(opt_crr,"mpi_implementation")){
@@ -258,8 +257,8 @@ main(int argc,char **argv)
     switch(opt){
     case 0: /* Long options have already been processed, return */
       break;
-    case '4': /* [flg] Output netCDF4/HDF storage format */
-      fl_out_fmt=NC_FORMAT_NETCDF4; /* [enm] Output file format */
+    case '4': /* [flg] Catch-all to prescribe output storage format */
+      if(!strcmp(opt_crr,"64bit") || !strcmp(opt_crr,"64-bit-offset")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
     case 'a': /* Toggle ALPHABETIZE_OUTPUT */
       ALPHABETIZE_OUTPUT=!ALPHABETIZE_OUTPUT;
