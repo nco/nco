@@ -22060,7 +22060,7 @@ echo "# Testing for HDF5 & HDF5_HL & NETCDF4 libs #"
 echo "#############################################"
 
 # Check for HDF5 libraries unless told otherwise
-if test "${enable_netcdf4}" = 'yes' && test "${enable_dap}" = 'no'; then
+if (test "${enable_netcdf4}" = 'yes' && test "${enable_dap}" = 'no'); then
     # assume HDF5 libs are in std places but allow builder to specify another
 
   # Add ${HDF5_LIB_DIR} to search path if present
@@ -22226,7 +22226,7 @@ _ACEOF
 	    LIBS="-lhdf5_hl ${LIBS}"
     fi  # End test for HDF5 libs
 
-elif test "${enable_netcdf4}" ='no' && test "${enable_dap}" = 'no'; then
+elif (test "${enable_netcdf4}" = 'no' && test "${enable_dap}" = 'no'); then
     # this next stanza should only be tried if --enable-netcdf4=no / --disable-netcdf4
     # && look for real netCDF library only if enable_dap is false. jhrg 05/26/05
 
@@ -22489,7 +22489,7 @@ if test $ac_cv_lib_netcdf_nc_open = yes; then
 	LIBS="-lnetcdf ${LIBS}"
 	{ echo "$as_me:$LINENO: Good news: Simple program compiles and links to libnetcdf.a with default compiler flags" >&5
 echo "$as_me: Good news: Simple program compiles and links to libnetcdf.a with default compiler flags" >&6;}
-    if (test ${have_hdf5} = 'yes' && test ${have_hdf5_ul} = 'yes') ; then
+    if test ${have_hdf5} = 'yes' && test ${have_hdf5_ul} = 'yes' ; then
         echo "Great!  This build can support some NETCDF4 features."
     fi
 
