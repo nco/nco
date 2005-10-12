@@ -1,3 +1,11 @@
+ 2005-10-12  Harry Mangalam <hjm@tacgi.com>
+
+   * added --enable-netcdf4 to configure, configure.in to find the bits
+		necessary (libhdf5, libhdf_hl) to build the netcdf4 version of ncos
+		(TODO bld52)
+	* mods to mk_bm_plot.pl to zero time axis (TODO bld56), compute
+		regression and place on plots (TODO  bld57), 
+
 2005-10-08  Charlie Zender  <zender@uci.edu>
 
 	* netCDF4 causes a regression in ncpdq packing/unpacking TODO nco615

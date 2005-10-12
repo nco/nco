@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.51 2005-10-07 20:31:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.52 2005-10-12 17:33:40 mangalam Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -7,7 +7,6 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
-
 /* nco_netcdf.h is (nearly) independent of NCO and does not depend on nco.h 
    nco_netcdf.h is an abstraction layer for netcdf.h, plus a few convenience routines
    A similar abstraction layer must exist for each NCO storage backend, e.g., nco_hdf.h

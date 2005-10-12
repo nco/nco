@@ -1,9 +1,10 @@
 #!/usr/bin/perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/mk_bm_plots.pl,v 1.3 2005-10-06 16:16:30 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/mk_bm_plots.pl,v 1.4 2005-10-12 17:33:40 mangalam Exp $
 
-# TODO: detect failures in the benchmarks and mark them as another symbol so they are detectable
-# in the benchmark
+# TODO: detect failures in the benchmarks and mark them with another symbol so they are detectable
+# in the benchmark plots and benchmarks
+
 
 # use this script to plot the data from the daemon-recorded benchmark info
 # located at: sand:/var/log/nco_benchmark.log
@@ -13,7 +14,7 @@
 # commandline|timing data (the last 2 fields of the nco_benchmark.log) like so
 # (assuming you're running this from a subdir below the log and perl script so as to isolate the data generated)
 
-#grep bench ../nco_benchmark.log |grep sand |grep -iv dap |grep Linux |scut --c1="2 3" --id1='\|' --od='|' |../mk_bm_plots.pl
+#grep bench ../nco_benchmark.log |grep sand |grep -iv dap |grep Linux |scut --c1="1 2 3" --id1='\|' --od='|' |../mk_bm_plots.pl
 
 # the above line selects the benchmark lines run on sand filters out the ones that include '--dap',
 # ignore all those that aren't true benchmark lines (Linux is only seen on the uname output), then passes
@@ -30,20 +31,20 @@
 # they'll add up quickly if you run it multiple times:
 
 # nco_bm.2005-07-14+22:37.gnuplot............the gnuplot instructions & titles
-# ncap.2005-07-14+22:37.gnuplot..............gnuplot numeric data for each of the nco plots
-# ncbo.2005-07-14+22:37.gnuplot                          "
-# ncea.2005-07-14+22:37.gnuplot                          "
-# ncecat.2005-07-14+22:37.gnuplot                        "
-# ncflint.2005-07-14+22:37.gnuplot                       "
-# ncpdq.2005-07-14+22:37.gnuplot                         "
-# ncra.2005-07-14+22:37.gnuplot                          "
-# ncrcat.2005-07-14+22:37.gnuplot                        "
-# ncwa.2005-07-14+22:37.gnuplot                          "
+# ncap.2005-07-14+22:37.data..............gnuplot numeric data for each of the nco plots
+# ncbo.2005-07-14+22:37.data                          "
+# ncea.2005-07-14+22:37.data                          "
+# ncecat.2005-07-14+22:37.data                        "
+# ncflint.2005-07-14+22:37.data                       "
+# ncpdq.2005-07-14+22:37.data                         "
+# ncra.2005-07-14+22:37.data                          "
+# ncrcat.2005-07-14+22:37.data                        "
+# ncwa.2005-07-14+22:37.data                          "
 
 # The above files are plot commands to gnuplot which are automatically plotted into postscript
 # by this script, but can be customized by editing the files with a text editor to make the titles
 # more specific. Replot them again by simply typing:
-# gnuplot ncap.2005-07-14+22:37.gnuplot
+# gnuplot ncap.2005-07-14+22:37.data
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 #use Getopt::Long; # GNU-style getopt #qw(:config no_ignore_case bundling);
@@ -52,7 +53,7 @@ use strict; # Protect all namespaces
 # Declare vars for strict
 use vars qw( @titles @cmdline @nco_tim_info $thr_num %nc %tim_dta $num_nco_stz @nco_stz @clin_bits
 $num_bits @nco_stz $num_nco_stz $nco_name @nco_tim_dta $gnuplot_data_file @nco_name_array
-$tim_dta_end $cmdfile $ps_file
+$tim_dta_end $cmdfile $ps_file $uname $op_sys $nco_vrsn
 );
 $thr_num = 0;
 $tim_dta_end = 2; # number of variables to be plotted (to expand if start adding more rusage() vars)
@@ -61,21 +62,36 @@ $tim_dta_end = 2; # number of variables to be plotted (to expand if start adding
 
 @titles = ("threads", "   wall", "   real", "   user", " system", "\n");
 
+
+#grab the nco version and make a composite
+my $tmp_sng = `ncap --version  2>&1 |  grep version | head -2`; # long string sep by a newline.
+$nco_vrsn
+
+
 my $linect = 0;
 while (<>) {
 	if ($_ =~ '^#') {
 #		print "skipping line $linect: $_\n";
 	} else { # split the line on the '|'s into
 #		print "\n\nworking on: $_\n";
-		($cmdline[$linect],$nco_tim_info[$linect]) = split(/\|/,$_,2);
+		($uname,$cmdline[$linect],$nco_tim_info[$linect]) = split(/\|/,$_,4);
 		#my $splitcnt = split(/]/,$_);
 		#print "splitcnt = $splitcnt\n";
-#		print "cmd: $cmdline[$linect]\n";
-#		print "timing data: $nco_tim_info[$linect]\n";
+		print "uname: $uname\n";
+		print "cmd: $cmdline[$linect]\n";
+		print "timing data: $nco_tim_info[$linect]\n";
 	}
 	$linect++;
+#	print "hit key\n";
+#	my $tmp = <STDIN>;
 }
+
 print "processed $linect lines\n";
+
+# get OS name that should be the same for all lines:
+my $uname_cnt = split(/\s+/,$uname);
+$op_sys = $_[0];
+print "operating system = $op_sys\n";
 
 for (my $i=0; $i<$linect;$i++) {
 	# process the commandline to see how many threads were requested
@@ -111,7 +127,7 @@ for (my $i=0; $i<$linect;$i++) {
 	foreach my $chunk (@nco_stz) {
 		$chunk =~ s/,/ /g;
 		$chunk =~ s/\s+/ /g;
-		print "processed chunk = $chunk\n";
+#		print "processed chunk = $chunk\n";
 		   @nco_tim_dta = split(/\s+/,$chunk);
 		   $nco_name_array[$cnt] = $nco_name = $nco_tim_dta[0];
 		my $walltime = $nco_tim_dta[3]; # wall = [0]
@@ -135,18 +151,32 @@ for (my $i=0; $i<$linect;$i++) {
 write_gnuplot_cmds();
 write_nco_data();
 print "\nexecuting the gnuplot on $cmdfile\n";
-system "gnuplot $cmdfile";
-print "\n\nThe benchmark plots should be in $ps_file.\n\n";
+system "gnuplot < $cmdfile";
+print "\n========================================\nThe benchmark plots should be in:\n  $ps_file\n====\n";
 
-my $mpage ="";
+my $mpage ="";my $up4ps_file = "";
 $mpage = `which mpage`;
 if ($mpage =~ /bin/ ){
-	chomp $mpage; my $up4ps_file = "4-up_" . $ps_file;
+	chomp $mpage; $up4ps_file = "4-up_" . $ps_file;
 	system "$mpage $ps_file > $up4ps_file";
-	print "\n\nThe 4-up benchmark plots should be in $up4ps_file.\n\n";
+	print "\n========================================\nThe 4-up benchmark plots should be in:\n  $up4ps_file.\n====\n";
 } else {
-	print "\n\nIf you install mpage, you can generate 4-up postscript plots by running mpage on $ps_file.\n\n";
+	print "\n\nIf you install mpage, you can generate 4-up postscript plots by running mpage on $ps_file\n\n";
 }
+
+my $ps2pdf = "";
+$ps2pdf = `which ps2pdf`;
+if ($ps2pdf =~ /bin/ ){
+	my $pdf_file = $ps_file;
+	chomp $ps2pdf; $pdf_file =~ s/\.ps/\.pdf/;
+	#print "\n\$pdf_file = $pdf_file\n\n";
+	if ($mpage =~ /bin/ ) { $ps_file = $up4ps_file; }
+	system "$ps2pdf $ps_file > $pdf_file";
+	print "\n========================================\nThe PDF'ed benchmark plots should be in:\n  $pdf_file\n====\n";
+} else {
+	print "\n\nIf you install ps2pdf, this script can convert the postscript plots to PDF.\n\n";
+}
+
 
 
 sub write_nco_data {
@@ -157,7 +187,7 @@ sub write_nco_data {
 	my $filetimestamp = `date +%F+%R`; chomp $filetimestamp;
 	for (my $r=0; $r<$num_nco_stz;$r++) {
 		$nco_name = $nco_name_array[$r];
-		my $datafile = "$nco_name.$filetimestamp.gnuplot";
+		my $datafile = "$nco_name.$filetimestamp.data";
 		print "datafile name: $datafile\n";
 		open(DAT, ">$datafile") or die "\nUnable to open command file '$datafile' in current dir - check permissions on it\nor the directory you are in.\n stopped";
 
@@ -193,10 +223,12 @@ sub write_gnuplot_cmds {
 # auto-generated data for nco benchmark plots to postscript
 #  created $filetimestamp
 # called from this perl script as: system ("gnuplot $cmdfile");
-# input file has the format:<nco>.datestamp.gnuplot
+# input file has the format:<nco>.datestamp.data
 set xrange [-1:9]
+# make sure that axis starts at 0
+set yrange [0:]
 set xlabel "Number of threads or processes"
-set ylabel "Execution time (s)"
+set ylabel "Execution time in wallclock seconds"
 set key box
 set terminal postscript landscape color
 set output '$ps_file'
@@ -207,14 +239,17 @@ HEADER
 		my $tail = ", \\\n";
 		#print "set output 'bench.$nco_name_array[$r].ps'\n"
 #		print "\n\n";
-		print CMD "set title 'Benchmark for $nco_name_array[$r] using multiple threads'\n";
-		my $datafile = "$nco_name_array[$r].$filetimestamp.gnuplot";
+		print CMD "set title '$op_sys Benchmark for $nco_name_array[$r] using multiple threads / processes'\n";
+
+		my $datafile = "$nco_name_array[$r].$filetimestamp.data";
 		for (my $e=0; $e<($tim_dta_end-1);$e++) {
 			my $plot_str = "plot";
 			if ($e > 0) {$plot_str = "";}
 			if ($e > ($tim_dta_end-3)) { $tail = "\n"; }
 			my $col = $e + 2;
-			print CMD "$plot_str '$datafile' using 1:$col title \"$titles[$col - 1]\" $tail";
+			print CMD "m=0;b=0\nf(x) = m*x + b\nfit [0:8] f(x) \"$datafile\" using 1:2 via m,b\n";
+			print CMD "unset label\nset label \"slope = %f\", m at 1, 20\n";
+			print CMD "$plot_str '$datafile' using 1:$col title \"$titles[$col - 1]\", m*x+b title \"m*x+b\" \n#new plot\n";
 		}
 	}
 	close (CMD);
