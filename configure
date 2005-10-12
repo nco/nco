@@ -22489,7 +22489,7 @@ if test $ac_cv_lib_netcdf_nc_open = yes; then
 	LIBS="-lnetcdf ${LIBS}"
 	{ echo "$as_me:$LINENO: Good news: Simple program compiles and links to libnetcdf.a with default compiler flags" >&5
 echo "$as_me: Good news: Simple program compiles and links to libnetcdf.a with default compiler flags" >&6;}
-    if test ${have_hdf5} = 'yes' && test ${have_hdf5_ul} = 'yes' ; then
+    if (test "${have_hdf5}" = 'yes' && test "${have_hdf5_ul}" = 'yes') ; then
         echo "Great!  This build can support some NETCDF4 features."
     fi
 
