@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.148 2005-10-12 21:37:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.149 2005-10-13 16:47:12 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.148 2005-10-12 21:37:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.148 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.149 2005-10-13 16:47:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.149 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
   extern char *optarg;
@@ -166,7 +166,6 @@ main(int argc,char **argv)
       /* Long options with short counterparts */
       {"4",no_argument,0,'4'},
       {"64bit",no_argument,0,'4'},
-      {"64-bit-offset",no_argument,0,'4'},
       {"netcdf4",no_argument,0,'4'},
       {"abc",no_argument,0,'a'},
       {"alphabetize",no_argument,0,'a'},
@@ -209,10 +208,8 @@ main(int argc,char **argv)
       {"revision",no_argument,0,'r'},
       {"version",no_argument,0,'r'},
       {"vrs",no_argument,0,'r'},
-      {"sng",required_argument,0,'s'},
+      {"sng_fmt",required_argument,0,'s'},
       {"string",required_argument,0,'s'},
-      {"format",required_argument,0,'s'},
-      {"fmt",required_argument,0,'s'},
       {"units",no_argument,0,'u'},
       {"variable",required_argument,0,'v'},
       {"exclude",no_argument,0,'x'},
@@ -257,7 +254,7 @@ main(int argc,char **argv)
     case 0: /* Long options have already been processed, return */
       break;
     case '4': /* [flg] Catch-all to prescribe output storage format */
-      if(!strcmp(opt_crr,"64bit") || !strcmp(opt_crr,"64-bit-offset")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
+      if(!strcmp(opt_crr,"64bit")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
     case 'a': /* Toggle ALPHABETIZE_OUTPUT */
       ALPHABETIZE_OUTPUT=!ALPHABETIZE_OUTPUT;

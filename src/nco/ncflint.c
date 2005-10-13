@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.108 2005-10-12 21:37:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.109 2005-10-13 16:47:12 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -102,8 +102,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.108 2005-10-12 21:37:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.108 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.109 2005-10-13 16:47:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.109 $";
   const char * const opt_sht_lst="4ACcD:d:Fhi:l:Oo:p:rRt:v:xw:-:";
   
   dmn_sct **dim;
@@ -174,7 +174,6 @@ main(int argc,char **argv)
       /* Long options with short counterparts */
       {"4",no_argument,0,'4'},
       {"64bit",no_argument,0,'4'},
-      {"64-bit-offset",no_argument,0,'4'},
       {"netcdf4",no_argument,0,'4'},
       {"append",no_argument,0,'A'},
       {"coords",no_argument,0,'c'},
@@ -237,7 +236,7 @@ main(int argc,char **argv)
     case 0: /* Long options have already been processed, return */
       break;
     case '4': /* [flg] Catch-all to prescribe output storage format */
-      if(!strcmp(opt_crr,"64bit") || !strcmp(opt_crr,"64-bit-offset")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
+      if(!strcmp(opt_crr,"64bit")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;

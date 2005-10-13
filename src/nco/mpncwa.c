@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.22 2005-10-12 21:37:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.23 2005-10-13 16:47:12 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.22 2005-10-12 21:37:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.22 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.23 2005-10-13 16:47:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.23 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -211,7 +211,6 @@ main(int argc,char **argv)
       /* Long options with short counterparts */
       {"4",no_argument,0,'4'},
       {"64bit",no_argument,0,'4'},
-      {"64-bit-offset",no_argument,0,'4'},
       {"netcdf4",no_argument,0,'4'},
       {"average",required_argument,0,'a'},
       {"avg",required_argument,0,'a'},
@@ -311,7 +310,7 @@ main(int argc,char **argv)
     case 0: /* Long options have already been processed, return */
       break;
     case '4': /* [flg] Catch-all to prescribe output storage format */
-      if(!strcmp(opt_crr,"64bit") || !strcmp(opt_crr,"64-bit-offset")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
+      if(!strcmp(opt_crr,"64bit")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;

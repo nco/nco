@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.107 2005-10-12 21:37:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.108 2005-10-13 16:47:12 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -432,8 +432,8 @@ nco_usg_prn(void)
   (void)fprintf(stdout,"%s command line options cheat-sheet:\n",prg_nm_get());
   (void)fprintf(stdout,"%s %s\n",prg_nm_get(),opt_sng);
 
-  if(strstr(opt_sng,"-4")) (void)fprintf(stdout,"-4, --4, --netcdf4\tOutput netCDF4 HDF native storage format\n");
-  if(strstr(opt_sng,"--64bit")) (void)fprintf(stdout,"--64-bit-offset\tOutput netCDF3 64-bit offset storage format\n");
+  if(strstr(opt_sng,"-4")) (void)fprintf(stdout,"-4, --4, --netcdf4\tOutput file in netCDF4 storage format (HDF5)\n");
+  if(strstr(opt_sng,"--64bit")) (void)fprintf(stdout,"\tOutput file in netCDF3 64-bit offset storage format\n");
   if(strstr(opt_sng,"-A")) (void)fprintf(stdout,"-A, --apn, --append\tAppend to existing output file, if any\n");
   if(strstr(opt_sng,"-a")){
     if(prg_lcl == ncatted) (void)fprintf(stdout,"-a, --attribute att_nm,var_nm,mode,att_typ,att_val Attribute specification:\n\t\t\tmode = a,c,d,m,o and att_typ = f,d,l,s,c,b\n");
@@ -455,7 +455,7 @@ nco_usg_prn(void)
   } /* end if -d */
   if(strstr(opt_sng,"-F")) (void)fprintf(stdout,"-F, --ftn, --fortran\tFortran indexing conventions (1-based) for I/O\n");
   if(strstr(opt_sng,"[-f]")) (void)fprintf(stdout,"-f, --fnc_tbl, --prn_fnc_tbl\tPrint function table\n");
-  if(strstr(opt_sng,"--fl_fmt, --file_format")) (void)fprintf(stdout,"--fl_fmt\tFile format [classic,64bit,netcdf4,netcdf4_classic]\n");
+  if(strstr(opt_sng,"--fl_fmt")) (void)fprintf(stdout,"--fl_fmt, --file_format format\tFile format [classic,64bit,netcdf4,netcdf4_classic]\n");
   if(strstr(opt_sng,"-H")){
     if(prg_lcl == ncks) (void)fprintf(stdout,"-H, --huh, --hmm\tToggle printing data\n");
     if(nco_is_mlt_fl_opr(prg_lcl)) (void)fprintf(stdout,"-H, --fl_lst_in, --file_list\tDo not create \"input_file_list\" global attribute\n");
@@ -490,7 +490,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-R")) (void)fprintf(stdout,"-R, --rtn, --retain\tRetain remotely-retrieved files after use\n");
   if(strstr(opt_sng,"-r")) (void)fprintf(stdout,"-r, --revision, --vrs, --version\tProgram version and copyright notice\n");
   if(strstr(opt_sng,"-s")){
-    if(prg_lcl != ncap) (void)fprintf(stdout,"-s, --sng, --string, --fmt, --format format\tString format for text output\n");
+    if(prg_lcl != ncap) (void)fprintf(stdout,"-s, --sng_fmt, --string format\tString format for text output\n");
     if(prg_lcl == ncap) (void)fprintf(stdout,"-s, --spt, --script algebra\tAlgebraic command defining single output variable\n");
   } /* end if */
   if(strstr(opt_sng,"-S")) (void)fprintf(stdout,"-S, --fl_spt, --script-file fl.nco\tScript file containing multiple algebraic commands\n");

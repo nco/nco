@@ -1,10 +1,23 @@
- 2005-10-12  Harry Mangalam <hjm@tacgi.com>
+2005-10-12  Charlie Zender  <zender@uci.edu>
 
-   * added --enable-netcdf4 to configure, configure.in to find the bits
-		necessary (libhdf5, libhdf_hl) to build the netcdf4 version of ncos
-		(TODO bld52)
+	* Insert stub for MPI documentation
+
+	* Finish netCDF4 documentation in manual
+
+	* Commit netCDF4 output support for all operators
+	  New options -4,--4,--64bit,--fl_fmt,--netcdf4 control file format
+	
+	* ncks: Eliminate --fmt,--format synonyms to avoid netCDF4 confusion
+          Change --sng to --sng_fmt
+
+2005-10-12  Harry Mangalam <hjm@tacgi.com>
+
+        * added --enable-netcdf4 to configure, configure.in to find the bits
+          necessary (libhdf5, libhdf_hl) to build the netcdf4 version of NCOs
+          (TODO bld52)
+
 	* mods to mk_bm_plot.pl to zero time axis (TODO bld56), compute
-		regression and place on plots (TODO  bld57), 
+	  regression and place on plots (TODO bld57), 
 
 2005-10-08  Charlie Zender  <zender@uci.edu>
 

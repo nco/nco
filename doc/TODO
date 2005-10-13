@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.640 2005-10-12 21:37:12 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.641 2005-10-13 16:47:11 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -359,17 +359,15 @@ nco605. ncpdq: speed up end of program by padding metadata intially?
 nco607. mpnc*: Define structures (rather than int arrays) for MPI messages
 nco609. Tune (or remove?) sleep interval in MPI operators
 nco611. Expand threaded region in SMP codes to include file open()s
+        cd ~/nco/bld;make USR_TKN=-DPARALLELIZE_OVER_CL1
 nco612. ncks ncdump-like features for netcdf4 files structures
-nco614. Re-think/merge/deprecate -Z/-4/-fl_fmt switches for netCDF4/HDF
 nco616. Remove assumption that type_id is proxy for precision (breaks in netCDF4)
-nco617. Document od results for netCDF4
 nco618. XML data discovery on NCAR CDP via Luca Cinquini protocol?
 nco619. Send Russ Rew 1-2 MB IPCC dataset
-nco620. Document fl_fmt arugments in nco.texi
-nco621. Replace -Z with --64bit in source/documentation
-nco622. NULLify opt_crr unless opt_lng detected?
+nco622. NULL'ify opt_crr unless opt_lng detected?
 nco623. netcdf4 builds in particular order seem to trigger bogus ncpdq regression
-nco624. 
+nco624. Document MPI in users guide/manual
+nco625. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
