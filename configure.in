@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.132 2005-10-14 00:14:05 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.133 2005-10-14 20:51:19 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -191,8 +191,6 @@ AM_CONDITIONAL(TEST_DAP,[test "${enable_dap}" = 'yes'])
 # Make precious variables for ./configure --help
 AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
 AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
-
-
 
 # Begin HDF5 test
 # note that netcdf4 requires the libhdf5 & libhdf5_hl to link correctly

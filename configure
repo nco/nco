@@ -22037,8 +22037,6 @@ fi
 
 
 
-
-
 # Begin HDF5 test
 # note that netcdf4 requires the libhdf5 & libhdf5_hl to link correctly
 #following line enables & initializes the configure option

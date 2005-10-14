@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.645 2005-10-14 05:09:39 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.646 2005-10-14 20:51:19 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -367,7 +367,7 @@ nco619. Send Russ Rew 1-2 MB IPCC dataset
 nco622. NULL'ify opt_crr unless opt_lng detected?
 nco623. netcdf4 builds in particular order seem to trigger bogus ncpdq regression
 nco624. Document MPI in users guide/manual
-nco626. Mac OS X build problem: _res problems? Caused by _POSIX_SOURCE?
+nco626. Mac OS X bld/Makefile problem: _res problems? Caused by _POSIX_SOURCE?
 nco627. 
 ************************************************************************
 End ncoXXX TODOs
@@ -540,7 +540,7 @@ bld44. Add support for autopackage format? http://www.wildgardenseed.com/apkg/
 bld45. Replace ENABLE_LARGEFILE with test for 64-bit offset support (i.e., netCDF 3.6) in configure.in and nco_ctl.c
 bld46. Is DAP_ROOT (or DODS_ROOT) an obsolete variable in DAP 3.5+? if so obsolete it in configure.in, nco.texi
 bld47. Add regression test for 64bit file format capability
-bld50. Eliminate -D_POSIX_SOURCE on MAC OS X builds in configure (without kludging)
+bld50. hjm Eliminate -D_POSIX_SOURCE on MAC OS X builds in configure (without kludging)
 bld51. hjm Add --enable-mpi configure option
 bld53. hjm Add --fl_fmt option to nco_bm.pl (see ncks.c for fl_fmt values)
 bld58. hjm Run benchmarks with netCDF4, compare to netCDF3
@@ -553,7 +553,8 @@ bld64. hjm Benchmark ESMF->UCSD over OpenDAP
 bld65. stromberg Install DAP (THREDDS if necessary) on ESMF UCI
 bld66. hjm Eliminate test1.sh,test2.sh from source tree/configure
 bld67. hjm Move benchmarks to 3x3 or 4x3 portrait format on one page
-bld68.
+bld68. hjm Verify configure with minimal options works with MACOSX (cg1)
+bld69. 
 ************************************************************************
 End bldXXX TODOs
 ************************************************************************
