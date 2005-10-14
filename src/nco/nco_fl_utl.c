@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.69 2005-10-08 20:04:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.70 2005-10-14 19:59:37 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -60,7 +60,7 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
       /* If "netcdf4_classic" contains string */
       *fl_fmt_enm=NC_FORMAT_NETCDF4_CLASSIC;
     } /* endif NETCDF4 */
-#else
+#else /* !ENABLE_NETCDF4 */
     (void)fprintf(stderr,"%s: ERROR This NCO was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try without specifying file format, or specifying file_format as \"classic\" or \"64bit\".\n",prg_nm_get());
 #endif /* !ENABLE_NETCDF4 */
   }else{

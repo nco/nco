@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.160 2005-10-13 16:47:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.161 2005-10-14 19:59:37 zender Exp $ */
 
 /* ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.160 2005-10-13 16:47:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.160 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.161 2005-10-14 19:59:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.161 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
   dmn_sct **dim;
@@ -515,12 +515,15 @@ main(int argc,char **argv)
     /* 20051004 fxm: TODO nco611 */
 #undef PARALLELIZE_OVER_CL1
 #ifdef PARALLELIZE_OVER_CL1
-#pragma omp parallel for default(none) private(idx) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,in_id,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx,in_id,rcd) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,var_prc,var_prc_out)
 #endif /* !PARALLELIZE_OVER_CL1 */
 #ifdef _OPENMP
 #endif /* !_OPENMP */
     rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
     
+    /* csz: got to here re-OMP'ing
+       What to do with var_prc? */
+
     /* Variables may have different ID, missing_value, type, in each file */
     for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_mtd_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
 
