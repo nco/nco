@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.12 2005-09-21 20:04:25 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.13 2005-10-14 05:09:39 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -29,6 +29,7 @@ Top-level directories:
 nco/autobld	Files related to autotools: autoconf/automake/autolib
 nco/bin		Binary directory for NCO binary executable
 nco/bld		Build directory for Makefile and ancillary scripts
+nco/bm		Benchmark directory and related plot scripts
 nco/debian	Scripts for Debian GNU/Linux .deb builds
 nco/data	Sample I/O datasets
 nco/doc		Documentation
@@ -39,11 +40,15 @@ nco/src		Source files
 Binary directory:
 nco/bin/README		Description of binary directory
 
+Benchmark directory:
+
+
 Build directory:
 nco/bld/Makefile	Makefile used by GNU make to create NCO executables
 nco/bld/nco_dst.pl	Perl script to build NCO distributions
-nco/bld/nco_tst.pl	Perl script to test NCO executables
-nco/bld/pvmgetarch	Script used by Makefile to determine your native machine type
+nco/bld/pvmgetarch	Script used by Makefile to determine native machine type
+nco/bld/libnco_c++_tst.cc Simplest front end to exercise libnco_c++.a
+nco/bld/libnco_tst.c	Simplest front end to exercise libnco.a
 
 Data Directory:
 nco/data/in.cdl 	CDL file to generate netCDF test file in.nc
@@ -54,14 +59,17 @@ nco/doc/ANNOUNCE	Announcement to accompany release notifications
 nco/doc/LICENSE		License and legal information
 nco/doc/MANIFEST	This file. Describes all files in distribution
 nco/doc/README		Description of NCO
+nco/doc/README_Fedora	Short instructions for Fedora users
 nco/doc/TAG		CVS tag for this version 
 nco/doc/TODO		List of tasks for future releases
 nco/doc/VERSION		NCO version 
 nco/doc/ChangeLog	Chronological log of NCO changes
 nco/doc/debian.txt	Creating and updating Debian NCO .deb packages
-nco/doc/dods.sh		Installs DODS first so NCO builds as DODS clients
+nco/doc/dods.sh		Install OPeNDAP 3.4.X for NCO DAP-enabled clients
 nco/doc/dir		Example Info file to load nco.info
+nco/doc/help.txt	Advertisement for help with NCO (outdated---from 2000)
 nco/doc/index.shtml	NCO website homepage
+nco/doc/mpi.txt		MPI Environments for NCO
 nco/doc/nco_news.shtml	NCO news archive
 nco/doc/ncap.txt	Description of the ncap operator (not yet used)
 nco/doc/nco.texi	NCO User's Guide: TeXInfo format
@@ -70,6 +78,10 @@ nco/doc/nco.dvi(v)	NCO User's Guide: DVI format
 nco/doc/nco.pdf(v)	NCO User's Guide: Portable Document Format
 nco/doc/nco.ps(v)	NCO User's Guide: Postscript format
 nco/doc/nco.html(v)	NCO User's Guide: HTML format
+nco/doc/opendap.sh	Install OPeNDAP 3.5.X for NCO DAP-enabled clients
+nco/doc/surfit.txt	Summer research project advertisement
+nco/doc/tags_doc.sh	Generate Emacs tags for all NCO documents
+nco/doc/valgrind.txt	Valgrind suppressions file for debugging NCO 
 
 Object directory:
 nco/obj/README		Description of object directory
@@ -83,6 +95,12 @@ nco/src/nco/Makefile
 nco/src/nco/Makefile.am
 nco/src/nco/Makefile.in
 nco/src/nco/libnco.h
+nco/src/nco/mpncbo.c
+nco/src/nco/mpncecat.c
+nco/src/nco/mpncflint.c
+nco/src/nco/mpncpdq.c
+nco/src/nco/mpncra.c
+nco/src/nco/mpncwa.c
 nco/src/nco/ncap.c
 nco/src/nco/ncap.h
 nco/src/nco/ncap_lex.l
@@ -149,6 +167,7 @@ nco/src/nco/nco_scm.c
 nco/src/nco/nco_scm.h
 nco/src/nco/nco_sng_utl.c
 nco/src/nco/nco_sng_utl.h
+nco/src/nco/nco_typ.h
 nco/src/nco/nco_var_avg.c
 nco/src/nco/nco_var_avg.h
 nco/src/nco/nco_var_lst.c
