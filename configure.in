@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.131 2005-10-12 19:00:32 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.132 2005-10-14 00:14:05 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -506,6 +506,12 @@ case ${host} in
 	    icc ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -D_BSD_SOURCE -D_POSIX_SOURCE -no-gcc" ; ;;
 	esac
 	;;
+    powerpc-apple-darwin* )
+	case ${CC} in
+# NB: -D_POSIX_SOURCE breaks MACOSX build in nco_fl_utl.c, nco_mmr.c
+	    cc ) CPPFLAGS="${CPPFLAGS} -U_POSIX_SOURCE" ; ;;
+	esac
+	;;
     powerpc-ibm-aix* )
 	case ${CC} in
 	    gcc ) CFLAGS="${CFLAGS} -maix64" ; ;;
@@ -674,6 +680,8 @@ if test "${enable_optimize_custom}" = 'yes'; then
 	    if test "x${CC}" = xcc; then
 		CFLAGS="${CFLAGS} -O2"
 	    fi
+	    ;;
+	powerpc-apple-darwin* )
 	    ;;
 	powerpc-ibm-aix* )
 	    case ${CC} in

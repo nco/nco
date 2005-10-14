@@ -1,7 +1,9 @@
 2005-10-13  Charlie Zender  <zender@uci.edu>
 
+	* Attempt to add -U_POSIX_SOURCE token to MACOSX in configure build
+
 	* Change MACOSX to include sys/time.h rather than time.h so that
-	struct timeval is defined before use in struct rusage
+          struct timeval is defined before use in struct rusage
 
 2005-10-12  Charlie Zender  <zender@uci.edu>
 

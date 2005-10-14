@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.643 2005-10-13 23:47:52 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.644 2005-10-14 00:14:06 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -367,9 +367,7 @@ nco619. Send Russ Rew 1-2 MB IPCC dataset
 nco622. NULL'ify opt_crr unless opt_lng detected?
 nco623. netcdf4 builds in particular order seem to trigger bogus ncpdq regression
 nco624. Document MPI in users guide/manual
-nco625. Mac OS X with Opendap build problem reported on Help Forum 20051011
-        Solutions is sys/time.h instead of time.h?
-nco626. Mac OS X build problem: _res problems
+nco626. Mac OS X build problem: _res problems?
 nco627. 
 ************************************************************************
 End ncoXXX TODOs

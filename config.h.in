@@ -15,6 +15,9 @@
 /* Enable Large File Support (LFS) */
 #undef ENABLE_LARGEFILE
 
+/* Do NOT have NETCDF4 support */
+#undef ENABLE_NETCDF4
+
 /* Fastest possible execution (slowest compilation) */
 #undef ENABLE_OPTIMIZE_CUSTOM
 
@@ -300,9 +303,6 @@
 
 /* Define if C++ compiler has working valarray<T> */
 #undef HAVE_VALARRAY
-
-/* Have HDF5 support */
-#undef HDF5
 
 /* Hostname */
 #undef HOST

@@ -25733,6 +25733,12 @@ case ${host} in
 	    icc ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -D_BSD_SOURCE -D_POSIX_SOURCE -no-gcc" ; ;;
 	esac
 	;;
+    powerpc-apple-darwin* )
+	case ${CC} in
+# NB: -D_POSIX_SOURCE breaks MACOSX build in nco_fl_utl.c, nco_mmr.c
+	    cc ) CPPFLAGS="${CPPFLAGS} -U_POSIX_SOURCE" ; ;;
+	esac
+	;;
     powerpc-ibm-aix* )
 	case ${CC} in
 	    gcc ) CFLAGS="${CFLAGS} -maix64" ; ;;
@@ -26069,6 +26075,8 @@ _ACEOF
 	    if test "x${CC}" = xcc; then
 		CFLAGS="${CFLAGS} -O2"
 	    fi
+	    ;;
+	powerpc-apple-darwin* )
 	    ;;
 	powerpc-ibm-aix* )
 	    case ${CC} in
