@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.334 2005-10-13 16:47:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.335 2005-10-16 06:04:30 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5461,8 +5461,8 @@ Imagine you wish to create a binary flag based on the value of
 an array.
 The flag should have @w{value 1.0} where the array @w{exceeds 1.0},
 and @w{value 0.0} elsewhere.
-Assume the array named @code{ORO} is in @file{in.nc}.
-The variable @code{ORO_flg} in @file{out.nc}
+This example creates the binary flag @code{ORO_flg} in @file{out.nc}
+from the continuous array named @code{ORO} in @file{in.nc}.
 @cindex masked average
 @findex ncecat
 @findex ncwa
@@ -5472,7 +5472,7 @@ The variable @code{ORO_flg} in @file{out.nc}
 ncecat -O -v ORO in.nc foo.nc
 # Average degenerate "record" dimension using ORO as mask
 ncwa -a record -O -m ORO -T gt -M 1.0 foo.nc foo.nc
-# ORO is either 0.0 or > 1.0 everywhere
+# ORO is either = 0.0 or > 1.0 everywhere
 # Create ORO_frc in [0.0,1.0) then add 0.99 and convert to int 
 ncap -O -s "ORO_frc=ORO-int(ORO)" -s "ORO_flg=int(ORO_frc+0.99)" foo.nc out.nc
 # ORO_flg now equals 0 or 1
