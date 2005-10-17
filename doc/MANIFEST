@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.13 2005-10-14 05:09:39 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.14 2005-10-17 20:15:44 mangalam Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -181,8 +181,6 @@ nco/src/nco/nco_var_utl.h
 nco/src/nco/ncra.c
 nco/src/nco/ncrename.c
 nco/src/nco/ncwa.c
-nco/src/nco/test1.sh
-nco/src/nco/test2.sh
 
 NCO C++ interface to netCDF directory:
 nco/src/nco_c++/ChangeLog

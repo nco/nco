@@ -1,3 +1,7 @@
+2005-10-17  Harry Mangalam <hjm@tacgi.com>
+	
+	* Updated index.shtml to include Benchmark info
+
 2005-10-16  Charlie Zender  <zender@uci.edu>
 
 	* Verify netcdf4 features work on Ubuntu AMD64 (sand) and Libranet x86 (elnino)
@@ -33,9 +37,9 @@
 
 2005-10-12  Harry Mangalam <hjm@tacgi.com>
 
-        * added --enable-netcdf4 to configure, configure.in to find the bits
-          necessary (libhdf5, libhdf_hl) to build the netcdf4 version of NCOs
-          (TODO bld52)
+   * added --enable-netcdf4 to configure, configure.in to find the bits
+     necessary (libhdf5, libhdf_hl) to build the netcdf4 version of NCOs
+     (TODO bld52)
 
 	* mods to mk_bm_plot.pl to zero time axis (TODO bld56), compute
 	  regression and place on plots (TODO bld57), 

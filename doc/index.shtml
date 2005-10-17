@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.307 2005-10-16 06:04:30 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.308 2005-10-17 20:15:44 mangalam Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -32,7 +32,7 @@ Try to disable Spammers' machines:
 <head>
    <title>NCO Homepage</title>
    <meta name="Generator" content="Old fashioned typing">
-   <meta name="Author" content="Charles S. Zender">
+   <meta name="author" content="hjm">
    <meta name="Keywords" content="NCO Homepage, netCDF, netCDF operator, GCM, HDF, scientific data">
 </head>
 <body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
@@ -83,6 +83,7 @@ little money, click on the PayPal button:
 <li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
 <li><a href="#FAQ">FAQ</a></li>
 <li><a href="#NCAR">Using NCO at UCI, NCAR, and other HPCCs</a></li>
+<li><a href="#BM">NCO Parallel and Serial Benchmarks</a></li>
 <li><a href="#Bugs">Common NCO Build/Run Problems</a></li>
 <li><a href="#Contact">Contacting us</a></li>
 </ul>
@@ -93,6 +94,11 @@ little money, click on the PayPal button:
 <h2>NCO News &amp; Announcements</h2>
 
 <ul>
+<li>Oct 17, 2005: <a href="#BM">NCO Parallel Benchmarks now available.</a>  We have started to generate Benchamrks for the parallel operators 
+	on both AIX (Power4) and a variety of Linux machines accessing data from local files from OpenDAP servers.  
+	They will be updated as we add more features or more architectures to test on 
+	(THREDDS, over Optiputer network, parallel filesystems, etc.</li>
+
 <li>August&nbsp;22, 2005: NCO 3.0.2 released</li>
 
 <li>June&nbsp;10, 2005: NCO 3.0.1 released</li>
@@ -612,6 +618,35 @@ Users at NCAR should try the <i>supported</i> executables in
 <li>SCD <tt>tempest.ucar.edu</tt> (???): <tt>/usr/local/bin</tt></li>
 </ul>
 <hr></p>
+
+
+<!-- http://nco.sf.net#BM -->
+<dt><a name="BM"></dt>
+<h2>Parallel NCO Benchmarks.</h2>
+<p>
+This section deals with benchmarks that have been generated with both serial and parallel versions of the NCOs.
+There are 2 parallel versions - one that has been developed to use the 
+<a href="http://www.openmp.org/drupal/">OpenMP approach</a> 
+on SMP machines and one that uses 
+the <a href="http://www-unix.mcs.anl.gov/mpi/">Message Passing Interface (aka MPI)</a> to run over more distributed architectures.  
+</p>
+<p>
+In order to use the OpenMP approach, you have to have use a compiler that supports it.  
+The commercial <a href="http://www.pgroup.com/">Portland Group Compiler</a> and the commercial, but (under some conditions) free 
+<a href="http://www.intel.com/cd/software/products/asmo-na/eng/compilers/index.htm">Intel compiler</a> both support OpenMP; 
+gcc does not (yet, tho it is scheduled to support it at 4.2).  NB:While it will generate code for AMD chips 
+(Athlon, Opteron) the Intel compiler seems to give odd results on them.
+</p>
+<p>
+To use the MPI approach, you have to use one of two MPI implementations: MPICH2 or LAM.  We've run the NCOs using both; 
+the MPICH2 approach seems to be more stable but at the time of this writing Oct 17, 2005, not as easily installable as the 
+LAM distribution which installs and works bore or less out of the box with the Ubuntu distribution that we're using.  
+You can get <a href="http://torvalds.cs.mtsu.edu/~zach/debian/current/">MPICH2 packaged into debs by Zach Lowry here.
+</a>
+</p>
+<p><a href="http://dust.ess.uci.edu/nco/bm/index.html">The full NCO Benchmarks (in PDF form) are available here.</a>
+</p>
+<hr>
 
 <!-- http://nco.sf.net#bugs -->
 <dt><a name="Bugs"></a><a name="bugs"></a></dt>
