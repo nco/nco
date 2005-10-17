@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.70 2005-10-14 19:59:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.71 2005-10-17 07:13:54 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -61,7 +61,7 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
       *fl_fmt_enm=NC_FORMAT_NETCDF4_CLASSIC;
     } /* endif NETCDF4 */
 #else /* !ENABLE_NETCDF4 */
-    (void)fprintf(stderr,"%s: ERROR This NCO was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try without specifying file format, or specifying file_format as \"classic\" or \"64bit\".\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR This NCO was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try with different (or no) specified file format, such as \"classic\" or \"64bit\".\n",prg_nm_get());
 #endif /* !ENABLE_NETCDF4 */
   }else{
     (void)fprintf(stderr,"%s: ERROR Unknown output file format \"%s\" requested. Valid formats are (unambiguous leading characters of) \"classic\", \"64bit\", \"netcdf4\", and \"netcdf4_classic\".\n",prg_nm_get(),fl_fmt_sng);

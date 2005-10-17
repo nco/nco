@@ -1,3 +1,7 @@
+2005-10-16  Charlie Zender  <zender@uci.edu>
+
+	* Verify netcdf4 features work on Ubuntu AMD64 (sand) and Libranet x86 (elnino)
+
 2005-10-14  Charlie Zender  <zender@uci.edu>
 
 	* Alphabetize lists in Makefile.am

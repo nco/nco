@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.335 2005-10-16 06:04:30 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.336 2005-10-17 07:13:53 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2803,7 +2803,7 @@ To discover whether a netCDF file is a classic (32-bit offset) or newer
 @cindex 32-bit offset file format
 @cindex 64-bit offset file format
 @example
-% od -An -c -N4 ~/nco/data/foo_3c.nc
+% od -An -c -N4 foo_3c.nc
    C   D   F 001
 % od -An -c -N4 foo_364.nc
    C   D   F 002

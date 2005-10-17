@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.161 2005-10-14 19:59:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.162 2005-10-17 07:13:54 zender Exp $ */
 
 /* ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.161 2005-10-14 19:59:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.161 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.162 2005-10-17 07:13:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.162 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
   dmn_sct **dim;
@@ -514,10 +514,10 @@ main(int argc,char **argv)
     if(dbg_lvl > 0) (void)fprintf(stderr,gettext("local file %s:\n"),fl_in);
     /* 20051004 fxm: TODO nco611 */
 #undef PARALLELIZE_OVER_CL1
+#ifdef _OPENMP
 #ifdef PARALLELIZE_OVER_CL1
 #pragma omp parallel for default(none) private(idx,in_id,rcd) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,var_prc,var_prc_out)
 #endif /* !PARALLELIZE_OVER_CL1 */
-#ifdef _OPENMP
 #endif /* !_OPENMP */
     rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
     
@@ -538,6 +538,11 @@ main(int argc,char **argv)
 
     if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
       /* Loop over each record in current file */
+#ifdef _OPENMP
+#ifdef PARALLELIZE_OVER_CL1
+#pragma omp master
+#endif /* !PARALLELIZE_OVER_CL1 */
+#endif /* !_OPENMP */
       if(lmt_rec->srt > lmt_rec->end) (void)fprintf(stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
       for(idx_rec=lmt_rec->srt;idx_rec<=lmt_rec->end;idx_rec+=lmt_rec->srd){
 	if(fl_idx == fl_nbr-1 && idx_rec >= 1L+lmt_rec->end-lmt_rec->srd) LAST_RECORD=True;
