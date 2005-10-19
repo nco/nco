@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.109 2005-10-13 16:47:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.110 2005-10-19 19:53:54 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -102,8 +102,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.109 2005-10-13 16:47:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.109 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.110 2005-10-19 19:53:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.110 $";
   const char * const opt_sht_lst="4ACcD:d:Fhi:l:Oo:p:rRt:v:xw:-:";
   
   dmn_sct **dim;
@@ -551,7 +551,7 @@ main(int argc,char **argv)
     if(dbg_lvl > 0) (void)fflush(fp_stderr);
 
     var_prc_2[idx]=nco_var_dpl(var_prc_1[idx]);
-    (void)nco_var_mtd_refresh(in_id_2,var_prc_2[idx]); /* Routine contains OpenMP critical regions */
+    (void)nco_var_mtd_refresh(in_id_2,var_prc_2[idx]);
 
     (void)nco_var_get(in_id_1,var_prc_1[idx]); /* Routine contains OpenMP critical regions */
     (void)nco_var_get(in_id_2,var_prc_2[idx]); /* Routine contains OpenMP critical regions */

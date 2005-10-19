@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.93 2005-08-15 01:48:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.94 2005-10-19 19:53:54 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1244,7 +1244,6 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
 (const int nc_id, /* I [id] netCDF input-file ID */
  var_sct * const var) /* I/O [sct] Variable to update */
 {
-  /* Threads: Routine contains thread-unsafe calls protected by critical regions */
   /* Purpose: Update variable ID, number of dimensions, and missing_value attribute for given variable
      nco_var_mtd_refresh() is called in file loop in multi-file operators because each new file may have 
      different variable ID, type, and missing_value for same variable.

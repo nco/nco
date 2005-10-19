@@ -1,3 +1,10 @@
+2005-10-19  Charlie Zender  <zender@uci.edu>
+
+	* Mark nco_var_mtd_refresh() as non-OpenMP Critical
+	Based on discussions with Unidata, metadata access (as opposed to
+	data access) is thread-safe because all metadata is cached when
+	file is opened.
+
 2005-10-17  Harry Mangalam <hjm@tacgi.com>
 	
 	* Updated index.shtml to include Benchmark info

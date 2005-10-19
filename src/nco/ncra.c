@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.162 2005-10-17 07:13:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.163 2005-10-19 19:53:54 zender Exp $ */
 
 /* ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.162 2005-10-17 07:13:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.162 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.163 2005-10-19 19:53:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.163 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
   dmn_sct **dim;
@@ -516,16 +516,21 @@ main(int argc,char **argv)
 #undef PARALLELIZE_OVER_CL1
 #ifdef _OPENMP
 #ifdef PARALLELIZE_OVER_CL1
-#pragma omp parallel for default(none) private(idx,in_id,rcd) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,var_prc,var_prc_out)
+#pragma omp parallel default(none) private(idx,in_id,rcd) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,var_prc,var_prc_out)
 #endif /* !PARALLELIZE_OVER_CL1 */
 #endif /* !_OPENMP */
     rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
     
     /* csz: got to here re-OMP'ing
-       What to do with var_prc? */
+       What to do with var_prc? Want to keep it shared */
 
     /* Variables may have different ID, missing_value, type, in each file */
-    for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_mtd_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
+#ifdef _OPENMP
+#ifdef PARALLELIZE_OVER_CL1
+#pragma omp for
+#endif /* !PARALLELIZE_OVER_CL1 */
+#endif /* !_OPENMP */
+    for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
 
     /* Each file can have a different number of records to process */
     if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,idx_rec_out,FORTRAN_IDX_CNV); /* Routine is thread-unsafe */
@@ -540,7 +545,7 @@ main(int argc,char **argv)
       /* Loop over each record in current file */
 #ifdef _OPENMP
 #ifdef PARALLELIZE_OVER_CL1
-#pragma omp master
+#pragma omp single nowait
 #endif /* !PARALLELIZE_OVER_CL1 */
 #endif /* !_OPENMP */
       if(lmt_rec->srt > lmt_rec->end) (void)fprintf(stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
@@ -553,6 +558,9 @@ main(int argc,char **argv)
 #define PARALLELIZE_OVER_CL2 1
 #endif /* PARALLELIZE_OVER_CL1 */
 #ifdef _OPENMP
+#ifdef PARALLELIZE_OVER_CL1
+#pragma omp for default(none) private(idx,in_id,rcd) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,var_prc,var_prc_out)
+#endif /* !PARALLELIZE_OVER_CL1 */
 #ifdef PARALLELIZE_OVER_CL2
 #pragma omp parallel for default(none) private(idx) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,in_id,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
 #endif /* !PARALLELIZE_OVER_CL2 */
