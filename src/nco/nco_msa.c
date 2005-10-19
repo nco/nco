@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.29 2005-08-23 01:23:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.30 2005-10-19 23:32:35 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -20,6 +20,7 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
  lmt_all_sct **lmt_lst, /* [sct] List of limits in each dimension (this remains STATIC as we recurse) */
  var_sct *vara) /* [sct] Information for routine to read variable information and pass information between calls */
 {
+  /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
   /* Purpose: Multi-slab algorithm (recursive routine, returns a single slab pointer */
   int idx;
   int nbr_slb;
@@ -31,6 +32,7 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
 
   if(nbr_slb == 1){
     lmt[dpt_crr]=lmt_lst[dpt_crr]->lmt_dmn[0];
+    /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
     vp=nco_msa_rec_clc(dpt_crr+1,dpt_crr_max,lmt,lmt_lst,vara);
     return vp;
   } /* end if */
@@ -62,6 +64,7 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     
     for(idx=0;idx<nbr_slb;idx++){
       lmt[dpt_crr]=lmt_lst[dpt_crr]->lmt_dmn[idx];
+      /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
       cp_wrp[idx]=(char *)nco_msa_rec_clc(dpt_crr+1,dpt_crr_max,lmt,lmt_lst,vara);
       cp_sz[idx]=vara->sz;
     } /* end loop over idx */
@@ -145,11 +148,14 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     
     vp=(void *)nco_malloc(var_sz*nco_typ_lng(vara->type));
     
-    /* Check for stride */
-    if(mult_srd == 1L)
-      (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp,vara->type);
-    else
-      (void)nco_get_varm(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,vp,vara->type);
+    /* Block is critical/thread-safe for identical/distinct in_id's */
+    { /* begin potential OpenMP critical */
+      /* Check for stride */
+      if(mult_srd == 1L)
+	(void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp,vara->type);
+      else
+	(void)nco_get_varm(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,vp,vara->type);
+    } /* end potential OpenMP critical */
     
     dmn_srt=(long *)nco_free(dmn_srt);
     dmn_cnt=(long *)nco_free(dmn_cnt);
@@ -482,6 +488,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
  lmt_all_sct * const * lmt_lst, /* I multi-hyperslab limits */
  int nbr_dmn_fl) /* I [nbr] Number of multi-hyperslab limits */
 {
+  /* NB: nco_cpy_var_val_mlt_lmt() contains OpenMP critical region */
   /* Purpose: Copy variable data from input netCDF file to output netCDF file 
      Routine truncates dimensions in variable definition in output file according to user-specified limits.
      Routine copies variable-by-variable, old-style, used only by ncks */
@@ -527,8 +534,14 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   if(nbr_dim == 0){
     var_sz=1L;
     void_ptr=nco_malloc(nco_typ_lng(var_type));
-    (void)nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
-    (void)nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
+    /* Block is critical/thread-safe for identical/distinct in_id's */
+    { /* begin potential OpenMP critical */
+      (void)nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
+    } /* end potential OpenMP critical */
+    /* Block is always critical */
+    { /* begin OpenMP critical */
+      (void)nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
+    } /* end OpenMP critical */
     if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
     (void)nco_free(void_ptr);
     return;
@@ -567,10 +580,14 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   vara.type=var_type;
   
   /* Call super-dooper recursive routine */
+  /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
   void_ptr=nco_msa_rec_clc(0,nbr_dim,lmt,lmt_mult,&vara);
   var_sz=vara.sz;
   
-  (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_out,void_ptr,var_type);
+  /* Block is always critical */
+  { /* begin OpenMP critical */
+    (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_out,void_ptr,var_type);
+  } /* end OpenMP critical */
   
   if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
   
@@ -608,6 +625,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
  const bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
  const bool PRN_DMN_IDX_CRD_VAL) /* I [flg] Print dimension/coordinate indices/values */
 {
+  /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
   /* Purpose:
      Get variable with limits from input file
      User supplied dlm_sng, print var (includes nbr_dmim == 0)
@@ -653,7 +671,10 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   if(var.nbr_dim == 0){
     var.sz=1L;
     var.val.vp=nco_malloc(nco_typ_lng(var.type));
-    (void)nco_get_var1(in_id,var.id ,0L,var.val.vp,var.type);
+    /* Block is critical/thread-safe for identical/distinct in_id's */
+    { /* begin potential OpenMP critical */
+      (void)nco_get_var1(in_id,var.id,0L,var.val.vp,var.type);
+    } /* end potential OpenMP critical */
   } /* end if */
 
   dmn_id=(int *)nco_malloc(var.nbr_dim*sizeof(int));
@@ -674,6 +695,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     } /* end loop over jdx */
 
   /* Call super-dooper recursive routine */
+  /* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
   var.val.vp=nco_msa_rec_clc(0,var.nbr_dim,lmt,lmt_mult,&var);
   /* Call also initializes var.sz with final size */
 
@@ -792,6 +814,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         var_crd.type=dim[idx].type;
         var_crd.id=dim[idx].cid;
         /* Read in coordinate var with limits applied */
+	/* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
 	dim[idx].val.vp=nco_msa_rec_clc(0,1,lmt,lmt_mult+idx,&var_crd);
 
         /* typecast pointer before use */  

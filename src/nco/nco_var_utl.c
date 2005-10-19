@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.94 2005-10-19 19:53:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.95 2005-10-19 23:32:35 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -174,6 +174,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
  const bool NCO_BNR_WRT, /* I [flg] Write binary file */
  char *var_nm) /* I [sng] Variable name */
 {
+  /* NB: nco_cpy_var_val() contains OpenMP critical region */
   /* Purpose: Copy variable data from input netCDF file to output netCDF file
      Routine does not account for user-specified limits, it just copies what it findsa
      Routine copies variable-by-variable, old-style, called only by ncks */
@@ -266,6 +267,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
  const lmt_sct * const lmt, /* I [sct] Hyperslab limits */
  const int lmt_nbr) /* I [nbr] Number of hyperslab limits */
 {
+  /* NB: nco_cpy_var_val_lmt() contains OpenMP critical region */
   /* Purpose: Copy variable data from input netCDF file to output netCDF file 
      Truncate dimensions in variable definition in output file according to user-specified limits
      Copy variable-by-variable, old-style, used only by ncks */
@@ -605,9 +607,12 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   var->val.vp=(void *)nco_malloc_dbg(var->sz*nco_typ_lng(var->typ_dsk),"Unable to malloc() value buffer when retrieving variable from disk",fnc_nm);
 
   if(False) (void)fprintf(stdout,"%s: DEBUG: fxm TODO nco354. Calling nco_get_vara() for variable %s with nc_id=%d, var_id=%d, var_srt=%li, var_cnt = %li, var_val = %g, var_typ = %s\n",prg_nm_get(),var->nm,nc_id,var->id,var->srt[0],var->cnt[0],var->val.fp[0],nco_typ_sng(var->typ_dsk));
-  /* 20050519: Not sure why following nco_get_var*() routines are SMP-critical
-     netCDF library interface is designed to allow parallel reads
-     20050629: Removing this critical region causes multiple ncwa/ncra regressions */
+  /* 20051019: nco_get_var*() routines are SMP-critical
+     netCDF library allows parallel reads by different processes, not threads
+     Parallel reads to the same nc_id by different threads are critical because
+     the underlying UNIX file open has limited stdin caching
+     Parallel reads to different nc_id's for same underlying file work because
+     each UNIX file open (for same file) creates own stdin caching */
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
@@ -1002,6 +1007,7 @@ nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
  var_sct ** const var, /* I/O [sct] Variables to copy to output file */
  const int nbr_var) /* I [nbr] Number of variables */
 {
+  /* NB: nco_var_val_cpy() contains OpenMP critical region */
   /* Purpose: Copy variable data for every variable in input variable structure list
      from input file to output file */
   

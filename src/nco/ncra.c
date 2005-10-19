@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.163 2005-10-19 19:53:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.164 2005-10-19 23:32:35 zender Exp $ */
 
 /* ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.163 2005-10-19 19:53:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.163 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.164 2005-10-19 23:32:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.164 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
   dmn_sct **dim;
@@ -399,7 +399,8 @@ main(int argc,char **argv)
   
   /* We now have final list of variables to extract. Phew. */
   
-  /* Find coordinate/dimension values associated with user-specified limits */
+  /* Find coordinate/dimension values associated with user-specified limits
+     NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
 
   /* Find dimensions associated with variables to be extracted */
@@ -436,6 +437,7 @@ main(int argc,char **argv)
 
   /* Is this an ARM-format data file? */
   CNV_ARM=arm_inq(in_id);
+  /* NB: arm_base_time_get() with same nc_id contains OpenMP critical region */
   if(CNV_ARM) base_time_srt=arm_base_time_get(in_id);
 
   /* Fill in variable structure list for all extracted variables */
@@ -516,31 +518,40 @@ main(int argc,char **argv)
 #undef PARALLELIZE_OVER_CL1
 #ifdef _OPENMP
 #ifdef PARALLELIZE_OVER_CL1
-#pragma omp parallel default(none) private(idx,in_id,rcd) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,var_prc,var_prc_out)
+#pragma omp parallel default(none) private(idx,in_id,rcd) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,FORTRAN_IDX_CNV,fp_stderr,idx_rec,idx_rec_out,LAST_RECORD,lmt_rec,nbr_var_prc,nco_op_typ,out_id,prg,var_prc,var_prc_out)
 #endif /* !PARALLELIZE_OVER_CL1 */
 #endif /* !_OPENMP */
     rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
     
-    /* csz: got to here re-OMP'ing
-       What to do with var_prc? Want to keep it shared */
-
-    /* Variables may have different ID, missing_value, type, in each file */
 #ifdef _OPENMP
 #ifdef PARALLELIZE_OVER_CL1
-#pragma omp for
+#pragma omp single
+    { /* Begin structured-block for OpenMP single construct */
+      /* This block is executed with a single construct because 
+	 1. Wall-clock time is too short to merit special treatment
+	 2. (Potential) Critical region in arm_base_time_get() */
 #endif /* !PARALLELIZE_OVER_CL1 */
 #endif /* !_OPENMP */
-    for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
 
-    /* Each file can have a different number of records to process */
-    if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,idx_rec_out,FORTRAN_IDX_CNV); /* Routine is thread-unsafe */
+      /* Variables may have different ID, missing_value, type, in each file */
+      for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
+      
+      /* Each file can have a different number of records to process
+	 NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
+      if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,idx_rec_out,FORTRAN_IDX_CNV);
+      
+      /* NB: arm_base_time_get() with same nc_id contains OpenMP critical region */
+      if(CNV_ARM) base_time_crr=arm_base_time_get(in_id);
+      
+      /* Perform various error-checks on input file */
+      if(False) (void)nco_fl_cmp_err_chk();
+      
+#ifdef _OPENMP
+#ifdef PARALLELIZE_OVER_CL1
+    } /* End structured-block for OpenMP single construct */
+#endif /* !PARALLELIZE_OVER_CL1 */
+#endif /* !_OPENMP */
     
-    /* Is this an ARM-format data file? */
-    if(CNV_ARM) base_time_crr=arm_base_time_get(in_id); /* Routine is thread-unsafe */
-
-    /* Perform various error-checks on input file */
-    if(False) (void)nco_fl_cmp_err_chk();
-
     if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
       /* Loop over each record in current file */
 #ifdef _OPENMP
@@ -696,7 +707,8 @@ main(int argc,char **argv)
   /* Manually fix YYMMDD date which was mangled by averaging */
   if(CNV_CCM_CCSM_CF && prg == ncra) (void)nco_cnv_ccm_ccsm_cf_date(out_id,var_out,nbr_xtr);
   
-  /* Add time variable to output file */
+  /* Add time variable to output file
+     NB: arm_time_install() contains OpenMP critical region */
   if(CNV_ARM && prg == ncrcat) (void)nco_arm_time_install(out_id,base_time_srt);
   
   /* Copy averages to output file and free averaging buffers */

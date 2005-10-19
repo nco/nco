@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.23 2005-07-01 05:33:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.24 2005-10-19 23:32:35 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -243,6 +243,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
  const bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
  const bool PRN_DMN_IDX_CRD_VAL) /* I [flg] Print dimension/coordinate indices/values */
 {
+  /* NB: nco_prn_var_val_lmt() with same nc_id contains OpenMP critical region */
   /* Purpose: Print variable data 
      Routine truncates dimensions of printed output variable in accord with user-specified limits
      fxm: routine does not correctly print hyperslabs which are wrapped, or which use non-unity stride */
@@ -349,12 +350,15 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
       /* Allocate enough space to hold coordinate */
       dim[idx].val.vp=(void *)nco_malloc(dmn_cnt[idx]*nco_typ_lng(dim[idx].type));
       
-      /* Retrieve this coordinate */
-      if(dmn_srd[idx] == 1L) (void)nco_get_vara(in_id,dim[idx].cid,dmn_srt+idx,dmn_cnt+idx,dim[idx].val.vp,dim[idx].type); else nco_get_varm(in_id,dim[idx].cid,dmn_srt+idx,dmn_cnt+idx,dmn_srd+idx,(long *)NULL,dim[idx].val.vp,dim[idx].type);
-
+      /* Block is critical/thread-safe for identical/distinct in_id's */
+      { /* begin potential OpenMP critical */
+	/* Retrieve this coordinate */
+	if(dmn_srd[idx] == 1L) (void)nco_get_vara(in_id,dim[idx].cid,dmn_srt+idx,dmn_cnt+idx,dim[idx].val.vp,dim[idx].type); else nco_get_varm(in_id,dim[idx].cid,dmn_srt+idx,dmn_cnt+idx,dmn_srd+idx,(long *)NULL,dim[idx].val.vp,dim[idx].type);
+      } /* end potential OpenMP critical */
+      
       /* Typecast pointer to values before access */
       (void)cast_void_nctype(dim[idx].type,&dim[idx].val);
-
+      
     }else{ /* end if dimension is coordinate */   
       dim[idx].is_crd_dmn=False;
       dim[idx].cid=-1;
@@ -373,14 +377,17 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
     nco_exit(EXIT_FAILURE);
   } /* end if */
 
-  /* Get variable */
-  if(var.nbr_dim==0){
-    nco_get_var1(in_id,var.id,0L,var.val.vp,var.type); 
-  }else if(!SRD){
-    nco_get_vara(in_id,var.id,dmn_srt,dmn_cnt,var.val.vp,var.type);
-  }else if(SRD){
-    nco_get_varm(in_id,var.id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,var.val.vp,var.type);
-  } /* end else */
+  /* Block is critical/thread-safe for identical/distinct in_id's */
+  { /* begin potential OpenMP critical */
+    /* Get variable */
+    if(var.nbr_dim==0){
+      nco_get_var1(in_id,var.id,0L,var.val.vp,var.type); 
+    }else if(!SRD){
+      nco_get_vara(in_id,var.id,dmn_srt,dmn_cnt,var.val.vp,var.type);
+    }else if(SRD){
+      nco_get_varm(in_id,var.id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,var.val.vp,var.type);
+    } /* end else */
+  } /* end potential OpenMP critical */
 
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(var.type,&var.val);
