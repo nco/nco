@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.10 2005-08-15 01:48:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.11 2005-10-19 23:32:35 zender Exp $ */
 
 /* Purpose: ARM conventions */
 
@@ -45,6 +45,7 @@ arm_time_mk /* [fnc] Return time corresponding to current time offset */
 (const int nc_id, /* I [id] netCDF file ID */
  const double time_offset) /* I [s] Current time offset */
 {
+  /* NB: arm_time_mk() with same nc_id contains OpenMP critical region */
   /* Purpose: Return time corresponding to current time offset */
   double arm_time;
 
@@ -59,7 +60,11 @@ arm_time_mk /* [fnc] Return time corresponding to current time offset */
     (void)fprintf(stderr,"%s: WARNING ARM file does not have variable \"base_time\", exiting arm_time_mk()...\n",prg_nm_get());
     return -1;
   } /* end if */
-  (void)nco_get_var1(nc_id,base_time_id,0L,&base_time,NC_INT);
+
+  { /* begin potential OpenMP critical */
+    /* Block is critical/thread-safe for identical/distinct in_id's */
+    (void)nco_get_var1(nc_id,base_time_id,0L,&base_time,NC_INT);
+  } /* end potential OpenMP critical */
   arm_time=base_time+time_offset;
 
   return arm_time;
@@ -70,6 +75,7 @@ nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
 (const int nc_id, /* I [id] netCDF file ID */
  const nco_int base_time_srt) /* I [s] base_time of first input file */
 {
+  /* NB: arm_time_install() contains OpenMP critical region */
   /* Purpose: Add time variable to concatenated ARM files */
 
   const char att_long_name[]="UNIX time";
@@ -118,7 +124,11 @@ nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   /* If the time coordinate does not already exist, create it */
   time_offset=(double *)nco_malloc(cnt*nco_typ_lng(NC_DOUBLE));
 
-  (void)nco_get_vara(nc_id,time_offset_id,&srt,&cnt,(void *)time_offset,NC_DOUBLE);
+  { /* begin potential OpenMP critical */
+    /* Block is critical/thread-safe for identical/distinct in_id's */
+    (void)nco_get_vara(nc_id,time_offset_id,&srt,&cnt,(void *)time_offset,NC_DOUBLE);
+  } /* end potential OpenMP critical */
+
   for(idx=0L;idx<cnt;idx++) time_offset[idx]+=base_time_srt;
 
   /* File must be in define mode */
@@ -135,8 +145,11 @@ nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   /* Take file out of define mode */
   (void)nco_enddef(nc_id);
 
-  /* Write time variable */
-  (void)nco_put_vara(nc_id,time_id,&srt,&cnt,(void *)time_offset,NC_DOUBLE);
+  /* Block is always critical */
+  { /* begin OpenMP critical */
+    /* Write time variable */
+    (void)nco_put_vara(nc_id,time_id,&srt,&cnt,(void *)time_offset,NC_DOUBLE);
+  } /* end OpenMP critical */
 
   /* Free time_offset buffer */
   time_offset=(double *)nco_free(time_offset);
@@ -148,13 +161,18 @@ nco_int /* O [s] Value of base_time variable */
 arm_base_time_get /* [fnc] Get base_time variable from ARM file */
 (const int nc_id) /* I [id] netCDF file ID */
 {
+  /* NB: arm_base_time_get() with same nc_id contains OpenMP critical region */
   /* Purpose: Get base_time variable from ARM file */
   int base_time_id;
 
   nco_int base_time;
 
   (void)nco_inq_varid(nc_id,"base_time",&base_time_id);
-  (void)nco_get_var1(nc_id,base_time_id,0L,&base_time,NC_INT);
+
+  /* Block is critical/thread-safe for identical/distinct in_id's */
+  { /* begin potential OpenMP critical */
+    (void)nco_get_var1(nc_id,base_time_id,0L,&base_time,NC_INT);
+  } /* end potential OpenMP critical */
 
   return base_time;
 } /* end arm_base_time_get */

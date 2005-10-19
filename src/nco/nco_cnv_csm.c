@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.22 2005-09-23 19:30:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.23 2005-10-19 23:32:35 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -88,7 +88,11 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF file
     (void)fprintf(stderr,"%s: %s",prg_nm_get(),wrn_sng);
     return;
   } /* endif */
-  (void)nco_get_var1(nc_id,nbdate_id,0L,&nbdate,NC_INT);
+
+  { /* begin potential OpenMP critical */
+    /* Block is critical/thread-safe for identical/distinct in_id's */
+    (void)nco_get_var1(nc_id,nbdate_id,0L,&nbdate,NC_INT);
+  } /* end potential OpenMP critical */
   
   /* Find time variable (NC_DOUBLE: current day) */
   for(idx=0;idx<nbr_var;idx++){

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.29 2005-10-19 19:53:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.30 2005-10-19 23:32:35 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.29 2005-10-19 19:53:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.29 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.30 2005-10-19 23:32:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.30 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -430,7 +430,8 @@ main(int argc,char **argv)
   
   /* We now have final list of variables to extract. Phew. */
   
-  /* Find coordinate/dimension values associated with user-specified limits */
+  /* Find coordinate/dimension values associated with user-specified limits
+     NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
   
   /* Find dimensions associated with variables to be extracted */
@@ -467,6 +468,7 @@ main(int argc,char **argv)
   
   /* Is this an ARM-format data file? */
   CNV_ARM=arm_inq(in_id);
+  /* NB: arm_base_time_get() with same nc_id contains OpenMP critical region */
   if(CNV_ARM) base_time_srt=arm_base_time_get(in_id);
   
   /* Fill in variable structure list for all extracted variables */
@@ -590,11 +592,12 @@ main(int argc,char **argv)
   /* Variables may have different ID, missing_value, type, in each file */
   for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
   
-  /* Each file can have a different number of records to process */
-  if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,idx_rec_out,FORTRAN_IDX_CNV); /* Routine is thread-unsafe */
+  /* Each file can have a different number of records to process
+     NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
+  if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,idx_rec_out,FORTRAN_IDX_CNV);
   
-  /* Is this an ARM-format data file? */
-  if(CNV_ARM) base_time_crr=arm_base_time_get(in_id); /* Routine is thread-unsafe */
+  /* NB: arm_base_time_get() with same nc_id contains OpenMP critical region */
+  if(CNV_ARM) base_time_crr=arm_base_time_get(in_id);
   
   /* Perform various error-checks on input file */
   if(False) (void)nco_fl_cmp_err_chk();
@@ -832,11 +835,12 @@ main(int argc,char **argv)
     /* Variables may have different IDs and missing_values in each file */
     for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
     
-    /* Each file can have a different number of records to process */
-    if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,idx_rec_out,FORTRAN_IDX_CNV); /* Routine is thread-unsafe */
+    /* Each file can have a different number of records to process
+       NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
+    if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,idx_rec_out,FORTRAN_IDX_CNV);
     
-    /* Is this an ARM-format data file? */
-    if(CNV_ARM) base_time_crr=arm_base_time_get(in_id); /* Routine is thread-unsafe */
+    /* NB: arm_base_time_get() with same nc_id contains OpenMP critical region */
+    if(CNV_ARM) base_time_crr=arm_base_time_get(in_id);
     
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
@@ -1117,7 +1121,8 @@ main(int argc,char **argv)
     /* Begin Pass 3:  */
     /* End Pass 3:  */
 
-    /* Add time variable to output file */
+    /* Add time variable to output file
+       NB: arm_time_install() contains OpenMP critical region */
     if(CNV_ARM && prg == ncrcat) (void)nco_arm_time_install(out_id,base_time_srt);
 #ifdef ENABLE_MPI
     nco_close(out_id); 

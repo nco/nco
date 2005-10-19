@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.110 2005-10-19 19:53:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.111 2005-10-19 23:32:35 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -102,8 +102,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.110 2005-10-19 19:53:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.110 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.111 2005-10-19 23:32:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.111 $";
   const char * const opt_sht_lst="4ACcD:d:Fhi:l:Oo:p:rRt:v:xw:-:";
   
   dmn_sct **dim;
@@ -382,7 +382,8 @@ main(int argc,char **argv)
 
   /* We now have final list of variables to extract. Phew. */
   
-  /* Find coordinate/dimension values associated with user-specified limits */
+  /* Find coordinate/dimension values associated with user-specified limits
+     NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
   
   /* Find dimensions associated with variables to be extracted */

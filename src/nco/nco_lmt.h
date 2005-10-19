@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.22 2005-05-23 00:12:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.23 2005-10-19 23:32:35 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -28,6 +28,9 @@
 #ifdef ENABLE_UDUNITS
 #include <udunits.h> /* Unidata units library */
 #endif /* !ENABLE_UDUNITS */
+#ifdef _OPENMP
+#include <omp.h> /* OpenMP pragmas */
+#endif /* !_OPENMP */
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */

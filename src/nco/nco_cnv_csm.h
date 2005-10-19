@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.15 2005-09-23 19:30:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.16 2005-10-19 23:32:35 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -19,6 +19,9 @@
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
+#ifdef _OPENMP
+#include <omp.h> /* OpenMP pragmas */
+#endif /* !_OPENMP */
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */

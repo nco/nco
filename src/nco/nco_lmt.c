@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.40 2005-05-30 01:05:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.41 2005-10-19 23:32:35 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -182,7 +182,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
  long cnt_crr, /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
  bool FORTRAN_IDX_CNV) /* I [flg] Hyperslab indices obey Fortran convention */
 {
-  /* Threads: Routine is thread-unsafe */
+  /* NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   /* Purpose: Take parsed list of dimension names, minima, and
      maxima strings and find appropriate indices into dimensions 
      for formulation of dimension start and count vectors, or fail trying. */
@@ -311,8 +311,15 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* Allocate enough space to hold coordinate */
     dim.val.vp=(void *)nco_malloc(dmn_sz*nco_typ_lng(dim.type));
     
-    /* Retrieve coordinate */
-    nco_get_vara(nc_id,dim.cid,&dmn_srt,&dmn_sz,dim.val.vp,dim.type);
+#ifdef _OPENMP
+#pragma omp critical
+#endif /* _OPENMP */
+    { /* begin OpenMP critical */
+      /* Block is critical for identical in_id's
+	 Block is thread-safe for distinct in_id's */
+      /* Retrieve this coordinate */
+      nco_get_vara(nc_id,dim.cid,&dmn_srt,&dmn_sz,dim.val.vp,dim.type);
+    } /* end OpenMP critical */
     
     /* Convert coordinate to double-precision if neccessary */
     if(dim.type != NC_DOUBLE){

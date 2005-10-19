@@ -1,5 +1,20 @@
 2005-10-19  Charlie Zender  <zender@uci.edu>
 
+	* Mark all routines containing nco_put_var*() calls as OpenMP
+	critical regions. Most nco_put_var*() calls occur in top level 
+	routines and were already enclosed in critical regions.
+	Routines newly marked tended to be "under the radar" exceptions
+	present only in programs which were not parallelized (e.g., ncks).
+	These include: nco_cpy_var_val_mlt_lmt(), 
+	However, at least one routine, arm_time_install(), contained
+	a write statement which I had forgotten all about.
+
+	* Mark all routines containing nco_get_var*() calls as potential 
+	OpenMP critical regions (they are critical when called with
+	identical nc_id's). 
+	These include: arm_base_time_get(), nco_cnv_ccm_ccsm_cf_date(),
+	nco_prn_var_val_lmt(), nco_msa_rec_calc() 
+
 	* Mark nco_var_mtd_refresh() as non-OpenMP Critical
 	Based on discussions with Unidata, metadata access (as opposed to
 	data access) is thread-safe because all metadata is cached when

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.149 2005-10-13 16:47:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.150 2005-10-19 23:32:35 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.149 2005-10-13 16:47:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.149 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.150 2005-10-19 23:32:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.150 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
   extern char *optarg;
@@ -432,7 +432,8 @@ main(int argc,char **argv)
   /* subroutineize this code block */
   /* Add user specified limits lmt_all_lst */
   for(idx=0;idx<lmt_nbr;idx++){
-    /* Find coordinate/dimension values associated with user-specified limits */
+    /* Find coordinate/dimension values associated with user-specified limits
+     NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
     (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
     for(jdx=0;jdx<nbr_dmn_fl;jdx++) {
       if(!strcmp(lmt[idx]->nm,lmt_all_lst[jdx]->dmn_nm)){   
@@ -528,8 +529,10 @@ main(int argc,char **argv)
       if(dbg_lvl > 2 && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
       if(dbg_lvl > 0) (void)fflush(stderr);
       /* Old hyperslab routines */
+      /* NB: nco_cpy_var_val_lmt() contains OpenMP critical region */
       /* if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm); */
       /* Multi-slab routines */
+      /* NB: nco_cpy_var_val_mlt_lmt() contains OpenMP critical region */
       if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm);
     } /* end loop over idx */
 
@@ -564,11 +567,13 @@ main(int argc,char **argv)
     } /* end loop over idx */
   } /* end if PRN_VAR_METADATA */
 
-  /* if(PRN_VAR_DATA){
-    for(idx=0;idx<nbr_xtr;idx++) (void)nco_prn_var_val_lmt(in_id,xtr_lst[idx].nm,lmt,lmt_nbr,dlm_sng,FORTRAN_IDX_CNV,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL);
-    } */
+  /* if(PRN_VAR_DATA){ */
+  /* NB: nco_prn_var_val_lmt() with same nc_id contains OpenMP critical region */
+  /* for(idx=0;idx<nbr_xtr;idx++) (void)nco_prn_var_val_lmt(in_id,xtr_lst[idx].nm,lmt,lmt_nbr,dlm_sng,FORTRAN_IDX_CNV,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL);
+     } */
 
   if(PRN_VAR_DATA){
+    /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
     for(idx=0;idx<nbr_xtr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL);
   } /* end if PRN_VAR_DATA */
   /* Extraction list no longer needed */
