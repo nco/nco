@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.647 2005-10-20 01:25:48 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.648 2005-10-20 07:21:28 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -360,6 +360,7 @@ nco607. mpnc*: Define structures (rather than int arrays) for MPI messages
 nco609. Tune (or remove?) sleep interval in MPI operators
 nco611. Expand threaded region in SMP codes to include file open()s
         cd ~/nco/bld;/bin/rm $MY_OBJ_DIR/ncra.o;make USR_TKN=-DPARALLELIZE_OVER_CL1
+        cd ~/nco/bld;~/nco/bm/nco_bm.pl --dbg=0 --rgr --thr_nbr=2 --udp
 nco612. ncks ncdump-like features for netcdf4 files structures
 nco616. Remove assumption that type_id is proxy for precision (breaks in netCDF4)
 nco618. XML data discovery on NCAR CDP via Luca Cinquini protocol?

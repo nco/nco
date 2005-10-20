@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.165 2005-10-20 01:25:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.166 2005-10-20 07:21:28 zender Exp $ */
 
 /* ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.165 2005-10-20 01:25:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.165 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.166 2005-10-20 07:21:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.166 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
   dmn_sct **dim;
@@ -532,6 +532,7 @@ main(int argc,char **argv)
 	/* This block is executed with a single construct because 
 	   1. Wall-clock time is too short to merit special treatment
 	   2. Most information updated (e.g., lmt_rec, var_prc) is shared memory
+              Shared memory may be safely updated by a only single thread
 	   3. (Potential) Critical region in nco_lmt_evl()
 	   4. (Potential) Critical region in arm_base_time_get() */
 #endif /* !PARALLELIZE_OVER_CL1 */
