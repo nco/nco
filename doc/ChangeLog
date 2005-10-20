@@ -13,7 +13,7 @@
 	OpenMP critical regions (they are critical when called with
 	identical nc_id's). 
 	These include: arm_base_time_get(), nco_cnv_ccm_ccsm_cf_date(),
-	nco_prn_var_val_lmt(), nco_msa_rec_calc() 
+	nco_prn_var_val_lmt(), nco_msa_rec_calc(), nco_var_get()
 
 	* Mark nco_var_mtd_refresh() as non-OpenMP Critical
 	Based on discussions with Unidata, metadata access (as opposed to

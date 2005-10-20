@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.164 2005-10-19 23:32:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.165 2005-10-20 01:25:49 zender Exp $ */
 
 /* ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.164 2005-10-19 23:32:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.164 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.165 2005-10-20 01:25:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.165 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
   dmn_sct **dim;
@@ -131,6 +131,7 @@ main(int argc,char **argv)
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
+  FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
   int abb_arg_nbr=0;
   int fl_idx;
@@ -514,154 +515,168 @@ main(int argc,char **argv)
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
     if(dbg_lvl > 0) (void)fprintf(stderr,gettext("local file %s:\n"),fl_in);
+
     /* 20051004 fxm: TODO nco611 */
-#undef PARALLELIZE_OVER_CL1
 #ifdef _OPENMP
 #ifdef PARALLELIZE_OVER_CL1
-#pragma omp parallel default(none) private(idx,in_id,rcd) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,FORTRAN_IDX_CNV,fp_stderr,idx_rec,idx_rec_out,LAST_RECORD,lmt_rec,nbr_var_prc,nco_op_typ,out_id,prg,var_prc,var_prc_out)
+#pragma omp parallel default(none) private(idx,in_id,rcd) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_idx,fl_in,fl_nbr,fl_out,FORTRAN_IDX_CNV,fp_stderr,fp_stdout,idx_rec,idx_rec_out,LAST_RECORD,lmt_rec,nbr_var_prc,nco_op_typ,out_id,prg,var_prc,var_prc_out)
+    { /* Begin structured-block for OpenMP parallel construct */
 #endif /* !PARALLELIZE_OVER_CL1 */
 #endif /* !_OPENMP */
-    rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
-    
+      rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
+      
 #ifdef _OPENMP
 #ifdef PARALLELIZE_OVER_CL1
 #pragma omp single
-    { /* Begin structured-block for OpenMP single construct */
-      /* This block is executed with a single construct because 
-	 1. Wall-clock time is too short to merit special treatment
-	 2. (Potential) Critical region in arm_base_time_get() */
+      { /* Begin structured-block for OpenMP single construct */
+	/* This block is executed with a single construct because 
+	   1. Wall-clock time is too short to merit special treatment
+	   2. Most information updated (e.g., lmt_rec, var_prc) is shared memory
+	   3. (Potential) Critical region in nco_lmt_evl()
+	   4. (Potential) Critical region in arm_base_time_get() */
 #endif /* !PARALLELIZE_OVER_CL1 */
 #endif /* !_OPENMP */
-
-      /* Variables may have different ID, missing_value, type, in each file */
-      for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
-      
-      /* Each file can have a different number of records to process
-	 NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
-      if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,idx_rec_out,FORTRAN_IDX_CNV);
-      
-      /* NB: arm_base_time_get() with same nc_id contains OpenMP critical region */
-      if(CNV_ARM) base_time_crr=arm_base_time_get(in_id);
-      
-      /* Perform various error-checks on input file */
-      if(False) (void)nco_fl_cmp_err_chk();
-      
+	  
+	/* Variables may have different ID, missing_value, type, in each file */
+	for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
+	
+	/* Each file can have a different number of records to process
+	   NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
+	if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,idx_rec_out,FORTRAN_IDX_CNV);
+	
+	/* NB: arm_base_time_get() with same nc_id contains OpenMP critical region */
+	if(CNV_ARM) base_time_crr=arm_base_time_get(in_id);
+	
+	/* Perform various error-checks on input file */
+	if(False) (void)nco_fl_cmp_err_chk();
+	
 #ifdef _OPENMP
 #ifdef PARALLELIZE_OVER_CL1
-    } /* End structured-block for OpenMP single construct */
+      } /* End structured-block for OpenMP single construct */
 #endif /* !PARALLELIZE_OVER_CL1 */
 #endif /* !_OPENMP */
-    
-    if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
-      /* Loop over each record in current file */
+      
+      if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
+	/* Loop over each record in current file */
+	
 #ifdef _OPENMP
 #ifdef PARALLELIZE_OVER_CL1
 #pragma omp single nowait
 #endif /* !PARALLELIZE_OVER_CL1 */
 #endif /* !_OPENMP */
-      if(lmt_rec->srt > lmt_rec->end) (void)fprintf(stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
-      for(idx_rec=lmt_rec->srt;idx_rec<=lmt_rec->end;idx_rec+=lmt_rec->srd){
-	if(fl_idx == fl_nbr-1 && idx_rec >= 1L+lmt_rec->end-lmt_rec->srd) LAST_RECORD=True;
-	/* Process all variables in current record */
-	if(dbg_lvl > 1) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
-	/* 20051004 fxm: TODO nco611 Operators were historically threaded in the variable loop rather than the record loop. However, buffer conflicts during reads make this not so great */
+	if(lmt_rec->srt > lmt_rec->end) (void)fprintf(fp_stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
+	
+	for(idx_rec=lmt_rec->srt;idx_rec<=lmt_rec->end;idx_rec+=lmt_rec->srd){
+	  if(fl_idx == fl_nbr-1 && idx_rec >= 1L+lmt_rec->end-lmt_rec->srd) LAST_RECORD=True;
+	  /* Process all variables in current record */
+	  if(dbg_lvl > 1) (void)fprintf(fp_stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
+	  /* 20051004 fxm: TODO nco611 Operators were historically threaded in the variable loop rather than the record loop. However, buffer conflicts during reads make this not so great */
 #ifndef PARALLELIZE_OVER_CL1
 #define PARALLELIZE_OVER_CL2 1
 #endif /* PARALLELIZE_OVER_CL1 */
 #ifdef _OPENMP
 #ifdef PARALLELIZE_OVER_CL1
-#pragma omp for default(none) private(idx,in_id,rcd) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,var_prc,var_prc_out)
+#pragma omp for private(idx,in_id,rcd)
 #endif /* !PARALLELIZE_OVER_CL1 */
 #ifdef PARALLELIZE_OVER_CL2
 #pragma omp parallel for default(none) private(idx) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,in_id,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
 #endif /* !PARALLELIZE_OVER_CL2 */
 #endif /* !_OPENMP */
-	for(idx=0;idx<nbr_var_prc;idx++){
-	  if(dbg_lvl > 2) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	  if(dbg_lvl > 0) (void)fflush(fp_stderr);
-	  /* Update hyperslab start indices to current record for each variable */
-	  var_prc[idx]->srt[0]=idx_rec;
-	  var_prc[idx]->end[0]=idx_rec;
-	  var_prc[idx]->cnt[0]=1L;
-	  /* Retrieve variable from disk into memory */
-	  (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
-	  
-	  if(prg == ncra){
-	    /* Convert char, short, long, int types to doubles before arithmetic
-	       Output variable type is "sticky" so only convert on first record */
-	    if(idx_rec_out == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
-	    var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
-	    /* Perform arithmetic operations: avg, min, max, ttl, ... */
-	    nco_opr_drv(idx_rec_out,nco_op_typ,var_prc[idx],var_prc_out[idx]);
-	  } /* end if ncra */
-	  	  	  
-	  /* Append current record to output file */
-	  if(prg == ncrcat){
-	    var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=idx_rec_out;
-	    var_prc_out[idx]->cnt[0]=1L;
-	    /* Replace this time_offset value with time_offset from initial file base_time */
-	    if(CNV_ARM && !strcmp(var_prc[idx]->nm,"time_offset")) var_prc[idx]->val.dp[0]+=(base_time_crr-base_time_srt);
+	  for(idx=0;idx<nbr_var_prc;idx++){
+	    if(dbg_lvl > 2) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	    if(dbg_lvl > 0) (void)fflush(fp_stderr);
+	    /* Update hyperslab start indices to current record for each variable */
+	    var_prc[idx]->srt[0]=idx_rec;
+	    var_prc[idx]->end[0]=idx_rec;
+	    var_prc[idx]->cnt[0]=1L;
+	    /* Retrieve variable from disk into memory */
+	    /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
+	    (void)nco_var_get(in_id,var_prc[idx]);
+	    
+	    if(prg == ncra){
+	      /* Convert char, short, long, int types to doubles before arithmetic
+		 Output variable type is "sticky" so only convert on first record */
+	      if(idx_rec_out == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
+	      var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
+	      /* Perform arithmetic operations: avg, min, max, ttl, ... */
+	      nco_opr_drv(idx_rec_out,nco_op_typ,var_prc[idx],var_prc_out[idx]);
+	    } /* end if ncra */
+	    
+	    /* Append current record to output file */
+	    if(prg == ncrcat){
+	      var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=idx_rec_out;
+	      var_prc_out[idx]->cnt[0]=1L;
+	      /* Replace this time_offset value with time_offset from initial file base_time */
+	      if(CNV_ARM && !strcmp(var_prc[idx]->nm,"time_offset")) var_prc[idx]->val.dp[0]+=(base_time_crr-base_time_srt);
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
-	    if(var_prc_out[idx]->sz_rec > 1) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
-	  } /* end if ncrcat */
-
-	  /* Warn if record coordinate, if any, is not monotonic */
-	  if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,idx_rec_out);
-	  /* Convert missing_value, if any, back to unpacked type
-	     Otherwise missing_value will be double-promoted when next record read 
-	     Do not convert after last record otherwise normalization fails 
-	     due to wrong missing_value type (needs promoted type, not unpacked type) */
-	  if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk && !LAST_RECORD) var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
+	      if(var_prc_out[idx]->sz_rec > 1) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
+	    } /* end if ncrcat */
+	    
+	    /* Warn if record coordinate, if any, is not monotonic */
+	    if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,idx_rec_out);
+	    /* Convert missing_value, if any, back to unpacked type
+	       Otherwise missing_value will be double-promoted when next record read 
+	       Do not convert after last record otherwise normalization fails 
+	       due to wrong missing_value type (needs promoted type, not unpacked type) */
+	    if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk && !LAST_RECORD) var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
+	    /* Free current input buffer */
+	    var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+	  } /* end (OpenMP parallel for) loop over variables */
+	  idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
+	  if(dbg_lvl > 2) (void)fprintf(fp_stderr,"\n");
+	} /* end loop over idx_rec */
+	/* Warn if fewer than number of requested records were read and final file has been processed */
+	if(lmt_rec->lmt_typ == lmt_dmn_idx && lmt_rec->is_usr_spc_min && lmt_rec->is_usr_spc_max){
+	  long rec_nbr_rqs; /* Number of records user requested */
+	  rec_nbr_rqs=1L+(lmt_rec->max_idx-lmt_rec->min_idx)/lmt_rec->srd;
+	  if(fl_idx == fl_nbr-1 && rec_nbr_rqs != idx_rec_out) (void)fprintf(fp_stdout,gettext("%s: WARNING User requested %li records but only %li were found\n"),prg_nm_get(),rec_nbr_rqs,idx_rec_out);
+	} /* end if */
+	/* Error if no records were read and final file has been processed */
+	if(idx_rec_out <= 0 && fl_idx == fl_nbr-1){
+	  (void)fprintf(fp_stdout,gettext("%s: ERROR No records lay within specified hyperslab\n"),prg_nm_get());
+	  nco_exit(EXIT_FAILURE);
+	} /* end if */
+	/* End of ncra, ncrcat section */
+      }else{ /* ncea */
+#ifdef _OPENMP
+#ifdef PARALLELIZE_OVER_CL2
+#pragma omp parallel for default(none) private(idx) shared(dbg_lvl,fl_idx,fp_stderr,in_id,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out)
+#endif /* !PARALLELIZE_OVER_CL2 */
+#endif /* !_OPENMP */
+	for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
+	  if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	  if(dbg_lvl > 0) (void)fflush(fp_stderr);
+	  /* Retrieve variable from disk into memory */
+	  (void)nco_var_get(in_id,var_prc[idx]);
+	  
+	  /* Convert char, short, long, int types to doubles before arithmetic
+	     Output variable type is "sticky" so only convert on first record */
+	  if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
+	  var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
+	  /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not idx_rec_out! */
+	  nco_opr_drv(fl_idx,nco_op_typ,var_prc[idx],var_prc_out[idx]);
+	  
 	  /* Free current input buffer */
 	  var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
-	} /* end (OpenMP parallel for) loop over variables */
-	idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
-	if(dbg_lvl > 2) (void)fprintf(stderr,"\n");
-      } /* end loop over idx_rec */
-      /* Warn if fewer than number of requested records were read and final file has been processed */
-      if(lmt_rec->lmt_typ == lmt_dmn_idx && lmt_rec->is_usr_spc_min && lmt_rec->is_usr_spc_max){
-	long rec_nbr_rqs; /* Number of records user requested */
-	rec_nbr_rqs=1L+(lmt_rec->max_idx-lmt_rec->min_idx)/lmt_rec->srd;
-	if(fl_idx == fl_nbr-1 && rec_nbr_rqs != idx_rec_out) (void)fprintf(stdout,gettext("%s: WARNING User requested %li records but only %li were found\n"),prg_nm_get(),rec_nbr_rqs,idx_rec_out);
-      } /* end if */
-      /* Error if no records were read and final file has been processed */
-      if(idx_rec_out <= 0 && fl_idx == fl_nbr-1){
-	(void)fprintf(stdout,gettext("%s: ERROR No records lay within specified hyperslab\n"),prg_nm_get());
-	nco_exit(EXIT_FAILURE);
-      } /* end if */
-      /* End of ncra, ncrcat section */
-    }else{ /* ncea */
-#ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx) shared(dbg_lvl,fl_idx,fp_stderr,in_id,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out)
-#endif /* !_OPENMP */
-      for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
-	if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	if(dbg_lvl > 0) (void)fflush(fp_stderr);
-	/* Retrieve variable from disk into memory */
-	(void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
-	
-	/* Convert char, short, long, int types to doubles before arithmetic
-	   Output variable type is "sticky" so only convert on first record */
-	if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
-	var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
-	/* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not idx_rec_out! */
-	nco_opr_drv(fl_idx,nco_op_typ,var_prc[idx],var_prc_out[idx]);
-	
-	/* Free current input buffer */
-	var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
-      } /* end (OpenMP parallel for) loop over idx */
-    } /* end else ncea */
-
-    if(dbg_lvl > 1) (void)fprintf(stderr,"\n");
+	} /* end (OpenMP parallel for) loop over idx */
+      } /* end else ncea */
       
-    /* Close input netCDF file */
-    nco_close(in_id);
+      if(dbg_lvl > 1) (void)fprintf(fp_stderr,"\n");
+      
+      /* Close input netCDF file */
+      nco_close(in_id);
+      
+#ifdef _OPENMP
+#ifdef PARALLELIZE_OVER_CL1
+    } /* End structured-block for OpenMP parallel construct */
+#endif /* !PARALLELIZE_OVER_CL1 */
+#endif /* !_OPENMP */
     
     /* Dispose local copy of file */
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
-
+    
   } /* end loop over fl_idx */
   
   /* Normalize, multiply, etc where necessary */
@@ -734,7 +749,7 @@ main(int argc,char **argv)
   
   /* ncra-specific memory cleanup */
   if(prg == ncra || prg == ncrcat) lmt_rec=nco_lmt_free(lmt_rec);
-
+  
   /* NCO-generic clean-up */
   /* Free individual strings */
   if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
@@ -761,7 +776,7 @@ main(int argc,char **argv)
   var_prc_out=(var_sct **)nco_free(var_prc_out);
   var_fix=(var_sct **)nco_free(var_fix);
   var_fix_out=(var_sct **)nco_free(var_fix_out);
-
+  
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.95 2005-10-19 23:32:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.96 2005-10-20 01:25:49 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -599,7 +599,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
 (const int nc_id, /* I [id] netCDF file ID */
  var_sct *var) /* I [sct] Variable to get */
 {
-  /* Threads: Routine contains thread-unsafe calls protected by critical regions */
+  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
   /* Purpose: Allocate and retrieve given variable hyperslab from disk into memory
      If variable is packed on disk then inquire about scale_factor and add_offset */
   const char fnc_nm[]="nco_var_get()"; /* [sng] Function name */
@@ -607,14 +607,18 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   var->val.vp=(void *)nco_malloc_dbg(var->sz*nco_typ_lng(var->typ_dsk),"Unable to malloc() value buffer when retrieving variable from disk",fnc_nm);
 
   if(False) (void)fprintf(stdout,"%s: DEBUG: fxm TODO nco354. Calling nco_get_vara() for variable %s with nc_id=%d, var_id=%d, var_srt=%li, var_cnt = %li, var_val = %g, var_typ = %s\n",prg_nm_get(),var->nm,nc_id,var->id,var->srt[0],var->cnt[0],var->val.fp[0],nco_typ_sng(var->typ_dsk));
-  /* 20051019: nco_get_var*() routines are SMP-critical
+  /* 20051019: nco_get_var*() routines are potentially SMP-critical
      netCDF library allows parallel reads by different processes, not threads
      Parallel reads to the same nc_id by different threads are critical because
      the underlying UNIX file open has limited stdin caching
      Parallel reads to different nc_id's for same underlying file work because
      each UNIX file open (for same file) creates own stdin caching */
+  /* 20050629: Removing this critical region and calling with identical nc_id's causes multiple ncwa/ncra regressions */
 #ifdef _OPENMP
+  /* fxm: TODO nco611 Remove ifndef once ncwa/ncra threads access distinct nc_id's */
+#ifndef PARALLELIZE_OVER_CL1
 #pragma omp critical
+#endif /* !PARALLELIZE_OVER_CL1 */
 #endif /* _OPENMP */
   { /* begin OpenMP critical */
     if(var->sz > 1){

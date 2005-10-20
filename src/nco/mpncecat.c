@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.25 2005-10-19 23:32:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.26 2005-10-20 01:25:49 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.25 2005-10-19 23:32:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.25 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.26 2005-10-20 01:25:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.26 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRSv:x-:";
   
   dmn_sct *rec_dmn;
@@ -637,6 +637,7 @@ main(int argc,char **argv)
 	    /* Variables may have different ID, missing_value, type, in each file */
 	    (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
 	    /* Retrieve variable from disk into memory */
+	    /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
 	    (void)nco_var_get(in_id,var_prc[idx]);
 	    /* Size of record dimension is 1 in output file */
 	    var_prc_out[idx]->cnt[0]=1L;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.39 2005-10-19 23:32:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.40 2005-10-20 01:25:49 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.39 2005-10-19 23:32:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.39 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.40 2005-10-20 01:25:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.40 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRSt:v:xy:-:";
   
   dmn_sct **dim_1;
@@ -627,12 +627,14 @@ main(int argc,char **argv)
 	  
 	  (void)nco_var_mtd_refresh(in_id_1,var_prc_1[idx]);
 	  has_mss_val=var_prc_1[idx]->has_mss_val; 
-	  (void)nco_var_get(in_id_1,var_prc_1[idx]); /* Routine contains OpenMP critical regions */
+	  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
+	  (void)nco_var_get(in_id_1,var_prc_1[idx]);
 	  
 	  /* Find and set variable dmn_nbr, ID, mss_val, type in second file */
 	  (void)nco_var_mtd_refresh(in_id_2,var_prc_2[idx]);
 	  
 	  /* Read hyperslab from second file */
+	  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
 	  (void)nco_var_get(in_id_2,var_prc_2[idx]);
 	  
 	  /* Determine whether var1 and var2 conform */

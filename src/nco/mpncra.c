@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.30 2005-10-19 23:32:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.31 2005-10-20 01:25:49 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.30 2005-10-19 23:32:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.30 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.31 2005-10-20 01:25:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.31 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -681,7 +681,8 @@ main(int argc,char **argv)
 	  var_prc[idx]->end[0]=idx_rec;
 	  var_prc[idx]->cnt[0]=1L;
 	  /* Retrieve variable from disk into memory */
-	  (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
+	  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
+	  (void)nco_var_get(in_id,var_prc[idx]);
 	  if(prg == ncra){
 	    /* Convert char, short, long, int types to doubles before arithmetic */
 	    /* Output variable type is "sticky" so only convert on first record */
@@ -790,7 +791,8 @@ main(int argc,char **argv)
 	  if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	  if(dbg_lvl > 0) (void)fflush(fp_stderr);
 	  /* Retrieve variable from disk into memory */
-	  (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
+	  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
+	  (void)nco_var_get(in_id,var_prc[idx]);
 	  
 	  /* Convert char, short, long, int types to doubles before arithmetic */
 	  /* var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ); */
@@ -914,7 +916,8 @@ main(int argc,char **argv)
 	      var_prc[idx]->end[0]=idx_rec;
 	      var_prc[idx]->cnt[0]=1L;
 	      /* Retrieve variable from disk into memory */
-	      (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
+	      /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
+	      (void)nco_var_get(in_id,var_prc[idx]);
 	      if(prg == ncra){
 		/* Convert char, short, long, int types to doubles before arithmetic */
 		var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
@@ -1021,7 +1024,8 @@ main(int argc,char **argv)
 	      if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	      if(dbg_lvl > 0) (void)fflush(fp_stderr);
 	      /* Retrieve variable from disk into memory */
-	      (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
+	      /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
+	      (void)nco_var_get(in_id,var_prc[idx]);
 	      
 	      /* Convert char, short, long, int types to doubles before arithmetic */
 	      /* var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ); */

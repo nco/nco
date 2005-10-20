@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.189 2005-10-19 23:32:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.190 2005-10-20 01:25:49 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.189 2005-10-19 23:32:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.189 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.190 2005-10-20 01:25:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.190 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -646,7 +646,7 @@ main(int argc,char **argv)
       wgt=nco_var_fll(in_id,wgt_id,wgt_nm,dim,nbr_dmn_xtr);
       
       /* Retrieve weighting variable */
-      (void)nco_var_get(in_id,wgt); /* Routine contains OpenMP critical regions */
+      (void)nco_var_get(in_id,wgt);
       /* fxm: Perhaps should allocate default tally array for wgt here
        That way, when wgt conforms to the first var_prc_out and it therefore
        does not get a tally array copied by nco_var_dpl() in nco_var_cnf_dmn(), 
@@ -663,7 +663,8 @@ main(int argc,char **argv)
       msk=nco_var_fll(in_id,msk_id,msk_nm,dim,nbr_dmn_xtr);
       
       /* Retrieve mask variable */
-      (void)nco_var_get(in_id,msk); /* Routine contains OpenMP critical regions */
+      /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
+      (void)nco_var_get(in_id,msk);
     } /* end if */
 
 #ifdef _OPENMP
@@ -695,7 +696,8 @@ main(int argc,char **argv)
       (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
       /* Retrieve variable from disk into memory */
       if(dbg_lvl > 4) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 About to nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
-      (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
+      /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
+      (void)nco_var_get(in_id,var_prc[idx]);
       if(dbg_lvl > 4) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 Finished nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
       
       /* Convert char, short, long, int types to doubles before arithmetic */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.72 2005-10-19 23:32:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.73 2005-10-20 01:25:49 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.72 2005-10-19 23:32:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.72 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.73 2005-10-20 01:25:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.73 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:-:";
   
   dmn_sct **dim_1;
@@ -506,7 +506,7 @@ main(int argc,char **argv)
     
     (void)nco_var_mtd_refresh(in_id_1,var_prc_1[idx]);
     has_mss_val=var_prc_1[idx]->has_mss_val; 
-    (void)nco_var_get(in_id_1,var_prc_1[idx]); /* Routine contains OpenMP critical regions */
+    (void)nco_var_get(in_id_1,var_prc_1[idx]);
     
     /* Find and set variable dmn_nbr, ID, mss_val, type in second file */
     (void)nco_var_mtd_refresh(in_id_2,var_prc_2[idx]);

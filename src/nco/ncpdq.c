@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.88 2005-10-19 23:32:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.89 2005-10-20 01:25:49 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.88 2005-10-19 23:32:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.88 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.89 2005-10-20 01:25:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.89 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -713,7 +713,8 @@ main(int argc,char **argv)
       if(dbg_lvl > 0) (void)fflush(fp_stderr);
       
       /* Retrieve variable from disk into memory */
-      (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
+      /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
+      (void)nco_var_get(in_id,var_prc[idx]);
       
       if(dmn_rdr_nbr > 0){
 	if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){

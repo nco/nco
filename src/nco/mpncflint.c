@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.27 2005-10-19 23:32:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.28 2005-10-20 01:25:49 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -105,8 +105,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.27 2005-10-19 23:32:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.27 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.28 2005-10-20 01:25:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.28 $";
   const char * const opt_sht_lst="4ACcD:d:Fhi:l:Oo:p:rRSt:v:xw:-:";
   
   dmn_sct **dim;
@@ -561,6 +561,7 @@ main(int argc,char **argv)
     } /* end if */
     
     /* Retrieve interpolation variable */
+    /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
     (void)nco_var_get(in_id_1,ntp_1);
     (void)nco_var_get(in_id_2,ntp_2);
     
@@ -679,8 +680,9 @@ main(int argc,char **argv)
 	  var_prc_2[idx]=nco_var_dpl(var_prc_1[idx]);
 	  (void)nco_var_mtd_refresh(in_id_2,var_prc_2[idx]);
 	  
-	  (void)nco_var_get(in_id_1,var_prc_1[idx]); /* Routine contains OpenMP critical regions */
-	  (void)nco_var_get(in_id_2,var_prc_2[idx]); /* Routine contains OpenMP critical regions */
+	  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
+	  (void)nco_var_get(in_id_1,var_prc_1[idx]);
+	  (void)nco_var_get(in_id_2,var_prc_2[idx]);
 	  
 	  wgt_out_1=nco_var_cnf_dmn(var_prc_1[idx],wgt_1,wgt_out_1,MUST_CONFORM,&DO_CONFORM);
 	  wgt_out_2=nco_var_cnf_dmn(var_prc_2[idx],wgt_2,wgt_out_2,MUST_CONFORM,&DO_CONFORM);
