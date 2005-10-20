@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.648 2005-10-20 07:21:28 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.649 2005-10-20 23:03:19 mangalam Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -555,9 +555,28 @@ bld65. stromberg Install DAP (THREDDS if necessary) on ESMF UCI
 bld66. hjm Eliminate test1.sh,test2.sh from source tree/configure
 bld67. hjm Move benchmarks to 3x3 or 4x3 portrait format on one page
 bld68. hjm Verify configure with minimal options works with MACOSX (cg1)
-bld69. 
+bld69. hjm make configure ignore system libs in favor of dev libs or figure
+         out a way to do this (change name of local dev lib (libnco-dev)?
+ 
 ************************************************************************
 End bldXXX TODOs
+************************************************************************
+
+************************************************************************
+Begin bnchXXX TODOs - benchmarking & analysis/presentation of same
+************************************************************************
+Benchmark items:
+bnch01. hjm make benchmark script return remote benchmark data as netcdf 
+	data, or re-write server side to convert returned data into netcdf
+	variables and append to a netcdf file.
+bnch02. hjm add code to analysis/plotting script (at least until bnch01 is
+	ready) to filter data points that vary more than 1 SD from mean to remove
+	bad data.
+bnch03. hjm should plotting script use linear regression or a log()
+	transform to analyze the relationship?  Check with other MPI analyses.
+
+************************************************************************
+End bnchXXX TODOs
 ************************************************************************
 
 ************************************************************************
