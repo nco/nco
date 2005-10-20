@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rec_var.c,v 1.7 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rec_var.c,v 1.8 2005-10-20 20:27:14 zender Exp $ */
 
 /* Purpose: Record variable utilities */
 
@@ -64,8 +64,15 @@ rec_crd_chk /* Check for monotonicity of coordinate values */
   
   if(idx_rec_out > 1){
     if(((rec_crd_val_crr > rec_crd_val_lst) && monotonic_direction == decreasing) ||
-       ((rec_crd_val_crr < rec_crd_val_lst) && monotonic_direction == increasing))
-      (void)fprintf(stderr,"%s: WARNING Record coordinate \"%s\" does not monotonically %s between (input file %s record indices: %ld, %ld) (output file %s record indices %ld, %ld) record coordinate values %f, %f\n",prg_nm_get(),var->nm,(monotonic_direction == decreasing ? "decrease" : "increase"),fl_in,idx_rec-1,idx_rec,fl_out,idx_rec_out-1,idx_rec_out,rec_crd_val_lst,rec_crd_val_crr);
+       ((rec_crd_val_crr < rec_crd_val_lst) && monotonic_direction == increasing)){
+      if(idx_rec-1 == -1){
+	/* Inter-file non-monotonicity */
+	(void)fprintf(stderr,"%s: WARNING Inter-file non-monotonicity. Record coordinate \"%s\" does not monotonically %s between last specified record of previous input file (whose name is not cached locally) and first specified record (i.e., record index = %ld) of current input file (%s). Output file %s will contain these non-monotonic record coordinate values (%f, %f) at record indices %ld, %ld.\n",prg_nm_get(),var->nm,(monotonic_direction == decreasing ? "decrease" : "increase"),idx_rec,fl_in,fl_out,rec_crd_val_lst,rec_crd_val_crr,idx_rec_out-1,idx_rec_out);
+      }else{
+	/* Intra-file non-monotonicity */
+	(void)fprintf(stderr,"%s: WARNING Intra-file non-monotonicity. Record coordinate \"%s\" does not monotonically %s between (input file %s record indices: %ld, %ld) (output file %s record indices %ld, %ld) record coordinate values %f, %f\n",prg_nm_get(),var->nm,(monotonic_direction == decreasing ? "decrease" : "increase"),fl_in,idx_rec-1,idx_rec,fl_out,idx_rec_out-1,idx_rec_out,rec_crd_val_lst,rec_crd_val_crr);
+      } /* end if Intra-file non-monotonicity */
+    } /* end if not monotonic */
   }else if(idx_rec_out == 1){
     if(rec_crd_val_crr > rec_crd_val_lst) monotonic_direction=increasing; else monotonic_direction=decreasing;
   } /* end if */
