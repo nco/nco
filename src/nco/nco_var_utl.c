@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.96 2005-10-20 01:25:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.97 2005-10-21 18:04:57 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -616,9 +616,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   /* 20050629: Removing this critical region and calling with identical nc_id's causes multiple ncwa/ncra regressions */
 #ifdef _OPENMP
   /* fxm: TODO nco611 Remove ifndef once ncwa/ncra threads access distinct nc_id's */
-#ifndef PARALLELIZE_OVER_CL1
 #pragma omp critical
-#endif /* !PARALLELIZE_OVER_CL1 */
 #endif /* _OPENMP */
   { /* begin OpenMP critical */
     if(var->sz > 1){
