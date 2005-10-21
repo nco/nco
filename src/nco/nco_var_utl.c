@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.98 2005-10-21 18:05:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.99 2005-10-21 22:34:44 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -614,10 +614,12 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
      Parallel reads to different nc_id's for same underlying file work because
      each UNIX file open (for same file) creates own stdin caching */
   /* 20050629: Removing this critical region and calling with identical nc_id's causes multiple ncwa/ncra regressions */
+#if 0
 #ifdef _OPENMP
   /* fxm: TODO nco611 Remove critical once ncwa/ncra threads access distinct nc_id's */
 #pragma omp critical
 #endif /* _OPENMP */
+#endif /* !0 */
   { /* begin OpenMP critical */
     if(var->sz > 1){
       (void)nco_get_vara(nc_id,var->id,var->srt,var->cnt,var->val.vp,var->typ_dsk);
