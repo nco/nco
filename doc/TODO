@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.652 2005-10-21 22:03:25 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.653 2005-10-21 22:24:50 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -371,7 +371,10 @@ nco624. Document MPI in users guide/manual
 nco626. Mac OS X bld/Makefile problem: _res problems? Caused by _POSIX_SOURCE?
 nco627. Pass nc_id explicitly in all functions to allow for SMP parallelization
         ncpdq SMP parallelization is especially dependent on this
-nco628. 
+nco628. openmp: Print OMP_NUM_THREADS, if any, as nco_omp_ini() diagnostic
+nco629. Split nco_omp_ini() from nco_thr_att_cat()
+nco630. Change if thr_nbr > 0 to if thr_nbr > 1 for nco_thr_Att_cat()?
+nco631. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
