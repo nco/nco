@@ -1,5 +1,9 @@
 2005-10-20  Charlie Zender  <zender@uci.edu>
 
+	* Replaced many instances of var->nc_id with function parameter
+	nc_id to possible parallelization over nc_id in calling routine.
+	Most code was already written this way.
+
 	* Realized that TODO nco28 is bogus and deleted it:
 	"Use var.nc_id as file ID from now on and rewrite old routines to do so"
 	This is a bad idea because it would prevent parallelizing over nc_id in SMP code

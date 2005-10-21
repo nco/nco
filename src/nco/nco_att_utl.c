@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.58 2005-07-04 18:07:52 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.59 2005-10-21 16:32:41 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -81,15 +81,15 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     var->sz=1L;
 
     /* Get type of variable and number of dimensions */
-    (void)nco_inq_var(var->nc_id,var->id,(char *)NULL,&var->type,&var->nbr_dim,(int *)NULL,(int *)NULL);
+    (void)nco_inq_var(nc_id,var_id,(char *)NULL,&var->type,&var->nbr_dim,(int *)NULL,(int *)NULL);
     dmn_id=(int *)nco_malloc(var->nbr_dim*sizeof(int));
     dmn_sz=(long *)nco_malloc(var->nbr_dim*sizeof(long));
     dmn_srt=(long *)nco_malloc(var->nbr_dim*sizeof(long));
-    (void)nco_inq_vardimid(var->nc_id,var->id,dmn_id);
+    (void)nco_inq_vardimid(nc_id,var_id,dmn_id);
 
     /* Get dimension sizes and construct variable size */
     for(idx=0;idx<var->nbr_dim;idx++){
-      (void)nco_inq_dimlen(var->nc_id,dmn_id[idx],dmn_sz+idx);
+      (void)nco_inq_dimlen(nc_id,dmn_id[idx],dmn_sz+idx);
       var->sz*=dmn_sz[idx];
       dmn_srt[idx]=0L;
     } /* end loop over dim */
@@ -103,14 +103,14 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
       nco_exit(EXIT_FAILURE); 
     } /* end if */
     if(var->sz > 1L){
-      (void)nco_get_vara(var->nc_id,var->id,var->srt,var->cnt,var->val.vp,var->type);
+      (void)nco_get_vara(nc_id,var_id,var->srt,var->cnt,var->val.vp,var->type);
     }else{
-      (void)nco_get_var1(var->nc_id,var->id,var->srt,var->val.vp,var->type);
+      (void)nco_get_var1(nc_id,var_id,var->srt,var->val.vp,var->type);
     } /* end else */
     
     /* Get current missing value attribute */
     var->mss_val.vp=NULL;
-    var->has_mss_val=nco_mss_val_get(var->nc_id,var);
+    var->has_mss_val=nco_mss_val_get(nc_id,var);
 
     /* Sanity check */
     if(var->has_mss_val == False){
@@ -151,9 +151,9 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 
     /* Write to disk */
     if(var->nbr_dim == 0){
-      (void)nco_put_var1(nc_id,var->id,var->srt,var->val.vp,var->type);
+      (void)nco_put_var1(nc_id,var_id,var->srt,var->val.vp,var->type);
     }else{ /* end if variable is a scalar */
-      (void)nco_put_vara(nc_id,var->id,var->srt,var->cnt,var->val.vp,var->type);
+      (void)nco_put_vara(nc_id,var_id,var->srt,var->cnt,var->val.vp,var->type);
     } /* end else */
 
     /* Free memory */

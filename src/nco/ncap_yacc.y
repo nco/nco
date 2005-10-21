@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.38 2005-09-15 21:43:56 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.39 2005-10-21 16:32:41 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -590,7 +590,7 @@ var_xpr '+' var_xpr { /* Begin Addition */
 } /* end PACK */
 | UNPACK '(' var_xpr ')' {
   /* Unpacking variable does not create duplicate so DO NOT free $3 */
-  /* Don't unpack on first pass */
+  /* Do not unpack on first pass */
   if(((prs_sct*)prs_arg)->ntl_scn){
     $3->undefined=True;
     $$=$3;
@@ -614,7 +614,7 @@ var_xpr '+' var_xpr { /* Begin Addition */
   
   var_sct *var;
   var_sct *var_tmp;
-  prs_sct *prs_drf; /*Pointer for dereferencing */
+  prs_sct *prs_drf; /*Pointer for de-referencing */
   
   prs_drf=(prs_sct*)prs_arg;
   

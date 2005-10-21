@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.21 2005-06-14 05:23:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.22 2005-10-21 16:32:41 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -33,7 +33,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
   bool USR_SPC_THR_RQS=False;
   const int dyn_thr=1; /* [flg] Allow system to dynamically set number of threads */
   int thr_nbr_max_fsh=4; /* [nbr] Maximum number of threads program can use efficiently */
-  int thr_nbr_max; /* [nbr] Maximum number of threads system/user allow program to use */
+  int thr_nbr_max; /* [nbr] Maximum number of threads system allows */
   int prc_nbr_max; /* [nbr] Maximum number of processors available */
   int thr_nbr_rqs=int_CEWI; /* [nbr] Number of threads to request */
 

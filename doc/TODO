@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.650 2005-10-21 05:05:39 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.651 2005-10-21 16:32:41 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -44,11 +44,9 @@ wvl_1e8 = 0.167772 (NB: this is approximately 1/6)
 nco405. Modify multi-slabbing so that it places the output slabs in the order in which they were specified rather than the order they appear in the input file (Martin Schultz)
 
 NCO-wide items of lesser priority:
-nco28. Use var.nc_id as file ID from now on and rewrite old routines to do so 
-       No! this is a bad idea! that prevents parallelizing over nc_id in SMP code
 nco50. Allow user-specified scalar weights to ncwa
 nco51. Make getopt() a shared subroutine?
-nco53. Add -t wall clock timer option? (then again, users can always use, e.g., timex())
+nco53. Add wall clock timer options? (to provide more info than, e.g., timex())
 nco55. nco_var_cnf_dmn() should be able to expand (x,64,128) array into (nx,64,128) array (maybe)
 nco60. Make something that can mask field without having to average over dimension
 nco66. Make history attribute get appended, rather than overwritten, when in append mode
@@ -370,7 +368,9 @@ nco622. NULL'ify opt_crr unless opt_lng detected?
 nco623. netcdf4 builds in particular order seem to trigger bogus ncpdq regression
 nco624. Document MPI in users guide/manual
 nco626. Mac OS X bld/Makefile problem: _res problems? Caused by _POSIX_SOURCE?
-nco627. 
+nco627. Pass nc_id explicitly in all functions to allow for SMP parallelization
+        ncpdq SMP parallelization is especially dependent on this
+nco628. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
