@@ -2,7 +2,7 @@
 # the shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on the esmf when running in the queue.  Otherwise it may not pick up the right perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.102 2005-10-06 16:16:30 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.103 2005-10-21 21:05:23 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -45,7 +45,7 @@ $spc_nbr_min  $spc_sng  %subbenchmarks  %success  %sym_link
 @sys_tim_arr  $sys_time  %sys_tme  $thr_nbr  $timed  $timestamp
 $tmr_app  %totbenchmarks  @tst_cmd  $tst_fl_cr8  $tst_fmt  $tst_id_sng
 $tst_idx  %tst_nbr  $udp_reprt  $udp_rpt  $USER  $usg  %usr_tme
-%wc_tbl  $wnt_log $xdta_pth $xpt_dsc
+%wc_tbl  $wnt_log $xdta_pth $xpt_dsc $nco_vrsn_sng
 );
 
 # Initializations
@@ -80,6 +80,7 @@ $pth_rmt_scp_tst='dust.ess.uci.edu:/var/www/html/dodsdata';
 $dust_usr = "";
 $xdta_pth = ''; # explicit data path that user can set from cmdline; more powerful than $dta_dir
 $os_nme = "";
+$nco_vrsn_sng = "";
 
 # other inits
 $localhostname = `hostname`; chomp $localhostname;
@@ -159,7 +160,9 @@ dbg_msg(2,$lcl_vars); # spit the whole thing out.
 
 if ($ARGV == 0) {	usage();}
 
+# set up some host-specific id's
 $os_nme = `uname`; chomp $os_nme;
+
 
 # do $mpi_prc and $mpi_fke conflict?
 if ($mpi_prc > 0 && $mpi_fke) {

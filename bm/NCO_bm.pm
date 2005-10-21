@@ -13,8 +13,9 @@ package NCO_bm;
 #   go().................takes care of executing both regressions and benchmarks set up in same format
 #   smrz_rgr_rslt()......summarizes the results of both regression and benchmark tests
 #   check_nco_results()..checks the output via md5/wc validation
+#   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.2 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.12 2005-10-04 16:35:55 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.13 2005-10-21 21:05:23 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -25,19 +26,20 @@ require Exporter;
 our @ISA = qw(Exporter);
 #export functions (top) and variables (bottom)
 our @EXPORT = qw (
-	go
-	initialize
-	verbosity
-	failed
-	smrz_rgr_rslt
-	set_dat_dir
-	usage
-	smrz_fl_cr8_rslt
 	check_nco_results
+	dbg_msg
+	failed
 	fl_cr8
 	fl_cr8_dat_init
+	go
+	initialize
+	nco_dual_vrsn
+	set_dat_dir
+	smrz_fl_cr8_rslt
+	smrz_rgr_rslt
+	usage
+	verbosity
 	wat4inpt
-	dbg_msg
 
 	@fl_cr8_dat @fl_tmg $prefix $opr_nm $opr_sng_mpi $md5 $md5found $bm_dir $mpi_prc $mpi_fke $dta_dir
 	$nsr_xpc @tst_cmd %tst_nbr $dbg_lvl $wnt_log $dsc_sng $outfile $fl_pth $tmr_app $fke_prefix $NUM_FLS
@@ -652,6 +654,7 @@ sub failed {
 }
 
 sub smrz_rgr_rslt {
+	my $nco_vrsn_sng = nco_dual_vrsn();
 	my $CC = `$MY_BIN_DIR/ncks --compiler`;
 	my $CCinfo = '';
 	if ($CC =~ /gcc/) {$CCinfo = `gcc --version |grep -i gcc`;}
@@ -671,7 +674,7 @@ sub smrz_rgr_rslt {
 # csz--
 	if ($thr_nbr > 0) {$reportstr .= " (OpenMP threads = $thr_nbr)\n";}
 	else {$reportstr .= "\n";}
-	my $udp_dat = $idstring . " using: " . $CCinfo . "|" . $cmd_ln . "|";
+	my $udp_dat = $idstring . " using: " . $CCinfo . "|" . "NCO ver: $nco_vrsn_sng" . "|" . $cmd_ln . "|";
 	foreach(@opr_lst) {
 		my $total = $success{$_}+$failure{$_};
 		my $fal_cnt = '';
@@ -770,6 +773,20 @@ sub dbg_msg {
 	}
 }
 
+# grab the nco version and conmogrify it into something like: "3.0.1 / 20051003"
+# just requires a string variable to absorb the string returned
+sub nco_dual_vrsn{
+	my @nco_vrsn;
+	my $tmp_sng = `ncks --version  2>&1 |  grep version | head -2`; # long string sep by a newline.
+	$tmp_sng =~ s/\n/ /g;
+	my @tmp_lst = split (/\s+/, $tmp_sng);
+	$nco_vrsn[0] = $tmp_lst[4];
+	$nco_vrsn[0] =~ s/"//g;
+	$nco_vrsn[1] = $tmp_lst[scalar(@tmp_lst) - 1];
+	# print "NCO release version: $nco_vrsn[0], NCO date version: $nco_vrsn[1]\n";
+	$tmp_sng = "$nco_vrsn[0]" . "/" . "$nco_vrsn[1]";
+	return $tmp_sng;
+}
 
 
 # the following 2 lines are required to provide a 'true' value at the end of the package.

@@ -11,7 +11,7 @@ else
 endif 
 
 if TEST_DAP
-  DAP_TESTS=test2.sh
+  echo "ARCHAIC: Test DAP with <NCO_ROOT>/bm/nco_bm.pl now"
 else
   DAP_TESTS=
 endif
@@ -136,7 +136,7 @@ nco_var_rth.c \
 nco_var_scv.c \
 nco_var_utl.c
 
-TESTS = test1.sh ${DAP_TESTS}
+TESTS = ${DAP_TESTS}
 
 EXTRA_DIST = nco_getopt.c
 

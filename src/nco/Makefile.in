@@ -15,7 +15,6 @@
 @SET_MAKE@
 
 
-SOURCES = $(libnco_la_SOURCES) $(ncap_SOURCES) $(ncatted_SOURCES) $(ncbo_SOURCES) $(ncecat_SOURCES) $(ncflint_SOURCES) $(ncks_SOURCES) $(ncpdq_SOURCES) $(ncra_SOURCES) $(ncrename_SOURCES) $(ncwa_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -38,9 +37,11 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
+# BIN_MPI_PROGRAMS passed in from configure - see below, but bin_MPI_PROGRAMS defined here
+bin_MPI_PROGRAMS = $(BIN_MPI_PROGRAMS)
 bin_PROGRAMS = $(am__EXEEXT_1) ncatted$(EXEEXT) ncbo$(EXEEXT) \
 	ncecat$(EXEEXT) ncflint$(EXEEXT) ncks$(EXEEXT) ncpdq$(EXEEXT) \
-	ncra$(EXEEXT) ncrename$(EXEEXT) $(am__EXEEXT_2)
+	ncra$(EXEEXT) ncrename$(EXEEXT) $(am__EXEEXT_2) $(bin_MPI_PROGRAMS)
 subdir = src/nco
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in ncap_lex.c \
 	ncap_yacc.c ncap_yacc.h
@@ -88,8 +89,9 @@ libnco_la_OBJECTS = $(am_libnco_la_OBJECTS)
 @BUILD_YACC_SOURCE_TRUE@am__EXEEXT_2 = ncwa$(EXEEXT)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_ncap_OBJECTS = ncap_utl.$(OBJEXT) ncap.$(OBJEXT) \
-	ncap_yacc.$(OBJEXT) ncap_lex.$(OBJEXT)
+BIN_MPI_PROGRAMS_INSTALL = $(INSTALL_PROGRAM)
+MPI_PROGRAMS = $(BIN_MPI_PROGRAMS)
+am_ncap_OBJECTS = ncap_utl.$(OBJEXT) ncap.$(OBJEXT) ncap_yacc.$(OBJEXT) ncap_lex.$(OBJEXT)
 ncap_OBJECTS = $(am_ncap_OBJECTS)
 ncap_DEPENDENCIES = libnco.la
 am_ncatted_OBJECTS = ncatted.$(OBJEXT)
@@ -120,6 +122,27 @@ am_ncwa_OBJECTS = ncwa.$(OBJEXT) ncap_utl.$(OBJEXT) ncap_lex.$(OBJEXT) \
 	ncap_yacc.$(OBJEXT)
 ncwa_OBJECTS = $(am_ncwa_OBJECTS)
 ncwa_DEPENDENCIES = libnco.la
+#MPI object deps
+am_mpncbo_OBJECTS = mpncbo.$(OBJEXT)
+mpncbo_OBJECTS = $(am_mpncbo_OBJECTS)
+mpncbo_DEPENDENCIES = libnco.la
+am_mpncecat_OBJECTS = mpncecat.$(OBJEXT)
+mpncecat_OBJECTS = $(am_mpncecat_OBJECTS)
+mpncecat_DEPENDENCIES = libnco.la
+am_mpncflint_OBJECTS = mpncflint.$(OBJEXT)
+mpncflint_OBJECTS = $(am_mpncflint_OBJECTS)
+mpncflint_DEPENDENCIES = libnco.la
+am_mpncpdq_OBJECTS = mpncpdq.$(OBJEXT)
+mpncpdq_OBJECTS = $(am_mpncpdq_OBJECTS)
+mpncpdq_DEPENDENCIES = libnco.la
+am_mpncra_OBJECTS = mpncra.$(OBJEXT)
+mpncra_OBJECTS = $(am_mpncra_OBJECTS)
+mpncra_DEPENDENCIES = libnco.la
+am_mpncwa_OBJECTS = mpncwa.$(OBJEXT) ncap_utl.$(OBJEXT) ncap_lex.$(OBJEXT) ncap_yacc.$(OBJEXT)
+mpncwa_OBJECTS = $(am_mpncwa_OBJECTS)
+mpncwa_DEPENDENCIES = libnco.la
+
+
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/autobld/depcomp
 am__depfiles_maybe = depfiles
@@ -128,6 +151,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/ncatted.Po ./$(DEPDIR)/ncbo.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ncecat.Po ./$(DEPDIR)/ncflint.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ncks.Po ./$(DEPDIR)/nco_att_utl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/mpncbo.Po ./$(DEPDIR)/mpncecat.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/mpncflint.Po ./$(DEPDIR)/mpncpdq.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/mpncra.Po ./$(DEPDIR)/mpncwa.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/nco_bnr.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/nco_cln_utl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/nco_cnf_dmn.Plo \
@@ -156,13 +182,16 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/nco_var_utl.Plo ./$(DEPDIR)/ncpdq.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ncra.Po ./$(DEPDIR)/ncrename.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ncwa.Po
+# hjm - if want MPI, define CC=mpicc - seems to work; just calls gcc with some extra bits
+# have to add the -DENABLE_MPI flag to $(DEFS) tho, preferably in configure.
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
+
+LTCOMPILE = $(LIBTOOL) --mode=compile --tag=C $(CC) $(DEFS) \
 	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
 	$(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
-LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+LINK = $(LIBTOOL) --mode=link --tag=C $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 LEXCOMPILE = $(LEX) $(LFLAGS) $(AM_LFLAGS)
 LTLEXCOMPILE = $(LIBTOOL) --mode=compile $(LEX) $(LFLAGS) $(AM_LFLAGS)
@@ -170,14 +199,19 @@ YLWRAP = $(top_srcdir)/autobld/ylwrap
 YACCCOMPILE = $(YACC) $(YFLAGS) $(AM_YFLAGS)
 LTYACCCOMPILE = $(LIBTOOL) --mode=compile $(YACC) $(YFLAGS) \
 	$(AM_YFLAGS)
+# add MPI_SOURCES to SOURCES if want MPI
 SOURCES = $(libnco_la_SOURCES) $(ncap_SOURCES) $(ncatted_SOURCES) \
 	$(ncbo_SOURCES) $(ncecat_SOURCES) $(ncflint_SOURCES) \
 	$(ncks_SOURCES) $(ncpdq_SOURCES) $(ncra_SOURCES) \
 	$(ncrename_SOURCES) $(ncwa_SOURCES)
+MPI_SOURCES = $(mpncbo_SOURCES) $(mpncecat_SOURCES) $(mpncflint_SOURCES) \
+	$(mpncpdq_SOURCES) $(mpncra_SOURCES)  $(mpncwa_SOURCES)
 DIST_SOURCES = $(am__libnco_la_SOURCES_DIST) $(ncap_SOURCES) \
 	$(ncatted_SOURCES) $(ncbo_SOURCES) $(ncecat_SOURCES) \
 	$(ncflint_SOURCES) $(ncks_SOURCES) $(ncpdq_SOURCES) \
-	$(ncra_SOURCES) $(ncrename_SOURCES) $(ncwa_SOURCES)
+	$(ncra_SOURCES) $(ncrename_SOURCES) $(ncwa_SOURCES) \
+	$(mpncbo_SOURCES) $(mpncecat_SOURCES) $(mpncflint_SOURCES) \
+	$(mpncpdq_SOURCES) $(mpncra_SOURCES)  $(mpncwa_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -190,9 +224,10 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BIN_MPI_PROGRAMS = @BIN_MPI_PROGRAMS@ # from configure
 BUILD_YACC_SOURCE_FALSE = @BUILD_YACC_SOURCE_FALSE@
 BUILD_YACC_SOURCE_TRUE = @BUILD_YACC_SOURCE_TRUE@
-CC = @CC@
+CC = @CC@  # set to mpicc via configure or env
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
@@ -219,6 +254,7 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+LAM_ROOT = @LAM_ROOT@
 LDFLAGS = @LDFLAGS@
 LEX = @LEX@
 LEXLIB = @LEXLIB@
@@ -232,6 +268,10 @@ MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
 MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
+# MPI-related
+MPI_CC = @MPI_CC@ # shouldn't need this anymore if CC can suffice
+HAVE_MPI_H = @HAVE_MPI_H@  # use to test for MPI, but also need the AC_DEFINE ENABLE_MPI for mp*.c
+MPICH2_ROOT = @MPICH2_ROOT@  # needed?
 NCO_CXX = @NCO_CXX@
 NCO_NEED_GETOPT_LONG_FALSE = @NCO_NEED_GETOPT_LONG_FALSE@
 NCO_NEED_GETOPT_LONG_TRUE = @NCO_NEED_GETOPT_LONG_TRUE@
@@ -301,16 +341,14 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-@BUILD_YACC_SOURCE_FALSE@NCAP = 
-@BUILD_YACC_SOURCE_TRUE@NCAP = ncap 
-@BUILD_YACC_SOURCE_FALSE@NCWA = 
+@BUILD_YACC_SOURCE_FALSE@NCAP =
+@BUILD_YACC_SOURCE_TRUE@NCAP = ncap
+@BUILD_YACC_SOURCE_FALSE@NCWA =
 @BUILD_YACC_SOURCE_TRUE@NCWA = ncwa
-@TEST_DAP_FALSE@DAP_TESTS = 
-@TEST_DAP_TRUE@DAP_TESTS = test2.sh
-@NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT = 
+@NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT =
 @NCO_NEED_GETOPT_LONG_TRUE@NCO_GETOPT = nco_getopt.c
 AM_YFLAGS = -d
-ncap_SOURCES = ncap_utl.c ncap.c ncap_yacc.y ncap_lex.l 
+ncap_SOURCES = ncap_utl.c ncap.c ncap_yacc.y ncap_lex.l
 ncap_LDADD = libnco.la
 ncatted_SOURCES = ncatted.c
 ncatted_LDADD = libnco.la
@@ -328,6 +366,20 @@ ncra_SOURCES = ncra.c
 ncra_LDADD = libnco.la
 ncrename_SOURCES = ncrename.c
 ncrename_LDADD = libnco.la
+# MPI version sources
+mpncbo_SOURCES = mpncbo.c
+mpncbo_LDADD = libnco.la
+mpncecat_SOURCES = mpncecat.c
+mpncecat_LDADD = libnco.la
+mpncflint_SOURCES = mpncflint.c
+mpncflint_LDADD = libnco.la
+mpncpdq_SOURCES = mpncpdq.c
+mpncpdq_LDADD = libnco.la
+mpncra_SOURCES = mpncra.c
+mpncra_LDADD = libnco.la
+mpncwa_SOURCES = mpncwa.c ncap_utl.c ncap_lex.l ncap_yacc.c
+mpncwa_LDADD = libnco.la
+
 
 # ncwa also requires ncap_yacc.y, but that should already be built with ncap
 ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l ncap_yacc.c
@@ -411,7 +463,6 @@ nco_var_rth.c \
 nco_var_scv.c \
 nco_var_utl.c
 
-TESTS = test1.sh ${DAP_TESTS}
 EXTRA_DIST = nco_getopt.c
 DISTCLEANFILES = ncap_lex.c ncap_yacc.c ncap_yacc.h
 CLEANFILES = ncdiff ncea ncrcat
@@ -475,12 +526,13 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libnco.la: $(libnco_la_OBJECTS) $(libnco_la_DEPENDENCIES) 
+libnco.la: $(libnco_la_OBJECTS) $(libnco_la_DEPENDENCIES)
 	$(LINK) -rpath $(libdir) $(libnco_la_LDFLAGS) $(libnco_la_OBJECTS) $(libnco_la_LIBADD) $(LIBS)
-install-binPROGRAMS: $(bin_PROGRAMS)
+
+install-binPROGRAMS: $(bin_PROGRAMS)   # includes MPI programs if defined in configure
 	@$(NORMAL_INSTALL)
 	test -z "$(bindir)" || $(mkdir_p) "$(DESTDIR)$(bindir)"
-	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	@list='$(bin_PROGRAMS) $(BIN_MPI_PROGRAMS)'; for p in $$list; do \
 	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
 	  if test -f $$p \
 	     || test -f $$p1 \
@@ -493,14 +545,14 @@ install-binPROGRAMS: $(bin_PROGRAMS)
 
 uninstall-binPROGRAMS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	@list='$(bin_PROGRAMS) $(bin_MPI_PROGRAMS)'; for p in $$list; do \
 	  f=`echo "$$p" | sed 's,^.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/'`; \
 	  echo " rm -f '$(DESTDIR)$(bindir)/$$f'"; \
 	  rm -f "$(DESTDIR)$(bindir)/$$f"; \
 	done
 
 clean-binPROGRAMS:
-	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	@list='$(bin_PROGRAMS) $(bin_MPI_PROGRAMS)'; for p in $$list; do \
 	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
@@ -510,36 +562,55 @@ ncap_yacc.h: ncap_yacc.c
 	  rm -f ncap_yacc.c; \
 	  $(MAKE) ncap_yacc.c; \
 	else :; fi
-ncap$(EXEEXT): $(ncap_OBJECTS) $(ncap_DEPENDENCIES) 
+ncap$(EXEEXT): $(ncap_OBJECTS) $(ncap_DEPENDENCIES)
 	@rm -f ncap$(EXEEXT)
 	$(LINK) $(ncap_LDFLAGS) $(ncap_OBJECTS) $(ncap_LDADD) $(LIBS)
-ncatted$(EXEEXT): $(ncatted_OBJECTS) $(ncatted_DEPENDENCIES) 
+ncatted$(EXEEXT): $(ncatted_OBJECTS) $(ncatted_DEPENDENCIES)
 	@rm -f ncatted$(EXEEXT)
 	$(LINK) $(ncatted_LDFLAGS) $(ncatted_OBJECTS) $(ncatted_LDADD) $(LIBS)
-ncbo$(EXEEXT): $(ncbo_OBJECTS) $(ncbo_DEPENDENCIES) 
+ncbo$(EXEEXT): $(ncbo_OBJECTS) $(ncbo_DEPENDENCIES)
 	@rm -f ncbo$(EXEEXT)
 	$(LINK) $(ncbo_LDFLAGS) $(ncbo_OBJECTS) $(ncbo_LDADD) $(LIBS)
-ncecat$(EXEEXT): $(ncecat_OBJECTS) $(ncecat_DEPENDENCIES) 
+ncecat$(EXEEXT): $(ncecat_OBJECTS) $(ncecat_DEPENDENCIES)
 	@rm -f ncecat$(EXEEXT)
 	$(LINK) $(ncecat_LDFLAGS) $(ncecat_OBJECTS) $(ncecat_LDADD) $(LIBS)
-ncflint$(EXEEXT): $(ncflint_OBJECTS) $(ncflint_DEPENDENCIES) 
+ncflint$(EXEEXT): $(ncflint_OBJECTS) $(ncflint_DEPENDENCIES)
 	@rm -f ncflint$(EXEEXT)
 	$(LINK) $(ncflint_LDFLAGS) $(ncflint_OBJECTS) $(ncflint_LDADD) $(LIBS)
-ncks$(EXEEXT): $(ncks_OBJECTS) $(ncks_DEPENDENCIES) 
+ncks$(EXEEXT): $(ncks_OBJECTS) $(ncks_DEPENDENCIES)
 	@rm -f ncks$(EXEEXT)
 	$(LINK) $(ncks_LDFLAGS) $(ncks_OBJECTS) $(ncks_LDADD) $(LIBS)
-ncpdq$(EXEEXT): $(ncpdq_OBJECTS) $(ncpdq_DEPENDENCIES) 
+ncpdq$(EXEEXT): $(ncpdq_OBJECTS) $(ncpdq_DEPENDENCIES)
 	@rm -f ncpdq$(EXEEXT)
 	$(LINK) $(ncpdq_LDFLAGS) $(ncpdq_OBJECTS) $(ncpdq_LDADD) $(LIBS)
-ncra$(EXEEXT): $(ncra_OBJECTS) $(ncra_DEPENDENCIES) 
+ncra$(EXEEXT): $(ncra_OBJECTS) $(ncra_DEPENDENCIES)
 	@rm -f ncra$(EXEEXT)
 	$(LINK) $(ncra_LDFLAGS) $(ncra_OBJECTS) $(ncra_LDADD) $(LIBS)
-ncrename$(EXEEXT): $(ncrename_OBJECTS) $(ncrename_DEPENDENCIES) 
+ncrename$(EXEEXT): $(ncrename_OBJECTS) $(ncrename_DEPENDENCIES)
 	@rm -f ncrename$(EXEEXT)
 	$(LINK) $(ncrename_LDFLAGS) $(ncrename_OBJECTS) $(ncrename_LDADD) $(LIBS)
-ncwa$(EXEEXT): $(ncwa_OBJECTS) $(ncwa_DEPENDENCIES) 
+ncwa$(EXEEXT): $(ncwa_OBJECTS) $(ncwa_DEPENDENCIES)
 	@rm -f ncwa$(EXEEXT)
 	$(LINK) $(ncwa_LDFLAGS) $(ncwa_OBJECTS) $(ncwa_LDADD) $(LIBS)
+# do these require -DENABLE_MPI to be added?
+mpncbo$(EXEEXT): $(mpncbo_OBJECTS) $(mpncbo_DEPENDENCIES)
+	@rm -f mpncbo$(EXEEXT)
+	$(LINK) $(mpncbo_LDFLAGS) $(mpncbo_OBJECTS) $(mpncbo_LDADD) $(LIBS)
+mpncecat$(EXEEXT): $(mpncecat_OBJECTS) $(mpncecat_DEPENDENCIES)
+	@rm -f mpncecat$(EXEEXT)
+	$(LINK) $(mpncecat_LDFLAGS) $(mpncecat_OBJECTS) $(mpncecat_LDADD) $(LIBS)
+mpncflint$(EXEEXT): $(mpncflint_OBJECTS) $(mpncflint_DEPENDENCIES)
+	@rm -f mpncflint$(EXEEXT)
+	$(LINK) $(mpncflint_LDFLAGS) $(mpncflint_OBJECTS) $(mpncflint_LDADD) $(LIBS)
+mpncpdq$(EXEEXT): $(mpncpdq_OBJECTS) $(mpncpdq_DEPENDENCIES)
+	@rm -f mpncpdq$(EXEEXT)
+	$(LINK) $(mpncpdq_LDFLAGS) $(mpncpdq_OBJECTS) $(mpncpdq_LDADD) $(LIBS)
+mpncra$(EXEEXT): $(mpncra_OBJECTS) $(mpncra_DEPENDENCIES)
+	@rm -f mpncra$(EXEEXT)
+	$(LINK) $(mpncra_LDFLAGS) $(mpncra_OBJECTS) $(mpncra_LDADD) $(LIBS)
+mpncwa$(EXEEXT): $(mpncwa_OBJECTS) $(mpncwa_DEPENDENCIES)
+	@rm -f mpncwa$(EXEEXT)
+	$(LINK) $(mpncwa_LDFLAGS) $(mpncwa_OBJECTS) $(mpncwa_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -592,7 +663,15 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncra.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncrename.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncwa.Po@am__quote@
+# MPI deps
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mpncbo.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mpncecat.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mpncflint.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mpncpdq.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mpncra.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mpncwa.Po@am__quote@
 
+# following should be complete for MPI deps as well, but does it need the -DENABLE_MPI ?
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
@@ -771,6 +850,7 @@ check-TESTS: $(TESTS)
 	  test "$$failed" -eq 0; \
 	else :; fi
 
+# MPI sources included in $(DISTFILES)
 distdir: $(DISTFILES)
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
@@ -800,8 +880,11 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
+
 check: check-am
+
 all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
+
 install-binPROGRAMS: install-libLTLIBRARIES
 
 installdirs:

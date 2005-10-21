@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.133 2005-10-14 20:51:19 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.134 2005-10-21 21:05:23 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -86,7 +86,7 @@ AM_CONFIG_HEADER(config.h)
 # CC and CXX have preferred lists
 # AC_PROG_CC sets GCC to 'yes' when GCC is detected
 # AC_PROG_CC sets CFLAGS = -g [-O2 iff GCC]
-AC_PROG_CC(xlc_r xlc acc cc gcc gcc-2 icc como c89)
+AC_PROG_CC( xlc_r xlc acc cc gcc gcc-2 icc como c89)
 AC_PROG_CXX(xlC_r xlC aCC CC cxx g++ g++-2 c++ icc como)
 AC_PROG_CPP
 AC_PROG_CXXCPP
@@ -192,6 +192,8 @@ AM_CONDITIONAL(TEST_DAP,[test "${enable_dap}" = 'yes'])
 AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
 AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
 
+
+
 # Begin HDF5 test
 # note that netcdf4 requires the libhdf5 & libhdf5_hl to link correctly
 #following line enables & initializes the configure option
@@ -201,9 +203,11 @@ if test "${enable_dap}" = 'no'; then
     AC_MSG_WARN([Did not request OpenDAP; checking for version of libnetcdf to use])
 fi
 
+echo ""
 echo "#############################################"
 echo "# Testing for HDF5 & HDF5_HL & NETCDF4 libs #"
 echo "#############################################"
+echo ""
 
 # Check for HDF5 libraries unless told otherwise
 if (test "${enable_netcdf4}" = 'yes' && test "${enable_dap}" = 'no'); then
@@ -327,15 +331,13 @@ AC_CHECK_LIB([netcdf],[nc_open],[
 
 fi # enable_dap
 
+echo "LIBS=$LIBS"
 
-
-
-
-
-
-
+##################################################
 # Begin Library checks
 # Check for libraries, add to link path if found
+##################################################
+
 #AC_CHECK_LIB([C],[cosf])
 AC_CHECK_LIB([m],[sin])
 AC_CHECK_LIB([sunmath],[sinf])
@@ -360,6 +362,92 @@ AC_CHECK_LIB([nco],[nco_open])
 
 # OPeNDAP (aka DAP) support was here
 # I moved it up to precede netcdf library tests jhrg 05/26/05
+
+echo "DEBUG: LIBS=$LIBS"
+
+if test "${enable_mpi}" != 'no'; then
+	echo ""
+	echo "##################################################"
+	echo "#  Sorting out MPI (LAM/MPICH) build parameters  #"
+	echo "#        (only works on Linux so far)            #"
+	echo "##################################################"
+	echo ""
+	AC_ARG_VAR([BIN_MPI_PROGRAMS],[List of MPI NCOs - not user configurable])
+	AC_ARG_VAR([DEFS],[List of MPI NCOs - not user configurable])
+	AC_ARG_VAR([HAVE_MPI_H],[configure finds mpi.h - not user configurable])
+#	AC_ARG_VAR([ENABLE_MPI],[configure finds mpi.h - not user configurable])
+
+	# based on this, if MPI_CC is defined, have to include <mpi.h> and include mpnc* build targets to be made with MPI_CC
+	# the rest can be made with ${CC} as usual.
+
+	AC_ARG_VAR([MPICH2_ROOT],[Root of non-std MPICH2 installation] (compile-time))
+	AC_ARG_VAR([LAM_ROOT],[Root of non-std LAM installation] (compile-time))
+
+	# following may have to AC_DEFINE ENABLE_MPI to pass to Makefile.
+	AC_ARG_ENABLE(mpi,AS_HELP_STRING([--enable-mpi],[Build NCOs for Message Passing Interface (detects LAM or MPICH2) [[default=no]]]),enable_mpi="yes",enable_mpi="no")
+
+	# is there a mpicc (linux)or mpcc (AIX)?
+	AC_CHECK_PROGS(MPI_CC, [mpicc  mpcc], "NONE", ${PATH})
+
+	# if MPI_CC = 'mpcc' (AIX), everything else is set up correctly, so no need to check for mpi.h, libmpi etc
+
+	if test "${MPI_CC}" == "mpicc"; then
+		# is there an mpi.h?
+		AC_CHECK_HEADER(mpi.h,[AC_DEFINE(ENABLE_MPI)])
+		AC_CHECK_HEADER(mpi.h, [HAVE_MPI_H="yes"], [HAVE_MPI_H="no"], [])
+		if test "${HAVE_MPI_H}" = "yes"; then
+			# define for src/nco/Makefile.in
+			echo "should set BIN_MPI_PROGRAMS.."
+			BIN_MPI_PROGRAMS="mpncbo\$(EXEEXT) mpncecat\$(EXEEXT) mpncflint\$(EXEEXT) mpncpdq\$(EXEEXT) mpncra\$(EXEEXT) mpncwa\$(EXEEXT)"
+			echo "..and it's set to: ${BIN_MPI_PROGRAMS}"
+			CPPFLAGS="-DENABLE_MPI ${CPPFLAGS}"
+			echo "CPPFLAGS set to: ${CPPFLAGS} "
+			CC="mpicc"
+		else
+			BIN_MPI_PROGRAMS=""
+		fi
+
+	echo "ENABLE_MPI = ${ENABLE_MPI} and HAVE_MPI_H = ${HAVE_MPI_H}";
+
+		# test for MPICH2 1st; if found, skip LAM as MPICH seems more stable and coherent
+		if (test "${enable_mpi}" = 'yes' && test "${HAVE_MPI_H}" = "yes" ); then
+			# test for diagnostic libs, 1st MPICH2
+#			AC_SEARCH_LIBS(aio_write64,rt,LIBS="-lrt ${LIBS}")
+			AC_SEARCH_LIBS(aio_write64,rt,[])  # automatically adds the lib to $LIBS
+			AC_CHECK_LIB([mpich],[MPIDU_Sock_get_sock_id],enable_mpich2=yes,enable_mpich2=no,[])
+			if test "${enable_mpich2}" = 'yes'; then
+#				echo "OK - found a libmpich.";
+				LIBS="-lmpich ${LIBS}";
+#				LIBS="-lmpich -lmpe -lampe ${LIBS}"; # this would be for debugging mpich apps. --enable-mpi-debug?
+			else
+				echo "MISSING libmpich. Will test for LAM-MPI";
+			fi
+		fi
+
+		# test for LAM-MPI
+		if (test "${enable_mpi}" = 'yes' && test "${HAVE_MPI_H}" = 'yes' && test "${enable_mpich2}" = 'no'); then
+			# test for diagnostic libs, 1st LAM_ROOT
+			AC_CHECK_LIB([lam],[lam_F_free_hdl],enable_lam=yes,enable_lam=no,[])
+			if test "${enable_lam}" = 'yes'; then
+#				echo "OK - found a liblam.";
+				LIBS="-llam -lmpi ${LIBS}";
+			else
+				echo "MISSING liblam - could not find a liblam.[a|so].";
+			fi
+		fi
+	fi
+	# finish MPI section by echoing MPI-realted vars if all other params are OK.
+	# Have to mod
+	if ( test "${enable_mpich2}" = 'yes' || test "${enable_lam}" = 'yes'); then
+		echo "MPI: Using MPI_CC=${MPI_CC} and LIBS=${LIBS}"
+	fi
+	echo "### End MPI Checks ###"
+	echo ""
+fi
+
+
+
+
 
 # Begin Fortran
 # If --enable-fortran define USE_FORTRAN_ARITHMETIC
@@ -446,6 +534,7 @@ echo ""
 echo "########################################"
 echo "#     Testing for UDUNITS support      #"
 echo "########################################"
+echo "LIBS=$LIBS"
 
 # Begin UDUnits
 # MacOS X requires libudport for threaded functions
@@ -502,12 +591,6 @@ case ${host} in
     i*86-*-linux-gnu )
 	case ${CC} in
 	    icc ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -D_BSD_SOURCE -D_POSIX_SOURCE -no-gcc" ; ;;
-	esac
-	;;
-    powerpc-apple-darwin* )
-	case ${CC} in
-# NB: -D_POSIX_SOURCE breaks MACOSX build in nco_fl_utl.c, nco_mmr.c
-	    cc ) CPPFLAGS="${CPPFLAGS} -U_POSIX_SOURCE" ; ;;
 	esac
 	;;
     powerpc-ibm-aix* )
@@ -679,8 +762,6 @@ if test "${enable_optimize_custom}" = 'yes'; then
 		CFLAGS="${CFLAGS} -O2"
 	    fi
 	    ;;
-	powerpc-apple-darwin* )
-	    ;;
 	powerpc-ibm-aix* )
 	    case ${CC} in
 # -qstrict: Ensure that -O3 optimizations do not alter program semantics
@@ -792,16 +873,19 @@ AC_OUTPUT
 
 # Echo build parameters for debugging
 echo "Configuration Parameters:"
-echo "AR_FLAGS  = ${AR_FLAGS}"
-echo "CC        = ${CC}"
-echo "CFLAGS    = ${CFLAGS}"
-echo "CPP       = ${CPP}"
-echo "CPPFLAGS  = ${CPPFLAGS}"
-echo "CXX       = ${CXX}"
-echo "CXXFLAGS  = ${CXXFLAGS}"
-echo "HOST      = ${HOST}"
-echo "LDFLAGS   = ${LDFLAGS}"
-echo "LIBS      = ${LIBS}"
+echo "AR_FLAGS............. ${AR_FLAGS}"
+echo "CC................... ${CC}"
+echo "CFLAGS............... ${CFLAGS}"
+echo "CPP.................. ${CPP}"
+echo "CPPFLAGS............. ${CPPFLAGS}"
+echo "CXX.................. ${CXX}"
+echo "CXXFLAGS............. ${CXXFLAGS}"
+#echo "ENABLE_MPI........... ${ENABLE_MPI}"
+echo "HAVE_MPI_H........... ${HAVE_MPI_H}"
+echo "HOST................. ${HOST}"
+echo "LDFLAGS.............. ${LDFLAGS}"
+echo "LIBS................. ${LIBS}"
+echo "BIN_MPI_PROGRAMS..... ${BIN_MPI_PROGRAMS}"
 
 # Inform users of the very useful configure.eg
 echo ""
