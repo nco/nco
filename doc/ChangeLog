@@ -1,12 +1,19 @@
 2005-10-21  Harry Mangalam <hjm@tacgi.com>
+
 	* configure[.in], Makefile[.in], src/nco/Makefile[.in] in good enough
 	shape to commit.  Still some shakiness, but time to check clean checkouts
 	on other platforms.  Now supports --enable-mpi, --enable-netcdf4
 
 2005-10-21  Charlie Zender  <zender@uci.edu>
 
+	* Verfied that parallelizing use of in_id in SMP code allows
+	parallel read access to file data with nco_get_var*() in ncra.
+	Hence, removed last critical read region from libnco.a
+	SMP on other (non-ncra) operators temporarily broken until 
+	I parallelize their front end use of in_id.
+
 	* Re-wrote nco_omp_ini() logic to use stubs outside of #ifdefs
-	Now UP and SMP codes use virtually same code
+	Now UP and SMP execute virtually same code in nco_omp_ini()
 
 	* Prototype and declare OpenMP stub functions in nco_omp.c/h
 
@@ -18,7 +25,7 @@
 
 	* Realized that TODO nco28 is bogus and deleted it:
 	"Use var.nc_id as file ID from now on and rewrite old routines to do so"
-	This is a bad idea because it would prevent parallelizing over nc_id in SMP code
+	Bad idea because it would prevent parallelizing over nc_id in SMP code
 
 	* Improve warning message for non-monotonicity in rec_crd_chk() to
 	better distinguish inter-file from intra-file non-monotonicity.

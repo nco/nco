@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.99 2005-10-21 22:34:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.100 2005-10-21 22:46:27 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -607,6 +607,9 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   var->val.vp=(void *)nco_malloc_dbg(var->sz*nco_typ_lng(var->typ_dsk),"Unable to malloc() value buffer when retrieving variable from disk",fnc_nm);
 
   if(False) (void)fprintf(stdout,"%s: DEBUG: fxm TODO nco354. Calling nco_get_vara() for variable %s with nc_id=%d, var_id=%d, var_srt=%li, var_cnt = %li, var_val = %g, var_typ = %s\n",prg_nm_get(),var->nm,nc_id,var->id,var->srt[0],var->cnt[0],var->val.fp[0],nco_typ_sng(var->typ_dsk));
+
+  /* 20051021: Removed this potentially critical region by parallelizing 
+     over in_id's in calling code */
   /* 20051019: nco_get_var*() routines are potentially SMP-critical
      netCDF library allows parallel reads by different processes, not threads
      Parallel reads to the same nc_id by different threads are critical because
@@ -614,19 +617,14 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
      Parallel reads to different nc_id's for same underlying file work because
      each UNIX file open (for same file) creates own stdin caching */
   /* 20050629: Removing this critical region and calling with identical nc_id's causes multiple ncwa/ncra regressions */
-#if 0
-#ifdef _OPENMP
-  /* fxm: TODO nco611 Remove critical once ncwa/ncra threads access distinct nc_id's */
-#pragma omp critical
-#endif /* _OPENMP */
-#endif /* !0 */
-  { /* begin OpenMP critical */
+  { /* begin potential OpenMP critical */
+    /* Block is critical/thread-safe for identical/distinct in_id's */
     if(var->sz > 1){
       (void)nco_get_vara(nc_id,var->id,var->srt,var->cnt,var->val.vp,var->typ_dsk);
     }else{
       (void)nco_get_var1(nc_id,var->id,var->srt,var->val.vp,var->typ_dsk);
     } /* end else */
-  } /* end OpenMP critical */
+  } /* end potential OpenMP critical */
   
   /* Packing properties initially obtained by nco_pck_dsk_inq() in nco_var_fll()
      Multi-file operators (MFOs) call nco_var_get() multiple times for each variable
