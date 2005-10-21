@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.h,v 1.14 2005-10-21 17:56:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.h,v 1.15 2005-10-21 20:22:21 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -37,10 +37,16 @@ extern "C" {
 /* OpenMP is not available with this compiler
    Prototype harmless stub routines for Uni-Processor (UP) code
    These stubs reduce pre-processor proliferation */
-int omp_get_max_threads(void);
-int omp_get_num_procs(void);
-int omp_get_num_threads(void);
-int omp_get_thread_num(void);
+  int omp_get_dynamic(void);
+  int omp_get_max_threads(void);
+  int omp_get_nested(void);
+  int omp_get_num_procs(void);
+  int omp_get_num_threads(void);
+  int omp_get_thread_num(void);
+  int omp_in_parallel(void);
+  void omp_set_dynamic(int dynamic_threads);
+  void omp_set_nested(int nested);
+  void omp_set_num_threads(int num_threads);
 #endif /* _OPENMP */
 
 int /* O [nbr] Thread number */

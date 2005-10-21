@@ -1,5 +1,8 @@
 2005-10-21  Charlie Zender  <zender@uci.edu>
 
+	* Re-wrote nco_omp_ini() logic to use stubs outside of #ifdefs
+	Now UP and SMP codes use virtually same code
+
 	* Prototype and declare OpenMP stub functions in nco_omp.c/h
 
 2005-10-20  Charlie Zender  <zender@uci.edu>
