@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.25 2005-10-21 21:49:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.26 2005-10-21 22:03:25 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -92,7 +92,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     /* Always try to honor user-specified thread request... */
     thr_nbr_rqs=thr_nbr; /* [nbr] Number of threads to request */
     /* ...if possible... */
-    if(dbg_lvl_get() > 2) (void)fprintf(fp_stderr,"%s: INFO User requested %d threads\n",prg_nm_get(),thr_nbr);
+    if(dbg_lvl_get() > 2) (void)fprintf(fp_stderr,"%s: INFO User command-line-requested %d thread%s\n",prg_nm_get(),thr_nbr,(thr_nbr > 1) ? "s" : "");
     if(thr_nbr > thr_nbr_max){
       (void)fprintf(fp_stderr,"%s: WARNING Reducing user-requested thread number = %d to maximum thread number allowed = %d\n",prg_nm_get(),thr_nbr,thr_nbr_max);
       thr_nbr_rqs=thr_nbr_max; /* [nbr] Number of threads to request */
@@ -144,11 +144,11 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     nco_exit(EXIT_FAILURE);
   }else{
     (void)omp_set_num_threads(thr_nbr_rqs); 
-    if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO nco_omp_ini() requested %d threads from system\n",prg_nm_get(),thr_nbr_rqs);
+    if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO omp_set_num_threads() used to set execution environment to spawn teams of %d threads\n",prg_nm_get(),thr_nbr_rqs);
   } /* end error */
 
   thr_nbr_act=omp_get_max_threads();
-  if(dbg_lvl_get() > 2) (void)fprintf(fp_stderr,"%s: INFO After using omp_set_num_threads() to adjust for any user requests/NCO optimizations, omp_get_max_threads() reports that a parallel constructe here/now would spawn a team of %d threads\n",prg_nm_get(),thr_nbr_act);
+  if(dbg_lvl_get() > 2) (void)fprintf(fp_stderr,"%s: INFO After using omp_set_num_threads() to adjust for any user requests/NCO optimizations, omp_get_max_threads() reports that a parallel construct here/now would spawn %d threads\n",prg_nm_get(),thr_nbr_act);
 #ifdef _OPENMP
   if(dbg_lvl_get() > 2){
 #pragma omp parallel default(none) shared(fp_stderr,thr_nbr_act)
