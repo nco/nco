@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.166 2005-10-20 07:21:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.167 2005-10-21 17:56:17 zender Exp $ */
 
 /* ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
@@ -33,7 +33,9 @@
    University of California at Irvine
    Irvine, CA 92697-3100 */
 
-/* Usage:
+/* URL: http://cvs.sourceforge.net/viewcvs.py/nco/nco/src/nco/ncra.c
+
+   Usage:
    ncra -n 3,4,1 -p ${HOME}/nco/data h0001.nc foo.nc
    ncra -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc foo.nc
    ncra -n 3,4,1 -p /ZENDER/tmp -l ${HOME}/nco/data h0001.nc foo.nc
@@ -118,8 +120,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.166 2005-10-20 07:21:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.166 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.167 2005-10-21 17:56:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.167 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
   dmn_sct **dim;

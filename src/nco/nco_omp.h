@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.h,v 1.13 2005-06-08 23:59:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.h,v 1.14 2005-10-21 17:56:17 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -32,6 +32,16 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+#ifndef _OPENMP
+/* OpenMP is not available with this compiler
+   Prototype harmless stub routines for Uni-Processor (UP) code
+   These stubs reduce pre-processor proliferation */
+int omp_get_max_threads(void);
+int omp_get_num_procs(void);
+int omp_get_num_threads(void);
+int omp_get_thread_num(void);
+#endif /* _OPENMP */
 
 int /* O [nbr] Thread number */
 nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
