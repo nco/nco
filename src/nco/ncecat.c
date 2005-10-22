@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.113 2005-10-22 01:30:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.114 2005-10-22 07:30:20 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -87,9 +87,9 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.113 2005-10-22 01:30:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.113 $";
-  const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRv:xt:-:";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.114 2005-10-22 07:30:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.114 $";
+  const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRt:v:x-:";
 
   dmn_sct *rec_dmn;
   dmn_sct **dim;
@@ -496,11 +496,11 @@ main(int argc,char **argv)
 
     /* OpenMP with threading over variables, not files */
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id,nbr_var_prc,out_id,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out)
 #endif /* !_OPENMP */
-    
     /* Process all variables in current file */
     for(idx=0;idx<nbr_var_prc;idx++){
+      in_id=in_id_arr[omp_get_thread_num()];
       if(dbg_lvl > 1) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
       if(dbg_lvl > 0) (void)fflush(fp_stderr);
       /* Variables may have different ID, missing_value, type, in each file */
@@ -531,8 +531,8 @@ main(int argc,char **argv)
     idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
     
     /* Close input netCDF file */
-    nco_close(in_id);
-    
+    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
+
     /* Remove local copy of file */
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
     

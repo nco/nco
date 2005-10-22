@@ -8,6 +8,8 @@
 
 2005-10-21  Charlie Zender  <zender@uci.edu>
 
+	* Clean up old aborted attempt to parallelize ncecat over files
+
 	* Verfied that parallelizing use of in_id in SMP code allows
 	parallel read access to file data with nco_get_var*() in ncra.
 	Hence, removed last critical read region from libnco.a

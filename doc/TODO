@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.654 2005-10-22 00:36:40 mangalam Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.655 2005-10-22 07:30:20 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -269,7 +269,6 @@ nco527. Purify ncatted memory:
 # Commas at end of following aed_sct appear never to be free()'d, are responsible for three unfree'd bytes
         valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncatted -D 5 -O -a float_att,att_var,d,,, -p ${HOME}/nco/data -l /tmp in.nc ~/foo.nc > ~/foo 2>&1
 nco533. Implement C99 mathematical special functions: lgamma_r, j0, j1, jn, y0, y1, yn
-nco538. Stabilize ncecat threading: why are fl_lst_in,in_id,var_prc firstprivate not shared?
 nco540. bm: regression tests report some apparent successes as failures on SUNMP, e.g., 
 	Result: [1e+36] != Expected: [1e+36]
 	always recorded as failure. 

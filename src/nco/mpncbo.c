@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.41 2005-10-22 01:30:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.42 2005-10-22 07:30:20 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.41 2005-10-22 01:30:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.41 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.42 2005-10-22 07:30:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.42 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRSt:v:xy:-:";
   
   dmn_sct **dim_1;
@@ -379,6 +379,7 @@ main(int argc,char **argv)
   if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in_1);
   /* Open file once per thread to improve caching */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in_1,NC_NOWRITE,in_id_1_arr+thr_idx);
+  in_id_1=in_id_1_arr[0];
   
   fl_idx=1; /* Input file _2 */
   fl_in_2=nco_fl_nm_prs(fl_in_2,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
@@ -388,6 +389,7 @@ main(int argc,char **argv)
   if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in_2);
   /* Open file once per thread to improve caching */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in_2,NC_NOWRITE,in_id_2_arr+thr_idx);
+  in_id_2=in_id_2_arr[0];
   
   /* Get number of variables and dimensions in file */
   (void)nco_inq(in_id_1,&nbr_dmn_fl_1,&nbr_var_fl_1,(int *)NULL,(int *)NULL);
@@ -623,17 +625,21 @@ main(int argc,char **argv)
 	/* OpenMP notes:
 	   shared(): msk and wgt are not altered within loop
 	   private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) private(idx,in_id_1,in_id_2) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1,in_id_2,nbr_dmn_xtr_1,nbr_var_prc_1,nbr_var_prc_2,nco_op_typ,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
+#pragma omp parallel for default(none) private(idx,in_id_1,in_id_2) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr_1,nbr_var_prc_1,nbr_var_prc_2,nco_op_typ,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
 #endif /* !_OPENMP */
 	/* UP and SMP codes main loop over variables */ 
 	for(idx=0;idx<nbr_var_prc_1;idx++){
 #endif /* ENABLE_MPI */
-	  /* Common code for UP, SMP, and MPI */ /* fxm: requires C99 as is? */ /* fxm: for the decl to be at the beginning of scope, another ifdef MPI below the decl should have the prev stmt? */
+	  /* Common code for UP, SMP, and MPI */
 	  int has_mss_val=False;
 	  ptr_unn mss_val;
+
 	  if(dbg_lvl > 0) (void)fprintf(fp_stderr,"%s, ",var_prc_1[idx]->nm);
 	  if(dbg_lvl > 0) (void)fflush(fp_stderr);
 	  
+	  in_id_1=in_id_1_arr[omp_get_thread_num()];
+	  in_id_2=in_id_2_arr[omp_get_thread_num()];
+
 	  (void)nco_var_mtd_refresh(in_id_1,var_prc_1[idx]);
 	  has_mss_val=var_prc_1[idx]->has_mss_val; 
 	  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
@@ -752,8 +758,8 @@ main(int argc,char **argv)
   if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
   
   /* Close input netCDF files */
-  nco_close(in_id_1);
-  nco_close(in_id_2);
+  for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);
+  for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_2_arr[thr_idx]);
   
 #ifdef ENABLE_MPI 
   /* Manager moves output file (closed by workers) from temporary to permanent location */
