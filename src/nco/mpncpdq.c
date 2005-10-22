@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.26 2005-10-22 07:30:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.27 2005-10-22 23:24:31 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.26 2005-10-22 07:30:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.26 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.27 2005-10-22 23:24:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.27 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:RrSt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -859,7 +859,7 @@ main(int argc,char **argv)
 	/* UP and SMP codes main loop over variables */
 	for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 #endif /* ENABLE_MPI */
-	    
+	  in_id=in_id_arr[omp_get_thread_num()];
 	  if(dbg_lvl > 1) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	  if(dbg_lvl > 0) (void)fflush(fp_stderr);
 	  
@@ -1001,7 +1001,7 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
     
     /* Close input netCDF file */
-    nco_close(in_id);
+    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
     
     /* Remove local copy of file */
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);

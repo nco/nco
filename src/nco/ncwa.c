@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.192 2005-10-22 07:30:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.193 2005-10-22 23:24:31 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.192 2005-10-22 07:30:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.192 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.193 2005-10-22 23:24:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.193 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -682,6 +682,7 @@ main(int argc,char **argv)
 #pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,msk_out,wgt_out) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,fp_stderr,fp_stdout,in_id_arr,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
 #endif /* !_OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
+      in_id=in_id_arr[omp_get_thread_num()];
       if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
       if(dbg_lvl > 0) (void)fflush(fp_stderr);
       
@@ -914,7 +915,7 @@ main(int argc,char **argv)
     if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
     
     /* Close input netCDF file */
-    nco_close(in_id);
+    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
     
     /* Remove local copy of file */
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);

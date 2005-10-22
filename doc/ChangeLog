@@ -1,3 +1,9 @@
+2005-10-22  zender  <zender@uci.edu>
+
+	* Regression tests show new bugs introduced in mpncea,mpncra
+
+	* Finished re-parallelization of front-ends over in_id
+
 2005-10-21  Harry Mangalam <hjm@tacgi.com>
 
 	* configure[.in], Makefile[.in], src/nco/Makefile[.in] in good enough

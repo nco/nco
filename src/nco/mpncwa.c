@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.28 2005-10-22 07:30:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.29 2005-10-22 23:24:31 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.28 2005-10-22 07:30:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.28 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.29 2005-10-22 23:24:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.29 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -710,6 +710,7 @@ main(int argc,char **argv)
     
     /* Open file once per thread to improve caching */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in,NC_NOWRITE,in_id_arr+thr_idx);
+    in_id=in_id_arr[0];
     
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
@@ -815,6 +816,7 @@ main(int argc,char **argv)
 	  /* UP and SMP codes main loop over variables */
 	  for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 #endif /* !ENABLE_MPI */
+	    in_id=in_id_arr[omp_get_thread_num()];
 	    if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	    if(dbg_lvl > 0) (void)fflush(fp_stderr);
 	    
@@ -1076,7 +1078,7 @@ main(int argc,char **argv)
     if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
     
     /* Close input netCDF file */
-    nco_close(in_id);
+    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
     
 #ifdef ENABLE_MPI
     /* Manager moves output file (closed by workers) from temporary to permanent location */
