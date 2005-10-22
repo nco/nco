@@ -3,6 +3,8 @@
 	* configure[.in], Makefile[.in], src/nco/Makefile[.in] in good enough
 	shape to commit.  Still some shakiness, but time to check clean checkouts
 	on other platforms.  Now supports --enable-mpi, --enable-netcdf4
+	
+	* configure supports MacOSX build (detects OSX and deletes POSIX flag).
 
 2005-10-21  Charlie Zender  <zender@uci.edu>
 

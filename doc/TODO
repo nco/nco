@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.653 2005-10-21 22:24:50 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.654 2005-10-22 00:36:40 mangalam Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -547,7 +547,6 @@ bld45. Replace ENABLE_LARGEFILE with test for 64-bit offset support (i.e., netCD
 bld46. Is DAP_ROOT (or DODS_ROOT) an obsolete variable in DAP 3.5+? if so obsolete it in configure.in, nco.texi
 bld47. Add regression test for 64bit file format capability
 bld50. hjm Eliminate -D_POSIX_SOURCE on MAC OS X builds in configure (without kludging)
-bld51. hjm Add --enable-mpi configure option
 bld53. hjm Add --fl_fmt option to nco_bm.pl (see ncks.c for fl_fmt values)
 bld58. hjm Run benchmarks with netCDF4, compare to netCDF3
 bld59. hjm Add THREDDS DAP server to sand
