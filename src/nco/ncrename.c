@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.85 2005-10-12 21:37:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.86 2005-10-22 01:30:58 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.85 2005-10-12 21:37:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.85 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.86 2005-10-22 01:30:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.86 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
   extern char *optarg;
@@ -102,7 +102,7 @@ main(int argc,char **argv)
   int nc_id;  
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int thr_nbr=0; /* [nbr] Thread number Option t */
+  int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   
   rnm_sct *var_rnm_lst=NULL_CEWI;
   rnm_sct *dmn_rnm_lst=NULL_CEWI;
@@ -459,12 +459,13 @@ main(int argc,char **argv)
   if(nbr_var_rnm > 0) var_rnm_lst=(rnm_sct *)nco_free(var_rnm_lst);
 
   /* NCO-generic clean-up */
-  /* Free individual strings */
+  /* Free individual strings/arrays */
   if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
   if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
   if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
   if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+  if(in_id_arr != NULL) in_id_arr=(int *)nco_free(in_id_arr);
   /* Free lists of strings */
   if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
   if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.40 2005-10-20 01:25:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.41 2005-10-22 01:30:58 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.40 2005-10-20 01:25:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.40 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.41 2005-10-22 01:30:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.41 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRSt:v:xy:-:";
   
   dmn_sct **dim_1;
@@ -132,6 +132,9 @@ main(int argc,char **argv)
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
   
+  int *in_id_1_arr;
+  int *in_id_2_arr;
+
   int abb_arg_nbr=0;
   int fl_idx;
   int fl_nbr=0;
@@ -157,7 +160,8 @@ main(int argc,char **argv)
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int thr_nbr=0; /* [nbr] Thread number Option t */
+  int thr_idx; /* [idx] Index of current thread */
+  int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
   
   lmt_sct **lmt;
@@ -360,7 +364,12 @@ main(int argc,char **argv)
   
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
-  
+    
+  /* Initialize thread information */
+  thr_nbr=nco_openmp_ini(thr_nbr);
+  in_id_1_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
+  in_id_2_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
+
   /* Parse filenames */
   fl_idx=0; /* Input file _1 */
   fl_in_1=nco_fl_nm_prs(fl_in_1,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
@@ -368,7 +377,8 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in_1=nco_fl_mk_lcl(fl_in_1,fl_pth_lcl,&FILE_1_RETRIEVED_FROM_REMOTE_LOCATION);
   if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in_1);
-  rcd=nco_open(fl_in_1,NC_NOWRITE,&in_id_1);
+  /* Open file once per thread to improve caching */
+  for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in_1,NC_NOWRITE,in_id_1_arr+thr_idx);
   
   fl_idx=1; /* Input file _2 */
   fl_in_2=nco_fl_nm_prs(fl_in_2,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
@@ -376,7 +386,8 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in_2=nco_fl_mk_lcl(fl_in_2,fl_pth_lcl,&FILE_2_RETRIEVED_FROM_REMOTE_LOCATION);
   if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in_2);
-  rcd=nco_open(fl_in_2,NC_NOWRITE,&in_id_2);
+  /* Open file once per thread to improve caching */
+  for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in_2,NC_NOWRITE,in_id_2_arr+thr_idx);
   
   /* Get number of variables and dimensions in file */
   (void)nco_inq(in_id_1,&nbr_dmn_fl_1,&nbr_var_fl_1,(int *)NULL,(int *)NULL);
@@ -493,8 +504,6 @@ main(int argc,char **argv)
     /* Catenate time-stamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
     
-    /* Initialize thread information */
-    thr_nbr=nco_openmp_ini(thr_nbr);
     if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
     
 #ifdef ENABLE_MPI 
@@ -614,7 +623,7 @@ main(int argc,char **argv)
 	/* OpenMP notes:
 	   shared(): msk and wgt are not altered within loop
 	   private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) private(idx) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1,in_id_2,nbr_dmn_xtr_1,nbr_var_prc_1,nbr_var_prc_2,nco_op_typ,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
+#pragma omp parallel for default(none) private(idx,in_id_1,in_id_2) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1,in_id_2,nbr_dmn_xtr_1,nbr_var_prc_1,nbr_var_prc_2,nco_op_typ,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
 #endif /* !_OPENMP */
 	/* UP and SMP codes main loop over variables */ 
 	for(idx=0;idx<nbr_var_prc_1;idx++){
@@ -763,12 +772,14 @@ main(int argc,char **argv)
   if(fl_in_2 != NULL) fl_in_2=(char *)nco_free(fl_in_2);
   
   /* NCO-generic clean-up */
-  /* Free individual strings */
+  /* Free individual strings/arrays */
   if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
   if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
   if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
   if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+  if(in_id_1_arr != NULL) in_id_1_arr=(int *)nco_free(in_id_1_arr);
+  if(in_id_2_arr != NULL) in_id_2_arr=(int *)nco_free(in_id_2_arr);
   /* Free lists of strings */
   if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
   if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);

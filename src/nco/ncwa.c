@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.190 2005-10-20 01:25:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.191 2005-10-22 01:30:58 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.190 2005-10-20 01:25:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.190 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.191 2005-10-22 01:30:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.191 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -133,7 +133,10 @@ main(int argc,char **argv)
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
+  int *in_id_arr;
+
   int abb_arg_nbr=0;
+  int dmn_avg_nbr=0;
   int fl_idx=int_CEWI;
   int fl_nbr=0;
   int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
@@ -142,14 +145,12 @@ main(int argc,char **argv)
   int idx_avg;
   int in_id=int_CEWI;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int dmn_avg_nbr=0;
   int nbr_dmn_fl;
   int nbr_dmn_out=0;
   int nbr_dmn_xtr;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
-  int var_lst_in_nbr=0;
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nco_op_typ=nco_op_avg; /* Operation type */
   int op_typ_rlt=0; /* Option o */
@@ -157,7 +158,9 @@ main(int argc,char **argv)
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED; /* [id] Record dimension ID in input file */
-  int thr_nbr=0; /* [nbr] Thread number Option t */
+  int thr_idx; /* [idx] Index of current thread */
+  int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
+  int var_lst_in_nbr=0;
   
   lmt_sct **lmt;
   
@@ -437,6 +440,10 @@ main(int argc,char **argv)
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
     
+  /* Initialize thread information */
+  thr_nbr=nco_openmp_ini(thr_nbr);
+  in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
+
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
@@ -587,8 +594,6 @@ main(int argc,char **argv)
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
 
-  /* Initialize thread information */
-  thr_nbr=nco_openmp_ini(thr_nbr);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
   
   /* Define dimensions in output file */
@@ -632,7 +637,9 @@ main(int argc,char **argv)
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
     if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
-    rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
+    
+    /* Open file once per thread to improve caching */
+    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in,NC_NOWRITE,in_id_arr+thr_idx);
     
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
@@ -672,7 +679,7 @@ main(int argc,char **argv)
      firstprivate(): msk_out and wgt_out must be NULL on first call to nco_var_cnf_dmn()
      shared(): msk and wgt are not altered within loop
      private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,msk_out,wgt_out) private(idx,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,fp_stderr,fp_stdout,in_id,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
+#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,msk_out,wgt_out) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,fp_stderr,fp_stdout,in_id,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
 #endif /* !_OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
@@ -929,13 +936,14 @@ main(int argc,char **argv)
   if(wgt_out != NULL) wgt_out=nco_var_free(wgt_out);
 
   /* NCO-generic clean-up */
-  /* Free individual strings */
+  /* Free individual strings/arrays */
   if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
   if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
   if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
   if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
   if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+  if(in_id_arr != NULL) in_id_arr=(int *)nco_free(in_id_arr);
   /* Free lists of strings */
   if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
   if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);

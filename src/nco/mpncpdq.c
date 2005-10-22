@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.24 2005-10-20 01:25:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.25 2005-10-22 01:30:58 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.24 2005-10-20 01:25:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.24 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.25 2005-10-22 01:30:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.25 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:RrSt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -130,6 +130,8 @@ main(int argc,char **argv)
   
   int **dmn_idx_out_in=NULL; /* [idx] Dimension correspondence, output->input CEWI */
   
+  int *in_id_arr;
+
   int abb_arg_nbr=0;
   int dmn_out_idx; /* [idx] Index over output dimension list */
   int dmn_out_idx_rec_in=NCO_REC_DMN_UNDEFINED; /* [idx] Record dimension index in output dimension list, original */
@@ -157,7 +159,8 @@ main(int argc,char **argv)
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id_in=NCO_REC_DMN_UNDEFINED; /* [id] Record dimension ID in input file */
-  int thr_nbr=0; /* [nbr] Thread number Option t */
+  int thr_idx; /* [idx] Index of current thread */
+  int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
   
   lmt_sct **lmt;
@@ -384,7 +387,11 @@ main(int argc,char **argv)
   
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
-  
+    
+  /* Initialize thread information */
+  thr_nbr=nco_openmp_ini(thr_nbr);
+  in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
+
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
@@ -539,8 +546,6 @@ main(int argc,char **argv)
     /* Catenate time-stamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
     
-    /* Initialize thread information */
-    thr_nbr=nco_openmp_ini(thr_nbr);
     if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
     
 #ifdef ENABLE_MPI
@@ -778,7 +783,9 @@ main(int argc,char **argv)
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
     if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
-    rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
+    
+    /* Open file once per thread to improve caching */
+    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in,NC_NOWRITE,in_id_arr+thr_idx);
     
 #ifdef ENABLE_MPI
     if(prc_rnk == rnk_mgr){ /* MPI manager code */
@@ -847,7 +854,7 @@ main(int argc,char **argv)
 #endif /* !0 */
 #else /* !ENABLE_MPI */
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,fp_stderr,fp_stdout,in_id,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,fp_stderr,fp_stdout,in_id,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out)
 #endif /* !_OPENMP */
 	/* UP and SMP codes main loop over variables */
 	for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
@@ -1038,13 +1045,14 @@ main(int argc,char **argv)
   } /* nco_pck_plc == nco_pck_plc_nil */
   
     /* NCO-generic clean-up */
-    /* Free individual strings */
+    /* Free individual strings/arrays */
   if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
   if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
   if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
   if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
   if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+  if(in_id_arr != NULL) in_id_arr=(int *)nco_free(in_id_arr);
   /* Free lists of strings */
   if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
   if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);

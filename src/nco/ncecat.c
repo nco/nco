@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.112 2005-10-20 01:25:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.113 2005-10-22 01:30:58 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.112 2005-10-20 01:25:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.112 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.113 2005-10-22 01:30:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.113 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRv:xt:-:";
 
   dmn_sct *rec_dmn;
@@ -102,26 +102,29 @@ main(int argc,char **argv)
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
 
+  int *in_id_arr;
+
+  int abb_arg_nbr=0;
+  int fl_idx;
+  int fl_nbr=0;
   int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
-  int fl_idx;
   int in_id;  
-  int out_id;  
-  int abb_arg_nbr=0;
-  int nbr_dmn_fl;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int nbr_var_fl;
-  int nbr_var_fix; /* nbr_var_fix gets incremented */
-  int nbr_var_prc; /* nbr_var_prc gets incremented */
-  int var_lst_in_nbr=0;
-  int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
+  int nbr_dmn_fl;
   int nbr_dmn_xtr;
-  int fl_nbr=0;
+  int nbr_var_fix; /* nbr_var_fix gets incremented */
+  int nbr_var_fl;
+  int nbr_var_prc; /* nbr_var_prc gets incremented */
+  int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int opt;
+  int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
-  int thr_nbr=0; /* [nbr] Thread number Option t */
+  int thr_idx; /* [idx] Index of current thread */
+  int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
+  int var_lst_in_nbr=0;
 
   lmt_sct **lmt;
   
@@ -304,6 +307,10 @@ main(int argc,char **argv)
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
     
+  /* Initialize thread information */
+  thr_nbr=nco_openmp_ini(thr_nbr);
+  in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
+
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
@@ -417,8 +424,6 @@ main(int argc,char **argv)
 
   } /* end if */
 
-  /* Initialize thread information */
-  thr_nbr=nco_openmp_ini(thr_nbr);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
   
   /* Define dimensions in output file */
@@ -474,33 +479,24 @@ main(int argc,char **argv)
   /* Close first input netCDF file */
   (void)nco_close(in_id);
   
-/*  try to OMP loop over files as well as variables.  This stanza is incomplete
-#ifdef _OPENMP
-#pragma omp parallel for default(none) 
-	firstprivate(fl_lst_in,)
-	 private(fl_in,fl_idx,in_id)
-	 shared(fl_nbr, nbr_var_prc, abb_arg_nbr, fl_lst_abb, fl_pth, dbg_lvl, )
-	 
-	 dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1,in_id_2,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out
-#endif */  /* !_OPENMP */
-  
   /* Loop over input files */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
-    if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL, fl_lst_in, abb_arg_nbr, fl_lst_abb, fl_pth);
+    if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr, fl_lst_abb,fl_pth);
     if(dbg_lvl > 0) (void)fprintf(fp_stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
     if(dbg_lvl > 0) (void)fprintf(fp_stderr,"local file %s:\n",fl_in);
-    rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
+    
+    /* Open file once per thread to improve caching */
+    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in,NC_NOWRITE,in_id_arr+thr_idx);
     
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
 
     /* OpenMP with threading over variables, not files */
-    /* fxm: TODO nco539: why are fl_lst_in,in_id,var_prc firstprivate not shared? */
 #ifdef _OPENMP
-#pragma omp parallel for default(none) firstprivate(fl_lst_in,in_id,var_prc) private(idx) shared(fl_nbr,nbr_var_prc,dbg_lvl,var_prc_out,idx_rec_out,out_id)
+#pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id,nbr_var_prc,out_id,var_prc,var_prc_out)
 #endif /* !_OPENMP */
     
     /* Process all variables in current file */
@@ -548,13 +544,14 @@ main(int argc,char **argv)
   /* ncecat-specific memory cleanup */
   
   /* NCO-generic clean-up */
-  /* Free individual strings */
+  /* Free individual strings/arrays */
   if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
   if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
   if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
   if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
   if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+  if(in_id_arr != NULL) in_id_arr=(int *)nco_free(in_id_arr);
   /* Free lists of strings */
   if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
   if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);

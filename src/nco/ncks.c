@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.150 2005-10-19 23:32:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.151 2005-10-22 01:30:58 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.150 2005-10-19 23:32:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.150 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.151 2005-10-22 01:30:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.151 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
   extern char *optarg;
@@ -591,7 +591,7 @@ main(int argc,char **argv)
   if(nbr_dmn_fl > 0) lmt_rgl=nco_lmt_lst_free(lmt_rgl,nbr_dmn_fl);
 
   /* NCO-generic clean-up */
-  /* Free individual strings */
+  /* Free individual strings/arrays */
   if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
   if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
