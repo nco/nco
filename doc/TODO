@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.656 2005-10-23 03:16:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.657 2005-10-23 03:28:17 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -370,7 +370,8 @@ nco629. Split nco_omp_ini() from nco_thr_att_cat()
 nco630. Change if thr_nbr > 0 to if thr_nbr > 1 for nco_thr_Att_cat()?
 nco631. Change usleep() to nanosleep()
 nco632. Add new netCDF4 types to NCO opaque type mechanism
-nco633. Allow MPI_FAKE to build with spinlock stuff
+nco634. Fix real+fake MPI mpncea,mpncra
+nco635. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
