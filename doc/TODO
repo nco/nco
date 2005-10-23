@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.655 2005-10-22 07:30:20 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.656 2005-10-23 03:16:49 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -356,10 +356,6 @@ nco599. Allow targets to determine Makefile variables so, e.g., 'make mpi' autom
 nco605. ncpdq: speed up end of program by padding metadata intially?
 nco607. mpnc*: Define structures (rather than int arrays) for MPI messages
 nco609. Tune (or remove?) sleep interval in MPI operators
-nco611. Expand threaded region in SMP codes to include file open()s
-        cd ~/nco/bld;/bin/rm $MY_OBJ_DIR/ncra.o;make USR_TKN=-DPARALLELIZE_OVER_CL1
-        cd ~/nco/bld;~/nco/bm/nco_bm.pl --dbg=0 --rgr --thr_nbr=2 --udp
-        ncra -O -D 3 -p ~/nco/data in.nc ~/foo.nc
 nco612. ncks ncdump-like features for netcdf4 files structures
 nco616. Remove assumption that type_id is proxy for precision (breaks in netCDF4)
 nco618. XML data discovery on NCAR CDP via Luca Cinquini protocol?
@@ -367,13 +363,14 @@ nco619. Send Russ Rew 1-2 MB IPCC dataset
 nco622. NULL'ify opt_crr unless opt_lng detected?
 nco623. netcdf4 builds in particular order seem to trigger bogus ncpdq regression
 nco624. Document MPI in users guide/manual
-nco626. Mac OS X bld/Makefile problem: _res problems? Caused by _POSIX_SOURCE?
 nco627. Pass nc_id explicitly in all functions to allow for SMP parallelization
         ncpdq SMP parallelization is especially dependent on this
 nco628. openmp: Print OMP_NUM_THREADS, if any, as nco_omp_ini() diagnostic
 nco629. Split nco_omp_ini() from nco_thr_att_cat()
 nco630. Change if thr_nbr > 0 to if thr_nbr > 1 for nco_thr_Att_cat()?
-nco631. 
+nco631. Change usleep() to nanosleep()
+nco632. Add new netCDF4 types to NCO opaque type mechanism
+nco633. Allow MPI_FAKE to build with spinlock stuff
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

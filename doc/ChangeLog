@@ -1,8 +1,11 @@
 2005-10-22  zender  <zender@uci.edu>
 
+	* #ifdef ENABLE_MPI spinlock -S switch so MPI_FAKE executables build
+
 	* Regression tests show new bugs introduced in mpncea,mpncra
 
 	* Finished re-parallelization of front-ends over in_id
+	SMP operators appear to work, pass all tests on soot and ESMF
 
 2005-10-21  Harry Mangalam <hjm@tacgi.com>
 

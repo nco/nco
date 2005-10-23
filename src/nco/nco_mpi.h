@@ -1,17 +1,17 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.7 2005-09-29 20:25:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mpi.h,v 1.8 2005-10-23 03:16:49 zender Exp $ */
 
 /* Purpose: MPI utilities */
 
 /* NB: Currently this header is only accessed by main() MPI programs 
    Hence it is not (yet) part of libnco.a
    Header assumes its inclusion is already conditional on ENABLE_MPI
-   This is currently a header mostly for file-scope constants needed by MPI routines 
+   Header is currently mostly for file-scope constants needed by MPI routines 
    No functions (yet) but some will eventually live here after MPI functionalization
    Adding functions will require creating a corresponding *.c file
    *.c files must reside in libnco.a or link separately to MPI executables
    The latter would slightly complicate the build procedure
-   I'm not yet sure I want _any_ MPI dependencies in libnco.a 
-   Cross-platform link weirdness (e.g., AIX) makes this something to avoid if possible */
+   I am not yet sure I want _any_ MPI dependencies in libnco.a 
+   Cross-platform link weirdness (e.g., AIX) makes avoiding this desirable */
 
 /* Copyright (C) 1995--2005 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
@@ -24,7 +24,7 @@
 #define NCO_MPI_H
 
 /* Standard header files */
-#include <signal.h> /* signal handling */
+#include <signal.h> /* Signal handling */
 
 /* 3rd party vendors */
 
@@ -70,8 +70,9 @@ extern "C" {
     msg_tag_tkn_wrt_rsp  /* Response to write token request */
   }; /* end nco_msg_tag_typ enum */
 
-  int nco_wai_var = 0; /* [nbr] Synchronization var for suspend/resume */
-  void continue_running(int signo){nco_wai_var=1;} /* Signal handler */
+  const int nco_spn_lck_us=100; /* [us] Spinlock sleep interval */
+  int nco_spn_lck_brk=0; /* [nbr] Break spin lock, resume execution */
+  void nco_cnt_run(int signo){nco_spn_lck_brk=1;} /* Signal handler */
 
 #ifdef __cplusplus
 } /* end extern "C" */

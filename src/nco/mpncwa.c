@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.29 2005-10-22 23:24:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.30 2005-10-23 03:16:49 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.29 2005-10-22 23:24:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.29 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.30 2005-10-23 03:16:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.30 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -386,10 +386,12 @@ main(int argc,char **argv)
       (void)nco_lbr_vrs_prn();
       nco_exit(EXIT_SUCCESS);
       break;
+#ifdef ENABLE_MPI
     case 'S': /* Suspend with signal handler to facilitate debugging */
-      if(signal(SIGUSR1,continue_running) == SIG_ERR) (void)fprintf(fp_stdout,"%s: ERROR Could not install suspend handler.\n",prg_nm);
-      while(nco_wai_var == 0) usleep(100); /* Spinlock. fxm: should probably insert a sched_yield */
+      if(signal(SIGUSR1,nco_cnt_run) == SIG_ERR) (void)fprintf(fp_stdout,"%s: ERROR Could not install suspend handler.\n",prg_nm);
+      while(!nco_spn_lck_brk) usleep(nco_spn_lck_us); /* Spinlock. fxm: should probably insert a sched_yield */
       break;
+#endif /* !ENABLE_MPI */
     case 'T': /* Relational operator type. Default is 0, eq, equality */
       op_typ_rlt=nco_op_prs_rlt(optarg);
       break;

@@ -1,8 +1,8 @@
 #!/usr/bin/env perl
-# the shebang line above may have to be set explicitly to /usr/local/bin/perl
-# on the esmf when running in the queue.  Otherwise it may not pick up the right perl
+# Shebang line above may have to be set explicitly to /usr/local/bin/perl
+# on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.103 2005-10-21 21:05:23 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.104 2005-10-23 03:16:49 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -10,7 +10,7 @@
 # ~/nco/bm/nco_bm.pl --thr_nbr=2 --regress --udpreport # Test OpenMP
 # ~/nco/bm/nco_bm.pl --mpi_prc=2 --regress --udpreport # Test MPI
 # ~/nco/bm/nco_bm.pl --dap --regress --udpreport # Test OPeNDAP on sand
-# ~/nco/bm/nco_bm.pl --dap=http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata --regress --udpreport # Test OPeNDAP on soot
+# ~/nco/bm/nco_bm.pl --dap=http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata --regress --udpreport # Test OPeNDAP on soot
 # scp ~/nco/bm/nco_bm.pl esmf.ess.uci.edu:nco/bm
 
 # NB: When adding tests, _be sure to use -O to overwrite files_
@@ -108,30 +108,30 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'bch_flg!'     => \$bch_flg,    # [flg] Batch behavior
 	'benchmark'    => \$bm,         # Run benchmarks
 	'bm'           => \$bm,         # Run benchmarks
-	'dbg_lvl=i'    => \$dbg_lvl,    # debug level - # is now optional
-	'debug=i'      => \$dbg_lvl,    # debug level
-	'dods:s'       => \$dodap,      # string is the URL to the DODs data
-	'dap:s'        => \$dodap,      #  "
-	'opendap:s'    => \$dodap,      #  "
+	'dbg_lvl=i'    => \$dbg_lvl,    # Debug level - # is now optional
+	'debug=i'      => \$dbg_lvl,    # Debug level
+	'dods:s'       => \$dodap,      # Optional string is URL to DAP data
+	'dap:s'        => \$dodap,      # Optional string is URL to DAP data
+	'opendap:s'    => \$dodap,      # Optional string is URL to DAP data
 	'dust_user=s'  => \$dust_usr,    #  #
-	'h'            => \$usg,        # explains how to use this thang
-	'help'         => \$usg,        #            ditto
-	'log'          => \$wnt_log,    # set if want output logged
-	'mpi_prc=i'    => \$mpi_prc,    # set number of mpi processes
-	'mpi_fake'	   => \$mpi_fke,    # run the mpi executable as a single process for debugging.
-	'fake_mpi'	   => \$mpi_fke,    # run the mpi executable as a single process for debugging.
-	'queue'        => \$que,        # if set, bypasses all interactive stuff
+	'h'            => \$usg,        # Explain how to use this thang
+	'help'         => \$usg,        # Explain how to use this thang
+	'log'          => \$wnt_log,    # Log output
+	'mpi_prc=i'    => \$mpi_prc,    # Number MPI processes to use
+	'mpi_fake'	   => \$mpi_fke,    # Run SMP version of MPI code
+	'fake_mpi'	   => \$mpi_fke,    # Run SMP version of MPI code
+	'queue'        => \$que,        # Bypass all interactive stuff
 	'pth_rmt_scp_tst' => \$pth_rmt_scp_tst, # [drc] Path to scp regression test file
-	'regress'      => \$rgr,        # test regression
-	'rgr'          => \$rgr,        # test regression
+	'regress'      => \$rgr,        # Perform regression tests
+	'rgr'          => \$rgr,        # Perform regression tests
 	'test_files=s' => \$tst_fl_cr8, # Create test files "134" does 1,3,4
 	'tst_fl=s'     => \$tst_fl_cr8, # Create test files "134" does 1,3,4
 	'thr_nbr=i'    => \$thr_nbr,    # Number of OMP threads to use
 	'udpreport'    => \$udp_rpt,    # punt the timing data back to udpserver on sand
-	'usage'        => \$usg,        # explains how to use this thang
+	'usage'        => \$usg,        # Explain how to use this thang
 	'caseid=s'     => \$caseid,     # short string to tag test dir and batch queue
-	'xdata=s'		=> \$xdta_pth,   # explicit data path set form cmdline
-	'xpt_dsc=s'    => \$xpt_dsc,    # long string to describe experiment
+	'xdata=s'		=> \$xdta_pth,   # explicit data path set from cmdline
+	'xpt_dsc=s'    => \$xpt_dsc,    # Long string to describe experiment
 #BROKEN - FXM hjm	'md5'          => \$md5,        # requests md5 checksumming results (longer but more exacting)
 );
 
