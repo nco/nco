@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.35 2005-10-23 04:52:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.36 2005-10-23 07:08:50 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.35 2005-10-23 04:52:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.35 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.36 2005-10-23 07:08:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.36 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -329,7 +329,7 @@ main(int argc,char **argv)
     case 'n': /* NINTAP-style abbreviation of files to average */
       fl_lst_abb=lst_prs_2D(optarg,",",&abb_arg_nbr);
       if(abb_arg_nbr < 1 || abb_arg_nbr > 5){
-	(void)fprintf(stdout,gettext("%s: ERROR Incorrect abbreviation for file list\n"),prg_nm);
+	(void)fprintf(stdout,gettext("%s: ERROR Incorrect abbreviation for file list\n"),prg_nm_get());
 	(void)nco_usg_prn();
 	nco_exit(EXIT_FAILURE);
       } /* end if */
@@ -357,7 +357,7 @@ main(int argc,char **argv)
       break;
 #ifdef ENABLE_MPI
     case 'S': /* Suspend with signal handler to facilitate debugging */
-      if(signal(SIGUSR1,nco_cnt_run) == SIG_ERR) (void)fprintf(fp_stderr,"%s: ERROR Could not install suspend handler.\n",prg_nm);
+      if(signal(SIGUSR1,nco_cnt_run) == SIG_ERR) (void)fprintf(fp_stderr,"%s: ERROR Could not install suspend handler.\n",prg_nm_get());
       while(!nco_spn_lck_brk) usleep(nco_spn_lck_us); /* Spinlock. fxm: should probably insert a sched_yield */
       break;
 #endif /* !ENABLE_MPI */
@@ -378,7 +378,9 @@ main(int argc,char **argv)
     case 'Y': /* Pseudonym */
       /* Call prg_prs to reset pseudonym */
       optarg_lcl=(char *)strdup(optarg);
+      if(prg_nm != NULL) prg_nm=(char *)nco_free(prg_nm);
       prg_nm=prg_prs(optarg_lcl,&prg);
+      optarg_lcl=(char *)nco_free(optarg_lcl);
       break;
     case 'y': /* Operation type */
       nco_op_typ_sng=(char *)strdup(optarg);

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.110 2005-09-29 20:25:17 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.111 2005-10-23 07:08:49 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -407,7 +407,7 @@ gcc/g++:
 export PVM_ARCH=`~/nco/bld/pvmgetarch`
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=/usr/include NETCDF_LIB=/usr/lib ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${PVM_ARCH} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${PVM_ARCH} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${PVM_ARCH} ./configure --disable-regex --disable-shared --prefix=${HOME} --bindir=${HOME}/bin/${PVM_ARCH} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${PVM_ARCH} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1

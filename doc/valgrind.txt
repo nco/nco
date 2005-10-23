@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/valgrind.txt,v 1.4 2005-09-15 05:29:37 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/valgrind.txt,v 1.5 2005-10-23 07:08:50 zender Exp $
 
 # Purpose: Suppression file for valgrind
 # Default suppressed warnings in /usr/local/lib/valgrind/default.supp
@@ -567,4 +567,17 @@
    fun:__nss_lookup_function
    obj:/lib/tls/libnss_compat-2.3.5.so
    fun:_nss_compat_getpwuid_r
+}
+
+# Suppress common problem found in NCO Ubuntu 5.10 valgrind-3.0.1 gcc-4.0.2 20051022:
+# ==18629== Conditional jump or move depends on uninitialised value(s)
+# ==18629==    at 0x1B8EC82D: (within /lib/ld-2.3.5.so)
+{
+   Conditional_jump_or_move_nco_ubuntu-5.10_valgrind-3.0.1_gcc-4.0.2
+   Memcheck:Cond
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
+   obj:/lib/ld-2.3.5.so
 }

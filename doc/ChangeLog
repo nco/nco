@@ -1,5 +1,7 @@
 2005-10-22  Charlie Zender  <zender@uci.edu>
 
+	* Eliminate small [mp]ncra leak with -Y pseudonym
+
 	* Fixed all known bugs with parallelization over in_id
 	MPI (except for known problems) and MPI_FAKE regression tests all passed
 	This resolves TODO nco611 and is opportune time to re-benchmark	SMP
