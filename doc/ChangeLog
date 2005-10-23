@@ -2,7 +2,7 @@
 
 	* #ifdef ENABLE_MPI spinlock -S switch so MPI_FAKE executables build
 
-	* Regression tests show new bugs introduced in mpncea,mpncra
+	* Regression tests show bugs introduced in real+fake MPI mpncea,mpncra
 
 	* Finished re-parallelization of front-ends over in_id
 	SMP operators appear to work, pass all tests on soot and ESMF
