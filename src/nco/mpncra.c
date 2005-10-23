@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.34 2005-10-23 03:16:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.35 2005-10-23 04:52:39 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.34 2005-10-23 03:16:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.34 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.35 2005-10-23 04:52:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.35 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -406,8 +406,10 @@ main(int argc,char **argv)
   /* Make uniform list of user-specified dimension limits */
   if(lmt_nbr > 0) lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
   
-  /* Make netCDF errors fatal and print the diagnostic */ 
-  
+  /* Initialize thread information */
+  thr_nbr=nco_openmp_ini(thr_nbr);
+  in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
+
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
@@ -914,6 +916,7 @@ main(int argc,char **argv)
 	    /* UP and SMP codes main loop over variables */
 	    for(idx=0;idx<nbr_var_prc;idx++){
 #endif /* ENABLE_MPI */
+	      in_id=in_id_arr[omp_get_thread_num()];
 	      if(dbg_lvl > 2) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	      if(dbg_lvl > 0) (void)fflush(fp_stderr);
 	      /* Update hyperslab start indices to current record for each variable */
@@ -1026,6 +1029,7 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
 	    for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 #endif /* !ENABLE_MPI */	
+	      in_id=in_id_arr[omp_get_thread_num()];
 	      if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	      if(dbg_lvl > 0) (void)fflush(fp_stderr);
 	      /* Retrieve variable from disk into memory */
@@ -1053,8 +1057,8 @@ main(int argc,char **argv)
       if(dbg_lvl > 1) (void)fprintf(stderr,"\n");
       
       /* Close input netCDF file */
-      nco_close(in_id);
-      
+      for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
+
       /* Dispose local copy of file */
       if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
     } /* end loop over fl_idx */
