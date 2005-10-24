@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.86 2005-10-24 22:30:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.87 2005-10-24 22:33:31 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -130,12 +130,6 @@ extern "C" {
 #ifndef NC_FORMAT_NETCDF4_CLASSIC
 #define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_STRICT_NC3. */
 #endif
-  /* Datatypes referenced in nco_typ.h, nco_netcdf.c: */
-#define	NC_UBYTE 	7	/* unsigned 1 byte int */
-#define	NC_USHORT 	8	/* unsigned 2-byte int */
-#define	NC_UINT 	9	/* unsigned 4-byte int */
-#define	NC_INT64 	10	/* signed 8-byte int */
-#define	NC_UINT64 	11	/* unsigned 8-byte int */
 #endif /* !ENABLE_NETCDF4 */
 
 #ifndef EXIT_SUCCESS /* Most likely this is a SUN4 machine */
