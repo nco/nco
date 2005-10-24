@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.52 2005-10-12 17:33:40 mangalam Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.53 2005-10-24 22:30:26 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -101,6 +101,16 @@ nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
     return sizeof(nco_char); 
   case NC_BYTE: 
     return sizeof(nco_byte); 
+  case NC_UBYTE:
+    return sizeof(nco_ubyte); 
+  case NC_USHORT:
+    return sizeof(nco_ushort); 
+  case NC_UINT:
+    return sizeof(nco_uint); 
+  case NC_INT64:
+    return sizeof(nco_int64); 
+  case NC_UINT64:
+    return sizeof(nco_uint64); 
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */ 
   
@@ -125,6 +135,16 @@ nco_typ_sng /* [fnc] Convert netCDF type enum to string */
     return "NC_CHAR";
   case NC_BYTE:
     return "NC_BYTE";
+  case NC_UBYTE:
+    return "NC_UBYTE";
+  case NC_USHORT:
+    return "NC_USHORT";
+  case NC_UINT:
+    return "NC_UINT";
+  case NC_INT64:
+    return "NC_INT64";
+  case NC_UINT64:
+    return "NC_UINT64";
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
@@ -146,13 +166,23 @@ c_typ_nm /* [fnc] Return string describing native C type */
   case NC_DOUBLE:
     return "double";
   case NC_INT:
-    return "NCO_TYP_INT_SNG";
+    return "NCO_INT_SNG";
   case NC_SHORT:
     return "signed short int";
   case NC_CHAR:
-    return "NCO_TYP_CHAR_SNG";
+    return "NCO_CHAR_SNG";
   case NC_BYTE:
-    return "NCO_TYP_BYTE_SNG";
+    return "NCO_BYTE_SNG";
+  case NC_UBYTE:
+    return "NCO_UBYTE_SNG";
+  case NC_USHORT:
+    return "NCO_USHORT_SNG";
+  case NC_UINT:
+    return "NCO_UINT_SNG";
+  case NC_INT64:
+    return "NCO_INT64_SNG";
+  case NC_UINT64:
+    return "NCO_UINT64_SNG";
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
@@ -178,6 +208,16 @@ f77_typ_nm /* [fnc] Return string describing native Fortran77 type */
     return "character";
   case NC_BYTE:
     return "character";
+  case NC_UBYTE:
+    return "character";
+  case NC_USHORT:
+    return "integer*2";
+  case NC_UINT:
+    return "integer*4";
+  case NC_INT64:
+    return "integer*8";
+  case NC_UINT64:
+    return "integer*8";
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
@@ -203,6 +243,17 @@ f90_typ_nm /* [fnc] Return string describing native Fortran90 type */
     return "character(1)";
   case NC_BYTE:
     return "character(1)";
+  case NC_UBYTE:
+    return "character(1)";
+    /* NB: Not sure about generality of integer kinds */
+  case NC_USHORT:
+    return "integer(selected_int_kind(2))";
+  case NC_UINT:
+    return "integer(selected_int_kind(6))";
+  case NC_INT64:
+    return "integer(selected_int_kind(8))";
+  case NC_UINT64:
+    return "integer(selected_int_kind(8))";
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 

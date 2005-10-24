@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.3 2005-07-01 05:33:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.4 2005-10-24 22:30:26 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -67,6 +67,13 @@ C code." */
 #define NCO_TYP_UCHAR 2
 #define NCO_TYP_INT 3
 #define NCO_TYP_LONG 4
+
+/* TODO nco632: new netCDF4 types */
+typedef unsigned char nco_ubyte; /* [typ] NC_UBYTE */
+typedef unsigned short nco_ushort; /* [typ] NC_USHORT */
+typedef unsigned long nco_uint; /* [typ] NC_UINT */
+typedef long long nco_int64; /* [typ] NC_INT64 */
+typedef unsigned long long nco_uint64; /* [typ] NC_UINT64 */
 
 /* NC_BYTE handling */
 #ifndef NCO_BYTE

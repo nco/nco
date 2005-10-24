@@ -1,3 +1,9 @@
+2005-10-24  Charlie Zender  <zender@uci.edu>
+
+	* Support netCDF4 NC_UBYTE,NC_USHORT,NC_UINT,NC_INT64,NC_UINT64
+	in metadata and structures. Still need to add read/write and
+	conversion/promotion functions. 
+
 2005-10-22  Charlie Zender  <zender@uci.edu>
 
 	* Eliminate small [mp]ncra leak with -Y pseudonym
