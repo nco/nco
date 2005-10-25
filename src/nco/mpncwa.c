@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.30 2005-10-23 03:16:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.31 2005-10-25 05:51:14 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.30 2005-10-23 03:16:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.30 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.31 2005-10-25 05:51:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.31 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -147,7 +147,7 @@ main(int argc,char **argv)
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
   int idx_avg;
-  int in_id=int_CEWI;  
+  int in_id;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_dmn_fl;
   int nbr_dmn_out=0;

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.661 2005-10-24 22:30:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.662 2005-10-25 05:51:14 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -361,7 +361,6 @@ nco616. Remove assumption that type_id is proxy for precision (breaks in netCDF4
 nco618. XML data discovery on NCAR CDP via Luca Cinquini protocol?
 nco619. Send Russ Rew 1-2 MB IPCC dataset
 nco622. NULL'ify opt_crr unless opt_lng detected?
-nco623. netcdf4 builds in particular order seem to trigger bogus ncpdq regression?
 nco624. Document MPI in users guide/manual
 nco627. Pass nc_id explicitly in all functions to allow for SMP parallelization
         ncpdq SMP parallelization is especially dependent on this
@@ -372,7 +371,12 @@ nco632. Add new netCDF4 types to NCO opaque type mechanism
 nco635. ncwa: MACOSX regressions
         ../bm/nco_bm.pl --dbg=0 --regress --udpreport ncwa
 nco636. Try pnetcdf: http://www-unix.mcs.anl.gov/parallel-netcdf/
-nco637. 
+nco637. netcdf4: many tests fail because in.nc not a netCDF id error, e.g.,
+        ncea -O -D 0 -v one -p ~/nco/data in.nc ~/foo.nc
+        This started happening after nco_typ.h modifications
+nco638. ncpdq nco_var_upk() bug: 
+	nco_get_att() in nco_var_upk() uses uninitialized nc_id from var_sct rather than funtion arg
+nco638. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
@@ -559,6 +563,7 @@ bld69. hjm make configure ignore system libs in favor of dev libs or figure
          out a way to do this (change name of local dev lib (libnco-dev)?
 bld70. hjm nco_c++ on Mac OS X: Get "make check" working (add -lstdc++, remove -lnco)
 bld71. hjm Mac OS X: remove false positive regressions in ncwa (cut?)
+
 bld72. 
 ************************************************************************
 End bldXXX TODOs

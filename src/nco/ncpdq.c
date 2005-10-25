@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.92 2005-10-22 23:24:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.93 2005-10-25 05:51:14 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.92 2005-10-22 23:24:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.92 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.93 2005-10-25 05:51:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.93 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -140,7 +140,7 @@ main(int argc,char **argv)
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
   int idx_rdr=int_CEWI;
-  int in_id=int_CEWI;  
+  int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_dmn_fl;
   int nbr_dmn_out;

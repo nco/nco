@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.34 2005-08-16 17:35:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.35 2005-10-25 05:51:14 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -1404,7 +1404,7 @@ nco_var_zero /* [fnc] Zero value of first operand */
      ccc --dbg=0 --tst=gsl --gsl_a=0.0 
      confirm this.
      Hence, it may be faster to use memset() system call to zero memory 
-     Same philosophy is used in nco_zero_long() */
+     Same approach is used in nco_zero_long() */
 
   size_t sz_byt; /* [B] Number of bytes in variable buffer */
   sz_byt=(size_t)sz*nco_typ_lng(type);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.56 2005-10-25 00:37:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.57 2005-10-25 05:51:14 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -304,15 +304,9 @@ nco_create(const char * const fl_nm,const int cmode,int * const nc_id)
 {
   /* Purpose: Wrapper for nc_create() */
   const char fnc_nm[]="nco_create()";
-  int rcd=NC_NOERR;
-  int fl_in_typ=nco_fl_typ_nc; /* [enm] File format */
-  if(fl_in_typ == nco_fl_typ_nc){
-    rcd=nc_create(fl_nm,cmode,nc_id);
-    if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
-  }else{
-    (void)fprintf(stderr,"ERROR: %s reports unknown fl_typ = %d\n",fnc_nm,fl_in_typ);
-    nco_err_exit(rcd,fnc_nm);
-  } /* end else */
+  int rcd;
+  rcd=nc_create(fl_nm,cmode,nc_id);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_create */
 
@@ -321,15 +315,9 @@ nco_open(const char * const fl_nm,const int mode,int * const nc_id)
 {
   /* Purpose: Wrapper for nc_open() */
   const char fnc_nm[]="nco_open()";
-  int rcd=NC_NOERR;
-  int fl_in_typ=nco_fl_typ_nc; /* [enm] File format */
-  if(fl_in_typ == nco_fl_typ_nc){
-    rcd=nc_open(fl_nm,mode,nc_id);
-    if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
-  }else{
-    (void)fprintf(stderr,"ERROR: %s reports unknown fl_typ = %d\n",fnc_nm,fl_in_typ);
-    nco_err_exit(rcd,fnc_nm);
-  } /* end else */
+  int rcd;
+  rcd=nc_open(fl_nm,mode,nc_id);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_open */
 

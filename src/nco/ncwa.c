@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.193 2005-10-22 23:24:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.194 2005-10-25 05:51:14 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.193 2005-10-22 23:24:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.193 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.194 2005-10-25 05:51:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.194 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -143,7 +143,7 @@ main(int argc,char **argv)
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
   int idx_avg;
-  int in_id=int_CEWI;  
+  int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_dmn_fl;
   int nbr_dmn_out=0;
@@ -640,6 +640,7 @@ main(int argc,char **argv)
     
     /* Open file once per thread to improve caching */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in,NC_NOWRITE,in_id_arr+thr_idx);
+    in_id=in_id_arr[0];
     
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();

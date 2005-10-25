@@ -1,20 +1,16 @@
-2005-10-24  Charlie Zender  <zender@uci.edu>
-
 2005-10-24  Daniel Wang  <wangd@uci.edu>
 
 	* Implement barrier in mpncra.c, which should fix TODO nco593.
 
 2005-10-24  Charlie Zender  <zender@uci.edu>
 
-	* Something about these netCDF4 types seriously breaks netCDF4 
-	regressions. Presumably this is TODO nco611:
-	netCDF4 breaks assumption that range/precision increases with nc_type enum
+	* Initialize dangling in_id in ncra, ncwa. Fixes TODO nco637.
 
 	* Support netCDF4 NC_UBYTE,NC_USHORT,NC_UINT,NC_INT64,NC_UINT64
 	in nco_netcdf.c wrapper functions for libnetcdf.a library
 
 	* Support netCDF4 NC_UBYTE,NC_USHORT,NC_UINT,NC_INT64,NC_UINT64
-	in metadata and structures. Still need to add read/write and
+	in metadata and some structures. Still need to add read/write and 
 	conversion/promotion functions. 
 
 2005-10-22  Charlie Zender  <zender@uci.edu>

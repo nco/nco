@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.58 2005-06-17 00:54:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.59 2005-10-25 05:51:14 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -961,6 +961,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
   if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
     scv_sct add_fst_scv;
     var->add_fst.vp=(void *)nco_malloc(nco_typ_lng(var->typ_upk));
+    /* fxm TODO nco638 */
     (void)nco_get_att(var->nc_id,var->id,add_fst_sng,var->add_fst.vp,var->typ_upk);
     add_fst_scv=ptr_unn_2_scv(var->typ_upk,var->add_fst);
     /* Convert var to type of scale_factor for expansion */
