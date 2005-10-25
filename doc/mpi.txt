@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.15 2005-09-17 00:19:03 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.16 2005-10-25 07:50:59 zender Exp $ -*-text-*-
 
 Installing an MPI Environment for NCO:
 
@@ -53,38 +53,47 @@ Up-to-date versions of LAM-MPI are distributed in RPM and Deb formats.
 (LAM features are included Open MPI, which has not reached 1.0 yet.)
 
 0. Remove LAM-MPI packages
-   sudo apt-get remove lam4 lam4-dev lam-mpidoc lam-runtime
+   sudo apt-get remove lam4c2 lam4-dev lam-mpidoc lam-runtime
    sudo rpm -e lam
    sudo yum remove lam
 
 1. Install LAM-MPI packages
-   sudo apt-get install lam4 lam4-dev lam-mpidoc lam-runtime
+   sudo apt-get install lam4c2 lam4-dev lam-mpidoc lam-runtime
    sudo rpm -i lam-7.0.6-3.i386.rpm
 
 2. Start lamd if not already running:
    lamboot & # Start lamd
 
 ************************************************************************
-MPICH (version 1) Instructions:
+MPICH (version 1, http://www-unix.mcs.anl.gov/mpi/mpich) Instructions:
 1. Install MPICH packages
    sudo apt-get install mpich mpich-common
    sudo rpm -i mpich mpich-doc
    sudo yum install mpich mpich-doc
-   sudo rpm -i mpich2 mpich2-doc
-   sudo yum install mpich2
    sudo rpm -i mpich-1.2.5.2-1mdk.i586.rpm
 
 ************************************************************************
-MPICH2 (i.e., MPICH version 2) Instructions:
+MPICH2 (i.e., MPICH version 2, http://www-unix.mcs.anl.gov/mpi/mpich2) Instructions:
+0. Remove MPICH2 packages
+
+   sudo apt-get remove libmpich2-1.0 mpich2-doc mpich2 mpich2-mpd mpich2-dev
+
 1. Install MPICH2 (requires python 2.3 or 2.4)
-   scp 'dust.ess.uci.edu:/data/zender/tmp/*mpich2*' ${DATA}/tmp
+   wget http://torvalds.cs.mtsu.edu/~zach/debian/1.0.2p1/libmpich2-1.0_1.0.2p1-2_i386.deb
+   wget http://torvalds.cs.mtsu.edu/~zach/debian/1.0.2p1/mpich2-doc_1.0.2p1-2_i386.deb
+   wget http://torvalds.cs.mtsu.edu/~zach/debian/1.0.2p1/mpich2_1.0.2p1-2_i386.deb
+   wget http://torvalds.cs.mtsu.edu/~zach/debian/1.0.2p1/mpich2-mpd_1.0.2p1-2_i386.deb
+   wget http://torvalds.cs.mtsu.edu/~zach/debian/1.0.2p1/mpich2-dev_1.0.2p1-2_i386.deb
+
+   sudo apt-get install python2.3 python2.3-xml
+
    cd ${DATA}/tmp
    sudo dpkg --install \
-   libmpich2-1.0_1.0.2-3_i386.deb \
-   mpich2-doc_1.0.2-3_i386.deb \
-   mpich2_1.0.2-3_i386.deb \
-   mpich2-mpd_1.0.2-3_i386.deb \
-   mpich2-dev_1.0.2-3_i386.deb
+   libmpich2-1.0_1.0.2p1-2_i386.deb \
+   mpich2-doc_1.0.2p1-2_i386.deb \
+   mpich2_1.0.2p1-2_i386.deb \
+   mpich2-mpd_1.0.2p1-2_i386.deb \
+   mpich2-dev_1.0.2p1-2_i386.deb
    cd -
 
 2. Install .mpd.conf in ${HOME} or set START="yes" in /etc/default/mpd
