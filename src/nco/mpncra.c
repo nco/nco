@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.36 2005-10-23 07:08:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.37 2005-10-25 00:33:48 wangd Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -47,6 +47,7 @@
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard C headers */
+#include <assert.h> /* assert() debugging macro */ 
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
@@ -86,7 +87,30 @@
 #define MAIN_PROGRAM_FILE
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
-int 
+
+void
+checkpointMpi(int prc_rnk, int stage) {
+  int msg[] = {0,0};
+  int result;
+  FILE* const f = stderr;
+
+  if(prc_rnk == rnk_mgr) {
+    msg[0] = stage;
+    msg[1] = stage;
+  }
+  fprintf(f, "%d checkpointing at stage %d\n", prc_rnk, stage);
+  /* make everyone continue from this point. */
+  result = MPI_Bcast(msg, 2, MPI_INT, 
+		     rnk_mgr, MPI_COMM_WORLD);
+  if(prc_rnk != rnk_mgr) {
+    /* basic sanity check */
+    assert(msg[0] == stage);
+    assert(msg[1] == stage);
+  }
+  /* done with checkpointing. */
+} 
+
+
 main(int argc,char **argv)
 {
   bool CNV_ARM=int_CEWI;
@@ -120,8 +144,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.36 2005-10-23 07:08:50 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.36 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.37 2005-10-25 00:33:48 wangd Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.37 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -822,6 +846,17 @@ main(int argc,char **argv)
   /* Close input netCDF file */
   nco_close(in_id);
   
+#ifdef ENABLE_MPI
+  /* This barrier ensures that all nodes have reached this point together.
+     Otherwise, the manager code should be altered so it can deal with 
+     nodes in different stages of execution at any time.
+     Daniel: I think we should be convinced of this parallelization 
+     structure before bothering with implementing the code restructuring in
+     the manager that would let us remove the barrier.  The barrier 
+     should only negligibly impact performance. */
+  checkpointMpi(prc_rnk, 1);
+#endif  /* ENABLE_MPI */
+
   /* End Pass 1: Workers construct local persistant variable lists */
   printf("DEBUG: prc_rnk %d is done with 1st pass\n",prc_rnk);
   /* Begin Pass 2: Complete record/file loops with local variable lists */
