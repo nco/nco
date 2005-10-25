@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.38 2005-10-25 05:51:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.39 2005-10-25 06:11:25 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -87,7 +87,6 @@
 #define MAIN_PROGRAM_FILE
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
-
 void
 checkpointMpi(int prc_rnk, int stage) {
   int msg[] = {0,0};
@@ -108,9 +107,9 @@ checkpointMpi(int prc_rnk, int stage) {
     assert(msg[1] == stage);
   }
   /* done with checkpointing. */
-} 
+} /* end checkpointMpi() */
 
-
+int 
 main(int argc,char **argv)
 {
   bool CNV_ARM=int_CEWI;
@@ -144,8 +143,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.38 2005-10-25 05:51:14 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.38 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.39 2005-10-25 06:11:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.39 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;

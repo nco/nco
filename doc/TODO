@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.662 2005-10-25 05:51:14 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.663 2005-10-25 06:11:25 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -376,6 +376,7 @@ nco637. netcdf4: many tests fail because in.nc not a netCDF id error, e.g.,
         This started happening after nco_typ.h modifications
 nco638. ncpdq nco_var_upk() bug: 
 	nco_get_att() in nco_var_upk() uses uninitialized nc_id from var_sct rather than funtion arg
+        Points out larger problem with packing code: not parallel over in_id
 nco638. 
 ************************************************************************
 End ncoXXX TODOs

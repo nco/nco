@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.93 2005-10-25 05:51:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.94 2005-10-25 06:11:25 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.93 2005-10-25 05:51:14 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.93 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.94 2005-10-25 06:11:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.94 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -717,6 +717,8 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       in_id=in_id_arr[omp_get_thread_num()];
+      /* fxm TODO nco638 temporary fix? */
+      var_prc[idx]->nc_id=in_id; 
       if(dbg_lvl > 1) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
       if(dbg_lvl > 0) (void)fflush(fp_stderr);
       
