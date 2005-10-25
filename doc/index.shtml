@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.310 2005-10-23 07:08:50 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.311 2005-10-25 20:57:19 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -788,6 +788,12 @@ To try, first re-build and re-install the netCDF library using
 <tt>CFLAGS=-fno-common</tt>.
 Apparently netCDF, unlike most codes, does not set this automatically.
 Then build NCO normally.
+
+Mac OS&nbsp;X ships with a broken version of the POSIX <tt>cut</tt>
+utility which causes many NCO regression tests to appear to fail.
+In fact the NCO commands succeed, but the <tt>cut</tt> output fails.
+The workaround is not to heed the regression tests, or to install a
+working <tt>cut</tt>, e.g., from the GNU <tt>coreutils</tt> package.
 </li>
 
 <!-- http://nco.sf.net#bld_slr -->

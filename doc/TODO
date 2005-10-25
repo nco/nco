@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.664 2005-10-25 06:14:12 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.665 2005-10-25 20:57:19 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -357,7 +357,7 @@ nco605. ncpdq: speed up end of program by padding metadata intially?
 nco607. mpnc*: Define structures (rather than int arrays) for MPI messages
 nco609. Tune (or remove?) sleep interval in MPI operators
 nco612. ncks ncdump-like features for netcdf4 files structures
-nco616. Remove assumption that type_id is proxy for precision (breaks in netCDF4)
+nco616. Remove ncap assumption that type_id is proxy for precision (breaks in netCDF4)
 nco618. XML data discovery on NCAR CDP via Luca Cinquini protocol?
 nco619. Send Russ Rew 1-2 MB IPCC dataset
 nco622. NULL'ify opt_crr unless opt_lng detected?
@@ -368,12 +368,17 @@ nco628. openmp: Print OMP_NUM_THREADS, if any, as nco_omp_ini() diagnostic
 nco630. Change if thr_nbr > 0 to if thr_nbr > 1 for nco_thr_att_cat()?
 nco631. Change usleep() to nanosleep()
 nco632. Add new netCDF4 types to NCO opaque type mechanism
-nco635. ncwa: MACOSX regressions
-        ../bm/nco_bm.pl --dbg=0 --regress --udpreport ncwa
+nco635. ncwa: MACOSX "regressions" caused by broken FREEBSD/MACOSX 'cut' binary
+        Solution may be to install GNU textutils?
+        cd ~/nco/bm;~/nco/bm/nco_bm.pl --dbg=0 --regress --udpreport ncwa
+        ncwa -h -O -D 0 -y min -v three_dmn_var_dbl -a lon -p ~/nco/data in.nc ${DATA}/nco_bm/foo.nc
+        ncks -C -H -s '%f,' -v three_dmn_var_dbl ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo
+        cut -d, -f 7 ${DATA}/nco_bm/foo # (breaks on MACOSX,FREEBSD? fine on AIX, LINUX)
 nco636. Try pnetcdf: http://www-unix.mcs.anl.gov/parallel-netcdf/
 nco639. Fix packing code to be parallel over in_id without requiring 
 	extra var->nc_id initialization everywhere
-nco640. 
+nco640. Naming: mpnc* (as currently implemented) or ncmpi* (as in pnetcdf)?
+nco641. Use netCDF3 MPI I/O hooks in nco_open/nco_create
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
@@ -560,7 +565,6 @@ bld69. hjm make configure ignore system libs in favor of dev libs or figure
          out a way to do this (change name of local dev lib (libnco-dev)?
 bld70. hjm nco_c++ on Mac OS X: Get "make check" working (add -lstdc++, remove -lnco)
 bld71. hjm Mac OS X: remove false positive regressions in ncwa (cut?)
-
 bld72. 
 ************************************************************************
 End bldXXX TODOs
