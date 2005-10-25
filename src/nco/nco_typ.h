@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.5 2005-10-24 22:33:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.6 2005-10-25 00:20:33 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -77,13 +77,11 @@ C code." */
 #define NCO_TYP_UCHAR 2
 #define NCO_TYP_INT 3
 #define NCO_TYP_LONG 4
-
-/* TODO nco632: new netCDF4 types */
-typedef unsigned char nco_ubyte; /* [typ] NC_UBYTE */
-typedef unsigned short nco_ushort; /* [typ] NC_USHORT */
-typedef unsigned long nco_uint; /* [typ] NC_UINT */
-typedef long long nco_int64; /* [typ] NC_INT64 */
-typedef unsigned long long nco_uint64; /* [typ] NC_UINT64 */
+#define NCO_TYP_UBYTE 5
+#define NCO_TYP_USHORT 6
+#define NCO_TYP_UINT 7
+#define NCO_TYP_INT64 8
+#define NCO_TYP_UINT64 9
 
 /* NC_BYTE handling */
 #ifndef NCO_BYTE
@@ -133,6 +131,29 @@ typedef unsigned char nco_byte; /* [typ] NC_BYTE */
 #else
 #error "ERROR: Unrecognized NCO_BYTE token"
 #endif /* NCO_BYTE */
+
+/* NC_UBYTE handling */
+#ifndef NCO_UBYTE
+/* Only valid option is NCO_TYP_UCHAR 
+   Default is NCO_TYP_UCHAR, which treats NC_UBYTE as C-type unsigned char */
+# define NCO_UBYTE NCO_TYP_UCHAR
+#endif /* NCO_UBYTE */
+#if NCO_UBYTE == NCO_TYP_UCHAR
+/* Treat NC_UBYTE as C-type unsigned char */
+typedef unsigned char nco_ubyte; /* [typ] NC_UBYTE */
+# define NCO_UBYTE_SNG "unsigned char"
+# define NCO_UBYTE_IO_SFX ubyte
+# define NCO_GET_ATT_UBYTE nc_get_att_ubyte
+# define NCO_GET_VAR1_UBYTE nc_get_var1_ubyte
+# define NCO_GET_VARA_UBYTE nc_get_vara_ubyte
+# define NCO_GET_VARM_UBYTE nc_get_varm_ubyte
+# define NCO_PUT_ATT_UBYTE nc_put_att_ubyte
+# define NCO_PUT_VAR1_UBYTE nc_put_var1_ubyte
+# define NCO_PUT_VARA_UBYTE nc_put_vara_ubyte
+# define NCO_PUT_VARM_UBYTE nc_put_varm_ubyte
+#else
+#error "ERROR: Unrecognized NCO_UBYTE token"
+#endif /* NCO_UBYTE */
 
 /* NC_CHAR handling */
 #ifndef NCO_CHAR
@@ -184,6 +205,29 @@ typedef unsigned char nco_char; /* [typ] NC_CHAR */
 #error "ERROR: Unrecognized NCO_CHAR token"
 #endif /* NCO_CHAR */
 
+/* NC_USHORT handling */
+#ifndef NCO_USHORT
+/* Only valid option is NCO_TYP_USHORT 
+   Default is NCO_TYP_USHORT, which treats NC_USHORT as C-type unsigned short */
+# define NCO_USHORT NCO_TYP_USHORT
+#endif /* NCO_USHORT */
+#if NCO_USHORT == NCO_TYP_USHORT
+/* Treat NC_USHORT as C-type unsigned short */
+typedef unsigned short nco_ushort; /* [typ] NC_USHORT */
+# define NCO_USHORT_SNG "unsigned short"
+# define NCO_USHORT_IO_SFX ushort
+# define NCO_GET_ATT_USHORT nc_get_att_ushort
+# define NCO_GET_VAR1_USHORT nc_get_var1_ushort
+# define NCO_GET_VARA_USHORT nc_get_vara_ushort
+# define NCO_GET_VARM_USHORT nc_get_varm_ushort
+# define NCO_PUT_ATT_USHORT nc_put_att_ushort
+# define NCO_PUT_VAR1_USHORT nc_put_var1_ushort
+# define NCO_PUT_VARA_USHORT nc_put_vara_ushort
+# define NCO_PUT_VARM_USHORT nc_put_varm_ushort
+#else
+#error "ERROR: Unrecognized NCO_USHORT token"
+#endif /* NCO_USHORT */
+
 /* NC_INT handling */
 #ifndef NCO_INT
 /* Valid options are NCO_TYP_INT, NCO_TYP_LONG
@@ -219,6 +263,75 @@ typedef long nco_int; /* [typ] NC_INT */
 #else
 #error "ERROR: Unrecognized NCO_INT token"
 #endif /* NCO_INT */
+
+/* NC_UINT handling */
+#ifndef NCO_UINT
+/* Only valid options is NCO_TYP_UINT
+   Default is NCO_TYP_UINT, which treats NC_UINT as C-type unsigned int */
+# define NCO_UINT NCO_TYP_UINT
+#endif /* NCO_UINT */
+#if NCO_UINT == NCO_TYP_UINT
+/* Treat NC_UINT as C-type unsigned int */
+typedef unsigned int nco_uint; /* [typ] NC_UINT */
+# define NCO_UINT_SNG "unsigned int"
+# define NCO_UINT_IO_SFX uint
+# define NCO_GET_ATT_UINT nc_get_att_uint
+# define NCO_GET_VAR1_UINT nc_get_var1_uint
+# define NCO_GET_VARA_UINT nc_get_vara_uint
+# define NCO_GET_VARM_UINT nc_get_varm_uint
+# define NCO_PUT_ATT_UINT nc_put_att_uint
+# define NCO_PUT_VAR1_UINT nc_put_var1_uint
+# define NCO_PUT_VARA_UINT nc_put_vara_uint
+# define NCO_PUT_VARM_UINT nc_put_varm_uint
+#else
+#error "ERROR: Unrecognized NCO_UINT token"
+#endif /* NCO_UINT */
+
+/* NC_INT64 handling */
+#ifndef NCO_INT64
+/* Only valid options is NCO_TYP_INT64
+   Default is NCO_TYP_INT64, which treats NC_INT64 as C-type long long */
+# define NCO_INT64 NCO_TYP_INT64
+#endif /* NCO_INT64 */
+#if NCO_INT64 == NCO_TYP_INT64
+/* Treat NC_INT64 as C-type long long */
+typedef long long nco_int64; /* [typ] NC_INT64 */
+# define NCO_INT64_SNG "long long"
+# define NCO_INT64_IO_SFX int64
+# define NCO_GET_ATT_INT64 nc_get_att_int64
+# define NCO_GET_VAR1_INT64 nc_get_var1_int64
+# define NCO_GET_VARA_INT64 nc_get_vara_int64
+# define NCO_GET_VARM_INT64 nc_get_varm_int64
+# define NCO_PUT_ATT_INT64 nc_put_att_int64
+# define NCO_PUT_VAR1_INT64 nc_put_var1_int64
+# define NCO_PUT_VARA_INT64 nc_put_vara_int64
+# define NCO_PUT_VARM_INT64 nc_put_varm_int64
+#else
+#error "ERROR: Unrecognized NCO_INT64 token"
+#endif /* NCO_INT64 */
+
+/* NC_UINT64 handling */
+#ifndef NCO_UINT64
+/* Only valid options is NCO_TYP_UINT64
+   Default is NCO_TYP_UINT64, which treats NC_UINT64 as C-type unsigned long long */
+# define NCO_UINT64 NCO_TYP_UINT64
+#endif /* NCO_UINT64 */
+#if NCO_UINT64 == NCO_TYP_UINT64
+/* Treat NC_UINT64 as C-type unsigned long long */
+typedef unsigned long long nco_uint64; /* [typ] NC_UINT64 */
+# define NCO_UINT64_SNG "unsigned long long"
+# define NCO_UINT64_IO_SFX uint64
+# define NCO_GET_ATT_UINT64 nc_get_att_uint64
+# define NCO_GET_VAR1_UINT64 nc_get_var1_uint64
+# define NCO_GET_VARA_UINT64 nc_get_vara_uint64
+# define NCO_GET_VARM_UINT64 nc_get_varm_uint64
+# define NCO_PUT_ATT_UINT64 nc_put_att_uint64
+# define NCO_PUT_VAR1_UINT64 nc_put_var1_uint64
+# define NCO_PUT_VARA_UINT64 nc_put_vara_uint64
+# define NCO_PUT_VARM_UINT64 nc_put_varm_uint64
+#else
+#error "ERROR: Unrecognized NCO_UINT64 token"
+#endif /* NCO_UINT64 */
 
 #ifdef __cplusplus
 extern "C" {
