@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.111 2005-10-23 07:08:49 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.112 2005-10-25 22:11:50 mangalam Exp $ -*-Fundamental-*-
 
-Purpose(s): 
+Purpose(s):
 Track status of autobuild features for NCO
 Develop recommended ./configure invocations for each architecture
 
@@ -20,7 +20,7 @@ ALPHA		Y					Y	Y
 CRAY
 FREEBSD		N(10)
 HPPA
-LINUX como	N(11)	
+LINUX como	N(11)
 LINUX gcc/g++	Y	N/A	Y			Y	Y
 LINUX icc	Y	N/A				Y	Y
 LINUXALPHA	Y					Y	Y
@@ -32,8 +32,8 @@ NECSX
 SGIMP64 cc/CC	Y	Y				Y	N(6)
 SGIMP64 gcc/g++	N(7)					Y
 SUNMP cc/CC	Y	Y				Y	Y
-SUNMP gcc/g++	N(13)				
-WIN32		
+SUNMP gcc/g++	N(13)
+WIN32
 -----------------------------------------------------------------------
 Key: Y: feature works, N feature broken, N/A not-applicable, blank: not tested (send us your results!)
 -----------------------------------------------------------------------
@@ -45,7 +45,7 @@ Table footnotes:
 11. Comeau (correctly) insists strdup(), strcasecmp() are not ANSI standard (this should now be fixed, retry)
 13. gcc 3.2.1 problem with /usr/include/sys/stat.h in nco_fl_utl.h
 14. g++ 2.95 (Darwin 5.5) does not have <valarray>, so the c++ library will not be built; g++ version 3.1 (Darwin 6.8) does. That is all we have tested.
-17. 
+17.
 -----------------------------------------------------------------------
 
 There are three basic ways to build/install NCO with the GNU autotools:
@@ -53,7 +53,7 @@ Method 1. Default installation procedure for system-wide installation.
 
    cd ~/nco;cvs update -kk;make distclean;./configure;make;sudo make install
 
-   This simplest default method works if the required libraries 
+   This simplest default method works if the required libraries
    (e.g., libnetcdf.a) are in normal places (e.g., /usr/local/lib).
    No special optimizations or features are activated.
 
@@ -61,12 +61,12 @@ Method 2. Optimized installation procedure for system-wide installation.
 
    cd ~/nco;cvs update -kk;make distclean;./configure --enable-optimize-custom;make;sudo make install
 
-   Activating --enable-optimize-custom causes NCO to attempt to build with 
-   a set of compiler switches customized for speed. 
+   Activating --enable-optimize-custom causes NCO to attempt to build with
+   a set of compiler switches customized for speed.
    This will only work if Method 1 worked, so give it a whirl.
 
 Method 3. Recommended/current custom ./configure invocation
-   System administrators like to install multiple compilers, and 
+   System administrators like to install multiple compilers, and
    have libraries in weird places.
    Serious users of NCO are encouraged to try the configurations below.
    The suggestions are alphabetized by (pvmgetarch) machine type.
@@ -78,12 +78,12 @@ pre-processor token NC_64BIT_OFFSET to '0', e.g., CPPFLAGS=-DNC_64BIT_OFFSET='0'
 ************************************************************************
 Start AIX
 status: Appears to work
-Updated 5/27/2003   Jim Edwards   
+Updated 5/27/2003   Jim Edwards
 Compiler warnings about incorrect file suffix and duplicate symbols may be safely ignored.
 On AIX, shared libraries and static libraries use the same namespace
 Hence, probably safer to either disable-shared or disable-static
-hjm: until DODS/DAP and the above mentioned shared/static problem is resolved, 
-AIX configure string should be:  ./configure --disable-dods --disable-shared 
+hjm: until DODS/DAP and the above mentioned shared/static problem is resolved,
+AIX configure string should be:  ./configure --disable-dods --disable-shared
 ************************************************************************
 zender@bs1201en:~/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess
 AIX
@@ -163,7 +163,7 @@ End ALPHA
 
 ************************************************************************
 Start FREEBSD
-Status: 
+Status:
 ************************************************************************
 bash-2.05a$ ./pvmgetarch;uname -a;~/nco/autobld/config.guess
 FREEBSD
@@ -413,6 +413,13 @@ make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
+
+hjm++
+MACOSX rquires CFLAGS=-fno-common for building netcdf3.x to allow linking with nco
+this may also be the case for netcdf4/hdf5
+MACOSX is detected and the '-fno-common' is added automatically to CFLAGS in nco's configure.
+hjm--
+
 ************************************************************************
 End MACOSX
 ************************************************************************
@@ -460,7 +467,7 @@ End SGIMP64
 
 ************************************************************************
 Start SUNMP
-Status: 
+Status:
 Works fine with native compilers
 ************************************************************************
 zender@flagstaff:~/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess

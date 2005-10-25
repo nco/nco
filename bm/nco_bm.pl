@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.104 2005-10-23 03:16:49 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.105 2005-10-25 22:11:50 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -45,7 +45,7 @@ $spc_nbr_min  $spc_sng  %subbenchmarks  %success  %sym_link
 @sys_tim_arr  $sys_time  %sys_tme  $thr_nbr  $timed  $timestamp
 $tmr_app  %totbenchmarks  @tst_cmd  $tst_fl_cr8  $tst_fmt  $tst_id_sng
 $tst_idx  %tst_nbr  $udp_reprt  $udp_rpt  $USER  $usg  %usr_tme
-%wc_tbl  $wnt_log $xdta_pth $xpt_dsc $nco_vrsn_sng
+%wc_tbl  $wnt_log $xdta_pth $xpt_dsc $nco_vrsn_sng $gnu_cut $tmp
 );
 
 # Initializations
@@ -81,6 +81,7 @@ $dust_usr = "";
 $xdta_pth = ''; # explicit data path that user can set from cmdline; more powerful than $dta_dir
 $os_nme = "";
 $nco_vrsn_sng = "";
+$gnu_cut = 1;
 
 # other inits
 $localhostname = `hostname`; chomp $localhostname;
@@ -163,6 +164,26 @@ if ($ARGV == 0) {	usage();}
 # set up some host-specific id's
 $os_nme = `uname`; chomp $os_nme;
 
+# check for bad cut on MacOSX
+
+if ($os_nme =~ /Darwin/){
+	print "\nTesting for GNU cut on Darwin..\n";
+	$tmp = `cut --version 2>&1 | grep 'Free Software Foundation'`;
+	if ($tmp !~ /Free/) {
+		print <<"BADCUT";
+
+WARN: You appear to be running this on MacOSX with the default wacko
+  'cut'. This will cause some of the regressions and benchmarks to fail as
+  well as contribute to the overall negative kharma of the universe.
+  If you want life to be better, consider installing the GNU coreutils
+  which will provide an acceptable 'cut'.
+
+Hit <Enter> to acknowledge your miserable state of cut kharma.
+BADCUT
+		$tmp = <STDIN>;
+		$gnu_cut = 0;
+	}
+}
 
 # do $mpi_prc and $mpi_fke conflict?
 if ($mpi_prc > 0 && $mpi_fke) {
