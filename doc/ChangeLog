@@ -1,3 +1,7 @@
+2005-10-24  Daniel Wang  <wangd@uci.edu>
+
+	* Implement barrier in mpncra.c, which should fix TODO nco593.
+
 2005-10-24  Charlie Zender  <zender@uci.edu>
 
 	* Support netCDF4 NC_UBYTE,NC_USHORT,NC_UINT,NC_INT64,NC_UINT64
