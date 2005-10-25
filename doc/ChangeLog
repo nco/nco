@@ -1,8 +1,12 @@
+2005-10-24  zender  <zender@uci.edu>
+
 2005-10-24  Daniel Wang  <wangd@uci.edu>
 
 	* Implement barrier in mpncra.c, which should fix TODO nco593.
 
 2005-10-24  Charlie Zender  <zender@uci.edu>
+
+	* Initialize var->nc_id in ncpdq. Fixes TODO nco638.
 
 	* Initialize dangling in_id in ncra, ncwa. Fixes TODO nco637.
 

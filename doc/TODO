@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.663 2005-10-25 06:11:25 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.664 2005-10-25 06:14:12 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -371,13 +371,9 @@ nco632. Add new netCDF4 types to NCO opaque type mechanism
 nco635. ncwa: MACOSX regressions
         ../bm/nco_bm.pl --dbg=0 --regress --udpreport ncwa
 nco636. Try pnetcdf: http://www-unix.mcs.anl.gov/parallel-netcdf/
-nco637. netcdf4: many tests fail because in.nc not a netCDF id error, e.g.,
-        ncea -O -D 0 -v one -p ~/nco/data in.nc ~/foo.nc
-        This started happening after nco_typ.h modifications
-nco638. ncpdq nco_var_upk() bug: 
-	nco_get_att() in nco_var_upk() uses uninitialized nc_id from var_sct rather than funtion arg
-        Points out larger problem with packing code: not parallel over in_id
-nco638. 
+nco639. Fix packing code to be parallel over in_id without requiring 
+	extra var->nc_id initialization everywhere
+nco640. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
