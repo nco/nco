@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.38 2005-07-01 05:33:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.39 2005-10-25 01:09:51 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -489,6 +489,7 @@ ncap_var_retype /* [fnc] Promote variable to higher common precision */
 (var_sct *var_1, /* I/O [sct] Variable */
  var_sct *var_2) /* I/O [sct] Variable */
 {
+  /* fxm: TODO nco616: netCDF4 breaks assumption that range/precision increases with nc_type enum */
   /* Purpose: Convert variable, if necessary, so variables are of same type */
   if(var_1->type == var_2->type) return var_1->type;
   /* fxm: Unsafe assumption that netCDF types are enumerated in increasing order of precision */
@@ -506,6 +507,7 @@ ncap_scv_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if n
 (scv_sct * const scv_1, /* I/O [sct] Scalar value */
  scv_sct * const scv_2) /* I/O [sct] Scalar value */
 {
+  /* fxm: TODO nco616: netCDF4 breaks assumption that range/precision increases with nc_type enum */
   /* Purpose: Promote scalar values to higher of two precisions, if necessary */
   if(scv_1->type == scv_2->type){
     return scv_1->type;
@@ -523,6 +525,7 @@ ncap_var_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if n
 (var_sct ** const var, /* I/O [sct] Variable */
  scv_sct * const scv) /* I/O [sct] Scalar value */
 {
+  /* fxm: TODO nco616: netCDF4 breaks assumption that range/precision increases with nc_type enum */
   /* Purpose: If types of variable and scalar value differ, convert argument with 
      lower precision to type of argument with higher precision.
      Otherwise do nothing. 
