@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.57 2005-10-25 05:51:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.58 2005-10-26 01:18:04 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -310,6 +310,20 @@ nco_create(const char * const fl_nm,const int cmode,int * const nc_id)
   return rcd;
 } /* end nco_create */
 
+#ifdef PNETCDF
+/* PNETCDF routines defined by ANL Parallel netCDF Library libpnetcdf.a */
+int
+ncompi_open(MPI_Comm mpi_cmm,const char * const fl_nm,const int mode,MPI_Info mpi_nfo,int * const nc_id)
+{
+  /* Purpose: Wrapper for ncmpi_open() */
+  const char fnc_nm[]="ncompi_open()";
+  int rcd;
+  rcd=ncmpi_open(mpi_cmm,fl_nm,mode,mpi_nfo,nc_id);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* end ncompi_open */
+#endif /* !PNETCDF */
+
 int
 nco_open(const char * const fl_nm,const int mode,int * const nc_id)
 {
@@ -394,14 +408,8 @@ nco_close(const int nc_id)
   /* Purpose: Wrapper for nc_close() */
   const char fnc_nm[]="nco_close()";
   int rcd=NC_NOERR;
-  int fl_in_typ=nco_fl_typ_nc; /* [enm] File format */
-  if(fl_in_typ == nco_fl_typ_nc){
-    rcd=nc_close(nc_id);
-    if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
-  }else{
-    (void)fprintf(stderr,"ERROR: %s reports unknown fl_typ = %d\n",fnc_nm,fl_in_typ);
-    nco_err_exit(rcd,fnc_nm);
-  } /* end else */
+  rcd=nc_close(nc_id);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_close */
 

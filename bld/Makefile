@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.348 2005-10-23 19:45:17 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.349 2005-10-26 01:18:04 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -21,6 +21,7 @@
 # make THR_NBR=2 tst                 # OpenMP regression test
 # make THR_NBR=2 bm                  # OpenMP benchmarks
 # make NETCDF4=Y                     # netCDF4 features
+# make PNETCDF=Y                     # pnetCDF features
 
 # Usage (Compilation):
 # cd ~/nco/bld;make;cd -             # Default build
@@ -127,6 +128,9 @@ endif # endif OMP
 ifndef OPTS
  OPTS := O
 endif
+ifndef ${PNETCDF} # pnetCDF support
+ PNETCDF := N
+endif # endif PNETCDF
 ifndef RPM
  RPM := N
 endif # endif RPM
@@ -153,7 +157,7 @@ endif # endif VRS_SNG
 # NB: CPP_TKN is recursively expanded variable, define only when components are ready
 CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
 
-# Default NCO build. May be overwritten by DAP and NETCDF4 clauses
+# Default NCO build. DAP, NETCDF4, and PNETCDF clauses may overwrite this
 NC_LDFLAGS := -L${NETCDF_LIB}
 NC_LIBS := -lnetcdf 
 
@@ -210,6 +214,12 @@ ifeq (${NETCDF4},Y)
  NC_LDFLAGS := -L${NETCDF_LIB}
  NC_LIBS := -lnetcdf -lhdf5 -lhdf5_hl
 endif # endif NETCDF4
+
+ifeq (${PNETCDF},Y)
+# Enable pnetCDF functionality
+ NC_LDFLAGS := -L${NETCDF_LIB}
+ NC_LIBS := -lpnetcdf
+endif # endif PNETCDF
 
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
 # Decide among the plethora of Linux compilers
@@ -1162,6 +1172,11 @@ ifeq (${NETCDF4},Y)
 endif
 # endif NETCDF4
 
+ifeq (${PNETCDF},Y)
+ CPPFLAGS += -DENABLE_PNETCDF
+endif
+# endif PNETCDF
+
 # Link to Electric Fence library, see man efence
 ifeq (${PVM_ARCH},LINUX)
 ifneq (${null},$(findstring ${OPTS},X))
@@ -1565,6 +1580,7 @@ dbg:
 	@printf "NETCDF_LIB = ${NETCDF_LIB}\n"
 	@printf "NETCDF_ROOT = ${NETCDF_ROOT}\n"
 	@printf "OMP = ${OMP}\n"
+	@printf "PNETCDF = ${PNETCDF}\n"
 	@printf "PVM_ARCH = ${PVM_ARCH}\n"
 	@printf "RPM = ${RPM}\n"
 	@printf "SRC_LST = $(SRC_LST)\n"

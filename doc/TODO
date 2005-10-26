@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.665 2005-10-25 20:57:19 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.666 2005-10-26 01:18:04 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -359,11 +359,8 @@ nco609. Tune (or remove?) sleep interval in MPI operators
 nco612. ncks ncdump-like features for netcdf4 files structures
 nco616. Remove ncap assumption that type_id is proxy for precision (breaks in netCDF4)
 nco618. XML data discovery on NCAR CDP via Luca Cinquini protocol?
-nco619. Send Russ Rew 1-2 MB IPCC dataset
 nco622. NULL'ify opt_crr unless opt_lng detected?
 nco624. Document MPI in users guide/manual
-nco627. Pass nc_id explicitly in all functions to allow for SMP parallelization
-        ncpdq SMP parallelization is especially dependent on this
 nco628. openmp: Print OMP_NUM_THREADS, if any, as nco_omp_ini() diagnostic
 nco630. Change if thr_nbr > 0 to if thr_nbr > 1 for nco_thr_att_cat()?
 nco631. Change usleep() to nanosleep()
@@ -378,7 +375,9 @@ nco636. Try pnetcdf: http://www-unix.mcs.anl.gov/parallel-netcdf/
 nco639. Fix packing code to be parallel over in_id without requiring 
 	extra var->nc_id initialization everywhere
 nco640. Naming: mpnc* (as currently implemented) or ncmpi* (as in pnetcdf)?
-nco641. Use netCDF3 MPI I/O hooks in nco_open/nco_create
+nco641. Use netCDF4 MPI I/O hooks in nco_open/nco_create
+nco642. Create nco_pnetcdf.h, nco_pnetcdf.c wrapper replacements?
+nco643. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
