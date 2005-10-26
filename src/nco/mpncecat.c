@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.29 2005-10-23 03:16:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.30 2005-10-26 17:53:43 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.29 2005-10-23 03:16:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.29 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.30 2005-10-26 17:53:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.30 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRSt:v:x-:";
   
   dmn_sct *rec_dmn;
@@ -580,6 +580,11 @@ main(int argc,char **argv)
     
     /* Open file once per thread to improve caching */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in,NC_NOWRITE,in_id_arr+thr_idx);
+#if 0
+    /* fxm: netCDF4: Change to independent variable reads? */
+    MPI_Info mpi_nfo=MPI_INFO_NULL;
+    rcd=nco_open_par(fl_in,NC_MPIIO|NC_NETCDF4,MPI_COMM_WORLD,mpi_nfo,in_id);
+#endif /* !0 */
     
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
