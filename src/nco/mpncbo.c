@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.43 2005-10-23 03:16:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.44 2005-10-27 17:02:08 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.43 2005-10-23 03:16:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.43 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.44 2005-10-27 17:02:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.44 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRSt:v:xy:-:";
   
   dmn_sct **dim_1;
@@ -184,6 +184,7 @@ main(int argc,char **argv)
   var_sct **var_prc_out;
   
 #ifdef ENABLE_MPI
+  /* #if defined(ENABLE_MPI) && !defined(ENABLE_NETCDF4) */
   /* Declare all MPI-specific variables here */
   MPI_Status mpi_stt; /* [enm] Status check to decode msg_tag_typ */
   

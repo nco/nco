@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.88 2005-10-25 05:51:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.89 2005-10-27 17:02:08 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -24,7 +24,6 @@
 /* Encapsulate C++ const usage in C99-safe macro 
    C++ compilers will use type-safe version
    C89 and C99 compilers use less type-safe version that is standards-compliant */
-/* fxm: This is incomplete and needs to be extended and applied to all source */
 #ifdef __cplusplus
 #define CST_X_PTR_CST_PTR_CST_Y(x,y) const x * const * const y
 #define X_CST_PTR_CST_PTR_Y(x,y) x const * const * y
