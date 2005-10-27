@@ -1,3 +1,7 @@
+2005-10-26  Charlie Zender  <zender@uci.edu>
+
+	* More unused prototyping of MPI-IO access code in mpncecat.c
+
 2005-10-25  Charlie Zender  <zender@uci.edu>
 
 	* Support pnetCDF in bld/Makefile

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.30 2005-10-26 17:53:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.31 2005-10-27 01:30:36 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.30 2005-10-26 17:53:43 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.30 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.31 2005-10-27 01:30:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.31 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRSt:v:x-:";
   
   dmn_sct *rec_dmn;
@@ -149,6 +149,10 @@ main(int argc,char **argv)
   
 #ifdef ENABLE_MPI
   /* Declare all MPI-specific variables here */
+  MPI_Comm mpi_cmm=MPI_COMM_WORLD; /* [prc] Communicator */
+#if defined(ENABLE_NETCDF4) || defined(ENABLE_PNETCDF)
+  MPI_Info mpi_nfo=MPI_INFO_NULL; /* [sct] File geometry hints */
+#endif /* !ENABLE_PNETCDF || !ENABLE_PNETCDF */
   MPI_Status mpi_stt; /* [enm] Status check to decode msg_tag_typ */
 
   bool TKN_WRT_FREE=True; /* [flg] Write-access to output file is available */
@@ -222,8 +226,8 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
   /* MPI Initialization */
   MPI_Init(&argc,&argv);
-  MPI_Comm_size(MPI_COMM_WORLD,&prc_nbr);
-  MPI_Comm_rank(MPI_COMM_WORLD,&prc_rnk);
+  MPI_Comm_size(mpi_cmm,&prc_nbr);
+  MPI_Comm_rank(mpi_cmm,&prc_rnk);
 #endif /* !ENABLE_MPI */
   
   /* Start clock and save command line */ 
@@ -547,9 +551,9 @@ main(int argc,char **argv)
   
   /* Manager obtains output filename and broadcasts to workers */
   if(prc_rnk == rnk_mgr) fl_nm_lng=(int)strlen(fl_out_tmp);
-  MPI_Bcast(&fl_nm_lng,1,MPI_INT,0,MPI_COMM_WORLD);
+  MPI_Bcast(&fl_nm_lng,1,MPI_INT,0,mpi_cmm);
   if(prc_rnk != rnk_mgr) fl_out_tmp=(char *)malloc((fl_nm_lng+1)*sizeof(char));
-  MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,0,MPI_COMM_WORLD);
+  MPI_Bcast(fl_out_tmp,fl_nm_lng+1,MPI_CHAR,0,mpi_cmm);
   
   if(prc_rnk == rnk_mgr){ /* MPI manager code */
     TKN_WRT_FREE=False;
@@ -569,7 +573,7 @@ main(int argc,char **argv)
   /* Loop over input files */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
 #ifdef ENABLE_MPI
-    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Barrier(mpi_cmm);
 #endif /* !ENABLE_MPI */
     /* Parse filename */
     if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
@@ -580,12 +584,16 @@ main(int argc,char **argv)
     
     /* Open file once per thread to improve caching */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in,NC_NOWRITE,in_id_arr+thr_idx);
+
 #if 0
     /* fxm: netCDF4: Change to independent variable reads? */
-    MPI_Info mpi_nfo=MPI_INFO_NULL;
-    rcd=nco_open_par(fl_in,NC_MPIIO|NC_NETCDF4,MPI_COMM_WORLD,mpi_nfo,in_id);
+#ifdef ENABLE_NETCDF4
+    rcd=nco_open_par(fl_in,NC_MPIIO|NC_NETCDF4,mpi_cmm,mpi_nfo,&in_id);
+#endif /* !ENABLE_NETCDF4 */
+#ifdef ENABLE_PNETCDF
+    rcd=ncompi_open(mpi_cmm,fl_in,NC_NOWRITE,mpi_nfo,&in_id);
+#endif /* !ENABLE_PNETCDF */
 #endif /* !0 */
-    
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
     
@@ -597,7 +605,7 @@ main(int argc,char **argv)
       /* While variables remain to be processed or written... */
       while(var_wrt_nbr < nbr_var_prc){
 	/* Receive message from any worker */
-	MPI_Recv(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,MPI_ANY_SOURCE,MPI_ANY_TAG,MPI_COMM_WORLD,&mpi_stt);
+	MPI_Recv(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,MPI_ANY_SOURCE,MPI_ANY_TAG,mpi_cmm,&mpi_stt);
 	/* Obtain MPI message tag type */
 	msg_tag_typ=mpi_stt.MPI_TAG;
 	/* Get sender's prc_rnk */
@@ -620,7 +628,7 @@ main(int argc,char **argv)
 	    /* Point to next variable on list */
 	    idx++;
 	  } /* endif idx */
-	  MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,rnk_wrk,msg_tag_wrk_rsp,MPI_COMM_WORLD);
+	  MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,rnk_wrk,msg_tag_wrk_rsp,mpi_cmm);
 	  /* msg_tag_typ != msg_tag_wrk_rqs */
 	}else if(msg_tag_typ == msg_tag_tkn_wrt_rqs){
 	  /* Allocate token if free, else ask worker to try later */
@@ -630,7 +638,7 @@ main(int argc,char **argv)
 	  }else{
 	    msg_bfr[0]=tkn_wrt_rqs_dny; /* Deny request for write token */
 	  } /* !TKN_WRT_FREE */
-	  MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,rnk_wrk,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD);
+	  MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,rnk_wrk,msg_tag_tkn_wrt_rsp,mpi_cmm);
 	} /* msg_tag_typ != msg_tag_tkn_wrt_rqs */
       } /* end while var_wrt_nbr < nbr_var_prc */
     }else{ /* prc_rnk != rnk_mgr, end Manager code begin Worker code */
@@ -638,9 +646,9 @@ main(int argc,char **argv)
       while(1){ /* While work remains... */
 	/* Send msg_tag_wrk_rqs */
 	wrk_id_bfr[0]=prc_rnk;
-	MPI_Send(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,rnk_mgr,msg_tag_wrk_rqs,MPI_COMM_WORLD);
+	MPI_Send(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,rnk_mgr,msg_tag_wrk_rqs,mpi_cmm);
 	/* Receive msg_tag_wrk_rsp */
-	MPI_Recv(msg_bfr,msg_bfr_lng,MPI_INT,0,msg_tag_wrk_rsp,MPI_COMM_WORLD,&mpi_stt);
+	MPI_Recv(msg_bfr,msg_bfr_lng,MPI_INT,0,msg_tag_wrk_rsp,mpi_cmm,&mpi_stt);
 	idx=msg_bfr[0];
 	out_id=msg_bfr[1];
 	if(idx == idx_all_wrk_ass) break;
@@ -672,8 +680,8 @@ main(int argc,char **argv)
 	    /* Obtain token and prepare to write */
 	    while(1){ /* Send msg_tag_tkn_wrt_rqs repeatedly until token obtained */
 	      wrk_id_bfr[0]=prc_rnk;
-	      MPI_Send(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,rnk_mgr,msg_tag_tkn_wrt_rqs,MPI_COMM_WORLD);
-	      MPI_Recv(msg_bfr,msg_bfr_lng,MPI_INT,rnk_mgr,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD,&mpi_stt);
+	      MPI_Send(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,rnk_mgr,msg_tag_tkn_wrt_rqs,mpi_cmm);
+	      MPI_Recv(msg_bfr,msg_bfr_lng,MPI_INT,rnk_mgr,msg_tag_tkn_wrt_rsp,mpi_cmm,&mpi_stt);
 	      tkn_wrt_rsp=msg_bfr[0];
 	      /* Wait then re-send request */
 	      if(tkn_wrt_rsp == tkn_wrt_rqs_dny) sleep(tkn_wrt_rqs_ntv); else break;
@@ -720,7 +728,7 @@ main(int argc,char **argv)
     /* Remove local copy of file */
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
 #ifdef ENABLE_MPI
-    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Barrier(mpi_cmm);
 #endif /* !ENABLE_MPI */
   } /* end loop over fl_idx */
   

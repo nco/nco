@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.336 2005-10-17 07:13:53 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.337 2005-10-27 01:30:36 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3240,8 +3240,8 @@ which is specified by chaining together hyperslab commands, i.e.,
 This allows multislabs to overcome some restraints which limit
 hyperslabs.
 
-@w{A single} @kbd{-d} option can only specify a contiguous and/or regularly 
-spaced multi-dimensional array of data. 
+@w{A single} @kbd{-d} option can only specify a contiguous and/or
+a regularly spaced multi-dimensional data array.
 Multislabs are constructed from multiple @kbd{-d} options and may
 therefore have non-regularly spaced arrays.
 For example, suppose it is desired to operate on all longitudes

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.667 2005-10-26 17:53:42 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.668 2005-10-27 01:30:35 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -377,7 +377,8 @@ nco639. Fix packing code to be parallel over in_id without requiring
 nco640. Naming: mpnc* (as currently implemented) or ncmpi* (as in pnetcdf)?
 nco641. Use netCDF4 MPI I/O hooks in nco_open/nco_create (mpncecat.c is testbed)
 nco642. Create nco_pnetcdf.h, nco_pnetcdf.c wrapper replacements?
-nco643. 
+nco643. bld/Makefile fails with netCDF4 and MPI simultaneously enabled
+nco644. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

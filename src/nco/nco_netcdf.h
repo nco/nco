@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.28 2005-10-26 01:18:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.29 2005-10-27 01:30:36 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -18,10 +18,10 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
-#ifdef PNETCDF
+#ifdef ENABLE_PNETCDF
 #include <mpi.h> /* MPI definitions */
 #include <pnetcdf.h> /* ANL Parallel netCDF definitions and C library */
-#endif /* !PNETCDF */
+#endif /* !ENABLE_PNETCDF */
 
 /* Personal headers */
 #include "nco_typ.h" /* Type definitions, opaque types */
@@ -67,10 +67,14 @@ nco_typ_sng /* [fnc] Convert netCDF type enum to string */
 (const nc_type type); /* I [enm] netCDF type */
 /* End Utility Routines */
 
-#ifdef PNETCDF
-/* PNETCDF routines defined by ANL Parallel netCDF Library libpnetcdf.a */
+#ifdef ENABLE_NETCDF4
+/* netCDF4 routines defined by Unidata netCDF4 Library libnetcdf.a */
+int nco_open_par(const char * const fl_nm,const int mode,MPI_Comm mpi_cmm,MPI_Info mpi_nfo,int * const nc_id);
+#endif /* !ENABLE_NETCDF4 */
+#ifdef ENABLE_PNETCDF
+/* pnetCDF routines defined by ANL Parallel netCDF Library libpnetcdf.a */
 int ncompi_open(MPI_Comm mpi_cmm,const char * const fl_nm,const int mode,MPI_Info mpi_nfo,int * const nc_id);
-#endif /* !PNETCDF */
+#endif /* !ENABLE_PNETCDF */
 
 /* Begin file-level routines */
 int nco_create(const char * const fl_nm,const int cmode,int * const nc_id);
