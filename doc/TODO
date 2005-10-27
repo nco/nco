@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.668 2005-10-27 01:30:35 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.669 2005-10-27 01:33:27 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -378,7 +378,8 @@ nco640. Naming: mpnc* (as currently implemented) or ncmpi* (as in pnetcdf)?
 nco641. Use netCDF4 MPI I/O hooks in nco_open/nco_create (mpncecat.c is testbed)
 nco642. Create nco_pnetcdf.h, nco_pnetcdf.c wrapper replacements?
 nco643. bld/Makefile fails with netCDF4 and MPI simultaneously enabled
-nco644. 
+nco644. Where is nc_open_par()? not in libnetcdf.a?
+nco645. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

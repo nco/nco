@@ -1,6 +1,7 @@
 2005-10-26  Charlie Zender  <zender@uci.edu>
 
-	* More unused prototyping of MPI-IO access code in mpncecat.c
+	* More unused prototyping of MPI-IO access code.
+	Implementing calls in mpncecat.c for testing, and wrappers in nco_netcdf.c
 
 2005-10-25  Charlie Zender  <zender@uci.edu>
 
