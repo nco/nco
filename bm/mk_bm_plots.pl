@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/mk_bm_plots.pl,v 1.4 2005-10-12 17:33:40 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/mk_bm_plots.pl,v 1.5 2005-10-28 23:34:58 mangalam Exp $
 
 # TODO: detect failures in the benchmarks and mark them with another symbol so they are detectable
 # in the benchmark plots and benchmarks
@@ -30,21 +30,21 @@
 # It also produces a number of operator-specific data files on each run so beware that
 # they'll add up quickly if you run it multiple times:
 
-# nco_bm.2005-07-14+22:37.gnuplot............the gnuplot instructions & titles
-# ncap.2005-07-14+22:37.data..............gnuplot numeric data for each of the nco plots
-# ncbo.2005-07-14+22:37.data                          "
-# ncea.2005-07-14+22:37.data                          "
-# ncecat.2005-07-14+22:37.data                        "
-# ncflint.2005-07-14+22:37.data                       "
-# ncpdq.2005-07-14+22:37.data                         "
-# ncra.2005-07-14+22:37.data                          "
-# ncrcat.2005-07-14+22:37.data                        "
-# ncwa.2005-07-14+22:37.data                          "
+# nco_bm.2005-07-14_22:37.gnuplot............the gnuplot instructions & titles
+# ncap.2005-07-14_22:37.data..............gnuplot numeric data for each of the nco plots
+# ncbo.2005-07-14_22:37.data                          "
+# ncea.2005-07-14_22:37.data                          "
+# ncecat.2005-07-14_22:37.data                        "
+# ncflint.2005-07-14_22:37.data                       "
+# ncpdq.2005-07-14_22:37.data                         "
+# ncra.2005-07-14_22:37.data                          "
+# ncrcat.2005-07-14_22:37.data                        "
+# ncwa.2005-07-14_22:37.data                          "
 
 # The above files are plot commands to gnuplot which are automatically plotted into postscript
 # by this script, but can be customized by editing the files with a text editor to make the titles
 # more specific. Replot them again by simply typing:
-# gnuplot ncap.2005-07-14+22:37.data
+# gnuplot < [cmdfile] (nco_bm.2005-07-14_22:37.gnuplot in the above case)
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 #use Getopt::Long; # GNU-style getopt #qw(:config no_ignore_case bundling);
@@ -53,20 +53,18 @@ use strict; # Protect all namespaces
 # Declare vars for strict
 use vars qw( @titles @cmdline @nco_tim_info $thr_num %nc %tim_dta $num_nco_stz @nco_stz @clin_bits
 $num_bits @nco_stz $num_nco_stz $nco_name @nco_tim_dta $gnuplot_data_file @nco_name_array
-$tim_dta_end $cmdfile $ps_file $uname $op_sys $nco_vrsn
+$tim_dta_end $cmdfile $ps_file $uname $op_sys $nco_vrsn_sng $nco_vrsn_A $nco_vrsn_B $datestamp $tmp_sng
 );
 $thr_num = 0;
 $tim_dta_end = 2; # number of variables to be plotted (to expand if start adding more rusage() vars)
                   # setting it to '2' will only plot wallclock seconds.  Setting it higher will plot
                   # more of the variables listed below.
 
-@titles = ("threads", "   wall", "   real", "   user", " system", "\n");
+@titles = ("threads", "   1/t(n)", "   real", "   user", " system", "\n");
 
+# $nco_vrsn_sng = nco_dual_vrsn();
 
-#grab the nco version and make a composite
-my $tmp_sng = `ncap --version  2>&1 |  grep version | head -2`; # long string sep by a newline.
-$nco_vrsn
-
+my $wait = <STDIN>;
 
 my $linect = 0;
 while (<>) {
@@ -74,12 +72,13 @@ while (<>) {
 #		print "skipping line $linect: $_\n";
 	} else { # split the line on the '|'s into
 #		print "\n\nworking on: $_\n";
-		($uname,$cmdline[$linect],$nco_tim_info[$linect]) = split(/\|/,$_,4);
+		($uname, $cmdline[$linect],$nco_tim_info[$linect], $nco_vrsn_sng,) = split(/\|/,$_,5);
 		#my $splitcnt = split(/]/,$_);
 		#print "splitcnt = $splitcnt\n";
-		print "uname: $uname\n";
-		print "cmd: $cmdline[$linect]\n";
-		print "timing data: $nco_tim_info[$linect]\n";
+ 		print "uname: $uname\n";
+ 		print "version: $nco_vrsn_sng\n";
+ 		print "cmd: $cmdline[$linect]\n";
+ 		print "timing data: $nco_tim_info[$linect]\n";
 	}
 	$linect++;
 #	print "hit key\n";
@@ -92,6 +91,14 @@ print "processed $linect lines\n";
 my $uname_cnt = split(/\s+/,$uname);
 $op_sys = $_[0];
 print "operating system = $op_sys\n";
+$datestamp = `date`;
+chomp $datestamp;
+chomp $nco_vrsn_sng;
+
+my @L = split(/[ \/]/,$nco_vrsn_sng);
+$nco_vrsn_A = $L[2]; $nco_vrsn_B = $L[3];
+print "nco_vrsn_sng = $nco_vrsn_sng and nco_vrsn_A = $nco_vrsn_A and nco_vrsn_B = $nco_vrsn_B\n";
+
 
 for (my $i=0; $i<$linect;$i++) {
 	# process the commandline to see how many threads were requested
@@ -138,7 +145,9 @@ for (my $i=0; $i<$linect;$i++) {
 		# @nco_tim_dta should now have [name][#success][#fail][wall][real][user][sys]
 		# so copy the tasty bits into the big array
 #		print "i = $i\n";
-		$tim_dta{$nco_name}[0][$i] = $thr_num;
+		if ($thr_num == 0) { $thr_num = 1}
+		else {
+		$tim_dta{$nco_name}[0][$i] = $thr_num;}
 		$tim_dta{$nco_name}[1][$i] = $walltime;
 		$tim_dta{$nco_name}[2][$i] = $realtime;
 		$tim_dta{$nco_name}[3][$i] = $usertime;
@@ -184,7 +193,7 @@ sub write_nco_data {
 # thread   wall  real  user  sys   and   other   rusage   params    spread    across    the    top
 # and then 1 gnuplot command file to read them all in and plot them
 	#open the file
-	my $filetimestamp = `date +%F+%R`; chomp $filetimestamp;
+	my $filetimestamp = `date +%F_%R`; chomp $filetimestamp;
 	for (my $r=0; $r<$num_nco_stz;$r++) {
 		$nco_name = $nco_name_array[$r];
 		my $datafile = "$nco_name.$filetimestamp.data";
@@ -199,10 +208,42 @@ sub write_nco_data {
 		for (my $i = 0; $i < $tim_dta_end; $i++){ print DAT $titles[$i];}
 		print DAT "\n";
 
-#		printf DAT "    threads       wall       real       user    system\n";
+# what we want to do is 1st get an average for the case of thr/prc=1, then use that value to normalize
+# the rest of the values to, and take the inverse of that normalized value to plot so the line goes
+# up to the right (hopefully). so need to
+# 1) generate avg for thr=1 for each of the nco slabs
+# 2) generate normalized vlaues for each nco slab along the
+# 3) invert them, write THOSE values to the data file and then everything's the same.
+# 		could include the unmodified vlaues as well I guess.
+		my $sum = 0; my $N=0;
+		for (my $i=0; $i<$linect; $i++){ # calc the avg
+			if ($tim_dta{$nco_name}[0][$i] == 1) {
+				print "val= $tim_dta{$nco_name}[1][$i]\n";
+				$sum += $tim_dta{$nco_name}[1][$i]; $N++;
+			}
+		}
+		my $sngl_thr_avg=2;
+		if ($N > 0 && $sum > 0){
+			$sngl_thr_avg = $sum / $N;
+			print "$nco_name: avg=$sngl_thr_avg (where sum: $sum, N: $N\n";
+		} else {
+			print "\n\nWarning: for $nco_name, there were no values with thr=1\n";
+		}
+#	in $tim_dta{$nco_name}[A][B], A=0 ->threads/processes, A=1 -> wallclock seconds
+#	                              B=values from across the tests (goes from 0-># lines processed
 		for (my $i=0; $i<$linect; $i++) {
-			printf DAT "%10d ",$tim_dta{$nco_name}[0][$i];
-			for (my $e=1; $e<$tim_dta_end; $e++) { printf DAT "%10.3f ",$tim_dta{$nco_name}[$e][$i]; }
+			printf DAT "%10d ",$tim_dta{$nco_name}[0][$i]; # print the # thr/procs
+			# print the values for each thr/proc; ends up like
+			# 1 73.4
+			# 1 75.6 etc
+			for (my $e=1; $e<$tim_dta_end; $e++) {
+				my $nrmlz = 0;
+				if ($tim_dta{$nco_name}[$e][$i] > 0 ) {
+					$nrmlz = 1/($tim_dta{$nco_name}[$e][$i] / $sngl_thr_avg);
+				}
+				printf DAT "%10.3f   %10.3f", $nrmlz, $tim_dta{$nco_name}[$e][$i];
+				# (1/($tim_dta{$nco_name}[$e][$i] / $sngl_thr_avg))
+			}
 			print DAT "\n";
 		}
 	}
@@ -214,7 +255,7 @@ sub write_nco_data {
 sub write_gnuplot_cmds {
 	# need to write 1 command file that plots all the files to a single postscript file
 	#open file
-	my $filetimestamp = `date +%F+%R`; chomp $filetimestamp;
+	my $filetimestamp = `date +%F_%R`; chomp $filetimestamp;
 	$cmdfile = "nco_bm.$filetimestamp.gnuplot";
 	$ps_file = "nco.benchmarks_$filetimestamp.ps";
 	print "cmdfile name: $cmdfile\n\n";
@@ -224,11 +265,11 @@ sub write_gnuplot_cmds {
 #  created $filetimestamp
 # called from this perl script as: system ("gnuplot $cmdfile");
 # input file has the format:<nco>.datestamp.data
-set xrange [-1:9]
+set xrange [0:9]
 # make sure that axis starts at 0
-set yrange [0:]
+set yrange [0:3.5]
 set xlabel "Number of threads or processes"
-set ylabel "Execution time in wallclock seconds"
+set ylabel "1/time (normalized to 1 thread)
 set key box
 set terminal postscript landscape color
 set output '$ps_file'
@@ -239,7 +280,7 @@ HEADER
 		my $tail = ", \\\n";
 		#print "set output 'bench.$nco_name_array[$r].ps'\n"
 #		print "\n\n";
-		print CMD "set title '$op_sys Benchmark for $nco_name_array[$r] using multiple threads / processes'\n";
+		print CMD "set title \"$nco_name_array[$r] on $op_sys using multiple threads / processes\\nfor NCO version: $nco_vrsn_sng, on $datestamp\"\n";
 
 		my $datafile = "$nco_name_array[$r].$filetimestamp.data";
 		for (my $e=0; $e<($tim_dta_end-1);$e++) {
@@ -248,13 +289,28 @@ HEADER
 			if ($e > ($tim_dta_end-3)) { $tail = "\n"; }
 			my $col = $e + 2;
 			print CMD "m=0;b=0\nf(x) = m*x + b\nfit [0:8] f(x) \"$datafile\" using 1:2 via m,b\n";
-			print CMD "unset label\nset label \"slope = %f\", m at 1, 20\n";
-			print CMD "$plot_str '$datafile' using 1:$col title \"$titles[$col - 1]\", m*x+b title \"m*x+b\" \n#new plot\n";
+			print CMD "unset label\nset label \"Scaling = %f\", m at 1, 2.5\n";
+			my $lbl = $col+1;
+			print CMD "$plot_str '$datafile' using 1:$col title \"$titles[$col - 1]\", m*x+b title \"m*x+b\" \n#new plot\n"; # :$lbl with labels center offset 0,1
 		}
 	}
 	close (CMD);
 }
 
+# grab the nco version and conmogrify it into something like: "3.0.1 / 20051003"
+# just requires a string variable to absorb the string returned
+sub nco_dual_vrsn{
+	my @nco_vrsn;
+	my $tmp_sng = `ncks --version  2>&1 |  grep 'ncks version'`; # long string sep by a newline.
+	$tmp_sng =~ s/\n/ /g;
+	my @tmp_lst = split (/\s+/, $tmp_sng);
+	$nco_vrsn[0] = $tmp_lst[4];
+	$nco_vrsn[0] =~ s/"//g;
+	$nco_vrsn[1] = $tmp_lst[scalar(@tmp_lst) - 1];
+	# print "NCO release version: $nco_vrsn[0], NCO date version: $nco_vrsn[1]\n";
+	$tmp_sng = "$nco_vrsn[0]" . " / " . "$nco_vrsn[1]";
+	return $tmp_sng;
+}
 
 
 

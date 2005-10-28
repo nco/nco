@@ -1,6 +1,12 @@
 2005-10-28  Harry Mangalam <hjm@tacgi.com>
 	* Changes to the configure/make chain to start to resolve
 	  autobuild issues with MPI / netcdf4 / DAP / etc
+	* now builds serial NCOs cleanly on Linux (x86,AMD64)
+	  and also MPI on Linux (x86,AMD64).  Suports Rich Lowry's
+	  mpich2 debs (no additional flags) and MPICH2 from src if
+	  given MPICH_ROOT.
+  
+	* added checks for -lf95, more error checking
 
 2005-10-27  Charlie Zender  <zender@uci.edu>
 

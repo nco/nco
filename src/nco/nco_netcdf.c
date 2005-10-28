@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.60 2005-10-27 01:33:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.61 2005-10-28 23:34:59 mangalam Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -7,7 +7,7 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
-/* nco_netcdf.h is (nearly) independent of NCO and does not depend on nco.h 
+/* nco_netcdf.h is (nearly) independent of NCO and does not depend on nco.h
    nco_netcdf.h is an abstraction layer for netcdf.h, plus a few convenience routines
    A similar abstraction layer must exist for each NCO storage backend, e.g., nco_hdf.h
 
@@ -20,8 +20,8 @@
    Name Convention: Where appropriate, routine name is identical to netCDF C-library name,
    except nc_ is replaced by nco_
 
-   Argument Ordering Convention: Routines follow same argument order as netCDF C-library 
-   Additional arguments, such as nc_type, are appended to end of argument list 
+   Argument Ordering Convention: Routines follow same argument order as netCDF C-library
+   Additional arguments, such as nc_type, are appended to end of argument list
 
    Return value convention: Functions return a success/failure code
    Errors in netCDF functions cause NCO wrapper to abort, except *_flg() wrappers
@@ -33,19 +33,20 @@
    To ensure this is the case, it is only safe to print diagnostics on
    variables which are supposed to be valid on input. */
 
+
 /* Utility routines not defined by netCDF library, but useful in working with it */
-void 
+void
 nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
-(const int rcd, /* I [enm] netCDF error code */ 
+(const int rcd, /* I [enm] netCDF error code */
  const char * const msg) /* I [sng] Supplemental error message */
 {
   /* Purpose: Print netCDF error message, routine name, then exit(EXIT_FAILURE) or abort()
      Routine is called by all wrappers when fatal error is encountered
-     Goal is to have all NCO error exits to go through nco_err_exit() 
+     Goal is to have all NCO error exits to go through nco_err_exit()
      This provides uniform handling of exit() status and abort() option
      Successful NCO exits should call nco_exit() not nco_err_exit()
 
-     msg variable allows wrapper to pass more descriptive information than 
+     msg variable allows wrapper to pass more descriptive information than
      is contained in the netCDF-defined error message.
      Use msg to print, e.g., the name of variable or routine which caused error */
 
@@ -63,7 +64,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
   (void)fprintf(stdout,"ERROR: program exiting through %s which will now call %s\n",fnc_nm,exit_fnc_nm);
 
   /* On occasion, routine is called with non-netCDF errors, e.g., by nco_dfl_case_nc_type_err()
-     non-netCDF errors call nco_err_exit() with rcd == 0 
+     non-netCDF errors call nco_err_exit() with rcd == 0
      Only attempt to print netCDF error messages when rcd != 0 */
   if(rcd != NC_NOERR) (void)fprintf(stderr,"%s: ERROR %s\n%s\n",fnc_nm,msg,nc_strerror(rcd));
 #ifdef NCO_ABORT_ON_ERROR
@@ -83,40 +84,40 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
 size_t /* O [B] Native type size */
 nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
 (const nc_type nco_typ) /* I [enm] netCDF type */
-{ 
+{
   /* Purpose: Return native size of specified netCDF type
      Routine is used to determine memory required to store variables in RAM
      This is only routine in nco_netcdf which needs NCO opaque type definitions
      nco_byte, nco_char, and nco_int defined in nco_typ.h */
-  switch(nco_typ){ 
-  case NC_FLOAT: 
-    return sizeof(float); 
-  case NC_DOUBLE: 
-    return sizeof(double); 
-  case NC_INT: 
-    return sizeof(nco_int); 
-  case NC_SHORT: 
-    return sizeof(short); 
-  case NC_CHAR: 
-    return sizeof(nco_char); 
-  case NC_BYTE: 
-    return sizeof(nco_byte); 
+  switch(nco_typ){
+  case NC_FLOAT:
+    return sizeof(float);
+  case NC_DOUBLE:
+    return sizeof(double);
+  case NC_INT:
+    return sizeof(nco_int);
+  case NC_SHORT:
+    return sizeof(short);
+  case NC_CHAR:
+    return sizeof(nco_char);
+  case NC_BYTE:
+    return sizeof(nco_byte);
   case NC_UBYTE:
-    return sizeof(nco_ubyte); 
+    return sizeof(nco_ubyte);
   case NC_USHORT:
-    return sizeof(nco_ushort); 
+    return sizeof(nco_ushort);
   case NC_UINT:
-    return sizeof(nco_uint); 
+    return sizeof(nco_uint);
   case NC_INT64:
-    return sizeof(nco_int64); 
+    return sizeof(nco_int64);
   case NC_UINT64:
-    return sizeof(nco_uint64); 
+    return sizeof(nco_uint64);
   default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */ 
-  
+  } /* end switch */
+
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return 0;
-} /* end nco_typ_lng() */ 
+} /* end nco_typ_lng() */
 
 const char * /* O [sng] String describing type */
 nco_typ_sng /* [fnc] Convert netCDF type enum to string */
@@ -158,7 +159,7 @@ c_typ_nm /* [fnc] Return string describing native C type */
 {
   /* Purpose: Divine internal (native) C type string from netCDF external type enum
      fxm: This breaks on Crays where both NC_FLOAT and NC_DOUBLE are native type float
-     fxm: Modify this to handle different opaque types correctly 
+     fxm: Modify this to handle different opaque types correctly
      This may mean defining tokens containing opaque type names in nco_typ.h */
   switch(type){
   case NC_FLOAT:
@@ -261,37 +262,37 @@ f90_typ_nm /* [fnc] Return string describing native Fortran90 type */
   return (char *)NULL;
 } /* end f90_typ_nm() */
 
-void 
+void
 nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal switch(nc_type) case */
 {
   /* Purpose: Convenience routine for printing error and exiting when
      switch(nctype) statement receives an illegal default case
-     NCO emits warnings when compiled by GCC with -DNETCDF2_ONLY since, 
+     NCO emits warnings when compiled by GCC with -DNETCDF2_ONLY since,
      apparently, there are a whole bunch of things besides numeric
      types in the old nctype enum and gcc warns about enums that are
-     not exhaustively considered in switch() statements. 
+     not exhaustively considered in switch() statements.
      All these default statements can be removed with netCDF3 interface
      so perhaps these should be surrounded with #ifdef NETCDF2_ONLY
      constructs, but they actually do make sense for netCDF3 as well
-     so I have implemented a uniform error function, nco_dfl_case_nc_type_err(), 
+     so I have implemented a uniform error function, nco_dfl_case_nc_type_err(),
      to be called by all routines which emit errors only when compiled with
      NETCDF2_ONLY.
      This makes the behavior easy to modify or remove in the future.
 
-     Placing this in its own routine also has the virtue of saving many lines 
+     Placing this in its own routine also has the virtue of saving many lines
      of code since this function is used in many many switch() statements. */
   const char fnc_nm[]="nco_dfl_case_nc_type_err()";
   (void)fprintf(stdout,"%s: ERROR switch(nctype) statement fell through to default case, which is illegal.\nNot handling the default case causes gcc to emit warnings when compiling NCO with the NETCDF2_ONLY token (because nctype definition is braindead in netCDF2.x). Exiting...\n",fnc_nm);
   nco_err_exit(0,fnc_nm);
 } /* end nco_dfl_case_nc_type_err() */
 
-void 
+void
 nco_dfl_case_prg_id_err(void) /* [fnc] Print error and exit for illegal switch(prg_id) case */
 {
   /* Purpose: Convenience routine for printing error and exiting when
      switch(prg_id) statement receives an illegal default case
 
-     Placing this in its own routine also has the virtue of saving many lines 
+     Placing this in its own routine also has the virtue of saving many lines
      of code since this function is used in many many switch() statements. */
   const char fnc_nm[]="nco_dfl_case_prg_id_err()";
   (void)fprintf(stdout,"%s: ERROR switch(prg_id) statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch(prg_id) statements are fully enumerated. Exiting...\n",fnc_nm);
@@ -360,7 +361,7 @@ nco_redef(const int nc_id)
   return rcd;
 } /* end nco_redef */
 
-int 
+int
 nco_set_fill(const int nc_id,const int fill_mode,int * const old_mode)
 {
   /* Purpose: Wrapper for nc_set_fill() */
@@ -370,7 +371,7 @@ nco_set_fill(const int nc_id,const int fill_mode,int * const old_mode)
   return rcd;
 } /* end nco_set_fill */
 
-int 
+int
 nco_enddef(const int nc_id)
 {
   /* Purpose: Wrapper for nc_enddef() */
@@ -380,7 +381,7 @@ nco_enddef(const int nc_id)
   return rcd;
 } /* end nco_enddef */
 
-int /* O [enm] netCDF error code */ 
+int /* O [enm] netCDF error code */
 nco__enddef /* [fnc] Wrapper for nc__enddef */
 (const int nc_id, /* [ID] netCDF ID */
  const size_t hdr_pad) /* [B] Pad at end of header section */
@@ -397,7 +398,7 @@ nco__enddef /* [fnc] Wrapper for nc__enddef */
   return rcd;
 } /* end nco__enddef */
 
-int 
+int
 nco_sync(const int nc_id)
 {
   /* Purpose: Wrapper for nc_sync() */
@@ -407,7 +408,7 @@ nco_sync(const int nc_id)
   return rcd;
 } /* end nco_sync */
 
-int 
+int
 nco_abort(const int nc_id)
 {
   /* Purpose: Wrapper for nc_abort() */
@@ -480,7 +481,7 @@ nco_inq_unlimdim(const int nc_id,int * const rec_dmn_id)
 /* End File routines */
 
 /* Begin Dimension routines (_dim) */
-int 
+int
 nco_def_dim(const int nc_id,const char * const dmn_nm,const long dmn_sz,int * const dmn_id)
 {
   /* Purpose: Wrapper for nc_def_dim() */
@@ -569,7 +570,7 @@ nco_rename_dim(const int nc_id,const int dmn_id,const char * const dmn_nm)
 /* End Dimension routines */
 
 /* Begin Variable routines (_var) */
-int 
+int
 nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,const int dmn_nbr,const int * const dmn_id,int * const var_id)
 {
   /* Purpose: Wrapper for nc_def_var() */
@@ -579,7 +580,7 @@ nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,cons
   return rcd;
 } /* end nco_def_var */
 
-int 
+int
 nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type *var_typ,int * const dmn_nbr,int * const dmn_id,int * const nbr_att)
 {
   /* Purpose: Wrapper for nco_inq_var() */
@@ -589,7 +590,7 @@ nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type *var_ty
   return rcd;
 } /* end nco_inq_var */
 
-int 
+int
 nco_inq_varid(const int nc_id,const char * const var_nm,int * const var_id)
 {
   /* Purpose: Wrapper for nc_inq_varid() */
@@ -601,7 +602,7 @@ nco_inq_varid(const int nc_id,const char * const var_nm,int * const var_id)
   return rcd;
 } /* end nco_inq_varid */
 
-int 
+int
 nco_inq_varid_flg(const int nc_id,const char * const var_nm,int * const var_id)
 {
   /* Purpose: Wrapper for nc_inq_varid_flg() which does not require success */
@@ -612,7 +613,7 @@ nco_inq_varid_flg(const int nc_id,const char * const var_nm,int * const var_id)
   return rcd;
 } /* end nco_inq_varid */
 
-int 
+int
 nco_inq_varname(const int nc_id,const int var_id,char * const var_nm)
 {
   /* Purpose: Wrapper for nc_inq_varname() */
@@ -622,7 +623,7 @@ nco_inq_varname(const int nc_id,const int var_id,char * const var_nm)
   return rcd;
 } /* end nco_inq_varname */
 
-int 
+int
 nco_inq_vartype(const int nc_id,const int var_id,nc_type * const var_typ)
 {
   /* Purpose: Wrapper for nc_inq_vartype() */
@@ -632,7 +633,7 @@ nco_inq_vartype(const int nc_id,const int var_id,nc_type * const var_typ)
   return rcd;
 } /* end nco_inq_vartype */
 
-int 
+int
 nco_inq_varndims(const int nc_id,const int var_id,int * const dmn_nbr)
 {
   /* Purpose: Wrapper for nc_inq_varndims() */
@@ -642,7 +643,7 @@ nco_inq_varndims(const int nc_id,const int var_id,int * const dmn_nbr)
   return rcd;
 } /* end nco_inq_varndims */
 
-int 
+int
 nco_inq_vardimid(const int nc_id,const int var_id,int * const dmn_id)
 {
   /* Purpose: Wrapper for nc_inq_vardimid() */
@@ -652,7 +653,7 @@ nco_inq_vardimid(const int nc_id,const int var_id,int * const dmn_id)
   return rcd;
 } /* end nco_inq_vardimid */
 
-int 
+int
 nco_inq_varnatts(const int nc_id,const int var_id,int * const nbr_att)
 {
   /* Purpose: Wrapper for nc_inq_varnatts() */
@@ -685,7 +686,7 @@ nco_copy_var(const int nc_in_id,const int var_id,const int nc_out_id)
 /* End _var */
 
 /* Start _get _put _var */
-int 
+int
 nco_get_var1(const int nc_id,const int var_id,const long * const srt,void * const vp,const nc_type var_typ)
 {
   /* Purpose: Wrapper for nc_get_var1_*() */
@@ -710,7 +711,7 @@ nco_get_var1(const int nc_id,const int var_id,const long * const srt,void * cons
   return rcd;
 } /* end nco_get_var1 */
 
-int 
+int
 nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void * const vp,const nc_type type)
 {
   /* Purpose: Wrapper for nc_put_var1_*() */
@@ -735,7 +736,7 @@ nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void 
   return rcd;
 } /* end nco_put_var1 */
 
-int 
+int
 nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long * const cnt,void * const vp,const nc_type type)
 {
   /* Purpose: Wrapper for nc_get_vara_*() */
@@ -760,7 +761,7 @@ nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long 
   return rcd;
 } /* end nco_get_vara */
 
-int 
+int
 nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const void * const vp,const nc_type type)
 {
   /* Purpose: Wrapper for nc_put_vara_*() */
@@ -785,12 +786,12 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
   return rcd;
 } /* end nco_put_vara */
 
-int 
+int
 nco_get_varm(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long *srd,const long * const map,void * const vp,const nc_type type)
 {
   /* Purpose: Wrapper for nc_get_varm_*() */
   int rcd=NC_NOERR;
-  
+
   switch(type){
   case NC_FLOAT: rcd=nc_get_varm_float(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(float *)vp); break;
   case NC_DOUBLE: rcd=nc_get_varm_double(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(double *)vp); break;
@@ -811,7 +812,7 @@ nco_get_varm(const int nc_id,const int var_id,const long * const srt,const long 
   return rcd;
 } /* end nco_get_varm */
 
-int 
+int
 nco_put_varm(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long *srd,const long * const map,const void * const vp,const nc_type type)
 {
   /* Purpose: Wrapper for nc_put_varm_*() */
@@ -838,7 +839,7 @@ nco_put_varm(const int nc_id,const int var_id,const long * const srt,const long 
 /* End Variable routines */
 
 /* Begin Attribute routines (_att) */
-int 
+int
 nco_inq_att(const int nc_id,const int var_id,const char * const att_nm,nc_type * const att_typ,long * const att_sz)
 {
   /* Purpose: Wrapper for nc_inq_att() */
@@ -852,8 +853,8 @@ nco_inq_att(const int nc_id,const int var_id,const char * const att_nm,nc_type *
   return rcd;
 } /* end nco_inq_att */
 
-int 
-nco_inq_att_flg(const int nc_id,const int var_id,const char * const att_nm,nc_type * const att_typ,long * const att_sz) 
+int
+nco_inq_att_flg(const int nc_id,const int var_id,const char * const att_nm,nc_type * const att_typ,long * const att_sz)
 {
   /* Purpose: Wrapper for nc_inq_att() */
   const char fnc_nm[]="nco_inq_att_flg()";
@@ -867,8 +868,8 @@ nco_inq_att_flg(const int nc_id,const int var_id,const char * const att_nm,nc_ty
   return rcd;
 } /* end nco_inq_att_flg */
 
-int 
-nco_inq_attid(const int nc_id,const int var_id,const char * const att_nm,int * const att_id) 
+int
+nco_inq_attid(const int nc_id,const int var_id,const char * const att_nm,int * const att_id)
 {
   /* Purpose: Wrapper for nc_inq_attid() */
   int rcd;
@@ -877,8 +878,8 @@ nco_inq_attid(const int nc_id,const int var_id,const char * const att_nm,int * c
   return rcd;
 } /* end nco_inq_attid */
 
-int 
-nco_inq_attid_flg(const int nc_id,const int var_id,const char * const att_nm,int * const att_id) 
+int
+nco_inq_attid_flg(const int nc_id,const int var_id,const char * const att_nm,int * const att_id)
 {
   /* Purpose: Wrapper for nc_inq_attid() */
   const char fnc_nm[]="nco_inq_attid_flg()";
@@ -892,8 +893,8 @@ nco_inq_attid_flg(const int nc_id,const int var_id,const char * const att_nm,int
   return rcd;
 } /* end nco_inq_attid_flg */
 
-int 
-nco_inq_atttype(const int nc_id,const int var_id,const char * const att_nm,nc_type * const att_typ) 
+int
+nco_inq_atttype(const int nc_id,const int var_id,const char * const att_nm,nc_type * const att_typ)
 {
   /* Purpose: Wrapper for nc_inq_atttype() */
   int rcd;
@@ -902,8 +903,8 @@ nco_inq_atttype(const int nc_id,const int var_id,const char * const att_nm,nc_ty
   return rcd;
 } /* end nco_inq_atttype */
 
-int 
-nco_inq_attlen(const int nc_id,const int var_id,const char * const att_nm,long * const att_sz) 
+int
+nco_inq_attlen(const int nc_id,const int var_id,const char * const att_nm,long * const att_sz)
 {
   /* Purpose: Wrapper for nc_inq_attlen() */
   int rcd;
@@ -912,8 +913,8 @@ nco_inq_attlen(const int nc_id,const int var_id,const char * const att_nm,long *
   return rcd;
 } /* end nco_inq_attlen */
 
-int 
-nco_inq_attname(const int nc_id,const int var_id,const int att_id,char * const att_nm) 
+int
+nco_inq_attname(const int nc_id,const int var_id,const int att_id,char * const att_nm)
 {
   /* Purpose: Wrapper for nc_inq_attname() */
   int rcd;
@@ -924,7 +925,7 @@ nco_inq_attname(const int nc_id,const int var_id,const int att_id,char * const a
 
 int
 nco_copy_att(const int nc_id_in,const int var_id_in,const char * const att_nm,const int nc_id_out,const int var_id_out)
-{  
+{
   /* Purpose: Wrapper for nc_copy_att() */
   int rcd;
   rcd=nc_copy_att(nc_id_in,var_id_in,att_nm,nc_id_out,var_id_out);
@@ -932,8 +933,8 @@ nco_copy_att(const int nc_id_in,const int var_id_in,const char * const att_nm,co
   return rcd;
 }  /* end nco_copy_att */
 
-int 
-nco_rename_att(const int nc_id,const int var_id,const char * const att_nm,const char * const att_new_nm) 
+int
+nco_rename_att(const int nc_id,const int var_id,const char * const att_nm,const char * const att_new_nm)
 {
   /* Purpose: Wrapper for nc_rename_att() */
   int rcd;
@@ -942,7 +943,7 @@ nco_rename_att(const int nc_id,const int var_id,const char * const att_nm,const 
   return rcd;
 }  /* end nco_rename_att */
 
-int 
+int
 nco_del_att(const int nc_id,const int var_id,const char * const att_nm)
 {
   /* Purpose: Wrapper for nc_del_att() */
@@ -952,7 +953,7 @@ nco_del_att(const int nc_id,const int var_id,const char * const att_nm)
   return rcd;
 } /* end nco_del_att */
 
-int 
+int
 nco_put_att(const int nc_id,const int var_id,const char * const att_nm,const nc_type att_typ,const long att_len,const void * const vp)
 {
   /* Purpose: Wrapper for nc_put_att_*() */
@@ -978,7 +979,7 @@ nco_put_att(const int nc_id,const int var_id,const char * const att_nm,const nc_
   return rcd;
 } /* end nco_put_att */
 
-int 
+int
 nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * const vp,const nc_type att_typ)
 {
   /* Purpose: Wrapper for nc_get_att_*() */

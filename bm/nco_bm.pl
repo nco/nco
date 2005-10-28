@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.105 2005-10-25 22:11:50 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.106 2005-10-28 23:34:58 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -45,7 +45,7 @@ $spc_nbr_min  $spc_sng  %subbenchmarks  %success  %sym_link
 @sys_tim_arr  $sys_time  %sys_tme  $thr_nbr  $timed  $timestamp
 $tmr_app  %totbenchmarks  @tst_cmd  $tst_fl_cr8  $tst_fmt  $tst_id_sng
 $tst_idx  %tst_nbr  $udp_reprt  $udp_rpt  $USER  $usg  %usr_tme
-%wc_tbl  $wnt_log $xdta_pth $xpt_dsc $nco_vrsn_sng $gnu_cut $tmp
+%wc_tbl  $wnt_log $xdta_pth $xpt_dsc $nco_vrsn_sng $gnu_cut $tmp $fl_fmt
 );
 
 # Initializations
@@ -82,6 +82,7 @@ $xdta_pth = ''; # explicit data path that user can set from cmdline; more powerf
 $os_nme = "";
 $nco_vrsn_sng = "";
 $gnu_cut = 1;
+$fl_fmt = "classic"; # file format for wirting
 
 # other inits
 $localhostname = `hostname`; chomp $localhostname;
@@ -113,6 +114,8 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'debug=i'      => \$dbg_lvl,    # Debug level
 	'dods:s'       => \$dodap,      # Optional string is URL to DAP data
 	'dap:s'        => \$dodap,      # Optional string is URL to DAP data
+	'fl_fmt=s'     => \$fl_fmt,     # Output format for writing netcdf files; one of:
+                                   # classic,64bit,netcdf4,netcdf4_classic
 	'opendap:s'    => \$dodap,      # Optional string is URL to DAP data
 	'dust_user=s'  => \$dust_usr,    #  #
 	'h'            => \$usg,        # Explain how to use this thang
@@ -135,6 +138,9 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'xpt_dsc=s'    => \$xpt_dsc,    # Long string to describe experiment
 #BROKEN - FXM hjm	'md5'          => \$md5,        # requests md5 checksumming results (longer but more exacting)
 );
+
+#--fl_fmt, --file_format format\tFile format [classic,64bit,netcdf4,netcdf4_classic]\n");
+
 
 BEGIN {eval "use Digest::MD5"; $md5found = $@ ? 0 : 1}
 # $md5found = 0;  # uncomment to simulate no MD5
@@ -161,6 +167,15 @@ dbg_msg(2,$lcl_vars); # spit the whole thing out.
 
 if ($ARGV == 0) {	usage();}
 
+# test file format
+if ( $fl_fmt eq "64bit" || $fl_fmt eq "netcdf4" || $fl_fmt eq "netcdf4_classic") {
+	$fl_fmt = "--fl_fmt=" . $fl_fmt;
+} elsif ($fl_fmt eq "classic"){
+	$fl_fmt = "";
+} else {
+	die "Your file format spec (--fl_fmt) isn't correct; it has to be one of:\n  classic,  64bit, netcdf4, or netcdf4_classic\nPlease choose one of these and repeat.\n\n";
+ }
+
 # set up some host-specific id's
 $os_nme = `uname`; chomp $os_nme;
 
@@ -184,6 +199,8 @@ BADCUT
 		$gnu_cut = 0;
 	}
 }
+
+
 
 # do $mpi_prc and $mpi_fke conflict?
 if ($mpi_prc > 0 && $mpi_fke) {

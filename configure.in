@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.138 2005-10-28 22:08:43 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.139 2005-10-28 23:34:58 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -375,6 +375,7 @@ echo "LIBS=$LIBS"
 ##################################################
 
 #AC_CHECK_LIB([C],[cosf])
+AC_CHECK_LIB([f95],[_g95_ac_array],,,[-lm])
 AC_CHECK_LIB([m],[sin])
 AC_CHECK_LIB([sunmath],[sinf])
 NCO_CHECK_FUNCS([getopt getopt_long])
