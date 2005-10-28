@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.11 2005-09-14 02:31:11 zender Exp $ -*-shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.12 2005-10-28 18:14:40 zender Exp $ -*-shell-script-*-
 
 # Purpose: Run NCO benchmark script in batch environment
 
@@ -25,8 +25,8 @@
 
 #@ job_name       = nco_bm03
 ##@ class          = com_rg1
-#@ class          = com_rg4
-##@ class          = com_rg8
+##@ class          = com_rg4
+#@ class          = com_rg8
 ##@ class          = com_rg32
 ##@ class          = com_node03
 #@ node           = 1
@@ -163,7 +163,7 @@ case "${PVM_ARCH}" in
 	export MP_TASKS_PER_NODE=${NTASKS}
 	export MP_RMPOOL='1'
 	export XLSMPOPTS='stack=86000000'
-#	echo ${HOST} > ./host.list
+	echo ${HOST} > ./host.list
 	if [ ${NTASKS} -gt 1 ]; then
 	    poe -hostfile=NULL -node=1 -tasks_per_node=${NTASKS} ${CMD_LN} > ${FL_STDOUT} 2>&1
 	else

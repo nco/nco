@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.671 2005-10-28 00:51:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.672 2005-10-28 18:14:40 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -322,6 +322,8 @@ nco587. Command line MPI on AIX PPE with poe
         zender@esmf04m:~/nco/bld$ cd ~/nco/bld;poe -hostfile=~/nco/bld/host.list -node=1 -tasks_per_node=3 $MY_BIN_DIR/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc
         ERROR: 0031-212  pmd: node esmf04m: user zender denied from access from host esmf04m
         ERROR: 0031-024  esmf04m: no response; rc = -1
+        AIX POE sample hello world at http://publib.boulder.ibm.com/infocenter/clresctr/index.jsp?topic=/com.ibm.cluster.pe.doc/pe_411/am105001/am10500113.html
+        cd ~/nco/bld;poe -infolevel 6 -node 1 -tasks_per_node 3 -rmpool 1 $MY_BIN_DIR/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc
 nco593. mpncrcat "sometimes" hangs while concatenating
 	command line: -np 2 seems to always work on sand, ashes, elnino
 	command line: -np 3 rarely hangs on ashes, usually hangs on sand, never hangs on elnino
@@ -394,7 +396,9 @@ nco646. pnetCDF builds on elnino, not ashes. Why?
 	In file included from nc.h:14,
                  from mpinetcdf.c:8:
 	/usr/lib/gcc/i486-linux-gnu/4.0.2/include/stddef.h:152: error: two or more data types in declaration specifiers
-	/usr/lib/gcc/i486-linux-gnu/4.0.2/include/stddef.h:214: error: duplicate unsignednco647. 
+	/usr/lib/gcc/i486-linux-gnu/4.0.2/include/stddef.h:214: error: duplicate unsignednco
+nco647. Replicate Daniel's dangling free valgrind error
+nco648. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
