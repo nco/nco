@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.672 2005-10-28 18:14:40 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.673 2005-10-28 23:30:38 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -323,7 +323,7 @@ nco587. Command line MPI on AIX PPE with poe
         ERROR: 0031-212  pmd: node esmf04m: user zender denied from access from host esmf04m
         ERROR: 0031-024  esmf04m: no response; rc = -1
         AIX POE sample hello world at http://publib.boulder.ibm.com/infocenter/clresctr/index.jsp?topic=/com.ibm.cluster.pe.doc/pe_411/am105001/am10500113.html
-        cd ~/nco/bld;poe -infolevel 6 -node 1 -tasks_per_node 3 -rmpool 1 $MY_BIN_DIR/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc
+        ocd ~/nco/bld;poe -infolevel 6 -node 1 -tasks_per_node 3 -rmpool 1 $MY_BIN_DIR/mpncwa -O -D 3 -p ${HOME}/nco/data in.nc ~/foo.nc
 nco593. mpncrcat "sometimes" hangs while concatenating
 	command line: -np 2 seems to always work on sand, ashes, elnino
 	command line: -np 3 rarely hangs on ashes, usually hangs on sand, never hangs on elnino
@@ -356,6 +356,7 @@ nco597. mpncea hangs on ncea regression test 4 (on sand with LAM)
         mpirun -np 2 /usr/local/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck $MY_BIN_DIR/mpncea -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 	Daniel finds mpncea tries to free dangling pointer on sand with:
         mpirun -np 4 valgrind -v /home/zender/bin/LINUXAMD64/mpncra -Y ncea -h -O -D 2 -C -v pck -p ../data in.nc ~/foo.nc > ~/foo 2>&1
+	Charlie cannot reproduce that.
 	Charlie finds that master exits but workers reproducibly hang on sand with:
         mpirun -np 2 valgrind -v /home/zender/bin/LINUXAMD64/mpncra -Y ncea -h -O -D 2 -C -v pck -p ../data in.nc ~/foo.nc > ~/foo 2>&1
 nco599. Allow targets to determine Makefile variables so, e.g., 'make mpi' automagically defines MPI=Y
@@ -398,7 +399,8 @@ nco646. pnetCDF builds on elnino, not ashes. Why?
 	/usr/lib/gcc/i486-linux-gnu/4.0.2/include/stddef.h:152: error: two or more data types in declaration specifiers
 	/usr/lib/gcc/i486-linux-gnu/4.0.2/include/stddef.h:214: error: duplicate unsignednco
 nco647. Replicate Daniel's dangling free valgrind error
-nco648. 
+nco648. Determine whether mpncra creates dangling points when it packs/unpacks variables
+nco649. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

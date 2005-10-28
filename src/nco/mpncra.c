@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.40 2005-10-28 00:51:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.41 2005-10-28 23:30:39 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.40 2005-10-28 00:51:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.40 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.41 2005-10-28 23:30:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.41 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -1267,6 +1267,15 @@ main(int argc,char **argv)
   if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
   if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr);
 #if 1
+  /* Free variable lists */
+  if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
+  if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);
+  var_prc=(var_sct **)nco_free(var_prc);
+  var_prc_out=(var_sct **)nco_free(var_prc_out);
+  var_fix=(var_sct **)nco_free(var_fix);
+  var_fix_out=(var_sct **)nco_free(var_fix_out);
+#endif /* !1 */
+#if 0
   /* 20051027: Try ncwa free()'ing technique to avoid freeing dangling pointers */
   if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr); 
   /* ncwa uses nco_var_lst_free() on var_prc_out because var_out has dangling pointers */
@@ -1275,15 +1284,6 @@ main(int argc,char **argv)
   var_prc=(var_sct **)nco_free(var_prc);
   var_fix=(var_sct **)nco_free(var_fix);
   var_out=(var_sct **)nco_free(var_out);
-#endif /* !1 */
-#if 0
-  /* Free variable lists */
-  if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
-  if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);
-  var_prc=(var_sct **)nco_free(var_prc);
-  var_prc_out=(var_sct **)nco_free(var_prc_out);
-  var_fix=(var_sct **)nco_free(var_fix);
-  var_fix_out=(var_sct **)nco_free(var_fix_out);
 #endif /* !0 */
   
   nco_exit_gracefully();
