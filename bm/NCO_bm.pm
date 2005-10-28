@@ -13,9 +13,9 @@ package NCO_bm;
 #   go().................takes care of executing both regressions and benchmarks set up in same format
 #   smrz_rgr_rslt()......summarizes the results of both regression and benchmark tests
 #   check_nco_results()..checks the output via md5/wc validation
-#   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.2 / 20051004"
+#   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.13 2005-10-21 21:05:23 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.14 2005-10-28 19:37:05 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible

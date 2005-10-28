@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.337 2005-10-27 01:30:36 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.338 2005-10-28 19:37:05 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -98,8 +98,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 3.0.2
-@set doc-edition 3.0.2
+@set nco-edition 3.0.3
+@set doc-edition 3.0.3
 @set copyright-years 1995--2005
 @set update-year 2005
 @set update-date 12 October 2005
@@ -677,7 +677,7 @@ Subsequently, @acronym{NCO} requires a C99 compiler to build correctly
 by invoking the compiler with @samp{-Drestrict=''}.}.
 
 @cindex @var{gamma}
-In June 2005, @acronym{NCO} version 3.0.2 began to take advantage
+In June 2005, @acronym{NCO} version 3.0.1 began to take advantage
 of C99 mathematical special functions.
 These include the standarized gamma function (called @code{tgamma()} 
 for ``true gamma''). 
