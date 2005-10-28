@@ -1,41 +1,36 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.160 2005-10-23 07:08:50 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.161 2005-10-28 19:22:15 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.1.0 are ready. 
+The netCDF operators NCO version 3.0.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Version 3.1.0 contains many internal changes (build,
+Version 3.0.3 contains many internal changes (build,
 benchmarking, memory usage, and documentation improvements),
 new I/O features, and convenience routines for IPCC processing.
 
 1. OpenMP: No more critical regions in netCDF reads
    This improves performance on SMP nodes and over OPeNDAP
 
-2. MPI builds (Harry Mangalam): Support configure --enable-mpi
-
-3. MPI: MPI-enabled operators have ZKB (zero-known bugs)! (fxm)
-   Builds them with 'cd ~/nco/bld;make MPI=Y' and run them with mpirun! 
-
-4. netCDF4 builds (Harry Mangalam): Support configure --enable-netcdf4
-
-5. netCDF4: New options -4,--fl_fmt,--netcdf4 for file format
-   NB: The -Z switch has been replaced by --64!
+2. netCDF4: New options -4,--fl_fmt,--netcdf4 for file format
+   As a result, the -Z switch has been replaced by --64.
+   netCDF4 features require the alpha netCDF4 library.
+   Although they work perfectly, use them only for testing
+   since the netCDF4 binary format will change in the future.
    See http://nco.sf.net/nco.html#netcdf4 for more info
+
+3. netCDF4 builds (Harry Mangalam): Support configure --enable-netcdf4
+
+4. MPI-enabled operators are 2KB (two-known bugs)
+   mpncra/mpncea/mpncrcat can still hang
+
+5. MPI builds (Harry Mangalam): Support configure --enable-mpi
 
 6. Compiler support: Intel icc and icpc 8.1 and 9.0 are fully
    supported on x86 and x86_64 architectures
 
-7. Support HTML access when OPeNDAP not installed, e.g., (fxm)
-   ncks -l ./ http://dust.ess.uci.edu/nco/in.nc
-   See http://nco.sf.net/nco.html#html for more info
-
-8. ncflint works better with incommensurate files (fxm)
-
-9. IPCC dataset data reduction chapter in manual is more extensive
-
-10. ncks: Eliminated --fmt,--format synonyms to avoid netCDF4 confusion
-          Change --sng synonym to --sng_fmt
+7. ncks: Eliminated --fmt,--format synonyms to avoid netCDF4 confusion
+         Change --sng synonym to --sng_fmt
 
 Enjoy,
 Charlie
