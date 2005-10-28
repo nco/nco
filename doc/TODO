@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.670 2005-10-27 17:02:07 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.671 2005-10-28 00:51:26 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -352,6 +352,10 @@ nco597. mpncea hangs on ncea regression test 4 (on sand with LAM)
         ncea -O -D 5 -C -v one -p ~/nco/data in.nc ~/foo.nc (works)
         mpirun -np 2 /home/zender/bin/LINUXAMD64/mpncea -O -D 5 -C -v one -p ~/nco/data in.nc ~/foo.nc (leaves processes hanging in nco_free(var_out[0]))
         mpirun -np 2 /usr/local/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck $MY_BIN_DIR/mpncea -O -D 5 -v one -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
+	Daniel finds mpncea tries to free dangling pointer on sand with:
+        mpirun -np 4 valgrind -v /home/zender/bin/LINUXAMD64/mpncra -Y ncea -h -O -D 2 -C -v pck -p ../data in.nc ~/foo.nc > ~/foo 2>&1
+	Charlie finds that master exits but workers reproducibly hang on sand with:
+        mpirun -np 2 valgrind -v /home/zender/bin/LINUXAMD64/mpncra -Y ncea -h -O -D 2 -C -v pck -p ../data in.nc ~/foo.nc > ~/foo 2>&1
 nco599. Allow targets to determine Makefile variables so, e.g., 'make mpi' automagically defines MPI=Y
 nco605. ncpdq: speed up end of program by padding metadata intially?
 nco607. mpnc*: Define structures (rather than int arrays) for MPI messages
@@ -378,10 +382,19 @@ nco640. Naming: mpnc* (as currently implemented) or ncmpi* (as in pnetcdf)?
 nco641. Use netCDF4 MPI I/O hooks in nco_open/nco_create (mpncecat.c is testbed)
 nco642. Create nco_pnetcdf.h, nco_pnetcdf.c wrapper replacements?
 nco643. bld/Makefile fails with netCDF4 and MPI simultaneously enabled
+	make NETCDF4=Y MPI=Y ends with error in first compile (nco_att_utl.o)
+	/usr/include/mpi.h:95: error: two or more data types in declaration specifiers
+	/usr/include/mpi.h:278: error: two or more data types in declaration specifiers
 nco644. Where is nc_open_par()? not in libnetcdf.a?
 nco645. Does wrapping MPI-IO routines for netCDF4 and pnetCDF require ENABLE_MPI?
 	Perhaps same MPI must be used to build netCDF4 as is used for NCO?
-nco646. 
+nco646. pnetCDF builds on elnino, not ashes. Why?
+        ashes pnetCDF builds fail with both LAM and MPICH2 here in system header:
+	/usr/bin/mpicc -c -O -g -I.   -O -g mpinetcdf.c
+	In file included from nc.h:14,
+                 from mpinetcdf.c:8:
+	/usr/lib/gcc/i486-linux-gnu/4.0.2/include/stddef.h:152: error: two or more data types in declaration specifiers
+	/usr/lib/gcc/i486-linux-gnu/4.0.2/include/stddef.h:214: error: duplicate unsignednco647. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
