@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.311 2005-10-25 20:57:19 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.312 2005-10-28 07:58:16 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -664,14 +664,15 @@ success you can expect building NCO with the <tt>./configure</tt>
 mechanism. 
 Trouble-free installation with <tt>./configure;make;make check;make install</tt> is
 less common than we would like. 
-All platforms work continue to work fine with the <tt>bld/Makefile</tt> method. 
-However, this method does not support shared libraries and other nice
-features that come automagically with Autotools.
+All platforms continue to work fine with the <tt>bld/Makefile</tt> method. 
+Disadvantages are that <tt>bld/Makefile</tt> (1)&nbsp;Usually requires
+editing to fix your platforms paths; (2)&nbsp;Does not support shared
+libraries; and (3)&nbsp;Requires a degree from Hogwarts to understand.
 So please send in the patches required to get the <tt>./configure</tt> 
 mechanism working properly for NCO, <tt>nco_c++</tt>, and
 <a href="http://opendap.org">OPeNDAP</a> on your platform.  
-The gory details of the failed (and successful) builds are in the
-<a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>.
+The <a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>
+contains gory details of successful (and failed) builds for many platforms.  
 </li>
 
 <!-- http://nco.sf.net#bld_chn -->
