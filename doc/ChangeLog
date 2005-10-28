@@ -1,3 +1,7 @@
+2005-10-28  Harry Mangalam <hjm@tacgi.com>
+	* Changes to the configure/make chain to start to resolve
+	  autobuild issues with MPI / netcdf4 / DAP / etc
+
 2005-10-27  Charlie Zender  <zender@uci.edu>
 
 	* Tried ncwa memory free()'ing technique to avoid freeing dangling

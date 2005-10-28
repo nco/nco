@@ -1086,8 +1086,8 @@ Optional Features:
   --enable-maintainer-mode  enable make rules and dependencies not useful
 			  (and sometimes confusing) to the casual installer
   --disable-largefile     omit support for large files
-  --enable-dap            Build OPeNDAP/DODS-enabled clients if possible
-                          [default=yes]
+  --enable-dap            Build OPeNDAP/DODS-enabled clients (conflicts with
+                          netcdf4) [default=yes]
   --enable-netcdf4        Use netcdf versiion 4 (WARNING: Experimental)
                           [default=no]
   --enable-mpi            Build NCOs for Message Passing Interface (detects
@@ -21935,6 +21935,19 @@ if test "${enable_dap+set}" = set; then
 else
   enable_dap=yes
 fi;
+
+# Check to see if netcdf4 is requested
+echo "enable_netcdf4 = ${enable_netcdf4} and enable_dap = ${enable_dap}"
+if (test "${enable_netcdf4}" != 'no' && test "${enable_dap}" != 'no'); then
+	# override the netcdf4 request
+	echo ""
+	echo "WARNING: Requested both netcdf4 and DAP support - overriding netcdf4"
+	echo "NCOs will be built with DAP support but NOT netcdf4/hdf5 support"
+	echo ""
+	enable_netcdf4='no'
+fi
+
+
 # Check for DAP libraries unless told not to
 if test "${enable_dap}" != 'no'; then
     if which ncdap-config > /dev/null; then
@@ -22067,12 +22080,94 @@ fi
 
 # End DAP support
 
+
 # Begin Mandatory Link Test with libnetcdf.a
 # Make precious variables for ./configure --help
 
 
 
+# if don't want netcdf4 capabilities, but are using the netcdf4 lib, need to
+# link with hdf5 libs to enable the link - ie as if you wanted netcdf4
 
+echo ""
+echo "################################################"
+echo "# Testing whether libnetcdf is version 4 or 3  #"
+echo "################################################"
+echo ""
+echo "enable_netcdf4 = ${enable_netcdf4} and enable_dap = ${enable_dap}"
+
+if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
+	# check libnetcdf for netcdf4 function to test which one it is..
+	echo "$as_me:$LINENO: checking for nc_check_for_hdf5 in -lnetcdf" >&5
+echo $ECHO_N "checking for nc_check_for_hdf5 in -lnetcdf... $ECHO_C" >&6
+if test "${ac_cv_lib_netcdf_nc_check_for_hdf5+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lnetcdf -lhdf5 -lhdf5_hl $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char nc_check_for_hdf5 ();
+int
+main ()
+{
+nc_check_for_hdf5 ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_netcdf_nc_check_for_hdf5=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_lib_netcdf_nc_check_for_hdf5=no
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_nc_check_for_hdf5" >&5
+echo "${ECHO_T}$ac_cv_lib_netcdf_nc_check_for_hdf5" >&6
+if test $ac_cv_lib_netcdf_nc_check_for_hdf5 = yes; then
+  enable_netcdf4=yes
+else
+  enable_netcdf4=no
+fi
+
+fi
 
 # Begin HDF5 test
 # note that netcdf4 requires the libhdf5 & libhdf5_hl to link correctly
@@ -22266,7 +22361,8 @@ _ACEOF
 elif (test "${enable_netcdf4}" = 'no' && test "${enable_dap}" = 'no'); then
     # this next stanza should only be tried if --enable-netcdf4=no / --disable-netcdf4
     # && look for real netCDF library only if enable_dap is false. jhrg 05/26/05
-
+	# HOWEVER: if have installed libnetcdf4 instead of libnetcdf3x, have to also link in
+	# the hdf5 libs to get it to compile correctly, just as above.
     # Add user-specified netCDF locations, if any, else add /usr/local locations if they exist
     if test "${NETCDF_LIB}"; then
 	if test -d "${NETCDF_LIB}"; then
@@ -24330,6 +24426,12 @@ if (test $enable_mpi != 'no'); then
 
 
 
+	echo "before loop, MPICH2_ROOT = ${MPICH2_ROOT}"
+	if (test "${MPICH2_ROOT}" != ""); then
+		echo "in loop, MPICH2_ROOT = ${MPICH2_ROOT}"
+		CPPFLAGS=-I${MPICH2_ROOT}/include
+		LDFLAGS=-L${MPICH2_ROOT}/lib
+	fi
 
 	# following may have to AC_DEFINE ENABLE_MPI to pass to Makefile.
 	# Check whether --enable-mpi or --disable-mpi was given.
@@ -24524,7 +24626,8 @@ echo "${ECHO_T}$ac_cv_header_mpi_h" >&6
 
 fi
 if test $ac_cv_header_mpi_h = yes; then
-  cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define ENABLE_MPI 1
 _ACEOF
 
@@ -24679,9 +24782,10 @@ fi
 			echo "should set BIN_MPI_PROGRAMS.."
 			BIN_MPI_PROGRAMS="mpncbo\$(EXEEXT) mpncecat\$(EXEEXT) mpncflint\$(EXEEXT) mpncpdq\$(EXEEXT) mpncra\$(EXEEXT) mpncwa\$(EXEEXT)"
 			echo "..and it's set to: ${BIN_MPI_PROGRAMS}"
-			CPPFLAGS="-DENABLE_MPI ${CPPFLAGS}"
-			echo "CPPFLAGS set to: ${CPPFLAGS} "
+#			CPPFLAGS="-DENABLE_MPI ${CPPFLAGS}"
+#			echo "CPPFLAGS set to: ${CPPFLAGS} "
 			CC="mpicc"
+			CPP="mpicc"
 		else
 			BIN_MPI_PROGRAMS=""
 		fi
@@ -24978,6 +25082,8 @@ fi
 	# Have to mod
 	if ( test "${enable_mpich2}" = 'yes' || test "${enable_lam}" = 'yes'); then
 		echo "MPI: Using MPI_CC=${MPI_CC} and LIBS=${LIBS}"
+		echo "MPI: Building shared libs conflicts with MPI; shared libs have been disabled."
+		enable_shared='no'
 	fi
 	echo "### End MPI Checks ###"
 	echo ""
@@ -25743,12 +25849,15 @@ fi
 
 # Begin Shared
 # If --enable-shared define ENABLE_SHARED
+echo "enable_shared  = ${enable_shared} "
 if test "${enable_shared}" = 'yes'; then
 
 cat >>confdefs.h <<\_ACEOF
 #define ENABLE_SHARED 1
 _ACEOF
 
+#else
+#	AC_DEFINE(ENABLE_SHARED,0,Enable shared libraries)
 fi
 # End Shared
 
@@ -26976,7 +27085,7 @@ fi
 # Tell GNU C compiler to use C99 standard (older gcc versions default to C89)
 if (test $ac_compiler_gnu == "yes"); then
   CFLAGS="$CFLAGS -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE"
-	if (test $macosx = 1); then
+	if (test "${macosx}" = 1); then
 		CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'`
 		CFLAGS="-fno-common $CFLAGS"
 	fi
@@ -28502,7 +28611,7 @@ echo "CPP.................. ${CPP}"
 echo "CPPFLAGS............. ${CPPFLAGS}"
 echo "CXX.................. ${CXX}"
 echo "CXXFLAGS............. ${CXXFLAGS}"
-echo "ENABLE_MPI........... ${ENABLE_MPI}"
+#echo "ENABLE_MPI........... ${ENABLE_MPI}"
 #echo "HAVE_MPI_H........... ${HAVE_MPI_H}"
 echo "HOST................. ${HOST}"
 echo "host................. ${host}"
