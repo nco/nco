@@ -1,3 +1,9 @@
+nco (3.0.3-1) unstable; urgency=low
+
+  * icc9, netCDF4, configure MPI and netCDF4, better SMP
+
+ -- Charlie Zender <zender@localhost.localdomain>  Fri, 28 Oct 2005 12:38:14 -0700
+
 nco (3.0.2-1) unstable; urgency=low
 
   * icc, OPeNDAP, ftp, sftp, .netrc, hdr_pad, cf, bm for MPI + OPeNDAP
