@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.673 2005-10-28 23:30:38 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.674 2005-10-31 17:07:13 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -400,7 +400,8 @@ nco646. pnetCDF builds on elnino, not ashes. Why?
 	/usr/lib/gcc/i486-linux-gnu/4.0.2/include/stddef.h:214: error: duplicate unsignednco
 nco647. Replicate Daniel's dangling free valgrind error
 nco648. Determine whether mpncra creates dangling points when it packs/unpacks variables
-nco649. 
+nco649. Add ncks --prn_cln switch to print coords/vars naked (no names, indices)
+nco650. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
