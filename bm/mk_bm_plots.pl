@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/mk_bm_plots.pl,v 1.5 2005-10-28 23:34:58 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/mk_bm_plots.pl,v 1.6 2005-10-31 19:29:31 mangalam Exp $
 
 # TODO: detect failures in the benchmarks and mark them with another symbol so they are detectable
 # in the benchmark plots and benchmarks
@@ -14,7 +14,11 @@
 # commandline|timing data (the last 2 fields of the nco_benchmark.log) like so
 # (assuming you're running this from a subdir below the log and perl script so as to isolate the data generated)
 
-#grep bench ../nco_benchmark.log |grep sand |grep -iv dap |grep Linux |scut --c1="1 2 3" --id1='\|' --od='|' |../mk_bm_plots.pl
+# example of 10.31.05
+#grep bench ../nco_benchmark.log |grep -i aix |scut --c1="1 3 4 2" --id1='\|' --od='|' | ../mk_bm_plots.pl --date_sng='10-27-05' --file_root='bm_AIX_OMP'
+
+# the --date_sng sets the date incorporated into the file name as well as the label on the plots, allowing postprocessing of older benchmark data without inserting today's date_sng
+# --file_root is the root file name string to better identify the data being generated.
 
 # the above line selects the benchmark lines run on sand filters out the ones that include '--dap',
 # ignore all those that aren't true benchmark lines (Linux is only seen on the uname output), then passes
@@ -49,20 +53,34 @@
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 #use Getopt::Long; # GNU-style getopt #qw(:config no_ignore_case bundling);
 use strict; # Protect all namespaces
+use Getopt::Long; # GNU-style getopt #qw(:config no_ignore_case bundling);
 
 # Declare vars for strict
 use vars qw( @titles @cmdline @nco_tim_info $thr_num %nc %tim_dta $num_nco_stz @nco_stz @clin_bits
 $num_bits @nco_stz $num_nco_stz $nco_name @nco_tim_dta $gnuplot_data_file @nco_name_array
 $tim_dta_end $cmdfile $ps_file $uname $op_sys $nco_vrsn_sng $nco_vrsn_A $nco_vrsn_B $datestamp $tmp_sng
+$date_sng $fle_root $filetimestamp $sngl_thr_avg %nco_avgs
 );
+
+$date_sng = "";
+$fle_root = "nco.benchmarks";
+
+my $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
+&GetOptions(
+	'date_sng=s'    => \$date_sng,    # datestamp string to add to labels and filename
+	'file_root=s'   => \$fle_root,    # filename root (combined with $date_sng, and other)
+);
+
+$filetimestamp = $date_sng;
+if ($date_sng eq ""){ $filetimestamp = `date +%F_%R`; chomp $filetimestamp; }
+print "date_sng: $date_sng and file_root: $fle_root \n";
+
 $thr_num = 0;
 $tim_dta_end = 2; # number of variables to be plotted (to expand if start adding more rusage() vars)
                   # setting it to '2' will only plot wallclock seconds.  Setting it higher will plot
                   # more of the variables listed below.
 
 @titles = ("threads", "   1/t(n)", "   real", "   user", " system", "\n");
-
-# $nco_vrsn_sng = nco_dual_vrsn();
 
 my $wait = <STDIN>;
 
@@ -75,14 +93,13 @@ while (<>) {
 		($uname, $cmdline[$linect],$nco_tim_info[$linect], $nco_vrsn_sng,) = split(/\|/,$_,5);
 		#my $splitcnt = split(/]/,$_);
 		#print "splitcnt = $splitcnt\n";
- 		print "uname: $uname\n";
- 		print "version: $nco_vrsn_sng\n";
- 		print "cmd: $cmdline[$linect]\n";
- 		print "timing data: $nco_tim_info[$linect]\n";
+#debugging only!
+#  		print "uname: $uname\n";
+#  		print "version: $nco_vrsn_sng\n";
+#  		print "cmd: $cmdline[$linect]\n";
+#  		print "timing data: $nco_tim_info[$linect]\n";
 	}
 	$linect++;
-#	print "hit key\n";
-#	my $tmp = <STDIN>;
 }
 
 print "processed $linect lines\n";
@@ -91,7 +108,7 @@ print "processed $linect lines\n";
 my $uname_cnt = split(/\s+/,$uname);
 $op_sys = $_[0];
 print "operating system = $op_sys\n";
-$datestamp = `date`;
+$datestamp = $filetimestamp;
 chomp $datestamp;
 chomp $nco_vrsn_sng;
 
@@ -147,6 +164,7 @@ for (my $i=0; $i<$linect;$i++) {
 #		print "i = $i\n";
 		if ($thr_num == 0) { $thr_num = 1}
 		else {
+		$nco_avgs{$nco_name} = 0; # initializes hash
 		$tim_dta{$nco_name}[0][$i] = $thr_num;}
 		$tim_dta{$nco_name}[1][$i] = $walltime;
 		$tim_dta{$nco_name}[2][$i] = $realtime;
@@ -157,16 +175,16 @@ for (my $i=0; $i<$linect;$i++) {
 	}
 }
 
-write_gnuplot_cmds();
 write_nco_data();
+write_gnuplot_cmds();
 print "\nexecuting the gnuplot on $cmdfile\n";
 system "gnuplot < $cmdfile";
 print "\n========================================\nThe benchmark plots should be in:\n  $ps_file\n====\n";
 
 my $mpage ="";my $up4ps_file = "";
-$mpage = `which mpage`;
+$mpage = `which mpage`; chomp $mpage;
 if ($mpage =~ /bin/ ){
-	chomp $mpage; $up4ps_file = "4-up_" . $ps_file;
+	$up4ps_file = "4-up_" . $ps_file;
 	system "$mpage $ps_file > $up4ps_file";
 	print "\n========================================\nThe 4-up benchmark plots should be in:\n  $up4ps_file.\n====\n";
 } else {
@@ -174,11 +192,10 @@ if ($mpage =~ /bin/ ){
 }
 
 my $ps2pdf = "";
-$ps2pdf = `which ps2pdf`;
+$ps2pdf = `which ps2pdf`; chomp $ps2pdf;
 if ($ps2pdf =~ /bin/ ){
 	my $pdf_file = $ps_file;
-	chomp $ps2pdf; $pdf_file =~ s/\.ps/\.pdf/;
-	#print "\n\$pdf_file = $pdf_file\n\n";
+	$pdf_file =~ s/\.ps/\.pdf/;
 	if ($mpage =~ /bin/ ) { $ps_file = $up4ps_file; }
 	system "$ps2pdf $ps_file > $pdf_file";
 	print "\n========================================\nThe PDF'ed benchmark plots should be in:\n  $pdf_file\n====\n";
@@ -193,18 +210,12 @@ sub write_nco_data {
 # thread   wall  real  user  sys   and   other   rusage   params    spread    across    the    top
 # and then 1 gnuplot command file to read them all in and plot them
 	#open the file
-	my $filetimestamp = `date +%F_%R`; chomp $filetimestamp;
+
 	for (my $r=0; $r<$num_nco_stz;$r++) {
 		$nco_name = $nco_name_array[$r];
 		my $datafile = "$nco_name.$filetimestamp.data";
 		print "datafile name: $datafile\n";
 		open(DAT, ">$datafile") or die "\nUnable to open command file '$datafile' in current dir - check permissions on it\nor the directory you are in.\n stopped";
-
-		# now plot the header line:
-#		my @titles = ("    threads", "       wall", "       real", "       user", "     system", "\n");
-# 		foreach my $tmp_sng (@titles){
-# 			printf DAT $tmp_sng
-# 		}
 		for (my $i = 0; $i < $tim_dta_end; $i++){ print DAT $titles[$i];}
 		print DAT "\n";
 
@@ -222,9 +233,10 @@ sub write_nco_data {
 				$sum += $tim_dta{$nco_name}[1][$i]; $N++;
 			}
 		}
-		my $sngl_thr_avg=2;
+	 	$sngl_thr_avg=2;
 		if ($N > 0 && $sum > 0){
 			$sngl_thr_avg = $sum / $N;
+			$nco_avgs{$nco_name} = $sngl_thr_avg; # record for label in gnuplot commands.
 			print "$nco_name: avg=$sngl_thr_avg (where sum: $sum, N: $N\n";
 		} else {
 			print "\n\nWarning: for $nco_name, there were no values with thr=1\n";
@@ -255,9 +267,9 @@ sub write_nco_data {
 sub write_gnuplot_cmds {
 	# need to write 1 command file that plots all the files to a single postscript file
 	#open file
-	my $filetimestamp = `date +%F_%R`; chomp $filetimestamp;
+#	my $filetimestamp = `date +%F_%R`; chomp $filetimestamp;
 	$cmdfile = "nco_bm.$filetimestamp.gnuplot";
-	$ps_file = "nco.benchmarks_$filetimestamp.ps";
+	$ps_file = $fle_root . "_" . $filetimestamp . ".ps";
 	print "cmdfile name: $cmdfile\n\n";
 	open(CMD, ">$cmdfile") or die "\nUnable to open command file '$cmdfile' in current dir - check permissions on it\nor the directory you are in.\n stopped";
 	print CMD << "HEADER";
@@ -280,7 +292,7 @@ HEADER
 		my $tail = ", \\\n";
 		#print "set output 'bench.$nco_name_array[$r].ps'\n"
 #		print "\n\n";
-		print CMD "set title \"$nco_name_array[$r] on $op_sys using multiple threads / processes\\nfor NCO version: $nco_vrsn_sng, on $datestamp\"\n";
+		print CMD "set title \"$nco_name_array[$r] on $op_sys using multiple threads / processes\\nfor NCO version: $nco_vrsn_sng, on $filetimestamp\"\n";
 
 		my $datafile = "$nco_name_array[$r].$filetimestamp.data";
 		for (my $e=0; $e<($tim_dta_end-1);$e++) {
@@ -289,9 +301,11 @@ HEADER
 			if ($e > ($tim_dta_end-3)) { $tail = "\n"; }
 			my $col = $e + 2;
 			print CMD "m=0;b=0\nf(x) = m*x + b\nfit [0:8] f(x) \"$datafile\" using 1:2 via m,b\n";
-			print CMD "unset label\nset label \"Scaling = %f\", m at 1, 2.5\n";
-			my $lbl = $col+1;
-			print CMD "$plot_str '$datafile' using 1:$col title \"$titles[$col - 1]\", m*x+b title \"m*x+b\" \n#new plot\n"; # :$lbl with labels center offset 0,1
+			# note that in the printf-like formatting below, the var has to immediately follow the format
+			# ie: \"%d\", dvar, \"%f\", fvar, \"%s\", svar
+			# it is NOT like printf's "%d %f %s", dvar, fvar, svar
+			print CMD "unset label\nset label \"Scaling = %4.3f \", m , \"(Avg s @ 1 thr: %5.2f)\", $nco_avgs{$nco_name_array[$r]}  at 1, 2.5\n";
+			print CMD "$plot_str '$datafile' using 1:$col title \"$titles[$col - 1]\", m*x+b title \"lin fit\" \n#new plot\n"; # :$lbl with labels center offset 0,1
 		}
 	}
 	close (CMD);

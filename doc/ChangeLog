@@ -1,3 +1,6 @@
+2005-10-31  Harry Mangalam <hjm@tacgi.com>
+	* Changes to mk_bm_plots to scriptify the last of CZ's requests
+	  
 2005-10-28  Harry Mangalam <hjm@tacgi.com>
 	* Changes to the configure/make chain to start to resolve
 	  autobuild issues with MPI / netcdf4 / DAP / etc

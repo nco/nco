@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.106 2005-10-28 23:34:58 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.107 2005-10-31 19:29:31 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -243,12 +243,14 @@ if ($mpi_prc > 0 && $mpi_fke) {
 #		print "\n\n__ $mpd_usr __\n\n";
 		dbg_msg(2,"Testing for a correctly owned running mpd: USER = [$ENV{'USER'}] and \$mpd_usr = [$mpd_usr]");
 		if ( $mpd_usr !~ /$ENV{'USER'}/ )  {
-			print "\nWARN: You might be trying to run MPICH without a running mpd.\nIf the run fails, try running 'mpd &'\n\n";
+			print "\nWARN: You might be trying to run MPICH without a running mpd.\nIf the run fails, and I can't start an mpd for you, try running 'mpd &' manually\n\n";
+			# try to start it automatically?
 		} else {
 			dbg_msg(1,"OK! You seem to be using MPICH and at least one mpd seems to be owned by you.");
 			$mpich_ok = 1;
 		}
 	}
+
 
 	if (!$lam_ok && !$mpich_ok) {
 		print "\nWARN: you asked for an MPI run (--mpi_prc=$mpi_prc) but you don't seem to be running either LAM-MPI or MPICH.\nIf the run fails, you might try running either of those 2 MPI systems.\n";
