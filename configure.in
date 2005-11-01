@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.142 2005-11-01 18:19:06 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.143 2005-11-01 21:19:07 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -141,16 +141,6 @@ AC_CXX_HAVE_VALARRAY
 # Arrange for large file support (LFS)
 AC_SYS_LARGEFILE
 
-#echo ""
-#echo "########################################"
-#echo "#  Testing for ccache goes here  #"
-#echo "########################################"
-#echo ""
-#AC_ARG_ENABLE(ccache,AS_HELP_STRING([--enable-ccache],[Enable ccaching for developers - enables very fast rebuilds)  [[default=no]]]),enable_ccache=${enableval},enable_ccache=yes)
-# is there a ccache?
-#AC_CHECK_PROG(CCACHE, [ccache], "NONE", ${PATH})
-# !! incomplete !!
-
 echo ""
 echo "########################################"
 echo "#  Testing for DAP (aka DODS) support  #"
@@ -241,22 +231,27 @@ echo "enable_netcdf4 = ${enable_netcdf4} and enable_dap = ${enable_dap}"
 
 AC_ARG_VAR([NETCDF4_ROOT],[Root of NETCDF4 installation - must be separate from netcdf3.x] (compile-time))
 # test if he set NETCDF4_ROOT and it at least exists
-if (test "${NETCDF4_ROOT}" != ""); then
-	if (test -d "${NETCDF4_ROOT}"); then
-		echo "NETCDF4_ROOT is set and exists - assuming it's real";\
-		echo "DEBUG: in loop, NETCDF4_ROOT = ${NETCDF4_ROOT}";\
-		CPPFLAGS="-I${NETCDF4_ROOT}/include/libsrc4 $CPPFLAGS";\
-		LDFLAGS="-L${NETCDF4_ROOT}/fortran -L${NETCDF4_ROOT}/libsrc4 $LDFLAGS";
-		if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
-			# check libnetcdf for netcdf4 function to test which one it is..
-			AC_CHECK_LIB([netcdf4],[nc_check_for_hdf5],,enable_netcdf4=no,[-lhdf5 -lhdf5_hl])
+if ( test "${enable_netcdf4}" = 'yes'); then
+	if (test "${NETCDF4_ROOT}" != ""); then
+		if (test -d "${NETCDF4_ROOT}"); then
+			echo "NETCDF4_ROOT is set and exists - assuming it's real";\
+			echo "DEBUG: in loop, NETCDF4_ROOT = ${NETCDF4_ROOT}";\
+			CPPFLAGS="-I${NETCDF4_ROOT}/include/libsrc4 $CPPFLAGS";\
+			LDFLAGS="-L${NETCDF4_ROOT}/fortran -L${NETCDF4_ROOT}/libsrc4 $LDFLAGS";
+			if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
+				# check libnetcdf for netcdf4 function to test which one it is..
+				AC_CHECK_LIB([netcdf4],[nc_check_for_hdf5],,enable_netcdf4=no,[-lhdf5 -lhdf5_hl])
+			fi
+		else
+			echo "NETCDF4_ROOT set but doesn't exist - skipping netcdf4 config";\
+			enable_netcdf4='no'
 		fi
 	else
-		echo "NETCDF4_ROOT set but doesn't exist - skipping netcdf4 config";\
-		enable_netcdf4='no'
+		echo "You set '--enable-netcdf4' but did not set NETCDF4_ROOT";\
+		echo "you need to set both to enable NETCDF4.  I'll try it anyway...";\
+		AC_CHECK_LIB([netcdf4],[nc_check_for_hdf5],,enable_netcdf4=no,[-lhdf5 -lhdf5_hl])
 	fi
 fi
-
 
 
 
