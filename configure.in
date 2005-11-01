@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.140 2005-11-01 04:25:01 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.141 2005-11-01 17:59:43 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -337,7 +337,7 @@ AC_CHECK_HEADERS([netcdf.h])
 # NCO does not support netCDF2
 AC_DEFINE(NO_NETCDF_2,1,No netCDF version 2.x API)
 
-if (test "$enable_dap" = 'no' && test ${enable_netcdf4 = 'no'}); then
+if (test "$enable_dap" = 'no' && test "${enable_netcdf4" = 'no'}); then
 
 # Check for 'nc_open()' using default compiler flags
 # If this fails, check for 'nc_close()' with 64-bit ABI flags (if known)
