@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.15 2005-10-28 23:34:58 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.16 2005-11-01 04:25:01 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -50,11 +50,17 @@ my $in_pth_arg = "-p $in_pth";
 # fxm: pass as arguments or use exporter/importer instead?
 *omp_flg=*main::omp_flg;
 *nco_D_flg=*main::nco_D_flg;
-*dodap=*main::dodap;
+#*dodap=*main::dodap;
+#*$fl_fmt=*main::fl_fmt;
+
 
 dbg_msg(1,"in package NCO_rgr, \$dodap = $dodap");
 dbg_msg(1,"in package NCO_rgr, \$omp_flg = $omp_flg");
 # csz--
+
+
+dbg_msg(1,"File format set to [$fl_fmt]");
+
 
 if ($dodap ne "FALSE") {
 	if ($dodap ne "" && $fl_pth =~ /http/ ) { $in_pth_arg = "-p $fl_pth"; }

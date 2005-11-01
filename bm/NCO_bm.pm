@@ -15,7 +15,7 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.14 2005-10-28 19:37:05 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.15 2005-11-01 04:25:01 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -138,6 +138,8 @@ where (options) are:
     --dap {OPeNDAP url} ...retrieve test files from OPeNDAP server URL
     --opendap..............             ditto
     --dust_user.....use this to define a user who CAN log into dust for testing
+    --fl_fmt........sets the file type to test.  One of:
+                    classic, 64bit, netcdf4, netcdf4_classic
     --log ..........requests that the debug info is logged to 'nctest.log'
                      as well as spat to STDOUT.
     --mpi_prc {#>0}..number of MPI processes to spawn

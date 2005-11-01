@@ -306,15 +306,15 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-@BUILD_YACC_SOURCE_FALSE@NCAP = 
-@BUILD_YACC_SOURCE_TRUE@NCAP = ncap 
-@BUILD_YACC_SOURCE_FALSE@NCWA = 
+@BUILD_YACC_SOURCE_FALSE@NCAP =
+@BUILD_YACC_SOURCE_TRUE@NCAP = ncap
+@BUILD_YACC_SOURCE_FALSE@NCWA =
 @BUILD_YACC_SOURCE_TRUE@NCWA = ncwa
-@TEST_DAP_FALSE@DAP_TESTS = 
-@NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT = 
+@TEST_DAP_FALSE@DAP_TESTS =
+@NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT =
 @NCO_NEED_GETOPT_LONG_TRUE@NCO_GETOPT = nco_getopt.c
 AM_YFLAGS = -d
-ncap_SOURCES = ncap_utl.c ncap.c ncap_yacc.y ncap_lex.l 
+ncap_SOURCES = ncap_utl.c ncap.c ncap_yacc.y ncap_lex.l
 ncap_LDADD = libnco.la
 ncatted_SOURCES = ncatted.c
 ncatted_LDADD = libnco.la
@@ -479,7 +479,7 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libnco.la: $(libnco_la_OBJECTS) $(libnco_la_DEPENDENCIES) 
+libnco.la: $(libnco_la_OBJECTS) $(libnco_la_DEPENDENCIES)
 	$(LINK) -rpath $(libdir) $(libnco_la_LDFLAGS) $(libnco_la_OBJECTS) $(libnco_la_LIBADD) $(LIBS)
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
@@ -514,34 +514,34 @@ ncap_yacc.h: ncap_yacc.c
 	  rm -f ncap_yacc.c; \
 	  $(MAKE) ncap_yacc.c; \
 	else :; fi
-ncap$(EXEEXT): $(ncap_OBJECTS) $(ncap_DEPENDENCIES) 
+ncap$(EXEEXT): $(ncap_OBJECTS) $(ncap_DEPENDENCIES)
 	@rm -f ncap$(EXEEXT)
 	$(LINK) $(ncap_LDFLAGS) $(ncap_OBJECTS) $(ncap_LDADD) $(LIBS)
-ncatted$(EXEEXT): $(ncatted_OBJECTS) $(ncatted_DEPENDENCIES) 
+ncatted$(EXEEXT): $(ncatted_OBJECTS) $(ncatted_DEPENDENCIES)
 	@rm -f ncatted$(EXEEXT)
 	$(LINK) $(ncatted_LDFLAGS) $(ncatted_OBJECTS) $(ncatted_LDADD) $(LIBS)
-ncbo$(EXEEXT): $(ncbo_OBJECTS) $(ncbo_DEPENDENCIES) 
+ncbo$(EXEEXT): $(ncbo_OBJECTS) $(ncbo_DEPENDENCIES)
 	@rm -f ncbo$(EXEEXT)
 	$(LINK) $(ncbo_LDFLAGS) $(ncbo_OBJECTS) $(ncbo_LDADD) $(LIBS)
-ncecat$(EXEEXT): $(ncecat_OBJECTS) $(ncecat_DEPENDENCIES) 
+ncecat$(EXEEXT): $(ncecat_OBJECTS) $(ncecat_DEPENDENCIES)
 	@rm -f ncecat$(EXEEXT)
 	$(LINK) $(ncecat_LDFLAGS) $(ncecat_OBJECTS) $(ncecat_LDADD) $(LIBS)
-ncflint$(EXEEXT): $(ncflint_OBJECTS) $(ncflint_DEPENDENCIES) 
+ncflint$(EXEEXT): $(ncflint_OBJECTS) $(ncflint_DEPENDENCIES)
 	@rm -f ncflint$(EXEEXT)
 	$(LINK) $(ncflint_LDFLAGS) $(ncflint_OBJECTS) $(ncflint_LDADD) $(LIBS)
-ncks$(EXEEXT): $(ncks_OBJECTS) $(ncks_DEPENDENCIES) 
+ncks$(EXEEXT): $(ncks_OBJECTS) $(ncks_DEPENDENCIES)
 	@rm -f ncks$(EXEEXT)
 	$(LINK) $(ncks_LDFLAGS) $(ncks_OBJECTS) $(ncks_LDADD) $(LIBS)
-ncpdq$(EXEEXT): $(ncpdq_OBJECTS) $(ncpdq_DEPENDENCIES) 
+ncpdq$(EXEEXT): $(ncpdq_OBJECTS) $(ncpdq_DEPENDENCIES)
 	@rm -f ncpdq$(EXEEXT)
 	$(LINK) $(ncpdq_LDFLAGS) $(ncpdq_OBJECTS) $(ncpdq_LDADD) $(LIBS)
-ncra$(EXEEXT): $(ncra_OBJECTS) $(ncra_DEPENDENCIES) 
+ncra$(EXEEXT): $(ncra_OBJECTS) $(ncra_DEPENDENCIES)
 	@rm -f ncra$(EXEEXT)
 	$(LINK) $(ncra_LDFLAGS) $(ncra_OBJECTS) $(ncra_LDADD) $(LIBS)
-ncrename$(EXEEXT): $(ncrename_OBJECTS) $(ncrename_DEPENDENCIES) 
+ncrename$(EXEEXT): $(ncrename_OBJECTS) $(ncrename_DEPENDENCIES)
 	@rm -f ncrename$(EXEEXT)
 	$(LINK) $(ncrename_LDFLAGS) $(ncrename_OBJECTS) $(ncrename_LDADD) $(LIBS)
-ncwa$(EXEEXT): $(ncwa_OBJECTS) $(ncwa_DEPENDENCIES) 
+ncwa$(EXEEXT): $(ncwa_OBJECTS) $(ncwa_DEPENDENCIES)
 	@rm -f ncwa$(EXEEXT)
 	$(LINK) $(ncwa_LDFLAGS) $(ncwa_OBJECTS) $(ncwa_LDADD) $(LIBS)
 
@@ -921,6 +921,8 @@ install-exec-hook:
 
 uninstall-hook:
 	cd $(DESTDIR)$(bindir) && rm -f ncdiff ncea ncrcat
+
+
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

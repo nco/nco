@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.112 2005-10-25 22:11:50 mangalam Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.113 2005-11-01 04:25:01 mangalam Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -281,8 +281,34 @@ make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
+
+
+
+
 ************************************************************************
 End LINUX
+************************************************************************
+
+************************************************************************
+Begin NETCDF4
+************************************************************************
+
+NETCDF4/netcdf4
+To build with netcdf4, we require two changes from the default process:
+- you must identify the root dir of the netcdf4 build dir.  ie the latest
+  build from UCAR creates a dir named netcdf-4.0-alpha9 when untarred.  The
+  fully qualified path to that directory is the NETCDF4_ROOT which is set at
+  configure time:
+  ./configure blah blah blah NETCDF4_ROOT=/where/you/unpacked/netcdf4
+
+- you must rename the 'libnetcdf.etc' built by the netcdf4 to
+  'libnetcdf4.etc' including the fortran lib if you want it included as
+  well. You shouldn't have to move the lib, but it must be renamed so as not
+  to conflict with an existing libnetcdf.a (from netcdf3.x).  If this fails,
+  you may have to symlink it into your /usr/local/lib.
+
+************************************************************************
+End NETCDF4
 ************************************************************************
 
 ************************************************************************

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.139 2005-10-28 23:34:58 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.140 2005-11-01 04:25:01 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -141,6 +141,16 @@ AC_CXX_HAVE_VALARRAY
 # Arrange for large file support (LFS)
 AC_SYS_LARGEFILE
 
+#echo ""
+#echo "########################################"
+#echo "#  Testing for ccache goes here  #"
+#echo "########################################"
+#echo ""
+#AC_ARG_ENABLE(ccache,AS_HELP_STRING([--enable-ccache],[Enable ccaching for developers - enables very fast rebuilds)  [[default=no]]]),enable_ccache=${enableval},enable_ccache=yes)
+# is there a ccache?
+#AC_CHECK_PROG(CCACHE, [ccache], "NONE", ${PATH})
+# !! incomplete !!
+
 echo ""
 echo "########################################"
 echo "#  Testing for DAP (aka DODS) support  #"
@@ -162,6 +172,9 @@ nco_LIBS_no_DAP="${LIBS}"
 # fxm: is DAP_ROOT (or DODS_ROOT) an obselete variable in DAP 3.5+?
 AC_ARG_VAR([DAP_ROOT],[Root of DAP installation] (compile-time))
 AC_ARG_ENABLE(dap,AS_HELP_STRING([--enable-dap],[Build OPeNDAP/DODS-enabled clients (conflicts with netcdf4)  [[default=yes]]]),enable_dap=${enableval},enable_dap=yes)
+
+
+AC_ARG_ENABLE(netcdf4,AS_HELP_STRING([--enable-netcdf4],[Use netcdf versiion 4 (WARNING: Experimental) [[default=no]]]),enable_netcdf4=yes,enable_netcdf4=no)
 
 # Check to see if netcdf4 is requested
 echo "enable_netcdf4 = ${enable_netcdf4} and enable_dap = ${enable_dap}"
@@ -216,6 +229,8 @@ AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
 
 # if don't want netcdf4 capabilities, but are using the netcdf4 lib, need to
 # link with hdf5 libs to enable the link - ie as if you wanted netcdf4
+#following line enables & initializes the configure option
+
 
 echo ""
 echo "################################################"
@@ -224,15 +239,29 @@ echo "################################################"
 echo ""
 echo "enable_netcdf4 = ${enable_netcdf4} and enable_dap = ${enable_dap}"
 
-if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
-	# check libnetcdf for netcdf4 function to test which one it is..
-	AC_CHECK_LIB([netcdf],[nc_check_for_hdf5],[enable_netcdf4=yes],enable_netcdf4=no,[-lhdf5 -lhdf5_hl])
+AC_ARG_VAR([NETCDF4_ROOT],[Root of NETCDF4 installation - must be separate from netcdf3.x] (compile-time))
+# test if he set NETCDF4_ROOT and it at least exists
+if (test "${NETCDF4_ROOT}" != ""); then
+	if (test -d "${NETCDF4_ROOT}"); then
+		echo "NETCDF4_ROOT is set and exists - assuming it's real";\
+		echo "DEBUG: in loop, NETCDF4_ROOT = ${NETCDF4_ROOT}";\
+		CPPFLAGS="-I${NETCDF4_ROOT}/include/libsrc4 $CPPFLAGS";\
+		LDFLAGS="-L${NETCDF4_ROOT}/fortran -L${NETCDF4_ROOT}/libsrc4 $LDFLAGS";
+		if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
+			# check libnetcdf for netcdf4 function to test which one it is..
+			AC_CHECK_LIB([netcdf4],[nc_check_for_hdf5],,enable_netcdf4=no,[-lhdf5 -lhdf5_hl])
+		fi
+	else
+		echo "NETCDF4_ROOT set but doesn't exist - skipping netcdf4 config";\
+		enable_netcdf4='no'
+	fi
 fi
+
+
+
 
 # Begin HDF5 test
 # note that netcdf4 requires the libhdf5 & libhdf5_hl to link correctly
-#following line enables & initializes the configure option
-AC_ARG_ENABLE(netcdf4,AS_HELP_STRING([--enable-netcdf4],[Use netcdf versiion 4 (WARNING: Experimental) [[default=no]]]),enable_netcdf4=${enableval},enable_netcdf4=no)
 
 if test "${enable_dap}" = 'no'; then
     AC_MSG_WARN([Did not request OpenDAP; checking for version of libnetcdf to use])
@@ -244,7 +273,8 @@ echo "# Testing for HDF5 & HDF5_HL & NETCDF4 libs #"
 echo "#############################################"
 echo ""
 
-# Check for HDF5 libraries unless told otherwise
+# Check for HDF5 libraries unless told otherwise.  HDF5 libs can be in standard places
+# but netcdf4 HAVE to be isolated in NETCDF4_ROOT to avoid conflicting with libnetcdf (3.x)
 if (test "${enable_netcdf4}" = 'yes' && test "${enable_dap}" = 'no'); then
     # assume HDF5 libs are in std places but allow builder to specify another
     AC_ARG_VAR([HDF5_LIB_DIR],Location of HDF5 libraries (compile-time))
@@ -307,7 +337,7 @@ AC_CHECK_HEADERS([netcdf.h])
 # NCO does not support netCDF2
 AC_DEFINE(NO_NETCDF_2,1,No netCDF version 2.x API)
 
-if test "$enable_dap" = 'no'; then
+if (test "$enable_dap" = 'no' && test ${enable_netcdf4 = 'no'}); then
 
 # Check for 'nc_open()' using default compiler flags
 # If this fails, check for 'nc_close()' with 64-bit ABI flags (if known)

@@ -467,7 +467,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os EGREP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CPP CXXCPP LEX LEXLIB LEX_OUTPUT_ROOT YACC LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB F77 FFLAGS ac_ct_F77 LIBTOOL BUILD_YACC_SOURCE_TRUE BUILD_YACC_SOURCE_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBOBJS POW_LIB DAP_ROOT TEST_DAP_TRUE TEST_DAP_FALSE NETCDF_INC NETCDF_LIB HDF5_LIB_DIR NCO_NEED_GETOPT_LONG_TRUE NCO_NEED_GETOPT_LONG_FALSE BIN_MPI_PROGRAMS HAVE_MPI_H MPICH2_ROOT LAM_ROOT MPI_CC I18N_SHARE UDUNITS_PATH path_to_ncgen NCO_CXX LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os EGREP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CPP CXXCPP LEX LEXLIB LEX_OUTPUT_ROOT YACC LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB F77 FFLAGS ac_ct_F77 LIBTOOL BUILD_YACC_SOURCE_TRUE BUILD_YACC_SOURCE_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBOBJS POW_LIB DAP_ROOT TEST_DAP_TRUE TEST_DAP_FALSE NETCDF_INC NETCDF_LIB NETCDF4_ROOT HDF5_LIB_DIR NCO_NEED_GETOPT_LONG_TRUE NCO_NEED_GETOPT_LONG_FALSE BIN_MPI_PROGRAMS HAVE_MPI_H MPICH2_ROOT LAM_ROOT MPI_CC I18N_SHARE UDUNITS_PATH path_to_ncgen NCO_CXX LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -960,6 +960,10 @@ ac_env_NETCDF_LIB_set=${NETCDF_LIB+set}
 ac_env_NETCDF_LIB_value=$NETCDF_LIB
 ac_cv_env_NETCDF_LIB_set=${NETCDF_LIB+set}
 ac_cv_env_NETCDF_LIB_value=$NETCDF_LIB
+ac_env_NETCDF4_ROOT_set=${NETCDF4_ROOT+set}
+ac_env_NETCDF4_ROOT_value=$NETCDF4_ROOT
+ac_cv_env_NETCDF4_ROOT_set=${NETCDF4_ROOT+set}
+ac_cv_env_NETCDF4_ROOT_value=$NETCDF4_ROOT
 ac_env_HDF5_LIB_DIR_set=${HDF5_LIB_DIR+set}
 ac_env_HDF5_LIB_DIR_value=$HDF5_LIB_DIR
 ac_cv_env_HDF5_LIB_DIR_set=${HDF5_LIB_DIR+set}
@@ -1134,6 +1138,9 @@ Some influential environment variables:
   DAP_ROOT    Root of DAP installation (compile-time)
   NETCDF_INC  Location of netCDF headers (compile-time)
   NETCDF_LIB  Location of netCDF library (compile-time)
+  NETCDF4_ROOT
+              Root of NETCDF4 installation - must be separate from netcdf3.x
+              (compile-time)
   HDF5_LIB_DIR
               Location of HDF5 libraries (compile-time)
   BIN_MPI_PROGRAMS
@@ -4920,7 +4927,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4923 "configure"' > conftest.$ac_ext
+  echo '#line 4930 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -5560,7 +5567,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:5563:" \
+echo "$as_me:5570:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -6592,11 +6599,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6595: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6602: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6599: \$? = $ac_status" >&5
+   echo "$as_me:6606: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -6825,11 +6832,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6828: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6835: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6832: \$? = $ac_status" >&5
+   echo "$as_me:6839: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -6885,11 +6892,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6888: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6895: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:6892: \$? = $ac_status" >&5
+   echo "$as_me:6899: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -9073,7 +9080,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9076 "configure"
+#line 9083 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -9171,7 +9178,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9174 "configure"
+#line 9181 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11348,11 +11355,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11351: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11358: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:11355: \$? = $ac_status" >&5
+   echo "$as_me:11362: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -11408,11 +11415,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11411: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11418: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:11415: \$? = $ac_status" >&5
+   echo "$as_me:11422: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12777,7 +12784,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12780 "configure"
+#line 12787 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12875,7 +12882,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12878 "configure"
+#line 12885 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13702,11 +13709,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13705: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13712: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13709: \$? = $ac_status" >&5
+   echo "$as_me:13716: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -13762,11 +13769,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13765: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13772: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13769: \$? = $ac_status" >&5
+   echo "$as_me:13776: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15807,11 +15814,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15810: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15817: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15814: \$? = $ac_status" >&5
+   echo "$as_me:15821: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -16040,11 +16047,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16043: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16050: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16047: \$? = $ac_status" >&5
+   echo "$as_me:16054: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -16100,11 +16107,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16103: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16110: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16107: \$? = $ac_status" >&5
+   echo "$as_me:16114: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18288,7 +18295,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 18291 "configure"
+#line 18298 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -18386,7 +18393,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 18389 "configure"
+#line 18396 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -21908,6 +21915,16 @@ rm -f conftest*
 fi
 
 
+#echo ""
+#echo "########################################"
+#echo "#  Testing for ccache goes here  #"
+#echo "########################################"
+#echo ""
+#AC_ARG_ENABLE(ccache,AS_HELP_STRING([--enable-ccache],[Enable ccaching for developers - enables very fast rebuilds)  [[default=no]]]),enable_ccache=${enableval},enable_ccache=yes)
+# is there a ccache?
+#AC_CHECK_PROG(CCACHE, [ccache], "NONE", ${PATH})
+# !! incomplete !!
+
 echo ""
 echo "########################################"
 echo "#  Testing for DAP (aka DODS) support  #"
@@ -21934,6 +21951,15 @@ if test "${enable_dap+set}" = set; then
   enable_dap=${enableval}
 else
   enable_dap=yes
+fi;
+
+
+# Check whether --enable-netcdf4 or --disable-netcdf4 was given.
+if test "${enable_netcdf4+set}" = set; then
+  enableval="$enable_netcdf4"
+  enable_netcdf4=yes
+else
+  enable_netcdf4=no
 fi;
 
 # Check to see if netcdf4 is requested
@@ -22088,6 +22114,8 @@ fi
 
 # if don't want netcdf4 capabilities, but are using the netcdf4 lib, need to
 # link with hdf5 libs to enable the link - ie as if you wanted netcdf4
+#following line enables & initializes the configure option
+
 
 echo ""
 echo "################################################"
@@ -22096,15 +22124,24 @@ echo "################################################"
 echo ""
 echo "enable_netcdf4 = ${enable_netcdf4} and enable_dap = ${enable_dap}"
 
-if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
-	# check libnetcdf for netcdf4 function to test which one it is..
-	echo "$as_me:$LINENO: checking for nc_check_for_hdf5 in -lnetcdf" >&5
-echo $ECHO_N "checking for nc_check_for_hdf5 in -lnetcdf... $ECHO_C" >&6
-if test "${ac_cv_lib_netcdf_nc_check_for_hdf5+set}" = set; then
+
+# test if he set NETCDF4_ROOT and it at least exists
+if (test "${NETCDF4_ROOT}" != ""); then
+	if (test -d "${NETCDF4_ROOT}"); then
+		echo "NETCDF4_ROOT is set and exists - assuming it's real";\
+		echo "DEBUG: in loop, NETCDF4_ROOT = ${NETCDF4_ROOT}";\
+		CPPFLAGS="-I${NETCDF4_ROOT}/include/libsrc4 $CPPFLAGS";\
+		LDFLAGS="-L${NETCDF4_ROOT}/fortran -L${NETCDF4_ROOT}/libsrc4 $LDFLAGS";
+		if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
+			# check libnetcdf for netcdf4 function to test which one it is..
+
+echo "$as_me:$LINENO: checking for nc_check_for_hdf5 in -lnetcdf4" >&5
+echo $ECHO_N "checking for nc_check_for_hdf5 in -lnetcdf4... $ECHO_C" >&6
+if test "${ac_cv_lib_netcdf4_nc_check_for_hdf5+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnetcdf -lhdf5 -lhdf5_hl $LIBS"
+LIBS="-lnetcdf4 -lhdf5 -lhdf5_hl $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -22148,37 +22185,42 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_netcdf_nc_check_for_hdf5=yes
+  ac_cv_lib_netcdf4_nc_check_for_hdf5=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_lib_netcdf_nc_check_for_hdf5=no
+ac_cv_lib_netcdf4_nc_check_for_hdf5=no
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_nc_check_for_hdf5" >&5
-echo "${ECHO_T}$ac_cv_lib_netcdf_nc_check_for_hdf5" >&6
-if test $ac_cv_lib_netcdf_nc_check_for_hdf5 = yes; then
-  enable_netcdf4=yes
+echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf4_nc_check_for_hdf5" >&5
+echo "${ECHO_T}$ac_cv_lib_netcdf4_nc_check_for_hdf5" >&6
+if test $ac_cv_lib_netcdf4_nc_check_for_hdf5 = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBNETCDF4 1
+_ACEOF
+
+  LIBS="-lnetcdf4 $LIBS"
+
 else
   enable_netcdf4=no
 fi
 
+		fi
+	else
+		echo "NETCDF4_ROOT set but doesn't exist - skipping netcdf4 config";\
+		enable_netcdf4='no'
+	fi
 fi
+
+
+
 
 # Begin HDF5 test
 # note that netcdf4 requires the libhdf5 & libhdf5_hl to link correctly
-#following line enables & initializes the configure option
-# Check whether --enable-netcdf4 or --disable-netcdf4 was given.
-if test "${enable_netcdf4+set}" = set; then
-  enableval="$enable_netcdf4"
-  enable_netcdf4=${enableval}
-else
-  enable_netcdf4=no
-fi;
 
 if test "${enable_dap}" = 'no'; then
     { echo "$as_me:$LINENO: WARNING: Did not request OpenDAP; checking for version of libnetcdf to use" >&5
@@ -22191,7 +22233,8 @@ echo "# Testing for HDF5 & HDF5_HL & NETCDF4 libs #"
 echo "#############################################"
 echo ""
 
-# Check for HDF5 libraries unless told otherwise
+# Check for HDF5 libraries unless told otherwise.  HDF5 libs can be in standard places
+# but netcdf4 HAVE to be isolated in NETCDF4_ROOT to avoid conflicting with libnetcdf (3.x)
 if (test "${enable_netcdf4}" = 'yes' && test "${enable_dap}" = 'no'); then
     # assume HDF5 libs are in std places but allow builder to specify another
 
@@ -22547,7 +22590,7 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 
-if test "$enable_dap" = 'no'; then
+if (test "$enable_dap" = 'no' && test ${enable_netcdf4 = 'no'}); then
 
 # Check for 'nc_open()' using default compiler flags
 # If this fails, check for 'nc_close()' with 64-bit ABI flags (if known)
@@ -27938,6 +27981,7 @@ s,@TEST_DAP_TRUE@,$TEST_DAP_TRUE,;t t
 s,@TEST_DAP_FALSE@,$TEST_DAP_FALSE,;t t
 s,@NETCDF_INC@,$NETCDF_INC,;t t
 s,@NETCDF_LIB@,$NETCDF_LIB,;t t
+s,@NETCDF4_ROOT@,$NETCDF4_ROOT,;t t
 s,@HDF5_LIB_DIR@,$HDF5_LIB_DIR,;t t
 s,@NCO_NEED_GETOPT_LONG_TRUE@,$NCO_NEED_GETOPT_LONG_TRUE,;t t
 s,@NCO_NEED_GETOPT_LONG_FALSE@,$NCO_NEED_GETOPT_LONG_FALSE,;t t
