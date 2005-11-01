@@ -22590,7 +22590,7 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 
-if (test "$enable_dap" = 'no' && test "${enable_netcdf4" = 'no'}); then
+if (test "$enable_dap" = 'no' && test "${enable_netcdf4}" = 'no'); then
 
 # Check for 'nc_open()' using default compiler flags
 # If this fails, check for 'nc_close()' with 64-bit ABI flags (if known)
