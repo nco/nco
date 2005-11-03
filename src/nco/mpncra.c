@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.41 2005-10-28 23:30:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.42 2005-11-03 19:58:53 wangd Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.41 2005-10-28 23:30:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.41 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.42 2005-11-03 19:58:53 wangd Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.42 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -1150,11 +1150,20 @@ main(int argc,char **argv)
 	default:
 	  break;
 	} /* end switch */
+	printf("DEBUG: node %d reset idx %d tally for var_prc(out)\n",
+	       prc_rnk, idx);
 	var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_free(var_prc[idx]->tally);
       } /* end (OpenMP parallel for) loop over variables */
 #ifdef ENABLE_MPI
       printf("DEBUG: End of Normzn at prc_rnk %d\n",prc_rnk);
     } /* prc_rnk == rnk_mgr */
+    for(idx = 0; idx < nbr_var_prc; idx++) {
+      assert(var_prc_out[idx]->tally == var_prc[idx]->tally);
+      if (var_prc_out[idx]->tally == 0) continue;
+      printf("DEBUG: node %d reset idx %d tally for var_prc(out) (cleanup)\n",
+	     prc_rnk, idx);
+      var_prc_out[idx]->tally = var_prc[idx]->tally = (long *)nco_free(var_prc[idx]->tally);
+    }
     printf("DEBUG: Mgr shud prnt this too, prc_rnk %d\n",prc_rnk);
 #endif /* !ENABLE_MPI */
   } /* !ncra/ncea */
