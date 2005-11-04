@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.16 2005-11-01 04:25:01 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.17 2005-11-04 01:49:31 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -438,13 +438,13 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_ar
 ####################
     $opr_nm='ncrcat';
 ####################
-        if ($mpi_prc == 0) { # fxm test hangs because of ncrcat TODO 593
+#if ($mpi_prc == 0) { # fxm test hangs because of ncrcat TODO 593
 	$tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc $outfile 2>$foo_tst";
 	$tst_cmd[1]="ncks -C -H -d time,11 -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="Concatenate float with double missing values across two files";
 	$nsr_xpc= 2 ;
  go();
-    } else { print "NB: Current mpncrcat test skipped because it hangs fxm TODO nco593.\n";}
+#    } else { print "NB: Current mpncrcat test skipped because it hangs fxm TODO nco593.\n";}
 
 ####################
 #### ncra tests ####
@@ -452,7 +452,7 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_ar
     $opr_nm='ncra';
 ####################
 
-        if ($mpi_prc == 0 || ($mpi_prc > 0 && $localhostname !~ /sand/)) { # test hangs because of ncrcat TODO nco593
+#        if ($mpi_prc == 0 || ($mpi_prc > 0 && $localhostname !~ /sand/)) { # test hangs because of ncrcat TODO nco593
 	$outfile =  $foo1_fl;
 	$tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc $outfile 2>$foo_tst";
 	$outfile =  $orig_outfile;
@@ -464,7 +464,7 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_ar
 	$dsc_sng="record sdn of float with double missing values across two files";
 	$nsr_xpc= 2 ;
  go();
-    } else { print "NB: Current mpncra test skipped on sand because mpncrcat step hangs fxm TODO nco593\n";}
+#    } else { print "NB: Current mpncra test skipped on sand because mpncrcat step hangs fxm TODO nco593\n";}
 
 	$tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var $outfile";
