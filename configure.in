@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.143 2005-11-01 21:19:07 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.144 2005-11-04 19:41:30 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -428,7 +428,7 @@ AC_CHECK_LIB([nco],[nco_open])
 echo "DEBUG: LIBS=$LIBS"
 echo "enable_mpi = '$enable_mpi'"
 
-if (test $enable_mpi != 'no'); then
+if (test "${enable_mpi}" != 'no'); then
 	echo ""
 	echo "##################################################"
 	echo "#  Sorting out MPI (LAM/MPICH) build parameters  #"
