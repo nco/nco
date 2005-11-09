@@ -1,3 +1,8 @@
+2005-11-09  Charlie Zender  <zender@uci.edu>
+
+	* Add CVS Header and -*-makefile-*- to all Makefile.am's 
+	This automatically invokes Emacs Makefile-mode syntax/highlighting
+
 2005-10-31  Harry Mangalam <hjm@tacgi.com>
 	* Changes to mk_bm_plots to scriptify the last of CZ's requests
 	* Changes to configure/make to straighten out build protocols 

@@ -1,3 +1,5 @@
+# $Header: /data/zender/nco_20150216/nco/Makefile.am,v 1.9 2005-11-09 21:15:47 zender Exp $ -*-makefile-*-
+
 SUBDIRS = data doc src man
 
 # everything in bld/ is added to the distribution seperately since autoconf

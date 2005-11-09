@@ -1,3 +1,5 @@
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.am,v 1.8 2005-11-09 21:15:48 zender Exp $ -*-makefile-*-
+
 lib_LTLIBRARIES = libnco_c++.la
 
 include_HEADERS = libnco_c++.hh nco_dmn.hh nco_hgh.hh nco_var.hh \

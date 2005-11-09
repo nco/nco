@@ -138,6 +138,9 @@
 /* Define to 1 if you have the `nc-dap' library (-lnc-dap). */
 #undef HAVE_LIBNC_DAP
 
+/* Define to 1 if you have the `netcdf4' library (-lnetcdf4). */
+#undef HAVE_LIBNETCDF4
+
 /* Define to 1 if you have the `nsl' library (-lnsl). */
 #undef HAVE_LIBNSL
 

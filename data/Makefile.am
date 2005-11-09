@@ -1,3 +1,5 @@
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.3 2005-11-09 21:15:48 zender Exp $ -*-makefile-*-
+
 # NCO-specific definitions
 all: test_data
 .PHONY: test_data

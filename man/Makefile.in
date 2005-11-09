@@ -13,6 +13,8 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
+
+# $Header: /data/zender/nco_20150216/nco/man/Makefile.in,v 1.29 2005-11-09 21:15:48 zender Exp $ -*-makefile-*-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -110,6 +112,7 @@ MPI_CC = @MPI_CC@
 NCO_CXX = @NCO_CXX@
 NCO_NEED_GETOPT_LONG_FALSE = @NCO_NEED_GETOPT_LONG_FALSE@
 NCO_NEED_GETOPT_LONG_TRUE = @NCO_NEED_GETOPT_LONG_TRUE@
+NETCDF4_ROOT = @NETCDF4_ROOT@
 NETCDF_INC = @NETCDF_INC@
 NETCDF_LIB = @NETCDF_LIB@
 OBJEXT = @OBJEXT@

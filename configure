@@ -24594,7 +24594,7 @@ fi
 echo "DEBUG: LIBS=$LIBS"
 echo "enable_mpi = '$enable_mpi'"
 
-if (test $enable_mpi != 'no'); then
+if (test "${enable_mpi}" != 'no'); then
 	echo ""
 	echo "##################################################"
 	echo "#  Sorting out MPI (LAM/MPICH) build parameters  #"

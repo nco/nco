@@ -1,3 +1,5 @@
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.am,v 1.32 2005-11-09 21:15:48 zender Exp $ -*-makefile-*-
+
 if BUILD_YACC_SOURCE
   NCAP=ncap 
 else

@@ -13,6 +13,8 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
+
+# $Header: /data/zender/nco_20150216/nco/Makefile.in,v 1.63 2005-11-09 21:15:47 zender Exp $ -*-makefile-*-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -132,6 +134,7 @@ MPI_CC = @MPI_CC@
 NCO_CXX = @NCO_CXX@
 NCO_NEED_GETOPT_LONG_FALSE = @NCO_NEED_GETOPT_LONG_FALSE@
 NCO_NEED_GETOPT_LONG_TRUE = @NCO_NEED_GETOPT_LONG_TRUE@
+NETCDF4_ROOT = @NETCDF4_ROOT@
 NETCDF_INC = @NETCDF_INC@
 NETCDF_LIB = @NETCDF_LIB@
 OBJEXT = @OBJEXT@
@@ -251,7 +254,7 @@ config.h: stamp-h1
 stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	@rm -f stamp-h1
 	cd $(top_builddir) && $(SHELL) ./config.status config.h
-$(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
+$(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) 
 	cd $(top_srcdir) && $(AUTOHEADER)
 	rm -f stamp-h1
 	touch $@
@@ -626,17 +629,9 @@ uninstall-info: uninstall-info-recursive
 	tags tags-recursive uninstall uninstall-am uninstall-info-am
 
 
-test: all
+test:
 	$(MAKE) check
-
-regress: all
-	cd bm && env MY_BIN_DIR=../src/nco && DATA=/tmp ./nco_bm.pl --regress
-
-devtest: all
-	cd bm && MY_BIN_DIR=../src/nco && DATA=/tmp  ./nco_bm.pl --regress --debug=1 --udpreport --md5
-
-
-
+	cd bld && env MY_BIN_DIR=../src/nco ./nco_tst.pl
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
