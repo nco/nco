@@ -1,3 +1,13 @@
+2005-11-09  Harry Mangalam <hjm@tacgi.com>
+	* Changes to Makefile.am in src/nco to enable MPI binaries to
+	  be built.
+	* Notes about problems with old aclocal, automake posted
+	  have to assure that new versions are manually updated in *ubuntu
+	  anyway.
+	* back on track with updating Makefiles the right way(c)
+	* updated MANIFEST to include new bm scripts and the breakup of 
+	  nco_bm.pl.
+
 2005-11-09  Charlie Zender  <zender@uci.edu>
 
 	* Add CVS Header and -*-makefile-*- to all Makefile.am's 
