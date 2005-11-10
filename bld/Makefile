@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.350 2005-10-26 01:20:38 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.351 2005-11-10 01:52:07 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -1152,10 +1152,12 @@ endif
 ifeq (${DAP},Y)
  CPPFLAGS += -DNC_64BIT_OFFSET=0
 ifneq (${CC},g++)
+ifeq (${null},$(findstring xl,${CC}))
 # g++ automatically links to -lstdc++, other compilers may need help
  LDFLAGS := ${LDFLAGS} -lstdc++
-endif
-endif
+endif # !xl*
+endif # !g++
+endif # !DAP
 # endif DAP
 
 # Internationalize NCO with i18n features

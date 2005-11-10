@@ -1,4 +1,5 @@
 2005-11-09  Harry Mangalam <hjm@tacgi.com>
+
 	* Changes to Makefile.am in src/nco to enable MPI binaries to
 	  be built.
 	* Notes about problems with old aclocal, automake posted
@@ -9,6 +10,8 @@
 	  nco_bm.pl.
 
 2005-11-09  Charlie Zender  <zender@uci.edu>
+
+	* Omit -lstdc++ from AIX xl* DAP builds
 
 	* Add CVS Header and -*-makefile-*- to all Makefile.am's 
 	This automatically invokes Emacs Makefile-mode syntax/highlighting
