@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.674 2005-10-31 17:07:13 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.675 2005-11-10 06:47:07 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -401,7 +401,9 @@ nco646. pnetCDF builds on elnino, not ashes. Why?
 nco647. Replicate Daniel's dangling free valgrind error
 nco648. Determine whether mpncra creates dangling points when it packs/unpacks variables
 nco649. Add ncks --prn_cln switch to print coords/vars naked (no names, indices)
-nco650. 
+nco650. Devise standard for adding long switches to nco_ctl.c docmentation
+nco651. Use nco650 standard to add --hdr_pad, --cmp, --mpi documentation
+nco652. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
