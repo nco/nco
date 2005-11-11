@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.17 2005-11-04 01:49:31 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.18 2005-11-11 20:59:04 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -772,35 +772,35 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_ar
 ####################
     $opr_nm='net';
 ####################
+# test 1
 	$tst_cmd[0]="/bin/rm -f /tmp/in.nc";
-	$tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -s '%e' -v one -p ftp://dust.ess.uci.edu/pub/zender/nco -l /tmp in.nc";
+	$tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -s '%e' -v one -p ftp://dust.ess.uci.edu/pub/zender/nco -l /tmp in.nc | tail -1";
 	$dsc_sng="Anonymous FTP protocol (requires anonymous FTP access to dust.ess.uci.edu)";
 	$nsr_xpc= 1.000000e+00 ;
- go();
+	go();
 
+# test 2
 	my $sftp_url = "sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco";
-
 	if ($dust_usr ne ""){ # if we need to connect as another user (hmangalm@esmf -> hjm@dust))
 		 $sftp_url =~ s/dust/$dust_usr\@dust/;
 	}
-
 #sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco
 	$tst_cmd[0]="/bin/rm -f /tmp/in.nc";
 	$tst_cmd[1]="ncks -O $nco_D_flg -v one -p $sftp_url -l /tmp in.nc";
 	$tst_cmd[2]="ncks -H $nco_D_flg -s '%e' -v one -l /tmp in.nc";
 	$dsc_sng="Secure FTP (SFTP) protocol (requires SFTP access to dust.ess.uci.edu)";
 	$nsr_xpc= 1.000000e+00 ;
- go();
+	go();
 
-if ($dust_usr ne ""){ # if we need to connect as another user (hmangalm@esmf -> hjm@dust))
-	$pth_rmt_scp_tst = $dust_usr . '@' . $pth_rmt_scp_tst;
-}
-
+# test 3
+	if ($dust_usr ne ""){ # if we need to connect as another user (hmangalm@esmf -> hjm@dust))
+		$pth_rmt_scp_tst = $dust_usr . '@' . $pth_rmt_scp_tst;
+	}
 	$tst_cmd[0]="/bin/rm -f /tmp/in.nc";
-	$tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg  -s '%e' -v one -p $pth_rmt_scp_tst -l /tmp in.nc";
+	$tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg  -s '%e' -v one -p $pth_rmt_scp_tst -l /tmp in.nc | tail -1";
 	$dsc_sng="SSH protocol (requires authorized SSH/scp access to dust.ess.uci.edu)";
 	$nsr_xpc= 1 ;
- go();
+	go();
 
 	$tst_cmd[0]="ncks -C -O -d lon,0 -s '%e' -v lon -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc";
 	$dsc_sng="OPeNDAP protocol (requires OPeNDAP/DODS-enabled NCO)";

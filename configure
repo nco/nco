@@ -467,7 +467,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os EGREP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CPP CXXCPP LEX LEXLIB LEX_OUTPUT_ROOT YACC LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB F77 FFLAGS ac_ct_F77 LIBTOOL BUILD_YACC_SOURCE_TRUE BUILD_YACC_SOURCE_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBOBJS POW_LIB DAP_ROOT TEST_DAP_TRUE TEST_DAP_FALSE NETCDF_INC NETCDF_LIB NETCDF4_ROOT HDF5_LIB_DIR NCO_NEED_GETOPT_LONG_TRUE NCO_NEED_GETOPT_LONG_FALSE BIN_MPI_PROGRAMS HAVE_MPI_H MPICH2_ROOT LAM_ROOT MPI_CC I18N_SHARE UDUNITS_PATH path_to_ncgen NCO_CXX LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os EGREP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CPP CXXCPP LEX LEXLIB LEX_OUTPUT_ROOT YACC LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB F77 FFLAGS ac_ct_F77 LIBTOOL BUILD_YACC_SOURCE_TRUE BUILD_YACC_SOURCE_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBOBJS POW_LIB DAP_ROOT TEST_DAP_TRUE TEST_DAP_FALSE NETCDF_INC NETCDF_LIB NETCDF4_ROOT HDF5_LIB_DIR NCO_NEED_GETOPT_LONG_TRUE NCO_NEED_GETOPT_LONG_FALSE HAVE_MPI_H MPICH2_ROOT LAM_ROOT MPI_CC ENABLE_MPI_TRUE ENABLE_MPI_FALSE ENABLE_LAM_TRUE ENABLE_LAM_FALSE ENABLE_MPICH2_TRUE ENABLE_MPICH2_FALSE I18N_SHARE UDUNITS_PATH path_to_ncgen NCO_CXX LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -968,10 +968,6 @@ ac_env_HDF5_LIB_DIR_set=${HDF5_LIB_DIR+set}
 ac_env_HDF5_LIB_DIR_value=$HDF5_LIB_DIR
 ac_cv_env_HDF5_LIB_DIR_set=${HDF5_LIB_DIR+set}
 ac_cv_env_HDF5_LIB_DIR_value=$HDF5_LIB_DIR
-ac_env_BIN_MPI_PROGRAMS_set=${BIN_MPI_PROGRAMS+set}
-ac_env_BIN_MPI_PROGRAMS_value=$BIN_MPI_PROGRAMS
-ac_cv_env_BIN_MPI_PROGRAMS_set=${BIN_MPI_PROGRAMS+set}
-ac_cv_env_BIN_MPI_PROGRAMS_value=$BIN_MPI_PROGRAMS
 ac_env_DEFS_set=${DEFS+set}
 ac_env_DEFS_value=$DEFS
 ac_cv_env_DEFS_set=${DEFS+set}
@@ -1143,8 +1139,6 @@ Some influential environment variables:
               (compile-time)
   HDF5_LIB_DIR
               Location of HDF5 libraries (compile-time)
-  BIN_MPI_PROGRAMS
-              List of MPI NCOs - not user configurable
   DEFS        List of MPI NCOs - not user configurable
   HAVE_MPI_H  configure finds mpi.h - not user configurable
   MPICH2_ROOT Root of non-std MPICH2 installation (compile-time)
@@ -1788,7 +1782,7 @@ _ACEOF
 
 # Use automake to create Makefiles
 #AM_INIT_AUTOMAKE
-am__api_version="1.8"
+am__api_version="1.9"
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
 # incompatible versions:
@@ -1940,13 +1934,21 @@ echo "$as_me: WARNING: \`missing' script is too old or missing" >&2;}
 fi
 
 if mkdir -p --version . >/dev/null 2>&1 && test ! -d ./--version; then
-  # Keeping the `.' argument allows $(mkdir_p) to be used without
-  # argument.  Indeed, we sometimes output rules like
+  # We used to keeping the `.' as first argument, in order to
+  # allow $(mkdir_p) to be used without argument.  As in
   #   $(mkdir_p) $(somedir)
-  # where $(somedir) is conditionally defined.
-  # (`test -n '$(somedir)' && $(mkdir_p) $(somedir)' is a more
-  # expensive solution, as it forces Make to start a sub-shell.)
-  mkdir_p='mkdir -p -- .'
+  # where $(somedir) is conditionally defined.  However this is wrong
+  # for two reasons:
+  #  1. if the package is installed by a user who cannot write `.'
+  #     make install will fail,
+  #  2. the above comment should most certainly read
+  #     $(mkdir_p) $(DESTDIR)$(somedir)
+  #     so it does not work when $(somedir) is undefined and
+  #     $(DESTDIR) is not.
+  #  To support the latter case, we have to write
+  #     test -z "$(somedir)" || $(mkdir_p) $(DESTDIR)$(somedir),
+  #  so the `.' trick is pointless.
+  mkdir_p='mkdir -p --'
 else
   # On NextStep and OpenStep, the `mkdir' command does not
   # recognize any option.  It will interpret all options as
@@ -2090,9 +2092,6 @@ AUTOHEADER=${AUTOHEADER-"${am_missing_run}autoheader"}
 
 MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
 
-
-AMTAR=${AMTAR-"${am_missing_run}tar"}
-
 install_sh=${install_sh-"$am_aux_dir/install-sh"}
 
 # Installed binaries are usually stripped using `strip' when the user
@@ -2185,6 +2184,13 @@ INSTALL_STRIP_PROGRAM="\${SHELL} \$(install_sh) -c -s"
 
 # We need awk for the "check" target.  The system "awk" is bad on
 # some platforms.
+# Always define AMTAR for backward compatibility.
+
+AMTAR=${AMTAR-"${am_missing_run}tar"}
+
+am__tar='${AMTAR} chof - "$$tardir"'; am__untar='${AMTAR} xf -'
+
+
 
 
 
@@ -4927,7 +4933,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4930 "configure"' > conftest.$ac_ext
+  echo '#line 4936 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -5567,7 +5573,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:5570:" \
+echo "$as_me:5576:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -6599,11 +6605,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6602: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6608: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6606: \$? = $ac_status" >&5
+   echo "$as_me:6612: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -6832,11 +6838,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6835: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6841: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6839: \$? = $ac_status" >&5
+   echo "$as_me:6845: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -6892,11 +6898,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6895: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6901: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:6899: \$? = $ac_status" >&5
+   echo "$as_me:6905: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -9080,7 +9086,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9083 "configure"
+#line 9089 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -9178,7 +9184,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9181 "configure"
+#line 9187 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11355,11 +11361,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11358: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11364: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:11362: \$? = $ac_status" >&5
+   echo "$as_me:11368: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -11415,11 +11421,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11418: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11424: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:11422: \$? = $ac_status" >&5
+   echo "$as_me:11428: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12784,7 +12790,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12787 "configure"
+#line 12793 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12882,7 +12888,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12885 "configure"
+#line 12891 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13709,11 +13715,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13712: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13718: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13716: \$? = $ac_status" >&5
+   echo "$as_me:13722: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -13769,11 +13775,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13772: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13778: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13776: \$? = $ac_status" >&5
+   echo "$as_me:13782: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15814,11 +15820,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15817: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15823: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15821: \$? = $ac_status" >&5
+   echo "$as_me:15827: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -16047,11 +16053,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16050: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16056: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16054: \$? = $ac_status" >&5
+   echo "$as_me:16060: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -16107,11 +16113,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16110: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16116: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16114: \$? = $ac_status" >&5
+   echo "$as_me:16120: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18295,7 +18301,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 18298 "configure"
+#line 18304 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -18393,7 +18399,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 18396 "configure"
+#line 18402 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -19407,6 +19413,9 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 
 
 
+
+# until a fix for the libtool error is found.
+LIBTOOL="${LIBTOOL} --tag=ignore_tag_err"
 
 
 
@@ -21953,7 +21962,7 @@ else
 fi;
 
 # Check to see if netcdf4 is requested
-echo "enable_netcdf4 = ${enable_netcdf4} and enable_dap = ${enable_dap}"
+echo "DEBUG: enable_netcdf4: ${enable_netcdf4} & enable_dap: ${enable_dap}"
 if (test "${enable_netcdf4}" != 'no' && test "${enable_dap}" != 'no'); then
 	# override the netcdf4 request
 	echo ""
@@ -21962,7 +21971,6 @@ if (test "${enable_netcdf4}" != 'no' && test "${enable_dap}" != 'no'); then
 	echo ""
 	enable_netcdf4='no'
 fi
-
 
 # Check for DAP libraries unless told not to
 if test "${enable_dap}" != 'no'; then
@@ -22081,7 +22089,7 @@ _ACEOF
 echo "$as_me: DAP support enabled" >&6;}
 # libtool cleans up duplicate library links (e.g., dap++, nc-dap) unless told not to
 # New (3.5.0+) version of libnc-dap does not require duplicate libraries jhrg 6/3/05
-	LIBTOOL="${LIBTOOL} --preserve-dup-deps"
+	LIBTOOL="${LIBTOOL} --tag=ignore_tag_err --preserve-dup-deps"
     fi
 fi
 
@@ -22112,7 +22120,7 @@ echo "################################################"
 echo "# Testing whether libnetcdf is version 4 or 3  #"
 echo "################################################"
 echo ""
-echo "enable_netcdf4 = ${enable_netcdf4} and enable_dap = ${enable_dap}"
+echo "DEBUG: enable_netcdf4: ${enable_netcdf4} & enable_dap: ${enable_dap}"
 
 
 # test if he set NETCDF4_ROOT and it at least exists
@@ -22120,13 +22128,11 @@ if ( test "${enable_netcdf4}" = 'yes'); then
 	if (test "${NETCDF4_ROOT}" != ""); then
 		if (test -d "${NETCDF4_ROOT}"); then
 			echo "NETCDF4_ROOT is set and exists - assuming it's real";\
-			echo "DEBUG: in loop, NETCDF4_ROOT = ${NETCDF4_ROOT}";\
 			CPPFLAGS="-I${NETCDF4_ROOT}/include/libsrc4 $CPPFLAGS";\
 			LDFLAGS="-L${NETCDF4_ROOT}/fortran -L${NETCDF4_ROOT}/libsrc4 $LDFLAGS";
 			if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
 				# check libnetcdf for netcdf4 function to test which one it is..
-
-echo "$as_me:$LINENO: checking for nc_check_for_hdf5 in -lnetcdf4" >&5
+				echo "$as_me:$LINENO: checking for nc_check_for_hdf5 in -lnetcdf4" >&5
 echo $ECHO_N "checking for nc_check_for_hdf5 in -lnetcdf4... $ECHO_C" >&6
 if test "${ac_cv_lib_netcdf4_nc_check_for_hdf5+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -22190,16 +22196,12 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf4_nc_check_for_hdf5" >&5
 echo "${ECHO_T}$ac_cv_lib_netcdf4_nc_check_for_hdf5" >&6
 if test $ac_cv_lib_netcdf4_nc_check_for_hdf5 = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBNETCDF4 1
-_ACEOF
-
-  LIBS="-lnetcdf4 $LIBS"
-
+  LIBS="-lnetcdf4 -lhdf5 -lhdf5_hl ${LIBS}"
 else
   enable_netcdf4=no
 fi
 
+				CPPFLAGS="${CPPFLAGS} -DNC_64BIT_OFFSET=1"
 			fi
 		else
 			echo "NETCDF4_ROOT set but doesn't exist - skipping netcdf4 config";\
@@ -22285,7 +22287,7 @@ fi
 
 	fi
 fi
-
+echo "DEBUG: LIBS = ${LIBS}"
 
 
 # Begin HDF5 test
@@ -22861,7 +22863,7 @@ fi
 
 fi # enable_dap
 
-echo "LIBS=$LIBS"
+echo "DEBUG: LIBS = $LIBS"
 
 ##################################################
 # Begin Library checks
@@ -24592,16 +24594,16 @@ fi
 # I moved it up to precede netcdf library tests jhrg 05/26/05
 
 echo "DEBUG: LIBS=$LIBS"
-echo "enable_mpi = '$enable_mpi'"
+echo "DEBUG: enable_mpi = '$enable_mpi'"
 
-if (test "${enable_mpi}" != 'no'); then
+if (test "${enable_mpi}" = 'yes'); then
 	echo ""
 	echo "##################################################"
 	echo "#  Sorting out MPI (LAM/MPICH) build parameters  #"
 	echo "#        (only works on Linux so far)            #"
 	echo "##################################################"
 	echo ""
-
+#	AC_ARG_VAR([BIN_MPI_PROGRAMS],[List of MPI NCOs - not user configurable])
 
 
 #	AC_ARG_VAR([ENABLE_MPI],[configure finds mpi.h - not user configurable])
@@ -24611,9 +24613,9 @@ if (test "${enable_mpi}" != 'no'); then
 
 
 
-	echo "before loop, MPICH2_ROOT = ${MPICH2_ROOT}"
+#	echo "before loop, MPICH2_ROOT = ${MPICH2_ROOT}"
 	if (test "${MPICH2_ROOT}" != ""); then
-		echo "in loop, MPICH2_ROOT = ${MPICH2_ROOT}"
+#		echo "in loop, MPICH2_ROOT = ${MPICH2_ROOT}"
 		CPPFLAGS=-I${MPICH2_ROOT}/include
 		LDFLAGS=-L${MPICH2_ROOT}/lib
 	fi
@@ -24964,23 +24966,18 @@ fi
 
 		if test "${HAVE_MPI_H}" = "yes"; then
 			# define for src/nco/Makefile.in
-			echo "should set BIN_MPI_PROGRAMS.."
-			BIN_MPI_PROGRAMS="mpncbo\$(EXEEXT) mpncecat\$(EXEEXT) mpncflint\$(EXEEXT) mpncpdq\$(EXEEXT) mpncra\$(EXEEXT) mpncwa\$(EXEEXT)"
-			echo "..and it's set to: ${BIN_MPI_PROGRAMS}"
-#			CPPFLAGS="-DENABLE_MPI ${CPPFLAGS}"
-#			echo "CPPFLAGS set to: ${CPPFLAGS} "
 			CC="mpicc"
 			CPP="mpicc"
+			{ echo "$as_me:$LINENO: MPI enabled" >&5
+echo "$as_me: MPI enabled" >&6;}
 		else
-			BIN_MPI_PROGRAMS=""
+			{ echo "$as_me:$LINENO: MPI DISabled" >&5
+echo "$as_me: MPI DISabled" >&6;}
 		fi
-
-	echo "ENABLE_MPI = ${ENABLE_MPI} and HAVE_MPI_H = ${HAVE_MPI_H}";
 
 		# test for MPICH2 1st; if found, skip LAM as MPICH seems more stable and coherent
 		if (test "${enable_mpi}" = 'yes' && test "${HAVE_MPI_H}" = "yes" ); then
 			# test for diagnostic libs, 1st MPICH2
-#			AC_SEARCH_LIBS(aio_write64,rt,LIBS="-lrt ${LIBS}")
 			echo "$as_me:$LINENO: checking for library containing aio_write64" >&5
 echo $ECHO_N "checking for library containing aio_write64... $ECHO_C" >&6
 if test "${ac_cv_search_aio_write64+set}" = set; then
@@ -25175,9 +25172,7 @@ else
 fi
 
 			if test "${enable_mpich2}" = 'yes'; then
-#				echo "OK - found a libmpich.";
 				LIBS="-lmpich ${LIBS}";
-#				LIBS="-lmpich -lmpe -lampe ${LIBS}"; # this would be for debugging mpich apps. --enable-mpi-debug?
 			else
 				echo "MISSING libmpich. Will test for LAM-MPI";
 			fi
@@ -25256,18 +25251,21 @@ else
 fi
 
 			if test "${enable_lam}" = 'yes'; then
-#				echo "OK - found a liblam.";
 				LIBS="-llam -lmpi ${LIBS}";
+				{ echo "$as_me:$LINENO: Found liblam - MPI-LAM enabled" >&5
+echo "$as_me: Found liblam - MPI-LAM enabled" >&6;}
 			else
-				echo "MISSING liblam - could not find a liblam.a|so.";
+				{ echo "$as_me:$LINENO: MISSING liblam - could not find a liblam.a|so." >&5
+echo "$as_me: MISSING liblam - could not find a liblam.a|so." >&6;}
 			fi
 		fi
 	fi
-	# finish MPI section by echoing MPI-realted vars if all other params are OK.
-	# Have to mod
+
+	# finish MPI section by echoing MPI-related vars if all other params are OK.
 	if ( test "${enable_mpich2}" = 'yes' || test "${enable_lam}" = 'yes'); then
 		echo "MPI: Using MPI_CC=${MPI_CC} and LIBS=${LIBS}"
 		echo "MPI: Building shared libs conflicts with MPI; shared libs have been disabled."
+		# 'enable_shared' value is passed to build system via AC_DEFINE below
 		enable_shared='no'
 	fi
 	echo "### End MPI Checks ###"
@@ -25275,6 +25273,39 @@ fi
 fi
 
 
+
+if test "${enable_mpi}" = 'yes'; then
+  ENABLE_MPI_TRUE=
+  ENABLE_MPI_FALSE='#'
+else
+  ENABLE_MPI_TRUE='#'
+  ENABLE_MPI_FALSE=
+fi
+
+
+
+if test "${enable_lam}" = 'yes'; then
+  ENABLE_LAM_TRUE=
+  ENABLE_LAM_FALSE='#'
+else
+  ENABLE_LAM_TRUE='#'
+  ENABLE_LAM_FALSE=
+fi
+
+
+
+if test "${enable_mpich2}" = 'yes'; then
+  ENABLE_MPICH2_TRUE=
+  ENABLE_MPICH2_FALSE='#'
+else
+  ENABLE_MPICH2_TRUE='#'
+  ENABLE_MPICH2_FALSE=
+fi
+
+
+cat >>confdefs.h <<_ACEOF
+#define MPICH2_ROOT "$MPICH2_ROOT"
+_ACEOF
 
 
 
@@ -26032,17 +26063,20 @@ _ACEOF
 fi
 # End rx
 
-# Begin Shared
+
+echo ""
+echo "###############################"
+echo "#    Require Shared Libs?     #"
+echo "###############################"
+
 # If --enable-shared define ENABLE_SHARED
-echo "enable_shared  = ${enable_shared} "
+echo "DEBUG: enable_shared: ${enable_shared} "
 if test "${enable_shared}" = 'yes'; then
 
 cat >>confdefs.h <<\_ACEOF
 #define ENABLE_SHARED 1
 _ACEOF
 
-#else
-#	AC_DEFINE(ENABLE_SHARED,0,Enable shared libraries)
 fi
 # End Shared
 
@@ -26061,7 +26095,8 @@ echo ""
 echo "########################################"
 echo "#     Testing for UDUNITS support      #"
 echo "########################################"
-echo "LIBS=$LIBS"
+echo ""
+echo "DEBUG: LIBS = $LIBS"
 
 # Begin UDUnits
 # MacOS X requires libudport for threaded functions
@@ -27429,6 +27464,27 @@ echo "$as_me: error: conditional \"NCO_NEED_GETOPT_LONG\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${ENABLE_MPI_TRUE}" && test -z "${ENABLE_MPI_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"ENABLE_MPI\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"ENABLE_MPI\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${ENABLE_LAM_TRUE}" && test -z "${ENABLE_LAM_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"ENABLE_LAM\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"ENABLE_LAM\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${ENABLE_MPICH2_TRUE}" && test -z "${ENABLE_MPICH2_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"ENABLE_MPICH2\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"ENABLE_MPICH2\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
@@ -27991,7 +28047,6 @@ s,@AUTOCONF@,$AUTOCONF,;t t
 s,@AUTOMAKE@,$AUTOMAKE,;t t
 s,@AUTOHEADER@,$AUTOHEADER,;t t
 s,@MAKEINFO@,$MAKEINFO,;t t
-s,@AMTAR@,$AMTAR,;t t
 s,@install_sh@,$install_sh,;t t
 s,@STRIP@,$STRIP,;t t
 s,@ac_ct_STRIP@,$ac_ct_STRIP,;t t
@@ -28000,6 +28055,9 @@ s,@mkdir_p@,$mkdir_p,;t t
 s,@AWK@,$AWK,;t t
 s,@SET_MAKE@,$SET_MAKE,;t t
 s,@am__leading_dot@,$am__leading_dot,;t t
+s,@AMTAR@,$AMTAR,;t t
+s,@am__tar@,$am__tar,;t t
+s,@am__untar@,$am__untar,;t t
 s,@CC@,$CC,;t t
 s,@CFLAGS@,$CFLAGS,;t t
 s,@LDFLAGS@,$LDFLAGS,;t t
@@ -28054,11 +28112,16 @@ s,@NETCDF4_ROOT@,$NETCDF4_ROOT,;t t
 s,@HDF5_LIB_DIR@,$HDF5_LIB_DIR,;t t
 s,@NCO_NEED_GETOPT_LONG_TRUE@,$NCO_NEED_GETOPT_LONG_TRUE,;t t
 s,@NCO_NEED_GETOPT_LONG_FALSE@,$NCO_NEED_GETOPT_LONG_FALSE,;t t
-s,@BIN_MPI_PROGRAMS@,$BIN_MPI_PROGRAMS,;t t
 s,@HAVE_MPI_H@,$HAVE_MPI_H,;t t
 s,@MPICH2_ROOT@,$MPICH2_ROOT,;t t
 s,@LAM_ROOT@,$LAM_ROOT,;t t
 s,@MPI_CC@,$MPI_CC,;t t
+s,@ENABLE_MPI_TRUE@,$ENABLE_MPI_TRUE,;t t
+s,@ENABLE_MPI_FALSE@,$ENABLE_MPI_FALSE,;t t
+s,@ENABLE_LAM_TRUE@,$ENABLE_LAM_TRUE,;t t
+s,@ENABLE_LAM_FALSE@,$ENABLE_LAM_FALSE,;t t
+s,@ENABLE_MPICH2_TRUE@,$ENABLE_MPICH2_TRUE,;t t
+s,@ENABLE_MPICH2_FALSE@,$ENABLE_MPICH2_FALSE,;t t
 s,@I18N_SHARE@,$I18N_SHARE,;t t
 s,@UDUNITS_PATH@,$UDUNITS_PATH,;t t
 s,@path_to_ncgen@,$path_to_ncgen,;t t
@@ -28687,27 +28750,21 @@ echo X"$mf" |
   else
     continue
   fi
-  grep '^DEP_FILES *= *[^ #]' < "$mf" > /dev/null || continue
-  # Extract the definition of DEP_FILES from the Makefile without
-  # running `make'.
+  # Extract the definition of DEPDIR, am__include, and am__quote
+  # from the Makefile without running `make'.
   DEPDIR=`sed -n 's/^DEPDIR = //p' < "$mf"`
   test -z "$DEPDIR" && continue
+  am__include=`sed -n 's/^am__include = //p' < "$mf"`
+  test -z "am__include" && continue
+  am__quote=`sed -n 's/^am__quote = //p' < "$mf"`
   # When using ansi2knr, U may be empty or an underscore; expand it
   U=`sed -n 's/^U = //p' < "$mf"`
-  test -d "$dirpart/$DEPDIR" || mkdir "$dirpart/$DEPDIR"
-  # We invoke sed twice because it is the simplest approach to
-  # changing $(DEPDIR) to its actual value in the expansion.
-  for file in `sed -n '
-    /^DEP_FILES = .*\\\\$/ {
-      s/^DEP_FILES = //
-      :loop
-	s/\\\\$//
-	p
-	n
-	/\\\\$/ b loop
-      p
-    }
-    /^DEP_FILES = / s/^DEP_FILES = //p' < "$mf" | \
+  # Find all dependency output files, they are included files with
+  # $(DEPDIR) in their names.  We invoke sed twice because it is the
+  # simplest approach to changing $(DEPDIR) to its actual value in the
+  # expansion.
+  for file in `sed -n "
+    s/^$am__include $am__quote\(.*(DEPDIR).*\)$am__quote"'$/\1/p' <"$mf" | \
        sed -e 's/\$(DEPDIR)/'"$DEPDIR"'/g' -e 's/\$U/'"$U"'/g'`; do
     # Make sure the directory exists.
     test -f "$dirpart/$file" && continue
@@ -28789,6 +28846,8 @@ fi
 # End config
 
 # Echo build parameters for debugging
+echo ""
+echo ""
 echo "Configuration Parameters:"
 echo "AR_FLAGS............. ${AR_FLAGS}"
 echo "CC................... ${CC}"
@@ -28804,7 +28863,6 @@ echo "host................. ${host}"
 echo "HOSTNAME............. ${HOSTNAME}"
 echo "LDFLAGS.............. ${LDFLAGS}"
 echo "LIBS................. ${LIBS}"
-#echo "BIN_MPI_PROGRAMS..... ${BIN_MPI_PROGRAMS}"
 
 # Inform users of the very useful configure.eg
 echo ""

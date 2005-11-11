@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/Makefile.am,v 1.9 2005-11-09 21:15:47 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/Makefile.am,v 1.10 2005-11-11 20:59:00 mangalam Exp $ -*-makefile-*-
 
 SUBDIRS = data doc src man
 
@@ -10,3 +10,9 @@ EXTRA_DIST = $(bld_extras)
 test:
 	$(MAKE) check
 	cd bld && env MY_BIN_DIR=../src/nco ./nco_tst.pl
+
+regress:
+	cd bm && env MY_BIN_DIR=../src/nco DATA=/tmp ./nco_bm.pl --regress
+
+regress-mpi:
+	cd bm && env MY_BIN_DIR=../src/nco DATA=/tmp ./nco_bm.pl --regress --mpi_prc=2

@@ -1,5 +1,9 @@
-2005-11-09  Harry Mangalam <hjm@tacgi.com>
-
+2005-11-11  Harry Mangalam <hjm@tacgi.com>
+	* fixed net tests to test only returned value, not entire msg
+	* Added UDP reporting query to regression and benchmark runs
+	  if users explicitly agree, to capture failures in regressiions
+	  automatically for better profiling.  Queries users if they will 
+	  allow data to be returned UNLESS the --udpreport is already set
 	* Changes to Makefile.am in src/nco to enable MPI binaries to
 	  be built.
 	* Notes about problems with old aclocal, automake posted

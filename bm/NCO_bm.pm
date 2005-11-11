@@ -15,7 +15,7 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.15 2005-11-01 04:25:01 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.16 2005-11-11 20:59:04 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -656,6 +656,7 @@ sub failed {
 }
 
 sub smrz_rgr_rslt {
+	my $ansr='';
 	my $nco_vrsn_sng = nco_dual_vrsn();
 	my $CC = `$MY_BIN_DIR/ncks --compiler`;
 	my $CCinfo = '';
@@ -696,10 +697,35 @@ sub smrz_rgr_rslt {
 	if ($dbg_lvl == 0) {print $reportstr;}
 	else { &verbosity($dbg_lvl, $wnt_log, $reportstr); }
 #	$udp_dat .= "@";  # use an infrequent char as separator token
-print "Regression: udp stream sent:\n$udp_dat\n";
-	if ($udp_rpt) {
+# print "Regression: udp stream sent:\n$udp_dat\n";
+	if (!$udp_rpt) {
+		print "\n\nThe log-formatted result from this regression test is:\n$udp_dat\n\n";
+		print << "REQ_REGR_PACKET";
+
+                   --== REQUEST for TEST RESULTS ==--
+
+   The NCO team would REALLY appreciate it if you would allow us to have
+   the above results of this regression test.  If you type 'yes' in
+   response to this question, the results of this regression test will
+   be sent verbatim as above, anonymously, to the NCO dev team via UDP on
+   port 29659.  If your institution has a firewall that prohibits this,
+   it will simply fail silently.  We want this info so we can fix failures,
+   improve efficiency, solve global warming, & bring about world peace. If
+   you DON'T want to participate in this, type in anything OTHER than
+   [y, Y, yes or YES].  <Enter> will also decline sending the data.
+
+   Do you allow the above regression data to be sent back to the NCO dev team?
+   [default is No, y, Y, yes, YES to send it]
+REQ_REGR_PACKET
+		print "Answer: ";
+		$ansr = <STDIN>; chomp $ansr;
+	}
+	if ($udp_rpt || $ansr eq "y" || $ansr eq "yes" || $ansr eq "Y" ||$ansr eq "YES") {
 		$sock->send($udp_dat);
+		print "\nData sent!  The NCO dev team thanks you!!\nHave a good one, eh!?\n\n\n";
 		if ($dbg_lvl > 0) { print "Regression: udp stream sent to $server_ip:\n$udp_dat\n";}
+	} else {
+		print "\nOK - data NOT sent, thanks for using NCO anyway - bye!\n\n";
 	}
 } # end of sub smrz_rgr_rslt
 

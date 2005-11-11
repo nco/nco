@@ -347,6 +347,9 @@
 /* Compatibility pvmgetarch token for Apple Mac OSX */
 #undef MACOSX
 
+/* Location of mpich2 src root */
+#undef MPICH2_ROOT
+
 /* POSIX extended regular expressions available */
 #undef NCO_HAVE_REGEX_FUNCTIONALITY
 

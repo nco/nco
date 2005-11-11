@@ -1,33 +1,38 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.am,v 1.32 2005-11-09 21:15:48 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.am,v 1.33 2005-11-11 20:59:05 mangalam Exp $ -*-makefile-*-
 
 if BUILD_YACC_SOURCE
-  NCAP=ncap 
+NCAP=ncap
 else
-  NCAP= 
-endif 
+NCAP=
+endif
 
 if BUILD_YACC_SOURCE
-  NCWA=ncwa
+NCWA=ncwa
 else
-  NCWA=
-endif 
+NCWA=
+endif
 
 if TEST_DAP
-  echo "ARCHAIC: Test DAP with <NCO_ROOT>/bm/nco_bm.pl now"
+echo "ARCHAIC: Test DAP with <NCO_ROOT>/bm/nco_bm.pl now"
 else
-  DAP_TESTS=
+DAP_TESTS=
 endif
 
 if NCO_NEED_GETOPT_LONG
-  NCO_GETOPT=nco_getopt.c
+NCO_GETOPT=nco_getopt.c
 else
-  NCO_GETOPT=
+NCO_GETOPT=
 endif
 
-bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ${NCWA} 
+if ENABLE_MPI
+bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename mpncbo mpncecat mpncflint mpncpdq mpncra mpncwa ${NCWA}
+else
+bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename  ${NCWA}
+endif
+
 AM_YFLAGS = -d
 
-ncap_SOURCES = ncap_utl.c ncap.c ncap_yacc.y ncap_lex.l 
+ncap_SOURCES = ncap_utl.c ncap.c ncap_yacc.y ncap_lex.l
 ncap_LDADD = libnco.la
 
 ncatted_SOURCES = ncatted.c
@@ -54,9 +59,28 @@ ncra_LDADD = libnco.la
 ncrename_SOURCES = ncrename.c
 ncrename_LDADD = libnco.la
 
+mpncbo_SOURCES = mpncbo.c
+mpncbo_LDADD = libnco.la
+
+mpncecat_SOURCES = mpncecat.c
+mpncecat_LDADD = libnco.la
+
+mpncflint_SOURCES = mpncflint.c
+mpncflint_LDADD = libnco.la
+
+mpncpdq_SOURCES = mpncpdq.c
+mpncpdq_LDADD = libnco.la
+
+mpncra_SOURCES = mpncra.c
+mpncra_LDADD = libnco.la
+
+
 # ncwa also requires ncap_yacc.y, but that should already be built with ncap
 ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l ncap_yacc.c
 ncwa_LDADD = libnco.la
+
+mpncwa_SOURCES = mpncwa.c ncap_utl.c ncap_lex.l ncap_yacc.c
+mpncwa_LDADD = libnco.la
 
 HEADER_SRC = \
 libnco.h \
@@ -148,9 +172,12 @@ install-exec-hook:
 	cd $(DESTDIR)$(bindir) && ln -s -f ncbo ncdiff || (rm -f ncdiff && ln -s -f ncbo ncdiff)
 	cd $(DESTDIR)$(bindir) && ln -s -f ncra ncea || (rm -f ncea && ln -s -f ncra ncea)
 	cd $(DESTDIR)$(bindir) && ln -s -f ncra ncrcat || (rm -f ncrcat && ln -s -f ncra ncrcat)
+	cd $(DESTDIR)$(bindir) && ln -s -f mpncbo mpncdiff || (rm -f mpncdiff && ln -s -f mpncbo mpncdiff)
+	cd $(DESTDIR)$(bindir) && ln -s -f mpncra mpncea || (rm -f mpncea && ln -s -f mpncra mpncea)
+	cd $(DESTDIR)$(bindir) && ln -s -f mpncra mpncrcat || (rm -f mpncrcat && ln -s -f mpncra mpncrcat)
 
 uninstall-hook:
-	cd $(DESTDIR)$(bindir) && rm -f ncdiff ncea ncrcat
+	cd $(DESTDIR)$(bindir) && rm -f ncdiff ncea ncrcat mpncdiff mpncea mpncrcat
 
-CLEANFILES=ncdiff ncea ncrcat
+CLEANFILES=ncdiff ncea ncrcat mpncdiff mpncea mpncrcat
 
