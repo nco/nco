@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.339 2005-10-28 19:39:59 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.340 2005-11-13 08:54:39 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -102,8 +102,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.0.3
 @set copyright-years 1995--2005
 @set update-year 2005
-@set update-date 28 October 2005
-@set update-month October 2005
+@set update-date 12 November 2005
+@set update-month November 2005
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -4655,7 +4655,7 @@ SYNTAX
 ncap [-4] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-f]
 [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[-s @var{algebra}] [-S @var{fl.nco}] [-v] [-Z]
+[-s @var{algebra}] [-S @var{fl.nco}] [-v]
 @var{input-file} [@var{output-file}]  
 @end example
  
@@ -5577,7 +5577,7 @@ Knowing when to use @command{ncwa -a time} rather than the default
 SYNTAX
 @example
 ncatted [-a @var{att_dsc}] [-a @dots{}] [-D @var{dbg}] [-h]
-[-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-Z]
+[-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
 @var{input-file} [[@var{output-file}]]
 @end example
  
@@ -5946,7 +5946,7 @@ SYNTAX
 ncbo [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] 
 [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r]
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] [-Z]
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
 
@@ -6283,7 +6283,7 @@ SYNTAX
 ncea [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] [-Z]
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -6387,7 +6387,7 @@ SYNTAX
 ncecat [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-Z] 
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] 
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -6497,7 +6497,7 @@ SYNTAX
 ncflint [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-i @var{var},@var{val3}]
 [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] 
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-x] [-Z]
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-x]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
 
@@ -6733,7 +6733,7 @@ ncks [-4] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] [-D @var{dbg}]
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]]
 [-F] [-H] [-h] [-l @var{path}] [-M] [-m] [-O] [-o @var{output-file}] 
 [-P] [-p @var{path}] [-Q] [-q] [-R] [-r] [-s @var{format}] [-u] 
-[-v @var{var}[,@dots{}]] [-x] [-Z] @var{input-file} [[@var{output-file}]]
+[-v @var{var}[,@dots{}]] [-x] @var{input-file} [[@var{output-file}]]
 @end example
 
 @noindent
@@ -7188,7 +7188,7 @@ SYNTAX
 ncpdq [-4] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-M @var{pck_map}] [-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] 
-[-R] [-r] [-t @var{thr_nbr}] [-U] [-v @var{var}[,@dots{}]] [-x] [-Z]
+[-R] [-r] [-t @var{thr_nbr}] [-U] [-v @var{var}[,@dots{}]] [-x]
 @var{input-file} [@var{output-file}]
 @end example
 
@@ -7455,19 +7455,19 @@ $\shrvct$ is empty if $\rdrvct \notin \dmnvct$.
 
 Re-ordering (or re-shaping) a variable means mapping the input state
 with dimensionality $\dmnvct(\xxx)$ to the output state with
-dimensionality $dmnvctprm(\xxxprm)$.  
+dimensionality $\dmnvctprm(\xxxprm)$.  
 In practice, mapping occurs in three logically distinct steps.
 First, we tranlate the user input to a one-to-one mapping $\mpp$ 
 between input and output dimensions, 
 $\dmnvct \mapsto \dmnvctprm$.
 This tentative map is final unless external constraints (typically
 netCDF restrictions) impose themselves.   
-Second, we check and, if necessary, the tentative mapping so that the
-re-shaped variables will co-exist in the same file without violating
+Second, we check and, if necessary, refine the tentative mapping so that
+the re-shaped variables will co-exist in the same file without violating 
 netCDF-imposed storage restrictions. 
 This refined map specifies the final (output) dimensionality.
 Third, we translate the output dimensionality into one-dimensional  
-memory offsets for each datum according to the @w{C language} convention
+memory offsets for each datum according to the @w{C language} convention 
 for multi-dimensional array storage.
 Dimension reversal changes the ordering of data, but not the
 dimensionality, and so is part of the third step. 
@@ -7673,7 +7673,7 @@ SYNTAX
 ncra [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] [-Z]
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -7780,7 +7780,7 @@ SYNTAX
 ncrcat [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-Z] 
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] 
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -7894,7 +7894,7 @@ SYNTAX
 ncrename [-a @var{old_name},@var{new_name}] [-a @dots{}] [-D @var{dbg}] 
 [-d @var{old_name},@var{new_name}] [-d @dots{}] [-h] [-l @var{path}]
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[-v @var{old_name},@var{new_name}] [-v @dots{}] [-Z]
+[-v @var{old_name},@var{new_name}] [-v @dots{}]
 @var{input-file} [[@var{output-file}]]
 @end example
  
@@ -8059,7 +8059,7 @@ ncwa [-4] [-A] [-a @var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}]
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-I] [-l @var{path}] 
 [-M @var{mask_val}] [-m @var{mask_var}] [-N] [-n] [-O] 
 [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-T @var{condition}]
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-W] [-w @var{weight}] [-x] [-y @var{op_typ}] [-Z]
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-W] [-w @var{weight}] [-x] [-y @var{op_typ}]
 @var{input-file} [@var{output-file}]
 @end example
 
