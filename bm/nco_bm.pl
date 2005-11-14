@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.108 2005-11-01 04:25:01 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.109 2005-11-14 19:31:55 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -172,7 +172,7 @@ if ($ARGV == 0) {	usage();}
 if ( $fl_fmt eq "64bit" || $fl_fmt eq "netcdf4" || $fl_fmt eq "netcdf4_classic") {
 	$fl_fmt = "--fl_fmt=" . $fl_fmt;
 	dbg_msg(1,"File format set to [$fl_fmt]");
-} elsif ($fl_fmt eq "classic"){
+}elsif ($fl_fmt eq "classic"){
 	$fl_fmt = "";
 } else {
 	die "Your file format spec (--fl_fmt) isn't correct; it has to be one of:\n  classic,  64bit, netcdf4, or netcdf4_classic\nPlease choose one of these and repeat.\n\n";
