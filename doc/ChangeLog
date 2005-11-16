@@ -1,4 +1,16 @@
 2005-11-14  Harry Mangalam <hjm@tacgi.com>
+	* retired following TODOs
+	  bld68. hjm Verify configure with minimal options works with MACOSX
+	  bld53. hjm Add --fl_fmt option to nco_bm.pl (see ncks.c for fl_fmt values)
+	  bld62. hjm Make regressions fail when input file not created but
+	    re-used from previous test etc
+	  bld71. hjm Mac OS X: remove false positive regressions in ncwa (cut?)
+	  bld72. hjm nco_bm: ensure "foo" (intermediate files) accessed locally
+	    not over DAP
+	  bld46. Is DAP_ROOT (or DODS_ROOT) an obsolete variable in DAP 3.5+? if
+	    so obsolete it
+
+2005-11-14  Harry Mangalam <hjm@tacgi.com>
 	* corrected Benchmark code for opendap access.
 
 2005-11-11  Harry Mangalam <hjm@tacgi.com>

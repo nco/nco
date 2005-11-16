@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.145 2005-11-11 20:59:04 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.146 2005-11-16 00:58:08 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -163,7 +163,8 @@ nco_LIBS_no_DAP="${LIBS}"
 # Sorry about version numbers being confusing... jhrg 6/3/05
 
 # fxm: is DAP_ROOT (or DODS_ROOT) an obselete variable in DAP 3.5+?
-AC_ARG_VAR([DAP_ROOT],[Root of DAP installation] (compile-time))
+# hjm thinks so.  Eliminate these 3 lines after running the dap tests with it disabled.
+#  AC_ARG_VAR([DAP_ROOT],[Root of DAP installation] (compile-time))
 AC_ARG_ENABLE(dap,AS_HELP_STRING([--enable-dap],[Build OPeNDAP/DODS-enabled clients (conflicts with netcdf4)  [[default=yes]]]),enable_dap=${enableval},enable_dap=yes)
 
 
@@ -584,25 +585,7 @@ if test "x${nco_have_regex}" = xyes; then
 fi
 # End rx
 
-
-echo ""
-echo "###############################"
-echo "#    Require Shared Libs?     #"
-echo "###############################"
-
-# If --enable-shared define ENABLE_SHARED
-echo "DEBUG: enable_shared: ${enable_shared} "
-if test "${enable_shared}" = 'yes'; then
-    AC_DEFINE(ENABLE_SHARED,1,Enable shared libraries)
-fi
-# End Shared
-
-# Begin Static
-# If --enable-static define ENABLE_STATIC
-if test "${enable_static}" = 'yes'; then
-    AC_DEFINE(ENABLE_STATIC,1,Enable static libraries)
-fi
-# End Static
+# Old placement of Shared libs stanza
 
 echo ""
 echo "########################################"
@@ -934,8 +917,31 @@ if (test $ac_compiler_gnu == "yes"); then
 	if (test "${macosx}" = 1); then
 		CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'`
 		CFLAGS="-fno-common $CFLAGS"
+		# MacOSX doan understand no steekin shared libs.
+		enable_shared=no
 	fi
 fi
+
+
+echo ""
+echo "###############################"
+echo "#    Require Shared Libs?     #"
+echo "###############################"
+
+# If --enable-shared define ENABLE_SHARED
+echo "DEBUG: enable_shared: ${enable_shared} "
+if test "${enable_shared}" = 'yes'; then
+    AC_DEFINE(ENABLE_SHARED,1,Enable shared libraries)
+fi
+# End Shared
+
+# Begin Static
+# If --enable-static define ENABLE_STATIC
+if test "${enable_static}" = 'yes'; then
+    AC_DEFINE(ENABLE_STATIC,1,Enable static libraries)
+fi
+# End Static
+
 
 
 # Begin config

@@ -15,7 +15,7 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.16 2005-11-11 20:59:04 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.17 2005-11-16 00:58:09 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -639,7 +639,8 @@ sub go {
 	if ($dbg_lvl > 0) {print $dbg_sgn;}
 	print LOG $dbg_sgn;
 	@tst_cmd=(); # Clear test
-#	print Total $totbenchmarks{$opr_nm}
+	# rm $outfile so it can't generate a false positive
+	if (-e $outfile && -w $outfile) { unlink $outfile;	}
 } # end go()
 
 ####################
