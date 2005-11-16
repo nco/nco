@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.180 2005-11-16 06:49:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.181 2005-11-16 06:53:54 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.180 2005-11-16 06:49:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.180 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.181 2005-11-16 06:53:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.181 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -144,6 +144,7 @@ main(int argc,char **argv)
   extern float fabsf(float); /* 20040629: Only AIX may need this */
   extern float logf(float);
   extern float log10f(float);
+  extern float rnd_nbrf(float);
   extern float sinf(float);
   extern float sqrtf(float);
   extern float tanf(float);
@@ -152,7 +153,6 @@ main(int argc,char **argv)
   extern float erff(float);
   extern float erfcf(float);
   extern float gammaf(float);
-  extern float randf(float);
 
   /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
   extern float acoshf(float);
@@ -406,16 +406,16 @@ main(int argc,char **argv)
   
   /* Create function table */
   sym_tbl_nbr= /* fxm: Make this dynamic */
-    +11 /* Basic math: acos, asin, atan, cos, exp, fabs, log, log10, sin, sqrt, tan */
+    +12 /* Basic math: acos, asin, atan, cos, exp, fabs, log, log10, rnd_nbr, sin, sqrt, tan */
     +1 /* Basic math synonyms: ln */
     +6 /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
     +2 /* Basic Rounding: ceil, floor */
     +4 /* Advanced Rounding: nearbyint, rint, round, trunc */
-    +4 /* Advanced math: erf, erfc, gamma, rand */
+    +3 /* Advanced math: erf, erfc, gamma */
     ;
   sym_tbl=(sym_sct **)nco_malloc(sizeof(sym_sct *)*sym_tbl_nbr);
   
-  /* Basic math: acos, asin, atan, cos, exp, log, log10, sin, sqrt, tan */
+  /* Basic math: acos, asin, atan, cos, exp, log, log10, rnd_nbr, sin, sqrt, tan */
   sym_tbl[sym_idx++]=ncap_sym_init("acos",acos,acosf);  
   sym_tbl[sym_idx++]=ncap_sym_init("asin",asin,asinf);
   sym_tbl[sym_idx++]=ncap_sym_init("atan",atan,atanf);
@@ -424,6 +424,7 @@ main(int argc,char **argv)
   sym_tbl[sym_idx++]=ncap_sym_init("fabs",fabs,fabsf);
   sym_tbl[sym_idx++]=ncap_sym_init("log",log,logf);
   sym_tbl[sym_idx++]=ncap_sym_init("log10",log10,log10f);
+  sym_tbl[sym_idx++]=ncap_sym_init("rnd_nbr",rnd_nbr,rnd_nbrf);
   sym_tbl[sym_idx++]=ncap_sym_init("sin",sin,sinf);
   sym_tbl[sym_idx++]=ncap_sym_init("sqrt",sqrt,sqrtf);
   sym_tbl[sym_idx++]=ncap_sym_init("tan",tan,tanf);
@@ -446,9 +447,8 @@ main(int argc,char **argv)
   sym_tbl[sym_idx++]=ncap_sym_init("erf",erf,erff);
   sym_tbl[sym_idx++]=ncap_sym_init("erfc",erfc,erfcf);
   sym_tbl[sym_idx++]=ncap_sym_init("gamma",tgamma,tgammaf);
-  sym_tbl[sym_idx++]=ncap_sym_init("rnd_nbr",rnd_nbr,rnd_nbrf);
 #else /* !LINUX */
-  sym_tbl_nbr-=4; /* Advanced math: erf, erfc, gamma, rand */
+  sym_tbl_nbr-=3; /* Advanced math: erf, erfc, gamma */
 #endif /* !LINUX */
 
   /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh
