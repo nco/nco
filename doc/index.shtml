@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.315 2005-11-13 08:54:39 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.316 2005-11-16 05:23:49 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -207,7 +207,7 @@ pay-per-feature basis.
 </form>
 These homepage donation counters track the influence of your monetary
 donations on NCO development: 
-<dt>Donations received between 20030624 and 20040815: US$10.00.</dt>
+<dt>Donations received between 20030624 and 20051115: US$10.00.</dt>
 <dt>NCO features "incentivized" by these donations: None.</dt>
 <hr></p>
 
@@ -917,7 +917,7 @@ The chances of the latter event ever happening are exceedingly
 remote. 
 The new algorithm compares only the new record to the
 <tt>missing_value</tt>. 
-This fixes both problems and is faster, to boot. 
+This fixes both problems and is faster, too.
 
 <!-- http://nco.sf.net#bug_pck_ncwa -->
 <a name="bug_pck_ncwa"></a>
