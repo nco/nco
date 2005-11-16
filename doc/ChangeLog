@@ -1,3 +1,9 @@
+2005-11-15  Charlie Zender  <zender@uci.edu>
+
+	* Added cheesy random number generator function rnd_nbr() to ncap
+	ncap -O -v -s 'x=rnd_nbr(lat)' ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
+	for generating fake data. Search source for TODO nco652 and improve!
+	
 2005-11-14  Harry Mangalam <hjm@tacgi.com>
 	* retired following TODOs
 	  bld68. hjm Verify configure with minimal options works with MACOSX

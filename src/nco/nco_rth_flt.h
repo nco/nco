@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.19 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.20 2005-11-16 06:49:27 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -21,6 +21,7 @@
 
 /* fxm stdio only needed for TODO ncap57 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
+#include <stdlib.h> /* atof, atoi, malloc, getopt */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
@@ -49,10 +50,11 @@ extern "C" {
   float sqrtf(float);
   float tanf(float);
 
-  /* Advanced math: erf, erfc, gamma */
+  /* Advanced math: erf, erfc, gamma, rand */
   float erff(float);
   float erfcf(float);
   float gammaf(float);
+  float rnd_nbrf(float);
 
   /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
   float acoshf(float);

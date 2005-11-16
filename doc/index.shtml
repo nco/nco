@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.316 2005-11-16 05:23:49 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.317 2005-11-16 06:49:25 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -440,9 +440,8 @@ over versions should largely disappear.
 <h3>NCO Binaries and OS-specific Packages</h3>
 <p>NCO development is too shorthanded to provide prebuilt binary
 executables.
-The source tarballs are always up-to-date, and known to work on
-our development systems
-(<a href="http://www.debian.org">Debian Sid GNU/Linux</a> for x86)
+The source tarballs are always up-to-date, and work on our development systems
+(<a href="http://www.ubuntu.com">Ubuntu</a>-flavored <a href="http://www.debian.org">Debian</a> GNU/Linux for x86 and x86_64)
 and our high-end scientific computing environment
 (<a href="http://www-1.ibm.com/servers/aix">AIX&nbsp;5L</a> for Power4).
 To keep users up-to-date, we provide links to binaries and packages 
@@ -526,9 +525,12 @@ The screen-oriented formats&mdash;<tt>nco.html</tt>,
 <tt>nco.info</tt>, <tt>nco.txt</tt>, and <tt>nco.xml</tt>&mdash;contain 
 all the documentation except the highly mathematical sections.
 
-<!-- This documentation went MIA sometime in 2004:
 <h3>Other documentation:</h3>
 This 
+<a href="http://dust.ess.uci.edu/doc/abb/abb.pdf">abbreviation key</a>
+unlocks the hidden mysteries of all the source code abbreviations and acronyms.
+
+<!-- This documentation went MIA sometime in 2004:
 <a href="http://www.cgd.ucar.edu/csm/support/Document/pdf/nco.pdf">pamphlet</a> and
 <a href="http://www.cgd.ucar.edu/csm/support/Document/shows/nco/nco_files/v3_document.htm">slide presentation</a> 
 introduce and summarize the NCO operators.

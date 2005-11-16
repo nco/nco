@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.179 2005-10-22 07:30:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.180 2005-11-16 06:49:27 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -88,6 +88,9 @@ main(int argc,char **argv)
   extern int yy_scan_string(const char *);
   
   extern FILE *yyin; /* [fl] Input script file */
+
+  /* fxm TODO nco652 */
+  double rnd_nbr(double);
   
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool EXTRACT_ALL_COORDINATES=False; /* Option c */
@@ -120,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.179 2005-10-22 07:30:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.179 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.180 2005-11-16 06:49:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.180 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -149,6 +152,7 @@ main(int argc,char **argv)
   extern float erff(float);
   extern float erfcf(float);
   extern float gammaf(float);
+  extern float randf(float);
 
   /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
   extern float acoshf(float);
@@ -407,7 +411,7 @@ main(int argc,char **argv)
     +6 /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
     +2 /* Basic Rounding: ceil, floor */
     +4 /* Advanced Rounding: nearbyint, rint, round, trunc */
-    +3 /* Advanced math: erf, erfc, gamma */
+    +4 /* Advanced math: erf, erfc, gamma, rand */
     ;
   sym_tbl=(sym_sct **)nco_malloc(sizeof(sym_sct *)*sym_tbl_nbr);
   
@@ -442,8 +446,9 @@ main(int argc,char **argv)
   sym_tbl[sym_idx++]=ncap_sym_init("erf",erf,erff);
   sym_tbl[sym_idx++]=ncap_sym_init("erfc",erfc,erfcf);
   sym_tbl[sym_idx++]=ncap_sym_init("gamma",tgamma,tgammaf);
+  sym_tbl[sym_idx++]=ncap_sym_init("rnd_nbr",rnd_nbr,rnd_nbrf);
 #else /* !LINUX */
-  sym_tbl_nbr-=3; /* Advanced math: erf, erfc, gamma */
+  sym_tbl_nbr-=4; /* Advanced math: erf, erfc, gamma, rand */
 #endif /* !LINUX */
 
   /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh

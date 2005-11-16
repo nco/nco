@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.677 2005-11-16 00:58:09 mangalam Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.678 2005-11-16 06:49:24 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -403,7 +403,9 @@ nco648. Determine whether mpncra creates dangling points when it packs/unpacks v
 nco649. Add ncks --prn_cln switch to print coords/vars naked (no names, indices)
 nco650. Devise standard for adding long switches to nco_ctl.c docmentation
 nco651. Use nco650 standard to add --hdr_pad, --cmp, --mpi documentation
-nco652. 
+nco652. Polish/finish ncap random number generator
+        ncap -O -v -s 'x=rnd_nbr(one)' ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
+nco653. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
@@ -489,6 +491,17 @@ Valgrind: Archive of valgrind tests which are memory-error and leak-free
     kcachegrind ncwa &
 ************************************************************************
 End valgrind section
+************************************************************************
+
+************************************************************************
+Begin oprofile section
+************************************************************************
+sudo opcontrol --reset
+cd ${DATA}/nco_bm
+ncbo -O --op_typ='-' -p ${DATA}/nco_bm ipcc_dly_T85.nc ipcc_dly_T85_00.nc ${DATA}/ipcc.diff.nc
+opreport --exclude-dependent --demangle=smart --symbols > prf_ncbo.txt
+************************************************************************
+End oprofile section
 ************************************************************************
 
 ************************************************************************

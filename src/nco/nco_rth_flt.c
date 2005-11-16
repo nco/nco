@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.13 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.14 2005-11-16 06:49:27 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -90,3 +90,23 @@ float tanf(float x){return (float)(tan((double)x));}
 #ifdef NEED_TANHF
 float tanhf(float x){return (float)(tanh((double)x));}
 #endif /* !NEED_TANHF */ 
+
+/* fxm TODO nco652 */
+double /* O [frc] Random fraction in [0,1] */
+rnd_nbr /* [fnc] Generate random fraction in [0,1] */
+(double x) /* I [frc] Immaterial */
+{
+  /* Purpose: Wrapper for system random number generator 
+     Output does not depend on input value of x */
+  long rnd_nbr_lng;
+  double rnd_nbr_dbl_frc;
+  x=x+0.0; /* CEWI */
+  rnd_nbr_lng=random();
+  rnd_nbr_dbl_frc=rnd_nbr_lng*1.0/RAND_MAX;
+  return rnd_nbr_dbl_frc;
+} /* end rnd_nbr() */
+
+#define NEED_RND_NBRF
+#ifdef NEED_RND_NBRF
+float rnd_nbrf(float x){return (float)(rnd_nbr((double)x));}
+#endif /* !NEED_RND_NBRF */ 
