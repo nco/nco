@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.43 2005-11-11 01:59:18 wangd Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.44 2005-11-16 19:21:13 wangd Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.43 2005-11-11 01:59:18 wangd Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.43 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.44 2005-11-16 19:21:13 wangd Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.44 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -1159,8 +1159,7 @@ main(int argc,char **argv)
     } /* prc_rnk == rnk_mgr */
     for(idx = 0; idx < nbr_var_prc; idx++) {
       assert(var_prc_out[idx]->tally == var_prc[idx]->tally);
-      /* only need to clean up workers that didn't have local vars to proc */
-      if (lcl_nbr_var > 0  || var_prc_out[idx]->tally == 0) continue;
+      if (var_prc_out[idx]->tally == 0) continue;
       printf("DEBUG: node %d reset idx %d tally for var_prc(out) (cleanup)\n",
 	     prc_rnk, idx);
       var_prc_out[idx]->tally = var_prc[idx]->tally = (long *)nco_free(var_prc[idx]->tally);
