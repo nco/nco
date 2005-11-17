@@ -16,12 +16,15 @@
 netcdf skn_lgs{
 dimensions:
     time=1314900; // sampling 8 vars at 1Hz for a year 1314900
+//    lat=2
 variables:
 //indices
-    double time(time);	 
+    double time(time);
+//    double lat(lat);
 
 // 1D vars of dim 1314900
-    float PO2(time);
+//    float PO2(time);
+    float PO2(time,lat);
 
 // need to define the values for time dimension, but is there a way to do it by 
 // iteration or script rather than by explicit assignment

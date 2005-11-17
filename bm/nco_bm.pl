@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.109 2005-11-14 19:31:55 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.110 2005-11-17 21:54:33 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -60,6 +60,7 @@ $dbg_lvl = 0; # [enm] Print tests during execution for debugging
 $nco_D_flg = "";
 my $nvr_data=$ENV{'DATA'} ? $ENV{'DATA'} : '';
 my $nvr_home=$ENV{'HOME'} ? $ENV{'HOME'} : '';
+my $nvr_host=$ENV{'HOST'} ? $ENV{'HOST'} : '';
 $USER = $ENV{'USER'};
 $pwd = `pwd`; chomp $pwd;
 $fl_pth = '';
@@ -181,8 +182,17 @@ if ( $fl_fmt eq "64bit" || $fl_fmt eq "netcdf4" || $fl_fmt eq "netcdf4_classic")
 # set up some host-specific id's
 $os_nme = `uname`; chomp $os_nme;
 
-# check for bad cut on MacOSX
+# check for user trying to run benchmarks on the UCI esmf interactive node:
+if ($nvr_host =~ /esmf04m/ && $bm) {
+	print "\n\nAre you sure you want to run the NCO benchmarks on the interactive node?\n";
+	print "Enter 'y' to continue.  Anything else cancels. [Default No]: ";
+	my $tmp = <STDIN>; chomp $tmp;
+	if ($tmp !~ /[yY]/) {
+		die "OK - Quitting now.  To run the benchmarks under AIX, modify <NCO_ROOT>/bm/nco_bm.sh (a POE script) \nand 'llsubmit' that script to the loadleveler.\n";
+	}
+}
 
+# check for bad cut on MacOSX
 if ($os_nme =~ /Darwin/){
 	print "\nTesting for GNU cut on Darwin..\n";
 	$tmp = `cut --version 2>&1 | grep 'Free Software Foundation'`;
