@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.110 2005-11-17 21:54:33 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.111 2005-11-17 22:38:40 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -29,7 +29,7 @@ use strict; # Protect all namespaces
 
 # Declare vars for strict
 use vars qw(
-$arg_nbr  $bch_flg  $bm  @bm_cmd_ary  $bm_dir  $caseid  $cmd_ln
+$aix_mpi_nvr_prfx $arg_nbr  $bch_flg  $bm  @bm_cmd_ary  $bm_dir  $caseid  $cmd_ln
 $dbg_lvl  $dodap  $dot_fmt  $dot_nbr  $dot_nbr_min  $dot_sng  $dsc_fmt
 $dsc_lng_max  $dsc_sng  $dta_dir $dust_usr  %failure  $fl_cnt  @fl_cr8_dat
 $fl_pth  @fl_tmg  $foo1_fl  $foo2_fl  $foo_avg_fl  $foo_fl  $foo_T42_fl
@@ -55,6 +55,7 @@ $cmd_ln = "$0 "; $arg_nbr = @ARGV;
 for (my $i=0; $i<$arg_nbr; $i++){ $cmd_ln .= "$ARGV[$i] ";}
 
 # Set defaults for command line arguments
+$aix_mpi_nvr_prfx = "";
 $bch_flg=0; # [flg] Batch behavior
 $dbg_lvl = 0; # [enm] Print tests during execution for debugging
 $nco_D_flg = "";
@@ -190,6 +191,10 @@ if ($nvr_host =~ /esmf04m/ && $bm) {
 	if ($tmp !~ /[yY]/) {
 		die "OK - Quitting now.  To run the benchmarks under AIX, modify <NCO_ROOT>/bm/nco_bm.sh (a POE script) \nand 'llsubmit' that script to the loadleveler.\n";
 	}
+}
+if ($os_nme =~ /AIX/ && $rgr && $mpi_prc > 0) {
+	# set env vars for MPI to run on AIX (not just esmf)
+	$aix_mpi_nvr_prfx = "MP_PROCS=$mpi_prc MP_EUILIB='us' MP_NODES='1'  MP_TASKS_PER_NODE=$mpi_prc MP_RMPOOL='1' XLSMPOPTS='stack=86000000' ";
 }
 
 # check for bad cut on MacOSX
