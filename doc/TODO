@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.678 2005-11-16 06:49:24 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.679 2005-11-18 23:43:49 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -405,7 +405,8 @@ nco650. Devise standard for adding long switches to nco_ctl.c docmentation
 nco651. Use nco650 standard to add --hdr_pad, --cmp, --mpi documentation
 nco652. Polish/finish ncap random number generator
         ncap -O -v -s 'x=rnd_nbr(one)' ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
-nco653. 
+nco653. Segregate MPI from non-MPI builds completely in bld/Makefile on AIX
+nco654. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
