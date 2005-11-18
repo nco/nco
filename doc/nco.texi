@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.340 2005-11-13 08:54:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.341 2005-11-18 16:13:33 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -8706,11 +8706,18 @@ The climatological zonal-mean:
 
 The climatological time- and spatial-mean:
 
-  ncwa -O -D 1 -a lon,lat -w gw \
-    $@{drc_out@}/$@{CASEID@}_clm.nc $@{drc_out@}/$@{CASEID@}_clm_xy.nc
+  ncwa -O -D 1 -a lon,lat,time -w gw \
+    $@{drc_out@}/$@{CASEID@}_clm.nc $@{drc_out@}/$@{CASEID@}_clm_xyt.nc
 
 This file contains only scalars, e.g., "global mean temperature",
 used for summarizing global results of a climate experiment.
+
+Climatological monthly anomalies = Annual Cycle: 
+Subtract climatological mean from climatological monthly means. 
+Result is annual cycle, i.e., climate-mean has been removed.
+
+  ncbo -O -D 1 -o $@{drc_out@}/$@{CASEID@}_clm_0112_anm.nc \
+    $@{drc_out@}/$@{CASEID@}_clm_0112.nc $@{drc_out@}/$@{CASEID@}_clm_xyt.nc
 
 ************************************************************************
 Task 2: Correcting monthly averages
