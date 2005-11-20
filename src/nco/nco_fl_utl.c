@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.71 2005-10-17 07:13:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.72 2005-11-20 08:00:39 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -31,7 +31,7 @@ nco_create_mode_mrg /* [fnc] Merge clobber mode with user-specified file format 
   }else if(fl_out_fmt == NC_FORMAT_NETCDF4){
     nccreate_mode|=NC_NETCDF4;
   }else if(fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-    nccreate_mode|=NC_NETCDF4|NC_STRICT_NC3;
+    nccreate_mode|=NC_NETCDF4|NC_CLASSIC_MODEL;
   } /* end else fl_out_fmt */
 
   return nccreate_mode;

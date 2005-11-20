@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.341 2005-11-18 16:13:33 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.342 2005-11-20 08:00:38 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2754,7 +2754,7 @@ The @code{NETCDF4} format uses @acronym{HDF5} as the file storage layer.
 The files are (usually) created, accessed, and manipulated using the 
 traditional netCDF3 @acronym{API} (with numerous extensions).
 The @code{NETCDF4_CLASSIC} format refers to netCDF4 files created with
-the @code{NC_STRICT_NC3} mask.
+the @code{NC_CLASSIC_MODEL} mask.
 Such files use @acronym{HDF5} as the back-end storage format (unlike
 netCDF3), though they incorporate only netCDF3 features.
 Hence @code{NETCDF4_CLASSIC} files are perfectly readable by

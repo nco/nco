@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.89 2005-10-27 17:02:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.90 2005-11-20 08:00:39 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -114,8 +114,8 @@ extern "C" {
 /* Single compatibility token new to netCDF4 netcdf.h */
 #define NC_NETCDF4     (0x1000) /* Use netCDF-4/HDF5 format */
 /* Four compatibility tokens from netCDF3.6 netcdf.h */
-#ifndef NC_STRICT_NC3
-# define NC_STRICT_NC3 (0x8) /* Enforce strict netcdf-3 rules. */
+#ifndef NC_CLASSIC_MODEL
+# define NC_CLASSIC_MODEL (0x0008) /* Enforce strict netcdf-3 rules. */
 #endif
 #ifndef NC_FORMAT_CLASSIC
 # define NC_FORMAT_CLASSIC (1)
@@ -127,7 +127,7 @@ extern "C" {
 #define NC_FORMAT_NETCDF4 (3)
 #endif
 #ifndef NC_FORMAT_NETCDF4_CLASSIC
-#define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_STRICT_NC3. */
+#define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
 #endif
 #endif /* !ENABLE_NETCDF4 */
 

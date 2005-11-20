@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.6 2005-10-25 00:20:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.7 2005-11-20 08:00:39 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -297,15 +297,15 @@ typedef unsigned int nco_uint; /* [typ] NC_UINT */
 /* Treat NC_INT64 as C-type long long */
 typedef long long nco_int64; /* [typ] NC_INT64 */
 # define NCO_INT64_SNG "long long"
-# define NCO_INT64_IO_SFX int64
-# define NCO_GET_ATT_INT64 nc_get_att_int64
-# define NCO_GET_VAR1_INT64 nc_get_var1_int64
-# define NCO_GET_VARA_INT64 nc_get_vara_int64
-# define NCO_GET_VARM_INT64 nc_get_varm_int64
-# define NCO_PUT_ATT_INT64 nc_put_att_int64
-# define NCO_PUT_VAR1_INT64 nc_put_var1_int64
-# define NCO_PUT_VARA_INT64 nc_put_vara_int64
-# define NCO_PUT_VARM_INT64 nc_put_varm_int64
+# define NCO_INT64_IO_SFX longlong
+# define NCO_GET_ATT_INT64 nc_get_att_longlong
+# define NCO_GET_VAR1_INT64 nc_get_var1_longlong
+# define NCO_GET_VARA_INT64 nc_get_vara_longlong
+# define NCO_GET_VARM_INT64 nc_get_varm_longlong
+# define NCO_PUT_ATT_INT64 nc_put_att_longlong
+# define NCO_PUT_VAR1_INT64 nc_put_var1_longlong
+# define NCO_PUT_VARA_INT64 nc_put_vara_longlong
+# define NCO_PUT_VARM_INT64 nc_put_varm_longlong
 #else
 #error "ERROR: Unrecognized NCO_INT64 token"
 #endif /* NCO_INT64 */
@@ -320,15 +320,15 @@ typedef long long nco_int64; /* [typ] NC_INT64 */
 /* Treat NC_UINT64 as C-type unsigned long long */
 typedef unsigned long long nco_uint64; /* [typ] NC_UINT64 */
 # define NCO_UINT64_SNG "unsigned long long"
-# define NCO_UINT64_IO_SFX uint64
-# define NCO_GET_ATT_UINT64 nc_get_att_uint64
-# define NCO_GET_VAR1_UINT64 nc_get_var1_uint64
-# define NCO_GET_VARA_UINT64 nc_get_vara_uint64
-# define NCO_GET_VARM_UINT64 nc_get_varm_uint64
-# define NCO_PUT_ATT_UINT64 nc_put_att_uint64
-# define NCO_PUT_VAR1_UINT64 nc_put_var1_uint64
-# define NCO_PUT_VARA_UINT64 nc_put_vara_uint64
-# define NCO_PUT_VARM_UINT64 nc_put_varm_uint64
+# define NCO_UINT64_IO_SFX ulonglong
+# define NCO_GET_ATT_UINT64 nc_get_att_ulonglong
+# define NCO_GET_VAR1_UINT64 nc_get_var1_ulonglong
+# define NCO_GET_VARA_UINT64 nc_get_vara_ulonglong
+# define NCO_GET_VARM_UINT64 nc_get_varm_ulonglong
+# define NCO_PUT_ATT_UINT64 nc_put_att_ulonglong
+# define NCO_PUT_VAR1_UINT64 nc_put_var1_ulonglong
+# define NCO_PUT_VARA_UINT64 nc_put_vara_ulonglong
+# define NCO_PUT_VARM_UINT64 nc_put_varm_ulonglong
 #else
 #error "ERROR: Unrecognized NCO_UINT64 token"
 #endif /* NCO_UINT64 */

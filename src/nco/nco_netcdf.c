@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.61 2005-10-28 23:34:59 mangalam Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.62 2005-11-20 08:00:39 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -966,12 +966,12 @@ nco_put_att(const int nc_id,const int var_id,const char * const att_nm,const nc_
   case NC_CHAR: rcd=NCO_PUT_ATT_CHAR(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_char *)vp); break;
   case NC_BYTE: rcd=NCO_PUT_ATT_BYTE(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_byte *)vp); break;
 #ifdef ENABLE_NETCDF4
-    /* 20051024: netcdf4 library does not (yet) support these:
-  case NC_UBYTE: rcd=NCO_PUT_ATT_UBYTE(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_ubyte *)vp); break;
+    /* 20051119: netcdf4 library did not support these until alpha10, still does not support nco_put/get_att_ubyte() */
+    /*  case NC_UBYTE: rcd=NCO_PUT_ATT_UBYTE(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_ubyte *)vp); break;*/
   case NC_USHORT: rcd=NCO_PUT_ATT_USHORT(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_ushort *)vp); break;
   case NC_UINT: rcd=NCO_PUT_ATT_UINT(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_uint *)vp); break;
   case NC_INT64: rcd=NCO_PUT_ATT_INT64(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_int64 *)vp); break;
-  case NC_UINT64: rcd=NCO_PUT_ATT_UINT64(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_uint64 *)vp); break; */
+  case NC_UINT64: rcd=NCO_PUT_ATT_UINT64(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_uint64 *)vp); break;
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -992,12 +992,12 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
   case NC_CHAR: rcd=NCO_GET_ATT_CHAR(nc_id,var_id,att_nm,(nco_char *)vp); break;
   case NC_BYTE: rcd=NCO_GET_ATT_BYTE(nc_id,var_id,att_nm,(nco_byte *)vp); break;
 #ifdef ENABLE_NETCDF4
-    /* 20051024: netcdf4 library does not (yet) support these:
-  case NC_UBYTE: rcd=NCO_GET_ATT_UBYTE(nc_id,var_id,att_nm,(nco_ubyte *)vp); break;
+    /* 20051119: netcdf4 library did not support these until alpha10, still does not support nco_put/get_att_ubyte() */
+    /*  case NC_UBYTE: rcd=NCO_GET_ATT_UBYTE(nc_id,var_id,att_nm,(nco_ubyte *)vp); break;*/
   case NC_USHORT: rcd=NCO_GET_ATT_USHORT(nc_id,var_id,att_nm,(nco_ushort *)vp); break;
   case NC_UINT: rcd=NCO_GET_ATT_UINT(nc_id,var_id,att_nm,(nco_uint *)vp); break;
   case NC_INT64: rcd=NCO_GET_ATT_INT64(nc_id,var_id,att_nm,(nco_int64 *)vp); break;
-  case NC_UINT64: rcd=NCO_GET_ATT_UINT64(nc_id,var_id,att_nm,(nco_uint64 *)vp); break; */
+  case NC_UINT64: rcd=NCO_GET_ATT_UINT64(nc_id,var_id,att_nm,(nco_uint64 *)vp); break;
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */

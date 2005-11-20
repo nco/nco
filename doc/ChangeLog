@@ -1,3 +1,13 @@
+2005-11-19  Charlie Zender  <zender@uci.edu>
+
+	* Synchronize with netCDF4 alpha10, verified passes regression tests
+
+	* Expose new types in attribute function calls
+
+	* Change _int64/_uint64 to _longlong/_ulonglong in function names
+
+	* Change NC_STRICT_NC3 to NC_CLASSIC_MODEL
+
 2005-11-15  Charlie Zender  <zender@uci.edu>
 
 	* Added cheesy random number generator function rnd_nbr() to ncap
