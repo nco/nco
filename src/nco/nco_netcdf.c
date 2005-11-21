@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.62 2005-11-20 08:00:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.63 2005-11-21 08:11:48 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -330,8 +330,7 @@ nco_open_par(const char * const fl_nm,const int mode,MPI_Comm mpi_cmm,MPI_Info m
   /* Purpose: Wrapper for nc_open_par() */
   const char fnc_nm[]="nco_open_par()";
   int rcd;
-  /* fxm: TODO nco644 */  
-  /*  rcd=nc_open_par(fl_nm,mode,mpi_cmm,mpi_nfo,nc_id);*/
+  rcd=nc_open_par(fl_nm,mode,mpi_cmm,mpi_nfo,nc_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_open_par */
