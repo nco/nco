@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.147 2005-11-17 21:54:32 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.148 2005-11-23 00:32:28 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -106,7 +106,8 @@ AC_PROG_LN_S
 AC_PROG_LIBTOOL
 
 # until a fix for the libtool error is found.
-LIBTOOL="${LIBTOOL} --tag=ignore_tag_err"
+LIBTOOL="${LIBTOOL} --tag=CXX"
+#LIBTOOL="${LIBTOOL} --tag=ignore_tag_err"
 
 AM_CONDITIONAL(BUILD_YACC_SOURCE,[test "${YACC}" != "yacc" || test -f "src/nco/ncap_yacc.c"])
 
@@ -208,7 +209,7 @@ if test "${enable_dap}" != 'no'; then
 	AC_MSG_NOTICE([DAP support enabled])
 # libtool cleans up duplicate library links (e.g., dap++, nc-dap) unless told not to
 # New (3.5.0+) version of libnc-dap does not require duplicate libraries jhrg 6/3/05
-	LIBTOOL="${LIBTOOL} --tag=ignore_tag_err --preserve-dup-deps"
+	LIBTOOL="${LIBTOOL} --tag=CXX --preserve-dup-deps"
     fi
 fi
 AM_CONDITIONAL(TEST_DAP,[test "${enable_dap}" = 'yes'])

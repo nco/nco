@@ -19410,7 +19410,8 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 
 
 # until a fix for the libtool error is found.
-LIBTOOL="${LIBTOOL} --tag=ignore_tag_err"
+LIBTOOL="${LIBTOOL} --tag=CXX"
+#LIBTOOL="${LIBTOOL} --tag=ignore_tag_err"
 
 
 
@@ -21938,7 +21939,8 @@ nco_LIBS_no_DAP="${LIBS}"
 # Sorry about version numbers being confusing... jhrg 6/3/05
 
 # fxm: is DAP_ROOT (or DODS_ROOT) an obselete variable in DAP 3.5+?
-#AC_ARG_VAR([DAP_ROOT],[Root of DAP installation] (compile-time))
+# hjm thinks so.  Eliminate these 3 lines after running the dap tests with it disabled.
+#  AC_ARG_VAR([DAP_ROOT],[Root of DAP installation] (compile-time))
 # Check whether --enable-dap or --disable-dap was given.
 if test "${enable_dap+set}" = set; then
   enableval="$enable_dap"
@@ -22084,7 +22086,7 @@ _ACEOF
 echo "$as_me: DAP support enabled" >&6;}
 # libtool cleans up duplicate library links (e.g., dap++, nc-dap) unless told not to
 # New (3.5.0+) version of libnc-dap does not require duplicate libraries jhrg 6/3/05
-	LIBTOOL="${LIBTOOL} --tag=ignore_tag_err --preserve-dup-deps"
+	LIBTOOL="${LIBTOOL} --tag=CXX --preserve-dup-deps"
     fi
 fi
 
@@ -25429,6 +25431,7 @@ fi
 # If --enable-largefile define ENABLE_LARGEFILE
 # fxm: TODO bld45 Obsolete! Replace with test for 64-bit offset support (i.e., netCDF 3.6)
 if test "${enable_largefile}" = 'yes'; then
+    echo "We recommend against using this approach; use only if you cannot use netcdf 3.6 and above.  That said, we'll try..."
 
 cat >>confdefs.h <<\_ACEOF
 #define ENABLE_LARGEFILE 1

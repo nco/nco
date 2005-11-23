@@ -15,7 +15,7 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.19 2005-11-17 22:38:40 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.20 2005-11-23 00:32:28 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -41,13 +41,15 @@ our @EXPORT = qw (
 	verbosity
 	wat4inpt
 
-	@fl_cr8_dat @fl_tmg $prefix $opr_nm $opr_sng_mpi $md5 $md5found $bm_dir $mpi_prc $mpi_fke $dta_dir $aix_mpi_nvr_prfx
-	$nsr_xpc $os_nme @tst_cmd %tst_nbr $dbg_lvl $wnt_log $dsc_sng $outfile $fl_pth $tmr_app $fke_prefix $NUM_FLS
-	$udp_rpt $sock
+	$aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx @fl_cr8_dat @fl_tmg $prefix $opr_nm
+	$opr_sng_mpi $md5 $md5found $bm_dir $mpi_prc $mpi_fke $dta_dir $aix_mpi_
+	nvr_prfx	$nsr_xpc $os_nme @tst_cmd %tst_nbr $dbg_lvl $wnt_log $dsc_sng
+	$outfile $fl_pth $tmr_app $fke_prefix $NUM_FLS 	$udp_rpt $sock
 );
 
 use vars qw(
-	$aix_mpi_nvr_prfx  $dbg_lvl  $dot_fmt  $dot_nbr  $dot_nbr_min  $dot_sng  $dsc_fmt
+	$aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $dbg_lvl  $dot_fmt
+	$dot_nbr  $dot_nbr_min  $dot_sng  $dsc_fmt
 	$dsc_lng_max  $dsc_sng $fke_prefix $hiresfound  $md5  $mpi_prc  $mpi_prfx
 	$MY_BIN_DIR  $nsr_xpc  $opr_fmt  $opr_lng_max  @opr_lst
 	@opr_lst_all  @opr_lst_mpi $mpi_fke $opr_nm  $opr_rgr_mpi  $opr_sng_mpi
@@ -482,8 +484,10 @@ sub go {
 	# can run it in aix with naked command as long as env has been set up
 	# NB!  this will be fine for regression testing on the interactive node, but
 	# NB!  not for benchmarking under POE - intercepted and handled at startup
-	if ($aix){$mpi_prfx = " $aix_mpi_nvr_prfx $MY_BIN_DIR/mp";}
-	else     {$mpi_prfx = " mpirun -np $mpi_prc $MY_BIN_DIR/mp";} # assuming Linux-like MPI
+	# on AIX, non-MPI ops compiled with MPI will atttempt to run MP_PROCS.  To hold them
+	# to 1 process, have to add an explicit prefix ($aix_mpi_sgl_nvr), added below
+	if ($aix){ $mpi_prfx = " $aix_mpi_nvr_prfx $MY_BIN_DIR/mp";}
+	else     { $mpi_prfx = " mpirun -np $mpi_prc $MY_BIN_DIR/mp";} # assuming Linux-like MPI
 	$prfxd = 1; $timed = 1;
 
 	dbg_msg(3,"\$prefix=$prefix | \$mpi_prfx=$mpi_prfx | \$fke_prefix=$fke_prefix");
@@ -544,7 +548,9 @@ sub go {
 			if ($_ =~ m/^$op/ ) { # if the op is in the main list
 				if ($mpi_prc > 0 && $opr_sng_mpi =~ /$op/) { $_ = $tmr_app . $mpi_prfx . $_; } # and in the mpi list
 				elsif ($mpi_fke  && $opr_sng_mpi =~ /$op/) { $_ = $tmr_app . $fke_prefix . $_; } # the fake prefix
-				else  { $_ = $tmr_app . $prefix . $_; } # the std prefix
+				# non-MPI apps compiled w/ MPI need special prefix to hold them to 1 process
+				elsif ($aix) {$_ = $tmr_app . $aix_mpi_sgl_nvr_prfx . $prefix . $_;}
+				else         {$_ = $tmr_app . $prefix . $_; } # the std prefix
 				dbg_msg(2, "URGENT:cmdline= $_ \n");
 			}
 		}

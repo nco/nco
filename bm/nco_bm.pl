@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.111 2005-11-17 22:38:40 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.112 2005-11-23 00:32:28 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -29,7 +29,7 @@ use strict; # Protect all namespaces
 
 # Declare vars for strict
 use vars qw(
-$aix_mpi_nvr_prfx $arg_nbr  $bch_flg  $bm  @bm_cmd_ary  $bm_dir  $caseid  $cmd_ln
+$aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $arg_nbr  $bch_flg  $bm  @bm_cmd_ary  $bm_dir  $caseid  $cmd_ln
 $dbg_lvl  $dodap  $dot_fmt  $dot_nbr  $dot_nbr_min  $dot_sng  $dsc_fmt
 $dsc_lng_max  $dsc_sng  $dta_dir $dust_usr  %failure  $fl_cnt  @fl_cr8_dat
 $fl_pth  @fl_tmg  $foo1_fl  $foo2_fl  $foo_avg_fl  $foo_fl  $foo_T42_fl
@@ -56,6 +56,7 @@ for (my $i=0; $i<$arg_nbr; $i++){ $cmd_ln .= "$ARGV[$i] ";}
 
 # Set defaults for command line arguments
 $aix_mpi_nvr_prfx = "";
+$aix_mpi_sgl_nvr_prfx = "";
 $bch_flg=0; # [flg] Batch behavior
 $dbg_lvl = 0; # [enm] Print tests during execution for debugging
 $nco_D_flg = "";
@@ -194,7 +195,8 @@ if ($nvr_host =~ /esmf04m/ && $bm) {
 }
 if ($os_nme =~ /AIX/ && $rgr && $mpi_prc > 0) {
 	# set env vars for MPI to run on AIX (not just esmf)
-	$aix_mpi_nvr_prfx = "MP_PROCS=$mpi_prc MP_EUILIB='us' MP_NODES='1'  MP_TASKS_PER_NODE=$mpi_prc MP_RMPOOL='1' XLSMPOPTS='stack=86000000' ";
+	$aix_mpi_nvr_prfx = "MP_PROCS=$mpi_prc MP_EUILIB='us' MP_NODES='1'  MP_TASKS_PER_NODE=$mpi_prc MP_RMPOOL='1' ";
+	$aix_mpi_sgl_nvr_prfx = " MP_PROCS=1  MP_RMPOOL=1 ";
 }
 
 # check for bad cut on MacOSX
@@ -270,7 +272,7 @@ if ($mpi_prc > 0 && $mpi_fke) {
 
 
 	if (!$lam_ok && !$mpich_ok) {
-		print "\nWARN: you asked for an MPI run (--mpi_prc=$mpi_prc) but you don't seem to be running either LAM-MPI or MPICH.\nIf the run fails, you might try running either of those 2 MPI systems.\n";
+		print "\nWARN: you asked for an MPI run (--mpi_prc=$mpi_prc) but you don't seem to be running either LAM-MPI or MPICH (no running lamd or mpd).\nIf the run fails, you might try running one of those 2 MPI systems.\n";
 	}
 }
 
@@ -378,7 +380,7 @@ if (-e "/usr/bin/time" && -x "/usr/bin/time") {
 	$tmr_app = "/usr/bin/time ";
 	if (`uname` =~ "inux"){$tmr_app.="-p ";}
 } else { # just use whatever the shell thinks is the time app
-	$tmr_app = "time"; # bash builtin or other 'time'-like application (AIX)
+	$tmr_app = "time "; # bash builtin or other 'time'-like application (AIX)
 } # endif time
 
 if ($dbg_lvl > 1) {
