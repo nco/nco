@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.48 2005-08-15 01:48:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.49 2005-11-23 21:32:27 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -281,16 +281,31 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 
       /* var_lmn is offset into 1-D array corresponding to N-D indices dmn_ss */
       for(var_lmn=0;var_lmn<var_sz;var_lmn++){
+	/* dmn_ss are corresponding indices (subscripts) into N-D array */
+	/* Operations: 1 modulo, 1 pointer offset, 1 user memory fetch
+	   Repetitions: \lmnnbr
+	   Total Counts: \ntgnbr=2\lmnnbr, \mmrusrnbr=\lmnnbr
+	   NB: Counted RHS only */
 	dmn_ss[var_nbr_dmn_m1]=var_lmn%var_cnt[var_nbr_dmn_m1];
 	for(idx=0;idx<var_nbr_dmn_m1;idx++){
+	  /* Operations: 1 divide, 1 modulo, 2 pointer offset, 2 user memory fetch
+	     Repetitions: \lmnnbr(\dmnnbr-1)
+	     Counts: \ntgnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
+	     NB: Counted RHS only, ignored loop arithmetic/compare */
 	  dmn_ss[idx]=(long)(var_lmn/dmn_var_map[idx]);
 	  dmn_ss[idx]%=var_cnt[idx];
 	} /* end loop over dimensions */
 	
 	/* Map (shared) N-D array indices into 1-D index into original weight data */
 	wgt_lmn=0L;
+	/* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
+	   Repetitions: \lmnnbr\rnkwgt
+	   Counts: \ntgnbr=5\lmnnbr\rnkwgt, \mmrusrnbr=3\lmnnbr\rnkwgt */
 	for(idx=0;idx<wgt_nbr_dim;idx++) wgt_lmn+=dmn_ss[idx_wgt_var[idx]]*dmn_wgt_map[idx];
 	
+	/* Operations: 2 add, 2 multiply, 0 pointer offset, 1 system memory copy
+	   Repetitions: \lmnnbr
+	   Counts: \ntgnbr=4\lmnnbr, \mmrusrnbr=0, \mmrsysnbr=1 */
 	(void)memcpy(wgt_out_cp+var_lmn*wgt_typ_sz,wgt_cp+wgt_lmn*wgt_typ_sz,wgt_typ_sz);
 	
       } /* end loop over var_lmn */

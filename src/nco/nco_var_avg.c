@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.28 2005-07-01 05:33:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.29 2005-11-23 21:32:27 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -221,23 +221,39 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     
     /* var_lmn is offset into 1-D array */
     for(var_lmn=0;var_lmn<var_sz;var_lmn++){
-
       /* dmn_ss are corresponding indices (subscripts) into N-D array */
+	/* Operations: 1 modulo, 1 pointer offset, 1 user memory fetch
+	   Repetitions: \lmnnbr
+	   Total Counts: \ntgnbr=2\lmnnbr, \mmrusrnbr=\lmnnbr
+	   NB: Counted RHS only */
       dmn_ss[nbr_dmn_var_m1]=var_lmn%var_cnt[nbr_dmn_var_m1];
       for(idx=0;idx<nbr_dmn_var_m1;idx++){
+	/* Operations: 1 divide, 1 modulo, 2 pointer offset, 2 user memory fetch
+	   Repetitions: \lmnnbr(\dmnnbr-1)
+	   Counts: \ntgnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
+	   NB: Counted RHS only, ignored loop arithmetic/compare */
 	dmn_ss[idx]=(long)(var_lmn/dmn_var_map[idx]);
 	dmn_ss[idx]%=var_cnt[idx];
       } /* end loop over dimensions */
 
       /* Map variable's N-D array indices into a 1-D index into averaged data */
       fix_lmn=0L;
+      /* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
+	 Repetitions: \lmnnbr(\dmnnbr-\avgnbr)
+	 Counts: \ntgnbr=5\lmnnbr(\dmnnbr-\avgnbr), \mmrusrnbr=3\lmnnbr(\dmnnbr-\avgnbr) */
       for(idx=0;idx<nbr_dmn_fix;idx++) fix_lmn+=dmn_ss[idx_fix_var[idx]]*dmn_fix_map[idx];
       
       /* Map N-D array indices into 1-D offset from group offset */
       avg_lmn=0L;
+      /* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
+	 Repetitions: \lmnnbr\avgnbr
+	 Counts: \ntgnbr=5\lmnnbr\avgnbr, \mmrusrnbr=3\lmnnbr\avgnbr */
       for(idx=0;idx<dmn_avg_nbr;idx++) avg_lmn+=dmn_ss[idx_avg_var[idx]]*dmn_avg_map[idx];
       
       /* Copy current element in input array into its slot in sorted avg_val */
+      /* Operations: 3 add, 3 multiply, 0 pointer offset, 1 system memory copy
+	 Repetitions: \lmnnbr
+	 Counts: \ntgnbr=6\lmnnbr, \mmrusrnbr=0, \mmrsysnbr=1 */
       (void)memcpy(avg_cp+(fix_lmn*avg_sz+avg_lmn)*typ_sz,var_cp+var_lmn*typ_sz,(size_t)typ_sz);
     } /* end loop over var_lmn */
     

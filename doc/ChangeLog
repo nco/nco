@@ -1,3 +1,8 @@
+2005-11-23  Charlie Zender  <zender@uci.edu>
+
+	* Place operation count stanzas in expensive routines for paper:
+	nco_var_cnf_dmn(), nco_var_avg()
+
 2005-11-19  Charlie Zender  <zender@uci.edu>
 
 	* Synchronize with netCDF4 alpha10, verified passes regression tests
