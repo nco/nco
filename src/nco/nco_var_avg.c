@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.29 2005-11-23 21:32:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.30 2005-11-24 04:38:03 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -366,7 +366,14 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* ANSI-compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	/* Operations: 1 multiply 
+	   Repetitions: \dmnszavg^(\dmnnbr-\avgnbr)
+	   Total Counts: \ntgnbr=\dmnszavg^(\dmnnbr-\avgnbr) */
 	const long blk_off=idx_op2*sz_blk;
+	/* Operations: 1 fp add, 3 pointer offsets, 3 user memory fetch
+	   Repetitions: \lmnnbr
+	   Total Counts: \flpnbr=\lmnnbr, \ntgnbr=3\lmnnbr, \mmrusrnbr=3\lmnnbr,
+	   NB: Counted LHS+RHS+tally */
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.fp[idx_op2]+=op1.fp[blk_off+idx_blk];
 	tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */

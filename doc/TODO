@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.679 2005-11-18 23:43:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.680 2005-11-24 04:38:03 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -497,10 +497,46 @@ End valgrind section
 ************************************************************************
 Begin oprofile section
 ************************************************************************
-sudo opcontrol --reset
+xosview &
+sudo opcontrol --vmlinux=/usr/src/linux-2.6.11/vmlinux
+sudo opcontrol --start
+
+cat > ~/nco/bm/prf_ncbo.sh << EOF
 cd ${DATA}/nco_bm
-ncbo -O --op_typ='-' -p ${DATA}/nco_bm ipcc_dly_T85.nc ipcc_dly_T85_00.nc ${DATA}/ipcc.diff.nc
-opreport --exclude-dependent --demangle=smart --symbols > prf_ncbo.txt
+sudo opcontrol --reset
+time ${MY_BIN_DIR}/ncbo -O --op_typ='-' -p ${DATA}/nco_bm ipcc_dly_T85.nc ipcc_dly_T85_00.nc ${DATA}/nco_bm/prf_ncbo.nc
+opreport --exclude-dependent --demangle=smart --symbols > ~/nco/bm/prf_ncbo.txt
+EOF
+chmod a+x ~/nco/bm/prf_ncbo.sh
+~/nco/bm/prf_ncbo.sh
+
+cat > ~/nco/bm/prf_ncwa.sh << EOF
+cd ${DATA}/nco_bm
+sudo opcontrol --reset
+time ${MY_BIN_DIR}/ncwa -O -a lat,lon -w lat -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/prf_ncwa.nc
+opreport --exclude-dependent --demangle=smart --symbols > ~/nco/bm/prf_ncwa.txt
+EOF
+chmod a+x ~/nco/bm/prf_ncwa.sh
+~/nco/bm/prf_ncwa.sh
+
+cat > ~/nco/bm/prf_ncwa.sh << EOF
+cd ${DATA}/nco_bm
+sudo opcontrol --reset
+time ${MY_BIN_DIR}/ncwa -O -a lat,lon,lev,time -w lat -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/prf_ncwa.nc
+opreport --exclude-dependent --demangle=smart --symbols > ~/nco/bm/prf_ncwa_avgall.txt
+EOF
+chmod a+x ~/nco/bm/prf_ncwa.sh
+~/nco/bm/prf_ncwa.sh
+
+cat > ~/nco/bm/prf_ncwa.sh << EOF
+cd ${DATA}/nco_bm
+sudo opcontrol --reset
+time ${MY_BIN_DIR}/ncwa -O -d lat,0.,90. -d lon,0.,180. -d lev,0,15 -d time,0.,3. -a lat,lon,lev,time -w lat -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/prf_ncwa.nc
+opreport --exclude-dependent --demangle=smart --symbols > ~/nco/bm/prf_ncwa_hlf.txt
+EOF
+chmod a+x ~/nco/bm/prf_ncwa.sh
+~/nco/bm/prf_ncwa.sh
+
 ************************************************************************
 End oprofile section
 ************************************************************************
