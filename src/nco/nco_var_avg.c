@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.34 2005-11-26 20:24:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.35 2005-11-26 21:40:26 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -17,10 +17,10 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Reduce given variable over specified dimensions 
-     "Reduce" means to reduce rank of variable by performing an arithmetic operation
+     "Reduce" means to rank-reduce variable by performing arithmetic operation
      Output variable is duplicate of input variable, except for averaging dimensions
      Default operation is averaging, but nco_op_typ can also be min, max, etc.
-     nco_var_avg() overwrites contents, if any, of tally array with number of valid reduction operations
+     nco_var_avg() overwrites contents, if any, of tally array with number of valid input elements contributing to each valid output element
 
      Input variable structure is destroyed and routine returns resized, partially reduced variable
      For some operations, such as min, max, ttl, variable returned by nco_var_avg() is complete and need not be further processed
@@ -143,10 +143,10 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   fix->cnt=(long *)nco_realloc(fix->cnt,nbr_dmn_fix*sizeof(long));
   fix->end=(long *)nco_realloc(fix->end,nbr_dmn_fix*sizeof(long));
   
-  /* If product of sizes of all averaging dimensions is 1, input and output value arrays should be identical 
-     Since var->val was already copied to fix->val by nco_var_dpl() at the beginning
-     of this routine, only one task remains, to set fix->tally appropriately. */
   if(avg_sz == 1L){
+    /* If averaging block size is 1, input and output value arrays are identical 
+       var->val was copied to fix->val by nco_var_dpl() at beginning of routine
+       Only one task remains: to set fix->tally appropriately */
     long *fix_tally;
 
     fix_tally=fix->tally;
@@ -170,125 +170,132 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     } /* fix->has_mss_val */
   } /* end if avg_sz == 1L */
 
-  /* A complex and expensive collection procedure of generating averaging blocks
-     works in all cases but is unnecessary in one important case.
-     If the averaging dimensions are any number of the most rapidly varying (MRV) 
-     dimensions, then no re-arrangement is necessary because the averaging blocks
-     are the same as the original storage. 
-     The averaging dimensions are the MRV dimensions iff the nbr_dmn_fix fixed 
-     dimensions are one-to-one with the first nbr_dmn_fix input dimensions. 
-     Another way to answer this question is to compare the dmn_avg_nbr averaging 
-     dimensions with the last dmn_avg_nbr dimensions of the input variable.
-     However, the averaging dimensions may appear in any order so it seems more
-     straightforward to compare the fixed dimensions.  */
+  /* Distribute all elements of input hyperslab into averaging block in avg_val
+     Each block contains avg_sz elements in contiguous buffer 
+     Reduction step then "reduces" each block into single output element */
   if(avg_sz != 1L){
+    bool AVG_DMN_ARE_MRV=False; /* [flg] Avergaging dimensions are MRV dimensions */
+    ptr_unn avg_val;
+    
+    /* Initialize data needed by reduction step independent of collection algorithm */
+    var_sz=var->sz;
+
+    /* Complex expensive collection step for creating averaging blocks works 
+       works in all cases though is unnecessary in one important case.
+       If averaging dimensions are most rapidly varying (MRV) dimensions, then no 
+       re-arrangement is necessary because original variable is stored in averaging
+       block order.
+       Averaging dimensions are MRV dimensions iff nbr_dmn_fix fixed dimensions are 
+       one-to-one with first nbr_dmn_fix input dimensions. 
+       Alternatively, could compare dmn_avg_nbr averaging dimensions to last 
+       dmn_avg_nbr dimensions of input variable.
+       However, averaging dimensions may appear in any order so it is more
+       straightforward to compare fixed dimensions to LRV input dimensions. */
     for(idx=0;idx<nbr_dmn_fix;idx++) 
       if(idx_fix_var[idx] != idx) break;
     if(idx == nbr_dmn_fix){
       if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Reduction dimensions are %d most-rapidly-varying (MRV) dimensions of %s. Possible to skip collection step and proceed straight to reduction step.\n",prg_nm_get(),dmn_avg_nbr,fix->nm);
+      AVG_DMN_ARE_MRV=True; /* [flg] Avergaging dimensions are MRV dimensions */
     } /* idx != nbr_dmn_fix */
-  } /* end if avg_sz == 1L */
-
-  /* Starting at first element of input hyperslab, add up next stride elements
-     and place result in first element of output hyperslab. */
-  if(avg_sz != 1L){
-    char *avg_cp;
-    char *var_cp;
     
-    int typ_sz;
-    int nbr_dmn_var_m1;
-
-    long *var_cnt;
-    long avg_lmn;
-    long fix_lmn;
-    long var_lmn;
-    long dmn_ss[NC_MAX_DIMS];
-    long dmn_var_map[NC_MAX_DIMS];
-    long dmn_avg_map[NC_MAX_DIMS];
-    long dmn_fix_map[NC_MAX_DIMS];
-
-    ptr_unn avg_val;
-
-    nbr_dmn_var_m1=nbr_dmn_var-1;
-    typ_sz=nco_typ_lng(fix->type);
-    var_cnt=var->cnt;
-    var_cp=(char *)var->val.vp;
-    var_sz=var->sz;
-    
-    /* Reuse existing value buffer (it is of size var_sz, created by nco_var_dpl()) */
-    avg_val=fix->val;
-    avg_cp=(char *)avg_val.vp;
-    /* Create new value buffer for output (averaged) size */
-    fix->val.vp=(void *)nco_malloc(fix_sz*nco_typ_lng(fix->type));
-    /* Resize (or just plain allocate) tally array */
-    fix->tally=(long *)nco_realloc(fix->tally,fix_sz*sizeof(long));
-
-    /* Initialize value and tally arrays */
-    (void)nco_zero_long(fix_sz,fix->tally);
-    (void)nco_var_zero(fix->type,fix_sz,fix->val);
-  
-    /* Compute map for each dimension of input variable */
-    for(idx=0;idx<nbr_dmn_var;idx++) dmn_var_map[idx]=1L;
-    for(idx=0;idx<nbr_dmn_var-1;idx++)
-      for(idx_dmn=idx+1;idx_dmn<nbr_dmn_var;idx_dmn++)
-	dmn_var_map[idx]*=var->cnt[idx_dmn];
-    
-    /* Compute map for each dimension of output variable */
-    for(idx=0;idx<nbr_dmn_fix;idx++) dmn_fix_map[idx]=1L;
-    for(idx=0;idx<nbr_dmn_fix-1;idx++)
-      for(idx_dmn=idx+1;idx_dmn<nbr_dmn_fix;idx_dmn++)
-	dmn_fix_map[idx]*=fix->cnt[idx_dmn];
-    
-    /* Compute map for each dimension of averaging buffer */
-    for(idx=0;idx<dmn_avg_nbr;idx++) dmn_avg_map[idx]=1L;
-    for(idx=0;idx<dmn_avg_nbr-1;idx++)
-      for(idx_dmn=idx+1;idx_dmn<dmn_avg_nbr;idx_dmn++)
-	dmn_avg_map[idx]*=dmn_avg[idx_dmn]->cnt;
-    
-    /* var_lmn is offset into 1-D array */
-    for(var_lmn=0;var_lmn<var_sz;var_lmn++){
-      /* dmn_ss are corresponding indices (subscripts) into N-D array */
+    if(True){
+      /*    if(!AVG_DMN_ARE_MRV){*/
+      /* Dreaded, expensive collection algorithm sorts input into averaging blocks */
+      char *avg_cp;
+      char *var_cp;
+      
+      int typ_sz;
+      int nbr_dmn_var_m1;
+      
+      long *var_cnt;
+      long avg_lmn;
+      long fix_lmn;
+      long var_lmn;
+      long dmn_ss[NC_MAX_DIMS];
+      long dmn_var_map[NC_MAX_DIMS];
+      long dmn_avg_map[NC_MAX_DIMS];
+      long dmn_fix_map[NC_MAX_DIMS];
+      
+      nbr_dmn_var_m1=nbr_dmn_var-1;
+      typ_sz=nco_typ_lng(fix->type);
+      var_cnt=var->cnt;
+      var_cp=(char *)var->val.vp;
+      
+      /* Reuse existing value buffer (it is of size var_sz, created by nco_var_dpl()) */
+      avg_val=fix->val;
+      avg_cp=(char *)avg_val.vp;
+      /* Create new value buffer for output (averaged) size */
+      fix->val.vp=(void *)nco_malloc(fix_sz*nco_typ_lng(fix->type));
+      /* Resize (or just plain allocate) tally array */
+      fix->tally=(long *)nco_realloc(fix->tally,fix_sz*sizeof(long));
+      
+      /* Initialize value and tally arrays */
+      (void)nco_zero_long(fix_sz,fix->tally);
+      (void)nco_var_zero(fix->type,fix_sz,fix->val);
+      
+      /* Compute map for each dimension of input variable */
+      for(idx=0;idx<nbr_dmn_var;idx++) dmn_var_map[idx]=1L;
+      for(idx=0;idx<nbr_dmn_var-1;idx++)
+	for(idx_dmn=idx+1;idx_dmn<nbr_dmn_var;idx_dmn++)
+	  dmn_var_map[idx]*=var->cnt[idx_dmn];
+      
+      /* Compute map for each dimension of output variable */
+      for(idx=0;idx<nbr_dmn_fix;idx++) dmn_fix_map[idx]=1L;
+      for(idx=0;idx<nbr_dmn_fix-1;idx++)
+	for(idx_dmn=idx+1;idx_dmn<nbr_dmn_fix;idx_dmn++)
+	  dmn_fix_map[idx]*=fix->cnt[idx_dmn];
+      
+      /* Compute map for each dimension of averaging buffer */
+      for(idx=0;idx<dmn_avg_nbr;idx++) dmn_avg_map[idx]=1L;
+      for(idx=0;idx<dmn_avg_nbr-1;idx++)
+	for(idx_dmn=idx+1;idx_dmn<dmn_avg_nbr;idx_dmn++)
+	  dmn_avg_map[idx]*=dmn_avg[idx_dmn]->cnt;
+      
+      /* var_lmn is offset into 1-D array */
+      for(var_lmn=0;var_lmn<var_sz;var_lmn++){
+	/* dmn_ss are corresponding indices (subscripts) into N-D array */
 	/* Operations: 1 modulo, 1 pointer offset, 1 user memory fetch
 	   Repetitions: \lmnnbr
 	   Total Counts: \ntgnbr=2\lmnnbr, \mmrusrnbr=\lmnnbr
 	   NB: LHS assumed compact and cached, counted RHS offsets and fetches only */
-      dmn_ss[nbr_dmn_var_m1]=var_lmn%var_cnt[nbr_dmn_var_m1];
-      for(idx=0;idx<nbr_dmn_var_m1;idx++){
-	/* Operations: 1 divide, 1 modulo, 2 pointer offset, 2 user memory fetch
-	   Repetitions: \lmnnbr(\dmnnbr-1)
-	   Counts: \ntgnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
-	   NB: LHS assumed compact and cached, counted RHS offsets and fetches only
-	   NB: Neglected loop arithmetic/compare */
-	dmn_ss[idx]=(long)(var_lmn/dmn_var_map[idx]);
-	dmn_ss[idx]%=var_cnt[idx];
-      } /* end loop over dimensions */
-
-      /* Map variable's N-D array indices into a 1-D index into averaged data */
-      fix_lmn=0L;
-      /* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
-	 Repetitions: \lmnnbr(\dmnnbr-\avgnbr)
-	 Counts: \ntgnbr=5\lmnnbr(\dmnnbr-\avgnbr), \mmrusrnbr=3\lmnnbr(\dmnnbr-\avgnbr) */
-      for(idx=0;idx<nbr_dmn_fix;idx++) fix_lmn+=dmn_ss[idx_fix_var[idx]]*dmn_fix_map[idx];
-      
-      /* Map N-D array indices into 1-D offset from group offset */
-      avg_lmn=0L;
-      /* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
-	 Repetitions: \lmnnbr\avgnbr
-	 Counts: \ntgnbr=5\lmnnbr\avgnbr, \mmrusrnbr=3\lmnnbr\avgnbr */
-      for(idx=0;idx<dmn_avg_nbr;idx++) avg_lmn+=dmn_ss[idx_avg_var[idx]]*dmn_avg_map[idx];
-      
-      /* Copy current element in input array into its slot in sorted avg_val */
-      /* Operations: 3 add, 3 multiply, 0 pointer offset, 1 system memory copy
-	 Repetitions: \lmnnbr
-	 Counts: \ntgnbr=6\lmnnbr, \mmrusrnbr=0, \mmrsysnbr=1 */
-      (void)memcpy(avg_cp+(fix_lmn*avg_sz+avg_lmn)*typ_sz,var_cp+var_lmn*typ_sz,(size_t)typ_sz);
-    } /* end loop over var_lmn */
+	dmn_ss[nbr_dmn_var_m1]=var_lmn%var_cnt[nbr_dmn_var_m1];
+	for(idx=0;idx<nbr_dmn_var_m1;idx++){
+	  /* Operations: 1 divide, 1 modulo, 2 pointer offset, 2 user memory fetch
+	     Repetitions: \lmnnbr(\dmnnbr-1)
+	     Counts: \ntgnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
+	     NB: LHS assumed compact and cached, counted RHS offsets and fetches only
+	     NB: Neglected loop arithmetic/compare */
+	  dmn_ss[idx]=(long)(var_lmn/dmn_var_map[idx]);
+	  dmn_ss[idx]%=var_cnt[idx];
+	} /* end loop over dimensions */
+	
+	/* Map variable's N-D array indices into a 1-D index into averaged data */
+	fix_lmn=0L;
+	/* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
+	   Repetitions: \lmnnbr(\dmnnbr-\avgnbr)
+	   Counts: \ntgnbr=5\lmnnbr(\dmnnbr-\avgnbr), \mmrusrnbr=3\lmnnbr(\dmnnbr-\avgnbr) */
+	for(idx=0;idx<nbr_dmn_fix;idx++) fix_lmn+=dmn_ss[idx_fix_var[idx]]*dmn_fix_map[idx];
+	
+	/* Map N-D array indices into 1-D offset from group offset */
+	avg_lmn=0L;
+	/* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
+	   Repetitions: \lmnnbr\avgnbr
+	   Counts: \ntgnbr=5\lmnnbr\avgnbr, \mmrusrnbr=3\lmnnbr\avgnbr */
+	for(idx=0;idx<dmn_avg_nbr;idx++) avg_lmn+=dmn_ss[idx_avg_var[idx]]*dmn_avg_map[idx];
+	
+	/* Copy current element in input array into its slot in sorted avg_val */
+	/* Operations: 3 add, 3 multiply, 0 pointer offset, 1 system memory copy
+	   Repetitions: \lmnnbr
+	   Counts: \ntgnbr=6\lmnnbr, \mmrusrnbr=0, \mmrsysnbr=1 */
+	(void)memcpy(avg_cp+(fix_lmn*avg_sz+avg_lmn)*typ_sz,var_cp+var_lmn*typ_sz,(size_t)typ_sz);
+      } /* end loop over var_lmn */
+    } /* AVG_DMN_ARE_MRV */
     
     /* Input data are now sorted and stored (in avg_val) in blocks (of length avg_sz)
        in same order as blocks' average values will appear in output buffer. 
        Averaging routines can take advantage of this by casting avg_val to 
        two dimensional variable and averaging over inner dimension. 
-       Tally array is actually set in nco_var_avg_reduce_*() */
+       nco_var_avg_reduce_*() sets tally array */
     switch(nco_op_typ){
     case nco_op_max:
       (void)nco_var_avg_reduce_max(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);
@@ -306,19 +313,21 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
       (void)nco_var_avg_reduce_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);	  		
       break;
     } /* end case */
-
+    
     /* Free dynamic memory that held rearranged input variable values */
     avg_val.vp=nco_free(avg_val.vp);
   } /* end if avg_sz != 1 */
   
-  /* Jump here if variable is not averaged */
+  /* Jump here when variable is not to be reduced. This occurs when
+     1. Variable contains no averaging dimensions
+     2. Averaging block size is 1 */
  cln_and_xit:
-
+  
   /* Free input variable */
   var=nco_var_free(var);
   dmn_avg=(dmn_sct **)nco_free(dmn_avg);
   dmn_fix=(dmn_sct **)nco_free(dmn_fix);
-
+  
   /* Return averaged variable */
   return fix;
 } /* end nco_var_avg() */
@@ -345,7 +354,7 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
      Routine only does summation rather than averaging in order to remain flexible
      Operations which require normalization, e.g., averaging, must call nco_var_nrm() 
      or nco_var_dvd() to divide sum set in this routine by tally set in this routine. */
-
+  
   /* Each operation has GNUC and non-GNUC blocks:
      GNUC: Utilize (non-ANSI-compliant) compiler support for local automatic arrays
      This results in more elegent loop structure and, theoretically, in faster performance
@@ -354,7 +363,7 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
      
      non-GNUC: Fully ANSI-compliant structure
      Fortran: Support deprecated */
-
+  
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
   long idx_op1;
