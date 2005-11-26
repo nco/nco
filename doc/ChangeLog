@@ -1,3 +1,7 @@
+2005-11-25  Charlie Zender  <zender@uci.edu>
+
+	* Change "long missing_value" to "nco_int missing_value"
+
 2005-11-23  Charlie Zender  <zender@uci.edu>
 
 	* Place operation count stanzas in expensive routines for paper:

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.30 2005-11-24 04:38:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.31 2005-11-26 05:43:26 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -225,13 +225,14 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 	/* Operations: 1 modulo, 1 pointer offset, 1 user memory fetch
 	   Repetitions: \lmnnbr
 	   Total Counts: \ntgnbr=2\lmnnbr, \mmrusrnbr=\lmnnbr
-	   NB: Counted RHS only */
+	   NB: LHS assumed compact and cached, counted RHS offsets and fetches only */
       dmn_ss[nbr_dmn_var_m1]=var_lmn%var_cnt[nbr_dmn_var_m1];
       for(idx=0;idx<nbr_dmn_var_m1;idx++){
 	/* Operations: 1 divide, 1 modulo, 2 pointer offset, 2 user memory fetch
 	   Repetitions: \lmnnbr(\dmnnbr-1)
 	   Counts: \ntgnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
-	   NB: Counted RHS only, ignored loop arithmetic/compare */
+	   NB: LHS assumed compact and cached, counted RHS offsets and fetches only
+	   NB: Neglected loop arithmetic/compare */
 	dmn_ss[idx]=(long)(var_lmn/dmn_var_map[idx]);
 	dmn_ss[idx]%=var_cnt[idx];
       } /* end loop over dimensions */
@@ -373,7 +374,7 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
 	/* Operations: 1 fp add, 3 pointer offsets, 3 user memory fetch
 	   Repetitions: \lmnnbr
 	   Total Counts: \flpnbr=\lmnnbr, \ntgnbr=3\lmnnbr, \mmrusrnbr=3\lmnnbr,
-	   NB: Counted LHS+RHS+tally */
+	   NB: Counted LHS+RHS+tally offsets and fetches */
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.fp[idx_op2]+=op1.fp[blk_off+idx_blk];
 	tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.35 2005-10-25 05:51:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.36 2005-11-26 05:43:26 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -54,7 +54,7 @@ nco_var_abs /* [fnc] Replace op1 values by their absolute values */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]=labs(op1.lp[idx]); /* int abs(int), long labs(long) */
     }else{
-      const long mss_val_lng=*mss_val.lp;
+      const nco_int mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]=labs(op1.lp[idx]); /* int abs(int), long labs(long) */
       } /* end for */
@@ -133,7 +133,7 @@ nco_var_add /* [fnc] Add first operand to second operand */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.lp[idx]+=op1.lp[idx];
     }else{
-      const long mss_val_lng=*mss_val.lp;
+      const nco_int mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if((op2.lp[idx] != mss_val_lng) && (op1.lp[idx] != mss_val_lng)) op2.lp[idx]+=op1.lp[idx]; else op2.lp[idx]=mss_val_lng;
       } /* end for */
@@ -235,7 +235,7 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
 	tally[idx]++;
       } /* end for */
     }else{
-      const long mss_val_lng=*mss_val.lp;
+      const nco_int mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if((op2.lp[idx] != mss_val_lng) && (op1.lp[idx] != mss_val_lng)){
 	  op2.lp[idx]+=op1.lp[idx];
@@ -316,7 +316,7 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
 	tally[idx]++;
       } /* end for */
     }else{
-      const long mss_val_lng=*mss_val.lp;
+      const nco_int mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if((op2.lp[idx] != mss_val_lng) && (op1.lp[idx] != mss_val_lng)){
 	  op2.lp[idx]+=op1.lp[idx];
@@ -443,7 +443,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
 	tally[idx]++;
       } /* end for */
     }else{
-      const long mss_val_lng=*mss_val.lp;
+      const nco_int mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if(op1.lp[idx] != mss_val_lng){
 	  op2.lp[idx]+=op1.lp[idx];
@@ -530,7 +530,7 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.lp[idx]/=op1.lp[idx];
     }else{
-      const long mss_val_lng=*mss_val.lp;
+      const nco_int mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if((op2.lp[idx] != mss_val_lng) && (op1.lp[idx] != mss_val_lng)) op2.lp[idx]/=op1.lp[idx]; else op2.lp[idx]=mss_val_lng;
       } /* end for */
@@ -615,7 +615,7 @@ nco_var_max_bnr /* [fnc] Maximize two operands */
 	if(op2.lp[idx] < op1.lp[idx]) 
 	  op2.lp[idx]=op1.lp[idx];
     }else{
-      const long mss_val_lng=*mss_val.lp;
+      const nco_int mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if(op2.lp[idx] == mss_val_lng) 
 	  op2.lp[idx]=op1.lp[idx];
@@ -705,7 +705,7 @@ nco_var_min_bnr /* [fnc] Minimize two operands */
 	if(op2.lp[idx] > op1.lp[idx]) 
 	  op2.lp[idx]=op1.lp[idx];
     }else{
-      const long mss_val_lng=*mss_val.lp;
+      const nco_int mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if(op2.lp[idx] == mss_val_lng) 
 	  op2.lp[idx]=op1.lp[idx];
@@ -786,7 +786,7 @@ nco_var_mlt /* [fnc] Multiply first operand by second operand */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.lp[idx]*=op1.lp[idx];
     }else{
-      const long mss_val_lng=*mss_val.lp;
+      const nco_int mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if((op2.lp[idx] != mss_val_lng) && (op1.lp[idx] != mss_val_lng)) op2.lp[idx]*=op1.lp[idx]; else op2.lp[idx]=mss_val_lng;
       } /* end for */
@@ -864,7 +864,7 @@ nco_var_mod /* [fnc] Remainder (modulo) operation of two variables */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.lp[idx]=op1.lp[idx]%op2.lp[idx];
     }else{
-      const long mss_val_lng=*mss_val.lp;
+      const nco_int mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if((op2.lp[idx] != mss_val_lng) && (op1.lp[idx] != mss_val_lng)) op2.lp[idx]=op1.lp[idx]%op2.lp[idx]; else op2.lp[idx]=mss_val_lng;
       } /* end for */
@@ -965,12 +965,12 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
     break;
   case NC_INT:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.lp[idx] != (long)op1) op3.lp[idx]=mss_val_lng; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.lp[idx] == (long)op1) op3.lp[idx]=mss_val_lng; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.lp[idx] >= (long)op1) op3.lp[idx]=mss_val_lng; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.lp[idx] <= (long)op1) op3.lp[idx]=mss_val_lng; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.lp[idx] >  (long)op1) op3.lp[idx]=mss_val_lng; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.lp[idx] <  (long)op1) op3.lp[idx]=mss_val_lng; break;
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.lp[idx] != (nco_int)op1) op3.lp[idx]=mss_val_lng; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.lp[idx] == (nco_int)op1) op3.lp[idx]=mss_val_lng; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.lp[idx] >= (nco_int)op1) op3.lp[idx]=mss_val_lng; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.lp[idx] <= (nco_int)op1) op3.lp[idx]=mss_val_lng; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.lp[idx] >  (nco_int)op1) op3.lp[idx]=mss_val_lng; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.lp[idx] <  (nco_int)op1) op3.lp[idx]=mss_val_lng; break;
     } /* end switch */
     break;
   case NC_SHORT:
@@ -1034,6 +1034,10 @@ nco_var_nrm /* [fnc] Normalize value of first operand by count in tally array */
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
+      /* Operations: 1 fp divide, 2 pointer offset, 2 user memory fetch
+	 Repetitions: \dmnszavg^(\dmnnbr-\avgnbr)
+	 Total Counts: \flpnbr=\dmnszavg^(\dmnnbr-\avgnbr), \ntgnbr=2\dmnszavg^(\dmnnbr-\avgnbr), \mmrusrnbr=2\dmnszavg^(\dmnnbr-\avgnbr)
+	 NB: Counted LHS+RHS+tally offsets and fetches */
       for(idx=0;idx<sz;idx++) op1.fp[idx]/=tally[idx];
     }else{
       const float mss_val_flt=*mss_val.fp;
@@ -1052,7 +1056,7 @@ nco_var_nrm /* [fnc] Normalize value of first operand by count in tally array */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]/=tally[idx];
     }else{
-      const long mss_val_lng=*mss_val.lp;
+      const nco_int mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.lp[idx]/=tally[idx]; else op1.lp[idx]=mss_val_lng;
     } /* end else */
     break;
@@ -1120,7 +1124,7 @@ nco_var_nrm_sdn /* [fnc] Normalize value of first operand by count-1 in tally ar
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]/=(tally[idx]-1);
     }else{
-      const long mss_val_lng=*mss_val.lp;
+      const nco_int mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.lp[idx]/=(tally[idx]-1); else op1.lp[idx]=mss_val_lng;
     } /* end else */
     break;
@@ -1257,7 +1261,7 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.lp[idx]-=op1.lp[idx];
     }else{
-      const long mss_val_lng=*mss_val.lp;
+      const nco_int mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if((op2.lp[idx] != mss_val_lng) && (op1.lp[idx] != mss_val_lng)) op2.lp[idx]-=op1.lp[idx]; else op2.lp[idx]=mss_val_lng;
       } /* end for */
@@ -1347,14 +1351,14 @@ nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second opera
   case NC_INT:
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++){
-	op2.lp[idx]=(long)sqrt((double)(op1.lp[idx]));
+	op2.lp[idx]=(nco_int)sqrt((double)(op1.lp[idx]));
 	tally[idx]++;
       } /* end for */
     }else{
-      const long mss_val_lng=*mss_val.lp;
+      const nco_int mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if(op1.lp[idx] != mss_val_lng){
-	  op2.lp[idx]=(long)sqrt((double)(op1.lp[idx]));
+	  op2.lp[idx]=(nco_int)sqrt((double)(op1.lp[idx]));
 	  tally[idx]++;
 	} /* end if */
       } /* end for */

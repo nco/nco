@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.680 2005-11-24 04:38:03 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.681 2005-11-26 05:43:26 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -531,7 +531,7 @@ chmod a+x ~/nco/bm/prf_ncwa.sh
 cat > ~/nco/bm/prf_ncwa.sh << EOF
 cd ${DATA}/nco_bm
 sudo opcontrol --reset
-time ${MY_BIN_DIR}/ncwa -O -d lat,0.,90. -d lon,0.,180. -d lev,0,15 -d time,0.,3. -a lat,lon,lev,time -w lat -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/prf_ncwa.nc
+time ${MY_BIN_DIR}/ncwa -O -F -d lat,,64 -d lon,,128 -d lev,,16 -d time,,4 -a lat,lon,lev,time -w lat -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/prf_ncwa.nc
 opreport --exclude-dependent --demangle=smart --symbols > ~/nco/bm/prf_ncwa_hlf.txt
 EOF
 chmod a+x ~/nco/bm/prf_ncwa.sh

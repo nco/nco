@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.49 2005-11-23 21:32:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.50 2005-11-26 05:43:26 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -285,13 +285,14 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 	/* Operations: 1 modulo, 1 pointer offset, 1 user memory fetch
 	   Repetitions: \lmnnbr
 	   Total Counts: \ntgnbr=2\lmnnbr, \mmrusrnbr=\lmnnbr
-	   NB: Counted RHS only */
+	   NB: LHS assumed compact and cached, counted RHS offsets and fetches only */
 	dmn_ss[var_nbr_dmn_m1]=var_lmn%var_cnt[var_nbr_dmn_m1];
 	for(idx=0;idx<var_nbr_dmn_m1;idx++){
 	  /* Operations: 1 divide, 1 modulo, 2 pointer offset, 2 user memory fetch
 	     Repetitions: \lmnnbr(\dmnnbr-1)
 	     Counts: \ntgnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
-	     NB: Counted RHS only, ignored loop arithmetic/compare */
+	     NB: LHS assumed compact and cached, counted RHS offsets and fetches only
+	     NB: Neglected loop arithmetic/compare */
 	  dmn_ss[idx]=(long)(var_lmn/dmn_var_map[idx]);
 	  dmn_ss[idx]%=var_cnt[idx];
 	} /* end loop over dimensions */
