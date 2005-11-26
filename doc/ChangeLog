@@ -1,3 +1,7 @@
+2005-11-26  Charlie Zender  <zender@uci.edu>
+
+	* Test for averaging dimensions being MRV dimensions
+
 2005-11-25  Charlie Zender  <zender@uci.edu>
 
 	* Change "long missing_value" to "nco_int missing_value"
@@ -24,32 +28,40 @@
 	for generating fake data. Search source for TODO nco652 and improve!
 	
 2005-11-14  Harry Mangalam <hjm@tacgi.com>
+
 	* retired following TODOs
-	  bld68. hjm Verify configure with minimal options works with MACOSX
-	  bld53. hjm Add --fl_fmt option to nco_bm.pl (see ncks.c for fl_fmt values)
-	  bld62. hjm Make regressions fail when input file not created but
-	    re-used from previous test etc
-	  bld71. hjm Mac OS X: remove false positive regressions in ncwa (cut?)
-	  bld72. hjm nco_bm: ensure "foo" (intermediate files) accessed locally
-	    not over DAP
-	  bld46. Is DAP_ROOT (or DODS_ROOT) an obsolete variable in DAP 3.5+? if
-	    so obsolete it
+	bld68. hjm Verify configure with minimal options works with MACOSX
+	bld53. hjm Add --fl_fmt option to nco_bm.pl (see ncks.c for fl_fmt values)
+	bld62. hjm Make regressions fail when input file not created but
+	       re-used from previous test etc
+	bld71. hjm Mac OS X: remove false positive regressions in ncwa (cut?)
+	bld72. hjm nco_bm: ensure "foo" (intermediate files) accessed locally
+	       not over DAP
+	bld46. Is DAP_ROOT (or DODS_ROOT) an obsolete variable in DAP 3.5+? if
+	       so obsolete it
 
 2005-11-14  Harry Mangalam <hjm@tacgi.com>
+
 	* corrected Benchmark code for opendap access.
 
 2005-11-11  Harry Mangalam <hjm@tacgi.com>
+
 	* fixed net tests to test only returned value, not entire msg
+
 	* Added UDP reporting query to regression and benchmark runs
-	  if users explicitly agree, to capture failures in regressiions
-	  automatically for better profiling.  Queries users if they will 
-	  allow data to be returned UNLESS the --udpreport is already set
+	if users explicitly agree, to capture failures in regressiions
+	automatically for better profiling.  Queries users if they will 
+	allow data to be returned UNLESS the --udpreport is already set
+
 	* Changes to Makefile.am in src/nco to enable MPI binaries to
-	  be built.
+	be built.
+
 	* Notes about problems with old aclocal, automake posted
-	  have to assure that new versions are manually updated in *ubuntu
-	  anyway.
+	have to assure that new versions are manually updated in *ubuntu
+	anyway.
+
 	* back on track with updating Makefiles the right way(c)
+
 	* updated MANIFEST to include new bm scripts and the breakup of 
 	  nco_bm.pl.
 
@@ -61,19 +73,23 @@
 	This automatically invokes Emacs Makefile-mode syntax/highlighting
 
 2005-10-31  Harry Mangalam <hjm@tacgi.com>
+
 	* Changes to mk_bm_plots to scriptify the last of CZ's requests
+
 	* Changes to configure/make to straighten out build protocols 
-	  for netcdf4 (NETCDF4_ROOT to be defined, needs to be named
-	  libnetcdf4, not libnetcdf).  Automatic paths for -I, -L based
-	  on the NETCDF4_ROOT) 
+	for netcdf4 (NETCDF4_ROOT to be defined, needs to be named
+	libnetcdf4, not libnetcdf).  Automatic paths for -I, -L based
+	on the NETCDF4_ROOT) 
   
 2005-10-28  Harry Mangalam <hjm@tacgi.com>
+
 	* Changes to the configure/make chain to start to resolve
-	  autobuild issues with MPI / netcdf4 / DAP / etc
+	autobuild issues with MPI / netcdf4 / DAP / etc
+
 	* now builds serial NCOs cleanly on Linux (x86,AMD64)
-	  and also MPI on Linux (x86,AMD64).  Suports Rich Lowry's
-	  mpich2 debs (no additional flags) and MPICH2 from src if
-	  given MPICH_ROOT.
+	and also MPI on Linux (x86,AMD64).  Suports Rich Lowry's
+	mpich2 debs (no additional flags) and MPICH2 from src if
+	given MPICH_ROOT.
   
 	* added checks for -lf95, more error checking
 
@@ -98,10 +114,10 @@
 2005-10-25  Harry Mangalam <hjm@tacgi.com>
 
 	* Changes to support MacOSX better:
-	  - configure detects Darwin and inserts -fno-common
-	  - bits added to configure.eg to describe other dependencies of
-	    this flag for libnetcdf (3.x)
-	  - nco_bm.pl detects Darwin and tests for bad cut.
+	- configure detects Darwin and inserts -fno-common
+	- bits added to configure.eg to describe other dependencies of
+	this flag for libnetcdf (3.x)
+	- nco_bm.pl detects Darwin and tests for bad cut.
 
 2005-10-24  Daniel Wang  <wangd@uci.edu>
 

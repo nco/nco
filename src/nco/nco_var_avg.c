@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.31 2005-11-26 05:43:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.32 2005-11-26 20:11:26 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -30,7 +30,8 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 
   /* Routine keeps track of three variables whose abbreviations are:
      var: Input variable (already hyperslabbed)
-     avg: Contiguous arrangement of all elements of var contributing to a single element of fix (a quasi-hyperslab)
+     avg: An array of averaging blocks, each a contiguous arrangement of all 
+          elements of var which contribute to a single element of fix.
      fix: Output (averaged) variable */
 
   dmn_sct **dmn_avg;
@@ -68,12 +69,16 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   dmn_fix=(dmn_sct **)nco_malloc(nbr_dmn_var*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_var;idx++){
     for(idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
+      /* Comparing dimension IDs is faster than comparing dimension names 
+	 but requires assumption that all dimensions are from same file */
       if(var->dmn_id[idx] == dim[idx_dmn]->id){
 	/* Although structures in dim are never altered, linking them into
 	   dmn_avg list makes them vulnerable to manipulation and forces 
 	   dim to lose const protection in prototype */
 	dmn_avg[dmn_avg_nbr]=dim[idx_dmn];
+	/* idx_avg_var[i]=j means that the ith averaging dimension is the jth dimension of var */
 	idx_avg_var[dmn_avg_nbr]=idx;
+	/* idx_var_avg[j]=i means that the jth dimension of var is the ith averaging dimension */
 	/*	idx_var_avg[idx]=dmn_avg_nbr;*/ /* Variable is unused but instructive anyway */
 	dmn_avg_nbr++;
 	break;
@@ -81,7 +86,9 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     } /* end loop over idx_dmn */
     if(idx_dmn == nbr_dim){
       dmn_fix[nbr_dmn_fix]=var->dim[idx];
+      /* idx_fix_var[i]=j means that the ith fixed dimension is the jth dimension of var */
       idx_fix_var[nbr_dmn_fix]=idx;
+      /* idx_var_fix[j]=i means that the jth dimension of var is the ith fixed dimension */
       /*      idx_var_fix[idx]=nbr_dmn_fix;*/ /* Variable is unused but instructive anyway */
       nbr_dmn_fix++;
     } /* end if */
@@ -90,7 +97,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   if(dmn_avg_nbr == 0){
     /* 20050517: ncwa only calls nco_var_avg() with variables containing averaging dimensions
        Variables without averaging dimensions are in the var_fix list 
-       We preserve the capability of nco_var_avg() to work on var_fix variables for future flexibility */
+       We preserve nco_var_avg() capability to work on var_fix variables for future flexibility */
     (void)fprintf(stderr,"%s: WARNING %s does not contain any averaging dimensions\n",prg_nm_get(),fix->nm);
     /* Variable does not contain any averaging dimensions so we are done
        For consistency, return copy of variable held in fix and free() original
@@ -161,6 +168,25 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
       for(idx=0;idx<fix_sz;idx++,val+=val_sz_byte)
 	if(!memcmp(val,mss_val,(size_t)val_sz_byte)) fix_tally[idx]=0L;
     } /* fix->has_mss_val */
+  } /* end if avg_sz == 1L */
+
+  /* A complex and expensive collection procedure of generating averaging blocks
+     works in all cases but is unnecessary in one important case.
+     If the averaging dimensions are any number of the most rapidly varying (MRV) 
+     dimensions, then no re-arrangement is necessary because the averaging blocks
+     are the same as the original storage. 
+     The averaging dimensions are the MRV dimensions iff the nbr_dmn_fix fixed 
+     dimensions are one-to-one with the first nbr_dmn_fix input dimensions. 
+     Another way to answer this question is to compare the dmn_avg_nbr averaging 
+     dimensions with the last dmn_avg_nbr dimensions of the input variable.
+     However, the averaging dimensions may appear in any order so it seems more
+     straightforward to compare the fixed dimensions.  */
+  if(avg_sz != 1L){
+    for(idx=0;idx<nbr_dmn_fix;idx++) 
+      if(idx_fix_var[idx] != idx) break;
+    if(idx == nbr_dmn_fix){
+      (void)fprintf(stderr,"%s: INFO Reduction dimensions are most-rapidly-varying (MRV) dimensions of %s. Skipping collection step and proceding straight to reduction step.\n",prg_nm_get(),fix->nm);
+    } /* idx != nbr_dmn_fix */
   } /* end if avg_sz == 1L */
 
   /* Starting at first element of input hyperslab, add up next stride elements
@@ -260,9 +286,9 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     
     /* Input data are now sorted and stored (in avg_val) in blocks (of length avg_sz)
        in same order as blocks' average values will appear in output buffer. 
-       An averaging routine can take advantage of this by casting avg_val to a two dimensional
-       variable and averaging over inner dimension. 
-       This is where tally array is actually set */
+       Averaging routines can take advantage of this by casting avg_val to 
+       two dimensional variable and averaging over inner dimension. 
+       Tally array is actually set in nco_var_avg_reduce_*() */
     switch(nco_op_typ){
     case nco_op_max:
       (void)nco_var_avg_reduce_max(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);

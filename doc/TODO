@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.681 2005-11-26 05:43:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.682 2005-11-26 20:11:26 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -406,7 +406,8 @@ nco651. Use nco650 standard to add --hdr_pad, --cmp, --mpi documentation
 nco652. Polish/finish ncap random number generator
         ncap -O -v -s 'x=rnd_nbr(one)' ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
 nco653. Segregate MPI from non-MPI builds completely in bld/Makefile on AIX
-nco654. 
+nco654. ncwa: skip collection step when averaging over MRV dimensions
+nco655. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
@@ -497,15 +498,18 @@ End valgrind section
 ************************************************************************
 Begin oprofile section
 ************************************************************************
+cd ~/nco/bm
 xosview &
-sudo opcontrol --vmlinux=/usr/src/linux-2.6.11/vmlinux
-sudo opcontrol --start
+sudo opcontrol --vmlinux=/usr/src/linux-2.6.11/vmlinux # 
+sudo opcontrol --separate=cpu # Use this on SMP machines
+sudo opcontrol --start # Start profiling
+sudo opcontrol --shutdown
 
 cat > ~/nco/bm/prf_ncbo.sh << EOF
 cd ${DATA}/nco_bm
 sudo opcontrol --reset
 time ${MY_BIN_DIR}/ncbo -O --op_typ='-' -p ${DATA}/nco_bm ipcc_dly_T85.nc ipcc_dly_T85_00.nc ${DATA}/nco_bm/prf_ncbo.nc
-opreport --exclude-dependent --demangle=smart --symbols > ~/nco/bm/prf_ncbo.txt
+opreport --demangle=smart --exclude-dependent --symbols > ~/nco/bm/prf_ncbo.txt
 EOF
 chmod a+x ~/nco/bm/prf_ncbo.sh
 ~/nco/bm/prf_ncbo.sh
@@ -513,8 +517,8 @@ chmod a+x ~/nco/bm/prf_ncbo.sh
 cat > ~/nco/bm/prf_ncwa.sh << EOF
 cd ${DATA}/nco_bm
 sudo opcontrol --reset
-time ${MY_BIN_DIR}/ncwa -O -a lat,lon -w lat -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/prf_ncwa.nc
-opreport --exclude-dependent --demangle=smart --symbols > ~/nco/bm/prf_ncwa.txt
+time ${MY_BIN_DIR}/ncwa -O -a lat,lon,lev,time -w lat -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/prf_ncwa.nc
+opreport --demangle=smart --exclude-dependent --symbols > ~/nco/bm/prf_ncwa_avgall.txt
 EOF
 chmod a+x ~/nco/bm/prf_ncwa.sh
 ~/nco/bm/prf_ncwa.sh
@@ -522,8 +526,8 @@ chmod a+x ~/nco/bm/prf_ncwa.sh
 cat > ~/nco/bm/prf_ncwa.sh << EOF
 cd ${DATA}/nco_bm
 sudo opcontrol --reset
-time ${MY_BIN_DIR}/ncwa -O -a lat,lon,lev,time -w lat -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/prf_ncwa.nc
-opreport --exclude-dependent --demangle=smart --symbols > ~/nco/bm/prf_ncwa_avgall.txt
+time ${MY_BIN_DIR}/ncwa -O -a lat,lon,lev,time -w lat -z "lat!=1.0" -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/prf_ncwa.nc
+opreport --demangle=smart --exclude-dependent --symbols > ~/nco/bm/prf_ncwa_avgall_msk.txt
 EOF
 chmod a+x ~/nco/bm/prf_ncwa.sh
 ~/nco/bm/prf_ncwa.sh
@@ -532,7 +536,7 @@ cat > ~/nco/bm/prf_ncwa.sh << EOF
 cd ${DATA}/nco_bm
 sudo opcontrol --reset
 time ${MY_BIN_DIR}/ncwa -O -F -d lat,,64 -d lon,,128 -d lev,,16 -d time,,4 -a lat,lon,lev,time -w lat -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/prf_ncwa.nc
-opreport --exclude-dependent --demangle=smart --symbols > ~/nco/bm/prf_ncwa_hlf.txt
+opreport --demangle=smart --exclude-dependent --symbols > ~/nco/bm/prf_ncwa_hlf.txt
 EOF
 chmod a+x ~/nco/bm/prf_ncwa.sh
 ~/nco/bm/prf_ncwa.sh
