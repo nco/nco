@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.682 2005-11-26 20:11:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.683 2005-11-26 20:22:40 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -407,6 +407,8 @@ nco652. Polish/finish ncap random number generator
         ncap -O -v -s 'x=rnd_nbr(one)' ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
 nco653. Segregate MPI from non-MPI builds completely in bld/Makefile on AIX
 nco654. ncwa: skip collection step when averaging over MRV dimensions
+	ncwa -O -v three_dmn_var -a lev,lon -p ~/nco/data in.nc ~/in.nc
+	ncwa -O -v three_dmn_var -a lat,lon -p ~/nco/data in.nc ~/in.nc
 nco655. 
 ************************************************************************
 End ncoXXX TODOs
