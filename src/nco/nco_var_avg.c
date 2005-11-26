@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.33 2005-11-26 20:22:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.34 2005-11-26 20:24:11 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -185,7 +185,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     for(idx=0;idx<nbr_dmn_fix;idx++) 
       if(idx_fix_var[idx] != idx) break;
     if(idx == nbr_dmn_fix){
-      (void)fprintf(stderr,"%s: INFO Reduction dimensions are most-rapidly-varying (MRV) dimensions of %s. Possible to skip collection step and proceed straight to reduction step.\n",prg_nm_get(),fix->nm);
+      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Reduction dimensions are %d most-rapidly-varying (MRV) dimensions of %s. Possible to skip collection step and proceed straight to reduction step.\n",prg_nm_get(),dmn_avg_nbr,fix->nm);
     } /* idx != nbr_dmn_fix */
   } /* end if avg_sz == 1L */
 
