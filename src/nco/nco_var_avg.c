@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.35 2005-11-26 21:40:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.36 2005-11-26 21:52:25 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -180,6 +180,19 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     /* Initialize data needed by reduction step independent of collection algorithm */
     var_sz=var->sz;
 
+    /* Value buffer of size var_sz is currently duplicate of input values
+       MRV algorithm uses these values without re-arranging
+       General collection algorithm overwrites avg_val with averaging blocks */
+    avg_val=fix->val;
+    /* Create new value buffer for output (averaged) size */
+    fix->val.vp=(void *)nco_malloc(fix_sz*nco_typ_lng(fix->type));
+    /* Resize (or just plain allocate) tally array */
+    fix->tally=(long *)nco_realloc(fix->tally,fix_sz*sizeof(long));
+    
+    /* Initialize value and tally arrays */
+    (void)nco_zero_long(fix_sz,fix->tally);
+    (void)nco_var_zero(fix->type,fix_sz,fix->val);
+
     /* Complex expensive collection step for creating averaging blocks works 
        works in all cases though is unnecessary in one important case.
        If averaging dimensions are most rapidly varying (MRV) dimensions, then no 
@@ -198,8 +211,8 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
       AVG_DMN_ARE_MRV=True; /* [flg] Avergaging dimensions are MRV dimensions */
     } /* idx != nbr_dmn_fix */
     
-    if(True){
-      /*    if(!AVG_DMN_ARE_MRV){*/
+    /* MRV algorithm simply skips this collection step */
+    if(!AVG_DMN_ARE_MRV){
       /* Dreaded, expensive collection algorithm sorts input into averaging blocks */
       char *avg_cp;
       char *var_cp;
@@ -220,18 +233,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
       typ_sz=nco_typ_lng(fix->type);
       var_cnt=var->cnt;
       var_cp=(char *)var->val.vp;
-      
-      /* Reuse existing value buffer (it is of size var_sz, created by nco_var_dpl()) */
-      avg_val=fix->val;
       avg_cp=(char *)avg_val.vp;
-      /* Create new value buffer for output (averaged) size */
-      fix->val.vp=(void *)nco_malloc(fix_sz*nco_typ_lng(fix->type));
-      /* Resize (or just plain allocate) tally array */
-      fix->tally=(long *)nco_realloc(fix->tally,fix_sz*sizeof(long));
-      
-      /* Initialize value and tally arrays */
-      (void)nco_zero_long(fix_sz,fix->tally);
-      (void)nco_var_zero(fix->type,fix_sz,fix->val);
       
       /* Compute map for each dimension of input variable */
       for(idx=0;idx<nbr_dmn_var;idx++) dmn_var_map[idx]=1L;
