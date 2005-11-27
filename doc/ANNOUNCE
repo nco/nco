@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.161 2005-10-28 19:22:15 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.162 2005-11-27 05:21:39 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.0.3 are ready. 
 
@@ -9,28 +9,24 @@ Version 3.0.3 contains many internal changes (build,
 benchmarking, memory usage, and documentation improvements),
 new I/O features, and convenience routines for IPCC processing.
 
-1. OpenMP: No more critical regions in netCDF reads
-   This improves performance on SMP nodes and over OPeNDAP
+1. ncwa most rapidly varying dimension (MRV) averaging speed-up:
+   Complaints about ncwa being a slow averager (Brian, Byron... :))
+   are as old as NCO itself. 
+   I've finally implemented an MRV-averaging acceleration algorithm.
+   This improves zonal- (longitude) and area- (latitude/longitude)
+   averaging throughput by a factor of five--ten on files which
+   adhere to CF conventions (t,z,y,x).
+   Improvement is seen in all MRV averages with no downside for
+   non-MRV averages.
+   Should have done this long ago!
 
-2. netCDF4: New options -4,--fl_fmt,--netcdf4 for file format
-   As a result, the -Z switch has been replaced by --64.
-   netCDF4 features require the alpha netCDF4 library.
-   Although they work perfectly, use them only for testing
-   since the netCDF4 binary format will change in the future.
-   See http://nco.sf.net/nco.html#netcdf4 for more info
+2. ncap random number generator:
+   
 
-3. netCDF4 builds (Harry Mangalam): Support configure --enable-netcdf4
+2. Autotools builds (Harry Mangalam): fixes to configure for
+   --enable-netcdf4 and  --enable-mpi
 
-4. MPI-enabled operators are 2KB (two-known bugs)
-   mpncra/mpncea/mpncrcat can still hang
-
-5. MPI builds (Harry Mangalam): Support configure --enable-mpi
-
-6. Compiler support: Intel icc and icpc 8.1 and 9.0 are fully
-   supported on x86 and x86_64 architectures
-
-7. ncks: Eliminated --fmt,--format synonyms to avoid netCDF4 confusion
-         Change --sng synonym to --sng_fmt
+3. MPI-enabled operators have zero-known bugs! ZKB! (Daniel Wang)
 
 Enjoy,
 Charlie

@@ -4,7 +4,7 @@
 # for the NCO benchmark script nco_bm.pl
 # It must maintain Perl semantics for Perl code.
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_benchmarks.pl,v 1.6 2005-11-14 22:19:38 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_benchmarks.pl,v 1.7 2005-11-27 05:21:39 zender Exp $
 
 	print "\nINFO: Starting Benchmarks now\n";
 	if($dbg_lvl > 1){print "bm: prefix = $prefix\n";}
@@ -41,9 +41,9 @@
 	dbg_msg(2,"mpi_prc = $mpi_prc\nopr_sng_mpi = $opr_sng_mpi");
 
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-		$tst_cmd[0] = "ncap -h -O $fl_fmt $nco_D_flg -s  \"nu_var1[time,lat,lon,lev]=d4_01*d4_02*(d4_03**2)-(d4_05/d4_06)\" 	-s \"nu_var2[lat,time,lev,lon]=(d4_13/d4_02)*((d4_03**2)-(d4_05/d4_06))\" -s \"nu_var3[time,lat,lon]=(d3_08*3d_01)-(3d_05**3)-(3d_11*3d_16)\" -s \"nu_var4[lon,lat,time]=(d3_08+3d_01)-(3d_05*3)-3d_11-17.33)\"  $in_pth_arg ipcc_dly_T85.nc  $outfile";
-		$tst_cmd[1] = "ncwa -O $omp_flg -y sqrt -a lat,lon $outfile  $outfile";
-		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00  $outfile";
+		$tst_cmd[0] = "ncap -h -O $fl_fmt $nco_D_flg -s  \"nu_var1[time,lat,lon,lev]=d4_01*d4_02*(d4_03**2)-(d4_05/d4_06)\" 	-s \"nu_var2[lat,time,lev,lon]=(d4_13/d4_02)*((d4_03**2)-(d4_05/d4_06))\" -s \"nu_var3[time,lat,lon]=(d3_08*3d_01)-(3d_05**3)-(3d_11*3d_16)\" -s \"nu_var4[lon,lat,time]=(d3_08+3d_01)-(3d_05*3)-3d_11-17.33)\" $in_pth_arg ipcc_dly_T85.nc $outfile";
+		$tst_cmd[1] = "ncwa -O $omp_flg -y sqrt -a lat,lon $outfile $outfile";
+		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00 $outfile";
 		$nsr_xpc = "4.024271";
 		go();
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng]\n";}
@@ -74,7 +74,7 @@
 		$tst_cmd[0] = "ncea -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg stl_5km_00.nc $outfile";
 		if($dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
 		$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt -a lat,lon $outfile $outfile";
-		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00  $outfile";
+		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00 $outfile";
 		$nsr_xpc = "1.604304";
 		go();
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
@@ -88,8 +88,8 @@
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng, files=$fl_cnt\n";}
 		$tst_cmd[0] = "ncecat -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg skn_lgs_00.nc $outfile";
-		$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg  $outfile $outfile";
-		$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2  $outfile";
+		$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg $outfile $outfile";
+		$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2 $outfile";
 		# following required due to shortened length of test under dap.
 		if ($dodap eq "FALSE") { $nsr_xpc = "12.759310";}
 		else { $nsr_xpc = "18.106375";}
@@ -104,10 +104,10 @@
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncflint -h -O $fl_fmt $nco_D_flg   -w '0.5' $in_pth_arg ipcc_dly_T85_00.nc  ipcc_dly_T85_01.nc  $outfile";
+		$tst_cmd[0] = "ncflint -h -O $fl_fmt $nco_D_flg   -w '0.5' $in_pth_arg ipcc_dly_T85_00.nc  ipcc_dly_T85_01.nc $outfile";
 		if($dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
 		$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt -a lat,lon $outfile $outfile";
-		$tst_cmd[2] = "ncks -C -H -s '%f ' -v d1_00  $outfile";
+		$tst_cmd[2] = "ncks -C -H -s '%f ' -v d1_00 $outfile";
 		$nsr_xpc = "1.800000 1.800000 1.800000 1.800000 1.800000 1.800000 1.800000 1.800000";
 		go();
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
@@ -121,7 +121,7 @@
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 		#!!WARN - change back to testing the ipcc file after verify
-		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -a -time -lev -lat -lon $in_pth_arg  ipcc_dly_T85.nc  $outfile";
+		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -a -time -lev -lat -lon $in_pth_arg  ipcc_dly_T85.nc $outfile";
 		# ~2m on sand for ipcc_dly_T85.nc
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";  #ipcc
 		$nsr_xpc = "0.800000"; #ipcc
@@ -136,7 +136,7 @@
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -a 'lon,time,lev,lat' $in_pth_arg  ipcc_dly_T85.nc  $outfile";
+		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -a 'lon,time,lev,lat' $in_pth_arg  ipcc_dly_T85.nc $outfile";
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";  #ipcc
 		$nsr_xpc = "0.800000"; #ipcc
 		go();
@@ -150,7 +150,7 @@
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -a '-lon,-time,-lev,-lat' $in_pth_arg  ipcc_dly_T85.nc  $outfile";
+		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -a '-lon,-time,-lev,-lat' $in_pth_arg  ipcc_dly_T85.nc $outfile";
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";  #ipcc
 		$nsr_xpc = "0.800000"; #ipcc
 		go();
@@ -164,14 +164,12 @@
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -P all_new  $in_pth_arg  ipcc_dly_T85.nc  $outfile";
+		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -P all_new  $in_pth_arg  ipcc_dly_T85.nc $outfile";
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey $outfile";
 		$nsr_xpc = "0.000000";
 		go();
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
-
-
 
 	#################### begin cz benchmark list #2
 	$opr_nm='ncra';
@@ -182,7 +180,7 @@
 #			if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 			$tst_cmd[0] = "ncra -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg ipcc_dly_T85_00.nc $outfile";
 			# ~4m on sand.
-			$tst_cmd[1] =  "ncks -C -H -s '%f' -v d1_03    $outfile ";
+			$tst_cmd[1] =  "ncks -C -H -s '%f' -v d1_03   $outfile ";
 			$nsr_xpc = "1.800001";
 			go();
 			if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
@@ -199,8 +197,8 @@
 		if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 	#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 			$tst_cmd[0] = "ncrcat -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg skn_lgs_00.nc $outfile";
-			$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg  $outfile $outfile";
-			$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2  $outfile";
+			$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg $outfile $outfile";
+			$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2 $outfile";
 			$nsr_xpc = "12.759310";
 			go();
 			if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
@@ -215,7 +213,7 @@
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 		$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt -a lat,lon $in_pth_arg stl_5km.nc $outfile";
-		$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02  $outfile";
+		$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02 $outfile";
 		$nsr_xpc = "1.604304";  # was 1.974842
 		go();
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
@@ -230,7 +228,7 @@
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 		$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y rms -a lat,lon $in_pth_arg stl_5km.nc $outfile";
-		$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02  $outfile";
+		$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02 $outfile";
 		$nsr_xpc = "2.826392"; # past result = 3.939694
 		go();
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
@@ -244,8 +242,8 @@
 			$dsc_sng = 'ncwa averaging all variables to scalars - ipcc_dly_T85.nc & sqt';
 			####################
 #			if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-			$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt   -a lat,lon $in_pth_arg ipcc_dly_T85.nc $outfile";
-			$tst_cmd[1] = "ncks -C -H -s '%f' -v skanky  $outfile";
+			$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt -a lat,lon $in_pth_arg ipcc_dly_T85.nc $outfile";
+			$tst_cmd[1] = "ncks -C -H -s '%f' -v skanky $outfile";
 			$nsr_xpc = "0.800000";
 			go();
 		}

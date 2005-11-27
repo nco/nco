@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.36 2005-11-26 21:52:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.37 2005-11-27 05:21:39 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -194,7 +194,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     (void)nco_var_zero(fix->type,fix_sz,fix->val);
 
     /* Complex expensive collection step for creating averaging blocks works 
-       works in all cases though is unnecessary in one important case.
+       in all cases though is unnecessary in one important case.
        If averaging dimensions are most rapidly varying (MRV) dimensions, then no 
        re-arrangement is necessary because original variable is stored in averaging
        block order.
@@ -207,7 +207,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     for(idx=0;idx<nbr_dmn_fix;idx++) 
       if(idx_fix_var[idx] != idx) break;
     if(idx == nbr_dmn_fix){
-      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Reduction dimensions are %d most-rapidly-varying (MRV) dimensions of %s. Possible to skip collection step and proceed straight to reduction step.\n",prg_nm_get(),dmn_avg_nbr,fix->nm);
+      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Reduction dimensions are %d most-rapidly-varying (MRV) dimensions of %s. Will skip collection step and proceed straight to reduction step.\n",prg_nm_get(),dmn_avg_nbr,fix->nm);
       AVG_DMN_ARE_MRV=True; /* [flg] Avergaging dimensions are MRV dimensions */
     } /* idx != nbr_dmn_fix */
     

@@ -15,7 +15,7 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.20 2005-11-23 00:32:28 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.21 2005-11-27 05:21:39 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -341,7 +341,7 @@ if ($dbg_lvl > 2) {
 	if ($hiresfound) {$t0 = [gettimeofday];}
 	else {$t0 = time;}
 # File creation now timed
-	system  "$tmr_app ncgen -b -o $fl_out   $bm_dir/$fl_cr8_dat[$idx][2].cdl";
+	system  "$tmr_app ncgen -b -o $fl_out $bm_dir/$fl_cr8_dat[$idx][2].cdl";
 	if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
 	else {$elapsed = time - $t0;}
 # log it to common timing array
@@ -349,11 +349,11 @@ if ($dbg_lvl > 2) {
 	$fl_tmg[$idx][1] = $elapsed; # creation time
 	if ($idx == 0) { # skn_lgs needs some extra massaging
 		if ($dbg_lvl > 0) {print "\nextra steps for skn_lgs - ncecat...\n";}
-		system "$prefix/ncecat -O -h                         $fl_in    $fl_out";  # inserts a record dimension
+		system "$prefix/ncecat -O -h $fl_in $fl_out";  # inserts a record dimension
 		if ($dbg_lvl > 0) {print "\nncpdq...\n";}
-		system "$prefix/ncpdq -O -h -a time,record             $fl_in    $fl_out"; # swaps time and 'record'
+		system "$prefix/ncpdq -O -h -a time,record $fl_in $fl_out"; # swaps time and 'record'
 		if ($dbg_lvl > 0) {print "\nncwa...\n";}
-		system "$prefix/ncwa -O -h -a record   $fl_in    $fl_out"; # renames 'record' out of the way
+		system "$prefix/ncwa -O -h -a record $fl_in $fl_out"; # averages 'record' out of the way
 # now skn_lgs ready for ncap'ing
 }
 	print "\n==== Populating $fl_out file.\nTiming results:\n";
