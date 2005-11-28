@@ -4,7 +4,7 @@
 # for the NCO benchmark script nco_bm.pl
 # It must maintain Perl semantics for Perl code.
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_benchmarks.pl,v 1.7 2005-11-27 05:21:39 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_benchmarks.pl,v 1.8 2005-11-28 22:44:12 mangalam Exp $
 
 	print "\nINFO: Starting Benchmarks now\n";
 	if($dbg_lvl > 1){print "bm: prefix = $prefix\n";}
@@ -212,8 +212,8 @@
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt -a lat,lon $in_pth_arg stl_5km.nc $outfile";
-		$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02 $outfile";
+		$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -w lat -y sqrt -a lat,lon $in_pth_arg stl_5km.nc $outfile";
+		$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02  $outfile";
 		$nsr_xpc = "1.604304";  # was 1.974842
 		go();
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
@@ -227,8 +227,8 @@
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y rms -a lat,lon $in_pth_arg stl_5km.nc $outfile";
-		$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02 $outfile";
+		$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y rms -w lat -a lat,lon $in_pth_arg stl_5km.nc $outfile";
+		$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02  $outfile";
 		$nsr_xpc = "2.826392"; # past result = 3.939694
 		go();
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
@@ -242,8 +242,8 @@
 			$dsc_sng = 'ncwa averaging all variables to scalars - ipcc_dly_T85.nc & sqt';
 			####################
 #			if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-			$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt -a lat,lon $in_pth_arg ipcc_dly_T85.nc $outfile";
-			$tst_cmd[1] = "ncks -C -H -s '%f' -v skanky $outfile";
+			$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt  -w lat -a lat,lon $in_pth_arg ipcc_dly_T85.nc $outfile";
+			$tst_cmd[1] = "ncks -C -H -s '%f' -v skanky  $outfile";
 			$nsr_xpc = "0.800000";
 			go();
 		}

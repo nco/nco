@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.113 2005-11-01 04:25:01 mangalam Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.114 2005-11-28 22:44:11 mangalam Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -296,10 +296,15 @@ Begin NETCDF4
 NETCDF4/netcdf4
 To build with netcdf4, we require two changes from the default process:
 - you must identify the root dir of the netcdf4 build dir.  ie the latest
-  build from UCAR creates a dir named netcdf-4.0-alpha9 when untarred.  The
+  build from UCAR creates a dir named netcdf-4.0-alpha10 when untarred.  The
   fully qualified path to that directory is the NETCDF4_ROOT which is set at
   configure time:
-  ./configure blah blah blah NETCDF4_ROOT=/where/you/unpacked/netcdf4
+  ./configure --enable-netcdf4 --disable-dap --disable-shared NETCDF4_ROOT=/where/you/unpacked/netcdf4
+
+- the options '--enable-netcdf4 --disable-dap --disable-shared' are currently
+  required to build it as well because of incompatibilities among these 
+  options.  Those restrictions should be lifted when Netcdf4 and DAP are 
+  finalized.
 
 - you must rename the 'libnetcdf.etc' built by the netcdf4 to
   'libnetcdf4.etc' including the fortran lib if you want it included as

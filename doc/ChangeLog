@@ -1,3 +1,10 @@
+2005-11-28  Harry Mangalam <hjm@tacgi.com>
+	
+* Spiffing configure/makefiles to make sure that netcdf4 works as
+	  expected; adding dependencies into configure rather than requiring the
+	  full set to be run at the commandline.  Still a question about  the
+	  specification tho (--fl_fmt vs --netcdf4).
+
 2005-11-26  Charlie Zender  <zender@uci.edu>
 
 	* Test for averaging dimensions being MRV dimensions

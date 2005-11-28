@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.148 2005-11-23 00:32:28 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.149 2005-11-28 22:44:11 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -243,6 +243,8 @@ if ( test "${enable_netcdf4}" = 'yes'); then
 			LDFLAGS="-L${NETCDF4_ROOT}/fortran -L${NETCDF4_ROOT}/libsrc4 $LDFLAGS";
 			if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
 				# check libnetcdf for netcdf4 function to test which one it is..
+				# and netcdf4 (at alpha10) conflicts with shared libs - fxm - check after final release.
+				enable_shared='no'
 				AC_CHECK_LIB([netcdf4],[nc_check_for_hdf5],[LIBS="-lnetcdf4 -lhdf5 -lhdf5_hl ${LIBS}"],[enable_netcdf4=no],[-lhdf5 -lhdf5_hl])
 				CPPFLAGS="${CPPFLAGS} -DNC_64BIT_OFFSET=1"
 			fi
@@ -920,7 +922,7 @@ if (test $ac_compiler_gnu == "yes"); then
 		CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'`
 		CFLAGS="-fno-common $CFLAGS"
 		# MacOSX doan understand no steekin shared libs.
-		enable_shared=no
+		enable_shared='no'
 	fi
 fi
 
@@ -932,8 +934,11 @@ echo "###############################"
 
 # If --enable-shared define ENABLE_SHARED
 echo "DEBUG: enable_shared: ${enable_shared} "
-if test "${enable_shared}" = 'yes'; then
-    AC_DEFINE(ENABLE_SHARED,1,Enable shared libraries)
+if (test "${enable_shared}" = 'yes' && test "${enable_netcdf4}" = 'no'); then
+	AC_DEFINE(ENABLE_SHARED,1,Enable shared libraries)
+else
+	echo "DEBUG: enable_shared: rejected due to netcdf4 requirement"
+#	AC_DEFINE(ENABLE_SHARED,0,Enable shared libraries)
 fi
 # End Shared
 

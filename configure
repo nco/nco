@@ -22129,6 +22129,8 @@ if ( test "${enable_netcdf4}" = 'yes'); then
 			LDFLAGS="-L${NETCDF4_ROOT}/fortran -L${NETCDF4_ROOT}/libsrc4 $LDFLAGS";
 			if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
 				# check libnetcdf for netcdf4 function to test which one it is..
+				# and netcdf4 (at alpha10) conflicts with shared libs - fxm - check after final release.
+				enable_shared='no'
 				echo "$as_me:$LINENO: checking for nc_check_for_hdf5 in -lnetcdf4" >&5
 echo $ECHO_N "checking for nc_check_for_hdf5 in -lnetcdf4... $ECHO_C" >&6
 if test "${ac_cv_lib_netcdf4_nc_check_for_hdf5+set}" = set; then
@@ -27281,7 +27283,7 @@ if (test $ac_compiler_gnu == "yes"); then
 		CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'`
 		CFLAGS="-fno-common $CFLAGS"
 		# MacOSX doan understand no steekin shared libs.
-		enable_shared=no
+		enable_shared='no'
 	fi
 fi
 
@@ -27293,12 +27295,15 @@ echo "###############################"
 
 # If --enable-shared define ENABLE_SHARED
 echo "DEBUG: enable_shared: ${enable_shared} "
-if test "${enable_shared}" = 'yes'; then
+if (test "${enable_shared}" = 'yes' && test "${enable_netcdf4}" = 'no'); then
 
 cat >>confdefs.h <<\_ACEOF
 #define ENABLE_SHARED 1
 _ACEOF
 
+else
+	echo "DEBUG: enable_shared: rejected due to netcdf4 requirement"
+#	AC_DEFINE(ENABLE_SHARED,0,Enable shared libraries)
 fi
 # End Shared
 
