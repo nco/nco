@@ -1,9 +1,14 @@
+2005-11-28  Charlie Zender  <zender@uci.edu>
+
+	* Remove nco_open_par() again. Seems to require parallel mode
+	in netCDF4 configure to appear in library, possible hardware dependency
+
 2005-11-28  Harry Mangalam <hjm@tacgi.com>
 	
-* Spiffing configure/makefiles to make sure that netcdf4 works as
-	  expected; adding dependencies into configure rather than requiring the
-	  full set to be run at the commandline.  Still a question about  the
-	  specification tho (--fl_fmt vs --netcdf4).
+	* Spiffing configure/makefiles to make sure that netcdf4 works as
+	expected; adding dependencies into configure rather than requiring the
+	full set to be run at the commandline.  Still a question about  the
+	specification tho (--fl_fmt vs --netcdf4).
 
 2005-11-26  Charlie Zender  <zender@uci.edu>
 

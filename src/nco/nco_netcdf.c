@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.63 2005-11-21 08:11:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.64 2005-11-29 05:12:18 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -322,8 +322,10 @@ nco_open(const char * const fl_nm,const int mode,int * const nc_id)
   return rcd;
 } /* end nco_open */
 
+#if 0
 #ifdef ENABLE_NETCDF4
-/* netCDF4 routines defined by Unidata netCDF4 Library libnetcdf.a */
+/* netCDF4 routines defined by Unidata netCDF4 Library libnetcdf.a 
+   20051129: nc_*_par() routines require certain netCDF4 configuration options */
 int 
 nco_open_par(const char * const fl_nm,const int mode,MPI_Comm mpi_cmm,MPI_Info mpi_nfo,int * const nc_id)
 {
@@ -335,6 +337,7 @@ nco_open_par(const char * const fl_nm,const int mode,MPI_Comm mpi_cmm,MPI_Info m
   return rcd;
 } /* end nco_open_par */
 #endif /* !ENABLE_NETCDF4 */
+#endif /* !0 */
 
 #ifdef ENABLE_PNETCDF
 /* pnetCDF routines defined by ANL Parallel netCDF Library libpnetcdf.a */

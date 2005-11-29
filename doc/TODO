@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.684 2005-11-28 19:53:20 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.685 2005-11-29 05:12:14 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -371,7 +371,6 @@ nco624. Document MPI in users guide/manual
 nco628. openmp: Print OMP_NUM_THREADS, if any, as nco_omp_ini() diagnostic
 nco630. Change if thr_nbr > 0 to if thr_nbr > 1 for nco_thr_att_cat()?
 nco631. Change usleep() to nanosleep()
-nco632. Add new netCDF4 types to NCO opaque type mechanism
 nco635. ncwa: MACOSX "regressions" caused by broken FREEBSD/MACOSX 'cut' binary
         Solution may be to install GNU textutils?
         cd ~/nco/bm;~/nco/bm/nco_bm.pl --dbg=0 --regress --udpreport ncwa
@@ -407,7 +406,9 @@ nco652. Polish/finish ncap random number generator
         ncap -O -v -s 'x=rnd_nbr(one)' ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
 nco653. Segregate MPI from non-MPI builds completely in bld/Makefile on AIX
 nco655. Incorporate BLAS if possible?
-nco656. 
+nco656. (re-)Make NCO C++-compliant
+nco657. Add new netCDF4 types to arithmetic code
+nco658. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
