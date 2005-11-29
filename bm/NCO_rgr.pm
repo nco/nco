@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.18 2005-11-11 20:59:04 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.19 2005-11-29 21:50:44 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -177,7 +177,7 @@ dbg_msg(1,"-------------  REGRESSION TESTS STARTED from perform_tests()  -------
  go();
 
 	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v mss_val_fst $in_pth_arg in.nc $outfile";
-	$tst_cmd[1]="ncrename -h -O $fl_fmt $nco_D_flg -v mss_val_fst,mss_val $outfile";
+	$tst_cmd[1]="ncrename -h -O $nco_D_flg -v mss_val_fst,mss_val $outfile";
 	$tst_cmd[2]="ncbo $omp_flg  -h -O $fl_fmt $nco_D_flg -y '-' -v mss_val $outfile ../data/in.nc $outfile 2> $foo_tst";
 	$tst_cmd[3]="ncks -C -H -s '%f,' -v mss_val $outfile";
 	$dsc_sng="missing_values differ between files";
@@ -281,8 +281,8 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_ar
 	$nsr_xpc= 1.0 ;
  go();
 
-	$tst_cmd[0]="ncrename -h -O $fl_fmt $nco_D_flg -v zero,foo $in_pth_arg in.nc $foo1_fl";
-	$tst_cmd[1]="ncrename -h -O $fl_fmt $nco_D_flg -v one,foo $in_pth_arg in.nc $outfile";
+	$tst_cmd[0]="ncrename -h -O $nco_D_flg -v zero,foo $in_pth_arg in.nc $foo1_fl";
+	$tst_cmd[1]="ncrename -h -O $nco_D_flg -v one,foo $in_pth_arg in.nc $outfile";
 	$tst_cmd[2]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -i foo,0.5 -v two $foo1_fl $outfile $outfile";
 	$tst_cmd[3]="ncks -C -H -s '%e' -v two $outfile";
 	$dsc_sng="identity interpolation";
@@ -305,7 +305,7 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_ar
     $opr_nm='ncks';
 ####################
 	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v lat_T42,lon_T42,gw_T42 $in_pth_arg in.nc $foo_T42_fl";
-	$tst_cmd[1]="ncrename -h -O $fl_fmt $nco_D_flg -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon $foo_T42_fl";
+	$tst_cmd[1]="ncrename -h -O $nco_D_flg -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon $foo_T42_fl";
 	$tst_cmd[2]="ncap -h -O $fl_fmt $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' $foo_T42_fl $foo_T42_fl";
 	$tst_cmd[3]="ncks -C -H -s '%g' -v one -F -d lon,128 -d lat,64 $foo_T42_fl";
 	$nsr_xpc="1";

@@ -21971,16 +21971,16 @@ fi
 
 # Check for DAP libraries unless told not to
 if test "${enable_dap}" != 'no'; then
-    if which ncdap-config > /dev/null; then
-	CPPFLAGS="${CPPFLAGS} `ncdap-config --cflags`"
-	nc_dap_ver=`ncdap-config --version`
-	nc_dap_ver_M=`echo $nc_dap_ver | sed 's@^libnc-dap \([0-9]\)*\.\([0-9]*\)\.\([0-9]*\)$@\1@'`
-	nc_dap_ver_m=`echo $nc_dap_ver | sed 's@^libnc-dap \([0-9]\)*\.\([0-9]*\)\.\([0-9]*\)$@\2@'`
-	if test $nc_dap_ver_M -le 3 -a $nc_dap_ver_m -le 5; then
-	    CPPFLAGS="${CPPFLAGS} -DNC_64BIT_OFFSET=0"
+	if which ncdap-config > /dev/null; then
+		CPPFLAGS="${CPPFLAGS} `ncdap-config --cflags`"
+		nc_dap_ver=`ncdap-config --version`
+		nc_dap_ver_M=`echo $nc_dap_ver | sed 's@^libnc-dap \([0-9]\)*\.\([0-9]*\)\.\([0-9]*\)$@\1@'`
+		nc_dap_ver_m=`echo $nc_dap_ver | sed 's@^libnc-dap \([0-9]\)*\.\([0-9]*\)\.\([0-9]*\)$@\2@'`
+		if test $nc_dap_ver_M -le 3 -a $nc_dap_ver_m -le 5; then
+	 	   CPPFLAGS="${CPPFLAGS} -DNC_64BIT_OFFSET"
+		fi
+		LIBS="`ncdap-config --libs` ${LIBS}"
 	fi
-	LIBS="`ncdap-config --libs` ${LIBS}"
-    fi
 
     ac_ext=cc
 ac_cpp='$CXXCPP $CPPFLAGS'
@@ -22072,22 +22072,22 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
     LIBS="${LIBS} -lstdc++"
 
-    if test "${enable_dap}" = 'no'; then
-	{ echo "$as_me:$LINENO: WARNING: DAP support disabled (missing libraries)" >&5
+	if test "${enable_dap}" = 'no'; then
+		{ echo "$as_me:$LINENO: WARNING: DAP support disabled (missing libraries)" >&5
 echo "$as_me: WARNING: DAP support disabled (missing libraries)" >&2;}
-	LIBS="${nco_LIBS_no_DAP}"
-    elif test "${enable_dap}" = 'yes'; then
+		LIBS="${nco_LIBS_no_DAP}"
+	elif test "${enable_dap}" = 'yes'; then
 
 cat >>confdefs.h <<\_ACEOF
 #define ENABLE_DAP 1
 _ACEOF
 
-	{ echo "$as_me:$LINENO: DAP support enabled" >&5
+		{ echo "$as_me:$LINENO: DAP support enabled" >&5
 echo "$as_me: DAP support enabled" >&6;}
-# libtool cleans up duplicate library links (e.g., dap++, nc-dap) unless told not to
-# New (3.5.0+) version of libnc-dap does not require duplicate libraries jhrg 6/3/05
-	LIBTOOL="${LIBTOOL} --tag=CXX --preserve-dup-deps"
-    fi
+		# libtool cleans up duplicate library links (e.g., dap++, nc-dap) unless told not to
+		# New (3.5.0+) version of libnc-dap does not require duplicate libraries jhrg 6/3/05
+		LIBTOOL="${LIBTOOL} --tag=CXX --preserve-dup-deps"
+	fi
 fi
 
 
@@ -22125,19 +22125,19 @@ if ( test "${enable_netcdf4}" = 'yes'); then
 	if (test "${NETCDF4_ROOT}" != ""); then
 		if (test -d "${NETCDF4_ROOT}"); then
 			echo "NETCDF4_ROOT is set and exists - assuming it's real";\
-			CPPFLAGS="-I${NETCDF4_ROOT}/include/libsrc4 $CPPFLAGS";\
-			LDFLAGS="-L${NETCDF4_ROOT}/fortran -L${NETCDF4_ROOT}/libsrc4 $LDFLAGS";
+			CPPFLAGS="-I${NETCDF4_ROOT}/include $CPPFLAGS";\
+			LDFLAGS="-L${NETCDF4_ROOT}/lib $LDFLAGS";
 			if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
 				# check libnetcdf for netcdf4 function to test which one it is..
 				# and netcdf4 (at alpha10) conflicts with shared libs - fxm - check after final release.
 				enable_shared='no'
-				echo "$as_me:$LINENO: checking for nc_check_for_hdf5 in -lnetcdf4" >&5
-echo $ECHO_N "checking for nc_check_for_hdf5 in -lnetcdf4... $ECHO_C" >&6
-if test "${ac_cv_lib_netcdf4_nc_check_for_hdf5+set}" = set; then
+				echo "$as_me:$LINENO: checking for nc_check_for_hdf5 in -lnetcdf" >&5
+echo $ECHO_N "checking for nc_check_for_hdf5 in -lnetcdf... $ECHO_C" >&6
+if test "${ac_cv_lib_netcdf_nc_check_for_hdf5+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnetcdf4 -lhdf5 -lhdf5_hl $LIBS"
+LIBS="-lnetcdf -lhdf5 -lhdf5_hl $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -22181,26 +22181,30 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_netcdf4_nc_check_for_hdf5=yes
+  ac_cv_lib_netcdf_nc_check_for_hdf5=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_lib_netcdf4_nc_check_for_hdf5=no
+ac_cv_lib_netcdf_nc_check_for_hdf5=no
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf4_nc_check_for_hdf5" >&5
-echo "${ECHO_T}$ac_cv_lib_netcdf4_nc_check_for_hdf5" >&6
-if test $ac_cv_lib_netcdf4_nc_check_for_hdf5 = yes; then
-  LIBS="-lnetcdf4 -lhdf5 -lhdf5_hl ${LIBS}"
+echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_nc_check_for_hdf5" >&5
+echo "${ECHO_T}$ac_cv_lib_netcdf_nc_check_for_hdf5" >&6
+if test $ac_cv_lib_netcdf_nc_check_for_hdf5 = yes; then
+  LIBS="-lnetcdf -lhdf5 -lhdf5_hl ${LIBS}"
+cat >>confdefs.h <<\_ACEOF
+#define ENABLE_NETCDF4 1
+_ACEOF
+
 else
   enable_netcdf4=no
 fi
 
-				CPPFLAGS="${CPPFLAGS} -DNC_64BIT_OFFSET=1"
+				#X#CPPFLAGS="${CPPFLAGS} -DNC_64BIT_OFFSET"
 			fi
 		else
 			echo "NETCDF4_ROOT set but doesn't exist - skipping netcdf4 config";\
@@ -22302,20 +22306,22 @@ echo "#############################################"
 echo "# Testing for HDF5 & HDF5_HL & NETCDF4 libs #"
 echo "#############################################"
 echo ""
+echo "DEBUG: LIBS = ${LIBS}"
 
 # Check for HDF5 libraries unless told otherwise.  HDF5 libs can be in standard places
 # but netcdf4 HAVE to be isolated in NETCDF4_ROOT to avoid conflicting with libnetcdf (3.x)
+# this may be redundant if the previous netcdf4 AC_CHECK_LIB succeeded tho...?
 if (test "${enable_netcdf4}" = 'yes' && test "${enable_dap}" = 'no'); then
-    # assume HDF5 libs are in std places but allow builder to specify another
+	# assume HDF5 libs are in std places but allow builder to specify another
 
-  # Add ${HDF5_LIB_DIR} to search path if present
-    if test "${HDF5_LIB_DIR}"; then
-	LDFLAGS="${LDFLAGS} -L${HDF5_LIB_DIR}"
-    fi
+	# Add ${HDF5_LIB_DIR} to search path if present
+	if test "${HDF5_LIB_DIR}"; then
+		LDFLAGS="-L${HDF5_LIB_DIR} ${LDFLAGS} "
+	fi
 
-    # if using NETCDF4, require HDF5 libs to be known to system before the nc_open test
-    # so check for the HDF5 libs
-    echo "$as_me:$LINENO: checking for H5Fcreate in -lhdf5" >&5
+	# if using NETCDF4, require HDF5 libs to be known to system before the nc_open test
+	# so check for the HDF5 libs
+	echo "$as_me:$LINENO: checking for H5Fcreate in -lhdf5" >&5
 echo $ECHO_N "checking for H5Fcreate in -lhdf5... $ECHO_C" >&6
 if test "${ac_cv_lib_hdf5_H5Fcreate+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -22379,16 +22385,16 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_hdf5_H5Fcreate" >&5
 echo "${ECHO_T}$ac_cv_lib_hdf5_H5Fcreate" >&6
 if test $ac_cv_lib_hdf5_H5Fcreate = yes; then
-  nco_have_hdf5=yes
+  nco_have_hdf5='yes'
 else
-  enable_netcdf4=no
+  enable_netcdf4='no'
 fi
 
-    if test "${nco_have_hdf5}" = 'yes'; then
-        # include HDF5 libs in LIBS line
-	    LIBS="-lhdf5  ${LIBS}"
-    fi
-    echo "$as_me:$LINENO: checking for H5LTcreate_compound_type in -lhdf5_hl" >&5
+	if test "${nco_have_hdf5}" = 'yes'; then
+		# include HDF5 libs in LIBS line
+		LIBS="-lhdf5  ${LIBS}"
+	fi
+	echo "$as_me:$LINENO: checking for H5LTcreate_compound_type in -lhdf5_hl" >&5
 echo $ECHO_N "checking for H5LTcreate_compound_type in -lhdf5_hl... $ECHO_C" >&6
 if test "${ac_cv_lib_hdf5_hl_H5LTcreate_compound_type+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -22457,48 +22463,47 @@ else
   enable_netcdf4=no
 fi
 
-    # H5DSattach_scale
-    if test "${nco_have_hdf5}" != 'yes'; then
-	    { echo "$as_me:$LINENO: WARNING: NETCDF4 support disabled (missing HDF5 libraries)" >&5
+	if test "${nco_have_hdf5}" != 'yes'; then
+		{ echo "$as_me:$LINENO: WARNING: NETCDF4 support disabled (missing HDF5 libraries)" >&5
 echo "$as_me: WARNING: NETCDF4 support disabled (missing HDF5 libraries)" >&2;}
+	elif test "${nco_have_hdf5_hl}" = 'yes'; then
+		# include HDF5_hl libs in LIBS line
+		LIBS="-lhdf5_hl ${LIBS}"
 
 cat >>confdefs.h <<\_ACEOF
-#define ENABLE_NETCDF4 0
+#define ENABLE_NETCDF4 1
 _ACEOF
 
-    elif test "${nco_have_hdf5_hl}" = 'yes'; then
-        # include HDF5_hl libs in LIBS line
-	    LIBS="-lhdf5_hl ${LIBS}"
-    fi  # End test for HDF5 libs
+	fi  # End test for HDF5 libs
 
 elif (test "${enable_netcdf4}" = 'no' && test "${enable_dap}" = 'no'); then
-    # this next stanza should only be tried if --enable-netcdf4=no / --disable-netcdf4
-    # && look for real netCDF library only if enable_dap is false. jhrg 05/26/05
+	# this next stanza should only be tried if --enable-netcdf4=no / --disable-netcdf4
+	# && look for real netCDF library only if enable_dap is false. jhrg 05/26/05
 	# HOWEVER: if have installed libnetcdf4 instead of libnetcdf3x, have to also link in
 	# the hdf5 libs to get it to compile correctly, just as above.
-    # Add user-specified netCDF locations, if any, else add /usr/local locations if they exist
-    if test "${NETCDF_LIB}"; then
-	if test -d "${NETCDF_LIB}"; then
-	    LDFLAGS="${LDFLAGS} -L${NETCDF_LIB}"
+	# Add user-specified netCDF locations, if any, else add /usr/local locations if they exist
+	if test "${NETCDF_LIB}"; then
+		if test -d "${NETCDF_LIB}"; then
+			LDFLAGS="-L${NETCDF_LIB} ${LDFLAGS} "
+		else
+			echo "WARNING: NETCDF_LIB location \"${NETCDF_LIB}\" does not exist!"
+		fi
 	else
-	    echo "WARNING: NETCDF_LIB location \"${NETCDF_LIB}\" does not exist!"
-	fi
-    else
-	if test -d "/usr/local/lib"; then
-	    LDFLAGS="-L/usr/local/lib ${LDFLAGS}"
-	fi
-    fi # !NETCDF_LIB
-    if test "${NETCDF_INC}"; then
-	if test -d "${NETCDF_INC}"; then
-	    CPPFLAGS="${CPPFLAGS} -I${NETCDF_INC}"
+		if test -d "/usr/local/lib"; then
+			LDFLAGS="-L/usr/local/lib ${LDFLAGS}"
+		fi
+	fi # !NETCDF_LIB
+	if test "${NETCDF_INC}"; then
+		if test -d "${NETCDF_INC}"; then
+			CPPFLAGS="-I${NETCDF_INC} ${CPPFLAGS} "
+		else
+			echo "WARNING: NETCDF_INC location \"${NETCDF_INC}\" does not exist!"
+		fi
 	else
-	    echo "WARNING: NETCDF_INC location \"${NETCDF_INC}\" does not exist!"
-	fi
-    else
-	if test -d "/usr/local/include"; then
-	    CPPFLAGS="-I/usr/local/include ${CPPFLAGS}"
-	fi
-    fi # !NETCDF_INC
+		if test -d "/usr/local/include"; then
+			CPPFLAGS="-I/usr/local/include ${CPPFLAGS}"
+		fi
+	fi # !NETCDF_INC
 fi # enable_dap
 
 
@@ -28870,6 +28875,7 @@ echo "host................. ${host}"
 echo "HOSTNAME............. ${HOSTNAME}"
 echo "LDFLAGS.............. ${LDFLAGS}"
 echo "LIBS................. ${LIBS}"
+echo "NETCDF4_ROOT......... ${NETCDF4_ROOT}"
 
 # Inform users of the very useful configure.eg
 echo ""

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.114 2005-11-28 22:44:11 mangalam Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.115 2005-11-29 21:50:44 mangalam Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -449,6 +449,7 @@ hjm++
 MACOSX rquires CFLAGS=-fno-common for building netcdf3.x to allow linking with nco
 this may also be the case for netcdf4/hdf5
 MACOSX is detected and the '-fno-common' is added automatically to CFLAGS in nco's configure.
+ALso requires '--disable-shared' on the configure line.
 hjm--
 
 ************************************************************************
