@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.29 2005-10-27 01:30:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.30 2005-11-29 19:40:23 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -67,10 +67,12 @@ nco_typ_sng /* [fnc] Convert netCDF type enum to string */
 (const nc_type type); /* I [enm] netCDF type */
 /* End Utility Routines */
 
+#if 0
 #ifdef ENABLE_NETCDF4
 /* netCDF4 routines defined by Unidata netCDF4 Library libnetcdf.a */
 int nco_open_par(const char * const fl_nm,const int mode,MPI_Comm mpi_cmm,MPI_Info mpi_nfo,int * const nc_id);
 #endif /* !ENABLE_NETCDF4 */
+#endif /* !0 */
 #ifdef ENABLE_PNETCDF
 /* pnetCDF routines defined by ANL Parallel netCDF Library libpnetcdf.a */
 int ncompi_open(MPI_Comm mpi_cmm,const char * const fl_nm,const int mode,MPI_Info mpi_nfo,int * const nc_id);
