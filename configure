@@ -24620,8 +24620,8 @@ if (test "${enable_mpi}" = 'yes'); then
 #	echo "before loop, MPICH2_ROOT = ${MPICH2_ROOT}"
 	if (test "${MPICH2_ROOT}" != ""); then
 #		echo "in loop, MPICH2_ROOT = ${MPICH2_ROOT}"
-		CPPFLAGS=-I${MPICH2_ROOT}/include
-		LDFLAGS=-L${MPICH2_ROOT}/lib
+		CPPFLAGS="-I${MPICH2_ROOT}/include ${CPPFLAGS}"
+		LDFLAGS="-L${MPICH2_ROOT}/lib ${LDFLAGS}"
 	fi
 
 	# following may have to AC_DEFINE ENABLE_MPI to pass to Makefile.
@@ -27209,7 +27209,7 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 	;;
-    x86_64-pc-linux* )
+	 x86_64*-linux* )
 cat >>confdefs.h <<\_ACEOF
 #define LINUXAMD64 1
 _ACEOF
