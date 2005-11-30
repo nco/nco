@@ -1,3 +1,12 @@
+2005-11-30  Harry Mangalam <hjm@tacgi.com>
+
+	* changed configure.in to accept a more flexible OS/arch string to 
+	  be able to set AMD64 (reason for previous failing the erf() tests in
+	  ncap).
+	
+	* changed the ncap benchmark scripts to correct syntax errors and change 
+	  dimensions to correspond to the casting dimension order.
+
 2005-11-29  Charlie Zender  <zender@uci.edu>
 
 	* bld/Makefile accepts FL_FMT for netCDF4 testing

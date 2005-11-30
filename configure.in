@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.151 2005-11-30 01:03:19 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.152 2005-11-30 20:37:15 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -887,7 +887,6 @@ case ${host} in
 	;;
     sx*-nec-superux* ) AC_DEFINE(NECSX,1,Compatibility pvmgetarch token for SuperUX on NEC SX)
 	;;
-    x86_64-pc-linux* ) AC_DEFINE(LINUXAMD64,1,Compatibility pvmgetarch token for Linux on AMD x86_64)
 	;;
 esac
 # End pvmgetarch Compatibility

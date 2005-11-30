@@ -4,7 +4,7 @@
 # for the NCO benchmark script nco_bm.pl
 # It must maintain Perl semantics for Perl code.
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_benchmarks.pl,v 1.9 2005-11-30 19:14:21 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_benchmarks.pl,v 1.10 2005-11-30 20:37:16 mangalam Exp $
 
 	print "\nINFO: Starting Benchmarks now\n";
 	if($dbg_lvl > 1){print "bm: prefix = $prefix\n";}
@@ -41,7 +41,7 @@
 	dbg_msg(2,"mpi_prc = $mpi_prc\nopr_sng_mpi = $opr_sng_mpi");
 
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-		$tst_cmd[0] = "ncap -h -O $fl_fmt $nco_D_flg -s  \"nu_var1[time,lat,lon,lev]=d4_01*d4_02*(d4_03^2)-(d4_05/d4_06)\" 	-s \"nu_var2[lat,time,lev,lon]=(d4_13/d4_02)*((d4_03^2)-(d4_05/d4_06))\" -s \"nu_var3[time,lat,lon]=(d3_08*d3_01)-(d3_05^3)-(d3_11*d3_16)\" -s \"nu_var4[lon,lat,time]=(d3_08+d3_01)-((d3_05*3)-d3_11-17.33)\" $in_pth_arg ipcc_dly_T85.nc $outfile";
+		$tst_cmd[0] = "ncap -h -O $fl_fmt $nco_D_flg -s  \"nu_var1[time,lev,lat,lon]=d4_01*d4_02*(d4_03^2)-(d4_05/d4_06)\" 	-s \"nu_var2[time,lev,lat,lon]=(d4_13/d4_02)*((d4_03^2)-(d4_05/d4_06))\" -s \"nu_var3[time,lat,lon]=(d3_08*d3_01)-(d3_05^3)-(d3_11*d3_16)\" -s \"nu_var4[time,lat,lon]=(d3_08+d3_01)-((d3_05*3)-d3_11-17.33)\" $in_pth_arg ipcc_dly_T85.nc $outfile";
 		$tst_cmd[1] = "ncwa -O $omp_flg -y sqrt -a lat,lon $outfile $outfile";
 		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00 $outfile";
 		$nsr_xpc = "4.024271";
