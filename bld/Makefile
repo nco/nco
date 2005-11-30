@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.351 2005-11-10 01:52:07 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.352 2005-11-30 01:33:06 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -84,6 +84,12 @@ endif # endif DBG
 ifndef DAP
  DAP := N
 endif
+ifdef FL_FMT
+# Pass this netCDF4 argument to nco_bm.pl
+ FL_FMT_SNG := "--fl_fmt=${FL_FMT}"
+else # endif FL_FMT
+ FL_FMT_SNG :=
+endif # endif FL_FMT
 ifndef GCC_RCH_ARG
  GCC_RCH_ARG :=
 endif # endif GCC_RCH_ARG
@@ -1393,17 +1399,17 @@ bench:	bm
 bnch:	bm
 bm:	
 	cd ${MY_BM_DIR}; \
-	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --dbg=0 --bench --udpreport ${THR_NBR_SNG} ${MPI_PRC_SNG}
+	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --dbg=0 --bench --udpreport ${FL_FMT_SNG} ${MPI_PRC_SNG} ${THR_NBR_SNG}
 file:	fl
 fl:	
 	cd ${MY_BM_DIR}; \
-	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --dbg=0 --test_files=A --udpreport ${THR_NBR_SNG} ${MPI_PRC_SNG}
+	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --dbg=0 --test_files=A --udpreport ${FL_FMT_SNG} ${MPI_PRC_SNG} ${THR_NBR_SNG}
 regression:	tst
 rgr:	tst
 test:	tst
 tst:	dat
 	cd ${MY_BM_DIR}; \
-	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --dbg=0 --regress --udpreport ${THR_NBR_SNG} ${MPI_PRC_SNG}
+	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --dbg=0 --regress --udpreport ${FL_FMT_SNG} ${MPI_PRC_SNG} ${THR_NBR_SNG}
 # Targets in dat
 data:	dat
 dat:	${MY_DAT_DIR}/in.nc
@@ -1549,6 +1555,7 @@ dbg:
 	@printf "DBG = ${DBG}\n"
 	@printf "FC = ${FC}\n"
 	@printf "FFLAGS = ${FFLAGS}\n"
+	@printf "FL_FMT = ${FL_FMT}\n"
 	@printf "GCC_RCH_ARG = ${GCC_RCH_ARG}\n"
 	@printf "HOST = ${HOST}\n"
 	@printf "ICC_RCH_ARG = ${ICC_RCH_ARG}\n"

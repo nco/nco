@@ -1,6 +1,11 @@
+2005-11-29  Charlie Zender  <zender@uci.edu>
+
+	* bld/Makefile accepts FL_FMT for netCDF4 testing
+
 2005-11-29  Harry Mangalam <hjm@tacgi.com>
-	* changed configure.in to use NETCDF4_ROOT rather than renaming to
-	  libnetcdf4.
+
+	* Changed configure.in to use NETCDF4_ROOT rather than renaming to
+	libnetcdf4.
 
 2005-11-28  Charlie Zender  <zender@uci.edu>
 
