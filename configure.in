@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.150 2005-11-29 21:50:44 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.151 2005-11-30 01:03:19 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -455,8 +455,8 @@ if (test "${enable_mpi}" = 'yes'); then
 #	echo "before loop, MPICH2_ROOT = ${MPICH2_ROOT}"
 	if (test "${MPICH2_ROOT}" != ""); then
 #		echo "in loop, MPICH2_ROOT = ${MPICH2_ROOT}"
-		CPPFLAGS=-I${MPICH2_ROOT}/include
-		LDFLAGS=-L${MPICH2_ROOT}/lib
+		CPPFLAGS="-I${MPICH2_ROOT}/include ${CPPFLAGS}"
+		LDFLAGS="-L${MPICH2_ROOT}/lib ${LDFLAGS}"
 	fi
 
 	# following may have to AC_DEFINE ENABLE_MPI to pass to Makefile.

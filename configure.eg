@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.115 2005-11-29 21:50:44 mangalam Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.116 2005-11-30 01:03:19 mangalam Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -294,23 +294,24 @@ Begin NETCDF4
 ************************************************************************
 
 NETCDF4/netcdf4
-To build with netcdf4, we require two changes from the default process:
-- you must identify the root dir of the netcdf4 build dir.  ie the latest
-  build from UCAR creates a dir named netcdf-4.0-alpha10 when untarred.  The
-  fully qualified path to that directory is the NETCDF4_ROOT which is set at
-  configure time:
-  ./configure --enable-netcdf4 --disable-dap --disable-shared NETCDF4_ROOT=/where/you/unpacked/netcdf4
+To build with netcdf4, we require changes from the default process:
 
-- the options '--enable-netcdf4 --disable-dap --disable-shared' are currently
-  required to build it as well because of incompatibilities among these 
-  options.  Those restrictions should be lifted when Netcdf4 and DAP are 
-  finalized.
+- You should build the hdf5 libs and install them as you normally would (you 
+  could install them in /usr/local, for example).  
 
-- you must rename the 'libnetcdf.etc' built by the netcdf4 to
-  'libnetcdf4.etc' including the fortran lib if you want it included as
-  well. You shouldn't have to move the lib, but it must be renamed so as not
-  to conflict with an existing libnetcdf.a (from netcdf3.x).  If this fails,
-  you may have to symlink it into your /usr/local/lib.
+- you must identify the installation (--prefix=) dir for netcdf4.  ie where 
+  you installed it.  This must be kept spearate from the usual /usr/local 
+  prefix because the netcdf4 lib is still called libnetcdf.a and until netcdf4
+  is debugged, you'll want both of them around.  The configure options 
+  to use for netcdf4 are:
+
+  ./configure --enable-netcdf4 --disable-dap --disable-shared \
+  NETCDF4_ROOT=/where/you/unpacked/netcdf4
+
+  Alternatively, you can export an environment variable NETCDF4_ROOT to 
+  the same value and the configure script will pick it up.
+
+- currently (11.29.05), building NCOs with NETCDF4 and MPI are NOT compatible. 
 
 ************************************************************************
 End NETCDF4
