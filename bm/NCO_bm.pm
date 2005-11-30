@@ -15,7 +15,7 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.21 2005-11-27 05:21:39 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.22 2005-11-30 22:53:02 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -507,6 +507,7 @@ sub go {
 	my $tst_cmdcnt = 0;
 	my $t = 0;
 	my $lst_cmd = @tst_cmd;
+	my $elapsed;
 	$lst_cmd--;
 
 	dbg_msg(4,"\n nsr_xpc = $nsr_xpc\n dbg_lvl = $dbg_lvl\n wnt_log = $wnt_log\n tst_cmd = @tst_cmd");
@@ -577,7 +578,7 @@ sub go {
 			$usr_tme{$opr_nm}  += $sys_tim_arr[3];
 			$sys_tme{$opr_nm}  += $sys_tim_arr[5];
 		}
-		my $elapsed;
+		$elapsed;
 		if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
 		else {$elapsed = time - $t0;}
 
