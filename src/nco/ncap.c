@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.181 2005-11-16 06:53:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.182 2005-12-01 21:32:25 mangalam Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.181 2005-11-16 06:53:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.181 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.182 2005-12-01 21:32:25 mangalam Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.182 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -443,7 +443,7 @@ main(int argc,char **argv)
      20020122 and 20020422: AIX, CRAY, SGI*, WIN32 do not define erff(), erfcf(), gammaf() with C89
      20050610: C99 mandates support for erf(), erfc(), tgamma()
      Eventually users without C99 will forego ncap */
-#if defined(LINUX) || defined(LINUXAMD64)
+#if defined(LINUX) || defined(LINUXAMD64)  || defined(MACOSX)
   sym_tbl[sym_idx++]=ncap_sym_init("erf",erf,erff);
   sym_tbl[sym_idx++]=ncap_sym_init("erfc",erfc,erfcf);
   sym_tbl[sym_idx++]=ncap_sym_init("gamma",tgamma,tgammaf);
