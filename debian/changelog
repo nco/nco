@@ -1,3 +1,9 @@
+nco (3.1.0-1) unstable; urgency=low
+
+  * MPI ZKB, configure netcdf4/mpi, ncwa MRV, ncap rnd_nbr(), netcdf4-alpha10
+
+ -- Charlie Zender <zender@elnino.ess.uci.edu>  Fri,  2 Dec 2005 20:37:09 -0800
+
 nco (3.0.3-1) unstable; urgency=low
 
   * icc9, netCDF4, configure MPI and netCDF4, better SMP

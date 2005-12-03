@@ -2,7 +2,7 @@
 
 	* cvs tag -c nco-3_1_0
 	Changes since nco-3_0_3: 
-	MPI is ZKB, enable-netcdf4/mpi works, ncwa MRV optimization, ncap rnd_nbr()
+	MPI ZKB, configure netcdf4/mpi, ncwa MRV, ncap rnd_nbr(), netcdf4-alpha10
 
 	* Preparing for NCO 3.1.0 release
 
@@ -11,11 +11,11 @@
 	* Changed ncap.c to allow MACOSX to use erf, erfc, gamma
 
 	* changed configure.in to accept a more flexible OS/arch string to 
-	  be able to set AMD64 (reason for previous failing the erf() tests in
-	  ncap).
+	be able to set AMD64 (reason for previous failing the erf() tests in
+	ncap).
 	
 	* changed the ncap benchmark scripts to correct syntax errors and change 
-	  dimensions to correspond to the casting dimension order.
+	dimensions to correspond to the casting dimension order.
 
 2005-11-29  Charlie Zender  <zender@uci.edu>
 
@@ -103,7 +103,7 @@
 	* back on track with updating Makefiles the right way(c)
 
 	* updated MANIFEST to include new bm scripts and the breakup of 
-	  nco_bm.pl.
+        nco_bm.pl.
 
 2005-11-09  Charlie Zender  <zender@uci.edu>
 
