@@ -18,7 +18,7 @@
 /* Enable special compilation for MPI with mpicc */
 #undef ENABLE_MPI
 
-/* Do NOT have NETCDF4 support */
+/* Have included NETCDF4 support */
 #undef ENABLE_NETCDF4
 
 /* Fastest possible execution (slowest compilation) */

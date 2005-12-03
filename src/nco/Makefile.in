@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.60 2005-11-11 20:59:05 mangalam Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.61 2005-12-03 04:48:46 zender Exp $ -*-makefile-*-
 
 
 SOURCES = $(libnco_la_SOURCES) $(mpncbo_SOURCES) $(mpncecat_SOURCES) $(mpncflint_SOURCES) $(mpncpdq_SOURCES) $(mpncra_SOURCES) $(mpncwa_SOURCES) $(ncap_SOURCES) $(ncatted_SOURCES) $(ncbo_SOURCES) $(ncecat_SOURCES) $(ncflint_SOURCES) $(ncks_SOURCES) $(ncpdq_SOURCES) $(ncra_SOURCES) $(ncrename_SOURCES) $(ncwa_SOURCES)
@@ -212,7 +212,6 @@ CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DAP_ROOT = @DAP_ROOT@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 ECHO = @ECHO@

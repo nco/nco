@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/Makefile.in,v 1.28 2005-11-11 20:59:05 mangalam Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/Makefile.in,v 1.29 2005-12-03 04:48:46 zender Exp $ -*-makefile-*-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -81,7 +81,6 @@ CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DAP_ROOT = @DAP_ROOT@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 ECHO = @ECHO@
