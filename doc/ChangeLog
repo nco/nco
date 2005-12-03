@@ -1,8 +1,14 @@
-2005-11-30  Harry Mangalam <hjm@tacgi.com>
-	
-	* Changed ncap.c to allow MACOSX to use erf, erfc, gamma
+2005-12-02  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-3_1_0
+	Changes since nco-3_0_3: 
+	MPI is ZKB, enable-netcdf4/mpi works, ncwa MRV optimization, ncap rnd_nbr()
+
+	* Preparing for NCO 3.1.0 release
 
 2005-11-30  Harry Mangalam <hjm@tacgi.com>
+
+	* Changed ncap.c to allow MACOSX to use erf, erfc, gamma
 
 	* changed configure.in to accept a more flexible OS/arch string to 
 	  be able to set AMD64 (reason for previous failing the erf() tests in

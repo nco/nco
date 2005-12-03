@@ -1,15 +1,35 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.162 2005-11-27 05:21:39 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.163 2005-12-03 02:12:23 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.0.3 are ready. 
+The netCDF operators NCO version 3.1.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Version 3.0.3 contains many internal changes (build,
-benchmarking, memory usage, and documentation improvements),
-new I/O features, and convenience routines for IPCC processing.
+Version 3.1.0 achieves two major milestones:
+1. All arithmetic operators work and are bug-free in MPI mode. 
+2. netcdf4-alpha support works well and is numerically correct.
 
-1. ncwa most rapidly varying dimension (MRV) averaging speed-up:
+Using MPI, NCO can now distribute computations among multiple nodes
+which share disk space. This is the first step toward truly efficient
+distributed versions of NCO toward which we are working. 
+These more efficient versions will utilize parallel I/O techniques
+from netcdf4 and/or pnetcdf. 
+
+We may refer to NCO version 3.1.0+ as SDO, Scientific Data Operators. 
+For now it is just the same old netCDF data, but with the HDF files
+it now supports via netCDF4, and other upcoming features, the name
+does need to change.
+
+1. MPI-enabled operators have zero-known bugs! ZKB! (Daniel Wang)
+
+2. Autotools builds (Harry Mangalam): fixes to configure for
+   --enable-netcdf4 and --enable-mpi
+   Benchmarks also work in these modes--try 'em out.
+
+3. Supports netcdf4-alpha10. Currently reads/writes HDF, no other 
+   netCDF4 features supported yet. 
+
+4. ncwa most rapidly varying dimension (MRV) averaging speed-up:
    Complaints about ncwa being a slow averager (Brian, Byron... :))
    are as old as NCO itself. 
    I've finally implemented an MRV-averaging acceleration algorithm.
@@ -17,16 +37,10 @@ new I/O features, and convenience routines for IPCC processing.
    averaging throughput by a factor of five--ten on files which
    adhere to CF conventions (t,z,y,x).
    Improvement is seen in all MRV averages with no downside for
-   non-MRV averages.
-   Should have done this long ago!
+   non-MRV averages. Should have done this long ago!
+   Recommend upgrade if you use ncwa a lot.
 
-2. ncap random number generator:
-   
-
-2. Autotools builds (Harry Mangalam): fixes to configure for
-   --enable-netcdf4 and  --enable-mpi
-
-3. MPI-enabled operators have zero-known bugs! ZKB! (Daniel Wang)
+5. ncap has a random number generator: rnd_nbr()
 
 Enjoy,
 Charlie
