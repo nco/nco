@@ -1,3 +1,7 @@
+2005-12-05  Charlie Zender  <zender@uci.edu>
+
+	* Add doc/netcdf4.sh to install latest netcdf4 and HDF libraries for NCO
+
 2005-12-02  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-3_1_0

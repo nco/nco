@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.16 2005-12-05 21:51:54 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.17 2005-12-05 21:53:34 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -93,7 +93,7 @@ nco/doc/nco.dvi(v)	NCO User's Guide: DVI format
 nco/doc/nco.pdf(v)	NCO User's Guide: Portable Document Format
 nco/doc/nco.ps(v)	NCO User's Guide: Postscript format
 nco/doc/nco.html(v)	NCO User's Guide: HTML format
-nco/doc/netcdf4.txt	
+nco/doc/netcdf4.sh	Install latest netcdf4 and HDF libraries for NCO
 nco/doc/opendap.sh	Install OPeNDAP 3.5.X for NCO DAP-enabled clients
 nco/doc/surfit.txt	Summer research project advertisement
 nco/doc/tags_doc.sh	Generate Emacs tags for all NCO documents
