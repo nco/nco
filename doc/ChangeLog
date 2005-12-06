@@ -1,5 +1,25 @@
 2005-12-05  Charlie Zender  <zender@uci.edu>
 
+	* Today's modifications allow G++ to build NCO limited by
+	make non_ncap UDUNITS=N
+	This NCO passes all regression tests
+	ncap and UDUNITS linkage remain C++ problems and prevent closing TODO nco656
+	
+	* Hacked nco_malloc_*() to remove errno references with G++
+	Presence triggers G++ error: undefined reference to `__errno_location()'
+	This is TODO nco659
+	
+	* Set #define YYDEBUG 0 in ncap_yacc.y so C++ compiles ncap_yacc.c
+
+	* Fix type conversions in nco_mss_val_cnf() 
+	This fixed a latent bug that was probably never expressed
+
+	* Explicitly coerce pointers in implicit conversions to make C++ happy in  
+	nco_cmp_chr(), nco_cmp_int(), ncpdq.c 
+
+	* Correct const-ness of string list arguments with prototypes in
+	nco_prs_rnm_lst(), nco_fl_nm_prs()
+
 	* Add doc/netcdf4.sh to install latest netcdf4 and HDF libraries for NCO
 
 2005-12-02  Charlie Zender  <zender@uci.edu>

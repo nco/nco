@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.24 2005-07-15 01:02:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.25 2005-12-06 00:26:39 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -102,7 +102,9 @@ nco_malloc_flg /* [fnc] Wrapper for malloc(), forgives ENOMEM errors */
   /* Purpose: Custom plugin wrapper for malloc() that allows ENOMEM errors
      Top of nco_mmr.c explains usage of nco_malloc(), nco_malloc_flg(), and nco_malloc_dbg() */
 
+#ifndef __GNUG__
   extern int errno; /* [enm] Error code in errno.h */
+#endif /* __GNUG__ */
 
   void *ptr; /* [ptr] Pointer to new buffer */
   
@@ -115,9 +117,14 @@ nco_malloc_flg /* [fnc] Wrapper for malloc(), forgives ENOMEM errors */
   ptr=malloc(sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
     (void)fprintf(stdout,"%s: WARNING nco_malloc_flg() unable to allocate %lu bytes\n",prg_nm_get(),(unsigned long)sz);
+#ifndef __GNUG__
+    /* 20051205: Triggers G++ error: undefined reference to `__errno_location()' */
     (void)fprintf(stdout,"%s: malloc() error is \"%s\"\n",prg_nm_get(),strerror(errno));
     if(errno == ENOMEM) return NULL; /* Unlike nco_malloc(), allow simple OOM errors */
-    else (void)fprintf(stdout,"%s: ERROR is not ENOMEM, exiting...\n",prg_nm_get());
+#else
+    return NULL; /* Unlike nco_malloc(), allow simple OOM errors */
+#endif /* __GNUG__ */
+    (void)fprintf(stdout,"%s: ERROR is not ENOMEM, exiting...\n",prg_nm_get());
     (void)nco_malloc_err_hnt_prn();
     nco_exit(EXIT_FAILURE);
   } /* endif */
@@ -136,7 +143,9 @@ nco_malloc_dbg /* [fnc] Wrapper for malloc(), receives and prints more diagnosti
   /* Purpose: Custom wrapper for malloc(), non-plugin, receives and prints more diagnostics
      Top of nco_mmr.c explains usage of nco_malloc(), nco_malloc_flg(), and nco_malloc_dbg() */
 
+#ifndef __GNUG__
   extern int errno; /* [enm] Error code in errno.h */
+#endif /* __GNUG__ */
 
   void *ptr; /* [ptr] Pointer to new buffer */
   
@@ -149,7 +158,10 @@ nco_malloc_dbg /* [fnc] Wrapper for malloc(), receives and prints more diagnosti
   ptr=malloc(sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
     (void)fprintf(stdout,"%s: ERROR malloc() returns error on %s request for %lu bytes\n",prg_nm_get(),fnc_nm,(unsigned long)sz);
+#ifndef __GNUG__
+    /* 20051205: Triggers G++ error: undefined reference to `__errno_location()' */
     (void)fprintf(stdout,"%s: malloc() error is \"%s\"\n",prg_nm_get(),strerror(errno));
+#endif /* __GNUG__ */
     (void)fprintf(stdout,"%s: User-supplied supplemental error message is \"%s\"\n",prg_nm_get(),msg);
     (void)nco_malloc_err_hnt_prn();
     nco_exit(EXIT_FAILURE);

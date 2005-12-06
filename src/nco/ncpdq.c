@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.95 2005-10-25 06:14:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.96 2005-12-06 00:26:39 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.95 2005-10-25 06:14:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.95 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.96 2005-12-06 00:26:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.96 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -737,8 +737,8 @@ main(int argc,char **argv)
 	/* Re-ordering required two value buffers, time to free input buffer */
 	var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	/* Free current dimension correspondence */
-	dmn_idx_out_in[idx]=nco_free(dmn_idx_out_in[idx]);
-	dmn_rvr_in[idx]=nco_free(dmn_rvr_in[idx]);
+	dmn_idx_out_in[idx]=(int *)nco_free(dmn_idx_out_in[idx]);
+	dmn_rvr_in[idx]=(bool *)nco_free(dmn_rvr_in[idx]);
       } /* endif dmn_rdr_nbr > 0 */
 
       if(nco_pck_plc != nco_pck_plc_nil){

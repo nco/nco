@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.60 2005-11-28 19:53:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.61 2005-12-06 00:26:39 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -723,7 +723,7 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
 rnm_sct * /* O [sng] Structured list of old, new names */
 nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */
 (const int nbr_rnm, /* I [nbr] Number of elements in rename list */
- CST_X_PTR_CST_PTR_CST_Y(char,rnm_arg)) /* I [sng] Unstructured list of old, new names */
+ char * const * const rnm_arg) /* I [sng] Unstructured list of old, new names */
 {
   /* Purpose: Set old_nm, new_nm elements of rename structure
      Routine merely fills rename structure and does not attempt to validate 

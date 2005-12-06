@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.20 2005-04-15 23:28:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.21 2005-12-06 00:26:39 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -103,28 +103,28 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
     for(idx=0L;idx<var_sz;idx++) if(var_val.fp[idx] == mss_val_2_flt) var_val.fp[idx]=mss_val_1_flt;
   } break;
   case NC_DOUBLE: {
-    const float mss_val_1_dbl=*var1->mss_val.dp;
-    const float mss_val_2_dbl=*var2->mss_val.dp; 
+    const double mss_val_1_dbl=*var1->mss_val.dp;
+    const double mss_val_2_dbl=*var2->mss_val.dp; 
     for(idx=0L;idx<var_sz;idx++) if(var_val.dp[idx] == mss_val_2_dbl) var_val.dp[idx]=mss_val_1_dbl;
   } break;
   case NC_INT: {
-    const float mss_val_1_lng=*var1->mss_val.lp;
-    const float mss_val_2_lng=*var2->mss_val.lp; 
+    const nco_int mss_val_1_lng=*var1->mss_val.lp;
+    const nco_int mss_val_2_lng=*var2->mss_val.lp; 
     for(idx=0L;idx<var_sz;idx++) if(var_val.lp[idx] == mss_val_2_lng) var_val.lp[idx]=mss_val_1_lng;
   } break;
   case NC_SHORT: {
-    const float mss_val_1_sht=*var1->mss_val.sp;
-    const float mss_val_2_sht=*var2->mss_val.sp; 
+    const short mss_val_1_sht=*var1->mss_val.sp;
+    const short mss_val_2_sht=*var2->mss_val.sp; 
     for(idx=0L;idx<var_sz;idx++) if(var_val.sp[idx] == mss_val_2_sht) var_val.sp[idx]=mss_val_1_sht; 
   } break;
   case NC_CHAR: {
-    const float mss_val_1_chr=*var1->mss_val.cp;
-    const float mss_val_2_chr=*var2->mss_val.cp; 
+    const nco_char mss_val_1_chr=*var1->mss_val.cp;
+    const nco_char mss_val_2_chr=*var2->mss_val.cp; 
     for(idx=0L;idx<var_sz;idx++) if(var_val.cp[idx] == mss_val_2_chr) var_val.cp[idx]=mss_val_1_chr; 
   } break;
   case NC_BYTE: {
-    const float mss_val_1_byt=*var1->mss_val.bp;
-    const float mss_val_2_byt=*var2->mss_val.bp; 
+    const nco_byte mss_val_1_byt=*var1->mss_val.bp;
+    const nco_byte mss_val_2_byt=*var2->mss_val.bp; 
     for(idx=0L;idx<var_sz;idx++) if(var_val.bp[idx] == mss_val_2_byt) var_val.bp[idx]=mss_val_1_byt; 
   } break;
   default: nco_dfl_case_nc_type_err(); break;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.72 2005-11-20 08:00:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.73 2005-12-06 00:26:39 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -873,7 +873,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
 (char *fl_nm, /* I/O [sng] Current filename, if any */
  const int fl_idx, /* I [nbr] Ordinal index of file in input file list */
  int * const fl_nbr, /* I/O [nbr] Number of files to be processed */
- CST_X_PTR_CST_PTR_CST_Y(char,fl_lst_in), /* I [sng] User-specified filenames */
+ char * const * const fl_lst_in, /* I [sng] User-specified filenames */
  const int abb_arg_nbr, /* I [nbr] Number of abbreviation arguments */
  CST_X_PTR_CST_PTR_CST_Y(char,fl_lst_abb), /* I [sng] NINTAP-style arguments, if any */
  const char * const fl_pth) /* I [sng] Path prefix for files in fl_lst_in */

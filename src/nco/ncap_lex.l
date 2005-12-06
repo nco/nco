@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.49 2005-09-15 21:43:56 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.50 2005-12-06 00:26:39 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -72,7 +72,7 @@
    (Asterisks inserted into token names in comments so that cpp does not expand token)
    1. Top of ncap_lex.l via YY*DECL token
       Define YY*DECL token so yylex() accepts re-entrant arguments (Flex p. 12, Bison p. 60) 
-      Use YY*DECL on line following it definition to make prototype visible ncap_lex.c
+      Use YY*DECL on line following its definition to make prototype visible in ncap_lex.c
       This quiets a compiler warning
    2. Top of ncap_yacc.y via YY*DECL token
       Required to quiet compiler warning (see additional comments in ncap_yacc.y)

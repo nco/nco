@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.39 2005-10-21 16:32:41 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.40 2005-12-06 00:26:39 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -57,7 +57,7 @@
 /* Bison adds routines which reference YY*LEX token to ncap_yacc.c 
    These routines generate warnings unless YY*LEX prototype appears above
    YYLEX prototype generates error unless YYSTYPE token is defined
-   Thus must #include ncap_yacc.h solely to pre-define YY*STPE for YY*LEX prototype
+   Thus must #include ncap_yacc.h solely to pre-define YY*STYPE for YY*LEX prototype
    There is no other reason for ncap_yacc.h to appear in ncap_yacc.y 
    Yes, this is rather circular */
 /* Get YYSTYPE prior to prototyping scanner */
@@ -66,7 +66,7 @@
   YY_DECL;
 
 /* Turn on parser debugging option (Bison manual p. 85) */
-#define YYDEBUG 1
+#define YYDEBUG 0
 int yydebug=0; /* 0: Normal operation. 1: Print parser rules during execution */
 
 /* Turns on more verbose errors than just plain "parse error" when yyerror() is called by parser */

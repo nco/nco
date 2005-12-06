@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.53 2005-09-23 19:30:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.54 2005-12-06 00:26:39 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -12,7 +12,7 @@ nm_id_sct * /* O [sct] Variable extraction list */
 nco_var_lst_mk /* [fnc] Create variable extraction list using regular expressions */
 (const int nc_id, /* I [enm] netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
- CST_X_PTR_CST_PTR_CST_Y(char,var_lst_in), /* I [sng] User-specified list of variable names and rx's */
+ char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
  const bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
 {
