@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.321 2005-12-06 00:26:38 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.322 2005-12-08 06:50:28 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -300,7 +300,7 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 <!-- http://nco.sf.net#vrs -->
 <dt><a name="Version"></a><a name="vrs"></a></dt>
 <h2>Version Summary</h2>
-New releases receive unique CVS tags and their tarballs and stored  
+New releases receive unique CVS tags and their tarballs are stored  
 <a href="http://dust.ess.uci.edu/nco/src">here</a>. 
 Tarballs and RPMs no longer debut on SourceForge 
 (because SF's upload mechanism is too time-consuming).
