@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.116 2005-11-30 01:03:19 mangalam Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.117 2005-12-09 20:36:01 zender Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -27,7 +27,7 @@ LINUXALPHA	Y					Y	Y
 LINUXAMD64		Y				Y	Y
 LINUXPPC	Y					Y	N(9)
 LINUXSPARC64	Y					Y	Y
-MACOSX		Y					Y(14)	Y(14)
+MACOSX		Y					Y	Y
 NECSX
 SGIMP64 cc/CC	Y	Y				Y	N(6)
 SGIMP64 gcc/g++	N(7)					Y
@@ -44,7 +44,6 @@ Table footnotes:
 10. Major problems with configure script and permissions on installed files
 11. Comeau (correctly) insists strdup(), strcasecmp() are not ANSI standard (this should now be fixed, retry)
 13. gcc 3.2.1 problem with /usr/include/sys/stat.h in nco_fl_utl.h
-14. g++ 2.95 (Darwin 5.5) does not have <valarray>, so the c++ library will not be built; g++ version 3.1 (Darwin 6.8) does. That is all we have tested.
 17.
 -----------------------------------------------------------------------
 
