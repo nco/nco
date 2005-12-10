@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.689 2005-12-06 01:37:42 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.690 2005-12-10 02:03:26 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -637,22 +637,18 @@ bld44. Add support for autopackage format? http://www.wildgardenseed.com/apkg/
 bld45. Replace ENABLE_LARGEFILE with test for 64-bit offset support (i.e., netCDF 3.6) in configure.in and nco_ctl.c
 x bld46. Is DAP_ROOT (or DODS_ROOT) an obsolete variable in DAP 3.5+? if so obsolete it in configure.in, nco.texi
 bld47. Add regression test for 64bit file format capability
-x bld53. hjm Add --fl_fmt option to nco_bm.pl (see ncks.c for fl_fmt values)
 bld58. hjm Run benchmarks with netCDF4, compare to netCDF3
 bld61. hjm Verify netCDF4 benchmarks work for Ed Hartnett
-x bld62. hjm Make regressions fail when input file not created but re-used from previous test (remove false negatives)
 bld63. hjm Install OpenDAP at UCSD
 bld64. hjm Benchmark ESMF->UCSD over OpenDAP
 bld65. stromberg Install DAP (THREDDS if necessary) on ESMF UCI
 bld67. hjm Move benchmarks to 3x3 or 4x3 portrait format on one page
-x bld68. hjm Verify configure with minimal options works with MACOSX (cg1)
 bld69. hjm make configure ignore system libs in favor of dev libs or figure
          out a way to do this (change name of local dev lib (libnco-dev)?
 bld70. hjm nco_c++ on Mac OS X: Get "make check" working (add -lstdc++, remove -lnco)
-x bld71. hjm Mac OS X: remove false positive regressions in ncwa (cut?)
-x bld72. hjm nco_bm: ensure "foo" (intermediate files) accessed locally not over DAP
 bld73. hjm Get MPI regressions/benchmarks running on ESMF
-bld74. 
+bld74. hjm Do not pass -std=c99 unless GCC=gcc rather than g++
+bld75. 
 ************************************************************************
 End bldXXX TODOs
 ************************************************************************

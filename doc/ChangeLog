@@ -1,3 +1,9 @@
+2005-12-09  Charlie Zender  <zender@uci.edu>
+
+	* Strip -std=c99 from CC and CFLAGS if CC is gcc* in order to support
+	to support using CC=g++ within configure. Ditto for
+	-Wmissing-prototypes, and analogous procedures for xlC* and icpc*.
+
 2005-12-05  Charlie Zender  <zender@uci.edu>
 
 	* Today's modifications allow G++ to build NCO limited by

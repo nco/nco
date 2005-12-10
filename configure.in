@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.154 2005-12-03 04:39:07 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.155 2005-12-10 02:03:26 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -917,16 +917,22 @@ fi
 # End netCDF test data
 
 # Tell GNU C compiler to use C99 standard (older gcc versions default to C89)
+# fxm: only do this for gcc, not g++
 if (test $ac_compiler_gnu == "yes"); then
-  CFLAGS="$CFLAGS -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE"
-	if (test "${macosx}" = 1); then
-		CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'`
-		CFLAGS="-fno-common $CFLAGS"
-		# MacOSX doan understand no steekin shared libs.
-		enable_shared='no'
-	fi
+    CFLAGS="$CFLAGS -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE"
+    if (test "${macosx}" = 1); then
+	CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'`
+	CFLAGS="-fno-common $CFLAGS"
+# MacOSX doan understand no steekin shared libs.
+	enable_shared='no'
+    fi
 fi
 
+# Drop C99 switches when compiling NCO with C++ compiler, e.g., CC=g++
+case ${CC} in
+    g\+\+* | icpc* ) CC=`echo "${CC}" | sed -e 's/-std=c99//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/-std=c99//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/-Wmissing-prototypes//'` ; ;;
+    xlC* ) CC=`echo "${CC}" | sed -e 's/-qlanglvl=extc99//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/-qlanglvl=extc99//'` ; ;;
+esac
 
 echo ""
 echo "###############################"
