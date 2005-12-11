@@ -1,3 +1,7 @@
+2005-12-11  Charlie Zender  <zender@uci.edu>
+
+	* C++-compatibility tweaks to nco_lmt.c, nco_omp.c, and configure.in
+
 2005-12-09  Charlie Zender  <zender@uci.edu>
 
 	* Strip -std=c99 from CC and CFLAGS if CC is gcc* in order to support

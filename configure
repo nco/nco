@@ -27295,8 +27295,8 @@ fi
 
 # Drop C99 switches when compiling NCO with C++ compiler, e.g., CC=g++
 case ${CC} in
-    g\+\+* | icpc* ) CC=`echo "${CC}" | sed -e 's/-std=c99//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/-std=c99//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/-Wmissing-prototypes//'` ; ;;
-    xlC* ) CC=`echo "${CC}" | sed -e 's/-qlanglvl=extc99//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/-qlanglvl=extc99//'` ; ;;
+    g\+\+* | icpc* ) CC=`echo "${CC}" | sed -e 's/-std=c99//'` ; CC=`echo "${CC}" | sed -e 's/-pedantic//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/-std=c99//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/-Wmissing-prototypes//'` ; ;;
+    xlC* ) CC=`echo "${CC}" | sed -e 's/-qlanglvl=extc99//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/-qlanglvl=extc99//'` ; CFLAGS="${CFLAGS} -qlonglong" ; ;;
 esac
 
 echo ""
@@ -27328,8 +27328,6 @@ _ACEOF
 
 fi
 # End Static
-
-
 
 # Begin config
                                                             ac_config_files="$ac_config_files Makefile data/Makefile src/Makefile src/nco/Makefile man/Makefile doc/Makefile"
