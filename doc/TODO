@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.690 2005-12-10 02:03:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.691 2005-12-11 18:15:52 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -415,7 +415,10 @@ nco658. netcdf4 regression in ncks test #1 (due to ncap?)
 nco659. C++: nco_mmr.c: errno presence triggers g++ error: undefined reference to `__errno_location()'
 nco660. C++: NCO does not link to libudunits.a
 nco661. C++: fails coercing YYLEX prototype on bison-generated ncap_yacc.c 
-nco662. 
+nco662. CC=g++ compiler error with configure:
+        ncap_utl.c: In function scv_sct ncap_scv_clc(scv_sct, char, scv_sct):
+        ncap_utl.c:824: internal compiler error: in add_AT_specification, at dwarf2out.c:4903
+nco663. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

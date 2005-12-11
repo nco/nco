@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.26 2005-10-21 22:03:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.27 2005-12-11 18:12:46 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -19,9 +19,9 @@ int omp_get_num_procs(void){return 1;}
 int omp_get_num_threads(void){return 1;}
 int omp_get_thread_num(void){return 0;}
 int omp_in_parallel(void){return 0;}
-void omp_set_dynamic(int dynamic_threads){}
-void omp_set_nested(int nested){}
-void omp_set_num_threads(int num_threads){}
+void omp_set_dynamic(int dynamic_threads){int foo=0;dynamic_threads+=foo;}
+void omp_set_nested(int nested){int foo=0;nested+=foo;}
+void omp_set_num_threads(int num_threads){int foo=0;num_threads+=foo;}
 #endif /* _OPENMP */
 
 int /* O [nbr] Thread number */

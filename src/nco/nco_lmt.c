@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.41 2005-10-19 23:32:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.42 2005-12-11 18:12:46 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1041,7 +1041,7 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
   (void)utTerm(); /* Free memory taken by UDUnits library */
   return 0; /* Successful conversion */
 #else /* !ENABLE_UDUNITS */
-  rcd=1+0*nc_id+0*dmn_id+0*(*lmt_val); /* CEWI removes unused parameter warnings */
+  rcd=(int)(1+0*nc_id+0*dmn_id+0*(*lmt_val)); /* CEWI removes unused parameter warnings */
   (void)fprintf(stdout,"UDUnits limit detected in \"%s\" but UDUnits library is unavailable to perform conversion.\nHINT: Re-compile and re-install NCO with UDUnits enabled. http://nco.sf.net/nco.html#udunits",lmt_sng);
   nco_exit(EXIT_FAILURE);
   return 1; /* Conversion failed */
