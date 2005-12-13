@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.38 2005-12-13 00:18:09 mangalam Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.39 2005-12-13 01:05:34 mangalam Exp $ */
 
 /* Purpose: Average variables */
 
@@ -16,7 +16,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
  const int nco_op_typ) /* I [enm] Operation type, default is average */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
-  /* Purpose: Reduce given variable over specified dimensions
+  /* Purpose: Reduce given variable over specified dimensions 
      "Reduce" means to rank-reduce variable by performing arithmetic operation
      Output variable is duplicate of input variable, except for averaging dimensions
      Default operation is averaging, but nco_op_typ can also be min, max, etc.
@@ -26,11 +26,11 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
      For some operations, such as min, max, ttl, variable returned by nco_var_avg() is complete and need not be further processed
      For averaging operation, output variable must be normalized by its tally array
      In other words, nco_var_nrm() should be called subsequently if normalization is desired
-     Normalization is not done internally to nco_var_avg() to allow user more flexibility */
+     Normalization is not done internally to nco_var_avg() to allow user more flexibility */ 
 
   /* Routine keeps track of three variables whose abbreviations are:
      var: Input variable (already hyperslabbed)
-     avg: An array of averaging blocks, each a contiguous arrangement of all
+     avg: An array of averaging blocks, each a contiguous arrangement of all 
           elements of var which contribute to a single element of fix.
      fix: Output (averaged) variable */
 
@@ -56,10 +56,10 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   /* Copy basic attributes of input variable into output (averaged) variable */
   fix=nco_var_dpl(var);
 
-  /* Create lists of averaging and fixed dimensions (in order of their appearance
-     in the variable). We do not know a priori how many dimensions remain in the
+  /* Create lists of averaging and fixed dimensions (in order of their appearance 
+     in the variable). We do not know a priori how many dimensions remain in the 
      output (averaged) variable, but nbr_dmn_var is an upper bound. Similarly, we do
-     not know a priori how many of the dimensions in the input list of averaging
+     not know a priori how many of the dimensions in the input list of averaging 
      dimensions (dim) actually occur in the current variable, so we do not know
      dmn_avg_nbr, but nbr_dim is an upper bound on it. */
   nbr_dmn_var=var->nbr_dim;
@@ -69,11 +69,11 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   dmn_fix=(dmn_sct **)nco_malloc(nbr_dmn_var*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_var;idx++){
     for(idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
-      /* Comparing dimension IDs is faster than comparing dimension names
+      /* Comparing dimension IDs is faster than comparing dimension names 
 	 but requires assumption that all dimensions are from same file */
       if(var->dmn_id[idx] == dim[idx_dmn]->id){
 	/* Although structures in dim are never altered, linking them into
-	   dmn_avg list makes them vulnerable to manipulation and forces
+	   dmn_avg list makes them vulnerable to manipulation and forces 
 	   dim to lose const protection in prototype */
 	dmn_avg[dmn_avg_nbr]=dim[idx_dmn];
 	/* idx_avg_var[i]=j means that the ith averaging dimension is the jth dimension of var */
@@ -96,7 +96,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 
   if(dmn_avg_nbr == 0){
     /* 20050517: ncwa only calls nco_var_avg() with variables containing averaging dimensions
-       Variables without averaging dimensions are in the var_fix list
+       Variables without averaging dimensions are in the var_fix list 
        We preserve nco_var_avg() capability to work on var_fix variables for future flexibility */
     (void)fprintf(stderr,"%s: WARNING %s does not contain any averaging dimensions\n",prg_nm_get(),fix->nm);
     /* Variable does not contain any averaging dimensions so we are done
@@ -130,10 +130,10 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     fix->cnt[idx]=var->cnt[idx_fix_var[idx]];
     fix->end[idx]=var->end[idx_fix_var[idx]];
   } /* end loop over idx */
-
+  
   fix->is_crd_var=False;
   if(nbr_dmn_fix == 1)
-    if(dmn_fix[0]->is_crd_dmn)
+    if(dmn_fix[0]->is_crd_dmn) 
       fix->is_crd_var=True;
 
   /* Trim dimension arrays to their new sizes */
@@ -142,9 +142,9 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   fix->srt=(long *)nco_realloc(fix->srt,nbr_dmn_fix*sizeof(long));
   fix->cnt=(long *)nco_realloc(fix->cnt,nbr_dmn_fix*sizeof(long));
   fix->end=(long *)nco_realloc(fix->end,nbr_dmn_fix*sizeof(long));
-
+  
   if(avg_sz == 1L){
-    /* If averaging block size is 1, input and output value arrays are identical
+    /* If averaging block size is 1, input and output value arrays are identical 
        var->val was copied to fix->val by nco_var_dpl() at beginning of routine
        Only one task remains: to set fix->tally appropriately */
     long *fix_tally;
@@ -171,12 +171,12 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   } /* end if avg_sz == 1L */
 
   /* Distribute all elements of input hyperslab into averaging block in avg_val
-     Each block contains avg_sz elements in contiguous buffer
+     Each block contains avg_sz elements in contiguous buffer 
      Reduction step then "reduces" each block into single output element */
   if(avg_sz != 1L){
     bool AVG_DMN_ARE_MRV=False; /* [flg] Avergaging dimensions are MRV dimensions */
     ptr_unn avg_val;
-
+    
     /* Initialize data needed by reduction step independent of collection algorithm */
     var_sz=var->sz;
 
@@ -188,38 +188,38 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     fix->val.vp=(void *)nco_malloc(fix_sz*nco_typ_lng(fix->type));
     /* Resize (or just plain allocate) tally array */
     fix->tally=(long *)nco_realloc(fix->tally,fix_sz*sizeof(long));
-
+    
     /* Initialize value and tally arrays */
     (void)nco_zero_long(fix_sz,fix->tally);
     (void)nco_var_zero(fix->type,fix_sz,fix->val);
 
-    /* Complex expensive collection step for creating averaging blocks works
+    /* Complex expensive collection step for creating averaging blocks works 
        in all cases though is unnecessary in one important case.
-       If averaging dimensions are most rapidly varying (MRV) dimensions, then no
+       If averaging dimensions are most rapidly varying (MRV) dimensions, then no 
        re-arrangement is necessary because original variable is stored in averaging
        block order.
-       Averaging dimensions are MRV dimensions iff nbr_dmn_fix fixed dimensions are
-       one-to-one with first nbr_dmn_fix input dimensions.
-       Alternatively, could compare dmn_avg_nbr averaging dimensions to last
+       Averaging dimensions are MRV dimensions iff nbr_dmn_fix fixed dimensions are 
+       one-to-one with first nbr_dmn_fix input dimensions. 
+       Alternatively, could compare dmn_avg_nbr averaging dimensions to last 
        dmn_avg_nbr dimensions of input variable.
        However, averaging dimensions may appear in any order so it is more
        straightforward to compare fixed dimensions to LRV input dimensions. */
-    for(idx=0;idx<nbr_dmn_fix;idx++)
+    for(idx=0;idx<nbr_dmn_fix;idx++) 
       if(idx_fix_var[idx] != idx) break;
     if(idx == nbr_dmn_fix){
       if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Reduction dimensions are %d most-rapidly-varying (MRV) dimensions of %s. Will skip collection step and proceed straight to reduction step.\n",prg_nm_get(),dmn_avg_nbr,fix->nm);
       AVG_DMN_ARE_MRV=True; /* [flg] Avergaging dimensions are MRV dimensions */
     } /* idx != nbr_dmn_fix */
-
+    
     /* MRV algorithm simply skips this collection step */
     if(!AVG_DMN_ARE_MRV){
       /* Dreaded, expensive collection algorithm sorts input into averaging blocks */
       char *avg_cp;
       char *var_cp;
-
+      
       int typ_sz;
       int nbr_dmn_var_m1;
-
+      
       long *var_cnt;
       long avg_lmn;
       long fix_lmn;
@@ -228,42 +228,32 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
       long dmn_var_map[NC_MAX_DIMS];
       long dmn_avg_map[NC_MAX_DIMS];
       long dmn_fix_map[NC_MAX_DIMS];
-
+      
       nbr_dmn_var_m1=nbr_dmn_var-1;
       typ_sz=nco_typ_lng(fix->type);
       var_cnt=var->cnt;
       var_cp=(char *)var->val.vp;
       avg_cp=(char *)avg_val.vp;
-
+      
       /* Compute map for each dimension of input variable */
-      (void) fprintf(stderr, "asgn: br_dmn_var = %d\n",nbr_dmn_var );  /* HJM DEBUG */
       for(idx=0;idx<nbr_dmn_var;idx++) dmn_var_map[idx]=1L;
-      (void) fprintf(stderr, "incr: nbr_dmn_var-1 = %d\n", nbr_dmn_var-1); /* HJM DEBUG */
       for(idx=0;idx<nbr_dmn_var-1;idx++)
-      (void) fprintf(stderr, "1 mul 1 asgn: idx+1 to nbr_dmn = %d\n", (nbr_dmn_var - (idx+1))); /* HJM DEBUG */
 	for(idx_dmn=idx+1;idx_dmn<nbr_dmn_var;idx_dmn++)
 	  dmn_var_map[idx]*=var->cnt[idx_dmn];
-
+      
       /* Compute map for each dimension of output variable */
-      (void) fprintf(stderr, "1 asgn: nbr_dmn_fix= %d\n", nbr_dmn_fix); /* HJM DEBUG */
       for(idx=0;idx<nbr_dmn_fix;idx++) dmn_fix_map[idx]=1L;
-      (void) fprintf(stderr, "1 incr: nbr_dmn_fix-1 = %d\n", (nbr_dmn_fix-1)); /* HJM DEBUG */
       for(idx=0;idx<nbr_dmn_fix-1;idx++)
-      (void) fprintf(stderr, "1 mul, 1 asgn:  = %d\n",(nbr_dmn_var - (idx+1)) ); /* HJM DEBUG */
 	for(idx_dmn=idx+1;idx_dmn<nbr_dmn_fix;idx_dmn++)
 	  dmn_fix_map[idx]*=fix->cnt[idx_dmn];
-
+      
       /* Compute map for each dimension of averaging buffer */
-      (void) fprintf(stderr, "1 asgn: dmn_avg_nbr= %d\n", dmn_avg_nbr); /* HJM DEBUG */
       for(idx=0;idx<dmn_avg_nbr;idx++) dmn_avg_map[idx]=1L;
-       (void) fprintf(stderr, "1 incr: dmn_avg_nbr-1 = %d\n", dmn_avg_nbr-1); /* HJM DEBUG */
-     for(idx=0;idx<dmn_avg_nbr-1;idx++)
-      (void) fprintf(stderr, "1 mul, 1 asgn:  = %d\n", (dmn_avg_nbr - (idx+1))); /* HJM DEBUG */
+      for(idx=0;idx<dmn_avg_nbr-1;idx++)
 	for(idx_dmn=idx+1;idx_dmn<dmn_avg_nbr;idx_dmn++)
 	  dmn_avg_map[idx]*=dmn_avg[idx_dmn]->cnt;
-
+      
       /* var_lmn is offset into 1-D array */
-      (void) fprintf(stderr, "1 modulo, 1 pointer offset, 1 user memory fetch: var_sz= %ld\n", var_sz); /* HJM DEBUG */
       for(var_lmn=0;var_lmn<var_sz;var_lmn++){
 	/* dmn_ss are corresponding indices (subscripts) into N-D array */
 	/* Operations: 1 modulo, 1 pointer offset, 1 user memory fetch
@@ -271,7 +261,6 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 	   Total Counts: \ntgnbr=2\lmnnbr, \mmrusrnbr=\lmnnbr
 	   NB: LHS assumed compact and cached, counted RHS offsets and fetches only */
 	dmn_ss[nbr_dmn_var_m1]=var_lmn%var_cnt[nbr_dmn_var_m1];
-      (void) fprintf(stderr, "1 divide, 1 modulo, 2 pointer offset, 2 user memory fetch: nbr_dmn_var_m1 = %d\n", nbr_dmn_var_m1); /* HJM DEBUG */
 	for(idx=0;idx<nbr_dmn_var_m1;idx++){
 	  /* Operations: 1 divide, 1 modulo, 2 pointer offset, 2 user memory fetch
 	     Repetitions: \lmnnbr(\dmnnbr-1)
@@ -281,36 +270,33 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 	  dmn_ss[idx]=(long)(var_lmn/dmn_var_map[idx]);
 	  dmn_ss[idx]%=var_cnt[idx];
 	} /* end loop over dimensions */
-
+	
 	/* Map variable's N-D array indices into a 1-D index into averaged data */
 	fix_lmn=0L;
 	/* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
 	   Repetitions: \lmnnbr(\dmnnbr-\avgnbr)
 	   Counts: \ntgnbr=5\lmnnbr(\dmnnbr-\avgnbr), \mmrusrnbr=3\lmnnbr(\dmnnbr-\avgnbr) */
-      (void) fprintf(stderr, "1 add, 1 multiply, 3 pointer offset, 3 user memory fetch: nbr_dmn_fix= %d\n",nbr_dmn_fix ); /* HJM DEBUG */
 	for(idx=0;idx<nbr_dmn_fix;idx++) fix_lmn+=dmn_ss[idx_fix_var[idx]]*dmn_fix_map[idx];
-
+	
 	/* Map N-D array indices into 1-D offset from group offset */
 	avg_lmn=0L;
 	/* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
 	   Repetitions: \lmnnbr\avgnbr
 	   Counts: \ntgnbr=5\lmnnbr\avgnbr, \mmrusrnbr=3\lmnnbr\avgnbr */
-      (void) fprintf(stderr, "1 add, 1 multiply, 3 pointer offset, 3 user memory fetch: dmn_avg_nbr = %d\n", dmn_avg_nbr); /* HJM DEBUG */
 	for(idx=0;idx<dmn_avg_nbr;idx++) avg_lmn+=dmn_ss[idx_avg_var[idx]]*dmn_avg_map[idx];
-
+	
 	/* Copy current element in input array into its slot in sorted avg_val */
 	/* Operations: 3 add, 3 multiply, 0 pointer offset, 1 system memory copy
 	   Repetitions: \lmnnbr
 	   Counts: \ntgnbr=6\lmnnbr, \mmrusrnbr=0, \mmrsysnbr=1 */
-      (void) fprintf(stderr, "3 add, 3 multiply, 0 pointer offset, 1 system memcpy:\n"); /* HJM DEBUG */
 	(void)memcpy(avg_cp+(fix_lmn*avg_sz+avg_lmn)*typ_sz,var_cp+var_lmn*typ_sz,(size_t)typ_sz);
       } /* end loop over var_lmn */
     } /* AVG_DMN_ARE_MRV */
-
+    
     /* Input data are now sorted and stored (in avg_val) in blocks (of length avg_sz)
-       in same order as blocks' average values will appear in output buffer.
-       Averaging routines can take advantage of this by casting avg_val to
-       two dimensional variable and averaging over inner dimension.
+       in same order as blocks' average values will appear in output buffer. 
+       Averaging routines can take advantage of this by casting avg_val to 
+       two dimensional variable and averaging over inner dimension. 
        nco_var_avg_reduce_*() sets tally array */
     switch(nco_op_typ){
     case nco_op_max:
@@ -326,24 +312,24 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     case nco_op_rmssdn: /* Operations: Previous=square, Current=sum, Next=normalize and root */
     case nco_op_ttl: /* Operations: Previous=none, Current=sum, Next=none */
     default:
-      (void)nco_var_avg_reduce_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
+      (void)nco_var_avg_reduce_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);	  		
       break;
     } /* end case */
-
+    
     /* Free dynamic memory that held rearranged input variable values */
     avg_val.vp=nco_free(avg_val.vp);
   } /* end if avg_sz != 1 */
-
+  
   /* Jump here when variable is not to be reduced. This occurs when
      1. Variable contains no averaging dimensions
      2. Averaging block size is 1 */
  cln_and_xit:
-
+  
   /* Free input variable */
   var=nco_var_free(var);
   dmn_avg=(dmn_sct **)nco_free(dmn_avg);
   dmn_fix=(dmn_sct **)nco_free(dmn_fix);
-
+  
   /* Return averaged variable */
   return fix;
 } /* end nco_var_avg() */
@@ -361,25 +347,25 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Sum values in each contiguous block of first operand and place
-     result in corresponding element in second operand.
+     result in corresponding element in second operand. 
      Currently arithmetic operation performed is summation of elements in op1
      Input operands are assumed to have conforming types, but not dimensions or sizes
      nco_var_avg_reduce() knows nothing about dimensions
      Routine is one dimensional array operator acting serially on each element of input buffer op1
      Calling rouine knows exactly how rank of output, op2, is reduced from rank of input
      Routine only does summation rather than averaging in order to remain flexible
-     Operations which require normalization, e.g., averaging, must call nco_var_nrm()
+     Operations which require normalization, e.g., averaging, must call nco_var_nrm() 
      or nco_var_dvd() to divide sum set in this routine by tally set in this routine. */
-
+  
   /* Each operation has GNUC and non-GNUC blocks:
      GNUC: Utilize (non-ANSI-compliant) compiler support for local automatic arrays
      This results in more elegent loop structure and, theoretically, in faster performance
      20040225: In reality, the GNUC non-ANSI blocks fail on some large files
      This may be because they allocate significant local storage on the stack
-
+     
      non-GNUC: Fully ANSI-compliant structure
      Fortran: Support deprecated */
-
+  
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
   long idx_op1;
@@ -416,9 +402,9 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
     /* ANSI-compliant branch */
-    if(!has_mss_val){
+    if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	/* Operations: 1 multiply
+	/* Operations: 1 multiply 
 	   Repetitions: \dmnszavg^(\dmnnbr-\avgnbr)
 	   Total Counts: \ntgnbr=\dmnszavg^(\dmnnbr-\avgnbr) */
 	const long blk_off=idx_op2*sz_blk;
@@ -446,9 +432,9 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       float op1_2D[sz_op2][sz_blk];
-
+      
       (void)memcpy((void *)op1_2D,(void *)(op1.fp),sz_op1*nco_typ_lng(type));
-
+      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.fp[idx_op2]+=op1_2D[idx_op2][idx_blk];
@@ -495,9 +481,9 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       double op1_2D[sz_op2][sz_blk];
-
+      
       (void)memcpy((void *)op1_2D,(void *)(op1.dp),sz_op1*nco_typ_lng(type));
-
+      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.dp[idx_op2]+=op1_2D[idx_op2][idx_blk];
@@ -544,9 +530,9 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       long op1_2D[sz_op2][sz_blk];
-
+      
       (void)memcpy((void *)op1_2D,(void *)(op1.lp),sz_op1*nco_typ_lng(type));
-
+      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.lp[idx_op2]+=op1_2D[idx_op2][idx_blk];
@@ -593,9 +579,9 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       short op1_2D[sz_op2][sz_blk];
-
+      
       (void)memcpy((void *)op1_2D,(void *)(op1.sp),sz_op1*nco_typ_lng(type));
-
+      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.sp[idx_op2]+=op1_2D[idx_op2][idx_blk];
@@ -625,8 +611,8 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-
-  /* NB: it is not neccessary to un-typecast pointers to values after access
+  
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
 
 } /* end nco_var_avg_reduce_ttl() */
@@ -664,14 +650,14 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
   short mss_val_sht=short_CEWI;
   nco_char mss_val_chr;
   nco_byte mss_val_byt;
-
+  
   bool flg_mss=False; /* [flg] Block has valid (non-missing) values */
-
+  
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
-
+  
   if(has_mss_val){
     switch(type){
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
@@ -683,18 +669,18 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
-
+  
   switch(type){
   case NC_FLOAT:
-
+    
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
     /* ANSI-compliant branch */
-    if(!has_mss_val){
+    if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	const long blk_off=idx_op2*sz_blk;
 	op2.fp[idx_op2]=op1.fp[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++)
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	  if(op2.fp[idx_op2] > op1.fp[blk_off+idx_blk]) op2.fp[idx_op2]=op1.fp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
@@ -715,13 +701,13 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       float op1_2D[sz_op2][sz_blk];
-
+      
       (void)memcpy((void *)op1_2D,(void *)(op1.fp),sz_op1*nco_typ_lng(type));
-
+      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.fp[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++)
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	    if(op2.fp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
 	} /* end loop over idx_op2 */
       }else{
@@ -738,10 +724,10 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
-
+    
     break;
   case NC_DOUBLE:
-
+    
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
     /* ANSI-compliant branch */
@@ -749,7 +735,7 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	const long blk_off=idx_op2*sz_blk;
 	op2.dp[idx_op2]=op1.dp[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++)
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	  if(op2.dp[idx_op2] > op1.dp[blk_off+idx_blk]) op2.dp[idx_op2]=op1.dp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
@@ -770,13 +756,13 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       double op1_2D[sz_op2][sz_blk];
-
+      
       (void)memcpy((void *)op1_2D,(void *)(op1.dp),sz_op1*nco_typ_lng(type));
-
+      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.dp[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++)
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	    if(op2.dp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk] ;
 	} /* end loop over idx_op2 */
       }else{
@@ -784,7 +770,7 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	    if(op1_2D[idx_op2][idx_blk] != mss_val_dbl){
-	      if(!flg_mss || (op2.dp[idx_op2] > op1_2D[idx_op2][idx_blk])) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	      if(!flg_mss || (op2.dp[idx_op2] > op1_2D[idx_op2][idx_blk])) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk];	    
 	      flg_mss=True;
 	    } /* end if */
 	  } /* end loop over idx_blk */
@@ -802,7 +788,7 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	const long blk_off=idx_op2*sz_blk;
 	op2.lp[idx_op2]=op1.lp[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++)
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	  if(op2.lp[idx_op2] > op1.lp[blk_off+idx_blk]) op2.lp[idx_op2]=op1.lp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
@@ -823,13 +809,13 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       long op1_2D[sz_op2][sz_blk];
-
+      
       (void)memcpy((void *)op1_2D,(void *)(op1.lp),sz_op1*nco_typ_lng(type));
-
+      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.lp[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++)
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	    if(op2.lp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];
 	} /* end loop over idx_op2 */
       }else{
@@ -837,7 +823,7 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	    if(op1_2D[idx_op2][idx_blk] != mss_val_lng){
-	      if(!flg_mss || op2.lp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	      if(!flg_mss || op2.lp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
 	      flg_mss=True;
 	    } /* end if */
 	  } /* end loop over idx_blk */
@@ -855,7 +841,7 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	const long blk_off=idx_op2*sz_blk;
 	op2.sp[idx_op2]=op1.sp[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++)
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	  if(op2.sp[idx_op2] > op1.sp[blk_off+idx_blk]) op2.sp[idx_op2]=op1.sp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
@@ -876,13 +862,13 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       short op1_2D[sz_op2][sz_blk];
-
+      
       (void)memcpy((void *)op1_2D,(void *)(op1.sp),sz_op1*nco_typ_lng(type));
-
+      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.sp[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++)
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	    if(op2.sp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];
 	} /* end loop over idx_op2 */
       }else{
@@ -890,7 +876,7 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	    if(op1_2D[idx_op2][idx_blk] != mss_val_sht){
-	      if(!flg_mss  || op2.sp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	      if(!flg_mss  || op2.sp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
 	      flg_mss=True;
 	    } /* end if */
 	  } /* end loop over idx_blk */
@@ -910,10 +896,10 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
     break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end  switch */
-
-  /* NB: it is not neccessary to un-typecast pointers to values after access
+  
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
-
+  
 } /* end nco_var_avg_reduce_min() */
 
 void
@@ -942,21 +928,21 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
   const long sz_blk=sz_op1/sz_op2;
   long idx_op2;
   long idx_blk;
-
+  
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
   nco_int mss_val_lng=nco_int_CEWI;
   short mss_val_sht=short_CEWI;
   nco_char mss_val_chr;
   nco_byte mss_val_byt;
-
+  
   bool flg_mss=False;
-
+  
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
-
+  
   if(has_mss_val){
     switch(type){
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
@@ -968,18 +954,18 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
-
+  
   switch(type){
   case NC_FLOAT:
-
+    
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
     /* ANSI-compliant branch */
-    if(!has_mss_val){
+    if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	const long blk_off=idx_op2*sz_blk;
 	op2.fp[idx_op2]=op1.fp[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++)
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	  if(op2.fp[idx_op2] < op1.fp[blk_off+idx_blk]) op2.fp[idx_op2]=op1.fp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
@@ -1000,13 +986,13 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       float op1_2D[sz_op2][sz_blk];
-
+      
       (void)memcpy((void *)op1_2D,(void *)(op1.fp),sz_op1*nco_typ_lng(type));
-
+      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.fp[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++)
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	    if(op2.fp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
 	} /* end loop over idx_op2 */
       }else{
@@ -1023,10 +1009,10 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
-
+    
     break;
   case NC_DOUBLE:
-
+    
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
     /* ANSI-compliant branch */
@@ -1034,7 +1020,7 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	const long blk_off=idx_op2*sz_blk;
 	op2.dp[idx_op2]=op1.dp[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++)
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	  if(op2.dp[idx_op2] < op1.dp[blk_off+idx_blk]) op2.dp[idx_op2]=op1.dp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
@@ -1055,13 +1041,13 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       double op1_2D[sz_op2][sz_blk];
-
+      
       (void)memcpy((void *)op1_2D,(void *)(op1.dp),sz_op1*nco_typ_lng(type));
-
+      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.dp[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++)
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	    if(op2.dp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk] ;
 	} /* end loop over idx_op2 */
       }else{
@@ -1069,7 +1055,7 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	    if(op1_2D[idx_op2][idx_blk] != mss_val_dbl){
-	      if(!flg_mss || (op2.dp[idx_op2] < op1_2D[idx_op2][idx_blk])) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	      if(!flg_mss || (op2.dp[idx_op2] < op1_2D[idx_op2][idx_blk])) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk];	    
 	      flg_mss=True;
 	    } /* end if */
 	  } /* end loop over idx_blk */
@@ -1087,7 +1073,7 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	const long blk_off=idx_op2*sz_blk;
 	op2.lp[idx_op2]=op1.lp[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++)
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	  if(op2.lp[idx_op2] < op1.lp[blk_off+idx_blk]) op2.lp[idx_op2]=op1.lp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
@@ -1108,13 +1094,13 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       long op1_2D[sz_op2][sz_blk];
-
+      
       (void)memcpy((void *)op1_2D,(void *)(op1.lp),sz_op1*nco_typ_lng(type));
-
+      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.lp[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++)
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	    if(op2.lp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];
 	} /* end loop over idx_op2 */
       }else{
@@ -1122,7 +1108,7 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	    if(op1_2D[idx_op2][idx_blk] != mss_val_lng){
-	      if(!flg_mss || op2.lp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	      if(!flg_mss || op2.lp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
 	      flg_mss=True;
 	    } /* end if */
 	  } /* end loop over idx_blk */
@@ -1140,7 +1126,7 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	const long blk_off=idx_op2*sz_blk;
 	op2.sp[idx_op2]=op1.sp[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++)
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	  if(op2.sp[idx_op2] < op1.sp[blk_off+idx_blk]) op2.sp[idx_op2]=op1.sp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
@@ -1161,13 +1147,13 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       short op1_2D[sz_op2][sz_blk];
-
+      
       (void)memcpy((void *)op1_2D,(void *)(op1.sp),sz_op1*nco_typ_lng(type));
-
+      
       if(!has_mss_val){
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  op2.sp[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++)
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	    if(op2.sp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];
 	} /* end loop over idx_op2 */
       }else{
@@ -1175,7 +1161,7 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	    if(op1_2D[idx_op2][idx_blk] != mss_val_sht){
-	      if(!flg_mss  || op2.sp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	      if(!flg_mss  || op2.sp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
 	      flg_mss=True;
 	    } /* end if */
 	  } /* end loop over idx_blk */
@@ -1195,8 +1181,8 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
     break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end  switch */
-
-  /* NB: it is not neccessary to un-typecast pointers to values after access
+  
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
 
 } /* end nco_var_avg_reduce_max() */
