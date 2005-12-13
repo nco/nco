@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.124 2005-07-08 00:06:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.125 2005-12-13 15:35:59 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -196,7 +196,7 @@ ncap_var_write
     /* Check to see if variable has already been defined and written */
     if(rcd == NC_NOERR){
     (void)sprintf(ncap_err_sng,"Warning: Variable %s has aleady been saved in %s",var->nm,((prs_sct *)prs_arg)->fl_out);
-    (void)yyerror(ncap_err_sng);
+    (void)yyerror(prs_arg,ncap_err_sng);
     var = nco_var_free(var);
     return False;
     }
@@ -759,10 +759,10 @@ ncap_scv_clc
      __GNUC__ : Defined by gcc 
      __GNUG__ : Defined by g++, equivalent to (__GNUC__ && __cplusplus) */
 
-  /* #ifndef __GNUG__ */
+#ifndef __GNUG__ 
   extern float fmodf(float,float); /* Cannot insert fmodf in ncap_sym_init() because it takes two arguments TODO #20 */
   extern float fabsf(float); /* Sun math.h does not include fabsf() prototype */
-  /* #endif */ /* __GNUG__ */
+#endif   /* __GNUG__ */
   
   scv_sct scv_out;
   scv_out.type=scv_1.type;
@@ -827,7 +827,12 @@ scv_sct
 ncap_scv_abs(scv_sct scv)
 {
   /* Purpose: Find the absolute value of a scalar value */
+
+#ifndef __GNUG__ 
   extern float fabsf(float); /* Sun math.h does not include fabsf() prototype */
+#endif   
+
+
   
   scv_sct scv_out;
   scv_out.type=scv.type;
