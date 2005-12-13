@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.40 2005-12-06 00:26:39 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.41 2005-12-13 15:34:04 hmb Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -62,7 +62,8 @@
    Yes, this is rather circular */
 /* Get YYSTYPE prior to prototyping scanner */
 #include "ncap_yacc.h" /* ncap_yacc.h (ncap.tab.h) is produced from ncap_yacc.y by parser generator */
-#define YY_DECL int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg)
+
+  #define YY_DECL int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg)
   YY_DECL;
 
 /* Turn on parser debugging option (Bison manual p. 85) */
@@ -73,8 +74,8 @@ int yydebug=0; /* 0: Normal operation. 1: Print parser rules during execution */
 #define YYERROR_VERBOSE 1
 
 /* Bison manual p. 60 describes how to call yyparse() with arguments */
-#define YYPARSE_PARAM prs_arg
-#define YYLEX_PARAM prs_arg 
+//#define YYPARSE_PARAM prs_arg
+// #define YYLEX_PARAM prs_arg 
 int rcd; /* [enm] Return value for function calls */
 
 /* Global variables */
@@ -91,7 +92,14 @@ extern char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in nca
    fxm: 20020122 ncap16: Code breaks on Linux when pure_parser is not used---why?
    e.g., ncap -O -D 5 -S ${HOME}/dst/dst.nco ${DATA}/${caseid}/${caseid}_${yr_sng}_xy.nc ${DATA}/${caseid}/${caseid}_${yr_sng}_xy.nc
    Possibly because hardcoded yy* function prototypes change? */
-%pure_parser
+
+
+
+%pure-parser
+%parse-param {prs_sct *prs_arg}
+%lex-param{ prs_sct *prs_arg }
+
+
 
 /* NB: "terminal symbol" is just a fancy name for token produced by lexer 
    Symbols defined on LHS of rules are called "non-terminal symbols" or "non-terminals" 
@@ -162,8 +170,10 @@ program:
 stmt_lst
 ; /* end program */
 
-stmt_lst: 
-stmt_lst stmt ';' {
+stmt_lst:
+ ';' { ;}           /* collect extra ; */
+| stmt_lst ';' { ;} /* collect extra ; */
+| stmt_lst stmt ';' {
   /* Purpose: Actions to be performed at end-of-statement go here */
   /* Clean up from and exit LHS_cst mode */
   (void)nco_var_free_wrp(&((prs_sct *)prs_arg)->var_LHS);
@@ -171,6 +181,8 @@ stmt_lst stmt ';' {
 | stmt_lst error ';' {(void)nco_var_free_wrp(&((prs_sct *)prs_arg)->var_LHS);}
 | stmt ';' {(void)nco_var_free_wrp(&((prs_sct *)prs_arg)->var_LHS);}
 | error ';' {(void)nco_var_free_wrp(&((prs_sct *)prs_arg)->var_LHS);}
+
+
 /* Catch most errors then read up to next semi-colon */
 ; /* end stmt_lst */
 
@@ -201,7 +213,7 @@ PRINT '(' var_xpr ')' ';' {
   ptr_aed->sz=1L;
   (void)cast_nctype_void(ptr_aed->type,&ptr_aed->val);    
   if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s to %s",$1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->fl_out);
-  (void)yyerror(ncap_err_sng);
+  (void)yyerror(prs_arg, ncap_err_sng);
   
   if(dbg_lvl_get() > 1){
     (void)fprintf(stderr,"Saving in array attribute %s@%s=",$1.var_nm,$1.att_nm);
@@ -231,7 +243,7 @@ PRINT '(' var_xpr ')' ';' {
   (void)cast_nctype_void((nc_type)NC_CHAR,&ptr_aed->val);    
   
   if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s=%s",$1.var_nm,$1.att_nm,$3);
-  (void)yyerror(ncap_err_sng);
+  (void)yyerror(prs_arg, ncap_err_sng);
   $1.var_nm=(char *)nco_free($1.var_nm);
   $1.att_nm=(char *)nco_free($1.att_nm);
   $3=(char *)nco_free($3);
@@ -254,10 +266,10 @@ PRINT '(' var_xpr ')' ';' {
     }
     /* cast_nctype_void($3->type,&ptr_aed->val); */
     if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s %d dimensional variable",$1.var_nm,$1.att_nm,$3->nbr_dim);
-    (void)yyerror(ncap_err_sng); 
+    (void)yyerror(prs_arg,ncap_err_sng); 
   }else{
     (void)sprintf(ncap_err_sng,"Warning: Cannot store in attribute %s@%s a variable with dimension %d",$1.var_nm,$1.att_nm,$3->nbr_dim);
-    (void)yyerror(ncap_err_sng);
+    (void)yyerror(prs_arg,ncap_err_sng);
   } /* endif */
   $1.var_nm=(char *)nco_free($1.var_nm);
   $1.att_nm=(char *)nco_free($1.att_nm);
@@ -271,7 +283,7 @@ PRINT '(' var_xpr ')' ';' {
   
   /* Print mess only for defined variables */
   if(dbg_lvl_get() > 0 && !$3->undefined){(void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
-  (void)yyerror(ncap_err_sng);
+  (void)yyerror(prs_arg,ncap_err_sng);
   } /* endif */
   $1=(char *)nco_free($1);
 } /* end out_var_xpr '=' var_xpr */
@@ -310,7 +322,7 @@ PRINT '(' var_xpr ')' ';' {
   (void)ncap_var_write(var,(prs_sct *)prs_arg);
   
   if(dbg_lvl_get() > 0 ) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
-  (void)yyerror(ncap_err_sng);
+  (void)yyerror(prs_arg,ncap_err_sng);
   
   
   $1=(char *)nco_free($1);
@@ -332,7 +344,7 @@ PRINT '(' var_xpr ')' ';' {
   (void)ncap_var_write(var,(prs_sct *)prs_arg);
   
   if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
-  (void)yyerror(ncap_err_sng);
+  (void)yyerror(prs_arg,ncap_err_sng);
   
   $1=(char *)nco_free($1);
   $3=(char *)nco_free($3);
@@ -732,7 +744,7 @@ ncap_var_lookup
 
 int /* [rcd] Return code */
 yyerror /* [fnc] Print error/warning/info messages generated by parser */
-(const char * const err_sng_lcl) /* [sng] Message to print */
+(prs_sct *prs_arg, const char * const err_sng_lcl) /* [sng] Message to print */
 {
   /* Purpose: Print error/warning/info messages generated by parser
      Use eprokoke_skip to skip error message after sending error message from yylex()
