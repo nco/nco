@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.74 2005-06-09 05:27:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.75 2005-12-13 15:26:09 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -151,7 +151,7 @@ opr_ctl /* [fnc] Operation controller function Nie02 opr() */
  ... /* I [llp] Ellipsis defined in stdarg.h */
  ); /* end opr_ctl() */
 
-int yyerror(const char * const sng);
+int yyerror(prs_sct* prs_arg, const char * const sng);
 /* End funtions in ncap_yacc.y */
 
 /* Begin funtions in ncap_utl.c */
