@@ -4,7 +4,7 @@
 # for the NCO benchmark script nco_bm.pl
 # It must maintain Perl semantics for Perl code.
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_benchmarks.pl,v 1.12 2005-11-30 22:58:13 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_benchmarks.pl,v 1.13 2005-12-13 00:18:08 mangalam Exp $
 
 	print "\nINFO: Starting Benchmarks now\n";
 	if($dbg_lvl > 1){print "bm: prefix = $prefix\n";}
@@ -33,6 +33,8 @@
 			}
 		}
 	}
+
+
 
 	#################### begin ncap benchmark hjm - needs to be verified.
 	$opr_nm='ncap';
@@ -248,6 +250,43 @@
 			go();
 		}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
+
+
+	if ($ncwa_scl_tst) {
+		if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
+			if ($notbodi) { #  ipcc too big for bodi
+				#my @ipcc_dm_sz = (8, 8, 16, 64, 32); # dims for d0-d4
+				# 3 -v descriptors that should reduce the total size to 1/2, 1/4, 1/8.
+				my @var_sz =
+				(" -v d1_0[0-3] -v d2_0[0-7] -v d3_[0-2][0-9] -v -d3_3[01]  -v d4_0[0-9] -v d4_1[0-5]",
+				"  -v d1_0[01]  -v d2_0[0-3] -v d3_0[0-9]      -v d3_1[0-5] -v d4_0[0-3]]",
+				"  -v d1_00     -v d2_0[01]  -v d3_0[0-7]                   -v d4_0[01]");
+
+				#################### begin ncwa benchmark list #1c
+				$opr_nm='ncwa';
+				$dsc_sng = 'ncwa averaging at dif var sizes - ipcc_dly_T85.nc & sqt';
+				####################
+				# make vars in size of 1/2, 1/4, 1/8 of each one.
+# 				for (my $r=0; $r<5; $r++) {
+# 					my $var_prfx = sprintf("d%d_", $r);
+# 					for (my $nd=2; $nd<=8; $nd*2){
+# 						my $var_sfx = sprintf("%2d", $ipcc_dm_sz[$r]);
+#
+# 						my $var_sng =
+#
+# 					}
+# 				}
+				for (my $r=0; $r<2; $r++) {
+					$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg $var_sz[$r] -y sqrt  -w lat -a lat,lon $in_pth_arg ipcc_dly_T85.nc $outfile";
+					$tst_cmd[1] = "ncks -C -H -s '%f' -v skanky  $outfile";
+					$nsr_xpc = "0.800000";
+					go();
+				}
+			} # not bodi
+		} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
+	}
+
+
 
 	# and summarize the benchmarks results
 	smrz_rgr_rslt();

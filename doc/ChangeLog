@@ -9,6 +9,14 @@
 	to support using CC=g++ within configure. Ditto for
 	-Wmissing-prototypes, and analogous procedures for xlC* and icpc*.
 
+2005-12-08  Harry Mangalam <hjm@tacgi.com>
+
+	* fixed passive/active ftp problem exhibited on soot by making 'ftp'
+	  explicitly '/usr/bin/ftp' (it was a kerberos'ed ftp on soot for some
+	  reason - /usr/kerberos/bin/ftp).  For linux and esmf, the system ftp
+	  supports passive ftp (-p flag).  The kerberos ftp supports it as well
+	  but not as a flag which casued problems in the 'here' script.
+
 2005-12-05  Charlie Zender  <zender@uci.edu>
 
 	* Today's modifications allow G++ to build NCO limited by

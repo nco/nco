@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.112 2005-11-23 00:32:28 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.113 2005-12-13 00:18:08 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -35,7 +35,7 @@ $dsc_lng_max  $dsc_sng  $dta_dir $dust_usr  %failure  $fl_cnt  @fl_cr8_dat
 $fl_pth  @fl_tmg  $foo1_fl  $foo2_fl  $foo_avg_fl  $foo_fl  $foo_T42_fl
 $foo_tst  $foo_x_fl  $foo_xy_fl  $foo_xymyx_fl  $foo_y_fl  $foo_yx_fl
 $hiresfound  @ifls  $itmp  $localhostname  $md5  $md5found  %MD5_tbl
-$mpi_fke  $mpi_prc  $mpi_prfx  $MY_BIN_DIR  $nco_D_flg  $notbodi
+$mpi_fke  $mpi_prc  $mpi_prfx  $MY_BIN_DIR  $nco_D_flg $ncwa_scl_tst $notbodi
 $nsr_xpc  $NUM_FLS  $nvr_my_bin_dir  $omp_flg $os_nme $opr_fmt  $opr_lng_max
 @opr_lst  @opr_lst_all  @opr_lst_mpi  $opr_nm  $opr_rgr_mpi
 $opr_sng_mpi  $orig_outfile  $outfile  $prfxd  $prg_nm
@@ -121,7 +121,7 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'fl_fmt=s'     => \$fl_fmt,     # Output format for writing netcdf files; one of:
                                    # classic,64bit,netcdf4,netcdf4_classic
 	'opendap:s'    => \$dodap,      # Optional string is URL to DAP data
-	'dust_user=s'  => \$dust_usr,    #  #
+	'dust_user=s'  => \$dust_usr,   #  #
 	'h'            => \$usg,        # Explain how to use this thang
 	'help'         => \$usg,        # Explain how to use this thang
 	'log'          => \$wnt_log,    # Log output
@@ -132,6 +132,7 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'pth_rmt_scp_tst' => \$pth_rmt_scp_tst, # [drc] Path to scp regression test file
 	'regress'      => \$rgr,        # Perform regression tests
 	'rgr'          => \$rgr,        # Perform regression tests
+	'scaling'      => \$ncwa_scl_tst, # do scaling test on ncwa bench to see how dif var sizes change time.
 	'test_files=s' => \$tst_fl_cr8, # Create test files "134" does 1,3,4
 	'tst_fl=s'     => \$tst_fl_cr8, # Create test files "134" does 1,3,4
 	'thr_nbr=i'    => \$thr_nbr,    # Number of OMP threads to use
@@ -330,7 +331,6 @@ use NCO_rgr; # module that contains perform_tests()
 # the real udping server
 $server_name = "sand.ess.uci.edu";
 $server_ip = "128.200.14.132";
-
 $server_port = 29659;
 
 if ($usg) { usage()};   # dump usage blurb
@@ -369,7 +369,7 @@ if ($dodap ne "FALSE") {
 		die "\nThe URL specified with the --dods option:\n $dodap \ndoesn't look like a valid URL.\nTry again\n\n";
 	}
 }
-dbg_msg(4, "after dodap assignment, \$fl_pth = $fl_pth, \$dodap = $dodap");
+dbg_msg(3, "after dodap assignment, \$fl_pth = $fl_pth, \$dodap = $dodap");
 
 # Initialize & set up some variables
 #if($dbg_lvl > 0){printf ("$prg_nm: Calling initialize()...\n");}
@@ -435,5 +435,5 @@ wat4inpt(__LINE__,"just prior to starting the benchmarks");
 # and now, the REAL benchmarks, set up as the regression tests below to use go() and smrz_rgr_rslt()
 if ($bm) {
 	my $bmfile = $pwd . "/" . "nco_bm_benchmarks.pl";
-	do "$bmfile" or die "Can't find Benchmark data ($bmfile) $! $@";
+	do "$bmfile" or die "That's all folks!\n";
 }

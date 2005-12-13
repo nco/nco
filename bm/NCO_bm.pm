@@ -15,7 +15,7 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.22 2005-11-30 22:53:02 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.23 2005-12-13 00:18:08 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -138,7 +138,9 @@ where (options) are:
                      this string can be used to identity and separate results
                      from different runs.
     --dap {OPeNDAP url} ...retrieve test files from OPeNDAP server URL
-    --opendap..............             ditto
+    --opendap..............ditto.  Both take a URL of the form:
+                    http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata
+                    (ie. the URL points points thru the cgi-bin to the data dir)
     --dust_user.....use this to define a user who CAN log into dust for testing
     --fl_fmt........sets the file type to test.  One of:
                     classic, 64bit, netcdf4, netcdf4_classic
@@ -151,6 +153,7 @@ where (options) are:
                      NCO Central to add your test, timing, and build results.
                             NB: This option uses udp port 29659 and may set off
                             firewall alarms if used unless that port is open.
+    --scaling.......runs the ncwa benchmarks with 1/2, 1/4, 1/8 of the variables
     --test_files....requests the testing & excercise of the file creation script
                      'ncgen' and the Left Hand Casting ability of ncap.
                             Currently gives the option to test 4 files of increasing

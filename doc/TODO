@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.692 2005-12-12 08:44:24 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.693 2005-12-13 00:18:08 mangalam Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -512,6 +512,8 @@ Begin oprofile section
 ************************************************************************
 cd ~/nco/bm
 xosview &
+# to enable idle cycle counts, add 'idle=poll' to kernel spec in /boot/grub/menu.lst:
+# kernel          /boot/vmlinuz.old root=/dev/hda1 ro console=tty0 idle=poll quiet splash
 sudo opcontrol --vmlinux=/usr/src/linux-2.6.11/vmlinux # 
 sudo opcontrol --separate=cpu # Use this on SMP machines
 sudo opcontrol --start # Start profiling
@@ -639,11 +641,8 @@ bld42. Adopt orphaned Debian NCO http://bugs.debian.org/cgi-bin/bugreport.cgi?bu
 bld43. Implement Martin Schmidt's suggestion for AIX autoconf builds posted to developer's forum 20050201: {$CC} is not tested for xlc* but for (arbitrary_path/xlc*)
 bld44. Add support for autopackage format? http://www.wildgardenseed.com/apkg/
 bld45. Replace ENABLE_LARGEFILE with test for 64-bit offset support (i.e., netCDF 3.6) in configure.in and nco_ctl.c
-x bld46. Is DAP_ROOT (or DODS_ROOT) an obsolete variable in DAP 3.5+? if so obsolete it in configure.in, nco.texi
 bld47. Add regression test for 64bit file format capability
-bld58. hjm Run benchmarks with netCDF4, compare to netCDF3
 bld61. hjm Verify netCDF4 benchmarks work for Ed Hartnett
-bld63. hjm Install OpenDAP at UCSD
 bld64. hjm Benchmark ESMF->UCSD over OpenDAP
 bld65. stromberg Install DAP (THREDDS if necessary) on ESMF UCI
 bld67. hjm Move benchmarks to 3x3 or 4x3 portrait format on one page
