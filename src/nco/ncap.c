@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.182 2005-12-01 21:32:25 mangalam Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.183 2005-12-13 15:25:15 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -81,7 +81,7 @@ glb_init_free /* [fnc] Initialize and free global variables (line numbers and in
 int 
 main(int argc,char **argv)
 {
-  extern int yyparse(void *); /* Prototype here as in bison.simple to avoid compiler warning */
+  extern int yyparse(prs_sct *prs_arg); /* Prototype here as in bison.simple to avoid compiler warning */
   /* Following declaration gets rid of implicit declaration compiler warning
      It is a condensation of the lexer declaration from lex.yy.c:
      YY_BUFFER_STATE yy_scan_string YY_PROTO(( yyconst char *yy_str )); */
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.182 2005-12-01 21:32:25 mangalam Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.182 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.183 2005-12-13 15:25:15 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.183 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -133,9 +133,15 @@ main(int argc,char **argv)
 
   extern char *optarg;
   extern int optind;
+
   
   /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX */
   /* Basic math: acos, asin, atan, cos, exp, fabs, log, log10, sin, sqrt, tan */
+  
+  /* GNU g++ barfs at these float declartions -- remove if g++ used */
+
+#ifndef __GNUG__
+  
   extern float acosf(float);
   extern float asinf(float);
   extern float atanf(float);
@@ -171,7 +177,8 @@ main(int argc,char **argv)
   extern float rintf(float);
   extern float roundf(float);
   extern float truncf(float);
-  
+#endif
+
   int abb_arg_nbr=0;
   int fl_nbr=0;
   int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
@@ -580,10 +587,10 @@ main(int argc,char **argv)
     ncap_fl_spt_glb[ncap_ncl_dpt_crr]=fl_spt_usr;
     
     /* Invoke parser */
-    rcd=yyparse((void *)&prs_arg);
+    rcd=yyparse(&prs_arg);
     
     /* Tidy up */  
-    if(nbr_spt > 0) fl_spt_usr=nco_free(fl_spt_usr);
+    if(nbr_spt > 0) fl_spt_usr=(char*)nco_free(fl_spt_usr);
     (void)glb_init_free(False); 
     
     if(!prs_arg.ntl_scn) continue;
@@ -656,7 +663,7 @@ main(int argc,char **argv)
       /* If dimension is in list and is not yet defined */
       if(!strcmp(dmn_lst[idx].nm,dmn_in[jdx]->nm) && !dmn_in[jdx]->xrf){     
 	/* Add dimension to output list dmn_prc */
-	dmn_new=nco_dmn_out_grow((void *)&prs_arg);
+	dmn_new=nco_dmn_out_grow(&prs_arg);
 	*dmn_new=nco_dmn_dpl(dmn_in[jdx]);
 	(void)nco_dmn_xrf(*dmn_new,dmn_in[jdx]);
 	/* Write dimension to output */
@@ -677,7 +684,7 @@ main(int argc,char **argv)
       
       if(EXTRACT_ALL_COORDINATES && !dmn_in[idx]->xrf){
 	/* Add dimensions to output list dmn_out */
-	dmn_new=nco_dmn_out_grow((void *)&prs_arg);
+	dmn_new=nco_dmn_out_grow(&prs_arg);
 	*dmn_new=nco_dmn_dpl(dmn_in[idx]);
 	(void)nco_dmn_xrf(*dmn_new,dmn_in[idx]);
 	/* Write dimension to output */
@@ -755,8 +762,8 @@ main(int argc,char **argv)
   /* ncap-unique memory */
   /* fxm: ncap-specific memory freeing instructions go here */
   for(idx=0;idx<sym_tbl_nbr;idx++){
-    sym_tbl[idx]->nm=nco_free(sym_tbl[idx]->nm);
-    sym_tbl[idx]=nco_free(sym_tbl[idx]);
+    sym_tbl[idx]->nm=(char*)nco_free(sym_tbl[idx]->nm);
+    sym_tbl[idx]=(sym_sct*)nco_free(sym_tbl[idx]);
   } /* end loop */
   sym_tbl=(sym_sct **)nco_free(sym_tbl);
   if(fl_spt_usr != NULL) fl_spt_usr=(char *)nco_free(fl_spt_usr);
