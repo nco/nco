@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.42 2005-12-11 18:12:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.43 2005-12-14 07:31:05 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -924,7 +924,8 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
   char *usr_unt_sng; /* [sng] User-specified unit string */
   long att_sz; /* [nbr] "units" attribute size */
   nc_type att_typ; /* [enm] Atttribute type, probably NC_CHAR */
-  utUnit udu_sct_in,udu_sct_out; /* Unidata units structure */
+  utUnit udu_sct_in; /* Unidata units structure */
+  utUnit udu_sct_out; /* Unidata units structure */
   
 #ifdef UDUNITS_PATH
   /* UDUNITS_PATH macro expands to where autoconf found database file */

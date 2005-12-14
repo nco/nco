@@ -1,3 +1,9 @@
+2005-12-13  Charlie Zender  <zender@uci.edu>
+
+	* Fix yyunput argument type in ncap_lex.l
+
+	* Reference prs_sct in yyerror to fix CEWI with g++ -Werror
+
 2005-12-11  Charlie Zender  <zender@uci.edu>
 
 	* C++-compatibility tweaks to nco_lmt.c, nco_omp.c, and configure.in

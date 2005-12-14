@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.51 2005-12-13 15:27:07 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.52 2005-12-14 07:31:05 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -734,7 +734,7 @@ M_PI {return NAMED_CONSTANT;}
   
   if(0){ /* Remove some compiler warning messages CEWI */
     /* Following two statements remove "defined but not used" messages in ncap_lex.c (lex.yy.c) */
-    (void)yyunput((int)NULL,(char *)NULL);
+    (void)yyunput((int)0,(char *)NULL);
     (void)yy_flex_realloc((void *)NULL,(size_t)NULL);
     /* Remove warnings which only occur on SGI IRIX cc */
     yy_full_match=yy_full_match;
