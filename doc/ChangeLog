@@ -1,5 +1,9 @@
 2005-12-13  Charlie Zender  <zender@uci.edu>
 
+	* modify `make test` to automatically run regression test
+
+	* Remove old nco_tst.pl references from Makefile.am `make test`
+
 	* Fix yyunput argument type in ncap_lex.l
 
 	* Reference prs_sct in yyerror to fix CEWI with g++ -Werror

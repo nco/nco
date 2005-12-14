@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.52 2005-12-14 07:31:05 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.53 2005-12-14 08:01:11 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -90,7 +90,7 @@
      See also 20040112 thread in comp.compilers */
   /* Implicit declaration warnings: -D_POSIX_SOURCE also avoids fileno warning */
   int fileno(FILE *); /* fixes: warning: implicit declaration of function `fileno', -D_POSIX_SOURCE also avoids this warning */
-  int yy_flex_realloc(void *,size_t); /* fixes: warning: implicit declaration of function `yy_flex_realloc'. Is this obsolete? Other versions of flex on Linux seem to want void * yyflex_realloc(void *,size_t), which actually makes more sense given that it is a realloc() function */
+  int yy_flex_realloc(void *,size_t); /* fixes: warning: implicit declaration of function `yy_flex_realloc'. Is this obsolete? Other versions of flex on Linux seem to want void * yy_flex_realloc(void *,size_t), which actually makes more sense given that it is a realloc() function */
   /* 20050318: Fedora Core 2 flex 2.5.4 gcc 3.4.2 This prototype causes 
      error: conflicting types for 'yy_flex_realloc' */
   /* Missing prototypes warnings: Triggered by -Wmissing-prototypes */
@@ -735,7 +735,7 @@ M_PI {return NAMED_CONSTANT;}
   if(0){ /* Remove some compiler warning messages CEWI */
     /* Following two statements remove "defined but not used" messages in ncap_lex.c (lex.yy.c) */
     (void)yyunput((int)0,(char *)NULL);
-    (void)yy_flex_realloc((void *)NULL,(size_t)NULL);
+    /*    (void)yy_flex_realloc((void *)NULL,(size_t)NULL);*/
     /* Remove warnings which only occur on SGI IRIX cc */
     yy_full_match=yy_full_match;
     yy_full_lp=yy_full_lp;
