@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.156 2005-12-11 18:12:45 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.157 2005-12-14 18:48:27 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -607,7 +607,7 @@ AC_ARG_ENABLE(udunits,AS_HELP_STRING([--enable-udunits],[Build-in UDUnits suppor
 if test "${enable_udunits}" != 'no'; then
   if test "${UDUNITS_PATH}"; then
 # Add ${UDUNITS_PATH}/lib to search path if present
-    nco_udunits_dat=${UDUNITS_PATH}/src/lib/udunits.dat
+    nco_udunits_dat=${UDUNITS_PATH}/etc/udunits.dat
     LDFLAGS="${LDFLAGS} -L${UDUNITS_PATH}/lib"
     CPPFLAGS="${CPPFLAGS} -I${UDUNITS_PATH}/include"
 #    nco_udunits_dat=${UDUNITS_PATH}/src/lib/udunits.dat

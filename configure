@@ -26257,7 +26257,7 @@ fi;
 if test "${enable_udunits}" != 'no'; then
   if test "${UDUNITS_PATH}"; then
 # Add ${UDUNITS_PATH}/lib to search path if present
-    nco_udunits_dat=${UDUNITS_PATH}/src/lib/udunits.dat
+    nco_udunits_dat=${UDUNITS_PATH}/etc/udunits.dat
     LDFLAGS="${LDFLAGS} -L${UDUNITS_PATH}/lib"
     CPPFLAGS="${CPPFLAGS} -I${UDUNITS_PATH}/include"
 #    nco_udunits_dat=${UDUNITS_PATH}/src/lib/udunits.dat
