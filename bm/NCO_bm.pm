@@ -15,7 +15,7 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.23 2005-12-13 00:18:08 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.24 2005-12-19 21:43:05 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -41,14 +41,14 @@ our @EXPORT = qw (
 	verbosity
 	wat4inpt
 
-	$aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx @fl_cr8_dat @fl_tmg $prefix $opr_nm
+	$aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $caseid $dodap @fl_cr8_dat @fl_tmg $prefix $opr_nm
 	$opr_sng_mpi $md5 $md5found $bm_dir $mpi_prc $mpi_fke $dta_dir $aix_mpi_
 	nvr_prfx	$nsr_xpc $os_nme @tst_cmd %tst_nbr $dbg_lvl $wnt_log $dsc_sng
 	$outfile $fl_pth $tmr_app $fke_prefix $NUM_FLS 	$udp_rpt $sock
 );
 
 use vars qw(
-	$aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $dbg_lvl  $dot_fmt
+	$aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $dbg_lvl $dodap $dot_fmt
 	$dot_nbr  $dot_nbr_min  $dot_sng  $dsc_fmt
 	$dsc_lng_max  $dsc_sng $fke_prefix $hiresfound  $md5  $mpi_prc  $mpi_prfx
 	$MY_BIN_DIR  $nsr_xpc  $opr_fmt  $opr_lng_max  @opr_lst
@@ -494,6 +494,15 @@ sub go {
 	$prfxd = 1; $timed = 1;
 
 	dbg_msg(3,"\$prefix=$prefix | \$mpi_prfx=$mpi_prfx | \$fke_prefix=$fke_prefix");
+
+	#delete everything in the dap subdir to force a DAP retrieval
+	# by this time, $dta_dir has been directed to $dta_dir/DAP_DIR
+	#print "\n\$dta_dir = $dta_dir\n\n";
+	if ($dodap ne "FALSE") {
+#		print "\nunlinking everything in $dta_dir\n";
+		my $unlink_cnt = unlink <$dta_dir/*>;
+#		print "\nunlinked $unlink_cnt files\n";
+	}
 
 # Perform tests of requested operator; default is all
 	if (!defined $tst_nbr{$opr_nm}) {

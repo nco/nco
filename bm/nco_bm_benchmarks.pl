@@ -4,16 +4,16 @@
 # for the NCO benchmark script nco_bm.pl
 # It must maintain Perl semantics for Perl code.
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_benchmarks.pl,v 1.13 2005-12-13 00:18:08 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_benchmarks.pl,v 1.14 2005-12-19 21:43:05 mangalam Exp $
 
 	print "\nINFO: Starting Benchmarks now\n";
 	if($dbg_lvl > 1){print "bm: prefix = $prefix\n";}
 
-	my $in_pth = "$dta_dir";
-	my $in_pth_arg = " -p $in_pth ";
-#	if ($dodap eq "FALSE") {$in_pth_arg = " -p $in_pth "}
-	if ($dodap ne "" && $fl_pth =~ /http/ ) { $in_pth_arg = " $in_pth_arg "; }
-	if ($dodap eq "") { $in_pth_arg = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata "; }
+	my $in_pth = "";
+	my $in_pth_arg = "";
+	if ($dodap eq "FALSE") { $in_pth_arg = "-p $dta_dir"; }
+	elsif ($dodap ne "" && $fl_pth =~ /http/ ) { $in_pth_arg = " -p $fl_pth "; }
+	elsif ($dodap eq "") { $in_pth_arg = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata "; }
 
 
 	################### Set up the symlinks ###################

@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.113 2005-12-13 00:18:08 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.114 2005-12-19 21:43:05 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -181,6 +181,9 @@ if ( $fl_fmt eq "64bit" || $fl_fmt eq "netcdf4" || $fl_fmt eq "netcdf4_classic")
 } else {
 	die "Your file format spec (--fl_fmt) isn't correct; it has to be one of:\n  classic,  64bit, netcdf4, or netcdf4_classic\nPlease choose one of these and repeat.\n\n";
  }
+
+# if testing DAP, use $case_id to specify separate dir, so don't mess with current files
+if ($dodap ne "FALSE") {$caseid = "DAP_DIR"; print "DAP_DIR set as caseid. \n";}
 
 # set up some host-specific id's
 $os_nme = `uname`; chomp $os_nme;
