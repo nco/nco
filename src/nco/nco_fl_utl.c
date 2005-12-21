@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.74 2005-12-13 00:18:09 mangalam Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.75 2005-12-21 13:19:09 hmb Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -345,7 +345,7 @@ char * /* O [sng] Filename of locally available file */
 nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 (char *fl_nm, /* I/O [sng] Current filename, if any (destroyed) */
  const char * const fl_pth_lcl, /* I [sng] Local storage area for files retrieved from remote locations */
- int * const FILE_RETRIEVED_FROM_REMOTE_LOCATION) /* O [flg] File was retrieved from remote location */
+ bool * const FILE_RETRIEVED_FROM_REMOTE_LOCATION) /* O [flg] File was retrieved from remote location */
 {
   /* Purpose: Locate input file, retrieve it from remote storage system if necessary,
      create local storage directory if neccessary, check file for read-access,
