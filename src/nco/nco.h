@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.90 2005-11-20 08:00:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.91 2005-12-21 13:17:10 hmb Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -31,14 +31,14 @@
 #define CST_X_PTR_CST_PTR_CST_Y(x,y) x * const * const y
 #define X_CST_PTR_CST_PTR_Y(x,y) x * const * y
 #endif /* !__cplusplus */
-
 #ifdef __cplusplus
+
 /* Use C-bindings so C++-compiled and C-compiled libraries are compatible */
 extern "C" {
 #endif /* !__cplusplus */
 
 /* Uncomment next line to remove C99 restrict type-qualifier from all source */
-/*#define restrict*/
+/* #define restrict */
 
 /* Replace restrict by __restrict in g++ compiler
    Substitute whitespace for __restrict in all other C++ compilers */
@@ -51,9 +51,11 @@ extern "C" {
 #endif /* !__cplusplus */
 
 /* Boolean values */
+#ifndef __GNUG__
 #ifndef bool
 #define bool int
 #endif /* bool */
+#endif /* _cplusplus */
 #ifndef True
 #define True 1
 #endif /* True */
