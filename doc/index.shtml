@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.327 2005-12-30 00:28:15 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.328 2005-12-30 00:57:17 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -73,6 +73,9 @@ little money, click on the PayPal button:
 
 <p><h2>Current version is <!--#include virtual="VERSION"--> last updated on <!--#flastmod file="VERSION"--> </h2>
 
+<table border=0 width=100%>
+
+<td>
 <p><ul>
 <li><a href="#News">News &amp; Announcements</a></li>
 <li><a href="#Definition">What is NCO?</a></li>
@@ -88,6 +91,16 @@ little money, click on the PayPal button:
 <li><a href="#Bugs">Common NCO Build/Run Problems</a></li>
 <li><a href="#Contact">Contacting us</a></li>
 </ul>
+</td>
+
+<td>
+<img src="nco.png" height=180 width=180 align=right>
+The temporary NCO logo&hellip;<br>
+Have a better one?<br>
+Send it in!<br>
+</td>
+
+</table>
 <hr>
 
 <!-- http://nco.sf.net#news -->
