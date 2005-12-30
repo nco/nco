@@ -1,12 +1,12 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.326 2005-12-30 00:13:20 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.327 2005-12-30 00:28:15 zender Exp $
 Purpose: NCO homepage
 
 Usage:
 http://dust.ess.uci.edu/nco/index.shtml
 file:///home/zender/nco/doc/index.shtml
 
-/usr/bin/scp ~/nco/doc/index.shtml nco.sf.net:/home/groups/n/nc/nco/htdocs/index.shtml
-scp -p ~/nco/doc/index.shtml dust.ess.uci.edu:/var/www/html/nco/index.shtml
+/usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/nco.png nco.sf.net:/home/groups/n/nc/nco/htdocs
+scp -p ~/nco/doc/index.shtml ~/nco/doc/nco.png dust.ess.uci.edu:/var/www/html/nco
 -->
 
 <!--
@@ -34,7 +34,7 @@ Try to disable Spammers' machines:
    <meta name="Generator" content="Old fashioned typing">
    <meta name="author" content="hjm">
    <meta name="Keywords" content="NCO Homepage, netCDF, netCDF operator, GCM, HDF, scientific data">
-   <link rel="icon" href="http://nco.sf.net/nco.xbm" type="image/xbitmap">
+   <link rel="icon" href="./nco.png" type="image/png">
 </head>
 <body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
 
