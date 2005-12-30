@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.17 2005-12-05 21:53:34 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.18 2005-12-30 00:13:20 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -71,6 +71,7 @@ nco/data/ncap.in	Text input for ncap (not yet used)
 
 Documentation directory:
 nco/doc/ANNOUNCE	Announcement to accompany release notifications
+nco/doc/ChangeLog	Chronological log of NCO changes
 nco/doc/LICENSE		License and legal information
 nco/doc/MANIFEST	This file. Describes all files in distribution
 nco/doc/README		Description of NCO
@@ -78,21 +79,21 @@ nco/doc/README_Fedora	Short instructions for Fedora users
 nco/doc/TAG		CVS tag for this version 
 nco/doc/TODO		List of tasks for future releases
 nco/doc/VERSION		NCO version 
-nco/doc/ChangeLog	Chronological log of NCO changes
 nco/doc/debian.txt	Creating and updating Debian NCO .deb packages
-nco/doc/dods.sh		Install OPeNDAP 3.4.X for NCO DAP-enabled clients
 nco/doc/dir		Example Info file to load nco.info
+nco/doc/dods.sh		Install OPeNDAP 3.4.X for NCO DAP-enabled clients
 nco/doc/help.txt	Advertisement for help with NCO (outdated---from 2000)
 nco/doc/index.shtml	NCO website homepage
 nco/doc/mpi.txt		MPI Environments for NCO
-nco/doc/nco_news.shtml	NCO news archive
 nco/doc/ncap.txt	Description of the ncap operator (not yet used)
-nco/doc/nco.texi	NCO User's Guide: TeXInfo format
-nco/doc/nco.info(v)	NCO User's Guide: Info format
 nco/doc/nco.dvi(v)	NCO User's Guide: DVI format
+nco/doc/nco.html(v)	NCO User's Guide: HTML format
+nco/doc/nco.info(v)	NCO User's Guide: Info format
 nco/doc/nco.pdf(v)	NCO User's Guide: Portable Document Format
 nco/doc/nco.ps(v)	NCO User's Guide: Postscript format
-nco/doc/nco.html(v)	NCO User's Guide: HTML format
+nco/doc/nco.texi	NCO User's Guide: TeXInfo format
+nco/doc/nco.xbm		NCO Webpage icon (X-bitmap format)
+nco/doc/nco_news.shtml	NCO news archive
 nco/doc/netcdf4.sh	Install latest netcdf4 and HDF libraries for NCO
 nco/doc/opendap.sh	Install OPeNDAP 3.5.X for NCO DAP-enabled clients
 nco/doc/surfit.txt	Summer research project advertisement
