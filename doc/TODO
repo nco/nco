@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.694 2005-12-14 08:42:50 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.695 2006-01-03 01:59:04 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -610,7 +610,8 @@ ncap66. make ncap errors fatal, either in yyerror(), or call nco_error_exit()
 ncap70. gamma() function broken on AIX
 ncap71. Remove erf and gamma functions from AIX build
 ncap72. Stop linking to -lC on AIX. Get all float math functions by casting double versions
-ncap76. 
+ncap76. Cause LHS variables to retain attributes of pre-existing variables of same name
+ncap77. 
 ************************************************************************
 End ncapXXX TODOs
 ************************************************************************
