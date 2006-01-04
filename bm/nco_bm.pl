@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.114 2005-12-19 21:43:05 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.115 2006-01-04 20:30:29 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -77,7 +77,7 @@ $md5 = 0;
 $mpi_prc = 0; # by default, don't want no steekin MPI
 $mpi_prfx = "";
 $timestamp = `date -u "+%x %R"`; chomp $timestamp;
-$dodap = "FALSE"; # Unless redefined by the command line, it does not get set
+$dodap = "FALSE"; # Unless redefined by the command line, it does not get reset
 $fl_cnt = 32; # nbr of files to process (reduced to 4 if using remote/dods files
 $pth_rmt_scp_tst='dust.ess.uci.edu:/var/www/html/dodsdata';
 $dust_usr = "";
@@ -183,7 +183,7 @@ if ( $fl_fmt eq "64bit" || $fl_fmt eq "netcdf4" || $fl_fmt eq "netcdf4_classic")
  }
 
 # if testing DAP, use $case_id to specify separate dir, so don't mess with current files
-if ($dodap ne "FALSE") {$caseid = "DAP_DIR"; print "DAP_DIR set as caseid. \n";}
+if ($dodap ne "FALSE") {$caseid = "DAP_DIR"; print "\nDAP_DIR set as caseid. \n";}
 
 # set up some host-specific id's
 $os_nme = `uname`; chomp $os_nme;

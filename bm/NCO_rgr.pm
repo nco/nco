@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.20 2005-11-29 22:37:06 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.21 2006-01-04 20:30:29 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -20,7 +20,7 @@ our @EXPORT = qw (
 
 	$dust_usr $prefix $opr_nm $opr_sng_mpi $dodap $pth_rmt_scp_tst
 	$nsr_xpc @tst_cmd %tst_nbr $dbg_lvl $localhostname $wnt_log $dsc_sng
-	$outfile $orig_outfile  $foo_fl $foo_avg_fl $foo_tst $foo1_fl $foo2_fl $foo_x_fl
+	$outfile $orig_outfile $prsrv_fl $foo_fl $foo_avg_fl $foo_tst $foo1_fl $foo2_fl $foo_x_fl
 	$foo_y_fl $foo_xy_fl $foo_yx_fl $foo_xymyx_fl $foo_T42_fl $fl_fmt
 
 );
@@ -30,7 +30,7 @@ use vars qw(
     $foo_fl $foo_T42_fl $foo_tst $foo_x_fl $foo_xy_fl
     $foo_xymyx_fl $foo_y_fl $foo_yx_fl $mpi_prc $nco_D_flg $localhostname
     $nsr_xpc $omp_flg $opr_nm $opr_rgr_mpi $orig_outfile
-    $outfile $pth_rmt_scp_tst @tst_cmd $USER
+    $outfile $pth_rmt_scp_tst $prsrv_fl @tst_cmd $USER
 );
 
 sub perform_tests
@@ -45,6 +45,7 @@ sub perform_tests
 
 my $in_pth = "../data";
 my $in_pth_arg = "-p $in_pth";
+$prsrv_fl = 0;
 
 # csz++
 # fxm: pass as arguments or use exporter/importer instead?
@@ -128,6 +129,7 @@ dbg_msg(1,"-------------  REGRESSION TESTS STARTED from perform_tests()  -------
 	$nsr_xpc ="-1.000000000000";
  go();
 
+if ($dodap eq "FALSE") {
 ####################
 #### ncatted tests #
 ####################
@@ -139,7 +141,7 @@ dbg_msg(1,"-------------  REGRESSION TESTS STARTED from perform_tests()  -------
 	$nsr_xpc="meter second-1";
  go();
 
-        $tst_cmd[0]="ncatted -h -O $fl_fmt $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth_arg in.nc $outfile";
+   $tst_cmd[0]="ncatted -h -O $fl_fmt $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth_arg in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v val_one_mss $outfile";
 	$dsc_sng="Change missing_value attribute from 1.0e36 to 0.0";
 	$nsr_xpc= 0 ;
@@ -151,7 +153,7 @@ dbg_msg(1,"-------------  REGRESSION TESTS STARTED from perform_tests()  -------
 	$dsc_sng="Pad header with 1000 extra bytes for future metadata";
 	$nsr_xpc= 26 ;
  go();
-
+}
 ####################
 #### ncbo tests ####
 ####################
@@ -281,6 +283,7 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_ar
 	$nsr_xpc= 1.0 ;
  go();
 
+if ($dodap eq "FALSE"){
 	$tst_cmd[0]="ncrename -h -O $nco_D_flg -v zero,foo $in_pth_arg in.nc $foo1_fl";
 	$tst_cmd[1]="ncrename -h -O $nco_D_flg -v one,foo $in_pth_arg in.nc $outfile";
 	$tst_cmd[2]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -i foo,0.5 -v two $foo1_fl $outfile $outfile";
@@ -288,7 +291,7 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_ar
 	$dsc_sng="identity interpolation";
 	$nsr_xpc= 2.0 ;
  go();
-
+}
 	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d lon,1 -v mss_val $in_pth_arg in.nc $foo_x_fl";
 	$tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -d lon,0 -v mss_val $in_pth_arg in.nc $foo_y_fl";
 	$tst_cmd[2]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -w 0.5,0.5 $foo_x_fl $foo_y_fl $foo_xy_fl";
@@ -561,11 +564,26 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_ar
 ####################
     $opr_nm='ncwa';
 ####################
+
+	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v lat_T42,lon_T42,gw_T42 $in_pth_arg in.nc $foo_T42_fl";
+	$tst_cmd[1]="ncrename -h -O $nco_D_flg -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon $foo_T42_fl";
+	$tst_cmd[2]="ncap -h -O $fl_fmt $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' $foo_T42_fl $foo_T42_fl";
+	$tst_cmd[3]="ncks -C -H -s '%g' -v one -F -d lon,128 -d lat,64 $foo_T42_fl";
+	$nsr_xpc="1";
+	$dsc_sng="Creating $foo_T42_fl again ";
+ go();
+
+#print "!!!!!!!!!!!!!!  WAITING FOR INPUT  !!!!!!!!!!!!!!"; $nsr_xpc=<STDIN>;
+#   system "ls $foo_T42_fl";
+
 	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon -w gw -d lat,0.0,90.0 $foo_T42_fl $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%g' -v one $outfile";
 	$dsc_sng="normalize by denominator upper hemisphere";
 	$nsr_xpc= 1;
+	$prsrv_fl = 1; # save previously generated files.
  go();
+
+#print "!!!!!!!!!!!!!!  WAITING FOR INPUT  !!!!!!!!!!!!!!"; $nsr_xpc=<STDIN>;
 
 #${MY_BIN_DIR}/ncwa -n $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon -w gw $foo_T42_fl$outfile";
 #$tst_cmd[1]="ncks -C -H -s '%f' -v one $outfile";
@@ -656,9 +674,11 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_ar
 	$dsc_sng="Dimension reduction with min switch and missing values";
 	$nsr_xpc= -99 ;
  go();
+
 	$tst_cmd[0]="cut -d, -f 20 $foo_fl";
 	$dsc_sng="Dimension reduction with min switch";
 	$nsr_xpc= 77 ;
+	$prsrv_fl = 1;
  go();
 
 	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_int -a lon $in_pth_arg in.nc $outfile";
@@ -670,6 +690,7 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_ar
 	$tst_cmd[0]="cut -d, -f 7 $foo_fl";
 	$dsc_sng="Dimension reduction on type int variable";
 	$nsr_xpc= 25 ;
+	$prsrv_fl = 1;
  go();
 
 	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_sht -a lon $in_pth_arg in.nc $outfile";
@@ -681,6 +702,7 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_ar
 	$tst_cmd[0]="cut -d, -f 8 $foo_fl";
 	$dsc_sng="Dimension reduction on type short variable";
 	$nsr_xpc= 29 ;
+	$prsrv_fl = 1;
  go();
 
 	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_rec_var $in_pth_arg in.nc $outfile 2>$foo_tst";
@@ -704,6 +726,7 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_ar
 	$tst_cmd[0]="cut -d, -f 5 $foo_fl";
 	$dsc_sng="Dimension reduction on type double variable";
 	$nsr_xpc= 40 ;
+	$prsrv_fl = 1;
  go();
 
 	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_int -a lat $in_pth_arg in.nc $outfile";;
@@ -715,6 +738,7 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_ar
 	$tst_cmd[0]="cut -d, -f 13 $foo_fl";
 	$dsc_sng="Dimension reduction on type int variable";
 	$nsr_xpc= 29 ;
+	$prsrv_fl = 1;
  go();
 
 	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_sht -a lat $in_pth_arg in.nc $outfile";;
@@ -726,6 +750,7 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_ar
 	$tst_cmd[0]="cut -d, -f 33 $foo_fl";
 	$dsc_sng="Dimension reduction on type short, max switch variable";
 	$nsr_xpc= 69 ;
+	$prsrv_fl = 1;
  go();
 
 	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -w lat_wgt -v lat $in_pth_arg in.nc $outfile 2>$foo_tst";

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.75 2005-12-21 13:19:09 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.76 2006-01-04 20:30:30 mangalam Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -165,10 +165,10 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 
   int idx;
   int fl_nm_sz_wrn=255;
-  int prg_id; /* Program ID */
   int psn_arg_fst=0; /* [nbr] Offset for expected number of positional arguments */
   int psn_arg_nbr; /* [nbr] Number of remaining positional arguments */
 
+  int prg_id; /* Program ID */
   prg_id=prg_get(); /* [enm] Program ID */
   psn_arg_nbr=argc-arg_crr; /* [nbr] Number of remaining positional arguments */
 
@@ -365,6 +365,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   int rcd;
   size_t url_sng_lng=0L; /* CEWI */
   struct stat stat_sct;
+  int prg_id; /* Program ID */
+  prg_id=prg_get(); /* [enm] Program ID */
 
   /* Assume local filename is input filename */
   fl_nm_lcl=(char *)strdup(fl_nm);
@@ -378,6 +380,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     url_sng_lng=strlen(ftp_url_sng);
   } /* !ftp */
   FTP_OR_SFTP_URL=FTP_URL || SFTP_URL;
+
+//printf("\n\nprg_id=%d and ncatted=%d!\n", prg_id, ncatted);
 
   if(FTP_OR_SFTP_URL){
     char *fl_nm_lcl_tmp;
@@ -809,6 +813,17 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl){
     /* Attempt nc_open() on HTTP protocol files. Success means DAP found file. */
     int in_id; /* [id] Temporary input file ID */
+
+    /* Following is the graceful failure if ncatted or ncrename try to use DAP to retrieve a file. */
+  switch(prg_id){
+    case ncatted:  case ncrename:
+    (void)fprintf(stderr,"%s: ERROR - in nco_fl_mk_lcl(), ncatted and ncrename cannot currently retrieve entire files via DAP or http.\n",prg_nm_get());
+    nco_exit(EXIT_FAILURE);
+    break;
+    default:
+      /* ALl the others work with DAP correctly */
+    break;
+  }
 
     rcd=nco_open(fl_nm_lcl,NC_NOWRITE,&in_id);
 

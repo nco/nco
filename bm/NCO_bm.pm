@@ -15,7 +15,7 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.24 2005-12-19 21:43:05 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.25 2006-01-04 20:30:29 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -43,7 +43,7 @@ our @EXPORT = qw (
 
 	$aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $caseid $dodap @fl_cr8_dat @fl_tmg $prefix $opr_nm
 	$opr_sng_mpi $md5 $md5found $bm_dir $mpi_prc $mpi_fke $dta_dir $aix_mpi_
-	nvr_prfx	$nsr_xpc $os_nme @tst_cmd %tst_nbr $dbg_lvl $wnt_log $dsc_sng
+	nvr_prfx	$nsr_xpc $os_nme $prsrv_fl @tst_cmd %tst_nbr $dbg_lvl $wnt_log $dsc_sng
 	$outfile $fl_pth $tmr_app $fke_prefix $NUM_FLS 	$udp_rpt $sock
 );
 
@@ -58,7 +58,7 @@ use vars qw(
 	$sys_time  %sys_tme  $timed  %totbenchmarks  @tst_cmd  $tst_fmt
 	$tst_id_sng  %tst_nbr  %usr_tme $wnt_log $timestamp
 	$bm_dir $caseid $cmd_ln $dta_dir @fl_cr8_dat $fl_pth @fl_tmg $md5found
-	%MD5_tbl $nco_D_flg $NUM_FLS $prfxd $que $server_ip $sock $thr_nbr $dbg_sgn $err_sgn
+	%MD5_tbl $nco_D_flg $NUM_FLS $prfxd $prsrv_fl $que $server_ip $sock $thr_nbr $dbg_sgn $err_sgn
 	$tmr_app $udp_rpt %wc_tbl $prfxd $nvr_my_bin_dir $prg_nm $arg_nbr @fl_tmg
 );
 
@@ -498,7 +498,7 @@ sub go {
 	#delete everything in the dap subdir to force a DAP retrieval
 	# by this time, $dta_dir has been directed to $dta_dir/DAP_DIR
 	#print "\n\$dta_dir = $dta_dir\n\n";
-	if ($dodap ne "FALSE") {
+	if ($dodap ne "FALSE" && !$prsrv_fl) {
 #		print "\nunlinking everything in $dta_dir\n";
 		my $unlink_cnt = unlink <$dta_dir/*>;
 #		print "\nunlinked $unlink_cnt files\n";
@@ -577,10 +577,13 @@ sub go {
 		my $t0;
 		if ($hiresfound) {$t0 = [gettimeofday];}
 		else {$t0 = time;}
+#my $rt = `ls /home/hjm/data/nco_bm/DAP_DIR/foo_T42.nc`;
+#print "\nexists? = $rt\n";
 		#####################################################################################
 		# and execute the command, splitting off stderr to file 'nco-stderror'
-		$result=`($_) 2> nco-stderror`; # stderr should contain timing info if it exists.
+		$result = `($_) 2> nco-stderror`; # stderr should contain timing info if it exists.
 		#####################################################################################
+#		print "\nresult of [$_] = $result\n";
 		chomp $result;
 		if ($timed) {
 			$sys_time = `cat nco-stderror`;
@@ -665,6 +668,7 @@ sub go {
 	if ($dbg_lvl > 0) {print $dbg_sgn;}
 	print LOG $dbg_sgn;
 	@tst_cmd=(); # Clear test
+	$prsrv_fl = 0; # reset so files will be deleted unless specifically request saving them
 	# rm $outfile so it can't generate a false positive
 	if (-e $outfile && -w $outfile) { unlink $outfile;	}
 } # end go()

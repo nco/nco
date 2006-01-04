@@ -1,6 +1,25 @@
+2006-01-04  Harry Mangalam <hjm@tacgi.com>
+	
+ 	* Fixes to the BM code to force the retrieval of DAP-requested files and
+     a variable ($prsrv_fl) to allow a regression test to maintain files if 
+	  a previously downloaded file is needed for a successive test.
+
+	* noted in the TODO as well, but there is a difference between the
+     opendap code running on sand (which passes all server-side regression tests)
+     and the code running on hiperstore, which fails a number of them, many 
+     with OpenDAP errors emitted from the lib.  Still figuring this out.
+	
+	* mods to nco_fl_utl.c: in nco_fl_mk_lcl() to make ncatted and ncrename
+	  fail gracefully when asked to DAP-retrieve a file on which to operate.
+
 2005-12-29  Charlie Zender  <zender@uci.edu>
 
 	* Add xbitmap icon to homepage
+
+2005-12-19  Harry Mangalam <hjm@tacgi.com>
+	
+	* mod bm code to make a new dir for dap data and explicitly delete 
+	  everything in it for each new DAP test to force the network transfer.
 
 2005-12-13  Charlie Zender  <zender@uci.edu>
 
