@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.696 2006-01-04 20:30:30 mangalam Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.697 2006-01-09 17:45:43 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -510,11 +510,35 @@ End valgrind section
 ************************************************************************
 
 ************************************************************************
+Begin hpctoolkit section
+************************************************************************
+/bin/rm -r ~/nco/bm/hpctoolkit # Remove old profiles
+mkdir -p ~/nco/bm/hpctoolkit
+lsmod | grep oprofile # Make sure oprofile module is not loaded
+sudo opcontrol --deinit # Unload oprofile iff it is loaded
+modprobe perfctr # Load perfctr module
+# Do not monitor more than one function per hardware counter, e.g., PAPI_FP_OPS and PAPI_FP_OPS
+
+cat > ~/nco/bm/prf_ncbo.sh << EOF
+cd ~/nco/bm/hpctoolkit
+hpcrun -r -o ~/nco/bm/hpctoolkit -e PAPI_TOT_CYC:32767 -e PAPI_FP_OPS:32767 -e PAPI_TOT_INS:32767 -e PAPI_L2_DCM:32767 -- ${MY_BIN_DIR}/ncbo -O --op_typ='-' -p ${DATA}/nco_bm stl_5km.nc stl_5km.nc ${DATA}/nco_bm/prf_ncbo.nc
+EOF
+chmod a+x ~/nco/bm/prf_ncbo.sh
+~/nco/bm/prf_ncbo.sh
+
+hpcquick -I ~/nco/src/nco -P ~/nco/bm/hpctoolkit/ncbo.PAPI_TOT_CYC-etc.clay.ess.uci.edu.14169.0
+cd hpcquick.db
+hpcviewer hpcquick.db-14173/hpcquick.hpcviewer &
+************************************************************************
+End hpctoolkit section
+************************************************************************
+
+************************************************************************
 Begin oprofile section
 ************************************************************************
 cd ~/nco/bm
 xosview &
-# to enable idle cycle counts, add 'idle=poll' to kernel spec in /boot/grub/menu.lst:
+# To enable idle cycle counts, add 'idle=poll' to kernel spec in /boot/grub/menu.lst:
 # kernel          /boot/vmlinuz.old root=/dev/hda1 ro console=tty0 idle=poll quiet splash
 sudo opcontrol --vmlinux=/usr/src/linux-2.6.11/vmlinux # 
 sudo opcontrol --separate=cpu # Use this on SMP machines
@@ -556,7 +580,6 @@ opreport --demangle=smart --exclude-dependent --symbols > ~/nco/bm/prf_ncwa_hlf.
 EOF
 chmod a+x ~/nco/bm/prf_ncwa.sh
 ~/nco/bm/prf_ncwa.sh
-
 ************************************************************************
 End oprofile section
 ************************************************************************
