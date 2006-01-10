@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.697 2006-01-09 17:45:43 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.698 2006-01-10 17:21:54 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -527,8 +527,7 @@ chmod a+x ~/nco/bm/prf_ncbo.sh
 ~/nco/bm/prf_ncbo.sh
 
 hpcquick -I ~/nco/src/nco -P ~/nco/bm/hpctoolkit/ncbo.PAPI_TOT_CYC-etc.clay.ess.uci.edu.14169.0
-cd hpcquick.db
-hpcviewer hpcquick.db-14173/hpcquick.hpcviewer &
+hpcviewer ~/nco/bm/hpctoolkit/hpcquick.db/hpcquick.hpcviewer &
 ************************************************************************
 End hpctoolkit section
 ************************************************************************
