@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.698 2006-01-10 17:21:54 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.699 2006-01-16 04:54:22 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -416,12 +416,14 @@ nco659. C++: nco_mmr.c: errno presence triggers g++ error: undefined reference t
 nco660. C++: NCO does not link to libudunits.a
 nco663. Remove all ncap-dependence from ncwa?
 nco664. ncatted & ncrename will not work with DAP because there is not any
-			way currently to retrieve the DAP files to local files for them to
-			operate on.  see nco_fl_utl.c:~813 in nco_fl_mk_lcl().  
-			Currently just fails semi-gracefully.
-nco665  hjm not strictly an nco TODO but a warning that the newer OpenDAP
+	way currently to retrieve the DAP files to local files for them to
+	operate on.  see nco_fl_utl.c:~813 in nco_fl_mk_lcl().  
+	Currently just fails semi-gracefully.
+nco665.  hjm not strictly an nco TODO but a warning that the newer OpenDAP
         code fails on queries that the previous DAP code passed.  Will send to
         Opendap list.
+nco666. Grid regridding/interpolation operator ncrebin?
+nco667. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
