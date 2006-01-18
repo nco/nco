@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.699 2006-01-16 04:54:22 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.700 2006-01-18 02:05:16 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -699,6 +699,40 @@ bnch03. hjm should plotting script use linear regression or a log()
 ************************************************************************
 End bnchXXX TODOs
 ************************************************************************
+
+************************************************************************
+Begin dlwXXX plan
+************************************************************************
+1. one or two operator complete server side DAP script server side only
+2. CVS. write client wrapper script which parses regular command
+   line(s) and feeds complex script to server (shell)
+         
+    wrapper_script ncra -n 100,1,2 model_01.nc model_avg.nc
+
+3. Complete SS CGI script to work with all operators 
+4. Complete client side to work with all operators
+5. Make sure wildcards/globbing works
+
+Milestone: regression tests can work in nco_bm.pl
+           Check if design decisions/interfaces seem good
+           ncra -n 100,1,2 -p http://server/foo/model_01.nc model_avg.nc
+Goal: end of February
+
+6. Multiple sequential commands with SS intermediate output files and one
+   output file to client
+7. SS intermediate filename magic allow deterministic chaining of
+   output files so sequential command may depend on previous commands
+8. SS and client side mods to send back multiple output files
+
+Milestone: Mark's climate model analysis script "works"
+           Check if design decisions/interfaces/initial parser seems good 
+           
+9. SS understand dependencies (i.e., dependence of commands within script)
+10. Smarter scheduling of operations (i.e., non-sequential script execution)
+************************************************************************
+End dlwXXX plan
+************************************************************************
+
 
 ************************************************************************
 End NCO Wish list
