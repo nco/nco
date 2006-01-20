@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.343 2005-12-03 02:12:23 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.344 2006-01-20 19:36:09 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1831,7 +1831,7 @@ feature is automatic and cannot be controlled by the user.
 * Specifying Output Files::     
 * Remote storage::              
 * Retaining Retrieved Files::   
-* Selecting Output File Format::         
+* Selecting Output File Format::  
 * Large File Support::          
 * Subsetting Variables::        
 * Subsetting Coordinate Variables::  
@@ -8089,6 +8089,10 @@ weights, masks, and normalization options.
 With these options, @command{ncwa} can compute sophisticated averages
 (and integrals) from the command line. 
 
+@html
+<a name="-w"></a> <!-- http://nco.sf.net/nco.html#-w -->
+<a name="wgt"></a> <!-- http://nco.sf.net/nco.html#wgt -->
+@end html
 @cindex @code{-w @var{weight}}
 @cindex @code{--weight @var{weight}}
 @cindex @code{--wgt_var @var{weight}}
@@ -8157,13 +8161,14 @@ is given above (@pxref{Operation Types}).
 
 @menu
 * Mask condition::              
-* Normalization::               
+* Normalization and Integration::  
 @end menu
 
 @html
 <a name="msk"></a> <!-- http://nco.sf.net/nco.html#msk -->
+<a name="-m"></a> <!-- http://nco.sf.net/nco.html#-m -->
 @end html
-@node Mask condition, Normalization, ncwa netCDF Weighted Averager, ncwa netCDF Weighted Averager
+@node Mask condition, Normalization and Integration, ncwa netCDF Weighted Averager, ncwa netCDF Weighted Averager
 @subsection Mask condition
 @cindex mask condition
 @cindex truth condition
@@ -8269,12 +8274,15 @@ weight $\wgt_{\idx}=0.0$ as well).
 
 @html
 <a name="nrm"></a> <!-- http://nco.sf.net/nco.html#nrm -->
+<a name="ntg"></a> <!-- http://nco.sf.net/nco.html#ntg -->
 @end html
-@node Normalization,  , Mask condition, ncwa netCDF Weighted Averager
-@subsection Normalization
+@node Normalization and Integration,  , Mask condition, ncwa netCDF Weighted Averager
+@subsection Normalization and Integration
 @cindex normalization
 @cindex @code{-N}
 @cindex @code{numerator}
+@cindex integration
+@cindex dot product
 @command{ncwa} has one switch which controls the normalization of the
 averages appearing in the @var{output-file}.
 Short option @samp{-N} (or long options @samp{--nmr} or
@@ -8284,6 +8292,29 @@ weighted sum of the weights (the denominator in the averaging
 expression).   
 Thus @samp{-N} tells @command{ncwa} to return just the numerator of the
 arithmetic expression defining the operation (@pxref{Operation Types}). 
+
+With this normalization option, @command{ncwa} can integrate variables.
+Averages are first computed as sums, and then normalized to obtain the
+average. 
+The original sum (i.e., the numerator of the expression in
+@ref{Operation Types}) is output if default normalization is turned off
+(@w{with @samp{-N}}). 
+This sum is the integral (not the average) over the specified 
+(@w{with @samp{-a}}, or all, if none are specified) dimensions.
+The weighting variable, if specified (@w{with @samp{-w}}), plays the
+role of the differential increment and thus permits more sophisticated 
+integrals (i.e., weighted sums) to be output.
+For example, consider the variable 
+@code{lev} where @math{@var{lev} = [100,500,1000]} weighted by the weight 
+@code{lev_wgt} where @math{@var{lev_wgt} = [10,2,1]}.
+@cindex dot product
+The vertical integral of @code{lev}, weighted by @code{lev_wgt}, 
+is the dot product of @var{lev} and @var{lev_wgt}. 
+That this is @w{is 3000.0} can be seen by inspection and verified with 
+the integration command
+@example
+ncwa -N -v lev -w lev_wgt in.nc foo.nc;ncks in.nc
+@end example
 
 @ignore
 @c NB: these masking features are deprecated

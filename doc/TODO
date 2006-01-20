@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.700 2006-01-18 02:05:16 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.701 2006-01-20 19:36:09 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -423,7 +423,8 @@ nco665.  hjm not strictly an nco TODO but a warning that the newer OpenDAP
         code fails on queries that the previous DAP code passed.  Will send to
         Opendap list.
 nco666. Grid regridding/interpolation operator ncrebin?
-nco667. 
+nco667. rnd_nbr(): ncap does not link to rnd_nbr on AMD64 with bld/Makefile
+nco668. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
