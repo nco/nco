@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.701 2006-01-20 19:36:09 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.702 2006-01-21 07:51:47 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -406,9 +406,8 @@ nco652. Polish/finish ncap random number generator
         ncap -O -v -s 'x=rnd_nbr(one)' ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
 nco653. Segregate MPI from non-MPI builds completely in bld/Makefile on AIX
 nco655. Incorporate BLAS if possible?
-nco656. (re-)Make NCO C++-compliant
 nco657. Add new netCDF4 types to arithmetic code
-nco658. netcdf4 regression in ncks test #1 (due to ncap?)
+nco658. netcdf4 regression in ncks test #1
         make NETCDF4=Y FL_FMT=netcdf4 tst 
         ncks -O --fl_fmt=netcdf4 -v lat_T42 ~/nco/data/in.nc ~/foo.nc;od -An -c -N4 ~/foo.nc
         ncrename -O -d lat_T42,lat -v lat_T42,lat ~/foo.nc
@@ -419,7 +418,7 @@ nco664. ncatted & ncrename will not work with DAP because there is not any
 	way currently to retrieve the DAP files to local files for them to
 	operate on.  see nco_fl_utl.c:~813 in nco_fl_mk_lcl().  
 	Currently just fails semi-gracefully.
-nco665.  hjm not strictly an nco TODO but a warning that the newer OpenDAP
+nco665. hjm not strictly an nco TODO but a warning that the newer OpenDAP
         code fails on queries that the previous DAP code passed.  Will send to
         Opendap list.
 nco666. Grid regridding/interpolation operator ncrebin?

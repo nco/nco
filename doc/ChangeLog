@@ -1,6 +1,8 @@
 2006-01-20  Charlie Zender  <zender@uci.edu>
 
-	* Passes regression tests with netcdf 4.0-alpha11
+	* Verified regular NCO builds with gcc-4.0.3 on dapper drake dirt
+
+	* netcdf 4.0-alpha11 fails regression tests as per TODO nco658
 
 	* Make nco_lbr_vrs_prn() work with netcdf 4.0-alpha11-style values
 
