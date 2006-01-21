@@ -1,5 +1,9 @@
 2006-01-20  Charlie Zender  <zender@uci.edu>
 
+	* Passes regression tests with netcdf 4.0-alpha11
+
+	* Make nco_lbr_vrs_prn() work with netcdf 4.0-alpha11-style values
+
 	* Added integration example to ncwa in manual
 
 2006-01-04  Harry Mangalam <hjm@tacgi.com>
@@ -50,10 +54,10 @@
 2005-12-08  Harry Mangalam <hjm@tacgi.com>
 
 	* fixed passive/active ftp problem exhibited on soot by making 'ftp'
-	  explicitly '/usr/bin/ftp' (it was a kerberos'ed ftp on soot for some
-	  reason - /usr/kerberos/bin/ftp).  For linux and esmf, the system ftp
-	  supports passive ftp (-p flag).  The kerberos ftp supports it as well
-	  but not as a flag which casued problems in the 'here' script.
+        explicitly '/usr/bin/ftp' (it was a kerberos'ed ftp on soot for some
+	reason - /usr/kerberos/bin/ftp).  For linux and esmf, the system ftp
+	supports passive ftp (-p flag).  The kerberos ftp supports it as well
+	but not as a flag which casued problems in the 'here' script.
 
 2005-12-05  Charlie Zender  <zender@uci.edu>
 

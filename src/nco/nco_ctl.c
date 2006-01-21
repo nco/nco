@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.110 2005-12-03 04:48:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.111 2006-01-21 07:45:07 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -203,21 +203,32 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
   size_t cmp_dat_sng_lng;
   size_t lbr_vrs_sng_lng;
 
-  /* As of netCDF 3.4, nc_inq_libvers() returns strings like "3.4 of May 16 1998 14:06:16 $" */  
+  /* Behavior of nc_inq_libvers() depends on library versions. Return values are:
+     netCDF 3.4--3.6.x: "3.4 of May 16 1998 14:06:16 $"
+     netCDF 4.0-alpha1-4.0-alpha10: NULL
+     netCDF 4.0-alpha11-present: "4.0-alpha11" */  
   lbr_sng=(char *)strdup(nc_inq_libvers());
+  /* (void)fprintf(stderr,"%s: nco_lbr_vrs_prn() returns %s\n",prg_nm_get(),lbr_sng);*/
   of_ptr=strstr(lbr_sng," of ");
-  if(of_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nco_lbr_vrs_prn() reports of_ptr == NULL\n",prg_nm_get());
-  lbr_vrs_sng_lng=(size_t)(of_ptr-lbr_sng);
+  if(of_ptr == NULL){
+    (void)fprintf(stderr,"%s: WARNING nco_lbr_vrs_prn() reports of_ptr == NULL\n",prg_nm_get());
+    lbr_vrs_sng_lng=(size_t)strlen(lbr_sng);
+  }else{
+    lbr_vrs_sng_lng=(size_t)(of_ptr-lbr_sng);
+  } /* endif */
   lbr_vrs_sng=(char *)nco_malloc(lbr_vrs_sng_lng+1);
   strncpy(lbr_vrs_sng,lbr_sng,lbr_vrs_sng_lng);
   lbr_vrs_sng[lbr_vrs_sng_lng]='\0'; /* NUL-terminate */
 
   dlr_ptr=strstr(lbr_sng," $");
-  if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nco_lbr_vrs_prn() reports dlr_ptr == NULL\n",prg_nm_get());
-  cmp_dat_sng_lng=(size_t)(dlr_ptr-of_ptr-4); /* 4 is the length of " of " */
-  cmp_dat_sng=(char *)nco_malloc(cmp_dat_sng_lng+1ul);
-  strncpy(cmp_dat_sng,of_ptr+4,cmp_dat_sng_lng); /* 4 is the length of " of " */
-  cmp_dat_sng[cmp_dat_sng_lng]='\0'; /* NUL-terminate */
+  if(of_ptr != NULL && dlr_ptr != NULL){
+    cmp_dat_sng_lng=(size_t)(dlr_ptr-of_ptr-4); /* 4 is the length of " of " */
+    cmp_dat_sng=(char *)nco_malloc(cmp_dat_sng_lng+1ul);
+    strncpy(cmp_dat_sng,of_ptr+4,cmp_dat_sng_lng); /* 4 is the length of " of " */
+    cmp_dat_sng[cmp_dat_sng_lng]='\0'; /* NUL-terminate */
+  }else{
+    cmp_dat_sng=(char *)strdup("Unknown");
+  } /* endif */
 
   (void)fprintf(stderr,"Linked to netCDF library version %s, compiled %s\n",lbr_vrs_sng,cmp_dat_sng);
   (void)fprintf(stdout,"Homepage URL: http://nco.sf.net\n");
