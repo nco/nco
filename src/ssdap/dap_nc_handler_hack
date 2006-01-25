@@ -1,0 +1,297 @@
+#!/usr/bin/env python
+import sys
+import getopt
+import os
+import time
+import tempfile
+import string
+import shutil
+
+# we potentially have to handle: das, dds, dods, ascii, info
+# das -- ??
+# dds -- ??
+# dods -- return dods data. This is the one we care about.
+# ascii -- does dods mode, with -e and no url
+# info -- does das/dds sequence
+# html -- calls das/dds to obtain var info, then gives html form
+# version -- doesn't seem to call the handler: opendap core version
+
+#options: -o <response>: DAS, DDS, DataDDS, DDX, BLOB or Version (Required)
+#          -u <url>: The complete URL minus the CE (required for DDX)
+#          -c: Compress the response using the deflate algorithm.
+#          -e <expr>: When returning a DataDDS, use <expr> as the constraint.
+#          -v <version>: Use <version> as the version number
+#          -d <dir>: Look for ancillary file in <dir> (deprecated).
+#          -f <file>: Look for ancillary data in <file> (deprecated).
+#          -r <dir>: Use <dir> as a cache directory
+#          -l <time>: Conditional request; if data source is unchanged since
+#                     <time>, return an HTTP 304 response.
+#          -L : skip printing of http headers.
+
+
+# do some logging
+logfile = open("/home/wangd/opendap/iroot/hackscr.log", "a")
+
+logfile.write("handler hack log open at " + time.ctime()+"\n")
+def logit(file,s):
+	file.write(s+"\n")
+	#print s
+
+
+class ScriptingEnv:
+	# constants (but not const-enforced by python)
+	SCRIPT_OUTFILE = "%outfile%"
+	NCBINPATH = "/home/wangd/nco/nco/bin"
+	NC_SUFFIX = ".nc"
+	LOCALSWITCH = "local"
+	
+	VALID_COMMANDS = {"ncecat" :  (NCBINPATH + os.sep + "ncecat"),
+			  "ncflint" : (NCBINPATH + os.sep + "ncecat"),
+			  "ncwa" :    (NCBINPATH + os.sep + "ncecat") }
+	
+	COMMENT_CHAR = "#"  # not used right now.
+	
+	def __init__(self, scriptlines, settingsDict):
+		assert type(scriptlines) == type([])
+		assert type(settingsDict) == type({})
+		self.fileMap = {}
+		self.env = settingsDict
+		self.lines = scriptlines
+		self.makeCommandLine()
+		pass
+	def shouldRemap(self, absName):
+		# return bool indicating whether this word should be xlated.
+		# keep simple for now: check a list.
+		# suck class const into local namespace.
+		return absName in [ScriptingEnv.SCRIPT_OUTFILE]
+	def possibleFilename(self, cand):
+		elts = string.split(cand, ".")
+
+		if len(elts) != 2: #looking for something.ext
+			return False
+		if elts[1] != "nc": # only going to detect .nc
+			return False
+		if elts[0][0] == os.sep: # do not detect with leading /
+			return False
+		return True
+
+	
+	def addAbsName(self, absName):
+		""" return a concrete name from an abstract name"""
+		if self.fileMap.has_key(absName):
+			return None # can't assign name, already assigned!
+		alnum = string.letters + string.digits
+		fixName = ""
+		for i in absName:
+			if i in alnum: fixName += i
+
+		filepair = tempfile.mkstemp( ScriptingEnv.NC_SUFFIX,
+					    fixName,
+					    self.env["tempdir"] )
+		# filepair = (descriptor, tempfilename)
+		self.fileMap[absName] = filepair
+		# close the file, so the nco util can touch it
+		os.close(filepair[0])
+		return filepair[1]
+	
+	def makeCommandLine(self):
+		newCommandLine = ""
+		index = 0
+		seenCommand = False
+		commandIndex = -1
+
+		# for now, use only the first line
+		for word in self.lines[0].split(): 
+			if word in ScriptingEnv.VALID_COMMANDS:
+				newCommandLine += " " + ScriptingEnv.VALID_COMMANDS[word]
+				seenCommand = True
+				commandIndex = index
+			elif self.shouldRemap(word):
+				remapped = self.addAbsName(word)
+				assert remapped != None
+				newCommandLine += " " + remapped
+			elif self.possibleFilename(word):
+				newname = self.env["defpath"] + os.sep + word
+				newCommandLine += " " + newname
+			else: # passthrough unrecognized things
+				newCommandLine += " " + word
+			index = index + 1
+		# chop off leading " "
+		assert newCommandLine[0] == " " 
+		newCommandLine = newCommandLine[1:]
+		# proclaim my results
+		logit(logfile, "real cmdline: " + newCommandLine)
+		self.commandLine = newCommandLine
+	def execute(self):
+		self.clearTemps()
+		(sin,sout) = os.popen2(self.commandLine)
+		sin.close() # close the input, so it flushes
+		#out handle is now ready to be read.
+		for x in sout:
+			logit(logfile, "execution output: " + x)
+			pass
+		# for now, ignore stdout
+		#okay
+		pass
+	def returnOutput(self, targetfd):
+		oname = self.fileMap[ScriptingEnv.SCRIPT_OUTFILE][1]
+		
+		if(ScriptingEnv.LOCALSWITCH in self.env):
+			self.rawWrite(oname, targetfd)
+		else:
+			self.httpWrite(oname, targetfd)
+		pass
+
+	def rawWrite(self, srcfilename, targetfd):
+		result = open(srcfilename)
+		shutil.copyfileobj(result, targetfd)
+		result.close()
+	def httpWrite(self, srcfilename, targetfd):
+		print >> targetfd, "HTTP/1.0 200 OK"
+		print >> targetfd, "Xssdap-server: 0.1"
+		print >> targetfd, "Date: " + time.ctime()
+		print >> targetfd, "Content-type: application/x-netcdf"
+		print >> targetfd, ""
+		self.rawWrite(srcfilename, targetfd)
+	def clearTemps(self):
+		for key in self.fileMap:
+			# if the file exists, and we can write it,
+			# kill it to clean up.
+			(fd,fname) = self.fileMap[key]
+			if(os.access(fname, os.F_OK | os.W_OK)):
+			   os.remove(fname)
+			else:
+				print "I couldn't delete " + str(fname)
+		pass
+
+	def __del__(self):
+		"""some cleanup for the scripting environment"""
+		## we should get rid of temp files, like a good citizen
+		## this might be modified if we introduce caching
+		self.clearTemps()
+	pass
+
+
+	
+class Settings:
+	# put in url .../foo.nc.dods?superduperscript11"
+	MAGIC_CONSTRAINT = "superduperscript11"
+	# use in script to indicate what file should be sent back.
+
+	def __init__(self, sysargs):
+		# -d and -f options are supposed to be deprecated
+		self.shortopts = "Lcd:r:o:e:f:l:u:v:"
+		self.args = {}
+		self.originalargs = sysargs
+		self.env = {}
+		#print sys.argv
+
+		parsed =  getopt.getopt(sysargs[1:], self.shortopts)
+		self.nonpars = []
+		self.newp = []
+		if parsed[1] != []:
+			#logit(logfile, "nonparseable avail."+str(parsed[1]))
+			nonpars = parsed[1][0]
+			newp = getopt.getopt(parsed[1][1:],self.shortopts)
+			newp = newp[0]
+		else:
+			nonpars = ""
+			newp = []
+		#print "here it comes"
+		for i in parsed[0]:
+			#print i
+			#logfile.write(str(i)+"\n")
+			self.args[i[0]] = i[1]
+		#print " and fixed is ", nonpars
+		#logfile.write(str(nonpars)+"\n")
+		self.args["-realfile"] = nonpars
+
+		for i in newp:
+			#print i
+			#logfile.write(str(i)+"\n")
+			self.args[i[0]] = i[1]
+		#print self.args
+
+		#logit(logfile, str(self.args))
+#		for x in  os.environ: #.get("LD_LIBRARY_PATH")
+	#		print x
+	
+		pass
+	def accessmode(self):
+		return self.args["-o"]
+	def passthrough(self):
+		""" this should bounce the call to the default opendap netcdf handler"""
+		complaintmsg = "passthrough for DAS and DDS not implemented yet!"
+		complaintmsg += "\nDAS/DDS sequence for info option"
+		#print complaintmsg
+		logit(logfile, complaintmsg)
+		logit(logfile, "cmdline is: " + str(self.originalargs))
+	def runhacked(self):
+		"""this is where we should go ahead and run the script that we got passed."""
+		
+		if "-e" in self.args:
+			if "-u" not in self.args:
+				logit(logfile, "-e option "+self.args["-e"]+" but no -u url.")
+				logit(logfile, "not implemented yet.")
+				logit(logfile, "args are " + str(self.originalargs))
+				return
+			else:
+				pass
+				#logit(logfile, "-e, but -u exists: GET info avail." + self.args["-e"])
+		report = ""
+		report += "scratch space loc(-r): " + self.args["-r"] + "\n"
+		report += "originalurl(-u): " + self.args["-u"] + "\n"
+
+		report += "realfile? " + self.args["-realfile"] + "\n"
+		report += "compression? " + ["nope","requested"][bool(self.args.has_key("-c"))] + "\n"
+		report += "requestor: " + self.args["-v"] + "\n"
+		if "-e" in self.args:
+			report += "constraint: " + self.args["-e"] + "\n"
+		else: report += "constraint: no\n"
+		if self.args["-e"] == Settings.MAGIC_CONSTRAINT:
+			self.readScript()
+			self.runScript()
+		else:
+			complaint = "ignoring non-scripting requests for now."
+			logit(logfile, complaint)
+		#print report
+		#logit(logfile, report)
+
+	def execute(self):
+		jumptable={'dods':self.runhacked,
+			   'DAS':self.passthrough,
+			   'DDS':self.passthrough}
+		jumptable[self.accessmode()]()  ## make the call
+		pass
+	def readScript(self):
+		""" reads in stdin as script input"""
+		lines = []
+		for i in sys.stdin:
+			lines += [i] ## [] to put lines (not chars) in the list
+			
+		#logit(logfile, "we got POST data: \n"+str(lines))
+		self.scriptlines = lines
+		pass
+	def runScript(self):
+		self.env["tempdir"] = self.args["-r"]
+		(filepath, filename) = os.path.split(self.args["-realfile"])
+		
+		self.env["defpath"] = filepath # use for default path.
+		self.env["requestefile"] = filename  #not sure we need this
+		self.env["local"] = "true"
+		scriptenv = ScriptingEnv(self.scriptlines, self.env)
+		scriptenv.execute()
+		scriptenv.returnOutput(sys.stdout)
+		pass
+		
+
+
+settings = Settings(sys.argv)
+mode =  settings.accessmode()
+logit(logfile,"Mode is " + mode)
+
+settings.execute()
+
+
+logfile.write("handler hack log closed at " + time.ctime()+ "\n")
+logfile.close()
