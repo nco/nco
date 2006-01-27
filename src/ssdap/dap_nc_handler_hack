@@ -1,11 +1,6 @@
 #!/usr/bin/env python
-import sys
-import getopt
-import os
-import time
-import tempfile
-import string
-import shutil
+import getopt, os, sys, tempfile, shutil
+import string, time
 
 # we potentially have to handle: das, dds, dods, ascii, info
 # das -- ??
@@ -26,15 +21,23 @@ import shutil
 #          -r <dir>: Use <dir> as a cache directory
 #          -l <time>: Conditional request; if data source is unchanged since
 #                     <time>, return an HTTP 304 response.
-#          -L : skip printing of http headers.
+#
+#          -L : skip printing of http headers. **** for easier testing
 
+#
 
+class local:
+	disableLogging = False
+	logLocation = "/home/wangd/opendap/iroot/hackscr.log"
+	
 # do some logging
-logfile = open("/home/wangd/opendap/iroot/hackscr.log", "a")
+if not local.disableLogging:
+	local.logfile = open(local.logLocation, "a")
+	local.logfile.write("handler hack log open at " + time.ctime()+"\n")
 
-logfile.write("handler hack log open at " + time.ctime()+"\n")
-def logit(file,s):
-	file.write(s+"\n")
+def logit(s):
+	if not local.disableLogging:
+		local.logfile.write(s+"\n")
 	#print s
 
 
@@ -120,7 +123,7 @@ class ScriptingEnv:
 		assert newCommandLine[0] == " " 
 		newCommandLine = newCommandLine[1:]
 		# proclaim my results
-		logit(logfile, "real cmdline: " + newCommandLine)
+		logit( "real cmdline: " + newCommandLine)
 		self.commandLine = newCommandLine
 	def execute(self):
 		self.clearTemps()
@@ -128,7 +131,7 @@ class ScriptingEnv:
 		sin.close() # close the input, so it flushes
 		#out handle is now ready to be read.
 		for x in sout:
-			logit(logfile, "execution output: " + x)
+			logit( "execution output: " + x)
 			pass
 		# for now, ignore stdout
 		#okay
@@ -190,7 +193,7 @@ class Settings:
 		self.nonpars = []
 		self.newp = []
 		if parsed[1] != []:
-			#logit(logfile, "nonparseable avail."+str(parsed[1]))
+			#logit( "nonparseable avail."+str(parsed[1]))
 			nonpars = parsed[1][0]
 			newp = getopt.getopt(parsed[1][1:],self.shortopts)
 			newp = newp[0]
@@ -212,7 +215,7 @@ class Settings:
 			self.args[i[0]] = i[1]
 		#print self.args
 
-		#logit(logfile, str(self.args))
+		#logit( str(self.args))
 #		for x in  os.environ: #.get("LD_LIBRARY_PATH")
 	#		print x
 	
@@ -224,20 +227,20 @@ class Settings:
 		complaintmsg = "passthrough for DAS and DDS not implemented yet!"
 		complaintmsg += "\nDAS/DDS sequence for info option"
 		#print complaintmsg
-		logit(logfile, complaintmsg)
-		logit(logfile, "cmdline is: " + str(self.originalargs))
+		logit( complaintmsg)
+		logit( "cmdline is: " + str(self.originalargs))
 	def runhacked(self):
 		"""this is where we should go ahead and run the script that we got passed."""
 		
 		if "-e" in self.args:
 			if "-u" not in self.args:
-				logit(logfile, "-e option "+self.args["-e"]+" but no -u url.")
-				logit(logfile, "not implemented yet.")
-				logit(logfile, "args are " + str(self.originalargs))
+				logit( "-e option "+self.args["-e"]+" but no -u url.")
+				logit( "not implemented yet.")
+				logit( "args are " + str(self.originalargs))
 				return
 			else:
 				pass
-				#logit(logfile, "-e, but -u exists: GET info avail." + self.args["-e"])
+				#logit( "-e, but -u exists: GET info avail." + self.args["-e"])
 		report = ""
 		report += "scratch space loc(-r): " + self.args["-r"] + "\n"
 		report += "originalurl(-u): " + self.args["-u"] + "\n"
@@ -253,9 +256,9 @@ class Settings:
 			self.runScript()
 		else:
 			complaint = "ignoring non-scripting requests for now."
-			logit(logfile, complaint)
+			logit( complaint)
 		#print report
-		#logit(logfile, report)
+		#logit( report)
 
 	def execute(self):
 		jumptable={'dods':self.runhacked,
@@ -269,7 +272,7 @@ class Settings:
 		for i in sys.stdin:
 			lines += [i] ## [] to put lines (not chars) in the list
 			
-		#logit(logfile, "we got POST data: \n"+str(lines))
+		#logit( "we got POST data: \n"+str(lines))
 		self.scriptlines = lines
 		pass
 	def runScript(self):
@@ -288,10 +291,10 @@ class Settings:
 
 settings = Settings(sys.argv)
 mode =  settings.accessmode()
-logit(logfile,"Mode is " + mode)
+logit("Mode is " + mode)
 
 settings.execute()
 
 
-logfile.write("handler hack log closed at " + time.ctime()+ "\n")
-logfile.close()
+logit("handler hack log closed at " + time.ctime()+ "\n")
+
