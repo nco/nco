@@ -39,7 +39,10 @@ def logit(s):
 	if not local.disableLogging:
 		local.logfile.write(s+"\n")
 	#print s
-
+def logflush():
+	if not local.disableLogging:
+		local.logfile.flush()
+	pass
 
 class ScriptingEnv:
 	# constants (but not const-enforced by python)
@@ -48,7 +51,8 @@ class ScriptingEnv:
 	NC_SUFFIX = ".nc"
 	LOCALSWITCH = "local"
 	
-	VALID_COMMANDS = {"ncecat" :  (NCBINPATH + os.sep + "ncecat"),
+	VALID_COMMANDS = {"ncbo" :    (NCBINPATH + os.sep + "ncbo"),
+			  "ncecat" :  (NCBINPATH + os.sep + "ncecat"),
 			  "ncflint" : (NCBINPATH + os.sep + "ncecat"),
 			  "ncwa" :    (NCBINPATH + os.sep + "ncecat") }
 	
@@ -127,6 +131,8 @@ class ScriptingEnv:
 		self.commandLine = newCommandLine
 	def execute(self):
 		self.clearTemps()
+		logflush()
+				
 		(sin,sout) = os.popen2(self.commandLine)
 		sin.close() # close the input, so it flushes
 		#out handle is now ready to be read.
@@ -157,14 +163,15 @@ class ScriptingEnv:
 		print >> targetfd, ""
 		self.rawWrite(srcfilename, targetfd)
 	def clearTemps(self):
+		#logit("tempdir is " + str(os.listdir(self.env["tempdir"])))
 		for key in self.fileMap:
 			# if the file exists, and we can write it,
 			# kill it to clean up.
 			(fd,fname) = self.fileMap[key]
-			if(os.access(fname, os.F_OK | os.W_OK)):
-			   os.remove(fname)
+			if os.access(fname, os.F_OK | os.W_OK):
+				os.remove(fname)
 			else:
-				print "I couldn't delete " + str(fname)
+				logit("I couldn't delete " + str(fname))
 		pass
 
 	def __del__(self):

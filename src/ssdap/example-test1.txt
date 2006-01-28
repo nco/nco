@@ -1,0 +1,5 @@
+./ssdwrap.py ncbo  -h -O  -D 1 --op_typ='-' -v mss_val_scl -p data in.nc in.nc output.nc
+#/usr/bin/time -p /home/wangd/nco/nco/bin/ncbo  -h -O  -D 1 --op_typ='-' -v mss_val_scl -p ../data in.nc in.nc /home/wangd/nco/testdata/nco_bm/foo.nc
+# /home/wangd/nco/nco/bin/ncks -C -H -s '%g' -v mss_val_scl /home/wangd/nco/testdata/nco_bm/foo.nc
+#[1e+36]
+

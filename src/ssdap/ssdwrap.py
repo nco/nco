@@ -13,7 +13,7 @@ import urllib
 # Report option passing problems so I can fix this.  Not all nco
 # commands have been tested.
 #
-# version info: $Id: ssdwrap.py,v 1.1 2006-01-27 02:15:03 wangd Exp $
+# version info: $Id: ssdwrap.py,v 1.2 2006-01-28 00:49:45 wangd Exp $
 ########################################################################
 
 
@@ -39,16 +39,21 @@ class Command:
         pass
     def build(self, argvlist):
         """look for output filename, replace with magic key for remote"""
-        shortopts = "4ACcD:d:Ffhl:Oo:p:Rrs:S:v"
+        # some of these options do not make sense in this context,
+        # and some have meanings that necessarily need changing.
+        shortopts = "4ACcD:d:Ffhl:n:Oo:p:Rrs:S:t:v:xy:"
         longopts = ["4", "netcdf4", "apn", "append", "crd", "coords",
                     "nocoords", "dbg_lvl=", "debug-level=",
                     "dmn=", "dimension=", "ftn", "fortran",
                     "fnc_tbl", "prn_fnc_tbl", "hst", "history",
-                    "lcl=", "local=", "output=", "fl_out=",
+                    "lcl=", "local=", "nintap", 
+                    "output=", "fl_out=",
                     "ovr", "overwrite", "pth=", "path=",
                     "rtn", "retain", "revision", "vrs", "version",
                     "spt=", "script=", "fl_spt=", "script-file=",
-                    "variable" ]
+                    "thr_nbr=", "threads=", "omp_num_threads=",
+                    "xcl", "exclude"
+                    "variable=", "op_typ=", "operation=" ]
         (arglist, leftover) = getopt.getopt(argvlist, shortopts, longopts)
         argdict = dict(arglist)
         ofname = ""
@@ -63,21 +68,54 @@ class Command:
             if ofname == "": # i.e. haven't gotten a parameterixed outfilename
                 ofname = leftover[-1]
                 argdict["--output"] = ofname # and add to dict.
-                assert len(leftover) == 2 # assume in.nc, out.nc
-                leftover = leftover[0:1] # take only first element
-            assert ofname != ""  # make sure we got one
-            self.infilename = leftover[0]
+                assert len(leftover) > 1 # assume in.nc, out.nc, at least
+                leftover = leftover[:-1] # take only first element
+
+        assert ofname != ""  # make sure we got one
+
             
         self.outfilename = ofname # save outfilename
         argdict["--output"] = "%outfile%" # patch with magic script hint
+        # hack since ncbo doesn't support --output option
+        argdict["-o"] = argdict.pop("--output")
+        
+        
+        #patch infiles with -p option
+        self.infilename = self.patchInfiles(argdict, leftover)
         
         # now, build script command line
         return self.rebuildCommandline(argdict, self.infilename)
+
+    def patchInfiles(self, argdict, filelist):
+        # find path prefixer.
+        prefix = ""
+        opts = ["-p", "--pth", "--path"]
+        for p in opts:
+            if p in argdict:
+                prefix = argdict[p]
+                break
+        if prefix == "":
+            return filelist
+        newlist = []
+        for n in filelist:
+            newlist.append(prefix + os.sep + n)
+        # now, delete prefix option from arguments, so it doesn't get applied twice.
+        for p in opts:
+            if p in argdict:
+                argdict.pop(p)  # ignore return value
+        return newlist
+        
     def rebuildCommandline(self, argdict, infilename):
         line = self.cmd
         for (k,v) in argdict.items():
-            line += " " + k + " " + v
-        line += " " + infilename
+            #special value handling for --op_typ='-'
+            if (len(v) > 0) and \
+                   v[0] not in (string.letters + string.digits + "%"):
+                line += " " + k + "='" + v + "'"
+            else:
+                line += " " + k + " " + v
+        for name in infilename:
+            line += " " + name
         return line
     
     def scriptLineSub(self):
@@ -120,12 +158,14 @@ class RemoteScript:
         print "url is " + url
         print "and script is " + script
         #return True
-        result = urllib.urlopen(url, script) # request from server
-        target = open(filename, "wb") # open local result
-        shutil.copyfileobj(result, target) # funnel stuff to local
-        target.close() # done writing, ok to close
-        result.close() #done copying, ok to close
-        
+        try:
+            result = urllib.urlopen(url, script) # request from server
+            target = open(filename, "wb") # open local result
+            shutil.copyfileobj(result, target) # funnel stuff to local
+            target.close() # done writing, ok to close
+            result.close() #done copying, ok to close
+        except AttributeError:
+            print "odd error in fetching url/writing file."
         # should be done now
         return True
     
