@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.76 2006-01-04 20:30:30 mangalam Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.77 2006-01-31 06:42:11 zender Exp $ */
 
 /* Purpose: File manipulation */
 
-/* Copyright (C) 1995--2005 Charlie Zender
+/* Copyright (C) 1995--2006 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 

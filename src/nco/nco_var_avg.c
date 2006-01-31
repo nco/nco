@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.39 2005-12-13 01:05:34 mangalam Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.40 2006-01-31 06:42:11 zender Exp $ */
 
 /* Purpose: Average variables */
 
-/* Copyright (C) 1995--2005 Charlie Zender
+/* Copyright (C) 1995--2006 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 

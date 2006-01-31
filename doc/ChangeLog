@@ -4,6 +4,8 @@
 	Changes since nco-3_1_0: 
 	C++ builds work again, ssdap, nco++, 4.0-alpha11-compatible
 
+	* Changed copyright to 2006
+
 	* Daniel added server side extensions to ssdap
 
 	* nco++ still has Henry's hardcoded paths---will fix in nco-3_1_1

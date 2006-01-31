@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.90 2005-10-22 01:30:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.91 2006-01-31 06:42:11 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
 /* Purpose: Add, create, delete, or overwrite attributes in a netCDF file */
 
-/* Copyright (C) 1995--2005 Charlie Zender
+/* Copyright (C) 1995--2006 Charlie Zender
 
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.90 2005-10-22 01:30:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.90 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.91 2006-01-31 06:42:11 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.91 $";
   const char * const opt_sht_lst="4Aa:D:hl:Oo:p:Rr-:";
   
   extern char *optarg;

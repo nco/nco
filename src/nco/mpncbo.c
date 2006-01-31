@@ -1,11 +1,11 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.44 2005-10-27 17:02:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.45 2006-01-31 06:42:10 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
 /* Purpose: Compute sum, difference, product, or ratio of specified hyperslabs of specfied variables
    from two input netCDF files and output them to a single file. */
 
-/* Copyright (C) 1995--2005 Charlie Zender
+/* Copyright (C) 1995--2006 Charlie Zender
    
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.44 2005-10-27 17:02:08 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.44 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.45 2006-01-31 06:42:10 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.45 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRSt:v:xy:-:";
   
   dmn_sct **dim_1;

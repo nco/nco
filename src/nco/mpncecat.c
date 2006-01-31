@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.32 2005-10-28 00:51:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.33 2006-01-31 06:42:10 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
 /* Purpose: Join variables across files into a new record variable */
 
-/* Copyright (C) 1995--2005 Charlie Zender
+/* Copyright (C) 1995--2006 Charlie Zender
 
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.32 2005-10-28 00:51:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.32 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.33 2006-01-31 06:42:10 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.33 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRSt:v:x-:";
   
   dmn_sct *rec_dmn;

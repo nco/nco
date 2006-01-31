@@ -15,7 +15,7 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.25 2006-01-04 20:30:29 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.26 2006-01-31 06:42:10 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -187,7 +187,7 @@ appending history to file.
 This script is part of the netCDF Operators package:
   http://nco.sourceforge.net
 
-Copyright  1994-2005 Charlie 'my surname is' Zender (surname@uci.edu)
+Copyright  1994-2006 Charlie 'my surname is' Zender (surname@uci.edu)
 
 USAGE
 exit(0);
