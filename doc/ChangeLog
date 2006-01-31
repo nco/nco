@@ -1,6 +1,12 @@
 2006-01-30  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-3_1_1
+	Changes since nco-3_1_0: 
+	C++ builds work again, ssdap, nco++, 4.0-alpha11-compatible
+
 	* Daniel added server side extensions to ssdap
+
+	* nco++ still has Henry's hardcoded paths---will fix in nco-3_1_1
 
 	* Committed Henry's C++ ncap2 antlr-based code to nco++
 

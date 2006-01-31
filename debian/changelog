@@ -1,3 +1,9 @@
+nco (3.1.1-1) unstable; urgency=low
+
+  * C++ builds work again, ssdap, nco++, 4.0-alpha11-compatible
+
+ -- Charlie Zender <zender@elnino.ess.uci.edu>  Mon, 30 Jan 2006 22:23:53 -0800
+
 nco (3.1.0-1) unstable; urgency=low
 
   * MPI ZKB, configure netcdf4/mpi, ncwa MRV, ncap rnd_nbr(), netcdf4-alpha10

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.328 2005-12-30 00:57:17 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.329 2006-01-31 06:28:00 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -431,19 +431,19 @@ Hit <tt>return</tt> when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>3.1.0</tt> (which is
-tagged as <tt>nco-3_1_0</tt> due to CVS rules) into local directory
-<tt>nco-3.1.0</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -r nco-3_1_0 -d nco-3.1.0 nco</tt></p>
+This command retrieves and places NCO version <tt>3.1.1</tt> (which is
+tagged as <tt>nco-3_1_1</tt> due to CVS rules) into local directory
+<tt>nco-3.1.1</tt>:   
+<p><tt>cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -r nco-3_1_1 -d nco-3.1.1 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-3_1_0</tt>) and the development version is that the
+(e.g., <tt>nco-3_1_1</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>3.1.0</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>3.1.1</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -469,18 +469,18 @@ testing and porting of NCO on the
 <h3><a href="http://www.debian.org">Debian GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-3.1.0</a></li>
+<li><a href="http://www.debian.org">Debian</a> GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-3.1.1</a></li>
 -->
 <a href="http://packages.debian.org/unstable/math/nco.html">Debian GNU/Linux homepage for NCO</a>.
 <a href="http://www.debian.org">debs</a> by Rorik Peterson and Charlie Zender:
 <li><i>We cannot produce up-to-date Debian NCO packages until the Debian
 netCDF maintainer upgrades the netCDF package to version&nbsp;3.6.
 Links to the Debian NCO packages below will remain broken until that time.</i></li>
-<li><a href="src/nco_3.1.0-1_i386.deb">nco_3.1.0-1_i386.deb</a> (<!--#fsize file="src/nco_3.1.0-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
-<li><a href="src/nco_3.1.0-1.dsc">nco_3.1.0-1.dsc</a> (<!--#fsize file="src/nco_3.1.0-1.dsc"-->): Description</li>
-<li><a href="src/nco_3.1.0-1.tar.gz">nco_3.1.0-1.tar.gz</a> (<!--#fsize file="src/nco_3.1.0-1.tar.gz"-->): Gzipped Source Tarball</li>
+<li><a href="src/nco_3.1.1-1_i386.deb">nco_3.1.1-1_i386.deb</a> (<!--#fsize file="src/nco_3.1.1-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
+<li><a href="src/nco_3.1.1-1.dsc">nco_3.1.1-1.dsc</a> (<!--#fsize file="src/nco_3.1.1-1.dsc"-->): Description</li>
+<li><a href="src/nco_3.1.1-1.tar.gz">nco_3.1.1-1.tar.gz</a> (<!--#fsize file="src/nco_3.1.1-1.tar.gz"-->): Gzipped Source Tarball</li>
 <li><a
-href="src/nco_3.1.0-1_i386.changes">nco_3.1.0-1_i386.changes</a> (<!--#fsize file="src/nco_3.1.0-1.changes"-->): Changes</li> (An SSI error here is expected since there are no changes between the official tarball and the Debian tarball so #fsize reports an error. Anyone know?)
+href="src/nco_3.1.1-1_i386.changes">nco_3.1.1-1_i386.changes</a> (<!--#fsize file="src/nco_3.1.1-1.changes"-->): Changes</li> (An SSI error here is expected since there are no changes between the official tarball and the Debian tarball so #fsize reports an error. Anyone know?)
 </ul>
 
 <a name="redhat"></a>
@@ -961,7 +961,7 @@ Version&nbsp;2.8.7 fixes this problem.
 <ul><b>Platform-specific Run-time Problems:</b>
 <a name="bug_ncap_flt_fnc_aix"></a>
 <li><i>Float-valued intrinsic arithmetic functions in <tt>ncap</tt> on AIX:</i>
-<tt>ncap</tt> versions through 3.1.0 have a bug that causes all float-valued
+<tt>ncap</tt> versions through 3.1.1 have a bug that causes all float-valued
 intrinsic math functions to fail under AIX.
 Float-valued math functions are the ISO&nbsp;C99 functions, e.g.,
 <tt>cosf()</tt>, <tt>fabsf()</tt>, <tt>logf()</tt>.
@@ -975,7 +975,7 @@ variables stored as <tt>NC_FLOAT</tt>).
 Double precision arguments cause NCO to invoke the standard
 (double-valued) form of the generic function, e.g., <tt>cos()</tt>, 
 <tt>fabs()</tt>, <tt>log()</tt>. 
-Version 3.1.0 fixes this problem by using its own float-valued
+Version 3.1.1 fixes this problem by using its own float-valued
 functions instead of the native AIX functions. 
 <!-- Whevnever this bug is fixed, here is some text
 Version info:
