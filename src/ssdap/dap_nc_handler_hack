@@ -2,6 +2,11 @@
 import getopt, os, sys, tempfile, shutil
 import string, time
 
+# $Id: dap_nc_handler_hack,v 1.4 2006-01-31 02:56:27 wangd Exp $
+# This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
+#           -- It provides a script handling facility, but redirects most
+#              normal calls to the original dap_nc_handler
+
 # we potentially have to handle: das, dds, dods, ascii, info
 # das -- ??
 # dds -- ??
@@ -26,15 +31,27 @@ import string, time
 
 #
 
+######################################################################
+# Administrator-tunable parameters:
+######################################################################
 class local:
 	disableLogging = False
 	logLocation = "/home/wangd/opendap/iroot/hackscr.log"
-	
-# do some logging
+
+	#ncBinPath = os.environ["MY_BIN_DIR"] 
+	ncBinPath = "/home/wangd/nco/nco/bin"
+
+	# pass original DAP commands to the original dap handler.
+	passthroughPath = "/home/wangd/opendap/iroot/bin/dap_nc_handler"
+
+
+######################################################################
+
+# setup some logging
 if not local.disableLogging:
 	local.logfile = open(local.logLocation, "a")
 	local.logfile.write("handler hack log open at " + time.ctime()+"\n")
-
+	
 def logit(s):
 	if not local.disableLogging:
 		local.logfile.write(s+"\n")
@@ -44,20 +61,26 @@ def logflush():
 		local.logfile.flush()
 	pass
 
+	
+
 class ScriptingEnv:
 	# constants (but not const-enforced by python)
 	SCRIPT_OUTFILE = "%outfile%"
-	NCBINPATH = "/home/wangd/nco/nco/bin"
+	NCBINPATH = local.ncBinPath
 	NC_SUFFIX = ".nc"
 	LOCALSWITCH = "local"
-	
-	VALID_COMMANDS = {"ncbo" :    (NCBINPATH + os.sep + "ncbo"),
-			  "ncecat" :  (NCBINPATH + os.sep + "ncecat"),
-			  "ncflint" : (NCBINPATH + os.sep + "ncecat"),
-			  "ncwa" :    (NCBINPATH + os.sep + "ncecat") }
+	NCO_COMMANDS = ["ncap", "ncatted", "ncbo", "ncdiff",
+			"ncea", "ncecat", "ncflint", "ncks",
+			"ncpack", "ncpdq", "ncra", "ncrcat",
+			"ncrename", "ncunpack", "ncwa"]
+	VALID_COMMANDS = {}
+	for n in NCO_COMMANDS:
+		VALID_COMMANDS[n] = (NCBINPATH + os.sep + n )
+	# room to add other commands here.
+       	
 	
 	COMMENT_CHAR = "#"  # not used right now.
-	
+
 	def __init__(self, scriptlines, settingsDict):
 		assert type(scriptlines) == type([])
 		assert type(settingsDict) == type({})
@@ -66,6 +89,19 @@ class ScriptingEnv:
 		self.lines = scriptlines
 		self.makeCommandLine()
 		pass
+
+	## flexible result handling needs to be designed with
+	## multiple script lines in mind.
+	def getResultHandler(self, cmd):
+		"""returns a function f that has args: (stdout, filename)
+		"""
+		return 
+
+	def stdoutHandler(self, stdout, filename):
+		pass
+	def outfileHandler(self, stdout, filename):
+		pass
+	
 	def shouldRemap(self, absName):
 		# return bool indicating whether this word should be xlated.
 		# keep simple for now: check a list.
@@ -81,7 +117,7 @@ class ScriptingEnv:
 		if elts[0][0] == os.sep: # do not detect with leading /
 			return False
 		return True
-
+	
 	
 	def addAbsName(self, absName):
 		""" return a concrete name from an abstract name"""
@@ -104,15 +140,19 @@ class ScriptingEnv:
 	def makeCommandLine(self):
 		newCommandLine = ""
 		index = 0
-		seenCommand = False
-		commandIndex = -1
+		self.cmd = None 
 
 		# for now, use only the first line
-		for word in self.lines[0].split(): 
-			if word in ScriptingEnv.VALID_COMMANDS:
-				newCommandLine += " " + ScriptingEnv.VALID_COMMANDS[word]
-				seenCommand = True
-				commandIndex = index
+		for word in self.lines[0].split():
+			if index is 0:
+				if word in ScriptingEnv.VALID_COMMANDS:
+					newCommandLine += " " + ScriptingEnv.VALID_COMMANDS[word]
+					self.cmd = word
+				else:
+					handleError("unrecognized command:"
+						    + word + " in script.")
+					return # shouldn't continue
+					
 			elif self.shouldRemap(word):
 				remapped = self.addAbsName(word)
 				assert remapped != None
@@ -123,6 +163,7 @@ class ScriptingEnv:
 			else: # passthrough unrecognized things
 				newCommandLine += " " + word
 			index = index + 1
+			
 		# chop off leading " "
 		assert newCommandLine[0] == " " 
 		newCommandLine = newCommandLine[1:]
@@ -228,26 +269,26 @@ class Settings:
 	
 		pass
 	def accessmode(self):
+		if "-o" not in self.args:
+			return "helpmode"
 		return self.args["-o"]
 	def passthrough(self):
 		""" this should bounce the call to the default opendap netcdf handler"""
-		complaintmsg = "passthrough for DAS and DDS not implemented yet!"
-		complaintmsg += "\nDAS/DDS sequence for info option"
-		#print complaintmsg
-		logit( complaintmsg)
-		logit( "cmdline is: " + str(self.originalargs))
-	def runhacked(self):
-		"""this is where we should go ahead and run the script that we got passed."""
-		
-		if "-e" in self.args:
-			if "-u" not in self.args:
-				logit( "-e option "+self.args["-e"]+" but no -u url.")
-				logit( "not implemented yet.")
-				logit( "args are " + str(self.originalargs))
-				return
-			else:
-				pass
-				#logit( "-e, but -u exists: GET info avail." + self.args["-e"])
+		newargs = [local.passthroughPath] + self.originalargs[1:]
+		newline = ""
+		## need to substitute null strings to provide null -e option
+		for x in newargs:
+			if x == "": newline += "\"\" "
+			else: newline += x + " "
+		logit( "Bouncing from: " + str(self.originalargs[0]))
+		logit( "Executing: " + newline)
+		(sin,sout) = os.popen2(newline)
+		# copy our stdin to the process
+#		if sys.stdin.isatty():
+#			shutil.copyfileobj(sys.stdin, sin)
+		shutil.copyfileobj(sout, sys.stdout)
+
+	def argReport(args):
 		report = ""
 		report += "scratch space loc(-r): " + self.args["-r"] + "\n"
 		report += "originalurl(-u): " + self.args["-u"] + "\n"
@@ -258,19 +299,43 @@ class Settings:
 		if "-e" in self.args:
 			report += "constraint: " + self.args["-e"] + "\n"
 		else: report += "constraint: no\n"
-		if self.args["-e"] == Settings.MAGIC_CONSTRAINT:
-			self.readScript()
-			self.runScript()
-		else:
-			complaint = "ignoring non-scripting requests for now."
-			logit( complaint)
-		#print report
-		#logit( report)
+		return report
+
+	def runhacked(self):
+		"""this is where we should go ahead and run the script that we got passed."""
+		
+		if "-e" in self.args:
+			if "-u" not in self.args:
+				self.passthrough()
+				return
+			else:
+				# logit(argReport(self.args))
+				if self.args["-e"] == Settings.MAGIC_CONSTRAINT:
+					logit("stdin = tty?" + str(sys.stdin.isatty()))
+					self.readScript()
+					self.runScript()
+					return
+		self.passthrough()  ## passthrough everything else.
+
+	def printusage(self):
+		print """
+		This script is to be called by an opendap
+		installation.  Ask a developer for more info."""
+		
+		
 
 	def execute(self):
-		jumptable={'dods':self.runhacked,
-			   'DAS':self.passthrough,
-			   'DDS':self.passthrough}
+		jumptable={'dods' : self.runhacked,
+			   'DODS' : self.runhacked,
+			   'das' :  self.passthrough,
+			   'DAS' :  self.passthrough,
+			   'dds' :  self.passthrough,
+			   'DDS' :  self.passthrough,
+			   'DDX' :  self.passthrough,
+			   'BLOB':  self.passthrough,
+			   'Version': self.passthrough,
+			   'helpmode': self.printusage
+			   }
 		jumptable[self.accessmode()]()  ## make the call
 		pass
 	def readScript(self):
@@ -288,7 +353,7 @@ class Settings:
 		
 		self.env["defpath"] = filepath # use for default path.
 		self.env["requestefile"] = filename  #not sure we need this
-		self.env["local"] = "true"
+		#self.env["local"] = "true"
 		scriptenv = ScriptingEnv(self.scriptlines, self.env)
 		scriptenv.execute()
 		scriptenv.returnOutput(sys.stdout)
