@@ -1,3 +1,7 @@
+2006-01-31  Charlie Zender  <zender@uci.edu>
+
+	* Created nco++/Makefile, made progress toward in-tree nco++ build
+
 2006-01-30  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-3_1_1

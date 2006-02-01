@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.330 2006-01-31 06:34:39 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.331 2006-02-01 07:52:31 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -108,6 +108,8 @@ Send it in!<br>
 <h2>NCO News &amp; Announcements</h2>
 
 <ul>
+<li>January&nbsp;30, 2006: NCO 3.1.1 released</li>
+
 <li>December&nbsp;2, 2005: NCO 3.1.0 released&mdash;All arithmetic operators support MPI</li>
 
 <li>October&nbsp;28, 2005: NCO 3.0.3 released</li>

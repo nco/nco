@@ -1,17 +1,17 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.1 2006-02-01 06:52:07 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.2 2006-02-01 07:52:32 zender Exp $ -*-makefile-*-
 
-# Purpose: Makefile for libnco_c++ module nco_c++
+# Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file.
-# scp ~/nco/src/nco_c++/Makefile.old esmf.ess.uci.edu:nco/src/nco_c++
-# scp ~/nco/src/nco_c++/Makefile.old soot.ess.uci.edu:nco/src/nco_c++
-# scp ~/nco/src/nco_c++/Makefile.old goldhill.cgd.ucar.edu:nco/src/nco_c++
+# scp ~/nco/src/nco++/Makefile.old esmf.ess.uci.edu:nco/src/nco++
+# scp ~/nco/src/nco++/Makefile.old soot.ess.uci.edu:nco/src/nco++
+# scp ~/nco/src/nco++/Makefile.old goldhill.cgd.ucar.edu:nco/src/nco++
 
-# Copyright (C) 1994--2004 Charlie Zender
-# This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+# Copyright (C) 1994--2006 Charlie Zender
+# This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
 # See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text
 
 # Usage:
-# cd ~/nco/src/nco_c++;make -f Makefile.old dpn_cln cln all
+# cd ~/nco/src/nco++;make -f Makefile.old dpn_cln cln all
 
 # In rule 
 # foobar.o : foo.c bar.c
@@ -67,6 +67,15 @@ ifndef ${ABI}
 # 32 vs. 64 bit ABI: 32=32 bit mode (default), 64=64 bit mode if available
  ABI := 64
 endif # endif ABI
+ifndef ANTLR_ROOT
+ ANTLR_ROOT := /usr/local
+endif
+ifndef ANTLR_INC
+ ANTLR_INC := ${ANTLR_ROOT}/include # Directory containing antlr.h
+endif
+ifndef ANTLR_LIB
+ ANTLR_LIB := ${ANTLR_ROOT}/lib # Directory containing libantlr.a
+endif
 ifndef ${DBG}
 # Debugging token N=No (default) Y=Yes
  DBG := N
@@ -92,11 +101,20 @@ ifndef MK_DPN
  MK_DPN = ${CPP} -M # NB: Recursive expansion required
  MK_DPN_CXX = ${CXX} -M # NB: Recursive expansion required
 endif # endif MK_DPN
+ifndef ${NETCDF4} # netCDF4 support
+ NETCDF4 := N
+endif # endif NETCDF4
+ifndef NETCDF_ROOT
+ NETCDF_ROOT := /usr/local
+endif
+ifndef NETCDF4_ROOT
+ NETCDF4_ROOT := ${NETCDF_ROOT}
+endif
 ifndef NETCDF_INC
- NETCDF_INC := /usr/local/include 
+ NETCDF_INC := ${NETCDF_ROOT}/include # Directory containing netcdf.h
 endif
 ifndef NETCDF_LIB
- NETCDF_LIB := /usr/local/lib
+ NETCDF_LIB := ${NETCDF_ROOT}/lib # Directory containing libnetcdf.a
 endif
 ifndef ${OMP} # OpenMP
  OMP := Y
@@ -191,10 +209,14 @@ slash := /
 MY_OBJ_DIR_RX := $(subst ${slash},${slash_rx},${MY_OBJ_DIR})
 MY_DPN_DIR_RX := $(subst ${slash},${slash_rx},${MY_DPN_DIR})
 
+# Directories to search for source files
+MDL_PTH := ./ ${MY_SRC_DIR}
+# Find all C and C++ files in given directory
+FIND_FNC = $(wildcard ${dir}/*.cc ${dir}/*.c)
+# Assemble source files from all directories
+SRC_LST = $(foreach dir, ${MDL_PTH},$(FIND_FNC))
 # Source file names with directories removed
-# List source targets alphabetically by "category":
-MDL_SRC := nco_utl.cc nco_fl.cc nco_dmn.cc nco_var.cc nco_att.cc nco_hgh.cc # libnco_c++
-MDL_SRC += tst.cc # Test program
+MDL_SRC := $(notdir $(SRC_LST))
 # Directories to search for source files
 MDL_PTH := . ${HOME}/include
 # Dependency list for executable
@@ -207,14 +229,15 @@ VPATH := $(subst ${space},:,${MDL_PTH})
 CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 
 # Variables having to do with binary executables created by module
-MDL_BIN_TRG := tst # Binary targets
+MDL_BIN_TRG := ncap2 # Binary targets
 MDL_BIN_SYM_LNK := # Symbolic links
 MDL_BIN_STB := ${MDL_BIN_TRG} ${MDL_BIN_SYM_LNK} # All C++ files in MY_BIN_DIR
 MDL_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_BIN_STB}) # dst_cln removes these files
 
 # Variables having to do with header files created by module
 # List header targets alphabetically by "category":
-MDL_INC_TRG := libnco_c++.hh nco_utl.hh nco_fl.hh nco_dmn.hh nco_var.hh nco_att.hh nco_hgh.hh # libnco_c++
+MDL_INC_TRG := # Raw (no functions)
+MDL_INC_TRG += # libnco++
 MDL_INC_SYM_LNK := # Symbolic links
 MDL_INC_STB = ${MDL_INC_TRG} ${MDL_INC_SYM_LNK} # All header files in ${MY_INC_DIR}
 MDL_INC = $(addprefix ${MY_INC_DIR}/,${MDL_INC_STB}) # dst_cln removes these files
@@ -304,7 +327,7 @@ ifneq (${null},$(findstring xl,${CC}))
  CPP_TKN_OS += -I/usr/vacpp/include
 endif # xlC compilers
 # Add /usr/local/include for libintl.h explicitly until netCDF is moved there
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} ${GSL_INC} -I/usr/local/include
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC} ${GSL_INC} -I/usr/local/include
 FC := xlf95_r
 LD := ld
 LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
@@ -417,7 +440,7 @@ CXX := cxx -std strict_ansi
 CC := cc
 CFLAGS := ${OMP_FLG}
 # OSF1 is for CCM compatibility
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DOSF1 ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DOSF1 ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := f90
 FFLAGS := -c ${OMP_FLG} -automatic -fpe3
 FIXEDFLAGS := -extend_source
@@ -454,7 +477,7 @@ ifeq (${PVM_ARCH},CRAY)
 CXX := g++
 CC := cc
 CPP := cpp
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := f90
 LD := ld
 LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
@@ -492,7 +515,7 @@ CXX := ${LINUX_CXX}
 CC := ${LINUX_CC}
 CPP := ${CXX}
 # HAVE_INLINE is GNU standard to activate inline functions (used by GSL)
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DHAVE_INLINE ${CPP_PTH} -I${NETCDF_INC} 
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DHAVE_INLINE ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC} 
 FC := ${LINUX_FC}
 LD := ld
 LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
@@ -726,7 +749,7 @@ CXX := c++
 CC := cc
 CFLAGS := -Wall
 CPP := ${CC}
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := f90
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -764,7 +787,7 @@ CXX := c++
 CC := cc
 CPP := c++ -E
 #CPP := /usr/lib/cpp
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := f90
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -798,7 +821,7 @@ ifeq (${PVM_ARCH},RS6K)
 CXX := g++
 CC := gcc -ansi
 CPP := /lib/cpp -P
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := xlf
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -835,7 +858,7 @@ ifneq (,$(findstring SGI,${PVM_ARCH}))
 # 20000302: -w suppresses warnings which will swamp linker
 CXX := g++ -w
 CC := gcc
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := f90 -cpp
 LD := ld
 LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
@@ -916,7 +939,7 @@ CXX := g++
 CC := gcc
 CFLAGS := -Wall
 CPP := cpp
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} 
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC} 
 FC := f90 -DHIDE_SHR_MSG
 #FFLAGS := -xs -stackvar -e -Qoption f90comp -r8const
 FFLAGS := -xs -stackvar -e 
@@ -965,7 +988,7 @@ CXX := g++-2
 CC := gcc-2 -ansi
 CPP := cpp-2
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -Di386 ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -Di386 ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := g77-2
 LD := ld
 LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
@@ -1014,10 +1037,10 @@ obj_dir :
 	- if ! test -d ${MY_OBJ_DIR}; then mkdir ${MY_OBJ_DIR}; fi
 
 # Targets in bin
-TST_OBJ := ${MY_OBJ_DIR}/tst.o
-tst:	lib ${MY_BIN_DIR}/tst
-${MY_BIN_DIR}/tst:	$(TST_OBJ)
-	${CXX} -o $@ $(TST_OBJ) ${LDFLAGS}
+NCAP2_OBJ := ${MY_OBJ_DIR}/ncap2.o
+ncap2:	lib ${MY_BIN_DIR}/ncap2
+${MY_BIN_DIR}/ncap2:	${NCAP2_OBJ}
+	${CXX} -o $@ ${NCAP2_OBJ} ${LDFLAGS} -L${ANTLR_LIB} -lantlr
 	chmod 755 $@
 
 bin : ${MDL_BIN_TRG}
@@ -1039,22 +1062,22 @@ dpn_cln :
 	rm -f ${MDL_DPN}
 # Targets in dpn
 dst : 
-	cd ..; tar cvzf /var/ftp/pub/zender/nco_c++/nco_c++.tar.gz ./nco_c++;
+	cd ..; tar cvzf /var/ftp/pub/zender/nco++/nco++.tar.gz ./nco++;
 # Targets in inc
 inc : ${MDL_INC}
 inc_cln :
 	rm -f ${MDL_INC}
 # Targets in lib
-lib : inc $(libnco_c++).a
-$(libnco_c++).a : inc $(libnco_c++).a(${MY_OBJ_DIR}/nco_att.o) \
-	$(libnco_c++).a(${MY_OBJ_DIR}/nco_dmn.o) \
-	$(libnco_c++).a(${MY_OBJ_DIR}/nco_fl.o) \
-	$(libnco_c++).a(${MY_OBJ_DIR}/nco_hgh.o) \
-	$(libnco_c++).a(${MY_OBJ_DIR}/nco_var.o) \
-	$(libnco_c++).a(${MY_OBJ_DIR}/nco_utl.o)
+lib : inc $(libnco++).a
+$(libnco++).a : inc $(libnco++).a(${MY_OBJ_DIR}/ncap_utl.o) \
+	$(libnco++).a(${MY_OBJ_DIR}/Invoke.o) \
+	$(libnco++).a(${MY_OBJ_DIR}/NcapVarVector.o) \
+	$(libnco++).a(${MY_OBJ_DIR}/ncoLexer.o) \
+	$(libnco++).a(${MY_OBJ_DIR}/ncoParser.o) \
+	$(libnco++).a(${MY_OBJ_DIR}/ncoTree.o)
 # NB: Do not place comments in the middle of a rule, or have \ at the end
 lib_cln :
-	rm -f $(libnco_c++).a $(libnco_c++).la $(libnco_c++).so*
+	rm -f $(libnco++).a $(libnco++).la $(libnco++).so*
 # Targets in obj
 obj : ${MDL_OBJ}
 obj_cln :
