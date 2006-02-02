@@ -2,7 +2,7 @@
 import getopt, os, sys, tempfile, shutil
 import string, time
 
-# $Id: dap_nc_handler_hack,v 1.4 2006-01-31 02:56:27 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.5 2006-02-02 02:55:14 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -36,7 +36,7 @@ import string, time
 ######################################################################
 class local:
 	disableLogging = False
-	logLocation = "/home/wangd/opendap/iroot/hackscr.log"
+	logLocation = "/home/wangd/opendap/iroot/ssdap.log"
 
 	#ncBinPath = os.environ["MY_BIN_DIR"] 
 	ncBinPath = "/home/wangd/nco/nco/bin"
@@ -44,6 +44,8 @@ class local:
 	# pass original DAP commands to the original dap handler.
 	passthroughPath = "/home/wangd/opendap/iroot/bin/dap_nc_handler"
 
+	disableHTTP = True # Recommend: False
+	# this is for command-line debugging
 
 ######################################################################
 
@@ -61,14 +63,96 @@ def logflush():
 		local.logfile.flush()
 	pass
 
+class Command:
+	def __init__(self, line, scriptenv):
+		self.original = line
+		self.env = scriptenv
+		self.cmdLine = None #empty commmandline for now
+		self.dependents = []
+		self.ancestors = []
+		self.buildCommandLine()
+		pass
+
+	def commandLine(self):
+		return self.cmdLine
+	def addChild(self, comm):
+		assert isinstance(comm, Command)
+		# update self
+		if comm not in self.dependents:
+			self.dependents.append(comm)
+		#update child
+		if self not in comm.parents():
+			comm.addParent(self)
+	def addParent(self, comm):
+		assert isinstance(comm, Command)
+		# update self
+		if comm not in self.ancestors:
+			self.ancestors.append(comm)
+		# update parent
+		if self not in comm.children():
+			comm.addChild(self)
+		
+	def children(self):
+		return self.dependents
+	def parents(self):
+		return self.ancestors
+	def outputs(self):
+		""" return a dictionary mapping absoutputfiles to real files"""
+		return self.outputMap()
+	def inputs(self):
+		""" return a dictionary mapping absinputfiles to real files"""
+		return self.inputMap()
+	# "private" functions
+	def buildCommandLine(self):
+		newCommandLine = ""
+		index = 0
+		self.cmd = None
+		# for now, use only the first line
+		for word in self.original.split():
+			if word[0] == "#": # comment; skip parsing
+				break
+			if self.cmd == None:
+				if word in ScriptingEnv.VALID_COMMANDS:
+					newCommandLine += " " + ScriptingEnv.VALID_COMMANDS[word]
+					self.cmd = word
+				else:
+					handleError("unrecognized command:"
+						    + word + " in script.")
+					return # shouldn't continue
+					
+			elif self.env.shouldRemap(word):
+				#print "should map " + word
+				remapped = self.env.addAbsName(word)
+				assert remapped != None
+				
+				newCommandLine += " " + remapped
+			elif self.env.possibleFilename(word):
+				# add defpath for now.
+				newname = self.env.env["defpath"] + os.sep + word
+				#newname = word
+				newCommandLine += " " + newname
+			else: # passthrough unrecognized things
+				newCommandLine += " " + word
+			index = index + 1
+		if self.cmd == None:
+			return # don't do anything more.
+		# chop off leading " "
+		assert newCommandLine[0] == " " 
+		newCommandLine = newCommandLine[1:]
+		# proclaim my results
+		logit( "real cmdline: " + newCommandLine)
+		self.cmdLine = newCommandLine
 	
 
 class ScriptingEnv:
 	# constants (but not const-enforced by python)
 	SCRIPT_OUTFILE = "%outfile%"
+	SCRIPT_STDOUTERR = "%stdouterr%"
+	CLASS_TEMP = "tempf"
+	CLASS_SEP = "_"
+	MAGIC_DELIM = "%"
 	NCBINPATH = local.ncBinPath
 	NC_SUFFIX = ".nc"
-	LOCALSWITCH = "local"
 	NCO_COMMANDS = ["ncap", "ncatted", "ncbo", "ncdiff",
 			"ncea", "ncecat", "ncflint", "ncks",
 			"ncpack", "ncpdq", "ncra", "ncrcat",
@@ -87,7 +171,15 @@ class ScriptingEnv:
 		self.fileMap = {}
 		self.env = settingsDict
 		self.lines = scriptlines
-		self.makeCommandLine()
+		# make commandlines from each scriptline
+		self.commandLine = []
+		for line in scriptlines:
+			c = Command(line, self)
+			if c.commandLine() != None:
+				#print c.commandLine()
+				
+				self.commandLine.append(c.commandLine())
+
 		pass
 
 	## flexible result handling needs to be designed with
@@ -105,8 +197,17 @@ class ScriptingEnv:
 	def shouldRemap(self, absName):
 		# return bool indicating whether this word should be xlated.
 		# keep simple for now: check a list.
-		# suck class const into local namespace.
-		return absName in [ScriptingEnv.SCRIPT_OUTFILE]
+		# first, filter out %...% delimiters
+		if not (absName[0] == absName[-1] == ScriptingEnv.MAGIC_DELIM):
+			return False  # do not remap these.
+		symname = absName[1:-1] # clip ends
+		fields = string.split(symname, ScriptingEnv.CLASS_SEP)
+		if len(fields) == 2:
+			# check for tempname
+			if fields[0] == ScriptingEnv.CLASS_TEMP:
+				return True
+		return absName == ScriptingEnv.SCRIPT_OUTFILE
+		
 	def possibleFilename(self, cand):
 		elts = string.split(cand, ".")
 
@@ -122,7 +223,7 @@ class ScriptingEnv:
 	def addAbsName(self, absName):
 		""" return a concrete name from an abstract name"""
 		if self.fileMap.has_key(absName):
-			return None # can't assign name, already assigned!
+			return self.fileMap[absName][1] # reuse mapped name
 		alnum = string.letters + string.digits
 		fixName = ""
 		for i in absName:
@@ -137,56 +238,32 @@ class ScriptingEnv:
 		os.close(filepair[0])
 		return filepair[1]
 	
-	def makeCommandLine(self):
-		newCommandLine = ""
-		index = 0
-		self.cmd = None 
-
-		# for now, use only the first line
-		for word in self.lines[0].split():
-			if index is 0:
-				if word in ScriptingEnv.VALID_COMMANDS:
-					newCommandLine += " " + ScriptingEnv.VALID_COMMANDS[word]
-					self.cmd = word
-				else:
-					handleError("unrecognized command:"
-						    + word + " in script.")
-					return # shouldn't continue
-					
-			elif self.shouldRemap(word):
-				remapped = self.addAbsName(word)
-				assert remapped != None
-				newCommandLine += " " + remapped
-			elif self.possibleFilename(word):
-				newname = self.env["defpath"] + os.sep + word
-				newCommandLine += " " + newname
-			else: # passthrough unrecognized things
-				newCommandLine += " " + word
-			index = index + 1
-			
-		# chop off leading " "
-		assert newCommandLine[0] == " " 
-		newCommandLine = newCommandLine[1:]
-		# proclaim my results
-		logit( "real cmdline: " + newCommandLine)
-		self.commandLine = newCommandLine
 	def execute(self):
 		self.clearTemps()
 		logflush()
-				
-		(sin,sout) = os.popen2(self.commandLine)
-		sin.close() # close the input, so it flushes
-		#out handle is now ready to be read.
-		for x in sout:
-			logit( "execution output: " + x)
+		#print "about to execute..."
+		for l in self.commandLine:
+			#print l
+			pass
+		for l in self.commandLine:		
+			(sin,sout) = os.popen2(l)
+			sin.close() # close the input, so it flushes
+			#out handle is now ready to be read.
+			for x in sout:
+				logit( "execution output: " + x)
 			pass
 		# for now, ignore stdout
 		#okay
 		pass
 	def returnOutput(self, targetfd):
+		
+		if self.fileMap.has_key(ScriptingEnv.SCRIPT_STDOUTERR):
+			# we will need to fix this....
+			pass
+
 		oname = self.fileMap[ScriptingEnv.SCRIPT_OUTFILE][1]
 		
-		if(ScriptingEnv.LOCALSWITCH in self.env):
+		if(local.disableHTTP):
 			self.rawWrite(oname, targetfd)
 		else:
 			self.httpWrite(oname, targetfd)
@@ -224,7 +301,7 @@ class ScriptingEnv:
 
 
 	
-class Settings:
+class FrontEnd:
 	# put in url .../foo.nc.dods?superduperscript11"
 	MAGIC_CONSTRAINT = "superduperscript11"
 	# use in script to indicate what file should be sent back.
@@ -310,8 +387,8 @@ class Settings:
 				return
 			else:
 				# logit(argReport(self.args))
-				if self.args["-e"] == Settings.MAGIC_CONSTRAINT:
-					logit("stdin = tty?" + str(sys.stdin.isatty()))
+				if self.args["-e"] == FrontEnd.MAGIC_CONSTRAINT:
+					#logit("stdin = tty?" + str(sys.stdin.isatty()))
 					self.readScript()
 					self.runScript()
 					return
@@ -352,7 +429,13 @@ class Settings:
 		(filepath, filename) = os.path.split(self.args["-realfile"])
 		
 		self.env["defpath"] = filepath # use for default path.
-		self.env["requestefile"] = filename  #not sure we need this
+		self.env["requestedfile"] = filename  #not sure we need this
+
+		(urlpath, ufilename) = os.path.split(self.args["-u"])
+		assert filename == ufilename
+		for x in range(1,len(filepath)):
+			pass
+			
 		#self.env["local"] = "true"
 		scriptenv = ScriptingEnv(self.scriptlines, self.env)
 		scriptenv.execute()
@@ -361,7 +444,7 @@ class Settings:
 		
 
 
-settings = Settings(sys.argv)
+settings = FrontEnd(sys.argv)
 mode =  settings.accessmode()
 logit("Mode is " + mode)
 
