@@ -7,7 +7,8 @@
 
 2006-01-31  Charlie Zender  <zender@uci.edu>
 
-	* Created nco++/Makefile, made progress toward in-tree nco++ build
+	* Created nco++/Makefile.old from nco_c++/Makefile.old
+	  Made progress toward in-tree nco++ build
 
 2006-01-30  Charlie Zender  <zender@uci.edu>
 
