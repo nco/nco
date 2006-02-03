@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.2 2006-02-01 07:52:32 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.3 2006-02-03 00:55:53 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -218,7 +218,7 @@ SRC_LST = $(foreach dir, ${MDL_PTH},$(FIND_FNC))
 # Source file names with directories removed
 MDL_SRC := $(notdir $(SRC_LST))
 # Directories to search for source files
-MDL_PTH := . ${HOME}/include
+MDL_PTH := . ../nco
 # Dependency list for executable
 MDL_OBJ := $(addprefix ${MY_OBJ_DIR}/,$(addsuffix .o, $(basename ${MDL_SRC}))) 
 # Dependency (make) file for each object file

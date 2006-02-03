@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap_utl.cc,v 1.1 2006-01-31 06:07:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.1 2006-02-03 00:55:53 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
