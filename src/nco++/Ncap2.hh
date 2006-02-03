@@ -1,4 +1,4 @@
-#ifndef NCAP_HH
-#define NCAP_HH
+#ifndef NCAP2_HH
+#define NCAP2_HH
 typedef enum { ncap_var, ncap_att,ncap_hyper,ncap_undef  } ncap_type;
-#endif
+#endif // NCAP2_HH

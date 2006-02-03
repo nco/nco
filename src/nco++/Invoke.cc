@@ -13,7 +13,7 @@
 #include "ncoParser.hpp"
 #include "ncoTree.hpp"
 
-#include "ncap.h"
+#include "ncap2.h"
 
 // Forward Declaration
 int switchboard(RefAST t,ncoTree &walker);

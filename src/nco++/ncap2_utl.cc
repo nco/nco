@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.1 2006-02-03 00:55:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.2 2006-02-03 01:59:56 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -7,7 +7,7 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include <assert.h>
-#include "ncap.hh" /* netCDF arithmetic processor */
+#include "ncap2.hh" /* netCDF arithmetic processor */
 
 /* have removed extern -- (not linking to ncap_lex.l */
 /*extern*/ char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in ncap_lex.l) */

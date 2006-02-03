@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.1 2006-02-03 00:55:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.2 2006-02-03 01:59:56 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -36,13 +36,11 @@
    scp ~/nco/src/nco/ncap.c esmf.ess.uci.edu:nco/src/nco/ncap.c */
 
 /* temporary define --not for release */
-#define HAVE_CONFIG_H 1
+// #define HAVE_CONFIG_H 1
 
 #ifdef HAVE_CONFIG_H
 #include "config.h" /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
-
-
 
 /* Standard C headers */
 #include <assert.h>  /* assert() debugging macro */
@@ -72,7 +70,7 @@
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
-#include "ncap.hh" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
+#include "ncap2.hh" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
 /* Global variables */
@@ -121,8 +119,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.1 2006-02-03 00:55:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.1 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.2 2006-02-03 01:59:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.2 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */

@@ -4,7 +4,7 @@ header {
     #include <assert.h>
     #include <iostream>
     #include <string>
-    #include "ncap.hh"
+    #include "ncap2.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
     ANTLR_USING_NAMESPACE(std);

@@ -1,10 +1,9 @@
-#ifndef NCAPVAR_H
-#define NCAPVAR_H
-
+#ifndef NCAPVAR_HH
+#define NCAPVAR_HH
 
 #include <string>
 #include "nco.h"
-#include "Ncap.hh"
+#include "Ncap2.hh"
 #include "nco_var_utl.h"
 
 class NcapVar{
@@ -60,4 +59,4 @@ public:
 
 };
 
-#endif NCAPVAR_H
+#endif // NCAPVAR_HH

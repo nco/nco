@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "Ncap.hh"
+#include "Ncap2.hh"
 #include "NcapVar.hh"
 
 class NcapVarVector {

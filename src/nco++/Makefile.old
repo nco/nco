@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.3 2006-02-03 00:55:53 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.4 2006-02-03 01:59:56 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -209,10 +209,18 @@ slash := /
 MY_OBJ_DIR_RX := $(subst ${slash},${slash_rx},${MY_OBJ_DIR})
 MY_DPN_DIR_RX := $(subst ${slash},${slash_rx},${MY_DPN_DIR})
 
+# Automagically generated grammar
+NCAP2_ANTLR_GENERATED_CC_STB := ncoLexer ncoParser ncoTree
+NCAP2_ANTLR_GENERATED_HH_STB := ${NCAP2_ANTLR_GENERATED_CC_STB} ncoParserTokenTypes
+NCAP2_ANTLR_GENERATED_CC := $(addsuffix .cc, $(basename ${NCAP2_ANTLR_GENERATED_CC_STB})) 
+NCAP2_ANTLR_GENERATED_CPP := $(addsuffix .cpp, $(basename ${NCAP2_ANTLR_GENERATED_CC_STB})) 
+NCAP2_ANTLR_GENERATED_HH := $(addsuffix .hh, $(basename ${NCAP2_ANTLR_GENERATED_HH_STB})) 
+NCAP2_ANTLR_GENERATED_HPP := $(addsuffix .hpp, $(basename ${NCAP2_ANTLR_GENERATED_HH_STB})) 
+
 # Directories to search for source files
 MDL_PTH := ./ ${MY_SRC_DIR}
 # Find all C and C++ files in given directory
-FIND_FNC = $(wildcard ${dir}/*.cc ${dir}/*.c)
+FIND_FNC = $(wildcard ${dir}/*.cpp ${dir}/*.cc ${dir}/*.c)
 # Assemble source files from all directories
 SRC_LST = $(foreach dir, ${MDL_PTH},$(FIND_FNC))
 # Source file names with directories removed
@@ -246,6 +254,8 @@ MDL_INC = $(addprefix ${MY_INC_DIR}/,${MDL_INC_STB}) # dst_cln removes these fil
 ${MY_OBJ_DIR}/%.o : %.c
 	${CC} ${CPPFLAGS} ${CFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
 ${MY_OBJ_DIR}/%.o : %.cc
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
+${MY_OBJ_DIR}/%.o : %.cpp
 	${CXX} ${CPPFLAGS} ${CXXFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
 
 # Default Fortran pattern rules: CRAY and RS6K must override these rules
@@ -297,6 +307,9 @@ ${MY_DPN_DIR}/%.d : %.cc
 # NB: Use ${CXX} rather than ${CPP} on C++ files for now because, e.g., SUNMP cpp does not 
 # preprocess .cc files quite correctly
 #	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$*.o $@/g;' > $@
+	${CXX} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
+
+${MY_DPN_DIR}/%.d : %.cpp
 	${CXX} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
 
 # The first LDFLAGS is for typical C programs with netCDF, math, and networking
@@ -1026,7 +1039,7 @@ all: ${MDL_BIN_TRG} inc lib dat
 # Delete default suffixes---this should increase speed
 .SUFFIXES: 
 # Define suffixes which matter
-.SUFFIXES: .cc .c .o .F .d
+.SUFFIXES: .cpp .cc .c .o .F .d
 # Delete targets which were not successfully made
 .DELETE_ON_ERROR:
 lib_dir :
@@ -1037,15 +1050,26 @@ obj_dir :
 	- if ! test -d ${MY_OBJ_DIR}; then mkdir ${MY_OBJ_DIR}; fi
 
 # Targets in bin
+%.hh : %.hpp
+	mv $< $(basename $<).hh
+%.cc : %.cpp
+	mv $< $(basename $<).cc
+
+ncoParserTokenTypes.hpp : ncoGrammer.g
+	${ANTLR} ncoGrammer.g
+
+antlr_grammar:	ncoGrammer.g
+	${ANTLR} ncoGrammer.g
+
 NCAP2_OBJ := ${MY_OBJ_DIR}/ncap2.o
-ncap2:	lib ${MY_BIN_DIR}/ncap2
+ncap2:	lib ${MY_BIN_DIR}/ncap2 antlr_grammar
 ${MY_BIN_DIR}/ncap2:	${NCAP2_OBJ}
 	${CXX} -o $@ ${NCAP2_OBJ} ${LDFLAGS} -L${ANTLR_LIB} -lantlr
 	chmod 755 $@
 
 bin : ${MDL_BIN_TRG}
 bin_cln: 
-	rm -f ${MDL_BIN}
+	rm -f ${MDL_BIN} ${NCAP2_ANTLR_GENERATED_CPP} ${NCAP2_ANTLR_GENERATED_HPP}
 # Targets in bld
 bld_cln :
 	cd ${MY_BLD_DIR}; rm -f TAGS
@@ -1069,7 +1093,7 @@ inc_cln :
 	rm -f ${MDL_INC}
 # Targets in lib
 lib : inc $(libnco++).a
-$(libnco++).a : inc $(libnco++).a(${MY_OBJ_DIR}/ncap_utl.o) \
+$(libnco++).a : inc $(libnco++).a(${MY_OBJ_DIR}/ncap2_utl.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/Invoke.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/NcapVarVector.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/ncoLexer.o) \
@@ -1133,7 +1157,7 @@ distclean : dst_cln
 dst_cln : cln bld_cln lib_cln
 install : inc 
 tags : 
-	etags *.cc *.c *.com *.F *.F90 *.h *.hh Makefile
+	etags *.cpp *.cc *.c *.com *.F *.F90 *.h *.hh *.hpp Makefile
 uninstall : dst_cln bin_cln inc_cln lib_cln
 
 # Create dependency files only if they will not be immediately deleted

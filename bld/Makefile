@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.354 2006-01-31 06:42:10 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.355 2006-02-03 01:59:55 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -1618,7 +1618,7 @@ tags:
 # It is safest to do both YACC and LEX after either file changes
 # Otherwise only changing one and then switching, e.g., from bison to yacc, can cause problems
 # NB: Bison has a problem when bison.simple declares yyparse() as int yyparse (void);
-# The solution is to comment out that definition in bison.simple
+# Solution is to comment out that definition in bison.simple
 ifeq (${YACC},bison)
 ${MY_SRC_DIR}/%_yacc.c ${MY_SRC_DIR}/%_yacc.h : ${MY_SRC_DIR}/%_yacc.y
 	${YACC} --output=$(basename $<).c -d $<
@@ -1635,7 +1635,7 @@ ifeq (${YACC},yacc)
 endif
 
 %_lex.c : %_lex.l
-	$(LEX) $<
+	${LEX} $<
 	mv lex.yy.c $(basename $<).c
 
 # ncap, and only ncap, requires AIX system C++ library
