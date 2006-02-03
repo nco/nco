@@ -2,7 +2,7 @@
 import getopt, os, sys, tempfile, shutil
 import string, time
 
-# $Id: dap_nc_handler_hack,v 1.5 2006-02-02 02:55:14 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.6 2006-02-03 03:26:18 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -119,7 +119,8 @@ class Command:
 					handleError("unrecognized command:"
 						    + word + " in script.")
 					return # shouldn't continue
-					
+			elif self.env.processSpecial(word):
+				pass # don't add to command line.
 			elif self.env.shouldRemap(word):
 				#print "should map " + word
 				remapped = self.env.addAbsName(word)
@@ -148,6 +149,7 @@ class ScriptingEnv:
 	# constants (but not const-enforced by python)
 	SCRIPT_OUTFILE = "%outfile%"
 	SCRIPT_STDOUTERR = "%stdouterr%"
+	SCRIPT_STDOUT = "%stdout%"
 	CLASS_TEMP = "tempf"
 	CLASS_SEP = "_"
 	MAGIC_DELIM = "%"
@@ -171,6 +173,11 @@ class ScriptingEnv:
 		self.fileMap = {}
 		self.env = settingsDict
 		self.lines = scriptlines
+		# save lines of output for each type of output.
+		# direct child output to /dev/null unless requested
+		self.outFd = os.devnull
+		self.popen = os.popen2
+		
 		# make commandlines from each scriptline
 		self.commandLine = []
 		for line in scriptlines:
@@ -179,7 +186,7 @@ class ScriptingEnv:
 				#print c.commandLine()
 				
 				self.commandLine.append(c.commandLine())
-
+		
 		pass
 
 	## flexible result handling needs to be designed with
@@ -207,7 +214,14 @@ class ScriptingEnv:
 			if fields[0] == ScriptingEnv.CLASS_TEMP:
 				return True
 		return absName == ScriptingEnv.SCRIPT_OUTFILE
-		
+	def processSpecial(self, absName):
+		redirTable = {ScriptingEnv.SCRIPT_STDOUTERR : os.popen4,
+			 ScriptingEnv.SCRIPT_STDOUT: os.popen2}
+		if absName in redirTable:
+			self.outFd = sys.stdout
+			self.popen = redirTable[absName]
+			return True
+		return False
 	def possibleFilename(self, cand):
 		elts = string.split(cand, ".")
 
@@ -243,23 +257,30 @@ class ScriptingEnv:
 		logflush()
 		#print "about to execute..."
 		for l in self.commandLine:
-			#print l
+			print l
 			pass
-		for l in self.commandLine:		
-			(sin,sout) = os.popen2(l)
+		# check to make sure we don't have both an output file and outstderr
+		# make sure we're doing exactly one thing with our output
+		havefile = self.fileMap.has_key(ScriptingEnv.SCRIPT_OUTFILE)
+		outbypass = (self.outFd != os.devnull)
+		assert havefile ^ outbypass
+		
+		
+		for l in self.commandLine:
+			#(sin,sout) = os.popen2(l)
+			(sin,sout) = self.popen(l)  # use the mapped popen
 			sin.close() # close the input, so it flushes
 			#out handle is now ready to be read.
-			for x in sout:
-				logit( "execution output: " + x)
-			pass
-		# for now, ignore stdout
-		#okay
+			#for x in sout:
+			#	self.outStream.append(x)
+			#	logit( "execution output: " + x)
+			# skip logging the output, and just dump to outstream.
+			shutil.copyfileobj(sout, self.outFd)
 		pass
 	def returnOutput(self, targetfd):
-		
-		if self.fileMap.has_key(ScriptingEnv.SCRIPT_STDOUTERR):
-			# we will need to fix this....
-			pass
+		# if we have an output...
+		if not self.fileMap.has_key(ScriptingEnv.SCRIPT_OUTFILE):
+			return  # already returned console out during exec.
 
 		oname = self.fileMap[ScriptingEnv.SCRIPT_OUTFILE][1]
 		

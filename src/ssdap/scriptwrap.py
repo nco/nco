@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+# $Id: scriptwrap.py,v 1.2 2006-02-03 03:26:18 wangd Exp $
 # want to support url-based specification of server.
 #           ncra -n 100,1,2 -p http://server/foo/model_01.nc model_avg.nc
 import os, shutil, sys, urllib
@@ -73,12 +74,13 @@ class ScriptRunner:
 
     # check that we can write to the output file.
     def acceptOutput(self, outname):
-        # only check two cases for now.  Doesn't worry about directories.
+        # only check two cases for now.  Doesn't worry (much) about dirs
         if not os.access(outname, os.F_OK):
             # check if dir is writable
             (path,name) = os.path.split(outname)
             if path == "": path = "."  ## fix for current dir writing.
-            if not os.access(path, W_OK):
+            # check if the current dir is writable
+            if not os.access(path, os.W_OK):
                 return False
         elif not os.access(outname, os.W_OK):
             return False
@@ -95,14 +97,13 @@ class ScriptRunner:
         
         #return True
         try:
-            
             result = urllib.urlopen(url, self.scriptData) # request from server
             if self.targetFile != self.MAGIC_DUMMY:
-                target = open(filename, "wb") # open local result
-            else: target = sys.stdout
-            shutil.copyfileobj(result, target) # funnel stuff to local
-            if self.targetFile != self.MAGIC_DUMMY:
+                target = open(self.targetFile, "wb") # open local result
+                shutil.copyfileobj(result, target) # funnel stuff to local
                 target.close() # done writing, ok to close
+            else:
+                shutil.copyfileobj(result, sys.stdout) # funnel stuff to local
             result.close() #done copying, ok to close
         except AttributeError:
             print "odd error in fetching url/writing file."
