@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import getopt, os, sys, tempfile, shutil
 import string, time
-
-# $Id: dap_nc_handler_hack,v 1.6 2006-02-03 03:26:18 wangd Exp $
+       
+       
+# $Id: dap_nc_handler_hack,v 1.7 2006-02-04 01:11:18 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -30,439 +31,544 @@ import string, time
 #          -L : skip printing of http headers. **** for easier testing
 
 #
-
+       
 ######################################################################
 # Administrator-tunable parameters:
 ######################################################################
 class local:
-	disableLogging = False
-	logLocation = "/home/wangd/opendap/iroot/ssdap.log"
+    disableLogging = False
+    logLocation = "/home/wangd/opendap/iroot/ssdap.log"
 
-	#ncBinPath = os.environ["MY_BIN_DIR"] 
-	ncBinPath = "/home/wangd/nco/nco/bin"
+    #ncBinPath = os.environ["MY_BIN_DIR"] 
+    ncBinPath = "/home/wangd/nco/nco/bin"
 
-	# pass original DAP commands to the original dap handler.
-	passthroughPath = "/home/wangd/opendap/iroot/bin/dap_nc_handler"
+    # pass original DAP commands to the original dap handler.
+    passthroughPath = "/home/wangd/opendap/iroot/bin/dap_nc_handler"
 
-	disableHTTP = True # Recommend: False
-	# this is for command-line debugging
+    disableHTTP = True # Recommend: False
+    # this is for command-line debugging
 
 ######################################################################
 
+# this class should stay identical in client/server.  If it gets big,
+# we should split it into some python module to be imported.
+class SsdapCommon:
+    """stuff that should be identical between client and server code"""
+    parserShortOpt = "4AaBb:CcD:d:FfHhl:Mmn:Oo:Pp:QqRrs:S:s:t:uv:xy:"
+    parserLongOpt = ["4", "netcdf4", "apn", "append",
+                     "abc", "alphabetize", "bnr", "binary",
+                     "fl_bnr=", "binary-file=",
+                     "crd", "coords",
+                     "nocoords", "dbg_lvl=", "debug-level=",
+                     "dmn=", "dimension=", "ftn", "fortran",
+                     "huh", "hmm",
+                     "fnc_tbl", "prn_fnc_tbl", "hst", "history",
+                     "Mtd", "Metadata", "mtd", "metadata",
+                     "lcl=", "local=", "nintap", 
+                     "output=", "fl_out=",
+                     "ovr", "overwrite", "prn", "print", "quiet",
+                     "pth=", "path=",
+                     "rtn", "retain", "revision", "vrs", "version",
+                     "spt=", "script=", "fl_spt=", "script-file=",
+                     "sng_fmt=", "string=",
+                     "thr_nbr=", "threads=", "omp_num_threads=",
+                     "xcl", "exclude"
+                     "variable=", "op_typ=", "operation=" ] 
+    pass
+
+######################################################################
 # setup some logging
 if not local.disableLogging:
-	local.logfile = open(local.logLocation, "a")
-	local.logfile.write("handler hack log open at " + time.ctime()+"\n")
+    local.logfile = open(local.logLocation, "a")
+    local.logfile.write("handler hack log open at " + time.ctime()+"\n")
 	
 def logit(s):
-	if not local.disableLogging:
-		local.logfile.write(s+"\n")
-	#print s
+    if not local.disableLogging:
+        local.logfile.write(s+"\n")
+    #print s
 def logflush():
-	if not local.disableLogging:
-		local.logfile.flush()
-	pass
+    if not local.disableLogging:
+        local.logfile.flush()
+    pass
 
 class Command:
-	def __init__(self, line, scriptenv):
-		self.original = line
-		self.env = scriptenv
-		self.cmdLine = None #empty commmandline for now
-		self.dependents = []
-		self.ancestors = []
-		self.buildCommandLine()
-		pass
+    def __init__(self, line, scriptenv):
+        self.original = line
+        self.env = scriptenv
+        self.cmdLine = None #empty commmandline for now
+        self.myName = ""
+        self.dependents = []
+        self.ancestors = []
+        self.absOutputs = []
+        self.absInputs = []
+        self.parseOriginalLine()
+        self.buildCommandLine()
+        pass
 
-	def commandLine(self):
-		return self.cmdLine
-	def addChild(self, comm):
-		assert isinstance(comm, Command)
-		# update self
-		if comm not in self.dependents:
-			self.dependents.append(comm)
-		#update child
-		if self not in comm.parents():
-			comm.addParent(self)
-	def addParent(self, comm):
-		assert isinstance(comm, Command)
-		# update self
-		if comm not in self.ancestors:
-			self.ancestors.append(comm)
-		# update parent
-		if self not in comm.children():
-			comm.addChild(self)
-		
-	def children(self):
-		return self.dependents
-	def parents(self):
-		return self.ancestors
-	def outputs(self):
-		""" return a dictionary mapping absoutputfiles to real files"""
-		return self.outputMap()
-	def inputs(self):
-		""" return a dictionary mapping absinputfiles to real files"""
-		return self.inputMap()
-	# "private" functions
-	def buildCommandLine(self):
-		newCommandLine = ""
-		index = 0
-		self.cmd = None
-		# for now, use only the first line
-		for word in self.original.split():
-			if word[0] == "#": # comment; skip parsing
-				break
-			if self.cmd == None:
-				if word in ScriptingEnv.VALID_COMMANDS:
-					newCommandLine += " " + ScriptingEnv.VALID_COMMANDS[word]
-					self.cmd = word
-				else:
-					handleError("unrecognized command:"
-						    + word + " in script.")
-					return # shouldn't continue
-			elif self.env.processSpecial(word):
-				pass # don't add to command line.
-			elif self.env.shouldRemap(word):
-				#print "should map " + word
-				remapped = self.env.addAbsName(word)
-				assert remapped != None
-				
-				newCommandLine += " " + remapped
-			elif self.env.possibleFilename(word):
-				# add defpath for now.
-				newname = self.env.env["defpath"] + os.sep + word
-				#newname = word
-				newCommandLine += " " + newname
-			else: # passthrough unrecognized things
-				newCommandLine += " " + word
-			index = index + 1
-		if self.cmd == None:
-			return # don't do anything more.
-		# chop off leading " "
-		assert newCommandLine[0] == " " 
-		newCommandLine = newCommandLine[1:]
-		# proclaim my results
-		logit( "real cmdline: " + newCommandLine)
-		self.cmdLine = newCommandLine
-	
+    def commandLine(self):
+        return self.cmdLine
+    def addChild(self, comm):
+        assert isinstance(comm, Command)
+        # update self
+        if comm not in self.dependents:
+            self.dependents.append(comm)
+        #update child
+        if self not in comm.parents():
+            comm.addParent(self)
+    def addParent(self, comm):
+        assert isinstance(comm, Command)
+        # update self
+        if comm not in self.ancestors:
+            self.ancestors.append(comm)
+        # update parent
+        if self not in comm.children():
+            comm.addChild(self)
+        
+    def children(self):
+        return self.dependents
+    def parents(self):
+        return self.ancestors
+    def outputs(self):
+        """ return a list of absoutputfiles """
+        return self.absOutputs
+    def inputs(self):
+        """ return a list of absinputfiles """
+        return self.absInputs
+    # "private" functions
 
+    def parseOriginalLine(self):
+        argv = self.original.split()
+        
+        if len(argv) < 1:
+            return # nothing to parse
+        
+        mycmd = argv[0]
+        if mycmd[0] == "#": #comment: nothing to parse.
+            return
+        if mycmd not in ScriptingEnv.VALID_COMMANDS:
+            print "WARN: bad script line: " + self.original
+            return
+        self.myName = mycmd + str(len(self.env.commands))
+
+        (arglist, leftover) = getopt.getopt(argv[1:],
+                                            SsdapCommon.parserShortOpt,
+                                            SsdapCommon.parserLongOpt)
+        argdict = dict(arglist)
+        self.acceptInOut(argdict, leftover)
+        self.fixupDependencies()
+    def acceptInOut(self, adict, leftover):
+        # look for output file first
+        ofname = ""
+        for x in  ["-o", "--fl_out", "--output"]:
+            if x in adict:
+                assert ofname == ""
+                ofname = adict[x]
+        if ofname == "":
+            ofname = leftover[-1] # take last arg
+            leftover = leftover[:-1] # and drop it off
+        assert ofname != "" # should have a real filename (or placeholder)
+        self.absOutputs.append(ofname)
+        self.absInputs += leftover
+    def fixupDependencies(self):
+        # go get a reversed list of the previous commands
+        previous = self.env.commands[:] #make copy!
+        previous.reverse() #reverse happens in-place
+
+        # for each input, check previously parsed for RAW hazards
+        # read-after-write is a true dependency
+        for x in self.absInputs:
+            for p in previous:
+                if x in p.outputs():
+                    p.addChild(self)
+                    break # only choose most recent output
+            
+        # don't do the other checking until we decide to track those deps
+        # for each output, check previously parsed for WAW hazards
+        # write-after-write is an output dependency
+        # also check for WAR: anti-dependency
+        #for x in self.absOutputs: # probably only one output...
+        #    for p in previous:
+
+        
+    def buildCommandLine(self):
+        newCommandLine = ""
+        index = 0
+        self.cmd = None
+        # for now, use only the first line
+        for word in self.original.split():
+            if word[0] == "#": # comment; skip parsing
+                break
+            if self.cmd == None:
+                if word in ScriptingEnv.VALID_COMMANDS:
+                    newCommandLine += " " + ScriptingEnv.VALID_COMMANDS[word]
+                    self.cmd = word
+                else:
+                    handleError("unrecognized command:"
+                            + word + " in script.")
+                    return # shouldn't continue
+            elif self.env.processSpecial(word):
+                pass # don't add to command line.
+            elif self.env.shouldRemap(word):
+                #print "should map " + word
+                remapped = self.env.addAbsName(word)
+                assert remapped != None
+                
+                newCommandLine += " " + remapped
+            elif self.env.possibleFilename(word):
+                # add defpath for now.
+                newname = self.env.env["defpath"] + os.sep + word
+                #newname = word
+                newCommandLine += " " + newname
+            else: # passthrough unrecognized things
+                newCommandLine += " " + word
+            index = index + 1
+        if self.cmd == None:
+            return # don't do anything more.
+        # chop off leading " "
+        assert newCommandLine[0] == " " 
+        newCommandLine = newCommandLine[1:]
+        # proclaim my results
+        logit( "real cmdline: " + newCommandLine)
+        self.cmdLine = newCommandLine
+    
+# This class should hold the state used by a single script
+# Might be worthwhile to split out constants/data shared
+#  between scripts instead of letting them be class shared data.
 class ScriptingEnv:
-	# constants (but not const-enforced by python)
-	SCRIPT_OUTFILE = "%outfile%"
-	SCRIPT_STDOUTERR = "%stdouterr%"
-	SCRIPT_STDOUT = "%stdout%"
-	CLASS_TEMP = "tempf"
-	CLASS_SEP = "_"
-	MAGIC_DELIM = "%"
-	NCBINPATH = local.ncBinPath
-	NC_SUFFIX = ".nc"
-	NCO_COMMANDS = ["ncap", "ncatted", "ncbo", "ncdiff",
-			"ncea", "ncecat", "ncflint", "ncks",
-			"ncpack", "ncpdq", "ncra", "ncrcat",
-			"ncrename", "ncunpack", "ncwa"]
-	VALID_COMMANDS = {}
-	for n in NCO_COMMANDS:
-		VALID_COMMANDS[n] = (NCBINPATH + os.sep + n )
-	# room to add other commands here.
-       	
-	
-	COMMENT_CHAR = "#"  # not used right now.
+    # constants (but not const-enforced by python)
+    SCRIPT_OUTFILE = "%outfile%"
+    SCRIPT_STDOUTERR = "%stdouterr%"
+    SCRIPT_STDOUT = "%stdout%"
+    CLASS_TEMP = "tempf"
+    CLASS_SEP = "_"
+    MAGIC_DELIM = "%"
+    NCBINPATH = local.ncBinPath
+    NC_SUFFIX = ".nc"
+    NCO_COMMANDS = ["ncap", "ncatted", "ncbo", "ncdiff",
+            "ncea", "ncecat", "ncflint", "ncks",
+            "ncpack", "ncpdq", "ncra", "ncrcat",
+            "ncrename", "ncunpack", "ncwa"]
+    VALID_COMMANDS = {}
+    for n in NCO_COMMANDS:
+        VALID_COMMANDS[n] = (NCBINPATH + os.sep + n )
+    # room to add other commands here.
+        
+    
+    COMMENT_CHAR = "#"  # not used right now.
 
-	def __init__(self, scriptlines, settingsDict):
-		assert type(scriptlines) == type([])
-		assert type(settingsDict) == type({})
-		self.fileMap = {}
-		self.env = settingsDict
-		self.lines = scriptlines
-		# save lines of output for each type of output.
-		# direct child output to /dev/null unless requested
-		self.outFd = os.devnull
-		self.popen = os.popen2
-		
-		# make commandlines from each scriptline
-		self.commandLine = []
-		for line in scriptlines:
-			c = Command(line, self)
-			if c.commandLine() != None:
-				#print c.commandLine()
-				
-				self.commandLine.append(c.commandLine())
-		
-		pass
+    def __init__(self, scriptlines, settingsDict):
+        assert type(scriptlines) == type([])
+        assert type(settingsDict) == type({})
+        self.fileMap = {}
+        self.env = settingsDict
+        self.lines = scriptlines
+        # save lines of output for each type of output.
+        # direct child output to /dev/null unless requested
+        self.outFd = os.devnull
+        self.popen = os.popen2
+        
+        # make commandlines from each scriptline
+        self.commands = []  # list of commands (inc. comments)
+        #WARN: commands is read by the command builder
+        self.commandLine = [] # list of commandlines (no comments)
+        for line in scriptlines:
+            c = Command(line, self)
+            self.commands.append(c) # append command, regardless of parsing
+            if c.commandLine() != None:
+                #print c.commandLine()
+                self.commandLine.append(c.commandLine())
+        
+        logit(self.depTreeToString()) # for debug...
 
-	## flexible result handling needs to be designed with
-	## multiple script lines in mind.
-	def getResultHandler(self, cmd):
-		"""returns a function f that has args: (stdout, filename)
-		"""
-		return 
+        pass
 
-	def stdoutHandler(self, stdout, filename):
-		pass
-	def outfileHandler(self, stdout, filename):
-		pass
-	
-	def shouldRemap(self, absName):
-		# return bool indicating whether this word should be xlated.
-		# keep simple for now: check a list.
-		# first, filter out %...% delimiters
-		if not (absName[0] == absName[-1] == ScriptingEnv.MAGIC_DELIM):
-			return False  # do not remap these.
-		symname = absName[1:-1] # clip ends
-		fields = string.split(symname, ScriptingEnv.CLASS_SEP)
-		if len(fields) == 2:
-			# check for tempname
-			if fields[0] == ScriptingEnv.CLASS_TEMP:
-				return True
-		return absName == ScriptingEnv.SCRIPT_OUTFILE
-	def processSpecial(self, absName):
-		redirTable = {ScriptingEnv.SCRIPT_STDOUTERR : os.popen4,
-			 ScriptingEnv.SCRIPT_STDOUT: os.popen2}
-		if absName in redirTable:
-			self.outFd = sys.stdout
-			self.popen = redirTable[absName]
-			return True
-		return False
-	def possibleFilename(self, cand):
-		elts = string.split(cand, ".")
+    ## flexible result handling needs to be designed with
+    ## multiple script lines in mind.
+    def getResultHandler(self, cmd):
+        """returns a function f that has args: (stdout, filename)
+        """
+        return 
 
-		if len(elts) != 2: #looking for something.ext
-			return False
-		if elts[1] != "nc": # only going to detect .nc
-			return False
-		if elts[0][0] == os.sep: # do not detect with leading /
-			return False
-		return True
-	
-	
-	def addAbsName(self, absName):
-		""" return a concrete name from an abstract name"""
-		if self.fileMap.has_key(absName):
-			return self.fileMap[absName][1] # reuse mapped name
-		alnum = string.letters + string.digits
-		fixName = ""
-		for i in absName:
-			if i in alnum: fixName += i
+    def stdoutHandler(self, stdout, filename):
+        pass
+    def outfileHandler(self, stdout, filename):
+        pass
+    
+    def shouldRemap(self, absName):
+        # return bool indicating whether this word should be xlated.
+        # keep simple for now: check a list.
+        # first, filter out %...% delimiters
+        if not (absName[0] == absName[-1] == ScriptingEnv.MAGIC_DELIM):
+            return False  # do not remap these.
+        symname = absName[1:-1] # clip ends
+        fields = string.split(symname, ScriptingEnv.CLASS_SEP)
+        if len(fields) == 2:
+            # check for tempname
+            if fields[0] == ScriptingEnv.CLASS_TEMP:
+                return True
+        return absName == ScriptingEnv.SCRIPT_OUTFILE
+    def processSpecial(self, absName):
+        redirTable = {ScriptingEnv.SCRIPT_STDOUTERR : os.popen4,
+             ScriptingEnv.SCRIPT_STDOUT: os.popen2}
+        if absName in redirTable:
+            self.outFd = sys.stdout
+            self.popen = redirTable[absName]
+            return True
+        return False
+    def possibleFilename(self, cand):
+        elts = string.split(cand, ".")
 
-		filepair = tempfile.mkstemp( ScriptingEnv.NC_SUFFIX,
-					    fixName,
-					    self.env["tempdir"] )
-		# filepair = (descriptor, tempfilename)
-		self.fileMap[absName] = filepair
-		# close the file, so the nco util can touch it
-		os.close(filepair[0])
-		return filepair[1]
-	
-	def execute(self):
-		self.clearTemps()
-		logflush()
-		#print "about to execute..."
-		for l in self.commandLine:
-			print l
-			pass
-		# check to make sure we don't have both an output file and outstderr
-		# make sure we're doing exactly one thing with our output
-		havefile = self.fileMap.has_key(ScriptingEnv.SCRIPT_OUTFILE)
-		outbypass = (self.outFd != os.devnull)
-		assert havefile ^ outbypass
-		
-		
-		for l in self.commandLine:
-			#(sin,sout) = os.popen2(l)
-			(sin,sout) = self.popen(l)  # use the mapped popen
-			sin.close() # close the input, so it flushes
-			#out handle is now ready to be read.
-			#for x in sout:
-			#	self.outStream.append(x)
-			#	logit( "execution output: " + x)
-			# skip logging the output, and just dump to outstream.
-			shutil.copyfileobj(sout, self.outFd)
-		pass
-	def returnOutput(self, targetfd):
-		# if we have an output...
-		if not self.fileMap.has_key(ScriptingEnv.SCRIPT_OUTFILE):
-			return  # already returned console out during exec.
+        if len(elts) != 2: #looking for something.ext
+            return False
+        if elts[1] != "nc": # only going to detect .nc
+            return False
+        if elts[0][0] == os.sep: # do not detect with leading /
+            return False
+        return True
+    
+    
+    def addAbsName(self, absName):
+        """ return a concrete name from an abstract name"""
+        if self.fileMap.has_key(absName):
+            return self.fileMap[absName][1] # reuse mapped name
+        alnum = string.letters + string.digits
+        fixName = ""
+        for i in absName:
+            if i in alnum: fixName += i
 
-		oname = self.fileMap[ScriptingEnv.SCRIPT_OUTFILE][1]
-		
-		if(local.disableHTTP):
-			self.rawWrite(oname, targetfd)
-		else:
-			self.httpWrite(oname, targetfd)
-		pass
+        filepair = tempfile.mkstemp( ScriptingEnv.NC_SUFFIX,
+                        fixName,
+                        self.env["tempdir"] )
+        # filepair = (descriptor, tempfilename)
+        self.fileMap[absName] = filepair
+        # close the file, so the nco util can touch it
+        os.close(filepair[0])
+        return filepair[1]
+    
+    def execute(self):
+        self.clearTemps()
+        logflush()
+        #print "about to execute..."
+        for l in self.commandLine:
+            #print l
+            pass
+        # check to make sure we don't have both an output file and outstderr
+        # make sure we're doing exactly one thing with our output
+        havefile = self.fileMap.has_key(ScriptingEnv.SCRIPT_OUTFILE)
+        outbypass = (self.outFd != os.devnull)
+        assert havefile ^ outbypass
+        
+        
+        for l in self.commandLine:
+            #(sin,sout) = os.popen2(l)
+            (sin,sout) = self.popen(l)  # use the mapped popen
+            sin.close() # close the input, so it flushes
+            #out handle is now ready to be read.
+            #for x in sout:
+            #   self.outStream.append(x)
+            #   logit( "execution output: " + x)
+            # skip logging the output, and just dump to outstream.
+            shutil.copyfileobj(sout, self.outFd)
+        pass
+    def depTreeToString(self):
+        out = "Script dependency digraph: \n"
+        for x in self.commands:
+            for c in x.children():
+                # find shared input and output
+                inputs = c.inputs()
+                for o in x.outputs():
+                    if o in inputs:
+                        label = " [ label = \"" + o + "\" ]"
+                        out +=  x.myName + " -> " + c.myName + label + ";\n"
+        return out
+        
+    def returnOutput(self, targetfd):
+        # if we have an output...
+        if not self.fileMap.has_key(ScriptingEnv.SCRIPT_OUTFILE):
+            return  # already returned console out during exec.
 
-	def rawWrite(self, srcfilename, targetfd):
-		result = open(srcfilename)
-		shutil.copyfileobj(result, targetfd)
-		result.close()
-	def httpWrite(self, srcfilename, targetfd):
-		print >> targetfd, "HTTP/1.0 200 OK"
-		print >> targetfd, "Xssdap-server: 0.1"
-		print >> targetfd, "Date: " + time.ctime()
-		print >> targetfd, "Content-type: application/x-netcdf"
-		print >> targetfd, ""
-		self.rawWrite(srcfilename, targetfd)
-	def clearTemps(self):
-		#logit("tempdir is " + str(os.listdir(self.env["tempdir"])))
-		for key in self.fileMap:
-			# if the file exists, and we can write it,
-			# kill it to clean up.
-			(fd,fname) = self.fileMap[key]
-			if os.access(fname, os.F_OK | os.W_OK):
-				os.remove(fname)
-			else:
-				logit("I couldn't delete " + str(fname))
-		pass
+        oname = self.fileMap[ScriptingEnv.SCRIPT_OUTFILE][1]
+        
+        if(local.disableHTTP):
+            self.rawWrite(oname, targetfd)
+        else:
+            self.httpWrite(oname, targetfd)
+        pass
 
-	def __del__(self):
-		"""some cleanup for the scripting environment"""
-		## we should get rid of temp files, like a good citizen
-		## this might be modified if we introduce caching
-		self.clearTemps()
-	pass
+    def rawWrite(self, srcfilename, targetfd):
+        result = open(srcfilename)
+        shutil.copyfileobj(result, targetfd)
+        result.close()
+    def httpWrite(self, srcfilename, targetfd):
+        print >> targetfd, "HTTP/1.0 200 OK"
+        print >> targetfd, "Xssdap-server: 0.1"
+        print >> targetfd, "Date: " + time.ctime()
+        print >> targetfd, "Content-type: application/x-netcdf"
+        print >> targetfd, ""
+        self.rawWrite(srcfilename, targetfd)
+    def clearTemps(self):
+        #logit("tempdir is " + str(os.listdir(self.env["tempdir"])))
+        for key in self.fileMap:
+            # if the file exists, and we can write it,
+            # kill it to clean up.
+            (fd,fname) = self.fileMap[key]
+            if os.access(fname, os.F_OK | os.W_OK):
+                os.remove(fname)
+            else:
+                logit("I couldn't delete " + str(fname))
+        pass
+
+    def __del__(self):
+        """some cleanup for the scripting environment"""
+        ## we should get rid of temp files, like a good citizen
+        ## this might be modified if we introduce caching
+        self.clearTemps()
+    pass
 
 
-	
+    
 class FrontEnd:
-	# put in url .../foo.nc.dods?superduperscript11"
-	MAGIC_CONSTRAINT = "superduperscript11"
-	# use in script to indicate what file should be sent back.
+    # put in url .../foo.nc.dods?superduperscript11"
+    MAGIC_CONSTRAINT = "superduperscript11"
+    # use in script to indicate what file should be sent back.
 
-	def __init__(self, sysargs):
-		# -d and -f options are supposed to be deprecated
-		self.shortopts = "Lcd:r:o:e:f:l:u:v:"
-		self.args = {}
-		self.originalargs = sysargs
-		self.env = {}
-		#print sys.argv
+    def __init__(self, sysargs):
+        # -d and -f options are supposed to be deprecated
+        self.shortopts = "Lcd:r:o:e:f:l:u:v:"
+        self.args = {}
+        self.originalargs = sysargs
+        self.env = {}
+        #print sys.argv
 
-		parsed =  getopt.getopt(sysargs[1:], self.shortopts)
-		self.nonpars = []
-		self.newp = []
-		if parsed[1] != []:
-			#logit( "nonparseable avail."+str(parsed[1]))
-			nonpars = parsed[1][0]
-			newp = getopt.getopt(parsed[1][1:],self.shortopts)
-			newp = newp[0]
-		else:
-			nonpars = ""
-			newp = []
-		#print "here it comes"
-		for i in parsed[0]:
-			#print i
-			#logfile.write(str(i)+"\n")
-			self.args[i[0]] = i[1]
-		#print " and fixed is ", nonpars
-		#logfile.write(str(nonpars)+"\n")
-		self.args["-realfile"] = nonpars
+        parsed =  getopt.getopt(sysargs[1:], self.shortopts)
+        self.nonpars = []
+        self.newp = []
+        if parsed[1] != []:
+            #logit( "nonparseable avail."+str(parsed[1]))
+            nonpars = parsed[1][0]
+            newp = getopt.getopt(parsed[1][1:],self.shortopts)
+            newp = newp[0]
+        else:
+            nonpars = ""
+            newp = []
+        #print "here it comes"
+        for i in parsed[0]:
+            #print i
+            #logfile.write(str(i)+"\n")
+            self.args[i[0]] = i[1]
+        #print " and fixed is ", nonpars
+        #logfile.write(str(nonpars)+"\n")
+        self.args["-realfile"] = nonpars
 
-		for i in newp:
-			#print i
-			#logfile.write(str(i)+"\n")
-			self.args[i[0]] = i[1]
-		#print self.args
+        for i in newp:
+            #print i
+            #logfile.write(str(i)+"\n")
+            self.args[i[0]] = i[1]
+        #print self.args
 
-		#logit( str(self.args))
-#		for x in  os.environ: #.get("LD_LIBRARY_PATH")
-	#		print x
-	
-		pass
-	def accessmode(self):
-		if "-o" not in self.args:
-			return "helpmode"
-		return self.args["-o"]
-	def passthrough(self):
-		""" this should bounce the call to the default opendap netcdf handler"""
-		newargs = [local.passthroughPath] + self.originalargs[1:]
-		newline = ""
-		## need to substitute null strings to provide null -e option
-		for x in newargs:
-			if x == "": newline += "\"\" "
-			else: newline += x + " "
-		logit( "Bouncing from: " + str(self.originalargs[0]))
-		logit( "Executing: " + newline)
-		(sin,sout) = os.popen2(newline)
-		# copy our stdin to the process
-#		if sys.stdin.isatty():
-#			shutil.copyfileobj(sys.stdin, sin)
-		shutil.copyfileobj(sout, sys.stdout)
+        #logit( str(self.args))
+#       for x in  os.environ: #.get("LD_LIBRARY_PATH")
+    #       print x
+    
+        pass
+    def accessmode(self):
+        if "-o" not in self.args:
+            return "helpmode"
+        return self.args["-o"]
+    def passthrough(self):
+        """ this should bounce the call to the default opendap netcdf handler"""
+        newargs = [local.passthroughPath] + self.originalargs[1:]
+        newline = ""
+        ## need to substitute null strings to provide null -e option
+        for x in newargs:
+            if x == "": newline += "\"\" "
+            else: newline += x + " "
+        logit( "Bouncing from: " + str(self.originalargs[0]))
+        logit( "Executing: " + newline)
+        (sin,sout) = os.popen2(newline)
+        # copy our stdin to the process
+#       if sys.stdin.isatty():
+#           shutil.copyfileobj(sys.stdin, sin)
+        shutil.copyfileobj(sout, sys.stdout)
 
-	def argReport(args):
-		report = ""
-		report += "scratch space loc(-r): " + self.args["-r"] + "\n"
-		report += "originalurl(-u): " + self.args["-u"] + "\n"
+    def argReport(args):
+        report = ""
+        report += "scratch space loc(-r): " + self.args["-r"] + "\n"
+        report += "originalurl(-u): " + self.args["-u"] + "\n"
 
-		report += "realfile? " + self.args["-realfile"] + "\n"
-		report += "compression? " + ["nope","requested"][bool(self.args.has_key("-c"))] + "\n"
-		report += "requestor: " + self.args["-v"] + "\n"
-		if "-e" in self.args:
-			report += "constraint: " + self.args["-e"] + "\n"
-		else: report += "constraint: no\n"
-		return report
+        report += "realfile? " + self.args["-realfile"] + "\n"
+        report += "compression? " + ["nope","requested"][bool(self.args.has_key("-c"))] + "\n"
+        report += "requestor: " + self.args["-v"] + "\n"
+        if "-e" in self.args:
+            report += "constraint: " + self.args["-e"] + "\n"
+        else: report += "constraint: no\n"
+        return report
 
-	def runhacked(self):
-		"""this is where we should go ahead and run the script that we got passed."""
-		
-		if "-e" in self.args:
-			if "-u" not in self.args:
-				self.passthrough()
-				return
-			else:
-				# logit(argReport(self.args))
-				if self.args["-e"] == FrontEnd.MAGIC_CONSTRAINT:
-					#logit("stdin = tty?" + str(sys.stdin.isatty()))
-					self.readScript()
-					self.runScript()
-					return
-		self.passthrough()  ## passthrough everything else.
+    def runhacked(self):
+        """this is where we should go ahead and run the script that we got passed."""
+        
+        if "-e" in self.args:
+            if "-u" not in self.args:
+                self.passthrough()
+                return
+            else:
+                # logit(argReport(self.args))
+                if self.args["-e"] == FrontEnd.MAGIC_CONSTRAINT:
+                    #logit("stdin = tty?" + str(sys.stdin.isatty()))
+                    self.readScript()
+                    self.runScript()
+                    return
+        self.passthrough()  ## passthrough everything else.
 
-	def printusage(self):
-		print """
-		This script is to be called by an opendap
-		installation.  Ask a developer for more info."""
-		
-		
+    def printusage(self):
+        print """
+        This script is to be called by an opendap
+        installation.  Ask a developer for more info."""
+        
+        
 
-	def execute(self):
-		jumptable={'dods' : self.runhacked,
-			   'DODS' : self.runhacked,
-			   'das' :  self.passthrough,
-			   'DAS' :  self.passthrough,
-			   'dds' :  self.passthrough,
-			   'DDS' :  self.passthrough,
-			   'DDX' :  self.passthrough,
-			   'BLOB':  self.passthrough,
-			   'Version': self.passthrough,
-			   'helpmode': self.printusage
-			   }
-		jumptable[self.accessmode()]()  ## make the call
-		pass
-	def readScript(self):
-		""" reads in stdin as script input"""
-		lines = []
-		for i in sys.stdin:
-			lines += [i] ## [] to put lines (not chars) in the list
-			
-		#logit( "we got POST data: \n"+str(lines))
-		self.scriptlines = lines
-		pass
-	def runScript(self):
-		self.env["tempdir"] = self.args["-r"]
-		(filepath, filename) = os.path.split(self.args["-realfile"])
-		
-		self.env["defpath"] = filepath # use for default path.
-		self.env["requestedfile"] = filename  #not sure we need this
+    def execute(self):
+        jumptable={'dods' : self.runhacked,
+               'DODS' : self.runhacked,
+               'das' :  self.passthrough,
+               'DAS' :  self.passthrough,
+               'dds' :  self.passthrough,
+               'DDS' :  self.passthrough,
+               'DDX' :  self.passthrough,
+               'BLOB':  self.passthrough,
+               'Version': self.passthrough,
+               'helpmode': self.printusage
+               }
+        jumptable[self.accessmode()]()  ## make the call
+        pass
+    def readScript(self):
+        """ reads in stdin as script input"""
+        lines = []
+        for i in sys.stdin:
+            lines += [i] ## [] to put lines (not chars) in the list
+            
+        #logit( "we got POST data: \n"+str(lines))
+        self.scriptlines = lines
+        pass
+    def runScript(self):
+        self.env["tempdir"] = self.args["-r"]
+        (filepath, filename) = os.path.split(self.args["-realfile"])
+        
+        self.env["defpath"] = filepath # use for default path.
+        self.env["requestedfile"] = filename  #not sure we need this
 
-		(urlpath, ufilename) = os.path.split(self.args["-u"])
-		assert filename == ufilename
-		for x in range(1,len(filepath)):
-			pass
-			
-		#self.env["local"] = "true"
-		scriptenv = ScriptingEnv(self.scriptlines, self.env)
-		scriptenv.execute()
-		scriptenv.returnOutput(sys.stdout)
-		pass
-		
+        (urlpath, ufilename) = os.path.split(self.args["-u"])
+        assert filename == ufilename
+        for x in range(1,len(filepath)):
+            pass
+            
+        #self.env["local"] = "true"
+        scriptenv = ScriptingEnv(self.scriptlines, self.env)
+        scriptenv.execute() #####
+        #print "Skipping real execution for now"
+        scriptenv.returnOutput(sys.stdout)
+        pass
+        
 
 
 settings = FrontEnd(sys.argv)

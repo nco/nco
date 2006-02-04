@@ -13,7 +13,7 @@ import urllib
 # Report option passing problems so I can fix this.  Not all nco
 # commands have been tested.
 #
-# version info: $Id: ssdwrap.py,v 1.2 2006-01-28 00:49:45 wangd Exp $
+# version info: $Id: ssdwrap.py,v 1.3 2006-02-04 01:11:18 wangd Exp $
 ########################################################################
 
 
@@ -29,6 +29,33 @@ acceptableNcCommands = ["ncap", "ncatted", "ncbo", "ncdiff",
                         "ncrename", "ncunpack", "ncwa"]
 # should probably do some basic sanity check on the options
 
+
+# this class should stay identical in client/server.  If it gets big,
+# we should split it into some python module to be imported.
+class SsdapCommon:
+    """stuff that should be identical between client and server code"""
+    parserShortOpt = "4AaBb:CcD:d:FfHhl:Mmn:Oo:Pp:QqRrs:S:s:t:uv:xy:"
+    parserLongOpt = ["4", "netcdf4", "apn", "append",
+                     "abc", "alphabetize", "bnr", "binary",
+                     "fl_bnr=", "binary-file=",
+                     "crd", "coords",
+                     "nocoords", "dbg_lvl=", "debug-level=",
+                     "dmn=", "dimension=", "ftn", "fortran",
+                     "huh", "hmm",
+                     "fnc_tbl", "prn_fnc_tbl", "hst", "history",
+                     "Mtd", "Metadata", "mtd", "metadata",
+                     "lcl=", "local=", "nintap", 
+                     "output=", "fl_out=",
+                     "ovr", "overwrite", "prn", "print", "quiet",
+                     "pth=", "path=",
+                     "rtn", "retain", "revision", "vrs", "version",
+                     "spt=", "script=", "fl_spt=", "script-file=",
+                     "sng_fmt=", "string=",
+                     "thr_nbr=", "threads=", "omp_num_threads=",
+                     "xcl", "exclude"
+                     "variable=", "op_typ=", "operation=" ] 
+    pass
+
 class Command:
     def __init__(self, cmd, argvlist):
         """construct a command, which is a primitive-ish operation
@@ -41,20 +68,9 @@ class Command:
         """look for output filename, replace with magic key for remote"""
         # some of these options do not make sense in this context,
         # and some have meanings that necessarily need changing.
-        shortopts = "4ACcD:d:Ffhl:n:Oo:p:Rrs:S:t:v:xy:"
-        longopts = ["4", "netcdf4", "apn", "append", "crd", "coords",
-                    "nocoords", "dbg_lvl=", "debug-level=",
-                    "dmn=", "dimension=", "ftn", "fortran",
-                    "fnc_tbl", "prn_fnc_tbl", "hst", "history",
-                    "lcl=", "local=", "nintap", 
-                    "output=", "fl_out=",
-                    "ovr", "overwrite", "pth=", "path=",
-                    "rtn", "retain", "revision", "vrs", "version",
-                    "spt=", "script=", "fl_spt=", "script-file=",
-                    "thr_nbr=", "threads=", "omp_num_threads=",
-                    "xcl", "exclude"
-                    "variable=", "op_typ=", "operation=" ]
-        (arglist, leftover) = getopt.getopt(argvlist, shortopts, longopts)
+        shortopts = SsdapCommon.parserShortOpt
+        longopts =  SsdapCommon.parserLongOpt
+        (arglist, leftover) = getopt.getopt(argvlist,shortopts, longopts)
         argdict = dict(arglist)
         ofname = ""
         if "--output" in argdict:
