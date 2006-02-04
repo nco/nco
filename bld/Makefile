@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.355 2006-02-03 01:59:55 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.356 2006-02-04 06:52:42 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -1268,7 +1268,7 @@ mpnco:   mpi_nco
 mpi_nco:   ${MDL_MPI_TRG}
 mpncbo:   ${MY_BIN_DIR}/mpncbo
 ${MY_BIN_DIR}/mpncbo:	${MY_OBJ_DIR}/mpncbo.o lib
-	${MPICC} -o $@ $< ${LDFLAGS}
+	${MPICC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f mpncdiff; ln -s -f mpncbo mpncdiff
 # 20050710: icc 8.1 with -axW flag dies compiling ncecat
@@ -1281,68 +1281,68 @@ endif # !MPI_FAKE
 endif # endif Intel (Kai) C Compiler
 mpncecat:   ${MY_BIN_DIR}/mpncecat
 ${MY_BIN_DIR}/mpncecat:	${MY_OBJ_DIR}/mpncecat.o lib
-	${MPICC} -o $@ $< ${LDFLAGS}
+	${MPICC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 mpncflint:   ${MY_BIN_DIR}/mpncflint
 ${MY_BIN_DIR}/mpncflint:	${MY_OBJ_DIR}/mpncflint.o lib
-	${MPICC} -o $@ $< ${LDFLAGS}
+	${MPICC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 mpncpdq:   ${MY_BIN_DIR}/mpncpdq
 ${MY_BIN_DIR}/mpncpdq:	${MY_OBJ_DIR}/mpncpdq.o lib
-	${MPICC} -o $@ $< ${LDFLAGS}
+	${MPICC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 #	cd ${MY_BIN_DIR}; rm -f mpncunpack; ln -s -f mpncpdq mpncunpack
 #	cd ${MY_BIN_DIR}; rm -f mpncpack; ln -s -f mpncpdq mpncpack
 mpncra:   ${MY_BIN_DIR}/mpncra
 ${MY_BIN_DIR}/mpncra:	${MY_OBJ_DIR}/mpncra.o lib
-	${MPICC} -o $@ $< ${LDFLAGS}
+	${MPICC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f mpncea; ln -s -f mpncra mpncea
 	cd ${MY_BIN_DIR}; rm -f mpncrcat; ln -s -f mpncra mpncrcat
 mpncwa:   ${MY_BIN_DIR}/mpncwa
 ${MY_BIN_DIR}/mpncwa:	${MY_OBJ_DIR}/mpncwa.o ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o lib
-	${MPICC} -o $@ $<  ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o ${LDFLAGS}
+	${MPICC} -o $@${BNR_SFX} $<  ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 ncatted:   ${MY_BIN_DIR}/ncatted
 ${MY_BIN_DIR}/ncatted:	${MY_OBJ_DIR}/ncatted.o lib
-	${CC} -o $@ $< ${LDFLAGS}
+	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 ncbo:   ${MY_BIN_DIR}/ncbo
 ${MY_BIN_DIR}/ncbo:	${MY_OBJ_DIR}/ncbo.o lib
-	${CC} -o $@ $< ${LDFLAGS}
+	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f ncdiff; ln -s -f ncbo ncdiff
 ncecat:   ${MY_BIN_DIR}/ncecat
 ${MY_BIN_DIR}/ncecat:	${MY_OBJ_DIR}/ncecat.o lib
-	${CC} -o $@ $< ${LDFLAGS}
+	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 ncflint:   ${MY_BIN_DIR}/ncflint
 ${MY_BIN_DIR}/ncflint:	${MY_OBJ_DIR}/ncflint.o lib
-	${CC} -o $@ $< ${LDFLAGS}
+	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 ncks:   ${MY_BIN_DIR}/ncks
 ${MY_BIN_DIR}/ncks:	${MY_OBJ_DIR}/ncks.o lib
-	${CC} -o $@ $< ${LDFLAGS}
+	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 ncpdq:   ${MY_BIN_DIR}/ncpdq
 ${MY_BIN_DIR}/ncpdq:	${MY_OBJ_DIR}/ncpdq.o lib
-	${CC} -o $@ $< ${LDFLAGS}
+	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f ncunpack; ln -s -f ncpdq ncunpack
 	cd ${MY_BIN_DIR}; rm -f ncpack; ln -s -f ncpdq ncpack
 ncra:   ${MY_BIN_DIR}/ncra
 ${MY_BIN_DIR}/ncra:	${MY_OBJ_DIR}/ncra.o lib
-	${CC} -o $@ $< ${LDFLAGS}
+	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f ncea; ln -s -f ncra ncea
 	cd ${MY_BIN_DIR}; rm -f ncrcat; ln -s -f ncra ncrcat
 ncrename:   ${MY_BIN_DIR}/ncrename
 ${MY_BIN_DIR}/ncrename:	${MY_OBJ_DIR}/ncrename.o lib
-	${CC} -o $@ $< ${LDFLAGS}
+	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 ncwa:   ${MY_BIN_DIR}/ncwa
 ${MY_BIN_DIR}/ncwa:	${MY_OBJ_DIR}/ncwa.o ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o lib
-	${CC} -o $@ $<  ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o ${LDFLAGS}
+	${CC} -o $@${BNR_SFX} $<  ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 bin: ${MDL_BIN_TRG}
 binclean: bin_cln
@@ -1365,11 +1365,11 @@ libtest:	libtst
 libtst:	libnco_tst libnco_c++_tst
 libnco_tst:   ${MY_BLD_DIR}/libnco_tst
 ${MY_BLD_DIR}/libnco_tst:	${MY_BLD_DIR}/libnco_tst.o lib
-	${CC} -o $@ $< ${LDFLAGS}
+	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 libnco_c++_tst:   ${MY_BLD_DIR}/libnco_c++_tst
 ${MY_BLD_DIR}/libnco_c++_tst:	${MY_BLD_DIR}/libnco_c++_tst.o lib
-	${CXX} -o $@ $< ${LDFLAGS}
+	${CXX} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 rpm:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.5.1 rpm
 	cd ${DATA}/tmp; \

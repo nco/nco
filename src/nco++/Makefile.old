@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.5 2006-02-04 06:31:29 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.6 2006-02-04 06:52:42 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -212,6 +212,12 @@ slash := /
 MY_OBJ_DIR_RX := $(subst ${slash},${slash_rx},${MY_OBJ_DIR})
 MY_DPN_DIR_RX := $(subst ${slash},${slash_rx},${MY_DPN_DIR})
 
+ifeq (${PVM_ARCH},WIN32)
+ BNR_SFX := .exe
+else
+ BNR_SFX := ${null}
+endif 
+
 # Automagically generated grammar
 NCAP2_ANTLR_GENERATED_CC_STB := ncoLexer ncoParser ncoTree
 NCAP2_ANTLR_GENERATED_HH_STB := ${NCAP2_ANTLR_GENERATED_CC_STB} ncoParserTokenTypes
@@ -220,6 +226,7 @@ NCAP2_ANTLR_GENERATED_CPP := $(addsuffix .cpp, $(basename ${NCAP2_ANTLR_GENERATE
 NCAP2_ANTLR_GENERATED_HH := $(addsuffix .hh, $(basename ${NCAP2_ANTLR_GENERATED_HH_STB})) 
 NCAP2_ANTLR_GENERATED_HPP := $(addsuffix .hpp, $(basename ${NCAP2_ANTLR_GENERATED_HH_STB})) 
 NCAP2_ANTLR_GENERATED_OBJ := $(addprefix ${MY_OBJ_DIR}/,$(addsuffix .o, $(basename ${NCAP2_ANTLR_GENERATED_CC_STB})))
+NCAP2_ANTLR_GENERATED_TXT := ncoParserTokenTypes.txt
 
 # Directories to search for source files
 MDL_PTH := ./ ${MY_SRC_DIR}
@@ -1057,8 +1064,8 @@ obj_dir :
 NCAP2_OBJ := ${MY_OBJ_DIR}/ncap2.o ${NCAP2_ANTLR_GENERATED_OBJ}
 ncap2:	${MY_BIN_DIR}/ncap2
 ${MY_BIN_DIR}/ncap2:	${NCAP2_OBJ} lib antlr_grammar
-	${CXX} -o $@ ${NCAP2_OBJ} ${LDFLAGS} -L${ANTLR_LIB} -lantlr
-	chmod 755 $@
+	${CXX} -o $@${BNR_SFX} ${NCAP2_OBJ} ${LDFLAGS} -L${ANTLR_LIB} -lantlr
+	chmod 755 $@${BNR_SFX}
 
 bin : ${MDL_BIN_TRG}
 bin_cln: 
@@ -1104,15 +1111,23 @@ obj_cln :
 	mv $< $(basename $<).hh
 %.cc : %.cpp
 	mv $< $(basename $<).cc
-
+# fxm: change to common dependency rule
 ncoLexer.cpp : ncoGrammer.g
 	${ANTLR} ncoGrammer.g
 ncoLexer.o : ncoLexer.cpp ncoLexer.hpp
 	${ANTLR} ncoGrammer.g
+ncoParser.cpp : ncoGrammer.g
+	${ANTLR} ncoGrammer.g
+ncoParser.o : ncoParser.cpp ncoParser.hpp
+	${ANTLR} ncoGrammer.g
+ncoTree.cpp : ncoGrammer.g
+	${ANTLR} ncoGrammer.g
+ncoTree.o : ncoTree.cpp ncoTree.hpp
+	${ANTLR} ncoGrammer.g
 antlr_grammar:	ncoGrammer.g
 	${ANTLR} ncoGrammer.g
 src_cln :
-	rm -f ${NCAP2_ANTLR_GENERATED_CPP} ${NCAP2_ANTLR_GENERATED_HPP}
+	rm -f ${NCAP2_ANTLR_GENERATED_CPP} ${NCAP2_ANTLR_GENERATED_HPP} ${NCAP2_ANTLR_GENERATED_TXT}
 # Housekeeping
 clean : cln
 cln : dat_cln dpn_cln obj_cln
