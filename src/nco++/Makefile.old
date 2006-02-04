@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.4 2006-02-03 01:59:56 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.5 2006-02-04 06:31:29 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -67,6 +67,9 @@ ifndef ${ABI}
 # 32 vs. 64 bit ABI: 32=32 bit mode (default), 64=64 bit mode if available
  ABI := 64
 endif # endif ABI
+ifndef ANTLR
+ ANTLR := runantlr
+endif
 ifndef ANTLR_ROOT
  ANTLR_ROOT := /usr/local
 endif
@@ -216,15 +219,16 @@ NCAP2_ANTLR_GENERATED_CC := $(addsuffix .cc, $(basename ${NCAP2_ANTLR_GENERATED_
 NCAP2_ANTLR_GENERATED_CPP := $(addsuffix .cpp, $(basename ${NCAP2_ANTLR_GENERATED_CC_STB})) 
 NCAP2_ANTLR_GENERATED_HH := $(addsuffix .hh, $(basename ${NCAP2_ANTLR_GENERATED_HH_STB})) 
 NCAP2_ANTLR_GENERATED_HPP := $(addsuffix .hpp, $(basename ${NCAP2_ANTLR_GENERATED_HH_STB})) 
+NCAP2_ANTLR_GENERATED_OBJ := $(addprefix ${MY_OBJ_DIR}/,$(addsuffix .o, $(basename ${NCAP2_ANTLR_GENERATED_CC_STB})))
 
 # Directories to search for source files
 MDL_PTH := ./ ${MY_SRC_DIR}
 # Find all C and C++ files in given directory
-FIND_FNC = $(wildcard ${dir}/*.cpp ${dir}/*.cc ${dir}/*.c)
+FIND_FNC = $(wildcard ${dir}/*.cc ${dir}/*.c)
 # Assemble source files from all directories
 SRC_LST = $(foreach dir, ${MDL_PTH},$(FIND_FNC))
 # Source file names with directories removed
-MDL_SRC := $(notdir $(SRC_LST))
+MDL_SRC := $(notdir $(SRC_LST)) ${NCAP2_ANTLR_GENERATED_CPP}
 # Directories to search for source files
 MDL_PTH := . ../nco
 # Dependency list for executable
@@ -1050,20 +1054,9 @@ obj_dir :
 	- if ! test -d ${MY_OBJ_DIR}; then mkdir ${MY_OBJ_DIR}; fi
 
 # Targets in bin
-%.hh : %.hpp
-	mv $< $(basename $<).hh
-%.cc : %.cpp
-	mv $< $(basename $<).cc
-
-ncoParserTokenTypes.hpp : ncoGrammer.g
-	${ANTLR} ncoGrammer.g
-
-antlr_grammar:	ncoGrammer.g
-	${ANTLR} ncoGrammer.g
-
-NCAP2_OBJ := ${MY_OBJ_DIR}/ncap2.o
-ncap2:	lib ${MY_BIN_DIR}/ncap2 antlr_grammar
-${MY_BIN_DIR}/ncap2:	${NCAP2_OBJ}
+NCAP2_OBJ := ${MY_OBJ_DIR}/ncap2.o ${NCAP2_ANTLR_GENERATED_OBJ}
+ncap2:	${MY_BIN_DIR}/ncap2
+${MY_BIN_DIR}/ncap2:	${NCAP2_OBJ} lib antlr_grammar
 	${CXX} -o $@ ${NCAP2_OBJ} ${LDFLAGS} -L${ANTLR_LIB} -lantlr
 	chmod 755 $@
 
@@ -1106,7 +1099,20 @@ lib_cln :
 obj : ${MDL_OBJ}
 obj_cln :
 	rm -f ${MDL_OBJ}
+# Targets in src
+%.hh : %.hpp
+	mv $< $(basename $<).hh
+%.cc : %.cpp
+	mv $< $(basename $<).cc
 
+ncoLexer.cpp : ncoGrammer.g
+	${ANTLR} ncoGrammer.g
+ncoLexer.o : ncoLexer.cpp ncoLexer.hpp
+	${ANTLR} ncoGrammer.g
+antlr_grammar:	ncoGrammer.g
+	${ANTLR} ncoGrammer.g
+src_cln :
+	rm -f ${NCAP2_ANTLR_GENERATED_CPP} ${NCAP2_ANTLR_GENERATED_HPP}
 # Housekeeping
 clean : cln
 cln : dat_cln dpn_cln obj_cln
@@ -1154,7 +1160,7 @@ dbg:
 	@printf "VPATH = ${VPATH}\n"
 	@printf "VRS_SNG = ${VRS_SNG}\n"
 distclean : dst_cln
-dst_cln : cln bld_cln lib_cln
+dst_cln : cln bld_cln lib_cln src_cln
 install : inc 
 tags : 
 	etags *.cpp *.cc *.c *.com *.F *.F90 *.h *.hh *.hpp Makefile
