@@ -3,10 +3,10 @@
 #include "ncoParserTokenTypes.hpp"
 
 template<class T>
-class VarOp {
+class VarOp: public ncoParserTokenTypes {
 
-private:
-  struct ncoParserTokenTypes TT;
+  //private:
+  //struct ncoParserTokenTypes TT;
 
 public:
   VarOp() {;}
@@ -48,7 +48,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
  
     switch(op) {
 
-      case TT.PLUS:
+      case PLUS:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]+=tp2[idx];
 	}else{
@@ -59,7 +59,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	}  
         break;
       
-      case TT.MINUS:
+      case MINUS:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]-=tp2[idx];
 	}else{
@@ -71,7 +71,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 
         break;
       
-      case TT.TIMES:
+      case TIMES:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]*=tp2[idx];
 	}else{
@@ -83,7 +83,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 
         break;
 
-      case TT.DIVIDE:
+      case DIVIDE:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx] /= tp2[idx];
 	}else{
@@ -96,17 +96,17 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 
         break;
 
-      case TT.MOD:
+      case MOD:
 	// deal with else-where - can't template this function
         break;
 
-      case TT.CARET:
+      case CARET:
 	// deal with else-where - can't template this function
         break;
 
 	// Logical & Comparison Operators
 
-      case TT.LAND:
+      case LAND:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]=tp1[idx] &&  tp2[idx];
 	}else{
@@ -117,7 +117,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	}  
         break;
 
-      case TT.LOR:
+      case LOR:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]=tp1[idx] ||  tp2[idx];
 	}else{
@@ -128,7 +128,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	}  
         break;
 
-      case TT.LTHAN:
+      case LTHAN:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]=tp1[idx] < tp2[idx];
 	}else{
@@ -139,7 +139,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	}  
         break;
 
-      case TT.GTHAN:
+      case GTHAN:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]=tp1[idx] > tp2[idx];
 	}else{
@@ -150,7 +150,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	}  
         break;
 
-      case TT.GEQ:
+      case GEQ:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]=tp1[idx] >= tp2[idx];
 	}else{
@@ -161,7 +161,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	}  
         break;
 
-      case TT.LEQ:
+      case LEQ:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]=tp1[idx] <= tp2[idx];
 	}else{
@@ -172,7 +172,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	}  
         break;
 
-      case TT.EQ:
+      case EQ:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]=tp1[idx] == tp2[idx];
 	}else{
@@ -183,7 +183,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	}  
         break;
 
-      case TT.NEQ:
+      case NEQ:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]=tp1[idx] != tp2[idx];
 	}else{
@@ -222,11 +222,11 @@ var_sct*  VarOp<T>::var_op(var_sct* var1, int op) {
     switch(op) {
 
 
-      case TT.PLUS:
+      case PLUS:
       // Do nothing
         break;
       
-      case TT.MINUS:
+      case MINUS:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]*=-1;
 	}else{
@@ -236,7 +236,7 @@ var_sct*  VarOp<T>::var_op(var_sct* var1, int op) {
 	}
         break;
        
-    case TT.LNOT: 	
+    case LNOT: 	
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]=!tp1[idx];
 	}else{
