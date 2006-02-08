@@ -20,8 +20,6 @@ int switchboard(RefAST t,ncoTree &walker);
 
 struct ncoParserTokenTypes TokenTypes;
 
-
-
 int parse_antlr(prs_sct *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
 {
 

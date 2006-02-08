@@ -1,3 +1,7 @@
+2006-02-07  Charlie Zender  <zender@uci.edu>
+
+	* Remove redundant antlr actions
+
 2006-02-06  Charlie Zender  <zender@uci.edu>
 
 	* Fix nco++ library definition
