@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile,v 1.5 2006-02-09 21:56:41 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile,v 1.6 2006-02-09 22:16:21 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -79,6 +79,9 @@ endif
 ifndef ANTLR_LIB
  ANTLR_LIB := ${ANTLR_ROOT}/lib # Directory containing libantlr.a
 endif
+ifndef DAP
+ DAP := N
+endif
 ifndef ${DBG}
 # Debugging token N=No (default) Y=Yes
  DBG := N
@@ -86,16 +89,13 @@ endif # endif DBG
 ifndef GCC_RCH_ARG
  GCC_RCH_ARG :=
 endif # endif GCC_RCH_ARG
-ifndef I18N
 ifdef GSL_LIB
  GSL_LIB := -L${GSL_LIB}
 else
  GSL_LIB := $(shell gsl-config --libs)
 endif # endif GSL_LIB
+ifndef I18N
  I18N := Y
- MY_SHR_DIR := ${HOME}/share
- MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
- MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
 endif # endif I18N
 ifndef ICC_RCH_ARG
  ICC_RCH_ARG :=
@@ -104,6 +104,12 @@ ifndef MK_DPN
  MK_DPN = ${CPP} -M # NB: Recursive expansion required
  MK_DPN_CXX = ${CXX} -M # NB: Recursive expansion required
 endif # endif MK_DPN
+ifndef ${MPI} # MPI
+ MPI := N
+endif # endif MPI
+ifndef ${MPI_FAKE} # MPI
+ MPI_FAKE := N
+endif # endif MPI_FAKE
 ifndef ${NETCDF4} # netCDF4 support
  NETCDF4 := N
 endif # endif NETCDF4
@@ -125,6 +131,9 @@ endif # endif OMP
 ifndef OPTS
  OPTS := O
 endif # endif OPTS
+ifndef ${PNETCDF} # pnetCDF support
+ PNETCDF := N
+endif # endif PNETCDF
 ifndef ${PRC}
 # Precision token D=Double (default) S=Single
  PRC := S
@@ -135,6 +144,10 @@ endif
 ifndef STC
 # Created statically linked executable
  STC := N
+endif
+ifndef UDUNITS
+# Use UDUnits functionality
+ UDUNITS := Y
 endif
 ifndef UNAMES
  UNAMES := $(shell uname -s)
@@ -197,7 +210,95 @@ else
 endif # endif PRC
 
 # NB: CPP_TKN is recursively expanded variable, define only when components are ready
-CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}'
+CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
+
+# Default NCO build. DAP, NETCDF4, and PNETCDF clauses may overwrite this
+NC_LDFLAGS := -L${NETCDF_LIB}
+NC_LIBS := -lnetcdf 
+
+ifeq (${DAP},Y)
+# Build NCO as DAP-enabled clients
+# fxm: OPeNDAP bloats executables, should automagically enable stripping?
+# http://www.opendap.org/user/guide-html/guide_28.html
+ifndef DAP_ROOT
+# Directory containing libdap++.a, libnc-dap.a
+ DAP_ROOT := /usr/local
+endif # DAP_ROOT
+ NC_LDFLAGS := -L${DAP_ROOT}/lib
+# NB: nc-dods, dap++ prior to version 3.5.X must be linked twice!
+# Required libraries for
+# DODS 3.3-:
+# NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
+# DODS 3.4.X:
+# NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lxml2 -lcurl -lpthread -ldl -lz
+# DAP 3.5+:
+ NC_LIBS := -lnc-dap -ldap++ -lxml2 -lcurl
+# Get netCDF from OPeNDAP version
+ NETCDF_INC=${DAP_ROOT}/include/libnc-dap
+ NETCDF_LIB=${DAP_ROOT}/lib
+endif # end DAP
+
+# Internationalize NCO with i18n features
+ifeq (${I18N},Y)
+ MY_SHR_DIR := ${HOME}/share
+ MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
+ MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
+endif
+
+# Message Passing Interface (MPI)
+ifeq (${MPI_FAKE},Y)
+# MPI_FAKE instructs make to compile mpnc*.c operators without defining ENABLE_MPI
+# Resulting executables use UP or SMP code not MPI code
+# This tests compile, link, execution of MPI mpnc*.c code without using any MPI calls
+ MPI := Y
+endif # !MPI_FAKE
+ifdef MPI_PRC
+# MPI_PRC tells test scripts how many MPI processes to spawn
+# Pass this MPI argument to nco_bm.pl
+ MPI_PRC_SNG := "--mpi_prc=${MPI_PRC}"
+# MPI_PRC implies MPI
+ MPI := Y
+else # !MPI_PRC
+ MPI_PRC_SNG :=
+endif # !MPI_PRC
+
+ifeq (${NETCDF4},Y)
+# Enable netCDF4 functionality
+ NETCDF_INC := ${NETCDF4_ROOT}/include
+ NETCDF_LIB := ${NETCDF4_ROOT}/lib
+ NC_LDFLAGS := -L${NETCDF_LIB}
+ NC_LIBS := -lnetcdf -lhdf5 -lhdf5_hl
+endif # endif NETCDF4
+
+ifeq (${PNETCDF},Y)
+# Enable pnetCDF functionality
+ NC_LDFLAGS := -L${NETCDF_LIB}
+ NC_LIBS += -lpnetcdf
+endif # endif PNETCDF
+
+ifeq (${UDUNITS},Y)
+# Build UDUnits-enabled NCO 
+# Place UDUNITS block after DAP block for both to work together
+ifndef UDUNITS_INC
+ UDUNITS_INC := /usr/local/include # Directory containing udunits.h
+endif
+ifndef UDUNITS_LIB
+ UDUNITS_LIB := /usr/local/lib # Directory containing libudunits.a
+endif
+ifneq (${UDUNITS_INC},${NETCDF_INC})
+ NETCDF_INC += -I${UDUNITS_INC}
+endif # end 
+ifneq (${UDUNITS_LIB},${NETCDF_LIB})
+ NC_LDFLAGS += -L${UDUNITS_LIB}
+endif # end if
+ NC_LIBS += -ludunits
+endif # end if UDUNITS
+
+# TMP_* and NCO_* are required to play nicely with DAP flags
+NCO_LDFLAGS := -L${MY_LIB_DIR}
+NCO_LIBS :=  -lnco_c++ -lnco
+TMP_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS}
+TMP_LIBS := ${NCO_LIBS} ${NC_LIBS}
 
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
 null :=
@@ -329,10 +430,32 @@ ${MY_DPN_DIR}/%.d : %.cpp
 # Manually define autotools tokens normally defined in HAVE_CONFIG_H
 # Initialize OS-specific tokens to empty
 CPP_TKN_OS := 
+CPP_TKN_OS := -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY
+ifneq (${PVM_ARCH},CRAY)
+ CPP_TKN_OS += -DHAVE_MKSTEMP
+endif # CRAY
+ifneq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSXWIN32))
+ CPP_TKN_OS += -DHAVE_GETOPT_H -DHAVE_GETOPT_LONG
+# UDUNITS_DAT OK to be empty for now
+endif # !LINUX
+ifneq (${null},$(findstring ${PVM_ARCH},AIXSGIMP64))
+ CPP_TKN_OS += -DNEED_GETOPT_LONG
+endif # !(AIX || SGI)
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 # Visual age compiler headers must occur before g++ headers
  CPP_TKN_OS += -I/usr/vacpp/include
 endif # AIX
+ifeq (${DAP},Y)
+ CPP_TKN_OS += -DENABLE_DAP
+endif # !DAP
+ifeq (${MPI},Y)
+ifneq (${MPI_FAKE},Y)
+ CPP_TKN_OS += -DENABLE_MPI
+endif # MPI_FAKE
+endif # !MPI
+ifeq (${UDUNITS},Y)
+ CPP_TKN_OS += -DENABLE_UDUNITS -DHAVE_UDUNITS_H
+endif # !UDUNITS
 ifeq (${null},$(findstring SGI,${PVM_ARCH}))
  CPP_TKN_OS += -DHAVE_CSTDLIB
 endif # SGI
@@ -776,7 +899,7 @@ CPP := ${CC}
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := f90
 LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 LEX := flex
 LINT := lint
 YACC := bison
@@ -814,7 +937,7 @@ CPP := c++ -E
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := f90
 LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 # LDFLAGS += -L/lib -lf
 endif
@@ -848,7 +971,7 @@ CPP := /lib/cpp -P
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := xlf
 LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -lxlf90 -lxlf
 endif

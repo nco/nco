@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.356 2006-02-04 06:52:42 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.357 2006-02-09 22:16:42 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -77,13 +77,13 @@ ifndef ${ABI}
 # 32 vs. 64 bit ABI: 32=32 bit mode, 64=64 bit mode (default) if available
  ABI := 64
 endif # endif ABI
+ifndef DAP
+ DAP := N
+endif
 ifndef ${DBG}
 # Debugging token N=No (default) Y=Yes
  DBG := N
 endif # endif DBG
-ifndef DAP
- DAP := N
-endif
 ifdef FL_FMT
 # Pass this netCDF4 argument to nco_bm.pl
  FL_FMT_SNG := "--fl_fmt=${FL_FMT}"
@@ -1461,6 +1461,8 @@ include: inc
 inc: ${MDL_INC}
 inc_cln:
 	rm -f ${MDL_INC}
+love: 
+	echo "Not war?"
 # Targets in lib
 library: lib
 lib : inc ${libnco}.a
