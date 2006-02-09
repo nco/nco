@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile,v 1.4 2006-02-08 06:35:24 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile,v 1.5 2006-02-09 21:56:41 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -354,7 +354,7 @@ endif # xlC compilers
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC} ${GSL_INC} -I/usr/local/include
 FC := xlf95_r
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -lnco -L${NETCDF_LIB} -lnetcdf
 LEX := flex
 LINT := lint
 YACC := bison
@@ -470,7 +470,7 @@ FFLAGS := -c ${OMP_FLG} -automatic -fpe3
 FIXEDFLAGS := -extend_source
 FREEFLAGS := -DHIDE_SHR_MSG -free
 LD := ld
-LDFLAGS += ${OMP_FLG} -L${MY_LIB_DIR} -lnco -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += ${OMP_FLG} -L${MY_LIB_DIR} -lnco_c++ -lnco -L${NETCDF_LIB} -lnetcdf
 LEX := flex
 LINT := lint
 YACC := bison
@@ -504,7 +504,7 @@ CPP := cpp
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := f90
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -lnco -L${NETCDF_LIB} -lnetcdf
 LDFLAGS += -L/lib -lf
 LEX := lex
 LINT := lint
@@ -542,7 +542,7 @@ CPP := ${CXX}
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DHAVE_INLINE ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC} 
 FC := ${LINUX_FC}
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -lnco -L${NETCDF_LIB} -lnetcdf
 LEX := flex
 LINT := lint
 YACC := bison
@@ -885,7 +885,7 @@ CC := gcc
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := f90 -cpp
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -lnco -L${NETCDF_LIB} -lnetcdf
 LEX := flex
 LINT := lint
 YACC := bison
@@ -968,7 +968,7 @@ FC := f90 -DHIDE_SHR_MSG
 #FFLAGS := -xs -stackvar -e -Qoption f90comp -r8const
 FFLAGS := -xs -stackvar -e 
 LD := ld
-LDFLAGS := -L${MY_LIB_DIR} -lnco -lnco_c++ -L${NETCDF_LIB} -lnetcdf -lsunmath -lsocket -lnsl
+LDFLAGS := -L${MY_LIB_DIR} -lnco_c++ -lnco -L${NETCDF_LIB} -lnetcdf -lsunmath -lsocket -lnsl
 #LDFLAGS += -lF77 -lM77 -lresolv
 LEX := lex
 LINT := lint
@@ -1015,7 +1015,7 @@ CPP := cpp-2
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -Di386 ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := g77-2
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -lnco -L${NETCDF_LIB} -lnetcdf
 LDFLAGS += 
 LEX := flex
 LINT := lint
