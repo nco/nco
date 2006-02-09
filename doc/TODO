@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.704 2006-02-03 01:59:56 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.705 2006-02-09 16:36:19 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -424,8 +424,8 @@ nco666. Grid regridding/interpolation operator ncrebin?
 nco667. rnd_nbr(): ncap does not link to rnd_nbr on AMD64 with bld/Makefile?
 nco668. Prefix nco.png fractal icon with text "NC" to look like "NCO"
 nco669. Command-line switch for float->double math-promotion to aviod underflow?
-nco670. test with netcdf-3.6.1 final
 nco671. Finish nco++/Makefile.old
+nco672. debian: replace netcdfg3 with netcdf try to build .debs again
 nco672. 
 ************************************************************************
 End ncoXXX TODOs
