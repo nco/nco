@@ -1,6 +1,6 @@
 2006-02-07  Charlie Zender  <zender@uci.edu>
 
-	* Remove redundant antlr actions
+	* Remove redundant antlr actions. Add -lnco to LDFLAGS.
 
 2006-02-06  Charlie Zender  <zender@uci.edu>
 
