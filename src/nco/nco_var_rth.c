@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.37 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.38 2006-02-09 06:30:14 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -1036,7 +1036,7 @@ nco_var_nrm /* [fnc] Normalize value of first operand by count in tally array */
     if(!has_mss_val){
       /* Operations: 1 fp divide, 2 pointer offset, 2 user memory fetch
 	 Repetitions: \dmnszavg^(\dmnnbr-\avgnbr)
-	 Total Counts: \flpnbr=\dmnszavg^(\dmnnbr-\avgnbr), \ntgnbr=2\dmnszavg^(\dmnnbr-\avgnbr), \mmrusrnbr=2\dmnszavg^(\dmnnbr-\avgnbr)
+	 Total Counts: \flpnbr=\dmnszavg^(\dmnnbr-\avgnbr), \rthnbr=2\dmnszavg^(\dmnnbr-\avgnbr), \mmrusrnbr=2\dmnszavg^(\dmnnbr-\avgnbr)
 	 NB: Counted LHS+RHS+tally offsets and fetches */
       for(idx=0;idx<sz;idx++) op1.fp[idx]/=tally[idx];
     }else{

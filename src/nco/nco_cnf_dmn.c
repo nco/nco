@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.51 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.52 2006-02-09 06:30:14 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -284,13 +284,13 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 	/* dmn_ss are corresponding indices (subscripts) into N-D array */
 	/* Operations: 1 modulo, 1 pointer offset, 1 user memory fetch
 	   Repetitions: \lmnnbr
-	   Total Counts: \ntgnbr=2\lmnnbr, \mmrusrnbr=\lmnnbr
+	   Total Counts: \rthnbr=2\lmnnbr, \mmrusrnbr=\lmnnbr
 	   NB: LHS assumed compact and cached, counted RHS offsets and fetches only */
 	dmn_ss[var_nbr_dmn_m1]=var_lmn%var_cnt[var_nbr_dmn_m1];
 	for(idx=0;idx<var_nbr_dmn_m1;idx++){
 	  /* Operations: 1 divide, 1 modulo, 2 pointer offset, 2 user memory fetch
 	     Repetitions: \lmnnbr(\dmnnbr-1)
-	     Counts: \ntgnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
+	     Counts: \rthnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
 	     NB: LHS assumed compact and cached, counted RHS offsets and fetches only
 	     NB: Neglected loop arithmetic/compare */
 	  dmn_ss[idx]=(long)(var_lmn/dmn_var_map[idx]);
@@ -301,12 +301,12 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 	wgt_lmn=0L;
 	/* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
 	   Repetitions: \lmnnbr\rnkwgt
-	   Counts: \ntgnbr=5\lmnnbr\rnkwgt, \mmrusrnbr=3\lmnnbr\rnkwgt */
+	   Counts: \rthnbr=5\lmnnbr\rnkwgt, \mmrusrnbr=3\lmnnbr\rnkwgt */
 	for(idx=0;idx<wgt_nbr_dim;idx++) wgt_lmn+=dmn_ss[idx_wgt_var[idx]]*dmn_wgt_map[idx];
 	
 	/* Operations: 2 add, 2 multiply, 0 pointer offset, 1 system memory copy
 	   Repetitions: \lmnnbr
-	   Counts: \ntgnbr=4\lmnnbr, \mmrusrnbr=0, \mmrsysnbr=1 */
+	   Counts: \rthnbr=4\lmnnbr, \mmrusrnbr=0, \mmrsysnbr=1 */
 	(void)memcpy(wgt_out_cp+var_lmn*wgt_typ_sz,wgt_cp+wgt_lmn*wgt_typ_sz,wgt_typ_sz);
 	
       } /* end loop over var_lmn */

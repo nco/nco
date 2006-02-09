@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.40 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.41 2006-02-09 06:30:14 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -258,13 +258,13 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 	/* dmn_ss are corresponding indices (subscripts) into N-D array */
 	/* Operations: 1 modulo, 1 pointer offset, 1 user memory fetch
 	   Repetitions: \lmnnbr
-	   Total Counts: \ntgnbr=2\lmnnbr, \mmrusrnbr=\lmnnbr
+	   Total Counts: \rthnbr=2\lmnnbr, \mmrusrnbr=\lmnnbr
 	   NB: LHS assumed compact and cached, counted RHS offsets and fetches only */
 	dmn_ss[nbr_dmn_var_m1]=var_lmn%var_cnt[nbr_dmn_var_m1];
 	for(idx=0;idx<nbr_dmn_var_m1;idx++){
 	  /* Operations: 1 divide, 1 modulo, 2 pointer offset, 2 user memory fetch
 	     Repetitions: \lmnnbr(\dmnnbr-1)
-	     Counts: \ntgnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
+	     Counts: \rthnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
 	     NB: LHS assumed compact and cached, counted RHS offsets and fetches only
 	     NB: Neglected loop arithmetic/compare */
 	  dmn_ss[idx]=(long)(var_lmn/dmn_var_map[idx]);
@@ -275,20 +275,20 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 	fix_lmn=0L;
 	/* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
 	   Repetitions: \lmnnbr(\dmnnbr-\avgnbr)
-	   Counts: \ntgnbr=5\lmnnbr(\dmnnbr-\avgnbr), \mmrusrnbr=3\lmnnbr(\dmnnbr-\avgnbr) */
+	   Counts: \rthnbr=5\lmnnbr(\dmnnbr-\avgnbr), \mmrusrnbr=3\lmnnbr(\dmnnbr-\avgnbr) */
 	for(idx=0;idx<nbr_dmn_fix;idx++) fix_lmn+=dmn_ss[idx_fix_var[idx]]*dmn_fix_map[idx];
 	
 	/* Map N-D array indices into 1-D offset from group offset */
 	avg_lmn=0L;
 	/* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
 	   Repetitions: \lmnnbr\avgnbr
-	   Counts: \ntgnbr=5\lmnnbr\avgnbr, \mmrusrnbr=3\lmnnbr\avgnbr */
+	   Counts: \rthnbr=5\lmnnbr\avgnbr, \mmrusrnbr=3\lmnnbr\avgnbr */
 	for(idx=0;idx<dmn_avg_nbr;idx++) avg_lmn+=dmn_ss[idx_avg_var[idx]]*dmn_avg_map[idx];
 	
 	/* Copy current element in input array into its slot in sorted avg_val */
 	/* Operations: 3 add, 3 multiply, 0 pointer offset, 1 system memory copy
 	   Repetitions: \lmnnbr
-	   Counts: \ntgnbr=6\lmnnbr, \mmrusrnbr=0, \mmrsysnbr=1 */
+	   Counts: \rthnbr=6\lmnnbr, \mmrusrnbr=0, \mmrsysnbr=1 */
 	(void)memcpy(avg_cp+(fix_lmn*avg_sz+avg_lmn)*typ_sz,var_cp+var_lmn*typ_sz,(size_t)typ_sz);
       } /* end loop over var_lmn */
     } /* AVG_DMN_ARE_MRV */
@@ -406,11 +406,11 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	/* Operations: 1 multiply 
 	   Repetitions: \dmnszavg^(\dmnnbr-\avgnbr)
-	   Total Counts: \ntgnbr=\dmnszavg^(\dmnnbr-\avgnbr) */
+	   Total Counts: \rthnbr=\dmnszavg^(\dmnnbr-\avgnbr) */
 	const long blk_off=idx_op2*sz_blk;
 	/* Operations: 1 fp add, 3 pointer offsets, 3 user memory fetch
 	   Repetitions: \lmnnbr
-	   Total Counts: \flpnbr=\lmnnbr, \ntgnbr=3\lmnnbr, \mmrusrnbr=3\lmnnbr,
+	   Total Counts: \flpnbr=\lmnnbr, \rthnbr=3\lmnnbr, \mmrusrnbr=3\lmnnbr,
 	   NB: Counted LHS+RHS+tally offsets and fetches */
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.fp[idx_op2]+=op1.fp[blk_off+idx_blk];
 	tally[idx_op2]=sz_blk;
