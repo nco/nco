@@ -2,7 +2,7 @@ Source: nco
 Section: math
 Priority: optional
 Maintainer: Rorik Peterson <rorik@chabuku.iarc.uaf.edu>
-Build-Depends: debhelper (>> 4.0.0), netcdfg3, netcdfg-dev, texinfo
+Build-Depends: debhelper (>> 4.0.0), netcdf3, netcdf-dev, texinfo
 Standards-Version: 3.6.1
 
 Package: nco
