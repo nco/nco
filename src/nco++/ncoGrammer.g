@@ -119,12 +119,12 @@ expr:
     ;
 
 lmt:
-   (expr)? COLON! (expr)? COLON ! (expr)?
+   (expr)? (COLON (expr)?)*
    { #lmt = #( [LMT, "lmt"], #lmt ); }
     ;
 
 lmt_list
-  : LPAREN! lmt (COMMA! lmt)*  RPAREN!
+  : LPAREN! lmt (COMMA lmt)*  RPAREN!
    { #lmt_list = #( [LMT_LIST, "lmt_list"], #lmt_list ); }
   ;
 // Use vars in dimension list so dims in [] can
