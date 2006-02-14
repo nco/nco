@@ -1,6 +1,6 @@
 ncecat -h -O    -n 3,2,1 nco_bm/skn_lgs_00.nc %tempf_01%
 ncwa -h -O    %tempf_01% %tempf_02%
-ncks -C -H -s '%f' -v PO2 %tempf_02% %stdouterr%
+ncks -C -H -s '%f' -v PO2 %tempf_02% %stdout%
 
 # This is ncecat test 01 benchmark
 # we will test: data passing between lines, and stdout returning.

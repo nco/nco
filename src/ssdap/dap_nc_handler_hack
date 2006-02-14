@@ -3,7 +3,7 @@ import getopt, os, sys, tempfile, shutil
 import string, time
        
        
-# $Id: dap_nc_handler_hack,v 1.7 2006-02-04 01:11:18 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.8 2006-02-14 01:53:23 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -47,6 +47,7 @@ class local:
 
     disableHTTP = True # Recommend: False
     # this is for command-line debugging
+
 
 ######################################################################
 
@@ -97,10 +98,14 @@ class Command:
         self.env = scriptenv
         self.cmdLine = None #empty commmandline for now
         self.myName = ""
+        self.cmd = None
         self.dependents = []
         self.ancestors = []
         self.absOutputs = []
         self.absInputs = []
+        self.saveOutput = False
+        self.popen = os.popen2
+
         self.parseOriginalLine()
         self.buildCommandLine()
         pass
@@ -149,13 +154,44 @@ class Command:
             print "WARN: bad script line: " + self.original
             return
         self.myName = mycmd + str(len(self.env.commands))
-
+        self.cmd = mycmd
+        
         (arglist, leftover) = getopt.getopt(argv[1:],
                                             SsdapCommon.parserShortOpt,
                                             SsdapCommon.parserLongOpt)
         argdict = dict(arglist)
+        self.acceptModifiers(argdict, leftover)
         self.acceptInOut(argdict, leftover)
         self.fixupDependencies()
+        self.arguments = argdict
+        pass
+
+    def acceptModifiers(self, adict, leftover):
+        """accept special things like %stdouterr% and %stdout% so that
+        specify how to handle a particular line."""
+        def selectPopen2():
+            self.popen = os.popen2
+            self.absOutputs.append(ScriptingEnv.SCRIPT_STDOUT)
+            self.saveOutput = True
+        def selectPopen4():
+            self.popen = os.popen4
+            self.absOutputs.append(ScriptingEnv.SCRIPT_STDOUTERR)
+            self.saveOutput = True
+        # yes, I could replace the above with a single def that
+        # generated the right function, but why bother?
+
+        # this is a table of what can be matched, and what to do if
+        # there's a match.
+        redirTable = {ScriptingEnv.SCRIPT_STDOUTERR : selectPopen4,
+                      ScriptingEnv.SCRIPT_STDOUT: selectPopen2}
+        # check hangers-on on the tail of the line for modifiers.
+        # for now, process last to first, until we get a lot of modifiers
+        # and have a chance for actual conflict/precedence
+        while leftover[-1] in redirTable:
+            redirTable[leftover.pop()]()
+
+            # pop off the back of the list, and then do the right thing.
+        
     def acceptInOut(self, adict, leftover):
         # look for output file first
         ofname = ""
@@ -164,10 +200,17 @@ class Command:
                 assert ofname == ""
                 ofname = adict[x]
         if ofname == "":
-            ofname = leftover[-1] # take last arg
-            leftover = leftover[:-1] # and drop it off
-        assert ofname != "" # should have a real filename (or placeholder)
-        self.absOutputs.append(ofname)
+            # don't steal output if it's actually the input.
+            if len(leftover) <= 1:
+                # only one leftover...leave it to be captured by the inputter
+                if len(self.absOutputs) == 0:
+                    logit("warning, unbound output for " + self.original)
+            else:
+                ofname = leftover[-1] # take last arg
+                leftover = leftover[:-1] # and drop it off
+            
+        if ofname != "": # should have a real filename (or placeholder)
+            self.absOutputs.append(ofname)
         self.absInputs += leftover
     def fixupDependencies(self):
         # go get a reversed list of the previous commands
@@ -189,8 +232,47 @@ class Command:
         #for x in self.absOutputs: # probably only one output...
         #    for p in previous:
 
+    def buildCommandLineNew(self):
+        line = ""
+        if self.cmd == None: # don't build cmdline for non-cmds
+            return
+        line += ScriptingEnv.VALID_COMMANDS[self.cmd]
+
+        # pass options first
+        for (k,v) in self.arguments.items():
+            #special value handling for --op_typ='-'
+            if (len(v) > 0) and \
+                   v[0] not in (string.letters + string.digits + "%"):
+                line += " " + k + "='" + v + "'"
+            else:
+                line += " " + k + " " + v
+        # then pass commands
+        filelist = []
+        for name in self.absInputs:
+            filelist.append(name)
+        for name in self.absOutputs:
+            if name in [ ScriptingEnv.SCRIPT_STDOUTERR,
+                         ScriptingEnv.SCRIPT_STDOUT ]:
+                continue
+            filelist.append(name)
+        for name in filelist:
+            if self.env.shouldRemap(name):
+                remapped = self.env.addAbsName(name)
+                assert remapped != None
+                line += " " + remapped
+            elif self.env.possibleFilename(name):
+                # add defpath for now.
+                newname = self.env.env["defpath"] + os.sep + name
+                #newname = word
+                line += " " + newname
+            else: line += " " + name
+
+        self.cmdLine = line
+        logit( "real cmdline: " + line)
+
         
     def buildCommandLine(self):
+        return self.buildCommandLineNew()
         newCommandLine = ""
         index = 0
         self.cmd = None
@@ -239,6 +321,10 @@ class ScriptingEnv:
     SCRIPT_OUTFILE = "%outfile%"
     SCRIPT_STDOUTERR = "%stdouterr%"
     SCRIPT_STDOUT = "%stdout%"
+    # note that it's a bad idea to have outputfile set, and one of the
+    # console output catchers as well.  you're on your own for
+    # deciphering the file out of that mess.
+    
     CLASS_TEMP = "tempf"
     CLASS_SEP = "_"
     MAGIC_DELIM = "%"
@@ -264,8 +350,8 @@ class ScriptingEnv:
         self.lines = scriptlines
         # save lines of output for each type of output.
         # direct child output to /dev/null unless requested
-        self.outFd = os.devnull
-        self.popen = os.popen2
+        #self.outFd = os.devnull
+        #self.popen = os.popen2 ## let's deprecate this... FIXME!
         
         # make commandlines from each scriptline
         self.commands = []  # list of commands (inc. comments)
@@ -276,7 +362,7 @@ class ScriptingEnv:
             self.commands.append(c) # append command, regardless of parsing
             if c.commandLine() != None:
                 #print c.commandLine()
-                self.commandLine.append(c.commandLine())
+                self.commandLine.append(c)
         
         logit(self.depTreeToString()) # for debug...
 
@@ -308,6 +394,10 @@ class ScriptingEnv:
                 return True
         return absName == ScriptingEnv.SCRIPT_OUTFILE
     def processSpecial(self, absName):
+        """ don't use this anymore """
+        return False
+        # deprecate this way of tracking, in favor of a more general
+        # system that can be more flexible and work with per-line modifiers.
         redirTable = {ScriptingEnv.SCRIPT_STDOUTERR : os.popen4,
              ScriptingEnv.SCRIPT_STDOUT: os.popen2}
         if absName in redirTable:
@@ -355,20 +445,29 @@ class ScriptingEnv:
         # check to make sure we don't have both an output file and outstderr
         # make sure we're doing exactly one thing with our output
         havefile = self.fileMap.has_key(ScriptingEnv.SCRIPT_OUTFILE)
-        outbypass = (self.outFd != os.devnull)
-        assert havefile ^ outbypass
+#        outbypass = (self.outFd != os.devnull)
+#        assert havefile ^ outbypass
         
         
-        for l in self.commandLine:
+        for c in self.commandLine:
             #(sin,sout) = os.popen2(l)
-            (sin,sout) = self.popen(l)  # use the mapped popen
+            outFd = os.devnull
+            if c.saveOutput == True:
+                outFd = sys.stdout
+            (sin,sout) = c.popen(c.commandLine())  # use the mapped popen
             sin.close() # close the input, so it flushes
             #out handle is now ready to be read.
             #for x in sout:
             #   self.outStream.append(x)
             #   logit( "execution output: " + x)
             # skip logging the output, and just dump to outstream.
-            shutil.copyfileobj(sout, self.outFd)
+            logit(str(c.absOutputs))
+            if outFd == os.devnull:
+                fd = open(outFd, "w")
+                shutil.copyfileobj(sout, fd)
+                fd.close()
+            else:
+                shutil.copyfileobj(sout, outFd)
         pass
     def depTreeToString(self):
         out = "Script dependency digraph: \n"
