@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile,v 1.6 2006-02-09 22:16:21 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile,v 1.7 2006-02-14 23:31:21 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1185,7 +1185,8 @@ obj_dir :
 	- if ! test -d ${MY_OBJ_DIR}; then mkdir ${MY_OBJ_DIR}; fi
 
 # Targets in bin
-NCAP2_OBJ := ${MY_OBJ_DIR}/ncap2.o ${NCAP2_ANTLR_GENERATED_OBJ}
+# fxm: ncap2_utl.o, Invoke.o, and NcapVarVector.o should be in libnco++.a
+NCAP2_OBJ := ${MY_OBJ_DIR}/ncap2.o $(MY_OBJ_DIR)/ncap2_utl.o $(MY_OBJ_DIR)/Invoke.o $(MY_OBJ_DIR)/NcapVarVector.o ${NCAP2_ANTLR_GENERATED_OBJ}
 ncap2:	${MY_BIN_DIR}/ncap2
 ${MY_BIN_DIR}/ncap2:	${NCAP2_OBJ} lib
 	${CXX} -o $@${BNR_SFX} ${NCAP2_OBJ} ${LDFLAGS} -L${ANTLR_LIB} -lantlr

@@ -1,3 +1,7 @@
+2006-02-14  Charlie Zender  <zender@uci.edu>
+
+	* Temporarily add ncap2 object files directly to link line
+
 2006-02-07  Charlie Zender  <zender@uci.edu>
 
 	* Remove redundant antlr actions. Add -lnco to LDFLAGS.
