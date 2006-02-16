@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.102 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.103 2006-02-16 03:44:19 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -837,8 +837,9 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
     /* Checking only nco_is_rth_opr() is too simplistic
        1. All variables handled by arithmetic operators are currently unpacked on reading
        2. However "fixed variables" appear in many arithemetic operators
-          ncra, for instance, treats non-record variables as fixed (does not average them)
-	  ncbo treats coordinate variables as fixed  (does not subtract them)
+	  ncbo treats coordinate variables as fixed (does not subtract them)
+          ncra treats non-record variables as fixed (does not average them)
+	  ncwa treats variables without averaging dimensions as fixed (does not average them)
 	  It would be best not to alter [un-]packing of arithmetic fixed variables
        3. ncap, an arithmetic operator, also has "fixed variables", i.e., 
           pre-existing non-LHS variables copied directly to output.
@@ -951,7 +952,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
        var[idx]->xrf->pck_dsk) /* ...and variable is packed in input file... */
       PCK_ATT_CPY=False;
 
-    /* Do not copy packing attributres when unpacking variables 
+    /* Do not copy packing attributes when unpacking variables 
        ncpdq is currently only operator that passes values other than nco_pck_plc_nil */
     if(nco_pck_plc == nco_pck_plc_upk) /* ...and variable will be _unpacked_ ... */
       PCK_ATT_CPY=False;
