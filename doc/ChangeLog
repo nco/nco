@@ -1,3 +1,10 @@
+2006-02-15  Charlie Zender  <zender@uci.edu>
+
+	* Same problem exists with all other non-processed data. TODO nco673.
+
+	* Add test whether non-record data is unpacked in ncra output file.
+	ncra currently fails this test. Reported by Martin Dix.	TODO nco672.
+
 2006-02-14  Charlie Zender  <zender@uci.edu>
 
 	* Temporarily add ncap2 object files directly to link line

@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.21 2006-01-04 20:30:29 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.22 2006-02-16 01:55:12 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -529,6 +529,12 @@ if ($dodap eq "FALSE"){
 	$nsr_xpc= 100.55 ;
  go();
 
+	$tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v pck,one_dmn_rec_var $in_pth_arg in.nc $outfile";
+	$tst_cmd[1]="ncks -C -H -s '%3.2f' -v pck $outfile";
+	$dsc_sng="unpack non-record (i.e., non-processed) data before passing to output (fxm TODO nco672)";
+	$nsr_xpc= 3 ;
+ go();
+
 	$tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y avg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl $outfile";
 	$dsc_sng="record mean of float with double missing values across two files";
@@ -595,6 +601,12 @@ if ($dodap eq "FALSE"){
 #$dsc_sng="normalize by weight but not tally";
 #$nsr_xpc= 8192 ;
 #go();
+
+	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time -v pck,one_dmn_rec_var $in_pth_arg in.nc $outfile";
+	$tst_cmd[1]="ncks -C -H -s '%3.2f' -v pck $outfile";
+	$dsc_sng="unpack non-averaged (i.e., non-processed) data before passing to output (fxm TODO nco673)";
+	$nsr_xpc= 3 ;
+ go();
 
 	$tst_cmd[0]="ncwa -N $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon -w gw $in_pth_arg in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%f' -v mask $outfile";
