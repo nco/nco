@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import getopt, os, sys, tempfile, shutil
-import string, time
+import re, string, time
        
        
-# $Id: dap_nc_handler_hack,v 1.8 2006-02-14 01:53:23 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.9 2006-02-17 00:05:49 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -40,17 +40,28 @@ class local:
     logLocation = "/home/wangd/opendap/iroot/ssdap.log"
 
     #ncBinPath = os.environ["MY_BIN_DIR"] 
-    ncBinPath = "/home/wangd/nco/nco/bin"
-
+    nc4BinPath = "/home/wangd/opendap/iroot/nco_ncdf4_bin"
+    ncDapBinPath = "/home/wangd/opendap/iroot/nco_dap_bin"
+    ncBinPath = nc4BinPath
+    
     # pass original DAP commands to the original dap handler.
     passthroughPath = "/home/wangd/opendap/iroot/bin/dap_nc_handler"
 
     disableHTTP = True # Recommend: False
     # this is for command-line debugging
 
+    disableParallel = True
 
 ######################################################################
+# User/Administrator notes:
+######################################################################
+# this script switches between using DAP-aware or NetCDF4-capable NCO
+# binaries depending on if an OPeNDAP url is detected in a script
+# line. An opendap url is currently detected by looking for an
+# http:// prefix.
+#
 
+######################################################################
 # this class should stay identical in client/server.  If it gets big,
 # we should split it into some python module to be imported.
 class SsdapCommon:
@@ -232,7 +243,7 @@ class Command:
         #for x in self.absOutputs: # probably only one output...
         #    for p in previous:
 
-    def buildCommandLineNew(self):
+    def buildCommandLine(self):
         line = ""
         if self.cmd == None: # don't build cmdline for non-cmds
             return
@@ -270,48 +281,6 @@ class Command:
         self.cmdLine = line
         logit( "real cmdline: " + line)
 
-        
-    def buildCommandLine(self):
-        return self.buildCommandLineNew()
-        newCommandLine = ""
-        index = 0
-        self.cmd = None
-        # for now, use only the first line
-        for word in self.original.split():
-            if word[0] == "#": # comment; skip parsing
-                break
-            if self.cmd == None:
-                if word in ScriptingEnv.VALID_COMMANDS:
-                    newCommandLine += " " + ScriptingEnv.VALID_COMMANDS[word]
-                    self.cmd = word
-                else:
-                    handleError("unrecognized command:"
-                            + word + " in script.")
-                    return # shouldn't continue
-            elif self.env.processSpecial(word):
-                pass # don't add to command line.
-            elif self.env.shouldRemap(word):
-                #print "should map " + word
-                remapped = self.env.addAbsName(word)
-                assert remapped != None
-                
-                newCommandLine += " " + remapped
-            elif self.env.possibleFilename(word):
-                # add defpath for now.
-                newname = self.env.env["defpath"] + os.sep + word
-                #newname = word
-                newCommandLine += " " + newname
-            else: # passthrough unrecognized things
-                newCommandLine += " " + word
-            index = index + 1
-        if self.cmd == None:
-            return # don't do anything more.
-        # chop off leading " "
-        assert newCommandLine[0] == " " 
-        newCommandLine = newCommandLine[1:]
-        # proclaim my results
-        logit( "real cmdline: " + newCommandLine)
-        self.cmdLine = newCommandLine
     
 # This class should hold the state used by a single script
 # Might be worthwhile to split out constants/data shared
@@ -405,7 +374,16 @@ class ScriptingEnv:
             self.popen = redirTable[absName]
             return True
         return False
+    def possibleUrl(self, cand):
+        """return a sre.SRE_Match object if input matches our primitive regex
+        otherwise, return None"""
+        return re.match('^\w+://', cand)
+
+        
     def possibleFilename(self, cand):
+        # leave urls alone.
+        if self.possibleUrl(cand): return False
+        
         elts = string.split(cand, ".")
 
         if len(elts) != 2: #looking for something.ext
@@ -461,7 +439,7 @@ class ScriptingEnv:
             #   self.outStream.append(x)
             #   logit( "execution output: " + x)
             # skip logging the output, and just dump to outstream.
-            logit(str(c.absOutputs))
+
             if outFd == os.devnull:
                 fd = open(outFd, "w")
                 shutil.copyfileobj(sout, fd)
@@ -667,7 +645,13 @@ class FrontEnd:
         #print "Skipping real execution for now"
         scriptenv.returnOutput(sys.stdout)
         pass
-        
+
+
+class JobManager:  # will I have to write this?
+    def __init__(self):
+        self.maxParallel = 2
+
+
 
 
 settings = FrontEnd(sys.argv)
@@ -678,4 +662,21 @@ settings.execute()
 
 
 logit("handler hack log closed at " + time.ctime()+ "\n")
+
+#########################################
+# notes for adding async support
+#########################################
+# usage model:
+#
+# initial script submission
+# blah -c -h somefile somefile
+# blah blah blah
+# blah blah blah
+# %async%
+#
+# The server should respond with something like
+# 5 jobs submitted, your job id: 200
+# %async-resp% yourhost, url, 5, 200
+
+
 
