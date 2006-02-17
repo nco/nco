@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile,v 1.8 2006-02-17 16:02:13 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile,v 1.9 2006-02-17 18:56:32 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -296,7 +296,7 @@ endif # end if UDUNITS
 
 # TMP_* and NCO_* are required to play nicely with DAP flags
 NCO_LDFLAGS := -L${MY_LIB_DIR}
-NCO_LIBS := -lnco_c++ -lnco
+NCO_LIBS := -lnco++ -lnco -lnco_c++
 TMP_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} -L${ANTLR_LIB}
 TMP_LIBS := ${NCO_LIBS} ${NC_LIBS} -lantlr
 
@@ -1186,7 +1186,7 @@ obj_dir :
 
 # Targets in bin
 # fxm: ncap2_utl.o, Invoke.o, and NcapVarVector.o should be in libnco++.a
-NCAP2_OBJ := ${MY_OBJ_DIR}/ncap2.o $(MY_OBJ_DIR)/ncap2_utl.o $(MY_OBJ_DIR)/Invoke.o $(MY_OBJ_DIR)/NcapVarVector.o ${NCAP2_ANTLR_GENERATED_OBJ}
+NCAP2_OBJ := ${MY_OBJ_DIR}/ncap2.o
 ncap2:	${MY_BIN_DIR}/ncap2
 ${MY_BIN_DIR}/ncap2:	${NCAP2_OBJ} lib
 	${CXX} -o $@${BNR_SFX} ${NCAP2_OBJ} ${LDFLAGS}
@@ -1239,15 +1239,9 @@ obj_cln :
 # fxm: change to common dependency rule
 ncoLexer.cpp : ncoGrammer.g
 	${ANTLR} ncoGrammer.g
-ncoLexer.o : ncoLexer.cpp ncoLexer.hpp
-	${ANTLR} ncoGrammer.g
 ncoParser.cpp : ncoGrammer.g
 	${ANTLR} ncoGrammer.g
-ncoParser.o : ncoParser.cpp ncoParser.hpp
-	${ANTLR} ncoGrammer.g
 ncoTree.cpp : ncoGrammer.g
-	${ANTLR} ncoGrammer.g
-ncoTree.o : ncoTree.cpp ncoTree.hpp
 	${ANTLR} ncoGrammer.g
 src_cln :
 	rm -f ${NCAP2_ANTLR_GENERATED_CPP} ${NCAP2_ANTLR_GENERATED_HPP} ${NCAP2_ANTLR_GENERATED_TXT}
