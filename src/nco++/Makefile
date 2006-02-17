@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile,v 1.7 2006-02-14 23:31:21 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile,v 1.8 2006-02-17 16:02:13 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -11,7 +11,7 @@
 # See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text
 
 # Usage:
-# cd ~/nco/src/nco++;make -f Makefile.old dpn_cln cln all
+# cd ~/nco/src/nco++;make dpn_cln cln all
 
 # In rule 
 # foobar.o : foo.c bar.c
@@ -296,9 +296,9 @@ endif # end if UDUNITS
 
 # TMP_* and NCO_* are required to play nicely with DAP flags
 NCO_LDFLAGS := -L${MY_LIB_DIR}
-NCO_LIBS :=  -lnco_c++ -lnco
-TMP_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS}
-TMP_LIBS := ${NCO_LIBS} ${NC_LIBS}
+NCO_LIBS := -lnco_c++ -lnco
+TMP_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} -L${ANTLR_LIB}
+TMP_LIBS := ${NCO_LIBS} ${NC_LIBS} -lantlr
 
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
 null :=
@@ -477,7 +477,7 @@ endif # xlC compilers
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC} ${GSL_INC} -I/usr/local/include
 FC := xlf95_r
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -lnco -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
 LEX := flex
 LINT := lint
 YACC := bison
@@ -593,7 +593,7 @@ FFLAGS := -c ${OMP_FLG} -automatic -fpe3
 FIXEDFLAGS := -extend_source
 FREEFLAGS := -DHIDE_SHR_MSG -free
 LD := ld
-LDFLAGS += ${OMP_FLG} -L${MY_LIB_DIR} -lnco_c++ -lnco -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += ${OMP_FLG} ${TMP_LDFLAGS} ${TMP_LIBS}
 LEX := flex
 LINT := lint
 YACC := bison
@@ -627,7 +627,7 @@ CPP := cpp
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := f90
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -lnco -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
 LDFLAGS += -L/lib -lf
 LEX := lex
 LINT := lint
@@ -665,7 +665,7 @@ CPP := ${CXX}
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DHAVE_INLINE ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC} 
 FC := ${LINUX_FC}
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -lnco -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1008,7 +1008,7 @@ CC := gcc
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := f90 -cpp
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -lnco -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1091,7 +1091,7 @@ FC := f90 -DHIDE_SHR_MSG
 #FFLAGS := -xs -stackvar -e -Qoption f90comp -r8const
 FFLAGS := -xs -stackvar -e 
 LD := ld
-LDFLAGS := -L${MY_LIB_DIR} -lnco_c++ -lnco -L${NETCDF_LIB} -lnetcdf -lsunmath -lsocket -lnsl
+LDFLAGS := ${TMP_LDFLAGS} ${TMP_LIBS} -lsunmath -lsocket -lnsl
 #LDFLAGS += -lF77 -lM77 -lresolv
 LEX := lex
 LINT := lint
@@ -1138,7 +1138,7 @@ CPP := cpp-2
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -Di386 ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := g77-2
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -lnco -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
 LDFLAGS += 
 LEX := flex
 LINT := lint
@@ -1168,7 +1168,7 @@ libnco_c++ := ${MY_LIB_DIR}/libnco_c++
 libnco++ := ${MY_LIB_DIR}/libnco++
 
 # Default targets
-all: ${MDL_BIN_TRG} inc lib dat
+all: ${MDL_BIN_TRG} inc lib
 # .PHONY tells make to remake the following non-file targets 
 .PHONY: all cln dst_cln debug ${MDL_BIN_TRG}
 # Delete default suffixes---this should increase speed
@@ -1189,7 +1189,7 @@ obj_dir :
 NCAP2_OBJ := ${MY_OBJ_DIR}/ncap2.o $(MY_OBJ_DIR)/ncap2_utl.o $(MY_OBJ_DIR)/Invoke.o $(MY_OBJ_DIR)/NcapVarVector.o ${NCAP2_ANTLR_GENERATED_OBJ}
 ncap2:	${MY_BIN_DIR}/ncap2
 ${MY_BIN_DIR}/ncap2:	${NCAP2_OBJ} lib
-	${CXX} -o $@${BNR_SFX} ${NCAP2_OBJ} ${LDFLAGS} -L${ANTLR_LIB} -lantlr
+	${CXX} -o $@${BNR_SFX} ${NCAP2_OBJ} ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 
 bin : ${MDL_BIN_TRG}
@@ -1256,6 +1256,9 @@ clean : cln
 cln : dat_cln dpn_cln obj_cln
 debug: dbg
 dbg:
+	@printf "ABI = ${ABI}\n"
+	@printf "AR = ${AR}\n"
+	@printf "BNR_SFX = ${BNR_SFX}\n"
 	@printf "CC = ${CC}\n"
 	@printf "CFLAGS = ${CFLAGS}\n"
 	@printf "CPP = ${CPP}\n"
@@ -1264,39 +1267,60 @@ dbg:
 	@printf "CPP_TKN = ${CPP_TKN}\n"
 	@printf "CXX = ${CXX}\n"
 	@printf "CXXFLAGS = ${CXXFLAGS}\n"
+	@printf "DAP = ${DAP}\n"
+	@printf "DAP_ROOT = ${DAP_ROOT}\n"
 	@printf "DBG = ${DBG}\n"
 	@printf "FC = ${FC}\n"
 	@printf "FFLAGS = ${FFLAGS}\n"
+	@printf "FL_FMT = ${FL_FMT}\n"
 	@printf "GCC_RCH_ARG = ${GCC_RCH_ARG}\n"
-	@printf "GSL_LIB = ${GSL_LIB}\n"
 	@printf "HOST = ${HOST}\n"
-	@printf "HOSTNAME = ${HOSTNAME}\n"
 	@printf "ICC_RCH_ARG = ${ICC_RCH_ARG}\n"
+	@printf "LAMMPICC = ${LAMMPICC}\n"
+	@printf "LAMMPICXX = ${LAMMPICXX}\n"
 	@printf "LDFLAGS = ${LDFLAGS}\n"
+	@printf "LEX = $(LEX)\n"
+	@printf "LINUX_CC = $(LINUX_CC)\n"
+	@printf "LINUX_CXX = $(LINUX_CXX)\n"
+	@printf "MDL_BIN_TRG = ${MDL_BIN_TRG}\n"
 	@printf "MDL_DPN = ${MDL_DPN}\n"
+	@printf "MDL_MPI_TRG = ${MDL_MPI_TRG}\n"
 	@printf "MDL_OBJ = ${MDL_OBJ}\n"
 	@printf "MDL_PTH = ${MDL_PTH}\n"
+	@printf "MDL_RPM_NST_NM = ${MDL_RPM_NST_NM}\n"
 	@printf "MDL_SRC = ${MDL_SRC}\n"
-	@printf "MY_BIN_DIR = ${MY_BIN_DIR}\n"
-	@printf "MY_BLD_DIR = ${MY_BLD_DIR}\n"
-	@printf "MY_DAT_DIR = ${MY_DAT_DIR}\n"
-	@printf "MY_DOC_DIR = ${MY_DOC_DIR}\n"
-	@printf "MY_DPN_DIR_RX = ${MY_DPN_DIR_RX}\n"
-	@printf "MY_ES_DIR = ${MY_ES_DIR}\n"
-	@printf "MY_INC_DIR = ${MY_INC_DIR}\n"
-	@printf "MY_LIB_DIR = ${MY_LIB_DIR}\n"
-	@printf "MY_SHR_DIR = ${MY_SHR_DIR}\n"
-	@printf "MY_OBJ_DIR = ${MY_OBJ_DIR}\n"
-	@printf "MY_OBJ_DIR_RX = ${MY_OBJ_DIR_RX}\n"
+	@printf "MPICC = ${MPICC}\n"
+	@printf "MPICH_CC = ${MPICH_CC}\n"
+	@printf "MPICH_CXX = ${MPICH_CXX}\n"
+	@printf "MPICXX = ${MPICXX}\n"
+	@printf "MPI_PRC = ${MPI_PRC}\n"
+	@printf "MPI_PRC_SNG = ${MPI_PRC_SNG}\n"
+	@printf "NCO_LDFLAGS = $(NCO_LDFLAGS)\n"
+	@printf "NCO_LIBS = $(NCO_LIBS)\n"
+	@printf "NCO_VRS = ${NCO_VRS}\n"
+	@printf "NC_LDFLAGS = $(NC_LDFLAGS)\n"
+	@printf "NC_LIBS = $(NC_LIBS)\n"
+	@printf "NETCDF4 = ${NETCDF4}\n"
+	@printf "NETCDF4_ROOT = ${NETCDF4_ROOT}\n"
 	@printf "NETCDF_INC = ${NETCDF_INC}\n"
 	@printf "NETCDF_LIB = ${NETCDF_LIB}\n"
+	@printf "NETCDF_ROOT = ${NETCDF_ROOT}\n"
 	@printf "OMP = ${OMP}\n"
-	@printf "OPTS = ${OPTS}\n"
-	@printf "PRC = ${PRC}\n"
+	@printf "PNETCDF = ${PNETCDF}\n"
 	@printf "PVM_ARCH = ${PVM_ARCH}\n"
-	@printf "UNAMES = ${UNAMES}\n"
+	@printf "RPM = ${RPM}\n"
+	@printf "SRC_LST = $(SRC_LST)\n"
+	@printf "STC = ${STC}\n"
+	@printf "THR_NBR = ${THR_NBR}\n"
+	@printf "THR_NBR_SNG = ${THR_NBR_SNG}\n"
+	@printf "TMP_LDFLAGS = ${TMP_LDFLAGS}\n"
+	@printf "TMP_LIBS = ${TMP_LIBS}\n"
+	@printf "UDUNITS = $(UDUNITS)\n"
+	@printf "UDUNITS_INC = $(UDUNITS_INC)\n"
+	@printf "UDUNITS_LIB = $(UDUNITS_LIB)\n"
 	@printf "VPATH = ${VPATH}\n"
 	@printf "VRS_SNG = ${VRS_SNG}\n"
+	@printf "YACC = ${YACC}\n"
 distclean : dst_cln
 dst_cln : cln bld_cln lib_cln src_cln
 install : inc 
