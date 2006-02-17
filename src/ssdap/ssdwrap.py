@@ -13,12 +13,12 @@ import urllib
 # Report option passing problems so I can fix this.  Not all nco
 # commands have been tested.
 #
-# version info: $Id: ssdwrap.py,v 1.3 2006-02-04 01:11:18 wangd Exp $
+# version info: $Id: ssdwrap.py,v 1.4 2006-02-17 19:17:23 mangalam Exp $
 ########################################################################
 
 
 # configurable params
-serverBase = "http://localhost:8000/cgi/nph-dods"
+serverBase = "http://sand:80/cgi-bin/dods/nph-dods"
 
 # params probably unchanged
 

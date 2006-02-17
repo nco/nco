@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.115 2006-01-04 20:30:29 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.116 2006-02-17 19:17:22 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -86,6 +86,7 @@ $os_nme = "";
 $nco_vrsn_sng = "";
 $gnu_cut = 1;
 $fl_fmt = "classic"; # file format for wirting
+$caseid = "";
 
 # other inits
 $localhostname = `hostname`; chomp $localhostname;
@@ -294,7 +295,7 @@ dbg_msg(1,"WARN: Using the --debug flag set to greater than 0 will cause the NCO
 # Determine where $DATA should be, prompt user if necessary
 if ($xdta_pth eq '') {
 	dbg_msg(2, "$prg_nm: Calling set_dat_dir()");
-	set_dat_dir(); # Set $dta_dir
+	set_dat_dir($caseid); # Set $dta_dir
 } else { #validate $xdta_pth
 	if (-e $xdta_pth && -w $xdta_pth){ #if it exists and is writable,, spit out a debug message
 		dbg_msg(1,"User-specified DATA path ($xdta_pth) exists and is writable.");

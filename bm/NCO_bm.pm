@@ -15,13 +15,14 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.26 2006-01-31 06:42:10 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.27 2006-02-17 19:17:22 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
 use Cwd 'abs_path';
 
 use strict;
+use warnings;
 require Exporter;
 our @ISA = qw(Exporter);
 #export functions (top) and variables (bottom)
@@ -41,25 +42,27 @@ our @EXPORT = qw (
 	verbosity
 	wat4inpt
 
-	$aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $caseid $dodap @fl_cr8_dat @fl_tmg $prefix $opr_nm
-	$opr_sng_mpi $md5 $md5found $bm_dir $mpi_prc $mpi_fke $dta_dir $aix_mpi_
-	nvr_prfx	$nsr_xpc $os_nme $prsrv_fl @tst_cmd %tst_nbr $dbg_lvl $wnt_log $dsc_sng
-	$outfile $fl_pth $tmr_app $fke_prefix $NUM_FLS 	$udp_rpt $sock
+	$aix_mpi_ $aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $bm_dir $caseid $dbg_lvl
+	$dodap $dsc_sng $dta_dir $fke_prefix @fl_cr8_dat $fl_pth @fl_tmg $md5
+	$md5found $mpi_fke $mpi_prc $nsr_xpc $NUM_FLS nvr_prfx $opr_nm
+	$opr_sng_mpi $os_nme $outfile $prefix $prsrv_fl $que $sock $thr_nbr
+	$timestamp $tmr_app @tst_cmd %tst_nbr $udp_rpt $wnt_log
+
 );
 
 use vars qw(
-	$aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $dbg_lvl $dodap $dot_fmt
-	$dot_nbr  $dot_nbr_min  $dot_sng  $dsc_fmt
-	$dsc_lng_max  $dsc_sng $fke_prefix $hiresfound  $md5  $mpi_prc  $mpi_prfx
-	$MY_BIN_DIR  $nsr_xpc  $opr_fmt  $opr_lng_max  @opr_lst
-	@opr_lst_all  @opr_lst_mpi $mpi_fke $opr_nm  $opr_rgr_mpi  $opr_sng_mpi
-	$os_nme $outfile  $prefix  %real_tme  $result  $spc_fmt  $spc_nbr
-	$spc_nbr_min  $spc_sng  %subbenchmarks  %success  @sys_tim_arr
-	$sys_time  %sys_tme  $timed  %totbenchmarks  @tst_cmd  $tst_fmt
-	$tst_id_sng  %tst_nbr  %usr_tme $wnt_log $timestamp
-	$bm_dir $caseid $cmd_ln $dta_dir @fl_cr8_dat $fl_pth @fl_tmg $md5found
-	%MD5_tbl $nco_D_flg $NUM_FLS $prfxd $prsrv_fl $que $server_ip $sock $thr_nbr $dbg_sgn $err_sgn
-	$tmr_app $udp_rpt %wc_tbl $prfxd $nvr_my_bin_dir $prg_nm $arg_nbr @fl_tmg
+$aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $dbg_lvl $dodap $dot_fmt
+$dot_nbr $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng
+$fke_prefix $hiresfound $md5 $mpi_prc $mpi_prfx $MY_BIN_DIR $nsr_xpc
+$opr_fmt $opr_lng_max @opr_lst @opr_lst_all @opr_lst_mpi $mpi_fke
+$opr_nm $opr_rgr_mpi $opr_sng_mpi $os_nme $outfile $prefix %real_tme
+$result $spc_fmt $spc_nbr $spc_nbr_min $spc_sng %subbenchmarks %success
+@sys_tim_arr $sys_time %sys_tme $timed %totbenchmarks @tst_cmd $tst_fmt
+$tst_id_sng %tst_nbr %usr_tme $wnt_log $timestamp $bm_dir $caseid
+$cmd_ln $dta_dir @fl_cr8_dat $fl_pth @fl_tmg $md5found %MD5_tbl
+$nco_D_flg $NUM_FLS $prfxd $prsrv_fl $que $server_ip $sock $thr_nbr
+$dbg_sgn $err_sgn $tmr_app $udp_rpt %wc_tbl $prfxd $nvr_my_bin_dir
+$prg_nm $arg_nbr @fl_tmg
 );
 
 print "\nINFO: Testing for required modules\n";
@@ -89,7 +92,7 @@ if ($hiresfound == 0) {
 $bm_dir = `pwd`; chomp $bm_dir;
 $prefix = '';
 $err_sgn = "";
-if($dbg_lvl > 3){$nco_D_flg = "-D" .  "$dbg_lvl";}
+#if($dbg_lvl > 3){$nco_D_flg = "-D" .  "$dbg_lvl";}
 
 # Initializations
 # Re-constitute commandline
@@ -98,7 +101,8 @@ $cmd_ln = "$0 "; $arg_nbr = @ARGV;
 for (my $i=0; $i<$arg_nbr; $i++){ $cmd_ln .= "$ARGV[$i] ";}
 
 # make sure that the $fl_pth gets set to a reasonable defalt
-$fl_pth = "$dta_dir";
+#$fl_pth = "$dta_dir";
+#print "\$dta_dir = $dta_dir\n";
 
 # # Pass in the MPI prefix if --mpi is set. Should be able to just plug into the commandline
 # # MPI'ed nco's: mpirun -np 4 mpncbo etc
@@ -110,7 +114,7 @@ $fl_pth = "$dta_dir";
 # $fke_prefix = " $MY_BIN_DIR/mp";
 
 # # $prefix expects to find an regular nco in MY_BIN_DIR
-$prefix = " $MY_BIN_DIR";
+# $prefix = " $MY_BIN_DIR";
 # #  $mpi_prfx will always have the mpirun directive.PLUS the MPI'ed nco
 # $mpi_prfx = " mpirun -np $mpi_prc  $MY_BIN_DIR/mp";
 # $prfxd = 1; $timed = 1;
@@ -269,7 +273,7 @@ dbg_msg(1,"$prg_nm: initialize() reports:\n\t \$MY_BIN_DIR = $MY_BIN_DIR, \n\t \
 ####################
 sub verbosity {
 	my $dbg_lvl = shift;
-	my $wnt_log - shift;
+	my $wnt_log = shift;
 	my $ts = shift;
 #	my $wnt_log; # why should this be required?
 	if($dbg_lvl > 0){printf ("$ts");}
@@ -338,6 +342,7 @@ if ($dbg_lvl > 2) {
 	my $idx = shift;
 	my $t0;
 	my $elapsed;
+
 	my $fl_in = my $fl_out = "$dta_dir/$fl_cr8_dat[$idx][2].nc" ;
 	print "==== Creating $fl_cr8_dat[$idx][0] data file from template in [$dta_dir]\n";
 	print "Executing: $tmr_app ncgen -b -o $fl_out $bm_dir/$fl_cr8_dat[$idx][2].cdl\n";
@@ -408,14 +413,15 @@ sub smrz_fl_cr8_rslt {
 ##
 
 sub set_dat_dir {
+	$caseid = shift;
 	my $tmp;
 	my $datadir;
 	my $umask = umask;
 	# does user have a DATA dir defined in his env?  It has to be readable and
 # writable to be usable for these tests, so if it isn't just bail, with a nasty msg
-	if ($caseid ne "") {
-		$caseid =~ s/[^\w]/_/g;
-	}
+# 	if ($caseid ne "") {
+# 		$caseid =~ s/[^\w]/_/g;
+# 	}
 
 	if (defined $ENV{'DATA'} && $ENV{'DATA'} ne "") { # then is it readwritable?
 		if (-w $ENV{'DATA'} && -r $ENV{'DATA'}) {
@@ -478,6 +484,9 @@ sub go {
 	if ($os_nme =~ /AIX/) {$aix = 1;} # yafv for aix
 	$dbg_sgn = "";
 	$err_sgn = "";
+	my $result_is_num = 1;
+	my $expect_is_num = 1;
+	$mpi_prfx= ""; $fke_prefix="";
 
 	# twiddle the $prefix to allow for running the mpnc* as a non-mpi'ed  executable
 	if ($mpi_fke) {$fke_prefix = "$MY_BIN_DIR/mp"; }
@@ -583,17 +592,37 @@ sub go {
 		# and execute the command, splitting off stderr to file 'nco-stderror'
 		$result = `($_) 2> nco-stderror`; # stderr should contain timing info if it exists.
 		#####################################################################################
-#		print "\nresult of [$_] = $result\n";
+#	print "\nresult of [$_] = $result\n";
 		chomp $result;
+		# figure out if $result is numeric or alpha
+		if ($result =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ && 
+          $result !~ /[a-df-zA-DF-Z ,]/) { $result_is_num = 1;}
+		else {                               $result_is_num = 0;}
+
+		# figure out if $nsr_xpc is numeric or alpha
+		if ($nsr_xpc =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ && 
+          $nsr_xpc !~ /[a-df-zA-DF-Z ,]/) { $expect_is_num = 1;}
+		else {                                $expect_is_num = 0;}
+
+# 		if ($result =~ /ERROR/) { # then test has failed
+# 			$result = -123456789; # the magic error number
+# 		}
+
 		if ($timed) {
 			$sys_time = `cat nco-stderror`;
-			$sys_time =~ s/\n/ /g;
-			@sys_tim_arr = split(" ", $sys_time); # [0]real [1]0.00 [2]user [3]0.00 [4]sys [5]0.00
-			$real_tme{$opr_nm} += $sys_tim_arr[1];
-			$usr_tme{$opr_nm}  += $sys_tim_arr[3];
-			$sys_tme{$opr_nm}  += $sys_tim_arr[5];
+			if ($sys_time ne "") {
+				if ($sys_time =~ /ERR/ ) {last;}
+				$sys_time =~ s/\n/ /g;
+#		print "\$sys_time = [$sys_time]\n";
+				@sys_tim_arr = split(" ", $sys_time); # [0]real [1]0.00 [2]user [3]0.00 [4]sys [5]0.00
+				my @rev_sys_tim_arr = reverse @sys_tim_arr;
+#		print"\@revsys_tim_arr = @rev_sys_tim_arr\n";
+				# this will fail if an error occurs which offsets the time info, so you have to step thru the list until hit 'real' which syncs the array.  or do it from the back end.
+				$real_tme{$opr_nm} += $rev_sys_tim_arr[0] + 0; # '+0 forces conversion to a nbr
+				$usr_tme{$opr_nm}  += $rev_sys_tim_arr[2] + 0;
+				$sys_tme{$opr_nm}  += $rev_sys_tim_arr[4] + 0;
+			}
 		}
-		$elapsed;
 		if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
 		else {$elapsed = time - $t0;}
 
@@ -631,10 +660,9 @@ sub go {
 	chomp $result;  # Remove trailing newline for easier regex comparison
 
 	# Compare numeric results
-	if ($nsr_xpc =~/\d/) { # && it equals the expected value
-#if ($dbg_lvl > 1){print STDERR "\$nsr_xpc assumed to be numeric: $nsr_xpc\n\$result = $result\n";}
-		$dbg_sgn .= "DEBUG: \$nsr_xpc assumed to be numeric: $nsr_xpc\n\$result = [$result]\n";
-
+	if ($result_is_num && $expect_is_num) { # && it equals the expected value
+#print "\n \$nsr_xpc [$nsr_xpc] considered a number\n";
+		$dbg_sgn .= "DEBUG: \$nsr_xpc assumed to be numeric: $nsr_xpc & actual  \$result = [$result]\n";
 		if ($nsr_xpc == $result) {
 			$success{$opr_nm}++;
 			printf STDERR (" SVn ok\n");
@@ -646,10 +674,12 @@ sub go {
 		} else {
 			printf STDERR (" FAILED!\n");
 			&failed($nsr_xpc);
-			$dbg_sgn .= "DEBUG: !!FAILED (Numeric output) [expected: $nsr_xpc vs result: $result]\n";
+			my $diff = abs($nsr_xpc - $result);
+			$dbg_sgn .= "DEBUG: !!FAILED (Numeric output) [expected: $nsr_xpc vs result: $result].  Difference = $diff.\n";
 		}
-	} elsif ($nsr_xpc =~/\D/)  {# Compare non-numeric tests
+	} elsif (!$result_is_num && !$expect_is_num)  {# Compare non-numeric tests
 		dbg_msg(2,"DEBUG: expected value assumed to be alphabetic: $nsr_xpc\n\$result = $result\n");
+#print "\n \$nsr_xpc [$nsr_xpc] considered a string\n";
 
 		# Compare $result with $nsr_xpc
 		if (substr($result,0,length($nsr_xpc)) eq $nsr_xpc) {
@@ -661,12 +691,13 @@ sub go {
 			$dbg_sgn .= "DEBUG: !!FAILED Alphabetic output (expected: $nsr_xpc vs result: $result) ";
 		}
 	}  else {  # No result at all?
+	print STDERR " !!FAILED\n  \$result_is_num = $result_is_num and \$expect_is_num = $expect_is_num\n";
 		&failed();
 		$dbg_sgn .= "DEBUG: !!FAILED - No result from [$opr_nm]\n";
 	}
 	print $err_sgn;
 	if ($dbg_lvl > 0) {print $dbg_sgn;}
-	print LOG $dbg_sgn;
+	if ($wnt_log) {print LOG $dbg_sgn;}
 	@tst_cmd=(); # Clear test
 	$prsrv_fl = 0; # reset so files will be deleted unless specifically request saving them
 	# rm $outfile so it can't generate a false positive
@@ -677,12 +708,10 @@ sub go {
 
 ####################
 sub failed {
-	my $nsr_xpc = shift;
 	$failure{$opr_nm}++;
 	$err_sgn .= "\nERR: FAILURE in $opr_nm failure: $dsc_sng\n";
 	foreach(@tst_cmd) { $err_sgn .= "\t$_\n";}
-	if ($nsr_xpc) { $err_sgn .= "ERR::EXPLAIN: Result: [$result] != Expected: [$nsr_xpc]\n\n" ; }
-	else { $err_sgn .= "ERR::EXPLAIN: command produced no results.\n\n"; }
+	$err_sgn .= "ERR::EXPLAIN: Result: [$result] != Expected: [$nsr_xpc]\n\n" ; 
 	return;
 }
 
@@ -690,6 +719,7 @@ sub smrz_rgr_rslt {
 	my $ansr='';
 	my $nco_vrsn_sng = nco_dual_vrsn();
 	my $CC = `$MY_BIN_DIR/ncks --compiler`;
+	my $idstring = "";
 	my $CCinfo = '';
 	if ($CC =~ /gcc/) {$CCinfo = `gcc --version |grep -i gcc`;}
 	elsif ($CC =~ /xlc/) {$CCinfo = "xlc version ??";}

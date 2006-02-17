@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.23 2006-02-17 06:35:36 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.24 2006-02-17 19:17:22 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -81,7 +81,7 @@ dbg_msg(1,"-------------  REGRESSION TESTS STARTED from perform_tests()  -------
 	go();
 
 	$tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'tpt_mod=tpt%273.0f' $in_pth_arg in.nc $outfile";
-	$tst_cmd[1]="ncks -C -H -s '%.1f' $outfile";
+	$tst_cmd[1]="ncks -C -H -s '%.1f ' $outfile";
 	$dsc_sng="Testing float modulo float";
 	$nsr_xpc ="0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0";
 	go();
@@ -149,7 +149,7 @@ if ($dodap eq "FALSE") {
 
 	$tst_cmd[0]="ncatted -O --hdr_pad=1000 $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth_arg in.nc $outfile";
 	$tst_cmd[1]="ncks -M $outfile | grep hdr_pad | wc >$foo_fl";
-	$tst_cmd[2]="cut -d' ' -f 13-14 -s $foo_fl";
+	$tst_cmd[2]="cut -c 14-15  $foo_fl";
 	$dsc_sng="Pad header with 1000 extra bytes for future metadata";
 	$nsr_xpc= 26 ;
  go();
@@ -183,7 +183,7 @@ if ($dodap eq "FALSE") {
 	$tst_cmd[2]="ncbo $omp_flg  -h -O $fl_fmt $nco_D_flg -y '-' -v mss_val $outfile ../data/in.nc $outfile 2> $foo_tst";
 	$tst_cmd[3]="ncks -C -H -s '%f,' -v mss_val $outfile";
 	$dsc_sng="missing_values differ between files";
-	$nsr_xpc= "-999,-999,-999,-999" ;
+	$nsr_xpc= "-999.000000,-999.000000,-999.000000,-999.000000" ;
  go();
 
 	$tst_cmd[0]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg -d lon,1 -v mss_val $in_pth_arg in.nc in.nc $outfile";
@@ -267,9 +267,9 @@ $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_ar
 	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v one $in_pth_arg in.nc $foo1_fl";
 	$tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -v one $in_pth_arg in.nc $foo2_fl";
 	$tst_cmd[2]="ncecat $omp_flg -h -O $fl_fmt $nco_D_flg $foo1_fl $foo2_fl $outfile";
-	$tst_cmd[3]="ncks -C -H -s '%f, ' -v one $outfile";
+	$tst_cmd[3]="ncks -C -H -s '%6.3f, ' -v one $outfile";
 	$dsc_sng="concatenate two files containing only scalar variables";
-	$nsr_xpc= "1, 1" ;
+	$nsr_xpc= " 1.000,  1.000, " ;
  go();
 
 ####################
@@ -382,7 +382,7 @@ if ($dodap eq "FALSE"){
 
 	#fails
 	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v '^three_*' $in_pth_arg in.nc $outfile";
-	$tst_cmd[1]="ncks -C -H -s '%f'-C -v three $outfile";
+	$tst_cmd[1]="ncks -C -H -s '%f' -C -v three $outfile";
 	$dsc_sng="variable wildcards A (fails without regex library)";
 	$nsr_xpc= 3 ;
  go();
@@ -397,7 +397,7 @@ if ($dodap eq "FALSE"){
 	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,0,1 -v time $in_pth_arg in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%g' -C -d time,2, $outfile";
 	$dsc_sng="Offset past end of file";
-	$nsr_xpc="ncks: ERROR User-specified dimension index range 2 <= time <=  does not fall within valid dimension index range 0 <= time <= 1";
+	$nsr_xpc="ncks: ERROR User-specified dimension index range 2 <= time <= 1 does not fall within valid dimension index range 0 <= time <= 1";
  go();
 
 	$tst_cmd[0]="ncks -C -H -s '%d' -v byte_var $in_pth_arg in.nc";
