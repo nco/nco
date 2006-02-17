@@ -1,3 +1,14 @@
+2006-02-16  Charlie Zender  <zender@uci.edu>
+
+	* This fixes TODOs nco672, nco673, nco402
+
+	* Modify regression test to expect packed fixed data
+
+	* Check is_var_fix flags in nco_var_dfn() to handle packed fixed data
+
+	* Add is_var_fix to var_sct so nco_var_dfn() can use it to
+	identify variables to pass through packed straight to output
+
 2006-02-15  Charlie Zender  <zender@uci.edu>
 
 	* Same problem exists with all other non-processed data. TODO nco673.

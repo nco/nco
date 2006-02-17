@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.103 2006-02-16 03:44:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.104 2006-02-17 06:35:37 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -763,6 +763,7 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   var->end=(long *)NULL;
   var->srd=(long *)NULL;
   var->undefined=False;
+  var->is_fix_var=True; /* Is this a fixed (non-processed) variable? */
 
   /* Members related to packing */
   var->has_scl_fct=False; /* [flg] Valid scale_factor attribute exists */
@@ -813,9 +814,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
      So local variable var usually refers to var_prc_out in calling function 
      Hence names may look reversed in this function, and xrf is frequently used
 
-     fxm TODO nco402:
-     Have ncap,ncra,ncbo call with FIXED_KEEP_PACKED to keep fixed variables unaltered
-     We do not want to un-necessarily unpack variables that are fixed, not processed */
+     20060217: Packed fixed (non-processed) variables are now passed through unaltered */
 
   bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
@@ -840,28 +839,27 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	  ncbo treats coordinate variables as fixed (does not subtract them)
           ncra treats non-record variables as fixed (does not average them)
 	  ncwa treats variables without averaging dimensions as fixed (does not average them)
-	  It would be best not to alter [un-]packing of arithmetic fixed variables
+	  It is best not to alter [un-]pack fixed (non-processed) variables
        3. ncap, an arithmetic operator, also has "fixed variables", i.e., 
           pre-existing non-LHS variables copied directly to output.
 	  These "fixed" ncap variables should remain unaltered
 	  However, this is not presently done
 	  nco_var_dfn() needs more information to handle "fixed" variables correctly because
 	  Some ncap "fixed" variables appear on RHS in definitions of LHS variables
-          These RHS fixed variable must be separately unpacked during RHS algebra
+          These RHS fixed variables must be separately unpacked during RHS algebra
 	  Currently, ncap only calls nco_var_dfn() for fixed variables
 	  ncap uses its own routine, ncap_var_write(), for RHS variable definitions
-	  Tentative solution 20030119: fxm TODO nco402 implement this:
-	  Change ncap-specific condition to more generic FIXED_KEEP_PACKED flag 
-	  Pass this flag into nco_var_dfn()
        4. All variables in non-arithmetic operators (except ncpdq) should remain un-altered
        5. ncpdq is non-arithemetic operator
           However, ncpdq specially handles fine-grained control [un-]packing options */
     if(nco_is_rth_opr(prg_id)){
       /* Arithmetic operators store values as unpacked... */
       typ_out=var[idx]->typ_upk; 
-      /* ...with one exception...
+      /* ...with two exceptions...
 	 ncap [un-]packing precedes nco_var_dfn() call, sets var->type appropriately */
       if(prg_id == ncap) typ_out=var[idx]->type;
+      /* ...and pass through fixed (non-processed) variables untouched... */
+      if(var[idx]->is_fix_var) typ_out=var[idx]->type;
     }else{
       /* Non-arithmetic operators leave things alone by default
 	 ncpdq first modifies var_out->type, then calls nco_var_dfn(), then [un-]packs */
@@ -949,6 +947,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
     /* Copy exising packing attributes, if any, unless... */
     if(nco_is_rth_opr(prg_id) && /* ...operator is arithmetic... */
        prg_id != ncap && /* ...and is not ncap (hence it must be, e.g., ncra, ncbo)... */
+       !var[idx]->is_fix_var && /* ...and variable is processed (not fixed)... */
        var[idx]->xrf->pck_dsk) /* ...and variable is packed in input file... */
       PCK_ATT_CPY=False;
 
@@ -959,7 +958,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
     
     /* Recall that:
        var      refers to output variable structure
-       var->xrf refers to input variable structure 
+       var->xrf refers to input  variable structure 
        ncpdq may pre-define packing attributes below regardless of PCK_ATT_CPY */ 
     (void)nco_att_cpy(in_id,out_id,var[idx]->xrf->id,var[idx]->id,PCK_ATT_CPY);
     

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.92 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.93 2006-02-17 06:35:37 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -361,7 +361,7 @@ extern "C" {
     long *srd; /* [id] Contiguous vector of stride of hyperslab */
     ptr_unn val; /* [bfr] Buffer to hold hyperslab */
     long *tally; /* [nbr] Number of valid operations performed so far */
-    struct var_sct_tag *xrf; /* [sct] Cross-reference to associated variable structure (usually the structure for variable on output) */
+    struct var_sct_tag *xrf; /* [sct] Cross-reference to associated variable structure (usually structure for variable on output) fxm: deprecate! TODO nco226 */
     int pck_dsk; /* [flg] Variable is packed on disk (valid scale_factor, add_offset, or both attributes exist) */
     int pck_ram; /* [flg] Variable is packed in memory (valid scale_factor, add_offset, or both attributes exist) */
     int has_scl_fct; /* [flg] Valid scale_factor attribute exists */
@@ -371,6 +371,7 @@ extern "C" {
     nc_type typ_pck; /* [enm] Type of variable when packed (on disk). typ_pck = typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
     nc_type typ_upk; /* [enm] Type of variable when unpacked (expanded) (in memory) */
     int undefined; /* [flg] Variable is still undefined (in first parser pass) */
+    int is_fix_var; /* [flg] Is this a fixed (non-processed) variable? */
   } var_sct; /* end var_sct_tag */
   
 #ifdef __cplusplus

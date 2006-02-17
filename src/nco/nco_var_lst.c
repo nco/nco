@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.55 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.56 2006-02-17 06:35:37 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -502,10 +502,12 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   *nbr_var_prc=*nbr_var_fix=0;
   for(idx=0;idx<nbr_var;idx++){
     if(var_op_typ[idx] == fix){
+      var[idx]->is_fix_var=var_out[idx]->is_fix_var=True;
       var_fix[*nbr_var_fix]=var[idx];
       var_fix_out[*nbr_var_fix]=var_out[idx];
       ++*nbr_var_fix;
     }else{
+      var[idx]->is_fix_var=var_out[idx]->is_fix_var=False;
       var_prc[*nbr_var_prc]=var[idx];
       var_prc_out[*nbr_var_prc]=var_out[idx];
       ++*nbr_var_prc;

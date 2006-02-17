@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.706 2006-02-16 01:55:13 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.707 2006-02-17 06:35:37 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -216,8 +216,6 @@ nco392. OpenMP: thread main loop of ncatted
 nco395. ncpdq: document rdr shr lists
 nco396. free() memory at end of each operator
 nco397. make ncpack symbolic link to ncpdq? Re-order/pack are completely independent yet need same structure of program
-nco402. Leave alone [un-]packing of fixed variables in arithmetic operators
-        See notes about this in nco_var_dfn()
 nco404. Does Ersoy's XML stylesheet nco.css work?
 nco406. Add advantages/disadvantages of NCO (compared to e.g., ANTS) description?
 nco421. ncpdq: Make packing offer to move missing value to inside range
@@ -426,15 +424,6 @@ nco668. Prefix nco.png fractal icon with text "NC" to look like "NCO"
 nco669. Command-line switch for float->double math-promotion to aviod underflow?
 nco671. Finish nco++/Makefile.old
 nco672. debian: replace netcdfg3 with netcdf try to build .debs again
-nco672. ncra bug of Martin Dix:
-        ncra -O -C -v pck,one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
-        ncks -v pck ~/foo.nc
-        pck should be 3 in foo.nc
-nco673. Make sure other operators correctly unpack non-processed data?
-        e.g., ncwa with non-averaged data
-        ncwa -O -C -a time -v pck,one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
-        ncks -v pck ~/foo.nc
-        pck should be 3 in foo.nc
 nco674. 
 ************************************************************************
 End ncoXXX TODOs

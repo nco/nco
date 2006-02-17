@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.22 2006-02-16 01:55:12 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.23 2006-02-17 06:35:36 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -495,7 +495,7 @@ if ($dodap eq "FALSE"){
 
 	$tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_int $outfile";
-	$dsc_sng="record mean of integer with integer missing values across two files (TODO nco543)";
+	$dsc_sng="record mean of integer with integer missing values across two files";
 	$nsr_xpc= 5 ;
  go();
 
@@ -507,7 +507,7 @@ if ($dodap eq "FALSE"){
 
 	$tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_flt $in_pth_arg in.nc in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_flt $outfile";
-	$dsc_sng="record mean of integer with float missing values across two files (TODO nco543)";
+	$dsc_sng="record mean of integer with float missing values across two files";
 	$nsr_xpc= 5 ;
  go();
 
@@ -530,9 +530,9 @@ if ($dodap eq "FALSE"){
  go();
 
 	$tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v pck,one_dmn_rec_var $in_pth_arg in.nc $outfile";
-	$tst_cmd[1]="ncks -C -H -s '%3.2f' -v pck $outfile";
-	$dsc_sng="unpack non-record (i.e., non-processed) data before passing to output (fxm TODO nco672)";
-	$nsr_xpc= 3 ;
+	$tst_cmd[1]="ncks -C -H -s '%d' -v pck $outfile";
+	$dsc_sng="pass through non-record (i.e., non-processed) packed data to output (fxm TODO nco672)";
+	$nsr_xpc= 1 ;
  go();
 
 	$tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y avg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc $outfile";
@@ -603,9 +603,9 @@ if ($dodap eq "FALSE"){
 #go();
 
 	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time -v pck,one_dmn_rec_var $in_pth_arg in.nc $outfile";
-	$tst_cmd[1]="ncks -C -H -s '%3.2f' -v pck $outfile";
-	$dsc_sng="unpack non-averaged (i.e., non-processed) data before passing to output (fxm TODO nco673)";
-	$nsr_xpc= 3 ;
+	$tst_cmd[1]="ncks -C -H -s '%df' -v pck $outfile";
+	$dsc_sng="pass through non-averaged (i.e., non-processed) packed data to output (fxm TODO nco673)";
+	$nsr_xpc= 1 ;
  go();
 
 	$tst_cmd[0]="ncwa -N $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon -w gw $in_pth_arg in.nc $outfile";
