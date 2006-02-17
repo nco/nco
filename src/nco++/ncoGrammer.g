@@ -321,11 +321,54 @@ public:
     ncoTree(prs_sct *prs_in){
         prs_arg=prs_in;
         ncoTree();
-    }    
+    }
 
+public:
+    void run(RefAST tr){
+        while(tr) {
+          (void)statements(tr);   
+          tr=tr->getNextSibling();   
+        }
+    }
 }
 
 
+statements returns [int iret] 
+
+    : blo:BLOCK { 
+      run(blo->getFirstChild());
+            
+                }
+    | ass:ASSIGN {
+      assign(ass);
+ 	  cout << "Type ASSIGN " <<  ass->getFirstChild()->getText() <<endl;
+      }
+              
+    | iff:IF {
+      bool br;
+      var_sct *var;
+      RefAST ex;      
+	  //Calculate logical expression
+	  var= out( iff->getFirstChild());
+	  br=ncap_var_lgcl(var);
+	  var=nco_var_free(var);
+
+      if(br) { 
+         run(iff->getFirstChild()->getNextSibling() );    
+	     }else{ 
+           // See if else exists 
+         ex=iff->getFirstChild()->getNextSibling()->getNextSibling(); 
+         if(ex && ex->getType()==ELSE ) run(ex->getFirstChild());
+       }
+      }
+    | els:ELSE {
+      // exit function
+      iret =0;
+      return iret;
+      }
+    | nul:NULL_NODE {
+            }
+    ;
 
 assign 
 {
@@ -433,7 +476,7 @@ assign
            break;
          }
        }    
-       ;     
+    ;     
             
 
 out returns [var_sct *var]
