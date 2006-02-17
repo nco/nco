@@ -3,7 +3,7 @@ import getopt, os, sys, tempfile, shutil
 import re, string, time
        
        
-# $Id: dap_nc_handler_hack,v 1.9 2006-02-17 00:05:49 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.10 2006-02-17 01:03:59 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -245,9 +245,11 @@ class Command:
 
     def buildCommandLine(self):
         line = ""
+        needsDap = False
         if self.cmd == None: # don't build cmdline for non-cmds
             return
-        line += ScriptingEnv.VALID_COMMANDS[self.cmd]
+        # prefix cmd at the end.
+        #line += ScriptingEnv.VALID_COMMANDS[self.cmd]
 
         # pass options first
         for (k,v) in self.arguments.items():
@@ -276,10 +278,14 @@ class Command:
                 newname = self.env.env["defpath"] + os.sep + name
                 #newname = word
                 line += " " + newname
-            else: line += " " + name
-
-        self.cmdLine = line
-        logit( "real cmdline: " + line)
+            else:
+                needsDap |= self.env.requiresDap(name)
+                line += " " + name
+        if needsDap:
+            self.cmdLine = ScriptingEnv.VALID_DAPCOMMANDS[self.cmd] + " " + line
+        else:
+            self.cmdLine = ScriptingEnv.VALID_COMMANDS[self.cmd] + " " + line
+        logit( "real cmdline: " + self.cmdLine)
 
     
 # This class should hold the state used by a single script
@@ -303,9 +309,10 @@ class ScriptingEnv:
             "ncea", "ncecat", "ncflint", "ncks",
             "ncpack", "ncpdq", "ncra", "ncrcat",
             "ncrename", "ncunpack", "ncwa"]
-    VALID_COMMANDS = {}
-    for n in NCO_COMMANDS:
-        VALID_COMMANDS[n] = (NCBINPATH + os.sep + n )
+    # for now, all commands are valid in netcdf4 or over dap
+    VALID_COMMANDS=dict((x, local.nc4BinPath+os.sep+x) for x in NCO_COMMANDS)
+    VALID_DAPCOMMANDS=dict( (x, local.ncDapBinPath+os.sep+x) for x in NCO_COMMANDS)
+    
     # room to add other commands here.
         
     
@@ -378,6 +385,9 @@ class ScriptingEnv:
         """return a sre.SRE_Match object if input matches our primitive regex
         otherwise, return None"""
         return re.match('^\w+://', cand)
+
+    def requiresDap(self, word):
+        return word[:7] == 'http://'
 
         
     def possibleFilename(self, cand):
@@ -677,6 +687,9 @@ logit("handler hack log closed at " + time.ctime()+ "\n")
 # The server should respond with something like
 # 5 jobs submitted, your job id: 200
 # %async-resp% yourhost, url, 5, 200
-
+#
+#234567890123456789012345678901234567890123456789012345678901234567890123456789
+#0       1         2         3         4         5         6         7
+#
 
 
