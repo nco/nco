@@ -15,10 +15,6 @@
 
 #include "ncap2.hh"
 
-// Forward Declaration
-int switchboard(RefAST t,ncoTree &walker);
-
-struct ncoParserTokenTypes TokenTypes;
 
 int parse_antlr(prs_sct *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
 {
@@ -69,20 +65,20 @@ bool bchk;
 
 	try {   
 	  ncoTree walker(prs_arg);
-          //walker.setTable(prs_arg);
+	  printf("Walker initialized\n");
+          // Run script
+	  walker.run(t);
 
-	  printf("Tree walk completed\n");
-	  (void)switchboard(t,walker);
 	}  catch(std::exception& e) {
 	cerr << "exception: " << e.what() << endl;
 	}	
-        cout<< "Switchboard complete\n";
+        cout<< "run complete\n";
         return 1;
 
 
 }              
 
-	
+/*	
 int switchboard(RefAST t, ncoTree &walker) {
 bool br;;
 var_sct *var;
@@ -144,40 +140,4 @@ RefAST a;
 	return 1;
 }
 
-// Function -- convert antlr native types to nctypes;
-nc_type a2ntype(int itype)
-{
-  nc_type nret=NC_NAT;;
-  
-  switch( itype){
-
-    case TokenTypes.BYTE: 
-      nret= NC_BYTE;
-      break;
-
-   case TokenTypes.SHORT: 
-     nret= NC_SHORT;
-      break;
-
-   case TokenTypes.INT: 
-     nret= NC_INT;
-      break;
-
-   case TokenTypes.FLOAT: 
-     nret= NC_FLOAT;
-      break;
-
-   case TokenTypes.DOUBLE: 
-     nret= NC_DOUBLE;
-      break;
-
-  default:
-    nret= NC_NAT;
-    break;
-  }
-  return nret;
-
-}
-
-
-
+*/
