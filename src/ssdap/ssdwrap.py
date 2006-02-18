@@ -13,12 +13,15 @@ import urllib
 # Report option passing problems so I can fix this.  Not all nco
 # commands have been tested.
 #
-# version info: $Id: ssdwrap.py,v 1.4 2006-02-17 19:17:23 mangalam Exp $
+# version info: $Id: ssdwrap.py,v 1.5 2006-02-18 00:54:54 mangalam Exp $
 ########################################################################
 
 
 # configurable params
-serverBase = "http://sand:80/cgi-bin/dods/nph-dods"
+#serverBase = "http://localhost:8000/cgi/nph-dods"
+# this way of organizing the config has to be changed so that the server url
+# can be passed in via an option or the config can reside in a std config file
+serverBase = "http://sand.ess.uci.edu:80/cgi/dods/nph-dods"
 
 # params probably unchanged
 
@@ -44,7 +47,7 @@ class SsdapCommon:
                      "huh", "hmm",
                      "fnc_tbl", "prn_fnc_tbl", "hst", "history",
                      "Mtd", "Metadata", "mtd", "metadata",
-                     "lcl=", "local=", "nintap", 
+                     "lcl=", "local=", "nintap",
                      "output=", "fl_out=",
                      "ovr", "overwrite", "prn", "print", "quiet",
                      "pth=", "path=",
@@ -53,7 +56,7 @@ class SsdapCommon:
                      "sng_fmt=", "string=",
                      "thr_nbr=", "threads=", "omp_num_threads=",
                      "xcl", "exclude"
-                     "variable=", "op_typ=", "operation=" ] 
+                     "variable=", "op_typ=", "operation=" ]
     pass
 
 class Command:
@@ -89,16 +92,16 @@ class Command:
 
         assert ofname != ""  # make sure we got one
 
-            
+
         self.outfilename = ofname # save outfilename
         argdict["--output"] = "%outfile%" # patch with magic script hint
         # hack since ncbo doesn't support --output option
         argdict["-o"] = argdict.pop("--output")
-        
-        
+
+
         #patch infiles with -p option
         self.infilename = self.patchInfiles(argdict, leftover)
-        
+
         # now, build script command line
         return self.rebuildCommandline(argdict, self.infilename)
 
@@ -120,7 +123,7 @@ class Command:
             if p in argdict:
                 argdict.pop(p)  # ignore return value
         return newlist
-        
+
     def rebuildCommandline(self, argdict, infilename):
         line = self.cmd
         for (k,v) in argdict.items():
@@ -133,12 +136,12 @@ class Command:
         for name in infilename:
             line += " " + name
         return line
-    
+
     def scriptLineSub(self):
         return self.cmdline
     def outputFile(self):
         return self.outfilename
-    
+
 
 class RemoteScript:
     serverBase = serverBase
@@ -152,7 +155,7 @@ class RemoteScript:
         self.cmdList.append(cmd)
         # might consider building dep tree here.
         return True
-        
+
     def run(self):
         """sends off its current batch of commands off to the server to run"""
         script = self.buildScript()
@@ -184,7 +187,7 @@ class RemoteScript:
             print "odd error in fetching url/writing file."
         # should be done now
         return True
-    
+
     pass
 
 
@@ -212,7 +215,7 @@ rs = RemoteScript()
 #    line += x + " "
 rs.addCommand(Command(sys.argv[1], sys.argv[2:]))
 rs.run()
-    
+
 # ssdwrap ncbadf src dest.nc
 #wget serverbase/virtdest.nc.dods?superduperscript11
 

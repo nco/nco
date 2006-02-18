@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.159 2006-01-31 06:42:10 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.160 2006-02-18 00:54:54 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -43,6 +43,44 @@ AC_COPYRIGHT
 AC_CONFIG_SRCDIR([src/nco/ncks.c])
 # Put helper scripts here to reduce top level clutter
 AC_CONFIG_AUX_DIR(autobld)
+
+# Begin pvmgetarch Compatibility
+# Compatibility map between pvmgetarch and GNU triplets
+# Maintained as master list of architectures on which NCO is known to work
+case ${host} in
+    alpha*-dec-osf* ) AC_DEFINE(LINUXALPHA,1,Compatibility pvmgetarch token for OSF on DEC Alpha)
+	;;
+    alpha*-*-linux* ) AC_DEFINE(LINUXALPHA,1,Compatibility pvmgetarch token for Linux on DEC Alpha)
+	;;
+    hppa*-hp-hpux* ) AC_DEFINE(HPUX,1,Compatibility pvmgetarch token for HPUX on PA RISC)
+	;;
+    i*86-pc-freebsd* ) AC_DEFINE(FREEBSD,1,Compatibility pvmgetarch token for FreeBSD on Intel x86)
+	;;
+    i*86-pc-linux* ) AC_DEFINE(LINUX,1,Compatibility pvmgetarch token for Linux on Intel x86) linux=1
+	;;
+    i*86-pc-cygwin* ) AC_DEFINE(WIN32,1,Compatibility pvmgetarch token for Windows on Intel x86)
+	;;
+    mips*-sgi-irix* ) AC_DEFINE(SGIMP64,1,Compatibility pvmgetarch token for IRIX on SGI MIPS)
+	;;
+    powerpc-apple-darwin* ) AC_DEFINE(MACOSX,1,Compatibility pvmgetarch token for Apple Mac OSX)  macosx=1
+	;;
+    powerpc-ibm-aix* ) AC_DEFINE(AIX,1,Compatibility pvmgetarch token for AIX on IBM PowerPC)
+	;;
+    powerpc-*-linux* ) AC_DEFINE(LINUXPPC,1,Compatibility pvmgetarch token for Linux on PowerPC)
+	;;
+    rs6000-ibm-aix* ) AC_DEFINE(LINUXPPC,1,Compatibility pvmgetarch token for AIX on IBM RS6000)
+	;;
+    sparc64-*-linux* ) AC_DEFINE(LINUXSPARC64,1,Compatibility pvmgetarch token for Linux on Sun Sparc)
+	;;
+    sparc-sun-solaris2 ) AC_DEFINE(SUNMP,1,Compatibility pvmgetarch token for Solaris 2.x on Sun Sparc)
+	;;
+    sx*-nec-superux* ) AC_DEFINE(NECSX,1,Compatibility pvmgetarch token for SuperUX on NEC SX)
+	;;
+	 x86_64*-linux* ) AC_DEFINE(LINUXAMD64,1,Compatibility pvmgetarch token for Linux on AMD x86_64)
+	;;
+esac
+# End pvmgetarch Compatibility
+
 
 # Get build system parameters, need config.guess and config.sub to use these
 AC_CANONICAL_BUILD
@@ -426,7 +464,21 @@ AC_CHECK_LIB([resolv],[res_init])
 AC_CHECK_LIB([socket],[main])
 AC_CHECK_LIB([thread],[main])
 AC_CHECK_LIB([nsl],[main])
-AC_CHECK_LIB([nco],[nco_open])
+AC_CHECK_LIB([nco],[nco_open],[enable_libnco=yes],,)
+
+	echo ""
+	echo "##########################################################"
+	echo "#     Sorting out macosx build parameters                #"
+	echo "#                                                        #"
+	echo "enable_libnco = $enable_libnco and macosx =  $macosx"
+	echo "##########################################################"
+	echo ""
+
+if ((test "${enable_libnco}" = 'yes') && (test "${macosx}" != 1)); then
+	echo "Thank God - NOT MacOSX - adding -lnco to LIBS"
+	LIBS="-lnco $LIBS"
+fi
+
 # End Library checks
 
 # OPeNDAP (aka DAP) support was here
@@ -467,7 +519,7 @@ if (test "${enable_mpi}" = 'yes'); then
 
 	# if MPI_CC = 'mpcc' (AIX), everything else is set up correctly, so no need to check for mpi.h, libmpi etc
 
-	if test "${MPI_CC}" == "mpicc"; then
+	if test "${MPI_CC}" = "mpicc"; then
 		# is there an mpi.h?
 		AC_CHECK_HEADER(mpi.h,[AC_DEFINE([ENABLE_MPI],[1],[Enable special compilation for MPI with mpicc])])
 		AC_CHECK_HEADER(mpi.h, [HAVE_MPI_H="yes"], [HAVE_MPI_H="no"], [])
@@ -855,43 +907,9 @@ if test "${enable_optimize_custom}" = 'yes'; then
 fi
 # End enable_optimize_custom
 
-# Begin pvmgetarch Compatibility
-# Compatibility map between pvmgetarch and GNU triplets
-# Maintained as master list of architectures on which NCO is known to work
-case ${host} in
-    alpha*-dec-osf* ) AC_DEFINE(LINUXALPHA,1,Compatibility pvmgetarch token for OSF on DEC Alpha)
-	;;
-    alpha*-*-linux* ) AC_DEFINE(LINUXALPHA,1,Compatibility pvmgetarch token for Linux on DEC Alpha)
-	;;
-    hppa*-hp-hpux* ) AC_DEFINE(HPUX,1,Compatibility pvmgetarch token for HPUX on PA RISC)
-	;;
-    i*86-pc-freebsd* ) AC_DEFINE(FREEBSD,1,Compatibility pvmgetarch token for FreeBSD on Intel x86)
-	;;
-    i*86-pc-linux* ) AC_DEFINE(LINUX,1,Compatibility pvmgetarch token for Linux on Intel x86) linux=1
-	;;
-    i*86-pc-cygwin* ) AC_DEFINE(WIN32,1,Compatibility pvmgetarch token for Windows on Intel x86)
-	;;
-    mips*-sgi-irix* ) AC_DEFINE(SGIMP64,1,Compatibility pvmgetarch token for IRIX on SGI MIPS)
-	;;
-    powerpc-apple-darwin* ) AC_DEFINE(MACOSX,1,Compatibility pvmgetarch token for Apple Mac OSX)  macosx=1
-	;;
-    powerpc-ibm-aix* ) AC_DEFINE(AIX,1,Compatibility pvmgetarch token for AIX on IBM PowerPC)
-	;;
-    powerpc-*-linux* ) AC_DEFINE(LINUXPPC,1,Compatibility pvmgetarch token for Linux on PowerPC)
-	;;
-    rs6000-ibm-aix* ) AC_DEFINE(LINUXPPC,1,Compatibility pvmgetarch token for AIX on IBM RS6000)
-	;;
-    sparc64-*-linux* ) AC_DEFINE(LINUXSPARC64,1,Compatibility pvmgetarch token for Linux on Sun Sparc)
-	;;
-    sparc-sun-solaris2 ) AC_DEFINE(SUNMP,1,Compatibility pvmgetarch token for Solaris 2.x on Sun Sparc)
-	;;
-    sx*-nec-superux* ) AC_DEFINE(NECSX,1,Compatibility pvmgetarch token for SuperUX on NEC SX)
-	;;
-	 x86_64*-linux* ) AC_DEFINE(LINUXAMD64,1,Compatibility pvmgetarch token for Linux on AMD x86_64)
-	;;
-esac
-# End pvmgetarch Compatibility
-
+######################################################
+# Previous Location of the PVMARCH stuff
+######################################################
 # Begin netCDF test data
 AC_PATH_PROG(path_to_ncgen,ncgen,,)
 if test "${path_to_ncgen}"; then
@@ -918,7 +936,7 @@ fi
 
 # Tell GNU C compiler to use C99 standard (older gcc versions default to C89)
 # fxm: only do this for gcc, not g++
-if (test $ac_compiler_gnu == "yes"); then
+if (test $ac_compiler_gnu = "yes"); then
     CFLAGS="$CFLAGS -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE"
     if (test "${macosx}" = 1); then
 	CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'`

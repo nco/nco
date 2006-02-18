@@ -4,7 +4,7 @@
 # for the NCO benchmark script nco_bm.pl
 # It must maintain Perl semantics for Perl code.
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_benchmarks.pl,v 1.14 2005-12-19 21:43:05 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_benchmarks.pl,v 1.15 2006-02-18 00:54:54 mangalam Exp $
 
 	print "\nINFO: Starting Benchmarks now\n";
 	if($dbg_lvl > 1){print "bm: prefix = $prefix\n";}
@@ -34,7 +34,7 @@
 		}
 	}
 
-
+#  my $ssdwrap = "$MY_BIN_DIR/ssdwrap.py --ncks var_name 'nco commandline'"
 
 	#################### begin ncap benchmark hjm - needs to be verified.
 	$opr_nm='ncap';

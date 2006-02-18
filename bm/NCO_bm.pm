@@ -15,7 +15,7 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.27 2006-02-17 19:17:22 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.28 2006-02-18 00:54:54 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -481,6 +481,7 @@ sub set_dat_dir {
 # go() consumes the @tst_cmd array that contains a series of tests and executes them in order
 sub go {
 	my $aix = 0;
+	my $is_sng = 1;
 	if ($os_nme =~ /AIX/) {$aix = 1;} # yafv for aix
 	$dbg_sgn = "";
 	$err_sgn = "";
@@ -657,7 +658,7 @@ sub go {
 
 	 # this comparing of the results shouldn't even be necessary as we're validating the whole file,
 	 # not just a single value.
-	chomp $result;  # Remove trailing newline for easier regex comparison
+#	chomp $result;  # Remove trailing newline for easier regex comparison
 
 	# Compare numeric results
 	if ($result_is_num && $expect_is_num) { # && it equals the expected value

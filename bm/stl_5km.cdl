@@ -1,4 +1,4 @@
-//$Header: /data/zender/nco_20150216/nco/bm/stl_5km.cdl,v 1.1 2005-03-23 18:28:16 mangalam Exp $
+//$Header: /data/zender/nco_20150216/nco/bm/stl_5km.cdl,v 1.2 2006-02-18 00:54:54 mangalam Exp $
 // ncgen -b -o sat_5km.nc sat_5km.cdl     (-> 298,650,700 bytes)
 // takes about 7.5 (real) sec on 900MHz/512MB a22p thinkpad, 
 // most of it waiting for disk
@@ -17,7 +17,7 @@ variables:
     double lat(lat);
     double lon(lon);
 
-// 8 2D vars of dim 2160x4320
+// 8 2D vars of dim 2160x4320 (=9331200)  * 8 = 74649600
     float d2_00(lat,lon);
     float d2_01(lat,lon);
     float d2_02(lat,lon);
