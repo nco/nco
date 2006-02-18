@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.3 2006-02-18 01:17:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.4 2006-02-18 01:29:16 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -36,7 +36,6 @@
 #include <vector>
 #include "NcapVector.hh"
 #include "NcapVar.hh"
-#include "NcapVarVector.hh"
 
 /* Define symbol table */
 

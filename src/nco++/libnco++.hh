@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco++/libnco++.hh,v 1.1 2006-02-18 01:17:58 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco++/libnco++.hh,v 1.2 2006-02-18 01:29:16 zender Exp $ 
 
 // Purpose: Prototypes, typedefs, and global variables for libnco++
 
@@ -17,7 +17,8 @@
 #define LIBNCOXX_HH
 
 // Personal headers
-#include "NcapVector.hh"
-#include "NcapVar.hh"
-#include "NcapVarVector.hh"
+#include "ncoLexer.hpp" // 
+#include "ncoParser.hpp" //
+#include "ncoTree.hpp" // 
+#include "NcapVarVector.hh" // 
 #endif // LIBNCOXX_HH  
