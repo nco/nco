@@ -1,5 +1,7 @@
 2006-02-17  Charlie Zender  <zender@uci.edu>
 
+	* Re-make libnco (when necessary) before linking ncap2
+
 	* Add ncap2 to prg_prs()
 
 	* Add doc/ncap2.in to test ncap2
