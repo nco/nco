@@ -15,14 +15,14 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.28 2006-02-18 00:54:54 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.29 2006-02-18 04:58:22 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
 use Cwd 'abs_path';
 
 use strict;
-use warnings;
+# use warnings;
 require Exporter;
 our @ISA = qw(Exporter);
 #export functions (top) and variables (bottom)
@@ -596,12 +596,12 @@ sub go {
 #	print "\nresult of [$_] = $result\n";
 		chomp $result;
 		# figure out if $result is numeric or alpha
-		if ($result =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ && 
+		if ($result =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
           $result !~ /[a-df-zA-DF-Z ,]/) { $result_is_num = 1;}
 		else {                               $result_is_num = 0;}
 
 		# figure out if $nsr_xpc is numeric or alpha
-		if ($nsr_xpc =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ && 
+		if ($nsr_xpc =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
           $nsr_xpc !~ /[a-df-zA-DF-Z ,]/) { $expect_is_num = 1;}
 		else {                                $expect_is_num = 0;}
 
@@ -712,7 +712,7 @@ sub failed {
 	$failure{$opr_nm}++;
 	$err_sgn .= "\nERR: FAILURE in $opr_nm failure: $dsc_sng\n";
 	foreach(@tst_cmd) { $err_sgn .= "\t$_\n";}
-	$err_sgn .= "ERR::EXPLAIN: Result: [$result] != Expected: [$nsr_xpc]\n\n" ; 
+	$err_sgn .= "ERR::EXPLAIN: Result: [$result] != Expected: [$nsr_xpc]\n\n" ;
 	return;
 }
 
