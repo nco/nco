@@ -1,6 +1,7 @@
 // Purpose: Sample input script for ncap2
 
-// Usage: ncap2 -S ~/nco/data/ncap2.in ~/nco/data/in.nc
+// Usage: 
+// ncap2 -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
 // ncks ~/foo.nc
 
 a1=three_dmn_var_dbl+three_dmn_var_int;

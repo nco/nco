@@ -1,5 +1,7 @@
 2006-02-17  Charlie Zender  <zender@uci.edu>
 
+	* Add ncap2 to prg_prs()
+
 	* Add doc/ncap2.in to test ncap2
 
 	* ncap2 builds within tree now
