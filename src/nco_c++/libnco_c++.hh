@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/libnco_c++.hh,v 1.6 2005-01-07 23:54:59 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/libnco_c++.hh,v 1.7 2006-02-18 01:40:46 zender Exp $ 
 
 // Purpose: Prototypes, typedefs, and global variables for libnco_c++
 
@@ -13,8 +13,8 @@
 // Usage:
 // #include <libnco_c++.hh> // C++ interface to netCDF C library
 
-#ifndef LIBNCO_CCC_HH // Contents have not yet been inserted in current source file  
-#define LIBNCO_CCC_HH
+#ifndef LIBNCO_CXX_HH // Contents have not yet been inserted in current source file  
+#define LIBNCO_CXX_HH
 
 // Personal headers
 #include <nco_att.hh> // C++ interface to netCDF attribute routines
@@ -24,4 +24,4 @@
 #include <nco_utl.hh> // C++ interface utilities for netCDF routines
 #include <nco_var.hh> // C++ interface to netCDF variable routines
 
-#endif // LIBNCO_CCC_HH  
+#endif // LIBNCO_CXX_HH  

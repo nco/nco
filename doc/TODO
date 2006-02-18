@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.708 2006-02-17 19:17:23 mangalam Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.709 2006-02-18 01:40:46 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -419,9 +419,10 @@ nco666. Grid regridding/interpolation operator ncrebin?
 nco667. rnd_nbr(): ncap does not link to rnd_nbr on AMD64 with bld/Makefile
 nco668. Prefix nco.png fractal icon with text "NC" to look like "NCO"
 nco669. Command-line switch for float->double math-promotion to aviod underflow?
-nco671. Finish nco++/Makefile.old
-nco672. debian: replace netcdfg3 with netcdf try to build .debs again
-nco674. 
+nco674. debian: replace netcdfg3 with netcdf try to build .debs again
+nco675. ncap2: Makefile generates redundant antlr runs
+nco676. ncap2: not finding input files
+nco677. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

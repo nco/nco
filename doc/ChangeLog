@@ -1,5 +1,11 @@
 2006-02-17  Charlie Zender  <zender@uci.edu>
 
+	* Progress towards cleaning up libnco++ usage/headers
+
+	* Add libnco++.hh to store all libnco++ headers
+
+	* Add ncap2 target to bld/Makefile for convenience
+
 	* Re-make libnco (when necessary) before linking ncap2
 
 	* Add ncap2 to prg_prs()
