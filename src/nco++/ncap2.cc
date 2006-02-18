@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.2 2006-02-03 01:59:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.3 2006-02-18 01:17:58 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -78,7 +78,6 @@ size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremente
 size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap_lex.l) */
 char **ncap_fl_spt_glb=NULL; /* [fl] Script file */
 
-
 int 
 main(int argc,char **argv)
 {
@@ -119,8 +118,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.2 2006-02-03 01:59:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.2 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.3 2006-02-18 01:17:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.3 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
