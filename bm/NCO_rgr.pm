@@ -3,9 +3,9 @@ package NCO_rgr;
 # This file contains all the REGRESSION tests for the NCO operators.
 # The BENCHMARKS are coded in the file "nco_bm_benchmarks.pl" which is inline
 # code.  This is a module, so it has different packaging semantics, but
-# it must maintain Perl semantics
+# it must maintain Perl semantics. - hjm
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.24 2006-02-17 19:17:22 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.25 2006-02-18 05:03:40 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
