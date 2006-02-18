@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics. - hjm
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.25 2006-02-18 05:03:40 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.26 2006-02-18 06:09:47 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -531,7 +531,7 @@ if ($dodap eq "FALSE"){
 
 	$tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v pck,one_dmn_rec_var $in_pth_arg in.nc $outfile";
 	$tst_cmd[1]="ncks -C -H -s '%d' -v pck $outfile";
-	$dsc_sng="pass through non-record (i.e., non-processed) packed data to output (fxm TODO nco672)";
+	$dsc_sng="pass through non-record (i.e., non-processed) packed data to output";
 	$nsr_xpc= 1 ;
  go();
 
@@ -603,8 +603,8 @@ if ($dodap eq "FALSE"){
 #go();
 
 	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time -v pck,one_dmn_rec_var $in_pth_arg in.nc $outfile";
-	$tst_cmd[1]="ncks -C -H -s '%df' -v pck $outfile";
-	$dsc_sng="pass through non-averaged (i.e., non-processed) packed data to output (fxm TODO nco673)";
+	$tst_cmd[1]="ncks -C -H -s '%d' -v pck $outfile";
+	$dsc_sng="pass through non-averaged (i.e., non-processed) packed data to output";
 	$nsr_xpc= 1 ;
  go();
 
