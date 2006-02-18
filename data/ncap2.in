@@ -1,0 +1,51 @@
+// Purpose: Sample input script for ncap2
+
+// Usage: ncap2 -S ~/nco/data/ncap2.in ~/nco/data/in.nc
+// ncks ~/foo.nc
+
+a1=three_dmn_var_dbl+three_dmn_var_int;
+a2=sin(three_dmn_var_dbl)^2.0 + cos(three_dmn_var_dbl)^2.0;
+if(a2 > 0.99) a3=1.00;
+a4[$time,$lat,$lon]=time*2;
+a1@one=four;
+a5=a1@one;
+// check if thens
+if( 0 ) a6=0; else {{ a7=1; a8=2; }}
+if(1) {a9=1; a10=2;}
+if( 0.0 ) a6=0; else if(0) {a11=1; a12=2;} else if( 3>2) a13=3;
+// check dangling else
+if(1) if(0) a14=1; else a15=1; 
+b2=999;
+b2@one=2222.0d; 
+b2@zero=three_dmn_var_dbl@missing_value;
+b2@two=sin(3.14);
+b2@three=cos(3.14);
+b2@four=!sin(3.14);
+b3=b2@zero;
+// expressions with vars and attributtes
+c1@byte=10b;
+c1@short=20s;
+c1@int=30;
+c1@float=40f;
+c1@double=50d;
+c1=four*c1@byte;
+d1=three_dmn_var_int*c1@double;
+// put var "into" an attributte
+d1@one=three_dmn_var_dbl;
+// Multiply two attributes one sz=1
+d1@two=d1@one*c1@int;
+// multiply attribute and var of the same size !
+e1=d1@one*three_dmn_var_int;
+// check global attributtes
+// Read global
+e1@test=global@history;
+// write global
+global@test=999;
+global@test2=global@Conventions;
+// Mask examples --grab  only values <= 20 from three_dmn_var_dbl
+mask_out= (three_dmn_var_dbl <= 20) *three_dmn_var_dbl;
+// check var/att casting;
+/e1@test=three_dmn_var_int;
+e1@test2=e1@test*c1@int;
+e1@three=10000d;
+e2[time]=0.99;

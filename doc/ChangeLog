@@ -1,8 +1,14 @@
+2006-02-17  Charlie Zender  <zender@uci.edu>
+
+	* ncap2 builds within tree now
+
+	* Add udunits libraries, remove dat target
+
 2006-02-16  Harry Mangalam <hjm@tacgi.com>
 
-	* corrected BM code to account for error strings being eval'ed as 0 
-	when compared as numeric and a number of other error-checking
-   improvements.
+	* Corrected BM code to account for error strings being eval'ed as 0 
+          when compared as numeric and a number of other error-checking
+          improvements.
 
 2006-02-16  Charlie Zender  <zender@uci.edu>
 
