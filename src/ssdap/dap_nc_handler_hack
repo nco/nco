@@ -3,7 +3,7 @@ import getopt, os, sys, tempfile, shutil
 import re, string, time
        
        
-# $Id: dap_nc_handler_hack,v 1.10 2006-02-17 01:03:59 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.11 2006-02-18 02:05:15 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -76,7 +76,8 @@ class SsdapCommon:
                      "huh", "hmm",
                      "fnc_tbl", "prn_fnc_tbl", "hst", "history",
                      "Mtd", "Metadata", "mtd", "metadata",
-                     "lcl=", "local=", "nintap", 
+                     "lcl=", "local=",
+                     "nintap", 
                      "output=", "fl_out=",
                      "ovr", "overwrite", "prn", "print", "quiet",
                      "pth=", "path=",

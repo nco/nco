@@ -13,14 +13,21 @@ import urllib
 # Report option passing problems so I can fix this.  Not all nco
 # commands have been tested.
 #
-# version info: $Id: ssdwrap.py,v 1.5 2006-02-18 00:54:54 mangalam Exp $
+# Note: --ncks option added. (will only work with multi-line capable server)
+#       Try:
+#       ./ssdwrap.py --ncks=P01 ncecat nc/foo_T42.nc
+#         (but variable P01 is not in foo_T42, so this won't really work.
+#
+#
+# version info: $Id: ssdwrap.py,v 1.6 2006-02-18 02:05:15 wangd Exp $
 ########################################################################
 
 
-# configurable params
+# Administrator configurable params
 #serverBase = "http://localhost:8000/cgi/nph-dods"
-# this way of organizing the config has to be changed so that the server url
-# can be passed in via an option or the config can reside in a std config file
+# FIXME: this way of organizing the config has to be changed so that
+# the server url can be passed in via an option or the config can reside
+# in a std config file
 serverBase = "http://sand.ess.uci.edu:80/cgi/dods/nph-dods"
 
 # params probably unchanged
@@ -47,7 +54,8 @@ class SsdapCommon:
                      "huh", "hmm",
                      "fnc_tbl", "prn_fnc_tbl", "hst", "history",
                      "Mtd", "Metadata", "mtd", "metadata",
-                     "lcl=", "local=", "nintap",
+                     "lcl=", "local=",
+                     "nintap", 
                      "output=", "fl_out=",
                      "ovr", "overwrite", "prn", "print", "quiet",
                      "pth=", "path=",
@@ -60,45 +68,77 @@ class SsdapCommon:
     pass
 
 class Command:
-    def __init__(self, cmd, argvlist):
+    NCKS_OPT = "--ncks"
+    NCKS_TEMP = "%tempf_SCRIPTncks%"
+    
+    def __init__(self, argvlist):
         """construct a command, which is a primitive-ish operation
         over netcdf files.  in the future, we can query the command
         for its attributes (i.e. complexity, dependencies, etc.)"""
-        self.cmd = cmd
-        self.cmdline = self.build(argvlist)
+        self.children = []
+
+        newList = self.preProcess(argvlist)
+        self.cmdline = self.build(newList)
+
         pass
+    def preProcess(self, argvlist):
+        longopts = ["ncks="]
+        shortopts = ''
+        (arglist, newlist) = getopt.getopt(argvlist,shortopts, longopts)
+        argdict = dict(arglist)
+        # if we just want ncks on the results, build a two line script.
+        if Command.NCKS_OPT in argdict:
+            # ncks on outfile is desired... create a new command line
+            # FIXME: not sure what sort of options we want on ncks
+            optlist = ["ncks", "-v", argdict[Command.NCKS_OPT],
+                       Command.NCKS_TEMP, "%stdout%"]
+            self.children.append( Command(optlist))
+            newlist.append(Command.NCKS_TEMP) #create output for first line
+            
+        return newlist
+
+    def specialOutput(self, fname):
+        return '%' == fname[0] == fname[-1]
+    
     def build(self, argvlist):
         """look for output filename, replace with magic key for remote"""
+        # pull of cmd first.
+        if argvlist[0] not in acceptableNcCommands:
+            raise "Bad NCO command"
+        self.cmd = argvlist[0]
+
         # some of these options do not make sense in this context,
         # and some have meanings that necessarily need changing.
         shortopts = SsdapCommon.parserShortOpt
         longopts =  SsdapCommon.parserLongOpt
-        (arglist, leftover) = getopt.getopt(argvlist,shortopts, longopts)
+        (arglist, leftover) = getopt.getopt(argvlist[1:],shortopts, longopts)
         argdict = dict(arglist)
+
         ofname = ""
-        if "--output" in argdict:
-            ofname = argdict["--output"]
-        for x in ["-o", "--fl_out"]:
+        for x in ["-o", "--fl_out", "--output"]:
             if x in argdict:
                 assert ofname == ""
                 ofname = argdict[x]
                 # convert alt specs to --output
-                argdict["--output"] = ofname
-            if ofname == "": # i.e. haven't gotten a parameterixed outfilename
-                ofname = leftover[-1]
-                argdict["--output"] = ofname # and add to dict.
-                assert len(leftover) > 1 # assume in.nc, out.nc, at least
-                leftover = leftover[:-1] # take only first element
+                argdict["--output"] = argdict.pop(x)
+        if ofname == "": # i.e. haven't gotten a parameterixed outfilename
+            ofname = leftover[-1]
+            argdict["--output"] = ofname # and add to dict.
+            assert len(leftover) > 1 # assume in.nc, out.nc, at least
+            leftover = leftover[:-1] # take only first element
 
         assert ofname != ""  # make sure we got one
-
-
         self.outfilename = ofname # save outfilename
-        argdict["--output"] = "%outfile%" # patch with magic script hint
-        # hack since ncbo doesn't support --output option
-        argdict["-o"] = argdict.pop("--output")
 
-
+        # do not patch output if it's special already.
+        if self.specialOutput(ofname) :
+            argdict.pop("--output")
+            # leave as special
+        else: 
+            argdict["--output"] = "%outfile%" # patch with magic script hint
+            # hack since ncbo doesn't support --output option
+            argdict["-o"] = argdict.pop("--output")
+            
         #patch infiles with -p option
         self.infilename = self.patchInfiles(argdict, leftover)
 
@@ -133,13 +173,22 @@ class Command:
                 line += " " + k + "='" + v + "'"
             else:
                 line += " " + k + " " + v
-        for name in infilename:
-            line += " " + name
+        line += ''.join([" " + name for name in infilename])
+        if "--output" not in argdict:
+            line += " " + self.outfilename
         return line
+
+    def childCommands(self):
+        """Commands can have children.  A child is a command that should
+        be executed after the parent.  Often times, in parsing and
+        building a command, children are discovered."""
+        return self.children
 
     def scriptLineSub(self):
         return self.cmdline
     def outputFile(self):
+        if self.specialOutput(self.outfilename):
+            return None
         return self.outfilename
 
 
@@ -153,6 +202,10 @@ class RemoteScript:
     def addCommand(self, cmd):
         assert isinstance(cmd, Command)
         self.cmdList.append(cmd)
+
+        for c in cmd.childCommands():
+            self.addCommand(c)
+        
         # might consider building dep tree here.
         return True
 
@@ -165,23 +218,36 @@ class RemoteScript:
     def buildScript(self):
         """builds a textual script to send off to the server processor"""
         script = ""
-        for x in self.cmdList:
-            script += x.scriptLineSub()
+        script = "".join([x.scriptLineSub() + "\n" for x in self.cmdList])
         return script
 
     def executeBuilt(self, script):
         """sends the script to be executed"""
-        filename = self.cmdList[0].outputFile()
-        url = serverBase + "/" + filename
-        url += ".dods?superduperscript11"
-        print "url is " + url
-        print "and script is " + script
-        #return True
+
+        # pick the outfile of the last cmd... not sure this is right.
+        # but it seems better than picking the one from the first
+        filename = self.cmdList[-1].outputFile()
         try:
+            target = None
+            needToClose = False
+            if not filename:
+                filename = "DUMMY.nc"
+                target = sys.stdout
+            else:
+                target = open(filename, "wb") # open local result
+                needToClose = True
+
+            url = serverBase + "/" + filename
+            url += ".dods?superduperscript11"
+            
+            print "url is " + url
+            print "and script is " + script
+            #return True
+
             result = urllib.urlopen(url, script) # request from server
-            target = open(filename, "wb") # open local result
+
             shutil.copyfileobj(result, target) # funnel stuff to local
-            target.close() # done writing, ok to close
+            if needToClose: target.close() # done writing, ok to close
             result.close() #done copying, ok to close
         except AttributeError:
             print "odd error in fetching url/writing file."
@@ -197,23 +263,33 @@ def printUsage():
     for c in acceptableNcCommands: print c,
     print
     print "... and cmd args are the args you want for the command"
+    print "Note that you have to have both an input and output file specified,"
+    print "unless you're using --ncks=var, where var is the name of the"
+    print "variable you want from ncks."
 
 if len(sys.argv) < 4:  # we'll use the heuristic that we have at least:
                        # ssdwrap.py ncsomething in.nc out.nc
     printUsage()
     sys.exit(1)
 
-ncCommand = sys.argv[1]
-if ncCommand not in acceptableNcCommands:
+# defer command checking to the command itself.  
+# ncCommand = sys.argv[1]
+# if ncCommand not in acceptableNcCommands:
+#     printUsage()
+#     sys.exit(1)
+passedCommand = None
+try:
+    passedCommand = Command(sys.argv[1:])
+except:
+    print "Unexpected error:", sys.exc_info()[0]
+    sys.excepthook(sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
     printUsage()
     sys.exit(1)
-
-
 rs = RemoteScript()
 #line = ""
 #for x in sys.argv[1:]:
 #    line += x + " "
-rs.addCommand(Command(sys.argv[1], sys.argv[2:]))
+rs.addCommand(passedCommand)
 rs.run()
 
 # ssdwrap ncbadf src dest.nc
