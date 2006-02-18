@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.93 2006-02-17 06:35:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.94 2006-02-18 07:18:53 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -51,11 +51,11 @@ extern "C" {
 #endif /* !__cplusplus */
 
 /* Boolean values */
-#ifndef __GNUG__
+#ifndef __cplusplus
 #ifndef bool
 #define bool int
 #endif /* bool */
-#endif /* _cplusplus */
+#endif /* __cplusplus */
 #ifndef True
 #define True 1
 #endif /* True */

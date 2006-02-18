@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.54 2006-01-31 06:42:11 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.55 2006-02-18 07:18:53 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -814,8 +814,7 @@ M_PI {return NAMED_CONSTANT;}
 %%
 
 /* Begin user functions section */
-
-bool
+int /* fxm: 20060217 Change to int from bool to work with g++ */
 yywrap(void)
 {
   /* Purpose: Routine to replace library-defined yywrap() 

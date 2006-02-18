@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.709 2006-02-18 01:40:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.710 2006-02-18 07:18:52 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -421,8 +421,11 @@ nco668. Prefix nco.png fractal icon with text "NC" to look like "NCO"
 nco669. Command-line switch for float->double math-promotion to aviod underflow?
 nco674. debian: replace netcdfg3 with netcdf try to build .debs again
 nco675. ncap2: Makefile generates redundant antlr runs
-nco676. ncap2: not finding input files
-nco677. 
+nco676. ncap2: not finding input files when libnco built with gcc
+        bool *FL_LST_IN_FROM_STDIN not reaching nco_fl_lst_mk() intact
+        namespace issues?
+nco677. Get ncap2 functioning when libnco built with gcc
+nco678. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

@@ -1,5 +1,11 @@
 2006-02-17  Charlie Zender  <zender@uci.edu>
 
+	* ncap2 compiles and fails when libnco built with gcc
+
+	* ncap2 compiles and runs when libnco built with g++
+
+	* Change to int yywrap() from bool yywrap() to work with g++
+
 	* Progress towards cleaning up libnco++ usage/headers
 
 	* Add libnco++.hh to store all libnco++ headers

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.4 2006-02-18 01:40:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.5 2006-02-18 07:18:53 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -30,10 +30,8 @@
    Irvine, CA 92697-3100 */
 
 /* Usage:
-   ncap -O -D 1 -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-   ncap -O -D 1 -s a=b+c -s "b=c-d/2." -S ncap.in in.nc foo.nc
-   ncap -O -D 1 -s two=one+two in.nc foo.nc
-   scp ~/nco/src/nco/ncap.c esmf.ess.uci.edu:nco/src/nco/ncap.c */
+   ncap2 -O -D 1 -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
+   ncap2 -O -D 1 -s two=one+two in.nc foo.nc */
 
 /* temporary define --not for release */
 // #define HAVE_CONFIG_H 1
@@ -71,8 +69,8 @@
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
 #include "ncap2.hh" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
-#include "libnco.h" /* netCDF Operator (NCO) library */
 #include "libnco++.hh" /* netCDF Operator (NCO) C++ library */
+#include "libnco.h" /* netCDF Operator (NCO) library */
 
 /* Global variables */
 size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap_lex.l) */
@@ -119,8 +117,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.4 2006-02-18 01:40:46 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.4 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.5 2006-02-18 07:18:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.5 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */

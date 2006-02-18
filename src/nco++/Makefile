@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile,v 1.10 2006-02-18 00:56:51 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile,v 1.11 2006-02-18 07:18:53 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -299,6 +299,9 @@ NCO_LDFLAGS := -L${MY_LIB_DIR}
 NCO_LIBS := -lnco++ -lnco -lnco_c++
 TMP_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} -L${ANTLR_LIB}
 TMP_LIBS := ${NCO_LIBS} ${NC_LIBS} -lantlr
+# sort removes duplicates but unfortunately changes precedence too
+# fxm: use uniq instead
+#TMP_LDFLAGS := $(sort ${TMP_LDFLAGS})
 
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
 null :=
