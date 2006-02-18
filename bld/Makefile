@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.357 2006-02-09 22:16:42 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.358 2006-02-18 00:56:43 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -182,8 +182,10 @@ endif # DAP_ROOT
 # NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
 # DODS 3.4.X:
 # NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lxml2 -lcurl -lpthread -ldl -lz
+# DAP 3.5.0-3.5.1:
+# NC_LIBS := -lnc-dap -ldap++ -lxml2 -lcurl
 # DAP 3.5+:
- NC_LIBS := -lnc-dap -ldap++ -lxml2 -lcurl
+ NC_LIBS := -lnc-dap -ldap -lxml2 -lcurl
 # Get netCDF from OPeNDAP version
  NETCDF_INC=${DAP_ROOT}/include/libnc-dap
  NETCDF_LIB=${DAP_ROOT}/lib
