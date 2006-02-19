@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.32 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.33 2006-02-19 00:03:58 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -81,8 +81,8 @@ main(int argc,char **argv)
 {
   bool DO_CONFORM_MSK=False; /* Did nco_var_cnf_dmn() find truly conforming mask? */
   bool DO_CONFORM_WGT=False; /* Did nco_var_cnf_dmn() find truly conforming weight? */
-  bool EXCLUDE_INPUT_LIST=False; /* Option c */
-  bool EXTRACT_ALL_COORDINATES=False; /* Option c */
+  nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
+  nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.32 2006-01-31 06:42:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.32 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.33 2006-02-19 00:03:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.33 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;

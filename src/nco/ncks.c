@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.152 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.153 2006-02-19 00:03:58 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -72,7 +72,7 @@ int
 main(int argc,char **argv)
 {
   bool ALPHABETIZE_OUTPUT=True; /* Option a */
-  bool EXCLUDE_INPUT_LIST=False; /* Option c */
+  nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   bool FORCE_APPEND=False; /* Option A */
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.152 2006-01-31 06:42:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.152 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.153 2006-02-19 00:03:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.153 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
   extern char *optarg;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.5 2006-02-18 01:40:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.6 2006-02-19 00:03:58 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -100,10 +100,10 @@ nm_id_sct *nco_att_lst_mk(int,int,NcapVarVector & ,int *);
 sym_sct *ncap_sym_init(const char * const sym_nm,double (*fnc_dbl)(double),float (*fnc_flt)(float));
 
 // stretch a single valued attribute from 1 to sz
-bool ncap_att_stretch (var_sct* , long );
+nco_bool ncap_att_stretch (var_sct* , long );
 
 
-bool ncap_var_stretch(var_sct **,var_sct **);
+nco_bool ncap_var_stretch(var_sct **,var_sct **);
   // Call to super dooper C++ template 
 var_sct *ncap_var_var_op(var_sct *,var_sct*,int);
   // See if var is true or false

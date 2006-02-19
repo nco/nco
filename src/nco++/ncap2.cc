@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.5 2006-02-18 07:18:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.6 2006-02-19 00:03:58 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -83,22 +83,22 @@ main(int argc,char **argv)
   FILE *yyin; /* file handle used to check file existance */
   int parse_antlr(prs_sct*,char*,char*);
 
- /* fxm TODO nco652 */
+  /* fxm TODO nco652 */
   double rnd_nbr(double);
   
-  bool EXCLUDE_INPUT_LIST=False; /* Option c */
-  bool EXTRACT_ALL_COORDINATES=False; /* Option c */
-  bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
-  bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
-  bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  bool FORCE_APPEND=False; /* Option A */
-  bool FORCE_OVERWRITE=False; /* Option O */
-  bool FORTRAN_IDX_CNV=False; /* Option F */
-  bool HISTORY_APPEND=True; /* Option h */
-  bool CNV_CCM_CCSM_CF;
-  bool PRN_FNC_TBL=False; /* Option f */  
-  bool PROCESS_ALL_VARS=True; /* Option v */  
-  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
+  nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
+  nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
+  nco_bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
+  nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  nco_bool FORCE_APPEND=False; /* Option A */
+  nco_bool FORCE_OVERWRITE=False; /* Option O */
+  nco_bool FORTRAN_IDX_CNV=False; /* Option F */
+  nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool CNV_CCM_CCSM_CF;
+  nco_bool PRN_FNC_TBL=False; /* Option f */  
+  nco_bool PROCESS_ALL_VARS=True; /* Option v */  
+  nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.5 2006-02-18 07:18:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.5 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.6 2006-02-19 00:03:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.6 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.97 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.98 2006-02-19 00:03:58 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -72,8 +72,8 @@ main(int argc,char **argv)
 
   bool **dmn_rvr_in=NULL; /* [flg] Reverse dimension */
   bool *dmn_rvr_rdr=NULL; /* [flg] Reverse dimension */
-  bool EXCLUDE_INPUT_LIST=False; /* Option c */
-  bool EXTRACT_ALL_COORDINATES=False; /* Option c */
+  nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
+  nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.97 2006-01-31 06:42:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.97 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.98 2006-02-19 00:03:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.98 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;

@@ -1,12 +1,18 @@
+2006-02-18  Charlie Zender  <zender@uci.edu>
+
+	* ncap2 now compiles, links, and runs when libnco built with g++
+
+	* Change argument bool's to nco_bool's which are typedef's to int's
+
 2006-02-17  Charlie Zender  <zender@uci.edu>
 
-	* ncap2 compiles and fails when libnco built with gcc
+	* ncap2 compiles, links, and fails when libnco built with gcc
 
-	* ncap2 compiles and runs when libnco built with g++
+	* ncap2 compiles, links, and runs when libnco built with g++
 
 	* Change to int yywrap() from bool yywrap() to work with g++
 
-	* Progress towards cleaning up libnco++ usage/headers
+	* Begin to clean up libnco++ usage/headers
 
 	* Add libnco++.hh to store all libnco++ headers
 
@@ -18,7 +24,7 @@
 
 	* Add doc/ncap2.in to test ncap2
 
-	* ncap2 builds within tree now
+	* ncap2 builds within tree now!
 
 	* Add udunits libraries, remove dat target
 

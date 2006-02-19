@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.56 2006-02-17 06:35:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.57 2006-02-19 00:03:58 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -13,7 +13,7 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
 (const int nc_id, /* I [enm] netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
- const bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
+ const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
 {
   /* Purpose: Create variable extraction list with or without regular expressions */
@@ -117,7 +117,7 @@ nco_var_lst_mk_old /* [fnc] Create variable extraction list */
 (const int nc_id, /* I [enm] netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  CST_X_PTR_CST_PTR_CST_Y(char,var_lst_in), /* I [sng] User-specified list of variable names */
- const bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
+ const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
 {
   /* Purpose: Create variable extraction list 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.76 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.77 2006-02-19 00:03:58 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -82,8 +82,8 @@
 int 
 main(int argc,char **argv)
 {
-  bool EXCLUDE_INPUT_LIST=False; /* Option c */
-  bool EXTRACT_ALL_COORDINATES=False; /* Option c */
+  nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
+  nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   bool FILE_1_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FILE_2_RETRIEVED_FROM_REMOTE_LOCATION;
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.76 2006-01-31 06:42:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.76 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.77 2006-02-19 00:03:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.77 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:-:";
   
   dmn_sct **dim_1;

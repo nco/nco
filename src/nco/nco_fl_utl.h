@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.32 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.33 2006-02-19 00:03:58 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -74,13 +74,13 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
  int arg_crr, /* I [idx] Index of current argument */
  int * const fl_nbr, /* O [nbr] Number of files in input file list */
  char ** const fl_out, /* I/O [sng] Name of output file */
- bool *FL_LST_IN_FROM_STDIN); /* O [flg] fl_lst_in comes from stdin */
+ nco_bool *FL_LST_IN_FROM_STDIN); /* O [flg] fl_lst_in comes from stdin */
 
 char * /* O [sng] Filename of locally available file */
 nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 (char *fl_nm, /* I/O [sng] Current filename, if any (destroyed) */
  const char * const fl_pth_lcl, /* I [sng] Local storage area for files retrieved from remote locations */
- bool * const FILE_RETRIEVED_FROM_REMOTE_LOCATION); /* O [flg] File was retrieved from remote location */
+ nco_bool * const FILE_RETRIEVED_FROM_REMOTE_LOCATION); /* O [flg] File was retrieved from remote location */
 
 void
 nco_fl_mv /* [fnc] Move first file to second */
@@ -100,8 +100,8 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
 char * /* O [sng] Name of temporary file actually opened */
 nco_fl_out_open /* [fnc] Open output file subject to availability and user input */
 (const char * const fl_out, /* I [sng] Name of file to open */
- const bool FORCE_APPEND, /* I [flg] Append to existing file, if any */
- const bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
+ const nco_bool FORCE_APPEND, /* I [flg] Append to existing file, if any */
+ const nco_bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
  const int fl_out_fmt, /* I [enm] Output file format */
  int * const out_id); /* O [id] File ID */
 
