@@ -1,8 +1,14 @@
 2006-02-18  Charlie Zender  <zender@uci.edu>
 
+	* Add tst target to ncap2 Makefile
+
+	* Verified regression test results unaltered
+
+	* Changed argument bool's to nco_bool's throughout libnco and frontends
+
 	* ncap2 now compiles, links, and runs when libnco built with g++
 
-	* Change argument bool's to nco_bool's which are typedef's to int's
+	* Change ncap2 argument bool's to nco_bool's which are typedef's to int's
 
 2006-02-17  Charlie Zender  <zender@uci.edu>
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.36 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.37 2006-02-19 00:42:34 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -62,7 +62,7 @@ extern "C" {
   (int in_id, /* I [id] netCDF input file ID */
    int out_id, /* I [id] netCDF output file ID */
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
-   const bool NCO_BNR_WRT, /* I [flg] Write binary file */
+   const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
    char *var_nm); /* I [sng] Variable name */
 
   void
@@ -70,7 +70,7 @@ extern "C" {
   (const int in_id, /* I [id] netCDF input file ID */
    const int out_id, /* I [id] netCDF output file ID */
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
-   const bool NCO_BNR_WRT, /* I [flg] Write binary file */
+   const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
    char *var_nm, /* I [sng] Variable name */
    const lmt_sct * const lmt, /* I [sct] Hyperslab limits */
    const int lmt_nbr); /* I [nbr] Number of hyperslab limits */

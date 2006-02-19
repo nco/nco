@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.38 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.39 2006-02-19 00:42:34 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -43,7 +43,7 @@ nm_id_sct * /* O [sct] Sorted output list */
 lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
 (nm_id_sct *lst, /* I/O [sct] Current list (destroyed) */
  const int nbr_lst, /* I [nbr] number of members in list */
- const bool ALPHABETIZE_OUTPUT) /* I [flg] Alphabetize extraction list */
+ const nco_bool ALPHABETIZE_OUTPUT) /* I [flg] Alphabetize extraction list */
 {
   /* Purpose: Sort extraction lists numerically or alphabetically
      Routine is deprecated in favor of nco_lst_srt_nm_id() which uses system qsort()
@@ -430,7 +430,7 @@ nm_id_sct * /* O [sct] Sorted output list */
 nco_lst_srt_nm_id /* [fnc] Sort name/ID input list numerically or alphabetically */
 (nm_id_sct * const lst, /* I/O [sct] Current list (destroyed) */
  const int nbr_lst, /* I [nbr] number of members in list */
- const bool ALPHABETIZE_OUTPUT) /* I [flg] Alphabetize extraction list */
+ const nco_bool ALPHABETIZE_OUTPUT) /* I [flg] Alphabetize extraction list */
 {
   /* Purpose: Sort extraction lists numerically or alphabetically */
   if(ALPHABETIZE_OUTPUT){

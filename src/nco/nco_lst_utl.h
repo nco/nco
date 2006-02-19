@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.26 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.27 2006-02-19 00:42:34 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -58,7 +58,7 @@ nm_id_sct * /* O [sct] Sorted output list */
 lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
 (nm_id_sct *lst, /* I/O [sct] Current list (destroyed) */
  const int nbr_lst, /* I [nbr] number of members in list */
- const bool ALPHABETIZE_OUTPUT); /* I [flg] Alphabetize extraction list */
+ const nco_bool ALPHABETIZE_OUTPUT); /* I [flg] Alphabetize extraction list */
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_chr /* [fnc] Compare two characters */
@@ -104,7 +104,7 @@ nm_id_sct * /* O [sct] Sorted output list */
 nco_lst_srt_nm_id /* [fnc] Sort name/ID input list numerically or alphabetically */
 (nm_id_sct * const lst, /* I/O [sct] Current list (destroyed) */
  const int nbr_lst, /* I [nbr] number of members in list */
- const bool ALPHABETIZE_OUTPUT); /* I [flg] Alphabetize extraction list */
+ const nco_bool ALPHABETIZE_OUTPUT); /* I [flg] Alphabetize extraction list */
 
 nm_id_sct * /* O [sct] Pointer to free'd structure list */
 nco_nm_id_lst_free /* [fnc] Free memory associated with name-ID structure list */

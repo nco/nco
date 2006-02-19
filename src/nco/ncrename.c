@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.88 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.89 2006-02-19 00:42:34 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -65,13 +65,13 @@
 int 
 main(int argc,char **argv)
 {
-  bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
-  bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  bool FORCE_APPEND=False; /* Option A */
-  bool FORCE_OVERWRITE=False; /* Option O */
-  bool HISTORY_APPEND=True; /* Option h */
-  bool OUTPUT_TO_NEW_NETCDF_FILE=False;
-  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
+  nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  nco_bool FORCE_APPEND=False; /* Option A */
+  nco_bool FORCE_OVERWRITE=False; /* Option O */
+  nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool OUTPUT_TO_NEW_NETCDF_FILE=False;
+  nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.88 2006-01-31 06:42:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.88 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.89 2006-02-19 00:42:34 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.89 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
   extern char *optarg;

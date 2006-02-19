@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.31 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.32 2006-02-19 00:42:34 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -483,7 +483,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
 (const int in_id, /* I [id] netCDF input file ID */
  const int out_id, /* I [id] netCDF output file ID */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
- const bool NCO_BNR_WRT, /* I [flg] Write binary file */
+ const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
  char *var_nm, /* I [sng] Variable name */
  lmt_all_sct * const * lmt_lst, /* I multi-hyperslab limits */
  int nbr_dmn_fl) /* I [nbr] Number of multi-hyperslab limits */
@@ -621,9 +621,9 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
  lmt_all_sct * const *lmt_lst, /* I [sct] Dimension limits */
  const int lmt_nbr, /* I [nbr] number of dimensions with user-specified limits */
  char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
- const bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
- const bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
- const bool PRN_DMN_IDX_CRD_VAL) /* I [flg] Print dimension/coordinate indices/values */
+ const nco_bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
+ const nco_bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
+ const nco_bool PRN_DMN_IDX_CRD_VAL) /* I [flg] Print dimension/coordinate indices/values */
 {
   /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
   /* Purpose:

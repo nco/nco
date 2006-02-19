@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.25 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.26 2006-02-19 00:42:34 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -239,9 +239,9 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
  const lmt_sct * const lmt, /* I [sct] Dimension limits */
  const int lmt_nbr, /* I [nbr] number of dimensions with user-specified limits */
  char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
- const bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
- const bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
- const bool PRN_DMN_IDX_CRD_VAL) /* I [flg] Print dimension/coordinate indices/values */
+ const nco_bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
+ const nco_bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
+ const nco_bool PRN_DMN_IDX_CRD_VAL) /* I [flg] Print dimension/coordinate indices/values */
 {
   /* NB: nco_prn_var_val_lmt() with same nc_id contains OpenMP critical region */
   /* Purpose: Print variable data 

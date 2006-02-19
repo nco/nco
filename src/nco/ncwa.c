@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.196 2006-02-19 00:03:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.197 2006-02-19 00:42:34 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -75,26 +75,26 @@ char **ncap_fl_spt_glb; /* [fl] Script file */
 int 
 main(int argc,char **argv)
 {
-  bool DO_CONFORM_MSK=False; /* Did nco_var_cnf_dmn() find truly conforming mask? */
-  bool DO_CONFORM_WGT=False; /* Did nco_var_cnf_dmn() find truly conforming weight? */
+  nco_bool DO_CONFORM_MSK=False; /* Did nco_var_cnf_dmn() find truly conforming mask? */
+  nco_bool DO_CONFORM_WGT=False; /* Did nco_var_cnf_dmn() find truly conforming weight? */
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
-  bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
-  bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
-  bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  bool FORCE_APPEND=False; /* Option A */
-  bool FORCE_OVERWRITE=False; /* Option O */
-  bool FORTRAN_IDX_CNV=False; /* Option F */
-  bool HISTORY_APPEND=True; /* Option h */
-  bool MULTIPLY_BY_TALLY=False; /* Not currently implemented */
-  bool MUST_CONFORM=False; /* [flg] Must nco_var_cnf_dmn() find truly conforming variables? */
-  bool CNV_CCM_CCSM_CF;
-  bool NORMALIZE_BY_TALLY=True; /* Not currently implemented */
-  bool NORMALIZE_BY_WEIGHT=True; /* Not currently implemented */
-  bool NRM_BY_DNM=True; /* Option N Normalize by denominator */
-  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
-  bool WGT_MSK_CRD_VAR=True; /* [flg] Weight and/or mask coordinate variables */
-  bool opt_a_flg=False; /* Option a */
+  nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
+  nco_bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
+  nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  nco_bool FORCE_APPEND=False; /* Option A */
+  nco_bool FORCE_OVERWRITE=False; /* Option O */
+  nco_bool FORTRAN_IDX_CNV=False; /* Option F */
+  nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool MULTIPLY_BY_TALLY=False; /* Not currently implemented */
+  nco_bool MUST_CONFORM=False; /* [flg] Must nco_var_cnf_dmn() find truly conforming variables? */
+  nco_bool CNV_CCM_CCSM_CF;
+  nco_bool NORMALIZE_BY_TALLY=True; /* Not currently implemented */
+  nco_bool NORMALIZE_BY_WEIGHT=True; /* Not currently implemented */
+  nco_bool NRM_BY_DNM=True; /* Option N Normalize by denominator */
+  nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool WGT_MSK_CRD_VAR=True; /* [flg] Weight and/or mask coordinate variables */
+  nco_bool opt_a_flg=False; /* Option a */
 
   char **dmn_avg_lst_in=NULL_CEWI; /* Option a */
   char **fl_lst_abb=NULL; /* Option n */
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.196 2006-02-19 00:03:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.196 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.197 2006-02-19 00:42:34 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.197 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;

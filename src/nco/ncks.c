@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.153 2006-02-19 00:03:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.154 2006-02-19 00:42:34 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -71,29 +71,29 @@
 int 
 main(int argc,char **argv)
 {
-  bool ALPHABETIZE_OUTPUT=True; /* Option a */
+  nco_bool ALPHABETIZE_OUTPUT=True; /* Option a */
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
-  bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
-  bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  bool FORCE_APPEND=False; /* Option A */
-  bool FORCE_OVERWRITE=False; /* Option O */
-  bool FORTRAN_IDX_CNV=False; /* Option F */
-  bool HISTORY_APPEND=True; /* Option h */
-  bool NCO_BNR_WRT=False; /* [flg] Write binary file */
-  bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
-  bool PRN_DMN_UNITS=False; /* [flg] Print dimensional units Option u */
-  bool PRN_DMN_UNITS_TGL=False; /* [flg] Toggle print dimensional units Option u */
-  bool PRN_GLB_METADATA=False; /* [flg] Print global metadata */
-  bool PRN_GLB_METADATA_TGL=False; /* [flg] Toggle print global metadata Option M */
-  bool PRN_QUIET=False; /* [flg] Turn off all printing to screen */
-  bool PRN_VAR_DATA=False; /* [flg] Print variable data */
-  bool PRN_VAR_DATA_TGL=False; /* [flg] Toggle print variable data Option H */
-  bool PRN_VAR_METADATA=False; /* [flg] Print variable metadata */
-  bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
-  bool PRN_VRB=False; /* [flg] Print data and metadata by default */
-  bool PROCESS_ALL_COORDINATES=False; /* Option c */
-  bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
-  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
+  nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  nco_bool FORCE_APPEND=False; /* Option A */
+  nco_bool FORCE_OVERWRITE=False; /* Option O */
+  nco_bool FORTRAN_IDX_CNV=False; /* Option F */
+  nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool NCO_BNR_WRT=False; /* [flg] Write binary file */
+  nco_bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
+  nco_bool PRN_DMN_UNITS=False; /* [flg] Print dimensional units Option u */
+  nco_bool PRN_DMN_UNITS_TGL=False; /* [flg] Toggle print dimensional units Option u */
+  nco_bool PRN_GLB_METADATA=False; /* [flg] Print global metadata */
+  nco_bool PRN_GLB_METADATA_TGL=False; /* [flg] Toggle print global metadata Option M */
+  nco_bool PRN_QUIET=False; /* [flg] Turn off all printing to screen */
+  nco_bool PRN_VAR_DATA=False; /* [flg] Print variable data */
+  nco_bool PRN_VAR_DATA_TGL=False; /* [flg] Toggle print variable data Option H */
+  nco_bool PRN_VAR_METADATA=False; /* [flg] Print variable metadata */
+  nco_bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
+  nco_bool PRN_VRB=False; /* [flg] Print data and metadata by default */
+  nco_bool PROCESS_ALL_COORDINATES=False; /* Option c */
+  nco_bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
+  nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.153 2006-02-19 00:03:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.153 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.154 2006-02-19 00:42:34 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.154 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
   extern char *optarg;

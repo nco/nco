@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile,v 1.11 2006-02-18 07:18:53 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile,v 1.12 2006-02-19 00:42:34 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1201,11 +1201,15 @@ bin_cln:
 # Targets in bld
 bld_cln :
 	cd ${MY_BLD_DIR}; rm -f TAGS
+# Targets in bm
+test:	tst
+tst:	
+	ncap2 -O -v -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
 # Targets in dat
 data:	dat
 dat:	${MY_DAT_DIR}/in.nc 
 ${MY_DAT_DIR}/in.nc: ${MY_DAT_DIR}/in.cdl
-	ncgen -b -o in.nc ${MY_DAT_DIR}/in.cdl
+	-cd ../../bld; ${MAKE} $@
 dat_cln :
 	-cd ${MY_DAT_DIR}; rm -f in.nc foo.nc
 # Targets in dpn
@@ -1293,6 +1297,15 @@ dbg:
 	@printf "MPICXX = ${MPICXX}\n"
 	@printf "MPI_PRC = ${MPI_PRC}\n"
 	@printf "MPI_PRC_SNG = ${MPI_PRC_SNG}\n"
+	@printf "MY_BIN_DIR = ${MY_BIN_DIR}\n"
+	@printf "MY_BLD_DIR = ${MY_BLD_DIR}\n"
+	@printf "MY_BLD_DIR = ${MY_BLD_DIR}\n"
+	@printf "MY_DAT_DIR = ${MY_DAT_DIR}\n"
+	@printf "MY_DOC_DIR = ${MY_DOC_DIR}\n"
+	@printf "MY_DPN_DIR = ${MY_DPN_DIR}\n"
+	@printf "MY_INC_DIR = ${MY_INC_DIR}\n"
+	@printf "MY_LIB_DIR = ${MY_LIB_DIR}\n"
+	@printf "MY_OBJ_DIR = ${MY_OBJ_DIR}\n"
 	@printf "NCO_LDFLAGS = $(NCO_LDFLAGS)\n"
 	@printf "NCO_LIBS = $(NCO_LIBS)\n"
 	@printf "NCO_VRS = ${NCO_VRS}\n"

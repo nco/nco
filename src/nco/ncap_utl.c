@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.126 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.127 2006-02-19 00:42:34 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1121,8 +1121,8 @@ ncap_var_stretch /* [fnc] Stretch variables */
   
   bool CONFORMABLE=False; /* [flg] Whether var_lsr can be made to conform to var_gtr */
   bool CONVOLVE=False; /* [flg] var_1 and var_2 had to be convolved */
-  bool DO_CONFORM; /* [flg] Did var_1 and var_2 conform? */
-  bool MUST_CONFORM=False; /* [flg] Must var_1 and var_2 conform? */
+  nco_bool DO_CONFORM; /* [flg] Did var_1 and var_2 conform? */
+  nco_bool MUST_CONFORM=False; /* [flg] Must var_1 and var_2 conform? */
   
   int idx;
   int idx_dmn;

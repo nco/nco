@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.24 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.25 2006-02-19 00:42:34 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -14,7 +14,7 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions *
 {
   /* Purpose: Check if file adheres to CCM/CCSM/CF history tape format */
 
-  bool CNV_CCM_CCSM_CF=False;
+  nco_bool CNV_CCM_CCSM_CF=False;
 
   char *att_val;
 

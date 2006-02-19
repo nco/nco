@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.25 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.26 2006-02-19 00:42:34 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -51,7 +51,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 (int nc_id, /* I [idx] netCDF file ID */
  lmt_sct *lmt_ptr, /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
  long cnt_crr, /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
- bool FORTRAN_IDX_CNV); /* I [flg] Hyperslab indices obey Fortran convention */
+ nco_bool FORTRAN_IDX_CNV); /* I [flg] Hyperslab indices obey Fortran convention */
 
 lmt_sct * /* O [sct] Pointer to free'd structure */
 nco_lmt_free /* [fnc] Free memory associated with limit structure */
@@ -82,7 +82,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
  const int dmn_id, /* I [idx] ID of dimension for this limit structure */
  CST_X_PTR_CST_PTR_CST_Y(lmt_sct,lmt), /* I [sct] Array of limit structures from nco_lmt_evl() */ 
  int lmt_nbr, /* I [nbr] Number of limit structures */
- const bool FORTRAN_IDX_CNV); /* I [flg] Hyperslab indices obey Fortran convention */
+ const nco_bool FORTRAN_IDX_CNV); /* I [flg] Hyperslab indices obey Fortran convention */
 
 int /* O [enm] Limit type */
 nco_lmt_typ /* [fnc] Determine limit type */

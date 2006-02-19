@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.77 2006-02-19 00:03:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.78 2006-02-19 00:42:34 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -84,16 +84,16 @@ main(int argc,char **argv)
 {
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
-  bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
-  bool FILE_1_RETRIEVED_FROM_REMOTE_LOCATION;
-  bool FILE_2_RETRIEVED_FROM_REMOTE_LOCATION;
-  bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  bool FORCE_APPEND=False; /* Option A */
-  bool FORCE_OVERWRITE=False; /* Option O */
-  bool FORTRAN_IDX_CNV=False; /* Option F */
-  bool HISTORY_APPEND=True; /* Option h */
-  bool CNV_CCM_CCSM_CF;
-  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
+  nco_bool FILE_1_RETRIEVED_FROM_REMOTE_LOCATION;
+  nco_bool FILE_2_RETRIEVED_FROM_REMOTE_LOCATION;
+  nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  nco_bool FORCE_APPEND=False; /* Option A */
+  nco_bool FORCE_OVERWRITE=False; /* Option O */
+  nco_bool FORTRAN_IDX_CNV=False; /* Option F */
+  nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool CNV_CCM_CCSM_CF;
+  nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.77 2006-02-19 00:03:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.77 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.78 2006-02-19 00:42:34 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.78 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:-:";
   
   dmn_sct **dim_1;

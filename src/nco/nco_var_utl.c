@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.104 2006-02-17 06:35:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.105 2006-02-19 00:42:34 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -171,7 +171,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
 (int in_id, /* I [id] netCDF input file ID */
  int out_id, /* I [id] netCDF output file ID */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
- const bool NCO_BNR_WRT, /* I [flg] Write binary file */
+ const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
  char *var_nm) /* I [sng] Variable name */
 {
   /* NB: nco_cpy_var_val() contains OpenMP critical region */
@@ -262,7 +262,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
 (const int in_id, /* I [id] netCDF input file ID */
  const int out_id, /* I [id] netCDF output file ID */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
- const bool NCO_BNR_WRT, /* I [flg] Write binary file */
+ const nco_bool NCO_BNR_WRT, /* I [flg] Write binary file */
  char *var_nm, /* I [sng] Variable name */
  const lmt_sct * const lmt, /* I [sct] Hyperslab limits */
  const int lmt_nbr) /* I [nbr] Number of hyperslab limits */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.52 2006-02-09 06:30:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.53 2006-02-19 00:42:34 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -13,7 +13,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 (const var_sct * const var, /* I [ptr] Pointer to variable structure to serve as template */
  var_sct * const wgt, /* I [ptr] Pointer to variable structure to make conform to var */
  var_sct *wgt_crr, /* I/O [ptr] Pointer to existing conforming variable structure, if any (destroyed when does not conform to var) */
- const bool MUST_CONFORM, /* I [flg] Must wgt and var conform? */
+ const nco_bool MUST_CONFORM, /* I [flg] Must wgt and var conform? */
  bool *DO_CONFORM) /* O [flg] Do wgt and var conform? */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
@@ -338,8 +338,8 @@ ncap_var_cnf_dmn /* [fnc] Broadcast smaller variable into larger */
      If an input variable is replaced by a broadcast version of itself,
      then calling routine must free original version or it will leak. */
 
-  bool DO_CONFORM; /* [flg] Do var_1 and var_2 conform after processing? */
-  bool MUST_CONFORM=True; /* [flg] Must var_1 and var_2 conform? */
+  nco_bool DO_CONFORM; /* [flg] Do var_1 and var_2 conform after processing? */
+  nco_bool MUST_CONFORM=True; /* [flg] Must var_1 and var_2 conform? */
   var_sct *var_1_org; /* [ptr] Original location of var_1 */
   var_sct *var_2_org; /* [ptr] Original location of var_2 */
   var_sct *var_tmp=NULL;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.46 2006-02-19 00:03:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.47 2006-02-19 00:42:34 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -112,20 +112,20 @@ checkpointMpi(int prc_rnk, int stage) {
 int 
 main(int argc,char **argv)
 {
-  bool CNV_ARM=int_CEWI;
-  bool CNV_CCM_CCSM_CF=int_CEWI;
+  nco_bool CNV_ARM=int_CEWI;
+  nco_bool CNV_CCM_CCSM_CF=int_CEWI;
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
-  bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
-  bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
-  bool FL_LST_IN_APPEND=True; /* Option H */
-  bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  bool FORCE_APPEND=False; /* Option A */
-  bool FORCE_OVERWRITE=False; /* Option O */
-  bool FORTRAN_IDX_CNV=False; /* Option F */
-  bool HISTORY_APPEND=True; /* Option h */
-  bool LAST_RECORD=False;
-  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
+  nco_bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
+  nco_bool FL_LST_IN_APPEND=True; /* Option H */
+  nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  nco_bool FORCE_APPEND=False; /* Option A */
+  nco_bool FORCE_OVERWRITE=False; /* Option O */
+  nco_bool FORTRAN_IDX_CNV=False; /* Option F */
+  nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool LAST_RECORD=False;
+  nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.46 2006-02-19 00:03:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.46 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.47 2006-02-19 00:42:34 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.47 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;

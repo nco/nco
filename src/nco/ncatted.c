@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.91 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.92 2006-02-19 00:42:34 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -125,13 +125,13 @@ main(int argc,char **argv)
 {
   aed_sct *aed_lst=NULL_CEWI;
 
-  bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
-  bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  bool FORCE_APPEND=False; /* Option A */
-  bool FORCE_OVERWRITE=False; /* Option O */
-  bool HISTORY_APPEND=True; /* Option h */
-  bool OUTPUT_TO_NEW_NETCDF_FILE=False;
-  bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
+  nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  nco_bool FORCE_APPEND=False; /* Option A */
+  nco_bool FORCE_OVERWRITE=False; /* Option O */
+  nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool OUTPUT_TO_NEW_NETCDF_FILE=False;
+  nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.91 2006-01-31 06:42:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.91 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.92 2006-02-19 00:42:34 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.92 $";
   const char * const opt_sht_lst="4Aa:D:hl:Oo:p:Rr-:";
   
   extern char *optarg;
