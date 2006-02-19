@@ -1,7 +1,7 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile,v 1.12 2006-02-19 00:42:34 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile,v 1.13 2006-02-19 22:17:57 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
-# Requires GNU Make. AT&T Make will not process this file.
+# Requires GNU Make. AT&T Make will not process this file
 # scp ~/nco/src/nco++/Makefile.old esmf.ess.uci.edu:nco/src/nco++
 # scp ~/nco/src/nco++/Makefile.old soot.ess.uci.edu:nco/src/nco++
 # scp ~/nco/src/nco++/Makefile.old goldhill.cgd.ucar.edu:nco/src/nco++
