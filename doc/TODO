@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.710 2006-02-18 07:18:52 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.711 2006-02-20 08:04:57 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -418,14 +418,11 @@ nco664. ncatted & ncrename will not work with DAP because there is not any
 nco666. Grid regridding/interpolation operator ncrebin?
 nco667. rnd_nbr(): ncap does not link to rnd_nbr on AMD64 with bld/Makefile
 nco668. Prefix nco.png fractal icon with text "NC" to look like "NCO"
-nco669. Command-line switch for float->double math-promotion to aviod underflow?
+nco669. Command-line switch for float->double math-promotion to avoid underflow?
 nco674. debian: replace netcdfg3 with netcdf try to build .debs again
 nco675. ncap2: Makefile generates redundant antlr runs
-nco676. ncap2: not finding input files when libnco built with gcc
-        bool *FL_LST_IN_FROM_STDIN not reaching nco_fl_lst_mk() intact
-        namespace issues?
-nco677. Get ncap2 functioning when libnco built with gcc
-nco678. 
+nco678. Move packing documentation from ncap to Chapter 2
+nco679. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

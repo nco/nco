@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.114 2006-02-20 01:48:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.115 2006-02-20 08:04:58 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -321,7 +321,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "When I was a young teenager I prayed to the ancient Greek gods, usually Apollo, for vengeance against three classmates who taunted me when I rode the school bus. Unfortunately Bret, Steve, and Randy are still alive (as far as I know) and may be the basis for J.K. Rowlings' Malfoy, Crabb, and Goyle. I'm now an atheist, and I hope they get justice in Harry Potter Book 7.\n";
+  return "As a young teenager I prayed to ancient Greek gods, usually Apollo, for vengeance against three classmates who taunted me when I rode the school bus. Unfortunately Bret, Steve, and Randy were never punished (as far as I know). They could be the basis for J. K. Rowlings' Malfoy, Crabb, and Goyle. I'm now an atheist, and I hope they get justice in Harry Potter Book 7.\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
@@ -514,7 +514,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-T")) (void)fprintf(stdout,"-T, --truth_condition, --msk_cmp_typ, --op_rlt condition\tTruth condition for masking: eq,ne,ge,le,gt,lt\n");
   if(strstr(opt_sng,"-t")) (void)fprintf(stdout,"-t, --thr_nbr, --threads, --omp_num_threads thr_nbr\tThread number for OpenMP\n");
   if(strstr(opt_sng,"-u")) (void)fprintf(stdout,"-u, --units\t\tToggle printing units of variables, if any\n");
-  if(strstr(opt_sng,"-U")) (void)fprintf(stdout,"-U, --upk, --unpack\t\tUnpack input file\n");
+  if(strstr(opt_sng,"-U")) (void)fprintf(stdout,"-U, --upk, --unpack\tUnpack input file\n");
   if(strstr(opt_sng,"-v")){
     if(prg_lcl == ncrename) (void)fprintf(stdout,"-v, --variable old_var,new_var Variable's old and new names\n");
 	if(prg_lcl == ncap) (void)fprintf(stdout,"-v, --variable \t\tOutput file includes ONLY user-defined variables\n");

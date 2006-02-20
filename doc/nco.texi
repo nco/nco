@@ -4,13 +4,13 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.346 2006-01-31 06:42:10 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.347 2006-02-20 08:04:57 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
 URL: http://nco.sf.net/nco.texi
 
-Copyright (C) 1995--2004 Charlie Zender
+Copyright (C) 1995--2006 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1
 or any later version published by the Free Software Foundation;
@@ -102,8 +102,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.1.1
 @set copyright-years 1995--2006
 @set update-year 2006
-@set update-date 30 January 2006
-@set update-month January 2006
+@set update-date 20 February 2006
+@set update-month February 2006
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -1842,6 +1842,7 @@ feature is automatic and cannot be controlled by the user.
 * Wrapped Coordinates::         
 * Stride::                      
 * Missing Values::              
+* Packed data::                 
 * Operation Types::             
 * Type Conversion::             
 * Batch Mode::                  
@@ -3621,7 +3622,7 @@ ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 @html
 <a name="mss_val"></a> <!-- http://nco.sf.net/nco.html#mss_val -->
 @end html
-@node Missing Values, Operation Types, Stride, Common features
+@node Missing Values, Packed data, Stride, Common features
 @section Missing values
 @cindex missing values
 @cindex data, missing 
@@ -3745,13 +3746,137 @@ much slower and would be no likelier to yield a more satisfactory
 answer. 
 In practice, judicious choice of @var{missing_value} values prevents any
 important information from being lost.
-
 @end enumerate
+
+@html
+<a name="pck"></a> <!-- http://nco.sf.net/nco.html#pck -->
+@end html
+@node Packed data, Operation Types, Missing Values, Common features
+@section Packed data
+@cindex packing
+@cindex unpacking
+@cindex @code{add_offset}
+@cindex @code{scale_factor}
+@cindex @code{missing_value}
+@cindex @command{pack(x)}
+@cindex @command{unpack(x)}
+@cartouche
+Availability: @command{ncap}, @command{ncbo}, @command{ncea},
+@command{ncflint}, @command{ncpdq}, @command{ncra}, @command{ncwa}@* 
+Short options: None@*
+@end cartouche
+
+The phrase @dfn{packed data} refers to data which are stored in the
+standard netCDF packing format.
+
+@unnumberedsubsec Packing Algorithm
+@dfn{Packing}
+The packing algorithm is lossy, and produces data with the same dynamic
+range as the original but which requires no more than half the space
+to store.
+The packed variable is stored (usually) as type @code{NC_SHORT}
+with the two attributes required to unpack the variable,
+@code{scale_factor} and @code{add_offset}, stored at the original
+(unpacked) precision of the variable
+@footnote{Although not a part of the standard, @acronym{NCO} enforces
+the policy that the @code{missing_value} attribute, if any, of a packed
+variable is also stored at the original precision.}.
+Let @var{min} and @var{max} be the minimum and maximum values 
+@w{of @var{x}.} 
+@tex
+$$
+\rm
+\eqalign{\hbox{scale\_factor} &= (\hbox{max}-\hbox{min})/\hbox{ndrv}\cr
+\hbox{add\_offset} &= (\hbox{min}+\hbox{max})/2\cr
+\hbox{pck} &= (\hbox{upk}-\hbox{add\_offset})/\hbox{scale\_factor}\cr
+ &= {\hbox{ndrv}\times[\hbox{upk}-(\hbox{min}+\hbox{max})/2]\over\hbox{max}-\hbox{min}}\cr}
+$$
+@end tex
+@ifnottex
+@sp 1
+@var{scale_factor} = (@var{max}-@var{min})/@var{ndrv}@*
+@var{add_offset} = 0.5*(@var{min}+@var{max})@*
+@var{pck} = (@var{upk}-@var{add_offset})/@var{scale_factor} = (@var{upk}-0.5*(@var{min}+@var{max}))*@var{ndrv}/(@var{max}-@var{min})@* 
+@sp 1
+@end ifnottex
+where @var{ndrv} is the number of discrete representable values for
+given type of packed variable.
+The theoretical maximum value for @var{ndrv} is two raised to the
+number of bits used to store the packed variable.
+Thus if the variable is packed into type @code{NC_SHORT}, a two-byte
+datatype, then there are at most @math{2^16 = 65536} distinct values
+representible.
+In practice, the number of discretely representible values is taken
+to be one less than the theoretical maximum.
+This leaves extra space and solves potential problems with rounding
+which can occur during the unpacking of the variable.
+Thus for @code{NC_SHORT}, @math{ndrv = 65536 - 1 = 65535}.
+Less often, the variable may be packed into type @code{NC_CHAR}, 
+where @math{ndrv = 256 - 1 = 255}, or type @code{NC_INT} where
+where @math{ndrv = 4294967295 - 1 = 4294967294}.
+One useful feature of (lossy) netCDF packing algorithm is that
+additional, loss-less packing algorithms perform well on top of it. 
+
+@unnumberedsubsec Unpacking Algorithm
+@dfn{Unpacking}
+The unpacking algorithm depends on the presence of two attributes,
+@code{scale_factor} and @code{add_offset}.
+If @code{scale_factor} is present for a variable, the data are
+multiplied by the value @var{scale_factor} after the data are read.
+If @code{add_offset} is present for a variable, then the
+@var{add_offset} value is added to the data after the data are read.
+If both @code{scale_factor} and @code{add_offset} attributes are
+present, the data are first scaled by @var{scale_factor} before the
+offset @var{add_offset} is added.   
+@tex
+$$
+\rm
+\eqalign{\hbox{upk} &= \hbox{scale\_factor}\times\hbox{pck} + \hbox{add\_offset}\cr 
+&= {\hbox{pck}\times(\hbox{max}-\hbox{min})\over\hbox{ndrv}} + {\hbox{min}+\hbox{max}\over2}\cr} 
+$$
+@end tex
+@ifnottex
+@sp 1
+@var{upk} = @var{scale_factor}*@var{pck} + @var{add_offset} = (@var{max}-@var{min})*@var{pck}/@var{ndrv} + 0.5*(@var{min}+@var{max})@*
+@sp 1
+@end ifnottex
+When @code{scale_factor} and @code{add_offset} are used for packing, the
+associated variable (containing the packed data) is typically of type
+@code{byte} or @code{short}, whereas the unpacked values are intended to
+be of type @code{int}, @code{float}, or @code{double}. 
+An attribute's @code{scale_factor} and @code{add_offset} and
+@code{missing_value}, if any, should all be of the type intended for the
+unpacked data, i.e., @code{int}, @code{float} or @code{double}. 
+
+@unnumberedsubsec Default Handling of Packed Data
+All @acronym{NCO} arithmetic operators understand packed data.
+The operators automatically unpack any packed variable in the input 
+file which will be arithmetically processed.
+For example, @command{ncra} unpacks all record variables, 
+and @command{ncwa} unpacks all variable which contain a dimension to 
+be averaged.
+These variables are stored unpacked in the output file.
+
+On the other hand, arithmetic operators do not unpack non-processed
+variables. 
+For example, @command{ncra} leaves all non-record variables packed, 
+and @command{ncwa} leaves packed all variables lacking an averaged
+dimension.  
+These variables (called fixed variables) are passed unaltered from the
+input to the output file. 
+Hence fixed variables which are packed in input files remain packed in
+output files.
+Completely packing and unpacking files is easily accomplished with
+@command{ncpdq} (@pxref{ncpdq netCDF Permute Dimensions Quickly}).
+Packing and unpacking individual variables may be done with 
+@command{ncpdq} and the @command{ncap} 
+@command{pack()} and @command{unpack()} functions
+(@pxref{Intrinsic functions}).
 
 @html
 <a name="op_typ"></a> <!-- http://nco.sf.net/nco.html#op_typ -->
 @end html
-@node Operation Types, Type Conversion, Missing Values, Common features
+@node Operation Types, Type Conversion, Packed data, Common features
 @section Operation Types
 @cindex operation types
 @cindex @code{avg}
@@ -4822,95 +4947,14 @@ functions.
 In addition to the standard mathematical functions 
 (@pxref{Intrinsic mathematical functions}), @command{ncap} currently
 supports packing and unpacking.
-@unnumberedsubsec Packing and Unpacking Algorithms
 @cindex packing
 @cindex unpacking
-@cindex @code{add_offset}
-@cindex @code{scale_factor}
-@cindex @code{missing_value}
-@cindex @command{pack(x)}
-@cindex @command{unpack(x)}
 @table @code
 @item pack(x)
-@dfn{Packing}
 The standard packing algorithm is applied to variable @var{x}.
-The packing algorithm is lossy, and produces data with the same dynamic
-range as the original but which requires no more than half the space
-to store.
-The packed variable is stored (usually) as type @code{NC_SHORT}
-with the two attributes required to unpack the variable,
-@code{scale_factor} and @code{add_offset}, stored at the original
-(unpacked) precision of the variable
-@footnote{Although not a part of the standard, @acronym{NCO} enforces
-the policy that the @code{missing_value} attribute, if any, of a packed
-variable is also stored at the original precision.}.
-Let @var{min} and @var{max} be the minimum and maximum values 
-@w{of @var{x}.} 
-@tex
-$$
-\rm
-\eqalign{\hbox{scale\_factor} &= (\hbox{max}-\hbox{min})/\hbox{ndrv}\cr
-\hbox{add\_offset} &= (\hbox{min}+\hbox{max})/2\cr
-\hbox{pck} &= (\hbox{upk}-\hbox{add\_offset})/\hbox{scale\_factor}\cr
- &= {\hbox{ndrv}\times[\hbox{upk}-(\hbox{min}+\hbox{max})/2]\over\hbox{max}-\hbox{min}}\cr}
-$$
-@end tex
-@ifnottex
-@sp 1
-@var{scale_factor} = (@var{max}-@var{min})/@var{ndrv}@*
-@var{add_offset} = 0.5*(@var{min}+@var{max})@*
-@var{pck} = (@var{upk}-@var{add_offset})/@var{scale_factor} = (@var{upk}-0.5*(@var{min}+@var{max}))*@var{ndrv}/(@var{max}-@var{min})@* 
-@sp 1
-@end ifnottex
-where @var{ndrv} is the number of discrete representable values for
-given type of packed variable.
-The theoretical maximum value for @var{ndrv} is two raised to the
-number of bits used to store the packed variable.
-Thus if the variable is packed into type @code{NC_SHORT}, a two-byte
-datatype, then there are at most @math{2^16 = 65536} distinct values
-representible.
-In practice, the number of discretely representible values is taken
-to be one less than the theoretical maximum.
-This leaves extra space and solves potential problems with rounding
-which can occur during the unpacking of the variable.
-Thus for @code{NC_SHORT}, @math{ndrv = 65536 - 1 = 65535}.
-Less often, the variable may be packed into type @code{NC_CHAR}, 
-where @math{ndrv = 256 - 1 = 255}, or type @code{NC_INT} where
-where @math{ndrv = 4294967295 - 1 = 4294967294}.
 @item unpack(x)
-@dfn{Unpacking}
 The standard unpacking algorithm is applied to variable @var{x}.
-The unpacking algorithm depends on the presence of two attributes,
-@code{scale_factor} and @code{add_offset}.
-If @code{scale_factor} is present for a variable, the data are
-multiplied by the value @var{scale_factor} after the data are read.
-If @code{add_offset} is present for a variable, then the
-@var{add_offset} value is added to the data after the data are read.
-If both @code{scale_factor} and @code{add_offset} attributes are
-present, the data are first scaled by @var{scale_factor} before the
-offset @var{add_offset} is added.   
-@tex
-$$
-\rm
-\eqalign{\hbox{upk} &= \hbox{scale\_factor}\times\hbox{pck} + \hbox{add\_offset}\cr 
-&= {\hbox{pck}\times(\hbox{max}-\hbox{min})\over\hbox{ndrv}} + {\hbox{min}+\hbox{max}\over2}\cr} 
-$$
-@end tex
-@ifnottex
-@sp 1
-@var{upk} = @var{scale_factor}*@var{pck} + @var{add_offset} = (@var{max}-@var{min})*@var{pck}/@var{ndrv} + 0.5*(@var{min}+@var{max})@*
-@sp 1
-@end ifnottex
-When @code{scale_factor} and @code{add_offset} are used for packing, the
-associated variable (containing the packed data) is typically of type
-@code{byte} or @code{short}, whereas the unpacked values are intended to
-be of type @code{int}, @code{float}, or @code{double}. 
-An attribute's @code{scale_factor} and @code{add_offset} and
-@code{missing_value}, if any, should all be of the type intended for the
-unpacked data, i.e., @code{int}, @code{float} or @code{double}. 
 @end table
-One useful feature of (lossy) netCDF packing algorithm is that
-additional, loss-less packing algorithms perform well on top of it. 
 
 @unnumberedsubsec Type Conversion Functions
 These intrinsic functions allow @command{ncap} to convert variables on
@@ -8520,8 +8564,9 @@ The primary contributors to @acronym{NCO} development are:
 @item Charlie Zender
 Concept, design and implementation of @acronym{NCO} from 1995-2000.
 Since then mainly autotools, bug-squashing, documentation, packing,
-@acronym{NCO} library redesign, @command{ncap} features, @command{ncbo},  
-project coordination, and releases.
+@acronym{NCO} library redesign, @command{ncap} features, @command{ncbo}, 
+@command{ncpdq}, SMP threading and MPI parallelization, project
+coordination, and releases. 
 @cindex Henry Butowsky
 @item Henry Butowsky
 Non-linear operations and @code{min()}, @code{max()}, @code{total()}
@@ -8533,6 +8578,7 @@ Migration to netCDF3 API.
 Multislabbing algorithm.
 Variable wildcarding.
 Various hacks.
+ANTLR-based parser for @command{ncap2}. 
 @cindex Rorik Peterson
 @item Rorik Peterson
 Autotool build support. 
@@ -8544,6 +8590,9 @@ Numerous bug-fixes.
 @item Harry Mangalam
 Benchmarking.
 OPeNDAP configuration.
+@cindex Daniel Wang
+@item Daniel Wang
+Server side DAP support.
 @cindex Brian Mays
 @item Brian Mays
 Packaging for Debian GNU/Linux, @command{nroff} man pages.
