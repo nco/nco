@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.99 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.100 2006-02-20 20:59:23 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -70,8 +70,8 @@ main(int argc,char **argv)
   aed_sct *aed_lst_add_fst=NULL_CEWI;
   aed_sct *aed_lst_scl_fct=NULL_CEWI;
 
-  bool **dmn_rvr_in=NULL; /* [flg] Reverse dimension */
-  bool *dmn_rvr_rdr=NULL; /* [flg] Reverse dimension */
+  nco_bool **dmn_rvr_in=NULL; /* [flg] Reverse dimension */
+  nco_bool *dmn_rvr_rdr=NULL; /* [flg] Reverse dimension */
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.99 2006-02-19 00:42:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.99 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.100 2006-02-20 20:59:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.100 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -421,7 +421,7 @@ main(int argc,char **argv)
     /* Make list of user-specified dimension re-orders */
 
     /* Create reversed dimension list */
-    dmn_rvr_rdr=(bool *)nco_malloc(dmn_rdr_nbr*sizeof(bool));
+    dmn_rvr_rdr=(nco_bool *)nco_malloc(dmn_rdr_nbr*sizeof(nco_bool));
     for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
       if(dmn_rdr_lst_in[idx_rdr][0] == '-'){
 	dmn_rvr_rdr[idx_rdr]=True;
@@ -525,10 +525,10 @@ main(int argc,char **argv)
   /* If re-ordering, determine and set new dimensionality in metadata of each re-ordered variable */
   if(dmn_rdr_nbr > 0){
     dmn_idx_out_in=(int **)nco_malloc(nbr_var_prc*sizeof(int *));
-    dmn_rvr_in=(bool **)nco_malloc(nbr_var_prc*sizeof(bool *));
+    dmn_rvr_in=(nco_bool **)nco_malloc(nbr_var_prc*sizeof(nco_bool *));
     for(idx=0;idx<nbr_var_prc;idx++){
       dmn_idx_out_in[idx]=(int *)nco_malloc(var_prc[idx]->nbr_dim*sizeof(int));
-      dmn_rvr_in[idx]=(bool *)nco_malloc(var_prc[idx]->nbr_dim*sizeof(bool));
+      dmn_rvr_in[idx]=(nco_bool *)nco_malloc(var_prc[idx]->nbr_dim*sizeof(nco_bool));
       /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
       rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx],dmn_rvr_rdr,dmn_rvr_in[idx]);
       /* If record dimension required by current variable re-order...
@@ -738,7 +738,7 @@ main(int argc,char **argv)
 	var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	/* Free current dimension correspondence */
 	dmn_idx_out_in[idx]=(int *)nco_free(dmn_idx_out_in[idx]);
-	dmn_rvr_in[idx]=(bool *)nco_free(dmn_rvr_in[idx]);
+	dmn_rvr_in[idx]=(nco_bool *)nco_free(dmn_rvr_in[idx]);
       } /* endif dmn_rdr_nbr > 0 */
 
       if(nco_pck_plc != nco_pck_plc_nil){
@@ -770,7 +770,7 @@ main(int argc,char **argv)
     /* Write/overwrite packing attributes for newly packed and re-packed variables 
        Logic here should nearly mimic logic in nco_var_dfn() */
     if(nco_pck_plc != nco_pck_plc_nil && nco_pck_plc != nco_pck_plc_upk){
-      bool nco_pck_plc_alw; /* [flg] Packing policy allows packing nc_typ_in */
+      nco_bool nco_pck_plc_alw; /* [flg] Packing policy allows packing nc_typ_in */
       /* ...put file in define mode to allow metadata writing... */
       (void)nco_redef(out_id);
       /* ...loop through all variables that may have been packed... */
@@ -817,11 +817,11 @@ main(int argc,char **argv)
     /* Free dimension correspondence list */
     for(idx=0;idx<nbr_var_prc;idx++){
       dmn_idx_out_in[idx]=(int *)nco_free(dmn_idx_out_in[idx]);
-      dmn_rvr_in[idx]=(bool *)nco_free(dmn_rvr_in[idx]);
+      dmn_rvr_in[idx]=(nco_bool *)nco_free(dmn_rvr_in[idx]);
     } /* end loop over idx */
     if(dmn_idx_out_in != NULL) dmn_idx_out_in=(int **)nco_free(dmn_idx_out_in);
-    if(dmn_rvr_in != NULL) dmn_rvr_in=(bool **)nco_free(dmn_rvr_in);
-    if(dmn_rvr_rdr != NULL) dmn_rvr_rdr=(bool *)nco_free(dmn_rvr_rdr);
+    if(dmn_rvr_in != NULL) dmn_rvr_in=(nco_bool **)nco_free(dmn_rvr_in);
+    if(dmn_rvr_rdr != NULL) dmn_rvr_rdr=(nco_bool *)nco_free(dmn_rvr_rdr);
     if(dmn_rdr_nbr_in > 0) dmn_rdr_lst_in=nco_sng_lst_free(dmn_rdr_lst_in,dmn_rdr_nbr_in);
     /* Free dimension list pointers */
     dmn_rdr=(dmn_sct **)nco_free(dmn_rdr);

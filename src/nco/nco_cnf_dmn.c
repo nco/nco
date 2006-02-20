@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.53 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.54 2006-02-20 20:59:23 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -14,7 +14,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
  var_sct * const wgt, /* I [ptr] Pointer to variable structure to make conform to var */
  var_sct *wgt_crr, /* I/O [ptr] Pointer to existing conforming variable structure, if any (destroyed when does not conform to var) */
  const nco_bool MUST_CONFORM, /* I [flg] Must wgt and var conform? */
- bool *DO_CONFORM) /* O [flg] Do wgt and var conform? */
+ nco_bool *DO_CONFORM) /* O [flg] Do wgt and var conform? */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* fxm: TODO 226. Is xrf in nco_var_cnf_dmn() really necessary? If not, remove it and make wgt arg const var_sct * const */
@@ -62,8 +62,8 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
      (otherwise which hyperslab of weight to use would be ill-defined). 
      However, weight may (and often will) have fewer dimensions than variable */
 
-  bool CONFORMABLE=False; /* [flg] wgt can be made to conform to var */
-  bool USE_DUMMY_WGT=False; /* [flg] Fool NCO into thinking wgt conforms to var */
+  nco_bool CONFORMABLE=False; /* [flg] wgt can be made to conform to var */
+  nco_bool USE_DUMMY_WGT=False; /* [flg] Fool NCO into thinking wgt conforms to var */
 
   int idx; /* [idx] Counting index */
   int idx_dmn; /* [idx] Dimension index */
@@ -376,8 +376,8 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_rdr), /* I [sct] List of dimension structures in new order */
  const int dmn_rdr_nbr, /* I [nbr] Number of dimension structures in structure list */
  int * const dmn_idx_out_in, /* O [idx] Dimension correspondence, output->input */
- const bool * const dmn_rvr_rdr, /* I [idx] Reverse dimension */
- bool * const dmn_rvr_in) /* O [idx] Reverse dimension */
+ const nco_bool * const dmn_rvr_rdr, /* I [idx] Reverse dimension */
+ nco_bool * const dmn_rvr_in) /* O [idx] Reverse dimension */
 {
   /* Purpose: Re-order dimensions in a given variable
      dmn_rdr contains new dimension order for dimensions
@@ -625,13 +625,13 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
 (const var_sct * const var_in, /* I [ptr] Variable with metadata and data in original order */
  var_sct * const var_out, /* I/O [ptr] Variable whose data will be re-ordered */
  const int * const dmn_idx_out_in, /* I [idx] Dimension correspondence, output->input */
- const bool * const dmn_rvr_in) /* I [idx] Reverse dimension */
+ const nco_bool * const dmn_rvr_in) /* I [idx] Reverse dimension */
 {
   /* Purpose: Re-order values in given variable according to supplied dimension map
      Description of re-ordering concepts is in nco_var_dmn_rdr_mtd()
      Description of actual re-ordering algorithm is in nco_var_dmn_rdr_val() */
 
-  bool IDENTITY_REORDER=False; /* [flg] User requested identity re-ordering */
+  nco_bool IDENTITY_REORDER=False; /* [flg] User requested identity re-ordering */
 
   char *val_in_cp; /* [ptr] Input data location as char pointer */
   char *val_out_cp; /* [ptr] Output data location as char pointer */

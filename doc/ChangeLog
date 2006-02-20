@@ -1,3 +1,7 @@
+2006-02-20  Charlie Zender  <zender@uci.edu>
+
+	* Change more internal bool's to nco_bool's so g++ builds libnco.a
+
 2006-02-19  Charlie Zender  <zender@uci.edu>
 
 	* Re-arrange packing/unpacking documentation to describe default
