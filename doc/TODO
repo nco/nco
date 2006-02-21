@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.711 2006-02-20 08:04:57 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.712 2006-02-21 22:40:37 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -421,8 +421,11 @@ nco668. Prefix nco.png fractal icon with text "NC" to look like "NCO"
 nco669. Command-line switch for float->double math-promotion to avoid underflow?
 nco674. debian: replace netcdfg3 with netcdf try to build .debs again
 nco675. ncap2: Makefile generates redundant antlr runs
-nco678. Move packing documentation from ncap to Chapter 2
-nco679. 
+nco679. ncwa mask bug on forum?:
+        ncwa -O -o ~/foo.nc -m plat -M 0. -T gt -w parea -v sst ~/test.nc 
+	ncks -C -H -v sst ~/foo.nc
+	sst = 4.56931701831e+26
+nco680. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
