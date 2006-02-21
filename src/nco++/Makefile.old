@@ -1,0 +1,1352 @@
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.8 2006-02-21 22:13:19 zender Exp $ -*-makefile-*-
+
+# Purpose: Makefile for NCO C++ directory nco++
+# Requires GNU Make. AT&T Make will not process this file
+# scp ~/nco/src/nco++/Makefile.old esmf.ess.uci.edu:nco/src/nco++
+# scp ~/nco/src/nco++/Makefile.old soot.ess.uci.edu:nco/src/nco++
+# scp ~/nco/src/nco++/Makefile.old goldhill.cgd.ucar.edu:nco/src/nco++
+
+# Copyright (C) 1994--2006 Charlie Zender
+# This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
+# See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text
+
+# Usage:
+# cd ~/nco/src/nco++;make dpn_cln cln all
+
+# In rule 
+# foobar.o : foo.c bar.c
+# $@ is target = foobar.o
+# $< is first dependency = foo.c
+# $^ is name of all dependencies = foo.c bar.c
+# $* is stem of match, and so much more
+
+# Recursively expanded variables are defined with `=':
+# Values are installed verbatim and expanded when substitution occurs
+# Variable may be used before it is defined and expansion will be correct
+# However variable may not be modified (e.g., appended) after definition
+
+# Simply expanded variables are defined with `:=':
+# Values are immediately expanded at the time variable is defined
+# Variables must be defined before being used
+# Variables may be modified without causing infinite recursion
+
+# Top-level tokens defining directory structure
+# These tokens may be over-ridden by environment variables or when invoking make, e.g. make DODS=Y
+MY_BLD_DIR := ../../bld
+ifndef PVM_ARCH
+ PVM_ARCH := $(shell ${MY_BLD_DIR}/pvmgetarch)
+endif
+ifndef MY_BIN_DIR
+ MY_BIN_DIR := ../../bin
+endif
+ifndef MY_LIB_DIR
+ MY_LIB_DIR := ../../lib
+endif
+ifndef MY_OBJ_DIR
+ MY_OBJ_DIR := ../../obj
+endif
+ifndef MY_DAT_DIR
+ MY_DAT_DIR := ../../data 
+endif
+ifndef MY_INC_DIR
+ MY_INC_DIR := ${HOME}/include
+endif
+ifndef MY_BLD_DIR
+ MY_BLD_DIR := .
+endif
+ifndef MY_DOC_DIR
+ MY_DOC_DIR := .
+endif
+ifndef MY_DPN_DIR
+ MY_DPN_DIR := ${MY_OBJ_DIR}
+endif
+
+# Primary tokens which determine build options
+# Specify non-default when invoking make, e.g. make DODS=Y
+ifndef ${ABI}
+# 32 vs. 64 bit ABI: 32=32 bit mode (default), 64=64 bit mode if available
+ ABI := 64
+endif # endif ABI
+ifndef ANTLR
+ ANTLR := runantlr
+endif
+ifndef ANTLR_ROOT
+ ANTLR_ROOT := /usr/local
+endif
+ifndef ANTLR_INC
+ ANTLR_INC := ${ANTLR_ROOT}/include # Directory containing antlr.h
+endif
+ifndef ANTLR_LIB
+ ANTLR_LIB := ${ANTLR_ROOT}/lib # Directory containing libantlr.a
+endif
+ifndef DAP
+ DAP := N
+endif
+ifndef ${DBG}
+# Debugging token N=No (default) Y=Yes
+ DBG := N
+endif # endif DBG
+ifndef GCC_RCH_ARG
+ GCC_RCH_ARG :=
+endif # endif GCC_RCH_ARG
+ifdef GSL_LIB
+ GSL_LIB := -L${GSL_LIB}
+else
+ GSL_LIB := $(shell gsl-config --libs)
+endif # endif GSL_LIB
+ifndef I18N
+ I18N := Y
+endif # endif I18N
+ifndef ICC_RCH_ARG
+ ICC_RCH_ARG :=
+endif # endif ICC_RCH_ARG
+ifndef MK_DPN
+ MK_DPN = ${CPP} -M # NB: Recursive expansion required
+ MK_DPN_CXX = ${CXX} -M # NB: Recursive expansion required
+endif # endif MK_DPN
+ifndef ${MPI} # MPI
+ MPI := N
+endif # endif MPI
+ifndef ${MPI_FAKE} # MPI
+ MPI_FAKE := N
+endif # endif MPI_FAKE
+ifndef ${NETCDF4} # netCDF4 support
+ NETCDF4 := N
+endif # endif NETCDF4
+ifndef NETCDF_ROOT
+ NETCDF_ROOT := /usr/local
+endif
+ifndef NETCDF4_ROOT
+ NETCDF4_ROOT := ${NETCDF_ROOT}
+endif
+ifndef NETCDF_INC
+ NETCDF_INC := ${NETCDF_ROOT}/include # Directory containing netcdf.h
+endif
+ifndef NETCDF_LIB
+ NETCDF_LIB := ${NETCDF_ROOT}/lib # Directory containing libnetcdf.a
+endif
+ifndef ${OMP} # OpenMP
+ OMP := Y
+endif # endif OMP
+ifndef OPTS
+ OPTS := O
+endif # endif OPTS
+ifndef ${PNETCDF} # pnetCDF support
+ PNETCDF := N
+endif # endif PNETCDF
+ifndef ${PRC}
+# Precision token D=Double (default) S=Single
+ PRC := S
+endif # endif PRC
+ifndef PVM_ARCH
+ PVM_ARCH := $(shell ${HOME}/bin/sh/pvmgetarch)
+endif
+ifndef STC
+# Created statically linked executable
+ STC := N
+endif
+ifndef UDUNITS
+# Use UDUnits functionality
+ UDUNITS := Y
+endif
+ifndef UNAMES
+ UNAMES := $(shell uname -s)
+endif
+ifndef USR_TKN
+ USR_TKN := -DABORT_ON_ERROR
+endif # endif USR_TKN
+ifndef VRS_SNG
+ VRS_SNG := $(shell date +%Y%m%d)
+endif # endif VRS_SNG
+
+# Derived-tokens based on primary tokens
+# These tokens should not be altered by hand
+ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
+# Decide among the plethora of Linux compilers
+ifndef LINUX_CXX
+# C++ compiler for Linux
+ LINUX_CXX := g++
+ #LINUX_CXX := como
+ #LINUX_CXX := icpc
+ #LINUX_CXX := insure
+ #LINUX_CXX := pgCC
+endif # endif LINUX_CXX
+ifndef LINUX_CC
+# C compiler for Linux
+ LINUX_CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
+ #LINUX_CC := como --c99
+ #LINUX_CC := icc -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE
+ #LINUX_CC := insure
+ #LINUX_CC := pgcc
+endif # endif LINUX_CC
+ifndef LINUX_FC
+# Fortran compiler for Linux
+ LINUX_FC := g95
+ #LINUX_FC := gfortran
+ #LINUX_FC := lf95
+ #LINUX_FC := ifort
+ #LINUX_FC := pgf90
+endif # endif LINUX_CC
+ifeq (${PVM_ARCH},LINUXAMD64)
+ifndef LINUX_CXX
+# GCC 3.3 fails in atomicity.h with -O, -O0, and -O2 so use 3.4 instead 
+ LINUX_CXX := g++
+endif # endif LINUX_CXX
+ifndef LINUX_CC
+ LINUX_CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
+endif # endif LINUX_CC
+ifndef LINUX_FC
+ LINUX_FC := g95
+endif # endif LINUX_FC
+endif # endif LINUXAMD64
+ifeq (${PVM_ARCH},LINUXALPHA)
+ LINUX_FC := g77
+endif # endif LINUXALPHA
+endif # endif LINUX
+ifeq (${PRC},D)
+ USR_TKN := -DPRC_DBL ${USR_TKN}
+else
+ USR_TKN := -DPRC_FLT ${USR_TKN}
+endif # endif PRC
+
+# NB: CPP_TKN is recursively expanded variable, define only when components are ready
+CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
+
+# Default NCO build. DAP, NETCDF4, and PNETCDF clauses may overwrite this
+NC_LDFLAGS := -L${NETCDF_LIB}
+NC_LIBS := -lnetcdf 
+
+ifeq (${DAP},Y)
+# Build NCO as DAP-enabled clients
+# fxm: OPeNDAP bloats executables, should automagically enable stripping?
+# http://www.opendap.org/user/guide-html/guide_28.html
+ifndef DAP_ROOT
+# Directory containing libdap++.a, libnc-dap.a
+ DAP_ROOT := /usr/local
+endif # DAP_ROOT
+ NC_LDFLAGS := -L${DAP_ROOT}/lib
+# NB: nc-dods, dap++ prior to version 3.5.X must be linked twice!
+# Required libraries for
+# DODS 3.3-:
+# NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
+# DODS 3.4.X:
+# NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lxml2 -lcurl -lpthread -ldl -lz
+# DAP 3.5+:
+ NC_LIBS := -lnc-dap -ldap++ -lxml2 -lcurl
+# Get netCDF from OPeNDAP version
+ NETCDF_INC=${DAP_ROOT}/include/libnc-dap
+ NETCDF_LIB=${DAP_ROOT}/lib
+endif # end DAP
+
+# Internationalize NCO with i18n features
+ifeq (${I18N},Y)
+ MY_SHR_DIR := ${HOME}/share
+ MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
+ MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
+endif
+
+# Message Passing Interface (MPI)
+ifeq (${MPI_FAKE},Y)
+# MPI_FAKE instructs make to compile mpnc*.c operators without defining ENABLE_MPI
+# Resulting executables use UP or SMP code not MPI code
+# This tests compile, link, execution of MPI mpnc*.c code without using any MPI calls
+ MPI := Y
+endif # !MPI_FAKE
+ifdef MPI_PRC
+# MPI_PRC tells test scripts how many MPI processes to spawn
+# Pass this MPI argument to nco_bm.pl
+ MPI_PRC_SNG := "--mpi_prc=${MPI_PRC}"
+# MPI_PRC implies MPI
+ MPI := Y
+else # !MPI_PRC
+ MPI_PRC_SNG :=
+endif # !MPI_PRC
+
+ifeq (${NETCDF4},Y)
+# Enable netCDF4 functionality
+ NETCDF_INC := ${NETCDF4_ROOT}/include
+ NETCDF_LIB := ${NETCDF4_ROOT}/lib
+ NC_LDFLAGS := -L${NETCDF_LIB}
+ NC_LIBS := -lnetcdf -lhdf5 -lhdf5_hl
+endif # endif NETCDF4
+
+ifeq (${PNETCDF},Y)
+# Enable pnetCDF functionality
+ NC_LDFLAGS := -L${NETCDF_LIB}
+ NC_LIBS += -lpnetcdf
+endif # endif PNETCDF
+
+ifeq (${UDUNITS},Y)
+# Build UDUnits-enabled NCO 
+# Place UDUNITS block after DAP block for both to work together
+ifndef UDUNITS_INC
+ UDUNITS_INC := /usr/local/include # Directory containing udunits.h
+endif
+ifndef UDUNITS_LIB
+ UDUNITS_LIB := /usr/local/lib # Directory containing libudunits.a
+endif
+ifneq (${UDUNITS_INC},${NETCDF_INC})
+ NETCDF_INC += -I${UDUNITS_INC}
+endif # end 
+ifneq (${UDUNITS_LIB},${NETCDF_LIB})
+ NC_LDFLAGS += -L${UDUNITS_LIB}
+endif # end if
+ NC_LIBS += -ludunits
+endif # end if UDUNITS
+
+# TMP_* and NCO_* are required to play nicely with DAP flags
+NCO_LDFLAGS := -L${MY_LIB_DIR}
+NCO_LIBS := -lnco++ -lnco -lnco_c++
+TMP_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} -L${ANTLR_LIB}
+TMP_LIBS := ${NCO_LIBS} ${NC_LIBS} -lantlr
+# sort removes duplicates but unfortunately changes precedence too
+# fxm: use uniq instead
+#TMP_LDFLAGS := $(sort ${TMP_LDFLAGS})
+
+# NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
+null :=
+space := ${null} ${null}
+comma := ,
+newline := \n
+# We replace `/' by `cszzsc', call perl, then replace `cszzxc' by `/'
+# Unique character(s) to substitute for ${slash} before passing to perl regex
+slash_rx := cszzsc
+# Unique character(s) to replace by ${slash_rx} before passing to perl regex
+slash := /
+MY_OBJ_DIR_RX := $(subst ${slash},${slash_rx},${MY_OBJ_DIR})
+MY_DPN_DIR_RX := $(subst ${slash},${slash_rx},${MY_DPN_DIR})
+
+ifeq (${PVM_ARCH},WIN32)
+ BNR_SFX := .exe
+else
+ BNR_SFX := ${null}
+endif 
+
+# Automagically generated grammar
+NCAP2_ANTLR_GENERATED_CC_STB := ncoLexer ncoParser ncoTree
+NCAP2_ANTLR_GENERATED_HH_STB := ${NCAP2_ANTLR_GENERATED_CC_STB} ncoParserTokenTypes
+NCAP2_ANTLR_GENERATED_CC := $(addsuffix .cc, $(basename ${NCAP2_ANTLR_GENERATED_CC_STB})) 
+NCAP2_ANTLR_GENERATED_CPP := $(addsuffix .cpp, $(basename ${NCAP2_ANTLR_GENERATED_CC_STB})) 
+NCAP2_ANTLR_GENERATED_HH := $(addsuffix .hh, $(basename ${NCAP2_ANTLR_GENERATED_HH_STB})) 
+NCAP2_ANTLR_GENERATED_HPP := $(addsuffix .hpp, $(basename ${NCAP2_ANTLR_GENERATED_HH_STB})) 
+NCAP2_ANTLR_GENERATED_OBJ := $(addprefix ${MY_OBJ_DIR}/,$(addsuffix .o, $(basename ${NCAP2_ANTLR_GENERATED_CC_STB})))
+NCAP2_ANTLR_GENERATED_TXT := ncoParserTokenTypes.txt
+
+# Directories to search for source files
+MDL_PTH := ./ ${MY_SRC_DIR}
+# Find all C and C++ files in given directory
+FIND_FNC = $(wildcard ${dir}/*.cc ${dir}/*.c)
+# Assemble source files from all directories
+SRC_LST = $(foreach dir, ${MDL_PTH},$(FIND_FNC))
+# Source file names with directories removed
+MDL_SRC := $(notdir $(SRC_LST)) ${NCAP2_ANTLR_GENERATED_CPP}
+# Directories to search for source files
+MDL_PTH := . ../nco
+# Dependency list for executable
+MDL_OBJ := $(addprefix ${MY_OBJ_DIR}/,$(addsuffix .o, $(basename ${MDL_SRC}))) 
+# Dependency (make) file for each object file
+MDL_DPN := $(addprefix ${MY_DPN_DIR}/,$(addsuffix .d, $(basename ${MDL_SRC}))) 
+# VPATH helps make find dependencies (which are not pathname qualified) in *.d file
+VPATH := $(subst ${space},:,${MDL_PTH})
+# Prepend -I to use for compiler argument
+CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
+
+# Variables having to do with binary executables created by module
+MDL_BIN_TRG := ncap2 # Binary targets
+MDL_BIN_SYM_LNK := # Symbolic links
+MDL_BIN_STB := ${MDL_BIN_TRG} ${MDL_BIN_SYM_LNK} # All C++ files in MY_BIN_DIR
+MDL_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_BIN_STB}) # dst_cln removes these files
+
+# Variables having to do with header files created by module
+# List header targets alphabetically by "category":
+MDL_INC_TRG := # Raw (no functions)
+MDL_INC_TRG += # libnco++
+MDL_INC_SYM_LNK := # Symbolic links
+MDL_INC_STB = ${MDL_INC_TRG} ${MDL_INC_SYM_LNK} # All header files in ${MY_INC_DIR}
+MDL_INC = $(addprefix ${MY_INC_DIR}/,${MDL_INC_STB}) # dst_cln removes these files
+
+# Redefine default C and C++ pattern rules
+${MY_OBJ_DIR}/%.o : %.c
+	${CC} ${CPPFLAGS} ${CFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
+${MY_OBJ_DIR}/%.o : %.cc
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
+${MY_OBJ_DIR}/%.o : %.cpp
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
+
+# Default Fortran pattern rules: CRAY and RS6K must override these rules
+${MY_OBJ_DIR}/%.o : %.F
+	${FC} -c ${FFLAGS} ${CPPFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
+${MY_OBJ_DIR}/%.o : %.f
+	${FC} -c ${FFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
+
+# Rules for installing header files
+${MY_INC_DIR}/%.h : %.h
+	cp -f -p $(notdir $@) $@
+${MY_INC_DIR}/%.hh : %.hh
+	cp -f -p $(notdir $@) $@
+
+# Rules for installing i18n files
+%.po : %.cc
+	xgettext --default-domain=$* --join-existing $<
+${MY_ES_DIR}/%.mo : %.po
+#	Linux version accepts more arguments than Solaris version
+#	msgfmt --output-file=$@ --statistics $<
+	msgfmt -o $@ $<
+
+# Automatically generate a dependency file for each source file
+# $* is the stem, e.g., f
+# $@ is the filename of the target, e.g., f.d
+# Linux gcc may return an extra `.F' on Fortran names, e.g., `hello.F.o: hello.F'
+# (.F)? gets rid of this extran `.F'
+${MY_DPN_DIR}/%.d : %.F
+# Following command makes, e.g., f.d begin "f.o f.d : f.F ..."
+# Since f.o is not preceded by ${MY_OBJ_DIR}, objects are not recompiled when sources are touched.
+#	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.F\.o/$*.o $@/g;' > $@
+# Following command makes, e.g., f.d begin "/home/zender/obj/LINUX/f.o f.d : f.F ..."
+# This works fairly well, but is a hack
+# First pattern substitutes MY_OBJ_DIR_RX, which has placeholders for slashes
+# Second pattern substitutes slashes for the placeholders
+	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*(\.F)?\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
+# Following command makes, e.g., f.d begin "${MY_OBJ_DIR}/f.o f.d : f.F ..."
+# This would be the ideal command but I cannot get dollar sign to cooperate
+#	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.F\.o/\${dollar}MY_OBJ_DIR\/$*.o $@/g;' > $@
+
+${MY_DPN_DIR}/%.d : %.f
+	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
+
+${MY_DPN_DIR}/%.d : %.c
+#	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$*.o $@/g;' > $@
+	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
+
+${MY_DPN_DIR}/%.d : %.cc
+# NB: Use ${CXX} rather than ${CPP} on C++ files for now because, e.g., SUNMP cpp does not 
+# preprocess .cc files quite correctly
+#	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$*.o $@/g;' > $@
+	${CXX} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
+
+${MY_DPN_DIR}/%.d : %.cpp
+	${CXX} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
+
+# The first LDFLAGS is for typical C programs with netCDF, math, and networking
+# The second LDFLAGS enables C/Fortran linking
+
+# Manually define autotools tokens normally defined in HAVE_CONFIG_H
+# Initialize OS-specific tokens to empty
+CPP_TKN_OS := 
+CPP_TKN_OS := -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY
+ifneq (${PVM_ARCH},CRAY)
+ CPP_TKN_OS += -DHAVE_MKSTEMP
+endif # CRAY
+ifneq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSXWIN32))
+ CPP_TKN_OS += -DHAVE_GETOPT_H -DHAVE_GETOPT_LONG
+# UDUNITS_DAT OK to be empty for now
+endif # !LINUX
+ifneq (${null},$(findstring ${PVM_ARCH},AIXSGIMP64))
+ CPP_TKN_OS += -DNEED_GETOPT_LONG
+endif # !(AIX || SGI)
+ifneq (${null},$(findstring AIX,${PVM_ARCH}))
+# Visual age compiler headers must occur before g++ headers
+ CPP_TKN_OS += -I/usr/vacpp/include
+endif # AIX
+ifeq (${DAP},Y)
+ CPP_TKN_OS += -DENABLE_DAP
+endif # !DAP
+ifeq (${MPI},Y)
+ifneq (${MPI_FAKE},Y)
+ CPP_TKN_OS += -DENABLE_MPI
+endif # MPI_FAKE
+endif # !MPI
+ifeq (${UDUNITS},Y)
+ CPP_TKN_OS += -DENABLE_UDUNITS -DHAVE_UDUNITS_H
+endif # !UDUNITS
+ifeq (${null},$(findstring SGI,${PVM_ARCH}))
+ CPP_TKN_OS += -DHAVE_CSTDLIB
+endif # SGI
+
+# Works on AIX and AIX46K
+ifneq (${null},$(findstring AIX,${PVM_ARCH}))
+# 20030804: Always use re-entrant (_r) compilers---Jim Edwards NCAR/IBM 
+CC := xlc_r -qlanglvl=extc99
+#CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
+CXX := xlC_r
+# CXX := g++
+# fxm: 20040311 should this be cpp? gcc -M?
+CPP := xlc -c -qlanglvl=extc99
+ifneq (${null},$(findstring xl,${CC}))
+# Visual Age compiler headers must occur before g++ headers
+ CPP_TKN_OS += -I/usr/vacpp/include
+endif # xlC compilers
+# Add /usr/local/include for libintl.h explicitly until netCDF is moved there
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC} ${GSL_INC} -I/usr/local/include
+FC := xlf95_r
+LD := ld
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
+LEX := flex
+LINT := lint
+YACC := bison
+# AIX VA Compiler Collection
+ifneq (${null},$(findstring xl,${CC}))
+# Visual Age compiler defaults specified in /etc/vac.cfg
+# Additional switch to fix compiler warnings on csz.c
+# -qmaxmem=num Limit memory used by space intensive optimizations to <num> kilobytes
+# -qspill=size Size in B of register allocation spill area, mie needs > 1040 B
+ CFLAGS := -qmaxmem=8192 -qspill=2048
+ FFLAGS := -NS2000 -qfixed=132
+# -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
+ LDFLAGS += -bh:5
+#LDFLAGS += -lxlf90 # Required for linking Fortran objects
+ifeq (${OMP},Y)
+# -qsmp=noauto : Turn on SMP/OMP code generation but do no automatic parallelization
+# -qsmp=omp : Use industry standard OMP without IBM extensions
+ OMP_FLG_C := -qsmp=omp
+ OMP_FLG_F := -qsmp=omp
+else
+ CPP_DFN += -U_OPENMP
+ FC := xlf95
+endif # endif OMP
+ifeq (${OPTS},O)
+# -O : -O3 is safe, -O5 is dangerous
+# -qstrict: Ensure that -O3 optimizations do not alter program semantics
+# -Q : Inline all appropriate subprograms
+ CFLAGS := -O3 -qstrict -Q
+ FFLAGS += -O3 -qstrict -Q
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+ FFLAGS += -g
+endif
+ifeq (${OPTS},X)
+# -qflttrap generates instructions for floating point exceptions
+# -qidirfirst uses headers found in -I directories first
+# -qlonglong allow long long integers
+# -qmakedep creates .d file
+# -qwarn64 check for possible long-to-integer or pointer-to-integer truncation
+# -qhalt=e stop compiler if error severity equals or exceeds i, w, e, s, u
+ CFLAGS += -g -qflttrap -qidirfirst -qlonglong -qwarn64 -qcheck=all -qhalt=s
+ FFLAGS += -g
+endif
+ifeq (${ABI},64)
+ AR := ar -X 64
+ CFLAGS += -q64
+ FFLAGS += -q64
+ LDFLAGS += -q64 
+else
+ CPPFLAGS += -D_LARGE_FILES
+endif # endif ABI
+# Additional flags for AIX:
+# -M Generate information to be included in a "make" description file; output goes to .u file
+# -c Do not send object files to the linkage editor
+# -P Preprocess but do not compile; output goes to .i file
+# Using -P causes additional warning messages about lm 
+# Not using -P causes *.o files to be created twice
+${MY_DPN_DIR}/%.d : %.c
+	${MK_DPN} ${CPPFLAGS} $< ;perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' $*.u > $@ ; \
+	rm -f $*.i $*.o $*.u;
+${MY_DPN_DIR}/%.d : %.cc
+	${MK_DPN} ${CPPFLAGS} $< ;perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' $*.u > $@ ; \
+	rm -f $*.i $*.o $*.u;
+endif # endif AIX VA Compiler Collection
+# GNU Compiler Collection
+ifneq (${null},$(findstring gcc,${CC}))
+ CFLAGS := -Wall -Wunused
+ifeq (${OPTS},O)
+ CFLAGS += -O -g ${GCC_RCH_ARG}
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+ifeq (${OPTS},R)
+ CFLAGS += 
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g -O
+ LDFLAGS += /usr/local/lib/ccmalloc-g++.o -L/usr/local/lib -lccmalloc -ldl
+endif
+ifeq (${ABI},64)
+ CC += -maix64 
+ CXX += -maix64 
+endif # endif ABI
+ CXXFLAGS := ${CFLAGS}
+endif # endif GNU Compiler Collection
+# -q64: Select 64-bit compiler mode (required for accessing large files)
+# -qwarn64: Warn on possible long-to-integer or pointer-to-integer truncation
+CXXFLAGS := ${CFLAGS}
+ifeq (${OMP},Y)
+ CFLAGS += ${OMP_FLG_C}
+ CXXFLAGS += ${OMP_FLG_C}
+ FFLAGS += ${OMP_FLG_F}
+# LD behavior assumes C source code
+ LDFLAGS := ${OMP_FLG_C} ${LDFLAGS}
+endif # endif OMP
+endif
+# endif AIX
+
+ifeq (${PVM_ARCH},ALPHA)
+ifeq (${OMP},Y)
+ OMP_FLG := -omp
+endif # endif OMP
+CXX := cxx -std strict_ansi
+#CXX := cxx -std ansi -D__NO_USE_STD_IOSTREAM
+CC := cc
+CFLAGS := ${OMP_FLG}
+# OSF1 is for CCM compatibility
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DOSF1 ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC}
+FC := f90
+FFLAGS := -c ${OMP_FLG} -automatic -fpe3
+FIXEDFLAGS := -extend_source
+FREEFLAGS := -DHIDE_SHR_MSG -free
+LD := ld
+LDFLAGS += ${OMP_FLG} ${TMP_LDFLAGS} ${TMP_LIBS}
+LEX := flex
+LINT := lint
+YACC := bison
+ifeq (${PRC},D)
+ FFLAGS += -r8 -i4
+endif
+ifeq (${OPTS},O)
+ CFLAGS += -O2 -ansi_alias
+ FFLAGS += -O3 -inline speed
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g -check_bounds -check -check_omp
+ FFLAGS += -g3 -C
+endif
+ifeq (${OPTS},X)
+ CFLAGS := -g -N 132
+ FFLAGS := -g -check bounds -check omp_bindings -check overflow -check underflow
+endif
+CXXFLAGS := ${CFLAGS}
+${MY_OBJ_DIR}/%.o : %.F90
+	${FC} -c ${FREEFLAGS} ${FFLAGS} ${CPPFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
+${MY_OBJ_DIR}/%.o : %.F
+	${FC} -c ${FIXEDFLAGS} ${FFLAGS} ${CPPFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
+endif
+# endif ALPHA
+
+ifeq (${PVM_ARCH},CRAY)
+CXX := g++
+CC := cc
+CPP := cpp
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC}
+FC := f90
+LD := ld
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
+LDFLAGS += -L/lib -lf
+LEX := lex
+LINT := lint
+YACC := yacc
+ifeq (${OPTS},O)
+ CFLAGS += -O
+ FFLAGS := -N 132
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+ FFLAGS := -g -N 132
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g -N 132
+ FFLAGS := -g -N 132 -e i
+endif
+# 1997/10/21 Added -P to suppress #line # directives on Fortran files
+${MY_OBJ_DIR}/%.o : %.F
+	${CPP} -P ${CPPFLAGS} $< > $(patsubst %.F,%.f,$(notdir $<))
+	${FC} -c ${FFLAGS} $(patsubst %.F,%.f,$(notdir $<)) 
+	-mv -f $(notdir $@) ${MY_OBJ_DIR}
+	rm -f $(patsubst %.F,%.f,$(notdir $<)) 
+${MY_OBJ_DIR}/%.o : %.f
+	${FC} -c ${FFLAGS} $<
+	mv -f $(notdir $@) ${MY_OBJ_DIR}
+endif
+# endif CRAY
+
+# Works on LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSD))
+CXX := ${LINUX_CXX}
+CC := ${LINUX_CC}
+CPP := ${CXX}
+# HAVE_INLINE is GNU standard to activate inline functions (used by GSL)
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DHAVE_INLINE ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC} 
+FC := ${LINUX_FC}
+LD := ld
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
+LEX := flex
+LINT := lint
+YACC := bison
+# Comeau C Compiler
+ifeq (${CXX},como)
+ CFLAGS := 
+ LDFLAGS := ${COMOROOT}/libcomo/libcomo.a ${LDFLAGS}
+ifeq (${OPTS},O)
+ CFLAGS += -O
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+ifeq (${OPTS},R)
+ CFLAGS +=
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g
+endif
+ CXXFLAGS := ${CFLAGS}
+endif # endif Comeau C Compiler
+# GNU Compiler Collection
+ifneq (${null},$(findstring gcc,${CC}))
+ CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
+ CFLAGS := -Wall -Wno-unused-variable
+# Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
+# CFLAGS += -Werror -Wall -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4
+# Compilation flags recommended by GSL that I like and use:
+# -D_BSD_SOURCE: Support 4.3 BSD Unix extensions to ANSI C (prevents nameser.h warnings)
+# -D_POSIX_SOURCE: Support POSIX.1 standard additions to ANSI C (prevents fileno warnings)
+# -pedantic: Disallow non-ISO constructs (including type long long) (sometimes useful)
+# -Werror: Consider warnings as errors
+# -W: Extra warnings, including missing return values, comparison of signed with unsigned
+# -Wall: Warn about common programming problems
+# -Wmissing-prototypes: Warn if missing prototypes
+# -Wshadow: Warn if local variable has same name as other local variable
+# -Wpointer-arith: Warn if pointer arithmetic on types without size, e.g., void
+# -Wcast-qual: Warn if const qualifier removed from pointer
+# -Wcast-align: Warn if casting pointer to type of different size
+# -Wwrite-strings: Apply const-qualifier to string constants, die if overwritten
+# -fno-common: Prevent global variables from being simultaneously defined in different files
+# -g: Put debugging symbols in executable
+# -O4: Turn on optimization so unitialized variables are flagged
+# Compilation flags recommended by GSL that I do not like and do not use:
+# -ansi: Support only strict ANSI C. Equivalent to -std=c89, conflicts with -std=c99
+# --no-alias? -fstrict-aliasing
+# -Waggregate-return: Warn if functions return aggregates like structures or unions
+# -Wconversion: Warn if converting signed to unsigned. Intended for obsolete, non-prototyped code. Triggers fabsf(), sqrtf(), warnings.
+# -Wnested-externs: Warn if extern is encountered within function. C only?
+# -Wstrict-prototypes: Warn if inconsistent prototypes. C only?
+# -Wtraditional: Warn if constructs differ between traditional and ANSI C. C only?
+# -Dinline=: inline is not an ANSI keyword, must undefine inline to work with -ansi
+# -fshort-enums: Make enums as short as possible, ususally non-int. Do not ever invoke this! This breaks ABI and causes subtle problems
+ifeq (${OPTS},O)
+ CFLAGS += -O -g ${GCC_RCH_ARG}
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+ifeq (${OPTS},R)
+ CFLAGS += 
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g -O
+endif
+ifneq (${null},$(findstring AMD64,${PVM_ARCH}))
+ifeq (${ABI},64)
+ CFLAGS += -m64
+ FFLAGS += -m64
+ LDFLAGS += -m64
+endif # endif ABI
+endif # endif LINUXAMD64
+ CXXFLAGS := ${CFLAGS}
+endif # endif GNU Compiler Collection
+# Intel (Kai) C++ Compiler
+ifeq (icpc,$(firstword ${CXX}))
+# -cxxlib-gcc: link using C++ run-time libraries provided with GCC
+# -cxxlib-icc: link using C++ run-time libraries provided by Intel
+# -fast: enable -xP -O3 -ipo -static
+# -ipo[n]: enable multi-file IP optimizations (between files)
+# -no-gcc: do not define  __GNUC__, __GNUC_MINOR__, and __GNUC_PATCHLEVEL__ macros
+# -static: prevents linking with shared libraries
+# -std=c99: Enable C99 support for C programs
+# -aX<codes>: generate generic IA32 code and code specialized for processors specified by <codes> where codes are one or more of following:
+# B: Intel Pentium M and compatible Intel processors
+# K: Intel Pentium III and compatible Intel processors
+# N: Intel Pentium 4 and compatible Intel processors
+# P: Intel Pentium 4 processors with SSE3 extensions
+# W: Intel Pentium 4 and compatible Intel processors
+# -x<codes>: same as -aX only no generic code, run exclusively on <codes>
+# -Wall: enable all warnings
+# -Werror:force warnings to be reported as errors
+# -w0: display errors (same as -w)
+# -w1: display warnings and errors (DEFAULT)
+# -w2: display remarks, warnings, and errors
+# -wd<L1>[,<L2>,...] disable diagnostics L1 through LN
+# remark #981: operands are evaluated in unspecified order
+# remark #810: conversion from "double" to "float" may lose significant bits
+# remark #1572: floating-point equality and inequality comparisons are unreliable
+ CFLAGS := -w1
+ CPPFLAGS += -I${IA32ROOT}/include -I${IA32ROOT}/include/c++
+ LDFLAGS += -cxxlib-icc
+ifeq (${OMP},Y)
+ OMP_FLG_C := -openmp -openmp_report0
+endif # endif OMP
+ifeq (${OPTS},O)
+ CFLAGS += -O3 -g ${ICC_RCH_ARG}
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+ifeq (${OPTS},R)
+ CFLAGS +=
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g -Wall -wd810,981,1572 -inline_debug_info
+endif
+ CXXFLAGS := ${CFLAGS}
+endif # endif Intel (Kai) C++ Compiler
+# Intel (Kai) Fortran Compiler
+ifeq (${FC},ifort)
+# -132: specify 132 column lines for fixed form sources (same as -extend_source)
+# -axW: generate generic IA32 code and specialized code exclusively for Pentium 4 processors (requires linking to libsvml.a)
+# -fast: enable -xP -O3 -ipo -static
+# -fpconstant: extend precision of single precision constants assigned to double precision variables to double precision
+# -fpp2: necessary, but not sufficient, for  OpenMP
+# -ftz: enable/disable flush denormal results to zero
+# -ip: enable single-file IP optimizations
+# -ipo: enable multi-file IP optimizations
+# -module: specifies path to place .mod files
+# -mp: maintain floating point precision (disables some optimizations)
+# -nus: do not append an underscore to external subroutine names
+# -vec_report1: indicate vectorized loops (DEFAULT)
+# -tune pn4: optimize for Pentium(R) 4 processor (DEFAULT)
+# -us: append an underscore to external subroutine names
+# -vms: enable VMS and DEC statement extensions
+# -w95: supress warnings for non-standard fortran (which includes OpenMP)
+ FFLAGS := -extend_source -fpconstant -fpp2 -implicitnone -us -w95 -mp
+# -lsvml needed with -[a]xW
+ LDFLAGS += -lsvml
+ OMP_FLG_F := -openmp
+ifeq (${PRC},D)
+ FFLAGS += -i4 -r8
+else
+ FFLAGS += -i4
+endif
+ifeq (${OPTS},O)
+ FFLAGS += -O3 -g -vec_report1 -ftz ${ICC_RCH_ARG}
+endif
+ifeq (${OPTS},D)
+ FFLAGS += -g
+endif
+ifeq (${OPTS},R)
+ FFLAGS += 
+endif
+ifeq (${OPTS},X)
+# -C: extensive runtime diagnostics
+# -e95 issues warnings for non-standard fortran (which includes OpenMP)
+ FFLAGS += -g -C -e95
+endif
+endif # end Intel (Kai) Fortran Compiler
+# Portland Group C++ Compiler
+ifeq (${CXX},pgCC)
+# Enable Large File Support (LFS) by default
+ CFLAGS := -Mlfs
+ LDFLAGS += -Mlfs
+ OMP_FLG := -mp
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+ifeq (${OPTS},O)
+ CFLAGS += -fast
+endif
+ifeq (${OPTS},R)
+ CFLAGS += 
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g -Mbounds
+endif
+ CXXFLAGS := ${CFLAGS}
+endif # endif Portland Group C++ Compiler
+# Portland Group Fortran Compiler
+ifeq (${FC},pgf90)
+ FFLAGS := -Mextend -Mnosecond_underscore -byteswapio -Mrecursive -Mdalign -Ktrap=fp -Mlfs
+ OMP_FLG := -mp
+ifeq (${PRC},D)
+ FFLAGS += -Mr8 -Mi4
+endif
+ifeq (${OPTS},O)
+ FFLAGS += -fast
+endif
+ifeq (${OPTS},D)
+ FFLAGS += -g
+endif
+ifeq (${OPTS},R)
+ FFLAGS += 
+endif
+ifeq (${OPTS},X)
+ FFLAGS += -g -Mbounds
+endif
+endif # endif Portland Group Fortran Compiler
+# G77 Fortran compiler
+ifeq (${FC},g77)
+ FFLAGS := -ffixed-line-length-132 -fno-second-underscore
+ifeq (${OPTS},O)
+ FFLAGS += -O
+endif
+ifeq (${OPTS},D)
+ FFLAGS += -g -fdebug-kludge
+endif
+ifeq (${OPTS},R)
+ FFLAGS += -fdebug-kludge
+endif
+ifeq (${OPTS},X)
+ FFLAGS := -g -O -fdebug-kludge -fbounds-check
+endif
+endif # endif G77 Fortran compiler
+ifeq (${OMP},Y)
+ CFLAGS += ${OMP_FLG}
+ FFLAGS += ${OMP_FLG}
+ LDFLAGS := ${OMP_FLG} ${LDFLAGS}
+endif # endif OMP
+endif
+# endif LINUX
+
+ifeq (${PVM_ARCH},MACOSX)
+CXX := c++
+CC := cc
+CFLAGS := -Wall
+CPP := ${CC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${ANTLR_INC} -I${NETCDF_INC}
+FC := f90
+LD := ld
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
+LEX := flex
+LINT := lint
+YACC := bison
+ifeq (${OPTS},O)
+ CFLAGS += -O
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+ifeq (${OPTS},R)
+ CFLAGS += 
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g -O
+ LDFLAGS += /usr/local/lib/ccmalloc-gcc.o -L/usr/local/lib -lccmalloc -ldl
+endif
+CXXFLAGS := ${CFLAGS}
+ifeq (${OMP},Y)
+ CFLAGS += ${OMP_FLG}
+ FFLAGS += ${OMP_FLG}
+ LDFLAGS := ${OMP_FLG} ${LDFLAGS}
+endif # endif OMP
+endif
+# endif MACOSX
+
+ifeq (${PVM_ARCH},NECSX)
+ifeq (${OMP},Y)
+ OMP_FLG := -Popenmp
+endif # endif OMP
+CXX := c++
+#CC := c++ -Xa
+CC := cc
+CPP := c++ -E
+#CPP := /usr/lib/cpp
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${ANTLR_INC} -I${NETCDF_INC}
+FC := f90
+LD := ld
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+# LDFLAGS += -L/lib -lf
+endif
+LEX := lex
+LINT := lint
+YACC := yacc
+ifeq (${OPTS},O)
+ CFLAGS += -h2 -hmath vector -hxint
+# CFLAGS += -Cvopt -math vector -xint
+ FFLAGS = -Cvopt -f3
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+ FFLAGS = -g -f3
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -h0 -g -hstack=nan
+# CFLAGS += -Cdebug -init stack=nan
+ FFLAGS = -Cdebug -eR -f3 -Wf"-init stack=nan heap=nan"
+endif
+MK_DPN = /usr/local/bin/mkdep.perl /usr/lib/cpp # NECSX try this
+${MY_DPN_DIR}/%.d : %.c
+	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
+endif
+# endif NECSX
+
+ifeq (${PVM_ARCH},RS6K)
+CXX := g++
+CC := gcc -ansi
+CPP := /lib/cpp -P
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${ANTLR_INC} -I${NETCDF_INC}
+FC := xlf
+LD := ld
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+ LDFLAGS += -lxlf90 -lxlf
+endif
+LEX := lex
+LINT := lint
+YACC := yacc
+ifeq (${OPTS},O)
+ CFLAGS += -O2
+ CPP := ${CPP} ${CPPFLAGS}
+ PREPROCESS.F := ${CPP} ${CPPFLAGS}
+ FFLAGS := -O -NS2000 -qfixed=132
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+ CPP := ${CPP} ${CPPFLAGS}
+ PREPROCESS.F := ${CPP} ${CPPFLAGS}
+ FFLAGS := -g -NS2000 -qfixed=132
+endif
+${MY_OBJ_DIR}/%.o : %.F
+	${CPP} ${CPPFLAGS} $< ${MY_OBJ_DIR}/$(basename $<).f 
+	${FC} -c ${FFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) ${MY_OBJ_DIR}/$(basename $<).f
+${MY_OBJ_DIR}/%.o : %.f
+	${FC} -c ${FFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
+endif
+# endif RS6K
+
+# SGI6, SGI64, SGIMP64
+ifneq (,$(findstring SGI,${PVM_ARCH}))
+#CXX := CC -LANG:std
+#CC := cc
+# 20000302: -w suppresses warnings which will swamp linker
+CXX := g++ -w
+CC := gcc
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC}
+FC := f90 -cpp
+LD := ld
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
+LEX := flex
+LINT := lint
+YACC := bison
+ifeq (${PVM_ARCH},SGI6)
+# SGI6
+GCC_ABI_FLG := -mabi=32
+GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips3 
+SGI_ABI_FLG := -n32 -mips3
+# endif SGI6
+else
+# SGI64, SGIMP64
+GCC_ABI_FLG := -mabi=64
+GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips4 -L/usr/local/lib/mabi=64
+SGI_ABI_FLG := -64 -mips4
+# endif SGI64, SGIMP64
+endif
+ifeq (${CC},gcc)
+ LDFLAGS := $(GCC_LDFLAGS_SZ_SPC) ${LDFLAGS}
+ CFLAGS := ${GCC_ABI_FLG} -Wall
+ifeq (${OPTS},O)
+ CFLAGS += -O2
+endif
+ifeq (${OPTS},R)
+ CFLAGS += 
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g -O
+endif
+ CXXFLAGS := ${CFLAGS}
+endif
+# endif CC=gcc
+ifeq (${CC},cc)
+# SGI Native C++ headers are in /usr/include/CC
+ LDFLAGS := ${SGI_ABI_FLG} ${LDFLAGS}
+ CFLAGS := ${SGI_ABI_FLG}
+ifeq (${OPTS},O)
+ CFLAGS += -O2
+endif
+ifeq (${OPTS},R)
+ CFLAGS += 
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g -trapuv
+endif
+endif
+# endif CC=cc
+# Fortran flags
+FFLAGS := ${SGI_ABI_FLG} -extend_source
+ifeq (${OPTS},O)
+ FFLAGS += -O2
+endif
+ifeq (${OPTS},R)
+ FFLAGS += 
+endif
+ifeq (${OPTS},D)
+ FFLAGS += -g
+endif
+ifeq (${OPTS},X)
+ FFLAGS += -g -check_bounds -trapuv
+endif
+# end fortran flags
+endif
+# endif SGI6, SGI64, SGIMP64
+
+ifeq (${UNAMES},SunOS) 
+#CXX := CC
+#CC := cc
+CXX := g++
+CC := gcc
+CFLAGS := -Wall
+CPP := cpp
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC} 
+FC := f90 -DHIDE_SHR_MSG
+#FFLAGS := -xs -stackvar -e -Qoption f90comp -r8const
+FFLAGS := -xs -stackvar -e 
+LD := ld
+LDFLAGS := ${TMP_LDFLAGS} ${TMP_LIBS} -lsunmath -lsocket -lnsl
+#LDFLAGS += -lF77 -lM77 -lresolv
+LEX := lex
+LINT := lint
+YACC := yacc
+ifeq (${ABI},64)
+# Sun compiler
+ifeq (${CC},cc)
+ CFLAGS := -xarch=v9
+ FFLAGS := -xarch=v9
+ LDFLAGS += -xarch=v9
+endif # endif Sun compiler
+# GNU Compiler Collection
+ifeq (${CC},gcc)
+ CFLAGS += -mabi=64
+ FFLAGS += -mabi=64
+ LDFLAGS += -mabi=64
+endif # endif GNU Compiler Collection
+endif # endif ABI
+ifeq (${OPTS},O)
+ CFLAGS += -O2
+ FFLAGS += -fast
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+ FFLAGS += -g
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g 
+ FFLAGS += -g
+# NB: 19980601 -C (range-checking) is not supported by Sun f90
+ifeq (${FC},f77)
+ FFLAGS += -C
+endif
+endif
+ CXXFLAGS := ${CFLAGS}
+endif
+# endif SunOS=SUN4SOL2,SUNMP
+
+ifeq (${PVM_ARCH},WIN32)
+CXX := g++-2
+CC := gcc-2 -ansi
+CPP := cpp-2
+# NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -Di386 ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC}
+FC := g77-2
+LD := ld
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
+LDFLAGS += 
+LEX := flex
+LINT := lint
+YACC := bison
+ifeq (${OPTS},O)
+ CFLAGS += -O
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+endif
+# endif WIN32
+
+# Link to Electric Fence library, see man efence
+ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
+ifneq (${null},$(findstring ${OPTS},DX))
+# Electric Fence works on malloc(), not new(), so it is no good on most C++ programs
+# However, ccc contains a malloc() checker which is useful to use with Electric Fence
+# DDD/gdb may fail to run code compiled with efence, and complain about libpthread.so.0
+# LDFLAGS += -lefence
+endif
+endif
+# endif LINUX
+
+# Define any remaining variables
+libnco_c++ := ${MY_LIB_DIR}/libnco_c++
+libnco++ := ${MY_LIB_DIR}/libnco++
+
+# Default targets
+all: ${MDL_BIN_TRG} inc lib
+# .PHONY tells make to remake the following non-file targets 
+.PHONY: all cln dst_cln debug ${MDL_BIN_TRG}
+# Delete default suffixes---this should increase speed
+.SUFFIXES: 
+# Define suffixes which matter
+.SUFFIXES: .cpp .cc .c .o .F .d
+# Delete targets which were not successfully made
+.DELETE_ON_ERROR:
+lib_dir :
+	- if ! test -d ${MY_LIB_DIR}; then mkdir ${MY_LIB_DIR}; fi
+bin_dir :
+	- if ! test -d ${MY_BIN_DIR}; then mkdir ${MY_BIN_DIR}; fi
+obj_dir :
+	- if ! test -d ${MY_OBJ_DIR}; then mkdir ${MY_OBJ_DIR}; fi
+
+# Targets in bin
+# fxm: ncap2_utl.o, Invoke.o, and NcapVarVector.o should be in libnco++.a
+NCAP2_OBJ := ${MY_OBJ_DIR}/ncap2.o
+ncap2:	${MY_BIN_DIR}/ncap2
+${MY_BIN_DIR}/ncap2:	${NCAP2_OBJ} lib
+	${CXX} -o $@${BNR_SFX} ${NCAP2_OBJ} ${LDFLAGS}
+	chmod 755 $@${BNR_SFX}
+
+bin : ${MDL_BIN_TRG}
+bin_cln: 
+	rm -f ${MDL_BIN} ${NCAP2_ANTLR_GENERATED_CPP} ${NCAP2_ANTLR_GENERATED_HPP}
+# Targets in bld
+bld_cln :
+	cd ${MY_BLD_DIR}; rm -f TAGS
+# Targets in bm
+test:	tst
+tst:	
+	ncap2 -O -v -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
+# Targets in dat
+data:	dat
+dat:	${MY_DAT_DIR}/in.nc 
+${MY_DAT_DIR}/in.nc: ${MY_DAT_DIR}/in.cdl
+	-cd ../../bld; ${MAKE} $@
+dat_cln :
+	-cd ${MY_DAT_DIR}; rm -f in.nc foo.nc
+# Targets in dpn
+dpn : ${MDL_DPN}
+dpn_cln :
+	rm -f ${MDL_DPN}
+# Targets in dpn
+dst : 
+	cd ..; tar cvzf /var/ftp/pub/zender/nco++/nco++.tar.gz ./nco++;
+# Targets in inc
+inc : ${MDL_INC}
+inc_cln :
+	rm -f ${MDL_INC}
+# Targets in lib
+lib : inc $(libnco++).a
+	-cd ../../bld; ${MAKE} $@ # Rebuild libnco if necessary
+$(libnco++).a : inc $(libnco++).a(${MY_OBJ_DIR}/ncap2_utl.o) \
+	$(libnco++).a(${MY_OBJ_DIR}/Invoke.o) \
+	$(libnco++).a(${MY_OBJ_DIR}/NcapVarVector.o) \
+	$(libnco++).a(${MY_OBJ_DIR}/ncoLexer.o) \
+	$(libnco++).a(${MY_OBJ_DIR}/ncoParser.o) \
+	$(libnco++).a(${MY_OBJ_DIR}/ncoTree.o)
+# NB: Do not place comments in the middle of a rule, or have \ at the end
+lib_cln :
+	rm -f $(libnco++).a $(libnco++).la $(libnco++).so*
+# Targets in obj
+obj : ${MDL_OBJ}
+obj_cln :
+	rm -f ${MDL_OBJ}
+# Targets in src
+%.hh : %.hpp
+	mv $< $(basename $<).hh
+%.cc : %.cpp
+	mv $< $(basename $<).cc
+# fxm: change to common dependency rule
+ncoLexer.cpp : ncoGrammer.g
+	${ANTLR} ncoGrammer.g
+ncoParser.cpp : ncoGrammer.g
+	${ANTLR} ncoGrammer.g
+ncoTree.cpp : ncoGrammer.g
+	${ANTLR} ncoGrammer.g
+src_cln :
+	rm -f ${NCAP2_ANTLR_GENERATED_CPP} ${NCAP2_ANTLR_GENERATED_HPP} ${NCAP2_ANTLR_GENERATED_TXT}
+# Housekeeping
+clean : cln
+cln : dat_cln dpn_cln obj_cln
+debug: dbg
+dbg:
+	@printf "ABI = ${ABI}\n"
+	@printf "AR = ${AR}\n"
+	@printf "BNR_SFX = ${BNR_SFX}\n"
+	@printf "CC = ${CC}\n"
+	@printf "CFLAGS = ${CFLAGS}\n"
+	@printf "CPP = ${CPP}\n"
+	@printf "CPPFLAGS = ${CPPFLAGS}\n"
+	@printf "CPP_PTH = ${CPP_PTH}\n"
+	@printf "CPP_TKN = ${CPP_TKN}\n"
+	@printf "CXX = ${CXX}\n"
+	@printf "CXXFLAGS = ${CXXFLAGS}\n"
+	@printf "DAP = ${DAP}\n"
+	@printf "DAP_ROOT = ${DAP_ROOT}\n"
+	@printf "DBG = ${DBG}\n"
+	@printf "FC = ${FC}\n"
+	@printf "FFLAGS = ${FFLAGS}\n"
+	@printf "FL_FMT = ${FL_FMT}\n"
+	@printf "GCC_RCH_ARG = ${GCC_RCH_ARG}\n"
+	@printf "HOST = ${HOST}\n"
+	@printf "ICC_RCH_ARG = ${ICC_RCH_ARG}\n"
+	@printf "LAMMPICC = ${LAMMPICC}\n"
+	@printf "LAMMPICXX = ${LAMMPICXX}\n"
+	@printf "LDFLAGS = ${LDFLAGS}\n"
+	@printf "LEX = $(LEX)\n"
+	@printf "LINUX_CC = $(LINUX_CC)\n"
+	@printf "LINUX_CXX = $(LINUX_CXX)\n"
+	@printf "MDL_BIN_TRG = ${MDL_BIN_TRG}\n"
+	@printf "MDL_DPN = ${MDL_DPN}\n"
+	@printf "MDL_MPI_TRG = ${MDL_MPI_TRG}\n"
+	@printf "MDL_OBJ = ${MDL_OBJ}\n"
+	@printf "MDL_PTH = ${MDL_PTH}\n"
+	@printf "MDL_RPM_NST_NM = ${MDL_RPM_NST_NM}\n"
+	@printf "MDL_SRC = ${MDL_SRC}\n"
+	@printf "MPICC = ${MPICC}\n"
+	@printf "MPICH_CC = ${MPICH_CC}\n"
+	@printf "MPICH_CXX = ${MPICH_CXX}\n"
+	@printf "MPICXX = ${MPICXX}\n"
+	@printf "MPI_PRC = ${MPI_PRC}\n"
+	@printf "MPI_PRC_SNG = ${MPI_PRC_SNG}\n"
+	@printf "MY_BIN_DIR = ${MY_BIN_DIR}\n"
+	@printf "MY_BLD_DIR = ${MY_BLD_DIR}\n"
+	@printf "MY_BLD_DIR = ${MY_BLD_DIR}\n"
+	@printf "MY_DAT_DIR = ${MY_DAT_DIR}\n"
+	@printf "MY_DOC_DIR = ${MY_DOC_DIR}\n"
+	@printf "MY_DPN_DIR = ${MY_DPN_DIR}\n"
+	@printf "MY_INC_DIR = ${MY_INC_DIR}\n"
+	@printf "MY_LIB_DIR = ${MY_LIB_DIR}\n"
+	@printf "MY_OBJ_DIR = ${MY_OBJ_DIR}\n"
+	@printf "NCO_LDFLAGS = $(NCO_LDFLAGS)\n"
+	@printf "NCO_LIBS = $(NCO_LIBS)\n"
+	@printf "NCO_VRS = ${NCO_VRS}\n"
+	@printf "NC_LDFLAGS = $(NC_LDFLAGS)\n"
+	@printf "NC_LIBS = $(NC_LIBS)\n"
+	@printf "NETCDF4 = ${NETCDF4}\n"
+	@printf "NETCDF4_ROOT = ${NETCDF4_ROOT}\n"
+	@printf "NETCDF_INC = ${NETCDF_INC}\n"
+	@printf "NETCDF_LIB = ${NETCDF_LIB}\n"
+	@printf "NETCDF_ROOT = ${NETCDF_ROOT}\n"
+	@printf "OMP = ${OMP}\n"
+	@printf "PNETCDF = ${PNETCDF}\n"
+	@printf "PVM_ARCH = ${PVM_ARCH}\n"
+	@printf "RPM = ${RPM}\n"
+	@printf "SRC_LST = $(SRC_LST)\n"
+	@printf "STC = ${STC}\n"
+	@printf "THR_NBR = ${THR_NBR}\n"
+	@printf "THR_NBR_SNG = ${THR_NBR_SNG}\n"
+	@printf "TMP_LDFLAGS = ${TMP_LDFLAGS}\n"
+	@printf "TMP_LIBS = ${TMP_LIBS}\n"
+	@printf "UDUNITS = $(UDUNITS)\n"
+	@printf "UDUNITS_INC = $(UDUNITS_INC)\n"
+	@printf "UDUNITS_LIB = $(UDUNITS_LIB)\n"
+	@printf "VPATH = ${VPATH}\n"
+	@printf "VRS_SNG = ${VRS_SNG}\n"
+	@printf "YACC = ${YACC}\n"
+distclean : dst_cln
+dst_cln : cln bld_cln lib_cln src_cln
+install : inc 
+tags : 
+	etags *.cpp *.cc *.c *.com *.F *.F90 *.h *.hh *.hpp Makefile
+uninstall : dst_cln bin_cln inc_cln lib_cln
+
+# Create dependency files only if they will not be immediately deleted
+INCLUDE_DPN := TRUE
+GOALS_WHICH_DELETE_DEPENDENCY_FILES := cln clean dir distclean dst_cln dpn_cln tags uninstall
+ifeq (,$(findstring $(MAKECMDGOALS),${GOALS_WHICH_DELETE_DEPENDENCY_FILES}))
+ INCLUDE_DPN := TRUE
+else
+ INCLUDE_DPN := FALSE
+endif
+ifeq (${INCLUDE_DPN},TRUE)
+-include ${MDL_DPN}
+endif
