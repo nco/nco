@@ -3,7 +3,7 @@ import getopt, os, sys, tempfile, shutil
 import re, string, time
        
        
-# $Id: dap_nc_handler_hack,v 1.11 2006-02-18 02:05:15 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.12 2006-02-21 23:43:06 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -210,7 +210,7 @@ class Command:
         for x in  ["-o", "--fl_out", "--output"]:
             if x in adict:
                 assert ofname == ""
-                ofname = adict[x]
+                ofname = adict.pop(x)
         if ofname == "":
             # don't steal output if it's actually the input.
             if len(leftover) <= 1:

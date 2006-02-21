@@ -19,7 +19,7 @@ import urllib
 #         (but variable P01 is not in foo_T42, so this won't really work.
 #
 #
-# version info: $Id: ssdwrap.py,v 1.6 2006-02-18 02:05:15 wangd Exp $
+# version info: $Id: ssdwrap.py,v 1.7 2006-02-21 23:43:07 wangd Exp $
 ########################################################################
 
 
@@ -28,15 +28,46 @@ import urllib
 # FIXME: this way of organizing the config has to be changed so that
 # the server url can be passed in via an option or the config can reside
 # in a std config file
-serverBase = "http://sand.ess.uci.edu:80/cgi/dods/nph-dods"
+class local:
+    serverBase = "http://sand.ess.uci.edu:80/cgi/dods/nph-dods"
 
-# params probably unchanged
+    # params probably unchanged
 
-# some of these are probably unacceptable... FIXME
-acceptableNcCommands = ["ncap", "ncatted", "ncbo", "ncdiff",
-                        "ncea", "ncecat", "ncflint", "ncks",
-                        "ncpack", "ncpdq", "ncra", "ncrcat",
-                        "ncrename", "ncunpack", "ncwa"]
+    # some of these are probably unacceptable... FIXME
+    acceptableNcCommands = ["ncap", "ncatted", "ncbo", "ncdiff",
+                            "ncea", "ncecat", "ncflint", "ncks",
+                            "ncpack", "ncpdq", "ncra", "ncrcat",
+                            "ncrename", "ncunpack", "ncwa"]
+    @staticmethod
+    def readConfigFile():
+        # can add other mappings from config file to local settings"
+        cfgmap = [("serverBase", "ssd-server", "url")]
+        try:
+            import ConfigParser
+            config = ConfigParser.ConfigParser()
+            filename = "ssdwrap.conf"
+            
+            # look in the same place as the script is located... 
+            # should I check current working directory instead?
+            filepath = os.path.join(os.path.split(sys.argv[0])[0], filename)
+            config.read(filepath)
+            for m in cfgmap:
+                if config.has_option(m[1], m[2]):
+                    setattr(local, m[0], config.get(m[1],m[2]))
+                
+            # dump entire config file (to remember the interface)
+            #for section in config.sections():
+            #    print section
+            #    for option in config.options(section):
+            #        print " ", option, "=", config.get(section, option)
+            pass
+        except AttributeError:
+            # no config file, probably safe to silently ignore
+            pass
+    pass
+
+
+    pass
 # should probably do some basic sanity check on the options
 
 
@@ -66,6 +97,8 @@ class SsdapCommon:
                      "xcl", "exclude"
                      "variable=", "op_typ=", "operation=" ]
     pass
+
+
 
 class Command:
     NCKS_OPT = "--ncks"
@@ -103,7 +136,7 @@ class Command:
     def build(self, argvlist):
         """look for output filename, replace with magic key for remote"""
         # pull of cmd first.
-        if argvlist[0] not in acceptableNcCommands:
+        if argvlist[0] not in local.acceptableNcCommands:
             raise "Bad NCO command"
         self.cmd = argvlist[0]
 
@@ -174,7 +207,7 @@ class Command:
             else:
                 line += " " + k + " " + v
         line += ''.join([" " + name for name in infilename])
-        if "--output" not in argdict:
+        if "-o" not in argdict:
             line += " " + self.outfilename
         return line
 
@@ -193,7 +226,7 @@ class Command:
 
 
 class RemoteScript:
-    serverBase = serverBase
+    serverBase = local.serverBase
     def __init__(self):
         self.cmdList = []
         #
@@ -212,7 +245,8 @@ class RemoteScript:
     def run(self):
         """sends off its current batch of commands off to the server to run"""
         script = self.buildScript()
-        print "script is " + script
+        #print "script is " + script
+
         self.executeBuilt(script)
 
     def buildScript(self):
@@ -237,12 +271,12 @@ class RemoteScript:
                 target = open(filename, "wb") # open local result
                 needToClose = True
 
-            url = serverBase + "/" + filename
+            url = local.serverBase + "/" + filename
             url += ".dods?superduperscript11"
             
             print "url is " + url
             print "and script is " + script
-            #return True
+            #return True # uncomment this to halt before server connect
 
             result = urllib.urlopen(url, script) # request from server
 
@@ -260,23 +294,26 @@ class RemoteScript:
 def printUsage():
     print "Usage: " + sys.argv[0] + " <cmd> [cmd args...]"
     print "... where <cmd> is one of: ",
-    for c in acceptableNcCommands: print c,
+    for c in local.acceptableNcCommands: print c,
     print
     print "... and cmd args are the args you want for the command"
     print "Note that you have to have both an input and output file specified,"
     print "unless you're using --ncks=var, where var is the name of the"
     print "variable you want from ncks."
 
+
+##################################################
+#    "main function" begins here."
+##################################################
+
 if len(sys.argv) < 4:  # we'll use the heuristic that we have at least:
                        # ssdwrap.py ncsomething in.nc out.nc
     printUsage()
     sys.exit(1)
 
+local.readConfigFile()
+
 # defer command checking to the command itself.  
-# ncCommand = sys.argv[1]
-# if ncCommand not in acceptableNcCommands:
-#     printUsage()
-#     sys.exit(1)
 passedCommand = None
 try:
     passedCommand = Command(sys.argv[1:])
@@ -285,6 +322,8 @@ except:
     sys.excepthook(sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
     printUsage()
     sys.exit(1)
+
+
 rs = RemoteScript()
 #line = ""
 #for x in sys.argv[1:]:
