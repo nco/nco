@@ -19,7 +19,7 @@ import urllib
 #         (but variable P01 is not in foo_T42, so this won't really work.
 #
 #
-# version info: $Id: ssdwrap.py,v 1.7 2006-02-21 23:43:07 wangd Exp $
+# version info: $Id: ssdwrap.py,v 1.8 2006-02-22 01:03:00 wangd Exp $
 ########################################################################
 
 
@@ -94,11 +94,28 @@ class SsdapCommon:
                      "spt=", "script=", "fl_spt=", "script-file=",
                      "sng_fmt=", "string=",
                      "thr_nbr=", "threads=", "omp_num_threads=",
-                     "xcl", "exclude"
+                     "xcl", "exclude",
                      "variable=", "op_typ=", "operation=" ]
+
+    # special handling for ncap's parameters
+    ncapShortOpt = parserShortOpt.replace("v:","v")
+    ncapLongOpt = parserLongOpt[:]
+    ncapLongOpt.remove('variable=')
+    ncapLongOpt.append('variable')
+    
+    @staticmethod
+    def specialGetOpt(cmd, argvlist):
+        if cmd == "ncap": # ncap has a different format
+            return getopt.getopt(argvlist,
+                                 SsdapCommon.ncapShortOpt,
+                                 SsdapCommon.ncapLongOpt)
+        else:
+            return getopt.getopt(argvlist,
+                                 SsdapCommon.parserShortOpt,
+                                 SsdapCommon.parserLongOpt)
     pass
 
-
+##################################################
 
 class Command:
     NCKS_OPT = "--ncks"
@@ -142,9 +159,9 @@ class Command:
 
         # some of these options do not make sense in this context,
         # and some have meanings that necessarily need changing.
-        shortopts = SsdapCommon.parserShortOpt
-        longopts =  SsdapCommon.parserLongOpt
-        (arglist, leftover) = getopt.getopt(argvlist[1:],shortopts, longopts)
+        (arglist, leftover) = SsdapCommon.specialGetOpt(self.cmd,
+                                                        argvlist[1:])
+
         argdict = dict(arglist)
 
         ofname = ""
@@ -201,11 +218,13 @@ class Command:
         line = self.cmd
         for (k,v) in argdict.items():
             #special value handling for --op_typ='-'
-            if (len(v) > 0) and \
-                   v[0] not in (string.letters + string.digits + "%"):
-                line += " " + k + "='" + v + "'"
-            else:
-                line += " " + k + " " + v
+            needsProt = False
+            safe = string.letters + string.digits + "%"
+            for x in v: needsProt |= (x not in safe)
+                
+            if needsProt:    line += " " + k + " '" + v + "'"
+            elif len(v) > 0: line += " " + k + " " + v
+            else:            line += " " + k
         line += ''.join([" " + name for name in infilename])
         if "-o" not in argdict:
             line += " " + self.outfilename

@@ -3,7 +3,7 @@ import getopt, os, sys, tempfile, shutil
 import re, string, time
        
        
-# $Id: dap_nc_handler_hack,v 1.12 2006-02-21 23:43:06 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.13 2006-02-22 01:03:00 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -47,7 +47,7 @@ class local:
     # pass original DAP commands to the original dap handler.
     passthroughPath = "/home/wangd/opendap/iroot/bin/dap_nc_handler"
 
-    disableHTTP = True # Recommend: False
+    disableHTTP = True # Recommend: True (until client code is fix'd)
     # this is for command-line debugging
 
     disableParallel = True
@@ -85,8 +85,25 @@ class SsdapCommon:
                      "spt=", "script=", "fl_spt=", "script-file=",
                      "sng_fmt=", "string=",
                      "thr_nbr=", "threads=", "omp_num_threads=",
-                     "xcl", "exclude"
+                     "xcl", "exclude",
                      "variable=", "op_typ=", "operation=" ] 
+
+    # special handling for ncap's parameters
+    ncapShortOpt = parserShortOpt.replace("v:","v")
+    ncapLongOpt = parserLongOpt[:]
+    ncapLongOpt.remove('variable=')
+    ncapLongOpt.append('variable')
+    
+    @staticmethod
+    def specialGetOpt(cmd, argvlist):
+        if cmd == "ncap": # ncap has a different format
+            return getopt.getopt(argvlist,
+                                 SsdapCommon.ncapShortOpt,
+                                 SsdapCommon.ncapLongOpt)
+        else:
+            return getopt.getopt(argvlist,
+                                 SsdapCommon.parserShortOpt,
+                                 SsdapCommon.parserLongOpt)
     pass
 
 ######################################################################
@@ -167,10 +184,10 @@ class Command:
             return
         self.myName = mycmd + str(len(self.env.commands))
         self.cmd = mycmd
-        
-        (arglist, leftover) = getopt.getopt(argv[1:],
-                                            SsdapCommon.parserShortOpt,
-                                            SsdapCommon.parserLongOpt)
+
+        (arglist, leftover) = SsdapCommon.specialGetOpt(self.cmd,
+                                                        argv[1:])
+
         argdict = dict(arglist)
         self.acceptModifiers(argdict, leftover)
         self.acceptInOut(argdict, leftover)
@@ -255,11 +272,14 @@ class Command:
         # pass options first
         for (k,v) in self.arguments.items():
             #special value handling for --op_typ='-'
-            if (len(v) > 0) and \
-                   v[0] not in (string.letters + string.digits + "%"):
-                line += " " + k + "='" + v + "'"
-            else:
-                line += " " + k + " " + v
+            needsProt = False
+            safe = string.letters + string.digits + "%"
+            for x in v: needsProt |= (x not in safe)
+            
+            if needsProt and not ("'" == v[0] == v[-1]):
+                line += " " + k + "'" + v + "'"
+            elif len(v) > 0: line += " " + k + " " + v
+            else:            line += " " + k
         # then pass commands
         filelist = []
         for name in self.absInputs:
