@@ -19,7 +19,7 @@ import urllib
 #         (but variable P01 is not in foo_T42, so this won't really work.
 #
 #
-# version info: $Id: ssdwrap.py,v 1.8 2006-02-22 01:03:00 wangd Exp $
+# version info: $Id: ssdwrap.py,v 1.9 2006-02-23 01:07:16 wangd Exp $
 ########################################################################
 
 
@@ -61,7 +61,7 @@ class local:
             #    for option in config.options(section):
             #        print " ", option, "=", config.get(section, option)
             pass
-        except AttributeError:
+        except:
             # no config file, probably safe to silently ignore
             pass
     pass

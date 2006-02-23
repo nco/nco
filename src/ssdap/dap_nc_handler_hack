@@ -3,7 +3,7 @@ import getopt, os, sys, tempfile, shutil
 import re, string, time
        
        
-# $Id: dap_nc_handler_hack,v 1.13 2006-02-22 01:03:00 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.14 2006-02-23 01:07:16 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -42,7 +42,6 @@ class local:
     #ncBinPath = os.environ["MY_BIN_DIR"] 
     nc4BinPath = "/home/wangd/opendap/iroot/nco_ncdf4_bin"
     ncDapBinPath = "/home/wangd/opendap/iroot/nco_dap_bin"
-    ncBinPath = nc4BinPath
     
     # pass original DAP commands to the original dap handler.
     passthroughPath = "/home/wangd/opendap/iroot/bin/dap_nc_handler"
@@ -52,6 +51,7 @@ class local:
 
     disableParallel = True
 
+
 ######################################################################
 # User/Administrator notes:
 ######################################################################
@@ -60,6 +60,8 @@ class local:
 # line. An opendap url is currently detected by looking for an
 # http:// prefix.
 #
+
+
 
 ######################################################################
 # this class should stay identical in client/server.  If it gets big,
@@ -93,7 +95,7 @@ class SsdapCommon:
     ncapLongOpt = parserLongOpt[:]
     ncapLongOpt.remove('variable=')
     ncapLongOpt.append('variable')
-    
+
     @staticmethod
     def specialGetOpt(cmd, argvlist):
         if cmd == "ncap": # ncap has a different format
@@ -106,12 +108,72 @@ class SsdapCommon:
                                  SsdapCommon.parserLongOpt)
     pass
 
+############################################################
+# config file reader
+
+def readConfigFile(fname = "ssdap_handler.conf"):
+    # can add other mappings from config file to local settings"
+    # set some defaults.
+    # form: (local varname, section, item, defaultvalue)
+    cfgmap = [("disableLogging", "log", "disable", False),
+              ("logLocation",    "log", "location",
+               "/home/wangd/opendap/iroot/ssdap.log"),
+              ("nc4BinPath", "targets", "netcdf4nco",
+               "/home/wangd/opendap/iroot/nco_ncdf4_bin"),
+              ("ncDapBinPath", "targets", "opendapnco",
+               "/home/wangd/opendap/iroot/nco_dap_bin"),
+              ("passthroughPath", "targets", "passthroughPath",
+               "/home/wangd/opendap/iroot/bin/dap_nc_handler"),
+              ("disableHTTP", "global", "disableHTTP", True),
+              ("disableParallel", "global", "disableParallel", True) ]
+    remap = {"True" : True, "False" : False, "Yes" : True, "No" : False }
+
+
+    try:
+        import ConfigParser
+        config = ConfigParser.ConfigParser()
+        if len(os.path.split(fname)[0]) == 0:
+            # look in the same place as the script is located... 
+            # should I check current working directory instead?
+            filepath = os.path.join(os.path.split(sys.argv[0])[0],
+                                    fname)
+        else: filepath = fname
+        config.read(filepath)
+        for m in cfgmap:
+            if config.has_option(m[1], m[2]):
+                val = config.get(m[1],m[2])
+                if val in remap: val = remap[val]
+                setattr(local, m[0], val)
+                # uncomment if you are curious about cfgfile reading
+                #logit( "cfgfile: setting local." + m[0] + " " +str( val))
+                
+        # dump entire config file (to remember the interface)
+        #for section in config.sections():
+        #    print section
+        #    for option in config.options(section):
+        #        print " ", option, "=", config.get(section, option)
+        pass
+    except AttributeError:
+        # no config file, probably safe to silently ignore
+        pass
+    
 ######################################################################
 # setup some logging
-if not local.disableLogging:
-    local.logfile = open(local.logLocation, "a")
-    local.logfile.write("handler hack log open at " + time.ctime()+"\n")
-	
+######################################################################
+def prestartLogging():
+    """start logging using a fake file.  Dump contents to a real log after
+    the log file location is decided."""
+    if not local.disableLogging:
+        import cStringIO
+        local.logfile = cStringIO.StringIO()
+        local.logfile.write("handler hack log open at " + time.ctime()+"\n")
+def startLogging():
+    if not local.disableLogging:
+        lastcontents = local.logfile.getvalue()
+        local.logfile = open(local.logLocation, "a")
+        local.logfile.write(lastcontents)
+        #local.logfile.write("log located at " + local.logLocation + "\n")
+    
 def logit(s):
     if not local.disableLogging:
         local.logfile.write(s+"\n")
@@ -171,6 +233,7 @@ class Command:
     # "private" functions
 
     def parseOriginalLine(self):
+
         argv = self.original.split()
         
         if len(argv) < 1:
@@ -324,7 +387,6 @@ class ScriptingEnv:
     CLASS_TEMP = "tempf"
     CLASS_SEP = "_"
     MAGIC_DELIM = "%"
-    NCBINPATH = local.ncBinPath
     NC_SUFFIX = ".nc"
     NCO_COMMANDS = ["ncap", "ncatted", "ncbo", "ncdiff",
             "ncea", "ncecat", "ncflint", "ncks",
@@ -559,7 +621,7 @@ class FrontEnd:
         else:
             nonpars = ""
             newp = []
-        #print "here it comes"
+            
         for i in parsed[0]:
             #print i
             #logfile.write(str(i)+"\n")
@@ -683,9 +745,11 @@ class JobManager:  # will I have to write this?
         self.maxParallel = 2
 
 
-
-
+prestartLogging()
+readConfigFile() # have to read config file before initializing logging.
+startLogging()
 settings = FrontEnd(sys.argv)
+
 mode =  settings.accessmode()
 logit("Mode is " + mode)
 
