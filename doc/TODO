@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.712 2006-02-21 22:40:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.713 2006-02-23 15:52:27 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -113,7 +113,7 @@ nco173. Add switch to ncra which allows user to remove degenerate time dimension
 nco174. Setup ncra,ncea,ncwa to do standard deviations sdn with one call
 nco176. Replace Bison, Flex components of ncap with smaller C++ parser?
 nco177. Make RPM production allowable by non-root, since building RPMs as sudo root screws up permissions in obj/bin directories of user
-nco179. Add netCDF to required packages list in RPM build?
+onco179. Add netCDF to required packages list in RPM build?
 nco182. Add -L, --license switch to print license terms (as suggested by GNU coding style)
 nco190. Make typ_pck et al. use nc_type enum or something sane for default
 nco192. ncdiff will sometimes subtract files of incommensurate sizes without complaint
@@ -425,7 +425,14 @@ nco679. ncwa mask bug on forum?:
         ncwa -O -o ~/foo.nc -m plat -M 0. -T gt -w parea -v sst ~/test.nc 
 	ncks -C -H -v sst ~/foo.nc
 	sst = 4.56931701831e+26
-nco680. 
+nco680. ncap memory problem?:
+        ncap -O -s 'foo=unpack(pck)' ~/nco/data/in.nc ~/foo.nc
+==15384== Invalid read of size 4
+==15384==    at 0x80772E2: nco_var_free (nco_var_utl.c:692)
+==15384==    by 0x8077429: nco_var_lst_free (nco_var_utl.c:720)
+==15384==    by 0x804BEF1: main (ncap.c:772)
+==15384==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
+nco681. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
@@ -621,8 +628,8 @@ ncap49. Cause "**" in arithmetic context to cause error, print HINT to Fortran s
 ncap52. Combine pow() with ^ parsing in parser ncap_yacc.y 
 ncap53. Bug in ncap pack() on Alpha/Tru64: ncap -O -D 10 -s 'hsig=pack(hsig)' foo.nc foo2.nc details on sourceforge
 ncap54. Add option (true by default?) to retain variable attributes when variable re-defined or defined in terms of single other variable or perhaps always retain attributes of left-most variable on RHS of definition?
-ncap -v -O -s "one=one*1" -s "two=one*2" -s "pck=pack(upk)" ~/nco/data/in.nc ~/foo.nc
-ncks -m -H -v one,two,pck ~/foo.nc
+        ncap -v -O -s "one=one*1" -s "two=one*2" -s "pck=pack(upk)" ~/nco/data/in.nc ~/foo.nc
+        ncks -m -H -v one,two,pck ~/foo.nc
 ncap55. Add pre-defined named_constants, e.g., nco_pi, nco_e, to make math easier
 ncap56. Introduce way of making function synonyms, e.g., ln=log, without growing symbol table?
 ncap57. Raising transcendental functions of NC_FLOATs to powers fails on AIX
