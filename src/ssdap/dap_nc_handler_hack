@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 import getopt, os, sys, tempfile, shutil
 import re, string, time
-       
-       
-# $Id: dap_nc_handler_hack,v 1.14 2006-02-23 01:07:16 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.15 2006-02-23 18:55:38 mangalam Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -31,20 +29,22 @@ import re, string, time
 #          -L : skip printing of http headers. **** for easier testing
 
 #
-       
+
 ######################################################################
 # Administrator-tunable parameters:
 ######################################################################
 class local:
     disableLogging = False
-    logLocation = "/home/wangd/opendap/iroot/ssdap.log"
+    logLocation = "/var/log/ssdap.log"
 
-    #ncBinPath = os.environ["MY_BIN_DIR"] 
+    #ncBinPath = os.environ["MY_BIN_DIR"]
     nc4BinPath = "/home/wangd/opendap/iroot/nco_ncdf4_bin"
     ncDapBinPath = "/home/wangd/opendap/iroot/nco_dap_bin"
-    
+#    nc4BinPath = "/usr/local/bin"
+#    ncDapBinPath = "/usr/local/bin"
+
     # pass original DAP commands to the original dap handler.
-    passthroughPath = "/home/wangd/opendap/iroot/bin/dap_nc_handler"
+    passthroughPath = "/usr/local/bin/dap_nc_handler"
 
     disableHTTP = True # Recommend: True (until client code is fix'd)
     # this is for command-line debugging
@@ -79,7 +79,7 @@ class SsdapCommon:
                      "fnc_tbl", "prn_fnc_tbl", "hst", "history",
                      "Mtd", "Metadata", "mtd", "metadata",
                      "lcl=", "local=",
-                     "nintap", 
+                     "nintap",
                      "output=", "fl_out=",
                      "ovr", "overwrite", "prn", "print", "quiet",
                      "pth=", "path=",
@@ -88,7 +88,7 @@ class SsdapCommon:
                      "sng_fmt=", "string=",
                      "thr_nbr=", "threads=", "omp_num_threads=",
                      "xcl", "exclude",
-                     "variable=", "op_typ=", "operation=" ] 
+                     "variable=", "op_typ=", "operation=" ]
 
     # special handling for ncap's parameters
     ncapShortOpt = parserShortOpt.replace("v:","v")
@@ -133,7 +133,7 @@ def readConfigFile(fname = "ssdap_handler.conf"):
         import ConfigParser
         config = ConfigParser.ConfigParser()
         if len(os.path.split(fname)[0]) == 0:
-            # look in the same place as the script is located... 
+            # look in the same place as the script is located...
             # should I check current working directory instead?
             filepath = os.path.join(os.path.split(sys.argv[0])[0],
                                     fname)
@@ -146,7 +146,7 @@ def readConfigFile(fname = "ssdap_handler.conf"):
                 setattr(local, m[0], val)
                 # uncomment if you are curious about cfgfile reading
                 #logit( "cfgfile: setting local." + m[0] + " " +str( val))
-                
+
         # dump entire config file (to remember the interface)
         #for section in config.sections():
         #    print section
@@ -156,7 +156,7 @@ def readConfigFile(fname = "ssdap_handler.conf"):
     except AttributeError:
         # no config file, probably safe to silently ignore
         pass
-    
+
 ######################################################################
 # setup some logging
 ######################################################################
@@ -173,7 +173,7 @@ def startLogging():
         local.logfile = open(local.logLocation, "a")
         local.logfile.write(lastcontents)
         #local.logfile.write("log located at " + local.logLocation + "\n")
-    
+
 def logit(s):
     if not local.disableLogging:
         local.logfile.write(s+"\n")
@@ -219,7 +219,7 @@ class Command:
         # update parent
         if self not in comm.children():
             comm.addChild(self)
-        
+
     def children(self):
         return self.dependents
     def parents(self):
@@ -235,10 +235,10 @@ class Command:
     def parseOriginalLine(self):
 
         argv = self.original.split()
-        
+
         if len(argv) < 1:
             return # nothing to parse
-        
+
         mycmd = argv[0]
         if mycmd[0] == "#": #comment: nothing to parse.
             return
@@ -283,7 +283,7 @@ class Command:
             redirTable[leftover.pop()]()
 
             # pop off the back of the list, and then do the right thing.
-        
+
     def acceptInOut(self, adict, leftover):
         # look for output file first
         ofname = ""
@@ -300,7 +300,7 @@ class Command:
             else:
                 ofname = leftover[-1] # take last arg
                 leftover = leftover[:-1] # and drop it off
-            
+
         if ofname != "": # should have a real filename (or placeholder)
             self.absOutputs.append(ofname)
         self.absInputs += leftover
@@ -316,7 +316,7 @@ class Command:
                 if x in p.outputs():
                     p.addChild(self)
                     break # only choose most recent output
-            
+
         # don't do the other checking until we decide to track those deps
         # for each output, check previously parsed for WAW hazards
         # write-after-write is an output dependency
@@ -338,7 +338,7 @@ class Command:
             needsProt = False
             safe = string.letters + string.digits + "%"
             for x in v: needsProt |= (x not in safe)
-            
+
             if needsProt and not ("'" == v[0] == v[-1]):
                 line += " " + k + "'" + v + "'"
             elif len(v) > 0: line += " " + k + " " + v
@@ -371,7 +371,7 @@ class Command:
             self.cmdLine = ScriptingEnv.VALID_COMMANDS[self.cmd] + " " + line
         logit( "real cmdline: " + self.cmdLine)
 
-    
+
 # This class should hold the state used by a single script
 # Might be worthwhile to split out constants/data shared
 #  between scripts instead of letting them be class shared data.
@@ -383,7 +383,7 @@ class ScriptingEnv:
     # note that it's a bad idea to have outputfile set, and one of the
     # console output catchers as well.  you're on your own for
     # deciphering the file out of that mess.
-    
+
     CLASS_TEMP = "tempf"
     CLASS_SEP = "_"
     MAGIC_DELIM = "%"
@@ -395,10 +395,10 @@ class ScriptingEnv:
     # for now, all commands are valid in netcdf4 or over dap
     VALID_COMMANDS=dict((x, local.nc4BinPath+os.sep+x) for x in NCO_COMMANDS)
     VALID_DAPCOMMANDS=dict( (x, local.ncDapBinPath+os.sep+x) for x in NCO_COMMANDS)
-    
+
     # room to add other commands here.
-        
-    
+
+
     COMMENT_CHAR = "#"  # not used right now.
 
     def __init__(self, scriptlines, settingsDict):
@@ -411,7 +411,7 @@ class ScriptingEnv:
         # direct child output to /dev/null unless requested
         #self.outFd = os.devnull
         #self.popen = os.popen2 ## let's deprecate this... FIXME!
-        
+
         # make commandlines from each scriptline
         self.commands = []  # list of commands (inc. comments)
         #WARN: commands is read by the command builder
@@ -422,7 +422,7 @@ class ScriptingEnv:
             if c.commandLine() != None:
                 #print c.commandLine()
                 self.commandLine.append(c)
-        
+
         logit(self.depTreeToString()) # for debug...
 
         pass
@@ -432,13 +432,13 @@ class ScriptingEnv:
     def getResultHandler(self, cmd):
         """returns a function f that has args: (stdout, filename)
         """
-        return 
+        return
 
     def stdoutHandler(self, stdout, filename):
         pass
     def outfileHandler(self, stdout, filename):
         pass
-    
+
     def shouldRemap(self, absName):
         # return bool indicating whether this word should be xlated.
         # keep simple for now: check a list.
@@ -472,11 +472,11 @@ class ScriptingEnv:
     def requiresDap(self, word):
         return word[:7] == 'http://'
 
-        
+
     def possibleFilename(self, cand):
         # leave urls alone.
         if self.possibleUrl(cand): return False
-        
+
         elts = string.split(cand, ".")
 
         if len(elts) != 2: #looking for something.ext
@@ -486,8 +486,8 @@ class ScriptingEnv:
         if elts[0][0] == os.sep: # do not detect with leading /
             return False
         return True
-    
-    
+
+
     def addAbsName(self, absName):
         """ return a concrete name from an abstract name"""
         if self.fileMap.has_key(absName):
@@ -505,7 +505,7 @@ class ScriptingEnv:
         # close the file, so the nco util can touch it
         os.close(filepair[0])
         return filepair[1]
-    
+
     def execute(self):
         self.clearTemps()
         logflush()
@@ -518,8 +518,8 @@ class ScriptingEnv:
         havefile = self.fileMap.has_key(ScriptingEnv.SCRIPT_OUTFILE)
 #        outbypass = (self.outFd != os.devnull)
 #        assert havefile ^ outbypass
-        
-        
+
+
         for c in self.commandLine:
             #(sin,sout) = os.popen2(l)
             outFd = os.devnull
@@ -551,14 +551,14 @@ class ScriptingEnv:
                         label = " [ label = \"" + o + "\" ]"
                         out +=  x.myName + " -> " + c.myName + label + ";\n"
         return out
-        
+
     def returnOutput(self, targetfd):
         # if we have an output...
         if not self.fileMap.has_key(ScriptingEnv.SCRIPT_OUTFILE):
             return  # already returned console out during exec.
 
         oname = self.fileMap[ScriptingEnv.SCRIPT_OUTFILE][1]
-        
+
         if(local.disableHTTP):
             self.rawWrite(oname, targetfd)
         else:
@@ -596,7 +596,7 @@ class ScriptingEnv:
     pass
 
 
-    
+
 class FrontEnd:
     # put in url .../foo.nc.dods?superduperscript11"
     MAGIC_CONSTRAINT = "superduperscript11"
@@ -621,7 +621,7 @@ class FrontEnd:
         else:
             nonpars = ""
             newp = []
-            
+
         for i in parsed[0]:
             #print i
             #logfile.write(str(i)+"\n")
@@ -639,7 +639,7 @@ class FrontEnd:
         #logit( str(self.args))
 #       for x in  os.environ: #.get("LD_LIBRARY_PATH")
     #       print x
-    
+
         pass
     def accessmode(self):
         if "-o" not in self.args:
@@ -676,7 +676,7 @@ class FrontEnd:
 
     def runhacked(self):
         """this is where we should go ahead and run the script that we got passed."""
-        
+
         if "-e" in self.args:
             if "-u" not in self.args:
                 self.passthrough()
@@ -694,8 +694,8 @@ class FrontEnd:
         print """
         This script is to be called by an opendap
         installation.  Ask a developer for more info."""
-        
-        
+
+
 
     def execute(self):
         jumptable={'dods' : self.runhacked,
@@ -716,14 +716,14 @@ class FrontEnd:
         lines = []
         for i in sys.stdin:
             lines += [i] ## [] to put lines (not chars) in the list
-            
+
         #logit( "we got POST data: \n"+str(lines))
         self.scriptlines = lines
         pass
     def runScript(self):
         self.env["tempdir"] = self.args["-r"]
         (filepath, filename) = os.path.split(self.args["-realfile"])
-        
+
         self.env["defpath"] = filepath # use for default path.
         self.env["requestedfile"] = filename  #not sure we need this
 
@@ -731,7 +731,7 @@ class FrontEnd:
         assert filename == ufilename
         for x in range(1,len(filepath)):
             pass
-            
+
         #self.env["local"] = "true"
         scriptenv = ScriptingEnv(self.scriptlines, self.env)
         scriptenv.execute() #####
