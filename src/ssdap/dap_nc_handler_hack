@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 import getopt, os, sys, tempfile, shutil
 import re, string, time
-# $Id: dap_nc_handler_hack,v 1.15 2006-02-23 18:55:38 mangalam Exp $
+import md5
+       
+       
+# $Id: dap_nc_handler_hack,v 1.16 2006-02-24 02:20:49 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -242,15 +245,26 @@ class Command:
         mycmd = argv[0]
         if mycmd[0] == "#": #comment: nothing to parse.
             return
-        if mycmd not in ScriptingEnv.VALID_COMMANDS:
+        valids = ScriptingEnv.META_COMMANDS + ScriptingEnv.NCO_COMMANDS
+        if mycmd not in valids:
             print "WARN: bad script line: " + self.original
             return
         self.myName = mycmd + str(len(self.env.commands))
         self.cmd = mycmd
 
-        (arglist, leftover) = SsdapCommon.specialGetOpt(self.cmd,
-                                                        argv[1:])
+        if self.cmd in ScriptingEnv.META_COMMANDS:
+            self.parseMetaCmd(argv[1:])
+        else:
+            self.parseNormalCmd(argv[1:])
 
+    def parseMetaCmd(self, argv):
+        metamap = {"ssd_initsave": self.cmdInitSave,
+                   "ssd_save": self.cmdSave}
+        metamap[self.cmd](argv)
+        pass
+
+    def parseNormalCmd(self, argv):
+        (arglist, leftover) = SsdapCommon.specialGetOpt(self.cmd, argv)
         argdict = dict(arglist)
         self.acceptModifiers(argdict, leftover)
         self.acceptInOut(argdict, leftover)
@@ -370,6 +384,33 @@ class Command:
         else:
             self.cmdLine = ScriptingEnv.VALID_COMMANDS[self.cmd] + " " + line
         logit( "real cmdline: " + self.cmdLine)
+        pass
+    
+    def cmdInitAsync(self, argv):
+        # want to close CGI connection, and then continue
+        # Return a task id that can be queried later.
+        
+        
+        pass
+    def cmdSave(self, argv):
+        # designate real filename (or just a persistently-mapped identifier)
+        # that can be requested later.  Would like to put in normal
+        # opendap-visible space.
+        pass
+    def taskId(self):
+        try: return self.cachedTaskId
+        except:
+            # get fingerprint from env
+            digest = self.env.fingerprint()
+            # munge the fingerprint to reduce clashes...
+            # PIDs will be recycled, so this needs more work
+            newdig = md5.md5(digest + str(os.getpid())).digest()
+            # take first 4 bytes, convert to hex, strip off 0x and L
+            taskid = hex(struct.unpack("L",newdig[:4])[0])[2:-1]
+            self.cachedTaskId = taskid
+            return self.cachedTaskId
+        pass
+        
 
 
 # This class should hold the state used by a single script
@@ -397,8 +438,9 @@ class ScriptingEnv:
     VALID_DAPCOMMANDS=dict( (x, local.ncDapBinPath+os.sep+x) for x in NCO_COMMANDS)
 
     # room to add other commands here.
+    META_COMMANDS = ["ssd_initsave", "ssd_save"]
 
-
+    
     COMMENT_CHAR = "#"  # not used right now.
 
     def __init__(self, scriptlines, settingsDict):
@@ -587,6 +629,16 @@ class ScriptingEnv:
             else:
                 logit("I couldn't delete " + str(fname))
         pass
+    def fingerprint(self):
+        try: return self.cachedFingerprint
+        except:
+            import md5
+            script = "".join(self.lines)
+            self.cachedFingerprint = md5.md5(script).digest()
+            return self.cachedFingerprint
+        pass
+
+
 
     def __del__(self):
         """some cleanup for the scripting environment"""
