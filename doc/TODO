@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.713 2006-02-23 15:52:27 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.714 2006-02-24 07:35:10 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -421,18 +421,38 @@ nco668. Prefix nco.png fractal icon with text "NC" to look like "NCO"
 nco669. Command-line switch for float->double math-promotion to avoid underflow?
 nco674. debian: replace netcdfg3 with netcdf try to build .debs again
 nco675. ncap2: Makefile generates redundant antlr runs
-nco679. ncwa mask bug on forum?:
-        ncwa -O -o ~/foo.nc -m plat -M 0. -T gt -w parea -v sst ~/test.nc 
-	ncks -C -H -v sst ~/foo.nc
-	sst = 4.56931701831e+26
-nco680. ncap memory problem?:
+nco680. ncap memory double-free:
         ncap -O -s 'foo=unpack(pck)' ~/nco/data/in.nc ~/foo.nc
 ==15384== Invalid read of size 4
 ==15384==    at 0x80772E2: nco_var_free (nco_var_utl.c:692)
 ==15384==    by 0x8077429: nco_var_lst_free (nco_var_utl.c:720)
 ==15384==    by 0x804BEF1: main (ncap.c:772)
 ==15384==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
-nco681. 
+nco681. Rename nco++:
+	Invoke.cc		sdo_nvk.cc
+	Makefile		"
+	Makefile.orig		"
+	Ncap2.hh		sdo.hh // [] ncap_type
+	NcapVar.hh		sdo_var.hh // [cls] NcapVar class definition and declaration
+	NcapVarVector.cc	sdo_var_vct.cc // [] NcapVarVector class declaration
+	NcapVarVector.hh	sdo_var_vct.hh // [] NcapVarVector class definition
+	NcapVector.hh		sdo_vct.hh // [] Ncapvector template class
+	VarOp.hh		sdo_var_opr.hh // [] VarOp template class
+	libnco++.hh		"
+	ncap2.cc		"
+	ncap2.hh		"
+	ncap2_utl.cc		"
+	ncoGrammer.g		sdo_grammar.g
+	ncoLexer.cpp		sdo_lexer.cc
+	ncoLexer.hpp		sdo_lexer.hh
+	ncoParser.cpp		sdo_parser.cc
+	ncoParser.hpp		sdo_parser.hh
+	ncoParserTokenTypes.hpp	sdo_tkn_typ.cc
+	ncoParserTokenTypes.txt	sdo_tkn_typ.txt
+	ncoTree.cpp		sdo_tree.cc
+	ncoTree.hpp		sdo_tree.hh
+nco682. Emit warning when _Fillvalue defined and missing_value not
+nco683. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
