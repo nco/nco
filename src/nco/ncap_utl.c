@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.127 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.128 2006-02-25 22:29:14 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -36,16 +36,14 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   var_sct *var;
   var_sct *var_lst;  
 
-  /* we have several possiblilties here */
-  /* var NOT in I or O
+  /* Several possiblilties here:
+     var NOT in I or O
      var in I
      var in O (defined and filled)
      var in 0 (defined but empty)
 
-     we need to handle the case 
-     var in I, var in O (defined & empty) with care.
-     This can occur when a var is on the LHS and RHS ie
-     two=two^6
+     Must handle case var in I, var in O (defined & empty) with care
+     This occurs when var is on LHS and RHS, e.g., two=two^6
 
      INITIAL SCAN
      check var list for var -- 
@@ -56,8 +54,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
      check var list for var -- 
      if present & defined + filled return var from output
      if present & defined + unfilled reurn var from input if defined
-     Not present check output then input
-  */     
+     Not present check output then input */     
      
   var_lkp.nm=strdup(var_nm);
   var_lst=ncap_var_lookup(&var_lkp,((prs_sct*)prs_arg),False);
@@ -69,7 +66,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
     return var;	
   } /* endif */
 
-  /* check if var in list has been defined but NOT filled */
+  /* Check if var in list has been defined but NOT filled */
   if(!prs_arg->ntl_scn && var_lst && var_lst->sz >0 ) DEF_VAR=True; 
 
   /* Check output file for var */  
@@ -145,12 +142,13 @@ nco_dmn_out_grow
 (prs_sct * prs_arg)
 {
   /* Purpose: Expand dimension list by one and return pointer to newly created member */
-  int *size;
-  size=prs_arg->nbr_dmn_out;
+
+  int *sz;
+  sz=prs_arg->nbr_dmn_out;
   
-  *(prs_arg->dmn_out)=(dmn_sct **)nco_realloc(*(prs_arg->dmn_out),(++*size)*sizeof(dmn_sct *));
+  *(prs_arg->dmn_out)=(dmn_sct **)nco_realloc(*(prs_arg->dmn_out),(++*sz)*sizeof(dmn_sct *));
   
-  return (*(prs_arg->dmn_out)+(*size-1));
+  return (*(prs_arg->dmn_out)+(*sz-1));
 } /* end nco_dmn_out_grow() */
 
 int 
@@ -158,11 +156,12 @@ ncap_var_write
 (var_sct *var,
  prs_sct *prs_arg)
 {
-
   /* Purpose: Define variable in output file and write variable */
+
   const char mss_val_sng[]="missing_value"; /* [sng] Unidata standard string for missing value */
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
+
   int rcd; /* [rcd] Return code */
   int var_out_id;
 

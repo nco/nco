@@ -1,3 +1,7 @@
+2006-02-25  Charlie Zender  <zender@uci.edu>
+
+	* Hunt for double-free() in ncap, cleanup var_ycc-related operations
+
 2006-02-20  Charlie Zender  <zender@uci.edu>
 
 	* Change more internal bool's to nco_bool's so g++ builds libnco.a (again)

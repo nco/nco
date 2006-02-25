@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.6 2006-02-19 00:03:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.7 2006-02-25 22:29:14 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
 /* Purpose: Compute user-defined derived fields using forward algebraic notation applied to netCDF files */
 
-/* Copyright (C) 1995--2005 Charlie Zender
+/* Copyright (C) 1995--2006 Charlie Zender
 
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.6 2006-02-19 00:03:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.6 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.7 2006-02-25 22:29:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.7 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -755,7 +755,6 @@ main(int argc,char **argv)
     } 
     sym_tbl=(sym_sct **)nco_free(sym_tbl); */
   if(fl_spt_usr != NULL) fl_spt_usr=(char *)nco_free(fl_spt_usr);
-  
   
   /* Free extraction lists */ 
   xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);

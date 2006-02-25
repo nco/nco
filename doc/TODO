@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.715 2006-02-25 01:28:18 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.716 2006-02-25 22:29:14 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -422,12 +422,14 @@ nco669. Command-line switch for float->double math-promotion to avoid underflow?
 nco674. debian: replace netcdfg3 with netcdf try to build .debs again
 nco675. ncap2: Makefile generates redundant antlr runs
 nco680. ncap memory double-free:
+	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncap -O -s 'foo=unpack(pck)' ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
         ncap -O -s 'foo=unpack(pck)' ~/nco/data/in.nc ~/foo.nc
 ==15384== Invalid read of size 4
 ==15384==    at 0x80772E2: nco_var_free (nco_var_utl.c:692)
 ==15384==    by 0x8077429: nco_var_lst_free (nco_var_utl.c:720)
 ==15384==    by 0x804BEF1: main (ncap.c:772)
 ==15384==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
+
 nco681. Rename nco++:
 	Invoke.cc		sdo_nvk.cc
 	Makefile		"

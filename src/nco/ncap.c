@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.187 2006-02-23 15:52:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.188 2006-02-25 22:29:14 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.187 2006-02-23 15:52:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.187 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.188 2006-02-25 22:29:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.188 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -196,7 +196,7 @@ main(int argc,char **argv)
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;/* number of vars in a file */
   int nbr_var_prc; /* nbr_var_prc gets incremented */
-  int nbr_var_ycc=0; /* nbr of vars to be defined after 1st parse */
+  int nbr_var_ycc=0; /* [nbr] Number of vars to be defined after 1st parse */
   int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
   int opt;
   int out_id;  
@@ -526,12 +526,6 @@ main(int argc,char **argv)
   
   (void)nco_enddef(out_id);
 
-  /* define first element in list var_ycc 
-  var_ycc=(var_sct**)nco_calloc(1,sizeof(var_sct*));
-  nbr_var_ycc=1;
-  var_ycc[0]=(var_sct*)NULL;
-  */  
-  
   /* Set arguments for  script execution */
   prs_arg.fl_in=fl_in; /* [sng] Input data file */
   prs_arg.in_id=in_id; /* [id] Input data file ID */
@@ -547,8 +541,8 @@ main(int argc,char **argv)
   prs_arg.sym_tbl_nbr=sym_tbl_nbr; /* [nbr] Number of functions in table */
   /* prs_arg.ntl_scn=False;   [flg] Initial scan of script */
   prs_arg.var_LHS=NULL; /* [var] LHS cast variable */
-  prs_arg.var_lst=&var_ycc; /* list of variables to be defined after 1st parse */
-  prs_arg.nbr_var=&nbr_var_ycc; /* [nbr] number in above list */
+  prs_arg.var_lst=&var_ycc; /* [sct] Variables to be defined after 1st parse */
+  prs_arg.nbr_var=&nbr_var_ycc; /* [nbr] Number of vars to be defined after 1st parse */
   prs_arg.nco_op_typ=nco_op_nil; /* [enm] Operation type */
 
   /* Do two parses. 1st parse define vars in output file 
@@ -599,13 +593,13 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_ycc;idx++){
       /* Define variables in output */
       /* Kill variables classified as undefined */
-      if(dbg_lvl > 0) (void)fprintf(stdout,"%s: Checking var_ycc[%d]->undefined for variable %s...\n",prg_nm_get(),idx,var_ycc[idx]->nm);
+      if(dbg_lvl > 1) (void)fprintf(stdout,"%s: Checking var_ycc[%d]->undefined for variable %s...\n",prg_nm_get(),idx,var_ycc[idx]->nm);
       if(var_ycc[idx]->undefined){
-	var_ycc[idx]=nco_var_free(var_ycc[idx]);
+	/* 20060225: TODO nco680 free() list at end or risk double-free()'ing*/
+	var_ycc[idx]=nco_var_free(var_ycc[idx]); 
 	continue;
       } /* endif */
       
-      /* printf("defined in output %s\n", var_ycc[idx]->nm); */
       (void)nco_def_var(out_id,var_ycc[idx]->nm,var_ycc[idx]->type,var_ycc[idx]->nbr_dim,var_ycc[idx]->dmn_id,&var_id);
       var_ycc[idx]->val.vp=nco_free(var_ycc[idx]->val.vp);
     } /* end loop over idx */
@@ -763,7 +757,7 @@ main(int argc,char **argv)
   /* fxm: ncap-specific memory freeing instructions go here */
   for(idx=0;idx<sym_tbl_nbr;idx++){
     sym_tbl[idx]->nm=(char*)nco_free(sym_tbl[idx]->nm);
-    sym_tbl[idx]=(sym_sct*)nco_free(sym_tbl[idx]);
+    sym_tbl[idx]=(sym_sct *)nco_free(sym_tbl[idx]);
   } /* end loop */
   sym_tbl=(sym_sct **)nco_free(sym_tbl);
   if(fl_spt_usr != NULL) fl_spt_usr=(char *)nco_free(fl_spt_usr);
