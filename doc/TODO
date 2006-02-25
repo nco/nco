@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.714 2006-02-24 07:35:10 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.715 2006-02-25 01:28:18 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -452,7 +452,8 @@ nco681. Rename nco++:
 	ncoTree.cpp		sdo_tree.cc
 	ncoTree.hpp		sdo_tree.hh
 nco682. Emit warning when _Fillvalue defined and missing_value not
-nco683. 
+nco683. Convert to subversion http://sf.net/docs/E09/
+nco684. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.347 2006-02-20 08:04:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.348 2006-02-25 01:28:18 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4957,6 +4957,11 @@ The standard unpacking algorithm is applied to variable @var{x}.
 @end table
 
 @unnumberedsubsec Type Conversion Functions
+@html
+<a name="typ_cnv"></a> <!-- http://nco.sf.net/nco.html#typ_cnv -->
+<a name="typ_cst"></a> <!-- http://nco.sf.net/nco.html#typ_cst -->
+<a name="cst"></a> <!-- http://nco.sf.net/nco.html#cst -->
+@end html
 These intrinsic functions allow @command{ncap} to convert variables on
 disk among the available types supported by netCDF.
 @cindex type conversion
