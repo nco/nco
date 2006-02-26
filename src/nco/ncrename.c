@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.89 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.90 2006-02-26 07:41:55 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -30,8 +30,8 @@
    Irvine, CA 92697-3100 */
 
 /* Usage:
-   ncrename -d old_dim1,new_dim1 -v old_var1,new_var1 -v old_var2,new_var2 -a old_att1,new_att1 in.nc foo.nc
-   ncrename -d lon,new_lon -v scalar_var,new_scalar_var -a long_name,new_long_name in.nc foo.nc
+   ncrename -d old_dim1,new_dim1 -v old_var1,new_var1 -v old_var2,new_var2 -a old_att1,new_att1 in.nc ~/foo.nc
+   ncrename -d lon,new_lon -v scalar_var,new_scalar_var -a long_name,new_long_name in.nc ~/foo.nc
    */
 
 #ifdef HAVE_CONFIG_H
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.89 2006-02-19 00:42:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.89 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.90 2006-02-26 07:41:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.90 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
   extern char *optarg;

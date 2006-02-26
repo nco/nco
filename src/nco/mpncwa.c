@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.34 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.35 2006-02-26 07:41:55 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -33,9 +33,9 @@
 /* fxm: 19981202 Deactivated -n and -W switches while I rethink the normalization switches */
 
 /* Usage:
-   ncwa -O -a lon ~/nco/data/in.nc foo.nc
-   ncwa -O -R -p /ZENDER/tmp -l ~/nco/data in.nc foo.nc
-   ncwa -O -C -a lat,lon,time -w gw -v PS -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc foo.nc;ncks -H foo.nc
+   ncwa -O -a lon ~/nco/data/in.nc ~/foo.nc
+   ncwa -O -R -p /ZENDER/tmp -l ~/nco/data in.nc ~/foo.nc
+   ncwa -O -C -a lat,lon,time -w gw -v PS -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc ~/foo.nc;ncks -H foo.nc
    scp ~/nco/src/nco/ncwa.c esmf.ess.uci.edu:nco/src/nco */
 
 #ifdef HAVE_CONFIG_H
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.34 2006-02-19 00:42:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.34 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.35 2006-02-26 07:41:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.35 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;

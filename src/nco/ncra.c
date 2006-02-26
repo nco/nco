@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.175 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.176 2006-02-26 07:41:55 zender Exp $ */
 
 /* ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
@@ -36,15 +36,15 @@
 /* URL: http://cvs.sourceforge.net/viewcvs.py/nco/nco/src/nco/ncra.c
 
    Usage:
-   ncra -n 3,4,1 -p ${HOME}/nco/data h0001.nc foo.nc
-   ncra -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc foo.nc
-   ncra -n 3,4,1 -p /ZENDER/tmp -l ${HOME}/nco/data h0001.nc foo.nc
+   ncra -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
+   ncra -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc ~/foo.nc
+   ncra -n 3,4,1 -p /ZENDER/tmp -l ${HOME}/nco/data h0001.nc ~/foo.nc
    scp ~/nco/src/nco/ncra.c esmf.ess.uci.edu:nco/src/nco
 
-   ncea in.nc in.nc foo.nc
-   ncea -n 3,4,1 -p ${HOME}/nco/data h0001.nc foo.nc
-   ncea -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc foo.nc
-   ncea -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc foo.nc */
+   ncea in.nc in.nc ~/foo.nc
+   ncea -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
+   ncea -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc ~/foo.nc
+   ncea -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h> /* Autotools tokens */
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.175 2006-02-19 00:42:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.175 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.176 2006-02-26 07:41:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.176 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
   dmn_sct **dim;

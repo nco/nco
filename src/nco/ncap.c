@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.188 2006-02-25 22:29:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.189 2006-02-26 07:41:55 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -31,8 +31,8 @@
 
 /* Usage:
    ncap -O -D 1 -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-   ncap -O -D 1 -s a=b+c -s "b=c-d/2." -S ncap.in in.nc foo.nc
-   ncap -O -D 1 -s two=one+two in.nc foo.nc
+   ncap -O -D 1 -s a=b+c -s "b=c-d/2." -S ncap.in in.nc ~/foo.nc
+   ncap -O -D 1 -s two=one+two in.nc ~/foo.nc
    scp ~/nco/src/nco/ncap.c esmf.ess.uci.edu:nco/src/nco/ncap.c */
 
 #ifdef HAVE_CONFIG_H
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.188 2006-02-25 22:29:14 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.188 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.189 2006-02-26 07:41:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.189 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */

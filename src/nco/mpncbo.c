@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.47 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.48 2006-02-26 07:41:55 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -31,12 +31,12 @@
    Irvine, CA 92697-3100 */
 
 /* Usage:
-   ncbo -O in.nc in.nc foo.nc
-   ncbo -O -v mss_val in.nc in.nc foo.nc
-   ncbo -p /data/zender/tmp h0001.nc foo.nc
-   ncbo -p /data/zender/tmp -l /data/zender/tmp/rmt h0001.nc h0002.nc foo.nc
-   ncbo -p /ZENDER/tmp -l /data/zender/tmp/rmt h0001.nc h0002.nc foo.nc
-   ncbo -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc h0002.nc foo.nc
+   ncbo -O in.nc in.nc ~/foo.nc
+   ncbo -O -v mss_val in.nc in.nc ~/foo.nc
+   ncbo -p /data/zender/tmp h0001.nc ~/foo.nc
+   ncbo -p /data/zender/tmp -l /data/zender/tmp/rmt h0001.nc h0002.nc ~/foo.nc
+   ncbo -p /ZENDER/tmp -l /data/zender/tmp/rmt h0001.nc h0002.nc ~/foo.nc
+   ncbo -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc h0002.nc ~/foo.nc
    
    Test type conversion:
    ncks -O -C -v float_var in.nc foo1.nc
@@ -50,7 +50,7 @@
    ncks -H -m foo4.nc
    
    Test nco_var_cnf_dmn:
-   ncks -O -v scalar_var in.nc foo.nc ; ncrename -v scalar_var,four_dmn_rec_var foo.nc ; ncbo -O -v four_dmn_rec_var in.nc foo.nc foo2.nc */
+   ncks -O -v scalar_var in.nc ~/foo.nc ; ncrename -v scalar_var,four_dmn_rec_var foo.nc ; ncbo -O -v four_dmn_rec_var in.nc ~/foo.nc foo2.nc */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h> /* Autotools tokens */
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.47 2006-02-19 00:42:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.47 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.48 2006-02-26 07:41:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.48 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRSt:v:xy:-:";
   
   dmn_sct **dim_1;

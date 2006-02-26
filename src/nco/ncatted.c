@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.92 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.93 2006-02-26 07:41:55 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -38,55 +38,55 @@
    ncatted -D 3 -h -a history,global,o,c,'Characters which do not require protection by backslash:\nSingle backquote: `\nDollarsign: $\nLeft brace: {\nRight brace: }\nPipe: |\nAmpersand: &\nAt sign: @\nPercent: %\n\n' in.nc ; ncks -M in.nc
 
    Append to existing string:
-   ncatted -D 5 -O -a char_att,att_var,a,c,"and appended Sentence three." in.nc foo.nc
+   ncatted -D 5 -O -a char_att,att_var,a,c,"and appended Sentence three." in.nc ~/foo.nc
 
    Append to existing string with internal delimiter characters (commas):
-   ncatted -D 5 -O -a char_att,att_var,a,c,"appended a comma, and three more commas,,," in.nc foo.nc
+   ncatted -D 5 -O -a char_att,att_var,a,c,"appended a comma, and three more commas,,," in.nc ~/foo.nc
 
    Append to existing float:
-   ncatted -D 5 -O -a float_att,att_var,a,f,74 in.nc foo.nc
-   ncatted -D 5 -O -a float_att,att_var,a,f,74,75,76 in.nc foo.nc
+   ncatted -D 5 -O -a float_att,att_var,a,f,74 in.nc ~/foo.nc
+   ncatted -D 5 -O -a float_att,att_var,a,f,74,75,76 in.nc ~/foo.nc
 
    Create new float:
-   ncatted -D 5 -O -a new_float_att,att_var,c,f,74 in.nc foo.nc
+   ncatted -D 5 -O -a new_float_att,att_var,c,f,74 in.nc ~/foo.nc
 
    Delete attribute:
-   ncatted -D 5 -O -a float_att,att_var,d,,, in.nc foo.nc
+   ncatted -D 5 -O -a float_att,att_var,d,,, in.nc ~/foo.nc
 
    Delete all attributes for given var:
-   ncatted -D 5 -O -a ,att_var,d,,, in.nc foo.nc
+   ncatted -D 5 -O -a ,att_var,d,,, in.nc ~/foo.nc
 
    Modify existing float:
-   ncatted -D 5 -O -a float_att,att_var,m,f,74 in.nc foo.nc
+   ncatted -D 5 -O -a float_att,att_var,m,f,74 in.nc ~/foo.nc
 
    Modify existing missing value attribute:
-   ncatted -D 5 -O -a missing_value,mss_val,m,f,74 in.nc foo.nc
+   ncatted -D 5 -O -a missing_value,mss_val,m,f,74 in.nc ~/foo.nc
    
    Multiple attribute edits:
-   ncatted -D 5 -O -a char_att,att_var,a,c,"and appended Sentence three." -a short_att,att_var,c,s,37,38,39 -a float_att,att_var,d,,, -a long_att,att_var,o,l,37 -a new_att,att_var,o,d,73,74,75 in.nc foo.nc
+   ncatted -D 5 -O -a char_att,att_var,a,c,"and appended Sentence three." -a short_att,att_var,c,s,37,38,39 -a float_att,att_var,d,,, -a long_att,att_var,o,l,37 -a new_att,att_var,o,d,73,74,75 in.nc ~/foo.nc
 
    Create global attribute:
-   ncatted -D 5 -O -a float_att,global,c,f,74 in.nc foo.nc
+   ncatted -D 5 -O -a float_att,global,c,f,74 in.nc ~/foo.nc
 
    Verify results:
    ncks -C -H -v att_var foo.nc
 
    Test algorithm for all variables:
    Append to existing string for all variables:
-   ncatted -D 5 -O -a char_att,,a,c,"and appended Sentence three." in.nc foo.nc
+   ncatted -D 5 -O -a char_att,,a,c,"and appended Sentence three." in.nc ~/foo.nc
 
    Append to existing float for all variables:
-   ncatted -D 5 -O -a float_att,,a,f,74 in.nc foo.nc
-   ncatted -D 5 -O -a float_att,,a,f,74,75,76 in.nc foo.nc
+   ncatted -D 5 -O -a float_att,,a,f,74 in.nc ~/foo.nc
+   ncatted -D 5 -O -a float_att,,a,f,74,75,76 in.nc ~/foo.nc
 
    Create new float for all variables:
-   ncatted -D 5 -O -a float_att,,c,f,74 in.nc foo.nc
+   ncatted -D 5 -O -a float_att,,c,f,74 in.nc ~/foo.nc
 
    Delete attribute for all variables:
-   ncatted -D 5 -O -a float_att,,d,,, in.nc foo.nc
+   ncatted -D 5 -O -a float_att,,d,,, in.nc ~/foo.nc
 
    Modify existing float for all variables:
-   ncatted -D 5 -O -a float_att,,m,f,74 in.nc foo.nc
+   ncatted -D 5 -O -a float_att,,m,f,74 in.nc ~/foo.nc
 
    Verify results:
    ncks -C -h foo.nc | m */
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.92 2006-02-19 00:42:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.92 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.93 2006-02-26 07:41:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.93 $";
   const char * const opt_sht_lst="4Aa:D:hl:Oo:p:Rr-:";
   
   extern char *optarg;
