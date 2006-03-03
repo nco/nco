@@ -4,7 +4,7 @@ import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.17 2006-03-03 00:44:53 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.18 2006-03-03 03:05:07 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -180,12 +180,13 @@ def readConfigFile(fname = "ssdap_handler.conf"):
 def prestartLogging():
     """start logging using a fake file.  Dump contents to a real log after
     the log file location is decided."""
+    local.mypid = os.getpid()
     if not local.disableLogging:
         import cStringIO
         local.logfile = cStringIO.StringIO()
-        local.logfile.write("handler hack log open at " + time.ctime()+"\n")
+        p = str(local.mypid)
+        local.logfile.write("handler "+p+" log open at " + time.ctime()+"\n")
 def startLogging():
-    local.mypid = os.getpid()
     if not local.disableLogging:
         lastcontents = local.logfile.getvalue()
         local.logfile = open(local.logLocation, "a")
@@ -194,7 +195,7 @@ def startLogging():
 
 def logit(s):
     if not local.disableLogging:
-        local.logfile.write(s+"\n")
+        local.logfile.write(str(local.mypid)+"=="+s+"\n")
     #print s
 def logflush():
     if not local.disableLogging:
@@ -202,6 +203,10 @@ def logflush():
     pass
 
 class Command:
+    """The Command class is an abstraction for a single script command
+    to be executed.  Each line in the script line maps to approximately
+    one command.  The Command class depends on the scripting environment
+    to provide constants in generating a command line."""
     def __init__(self, line, scriptenv):
         self.original = line
         self.env = scriptenv
@@ -248,6 +253,8 @@ class Command:
     def inputs(self):
         """ return a list of absinputfiles """
         return self.absInputs
+
+
     # "private" functions
 
     def parseOriginalLine(self):
@@ -461,6 +468,53 @@ class Command:
             return self.cachedTaskId
         pass
         
+class DepTracker:
+    """DepTracker is a class that encapsulates logic that understands
+    the concept of job readiness and dependencies"""
+
+    # since python has "managed variables" we can add get/set
+    # accessor/mutators later without disrupting client code
+
+    #for now, runnableCmds is public
+    def __init__(self, cmdlist):
+        self.execList = cmdlist[:]
+        self.nextCmdIndex = 0 # where are we in issuing jobs?
+        self.completedCmds = [] # which jobs have completed?
+        self.availableData = [] # which values are available?
+        self.pendingCmds = []
+        self.runnableCmds = []
+        self.updateRunnable()
+        pass
+
+    def markCompleted(self):
+        self.availableData.append(cmd.outputs)
+        self.completedCmds.append(cmd)
+        self.pendingCmds.remove(cmd)
+        self.updateRunnable()
+        pass
+
+    def markRunning(self, cmd):
+        assert cmd in self.runnableCmds
+        self.pendingCmds.append(cmd)
+        self.runnableCmds.remove(cmd)
+        pass
+        
+    # private
+    def updateRunnable(self):
+        elist = self.execList
+        idx = self.nextCmdIndex
+        cmd = elist[idx]
+        while self.isRunnableCmd(cmd):
+            self.runnableCmds.append(cmd)
+            idx += 1
+            cmd = elist[idx]
+        self.nextCmdIndex = idx
+        pass
+    def isRunnableCmd(self, cmd):
+        for i in cmd.inputs:
+            if i not in self.availableData:
+                return False
+        return True
 
 
 # This class should hold the state used by a single script
