@@ -19,7 +19,7 @@ import urllib
 #         (but variable P01 is not in foo_T42, so this won't really work.
 #
 #
-# version info: $Id: ssdwrap.py,v 1.10 2006-02-23 18:55:39 mangalam Exp $
+# version info: $Id: ssdwrap.py,v 1.11 2006-03-03 00:44:53 wangd Exp $
 ########################################################################
 
 
@@ -29,7 +29,6 @@ import urllib
 # the server url can be passed in via an option or the config can reside
 # in a std config file
 class local:
-    # 'serverbase' below is only used if there is no ssdwrap.conf in the same dir.
     serverBase = "http://sand.ess.uci.edu:80/cgi-bin/dods/nph-dods"
 
     # params probably unchanged
@@ -47,15 +46,15 @@ class local:
             import ConfigParser
             config = ConfigParser.ConfigParser()
             filename = "ssdwrap.conf"
-
-            # look in the same place as the script is located...
+            
+            # look in the same place as the script is located... 
             # should I check current working directory instead?
             filepath = os.path.join(os.path.split(sys.argv[0])[0], filename)
             config.read(filepath)
             for m in cfgmap:
                 if config.has_option(m[1], m[2]):
                     setattr(local, m[0], config.get(m[1],m[2]))
-
+                
             # dump entire config file (to remember the interface)
             #for section in config.sections():
             #    print section
@@ -87,7 +86,7 @@ class SsdapCommon:
                      "fnc_tbl", "prn_fnc_tbl", "hst", "history",
                      "Mtd", "Metadata", "mtd", "metadata",
                      "lcl=", "local=",
-                     "nintap",
+                     "nintap", 
                      "output=", "fl_out=",
                      "ovr", "overwrite", "prn", "print", "quiet",
                      "pth=", "path=",
@@ -104,12 +103,27 @@ class SsdapCommon:
     ncapLongOpt.remove('variable=')
     ncapLongOpt.append('variable')
 
+    ncpdqShortOpt = parserShortOpt.replace("a","a:")
+    ncpdqShortOpt = ncpdqShortOpt.replace("M","M:")
+    ncpdqShortOpt = ncpdqShortOpt.replace("P","P:")
+    ncpdqShortOpt = ncpdqShortOpt.replace("u","Uu")
+    
+    ncpdqLongOpt = parserLongOpt[:]
+    ncpdqLongOpt.extend(['arrange','permute','reorder', 'rdr',
+                         'pck_map', 'map', 'pck_plc','pack_policy',
+                         'upk', 'unpack'])
+    
     @staticmethod
     def specialGetOpt(cmd, argvlist):
         if cmd == "ncap": # ncap has a different format
             return getopt.getopt(argvlist,
                                  SsdapCommon.ncapShortOpt,
                                  SsdapCommon.ncapLongOpt)
+        elif cmd == "ncpdq": # ncpdq has a different format too
+            return getopt.getopt(argvlist,
+                                 SsdapCommon.ncpdqShortOpt,
+                                 SsdapCommon.ncpdqLongOpt)
+            
         else:
             return getopt.getopt(argvlist,
                                  SsdapCommon.parserShortOpt,
@@ -121,7 +135,7 @@ class SsdapCommon:
 class Command:
     NCKS_OPT = "--ncks"
     NCKS_TEMP = "%tempf_SCRIPTncks%"
-
+    
     def __init__(self, argvlist):
         """construct a command, which is a primitive-ish operation
         over netcdf files.  in the future, we can query the command
@@ -141,16 +155,17 @@ class Command:
         if Command.NCKS_OPT in argdict:
             # ncks on outfile is desired... create a new command line
             # FIXME: not sure what sort of options we want on ncks
-            optlist = ["ncks", "-CH", "-s%f", "-v", argdict[Command.NCKS_OPT],
-                       Command.NCKS_TEMP, "%stdout%"]
+            optlist = ["ncks", "-CH", "-s%f",
+                       "-v", argdict[Command.NCKS_OPT], Command.NCKS_TEMP,
+                       "%stdout%"]
             self.children.append( Command(optlist))
             newlist.append(Command.NCKS_TEMP) #create output for first line
-
+            
         return newlist
 
     def specialOutput(self, fname):
         return '%' == fname[0] == fname[-1]
-
+    
     def build(self, argvlist):
         """look for output filename, replace with magic key for remote"""
         # pull of cmd first.
@@ -185,11 +200,11 @@ class Command:
         if self.specialOutput(ofname) :
             argdict.pop("--output")
             # leave as special
-        else:
+        else: 
             argdict["--output"] = "%outfile%" # patch with magic script hint
             # hack since ncbo doesn't support --output option
             argdict["-o"] = argdict.pop("--output")
-
+            
         #patch infiles with -p option
         self.infilename = self.patchInfiles(argdict, leftover)
 
@@ -222,7 +237,7 @@ class Command:
             needsProt = False
             safe = string.letters + string.digits + "%"
             for x in v: needsProt |= (x not in safe)
-
+                
             if needsProt:    line += " " + k + " '" + v + "'"
             elif len(v) > 0: line += " " + k + " " + v
             else:            line += " " + k
@@ -258,7 +273,7 @@ class RemoteScript:
 
         for c in cmd.childCommands():
             self.addCommand(c)
-
+        
         # might consider building dep tree here.
         return True
 
@@ -293,7 +308,7 @@ class RemoteScript:
 
             url = local.serverBase + "/" + filename
             url += ".dods?superduperscript11"
-
+            
             print "url is " + url
             print "and script is " + script
             #return True # uncomment this to halt before server connect
@@ -333,7 +348,7 @@ if len(sys.argv) < 4:  # we'll use the heuristic that we have at least:
 
 local.readConfigFile()
 
-# defer command checking to the command itself.
+# defer command checking to the command itself.  
 passedCommand = None
 try:
     passedCommand = Command(sys.argv[1:])

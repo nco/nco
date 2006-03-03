@@ -4,7 +4,7 @@ import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.16 2006-02-24 02:20:49 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.17 2006-03-03 00:44:53 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -99,12 +99,26 @@ class SsdapCommon:
     ncapLongOpt.remove('variable=')
     ncapLongOpt.append('variable')
 
+    ncpdqShortOpt = parserShortOpt.replace("a","a:")
+    ncpdqShortOpt = ncpdqShortOpt.replace("M","M:")
+    ncpdqShortOpt = ncpdqShortOpt.replace("P","P:")
+    ncpdqShortOpt = ncpdqShortOpt.replace("u","Uu")
+    
+    ncpdqLongOpt = parserLongOpt[:]
+    ncpdqLongOpt.extend(['arrange','permute','reorder', 'rdr',
+                         'pck_map', 'map', 'pck_plc','pack_policy',
+                         'upk', 'unpack'])
+
     @staticmethod
     def specialGetOpt(cmd, argvlist):
         if cmd == "ncap": # ncap has a different format
             return getopt.getopt(argvlist,
                                  SsdapCommon.ncapShortOpt,
                                  SsdapCommon.ncapLongOpt)
+        elif cmd == "ncpdq": # ncpdq has a different format too
+            return getopt.getopt(argvlist,
+                                 SsdapCommon.ncpdqShortOpt,
+                                 SsdapCommon.ncpdqLongOpt)            
         else:
             return getopt.getopt(argvlist,
                                  SsdapCommon.parserShortOpt,
@@ -171,6 +185,7 @@ def prestartLogging():
         local.logfile = cStringIO.StringIO()
         local.logfile.write("handler hack log open at " + time.ctime()+"\n")
 def startLogging():
+    local.mypid = os.getpid()
     if not local.disableLogging:
         lastcontents = local.logfile.getvalue()
         local.logfile = open(local.logLocation, "a")
@@ -259,7 +274,8 @@ class Command:
 
     def parseMetaCmd(self, argv):
         metamap = {"ssd_initsave": self.cmdInitSave,
-                   "ssd_save": self.cmdSave}
+                   "ssd_save": self.cmdSave,
+                   "ssd_poll": self.cmdPoll}
         metamap[self.cmd](argv)
         pass
 
@@ -389,14 +405,48 @@ class Command:
     def cmdInitAsync(self, argv):
         # want to close CGI connection, and then continue
         # Return a task id that can be queried later.
-        
+        tid = self.taskId()
+        sys.stdout.flush() # flush output before forking
+        try:
+            of = os.fork()
+        except OSError:
+            sys.stderrwrite('fork failed\n')
+            sys.exit(1)
+        if of == 0: # child process
+            # child does the real work.
+            # set async: redirect stdout/stdin etc.
+            # write stdout to task.id.stdout
+            # when finished, write task.id.result
+            self.env.setAsync()
+            pass
+            
+        else: # parent process
+            print "Your task id is", tid, "running with PID", of
+            self.env.setAsync()
+            # want to report task id and then exit.
+            # this should let the client transaction finish
+            pass
+            
         
         pass
     def cmdSave(self, argv):
         # designate real filename (or just a persistently-mapped identifier)
         # that can be requested later.  Would like to put in normal
         # opendap-visible space.
+        #FIXME
         pass
+    def cmdPoll(self, argv):
+        # check for job finish. check for task.id.result. if not exist,
+        # consider reading task.id.stdout for fun.
+        #FIXME
+        pass
+
+    def execute(self, scrEnv):
+        """execute myself in a certain scripting environment"""
+        # open question: is it better to pass functions than the whole object?
+        # FIXME
+        pass 
+    
     def taskId(self):
         try: return self.cachedTaskId
         except:
@@ -438,7 +488,7 @@ class ScriptingEnv:
     VALID_DAPCOMMANDS=dict( (x, local.ncDapBinPath+os.sep+x) for x in NCO_COMMANDS)
 
     # room to add other commands here.
-    META_COMMANDS = ["ssd_initsave", "ssd_save"]
+    META_COMMANDS = ["ssd_initsave", "ssd_save", "ssd_poll"]
 
     
     COMMENT_CHAR = "#"  # not used right now.
@@ -469,17 +519,6 @@ class ScriptingEnv:
 
         pass
 
-    ## flexible result handling needs to be designed with
-    ## multiple script lines in mind.
-    def getResultHandler(self, cmd):
-        """returns a function f that has args: (stdout, filename)
-        """
-        return
-
-    def stdoutHandler(self, stdout, filename):
-        pass
-    def outfileHandler(self, stdout, filename):
-        pass
 
     def shouldRemap(self, absName):
         # return bool indicating whether this word should be xlated.
@@ -582,6 +621,10 @@ class ScriptingEnv:
             else:
                 shutil.copyfileobj(sout, outFd)
         pass
+    def spawnProcess(self):
+        """run a command, capture its output in??? FIXME"""
+        pass
+    
     def depTreeToString(self):
         out = "Script dependency digraph: \n"
         for x in self.commands:
