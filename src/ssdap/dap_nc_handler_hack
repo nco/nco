@@ -4,7 +4,7 @@ import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.18 2006-03-03 03:05:07 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.19 2006-03-04 02:46:05 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -30,9 +30,7 @@ import md5
 #                     <time>, return an HTTP 304 response.
 #
 #          -L : skip printing of http headers. **** for easier testing
-
 #
-
 ######################################################################
 # Administrator-tunable parameters:
 ######################################################################
@@ -202,6 +200,7 @@ def logflush():
         local.logfile.flush()
     pass
 
+######################################################################
 class Command:
     """The Command class is an abstraction for a single script command
     to be executed.  Each line in the script line maps to approximately
@@ -467,7 +466,8 @@ class Command:
             self.cachedTaskId = taskid
             return self.cachedTaskId
         pass
-        
+
+######################################################################
 class DepTracker:
     """DepTracker is a class that encapsulates logic that understands
     the concept of job readiness and dependencies"""
@@ -486,7 +486,7 @@ class DepTracker:
         self.updateRunnable()
         pass
 
-    def markCompleted(self):
+    def markCompleted(self, cmd):
         self.availableData.append(cmd.outputs)
         self.completedCmds.append(cmd)
         self.pendingCmds.remove(cmd)
@@ -498,7 +498,13 @@ class DepTracker:
         self.pendingCmds.append(cmd)
         self.runnableCmds.remove(cmd)
         pass
-        
+    def done(self):
+        """done means that all cmds have completed.  There are no jobs
+        runnable or pending.  All results are available. completedCmds
+        should have the same length as the original execList."""
+        idle = (not self.pendingCmds) and (not self.runnableCmds)
+        reallydone = len(self.execList) == len(self.completedCmds)
+        return idle and reallydone
     # private
     def updateRunnable(self):
         elist = self.execList
@@ -516,10 +522,11 @@ class DepTracker:
                 return False
         return True
 
-
+######################################################################
 # This class should hold the state used by a single script
 # Might be worthwhile to split out constants/data shared
 #  between scripts instead of letting them be class shared data.
+######################################################################
 class ScriptingEnv:
     # constants (but not const-enforced by python)
     SCRIPT_OUTFILE = "%outfile%"
@@ -651,30 +658,53 @@ class ScriptingEnv:
         # check to make sure we don't have both an output file and outstderr
         # make sure we're doing exactly one thing with our output
         havefile = self.fileMap.has_key(ScriptingEnv.SCRIPT_OUTFILE)
-#        outbypass = (self.outFd != os.devnull)
-#        assert havefile ^ outbypass
-
-
-        for c in self.commandLine:
-            #(sin,sout) = os.popen2(l)
-            outFd = os.devnull
-            if c.saveOutput == True:
-                outFd = sys.stdout
-            (sin,sout) = c.popen(c.commandLine())  # use the mapped popen
-            sin.close() # close the input, so it flushes
-            #out handle is now ready to be read.
-            #for x in sout:
-            #   self.outStream.append(x)
-            #   logit( "execution output: " + x)
-            # skip logging the output, and just dump to outstream.
-
-            if outFd == os.devnull:
-                fd = open(outFd, "w")
-                shutil.copyfileobj(sout, fd)
-                fd.close()
-            else:
-                shutil.copyfileobj(sout, outFd)
+        # outbypass = (self.outFd != os.devnull)
+        # assert havefile ^ outbypass
+        self.serialExec()
         pass
+    
+    def serialExec(self):
+        for c in self.commandLine:
+            self.runCmdRaw(c)
+        pass
+    def runCmdRaw(self, cmd):
+        outFd = os.devnull
+        if cmd.saveOutput == True:
+            outFd = sys.stdout
+        (sin,sout) = cmd.popen(cmd.commandLine())  # use the mapped popen
+        sin.close() # close the input, so it flushes
+        #out handle is now ready to be read.
+        #for x in sout:
+        #   self.outStream.append(x)
+        #   logit( "execution output: " + x)
+        # skip logging the output, and just dump to outstream.
+
+        if outFd == os.devnull:
+            fd = open(outFd, "w")
+            shutil.copyfileobj(sout, fd)
+            fd.close()
+        else:
+            shutil.copyfileobj(sout, outFd)
+
+    def depExec(self):
+        """an in-order multi-issue(not yet!) command scheduler"""
+        dept = DepTracker(self.commandLine) # track deps
+        while not dept.done():
+            # assume infinite issue width for now
+            while dept.runnableCmds:
+                cmd = dept.runnableCmds[0]
+                dept.markRunning(cmd)
+                # run/spawn cmds
+                self.runCmdRaw(cmd)
+                dept.markCompleted(cmd)
+            # check for completed jobs. how?
+            
+            
+            #here, we should sleep, since there are no runnable cmds
+            #before we check again for runnables.
+            time.sleep(1)
+        #we should be done
+        
     def spawnProcess(self):
         """run a command, capture its output in??? FIXME"""
         pass
