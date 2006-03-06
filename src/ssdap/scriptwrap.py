@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# $Id: scriptwrap.py,v 1.3 2006-02-14 01:53:23 wangd Exp $
+# $Id: scriptwrap.py,v 1.4 2006-03-06 21:29:04 wangd Exp $
 # want to support url-based specification of server.
 #           ncra -n 100,1,2 -p http://server/foo/model_01.nc model_avg.nc
 # this file was originally named scriptwrap.py
@@ -10,16 +10,16 @@ import os, shutil, sys, urllib
 class local:
     (localPath, scriptName) = os.path.split(sys.argv[0])
     helpStr = """A_GREAT_NAME is designed to help you run your ssdap scripts on a server.
-    Usage: A_GREAT_NAME <opendap_url> <analysis.ssdap> [output-file]
+    Usage: A_GREAT_NAME <analysis.ssdap> <opendap_url> [output-file]
+
+    -- analysis.ssdap is the name of a server-side script according to
+       the proper server-side-dap script specification
 
     -- opendap_url is the base url of the dods server
        e.g. http://localhost:8000/cgi/nph-dods
        This means that if you wanted info about data/foo_02.nc , you
        could point your browser at:
        http://localhost:8000/cgi/nph-dods/data/foo_02.nc.info
-       
-    -- analysis.ssdap is the name of a server-side script according to
-       the proper server-side-dap script specification
 
     -- output_file is the name of the file to store the output.  Only
        one output script is currently supported."""
