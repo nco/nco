@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-import getopt, os, sys, tempfile, shutil
+import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.19 2006-03-04 02:46:05 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.20 2006-03-07 00:03:00 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -216,6 +216,7 @@ class Command:
         self.ancestors = []
         self.absOutputs = []
         self.absInputs = []
+        self.inPrefix = ""
         self.saveOutput = False
         self.popen = os.popen2
 
@@ -258,7 +259,7 @@ class Command:
 
     def parseOriginalLine(self):
 
-        argv = self.original.split()
+        argv = shlex.split(self.original)
 
         if len(argv) < 1:
             return # nothing to parse
@@ -288,13 +289,13 @@ class Command:
     def parseNormalCmd(self, argv):
         (arglist, leftover) = SsdapCommon.specialGetOpt(self.cmd, argv)
         argdict = dict(arglist)
-        self.acceptModifiers(argdict, leftover)
-        self.acceptInOut(argdict, leftover)
+        self.acceptModifiers(argdict, arglist, leftover)
+        self.acceptInOut(argdict, arglist, leftover)
         self.fixupDependencies()
-        self.arguments = argdict
+        self.arguments = arglist
         pass
 
-    def acceptModifiers(self, adict, leftover):
+    def acceptModifiers(self, adict, alist, leftover):
         """accept special things like %stdouterr% and %stdout% so that
         specify how to handle a particular line."""
         def selectPopen2():
@@ -320,13 +321,17 @@ class Command:
 
             # pop off the back of the list, and then do the right thing.
 
-    def acceptInOut(self, adict, leftover):
+    def acceptInOut(self, adict, alist, leftover):
         # look for output file first
         ofname = ""
         for x in  ["-o", "--fl_out", "--output"]:
             if x in adict:
                 assert ofname == ""
+                keys = [x[0] for x in alist]
+                o = alist.pop(keys.index(x))
                 ofname = adict.pop(x)
+                assert o == ofname
+                
         if ofname == "":
             # don't steal output if it's actually the input.
             if len(leftover) <= 1:
@@ -340,6 +345,13 @@ class Command:
         if ofname != "": # should have a real filename (or placeholder)
             self.absOutputs.append(ofname)
         self.absInputs += leftover
+        if "-p" in adict:
+            self.inPrefix = adict["-p"]
+            keys = [x[0] for x in alist]
+            p = alist.pop(keys.index("-p"))
+            adict.pop("-p")
+            
+            
     def fixupDependencies(self):
         # go get a reversed list of the previous commands
         previous = self.env.commands[:] #make copy!
@@ -368,8 +380,9 @@ class Command:
         # prefix cmd at the end.
         #line += ScriptingEnv.VALID_COMMANDS[self.cmd]
 
+        
         # pass options first
-        for (k,v) in self.arguments.items():
+        for (k,v) in self.arguments:
             #special value handling for --op_typ='-'
             needsProt = False
             safe = string.letters + string.digits + "%"
@@ -395,7 +408,9 @@ class Command:
                 line += " " + remapped
             elif self.env.possibleFilename(name):
                 # add defpath for now.
-                newname = self.env.env["defpath"] + os.sep + name
+                if self.inPrefix: n = os.path.join(self.inPrefix,name)
+                else: n = name                    
+                newname = os.path.join(self.env.env["defpath"], n)
                 #newname = word
                 line += " " + newname
             else:
