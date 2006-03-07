@@ -4,7 +4,7 @@ import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.20 2006-03-07 00:03:00 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.21 2006-03-07 00:32:56 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -39,10 +39,8 @@ class local:
     logLocation = "/var/log/ssdap.log"
 
     #ncBinPath = os.environ["MY_BIN_DIR"]
-    nc4BinPath = "/home/wangd/opendap/iroot/nco_ncdf4_bin"
-    ncDapBinPath = "/home/wangd/opendap/iroot/nco_dap_bin"
-#    nc4BinPath = "/usr/local/bin"
-#    ncDapBinPath = "/usr/local/bin"
+    nc4BinPath = "/usr/local/bin"
+    ncDapBinPath = "/usr/local/bin"
 
     # pass original DAP commands to the original dap handler.
     passthroughPath = "/usr/local/bin/dap_nc_handler"
@@ -160,13 +158,14 @@ def readConfigFile(fname = "ssdap_handler.conf"):
                 if val in remap: val = remap[val]
                 setattr(local, m[0], val)
                 # uncomment if you are curious about cfgfile reading
-                #logit( "cfgfile: setting local." + m[0] + " " +str( val))
+                #logit("cfgfile: setting local." + m[0] + " " +str( val))
 
         # dump entire config file (to remember the interface)
         #for section in config.sections():
         #    print section
         #    for option in config.options(section):
         #        print " ", option, "=", config.get(section, option)
+        ScriptingEnv.fixConfig()
         pass
     except AttributeError:
         # no config file, probably safe to silently ignore
@@ -594,8 +593,14 @@ class ScriptingEnv:
         logit(self.depTreeToString()) # for debug...
 
         pass
-
-
+    @staticmethod
+    def fixConfig():
+        j = os.path.join
+        c = ScriptingEnv.NCO_COMMANDS
+        ScriptingEnv.VALID_COMMANDS=dict((x, j(local.nc4BinPath,x)) for x in c)
+        ScriptingEnv.VALID_DAPCOMMANDS=dict( (x, j(local.ncDapBinPath,x)) for x in c)
+        
+    
     def shouldRemap(self, absName):
         # return bool indicating whether this word should be xlated.
         # keep simple for now: check a list.
