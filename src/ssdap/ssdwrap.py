@@ -19,7 +19,7 @@ import urllib
 #         (but variable P01 is not in foo_T42, so this won't really work.
 #
 #
-# version info: $Id: ssdwrap.py,v 1.12 2006-03-08 01:43:43 wangd Exp $
+# version info: $Id: ssdwrap.py,v 1.13 2006-03-08 19:23:57 wangd Exp $
 ########################################################################
 
 
@@ -75,7 +75,7 @@ class local:
 # we should split it into some python module to be imported.
 class SsdapCommon:
     """stuff that should be identical between client and server code"""
-    parserShortOpt = "4AaBb:CcD:d:FfHhl:Mmn:Oo:Pp:QqRrs:S:s:t:uv:xy:"
+    parserShortOpt = "4AaBb:CcD:d:FfHhl:Mmn:Oo:Pp:QqRrs:S:s:t:uv:xY:y:"
     parserLongOpt = ["4", "netcdf4", "apn", "append",
                      "abc", "alphabetize", "bnr", "binary",
                      "fl_bnr=", "binary-file=",

@@ -4,7 +4,7 @@ import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.22 2006-03-08 01:43:43 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.23 2006-03-08 19:23:57 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -67,7 +67,7 @@ class local:
 # we should split it into some python module to be imported.
 class SsdapCommon:
     """stuff that should be identical between client and server code"""
-    parserShortOpt = "4AaBb:CcD:d:FfHhl:Mmn:Oo:Pp:QqRrs:S:s:t:uv:xy:"
+    parserShortOpt = "4AaBb:CcD:d:FfHhl:Mmn:Oo:Pp:QqRrs:S:s:t:uv:xY:y:"
     parserLongOpt = ["4", "netcdf4", "apn", "append",
                      "abc", "alphabetize", "bnr", "binary",
                      "fl_bnr=", "binary-file=",
