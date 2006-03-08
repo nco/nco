@@ -4,7 +4,7 @@ import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.21 2006-03-07 00:32:56 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.22 2006-03-08 01:43:43 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -326,10 +326,10 @@ class Command:
         for x in  ["-o", "--fl_out", "--output"]:
             if x in adict:
                 assert ofname == ""
-                keys = [x[0] for x in alist]
-                o = alist.pop(keys.index(x))
+                keys = [y[0] for y in alist]
+                o = alist.pop(keys.index(x)) # o is a tuple.
                 ofname = adict.pop(x)
-                assert o == ofname
+                assert o[1] == ofname
                 
         if ofname == "":
             # don't steal output if it's actually the input.
@@ -349,8 +349,32 @@ class Command:
             keys = [x[0] for x in alist]
             p = alist.pop(keys.index("-p"))
             adict.pop("-p")
-            
-            
+        self.patchNcapInscript(adict,alist,leftover)
+        pass
+    
+    def patchNcapInscript(self, adict, alist, leftover):
+        """ncap is a special command that has an input script.
+        If we are passed a filename, we should look for it in a particular
+        place"""
+        # this exists to solve:
+        # what about server side script?  The 1st ncap regression calls
+        # for the reading of a script from a file instead of supplying it
+        # in the commandline.
+        # ncap -h -O $fl_fmt $nco_D_flg -v -S ncap.in $in_pth_arg in.nc %tempf_00%";
+        #                                  ^^^^^^^^^^
+        # Can you capture/parse  the '-S scriptfile' and search for the
+        # script file in the specified '-p dir'? 
+
+
+        if "ncap" != self.cmd:
+            return # exit if it's not ncap
+        if "-S" in adict:
+            newname = self.addInfilePrefix(adict["-S"])
+            keys = [x[0] for x in alist]
+            alist[keys.index("-S")] = ('-S', newname)
+            adict["-S"] = newname
+        pass
+        
     def fixupDependencies(self):
         # go get a reversed list of the previous commands
         previous = self.env.commands[:] #make copy!
@@ -387,10 +411,15 @@ class Command:
             safe = string.letters + string.digits + "%"
             for x in v: needsProt |= (x not in safe)
 
+            # add = for long options? is this necessary?
+            k1 = k
+            #if len(k) > 2: k1 = k + "="
+
+            
             if needsProt and not ("'" == v[0] == v[-1]):
-                line += " " + k + "'" + v + "'"
-            elif len(v) > 0: line += " " + k + " " + v
-            else:            line += " " + k
+                line += " " + k1 + " '" + v + "'"
+            elif len(v) > 0: line += " " + k1 + " " + v
+            else:            line += " " + k1
         # then pass commands
         filelist = []
         for name in self.absInputs:
@@ -407,10 +436,7 @@ class Command:
                 line += " " + remapped
             elif self.env.possibleFilename(name):
                 # add defpath for now.
-                if self.inPrefix: n = os.path.join(self.inPrefix,name)
-                else: n = name                    
-                newname = os.path.join(self.env.env["defpath"], n)
-                #newname = word
+                newname = self.addInfilePrefix(name)
                 line += " " + newname
             else:
                 needsDap |= self.env.requiresDap(name)
@@ -421,6 +447,11 @@ class Command:
             self.cmdLine = ScriptingEnv.VALID_COMMANDS[self.cmd] + " " + line
         logit( "real cmdline: " + self.cmdLine)
         pass
+    def addInfilePrefix(self, name):
+        n = None
+        if self.inPrefix: n = os.path.join(self.inPrefix,name)
+        else: n = name                    
+        return os.path.join(self.env.env["defpath"], n)
     
     def cmdInitAsync(self, argv):
         # want to close CGI connection, and then continue

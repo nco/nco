@@ -19,7 +19,7 @@ import urllib
 #         (but variable P01 is not in foo_T42, so this won't really work.
 #
 #
-# version info: $Id: ssdwrap.py,v 1.11 2006-03-03 00:44:53 wangd Exp $
+# version info: $Id: ssdwrap.py,v 1.12 2006-03-08 01:43:43 wangd Exp $
 ########################################################################
 
 
@@ -212,6 +212,9 @@ class Command:
         return self.rebuildCommandline(argdict, self.infilename)
 
     def patchInfiles(self, argdict, filelist):
+        return filelist ## turn off path prefixing since it is done server-side
+        # delete this function after testing.
+
         # find path prefixer.
         prefix = ""
         opts = ["-p", "--pth", "--path"]
