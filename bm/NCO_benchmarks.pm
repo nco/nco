@@ -9,7 +9,7 @@ package NCO_benchmarks;
 # for the NCO benchmark master 'script nco_bm.pl'
 # It must maintain Perl semantics for Perl code.
 
-# $ $
+#$Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.2 2006-03-09 22:29:59 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
