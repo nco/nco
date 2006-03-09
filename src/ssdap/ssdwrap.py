@@ -19,7 +19,7 @@ import urllib
 #         (but variable P01 is not in foo_T42, so this won't really work.
 #
 #
-# version info: $Id: ssdwrap.py,v 1.13 2006-03-08 19:23:57 wangd Exp $
+# version info: $Id: ssdwrap.py,v 1.14 2006-03-09 22:30:41 wangd Exp $
 ########################################################################
 
 
@@ -75,7 +75,7 @@ class local:
 # we should split it into some python module to be imported.
 class SsdapCommon:
     """stuff that should be identical between client and server code"""
-    parserShortOpt = "4AaBb:CcD:d:FfHhl:Mmn:Oo:Pp:QqRrs:S:s:t:uv:xY:y:"
+    parserShortOpt = "4AaBb:CcD:d:FfHhl:Mmn:Oo:Pp:QqRrs:S:s:t:uv:w:xY:y:"
     parserLongOpt = ["4", "netcdf4", "apn", "append",
                      "abc", "alphabetize", "bnr", "binary",
                      "fl_bnr=", "binary-file=",
@@ -95,7 +95,8 @@ class SsdapCommon:
                      "sng_fmt=", "string=",
                      "thr_nbr=", "threads=", "omp_num_threads=",
                      "xcl", "exclude",
-                     "variable=", "op_typ=", "operation=" ]
+                     "variable=", "wgt_var=", "weight=",
+                     "op_typ=", "operation=" ]
 
     # special handling for ncap's parameters
     ncapShortOpt = parserShortOpt.replace("v:","v")
@@ -115,6 +116,8 @@ class SsdapCommon:
     
     @staticmethod
     def specialGetOpt(cmd, argvlist):
+        #consider special-case for ncwa ncflint -w: option
+        # wgt_var, weight also for ncflint/ncwa
         if cmd == "ncap": # ncap has a different format
             return getopt.getopt(argvlist,
                                  SsdapCommon.ncapShortOpt,
