@@ -15,56 +15,50 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.29 2006-02-18 04:58:22 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.30 2006-03-09 22:26:31 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
 use Cwd 'abs_path';
-
+#use NCO_benchmarks qw($tw_prt_bm);
 use strict;
+
+use NCO_rgr qw(
+	perform_tests
+	$dodap $prefix $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl
+	$outfile
+);
+# $foo1_fl $foo_fl $foo_tst
+
+# module that contains perform_tests()
+#use NCO_benchmarks; #module that contains the actual benchmark code
 # use warnings;
+
 require Exporter;
 our @ISA = qw(Exporter);
 #export functions (top) and variables (bottom)
 our @EXPORT = qw (
-	check_nco_results
-	dbg_msg
-	failed
-	fl_cr8
-	fl_cr8_dat_init
-	go
-	initialize
-	nco_dual_vrsn
-	set_dat_dir
-	smrz_fl_cr8_rslt
-	smrz_rgr_rslt
-	usage
-	verbosity
-	wat4inpt
-
-	$aix_mpi_ $aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $bm_dir $caseid $dbg_lvl
-	$dodap $dsc_sng $dta_dir $fke_prefix @fl_cr8_dat $fl_pth @fl_tmg $md5
-	$md5found $mpi_fke $mpi_prc $nsr_xpc $NUM_FLS nvr_prfx $opr_nm
-	$opr_sng_mpi $os_nme $outfile $prefix $prsrv_fl $que $sock $thr_nbr
-	$timestamp $tmr_app @tst_cmd %tst_nbr $udp_rpt $wnt_log
-
+	go dbg_msg set_dat_dir initialize
+	$prefix $dta_dir @fl_cr8_dat $opr_sng_mpi $opr_nm $dsc_sng
+	$prsrv_fl  $srvr_sde $hiresfound $dodap $bm $dbg_lvl
 );
 
 use vars qw(
-$aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $dbg_lvl $dodap $dot_fmt
+$aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $bm $dbg_lvl $dodap $dot_fmt
 $dot_nbr $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng
 $fke_prefix $hiresfound $md5 $mpi_prc $mpi_prfx $MY_BIN_DIR $nsr_xpc
 $opr_fmt $opr_lng_max @opr_lst @opr_lst_all @opr_lst_mpi $mpi_fke
-$opr_nm $opr_rgr_mpi $opr_sng_mpi $os_nme $outfile $prefix %real_tme
+$opr_nm $opr_rgr_mpi $opr_sng_mpi $os_nme  $prefix %real_tme
 $result $spc_fmt $spc_nbr $spc_nbr_min $spc_sng %subbenchmarks %success
 @sys_tim_arr $sys_time %sys_tme $timed %totbenchmarks @tst_cmd $tst_fmt
 $tst_id_sng %tst_nbr %usr_tme $wnt_log $timestamp $bm_dir $caseid
 $cmd_ln $dta_dir @fl_cr8_dat $fl_pth @fl_tmg $md5found %MD5_tbl
 $nco_D_flg $NUM_FLS $prfxd $prsrv_fl $que $server_ip $sock $thr_nbr
 $dbg_sgn $err_sgn $tmr_app $udp_rpt %wc_tbl $prfxd $nvr_my_bin_dir
-$prg_nm $arg_nbr @fl_tmg
-);
+$prg_nm $arg_nbr $tw_prt_bm $srvr_sde @cmd_lst
 
+);
+# $outfile
 print "\nINFO: Testing for required modules\n";
 BEGIN {eval "use Time::HiRes qw(usleep ualarm gettimeofday tv_interval)"; $hiresfound = $@ ? 0 : 1}
 #$hiresfound = 0;  # uncomment to simulate not found
@@ -73,6 +67,7 @@ if ($hiresfound == 0) {
 } else {
     print "\tTime::HiRes ... found.\n";
 } # $hiresfound
+
 
 # print "\$md5 = $md5\n";
 # print "\$outfile = $outfile\n";
@@ -89,39 +84,17 @@ if ($hiresfound == 0) {
 # 	print "\tMD5 NOT requested; continuing with ncks checking of single values.\n";
 # }
 
-$bm_dir = `pwd`; chomp $bm_dir;
-$prefix = '';
-$err_sgn = "";
-#if($dbg_lvl > 3){$nco_D_flg = "-D" .  "$dbg_lvl";}
-
-# Initializations
-# Re-constitute commandline
-$prg_nm=$0; # $0 is program name Camel p. 136
-$cmd_ln = "$0 "; $arg_nbr = @ARGV;
-for (my $i=0; $i<$arg_nbr; $i++){ $cmd_ln .= "$ARGV[$i] ";}
-
-# make sure that the $fl_pth gets set to a reasonable defalt
-#$fl_pth = "$dta_dir";
-#print "\$dta_dir = $dta_dir\n";
-
-# # Pass in the MPI prefix if --mpi is set. Should be able to just plug into the commandline
-# # MPI'ed nco's: mpirun -np 4 mpncbo etc
-# #               MPI prefix <--++--> regular command line
-# $nvr_my_bin_dir=$ENV{'MY_BIN_DIR'} ? $ENV{'MY_BIN_DIR'} : '';
-# $MY_BIN_DIR = $nvr_my_bin_dir;
+# $bm_dir = `pwd`; chomp $bm_dir;
+# $prefix = '';
+# $err_sgn = "";
+# #if($dbg_lvl > 3){$nco_D_flg = "-D" .  "$dbg_lvl";}
 #
-# # set the $fke_prefix to allow for running the mpnc* as a non-mpi'ed  executable
-# $fke_prefix = " $MY_BIN_DIR/mp";
-
-# # $prefix expects to find an regular nco in MY_BIN_DIR
-# $prefix = " $MY_BIN_DIR";
-# #  $mpi_prfx will always have the mpirun directive.PLUS the MPI'ed nco
-# $mpi_prfx = " mpirun -np $mpi_prc  $MY_BIN_DIR/mp";
-# $prfxd = 1; $timed = 1;
+# # Initializations
+# # Re-constitute commandline
+# $prg_nm=$0; # $0 is program name Camel p. 136
+# $cmd_ln = "$0 "; $arg_nbr = @ARGV;
+# for (my $i=0; $i<$arg_nbr; $i++){ $cmd_ln .= "$ARGV[$i] ";}
 #
-# dbg_msg(1, "*\$tmr_app = $tmr_app, \$prefix = $prefix,\$mpi_fke = $mpi_fke, \$mpi_prfx = $mpi_prfx");
-
-#wat4inpt(__LINE__,"NCO_bm.pm inits finished.");
 
 # usage - informational blurb for script
 sub usage {
@@ -158,6 +131,8 @@ where (options) are:
                             NB: This option uses udp port 29659 and may set off
                             firewall alarms if used unless that port is open.
     --scaling.......runs the ncwa benchmarks with 1/2, 1/4, 1/8 of the variables
+    --serverside {server URL}..requests that benchmarks be run on the server side
+                      points to sand.ess.uci.edu unless a url is given [EXPERIMENTAL]
     --test_files....requests the testing & excercise of the file creation script
                      'ncgen' and the Left Hand Casting ability of ncap.
                             Currently gives the option to test 4 files of increasing
@@ -268,7 +243,7 @@ dbg_msg(1,"$prg_nm: initialize() reports:\n\t \$MY_BIN_DIR = $MY_BIN_DIR, \n\t \
 
 
 ##
-## Ouptut string to either stdout, log, or both
+## Output string to either stdout, log, or both
 ##
 ####################
 sub verbosity {
@@ -285,8 +260,9 @@ sub verbosity {
 ##
 
 sub fl_cr8_dat_init {
-
-	dbg_msg(2,"fl_cr8_dat_init: \$NUM_FLS = $NUM_FLS");
+	my $NUM_FLS = 4;
+print "in fl_cr8_dat_init, \$NUM_FLS = $NUM_FLS\n";
+	dbg_msg(1,"fl_cr8_dat_init: \$NUM_FLS = $NUM_FLS");
 
 if ($dbg_lvl > 2) {
 	print "\nWaiting for keypress to proceed.\n";
@@ -319,6 +295,7 @@ if ($dbg_lvl > 2) {
 	$fl_cr8_dat[3][1] = "~4GB";                    # file size
 	$fl_cr8_dat[3][2] = $fl_tmg[3][0] = "ipcc_dly_T85";            # file name root
 	$fl_cr8_dat[3][3] = "\'weepy=0.8f;dopey=0.8f;sleepy=0.8f;grouchy=0.8f;sneezy=0.8f;doc=0.8f;wanky=0.8f;skanky=0.8f;d1_00[time]=1.8f;d1_01[time]=1.8f;d1_02[time]=1.8f;d1_03[time]=1.8f;d1_04[time]=1.8f;d1_05[time]=1.8f;d1_06[time]=1.8f;d1_07[time]=1.8f;d2_00[lat,lon]=16.2f;d2_01[lat,lon]=16.2f;d2_02[lat,lon]=16.2f;d2_03[lat,lon]=16.2f;d2_04[lat,lon]=16.2f;d2_05[lat,lon]=16.2f;d2_06[lat,lon]=16.2f;d2_07[lat,lon]=16.2f;d2_08[lat,lon]=16.2f;d2_09[lat,lon]=16.2f;d2_10[lat,lon]=16.2f;d2_11[lat,lon]=16.2f;d2_12[lat,lon]=16.2f;d2_13[lat,lon]=16.2f;d2_14[lat,lon]=16.2f;d2_15[lat,lon]=16.2f;d3_00[time,lat,lon]=64.0f;d3_01[time,lat,lon]=64.0f;d3_02[time,lat,lon]=64.0f;d3_03[time,lat,lon]=64.0f;d3_04[time,lat,lon]=64.0f;d3_05[time,lat,lon]=64.0f;d3_06[time,lat,lon]=64.0f;d3_07[time,lat,lon]=64.0f;d3_08[time,lat,lon]=64.0f;d3_09[time,lat,lon]=64.0f;d3_10[time,lat,lon]=64.0f;d3_11[time,lat,lon]=64.0f;d3_12[time,lat,lon]=64.0f;d3_13[time,lat,lon]=64.0f;d3_14[time,lat,lon]=64.0f;d3_15[time,lat,lon]=64.0f;d3_16[time,lat,lon]=64.0f;d3_17[time,lat,lon]=64.0f;d3_18[time,lat,lon]=64.0f;d3_19[time,lat,lon]=64.0f;d3_20[time,lat,lon]=64.0f;d3_21[time,lat,lon]=64.0f;d3_22[time,lat,lon]=64.0f;d3_23[time,lat,lon]=64.0f;d3_24[time,lat,lon]=64.0f;d3_25[time,lat,lon]=64.0f;d3_26[time,lat,lon]=64.0f;d3_27[time,lat,lon]=64.0f;d3_28[time,lat,lon]=64.0f;d3_29[time,lat,lon]=64.0f;d3_30[time,lat,lon]=64.0f;d3_31[time,lat,lon]=64.0f;d3_32[time,lat,lon]=64.0f;d3_33[time,lat,lon]=64.0f;d3_34[time,lat,lon]=64.0f;d3_35[time,lat,lon]=64.0f;d3_36[time,lat,lon]=64.0f;d3_37[time,lat,lon]=64.0f;d3_38[time,lat,lon]=64.0f;d3_39[time,lat,lon]=64.0f;d3_40[time,lat,lon]=64.0f;d3_41[time,lat,lon]=64.0f;d3_42[time,lat,lon]=64.0f;d3_43[time,lat,lon]=64.0f;d3_44[time,lat,lon]=64.0f;d3_45[time,lat,lon]=64.0f;d3_46[time,lat,lon]=64.0f;d3_47[time,lat,lon]=64.0f;d3_48[time,lat,lon]=64.0f;d3_49[time,lat,lon]=64.0f;d3_50[time,lat,lon]=64.0f;d3_51[time,lat,lon]=64.0f;d3_52[time,lat,lon]=64.0f;d3_53[time,lat,lon]=64.0f;d3_54[time,lat,lon]=64.0f;d3_55[time,lat,lon]=64.0f;d3_56[time,lat,lon]=64.0f;d3_57[time,lat,lon]=64.0f;d3_58[time,lat,lon]=64.0f;d3_59[time,lat,lon]=64.0f;d3_60[time,lat,lon]=64.0f;d3_61[time,lat,lon]=64.0f;d3_62[time,lat,lon]=64.0f;d3_63[time,lat,lon]=64.0f;d4_00[time,lev,lat,lon]=1.1f;d4_01[time,lev,lat,lon]=1.2f;d4_02[time,lev,lat,lon]=1.3f;d4_03[time,lev,lat,lon]=1.4f;d4_04[time,lev,lat,lon]=1.5f;d4_05[time,lev,lat,lon]=1.6f;d4_06[time,lev,lat,lon]=1.7f;d4_07[time,lev,lat,lon]=1.8f;d4_08[time,lev,lat,lon]=1.9f;d4_09[time,lev,lat,lon]=1.11f;d4_10[time,lev,lat,lon]=1.12f;d4_11[time,lev,lat,lon]=1.13f;d4_12[time,lev,lat,lon]=1.14f;d4_13[time,lev,lat,lon]=1.15f;d4_14[time,lev,lat,lon]=1.16f;d4_15[time,lev,lat,lon]=1.17f;d4_16[time,lev,lat,lon]=1.18f;d4_17[time,lev,lat,lon]=1.19f;d4_18[time,lev,lat,lon]=1.21f;d4_19[time,lev,lat,lon]=1.22f;d4_20[time,lev,lat,lon]=1.23f;d4_21[time,lev,lat,lon]=1.24f;d4_22[time,lev,lat,lon]=1.25f;d4_23[time,lev,lat,lon]=1.26f;d4_24[time,lev,lat,lon]=1.27f;d4_25[time,lev,lat,lon]=1.28f;d4_26[time,lev,lat,lon]=1.29f;d4_27[time,lev,lat,lon]=1.312f;d4_28[time,lev,lat,lon]=1.322f;d4_29[time,lev,lat,lon]=1.332f;d4_30[time,lev,lat,lon]=1.342f;d4_31[time,lev,lat,lon]=1.352f;\'";
+	return @fl_tmg;
 }; # end of fl_cr8_dat_init()
 
 
@@ -327,11 +304,8 @@ if ($dbg_lvl > 2) {
 ##
 
 sub fl_cr8 {
-# 	our @EXPORT = qw (
-# 		fl_cr8_dat_init
-# 		@fl_cr8_dat $dta_dir
-# 	);
-
+	my $idx = shift;
+	my $NUM_FLS = 4;
 	$prefix = "$MY_BIN_DIR";
 
 if ($dbg_lvl > 2) {
@@ -339,7 +313,6 @@ if ($dbg_lvl > 2) {
 	my $tmp = <STDIN>;
 }
 
-	my $idx = shift;
 	my $t0;
 	my $elapsed;
 
@@ -374,6 +347,7 @@ if ($dbg_lvl > 2) {
 	else {$elapsed = time - $t0;}
 	$fl_tmg[$idx][2] = $elapsed; # population time
 	print "==========================\nEnd of $fl_cr8_dat[$idx][2] section\n==========================\n\n\n";
+	return @fl_tmg;
 } # end sub fl_cr8
 
 
@@ -382,6 +356,8 @@ if ($dbg_lvl > 2) {
 ##
 
 sub smrz_fl_cr8_rslt {
+	$NUM_FLS = 4;
+	print " insmrz_fl_cr8_rslt,  \$fl_tmg[1][0] = $fl_tmg[1][0] & \$NUM_FLS = $NUM_FLS\n";
 	if ($dbg_lvl > 0){print "Summarizing results of file creation\n";}
 	my $CC = `../src/nco/ncks --compiler`;
 	my $CCinfo = '';
@@ -477,17 +453,71 @@ sub set_dat_dir {
 	} # !defined $ENV{'DATA'})
 } # end set_dat_dir()
 
-
-# go() consumes the @tst_cmd array that contains a series of tests and executes them in order
+#########################  subroutine go ()  ####################################
+# go() consumes the @tst_cmd array that contains a series of tests and
+# executes them in order
+#################################################################################
 sub go {
-	my $aix = 0;
-	my $is_sng = 1;
-	if ($os_nme =~ /AIX/) {$aix = 1;} # yafv for aix
-	$dbg_sgn = "";
-	$err_sgn = "";
-	my $result_is_num = 1;
-	my $expect_is_num = 1;
-	$mpi_prfx= ""; $fke_prefix="";
+
+# Use variables for file names in regressions; some of these could be collapsed into
+# fewer ones, no doubt, but keep them separate until whole shebang starts working correctly
+
+# $outfile       = "$dta_dir/foo.nc"; # replaces outfile in tests, typically 'foo.nc'
+# $orig_outfile  = "$dta_dir/foo.nc";
+# $foo_fl        = "$dta_dir/foo";
+# $foo_avg_fl    = "$dta_dir/foo_avg.nc";
+# $foo_tst       = "$dta_dir/foo.tst";
+# $foo1_fl       = "$dta_dir/foo1.nc";
+# $foo2_fl       = "$dta_dir/foo2.nc";
+# $foo_x_fl      = "$dta_dir/foo_x.nc";
+# $foo_y_fl      = "$dta_dir/foo_y.nc";
+# $foo_xy_fl     = "$dta_dir/foo_xy.nc";
+# $foo_yx_fl     = "$dta_dir/foo_yx.nc";
+# $foo_xymyx_fl  = "$dta_dir/foo_xymyx.nc";
+# $foo_T42_fl    = "$dta_dir/foo_T42.nc";
+
+
+my %lfn = ( # lfn = local_file_name
+'%stdouterr%'   => "$dta_dir/stdouterr.nc",
+'%tempf_00%'    => "$dta_dir/tempf_00.nc", # this will be the default replacement for $outfile
+'%tempf_01%'    => "$dta_dir/tempf_01.nc",
+'%tempf_02%'    => "$dta_dir/tempf_02.nc",
+'%tempf_03%'    => "$dta_dir/tempf_03.nc",
+'%tempf_04%'    => "$dta_dir/tempf_04.nc",
+'%tempf_05%'    => "$dta_dir/tempf_05.nc",
+# no use for more than 05
+'%tempf_06%'    => "$dta_dir/tempf_06.nc",
+'%tempf_07%'    => "$dta_dir/tempf_07.nc",
+'%tempf_08%'    => "$dta_dir/tempf_08.nc",
+'%tempf_09%'    => "$dta_dir/tempf_09.nc",
+'%tempf_10%'    => "$dta_dir/tempf_10.nc",
+'%tempf_11%'    => "$dta_dir/tempf_11.nc",
+'%tempf_12%'    => "$dta_dir/tempf_12.nc",
+);
+
+# so if executign on the client side, have to replace all the special purpose
+# filenames with name like $lfn{'%tempf_00%'}
+
+	# WTF do these vars require this treatment?!??
+	*dbg_lvl = *main::dbg_lvl;
+	*outfile = *main::outfile;
+	#$dbg_lvl = 2;
+	if ($dbg_lvl > 0) {
+		print "\n\n\n## New go() cycle [$opr_nm: $dsc_sng] ###\n";
+		if ($lfn{'%tempf_00%'} eq "") {
+			print "outfile undefined!\n";
+		} # else {	print "\$lfn{'%tempf_00%'} = [$lfn{'%tempf_00%'}] \n";}
+	}
+# mod of go() requires that rgr tests have to be modified to provide
+# the expected value in each submission to go()  If the last el is not SS_OK,
+# it has to pop off the expected  value and then should process the commands
+# the same as it did previously.
+	my $arr_ref = shift; # now passing in benchmark()'s @tst_cmd via a ref to maintain coherence
+	my @cmd_lst= @$arr_ref; # deref the ref to a new array name
+	# clear variables
+	my $ssdwrap_cmd = $dbg_sgn = $err_sgn = $mpi_prfx = $fke_prefix = "";
+	my $result_is_num = 1; 	my $expect_is_num = 1; # for extra return value checks
+
 
 	# twiddle the $prefix to allow for running the mpnc* as a non-mpi'ed  executable
 	if ($mpi_fke) {$fke_prefix = "$MY_BIN_DIR/mp"; }
@@ -499,6 +529,7 @@ sub go {
 	# NB!  not for benchmarking under POE - intercepted and handled at startup
 	# on AIX, non-MPI ops compiled with MPI will atttempt to run MP_PROCS.  To hold them
 	# to 1 process, have to add an explicit prefix ($aix_mpi_sgl_nvr), added below
+	my $aix = 0; if ($os_nme =~ /AIX/) {$aix = 1;} # yafv for aix
 	if ($aix){ $mpi_prfx = " $aix_mpi_nvr_prfx $MY_BIN_DIR/mp";}
 	else     { $mpi_prfx = " mpirun -np $mpi_prc $MY_BIN_DIR/mp";} # assuming Linux-like MPI
 	$prfxd = 1; $timed = 1;
@@ -507,32 +538,46 @@ sub go {
 
 	#delete everything in the dap subdir to force a DAP retrieval
 	# by this time, $dta_dir has been directed to $dta_dir/DAP_DIR
-	#print "\n\$dta_dir = $dta_dir\n\n";
+
+#	print "DEBUG[go]:\$dodap = [$dodap], \$prsrv_fl = [$prsrv_fl]\n";
 	if ($dodap ne "FALSE" && !$prsrv_fl) {
-#		print "\nunlinking everything in $dta_dir\n";
+		print "\nWARN: about to unlink everything in $dta_dir ! Continue? [Ny]\n";
+		my $wait = <STDIN>; if ($wait !~ /[Yy]/) { die "Make sure of the commandline options!\n";}
 		my $unlink_cnt = unlink <$dta_dir/*>;
-#		print "\nunlinked $unlink_cnt files\n";
+		print "\nINFO: OK - unlinked $unlink_cnt files\n";
+	}
+#	print "just past unlinking stage \n";  my $wait = <STDIN>;
+
+	# see what the cmd_lst looks like now.
+	if ($dbg_lvl > 0) {
+		for (my $ccmd=0; $ccmd <= $#cmd_lst; $ccmd++){
+		print "### cmd_lst[$ccmd] = $cmd_lst[$ccmd] ###\n";
+		}
 	}
 
 # Perform tests of requested operator; default is all
 	if (!defined $tst_nbr{$opr_nm}) {
-		@tst_cmd=();  # Clear test array
+		#print "DEBUG: \$tst_nbr{\$opr_nm} not defined - going to exit!\n";
+		@cmd_lst=();  # Clear test array
 		# and init the timing hashes
 		$real_tme{$opr_nm} = 0;
 		$usr_tme{$opr_nm}  = 0;
 		$sys_tme{$opr_nm}  = 0;
 		return;
+	} else {
+		#print "\$tst_nbr{\$opr_nm} = $tst_nbr{$opr_nm}\n";
 	}
+#	print "DEBUG: for $opr_nm, \$tst_nbr{\$opr_nm} = $tst_nbr{$opr_nm}\n";
 
 	$subbenchmarks{$opr_nm} = 0;
 	$tst_nbr{$opr_nm}++;
-	my $tst_cmdcnt = 0;
+	my $cmd_lst_cnt = 0;
 	my $t = 0;
-	my $lst_cmd = @tst_cmd;
+	my $lst_cmd = @cmd_lst;
 	my $elapsed;
 	$lst_cmd--;
 
-	dbg_msg(4,"\n nsr_xpc = $nsr_xpc\n dbg_lvl = $dbg_lvl\n wnt_log = $wnt_log\n tst_cmd = @tst_cmd");
+	dbg_msg(4,"\n nsr_xpc = $nsr_xpc\n dbg_lvl = $dbg_lvl\n wnt_log = $wnt_log\n cmd_lst = @cmd_lst");
 
 	&verbosity($dbg_lvl, $wnt_log, "\n\n============ New Test ==================\n");
 
@@ -557,101 +602,136 @@ sub go {
 	printf STDERR ($tst_fmt,$dsc_sng,$dot_sng);
 	# csz--
 
-	foreach (@tst_cmd){
-		my $md5_chk = 1;
-		$dbg_sgn .= "\nDEBUG: Full commandline for part $tst_cmdcnt:\n";
 
-		if ($_ !~ /foo.nc/) {$md5_chk = 0;}
-		my $opcnt = 0;
-		my $md5_dsc_sng = $dsc_sng . "_$tst_cmdcnt";
-		# Add $prefix only to NCO operator commands, not things like 'cut'.
+# SS checks and balances
+# $ncks_chk = SS_gnarly_pything(\@cmd_lst)
+	my $SS_nsr_xpc = 0;
+	my $SS_OK = 1;
+	if ($cmd_lst[$#cmd_lst] ne "SS_OK") {$SS_OK = 0;} # check on last el whether cmds can be SS'ed
+	if ($SS_OK && $srvr_sde ne "SSNOTSET" ) {
 
-		foreach my $op (@opr_lst_all) {
-#			print "\$op = $op\n";
-			if ($_ =~ m/^$op/ ) { # if the op is in the main list
-				if ($mpi_prc > 0 && $opr_sng_mpi =~ /$op/) { $_ = $tmr_app . $mpi_prfx . $_; } # and in the mpi list
-				elsif ($mpi_fke  && $opr_sng_mpi =~ /$op/) { $_ = $tmr_app . $fke_prefix . $_; } # the fake prefix
-				# non-MPI apps compiled w/ MPI need special prefix to hold them to 1 process
-				elsif ($aix) {$_ = $tmr_app . $aix_mpi_sgl_nvr_prfx . $prefix . $_;}
-				else         {$_ = $tmr_app . $prefix . $_; } # the std prefix
-				dbg_msg(2, "URGENT:cmdline= $_ \n");
+		# send it off to be processed and get back the string or single value to check
+		$SS_nsr_xpc = SS_gnarly_pything(\@cmd_lst);
+
+		$result = $SS_nsr_xpc; # do this in one step later
+ 		# and undef the last one to leave the expected value as last value
+ 		delete $cmd_lst[$#cmd_lst];
+ 		$nsr_xpc = $cmd_lst[$#cmd_lst]; # & pop last value to provide the exepected answer
+#		print "\n##DEBUG:\t$nsr_xpc (expt)\n\t\t$result (SS)\n";
+	} else {
+		# delete the SS value to leave "expected value" as last
+		delete $cmd_lst[$#cmd_lst];
+		#regardless, pop the next value off to provide the 'expected value'
+		$nsr_xpc = $cmd_lst[$#cmd_lst]; # pop the next value off \
+		delete $cmd_lst[$#cmd_lst]; # and now the $cmd_lst is the same as it ever was..
+
+		foreach (@cmd_lst){
+#			print "\nforeach cmd_lst = $_\n";
+			my $md5_chk = 1;
+			$dbg_sgn .= "\nDEBUG: Full commandline for part $cmd_lst_cnt:\n";
+			if ($_ !~ /foo.nc/) {$md5_chk = 0;}
+			my $opcnt = 0;
+			my $md5_dsc_sng = $dsc_sng . "_$cmd_lst_cnt";
+
+			# substitute real file names for the fake ones (%*%)
+			my $r = 0; 	my $N = my @L = split;
+			while ($r <= $N) { if ($L[$r] =~ /\%.{8,9}\%/){ $L[$r] = $lfn{$L[$r]};}	$r++;	}
+			$_ = ""; # zero and then reconstitute $_
+			for ($r=0; $r<= $N; $r++) {$_ .= $L[$r] . " ";}
+			#print "DEBUG: reconstituted \$_ = $_\n";
+
+			# Add $prefix only to NCO operator commands, not things like 'cut'.
+			foreach my $op (@opr_lst_all) {
+				if ($_ =~ m/$op/ ) { # if the op is anywhere  in the main list
+					if ($mpi_prc > 0 && $opr_sng_mpi =~ /$op/) {
+						$_ = $tmr_app . $mpi_prfx . $_; } # and in the mpi list
+					elsif ($mpi_fke  && $opr_sng_mpi =~ /$op/) {
+						$_ = $tmr_app . $fke_prefix . $_; } # the fake prefix
+					# non-MPI apps compiled w/ MPI need special prefix to hold them to 1 process
+					elsif ($aix) {$_ = $tmr_app . $aix_mpi_sgl_nvr_prfx . $prefix . $_;}
+					else         {$_ = $tmr_app . $prefix . $_; } # the std prefix
+					dbg_msg(2, "URGENT:cmdline= $_ \n");
+					last;
+				}
+			} # end of foreach my $op (@opr_lst_all)
+			$dbg_sgn .= "DEBUG:$_\n";
+
+			# NB: May have to do ONLY HiRes timing since SERVERSIDE will be hard to do otherwise
+			# timing code using Time::HiRes
+			my $t0;
+			if ($hiresfound) {$t0 = [gettimeofday];}
+			else {$t0 = time;}
+
+			#########################################################################
+			# and execute the command, splitting off stderr to file 'nco-stderror'
+			$result = `($_) 2> nco-stderror`; # stderr should contain timing info if it exists.
+			#########################################################################
+#			print "\nDEBUG: cmd = $_ \n and \$result = $result\n ";
+			if ($dbg_lvl >= 1) {print "\nDEBUG: result of [$_]\n = [$result]\n";}
+			chomp $result;
+
+# 			# still newlines in $result? -> a multiline result & only want the last one.
+# 			if ($result =~/\n/) {
+# 				my @rslt_arr = split(/\n/, $result);
+# 				$result = $rslt_arr[$#rslt_arr]; # take the last line
+# 				if ($dbg_lvl >= 1) {print "\nprocessed multiline \$result = [$result]\n";}
+# 			}
+# 			# figure out if $result is numeric or alpha
+# 			if ($result =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
+# 				$result !~ /[a-df-zA-DF-Z ,]/) { $result_is_num = 1;}
+# 			else { #print "DEBUG: \$result is not numeric: $result \n";
+# 				$result_is_num = 0;
+# 			}
+# 			# figure out if $nsr_xpc is numeric or alpha
+# 			if ($nsr_xpc =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
+# 				$nsr_xpc !~ /[a-df-zA-DF-Z ,]/) { $expect_is_num = 1;}
+# 			else { #print "DEBUG: \$nsr_xpc is not numeric: $nsr_xpc \n";
+# 				$expect_is_num = 0;
+# 			}
+
+			if ($timed) {
+				$sys_time = `cat nco-stderror`;
+				if ($sys_time ne "") {
+					if ($sys_time =~ /ERR/ ) {last;}
+					$sys_time =~ s/\n/ /g;
+					#	print "\$sys_time = [$sys_time]\n";
+					@sys_tim_arr = split(" ", $sys_time); # [0]real [1]0.00 [2]user [3]0.00 [4]sys [5]0.00
+					my @rev_sys_tim_arr = reverse @sys_tim_arr;
+					# print"\@revsys_tim_arr = @rev_sys_tim_arr\n";
+					# this will fail if an error occurs which offsets the time info, so you have to step thru the list until hit 'real' which syncs the array.  or do it from the back end.
+					$real_tme{$opr_nm} += $rev_sys_tim_arr[0] + 0; # '+0 forces conversion to a nbr
+					$usr_tme{$opr_nm}  += $rev_sys_tim_arr[2] + 0;
+					$sys_tme{$opr_nm}  += $rev_sys_tim_arr[4] + 0;
+				}
 			}
-		}
+			if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
+			else {$elapsed = time - $t0;}
 
-#wat4inpt(__LINE__);
+			#print "inter benchmark for $opr_nm = $subbenchmarks{$opr_nm} \n";
+			$subbenchmarks{$opr_nm} += $elapsed;
+	#		$tst_idx = $tst_nbr{$opr_nm}-1;
+			if($dbg_lvl > 3){print "\t$opr_nm subtest [$t] took $elapsed seconds\n";}
+			$dbg_sgn .= "DEBUG: Result = [$result]\n";
 
-		$dbg_sgn .= "DEBUG:$_\n";
-
-
-# timing code using Time::HiRes
-		my $t0;
-		if ($hiresfound) {$t0 = [gettimeofday];}
-		else {$t0 = time;}
-#my $rt = `ls /home/hjm/data/nco_bm/DAP_DIR/foo_T42.nc`;
-#print "\nexists? = $rt\n";
-		#####################################################################################
-		# and execute the command, splitting off stderr to file 'nco-stderror'
-		$result = `($_) 2> nco-stderror`; # stderr should contain timing info if it exists.
-		#####################################################################################
-#	print "\nresult of [$_] = $result\n";
-		chomp $result;
-		# figure out if $result is numeric or alpha
-		if ($result =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
-          $result !~ /[a-df-zA-DF-Z ,]/) { $result_is_num = 1;}
-		else {                               $result_is_num = 0;}
-
-		# figure out if $nsr_xpc is numeric or alpha
-		if ($nsr_xpc =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
-          $nsr_xpc !~ /[a-df-zA-DF-Z ,]/) { $expect_is_num = 1;}
-		else {                                $expect_is_num = 0;}
-
-# 		if ($result =~ /ERROR/) { # then test has failed
-# 			$result = -123456789; # the magic error number
-# 		}
-
-		if ($timed) {
-			$sys_time = `cat nco-stderror`;
-			if ($sys_time ne "") {
-				if ($sys_time =~ /ERR/ ) {last;}
-				$sys_time =~ s/\n/ /g;
-#		print "\$sys_time = [$sys_time]\n";
-				@sys_tim_arr = split(" ", $sys_time); # [0]real [1]0.00 [2]user [3]0.00 [4]sys [5]0.00
-				my @rev_sys_tim_arr = reverse @sys_tim_arr;
-#		print"\@revsys_tim_arr = @rev_sys_tim_arr\n";
-				# this will fail if an error occurs which offsets the time info, so you have to step thru the list until hit 'real' which syncs the array.  or do it from the back end.
-				$real_tme{$opr_nm} += $rev_sys_tim_arr[0] + 0; # '+0 forces conversion to a nbr
-				$usr_tme{$opr_nm}  += $rev_sys_tim_arr[2] + 0;
-				$sys_tme{$opr_nm}  += $rev_sys_tim_arr[4] + 0;
+			#and here, check results by md5 checksum for each step - insert guts of check_nco_results()
+			# have to mod the input string -  suffix with the cycle#
+			# follow check only if the MD5 module is present, there's a foo.nc to check ($lfn{'%tempf_00%'} = 'foo.nc')
+			# & non-terminal cmd (the terminal command is ncks which is expected to return a single value or string)
+			dbg_msg(3,"check_nco_results(): \$md5 = $md5, \$md5_chk = $md5_chk, \$cmd_lst_cnt ($cmd_lst_cnt) < \$lst_cmd ($lst_cmd)");
+			if ($md5 && $md5_chk && $cmd_lst_cnt < $lst_cmd) {
+				dbg_msg(2,"Entering check_nco_results() with \$lfn{'%tempf_00%'}=$lfn{'%tempf_00%'}");
+				check_nco_results($lfn{'%tempf_00%'}, $md5_dsc_sng);
 			}
-		}
-		if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
-		else {$elapsed = time - $t0;}
+			if ($md5_chk == 0 && $dbg_lvl > 0) { $dbg_sgn .= "WARN: No MD5/wc check on intermediate file.\n";}
 
-		#print "inter benchmark for $opr_nm = $subbenchmarks{$opr_nm} \n";
-		$subbenchmarks{$opr_nm} += $elapsed;
-#		$tst_idx = $tst_nbr{$opr_nm}-1;
-		if($dbg_lvl > 3){print "\t$opr_nm subtest [$t] took $elapsed seconds\n";}
-		$dbg_sgn .= "DEBUG: Result = [$result]\n";
-
-		#and here, check results by md5 checksum for each step - insert guts of check_nco_results()
-		# have to mod the input string -  suffix with the cycle#
-		# follow check only if the MD5 module is present, there's a foo.nc to check ($outfile = 'foo.nc')
-		# & non-terminal cmd (the terminal command is ncks which is expected to return a single value or string)
-		dbg_msg(3,"check_nco_results(): \$md5 = $md5, \$md5_chk = $md5_chk, \$tst_cmdcnt ($tst_cmdcnt) < \$lst_cmd ($lst_cmd)");
-		if ($md5 && $md5_chk && $tst_cmdcnt < $lst_cmd) {
-			dbg_msg(2,"Entering check_nco_results() with \$outfile=$outfile");
-			check_nco_results($outfile, $md5_dsc_sng);
-		}
-		if ($md5_chk == 0 && $dbg_lvl > 0) { $dbg_sgn .= "WARN: No MD5/wc check on intermediate file.\n";}
-
-		# else the oldstyle check has already been done and the results are in $result, so process normally
-		$tst_cmdcnt++;
-		if ($dbg_lvl > 2) {
-			print "\ngo: test cycle held - hit <Enter> to continue\n";
-			my $wait = <STDIN>;
-		}
-
-	} # end loop over sub-tests
+			# else the oldstyle check has already been done and the results are in $result, so process normally
+			$cmd_lst_cnt++;
+			if ($dbg_lvl > 2) {
+				print "\ngo: test cycle held - hit <Enter> to continue\n";
+				my $wait = <STDIN>;
+			}
+		} # end loop: 	foreach (@cmd_lst)
+	}  # end of client side 'else'
 
 	$dbg_sgn .= "DEBUG: Total time for $opr_nm [$tst_nbr{$opr_nm}] = $subbenchmarks{$opr_nm} s\n";
 	$totbenchmarks{$opr_nm}+=$subbenchmarks{$opr_nm};
@@ -659,6 +739,26 @@ sub go {
 	 # this comparing of the results shouldn't even be necessary as we're validating the whole file,
 	 # not just a single value.
 #	chomp $result;  # Remove trailing newline for easier regex comparison
+
+
+			# still newlines in $result? -> a multiline result & only want the last one.
+			if ($result =~/\n/) {
+				my @rslt_arr = split(/\n/, $result);
+				$result = $rslt_arr[$#rslt_arr]; # take the last line
+				if ($dbg_lvl >= 1) {print "\nprocessed multiline \$result = [$result]\n";}
+			}
+			# figure out if $result is numeric or alpha
+			if ($result =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
+				$result !~ /[a-df-zA-DF-Z ,]/) { $result_is_num = 1;}
+			else { #print "DEBUG: \$result is not numeric: $result \n";
+				$result_is_num = 0;
+			}
+			# figure out if $nsr_xpc is numeric or alpha
+			if ($nsr_xpc =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
+				$nsr_xpc !~ /[a-df-zA-DF-Z ,]/) { $expect_is_num = 1;}
+			else { #print "DEBUG: \$nsr_xpc is not numeric: $nsr_xpc \n";
+				$expect_is_num = 0;
+			}
 
 	# Compare numeric results
 	if ($result_is_num && $expect_is_num) { # && it equals the expected value
@@ -699,20 +799,86 @@ sub go {
 	print $err_sgn;
 	if ($dbg_lvl > 0) {print $dbg_sgn;}
 	if ($wnt_log) {print LOG $dbg_sgn;}
-	@tst_cmd=(); # Clear test
-	$prsrv_fl = 0; # reset so files will be deleted unless specifically request saving them
-	# rm $outfile so it can't generate a false positive
-	if (-e $outfile && -w $outfile) { unlink $outfile;	}
+	@cmd_lst =(); # Clear test
+	if (!$bm) { $prsrv_fl = 0; } # reset so files will be deleted unless doing benchmarks
+	if (-e $lfn{'%tempf_00%'} && -w $lfn{'%tempf_00%'}) { unlink $lfn{'%tempf_00%'};	}
 } # end go()
 
 ####################
 
+# if SS_OK && the user requests a SS attempt ..
+# this needs to be functionized to:
+# -  breathe in the cmd_lst,
+# - replace the outfile with the %tempfile% params (most '$outfile's -> '%temp_00%'
+# - change the in_pth arg to look for files in the dodsdata dir (replace -p xxx to -p dodsdata)
+# - write that block to disk,
+# - execute the scriptwrap cmd and breathe back in the returned value, currently just the ncks single value
+# $ncks_chk = SS_gnarly_thing(\@cmd_lst);
+
+sub SS_gnarly_pything {
+
+	my $arr_ref = shift; # now passing in go()'s cmd_lst via a ref to maintain NS separation
+	my @sscmd_lst= @$arr_ref; # deref the ref to a new array name
+	my $SS_URL = "http://sand.ess.uci.edu/cgi-bin/dods/nph-dods";
+	my $dodsdata = "dodsdata";
+	# write out the array replacing each $outfile with the %temp% spec.
+	# 1st cmd has to specify the starting datadir, but client cannot be expected in most cases to know it, so
+	# will substitute any '-p URL'  with '-p %datadir%' which will probably have to be escaped at some level.
+	# further cmds will act on the %outfile%, so no '-p' substitution will be nec.
+	# can assume that the '-p URL' will be in 1st cmd, but will check all cmds for the existence of a '-p'
+	# because of mixed programming model, simplest to write to disk and send via pything.
+	# file name can be re-useable: 'nco_regr_temp_4scriptwrap'
+	# NB: need to only process the actual scripts so need to chew off the extra bits before processing them
+	# ie as above, ignore the last 2 entries (return value and SS_OK status
+#	print "MY_BIN_DIR = $MY_BIN_DIR\n";
+#	print "DATA_DIR = $dta_dir\n";
+	my $lst_scrt_idx = $#sscmd_lst - 2; # last script index that has content to be sent to the server.
+	my $tfname = "/home/hjm/z/nco/bm/nco_rgr_tmp_4scriptwrap";
+	open(TF, "> $tfname") or die "\nUnable to open temp file 'nco_rgr_tmp_4scriptwrap' in current dir.\n";
+	my $r = 0;
+	my $sscl = ""; # 'server side cmd line' holds the SS version of the individual cmdlines
+	while ($r <= $lst_scrt_idx) {
+		#print "before chang'g line [$r]:\n$sscmd_lst[$r] \n";
+		my $e = my @L = split(/\s+/,$sscmd_lst[$r]);
+		for (my $d=0; $d < $e; $d++) {
+			$sscl .= $L[$d] . " "; # cp each term over to the temp line
+			if ($L[$d] =~ /\-p/) {
+				$d++;
+				$sscl .= $dodsdata . " ";
+			}
+		}
+		if ($r == $lst_scrt_idx && $sscmd_lst[$r] =~ /ncks/) {
+			$sscl .= " %stdouterr% "; # SS needs this as the final term to return a value.
+		}
+		#print " cmdline [$r] munged for SS:\n$sscl \n"; #my $wait = <STDIN>;
+		# and write it to the temp files
+		print TF "$sscl\n";
+		$r++;
+		$sscl = "";
+	}
+	close TF;
+	#print "TF should be done - waiting for action\n"; #my $wait = <STDIN>;#my $wait = <STDIN>;
+
+ print "\n##SS cmd: $MY_BIN_DIR/scriptwrap.py  $tfname $SS_URL\nand waiting for key to go"; my $wait = <STDIN>;
+	# and finally EXECUTE it
+	my $xpct_val = `$MY_BIN_DIR/scriptwrap.py  $tfname $SS_URL`;
+	# and now (unfortunately), write it to disk and then execute the scriptwrap.py to get a value.
+	#unlink "nco_rgr_tmp_4scriptwrap" or die "Can't unlink the temp file: 'nco_rgr_tmp_4scriptwrap'\n";
+	#print "returned value = $xpct_val \n"; #my $wait = <STDIN>;
+	return $xpct_val;
+}
+
+
+
+
+
+
 ####################
 sub failed {
 	$failure{$opr_nm}++;
-	$err_sgn .= "\nERR: FAILURE in $opr_nm failure: $dsc_sng\n";
-	foreach(@tst_cmd) { $err_sgn .= "\t$_\n";}
-	$err_sgn .= "ERR::EXPLAIN: Result: [$result] != Expected: [$nsr_xpc]\n\n" ;
+	$err_sgn .= "   ERR: FAILURE in $opr_nm failure: $dsc_sng\n";
+	foreach(@cmd_lst) { $err_sgn .= "   $_\n";}
+	$err_sgn .= "   ERR::EXPLAIN: Result: [$result] != Expected: [$nsr_xpc]\n\n" ;
 	return;
 }
 

@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.116 2006-02-17 19:17:22 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.117 2006-03-09 22:26:31 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -27,25 +27,31 @@ use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehen
 use Getopt::Long; # GNU-style getopt #qw(:config no_ignore_case bundling);
 use strict; # Protect all namespaces
 
+# the 'use' statements for NCO_rgr.pm and NCO_benchmarks.pm are immediately before their subs are
+# used to minimize the chance of shared variables being contaminated.
+# Remember that unnecessary globals should continue to be hunted down and killed off.
+
 # Declare vars for strict
 use vars qw(
-$aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $arg_nbr  $bch_flg  $bm  @bm_cmd_ary  $bm_dir  $caseid  $cmd_ln
-$dbg_lvl  $dodap  $dot_fmt  $dot_nbr  $dot_nbr_min  $dot_sng  $dsc_fmt
-$dsc_lng_max  $dsc_sng  $dta_dir $dust_usr  %failure  $fl_cnt  @fl_cr8_dat
-$fl_pth  @fl_tmg  $foo1_fl  $foo2_fl  $foo_avg_fl  $foo_fl  $foo_T42_fl
-$foo_tst  $foo_x_fl  $foo_xy_fl  $foo_xymyx_fl  $foo_y_fl  $foo_yx_fl
-$hiresfound  @ifls  $itmp  $localhostname  $md5  $md5found  %MD5_tbl
-$mpi_fke  $mpi_prc  $mpi_prfx  $MY_BIN_DIR  $nco_D_flg $ncwa_scl_tst $notbodi
-$nsr_xpc  $NUM_FLS  $nvr_my_bin_dir  $omp_flg $os_nme $opr_fmt  $opr_lng_max
-@opr_lst  @opr_lst_all  @opr_lst_mpi  $opr_nm  $opr_rgr_mpi
-$opr_sng_mpi  $orig_outfile  $outfile  $prfxd  $prg_nm
-$pth_rmt_scp_tst  $pwd  $que  $rcd  %real_tme  $result  $rgr
-$server_ip  $server_name  $server_port  $sock  $spc_fmt  $spc_nbr
-$spc_nbr_min  $spc_sng  %subbenchmarks  %success  %sym_link
-@sys_tim_arr  $sys_time  %sys_tme  $thr_nbr  $timed  $timestamp
-$tmr_app  %totbenchmarks  @tst_cmd  $tst_fl_cr8  $tst_fmt  $tst_id_sng
-$tst_idx  %tst_nbr  $udp_reprt  $udp_rpt  $USER  $usg  %usr_tme
-%wc_tbl  $wnt_log $xdta_pth $xpt_dsc $nco_vrsn_sng $gnu_cut $tmp $fl_fmt
+$aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $arg_nbr $bch_flg $bm
+@bm_cmd_ary $bm_dir $caseid $cmd_ln $dbg_lvl $dodap $dot_fmt $dot_nbr
+$dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng $dta_dir
+$dust_usr %failure $fl_cnt @fl_cr8_dat $fl_fmt $fl_pth @fl_tmg
+$foo1_fl $foo2_fl $foo_avg_fl $foo_fl $foo_T42_fl $foo_tst $foo_x_fl
+$foo_xy_fl $foo_xymyx_fl $foo_y_fl $foo_yx_fl $gnu_cut $hiresfound
+@ifls $itmp $localhostname $md5 $md5found %MD5_tbl $mpi_fke $mpi_prc
+$mpi_prfx $MY_BIN_DIR $nco_D_flg $nco_vrsn_sng $ncwa_scl_tst $notbodi
+$nsr_xpc $NUM_FLS $nvr_my_bin_dir $omp_flg $opr_fmt $opr_lng_max
+@opr_lst @opr_lst_all @opr_lst_mpi $opr_nm $opr_rgr_mpi $opr_sng_mpi
+$orig_outfile $os_nme $outfile $prfxd $prg_nm $prsrv_fl
+$pth_rmt_scp_tst $pwd $que $rcd %real_tme $result $rgr $server_ip
+$server_name $server_port $sock $spc_fmt $spc_nbr $spc_nbr_min
+$spc_sng $srvr_sde %subbenchmarks %success %sym_link @sys_tim_arr
+$sys_time %sys_tme $thr_nbr $timed $timestamp $tmp $tmr_app
+%totbenchmarks @tst_cmd $tst_fl_cr8 $tst_fmt $tst_id_sng $tst_idx
+%tst_nbr $tw_prt_bm $udp_reprt $udp_rpt $USER $usg %usr_tme %wc_tbl
+$wnt_log $xdta_pth $xpt_dsc
+$prefix
 );
 
 # Initializations
@@ -87,6 +93,9 @@ $nco_vrsn_sng = "";
 $gnu_cut = 1;
 $fl_fmt = "classic"; # file format for wirting
 $caseid = "";
+$srvr_sde = "SSNOTSET";
+$prsrv_fl = 1;
+$prefix = "";
 
 # other inits
 $localhostname = `hostname`; chomp $localhostname;
@@ -98,7 +107,7 @@ $ARGV = @ARGV;
 my $iosockfound;
 
 BEGIN{
-    unshift @INC,$ENV{'HOME'}.'/nco/bm'; # Location of NCO_rgr.pm, NCO_bm.pmg
+    unshift @INC,$ENV{'HOME'}.'/nco/bm'; # Location of NCO_rgr.pm, NCO_bm.pm
     unshift @INC,'.';
 } # end BEGIN
 
@@ -134,6 +143,7 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'regress'      => \$rgr,        # Perform regression tests
 	'rgr'          => \$rgr,        # Perform regression tests
 	'scaling'      => \$ncwa_scl_tst, # do scaling test on ncwa bench to see how dif var sizes change time.
+	'serverside:s' => \$srvr_sde,   # do benchmarks on server side (w/ ssdwrap)
 	'test_files=s' => \$tst_fl_cr8, # Create test files "134" does 1,3,4
 	'tst_fl=s'     => \$tst_fl_cr8, # Create test files "134" does 1,3,4
 	'thr_nbr=i'    => \$thr_nbr,    # Number of OMP threads to use
@@ -157,11 +167,14 @@ if ($md5 == 1) {
 
 $NUM_FLS = 4; # max number of files in the file creation series
 
-my $lcl_vars = "\n\t \$cmd_ln = $cmd_ln\n";
-$lcl_vars .=   "\t \$caseid = $caseid\n";
-$lcl_vars .=   "\t \$rgr = $rgr\n" ;
-$lcl_vars .=   "\t \$bm = $bm\n" ;
+if ($srvr_sde eq "") {$srvr_sde = 1;}
+
+my $lcl_vars =  "\n\t \$cmd_ln = $cmd_ln\n";
+$lcl_vars .=    "\t \$caseid = $caseid\n";
+$lcl_vars .=    "\t \$rgr = $rgr\n" ;
+$lcl_vars .=    "\t \$bm = $bm\n" ;
 $lcl_vars .=    "\t \$bch_flg = $bch_flg\n";
+$lcl_vars .=    "\t \$srvr_sde = [$srvr_sde]\n";
 $lcl_vars .=    "\t \$nvr_data = $nvr_data\n";
 $lcl_vars .=    "\t \$nvr_home = $nvr_home\n";
 $lcl_vars .=    "\t \$nvr_my_bin_dir = $nvr_my_bin_dir\n";
@@ -169,20 +182,34 @@ $lcl_vars .=    "\t \$nvr_my_bin_dir = $nvr_my_bin_dir\n";
 $lcl_vars .=    "\t \@ENV = @ENV\n";
 $lcl_vars .=    "\t \@INC:\n";
 foreach my $subpth (@INC) {$lcl_vars .= "\t   $subpth\n"}
-dbg_msg(2,$lcl_vars); # spit the whole thing out.
+dbg_msg(1,$lcl_vars); # spit the whole thing out.
 
-if ($ARGV == 0) {	usage();}
+if ($ARGV == 0) {	NCO_bm::usage();}
 
 # test file format
 if ( $fl_fmt eq "64bit" || $fl_fmt eq "netcdf4" || $fl_fmt eq "netcdf4_classic") {
 	$fl_fmt = "--fl_fmt=" . $fl_fmt;
 	dbg_msg(1,"File format set to [$fl_fmt]");
 }elsif ($fl_fmt eq "classic"){
-	$fl_fmt = "";
+	$fl_fmt = " ";
 } else {
 	die "Your file format spec (--fl_fmt) isn't correct; it has to be one of:\n  classic,  64bit, netcdf4, or netcdf4_classic\nPlease choose one of these and repeat.\n\n";
  }
 
+
+# this next commented block will soon disappear as we DO need to make
+# BOTH benchmarks and regressions  run serverside
+# check that if serverside has been requested, also benchmarks have been or emit errors
+# if ($srvr_sde ne "SSNOTSET" && !$bm) {
+# 	print "\nWARN: The only option allowed with '--serverside' is '--benchmark' - continue? [Ny] ";
+# 	my $tmp = <STDIN>;
+# 	if ($tmp !~ /[Yy]/) {die "OK - try again without the serverside option\n";}
+# 	#else {$bm = 1;} #set $bm and continue
+# }
+# can't do both serverside and DAP - check that the options don't conflict
+if ($srvr_sde ne "SSNOTSET" && $dodap ne "FALSE") {
+	die "\nERR: Can't combine '--serverside' and '--dap' - choose one or the other.\n";
+}
 # if testing DAP, use $case_id to specify separate dir, so don't mess with current files
 if ($dodap ne "FALSE") {$caseid = "DAP_DIR"; print "\nDAP_DIR set as caseid. \n";}
 
@@ -223,8 +250,6 @@ BADCUT
 		$gnu_cut = 0;
 	}
 }
-
-
 
 # do $mpi_prc and $mpi_fke conflict?
 if ($mpi_prc > 0 && $mpi_fke) {
@@ -275,7 +300,6 @@ if ($mpi_prc > 0 && $mpi_fke) {
 		}
 	}
 
-
 	if (!$lam_ok && !$mpich_ok) {
 		print "\nWARN: you asked for an MPI run (--mpi_prc=$mpi_prc) but you don't seem to be running either LAM-MPI or MPICH (no running lamd or mpd).\nIf the run fails, you might try running one of those 2 MPI systems.\n";
 	}
@@ -314,23 +338,22 @@ initialize($bch_flg,$dbg_lvl);
 
 # Use variables for file names in regressions; some of these could be collapsed into
 # fewer ones, no doubt, but keep them separate until whole shebang starts working correctly
-$outfile       = "$dta_dir/foo.nc"; # replaces outfile in tests, typically 'foo.nc'
-$orig_outfile  = "$dta_dir/foo.nc";
-$foo_fl        = "$dta_dir/foo";
-$foo_avg_fl    = "$dta_dir/foo_avg.nc";
-$foo_tst       = "$dta_dir/foo.tst";
-$foo1_fl       = "$dta_dir/foo1.nc";
-$foo2_fl       = "$dta_dir/foo2.nc";
-$foo_x_fl      = "$dta_dir/foo_x.nc";
-$foo_y_fl      = "$dta_dir/foo_y.nc";
-$foo_xy_fl     = "$dta_dir/foo_xy.nc";
-$foo_yx_fl     = "$dta_dir/foo_yx.nc";
-$foo_xymyx_fl  = "$dta_dir/foo_xymyx.nc";
-$foo_T42_fl    = "$dta_dir/foo_T42.nc";
+# $outfile       = "$dta_dir/foo.nc"; # replaces outfile in tests, typically 'foo.nc'
+# $orig_outfile  = "$dta_dir/foo.nc";
+# $foo_fl        = "$dta_dir/foo";
+# $foo_avg_fl    = "$dta_dir/foo_avg.nc";
+# $foo_tst       = "$dta_dir/foo.tst";
+# $foo1_fl       = "$dta_dir/foo1.nc";
+# $foo2_fl       = "$dta_dir/foo2.nc";
+# $foo_x_fl      = "$dta_dir/foo_x.nc";
+# $foo_y_fl      = "$dta_dir/foo_y.nc";
+# $foo_xy_fl     = "$dta_dir/foo_xy.nc";
+# $foo_yx_fl     = "$dta_dir/foo_yx.nc";
+# $foo_xymyx_fl  = "$dta_dir/foo_xymyx.nc";
+# $foo_T42_fl    = "$dta_dir/foo_T42.nc";
 
-use NCO_bm; # module that contains most of the functions
-
-use NCO_rgr; # module that contains perform_tests()
+# NCO_bm defined here to allow above variables to be defined for later use
+use NCO_bm; # module that contains most of the functions.
 
 # the real udping server
 $server_name = "sand.ess.uci.edu";
@@ -353,7 +376,7 @@ if ($wnt_log) {
 }
 
 # Pass explicit threading argument
-if ($thr_nbr > 0){$omp_flg="--thr_nbr=$thr_nbr";} else {$omp_flg='';}
+if ($thr_nbr > 0){$omp_flg="--thr_nbr=$thr_nbr";} else {$omp_flg=' ';}
 
 # does dodap require that we ignore both MPI and OpenMP?  Let's leave it in for now.
 # If dodap is not set then test with local files
@@ -393,27 +416,29 @@ if ($dbg_lvl > 1) {
 }
 
 
-
 # Regression tests
 if ($rgr){
-	perform_tests();
-	smrz_rgr_rslt();
+	use NCO_rgr; # module that contains perform_tests()
+	NCO_rgr::perform_tests();
+	NCO_bm::smrz_rgr_rslt();
 } # endif rgr
 
 # Start real benchmark tests
 # Test if necessary files are available - if so, may skip creation tests
 
+# initialize filenames
 if( $tst_fl_cr8 ne "0"  ||( $bm && $dodap eq "FALSE")){
 	if($dbg_lvl > 1){printf ("\n$prg_nm: Calling fl_cr8_dat_init()...\n");}
-	fl_cr8_dat_init(@fl_cr8_dat); # Initialize data strings & timing array for files
+	NCO_bm::fl_cr8_dat_init(@fl_cr8_dat); # Initialize data strings & timing array for files
 }
 
 # Check if files have already been created
 # If so, skip file creation if not requested
-if ($bm && $tst_fl_cr8 eq "0" && $dodap eq "FALSE") {
+if ($bm && $tst_fl_cr8 eq "0" && $dodap eq "FALSE" )  {
 	if ($dbg_lvl> 0){print "\nINFO: File creation tests:\n";}
 	for (my $i = 0; $i < $NUM_FLS; $i++) {
 		my $fl = $fl_cr8_dat[$i][2] . ".nc"; # file root name stored in $fl_cr8_dat[$i][2]
+		print "testing for $dta_dir/$fl...\n";
 		if (-e "$dta_dir/$fl" && -r "$dta_dir/$fl") {
 		if ($dbg_lvl> 0){printf ("%50s exists - can skip creation\n", $dta_dir . "/" . $fl);}
 		} else {
@@ -423,21 +448,22 @@ if ($bm && $tst_fl_cr8 eq "0" && $dodap eq "FALSE") {
 	}
 }
 
+	print "DEBUG:  in nco_bm.pl, \$fl_tmg[1][0] = $fl_tmg[1][0] & \$NUM_FLS = $NUM_FLS\n";
+
 # file creation tests
-if ($tst_fl_cr8 ne "0"){
-    my $fc = 0;
+if ($tst_fl_cr8 ne "0" || $srvr_sde ne "SSNOTSET"){
+    my $fc = 0; $prsrv_fl = 1;
     if ($tst_fl_cr8 =~ "[Aa]") { $tst_fl_cr8 = "1234";}
-    if ($tst_fl_cr8 =~ /1/){ fl_cr8(0); $fc++; }
-    if ($tst_fl_cr8 =~ /2/){ fl_cr8(1); $fc++; }
-    if ($tst_fl_cr8 =~ /3/){ fl_cr8(2); $fc++; }
-    if ($notbodi && $tst_fl_cr8 =~ /4/) { fl_cr8(3); $fc++; }
-    if ($fc >0) {smrz_fl_cr8_rslt(); } # prints and udpreports file creation timing
+    if ($tst_fl_cr8 =~ /1/){ @fl_tmg = fl_cr8(0); $fc++; }
+    if ($tst_fl_cr8 =~ /2/){ @fl_tmg = fl_cr8(1); $fc++; }
+    if ($tst_fl_cr8 =~ /3/){ @fl_tmg = fl_cr8(2); $fc++; }
+    if ($notbodi && $tst_fl_cr8 =~ /4/) { @fl_tmg = fl_cr8(3); $fc++; }
+    if ($fc >0) {smrz_fl_cr8_rslt(@fl_tmg); } # prints and udpreports file creation timing
 }
 
 my $doit=1; # for skipping various tests
-wat4inpt(__LINE__,"just prior to starting the benchmarks");
+use NCO_benchmarks; #module that contains the actual benchmark code
 # and now, the REAL benchmarks, set up as the regression tests below to use go() and smrz_rgr_rslt()
-if ($bm) {
-	my $bmfile = $pwd . "/" . "nco_bm_benchmarks.pl";
-	do "$bmfile" or die "That's all folks!\n";
-}
+print "DEBUG: prior to benchmark call, dodap = $dodap\n";
+if ($bm) { NCO_benchmarks::benchmarks(); }
+

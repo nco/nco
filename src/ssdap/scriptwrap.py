@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# $Id: scriptwrap.py,v 1.4 2006-03-06 21:29:04 wangd Exp $
+# $Id: scriptwrap.py,v 1.5 2006-03-09 22:26:31 mangalam Exp $
 # want to support url-based specification of server.
 #           ncra -n 100,1,2 -p http://server/foo/model_01.nc model_avg.nc
 # this file was originally named scriptwrap.py
@@ -33,7 +33,7 @@ class ScriptRunner:
         self.ready = False
 
     ## public (externally-usable) methods ####################
-        
+
     def parseArgs(self, argv):
         if (len(argv) > 3) or (len(argv) < 2):
             return # not of spec... so continue
@@ -95,7 +95,7 @@ class ScriptRunner:
         (path, name) = os.path.split(self.targetFile)
         url = self.serverBase + "/" + name
         url += ".dods?" + self.MAGIC_CONSTRAINT
-        #print "url is " + url
+        print "url is " + url
         s
         try:
             result = urllib.urlopen(url, self.scriptData) # request from server
@@ -110,7 +110,7 @@ class ScriptRunner:
             print "odd error in fetching url/writing file."
         # should be done now
         return True
-    
+
 ######################################################################
 # end of declarations, start of code
 ######################################################################
@@ -119,7 +119,7 @@ s = ScriptRunner()
 s.parseArgs(sys.argv[1:])
 if not s.isReady():
     print local.helpStr
-    
+
 else:
     s.run()
     pass

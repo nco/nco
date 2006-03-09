@@ -1,3 +1,19 @@
+2006-03-09  Harry Mangalam <hjm@tacgi.com>
+	* lots of changes to the benchmark code:
+	* nco_bm_benchmarks.pl converted to NCO_benchmarks.pm with a good 
+	    bit of namespace cleanup.  There are still some inexplicable explicit
+       declarations that are needed but only about 2-3.
+	* both benchmark and regression code support both serverside and
+	    clientside execution.  There are still some remaining conflicts, 
+	    but most benchmarks and most regressions run identically.
+	* the go() routine was rewritten to be a bit more coherent.  Again,
+	    there is a bit more cleanup to do, but it's time to get it into cvs
+	* Daniel's ss code changes have tracked the benchmarking code, so both
+	    sides work with each other.  There are some unfortuneately primitive
+	    hacks to get them working together, but while it's ugly (perl writes 
+	    data to file and executes python to pick it up, it's simpler than
+       bringing swig into the picture.
+
 2006-02-25  Charlie Zender  <zender@uci.edu>
 
 	* Hunt for double-free() in ncap, cleanup var_ycc-related operations
