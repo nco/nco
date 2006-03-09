@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.718 2006-02-26 07:41:51 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.719 2006-03-09 03:59:38 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -454,10 +454,11 @@ nco681. Rename nco++:
 	ncoTree.hpp		sdo_tree.hh
 nco682. Emit warning when _Fillvalue defined and missing_value not
 nco683. Convert to subversion http://sf.net/docs/E09/
-nco684. ncap2 memory problem (ashes only):
+nco684. ncap2 memory problem (ashes only!):
 	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncap2 -O -D 1 -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
 	ncap2 -O -D 1 -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
-nco685. 
+nco685. Run static analysis tool on nco codebase
+nco686. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
