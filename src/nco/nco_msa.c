@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.32 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.33 2006-03-10 01:37:21 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -8,9 +8,9 @@
 
 #include "nco_msa.h" /* Multi-slabbing algorithm */
 
-/* fxm: strings statically allocated with MAX_LEN_FMT_SNG chars are susceptible to buffer overflow attacks */
+/* fxm: strings statically allocated with NCO_MAX_LEN_FMT_SNG chars are susceptible to buffer overflow attacks */
 /* Length should be computed at run time but is a pain */
-#define MAX_LEN_FMT_SNG 100
+#define NCO_MAX_LEN_FMT_SNG 100
 
 void *
 nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a single slab pointer */
@@ -637,7 +637,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   
   bool MALLOC_UNITS_SNG=False; /* [flg] Allocated memory for units string */
   char nul_chr='\0';
-  char var_sng[MAX_LEN_FMT_SNG];
+  char var_sng[NCO_MAX_LEN_FMT_SNG];
   char *unit_sng;
   
   /* Get variable with limits from input file */
@@ -842,7 +842,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         int dmn_idx;
         long dmn_sbs_prn;
 	long crd_idx_crr;
-	char dmn_sng[MAX_LEN_FMT_SNG];
+	char dmn_sng[NCO_MAX_LEN_FMT_SNG];
       
 	/* Loop over dimensions whose coordinates are to be printed */
 	for(idx=0;idx<var.nbr_dim;idx++){

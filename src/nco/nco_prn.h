@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.16 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.17 2006-03-10 01:37:21 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -30,6 +30,10 @@
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_sng_utl.h" /* String utilities */
+
+/* fxm: strings statically allocated with NCO_MAX_LEN_FMT_SNG chars are susceptible to buffer overflow attacks */
+/* Length should be computed at run time but is a pain */
+#define NCO_MAX_LEN_FMT_SNG 100
 
 #ifdef __cplusplus
 extern "C" {

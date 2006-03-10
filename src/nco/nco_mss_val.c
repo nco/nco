@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.22 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.23 2006-03-10 01:37:21 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -72,7 +72,32 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
     /* fxm: Print statement only works with type NC_FLOAT */
-    if(!MSS_VAL_EQL) (void)fprintf(stderr,"%s: WARNING Input variables have different missing_value's:\nFile 1 variable %s has missing_value type = %s, value = %f\nFile 2 variable %s has missing_value type = %s, value = %f\nFile 3 variable %s will have missing_value type = %s, value = %f\nWill translate values of var2 equaling mss_val2 to mss_val1 before arithmetic operation\n",prg_nm_get(),var1->nm,nco_typ_sng(var1->type),var1->mss_val.fp[0],var2->nm,nco_typ_sng(var2->type),var2->mss_val.fp[0],var1->nm,nco_typ_sng(var1->type),var1->mss_val.fp[0]);
+    if(!MSS_VAL_EQL){
+      char mss_val_1_sng[NCO_MAX_LEN_FMT_SNG];
+      char mss_val_2_sng[NCO_MAX_LEN_FMT_SNG];
+      char *fmt_sng;
+      fmt_sng=nco_typ_fmt_sng(var1->type);
+      switch(var1->type){
+      case NC_FLOAT: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.fp[0]); break;
+      case NC_DOUBLE: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.dp[0]); break;
+      case NC_SHORT: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.sp[0]); break;
+      case NC_INT: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.lp[0]); break;
+      case NC_CHAR: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.cp[0]); break;
+      case NC_BYTE: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.bp[0]); break;
+      default: nco_dfl_case_nc_type_err(); break;
+      } /* end switch */
+      fmt_sng=nco_typ_fmt_sng(var2->type);
+      switch(var2->type){
+      case NC_FLOAT: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.fp[0]); break;
+      case NC_DOUBLE: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.dp[0]); break;
+      case NC_SHORT: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.sp[0]); break;
+      case NC_INT: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.lp[0]); break;
+      case NC_CHAR: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.cp[0]); break;
+      case NC_BYTE: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.bp[0]); break;
+      default: nco_dfl_case_nc_type_err(); break;
+      } /* end switch */
+      (void)fprintf(stderr,"%s: WARNING Input variables have different missing_value's:\nFile 1 variable %s has missing_value type = %s, value = %s\nFile 2 variable %s has missing_value type = %s, value = %s\nFile 3 variable %s will have missing_value type = %s, value = %s\nWill translate values of var2 equaling mss_val2 to mss_val1 before arithmetic operation\n",prg_nm_get(),var1->nm,nco_typ_sng(var1->type),mss_val_1_sng,var2->nm,nco_typ_sng(var2->type),mss_val_2_sng,var1->nm,nco_typ_sng(var1->type),mss_val_1_sng);
+    } /* MSS_VAL_EQL */
     (void)cast_nctype_void(var_typ,&var1->mss_val);
     (void)cast_nctype_void(var_typ,&var2->mss_val);
   } /* end if both variables have missing values */

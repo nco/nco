@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.720 2006-03-10 01:31:54 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.721 2006-03-10 01:37:20 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -460,10 +460,8 @@ nco684. ncap2 memory problem (ashes only!):
 nco685. Run static analysis tool on nco codebase
 nco686. ncbo missing_value asymmetry breaks ?
 	ncbo -v ALBS clm21_clm_0112.nc isccpd_0112_clm.nc ~/foo.nc 
-	
-nco687. ncbo mss_val_ print diagnostic uses wrong printf format
-File 1 variable ALBS has missing_value type = NC_DOUBLE, value = -2.000000
-nco688. fix 
+nco688. Add regression test for nco686
+nco689. 
 
 ************************************************************************
 End ncoXXX TODOs

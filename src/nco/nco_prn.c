@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.26 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.27 2006-03-10 01:37:21 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -7,10 +7,6 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_prn.h" /* Printing variables, attributes, metadata */
-
-/* fxm: strings statically allocated with MAX_LEN_FMT_SNG chars are susceptible to buffer overflow attacks */
-/* Length should be computed at run time but is a pain */
-#define MAX_LEN_FMT_SNG 100
 
 void 
 nco_prn_att /* [fnc] Print all attributes of single variable */
@@ -26,7 +22,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable */
 
   char dlm_sng[3];
   char src_sng[NC_MAX_NAME];
-  char att_sng[MAX_LEN_FMT_SNG];
+  char att_sng[NCO_MAX_LEN_FMT_SNG];
 
   long att_lmn;
   long att_sz;
@@ -252,7 +248,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
   bool WRP=False; /* Coordinate is wrapped */
 
   char nul_chr='\0';
-  char var_sng[MAX_LEN_FMT_SNG];
+  char var_sng[NCO_MAX_LEN_FMT_SNG];
   char *unit_sng=NULL;
   
   int rcd=NC_NOERR; /* [rcd] Return code */
@@ -460,7 +456,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 
     char arr_lft_dlm=char_CEWI;
     char arr_rgt_dlm=char_CEWI;
-    char dmn_sng[MAX_LEN_FMT_SNG];
+    char dmn_sng[NCO_MAX_LEN_FMT_SNG];
 
     int crd_idx_crr=int_CEWI; /* Current coordinate index */
     int dmn_idx=int_CEWI;

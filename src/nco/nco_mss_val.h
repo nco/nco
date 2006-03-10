@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.h,v 1.14 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.h,v 1.15 2006-03-10 01:37:21 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -28,6 +28,7 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_cnf_typ.h" /* Conform variable types */
 #include "nco_mmr.h" /* Memory management */
+#include "nco_prn.h" /* Printing variables, attributes, metadata */
 #if (!defined HAVE_STRCASECMP) || (!defined HAVE_STRDUP)
 #include "nco_sng_utl.h" /* String utilities */
 #endif /* HAVE_STRCASECMP || HAVE_STRDUP */
