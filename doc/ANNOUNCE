@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.167 2006-02-17 06:40:42 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.168 2006-03-10 06:10:12 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.1 are ready. 
 This is mainly a development release for internal consumption.
@@ -13,15 +13,17 @@ correctly. Thanks to Martin Dix for reporting this problem.
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-0. Store non-process packed data correctly.
+0. Store non-processed packed data correctly.
 
-1. Support netcdf4-alpha12 fxm.
+1. Work when only one variable has missing_value in binary operators
 
-2. ncap2 development code in nco/src/nco++ (Henry Butowsky)
+2. Support netcdf4-alpha13 fxm.
 
-3. server-side extensions in (Daniel Wang)
+3. ncap2 development code in nco/src/nco++ (Henry Butowsky)
 
-4. Fixed some benchmark/regression problems over DAP (Harry Mangalam)
+4. server-side extensions in (Daniel Wang)
+
+5. Fixed some benchmark/regression problems over DAP (Harry Mangalam)
 
 Enjoy,
 Charlie

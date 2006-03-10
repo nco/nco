@@ -1,5 +1,7 @@
 2006-03-09  Charlie Zender  <zender@uci.edu>
 
+	* Added regression test to make sure nco686 stays fixed.
+
 	* Re-work nco_mss_val_cnf() to handle all cases of var1 and var2
 	having/not having missing values. Fixes TODO nco686.
 	Probably fixed analogous latent bug in ncflint.

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.723 2006-03-10 06:05:20 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.724 2006-03-10 06:05:46 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -458,15 +458,6 @@ nco684. ncap2 memory problem (ashes only!):
 	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncap2 -O -D 1 -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
 	ncap2 -O -D 1 -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
 nco685. Run static analysis tool on nco codebase
-nco686. ncbo missing_value asymmetry breaks ?
-	ncbo -v ALBS clm21_clm_0112.nc isccpd_0112_clm.nc ~/foo.nc 
-	cd ~/nco/data
-        ncrename -O -v no_mss_val,one_dmn_arr_with_and_without_mss_val -p ~/nco/data in.nc ~/foo1.nc
-        ncrename -O -v mss_val,one_dmn_arr_with_and_without_mss_val -p ~/nco/data in.nc ~/foo2.nc
-        ncks -O -v one_dmn_arr_with_and_without_mss_val ~/foo1.nc ~/foo1.nc
-        ncks -O -v one_dmn_arr_with_and_without_mss_val ~/foo2.nc ~/foo2.nc
-        ncbo -O -v one_dmn_arr_with_and_without_mss_val -p ~/ foo1.nc foo2.nc ~/foo3.nc
-        ncks ~/foo3.nc
 nco689. 
 
 ************************************************************************
