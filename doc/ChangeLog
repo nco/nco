@@ -1,3 +1,11 @@
+2006-03-09  Harry Mangalam <hjm@tacgi.com>
+	* namespace cleanup on benchmark code and added rc capability to the code,
+	first capability just records whether users said yes to send UDP data and
+	then uses that answer to bypass the question from then on.
+	Other info can be added in NAME=VALUE pairs and the detection routine
+	reads them all into a global hash %NCO_RC that can be used to set various
+	things.
+
 2006-03-09  Charlie Zender  <zender@uci.edu>
 
 	* Added regression test to make sure nco686 stays fixed.

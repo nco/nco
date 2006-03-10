@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.117 2006-03-09 22:26:31 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.118 2006-03-10 20:50:33 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -40,7 +40,7 @@ $dust_usr %failure $fl_cnt @fl_cr8_dat $fl_fmt $fl_pth @fl_tmg
 $foo1_fl $foo2_fl $foo_avg_fl $foo_fl $foo_T42_fl $foo_tst $foo_x_fl
 $foo_xy_fl $foo_xymyx_fl $foo_y_fl $foo_yx_fl $gnu_cut $hiresfound
 @ifls $itmp $localhostname $md5 $md5found %MD5_tbl $mpi_fke $mpi_prc
-$mpi_prfx $MY_BIN_DIR $nco_D_flg $nco_vrsn_sng $ncwa_scl_tst $notbodi
+$mpi_prfx $MY_BIN_DIR $nco_D_flg %NCO_RC $nco_vrsn_sng $ncwa_scl_tst $notbodi
 $nsr_xpc $NUM_FLS $nvr_my_bin_dir $omp_flg $opr_fmt $opr_lng_max
 @opr_lst @opr_lst_all @opr_lst_mpi $opr_nm $opr_rgr_mpi $opr_sng_mpi
 $orig_outfile $os_nme $outfile $prfxd $prg_nm $prsrv_fl
@@ -49,11 +49,11 @@ $server_name $server_port $sock $spc_fmt $spc_nbr $spc_nbr_min
 $spc_sng $srvr_sde %subbenchmarks %success %sym_link @sys_tim_arr
 $sys_time %sys_tme $thr_nbr $timed $timestamp $tmp $tmr_app
 %totbenchmarks @tst_cmd $tst_fl_cr8 $tst_fmt $tst_id_sng $tst_idx
-%tst_nbr $tw_prt_bm $udp_reprt $udp_rpt $USER $usg %usr_tme %wc_tbl
+%tst_nbr $tw_prt_bm  $udp_reprt $USER $usg %usr_tme %wc_tbl
 $wnt_log $xdta_pth $xpt_dsc
 $prefix
 );
-
+#$udp_reprt
 # Initializations
 # Re-constitute commandline
 $prg_nm=$0; # $0 is program name Camel p. 136
@@ -75,7 +75,7 @@ $fl_pth = '';
 $que = 0;
 $thr_nbr = 0; # If not zero, pass explicit threading argument
 $tst_fl_cr8 = "0";
-$udp_rpt = 0;
+$udp_reprt = 0;
 $usg = 0;
 $mpi_fke = 0;
 $wnt_log = 0;
@@ -147,7 +147,7 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'test_files=s' => \$tst_fl_cr8, # Create test files "134" does 1,3,4
 	'tst_fl=s'     => \$tst_fl_cr8, # Create test files "134" does 1,3,4
 	'thr_nbr=i'    => \$thr_nbr,    # Number of OMP threads to use
-	'udpreport'    => \$udp_rpt,    # punt the timing data back to udpserver on sand
+	'udpreport'    => \$udp_reprt,    # punt the timing data back to udpserver on sand
 	'usage'        => \$usg,        # Explain how to use this thang
 	'caseid=s'     => \$caseid,     # short string to tag test dir and batch queue
 	'xdata=s'		=> \$xdta_pth,   # explicit data path set from cmdline
@@ -196,6 +196,25 @@ if ( $fl_fmt eq "64bit" || $fl_fmt eq "netcdf4" || $fl_fmt eq "netcdf4_classic")
 	die "Your file format spec (--fl_fmt) isn't correct; it has to be one of:\n  classic,  64bit, netcdf4, or netcdf4_classic\nPlease choose one of these and repeat.\n\n";
  }
 
+# check for presence of ~/.ncorc and if there, read the values into a global hash
+if (-e "$ENV{'HOME'}/.ncorc" && -r "$ENV{'HOME'}/.ncorc" && !-z "$ENV{'HOME'}/.ncorc" ){ # if exists, readable, nonzero
+	# read it it into the %NCO_RC hash (file format is "name" => "value"
+	open(RC, "$ENV{'HOME'}/.ncorc") or die "Can't open user's ~/.ncorc file for reading.\n";
+	my $ln_cnt = 0;
+	while (<RC>){
+		$ln_cnt++;
+		if ($_ !~ /^#/) { # ignore comments
+			my $N = my @L = split('=');
+			chomp $L[1]; # if should have a \n on it so get rid of it.
+			if ($N != 2) {print "ERR: typo in ~/.ncorc file on line $ln_cnt.\nFormat is: 'Name=value'\nIgnoring error for now\n";}
+			$NCO_RC{$L[0]} = $L[1];
+			# print "DEBUG: NCO_RC{$L[0]} = $L[1] \n";
+		}
+	}
+}
+# following will allow UDP reporting if perl has found IO::Socket and ~/.ncorc sez yes to it
+# if user sets it to 'no' then this test will fail.
+if ($iosockfound && $NCO_RC{"udp_report"} =~ "yes") {	$udp_reprt = 1;}
 
 # this next commented block will soon disappear as we DO need to make
 # BOTH benchmarks and regressions  run serverside
@@ -448,7 +467,7 @@ if ($bm && $tst_fl_cr8 eq "0" && $dodap eq "FALSE" )  {
 	}
 }
 
-	print "DEBUG:  in nco_bm.pl, \$fl_tmg[1][0] = $fl_tmg[1][0] & \$NUM_FLS = $NUM_FLS\n";
+#	print "DEBUG:  in nco_bm.pl, \$fl_tmg[1][0] = $fl_tmg[1][0] & \$NUM_FLS = $NUM_FLS\n";
 
 # file creation tests
 if ($tst_fl_cr8 ne "0" || $srvr_sde ne "SSNOTSET"){
@@ -464,6 +483,6 @@ if ($tst_fl_cr8 ne "0" || $srvr_sde ne "SSNOTSET"){
 my $doit=1; # for skipping various tests
 use NCO_benchmarks; #module that contains the actual benchmark code
 # and now, the REAL benchmarks, set up as the regression tests below to use go() and smrz_rgr_rslt()
-print "DEBUG: prior to benchmark call, dodap = $dodap\n";
+#print "DEBUG: prior to benchmark call, dodap = $dodap\n";
 if ($bm) { NCO_benchmarks::benchmarks(); }
 

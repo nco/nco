@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics. - hjm
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.30 2006-03-10 18:47:38 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.31 2006-03-10 20:50:33 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -23,14 +23,14 @@ our @EXPORT = qw (
 	perform_tests
 	$outfile $dodap $prefix $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl $nsr_xpc
 	$foo1_fl $foo_fl $foo_tst $orig_outfile $foo_avg_fl $foo_x_fl $foo_y_fl $foo_yx_fl
-	$foo_xy_fl  $foo_xymyx_fl $pth_rmt_scp_tst $omp_flg $nco_D_flg
+	$foo_xy_fl  $foo_xymyx_fl $pth_rmt_scp_tst $omp_flg $nco_D_flg %NCO_RC
 );
 use vars qw(
     $dodap $dsc_sng $dust_usr $fl_fmt $fl_pth $foo1_fl $foo2_fl $foo_avg_fl
     $foo_fl $foo_tst $foo_x_fl $foo_xy_fl
     $foo_xymyx_fl $foo_y_fl $foo_yx_fl $mpi_prc $nco_D_flg $localhostname
     $nsr_xpc $omp_flg $opr_nm $opr_rgr_mpi $orig_outfile
-    $outfile $pth_rmt_scp_tst $prsrv_fl @tst_cmd $USER
+    $outfile $pth_rmt_scp_tst $prsrv_fl @tst_cmd $USER %NCO_RC
 );
 #
 sub perform_tests {
@@ -92,7 +92,7 @@ if (0) {} #################  SKIP THESE #####################
 # this stanza will not map to the way the SS is done - needs a %stdouterr% added but all the rest of them
 # have an ncks which triggers this addition from the sub go() -> gnarly_pything.
 # this stanza also requires a script on the SS.
-	$tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -v -S ncap.in $in_pth_arg in.nc %tempf_00%";
+	$tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -v -S ncap.in $in_pth_arg in.nc %tempf_00%  %stdouterr%";
 	$dsc_sng="running ncap.in script into nco_tst.pl";
 	$tst_cmd[1] = "ncap: WARNING Replacing missing value data in variable val_half_half";
 #	$tst_cmd[2] = "NO_SS";
@@ -100,17 +100,17 @@ if (0) {} #################  SKIP THESE #####################
 	NCO_bm::go(\@tst_cmd);
 	$#tst_cmd=0;  # reset the array
 
-#print "paused - hit return to continue"; my $wait = <STDIN>;
+# printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
 
 	$tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'tpt_mod=tpt%273.0f' $in_pth_arg in.nc %tempf_00%";
 	$tst_cmd[1]="ncks -C -H -v  tpt_mod -s '%.1f ' %tempf_00%";
 	$dsc_sng="Testing float modulo float";
-	$tst_cmd[2] = "0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0";
+	$tst_cmd[2] = "0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 ";
 	$tst_cmd[3] = "SS_OK";
 	NCO_bm::go(\@tst_cmd);
 	$#tst_cmd=0;  # reset the array
-#print "paused - hit return to continue"; my $wait = <STDIN>;
 
+# printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
 
 	$tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=log(e_flt)^1' $in_pth_arg in.nc %tempf_00%";
 	$tst_cmd[1]="ncks -C -H -v foo -s '%.6f\\n' %tempf_00%";
@@ -120,7 +120,6 @@ if (0) {} #################  SKIP THESE #####################
 	NCO_bm::go(\@tst_cmd);
 	$#tst_cmd=0;  # reset the array
 #print "paused - hit return to continue"; my $wait = <STDIN>;
-
 
 # where did e_dbl go??  it's in in.cdl but gets lost thru the rgrs...?
 	$tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=log(e_dbl)^1' $in_pth_arg in.nc %tempf_00%";
@@ -172,7 +171,7 @@ if (0) {} #################  SKIP THESE #####################
 	NCO_bm::go(\@tst_cmd);
 	$#tst_cmd=0;  # reset the array
 
-# print "paused - hit return to continue"; my $wait = <STDIN>;
+# printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
 
 if ($dodap eq "FALSE") {
 ####################
@@ -209,7 +208,7 @@ if ($dodap eq "FALSE") {
 	$#tst_cmd=0;  # reset the array
 }
 
-#print "paused - hit return to continue"; my $wait = <STDIN>;
+# printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
 
 
 ####################
@@ -298,7 +297,8 @@ if ($dodap eq "FALSE") {
 
 #} # endif $mpi_prc == 0...
 
-# print "paused - hit return to continue"; my $wait = <STDIN>;
+# printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
+
 ####################
 #### ncea tests #### - OK !
 ####################

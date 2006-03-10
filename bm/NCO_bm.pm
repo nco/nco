@@ -15,7 +15,7 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.30 2006-03-09 22:26:31 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.31 2006-03-10 20:50:33 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -39,14 +39,14 @@ our @ISA = qw(Exporter);
 #export functions (top) and variables (bottom)
 our @EXPORT = qw (
 	go dbg_msg set_dat_dir initialize
-	$prefix $dta_dir @fl_cr8_dat $opr_sng_mpi $opr_nm $dsc_sng
-	$prsrv_fl  $srvr_sde $hiresfound $dodap $bm $dbg_lvl
+	$prefix $dta_dir @fl_cr8_dat $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
+	$prsrv_fl  $srvr_sde $hiresfound $dodap $bm $dbg_lvl $sock $udp_reprt
 );
 
 use vars qw(
 $aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $bm $dbg_lvl $dodap $dot_fmt
 $dot_nbr $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng
-$fke_prefix $hiresfound $md5 $mpi_prc $mpi_prfx $MY_BIN_DIR $nsr_xpc
+$fke_prefix $hiresfound $md5 $mpi_prc $mpi_prfx $MY_BIN_DIR %NCO_RC $nsr_xpc
 $opr_fmt $opr_lng_max @opr_lst @opr_lst_all @opr_lst_mpi $mpi_fke
 $opr_nm $opr_rgr_mpi $opr_sng_mpi $os_nme  $prefix %real_tme
 $result $spc_fmt $spc_nbr $spc_nbr_min $spc_sng %subbenchmarks %success
@@ -54,7 +54,7 @@ $result $spc_fmt $spc_nbr $spc_nbr_min $spc_sng %subbenchmarks %success
 $tst_id_sng %tst_nbr %usr_tme $wnt_log $timestamp $bm_dir $caseid
 $cmd_ln $dta_dir @fl_cr8_dat $fl_pth @fl_tmg $md5found %MD5_tbl
 $nco_D_flg $NUM_FLS $prfxd $prsrv_fl $que $server_ip $sock $thr_nbr
-$dbg_sgn $err_sgn $tmr_app $udp_rpt %wc_tbl $prfxd $nvr_my_bin_dir
+$dbg_sgn $err_sgn $tmr_app $udp_reprt %wc_tbl $prfxd $nvr_my_bin_dir
 $prg_nm $arg_nbr $tw_prt_bm $srvr_sde @cmd_lst
 
 );
@@ -378,7 +378,7 @@ sub smrz_fl_cr8_rslt {
 }
 	$reportstr .= sprintf "\n\n";
 	print $reportstr;
-	if ($udp_rpt) {
+	if ($udp_reprt) {
 		$sock->send($udp_dat);
 		if ($dbg_lvl > 0) { print "File Creation: udp stream sent to $server_ip:\n$udp_dat\n";}
 } # and send it back separately
@@ -478,7 +478,7 @@ sub go {
 
 
 my %lfn = ( # lfn = local_file_name
-'%stdouterr%'   => "$dta_dir/stdouterr.nc",
+'%stdouterr%'   => "", # stdouterr has to be left to generate stderr
 '%tempf_00%'    => "$dta_dir/tempf_00.nc", # this will be the default replacement for $outfile
 '%tempf_01%'    => "$dta_dir/tempf_01.nc",
 '%tempf_02%'    => "$dta_dir/tempf_02.nc",
@@ -783,6 +783,7 @@ my %lfn = ( # lfn = local_file_name
 #print "\n \$nsr_xpc [$nsr_xpc] considered a string\n";
 
 		# Compare $result with $nsr_xpc
+#		if ($result =~ $nsr_xpc) {
 		if (substr($result,0,length($nsr_xpc)) eq $nsr_xpc) {
 			$success{$opr_nm}++;
 			printf STDERR (" SVa ok\n");
@@ -859,7 +860,7 @@ sub SS_gnarly_pything {
 	close TF;
 	#print "TF should be done - waiting for action\n"; #my $wait = <STDIN>;#my $wait = <STDIN>;
 
- print "\n##SS cmd: $MY_BIN_DIR/scriptwrap.py  $tfname $SS_URL\nand waiting for key to go"; my $wait = <STDIN>;
+# print "\n##SS cmd: $MY_BIN_DIR/scriptwrap.py  $tfname $SS_URL\nand waiting for key to go"; my $wait = <STDIN>;
 	# and finally EXECUTE it
 	my $xpct_val = `$MY_BIN_DIR/scriptwrap.py  $tfname $SS_URL`;
 	# and now (unfortunately), write it to disk and then execute the scriptwrap.py to get a value.
@@ -924,9 +925,9 @@ sub smrz_rgr_rslt {
 	chdir "../bld";
 	if ($dbg_lvl == 0) {print $reportstr;}
 	else { &verbosity($dbg_lvl, $wnt_log, $reportstr); }
-#	$udp_dat .= "@";  # use an infrequent char as separator token
-# print "Regression: udp stream sent:\n$udp_dat\n";
-	if (!$udp_rpt) {
+
+	if (!$udp_reprt) { # set either explicitly (1st time) or set in ~/.ncorc after user agreed to it
+
 		print "\n\nThe log-formatted result from this regression test is:\n$udp_dat\n\n";
 		print << "REQ_REGR_PACKET";
 
@@ -948,10 +949,18 @@ REQ_REGR_PACKET
 		print "Answer: ";
 		$ansr = <STDIN>; chomp $ansr;
 	}
-	if ($udp_rpt || $ansr eq "y" || $ansr eq "yes" || $ansr eq "Y" ||$ansr eq "YES") {
+
+	if ($udp_reprt || $ansr eq "y" || $ansr eq "yes" || $ansr eq "Y" ||$ansr eq "YES") {
 		$sock->send($udp_dat);
-		print "\nData sent!  The NCO dev team thanks you!!\nHave a good one, eh!?\n\n\n";
+		print "\nUDP Data sent!  The NCO dev team thanks you!!\nHave a good one, eh!?\n\n\n";
 		if ($dbg_lvl > 0) { print "Regression: udp stream sent to $server_ip:\n$udp_dat\n";}
+		# and write this agreement to the ~/.ncorc file so user isn't bothered by this again.
+		if (!-e "~/.ncorc") {
+			#my $HOME = $ENV{'HOME'}
+			open(RC, "> $ENV{'HOME'}/.ncorc") or die "can't create a .ncorc file in home dir!\n";
+			print RC "udp_report=yes\n";
+			close RC;
+		}
 	} else {
 		print "\nOK - data NOT sent, thanks for using NCO anyway - bye!\n\n";
 	}

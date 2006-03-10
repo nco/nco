@@ -9,7 +9,7 @@ package NCO_benchmarks;
 # for the NCO benchmark master 'script nco_bm.pl'
 # It must maintain Perl semantics for Perl code.
 
-#$Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.2 2006-03-09 22:29:59 mangalam Exp $
+#$Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.3 2006-03-10 20:50:33 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -27,13 +27,16 @@ our @ISA = qw(Exporter);
 #export functions (top) and variables (bottom)
 our @EXPORT = qw(
 	benchmarks
-	$srvr_sde $dodap $NUM_FLS $dbg_lvl $bm  $mpi_prc $opr_sng_mpi $omp_flg $fl_fmt $nco_D_flg $outfile $tw_prt_bm @tst_cmd $opr_nm $dsc_sng $nsr_xpc $fl_cnt
+	$srvr_sde $dodap $NUM_FLS $dbg_lvl $bm  $mpi_prc $opr_sng_mpi $omp_flg $fl_fmt
+	$nco_D_flg $outfile $tw_prt_bm @tst_cmd $opr_nm $dsc_sng $nsr_xpc $fl_cnt %NCO_RC
 );
 
 use vars qw(
-$dta_dir  $f  @fl_cr8_dat  $in_pth  $in_pth_arg  $ipcc_dm_sz  $ldz  $lnk_fl_nme  $MY_BIN_DIR
-$n  $nd  $NUM_FLS  $r  $rel_fle  $ssdwrap  $var_prfx  $var_sfx  $var_sng @var_sz   $wait  $tw_prt_bm $srvr_sde $opr_nm $dsc_sng $mpi_prc $outfile $bm $dbg_lvl $dodap $fl_cnt @fl_cr8_dat $fl_fmt
-$fl_pth $nco_D_flg $ncwa_scl_tst $notbodi $nsr_xpc $omp_flg $opr_sng_mpi  @tst_cmd
+$dta_dir  $f  @fl_cr8_dat  $in_pth  $in_pth_arg  $ipcc_dm_sz  $ldz  $lnk_fl_nme
+$MY_BIN_DIR $n  $nd  $NUM_FLS  $r  $rel_fle  $ssdwrap  $var_prfx  $var_sfx
+$var_sng @var_sz   $wait  $tw_prt_bm $srvr_sde $opr_nm $dsc_sng $mpi_prc $outfile
+$bm $dbg_lvl $dodap $fl_cnt @fl_cr8_dat $fl_fmt $fl_pth %NCO_RC $nco_D_flg
+$ncwa_scl_tst $notbodi $nsr_xpc $omp_flg $opr_sng_mpi  @tst_cmd
 );
 
 sub benchmarks{
