@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.6 2006-02-19 00:03:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.7 2006-03-10 09:54:09 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -73,44 +73,119 @@ public:
 
 /* Begin funtions in ncap_utl.c */
 
-var_sct * /* O [sct] Remainder of modulo operation of input variables (var_1%var_2) */
-ncap_var_var_mod /* [fnc] Remainder operation of two variables */ 
-(var_sct *var_1, /* I [sct] Variable structure containing field */
+var_sct *                  /* O [sct] initialized variable */
+ncap_var_init(
+const char * const var_nm, /* I [sng] variable name constant */
+prs_sct *prs_arg);          /* I/O  vectors of atts,vars,dims, filenames */
+
+
+int                /* O  [bool] bool - ture if sucessful */
+ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */ 
+(var_sct *var,     /* I  [sct] variable to be written - freed at end */  
+prs_sct *prs_arg); /* I/O vectors of atts & vars & file names  */
+
+
+var_sct *                /* O [sct] variable containing attribute */
+ncap_att_init(           /*   [fnc] Grab an attribute from input file */
+const char *const va_nm, /* I [sng] att name of form var_nm&att_nm */ 
+prs_sct *prs_arg);        /* I/O vectors of atts & vars & file names  */
+
+sym_sct *                    /* O [sct] return sym_sct */
+ncap_sym_init                /*  [fnc] populate & return a symbol table structure */
+(const char * const sym_nm,  /* I [sng] symbol name */
+ double (*fnc_dbl)(double),  /* I [fnc_dbl] Pointer to double function */
+ float (*fnc_flt)(float));    /* I [fnc_flt] Pointer to float  function */
+
+
+
+var_sct *   /* O [sct] Remainder of modulo operation of input variables (var_1%var_2) */
+ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
+(var_sct *var_1, /* I [sc,t] Variable structure containing field */
  var_sct *var_2); /* I [sct] Variable structure containing divisor */
 
-var_sct * /* O [sct] Empowerment of input variables (var_1^var_2) */
-ncap_var_var_pwr /* [fnc] Empowerment of two variables */ 
-(var_sct *var_1, /* I [sct] Variable structure containing base */
+
+var_sct *         /* O [sct] Empowerment of input variables (var_1^var_2) */
+ncap_var_var_pwr  /* [fnc] Empowerment of two variables */ 
+(var_sct *var_1,  /* I [sct] Variable structure containing base */
  var_sct *var_2); /* I [sct] Variable structure containing exponent */
 
 
-  /* fxm: Following functions need editing, const'ifying, etc. */
-var_sct *ncap_var_abs(var_sct *);
-var_sct *ncap_var_fnc(var_sct *,sym_sct *);
-
-var_sct *ncap_var_init(char * ,prs_sct *);
-var_sct *ncap_att_init(const char *,prs_sct *);
-
-int ncap_var_write(var_sct *,prs_sct*);
-nm_id_sct *nco_var_lst_add(nm_id_sct *,int *,nm_id_sct *,int);
-nm_id_sct *nco_var_lst_copy(nm_id_sct *,int);
-nm_id_sct *nco_var_lst_sub(nm_id_sct *,int *,nm_id_sct *,int);
-nm_id_sct *nco_dmn_lst(const int, int * const);
-nm_id_sct *nco_att_lst_mk(int,int,NcapVarVector & ,int *);
-sym_sct *ncap_sym_init(const char * const sym_nm,double (*fnc_dbl)(double),float (*fnc_flt)(float));
-
-// stretch a single valued attribute from 1 to sz
-nco_bool ncap_att_stretch (var_sct* , long );
+var_sct *           /* O [sct] Resultant variable (actually is var_in) */
+ncap_var_fnc(       /* Apply function to var */   
+var_sct *var_in,    /* I/O [sng] input variable */ 
+sym_sct *app);       /* I [fnc_ptr] to apply to variable */
 
 
-nco_bool ncap_var_stretch(var_sct **,var_sct **);
-  // Call to super dooper C++ template 
-var_sct *ncap_var_var_op(var_sct *,var_sct*,int);
-  // See if var is true or false
-bool ncap_var_lgcl(var_sct* var);
+var_sct *         /* O [sct] Resultant variable (actually is var) */
+ncap_var_abs(     /* Purpose: Find absolute value of each element of var */
+var_sct *var);    /* I/O [sct] input variable */
 
-  // Generate casting variable
-var_sct* ncap_cast_LHS(char **sbs_lst, int lst_nbr, prs_sct *prs_arg);
+
+nm_id_sct *            /* O [sct] new copy of xtr_lst */
+nco_var_lst_copy(      /*   [fnc] Purpose: Copy xtr_lst and return new list */
+nm_id_sct *xtr_lst,    /* I  [sct] input list */ 
+int lst_nbr);           /* I  [nbr] number of elements in list */
+
+
+nm_id_sct *             /* O [sct] New list */
+nco_var_lst_sub(        /* [fnc] subract elements of lst_b from )lst */
+nm_id_sct *xtr_lst,     /* I [sct] input list */   
+int *nbr_xtr,           /* I/O [ptr] size of xtr_lst and new list */
+nm_id_sct *xtr_lst_b,   /* I [sct] list to be subtracted */   
+int nbr_lst_b);          /* I [nbr] size eof xtr_lst_b */ 
+
+
+nm_id_sct *            /* O [sct] -- new list */
+nco_var_lst_add(       /* [fnc]  add elemenst of lst_a to lst */
+nm_id_sct *xtr_lst,    /* I [sct] input list */ 
+int *nbr_xtr,          /* I/O [ptr] -- size of xtr_lst & new output list */ 
+nm_id_sct *xtr_lst_a,  /* I [sct] list of elemenst to be added to new list */
+int nbr_lst_a);         /* I [nbr] size of xtr_lst_a */
+
+
+nm_id_sct *               /* O [sct] List of dimensions associated with input variable list */
+nco_dmn_lst               /* [fnc] Create list of all dimensions in file  */
+(const int nc_id,         /* I [id] netCDF input-file ID */
+ int * const nbr_dmn);    /* O [nbr] Number of dimensions in  list */
+
+
+nm_id_sct *                /* O [sct] output list */ 
+nco_att_lst_mk      
+(const int in_id,         /* I [id] of input file */
+ const int out_id,        /* I [id] id of output file */
+ NcapVarVector &var_vtr,  /* I [vec] vector of vars & att */
+ int *nbr_lst);            /* O [ptr] size of output list */
+
+
+
+nco_bool /* O [flg] Variables now conform */
+ncap_var_stretch /* [fnc] Stretch variables */
+(var_sct **var_1, /* I/O [ptr] First variable */
+ var_sct **var_2); /* I/O [ptr] Second variable */
+
+nco_bool          /* O [flg] true if var has been stretched */
+ncap_att_stretch  /* stretch a single valued attribute from 1 to sz */
+(var_sct* var,    /* I/O [sct] variable */       
+ long nw_sz);      /* I [nbr] new var size */
+
+var_sct *         /* O [sct] Sum of input variables (var1+var2) */
+ncap_var_var_op   /* [fnc] Add two variables */
+(var_sct *var1,  /* I [sct] Input variable structure containing first operand */
+ var_sct *var2,  /* I [sct] Input variable structure containing second operand */
+ int op);        /* Operation +-% */
+
+  
+bool            /* O [flg] true if all var elemenst are true */
+ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
+(var_sct* var);  /* I [sct] input variable */
+
+
+var_sct*         /* O [sct] casting variable has its own private dims */ 
+ncap_cast_LHS(   /* [fnc] create casting var from a list of dims */
+char **sbs_lst,  /* I [sng] Array of dimension subscripts */
+int lst_nbr,     /* I [nbr] size of above list */  
+prs_sct *prs_arg);
+
 
 /* End funtions in ncap_utl.c */
 
