@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.724 2006-03-10 06:05:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.725 2006-03-10 23:25:17 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -458,7 +458,10 @@ nco684. ncap2 memory problem (ashes only!):
 	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncap2 -O -D 1 -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
 	ncap2 -O -D 1 -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
 nco685. Run static analysis tool on nco codebase
-nco689. 
+nco689. Fail on multislabs (multiple limits on same dimension) in arithmetic operators. Currently, arithmetic operators silently ignore all limit specifications after the first. Diagnose and fail until nco690 implemented.
+        ncwa -O -a lat,lon -w area -d lat,30.,90. -d lon,345.,360. -d lon,0.,195. isccpd_0112_clm_landmask.nc foo4.nc
+nco690. Implement multislabs in arithmetic operators (no reason not to!)
+nco691.
 
 ************************************************************************
 End ncoXXX TODOs
