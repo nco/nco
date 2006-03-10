@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.3 2006-02-19 00:03:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.4 2006-03-10 09:52:29 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -12,10 +12,10 @@
 /* have removed extern -- (not linking to ncap_lex.l */
 /*extern*/ char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in ncap_lex.l) */
 
-var_sct *
-/* fxm: which prototype to use? */
-/* ncap_var_init(const char * const var_nm,prs_sct *prs_arg) */
-ncap_var_init(char *var_nm,prs_sct *prs_arg)
+var_sct *                  /* O [sct] initialized variable */
+ncap_var_init(
+const char * const var_nm, /* I [sng] variable name constant */
+prs_sct *prs_arg)          /* I/O  vectors of atts,vars,dims, filenames */
 {
   /* Purpose: Initialize variable structure, retrieve variable values from disk
      Parser calls ncap_var_init() when it encounters a new RHS variable */
@@ -110,10 +110,10 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
 } /* end ncap_var_init() */
 
 
-int 
-ncap_var_write
-(var_sct *var,
- prs_sct *prs_arg)
+int                /* O  [bool] bool - ture if sucessful */
+ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */ 
+(var_sct *var,     /* I  [sct] variable to be written - freed at end */  
+ prs_sct *prs_arg) /* I/O vectors of atts & vars & file names  */
 {
 
   /* Purpose: Define variable in output file and write variable */
@@ -174,10 +174,10 @@ ncap_var_write
 } /* end ncap_var_write() */
 
 
-// Grab an attribbute from input and put it into a variable structure 
-// return NULL if var (and/or) att not found
-var_sct * 
-ncap_att_init(const char *va_nm, prs_sct *prs_arg)
+var_sct *                /* O [sct] variable containing attribute */
+ncap_att_init(           /*   [fnc] Grab an attribute from input file */
+const char *const va_nm, /* I [sng] att name of form var_nm&att_nm */ 
+prs_sct *prs_arg)        /* I/O vectors of atts & vars & file names  */
 {
 int rcd;
 int var_id;
@@ -229,11 +229,11 @@ var_sct *var_ret;
   return var_ret;
 }
   
-sym_sct *
-ncap_sym_init
-(const char * const sym_nm,
- double (*fnc_dbl)(double),
- float (*fnc_flt)(float))
+sym_sct *                    /* O [sct] return sym_sct */
+ncap_sym_init                /*  [fnc] populate & return a symbol table structure */
+(const char * const sym_nm,  /* I [sng] symbol name */
+ double (*fnc_dbl)(double),  /* I [fnc_dbl] Pointer to double function */
+ float (*fnc_flt)(float))    /* I [fnc_flt] Pointer to float  function */
 { 
   /* Purpose: Allocate space for sym_sct then initialize */
   sym_sct *symbol;
@@ -290,12 +290,6 @@ ncap_var_var_pwr /* [fnc] Empowerment of two variables */
 {
   /* Purpose: Empower two variables (var_1^var_2) */
 
-
-
-
-
-  /* Purpose: Add two variables */
-  /* Store result in var_2 */
   if(var_1->undefined) var_2->undefined=True;
     if(var_2->undefined) {
     var_1=nco_var_free(var_1);
@@ -325,8 +319,10 @@ ncap_var_var_pwr /* [fnc] Empowerment of two variables */
    return var_2;
 } /* end ncap_var_var_pwr() */
 
-var_sct *
-ncap_var_fnc(var_sct *var_in,sym_sct *app)
+var_sct *           /* O [sct] Resultant variable (actually is var_in) */
+ncap_var_fnc(   
+var_sct *var_in,    /* I/O [sng] input variable */ 
+sym_sct *app)       /* I [fnc_ptr] to apply to variable */
 {
   /* Purpose: Evaluate fnc_dbl(var) or fnc_flt(var) for each value in variable
      Float and double functions are in app */
@@ -381,10 +377,11 @@ ncap_var_fnc(var_sct *var_in,sym_sct *app)
 } /* end ncap_var_fnc() */
 
 
-var_sct *
-ncap_var_abs(var_sct *var)
+var_sct *        /* O [sct] Resultant variable (actually is var) */
+ncap_var_abs(    /* Purpose: Find absolute value of each element of var */
+var_sct *var)    /* I/O [sct] input variable */
 {
-  /* Purpose: Find absolute value of each element of var */
+
   if(var->undefined) return var;
 
   /* deal with inital scan */
@@ -395,10 +392,11 @@ ncap_var_abs(var_sct *var)
 } /* end ncap_var_abs */
 
 
-nm_id_sct *
-nco_var_lst_copy(nm_id_sct *xtr_lst,int lst_nbr)
+nm_id_sct *            /* O [sct] new copy of xtr_lst */
+nco_var_lst_copy(      /*   [fnc] Purpose: Copy xtr_lst and return new list */
+nm_id_sct *xtr_lst,    /* I  [sct] input list */ 
+int lst_nbr)           /* I  [nbr] number of elements in list */
 {
-  /* Purpose: Copy xtr_lst and return new list */
   int idx;
   nm_id_sct *xtr_new_lst;
   
@@ -412,8 +410,12 @@ nco_var_lst_copy(nm_id_sct *xtr_lst,int lst_nbr)
 } /* end nco_var_lst_copy() */
 
 
-nm_id_sct *
-nco_var_lst_sub(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst_b)
+nm_id_sct *             /* O [sct] New list */
+nco_var_lst_sub(
+nm_id_sct *xtr_lst,     /* I [sct] input list */   
+int *nbr_xtr,           /* I/O [ptr] size of xtr_lst and new list */
+nm_id_sct *xtr_lst_b,   /* I [sct] list to be subtracted */   
+int nbr_lst_b)          /* I [nbr] size eof xtr_lst_b */ 
 {
   /* Purpose: Subtract from xtr_lst any elements from xtr_lst_b which are present and return new list */
   int idx;
@@ -444,8 +446,12 @@ nco_var_lst_sub(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst
   return xtr_new_lst;     
 }/* end nco_var_lst_sub */
 
-nm_id_sct *
-nco_var_lst_add(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int nbr_lst_a)
+nm_id_sct *            /* O [sct] -- new list */
+nco_var_lst_add(
+nm_id_sct *xtr_lst,    /* I [sct] input list */ 
+int *nbr_xtr,          /* I/O [ptr] -- size of xtr_lst & new output list */ 
+nm_id_sct *xtr_lst_a,  /* I [sct] list of elemenst to be added to new list */
+int nbr_lst_a)         /* I [nbr] size of xtr_lst_a */
 {
   /* Purpose: Add to xtr_lst any elements from xtr_lst_a not already present and return new list */
   int idx;
@@ -479,7 +485,7 @@ nco_var_lst_add(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int nbr_lst
   } /* end for */
   *nbr_xtr=nbr_xtr_crr;
   return xtr_new_lst;           
-} /* nco_var_lst_add */
+} /* end nco_var_lst_add */
 
 
 nm_id_sct * /* O [sct] List of dimensions associated with input variable list */
@@ -506,12 +512,12 @@ nco_dmn_lst /* [fnc] Create list of all dimensions in file  */
   return dmn;
 } /* end nco_dmn_lst() */
 
-nm_id_sct * 
-nco_att_lst_mk
-(const int in_id,
- const int out_id,
- NcapVarVector &var_vtr,
- int *nbr_lst)
+nm_id_sct *                /* O [sct] output list */ 
+nco_att_lst_mk      
+(const int in_id,         /* I [id] of input file */
+ const int out_id,        /* I [id] id of output file */
+ NcapVarVector &var_vtr,  /* I [vec] vector of vars & att */
+ int *nbr_lst)            /* O [ptr] size of output list */
 {
   int idx;
   int jdx;
@@ -842,11 +848,13 @@ nco_bool ncap_var_is_att( var_sct *var) {
   return false;
 }
 
-// stretch a single valued attribute from 1 to sz
-nco_bool ncap_att_stretch
-(var_sct* var, 
-long nw_sz)
+
+nco_bool          /* O [flg] true if var has been stretched */
+ncap_att_stretch  /* stretch a single valued attribute from 1 to sz */
+(var_sct* var,    /* I/O [sct] variable */       
+ long nw_sz)      /* I [nbr] new var size */
 {
+
   size_t idx;
   size_t var_typ_sz;  
   void* vp;
@@ -869,7 +877,7 @@ long nw_sz)
   
     return false; 
 
-} // end ncap_att_stretch
+} /* end ncap_att_stretch */
 
 
 #include "VarOp.hh" 
@@ -1008,7 +1016,9 @@ ncap_var_var_op   /* [fnc] Add two variables */
   return var_ret;
 }
   
-bool ncap_var_lgcl(var_sct* var)
+bool            /* O [flg] true if all var elemenst are true */
+ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
+(var_sct* var)  /* I [sct] input variable */
 {
   int idx;
   int sz;
@@ -1043,15 +1053,15 @@ bool ncap_var_lgcl(var_sct* var)
   return bret;
 }
 
-var_sct* ncap_cast_LHS(  // O casting variable
-char **sbs_lst, 
-int lst_nbr, 
+var_sct*         /* O [sct] casting variable has its own private dims */ 
+ncap_cast_LHS(   /* [fnc] create casting var from a list of dims */
+char **sbs_lst,  /* I [sng] Array of dimension subscripts */
+int lst_nbr,     /* I [nbr] size of above list */  
 prs_sct *prs_arg)
 {
 
   static const char * const tpl_nm="Internally generated template";
   
-  //char **sbs_lst; /* [sng] Array of dimension subscripts */
   
   int dmn_nbr; /* [nbr] Number of dimensions */
   int idx; /* [idx] Counter */
