@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.23 2006-03-10 01:37:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.24 2006-03-10 06:05:21 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -44,8 +44,11 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
 (var_sct * const var1, /* I [sct] Variable with template missing value to copy */
  var_sct * const var2) /* I/O [sct] Variable with missing value to fill in/overwrite */
 {
-  /* Purpose: Change missing_value of var2 to missing_value of var1 when both exist 
-     Change missing_value of var1 to missing_value of var2 when only var2 has a missing_value */
+  /* Purpose: 
+     1. Change missing_value of var2 to missing_value of var1 when both exist 
+     2. Change missing_value of var1 to missing_value of var2 when only var2 has a missing_value
+     3. Change missing_value of var2 to missing_value of var1 when only var1 has a missing_value
+     4. Return false when neither operand has missing value */
   int has_mss_val=False; /* [flg] One or both operands have missing value */
   bool MSS_VAL_EQL=False; /* [flg] Missing values of input operands are identical */
   long idx;
@@ -71,8 +74,8 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
     case NC_BYTE: MSS_VAL_EQL=(*var1->mss_val.bp == *var2->mss_val.bp); break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
-    /* fxm: Print statement only works with type NC_FLOAT */
     if(!MSS_VAL_EQL){
+      /* World's most anally formatted warning message... */
       char mss_val_1_sng[NCO_MAX_LEN_FMT_SNG];
       char mss_val_2_sng[NCO_MAX_LEN_FMT_SNG];
       char *fmt_sng;
@@ -100,71 +103,75 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
     } /* MSS_VAL_EQL */
     (void)cast_nctype_void(var_typ,&var1->mss_val);
     (void)cast_nctype_void(var_typ,&var2->mss_val);
+    
+    /* Missing values are already equal */
+    if(MSS_VAL_EQL) return has_mss_val;
+    
+    /* If both files have missing_value's and they differ,
+       must translate mss_val_2 in var2 to mss_val_1 before binary operation.
+       Otherwise mss_val_2 would be treated as regular value in var_2
+       Unfixable bug is when var1 has mss_val1 and var2 does not have a missing_value
+       Then var2 values that happen to equal mss_val1 are treated as missing_values
+       A generic, satisfactory solution to this problem does not exist 
+       Picking missing_values that are nearly out-of-range is best workaround
+       The user must be smart enough to do this, NCO cannot help */
+    
+    /* Typecast pointer to values before access */
+    (void)cast_void_nctype(var_typ,&var1->mss_val);
+    (void)cast_void_nctype(var_typ,&var2->mss_val);
+    (void)cast_void_nctype(var_typ,&var2->val);
+    
+    /* Shortcuts to avoid indirection */
+    var_val=var2->val;
+    var_sz=var2->sz;
+    switch(var_typ){
+    case NC_FLOAT: {
+      const float mss_val_1_flt=*var1->mss_val.fp;
+      const float mss_val_2_flt=*var2->mss_val.fp; 
+      for(idx=0L;idx<var_sz;idx++) if(var_val.fp[idx] == mss_val_2_flt) var_val.fp[idx]=mss_val_1_flt;
+    } break;
+    case NC_DOUBLE: {
+      const double mss_val_1_dbl=*var1->mss_val.dp;
+      const double mss_val_2_dbl=*var2->mss_val.dp; 
+      for(idx=0L;idx<var_sz;idx++) if(var_val.dp[idx] == mss_val_2_dbl) var_val.dp[idx]=mss_val_1_dbl;
+    } break;
+    case NC_INT: {
+      const nco_int mss_val_1_lng=*var1->mss_val.lp;
+      const nco_int mss_val_2_lng=*var2->mss_val.lp; 
+      for(idx=0L;idx<var_sz;idx++) if(var_val.lp[idx] == mss_val_2_lng) var_val.lp[idx]=mss_val_1_lng;
+    } break;
+    case NC_SHORT: {
+      const short mss_val_1_sht=*var1->mss_val.sp;
+      const short mss_val_2_sht=*var2->mss_val.sp; 
+      for(idx=0L;idx<var_sz;idx++) if(var_val.sp[idx] == mss_val_2_sht) var_val.sp[idx]=mss_val_1_sht; 
+    } break;
+    case NC_CHAR: {
+      const nco_char mss_val_1_chr=*var1->mss_val.cp;
+      const nco_char mss_val_2_chr=*var2->mss_val.cp; 
+      for(idx=0L;idx<var_sz;idx++) if(var_val.cp[idx] == mss_val_2_chr) var_val.cp[idx]=mss_val_1_chr; 
+    } break;
+    case NC_BYTE: {
+      const nco_byte mss_val_1_byt=*var1->mss_val.bp;
+      const nco_byte mss_val_2_byt=*var2->mss_val.bp; 
+      for(idx=0L;idx<var_sz;idx++) if(var_val.bp[idx] == mss_val_2_byt) var_val.bp[idx]=mss_val_1_byt; 
+    } break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end switch */
+
+    /* Un-typecast the pointer to values after access */
+    (void)cast_nctype_void(var_typ,&var2->val);
+    (void)cast_nctype_void(var_typ,&var1->mss_val);
+    (void)cast_nctype_void(var_typ,&var2->mss_val);
+  
   } /* end if both variables have missing values */
   
-  /* Missing values are already equal */
-  if(MSS_VAL_EQL) return has_mss_val;
-
-  /* If both files have missing_value's and they differ,
-     must translate mss_val_2 in var2 to mss_val_1 before binary operation.
-     Otherwise mss_val_2 would be treated as regular value in var_2
-     Unfixable bug is when var1 has mss_val1 and var2 does not have a missing_value
-     Then var2 values that happen to equal mss_val1 are treated as missing_values
-     A generic, satisfactory solution to this problem does not exist 
-     Picking missing_values that are nearly out-of-range is best workaround */
-
-  /* Typecast pointer to values before access */
-  (void)cast_void_nctype(var_typ,&var1->mss_val);
-  (void)cast_void_nctype(var_typ,&var2->mss_val);
-  (void)cast_void_nctype(var_typ,&var2->val);
-  
-  /* Shortcuts to avoid indirection */
-  var_val=var2->val;
-  var_sz=var2->sz;
-  switch(var_typ){
-  case NC_FLOAT: {
-    const float mss_val_1_flt=*var1->mss_val.fp;
-    const float mss_val_2_flt=*var2->mss_val.fp; 
-    for(idx=0L;idx<var_sz;idx++) if(var_val.fp[idx] == mss_val_2_flt) var_val.fp[idx]=mss_val_1_flt;
-  } break;
-  case NC_DOUBLE: {
-    const double mss_val_1_dbl=*var1->mss_val.dp;
-    const double mss_val_2_dbl=*var2->mss_val.dp; 
-    for(idx=0L;idx<var_sz;idx++) if(var_val.dp[idx] == mss_val_2_dbl) var_val.dp[idx]=mss_val_1_dbl;
-  } break;
-  case NC_INT: {
-    const nco_int mss_val_1_lng=*var1->mss_val.lp;
-    const nco_int mss_val_2_lng=*var2->mss_val.lp; 
-    for(idx=0L;idx<var_sz;idx++) if(var_val.lp[idx] == mss_val_2_lng) var_val.lp[idx]=mss_val_1_lng;
-  } break;
-  case NC_SHORT: {
-    const short mss_val_1_sht=*var1->mss_val.sp;
-    const short mss_val_2_sht=*var2->mss_val.sp; 
-    for(idx=0L;idx<var_sz;idx++) if(var_val.sp[idx] == mss_val_2_sht) var_val.sp[idx]=mss_val_1_sht; 
-  } break;
-  case NC_CHAR: {
-    const nco_char mss_val_1_chr=*var1->mss_val.cp;
-    const nco_char mss_val_2_chr=*var2->mss_val.cp; 
-    for(idx=0L;idx<var_sz;idx++) if(var_val.cp[idx] == mss_val_2_chr) var_val.cp[idx]=mss_val_1_chr; 
-  } break;
-  case NC_BYTE: {
-    const nco_byte mss_val_1_byt=*var1->mss_val.bp;
-    const nco_byte mss_val_2_byt=*var2->mss_val.bp; 
-    for(idx=0L;idx<var_sz;idx++) if(var_val.bp[idx] == mss_val_2_byt) var_val.bp[idx]=mss_val_1_byt; 
-  } break;
-  default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
-  
-  /* Handle case where var2 has missing_value and var1 does not
-     In this case, copy missing_value from var2 to var1 to ensure binary arithmetic 
+  /* Handle cases where only one variable has missing value.
+     First, if var2 has missing_value and var1 does not,
+     then copy missing_value from var2 to var1 to ensure binary arithmetic 
      (which uses var1's missing_value) handles missing_value's correctly
      Assume var1 and var2 already have same type */
   if(!var1->has_mss_val && var2->has_mss_val) (void)nco_mss_val_cp(var2,var1);
-
-  /* Un-typecast the pointer to values after access */
-  (void)cast_nctype_void(var_typ,&var2->val);
-  (void)cast_nctype_void(var_typ,&var1->mss_val);
-  (void)cast_nctype_void(var_typ,&var2->mss_val);
+  if(var1->has_mss_val && !var2->has_mss_val) (void)nco_mss_val_cp(var1,var2);
   
   return has_mss_val;
 } /* end nco_mss_val_cnf() */

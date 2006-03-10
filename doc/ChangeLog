@@ -1,5 +1,13 @@
 2006-03-09  Charlie Zender  <zender@uci.edu>
 
+	* Re-work nco_mss_val_cnf() to handle all cases of var1 and var2
+	having/not having missing values. Fixes TODO nco686.
+	Probably fixed analogous latent bug in ncflint.
+
+	* Remove bogus const prototype on return value of nco_typ_fmt_sng()
+	Apparently gcc 4.0.3 actually pays attention to intended
+	const-ness of return values in these situations 
+
 	* Fix TODO nco687 so unequal missing values are formatted
 	correctly in warning messages. This should help debug nco686.
 
