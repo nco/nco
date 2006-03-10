@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics. - hjm
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.27 2006-03-09 22:26:31 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.28 2006-03-10 05:23:42 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -248,6 +248,16 @@ if ($dodap eq "FALSE") {
 	$tst_cmd[3]="ncks -C -H -s '%f,' -v mss_val %tempf_01%";
 	$dsc_sng="missing_values differ between files";
 	$tst_cmd[4] = "-999.000000,-999.000000,-999.000000,-999.000000";
+	$tst_cmd[5] = "SS_OK";
+	NCO_bm::go(\@tst_cmd);
+	$#tst_cmd=0;  # reset the array ok
+
+	$tst_cmd[0]="ncrename -h $nco_D_flg -O -v no_mss_val,one_dmn_arr_with_and_without_mss_val $in_pth_arg in.nc %tempf_00%";
+	$tst_cmd[1]="ncrename -h $nco_D_flg -O -v mss_val,one_dmn_arr_with_and_without_mss_val $in_pth_arg in.nc %tempf_01%";
+	$tst_cmd[2]="ncbo $omp_flg  -h -O $fl_fmt $nco_D_flg -y '-' -v one_dmn_arr_with_and_without_mss_val %tempf_00% %tempf_01% %tempf_02% 2> %tempf_03%";
+	$tst_cmd[3]="ncks -C -H -s '%f,' -v mss_val %tempf_02%";
+	$dsc_sng="missing_value in one variable (not both variables) fxm TODO nco686";
+	$tst_cmd[4] = "0.0,1.0e36,0.0,1.0e36";
 	$tst_cmd[5] = "SS_OK";
 	NCO_bm::go(\@tst_cmd);
 	$#tst_cmd=0;  # reset the array ok
