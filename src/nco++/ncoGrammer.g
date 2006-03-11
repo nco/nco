@@ -76,10 +76,10 @@ assign_statement:
     ;
 
 
-hyper_slb: (VAR_ID|ATT_ID) (lmt_list)?
+hyper_slb: (VAR_ID^|ATT_ID^) (lmt_list)?
      ;
 
-cast_slb:  VAR_ID dmn_list
+cast_slb:  (VAR_ID^|ATT_ID^) dmn_list
      ;
 
 // left association
@@ -124,7 +124,7 @@ lmt:
     ;
 
 lmt_list
-  : LPAREN! lmt (COMMA lmt)*  RPAREN!
+  : LPAREN! lmt (COMMA! lmt)*  RPAREN!
    { #lmt_list = #( [LMT_LIST, "lmt_list"], #lmt_list ); }
   ;
 // Use vars in dimension list so dims in [] can
@@ -311,8 +311,8 @@ class ncoTree extends TreeParser;
 
 private:
     prs_sct *prs_arg;
-    bool bcast;
-    var_sct* var_cast;;
+    bool bcst;
+    var_sct* var_cst;;
 public:
     void setTable(prs_sct *prs_in){
         prs_arg=prs_in;
@@ -320,6 +320,10 @@ public:
     // Customized Constructor
     ncoTree(prs_sct *prs_in){
         prs_arg=prs_in;
+        // default is NO. Casting variable set to true 
+        // causes casting in function out(). var_cst must 
+        // then be defined 
+        bcst=false;  
         ncoTree();
     }
 
@@ -330,13 +334,32 @@ public:
           tr=tr->getNextSibling();   
         }
     }
+    
+
 }
+
+// Return the number of dimensions in lmt subscript
+lmt_peek returns [int nbr_dmn]
+
+   : lmt:LMT_LIST {
+       RefAST aRef;
+     
+       aRef=lmt->getFirstChild();
+       nbr_dmn=0;
+       while(aRef) {
+         if(aRef->getType() == LMT) nbr_dmn++;    
+        aRef=aRef->getNextSibling();     
+       }   
+     }        
+    ;
+
+
 
 
 statements returns [int iret] 
 
     : blo:BLOCK { 
-      run(blo->getFirstChild());
+       run(blo->getFirstChild());
             
                 }
     | ass:ASSIGN {
@@ -362,122 +385,102 @@ statements returns [int iret]
        }
       }
     | els:ELSE {
-      // exit function
-      iret =0;
-      return iret;
+
       }
     | nul:NULL_NODE {
             }
     ;
 
+
 assign 
 {
   var_sct *var;
 }
-   :(#(ASSIGN  VAR_ID ))=> #(ASSIGN  v:VAR_ID ){
-
-       int dmn_nbr=0;
-       char** sbs_lst;
-       long *ind_lst;
-       long ind_nbr=0;
-
-       var_sct* var_out;
-       RefAST aRef;
-
-       bcast=false;  
+   :   (#(ASSIGN  VAR_ID ))=> #(ASSIGN  vid:VAR_ID ){
+    
+          switch( vid->getNextSibling()->getType()){
             
-       var_cast=(var_sct*)NULL;
-       // Deal with LHS casting 
-       if(v->getNextSibling()->getType() == DMN_LIST){
-         sbs_lst=(char**)nco_calloc(NC_MAX_DIMS, sizeof(char*));
-         aRef=v->getNextSibling()->getFirstChild();
+            case LMT_LIST:{
+                ;
+                } break;
+
+            case DMN_LIST:{
+              // Deal with LHS casting 
+              int dmn_nbr=0;
+              char** sbs_lst;
+              RefAST aRef;
+              
+              // set class wide variables
+              bcst=true;  
+              var_cst=(var_sct*)NULL;
+
+              sbs_lst=(char**)nco_calloc(NC_MAX_DIMS, sizeof(char*));
+              aRef=vid->getNextSibling()->getFirstChild();
          
-         // Get dimension names in list       
-         while(aRef) {
-           sbs_lst[dmn_nbr++]=strdup(aRef->getText().c_str());
-           aRef=aRef->getNextSibling();      
-         }
-           var_cast=ncap_cast_LHS(sbs_lst,dmn_nbr,prs_arg);     
-           bcast=true;     
-           var=out(v->getNextSibling()->getNextSibling());
-           
-           var->nm =strdup(v->getText().c_str());
-           (void)ncap_var_write(var,prs_arg);
+              // Get dimension names in list       
+              while(aRef) {
+                sbs_lst[dmn_nbr++]=strdup(aRef->getText().c_str());
+                aRef=aRef->getNextSibling();      
+              }
+              // Cast is applied in VAR_ID action in function out()
+              var_cst=ncap_mk_cst(sbs_lst,dmn_nbr,prs_arg);     
+              var=out(vid->getNextSibling()->getNextSibling());
+              
+              // Cast isn't applied to naked numbers,
+              // or variables of size 1, or attributes
+              // so apply it here
+              if(var->sz ==1 )
+                  var=ncap_do_cst(var,var_cst,prs_arg->ntl_scn);
+     
 
-           bcast=false;
-           var_cast=nco_var_free(var_cast); 
-           (void)nco_sng_lst_free(sbs_lst,NC_MAX_DIMS);    
-                
-         }else 
-          // deal with hyperslab ( only single indices )
-          if(v->getNextSibling()->getType() == ARG_LIST){
-            aRef=v->getNextSibling()->getFirstChild();
-          ind_lst=(long*)nco_malloc(NC_MAX_DIMS*sizeof(long));
-         // Calculate indices & put in list      
-         while(aRef) {
-           // Calculate indice         
-           var_out=out(aRef);
-           if(var_out->sz > 1) {
-               fprintf(stderr, "Indicies must be single values\n");
-               exit(1);
-           }
-           // convert var to int 
-           var_out=nco_var_cnf_typ(NC_INT,var_out);
-           (void)cast_void_nctype(NC_INT,&var_out->val);
+              var->nm =strdup(vid->getText().c_str());
+              (void)ncap_var_write(var,prs_arg);
 
-           ind_lst[ind_nbr++]=var_out->val.lp[0];
+              bcst=false;
+              var_cst=nco_var_free(var_cst); 
+              (void)nco_sng_lst_free(sbs_lst,NC_MAX_DIMS);    
 
-           var_out=nco_var_free(var_out);
-           printf("id %ld=%ld\n",ind_nbr,ind_lst[ind_nbr-1]);         
-           aRef=aRef->getNextSibling();      
-         }
-         var=out(v->getNextSibling()->getNextSibling());
-         var->nm =strdup(v->getText().c_str());
-         (void)ncap_var_write(var,prs_arg);           
-         }else {
+             } break;
 
-         var_out=out(v->getNextSibling());
-         var_out->nm =strdup(v->getText().c_str());
-         (void)ncap_var_write(var_out,prs_arg);      
-       }
-      }
-   |   (#(ASSIGN  ATT_ID ))=> #(ASSIGN  a:ATT_ID ){
-        
-       int dmn_nbr=0;
-       char** sbs_lst;
-       long *ind_lst;
-       long ind_nbr=0;
-       
-       //token a  WILL contain a "@"
-       string sa=a->getText();
-       var_sct *var1;
-       RefAST aRef;
+             default: {
+               // Set class wide variables     
+               bcst=false;
+               var_cst=(var_sct*)NULL;
 
-       bcast=false;  
+
+               var=out(vid->getNextSibling());
+               var->nm =strdup(vid->getText().c_str());
+               (void)ncap_var_write(var,prs_arg);      
+             } break; 
+         } // end switch 
+         
+       } // end action
+ 
+   |   (#(ASSIGN  ATT_ID ))=> #(ASSIGN  att:ATT_ID ){
+    
+          switch( att->getNextSibling()->getType()){
             
-       // Deal with LHS casting 
-       switch (a->getNextSibling()->getType()){
-                
-         case DMN_LIST:
-               break;
-                
-         case ARG_LIST:
-               break;
-       
-         // plain var on RHS can only be dimension 0 or 1;
-         default:
-             {
-           var1=out(a->getNextSibling());
-             NcapVar *Nvar=new NcapVar(sa,nco_var_dpl(var1));
-             prs_arg->ptr_var_vtr->push_ow(Nvar);       
-             (void)nco_var_free(var1);
+            case LMT_LIST:{
+                ;
+                } break;
 
-             }       
-           break;
-         }
-       }    
-    ;     
-            
+            case DMN_LIST:{
+                    ;
+                }break;
+
+             default: {
+                string sa=att->getText();
+
+                var=out(att->getNextSibling());
+                NcapVar *Nvar=new NcapVar(sa,nco_var_dpl(var));
+                prs_arg->ptr_var_vtr->push_ow(Nvar);       
+                (void)nco_var_free(var);
+             } break; 
+         } // end switch 
+         
+       } // end action
+   ;
+               
 
 out returns [var_sct *var]
 {
@@ -541,7 +544,8 @@ out returns [var_sct *var]
             { var=ncap_var_var_op(var1,var2, NEQ );}
 
 
-    // Naked numbers
+    // Naked numbers 
+    // nb Cast is not applied to these numbers
 	|	c:BYTE		
           {  
             int ival;
@@ -644,45 +648,36 @@ out returns [var_sct *var]
          }
 
     // variables & attributes
+    |  (#( VAR_ID LMT_LIST)) => #( vid:VAR_ID lmt:LMT_LIST) {
+          int nbr_dmn;
+          int *nbr_ind; // the number of indices in each dim limit
+          char *nm;
+          nm =strdup(vid->getText().c_str());
+          var=ncap_var_init(nm,prs_arg);
+          if(var== (var_sct*)NULL){
+               nco_exit(EXIT_FAILURE);
+          }
+          var->undefined=False;
+          // apply cast only if sz >1 
+          if(bcst && var->sz >1)
+            var=ncap_do_cst(var,var_cst,prs_arg->ntl_scn);
+
+          nbr_dmn=lmt_peek(lmt);
+        }
+
 	|   v:VAR_ID       
         { 
-          
           char *nm;
-          var_sct *var_tmp;
           nm =strdup(v->getText().c_str());
           var=ncap_var_init(nm,prs_arg);
           if(var== (var_sct*)NULL){
                nco_exit(EXIT_FAILURE);
-            }
-          var->undefined=False;
-  
-          if(prs_arg->ntl_scn == True && bcast){
-             var_tmp=nco_var_dpl(var_cast);
-             var_tmp->id=var->id;
-             var_tmp->nm=(char*)nco_free(var_tmp->nm);
-             var_tmp->nm=strdup(nm);
-             var_tmp->type=var->type;
-             var_tmp->typ_dsk=var->typ_dsk;
-             var_tmp->undefined=False;
-             var_tmp->val.vp=(void*)NULL;
-             var=nco_var_free(var);
-             var=var_tmp;
-           } /* endif ntl_scn */
-  
-          if(prs_arg->ntl_scn == False && bcast){
-    /* User intends LHS to cast RHS to same dimensionality
-       Stretch newly initialized variable to size of LHS template */
-    /*    (void)ncap_var_cnf_dmn(&$$,&(((prs_sct *)prs_arg)->var_LHS));*/
-           var_tmp=var;
-           (void)ncap_var_stretch(&var_tmp,&var_cast);
-           if(var_tmp != var) { 
-           var=nco_var_free(var); 
-           var=var_tmp;
           }
-  
-          if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching variable %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),var->nm,var_cast->nm,var_cast->nbr_dim,var_cast->sz);
-    var->undefined=False;
-            } /* endif LHS_cst */
+
+          var->undefined=False;
+          // apply cast only if sz >1 
+          if(bcst && var->sz >1)
+            var=ncap_do_cst(var,var_cst,prs_arg->ntl_scn);
 
         } /* end action */
 
