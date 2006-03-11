@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.4 2006-03-10 09:52:29 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.5 2006-03-11 15:19:59 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1053,8 +1053,10 @@ ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
   return bret;
 }
 
+
+
 var_sct*         /* O [sct] casting variable has its own private dims */ 
-ncap_cast_LHS(   /* [fnc] create casting var from a list of dims */
+ncap_mk_cst(   /* [fnc] create casting var from a list of dims */
 char **sbs_lst,  /* I [sng] Array of dimension subscripts */
 int lst_nbr,     /* I [nbr] size of above list */  
 prs_sct *prs_arg)
@@ -1150,7 +1152,6 @@ prs_sct *prs_arg)
     var->val.vp=(void*)NULL;
     goto end_var;
   }
-  
 
   /* Allocate space for variable values 
      fxm: more efficient and safer to use nco_calloc() and not fill with values? */
@@ -1186,10 +1187,49 @@ prs_sct *prs_arg)
 
   return var;
 
-} // end ncap_cast_LHS
+} // end ncap_mk_cst
 
 
+var_sct*
+ncap_do_cst(
+var_sct* var,
+var_sct* var_cst,
+bool bntlscn)
+{
 
+  var_sct* var_tmp;
+
+  if(bntlscn) {
+    var_tmp=nco_var_dpl(var_cst);
+    var_tmp->id=var->id;
+    var_tmp->nm=(char*)nco_free(var_tmp->nm);
+    var_tmp->nm=strdup(var->nm);
+    var_tmp->type=var->type;
+    var_tmp->typ_dsk=var->typ_dsk;
+    var_tmp->undefined=False;
+    var_tmp->val.vp=(void*)NULL;
+    var=nco_var_free(var);
+    var=var_tmp;
+  
+  }else{
+
+   /* User intends LHS to cast RHS to same dimensionality
+      Stretch newly initialized variable to size of LHS template */
+   var_tmp=var;
+   (void)ncap_var_stretch(&var_tmp,&var_cst);
+   if(var_tmp != var) { 
+     var=nco_var_free(var); 
+     var=var_tmp;
+   }
+  
+  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching variable %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),var->nm,var_cst->nm,var_cst->nbr_dim,var_cst->sz);
+    
+   var->undefined=False;
+  }
+
+return var;
+
+}
 
 
 
