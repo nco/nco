@@ -4,7 +4,7 @@ import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.24 2006-03-09 22:30:40 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.25 2006-03-11 00:59:41 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -287,6 +287,9 @@ class Command:
                    "ssd_poll": self.cmdPoll}
         metamap[self.cmd](argv)
         pass
+
+    def __str__(self):
+        return "Command (" + self.myName + ") with cmdline: " + self.cmdLine
 
     def parseNormalCmd(self, argv):
         try:
@@ -725,7 +728,9 @@ class ScriptingEnv:
     
     def serialExec(self):
         for c in self.commandLine:
+            logit("Starting " + str(c))
             self.runCmdRaw(c)
+        logit("Finished cmd exec")
         pass
     def runCmdRaw(self, cmd):
         outFd = os.devnull
