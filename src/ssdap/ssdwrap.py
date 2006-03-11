@@ -19,7 +19,7 @@ import urllib
 #         (but variable P01 is not in foo_T42, so this won't really work.
 #
 #
-# version info: $Id: ssdwrap.py,v 1.14 2006-03-09 22:30:41 wangd Exp $
+# version info: $Id: ssdwrap.py,v 1.15 2006-03-11 01:57:02 wangd Exp $
 ########################################################################
 
 
@@ -75,9 +75,11 @@ class local:
 # we should split it into some python module to be imported.
 class SsdapCommon:
     """stuff that should be identical between client and server code"""
-    parserShortOpt = "4AaBb:CcD:d:FfHhl:Mmn:Oo:Pp:QqRrs:S:s:t:uv:w:xY:y:"
+    parserShortOpt = "4Aa:Bb:CcD:d:FfHhl:Mmn:Oo:Pp:QqRrs:S:s:t:uv:w:xY:y:"
     parserLongOpt = ["4", "netcdf4", "apn", "append",
-                     "abc", "alphabetize", "bnr", "binary",
+                     "attribute=", #ncatted, ncrename
+                     "avg=", "average=" #ncwa
+                     "bnr", "binary",
                      "fl_bnr=", "binary-file=",
                      "crd", "coords",
                      "nocoords", "dbg_lvl=", "debug-level=",
@@ -104,15 +106,17 @@ class SsdapCommon:
     ncapLongOpt.remove('variable=')
     ncapLongOpt.append('variable')
 
-    ncpdqShortOpt = parserShortOpt.replace("a","a:")
-    ncpdqShortOpt = ncpdqShortOpt.replace("M","M:")
-    ncpdqShortOpt = ncpdqShortOpt.replace("P","P:")
-    ncpdqShortOpt = ncpdqShortOpt.replace("u","Uu")
+    ncpackShortOpt = parserShortOpt.replace("M","M:")
+    ncpackShortOpt = ncpackShortOpt.replace("P","P:")
+    ncpackShortOpt = ncpackShortOpt.replace("u","Uu")
     
-    ncpdqLongOpt = parserLongOpt[:]
-    ncpdqLongOpt.extend(['arrange','permute','reorder', 'rdr',
+    ncpackLongOpt = parserLongOpt[:]
+    ncpackLongOpt.extend(['arrange','permute','reorder', 'rdr',
                          'pck_map', 'map', 'pck_plc','pack_policy',
                          'upk', 'unpack'])
+    ncksShortOpt = parserShortOpt.replace("a:","a")
+    ncksLongOpt = parserLongOpt[:]
+    ncksLongOpt.extend(['abc', 'alphabetize'])
     
     @staticmethod
     def specialGetOpt(cmd, argvlist):
@@ -122,11 +126,15 @@ class SsdapCommon:
             return getopt.getopt(argvlist,
                                  SsdapCommon.ncapShortOpt,
                                  SsdapCommon.ncapLongOpt)
-        elif cmd == "ncpdq": # ncpdq has a different format too
+        elif cmd in ["ncpdq", "ncpack", "ncunpack"]:
+            # ncpdq/ncpack/ncunpack have a different format too
             return getopt.getopt(argvlist,
-                                 SsdapCommon.ncpdqShortOpt,
-                                 SsdapCommon.ncpdqLongOpt)
-            
+                                 SsdapCommon.ncpackShortOpt,
+                                 SsdapCommon.ncpackLongOpt)
+        elif cmd == "ncks":
+            return getopt.getopt(argvlist,
+                                 SsdapCommon.ncksShortOpt,
+                                 SsdapCommon.ncksLongOpt)            
         else:
             return getopt.getopt(argvlist,
                                  SsdapCommon.parserShortOpt,
