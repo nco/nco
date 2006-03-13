@@ -9,7 +9,7 @@ package NCO_benchmarks;
 # for the NCO benchmark master 'script nco_bm.pl'
 # It must maintain Perl semantics for Perl code.
 
-#$Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.3 2006-03-10 20:50:33 mangalam Exp $
+#$Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.4 2006-03-13 23:46:27 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -105,9 +105,8 @@ sub benchmarks{
 # (or %tempf_00% and have it work. All output must be named differently in a script for the
 #script to work correctly.
 
-if (0) { # skip these
-} # skipped down to here
-
+if (0) { # DEBUGGING to skip these
+} # [DEBUGGING to skip these] down to here
 
 	#################### begin ncap benchmark hjm - needs to be verified.
 	$opr_nm='ncap';
@@ -305,6 +304,8 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
 if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
+
+
 # the 1st and last lines of this stanza are commented for testing the benchmarks on the Gb net
 # but it's incredibly slow - order of several hours even if done on the same machine
  	if ($dodap eq "FALSE") { # only if not being done by remote
@@ -314,7 +315,8 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 		####################
 		if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 	#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-			$tst_cmd[0] = "ncrcat -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg skn_lgs_00.nc %tempf_00%";
+			$tst_cmd[0] = "ncrcat -h -O $fl_fmt $nco_D_flg $omp_flg -n 22,2,1 $in_pth_arg skn_lgs_00.nc %tempf_00%";
+#			$tst_cmd[0] = "ncrcat -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg skn_lgs_00.nc %tempf_00%";
 			$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg %tempf_00% %tempf_01%";
 			$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2 %tempf_01%";
 			$tst_cmd[3] = "12.759310";
@@ -343,6 +345,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
 if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
+printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
 
 	# following fails on numeric cmp but why should the result the same?
 	#################### begin ncwa benchmark list #1b

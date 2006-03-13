@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.118 2006-03-10 20:50:33 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.119 2006-03-13 23:46:27 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -157,13 +157,13 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 
 #--fl_fmt, --file_format format\tFile format [classic,64bit,netcdf4,netcdf4_classic]\n");
 
-
-BEGIN {eval "use Digest::MD5"; $md5found = $@ ? 0 : 1}
-# $md5found = 0;  # uncomment to simulate no MD5
-if ($md5 == 1) {
-	if ($md5found == 0) {print "\nOoops! Digest::MD5 module not found - continuing with simpler error checking\n\n" ;	}
-	else                {print "\tDigest::MD5 ... found.\n";}
-} else {	print "\tMD5 NOT requested; continuing with ncks checking of single values.\n";}
+# kill all md5 stuff asap
+# BEGIN {eval "use Digest::MD5"; $md5found = $@ ? 0 : 1}
+# # $md5found = 0;  # uncomment to simulate no MD5
+# if ($md5 == 1) {
+# 	if ($md5found == 0) {print "\nOoops! Digest::MD5 module not found - continuing with simpler error checking\n\n" ;	}
+# 	else                {print "\tDigest::MD5 ... found.\n";}
+# } else {	print "\tMD5 NOT requested; continuing with ncks checking of single values.\n";}
 
 $NUM_FLS = 4; # max number of files in the file creation series
 

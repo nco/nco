@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics. - hjm
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.31 2006-03-10 20:50:33 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.32 2006-03-13 23:46:27 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -110,7 +110,7 @@ if (0) {} #################  SKIP THESE #####################
 	NCO_bm::go(\@tst_cmd);
 	$#tst_cmd=0;  # reset the array
 
-# printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
+#printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
 
 	$tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=log(e_flt)^1' $in_pth_arg in.nc %tempf_00%";
 	$tst_cmd[1]="ncks -C -H -v foo -s '%.6f\\n' %tempf_00%";
@@ -182,11 +182,13 @@ if ($dodap eq "FALSE") {
 	# FAILS!
 	$tst_cmd[0]="ncatted -h -O $fl_fmt $nco_D_flg -a units,,m,c,'meter second-1' $in_pth_arg in.nc %tempf_00%";
 	$tst_cmd[1]="ncks -C -H -s '%s' -v lev %tempf_00% | grep units | cut -d' ' -f 11-12";
-	$dsc_sng="Modify all existing units attributes to meter second-1 FAILS - FXME! ";
+	$dsc_sng="FIXME; TODO691: Modify all existing units attributes to meter second-1";
 	$tst_cmd[2] = "meter second-1";
 	$tst_cmd[3] = "SS_OK";
 	NCO_bm::go(\@tst_cmd);
 	$#tst_cmd=0;  # reset the array
+
+#printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
 
    $tst_cmd[0]="ncatted -h -O $fl_fmt $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tempf_00%";
 	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v val_one_mss %tempf_00%";
@@ -287,7 +289,7 @@ if ($dodap eq "FALSE") {
 
 
 	$tst_cmd[0]="ncwa $omp_flg -C -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc %tempf_03%";
-	$tst_cmd[1]="ncbo $omp_flg -C -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc %tempf_03% %tempf_00%";
+	$tst_cmd[1]="ncbo $omp_flg -C -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth/in.nc %tempf_03% %tempf_00%";
 	$tst_cmd[2]="ncks -C -H -d time,3 -s '%f' -v rec_var_flt_mss_val_dbl %tempf_00%";
 	$dsc_sng="Difference which tests broadcasting and changing variable IDs";
 	$tst_cmd[3] = "-1.0";
@@ -297,7 +299,7 @@ if ($dodap eq "FALSE") {
 
 #} # endif $mpi_prc == 0...
 
-# printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
+#printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
 
 ####################
 #### ncea tests #### - OK !
@@ -599,9 +601,7 @@ if ($dodap eq "FALSE"){
 ####################
 
 #        if ($mpi_prc == 0 || ($mpi_prc > 0 && $localhostname !~ /sand/)) { # test hangs because of ncrcat TODO nco593
-#	$outfile =  $foo1_fl; # orig line - refactor after rest of tests are working
-	$tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tempf_00% 2> %tempf_02%";
-#	$outfile =  $orig_outfile;  orig line FIXME
+	$tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tempf_01% 2> %tempf_02%";
 	$tst_cmd[1]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y avg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tempf_00%";
 	$tst_cmd[2]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time %tempf_00% %tempf_00%";
 	$tst_cmd[3]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl %tempf_01% %tempf_00% %tempf_00%";

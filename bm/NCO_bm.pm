@@ -15,7 +15,7 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.31 2006-03-10 20:50:33 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.32 2006-03-13 23:46:27 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -261,7 +261,6 @@ sub verbosity {
 
 sub fl_cr8_dat_init {
 	my $NUM_FLS = 4;
-print "in fl_cr8_dat_init, \$NUM_FLS = $NUM_FLS\n";
 	dbg_msg(1,"fl_cr8_dat_init: \$NUM_FLS = $NUM_FLS");
 
 if ($dbg_lvl > 2) {
@@ -650,7 +649,7 @@ my %lfn = ( # lfn = local_file_name
 					# non-MPI apps compiled w/ MPI need special prefix to hold them to 1 process
 					elsif ($aix) {$_ = $tmr_app . $aix_mpi_sgl_nvr_prfx . $prefix . $_;}
 					else         {$_ = $tmr_app . $prefix . $_; } # the std prefix
-					dbg_msg(2, "URGENT:cmdline= $_ \n");
+					dbg_msg(3, "URGENT:before execution, cmdline= $_ \n");
 					last;
 				}
 			} # end of foreach my $op (@opr_lst_all)
@@ -717,12 +716,12 @@ my %lfn = ( # lfn = local_file_name
 			# have to mod the input string -  suffix with the cycle#
 			# follow check only if the MD5 module is present, there's a foo.nc to check ($lfn{'%tempf_00%'} = 'foo.nc')
 			# & non-terminal cmd (the terminal command is ncks which is expected to return a single value or string)
-			dbg_msg(3,"check_nco_results(): \$md5 = $md5, \$md5_chk = $md5_chk, \$cmd_lst_cnt ($cmd_lst_cnt) < \$lst_cmd ($lst_cmd)");
-			if ($md5 && $md5_chk && $cmd_lst_cnt < $lst_cmd) {
-				dbg_msg(2,"Entering check_nco_results() with \$lfn{'%tempf_00%'}=$lfn{'%tempf_00%'}");
-				check_nco_results($lfn{'%tempf_00%'}, $md5_dsc_sng);
-			}
-			if ($md5_chk == 0 && $dbg_lvl > 0) { $dbg_sgn .= "WARN: No MD5/wc check on intermediate file.\n";}
+# 			dbg_msg(3,"check_nco_results(): \$md5 = $md5, \$md5_chk = $md5_chk, \$cmd_lst_cnt ($cmd_lst_cnt) < \$lst_cmd ($lst_cmd)");
+# 			if ($md5 && $md5_chk && $cmd_lst_cnt < $lst_cmd) {
+# 				dbg_msg(2,"Entering check_nco_results() with \$lfn{'%tempf_00%'}=$lfn{'%tempf_00%'}");
+# 				check_nco_results($lfn{'%tempf_00%'}, $md5_dsc_sng);
+# 			}
+# 			if ($md5_chk == 0 && $dbg_lvl > 0) { $dbg_sgn .= "WARN: No MD5/wc check on intermediate file.\n";}
 
 			# else the oldstyle check has already been done and the results are in $result, so process normally
 			$cmd_lst_cnt++;
@@ -834,7 +833,7 @@ sub SS_gnarly_pything {
 #	print "MY_BIN_DIR = $MY_BIN_DIR\n";
 #	print "DATA_DIR = $dta_dir\n";
 	my $lst_scrt_idx = $#sscmd_lst - 2; # last script index that has content to be sent to the server.
-	my $tfname = "/home/hjm/z/nco/bm/nco_rgr_tmp_4scriptwrap";
+	my $tfname = "/tmp/nco_rgr_tmp_4scriptwrap";
 	open(TF, "> $tfname") or die "\nUnable to open temp file 'nco_rgr_tmp_4scriptwrap' in current dir.\n";
 	my $r = 0;
 	my $sscl = ""; # 'server side cmd line' holds the SS version of the individual cmdlines
@@ -859,7 +858,6 @@ sub SS_gnarly_pything {
 	}
 	close TF;
 	#print "TF should be done - waiting for action\n"; #my $wait = <STDIN>;#my $wait = <STDIN>;
-
 # print "\n##SS cmd: $MY_BIN_DIR/scriptwrap.py  $tfname $SS_URL\nand waiting for key to go"; my $wait = <STDIN>;
 	# and finally EXECUTE it
 	my $xpct_val = `$MY_BIN_DIR/scriptwrap.py  $tfname $SS_URL`;
@@ -922,6 +920,7 @@ sub smrz_rgr_rslt {
 		}
 	}
 	$reportstr .= sprintf "\nNB:MD5: test passes MD5 checksum on file(s) May be more than one intermediate file.\nSVx: test passes single terminal value check SVn=numeric, SVa=alphabetic\n";
+
 	chdir "../bld";
 	if ($dbg_lvl == 0) {print $reportstr;}
 	else { &verbosity($dbg_lvl, $wnt_log, $reportstr); }
