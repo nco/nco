@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.5 2006-03-11 15:19:59 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.6 2006-03-15 14:03:21 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -891,9 +891,6 @@ ncap_var_var_op   /* [fnc] Add two variables */
   nco_bool vb1;
   nco_bool vb2;
 
-  var_sct *var_swp;
-  ptr_unn val_swp;  // Used to swap values arround
-
 
   static VarOp<short> Vs;
   static VarOp<nco_int> Vl;
@@ -954,6 +951,9 @@ ncap_var_var_op   /* [fnc] Add two variables */
        
     // att & var
     }else if( vb1 && !vb2){
+      var_sct *var_swp;
+      ptr_unn val_swp;  // Used to swap values around
+
       var1=nco_var_cnf_typ(var2->type,var1);
      if(var2->sz > 1 && var1->sz==1)
       (void)ncap_var_cnf_dmn(&var1,&var2);
@@ -965,11 +965,12 @@ ncap_var_var_op   /* [fnc] Add two variables */
      // Swap values around in var1 and var2;   
      val_swp=var1->val;
      var1->val=var2->val;
-     var2->val=var1->val;
+     var2->val=val_swp;;
      // Swap names about 
      var_swp=var1;
      var1=var2;
      var2=var_swp;
+
      // att && att
     } else if (vb1 && vb2) {
       (void)ncap_var_retype(var1,var2);
