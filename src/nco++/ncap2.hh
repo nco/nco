@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.8 2006-03-11 15:21:59 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.9 2006-03-15 14:01:16 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -39,6 +39,8 @@
 #include "NcapVarVector.hh"
 #include "NcapVar.hh"
 
+#include <antlr/AST.hpp> /* nneeded for ast_ind struct */
+
 /* Define symbol table */
 
 typedef struct{ /* sym_sct */
@@ -55,8 +57,14 @@ typedef struct{ /* nm_lst_sct */
 } nm_lst_sct;
 
 
-typedef struct{ /* prs_sct */
+/* Structure to hold AST pointers to indices in hyperslabs -only temporary */
+typedef struct{
+  ANTLR_USE_NAMESPACE(antlr)RefAST ind[3];
+} ast_lmt_sct;   
 
+
+
+typedef struct{ /* prs_sct */
 public:
   char *fl_in; /* [sng] Input data file */
   int in_id; /* [id] Input data file ID */
