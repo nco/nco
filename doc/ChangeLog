@@ -6,6 +6,23 @@
 	* Started code for slab indices added
 	lmt_peek() & lmt_init() to ncoTree.hpp
 
+2006-03-14  Harry Mangalam <hjm@tacgi.com>
+	* nco++ dir now works with autoconf/automake, altho only tested with
+	  simple cases (only gcc/g++ compilers, etc).  Original Makefile renamed
+     to Makefile.old. Tested under --enable-nco++=yes (default) &
+     --enable-nco++=no
+
+2006-03-13  Harry Mangalam <hjm@tacgi.com>
+	* all but 1 benchmark work server-side.  When trying to execute the ncrcat 
+	  bench, the serverside fails when doing the ncwa command.  It uses a very large amount 
+	  of mem (~1.3G when it dies - de to an apache limitation?)  Daniel and I are giving up
+	  for now - marked as TODO 692.
+	
+	* failing regressions tested and some resolved to bad handling by benchmark script.
+	  remianing ones are marked in the failure message.  Only new one is TODO691 - looks
+	  like a problem with ncatted returning mysteriously null values.
+	  Total of 3 regressions failing - 2 ncap, 1 ncatted.
+
 2006-03-09  Harry Mangalam <hjm@tacgi.com>
 	* namespace cleanup on benchmark code and added rc capability to the code,
 	first capability just records whether users said yes to send UDP data and

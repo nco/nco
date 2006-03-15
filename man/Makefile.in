@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/man/Makefile.in,v 1.31 2005-12-03 04:48:46 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/man/Makefile.in,v 1.32 2006-03-15 17:25:28 mangalam Exp $ -*-makefile-*-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -115,6 +115,9 @@ MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
 MPICH2_ROOT = @MPICH2_ROOT@
 MPI_CC = @MPI_CC@
+NCOXX = @NCOXX@
+NCOXX_FALSE = @NCOXX_FALSE@
+NCOXX_TRUE = @NCOXX_TRUE@
 NCO_CXX = @NCO_CXX@
 NCO_NEED_GETOPT_LONG_FALSE = @NCO_NEED_GETOPT_LONG_FALSE@
 NCO_NEED_GETOPT_LONG_TRUE = @NCO_NEED_GETOPT_LONG_TRUE@
@@ -201,9 +204,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  man/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  man/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  man/Makefile
+	  $(AUTOMAKE) --gnu  man/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
