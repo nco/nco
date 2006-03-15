@@ -37,6 +37,7 @@ c1@double2=25.;
 c1@exp=21e2;
 c1@exp2=21.1e10f;
 c1@exp3=2e-2d;
+c1@exp4=2.e3;
 c1@zero=0.0;
 c1@zero1=.0;
 c1@zero2=0.0e2;
