@@ -41,10 +41,10 @@ public:
       att_nm=s_va_nm.substr(att_char_posn);
     }
     //var->nm && s_va_nm are the same
-    /*
+
     if( var->nm) 
     var->nm=(char*)nco_free(var->nm);
-    var->nm=strdup(s_va_nm.c_str()); */
+    var->nm=strdup(s_va_nm.c_str()); 
     
   }
     
