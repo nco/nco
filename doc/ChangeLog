@@ -1,3 +1,11 @@
+2006-03-15 Henry Butowsky <henryb@ntlworld.com>
+	* fixed problem with NUMBER lexer.Can now lex
+	number like 23. or 111. etc
+	* fixed code in NcapVar.hh -- Code was crashing when
+	var->nm was set equal to s_va_nm
+	* Started code for slab indices added
+	lmt_peek() & lmt_init() to ncoTree.hpp
+
 2006-03-09  Harry Mangalam <hjm@tacgi.com>
 	* namespace cleanup on benchmark code and added rc capability to the code,
 	first capability just records whether users said yes to send UDP data and
