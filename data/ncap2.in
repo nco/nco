@@ -16,6 +16,8 @@ if(1) {a9=1; a10=2;}
 if( 0.0 ) a6=0; else if(0) {a11=1; a12=2;} else if( 3>2) a13=3;
 // check dangling else
 if(1) if(0) a14=1; else a15=1; 
+a20[$time]=666;
+a21[$time,$lat]=a1@one;
 b2=999;
 b2@one=2222.0d; 
 b2@zero=three_dmn_var_dbl@missing_value;
@@ -23,12 +25,21 @@ b2@two=sin(3.14);
 b2@three=cos(3.14);
 b2@four=!sin(3.14);
 b3=b2@zero;
-// expressions with vars and attributtes
+// Check bare numbers are being parsed OK
 c1@byte=10b;
 c1@short=20s;
 c1@int=30;
+c1@int2=23L;
+c1@int3=24l;
 c1@float=40f;
 c1@double=50d;
+c1@double2=25.;
+c1@exp=21e2;
+c1@exp2=21.1e10f;
+c1@exp3=2e-2d;
+c1@zero=0.0;
+c1@zero1=.0;
+c1@zero2=0.0e2;
 c1=four*c1@byte;
 d1=three_dmn_var_int*c1@double;
 // put var "into" an attributte
@@ -46,7 +57,18 @@ global@test2=global@Conventions;
 // Mask examples --grab  only values <= 20 from three_dmn_var_dbl
 mask_out= (three_dmn_var_dbl <= 20) *three_dmn_var_dbl;
 // check var/att casting;
-/e1@test=three_dmn_var_int;
+e1@test=three_dmn_var_int;
 e1@test2=e1@test*c1@int;
-e1@three=10000d;
-e2[time]=0.99;
+e1@three=10d;
+// plain numbers are created as vars -- 
+// mixed expression -resultant type=double
+e1@four=1.001d*e1@three;
+// resultant expression resultant type=int
+e1@five=e1@three*199;
+e1@six=e1@three*e1@three;
+// below op not done -- att must conform to var 
+//e1@seven=e1@test*100;
+// below op valid att size= var size
+e1@eight=e1@test*three_dmn_var_dbl;
+//e2[time]=0.99;
+e2=11111.0;
