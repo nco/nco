@@ -142,7 +142,7 @@ primary_exp
     | INT
     | FLOAT    
     | DOUBLE
-    | hyper_slb  //remember this include VAR_ID & ATT_ID
+    | hyper_slb  //remember this includes VAR_ID & ATT_ID
   ;
 
 
@@ -270,23 +270,22 @@ C_COMMENT:
 
 NUMBER:
 	(DGT)+	{ $setType(INT); }
-	(
- 	|{ LA(2) >= '0' && LA(2) <= '9' }? '.' (DGT)+ (XPN)? { $setType(DOUBLE); }
-	|	(XPN) { $setType(DOUBLE); }
-    )(
-    ('L'|'l')!    { $setType(INT);}
-    | ('S'|'s')!    { $setType(SHORT);}
-    | ('B'|'b')!    { $setType(BYTE);}
-    | ('D'|'d')!    { $setType(DOUBLE);}
-    |('F'|'f')!     { $setType(FLOAT);}
+	( ( '.'  ((DGT)+ (XPN)? )?)  { $setType(DOUBLE); }
+       | (XPN)         { $setType(DOUBLE);}
+       | ('L'|'l')!    { $setType(INT);   }
+       | ('S'|'s')!    { $setType(SHORT); }
+       | ('B'|'b')!    { $setType(BYTE);  }
+    )?
+    (    ('F'|'f')!    { $setType(FLOAT); }
+       | ('D'|'d')!    { $setType(DOUBLE);}
     )?        
 ;
 
 // deal with number like .123, .2e3 ,.123f, 0.23d
 NUMBER_DOT:
       '.' (DGT)+ (XPN)? { $setType(DOUBLE); }  
-      (('D'|'d')!     { $setType(DOUBLE);}
-       |('F'|'f')!     { $setType(FLOAT);}
+      ( ('D'|'d')!     {  $setType(DOUBLE);}
+       |('F'|'f')!     {  $setType(FLOAT);}
       )?        
     ;
 
@@ -334,10 +333,57 @@ public:
           tr=tr->getNextSibling();   
         }
     }
+    int lmt_init(RefAST aRef, int nbr_dmn, vector<ast_lmt_sct*> &lmt_vtr) {
+   
+      int idx;
+      int cdex;
+      RefAST lRef;
+      RefAST eRef;
+      ast_lmt_sct *hyp;
+
+      if(aRef->getType() != LMT_LIST)
+         return 0;
     
+      lRef=aRef->getFirstChild();
+
+      cout<<"In lmt_init\n";         
+
+      for(idx=0 ; idx < nbr_dmn ; idx++){
+       hyp=new ast_lmt_sct;
+       hyp->ind[0]= ANTLR_USE_NAMESPACE(antlr)nullAST;                 
+       hyp->ind[1]= ANTLR_USE_NAMESPACE(antlr)nullAST;                     
+       hyp->ind[2]= ANTLR_USE_NAMESPACE(antlr)nullAST;                 
+       
+       if(lRef->getType()!=LMT) 
+            return 0;
+       
+        cdex=0; 
+        eRef=lRef->getFirstChild();
+
+       /* 
+       while(eRef) {
+          if(eRef->getType() != COLON)
+            hyp->ind[cdex]=eRef;   
+           else
+          hyp->ind[cdex+1]=eRef;   
+        
+           cdex++; 
+           eRef=eRef->getNextSibling();
+        }
+       */
+       hyp->ind[0]=eRef;
+
+       cout <<"eRef="<<eRef->getText()<<endl;
+       cout <<"hyp->ind[0]="<<hyp->ind[0]->getText()<<endl;
+ 
+       lmt_vtr.push_back(hyp);
+       cout<<"lmt_vtr[idx]="<<lmt_vtr[idx]->ind[0]->getText()<<endl;
+       lRef=lRef->getNextSibling();
+     }
+  }
+
 
 }
-
 // Return the number of dimensions in lmt subscript
 lmt_peek returns [int nbr_dmn]
 
@@ -469,12 +515,17 @@ assign
                 }break;
 
              default: {
+                var_sct *var_nw;
                 string sa=att->getText();
 
+                cout <<"Saving attribute " << sa <<endl;
+
+         
                 var=out(att->getNextSibling());
-                NcapVar *Nvar=new NcapVar(sa,nco_var_dpl(var));
+                //var_nw=nco_var_dpl(var);
+                NcapVar *Nvar=new NcapVar(sa,var);
                 prs_arg->ptr_var_vtr->push_ow(Nvar);       
-                (void)nco_var_free(var);
+                //(void)nco_var_free(var);
              } break; 
          } // end switch 
          
@@ -647,24 +698,69 @@ out returns [var_sct *var]
             (void)cast_nctype_void(type,&var->val);
          }
 
-    // variables & attributes
+
+
+    // Variable with argument list 
     |  (#( VAR_ID LMT_LIST)) => #( vid:VAR_ID lmt:LMT_LIST) {
+          int idx;
+          int jdx;
           int nbr_dmn;
           int *nbr_ind; // the number of indices in each dim limit
           char *nm;
+          var_sct *var;
+          RefAST aRef;
+          vector<ast_lmt_sct*> lmt_vtr; 
+
+          cout<<"About to call lmt_peek\n";         
+          nbr_dmn=lmt_peek(lmt);       
+          cout<<"Called to call lmt_peek\n";         
+          if( lmt_init(lmt,nbr_dmn, lmt_vtr) == 0){
+            printf("zero return for lmt_init\n");
+            nco_exit(EXIT_FAILURE);
+          }
+            cout<<"Return from lmt_peek num_dim=" <<nbr_dmn <<endl ;                          
+            cout<<"lmt_vtr.size()==" << lmt_vtr.size() <<endl ;                          
+          
+          for(idx=0 ; idx < lmt_vtr.size() ; idx++){
+           for(jdx=0;jdx < 3; jdx++){
+
+              //cout<< lmt_vtr[idx]->ind[jdx]->getText()<<endl;
+
+              
+              aRef=lmt_vtr[idx]->ind[jdx];
+
+                //if(aRef == nullAST) 
+                if(!aRef) 
+                   cout <<" null " <<endl;
+                 else
+                    cout << aRef->getText() <<" " << endl;               
+
+              if(jdx==2) printf("\n");
+             
+               
+            }
+          }
+          cout << "Done printing\n";
           nm =strdup(vid->getText().c_str());
           var=ncap_var_init(nm,prs_arg);
           if(var== (var_sct*)NULL){
                nco_exit(EXIT_FAILURE);
           }
           var->undefined=False;
+
           // apply cast only if sz >1 
           if(bcst && var->sz >1)
             var=ncap_do_cst(var,var_cst,prs_arg->ntl_scn);
+          
+          cout << "At action /function end!!\n";
+           for(idx=0 ; idx <lmt_vtr.size() ; idx++)
+             delete lmt_vtr[idx];
 
-          nbr_dmn=lmt_peek(lmt);
+            cout << "Done vector delete\n";
+ 
         }
 
+    // Plain variable
 	|   v:VAR_ID       
         { 
           char *nm;
@@ -680,7 +776,7 @@ out returns [var_sct *var]
             var=ncap_do_cst(var,var_cst,prs_arg->ntl_scn);
 
         } /* end action */
-
+    // PLain attribute
     |   att:ATT_ID { 
             // check "output"
             NcapVar *Nvar;
