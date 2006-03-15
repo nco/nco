@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.161 2006-03-15 17:25:26 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.162 2006-03-15 20:46:59 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -212,6 +212,21 @@ AC_ARG_ENABLE(
     enable_ncoxx=${enableval},
     [enable_ncoxx=yes])
 
+AC_LANG_PUSH(C++)
+if (test "${enable_ncoxx}" != 'no'); then
+	# check for runantlr
+	AC_CHECK_PROG(RUNANTLR,runantlr,"TRUE","FALSE")
+	if (test "${RUNANTLR}" == 'TRUE'); then
+		AC_CHECK_LIB([antlr],[_ZN5antlr11CommonToken7factoryEv],enable_ncoxx=yes,enable_ncoxx=no,-lstdc++)
+		AC_CHECK_HEADER([antlr/CommonToken.hpp],enable_ncoxx=yes,enable_ncoxx=no)
+		if (test "${enable_ncoxx}" == 'no'); then
+			echo "INFO: No [antlr] support - you need to install the antlr development package to build the nco++ dir"
+		else
+			echo "INFO: ANTLR development support found - can build nco++"
+		fi
+	fi
+fi
+AC_LANG_POP(C++)
 
 AC_ARG_ENABLE(netcdf4,AS_HELP_STRING([--enable-netcdf4],[Use netcdf versiion 4 (WARNING: Experimental) [[default=no]]]),enable_netcdf4=yes,enable_netcdf4=no)
 

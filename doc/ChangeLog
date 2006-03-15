@@ -10,7 +10,8 @@
 	* nco++ dir now works with autoconf/automake, altho only tested with
 	  simple cases (only gcc/g++ compilers, etc).  Original Makefile renamed
      to Makefile.old. Tested under --enable-nco++=yes (default) &
-     --enable-nco++=no
+     --enable-nco++=no.  Added more logic as per CZ request on 3.15 - now
+     checks for runantlr, libantlr, antlr headers, 
 
 2006-03-13  Harry Mangalam <hjm@tacgi.com>
 	* all but 1 benchmark work server-side.  When trying to execute the ncrcat 
