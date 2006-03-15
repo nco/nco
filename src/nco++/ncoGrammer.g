@@ -270,7 +270,7 @@ C_COMMENT:
 
 NUMBER:
 	(DGT)+	{ $setType(INT); }
-	( ( '.'  ((DGT)+ (XPN)? )?)  { $setType(DOUBLE); }
+	( ( '.'  (DGT)* (XPN)? ) { $setType(DOUBLE); }
        | (XPN)         { $setType(DOUBLE);}
        | ('L'|'l')!    { $setType(INT);   }
        | ('S'|'s')!    { $setType(SHORT); }
@@ -409,8 +409,9 @@ statements returns [int iret]
             
                 }
     | ass:ASSIGN {
-      assign(ass);
  	  cout << "Type ASSIGN " <<  ass->getFirstChild()->getText() <<endl;
+      assign(ass);
+
       }
               
     | iff:IF {
