@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.26 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.27 2006-03-17 23:34:19 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -315,7 +315,9 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
   struct rusage usg;
 
   /* Get page size */
+#ifndef NECSX
   sz_pg=getpagesize();
+#endif /* NECSX */
 
   /* fxm: CEWI, not necessary */
   rcd=rusage_who;
@@ -328,6 +330,9 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
 #ifdef LINUX
   (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is LINUX so rusage does not implement ru_maxrss, ru_ixrss, ru_idrss, and ru_idrss. Page size is %d B.\n",prg_nm_get(),sz_pg);
 #endif /* !LINUX */
+#ifdef NECSX
+  (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is NECSX so rusage units for page size ticks are unknown.\n",prg_nm_get(),sz_pg);
+#endif /* !SUNMP */
 #ifdef SUNMP
   (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is SUNMP so rusage uses pages [pg] for size and ticks [tck] for time. Page size is %d B.\n",prg_nm_get(),sz_pg);
 #endif /* !SUNMP */

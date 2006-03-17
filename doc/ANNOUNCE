@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.168 2006-03-10 06:10:12 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.169 2006-03-17 23:34:18 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.1 are ready. 
 This is mainly a development release for internal consumption.
@@ -21,9 +21,14 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 3. ncap2 development code in nco/src/nco++ (Henry Butowsky)
 
-4. server-side extensions in (Daniel Wang)
+4. Server-side extensions in (Daniel Wang)
 
 5. Fixed some benchmark/regression problems over DAP (Harry Mangalam)
+
+6. Automatically configure/build nco++ directory (Harry Mangalam)
+
+7. Regression tests & benchmarks work with server-side extensions (HM/DW)
+
 
 Enjoy,
 Charlie

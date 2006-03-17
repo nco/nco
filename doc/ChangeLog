@@ -1,38 +1,49 @@
-2006-03-14  Harry Mangalam <hjm@tacgi.com>
+2006-03-17  Charlie Zender  <zender@uci.edu>
+
+	* NECSX does not support getpagesize() in nco_mmr.c
+
+2006-03-14  Harry Mangalam  <hjm@tacgi.com>
+
 	* spiffin' config/make to bypass nco++ politely if antlr not available
 	also now forces regeneration of hpp files - 1st .cc file triggers
 	rebuild.  Builds (or doesn't) on a clean checkout.
-   * 'make install' installs ncap2 to bindir if it's built.
-	* mod configure to skip nco++ if trying to build for MPI (nco++ fails on 
-	the MPI build - a concern at this point?)
 
-2006-03-15 Henry Butowsky <henryb@ntlworld.com>
-	* fixed problem with NUMBER lexer.Can now lex
-	number like 23. or 111. etc
-	* fixed code in NcapVar.hh -- Code was crashing when
-	var->nm was set equal to s_va_nm
-	* Started code for slab indices added
-	lmt_peek() & lmt_init() to ncoTree.hpp
+	* 'make install' installs ncap2 to bindir if it's built.
 
-2006-03-14  Harry Mangalam <hjm@tacgi.com>
+	* mod configure to skip nco++ if trying to build for MPI (nco++
+	fails on the MPI build - a concern at this point?)
+
+2006-03-15  Henry Butowsky  <henryb@ntlworld.com>
+
+	* Fix NUMBER lexer. Can now lex number like 23. or 111. etc
+
+	* Fix NcapVar.hh -- Code was crashing when var->nm was set equal to s_va_nm
+
+	* Start code for slab indices added lmt_peek() & lmt_init() to ncoTree.hpp
+
+2006-03-14  Harry Mangalam  <hjm@tacgi.com>
+
 	* nco++ dir now works with autoconf/automake, altho only tested with
-	  simple cases (only gcc/g++ compilers, etc).  Original Makefile renamed
-     to Makefile.old. Tested under --enable-nco++=yes (default) &
-     --enable-nco++=no.  Added more logic as per CZ request on 3.15 - now
-     checks for runantlr, libantlr, antlr headers, 
+	simple cases (only gcc/g++ compilers, etc).  Original Makefile renamed
+	to Makefile.old. Tested under --enable-nco++=yes (default) &
+	--enable-nco++=no.  Added more logic as per CZ request on 3.15 - now
+	checks for runantlr, libantlr, antlr headers, 
 
-2006-03-13  Harry Mangalam <hjm@tacgi.com>
+2006-03-13  Harry Mangalam  <hjm@tacgi.com>
+
 	* all but 1 benchmark work server-side.  When trying to execute the ncrcat 
-	  bench, the serverside fails when doing the ncwa command.  It uses a very large amount 
-	  of mem (~1.3G when it dies - de to an apache limitation?)  Daniel and I are giving up
-	  for now - marked as TODO 692.
+	bench, the serverside fails when doing the ncwa command.  It uses
+	a very large amount of mem (~1.3G when it dies - de to an apache
+	limitation?)  Daniel and I are giving up for now - marked as TODO 692.
 	
-	* failing regressions tested and some resolved to bad handling by benchmark script.
-	  remianing ones are marked in the failure message.  Only new one is TODO691 - looks
-	  like a problem with ncatted returning mysteriously null values.
-	  Total of 3 regressions failing - 2 ncap, 1 ncatted.
+	* failing regressions tested and some resolved to bad handling by
+	benchmark script. Remaining ones are marked in the failure
+	message. Only new one is TODO691 - looks like a problem with
+	ncatted returning mysteriously null values. Total of 3 regressions
+	failing - 2 ncap, 1 ncatted. 
 
-2006-03-09  Harry Mangalam <hjm@tacgi.com>
+2006-03-09  Harry Mangalam  <hjm@tacgi.com>
+
 	* namespace cleanup on benchmark code and added rc capability to the code,
 	first capability just records whether users said yes to send UDP data and
 	then uses that answer to bypass the question from then on.
@@ -55,24 +66,24 @@
 	* Fix TODO nco687 so unequal missing values are formatted
 	correctly in warning messages. This should help debug nco686.
 
-2006-03-09  Harry Mangalam <hjm@tacgi.com>
+2006-03-09  Harry Mangalam  <hjm@tacgi.com>
 
 	* nco_bm_benchmarks.pl converted to NCO_benchmarks.pm with a good 
-          bit of namespace cleanup.  There are still some inexplicable explicit
-          declarations that are needed but only about 2-3.
+        bit of namespace cleanup.  There are still some inexplicable explicit
+        declarations that are needed but only about 2-3.
 
 	* both benchmark and regression code support both serverside and
-	  clientside execution.  There are still some remaining conflicts, 
-	  but most benchmarks and most regressions run identically.
+	clientside execution.  There are still some remaining conflicts, 
+	but most benchmarks and most regressions run identically.
 
 	* the go() routine was rewritten to be a bit more coherent.  Again,
-	  there is a bit more cleanup to do, but it's time to get it into cvs
+	there is a bit more cleanup to do, but it's time to get it into cvs
 
 	* Daniel's ss code changes have tracked the benchmarking code, so both
-	  sides work with each other.  There are some unfortuneately primitive
-	  hacks to get them working together, but while it's ugly (perl writes 
-	  data to file and executes python to pick it up, it's simpler than
-          bringing swig into the picture.
+	sides work with each other.  There are some unfortuneately primitive
+	hacks to get them working together, but while it's ugly (perl writes 
+	data to file and executes python to pick it up, it's simpler than
+	bringing swig into the picture.
 
 2006-02-25  Charlie Zender  <zender@uci.edu>
 
@@ -124,7 +135,7 @@
 
 	* Add udunits libraries, remove dat target
 
-2006-02-16  Harry Mangalam <hjm@tacgi.com>
+2006-02-16  Harry Mangalam  <hjm@tacgi.com>
 
 	* Corrected BM code to account for error strings being eval'ed as 0 
           when compared as numeric and a number of other error-checking
@@ -203,7 +214,7 @@
 
 	* Added integration example to ncwa in manual
 
-2006-01-04  Harry Mangalam <hjm@tacgi.com>
+2006-01-04  Harry Mangalam  <hjm@tacgi.com>
 	
  	* Fixes to the BM code to force the retrieval of DAP-requested files and
           a variable ($prsrv_fl) to allow a regression test to maintain files if 
@@ -222,7 +233,7 @@
 
 	* Add xbitmap icon to homepage
 
-2005-12-19  Harry Mangalam <hjm@tacgi.com>
+2005-12-19  Harry Mangalam  <hjm@tacgi.com>
 	
 	* mod bm code to make a new dir for dap data and explicitly delete 
 	  everything in it for each new DAP test to force the network transfer.
@@ -248,7 +259,7 @@
 	to support using CC=g++ within configure. Ditto for
 	-Wmissing-prototypes, and analogous procedures for xlC* and icpc*.
 
-2005-12-08  Harry Mangalam <hjm@tacgi.com>
+2005-12-08  Harry Mangalam  <hjm@tacgi.com>
 
 	* fixed passive/active ftp problem exhibited on soot by making 'ftp'
         explicitly '/usr/bin/ftp' (it was a kerberos'ed ftp on soot for some
@@ -288,7 +299,7 @@
 
 	* Preparing for NCO 3.1.0 release
 
-2005-11-30  Harry Mangalam <hjm@tacgi.com>
+2005-11-30  Harry Mangalam  <hjm@tacgi.com>
 
 	* Changed ncap.c to allow MACOSX to use erf, erfc, gamma
 
@@ -303,7 +314,7 @@
 
 	* bld/Makefile accepts FL_FMT for netCDF4 testing
 
-2005-11-29  Harry Mangalam <hjm@tacgi.com>
+2005-11-29  Harry Mangalam  <hjm@tacgi.com>
 
 	* Changed configure.in to use NETCDF4_ROOT rather than renaming to
 	libnetcdf4.
@@ -313,7 +324,7 @@
 	* Remove nco_open_par() again. Seems to require parallel mode
 	in netCDF4 configure to appear in library, possible hardware dependency
 
-2005-11-28  Harry Mangalam <hjm@tacgi.com>
+2005-11-28  Harry Mangalam  <hjm@tacgi.com>
 	
 	* Spiffing configure/makefiles to make sure that netcdf4 works as
 	expected; adding dependencies into configure rather than requiring the
@@ -349,7 +360,7 @@
 	ncap -O -v -s 'x=rnd_nbr(lat)' ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
 	for generating fake data. Search source for TODO nco652 and improve!
 	
-2005-11-14  Harry Mangalam <hjm@tacgi.com>
+2005-11-14  Harry Mangalam  <hjm@tacgi.com>
 
 	* retired following TODOs
 	bld68. hjm Verify configure with minimal options works with MACOSX
@@ -362,11 +373,11 @@
 	bld46. Is DAP_ROOT (or DODS_ROOT) an obsolete variable in DAP 3.5+? if
 	       so obsolete it
 
-2005-11-14  Harry Mangalam <hjm@tacgi.com>
+2005-11-14  Harry Mangalam  <hjm@tacgi.com>
 
 	* corrected Benchmark code for opendap access.
 
-2005-11-11  Harry Mangalam <hjm@tacgi.com>
+2005-11-11  Harry Mangalam  <hjm@tacgi.com>
 
 	* fixed net tests to test only returned value, not entire msg
 
@@ -394,7 +405,7 @@
 	* Add CVS Header and -*-makefile-*- to all Makefile.am's 
 	This automatically invokes Emacs Makefile-mode syntax/highlighting
 
-2005-10-31  Harry Mangalam <hjm@tacgi.com>
+2005-10-31  Harry Mangalam  <hjm@tacgi.com>
 
 	* Changes to mk_bm_plots to scriptify the last of CZ's requests
 
@@ -403,7 +414,7 @@
 	libnetcdf4, not libnetcdf).  Automatic paths for -I, -L based
 	on the NETCDF4_ROOT) 
   
-2005-10-28  Harry Mangalam <hjm@tacgi.com>
+2005-10-28  Harry Mangalam  <hjm@tacgi.com>
 
 	* Changes to the configure/make chain to start to resolve
 	autobuild issues with MPI / netcdf4 / DAP / etc
@@ -433,7 +444,7 @@
 
 	* Add ncompi_open(), first pnetCDF interface wrapper
 
-2005-10-25  Harry Mangalam <hjm@tacgi.com>
+2005-10-25  Harry Mangalam  <hjm@tacgi.com>
 
 	* Changes to support MacOSX better:
 	- configure detects Darwin and inserts -fno-common
@@ -472,7 +483,7 @@
 	* Finished re-parallelization of front-ends over in_id
 	SMP operators appear to work, pass all tests on soot and ESMF
 
-2005-10-21  Harry Mangalam <hjm@tacgi.com>
+2005-10-21  Harry Mangalam  <hjm@tacgi.com>
 
 	* configure[.in], Makefile[.in], src/nco/Makefile[.in] in good enough
 	shape to commit.  Still some shakiness, but time to check clean checkouts
@@ -530,7 +541,7 @@
 	data access) is thread-safe because all metadata is cached when
 	file is opened.
 
-2005-10-17  Harry Mangalam <hjm@tacgi.com>
+2005-10-17  Harry Mangalam  <hjm@tacgi.com>
 	
 	* Updated index.shtml to include Benchmark info
 
@@ -567,7 +578,7 @@
 	* ncks: Eliminate --fmt,--format synonyms to avoid netCDF4 confusion
           Change --sng to --sng_fmt
 
-2005-10-12  Harry Mangalam <hjm@tacgi.com>
+2005-10-12  Harry Mangalam  <hjm@tacgi.com>
 
    * added --enable-netcdf4 to configure, configure.in to find the bits
      necessary (libhdf5, libhdf_hl) to build the netcdf4 version of NCOs
@@ -611,7 +622,7 @@
 
 	* Remove superfluous close/open fl_in for MPI mpncra/mpncrcat/mpncea
 
-2005-09-28  Harry Mangalam <hjm@tacgi.com>
+2005-09-28  Harry Mangalam  <hjm@tacgi.com>
 
 	* Added --dust_user to allow setting a user that can log
 		into dust for testing (hmangalm@esmf -> hjm@dust)
@@ -640,7 +651,7 @@
 
 	* Remove nco_tst.pl from distribution
 
-2005-09-23  Harry Mangalam <hjm@tacgi.com>
+2005-09-23  Harry Mangalam  <hjm@tacgi.com>
 
 	* Check for IP#/hostname conflicts, LAM/lamd,
 	 and MPICH/mpd in nco_bm.pl to help debug MPI errors.
@@ -673,7 +684,7 @@
 	Cross-platform link weirdness (e.g., AIX) makes this something to avoid
 	as long as possible
 
-2005-09-20  Harry Mangalam <hjm@tacgi.com>
+2005-09-20  Harry Mangalam  <hjm@tacgi.com>
 
 	* added --xdata to nco_bm.pl to allow commandline data path to be entered
 	(to allow benchmarking on different filesystems without resetting
@@ -715,7 +726,7 @@
 	NB: nco_bm.pl does not run for me unless $MY_BIN_DIR is defined
 	Probably same for other bld/Makefile users.
 	
-2005-09-16  Harry Mangalam <hjm@tacgi.com>
+2005-09-16  Harry Mangalam  <hjm@tacgi.com>
 
 	* added --mpi_fake (aka -mpi_fke aka --fake_mpi)  to allow running of
 	the mpi executables as single processes.  Since my laptop cannnot yet
@@ -727,7 +738,7 @@
 	* Move mpncra.c nco_var_srt_zero() from MPI to common code so
 	UP/SMP executables zero start vectors. Fixes mpncea bug TODO nco594. 
 
-2005-09-16  Harry Mangalam <hjm@tacgi.com>
+2005-09-16  Harry Mangalam  <hjm@tacgi.com>
 
 	* Re-org of regression and benchmarking script.  nco_bm.pl has
 	been broken into 5 files:
@@ -1251,7 +1262,7 @@
 	* Change configure.in 'case' statement from sparc-sun-solaris2
 	to sparc-sun-solaris2* to handle newer solaris triplets
 
-2005-06-21  Harry Mangalam <hjm@tacgi.com>
+2005-06-21  Harry Mangalam  <hjm@tacgi.com>
 
 	* fixed Makefile.in and nco_bm.pl to work with:
 	make test      does regression test with no debug info
@@ -1295,7 +1306,7 @@
 	Will commit this first then try that next
 	Best solution is to carry missing_value type in variable structure?
 
-2005-06-17  Harry Mangalam <hjm@tacgi.com>
+2005-06-17  Harry Mangalam  <hjm@tacgi.com>
 
 	* Tested NCO with new (3.5.1) version of DAP/NC-DAP, with netcdf 3.6. 
 	Seems to work for small transfers but hangs with large transfers 
@@ -1340,7 +1351,7 @@
 	(i)rec_var_int_mss_val_int (ii)rec_var_int_mss_val_flt across 2
 	identical input files) in nco_bm.pl which seem to fail
 
-2005-06-15  Harry Mangalam <hjm@tacgi.com>
+2005-06-15  Harry Mangalam  <hjm@tacgi.com>
 
         * MD5 version of nco_bm.pl checked in - works on SV (Single Values) on 
 	x86-32, x86-64, esmf.  Passes benchmarks on all these platforms. 
@@ -1545,7 +1556,7 @@
 
 	* Leak-proofed nco_msa.c 
 
-2005-05-26  Hary Mangalam <hjm@tacgi.com>
+2005-05-26  Hary Mangalam  <hjm@tacgi.com>
 
 	* finally brought in ncecat in OMP form
 
@@ -1563,7 +1574,7 @@
 	* Tidy up nco_cpy_var_dfn_lmt() prototype and use lmt_all
 	rather than lmt to designate lmt_all rather than lmt structures
 
-2005-05-26 Henry Butowsky <henryb@ntlworld>
+2005-05-26 Henry Butowsky  <henryb@ntlworld>
 
 	* Changed in ncks.c lmt_all_lst from a 1D to a 2D variable
 	also changed associated functions in nco_msa.[ch]
@@ -1653,7 +1664,7 @@
 
 	* Fixed ncap_var_init() prototype and nco_cnf_typ() to compile cleanly
 
-2005-05-06 Henry Butowsky <henryb@ntlworld>
+2005-05-06 Henry Butowsky  <henryb@ntlworld>
 
 	* Cleaned up double parsing in ncap.c,ncap_*.[hc] 
 	  now passes basic tests
@@ -1705,7 +1716,7 @@
 
 	* Initial ncecat memory cleanup---still one problem with dimension list
 
-2005-04-19  Harry Mangalam <hjm@tacgi.com>
+2005-04-19  Harry Mangalam  <hjm@tacgi.com>
 
 	* Large cleanup of benchmark code
 	  integrated file build, benchmark, and regression testing
@@ -3179,7 +3190,7 @@
 
 	* Bring bld/Makefile up-to-date with wildcarding, getopt changes
 
-2003-08-20 Henry Butowsky <henryb@ntlworld>
+2003-08-20 Henry Butowsky  <henryb@ntlworld>
 
 	* Rolled out variable wildcarding to all operators.
 	  Configure script checks for presence of regular expressions lib regex.h
@@ -3507,7 +3518,7 @@
 	* Fixed ncrename to not fail when . specified and variable does
 	not contain attribute
 
-2002-09-24  Henry Butowsky <henryb@ntlworld.com>
+2002-09-24  Henry Butowsky  <henryb@ntlworld.com>
 
 	* Added type conversion functions for attributes and variables
 	  byte, char, short, int, float, and double
