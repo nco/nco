@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.163 2006-03-17 21:59:16 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.164 2006-03-17 23:24:31 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -216,10 +216,10 @@ AC_LANG_PUSH(C++)
 if (test "${enable_ncoxx}" != 'no'); then
 	# check for runantlr
 	AC_CHECK_PROG(RUNANTLR,runantlr,"TRUE","FALSE")
-	if (test "${RUNANTLR}" == 'TRUE'); then
+	if (test "${RUNANTLR}" = 'TRUE'); then
 		AC_CHECK_LIB([antlr],[_ZN5antlr11CommonToken7factoryEv],enable_ncoxx=yes,enable_ncoxx=no,-lstdc++)
 		AC_CHECK_HEADER([antlr/CommonToken.hpp],enable_ncoxx=yes,enable_ncoxx=no)
-		if (test "${enable_ncoxx}" == 'no'); then
+		if (test "${enable_ncoxx}" = 'no'); then
 			echo "INFO: No [antlr] support - you need to install the antlr development package to build the nco++ dir"
 		else
 			echo "INFO: ANTLR development support found - can build nco++"
@@ -587,6 +587,10 @@ if (test "${enable_mpi}" = 'yes'); then
 		# 'enable_shared' value is passed to build system via AC_DEFINE below
 		enable_shared='no'
 	fi
+	# and right now, can't build the ncap2 as an MPI so disable it here, regardless
+	echo "Cannnot currently build ncap2 with MPI - disabling ncap2 build."
+	enable_ncoxx='no'
+
 	echo "### End MPI Checks ###"
 	echo ""
 fi
@@ -595,7 +599,6 @@ AM_CONDITIONAL(ENABLE_MPI,[test "${enable_mpi}" = 'yes'])
 AM_CONDITIONAL(ENABLE_LAM,[test "${enable_lam}" = 'yes'])
 AM_CONDITIONAL(ENABLE_MPICH2,[test "${enable_mpich2}" = 'yes'])
 AC_DEFINE_UNQUOTED([MPICH2_ROOT],["$MPICH2_ROOT"],[Location of mpich2 src root])
-
 
 # Begin Fortran
 # If --enable-fortran define USE_FORTRAN_ARITHMETIC
@@ -1009,7 +1012,7 @@ fi
 AC_SUBST(NCO_CXX)
 AC_OUTPUT
 
-echo "DEBUG: enable_ncoxx: ${enable_ncoxx} "
+#echo "DEBUG: enable_ncoxx: ${enable_ncoxx} "
 if test "${enable_ncoxx}" = 'yes' ; then
     AC_CONFIG_FILES(src/nco++/Makefile)
     NCOXX="nco++"

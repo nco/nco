@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.63 2006-03-17 21:59:22 mangalam Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.64 2006-03-17 23:24:33 mangalam Exp $ -*-makefile-*-
 
 
 SOURCES = $(libnco_la_SOURCES) $(mpncbo_SOURCES) $(mpncecat_SOURCES) $(mpncflint_SOURCES) $(mpncpdq_SOURCES) $(mpncra_SOURCES) $(mpncwa_SOURCES) $(ncap_SOURCES) $(ncatted_SOURCES) $(ncbo_SOURCES) $(ncecat_SOURCES) $(ncflint_SOURCES) $(ncks_SOURCES) $(ncpdq_SOURCES) $(ncra_SOURCES) $(ncrename_SOURCES) $(ncwa_SOURCES)

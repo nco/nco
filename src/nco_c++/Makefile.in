@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.in,v 1.36 2006-03-17 21:59:27 mangalam Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.in,v 1.37 2006-03-17 23:24:35 mangalam Exp $ -*-makefile-*-
 
 
 SOURCES = $(libnco_c___la_SOURCES) $(tst_SOURCES)

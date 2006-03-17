@@ -22100,7 +22100,7 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-	if (test "${RUNANTLR}" == 'TRUE'); then
+	if (test "${RUNANTLR}" = 'TRUE'); then
 		echo "$as_me:$LINENO: checking for _ZN5antlr11CommonToken7factoryEv in -lantlr" >&5
 echo $ECHO_N "checking for _ZN5antlr11CommonToken7factoryEv in -lantlr... $ECHO_C" >&6
 if test "${ac_cv_lib_antlr__ZN5antlr11CommonToken7factoryEv+set}" = set; then
@@ -22313,7 +22313,7 @@ else
 fi
 
 
-		if (test "${enable_ncoxx}" == 'no'); then
+		if (test "${enable_ncoxx}" = 'no'); then
 			echo "INFO: No antlr support - you need to install the antlr development package to build the nco++ dir"
 		else
 			echo "INFO: ANTLR development support found - can build nco++"
@@ -25659,6 +25659,10 @@ echo "$as_me: MISSING liblam - could not find a liblam.a|so." >&6;}
 		# 'enable_shared' value is passed to build system via AC_DEFINE below
 		enable_shared='no'
 	fi
+	# and right now, can't build the ncap2 as an MPI so disable it here, regardless
+	echo "Cannnot currently build ncap2 with MPI - disabling ncap2 build."
+	enable_ncoxx='no'
+
 	echo "### End MPI Checks ###"
 	echo ""
 fi
@@ -25697,7 +25701,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define MPICH2_ROOT "$MPICH2_ROOT"
 _ACEOF
-
 
 
 # Begin Fortran
@@ -29154,7 +29157,7 @@ if test "$no_create" != yes; then
 fi
 
 
-echo "DEBUG: enable_ncoxx: ${enable_ncoxx} "
+#echo "DEBUG: enable_ncoxx: ${enable_ncoxx} "
 if test "${enable_ncoxx}" = 'yes' ; then
               ac_config_files="$ac_config_files src/nco++/Makefile"
 

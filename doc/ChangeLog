@@ -2,6 +2,9 @@
 	* spiffin' config/make to bypass nco++ politely if antlr not available
 	also now forces regeneration of hpp files - 1st .cc file triggers
 	rebuild.  Builds (or doesn't) on a clean checkout.
+   * 'make install' installs ncap2 to bindir if it's built.
+	* mod configure to skip nco++ if trying to build for MPI (nco++ fails on 
+	the MPI build - a concern at this point?)
 
 2006-03-15 Henry Butowsky <henryb@ntlworld.com>
 	* fixed problem with NUMBER lexer.Can now lex
