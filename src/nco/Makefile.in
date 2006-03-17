@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.62 2006-03-15 17:25:31 mangalam Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.63 2006-03-17 21:59:22 mangalam Exp $ -*-makefile-*-
 
 
 SOURCES = $(libnco_la_SOURCES) $(mpncbo_SOURCES) $(mpncecat_SOURCES) $(mpncflint_SOURCES) $(mpncpdq_SOURCES) $(mpncra_SOURCES) $(mpncwa_SOURCES) $(ncap_SOURCES) $(ncatted_SOURCES) $(ncbo_SOURCES) $(ncecat_SOURCES) $(ncflint_SOURCES) $(ncks_SOURCES) $(ncpdq_SOURCES) $(ncra_SOURCES) $(ncrename_SOURCES) $(ncwa_SOURCES)
@@ -252,8 +252,6 @@ MAKEINFO = @MAKEINFO@
 MPICH2_ROOT = @MPICH2_ROOT@
 MPI_CC = @MPI_CC@
 NCOXX = @NCOXX@
-NCOXX_FALSE = @NCOXX_FALSE@
-NCOXX_TRUE = @NCOXX_TRUE@
 NCO_CXX = @NCO_CXX@
 NCO_NEED_GETOPT_LONG_FALSE = @NCO_NEED_GETOPT_LONG_FALSE@
 NCO_NEED_GETOPT_LONG_TRUE = @NCO_NEED_GETOPT_LONG_TRUE@
@@ -270,6 +268,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 POW_LIB = @POW_LIB@
 RANLIB = @RANLIB@
+RUNANTLR = @RUNANTLR@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@

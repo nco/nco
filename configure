@@ -22318,6 +22318,8 @@ fi
 		else
 			echo "INFO: ANTLR development support found - can build nco++"
 		fi
+	else
+		enable_ncoxx="no"
 	fi
 fi
 ac_ext=c
@@ -29152,7 +29154,7 @@ if test "$no_create" != yes; then
 fi
 
 
-#echo "DEBUG: enable_ncoxx: ${enable_ncoxx} "
+echo "DEBUG: enable_ncoxx: ${enable_ncoxx} "
 if test "${enable_ncoxx}" = 'yes' ; then
               ac_config_files="$ac_config_files src/nco++/Makefile"
 
@@ -29160,6 +29162,7 @@ if test "${enable_ncoxx}" = 'yes' ; then
 else
     NCOXX=""
 fi
+echo "DEBUG: enable_ncoxx: ${enable_ncoxx} and NCOXX = ${NCOXX}"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure

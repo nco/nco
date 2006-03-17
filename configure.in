@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.162 2006-03-15 20:46:59 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.163 2006-03-17 21:59:16 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -8,8 +8,8 @@
 # See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text
 
 # TODO: need support for:
-#   MacOSX - detect the OS, compilers, etc.
-#   MPI - detect mpicc, need to detect whether LAM or MPICH2
+#   MacOSX - detect the OS, compilers, etc. !!done
+#   MPI - detect mpicc, need to detect whether LAM or MPICH2 !! done
 #   OpenMP - detect OMP-capable compiler (xlr_c/AIX, icc/Linux, pgcc/Linux; NOT gcc)
 #   HDF5, NetCDF4 - detect hdf5, hdf5_hl, netcdf libs !! done
 
@@ -224,6 +224,8 @@ if (test "${enable_ncoxx}" != 'no'); then
 		else
 			echo "INFO: ANTLR development support found - can build nco++"
 		fi
+	else
+		enable_ncoxx="no"
 	fi
 fi
 AC_LANG_POP(C++)
@@ -1007,13 +1009,14 @@ fi
 AC_SUBST(NCO_CXX)
 AC_OUTPUT
 
-#echo "DEBUG: enable_ncoxx: ${enable_ncoxx} "
+echo "DEBUG: enable_ncoxx: ${enable_ncoxx} "
 if test "${enable_ncoxx}" = 'yes' ; then
     AC_CONFIG_FILES(src/nco++/Makefile)
     NCOXX="nco++"
 else
     NCOXX=""
 fi
+echo "DEBUG: enable_ncoxx: ${enable_ncoxx} and NCOXX = ${NCOXX}"
 AC_SUBST(NCOXX)
 AC_OUTPUT
 # End config

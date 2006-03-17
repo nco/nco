@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/Makefile.in,v 1.30 2006-03-15 17:25:30 mangalam Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/Makefile.in,v 1.31 2006-03-17 21:59:20 mangalam Exp $ -*-makefile-*-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -121,8 +121,6 @@ MAKEINFO = @MAKEINFO@
 MPICH2_ROOT = @MPICH2_ROOT@
 MPI_CC = @MPI_CC@
 NCOXX = @NCOXX@
-NCOXX_FALSE = @NCOXX_FALSE@
-NCOXX_TRUE = @NCOXX_TRUE@
 NCO_CXX = @NCO_CXX@
 NCO_NEED_GETOPT_LONG_FALSE = @NCO_NEED_GETOPT_LONG_FALSE@
 NCO_NEED_GETOPT_LONG_TRUE = @NCO_NEED_GETOPT_LONG_TRUE@
@@ -139,6 +137,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 POW_LIB = @POW_LIB@
 RANLIB = @RANLIB@
+RUNANTLR = @RUNANTLR@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@

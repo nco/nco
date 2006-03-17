@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.1 2006-03-15 17:25:31 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.2 2006-03-17 21:59:23 mangalam Exp $
 
 SOURCES = $(ncap2_SOURCES)
 
@@ -137,8 +137,6 @@ MAKEINFO = @MAKEINFO@
 MPICH2_ROOT = @MPICH2_ROOT@
 MPI_CC = @MPI_CC@
 NCOXX = @NCOXX@
-NCOXX_FALSE = @NCOXX_FALSE@
-NCOXX_TRUE = @NCOXX_TRUE@
 NCO_CXX = @NCO_CXX@
 NCO_NEED_GETOPT_LONG_FALSE = @NCO_NEED_GETOPT_LONG_FALSE@
 NCO_NEED_GETOPT_LONG_TRUE = @NCO_NEED_GETOPT_LONG_TRUE@
@@ -155,6 +153,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 POW_LIB = @POW_LIB@
 RANLIB = @RANLIB@
+RUNANTLR = @RUNANTLR@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -213,16 +212,11 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 ANTLR = runantlr
 
-# also needs runantlr parsing assistance
-
 #ncolib_SOURCES includes almost all the ../nco C sources (except for the individual operator source files)
 #but these shoud all be built before nco++ gets built.
-#ncolib_SOURCES = ../nco/*.c
 ncap2_SOURCES = Invoke.cc  ncap2.cc  ncap2_utl.cc  NcapVarVector.cc  ncoLexer.cpp  ncoParser.cpp  ncoTree.cpp
 
 #either of the following should work if the ..nco dir is built first as it's supposed to be.
-#ncap2_LDADD = ../nco/.libs/libnco.so
-#ncap2_LDADD = ../nco/libnco.la
 ncap2_LDFLAGS = -lantlr -lnco
 INCLUDES = -I./ -I../nco
 all: all-am
@@ -525,26 +519,9 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 	uninstall-binPROGRAMS uninstall-info-am
 
 
-ncoLexer.cpp : ncoGrammer.g
+# need to invoke 'runantlr' on ncoGrammer.g to generate the required hpp files.  A single .cc file will do it.
+Invoke.cc : ncoGrammer.g
 	${ANTLR} ncoGrammer.g
-ncoParser.cpp : ncoGrammer.g
-	${ANTLR} ncoGrammer.g
-ncoTree.cpp : ncoGrammer.g
-	${ANTLR} ncoGrammer.g
-
-# the headers should include all the .hh files
-# HEADER_SRC = \
-# ../nco/nco_netcdf.h \
-# ../nco/libnco.h \
-# ../nco/nco.h \
-# ../nco/nco_var_utl.h \
-# libnco++.hh  \
-# Ncap2.hh \
-# NcapVarVector.hh \
-# VarOp.hh \
-# ncap2.hh \
-# NcapVar.hh \
-# NcapVector.hh
 
 #The following libs have to be included based on configure options.  Down here as a reminder.
 # -lnco++ -lnco -lnco_c++ -lantlr
