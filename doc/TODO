@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.727 2006-03-17 23:58:41 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.728 2006-03-18 04:30:50 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -461,8 +461,6 @@ nco685. Run static analysis tool on nco codebase
 nco689. Multislabs (multiple limits on same dimension) fail in arithmetic operators. Currently, arithmetic operators silently ignore all limit specifications after the first. Solution: Diagnose and fail with informative warning until nco690 implemented.
         ncwa -O -a lat,lon -w area -d lat,30.,90. -d lon,345.,360. -d lon,0.,195. isccpd_0112_clm_landmask.nc foo4.nc
 nco690. Implement multislabs in arithmetic operators (no reason not to!)
-nco691. ncatted fails with mysterious nulls where there should be values in regression test: ncatted test 0.  
-        ie - looks like a real regression failure rather than a script error.
 nco692. Update to DAP 3.6
 nco693. 
 

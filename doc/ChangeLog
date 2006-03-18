@@ -1,5 +1,7 @@
 2006-03-17  Charlie Zender  <zender@uci.edu>
 
+	* Un-botch ncatted regression test, fixing TODO nco691
+
 	* NECSX does not support getpagesize() in nco_mmr.c
 
 2006-03-17  Harry Mangalam  <hjm@tacgi.com>

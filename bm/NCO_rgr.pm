@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics. - hjm
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.32 2006-03-13 23:46:27 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.33 2006-03-18 04:30:49 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -181,8 +181,8 @@ if ($dodap eq "FALSE") {
 ####################
 	# FAILS!
 	$tst_cmd[0]="ncatted -h -O $fl_fmt $nco_D_flg -a units,,m,c,'meter second-1' $in_pth_arg in.nc %tempf_00%";
-	$tst_cmd[1]="ncks -C -H -s '%s' -v lev %tempf_00% | grep units | cut -d' ' -f 11-12";
-	$dsc_sng="FIXME; TODO691: Modify all existing units attributes to meter second-1";
+	$tst_cmd[1]="ncks -C -m -v lev %tempf_00% | grep units | cut -d' ' -f 11-12";
+	$dsc_sng="Modify all existing units attributes to meter second-1";
 	$tst_cmd[2] = "meter second-1";
 	$tst_cmd[3] = "SS_OK";
 	NCO_bm::go(\@tst_cmd);
