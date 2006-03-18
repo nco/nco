@@ -2,7 +2,7 @@
 
 	* NECSX does not support getpagesize() in nco_mmr.c
 
-2006-03-14  Harry Mangalam  <hjm@tacgi.com>
+2006-03-17  Harry Mangalam  <hjm@tacgi.com>
 
 	* spiffin' config/make to bypass nco++ politely if antlr not available
 	also now forces regeneration of hpp files - 1st .cc file triggers
@@ -12,6 +12,9 @@
 
 	* mod configure to skip nco++ if trying to build for MPI (nco++
 	fails on the MPI build - a concern at this point?)
+
+	* autoconf/automake patches to allow nco++ and MPI to co-exist and mods
+	to allow MPI regressions and benchmarks to (mostly) work.
 
 2006-03-15  Henry Butowsky  <henryb@ntlworld.com>
 
