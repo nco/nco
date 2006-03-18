@@ -15,7 +15,7 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.32 2006-03-13 23:46:27 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.33 2006-03-18 00:38:14 mangalam Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -41,13 +41,14 @@ our @EXPORT = qw (
 	go dbg_msg set_dat_dir initialize
 	$prefix $dta_dir @fl_cr8_dat $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
 	$prsrv_fl  $srvr_sde $hiresfound $dodap $bm $dbg_lvl $sock $udp_reprt
+	$mpi_prc $mpi_prfx $mpi_fke
 );
 
 use vars qw(
 $aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $bm $dbg_lvl $dodap $dot_fmt
 $dot_nbr $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng
-$fke_prefix $hiresfound $md5 $mpi_prc $mpi_prfx $MY_BIN_DIR %NCO_RC $nsr_xpc
-$opr_fmt $opr_lng_max @opr_lst @opr_lst_all @opr_lst_mpi $mpi_fke
+$fke_prefix $hiresfound $md5 $mpi_prc $mpi_prfx $mpi_fke $MY_BIN_DIR %NCO_RC $nsr_xpc
+$opr_fmt $opr_lng_max @opr_lst @opr_lst_all @opr_lst_mpi
 $opr_nm $opr_rgr_mpi $opr_sng_mpi $os_nme  $prefix %real_tme
 $result $spc_fmt $spc_nbr $spc_nbr_min $spc_sng %subbenchmarks %success
 @sys_tim_arr $sys_time %sys_tme $timed %totbenchmarks @tst_cmd $tst_fmt
@@ -458,24 +459,6 @@ sub set_dat_dir {
 #################################################################################
 sub go {
 
-# Use variables for file names in regressions; some of these could be collapsed into
-# fewer ones, no doubt, but keep them separate until whole shebang starts working correctly
-
-# $outfile       = "$dta_dir/foo.nc"; # replaces outfile in tests, typically 'foo.nc'
-# $orig_outfile  = "$dta_dir/foo.nc";
-# $foo_fl        = "$dta_dir/foo";
-# $foo_avg_fl    = "$dta_dir/foo_avg.nc";
-# $foo_tst       = "$dta_dir/foo.tst";
-# $foo1_fl       = "$dta_dir/foo1.nc";
-# $foo2_fl       = "$dta_dir/foo2.nc";
-# $foo_x_fl      = "$dta_dir/foo_x.nc";
-# $foo_y_fl      = "$dta_dir/foo_y.nc";
-# $foo_xy_fl     = "$dta_dir/foo_xy.nc";
-# $foo_yx_fl     = "$dta_dir/foo_yx.nc";
-# $foo_xymyx_fl  = "$dta_dir/foo_xymyx.nc";
-# $foo_T42_fl    = "$dta_dir/foo_T42.nc";
-
-
 my %lfn = ( # lfn = local_file_name
 '%stdouterr%'   => "", # stdouterr has to be left to generate stderr
 '%tempf_00%'    => "$dta_dir/tempf_00.nc", # this will be the default replacement for $outfile
@@ -497,9 +480,12 @@ my %lfn = ( # lfn = local_file_name
 # so if executign on the client side, have to replace all the special purpose
 # filenames with name like $lfn{'%tempf_00%'}
 
+
 	# WTF do these vars require this treatment?!??
 	*dbg_lvl = *main::dbg_lvl;
 	*outfile = *main::outfile;
+	*mpi_prc = *main::mpi_prc;
+
 	#$dbg_lvl = 2;
 	if ($dbg_lvl > 0) {
 		print "\n\n\n## New go() cycle [$opr_nm: $dsc_sng] ###\n";
@@ -533,7 +519,7 @@ my %lfn = ( # lfn = local_file_name
 	else     { $mpi_prfx = " mpirun -np $mpi_prc $MY_BIN_DIR/mp";} # assuming Linux-like MPI
 	$prfxd = 1; $timed = 1;
 
-	dbg_msg(3,"\$prefix=$prefix | \$mpi_prfx=$mpi_prfx | \$fke_prefix=$fke_prefix");
+	dbg_msg(1,"\$prefix=$prefix | \$mpi_prfx=$mpi_prfx | \$fke_prefix=$fke_prefix");
 
 	#delete everything in the dap subdir to force a DAP retrieval
 	# by this time, $dta_dir has been directed to $dta_dir/DAP_DIR
@@ -624,6 +610,9 @@ my %lfn = ( # lfn = local_file_name
 		$nsr_xpc = $cmd_lst[$#cmd_lst]; # pop the next value off \
 		delete $cmd_lst[$#cmd_lst]; # and now the $cmd_lst is the same as it ever was..
 
+#print "\nDEBUG:in go:613, \$mpi_prc=[$mpi_prc] \$mpi_prfx=[$mpi_prfx] \$mpi_fke=[$mpi_fke]\n";
+
+
 		foreach (@cmd_lst){
 #			print "\nforeach cmd_lst = $_\n";
 			my $md5_chk = 1;
@@ -649,7 +638,7 @@ my %lfn = ( # lfn = local_file_name
 					# non-MPI apps compiled w/ MPI need special prefix to hold them to 1 process
 					elsif ($aix) {$_ = $tmr_app . $aix_mpi_sgl_nvr_prfx . $prefix . $_;}
 					else         {$_ = $tmr_app . $prefix . $_; } # the std prefix
-					dbg_msg(3, "URGENT:before execution, cmdline= $_ \n");
+					dbg_msg(1, "URGENT:before execution, cmdline= $_ \n");
 					last;
 				}
 			} # end of foreach my $op (@opr_lst_all)

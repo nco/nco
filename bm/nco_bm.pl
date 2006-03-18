@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.119 2006-03-13 23:46:27 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.120 2006-03-18 00:38:14 mangalam Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -484,5 +484,7 @@ my $doit=1; # for skipping various tests
 use NCO_benchmarks; #module that contains the actual benchmark code
 # and now, the REAL benchmarks, set up as the regression tests below to use go() and smrz_rgr_rslt()
 #print "DEBUG: prior to benchmark call, dodap = $dodap\n";
+#print "in main(),just priior to the benchmarks \$mpi_prc=[$mpi_prc] \$mpi_prfx=[$mpi_prfx] \$mpi_fke=[$mpi_fke]\n";
+
 if ($bm) { NCO_benchmarks::benchmarks(); }
 
