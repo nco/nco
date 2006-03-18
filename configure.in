@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.164 2006-03-17 23:24:31 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.165 2006-03-18 00:39:38 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -587,8 +587,9 @@ if (test "${enable_mpi}" = 'yes'); then
 		# 'enable_shared' value is passed to build system via AC_DEFINE below
 		enable_shared='no'
 	fi
+	# Daniel, just delete the following 3 lines when ncap2 is MPI-ready
 	# and right now, can't build the ncap2 as an MPI so disable it here, regardless
-	echo "Cannnot currently build ncap2 with MPI - disabling ncap2 build."
+	echo "INFO: Cannnot currently build ncap2 with MPI - disabling ncap2 build."
 	enable_ncoxx='no'
 
 	echo "### End MPI Checks ###"
