@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.333 2006-03-10 06:10:12 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.334 2006-03-20 22:43:03 wangd Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -452,6 +452,21 @@ The development version simply places today's date in place of the
 version.
 Once the autotools builds are working more robustly, the confusion
 over versions should largely disappear.
+
+<a name="doxy"></a>
+<h3>Developer NCO Source Documentation</h3>
+<p>Automated source documentation, created by the
+ <a href="http://www.stack.nl/~dimitri/doxygen/">Doxygen</a> tool is available.  
+Some developers find this documentation helpful, as it can clarify code and data 
+relationships in the code.</p>
+<ul>
+<li><a href="http://sand.ess.uci.edu/nco/doxygen/main/files.html">
+Source documentation for NCO and NetCDF4(alpha13)</a></li>
+</ul>
+<p>Please be aware that the documentation may be slightly inaccurate and 
+infrequently updated. Comments and suggestions are certainly welcomed on the 
+ <a href="http://sf.net/forum/forum.php?forum_id=9829">forums</a>.
+</p>
 
 <a name="bnr"></a>
 <h3>NCO Binaries and OS-specific Packages</h3>
