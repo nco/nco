@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.729 2006-03-18 04:33:11 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.730 2006-03-20 19:51:50 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -463,8 +463,10 @@ nco689. Multislabs (multiple limits on same dimension) fail in arithmetic operat
 nco690. Implement multislabs in arithmetic operators (no reason not to!)
 nco692. Update to DAP 3.6
 nco693. ncks regression for offset past end of file test
-	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,0,1 -v time $in_pth_arg in.nc %tempf_00%";
-	$tst_cmd[1]="ncks -C -H -s '%g' -C -d time,2, %tempf_00%";
+	ncks -h -O -C -d time,0,1 -v time ~/nco/data/in.nc ~/foo.nc
+	ncks -C -H -s '%g' -C -d time,2, ~/foo.nc
+        ncks: ERROR User-specified dimension index range 2 <= time <= 1 does not fall within valid dimension index range 0 <= time <= 1
+        ncks behaves perfectly here and the perl script cannot recognize the expected answer string as being valid
 nco694. 
 ************************************************************************
 End ncoXXX TODOs
