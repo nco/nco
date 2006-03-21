@@ -23,7 +23,7 @@ $ncwa_weighting_correction $ncwa_weighting_multiplier $ncwa_WT_INS_multiplier $n
 $dim_sz                     = 1; # simple initializ'n for the dimension size
 $ncbo                       = 1; # 1 for doing the ncbo routines, 0 for ncwa
 $weighting                  = 1; # 1 for weighting, 0 for NOT weighting
-$stl_5km                    = 0; # 1 if the file is the stl_5km file, 0 for the ipcc file
+$stl_5km                    = 1; # 1 if the file is the stl_5km file, 0 for the ipcc file
 
 # Vars to set relating to the size and layout of the test files.
 # These should be set correctly unless you want to test files other than the std files
