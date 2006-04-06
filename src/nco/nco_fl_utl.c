@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.78 2006-02-19 00:03:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.79 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -159,7 +159,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
      Multi-file operators take input filenames from positional arguments, if any
      Otherwise, multi-file operators try to get input filenames from stdin */
 
-  bool FL_OUT_FROM_PSN_ARG=True; /* [flg] fl_out comes from positional argument */
+  nco_bool FL_OUT_FROM_PSN_ARG=True; /* [flg] fl_out comes from positional argument */
 
   char **fl_lst_in=NULL_CEWI; /* [sng] List of user-specified filenames */
 
@@ -352,10 +352,10 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
      return name of file on local system */
 
   FILE *fp_in;
-  bool FTP_URL=False;
-  bool FTP_NETRC=False;
-  bool SFTP_URL=False;
-  bool FTP_OR_SFTP_URL;
+  nco_bool FTP_URL=False;
+  nco_bool FTP_NETRC=False;
+  nco_bool SFTP_URL=False;
+  nco_bool FTP_OR_SFTP_URL;
   char *cln_ptr; /* [ptr] Colon pointer */
   char *fl_nm_lcl;
   char *fl_nm_stub;

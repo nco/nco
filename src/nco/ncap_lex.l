@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.55 2006-02-18 07:18:53 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.56 2006-04-06 22:56:20 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -121,7 +121,7 @@
      In this case return variable/attribute name to parser
      If on RHS then return attribute value or variable structure
      Initialize to false, change to true if token is '=', false is token is ';' */
-  static bool RHS=False; /* [flg] Is lexer on RHS of '=' sign? */
+  static nco_bool RHS=False; /* [flg] Is lexer on RHS of '=' sign? */
 
   /* Headers necessary for INCLUDE state */
 #define NCO_MAX_NCL_DPT 10
@@ -192,7 +192,7 @@ XPN [eE][+-]?[0-9]+
 
 <<EOF>> {
   /* NB: AT&T lex does not appear to have <EOF> rules */
-  bool NCO_SCRIPT_WITH_EOF_IS_TOPLEVEL=True;
+  nco_bool NCO_SCRIPT_WITH_EOF_IS_TOPLEVEL=True;
   /* Emerge from #include file if nested, else exit lexer */
   if(ncap_ncl_dpt_crr > 0UL){
     /* If we are exiting a #include'd script, delete its buffers */
@@ -446,7 +446,7 @@ M_PI {return NAMED_CONSTANT;}
   nc_type type;
   ptr_unn val;
   size_t sng_lng;
-  bool blkp;
+  nco_bool blkp;
   var_sct var_lkp; /* for us when calling lookup vars on first pass only */
   
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing attribute %s\n",yytext);
@@ -869,7 +869,7 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
   extern int yy_scan_string(const char *);
 #endif /* NCAP_NTL_SCN_NOT_IN_NCAP_L */
 
-  bool mch_flg; /* [flg] Variable is defined in list already */
+  nco_bool mch_flg; /* [flg] Variable is defined in list already */
   
   char *var_nm;  
 
@@ -997,7 +997,7 @@ ncap_ncwa_scn /* [fnc] Scan command script, construct I/O lists */
     extern int yy_scan_string(const char *);
   */
   
-  bool scv_def=False;
+  nco_bool scv_def=False;
   int op_typ=-1;
   int rcd=1;
   char *fnl_sng;

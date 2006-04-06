@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.38 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.39 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -75,7 +75,7 @@ void
 nco_dfl_case_pck_plc_err /* [fnc] Print error and exit for illegal switch(nco_pck_plc) case */
 (void);
 
-bool /* O [flg] NCO will attempt to pack variable */
+nco_bool /* O [flg] NCO will attempt to pack variable */
 nco_is_packable /* [fnc] Will NCO attempt to pack variable? */
 (const nc_type nc_typ_in); /* I [enm] Type of input variable */
 
@@ -87,7 +87,7 @@ const char * /* O [sng] Packing policy string */
 nco_pck_plc_sng_get /* [fnc] Convert packing policy enum to string */
 (const int nco_pck_plc); /* I [enm] Packing policy */
 
-bool /* O [flg] Packing policy allows packing nc_typ_in */
+nco_bool /* O [flg] Packing policy allows packing nc_typ_in */
 nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
 (const int nco_pck_map, /* I [enm] Packing map */
  const nc_type nc_typ_in, /* I [enm] Type of input variable */
@@ -117,7 +117,7 @@ int /* O [enm] Packing policy */
 nco_pck_plc_get /* [fnc] Convert user-specified packing policy to key */
 (const char *nco_pck_plc_sng); /* [sng] User-specified packing policy */
   
-bool /* O [flg] Variable is packed on disk */
+nco_bool /* O [flg] Variable is packed on disk */
 nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
 (const int nc_id, /* I [idx] netCDF file ID */
  var_sct *var); /* I/O [sct] Variable */
@@ -132,7 +132,7 @@ var_sct * /* O [sct] Packed variable */
 nco_var_pck /* [fnc] Pack variable in memory */
 (var_sct *var, /* I/O [sct] Variable to be packed */
  const nc_type typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
- bool *PCK_VAR_WITH_NEW_PCK_ATT); /* O [flg] Routine generated new scale_factor/add_offset */
+ nco_bool *PCK_VAR_WITH_NEW_PCK_ATT); /* O [flg] Routine generated new scale_factor/add_offset */
 
 var_sct * /* O [sct] Unpacked variable */
 nco_var_upk /* [fnc] Unpack variable in memory */

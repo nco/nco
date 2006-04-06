@@ -1,3 +1,7 @@
+2006-04-06  Charlie Zender  <zender@uci.edu>
+
+	* Change bool's to nco_bool's in nco.h
+
 2006-03-17  Charlie Zender  <zender@uci.edu>
 
 	* Un-botch ncatted regression test, fixing TODO nco691

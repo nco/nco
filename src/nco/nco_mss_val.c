@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.24 2006-03-10 06:05:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.25 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -39,7 +39,7 @@ nco_mss_val_mk /* [fnc] Return default missing value for type type */
 
 } /* end nco_mss_val_mk() */
   
-bool /* O [flg] One or both operands have missing value */
+nco_bool /* O [flg] One or both operands have missing value */
 nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 */
 (var_sct * const var1, /* I [sct] Variable with template missing value to copy */
  var_sct * const var2) /* I/O [sct] Variable with missing value to fill in/overwrite */
@@ -50,7 +50,7 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
      3. Change missing_value of var2 to missing_value of var1 when only var1 has a missing_value
      4. Return false when neither operand has missing value */
   int has_mss_val=False; /* [flg] One or both operands have missing value */
-  bool MSS_VAL_EQL=False; /* [flg] Missing values of input operands are identical */
+  nco_bool MSS_VAL_EQL=False; /* [flg] Missing values of input operands are identical */
   long idx;
   long var_sz=long_CEWI;
   nc_type var_typ=NC_NAT; /* CEWI [enm] Type of input values */

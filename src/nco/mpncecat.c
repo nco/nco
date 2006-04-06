@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.35 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.36 2006-04-06 22:56:20 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.35 2006-02-19 00:42:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.35 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.36 2006-04-06 22:56:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.36 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRSt:v:x-:";
   
   dmn_sct *rec_dmn;
@@ -155,7 +155,7 @@ main(int argc,char **argv)
 #endif /* !ENABLE_NETCDF4 || !ENABLE_PNETCDF */
   MPI_Status mpi_stt; /* [enm] Status check to decode msg_tag_typ */
 
-  bool TKN_WRT_FREE=True; /* [flg] Write-access to output file is available */
+  nco_bool TKN_WRT_FREE=True; /* [flg] Write-access to output file is available */
   
   const double tkn_wrt_rqs_ntv=0.04; /* [s] Token request interval */
   

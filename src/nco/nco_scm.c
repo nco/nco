@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.24 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.25 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -12,7 +12,7 @@ char * /* O [sng] CVS version string */
 cvs_vrs_prs(void) /* [fnc] Return CVS version string */
 {
   /* Purpose: Return CVS version string */
-  bool dly_snp;
+  nco_bool dly_snp;
 
   char *cvs_mjr_vrs_sng=NULL;
   char *cvs_mnr_vrs_sng=NULL;

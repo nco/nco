@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.18 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.19 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -92,7 +92,7 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
      when characters are "moved to the left" if C language escape sequences are embedded.
      Thus string length may shrink */
 
-  bool trn_flg; /* Translate this escape sequence */
+  nco_bool trn_flg; /* Translate this escape sequence */
 
   char *backslash_ptr; /* [ptr] Pointer to backslash character */
   char backslash_chr='\\'; /* [chr] Backslash character */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.39 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.40 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -405,7 +405,7 @@ nco_lst_comma2hash /* [fnc] Replace commas with hashes when within braces */
      not to overwrite ends of strings */
   char *cp;
   char *cp_cnv=NULL; /* [ptr] Location of comma following open brace */
-  bool openbrace=False; /* [flg] Open brace has been found */
+  nco_bool openbrace=False; /* [flg] Open brace has been found */
   cp=rx_sng;
   /* Loop over each character in string until first NUL encountered */
   while(*cp){

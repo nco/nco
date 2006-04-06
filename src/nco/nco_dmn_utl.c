@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.24 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.25 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -156,7 +156,7 @@ nco_dmn_lst_ass_var /* [fnc] Create list of all dimensions associated with input
 {
   /* Purpose: Create list of all dimensions associated with input variable list */
 
-  bool dmn_has_been_placed_on_list;
+  nco_bool dmn_has_been_placed_on_list;
 
   char dmn_nm[NC_MAX_NAME];
 

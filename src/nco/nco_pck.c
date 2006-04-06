@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.60 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.61 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -96,7 +96,7 @@ nco_dfl_case_pck_plc_err(void) /* [fnc] Print error and exit for illegal switch(
   nco_err_exit(0,fnc_nm);
 } /* end nco_dfl_case_pck_plc_err() */
 
-bool /* O [flg] NCO will attempt to pack variable */
+nco_bool /* O [flg] NCO will attempt to pack variable */
 nco_is_packable /* [fnc] Will NCO attempt to pack variable? */
 (const nc_type nc_typ_in) /* I [enm] Type of input variable */
 {
@@ -201,7 +201,7 @@ nco_pck_plc_get /* [fnc] Convert user-specified packing policy to key */
   return nco_pck_plc_nil; /* Statement should not be reached */
 } /* end nco_pck_plc_get() */
 
-bool /* O [flg] Packing policy allows packing nc_typ_in */
+nco_bool /* O [flg] Packing policy allows packing nc_typ_in */
 nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
 (const int nco_pck_map,  /* I [enm] Packing map */
  const nc_type nc_typ_in, /* I [enm] Type of input variable */
@@ -218,7 +218,7 @@ nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
      In both cases, nc_typ_pck_out is only set if it is non-NULL */
 
   const char fnc_nm[]="nco_pck_plc_typ_get()"; /* [sng] Function name */
-  bool nco_pck_plc_alw; /* O [flg] Packing policy allows packing nc_typ_in */
+  nco_bool nco_pck_plc_alw; /* O [flg] Packing policy allows packing nc_typ_in */
   nc_type nc_typ_pck_out_tmp; /* O [enm] Type to pack variable to */
 
   /* Initialize output type to NAT and pack allow to False to help catch errors */
@@ -330,7 +330,7 @@ nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
   return nco_pck_plc_alw; /* O [flg] Packing policy allows packing nc_typ_in */
 } /* end nco_pck_plc_typ_get() */
 
-bool /* O [flg] Variable is packed on disk */
+nco_bool /* O [flg] Variable is packed on disk */
 nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
 (const int nc_id, /* I [idx] netCDF file ID */
  var_sct * const var) /* I/O [sct] Variable */
@@ -432,7 +432,7 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
   /* Purpose: Alter metadata according to packing specification */
   const char fnc_nm[]="nco_pck_mtd()"; /* [sng] Function name */
   nc_type nc_typ_pck_out; /* [enm] Type to pack to */
-  bool nco_pck_plc_alw; /* [flg] Packing policy allows packing nc_typ_in */
+  nco_bool nco_pck_plc_alw; /* [flg] Packing policy allows packing nc_typ_in */
   
   switch(nco_pck_plc){
   case nco_pck_plc_all_xst_att:
@@ -507,9 +507,9 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
 {
   /* Purpose: Alter metadata according to packing specification */
   const char fnc_nm[]="nco_pck_val()"; /* [sng] Function name */
-  bool PCK_VAR_WITH_NEW_PCK_ATT=False; /* [flg] Insert new scale_factor and add_offset into lists */
+  nco_bool PCK_VAR_WITH_NEW_PCK_ATT=False; /* [flg] Insert new scale_factor and add_offset into lists */
   nc_type typ_out; /* [enm] Type in output file */
-  bool nco_pck_plc_alw; /* [flg] Packing policy allows packing nc_typ_in */
+  nco_bool nco_pck_plc_alw; /* [flg] Packing policy allows packing nc_typ_in */
   
   /* typ_out contains type of variable defined in output file
      as defined by var_out->type which was set in var_pck_mtd() 
@@ -609,7 +609,7 @@ nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to
      ncpdq breaks up writing packed variables into multiple tasks, i.e.,
      ncpdq separates variable value writes from packing attribute value writes.
      This routine is intended to write a packed variable in one routine */
-  bool PCK_VAR_WITH_NEW_PCK_ATT=False; /* [flg] Insert new scale_factor and add_offset into lists */
+  nco_bool PCK_VAR_WITH_NEW_PCK_ATT=False; /* [flg] Insert new scale_factor and add_offset into lists */
   
   switch(nco_pck_plc){
   case nco_pck_plc_all_xst_att:
@@ -645,7 +645,7 @@ var_sct * /* O [sct] Packed variable */
 nco_var_pck /* [fnc] Pack variable in memory */
 (var_sct *var, /* I/O [sct] Variable to be packed */
  const nc_type nc_typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
- bool *PCK_VAR_WITH_NEW_PCK_ATT) /* O [flg] Routine generated new scale_factor/add_offset */
+ nco_bool *PCK_VAR_WITH_NEW_PCK_ATT) /* O [flg] Routine generated new scale_factor/add_offset */
 {
   /* Purpose: Pack variable 
      Routine is inverse of nco_var_upk(): nco_var_pck[nco_var_upk(var)]=var 
@@ -655,7 +655,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
      NB: Value buffer var->val.vp is usually free()'d here
      Variables in calling routine which point to var->val.vp will be left dangling */
 
-  bool PURE_MSS_VAL_FLD=False; /* [flg] Field is pure missing_value, i.e., no valid values */
+  nco_bool PURE_MSS_VAL_FLD=False; /* [flg] Field is pure missing_value, i.e., no valid values */
   const char fnc_nm[]="nco_var_pck()"; /* [sng] Function name */
   double scl_fct_dbl=double_CEWI; /* [sct] Double precision value of scale_factor */
   double add_fst_dbl=double_CEWI; /* [sct] Double precision value of add_offset */
@@ -872,7 +872,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
      Using var_scv_[sub,multiply] instead of ncap_var_scv_[sub,multiply] avoids cost of deep copies
      Moreover, this keeps variable structure from changing (because ncap_var_scv_* functions all do deep copies before operations) and thus complicating memory management */
   if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
-    bool has_mss_val_tmp; /* [flg] Temporary missing_value flag */
+    nco_bool has_mss_val_tmp; /* [flg] Temporary missing_value flag */
 
     /* Subtract add_offset from var */
     scv_sct add_fst_scv;

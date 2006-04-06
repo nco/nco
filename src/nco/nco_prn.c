@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.28 2006-03-10 06:05:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.29 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -244,8 +244,8 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
      Routine truncates dimensions of printed output variable in accord with user-specified limits
      fxm: routine does not correctly print hyperslabs which are wrapped, or which use non-unity stride */
 
-  bool SRD=False; /* Stride is non-unity */
-  bool WRP=False; /* Coordinate is wrapped */
+  nco_bool SRD=False; /* Stride is non-unity */
+  nco_bool WRP=False; /* Coordinate is wrapped */
 
   char nul_chr='\0';
   char var_sng[NCO_MAX_LEN_FMT_SNG];

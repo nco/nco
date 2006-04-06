@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.41 2006-02-09 06:30:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.42 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -174,7 +174,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
      Each block contains avg_sz elements in contiguous buffer 
      Reduction step then "reduces" each block into single output element */
   if(avg_sz != 1L){
-    bool AVG_DMN_ARE_MRV=False; /* [flg] Avergaging dimensions are MRV dimensions */
+    nco_bool AVG_DMN_ARE_MRV=False; /* [flg] Avergaging dimensions are MRV dimensions */
     ptr_unn avg_val;
     
     /* Initialize data needed by reduction step independent of collection algorithm */
@@ -651,7 +651,7 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
   nco_char mss_val_chr;
   nco_byte mss_val_byt;
   
-  bool flg_mss=False; /* [flg] Block has valid (non-missing) values */
+  nco_bool flg_mss=False; /* [flg] Block has valid (non-missing) values */
   
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
@@ -936,7 +936,7 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
   nco_char mss_val_chr;
   nco_byte mss_val_byt;
   
-  bool flg_mss=False;
+  nco_bool flg_mss=False;
   
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);

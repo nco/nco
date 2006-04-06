@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.54 2006-02-20 20:59:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.55 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -326,7 +326,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
   
 } /* end nco_var_cnf_dmn() */
 
-bool /* [flg] var_1 and var_2 conform after processing */
+nco_bool /* [flg] var_1 and var_2 conform after processing */
 ncap_var_cnf_dmn /* [fnc] Broadcast smaller variable into larger */
 (var_sct **var_1, /* I/O [ptr] First variable */
  var_sct **var_2) /* I/O [ptr] Second variable */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.76 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.77 2006-04-06 22:56:20 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -90,7 +90,7 @@ typedef struct{ /* prs_sct */
   int *nbr_dmn_out;   /* number of dimensions in above list */
   sym_sct **sym_tbl; /* [fnc] Symbol table for functions */
   int sym_tbl_nbr; /* [nbr] Number of functions in table */
-  bool ntl_scn; /* [flg] Initial scan of script */
+  nco_bool ntl_scn; /* [flg] Initial scan of script */
   var_sct *var_LHS; /* [var] LHS cast variable */
   var_sct ***var_lst; /* list of variables to be defined in O */
   int *nbr_var;        /* [nbr] of variables in above list */ 
@@ -131,14 +131,14 @@ ncap_aed_lookup /* [fnc] Find location of existing attribute or add new attribut
 (const char * const var_nm, /* I [sng] Variable name */
  const char * const att_nm, /* I [sng] Attribute name */
  prs_sct * const prs_arg,  /* I/O [sct] contains attribute list  */
- const bool update); /* I [flg] Delete existing value or add new attribute to list */
+ const nco_bool update); /* I [flg] Delete existing value or add new attribute to list */
 
 
 var_sct *                      /*I [sct] varibale in list */
 ncap_var_lookup
 (var_sct *var,   /* I  [sct] variable  */
  prs_sct *prs_arg,             /* I/O [sct] contains var list */
- const bool add);              /* I if not in list then add to list */          
+ const nco_bool add);              /* I if not in list then add to list */          
 
 
 void nco_var_free_wrp(var_sct **);
@@ -186,7 +186,7 @@ ncap_var_var_sub /* [fnc] Subtract two variables (var_2-var_1) */
  var_sct *var_1); /* I [sct] Variable structure containing first operand */
 
   /* fxm: Following functions need editing, const'ifying, etc. */
-bool ncap_var_stretch(var_sct **,var_sct **);
+nco_bool ncap_var_stretch(var_sct **,var_sct **);
 dmn_sct **nco_dmn_out_grow(prs_sct *);
 int ncap_scv_minus(scv_sct *);
 int ncap_var_write(var_sct *,prs_sct*);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.29 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.30 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -43,7 +43,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
 
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
 
-  bool USR_SPC_THR_RQS=False;
+  nco_bool USR_SPC_THR_RQS=False;
 
   const int dyn_thr=1; /* [flg] Allow system to dynamically set number of threads */
 

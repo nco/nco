@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.105 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.106 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -272,8 +272,8 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
      Truncate dimensions in variable definition in output file according to user-specified limits
      Copy variable-by-variable, old-style, used only by ncks */
 
-  bool SRD=False;
-  bool WRP=False;
+  nco_bool SRD=False;
+  nco_bool WRP=False;
 
   const char fnc_nm[]="nco_cpy_var_val_lmt()"; /* [sng] Function name */
 
@@ -443,8 +443,8 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
 
     if(False){
       /* If coordinate variable, perform monotonicity check */
-      bool CRD=False;
-      bool MNT=False;
+      nco_bool CRD=False;
+      nco_bool MNT=False;
 
       double val_dbl;
       double wrp_spn;
@@ -816,7 +816,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 
      20060217: Packed fixed (non-processed) variables are now passed through unaltered */
 
-  bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
+  nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
   const char fnc_nm[]="nco_var_dfn()"; /* [sng] Function name */
 
@@ -967,7 +967,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
        Recall ncap calls ncap_var_write() to define newly packed LHS variables 
        If operator will attempt to pack some variables... */
     if(nco_pck_plc != nco_pck_plc_nil && nco_pck_plc != nco_pck_plc_upk){ 
-      bool nco_pck_plc_alw; /* O [flg] Packing policy allows packing nc_typ_in */
+      nco_bool nco_pck_plc_alw; /* O [flg] Packing policy allows packing nc_typ_in */
       /* ...and expanded variable is pack-able... */
       if((nco_pck_plc_alw=nco_pck_plc_typ_get(nco_pck_map,var[idx]->typ_upk,(nc_type *)NULL))){
 	/* ...and operator will pack this particular variable... */

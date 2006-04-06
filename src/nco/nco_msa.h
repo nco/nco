@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.18 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.19 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -50,9 +50,9 @@ extern "C" {
   nco_msa_c_2_f /* [fnc] Replace brackets with parentheses in a string */
   (char *sng); /* [sng] String to change from C to Fortran notation */
 
-  bool /* if false then we are at the end of the slab */
+  nco_bool /* if false then we are at the end of the slab */
   nco_msa_clc_idx
-  (bool NORMALIZE,         /* Return indices of slab within the slab */
+  (nco_bool NORMALIZE,         /* Return indices of slab within the slab */
    lmt_all_sct *lmt_a,         /* I list of lmts for each dimension  */
    long *indices,          /* I/O so routine can keep track of where its at */
    lmt_sct* lmt_out,      /* O  output hyperslab */
@@ -81,7 +81,7 @@ extern "C" {
   long /* O [idx] Minimum value */
   nco_msa_min_idx /* [fnc] Find minimum values in current and return minimum value */
   (const long * const current, /* I [idx] Current indices */
-   bool * const mnm, /* O [flg] Minimum */
+   nco_bool * const mnm, /* O [flg] Minimum */
    const int size); /* I [nbr] Size of current and min */
 
   void             /* convert hyperlsab indices into indices relative to disk */ 
@@ -90,7 +90,7 @@ extern "C" {
   lmt_all_sct** lmt_mult,   /* input hyperlab limits     */
   int nbr_dmn,         /* number of dimensions */    
   long *dmn_sbs_dsk,  /* Output - indices relative to disk */
-  bool FREE);        /* Free static space on last call */
+  nco_bool FREE);        /* Free static space on last call */
 
   void
   nco_msa_prn_var_val   /* [fnc] Print variable data */

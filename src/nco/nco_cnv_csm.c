@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.25 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.26 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -8,7 +8,7 @@
 
 #include "nco_cnv_csm.h" /* CCM/CCSM/CF conventions */
 
-bool /* O [flg] File obeys CCM/CCSM/CF conventions */
+nco_bool /* O [flg] File obeys CCM/CCSM/CF conventions */
 nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions */
 (const int nc_id) /* I [id] netCDF file ID */
 {

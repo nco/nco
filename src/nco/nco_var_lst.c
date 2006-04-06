@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.58 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.59 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -29,7 +29,7 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
   
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
   nm_id_sct *in_lst=NULL; 
-  bool *in_bool=NULL;
+  nco_bool *in_bool=NULL;
   
   /* Create list of all variables in input file */
   char var_nm[NC_MAX_NAME];
@@ -48,8 +48,8 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
     return in_lst;
   } /* end if */     
   
-  /* Initialize and allocacte bool array to all False */
-  in_bool=(bool *)nco_calloc((size_t)nbr_var,sizeof(bool));
+  /* Initialize and allocacte nco_bool array to all False */
+  in_bool=(nco_bool *)nco_calloc((size_t)nbr_var,sizeof(nco_bool));
   
   /* Loop through var_lst_in */
   for(idx=0;idx<*nbr_xtr;idx++){
@@ -123,7 +123,7 @@ nco_var_lst_mk_old /* [fnc] Create variable extraction list */
   /* Purpose: Create variable extraction list 
      NB: Routine is deprecated in favor of nco_var_lst_mk() */
 
-  bool err_flg=False;
+  nco_bool err_flg=False;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int idx;
 
@@ -171,7 +171,7 @@ nco_var_meta_search /* [fnc] Search for pattern matches in var string list */
 (int nbr_var, /* I [nbr] number of vars in srch_sng and size of in_bool */
  nm_id_sct *in_lst, /* I [sct] List of all variables in input file (with IDs) */
  char *rexp, /* I [sng] Regular expression pattern */
- bool *in_bool) /* O [flg] Matched vars holder */
+ nco_bool *in_bool) /* O [flg] Matched vars holder */
 {
   /* If regular expression does not compile then program dies */
   int idx;

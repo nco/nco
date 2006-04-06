@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.46 2006-03-10 23:25:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.47 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -187,8 +187,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
      maxima strings and find appropriate indices into dimensions 
      for formulation of dimension start and count vectors, or fail trying. */
   
-  bool flg_no_data=False; /* True if file contains no data for hyperslab */
-  bool rec_dmn_and_mlt_fl_opr=False; /* True if record dimension in multi-file operator */
+  nco_bool flg_no_data=False; /* True if file contains no data for hyperslab */
+  nco_bool rec_dmn_and_mlt_fl_opr=False; /* True if record dimension in multi-file operator */
   
   dmn_sct dim;
   

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.95 2006-02-19 00:03:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.96 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -212,10 +212,10 @@ extern "C" {
     char *nm; /* [sng] Dimension name */
     int lmt_typ; /* crd_val or dmn_idx */
     /* Following four flags are used only by multi-file operators ncra and ncrcat: */
-    bool is_usr_spc_lmt; /* True if any part of limit is user-specified, else False */
-    bool is_usr_spc_min; /* True if user-specified, else False */
-    bool is_usr_spc_max; /* True if user-specified, else False */
-    bool is_rec_dmn; /* True if record dimension, else False */
+    nco_bool is_usr_spc_lmt; /* True if any part of limit is user-specified, else False */
+    nco_bool is_usr_spc_min; /* True if user-specified, else False */
+    nco_bool is_usr_spc_max; /* True if user-specified, else False */
+    nco_bool is_rec_dmn; /* True if record dimension, else False */
     long rec_skp_vld_prv; /* Records skipped at end of previous valid file (multi-file record dimension only) */
     long rec_skp_nsh_spf; /* Number of records skipped in initial superfluous files (multi-file record dimension only) */
     char *min_sng; /* User-specified string for dimension minimum */
@@ -238,8 +238,8 @@ extern "C" {
     long dmn_cnt; /* [nbr] Total number of hyperslabs to extract */
     long dmn_sz_org; /* [nbr] Size of dimension in INPUT file */
     int lmt_dmn_nbr; /* [nbr] Number of lmt args */
-    bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
-    bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
+    nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
+    nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
     lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with each dimension */  
   } lmt_all_sct;
   

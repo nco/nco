@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.33 2006-03-10 01:37:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.34 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -188,9 +188,9 @@ nco_msa_prn_idx(lmt_all_sct *lmt_i)
     printf("slb_nbr=%d srt=%ld end=%ld cnt=%ld srd=%ld\n",slb_nbr,lmt.srt,lmt.end,lmt.cnt,lmt.srd);
 } /* end nco_msa_prn_idx() */
 
-bool /* [flg] There are more limits to process in the slab */
+nco_bool /* [flg] There are more limits to process in the slab */
 nco_msa_clc_idx
-(bool NORMALIZE,
+(nco_bool NORMALIZE,
  lmt_all_sct *lmt_a, /* I list of lmts for each dimension  */
  long *indices, /* I/O so routine can keep track of where its at */
  lmt_sct *lmt, /* O Output hyperslab */
@@ -202,8 +202,8 @@ nco_msa_clc_idx
      So the stride is ALWAYS 1 */
   int sz_idx;
   int size=lmt_a->lmt_dmn_nbr;
-  bool *mnm;
-  bool rcd;
+  nco_bool *mnm;
+  nco_bool rcd;
   
   int prv_slb=0;
   int crr_slb=0;
@@ -211,7 +211,7 @@ nco_msa_clc_idx
   long prv_idx=long_CEWI;
   long cnt=0L;
   
-  mnm=(bool *)nco_malloc(size*sizeof(bool));
+  mnm=(nco_bool *)nco_malloc(size*sizeof(nco_bool));
   
   lmt->srt=-1L;
   lmt->cnt=0L;
@@ -276,7 +276,7 @@ nco_msa_clc_idx
 
   /* Jump here if only one string */
  cln_and_xit:
-  mnm=(bool *)nco_free(mnm);
+  mnm=(nco_bool *)nco_free(mnm);
 
   return rcd;
 } /* end nco_msa_clc_idx() */
@@ -287,7 +287,7 @@ nco_msa_ram_2_dsk /* convert hyperslab indices (in RAM) to hyperlsab indices rel
  lmt_all_sct **lmt_mult, 
  int nbr_dim,
  long *dmn_sbs_dsk,
- bool FREE){
+ nco_bool FREE){
   /*  It does not really convert RAM indices to disk indices, but given a set 
       of RAM indices finds the next set of dsk incdices. 
       So it only works if the indices fed to it are continuous */
@@ -297,7 +297,7 @@ nco_msa_ram_2_dsk /* convert hyperslab indices (in RAM) to hyperlsab indices rel
   static int initialize;
   static long **dmn_indices;
   static long *dmn_sbs_prv;
-  static bool mnm[100];
+  static nco_bool mnm[100];
 
   if(!initialize){
     dmn_sbs_prv=(long *)nco_malloc(nbr_dim*sizeof(long));
@@ -365,7 +365,7 @@ nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
   long cnt=0;
   int size=lmt_lst->lmt_dmn_nbr;
   long *indices;
-  bool *mnm;
+  nco_bool *mnm;
   
   /* Degenerate case */
   if(size == 1){
@@ -374,7 +374,7 @@ nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
   } /* end if */
 
   indices=(long *)nco_malloc(size*sizeof(long));
-  mnm=(bool *)nco_malloc(size*sizeof(bool));
+  mnm=(nco_bool *)nco_malloc(size*sizeof(nco_bool));
   
   /* Initialize indices with srt */
   for(idx=0;idx<size;idx++) 
@@ -392,7 +392,7 @@ nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
   lmt_lst->dmn_cnt=cnt;
 
   indices=(long *)nco_free(indices);
-  mnm=(bool *)nco_free(mnm);
+  mnm=(nco_bool *)nco_free(mnm);
 
   return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
 } /* end nco_msa_clc_cnt() */
@@ -463,7 +463,7 @@ nco_msa_wrp_splt /* [fnc] Split wrapped dimensions */
 long /* O [idx] Minimum value */
 nco_msa_min_idx /* [fnc] Find minimum values in current and return minimum value */
 (const long * const current, /* I [idx] Current indices */
- bool * const mnm, /* O [flg] Minimum */
+ nco_bool * const mnm, /* O [flg] Minimum */
  const int size) /* I [nbr] Size of current and mnm */
 {
   int sz_idx;
@@ -635,7 +635,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
      if PRN_DMN_IDX_CRD_VAL then read in co-ord dims
      if PRN.. = True print var taking account of FORTRAN (Use dims to calculate var indices */
   
-  bool MALLOC_UNITS_SNG=False; /* [flg] Allocated memory for units string */
+  nco_bool MALLOC_UNITS_SNG=False; /* [flg] Allocated memory for units string */
   char nul_chr='\0';
   char var_sng[NCO_MAX_LEN_FMT_SNG];
   char *unit_sng;
@@ -883,7 +883,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     lbl_chr_prn:
 
       if(var.type == NC_CHAR){
-        static bool NULL_IN_SLAB;
+        static nco_bool NULL_IN_SLAB;
 	static char *prn_sng;
         static int chr_cnt;
         static long dmn_sz;

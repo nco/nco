@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.189 2006-02-26 07:41:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.190 2006-04-06 22:56:20 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -76,7 +76,7 @@ char **ncap_fl_spt_glb=NULL; /* [fl] Script file */
 
 void 
 glb_init_free /* [fnc] Initialize and free global variables (line numbers and include stuff) */
-(bool action); /* I [flg] Initialize */
+(nco_bool action); /* I [flg] Initialize */
 
 int 
 main(int argc,char **argv)
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.189 2006-02-26 07:41:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.189 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.190 2006-04-06 22:56:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.190 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -818,7 +818,7 @@ main(int argc,char **argv)
 
 void
 glb_init_free /* [fnc] Initialize and free global variables (line numbers and include stuff) */
-(bool action) /* I [flg] Initialize */
+(nco_bool action) /* I [flg] Initialize */
 {
 /* Purpose: Initialize and free global variables (line numbers and include stuff) */
  

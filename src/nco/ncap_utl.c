@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.128 2006-02-25 22:29:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.129 2006-04-06 22:56:20 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -27,7 +27,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   int rcd;
   int fl_id;
 
-  bool DEF_VAR=False;
+  nco_bool DEF_VAR=False;
 
   dmn_sct *dmn_in; 
   dmn_sct **dim_new=NULL_CEWI;
@@ -167,7 +167,7 @@ ncap_var_write
 
   var_sct *ptr_var;
   var_sct *var_dpl;
-  bool DEF_VAR; /* True if var has been defined in O in initial scan */
+  nco_bool DEF_VAR; /* True if var has been defined in O in initial scan */
   
 #ifdef NCO_RUSAGE_DBG
   long maxrss; /* [B] Maximum resident set size */
@@ -912,7 +912,7 @@ nco_var_lst_sub(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst
   int xtr_idx;
   int xtr_nbr_new=0;
   
-  bool match;
+  nco_bool match;
   
   nm_id_sct *xtr_new_lst=NULL;
   
@@ -946,7 +946,7 @@ nco_var_lst_add(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int nbr_lst
   
   nm_id_sct *xtr_new_lst;
   
-  bool match;
+  nco_bool match;
   
   nbr_xtr_crr=*nbr_xtr;
   if(nbr_xtr_crr > 0){
@@ -1081,7 +1081,7 @@ nco_att_lst_mk
   return xtr_lst;
 } /* end nco_att_lst_mk() */
 
-bool /* O [flg] Variables now conform */
+nco_bool /* O [flg] Variables now conform */
 ncap_var_stretch /* [fnc] Stretch variables */
 (var_sct **var_1, /* I/O [ptr] First variable */
  var_sct **var_2) /* I/O [ptr] Second variable */
@@ -1118,8 +1118,8 @@ ncap_var_stretch /* [fnc] Stretch variables */
      var_gtr_out is required since both variables may change
      var_gtr_out=var_gtr unless convolution is required */
   
-  bool CONFORMABLE=False; /* [flg] Whether var_lsr can be made to conform to var_gtr */
-  bool CONVOLVE=False; /* [flg] var_1 and var_2 had to be convolved */
+  nco_bool CONFORMABLE=False; /* [flg] Whether var_lsr can be made to conform to var_gtr */
+  nco_bool CONVOLVE=False; /* [flg] var_1 and var_2 had to be convolved */
   nco_bool DO_CONFORM; /* [flg] Did var_1 and var_2 conform? */
   nco_bool MUST_CONFORM=False; /* [flg] Must var_1 and var_2 conform? */
   

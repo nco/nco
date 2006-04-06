@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.35 2006-02-26 07:41:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.36 2006-04-06 22:56:20 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.35 2006-02-26 07:41:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.35 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.36 2006-04-06 22:56:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.36 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -192,7 +192,7 @@ main(int argc,char **argv)
   /* Declare all MPI-specific variables here */
   MPI_Status mpi_stt; /* [enm] Status check to decode msg_tag_typ */
 
-  bool TKN_WRT_FREE=True; /* [flg] Write-access to output file is available */
+  nco_bool TKN_WRT_FREE=True; /* [flg] Write-access to output file is available */
   
   int fl_nm_lng; /* [nbr] Output file name length */
   int msg_bfr[msg_bfr_lng]; /* [bfr] Buffer containing var, idx, tkn_wrt_rsp */

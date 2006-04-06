@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.h,v 1.11 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.h,v 1.12 2006-04-06 22:56:21 zender Exp $ */
 
 /* Purpose: ARM conventions */
 
@@ -29,7 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-bool /* O [flg] File obeys ARM conventions */
+nco_bool /* O [flg] File obeys ARM conventions */
 arm_inq /* O [fnc] Check if file obeys ARM conventions */
 (const int nc_id); /* I [id] netCDF file ID */
 
