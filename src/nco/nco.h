@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.96 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.97 2006-04-07 06:46:22 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -51,6 +51,16 @@ extern "C" {
 #endif /* !__cplusplus */
 
 /* Boolean values */
+/* From Wikipedia:
+"On a recent C compiler (supporting the C99 standard), there is a _Bool type, which is used to define bool by the stdbool.h header: 
+
+#include <stdbool.h>
+bool b = false;
+...
+b = true;
+
+During its standardization process, the C++ programming language introduced the bool, true and false keywords, adding a native datatype to support boolean data.
+Preprocessor macros may be used to turn bool into _Bool, false into 0 and true into 1, allowing compatibility with the aforementioned C99 use of the stdbool.h header." */
 #define nco_bool int
 #ifndef __cplusplus
 #ifndef bool

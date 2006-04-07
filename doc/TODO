@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.730 2006-03-20 19:51:50 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.731 2006-04-07 06:46:21 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -467,7 +467,8 @@ nco693. ncks regression for offset past end of file test
 	ncks -C -H -s '%g' -C -d time,2, ~/foo.nc
         ncks: ERROR User-specified dimension index range 2 <= time <= 1 does not fall within valid dimension index range 0 <= time <= 1
         ncks behaves perfectly here and the perl script cannot recognize the expected answer string as being valid
-nco694. 
+nco694. Change nco_bool to C99 standard bool as per Wikipedia?
+nco695. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
