@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.65 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.66 2006-04-12 11:32:37 hmb Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -787,6 +787,35 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara");
   return rcd;
 } /* end nco_put_vara */
+
+
+
+int
+nco_put_vars(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long *srd,const void * const vp,const nc_type type)
+{
+  /* Purpose: Wrapper for nc_put_vars_*() */
+  int rcd=NC_NOERR;
+  switch(type){
+  case NC_FLOAT: rcd=nc_put_vars_float(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t)srd, (const float *)vp); break;
+  case NC_DOUBLE: rcd=nc_put_vars_double(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t)srd,(const double *)vp); break;
+  case NC_INT: rcd=NCO_PUT_VARS_INT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t)srd,(const nco_int *)vp); break;
+  case NC_SHORT: rcd=nc_put_vars_short(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t)srd, (const short *)vp); break;
+  case NC_CHAR: rcd=NCO_PUT_VARS_CHAR(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t)srd,(const nco_char *)vp); break;
+  case NC_BYTE: rcd=NCO_PUT_VARS_BYTE(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t)srd, (const nco_byte *)vp); break;
+#ifdef ENABLE_NETCDF4
+  case NC_UBYTE: rcd=NCO_PUT_VARS_UBYTE(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t)srd,(const nco_ubyte *)vp); break;
+  case NC_USHORT: rcd=NCO_PUT_VARS_USHORT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t)srd, (const nco_ushort *)vp); break;
+  case NC_UINT: rcd=NCO_PUT_VARS_UINT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t)srd, (const nco_uint *)vp); break;
+  case NC_INT64: rcd=NCO_PUT_VARS_INT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t)srd, (const nco_int64 *)vp); break;
+  case NC_UINT64: rcd=NCO_PUT_VARS_UINT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t)srd,(const nco_uint64 *)vp); break;
+#endif /* !ENABLE_NETCDF4 */
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vars");
+  return rcd;
+} /* end nco_put_vars */
+
+
 
 int
 nco_get_varm(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long *srd,const long * const map,void * const vp,const nc_type type)
