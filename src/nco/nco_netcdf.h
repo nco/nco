@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.31 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.32 2006-04-12 11:31:26 hmb Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -124,6 +124,7 @@ int nco_get_var1(const int nc_id,const int var_id,const long * const srt,void * 
 int nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void * const vp,const nc_type type);
 int nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long * const cnt,void * const vp,const nc_type type);
 int nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const void * const vp,const nc_type type);
+  int nco_put_vars(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long *srd,const void * const vp,const nc_type type);
 int nco_get_varm(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long *srd,const long * const map,void * const vp,const nc_type type);
 int nco_put_varm(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long *srd,const long * const map,const void * const vp,const nc_type type);
 /* End Variable routines */
