@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.9 2006-03-15 14:01:16 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.10 2006-04-13 12:47:10 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -75,7 +75,8 @@ public:
   NcapVector<dmn_sct*> *ptr_dmn_out_vtr; //Vector of dimensions in output file file
   NcapVector<sym_sct*> *ptr_sym_vtr;     //Vector of functions nb doesn't change
   NcapVarVector *ptr_var_vtr;            // list of attributes & variables
-  bool ntl_scn; /* [flg] Initial scan of script */
+  bool ntl_scn;                          // [flg] Initial scan of script 
+  bool FORTRAN_IDX_CNV;                  //Use fortran convention with hyperslab indices
 } prs_sct;
 
 
@@ -84,8 +85,8 @@ public:
 var_sct *                  /* O [sct] initialized variable */
 ncap_var_init(
 const char * const var_nm, /* I [sng] variable name constant */
-prs_sct *prs_arg);          /* I/O  vectors of atts,vars,dims, filenames */
-
+prs_sct *prs_arg,          /* I/O  vectors of atts,vars,dims, filenames */
+bool bfll);                /* if true fill var with data */ 
 
 int                /* O  [bool] bool - ture if sucessful */
 ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */ 
@@ -96,7 +97,9 @@ prs_sct *prs_arg); /* I/O vectors of atts & vars & file names  */
 var_sct *                /* O [sct] variable containing attribute */
 ncap_att_init(           /*   [fnc] Grab an attribute from input file */
 const char *const va_nm, /* I [sng] att name of form var_nm&att_nm */ 
-prs_sct *prs_arg);        /* I/O vectors of atts & vars & file names  */
+prs_sct *prs_arg);       /* I/O vectors of atts & vars & file names  */
+
+
 
 sym_sct *                    /* O [sct] return sym_sct */
 ncap_sym_init                /*  [fnc] populate & return a symbol table structure */
@@ -201,7 +204,6 @@ ncap_do_cst(
 var_sct* var,
 var_sct* var_cst,
 bool bntlscn);
-
 
 
 /* End funtions in ncap_utl.c */
