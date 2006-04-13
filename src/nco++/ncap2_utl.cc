@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.6 2006-03-15 14:03:21 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.7 2006-04-13 12:46:21 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -15,7 +15,8 @@
 var_sct *                  /* O [sct] initialized variable */
 ncap_var_init(
 const char * const var_nm, /* I [sng] variable name constant */
-prs_sct *prs_arg)          /* I/O  vectors of atts,vars,dims, filenames */
+prs_sct *prs_arg,          /* I/O  vectors of atts,vars,dims, filenames */
+bool bfll)                 /* if true fill var with data */ 
 {
   /* Purpose: Initialize variable structure, retrieve variable values from disk
      Parser calls ncap_var_init() when it encounters a new RHS variable */
@@ -104,7 +105,8 @@ prs_sct *prs_arg)          /* I/O  vectors of atts,vars,dims, filenames */
   var->tally=(long *)NULL;
 
   /* Retrieve variable values from disk into memory */
-  (void)nco_var_get(fl_id,var); 
+  if(bfll)
+     (void)nco_var_get(fl_id,var); 
 
   return var;
 } /* end ncap_var_init() */
@@ -1231,10 +1233,6 @@ bool bntlscn)
 return var;
 
 }
-
-
-
-
 
 
 
