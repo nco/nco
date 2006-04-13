@@ -122,6 +122,7 @@ lmt:
    (expr)? (COLON (expr)?)*
    { #lmt = #( [LMT, "lmt"], #lmt ); }
     ;
+        
 
 lmt_list
   : LPAREN! lmt (COMMA! lmt)*  RPAREN!
@@ -333,79 +334,221 @@ public:
           tr=tr->getNextSibling();   
         }
     }
-    int lmt_init(RefAST aRef, int nbr_dmn, vector<ast_lmt_sct*> &lmt_vtr) {
+
+
+int 
+lmt_init(
+RefAST aRef, 
+vector<ast_lmt_sct> &ast_lmt_vtr) 
+{
    
       int idx;
-      int cdex;
+      int nbr_dmn;   
+      int nbr_cln; // Number of colons in limit
       RefAST lRef;
       RefAST eRef;
-      ast_lmt_sct *hyp;
+      RefAST cRef;
+      ast_lmt_sct hyp;
 
       if(aRef->getType() != LMT_LIST)
          return 0;
     
       lRef=aRef->getFirstChild();
 
-      cout<<"In lmt_init\n";         
+      nbr_dmn=lmt_peek(aRef);      
 
       for(idx=0 ; idx < nbr_dmn ; idx++){
-       hyp=new ast_lmt_sct;
-       hyp->ind[0]= ANTLR_USE_NAMESPACE(antlr)nullAST;                 
-       hyp->ind[1]= ANTLR_USE_NAMESPACE(antlr)nullAST;                     
-       hyp->ind[2]= ANTLR_USE_NAMESPACE(antlr)nullAST;                 
-       
+         hyp.ind[0]=ANTLR_USE_NAMESPACE(antlr)nullAST;
+         hyp.ind[1]=ANTLR_USE_NAMESPACE(antlr)nullAST;
+         hyp.ind[2]=ANTLR_USE_NAMESPACE(antlr)nullAST;
+
+             
        if(lRef->getType()!=LMT) 
             return 0;
        
-        cdex=0; 
         eRef=lRef->getFirstChild();
-
-       /* 
-       while(eRef) {
-          if(eRef->getType() != COLON)
-            hyp->ind[cdex]=eRef;   
-           else
-          hyp->ind[cdex+1]=eRef;   
+        nbr_cln=0;
         
-           cdex++; 
+       while(eRef) {
+          if(eRef->getType() == COLON){
+            cRef=eRef;        
+            nbr_cln++;
+          }
            eRef=eRef->getNextSibling();
         }
-       */
-       hyp->ind[0]=eRef;
+      
+      // Initialise  to default markers
+       switch(nbr_cln) {
+          case 0: 
+             break;
+                
+         case 1: hyp.ind[0]=cRef;
+                 hyp.ind[1]=cRef;
+                 break;
 
-       cout <<"eRef="<<eRef->getText()<<endl;
-       cout <<"hyp->ind[0]="<<hyp->ind[0]->getText()<<endl;
- 
-       lmt_vtr.push_back(hyp);
-       cout<<"lmt_vtr[idx]="<<lmt_vtr[idx]->ind[0]->getText()<<endl;
+         case 2: hyp.ind[0]=cRef;
+                 hyp.ind[1]=cRef;
+                 hyp.ind[2]=cRef;
+                 break;
+
+         default: printf("Error: too many indicies\n");
+                  nco_exit(EXIT_FAILURE);                  
+                 break;      
+        }
+
+       eRef=lRef->getFirstChild();
+       // point inidices to any expressions that exist
+        nbr_cln=0;
+       while(eRef) {
+          if(eRef->getType() == COLON) 
+             nbr_cln++; 
+           else   
+             hyp.ind[nbr_cln]=eRef;
+           
+           eRef=eRef->getNextSibling();
+       }
+       // save indices 
+       ast_lmt_vtr.push_back(hyp);
+
        lRef=lRef->getNextSibling();
      }
-  }
+     return nbr_dmn;
+
+} 
+
+int 
+lmt_mk(
+RefAST lmt,
+NcapVector<lmt_sct*> &lmt_vtr ) 
+{   
+int nbr_dmn;
+int idx;
+int jdx;
+long lcl_ind[3];
+
+char *buff;
+
+lmt_sct *lmt_ptr;
+RefAST aRef;
+
+vector<ast_lmt_sct> ast_lmt_vtr;
 
 
-}
+// populate ast_lmt_vtr
+nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
+
+  for(idx=0 ; idx <nbr_dmn ; idx++){
+
+
+     lcl_ind[0]=-2; lcl_ind[1]=-2; lcl_ind[2]=0; 
+
+    for(jdx=0 ; jdx <3 ; jdx++){
+
+     aRef=ast_lmt_vtr[idx].ind[jdx];
+
+     if(!aRef)
+        continue; //do nothing - use default lcl_ind values     
+     else if( aRef->getType() == COLON){
+       if(jdx <2) lcl_ind[jdx]=-1;
+     }else{
+         // Calculate number using out()
+         var_sct *var_out;
+   
+         var_out=out(aRef);
+
+         // convert result to type int
+          var_out=nco_var_cnf_typ(NC_INT,var_out);    
+         (void)cast_void_nctype(NC_INT,&var_out->val);
+
+          // only interested in the first value.
+         lcl_ind[jdx]=var_out->val.lp[0];
+
+         var_out=nco_var_free(var_out);
+        }
+     }// end jdx
+         
+     // fill out lmt structure
+     // use same logic as nco_lmt_prs 
+     lmt_ptr=(lmt_sct*)nco_calloc((size_t)1,sizeof(lmt_sct));
+
+     lmt_ptr->nm=NULL;
+     //lmt_ptr->lmt_typ=-1;
+     lmt_ptr->is_usr_spc_lmt=True; /* True if any part of limit is user-specified, else False */
+     lmt_ptr->min_sng=NULL;
+     lmt_ptr->max_sng=NULL;
+     lmt_ptr->srd_sng=NULL;
+     /* rec_skp_nsh_spf is used for record dimension in multi-file operators */
+     lmt_ptr->rec_skp_nsh_spf=0L; /* Number of records skipped in initial superfluous files */
+    
+    
+    /* Fill in structure */
+    if( lcl_ind[0] >= 0) {
+          buff=(char*)nco_malloc(20*sizeof(char));
+          (void)sprintf(buff, "%ld",lcl_ind[0]);
+           lmt_ptr->min_sng=buff; 
+    }    
+
+    /* Fill in structure */
+    if( lcl_ind[1] >= 0) {
+          buff=(char*)nco_malloc(20*sizeof(char));
+          (void)sprintf(buff, "%ld",lcl_ind[1]);
+           lmt_ptr->max_sng=buff;
+    }    
+
+    /* Fill in structure */
+    if( lcl_ind[2] > 0) {
+          buff=(char*)nco_malloc(20*sizeof(char));
+          (void)sprintf(buff, "%ld",lcl_ind[2]);
+           lmt_ptr->srd_sng=buff;
+    }    
+
+    /* need to deal with situation where only start is defined -- ie picking only a single value */
+    if(lcl_ind[0] >=0 && lcl_ind[1]==-2){
+          buff=(char*)nco_malloc(20*sizeof(char));
+          (void)sprintf(buff, "%ld",lcl_ind[0]);
+          lmt_ptr->max_sng=buff; 
+    }    
+
+
+    if(lmt_ptr->max_sng == NULL) lmt_ptr->is_usr_spc_max=False; else lmt_ptr->is_usr_spc_max=True;
+    if(lmt_ptr->min_sng == NULL) lmt_ptr->is_usr_spc_min=False; else lmt_ptr->is_usr_spc_min=True;
+
+    lmt_vtr.push(lmt_ptr);
+
+
+   } // end idx
+
+   return nbr_dmn;
+
+} /* end lmt_mk */
+
+
+
+} // end native block
+
+
+
+
 // Return the number of dimensions in lmt subscript
 lmt_peek returns [int nbr_dmn]
 
-   : lmt:LMT_LIST {
-       RefAST aRef;
-     
-       aRef=lmt->getFirstChild();
-       nbr_dmn=0;
-       while(aRef) {
-         if(aRef->getType() == LMT) nbr_dmn++;    
+  : lmt:LMT_LIST{
+    RefAST aRef;     
+    aRef=lmt->getFirstChild();
+    nbr_dmn=0;
+    while(aRef) {
+      if(aRef->getType() == LMT) nbr_dmn++;    
         aRef=aRef->getNextSibling();     
-       }   
-     }        
-    ;
-
+    }   
+  }
+  ;
 
 
 
 statements returns [int iret] 
 
-    : blo:BLOCK { 
-       run(blo->getFirstChild());
+    : blk:BLOCK { 
+       run(blk->getFirstChild());
             
                 }
     | ass:ASSIGN {
@@ -431,10 +574,10 @@ statements returns [int iret]
          if(ex && ex->getType()==ELSE ) run(ex->getFirstChild());
        }
       }
-    | els:ELSE {
+    | ELSE {
 
       }
-    | nul:NULL_NODE {
+    | NULL_NODE {
             }
     ;
 
@@ -445,10 +588,125 @@ assign
 }
    :   (#(ASSIGN  VAR_ID ))=> #(ASSIGN  vid:VAR_ID ){
     
-          switch( vid->getNextSibling()->getType()){
+
+          if(vid->getFirstChild()) {
+
+          switch( vid->getFirstChild()->getType()){
             
+
+            // Deal with LHS hyperslab
             case LMT_LIST:{
-                ;
+               int idx;
+               int jdx;
+               int rcd;
+               int nbr_dmn;
+               int var_id; 
+               char *var_nm;
+               
+               RefAST lmt_Ref;
+               lmt_sct *lmt_ptr;
+               var_sct *var_lhs;
+               var_sct *var_rhs;
+               NcapVector<lmt_sct*> lmt_vtr;          
+               
+               lmt_Ref=vid->getFirstChild();
+
+               bcst=false;
+               var_cst=(var_sct*)NULL;
+               var=(var_sct*)NULL;
+
+              
+               var_nm=strdup(vid->getText().c_str());
+
+               // check if var is in output
+               rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
+               if(rcd != NC_NOERR) {
+                  (void)fprintf(stderr,"WARNING unable to find %s in file %s. The variable to hyperslab must be in the output file\n",var_nm,prs_arg->fl_out );          
+                  nco_exit(EXIT_FAILURE); 
+               }
+             
+               var_lhs=ncap_var_init(var_nm,prs_arg,false);         
+
+               nbr_dmn=var_lhs->nbr_dim;
+
+               // Now populate lmt_vtr;
+               if( lmt_mk(lmt_Ref,lmt_vtr) == 0){
+                  printf("zero return for lmt_vtr\n");
+                  nco_exit(EXIT_FAILURE);
+               }
+
+               if( lmt_vtr.size() != nbr_dmn){
+                   (void)fprintf(stderr,"Error: Number of limits does match number of dimensions\n" );                                      
+                   nco_exit(EXIT_FAILURE);     
+               }
+
+                // add dim names to dimension list 
+               for(idx=0 ; idx < nbr_dmn;idx++) 
+                   lmt_vtr[idx]->nm=strdup(var_lhs->dim[idx]->nm);   
+        
+                
+                var_lhs->sz=1;        
+                // fill out limit structure
+                for(idx=0 ; idx < nbr_dmn ;idx++){
+                   (void)nco_lmt_evl(prs_arg->out_id,lmt_vtr[idx],0L,prs_arg->FORTRAN_IDX_CNV);
+                    // Calculate size
+                   var_lhs->sz *= lmt_vtr[idx]->cnt;
+                }
+               // Calculate RHS variable                  
+               var_rhs=out(vid->getNextSibling());         
+               // Convert to LHS type
+               var_rhs=nco_var_cnf_typ(var_lhs->type,var_rhs);             
+               
+               // deal with scalar on RHS first         
+               if(var_rhs->sz == 1){
+                 // stretch variable to var_lhs->sz                 
+                 (void)ncap_att_stretch(var_rhs,var_lhs->sz);
+                }else {
+                 // make sure var_lhs and var_rhs are the same size
+                 // and that they are the same shape (ie they conform!!)          
+                 if(var_rhs->sz != var_lhs->sz){
+
+                   (void)fprintf(stderr,"Error: Mismatch - number of elements on LHS(%li) doesn't equal number of elements on RHS(%li)\n",var_lhs->sz,var_rhs->sz );                                      
+                   nco_exit(EXIT_FAILURE); 
+                   }
+               }   
+          
+               // Now ready to put values 
+              {
+               long mult_srd=1L;
+               long *dmn_srt;
+               long *dmn_cnt;
+               long *dmn_srd;
+    
+               dmn_srt=(long *)nco_malloc(nbr_dmn*sizeof(long));
+               dmn_cnt=(long *)nco_malloc(nbr_dmn*sizeof(long));
+               dmn_srd=(long *)nco_malloc(nbr_dmn*sizeof(long));
+    
+               for(idx=0;idx<nbr_dmn;idx++){
+                 dmn_srt[idx]=lmt_vtr[idx]->srt;
+                 dmn_cnt[idx]=lmt_vtr[idx]->cnt;
+                 dmn_srd[idx]=lmt_vtr[idx]->srd;
+                    mult_srd*=lmt_vtr[idx]->srd;
+               } /* end loop over idx */
+    
+               /* Check for stride */
+               if(mult_srd == 1L)
+	            (void)nco_put_vara(prs_arg->out_id,var_id,dmn_srt,dmn_cnt,var_rhs->val.vp,var_rhs->type);
+               else
+	            (void)nco_put_vars(prs_arg->out_id,var_id,dmn_srt,dmn_cnt,dmn_srd,var_rhs->val.vp,var_rhs->type);
+    
+               dmn_srt=(long *)nco_free(dmn_srt);
+               dmn_cnt=(long *)nco_free(dmn_cnt);
+               dmn_srd=(long *)nco_free(dmn_srd);
+              } // end put block !!
+
+              var_lhs=nco_var_free(var_lhs);
+              var_rhs=nco_var_free(var_rhs);
+
+               // Empty and free vector 
+              for(idx=0 ; idx < nbr_dmn ; idx++)
+                (void)nco_lmt_free(lmt_vtr[idx]);
+
                 } break;
 
             case DMN_LIST:{
@@ -457,12 +715,14 @@ assign
               char** sbs_lst;
               RefAST aRef;
               
+              cout<< "In ASSIGN/DMN\n";
+
               // set class wide variables
               bcst=true;  
               var_cst=(var_sct*)NULL;
 
               sbs_lst=(char**)nco_calloc(NC_MAX_DIMS, sizeof(char*));
-              aRef=vid->getNextSibling()->getFirstChild();
+              aRef=vid->getFirstChild()->getFirstChild();
          
               // Get dimension names in list       
               while(aRef) {
@@ -471,7 +731,7 @@ assign
               }
               // Cast is applied in VAR_ID action in function out()
               var_cst=ncap_mk_cst(sbs_lst,dmn_nbr,prs_arg);     
-              var=out(vid->getNextSibling()->getNextSibling());
+              var=out(vid->getNextSibling());
               
               // Cast isn't applied to naked numbers,
               // or variables of size 1, or attributes
@@ -489,17 +749,18 @@ assign
 
              } break;
 
-             default: {
+             }
+
+             
+             } else {
                // Set class wide variables     
                bcst=false;
                var_cst=(var_sct*)NULL;
 
-
                var=out(vid->getNextSibling());
                var->nm =strdup(vid->getText().c_str());
                (void)ncap_var_write(var,prs_arg);      
-             } break; 
-         } // end switch 
+             } // end else 
          
        } // end action
  
@@ -698,75 +959,87 @@ out returns [var_sct *var]
             *var->val.dp = r;
             (void)cast_nctype_void(type,&var->val);
          }
-
-
-
     // Variable with argument list 
     |  (#( VAR_ID LMT_LIST)) => #( vid:VAR_ID lmt:LMT_LIST) {
-          int idx;
-          int jdx;
-          int nbr_dmn;
-          int *nbr_ind; // the number of indices in each dim limit
-          char *nm;
-          var_sct *var;
-          RefAST aRef;
-          vector<ast_lmt_sct*> lmt_vtr; 
 
-          cout<<"About to call lmt_peek\n";         
-          nbr_dmn=lmt_peek(lmt);       
-          cout<<"Called to call lmt_peek\n";         
-          if( lmt_init(lmt,nbr_dmn, lmt_vtr) == 0){
-            printf("zero return for lmt_init\n");
+          int idx;
+          int nbr_dmn;
+          char *var_nm;
+          var_sct *var_rhs;
+          var_sct *var_nw;
+          dmn_sct *dmn_nw;
+         
+          NcapVector<lmt_sct*> lmt_vtr;
+          NcapVector<dmn_sct*> dmn_vtr;
+   
+          var_nm=strdup(vid->getText().c_str()); 
+          var_rhs=ncap_var_init(var_nm,prs_arg,false);            
+          nbr_dmn=var_rhs->nbr_dim;          
+
+          // Now populate lmt_vtr                  
+          if( lmt_mk(lmt,lmt_vtr) == 0){
+            printf("zero return for lmt_vtr\n");
             nco_exit(EXIT_FAILURE);
           }
-            cout<<"Return from lmt_peek num_dim=" <<nbr_dmn <<endl ;                          
-            cout<<"lmt_vtr.size()==" << lmt_vtr.size() <<endl ;                          
+
+         if( lmt_vtr.size() != nbr_dmn){
+            (void)fprintf(stderr,"Error: Number of limits does match number of dimensions\n" );                                      
+            nco_exit(EXIT_FAILURE);     
+         }
+
+          // add dim names to dimension list 
+          for(idx=0 ; idx < nbr_dmn;idx++) 
+            lmt_vtr[idx]->nm=strdup(var_rhs->dim[idx]->nm);   
+                        
+          // fill out limit structure
+           for(idx=0 ; idx < nbr_dmn ;idx++)
+            (void)nco_lmt_evl(var_rhs->nc_id,lmt_vtr[idx],0L,prs_arg->FORTRAN_IDX_CNV);
+
+           // copy lmt_sct to dmn_sct;
+           for(idx=0 ;idx <nbr_dmn ; idx++){
+              dmn_nw=(dmn_sct*)nco_malloc(sizeof(dmn_sct));
+              dmn_nw->nm=strdup(lmt_vtr[idx]->nm);
+              dmn_nw->id=lmt_vtr[idx]->id;
+              dmn_nw->cnt=lmt_vtr[idx]->cnt;  
+              dmn_nw->srt=lmt_vtr[idx]->srt;  
+              dmn_nw->end=lmt_vtr[idx]->end;  
+              dmn_nw->srd=lmt_vtr[idx]->srd;  
+              dmn_vtr.push(dmn_nw);
+           }  
+ 
+          // Fudge -- fill out var again -but using dims defined in dmn_vtr
+          // We need data in var so that RHS logic in assign can access var shape 
+          var_nw=nco_var_fll(var_rhs->nc_id,var_rhs->id,var_nm, dmn_vtr.ptr(0),dmn_vtr.size());
+
+          // Now get data from disk -can't use nco_var_get() -as it lacks stride
+          var_nw->val.vp=(void*)nco_malloc(var_nw->sz*nco_typ_lng(var_nw->typ_dsk));
+          if(var_nw->sz >1)  
+           (void)nco_get_varm(var_nw->nc_id,var_nw->id,var_nw->srt,var_nw->cnt,var_nw->srd,(long*)NULL,var_nw->val.vp,var_nw->typ_dsk);
+          else
+           (void)nco_get_var1(var_nw->nc_id,var_nw->id,var_nw->srt,var_nw->val.vp,var_nw->typ_dsk);
+
           
-          for(idx=0 ; idx < lmt_vtr.size() ; idx++){
-           for(jdx=0;jdx < 3; jdx++){
-
-              //cout<< lmt_vtr[idx]->ind[jdx]->getText()<<endl;
-
-              
-              aRef=lmt_vtr[idx]->ind[jdx];
-
-                //if(aRef == nullAST) 
-                if(!aRef) 
-                   cout <<" null " <<endl;
-                 else
-                    cout << aRef->getText() <<" " << endl;               
-
-              if(jdx==2) printf("\n");
-             
-               
-            }
-          }
-          cout << "Done printing\n";
-          nm =strdup(vid->getText().c_str());
-          var=ncap_var_init(nm,prs_arg);
-          if(var== (var_sct*)NULL){
-               nco_exit(EXIT_FAILURE);
-          }
-          var->undefined=False;
-
-          // apply cast only if sz >1 
+          var=var_nw;
+           
           if(bcst && var->sz >1)
             var=ncap_do_cst(var,var_cst,prs_arg->ntl_scn);
           
-          cout << "At action /function end!!\n";
-           for(idx=0 ; idx <lmt_vtr.size() ; idx++)
-             delete lmt_vtr[idx];
+          var_rhs=nco_var_free(var_rhs);
 
-            cout << "Done vector delete\n";
- 
-        }
+          //free vectors
+          for(idx=0 ; idx < nbr_dmn ; idx++){
+            (void)nco_lmt_free(lmt_vtr[idx]);
+            (void)nco_dmn_free(dmn_vtr[idx]);
+          }    
+          
 
-    // Plain variable
+    }
+    // plain Variable
 	|   v:VAR_ID       
         { 
           char *nm;
           nm =strdup(v->getText().c_str());
-          var=ncap_var_init(nm,prs_arg);
+          var=ncap_var_init(nm,prs_arg,true);
           if(var== (var_sct*)NULL){
                nco_exit(EXIT_FAILURE);
           }
@@ -778,6 +1051,7 @@ out returns [var_sct *var]
 
         } /* end action */
     // PLain attribute
+
     |   att:ATT_ID { 
             // check "output"
             NcapVar *Nvar;
@@ -795,6 +1069,5 @@ out returns [var_sct *var]
             }
              
         }    
-        ;
-
+;
 
