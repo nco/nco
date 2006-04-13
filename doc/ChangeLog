@@ -1,3 +1,8 @@
+2006-04-13  Henry Butowsky  <henryb@ntlworld.com>
+	* The first iteration of hyperslabing in ncap2
+	* Can hyperslab on LHS with scalar on RHS eg time(5:9)=.4;
+	  or var on RHS. 
+	* Can also  hyperslab on RHS eg three_dmn_var(1,,)=three_dmn_var(9,,);
 2006-04-06  Charlie Zender  <zender@uci.edu>
 
 	* Change bool's to nco_bool's in nco.h
