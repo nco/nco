@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.9 2006-04-12 11:29:59 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.10 2006-04-14 22:02:08 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -97,6 +97,7 @@ typedef char nco_byte; /* [typ] NC_BYTE */
 # define NCO_GET_ATT_BYTE nc_get_att_text
 # define NCO_GET_VAR1_BYTE nc_get_var1_text
 # define NCO_GET_VARA_BYTE nc_get_vara_text
+# define NCO_GET_VARS_BYTE nc_get_vars_text
 # define NCO_GET_VARM_BYTE nc_get_varm_text
 # define NCO_PUT_ATT_BYTE nc_put_att_text
 # define NCO_PUT_VAR1_BYTE nc_put_var1_text
@@ -111,6 +112,7 @@ typedef signed char nco_byte; /* [typ] NC_BYTE */
 # define NCO_GET_ATT_BYTE nc_get_att_schar
 # define NCO_GET_VAR1_BYTE nc_get_var1_schar
 # define NCO_GET_VARA_BYTE nc_get_vara_schar
+# define NCO_GET_VARS_BYTE nc_get_vars_schar
 # define NCO_GET_VARM_BYTE nc_get_varm_schar
 # define NCO_PUT_ATT_BYTE nc_put_att_schar
 # define NCO_PUT_VAR1_BYTE nc_put_var1_schar
@@ -125,6 +127,7 @@ typedef unsigned char nco_byte; /* [typ] NC_BYTE */
 # define NCO_GET_ATT_BYTE nc_get_att_uchar
 # define NCO_GET_VAR1_BYTE nc_get_var1_uchar
 # define NCO_GET_VARA_BYTE nc_get_vara_uchar
+# define NCO_GET_VARS_BYTE nc_get_vars_uchar
 # define NCO_GET_VARM_BYTE nc_get_varm_uchar
 # define NCO_PUT_ATT_BYTE nc_put_att_uchar
 # define NCO_PUT_VAR1_BYTE nc_put_var1_uchar
@@ -149,6 +152,7 @@ typedef unsigned char nco_ubyte; /* [typ] NC_UBYTE */
 # define NCO_GET_ATT_UBYTE nc_get_att_ubyte
 # define NCO_GET_VAR1_UBYTE nc_get_var1_ubyte
 # define NCO_GET_VARA_UBYTE nc_get_vara_ubyte
+# define NCO_GET_VARS_UBYTE nc_get_vars_ubyte
 # define NCO_GET_VARM_UBYTE nc_get_varm_ubyte
 # define NCO_PUT_ATT_UBYTE nc_put_att_ubyte
 # define NCO_PUT_VAR1_UBYTE nc_put_var1_ubyte
@@ -173,7 +177,7 @@ typedef char nco_char; /* [typ] NC_CHAR */
 # define NCO_GET_ATT_CHAR nc_get_att_text
 # define NCO_GET_VAR1_CHAR nc_get_var1_text
 # define NCO_GET_VARA_CHAR nc_get_vara_text
-# define NCO_GET_VARS_CHAR nc_get_vara_text
+# define NCO_GET_VARS_CHAR nc_get_vars_text
 # define NCO_GET_VARM_CHAR nc_get_varm_text
 /* nc_put_att_text() is unique---it uses strlen() to determine argument length */
 # define NCO_PUT_ATT_CHAR(a,b,c,d,e,f) nc_put_att_text(a,b,c,e,f)
@@ -189,6 +193,7 @@ typedef signed char nco_char; /* [typ] NC_CHAR */
 # define NCO_GET_ATT_CHAR nc_get_att_schar
 # define NCO_GET_VAR1_CHAR nc_get_var1_schar
 # define NCO_GET_VARA_CHAR nc_get_vara_schar
+# define NCO_GET_VARS_CHAR nc_get_vars_schar
 # define NCO_GET_VARM_CHAR nc_get_varm_schar
 # define NCO_PUT_ATT_CHAR nc_put_att_schar
 # define NCO_PUT_VAR1_CHAR nc_put_var1_schar
@@ -202,6 +207,7 @@ typedef unsigned char nco_char; /* [typ] NC_CHAR */
 # define NCO_GET_ATT_CHAR nc_get_att_uchar
 # define NCO_GET_VAR1_CHAR nc_get_var1_uchar
 # define NCO_GET_VARA_CHAR nc_get_vara_uchar
+# define NCO_GET_VARS_CHAR nc_get_vars_uchar
 # define NCO_GET_VARM_CHAR nc_get_varm_uchar
 # define NCO_PUT_ATT_CHAR nc_put_att_uchar
 # define NCO_PUT_VAR1_CHAR nc_put_var1_uchar
@@ -226,6 +232,7 @@ typedef unsigned short nco_ushort; /* [typ] NC_USHORT */
 # define NCO_GET_ATT_USHORT nc_get_att_ushort
 # define NCO_GET_VAR1_USHORT nc_get_var1_ushort
 # define NCO_GET_VARA_USHORT nc_get_vara_ushort
+# define NCO_GET_VARS_USHORT nc_get_vars_ushort
 # define NCO_GET_VARM_USHORT nc_get_varm_ushort
 # define NCO_PUT_ATT_USHORT nc_put_att_ushort
 # define NCO_PUT_VAR1_USHORT nc_put_var1_ushort
@@ -250,6 +257,7 @@ typedef int nco_int; /* [typ] NC_INT */
 # define NCO_GET_ATT_INT nc_get_att_int
 # define NCO_GET_VAR1_INT nc_get_var1_int
 # define NCO_GET_VARA_INT nc_get_vara_int
+# define NCO_GET_VARS_INT nc_get_vars_int
 # define NCO_GET_VARM_INT nc_get_varm_int
 # define NCO_PUT_ATT_INT nc_put_att_int
 # define NCO_PUT_VAR1_INT nc_put_var1_int
@@ -264,6 +272,7 @@ typedef long nco_int; /* [typ] NC_INT */
 # define NCO_GET_ATT_INT nc_get_att_long
 # define NCO_GET_VAR1_INT nc_get_var1_long
 # define NCO_GET_VARA_INT nc_get_vara_long
+# define NCO_GET_VARS_INT nc_get_vars_long
 # define NCO_GET_VARM_INT nc_get_varm_long
 # define NCO_PUT_ATT_INT nc_put_att_long
 # define NCO_PUT_VAR1_INT nc_put_var1_long
@@ -288,6 +297,7 @@ typedef unsigned int nco_uint; /* [typ] NC_UINT */
 # define NCO_GET_ATT_UINT nc_get_att_uint
 # define NCO_GET_VAR1_UINT nc_get_var1_uint
 # define NCO_GET_VARA_UINT nc_get_vara_uint
+# define NCO_GET_VARS_UINT nc_get_vars_uint
 # define NCO_GET_VARM_UINT nc_get_varm_uint
 # define NCO_PUT_ATT_UINT nc_put_att_uint
 # define NCO_PUT_VAR1_UINT nc_put_var1_uint
@@ -312,6 +322,7 @@ typedef long long nco_int64; /* [typ] NC_INT64 */
 # define NCO_GET_ATT_INT64 nc_get_att_longlong
 # define NCO_GET_VAR1_INT64 nc_get_var1_longlong
 # define NCO_GET_VARA_INT64 nc_get_vara_longlong
+# define NCO_GET_VARS_INT64 nc_get_vars_longlong
 # define NCO_GET_VARM_INT64 nc_get_varm_longlong
 # define NCO_PUT_ATT_INT64 nc_put_att_longlong
 # define NCO_PUT_VAR1_INT64 nc_put_var1_longlong
@@ -336,6 +347,7 @@ typedef unsigned long long nco_uint64; /* [typ] NC_UINT64 */
 # define NCO_GET_ATT_UINT64 nc_get_att_ulonglong
 # define NCO_GET_VAR1_UINT64 nc_get_var1_ulonglong
 # define NCO_GET_VARA_UINT64 nc_get_vara_ulonglong
+# define NCO_GET_VARS_UINT64 nc_get_vars_ulonglong
 # define NCO_GET_VARM_UINT64 nc_get_varm_ulonglong
 # define NCO_PUT_ATT_UINT64 nc_put_att_ulonglong
 # define NCO_PUT_VAR1_UINT64 nc_put_var1_ulonglong
