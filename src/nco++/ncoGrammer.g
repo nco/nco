@@ -661,17 +661,17 @@ assign
                if(var_rhs->sz == 1){
                  // stretch variable to var_lhs->sz                 
                  (void)ncap_att_stretch(var_rhs,var_lhs->sz);
-                }else {
-                 // make sure var_lhs and var_rhs are the same size
-                 // and that they are the same shape (ie they conform!!)          
-                 if(var_rhs->sz != var_lhs->sz){
+                }
 
-                   (void)fprintf(stderr,"Error: Mismatch - number of elements on LHS(%li) doesn't equal number of elements on RHS(%li)\n",var_lhs->sz,var_rhs->sz );                                      
+               // make sure var_lhs and var_rhs are the same size
+               // and that they are the same shape (ie they conform!!)          
+               if(var_rhs->sz != var_lhs->sz){
+                 (void)fprintf(stderr,"Error: Mismatch - number of elements on LHS(%li) doesn't equal number of elements on RHS(%li)\n",var_lhs->sz,var_rhs->sz );                                      
                    nco_exit(EXIT_FAILURE); 
-                   }
-               }   
+                 }
+
           
-               // Now ready to put values 
+              // Now ready to put values 
               {
                long mult_srd=1L;
                long *dmn_srt;
@@ -967,6 +967,7 @@ out returns [var_sct *var]
           char *var_nm;
           var_sct *var_rhs;
           var_sct *var_nw;
+          var_sct *var1;
           dmn_sct *dmn_nw;
          
           NcapVector<lmt_sct*> lmt_vtr;
@@ -1018,9 +1019,26 @@ out returns [var_sct *var]
           else
            (void)nco_get_var1(var_nw->nc_id,var_nw->id,var_nw->srt,var_nw->val.vp,var_nw->typ_dsk);
 
-          
-          var=var_nw;
-           
+           //if variable is scalar -- re-organize in a  new var - loose extraneous material
+           if(var_nw->sz ==1) {
+             var1=(var_sct *)nco_malloc(sizeof(var_sct));
+             /* Set defaults */
+             (void)var_dfl_set(var1); 
+             /* Overwrite with attribute expression information */
+             var1->nm=strdup("scalar_var");
+             var1->nbr_dim=0;
+             var1->sz=1;
+             // Get nco type
+             var1->type=var_nw->type;
+             var1->val.vp=(void*)nco_malloc(nco_typ_lng(var1->type));
+             (void)memcpy( (void*)var1->val.vp,var_nw->val.vp,nco_typ_lng(var1->type));
+             var_nw=nco_var_free(var_nw);
+             var=var1;
+            }else{
+             var=var_nw;
+            }   
+            
+
           if(bcst && var->sz >1)
             var=ncap_do_cst(var,var_cst,prs_arg->ntl_scn);
           
