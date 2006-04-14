@@ -10,7 +10,7 @@
 #***********************************************************************
 cd ${DATA}/tmp
 wget -c ftp://ftp.ncsa.uiuc.edu/HDF/pub/outgoing/hdf5/snapshots/hdf5-1.7.51.tar.bz2
-wget -c ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.0-alpha10.tar.gz
+wget -c ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.0-alpha13.tar.gz
 sudo /bin/rm -r ${DATA}/tmp/hdf5-1.7.51
 tar xvjf hdf5-1.7.51.tar.bz2
 # Build HDF5 first ('make install' installs locally)
@@ -38,10 +38,10 @@ make check
 sudo make install
 # Do same for netcdf4
 cd ${DATA}/tmp
-/bin/rm -r ${DATA}/tmp/netcdf-4.0-alpha10
+/bin/rm -r ${DATA}/tmp/netcdf-4.0-alpha13
 sudo /bin/rm -r ${NETCDF4_ROOT}/include/netcdf.* ${NETCDF4_ROOT}/lib/libnetcdf.* 
-tar -xzvf netcdf-4.0-alpha10.tar.gz
-cd ${DATA}/tmp/netcdf-4.0-alpha10
+tar -xzvf netcdf-4.0-alpha13.tar.gz
+cd ${DATA}/tmp/netcdf-4.0-alpha13
 make distclean
 # Build parallel netCDF with LAM MPI
 CPPFLAGS='-I/usr/include/lam' ./configure --prefix=${NETCDF4_ROOT} --enable-netcdf-4 --disable-parallel --disable-shared --with-hdf5=${HDF5_ROOT} --disable-cxx --disable-f90 --disable-f77 > netcdf.configure.${GNU_TRP}.foo 2>&1
@@ -52,13 +52,13 @@ make check
 sudo make install
 exit # Return to previous shell level
 # NB: Fortran symbols do get munged into libnetcdf.a somehow
-sudo cp ${DATA}/tmp/netcdf-4.0-alpha10/libsrc/libnetcdf.a /usr/local/netcdf4/lib/libnetcdf.a.gcc-g95
+sudo cp ${DATA}/tmp/netcdf-4.0-alpha13/libsrc/libnetcdf.a /usr/local/netcdf4/lib/libnetcdf.a.gcc-g95
 # netCDF4 Fortran90 interfaces not yet available
-#sudo cp ${DATA}/tmp/netcdf-4.0-alpha10/f90/typesizes.mod /usr/local/netcdf4/include/typesizes.mod.g95
-#sudo cp ${DATA}/tmp/netcdf-4.0-alpha10/f90/netcdf.mod /usr/local/netcdf4/include/netcdf.mod.g95
+#sudo cp ${DATA}/tmp/netcdf-4.0-alpha13/f90/typesizes.mod /usr/local/netcdf4/include/typesizes.mod.g95
+#sudo cp ${DATA}/tmp/netcdf-4.0-alpha13/f90/netcdf.mod /usr/local/netcdf4/include/netcdf.mod.g95
 make clean
 #***********************************************************************
-# 20051205: elnino.ess.uci.edu Debian Ubuntu 5.10 Breezy Badger gcc/g95 netcdf-4.0-alpha10
+# 20051205: elnino.ess.uci.edu Debian Ubuntu 5.10 Breezy Badger gcc/g95 netcdf-4.0-alpha13
 #***********************************************************************
 
 
