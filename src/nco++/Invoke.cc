@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <fstream>
+#include <sstream>
 #include <antlr/AST.hpp>
 #include "ncoParserTokenTypes.hpp"
 #include "ncoLexer.hpp"
@@ -25,19 +26,30 @@ ANTLR_USING_NAMESPACE(antlr);
 int idx;
 char *filename;
 ifstream *in;
+istringstream *sin;
+
+ncoLexer *lexer;
 RefAST t,a;
 bool bchk;
 
 
-    filename=fl_spt_usr;   
-    in=new ifstream(filename);
 
-	
+filename=fl_spt_usr;   
+
 	try {
-	  ncoLexer lexer(*in, prs_arg);
-	  lexer.setFilename(filename);
+        
+          if( cmd_ln_sng ) {
+	    sin=new istringstream(cmd_ln_sng);
+	    lexer= new ncoLexer(*sin, prs_arg);
+	  }else { 
+            in=new ifstream(filename);
+	    lexer= new ncoLexer(*in, prs_arg);
+          }  
+
+
+	  lexer->setFilename(filename);
            
-	  ncoParser parser(lexer);
+	  ncoParser parser(*lexer);
 	  parser.setFilename(filename);
 
 	  ASTFactory ast_factory;
