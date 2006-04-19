@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.733 2006-04-14 22:02:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.734 2006-04-19 22:38:43 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -454,7 +454,7 @@ nco681. Rename nco++:
 	ncoTree.hpp		sdo_tree.hh
 nco682. Warn when _Fillvalue defined and missing_value not
 nco683. Convert to subversion http://sf.net/docs/E09/
-nco684. ncap2 memory problem (ashes only!):
+nco684. ncap2 memory problem:
 	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncap2 -O -D 1 -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
 	ncap2 -O -D 1 -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
 nco685. Run static analysis tool on nco codebase
@@ -466,7 +466,7 @@ nco693. ncks regression for offset past end of file test
 	ncks -h -O -C -d time,0,1 -v time ~/nco/data/in.nc ~/foo.nc
 	ncks -C -H -s '%g' -C -d time,2, ~/foo.nc
         ncks: ERROR User-specified dimension index range 2 <= time <= 1 does not fall within valid dimension index range 0 <= time <= 1
-        ncks behaves perfectly here and the perl script cannot recognize the expected answer string as being valid
+        ncks behaves perfectly here. Unfortunately, the perl script does not recognize the expected answer string as being valid
 nco694. Change nco_bool to C99 standard bool as per Wikipedia?
 nco696. 
 ************************************************************************
