@@ -425,9 +425,9 @@ int nbr_dmn;
 int idx;
 int jdx;
 long lcl_ind[3];
-
 char *buff;
 
+var_sct *var_out;
 lmt_sct *lmt_ptr;
 RefAST aRef;
 
@@ -452,8 +452,6 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
        if(jdx <2) lcl_ind[jdx]=-1;
      }else{
          // Calculate number using out()
-         var_sct *var_out;
-   
          var_out=out(aRef);
 
          // convert result to type int
@@ -636,7 +634,7 @@ assign
                }
 
                if( lmt_vtr.size() != nbr_dmn){
-                   (void)fprintf(stderr,"Error: Number of limits does match number of dimensions\n" );                                      
+                   (void)fprintf(stderr,"Error: Number of limits doesn't  match number of dimensions\n" );                                      
                    nco_exit(EXIT_FAILURE);     
                }
 
@@ -811,7 +809,7 @@ out returns [var_sct *var]
 	|	#(DIVIDE var1=out var2=out)	
             { var=ncap_var_var_op(var1,var2, DIVIDE );}
 	|	#(MOD var1=out var2=out)
-	
+	         {var=ncap_var_var_mod(var1,var2);}
     |   #(CARET var1=out var2=out)
             {var=ncap_var_var_pwr(var1,var2);}
 
@@ -984,7 +982,7 @@ out returns [var_sct *var]
           }
 
          if( lmt_vtr.size() != nbr_dmn){
-            (void)fprintf(stderr,"Error: Number of limits does match number of dimensions\n" );                                      
+            (void)fprintf(stderr,"Error: Number of limits doesn't match number of dimensions\n" );                                      
             nco_exit(EXIT_FAILURE);     
          }
 
@@ -1009,7 +1007,7 @@ out returns [var_sct *var]
            }  
  
           // Fudge -- fill out var again -but using dims defined in dmn_vtr
-          // We need data in var so that RHS logic in assign can access var shape 
+          // We need data in var so that LHS logic in assign can access var shape 
           var_nw=nco_var_fll(var_rhs->nc_id,var_rhs->id,var_nm, dmn_vtr.ptr(0),dmn_vtr.size());
 
           // Now get data from disk -can't use nco_var_get() -as it lacks stride
@@ -1024,12 +1022,11 @@ out returns [var_sct *var]
              var1=(var_sct *)nco_malloc(sizeof(var_sct));
              /* Set defaults */
              (void)var_dfl_set(var1); 
-             /* Overwrite with attribute expression information */
              var1->nm=strdup("scalar_var");
              var1->nbr_dim=0;
              var1->sz=1;
-             // Get nco type
              var1->type=var_nw->type;
+
              var1->val.vp=(void*)nco_malloc(nco_typ_lng(var1->type));
              (void)memcpy( (void*)var1->val.vp,var_nw->val.vp,nco_typ_lng(var1->type));
              var_nw=nco_var_free(var_nw);
