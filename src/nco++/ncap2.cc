@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.10 2006-04-20 15:15:10 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.11 2006-04-20 16:21:07 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -31,9 +31,9 @@
 
 /* Usage:
    ncap2 -O -D 1 -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
-   ncap2 -O -D 1 -s two=one+two in.nc foo.nc
-   ncap2 -O -v -D 1 -s "one_dmn_rec_var(0)=one_dmn_rec_var(0)+1" in.nc foo.nc
-   ncap2 -O -v -D 1 -s "three_dmn_rec_var(0,,)=three_dmn_rec_var(0,,)+1" in.nc foo.nc */
+   ncap2 -O -D 1 -s two=one+two ~/nco/data/in.nc ~/foo.nc
+   ncap2 -O -v -D 1 -s "one_dmn_rec_var(0)=one_dmn_rec_var(0)+1" ~/nco/data/in.nc ~/foo.nc
+   ncap2 -O -v -D 1 -s "three_dmn_rec_var(0,,)=three_dmn_rec_var(0,,)+1" ~/nco/data/in.nc ~/foo.nc */
 
 /* temporary define --not for release */
 //#define HAVE_CONFIG_H 1
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.10 2006-04-20 15:15:10 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.10 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.11 2006-04-20 16:21:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.11 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
