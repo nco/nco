@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.9 2006-04-19 22:38:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.10 2006-04-20 15:15:10 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -31,12 +31,12 @@
 
 /* Usage:
    ncap2 -O -D 1 -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
-   ncap2 -O -D 1 -s two=one+two ~/nco/data/in.nc ~/foo.nc
-   ncap2 -O -v -D 1 -s "one_dmn_rec_var(0)=one_dmn_rec_var(0)+1" ~/nco/data/in.nc ~/foo.nc
-   ncap2 -O -v -D 1 -s "three_dmn_rec_var(0,,)=three_dmn_rec_var(0,,)+1" ~/nco/data/in.nc ~/foo.nc */
+   ncap2 -O -D 1 -s two=one+two in.nc foo.nc
+   ncap2 -O -v -D 1 -s "one_dmn_rec_var(0)=one_dmn_rec_var(0)+1" in.nc foo.nc
+   ncap2 -O -v -D 1 -s "three_dmn_rec_var(0,,)=three_dmn_rec_var(0,,)+1" in.nc foo.nc */
 
 /* temporary define --not for release */
-// #define HAVE_CONFIG_H 1
+//#define HAVE_CONFIG_H 1
 
 #ifdef HAVE_CONFIG_H
 #include "config.h" /* Autotools tokens */
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.9 2006-04-19 22:38:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.9 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.10 2006-04-20 15:15:10 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.10 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -227,9 +227,6 @@ main(int argc,char **argv)
   var_sct **var_prc_out;
 
   aed_sct att_item; //Used to convert atts in vector to normal form  
-  size_t att_char_posn;  
-  char att_sng[3*NC_MAX_NAME];
-  
 
   prs_sct prs_arg; /* [sct] Global information required in parser routines */
   
@@ -538,8 +535,9 @@ main(int argc,char **argv)
   prs_arg.ptr_dmn_out_vtr=&dmn_out_vtr;
   prs_arg.ptr_sym_vtr=&sym_vtr;
   prs_arg.ptr_var_vtr=&var_vtr;
-
+  
   prs_arg.ntl_scn=False;   //[flg] Initial scan of script */
+  prs_arg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
 
     
   if(fl_spt_usr == NULL){
@@ -571,10 +569,6 @@ main(int argc,char **argv)
     rcd=parse_antlr(&prs_arg,fl_spt_usr,spt_arg_cat);
 
     
-    /* Tidy up */  
-    fl_spt_usr=(char*)nco_free(fl_spt_usr);
-
-  
   /* Get number of variables in output file */
   rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int*)NULL);
   
@@ -701,13 +695,9 @@ main(int argc,char **argv)
 
     // Check if attrribute
     if( var_vtr[idx]->type != ncap_att) continue;
-    att_char_posn=var_vtr[idx]->s_va_nm.find("@");
-    if(att_char_posn == std::string::npos) continue;
-    (void)strcpy(att_sng,var_vtr[idx]->s_va_nm.c_str());
-    att_sng[att_char_posn]='\0';
-
-    att_item.att_nm=(att_sng+att_char_posn+1);
-    att_item.var_nm=att_sng;
+   
+    att_item.att_nm=strdup(var_vtr[idx]->getAtt().c_str());
+    att_item.var_nm=strdup(var_vtr[idx]->getVar().c_str());
     att_item.sz=var_vtr[idx]->var->sz;
     att_item.type=var_vtr[idx]->var->type;
     att_item.val=var_vtr[idx]->var->val;
@@ -725,9 +715,11 @@ main(int argc,char **argv)
 	continue;
       }
     /* NB: These attributes should probably be written prior to last data mode */
+
+
     (void)nco_aed_prc(out_id,var_id,att_item);
-    // delete NcapVar 
-    delete var_vtr[idx];
+     att_item.var_nm=(char*)nco_free(att_item.var_nm);
+     att_item.att_nm=(char*)nco_free(att_item.att_nm);
    }/* end for */
   
   /* Turn off default filling behavior to enhance efficiency */
@@ -750,12 +742,15 @@ main(int argc,char **argv)
   
   /* ncap-unique memory */
   /* fxm: ncap-specific memory freeing instructions go here */
-  /*
-  for(idx=0;idx<sym_tbl_nbr;idx++){
-    sym_tbl[idx]->nm=(char*)nco_free(sym_tbl[idx]->nm);
-    sym_tbl[idx]=(sym_sct*)nco_free(sym_tbl[idx]);
+  int sz;
+  sz=sym_vtr.size();
+  for(idx=0; idx<sym_vtr.size() ;idx++){
+    sym_vtr[idx]->nm=(char*)nco_free(sym_vtr[idx]->nm);
+    (void)nco_free(sym_vtr[idx]);
     } 
-    sym_tbl=(sym_sct **)nco_free(sym_tbl); */
+
+  printf("Freed sym_vtr\n");
+
   if(fl_spt_usr != NULL) fl_spt_usr=(char *)nco_free(fl_spt_usr);
   
   /* Free extraction lists */ 
@@ -781,9 +776,26 @@ main(int argc,char **argv)
   /* Free limits */
   for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
   if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
-  /* Free dimension lists */
-  if(nbr_dmn_in > 0) dmn_in=nco_dmn_lst_free(dmn_in,nbr_dmn_in);
-  if(nbr_dmn_out > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_out);
+
+  /* Free dimension vectors */
+  if(dmn_in_vtr.size() > 0) { 
+    for(idx=0; idx < dmn_in_vtr.size(); idx++)
+       (void)nco_dmn_free(dmn_in_vtr[idx]);
+  }
+
+  if(dmn_out_vtr.size() > 0) { 
+    for(idx=0; idx < dmn_out_vtr.size(); idx++)
+       (void)nco_dmn_free(dmn_out_vtr[idx]);
+  }
+  
+  /* Free var_vtr */
+  if(var_vtr.size() > 0) { 
+    for(idx=0; idx < var_vtr.size(); idx++)
+      delete var_vtr[idx];
+  }  
+
+
+
   /* Free variable lists */
   if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
   if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);
