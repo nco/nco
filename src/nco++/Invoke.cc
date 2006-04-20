@@ -25,10 +25,13 @@ ANTLR_USING_NAMESPACE(antlr);
 
 int idx;
 char *filename;
-ifstream *in;
-istringstream *sin;
+ 
+istringstream *sin=NULL;
+ifstream *in=NULL;
 
 ncoLexer *lexer;
+ncoParser *parser;
+
 RefAST t,a;
 bool bchk;
 
@@ -36,30 +39,30 @@ bool bchk;
 
 filename=fl_spt_usr;   
 
-	try {
+     try {
         
-          if( cmd_ln_sng ) {
-	    sin=new istringstream(cmd_ln_sng);
-	    lexer= new ncoLexer(*sin, prs_arg);
-	  }else { 
-            in=new ifstream(filename);
-	    lexer= new ncoLexer(*in, prs_arg);
-          }  
+       if( cmd_ln_sng ){
+	 sin= new  istringstream(cmd_ln_sng);
+	 lexer= new ncoLexer( *sin, prs_arg);
+       }else {
+         in=new ifstream(filename);          
+	 lexer= new ncoLexer( *in, prs_arg);
+       }     
 
 
 	  lexer->setFilename(filename);
            
-	  ncoParser parser(*lexer);
-	  parser.setFilename(filename);
+	  parser= new ncoParser(*lexer);
+	  parser->setFilename(filename);
 
 	  ASTFactory ast_factory;
-	  parser.initializeASTFactory(ast_factory);
-	  parser.setASTFactory(&ast_factory);
+	  parser->initializeASTFactory(ast_factory);
+	  parser->setASTFactory(&ast_factory);
 
 
 	  // Parse the input expressions
-	  parser.program();
-	  a = parser.getAST();
+	  parser->program();
+	  a = parser->getAST();
 	  t=a;
 	  //print the parse tree
 	   while( t ) {
@@ -68,14 +71,14 @@ filename=fl_spt_usr;
 	   }
 	   printf("Paser tree printed\n");
 
-	}  catch(std::exception& e) {
-	cerr << "exception: " << e.what() << endl;
+	}  catch(ANTLRException& e) {
+	cerr << "exception: " << e.getMessage() << endl;
 	}
 
 	
 	t=a;
 
-	try {   
+    try {   
 	  ncoTree walker(prs_arg);
 	  printf("Walker initialized\n");
           // Run script
@@ -84,7 +87,15 @@ filename=fl_spt_usr;
 	}  catch(std::exception& e) {
 	cerr << "exception: " << e.what() << endl;
 	}	
+
+
         cout<< "run complete\n";
+      
+        delete lexer;
+        delete parser;        
+        if(sin) delete sin;
+        if(in) delete in;
+       
         return 1;
 
 
