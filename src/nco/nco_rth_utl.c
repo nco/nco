@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.24 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.25 2006-04-21 20:33:18 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -20,6 +20,16 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
      These operations perform some, but not all, of necessary operations for each procedure
      Most arithmetic operations require additional procedures such as normalization be performed after all files/records have been processed */
   
+  /* NCO's paradigm is that coordinate variables represent grid axes
+     Reducing such grids to a single-value must be done
+     The most representative value of the grid is the average 
+     The total, min, max, rms, etc. of the grid usually makes no sense
+     Users are most interested in the mean grid coordinate */
+  if(var_prc->is_crd_var){
+    (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    return;
+  } /* !var_prc->is_crd_var */
+
   /* var_prc_out->type and var_prc->type should be equal and thus interchangeable
      var_prc_out->sz and var_prc->sz should be equal and thus interchangeable */
   switch (nco_op_typ){

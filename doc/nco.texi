@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.349 2006-04-21 00:57:09 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.350 2006-04-21 20:33:17 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3929,13 +3929,27 @@ Square root of the mean
 Sum of values
 @end table
 @noindent
-If an operation type is not specified with @samp{-y} then the operator
-will perform an arithmetic average by default.
-The mathematical definition of each operation is given below. 
+@cindex coordinate variable 
+@acronym{NCO} assumes coordinate variables represent grid axes, e.g.,
+longitude. 
+The only rank-reduction which makes sense for coordinate variables
+is averaging.
+Hence @acronym{NCO} implements the operation type requested with
+@samp{-y} on all non-coordinate variables, but not on coorniate
+variables. 
+When an operation requires a coordinate variable to be reduced in
+rank, i.e., from one dimension to a scalar or from one dimension to
+a degenerate (single value) array, then @acronym{NCO} 
+@emph{always averages} the coordinate variable regardless of the
+arithmetic operation type performed on the non-coordinate variables.
+
+The mathematical definition of each arithmetic operation is given below. 
 @xref{ncwa netCDF Weighted Averager}, for additional information on
 masks and normalization.
-Averaging is the default, and will be described first so the
-terminology for the other operations is familiar.
+If an operation type is not specified with @samp{-y} then the operator
+performs an arithmetic average by default.
+Averaging is described first so the terminology for the other operations
+is familiar. 
 
 @ifhtml
 @cartouche
@@ -6350,9 +6364,14 @@ variable in any one of the in the @var{input-files}, and all
 This is distinct from @command{ncra}, which only averages over the
 record dimension (e.g., time), and weights each record in the record
 dimension evenly,  
+@cindex operation types
+@command{ncra} @emph{always averages} coordinate variables regardless of 
+the arithmetic operation type performed on the non-coordinate variables. 
+(@pxref{Operation Types}). 
 @cindex record dimension
 All dimensions, including the record dimension, are treated identically
 and preserved in the @var{output-file}.
+
 @xref{Averaging vs. Concatenating}, for a description of the
 distinctions between the various averagers and concatenators. 
 @cindex multi-file operators
@@ -7761,6 +7780,10 @@ hyperslab option (@pxref{Hyperslabs}) for the record dimension only,
 @command{ncra} does not attempt to see if, say, the @code{time}
 coordinate is irregularly spaced and thus would require a weighted
 average in order to be a true time average.
+@cindex operation types
+@command{ncra} @emph{always averages} coordinate variables regardless of 
+the arithmetic operation type performed on the non-coordinate variables. 
+(@pxref{Operation Types}). 
 
 @noindent
 @html
@@ -8205,6 +8228,13 @@ rather than the area weighted centroid of the hyperslab
 @code{latitude} in the @var{output-file} will be the area-weighted
 centroid of the hyperslab. 
 For the example given, this is about @w{30 degrees.}}.  
+
+@cindex average
+@cindex operation types
+As explained in @xref{Operation Types}, @command{ncwa} 
+@emph{always averages} coordinate variables regardless of the arithmetic
+operation type performed on the non-coordinate variables. 
+This is independent of the setting of the @samp{-I} option.
 The mathematical definition of operations involving rank reduction 
 is given above (@pxref{Operation Types}).
 
@@ -8354,16 +8384,27 @@ The weighting variable, if specified (@w{with @samp{-w}}), plays the
 role of the differential increment and thus permits more sophisticated 
 integrals (i.e., weighted sums) to be output.
 For example, consider the variable 
-@code{lev} where @math{@var{lev} = [100,500,1000]} weighted by the weight 
-@code{lev_wgt} where @math{@var{lev_wgt} = [10,2,1]}.
+@code{lev} where @math{@var{lev} = [100,500,1000]} weighted by
+the weight @code{lev_wgt} where @math{@var{lev_wgt} = [10,2,1]}.
 @cindex dot product
 The vertical integral of @code{lev}, weighted by @code{lev_wgt}, 
 is the dot product of @var{lev} and @var{lev_wgt}. 
 That this is @w{is 3000.0} can be seen by inspection and verified with 
 the integration command
 @example
-ncwa -N -v lev -w lev_wgt in.nc foo.nc;ncks in.nc
+ncwa -N -a lev -v lev -w lev_wgt in.nc foo.nc;ncks foo.nc
 @end example
+
+@ignore
+fxm TODO nco702
+As explained in @xref{Operation Types}, @command{ncwa} 
+@emph{always averages} coordinate variables regardless of the arithmetic 
+operation type performed on the non-coordinate variables. 
+The single exception is shown in the above example.
+The @samp{-N} switch turns off normalization so variable which are to be
+averaged, including coordinate variables, are not normalized.
+This is equivalent to summation or integration.
+@end ignore
 
 @ignore
 @c NB: these masking features are deprecated

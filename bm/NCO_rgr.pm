@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics. - hjm
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.33 2006-03-18 04:30:49 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.34 2006-04-21 20:33:16 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -521,7 +521,7 @@ if ($dodap eq "FALSE"){
 
 	$tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,0,1 -v time $in_pth_arg in.nc %tempf_00%";
 	$tst_cmd[1]="ncks -C -H -s '%g' -C -d time,2, %tempf_00%";
-	$dsc_sng="Offset past end of file";
+	$dsc_sng="Offset past end of file (OK. TODO nco693. ncks behaves perfectly here. Unfortunately, the perl test script does not recognize the expected answer string as being valid)";
 	$tst_cmd[2] = "ncks: ERROR User-specified dimension index range 2 <= time <= 1 does not fall within valid dimension index range 0 <= time <= 1";
 	$tst_cmd[3] = "SS_OK";
 	NCO_bm::go(\@tst_cmd);
@@ -738,6 +738,22 @@ if ($dodap eq "FALSE"){
 	$tst_cmd[1]="ncks -C -H -s '%1.5f' -v rec_var_flt_mss_val_dbl %tempf_00%";
 	$dsc_sng="record rms of float with double missing values across two files";
 	$tst_cmd[2] = "5.38516";
+	$tst_cmd[3] = "SS_OK";
+	NCO_bm::go(\@tst_cmd);
+	$#tst_cmd=0;  # reset the array
+
+	$tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v time,one_dmn_rec_var $in_pth_arg in.nc in.nc %tempf_00%";
+	$tst_cmd[1]="ncks -C -H -s '%f' -v time %tempf_00%";
+	$dsc_sng="Return mean time coordinate (when computing totals) across two files";
+	$tst_cmd[2] = "5.5";
+	$tst_cmd[3] = "SS_OK";
+	NCO_bm::go(\@tst_cmd);
+	$#tst_cmd=0;  # reset the array
+
+	$tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v time,one_dmn_rec_var $in_pth_arg in.nc in.nc %tempf_00%";
+	$tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var %tempf_00%";
+	$dsc_sng="Return total record (when computing totals) across two files";
+	$tst_cmd[2] = "110";
 	$tst_cmd[3] = "SS_OK";
 	NCO_bm::go(\@tst_cmd);
 	$#tst_cmd=0;  # reset the array
@@ -1006,8 +1022,8 @@ if ($dodap eq "FALSE"){
 	NCO_bm::go(\@tst_cmd);
 	$#tst_cmd=0;  # reset the array
 
-	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -w lat_wgt -v lat $in_pth_arg in.nc %tempf_00% 2> %tempf_02%";
-	$tst_cmd[1]="ncks -C -H -s '%f' -v lat %tempf_00%";;
+	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -w lat_wgt -v lat_cpy $in_pth_arg in.nc %tempf_00% 2> %tempf_02%";
+	$tst_cmd[1]="ncks -C -H -s '%f' -v lat_cpy %tempf_00%";;
 	$dsc_sng="rms with weights";
 	$tst_cmd[2] = "90";
 	$tst_cmd[3] = "SS_OK";
@@ -1041,21 +1057,38 @@ if ($dodap eq "FALSE"){
 	NCO_bm::go(\@tst_cmd);
 	$#tst_cmd=0;  # reset the array
 
-	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -a lat -v lat -w gw $in_pth_arg in.nc %tempf_00%";;
-	$tst_cmd[1]="ncks -C -H -s '%g' -v lat %tempf_00%";;
+	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -a lat -v lat_cpy -w gw $in_pth_arg in.nc %tempf_00%";;
+	$tst_cmd[1]="ncks -C -H -s '%g' -v lat_cpy %tempf_00%";;
 	$dsc_sng="min with weights";
 	$tst_cmd[2] = "-900";
 	$tst_cmd[3] = "SS_OK";
 	NCO_bm::go(\@tst_cmd);
 	$#tst_cmd=0;  # reset the array
 
-	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -a lat -v lat -w gw $in_pth_arg in.nc %tempf_00%";;
-	$tst_cmd[1]="ncks -C -H -s '%g' -v lat %tempf_00%";;
+	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -a lat -v lat_cpy -w gw $in_pth_arg in.nc %tempf_00%";;
+	$tst_cmd[1]="ncks -C -H -s '%g' -v lat_cpy %tempf_00%";;
 	$dsc_sng="max with weights";
 	$tst_cmd[2] = "900";
 	$tst_cmd[3] = "SS_OK";
 	NCO_bm::go(\@tst_cmd);
 	$#tst_cmd=0;  # reset the array
+
+	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -a time -w one -v time,one_dmn_rec_var $in_pth_arg in.nc %tempf_00%";
+	$tst_cmd[1]="ncks -C -H -s '%f' -v time %tempf_00%";
+	$dsc_sng="Return mean time coordinate (when computing totals)";
+	$tst_cmd[2] = "5.5";
+	$tst_cmd[3] = "SS_OK";
+	NCO_bm::go(\@tst_cmd);
+	$#tst_cmd=0;  # reset the array
+
+	$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -a time -w one -v time,one_dmn_rec_var $in_pth_arg in.nc %tempf_00%";
+	$tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var %tempf_00%";
+	$dsc_sng="Return total record (when computing totals)";
+	$tst_cmd[2] = "55";
+	$tst_cmd[3] = "SS_OK";
+	NCO_bm::go(\@tst_cmd);
+	$#tst_cmd=0;  # reset the array
+
 
 #print "paused - hit return to continue"; my $wait = <STDIN>;
 

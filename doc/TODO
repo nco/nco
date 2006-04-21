@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.734 2006-04-19 22:38:43 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.735 2006-04-21 20:33:17 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -466,9 +466,16 @@ nco693. ncks regression for offset past end of file test
 	ncks -h -O -C -d time,0,1 -v time ~/nco/data/in.nc ~/foo.nc
 	ncks -C -H -s '%g' -C -d time,2, ~/foo.nc
         ncks: ERROR User-specified dimension index range 2 <= time <= 1 does not fall within valid dimension index range 0 <= time <= 1
-        ncks behaves perfectly here. Unfortunately, the perl script does not recognize the expected answer string as being valid
+        ncks behaves perfectly here. Unfortunately, the perl test script does not recognize the expected answer string as being valid
 nco694. Change nco_bool to C99 standard bool as per Wikipedia?
-nco696. 
+nco696. ncra should always average coordinate variables by default, regardless of whether min, max, avg, ttl etc. are requested for non-cooordinate variables
+nco697. Implement mean-coordinates in mpncra.c
+nco698. Document new ncra/ncea coordinate behavior in nco.texi
+nco699. Add new ncra/ncea behavior to regression test
+nco700. Copy new ncra/ncea behavior to ncwa?
+nco701. Add new ncwa behavior to regression test
+nco702. How to mix new ncwa behavior with -I wng_msk_crd_var?
+nco703. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

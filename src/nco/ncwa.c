@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.198 2006-02-26 07:41:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.199 2006-04-21 20:33:18 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.198 2006-02-26 07:41:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.198 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.199 2006-04-21 20:33:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.199 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -730,15 +730,17 @@ main(int argc,char **argv)
 	} /* end if */
       } /* end if */
       /* Perform non-linear transformations before weighting */
-      switch(nco_op_typ){
-      case nco_op_avgsqr: /* Square variable before weighting */
-      case nco_op_rms: /* Square variable before weighting */
-      case nco_op_rmssdn: /* Square variable before weighting */
-	(void)nco_var_mlt(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->val,var_prc[idx]->val);
-	break;
-      default: /* All other operations are linear, do nothing to them yet */
-	break;
-      } /* end case */
+      if(!var_prc[idx]->is_crd_var){
+	switch(nco_op_typ){
+	case nco_op_avgsqr: /* Square variable before weighting */
+	case nco_op_rms: /* Square variable before weighting */
+	case nco_op_rmssdn: /* Square variable before weighting */
+	  (void)nco_var_mlt(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->val,var_prc[idx]->val);
+	  break;
+	default: /* All other operations are linear, do nothing to them yet */
+	  break;
+	} /* end case */
+      } /* var_prc[idx]->is_crd_var */
       if(wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
 	/* fxm: nco_var_cnf_dmn() has bug where it does not allocate tally array
 	   for weights that do already conform to var_prc. TODO #114. */
@@ -825,51 +827,61 @@ main(int argc,char **argv)
 	if(var_prc_out[idx]->sz == 1L && var_prc_out[idx]->type == NC_INT && var_prc_out[idx]->val.lp[0] == 0){
 	  (void)fprintf(fp_stdout,"%s: ERROR Weight in denominator weight = 0.0, will cause SIGFPE\n%s: HINT Sum of masked, averaged weights must be non-zero\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
 	} /* end if */
-	/* Divide numerator by masked, averaged, weights */
-	switch(nco_op_typ){
-	case nco_op_avg: /* Normalize sum by weighted tally to create mean */
-	case nco_op_sqravg: /* Normalize sum by weighted tally to create mean */
-	case nco_op_avgsqr: /* Normalize sum of squares by weighted tally to create mean square */
-	case nco_op_rms: /* Normalize sum of squares by weighted tally to create mean square */
-	case nco_op_sqrt: /* Normalize sum by weighted tally to create mean */
-	case nco_op_rmssdn: /* Normalize sum of squares by weighted tally-1 to create mean square for sdn */
+	if(var_prc[idx]->is_crd_var){
+	  /* Always average coordinate variables */
 	  (void)nco_var_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
-	  break;
-	case nco_op_min: /* Minimum is already in buffer, do nothing */
-	case nco_op_max: /* Maximum is already in buffer, do nothing */	
-	case nco_op_ttl: /* Total is already in buffer, do nothing */	
-	  break;
-	default:
-	  (void)fprintf(fp_stdout,"%s: ERROR Illegal nco_op_typ in weighted normalization\n",prg_nm);
-	  nco_exit(EXIT_FAILURE);
-	  break;
-	} /* end switch */
+	}else{ /* !var_prc[idx]->is_crd_var */
+	  /* Divide numerator by masked, averaged, weights */
+	  switch(nco_op_typ){
+	  case nco_op_avg: /* Normalize sum by weighted tally to create mean */
+	  case nco_op_sqravg: /* Normalize sum by weighted tally to create mean */
+	  case nco_op_avgsqr: /* Normalize sum of squares by weighted tally to create mean square */
+	  case nco_op_rms: /* Normalize sum of squares by weighted tally to create mean square */
+	  case nco_op_sqrt: /* Normalize sum by weighted tally to create mean */
+	  case nco_op_rmssdn: /* Normalize sum of squares by weighted tally-1 to create mean square for sdn */
+	    (void)nco_var_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
+	    break;
+	  case nco_op_min: /* Minimum is already in buffer, do nothing */
+	  case nco_op_max: /* Maximum is already in buffer, do nothing */	
+	  case nco_op_ttl: /* Total is already in buffer, do nothing */	
+	    break;
+	  default:
+	    (void)fprintf(fp_stdout,"%s: ERROR Illegal nco_op_typ in weighted normalization\n",prg_nm);
+	    nco_exit(EXIT_FAILURE);
+	    break;
+	  } /* end switch */
+	} /* !var_prc[idx]->is_crd_var */
 	/* Free wgt_avg, but keep wgt_out, after each use */
 	if(wgt_avg != NULL) wgt_avg=nco_var_free(wgt_avg);
 	/* End of branch for normalization when weights were specified */
       }else if(NRM_BY_DNM){
 	/* Branch for normalization when no weights were specified
 	   Normalization is just due to tally */
-	switch(nco_op_typ){
-	case nco_op_avg: /* Normalize sum by tally to create mean */
-	case nco_op_sqravg: /* Normalize sum by tally to create mean */
-	case nco_op_avgsqr: /* Normalize sum of squares by tally to create mean square */
-	case nco_op_rms: /* Normalize sum of squares by tally to create mean square */
-	case nco_op_sqrt: /* Normalize sum by tally to create mean */
+	if(var_prc[idx]->is_crd_var){
+	  /* Always average coordinate variables */
 	  (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
-	  break;
-	case nco_op_rmssdn: /* Normalize sum of squares by tally-1 to create mean square for sdn */
-	  (void)nco_var_nrm_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
-	  break;
-	case nco_op_min: /* Minimum is already in buffer, do nothing */
-	case nco_op_max: /* Maximum is already in buffer, do nothing */	
-	case nco_op_ttl: /* Total is already in buffer, do nothing */	
-	  break;
-	default:
-	  (void)fprintf(fp_stdout,"%s: ERROR Illegal nco_op_typ in non-weighted normalization\n",prg_nm);
-	  nco_exit(EXIT_FAILURE);
-	  break;
-	} /* end switch */
+	}else{ /* !var_prc[idx]->is_crd_var */
+	  switch(nco_op_typ){
+	  case nco_op_avg: /* Normalize sum by tally to create mean */
+	  case nco_op_sqravg: /* Normalize sum by tally to create mean */
+	  case nco_op_avgsqr: /* Normalize sum of squares by tally to create mean square */
+	  case nco_op_rms: /* Normalize sum of squares by tally to create mean square */
+	  case nco_op_sqrt: /* Normalize sum by tally to create mean */
+	    (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+	    break;
+	  case nco_op_rmssdn: /* Normalize sum of squares by tally-1 to create mean square for sdn */
+	    (void)nco_var_nrm_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+	    break;
+	  case nco_op_min: /* Minimum is already in buffer, do nothing */
+	  case nco_op_max: /* Maximum is already in buffer, do nothing */	
+	  case nco_op_ttl: /* Total is already in buffer, do nothing */	
+	    break;
+	  default:
+	    (void)fprintf(fp_stdout,"%s: ERROR Illegal nco_op_typ in non-weighted normalization\n",prg_nm);
+	    nco_exit(EXIT_FAILURE);
+	    break;
+	  } /* end switch */
+	} /* !var_prc[idx]->is_crd_var */
       }else if(!NRM_BY_DNM){
 	/* Normalization has been turned off by user, we are done */
 	;
@@ -877,19 +889,21 @@ main(int argc,char **argv)
 	(void)fprintf(fp_stdout,"%s: ERROR Unforeseen logical branch in main()\n",prg_nm);
 	nco_exit(EXIT_FAILURE);
       } /* end if */
-      /* Some non-linear operations require additional processing */
-      switch(nco_op_typ){
-      case nco_op_sqravg: /* Square mean to create square of the mean (for sdn) */
-	(void)nco_var_mlt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
-	break;
-      case nco_op_sqrt: /* Take root of mean to create root mean */
-      case nco_op_rms: /* Take root of mean of sum of squares to create root mean square */
-      case nco_op_rmssdn: /* Take root of sdn mean of sum of squares to create root mean square for sdn */
-	(void)nco_var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);  
-	break;
-      default:
-	break;
-      } /* end switch */
+	/* Some non-linear operations require additional processing */
+      if(!var_prc[idx]->is_crd_var){
+	switch(nco_op_typ){
+	case nco_op_sqravg: /* Square mean to create square of the mean (for sdn) */
+	  (void)nco_var_mlt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
+	  break;
+	case nco_op_sqrt: /* Take root of mean to create root mean */
+	case nco_op_rms: /* Take root of mean of sum of squares to create root mean square */
+	case nco_op_rmssdn: /* Take root of sdn mean of sum of squares to create root mean square for sdn */
+	  (void)nco_var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);  
+	  break;
+	default:
+	  break;
+	} /* end switch */
+      } /* var_prc[idx]->is_crd_var */
       /* Free tally buffer */
       var_prc_out[idx]->tally=(long *)nco_free(var_prc_out[idx]->tally);
       

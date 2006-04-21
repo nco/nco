@@ -1,14 +1,23 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.169 2006-03-17 23:34:18 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.170 2006-04-21 20:33:17 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.1 are ready. 
 This is mainly a development release for internal consumption.
-There are a few bugfixes in dark corners of the code.
+There are a few bugfixes in dark corners of the code:
 
 All previous NCO versions incorrectly stored non-processed packed data 
 incorrectly in the output file. This meant, for example, that a packed
 non-record variable would be stored incorrectly after the whole file
 was passed through ncra. Non-processed packed data is now stored
 correctly. Thanks to Martin Dix for reporting this problem.
+
+ncra and ncea used to process coordinate variables identically to 
+non-coordinate variables. This meant that if the user requested 
+minimization, the operator returned the minimum of all fields
+with an output coordinate that would be the minimum of the coordinate
+axis (which makes no sense). In all cases we could think of, it makes
+more sense to average the coordinates, and apply the requested
+arithmetic operations (min,max,avg,sdn,rms, etc.) to the
+non-coordinate fields. We've changed to this behavior.
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -21,7 +30,7 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 3. ncap2 development code in nco/src/nco++ (Henry Butowsky)
 
-4. Server-side extensions in (Daniel Wang)
+4. Server-side extensions (Daniel Wang)
 
 5. Fixed some benchmark/regression problems over DAP (Harry Mangalam)
 
@@ -29,6 +38,7 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 7. Regression tests & benchmarks work with server-side extensions (HM/DW)
 
+8. ncra/ncea now _always_ average coordinate variables
 
 Enjoy,
 Charlie

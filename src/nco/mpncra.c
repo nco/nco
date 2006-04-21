@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.49 2006-04-06 22:56:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.50 2006-04-21 20:33:18 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.49 2006-04-06 22:56:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.49 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.50 2006-04-21 20:33:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.50 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -1120,38 +1120,42 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
       for(idx=0;idx<nbr_var_prc;idx++){
 #endif /* !ENABLE_MPI */
-	switch(nco_op_typ){
-	case nco_op_avg: /* Normalize sum by tally to create mean */
-	case nco_op_sqrt: /* Normalize sum by tally to create mean */
-	case nco_op_sqravg: /* Normalize sum by tally to create mean */
-	case nco_op_rms: /* Normalize sum of squares by tally to create mean square */
-	case nco_op_avgsqr: /* Normalize sum of squares by tally to create mean square */
+	if(var_prc[idx]->is_crd_var){
+	/* Always average coordinate variables */
 	  (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
-	  break;
-	case nco_op_rmssdn: /* Normalize sum of squares by tally-1 to create mean square for sdn */
-	  (void)nco_var_nrm_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
-	  break;
-	case nco_op_min: /* Minimum is already in buffer, do nothing */
-	case nco_op_max: /* Maximum is already in buffer, do nothing */
-	case nco_op_ttl: /* Total is already in buffer, do nothing */
-	default:
-	  break;
-	} /* end switch */
+	}else{ /* !var_prc[idx]->is_crd_var */
+	  switch(nco_op_typ){
+	  case nco_op_avg: /* Normalize sum by tally to create mean */
+	  case nco_op_sqrt: /* Normalize sum by tally to create mean */
+	  case nco_op_sqravg: /* Normalize sum by tally to create mean */
+	  case nco_op_rms: /* Normalize sum of squares by tally to create mean square */
+	  case nco_op_avgsqr: /* Normalize sum of squares by tally to create mean square */
+	    (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+	    break;
+	  case nco_op_rmssdn: /* Normalize sum of squares by tally-1 to create mean square for sdn */
+	    (void)nco_var_nrm_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+	    break;
+	  case nco_op_min: /* Minimum is already in buffer, do nothing */
+	  case nco_op_max: /* Maximum is already in buffer, do nothing */
+	  case nco_op_ttl: /* Total is already in buffer, do nothing */
+	  default:
+	    break;
+	  } /* end switch */
 	  /* Some operations require additional processing */
-	switch(nco_op_typ){
-	case nco_op_rms: /* Take root of mean of sum of squares to create root mean square */
-	case nco_op_rmssdn: /* Take root of sdn mean of sum of squares to create root mean square for sdn */
-	case nco_op_sqrt: /* Take root of mean to create root mean */
-	  (void)nco_var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);
-	  break;
-	case nco_op_sqravg: /* Square mean to create square of the mean (for sdn) */
-	  (void)nco_var_mlt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
-	  break;
-	default:
-	  break;
-	} /* end switch */
-	printf("DEBUG: node %d reset idx %d tally for var_prc(out)\n",
-	       prc_rnk, idx);
+	  switch(nco_op_typ){
+	  case nco_op_rms: /* Take root of mean of sum of squares to create root mean square */
+	  case nco_op_rmssdn: /* Take root of sdn mean of sum of squares to create root mean square for sdn */
+	  case nco_op_sqrt: /* Take root of mean to create root mean */
+	    (void)nco_var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);
+	    break;
+	  case nco_op_sqravg: /* Square mean to create square of the mean (for sdn) */
+	    (void)nco_var_mlt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
+	    break;
+	  default:
+	    break;
+	  } /* end switch */
+	  printf("DEBUG: node %d reset idx %d tally for var_prc(out)\n",prc_rnk,idx);
+	} /* !var_prc[idx]->is_crd_var */
 	var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_free(var_prc[idx]->tally);
       } /* end (OpenMP parallel for) loop over variables */
 #ifdef ENABLE_MPI
@@ -1160,9 +1164,8 @@ main(int argc,char **argv)
     for(idx = 0; idx < nbr_var_prc; idx++) {
       assert(var_prc_out[idx]->tally == var_prc[idx]->tally);
       if (var_prc_out[idx]->tally == 0) continue;
-      printf("DEBUG: node %d reset idx %d tally for var_prc(out) (cleanup)\n",
-	     prc_rnk, idx);
-      var_prc_out[idx]->tally = var_prc[idx]->tally = (long *)nco_free(var_prc[idx]->tally);
+      printf("DEBUG: node %d reset idx %d tally for var_prc(out) (cleanup)\n",prc_rnk,idx);
+      var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_free(var_prc[idx]->tally);
     }
     printf("DEBUG: Mgr shud prnt this too, prc_rnk %d\n",prc_rnk);
 #endif /* !ENABLE_MPI */

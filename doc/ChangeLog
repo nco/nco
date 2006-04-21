@@ -1,3 +1,9 @@
+2006-04-21  Charlie Zender  <zender@uci.edu>
+
+	* Add new ncra/ncea regression test to verify this
+
+	* Change ncra/ncea to always average coordinate variables
+
 2006-04-14  Charlie Zender  <zender@uci.edu>
 
 	* Constify srd in nc_put/get_varm() calls and prototypes
