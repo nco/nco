@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.348 2006-02-25 01:28:18 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.349 2006-04-21 00:57:09 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -102,8 +102,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.1.1
 @set copyright-years 1995--2006
 @set update-year 2006
-@set update-date 20 February 2006
-@set update-month February 2006
+@set update-date 20 April 2006
+@set update-month April 2006
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -7733,8 +7733,8 @@ DESCRIPTION
 @var{input-files}.
 @cindex degenerate dimension
 @cindex record dimension
-The record dimension is retained as a degenerate @w{(size 1)} dimension in
-the output variables.
+The record dimension is retained as a degenerate @w{(size 1)} dimension
+in the output variables.
 @xref{Averaging vs. Concatenating}, for a description of the
 distinctions between the various averagers and concatenators. 
 @cindex multi-file operators
@@ -7746,15 +7746,15 @@ as positional arguments on the command line
 (@pxref{Large Numbers of Files}).
 
 Input files may vary in size, but each must have a record dimension.
-The record coordinate, if any, should be monotonic for (or else
-non-fatal warnings may be generated).
+The record coordinate, if any, should be monotonic (or else non-fatal
+warnings may be generated). 
 @cindex hyperslab
-Hyperslabs of the record dimension which include more than one file are 
-handled correctly.
+Hyperslabs of the record dimension which include more than one file 
+work correctly.
 @cindex stride
 @command{ncra} supports the @var{stride} argument to the @samp{-d}
-hyperslab option for the record dimension only, @var{stride} is not
-supported for non-record dimensions.
+hyperslab option (@pxref{Hyperslabs}) for the record dimension only,
+@var{stride} is not supported for non-record dimensions.
 
 @command{ncra} weights each record (e.g., time slice) in the
 @var{input-files} equally.
