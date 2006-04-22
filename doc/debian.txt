@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.35 2006-01-31 06:28:00 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.36 2006-04-22 00:45:15 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -17,19 +17,19 @@ apt-get install dh-make debhelper devscripts fakeroot gnupg debian-policy develo
 
 2. Debian build procedure recommends placing entire package source in
    subdirectory of main package. 
-   For starters, we wish to create .debs of tagged releases, e.g., nco-3.1.1
-   First we create a clean source distribution of nco and place it in nco-3.1.1
-   Once automated, we will use cvs co -rnco-3_1_1 to get the source
+   For starters, we wish to create .debs of tagged releases, e.g., nco-3.1.2
+   First we create a clean source distribution of nco and place it in nco-3.1.2
+   Once automated, we will use cvs co -rnco-3_1_2 to get the source
    Until we know what is necessary, however, we just copy a snapshot
    
    2.1 Clean all build files from development directory
 
 cd ~/nco;make distclean;cd bld;make clean;cd ~
 tar cvzf ./nco/nco.tar.gz ./nco/*
-cd ~/nco;tar xvzf nco.tar.gz;mv nco nco-3.1.1
-/bin/rm nco.tar.gz;tar cvzf nco-3.1.1.tar.gz ./nco-3.1.1/*
-cd ~/nco/nco-3.1.1
-dh_make -e zender@uci.edu -f ../nco-3.1.1.tar.gz
+cd ~/nco;tar xvzf nco.tar.gz;mv nco nco-3.1.2
+/bin/rm nco.tar.gz;tar cvzf nco-3.1.2.tar.gz ./nco-3.1.2/*
+cd ~/nco/nco-3.1.2
+dh_make -e zender@uci.edu -f ../nco-3.1.2.tar.gz
 
     2.2 The preceding steps created template debian files for a .deb,
     Those files now reside in ~/nco/debian.
@@ -44,7 +44,7 @@ dh_make -e zender@uci.edu -f ../nco-3.1.1.tar.gz
    from previous build
 
    cd ~/nco;/bin/rm *.gz
-   cd ~/nco/nco-3.1.1;
+   cd ~/nco/nco-3.1.2;
    dpkg-buildpackage -rfakeroot > foo 2>&1
 
 4. Find out which packages new package needs for building
@@ -71,17 +71,17 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
    cd ~/nco/bld
    make tags
 # Install correct version numbers before updating Debian
-# tags-query replace 3_1_1 with X_Y_Z+1
-# tags-query replace 3.1.1 with X.Y.Z+1
+# tags-query replace 3_1_2 with X_Y_Z+1
+# tags-query replace 3.1.2 with X.Y.Z+1
 # If tags-query replace does not work, be sure to manually change
 # versions in configure.in, debian/files, doc/ANNOUNCE, doc/debian.txt,
 # doc/index.shtml, doc/nco.texi, bld/nco_dst.pl, doc/VERSION 
    cd ~/nco/debian
-   dch -v 3.1.1-1 # Update changelog
+   dch -v 3.1.2-1 # Update changelog
 # For unknown reason rules file may lose its executable bit
    chmod a+x ~/nco/debian/rules
    cd ~/nco;cvs commit -m "";dpkg-buildpackage -rfakeroot > foo 2>&1
 # Save all files in emacs before tagging
 # Tag CVS code after changing files in ~/nco/debian
-   cd ~/nco;cvs commit -m "Preparing nco-3.1.1 release";cvs tag -c nco-3_1_1
-   ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-3_1_1
+   cd ~/nco;cvs commit -m "Preparing nco-3.1.2 release";cvs tag -c nco-3_1_2
+   ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-3_1_2

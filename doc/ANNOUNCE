@@ -1,8 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.170 2006-04-21 20:33:17 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.171 2006-04-22 00:45:15 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.1.1 are ready. 
-This is mainly a development release for internal consumption.
-There are a few bugfixes in dark corners of the code:
+The netCDF operators NCO version 3.1.2 are ready. 
+They contain an noteworthy bugfix for packed data, an important change
+in behavior for ncea/ncra/ncwa, and significant new features in ncap2.
+
+http://nco.sf.net (Homepage)
+http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 All previous NCO versions incorrectly stored non-processed packed data 
 incorrectly in the output file. This meant, for example, that a packed
@@ -10,8 +13,8 @@ non-record variable would be stored incorrectly after the whole file
 was passed through ncra. Non-processed packed data is now stored
 correctly. Thanks to Martin Dix for reporting this problem.
 
-ncra and ncea used to process coordinate variables identically to 
-non-coordinate variables. This meant that if the user requested 
+ncra, ncea, and ncwa used to process coordinate variables identically
+to non-coordinate variables. This meant that if the user requested 
 minimization, the operator returned the minimum of all fields
 with an output coordinate that would be the minimum of the coordinate
 axis (which makes no sense). In all cases we could think of, it makes
@@ -19,14 +22,17 @@ more sense to average the coordinates, and apply the requested
 arithmetic operations (min,max,avg,sdn,rms, etc.) to the
 non-coordinate fields. We've changed to this behavior.
 
-http://nco.sf.net (Homepage)
-http://dust.ess.uci.edu/nco (Homepage "mirror")
+ncap2 is the successor to ncap. Henry Butowsky's work to address some
+of the arithmetic limitations of ncap is beginning to pay off.
+ncap2 now handles array syntax, if/then constructs and much more.
+ncap2 is still a bit alpha, but ready to be tested for functionality.
+The sample script nco/data/ncap2.in demonstrates its features.
 
 0. Store non-processed packed data correctly.
 
 1. Work when only one variable has missing_value in binary operators
 
-2. Support netcdf4-alpha13 fxm.
+2. Support netcdf4-alpha13
 
 3. ncap2 development code in nco/src/nco++ (Henry Butowsky)
 
@@ -38,7 +44,7 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 7. Regression tests & benchmarks work with server-side extensions (HM/DW)
 
-8. ncra/ncea now _always_ average coordinate variables
+8. ncra/ncea/ncwa now _always_ average coordinate variables
 
 Enjoy,
 Charlie
