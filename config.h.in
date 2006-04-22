@@ -132,9 +132,6 @@
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
 
-/* Define to 1 if you have the `nco' library (-lnco). */
-#undef HAVE_LIBNCO
-
 /* Define to 1 if you have the `nc-dap' library (-lnc-dap). */
 #undef HAVE_LIBNC_DAP
 
