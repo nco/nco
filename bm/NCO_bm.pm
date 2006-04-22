@@ -15,7 +15,7 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.33 2006-03-18 00:38:14 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.34 2006-04-22 05:59:16 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -118,23 +118,23 @@ where (options) are:
     --dap {OPeNDAP url} ...retrieve test files from OPeNDAP server URL
     --opendap..............ditto.  Both take a URL of the form:
                     http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata
-                    (ie. the URL points points thru the cgi-bin to the data dir)
+                    (i.e., URL points points thru the cgi-bin to the data dir)
     --dust_user.....use this to define a user who CAN log into dust for testing
     --fl_fmt........sets the file type to test.  One of:
                     classic, 64bit, netcdf4, netcdf4_classic
-    --log ..........requests that the debug info is logged to 'nctest.log'
-                     as well as spat to STDOUT.
+    --log ..........requests that debug info is logged to 'nctest.log'
+                    as well as spat to STDOUT.
     --mpi_prc {#>0}..number of MPI processes to spawn
-    --mpi_fake.......run the mpi executable as a single process for debugging.
-    --fake_mpi.......                   ditto
+    --mpi_fake.......run mpi executable as single process for debugging.
+    --fake_mpi.......ditto
     --udpreport.....requests that the test results are communicated back to
-                     NCO Central to add your test, timing, and build results.
+                    NCO Central to add your test, timing, and build results.
                             NB: This option uses udp port 29659 and may set off
                             firewall alarms if used unless that port is open.
-    --scaling.......runs the ncwa benchmarks with 1/2, 1/4, 1/8 of the variables
-    --serverside {server URL}..requests that benchmarks be run on the server side
-                      points to sand.ess.uci.edu unless a url is given [EXPERIMENTAL]
-    --test_files....requests the testing & excercise of the file creation script
+    --scaling.......Run ncwa benchmarks with 1/2, 1/4, 1/8 of the variables
+    --serverside {server URL}..requests that benchmarks be run on server side
+                      points to sand.ess.uci.edu unless alternate URL is given [EXPERIMENTAL]
+    --test_files....Test and excercise file creation script
                      'ncgen' and the Left Hand Casting ability of ncap.
                             Currently gives the option to test 4 files of increasing
                             size and complexity:
@@ -145,17 +145,17 @@ where (options) are:
                             4 - IPCC Daily T85 data set  ~  4GB  ~several min
                             A - All
     --thr_nbr {#>0}....Number of OpenMP threads to use
-    --xdata.........explicit data path set from cmdline
+    --xdata.........Explicit data path set from command line
                     (overrides DATA environment variable)
-    --regress.......do the regression tests
-    --benchmark.....do the benchmarks
+    --regress.......Perform regression tests
+    --benchmark.....Perform benchmarks
 
 nco_bm.pl is a semi-automated script for testing the accuracy and
-robustness of the nco (netCDF Operators), typically after they are
+robustness of the NCO (netCDF Operators), typically after they are
 built, using the 'make benchmark' command.  In this mode, a user should
 never have to see this message, so this is all I'll say about it.
 
-In nco debug/testing  mode, it tries to validate the NCO's for both
+In NCP debug/testing  mode, it tries to validate the NCOs for both
 accuracy and robustness.  It also can collect benchmark statistics via
 sending test results to a UDP server.
 
@@ -174,11 +174,7 @@ exit(0);
 } # end usage()
 
 
-##
-## initializes the NCOs that need to be tested for particular conditions
-##
-
-####################
+# Initialize NCOs that need to be tested for particular conditions
 sub initialize($$){
 	use vars qw($prg_nm %sym_link %failure);
 	my $bch_flg; # [flg] Batch behavior
@@ -242,11 +238,7 @@ dbg_msg(1,"$prg_nm: initialize() reports:\n\t \$MY_BIN_DIR = $MY_BIN_DIR, \n\t \
 }
 } # end of initialize()
 
-
-##
-## Output string to either stdout, log, or both
-##
-####################
+# Output string to either stdout, log, or both
 sub verbosity {
 	my $dbg_lvl = shift;
 	my $wnt_log = shift;
@@ -298,11 +290,7 @@ if ($dbg_lvl > 2) {
 	return @fl_tmg;
 }; # end of fl_cr8_dat_init()
 
-
-##
-## fl_cr8 creates files from the CDL templates an populates them for the benchmarks
-##
-
+# fl_cr8 creates files from CDL templates and populates them for benchmarks
 sub fl_cr8 {
 	my $idx = shift;
 	my $NUM_FLS = 4;
@@ -350,11 +338,7 @@ if ($dbg_lvl > 2) {
 	return @fl_tmg;
 } # end sub fl_cr8
 
-
-##
-## Summarizes the timing results of the file creation tests
-##
-
+# Summarize timing results of file creation tests
 sub smrz_fl_cr8_rslt {
 	$NUM_FLS = 4;
 	print " insmrz_fl_cr8_rslt,  \$fl_tmg[1][0] = $fl_tmg[1][0] & \$NUM_FLS = $NUM_FLS\n";
@@ -504,25 +488,25 @@ my %lfn = ( # lfn = local_file_name
 	my $result_is_num = 1; 	my $expect_is_num = 1; # for extra return value checks
 
 
-	# twiddle the $prefix to allow for running the mpnc* as a non-mpi'ed  executable
+	# Twiddle $prefix to allow running mpnc* as non-MPI'd  executable
 	if ($mpi_fke) {$fke_prefix = "$MY_BIN_DIR/mp"; }
 	$prefix = "$MY_BIN_DIR/";
-	#  $mpi_prfx will always have the mpirun directive.
+	# $mpi_prfx always has mpirun directive
 
-	# can run it in aix with naked command as long as env has been set up
-	# NB!  this will be fine for regression testing on the interactive node, but
-	# NB!  not for benchmarking under POE - intercepted and handled at startup
-	# on AIX, non-MPI ops compiled with MPI will atttempt to run MP_PROCS.  To hold them
-	# to 1 process, have to add an explicit prefix ($aix_mpi_sgl_nvr), added below
+	# Can run it in AIX with naked command as long as env has been set up
+	# NB: This is for regression testing on interactive node, 
+	# not for benchmarking under POE - intercepted and handled at startup
+	# on AIX, non-MPI ops compiled with MPI will atttempt to run MP_PROCS.  
+        # To hold them to one process, must add explicit prefix ($aix_mpi_sgl_nvr), added below
 	my $aix = 0; if ($os_nme =~ /AIX/) {$aix = 1;} # yafv for aix
-	if ($aix){ $mpi_prfx = " $aix_mpi_nvr_prfx $MY_BIN_DIR/mp";}
-	else     { $mpi_prfx = " mpirun -np $mpi_prc $MY_BIN_DIR/mp";} # assuming Linux-like MPI
+	if($aix){ $mpi_prfx = " $aix_mpi_nvr_prfx $MY_BIN_DIR/mp";}
+	else    { $mpi_prfx = " mpirun -np $mpi_prc $MY_BIN_DIR/mp";} # Assume Linux-like MPI
 	$prfxd = 1; $timed = 1;
 
 	dbg_msg(1,"\$prefix=$prefix | \$mpi_prfx=$mpi_prfx | \$fke_prefix=$fke_prefix");
 
-	#delete everything in the dap subdir to force a DAP retrieval
-	# by this time, $dta_dir has been directed to $dta_dir/DAP_DIR
+	# Delete everything in DAP subdir to force DAP retrieval
+	# $dta_dir has by now been directed to $dta_dir/DAP_DIR
 
 #	print "DEBUG[go]:\$dodap = [$dodap], \$prsrv_fl = [$prsrv_fl]\n";
 	if ($dodap ne "FALSE" && !$prsrv_fl) {
