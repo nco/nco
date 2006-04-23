@@ -5,7 +5,7 @@ package NCO_rgr;
 # code.  This is a module, so it has different packaging semantics, but
 # it must maintain Perl semantics. - hjm
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.34 2006-04-21 20:33:16 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.35 2006-04-23 06:44:41 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -53,8 +53,8 @@ $prsrv_fl = 0;
 # fxm: pass as arguments or use exporter/importer instead?
 # *omp_flg=*main::omp_flg;
 # *nco_D_flg=*main::nco_D_flg;
-#*dodap=*main::dodap;
-#*$fl_fmt=*main::fl_fmt;
+# *dodap=*main::dodap;
+# *$fl_fmt=*main::fl_fmt;
 
 # I DO NOT *&^%*& understand why this $outfile needs special handling !!!
 *outfile = *main::outfile;

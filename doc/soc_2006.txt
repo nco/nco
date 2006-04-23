@@ -1,6 +1,6 @@
 Summer of Code 2006 Project: 
 
-_Implementing Metadata CF Metadata Conventions in NCO Software_
+_CF Metadata Conventions for NCO Software_
 
 The netCDF Operators (NCO, http://nco.sf.net) are a GPL'd scientific
 data analysis toolkit widely used in the geosciences.
@@ -23,7 +23,7 @@ metadata conventions for
    http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#gath
 Tasks 1 and 2 can be accomplished within the eight week SOC period by
 a motivated student proficient in C and the GNU/GCC toolchain. 
-The student will be exposed to state of the art scientific software
+The student will modify state-of-the-art scientific software 
 which runs in cross-platform high performance computing environments.
 
 The advisor for this project is:

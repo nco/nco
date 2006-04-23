@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.19 2005-12-30 00:28:15 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.20 2006-04-23 06:44:41 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -46,17 +46,13 @@ nco/bm/ipcc_dly_T85.cdl "
 nco/bm/skn_lgs.cdl      "
 nco/bm/sml_stl.cdl      "
 nco/bm/stl_5km.cdl      "
---
-nco/bm/nco_bm.pl            core perl app that calls rest of bm pieces
-nco/bm/nco_bm_benchmarks.pl the benchmark tests
-nco/bm/nco_bm_md5wc_tbl.pl  the hash table for the MD5 and wc values
-nco/bm/NCO_bm.pm            common code for the nco_bm.pl
-nco/bm/NCO_rgr.pm           the regression tests.
---
-nco/bm/mk_bm_plots.pl       perl script to autoplot the benchmark data
---
-nco/bm/nco_bm.sh            script to run nco_bm.pl for various platforms
-
+nco/bm/nco_bm.pl            Core perl app that calls rest of BM pieces
+nco/bm/nco_bm_benchmarks.pl Benchmark tests
+nco/bm/nco_bm_md5wc_tbl.pl  Hash table for MD5 and wc values
+nco/bm/NCO_bm.pm            Common code for nco_bm.pl
+nco/bm/NCO_rgr.pm           Regression tests.
+nco/bm/mk_bm_plots.pl       Perl script to autoplot benchmark data
+nco/bm/nco_bm.sh            Script to run nco_bm.pl for various platforms
 
 Build directory:
 nco/bld/Makefile	Makefile used by GNU make to create NCO executables
@@ -67,7 +63,8 @@ nco/bld/libnco_tst.c	Simplest front end to exercise libnco.a
 
 Data Directory:
 nco/data/in.cdl 	CDL file to generate netCDF test file in.nc
-nco/data/ncap.in	Text input for ncap (not yet used)
+nco/data/ncap.in	Input script for ncap
+nco/data/ncap2.in	Input script for ncap2
 
 Documentation directory:
 nco/doc/ANNOUNCE	Announcement to accompany release notifications
@@ -103,11 +100,12 @@ nco/doc/valgrind.txt	Valgrind suppressions file for debugging NCO
 Object directory:
 nco/obj/README		Description of object directory
 
-Source directories:
-nco/src/nco		Source code for base NCO library and operators
-nco/src/nco_c++		Source code for NCO C++ interface to netCDF
+Source code directories:
+nco/src/nco		Source for base NCO library and operators
+nco/src/nco++		Source for NCO C++ operators (ncap2) and libnco++
+nco/src/nco_c++		Source for libnco_c++ C++ interface to netCDF API
 
-NCO source source directory:
+NCO source directory:
 nco/src/nco/Makefile
 nco/src/nco/Makefile.am
 nco/src/nco/Makefile.in

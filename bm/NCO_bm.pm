@@ -15,7 +15,7 @@ package NCO_bm;
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.34 2006-04-22 05:59:16 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.35 2006-04-23 06:44:41 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -1010,8 +1010,8 @@ sub dbg_msg {
 	}
 }
 
-# grab the nco version and conmogrify it into something like: "3.0.1 / 20051003"
-# just requires a string variable to absorb the string returned
+# Grab NCO version and conmogrify it into something like: "3.0.1 / 20051003"
+# Requires a string variable to absorb returned string
 sub nco_dual_vrsn{
 	my @nco_vrsn;
 	my $tmp_sng = `ncks --version  2>&1 |  grep version | head -2`; # long string sep by a newline.
@@ -1026,6 +1026,6 @@ sub nco_dual_vrsn{
 }
 
 
-# the following 2 lines are required to provide a 'true' value at the end of the package.
+# Following two lines required to provide 'true' value at package end
 1;
 __END__

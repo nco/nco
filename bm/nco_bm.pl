@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.120 2006-03-18 00:38:14 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.121 2006-04-23 06:44:41 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -129,7 +129,7 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	'dods:s'       => \$dodap,      # Optional string is URL to DAP data
 	'dap:s'        => \$dodap,      # Optional string is URL to DAP data
 	'fl_fmt=s'     => \$fl_fmt,     # Output format for writing netcdf files; one of:
-                                   # classic,64bit,netcdf4,netcdf4_classic
+                                        # classic,64bit,netcdf4,netcdf4_classic
 	'opendap:s'    => \$dodap,      # Optional string is URL to DAP data
 	'dust_user=s'  => \$dust_usr,   #  #
 	'h'            => \$usg,        # Explain how to use this thang

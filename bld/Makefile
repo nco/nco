@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.360 2006-02-19 00:42:33 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.361 2006-04-23 06:44:41 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -16,6 +16,7 @@
 
 # Usage (testing):
 # make tst                           # Vanilla regression test
+# make FL_FMT=netcdf4 tst            # netCDF4 regression test
 # make MPI_PRC=3 tst                 # MPI regression test
 # make MPI_PRC=3 bm                  # MPI benchmarks
 # make THR_NBR=2 tst                 # OpenMP regression test
