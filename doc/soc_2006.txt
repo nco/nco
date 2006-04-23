@@ -1,0 +1,34 @@
+Summer of Code 2006 Project: 
+
+_Implementing Metadata CF Metadata Conventions in NCO Software_
+
+The netCDF Operators (NCO, http://nco.sf.net) are a GPL'd scientific
+data analysis toolkit widely used in the geosciences.
+The Climate and Forecast (CF) metdata conventions provide a framework
+for indicating complex data attributes such as geophysical grids and
+processing history in netCDF datasets
+(http://www.cgd.ucar.edu/cms/eaton/cf-metadata).
+However, it is difficult to exploit the utility of CF-compliant
+datasets since the full CF standard is not implemented in generic data 
+processing toolkits since doing so would be very complex.
+We propose a Summer of Code project to implement key CF parts in NCO.
+
+Specifically, the interested student will implement and propagate CF
+metadata conventions for 
+1. Missing data (CF convention Section 2.5.1) 
+   http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#miss
+2. Cell methods (Section 7.1)
+   http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#bnds
+3. Compression by Gathering (Section 8.2) (time permitting)
+   http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#gath
+Tasks 1 and 2 can be accomplished within the eight week SOC period by
+a motivated student proficient in C and the GNU/GCC toolchain. 
+The student will be exposed to state of the art scientific software
+which runs in cross-platform high performance computing environments.
+
+The advisor for this project is:
+
+Professor Charlie Zender <zender@uci.edu>
+Department of Earth System Science
+University of California at Irvine
+http://www.ess.uci.edu/~zender
