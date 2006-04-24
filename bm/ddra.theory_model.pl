@@ -2,7 +2,7 @@
 use strict;
 # Declare vars for strict
 
-# Generate run times based on Zender's DDRA theory paper of 2006
+# Generate run times based on Zender and Mangalam (2006) DDRA paper
 # Currently no options---all variables hardcoded in script
 
 use vars qw(
