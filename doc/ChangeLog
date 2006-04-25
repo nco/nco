@@ -1,3 +1,7 @@
+2006-04-25  Charlie Zender  <zender@uci.edu>
+
+	* Note in nco_var_cnf_dmn() how to turn off weight re-use
+
 2006-04-21  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-3_1_2

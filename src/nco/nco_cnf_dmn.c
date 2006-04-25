@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.55 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.56 2006-04-25 20:43:56 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -84,6 +84,16 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
       } /* end loop over dimensions */
       if(idx == var->nbr_dim) *DO_CONFORM=True;
     } /* end if ranks are equal */
+    /* 20060425: To turn of weight re-use, always execute the "else" block
+       Do this by (temporarily) using for the conditional clause
+
+    if(*DO_CONFORM && False){
+
+    instead of
+
+    if(*DO_CONFORM){ 
+
+    in the following line: */
     if(*DO_CONFORM){
       wgt_out=wgt_crr;
     }else{
