@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.166 2006-04-22 00:45:14 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.167 2006-04-26 16:56:23 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -8,10 +8,7 @@
 # See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text
 
 # TODO: need support for:
-#   MacOSX - detect the OS, compilers, etc. !!done
-#   MPI - detect mpicc, need to detect whether LAM or MPICH2 !! done
-#   OpenMP - detect OMP-capable compiler (xlr_c/AIX, icc/Linux, pgcc/Linux; NOT gcc)
-#   HDF5, NetCDF4 - detect hdf5, hdf5_hl, netcdf libs !! done
+# OpenMP - detect OMP-capable compiler (xlr_c/AIX, icc/Linux, pgcc/Linux; NOT gcc)
 
 # Usage:
 # autoconf
@@ -43,6 +40,45 @@ AC_COPYRIGHT
 AC_CONFIG_SRCDIR([src/nco/ncks.c])
 # Put helper scripts here to reduce top level clutter
 AC_CONFIG_AUX_DIR(autobld)
+
+# Get build system parameters, need config.guess and config.sub to use these
+# Set $build
+AC_CANONICAL_BUILD
+# Set $host
+AC_CANONICAL_HOST
+# Set $target
+AC_CANONICAL_TARGET
+
+# Get NCO version
+if test -r doc/VERSION; then
+    nco_version=`cat doc/VERSION`
+#  AC_DEFINE_UNQUOTED(VERSION,${nco_version},NCO Version)
+fi
+
+# Set egrep
+AC_PROG_EGREP
+
+# Get hostname and user
+if test "${USER}"; then
+    nco_user=${USER};
+elif test "${LOGNAME}"; then
+    nco_user="${LOGNAME}";
+else
+    nco_user="nobody";
+fi
+AC_DEFINE_UNQUOTED(USER,${nco_user},User)
+if test "${HOSTNAME}"; then
+    nco_hostname="${HOSTNAME}"
+# following line $HOST will not be set (from AC_CANONICAL_HOST - will set $host
+elif test "${HOST}"; then
+    nco_hostname="${HOST}"
+else
+    nco_hostname="nowhere";
+fi
+
+AC_DEFINE_UNQUOTED(HOST,${nco_hostname},Hostname)
+AC_DEFINE_UNQUOTED(HOSTNAME,${nco_hostname},Hostname alias)
+AC_DEFINE_UNQUOTED(GNU_TRP,${build},Autoconf-generated architecture \"triplet\")
 
 # Begin pvmgetarch Compatibility
 # Compatibility map between pvmgetarch and GNU triplets
@@ -80,46 +116,6 @@ case ${host} in
 	;;
 esac
 # End pvmgetarch Compatibility
-
-
-# Get build system parameters, need config.guess and config.sub to use these
-AC_CANONICAL_BUILD
-# sets $build
-AC_CANONICAL_HOST
-# sets $host - important var
-AC_CANONICAL_TARGET
-#sets $target - ignore for the most part
-
-# Get version
-if test -r doc/VERSION; then
-    nco_version=`cat doc/VERSION`
-#  AC_DEFINE_UNQUOTED(VERSION,${nco_version},NCO Version)
-fi
-
-#set egrep
-AC_PROG_EGREP
-
-# Get hostname and user
-if test "${USER}"; then
-    nco_user=${USER};
-elif test "${LOGNAME}"; then
-    nco_user="${LOGNAME}";
-else
-    nco_user="nobody";
-fi
-AC_DEFINE_UNQUOTED(USER,${nco_user},User)
-if test "${HOSTNAME}"; then
-    nco_hostname="${HOSTNAME}"
-# following line $HOST will not be set (from AC_CANONICAL_HOST - will set $host
-elif test "${HOST}"; then
-    nco_hostname="${HOST}"
-else
-    nco_hostname="nowhere";
-fi
-
-AC_DEFINE_UNQUOTED(HOST,${nco_hostname},Hostname)
-AC_DEFINE_UNQUOTED(HOSTNAME,${nco_hostname},Hostname alias)
-AC_DEFINE_UNQUOTED(GNU_TRP,${build},Autoconf-generated architecture \"triplet\")
 
 # Use automake to create Makefiles
 #AM_INIT_AUTOMAKE

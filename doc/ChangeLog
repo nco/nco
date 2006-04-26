@@ -1,3 +1,9 @@
+2006-04-26  Charlie Zender  <zender@uci.edu>
+
+	* Re-order PVM_ARCH compatibility portion of configure.in so it
+	follows not precedes $host definition. This should fix cygwin
+	(and other) build problems introduced in NCO version 3.1.2.
+
 2006-04-25  Charlie Zender  <zender@uci.edu>
 
 	* Note in nco_var_cnf_dmn() how to turn off weight re-use
