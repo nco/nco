@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.736 2006-04-21 20:37:57 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.737 2006-04-26 16:24:25 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -468,8 +468,9 @@ nco693. ncks regression for offset past end of file test
         ncks: ERROR User-specified dimension index range 2 <= time <= 1 does not fall within valid dimension index range 0 <= time <= 1
         ncks behaves perfectly here. Unfortunately, the perl test script does not recognize the expected answer string as being valid
 nco694. Change nco_bool to C99 standard bool as per Wikipedia?
-nco702. How to mix new ncwa behavior with -I wng_msk_crd_var?
-nco703. 
+nco702. How to mix new ncwa behavior with -I wgt_msk_crd_var?
+nco703. WIN32 no longer defined in config.h for configure in 3.1.2. Causes build failure on cygwin.
+nco704. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
