@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.336 2006-04-22 00:45:15 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.337 2006-04-27 18:38:23 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -740,7 +740,11 @@ More details on C99 compatibility are in the header file
 <i>Old netCDF libraries:</i>
 NCO versions &ge;&nbsp;3.0.0 require netCDF versions
 &ge;&nbsp;3.6 to take advantage of the new 64-bit offset file type.  
-To build NCO versions &ge;&nbsp;3.0.0 with netCDF versions
+The library <i>and</i> include directories (e.g., <tt>/usr/lib</tt> and
+<tt>/usr/include<tt>, respectively) for netCDF version &ge;&nbsp;3.6
+must be on the path searched by the compiler, and must precede the
+locations of any older netCDF installations.
+To build NCO versions &ge;&nbsp;3.0.0 with older netCDF versions
 &lt;&nbsp;3.6, simply define the pre-processor token
 <tt>NC_64BIT_OFFSET</tt> to <tt>0</tt> before compiling NCO.
 Do this, e.g., with <tt>CPPFLAGS='-DNC_64BIT_OFFSET=0'</tt> or

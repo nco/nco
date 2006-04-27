@@ -1,7 +1,7 @@
 2006-04-27  Charlie Zender  <zender@uci.edu>
 
-	* Remove superfluous semi-colons from some ncbo comments
-	This should fix Solaris build
+	* Remove superfluous semi-colons from some ncbo/ncflint comments
+	This should fix Solaris builds
 
 2006-04-26  Charlie Zender  <zender@uci.edu>
 
