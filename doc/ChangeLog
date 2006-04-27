@@ -1,3 +1,8 @@
+2006-04-27  Charlie Zender  <zender@uci.edu>
+
+	* Remove superfluous semi-colons from some ncbo comments
+	This should fix Solaris build
+
 2006-04-26  Charlie Zender  <zender@uci.edu>
 
 	* Re-order PVM_ARCH compatibility portion of configure.in so it

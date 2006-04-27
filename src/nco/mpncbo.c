@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.49 2006-04-06 22:56:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.50 2006-04-27 18:10:46 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char **fl_lst_in;
   char **var_lst_in=NULL_CEWI;
   char *cmd_ln;
-  char *fl_in_1=NULL; /* fl_in_1 is nco_realloc'd when not NULL */;
-  char *fl_in_2=NULL; /* fl_in_2 is nco_realloc'd when not NULL */;
+  char *fl_in_1=NULL; /* fl_in_1 is nco_realloc'd when not NULL */
+  char *fl_in_2=NULL; /* fl_in_2 is nco_realloc'd when not NULL */
   char *fl_out=NULL; /* Option o */
   char *fl_out_tmp=NULL; /* MPI CEWI */
   char *fl_pth=NULL; /* Option p */
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.49 2006-04-06 22:56:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.49 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.50 2006-04-27 18:10:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.50 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRSt:v:xy:-:";
   
   dmn_sct **dim_1;
