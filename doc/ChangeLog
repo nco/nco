@@ -1,5 +1,7 @@
 2006-04-28  Charlie Zender  <zender@uci.edu>
 
+	* Change $sz_wgt_blk to $sz_avg_blk in ddra.theory_model.pl
+
 	* Autoconf-conditions for getpagesize(), getrusage() in nco_mmr.c
 	This should cure build failures on Cray platforms, and make
 	nco_mmr.c bulletproof (though still not perfect) for other
