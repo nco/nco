@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.361 2006-04-23 06:44:41 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.362 2006-04-29 04:40:34 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -445,9 +445,9 @@ ${MY_DPN_DIR}/%.d : %.cc
 # First LDFLAGS is for typical C programs with netCDF, math, and networking
 # Second LDFLAGS, when present, enables C/Fortran linking
 
-# Manually define autotools tokens normally defined in HAVE_CONFIG_H
+# Manually define autotools tokens normally defined with HAVE_CONFIG_H in config.h 
 # Initialize OS-specific tokens to empty
-CPP_TKN_OS := -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY
+CPP_TKN_OS := -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY -DHAVE_GETPAGESIZE -DHAVE_GETRUSAGE
 ifneq (${PVM_ARCH},CRAY)
  CPP_TKN_OS += -DHAVE_MKSTEMP
 endif # CRAY

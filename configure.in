@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.167 2006-04-26 16:56:23 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.168 2006-04-29 04:40:33 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -6,9 +6,6 @@
 # Copyright (C) 2003--2006 Charlie Zender and Rorik Peterson
 # This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
 # See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text
-
-# TODO: need support for:
-# OpenMP - detect OMP-capable compiler (xlr_c/AIX, icc/Linux, pgcc/Linux; NOT gcc)
 
 # Usage:
 # autoconf
@@ -155,7 +152,7 @@ AC_FUNC_STAT
 AC_FUNC_STRTOD
 
 # Check for library functions, if found then #define HAVE_FUNCTION in config.h
-AC_CHECK_FUNCS([floor canonicalize_file_name gethostname memchr memmove memset mkstemp pow readlink realpath regcomp setlocale sqrt strchr strerror strpbrk strrchr strstr strtol])
+AC_CHECK_FUNCS([floor canonicalize_file_name gethostname getpagesize getrusage memchr memmove memset mkstemp pow readlink realpath regcomp setlocale sqrt strchr strerror strpbrk strrchr strstr strtol])
 
 # Check for header files
 AC_HEADER_STDC

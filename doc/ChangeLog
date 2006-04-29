@@ -1,3 +1,10 @@
+2006-04-28  Charlie Zender  <zender@uci.edu>
+
+	* Autoconf-conditions for getpagesize(), getrusage() in nco_mmr.c
+	This should cure build failures on Cray platforms, and make
+	nco_mmr.c bulletproof (though still not perfect) for other
+	esoteric platforms.
+	
 2006-04-27  Charlie Zender  <zender@uci.edu>
 
 	* Remove superfluous semi-colons from some ncbo/ncflint comments

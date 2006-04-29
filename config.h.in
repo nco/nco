@@ -111,6 +111,12 @@
 /* Define to 1 if compiler finds external `getopt_long' function */
 #undef HAVE_GETOPT_LONG
 
+/* Define to 1 if you have the `getpagesize' function. */
+#undef HAVE_GETPAGESIZE
+
+/* Define to 1 if you have the `getrusage' function. */
+#undef HAVE_GETRUSAGE
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 

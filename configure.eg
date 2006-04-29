@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.120 2005-12-14 08:01:11 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.121 2006-04-29 04:40:33 zender Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -291,10 +291,6 @@ make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
-
-
-
-
 ************************************************************************
 End LINUX
 ************************************************************************
@@ -302,7 +298,6 @@ End LINUX
 ************************************************************************
 Begin NETCDF4
 ************************************************************************
-
 NETCDF4/netcdf4
 To build with netcdf4, we require changes from the default process:
 

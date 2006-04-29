@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.171 2006-04-22 00:45:15 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.172 2006-04-29 04:40:34 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.2 are ready. 
 They contain an noteworthy bugfix for packed data, an important change
@@ -7,44 +7,22 @@ in behavior for ncea/ncra/ncwa, and significant new features in ncap2.
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-All previous NCO versions incorrectly stored non-processed packed data 
-incorrectly in the output file. This meant, for example, that a packed
-non-record variable would be stored incorrectly after the whole file
-was passed through ncra. Non-processed packed data is now stored
-correctly. Thanks to Martin Dix for reporting this problem.
-
-ncra, ncea, and ncwa used to process coordinate variables identically
-to non-coordinate variables. This meant that if the user requested 
-minimization, the operator returned the minimum of all fields
-with an output coordinate that would be the minimum of the coordinate
-axis (which makes no sense). In all cases we could think of, it makes
-more sense to average the coordinates, and apply the requested
-arithmetic operations (min,max,avg,sdn,rms, etc.) to the
-non-coordinate fields. We've changed to this behavior.
-
 ncap2 is the successor to ncap. Henry Butowsky's work to address some
 of the arithmetic limitations of ncap is beginning to pay off.
 ncap2 now handles array syntax, if/then constructs and much more.
 ncap2 is still a bit alpha, but ready to be tested for functionality.
 The sample script nco/data/ncap2.in demonstrates its features.
 
-0. Store non-processed packed data correctly.
 
-1. Work when only one variable has missing_value in binary operators
+0. Build fixes for Solaris, Cygwin, NECSX and Cray
 
-2. Support netcdf4-alpha13
+1. Support netcdf4-alpha14 (fxm)
 
-3. ncap2 development code in nco/src/nco++ (Henry Butowsky)
+2. ncap2 attribute propagation (Henry Butowsky) (fxm)
 
-4. Server-side extensions (Daniel Wang)
+3. ncap2 LHS array logic working (Henry Butowsky) (fxm)
 
-5. Fixed some benchmark/regression problems over DAP (Harry Mangalam)
-
-6. Automatically configure/build nco++ directory (Harry Mangalam)
-
-7. Regression tests & benchmarks work with server-side extensions (HM/DW)
-
-8. ncra/ncea/ncwa now _always_ average coordinate variables
+4. Server-side extensions (Daniel Wang) (fxm)
 
 Enjoy,
 Charlie
