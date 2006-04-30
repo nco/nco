@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.116 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.117 2006-04-30 06:18:26 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -76,6 +76,223 @@ nco_mpi_get(void) /* [fnc] Return MPI implementation */
   if(dbg_lvl_get() > 4) (void)fprintf(stderr,"%s: INFO %s reports MPI implementation name is %s, MPI implementation string is %s\n",prg_nm_get(),fnc_nm,mpi_nm,mpi_sng);
   return mpi_nm;
 } /* end nco_mpi_get() */
+
+int /* O [rcd] Return code */
+nco_ddra /* [fnc] Count operations */
+(const char * const var_nm, /* I [sng] Variable name */
+ const char * const wgt_nm, /* I [sng] Weight name */
+ const int nco_op_typ, /* I [enm] Operation type */
+ const int rnk_avg, /* I [nbr] Rank of averaging space */
+ const int rnk_var, /* I [nbr] Variable rank (in input file) */
+ const int rnk_wgt, /* I [nbr] Rank of weight */
+ const int var_idx, /* I [enm] Index */
+ const int wrd_sz, /* I [B] Bytes per element */
+ const long lmn_nbr, /* I [nbr] Variable size */
+ const long lmn_nbr_avg, /* I [nbr] Averaging block size */
+ const long lmn_nbr_wgt) /* I [nbr] Weight size */
+{
+  /* Purpose: Estimate operation counts required */
+  nco_bool MRV_flg=False;
+  nco_bool wgt_reuse_flg=False;
+
+  const char fnc_nm[]="nco_ddra()";
+  
+  const float spd_flp=153e6; /* [# s-1] Floating point operation speed */
+  const float spd_ntg=200e6; /* [# s-1] Integer operation speed */
+  const float spd_rd=63.375e6; /* [B s-1] Disk read bandwidth */
+  const float spd_wrt=57.865e6; /* [B s-1] Disk write bandwidth */
+
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  
+  /* Cumulative file costs */
+  static long ntg_nbr_ttl=0L; /* I/O [nbr] Cumulative integer operations */
+  static long flp_nbr_ttl=0L; /* I/O [nbr] Cumulative floating point operations */
+
+  /* Cumulative times */
+  static float tm_ntg_ttl=0.0; /* I/O [s] Cumulative integer time */
+  static float tm_flp_ttl=0.0; /* I/O [s] Cumulative floating point time */
+  static float tm_rd_ttl=0.0; /* I/O [s] Cumulative read time */
+  static float tm_wrt_ttl=0.0; /* I/O [s] Cumulative write time */
+  static float tm_ttl=0.0; /* I/O [s] Cumulative time */
+  
+  /* Current variable costs */
+  float tm_ntg; /* [s] Integer time */
+  float tm_flp; /* [s] Floating point time */
+  float tm_rd; /* [s] Read time */
+  float tm_wrt; /* [s] Write time */
+  float tm_crr; /* [s] Time for this variable */
+  long ntg_nbr; /* [nbr] Integer operations */
+  long flp_nbr; /* [nbr] Floating point operations */
+  long rd_nbr_byt=int_CEWI; /* [B] Bytes read */
+  long wrt_nbr_byt=int_CEWI; /* [B] Bytes written */
+  
+  /* Default algorithm costs if invoked */
+  long ntg_nbr_byt_swp_dfl; /* [nbr] Integer operations for byte-swap */
+  long ntg_nbr_brd_dfl; /* [nbr] Integer operations for broadcasting */
+  long ntg_nbr_clc_dfl; /* [nbr] Integer operations for collection */
+  long ntg_nbr_rdc_dfl; /* [nbr] Integer operations for reduction */
+  long ntg_nbr_nrm_dfl; /* [nbr] Integer operations for normalization */
+  long flp_nbr_bnr_dfl; /* [nbr] Floating point operations for binary arithmetic */
+  long flp_nbr_rdc_dfl; /* [nbr] Floating point operations for reduction */
+  long flp_nbr_nrm_dfl; /* [nbr] Floating point operations for normalization */
+
+  /* Initialize all algorithm counts for this variable to zero then increment */
+  long ntg_nbr_byt_swp=0L; /* [nbr] Integer operations for byte-swap */
+  long ntg_nbr_brd=0L; /* [nbr] Integer operations for broadcasting */
+  long ntg_nbr_clc=0L; /* [nbr] Integer operations for collection */
+  long ntg_nbr_rdc=0L; /* [nbr] Integer operations for reduction */
+  long ntg_nbr_nrm=0L; /* [nbr] Integer operations for normalization */
+  long flp_nbr_bnr=0L; /* [nbr] Floating point operations for binary arithmetic */
+  long flp_nbr_rdc=0L; /* [nbr] Floating point operations for reduction */
+  long flp_nbr_nrm=0L; /* [nbr] Floating point operations for normalization */
+
+  /* Locals */
+  long lmn_nbr_out; /* [nbr] Output elements */
+
+  /* Where possible, work in terms of "default" counts per algorithm
+     Algorithms (e.g., reduction, byte-swapping) are generally subroutines
+     Record hand-counted counts in only one place
+     This makes it easier and less error-prone to propagate optimizations
+     Also, easier to think in terms of procedures than raw counts
+
+     Algorithms for subtraction:
+     "byte_swap+byte_swap+binary_arithmetic+byte_swap"
+     Algorithms for non-weighted, non-MRV averaging:
+     "byte_swap(input)+collection+reduction+normalization+byte_swap(output)"
+     Algorithms for non-weighted, MRV averaging:
+     "byte_swap(input)+reduction+normalization+byte_swap(output)"
+     Algorithms for weighted, non-MRV averaging:
+     "byte_swap(input)+byte_swap(weight)+broadcast(weight)+
+     collection(numerator)+collection(denominator)+
+     binary_arithmetic(weight*value)+
+     reduction(numerator)+reduction(denominator)+
+     normalization(numerator)+normalization(denominator)+byte_swap(output)"
+     Units: 
+     [nbr] = Operation counts
+     [nbr nbr-1] = Operation counts per element */
+
+  /* Derived variables */
+  lmn_nbr_out=lmn_nbr/lmn_nbr_avg; /* [nbr] Output elements */
+
+  flp_nbr_bnr_dfl=lmn_nbr; /* [nbr] Floating point operations for binary arithmetic */
+  flp_nbr_nrm_dfl=lmn_nbr_out; /* [nbr] Floating point operations for normalization */
+  flp_nbr_rdc_dfl=lmn_nbr; /* [nbr] Floating point operations for reduction */
+
+  /* Integer operations for broadcasting weight */
+  ntg_nbr_brd_dfl=lmn_nbr*(6*rnk_var+8*rnk_wgt+2); /* [nbr] N(6R+8R_w+2) */
+
+  /* Byte-swap integer operations per element */
+  ntg_nbr_byt_swp_dfl=wrd_sz+2; /* [nbr nbr-1] W+2 */
+
+  /* Integer operations for collection */
+  ntg_nbr_clc_dfl=lmn_nbr*(14*rnk_var+4); /* [nbr] N(14R+4) */
+
+  /* Integer operations for normalization */
+  ntg_nbr_nrm_dfl=lmn_nbr*4/lmn_nbr_avg; /* [nbr] 4N/N_A = 4N_O */
+
+  /* Integer operations for reduction */
+  ntg_nbr_rdc_dfl=lmn_nbr*6+lmn_nbr_out; /* [nbr] N(6+N/N_A) */
+
+  switch(nco_op_typ){
+    /* Types used in ncbo(), ncflint() */
+  case nco_op_add: /* [enm] Add file_1 to file_2 */
+  case nco_op_dvd: /* [enm] Divide file_1 by file_2 */
+  case nco_op_mlt: /* [enm] Multiply file_1 by file_2 */
+  case nco_op_sbt: /* [enm] Subtract file_2 from file_1 */
+    /* Subtraction computation assumes variables are same size
+       fxm: Account for broadcasting */
+    /* One floating point (add/subtract/multiply/divide) per element */
+    flp_nbr_bnr=lmn_nbr;
+    /* Byte-swap elements from two input files and one output file */
+    ntg_nbr_byt_swp=3*lmn_nbr*ntg_nbr_byt_swp_dfl; /* 3N(W+2) */
+    rd_nbr_byt=2*lmn_nbr*wrd_sz; /* [B] Bytes read */
+    wrt_nbr_byt=lmn_nbr*wrd_sz; /* [B] Bytes written */
+    break;
+    /* Types used in ncra(), ncrcat(), ncwa(): */
+  case nco_op_avg: /* [enm] Average */
+  case nco_op_min: /* [enm] Minimum value */
+  case nco_op_max: /* [enm] Maximum value */
+  case nco_op_ttl: /* [enm] Linear sum */
+  case nco_op_sqravg: /* [enm] Square of mean */
+  case nco_op_avgsqr: /* [enm] Mean of sum of squares */
+  case nco_op_sqrt: /* [enm] Square root of mean */
+  case nco_op_rms: /* [enm] Root-mean-square (normalized by N) */
+  case nco_op_rmssdn: /* [enm] Root-mean square normalized by N-1 */
+    rd_nbr_byt=lmn_nbr*wrd_sz; /* [B] Bytes read */
+    wrt_nbr_byt=lmn_nbr_out*wrd_sz; /* [B] Bytes written */
+    /* One floating point add per input element to sum numerator */
+    flp_nbr_rdc=lmn_nbr;
+    /* One floating point divide per output element to normalize numerator by denominatro (tally) */
+    flp_nbr_nrm=lmn_nbr_out;
+    /* Byte-swap elements from one input file and one (rank-reduced) output file */
+    ntg_nbr_byt_swp=(lmn_nbr+lmn_nbr_out)*ntg_nbr_byt_swp_dfl;
+    if(!MRV_flg){
+      /* Collection required for numerator */
+      ntg_nbr_clc+=ntg_nbr_clc_dfl;
+    } /* !MRV_flg */
+    if(wgt_nm){
+      if(var_idx == 0){
+	/* Set cost = 0 after first variable since only read weight once */
+	rd_nbr_byt+=lmn_nbr_wgt*wrd_sz; /* [B] Bytes read */
+	/* Byte-swap cost for first weight input is usually negligible */
+	ntg_nbr_byt_swp+=lmn_nbr_wgt*ntg_nbr_byt_swp_dfl;
+      } /* var_idx != 0 */
+      /* One floating point multiply per input element for weight*value in numerator,
+	 and one floating point add per input element to sum weight in denominator */
+      flp_nbr_rdc+=2*lmn_nbr;
+      /* One floating point divide per output element to normalize denominator by tally */
+      flp_nbr_nrm+=lmn_nbr_out;
+      if(!wgt_reuse_flg){
+	/* fxm: Charge for broadcasting weight at least once */
+	/* Broadcasting cost for weight */
+	ntg_nbr_brd=ntg_nbr_brd_dfl;
+      } /* wgt_reuse_flg */
+      if(!MRV_flg){
+	/* Collection required for denominator */
+	ntg_nbr_clc+=ntg_nbr_clc_dfl;
+      } /* !MRV_flg */
+    } /* !wgt_nm */
+    break;
+  case nco_op_nil: /* [enm] Nil or undefined operation type  */
+    break;
+  default:
+    (void)fprintf(stdout,"%s: ERROR Illegal nco_op_typ in %s\n",prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+    break;
+  } /* end switch */
+
+  flp_nbr= /* [nbr] Floating point operations */
+    flp_nbr_bnr+ /* [nbr] Floating point operations for binary arithmetic */
+    flp_nbr_rdc+ /* [nbr] Floating point operations for reduction */
+    flp_nbr_nrm; /* [nbr] Floating point operations for normalization */
+
+  ntg_nbr= /* [nbr] Integer operations */
+    ntg_nbr_byt_swp+ /* [nbr] Integer operations for byte-swap */
+    ntg_nbr_brd+ /* [nbr] Integer operations for broadcasting */
+    ntg_nbr_clc+ /* [nbr] Integer operations for collection */
+    ntg_nbr_rdc+ /* [nbr] Integer operations for reduction */
+    ntg_nbr_nrm; /* [nbr] Integer operations for normalization */
+
+  tm_ntg=ntg_nbr/spd_ntg; /* [s] Integer time */
+  tm_flp=flp_nbr/spd_flp; /* [s] Floating point time */
+  tm_rd=rd_nbr_byt/spd_rd; /* [s] Read time */
+  tm_wrt=wrt_nbr_byt/spd_wrt; /* [s] Write time */
+
+  tm_crr=tm_ntg+tm_flp+tm_rd+tm_wrt; /* [s] Time for this variable */
+
+  /* Increment running totals */
+  flp_nbr_ttl+=flp_nbr; /* [nbr] Cumulative floating point operations */
+  ntg_nbr_ttl+=ntg_nbr; /* [nbr] Cumulative integer operations */
+  
+  tm_ntg_ttl+=tm_ntg; /* [s] Cumulative integer time */
+  tm_flp_ttl+=tm_flp; /* [s] Cumulative floating point time */
+  tm_rd_ttl+=tm_rd; /* [s] Cumulative read time */
+  tm_wrt_ttl+=tm_wrt; /* [s] Cumulative write time */
+  tm_ttl+=tm_crr; /* [s] Cumulative time */
+
+  if(dbg_lvl_get() > 1) (void)fprintf(stdout,"%s: %s estimates count of arithmetic operations for variable idx=%d, %s\n",prg_nm_get(),fnc_nm,var_idx,var_nm);
+  return rcd; /* [rcd] Return code */
+} /* nco_ddra() */
 
 void
 nco_exit /* [fnc] Wrapper for exit() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.20 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.21 2006-04-30 06:18:26 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -55,6 +55,20 @@ nco_is_rth_opr /* [fnc] Query whether program does arithmetic */
 nco_bool /* [flg] Program is multi-file operator */
 nco_is_mlt_fl_opr /* [fnc] Query whether program is multi-file operator */
 (const int prg_id); /* [enm] Program ID */
+
+int /* O [rcd] Return code */
+nco_ddra /* [fnc] Count operations */
+(const char * const var_nm, /* I [sng] Variable name */
+ const char * const wgt_nm, /* I [sng] Weight name */
+ const int nco_op_typ, /* I [enm] Operation type */
+ const int rnk_avg, /* I [nbr] Rank of averaging space */
+ const int rnk_var, /* I [nbr] Variable rank (in input file) */
+ const int rnk_wgt, /* I [nbr] Rank of weight */
+ const int var_idx, /* I [enm] Index */
+ const int wrd_sz, /* I [B] Bytes per element */
+ const long lmn_nbr, /* I [nbr] Variable size */
+ const long lmn_nbr_avg, /* I [nbr] Averaging block size */
+ const long lmn_nbr_wgt); /* I [nbr] Weight size */
 
 void
 nco_lbr_vrs_prn(void); /* [fnc] Print netCDF library version */

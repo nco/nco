@@ -14,12 +14,12 @@ use vars qw(
 	    $ncbo
 	    $ncwa_atomic_INS $byt_in $byt_out $byt_per_val $ncwa_compute_sec_nowt
 	    $var_sz $var_idx $ncwa_Icyc_per_el $rnk_idx $timestamp $INS_per_Int_op $INS_per_FP_op
-	    $ncwa_compute_sec_wt $cpu_clock_freq $dsk_bw_rd $dsk_bw_wrt $dsk_tm_in
+	    $ncwa_compute_sec_wt $cpu_clock_freq $spd_rd $spd_wrt $dsk_tm_in
 	    $dsk_tm_out $dsk_ttl_IO_tm $int_coeff $ncwa_est_flops $ncwa_int_INS_nowt $ncwa_int_INS_wt
 	    $ncwa_memcpy_INS_nowt  $ncwa_memcpy_per_el_nowt $ncwa_memcpy_per_el_wt $lmn_nbr_ttl
 	    $fl_nbr_in $fl_nbr_out $var_nbr $ncwa_NOWT_INS_multiplier $rnk $rnk @dim_vars
 	    $ncwa_ttl_cyc_mlt_nowt $ncwa_ttl_cyc_mlt_wt $ncwa_TOT_CYC_nowt $ncwa_TOT_CYC_wt $ncwa_TOT_INS_multiplier $ncbo_Icyc_per_ins $ncbo_Int_INS_per_el $stl_5km $out_fl_nm $sz_avg_blk
-	    $V_flops $V_int_INS $ncwa_wallclock_sec_nowt $ncwa_wallclock_sec_wt $wgt_flg $wgt_reuse_flg $V_intops
+	    $spd_flp $V_int_INS $ncwa_wallclock_sec_nowt $ncwa_wallclock_sec_wt $wgt_flg $wgt_reuse_flg $V_intops
 	    $ncwa_weighting_correction $ncwa_weighting_multiplier $ncwa_WT_INS_multiplier $rnk_wgt
 	    
 	    $K_Ia  $K_Mu  $F_cnt  $Ia_cnt  $Mu_cnt  $Ms_cnt  $fp_tm  $Ittl_cnt $sz_wgt_blk
@@ -72,26 +72,26 @@ $fl_nbr_out              = 1; # number of files out
 # $INS_per_FP_op               = 7.0;   # direct measure from PAPI for both ncbo AND ncwa
 
 # Following vars are set for clay and are relatively stable unless changing machines
-# I retracti my previous estimate--- 
+# I retract my previous estimate--- 
 # I think bonnie estimates work better across range of tests we're doing
-$dsk_bw_rd               = 63.375e6; # fr disk read bandwidth in byt/s (bonnie++)
-$dsk_bw_wrt              = 57.865e6; # fr disk write bandwidth in byt/s (bonnie++)
-#$dsk_bw_rd               = 100e6; # value from to or from memory - theoretical max
-#$dsk_bw_wrt              = 60e6;  # value from to or from memory - theoretical max
+$spd_rd               = 63.375e6; # fr disk read bandwidth in byt/s (bonnie++)
+$spd_wrt              = 57.865e6; # fr disk write bandwidth in byt/s (bonnie++)
+#$spd_rd               = 100e6; # value from to or from memory - theoretical max
+#$spd_wrt              = 60e6;  # value from to or from memory - theoretical max
 
 $byt_per_val              = 4;   #change if using doubles or other non-NC_FLOAT sizes
 $cpu_clock_freq             = 2e9; # CPU clock in Hz
 
-$V_flops                    = 153e6; # floating point speed derived from direct PAPI measures
-$V_intops                   = 200e6; # int speed from direct measure, using a large data set
+$spd_flp                    = 153e6; # floating point speed derived from direct PAPI measures
+$spd_ntg                   = 200e6; # int speed from direct measure, using a large data set
 
 # the following estimates are from local variables and as such are highly optimized and therefore
 # inapplicable to the nco benchmarks.
-#$V_flops                    = 353e6; # floating point speed derived from tacg measures
-#$V_intops                   = 1386e6; # integer speed derived from tacg measures
-#$V_flops                    = 153e6; # floating point speed derived directly from PAPI
-#$V_flops                    = 1017e6; # floating point speed derived from BOINC measures
-#$V_intops                   = 2147e6; # integer speed derived from BOINC measures
+#$spd_flp                    = 353e6; # floating point speed derived from tacg measures
+#$spd_ntg                   = 1386e6; # integer speed derived from tacg measures
+#$spd_flp                    = 153e6; # floating point speed derived directly from PAPI
+#$spd_flp                    = 1017e6; # floating point speed derived from BOINC measures
+#$spd_ntg                   = 2147e6; # integer speed derived from BOINC measures
 
 for (my $rnk_idx=0; $rnk_idx<$rnk; $rnk_idx++){$var_sz *= $dim_vars[$rnk_idx];} # total scalar size of all dimensions
 # $lmn_nbr_ttl = total nbr of elelments - only for those calcs that do not run thru the
@@ -149,13 +149,13 @@ if (!$ncbo) {
 	
 	# Averaging (rank reduction) file out size is less than input file size by size of averaging variable - $sz_wgt_blk
 	$byt_out = ($lmn_nbr/$sz_avg_blk) * $byt_per_val * $fl_nbr_out;
-	$dsk_tm_in = $byt_in / $dsk_bw_rd;
-	$dsk_tm_out = $byt_out / $dsk_bw_wrt;
+	$dsk_tm_in = $byt_in / $spd_rd;
+	$dsk_tm_out = $byt_out / $spd_wrt;
 	$dsk_ttl_IO_tm = $dsk_tm_in + $dsk_tm_out;
 #		printf "byt in=  %1.4e \$dsk_tm_in = %1.4e \nbyt out= %1.4e \$dsk_tm_out = %1.4e \n\$dsk_ttl_IO_tm =  %1.4e\n", $byt_in, $dsk_tm_in, $byt_out, $dsk_tm_out, $dsk_ttl_IO_tm;
-	$fp_tm = $F_cnt / $V_flops;
+	$fp_tm = $F_cnt / $spd_flp;
 	$Ittl_cnt = $Ia_cnt + $Mu_cnt + $Ms_cnt;
-	$Int_tm = $Ittl_cnt / $V_intops; # remember that $V_intops is under some suspicion
+	$Int_tm = $Ittl_cnt / $spd_ntg; # remember that $spd_ntg is under some suspicion
 	$time = $dsk_ttl_IO_tm + $fp_tm  + $Int_tm;
 	
 	#         IO                IO             FP term                 Int term
@@ -176,13 +176,13 @@ Cycle   DataSize     T_fp     T_int    T_I/O      T_tot      Int_ops\n";
 	$byt_in  = $lmn_nbr * $byt_per_val * $fl_nbr_in;
 	$byt_out = $lmn_nbr * $byt_per_val * $fl_nbr_out; # no rank reduction
 	
-	$dsk_tm_in = $byt_in / $dsk_bw_rd;
-	$dsk_tm_out = $byt_out / $dsk_bw_wrt;
+	$dsk_tm_in = $byt_in / $spd_rd;
+	$dsk_tm_out = $byt_out / $spd_wrt;
 	$dsk_ttl_IO_tm = $dsk_tm_in + $dsk_tm_out;
 	
 	# match ZeM06 equations, unweighted
 	my $fp_cnts = $lmn_nbr;
-	my $fp_tm = ($fp_cnts/$V_flops); # NB: $V_flops is dodgy
+	my $fp_tm = ($fp_cnts/$spd_flp); # NB: $spd_flp is dodgy
 	
 	my $K_Ia = 1; # fudge for Ia
 	my $K_Mu = 1; # fudge for Mu (Mu may have to change relative to
@@ -190,7 +190,7 @@ Cycle   DataSize     T_fp     T_int    T_I/O      T_tot      Int_ops\n";
 	my $Mu_cnt =   $K_Mu *   3 * $byt_per_val * $lmn_nbr;
 	my $Ms_cnt = 0;
 	my $ncbo_int_op_cnts =  $Int_cnt + $Mu_cnt +  $Ms_cnt;
-	my $ncbo_int_tm = $ncbo_int_op_cnts / $V_intops; # $V_intops is dodgy
+	my $ncbo_int_tm = $ncbo_int_op_cnts / $spd_ntg; # $spd_ntg is dodgy
 	
 	#         IO                 FP term                 Int term
 	$time = $dsk_ttl_IO_tm + $fp_tm + $ncbo_int_tm;
