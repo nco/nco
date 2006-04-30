@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.201 2006-04-30 21:13:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.202 2006-04-30 21:44:36 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.201 2006-04-30 21:13:22 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.201 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.202 2006-04-30 21:44:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.202 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -926,6 +926,7 @@ main(int argc,char **argv)
 	/* DDRA diagnostics
 	   Usage:
 	   ncwa -O -C -D 73 -a lat,lon,time -w lat ~/nco/data/in.nc ~/foo.nc
+	   ncwa -O -C -D 73 -a lat,lon -w lat ${DATA}/nco_bm/stl_5km.nc ~/foo.nc
 	   ncwa -O -C -D 73 -a lat,lon,time -w lat ${DATA}/nco_bm/ipcc_dly_T85.nc ~/foo.nc */
 
 	int rnk_avg; /* [nbr] Rank of averaging space */
