@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.121 2006-04-30 21:44:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.122 2006-04-30 22:59:57 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -103,6 +103,12 @@ nco_ddra /* [fnc] Count operations */
   const float spd_wrt=57.865e6; /* [B s-1] Disk write bandwidth */
 
   int rcd=NC_NOERR; /* [rcd] Return code */
+
+  /* Timer information */
+  static float tm_obs_ttl=0.0; /* [s] Total seconds elapsed */
+  static time_t tm_obs_old; /* [s] Seconds since 1969 initially */
+  time_t tm_obs_crr; /* [s] Seconds since 1969 currently */
+  float tm_obs_dff; /* [s] Seconds elapsed */
   
   /* Cumulative file costs */
   static long long lmn_nbr_ttl=0LL; /* I/O [nbr] Cumulative variable size */
@@ -171,7 +177,7 @@ nco_ddra /* [fnc] Count operations */
      reduction(numerator)+reduction(denominator)+
      normalization(numerator)+normalization(denominator)+byte_swap(output)"
      Units: 
-     [nbr] = Operation counts
+     [nbr] = Operation counts for lmn_nbr elements
      [nbr nbr-1] = Operation counts per element */
 
   /* Derived variables */
@@ -296,17 +302,28 @@ nco_ddra /* [fnc] Count operations */
   tm_io_ttl+=tm_io; /* [s] Cumulative I/O time */
   tm_ttl+=tm_crr; /* [s] Cumulative time */
 
-  /* Table headings */
   if(var_idx == 0){
-    (void)fprintf(stdout,"%4s %8s %8s %8s %8s %5s %5s %8s %8s %8s %7s\n",
-		  "idx "," var_nm ","   lmn  ","   flp  ","   ntg  ","tm_io","  tm "," lmn_ttl"," flp_ttl"," ntg_ttl"," tm_ttl");
-    (void)fprintf(stdout,"%4s %8s %8s %8s %8s %5s %5s %8s %8s %8s %7s\n",
-		  "    ","        ","    #   ","    #   ","    #   ","  s  ","  s  ","   #    ","   #    ","    #   ","   s   ");
+    /* Start timer code */
+    /* fxm: Initializing timer here (rather than main()) does not count first variable */
+    tm_obs_old=time((time_t *)NULL);
+
+    /* Table headings */
+    (void)fprintf(stdout,"%3s %8s %8s %8s %8s %5s %5s %8s %8s %8s %7s %7s\n",
+		  "idx"," var_nm ","   lmn  ","   flp  ","   ntg  ","tm_io","  tm "," lmn_ttl"," flp_ttl"," ntg_ttl"," tm_ttl"," tm_obs");
+    (void)fprintf(stdout,"%3s %8s %8s %8s %8s %5s %5s %8s %8s %8s %7s %7s\n",
+		  "   ","        ","    #   ","    #   ","    #   ","  s  ","  s  ","   #    ","   #    ","    #   ","   s   ","   s   ");
   } /* var_idx != 0 */
 
+  /* Update timers */
+  tm_obs_crr=time((time_t *)NULL);
+  tm_obs_dff=(float)(tm_obs_crr-tm_obs_old);
+  /*  tm_obs_dff=difftime(tm_obs_crr-tm_obs_srt);*/
+  tm_obs_old=tm_obs_crr;
+  tm_obs_ttl+=tm_obs_dff;
+
   (void)fprintf(stdout,
-		"%4d %8s %8.2e %8.2e %8.2e %5.2f %5.2f %8.2e %8.2e %8.2e %7.2f\n",
-		var_idx,var_nm,(float)lmn_nbr,(float)flp_nbr,(float)ntg_nbr,tm_io,tm_crr,(float)lmn_nbr_ttl,(float)flp_nbr_ttl,(float)ntg_nbr_ttl,tm_ttl);
+		"%3d %8s %8.2e %8.2e %8.2e %5.2f %5.2f %8.2e %8.2e %8.2e %7.2f %7.2f\n",
+		var_idx,var_nm,(float)lmn_nbr,(float)flp_nbr,(float)ntg_nbr,tm_io,tm_crr,(float)lmn_nbr_ttl,(float)flp_nbr_ttl,(float)ntg_nbr_ttl,tm_ttl,tm_obs_ttl);
     
   return rcd; /* [rcd] Return code */
 } /* nco_ddra() */

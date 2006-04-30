@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.202 2006-04-30 21:44:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.203 2006-04-30 22:59:57 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.202 2006-04-30 21:44:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.202 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.203 2006-04-30 22:59:57 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.203 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -260,7 +260,6 @@ main(int argc,char **argv)
   time_crr_time_t=time((time_t *)NULL);
   time_bfr_srt=ctime(&time_crr_time_t); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
 
-  time_bfr_srt=time_bfr_srt; /* CEWI: Avert compiler warning that variable is set but never used */
   NORMALIZE_BY_TALLY=NORMALIZE_BY_TALLY; /* CEWI: Avert compiler warning that variable is set but never used */
   NORMALIZE_BY_WEIGHT=NORMALIZE_BY_WEIGHT; /* CEWI: Avert compiler warning that variable is set but never used */
   

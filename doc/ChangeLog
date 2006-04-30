@@ -1,5 +1,7 @@
 2006-04-30  Charlie Zender  <zender@uci.edu>
 
+	* Add observed time to diagnostics
+
 	* Filter noisy INFO messages in main ncwa loop
 
 	* Modify DDRA diagnostics to work with long long's = int64 sizes

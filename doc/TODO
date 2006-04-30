@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.739 2006-04-30 21:13:15 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.740 2006-04-30 22:59:56 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -472,7 +472,9 @@ nco702. How to mix new ncwa behavior with -I wgt_msk_crd_var?
 nco704. Add MRV_flg, rnk_avg, and lmn_nbr_avg outputs to nco_var_avg()
 nco705. Add lmn_nbr_wgt and DID_BROADCAST outputs to nco_var_cnf_dmn()?
 nco706. Add DID_REDUCE outputs to nco_var_avg_reduce()?
-nco707. 
+nco707. Hook nco_ddra() into ncbo
+nco708. Change DDRA diagnostics from --dbg=73 to command line switch
+nco709. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
