@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.199 2006-04-21 20:33:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.200 2006-04-30 20:52:13 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.199 2006-04-21 20:33:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.199 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.200 2006-04-30 20:52:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.200 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -763,8 +763,8 @@ main(int argc,char **argv)
 	 These logical switches are VERY tricky---be careful modifying them */
       if(NRM_BY_DNM && DO_CONFORM_WGT && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
 	/* Duplicate wgt_out as wgt_avg so that wgt_out is not contaminated by any
-	   averaging operation and may be reused on next variable.
-	   Free wgt_avg after each use but continue to reuse wgt_out */
+	   averaging operation and may be re-used on next variable.
+	   Free wgt_avg after each use but continue to re-use wgt_out */
 	wgt_avg=nco_var_dpl(wgt_out);
 	
 	if(var_prc[idx]->has_mss_val){
@@ -921,6 +921,50 @@ main(int argc,char **argv)
 	  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	} /* end if variable is array */
       } /* end OpenMP critical */
+
+      if(dbg_lvl == 73){
+	/* DDRA diagnostics
+	   Usage:
+	   ncwa -O -C -D 73 -a lat,lon,time -w gw ~/nco/data/in.nc ~/foo.nc
+	   ncwa -O -C -D 73 -a lat,lon,time -w gw ${DATA}/nco_bm/ipcc_dly_T85.nc ~/foo.nc */
+
+	int rnk_avg; /* [nbr] Rank of averaging space */
+	int rnk_var; /* [nbr] Variable rank (in input file) */
+	int rnk_wgt; /* [nbr] Rank of weight */
+	int var_idx; /* [enm] Index */
+	int wrd_sz; /* [B] Bytes per element */
+	long lmn_nbr; /* [nbr] Variable size */
+	long lmn_nbr_avg; /* [nbr] Averaging block size */
+	long lmn_nbr_wgt; /* [nbr] Weight size */
+	
+	/* Assign exact input for DDRA diagnostics */
+	rnk_var=var_prc[idx]->nbr_dim; /* I [nbr] Variable rank (in input file) */
+	wrd_sz=nco_typ_lng(var_prc[idx]->type); /* [B] Bytes per element */
+	lmn_nbr=var_prc[idx]->sz; /* [nbr] Variable size */
+	var_idx=idx; /* [enm] Index */
+
+	/* Estimate remaining input for DDRA diagnostics */
+	rnk_avg=dmn_avg_nbr; /* [nbr] Rank of averaging space */
+	rnk_wgt=wgt->nbr_dim; /* [nbr] Rank of weight */
+	lmn_nbr_wgt=wgt->sz; /* [nbr] Weight size */
+	lmn_nbr_avg=1L; /* [nbr] Averaging block size */
+	for(idx_avg=0;idx_avg<dmn_avg_nbr;idx_avg++) lmn_nbr_avg*=dmn_avg[idx_avg]->cnt;
+
+	/* DDRA diagnostics */
+	rcd+=nco_ddra /* [fnc] Count operations */
+	  (var_prc[idx]->nm, /* I [sng] Variable name */
+	   wgt_nm, /* I [sng] Weight name */
+	   nco_op_typ, /* I [enm] Operation type */
+	   rnk_avg, /* I [nbr] Rank of averaging space */
+	   rnk_var, /* I [nbr] Variable rank (in input file) */
+	   rnk_wgt, /* I [nbr] Rank of weight */
+	   var_idx, /* I [enm] Index */
+	   wrd_sz, /* I [B] Bytes per element */
+	   lmn_nbr, /* I [nbr] Variable size */
+	   lmn_nbr_avg, /* I [nbr] Averaging block size */
+	   lmn_nbr_wgt); /* I [nbr] Weight size */
+
+      } /* !dbg */
 
       /* Free current output buffer */
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);

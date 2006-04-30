@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.117 2006-04-30 06:18:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.118 2006-04-30 20:52:13 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -113,6 +113,7 @@ nco_ddra /* [fnc] Count operations */
   static float tm_flp_ttl=0.0; /* I/O [s] Cumulative floating point time */
   static float tm_rd_ttl=0.0; /* I/O [s] Cumulative read time */
   static float tm_wrt_ttl=0.0; /* I/O [s] Cumulative write time */
+  static float tm_io_ttl=0.0; /* [s] I/O time */
   static float tm_ttl=0.0; /* I/O [s] Cumulative time */
   
   /* Current variable costs */
@@ -120,6 +121,7 @@ nco_ddra /* [fnc] Count operations */
   float tm_flp; /* [s] Floating point time */
   float tm_rd; /* [s] Read time */
   float tm_wrt; /* [s] Write time */
+  float tm_io; /* [s] I/O time */
   float tm_crr; /* [s] Time for this variable */
   long ntg_nbr; /* [nbr] Integer operations */
   long flp_nbr; /* [nbr] Floating point operations */
@@ -278,6 +280,7 @@ nco_ddra /* [fnc] Count operations */
   tm_rd=rd_nbr_byt/spd_rd; /* [s] Read time */
   tm_wrt=wrt_nbr_byt/spd_wrt; /* [s] Write time */
 
+  tm_io=tm_rd+tm_wrt; /* [s] I/O time */
   tm_crr=tm_ntg+tm_flp+tm_rd+tm_wrt; /* [s] Time for this variable */
 
   /* Increment running totals */
@@ -288,9 +291,22 @@ nco_ddra /* [fnc] Count operations */
   tm_flp_ttl+=tm_flp; /* [s] Cumulative floating point time */
   tm_rd_ttl+=tm_rd; /* [s] Cumulative read time */
   tm_wrt_ttl+=tm_wrt; /* [s] Cumulative write time */
+  tm_io_ttl+=tm_io; /* [s] Cumulative I/O time */
   tm_ttl+=tm_crr; /* [s] Cumulative time */
 
-  if(dbg_lvl_get() > 1) (void)fprintf(stdout,"%s: %s estimates count of arithmetic operations for variable idx=%d, %s\n",prg_nm_get(),fnc_nm,var_idx,var_nm);
+  /*  if(dbg_lvl_get() > 1) (void)fprintf(stdout,"%s: %s estimates count of arithmetic operations for variable idx=%d, %s\n",prg_nm_get(),fnc_nm,var_idx,var_nm);*/
+
+  /* Table headings */
+  if(var_idx == 0){
+    (void)fprintf(stdout,"%4s %8s %8s %8s %8s %8s %8s %8s %8s\n",
+		  "idx "," var_nm "," flp_ttl"," ntg_ttl","  tm_io "," tm_crr "," flp_ttl"," ntg_ttl","  tm_ttl ");
+    (void)fprintf(stdout,"%4s %8s %8s %8s %8s %8s %8s %8s %8s\n",
+		  "    ","        ","    #   ","    #   ","    s   ","    s   ","   #    ","    #   ","    s    ");
+  } /* var_idx != 0 */
+
+  (void)fprintf(stdout,"%4d %8s %8ld %8ld %8.6f %8.6f %8ld %8ld %8.6f\n",
+		var_idx,var_nm,flp_nbr,ntg_nbr,tm_io,tm_crr,flp_nbr_ttl,ntg_nbr_ttl,tm_ttl);
+    
   return rcd; /* [rcd] Return code */
 } /* nco_ddra() */
 

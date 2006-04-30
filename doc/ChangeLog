@@ -1,3 +1,10 @@
+2006-04-30  Charlie Zender  <zender@uci.edu>
+
+	* fxm Add MRV_flg, rnk_avg, and lmn_nbr_avg outputs to nco_var_avg()
+
+	* Hooked-in call to nco_ddra() with estimates for some inputs
+	Calculations should be more accurate than ddra scripts.
+
 2006-04-29  Charlie Zender  <zender@uci.edu>
 
 	* Added nco_ddra() to estimate computation time. Not invoked yet.
