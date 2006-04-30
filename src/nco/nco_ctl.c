@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.119 2006-04-30 21:13:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.120 2006-04-30 21:23:36 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -304,8 +304,11 @@ nco_ddra /* [fnc] Count operations */
 		  "    ","        ","    #   ","    #   ","    s   ","    s   ","   #    ","    #   ","    s    ");
   } /* var_idx != 0 */
 
-  (void)fprintf(stderr,"%4d %8s %8lld %8lld %8.6f %8.6f %8lld %8lld %8.6f\n",
-		var_idx,var_nm,flp_nbr,ntg_nbr,tm_io,tm_crr,flp_nbr_ttl,ntg_nbr_ttl,tm_ttl);
+  (void)fprintf(stderr,
+		/*		"%4d %8s %8lld %8lld %8.3f %8.3f %8lld %8lld %8.3f\n",
+				var_idx,var_nm,flp_nbr,ntg_nbr,tm_io,tm_crr,flp_nbr_ttl,ntg_nbr_ttl,tm_ttl); */
+		"%4d %8s %8.2e %8.2e %8.3f %8.3f %8.2e %8.2e %8.3f\n",
+		var_idx,var_nm,(float)flp_nbr,(float)ntg_nbr,tm_io,tm_crr,(float)flp_nbr_ttl,(float)ntg_nbr_ttl,tm_ttl);
     
   return rcd; /* [rcd] Return code */
 } /* nco_ddra() */

@@ -1,5 +1,7 @@
 2006-04-30  Charlie Zender  <zender@uci.edu>
 
+	* Filter noisy INFO messages in main ncwa loop
+
 	* Modify DDRA diagnostics to work with long long's = int64 sizes
 
 	* fxm Add MRV_flg, rnk_avg, and lmn_nbr_avg outputs to nco_var_avg()
