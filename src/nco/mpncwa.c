@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.37 2006-04-21 20:33:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.38 2006-04-30 21:13:21 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.37 2006-04-21 20:33:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.37 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.38 2006-04-30 21:13:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.38 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -839,10 +839,10 @@ main(int argc,char **argv)
 	    
 	    (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
 	    /* Retrieve variable from disk into memory */
-	    if(dbg_lvl > 4) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 About to nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
+	    if(False) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 About to nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
 	    /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
 	    (void)nco_var_get(in_id,var_prc[idx]);
-	    if(dbg_lvl > 4) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 Finished nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
+	    if(False) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 Finished nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
 	    
 	    /* Convert char, short, long, int types to doubles before arithmetic */
 	    var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);

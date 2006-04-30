@@ -1,5 +1,7 @@
 2006-04-30  Charlie Zender  <zender@uci.edu>
 
+	* Modify DDRA diagnostics to work with long long's = int64 sizes
+
 	* fxm Add MRV_flg, rnk_avg, and lmn_nbr_avg outputs to nco_var_avg()
 
 	* Hooked-in call to nco_ddra() with estimates for some inputs

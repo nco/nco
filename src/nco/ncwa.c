@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.200 2006-04-30 20:52:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.201 2006-04-30 21:13:22 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.200 2006-04-30 20:52:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.200 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.201 2006-04-30 21:13:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.201 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -684,8 +684,8 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       in_id=in_id_arr[omp_get_thread_num()];
-      if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-      if(dbg_lvl > 0) (void)fflush(fp_stderr);
+      if(dbg_lvl > 0 && dbg_lvl < 10) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+      if(dbg_lvl > 0 && dbg_lvl < 10) (void)fflush(fp_stderr);
       
       /* Allocate and, if necessary, initialize accumulation space for all processed variables */
       var_prc_out[idx]->sz=var_prc[idx]->sz;
@@ -704,10 +704,10 @@ main(int argc,char **argv)
       
       (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
       /* Retrieve variable from disk into memory */
-      if(dbg_lvl > 4) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 About to nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
+      if(False) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 About to nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
       /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
       (void)nco_var_get(in_id,var_prc[idx]);
-      if(dbg_lvl > 4) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 Finished nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
+      if(False) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 Finished nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
       
       /* Convert char, short, long, int types to doubles before arithmetic */
       var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
@@ -925,17 +925,17 @@ main(int argc,char **argv)
       if(dbg_lvl == 73){
 	/* DDRA diagnostics
 	   Usage:
-	   ncwa -O -C -D 73 -a lat,lon,time -w gw ~/nco/data/in.nc ~/foo.nc
-	   ncwa -O -C -D 73 -a lat,lon,time -w gw ${DATA}/nco_bm/ipcc_dly_T85.nc ~/foo.nc */
+	   ncwa -O -C -D 73 -a lat,lon,time -w lat ~/nco/data/in.nc ~/foo.nc
+	   ncwa -O -C -D 73 -a lat,lon,time -w lat ${DATA}/nco_bm/ipcc_dly_T85.nc ~/foo.nc */
 
 	int rnk_avg; /* [nbr] Rank of averaging space */
 	int rnk_var; /* [nbr] Variable rank (in input file) */
 	int rnk_wgt; /* [nbr] Rank of weight */
 	int var_idx; /* [enm] Index */
 	int wrd_sz; /* [B] Bytes per element */
-	long lmn_nbr; /* [nbr] Variable size */
-	long lmn_nbr_avg; /* [nbr] Averaging block size */
-	long lmn_nbr_wgt; /* [nbr] Weight size */
+	long long lmn_nbr; /* [nbr] Variable size */
+	long long lmn_nbr_avg; /* [nbr] Averaging block size */
+	long long lmn_nbr_wgt; /* [nbr] Weight size */
 	
 	/* Assign exact input for DDRA diagnostics */
 	rnk_var=var_prc[idx]->nbr_dim; /* I [nbr] Variable rank (in input file) */
@@ -947,7 +947,7 @@ main(int argc,char **argv)
 	rnk_avg=dmn_avg_nbr; /* [nbr] Rank of averaging space */
 	rnk_wgt=wgt->nbr_dim; /* [nbr] Rank of weight */
 	lmn_nbr_wgt=wgt->sz; /* [nbr] Weight size */
-	lmn_nbr_avg=1L; /* [nbr] Averaging block size */
+	lmn_nbr_avg=1LL; /* [nbr] Averaging block size */
 	for(idx_avg=0;idx_avg<dmn_avg_nbr;idx_avg++) lmn_nbr_avg*=dmn_avg[idx_avg]->cnt;
 
 	/* DDRA diagnostics */

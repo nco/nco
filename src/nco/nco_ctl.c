@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.118 2006-04-30 20:52:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.119 2006-04-30 21:13:21 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -87,9 +87,9 @@ nco_ddra /* [fnc] Count operations */
  const int rnk_wgt, /* I [nbr] Rank of weight */
  const int var_idx, /* I [enm] Index */
  const int wrd_sz, /* I [B] Bytes per element */
- const long lmn_nbr, /* I [nbr] Variable size */
- const long lmn_nbr_avg, /* I [nbr] Averaging block size */
- const long lmn_nbr_wgt) /* I [nbr] Weight size */
+ const long long lmn_nbr, /* I [nbr] Variable size */
+ const long long lmn_nbr_avg, /* I [nbr] Averaging block size */
+ const long long lmn_nbr_wgt) /* I [nbr] Weight size */
 {
   /* Purpose: Estimate operation counts required */
   nco_bool MRV_flg=False;
@@ -123,33 +123,33 @@ nco_ddra /* [fnc] Count operations */
   float tm_wrt; /* [s] Write time */
   float tm_io; /* [s] I/O time */
   float tm_crr; /* [s] Time for this variable */
-  long ntg_nbr; /* [nbr] Integer operations */
-  long flp_nbr; /* [nbr] Floating point operations */
-  long rd_nbr_byt=int_CEWI; /* [B] Bytes read */
-  long wrt_nbr_byt=int_CEWI; /* [B] Bytes written */
+  long long ntg_nbr; /* [nbr] Integer operations */
+  long long flp_nbr; /* [nbr] Floating point operations */
+  long long rd_nbr_byt=int_CEWI; /* [B] Bytes read */
+  long long wrt_nbr_byt=int_CEWI; /* [B] Bytes written */
   
   /* Default algorithm costs if invoked */
-  long ntg_nbr_byt_swp_dfl; /* [nbr] Integer operations for byte-swap */
-  long ntg_nbr_brd_dfl; /* [nbr] Integer operations for broadcasting */
-  long ntg_nbr_clc_dfl; /* [nbr] Integer operations for collection */
-  long ntg_nbr_rdc_dfl; /* [nbr] Integer operations for reduction */
-  long ntg_nbr_nrm_dfl; /* [nbr] Integer operations for normalization */
-  long flp_nbr_bnr_dfl; /* [nbr] Floating point operations for binary arithmetic */
-  long flp_nbr_rdc_dfl; /* [nbr] Floating point operations for reduction */
-  long flp_nbr_nrm_dfl; /* [nbr] Floating point operations for normalization */
+  long long ntg_nbr_byt_swp_dfl; /* [nbr] Integer operations for byte-swap */
+  long long ntg_nbr_brd_dfl; /* [nbr] Integer operations for broadcasting */
+  long long ntg_nbr_clc_dfl; /* [nbr] Integer operations for collection */
+  long long ntg_nbr_rdc_dfl; /* [nbr] Integer operations for reduction */
+  long long ntg_nbr_nrm_dfl; /* [nbr] Integer operations for normalization */
+  long long flp_nbr_bnr_dfl; /* [nbr] Floating point operations for binary arithmetic */
+  long long flp_nbr_rdc_dfl; /* [nbr] Floating point operations for reduction */
+  long long flp_nbr_nrm_dfl; /* [nbr] Floating point operations for normalization */
 
   /* Initialize all algorithm counts for this variable to zero then increment */
-  long ntg_nbr_byt_swp=0L; /* [nbr] Integer operations for byte-swap */
-  long ntg_nbr_brd=0L; /* [nbr] Integer operations for broadcasting */
-  long ntg_nbr_clc=0L; /* [nbr] Integer operations for collection */
-  long ntg_nbr_rdc=0L; /* [nbr] Integer operations for reduction */
-  long ntg_nbr_nrm=0L; /* [nbr] Integer operations for normalization */
-  long flp_nbr_bnr=0L; /* [nbr] Floating point operations for binary arithmetic */
-  long flp_nbr_rdc=0L; /* [nbr] Floating point operations for reduction */
-  long flp_nbr_nrm=0L; /* [nbr] Floating point operations for normalization */
+  long long ntg_nbr_byt_swp=0LL; /* [nbr] Integer operations for byte-swap */
+  long long ntg_nbr_brd=0LL; /* [nbr] Integer operations for broadcasting */
+  long long ntg_nbr_clc=0LL; /* [nbr] Integer operations for collection */
+  long long ntg_nbr_rdc=0LL; /* [nbr] Integer operations for reduction */
+  long long ntg_nbr_nrm=0LL; /* [nbr] Integer operations for normalization */
+  long long flp_nbr_bnr=0LL; /* [nbr] Floating point operations for binary arithmetic */
+  long long flp_nbr_rdc=0LL; /* [nbr] Floating point operations for reduction */
+  long long flp_nbr_nrm=0LL; /* [nbr] Floating point operations for normalization */
 
   /* Locals */
-  long lmn_nbr_out; /* [nbr] Output elements */
+  long long lmn_nbr_out; /* [nbr] Output elements */
 
   /* Where possible, work in terms of "default" counts per algorithm
      Algorithms (e.g., reduction, byte-swapping) are generally subroutines
@@ -298,13 +298,13 @@ nco_ddra /* [fnc] Count operations */
 
   /* Table headings */
   if(var_idx == 0){
-    (void)fprintf(stdout,"%4s %8s %8s %8s %8s %8s %8s %8s %8s\n",
+    (void)fprintf(stderr,"%4s %8s %8s %8s %8s %8s %8s %8s %8s\n",
 		  "idx "," var_nm "," flp_ttl"," ntg_ttl","  tm_io "," tm_crr "," flp_ttl"," ntg_ttl","  tm_ttl ");
-    (void)fprintf(stdout,"%4s %8s %8s %8s %8s %8s %8s %8s %8s\n",
+    (void)fprintf(stderr,"%4s %8s %8s %8s %8s %8s %8s %8s %8s\n",
 		  "    ","        ","    #   ","    #   ","    s   ","    s   ","   #    ","    #   ","    s    ");
   } /* var_idx != 0 */
 
-  (void)fprintf(stdout,"%4d %8s %8ld %8ld %8.6f %8.6f %8ld %8ld %8.6f\n",
+  (void)fprintf(stderr,"%4d %8s %8lld %8lld %8.6f %8.6f %8lld %8lld %8.6f\n",
 		var_idx,var_nm,flp_nbr,ntg_nbr,tm_io,tm_crr,flp_nbr_ttl,ntg_nbr_ttl,tm_ttl);
     
   return rcd; /* [rcd] Return code */

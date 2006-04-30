@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.738 2006-04-30 20:52:10 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.739 2006-04-30 21:13:15 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -470,7 +470,9 @@ nco693. ncks regression for offset past end of file test
 nco694. Change nco_bool to C99 standard bool as per Wikipedia?
 nco702. How to mix new ncwa behavior with -I wgt_msk_crd_var?
 nco704. Add MRV_flg, rnk_avg, and lmn_nbr_avg outputs to nco_var_avg()
-nco705.
+nco705. Add lmn_nbr_wgt and DID_BROADCAST outputs to nco_var_cnf_dmn()?
+nco706. Add DID_REDUCE outputs to nco_var_avg_reduce()?
+nco707. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
