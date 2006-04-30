@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.122 2006-04-30 22:59:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.123 2006-04-30 23:22:27 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -105,9 +105,9 @@ nco_ddra /* [fnc] Count operations */
   int rcd=NC_NOERR; /* [rcd] Return code */
 
   /* Timer information */
+  static clock_t tm_obs_old; /* [us] Microseconds initially */
   static float tm_obs_ttl=0.0; /* [s] Total seconds elapsed */
-  static time_t tm_obs_old; /* [s] Seconds since 1969 initially */
-  time_t tm_obs_crr; /* [s] Seconds since 1969 currently */
+  clock_t tm_obs_crr; /* [us] Microseconds currently */
   float tm_obs_dff; /* [s] Seconds elapsed */
   
   /* Cumulative file costs */
@@ -305,7 +305,7 @@ nco_ddra /* [fnc] Count operations */
   if(var_idx == 0){
     /* Start timer code */
     /* fxm: Initializing timer here (rather than main()) does not count first variable */
-    tm_obs_old=time((time_t *)NULL);
+    tm_obs_old=clock();
 
     /* Table headings */
     (void)fprintf(stdout,"%3s %8s %8s %8s %8s %5s %5s %8s %8s %8s %7s %7s\n",
@@ -315,9 +315,9 @@ nco_ddra /* [fnc] Count operations */
   } /* var_idx != 0 */
 
   /* Update timers */
-  tm_obs_crr=time((time_t *)NULL);
-  tm_obs_dff=(float)(tm_obs_crr-tm_obs_old);
-  /*  tm_obs_dff=difftime(tm_obs_crr-tm_obs_srt);*/
+  /* NB: POSIX requires CLOCKS_PER_SEC equals 1000000 so resolution = 1 microsecond */
+  tm_obs_crr=clock();
+  tm_obs_dff=(float)(tm_obs_crr-tm_obs_old)/CLOCKS_PER_SEC;
   tm_obs_old=tm_obs_crr;
   tm_obs_ttl+=tm_obs_dff;
 

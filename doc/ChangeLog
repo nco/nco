@@ -1,5 +1,7 @@
 2006-04-30  Charlie Zender  <zender@uci.edu>
 
+	* Change from time_t=time() to clock_t=clock() timers
+
 	* Add observed time to diagnostics
 
 	* Filter noisy INFO messages in main ncwa loop
