@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.38 2006-05-01 04:03:54 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.39 2006-05-01 15:59:29 zender Exp $
 
 # Purpose: library module supporting the nco_bm.pl benchmark and regression tests.
 # this module contains the following functions in approximate order of their usage:
@@ -371,7 +371,6 @@ sub smrz_fl_cr8_rslt {
 sub set_dta_drc {
     $caseid = shift;
     my $tmp;
-    my $datadir;
     my $umask = umask;
 # Does user have $DATA dir defined in his environment?
 # Bail with nasty message if it's not readable and writable

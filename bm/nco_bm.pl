@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.125 2006-05-01 04:03:54 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.126 2006-05-01 15:59:29 zender Exp $
 
 # Usage: usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -329,7 +329,7 @@ if (length($caseid) > 80) {die "\nThe caseid string is > 80 characters - please 
 if ($md5 == 1) {	do "nco_bm_md5wc_tbl.pl" or die "Can't find the validation data (nco_bm_md5wc_tbl.pl).\n";}
 
 $nco_D_flg = "-D $dbg_lvl";
-dbg_msg(1,"WARN: Using the --debug flag set to greater than 0 will cause the NCO\n  commandline -D flag to be set to the corresponding number as well, which will cause\n  some of the tests to fail, as the output will be different also.\n  It is currently set to \$nco_D_flg = $nco_D_flg");
+dbg_msg(1,"WARN: Setting --debug to > 0 sets the NCO\n  command line -D flag to the same value.\n  This causes some tests to fail.\n  It is currently set to \$nco_D_flg = $nco_D_flg");
 
 # Determine where $DATA should be, prompt user if necessary
 if ($xdta_pth eq '') {
