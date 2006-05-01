@@ -1,5 +1,9 @@
 2006-04-30  Charlie Zender  <zender@uci.edu>
 
+	* Some cleanup of nco_bm suite
+
+	* Add missing NCO_bm:: scope to functions in nco_bm.pl
+
 	* Change from time_t=time() to clock_t=clock() timers
 
 	* Add observed time to diagnostics
