@@ -2,9 +2,9 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.123 2006-05-01 03:39:31 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.124 2006-05-01 03:51:25 zender Exp $
 
-# Usage:  usage(), below, has more information
+# Usage: usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
 # ~/nco/bm/nco_bm.pl ncra # Test one operator
 # ~/nco/bm/nco_bm.pl --thr_nbr=2 --regress --udpreport # Test OpenMP
@@ -13,13 +13,10 @@
 # ~/nco/bm/nco_bm.pl --dap=http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata --regress --udpreport # Test OPeNDAP on soot
 # scp ~/nco/bm/nco_bm.pl esmf.ess.uci.edu:nco/bm
 
-# NB: When adding tests, _be sure to use -O to overwrite files_
-# Otherwise, script hangs waiting for interactive response to overwrite queries
-
-# NB: when adding debugging messages, use dgb_msg(#,message);, where
-#	# = the debug level at which the message should be emitted (2 will be seen at --debug=2)
-#	message = a valid perl string to print. ie: "just before foo, \$blah = $blah"
-#		the sub will prefix the message with DEBUG[#] and take care of adding a newline
+# NB: when adding debugging messages, use dgb_msg(nbr,message);, where
+# nbr = debug level at which the message should be emitted
+# message = valid Perl string to print. ie: "just before foo, \$blah = $blah"
+# Subroutine prefixes message with DEBUG[#] and adds newline
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use Cwd 'abs_path';
@@ -27,9 +24,9 @@ use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehen
 use Getopt::Long; # GNU-style getopt #qw(:config no_ignore_case bundling);
 use strict; # Protect all namespaces
 
-# the 'use' statements for NCO_rgr.pm and NCO_benchmarks.pm are immediately before their subs are
-# used to minimize the chance of shared variables being contaminated.
-# Remember that unnecessary globals should continue to be hunted down and killed off.
+# 'use' statements for NCO_rgr.pm and NCO_benchmarks.pm are later 
+# to minimize chances shared variables will be contaminated.
+# Unnecessary globals should continue to be hunted down and killed off
 
 # Declare vars for strict
 use vars qw(

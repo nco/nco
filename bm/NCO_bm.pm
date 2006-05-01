@@ -1,5 +1,8 @@
 package NCO_bm;
-# nco_bm.pm - the library module supporting the nco_bm.pl benchmark and regression tests.
+
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.37 2006-05-01 03:51:25 zender Exp $
+
+# Purpose: library module supporting the nco_bm.pl benchmark and regression tests.
 # this module contains the following functions in approximate order of their usage:
 
 #   usage()..............dumps usage text for the utility
@@ -14,8 +17,6 @@ package NCO_bm;
 #   smrz_rgr_rslt()......summarizes the results of both regression and benchmark tests
 #   check_nco_results()..checks the output via md5/wc validation
 #   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
-
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.36 2006-05-01 03:39:31 zender Exp $
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible

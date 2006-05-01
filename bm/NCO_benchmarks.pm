@@ -1,15 +1,15 @@
 package NCO_benchmarks;
-# NCO_benchmarks.pm - the library module supporting the nco_bm.pl benchmark and regression tests.
-# this module contains the following functions in approximate order of their usage:
 
-#   benchmarks().........the entire set of benchmarks
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.5 2006-05-01 03:51:25 zender Exp $
 
-# This file contains the BENCHMARK code (as opposed to the REGRESSION tests,
-# which are included in "NCO_rgr.pm"
-# for the NCO benchmark master 'script nco_bm.pl'
-# It must maintain Perl semantics for Perl code.
+# Purpose: library module supporting nco_bm.pl benchmark and regression tests
+# File contains BENCHMARK code (as opposed to the REGRESSION tests in "NCO_rgr.pm")
+# Module contains following functions in approximate order of usage:
 
-#$Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.4 2006-03-13 23:46:27 mangalam Exp $
+# benchmarks().........the entire set of benchmarks
+
+# NB: When adding tests, _be sure to use -O to overwrite files_
+# Otherwise, script hangs waiting for interactive response to overwrite queries
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
