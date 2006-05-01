@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.121 2006-04-23 06:44:41 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.122 2006-05-01 03:08:34 zender Exp $
 
 # Usage:  usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -473,11 +473,11 @@ if ($bm && $tst_fl_cr8 eq "0" && $dodap eq "FALSE" )  {
 if ($tst_fl_cr8 ne "0" || $srvr_sde ne "SSNOTSET"){
     my $fc = 0; $prsrv_fl = 1;
     if ($tst_fl_cr8 =~ "[Aa]") { $tst_fl_cr8 = "1234";}
-    if ($tst_fl_cr8 =~ /1/){ @fl_tmg = fl_cr8(0); $fc++; }
-    if ($tst_fl_cr8 =~ /2/){ @fl_tmg = fl_cr8(1); $fc++; }
-    if ($tst_fl_cr8 =~ /3/){ @fl_tmg = fl_cr8(2); $fc++; }
-    if ($notbodi && $tst_fl_cr8 =~ /4/) { @fl_tmg = fl_cr8(3); $fc++; }
-    if ($fc >0) {smrz_fl_cr8_rslt(@fl_tmg); } # prints and udpreports file creation timing
+    if ($tst_fl_cr8 =~ /1/){ @fl_tmg = NCO_bm::fl_cr8(0); $fc++; }
+    if ($tst_fl_cr8 =~ /2/){ @fl_tmg = NCO_bm::fl_cr8(1); $fc++; }
+    if ($tst_fl_cr8 =~ /3/){ @fl_tmg = NCO_bm::fl_cr8(2); $fc++; }
+    if ($notbodi && $tst_fl_cr8 =~ /4/) { @fl_tmg = NCO_bm::fl_cr8(3); $fc++; }
+    if ($fc >0) {NCO_bm::smrz_fl_cr8_rslt(@fl_tmg); } # prints and udpreports file creation timing
 }
 
 my $doit=1; # for skipping various tests
