@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.124 2006-05-01 03:51:25 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.125 2006-05-01 04:03:54 zender Exp $
 
 # Usage: usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -32,7 +32,7 @@ use strict; # Protect all namespaces
 use vars qw(
 	    $aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $arg_nbr $bch_flg $bm
 	    @bm_cmd_ary $bm_dir $caseid $cmd_ln $dbg_lvl $dodap $dot_fmt $dot_nbr
-	    $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng $dta_dir
+	    $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng $dat_drc
 	    $dust_usr %failure $fl_cnt @fl_cr8_dat $fl_fmt $fl_pth @fl_tmg
 	    $foo1_fl $foo2_fl $foo_avg_fl $foo_fl $foo_T42_fl $foo_tst $foo_x_fl
 	    $foo_xy_fl $foo_xymyx_fl $foo_y_fl $foo_yx_fl $gnu_cut $hiresfound
@@ -84,7 +84,7 @@ $dodap = "FALSE"; # Unless redefined by the command line, it does not get reset
 $fl_cnt = 32; # nbr of files to process (reduced to 4 if using remote/dods files
 $pth_rmt_scp_tst='dust.ess.uci.edu:/var/www/html/dodsdata';
 $dust_usr = "";
-$xdta_pth = ''; # explicit data path that user can set from cmdline; more powerful than $dta_dir
+$xdta_pth = ''; # explicit data path that user can set from cmdline; more powerful than $dat_drc
 $os_sng = "";
 $nco_vrsn_sng = "";
 $gnu_cut = 1;
@@ -333,19 +333,19 @@ dbg_msg(1,"WARN: Using the --debug flag set to greater than 0 will cause the NCO
 
 # Determine where $DATA should be, prompt user if necessary
 if ($xdta_pth eq '') {
-    dbg_msg(2, "$prg_nm: Calling set_dat_dir()");
-    set_dat_dir($caseid); # Set $dta_dir
-} else { #validate $xdta_pth
+    dbg_msg(2, "$prg_nm: Calling set_dta_drc()");
+    set_dta_drc($caseid); # Set $dat_drc
+} else { # Validate $xdta_pth
     if (-e $xdta_pth && -w $xdta_pth){
-	dbg_msg(1,"User-specified DATA path ($xdta_pth) exists and is writable.");
-	$dta_dir = $xdta_pth; # and assign it to the previously coded variable.
+	dbg_msg(1,"User-specified DATA path ($xdta_pth) exists and is writable");
+	$dat_drc = $xdta_pth; # and assign it to previously coded variable
     } else {
-	die "FATAL(bm): The directory you specified on the commandline ($xdta_pth) doesn't exist or isn't writable by you.\n";
+	die "FATAL(bm): The directory you specified on the commandline ($xdta_pth) does not exist or is not writable by you.\n";
     }
 }
 
 # Set $fl_pth to reasonable defalt
-$fl_pth = "$dta_dir";
+$fl_pth = "$dat_drc";
 
 # Initialize & set up some variables
 dbg_msg(3, "Calling initialize().");
@@ -353,19 +353,19 @@ initialize($bch_flg,$dbg_lvl);
 
 # Use variables for file names in regressions; some of these could be collapsed into
 # fewer ones, no doubt, but keep them separate until whole shebang starts working correctly
-# $outfile       = "$dta_dir/foo.nc"; # replaces outfile in tests, typically 'foo.nc'
-# $orig_outfile  = "$dta_dir/foo.nc";
-# $foo_fl        = "$dta_dir/foo";
-# $foo_avg_fl    = "$dta_dir/foo_avg.nc";
-# $foo_tst       = "$dta_dir/foo.tst";
-# $foo1_fl       = "$dta_dir/foo1.nc";
-# $foo2_fl       = "$dta_dir/foo2.nc";
-# $foo_x_fl      = "$dta_dir/foo_x.nc";
-# $foo_y_fl      = "$dta_dir/foo_y.nc";
-# $foo_xy_fl     = "$dta_dir/foo_xy.nc";
-# $foo_yx_fl     = "$dta_dir/foo_yx.nc";
-# $foo_xymyx_fl  = "$dta_dir/foo_xymyx.nc";
-# $foo_T42_fl    = "$dta_dir/foo_T42.nc";
+# $outfile       = "$dat_drc/foo.nc"; # replaces outfile in tests, typically 'foo.nc'
+# $orig_outfile  = "$dat_drc/foo.nc";
+# $foo_fl        = "$dat_drc/foo";
+# $foo_avg_fl    = "$dat_drc/foo_avg.nc";
+# $foo_tst       = "$dat_drc/foo.tst";
+# $foo1_fl       = "$dat_drc/foo1.nc";
+# $foo2_fl       = "$dat_drc/foo2.nc";
+# $foo_x_fl      = "$dat_drc/foo_x.nc";
+# $foo_y_fl      = "$dat_drc/foo_y.nc";
+# $foo_xy_fl     = "$dat_drc/foo_xy.nc";
+# $foo_yx_fl     = "$dat_drc/foo_yx.nc";
+# $foo_xymyx_fl  = "$dat_drc/foo_xymyx.nc";
+# $foo_T42_fl    = "$dat_drc/foo_T42.nc";
 
 # NCO_bm defined here to allow above variables to be defined for later use
 use NCO_bm; # module that contains most of the functions.
@@ -453,9 +453,9 @@ if ($bm && $tst_fl_cr8 eq "0" && $dodap eq "FALSE" )  {
     if ($dbg_lvl> 0){print "\nINFO: File creation tests:\n";}
     for (my $i = 0; $i < $NUM_FLS; $i++) {
 	my $fl = $fl_cr8_dat[$i][2] . ".nc"; # file root name stored in $fl_cr8_dat[$i][2]
-	print "testing for $dta_dir/$fl...\n";
-	if (-e "$dta_dir/$fl" && -r "$dta_dir/$fl") {
-	    if ($dbg_lvl> 0){printf ("%50s exists - can skip creation\n", $dta_dir . "/" . $fl);}
+	print "testing for $dat_drc/$fl...\n";
+	if (-e "$dat_drc/$fl" && -r "$dat_drc/$fl") {
+	    if ($dbg_lvl> 0){printf ("%50s exists - can skip creation\n", $dat_drc . "/" . $fl);}
 	} else {
 	    my $e = $i+1;
 	    $tst_fl_cr8 .= "$e";

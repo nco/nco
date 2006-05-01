@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.37 2006-05-01 03:51:25 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.38 2006-05-01 04:03:54 zender Exp $
 
 # Purpose: library module supporting the nco_bm.pl benchmark and regression tests.
 # this module contains the following functions in approximate order of their usage:
@@ -10,7 +10,7 @@ package NCO_bm;
 #   fl_cr8_dat_init()....initializes the data used to create the test files
 #   fl_cr8().............creates the test files
 #   smrz_fl_cr8_rslt()...summarizes the results of the file creation tests
-#   set_dat_dir()........figures out where to write output data
+#   set_dta_drc()........figures out where to write output data
 #   initialize().........initialization, sets which NCOs are to be tested under different conditions
 #   tst_hirez()..........almost ready-to-delete test of the HiRes fn() on opterons
 #   go().................takes care of executing both regressions and benchmarks set up in same format
@@ -39,8 +39,8 @@ require Exporter;
 our @ISA = qw(Exporter);
 #export functions (top) and variables (bottom)
 our @EXPORT = qw (
-		  go dbg_msg set_dat_dir initialize
-		  $prefix $dta_dir @fl_cr8_dat $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
+		  go dbg_msg set_dta_drc initialize
+		  $prefix $dat_drc @fl_cr8_dat $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
 		  $prsrv_fl  $srvr_sde $hiresfound $dodap $bm $dbg_lvl $sock $udp_reprt
 		  $mpi_prc $mpi_prfx $mpi_fke
 		  );
@@ -54,7 +54,7 @@ use vars qw(
 	    $result $spc_fmt $spc_nbr $spc_nbr_min $spc_sng %subbenchmarks %success
 	    @sys_tim_arr $sys_time %sys_tme $timed %totbenchmarks @tst_cmd $tst_fmt
 	    $tst_id_sng %tst_nbr %usr_tme $wnt_log $timestamp $bm_dir $caseid
-	    $cmd_ln $dta_dir @fl_cr8_dat $fl_pth @fl_tmg $md5found %MD5_tbl
+	    $cmd_ln $dat_drc @fl_cr8_dat $fl_pth @fl_tmg $md5found %MD5_tbl
 	    $nco_D_flg $NUM_FLS $prfxd $prsrv_fl $que $server_ip $sock $thr_nbr
 	    $dbg_sgn $err_sgn $tmr_app $udp_reprt %wc_tbl $prfxd $nvr_my_bin_dir
 	    $prg_nm $arg_nbr $tw_prt_bm $srvr_sde @cmd_lst
@@ -303,8 +303,8 @@ sub fl_cr8 {
     my $t0;
     my $elapsed;
     
-    my $fl_in = my $fl_out = "$dta_dir/$fl_cr8_dat[$idx][2].nc" ;
-    print "==== Creating $fl_cr8_dat[$idx][0] data file from template in [$dta_dir]\n";
+    my $fl_in = my $fl_out = "$dat_drc/$fl_cr8_dat[$idx][2].nc" ;
+    print "==== Creating $fl_cr8_dat[$idx][0] data file from template in [$dat_drc]\n";
     print "Executing: $tmr_app ncgen -b -o $fl_out $bm_dir/$fl_cr8_dat[$idx][2].cdl\n";
     if ($hiresfound) {$t0 = [gettimeofday];}
     else {$t0 = time;}
@@ -367,8 +367,8 @@ sub smrz_fl_cr8_rslt {
     } # and send it back separately
 } # end of smrz_fl_cr8_rslt
 
-# set_dat_dir() tries to answer the question of where to write data
-sub set_dat_dir {
+# set_dta_drc() tries to answer the question of where to write data
+sub set_dta_drc {
     $caseid = shift;
     my $tmp;
     my $datadir;
@@ -383,13 +383,13 @@ sub set_dat_dir {
 	if (-w $ENV{'DATA'} && -r $ENV{'DATA'}) {
 	    if ($que == 0) {print "INFO: Using your environment variable DATA \n\t   [$ENV{'DATA'}]\n\t as the root DATA directory for this series of tests.\n\n";}
 	    if ($caseid ne "") {
-		$dta_dir = "$ENV{'DATA'}/nco_bm/$caseid";
-		my $err = `mkdir -p -m0777 $dta_dir`;
-		if ($err ne "") {die "mkdir err: $dta_dir\n";}
+		$dat_drc = "$ENV{'DATA'}/nco_bm/$caseid";
+		my $err = `mkdir -p -m0777 $dat_drc`;
+		if ($err ne "") {die "mkdir err: $dat_drc\n";}
 	    } else { # just dump it into nco_bm
-		$dta_dir = "$ENV{'DATA'}/nco_bm";
-		my $err = `mkdir -p -m0777 $dta_dir`;
-		if ($err ne "") {die "mkdir err: $dta_dir\n";}
+		$dat_drc = "$ENV{'DATA'}/nco_bm";
+		my $err = `mkdir -p -m0777 $dat_drc`;
+		if ($err ne "") {die "mkdir err: $dat_drc\n";}
 	    }
 	} else {
 	    die "You have defined a DATA dir ($ENV{'DATA'}) that cannot be written to or read\nfrom or both - please try again.\n stopped";
@@ -401,37 +401,37 @@ sub set_dat_dir {
 	chomp $tmp;
 	print "You entered [$tmp] \n";
 	if ($tmp eq '') {
-	    $dta_dir = "$ENV{'HOME'}/nco_bm/$caseid";  # if $caseid not set, then it decays to $ENV{'HOME'}/nco_bm/
-	    if (-e "$dta_dir") {
-		print "$dta_dir already exists - OK to re-use?\n[N/y] ";
+	    $dat_drc = "$ENV{'HOME'}/nco_bm/$caseid";  # if $caseid not set, then it decays to $ENV{'HOME'}/nco_bm/
+	    if (-e "$dat_drc") {
+		print "$dat_drc already exists - OK to re-use?\n[N/y] ";
 		$tmp = <STDIN>;
 		chomp $tmp;
 		if ($tmp =~ "[nN]" || $tmp eq '') {
 		    die "\nFine - decide what to use and start over again - bye! stopped";
 		} else { print "\n";	}
 	    } else { # have to make it
-		print "Making $dta_dir & continuing\n";
-		my $err = `mkdir -p -m0777 $dta_dir`;
-		if ($err ne "") {die "mkdir err: $dta_dir\n";}
+		print "Making $dat_drc & continuing\n";
+		my $err = `mkdir -p -m0777 $dat_drc`;
+		if ($err ne "") {die "mkdir err: $dat_drc\n";}
 	    }
 	} else {
-	    $dta_dir = "$tmp/nco_bm/$caseid";
+	    $dat_drc = "$tmp/nco_bm/$caseid";
 	    # and now test it
-	    if (-w $dta_dir && -r $dta_dir) {
-		print "OK - we will use [$dta_dir] to write to.\n\n";
+	    if (-w $dat_drc && -r $dat_drc) {
+		print "OK - we will use [$dat_drc] to write to.\n\n";
 	    } else { # we'll have to make it
-		print "[$dta_dir] doesn't exist - will try to make it.\n";
-		my $err = `mkdir -p -m0777 $dta_dir`;
-		if ($err ne "") {die "mkdir err: $dta_dir\n";}
-		if (-w $dta_dir && -r $dta_dir) {
-		    print "OK - [$dta_dir] is available to write to\n";
-		} else {	die "ERROR - [$dta_dir] could not be made - check this and try again.\n stopped";}
+		print "[$dat_drc] doesn't exist - will try to make it.\n";
+		my $err = `mkdir -p -m0777 $dat_drc`;
+		if ($err ne "") {die "mkdir err: $dat_drc\n";}
+		if (-w $dat_drc && -r $dat_drc) {
+		    print "OK - [$dat_drc] is available to write to\n";
+		} else {	die "ERROR - [$dat_drc] could not be made - check this and try again.\n stopped";}
 	    }
 	}
     } else { # que != 0
 	die "You MUST define a DATA environment variable to run this in a queue\n stopped";
     } # !defined $ENV{'DATA'})
-} # end set_dat_dir()
+} # end set_dta_drc()
 
 #########################  subroutine go ()  ####################################
 # go() consumes the @tst_cmd array that contains a series of tests and
@@ -441,20 +441,20 @@ sub go {
     
     my %lfn = ( # lfn = local_file_name
 		'%stdouterr%'   => "", # stdouterr has to be left to generate stderr
-		'%tempf_00%'    => "$dta_dir/tempf_00.nc", # this will be the default replacement for $outfile
-		'%tempf_01%'    => "$dta_dir/tempf_01.nc",
-		'%tempf_02%'    => "$dta_dir/tempf_02.nc",
-		'%tempf_03%'    => "$dta_dir/tempf_03.nc",
-		'%tempf_04%'    => "$dta_dir/tempf_04.nc",
-		'%tempf_05%'    => "$dta_dir/tempf_05.nc",
+		'%tempf_00%'    => "$dat_drc/tempf_00.nc", # this will be the default replacement for $outfile
+		'%tempf_01%'    => "$dat_drc/tempf_01.nc",
+		'%tempf_02%'    => "$dat_drc/tempf_02.nc",
+		'%tempf_03%'    => "$dat_drc/tempf_03.nc",
+		'%tempf_04%'    => "$dat_drc/tempf_04.nc",
+		'%tempf_05%'    => "$dat_drc/tempf_05.nc",
 # no use for more than 05
-		'%tempf_06%'    => "$dta_dir/tempf_06.nc",
-		'%tempf_07%'    => "$dta_dir/tempf_07.nc",
-		'%tempf_08%'    => "$dta_dir/tempf_08.nc",
-		'%tempf_09%'    => "$dta_dir/tempf_09.nc",
-		'%tempf_10%'    => "$dta_dir/tempf_10.nc",
-		'%tempf_11%'    => "$dta_dir/tempf_11.nc",
-		'%tempf_12%'    => "$dta_dir/tempf_12.nc",
+		'%tempf_06%'    => "$dat_drc/tempf_06.nc",
+		'%tempf_07%'    => "$dat_drc/tempf_07.nc",
+		'%tempf_08%'    => "$dat_drc/tempf_08.nc",
+		'%tempf_09%'    => "$dat_drc/tempf_09.nc",
+		'%tempf_10%'    => "$dat_drc/tempf_10.nc",
+		'%tempf_11%'    => "$dat_drc/tempf_11.nc",
+		'%tempf_12%'    => "$dat_drc/tempf_12.nc",
 		);
     
 # so if executign on the client side, have to replace all the special purpose
@@ -502,13 +502,13 @@ sub go {
     dbg_msg(1,"\$prefix=$prefix | \$mpi_prfx=$mpi_prfx | \$fke_prefix=$fke_prefix");
     
     # Delete everything in DAP subdir to force DAP retrieval
-    # $dta_dir has by now been directed to $dta_dir/DAP_DIR
+    # $dat_drc has by now been directed to $dat_drc/DAP_DIR
     
 #	print "DEBUG[go]:\$dodap = [$dodap], \$prsrv_fl = [$prsrv_fl]\n";
     if ($dodap ne "FALSE" && !$prsrv_fl) {
-	print "\nWARN: about to unlink everything in $dta_dir ! Continue? [Ny]\n";
+	print "\nWARN: about to unlink everything in $dat_drc ! Continue? [Ny]\n";
 	my $wait = <STDIN>; if ($wait !~ /[Yy]/) { die "Make sure of the commandline options!\n";}
-	my $unlink_cnt = unlink <$dta_dir/*>;
+	my $unlink_cnt = unlink <$dat_drc/*>;
 	print "\nINFO: OK - unlinked $unlink_cnt files\n";
     }
 #	print "just past unlinking stage \n";  my $wait = <STDIN>;
@@ -790,17 +790,18 @@ sub SS_gnarly_pything {
     my @sscmd_lst= @$arr_ref; # deref the ref to a new array name
     my $SS_URL = "http://sand.ess.uci.edu/cgi-bin/dods/nph-dods";
     my $dodsdata = "dodsdata";
-    # write out the array replacing each $outfile with the %temp% spec.
-    # 1st cmd has to specify the starting datadir, but client cannot be expected in most cases to know it, so
-    # will substitute any '-p URL'  with '-p %datadir%' which will probably have to be escaped at some level.
-    # further cmds will act on the %outfile%, so no '-p' substitution will be nec.
-    # can assume that the '-p URL' will be in 1st cmd, but will check all cmds for the existence of a '-p'
-    # because of mixed programming model, simplest to write to disk and send via pything.
-    # file name can be re-useable: 'nco_regr_temp_4scriptwrap'
-    # NB: need to only process the actual scripts so need to chew off the extra bits before processing them
-    # ie as above, ignore the last 2 entries (return value and SS_OK status
+    # Write out  array replacing each $outfile with the %temp% spec
+    # First command must specify starting datadir, but client may not know it, so
+    # substitute any '-p URL' with '-p %datadir%' which may be escaped at some level.
+    # Further commands act on %outfile%, so no '-p' substitution is necessary
+    # Assume that '-p URL' is in first command, but check all commands for '-p'
+    # because of mixed programming model, 
+    # Simplest to write to disk and send via pything.
+    # File name can be re-useable: 'nco_regr_temp_4scriptwrap'
+    # NB: Chew off extra bits before processing actual scripts
+    # i.e., as above, ignore last two entries (return value and SS_OK status)
 #	print "MY_BIN_DIR = $MY_BIN_DIR\n";
-#	print "DATA_DIR = $dta_dir\n";
+#	print "DATA_DIR = $dat_drc\n";
     my $lst_scrt_idx = $#sscmd_lst - 2; # last script index that has content to be sent to the server.
     my $tfname = "/tmp/nco_rgr_tmp_4scriptwrap";
     open(TF, "> $tfname") or die "\nUnable to open temp file 'nco_rgr_tmp_4scriptwrap' in current dir.\n";
