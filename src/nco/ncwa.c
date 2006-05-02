@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.204 2006-05-01 00:21:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.205 2006-05-02 07:08:33 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,10 +115,12 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.204 2006-05-01 00:21:33 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.204 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.205 2006-05-02 07:08:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.205 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
+  ddra_info_sct ddra_info={.MRV_flg=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
+
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out=NULL_CEWI;
   dmn_sct **dmn_avg=NULL_CEWI;
@@ -756,7 +758,7 @@ main(int argc,char **argv)
       /* 20050516: fxm: destruction of var_prc_out in nco_var_avg() leaves dangling pointers in var_out? */
       /* Reduce variable over specified dimensions (tally array is set here)
 	 NB: var_prc_out[idx] is new, so corresponding var_out[idx] is dangling */
-      var_prc_out[idx]=nco_var_avg(var_prc_out[idx],dmn_avg,dmn_avg_nbr,nco_op_typ);
+      var_prc_out[idx]=nco_var_avg(var_prc_out[idx],dmn_avg,dmn_avg_nbr,nco_op_typ,&ddra_info);
       /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide
 	 Denominator is also tricky due to sundry normalization options
 	 These logical switches are VERY tricky---be careful modifying them */
@@ -814,7 +816,8 @@ main(int argc,char **argv)
 	    nco_exit(EXIT_FAILURE); 
 	  } /* end if */
 	/* Average weight over specified dimensions (tally array is set here) */
-	wgt_avg=nco_var_avg(wgt_avg,dmn_avg,dmn_avg_nbr,nco_op_avg);
+	wgt_avg=nco_var_avg(wgt_avg,dmn_avg,dmn_avg_nbr,nco_op_avg,&ddra_info);
+
 	if(MULTIPLY_BY_TALLY){
 	  /* NB: Currently this is not implemented */
 	  /* Multiply numerator (weighted sum of variable) by tally 
@@ -928,41 +931,20 @@ main(int argc,char **argv)
 	   ncwa -O -C -D 73 -a lat,lon -w lat ${DATA}/nco_bm/stl_5km.nc ~/foo.nc
 	   ncwa -O -C -D 73 -a lat,lon,time -w lat ${DATA}/nco_bm/ipcc_dly_T85.nc ~/foo.nc */
 
-	int rnk_avg; /* [nbr] Rank of averaging space */
-	int rnk_var; /* [nbr] Variable rank (in input file) */
-	int rnk_wgt; /* [nbr] Rank of weight */
-	int var_idx; /* [enm] Index */
-	int wrd_sz; /* [B] Bytes per element */
-	long long lmn_nbr; /* [nbr] Variable size */
-	long long lmn_nbr_avg; /* [nbr] Averaging block size */
-	long long lmn_nbr_wgt; /* [nbr] Weight size */
-	
-	/* Assign exact input for DDRA diagnostics */
-	rnk_var=var_prc[idx]->nbr_dim; /* I [nbr] Variable rank (in input file) */
-	wrd_sz=nco_typ_lng(var_prc[idx]->type); /* [B] Bytes per element */
-	lmn_nbr=var_prc[idx]->sz; /* [nbr] Variable size */
-	var_idx=idx; /* [enm] Index */
-
-	/* Estimate remaining input for DDRA diagnostics */
-	rnk_avg=dmn_avg_nbr; /* [nbr] Rank of averaging space */
-	rnk_wgt=wgt->nbr_dim; /* [nbr] Rank of weight */
-	lmn_nbr_wgt=wgt->sz; /* [nbr] Weight size */
-	lmn_nbr_avg=1LL; /* [nbr] Averaging block size */
-	for(int idx_dmn=0;idx_dmn<dmn_avg_nbr;idx_dmn++) lmn_nbr_avg*=dmn_avg[idx_dmn]->cnt;
+	/* Assign remaining input for DDRA diagnostics */
+	ddra_info.lmn_nbr=var_prc[idx]->sz; /* [nbr] Variable size */
+	ddra_info.lmn_nbr_wgt=wgt->sz; /* [nbr] Weight size */
+	ddra_info.nco_op_typ=nco_op_typ; /* [enm] Operation type */
+	ddra_info.rnk_var=var_prc[idx]->nbr_dim; /* I [nbr] Variable rank (in input file) */
+	ddra_info.rnk_wgt=wgt->nbr_dim; /* [nbr] Rank of weight */
+	ddra_info.var_idx=idx; /* [enm] Index */
+	ddra_info.wrd_sz=nco_typ_lng(var_prc[idx]->type); /* [B] Bytes per element */
 
 	/* DDRA diagnostics */
 	rcd+=nco_ddra /* [fnc] Count operations */
 	  (var_prc[idx]->nm, /* I [sng] Variable name */
 	   wgt_nm, /* I [sng] Weight name */
-	   nco_op_typ, /* I [enm] Operation type */
-	   rnk_avg, /* I [nbr] Rank of averaging space */
-	   rnk_var, /* I [nbr] Variable rank (in input file) */
-	   rnk_wgt, /* I [nbr] Rank of weight */
-	   var_idx, /* I [enm] Index */
-	   wrd_sz, /* I [B] Bytes per element */
-	   lmn_nbr, /* I [nbr] Variable size */
-	   lmn_nbr_avg, /* I [nbr] Averaging block size */
-	   lmn_nbr_wgt); /* I [nbr] Weight size */
+	   &ddra_info); /* I [sct] DDRA information */
 
       } /* !dbg */
 

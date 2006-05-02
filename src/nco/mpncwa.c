@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.39 2006-04-30 22:59:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.40 2006-05-02 07:10:27 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -119,10 +119,12 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.39 2006-04-30 22:59:57 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.39 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.40 2006-05-02 07:10:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.40 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:z:-:";
   
+  ddra_info_sct ddra_info={.MRV_flg=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
+
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out=NULL_CEWI;
   dmn_sct **dmn_avg=NULL_CEWI;
@@ -891,7 +893,7 @@ main(int argc,char **argv)
 	    /* 20050516: fxm: destruction of var_prc_out in nco_var_avg() leaves dangling pointers in var_out? */
 	    /* Reduce variable over specified dimensions (tally array is set here)
 	       NB: var_prc_out[idx] is new, so corresponding var_out[idx] is dangling */
-	    var_prc_out[idx]=nco_var_avg(var_prc_out[idx],dmn_avg,dmn_avg_nbr,nco_op_typ);
+	    var_prc_out[idx]=nco_var_avg(var_prc_out[idx],dmn_avg,dmn_avg_nbr,nco_op_typ,&ddra_info);
 	    /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide
 	       Denominator is also tricky due to sundry normalization options
 	       These logical switches are VERY tricky---be careful modifying them */
@@ -949,7 +951,7 @@ main(int argc,char **argv)
 		  nco_exit(EXIT_FAILURE); 
 		} /* end if */
 	      /* Average weight over specified dimensions (tally array is set here) */
-	      wgt_avg=nco_var_avg(wgt_avg,dmn_avg,dmn_avg_nbr,nco_op_avg);
+	      wgt_avg=nco_var_avg(wgt_avg,dmn_avg,dmn_avg_nbr,nco_op_avg,&ddra_info);
 	      if(MULTIPLY_BY_TALLY){
 		/* NB: Currently this is not implemented */
 		/* Multiply numerator (weighted sum of variable) by tally 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.123 2006-04-30 23:22:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.124 2006-05-02 07:08:33 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -81,19 +81,9 @@ int /* O [rcd] Return code */
 nco_ddra /* [fnc] Count operations */
 (const char * const var_nm, /* I [sng] Variable name */
  const char * const wgt_nm, /* I [sng] Weight name */
- const int nco_op_typ, /* I [enm] Operation type */
- const int rnk_avg, /* I [nbr] Rank of averaging space */
- const int rnk_var, /* I [nbr] Variable rank (in input file) */
- const int rnk_wgt, /* I [nbr] Rank of weight */
- const int var_idx, /* I [enm] Index */
- const int wrd_sz, /* I [B] Bytes per element */
- const long long lmn_nbr, /* I [nbr] Variable size */
- const long long lmn_nbr_avg, /* I [nbr] Averaging block size */
- const long long lmn_nbr_wgt) /* I [nbr] Weight size */
+ const ddra_info_sct * const ddra_info) /* I [sct] DDRA information */
 {
   /* Purpose: Estimate operation counts required */
-  nco_bool MRV_flg=False;
-  nco_bool wgt_reuse_flg=False;
 
   const char fnc_nm[]="nco_ddra()";
   
@@ -155,6 +145,19 @@ nco_ddra /* [fnc] Count operations */
   long long flp_nbr_rdc=0LL; /* [nbr] Floating point operations for reduction */
   long long flp_nbr_nrm=0LL; /* [nbr] Floating point operations for normalization */
 
+  /* Copies of DDRA information */
+  int nco_op_typ; /* [enm] Operation type */
+  int rnk_avg; /* [nbr] Rank of averaging space */
+  int rnk_var; /* [nbr] Variable rank (in input file) */
+  int rnk_wgt; /* [nbr] Rank of weight */
+  int var_idx; /* [enm] Index */
+  int wrd_sz; /* [B] Bytes per element */
+  long long lmn_nbr; /* [nbr] Variable size */
+  long long lmn_nbr_avg; /* [nbr] Averaging block size */
+  long long lmn_nbr_wgt; /* [nbr] Weight size */
+  nco_bool MRV_flg; /* [flg] Avergaging dimensions are MRV dimensions */
+  nco_bool wgt_brd_flg; /* [flg] Broadcast weight for this variable */
+
   /* Locals */
   long long lmn_nbr_out; /* [nbr] Output elements */
 
@@ -179,6 +182,19 @@ nco_ddra /* [fnc] Count operations */
      Units: 
      [nbr] = Operation counts for lmn_nbr elements
      [nbr nbr-1] = Operation counts per element */
+
+  /* Decode input */
+  MRV_flg=ddra_info->MRV_flg; /* [flg] Avergaging dimensions are MRV dimensions */
+  lmn_nbr=ddra_info->lmn_nbr; /* [nbr] Variable size */
+  lmn_nbr_avg=ddra_info->lmn_nbr_avg; /* [nbr] Averaging block size */
+  lmn_nbr_wgt=ddra_info->lmn_nbr_wgt; /* [nbr] Weight size */
+  nco_op_typ=ddra_info->nco_op_typ; /* [enm] Operation type */
+  rnk_avg=ddra_info->rnk_avg; /* [nbr] Rank of averaging space */
+  rnk_var=ddra_info->rnk_var; /* [nbr] Variable rank (in input file) */
+  rnk_wgt=ddra_info->rnk_wgt; /* [nbr] Rank of weight */
+  var_idx=ddra_info->var_idx; /* [enm] Index */
+  wgt_brd_flg=ddra_info->wgt_brd_flg; /* [flg] Broadcast weight for this variable */
+  wrd_sz=ddra_info->wrd_sz; /* [B] Bytes per element */
 
   /* Derived variables */
   lmn_nbr_out=lmn_nbr/lmn_nbr_avg; /* [nbr] Output elements */
@@ -251,11 +267,11 @@ nco_ddra /* [fnc] Count operations */
       flp_nbr_rdc+=2*lmn_nbr;
       /* One floating point divide per output element to normalize denominator by tally */
       flp_nbr_nrm+=lmn_nbr_out;
-      if(!wgt_reuse_flg){
+      if(!wgt_brd_flg){
 	/* fxm: Charge for broadcasting weight at least once */
 	/* Broadcasting cost for weight */
 	ntg_nbr_brd=ntg_nbr_brd_dfl;
-      } /* wgt_reuse_flg */
+      } /* wgt_brd_flg */
       if(!MRV_flg){
 	/* Collection required for denominator */
 	ntg_nbr_clc+=ntg_nbr_clc_dfl;

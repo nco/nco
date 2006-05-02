@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.97 2006-04-07 06:46:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.98 2006-05-02 07:08:33 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -77,14 +77,15 @@ Preprocessor macros may be used to turn bool into _Bool, false into 0 and true i
   /* Variables marked CEWI "Compiler Error Warning Initialization" are initialized
      to prevent spurious "warning: `float foo' might be used uninitialized in 
      this function" warnings when, e.g., GCC -Wuninitialized is turned on.
-     Note that these warning messages are compiler and OS dependent
-     GCC on Alpha, e.g., emits warnings which cannot be removed by this trick */
+     Note that these warning messages are compiler- and OS-dependent
+     GCC warning on Alpha, e.g., cannot be removed by this trick */
 #define NULL_CEWI NULL
 #define char_CEWI '\0'
 #define double_CEWI 0.0
 #define float_CEWI 0.0
 #define int_CEWI 0
 #define long_CEWI 0L
+#define long_long_CEWI 0LL
 #define nco_byte_CEWI 0
 #define nco_char_CEWI '\0'
 #define nco_int_CEWI 0L
@@ -266,6 +267,21 @@ Preprocessor macros may be used to turn bool into _Bool, false into 0 and true i
     int id;
   } rnm_sct;
 
+  /* DDRA information structure */
+  typedef struct{ /* ddra_info_sct */
+    int nco_op_typ; /* [enm] Operation type */
+    int rnk_avg; /* [nbr] Rank of averaging space */
+    int rnk_var; /* [nbr] Variable rank (in input file) */
+    int rnk_wgt; /* [nbr] Rank of weight */
+    int var_idx; /* [enm] Index */
+    int wrd_sz; /* [B] Bytes per element */
+    long long lmn_nbr; /* [nbr] Variable size */
+    long long lmn_nbr_avg; /* [nbr] Averaging block size */
+    long long lmn_nbr_wgt; /* [nbr] Weight size */
+    nco_bool MRV_flg; /* [flg] Avergaging dimensions are MRV dimensions */
+    nco_bool wgt_brd_flg; /* [flg] Broadcast weight for this variable */
+  } ddra_info_sct;
+  
   /* Pointer union */
   typedef union{ /* ptr_unn */
     float * restrict fp;

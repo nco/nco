@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.22 2006-04-30 21:13:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.23 2006-05-02 07:08:33 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -60,15 +60,7 @@ int /* O [rcd] Return code */
 nco_ddra /* [fnc] Count operations */
 (const char * const var_nm, /* I [sng] Variable name */
  const char * const wgt_nm, /* I [sng] Weight name */
- const int nco_op_typ, /* I [enm] Operation type */
- const int rnk_avg, /* I [nbr] Rank of averaging space */
- const int rnk_var, /* I [nbr] Variable rank (in input file) */
- const int rnk_wgt, /* I [nbr] Rank of weight */
- const int var_idx, /* I [enm] Index */
- const int wrd_sz, /* I [B] Bytes per element */
- const long long lmn_nbr, /* I [nbr] Variable size */
- const long long lmn_nbr_avg, /* I [nbr] Averaging block size */
- const long long lmn_nbr_wgt); /* I [nbr] Weight size */
+ const ddra_info_sct * const ddra_info); /* I [sct] DDRA information */
 
 void
 nco_lbr_vrs_prn(void); /* [fnc] Print netCDF library version */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.43 2006-04-30 21:13:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.44 2006-05-02 07:08:33 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -13,7 +13,8 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 (var_sct *var, /* I/O [sct] Variable to reduce (e.g., average) (destroyed) */
  dmn_sct * const * const dim, /* I [sct] Dimensions over which to reduce variable */
  const int nbr_dim, /* I [sct] Number of dimensions to reduce variable over */
- const int nco_op_typ) /* I [enm] Operation type, default is average */
+ const int nco_op_typ, /* I [enm] Operation type, default is average */
+ ddra_info_sct * const ddra_info) /* O [sct] DDRA information */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Reduce given variable over specified dimensions 
@@ -34,6 +35,8 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
           elements of var which contribute to a single element of fix.
      fix: Output (averaged) variable */
 
+  nco_bool AVG_DMN_ARE_MRV=False; /* [flg] Avergaging dimensions are MRV dimensions */
+
   dmn_sct **dmn_avg;
   dmn_sct **dmn_fix;
 
@@ -47,7 +50,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   int nbr_dmn_fix;
   int nbr_dmn_var;
 
-  long avg_sz;
+  long avg_sz=int_CEWI;
   long fix_sz;
   long var_sz;
 
@@ -174,7 +177,6 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
      Each block contains avg_sz elements in contiguous buffer 
      Reduction step then "reduces" each block into single output element */
   if(avg_sz != 1L){
-    nco_bool AVG_DMN_ARE_MRV=False; /* [flg] Avergaging dimensions are MRV dimensions */
     ptr_unn avg_val;
     
     /* Initialize data needed by reduction step independent of collection algorithm */
@@ -330,6 +332,11 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   dmn_avg=(dmn_sct **)nco_free(dmn_avg);
   dmn_fix=(dmn_sct **)nco_free(dmn_fix);
   
+  /* Set diagnostic DDRA information DDRA */
+  ddra_info->lmn_nbr_avg=avg_sz; /* [nbr] Averaging block size */
+  ddra_info->rnk_avg=dmn_avg_nbr; /* [nbr] Rank of averaging space */
+  ddra_info->MRV_flg=AVG_DMN_ARE_MRV; /* [flg] Avergaging dimensions are MRV dimensions */
+
   /* Return averaged variable */
   return fix;
 } /* end nco_var_avg() */

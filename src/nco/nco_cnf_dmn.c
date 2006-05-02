@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.56 2006-04-25 20:43:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.57 2006-05-02 07:08:33 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -181,6 +181,9 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
       (void)nco_xrf_var(wgt,wgt_out);
     } /* end if */
   } /* end if */
+
+  /* Set diagnostic DDRA information DDRA */
+  /* ddra_info->wgt_brd_flg=(wgt_out == NULL) ? True : False; *//* [flg] Broadcast weight for this variable */
 
   if(wgt_out == NULL){
     /* Expand original weight (wgt) to match size of current variable */

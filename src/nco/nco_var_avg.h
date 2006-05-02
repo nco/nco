@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.h,v 1.12 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.h,v 1.13 2006-05-02 07:08:33 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -36,7 +36,8 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 (var_sct *var, /* I/O [sct] Variable to reduce (e.g., average) (destroyed) */
  dmn_sct * const * const dim, /* I [sct] Dimensions over which to reduce variable */
  const int nbr_dim, /* I [sct] Number of dimensions to reduce variable over */
- const int nco_op_typ); /* I [enm] Operation type, default is average */
+ const int nco_op_typ, /* I [enm] Operation type, default is average */
+ ddra_info_sct * const ddra_info); /* O [sct] DDRA information */
 
 void
 nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
