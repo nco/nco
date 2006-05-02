@@ -3,6 +3,9 @@
 /* Compatibility pvmgetarch token for AIX on IBM PowerPC */
 #undef AIX
 
+/* Compatibility pvmgetarch token for UNICOS on DEC Alpha */
+#undef CRAY
+
 /* Compile operators with OPeNDAP/DODS support */
 #undef ENABLE_DAP
 

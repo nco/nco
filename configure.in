@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.168 2006-04-29 04:40:33 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.169 2006-05-02 03:29:01 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -85,6 +85,8 @@ case ${host} in
 	;;
     alpha*-*-linux* ) AC_DEFINE(LINUXALPHA,1,Compatibility pvmgetarch token for Linux on DEC Alpha)
 	;;
+# e.g., alphaev5-cray-unicosmk2.0.5.X at NIWA
+    alpha*-cray-unicos* ) AC_DEFINE(CRAY,1,Compatibility pvmgetarch token for UNICOS on DEC Alpha)
     hppa*-hp-hpux* ) AC_DEFINE(HPUX,1,Compatibility pvmgetarch token for HPUX on PA RISC)
 	;;
     i*86-pc-freebsd* ) AC_DEFINE(FREEBSD,1,Compatibility pvmgetarch token for FreeBSD on Intel x86)
@@ -109,7 +111,7 @@ case ${host} in
 	;;
     sx*-nec-superux* ) AC_DEFINE(NECSX,1,Compatibility pvmgetarch token for SuperUX on NEC SX)
 	;;
-	 x86_64*-linux* ) AC_DEFINE(LINUXAMD64,1,Compatibility pvmgetarch token for Linux on AMD x86_64)
+    x86_64*-linux* ) AC_DEFINE(LINUXAMD64,1,Compatibility pvmgetarch token for Linux on AMD x86_64)
 	;;
 esac
 # End pvmgetarch Compatibility
@@ -812,7 +814,7 @@ if test "${enable_debug_custom}" = 'yes'; then
 		cc ) CFLAGS="${CFLAGS} -check_bounds -check -check_omp" ; ;;
 	    esac
 	    ;;
-	*-cray-unicos* )
+	alpha*-cray-unicos* )
 	    case ${CC} in
 		cc ) CFLAGS="${CFLAGS} -h rounddiv -h indef -h bounds -h nofastmd -h nofastmodulus" ; ;;
 	    esac
@@ -887,7 +889,7 @@ if test "${enable_optimize_custom}" = 'yes'; then
 		cc ) CFLAGS="${CFLAGS} -O2 -ansi-alias" ; ;;
 	    esac
 	    ;;
-	*-cray-unicos* )
+	alpha*-cray-unicos* )
 	    case ${CC} in
 		cc ) CFLAGS="${CFLAGS} -h rounddiv -h nofastmd -h nofastmodulus" ; ;;
 	    esac

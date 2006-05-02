@@ -1,3 +1,7 @@
+2006-05-01  Charlie Zender  <zender@uci.edu>
+
+	* Update configure.in for Cray compatibility
+
 2006-04-30  Charlie Zender  <zender@uci.edu>
 
 	* Some cleanup of nco_bm suite
