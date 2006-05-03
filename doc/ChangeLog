@@ -1,5 +1,7 @@
 2006-05-02  Charlie Zender  <zender@uci.edu>
 
+	* Remove obsolete -Z option from help strings
+
 	* Get MRV_flg, dmn_avg_nbr, lmn_nbr_avg from nco_var_avg(), use in nco_ddra()
 
 2006-05-01  Charlie Zender  <zender@uci.edu>

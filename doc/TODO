@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.740 2006-04-30 22:59:56 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.741 2006-05-03 03:56:34 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -469,12 +469,13 @@ nco693. ncks regression for offset past end of file test
         ncks behaves perfectly here. Unfortunately, the perl test script does not recognize the expected answer string as being valid
 nco694. Change nco_bool to C99 standard bool as per Wikipedia?
 nco702. How to mix new ncwa behavior with -I wgt_msk_crd_var?
-nco704. Add MRV_flg, rnk_avg, and lmn_nbr_avg outputs to nco_var_avg()
 nco705. Add lmn_nbr_wgt and DID_BROADCAST outputs to nco_var_cnf_dmn()?
 nco706. Add DID_REDUCE outputs to nco_var_avg_reduce()?
 nco707. Hook nco_ddra() into ncbo
 nco708. Change DDRA diagnostics from --dbg=73 to command line switch
-nco709. 
+nco709. Change wgt_brd_flg (may have wrong meaning)
+nco710. Create correct ncwa predictions for each 1/8th
+nco711. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
