@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.106 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.107 2006-05-05 01:12:37 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -240,8 +240,10 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
   }else{ /* end if variable is a scalar */
-    nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_type);
-    nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_type);
+    if(var_sz > 0){ /* Allow for zero-size record variables TODO nco711 */
+      nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_type);
+      nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_type);
+    } /* end if var_sz */
   } /* end if variable is an array */
   /* Write unformatted binary data */
   if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
@@ -361,7 +363,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
   void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_type),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
   /* Copy variable */
-  if(nbr_dim==0){ /* Copy scalar */
+  if(nbr_dim == 0){ /* Copy scalar */
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
     if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);

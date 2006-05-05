@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.34 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.35 2006-05-05 01:12:37 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -151,10 +151,12 @@ nco_msa_rec_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     /* Block is critical/thread-safe for identical/distinct in_id's */
     { /* begin potential OpenMP critical */
       /* Check for stride */
-      if(mult_srd == 1L)
-	(void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp,vara->type);
-      else
-	(void)nco_get_varm(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,vp,vara->type);
+      if(var_sz > 0){ /* Allow for zero-size record variables TODO nco711 */
+	if(mult_srd == 1L)
+	  (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,vp,vara->type);
+	else
+	  (void)nco_get_varm(vara->nc_id,vara->id,dmn_srt,dmn_cnt,dmn_srd,(long *)NULL,vp,vara->type);
+      } /* end if var_sz */
     } /* end potential OpenMP critical */
     
     dmn_srt=(long *)nco_free(dmn_srt);
