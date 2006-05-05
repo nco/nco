@@ -1,0 +1,29 @@
+// ncgen -b -o ~/nco/data/rec_zero.nc ~/foo.cdl
+
+netcdf foo {
+dimensions:
+        lon = 4 ;
+        time = UNLIMITED ; // (10 currently)
+variables:
+        float lon(lon) ;
+                lon:long_name = "Latitude" ;
+                lon:units = "degrees_north" ;
+        float one ;
+                one:long_name = "one" ;
+
+        double time(time) ;
+		time:long_name = "record variable of size zero (no data yet)";
+
+// global attributes:
+                :Conventions = "NCAR-CSM" ;
+                :history = "Thu May  4 17:30:29 2006: ncks -v one,lon,time /home/zender/nco/data/in.nc /home/zender/foo.nc\n",
+                        "History global attribute.\n",
+                        "" ;
+                :julian_day = 200000.04 ;
+                :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_rec_zero.cdl,v 1.1 2006-05-05 00:35:05 zender Exp $" ;
+data:
+
+ lon = 0, 90, 180, 270 ;
+
+ one = 1 ;
+}
