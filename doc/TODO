@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.743 2006-05-05 01:12:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.744 2006-05-05 01:18:11 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -479,6 +479,7 @@ nco710. Create correct ncwa predictions for each 1/8th
 nco711. Should NCO work on record dimensions of length zero?
 	ncgen -b -o ~/nco/data/in_rec_zero.nc ~/nco/data/in_rec_zero.cdl
 	ncks -O -x -v one,lon ~/nco/data/in_rec_zero.nc ~/foo.nc
+	ncks -O -d lon,1 ~/nco/data/in_rec_zero.nc ~/foo.nc
 	ncks ~/foo.nc
 nco712. Create high level NCO manpage
 nco713. Should libnetcdf return "Index exceeds dimension bound" error when srt=cnt=0?
