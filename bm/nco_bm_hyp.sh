@@ -1,6 +1,9 @@
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_hyp.sh,v 1.3 2006-05-04 01:17:42 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_hyp.sh,v 1.4 2006-05-06 00:53:47 zender Exp $
 
 # Purpose: Perform some NCO benchmarks while hyperslabbing 
+
+# Usage:
+# ~/nco/bm/nco_bm_hyp.sh
 
 # 1
 ~/nco/bm/cch_clr.pl; /usr/bin/time -a -o ~/nco/bm/ncwa.timing -f "%e wall %s system %U user " \
