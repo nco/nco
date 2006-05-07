@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.107 2006-05-05 01:12:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.108 2006-05-07 19:57:18 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -175,8 +175,8 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
  char *var_nm) /* I [sng] Variable name */
 {
   /* NB: nco_cpy_var_val() contains OpenMP critical region */
-  /* Purpose: Copy variable data from input netCDF file to output netCDF file
-     Routine does not account for user-specified limits, it just copies what it findsa
+  /* Purpose: Copy single variable from input netCDF file to output netCDF file
+     Routine does not account for user-specified limits, it just copies what it finds
      Routine copies variable-by-variable, old-style, called only by ncks */
 
   const char fnc_nm[]="nco_cpy_var_val()"; /* [sng] Function name */
@@ -1012,8 +1012,8 @@ nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
  const int nbr_var) /* I [nbr] Number of variables */
 {
   /* NB: nco_var_val_cpy() contains OpenMP critical region */
-  /* Purpose: Copy variable data for every variable in input variable structure list
-     from input file to output file */
+  /* Purpose: Copy every variable in input variable structure list 
+     from input file to output file. Only data (not metadata) are copied. */
   
   int idx;
   
@@ -1023,8 +1023,10 @@ nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
       nco_get_var1(in_id,var[idx]->id,var[idx]->srt,var[idx]->val.vp,var[idx]->type);
       nco_put_var1(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->val.vp,var[idx]->type);
     }else{ /* end if variable is a scalar */
-      nco_get_vara(in_id,var[idx]->id,var[idx]->srt,var[idx]->cnt,var[idx]->val.vp,var[idx]->type);
-      nco_put_vara(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->val.vp,var[idx]->type);
+      if(var[idx]->sz > 0){ /* Allow for zero-size record variables TODO nco711 */
+	nco_get_vara(in_id,var[idx]->id,var[idx]->srt,var[idx]->cnt,var[idx]->val.vp,var[idx]->type);
+	nco_put_vara(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->val.vp,var[idx]->type);
+      } /* end if var_sz */
     } /* end if variable is an array */
     var[idx]->val.vp=var[idx]->xrf->val.vp=nco_free(var[idx]->val.vp);
   } /* end loop over idx */

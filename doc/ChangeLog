@@ -1,3 +1,11 @@
+2006-05-07  Charlie Zender  <zender@uci.edu>
+
+	* Allow zero-record record variables in nco_var_val_cpy()
+	This should allow copying metadata in most NCOs
+
+	* Make zero-record record variables always fixed in arithmetic operators
+	This ensures airthmetic loops to not encounter empty variables
+	
 2006-05-06  Charlie Zender  <zender@uci.edu>
 
 	* Improve warning messages in ncra for size 0 records

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.59 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.60 2006-05-07 19:57:18 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -385,7 +385,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   char *var_nm=NULL_CEWI;
 
   int idx;
-  int prg; /* Program key */
+  int prg_id; /* Program key */
 
   enum op_typ{
     fix, /* 0 [enm] Fix variable (operator alters neither data nor metadata) */
@@ -403,7 +403,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   var_sct **var_prc;
   var_sct **var_prc_out;
 
-  prg=prg_get(); /* Program key */
+  prg_id=prg_get(); /* Program key */
 
   /* Allocate space for too many structures first then realloc() appropriately
      It is calling function's responsibility to free() this memory */
@@ -420,8 +420,8 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     var_nm=var[idx]->nm;
     var_type=var[idx]->type;
 
-    /* Override operation type based depending on both variable type and program */
-    switch(prg){
+    /* Override operation type based depending on variable properties and program */
+    switch(prg_id){
     case ncap:
       var_op_typ[idx]=fix;
       break;
@@ -490,10 +490,15 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     default: nco_dfl_case_prg_id_err(); break;
     } /* end switch */
     
+    /* Previous case-statement does account for variables with no data */
+    if(nco_is_rth_opr(prg_id))
+      if(var[idx]->sz == 0L)
+	var_op_typ[idx]=fix;
+
     if(CNV_CCM_CCSM_CF){
       if(!strcmp(var_nm,"ntrm") || !strcmp(var_nm,"ntrn") || !strcmp(var_nm,"ntrk") || !strcmp(var_nm,"ndbase") || !strcmp(var_nm,"nsbase") || !strcmp(var_nm,"nbdate") || !strcmp(var_nm,"nbsec") || !strcmp(var_nm,"mdt") || !strcmp(var_nm,"mhisf")) var_op_typ[idx]=fix;
       /* NB: all !strcmp()'s except "msk_" which uses strstr() */
-      if(prg == ncbo && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm))) var_op_typ[idx]=fix;
+      if(prg_id == ncbo && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm))) var_op_typ[idx]=fix;
     } /* end if CNV_CCM_CCSM_CF */
 
   } /* end loop over var */
@@ -511,7 +516,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       var_prc[*nbr_var_prc]=var[idx];
       var_prc_out[*nbr_var_prc]=var_out[idx];
       ++*nbr_var_prc;
-      if(((var[idx]->type == NC_CHAR) || (var[idx]->type == NC_BYTE)) && ((prg != ncecat) && (prg != ncpdq) && (prg != ncrcat))){
+      if(((var[idx]->type == NC_CHAR) || (var[idx]->type == NC_BYTE)) && ((prg_id != ncecat) && (prg_id != ncpdq) && (prg_id != ncrcat))){
 	(void)fprintf(stderr,"%s: WARNING Variable %s is of type %s, for which processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var[idx]->nm,nco_typ_sng(var[idx]->type));
       } /* end if */
     } /* end else */
@@ -525,9 +530,9 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 
   /* fxm: Remove ncap exception when finished with ncap list processing */
   /* fxm: ncpdq processes all variables when pakcing requested */
-  if(*nbr_var_prc == 0 && prg != ncap && prg != ncpdq){
+  if(*nbr_var_prc == 0 && prg_id != ncap && prg_id != ncpdq){
     (void)fprintf(stdout,"%s: ERROR no variables fit criteria for processing\n",prg_nm_get());
-    switch(prg_get()){
+    switch(prg_id){
     case ncap:
       (void)fprintf(stdout,"%s: HINT Extraction list must contain at least one derived field\n",prg_nm_get());
     case ncatted:
