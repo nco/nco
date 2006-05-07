@@ -1,8 +1,8 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.172 2006-04-29 04:40:34 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.173 2006-05-07 22:29:49 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.2 are ready. 
-They contain an noteworthy bugfix for packed data, an important change
-in behavior for ncea/ncra/ncwa, and significant new features in ncap2.
+They contain a fixes for zero-length record variables, and significant
+new features in ncap2. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -13,6 +13,18 @@ ncap2 now handles array syntax, if/then constructs and much more.
 ncap2 is still a bit alpha, but ready to be tested for functionality.
 The sample script nco/data/ncap2.in demonstrates its features.
 
+All record variables are zero-length prior to the storage of data.
+Apparently having zero-length record variables is a valid state for a 
+netCDF file. NCO now works "correctly" on such files.
+I say "correctly" because this is somewhat subjective.
+The only clearly bizarre behavior I am aware of is that averaging
+a zero-record record variable over the record dimension with ncwa 
+creates a scalar, i.e., a variable with no dimensions. 
+Scalars must have one element, so the averaged variable has more data
+than the initial variable.  
+The alternative is deleting the variable completely, and I thought
+retaining the metadata would be preferable. 
+This behavior may change in the future.
 
 0. Build fixes for Solaris, Cygwin, NECSX and Cray
 
@@ -23,6 +35,8 @@ The sample script nco/data/ncap2.in demonstrates its features.
 3. ncap2 LHS array logic working (Henry Butowsky) (fxm)
 
 4. Server-side extensions (Daniel Wang) (fxm)
+
+5. Work (or die) "correctly" with zero-record record variables
 
 Enjoy,
 Charlie
