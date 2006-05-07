@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.47 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.48 2006-05-07 06:36:48 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -81,8 +81,8 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
  int lmt_nbr, /* I [nbr] Number of limit structures */
  const nco_bool FORTRAN_IDX_CNV) /* I [flg] Hyperslab indices obey Fortran convention */
 {
-  /* Purpose: Create stand-alone limit structure just for given dimension 
-     nco_lmt_sct_mk() is called by ncra() to generate limit structure for record dimension */
+  /* Purpose: Create stand-alone limit structure just for given dimension
+     ncra calls nco_lmt_sct_mk() to generate record dimension limit structure */
   
   int idx;
   int rcd; /* [rcd] Return code */
@@ -148,13 +148,15 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
        dimension.
        Then, when nco_lmt_sct_mk() creates the record dimension structure, it must
        be created consistently with the FORTRAN_IDX_CNV flag for the other dimensions.
-       In order to do that, I must fill in the max_sng, min_sng, and srd_sng
-       arguments with strings as if they had been read from the keyboard.
-       Another solution would be to add a flag to lmt_sct indicating whether this
+       In order to do that, fill in max_sng, min_sng, and srd_sng
+       arguments with strings as if they had been read from keyboard.
+       An alternate solution is to add flag to lmt_sct indicating whether this
        limit struct had been automatically generated and then act accordingly. */
     /* Decrement cnt to C index value if necessary */
     if(!FORTRAN_IDX_CNV) cnt--; 
     if(cnt < 0L){
+      if(cnt == -1L) (void)fprintf(stdout,"%s: nco_lmt_sct_mk() reports record variable exists and is size zero, i.e., has no records yet.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT: Perform record-oriented operations only after files has valid records.\n",prg_nm_get());
       (void)fprintf(stdout,"%s: cnt < 0 in nco_lmt_sct_mk()\n",prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end if */

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.363 2006-05-01 03:39:30 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.364 2006-05-07 06:36:48 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -1415,10 +1415,12 @@ tst:	dat
 	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --dbg=0 --regress --udpreport ${FL_FMT_SNG} ${MPI_PRC_SNG} ${THR_NBR_SNG}
 # Targets in dat
 data:	dat
-dat:	${MY_DAT_DIR}/in.nc
+dat:	${MY_DAT_DIR}/in.nc ${MY_DAT_DIR}/in_rec_zero.nc
 	-for fl in ${MDL_DAT_STB}; do cd ${MY_DAT_DIR}; ln -s -f in.nc $$fl; done
 ${MY_DAT_DIR}/in.nc: ${MY_DAT_DIR}/in.cdl
 	cd ${MY_DAT_DIR}; ncgen -b -o in.nc in.cdl
+${MY_DAT_DIR}/in_rec_zero.nc: ${MY_DAT_DIR}/in_rec_zero.cdl
+	cd ${MY_DAT_DIR}; ncgen -b -o in_rec_zero.nc in_rec_zero.cdl
 dataclean: dat_cln
 dat_cln:
 	rm -f ${MDL_DAT}
@@ -1621,7 +1623,7 @@ dbg:
 distclean: dst_cln
 dst_cln: cln bin_cln dat_cln doc_cln root_cln
 	cd ${MY_BLD_DIR}; rm -f *~
-	cd ${MY_DAT_DIR}; rm -f in.nc *~
+	cd ${MY_DAT_DIR}; rm -f in.nc in_rec_zero.nc *~
 tags: 
 	etags ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_BLD_SRC} ${MDL_NCAP_SRC}
 

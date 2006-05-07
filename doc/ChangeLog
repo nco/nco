@@ -1,3 +1,9 @@
+2006-05-06  Charlie Zender  <zender@uci.edu>
+
+	* Improve warning messages in ncra for size 0 records
+
+	* Build in_rec_zero.nc from in_rec_zero.cdl in Makefiles
+
 2006-05-04  Charlie Zender  <zender@uci.edu>
 
 	* Fix ncks to work with record dimensions of size zero

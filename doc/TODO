@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.745 2006-05-06 00:52:36 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.746 2006-05-07 06:36:48 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -484,7 +484,6 @@ nco711. Should NCO work on record dimensions of length zero?
 nco712. Create high level NCO manpage
 nco713. Should libnetcdf return "Index exceeds dimension bound" error when srt=cnt=0?
 nco714. Apply nco711 fix to nco_cpy_var_val_mlt() and rest of code
-nco715. Create in_rec_zero.nc in Makefiles as additional regression target
 nco716. Create regression tests for in_rec_zero.nc
 nco717. 
 ************************************************************************
