@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.746 2006-05-07 06:36:48 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.747 2006-05-07 21:52:29 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -476,16 +476,17 @@ nco707. Hook nco_ddra() into ncbo
 nco708. Change DDRA diagnostics from --dbg=73 to command line switch
 nco709. Change wgt_brd_flg (may have wrong meaning)
 nco710. Create correct ncwa predictions for each 1/8th
-nco711. Should NCO work on record dimensions of length zero?
-	ncgen -b -o ~/nco/data/in_rec_zero.nc ~/nco/data/in_rec_zero.cdl
-	ncks -O -x -v one,lon ~/nco/data/in_rec_zero.nc ~/foo.nc
-	ncks -O -d lon,1 ~/nco/data/in_rec_zero.nc ~/foo.nc
-	ncks ~/foo.nc
 nco712. Create high level NCO manpage
 nco713. Should libnetcdf return "Index exceeds dimension bound" error when srt=cnt=0?
-nco714. Apply nco711 fix to nco_cpy_var_val_mlt() and rest of code
-nco716. Create regression tests for in_rec_zero.nc
-nco717. 
+nco717. Averaging empty record variable creates an element in output!:
+	ncwa -O ~/nco/data/in_rec_zero.nc ~/foo.nc
+	This seems unavoidable since variable must be a scalar in output,
+	and scalars automatically have one element of space reserved, whereas
+	zero-record arrays have not elements of space reserved.
+	Scalar is ill-defined of course.
+	Hence averaging the file increases the data storage.
+	What to do?  Nothing.
+nco718. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

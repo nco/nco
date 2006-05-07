@@ -1,5 +1,7 @@
 2006-05-07  Charlie Zender  <zender@uci.edu>
 
+	* Create stand-alone NCO(1) man page
+
 	* Allow zero-record record variables in nco_var_val_cpy()
 	This should allow copying metadata in most NCOs
 

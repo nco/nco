@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.49 2006-05-07 19:57:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.50 2006-05-07 21:52:30 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -155,7 +155,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
     /* Decrement cnt to C index value if necessary */
     if(!FORTRAN_IDX_CNV) cnt--; 
     if(cnt < 0L){
-      if(cnt == -1L) (void)fprintf(stdout,"%s: nco_lmt_sct_mk() reports record variable exists and is size zero, i.e., has no records yet.\n",prg_nm_get());
+      if(cnt == -1L) (void)fprintf(stdout,"%s: ERROR nco_lmt_sct_mk() reports record variable exists and is size zero, i.e., has no records yet.\n",prg_nm_get());
       (void)fprintf(stdout,"%s: HINT: Perform record-oriented operations only after file has valid records.\n",prg_nm_get());
       (void)fprintf(stdout,"%s: cnt < 0 in nco_lmt_sct_mk()\n",prg_nm_get());
       nco_exit(EXIT_FAILURE);
