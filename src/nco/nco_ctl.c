@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.125 2006-05-03 03:56:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.126 2006-05-08 02:55:20 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -87,6 +87,8 @@ nco_ddra /* [fnc] Count operations */
 
   const char fnc_nm[]="nco_ddra()";
   
+  /* Following speed parameter estimates are for clay.ess.uci.edu 
+     clay is the dual opteron used in ppr_ZeM06 */
   const float spd_flp=153e6; /* [# s-1] Floating point operation speed */
   const float spd_ntg=200e6; /* [# s-1] Integer operation speed */
   const float spd_rd=63.375e6; /* [B s-1] Disk read bandwidth */
@@ -197,7 +199,33 @@ nco_ddra /* [fnc] Count operations */
   wrd_sz=ddra_info->wrd_sz; /* [B] Bytes per element */
 
   /* Derived variables */
-  lmn_nbr_out=lmn_nbr/lmn_nbr_avg; /* [nbr] Output elements */
+  switch(nco_op_typ){
+    /* Types used in ncbo(), ncflint() */
+  case nco_op_add: /* [enm] Add file_1 to file_2 */
+  case nco_op_dvd: /* [enm] Divide file_1 by file_2 */
+  case nco_op_mlt: /* [enm] Multiply file_1 by file_2 */
+  case nco_op_sbt: /* [enm] Subtract file_2 from file_1 */
+    lmn_nbr_out=lmn_nbr; /* [nbr] Output elements */
+    break;
+    /* Types used in ncra(), ncrcat(), ncwa(): */
+  case nco_op_avg: /* [enm] Average */
+  case nco_op_min: /* [enm] Minimum value */
+  case nco_op_max: /* [enm] Maximum value */
+  case nco_op_ttl: /* [enm] Linear sum */
+  case nco_op_sqravg: /* [enm] Square of mean */
+  case nco_op_avgsqr: /* [enm] Mean of sum of squares */
+  case nco_op_sqrt: /* [enm] Square root of mean */
+  case nco_op_rms: /* [enm] Root-mean-square (normalized by N) */
+  case nco_op_rmssdn: /* [enm] Root-mean square normalized by N-1 */
+    lmn_nbr_out=lmn_nbr/lmn_nbr_avg; /* [nbr] Output elements */
+    break;
+  case nco_op_nil: /* [enm] Nil or undefined operation type  */
+    break;
+  default:
+    (void)fprintf(stdout,"%s: ERROR Illegal nco_op_typ in %s\n",prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+    break;
+  } /* end switch */
 
   flp_nbr_bnr_dfl=lmn_nbr; /* [nbr] Floating point operations for binary arithmetic */
   flp_nbr_nrm_dfl=lmn_nbr_out; /* [nbr] Floating point operations for normalization */
@@ -213,7 +241,7 @@ nco_ddra /* [fnc] Count operations */
   ntg_nbr_clc_dfl=lmn_nbr*(14*rnk_var+4); /* [nbr] N(14R+4) */
 
   /* Integer operations for normalization */
-  ntg_nbr_nrm_dfl=lmn_nbr*4/lmn_nbr_avg; /* [nbr] 4N/N_A = 4N_O */
+  ntg_nbr_nrm_dfl=4*lmn_nbr_out; /* [nbr] 4N/N_A = 4N_O */
 
   /* Integer operations for reduction */
   ntg_nbr_rdc_dfl=lmn_nbr*6+lmn_nbr_out; /* [nbr] N(6+N/N_A) */
@@ -231,7 +259,7 @@ nco_ddra /* [fnc] Count operations */
     /* Byte-swap elements from two input files and one output file */
     ntg_nbr_byt_swp=3*lmn_nbr*ntg_nbr_byt_swp_dfl; /* 3N(W+2) */
     rd_nbr_byt=2*lmn_nbr*wrd_sz; /* [B] Bytes read */
-    wrt_nbr_byt=lmn_nbr*wrd_sz; /* [B] Bytes written */
+    wrt_nbr_byt=lmn_nbr_out*wrd_sz; /* [B] Bytes written */
     break;
     /* Types used in ncra(), ncrcat(), ncwa(): */
   case nco_op_avg: /* [enm] Average */

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.169 2006-05-02 03:29:01 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.170 2006-05-08 02:55:20 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -127,8 +127,8 @@ AM_CONFIG_HEADER(config.h)
 # CC and CXX have preferred lists
 # AC_PROG_CC sets GCC to 'yes' when GCC is detected
 # AC_PROG_CC sets CFLAGS = -g [-O2 iff GCC]
-AC_PROG_CC( xlc_r xlc acc cc gcc gcc-2 icc como c89)
-AC_PROG_CXX(xlC_r xlC aCC CC cxx g++ g++-2 c++ icc como)
+AC_PROG_CC( xlc_r xlc acc cc     gcc gcc-2     icc  como c89)
+AC_PROG_CXX(xlC_r xlC aCC CC cxx g++ g++-2 c++ icpc como)
 AC_PROG_CPP
 AC_PROG_CXXCPP
 AC_PROG_CC_STDC
@@ -138,7 +138,7 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_LIBTOOL
 
-# until a fix for the libtool error is found.
+# Until fix for libtool error is found
 LIBTOOL="${LIBTOOL} --tag=CXX"
 #LIBTOOL="${LIBTOOL} --tag=ignore_tag_err"
 

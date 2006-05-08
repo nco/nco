@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.351 2006-04-22 00:45:15 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.352 2006-05-08 02:55:20 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1199,6 +1199,7 @@ variable in one file with hyperslabs of the same variable from another
 file} or @dfn{pasting}. 
 Appending is often confused with what @acronym{NCO} calls
 @dfn{concatenation}. 
+@cindex record dimension
 In @acronym{NCO}, concatenation refers to splicing a variable along the
 record dimension. 
 Appending, on the other hand, refers to adding variables from one file
