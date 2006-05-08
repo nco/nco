@@ -1,7 +1,6 @@
 2006-05-07  Charlie Zender  <zender@uci.edu>
 
 	* Add nco_ddra() to ncbo
-	Still need to remove ncwa assumptions from nco_ddra()
 
 	* Create stand-alone NCO(1) man page
 

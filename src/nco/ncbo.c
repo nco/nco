@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.81 2006-05-08 02:55:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.82 2006-05-08 03:40:05 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.81 2006-05-08 02:55:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.81 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.82 2006-05-08 03:40:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.82 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:-:";
   
   ddra_info_sct ddra_info={.MRV_flg=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
@@ -515,8 +515,8 @@ main(int argc,char **argv)
     int has_mss_val=False;
     ptr_unn mss_val;
 
-    if(dbg_lvl > 0) (void)fprintf(fp_stderr,"%s, ",var_prc_1[idx]->nm);
-    if(dbg_lvl > 0) (void)fflush(fp_stderr);
+    if(dbg_lvl > 0 && dbg_lvl < 10) (void)fprintf(fp_stderr,"%s, ",var_prc_1[idx]->nm);
+    if(dbg_lvl > 0 && dbg_lvl < 10) (void)fflush(fp_stderr);
     
     in_id_1=in_id_1_arr[omp_get_thread_num()];
     in_id_2=in_id_2_arr[omp_get_thread_num()];

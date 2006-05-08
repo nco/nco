@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.126 2006-05-08 02:55:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.127 2006-05-08 03:40:05 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -255,7 +255,7 @@ nco_ddra /* [fnc] Count operations */
     /* Subtraction computation assumes variables are same size
        fxm: Account for broadcasting */
     /* One floating point (add/subtract/multiply/divide) per element */
-    flp_nbr_bnr=lmn_nbr;
+    flp_nbr_bnr=flp_nbr_bnr_dfl;
     /* Byte-swap elements from two input files and one output file */
     ntg_nbr_byt_swp=3*lmn_nbr*ntg_nbr_byt_swp_dfl; /* 3N(W+2) */
     rd_nbr_byt=2*lmn_nbr*wrd_sz; /* [B] Bytes read */
