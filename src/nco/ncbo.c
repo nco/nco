@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.82 2006-05-08 03:40:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.83 2006-05-13 21:33:33 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -94,6 +94,7 @@ main(int argc,char **argv)
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool CNV_CCM_CCSM_CF;
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
   
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -111,8 +112,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.82 2006-05-08 03:40:05 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.82 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.83 2006-05-13 21:33:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.83 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:-:";
   
   ddra_info_sct ddra_info={.MRV_flg=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
@@ -184,6 +185,8 @@ main(int argc,char **argv)
     { /* Structure ordered by short option key if possible */
       /* Long options with no argument, no short option counterpart */
       /* Long options with argument, no short option counterpart */
+      {"ddra",no_argument,0,0}, /* [flg] DDRA diagnostics */
+      {"mdl_cmp",no_argument,0,0}, /* [flg] DDRA diagnostics */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
       /* Long options with short counterparts */
@@ -242,6 +245,7 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
+      if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) flg_ddra=True; /* [flg] DDRA diagnostics */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
     } /* opt != 0 */
     /* Process short options */
@@ -509,7 +513,7 @@ main(int argc,char **argv)
   /* OpenMP notes:
      shared(): msk and wgt are not altered within loop
      private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) private(ddra_info,idx,in_id_1,in_id_2) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr_1,nbr_var_prc_1,nbr_var_prc_2,nco_op_typ,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
+#pragma omp parallel for default(none) private(ddra_info,idx,in_id_1,in_id_2) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,flg_ddra,fp_stderr,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr_1,nbr_var_prc_1,nbr_var_prc_2,nco_op_typ,out_id,prg_nm,rcd,var_prc_1,var_prc_2,var_prc_out)
 #endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc_1;idx++){
     int has_mss_val=False;
@@ -604,12 +608,12 @@ main(int argc,char **argv)
     } /* end OpenMP critical */
     var_prc_1[idx]->val.vp=nco_free(var_prc_1[idx]->val.vp);
     
-    if(dbg_lvl == 73){
+    if(flg_ddra){
       /* DDRA diagnostics
 	 Usage:
-	 ncbo -O -C -D 73 -p ~/nco/data in.nc in.nc ~/foo.nc
-	 ncbo -O -C -D 73 -p ${DATA}/nco_bm stl_5km.nc stl_5km.nc ~/foo.nc
-	 ncbo -O -C -D 73 -p ${DATA}/nco_bm ipcc_dly_T85.nc ipcc_dly_T85.nc ~/foo.nc */
+	 ncbo -O -C --mdl -p ~/nco/data in.nc in.nc ~/foo.nc
+	 ncbo -O -C --mdl -p ${DATA}/nco_bm stl_5km.nc stl_5km.nc ~/foo.nc
+	 ncbo -O -C --mdl -p ${DATA}/nco_bm ipcc_dly_T85.nc ipcc_dly_T85.nc ~/foo.nc */
       
       /* Assign remaining input for DDRA diagnostics */
       ddra_info.lmn_nbr=var_prc_1[idx]->sz; /* [nbr] Variable size */
@@ -624,7 +628,7 @@ main(int argc,char **argv)
 	 (char *)NULL, /* I [sng] Weight name */
 	 &ddra_info); /* I [sct] DDRA information */
       
-    } /* !dbg */
+    } /* !flg_ddra */
     
   } /* end (OpenMP parallel for) loop over idx */
   if(dbg_lvl > 0) (void)fprintf(stderr,"\n");

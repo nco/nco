@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.748 2006-05-07 22:29:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.749 2006-05-13 21:31:05 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -486,7 +486,12 @@ nco717. Averaging empty record variable creates an element in output!:
 	Scalar is ill-defined of course.
 	Hence averaging the file increases the data storage.
 	What to do?  Nothing.
-nco718. 
+nco718. Add CF "coordinate" convention to NCO http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-current.html#grids
+nco719. Add regression test for CF "coordinate" convention
+	ncks -O -v cnv_CF_crd -p ~/nco/data in.nc ~/foo.nc
+	ncks ~/foo.nc
+nco720. Add variable which exercises CF "coordinate" convention to in.cdl
+nco721. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

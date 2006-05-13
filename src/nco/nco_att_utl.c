@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.63 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.64 2006-05-13 21:34:24 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -251,6 +251,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
   /* Jump back to here if current attribute is treated specially */
   for(idx=0;idx<nbr_att;idx++){
     (void)nco_inq_attname(in_id,var_in_id,idx,att_nm);
+    /* Look for same attribute in output variable in output file */
     rcd=nco_inq_att_flg(out_id,var_out_id,att_nm,(nc_type *)NULL,(long *)NULL);
       
     /* If instructed not to copy packing attributes... */
