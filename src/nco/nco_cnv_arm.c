@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.14 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.15 2006-05-13 21:39:06 zender Exp $ */
 
 /* Purpose: ARM conventions */
 
@@ -9,7 +9,7 @@
 #include "nco_cnv_arm.h" /* ARM conventions */
 
 nco_bool /* O [flg] File obeys ARM conventions */
-arm_inq /* O [fnc] Check if file obeys ARM conventions */
+nco_cnv_arm_inq /* O [fnc] Check if file obeys ARM conventions */
 (const int nc_id) /* I [id] netCDF file ID */
 {
   /* Purpose: Check whether file adheres to ARM time format */
@@ -38,14 +38,14 @@ arm_inq /* O [fnc] Check if file obeys ARM conventions */
   } /* end else */
 
   return CNV_ARM;
-} /* end arm_inq */
+} /* end nco_cnv_arm_inq */
 
 double /* O [s] base_time + current time_offset */ 
-arm_time_mk /* [fnc] Return time corresponding to current time offset */
+nco_cnv_arm_time_mk /* [fnc] Return time corresponding to current time offset */
 (const int nc_id, /* I [id] netCDF file ID */
  const double time_offset) /* I [s] Current time offset */
 {
-  /* NB: arm_time_mk() with same nc_id contains OpenMP critical region */
+  /* NB: nco_cnv_arm_time_mk() with same nc_id contains OpenMP critical region */
   /* Purpose: Return time corresponding to current time offset */
   double arm_time;
 
@@ -57,7 +57,7 @@ arm_time_mk /* [fnc] Return time corresponding to current time offset */
   /* Find base_time variable (NC_INT: base UNIX time of file) */
   rcd=nco_inq_varid_flg(nc_id,"base_time",&base_time_id);
   if(rcd != NC_NOERR){
-    (void)fprintf(stderr,"%s: WARNING ARM file does not have variable \"base_time\", exiting arm_time_mk()...\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: WARNING ARM file does not have variable \"base_time\", exiting nco_cnv_arm_time_mk()...\n",prg_nm_get());
     return -1;
   } /* end if */
 
@@ -68,14 +68,14 @@ arm_time_mk /* [fnc] Return time corresponding to current time offset */
   arm_time=base_time+time_offset;
 
   return arm_time;
-} /* end arm_time_mk() */
+} /* end nco_cnv_arm_time_mk() */
 
 void
-nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
+nco_cnv_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
 (const int nc_id, /* I [id] netCDF file ID */
  const nco_int base_time_srt) /* I [s] base_time of first input file */
 {
-  /* NB: arm_time_install() contains OpenMP critical region */
+  /* NB: nco_cnv_arm_time_install() contains OpenMP critical region */
   /* Purpose: Add time variable to concatenated ARM files */
 
   const char att_long_name[]="UNIX time";
@@ -101,7 +101,7 @@ nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   /* Find time_offset variable */
   rcd=nco_inq_varid_flg(nc_id,"time_offset",&time_offset_id);
   if(rcd != NC_NOERR){
-    (void)fprintf(stderr,"%s: WARNING ARM file does not have variable \"time_offset\", exiting nco_arm_time_install()...\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: WARNING ARM file does not have variable \"time_offset\", exiting nco_cnv_arm_time_install()...\n",prg_nm_get());
     return;
   } /* endif */
 
@@ -155,13 +155,13 @@ nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   time_offset=(double *)nco_free(time_offset);
 
   return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
-} /* end nco_arm_time_install */
+} /* end nco_cnv_arm_time_install */
 
 nco_int /* O [s] Value of base_time variable */
-arm_base_time_get /* [fnc] Get base_time variable from ARM file */
+nco_cnv_arm_base_time_get /* [fnc] Get base_time variable from ARM file */
 (const int nc_id) /* I [id] netCDF file ID */
 {
-  /* NB: arm_base_time_get() with same nc_id contains OpenMP critical region */
+  /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
   /* Purpose: Get base_time variable from ARM file */
   int base_time_id;
 
@@ -175,5 +175,5 @@ arm_base_time_get /* [fnc] Get base_time variable from ARM file */
   } /* end potential OpenMP critical */
 
   return base_time;
-} /* end arm_base_time_get */
+} /* end nco_cnv_arm_base_time_get */
 

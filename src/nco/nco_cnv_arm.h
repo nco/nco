@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.h,v 1.12 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.h,v 1.13 2006-05-13 21:39:06 zender Exp $ */
 
 /* Purpose: ARM conventions */
 
@@ -30,21 +30,21 @@ extern "C" {
 #endif /* __cplusplus */
 
 nco_bool /* O [flg] File obeys ARM conventions */
-arm_inq /* O [fnc] Check if file obeys ARM conventions */
+nco_cnv_arm_inq /* O [fnc] Check if file obeys ARM conventions */
 (const int nc_id); /* I [id] netCDF file ID */
 
 double /* O [s] base_time + current time_offset */ 
-arm_time_mk /* [fnc] Return time corresponding to current time offset */
+nco_cnv_arm_time_mk /* [fnc] Return time corresponding to current time offset */
 (const int nc_id, /* I [id] netCDF file ID */
  const double time_offset); /* I [s] Current time offset */
 
 void
-nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
+nco_cnv_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
 (const int nc_id, /* I [id] netCDF file ID */
  const nco_int base_time_srt); /* I [s] base_time of first input file */
 
 nco_int /* O [s] Value of base_time variable */
-arm_base_time_get /* [fnc] Get base_time variable from ARM file */
+nco_cnv_arm_base_time_get /* [fnc] Get base_time variable from ARM file */
 (const int nc_id); /* I [id] netCDF file ID */
 
 #ifdef __cplusplus

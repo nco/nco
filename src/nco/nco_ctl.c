@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.127 2006-05-08 03:40:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.128 2006-05-13 21:39:06 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -161,7 +161,7 @@ nco_ddra /* [fnc] Count operations */
   nco_bool wgt_brd_flg; /* [flg] Broadcast weight for this variable */
 
   /* Locals */
-  long long lmn_nbr_out; /* [nbr] Output elements */
+  long long lmn_nbr_out=long_long_CEWI; /* [nbr] Output elements */
 
   /* Where possible, work in terms of "default" counts per algorithm
      Algorithms (e.g., reduction, byte-swapping) are generally subroutines

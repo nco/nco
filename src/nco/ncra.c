@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.177 2006-04-21 20:33:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.178 2006-05-13 21:39:06 zender Exp $ */
 
 /* ncra -- netCDF running averager
    ncea -- netCDF ensemble averager
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.177 2006-04-21 20:33:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.177 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.178 2006-05-13 21:39:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.178 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
   dmn_sct **dim;
@@ -446,9 +446,9 @@ main(int argc,char **argv)
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
 
   /* Is this an ARM-format data file? */
-  CNV_ARM=arm_inq(in_id);
-  /* NB: arm_base_time_get() with same nc_id contains OpenMP critical region */
-  if(CNV_ARM) base_time_srt=arm_base_time_get(in_id);
+  CNV_ARM=nco_cnv_arm_inq(in_id);
+  /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
+  if(CNV_ARM) base_time_srt=nco_cnv_arm_base_time_get(in_id);
 
   /* Fill in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
@@ -534,8 +534,8 @@ main(int argc,char **argv)
        NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
     if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,idx_rec_out,FORTRAN_IDX_CNV);
     
-    /* NB: arm_base_time_get() with same nc_id contains OpenMP critical region */
-    if(CNV_ARM) base_time_crr=arm_base_time_get(in_id);
+    /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
+    if(CNV_ARM) base_time_crr=nco_cnv_arm_base_time_get(in_id);
     
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
@@ -692,8 +692,8 @@ main(int argc,char **argv)
   if(CNV_CCM_CCSM_CF && prg == ncra) (void)nco_cnv_ccm_ccsm_cf_date(out_id,var_out,nbr_xtr);
   
   /* Add time variable to output file
-     NB: arm_time_install() contains OpenMP critical region */
-  if(CNV_ARM && prg == ncrcat) (void)nco_arm_time_install(out_id,base_time_srt);
+     NB: nco_cnv_arm_time_install() contains OpenMP critical region */
+  if(CNV_ARM && prg == ncrcat) (void)nco_cnv_arm_time_install(out_id,base_time_srt);
   
   /* Copy averages to output file and free averaging buffers */
   if(prg == ncra || prg == ncea){

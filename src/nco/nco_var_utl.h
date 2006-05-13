@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.37 2006-02-19 00:42:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.38 2006-05-13 21:39:06 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -33,6 +33,7 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_att_utl.h" /* Attribute utilities */
 #include "nco_bnr.h" /* Binary write utilities */
+#include "nco_cnv_csm.h" /* CCM/CCSM/CF conventions */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_pck.h" /* Packing and unpacking variables */
