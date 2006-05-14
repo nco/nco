@@ -1,3 +1,9 @@
+2006-05-14  Charlie Zender  <zender@uci.edu>
+
+	* Finished hand-merging one week's patches from development on
+	multiple machines due to sourceforge.net outage. 
+	Master code is now on ashes.
+
 2006-05-13  Charlie Zender  <zender@uci.edu>
 
 	* Out-of-sync commits from ashes to new sourceforge repository
