@@ -1,8 +1,12 @@
 2006-05-14  Charlie Zender  <zender@uci.edu>
 
+	* Master code repository is now on nco.cvs.sf.net
+	Old code at nco.sf.net is a hodgepodge of erratic commits over past week.
+
 	* Finished hand-merging one week's patches from development on
 	multiple machines due to sourceforge.net outage. 
-	Master code is now on ashes.
+	Master code is now on ashes. Everything from about 
+	20060506--20060512 was originally "out-of-tree" during outage.
 
 2006-05-13  Charlie Zender  <zender@uci.edu>
 
