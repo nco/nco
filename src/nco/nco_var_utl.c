@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.109 2006-05-13 21:39:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.110 2006-05-14 19:35:37 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1103,7 +1103,7 @@ nco_var_lst_ass_crd_add /* [fnc] Add coordinates associated extracted variables 
 
   /* ...for each dimension in input file... */
   for(idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
-    /* ...see if it is a coordinate dimension... */
+    /* ...see if it is coordinate dimension... */
     (void)nco_inq_dimname(nc_id,idx_dmn,dmn_nm);
      
     rcd=nco_inq_varid_flg(nc_id,dmn_nm,&crd_id);
@@ -1125,12 +1125,12 @@ nco_var_lst_ass_crd_add /* [fnc] Add coordinates associated extracted variables 
 	    xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));
 	    xtr_lst[*nbr_xtr].nm=(char *)strdup(dmn_nm);
 	    xtr_lst[*nbr_xtr].id=crd_id;
-	    (*nbr_xtr)++;
+	    (*nbr_xtr)++; /* NB: Changes size of current loop! */
 	    break;
 	  } /* end if */
 	} /* end loop over idx_var */
-      } /* end if coordinate was not already on the list */
-    } /* end if dimension is a coordinate */
+      } /* end if coordinate was not already in list */
+    } /* end if dimension is coordinate */
   } /* end loop over idx_dmn */
   
   /* Detect and apply coordinates specified by CF convention */
@@ -1138,7 +1138,7 @@ nco_var_lst_ass_crd_add /* [fnc] Add coordinates associated extracted variables 
     const char dlm_sng[]=" "; /* [sng] Delimiter string */
     const char fnc_nm[]="nco_var_lst_ass_crd_add()"; /* [sng] Function name */
     char **crd_lst; /* [sng] 1D array of list elements */
-    char *att_val_crd;
+    char *att_val;
     char att_nm[NC_MAX_NAME];
     int idx_att;
     int idx_crd;
@@ -1165,18 +1165,20 @@ nco_var_lst_ass_crd_add /* [fnc] Add coordinates associated extracted variables 
 	    (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
 	    return xtr_lst;
 	  } /* end if */
-	  att_val_crd=(char *)nco_malloc((att_sz+1L)*sizeof(char));
-	  if(att_sz > 0) (void)nco_get_att(nc_id,var_id,att_nm,(void *)att_val_crd,NC_CHAR);	  
+	  att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+	  if(att_sz > 0) (void)nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+	  /* NUL-terminate attribute */
+	  att_val[att_sz]='\0';
 	  /* Split list into separate coordinate names */
-	  crd_lst=lst_prs_2D(att_val_crd,dlm_sng,&nbr_crd);
+	  crd_lst=lst_prs_2D(att_val,dlm_sng,&nbr_crd);
 	  /* ...for each coordinate in "coordinates" attribute... */
 	  for(idx_crd=0;idx_crd<nbr_crd;idx_crd++){
-	    /* Verify the "coordinate" exists in the input file */
+	    /* Verify "coordinate" exists in input file */
 	    rcd=nco_inq_varid_flg(nc_id,crd_lst[idx_crd],&crd_id);
 	    /* NB: Do not check that dimension by this name exists
-	       CF files often use this "coordinates" convention to identify
-	       two-dimensional (or more) variables which serve as coordinates.
-	       In other words, we want to ally N-D variables to work as coordinates
+	       CF files often use "coordinates" convention to identify
+	       two-dimensional (or greater) variables which serve as coordinates.
+	       In other words, we want to allow N-D variables to work as coordinates
 	       for the purpose of adding them to the extraction list only. */
 	    if(rcd == NC_NOERR){
 	      /* idx_var2 labels inner loop over variables */
@@ -1189,13 +1191,14 @@ nco_var_lst_ass_crd_add /* [fnc] Add coordinates associated extracted variables 
 		xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));
 		xtr_lst[*nbr_xtr].nm=(char *)strdup(crd_lst[idx_crd]);
 		xtr_lst[*nbr_xtr].id=crd_id;
-		(*nbr_xtr)++;
-		break;
-	      } /* end if coordinate was not already on the list */
+		(*nbr_xtr)++; /* NB: Changes size of current loop! */
+		/* Continue to next coordinate in loop */
+		continue;
+	      } /* end if coordinate was not already in list */
 	    } /* end if named coordinate exists in input file */
 	  } /* end loop over idx_crd */
 	  /* Free allocated memory */
-	  att_val_crd=(char *)nco_free(att_val_crd);
+	  att_val=(char *)nco_free(att_val);
 	  crd_lst=nco_sng_lst_free(crd_lst,nbr_crd);
 	} /* !coordinates */
       } /* end loop over attributes */

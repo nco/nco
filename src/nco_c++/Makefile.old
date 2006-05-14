@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.34 2005-07-14 21:40:01 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.35 2006-05-14 19:35:37 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -6,8 +6,8 @@
 # scp ~/nco/src/nco_c++/Makefile.old soot.ess.uci.edu:nco/src/nco_c++
 # scp ~/nco/src/nco_c++/Makefile.old goldhill.cgd.ucar.edu:nco/src/nco_c++
 
-# Copyright (C) 1994--2004 Charlie Zender
-# This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+# Copyright (C) 1994--2006 Charlie Zender
+# This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
 # See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text
 
 # Usage:
@@ -67,6 +67,21 @@ ifndef ${ABI}
 # 32 vs. 64 bit ABI: 32=32 bit mode (default), 64=64 bit mode if available
  ABI := 64
 endif # endif ABI
+ifndef ANTLR
+ ANTLR := runantlr
+endif
+ifndef ANTLR_ROOT
+ ANTLR_ROOT := /usr/local
+endif
+ifndef ANTLR_INC
+ ANTLR_INC := ${ANTLR_ROOT}/include # Directory containing antlr.h
+endif
+ifndef ANTLR_LIB
+ ANTLR_LIB := ${ANTLR_ROOT}/lib # Directory containing libantlr.a
+endif
+ifndef DAP
+ DAP := N
+endif
 ifndef ${DBG}
 # Debugging token N=No (default) Y=Yes
  DBG := N
@@ -74,12 +89,12 @@ endif # endif DBG
 ifndef GCC_RCH_ARG
  GCC_RCH_ARG :=
 endif # endif GCC_RCH_ARG
-ifndef I18N
 ifdef GSL_LIB
  GSL_LIB := -L${GSL_LIB}
 else
  GSL_LIB := $(shell gsl-config --libs)
 endif # endif GSL_LIB
+ifndef I18N
  I18N := Y
  MY_SHR_DIR := ${HOME}/share
  MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
@@ -92,11 +107,26 @@ ifndef MK_DPN
  MK_DPN = ${CPP} -M # NB: Recursive expansion required
  MK_DPN_CXX = ${CXX} -M # NB: Recursive expansion required
 endif # endif MK_DPN
+ifndef ${MPI} # MPI
+ MPI := N
+endif # endif MPI
+ifndef ${MPI_FAKE} # MPI
+ MPI_FAKE := N
+endif # endif MPI_FAKE
+ifndef ${NETCDF4} # netCDF4 support
+ NETCDF4 := N
+endif # endif NETCDF4
+ifndef NETCDF_ROOT
+ NETCDF_ROOT := /usr/local
+endif
+ifndef NETCDF4_ROOT
+ NETCDF4_ROOT := ${NETCDF_ROOT}
+endif
 ifndef NETCDF_INC
- NETCDF_INC := /usr/local/include 
+ NETCDF_INC := ${NETCDF_ROOT}/include # Directory containing netcdf.h
 endif
 ifndef NETCDF_LIB
- NETCDF_LIB := /usr/local/lib
+ NETCDF_LIB := ${NETCDF_ROOT}/lib # Directory containing libnetcdf.a
 endif
 ifndef ${OMP} # OpenMP
  OMP := Y
@@ -104,6 +134,9 @@ endif # endif OMP
 ifndef OPTS
  OPTS := O
 endif # endif OPTS
+ifndef ${PNETCDF} # pnetCDF support
+ PNETCDF := N
+endif # endif PNETCDF
 ifndef ${PRC}
 # Precision token D=Double (default) S=Single
  PRC := S
@@ -114,6 +147,10 @@ endif
 ifndef STC
 # Created statically linked executable
  STC := N
+endif
+ifndef UDUNITS
+# Use UDUnits functionality
+ UDUNITS := Y
 endif
 ifndef UNAMES
  UNAMES := $(shell uname -s)
@@ -176,7 +213,98 @@ else
 endif # endif PRC
 
 # NB: CPP_TKN is recursively expanded variable, define only when components are ready
-CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}'
+CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
+
+# Default NCO build. DAP, NETCDF4, and PNETCDF clauses may overwrite this
+NC_LDFLAGS := -L${NETCDF_LIB}
+NC_LIBS := -lnetcdf 
+
+ifeq (${DAP},Y)
+# Build NCO as DAP-enabled clients
+# fxm: OPeNDAP bloats executables, should automagically enable stripping?
+# http://www.opendap.org/user/guide-html/guide_28.html
+ifndef DAP_ROOT
+# Directory containing libdap++.a, libnc-dap.a
+ DAP_ROOT := /usr/local
+endif # DAP_ROOT
+ NC_LDFLAGS := -L${DAP_ROOT}/lib
+# NB: nc-dods, dap++ prior to version 3.5.X must be linked twice!
+# Required libraries for
+# DODS 3.3-:
+# NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
+# DODS 3.4.X:
+# NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lxml2 -lcurl -lpthread -ldl -lz
+# DAP 3.5+:
+ NC_LIBS := -lnc-dap -ldap++ -lxml2 -lcurl
+# Get netCDF from OPeNDAP version
+ NETCDF_INC=${DAP_ROOT}/include/libnc-dap
+ NETCDF_LIB=${DAP_ROOT}/lib
+endif # end DAP
+
+# Internationalize NCO with i18n features
+ifeq (${I18N},Y)
+ MY_SHR_DIR := ${HOME}/share
+ MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
+ MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
+endif
+
+# Message Passing Interface (MPI)
+ifeq (${MPI_FAKE},Y)
+# MPI_FAKE instructs make to compile mpnc*.c operators without defining ENABLE_MPI
+# Resulting executables use UP or SMP code not MPI code
+# This tests compile, link, execution of MPI mpnc*.c code without using any MPI calls
+ MPI := Y
+endif # !MPI_FAKE
+ifdef MPI_PRC
+# MPI_PRC tells test scripts how many MPI processes to spawn
+# Pass this MPI argument to nco_bm.pl
+ MPI_PRC_SNG := "--mpi_prc=${MPI_PRC}"
+# MPI_PRC implies MPI
+ MPI := Y
+else # !MPI_PRC
+ MPI_PRC_SNG :=
+endif # !MPI_PRC
+
+ifeq (${NETCDF4},Y)
+# Enable netCDF4 functionality
+ NETCDF_INC := ${NETCDF4_ROOT}/include
+ NETCDF_LIB := ${NETCDF4_ROOT}/lib
+ NC_LDFLAGS := -L${NETCDF_LIB}
+ NC_LIBS := -lnetcdf -lhdf5 -lhdf5_hl
+endif # endif NETCDF4
+
+ifeq (${PNETCDF},Y)
+# Enable pnetCDF functionality
+ NC_LDFLAGS := -L${NETCDF_LIB}
+ NC_LIBS += -lpnetcdf
+endif # endif PNETCDF
+
+ifeq (${UDUNITS},Y)
+# Build UDUnits-enabled NCO 
+# Place UDUNITS block after DAP block for both to work together
+ifndef UDUNITS_INC
+ UDUNITS_INC := /usr/local/include # Directory containing udunits.h
+endif
+ifndef UDUNITS_LIB
+ UDUNITS_LIB := /usr/local/lib # Directory containing libudunits.a
+endif
+ifneq (${UDUNITS_INC},${NETCDF_INC})
+ NETCDF_INC += -I${UDUNITS_INC}
+endif # end 
+ifneq (${UDUNITS_LIB},${NETCDF_LIB})
+ NC_LDFLAGS += -L${UDUNITS_LIB}
+endif # end if
+ NC_LIBS += -ludunits
+endif # end if UDUNITS
+
+# TMP_* and NCO_* are required to play nicely with DAP flags
+NCO_LDFLAGS := -L${MY_LIB_DIR}
+NCO_LIBS := -lnco_c++
+TMP_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS}
+TMP_LIBS := ${NCO_LIBS} ${NC_LIBS}
+# sort removes duplicates but unfortunately changes precedence too
+# fxm: use uniq instead
+#TMP_LDFLAGS := $(sort ${TMP_LDFLAGS})
 
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
 null :=
@@ -190,6 +318,12 @@ slash_rx := cszzsc
 slash := /
 MY_OBJ_DIR_RX := $(subst ${slash},${slash_rx},${MY_OBJ_DIR})
 MY_DPN_DIR_RX := $(subst ${slash},${slash_rx},${MY_DPN_DIR})
+
+ifeq (${PVM_ARCH},WIN32)
+ BNR_SFX := .exe
+else
+ BNR_SFX := ${null}
+endif 
 
 # Source file names with directories removed
 # List source targets alphabetically by "category":
@@ -282,10 +416,32 @@ ${MY_DPN_DIR}/%.d : %.cc
 # Manually define autotools tokens normally defined in HAVE_CONFIG_H
 # Initialize OS-specific tokens to empty
 CPP_TKN_OS := 
+CPP_TKN_OS := -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY
+ifneq (${PVM_ARCH},CRAY)
+ CPP_TKN_OS += -DHAVE_MKSTEMP
+endif # CRAY
+ifneq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSXWIN32))
+ CPP_TKN_OS += -DHAVE_GETOPT_H -DHAVE_GETOPT_LONG
+# UDUNITS_DAT OK to be empty for now
+endif # !LINUX
+ifneq (${null},$(findstring ${PVM_ARCH},AIXSGIMP64))
+ CPP_TKN_OS += -DNEED_GETOPT_LONG
+endif # !(AIX || SGI)
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 # Visual age compiler headers must occur before g++ headers
  CPP_TKN_OS += -I/usr/vacpp/include
 endif # AIX
+ifeq (${DAP},Y)
+ CPP_TKN_OS += -DENABLE_DAP
+endif # !DAP
+ifeq (${MPI},Y)
+ifneq (${MPI_FAKE},Y)
+ CPP_TKN_OS += -DENABLE_MPI
+endif # MPI_FAKE
+endif # !MPI
+ifeq (${UDUNITS},Y)
+ CPP_TKN_OS += -DENABLE_UDUNITS -DHAVE_UDUNITS_H
+endif # !UDUNITS
 ifeq (${null},$(findstring SGI,${PVM_ARCH}))
  CPP_TKN_OS += -DHAVE_CSTDLIB
 endif # SGI
@@ -572,8 +728,8 @@ endif # endif LINUXAMD64
 endif # endif GNU Compiler Collection
 # Intel (Kai) C++ Compiler
 ifeq (icpc,$(firstword ${CXX}))
-# -cxxlib-gcc: link using C++ run-time libraries provided with GCC
-# -cxxlib-icc: link using C++ run-time libraries provided by Intel
+# -cxxlib-gcc: link using C++ run-time libraries provided with GCC (default) (generated code is binary compatible with g++)
+# -cxxlib-icc: link using C++ run-time libraries provided by Intel (generated code is not binary compatible with g++)
 # -fast: enable -xP -O3 -ipo -static
 # -ipo[n]: enable multi-file IP optimizations (between files)
 # -no-gcc: do not define  __GNUC__, __GNUC_MINOR__, and __GNUC_PATCHLEVEL__ macros
@@ -597,7 +753,7 @@ ifeq (icpc,$(firstword ${CXX}))
 # remark #1572: floating-point equality and inequality comparisons are unreliable
  CFLAGS := -w1
  CPPFLAGS += -I${IA32ROOT}/include -I${IA32ROOT}/include/c++
- LDFLAGS += -cxxlib-icc
+ LDFLAGS += -cxxlib-gcc
 ifeq (${OMP},Y)
  OMP_FLG_C := -openmp -openmp_report0
 endif # endif OMP
@@ -1065,6 +1221,9 @@ clean : cln
 cln : dat_cln dpn_cln obj_cln
 debug: dbg
 dbg:
+	@printf "ABI = ${ABI}\n"
+	@printf "AR = ${AR}\n"
+	@printf "BNR_SFX = ${BNR_SFX}\n"
 	@printf "CC = ${CC}\n"
 	@printf "CFLAGS = ${CFLAGS}\n"
 	@printf "CPP = ${CPP}\n"
@@ -1073,20 +1232,37 @@ dbg:
 	@printf "CPP_TKN = ${CPP_TKN}\n"
 	@printf "CXX = ${CXX}\n"
 	@printf "CXXFLAGS = ${CXXFLAGS}\n"
+	@printf "DAP = ${DAP}\n"
+	@printf "DAP_ROOT = ${DAP_ROOT}\n"
 	@printf "DBG = ${DBG}\n"
 	@printf "FC = ${FC}\n"
 	@printf "FFLAGS = ${FFLAGS}\n"
+	@printf "FL_FMT = ${FL_FMT}\n"
 	@printf "GCC_RCH_ARG = ${GCC_RCH_ARG}\n"
-	@printf "GSL_LIB = ${GSL_LIB}\n"
 	@printf "HOST = ${HOST}\n"
 	@printf "HOSTNAME = ${HOSTNAME}\n"
 	@printf "ICC_RCH_ARG = ${ICC_RCH_ARG}\n"
+	@printf "LAMMPICC = ${LAMMPICC}\n"
+	@printf "LAMMPICXX = ${LAMMPICXX}\n"
 	@printf "LDFLAGS = ${LDFLAGS}\n"
+	@printf "LEX = $(LEX)\n"
+	@printf "LINUX_CC = $(LINUX_CC)\n"
+	@printf "LINUX_CXX = $(LINUX_CXX)\n"
+	@printf "MDL_BIN_TRG = ${MDL_BIN_TRG}\n"
 	@printf "MDL_DPN = ${MDL_DPN}\n"
+	@printf "MDL_MPI_TRG = ${MDL_MPI_TRG}\n"
 	@printf "MDL_OBJ = ${MDL_OBJ}\n"
 	@printf "MDL_PTH = ${MDL_PTH}\n"
+	@printf "MDL_RPM_NST_NM = ${MDL_RPM_NST_NM}\n"
 	@printf "MDL_SRC = ${MDL_SRC}\n"
+	@printf "MPICC = ${MPICC}\n"
+	@printf "MPICH_CC = ${MPICH_CC}\n"
+	@printf "MPICH_CXX = ${MPICH_CXX}\n"
+	@printf "MPICXX = ${MPICXX}\n"
+	@printf "MPI_PRC = ${MPI_PRC}\n"
+	@printf "MPI_PRC_SNG = ${MPI_PRC_SNG}\n"
 	@printf "MY_BIN_DIR = ${MY_BIN_DIR}\n"
+	@printf "MY_BLD_DIR = ${MY_BLD_DIR}\n"
 	@printf "MY_BLD_DIR = ${MY_BLD_DIR}\n"
 	@printf "MY_DAT_DIR = ${MY_DAT_DIR}\n"
 	@printf "MY_DOC_DIR = ${MY_DOC_DIR}\n"
@@ -1096,16 +1272,35 @@ dbg:
 	@printf "MY_LIB_DIR = ${MY_LIB_DIR}\n"
 	@printf "MY_SHR_DIR = ${MY_SHR_DIR}\n"
 	@printf "MY_OBJ_DIR = ${MY_OBJ_DIR}\n"
-	@printf "MY_OBJ_DIR_RX = ${MY_OBJ_DIR_RX}\n"
+	@printf "NCO_LDFLAGS = $(NCO_LDFLAGS)\n"
+	@printf "NCO_LIBS = $(NCO_LIBS)\n"
+	@printf "NCO_VRS = ${NCO_VRS}\n"
+	@printf "NC_LDFLAGS = $(NC_LDFLAGS)\n"
+	@printf "NC_LIBS = $(NC_LIBS)\n"
+	@printf "NETCDF4 = ${NETCDF4}\n"
+	@printf "NETCDF4_ROOT = ${NETCDF4_ROOT}\n"
 	@printf "NETCDF_INC = ${NETCDF_INC}\n"
 	@printf "NETCDF_LIB = ${NETCDF_LIB}\n"
+	@printf "NETCDF_ROOT = ${NETCDF_ROOT}\n"
 	@printf "OMP = ${OMP}\n"
 	@printf "OPTS = ${OPTS}\n"
+	@printf "PNETCDF = ${PNETCDF}\n"
 	@printf "PRC = ${PRC}\n"
 	@printf "PVM_ARCH = ${PVM_ARCH}\n"
+	@printf "RPM = ${RPM}\n"
+	@printf "SRC_LST = $(SRC_LST)\n"
+	@printf "STC = ${STC}\n"
+	@printf "THR_NBR = ${THR_NBR}\n"
+	@printf "THR_NBR_SNG = ${THR_NBR_SNG}\n"
+	@printf "TMP_LDFLAGS = ${TMP_LDFLAGS}\n"
+	@printf "TMP_LIBS = ${TMP_LIBS}\n"
+	@printf "UDUNITS = $(UDUNITS)\n"
+	@printf "UDUNITS_INC = $(UDUNITS_INC)\n"
+	@printf "UDUNITS_LIB = $(UDUNITS_LIB)\n"
 	@printf "UNAMES = ${UNAMES}\n"
 	@printf "VPATH = ${VPATH}\n"
 	@printf "VRS_SNG = ${VRS_SNG}\n"
+	@printf "YACC = ${YACC}\n"
 distclean : dst_cln
 dst_cln : cln bld_cln lib_cln
 install : inc 

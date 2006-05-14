@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.9 2006-03-15 17:25:31 mangalam Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.10 2006-05-14 19:35:37 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -11,7 +11,7 @@
 # See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text
 
 # Usage:
-# cd ~/nco/src/nco++;make dpn_cln cln all
+# cd ~/nco/src/nco++;make -f Makefile.old dpn_cln cln all
 
 # In rule 
 # foobar.o : foo.c bar.c
@@ -745,8 +745,8 @@ endif # endif LINUXAMD64
 endif # endif GNU Compiler Collection
 # Intel (Kai) C++ Compiler
 ifeq (icpc,$(firstword ${CXX}))
-# -cxxlib-gcc: link using C++ run-time libraries provided with GCC
-# -cxxlib-icc: link using C++ run-time libraries provided by Intel
+# -cxxlib-gcc: link using C++ run-time libraries provided with GCC (default) (generated code is binary compatible with g++)
+# -cxxlib-icc: link using C++ run-time libraries provided by Intel (generated code is not binary compatible with g++)
 # -fast: enable -xP -O3 -ipo -static
 # -ipo[n]: enable multi-file IP optimizations (between files)
 # -no-gcc: do not define  __GNUC__, __GNUC_MINOR__, and __GNUC_PATCHLEVEL__ macros
@@ -770,7 +770,7 @@ ifeq (icpc,$(firstword ${CXX}))
 # remark #1572: floating-point equality and inequality comparisons are unreliable
  CFLAGS := -w1
  CPPFLAGS += -I${IA32ROOT}/include -I${IA32ROOT}/include/c++
- LDFLAGS += -cxxlib-icc
+ LDFLAGS += -cxxlib-gcc
 ifeq (${OMP},Y)
  OMP_FLG_C := -openmp -openmp_report0
 endif # endif OMP
