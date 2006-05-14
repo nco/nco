@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.352 2006-05-08 02:55:20 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.353 2006-05-14 07:16:48 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -102,8 +102,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.1.2
 @set copyright-years 1995--2006
 @set update-year 2006
-@set update-date 20 April 2006
-@set update-month April 2006
+@set update-date 8 May 2006
+@set update-month May 2006
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -4579,7 +4579,7 @@ specially.
 @acronym{NCO} handles older @acronym{NCAR} model datasets, such as
 @acronym{CCM} and early @acronym{CCSM} datasets, with its @acronym{CF}    
 rules even though the earlier data may not contain an explicit
-@code{Convention} attribute (e.g., @samp{CF-1.0}).
+@code{Conventions} attribute (e.g., @samp{CF-1.0}).
 We refer to all such data collectively as @acronym{CF} data.
 Skip this section if you never work with @acronym{CF} data.
 
@@ -4617,9 +4617,9 @@ conventions, but experience shows they simplify data analysis.
 
 Currently, @acronym{NCO} determines whether a datafile is a
 @acronym{CF} output datafile simply by checking whether value of the
-global attribute @code{convention} (if it exists) equals
+global attribute @code{Conventions} (if it exists) equals
 @samp{CF-1.0} or @samp{NCAR-CSM}.   
-Should @code{convention} equal either of these in the (first)
+Should @code{Conventions} equal either of these in the (first)
 @var{input-file}, @acronym{NCO} will attempt to treat certain variables
 specially, because of their meaning in @acronym{CF} files. 
 @acronym{NCO} will not average the following variables often found in
@@ -4654,7 +4654,7 @@ coordinate variables such as @code{latitude} and @code{longitude}.
 Users usually want @emph{all} grid properties to remain unaltered in the
 output file. 
 To be treated as a grid property, the variable name must @emph{exactly}
-match one of the names in the above list, or be a coordinate variable. 
+match a name in the above list, or be a coordinate variable. 
 The handling of @code{msk_*} is exceptional in that @emph{any} variable 
 name beginning with the string @code{msk_} is considered to be a
 ``mask'' and is thus preserved (not operated on arithmetically).
@@ -4662,7 +4662,29 @@ name beginning with the string @code{msk_} is considered to be a
 You must spoof @acronym{NCO} if you would like any grid properties
 or other special @acronym{CF} fields processed normally.
 For example rename the variables first with @command{ncrename}, 
-or alter the @code{convention} attribute.
+or alter the @code{Conventions} attribute.
+
+@html
+<a name="cnv_CF_crd"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_crd -->
+@end html
+@cindex @code{coordinates}
+@cindex coordinates convention
+@cindex coordinate variable 
+@cindex @code{-C}
+@cindex @code{-c}
+@cindex @code{--no-coords}
+@cindex @code{--no-crd}
+@cindex @code{--coords}
+@cindex @code{--crd}
+NCO supports the @acronym{CF} @code{coordinates} convention described at
+@uref{http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#grid_ex2}. 
+This convention allows variables to specify additional coordinates
+(including multidimensional coordinates) in a space-separated string
+attribute named @code{coordinates}. 
+NCO attached any such coordinates to the extraction list along with
+variable and its usual (one-dimensional) coordinates, if any.
+These auxiliary coordinates are subject to the user-specified overrides
+described in @ref{Subsetting Coordinate Variables}.
 
 @html
 <a name="cnv_ARM"></a> <!-- http://nco.sf.net/nco.html#cnv_ARM -->

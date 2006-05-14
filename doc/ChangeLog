@@ -2,7 +2,36 @@
 
 	* Out-of-sync commits from ashes to new sourceforge repository
 
+006-05-11  Charlie Zender  <zender@uci.edu>
+
+        * Fix syntax error in data/Makefile.am so .nc's build correctly
+
+        * Fix syntax errors in configure.in
+
+2006-05-09  Charlie Zender  <zender@uci.edu>
+
+        * Add CF coordinate convention to documentation
+
+        * Add regression test for CF "coordinate" convention
+
+        * CF "coordinates" convention is fully implemented
+
+        * Add C++ directory contents to TAGS source list
+
+        * CF "coordinates" convention is semi-working
+
+2006-05-08  Charlie Zender  <zender@uci.edu>
+
+        * Change in.cdl Conventions from NCAR-CSM to CF-1.0
+
+        * Implement nco_cnv_ name convention in ARM routines
+
+        * Support OPeNDAP on AIX in bld/Makefile
+
 2006-05-07  Charlie Zender  <zender@uci.edu>
+
+        * Change from --dbg_lvl=73 to --ddra or --mdl_cmp for
+        computational model = DDRA diagnostic output
 
 	* Add nco_ddra() to ncbo
 
@@ -51,7 +80,7 @@
 
 	* Modify DDRA diagnostics to work with long long's = int64 sizes
 
-	* fxm Add MRV_flg, rnk_avg, and lmn_nbr_avg outputs to nco_var_avg()
+	* Add MRV_flg, rnk_avg, and lmn_nbr_avg outputs to nco_var_avg()
 
 	* Hooked-in call to nco_ddra() with estimates for some inputs
 	Calculations should be more accurate than ddra scripts.

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.26 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.27 2006-05-14 07:16:48 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -17,8 +17,11 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions *
   nco_bool CNV_CCM_CCSM_CF=False;
 
   char *att_val;
+  char *cnv_sng=NULL_CEWI;
 
-  char cnv_sng[]="Conventions"; /* Unidata standard string */
+  /* netCDF standard is uppercase Conventions, but some models user lowercase */
+  char cnv_sng_UC[]="Conventions"; /* Unidata standard string (uppercase) */
+  char cnv_sng_LC[]="conventions"; /* Unidata non-standard string (lowercase) */
   
   int rcd; /* [rcd] Return code */
   
@@ -27,8 +30,14 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions *
   nc_type att_typ;
 
   /* Look for signature of an CCM/CCSM/CF format file */
+  cnv_sng=cnv_sng_UC;
   rcd=nco_inq_att_flg(nc_id,NC_GLOBAL,cnv_sng,&att_typ,&att_sz);
-
+  if(rcd != NC_NOERR){
+    /* Some models, e.g., CLM user lowercase "conventions" */
+    cnv_sng=cnv_sng_LC;
+    rcd=nco_inq_att_flg(nc_id,NC_GLOBAL,cnv_sng,&att_typ,&att_sz);
+  } /* Re-try with lowercase string */
+  
   if(rcd == NC_NOERR && att_typ == NC_CHAR){
     /* Add one for NUL byte */
     att_val=(char *)nco_malloc(att_sz*nco_typ_lng(att_typ)+1);
@@ -39,6 +48,8 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions *
     if(strstr(att_val,"NCAR-CSM") != NULL) CNV_CCM_CCSM_CF=True; /* Backwards compatibility */
     /* Climate-Forecast conventions */
     if(strstr(att_val,"CF-1.0") != NULL) CNV_CCM_CCSM_CF=True; /* NB: Not fully implemented TODO nco145 */
+    /* As of 20060514, CLM 3.0 uses CF1.0 not CF-1.0 (CAM gets it right) */
+    if(strstr(att_val,"CF1.0") != NULL) CNV_CCM_CCSM_CF=True; /* NB: Not fully implemented TODO nco145 */
     if(CNV_CCM_CCSM_CF && dbg_lvl_get() > 0){
       (void)fprintf(stderr,"%s: CONVENTION File Convention attribute is \"%s\".",prg_nm_get(),att_val);
       if(dbg_lvl_get() > 1) (void)fprintf(stderr," NCO has a unified (but incomplete) treatment of many related (official and unoffical) conventions such as CCM, CCSM, and CF. As part of adhering to this convention, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"date\" or \"gw\". For a full list of exceptions, see the manual http://nco.sf.net/nco.html#CF");

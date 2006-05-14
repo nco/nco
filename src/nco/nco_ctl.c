@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.128 2006-05-13 21:39:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.129 2006-05-14 07:18:53 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -18,6 +18,8 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   static const char cmp_sng[]="Token _AIX_ defined in nco_cmp_get(), probably compiled with xlc"; /* [sng] Compiler string */
 #endif /* !_AIX */
 #if defined(__GNUC__) && !defined(__INTEL_COMPILER)
+  /* Testing for GCC macros early is dangerous because some compilers, 
+     including Intel's, define GCC macros for compatibility */
   static const char cmp_nm[]="gcc"; /* [sng] Compiler name */
   static const char cmp_sng[]="Token __GNUC__ defined in nco_cmp_get(), probably compiled with gcc"; /* [sng] Compiler string */
 #endif /* !__GNUC__ */
@@ -161,7 +163,7 @@ nco_ddra /* [fnc] Count operations */
   nco_bool wgt_brd_flg; /* [flg] Broadcast weight for this variable */
 
   /* Locals */
-  long long lmn_nbr_out=long_long_CEWI; /* [nbr] Output elements */
+  long long lmn_nbr_out; /* [nbr] Output elements */
 
   /* Where possible, work in terms of "default" counts per algorithm
      Algorithms (e.g., reduction, byte-swapping) are generally subroutines

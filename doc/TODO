@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.750 2006-05-14 06:28:28 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.751 2006-05-14 07:16:48 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -495,7 +495,8 @@ nco724. attribute propagation: test
         ncap2 -s "cnv_CF_crd2=cnv_CF_crd" -s "lon2=lon[0]" -p ~/nco/data in.nc ~/foo.nc
 nco725. attribute propagation: regression test
 nco726. attribute propagation: document
-nco727. 
+nco727. CLM uses "conventions" attribute
+nco728. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

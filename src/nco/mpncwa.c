@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.40 2006-05-02 07:10:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.41 2006-05-14 07:18:53 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -99,6 +99,7 @@ main(int argc,char **argv)
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   nco_bool WGT_MSK_CRD_VAR=True; /* [flg] Weight and/or mask coordinate variables */
   nco_bool opt_a_flg=False; /* Option a */
+  nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
   
   char **dmn_avg_lst_in=NULL_CEWI; /* Option a */
   char **fl_lst_abb=NULL; /* Option n */
@@ -119,8 +120,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.40 2006-05-02 07:10:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.40 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.41 2006-05-14 07:18:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.41 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:z:-:";
   
   ddra_info_sct ddra_info={.MRV_flg=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
@@ -211,6 +212,8 @@ main(int argc,char **argv)
     { /* Structure ordered by short option key if possible */
       /* Long options with no argument, no short option counterpart */
       /* Long options with argument, no short option counterpart */
+      {"ddra",no_argument,0,0}, /* [flg] DDRA diagnostics */
+      {"mdl_cmp",no_argument,0,0}, /* [flg] DDRA diagnostics */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
       /* Long options with short counterparts */
@@ -307,6 +310,7 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
+      if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) flg_ddra=True; /* [flg] DDRA diagnostics */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
     } /* opt != 0 */
     /* Process short options */
@@ -814,7 +818,7 @@ main(int argc,char **argv)
 	     firstprivate(): msk_out and wgt_out must be NULL on first call to nco_var_cnf_dmn()
 	     shared(): msk and wgt are not altered within loop
 	     private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,msk_out,wgt_out) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,fp_stderr,fp_stdout,in_id_arr,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
+#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,msk_out,wgt_out) private((ddra_info,idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,flg_ddra,fp_stderr,fp_stdout,in_id_arr,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
 #endif /* !_OPENMP */
 	  /* UP and SMP codes main loop over variables */
 	  for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
@@ -1076,6 +1080,31 @@ main(int argc,char **argv)
 		  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 		} /* end if variable is array */
 	      } /* end OpenMP critical */
+	      
+	      /* fxm: TODO nco722 DDRA diagnostics should work in MPI mode */
+	      if(flg_ddra){
+		/* DDRA diagnostics
+		   Usage:
+		   mpncwa -O -C --mdl -a lat,lon,time -w lat ~/nco/data/in.nc ~/foo.nc
+		   mpncwa -O -C --mdl -a lat,lon -w lat ${DATA}/nco_bm/stl_5km.nc ~/foo.nc
+		   mpncwa -O -C --mdl -a lat,lon,time -w lat ${DATA}/nco_bm/ipcc_dly_T85.nc ~/foo.nc */
+		
+		/* Assign remaining input for DDRA diagnostics */
+		ddra_info.lmn_nbr=var_prc[idx]->sz; /* [nbr] Variable size */
+		ddra_info.lmn_nbr_wgt=wgt->sz; /* [nbr] Weight size */
+		ddra_info.nco_op_typ=nco_op_typ; /* [enm] Operation type */
+		ddra_info.rnk_var=var_prc[idx]->nbr_dim; /* I [nbr] Variable rank (in input file) */
+		ddra_info.rnk_wgt=wgt->nbr_dim; /* [nbr] Rank of weight */
+		ddra_info.var_idx=idx; /* [enm] Index */
+		ddra_info.wrd_sz=nco_typ_lng(var_prc[idx]->type); /* [B] Bytes per element */
+		
+		/* DDRA diagnostics */
+		rcd+=nco_ddra /* [fnc] Count operations */
+		  (var_prc[idx]->nm, /* I [sng] Variable name */
+		   wgt_nm, /* I [sng] Weight name */
+		   &ddra_info); /* I [sct] DDRA information */
+		
+	      } /* !flg_ddra */
 	      
 	      /* Free current output buffer */
 	      var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
