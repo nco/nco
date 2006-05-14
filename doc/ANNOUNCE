@@ -1,8 +1,8 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.173 2006-05-07 22:29:49 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.174 2006-05-14 06:50:08 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.2 are ready. 
-They contain a fixes for zero-length record variables, and significant
-new features in ncap2. 
+They contain a fix for empty record variables, improved CF Convention
+support, and significant new features in ncap2. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -37,6 +37,11 @@ This behavior may change in the future.
 4. Server-side extensions (Daniel Wang) (fxm)
 
 5. Work (or die) "correctly" with zero-record record variables
+
+6. Support CF convention on "coordinates" attribute:
+   Coordinates listed in "coordinates" attribute are stick to the
+   parent variable just like real coordinates.
+   http://nco.sf.net/nco.html#cnv_CF_crd
 
 Enjoy,
 Charlie

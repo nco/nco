@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.37 2006-05-01 04:03:54 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.38 2006-05-14 06:43:39 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -99,7 +99,7 @@ sub perform_tests {
 #	$tst_cmd[2] = "NO_SS";
     $tst_cmd[2] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 # printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
     
@@ -109,7 +109,7 @@ sub perform_tests {
     $tst_cmd[2] = "0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 ";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 #printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
     
@@ -119,7 +119,7 @@ sub perform_tests {
     $tst_cmd[2] = "1.000000";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
 #print "paused - hit return to continue"; my $wait = <STDIN>;
     
 # where did e_dbl go??  it's in in.cdl but gets lost thru the rgrs...?
@@ -129,7 +129,7 @@ sub perform_tests {
     $tst_cmd[2] = "1.000000000000";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=4*atan(1)' $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%.12f\\n' %tempf_00%";
@@ -137,7 +137,7 @@ sub perform_tests {
     $tst_cmd[2] = "3.141592741013";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=erf(1)' $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%.12f\\n' %tempf_00%";
@@ -145,7 +145,7 @@ sub perform_tests {
     $tst_cmd[2] = "0.842701";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     #fails - wrong result ???
     $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=gamma(0.5)' $in_pth_arg in.nc %tempf_00%";
@@ -154,7 +154,7 @@ sub perform_tests {
     $tst_cmd[2] = "1.772453851";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'pi=4*atan(1);foo=sin(pi/2)' $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -v foo -s '%.12f\\n' %tempf_00%";
@@ -162,7 +162,7 @@ sub perform_tests {
     $tst_cmd[2] = "1.000000000000";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'pi=4*atan(1);foo=cos(pi)' $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -v foo -s '%.12f\\n' %tempf_00%";
@@ -170,7 +170,7 @@ sub perform_tests {
     $tst_cmd[2] = "-1.000000000000";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 # printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
     
@@ -187,7 +187,7 @@ sub perform_tests {
 	$tst_cmd[2] = "meter second-1";
 	$tst_cmd[3] = "SS_OK";
 	NCO_bm::go(\@tst_cmd);
-	$#tst_cmd=0;  # reset the array
+	$#tst_cmd=0;  # Reset array
 	
 #printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
 	
@@ -197,7 +197,7 @@ sub perform_tests {
 	$tst_cmd[2] = "0";
 	$tst_cmd[3] = "SS_OK";
 	NCO_bm::go(\@tst_cmd);
-	$#tst_cmd=0;  # reset the array
+	$#tst_cmd=0;  # Reset array
 	
 # this test now fails - due to changed $dsc_sng?
 	$tst_cmd[0]="ncatted -O --hdr_pad=1000 $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tempf_00%";
@@ -208,7 +208,7 @@ sub perform_tests {
 	$tst_cmd[3] = "24"; # was 26
 	$tst_cmd[4] = "SS_OK";
 	NCO_bm::go(\@tst_cmd);
-	$#tst_cmd=0;  # reset the array
+	$#tst_cmd=0;  # Reset array
     }
     
 # printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
@@ -226,7 +226,7 @@ sub perform_tests {
     $tst_cmd[2] = "1.0e36";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array - ok
+    $#tst_cmd=0;  # Reset array - ok
     
     $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg --op_typ='-' -d lon,1 -v mss_val $in_pth_arg in.nc in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v mss_val %tempf_00%";
@@ -234,7 +234,7 @@ sub perform_tests {
     $tst_cmd[2] = 1.0e36;
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array ok
+    $#tst_cmd=0;  # Reset array ok
     
     $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg --op_typ='-' -d lon,0 -v no_mss_val $in_pth_arg in.nc in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v no_mss_val %tempf_00%";
@@ -242,7 +242,7 @@ sub perform_tests {
     $tst_cmd[2] = "0";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array ok
+    $#tst_cmd=0;  # Reset array ok
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v mss_val_fst $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncrename -h -O $nco_D_flg -v mss_val_fst,mss_val %tempf_00%";
@@ -252,7 +252,7 @@ sub perform_tests {
     $tst_cmd[4] = "-999.000000,-999.000000,-999.000000,-999.000000";
     $tst_cmd[5] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array ok
+    $#tst_cmd=0;  # Reset array ok
     
     $tst_cmd[0]="ncrename -h $nco_D_flg -O -v no_mss_val,one_dmn_arr_with_and_without_mss_val $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncrename -h $nco_D_flg -O -v mss_val,one_dmn_arr_with_and_without_mss_val $in_pth_arg in.nc %tempf_01%";
@@ -262,7 +262,7 @@ sub perform_tests {
     $tst_cmd[4] = 0.0;
     $tst_cmd[5] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array ok
+    $#tst_cmd=0;  # Reset array ok
     
     $tst_cmd[0]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg -d lon,1 -v mss_val $in_pth_arg in.nc in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v mss_val %tempf_00%";
@@ -270,7 +270,7 @@ sub perform_tests {
     $tst_cmd[2] = 1.0e36;
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array ok
+    $#tst_cmd=0;  # Reset array ok
     
     $tst_cmd[0]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg -d lon,1 -v mss_val $in_pth_arg in.nc in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v mss_val %tempf_00%";
@@ -278,7 +278,7 @@ sub perform_tests {
     $tst_cmd[2] = 1.0e36;
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array ok
+    $#tst_cmd=0;  # Reset array ok
     
     $tst_cmd[0]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg -d lon,0 -v no_mss_val $in_pth_arg in.nc in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v no_mss_val %tempf_00%";
@@ -286,7 +286,7 @@ sub perform_tests {
     $tst_cmd[2] = "0";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array ok
+    $#tst_cmd=0;  # Reset array ok
     
     
     $tst_cmd[0]="ncwa $omp_flg -C -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc %tempf_03%";
@@ -296,7 +296,7 @@ sub perform_tests {
     $tst_cmd[3] = "-1.0";
     $tst_cmd[4] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 #} # endif $mpi_prc == 0...
     
@@ -314,7 +314,7 @@ sub perform_tests {
     $tst_cmd[2] = "5";
     $tst_cmd[3] = "NO_SS";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_flt -d time,0 $in_pth_arg in.nc in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v rec_var_flt_mss_val_flt %tempf_00%";
@@ -322,7 +322,7 @@ sub perform_tests {
     $tst_cmd[2] = "1.0e36";
     $tst_cmd[3] = "NO_SS";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="/bin/rm -f %tempf_00%";
     $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v rec_var_flt_mss_val_dbl -d time,1 $in_pth_arg in.nc in.nc %tempf_00%";
@@ -331,7 +331,7 @@ sub perform_tests {
     $tst_cmd[3] = "2";
     $tst_cmd[4] = "NO_SS";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="/bin/rm -f %tempf_00%";
     $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_arg in.nc %tempf_00%";
@@ -340,7 +340,7 @@ sub perform_tests {
     $tst_cmd[3] = "3";
     $tst_cmd[4] = "NO_SS";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="/bin/rm -f %tempf_00%";
     $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc in.nc %tempf_00%";
@@ -349,7 +349,7 @@ sub perform_tests {
     $tst_cmd[3] = "-999 2 3 4 5 6 7 8 -999 -999";
     $tst_cmd[4] = "NO_SS";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 # print "paused - hit return to continue"; my $wait = <STDIN>;
     
@@ -366,7 +366,7 @@ sub perform_tests {
     $tst_cmd[4] = " 1.000, "; # is this effectively equal to the previous " 1.000,  1.000, "
     $tst_cmd[5] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 #print "paused - hit return to continue"; my $wait = <STDIN>;
     
@@ -381,7 +381,7 @@ sub perform_tests {
     $tst_cmd[2] = "1.0";
     $tst_cmd[3] = "NO_SS";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     if ($dodap eq "FALSE"){
 	$tst_cmd[0]="ncrename -h -O $nco_D_flg -v zero,foo $in_pth_arg in.nc %tempf_01%";
@@ -392,7 +392,7 @@ sub perform_tests {
 	$tst_cmd[4] = "2.0";
 	$tst_cmd[5] = "NO_SS";
 	NCO_bm::go(\@tst_cmd);
-	$#tst_cmd=0;  # reset the array
+	$#tst_cmd=0;  # Reset array
     }
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d lon,1 -v mss_val $in_pth_arg in.nc %tempf_01%";
@@ -405,7 +405,7 @@ sub perform_tests {
     $tst_cmd[6] = "1e+36";
     $tst_cmd[7] = "NO_SS";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     
 ####################
@@ -421,7 +421,7 @@ sub perform_tests {
     $tst_cmd[4] = 1;
     $tst_cmd[5] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     #passes, but returned string includes tailing NULLS (<nul> in nedit)
     $tst_cmd[0]="ncks -C -H -s '%c' -v fl_nm $in_pth_arg in.nc";
@@ -429,7 +429,7 @@ sub perform_tests {
     $tst_cmd[1] = "/home/zender/nco/data/in.cdl";
     $tst_cmd[2] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v lev $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f,' -v lev %tempf_00%";
@@ -437,7 +437,7 @@ sub perform_tests {
     $tst_cmd[2] = "100.000000,500.000000,1000.000000";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v three_dmn_var $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,3,3 %tempf_00%";
@@ -445,7 +445,7 @@ sub perform_tests {
     $tst_cmd[2] = "23";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v int_var $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v int_var %tempf_00%";
@@ -453,7 +453,7 @@ sub perform_tests {
     $tst_cmd[2] = "10";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,0,0 -d lev,2,2 -d lon,0,,2 -d lon,1,,2 $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%4.1f,' -v three_dmn_var %tempf_00%";
@@ -461,7 +461,7 @@ sub perform_tests {
     $tst_cmd[2] = "12.0,13.0,14.0,15.0,20.0,21.0,22.0,23.0";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,0,3 -d lon,1,3 $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%4.1f,' -v three_dmn_var %tempf_00%";
@@ -469,7 +469,7 @@ sub perform_tests {
     $tst_cmd[2] = "20.0,21.0,22.0,23.0";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,0.,,2 -d lon,90.,,2 $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%4.1f,' -v three_dmn_var %tempf_00%";
@@ -477,7 +477,7 @@ sub perform_tests {
     $tst_cmd[2] = "20.0,21.0,22.0,23.0";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,800.,200. -d lon,270.,0. $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%4.1f,' -v three_dmn_var %tempf_00%";
@@ -485,7 +485,7 @@ sub perform_tests {
     $tst_cmd[2] = "23.0,20.0,15.0,12.0";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d time_udunits,'1999-12-08 12:00:0.0','1999-12-09 00:00:0.0' $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%6.0f' -d time_udunits,'1999-12-08 18:00:0.0','1999-12-09 12:00:0.0',2 -v time_udunits $in_pth_arg in.nc";
@@ -493,14 +493,14 @@ sub perform_tests {
     $tst_cmd[2] = "876018";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -H -v wvl -d wvl,'0.4 micron','0.7 micron' -s '%3.1e' $in_pth_arg in.nc";
     $dsc_sng="dimension slice using UDUnit conversion (fails without UDUnits library support)";
     $tst_cmd[1] = "1.0e-06";
     $tst_cmd[2] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     #fails
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v '^three_*' $in_pth_arg in.nc %tempf_00%";
@@ -509,7 +509,7 @@ sub perform_tests {
     $tst_cmd[2] = "3";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v '^[a-z]{3}_[a-z]{3}_[a-z]{3,}\$' $in_pth_arg in.nc %tempf_00%";
     # for this test, the regex is mod'ed                       ^
@@ -518,7 +518,7 @@ sub perform_tests {
     $tst_cmd[2] = "1";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d time,0,1 -v time $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -C -d time,2, %tempf_00%";
@@ -526,18 +526,23 @@ sub perform_tests {
     $tst_cmd[2] = "ncks: ERROR User-specified dimension index range 2 <= time <= 1 does not fall within valid dimension index range 0 <= time <= 1";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncks -C -H -s '%d' -v byte_var $in_pth_arg in.nc";
     $dsc_sng="Print byte value";
     $tst_cmd[1] = "122";
     $tst_cmd[2] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
-    
-    
-    
-    
+    $#tst_cmd=0;  # Reset array
+
+    $tst_cmd[0]="ncks -O -v cnv_CF_crd $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[1]="ncks -C -H -s '%g' -v lon -d lon,3 %tempf_00%";
+    $dsc_sng="CF convention coordinates attribute";
+    $tst_cmd[2] = "270";
+    $tst_cmd[3] = "SS_OK";
+    NCO_bm::go(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
 #####################
 #### ncpdq tests #### -OK !
 #####################
@@ -550,7 +555,7 @@ sub perform_tests {
     $tst_cmd[2] = "90";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a -lat,-lev,-lon -v three_dmn_var $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var -d lat,0 -d lev,0 -d lon,0 %tempf_00%";
@@ -558,7 +563,7 @@ sub perform_tests {
     $tst_cmd[2] = 23;
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a lon,lat -v three_dmn_var $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var -d lat,0 -d lev,2 -d lon,3 %tempf_00%";
@@ -566,7 +571,7 @@ sub perform_tests {
     $tst_cmd[2] = "11";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -P all_new -v upk $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -P upk -v upk %tempf_00% %tempf_00%";
@@ -575,7 +580,7 @@ sub perform_tests {
     $tst_cmd[3] = "3";
     $tst_cmd[4] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     
 #print "paused - hit return to continue"; my $wait = <STDIN>;
@@ -592,7 +597,7 @@ sub perform_tests {
     $tst_cmd[2] = "2";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
 #    } else { print "NB: Current mpncrcat test skipped because it hangs fxm TODO nco593.\n";}
     
 ####################
@@ -612,7 +617,7 @@ sub perform_tests {
     $tst_cmd[6] = "2";
     $tst_cmd[7] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
 #    } else { print "NB: Current mpncra test skipped on sand because mpncrcat step hangs fxm TODO nco593\n";}
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in.nc in.nc %tempf_00%";
@@ -621,7 +626,7 @@ sub perform_tests {
     $tst_cmd[2] = "5";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tempf_00%";
@@ -629,7 +634,7 @@ sub perform_tests {
     $tst_cmd[2] = "5";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_int $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_int %tempf_00%";
@@ -637,7 +642,7 @@ sub perform_tests {
     $tst_cmd[2] = "5";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_int %tempf_00%";
@@ -645,7 +650,7 @@ sub perform_tests {
     $tst_cmd[2] = "5";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_int %tempf_00%";
@@ -653,7 +658,7 @@ sub perform_tests {
     $tst_cmd[2] = "5";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_flt $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_flt %tempf_00%";
@@ -661,7 +666,7 @@ sub perform_tests {
     $tst_cmd[2] = "5";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_flt $in_pth_arg in.nc in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_flt %tempf_00%";
@@ -669,7 +674,7 @@ sub perform_tests {
     $tst_cmd[2] = "5";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_dbl_mss_val_dbl_pck $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck %tempf_00%";
@@ -677,7 +682,7 @@ sub perform_tests {
     $tst_cmd[2] = "5";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_dbl_pck $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_dbl_pck %tempf_00%";
@@ -685,7 +690,7 @@ sub perform_tests {
     $tst_cmd[2] = "100.55";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_pck $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%3.2f' -v rec_var_flt_pck %tempf_00%";
@@ -693,7 +698,7 @@ sub perform_tests {
     $tst_cmd[2] = "100.55";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v pck,one_dmn_rec_var $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v pck %tempf_00%";
@@ -701,7 +706,7 @@ sub perform_tests {
     $tst_cmd[2] = "1";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y avg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tempf_00%";
@@ -709,7 +714,7 @@ sub perform_tests {
     $tst_cmd[2] = "5";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tempf_00%";
@@ -717,7 +722,7 @@ sub perform_tests {
     $tst_cmd[2] = "2";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tempf_00%";
@@ -725,7 +730,7 @@ sub perform_tests {
     $tst_cmd[2] = "8";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tempf_00%";
@@ -733,7 +738,7 @@ sub perform_tests {
     $tst_cmd[2] = "70";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%1.5f' -v rec_var_flt_mss_val_dbl %tempf_00%";
@@ -741,7 +746,7 @@ sub perform_tests {
     $tst_cmd[2] = "5.38516";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v time,one_dmn_rec_var $in_pth_arg in.nc in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v time %tempf_00%";
@@ -749,7 +754,7 @@ sub perform_tests {
     $tst_cmd[2] = "5.5";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v time,one_dmn_rec_var $in_pth_arg in.nc in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var %tempf_00%";
@@ -757,7 +762,7 @@ sub perform_tests {
     $tst_cmd[2] = "110";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 #print "paused - hit return to continue"; my $wait = <STDIN>;
 #print "<<<STOP>>>- hit return to continue"; my $wait = <STDIN>;
@@ -776,7 +781,7 @@ sub perform_tests {
     $tst_cmd[4] = "1";
     $tst_cmd[5] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon -w gw -d lat,0.0,90.0 %tempf_04% %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v one %tempf_00%";
@@ -787,7 +792,7 @@ sub perform_tests {
     $tst_cmd[2] = 1;
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time -v pck,one_dmn_rec_var $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v pck %tempf_00%";
@@ -795,7 +800,7 @@ sub perform_tests {
     $tst_cmd[2] = "1";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa -N $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon -w gw $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v mask %tempf_00%";
@@ -803,7 +808,7 @@ sub perform_tests {
     $tst_cmd[2] = "50";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lon -v mss_val $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v mss_val %tempf_00%";
@@ -811,7 +816,7 @@ sub perform_tests {
     $tst_cmd[2] = "73";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lon -v no_mss_val $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v no_mss_val %tempf_00%";
@@ -819,7 +824,7 @@ sub perform_tests {
     $tst_cmd[2] = "5.0e35";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lat -m lat -M 90.0 -T eq -a lat $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lat %tempf_00%";
@@ -827,7 +832,7 @@ sub perform_tests {
     $tst_cmd[2] = "90.0";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lat_var -m lat -M 90.0 -T eq -a lat $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lat_var %tempf_00%";
@@ -835,7 +840,7 @@ sub perform_tests {
     $tst_cmd[2] = "2.0";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -m lev -M 100.0 -T eq -a lev -w lev_wgt $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lev %tempf_00%";
@@ -843,7 +848,7 @@ sub perform_tests {
     $tst_cmd[2] = "100.0";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev_var -m lev -M 100.0 -T gt -a lev -w lev_wgt $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lev_var %tempf_00%";
@@ -851,7 +856,7 @@ sub perform_tests {
     $tst_cmd[2] = "666.6667";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lat -a lat -w gw -d lat,0 $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lat %tempf_00%";
@@ -859,7 +864,7 @@ sub perform_tests {
     $tst_cmd[2] = "-90.0";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v mss_val_all -a lon -w lon $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v mss_val_all %tempf_00%";
@@ -867,7 +872,7 @@ sub perform_tests {
     $tst_cmd[2] = "1.0e36";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v val_one_mss -a lat -w wgt_one $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v val_one_mss %tempf_00%";
@@ -875,7 +880,7 @@ sub perform_tests {
     $tst_cmd[2] = "1.0";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v msk_prt_mss_prt -m msk_prt_mss_prt -M 1.0 -T lt -a lon $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v msk_prt_mss_prt %tempf_00%";
@@ -883,7 +888,7 @@ sub perform_tests {
     $tst_cmd[2] = "0.5";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc %tempf_00% 2> %tempf_02%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v rec_var_flt_mss_val_dbl %tempf_00%";
@@ -891,7 +896,7 @@ sub perform_tests {
     $tst_cmd[2] = "2";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 # will fail SS - ncks not the last cmd
     $tst_cmd[0]="ncwa $omp_flg  -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_dbl -a lon $in_pth_arg in.nc %tempf_00%";
@@ -901,7 +906,7 @@ sub perform_tests {
     $tst_cmd[3] = "-99";
     $tst_cmd[4] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 # will fail SS - ncks not the last cmd
     $tst_cmd[0]="cut -d, -f 20 %tempf_01%";
@@ -910,7 +915,7 @@ sub perform_tests {
     $tst_cmd[1] = "77";
     $tst_cmd[2] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 # will fail SS - ncks not the last cmd
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_int -a lon $in_pth_arg in.nc %tempf_00%";
@@ -920,7 +925,7 @@ sub perform_tests {
     $tst_cmd[3] = "-99";
     $tst_cmd[4] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 # will fail SS - ncks not the last cmd
     $tst_cmd[0]="cut -d, -f 7 %tempf_01%";
@@ -929,7 +934,7 @@ sub perform_tests {
     $tst_cmd[1] = "25";
     $tst_cmd[2] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 # will fail SS - ncks not the last cmd
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_sht -a lon $in_pth_arg in.nc %tempf_00%";
@@ -939,7 +944,7 @@ sub perform_tests {
     $tst_cmd[3] = -99;
     $tst_cmd[4] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 # will fail SS - ncks not the last cmd
     $tst_cmd[0]="cut -d, -f 8 %tempf_01%";
@@ -948,7 +953,7 @@ sub perform_tests {
     $tst_cmd[1] = "29";
     $tst_cmd[2] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_rec_var $in_pth_arg in.nc %tempf_00% 2> %tempf_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_rec_var %tempf_00%";
@@ -956,7 +961,7 @@ sub perform_tests {
     $tst_cmd[2] = "1";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v four_dmn_rec_var $in_pth_arg in.nc %tempf_00% 2> %tempf_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v four_dmn_rec_var %tempf_00%";
@@ -964,7 +969,7 @@ sub perform_tests {
     $tst_cmd[2] = "240";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 # will fail SS - ncks not the last cmd
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_dbl -a lat,lon $in_pth_arg in.nc %tempf_00%";
@@ -974,7 +979,7 @@ sub perform_tests {
     $tst_cmd[3] = "-99";
     $tst_cmd[4] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 # will fail SS - ncks not the last cmd
     $tst_cmd[0]="cut -d, -f 5 %tempf_01%";
@@ -983,7 +988,7 @@ sub perform_tests {
     $tst_cmd[1] = "40";
     $tst_cmd[2] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 # will fail SS - ncks not the last cmd
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_int -a lat $in_pth_arg in.nc %tempf_00%";
@@ -993,7 +998,7 @@ sub perform_tests {
     $tst_cmd[3] = "-99";
     $tst_cmd[4] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 # will fail SS - ncks not the last cmd
     $tst_cmd[0]="cut -d, -f 13 %tempf_01%";
@@ -1002,7 +1007,7 @@ sub perform_tests {
     $tst_cmd[1] = "29";
     $tst_cmd[2] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 # will fail SS - ncks not the last cmd
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_sht -a lat $in_pth_arg in.nc %tempf_00%";;
@@ -1012,7 +1017,7 @@ sub perform_tests {
     $tst_cmd[3] = "-99";
     $tst_cmd[4] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 # will fail SS - ncks not the last cmd
     $tst_cmd[0]="cut -d, -f 33 %tempf_01%";
@@ -1021,7 +1026,7 @@ sub perform_tests {
     $tst_cmd[1] = "69";
     $tst_cmd[2] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -w lat_wgt -v lat_cpy $in_pth_arg in.nc %tempf_00% 2> %tempf_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v lat_cpy %tempf_00%";;
@@ -1029,7 +1034,7 @@ sub perform_tests {
     $tst_cmd[2] = "90";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -w val_half_half -v val_one_one_int $in_pth_arg in.nc %tempf_00% 2> %tempf_02%";
     $tst_cmd[1]="ncks -C -H -s '%ld' -v val_one_one_int %tempf_00%";;
@@ -1037,7 +1042,7 @@ sub perform_tests {
     $tst_cmd[2] = "1";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y avg -v val_max_max_sht $in_pth_arg in.nc %tempf_00% 2> %tempf_02%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v val_max_max_sht %tempf_00%";;
@@ -1045,7 +1050,7 @@ sub perform_tests {
     $tst_cmd[2] = "17000";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v val_max_max_sht $in_pth_arg in.nc %tempf_00% 2> %tempf_02%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v val_max_max_sht %tempf_00%";
@@ -1056,7 +1061,7 @@ sub perform_tests {
     $tst_cmd[2] = "-32768";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -a lat -v lat_cpy -w gw $in_pth_arg in.nc %tempf_00%";;
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat_cpy %tempf_00%";;
@@ -1064,7 +1069,7 @@ sub perform_tests {
     $tst_cmd[2] = "-900";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -a lat -v lat_cpy -w gw $in_pth_arg in.nc %tempf_00%";;
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat_cpy %tempf_00%";;
@@ -1072,7 +1077,7 @@ sub perform_tests {
     $tst_cmd[2] = "900";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -a time -w one -v time,one_dmn_rec_var $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v time %tempf_00%";
@@ -1080,7 +1085,7 @@ sub perform_tests {
     $tst_cmd[2] = "5.5";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -a time -w one -v time,one_dmn_rec_var $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var %tempf_00%";
@@ -1088,7 +1093,7 @@ sub perform_tests {
     $tst_cmd[2] = "55";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     
 #print "paused - hit return to continue"; my $wait = <STDIN>;
@@ -1105,7 +1110,7 @@ sub perform_tests {
     $tst_cmd[2] = "1.000000e+00";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 # test 2
     my $sftp_url = "sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco";
@@ -1120,7 +1125,7 @@ sub perform_tests {
     $tst_cmd[3] = "1.000000e+00";
     $tst_cmd[4] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
 # test 3
     if ($dust_usr ne ""){ # if we need to connect as another user (hmangalm@esmf -> hjm@dust))
@@ -1132,14 +1137,14 @@ sub perform_tests {
     $tst_cmd[2] = 1;
     $tst_cmd[3] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncks -C -O -d lon,0 -s '%e' -v lon -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc";
     $dsc_sng="OPeNDAP protocol (requires OPeNDAP/DODS-enabled NCO)";
     $tst_cmd[1] = "0";
     $tst_cmd[2] = "SS_OK";
     NCO_bm::go(\@tst_cmd);
-    $#tst_cmd=0;  # reset the array
+    $#tst_cmd=0;  # Reset array
     
     if($USER eq 'zender'){
 	$tst_cmd[0]="/bin/rm -f /tmp/etr_A4.SRESA1B_9.CCSM.atmd.2000_cat_2099.nc";
@@ -1148,7 +1153,7 @@ sub perform_tests {
 	$tst_cmd[2] = "182.5";
 	$tst_cmd[3] = "SS_OK";
 	NCO_bm::go(\@tst_cmd);
-	$#tst_cmd=0;  # reset the array
+	$#tst_cmd=0;  # Reset array
 	
 	$tst_cmd[0]="/bin/rm -f /tmp/in.nc";
 	$tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -v one -p mss:/ZENDER/nc -l /tmp in.nc";
@@ -1157,7 +1162,7 @@ sub perform_tests {
 	$tst_cmd[3] = "1";
 	$tst_cmd[4] = "SS_OK";
 	NCO_bm::go(\@tst_cmd);
-	$#tst_cmd=0;  # reset the array
+	$#tst_cmd=0;  # Reset array
 	
     } else { print "WARN: Skipping net tests of mss: and password protected FTP protocol retrieval---user not zender\n";}
     
@@ -1168,7 +1173,7 @@ sub perform_tests {
  	$tst_cmd[2] = "1";
 	$tst_cmd[3] = "SS_OK";
 	NCO_bm::go(\@tst_cmd);
-	$#tst_cmd=0;  # reset the array
+	$#tst_cmd=0;  # Reset array
 	
     } else { print "WARN: Skipping net test wget: protocol retrieval---not implemented yet\n";}
     

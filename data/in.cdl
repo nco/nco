@@ -37,10 +37,10 @@ netcdf in {
 dimensions:
 	dgn=1,bnd=2,lat=2,lev=3,rlev=3,lon=4,char_dmn_lng=80,char_dmn_sml=4,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,time=unlimited;
 variables:
-	:Conventions = "NCAR-CSM";
+	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.66 2006-04-21 20:33:17 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.67 2006-05-14 06:47:26 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude";
@@ -88,6 +88,10 @@ variables:
 	float P0;
 	P0:long_name = "reference pressure";
 	P0:units = "pascal";
+
+	float cnv_CF_crd;
+	cnv_CF_crd:long_name = "Variable to test CF coordinates conventions";
+	cnv_CF_crd:coordinates = "lat lon";
 
 	float PS(time,lat,lon);
 	PS:long_name = "surface pressure";
@@ -484,6 +488,7 @@ data:
 	char_var_multinul="\b\n\0";
 	char_var_nul='\0';
 	char_var_space=" ";
+	cnv_CF_crd=1.0;
 	double_var=10.;
 	double_var2=10.;
 	e_dbl=2.71828182846;

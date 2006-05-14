@@ -1,9 +1,9 @@
-# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.4 2006-05-07 06:36:48 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.5 2006-05-14 06:50:08 zender Exp $ -*-makefile-*-
 
 # NCO-specific definitions
 all: test_data
 .PHONY: test_data
-test_data = in.nc big.nc
+test_data = in.nc in_rec_zero.nc big.nc
 .cdl.nc:
 	ncgen -o $@ $<
 
