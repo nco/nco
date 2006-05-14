@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.364 2006-05-07 06:36:48 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.365 2006-05-14 06:32:49 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -71,6 +71,7 @@ MY_DPN_DIR := ${MY_OBJ_DIR}
 MY_SRC_DIR := ../src/nco
 MY_INC_DIR := ${MY_SRC_DIR}
 NCO_CXX_SRC_DIR := ${MY_SRC_DIR}/../nco_c++
+NCOXX_SRC_DIR := ${MY_SRC_DIR}/../nco++
 
 # Primary tokens which determine build options
 # Specify non-default when invoking make, e.g. make DAP=Y
@@ -187,6 +188,10 @@ endif # DAP_ROOT
 # NC_LIBS := -lnc-dap -ldap++ -lxml2 -lcurl
 # DAP 3.5+:
  NC_LIBS := -lnc-dap -ldap -lxml2 -lcurl
+# In addition, AIX OPeNDAP requires these libraries...
+ifneq (${null},$(findstring AIX,${PVM_ARCH}))
+ NC_LIBS += -lcrypto -liconv -lssl -lz
+endif # end AIX
 # Get netCDF from OPeNDAP version
  NETCDF_INC=${DAP_ROOT}/include/libnc-dap
  NETCDF_LIB=${DAP_ROOT}/lib
@@ -387,6 +392,10 @@ TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc
 MDL_NCAP_SRC := $(addprefix ${MY_SRC_DIR}/,ncap_yacc.y ncap_lex.l ncap.h) # `make tags' includes these files
 MDL_NCAP_TRG := ncap_yacc.c ncap_yacc.h ncap_lex.c # `make ncap' creates these files
 MDL_NCAP := $(addprefix ${MY_SRC_DIR}/,${MDL_NCAP_TRG}) # `make distclean' removes these files
+
+# Variables having to do with C++ source and documentation
+# fxm: auto-generate source code components of C++ lists
+MDL_CXX_SRC := $(addprefix ${NCOXX_SRC_DIR}/,libnco++.hh Makefile.am Makefile.old ncap2.cc ncap2.hh Ncap2.hh ncap2_utl.cc NcapVar.hh NcapVarVector.cc NcapVarVector.hh NcapVector.hh ncoGrammer.g VarOp.hh) $(addprefix ${NCO_CXX_SRC_DIR}/,INSTALL libnco_c++.hh Makefile.am Makefile.old nco_att.cc nco_att.hh nco_dmn.cc nco_dmn.hh nco_fl.cc nco_fl.hh nco_hgh.cc nco_hgh.hh nco_utl.cc nco_utl.hh nco_var.cc nco_var.hh README TODO tst.cc) # `make tags' includes these files
 
 # Redefine default C and C++ pattern rules
 ${MY_OBJ_DIR}/%.o : %.c
@@ -1625,7 +1634,7 @@ dst_cln: cln bin_cln dat_cln doc_cln root_cln
 	cd ${MY_BLD_DIR}; rm -f *~
 	cd ${MY_DAT_DIR}; rm -f in.nc in_rec_zero.nc *~
 tags: 
-	etags ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_BLD_SRC} ${MDL_NCAP_SRC}
+	etags ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC}
 
 # Reset internal YACC and LEX patterns
 %.c : %.y

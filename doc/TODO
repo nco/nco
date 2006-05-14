@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.749 2006-05-13 21:31:05 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.750 2006-05-14 06:28:28 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -476,7 +476,6 @@ nco707. Hook nco_ddra() into ncbo
 nco708. Change DDRA diagnostics from --dbg=73 to command line switch
 nco709. Change wgt_brd_flg (may have wrong meaning)
 nco710. Create correct ncwa predictions for each 1/8th
-nco713. Should libnetcdf return "Index exceeds dimension bound" error when srt=cnt=0?
 nco717. Averaging empty record variable creates an element in output!:
 	ncwa -O ~/nco/data/in_rec_zero.nc ~/foo.nc
 	ncwa -O -a lon ~/nco/data/in_rec_zero.nc ~/foo.nc
@@ -486,12 +485,17 @@ nco717. Averaging empty record variable creates an element in output!:
 	Scalar is ill-defined of course.
 	Hence averaging the file increases the data storage.
 	What to do?  Nothing.
-nco718. Add CF "coordinate" convention to NCO http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-current.html#grids
 nco719. Add regression test for CF "coordinate" convention
 	ncks -O -v cnv_CF_crd -p ~/nco/data in.nc ~/foo.nc
 	ncks ~/foo.nc
 nco720. Add variable which exercises CF "coordinate" convention to in.cdl
-nco721. 
+nco721. Add CPP token GLIBCPP_FORCE_NEW to ncap2 compiles to help detect leaks?
+nco722. mpncwa: DDRA diagnostics should work in MPI mode, not just SMP mode
+nco724. attribute propagation: test
+        ncap2 -s "cnv_CF_crd2=cnv_CF_crd" -s "lon2=lon[0]" -p ~/nco/data in.nc ~/foo.nc
+nco725. attribute propagation: regression test
+nco726. attribute propagation: document
+nco727. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
