@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.35 2006-05-14 19:35:37 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.36 2006-05-15 07:37:56 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -46,7 +46,7 @@ ifndef MY_OBJ_DIR
  MY_OBJ_DIR := ../../obj
 endif
 ifndef MY_DAT_DIR
- MY_DAT_DIR := ../../data 
+ MY_DAT_DIR := ../../data
 endif
 ifndef MY_INC_DIR
  MY_INC_DIR := ${HOME}/include
