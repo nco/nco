@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.51 2006-05-13 21:32:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.52 2006-05-15 17:43:45 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -87,27 +87,26 @@
 #define MAIN_PROGRAM_FILE
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
-void
-checkpointMpi(int prc_rnk, int stage) {
-  int msg[] = {0,0};
-  int result;
-  FILE* const f = stderr;
-
-  if(prc_rnk == rnk_mgr) {
-    msg[0] = stage;
-    msg[1] = stage;
-  }
-  fprintf(f, "%d checkpointing at stage %d\n", prc_rnk, stage);
+#ifdef ENABLE_MPI
+void checkpointMpi(int prc_rnk, int stage){
+  int msg[]={0,0};
+  int rcd; /* [rcd] Return code */
+  FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
+  
+  if(prc_rnk == rnk_mgr){
+    msg[0]=stage;
+    msg[1]=stage;
+  } /* endif */
+  (void)fprintf(fp_stderr,"%d checkpointing at stage %d\n",prc_rnk,stage);
   /* make everyone continue from this point. */
-  result = MPI_Bcast(msg, 2, MPI_INT, 
-		     rnk_mgr, MPI_COMM_WORLD);
+  rcd=MPI_Bcast(msg,2,MPI_INT,rnk_mgr,MPI_COMM_WORLD);
   if(prc_rnk != rnk_mgr) {
     /* basic sanity check */
     assert(msg[0] == stage);
     assert(msg[1] == stage);
-  }
-  /* done with checkpointing. */
+  } /* end if */
 } /* end checkpointMpi() */
+#endif /* !ENABLE_MPI */
 
 int 
 main(int argc,char **argv)
@@ -143,8 +142,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.51 2006-05-13 21:32:46 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.51 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.52 2006-05-15 17:43:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.52 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
