@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.38 2006-05-16 22:27:09 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.39 2006-05-16 22:38:20 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -33,6 +33,7 @@
 # Top-level tokens defining directory structure
 # These tokens may be over-ridden by environment variables or when invoking make, e.g. make DODS=Y
 MY_BLD_DIR := ../../bld
+MY_INC_DIR := ${HOME}/include
 ifndef PVM_ARCH
  PVM_ARCH := $(shell ${MY_BLD_DIR}/pvmgetarch)
 endif
@@ -47,9 +48,6 @@ ifndef MY_OBJ_DIR
 endif
 ifndef MY_DAT_DIR
  MY_DAT_DIR := ../../data
-endif
-ifndef MY_INC_DIR
- MY_INC_DIR := ${HOME}/include
 endif
 ifndef MY_BLD_DIR
  MY_BLD_DIR := .

@@ -1,3 +1,12 @@
+2006-05-16  Charlie Zender  <zender@uci.edu>
+
+	* Found bug in libnco_c++: library does incorrectly initializes
+	function parameters which default to CPP macros, e.g., NC_NOERR.
+	These parameters cannot be over-ridden by non-default values.
+	Same problems occurs whether passing rcd_opt as reference or not. 
+	Attempting to fix bug by creating named constant with global
+	library visibility.
+
 2006-05-14  Charlie Zender  <zender@uci.edu>
 
 	* Master code repository is now on nco.cvs.sf.net
