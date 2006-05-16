@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.13 2005-01-07 23:54:59 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.14 2006-05-16 22:27:09 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface to netCDF variable routines
 
@@ -76,7 +76,7 @@ nco_inq_varid // [fnc] Inquire variable ID
 (const int &nc_id, // I [enm] netCDF file ID
  const std::string &var_nm, // I [sng] Variable name
  int &var_id, // O [id] Variable ID
- const int &rcd_opt=NC_NOERR); // I [enm] Optional non-fatal return code 
+ const int rcd_opt=NCO_NOERR); // I [enm] Optional non-fatal return code 
 // end nco_inq_varid() prototype
 
 int // O [id] Variable ID

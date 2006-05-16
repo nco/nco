@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/libnco_c++.hh,v 1.7 2006-02-18 01:40:46 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/libnco_c++.hh,v 1.8 2006-05-16 22:27:09 zender Exp $ 
 
 // Purpose: Prototypes, typedefs, and global variables for libnco_c++
 
@@ -8,7 +8,7 @@
 
 /* libnco_c++.hh headers depend only on system headers
    Thus libnco_c++.a may be built independently of any other libraries
-   However, the user must supply prg_nm_get() and dbg_lvl_get() to link to */
+   However, user must supply prg_nm_get() and dbg_lvl_get() */
 
 // Usage:
 // #include <libnco_c++.hh> // C++ interface to netCDF C library

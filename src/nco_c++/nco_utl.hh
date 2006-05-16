@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.10 2005-01-07 23:54:59 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.11 2006-05-16 22:27:09 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface utilities for netCDF routines
 
@@ -30,10 +30,17 @@
 // 3rd party vendors
 #include <netcdf.h> // netCDF C interface
 
+// Library-wide headers
+/* All headers in libnco_c++ include nco_utl.hh
+   Hence nco_utl.hh is the appropriate place to define library-wide variables */
+const int NCO_NOERR=NC_NOERR; // [enm] Variable'ize CPP macro for use in function parameter initialization
+
 // Personal headers
 #include <nco_att.hh> // C++ interface to netCDF attribute routines
 #include <nco_dmn.hh> // C++ interface to netCDF dimension routines
 #include <nco_var.hh> // C++ interface to netCDF variable routines
+
+// Typedefs
 
 // Define nco_cls class
 

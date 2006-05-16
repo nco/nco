@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.27 2006-05-14 07:16:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.28 2006-05-16 22:27:09 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -51,7 +51,7 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions *
     /* As of 20060514, CLM 3.0 uses CF1.0 not CF-1.0 (CAM gets it right) */
     if(strstr(att_val,"CF1.0") != NULL) CNV_CCM_CCSM_CF=True; /* NB: Not fully implemented TODO nco145 */
     if(CNV_CCM_CCSM_CF && dbg_lvl_get() > 0){
-      (void)fprintf(stderr,"%s: CONVENTION File Convention attribute is \"%s\".",prg_nm_get(),att_val);
+      (void)fprintf(stderr,"%s: CONVENTION File \"%s\" attribute is \"%s\".",prg_nm_get(),cnv_sng,att_val);
       if(dbg_lvl_get() > 1) (void)fprintf(stderr," NCO has a unified (but incomplete) treatment of many related (official and unoffical) conventions such as CCM, CCSM, and CF. As part of adhering to this convention, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"date\" or \"gw\". For a full list of exceptions, see the manual http://nco.sf.net/nco.html#CF");
       (void)fprintf(stderr,"\n");
     } /* endif dbg */
