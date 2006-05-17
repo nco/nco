@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.39 2006-05-16 22:38:20 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.40 2006-05-17 06:55:38 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1182,11 +1182,13 @@ bld_cln :
 	cd ${MY_BLD_DIR}; rm -f TAGS
 # Targets in dat
 data:	dat
-dat:	${MY_DAT_DIR}/in.nc 
+dat:	./in.nc ${MY_DAT_DIR}/in.nc 
 ${MY_DAT_DIR}/in.nc: ${MY_DAT_DIR}/in.cdl
 	ncgen -b -o $@ $<
+./in.nc: ${MY_DAT_DIR}/in.cdl
+	ncgen -b -o $@ $<
 dat_cln :
-	-cd ${MY_DAT_DIR}; rm -f in.nc foo.nc
+	rm -f in.nc foo.nc
 # Targets in dpn
 dpn : ${MDL_DPN}
 dpn_cln :

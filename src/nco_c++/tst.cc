@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.16 2005-01-07 23:54:59 zender Exp $
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.17 2006-05-17 06:55:38 zender Exp $
 
 // Purpose: Test for C++ programs using libnco_c++ API
 
@@ -9,8 +9,12 @@
 /* Compilation
    make -W tst.cc OPTS=D tst
    make OPTS=D tst
-   cd ${HOME}/nco/src/nco_c++;make -f Makefile.old -W OPTS=D tst.cc tst;cd -
+   scp ~/nco/src/nco_c++/tstcc dust.ess.uci.edu:nco/src/nco_c++
+   cd ${HOME}/nco/src/nco_c++;make -f Makefile.old OPTS=D -W tst.cc tst;cd -
    cd ${HOME}/nco/src/nco_c++;make OPTS=D tst;cd - */
+
+/* Usage:
+   tst */
 
 // etags ~/nco/src/nco_c++/*.cc ~/nco/src/nco_c++/*.hh ~/mie/*.cc ~/mie/*.hh ~/slr_spc/*.cc ~/slr_spc/*.hh ~/ck/htrn.c ~/c++/*.cc ~/c++/*.hh 
 
@@ -50,10 +54,10 @@ int main(int argc,char **argv)
   long sz_nbr(1); // [nbr] Number of sizes
   register long idx; // [idx] Counting index
 
-  const std::string CVS_Date("$Date: 2005-01-07 23:54:59 $"); // [sng] CVS date string
-  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.16 2005-01-07 23:54:59 zender Exp $"); // [sng] CVS header string
-  const std::string CVS_Id("$Id: tst.cc,v 1.16 2005-01-07 23:54:59 zender Exp $"); // [sng] CVS identification string
-  const std::string CVS_Revision("$Revision: 1.16 $"); // [sng] CVS revision string
+  const std::string CVS_Date("$Date: 2006-05-17 06:55:38 $"); // [sng] CVS date string
+  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.17 2006-05-17 06:55:38 zender Exp $"); // [sng] CVS header string
+  const std::string CVS_Id("$Id: tst.cc,v 1.17 2006-05-17 06:55:38 zender Exp $"); // [sng] CVS identification string
+  const std::string CVS_Revision("$Revision: 1.17 $"); // [sng] CVS revision string
   const std::string date_cvs(CVS_Date.length() > 7 ? CVS_Date.substr(7,19) : static_cast<std::string>("Unknown")); // [sng] Date from CVS
   const std::string sbr_nm("main"); // [sng] Subroutine name
   const std::string prg_nm("libnco_c++"); // [sng] Program name
@@ -157,6 +161,12 @@ int main(int argc,char **argv)
   rcd=nco_put_var(nc_out,static_cast<std::string>("sz"),sz); delete []sz;
   rcd=nco_put_var(nc_out,static_cast<std::string>("sz_ldb"),sz_ldb); delete []sz_ldb;
   rcd=nco_put_var(nc_out,static_cast<std::string>("sz_nbr"),sz_nbr);
+
+  int rcd_opt(NC_ENOTVAR); // [enm] Acceptable return code
+  int var_id; // [id]  Variable ID
+  const std::string var_nm_nonesuch("quark"); // [sng]
+  rcd=nco_inq_varid(nc_out,var_nm_nonesuch,var_id,rcd_opt);
+  std::cout << "tst: Search of output file for " << var_nm_nonesuch << " with rcd_opt = " << rcd_opt << " yields rcd = " << rcd << std::endl;
 
   // Close output file
   rcd=nco_close(nc_out); // [fnc] Close netCDF file

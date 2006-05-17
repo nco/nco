@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.367 2006-05-16 22:38:20 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.368 2006-05-17 06:55:38 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -1275,9 +1275,9 @@ obj_dir:
 	-mkdir -p ${MY_OBJ_DIR}
 # The whole shebang
 nco_c++: 
-	-cd ../src/nco_c++; ${MAKE} -f Makefile.old all
+	-cd ../src/nco_c++; ${MAKE} -f Makefile.old lib dat all
 nco++: 
-	-cd ../src/nco++; ${MAKE} -f Makefile.old all
+	-cd ../src/nco++; ${MAKE} -f Makefile.old lib all
 allinone: all nco_c++ nco++
 # Targets in bin
 mpi:   mpi_nco

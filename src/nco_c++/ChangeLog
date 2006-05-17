@@ -1,3 +1,15 @@
+2006-05-16  Charlie Zender  <zender@uci.edu>
+
+	* Add rcd_opt test to tst.cc. rcd_opt test seems to work in tst.
+	Not sure why errors with mie on other machines.
+
+	* Found bug in libnco_c++: library does incorrectly initializes
+	function parameters which default to CPP macros, e.g., NC_NOERR.
+	These parameters cannot be over-ridden by non-default values.
+	Same problems occurs whether passing rcd_opt as reference or not. 
+	Attempting to fix bug by creating named constant with global
+	library visibility.
+
 2005-01-09  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco_c++-0_1_8 mie c++ nco/src/nco_c++
