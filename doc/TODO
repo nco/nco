@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.752 2006-05-16 22:27:09 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.753 2006-05-17 01:21:08 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -492,7 +492,7 @@ nco720. Add variable which exercises CF "coordinate" convention to in.cdl
 nco721. Add CPP token GLIBCPP_FORCE_NEW to ncap2 compiles to help detect leaks?
 nco722. mpncwa: DDRA diagnostics should work in MPI mode, not just SMP mode
 nco724. attribute propagation: test
-        ncap2 -s "cnv_CF_crd2=cnv_CF_crd" -s "lon2=lon[0]" -p ~/nco/data in.nc ~/foo.nc
+        ncap2 -O -s "cnv_CF_crd2=cnv_CF_crd" -s "lon2=lon[0]" -p ~/nco/data in.nc ~/foo.nc
 nco725. attribute propagation: regression test
 nco726. attribute propagation: document
 nco727. CLM uses "conventions" attribute
