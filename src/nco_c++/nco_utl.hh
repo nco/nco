@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.11 2006-05-16 22:27:09 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.12 2006-05-17 00:51:35 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface utilities for netCDF routines
 
@@ -32,7 +32,8 @@
 
 // Library-wide headers
 /* All headers in libnco_c++ include nco_utl.hh
-   Hence nco_utl.hh is the appropriate place to define library-wide variables */
+   Hence nco_utl.hh is the appropriate place to define library-wide variables
+   fxm: Make this extern and instantiate in .cc file? */
 const int NCO_NOERR=NC_NOERR; // [enm] Variable'ize CPP macro for use in function parameter initialization
 
 // Personal headers
