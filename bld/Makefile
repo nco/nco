@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.368 2006-05-17 06:55:38 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.369 2006-05-19 04:40:30 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -79,6 +79,9 @@ ifndef ${ABI}
 # 32 vs. 64 bit ABI: 32=32 bit mode, 64=64 bit mode (default) if available
  ABI := 64
 endif # endif ABI
+ifndef ${CCACHE}
+ CCACHE := N
+endif # CCACHE
 ifndef DAP
  DAP := N
 endif
@@ -1197,14 +1200,6 @@ ifeq (${PNETCDF},Y)
 endif
 # endif PNETCDF
 
-# Link to Electric Fence library, see man efence
-ifeq (${PVM_ARCH},LINUX)
-ifneq (${null},$(findstring ${OPTS},X))
-# LDFLAGS += -lefence
-endif
-endif
-# endif LINUX
-
 # Default to MPICC, MPICXX to CC, CXX and cross your fingers
 MPICC := ${CC}
 MPICXX := ${CXX}
@@ -1237,6 +1232,12 @@ ifneq (${null},$(findstring SGI,${PVM_ARCH}))
 endif # endif SGI
  CPPFLAGS += -U_OPENMP
 endif # endif OMP
+
+ifeq (${CCACHE},Y)
+# Prefix CC and CXX with ccache
+ CC := ccache ${CC}
+ CXX := ccache ${CXX}
+endif # endif CCACHE
 
 ifeq (${STC},Y)
 # Created statically linked executable
@@ -1565,6 +1566,7 @@ dbg:
 	@printf "AR = ${AR}\n"
 	@printf "BNR_SFX = ${BNR_SFX}\n"
 	@printf "CC = ${CC}\n"
+	@printf "CCACHE = ${CCACHE}\n"
 	@printf "CFLAGS = ${CFLAGS}\n"
 	@printf "CPP = ${CPP}\n"
 	@printf "CPPFLAGS = ${CPPFLAGS}\n"

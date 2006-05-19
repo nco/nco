@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.40 2006-05-17 06:55:38 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.41 2006-05-19 04:40:30 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -77,6 +77,9 @@ endif
 ifndef ANTLR_LIB
  ANTLR_LIB := ${ANTLR_ROOT}/lib # Directory containing libantlr.a
 endif
+ifndef ${CCACHE}
+ CCACHE := Y
+endif # CCACHE
 ifndef DAP
  DAP := N
 endif
@@ -1136,16 +1139,16 @@ endif
 endif
 # endif WIN32
 
-# Link to Electric Fence library, see man efence
-ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
-ifneq (${null},$(findstring ${OPTS},DX))
-# Electric Fence works on malloc(), not new(), so it is no good on most C++ programs
-# However, ccc contains a malloc() checker which is useful to use with Electric Fence
-# DDD/gdb may fail to run code compiled with efence, and complain about libpthread.so.0
-# LDFLAGS += -lefence
-endif
-endif
-# endif LINUX
+ifeq (${CCACHE},Y)
+# Prefix CC and CXX with ccache
+ CC := ccache ${CC}
+ CXX := ccache ${CXX}
+endif # endif CCACHE
+
+ifeq ($(STC),Y)
+# Created statically linked executable
+ LDFLAGS := -static ${LDFLAGS}
+endif # endif STC
 
 # Define any remaining variables
 libnco_c++ := ${MY_LIB_DIR}/libnco_c++
@@ -1225,6 +1228,7 @@ dbg:
 	@printf "AR = ${AR}\n"
 	@printf "BNR_SFX = ${BNR_SFX}\n"
 	@printf "CC = ${CC}\n"
+	@printf "CCACHE = ${CCACHE}\n"
 	@printf "CFLAGS = ${CFLAGS}\n"
 	@printf "CPP = ${CPP}\n"
 	@printf "CPPFLAGS = ${CPPFLAGS}\n"
