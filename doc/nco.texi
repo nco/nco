@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.354 2006-05-17 00:51:35 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.355 2006-05-19 00:38:39 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -338,8 +338,8 @@ of complex mathematical expressions.
 
 The netCDF Operators, or @acronym{NCO}, are a suite of programs known as 
 operators. 
-The operators facilitate manipulation and analysis of self-describing
-data stored in the netCDF format, which is freely available
+The operators facilitate manipulation and analysis of data stored in the 
+self-describing netCDF format, available from
 (@uref{http://www.unidata.ucar.edu/packages/netcdf}).
 Each @acronym{NCO} operator (e.g., ncks) takes netCDF input
 file(s), performs an operation (e.g., averaging, hyperslabbing, or
@@ -2540,11 +2540,11 @@ automagically implemented in @acronym{NCO} build mechanisms
 @footnote{
 Automagic support for @acronym{DODS} version 3.2.x was deprecated in 
 December, 2003 after @acronym{NCO} version 2.8.4.
-@acronym{NCO} support for @acronym{OPeNDAP} versions 3.4.x. commenced in
+@acronym{NCO} support for @acronym{OPeNDAP} versions 3.4.x commenced in
 December, 2003, with @acronym{NCO} version 2.8.5.
-@acronym{NCO} support for @acronym{OPeNDAP} versions 3.5.x. commenced in
+@acronym{NCO} support for @acronym{OPeNDAP} versions 3.5.x commenced in
 June, 2005, with @acronym{NCO} version 3.0.1.
-@acronym{NCO} support for @acronym{OPeNDAP} versions 3.6.x. is expected
+@acronym{NCO} support for @acronym{OPeNDAP} versions 3.6.x is expected
 to commence in June, 2005, with @acronym{NCO} version 3.1.3.}.
 The @file{./configure} mechanism automatically enables @acronym{NCO} as
 @acronym{OPeNDAP} clients if it can find the required
