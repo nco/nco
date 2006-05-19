@@ -1,3 +1,8 @@
+2006-05-18  Charlie Zender  <zender@uci.edu>
+
+	* Old-style Makefiles now assume ccache is installed on LINUX*
+	builds to speed up compilations. Disable with CCACHE=N
+
 2006-05-16  Charlie Zender  <zender@uci.edu>
 
 	* Found bug in libnco_c++: library does incorrectly initializes

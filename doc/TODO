@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.753 2006-05-17 01:21:08 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.754 2006-05-19 17:32:44 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -496,7 +496,9 @@ nco724. attribute propagation: test
 nco725. attribute propagation: regression test
 nco726. attribute propagation: document
 nco727. CLM uses "conventions" attribute
-nco728. 
+nco728. virga/icc make test bombs everywhere---LC problem?
+nco729. Print info message from nco_cnv_ccm_ccsm_cf_inq(nc_id) at most once
+nco730. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
