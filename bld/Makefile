@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.369 2006-05-19 04:40:30 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.370 2006-05-19 05:04:46 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -80,7 +80,7 @@ ifndef ${ABI}
  ABI := 64
 endif # endif ABI
 ifndef ${CCACHE}
- CCACHE := N
+ CCACHE := Y
 endif # CCACHE
 ifndef DAP
  DAP := N
