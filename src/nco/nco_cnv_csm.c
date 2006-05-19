@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.29 2006-05-19 20:25:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.30 2006-05-19 20:38:12 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -36,6 +36,7 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions *
     /* Some models, e.g., CLM user lowercase "conventions" */
     cnv_sng=cnv_sng_LC;
     rcd=nco_inq_att_flg(nc_id,NC_GLOBAL,cnv_sng,&att_typ,&att_sz);
+
   } /* Re-try with lowercase string */
   
   if(rcd == NC_NOERR && att_typ == NC_CHAR){
@@ -51,9 +52,9 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions *
     /* As of 20060514, CLM 3.0 uses CF1.0 not CF-1.0 (CAM gets it right) */
     if(strstr(att_val,"CF1.0") != NULL) CNV_CCM_CCSM_CF=True; /* NB: Not fully implemented TODO nco145 */
     if(CNV_CCM_CCSM_CF && dbg_lvl_get() > 0){
-      (void)fprintf(stderr,"%s: CONVENTION File \"%s\" attribute is \"%s\".",prg_nm_get(),cnv_sng,att_val);
-      if(dbg_lvl_get() > 1) (void)fprintf(stderr," NCO has a unified (but incomplete) treatment of many related (official and unoffical) conventions such as CCM, CCSM, and CF. As part of adhering to this convention, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"date\" or \"gw\". For a full list of exceptions, see the manual http://nco.sf.net/nco.html#CF");
-      (void)fprintf(stderr,"\n");
+      (void)fprintf(stderr,"%s: CONVENTION File \"%s\" attribute is \"%s\"\n",prg_nm_get(),cnv_sng,att_val);
+      if(cnv_sng == cnv_sng_LC) (void)fprintf(stderr,"%s: WARNING: This file uses a non-standard attribute (\"%s\") to indicate the netCDF convention. The correct attribute is \"%s\".\n",prg_nm_get(),cnv_sng_LC,cnv_sng_UC);
+      if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO NCO has a unified (but incomplete) treatment of many related (official and unoffical) conventions such as CCM, CCSM, and CF. As part of adhering to this convention, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"date\" or \"gw\". For a full list of exceptions, see the manual http://nco.sf.net/nco.html#CF\n",prg_nm_get());
     } /* endif dbg */
     att_val=(char *)nco_free(att_val);
   } /* endif */

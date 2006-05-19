@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.756 2006-05-19 20:25:52 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.757 2006-05-19 20:38:11 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -485,21 +485,14 @@ nco717. Averaging empty record variable creates an element in output!:
 	Scalar is ill-defined of course.
 	Hence averaging the file increases the data storage.
 	What to do?  Nothing.
-nco719. Add regression test for CF "coordinate" convention
-	ncks -O -v cnv_CF_crd -p ~/nco/data in.nc ~/foo.nc
-	ncks ~/foo.nc
-nco720. Add variable which exercises CF "coordinate" convention to in.cdl
-nco721. Add CPP token GLIBCPP_FORCE_NEW to ncap2 compiles to help detect leaks?
 nco722. mpncwa: DDRA diagnostics should work in MPI mode, not just SMP mode
 nco724. attribute propagation: test
         ncap2 -O -s "cnv_CF_crd2=cnv_CF_crd" -s "lon2=lon[0]" -p ~/nco/data in.nc ~/foo.nc
 nco725. attribute propagation: regression test
 nco726. attribute propagation: document
-nco727. CLM uses "conventions" attribute
 nco728. Major breakage in icc regression tests (gcc, xlc fine)
         ncra -O -v rec_var_flt_mss_val_dbl -p ~/nco/data in.nc ~/foo.nc
         Un-reproducible
-nco729. Print info message from nco_cnv_ccm_ccsm_cf_inq(nc_id) at most once
 nco730. 
 ************************************************************************
 End ncoXXX TODOs
