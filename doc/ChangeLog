@@ -1,3 +1,7 @@
+2006-05-19  Charlie Zender  <zender@uci.edu>
+
+	* Update documentation to new CVS and ViewCV URLs
+
 2006-05-18  Charlie Zender  <zender@uci.edu>
 
 	* Old-style Makefiles now assume ccache is installed on LINUX*

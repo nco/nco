@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.340 2006-05-18 01:53:32 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.341 2006-05-19 18:17:26 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -46,7 +46,7 @@ Try to disable Spammers' machines:
 <a href="#RTFM">Manual</a> /
 <a href="http://nco.sf.net">Homepage</a> /
 <a href="http://sf.net/projects/nco">Project</a> /
-<a href="http://cvs.sourceforge.net/viewcvs.py/nco/nco/src/nco/">Source</a> /
+<a href="http://nco.cvs.sourceforge.net/nco/nco/src/nco/">Source</a> /
 </td>
 
 <td align="right" valign="top">
@@ -424,7 +424,7 @@ The second best way is to download the source and documentation as a compressed 
 </ul>
 
 <p>NCO's browsable
-<a href="http://cvs.sourceforge.net/viewcvs.py/nco">CVS Repository</a> 
+<a href="http://nco.cvs.sourceforge.net/nco">CVS Repository</a> 
 contains up-to-the-minute sources and is the easiest way to stay
 synchronized with NCO features.
 Retrieving NCO requires some familiarity with GNU development tools,
@@ -435,7 +435,7 @@ Sourceforge provides
 <a href="http://sf.net/cvs/?group_id=3331">generic instructions</a> 
 for accessing their CVS servers.
 First log into the NCO CVS server:
-<p><tt>cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco login</tt></p>
+<p><tt>cvs -d:pserver:anonymous@nco.cvs.sourceforge.net:/cvsroot/nco login</tt></p>
 Hit <tt>return</tt> when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
@@ -443,10 +443,10 @@ Usually you wish to retrieve a recent tagged (i.e., released) version.
 This command retrieves and places NCO version <tt>3.1.2</tt> (which is
 tagged as <tt>nco-3_1_2</tt> due to CVS rules) into local directory
 <tt>nco-3.1.2</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -r nco-3_1_2 -d nco-3.1.2 nco</tt></p>
+<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sourceforge.net:/cvsroot/nco co -r nco-3_1_2 -d nco-3.1.2 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
-<p><tt>cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
+<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sourceforge.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
@@ -736,7 +736,7 @@ compiler, simply undefine the <tt>restrict</tt> type qualifier
 before compiling NCO.
 Do this, e.g., with <tt>CPPFLAGS='-Drestrict='</tt>.
 More details on C99 compatibility are in the header file
-<a href="http://cvs.sourceforge.net/viewcvs.py/nco/nco/src/nco/nco.h"><tt>nco/src/nco/nco.h</tt></a>.<br>
+<a href="http://nco.cvs.sourceforge.net/nco/nco/src/nco/nco.h"><tt>nco/src/nco/nco.h</tt></a>.<br>
 
 <!-- http://nco.sf.net#bld_netcdf -->
 <a name="bld_netcdf"></a>
@@ -870,7 +870,7 @@ The fix is to upgrade to the current NCO version.
 NEC&nbsp;SX does not understand the <tt>S_ISLNK</tt> macro, 
 preferring instead the (non-POSIX) <tt>S_IFLNK</tt> macro.
 This macro appears in the file 
-<a href="http://cvs.sourceforge.net/viewcvs.py/nco/nco/src/nco/nco_fl_utl.c"><tt>nco_fl_utl.c</tt></a>.
+<a href="http://nco.cvs.sourceforge.net/nco/nco/src/nco/nco_fl_utl.c"><tt>nco_fl_utl.c</tt></a>.
 The patch I wrote for this may be broken.
 Will someone with NEC&nbsp;SX please send us a working patch?
 </li>
@@ -1063,7 +1063,7 @@ site.</li>
 <a href="http://nco.sf.net">Homepage</a> /
 <a href="#RTFM">Manual</a> /
 <a href="http://sf.net/projects/nco">Project</a> /
-<a href="http://cvs.sourceforge.net/viewcvs.py/nco/nco/src/nco/">Source</a> /
+<a href="http://nco.cvs.sourceforge.net/nco/nco/src/nco/">Source</a> /
 </td>
 
 <td align="right" valign="top">
