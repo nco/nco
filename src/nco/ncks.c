@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.155 2006-02-26 07:41:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.156 2006-05-19 20:25:53 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -72,7 +72,10 @@ int
 main(int argc,char **argv)
 {
   nco_bool ALPHABETIZE_OUTPUT=True; /* Option a */
+  nco_bool CNV_CCM_CCSM_CF;
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
+  nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
+  nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   nco_bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   nco_bool FORCE_APPEND=False; /* Option A */
@@ -91,8 +94,6 @@ main(int argc,char **argv)
   nco_bool PRN_VAR_METADATA=False; /* [flg] Print variable metadata */
   nco_bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
   nco_bool PRN_VRB=False; /* [flg] Print data and metadata by default */
-  nco_bool PROCESS_ALL_COORDINATES=False; /* Option c */
-  nco_bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
 
   char **fl_lst_abb=NULL; /* Option a */
@@ -112,8 +113,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.155 2006-02-26 07:41:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.155 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.156 2006-05-19 20:25:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.156 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
   extern char *optarg;
@@ -270,10 +271,10 @@ main(int argc,char **argv)
       fl_bnr=(char *)strdup(optarg);
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
-      PROCESS_ASSOCIATED_COORDINATES=!PROCESS_ASSOCIATED_COORDINATES;
+      EXTRACT_ASSOCIATED_COORDINATES=!EXTRACT_ASSOCIATED_COORDINATES;
       break;
     case 'c': /* Add all coordinates to extraction list? */
-      PROCESS_ALL_COORDINATES=True;
+      EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* Debugging level. Default is 0. */
       dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
@@ -308,7 +309,7 @@ main(int argc,char **argv)
       break;
     case 'P': /* Print data to screen, maximal verbosity */
       PRN_VRB=True;
-      PROCESS_ASSOCIATED_COORDINATES=!PROCESS_ASSOCIATED_COORDINATES;
+      EXTRACT_ASSOCIATED_COORDINATES=!EXTRACT_ASSOCIATED_COORDINATES;
       break;
     case 'p': /* Common file path */
       fl_pth=(char *)strdup(optarg);
@@ -378,16 +379,22 @@ main(int argc,char **argv)
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&glb_att_nbr,&rec_dmn_id);
   
   /* Form initial extraction list which may include extended regular expressions */
-  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
+  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXTRACT_ALL_COORDINATES,&nbr_xtr);
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
 
   /* Add all coordinate variables to extraction list */
-  if(PROCESS_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_dmn_fl,xtr_lst,&nbr_xtr);
+  if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_dmn_fl,xtr_lst,&nbr_xtr);
 
   /* Make sure coordinates associated extracted variables are also on extraction list */
-  if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
+  if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
+
+  /* Is this an CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
+
+  /* Add coordinates defined by CF convention */
+  if(CNV_CCM_CCSM_CF && (EXTRACT_ALL_COORDINATES || EXTRACT_ASSOCIATED_COORDINATES)) xtr_lst=nco_cnv_cf_crd_add(in_id,xtr_lst,&nbr_xtr);
 
   /* Sort extraction list alphabetically or by variable ID */
   if(nbr_xtr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,nbr_xtr,ALPHABETIZE_OUTPUT);

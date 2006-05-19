@@ -1,6 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.52 2006-05-15 17:43:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.53 2006-05-19 20:25:53 zender Exp $ */
 
-/* ncra -- netCDF running averager */
+/* This single source file may be called as three separate executables:
+   ncra -- netCDF running averager
+   ncea -- netCDF ensemble averager
+   ncrcat -- netCDF record concatenator */
 
 /* Purpose: Compute averages or extract series of specified hyperslabs of 
    specfied variables of multiple input netCDF files and output them 
@@ -111,8 +114,8 @@ void checkpointMpi(int prc_rnk, int stage){
 int 
 main(int argc,char **argv)
 {
-  nco_bool CNV_ARM=int_CEWI;
-  nco_bool CNV_CCM_CCSM_CF=int_CEWI;
+  nco_bool CNV_ARM;
+  nco_bool CNV_CCM_CCSM_CF;
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -142,8 +145,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.52 2006-05-15 17:43:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.52 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.53 2006-05-19 20:25:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.53 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -456,6 +459,12 @@ main(int argc,char **argv)
   /* Make sure coordinates associated extracted variables are also on extraction list */
   if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
   
+  /* Is this an CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
+
+  /* Add coordinates defined by CF convention */
+  if(CNV_CCM_CCSM_CF && (EXTRACT_ALL_COORDINATES || EXTRACT_ASSOCIATED_COORDINATES)) xtr_lst=nco_cnv_cf_crd_add(in_id,xtr_lst,&nbr_xtr);
+
   /* Sort extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,nbr_xtr,False);
   
@@ -493,9 +502,6 @@ main(int argc,char **argv)
     } /* endif */
     lmt_rec=nco_lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_IDX_CNV);
   } /* endif */
-  
-  /* Is this an CCM/CCSM/CF-format history tape? */
-  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
   
   /* Is this an ARM-format data file? */
   CNV_ARM=nco_cnv_arm_inq(in_id);

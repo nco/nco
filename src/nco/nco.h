@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.98 2006-05-02 07:08:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.99 2006-05-19 20:25:53 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -86,6 +86,7 @@ Preprocessor macros may be used to turn bool into _Bool, false into 0 and true i
 #define int_CEWI 0
 #define long_CEWI 0L
 #define long_long_CEWI 0LL
+#define nco_bool_CEWI 0
 #define nco_byte_CEWI 0
 #define nco_char_CEWI '\0'
 #define nco_int_CEWI 0L

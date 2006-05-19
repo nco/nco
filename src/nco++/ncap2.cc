@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.12 2006-05-07 17:44:52 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.13 2006-05-19 20:25:53 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -89,6 +89,7 @@ main(int argc,char **argv)
   /* fxm TODO nco652 */
   double rnd_nbr(double);
   
+  nco_bool CNV_CCM_CCSM_CF;
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -98,7 +99,6 @@ main(int argc,char **argv)
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
-  nco_bool CNV_CCM_CCSM_CF;
   nco_bool PRN_FNC_TBL=False; /* Option f */  
   nco_bool PROCESS_ALL_VARS=True; /* Option v */  
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.12 2006-05-07 17:44:52 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.12 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.13 2006-05-19 20:25:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.13 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -661,15 +661,17 @@ main(int argc,char **argv)
     } /* end loop over idx */	      
   } /* end if */ 
  
- 
+  /* Is this an CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
+
+  /* Add coordinates defined by CF convention */
+  if(CNV_CCM_CCSM_CF && (EXTRACT_ALL_COORDINATES || EXTRACT_ASSOCIATED_COORDINATES)) xtr_lst=nco_cnv_cf_crd_add(in_id,xtr_lst,&nbr_xtr);
+
   /* Subtract list A again (it may contain re-defined coordinates) */
   if(nbr_xtr > 0) xtr_lst=nco_var_lst_sub(xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
   
   /* Sort extraction list for faster I/O */
   if(nbr_xtr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,nbr_xtr,False);
-  
-  /* Is this an CCM/CCSM/CF-format history tape? */
-  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
   
   /* Write "fixed" variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));

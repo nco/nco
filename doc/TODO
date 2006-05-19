@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.755 2006-05-19 18:17:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.756 2006-05-19 20:25:52 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -497,7 +497,8 @@ nco725. attribute propagation: regression test
 nco726. attribute propagation: document
 nco727. CLM uses "conventions" attribute
 nco728. Major breakage in icc regression tests (gcc, xlc fine)
-        ncra -O -v rec_var_flt_mss_val_dbl -p ../data in.nc ~/foo.nc
+        ncra -O -v rec_var_flt_mss_val_dbl -p ~/nco/data in.nc ~/foo.nc
+        Un-reproducible
 nco729. Print info message from nco_cnv_ccm_ccsm_cf_inq(nc_id) at most once
 nco730. 
 ************************************************************************

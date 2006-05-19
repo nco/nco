@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.41 2006-05-14 07:18:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.42 2006-05-19 20:25:53 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -79,6 +79,7 @@ char **ncap_fl_spt_glb; /* [fl] Script file */
 int 
 main(int argc,char **argv)
 {
+  nco_bool CNV_CCM_CCSM_CF;
   nco_bool DO_CONFORM_MSK=False; /* Did nco_var_cnf_dmn() find truly conforming mask? */
   nco_bool DO_CONFORM_WGT=False; /* Did nco_var_cnf_dmn() find truly conforming weight? */
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
@@ -92,7 +93,6 @@ main(int argc,char **argv)
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MULTIPLY_BY_TALLY=False; /* Not currently implemented */
   nco_bool MUST_CONFORM=False; /* [flg] Must nco_var_cnf_dmn() find truly conforming variables? */
-  nco_bool CNV_CCM_CCSM_CF;
   nco_bool NORMALIZE_BY_TALLY=True; /* Not currently implemented */
   nco_bool NORMALIZE_BY_WEIGHT=True; /* Not currently implemented */
   nco_bool NRM_BY_DNM=True; /* Option N Normalize by denominator */
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.41 2006-05-14 07:18:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.41 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.42 2006-05-19 20:25:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.42 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:z:-:";
   
   ddra_info_sct ddra_info={.MRV_flg=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
@@ -506,6 +506,12 @@ main(int argc,char **argv)
   /* Make sure coordinates associated extracted variables are also on extraction list */
   if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
   
+  /* Is this an CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
+
+  /* Add coordinates defined by CF convention */
+  if(CNV_CCM_CCSM_CF && (EXTRACT_ALL_COORDINATES || EXTRACT_ASSOCIATED_COORDINATES)) xtr_lst=nco_cnv_cf_crd_add(in_id,xtr_lst,&nbr_xtr);
+
   /* Sort extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,nbr_xtr,False);
   
@@ -598,9 +604,6 @@ main(int argc,char **argv)
     } /* end if */
     
   } /* dmn_avg_nbr <= 0 */
-  
-  /* Is this an CCM/CCSM/CF-format history tape? */
-  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
   
   /* Fill in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));

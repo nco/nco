@@ -1,5 +1,9 @@
 2006-05-19  Charlie Zender  <zender@uci.edu>
 
+	* Split CF coordinate convention nco_cnv_cf_crd_add()
+	out of nco_var_lst_ass_crd_add() so it can be called
+	based on other command line switches.
+
 	* Update documentation to new CVS and ViewCV URLs
 
 2006-05-18  Charlie Zender  <zender@uci.edu>

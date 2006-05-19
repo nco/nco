@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.341 2006-05-19 18:17:26 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.342 2006-05-19 20:25:52 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -424,7 +424,7 @@ The second best way is to download the source and documentation as a compressed 
 </ul>
 
 <p>NCO's browsable
-<a href="http://nco.cvs.sourceforge.net/nco">CVS Repository</a> 
+<a href="http://nco.cvs.sourceforge.net/nco/nco">CVS Repository</a> 
 contains up-to-the-minute sources and is the easiest way to stay
 synchronized with NCO features.
 Retrieving NCO requires some familiarity with GNU development tools,

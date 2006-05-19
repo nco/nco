@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.37 2006-04-27 18:10:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.38 2006-05-19 20:25:53 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -70,6 +70,7 @@
 int 
 main(int argc,char **argv)
 {
+  nco_bool CNV_CCM_CCSM_CF;
   nco_bool CMD_LN_NTP_VAR=False; /* Option i */
   nco_bool CMD_LN_NTP_WGT=True; /* Option w */
   nco_bool DO_CONFORM=False; /* Did nco_var_cnf_dmn() find truly conforming variables? */
@@ -84,7 +85,6 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MUST_CONFORM=False; /* Must nco_var_cnf_dmn() find truly conforming variables? */
-  nco_bool CNV_CCM_CCSM_CF;
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   
   char **fl_lst_abb=NULL; /* Option a */
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.37 2006-04-27 18:10:46 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.37 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.38 2006-05-19 20:25:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.38 $";
   const char * const opt_sht_lst="4ACcD:d:Fhi:l:Oo:p:rRSt:v:xw:-:";
   
   dmn_sct **dim;
@@ -436,6 +436,12 @@ main(int argc,char **argv)
   /* Make sure coordinates associated extracted variables are also on extraction list */
   if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id_1,xtr_lst,&nbr_xtr);
   
+  /* Is this an CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id_1);
+
+  /* Add coordinates defined by CF convention */
+  if(CNV_CCM_CCSM_CF && (EXTRACT_ALL_COORDINATES || EXTRACT_ASSOCIATED_COORDINATES)) xtr_lst=nco_cnv_cf_crd_add(in_id_1,xtr_lst,&nbr_xtr);
+
   /* Sort extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,nbr_xtr,False);
   
@@ -463,9 +469,6 @@ main(int argc,char **argv)
     dmn_out[idx]=nco_dmn_dpl(dim[idx]);
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]); 
   } /* end loop over idx */
-  
-  /* Is this an CCM/CCSM/CF-format history tape? */
-  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id_1);
   
   /* Fill in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));

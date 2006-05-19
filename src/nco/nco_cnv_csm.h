@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.18 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.19 2006-05-19 20:25:53 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -26,6 +26,7 @@
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_cln_utl.h" /* Calendar utilities */
+#include "nco_lst_utl.h" /* List utilities */
 #include "nco_mmr.h" /* Memory management */
 
 #ifdef __cplusplus
@@ -41,6 +42,12 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCSM files */
 (const int nc_id, /* I [id] netCDF file ID */
  X_CST_PTR_CST_PTR_Y(var_sct,var), /* I/O [sct] Variables in output file */
  const int nbr_var); /* I [nbr] Number of variables in list */
+
+nm_id_sct * /* O [sct] Extraction list */
+nco_cnv_cf_crd_add /* [fnc] Add coordinates defined by CF convention */
+(const int nc_id, /* I netCDF file ID */
+ nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
+ int * const nbr_xtr); /* I/O number of variables in current extraction list */
 
 #ifdef __cplusplus
 } /* end extern "C" */
