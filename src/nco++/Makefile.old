@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.13 2006-05-19 04:40:30 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.14 2006-05-19 05:09:59 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -1158,11 +1158,13 @@ endif
 endif
 # endif WIN32
 
+ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
 ifeq (${CCACHE},Y)
 # Prefix CC and CXX with ccache
  CC := ccache ${CC}
  CXX := ccache ${CXX}
-endif # endif CCACHE
+endif # !CCACHE
+endif # !LINUX
 
 ifeq ($(STC),Y)
 # Created statically linked executable

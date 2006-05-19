@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.370 2006-05-19 05:04:46 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.371 2006-05-19 05:09:59 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -1233,11 +1233,13 @@ endif # endif SGI
  CPPFLAGS += -U_OPENMP
 endif # endif OMP
 
+ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
 ifeq (${CCACHE},Y)
 # Prefix CC and CXX with ccache
  CC := ccache ${CC}
  CXX := ccache ${CXX}
-endif # endif CCACHE
+endif # !CCACHE
+endif # !LINUX
 
 ifeq (${STC},Y)
 # Created statically linked executable
