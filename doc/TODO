@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.758 2006-05-20 00:27:22 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.759 2006-05-20 04:32:26 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -493,9 +493,6 @@ nco726. attribute propagation: document
 nco728. Major breakage in icc regression tests (gcc, xlc fine)
         ncra -O -v rec_var_flt_mss_val_dbl -p ~/nco/data in.nc ~/foo.nc
         Un-reproducible
-nco730. Move nco_cnv_cf_crd_add() back into nco_var_lst_crd_ass_add()
-nco731. Put nco_cnv_cf_crd_add() functionality into nco_var_lst_crd_add()
-nco732. Pass CNV_CCM_CCSM_CF into above two routines. This will fix problem that EXTRACT_ALL_COORDINATES switch does not guarantee getting all CF coordinates.
 nco733. 
 ************************************************************************
 End ncoXXX TODOs
