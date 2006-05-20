@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.761 2006-05-20 06:00:18 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.762 2006-05-20 06:12:29 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -493,7 +493,8 @@ nco728. Major breakage in icc regression tests (gcc, xlc fine)
         ncra -O -v rec_var_flt_mss_val_dbl -p ~/nco/data in.nc ~/foo.nc
 	ncrcat -O -D 1 -d time,0 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc
 nco733. virga: wrong OMP messages when compiling with icc
-nco734. 
+nco734. virga: icc OMP not working
+nco735. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
