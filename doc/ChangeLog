@@ -1,5 +1,7 @@
 2006-05-19  Charlie Zender  <zender@uci.edu>
 
+	* Return 1 early from nco_omp_ini() on compilers without OpenMP
+
 	* Put CNV_CCM_CCSM_CF back in nco_var_lst_crd_ass_add(), and add
 	it into nco_var_lst_crd_add(). CF coordinates now handled
 	correctly with -C/-c switches.

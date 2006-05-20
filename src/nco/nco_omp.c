@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.30 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.31 2006-05-20 06:00:18 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -55,6 +55,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
 
 #ifndef _OPENMP
   if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO Compiler lacks (or user turned off) OpenMP support. Code will execute in Uni-Processor (UP) mode with single thread.\n",prg_nm_get());
+  return (int)1;
 #endif /* !_OPENMP */
 
   /* Strategy: 

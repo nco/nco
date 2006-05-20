@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.760 2006-05-20 04:40:39 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.761 2006-05-20 06:00:18 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -489,9 +489,11 @@ nco724. attribute propagation: test
 nco725. attribute propagation: regression test
 nco726. attribute propagation: document
 nco728. Major breakage in icc regression tests (gcc, xlc fine)
+        Un-reproducible on other platforms
         ncra -O -v rec_var_flt_mss_val_dbl -p ~/nco/data in.nc ~/foo.nc
-        Un-reproducible
-nco733. 
+	ncrcat -O -D 1 -d time,0 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc
+nco733. virga: wrong OMP messages when compiling with icc
+nco734. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
