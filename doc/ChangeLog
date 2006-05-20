@@ -1,5 +1,9 @@
 2006-05-19  Charlie Zender  <zender@uci.edu>
 
+	* Put CNV_CCM_CCSM_CF back in nco_var_lst_crd_ass_add(), and add
+	it into nco_var_lst_crd_add(). CF coordinates now handled
+	correctly with -C/-c switches.
+
 	* Move some nm_id_sct var_lst routines from nco_var_utl.c to
 	nco_var_lst.c 
 
