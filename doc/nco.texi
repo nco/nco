@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.355 2006-05-19 00:38:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.356 2006-05-20 06:36:33 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -102,7 +102,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.1.2
 @set copyright-years 1995--2006
 @set update-year 2006
-@set update-date 8 May 2006
+@set update-date 19 May 2006
 @set update-month May 2006
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -2878,6 +2878,7 @@ build time.
 @end html
 @node Subsetting Variables, Subsetting Coordinate Variables, Large File Support, Common features
 @section Subsetting Variables
+@cindex subsetting
 @cindex @code{-v @var{var}}
 @cindex @code{--variable @var{var}}
 @cindex @code{-x}
@@ -3041,6 +3042,7 @@ filename expansion (globbing).
 @end html
 @node Subsetting Coordinate Variables, C and Fortran Index Conventions, Subsetting Variables, Common features
 @section Subsetting Coordinate Variables
+@cindex subsetting
 @cindex @code{-C}
 @cindex @code{-c}
 @cindex @code{--no-coords}
@@ -3070,6 +3072,9 @@ automatically specifying that @emph{all} coordinate variables in the
 @var{input-files} should appear in the @var{output-file}.
 Thus @samp{-c} allows the user to select all the coordinate variables
 without having to know their names.
+@cindex @acronym{CF} conventions
+Both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{coordinates}
+convention described in @ref{CF Conventions}.
 
 @html
 <a name="ftn"></a> <!-- http://nco.sf.net/nco.html#ftn -->
@@ -4675,6 +4680,7 @@ or alter the @code{Conventions} attribute.
 @cindex @code{coordinates}
 @cindex coordinates convention
 @cindex coordinate variable 
+@cindex subsetting
 @cindex @code{-C}
 @cindex @code{-c}
 @cindex @code{--no-coords}

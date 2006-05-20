@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.762 2006-05-20 06:12:29 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.763 2006-05-20 06:36:33 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -488,12 +488,11 @@ nco724. attribute propagation: test
         ncap2 -O -s "cnv_CF_crd2=cnv_CF_crd" -s "lon2=lon[0]" -p ~/nco/data in.nc ~/foo.nc
 nco725. attribute propagation: regression test
 nco726. attribute propagation: document
-nco728. Major breakage in icc regression tests (gcc, xlc fine)
+nco728. Major breakage in icc regression tests (gcc, xlc fine) OpenMP related?
         Un-reproducible on other platforms
         ncra -O -v rec_var_flt_mss_val_dbl -p ~/nco/data in.nc ~/foo.nc
 	ncrcat -O -D 1 -d time,0 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc
-nco733. virga: wrong OMP messages when compiling with icc
-nco734. virga: icc OMP not working
+nco734. virga: icc OMP not working at all
 nco735. 
 ************************************************************************
 End ncoXXX TODOs
