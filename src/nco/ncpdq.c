@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.101 2006-05-19 20:25:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.102 2006-05-20 00:27:23 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.101 2006-05-19 20:25:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.101 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.102 2006-05-20 00:27:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.102 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -372,10 +372,10 @@ main(int argc,char **argv)
   if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
 
   /* Add all coordinate variables to extraction list */
-  if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_dmn_fl,xtr_lst,&nbr_xtr);
+  if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,xtr_lst,&nbr_xtr);
 
   /* Make sure coordinates associated extracted variables are also on extraction list */
-  if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
+  if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_crd_ass_add(in_id,xtr_lst,&nbr_xtr);
 
   /* Is this an CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);

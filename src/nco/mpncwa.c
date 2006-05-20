@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.42 2006-05-19 20:25:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.43 2006-05-20 00:27:23 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.42 2006-05-19 20:25:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.42 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.43 2006-05-20 00:27:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.43 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:z:-:";
   
   ddra_info_sct ddra_info={.MRV_flg=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
@@ -501,10 +501,10 @@ main(int argc,char **argv)
   if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
   
   /* Add all coordinate variables to extraction list */
-  if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_dmn_fl,xtr_lst,&nbr_xtr);
+  if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,xtr_lst,&nbr_xtr);
   
   /* Make sure coordinates associated extracted variables are also on extraction list */
-  if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
+  if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_crd_ass_add(in_id,xtr_lst,&nbr_xtr);
   
   /* Is this an CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);

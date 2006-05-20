@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.60 2006-05-07 19:57:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.61 2006-05-20 00:27:23 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -286,11 +286,13 @@ nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
 } /* end nco_var_lst_xcl() */
 
 nm_id_sct * /* O [sct] Extraction list */
-nco_var_lst_add_crd /* [fnc] Add all coordinates to extraction list */
+nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
 (const int nc_id, /* I [id] netCDF file ID */
  const int nbr_dim, /* I [nbr] Number of dimensions in input file */
+ const int nbr_var, /* I [nbr] Number of variables in input file */
  nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
- int * const nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
+ int * const nbr_xtr, /* I/O [nbr] Number of variables in current extraction list */
+ const nco_bool CNV_CCM_CCSM_CF) /* I [flg] file obeys CCM/CCSM/CF conventions */
 {
   /* Purpose: Add all coordinates to extraction list
      Find all coordinates (dimensions which are also variables) and
@@ -326,11 +328,266 @@ nco_var_lst_add_crd /* [fnc] Add all coordinates to extraction list */
     } /* end if */
   } /* end loop over idx */
   
+  /* Detect and apply coordinates specified by CF convention */
+  if(CNV_CCM_CCSM_CF){
+    const char dlm_sng[]=" "; /* [sng] Delimiter string */
+    const char fnc_nm[]="nco_var_lst_crd_add()"; /* [sng] Function name */
+    char **crd_lst; /* [sng] 1D array of list elements */
+    char *att_val;
+    char att_nm[NC_MAX_NAME];
+    int idx_att;
+    int idx_crd;
+    int idx_var;
+    int idx_var2;
+    int nbr_att;
+    int nbr_crd; /* [nbr] Number of coordinates specified in "coordinates" attribute */
+    int var_id;
+    long att_sz;
+    nc_type att_typ;
+
+    /* NB: Only difference between this algorithm and CF algorithm in 
+       nco_var_lst_crd_ass_add() is that this algorithm loops over 
+       all variables in file, not just over current extraction list. */ 
+    /* ...for each variable in file... */
+    for(idx_var=0;idx_var<nbr_var;idx_var++){
+      /* This assumption is valid in netCDF2, netCDF3, and netCDF4 */
+      var_id=idx_var;
+      /* fxm: Functionalize remainder and call from both 
+	 nco_var_lst_crd_ass_add() and nco_var_lst_crd_add()? */
+      /* Find number of attributes */
+      (void)nco_inq_varnatts(nc_id,var_id,&nbr_att);
+      for(idx_att=0;idx_att<nbr_att;idx_att++){
+	(void)nco_inq_attname(nc_id,var_id,idx_att,att_nm);
+	/* Is attribute part of CF convention? */
+	if(!strcmp(att_nm,"coordinates")){
+	  /* Yes, get list of specified attributes */
+	  (void)nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
+	  if(att_typ != NC_CHAR){
+	    (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+	    return xtr_lst;
+	  } /* end if */
+	  att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+	  if(att_sz > 0) (void)nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+	  /* NUL-terminate attribute */
+	  att_val[att_sz]='\0';
+	  /* Split list into separate coordinate names */
+	  crd_lst=lst_prs_2D(att_val,dlm_sng,&nbr_crd);
+	  /* ...for each coordinate in "coordinates" attribute... */
+	  for(idx_crd=0;idx_crd<nbr_crd;idx_crd++){
+	    /* Verify "coordinate" exists in input file */
+	    rcd=nco_inq_varid_flg(nc_id,crd_lst[idx_crd],&crd_id);
+	    /* NB: Do not check that dimension by this name exists
+	       CF files often use "coordinates" convention to identify
+	       two-dimensional (or greater) variables which serve as coordinates.
+	       In other words, we want to allow N-D variables to work as coordinates
+	       for the purpose of adding them to the extraction list only. */
+	    if(rcd == NC_NOERR){
+	      /* idx_var2 labels inner loop over variables */
+	      /* Is "coordinate" already on extraction list? */
+	      for(idx_var2=0;idx_var2<*nbr_xtr;idx_var2++){
+		if(crd_id == xtr_lst[idx_var2].id) break;
+	      } /* end loop over idx_var2 */
+	      if(idx_var2 == *nbr_xtr){
+		/* Add coordinate to list */
+		xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));
+		xtr_lst[*nbr_xtr].nm=(char *)strdup(crd_lst[idx_crd]);
+		xtr_lst[*nbr_xtr].id=crd_id;
+		(*nbr_xtr)++; /* NB: Changes size of current loop! */
+		/* Continue to next coordinate in loop */
+		continue;
+	      } /* end if coordinate was not already in list */
+	    } /* end if named coordinate exists in input file */
+	  } /* end loop over idx_crd */
+	  /* Free allocated memory */
+	  att_val=(char *)nco_free(att_val);
+	  crd_lst=nco_sng_lst_free(crd_lst,nbr_crd);
+	} /* !coordinates */
+      } /* end loop over attributes */
+    } /* end loop over idx_var */
+  } /* !CNV_CCM_CCSM_CF */
+
   return xtr_lst;
-} /* end nco_var_lst_add_crd() */
+} /* end nco_var_lst_crd_add() */
+
+nm_id_sct * /* O [sct] Extraction list */
+nco_var_lst_crd_ass_add /* [fnc] Add coordinates associated extracted variables to extraction list */
+(const int nc_id, /* I netCDF file ID */
+ nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
+ int * const nbr_xtr, /* I/O number of variables in current extraction list */
+ const nco_bool CNV_CCM_CCSM_CF) /* I [flg] file obeys CCM/CCSM/CF conventions */
+{
+  /* Purpose: Add coordinates associated with variables to extraction list */
+
+  char dmn_nm[NC_MAX_NAME];
+
+  int crd_id;
+  int dmn_id[NC_MAX_DIMS];
+  int idx_dmn;
+  int idx_var_dim;
+  int idx_var;
+  int nbr_dim;
+  int nbr_var_dim;
+  int rcd=NC_NOERR; /* [rcd] Return code */
+
+  /* Get number of dimensions */
+  (void)nco_inq(nc_id,&nbr_dim,(int *)NULL,(int *)NULL,(int *)NULL);
+
+  /* ...for each dimension in input file... */
+  for(idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
+    /* ...see if it is coordinate dimension... */
+    (void)nco_inq_dimname(nc_id,idx_dmn,dmn_nm);
+     
+    rcd=nco_inq_varid_flg(nc_id,dmn_nm,&crd_id);
+    if(rcd == NC_NOERR){ /* Valid coordinate (same name of dimension and variable) */
+      /* Is coordinate already on extraction list? */
+      for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
+	if(crd_id == xtr_lst[idx_var].id) break;
+      } /* end loop over idx_var */
+      if(idx_var == *nbr_xtr){
+	/* ...coordinate is not on list, is it associated with any variables?... */
+	for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
+	  /* Get number of dimensions and dimension IDs for variable */
+	  (void)nco_inq_var(nc_id,xtr_lst[idx_var].id,(char *)NULL,(nc_type *)NULL,&nbr_var_dim,dmn_id,(int *)NULL);
+	  for(idx_var_dim=0;idx_var_dim<nbr_var_dim;idx_var_dim++){
+	    if(idx_dmn == dmn_id[idx_var_dim]) break;
+	  } /* end loop over idx_var_dim */
+	  if(idx_var_dim != nbr_var_dim){
+	    /* Add coordinate to list */
+	    xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));
+	    xtr_lst[*nbr_xtr].nm=(char *)strdup(dmn_nm);
+	    xtr_lst[*nbr_xtr].id=crd_id;
+	    (*nbr_xtr)++; /* NB: Changes size of current loop! */
+	    break;
+	  } /* end if */
+	} /* end loop over idx_var */
+      } /* end if coordinate was not already in list */
+    } /* end if dimension is coordinate */
+  } /* end loop over idx_dmn */
+  
+  /* Detect and apply coordinates specified by CF convention */
+  if(CNV_CCM_CCSM_CF){
+    const char dlm_sng[]=" "; /* [sng] Delimiter string */
+    const char fnc_nm[]="nco_var_lst_crd_ass_add()"; /* [sng] Function name */
+    char **crd_lst; /* [sng] 1D array of list elements */
+    char *att_val;
+    char att_nm[NC_MAX_NAME];
+    int idx_att;
+    int idx_crd;
+    int idx_var2;
+    int nbr_att;
+    int nbr_crd; /* [nbr] Number of coordinates specified in "coordinates" attribute */
+    int var_id;
+    long att_sz;
+    nc_type att_typ;
+
+    /* ...for each variable in extraction list... */
+    for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
+      /* Eschew indirection */
+      var_id=xtr_lst[idx_var].id;
+      /* Find number of attributes */
+      (void)nco_inq_varnatts(nc_id,var_id,&nbr_att);
+      for(idx_att=0;idx_att<nbr_att;idx_att++){
+	(void)nco_inq_attname(nc_id,var_id,idx_att,att_nm);
+	/* Is attribute part of CF convention? */
+	if(!strcmp(att_nm,"coordinates")){
+	  /* Yes, get list of specified attributes */
+	  (void)nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
+	  if(att_typ != NC_CHAR){
+	    (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+	    return xtr_lst;
+	  } /* end if */
+	  att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+	  if(att_sz > 0) (void)nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+	  /* NUL-terminate attribute */
+	  att_val[att_sz]='\0';
+	  /* Split list into separate coordinate names */
+	  crd_lst=lst_prs_2D(att_val,dlm_sng,&nbr_crd);
+	  /* ...for each coordinate in "coordinates" attribute... */
+	  for(idx_crd=0;idx_crd<nbr_crd;idx_crd++){
+	    /* Verify "coordinate" exists in input file */
+	    rcd=nco_inq_varid_flg(nc_id,crd_lst[idx_crd],&crd_id);
+	    /* NB: Do not check that dimension by this name exists
+	       CF files often use "coordinates" convention to identify
+	       two-dimensional (or greater) variables which serve as coordinates.
+	       In other words, we want to allow N-D variables to work as coordinates
+	       for the purpose of adding them to the extraction list only. */
+	    if(rcd == NC_NOERR){
+	      /* idx_var2 labels inner loop over variables */
+	      /* Is "coordinate" already on extraction list? */
+	      for(idx_var2=0;idx_var2<*nbr_xtr;idx_var2++){
+		if(crd_id == xtr_lst[idx_var2].id) break;
+	      } /* end loop over idx_var2 */
+	      if(idx_var2 == *nbr_xtr){
+		/* Add coordinate to list */
+		xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));
+		xtr_lst[*nbr_xtr].nm=(char *)strdup(crd_lst[idx_crd]);
+		xtr_lst[*nbr_xtr].id=crd_id;
+		(*nbr_xtr)++; /* NB: Changes size of current loop! */
+		/* Continue to next coordinate in loop */
+		continue;
+	      } /* end if coordinate was not already in list */
+	    } /* end if named coordinate exists in input file */
+	  } /* end loop over idx_crd */
+	  /* Free allocated memory */
+	  att_val=(char *)nco_free(att_val);
+	  crd_lst=nco_sng_lst_free(crd_lst,nbr_crd);
+	} /* !coordinates */
+      } /* end loop over attributes */
+    } /* end loop over idx_var */
+  } /* !CNV_CCM_CCSM_CF */
+
+  return xtr_lst;
+  
+} /* end nco_var_lst_crd_ass_add() */
+
+nm_id_sct * /* O [sct] List with coordinate excluded */
+nco_var_lst_crd_xcl /* [fnc] Exclude given coordinates from extraction list */
+(const int nc_id, /* I [id] netCDF file ID */
+ const int dmn_id, /* I [id] Dimension ID of coordinate to remove from extraction list */
+ nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
+ int * const nbr_xtr) /* I/O [nbr] Number of variables in extraction list */
+{
+  /* Purpose: Modify extraction list to exclude coordinate, if any, associated with given dimension ID */
+  
+  char crd_nm[NC_MAX_NAME];
+
+  int idx;
+  int crd_id=-1;
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  
+  /* What is variable ID of record coordinate, if any? */
+  (void)nco_inq_dimname(nc_id,dmn_id,crd_nm);
+   
+  rcd=nco_inq_varid_flg(nc_id,crd_nm,&crd_id);
+  if(rcd == NC_NOERR){
+    /* Is coordinate on extraction list? */
+    for(idx=0;idx<*nbr_xtr;idx++){
+      if(xtr_lst[idx].id == crd_id) break;
+    } /* end loop over idx */
+    if(idx != *nbr_xtr){
+      nm_id_sct *var_lst_tmp;
+      
+      var_lst_tmp=(nm_id_sct *)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
+      /* Copy the extract list to the temporary extract list and reallocate the extract list */
+      (void)memcpy((void *)var_lst_tmp,(void *)xtr_lst,*nbr_xtr*sizeof(nm_id_sct));
+      (*nbr_xtr)--;
+      xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,*nbr_xtr*sizeof(nm_id_sct));
+      /* Collapse the temporary extract list into the permanent list by copying 
+	 all but the coordinate. NB: the ordering of the list is conserved. */
+      (void)memcpy((void *)xtr_lst,(void *)var_lst_tmp,idx*sizeof(nm_id_sct));
+      (void)memcpy((void *)(xtr_lst+idx),(void *)(var_lst_tmp+idx+1),(*nbr_xtr-idx)*sizeof(nm_id_sct));
+      /* Free the memory for coordinate name in the extract list before losing the pointer */
+      var_lst_tmp[idx].nm=(char *)nco_free(var_lst_tmp[idx].nm);
+      var_lst_tmp=(nm_id_sct *)nco_free(var_lst_tmp);
+    } /* end if */
+  } /* end if */
+  
+  return xtr_lst;
+  
+} /* end nco_var_lst_crd_xcl() */
 
 void
-var_lst_convert /* [fnc] Make variable structure list from variable name ID list */
+nco_var_lst_convert /* [fnc] Make variable structure list from variable name ID list */
 (const int nc_id, /* I [enm] netCDF file ID */
  nm_id_sct *xtr_lst, /* I [sct] Current extraction list (destroyed) */
  const int nbr_xtr, /* I [nbr] Number of variables in input file */
@@ -361,7 +618,7 @@ var_lst_convert /* [fnc] Make variable structure list from variable name ID list
   *var_ptr=var;
   *var_out_ptr=var_out;
 
-} /* end var_lst_convert() */
+} /* end nco_var_lst_convert() */
 
 void
 nco_var_lst_dvd /* [fnc] Divide input lists into output lists */

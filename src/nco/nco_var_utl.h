@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.39 2006-05-19 20:25:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.40 2006-05-20 00:27:23 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -118,19 +118,6 @@ extern "C" {
   nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory */
   (const int nc_id, /* I [id] netCDF file ID */
    var_sct *var); /* I [sct] Variable to get */
-  
-  nm_id_sct * /* O [sct] List with coordinate excluded */
-  nco_var_lst_crd_xcl /* [fnc] Exclude given coordinates from extraction list */
-  (const int nc_id, /* I [id] netCDF file ID */
-   const int dmn_id, /* I [id] Dimension ID of coordinate to remove from extraction list */
-   nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
-   int * const nbr_xtr); /* I/O [nbr] Number of variables in extraction list */
-  
-  nm_id_sct * /* O [sct] Extraction list */
-  nco_var_lst_ass_crd_add /* [fnc] Add coordinates associated extracted variables to extraction list */
-  (const int nc_id, /* I netCDF file ID */
-   nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
-   int * const nbr_xtr); /* I/O number of variables in current extraction list */
   
   var_sct ** /* O [sct] Pointer to free'd structure list */
   nco_var_lst_free /* [fnc] Free memory associated with variable structure list */

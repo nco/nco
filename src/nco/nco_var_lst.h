@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.35 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.36 2006-05-20 00:27:23 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -59,13 +59,6 @@ nco_var_lst_mk_old /* [fnc] Create variable extraction list */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const nbr_xtr); /* I/O [nbr] Number of variables in current extraction list */
 
-int /* O [nbr] Number of matches found */
-nco_var_meta_search /* [fnc] Search for pattern matches in var string list */
-(int nbr_var, /* I [nbr] number of vars in srch_sng and size of in_bool */
- nm_id_sct *in_lst, /* I [sct] List of all variables in input file (with IDs) */
- char *rexp, /* I [sng] Regular expression pattern */
- nco_bool *in_bool); /* O [flg] Matched vars holder */
-
 nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
 (const int nc_id, /* I netCDF file ID */
@@ -74,14 +67,23 @@ nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
  int * const nbr_xtr); /* I/O [nbr] Number of variables in exclusion/extraction list */
 
 nm_id_sct * /* O [sct] Extraction list */
-nco_var_lst_add_crd /* [fnc] Add all coordinates to extraction list */
+nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
 (const int nc_id, /* I [id] netCDF file ID */
  const int nbr_dim, /* I [nbr] Number of dimensions in input file */
+ const int nbr_var, /* I [nbr] Number of variables in input file */
  nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
- int * const nbr_xtr); /* I/O [nbr] Number of variables in current extraction list */
+ int * const nbr_xtr, /* I/O [nbr] Number of variables in current extraction list */
+ const nco_bool CNV_CCM_CCSM_CF); /* I [flg] file obeys CCM/CCSM/CF conventions */
+
+nm_id_sct * /* O [sct] Extraction list */
+nco_var_lst_crd_ass_add /* [fnc] Add coordinates associated extracted variables to extraction list */
+(const int nc_id, /* I netCDF file ID */
+ nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
+ int * const nbr_xtr, /* I/O number of variables in current extraction list */
+ const nco_bool CNV_CCM_CCSM_CF); /* I [flg] file obeys CCM/CCSM/CF conventions */
 
 void
-var_lst_convert /* [fnc] Make variable structure list from variable name ID list */
+nco_var_lst_convert /* [fnc] Make variable structure list from variable name ID list */
 (const int nc_id, /* I [enm] netCDF file ID */
  nm_id_sct *xtr_lst, /* I [sct] Current extraction list (destroyed) */
  const int nbr_xtr, /* I [nbr] Number of variables in input file */
@@ -113,6 +115,13 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
  var_sct *** var_2_ptr, /* I/O [sct] Variable list 2 */
  int * const var_nbr_1, /* I/O [nbr] Number of variables in list 1 */
  int * const var_nbr_2); /* I/O [nbr] Number of variables in list 2 */
+
+int /* O [nbr] Number of matches found */
+nco_var_meta_search /* [fnc] Search for pattern matches in var string list */
+(int nbr_var, /* I [nbr] number of vars in srch_sng and size of in_bool */
+ nm_id_sct *in_lst, /* I [sct] List of all variables in input file (with IDs) */
+ char *rexp, /* I [sng] Regular expression pattern */
+ nco_bool *in_bool); /* O [flg] Matched vars holder */
 
 #ifdef __cplusplus
 } /* end extern "C" */

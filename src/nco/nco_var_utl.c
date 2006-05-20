@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.111 2006-05-19 20:25:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.112 2006-05-20 00:27:23 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1032,110 +1032,6 @@ nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
   } /* end loop over idx */
 
 } /* end nco_var_val_cpy() */
-
-nm_id_sct * /* O [sct] List with coordinate excluded */
-nco_var_lst_crd_xcl /* [fnc] Exclude given coordinates from extraction list */
-(const int nc_id, /* I [id] netCDF file ID */
- const int dmn_id, /* I [id] Dimension ID of coordinate to remove from extraction list */
- nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
- int * const nbr_xtr) /* I/O [nbr] Number of variables in extraction list */
-{
-  /* Purpose: Modify extraction list to exclude coordinate, if any, associated with given dimension ID */
-  
-  char crd_nm[NC_MAX_NAME];
-
-  int idx;
-  int crd_id=-1;
-  int rcd=NC_NOERR; /* [rcd] Return code */
-  
-  /* What is variable ID of record coordinate, if any? */
-  (void)nco_inq_dimname(nc_id,dmn_id,crd_nm);
-   
-  rcd=nco_inq_varid_flg(nc_id,crd_nm,&crd_id);
-  if(rcd == NC_NOERR){
-    /* Is coordinate on extraction list? */
-    for(idx=0;idx<*nbr_xtr;idx++){
-      if(xtr_lst[idx].id == crd_id) break;
-    } /* end loop over idx */
-    if(idx != *nbr_xtr){
-      nm_id_sct *var_lst_tmp;
-      
-      var_lst_tmp=(nm_id_sct *)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
-      /* Copy the extract list to the temporary extract list and reallocate the extract list */
-      (void)memcpy((void *)var_lst_tmp,(void *)xtr_lst,*nbr_xtr*sizeof(nm_id_sct));
-      (*nbr_xtr)--;
-      xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,*nbr_xtr*sizeof(nm_id_sct));
-      /* Collapse the temporary extract list into the permanent list by copying 
-	 all but the coordinate. NB: the ordering of the list is conserved. */
-      (void)memcpy((void *)xtr_lst,(void *)var_lst_tmp,idx*sizeof(nm_id_sct));
-      (void)memcpy((void *)(xtr_lst+idx),(void *)(var_lst_tmp+idx+1),(*nbr_xtr-idx)*sizeof(nm_id_sct));
-      /* Free the memory for coordinate name in the extract list before losing the pointer */
-      var_lst_tmp[idx].nm=(char *)nco_free(var_lst_tmp[idx].nm);
-      var_lst_tmp=(nm_id_sct *)nco_free(var_lst_tmp);
-    } /* end if */
-  } /* end if */
-  
-  return xtr_lst;
-  
-} /* end nco_var_lst_crd_xcl() */
-
-nm_id_sct * /* O [sct] Extraction list */
-nco_var_lst_ass_crd_add /* [fnc] Add coordinates associated extracted variables to extraction list */
-(const int nc_id, /* I netCDF file ID */
- nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
- int * const nbr_xtr) /* I/O number of variables in current extraction list */
-{
-  /* Purpose: Add coordinates associated with variables to extraction list */
-
-  char dmn_nm[NC_MAX_NAME];
-
-  int crd_id;
-  int dmn_id[NC_MAX_DIMS];
-  int idx_dmn;
-  int idx_var_dim;
-  int idx_var;
-  int nbr_dim;
-  int nbr_var_dim;
-  int rcd=NC_NOERR; /* [rcd] Return code */
-
-  /* Get number of dimensions */
-  (void)nco_inq(nc_id,&nbr_dim,(int *)NULL,(int *)NULL,(int *)NULL);
-
-  /* ...for each dimension in input file... */
-  for(idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
-    /* ...see if it is coordinate dimension... */
-    (void)nco_inq_dimname(nc_id,idx_dmn,dmn_nm);
-     
-    rcd=nco_inq_varid_flg(nc_id,dmn_nm,&crd_id);
-    if(rcd == NC_NOERR){ /* Valid coordinate (same name of dimension and variable) */
-      /* Is coordinate already on extraction list? */
-      for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
-	if(crd_id == xtr_lst[idx_var].id) break;
-      } /* end loop over idx_var */
-      if(idx_var == *nbr_xtr){
-	/* ...coordinate is not on list, is it associated with any variables?... */
-	for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
-	  /* Get number of dimensions and dimension IDs for variable */
-	  (void)nco_inq_var(nc_id,xtr_lst[idx_var].id,(char *)NULL,(nc_type *)NULL,&nbr_var_dim,dmn_id,(int *)NULL);
-	  for(idx_var_dim=0;idx_var_dim<nbr_var_dim;idx_var_dim++){
-	    if(idx_dmn == dmn_id[idx_var_dim]) break;
-	  } /* end loop over idx_var_dim */
-	  if(idx_var_dim != nbr_var_dim){
-	    /* Add coordinate to list */
-	    xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));
-	    xtr_lst[*nbr_xtr].nm=(char *)strdup(dmn_nm);
-	    xtr_lst[*nbr_xtr].id=crd_id;
-	    (*nbr_xtr)++; /* NB: Changes size of current loop! */
-	    break;
-	  } /* end if */
-	} /* end loop over idx_var */
-      } /* end if coordinate was not already in list */
-    } /* end if dimension is coordinate */
-  } /* end loop over idx_dmn */
-  
-  return xtr_lst;
-  
-} /* end nco_var_lst_ass_crd_add() */
 
 var_sct * /* O [sct] Variable structure */
 nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
