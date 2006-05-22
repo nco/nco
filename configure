@@ -1815,7 +1815,7 @@ _ACEOF
 cat >>confdefs.h <<\_ACEOF
 #define LINUX 1
 _ACEOF
- ; linux=1
+ LINUX=1 ;
 	;;
     i*86-pc-cygwin* )
 cat >>confdefs.h <<\_ACEOF
@@ -1833,7 +1833,7 @@ _ACEOF
 cat >>confdefs.h <<\_ACEOF
 #define MACOSX 1
 _ACEOF
- ; macosx=1
+ MACOSX=1 ;
 	;;
     powerpc-ibm-aix* )
 cat >>confdefs.h <<\_ACEOF
@@ -24721,13 +24721,13 @@ fi
 
 	echo ""
 	echo "##########################################################"
-	echo "#     Sorting out macosx build parameters                #"
+	echo "#     Sorting out MacOSX build parameters              #"
 	echo "#                                                        #"
-	echo "enable_libnco = $enable_libnco and macosx =  $macosx"
+	echo "enable_libnco = $enable_libnco and MACOSX =  $MACOSX"
 	echo "##########################################################"
 	echo ""
 
-if ((test "${enable_libnco}" = 'yes') && (test "${macosx}" != 1)); then
+if ((test "${enable_libnco}" = 'yes') && (test "${MACOSX}" != 1)); then
 	echo "Thank God - NOT MacOSX - adding -lnco to LIBS"
 	LIBS="-lnco $LIBS"
 fi
@@ -24764,7 +24764,7 @@ if (test "${enable_mpi}" = 'yes'); then
 		LDFLAGS="-L${MPICH2_ROOT}/lib ${LDFLAGS}"
 	fi
 
-	# following may have to AC_DEFINE ENABLE_MPI to pass to Makefile.
+	# Following may have to AC_DEFINE ENABLE_MPI to pass to Makefile
 	# Check whether --enable-mpi or --disable-mpi was given.
 if test "${enable_mpi+set}" = set; then
   enableval="$enable_mpi"
@@ -24773,7 +24773,7 @@ else
   enable_mpi=no
 fi;
 
-	# is there a mpicc (linux)or mpcc (AIX)?
+	# Is mpicc (Linux) or mpcc (AIX) present?
 	for ac_prog in mpicc  mpcc
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -24816,7 +24816,7 @@ done
 test -n "$MPI_CC" || MPI_CC=""NONE""
 
 
-	# if MPI_CC = 'mpcc' (AIX), everything else is set up correctly, so no need to check for mpi.h, libmpi etc
+	# If MPI_CC = 'mpcc' (AIX), everything else is set up correctly, so no need to check for mpi.h, libmpi etc
 
 	if test "${MPI_CC}" = "mpicc"; then
 		# is there an mpi.h?
@@ -27335,10 +27335,10 @@ fi
 # fxm: only do this for gcc, not g++
 if (test $ac_compiler_gnu = "yes"); then
     CFLAGS="$CFLAGS -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE"
-    if (test "${macosx}" = 1); then
+    if (test "${MACOSX}" = 1); then
 	CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'`
 	CFLAGS="-fno-common $CFLAGS"
-# MacOSX doan understand no steekin shared libs.
+# MacOSX does not understand shared libraries
 	enable_shared='no'
     fi
 fi

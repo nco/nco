@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.172 2006-05-22 22:50:22 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.173 2006-05-22 23:21:24 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -92,13 +92,13 @@ case ${host} in
 	;;
     i*86-pc-freebsd* ) AC_DEFINE(FREEBSD,1,Compatibility pvmgetarch token for FreeBSD on Intel x86)
 	;;
-    i*86-pc-linux* ) AC_DEFINE(LINUX,1,Compatibility pvmgetarch token for Linux on Intel x86) ; linux=1
+    i*86-pc-linux* ) AC_DEFINE(LINUX,1,Compatibility pvmgetarch token for Linux on Intel x86) LINUX=1 ;
 	;;
     i*86-pc-cygwin* ) AC_DEFINE(WIN32,1,Compatibility pvmgetarch token for Windows on Intel x86)
 	;;
     mips*-sgi-irix* ) AC_DEFINE(SGIMP64,1,Compatibility pvmgetarch token for IRIX on SGI MIPS)
 	;;
-    powerpc-apple-darwin* ) AC_DEFINE(MACOSX,1,Compatibility pvmgetarch token for Apple Mac OSX) ; macosx=1
+    powerpc-apple-darwin* ) AC_DEFINE(MACOSX,1,Compatibility pvmgetarch token for Apple Mac OSX) MACOSX=1 ;
 	;;
     powerpc-ibm-aix* ) AC_DEFINE(AIX,1,Compatibility pvmgetarch token for AIX on IBM PowerPC)
 	;;
@@ -487,13 +487,13 @@ AC_CHECK_LIB([nco],[nco_open],[enable_libnco=yes],,)
 
 	echo ""
 	echo "##########################################################"
-	echo "#     Sorting out macosx build parameters                #"
+	echo "#     Sorting out MacOSX build parameters              #"
 	echo "#                                                        #"
-	echo "enable_libnco = $enable_libnco and macosx =  $macosx"
+	echo "enable_libnco = $enable_libnco and MACOSX =  $MACOSX"
 	echo "##########################################################"
 	echo ""
 
-if ((test "${enable_libnco}" = 'yes') && (test "${macosx}" != 1)); then
+if ((test "${enable_libnco}" = 'yes') && (test "${MACOSX}" != 1)); then
 	echo "Thank God - NOT MacOSX - adding -lnco to LIBS"
 	LIBS="-lnco $LIBS"
 fi
@@ -530,13 +530,13 @@ if (test "${enable_mpi}" = 'yes'); then
 		LDFLAGS="-L${MPICH2_ROOT}/lib ${LDFLAGS}"
 	fi
 
-	# following may have to AC_DEFINE ENABLE_MPI to pass to Makefile.
+	# Following may have to AC_DEFINE ENABLE_MPI to pass to Makefile
 	AC_ARG_ENABLE(mpi,AS_HELP_STRING([--enable-mpi],[Build NCOs for Message Passing Interface (detects LAM or MPICH2) [[default=no]]]),enable_mpi=yes,enable_mpi=no)
 
-	# is there a mpicc (linux)or mpcc (AIX)?
+	# Is mpicc (Linux) or mpcc (AIX) present?
 	AC_CHECK_PROGS(MPI_CC, [mpicc  mpcc], "NONE", ${PATH})
 
-	# if MPI_CC = 'mpcc' (AIX), everything else is set up correctly, so no need to check for mpi.h, libmpi etc
+	# If MPI_CC = 'mpcc' (AIX), everything else is set up correctly, so no need to check for mpi.h, libmpi etc
 
 	if test "${MPI_CC}" = "mpicc"; then
 		# is there an mpi.h?
@@ -961,10 +961,10 @@ fi
 # fxm: only do this for gcc, not g++
 if (test $ac_compiler_gnu = "yes"); then
     CFLAGS="$CFLAGS -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE"
-    if (test "${macosx}" = 1); then
+    if (test "${MACOSX}" = 1); then
 	CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'`
 	CFLAGS="-fno-common $CFLAGS"
-# MacOSX doan understand no steekin shared libs.
+# MacOSX does not understand shared libraries
 	enable_shared='no'
     fi
 fi

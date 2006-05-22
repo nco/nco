@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.763 2006-05-20 06:36:33 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.764 2006-05-22 23:21:24 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -749,9 +749,9 @@ bld67. hjm Move benchmarks to 3x3 or 4x3 portrait format on one page
 bld69. hjm make configure ignore system libs in favor of dev libs or figure
          out a way to do this (change name of local dev lib (libnco-dev)?
 bld70. hjm nco_c++ on Mac OS X: Get "make check" working (add -lstdc++, remove -lnco)
-bld73. hjm Get MPI regressions/benchmarks running on ESMF
 bld74. hjm Do not pass -std=c99 unless GCC=gcc rather than g++
-bld75. 
+bld75. Change from configure.in to configure.ac
+bld76. 
 ************************************************************************
 End bldXXX TODOs
 ************************************************************************
