@@ -1815,7 +1815,7 @@ _ACEOF
 cat >>confdefs.h <<\_ACEOF
 #define LINUX 1
 _ACEOF
- ; linux=1 ;
+ ; linux=1
 	;;
     i*86-pc-cygwin* )
 cat >>confdefs.h <<\_ACEOF
@@ -1833,7 +1833,7 @@ _ACEOF
 cat >>confdefs.h <<\_ACEOF
 #define MACOSX 1
 _ACEOF
- ; macosx=1 ;
+ ; macosx=1
 	;;
     powerpc-ibm-aix* )
 cat >>confdefs.h <<\_ACEOF

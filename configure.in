@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.171 2006-05-14 06:26:00 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.172 2006-05-22 22:50:22 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -92,13 +92,13 @@ case ${host} in
 	;;
     i*86-pc-freebsd* ) AC_DEFINE(FREEBSD,1,Compatibility pvmgetarch token for FreeBSD on Intel x86)
 	;;
-    i*86-pc-linux* ) AC_DEFINE(LINUX,1,Compatibility pvmgetarch token for Linux on Intel x86) ; linux=1 ;
+    i*86-pc-linux* ) AC_DEFINE(LINUX,1,Compatibility pvmgetarch token for Linux on Intel x86) ; linux=1
 	;;
     i*86-pc-cygwin* ) AC_DEFINE(WIN32,1,Compatibility pvmgetarch token for Windows on Intel x86)
 	;;
     mips*-sgi-irix* ) AC_DEFINE(SGIMP64,1,Compatibility pvmgetarch token for IRIX on SGI MIPS)
 	;;
-    powerpc-apple-darwin* ) AC_DEFINE(MACOSX,1,Compatibility pvmgetarch token for Apple Mac OSX) ; macosx=1 ;
+    powerpc-apple-darwin* ) AC_DEFINE(MACOSX,1,Compatibility pvmgetarch token for Apple Mac OSX) ; macosx=1
 	;;
     powerpc-ibm-aix* ) AC_DEFINE(AIX,1,Compatibility pvmgetarch token for AIX on IBM PowerPC)
 	;;
