@@ -1,3 +1,7 @@
+2006-05-20  Charlie Zender  <zender@uci.edu>
+
+	* Improve help message in nco_usg_prn()
+
 2006-05-19  Charlie Zender  <zender@uci.edu>
 
 	* Return 1 early from nco_omp_ini() on compilers without OpenMP

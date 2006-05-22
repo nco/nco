@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.356 2006-05-20 06:36:33 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.357 2006-05-22 15:37:01 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6249,7 +6249,8 @@ albeit in a more convoluted way than @command{ncbo}.
 
 @noindent
 @html
-<a name="xmp_ncks"></a> <!-- http://nco.sf.net/nco.html#xmp_ncbo -->
+<a name="xmp_ncbo"></a> <!-- http://nco.sf.net/nco.html#xmp_ncbo -->
+<a name="xmp_ncdiff"></a> <!-- http://nco.sf.net/nco.html#xmp_ncdiff -->
 @end html
 EXAMPLES
 
