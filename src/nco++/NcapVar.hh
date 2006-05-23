@@ -38,7 +38,7 @@ public:
     }else{
       type=ncap_att;
       var_nm=s_va_nm.substr(0,att_char_posn);
-      att_nm=s_va_nm.substr(att_char_posn);
+      att_nm=s_va_nm.substr(att_char_posn+1);
     }
     //var->nm && s_va_nm are the same
 
