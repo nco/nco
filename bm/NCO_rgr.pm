@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.38 2006-05-14 06:43:39 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.39 2006-05-23 05:26:41 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -14,7 +14,7 @@ use Cwd 'abs_path';
 use strict;
 
 use NCO_bm qw(dbg_msg go
-	      $prefix $dat_drc @fl_cr8_dat $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl $nsr_xpc $srvr_sde
+	      $prefix $dat_drc @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl $nsr_xpc $srv_sde
 	      );
 
 require Exporter;

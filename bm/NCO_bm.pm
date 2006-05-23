@@ -1,22 +1,22 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.39 2006-05-01 15:59:29 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.40 2006-05-23 05:26:41 zender Exp $
 
 # Purpose: library module supporting the nco_bm.pl benchmark and regression tests.
 # this module contains the following functions in approximate order of their usage:
 
 #   usage()..............dumps usage text for the utility
 #   verbosity()..........small fn() to print to both screen and log
-#   fl_cr8_dat_init()....initializes the data used to create the test files
-#   fl_cr8().............creates the test files
-#   smrz_fl_cr8_rslt()...summarizes the results of the file creation tests
-#   set_dta_drc()........figures out where to write output data
+#   fl_mk_dat_init()....initializes the data used to create the test files
+#   fl_mk().............creates the test files
+#   smrz_fl_mk_rslt()...summarizes the results of the file creation tests
+#   set_dat_drc()........figures out where to write output data
 #   initialize().........initialization, sets which NCOs are to be tested under different conditions
 #   tst_hirez()..........almost ready-to-delete test of the HiRes fn() on opterons
 #   go().................takes care of executing both regressions and benchmarks set up in same format
-#   smrz_rgr_rslt()......summarizes the results of both regression and benchmark tests
+#   smr_rgr_rsl()......summarizes the results of both regression and benchmark tests
 #   check_nco_results()..checks the output via md5/wc validation
-#   nco_dual_vrsn()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
+#   nco_dual_vrs_()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -39,9 +39,9 @@ require Exporter;
 our @ISA = qw(Exporter);
 #export functions (top) and variables (bottom)
 our @EXPORT = qw (
-		  go dbg_msg set_dta_drc initialize
-		  $prefix $dat_drc @fl_cr8_dat $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
-		  $prsrv_fl  $srvr_sde $hiresfound $dodap $bm $dbg_lvl $sock $udp_reprt
+		  go dbg_msg set_dat_drc initialize
+		  $prefix $dat_drc @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
+		  $prsrv_fl  $srv_sde $hiresfound $dodap $bm $dbg_lvl $sock $udp_reprt
 		  $mpi_prc $mpi_prfx $mpi_fke
 		  );
 
@@ -53,11 +53,11 @@ use vars qw(
 	    $opr_nm $opr_rgr_mpi $opr_sng_mpi $os_nm  $prefix %real_tme
 	    $result $spc_fmt $spc_nbr $spc_nbr_min $spc_sng %subbenchmarks %success
 	    @sys_tim_arr $sys_time %sys_tme $timed %totbenchmarks @tst_cmd $tst_fmt
-	    $tst_id_sng %tst_nbr %usr_tme $wnt_log $timestamp $bm_dir $caseid
-	    $cmd_ln $dat_drc @fl_cr8_dat $fl_pth @fl_tmg $md5found %MD5_tbl
+	    $tst_id_sng %tst_nbr %usr_tme $wnt_log $timestamp $bm_drc $caseid
+	    $cmd_ln $dat_drc @fl_mk_dat $fl_pth @fl_tmg $md5found %MD5_tbl
 	    $nco_D_flg $NUM_FLS $prfxd $prsrv_fl $que $server_ip $sock $thr_nbr
 	    $dbg_sgn $err_sgn $tmr_app $udp_reprt %wc_tbl $prfxd $nvr_my_bin_dir
-	    $prg_nm $arg_nbr $tw_prt_bm $srvr_sde @cmd_lst
+	    $prg_nm $arg_nbr $tw_prt_bm $srv_sde @cmd_lst
 	    
 	    );
 # $outfile
@@ -86,17 +86,16 @@ if ($hiresfound == 0) {
 # 	print "\tMD5 NOT requested; continuing with ncks checking of single values.\n";
 # }
 
-# $bm_dir = `pwd`; chomp $bm_dir;
+# $bm_drc = `pwd`; chomp $bm_drc;
 # $prefix = '';
 # $err_sgn = "";
 # #if($dbg_lvl > 3){$nco_D_flg = "-D" .  "$dbg_lvl";}
-#
+
 # # Initializations
 # # Re-constitute commandline
 # $prg_nm=$0; # $0 is program name Camel p. 136
 # $cmd_ln = "$0 "; $arg_nbr = @ARGV;
 # for (my $i=0; $i<$arg_nbr; $i++){ $cmd_ln .= "$ARGV[$i] ";}
-#
 
 # usage - informational blurb for script
 sub usage {
@@ -122,7 +121,7 @@ where (options) are:
 --dust_user.....use this to define a user who CAN log into dust for testing
 --fl_fmt........sets the file type to test.  One of:
                 classic, 64bit, netcdf4, netcdf4_classic
---log ..........requests that debug info is logged to 'nctest.log'
+--log ..........requests that debug info is logged to 'nco_bm.log'
                 as well as spat to STDOUT.
 --mpi_prc {#>0}..number of MPI processes to spawn
 --mpi_fake.......run mpi executable as single process for debugging.
@@ -248,12 +247,12 @@ sub verbosity {
 } # end of verbosity($dbg_lvl, $wnt_log, informational string to output )
 
 ##
-## fl_cr8_dat_init() sets up the data for the (currently) 4 files that are created for later tests.
+## fl_mk_dat_init() sets up the data for the (currently) 4 files that are created for later tests.
 ##
 
-sub fl_cr8_dat_init {
+sub fl_mk_dat_init {
     my $NUM_FLS = 4;
-    dbg_msg(1,"fl_cr8_dat_init: \$NUM_FLS = $NUM_FLS");
+    dbg_msg(1,"fl_mk_dat_init: \$NUM_FLS = $NUM_FLS");
     
     if ($dbg_lvl > 2) {
 	print "\nWaiting for keypress to proceed.\n";
@@ -262,35 +261,35 @@ sub fl_cr8_dat_init {
     
     for (my $i = 0; $i < $NUM_FLS; $i++) { $fl_tmg[$i][1] = $fl_tmg[$i][2] = " omitted "; }
     
-#	$fl_cr8_dat[0][0] = "example gene expression"; # option descriptor
-#	$fl_cr8_dat[0][1] = "~50MB";                   # file size
-#	$fl_cr8_dat[0][2] = $fl_tmg[0][0] = "gne_exp";                 # file name root
-#	$fl_cr8_dat[0][3] = "\'base[ge_atoms,rep,treat,cell,params]=5.67f\'";
+#	$fl_mk_dat[0][0] = "example gene expression"; # option descriptor
+#	$fl_mk_dat[0][1] = "~50MB";                   # file size
+#	$fl_mk_dat[0][2] = $fl_tmg[0][0] = "gne_exp";                 # file name root
+#	$fl_mk_dat[0][3] = "\'base[ge_atoms,rep,treat,cell,params]=5.67f\'";
     
-    $fl_cr8_dat[0][0] = "long skinny file"; # option descriptor
-    $fl_cr8_dat[0][1] = "~52MB";                   # file size
-    $fl_cr8_dat[0][2] = $fl_tmg[0][0] = "skn_lgs";                 # file name root
-    $fl_cr8_dat[0][3] = "\'time[time]=1.0f;hmdty[time]=98.3f;PO2[time]=18.7f;PCO2[time]=1.92f;PN2[time]=77.4f;w_vel[time]=14.8f;w_dir[time]=321.3f;temp[time]=23.5f;lmbda_260[time]=684.2f\'";
+    $fl_mk_dat[0][0] = "long skinny file"; # option descriptor
+    $fl_mk_dat[0][1] = "~52MB";                   # file size
+    $fl_mk_dat[0][2] = $fl_tmg[0][0] = "skn_lgs";                 # file name root
+    $fl_mk_dat[0][3] = "\'time[time]=1.0f;hmdty[time]=98.3f;PO2[time]=18.7f;PCO2[time]=1.92f;PN2[time]=77.4f;w_vel[time]=14.8f;w_dir[time]=321.3f;temp[time]=23.5f;lmbda_260[time]=684.2f\'";
     
-    $fl_cr8_dat[1][0] = "small satellite";         # option descriptor
-    $fl_cr8_dat[1][1] = "~100MB";                  # file size
-    $fl_cr8_dat[1][2] = $fl_tmg[1][0] = "sml_stl";                 # file name root
-    $fl_cr8_dat[1][3] = "\'d2_00[lat,lon]=16.37f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=3.8f;\'";
+    $fl_mk_dat[1][0] = "small satellite";         # option descriptor
+    $fl_mk_dat[1][1] = "~100MB";                  # file size
+    $fl_mk_dat[1][2] = $fl_tmg[1][0] = "sml_stl";                 # file name root
+    $fl_mk_dat[1][3] = "\'d2_00[lat,lon]=16.37f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=3.8f;\'";
     
-    $fl_cr8_dat[2][0] = "5km satellite";           # option descriptor
-    $fl_cr8_dat[2][1] = "~300MB";                  # file size
-    $fl_cr8_dat[2][2] = $fl_tmg[2][0] = "stl_5km";                 # file name root
-    $fl_cr8_dat[2][3] = "\'weepy=1.23456f;d2_00[lat,lon]=2.8f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=2.8f;d2_03[lat,lon]=2.8f;d2_04[lat,lon]=2.8f;d2_05[lat,lon]=2.8f;d2_06[lat,lon]=2.8f;d2_07[lat,lon]=2.8f;\'";
+    $fl_mk_dat[2][0] = "5km satellite";           # option descriptor
+    $fl_mk_dat[2][1] = "~300MB";                  # file size
+    $fl_mk_dat[2][2] = $fl_tmg[2][0] = "stl_5km";                 # file name root
+    $fl_mk_dat[2][3] = "\'weepy=1.23456f;d2_00[lat,lon]=2.8f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=2.8f;d2_03[lat,lon]=2.8f;d2_04[lat,lon]=2.8f;d2_05[lat,lon]=2.8f;d2_06[lat,lon]=2.8f;d2_07[lat,lon]=2.8f;\'";
     
-    $fl_cr8_dat[3][0] = "IPCC Daily";              # option descriptor
-    $fl_cr8_dat[3][1] = "~4GB";                    # file size
-    $fl_cr8_dat[3][2] = $fl_tmg[3][0] = "ipcc_dly_T85";            # file name root
-    $fl_cr8_dat[3][3] = "\'weepy=0.8f;dopey=0.8f;sleepy=0.8f;grouchy=0.8f;sneezy=0.8f;doc=0.8f;wanky=0.8f;skanky=0.8f;d1_00[time]=1.8f;d1_01[time]=1.8f;d1_02[time]=1.8f;d1_03[time]=1.8f;d1_04[time]=1.8f;d1_05[time]=1.8f;d1_06[time]=1.8f;d1_07[time]=1.8f;d2_00[lat,lon]=16.2f;d2_01[lat,lon]=16.2f;d2_02[lat,lon]=16.2f;d2_03[lat,lon]=16.2f;d2_04[lat,lon]=16.2f;d2_05[lat,lon]=16.2f;d2_06[lat,lon]=16.2f;d2_07[lat,lon]=16.2f;d2_08[lat,lon]=16.2f;d2_09[lat,lon]=16.2f;d2_10[lat,lon]=16.2f;d2_11[lat,lon]=16.2f;d2_12[lat,lon]=16.2f;d2_13[lat,lon]=16.2f;d2_14[lat,lon]=16.2f;d2_15[lat,lon]=16.2f;d3_00[time,lat,lon]=64.0f;d3_01[time,lat,lon]=64.0f;d3_02[time,lat,lon]=64.0f;d3_03[time,lat,lon]=64.0f;d3_04[time,lat,lon]=64.0f;d3_05[time,lat,lon]=64.0f;d3_06[time,lat,lon]=64.0f;d3_07[time,lat,lon]=64.0f;d3_08[time,lat,lon]=64.0f;d3_09[time,lat,lon]=64.0f;d3_10[time,lat,lon]=64.0f;d3_11[time,lat,lon]=64.0f;d3_12[time,lat,lon]=64.0f;d3_13[time,lat,lon]=64.0f;d3_14[time,lat,lon]=64.0f;d3_15[time,lat,lon]=64.0f;d3_16[time,lat,lon]=64.0f;d3_17[time,lat,lon]=64.0f;d3_18[time,lat,lon]=64.0f;d3_19[time,lat,lon]=64.0f;d3_20[time,lat,lon]=64.0f;d3_21[time,lat,lon]=64.0f;d3_22[time,lat,lon]=64.0f;d3_23[time,lat,lon]=64.0f;d3_24[time,lat,lon]=64.0f;d3_25[time,lat,lon]=64.0f;d3_26[time,lat,lon]=64.0f;d3_27[time,lat,lon]=64.0f;d3_28[time,lat,lon]=64.0f;d3_29[time,lat,lon]=64.0f;d3_30[time,lat,lon]=64.0f;d3_31[time,lat,lon]=64.0f;d3_32[time,lat,lon]=64.0f;d3_33[time,lat,lon]=64.0f;d3_34[time,lat,lon]=64.0f;d3_35[time,lat,lon]=64.0f;d3_36[time,lat,lon]=64.0f;d3_37[time,lat,lon]=64.0f;d3_38[time,lat,lon]=64.0f;d3_39[time,lat,lon]=64.0f;d3_40[time,lat,lon]=64.0f;d3_41[time,lat,lon]=64.0f;d3_42[time,lat,lon]=64.0f;d3_43[time,lat,lon]=64.0f;d3_44[time,lat,lon]=64.0f;d3_45[time,lat,lon]=64.0f;d3_46[time,lat,lon]=64.0f;d3_47[time,lat,lon]=64.0f;d3_48[time,lat,lon]=64.0f;d3_49[time,lat,lon]=64.0f;d3_50[time,lat,lon]=64.0f;d3_51[time,lat,lon]=64.0f;d3_52[time,lat,lon]=64.0f;d3_53[time,lat,lon]=64.0f;d3_54[time,lat,lon]=64.0f;d3_55[time,lat,lon]=64.0f;d3_56[time,lat,lon]=64.0f;d3_57[time,lat,lon]=64.0f;d3_58[time,lat,lon]=64.0f;d3_59[time,lat,lon]=64.0f;d3_60[time,lat,lon]=64.0f;d3_61[time,lat,lon]=64.0f;d3_62[time,lat,lon]=64.0f;d3_63[time,lat,lon]=64.0f;d4_00[time,lev,lat,lon]=1.1f;d4_01[time,lev,lat,lon]=1.2f;d4_02[time,lev,lat,lon]=1.3f;d4_03[time,lev,lat,lon]=1.4f;d4_04[time,lev,lat,lon]=1.5f;d4_05[time,lev,lat,lon]=1.6f;d4_06[time,lev,lat,lon]=1.7f;d4_07[time,lev,lat,lon]=1.8f;d4_08[time,lev,lat,lon]=1.9f;d4_09[time,lev,lat,lon]=1.11f;d4_10[time,lev,lat,lon]=1.12f;d4_11[time,lev,lat,lon]=1.13f;d4_12[time,lev,lat,lon]=1.14f;d4_13[time,lev,lat,lon]=1.15f;d4_14[time,lev,lat,lon]=1.16f;d4_15[time,lev,lat,lon]=1.17f;d4_16[time,lev,lat,lon]=1.18f;d4_17[time,lev,lat,lon]=1.19f;d4_18[time,lev,lat,lon]=1.21f;d4_19[time,lev,lat,lon]=1.22f;d4_20[time,lev,lat,lon]=1.23f;d4_21[time,lev,lat,lon]=1.24f;d4_22[time,lev,lat,lon]=1.25f;d4_23[time,lev,lat,lon]=1.26f;d4_24[time,lev,lat,lon]=1.27f;d4_25[time,lev,lat,lon]=1.28f;d4_26[time,lev,lat,lon]=1.29f;d4_27[time,lev,lat,lon]=1.312f;d4_28[time,lev,lat,lon]=1.322f;d4_29[time,lev,lat,lon]=1.332f;d4_30[time,lev,lat,lon]=1.342f;d4_31[time,lev,lat,lon]=1.352f;\'";
+    $fl_mk_dat[3][0] = "IPCC Daily";              # option descriptor
+    $fl_mk_dat[3][1] = "~4GB";                    # file size
+    $fl_mk_dat[3][2] = $fl_tmg[3][0] = "ipcc_dly_T85";            # file name root
+    $fl_mk_dat[3][3] = "\'weepy=0.8f;dopey=0.8f;sleepy=0.8f;grouchy=0.8f;sneezy=0.8f;doc=0.8f;wanky=0.8f;skanky=0.8f;d1_00[time]=1.8f;d1_01[time]=1.8f;d1_02[time]=1.8f;d1_03[time]=1.8f;d1_04[time]=1.8f;d1_05[time]=1.8f;d1_06[time]=1.8f;d1_07[time]=1.8f;d2_00[lat,lon]=16.2f;d2_01[lat,lon]=16.2f;d2_02[lat,lon]=16.2f;d2_03[lat,lon]=16.2f;d2_04[lat,lon]=16.2f;d2_05[lat,lon]=16.2f;d2_06[lat,lon]=16.2f;d2_07[lat,lon]=16.2f;d2_08[lat,lon]=16.2f;d2_09[lat,lon]=16.2f;d2_10[lat,lon]=16.2f;d2_11[lat,lon]=16.2f;d2_12[lat,lon]=16.2f;d2_13[lat,lon]=16.2f;d2_14[lat,lon]=16.2f;d2_15[lat,lon]=16.2f;d3_00[time,lat,lon]=64.0f;d3_01[time,lat,lon]=64.0f;d3_02[time,lat,lon]=64.0f;d3_03[time,lat,lon]=64.0f;d3_04[time,lat,lon]=64.0f;d3_05[time,lat,lon]=64.0f;d3_06[time,lat,lon]=64.0f;d3_07[time,lat,lon]=64.0f;d3_08[time,lat,lon]=64.0f;d3_09[time,lat,lon]=64.0f;d3_10[time,lat,lon]=64.0f;d3_11[time,lat,lon]=64.0f;d3_12[time,lat,lon]=64.0f;d3_13[time,lat,lon]=64.0f;d3_14[time,lat,lon]=64.0f;d3_15[time,lat,lon]=64.0f;d3_16[time,lat,lon]=64.0f;d3_17[time,lat,lon]=64.0f;d3_18[time,lat,lon]=64.0f;d3_19[time,lat,lon]=64.0f;d3_20[time,lat,lon]=64.0f;d3_21[time,lat,lon]=64.0f;d3_22[time,lat,lon]=64.0f;d3_23[time,lat,lon]=64.0f;d3_24[time,lat,lon]=64.0f;d3_25[time,lat,lon]=64.0f;d3_26[time,lat,lon]=64.0f;d3_27[time,lat,lon]=64.0f;d3_28[time,lat,lon]=64.0f;d3_29[time,lat,lon]=64.0f;d3_30[time,lat,lon]=64.0f;d3_31[time,lat,lon]=64.0f;d3_32[time,lat,lon]=64.0f;d3_33[time,lat,lon]=64.0f;d3_34[time,lat,lon]=64.0f;d3_35[time,lat,lon]=64.0f;d3_36[time,lat,lon]=64.0f;d3_37[time,lat,lon]=64.0f;d3_38[time,lat,lon]=64.0f;d3_39[time,lat,lon]=64.0f;d3_40[time,lat,lon]=64.0f;d3_41[time,lat,lon]=64.0f;d3_42[time,lat,lon]=64.0f;d3_43[time,lat,lon]=64.0f;d3_44[time,lat,lon]=64.0f;d3_45[time,lat,lon]=64.0f;d3_46[time,lat,lon]=64.0f;d3_47[time,lat,lon]=64.0f;d3_48[time,lat,lon]=64.0f;d3_49[time,lat,lon]=64.0f;d3_50[time,lat,lon]=64.0f;d3_51[time,lat,lon]=64.0f;d3_52[time,lat,lon]=64.0f;d3_53[time,lat,lon]=64.0f;d3_54[time,lat,lon]=64.0f;d3_55[time,lat,lon]=64.0f;d3_56[time,lat,lon]=64.0f;d3_57[time,lat,lon]=64.0f;d3_58[time,lat,lon]=64.0f;d3_59[time,lat,lon]=64.0f;d3_60[time,lat,lon]=64.0f;d3_61[time,lat,lon]=64.0f;d3_62[time,lat,lon]=64.0f;d3_63[time,lat,lon]=64.0f;d4_00[time,lev,lat,lon]=1.1f;d4_01[time,lev,lat,lon]=1.2f;d4_02[time,lev,lat,lon]=1.3f;d4_03[time,lev,lat,lon]=1.4f;d4_04[time,lev,lat,lon]=1.5f;d4_05[time,lev,lat,lon]=1.6f;d4_06[time,lev,lat,lon]=1.7f;d4_07[time,lev,lat,lon]=1.8f;d4_08[time,lev,lat,lon]=1.9f;d4_09[time,lev,lat,lon]=1.11f;d4_10[time,lev,lat,lon]=1.12f;d4_11[time,lev,lat,lon]=1.13f;d4_12[time,lev,lat,lon]=1.14f;d4_13[time,lev,lat,lon]=1.15f;d4_14[time,lev,lat,lon]=1.16f;d4_15[time,lev,lat,lon]=1.17f;d4_16[time,lev,lat,lon]=1.18f;d4_17[time,lev,lat,lon]=1.19f;d4_18[time,lev,lat,lon]=1.21f;d4_19[time,lev,lat,lon]=1.22f;d4_20[time,lev,lat,lon]=1.23f;d4_21[time,lev,lat,lon]=1.24f;d4_22[time,lev,lat,lon]=1.25f;d4_23[time,lev,lat,lon]=1.26f;d4_24[time,lev,lat,lon]=1.27f;d4_25[time,lev,lat,lon]=1.28f;d4_26[time,lev,lat,lon]=1.29f;d4_27[time,lev,lat,lon]=1.312f;d4_28[time,lev,lat,lon]=1.322f;d4_29[time,lev,lat,lon]=1.332f;d4_30[time,lev,lat,lon]=1.342f;d4_31[time,lev,lat,lon]=1.352f;\'";
     return @fl_tmg;
-}; # end of fl_cr8_dat_init()
+}; # end of fl_mk_dat_init()
 
-# fl_cr8 creates files from CDL templates and populates them for benchmarks
-sub fl_cr8 {
+# fl_mk creates files from CDL templates and populates them for benchmarks
+sub fl_mk {
     my $idx = shift;
     my $NUM_FLS = 4;
     $prefix = "$MY_BIN_DIR";
@@ -303,17 +302,18 @@ sub fl_cr8 {
     my $t0;
     my $elapsed;
     
-    my $fl_in = my $fl_out = "$dat_drc/$fl_cr8_dat[$idx][2].nc" ;
-    print "==== Creating $fl_cr8_dat[$idx][0] data file from template in [$dat_drc]\n";
-    print "Executing: $tmr_app ncgen -b -o $fl_out $bm_dir/$fl_cr8_dat[$idx][2].cdl\n";
+    my $fl_in = my $fl_out = "$dat_drc/$fl_mk_dat[$idx][2].nc" ;
+   $bm_drc = `pwd`; chomp $bm_drc;
+    print "==== Creating $fl_mk_dat[$idx][0] data file from template in [$bm_drc]\n";
+    print "Executing: $tmr_app ncgen -b -o $fl_out $bm_drc/$fl_mk_dat[$idx][2].cdl\n";
     if ($hiresfound) {$t0 = [gettimeofday];}
     else {$t0 = time;}
 # File creation now timed
-    system  "$tmr_app ncgen -b -o $fl_out $bm_dir/$fl_cr8_dat[$idx][2].cdl";
+    system  "$tmr_app ncgen -b -o $fl_out $bm_drc/$fl_mk_dat[$idx][2].cdl";
     if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
     else {$elapsed = time - $t0;}
 # log it to common timing array
-    $fl_tmg[$idx][0] = "$fl_cr8_dat[$idx][2]"; # name root
+    $fl_tmg[$idx][0] = "$fl_mk_dat[$idx][2]"; # name root
     $fl_tmg[$idx][1] = $elapsed; # creation time
     if ($idx == 0) { # skn_lgs needs some extra massaging
 	if ($dbg_lvl > 0) {print "\nextra steps for skn_lgs - ncecat...\n";}
@@ -325,22 +325,22 @@ sub fl_cr8 {
 # now skn_lgs ready for ncap'ing
     }
     print "\n==== Populating $fl_out file.\nTiming results:\n";
-#print "fl_cr8: prefix = $prefix\n";
-    print "Executing: $tmr_app $prefix/ncap -h -O $nco_D_flg -s $fl_cr8_dat[$idx][3] $fl_in $fl_out\n";
+#print "fl_mk: prefix = $prefix\n";
+    print "Executing: $tmr_app $prefix/ncap -h -O $nco_D_flg -s $fl_mk_dat[$idx][3] $fl_in $fl_out\n";
     if ($hiresfound) {$t0 = [gettimeofday];}
     else {$t0 = time;}
-    system "$tmr_app $prefix/ncap -O -h -s $fl_cr8_dat[$idx][3] $fl_in $fl_out";
+    system "$tmr_app $prefix/ncap -O -h -s $fl_mk_dat[$idx][3] $fl_in $fl_out";
     if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
     else {$elapsed = time - $t0;}
     $fl_tmg[$idx][2] = $elapsed; # population time
-    print "==========================\nEnd of $fl_cr8_dat[$idx][2] section\n==========================\n\n\n";
+    print "==========================\nEnd of $fl_mk_dat[$idx][2] section\n==========================\n\n\n";
     return @fl_tmg;
-} # end sub fl_cr8
+} # end sub fl_mk
 
 # Summarize timing results of file creation tests
-sub smrz_fl_cr8_rslt {
+sub smrz_fl_mk_rslt {
     $NUM_FLS = 4;
-    print " insmrz_fl_cr8_rslt,  \$fl_tmg[1][0] = $fl_tmg[1][0] & \$NUM_FLS = $NUM_FLS\n";
+    print " insmrz_fl_mk_rslt,  \$fl_tmg[1][0] = $fl_tmg[1][0] & \$NUM_FLS = $NUM_FLS\n";
     if ($dbg_lvl > 0){print "Summarizing results of file creation\n";}
     my $CC = `../src/nco/ncks --compiler`;
     my $CCinfo = '';
@@ -365,10 +365,10 @@ sub smrz_fl_cr8_rslt {
 	$sock->send($udp_dat);
 	if ($dbg_lvl > 0) { print "File Creation: udp stream sent to $server_ip:\n$udp_dat\n";}
     } # and send it back separately
-} # end of smrz_fl_cr8_rslt
+} # end of smrz_fl_mk_rslt
 
-# set_dta_drc() tries to answer the question of where to write data
-sub set_dta_drc {
+# set_dat_drc() tries to answer the question of where to write data
+sub set_dat_drc {
     $caseid = shift;
     my $tmp;
     my $umask = umask;
@@ -430,7 +430,7 @@ sub set_dta_drc {
     } else { # que != 0
 	die "You MUST define a DATA environment variable to run this in a queue\n stopped";
     } # !defined $ENV{'DATA'})
-} # end set_dta_drc()
+} # end set_dat_drc()
 
 #########################  subroutine go ()  ####################################
 # go() consumes the @tst_cmd array that contains a series of tests and
@@ -572,7 +572,7 @@ sub go {
     my $SS_nsr_xpc = 0;
     my $SS_OK = 1;
     if ($cmd_lst[$#cmd_lst] ne "SS_OK") {$SS_OK = 0;} # check on last el whether cmds can be SS'ed
-    if ($SS_OK && $srvr_sde ne "SSNOTSET" ) {
+    if ($SS_OK && $srv_sde ne "SSNOTSET" ) {
 	
 	# send it off to be processed and get back the string or single value to check
 	$SS_nsr_xpc = SS_gnarly_pything(\@cmd_lst);
@@ -850,9 +850,9 @@ sub failed {
     return;
 }
 
-sub smrz_rgr_rslt {
+sub smr_rgr_rsl {
     my $ansr='';
-    my $nco_vrsn_sng = nco_dual_vrsn();
+    my $nco_vrs_sng = nco_dual_vrs_();
     my $CC = `$MY_BIN_DIR/ncks --compiler`;
     my $idstring = "";
     my $CCinfo = '';
@@ -873,7 +873,7 @@ sub smrz_rgr_rslt {
 # csz--
     if ($thr_nbr > 0) {$reportstr .= " (OpenMP threads = $thr_nbr)\n";}
     else {$reportstr .= "\n";}
-    my $udp_dat = $idstring . " using: " . $CCinfo . "|" . "NCO ver: $nco_vrsn_sng" . "|" . $cmd_ln . "|";
+    my $udp_dat = $idstring . " using: " . $CCinfo . "|" . "NCO ver: $nco_vrs_sng" . "|" . $cmd_ln . "|";
     foreach(@opr_lst) {
 	my $total = $success{$_}+$failure{$_};
 	my $fal_cnt = '';
@@ -932,10 +932,7 @@ REQ_REGR_PACKET
     } else {
 	print "\nOK - data NOT sent, thanks for using NCO anyway - bye!\n\n";
     }
-} # end of sub smrz_rgr_rslt
-
-
-
+} # end of sub smr_rgr_rsl
 
 sub check_nco_results {
 # taken substantially from process_tacg_results (in testtacg.pl), hjm
@@ -1008,16 +1005,16 @@ sub dbg_msg {
 
 # Grab NCO version and conmogrify it into something like: "3.0.1 / 20051003"
 # Requires a string variable to absorb returned string
-sub nco_dual_vrsn{
-    my @nco_vrsn;
+sub nco_dual_vrs_{
+    my @nco_vrs_;
     my $tmp_sng = `ncks --version  2>&1 |  grep version | head -2`; # long string sep by a newline.
     $tmp_sng =~ s/\n/ /g;
     my @tmp_lst = split (/\s+/, $tmp_sng);
-    $nco_vrsn[0] = $tmp_lst[4];
-    $nco_vrsn[0] =~ s/"//g;
-	$nco_vrsn[1] = $tmp_lst[scalar(@tmp_lst) - 1];
-	# print "NCO release version: $nco_vrsn[0], NCO date version: $nco_vrsn[1]\n";
-	$tmp_sng = "$nco_vrsn[0]" . "/" . "$nco_vrsn[1]";
+    $nco_vrs_[0] = $tmp_lst[4];
+    $nco_vrs_[0] =~ s/"//g;
+	$nco_vrs_[1] = $tmp_lst[scalar(@tmp_lst) - 1];
+	# print "NCO release version: $nco_vrs_[0], NCO date version: $nco_vrs_[1]\n";
+	$tmp_sng = "$nco_vrs_[0]" . "/" . "$nco_vrs_[1]";
 	return $tmp_sng;
 }
 

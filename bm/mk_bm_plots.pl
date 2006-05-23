@@ -1,20 +1,18 @@
 #!/usr/bin/perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/mk_bm_plots.pl,v 1.7 2006-03-16 23:05:22 mangalam Exp $
-# there should be a copy of this script in the <ncoCVSroot>/bm directory
-# TODO: detect failures in the benchmarks and mark them with another symbol so they are detectable
-# in the benchmark plots and benchmarks
+# $Header: /data/zender/nco_20150216/nco/bm/mk_bm_plots.pl,v 1.8 2006-05-23 05:26:41 zender Exp $
+# Script resides in nco/bm
 
-
-# use this script to plot the data from the daemon-recorded benchmark info
-# located at: sand.ess.uci.edu:/var/log/nco_benchmark.log
+# Purpose: 
+# Script plots data from daemon-recorded benchmark info in
+# sand.ess.uci.edu:/var/log/nco_benchmark.log
 # That log needs to be filtered from the commandline via the parameters you want,
 # typically by host, 'bench', possibly specific operator or thread number.
 # The filtered data can be piped into this script which currently expects a data format like:
 # commandline|timing data (the last 2 fields of the nco_benchmark.log) like so
 # (assuming you're running this from a subdir below the log and perl script so as to isolate the data generated)
-# 'scut' is a utility like 'cut' but better.  There's a recent copy in sand's /usr/local/bin
-# 'scut -h' to dump usage.
+# 'scut' is better than 'cut'.  sand.ess.uci.edu has scut in /usr/local/bin
+# 'scut -h' dumps usage
 # NB: While it will process single threaded benchmarks, it's meant for multi-threaded or MPI benchmarks so the output
 # (see write_gnuplot_cmds() below) is expecting 8 threads or processes to plot and best-fit over.
 # NBB: Because the benchmark format and tests keep changing, I haven't put a lot of effort into trying to make this as
@@ -43,7 +41,7 @@
 # they'll add up quickly if you run it multiple times:
 
 # nco_bm.2005-07-14_22:37.gnuplot............the gnuplot instructions & titles
-# ncap.2005-07-14_22:37.data..............gnuplot numeric data for each of the nco plots
+# ncap.2005-07-14_22:37.data..............gnuplot numeric data for each NCO plot
 # ncbo.2005-07-14_22:37.data                          "
 # ncea.2005-07-14_22:37.data                          "
 # ncecat.2005-07-14_22:37.data                        "
@@ -53,8 +51,8 @@
 # ncrcat.2005-07-14_22:37.data                        "
 # ncwa.2005-07-14_22:37.data                          "
 
-# The above files are plot commands to gnuplot which are automatically plotted into postscript
-# by this script, but can be customized by editing the files with a text editor to make the titles
+# Above files are gnuplot commands which this script automatically plots
+# but can be customized by editing the files with a text editor to make the titles
 # more specific. Replot them again by simply typing:
 # gnuplot < [cmdfile] (nco_bm.2005-07-14_22:37.gnuplot in the above case)
 
@@ -66,7 +64,7 @@ use Getopt::Long; # GNU-style getopt #qw(:config no_ignore_case bundling);
 # Declare vars for strict
 use vars qw( @titles @cmdline @nco_tim_info $thr_num %nc %tim_dta $num_nco_stz @nco_stz @clin_bits
 $num_bits @nco_stz $num_nco_stz $nco_name @nco_tim_dta $gnuplot_data_file @nco_name_array
-$tim_dta_end $cmdfile $ps_file $uname $op_sys $nco_vrsn_sng $nco_vrsn_A $nco_vrsn_B $datestamp $tmp_sng
+$tim_dta_end $cmdfile $ps_file $uname $op_sys $nco_vrs_sng $nco_vrs_A $nco_vrs_B $datestamp $tmp_sng
 $date_sng $fle_root $filetimestamp $sngl_thr_avg %nco_avgs
 );
 
@@ -98,12 +96,12 @@ while (<>) {
 #		print "skipping line $linect: $_\n";
 	} else { # split the line on the '|'s into
 #		print "\n\nworking on: $_\n";
-		($uname, $cmdline[$linect],$nco_tim_info[$linect], $nco_vrsn_sng,) = split(/\|/,$_,5);
+		($uname, $cmdline[$linect],$nco_tim_info[$linect], $nco_vrs_sng,) = split(/\|/,$_,5);
 		#my $splitcnt = split(/]/,$_);
 		#print "splitcnt = $splitcnt\n";
 #debugging only!
 #  		print "uname: $uname\n";
-#  		print "version: $nco_vrsn_sng\n";
+#  		print "version: $nco_vrs_sng\n";
 #  		print "cmd: $cmdline[$linect]\n";
 #  		print "timing data: $nco_tim_info[$linect]\n";
 	}
@@ -118,11 +116,11 @@ $op_sys = $_[0];
 print "operating system = $op_sys\n";
 $datestamp = $filetimestamp;
 chomp $datestamp;
-chomp $nco_vrsn_sng;
+chomp $nco_vrs_sng;
 
-my @L = split(/[ \/]/,$nco_vrsn_sng);
-$nco_vrsn_A = $L[2]; $nco_vrsn_B = $L[3];
-print "nco_vrsn_sng = $nco_vrsn_sng and nco_vrsn_A = $nco_vrsn_A and nco_vrsn_B = $nco_vrsn_B\n";
+my @L = split(/[ \/]/,$nco_vrs_sng);
+$nco_vrs_A = $L[2]; $nco_vrs_B = $L[3];
+print "nco_vrs_sng = $nco_vrs_sng and nco_vrs_A = $nco_vrs_A and nco_vrs_B = $nco_vrs_B\n";
 
 
 for (my $i=0; $i<$linect;$i++) {
@@ -300,7 +298,7 @@ HEADER
 		my $tail = ", \\\n";
 		#print "set output 'bench.$nco_name_array[$r].ps'\n"
 #		print "\n\n";
-		print CMD "set title \"$nco_name_array[$r] on $op_sys using multiple threads / processes\\nfor NCO version: $nco_vrsn_sng, on $filetimestamp\"\n";
+		print CMD "set title \"$nco_name_array[$r] on $op_sys using multiple threads / processes\\nfor NCO version: $nco_vrs_sng, on $filetimestamp\"\n";
 
 		my $datafile = "$nco_name_array[$r].$filetimestamp.data";
 		for (my $e=0; $e<($tim_dta_end-1);$e++) {
@@ -321,16 +319,16 @@ HEADER
 
 # grab the nco version and conmogrify it into something like: "3.0.1 / 20051003"
 # just requires a string variable to absorb the string returned
-sub nco_dual_vrsn{
-	my @nco_vrsn;
+sub nco_dual_vrs{
+	my @nco_vrs;
 	my $tmp_sng = `ncks --version  2>&1 |  grep 'ncks version'`; # long string sep by a newline.
 	$tmp_sng =~ s/\n/ /g;
 	my @tmp_lst = split (/\s+/, $tmp_sng);
-	$nco_vrsn[0] = $tmp_lst[4];
-	$nco_vrsn[0] =~ s/"//g;
-	$nco_vrsn[1] = $tmp_lst[scalar(@tmp_lst) - 1];
-	# print "NCO release version: $nco_vrsn[0], NCO date version: $nco_vrsn[1]\n";
-	$tmp_sng = "$nco_vrsn[0]" . " / " . "$nco_vrsn[1]";
+	$nco_vrs[0] = $tmp_lst[4];
+	$nco_vrs[0] =~ s/"//g;
+	$nco_vrs[1] = $tmp_lst[scalar(@tmp_lst) - 1];
+	# print "NCO release version: $nco_vrs[0], NCO date version: $nco_vrs[1]\n";
+	$tmp_sng = "$nco_vrs[0]" . " / " . "$nco_vrs[1]";
 	return $tmp_sng;
 }
 
