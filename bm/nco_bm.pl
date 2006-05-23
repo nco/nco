@@ -2,9 +2,9 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.128 2006-05-23 05:35:06 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.129 2006-05-23 19:49:10 zender Exp $
 
-# Usage: usage(), below, has more information
+# Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
 # ~/nco/bm/nco_bm.pl ncra # Test one operator
 # ~/nco/bm/nco_bm.pl --thr_nbr=2 --regress --udpreport # Test OpenMP
@@ -178,7 +178,7 @@ $lcl_vars .=    "\t \@INC:\n";
 foreach my $subpth (@INC) {$lcl_vars .= "\t   $subpth\n"}
 dbg_msg(1,$lcl_vars); # spit the whole thing out.
 
-if ($ARGV == 0) {	NCO_bm::usage();}
+if ($ARGV == 0) {	NCO_bm::bm_usg();}
 
 # Test file format
 if ($fl_fmt eq "64bit" || $fl_fmt eq "netcdf4" || $fl_fmt eq "netcdf4_classic") {
@@ -332,8 +332,8 @@ dbg_msg(1,"WARN: Setting --debug to > 0 sets the NCO\n  command line -D flag to 
 
 # Determine where $DATA should be, prompt user if necessary
 if ($xdat_pth eq '') {
-    dbg_msg(2, "$prg_nm: Calling set_dat_drc()");
-    set_dat_drc($caseid); # Set $dat_drc
+    dbg_msg(2, "$prg_nm: Calling dat_drc_set()");
+    dat_drc_set($caseid); # Set $dat_drc
 } else { # Validate $xdat_pth
     if (-e $xdat_pth && -w $xdat_pth){
 	dbg_msg(1,"User-specified DATA path ($xdat_pth) exists and is writable");
@@ -347,8 +347,8 @@ if ($xdat_pth eq '') {
 $fl_pth = "$dat_drc";
 
 # Initialize & set up some variables
-dbg_msg(3, "Calling initialize().");
-initialize($bch_flg,$dbg_lvl);
+dbg_msg(3, "Calling bm_ntl().");
+bm_ntl($bch_flg,$dbg_lvl);
 
 # Use variables for file names in regressions; some of these could be collapsed into
 # fewer ones, no doubt, but keep them separate until whole shebang starts working correctly
@@ -374,8 +374,8 @@ $server_name = "sand.ess.uci.edu";
 $server_ip = "128.200.14.132";
 $server_port = 29659;
 
-if($usg){usage()};
-if(0){tst_hirez();} # Test hires timer - needs explicit code mod to do this
+if($usg){bm_usg()};
+if(0){tst_tm_hrz();} # Test hires timer - needs explicit code mod to do this
 
 if($iosockfound){
     $sock = IO::Socket::INET->new (
@@ -416,8 +416,8 @@ if ($dodap ne 'FALSE') {
 dbg_msg(3, "after dodap assignment, \$fl_pth = $fl_pth, \$dodap = $dodap");
 
 # Initialize & set up some variables
-#if($dbg_lvl > 0){printf ("$prg_nm: Calling initialize()...\n");}
-#initialize($bch_flg,$dbg_lvl);
+#if($dbg_lvl > 0){printf ("$prg_nm: Calling bm_ntl()...\n");}
+#bm_ntl($bch_flg,$dbg_lvl);
 
 # Grok /usr/bin/time, as in shell scripts
 if (-e "/usr/bin/time" && -x "/usr/bin/time") {
@@ -437,7 +437,7 @@ if ($dbg_lvl > 1) {
 if ($rgr){
     use NCO_rgr; # module that contains perform_tests()
     NCO_rgr::perform_tests();
-    NCO_bm::smr_rgr_rsl();
+    NCO_bm::rsl_smr_rgr();
 } # endif rgr
 
 # Start real benchmark tests
@@ -445,8 +445,8 @@ if ($rgr){
 
 # initialize filenames
 if( $tst_fl_mk ne '0' || ($bm && $dodap eq 'FALSE')){
-    if($dbg_lvl > 1){printf ("\n$prg_nm: Calling fl_mk_dat_init()...\n");}
-    NCO_bm::fl_mk_dat_init(@fl_mk_dat); # Initialize data strings & timing array
+    if($dbg_lvl > 1){printf ("\n$prg_nm: Calling fl_mk_dat_ntl()...\n");}
+    NCO_bm::fl_mk_dat_ntl(@fl_mk_dat); # Initialize data strings & timing array
 }
 
 # Check if files have already been created
@@ -475,12 +475,12 @@ if ($tst_fl_mk ne '0' || $srv_sd ne "SSNOTSET"){
     if ($tst_fl_mk =~ /2/){ @fl_tmg = NCO_bm::fl_mk(1); $fc++; }
     if ($tst_fl_mk =~ /3/){ @fl_tmg = NCO_bm::fl_mk(2); $fc++; }
     if ($notbodi && $tst_fl_mk =~ /4/) { @fl_tmg = NCO_bm::fl_mk(3); $fc++; }
-    if ($fc >0) {NCO_bm::smr_fl_mk_rsl(@fl_tmg); } # Print and UDPreport creation times
+    if ($fc >0) {NCO_bm::rsl_smr_fl_mk(@fl_tmg); } # Print and UDPreport creation times
 }
 
 my $doit=1; # for skipping various tests
 use NCO_benchmarks; #module that contains the actual benchmark code
-# and now, the REAL benchmarks, set up as the regression tests below to use go() and smr_rgr_rsl()
+# and now, the REAL benchmarks, set up as the regression tests below to use tst_run() and rsl_smr_rgr()
 #print "DEBUG: prior to benchmark call, dodap = $dodap\n";
 #print "in main(),just priior to the benchmarks \$mpi_prc=[$mpi_prc] \$mpi_prfx=[$mpi_prfx] \$mpi_fke=[$mpi_fke]\n";
 

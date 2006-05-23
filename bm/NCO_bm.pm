@@ -1,22 +1,22 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.41 2006-05-23 05:35:06 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.42 2006-05-23 19:49:10 zender Exp $
 
 # Purpose: library module supporting the nco_bm.pl benchmark and regression tests.
 # this module contains the following functions in approximate order of their usage:
 
-#   usage()..............dumps usage text for the utility
-#   verbosity()..........small fn() to print to both screen and log
-#   fl_mk_dat_init()....initializes the data used to create the test files
+#   bm_ntl().........initialization, sets which NCOs are to be tested under different conditions
+#   bm_usg()..............dumps usage text for the utility
+#   bm_vrb()..........small fnc() to print to both screen and log
+#   dat_drc_set()........figures out where to write output data
 #   fl_mk().............creates the test files
-#   smr_fl_mk_rsl()...summarizes the results of the file creation tests
-#   set_dat_drc()........figures out where to write output data
-#   initialize().........initialization, sets which NCOs are to be tested under different conditions
-#   tst_hirez()..........almost ready-to-delete test of the HiRes fn() on opterons
-#   go().................takes care of executing both regressions and benchmarks set up in same format
-#   smr_rgr_rsl()......summarizes the results of both regression and benchmark tests
-#   check_nco_results()..checks the output via md5/wc validation
-#   nco_dual_vrs_()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
+#   fl_mk_dat_ntl()....initializes the data used to create the test files
+#   rsl_chk_MD5_wc()..checks the output via md5/wc validation
+#   rsl_smr_fl_mk()...summarizes the results of the file creation tests
+#   rsl_smr_rgr()......summarizes the results of both regression and benchmark tests
+#   tst_run().................takes care of executing both regressions and benchmarks set up in same format
+#   tst_tm_hrz()..........almost ready-to-delete test of the HiRes fnc() on opterons
+#   vrs_sng_dual_get()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -39,7 +39,7 @@ require Exporter;
 our @ISA = qw(Exporter);
 #export functions (top) and variables (bottom)
 our @EXPORT = qw (
-		  go dbg_msg set_dat_drc initialize
+		  tst_run dbg_msg dat_drc_set bm_ntl
 		  $prefix $dat_drc @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
 		  $prsrv_fl  $srv_sde $hiresfound $dodap $bm $dbg_lvl $sock $udp_reprt
 		  $mpi_prc $mpi_prfx $mpi_fke
@@ -97,8 +97,8 @@ if ($hiresfound == 0) {
 # $cmd_ln = "$0 "; $arg_nbr = @ARGV;
 # for (my $i=0; $i<$arg_nbr; $i++){ $cmd_ln .= "$ARGV[$i] ";}
 
-# usage - informational blurb for script
-sub usage {
+# bm_usg - informational blurb for script
+sub bm_usg {
     print << 'USAGE';
     
   Usage:
@@ -169,11 +169,11 @@ Copyright  1994-2006 Charlie 'my surname is' Zender (surname@uci.edu)
 
 USAGE
 exit(0);
-} # end usage()
+} # end bm_usg()
 
 
 # Initialize NCOs that need to be tested for particular conditions
-sub initialize($$){
+sub bm_ntl($$){
     use vars qw($prg_nm %sym_link %failure);
     my $bch_flg; # [flg] Batch behavior
     my $dbg_lvl; # [flg] Debugging level
@@ -201,7 +201,7 @@ sub initialize($$){
 #		} # !bch_flg
     } # !$MY_BIN_DIR
     
-    dbg_msg(1,"$prg_nm: initialize() reports:\n\t \$MY_BIN_DIR = $MY_BIN_DIR, \n\t \@opr_lst = @opr_lst\n\t \$opr_sng_mpi = $opr_sng_mpi\n\t \$opr_rgr_mpi = $opr_rgr_mpi\n");
+    dbg_msg(1,"$prg_nm: bm_ntl() reports:\n\t \$MY_BIN_DIR = $MY_BIN_DIR, \n\t \@opr_lst = @opr_lst\n\t \$opr_sng_mpi = $opr_sng_mpi\n\t \$opr_rgr_mpi = $opr_rgr_mpi\n");
     
 # Die if this path still does not work
     die "$MY_BIN_DIR/$opr_lst[0] does not exist\n stopped" unless (-e "$MY_BIN_DIR/$opr_lst[0]" || $opr_lst[0] eq "net");
@@ -234,25 +234,25 @@ sub initialize($$){
 	$success{$_}=0;
 	$failure{$_}=0;
     }
-} # end of initialize()
+} # end of bm_ntl()
 
 # Output string to either stdout, log, or both
-sub verbosity {
+sub bm_vrb {
     my $dbg_lvl = shift;
     my $wnt_log = shift;
     my $ts = shift;
 #	my $wnt_log; # why should this be required?
     if($dbg_lvl > 0){printf ("$ts");}
     if($wnt_log) {printf (LOG "$ts");}
-} # end of verbosity($dbg_lvl, $wnt_log, informational string to output )
+} # end of bm_vrb($dbg_lvl, $wnt_log, informational string to output )
 
 ##
-## fl_mk_dat_init() sets up the data for the (currently) 4 files that are created for later tests.
+## fl_mk_dat_ntl() sets up the data for the (currently) 4 files that are created for later tests.
 ##
 
-sub fl_mk_dat_init {
+sub fl_mk_dat_ntl {
     my $NUM_FLS = 4;
-    dbg_msg(1,"fl_mk_dat_init: \$NUM_FLS = $NUM_FLS");
+    dbg_msg(1,"fl_mk_dat_ntl: \$NUM_FLS = $NUM_FLS");
     
     if ($dbg_lvl > 2) {
 	print "\nWaiting for keypress to proceed.\n";
@@ -286,7 +286,7 @@ sub fl_mk_dat_init {
     $fl_mk_dat[3][2] = $fl_tmg[3][0] = "ipcc_dly_T85";            # file name root
     $fl_mk_dat[3][3] = "\'weepy=0.8f;dopey=0.8f;sleepy=0.8f;grouchy=0.8f;sneezy=0.8f;doc=0.8f;wanky=0.8f;skanky=0.8f;d1_00[time]=1.8f;d1_01[time]=1.8f;d1_02[time]=1.8f;d1_03[time]=1.8f;d1_04[time]=1.8f;d1_05[time]=1.8f;d1_06[time]=1.8f;d1_07[time]=1.8f;d2_00[lat,lon]=16.2f;d2_01[lat,lon]=16.2f;d2_02[lat,lon]=16.2f;d2_03[lat,lon]=16.2f;d2_04[lat,lon]=16.2f;d2_05[lat,lon]=16.2f;d2_06[lat,lon]=16.2f;d2_07[lat,lon]=16.2f;d2_08[lat,lon]=16.2f;d2_09[lat,lon]=16.2f;d2_10[lat,lon]=16.2f;d2_11[lat,lon]=16.2f;d2_12[lat,lon]=16.2f;d2_13[lat,lon]=16.2f;d2_14[lat,lon]=16.2f;d2_15[lat,lon]=16.2f;d3_00[time,lat,lon]=64.0f;d3_01[time,lat,lon]=64.0f;d3_02[time,lat,lon]=64.0f;d3_03[time,lat,lon]=64.0f;d3_04[time,lat,lon]=64.0f;d3_05[time,lat,lon]=64.0f;d3_06[time,lat,lon]=64.0f;d3_07[time,lat,lon]=64.0f;d3_08[time,lat,lon]=64.0f;d3_09[time,lat,lon]=64.0f;d3_10[time,lat,lon]=64.0f;d3_11[time,lat,lon]=64.0f;d3_12[time,lat,lon]=64.0f;d3_13[time,lat,lon]=64.0f;d3_14[time,lat,lon]=64.0f;d3_15[time,lat,lon]=64.0f;d3_16[time,lat,lon]=64.0f;d3_17[time,lat,lon]=64.0f;d3_18[time,lat,lon]=64.0f;d3_19[time,lat,lon]=64.0f;d3_20[time,lat,lon]=64.0f;d3_21[time,lat,lon]=64.0f;d3_22[time,lat,lon]=64.0f;d3_23[time,lat,lon]=64.0f;d3_24[time,lat,lon]=64.0f;d3_25[time,lat,lon]=64.0f;d3_26[time,lat,lon]=64.0f;d3_27[time,lat,lon]=64.0f;d3_28[time,lat,lon]=64.0f;d3_29[time,lat,lon]=64.0f;d3_30[time,lat,lon]=64.0f;d3_31[time,lat,lon]=64.0f;d3_32[time,lat,lon]=64.0f;d3_33[time,lat,lon]=64.0f;d3_34[time,lat,lon]=64.0f;d3_35[time,lat,lon]=64.0f;d3_36[time,lat,lon]=64.0f;d3_37[time,lat,lon]=64.0f;d3_38[time,lat,lon]=64.0f;d3_39[time,lat,lon]=64.0f;d3_40[time,lat,lon]=64.0f;d3_41[time,lat,lon]=64.0f;d3_42[time,lat,lon]=64.0f;d3_43[time,lat,lon]=64.0f;d3_44[time,lat,lon]=64.0f;d3_45[time,lat,lon]=64.0f;d3_46[time,lat,lon]=64.0f;d3_47[time,lat,lon]=64.0f;d3_48[time,lat,lon]=64.0f;d3_49[time,lat,lon]=64.0f;d3_50[time,lat,lon]=64.0f;d3_51[time,lat,lon]=64.0f;d3_52[time,lat,lon]=64.0f;d3_53[time,lat,lon]=64.0f;d3_54[time,lat,lon]=64.0f;d3_55[time,lat,lon]=64.0f;d3_56[time,lat,lon]=64.0f;d3_57[time,lat,lon]=64.0f;d3_58[time,lat,lon]=64.0f;d3_59[time,lat,lon]=64.0f;d3_60[time,lat,lon]=64.0f;d3_61[time,lat,lon]=64.0f;d3_62[time,lat,lon]=64.0f;d3_63[time,lat,lon]=64.0f;d4_00[time,lev,lat,lon]=1.1f;d4_01[time,lev,lat,lon]=1.2f;d4_02[time,lev,lat,lon]=1.3f;d4_03[time,lev,lat,lon]=1.4f;d4_04[time,lev,lat,lon]=1.5f;d4_05[time,lev,lat,lon]=1.6f;d4_06[time,lev,lat,lon]=1.7f;d4_07[time,lev,lat,lon]=1.8f;d4_08[time,lev,lat,lon]=1.9f;d4_09[time,lev,lat,lon]=1.11f;d4_10[time,lev,lat,lon]=1.12f;d4_11[time,lev,lat,lon]=1.13f;d4_12[time,lev,lat,lon]=1.14f;d4_13[time,lev,lat,lon]=1.15f;d4_14[time,lev,lat,lon]=1.16f;d4_15[time,lev,lat,lon]=1.17f;d4_16[time,lev,lat,lon]=1.18f;d4_17[time,lev,lat,lon]=1.19f;d4_18[time,lev,lat,lon]=1.21f;d4_19[time,lev,lat,lon]=1.22f;d4_20[time,lev,lat,lon]=1.23f;d4_21[time,lev,lat,lon]=1.24f;d4_22[time,lev,lat,lon]=1.25f;d4_23[time,lev,lat,lon]=1.26f;d4_24[time,lev,lat,lon]=1.27f;d4_25[time,lev,lat,lon]=1.28f;d4_26[time,lev,lat,lon]=1.29f;d4_27[time,lev,lat,lon]=1.312f;d4_28[time,lev,lat,lon]=1.322f;d4_29[time,lev,lat,lon]=1.332f;d4_30[time,lev,lat,lon]=1.342f;d4_31[time,lev,lat,lon]=1.352f;\'";
     return @fl_tmg;
-}; # end of fl_mk_dat_init()
+}; # end of fl_mk_dat_ntl()
 
 # fl_mk creates files from CDL templates and populates them for benchmarks
 sub fl_mk {
@@ -338,9 +338,9 @@ sub fl_mk {
 } # end sub fl_mk
 
 # Summarize timing results of file creation tests
-sub smr_fl_mk_rsl {
+sub rsl_smr_fl_mk {
     $NUM_FLS = 4;
-    print " in smr_fl_mk_rsl,  \$fl_tmg[1][0] = $fl_tmg[1][0] & \$NUM_FLS = $NUM_FLS\n";
+    print " in rsl_smr_fl_mk,  \$fl_tmg[1][0] = $fl_tmg[1][0] & \$NUM_FLS = $NUM_FLS\n";
     if ($dbg_lvl > 0){print "Summarizing results of file creation\n";}
     my $CC = `../src/nco/ncks --compiler`;
     my $CCinfo = '';
@@ -365,10 +365,10 @@ sub smr_fl_mk_rsl {
 	$sock->send($udp_dat);
 	if ($dbg_lvl > 0) { print "File Creation: udp stream sent to $server_ip:\n$udp_dat\n";}
     } # and send it back separately
-} # end of smr_fl_mk_rsl
+} # end of rsl_smr_fl_mk
 
-# set_dat_drc() tries to answer the question of where to write data
-sub set_dat_drc {
+# dat_drc_set() tries to answer the question of where to write data
+sub dat_drc_set {
     $caseid = shift;
     my $tmp;
     my $umask = umask;
@@ -430,15 +430,15 @@ sub set_dat_drc {
     } else { # que != 0
 	die "You MUST define a DATA environment variable to run this in a queue\n stopped";
     } # !defined $ENV{'DATA'})
-} # end set_dat_drc()
+} # end dat_drc_set()
 
-#########################  subroutine go ()  ####################################
-# go() consumes the @tst_cmd array that contains a series of tests and
+#########################  subroutine tst_run ()  ####################################
+# tst_run() consumes the @tst_cmd array that contains a series of tests and
 # executes them in order
 #################################################################################
-sub go {
+sub tst_run {
     
-    my %lfn = ( # lfn = local_file_name
+    my %fl_nm_lcl = ( # fl_nm_lcl = local_file_name
 		'%stdouterr%'   => "", # stdouterr has to be left to generate stderr
 		'%tempf_00%'    => "$dat_drc/tempf_00.nc", # this will be the default replacement for $outfile
 		'%tempf_01%'    => "$dat_drc/tempf_01.nc",
@@ -457,7 +457,7 @@ sub go {
 		);
     
 # so if executign on the client side, have to replace all the special purpose
-# filenames with name like $lfn{'%tempf_00%'}
+# filenames with name like $fl_nm_lcl{'%tempf_00%'}
     
     
     # WTF do these vars require this treatment?!??
@@ -467,13 +467,13 @@ sub go {
     
     #$dbg_lvl = 2;
     if ($dbg_lvl > 0) {
-	print "\n\n\n## New go() cycle [$opr_nm: $dsc_sng] ###\n";
-	    if ($lfn{'%tempf_00%'} eq "") {
+	print "\n\n\n## New tst_run() cycle [$opr_nm: $dsc_sng] ###\n";
+	    if ($fl_nm_lcl{'%tempf_00%'} eq "") {
 		print "outfile undefined!\n";
-	    } # else {	print "\$lfn{'%tempf_00%'} = [$lfn{'%tempf_00%'}] \n";}
+	    } # else {	print "\$fl_nm_lcl{'%tempf_00%'} = [$fl_nm_lcl{'%tempf_00%'}] \n";}
     }
-# mod of go() requires that rgr tests have to be modified to provide
-# the expected value in each submission to go()  If the last el is not SS_OK,
+# mod of tst_run() requires that rgr tests have to be modified to provide
+# the expected value in each submission to tst_run()  If the last el is not SS_OK,
 # it has to pop off the expected  value and then should process the commands
 # the same as it did previously.
     my $arr_ref = shift; # now passing in benchmark()'s @tst_cmd via a ref to maintain coherence
@@ -503,7 +503,7 @@ sub go {
     # Delete everything in DAP subdir to force DAP retrieval
     # $dat_drc has by now been directed to $dat_drc/DAP_DIR
     
-#	print "DEBUG[go]:\$dodap = [$dodap], \$prsrv_fl = [$prsrv_fl]\n";
+#	print "DEBUG[tst_run]:\$dodap = [$dodap], \$prsrv_fl = [$prsrv_fl]\n";
     if ($dodap ne "FALSE" && !$prsrv_fl) {
 	print "\nWARN: about to unlink everything in $dat_drc ! Continue? [Ny]\n";
 	my $wait = <STDIN>; if ($wait !~ /[Yy]/) { die "Make sure of the commandline options!\n";}
@@ -543,7 +543,7 @@ sub go {
     
     dbg_msg(4,"\n nsr_xpc = $nsr_xpc\n dbg_lvl = $dbg_lvl\n wnt_log = $wnt_log\n cmd_lst = @cmd_lst");
     
-    &verbosity($dbg_lvl, $wnt_log, "\n\n============ New Test ==================\n");
+    &bm_vrb($dbg_lvl, $wnt_log, "\n\n============ New Test ==================\n");
     
     # csz++
     $dot_nbr_min=3; # Minimum number of dots between description and "ok" result
@@ -589,7 +589,7 @@ sub go {
 	$nsr_xpc = $cmd_lst[$#cmd_lst]; # pop the next value off \
 	delete $cmd_lst[$#cmd_lst]; # and now the $cmd_lst is the same as it ever was..
 	
-#print "\nDEBUG:in go:613, \$mpi_prc=[$mpi_prc] \$mpi_prfx=[$mpi_prfx] \$mpi_fke=[$mpi_fke]\n";
+#print "\nDEBUG:in tst_run:613, \$mpi_prc=[$mpi_prc] \$mpi_prfx=[$mpi_prfx] \$mpi_fke=[$mpi_fke]\n";
 	
 	
 	foreach (@cmd_lst){
@@ -602,7 +602,7 @@ sub go {
 	    
 	    # substitute real file names for the fake ones (%*%)
 	    my $r = 0; 	my $N = my @L = split;
-	    while ($r <= $N) { if ($L[$r] =~ /\%.{8,9}\%/){ $L[$r] = $lfn{$L[$r]};}	$r++;	}
+	    while ($r <= $N) { if ($L[$r] =~ /\%.{8,9}\%/){ $L[$r] = $fl_nm_lcl{$L[$r]};}	$r++;	}
 	    $_ = ""; # zero and then reconstitute $_
 	    for ($r=0; $r<= $N; $r++) {$_ .= $L[$r] . " ";}
 	    #print "DEBUG: reconstituted \$_ = $_\n";
@@ -680,21 +680,21 @@ sub go {
 	    if($dbg_lvl > 3){print "\t$opr_nm subtest [$t] took $elapsed seconds\n";}
 	    $dbg_sgn .= "DEBUG: Result = [$result]\n";
 	    
-	    #and here, check results by md5 checksum for each step - insert guts of check_nco_results()
+	    #and here, check results by md5 checksum for each step - insert guts of rsl_chk_MD5_wc()
 	    # have to mod the input string -  suffix with the cycle#
-	    # follow check only if the MD5 module is present, there's a foo.nc to check ($lfn{'%tempf_00%'} = 'foo.nc')
+	    # follow check only if the MD5 module is present, there's a foo.nc to check ($fl_nm_lcl{'%tempf_00%'} = 'foo.nc')
 	    # & non-terminal cmd (the terminal command is ncks which is expected to return a single value or string)
-# 			dbg_msg(3,"check_nco_results(): \$md5 = $md5, \$md5_chk = $md5_chk, \$cmd_lst_cnt ($cmd_lst_cnt) < \$lst_cmd ($lst_cmd)");
+# 			dbg_msg(3,"rsl_chk_MD5_wc(): \$md5 = $md5, \$md5_chk = $md5_chk, \$cmd_lst_cnt ($cmd_lst_cnt) < \$lst_cmd ($lst_cmd)");
 # 			if ($md5 && $md5_chk && $cmd_lst_cnt < $lst_cmd) {
-# 				dbg_msg(2,"Entering check_nco_results() with \$lfn{'%tempf_00%'}=$lfn{'%tempf_00%'}");
-# 				check_nco_results($lfn{'%tempf_00%'}, $md5_dsc_sng);
+# 				dbg_msg(2,"Entering rsl_chk_MD5_wc() with \$fl_nm_lcl{'%tempf_00%'}=$fl_nm_lcl{'%tempf_00%'}");
+# 				rsl_chk_MD5_wc($fl_nm_lcl{'%tempf_00%'}, $md5_dsc_sng);
 # 			}
 # 			if ($md5_chk == 0 && $dbg_lvl > 0) { $dbg_sgn .= "WARN: No MD5/wc check on intermediate file.\n";}
 	    
 	    # else the oldstyle check has already been done and the results are in $result, so process normally
 	    $cmd_lst_cnt++;
 	    if ($dbg_lvl > 2) {
-		print "\ngo: test cycle held - hit <Enter> to continue\n";
+		print "\ntst_run: test cycle held - hit <Enter> to continue\n";
 		my $wait = <STDIN>;
 	    }
 	} # end loop: 	foreach (@cmd_lst)
@@ -769,8 +769,8 @@ sub go {
     if ($wnt_log) {print LOG $dbg_sgn;}
     @cmd_lst =(); # Clear test
     if (!$bm) { $prsrv_fl = 0; } # reset so files will be deleted unless doing benchmarks
-    if (-e $lfn{'%tempf_00%'} && -w $lfn{'%tempf_00%'}) { unlink $lfn{'%tempf_00%'};	}
-} # end go()
+    if (-e $fl_nm_lcl{'%tempf_00%'} && -w $fl_nm_lcl{'%tempf_00%'}) { unlink $fl_nm_lcl{'%tempf_00%'};	}
+} # end tst_run()
 
 ####################
 
@@ -785,7 +785,7 @@ sub go {
 
 sub SS_gnarly_pything {
     
-    my $arr_ref = shift; # now passing in go()'s cmd_lst via a ref to maintain NS separation
+    my $arr_ref = shift; # now passing in tst_run()'s cmd_lst via a ref to maintain NS separation
     my @sscmd_lst= @$arr_ref; # deref the ref to a new array name
     my $SS_URL = "http://sand.ess.uci.edu/cgi-bin/dods/nph-dods";
     my $dodsdata = "dodsdata";
@@ -827,7 +827,7 @@ sub SS_gnarly_pything {
     }
     close TF;
     #print "TF should be done - waiting for action\n"; #my $wait = <STDIN>;#my $wait = <STDIN>;
-# print "\n##SS cmd: $MY_BIN_DIR/scriptwrap.py  $tfname $SS_URL\nand waiting for key to go"; my $wait = <STDIN>;
+# print "\n##SS cmd: $MY_BIN_DIR/scriptwrap.py  $tfname $SS_URL\nand waiting for key to tst_run"; my $wait = <STDIN>;
     # and finally EXECUTE it
     my $xpct_val = `$MY_BIN_DIR/scriptwrap.py  $tfname $SS_URL`;
     # and now (unfortunately), write it to disk and then execute the scriptwrap.py to get a value.
@@ -850,9 +850,9 @@ sub failed {
     return;
 }
 
-sub smr_rgr_rsl {
+sub rsl_smr_rgr {
     my $ansr='';
-    my $nco_vrs_sng = nco_dual_vrs_();
+    my $nco_vrs_sng = vrs_sng_dual_get();
     my $CC = `$MY_BIN_DIR/ncks --compiler`;
     my $idstring = "";
     my $CCinfo = '';
@@ -892,7 +892,7 @@ sub smr_rgr_rsl {
     
     chdir "../bld";
     if ($dbg_lvl == 0) {print $reportstr;}
-    else { &verbosity($dbg_lvl, $wnt_log, $reportstr); }
+    else { &bm_vrb($dbg_lvl, $wnt_log, $reportstr); }
     
     if (!$udp_reprt) { # set either explicitly (1st time) or set in ~/.ncorc after user agreed to it
 	
@@ -932,11 +932,11 @@ REQ_REGR_PACKET
     } else {
 	print "\nOK - data NOT sent, thanks for using NCO anyway - bye!\n\n";
     }
-} # end of sub smr_rgr_rsl
+} # end of sub rsl_smr_rgr
 
-sub check_nco_results {
+sub rsl_chk_MD5_wc {
 # taken substantially from process_tacg_results (in testtacg.pl), hjm
-    dbg_msg(3, "check_nco_results()::\$fl_pth = $fl_pth");
+    dbg_msg(3, "rsl_chk_MD5_wc()::\$fl_pth = $fl_pth");
     my $file = shift;  # 1st arg
     my $testtype = shift; # 2nd arg
 # 	my $md5found = shift; # 3rd arg
@@ -963,26 +963,26 @@ sub check_nco_results {
 	print LOG "\n\"$testtype\" => ", "\"$hash\", #MD5\n\"$testtype\" => ", "\"$wc\", #wc\n$cmdline\n\n";
     }
     if ($md5found == 1) {
-	if ( $MD5_tbl{$testtype} eq $hash ) { print " MD5"; verbosity " MD5"; }
+	if ( $MD5_tbl{$testtype} eq $hash ) { print " MD5"; bm_vrb " MD5"; }
 	else {
-	    print " MD5 fail,"; verbosity " MD5 fail,";  # test: $testtype\n";
-	    if ($dbg_lvl > 1) {verbosity "MD5 sig: $hash should be: $MD5_tbl{$testtype}\n";}
-	    if ($wc eq $wc_tbl{$testtype}) { print "WC PASS "; verbosity "WC PASS "; }
-	    else { print " WC fail,"; verbosity " WC fail,"; }
+	    print " MD5 fail,"; bm_vrb " MD5 fail,";  # test: $testtype\n";
+	    if ($dbg_lvl > 1) {bm_vrb "MD5 sig: $hash should be: $MD5_tbl{$testtype}\n";}
+	    if ($wc eq $wc_tbl{$testtype}) { print "WC PASS "; bm_vrb "WC PASS "; }
+	    else { print " WC fail,"; bm_vrb " WC fail,"; }
 	    my $errfile = "$file" . ".MD5.err"; # will get overwritten; halt test if want to keep it.
 	    system("cp $file $errfile");
 	}
     } else {
-	if ($wc_tbl{$testtype} eq $wc) { print "passed wc \n"; verbosity "passed wc \n"; }
+	if ($wc_tbl{$testtype} eq $wc) { print "passed wc \n"; bm_vrb "passed wc \n"; }
 	else {
-	    print " WC fail,";verbosity " WC fail,";
+	    print " WC fail,";bm_vrb " WC fail,";
 	    my $errfile = "$testtype" . ".wc.err";
 	    print "\n\ncp $fl_pth/out $fl_pth/$errfile\n\n";
 	    system("cp $fl_pth/out $fl_pth/$errfile");
 	}
     }
     return $hash;
-} # end check_nco_results()
+} # end rsl_chk_MD5_wc()
 
 
 sub wat4inpt{
@@ -1005,16 +1005,16 @@ sub dbg_msg {
 
 # Grab NCO version and conmogrify it into something like: "3.0.1 / 20051003"
 # Requires a string variable to absorb returned string
-sub nco_dual_vrs_{
-    my @nco_vrs_;
+sub vrs_sng_dual_get{
+    my @nco_vrs;
     my $tmp_sng = `ncks --version  2>&1 |  grep version | head -2`; # long string sep by a newline.
     $tmp_sng =~ s/\n/ /g;
     my @tmp_lst = split (/\s+/, $tmp_sng);
-    $nco_vrs_[0] = $tmp_lst[4];
-    $nco_vrs_[0] =~ s/"//g;
-	$nco_vrs_[1] = $tmp_lst[scalar(@tmp_lst) - 1];
-	# print "NCO release version: $nco_vrs_[0], NCO date version: $nco_vrs_[1]\n";
-	$tmp_sng = "$nco_vrs_[0]" . "/" . "$nco_vrs_[1]";
+    $nco_vrs[0] = $tmp_lst[4];
+    $nco_vrs[0] =~ s/"//g;
+	$nco_vrs[1] = $tmp_lst[scalar(@tmp_lst) - 1];
+	# print "NCO release version: $nco_vrs[0], NCO date version: $nco_vrs[1]\n";
+	$tmp_sng = "$nco_vrs[0]" . "/" . "$nco_vrs[1]";
 	return $tmp_sng;
 }
 

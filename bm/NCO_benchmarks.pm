@@ -1,6 +1,6 @@
 package NCO_benchmarks;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.7 2006-05-23 05:26:41 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.8 2006-05-23 19:49:10 zender Exp $
 
 # Purpose: library module supporting nco_bm.pl benchmark and regression tests
 # File contains BENCHMARK code (as opposed to the REGRESSION tests in "NCO_rgr.pm")
@@ -18,7 +18,7 @@ use warnings;
 use strict;
 #use NCO_rgr qw( perform_tests ); # module that contains perform_tests()
 
-use NCO_bm qw(dbg_msg go
+use NCO_bm qw(dbg_msg tst_run
 	$dat_drc @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl  $srv_sde $dodap
 );
 
@@ -90,7 +90,7 @@ sub benchmarks{
 # 		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00 $outfile";
 # 		$tst_cmd[3] = "1.604304";
 # 		$tst_cmd[4] = "NO_SS";
-# 		go(\@tst_cmd);
+# 		tst_run(\@tst_cmd);
 # 		$#tst_cmd=0;  # reset the array
 # 		if($dbg_lvl >  0){print "\n[past benchmark stanza - $dsc_sng\n";}
 # 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
@@ -99,7 +99,7 @@ sub benchmarks{
 
 # Note that that the last SERVERSIDE executable nco statement has to end with a '%stdouterr%' to
 # have it return data.  For both benchmarks and regressions, this is added in the
-# SS_gnarly_pything() sub from go() that handles the SS manipulations.
+# SS_gnarly_pything() sub from tst_run() that handles the SS manipulations.
 # Also note that in order for Daniel's ssdwrap code to work at least for now, all the files passed in have
 # to be named differently in order to keep things straight.  So we can't name everything $outfile
 # (or %tempf_00% and have it work. All output must be named differently in a script for the
@@ -124,7 +124,7 @@ if (0) { # DEBUGGING to skip these
 		$tst_cmd[3] = "4.024271";
 #		$tst_cmd[4] = "NO_SS";
 		$tst_cmd[4] = "SS_OK";
-		go(\@tst_cmd);
+		tst_run(\@tst_cmd);
 		$#tst_cmd=0; # reset the array
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng]\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
@@ -144,7 +144,7 @@ if ($dbg_lvl >= 1) {print "paused after ncap - hit return to continue"; $wait = 
 #		$tst_cmd[1] = "ncks -C -H -s '%f' -v weepy %tempf_00%"; # smaller test file
 		$tst_cmd[2] = "0.000000";
 		$tst_cmd[3] = "SS_OK";
-		go(\@tst_cmd);
+		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng]\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
@@ -164,7 +164,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00 %tempf_01%";
 		$tst_cmd[3] = "1.604304";
 		$tst_cmd[4] = "SS_OK";
-		go(\@tst_cmd);
+		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
@@ -185,7 +185,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 		if ($dodap eq "FALSE") { $tst_cmd[3] = "12.759310";}
 		else                   { $tst_cmd[3] = "18.106375";}
 		$tst_cmd[4] = "SS_OK";
-		go(\@tst_cmd);
+		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
@@ -206,7 +206,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 		$tst_cmd[2] = "ncks -C -H -s '%f ' -v d1_00 %tempf_01%";
 		$tst_cmd[3] = "1.800000 1.800000 1.800000 1.800000 1.800000 1.800000 1.800000 1.800000";
 		$tst_cmd[4] = "SS_OK";
-		go(\@tst_cmd);
+		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
@@ -226,7 +226,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey %tempf_00%";  #ipcc
 		$tst_cmd[2] = "0.800000";
 		$tst_cmd[3] = "SS_OK";
-		go(\@tst_cmd);
+		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
@@ -243,7 +243,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey %tempf_00%";  #ipcc
 		$tst_cmd[2] = "0.800000";
 		$tst_cmd[3] = "SS_OK";
-		go(\@tst_cmd);
+		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
@@ -260,7 +260,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey %tempf_00%";  #ipcc
 		$tst_cmd[2] = "0.800000";
 		$tst_cmd[3] = "SS_OK";
-		go(\@tst_cmd);
+		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
@@ -277,7 +277,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey %tempf_00%";
 		$tst_cmd[2] = "0.000000";
 		$tst_cmd[3] = "SS_OK";
-		go(\@tst_cmd);
+		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
@@ -296,7 +296,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 			$tst_cmd[1] =  "ncks -C -H -s '%f' -v d1_03   %tempf_00% ";
 			$tst_cmd[2] = "1.800001";
 			$tst_cmd[3] = "NO_SS_OK";
-			go(\@tst_cmd);
+			tst_run(\@tst_cmd);
 			$#tst_cmd=0;  # reset the array
 			if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 		} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
@@ -321,7 +321,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 			$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2 %tempf_01%";
 			$tst_cmd[3] = "12.759310";
 			$tst_cmd[4] = "SS_OK";
-			go(\@tst_cmd);
+			tst_run(\@tst_cmd);
 			$#tst_cmd=0;  # reset the array
 			if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 		} else {	print "Skipping Benchmark [$opr_nm] - not MPI-ready\n"; }
@@ -339,7 +339,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 		$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02  %tempf_00%";
 		$tst_cmd[2] = "1.673425";
 		$tst_cmd[3] = "SS_OK";
-		go(\@tst_cmd);
+		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
@@ -358,7 +358,7 @@ printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $
 		$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02  %tempf_00%";
 		$tst_cmd[2] = "2.800084";
 		$tst_cmd[3] = "SS_OK";
-		go(\@tst_cmd);
+		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
@@ -376,7 +376,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 			$tst_cmd[1] = "ncks -C -H -s '%f' -v skanky  %tempf_00%";
 			$tst_cmd[2] = "0.800000";
 			$tst_cmd[3] = "SS_OK";
-			go(\@tst_cmd);
+			tst_run(\@tst_cmd);
 			$#tst_cmd=0;  # reset the array
 		}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
@@ -411,7 +411,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 					$tst_cmd[1] = "ncks -C -H -s '%f' -v skanky  %tempf_00%";
 					$tst_cmd[2] = "0.800000";
 					$tst_cmd[3] = "SS_OK";
-					go(\@tst_cmd);
+					tst_run(\@tst_cmd);
 					$#tst_cmd=0;  # reset the array
 				}
 			} # not bodi
@@ -419,7 +419,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 	}
 
 	# and summarize the benchmarks results
-	NCO_bm::smr_rgr_rsl();
+	NCO_bm::rsl_smr_rgr();
 }
 1;
 __END__

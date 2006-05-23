@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/mk_bm_plots.pl,v 1.8 2006-05-23 05:26:41 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/mk_bm_plots.pl,v 1.9 2006-05-23 19:49:10 zender Exp $
 # Script resides in nco/bm
 
 # Purpose: 
@@ -269,7 +269,7 @@ sub write_nco_data {
 
 
 # now munge into appro formats
-# 1st write the gnuplot commands to read in and plot the file - should be a separate fn().
+# 1st write the gnuplot commands to read in and plot the file - should be a separate fnc().
 sub write_gnuplot_cmds {
 	# need to write 1 command file that plots all the files to a single postscript file
 	#open file
@@ -319,7 +319,7 @@ HEADER
 
 # grab the nco version and conmogrify it into something like: "3.0.1 / 20051003"
 # just requires a string variable to absorb the string returned
-sub nco_dual_vrs{
+sub vrs_sng_dual_get{
 	my @nco_vrs;
 	my $tmp_sng = `ncks --version  2>&1 |  grep 'ncks version'`; # long string sep by a newline.
 	$tmp_sng =~ s/\n/ /g;
