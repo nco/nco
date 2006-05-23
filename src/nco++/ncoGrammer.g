@@ -528,7 +528,7 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
 
 
 // Return the number of dimensions in lmt subscript
-lmt_peek returns [int nbr_dmn]
+lmt_peek returns [int nbr_dmn=0]
 
   : lmt:LMT_LIST{
     RefAST aRef;     
@@ -543,7 +543,7 @@ lmt_peek returns [int nbr_dmn]
 
 
 
-statements returns [int iret] 
+statements 
 
     : blk:BLOCK { 
        run(blk->getFirstChild());
@@ -751,13 +751,23 @@ assign
 
              
              } else {
-               // Set class wide variables     
+               // Set class wide variables
                bcst=false;
-               var_cst=(var_sct*)NULL;
-
+               var_cst=(var_sct*)NULL; 
+               
                var=out(vid->getNextSibling());
+               // Save name 
+               std::string s_var_rhs(var->nm);
+               (void)nco_free(var->nm);                
                var->nm =strdup(vid->getText().c_str());
-               (void)ncap_var_write(var,prs_arg);      
+
+               //Do attribute propagation
+               (void)ncap_att_cpy(vid->getText(),s_var_rhs,prs_arg);
+
+               (void)ncap_var_write(var,prs_arg);
+               
+
+        
              } // end else 
          
        } // end action
@@ -865,7 +875,7 @@ out returns [var_sct *var]
             /* Set defaults */
             (void)var_dfl_set(var); 
             /* Overwrite with attribute expression information */
-            var->nm=strdup("byte");
+            var->nm=strdup("_byte");
             var->nbr_dim=0;
             var->sz=1;
             // Get nco type
@@ -886,7 +896,7 @@ out returns [var_sct *var]
             /* Set defaults */
             (void)var_dfl_set(var); 
             /* Overwrite with attribute expression information */
-            var->nm=strdup("short");
+            var->nm=strdup("_short");
             var->nbr_dim=0;
             var->sz=1;
             var->type=type;
@@ -906,7 +916,7 @@ out returns [var_sct *var]
             /* Set defaults */
             (void)var_dfl_set(var); 
             /* Overwrite with attribute expression information */
-            var->nm=strdup("int");
+            var->nm=strdup("_int");
             var->nbr_dim=0;
             var->sz=1;
             // Get nco type
@@ -926,7 +936,7 @@ out returns [var_sct *var]
             /* Set defaults */
             (void)var_dfl_set(var); 
             /* Overwrite with attribute expression information */
-            var->nm=strdup("float");
+            var->nm=strdup("_float");
             var->nbr_dim=0;
             var->sz=1;
             // Get nco type
@@ -946,7 +956,7 @@ out returns [var_sct *var]
             /* Set defaults */
             (void)var_dfl_set(var); 
             /* Overwrite with attribute expression information */
-            var->nm=strdup("double");
+            var->nm=strdup("_double");
             var->nbr_dim=0;
             var->sz=1;
             // Get nco type
