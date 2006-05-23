@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.130 2006-05-23 21:14:40 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.131 2006-05-23 22:24:07 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -32,7 +32,7 @@ use strict; # Protect all namespaces
 use vars qw(
 	    $aix_mpi_nvr_pfx $aix_mpi_sgl_nvr_pfx $arg_nbr $bch_flg $bm
 	    @bm_cmd_ary $bm_drc $caseid $cmd_ln $dbg_lvl $dodap $dot_fmt $dot_nbr
-	    $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng $dat_drc
+	    $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng $drc_dat
 	    $dust_usr %failure $fl_cnt @fl_mk_dat $fl_fmt $fl_pth @fl_tmg
 	    $foo1_fl $foo2_fl $foo_avg_fl $foo_fl $foo_T42_fl $foo_tst $foo_x_fl
 	    $foo_xy_fl $foo_xymyx_fl $foo_y_fl $foo_yx_fl $gnu_cut $hiresfound
@@ -40,8 +40,8 @@ use vars qw(
 	    $pfx_mpi $MY_BIN_DIR $nco_D_flg %NCO_RC $nco_vrs_sng $ncwa_scl_tst $notbodi
 	    $nsr_xpc $NUM_FLS $nvr_my_bin_dir $omp_flg $opr_fmt $opr_lng_max
 	    @opr_lst @opr_lst_all @opr_lst_mpi $opr_nm $opr_rgr_mpi $opr_sng_mpi
-	    $fl_out_orig $os_sng $fl_out $pfxd $prg_nm $prsrv_fl
-	    $pth_rmt_scp_tst $pwd $que $rcd %real_tme $result $rgr $server_ip
+	    $fl_out_rgn $os_sng $fl_out $pfxd $prg_nm $prsrv_fl
+	    $pth_rmt_scp_tst $pwd $que $rcd %real_tme $cmd_rsl $rgr $server_ip
 	    $server_name $server_port $sock $spc_fmt $spc_nbr $spc_nbr_min
 	    $spc_sng $srv_sd %subbenchmarks %success %sym_link @sys_tim_arr
 	    $sys_time %sys_tme $thr_nbr $timed $timestamp $tmp $tmr_app
@@ -92,7 +92,7 @@ $tst_fl_mk = '0';
 $udp_reprt = 0;
 $usg = 0;
 $wnt_log = 0;
-$xdat_pth = ''; # explicit data path; more powerful than $dat_drc
+$xdat_pth = ''; # explicit data path; more powerful than $drc_dat
 
 # other inits
 $localhostname = `hostname`; chomp $localhostname;
@@ -146,7 +146,7 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	    'udpreport'    => \$udp_reprt,  # Return timing data back to udpserver on sand
 	    'usage'        => \$usg,        # Explain how to use this thang
 	    'caseid=s'     => \$caseid,     # short string to tag test dir and batch queue
-	    'xdata=s'	   => \$xdat_pth,   # Explicit data path set from cmdline
+	    'xdata=s'	   => \$xdat_pth,   # Explicit data path
 	    'xpt_dsc=s'    => \$xpt_dsc,    # Long string to describe experiment
 #BROKEN - FXM hjm	'md5'          => \$md5,        # requests md5 checksumming results (longer but more exacting)
 	    );
@@ -332,19 +332,19 @@ dbg_msg(1,"WARN: Setting --debug to > 0 sets the NCO\n  command line -D flag to 
 
 # Determine where $DATA should be, prompt user if necessary
 if ($xdat_pth eq '') {
-    dbg_msg(2, "$prg_nm: Calling dat_drc_set()");
-    dat_drc_set($caseid); # Set $dat_drc
+    dbg_msg(2, "$prg_nm: Calling drc_dat_set()");
+    drc_dat_set($caseid); # Set $drc_dat
 } else { # Validate $xdat_pth
     if (-e $xdat_pth && -w $xdat_pth){
 	dbg_msg(1,"User-specified DATA path ($xdat_pth) exists and is writable");
-	$dat_drc = $xdat_pth; # and assign it to previously coded variable
+	$drc_dat = $xdat_pth; # and assign it to previously coded variable
     } else {
 	die "FATAL(bm): The directory you specified on the commandline ($xdat_pth) does not exist or is not writable by you.\n";
     }
 }
 
 # Set $fl_pth to reasonable defalt
-$fl_pth = "$dat_drc";
+$fl_pth = "$drc_dat";
 
 # Initialize & set up some variables
 dbg_msg(3, "Calling bm_ntl().");
@@ -352,19 +352,19 @@ bm_ntl($bch_flg,$dbg_lvl);
 
 # Use variables for file names in regressions; some of these could be collapsed into
 # fewer ones, no doubt, but keep them separate until whole shebang starts working correctly
-# $fl_out       = "$dat_drc/foo.nc"; # replaces fl_out in tests, typically 'foo.nc'
-# $fl_out_orig  = "$dat_drc/foo.nc";
-# $foo_fl        = "$dat_drc/foo";
-# $foo_avg_fl    = "$dat_drc/foo_avg.nc";
-# $foo_tst       = "$dat_drc/foo.tst";
-# $foo1_fl       = "$dat_drc/foo1.nc";
-# $foo2_fl       = "$dat_drc/foo2.nc";
-# $foo_x_fl      = "$dat_drc/foo_x.nc";
-# $foo_y_fl      = "$dat_drc/foo_y.nc";
-# $foo_xy_fl     = "$dat_drc/foo_xy.nc";
-# $foo_yx_fl     = "$dat_drc/foo_yx.nc";
-# $foo_xymyx_fl  = "$dat_drc/foo_xymyx.nc";
-# $foo_T42_fl    = "$dat_drc/foo_T42.nc";
+# $fl_out        = "$drc_dat/foo.nc"; # replaces fl_out in tests, typically 'foo.nc'
+# $fl_out_rgn    = "$drc_dat/foo.nc";
+# $foo_fl        = "$drc_dat/foo";
+# $foo_avg_fl    = "$drc_dat/foo_avg.nc";
+# $foo_tst       = "$drc_dat/foo.tst";
+# $foo1_fl       = "$drc_dat/foo1.nc";
+# $foo2_fl       = "$drc_dat/foo2.nc";
+# $foo_x_fl      = "$drc_dat/foo_x.nc";
+# $foo_y_fl      = "$drc_dat/foo_y.nc";
+# $foo_xy_fl     = "$drc_dat/foo_xy.nc";
+# $foo_yx_fl     = "$drc_dat/foo_yx.nc";
+# $foo_xymyx_fl  = "$drc_dat/foo_xymyx.nc";
+# $foo_T42_fl    = "$drc_dat/foo_T42.nc";
 
 # NCO_bm defined here to allow above variables to be defined for later use
 use NCO_bm; # Benchmarking functions
@@ -401,7 +401,7 @@ if ($thr_nbr > 0){$omp_flg="--thr_nbr=$thr_nbr";}else{$omp_flg=' ';}
 # If string is NOT NULL, use URL to grab files
 
 dbg_msg(4, "before dodap assignment, \$fl_pth = $fl_pth, \$dodap = $dodap");
-# $dodap asks for and if defined, carries, the URL that's inserted in the '-p' place in nco cmdlines
+# $dodap asks for and if defined, carries, the URL that's inserted in the '-p' place in nco command lines
 if ($dodap ne 'FALSE') {
     if ($dodap eq '') {
 	$fl_pth = "http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata";
@@ -455,9 +455,9 @@ if ($bm && $tst_fl_mk eq '0' && $dodap eq 'FALSE'){
     if ($dbg_lvl> 0){print "\nINFO: File creation tests:\n";}
     for (my $i = 0; $i < $NUM_FLS; $i++){
 	my $fl = $fl_mk_dat[$i][2].'.nc'; # file root name stored in $fl_mk_dat[$i][2]
-	print "testing for $dat_drc/$fl...\n";
-	if (-e "$dat_drc/$fl" && -r "$dat_drc/$fl") {
-	    if ($dbg_lvl> 0){printf ("%50s exists - can skip creation\n", $dat_drc . "/" . $fl);}
+	print "Testing for $drc_dat/$fl...\n";
+	if (-e "$drc_dat/$fl" && -r "$drc_dat/$fl") {
+	    if ($dbg_lvl> 0){printf ("%50s exists - can skip creation\n", $drc_dat . "/" . $fl);}
 	} else {
 	    my $e = $i+1;
 	    $tst_fl_mk .= "$e";

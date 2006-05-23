@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/mk_bm_plots.pl,v 1.10 2006-05-23 20:10:37 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/mk_bm_plots.pl,v 1.11 2006-05-23 22:24:07 zender Exp $
 # Script resides in nco/bm
 
 # Purpose: 
@@ -62,7 +62,7 @@ use strict; # Protect all namespaces
 use Getopt::Long; # GNU-style getopt #qw(:config no_ignore_case bundling);
 
 # Declare vars for strict
-use vars qw( @titles @cmdline @nco_tim_info $thr_num %nc %tim_dta $num_nco_stz @nco_stz @clin_bits
+use vars qw( @titles @cmd_ln @nco_tim_info $thr_num %nc %tim_dta $num_nco_stz @nco_stz @clin_bits
 $num_bits @nco_stz $num_nco_stz $nco_name @nco_tim_dta $gnuplot_data_file @nco_name_array
 $tim_dta_end $cmdfile $ps_file $uname $op_sys $nco_vrs_sng $nco_vrs_A $nco_vrs_B $datestamp $tmp_sng
 $date_sng $fle_root $filetimestamp $sngl_thr_avg %nco_avgs
@@ -96,13 +96,13 @@ while (<>) {
 #		print "skipping line $linect: $_\n";
 	} else { # split the line on the '|'s into
 #		print "\n\nworking on: $_\n";
-		($uname, $cmdline[$linect],$nco_tim_info[$linect], $nco_vrs_sng,) = split(/\|/,$_,5);
+		($uname, $cmd_ln[$linect],$nco_tim_info[$linect], $nco_vrs_sng,) = split(/\|/,$_,5);
 		#my $splitcnt = split(/]/,$_);
 		#print "splitcnt = $splitcnt\n";
 #debugging only!
 #  		print "uname: $uname\n";
 #  		print "version: $nco_vrs_sng\n";
-#  		print "cmd: $cmdline[$linect]\n";
+#  		print "cmd: $cmd_ln[$linect]\n";
 #  		print "timing data: $nco_tim_info[$linect]\n";
 	}
 	$linect++;
@@ -125,9 +125,9 @@ print "nco_vrs_sng = $nco_vrs_sng and nco_vrs_A = $nco_vrs_A and nco_vrs_B = $nc
 
 for (my $i=0; $i<$linect;$i++) {
 	# process the commandline to see how many threads were requested
-	if ($cmdline[$i] =~ "thr" || $cmdline[$i] =~ "mpi") {
-#		print "working on $cmdline[$i]\n";
-		$num_bits = @clin_bits = split /\s/,$cmdline[$i]; # split the cmdline into ws-delim bits
+	if ($cmd_ln[$i] =~ "thr" || $cmd_ln[$i] =~ "mpi") {
+#		print "working on $cmd_ln[$i]\n";
+		$num_bits = @clin_bits = split /\s/,$cmd_ln[$i]; # split the cmd_ln into ws-delim bits
 #		# then look for the thread number
 #		print "numbits = $num_bits\n";
 		my $notfound = 1;
@@ -142,7 +142,7 @@ for (my $i=0; $i<$linect;$i++) {
 			$bit_cnt++;
 		}
 	} else {
-#		print "line $i [$cmdline[$i]] has no thread spec - treat as special case of 0\n";
+#		print "line $i [$cmd_ln[$i]] has no thread spec - treat as special case of 0\n";
 		$thr_num = 0;
 		# yadda yada yadda
 	}

@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.45 2006-05-23 21:14:40 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.46 2006-05-23 22:24:07 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions in approximate order of their usage:
@@ -8,7 +8,7 @@ package NCO_bm;
 # bm_ntl().........initialization, set NCOs to be tested under different conditions
 # bm_usg().........dumps usage text
 # bm_vrb().........small fnc() to print to both screen and log
-# dat_drc_set()....figures out where to write output data
+# drc_dat_set()....figures out where to write output data
 # fl_mk()..........creates test files
 # fl_mk_dat_ntl()..initializes data used to create test files
 # rsl_chk_MD5_wc().checks output via md5/wc validation
@@ -39,8 +39,8 @@ require Exporter;
 our @ISA = qw(Exporter);
 #export functions (top) and variables (bottom)
 our @EXPORT = qw (
-		  tst_run dbg_msg dat_drc_set bm_ntl
-		  $pfx_cmd $dat_drc @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
+		  tst_run dbg_msg drc_dat_set bm_ntl
+		  $pfx_cmd $drc_dat @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
 		  $prsrv_fl  $srv_sde $hiresfound $dodap $bm $dbg_lvl $sock $udp_reprt
 		  $mpi_prc $pfx_mpi $mpi_fk
 		  );
@@ -51,10 +51,10 @@ use vars qw(
 	    $pfx_fk $hiresfound $md5 $mpi_prc $pfx_mpi $mpi_fk $MY_BIN_DIR %NCO_RC $nsr_xpc
 	    $opr_fmt $opr_lng_max @opr_lst @opr_lst_all @opr_lst_mpi
 	    $opr_nm $opr_rgr_mpi $opr_sng_mpi $os_nm  $pfx_cmd %real_tme
-	    $result $spc_fmt $spc_nbr $spc_nbr_min $spc_sng %subbenchmarks %success
+	    $cmd_rsl $spc_fmt $spc_nbr $spc_nbr_min $spc_sng %subbenchmarks %success
 	    @sys_tim_arr $sys_time %sys_tme $timed %totbenchmarks @tst_cmd $tst_fmt
 	    $tst_id_sng %tst_nbr %usr_tme $wnt_log $timestamp $bm_drc $caseid
-	    $cmd_ln $dat_drc @fl_mk_dat $fl_pth @fl_tmg $md5found %MD5_tbl
+	    $cmd_ln $drc_dat @fl_mk_dat $fl_pth @fl_tmg $md5found %MD5_tbl
 	    $nco_D_flg $NUM_FLS $pfxd $prsrv_fl $que $server_ip $sock $thr_nbr
 	    $dbg_sng $err_sng $tmr_app $udp_reprt %wc_tbl $pfxd $nvr_my_bin_dir
 	    $prg_nm $arg_nbr $tw_prt_bm $srv_sde @cmd_lst
@@ -219,14 +219,14 @@ sub bm_ntl($$){
     }
     
 # Go to data directory where tests are actually run
-    my $data_dir = "../data";
-    chdir $data_dir or die "$OS_ERROR\n stopped";
+    my $drc_in_nc = "../data";
+    chdir $drc_in_nc or die "$OS_ERROR\n stopped";
     
 # Make sure in.nc exists, make it if possible, or die
 # ncgen is not part of
     unless (-e "in.nc"){
 	system("ncgen -o in.nc in.cdl") if (`which ncgen` and -e "in.cdl");
-    } die "The netCDF file \"in.nc\" is necessary for testing NCO, however, it could not be found in \"$data_dir\".  Also, it could not be generated because \"ncgen\" could not be found in your path and/or the file \"$data_dir/in.cdl\" does not exist.\n stopped" unless (-e "in.nc");
+    } die "The netCDF file \"in.nc\" is necessary for testing NCO, however, it could not be found in \"$drc_in_nc\".  Also, it could not be generated because \"ncgen\" could not be found in your path and/or the file \"$drc_in_nc/in.cdl\" does not exist.\n stopped" unless (-e "in.nc");
     
 # Initialize hashes for each operator to test
     foreach(@opr_lst) {
@@ -302,7 +302,7 @@ sub fl_mk {
     my $t0;
     my $elapsed;
     
-    my $fl_in = my $fl_out = "$dat_drc/$fl_mk_dat[$idx][2].nc" ;
+    my $fl_in = my $fl_out = "$drc_dat/$fl_mk_dat[$idx][2].nc" ;
     $bm_drc = "../bm"; 
     print "==== Creating $fl_mk_dat[$idx][0] data file from template in [$bm_drc]\n";
     print "Executing: $tmr_app ncgen -b -o $fl_out $bm_drc/$fl_mk_dat[$idx][2].cdl\n";
@@ -367,13 +367,13 @@ sub rsl_smr_fl_mk {
     } # and send it back separately
 } # end of rsl_smr_fl_mk
 
-# dat_drc_set() tries to answer the question of where to write data
-sub dat_drc_set {
+# drc_dat_set() tries to answer the question of where to write data
+sub drc_dat_set {
     $caseid = shift;
     my $tmp;
     my $umask = umask;
-# Does user have $DATA dir defined in his environment?
-# Bail with nasty message if it's not readable and writable
+# Does user have $DATA defined in his environment?
+# Bail with nasty message if it is not readable and writable
 # 	if ($caseid ne "") {
 # 		$caseid =~ s/[^\w]/_/g;
 # 	}
@@ -382,55 +382,55 @@ sub dat_drc_set {
 	if (-w $ENV{'DATA'} && -r $ENV{'DATA'}) {
 	    if ($que == 0) {print "INFO: Using your environment variable DATA \n\t   [$ENV{'DATA'}]\n\t as the root DATA directory for this series of tests.\n\n";}
 	    if ($caseid ne "") {
-		$dat_drc = "$ENV{'DATA'}/nco_bm/$caseid";
-		my $err = `mkdir -p -m0777 $dat_drc`;
-		if ($err ne "") {die "mkdir err: $dat_drc\n";}
+		$drc_dat = "$ENV{'DATA'}/nco_bm/$caseid";
+		my $err = `mkdir -p -m0777 $drc_dat`;
+		if ($err ne "") {die "mkdir err: $drc_dat\n";}
 	    } else { # just dump it into nco_bm
-		$dat_drc = "$ENV{'DATA'}/nco_bm";
-		my $err = `mkdir -p -m0777 $dat_drc`;
-		if ($err ne "") {die "mkdir err: $dat_drc\n";}
+		$drc_dat = "$ENV{'DATA'}/nco_bm";
+		my $err = `mkdir -p -m0777 $drc_dat`;
+		if ($err ne "") {die "mkdir err: $drc_dat\n";}
 	    }
 	} else {
-	    die "You have defined a DATA dir ($ENV{'DATA'}) that cannot be written to or read\nfrom or both - please try again.\n stopped";
+	    die "You have defined a DATA directory ($ENV{'DATA'}) that cannot be written to or read\nfrom or both - please try again.\n stopped";
 	}
     } elsif ($que == 0) {
 	$tmp = 'notset';
-	print "You do not have a DATA dir defined and some of the test files can be several GB. \nWhere would you like to write the test data?  It will be placed in the indicated directory,\nunder nco_bm, using the '--caseid' option to set the name of the subdirectory. \n[$ENV{'HOME'}] or specify: ";
+	print "You do not have a \$DATA directory defined and the test files are several GB. \nWhere would you like to write the test data?  Data will be placed in the indicated directory,\nunder nco_bm, using the '--caseid' option to set the name of the subdirectory, if any. \n[$ENV{'HOME'}] or specify: ";
 	$tmp = <STDIN>;
 	chomp $tmp;
 	print "You entered [$tmp] \n";
 	if ($tmp eq '') {
-	    $dat_drc = "$ENV{'HOME'}/nco_bm/$caseid";  # if $caseid not set, then it decays to $ENV{'HOME'}/nco_bm/
-	    if (-e "$dat_drc") {
-		print "$dat_drc already exists - OK to re-use?\n[N/y] ";
+	    $drc_dat = "$ENV{'HOME'}/nco_bm/$caseid";  # if $caseid not set, then it decays to $ENV{'HOME'}/nco_bm/
+	    if (-e "$drc_dat") {
+		print "$drc_dat already exists - OK to re-use?\n[N/y] ";
 		$tmp = <STDIN>;
 		chomp $tmp;
 		if ($tmp =~ "[nN]" || $tmp eq '') {
 		    die "\nFine - decide what to use and start over again - bye! stopped";
 		} else { print "\n";	}
 	    } else { # have to make it
-		print "Making $dat_drc & continuing\n";
-		my $err = `mkdir -p -m0777 $dat_drc`;
-		if ($err ne "") {die "mkdir err: $dat_drc\n";}
+		print "Making $drc_dat & continuing\n";
+		my $err = `mkdir -p -m0777 $drc_dat`;
+		if ($err ne "") {die "mkdir err: $drc_dat\n";}
 	    }
 	} else {
-	    $dat_drc = "$tmp/nco_bm/$caseid";
+	    $drc_dat = "$tmp/nco_bm/$caseid";
 	    # and now test it
-	    if (-w $dat_drc && -r $dat_drc) {
-		print "OK - we will use [$dat_drc] to write to.\n\n";
-	    } else { # we'll have to make it
-		print "[$dat_drc] doesn't exist - will try to make it.\n";
-		my $err = `mkdir -p -m0777 $dat_drc`;
-		if ($err ne "") {die "mkdir err: $dat_drc\n";}
-		if (-w $dat_drc && -r $dat_drc) {
-		    print "OK - [$dat_drc] is available to write to\n";
-		} else {	die "ERROR - [$dat_drc] could not be made - check this and try again.\n stopped";}
+	    if (-w $drc_dat && -r $drc_dat) {
+		print "OK - we will use [$drc_dat] to write to.\n\n";
+	    } else { # must make it
+		print "[$drc_dat] doesn't exist - will try to make it.\n";
+		my $err = `mkdir -p -m0777 $drc_dat`;
+		if ($err ne "") {die "mkdir err: $drc_dat\n";}
+		if (-w $drc_dat && -r $drc_dat) {
+		    print "OK - [$drc_dat] is available to write to\n";
+		} else {	die "ERROR - [$drc_dat] could not be made - check this and try again.\n stopped";}
 	    }
 	}
     } else { # que != 0
 	die "You MUST define a DATA environment variable to run this in a queue\n stopped";
     } # !defined $ENV{'DATA'})
-} # end dat_drc_set()
+} # end drc_dat_set()
 
 #########################  subroutine tst_run ()  ##############################
 # tst_run() consumes @tst_cmd array and executes them in order
@@ -439,23 +439,23 @@ sub tst_run {
     
     my %fl_nm_lcl = ( # fl_nm_lcl = local_file_name
 		'%stdouterr%'   => "", # stdouterr has to be left to generate stderr
-		'%tempf_00%'    => "$dat_drc/tempf_00.nc", # Default replacement for $fl_out
-		'%tempf_01%'    => "$dat_drc/tempf_01.nc",
-		'%tempf_02%'    => "$dat_drc/tempf_02.nc",
-		'%tempf_03%'    => "$dat_drc/tempf_03.nc",
-		'%tempf_04%'    => "$dat_drc/tempf_04.nc",
-		'%tempf_05%'    => "$dat_drc/tempf_05.nc",
+		'%tempf_00%'    => "$drc_dat/tempf_00.nc", # Default replacement for $fl_out
+		'%tempf_01%'    => "$drc_dat/tempf_01.nc",
+		'%tempf_02%'    => "$drc_dat/tempf_02.nc",
+		'%tempf_03%'    => "$drc_dat/tempf_03.nc",
+		'%tempf_04%'    => "$drc_dat/tempf_04.nc",
+		'%tempf_05%'    => "$drc_dat/tempf_05.nc",
 # Currently no use for more than 05
-		'%tempf_06%'    => "$dat_drc/tempf_06.nc",
-		'%tempf_07%'    => "$dat_drc/tempf_07.nc",
-		'%tempf_08%'    => "$dat_drc/tempf_08.nc",
-		'%tempf_09%'    => "$dat_drc/tempf_09.nc",
-		'%tempf_10%'    => "$dat_drc/tempf_10.nc",
-		'%tempf_11%'    => "$dat_drc/tempf_11.nc",
-		'%tempf_12%'    => "$dat_drc/tempf_12.nc",
+		'%tempf_06%'    => "$drc_dat/tempf_06.nc",
+		'%tempf_07%'    => "$drc_dat/tempf_07.nc",
+		'%tempf_08%'    => "$drc_dat/tempf_08.nc",
+		'%tempf_09%'    => "$drc_dat/tempf_09.nc",
+		'%tempf_10%'    => "$drc_dat/tempf_10.nc",
+		'%tempf_11%'    => "$drc_dat/tempf_11.nc",
+		'%tempf_12%'    => "$drc_dat/tempf_12.nc",
 		);
     
-# If executign on client side, replace all the special purpose
+# If executign on client side, replace special purpose
 # filenames with names like $fl_nm_lcl{'%tempf_00%'}
     
     # fxm: WTF do these vars require this treatment?!??
@@ -477,15 +477,14 @@ sub tst_run {
     my @cmd_lst= @$arr_ref; # Dereference to new array name
     # Clear variables
     my $ssdwrap_cmd = $dbg_sng = $err_sng = $pfx_mpi = $pfx_fk = "";
-    my $result_is_num = 1; my $expect_is_num = 1; # for extra return value checks
-    
+    my $cmd_rsl_is_num = 1; my $xpc_is_num = 1; # for extra return value checks
     
     # Twiddle $pfx_cmd to allow running mpnc* as non-MPI'd  executable
     if ($mpi_fk) {$pfx_fk = "$MY_BIN_DIR/mp"; }
     $pfx_cmd = "$MY_BIN_DIR/";
     # $pfx_mpi always has mpirun directive
     
-    # Can run it in AIX with naked command as long as env has been set up
+    # AIX can run naked command as long as environment has been set up
     # NB: This is for regression testing on interactive node, 
     # not for benchmarking under POE - intercepted and handled at startup
     # on AIX, non-MPI ops compiled with MPI will atttempt to run MP_PROCS.  
@@ -495,23 +494,24 @@ sub tst_run {
     else    {$pfx_mpi = " mpirun -np $mpi_prc $MY_BIN_DIR/mp";} # Assume Linux-like MPI
     $pfxd = 1; $timed = 1;
     
-    dbg_msg(1,"\$pfx_cmd=$pfx_cmd | \$pfx_mpi=$pfx_mpi | \$pfx_fk=$pfx_fk");
+    my $pwd=`pwd`; chomp $pwd;
+    dbg_msg(1,"\$pwd=$pwd | \$pfx_cmd=$pfx_cmd | \$pfx_mpi=$pfx_mpi | \$pfx_fk=$pfx_fk");
     
     # Delete everything in DAP subdir to force DAP retrieval
-    # $dat_drc has by now been directed to $dat_drc/DAP_DIR
+    # $drc_dat has by now been directed to $drc_dat/DAP_DIR
     
 #	print "DEBUG[tst_run]:\$dodap = [$dodap], \$prsrv_fl = [$prsrv_fl]\n";
     if ($dodap ne "FALSE" && !$prsrv_fl) {
-	print "\nWARN: about to unlink everything in $dat_drc ! Continue? [Ny]\n";
+	print "\nWARN: about to unlink everything in $drc_dat ! Continue? [Ny]\n";
 	my $wait = <STDIN>; if ($wait !~ /[Yy]/) { die "Make sure of the commandline options!\n";}
-	my $unlink_cnt = unlink <$dat_drc/*>;
+	my $unlink_cnt = unlink <$drc_dat/*>;
 	print "\nINFO: OK - unlinked $unlink_cnt files\n";
     }
 #	print "just past unlinking stage \n";  my $wait = <STDIN>;
     
     if ($dbg_lvl > 0) {
-	for (my $ccmd=0; $ccmd <= $#cmd_lst; $ccmd++){
-	    print "### cmd_lst[$ccmd] = $cmd_lst[$ccmd] ###\n";
+	for (my $cmd_idx=0; $cmd_idx <= $#cmd_lst; $cmd_idx++){
+	    print "### cmd_lst[$cmd_idx] = $cmd_lst[$cmd_idx] ###\n";
 	    }
     }
     
@@ -571,11 +571,11 @@ sub tst_run {
 	# Send for processing and get back string or single value to check
 	$SS_nsr_xpc=SS_gnarly_pything(\@cmd_lst);
 	
-	$result=$SS_nsr_xpc; # do this in one step later
+	$cmd_rsl=$SS_nsr_xpc; # do this in one step later
 	# and undef the last one to leave the expected value as last value
 	delete $cmd_lst[$#cmd_lst];
 	$nsr_xpc=$cmd_lst[$#cmd_lst]; # pop last value to provide exepected answer
-#		print "\n##DEBUG:\t$nsr_xpc (expt)\n\t\t$result (SS)\n";
+#		print "\n##DEBUG:\t$nsr_xpc (expt)\n\t\t$cmd_rsl (SS)\n";
     } else {
 	# delete the SS value to leave "expected value" as last
 	delete $cmd_lst[$#cmd_lst];
@@ -610,7 +610,7 @@ sub tst_run {
 		    # Non-MPI applications compiled w/MPI need special prefix to hold them to single process
 		    elsif ($aix) {$_ = $tmr_app . $aix_mpi_sgl_nvr_pfx . $pfx_cmd . $_;}
 		    else         {$_ = $tmr_app . $pfx_cmd . $_; } # Standard prefix
-		    dbg_msg(1, "URGENT:before execution, cmdline= $_ \n");
+		    dbg_msg(1, "URGENT:before execution, cmd_ln= $_ \n");
 		    last;
 		}
 	    } # end of foreach my $op (@opr_lst_all)
@@ -622,35 +622,34 @@ sub tst_run {
 	    if ($hiresfound) {$t0 = [gettimeofday];}
 	    else {$t0 = time;}
 	    
-	    #########################################################################
-	    # and execute the command, splitting off stderr to file 'nco-stderror'
-	    $result = `($_) 2> nco-stderror`; # stderr should contain timing info if it exists.
-	    #########################################################################
-#			print "\nDEBUG: cmd = $_ \n and \$result = $result\n ";
-	    if ($dbg_lvl >= 1) {print "\nDEBUG: result of [$_]\n = [$result]\n";}
-	    chomp $result;
+	    # Execute command, split off stderr to file 'nco_bm.stderr'
+	    $cmd_rsl = `($_) 2> nco_bm.stderr`; # stderr contains timing info, if any
+
+#  	print "\nDEBUG: cmd = $_ \n and \$cmd_rsl = $cmd_rsl\n ";
+	    if ($dbg_lvl >= 1) {print "\nDEBUG: result of [$_]\n = [$cmd_rsl]\n";}
+	    chomp $cmd_rsl;
 	    
-# 			# still newlines in $result? -> a multiline result & only want the last one.
-# 			if ($result =~/\n/) {
-# 				my @rsl_arr = split(/\n/, $result);
-# 				$result = $rsl_arr[$#rsl_arr]; # take the last line
-# 				if ($dbg_lvl >= 1) {print "\nprocessed multiline \$result = [$result]\n";}
+# 			# still newlines in $cmd_rsl? -> a multiline result & only want the last one.
+# 			if ($cmd_rsl =~/\n/) {
+# 				my @rsl_arr = split(/\n/, $cmd_rsl);
+# 				$cmd_rsl = $rsl_arr[$#rsl_arr]; # take the last line
+# 				if ($dbg_lvl >= 1) {print "\nprocessed multiline \$cmd_rsl = [$cmd_rsl]\n";}
 # 			}
-# 			# figure out if $result is numeric or alpha
-# 			if ($result =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
-# 				$result !~ /[a-df-zA-DF-Z ,]/) { $result_is_num = 1;}
-# 			else { #print "DEBUG: \$result is not numeric: $result \n";
-# 				$result_is_num = 0;
+# 			# figure out if $cmd_rsl is numeric or alpha
+# 			if ($cmd_rsl =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
+# 				$cmd_rsl !~ /[a-df-zA-DF-Z ,]/) { $cmd_rsl_is_num = 1;}
+# 			else { #print "DEBUG: \$cmd_rsl is not numeric: $cmd_rsl \n";
+# 				$cmd_rsl_is_num = 0;
 # 			}
 # 			# figure out if $nsr_xpc is numeric or alpha
 # 			if ($nsr_xpc =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
-# 				$nsr_xpc !~ /[a-df-zA-DF-Z ,]/) { $expect_is_num = 1;}
+# 				$nsr_xpc !~ /[a-df-zA-DF-Z ,]/) { $xpc_is_num = 1;}
 # 			else { #print "DEBUG: \$nsr_xpc is not numeric: $nsr_xpc \n";
-# 				$expect_is_num = 0;
+# 				$xpc_is_num = 0;
 # 			}
 	    
 	    if ($timed) {
-		$sys_time = `cat nco-stderror`;
+		$sys_time = `cat nco_bm.stderr`;
 		if ($sys_time ne "") {
 		    if ($sys_time =~ /ERR/ ) {last;}
 		    $sys_time =~ s/\n/ /g;
@@ -671,7 +670,7 @@ sub tst_run {
 	    $subbenchmarks{$opr_nm} += $elapsed;
 	    #		$tst_idx = $tst_nbr{$opr_nm}-1;
 	    if($dbg_lvl > 3){print "\t$opr_nm subtest [$t] took $elapsed seconds\n";}
-	    $dbg_sng .= "DEBUG: Result = [$result]\n";
+	    $dbg_sng .= "DEBUG: Result = [$cmd_rsl]\n";
 	    
 	    #and here, check results by md5 checksum for each step - insert guts of rsl_chk_MD5_wc()
 	    # have to mod the input string -  suffix with the cycle#
@@ -684,7 +683,7 @@ sub tst_run {
 # 			}
 # 			if ($md5_chk == 0 && $dbg_lvl > 0) { $dbg_sng .= "WARN: No MD5/wc check on intermediate file.\n";}
 	    
-	    # else the oldstyle check has already been done and the results are in $result, so process normally
+	    # else old-style check has already been done and results are in $cmd_rsl, so process normally
 	    $cmd_lst_cnt++;
 	    if ($dbg_lvl > 2) {
 		print "\ntst_run: test cycle held - hit <Enter> to continue\n";
@@ -696,66 +695,66 @@ sub tst_run {
     $dbg_sng .= "DEBUG: Total time for $opr_nm [$tst_nbr{$opr_nm}] = $subbenchmarks{$opr_nm} s\n";
     $totbenchmarks{$opr_nm}+=$subbenchmarks{$opr_nm};
     
-    # this comparing of the results shouldn't even be necessary as we're validating the whole file,
+    # Results comparison should not be necessary to validate whole file,
     # not just a single value.
-#	chomp $result;  # Remove trailing newline for easier regex comparison
+#	chomp $cmd_rsl;  # Remove trailing newline for easier regex comparison
     
-    
-    # still newlines in $result? -> a multiline result & only want the last one.
-    if ($result =~/\n/) {
-	my @rsl_arr = split(/\n/, $result);
-	$result = $rsl_arr[$#rsl_arr]; # take the last line
-	if ($dbg_lvl >= 1) {print "\nprocessed multiline \$result = [$result]\n";}
+    # Still newlines in $cmd_rsl? -> a multiline result & only want the last one.
+    if ($cmd_rsl =~/\n/) {
+	my @rsl_arr = split(/\n/, $cmd_rsl);
+	$cmd_rsl = $rsl_arr[$#rsl_arr]; # take the last line
+	if ($dbg_lvl >= 1) {print "\nprocessed multiline \$cmd_rsl = [$cmd_rsl]\n";}
     }
-    # figure out if $result is numeric or alpha
-    if ($result =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
-	$result !~ /[a-df-zA-DF-Z ,]/) { $result_is_num = 1;}
-    else { #print "DEBUG: \$result is not numeric: $result \n";
-	$result_is_num = 0;
+    # Is $cmd_rsl numeric or alpha?
+    if ($cmd_rsl =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
+	$cmd_rsl !~ /[a-df-zA-DF-Z ,]/) { $cmd_rsl_is_num = 1;}
+    else { #print "DEBUG: \$cmd_rsl is not numeric: $cmd_rsl \n";
+	$cmd_rsl_is_num = 0;
     }
-    # figure out if $nsr_xpc is numeric or alpha
+    # Is $nsr_xpc numeric or alpha?
     if ($nsr_xpc =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
-	$nsr_xpc !~ /[a-df-zA-DF-Z ,]/) { $expect_is_num = 1;}
+	$nsr_xpc !~ /[a-df-zA-DF-Z ,]/) { $xpc_is_num = 1;}
     else { #print "DEBUG: \$nsr_xpc is not numeric: $nsr_xpc \n";
-	$expect_is_num = 0;
+	$xpc_is_num = 0;
     }
     
     # Compare numeric results
-    if ($result_is_num && $expect_is_num) { # && it equals the expected value
+    if ($cmd_rsl_is_num && $xpc_is_num) { # && it equals the expected value
 #print "\n \$nsr_xpc [$nsr_xpc] considered a number\n";
-	$dbg_sng .= "DEBUG: \$nsr_xpc assumed to be numeric: $nsr_xpc & actual  \$result = [$result]\n";
-	if ($nsr_xpc == $result) {
+	$dbg_sng .= "DEBUG: \$nsr_xpc assumed to be numeric: $nsr_xpc & actual  \$cmd_rsl = [$cmd_rsl]\n";
+	if ($nsr_xpc == $cmd_rsl) {
 	    $success{$opr_nm}++;
 	    printf STDERR (" SVn ok\n");
 	    $dbg_sng .= "DEBUG: PASSED (Numeric output)\n";
-	} elsif (abs($result - $nsr_xpc) < 0.02) {
+	} elsif (abs($cmd_rsl - $nsr_xpc) < 0.02) {
 	    $success{$opr_nm}++;
 	    printf STDERR (" SVn prov. ok\n");
-	    $dbg_sng .= "DEBUG: PASSED PROVISIONALLY (Numeric output):[$nsr_xpc vs $result]\n";
+	    $dbg_sng .= "DEBUG: PASSED PROVISIONALLY (Numeric output):[$nsr_xpc vs $cmd_rsl]\n";
 	} else {
 	    printf STDERR (" FAILED!\n");
 	    &failed($nsr_xpc);
-	    my $diff = abs($nsr_xpc - $result);
-	    $dbg_sng .= "DEBUG: !!FAILED (Numeric output) [expected: $nsr_xpc vs result: $result].  Difference = $diff.\n";
+	    my $diff = abs($nsr_xpc - $cmd_rsl);
+	    $dbg_sng .= "DEBUG: !!FAILED (Numeric output) [expected: $nsr_xpc vs result: $cmd_rsl].  Difference = $diff.\n";
 	}
-    } elsif (!$result_is_num && !$expect_is_num)  {# Compare non-numeric tests
-						       dbg_msg(2,"DEBUG: expected value assumed to be alphabetic: $nsr_xpc\n\$result = $result\n");
+    }elsif(!$cmd_rsl_is_num && !$xpc_is_num)
+    {# Compare non-numeric tests
+	 dbg_msg(2,"DEBUG: expected value assumed to be alphabetic: $nsr_xpc\n\$cmd_rsl = $cmd_rsl\n");
 #print "\n \$nsr_xpc [$nsr_xpc] considered a string\n";
-						       
-						       # Compare $result with $nsr_xpc
-#		if ($result =~ $nsr_xpc) {
-						       if (substr($result,0,length($nsr_xpc)) eq $nsr_xpc) {
-							   $success{$opr_nm}++;
-							   printf STDERR (" SVa ok\n");
-							   $dbg_sng .= "DEBUG: PASSED Alphabetic output";
-						       } else {
-							   &failed($nsr_xpc);
-							   $dbg_sng .= "DEBUG: !!FAILED Alphabetic output (expected: $nsr_xpc vs result: $result) ";
-						       }
-						   }  else {  # No result at all?
-						       print STDERR " !!FAILED\n  \$result_is_num = $result_is_num and \$expect_is_num = $expect_is_num\n";
-						       &failed();
-						       $dbg_sng .= "DEBUG: !!FAILED - No result from [$opr_nm]\n";
+	 
+	 # Compare $cmd_rsl with $nsr_xpc
+#		if ($cmd_rsl =~ $nsr_xpc) {
+	 if (substr($cmd_rsl,0,length($nsr_xpc)) eq $nsr_xpc) {
+	     $success{$opr_nm}++;
+	     printf STDERR (" SVa ok\n");
+	     $dbg_sng .= "DEBUG: PASSED Alphabetic output";
+	 } else {
+	     &failed($nsr_xpc);
+	     $dbg_sng .= "DEBUG: !!FAILED Alphabetic output (expected: $nsr_xpc vs result: $cmd_rsl) ";
+	 }
+     }  else {  # No result at all?
+	 print STDERR " !!FAILED\n  \$cmd_rsl_is_num = $cmd_rsl_is_num and \$xpc_is_num = $xpc_is_num\n";
+	 &failed();
+	 $dbg_sng .= "DEBUG: !!FAILED - No result from [$opr_nm]\n";
 						   }
     print $err_sng;
     if ($dbg_lvl > 0) {print $dbg_sng;}
@@ -793,12 +792,12 @@ sub SS_gnarly_pything {
     # NB: Chew off extra bits before processing actual scripts
     # i.e., as above, ignore last two entries (return value and SS_OK status)
 #	print "MY_BIN_DIR = $MY_BIN_DIR\n";
-#	print "DATA_DIR = $dat_drc\n";
+#	print "DATA_DIR = $drc_dat\n";
     my $lst_scrt_idx = $#sscmd_lst - 2; # last script index that has content to be sent to the server.
     my $tfname = "/tmp/nco_rgr_tmp_4scriptwrap";
     open(TF, "> $tfname") or die "\nUnable to open temp file 'nco_rgr_tmp_4scriptwrap' in current dir.\n";
     my $r = 0;
-    my $sscl = ""; # 'server side cmd line' holds the SS version of the individual cmdlines
+    my $sscl = ""; # 'server side cmd line' holds the SS version of the individual command lines
     while ($r <= $lst_scrt_idx) {
 	#print "before chang'g line [$r]:\n$sscmd_lst[$r] \n";
 	my $e = my @L = split(/\s+/,$sscmd_lst[$r]);
@@ -812,7 +811,7 @@ sub SS_gnarly_pything {
 	if ($r == $lst_scrt_idx && $sscmd_lst[$r] =~ /ncks/) {
 	    $sscl .= " %stdouterr% "; # SS needs this as the final term to return a value.
 	}
-	#print " cmdline [$r] munged for SS:\n$sscl \n"; #my $wait = <STDIN>;
+	#print " cmd_ln [$r] munged for SS:\n$sscl \n"; #my $wait = <STDIN>;
 	# and write it to the temp files
 	print TF "$sscl\n";
 	$r++;
@@ -839,7 +838,7 @@ sub failed {
     $failure{$opr_nm}++;
     $err_sng .= "   ERR: FAILURE in $opr_nm failure: $dsc_sng\n";
     foreach(@cmd_lst) { $err_sng .= "   $_\n";}
-    $err_sng .= "   ERR::EXPLAIN: Result: [$result] != Expected: [$nsr_xpc]\n\n" ;
+    $err_sng .= "   ERR::EXPLAIN: Result: [$cmd_rsl] != Expected: [$nsr_xpc]\n\n" ;
     return;
 }
 
@@ -934,13 +933,13 @@ sub rsl_chk_MD5_wc {
     my $testtype = shift; # 2nd arg
 # 	my $md5found = shift; # 3rd arg
     my $pfx_cmd = "$MY_BIN_DIR/"; $pfxd = 1; # embed timer command and local bin directory
-    my $cmdline = $_;
-    my $return_value = $result; # return value of executing non-terminal commands
+    my $cmd_ln = $_;
+    my $return_value = $cmd_rsl; # return value of executing non-terminal commands
     my $hash = "";
     my @wc_lst;
     my $wc = "";
     if ($return_value != 0) { # nco.h:131:#define EXIT_SUCCESS 0
-	print LOG "NonZero return value = $cmdline\n";
+	print LOG "NonZero return value = $cmd_ln\n";
     } else {
 # 1st do an ncks dump on the 1st 111111 lines (will cause a sig13 due to the head cmd)
 	system("$pfx_cmd/ncks -P $file |head -111111 > $fl_pth/wc_out");
@@ -953,7 +952,7 @@ sub rsl_chk_MD5_wc {
 	    binmode(FILE);
 	    $hash = Digest::MD5->new->addfile(*FILE)->hexdigest ;
 	} else { $hash = "UNDEFINED"; }
-	print LOG "\n\"$testtype\" => ", "\"$hash\", #MD5\n\"$testtype\" => ", "\"$wc\", #wc\n$cmdline\n\n";
+	print LOG "\n\"$testtype\" => ", "\"$hash\", #MD5\n\"$testtype\" => ", "\"$wc\", #wc\n$cmd_ln\n\n";
     }
     if ($md5found == 1) {
 	if ( $MD5_tbl{$testtype} eq $hash ) { print " MD5"; bm_vrb " MD5"; }

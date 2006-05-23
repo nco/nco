@@ -1,6 +1,6 @@
 package NCO_benchmarks;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.9 2006-05-23 21:14:40 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.10 2006-05-23 22:24:07 zender Exp $
 
 # Purpose: library module supporting nco_bm.pl benchmark and regression tests
 # File contains BENCHMARK code (as opposed to the REGRESSION tests in "NCO_rgr.pm")
@@ -19,7 +19,7 @@ use strict;
 #use NCO_rgr qw( tst_rgr ); # module that contains tst_rgr()
 
 use NCO_bm qw(dbg_msg tst_run
-	$dat_drc @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl  $srv_sde $dodap
+	$drc_dat @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl  $srv_sde $dodap
 );
 
 require Exporter;
@@ -32,7 +32,7 @@ our @EXPORT = qw(
 );
 
 use vars qw(
-$dat_drc  $f  @fl_mk_dat  $in_pth  $in_pth_arg  $ipcc_dm_sz  $ldz  $lnk_fl_nme
+$drc_dat  $f  @fl_mk_dat  $in_pth  $in_pth_arg  $ipcc_dm_sz  $ldz  $lnk_fl_nme
 $MY_BIN_DIR $n  $nd  $NUM_FLS  $r  $rel_fle  $ssdwrap  $var_pfx  $var_sfx
 $var_sng @var_sz   $wait  $tw_prt_bm $srv_sde $opr_nm $dsc_sng $mpi_prc $fl_out
 $bm $dbg_lvl $dodap $fl_cnt @fl_mk_dat $fl_fmt $fl_pth %NCO_RC $nco_D_flg
@@ -42,12 +42,12 @@ $ncwa_scl_tst $notbodi $nsr_xpc $omp_flg $opr_sng_mpi  @tst_cmd
 sub benchmarks{
 
 	print "\nINFO: Starting Benchmarks now:\n";
-#	"\t+serverside status = $srv_sde\n\t+dodap = $dodap\n\t+$dat_drc = $dat_drc";
+#	"\t+serverside status = $srv_sde\n\t+dodap = $dodap\n\t+$drc_dat = $drc_dat";
 
 	# set up the input path and argument string
 	$in_pth = "";
 	$in_pth_arg = "";
-	if ($dodap eq "FALSE") { $in_pth_arg = "-p $dat_drc"; }
+	if ($dodap eq "FALSE") { $in_pth_arg = "-p $drc_dat"; }
 	elsif ($dodap ne "" && $fl_pth =~ /http/ ) { $in_pth_arg = " -p $fl_pth "; }
 	elsif ($dodap eq "") { $in_pth_arg = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata "; }
 	# hardcode for now until we come up with a robut method for doing this
@@ -59,13 +59,13 @@ sub benchmarks{
 	if ($bm && $dodap eq "FALSE" && $srv_sde eq "SSNOTSET") {
 		if ($dbg_lvl > 0) {print "\nINFO: Setting up symlinks for test nc files\n";}
 		for (my $f=0; $f<$NUM_FLS; $f++) {
-			my $rel_fle = "$dat_drc/$fl_mk_dat[$f][2]" . ".nc" ;
+			my $rel_fle = "$drc_dat/$fl_mk_dat[$f][2]" . ".nc" ;
 			my $ldz = "0"; # leading zero for #s < 10
 			if ($dbg_lvl > 0) {print "\tsymlinking $rel_fle\n";}
 			for (my $n=0; $n<32; $n ++) {
 				if ($n>9) {$ldz ="";}
-				my $lnk_fl_nme = "$dat_drc/$fl_mk_dat[$f][2]" . "_" . "$ldz" . "$n" . ".nc";
-				if (-r $rel_fle && -d $dat_drc && -w $dat_drc){
+				my $lnk_fl_nme = "$drc_dat/$fl_mk_dat[$f][2]" . "_" . "$ldz" . "$n" . ".nc";
+				if (-r $rel_fle && -d $drc_dat && -w $drc_dat){
 					symlink $rel_fle, $lnk_fl_nme;
 				}
 			}
