@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.129 2006-05-23 19:49:10 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.130 2006-05-23 21:14:40 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -30,17 +30,17 @@ use strict; # Protect all namespaces
 
 # Declare vars for strict
 use vars qw(
-	    $aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $arg_nbr $bch_flg $bm
+	    $aix_mpi_nvr_pfx $aix_mpi_sgl_nvr_pfx $arg_nbr $bch_flg $bm
 	    @bm_cmd_ary $bm_drc $caseid $cmd_ln $dbg_lvl $dodap $dot_fmt $dot_nbr
 	    $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng $dat_drc
 	    $dust_usr %failure $fl_cnt @fl_mk_dat $fl_fmt $fl_pth @fl_tmg
 	    $foo1_fl $foo2_fl $foo_avg_fl $foo_fl $foo_T42_fl $foo_tst $foo_x_fl
 	    $foo_xy_fl $foo_xymyx_fl $foo_y_fl $foo_yx_fl $gnu_cut $hiresfound
-	    @ifls $itmp $localhostname $md5 $md5found %MD5_tbl $mpi_fke $mpi_prc
-	    $mpi_prfx $MY_BIN_DIR $nco_D_flg %NCO_RC $nco_vrs_sng $ncwa_scl_tst $notbodi
+	    @ifls $itmp $localhostname $md5 $md5found %MD5_tbl $mpi_fk $mpi_prc
+	    $pfx_mpi $MY_BIN_DIR $nco_D_flg %NCO_RC $nco_vrs_sng $ncwa_scl_tst $notbodi
 	    $nsr_xpc $NUM_FLS $nvr_my_bin_dir $omp_flg $opr_fmt $opr_lng_max
 	    @opr_lst @opr_lst_all @opr_lst_mpi $opr_nm $opr_rgr_mpi $opr_sng_mpi
-	    $orig_outfile $os_sng $outfile $prfxd $prg_nm $prsrv_fl
+	    $fl_out_orig $os_sng $fl_out $pfxd $prg_nm $prsrv_fl
 	    $pth_rmt_scp_tst $pwd $que $rcd %real_tme $result $rgr $server_ip
 	    $server_name $server_port $sock $spc_fmt $spc_nbr $spc_nbr_min
 	    $spc_sng $srv_sd %subbenchmarks %success %sym_link @sys_tim_arr
@@ -48,7 +48,7 @@ use vars qw(
 	    %totbenchmarks @tst_cmd $tst_fl_mk $tst_fmt $tst_id_sng $tst_idx
 	    %tst_nbr $tw_prt_bm  $udp_reprt $USER $usg %usr_tme %wc_tbl
 	    $wnt_log $xdat_pth $xpt_dsc
-	    $prefix
+	    $pfx_cmd
 	    );
 #$udp_reprt
 # Initializations
@@ -62,8 +62,8 @@ my $nvr_data=$ENV{'DATA'} ? $ENV{'DATA'} : '';
 my $nvr_home=$ENV{'HOME'} ? $ENV{'HOME'} : '';
 my $nvr_host=$ENV{'HOST'} ? $ENV{'HOST'} : '';
 $USER = $ENV{'USER'};
-$aix_mpi_nvr_prfx = '';
-$aix_mpi_sgl_nvr_prfx = '';
+$aix_mpi_nvr_pfx = '';
+$aix_mpi_sgl_nvr_pfx = '';
 $bch_flg=0; # [flg] Batch behavior
 $caseid = '';
 $dbg_lvl = 0; # [enm] Print tests during execution for debugging
@@ -74,13 +74,13 @@ $fl_fmt = 'classic'; # file format for wirting
 $fl_pth = '';
 $gnu_cut = 1;
 $md5 = 0;
-$mpi_fke = 0;
+$mpi_fk = 0;
 $mpi_prc = 0; # by default, don't want no steekin MPI
-$mpi_prfx = '';
+$pfx_mpi = '';
 $nco_D_flg = '';
 $nco_vrs_sng = '';
 $os_sng = '';
-$prefix = '';
+$pfx_cmd = '';
 $prsrv_fl = 1;
 $pth_rmt_scp_tst='dust.ess.uci.edu:/var/www/html/dodsdata';
 $pwd = `pwd`; chomp $pwd;
@@ -97,7 +97,7 @@ $xdat_pth = ''; # explicit data path; more powerful than $dat_drc
 # other inits
 $localhostname = `hostname`; chomp $localhostname;
 $notbodi = 0; # specific for hjm's puny laptop
-my $prfxd = 0;
+my $pfxd = 0;
 if ($localhostname !~ "bodi") {$notbodi = 1} # spare the poor laptop
 $ARGV = @ARGV;
 
@@ -132,8 +132,8 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	    'help'         => \$usg,        # Explain how to use this thang
 	    'log'          => \$wnt_log,    # Log output
 	    'mpi_prc=i'    => \$mpi_prc,    # Number MPI processes to use
-	    'mpi_fake'	   => \$mpi_fke,    # Run SMP version of MPI code
-	    'fake_mpi'	   => \$mpi_fke,    # Run SMP version of MPI code
+	    'mpi_fake'	   => \$mpi_fk,    # Run SMP version of MPI code
+	    'fake_mpi'	   => \$mpi_fk,    # Run SMP version of MPI code
 	    'queue'        => \$que,        # Bypass all interactive stuff
 	    'pth_rmt_scp_tst' => \$pth_rmt_scp_tst, # [drc] Path to scp regression test file
 	    'regress'      => \$rgr,        # Perform regression tests
@@ -241,8 +241,8 @@ if ($nvr_host =~ /esmf04m/ && $bm) {
 }
 if ($os_sng =~ /AIX/ && $rgr && $mpi_prc > 0) {
     # set env vars for MPI to run on AIX (not just esmf)
-    $aix_mpi_nvr_prfx = "MP_PROCS=$mpi_prc MP_EUILIB='us' MP_NODES='1'  MP_TASKS_PER_NODE=$mpi_prc MP_RMPOOL='1' ";
-    $aix_mpi_sgl_nvr_prfx = " MP_PROCS=1  MP_RMPOOL=1 ";
+    $aix_mpi_nvr_pfx = "MP_PROCS=$mpi_prc MP_EUILIB='us' MP_NODES='1'  MP_TASKS_PER_NODE=$mpi_prc MP_RMPOOL='1' ";
+    $aix_mpi_sgl_nvr_pfx = " MP_PROCS=1  MP_RMPOOL=1 ";
 }
 
 # Check for bad cut on MacOSX
@@ -265,8 +265,8 @@ BADCUT
     }
 }
 
-# do $mpi_prc and $mpi_fke conflict?
-if ($mpi_prc > 0 && $mpi_fke) {
+# do $mpi_prc and $mpi_fk conflict?
+if ($mpi_prc > 0 && $mpi_fk) {
     die "\nERR: You requested both an MPI run (--mpi_prc) as well as a FAKE MPI run (--mpi_fake)\n\tMake up your mind!\n\n";
 }
 
@@ -352,8 +352,8 @@ bm_ntl($bch_flg,$dbg_lvl);
 
 # Use variables for file names in regressions; some of these could be collapsed into
 # fewer ones, no doubt, but keep them separate until whole shebang starts working correctly
-# $outfile       = "$dat_drc/foo.nc"; # replaces outfile in tests, typically 'foo.nc'
-# $orig_outfile  = "$dat_drc/foo.nc";
+# $fl_out       = "$dat_drc/foo.nc"; # replaces fl_out in tests, typically 'foo.nc'
+# $fl_out_orig  = "$dat_drc/foo.nc";
 # $foo_fl        = "$dat_drc/foo";
 # $foo_avg_fl    = "$dat_drc/foo_avg.nc";
 # $foo_tst       = "$dat_drc/foo.tst";
@@ -435,8 +435,8 @@ if ($dbg_lvl > 1) {
 
 # Regression tests
 if ($rgr){
-    use NCO_rgr; # module that contains perform_tests()
-    NCO_rgr::perform_tests();
+    use NCO_rgr; # module that contains tst_rgr()
+    NCO_rgr::tst_rgr();
     NCO_bm::rsl_smr_rgr();
 } # endif rgr
 
@@ -482,7 +482,7 @@ my $doit=1; # for skipping various tests
 use NCO_benchmarks; #module that contains the actual benchmark code
 # and now, the REAL benchmarks, set up as the regression tests below to use tst_run() and rsl_smr_rgr()
 #print "DEBUG: prior to benchmark call, dodap = $dodap\n";
-#print "in main(),just priior to the benchmarks \$mpi_prc=[$mpi_prc] \$mpi_prfx=[$mpi_prfx] \$mpi_fke=[$mpi_fke]\n";
+#print "in main(),just priior to the benchmarks \$mpi_prc=[$mpi_prc] \$pfx_mpi=[$pfx_mpi] \$mpi_fk=[$mpi_fk]\n";
 
 if ($bm) { NCO_benchmarks::benchmarks(); }
 

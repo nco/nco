@@ -1,9 +1,9 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.44 2006-05-23 20:10:37 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.45 2006-05-23 21:14:40 zender Exp $
 
-# Purpose: library module supporting the nco_bm.pl benchmark and regression tests.
-# this module contains the following functions in approximate order of their usage:
+# Purpose: Library for nco_bm.pl benchmark and regression tests
+# Module contains following functions in approximate order of their usage:
 
 # bm_ntl().........initialization, set NCOs to be tested under different conditions
 # bm_usg().........dumps usage text
@@ -15,23 +15,23 @@ package NCO_bm;
 # rsl_smr_fl_mk()..summarize results of file creation tests
 # rsl_smr_rgr()....summarize results of both regression and benchmark tests
 # tst_run()........execute regressions and benchmarks in same format
-# tst_tm_hrz().....almost ready-to-delete test of HiRes fnc() on Opterons
+# tst_tm_hrz().....almost ready-to-delete test of HiRes fnc() on Opterons
 # vrs_sng_get()....create two-part release and date string e.g., "3.0.3 / 20051004"
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
-use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
+use English; # WCS96 p. 403 makes Perl errors more comprehensible
 use Cwd 'abs_path';
 #use NCO_benchmarks qw($tw_prt_bm);
 use strict;
 
 use NCO_rgr qw(
-	       perform_tests
-	       $dodap $prefix $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl
-	       $outfile
+	       tst_rgr
+	       $dodap $pfx_cmd $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl
+	       $fl_out
 	       );
 # $foo1_fl $foo_fl $foo_tst
 
-# module that contains perform_tests()
+# module that contains tst_rgr()
 #use NCO_benchmarks; #module that contains the actual benchmark code
 # use warnings;
 
@@ -40,27 +40,27 @@ our @ISA = qw(Exporter);
 #export functions (top) and variables (bottom)
 our @EXPORT = qw (
 		  tst_run dbg_msg dat_drc_set bm_ntl
-		  $prefix $dat_drc @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
+		  $pfx_cmd $dat_drc @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
 		  $prsrv_fl  $srv_sde $hiresfound $dodap $bm $dbg_lvl $sock $udp_reprt
-		  $mpi_prc $mpi_prfx $mpi_fke
+		  $mpi_prc $pfx_mpi $mpi_fk
 		  );
 
 use vars qw(
-	    $aix_mpi_nvr_prfx $aix_mpi_sgl_nvr_prfx $bm $dbg_lvl $dodap $dot_fmt
+	    $aix_mpi_nvr_pfx $aix_mpi_sgl_nvr_pfx $bm $dbg_lvl $dodap $dot_fmt
 	    $dot_nbr $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng
-	    $fke_prefix $hiresfound $md5 $mpi_prc $mpi_prfx $mpi_fke $MY_BIN_DIR %NCO_RC $nsr_xpc
+	    $pfx_fk $hiresfound $md5 $mpi_prc $pfx_mpi $mpi_fk $MY_BIN_DIR %NCO_RC $nsr_xpc
 	    $opr_fmt $opr_lng_max @opr_lst @opr_lst_all @opr_lst_mpi
-	    $opr_nm $opr_rgr_mpi $opr_sng_mpi $os_nm  $prefix %real_tme
+	    $opr_nm $opr_rgr_mpi $opr_sng_mpi $os_nm  $pfx_cmd %real_tme
 	    $result $spc_fmt $spc_nbr $spc_nbr_min $spc_sng %subbenchmarks %success
 	    @sys_tim_arr $sys_time %sys_tme $timed %totbenchmarks @tst_cmd $tst_fmt
 	    $tst_id_sng %tst_nbr %usr_tme $wnt_log $timestamp $bm_drc $caseid
 	    $cmd_ln $dat_drc @fl_mk_dat $fl_pth @fl_tmg $md5found %MD5_tbl
-	    $nco_D_flg $NUM_FLS $prfxd $prsrv_fl $que $server_ip $sock $thr_nbr
-	    $dbg_sng $err_sng $tmr_app $udp_reprt %wc_tbl $prfxd $nvr_my_bin_dir
+	    $nco_D_flg $NUM_FLS $pfxd $prsrv_fl $que $server_ip $sock $thr_nbr
+	    $dbg_sng $err_sng $tmr_app $udp_reprt %wc_tbl $pfxd $nvr_my_bin_dir
 	    $prg_nm $arg_nbr $tw_prt_bm $srv_sde @cmd_lst
 	    
 	    );
-# $outfile
+# $fl_out
 print "\nINFO: Testing for required modules\n";
 BEGIN {eval "use Time::HiRes qw(usleep ualarm gettimeofday tv_interval)"; $hiresfound = $@ ? 0 : 1}
 #$hiresfound = 0;  # uncomment to simulate not found
@@ -72,7 +72,7 @@ if ($hiresfound == 0) {
 
 
 # print "\$md5 = $md5\n";
-# print "\$outfile = $outfile\n";
+# print "\$fl_out = $fl_out\n";
 
 # BEGIN {eval "use Digest::MD5"; $md5found = $@ ? 0 : 1}
 # # $md5found = 0;  # uncomment to simulate no MD5
@@ -87,7 +87,7 @@ if ($hiresfound == 0) {
 # }
 
 # $bm_drc = `pwd`; chomp $bm_drc;
-# $prefix = '';
+# $pfx_cmd = '';
 # $err_sng = "";
 # #if($dbg_lvl > 3){$nco_D_flg = "-D" .  "$dbg_lvl";}
 
@@ -292,7 +292,7 @@ sub fl_mk_dat_ntl {
 sub fl_mk {
     my $idx = shift;
     my $NUM_FLS = 4;
-    $prefix = "$MY_BIN_DIR";
+    $pfx_cmd = "$MY_BIN_DIR";
     
     if ($dbg_lvl > 2) {
 	print "\nWaiting for keypress to proceed.\n";
@@ -317,19 +317,19 @@ sub fl_mk {
     $fl_tmg[$idx][1] = $elapsed; # creation time
     if ($idx == 0) { # skn_lgs needs some extra massaging
 	if ($dbg_lvl > 0) {print "\nextra steps for skn_lgs - ncecat...\n";}
-	system "$prefix/ncecat -O -h $fl_in $fl_out";  # inserts a record dimension
+	system "$pfx_cmd/ncecat -O -h $fl_in $fl_out";  # inserts a record dimension
 	if ($dbg_lvl > 0) {print "\nncpdq...\n";}
-	system "$prefix/ncpdq -O -h -a time,record $fl_in $fl_out"; # swaps time and 'record'
+	system "$pfx_cmd/ncpdq -O -h -a time,record $fl_in $fl_out"; # swaps time and 'record'
 	if ($dbg_lvl > 0) {print "\nncwa...\n";}
-	system "$prefix/ncwa -O -h -a record $fl_in $fl_out"; # averages 'record' out of the way
+	system "$pfx_cmd/ncwa -O -h -a record $fl_in $fl_out"; # averages 'record' out of the way
 # now skn_lgs ready for ncap'ing
     }
     print "\n==== Populating $fl_out file.\nTiming results:\n";
-#print "fl_mk: prefix = $prefix\n";
-    print "Executing: $tmr_app $prefix/ncap -h -O $nco_D_flg -s $fl_mk_dat[$idx][3] $fl_in $fl_out\n";
+#print "fl_mk: pfx_cmd = $pfx_cmd\n";
+    print "Executing: $tmr_app $pfx_cmd/ncap -h -O $nco_D_flg -s $fl_mk_dat[$idx][3] $fl_in $fl_out\n";
     if ($hiresfound) {$t0 = [gettimeofday];}
     else {$t0 = time;}
-    system "$tmr_app $prefix/ncap -O -h -s $fl_mk_dat[$idx][3] $fl_in $fl_out";
+    system "$tmr_app $pfx_cmd/ncap -O -h -s $fl_mk_dat[$idx][3] $fl_in $fl_out";
     if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
     else {$elapsed = time - $t0;}
     $fl_tmg[$idx][2] = $elapsed; # population time
@@ -439,7 +439,7 @@ sub tst_run {
     
     my %fl_nm_lcl = ( # fl_nm_lcl = local_file_name
 		'%stdouterr%'   => "", # stdouterr has to be left to generate stderr
-		'%tempf_00%'    => "$dat_drc/tempf_00.nc", # Default replacement for $outfile
+		'%tempf_00%'    => "$dat_drc/tempf_00.nc", # Default replacement for $fl_out
 		'%tempf_01%'    => "$dat_drc/tempf_01.nc",
 		'%tempf_02%'    => "$dat_drc/tempf_02.nc",
 		'%tempf_03%'    => "$dat_drc/tempf_03.nc",
@@ -460,13 +460,13 @@ sub tst_run {
     
     # fxm: WTF do these vars require this treatment?!??
     *dbg_lvl = *main::dbg_lvl;
-    *outfile = *main::outfile;
+    *fl_out = *main::fl_out;
     *mpi_prc = *main::mpi_prc;
     
     if ($dbg_lvl > 0) {
 	print "\n\n\n### New tst_run() cycle [$opr_nm: $dsc_sng] ###\n";
 	    if ($fl_nm_lcl{'%tempf_00%'} eq "") {
-		print "outfile undefined!\n";
+		print "fl_out undefined!\n";
 	    } # else {	print "\$fl_nm_lcl{'%tempf_00%'} = [$fl_nm_lcl{'%tempf_00%'}] \n";}
     }
 
@@ -476,14 +476,14 @@ sub tst_run {
     my $arr_ref = shift; # Pass benchmark()'s @tst_cmd via reference to maintain coherence
     my @cmd_lst= @$arr_ref; # Dereference to new array name
     # Clear variables
-    my $ssdwrap_cmd = $dbg_sng = $err_sng = $mpi_prfx = $fke_prefix = "";
+    my $ssdwrap_cmd = $dbg_sng = $err_sng = $pfx_mpi = $pfx_fk = "";
     my $result_is_num = 1; my $expect_is_num = 1; # for extra return value checks
     
     
-    # Twiddle $prefix to allow running mpnc* as non-MPI'd  executable
-    if ($mpi_fke) {$fke_prefix = "$MY_BIN_DIR/mp"; }
-    $prefix = "$MY_BIN_DIR/";
-    # $mpi_prfx always has mpirun directive
+    # Twiddle $pfx_cmd to allow running mpnc* as non-MPI'd  executable
+    if ($mpi_fk) {$pfx_fk = "$MY_BIN_DIR/mp"; }
+    $pfx_cmd = "$MY_BIN_DIR/";
+    # $pfx_mpi always has mpirun directive
     
     # Can run it in AIX with naked command as long as env has been set up
     # NB: This is for regression testing on interactive node, 
@@ -491,11 +491,11 @@ sub tst_run {
     # on AIX, non-MPI ops compiled with MPI will atttempt to run MP_PROCS.  
     # To hold them to one process, must add explicit prefix ($aix_mpi_sgl_nvr), added below
     my $aix = 0; if ($os_nm =~ /AIX/) {$aix = 1;} # yafv for aix
-    if($aix){$mpi_prfx = " $aix_mpi_nvr_prfx $MY_BIN_DIR/mp";}
-    else    {$mpi_prfx = " mpirun -np $mpi_prc $MY_BIN_DIR/mp";} # Assume Linux-like MPI
-    $prfxd = 1; $timed = 1;
+    if($aix){$pfx_mpi = " $aix_mpi_nvr_pfx $MY_BIN_DIR/mp";}
+    else    {$pfx_mpi = " mpirun -np $mpi_prc $MY_BIN_DIR/mp";} # Assume Linux-like MPI
+    $pfxd = 1; $timed = 1;
     
-    dbg_msg(1,"\$prefix=$prefix | \$mpi_prfx=$mpi_prfx | \$fke_prefix=$fke_prefix");
+    dbg_msg(1,"\$pfx_cmd=$pfx_cmd | \$pfx_mpi=$pfx_mpi | \$pfx_fk=$pfx_fk");
     
     # Delete everything in DAP subdir to force DAP retrieval
     # $dat_drc has by now been directed to $dat_drc/DAP_DIR
@@ -583,7 +583,7 @@ sub tst_run {
 	$nsr_xpc = $cmd_lst[$#cmd_lst]; # pop the next value off \
 	delete $cmd_lst[$#cmd_lst]; # and now the $cmd_lst is the same as it ever was..
 	
-#print "\nDEBUG:in tst_run:613, \$mpi_prc=[$mpi_prc] \$mpi_prfx=[$mpi_prfx] \$mpi_fke=[$mpi_fke]\n";
+#print "\nDEBUG:in tst_run:613, \$mpi_prc=[$mpi_prc] \$pfx_mpi=[$pfx_mpi] \$mpi_fk=[$mpi_fk]\n";
 	
 	foreach (@cmd_lst){
 #			print "\nforeach cmd_lst = $_\n";
@@ -600,16 +600,16 @@ sub tst_run {
 	    for ($r=0; $r<= $N; $r++) {$_ .= $L[$r] . " ";}
 	    #print "DEBUG: reconstituted \$_ = $_\n";
 	    
-	    # Add $prefix only to NCO operator commands, not things like 'cut'.
+	    # Add $pfx_cmd only to NCO operator commands, not things like 'cut'.
 	    foreach my $op (@opr_lst_all) {
 		if ($_ =~ m/$op/ ) { # If op is anywhere in main list
 		    if ($mpi_prc > 0 && $opr_sng_mpi =~ /$op/) {
-			$_ = $tmr_app . $mpi_prfx . $_; } # ...and in MPI list...
-		    elsif ($mpi_fke  && $opr_sng_mpi =~ /$op/) {
-			$_ = $tmr_app . $fke_prefix . $_; } # Fake prefix
+			$_ = $tmr_app . $pfx_mpi . $_; } # ...and in MPI list...
+		    elsif ($mpi_fk  && $opr_sng_mpi =~ /$op/) {
+			$_ = $tmr_app . $pfx_fk . $_; } # Fake prefix
 		    # Non-MPI applications compiled w/MPI need special prefix to hold them to single process
-		    elsif ($aix) {$_ = $tmr_app . $aix_mpi_sgl_nvr_prfx . $prefix . $_;}
-		    else         {$_ = $tmr_app . $prefix . $_; } # Standard prefix
+		    elsif ($aix) {$_ = $tmr_app . $aix_mpi_sgl_nvr_pfx . $pfx_cmd . $_;}
+		    else         {$_ = $tmr_app . $pfx_cmd . $_; } # Standard prefix
 		    dbg_msg(1, "URGENT:before execution, cmdline= $_ \n");
 		    last;
 		}
@@ -770,7 +770,7 @@ sub tst_run {
 # if SS_OK && the user requests a SS attempt ..
 # this needs to be functionized to:
 # -  breathe in the cmd_lst,
-# - replace the outfile with the %tempfile% params (most '$outfile's -> '%temp_00%'
+# - replace the fl_out with the %tempfile% params (most '$fl_out's -> '%temp_00%'
 # - change the in_pth arg to look for files in the dodsdata dir (replace -p xxx to -p dodsdata)
 # - write that block to disk,
 # - execute the scriptwrap cmd and breathe back in the returned value, currently just the ncks single value
@@ -782,10 +782,10 @@ sub SS_gnarly_pything {
     my @sscmd_lst= @$arr_ref; # deref the ref to a new array name
     my $SS_URL = "http://sand.ess.uci.edu/cgi-bin/dods/nph-dods";
     my $dodsdata = "dodsdata";
-    # Write out  array replacing each $outfile with the %temp% spec
+    # Write out  array replacing each $fl_out with the %temp% spec
     # First command must specify starting datadir, but client may not know it, so
     # substitute any '-p URL' with '-p %datadir%' which may be escaped at some level.
-    # Further commands act on %outfile%, so no '-p' substitution is necessary
+    # Further commands act on %fl_out%, so no '-p' substitution is necessary
     # Assume that '-p URL' is in first command, but check all commands for '-p'
     # because of mixed programming model, 
     # Simplest to write to disk and send via pything.
@@ -933,9 +933,9 @@ sub rsl_chk_MD5_wc {
     my $file = shift;  # 1st arg
     my $testtype = shift; # 2nd arg
 # 	my $md5found = shift; # 3rd arg
-    my $prefix = "$MY_BIN_DIR/"; $prfxd = 1; #embed the timer command and local bin in cmd
+    my $pfx_cmd = "$MY_BIN_DIR/"; $pfxd = 1; # embed timer command and local bin directory
     my $cmdline = $_;
-    my $return_value = $result; # this should be the return value of executing the non-terminal cmds
+    my $return_value = $result; # return value of executing non-terminal commands
     my $hash = "";
     my @wc_lst;
     my $wc = "";
@@ -943,7 +943,7 @@ sub rsl_chk_MD5_wc {
 	print LOG "NonZero return value = $cmdline\n";
     } else {
 # 1st do an ncks dump on the 1st 111111 lines (will cause a sig13 due to the head cmd)
-	system("$prefix/ncks -P $file |head -111111 > $fl_pth/wc_out");
+	system("$pfx_cmd/ncks -P $file |head -111111 > $fl_pth/wc_out");
 	@wc_lst = split(/\s+/, `wc $fl_pth/wc_out`);
 	$wc = $wc_lst[1] . " " . $wc_lst[2] . " " . $wc_lst[3];
 	

@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.40 2006-05-23 19:49:10 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.41 2006-05-23 21:14:40 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -14,27 +14,27 @@ use Cwd 'abs_path';
 use strict;
 
 use NCO_bm qw(dbg_msg tst_run
-	      $prefix $dat_drc @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl $nsr_xpc $srv_sde
+	      $pfx_cmd $dat_drc @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl $nsr_xpc $srv_sde
 	      );
 
 require Exporter;
 our @ISA = qw(Exporter);
 #export functions (top) and variables (bottom)
 our @EXPORT = qw (
-		  perform_tests
-		  $outfile $dodap $prefix $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl $nsr_xpc
-		  $foo1_fl $foo_fl $foo_tst $orig_outfile $foo_avg_fl $foo_x_fl $foo_y_fl $foo_yx_fl
+		  tst_rgr
+		  $fl_out $dodap $pfx_cmd $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl $nsr_xpc
+		  $foo1_fl $foo_fl $foo_tst $fl_out_orig $foo_avg_fl $foo_x_fl $foo_y_fl $foo_yx_fl
 		  $foo_xy_fl  $foo_xymyx_fl $pth_rmt_scp_tst $omp_flg $nco_D_flg %NCO_RC
 		  );
 use vars qw(
 	    $dodap $dsc_sng $dust_usr $fl_fmt $fl_pth $foo1_fl $foo2_fl $foo_avg_fl
 	    $foo_fl $foo_tst $foo_x_fl $foo_xy_fl
 	    $foo_xymyx_fl $foo_y_fl $foo_yx_fl $mpi_prc $nco_D_flg $localhostname
-	    $nsr_xpc $omp_flg $opr_nm $opr_rgr_mpi $orig_outfile
-	    $outfile $pth_rmt_scp_tst $prsrv_fl @tst_cmd $USER %NCO_RC
+	    $nsr_xpc $omp_flg $opr_nm $opr_rgr_mpi $fl_out_orig
+	    $fl_out $pth_rmt_scp_tst $prsrv_fl @tst_cmd $USER %NCO_RC
 	    );
 #
-sub perform_tests {
+sub tst_rgr {
 # Tests are in alphabetical order by operator name
     
 # The following tests are organized and laid out as follows:
@@ -57,8 +57,8 @@ sub perform_tests {
 # *dodap=*main::dodap;
 # *$fl_fmt=*main::fl_fmt;
     
-# I DO NOT *&^%*& understand why this $outfile needs special handling !!!
-    *outfile = *main::outfile;
+# I DO NOT *&^%*& understand why this $fl_out needs special handling !!!
+    *fl_out = *main::fl_out;
     
     NCO_bm::dbg_msg(1,"in package NCO_rgr, \$dodap = $dodap");
     NCO_bm::dbg_msg(1,"in package NCO_rgr, \$omp_flg = $omp_flg");
@@ -66,7 +66,7 @@ sub perform_tests {
     
     NCO_bm::dbg_msg(1,"File format set to [$fl_fmt]");
     
-# in general, $outfile    -> %tempf_00%
+# in general, $fl_out    -> %tempf_00%
 #             $foo_fl     -> %tempf_01%
 #             $foo_tst    -> %tempf_02%
 #             $foo_avg_fl -> %tempf_03%
@@ -75,11 +75,11 @@ sub perform_tests {
     
     
     if ($dodap ne "FALSE") {
-	print "DEBUG: in perform_tests(), \$dodap = $dodap \n";
+	print "DEBUG: in tst_rgr(), \$dodap = $dodap \n";
 	if ($dodap ne "" && $fl_pth =~ /http/ ) { $in_pth_arg = "-p $fl_pth"; }
 	if ($dodap eq "") { $in_pth_arg = "-p http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata"; }
     }
-    NCO_bm::dbg_msg(1,"-------------  REGRESSION TESTS STARTED from perform_tests()  -------------");
+    NCO_bm::dbg_msg(1,"-------------  REGRESSION TESTS STARTED from tst_rgr()  -------------");
     
     if (0) {} #################  SKIP THESE #####################
     

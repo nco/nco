@@ -1,6 +1,6 @@
 package NCO_benchmarks;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.8 2006-05-23 19:49:10 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.9 2006-05-23 21:14:40 zender Exp $
 
 # Purpose: library module supporting nco_bm.pl benchmark and regression tests
 # File contains BENCHMARK code (as opposed to the REGRESSION tests in "NCO_rgr.pm")
@@ -16,7 +16,7 @@ use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehen
 use Cwd 'abs_path';
 use warnings;
 use strict;
-#use NCO_rgr qw( perform_tests ); # module that contains perform_tests()
+#use NCO_rgr qw( tst_rgr ); # module that contains tst_rgr()
 
 use NCO_bm qw(dbg_msg tst_run
 	$dat_drc @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl  $srv_sde $dodap
@@ -28,13 +28,13 @@ our @ISA = qw(Exporter);
 our @EXPORT = qw(
 	benchmarks
 	$srv_sde $dodap $NUM_FLS $dbg_lvl $bm  $mpi_prc $opr_sng_mpi $omp_flg $fl_fmt
-	$nco_D_flg $outfile $tw_prt_bm @tst_cmd $opr_nm $dsc_sng $nsr_xpc $fl_cnt %NCO_RC
+	$nco_D_flg $fl_out $tw_prt_bm @tst_cmd $opr_nm $dsc_sng $nsr_xpc $fl_cnt %NCO_RC
 );
 
 use vars qw(
 $dat_drc  $f  @fl_mk_dat  $in_pth  $in_pth_arg  $ipcc_dm_sz  $ldz  $lnk_fl_nme
-$MY_BIN_DIR $n  $nd  $NUM_FLS  $r  $rel_fle  $ssdwrap  $var_prfx  $var_sfx
-$var_sng @var_sz   $wait  $tw_prt_bm $srv_sde $opr_nm $dsc_sng $mpi_prc $outfile
+$MY_BIN_DIR $n  $nd  $NUM_FLS  $r  $rel_fle  $ssdwrap  $var_pfx  $var_sfx
+$var_sng @var_sz   $wait  $tw_prt_bm $srv_sde $opr_nm $dsc_sng $mpi_prc $fl_out
 $bm $dbg_lvl $dodap $fl_cnt @fl_mk_dat $fl_fmt $fl_pth %NCO_RC $nco_D_flg
 $ncwa_scl_tst $notbodi $nsr_xpc $omp_flg $opr_sng_mpi  @tst_cmd
 );
@@ -84,10 +84,10 @@ sub benchmarks{
 #	# named uniquely using the ones described in nco_bm.pl: 336-350 (foo...).
 #	# The last nco command is usually an ncks command that examines a single value generated
 #	# from the preceding chain of commands
-# 		$tst_cmd[0] = "ncea -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg stl_5km_00.nc $outfile";
+# 		$tst_cmd[0] = "ncea -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg stl_5km_00.nc $fl_out";
 # 		if($dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
-# 		$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt -a lat,lon $outfile $outfile";
-# 		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00 $outfile";
+# 		$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt -a lat,lon $fl_out $fl_out";
+# 		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00 $fl_out";
 # 		$tst_cmd[3] = "1.604304";
 # 		$tst_cmd[4] = "NO_SS";
 # 		tst_run(\@tst_cmd);
@@ -101,7 +101,7 @@ sub benchmarks{
 # have it return data.  For both benchmarks and regressions, this is added in the
 # SS_gnarly_pything() sub from tst_run() that handles the SS manipulations.
 # Also note that in order for Daniel's ssdwrap code to work at least for now, all the files passed in have
-# to be named differently in order to keep things straight.  So we can't name everything $outfile
+# to be named differently in order to keep things straight.  So we can't name everything $fl_out
 # (or %tempf_00% and have it work. All output must be named differently in a script for the
 #script to work correctly.
 
@@ -400,7 +400,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 				####################
 				# make vars in size of 1/2, 1/4, 1/8 of each one.
 # 				for (my $r=0; $r<5; $r++) {
-# 					my $var_prfx = sprintf("d%d_", $r);
+# 					my $var_pfx = sprintf("d%d_", $r);
 # 					for (my $nd=2; $nd<=8; $nd*2){
 # 						my $var_sfx = sprintf("%2d", $ipcc_dm_sz[$r]);
 # 						my $var_sng =
