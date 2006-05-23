@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.764 2006-05-22 23:21:24 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.765 2006-05-23 03:49:52 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -493,7 +493,8 @@ nco728. Major breakage in icc regression tests (gcc, xlc fine) OpenMP related?
         ncra -O -v rec_var_flt_mss_val_dbl -p ~/nco/data in.nc ~/foo.nc
 	ncrcat -O -D 1 -d time,0 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc
 nco734. virga: icc OMP not working at all
-nco735. 
+nco735. g++ no longer builds ncbo and ncwa because of DDRA structure initializers
+nco736. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

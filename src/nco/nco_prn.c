@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.31 2006-05-23 00:50:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.32 2006-05-23 03:47:23 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -110,27 +110,29 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 {
   /* Purpose: Provide sprintf() format string for specified type */
   static const char fmt_NC_FLOAT[]="%g"; /* %g defaults to 6 digits of precision */
+  static const char fmt_NC_DOUBLE[]="%.12g"; /* Specify 12 digits of precision for double precision */
+  static const char fmt_NC_INT[]="%li"; /* NCO currently stores NC_INT in native type long, but this will be deprecated when netCDF supports a 64 bit integer type */
+  static const char fmt_NC_SHORT[]="%hi";
+  static const char fmt_NC_CHAR[]="%c";
+  /* Formats useful in printing byte data as decimal notation */
+  static const char fmt_NC_BYTE[]="%i";
+  /* static const char fmt_NC_BYTE[]="%c"; */
+  /* NB: %hhi is GNU extension, not ANSI standard */
+  /* static const char fmt_NC_BYTE[]="%hhi";*/ /* Takes signed char as arg and prints 0..255 (unfortunately) */
+  /* static const char fmt_NC_BYTE[]="%hhu";*/ /* Takes unsigned char as arg and prints 0..255 */
   switch (typ){
   case NC_FLOAT:
     return fmt_NC_FLOAT;
-    /*return "%g";*/ /* %g defaults to 6 digits of precision */
   case NC_DOUBLE:
-    return "%.12g"; /* Specify 12 digits of precision for double precision */
+    return fmt_NC_DOUBLE;
   case NC_INT:
-    return "%li"; /* NCO currently stores NC_INT in native type long, but this will be deprecated when netCDF supports a 64 bit integer type */
-    /*  case NC_LONG:
-	return "%li"; */
+    return fmt_NC_INT;
   case NC_SHORT:
-    return "%hi";
+    return fmt_NC_SHORT;
   case NC_CHAR:
-    return "%c";
+    return fmt_NC_CHAR;
   case NC_BYTE:
-    /* return "%c"; *//* Default */
-    /* Formats useful in printing byte data as decimal notation */
-    return "%i";
-    /* NB: %hhi is GNU extension, not ANSI standard */
-    /* return "%hhi"; */ /* Takes signed char as arg and prints 0..255 (unfortunately) */
-    /* return "%hhu"; */ /* Takes unsigned char as arg and prints 0..255 */
+    return fmt_NC_BYTE;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
