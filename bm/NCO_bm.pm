@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.42 2006-05-23 19:49:10 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.43 2006-05-23 20:07:30 zender Exp $
 
 # Purpose: library module supporting the nco_bm.pl benchmark and regression tests.
 # this module contains the following functions in approximate order of their usage:
@@ -56,7 +56,7 @@ use vars qw(
 	    $tst_id_sng %tst_nbr %usr_tme $wnt_log $timestamp $bm_drc $caseid
 	    $cmd_ln $dat_drc @fl_mk_dat $fl_pth @fl_tmg $md5found %MD5_tbl
 	    $nco_D_flg $NUM_FLS $prfxd $prsrv_fl $que $server_ip $sock $thr_nbr
-	    $dbg_sgn $err_sgn $tmr_app $udp_reprt %wc_tbl $prfxd $nvr_my_bin_dir
+	    $dbg_sng $err_sng $tmr_app $udp_reprt %wc_tbl $prfxd $nvr_my_bin_dir
 	    $prg_nm $arg_nbr $tw_prt_bm $srv_sde @cmd_lst
 	    
 	    );
@@ -88,7 +88,7 @@ if ($hiresfound == 0) {
 
 # $bm_drc = `pwd`; chomp $bm_drc;
 # $prefix = '';
-# $err_sgn = "";
+# $err_sng = "";
 # #if($dbg_lvl > 3){$nco_D_flg = "-D" .  "$dbg_lvl";}
 
 # # Initializations
@@ -432,21 +432,20 @@ sub dat_drc_set {
     } # !defined $ENV{'DATA'})
 } # end dat_drc_set()
 
-#########################  subroutine tst_run ()  ####################################
-# tst_run() consumes the @tst_cmd array that contains a series of tests and
-# executes them in order
+#########################  subroutine tst_run ()  ##############################
+# tst_run() consumes @tst_cmd array and executes them in order
 #################################################################################
 sub tst_run {
     
     my %fl_nm_lcl = ( # fl_nm_lcl = local_file_name
 		'%stdouterr%'   => "", # stdouterr has to be left to generate stderr
-		'%tempf_00%'    => "$dat_drc/tempf_00.nc", # this will be the default replacement for $outfile
+		'%tempf_00%'    => "$dat_drc/tempf_00.nc", # Default replacement for $outfile
 		'%tempf_01%'    => "$dat_drc/tempf_01.nc",
 		'%tempf_02%'    => "$dat_drc/tempf_02.nc",
 		'%tempf_03%'    => "$dat_drc/tempf_03.nc",
 		'%tempf_04%'    => "$dat_drc/tempf_04.nc",
 		'%tempf_05%'    => "$dat_drc/tempf_05.nc",
-# no use for more than 05
+# Currently no use for more than 05
 		'%tempf_06%'    => "$dat_drc/tempf_06.nc",
 		'%tempf_07%'    => "$dat_drc/tempf_07.nc",
 		'%tempf_08%'    => "$dat_drc/tempf_08.nc",
@@ -456,31 +455,29 @@ sub tst_run {
 		'%tempf_12%'    => "$dat_drc/tempf_12.nc",
 		);
     
-# so if executign on the client side, have to replace all the special purpose
-# filenames with name like $fl_nm_lcl{'%tempf_00%'}
+# If executign on client side, replace all the special purpose
+# filenames with names like $fl_nm_lcl{'%tempf_00%'}
     
-    
-    # WTF do these vars require this treatment?!??
+    # fxm: WTF do these vars require this treatment?!??
     *dbg_lvl = *main::dbg_lvl;
     *outfile = *main::outfile;
     *mpi_prc = *main::mpi_prc;
     
-    #$dbg_lvl = 2;
     if ($dbg_lvl > 0) {
-	print "\n\n\n## New tst_run() cycle [$opr_nm: $dsc_sng] ###\n";
+	print "\n\n\n### New tst_run() cycle [$opr_nm: $dsc_sng] ###\n";
 	    if ($fl_nm_lcl{'%tempf_00%'} eq "") {
 		print "outfile undefined!\n";
 	    } # else {	print "\$fl_nm_lcl{'%tempf_00%'} = [$fl_nm_lcl{'%tempf_00%'}] \n";}
     }
-# mod of tst_run() requires that rgr tests have to be modified to provide
-# the expected value in each submission to tst_run()  If the last el is not SS_OK,
-# it has to pop off the expected  value and then should process the commands
-# the same as it did previously.
-    my $arr_ref = shift; # now passing in benchmark()'s @tst_cmd via a ref to maintain coherence
-    my @cmd_lst= @$arr_ref; # deref the ref to a new array name
-    # clear variables
-    my $ssdwrap_cmd = $dbg_sgn = $err_sgn = $mpi_prfx = $fke_prefix = "";
-    my $result_is_num = 1; 	my $expect_is_num = 1; # for extra return value checks
+
+# tst_run() requires regression tests provide expected values
+# If last element is not SS_OK, tst_run() pops off expected value and 
+# processes commands same as it did previously
+    my $arr_ref = shift; # Pass benchmark()'s @tst_cmd via reference to maintain coherence
+    my @cmd_lst= @$arr_ref; # Dereference to new array name
+    # Clear variables
+    my $ssdwrap_cmd = $dbg_sng = $err_sng = $mpi_prfx = $fke_prefix = "";
+    my $result_is_num = 1; my $expect_is_num = 1; # for extra return value checks
     
     
     # Twiddle $prefix to allow running mpnc* as non-MPI'd  executable
@@ -494,8 +491,8 @@ sub tst_run {
     # on AIX, non-MPI ops compiled with MPI will atttempt to run MP_PROCS.  
     # To hold them to one process, must add explicit prefix ($aix_mpi_sgl_nvr), added below
     my $aix = 0; if ($os_nm =~ /AIX/) {$aix = 1;} # yafv for aix
-    if($aix){ $mpi_prfx = " $aix_mpi_nvr_prfx $MY_BIN_DIR/mp";}
-    else    { $mpi_prfx = " mpirun -np $mpi_prc $MY_BIN_DIR/mp";} # Assume Linux-like MPI
+    if($aix){$mpi_prfx = " $aix_mpi_nvr_prfx $MY_BIN_DIR/mp";}
+    else    {$mpi_prfx = " mpirun -np $mpi_prc $MY_BIN_DIR/mp";} # Assume Linux-like MPI
     $prfxd = 1; $timed = 1;
     
     dbg_msg(1,"\$prefix=$prefix | \$mpi_prfx=$mpi_prfx | \$fke_prefix=$fke_prefix");
@@ -512,7 +509,6 @@ sub tst_run {
     }
 #	print "just past unlinking stage \n";  my $wait = <STDIN>;
     
-    # see what the cmd_lst looks like now.
     if ($dbg_lvl > 0) {
 	for (my $ccmd=0; $ccmd <= $#cmd_lst; $ccmd++){
 	    print "### cmd_lst[$ccmd] = $cmd_lst[$ccmd] ###\n";
@@ -566,21 +562,19 @@ sub tst_run {
     printf STDERR ($tst_fmt,$dsc_sng,$dot_sng);
     # csz--
     
-    
 # SS checks and balances
 # $ncks_chk = SS_gnarly_pything(\@cmd_lst)
     my $SS_nsr_xpc = 0;
     my $SS_OK = 1;
     if ($cmd_lst[$#cmd_lst] ne "SS_OK") {$SS_OK = 0;} # check on last el whether cmds can be SS'ed
     if ($SS_OK && $srv_sde ne "SSNOTSET" ) {
+	# Send for processing and get back string or single value to check
+	$SS_nsr_xpc=SS_gnarly_pything(\@cmd_lst);
 	
-	# send it off to be processed and get back the string or single value to check
-	$SS_nsr_xpc = SS_gnarly_pything(\@cmd_lst);
-	
-	$result = $SS_nsr_xpc; # do this in one step later
+	$result=$SS_nsr_xpc; # do this in one step later
 	# and undef the last one to leave the expected value as last value
 	delete $cmd_lst[$#cmd_lst];
-	$nsr_xpc = $cmd_lst[$#cmd_lst]; # & pop last value to provide the exepected answer
+	$nsr_xpc=$cmd_lst[$#cmd_lst]; # pop last value to provide exepected answer
 #		print "\n##DEBUG:\t$nsr_xpc (expt)\n\t\t$result (SS)\n";
     } else {
 	# delete the SS value to leave "expected value" as last
@@ -591,16 +585,15 @@ sub tst_run {
 	
 #print "\nDEBUG:in tst_run:613, \$mpi_prc=[$mpi_prc] \$mpi_prfx=[$mpi_prfx] \$mpi_fke=[$mpi_fke]\n";
 	
-	
 	foreach (@cmd_lst){
 #			print "\nforeach cmd_lst = $_\n";
 	    my $md5_chk = 1;
-	    $dbg_sgn .= "\nDEBUG: Full commandline for part $cmd_lst_cnt:\n";
+	    $dbg_sng .= "\nDEBUG: Full commandline for part $cmd_lst_cnt:\n";
 	    if ($_ !~ /foo.nc/) {$md5_chk = 0;}
 	    my $opcnt = 0;
 	    my $md5_dsc_sng = $dsc_sng . "_$cmd_lst_cnt";
 	    
-	    # substitute real file names for the fake ones (%*%)
+	    # Substitute real for fake file names (%*%)
 	    my $r = 0; 	my $N = my @L = split;
 	    while ($r <= $N) { if ($L[$r] =~ /\%.{8,9}\%/){ $L[$r] = $fl_nm_lcl{$L[$r]};}	$r++;	}
 	    $_ = ""; # zero and then reconstitute $_
@@ -609,21 +602,21 @@ sub tst_run {
 	    
 	    # Add $prefix only to NCO operator commands, not things like 'cut'.
 	    foreach my $op (@opr_lst_all) {
-		if ($_ =~ m/$op/ ) { # if the op is anywhere  in the main list
+		if ($_ =~ m/$op/ ) { # If op is anywhere in main list
 		    if ($mpi_prc > 0 && $opr_sng_mpi =~ /$op/) {
-			$_ = $tmr_app . $mpi_prfx . $_; } # and in the mpi list
+			$_ = $tmr_app . $mpi_prfx . $_; } # ...and in MPI list...
 		    elsif ($mpi_fke  && $opr_sng_mpi =~ /$op/) {
-			$_ = $tmr_app . $fke_prefix . $_; } # the fake prefix
-		    # non-MPI apps compiled w/ MPI need special prefix to hold them to 1 process
+			$_ = $tmr_app . $fke_prefix . $_; } # Fake prefix
+		    # Non-MPI applications compiled w/MPI need special prefix to hold them to single process
 		    elsif ($aix) {$_ = $tmr_app . $aix_mpi_sgl_nvr_prfx . $prefix . $_;}
-		    else         {$_ = $tmr_app . $prefix . $_; } # the std prefix
+		    else         {$_ = $tmr_app . $prefix . $_; } # Standard prefix
 		    dbg_msg(1, "URGENT:before execution, cmdline= $_ \n");
 		    last;
 		}
 	    } # end of foreach my $op (@opr_lst_all)
-	    $dbg_sgn .= "DEBUG:$_\n";
+	    $dbg_sng .= "DEBUG:$_\n";
 	    
-	    # NB: May have to do ONLY HiRes timing since SERVERSIDE will be hard to do otherwise
+	    # NB: May require ONLY HiRes timing since SERVERSIDE will be hard to do otherwise
 	    # timing code using Time::HiRes
 	    my $t0;
 	    if ($hiresfound) {$t0 = [gettimeofday];}
@@ -678,7 +671,7 @@ sub tst_run {
 	    $subbenchmarks{$opr_nm} += $elapsed;
 	    #		$tst_idx = $tst_nbr{$opr_nm}-1;
 	    if($dbg_lvl > 3){print "\t$opr_nm subtest [$t] took $elapsed seconds\n";}
-	    $dbg_sgn .= "DEBUG: Result = [$result]\n";
+	    $dbg_sng .= "DEBUG: Result = [$result]\n";
 	    
 	    #and here, check results by md5 checksum for each step - insert guts of rsl_chk_MD5_wc()
 	    # have to mod the input string -  suffix with the cycle#
@@ -689,7 +682,7 @@ sub tst_run {
 # 				dbg_msg(2,"Entering rsl_chk_MD5_wc() with \$fl_nm_lcl{'%tempf_00%'}=$fl_nm_lcl{'%tempf_00%'}");
 # 				rsl_chk_MD5_wc($fl_nm_lcl{'%tempf_00%'}, $md5_dsc_sng);
 # 			}
-# 			if ($md5_chk == 0 && $dbg_lvl > 0) { $dbg_sgn .= "WARN: No MD5/wc check on intermediate file.\n";}
+# 			if ($md5_chk == 0 && $dbg_lvl > 0) { $dbg_sng .= "WARN: No MD5/wc check on intermediate file.\n";}
 	    
 	    # else the oldstyle check has already been done and the results are in $result, so process normally
 	    $cmd_lst_cnt++;
@@ -700,7 +693,7 @@ sub tst_run {
 	} # end loop: 	foreach (@cmd_lst)
     }  # end of client side 'else'
     
-    $dbg_sgn .= "DEBUG: Total time for $opr_nm [$tst_nbr{$opr_nm}] = $subbenchmarks{$opr_nm} s\n";
+    $dbg_sng .= "DEBUG: Total time for $opr_nm [$tst_nbr{$opr_nm}] = $subbenchmarks{$opr_nm} s\n";
     $totbenchmarks{$opr_nm}+=$subbenchmarks{$opr_nm};
     
     # this comparing of the results shouldn't even be necessary as we're validating the whole file,
@@ -730,20 +723,20 @@ sub tst_run {
     # Compare numeric results
     if ($result_is_num && $expect_is_num) { # && it equals the expected value
 #print "\n \$nsr_xpc [$nsr_xpc] considered a number\n";
-	$dbg_sgn .= "DEBUG: \$nsr_xpc assumed to be numeric: $nsr_xpc & actual  \$result = [$result]\n";
+	$dbg_sng .= "DEBUG: \$nsr_xpc assumed to be numeric: $nsr_xpc & actual  \$result = [$result]\n";
 	if ($nsr_xpc == $result) {
 	    $success{$opr_nm}++;
 	    printf STDERR (" SVn ok\n");
-	    $dbg_sgn .= "DEBUG: PASSED (Numeric output)\n";
+	    $dbg_sng .= "DEBUG: PASSED (Numeric output)\n";
 	} elsif (abs($result - $nsr_xpc) < 0.02) {
 	    $success{$opr_nm}++;
 	    printf STDERR (" SVn prov. ok\n");
-	    $dbg_sgn .= "DEBUG: PASSED PROVISIONALLY (Numeric output):[$nsr_xpc vs $result]\n";
+	    $dbg_sng .= "DEBUG: PASSED PROVISIONALLY (Numeric output):[$nsr_xpc vs $result]\n";
 	} else {
 	    printf STDERR (" FAILED!\n");
 	    &failed($nsr_xpc);
 	    my $diff = abs($nsr_xpc - $result);
-	    $dbg_sgn .= "DEBUG: !!FAILED (Numeric output) [expected: $nsr_xpc vs result: $result].  Difference = $diff.\n";
+	    $dbg_sng .= "DEBUG: !!FAILED (Numeric output) [expected: $nsr_xpc vs result: $result].  Difference = $diff.\n";
 	}
     } elsif (!$result_is_num && !$expect_is_num)  {# Compare non-numeric tests
 						       dbg_msg(2,"DEBUG: expected value assumed to be alphabetic: $nsr_xpc\n\$result = $result\n");
@@ -754,19 +747,19 @@ sub tst_run {
 						       if (substr($result,0,length($nsr_xpc)) eq $nsr_xpc) {
 							   $success{$opr_nm}++;
 							   printf STDERR (" SVa ok\n");
-							   $dbg_sgn .= "DEBUG: PASSED Alphabetic output";
+							   $dbg_sng .= "DEBUG: PASSED Alphabetic output";
 						       } else {
 							   &failed($nsr_xpc);
-							   $dbg_sgn .= "DEBUG: !!FAILED Alphabetic output (expected: $nsr_xpc vs result: $result) ";
+							   $dbg_sng .= "DEBUG: !!FAILED Alphabetic output (expected: $nsr_xpc vs result: $result) ";
 						       }
 						   }  else {  # No result at all?
 						       print STDERR " !!FAILED\n  \$result_is_num = $result_is_num and \$expect_is_num = $expect_is_num\n";
 						       &failed();
-						       $dbg_sgn .= "DEBUG: !!FAILED - No result from [$opr_nm]\n";
+						       $dbg_sng .= "DEBUG: !!FAILED - No result from [$opr_nm]\n";
 						   }
-    print $err_sgn;
-    if ($dbg_lvl > 0) {print $dbg_sgn;}
-    if ($wnt_log) {print LOG $dbg_sgn;}
+    print $err_sng;
+    if ($dbg_lvl > 0) {print $dbg_sng;}
+    if ($wnt_log) {print LOG $dbg_sng;}
     @cmd_lst =(); # Clear test
     if (!$bm) { $prsrv_fl = 0; } # reset so files will be deleted unless doing benchmarks
     if (-e $fl_nm_lcl{'%tempf_00%'} && -w $fl_nm_lcl{'%tempf_00%'}) { unlink $fl_nm_lcl{'%tempf_00%'};	}
@@ -844,9 +837,9 @@ sub SS_gnarly_pything {
 ####################
 sub failed {
     $failure{$opr_nm}++;
-    $err_sgn .= "   ERR: FAILURE in $opr_nm failure: $dsc_sng\n";
-    foreach(@cmd_lst) { $err_sgn .= "   $_\n";}
-    $err_sgn .= "   ERR::EXPLAIN: Result: [$result] != Expected: [$nsr_xpc]\n\n" ;
+    $err_sng .= "   ERR: FAILURE in $opr_nm failure: $dsc_sng\n";
+    foreach(@cmd_lst) { $err_sng .= "   $_\n";}
+    $err_sng .= "   ERR::EXPLAIN: Result: [$result] != Expected: [$nsr_xpc]\n\n" ;
     return;
 }
 
