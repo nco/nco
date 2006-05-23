@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.25 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.26 2006-05-23 00:50:00 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -78,7 +78,7 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
       /* World's most anally formatted warning message... */
       char mss_val_1_sng[NCO_MAX_LEN_FMT_SNG];
       char mss_val_2_sng[NCO_MAX_LEN_FMT_SNG];
-      char *fmt_sng;
+      const char *fmt_sng;
       fmt_sng=nco_typ_fmt_sng(var1->type);
       switch(var1->type){
       case NC_FLOAT: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.fp[0]); break;

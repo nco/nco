@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.18 2006-03-10 06:05:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.19 2006-05-23 00:50:00 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -44,7 +44,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable */
 (const int in_id, /* I [id] netCDF input file ID */
  const int var_id); /* I [id] netCDF input variable ID */
 
-char * /* O [sng] sprintf() format string for type typ */
+const char * /* O [sng] sprintf() format string for type typ */
 nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 (const nc_type typ); /* I [enm] netCDF type to provide format string for */
 
