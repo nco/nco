@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/mk_bm_plots.pl,v 1.9 2006-05-23 19:49:10 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/mk_bm_plots.pl,v 1.10 2006-05-23 20:10:37 zender Exp $
 # Script resides in nco/bm
 
 # Purpose: 
@@ -319,7 +319,7 @@ HEADER
 
 # grab the nco version and conmogrify it into something like: "3.0.1 / 20051003"
 # just requires a string variable to absorb the string returned
-sub vrs_sng_dual_get{
+sub vrs_sng_get{
 	my @nco_vrs;
 	my $tmp_sng = `ncks --version  2>&1 |  grep 'ncks version'`; # long string sep by a newline.
 	$tmp_sng =~ s/\n/ /g;

@@ -1,22 +1,22 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.43 2006-05-23 20:07:30 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.44 2006-05-23 20:10:37 zender Exp $
 
 # Purpose: library module supporting the nco_bm.pl benchmark and regression tests.
 # this module contains the following functions in approximate order of their usage:
 
-#   bm_ntl().........initialization, sets which NCOs are to be tested under different conditions
-#   bm_usg()..............dumps usage text for the utility
-#   bm_vrb()..........small fnc() to print to both screen and log
-#   dat_drc_set()........figures out where to write output data
-#   fl_mk().............creates the test files
-#   fl_mk_dat_ntl()....initializes the data used to create the test files
-#   rsl_chk_MD5_wc()..checks the output via md5/wc validation
-#   rsl_smr_fl_mk()...summarizes the results of the file creation tests
-#   rsl_smr_rgr()......summarizes the results of both regression and benchmark tests
-#   tst_run().................takes care of executing both regressions and benchmarks set up in same format
-#   tst_tm_hrz()..........almost ready-to-delete test of the HiRes fnc() on opterons
-#   vrs_sng_dual_get()......creates a 2 part string of the NCO release and date version eg "3.0.3 / 20051004"
+# bm_ntl().........initialization, set NCOs to be tested under different conditions
+# bm_usg().........dumps usage text
+# bm_vrb().........small fnc() to print to both screen and log
+# dat_drc_set()....figures out where to write output data
+# fl_mk()..........creates test files
+# fl_mk_dat_ntl()..initializes data used to create test files
+# rsl_chk_MD5_wc().checks output via md5/wc validation
+# rsl_smr_fl_mk()..summarize results of file creation tests
+# rsl_smr_rgr()....summarize results of both regression and benchmark tests
+# tst_run()........execute regressions and benchmarks in same format
+# tst_tm_hrz().....almost ready-to-delete test of HiRes fnc() on Opterons
+# vrs_sng_get()....create two-part release and date string e.g., "3.0.3 / 20051004"
 
 require 5.6.1 or die "This script requires Perl version >= 5.6.1, stopped";
 use English; # WCS96 p. 403 makes incomprehensible Perl errors sort of comprehensible
@@ -845,7 +845,7 @@ sub failed {
 
 sub rsl_smr_rgr {
     my $ansr='';
-    my $nco_vrs_sng = vrs_sng_dual_get();
+    my $nco_vrs_sng = vrs_sng_get();
     my $CC = `$MY_BIN_DIR/ncks --compiler`;
     my $idstring = "";
     my $CCinfo = '';
@@ -998,7 +998,7 @@ sub dbg_msg {
 
 # Grab NCO version and conmogrify it into something like: "3.0.1 / 20051003"
 # Requires a string variable to absorb returned string
-sub vrs_sng_dual_get{
+sub vrs_sng_get{
     my @nco_vrs;
     my $tmp_sng = `ncks --version  2>&1 |  grep version | head -2`; # long string sep by a newline.
     $tmp_sng =~ s/\n/ /g;
