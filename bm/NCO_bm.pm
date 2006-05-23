@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.40 2006-05-23 05:26:41 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.41 2006-05-23 05:35:06 zender Exp $
 
 # Purpose: library module supporting the nco_bm.pl benchmark and regression tests.
 # this module contains the following functions in approximate order of their usage:
@@ -9,7 +9,7 @@ package NCO_bm;
 #   verbosity()..........small fn() to print to both screen and log
 #   fl_mk_dat_init()....initializes the data used to create the test files
 #   fl_mk().............creates the test files
-#   smrz_fl_mk_rslt()...summarizes the results of the file creation tests
+#   smr_fl_mk_rsl()...summarizes the results of the file creation tests
 #   set_dat_drc()........figures out where to write output data
 #   initialize().........initialization, sets which NCOs are to be tested under different conditions
 #   tst_hirez()..........almost ready-to-delete test of the HiRes fn() on opterons
@@ -303,7 +303,7 @@ sub fl_mk {
     my $elapsed;
     
     my $fl_in = my $fl_out = "$dat_drc/$fl_mk_dat[$idx][2].nc" ;
-   $bm_drc = `pwd`; chomp $bm_drc;
+    $bm_drc = "../bm"; 
     print "==== Creating $fl_mk_dat[$idx][0] data file from template in [$bm_drc]\n";
     print "Executing: $tmr_app ncgen -b -o $fl_out $bm_drc/$fl_mk_dat[$idx][2].cdl\n";
     if ($hiresfound) {$t0 = [gettimeofday];}
@@ -338,9 +338,9 @@ sub fl_mk {
 } # end sub fl_mk
 
 # Summarize timing results of file creation tests
-sub smrz_fl_mk_rslt {
+sub smr_fl_mk_rsl {
     $NUM_FLS = 4;
-    print " insmrz_fl_mk_rslt,  \$fl_tmg[1][0] = $fl_tmg[1][0] & \$NUM_FLS = $NUM_FLS\n";
+    print " in smr_fl_mk_rsl,  \$fl_tmg[1][0] = $fl_tmg[1][0] & \$NUM_FLS = $NUM_FLS\n";
     if ($dbg_lvl > 0){print "Summarizing results of file creation\n";}
     my $CC = `../src/nco/ncks --compiler`;
     my $CCinfo = '';
@@ -365,7 +365,7 @@ sub smrz_fl_mk_rslt {
 	$sock->send($udp_dat);
 	if ($dbg_lvl > 0) { print "File Creation: udp stream sent to $server_ip:\n$udp_dat\n";}
     } # and send it back separately
-} # end of smrz_fl_mk_rslt
+} # end of smr_fl_mk_rsl
 
 # set_dat_drc() tries to answer the question of where to write data
 sub set_dat_drc {
@@ -639,8 +639,8 @@ sub go {
 	    
 # 			# still newlines in $result? -> a multiline result & only want the last one.
 # 			if ($result =~/\n/) {
-# 				my @rslt_arr = split(/\n/, $result);
-# 				$result = $rslt_arr[$#rslt_arr]; # take the last line
+# 				my @rsl_arr = split(/\n/, $result);
+# 				$result = $rsl_arr[$#rsl_arr]; # take the last line
 # 				if ($dbg_lvl >= 1) {print "\nprocessed multiline \$result = [$result]\n";}
 # 			}
 # 			# figure out if $result is numeric or alpha
@@ -710,8 +710,8 @@ sub go {
     
     # still newlines in $result? -> a multiline result & only want the last one.
     if ($result =~/\n/) {
-	my @rslt_arr = split(/\n/, $result);
-	$result = $rslt_arr[$#rslt_arr]; # take the last line
+	my @rsl_arr = split(/\n/, $result);
+	$result = $rsl_arr[$#rsl_arr]; # take the last line
 	if ($dbg_lvl >= 1) {print "\nprocessed multiline \$result = [$result]\n";}
     }
     # figure out if $result is numeric or alpha

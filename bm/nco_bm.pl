@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.127 2006-05-23 05:26:41 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.128 2006-05-23 05:35:06 zender Exp $
 
 # Usage: usage(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -367,23 +367,23 @@ initialize($bch_flg,$dbg_lvl);
 # $foo_T42_fl    = "$dat_drc/foo_T42.nc";
 
 # NCO_bm defined here to allow above variables to be defined for later use
-use NCO_bm; # module that contains most of the functions.
+use NCO_bm; # Benchmarking functions
 
-# the real udping server
+# UDP server
 $server_name = "sand.ess.uci.edu";
 $server_ip = "128.200.14.132";
 $server_port = 29659;
 
-if ($usg) { usage()};   # dump usage blurb
-if (0) { tst_hirez(); } # tests the hires timer - needs explict code mod to do this
+if($usg){usage()};
+if(0){tst_hirez();} # Test hires timer - needs explicit code mod to do this
 
-if ($iosockfound) {
+if($iosockfound){
     $sock = IO::Socket::INET->new (
 				   Proto    => 'udp',
 				   PeerAddr => $server_ip,
 				   PeerPort => $server_port
-				   ) or print "\nCan't get the socket - continuing anyway.\n"; # if off network..
-} else {$udp_reprt = 0;}
+				   ) or print "\nCannot get socket - continuing anyway.\n"; # if off network..
+}else{$udp_reprt = 0;}
 
 # Initialize bm directory
 # $bm_drc = `pwd`; chomp $bm_drc;
@@ -475,7 +475,7 @@ if ($tst_fl_mk ne '0' || $srv_sd ne "SSNOTSET"){
     if ($tst_fl_mk =~ /2/){ @fl_tmg = NCO_bm::fl_mk(1); $fc++; }
     if ($tst_fl_mk =~ /3/){ @fl_tmg = NCO_bm::fl_mk(2); $fc++; }
     if ($notbodi && $tst_fl_mk =~ /4/) { @fl_tmg = NCO_bm::fl_mk(3); $fc++; }
-    if ($fc >0) {NCO_bm::smrz_fl_mk_rslt(@fl_tmg); } # Print and UDPreport creation times
+    if ($fc >0) {NCO_bm::smr_fl_mk_rsl(@fl_tmg); } # Print and UDPreport creation times
 }
 
 my $doit=1; # for skipping various tests
