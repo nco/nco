@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.8 2006-05-23 13:15:56 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.9 2006-05-23 16:20:20 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -250,9 +250,7 @@ var_sct *var_ret;
   return var_ret;
 }
 
-
-
-bool              /* O [flg] true if var has been stretched */
+nco_bool     /* O [flg] true if var has been stretched */
 ncap_att_stretch  /* stretch a single valued attribute from 1 to sz */
 (var_sct* var,    /* I/O [sct] variable */       
  long nw_sz)      /* I [nbr] new var size */
