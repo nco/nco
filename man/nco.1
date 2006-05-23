@@ -1,0 +1,178 @@
+.TH NCO 1
+.SH NAME
+NCO \- netCDF Operators
+.SH SYNTAX
+operator 
+[
+.IR options ]
+.I input-files
+.I output-file
+.SH DESCRIPTION
+.PP
+The netCDF Operators, or 
+.B NCO
+are a suite of programs known as 
+.IR operators .
+Each operator is a standalone, command line program which is executed at
+the UNIX shell-level like, e.g., 
+.B ls
+or
+.BR mkdir .
+The operators take netCDF (<http://www.unidata.ucar.edu/packages/netcdf>)
+files as input, then perform a set of operations (e.g., deriving new
+data, averaging, hyperslabbing, or metadata manipulation) and produce a 
+netCDF file as output. 
+The operators are primarily designed to aid manipulation and analysis of
+gridded scientific data.
+The single command style of 
+.B NCO 
+allows users to manipulate and analyze
+files interactively and with simple scripts, avoiding the overhead
+(and some of the power) of a higher level programming environment. 
+The 
+.B NCO User's Guide
+illustrates their use
+with examples from the field of climate modeling and analysis.
+.PP
+The available 
+.I operators 
+are:
+.PP 
+.RS
+.BR ncap ,
+netCDF Arithmetic Processor
+.RE
+.RS
+.BR ncatted ,
+netCDF Attribute Editor
+.RE
+.RS
+.BR ncbo , 
+netCDF Binary Operator (includes 
+.BR ncadd , 
+.BR ncsubtract , 
+.BR ncmultiply , 
+.BR ncdivide )
+.RE
+.RS
+.BR ncea , 
+netCDF Ensemble Averager
+.RE
+.RS
+.BR ncecat , 
+netCDF Ensemble Concatenator
+.RE
+.RS
+.BR ncflint , 
+netCDF File Interpolator
+.RE
+.RS
+.BR ncks , 
+netCDF Kitchen Sink
+.RE
+.RS
+.BR ncpdq ,
+netCDF Permute Dimensions Quickly, Pack Data Quietly
+.RE
+.RS
+.BR ncra , 
+netCDF Record Averager
+.RE
+.RS
+.BR ncrcat ,
+netCDF Record Concatenator
+.RE
+.RS
+.BR ncrename , 
+netCDF Renamer
+.RE
+.RS
+.BR ncwa ,
+netCDF Weighted Averager.
+.RE
+(Note that the "averagers"
+are misnamed because they perform many non-linear operations as well,
+e.g., total, minimum, maximum, RMS).
+.PP
+The operators are as general as netCDF
+itself: there are no restrictions on the contents of the netCDF
+file(s) used as input.
+.BR NCO 's 
+internal routines are completely dynamic and impose no limit on
+the number or sizes of dimensions, variables, and files.
+.B NCO 
+is designed to be used both interactively and with large batch jobs.
+The default operator behavior is often sufficient for everyday needs, 
+and there are numerous command line (i.e., run-time) options, for
+special cases.
+.B NCO
+works well on all modern operating systems.
+
+.\" NB: Append man_end.txt here
+.\" $Header: /data/zender/nco_20150216/nco/man/nco.1,v 1.1 2006-05-23 00:11:39 zender Exp $ -*-nroff-*-
+.\" Purpose: Trailer file for common ending to NCO man pages
+.\" Usage: 
+.\" Append this file to end of NCO man pages immediately after marker
+.\" that says "Append man_end.txt here"
+.SH AUTHOR
+.B NCO
+manual pages written by Charlie Zender and Brian Mays.
+
+.SH "REPORTING BUGS"
+Report bugs to <http://sf.net/bugs/?group_id=3331>.
+
+.SH COPYRIGHT
+Copyright \(co 1995-2004 Charlie Zender
+.br
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+.SH "SEE ALSO"
+The full documentation for
+.B NCO
+is maintained as a Texinfo manual called the 
+.B NCO User's Guide.
+Because 
+.B NCO
+is mathematical in nature, the documentation includes TeX-intensive
+portions not viewable on character-based displays. 
+Hence the only complete and authoritative versions of the 
+.B NCO User's Guide 
+are the PDF (recommended), DVI, and Postscript versions at
+<http://nco.sf.net/nco.pdf>, <http://nco.sf.net/nco.dvi>,
+and <http://nco.sf.net/nco.ps>, respectively.
+HTML and XML versions
+are available at <http://nco.sf.net/nco.html> and
+<http://nco.sf.net/nco.xml>, respectively.
+
+If the
+.B info
+and
+.B NCO
+programs are properly installed at your site, the command
+.IP
+.B info nco
+.PP
+should give you access to the complete manual, except for the
+TeX-intensive portions.
+
+.BR ncap (1), 
+.BR ncatted (1), 
+.BR ncbo (1), 
+.BR ncdiff (1), 
+.BR ncea (1), 
+.BR ncecat (1), 
+.BR ncflint (1), 
+.BR ncks (1), 
+.BR nco (1), 
+.BR ncpdq (1), 
+.BR ncra (1), 
+.BR ncrcat (1), 
+.BR ncrename (1), 
+.BR ncwa (1) 
+
+
+.SH HOMEPAGE
+The 
+.B NCO
+homepage at <http://nco.sf.net> contains more information.
