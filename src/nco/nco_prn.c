@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.29 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.30 2006-05-23 00:14:49 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -109,8 +109,10 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 (const nc_type typ) /* I [enm] netCDF type to provide format string for */
 {
   /* Purpose: Provide sprintf() format string for specified type */
-  switch (typ) {
+  /*static const char fmt_NC_FLOAT[]="%g"; *//* %g defaults to 6 digits of precision */
+  switch (typ){
   case NC_FLOAT:
+    /*    return fmt_NC_FLOAT;*/
     return "%g"; /* %g defaults to 6 digits of precision */
   case NC_DOUBLE:
     return "%.12g"; /* Specify 12 digits of precision for double precision */
