@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.211 2006-05-20 04:32:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.212 2006-05-23 01:14:28 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.211 2006-05-20 04:32:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.211 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.212 2006-05-23 01:14:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.212 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   ddra_info_sct ddra_info={.MRV_flg=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
@@ -937,10 +937,10 @@ main(int argc,char **argv)
 
 	/* Assign remaining input for DDRA diagnostics */
 	ddra_info.lmn_nbr=var_prc[idx]->sz; /* [nbr] Variable size */
-	ddra_info.lmn_nbr_wgt=wgt->sz; /* [nbr] Weight size */
+	if(wgt != NULL) ddra_info.lmn_nbr_wgt=wgt->sz; /* [nbr] Weight size */
 	ddra_info.nco_op_typ=nco_op_typ; /* [enm] Operation type */
 	ddra_info.rnk_var=var_prc[idx]->nbr_dim; /* I [nbr] Variable rank (in input file) */
-	ddra_info.rnk_wgt=wgt->nbr_dim; /* [nbr] Rank of weight */
+	if(wgt != NULL) ddra_info.rnk_wgt=wgt->nbr_dim; /* [nbr] Rank of weight */
 	ddra_info.var_idx=idx; /* [enm] Index */
 	ddra_info.wrd_sz=nco_typ_lng(var_prc[idx]->type); /* [B] Bytes per element */
 
