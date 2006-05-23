@@ -29,8 +29,8 @@ char *filename;
 istringstream *sin=NULL;
 ifstream *in=NULL;
 
-ncoLexer *lexer;
-ncoParser *parser;
+ncoLexer *lexer=NULL;
+ncoParser *parser=NULL;
 
 RefAST t,a;
 bool bchk;
