@@ -1,6 +1,6 @@
 2006-05-22  Charlie Zender  <zender@uci.edu>
 
-	* C++ will not build ncbo and ncwa because of designated initializers
+	* Avoid designated initializers to build ncbo and ncwa in C++
 
 	* Add nco.1 man page which Sourceforge caused me to lose
 
