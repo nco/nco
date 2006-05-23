@@ -1,5 +1,7 @@
 2006-05-22  Charlie Zender  <zender@uci.edu>
 
+	* C++ will not build ncbo and ncwa because of designated initializers
+
 	* Add nco.1 man page which Sourceforge caused me to lose
 
 2006-05-20  Charlie Zender  <zender@uci.edu>
