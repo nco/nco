@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.7 2006-04-13 12:46:21 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.8 2006-05-23 13:15:56 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -7,6 +7,7 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include <assert.h>
+#include <string>
 #include "ncap2.hh" /* netCDF arithmetic processor */
 
 /* have removed extern -- (not linking to ncap_lex.l */
@@ -176,41 +177,27 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
 } /* end ncap_var_write() */
 
 
-var_sct *                /* O [sct] variable containing attribute */
-ncap_att_init(           /*   [fnc] Grab an attribute from input file */
-const char *const va_nm, /* I [sng] att name of form var_nm&att_nm */ 
-prs_sct *prs_arg)        /* I/O vectors of atts & vars & file names  */
+var_sct*
+ncap_att_get
+(int var_id,
+ const char *var_nm,
+ const char *att_nm,
+ prs_sct *prs_arg)
 {
-int rcd;
-int var_id;
-long sz;
-nc_type type;
-
-char *var_nm;
-char *att_nm;
-
-
-var_sct *var_ret;
-
-  var_nm=strdup(va_nm);
-  att_nm=strchr(var_nm,'@');
-  if (att_nm==NULL) return (var_sct*)NULL;
-  *att_nm++='\0';
-
-  if( !strcmp(var_nm,"global")){ 
-    var_id=NC_GLOBAL;
-  }else{
-    rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
-    if (rcd !=NC_NOERR) return (var_sct*)NULL;
-  }
+  long sz;
+  int rcd;
+  nc_type type;
+  var_sct *var_ret;
+  
   rcd=nco_inq_att_flg(prs_arg->in_id,var_id,att_nm,&type,&sz);
-  if (rcd == NC_ENOTATT) return (var_sct*)NULL;
+  if (rcd == NC_ENOTATT) 
+    return (var_sct*)NULL;
 
 
   var_ret=(var_sct*)nco_malloc(sizeof(var_sct));
   (void)var_dfl_set(var_ret);
 
-  var_ret->nm=strdup(va_nm);
+  var_ret->nm=strdup(var_nm);
   var_ret->id=var_id;
   var_ret->nc_id=prs_arg->in_id;
   var_ret->type=type;
@@ -222,15 +209,176 @@ var_sct *var_ret;
 
 
   rcd=nco_get_att(prs_arg->in_id,var_id,att_nm,var_ret->val.vp,type);
-  var_nm=(char*)nco_free(var_nm);
   if (rcd !=NC_NOERR) {
     var_ret=nco_var_free(var_ret);
     return (var_sct*)NULL;
   }
 
+  return var_ret; 
+}
+
+
+var_sct *                /* O [sct] variable containing attribute */
+ncap_att_init(           /*   [fnc] Grab an attribute from input file */
+const char *const va_nm, /* I [sng] att name of form var_nm&att_nm */ 
+prs_sct *prs_arg)        /* I/O vectors of atts & vars & file names  */
+{
+int rcd;
+int var_id;
+
+char *var_nm;
+char *att_nm;
+
+
+var_sct *var_ret;
+
+  var_nm=strdup(va_nm);
+  att_nm=strchr(var_nm,'@');
+  if (att_nm==NULL) return (var_sct*)NULL;
+  *att_nm++='\0';
+ 
+  if( !strcmp(var_nm,"global")){ 
+    var_id=NC_GLOBAL;
+  }else{
+    rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
+    if (rcd !=NC_NOERR) 
+      return (var_sct*)NULL;
+  }
+
+  var_ret=ncap_att_get(var_id,var_nm,att_nm,prs_arg);
+  
   return var_ret;
 }
+
+
+
+bool              /* O [flg] true if var has been stretched */
+ncap_att_stretch  /* stretch a single valued attribute from 1 to sz */
+(var_sct* var,    /* I/O [sct] variable */       
+ long nw_sz)      /* I [nbr] new var size */
+{
+
+  long  idx;
+  long  var_typ_sz;  
+  void* vp;
+  char *cp;
+
+  if(var->sz == 1L && nw_sz >1){
+    
+    var_typ_sz=nco_typ_lng(var->type);
+    vp=(void*)nco_malloc(nw_sz*var_typ_sz);
+    for(idx=0 ; idx < nw_sz ;idx++){
+      cp=(char*)vp + (ptrdiff_t)(idx*var_typ_sz);
+      memcpy(cp,var->val.vp ,var_typ_sz);
+    }
   
+    var->val.vp=(void*)nco_free(var->val.vp);
+    var->sz=nw_sz;
+    var->val.vp=vp;
+    return true;
+  }
+  
+    return false; 
+
+} /* end ncap_att_stretch */
+
+  
+int
+ncap_att_gnrl
+(const std::string s_dst,
+ const std::string s_src,
+ prs_sct  *prs_arg
+){
+  int idx;
+  int sz;
+  int rcd;
+  int var_id; 
+  int nbr_att;
+  char att_nm[NC_MAX_NAME];
+
+  var_sct *var_att;
+
+
+  std::string s_fll;
+ 
+  NcapVar *Nvar;
+  NcapVarVector var_vtr;   
+  NcapVector <var_sct*> att_vtr; //hold new attributtes.
+    
+        
+  // De-reference 
+  var_vtr= *prs_arg->ptr_var_vtr;
+
+    // get var_id
+  rcd=nco_inq_varid_flg(prs_arg->in_id,s_src.c_str(),&var_id);
+          
+  if(rcd == NC_NOERR){
+    (void)nco_inq_varnatts(prs_arg->in_id,var_id,&nbr_att);
+    // loop though attributes
+    for(idx=0; idx <nbr_att ; idx++){
+      (void)nco_inq_attname(prs_arg->in_id,var_id,idx,att_nm);
+       var_att=ncap_att_get(var_id,s_src.c_str(),att_nm,prs_arg);
+       // now add to list
+       if(var_att) {
+	  std::string s_att(att_nm);
+	  s_fll=s_dst+"@"+ s_att;
+          nco_free(var_att->nm);
+          var_att->nm=strdup(s_fll.c_str());
+          att_vtr.push(var_att); 
+        } 
+      } // end for
+    }// end rcd
+
+
+    sz=var_vtr.size();
+    for(idx=0; idx < sz ; idx++){
+      if( (var_vtr)[idx]->type != ncap_att) continue;
+      if( s_src == var_vtr[idx]->getVar() ){
+        // Create string for new attribute
+        s_fll= s_dst +"@"+(var_vtr[idx]->getAtt());
+        var_att=nco_var_dpl(var_vtr[idx]->var);
+	nco_free(var_att->nm);
+	var_att->nm=strdup(s_fll.c_str());
+        att_vtr.push(var_att);  
+      } 
+
+    }
+    // add new att to list;
+    for(idx=0 ; idx < att_vtr.size() ; idx++){
+      std::string s_out(att_vtr[idx]->nm);
+      Nvar=new NcapVar( s_out,att_vtr[idx]); 
+      prs_arg->ptr_var_vtr->push_ow(Nvar);
+    }
+
+
+    return att_vtr.size();
+    
+} /* end ncap_att_gnrl() */
+
+
+  
+int
+ncap_att_cpy
+(const std::string s_dst,
+ const std::string s_src,
+ prs_sct  *prs_arg
+){
+ 
+  int nbr_att=0;
+
+
+  if(prs_arg->ATT_INHERIT)
+      nbr_att=ncap_att_gnrl(s_dst,s_dst,prs_arg);
+
+
+  if(prs_arg->ATT_PROPAGATE && nbr_att==0)
+      nbr_att=ncap_att_gnrl(s_dst,s_src,prs_arg);
+
+
+  return nbr_att;
+}
+
+
 sym_sct *                    /* O [sct] return sym_sct */
 ncap_sym_init                /*  [fnc] populate & return a symbol table structure */
 (const char * const sym_nm,  /* I [sng] symbol name */
@@ -851,37 +999,6 @@ nco_bool ncap_var_is_att( var_sct *var) {
 }
 
 
-nco_bool          /* O [flg] true if var has been stretched */
-ncap_att_stretch  /* stretch a single valued attribute from 1 to sz */
-(var_sct* var,    /* I/O [sct] variable */       
- long nw_sz)      /* I [nbr] new var size */
-{
-
-  size_t idx;
-  size_t var_typ_sz;  
-  void* vp;
-  char *cp;
-
-  if(var->sz == 1L && nw_sz >1){
-    
-    var_typ_sz=nco_typ_lng(var->type);
-    vp=(void*)nco_malloc(nw_sz*var_typ_sz);
-    for(idx=0 ; idx < nw_sz ;idx++){
-      cp=(char*)vp + (ptrdiff_t)(idx*var_typ_sz);
-      memcpy(cp,var->val.vp ,var_typ_sz);
-    }
-  
-    var->val.vp=(void*)nco_free(var->val.vp);
-    var->sz=nw_sz;
-    var->val.vp=vp;
-    return true;
-  }
-  
-    return false; 
-
-} /* end ncap_att_stretch */
-
-
 #include "VarOp.hh" 
 
 var_sct *         /* O [sct] Sum of input variables (var1+var2) */
@@ -900,7 +1017,8 @@ ncap_var_var_op   /* [fnc] Add two variables */
   static VarOp<double> Vd;
   
   struct ncoParserTokenTypes TT;
-  var_sct *var_ret;
+  var_sct *var_ret=(var_sct*)NULL;
+
 
   //If var2 is null then we are dealing with a unary function
   if( var2 == NULL) {
@@ -1073,11 +1191,12 @@ prs_sct *prs_arg)
   
   double val=1.0; /* [frc] Value of template */
   
-  var_sct *var; /* [sct] Variable */
+  var_sct *var=(var_sct*)NULL; /* [sct] Variable */
   
   dmn_sct **dmn; /* [dmn] Dimension structure list */
   dmn_sct *dmn_item;
   dmn_sct *dmn_new;
+
   dmn_nbr = lst_nbr;
 
 
