@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.13 2006-05-19 20:25:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.14 2006-05-24 15:31:33 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -102,6 +102,10 @@ main(int argc,char **argv)
   nco_bool PRN_FNC_TBL=False; /* Option f */  
   nco_bool PROCESS_ALL_VARS=True; /* Option v */  
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool ATT_PROPAGATE=True;        
+  nco_bool ATT_INHERIT=True;          
+
+
   
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
@@ -120,8 +124,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.13 2006-05-19 20:25:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.13 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.14 2006-05-24 15:31:33 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.14 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -539,6 +543,9 @@ main(int argc,char **argv)
   
   prs_arg.ntl_scn=False;   //[flg] Initial scan of script */
   prs_arg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
+  prs_arg.ATT_PROPAGATE=ATT_PROPAGATE;      
+  prs_arg.ATT_INHERIT=ATT_INHERIT;          
+
 
     
   if(fl_spt_usr == NULL){
