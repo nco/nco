@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.766 2006-05-23 19:49:10 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.767 2006-05-24 17:46:17 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -485,7 +485,7 @@ nco717. Averaging empty record variable creates an element in output!:
 	What to do?  Nothing.
 nco722. mpncwa: DDRA diagnostics should work in MPI mode, not just SMP mode
 nco724. attribute propagation: test
-        ncap2 -O -s "cnv_CF_crd2=cnv_CF_crd" -s "lon2=lon[0]" -p ~/nco/data in.nc ~/foo.nc
+        ncap2 -v -O -s "cnv_CF_crd2=cnv_CF_crd" -s "lon2=lon(0)" -p ~/nco/data in.nc ~/foo.nc
 nco725. attribute propagation: regression test
 nco726. attribute propagation: document
 nco728. Major breakage in icc regression tests (gcc, xlc fine) OpenMP related?

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.14 2006-05-24 15:31:33 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.15 2006-05-24 17:46:17 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.14 2006-05-24 15:31:33 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.14 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.15 2006-05-24 17:46:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.15 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -672,7 +672,7 @@ main(int argc,char **argv)
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
 
   /* Add coordinates defined by CF convention */
-  if(CNV_CCM_CCSM_CF && (EXTRACT_ALL_COORDINATES || EXTRACT_ASSOCIATED_COORDINATES)) xtr_lst=nco_cnv_cf_crd_add(in_id,xtr_lst,&nbr_xtr);
+  // if(CNV_CCM_CCSM_CF && (EXTRACT_ALL_COORDINATES || EXTRACT_ASSOCIATED_COORDINATES)) xtr_lst=nco_cnv_cf_crd_add(in_id,xtr_lst,&nbr_xtr);
 
   /* Subtract list A again (it may contain re-defined coordinates) */
   if(nbr_xtr > 0) xtr_lst=nco_var_lst_sub(xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
