@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.10 2006-04-13 12:47:10 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.11 2006-05-24 15:29:37 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -43,6 +43,10 @@
 
 /* Define symbol table */
 
+/* Don't what Charlies done to the bools */
+/* Temporary fix for now !!*/
+#define nco_bool int
+
 typedef struct{ /* sym_sct */
   char *nm; /* [sng] Symbol name */
   double (*fnc_dbl)(double); /* [fnc] Double-valued function */
@@ -77,6 +81,10 @@ public:
   NcapVarVector *ptr_var_vtr;            // list of attributes & variables
   bool ntl_scn;                          // [flg] Initial scan of script 
   bool FORTRAN_IDX_CNV;                  //Use fortran convention with hyperslab indices
+  bool ATT_PROPAGATE;                    //Var on LHS gets attributtes from the leftermost var on the RHS
+  bool ATT_INHERIT;                      //Var on LHS inherits attributtes from var of the same name
+                                         // in the input file 
+                                              
 } prs_sct;
 
 
@@ -99,6 +107,18 @@ ncap_att_init(           /*   [fnc] Grab an attribute from input file */
 const char *const va_nm, /* I [sng] att name of form var_nm&att_nm */ 
 prs_sct *prs_arg);       /* I/O vectors of atts & vars & file names  */
 
+
+nco_bool                /* O [flg] true if var has been stretched */
+ncap_att_stretch    /* stretch a single valued attribute from 1 to sz */
+(var_sct* var,      /* I/O [sct] variable */       
+ long nw_sz);       /* I [nbr] new var size */
+
+ 
+int             
+ncap_att_cpy
+(std::string s_dst,
+ std::string s_src,
+ prs_sct  *prs_arg);
 
 
 sym_sct *                    /* O [sct] return sym_sct */
@@ -173,11 +193,6 @@ nco_bool /* O [flg] Variables now conform */
 ncap_var_stretch /* [fnc] Stretch variables */
 (var_sct **var_1, /* I/O [ptr] First variable */
  var_sct **var_2); /* I/O [ptr] Second variable */
-
-nco_bool          /* O [flg] true if var has been stretched */
-ncap_att_stretch  /* stretch a single valued attribute from 1 to sz */
-(var_sct* var,    /* I/O [sct] variable */       
- long nw_sz);      /* I [nbr] new var size */
 
 var_sct *         /* O [sct] Sum of input variables (var1+var2) */
 ncap_var_var_op   /* [fnc] Add two variables */
