@@ -40,7 +40,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.67 2006-05-14 06:47:26 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.68 2006-05-24 18:00:42 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude";
@@ -67,8 +67,8 @@ variables:
 	rlev:purpose = "Monotonically decreasing coordinate pressure";
 
 	float lon(lon);
-	lon:long_name = "Latitude";
-	lon:units = "degrees_north";
+	lon:long_name = "Longitude";
+	lon:units = "degrees_east";
 
 	double time(time);
 	float lsmlev(lsmlev);
