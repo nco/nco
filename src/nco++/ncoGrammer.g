@@ -1062,9 +1062,10 @@ out returns [var_sct *var]
     // plain Variable
 	|   v:VAR_ID       
         { 
+
           char *nm;
           nm =strdup(v->getText().c_str());
-          var=ncap_var_init(nm,prs_arg,true);
+          var=ncap_var_init(nm, prs_arg,true);
           if(var== (var_sct*)NULL){
                nco_exit(EXIT_FAILURE);
           }
@@ -1073,6 +1074,9 @@ out returns [var_sct *var]
           // apply cast only if sz >1 
           if(bcst && var->sz >1)
             var=ncap_do_cst(var,var_cst,prs_arg->ntl_scn);
+
+          // free nm (It is copied in nco_var_fll())
+          nm=(char*)nco_free(nm);
 
         } /* end action */
     // PLain attribute
