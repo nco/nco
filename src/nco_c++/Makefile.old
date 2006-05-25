@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.42 2006-05-19 05:09:59 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.43 2006-05-25 20:17:09 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -755,9 +755,7 @@ ifeq (icpc,$(firstword ${CXX}))
  CFLAGS := -w1
  CPPFLAGS += -I${IA32ROOT}/include -I${IA32ROOT}/include/c++
  LDFLAGS := -cxxlib-icc ${LDFLAGS} -lsvml
-ifeq (${OMP},Y)
  OMP_FLG_C := -openmp -openmp_report0
-endif # endif OMP
 ifeq (${OPTS},O)
  CFLAGS += -O3 -g ${ICC_RCH_ARG}
 endif
@@ -819,7 +817,7 @@ ifeq (${CXX},pgCC)
 # Enable Large File Support (LFS) by default
  CFLAGS := -Mlfs
  LDFLAGS += -Mlfs
- OMP_FLG := -mp
+ OMP_FLG_C := -mp
 ifeq (${OPTS},D)
  CFLAGS += -g
 endif
@@ -837,7 +835,7 @@ endif # endif Portland Group C++ Compiler
 # Portland Group Fortran Compiler
 ifeq (${FC},pgf90)
  FFLAGS := -Mextend -Mnosecond_underscore -byteswapio -Mrecursive -Mdalign -Ktrap=fp -Mlfs
- OMP_FLG := -mp
+ OMP_FLG_F := -mp
 ifeq (${PRC},D)
  FFLAGS += -Mr8 -Mi4
 endif
@@ -871,9 +869,11 @@ ifeq (${OPTS},X)
 endif
 endif # endif G77 Fortran compiler
 ifeq (${OMP},Y)
- CFLAGS += ${OMP_FLG}
- FFLAGS += ${OMP_FLG}
- LDFLAGS := ${OMP_FLG} ${LDFLAGS}
+ CFLAGS += ${OMP_FLG_C}
+ CXXFLAGS += ${OMP_FLG_C}
+ FFLAGS += ${OMP_FLG_F}
+# LD behavior assumes C source code
+ LDFLAGS := ${OMP_FLG_C} ${LDFLAGS}
 endif # endif OMP
 endif
 # endif LINUX
