@@ -1,3 +1,7 @@
+2006-05-24  Charlie Zender  <zender@uci.edu>
+
+	* Correct lon attributes in in.cdl
+
 2006-05-22  Charlie Zender  <zender@uci.edu>
 
 	* Avoid designated initializers to build ncbo and ncwa in C++
