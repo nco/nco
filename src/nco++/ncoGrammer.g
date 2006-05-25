@@ -737,6 +737,7 @@ assign
               if(var->sz ==1 )
                   var=ncap_do_cst(var,var_cst,prs_arg->ntl_scn);
      
+              var->nm=(char*)nco_free(var->nm);
 
               var->nm =strdup(vid->getText().c_str());
               (void)ncap_var_write(var,prs_arg);
@@ -1090,7 +1091,7 @@ out returns [var_sct *var]
                 var=nco_var_dpl(Nvar->var);
             else    
                 // Check input file for attribute
-                var=ncap_att_init(att->getText().c_str(),prs_arg);
+                var=ncap_att_init(att->getText(),prs_arg);
 
             if(var== (var_sct*)NULL){
                 fprintf(stderr,"unable to locate attribute %s in input or output files\n",att->getText().c_str());
