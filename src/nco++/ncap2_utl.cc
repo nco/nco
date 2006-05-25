@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.9 2006-05-23 16:20:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.10 2006-05-25 14:13:29 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -7,8 +7,10 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include <assert.h>
+#include <ctype.h>
 #include <string>
 #include "ncap2.hh" /* netCDF arithmetic processor */
+
 
 /* have removed extern -- (not linking to ncap_lex.l */
 /*extern*/ char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in ncap_lex.l) */
@@ -186,6 +188,8 @@ ncap_att_get
 {
   long sz;
   int rcd;
+  char *ln_nm;
+
   nc_type type;
   var_sct *var_ret;
   
@@ -196,8 +200,12 @@ ncap_att_get
 
   var_ret=(var_sct*)nco_malloc(sizeof(var_sct));
   (void)var_dfl_set(var_ret);
-
-  var_ret->nm=strdup(var_nm);
+  
+  // Make name of the form var_nm@att_nm
+  ln_nm=(char*)nco_malloc( (strlen(var_nm)+strlen(att_nm)+2)*sizeof(char));
+  strcpy(ln_nm,var_nm);strcat(ln_nm,"@");strcat(ln_nm,att_nm);
+  
+  var_ret->nm=ln_nm;
   var_ret->id=var_id;
   var_ret->nc_id=prs_arg->in_id;
   var_ret->type=type;
@@ -218,34 +226,39 @@ ncap_att_get
 }
 
 
-var_sct *                /* O [sct] variable containing attribute */
-ncap_att_init(           /*   [fnc] Grab an attribute from input file */
-const char *const va_nm, /* I [sng] att name of form var_nm&att_nm */ 
-prs_sct *prs_arg)        /* I/O vectors of atts & vars & file names  */
+var_sct *                  /* O [sct] variable containing attribute */
+ncap_att_init(             /*   [fnc] Grab an attribute from input file */
+const std::string s_va_nm, /* I [sng] att name of form var_nm&att_nm */ 
+prs_sct *prs_arg)          /* I/O vectors of atts & vars & file names  */
 {
 int rcd;
 int var_id;
 
-char *var_nm;
-char *att_nm;
-
+std::string var_nm;
+std::string att_nm;
+size_t  att_char_posn;
 
 var_sct *var_ret;
 
-  var_nm=strdup(va_nm);
-  att_nm=strchr(var_nm,'@');
-  if (att_nm==NULL) return (var_sct*)NULL;
-  *att_nm++='\0';
- 
-  if( !strcmp(var_nm,"global")){ 
-    var_id=NC_GLOBAL;
-  }else{
-    rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
+//check if we have an attribute
+
+
+
+if( (att_char_posn =s_va_nm.find("@")) ==std::string::npos )
+  return (var_sct*)NULL; 
+
+var_nm=s_va_nm.substr(0,att_char_posn);
+att_nm=s_va_nm.substr(att_char_posn+1);
+
+if(var_nm == "global")
+  var_id=NC_GLOBAL;
+  else{
+    rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm.c_str(),&var_id);
     if (rcd !=NC_NOERR) 
       return (var_sct*)NULL;
   }
 
-  var_ret=ncap_att_get(var_id,var_nm,att_nm,prs_arg);
+  var_ret=ncap_att_get(var_id,var_nm.c_str(),att_nm.c_str(),prs_arg);
   
   return var_ret;
 }
@@ -316,14 +329,14 @@ ncap_att_gnrl
     for(idx=0; idx <nbr_att ; idx++){
       (void)nco_inq_attname(prs_arg->in_id,var_id,idx,att_nm);
        var_att=ncap_att_get(var_id,s_src.c_str(),att_nm,prs_arg);
-       // now add to list
-       if(var_att) {
-	  std::string s_att(att_nm);
+       // now add to list( change the name!!)
+       if(var_att){ 
+          std::string s_att(att_nm);
 	  s_fll=s_dst+"@"+ s_att;
           nco_free(var_att->nm);
           var_att->nm=strdup(s_fll.c_str());
           att_vtr.push(var_att); 
-        } 
+       } 
       } // end for
     }// end rcd
 
@@ -344,6 +357,12 @@ ncap_att_gnrl
     // add new att to list;
     for(idx=0 ; idx < att_vtr.size() ; idx++){
       std::string s_out(att_vtr[idx]->nm);
+      // skip missing values
+      if( s_out.find("@missing_value") != std::string::npos){
+	(void)nco_var_free(att_vtr[idx]);
+        continue;
+      } 
+
       Nvar=new NcapVar( s_out,att_vtr[idx]); 
       prs_arg->ptr_var_vtr->push_ow(Nvar);
     }
@@ -364,13 +383,15 @@ ncap_att_cpy
  
   int nbr_att=0;
 
+  if(prs_arg->ATT_PROPAGATE && s_dst != s_src )
+      nbr_att=ncap_att_gnrl(s_dst,s_src,prs_arg);
+
 
   if(prs_arg->ATT_INHERIT)
       nbr_att=ncap_att_gnrl(s_dst,s_dst,prs_arg);
 
 
-  if(prs_arg->ATT_PROPAGATE && nbr_att==0)
-      nbr_att=ncap_att_gnrl(s_dst,s_src,prs_arg);
+
 
 
   return nbr_att;
@@ -1054,8 +1075,18 @@ ncap_var_var_op   /* [fnc] Add two variables */
 
   // var & var
   if( !vb1 && !vb2 ) { 
+    char *swp_nm;
     (void)ncap_var_retype(var1,var2);
     (void)ncap_var_cnf_dmn(&var1,&var2);
+
+    // Bare numbers have name prefixed with"_"
+    // for attribute propagation to work we need
+    // to swap names about if first operand is a bare number
+    // and second operand is a var
+    if( !isalpha(var1->nm[0]) && isalpha(var2->nm[0]) ){
+      swp_nm=var1->nm; var1->nm=var2->nm; var2->nm=swp_nm; 
+    }  
+
     // var & att
   }else  if( !vb1 && vb2 ){ 
     var2=nco_var_cnf_typ(var1->type,var2);
