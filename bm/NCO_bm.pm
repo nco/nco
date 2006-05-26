@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.46 2006-05-23 22:24:07 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.47 2006-05-26 20:37:02 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions in approximate order of their usage:
@@ -41,7 +41,7 @@ our @ISA = qw(Exporter);
 our @EXPORT = qw (
 		  tst_run dbg_msg drc_dat_set bm_ntl
 		  $pfx_cmd $drc_dat @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
-		  $prsrv_fl  $srv_sde $hiresfound $dodap $bm $dbg_lvl $sock $udp_reprt
+		  $prsrv_fl  $srv_sde $hiresfound $dodap $bm $dbg_lvl $sock $udp_rpt
 		  $mpi_prc $pfx_mpi $mpi_fk
 		  );
 
@@ -56,7 +56,7 @@ use vars qw(
 	    $tst_id_sng %tst_nbr %usr_tme $wnt_log $timestamp $bm_drc $caseid
 	    $cmd_ln $drc_dat @fl_mk_dat $fl_pth @fl_tmg $md5found %MD5_tbl
 	    $nco_D_flg $NUM_FLS $pfxd $prsrv_fl $que $server_ip $sock $thr_nbr
-	    $dbg_sng $err_sng $tmr_app $udp_reprt %wc_tbl $pfxd $nvr_my_bin_dir
+	    $dbg_sng $err_sng $tmr_app $udp_rpt %wc_tbl $pfxd $nvr_my_bin_dir
 	    $prg_nm $arg_nbr $tw_prt_bm $srv_sde @cmd_lst
 	    
 	    );
@@ -361,7 +361,7 @@ sub rsl_smr_fl_mk {
     }
     $reportstr .= sprintf "\n\n";
     print $reportstr;
-    if ($udp_reprt) {
+    if ($udp_rpt) {
 	$sock->send($udp_dat);
 	if ($dbg_lvl > 0) { print "File Creation: udp stream sent to $server_ip:\n$udp_dat\n";}
     } # and send it back separately
@@ -886,7 +886,7 @@ sub rsl_smr_rgr {
     if ($dbg_lvl == 0) {print $reportstr;}
     else { &bm_vrb($dbg_lvl, $wnt_log, $reportstr); }
     
-    if (!$udp_reprt) { # set either explicitly (1st time) or set in ~/.ncorc after user agreed to it
+    if (!$udp_rpt) { # set either explicitly (1st time) or set in ~/.ncorc after user agreed to it
 	
 	print "\n\nThe log-formatted result from this regression test is:\n$udp_dat\n\n";
 	print << "REQ_REGR_PACKET";
@@ -910,7 +910,7 @@ REQ_REGR_PACKET
 		$ansr = <STDIN>; chomp $ansr;
 	}
 
-	if ($udp_reprt || $ansr eq "y" || $ansr eq "yes" || $ansr eq "Y" ||$ansr eq "YES") {
+	if ($udp_rpt || $ansr eq "y" || $ansr eq "yes" || $ansr eq "Y" ||$ansr eq "YES") {
 		$sock->send($udp_dat);
 		print "\nUDP Data sent!  The NCO dev team thanks you!!\nHave a good one, eh!?\n\n\n";
 		if ($dbg_lvl > 0) { print "Regression: udp stream sent to $server_ip:\n$udp_dat\n";}

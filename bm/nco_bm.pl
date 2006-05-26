@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.131 2006-05-23 22:24:07 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.132 2006-05-26 20:37:04 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -46,11 +46,11 @@ use vars qw(
 	    $spc_sng $srv_sd %subbenchmarks %success %sym_link @sys_tim_arr
 	    $sys_time %sys_tme $thr_nbr $timed $timestamp $tmp $tmr_app
 	    %totbenchmarks @tst_cmd $tst_fl_mk $tst_fmt $tst_id_sng $tst_idx
-	    %tst_nbr $tw_prt_bm  $udp_reprt $USER $usg %usr_tme %wc_tbl
+	    %tst_nbr $tw_prt_bm  $udp_rpt $USER $usg %usr_tme %wc_tbl
 	    $wnt_log $xdat_pth $xpt_dsc
 	    $pfx_cmd
 	    );
-#$udp_reprt
+#$udp_rpt
 # Initializations
 # Re-constitute commandline
 $prg_nm=$0; # $0 is program name Camel p. 136
@@ -89,7 +89,7 @@ $srv_sd = "SSNOTSET";
 $thr_nbr = 0; # If not zero, pass explicit threading argument
 $timestamp = `date -u "+%x %R"`; chomp $timestamp;
 $tst_fl_mk = '0';
-$udp_reprt = 0;
+$udp_rpt = 0;
 $usg = 0;
 $wnt_log = 0;
 $xdat_pth = ''; # explicit data path; more powerful than $drc_dat
@@ -143,7 +143,7 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	    'test_files=s' => \$tst_fl_mk,  # Create test files "134" does 1,3,4
 	    'tst_fl=s'     => \$tst_fl_mk,  # Create test files "134" does 1,3,4
 	    'thr_nbr=i'    => \$thr_nbr,    # Number of OMP threads to use
-	    'udpreport'    => \$udp_reprt,  # Return timing data back to udpserver on sand
+	    'udpreport'    => \$udp_rpt,  # Return timing data back to udpserver on sand
 	    'usage'        => \$usg,        # Explain how to use this thang
 	    'caseid=s'     => \$caseid,     # short string to tag test dir and batch queue
 	    'xdata=s'	   => \$xdat_pth,   # Explicit data path
@@ -187,12 +187,12 @@ if ($fl_fmt eq "64bit" || $fl_fmt eq "netcdf4" || $fl_fmt eq "netcdf4_classic") 
 }elsif ($fl_fmt eq "classic"){
     $fl_fmt = " ";
 } else {
-    die "Your file format spec (--fl_fmt) isn't correct; it has to be one of:\n  classic,  64bit, netcdf4, or netcdf4_classic\nPlease choose one of these and repeat.\n\n";
+    die "File format specified (--fl_fmt) must be one of:\n  classic, 64bit, netcdf4, or netcdf4_classic\nPlease repeat and specify one of these.\n\n";
 }
 
 # Read values from ~/.ncorc, if present, into global hash
 if (-e "$ENV{'HOME'}/.ncorc" && -r "$ENV{'HOME'}/.ncorc" && !-z "$ENV{'HOME'}/.ncorc" ){ # if exists, readable, nonzero
-    # read it it into the %NCO_RC hash (file format is "name" => "value"
+    # Read into %NCO_RC hash (file format is "name" => "value"
     open(RC, "$ENV{'HOME'}/.ncorc") or die "Can't open user's ~/.ncorc file for reading.\n";
     my $ln_cnt = 0;
     while (<RC>){
@@ -207,9 +207,9 @@ if (-e "$ENV{'HOME'}/.ncorc" && -r "$ENV{'HOME'}/.ncorc" && !-z "$ENV{'HOME'}/.n
     }
 }
 
-# Allow UDP reporting if perl has found IO::Socket and OK by ~/.ncorc
-# If user sets it to 'no' then this test fails
-if ($iosockfound && $NCO_RC{"udp_report"} =~ "yes"){$udp_reprt = 1;}
+# Allow UDP reporting if Perl has found IO::Socket and OK by ~/.ncorc
+# Fail if user sets it to 'no'
+if ($iosockfound && $NCO_RC{"udp_report"} =~ "yes"){$udp_rpt = 1;}
 
 # this next commented block will soon disappear as we DO need to make
 # BOTH benchmarks and regressions  run serverside
@@ -383,7 +383,7 @@ if($iosockfound){
 				   PeerAddr => $server_ip,
 				   PeerPort => $server_port
 				   ) or print "\nCannot get socket - continuing anyway.\n"; # if off network..
-}else{$udp_reprt = 0;}
+}else{$udp_rpt = 0;}
 
 # Initialize bm directory
 # $bm_drc = `pwd`; chomp $bm_drc;
