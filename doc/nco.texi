@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.357 2006-05-22 15:37:01 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.358 2006-05-27 07:22:53 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2989,12 +2989,12 @@ consider a file with variables @code{Q}, @code{Q01}--@code{Q99},
 ncks -v 'Q+' in.nc               # Select variables that start with Q
 ncks -v '^Q+.?.' in.nc           # Select Q, Q01--Q99, QAA--QZZ, etc.
 ncks -v '^Q..' in.nc             # Select Q01--Q99, QAA--QZZ, etc.
-ncks -v '^Q[0-9][0-9]' in.nc     # Select Q01--Q99
+ncks -v '^Q[0-9][0-9]' in.nc     # Select Q01--Q99, Q100
 ncks -v '^Q[[:digit:]]@{2@}' in.nc # Select Q01--Q99
 ncks -v 'H2O$' in.nc             # Select Q_H2O, X_H2O 
 ncks -v 'H2O$|CO2$' in.nc        # Select Q_H2O, X_H2O, Q_CO2, X_CO2 
-ncks -v '^Q[0-9][0-9]' in.nc     # Select Q01--Q99, Q100
 ncks -v '^Q[0-9][0-9]$' in.nc    # Select Q01--Q99
+ncks -v '^Q[0-6][0-9]|7[0-3]' in.nc # Select Q01--Q73
 ncks -v '^[a-z]_[a-z]@{3@}$' in.nc # Select Q_H2O, X_H2O, Q_CO2, X_CO2
 @end example
 Beware---two of the most frequently used repetition pattern matching

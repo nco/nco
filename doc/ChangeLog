@@ -1,3 +1,21 @@
+2006-05-27  Charlie Zender  <zender@uci.edu>
+
+	* Add Q00--Q100 to in.cdl to text regex functionality
+
+2006-05-26  Charlie Zender  <zender@uci.edu>
+
+	* Correct regular expressions in nco_bm_hyp.sh
+
+	* All previous ncwa benchmarks which used variable subsetting on
+	the IPCC dataset were incorrect due to significantly wrong regular
+	expressions in nco_bm_hyp.sh. Incorrect regular expressions did
+	not affect satellite dataset because there were fewer than ten
+	variables. 
+	
+	* Correct max variable name for var_4d in nco_bm_hyp.sh
+
+	* Give wgt_brd_flg correct sign so not miscounted by nco_ddra()
+
 2006-05-24  Charlie Zender  <zender@uci.edu>
 
 	* Correct lon attributes in in.cdl
