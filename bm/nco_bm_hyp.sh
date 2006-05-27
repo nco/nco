@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_hyp.sh,v 1.7 2006-05-27 07:14:34 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_hyp.sh,v 1.8 2006-05-27 21:48:33 zender Exp $
 
 # Purpose: Perform NCO benchmarks while subsetting 
 
@@ -13,7 +13,7 @@
 # Usage:
 # ~/nco/bm/nco_bm_hyp.sh
 
-# Copy test code to Clay:
+# Copy code to test machines:
 # scp ~/nco/bm/nco_bm_hyp.sh clay.ess.uci.edu:nco/bm
 # scp ~/nco/src/nco/ncwa.c ~/nco/src/nco/nco_ctl.c ~/nco/src/nco/nco_var_avg.c ~/nco/src/nco/nco_cnf_dmn.c clay.ess.uci.edu:nco/src/nco
 # cd ~/nco/bld;make allinone;cd ~
