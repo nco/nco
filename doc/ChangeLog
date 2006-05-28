@@ -1,5 +1,9 @@
 2006-05-27  Charlie Zender  <zender@uci.edu>
 
+	* Improve rx examples in nco.texi
+
+	* Add flg_rdd hooks to retain degenerate dimensions in ncwa TODO nco739
+
 	* Add Q00--Q100 to in.cdl to text regex functionality
 
 2006-05-26  Charlie Zender  <zender@uci.edu>
