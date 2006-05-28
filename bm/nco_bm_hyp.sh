@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_hyp.sh,v 1.9 2006-05-28 04:06:03 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_hyp.sh,v 1.10 2006-05-28 06:59:58 zender Exp $
 
 # Purpose: Perform NCO benchmarks while subsetting 
 
@@ -21,9 +21,9 @@
 SCL_SUB_SET_FLG='1' # [flg] Use approach 1: Scale by sub-setting
 SCL_HYP_SLB_FLG='0' # [flg] Use approach 2: Scale by hyperslabbing
 
-WGT_FLG='0' # [flg] Perform weighted averages
+WGT_FLG='1' # [flg] Perform weighted averages
 if [ ${WGT_FLG} = '1' ]; then
-    WGT_CMD="-w lat"
+    WGT_CMD='-w lat'
 else
     WGT_CMD=''
 fi # !WGT_FLG

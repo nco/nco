@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.768 2006-05-28 03:43:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.769 2006-05-28 06:59:42 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -499,6 +499,9 @@ nco737. Add regression for regex'ing consecutive Q's:
 	ncks -O -v 'Q[0-9][0-9]$' ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
 nco738. nco_cnv_cf_cll_mth_add() CF cell methods
 nco739. ncwa: Add option to retain all averaged dimensions as degenerate arrays rather than scalars (retain degenerate dimensions, rdd)
+	Must still propagate flg_rdd through nco_var_avg() to avoid segfaults
+	ncwa --rdd -D 1 -O -C -a lat -v wgt_one ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
+	ncwa --rdd -D 1 -O -a lat,lon,lev -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
 nco740. 
 ************************************************************************
 End ncoXXX TODOs
