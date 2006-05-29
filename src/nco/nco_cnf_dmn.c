@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.58 2006-05-26 20:15:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.59 2006-05-29 06:29:36 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -26,8 +26,8 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
      Calling routine should set MUST_CONFORM=false if wgt and var need not conform
      When wgt and var do not conform then then nco_var_cnf_dmn sets *DO_CONFORM=False and returns copy of var with all values set to 1.0
      Calling procedure then decides what to do with unity output
-     MUST_CONFORM is True for ncbo: Variables of like name to be, e.g., differenced, must be same rank
-     MUST_CONFORM is False false for ncap, ncflint, ncwa: Some variables to be averaged may not conform to the specified weight, e.g., lon will not conform to gw. This is fine and returned wgt_out may be discarded. */
+     MUST_CONFORM is True for ncbo: Variables of like name to be, e.g., differenced, must conform
+     MUST_CONFORM is False false for ncap, ncflint, ncwa: Some variables to be averaged may not conform to specified weight, e.g., lon will not conform to gw. This is fine and returned wgt_out may be discarded. */
 
   /* There are many inelegant ways to accomplish this (without using C++): */  
 
@@ -85,17 +85,16 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
       if(idx == var->nbr_dim) *DO_CONFORM=True;
     } /* end if ranks are equal */
 
-    /* 20060425: To turn off weight re-use, always execute the "else" block below
-       Do this by (temporarily) using for the conditional clause
+    /* 20060425: Weight re-use will not occur if wgt_crr is free()'d here
+       Some DDRA benchmarks need to know cost of broadcasting weights
+       To turn off weight re-use and cause broadcasting, execute "else" block below
+       by (temporarily) using in following condition
 
     if(*DO_CONFORM && False){
 
     instead of
 
-    if(*DO_CONFORM){ 
-
-    in the following line: */
-    /*    if(*DO_CONFORM && False){*/
+    if(*DO_CONFORM){ */
     if(*DO_CONFORM){
       wgt_out=wgt_crr;
     }else{
@@ -207,7 +206,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 
     size_t wgt_typ_sz;
 
-    /* Copy main attributes of variable into ouput weight */
+    /* Copy main attributes of variable into output weight */
     wgt_out=nco_var_dpl(var);
     (void)nco_xrf_var(wgt,wgt_out);
 
@@ -331,8 +330,8 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
     *DO_CONFORM=True;
   } /* end if we had to stretch weight to fit variable */
   
-  if(*DO_CONFORM == -1){
-    (void)fprintf(stdout,"%s: ERROR *DO_CONFORM == -1 on exit from nco_var_cnf_dmn()\n",prg_nm_get());
+  if(MUST_CONFORM && !(*DO_CONFORM)){
+    (void)fprintf(stdout,"%s: ERROR Variables which MUST_CONFORM do not on exit from nco_var_cnf_dmn()\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif */
   

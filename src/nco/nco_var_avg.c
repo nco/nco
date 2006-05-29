@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.44 2006-05-02 07:08:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.45 2006-05-29 06:29:36 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -36,6 +36,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
      fix: Output (averaged) variable */
 
   nco_bool AVG_DMN_ARE_MRV=False; /* [flg] Avergaging dimensions are MRV dimensions */
+  nco_bool flg_rdd=False; /* [flg] Retain degenerate dimensions */
 
   dmn_sct **dmn_avg;
   dmn_sct **dmn_fix;
@@ -47,8 +48,8 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   int idx;
   int idx_dmn;
   int dmn_avg_nbr;
-  int nbr_dmn_fix;
-  int nbr_dmn_var;
+  int dmn_fix_nbr;
+  int dmn_var_nbr;
 
   long avg_sz=int_CEWI;
   long fix_sz;
@@ -61,16 +62,16 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 
   /* Create lists of averaging and fixed dimensions (in order of their appearance 
      in the variable). We do not know a priori how many dimensions remain in the 
-     output (averaged) variable, but nbr_dmn_var is an upper bound. Similarly, we do
+     output (averaged) variable, but dmn_var_nbr is an upper bound. Similarly, we do
      not know a priori how many of the dimensions in the input list of averaging 
      dimensions (dim) actually occur in the current variable, so we do not know
      dmn_avg_nbr, but nbr_dim is an upper bound on it. */
-  nbr_dmn_var=var->nbr_dim;
-  nbr_dmn_fix=0;
+  dmn_var_nbr=var->nbr_dim;
+  dmn_fix_nbr=0;
   dmn_avg_nbr=0;
   dmn_avg=(dmn_sct **)nco_malloc(nbr_dim*sizeof(dmn_sct *));
-  dmn_fix=(dmn_sct **)nco_malloc(nbr_dmn_var*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_var;idx++){
+  dmn_fix=(dmn_sct **)nco_malloc(dmn_var_nbr*sizeof(dmn_sct *));
+  for(idx=0;idx<dmn_var_nbr;idx++){
     for(idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
       /* Comparing dimension IDs is faster than comparing dimension names 
 	 but requires assumption that all dimensions are from same file */
@@ -79,21 +80,21 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 	   dmn_avg list makes them vulnerable to manipulation and forces 
 	   dim to lose const protection in prototype */
 	dmn_avg[dmn_avg_nbr]=dim[idx_dmn];
-	/* idx_avg_var[i]=j means that the ith averaging dimension is the jth dimension of var */
+	/* idx_avg_var[i]=j means that ith averaging dimension is jth dimension of var */
 	idx_avg_var[dmn_avg_nbr]=idx;
-	/* idx_var_avg[j]=i means that the jth dimension of var is the ith averaging dimension */
+	/* idx_var_avg[j]=i means that jth dimension of var is ith averaging dimension */
 	/*	idx_var_avg[idx]=dmn_avg_nbr;*/ /* Variable is unused but instructive anyway */
 	dmn_avg_nbr++;
 	break;
       } /* end if */
     } /* end loop over idx_dmn */
     if(idx_dmn == nbr_dim){
-      dmn_fix[nbr_dmn_fix]=var->dim[idx];
-      /* idx_fix_var[i]=j means that the ith fixed dimension is the jth dimension of var */
-      idx_fix_var[nbr_dmn_fix]=idx;
-      /* idx_var_fix[j]=i means that the jth dimension of var is the ith fixed dimension */
-      /*      idx_var_fix[idx]=nbr_dmn_fix;*/ /* Variable is unused but instructive anyway */
-      nbr_dmn_fix++;
+      dmn_fix[dmn_fix_nbr]=var->dim[idx];
+      /* idx_fix_var[i]=j means that ith fixed dimension is jth dimension of var */
+      idx_fix_var[dmn_fix_nbr]=idx;
+      /* idx_var_fix[j]=i means that jth dimension of var is ith fixed dimension */
+      /*      idx_var_fix[idx]=dmn_fix_nbr;*/ /* Variable is unused but instructive anyway */
+      dmn_fix_nbr++;
     } /* end if */
   } /* end loop over idx */
 
@@ -109,11 +110,11 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   } /* end if */
 
   /* Free extra list space */
-  dmn_fix=(dmn_sct **)nco_realloc(dmn_fix,nbr_dmn_fix*sizeof(dmn_sct *));
+  dmn_fix=(dmn_sct **)nco_realloc(dmn_fix,dmn_fix_nbr*sizeof(dmn_sct *));
   dmn_avg=(dmn_sct **)nco_realloc(dmn_avg,dmn_avg_nbr*sizeof(dmn_sct *));
 
   /* Get rid of averaged dimensions */
-  fix->nbr_dim=nbr_dmn_fix;
+  fix->nbr_dim=dmn_fix_nbr;
 
   avg_sz=1L;
   for(idx=0;idx<dmn_avg_nbr;idx++){
@@ -125,7 +126,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   fix_sz=fix->sz;
 
   fix->is_rec_var=False;
-  for(idx=0;idx<nbr_dmn_fix;idx++){
+  for(idx=0;idx<dmn_fix_nbr;idx++){
     if(dmn_fix[idx]->is_rec_dmn) fix->is_rec_var=True;
     fix->dim[idx]=dmn_fix[idx];
     fix->dmn_id[idx]=dmn_fix[idx]->id;
@@ -135,17 +136,24 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   } /* end loop over idx */
   
   fix->is_crd_var=False;
-  if(nbr_dmn_fix == 1)
+  if(dmn_fix_nbr == 1)
     if(dmn_fix[0]->is_crd_dmn) 
       fix->is_crd_var=True;
 
   /* Trim dimension arrays to their new sizes */
-  fix->dim=(dmn_sct **)nco_realloc(fix->dim,nbr_dmn_fix*sizeof(dmn_sct *));
-  fix->dmn_id=(int *)nco_realloc(fix->dmn_id,nbr_dmn_fix*sizeof(int));
-  fix->srt=(long *)nco_realloc(fix->srt,nbr_dmn_fix*sizeof(long));
-  fix->cnt=(long *)nco_realloc(fix->cnt,nbr_dmn_fix*sizeof(long));
-  fix->end=(long *)nco_realloc(fix->end,nbr_dmn_fix*sizeof(long));
+  fix->dim=(dmn_sct **)nco_realloc(fix->dim,dmn_fix_nbr*sizeof(dmn_sct *));
+  fix->dmn_id=(int *)nco_realloc(fix->dmn_id,dmn_fix_nbr*sizeof(int));
+  fix->srt=(long *)nco_realloc(fix->srt,dmn_fix_nbr*sizeof(long));
+  fix->cnt=(long *)nco_realloc(fix->cnt,dmn_fix_nbr*sizeof(long));
+  fix->end=(long *)nco_realloc(fix->end,dmn_fix_nbr*sizeof(long));
   
+  /* Retain degenerate dimensions? */
+  if(flg_rdd){
+    /* Simplest way to retain degenerate dimensions is average over them,
+       then insert degenerate dimensions back into list at end TODO nco739 */
+    ;
+  } /* !flg_rdd */
+
   if(avg_sz == 1L){
     /* If averaging block size is 1, input and output value arrays are identical 
        var->val was copied to fix->val by nco_var_dpl() at beginning of routine
@@ -197,30 +205,32 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 
     /* Complex expensive collection step for creating averaging blocks works 
        in all cases though is unnecessary in one important case.
-       If averaging dimensions are most rapidly varying (MRV) dimensions, then no 
-       re-arrangement is necessary because original variable is stored in averaging
-       block order.
-       Averaging dimensions are MRV dimensions iff nbr_dmn_fix fixed dimensions are 
-       one-to-one with first nbr_dmn_fix input dimensions. 
+       No re-arrangement is necessary when averaging dimensions are most rapidly varying 
+       (MRV) dimensions because original variable is stored in averaging block order.
+       Averaging dimensions are MRV dimensions iff dmn_fix_nbr fixed dimensions are 
+       one-to-one with first dmn_fix_nbr input dimensions. 
        Alternatively, could compare dmn_avg_nbr averaging dimensions to last 
        dmn_avg_nbr dimensions of input variable.
        However, averaging dimensions may appear in any order so it is more
        straightforward to compare fixed dimensions to LRV input dimensions. */
-    for(idx=0;idx<nbr_dmn_fix;idx++) 
+    for(idx=0;idx<dmn_fix_nbr;idx++) 
       if(idx_fix_var[idx] != idx) break;
-    if(idx == nbr_dmn_fix){
+    if(idx == dmn_fix_nbr){
       if(dbg_lvl_get() > 0 && dbg_lvl_get() < 10) (void)fprintf(stderr,"%s: INFO Reduction dimensions are %d most-rapidly-varying (MRV) dimensions of %s. Will skip collection step and proceed straight to reduction step.\n",prg_nm_get(),dmn_avg_nbr,fix->nm);
       AVG_DMN_ARE_MRV=True; /* [flg] Avergaging dimensions are MRV dimensions */
-    } /* idx != nbr_dmn_fix */
+    } /* idx != dmn_fix_nbr */
     
-    /* MRV algorithm simply skips this collection step */
+    /* MRV algorithm simply skips this collection step 
+       Some DDRA benchmarks need to know cost of collection
+       Always invoke collection step by uncommenting following line: */
+    /*    AVG_DMN_ARE_MRV=False;*/
     if(!AVG_DMN_ARE_MRV){
       /* Dreaded, expensive collection algorithm sorts input into averaging blocks */
       char *avg_cp;
       char *var_cp;
       
       int typ_sz;
-      int nbr_dmn_var_m1;
+      int dmn_var_nbr_m1;
       
       long *var_cnt;
       long avg_lmn;
@@ -231,22 +241,22 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
       long dmn_avg_map[NC_MAX_DIMS];
       long dmn_fix_map[NC_MAX_DIMS];
       
-      nbr_dmn_var_m1=nbr_dmn_var-1;
+      dmn_var_nbr_m1=dmn_var_nbr-1;
       typ_sz=nco_typ_lng(fix->type);
       var_cnt=var->cnt;
       var_cp=(char *)var->val.vp;
       avg_cp=(char *)avg_val.vp;
       
       /* Compute map for each dimension of input variable */
-      for(idx=0;idx<nbr_dmn_var;idx++) dmn_var_map[idx]=1L;
-      for(idx=0;idx<nbr_dmn_var-1;idx++)
-	for(idx_dmn=idx+1;idx_dmn<nbr_dmn_var;idx_dmn++)
+      for(idx=0;idx<dmn_var_nbr;idx++) dmn_var_map[idx]=1L;
+      for(idx=0;idx<dmn_var_nbr-1;idx++)
+	for(idx_dmn=idx+1;idx_dmn<dmn_var_nbr;idx_dmn++)
 	  dmn_var_map[idx]*=var->cnt[idx_dmn];
       
       /* Compute map for each dimension of output variable */
-      for(idx=0;idx<nbr_dmn_fix;idx++) dmn_fix_map[idx]=1L;
-      for(idx=0;idx<nbr_dmn_fix-1;idx++)
-	for(idx_dmn=idx+1;idx_dmn<nbr_dmn_fix;idx_dmn++)
+      for(idx=0;idx<dmn_fix_nbr;idx++) dmn_fix_map[idx]=1L;
+      for(idx=0;idx<dmn_fix_nbr-1;idx++)
+	for(idx_dmn=idx+1;idx_dmn<dmn_fix_nbr;idx_dmn++)
 	  dmn_fix_map[idx]*=fix->cnt[idx_dmn];
       
       /* Compute map for each dimension of averaging buffer */
@@ -262,8 +272,8 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 	   Repetitions: \lmnnbr
 	   Total Counts: \rthnbr=2\lmnnbr, \mmrusrnbr=\lmnnbr
 	   NB: LHS assumed compact and cached, counted RHS offsets and fetches only */
-	dmn_ss[nbr_dmn_var_m1]=var_lmn%var_cnt[nbr_dmn_var_m1];
-	for(idx=0;idx<nbr_dmn_var_m1;idx++){
+	dmn_ss[dmn_var_nbr_m1]=var_lmn%var_cnt[dmn_var_nbr_m1];
+	for(idx=0;idx<dmn_var_nbr_m1;idx++){
 	  /* Operations: 1 divide, 1 modulo, 2 pointer offset, 2 user memory fetch
 	     Repetitions: \lmnnbr(\dmnnbr-1)
 	     Counts: \rthnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
@@ -278,7 +288,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 	/* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
 	   Repetitions: \lmnnbr(\dmnnbr-\avgnbr)
 	   Counts: \rthnbr=5\lmnnbr(\dmnnbr-\avgnbr), \mmrusrnbr=3\lmnnbr(\dmnnbr-\avgnbr) */
-	for(idx=0;idx<nbr_dmn_fix;idx++) fix_lmn+=dmn_ss[idx_fix_var[idx]]*dmn_fix_map[idx];
+	for(idx=0;idx<dmn_fix_nbr;idx++) fix_lmn+=dmn_ss[idx_fix_var[idx]]*dmn_fix_map[idx];
 	
 	/* Map N-D array indices into 1-D offset from group offset */
 	avg_lmn=0L;

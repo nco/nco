@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.213 2006-05-23 04:46:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.214 2006-05-29 06:29:36 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -96,6 +96,7 @@ main(int argc,char **argv)
   nco_bool WGT_MSK_CRD_VAR=True; /* [flg] Weight and/or mask coordinate variables */
   nco_bool opt_a_flg=False; /* Option a */
   nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
+  nco_bool flg_rdd=False; /* [flg] Retain degenerate dimensions */
 
   char **dmn_avg_lst_in=NULL_CEWI; /* Option a */
   char **fl_lst_abb=NULL; /* Option n */
@@ -116,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.213 2006-05-23 04:46:00 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.213 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.214 2006-05-29 06:29:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.214 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
 #ifdef __cplusplus
@@ -199,6 +200,9 @@ main(int argc,char **argv)
       {"mdl_cmp",no_argument,0,0}, /* [flg] DDRA diagnostics */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
+      {"file_format",required_argument,0,0},
+      {"degenerate_dimensions",no_argument,0,0}, /* [flg] Retain degenerate dimensions */
+      {"rdd",no_argument,0,0}, /* [flg] Retain degenerate dimensions */
       /* Long options with short counterparts */
       {"4",no_argument,0,'4'},
       {"64bit",no_argument,0,'4'},
@@ -286,6 +290,7 @@ main(int argc,char **argv)
     /* Process long options without short option counterparts */
     if(opt == 0){
       if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) flg_ddra=True; /* [flg] DDRA diagnostics */
+      if(!strcmp(opt_crr,"rdd") || !strcmp(opt_crr,"degenerate_dimensions")) flg_rdd=True; /* [flg] Retain degenerate dimensions */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
     } /* opt != 0 */
     /* Process short options */
@@ -548,23 +553,48 @@ main(int argc,char **argv)
       } /* end loop over idx_avg */
     } /* end loop over idx */
 
-    /* Dimensions to be averaged will not appear in output file */
-    dmn_out=(dmn_sct **)nco_malloc((nbr_dmn_xtr-dmn_avg_nbr)*sizeof(dmn_sct *));
-    nbr_dmn_out=0;
-    for(idx=0;idx<nbr_dmn_xtr;idx++){
-      for(idx_avg=0;idx_avg<dmn_avg_nbr;idx_avg++){
-	if(!strcmp(dmn_avg_lst[idx_avg].nm,dim[idx]->nm)) break;
-      } /* end loop over idx_avg */
-      if(idx_avg == dmn_avg_nbr){
+    if(flg_rdd){
+      /* fxm: nco739 Dimensions to be averaged will not appear in output file */
+      dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+      nbr_dmn_out=0;
+      for(idx=0;idx<nbr_dmn_xtr;idx++){
+	for(idx_avg=0;idx_avg<dmn_avg_nbr;idx_avg++){
+	  if(!strcmp(dmn_avg_lst[idx_avg].nm,dim[idx]->nm)) break;
+	} /* end loop over idx_avg */
 	dmn_out[nbr_dmn_out]=nco_dmn_dpl(dim[idx]);
 	(void)nco_dmn_xrf(dim[idx],dmn_out[nbr_dmn_out]);
+	if(idx_avg != dmn_avg_nbr){
+	  /* Dimension is in average list reduce output size to one */
+	  dmn_out[nbr_dmn_out]->cnt=1L;
+	  dmn_out[nbr_dmn_out]->srt=0L;
+	  dmn_out[nbr_dmn_out]->end=0L;
+	} /* end if */
 	nbr_dmn_out++;
-      } /* end if */
-    } /* end loop over idx_avg */
+      } /* end loop over idx_avg */
+    }else{
+      /* Dimensions to be averaged will not appear in output file */
+      dmn_out=(dmn_sct **)nco_malloc((nbr_dmn_xtr-dmn_avg_nbr)*sizeof(dmn_sct *));
+      nbr_dmn_out=0;
+      for(idx=0;idx<nbr_dmn_xtr;idx++){
+	for(idx_avg=0;idx_avg<dmn_avg_nbr;idx_avg++){
+	  if(!strcmp(dmn_avg_lst[idx_avg].nm,dim[idx]->nm)) break;
+	} /* end loop over idx_avg */
+	if(idx_avg == dmn_avg_nbr){
+	  dmn_out[nbr_dmn_out]=nco_dmn_dpl(dim[idx]);
+	  (void)nco_dmn_xrf(dim[idx],dmn_out[nbr_dmn_out]);
+	  nbr_dmn_out++;
+	} /* end if */
+      } /* end loop over idx_avg */
+    } /* end if */
     /* Dimension average list no longer needed */
     dmn_avg_lst=nco_nm_id_lst_free(dmn_avg_lst,dmn_avg_nbr);
 
-    if(nbr_dmn_out != nbr_dmn_xtr-dmn_avg_nbr){
+    if(flg_rdd && (nbr_dmn_out != nbr_dmn_xtr)){
+      (void)fprintf(fp_stdout,"%s: ERROR nbr_dmn_out != nbr_dmn_xtr\n",prg_nm);
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+
+    if(!flg_rdd && (nbr_dmn_out != nbr_dmn_xtr-dmn_avg_nbr)){
       (void)fprintf(fp_stdout,"%s: ERROR nbr_dmn_out != nbr_dmn_xtr-dmn_avg_nbr\n",prg_nm);
       nco_exit(EXIT_FAILURE);
     } /* end if */

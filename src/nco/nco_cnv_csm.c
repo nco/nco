@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.30 2006-05-19 20:38:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.31 2006-05-29 06:29:36 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -138,7 +138,8 @@ nco_cnv_cf_crd_add /* [fnc] Add coordinates defined by CF convention */
  nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
  int * const nbr_xtr) /* I/O number of variables in current extraction list */
 {
-  /* Purpose: Detect coordinates specified by CF convention and add them to extraction list */
+  /* Purpose: Detect coordinates specified by CF convention and add them to extraction list
+     http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#grid_ex2 */
 
   const char dlm_sng[]=" "; /* [sng] Delimiter string */
   const char fnc_nm[]="nco_cnv_cf_crd_add()"; /* [sng] Function name */
@@ -219,3 +220,26 @@ nco_cnv_cf_crd_add /* [fnc] Add coordinates defined by CF convention */
   return xtr_lst;
   
 } /* end nco_cnv_cf_crd_add() */
+
+int /* [rcd] Return code */
+nco_cnv_cf_cll_mth_add /* [fnc] Add cell_methods attributes */
+(const int nc_id, /* I netCDF file ID */
+ var_sct * const * const var, /* I [sct] Variable to reduce (e.g., average) (destroyed) */
+ const int nbr_var, /* I [nbr] Number of variables to be defined */
+ dmn_sct * const * const dim, /* I [sct] Dimensions over which to reduce variable */
+ const int nbr_dim, /* I [sct] Number of dimensions to reduce variable over */
+ const int nco_op_typ) /* I [enm] Operation type, default is average */
+{
+  /* Purpose: Add/modify cell_methods attribute according to CF convention
+     http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#cell-methods
+     http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#sub_app */
+
+  const char fnc_nm[]="nco_cnv_cf_cll_mth_add()"; /* [sng] Function name */
+
+  int rcd=NC_NOERR; /* [rcd] Return code */
+
+  rcd=nbr_dim+(int)strlen(fnc_nm);
+
+  return rcd;
+  
+} /* end nco_cnv_cf_cll_mth_add() */

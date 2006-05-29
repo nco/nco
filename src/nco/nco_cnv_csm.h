@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.19 2006-05-19 20:25:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.20 2006-05-29 06:29:36 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -48,6 +48,15 @@ nco_cnv_cf_crd_add /* [fnc] Add coordinates defined by CF convention */
 (const int nc_id, /* I netCDF file ID */
  nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
  int * const nbr_xtr); /* I/O number of variables in current extraction list */
+
+int /* [rcd] Return code */
+nco_cnv_cf_cll_mth_add /* [fnc] Add cell_methods attributes */
+(const int nc_id, /* I netCDF file ID */
+ var_sct * const * const var, /* I [sct] Variable to reduce (e.g., average) (destroyed) */
+ const int nbr_var, /* I [nbr] Number of variables to be defined */
+ dmn_sct * const * const dim, /* I [sct] Dimensions over which to reduce variable */
+ const int nbr_dim, /* I [sct] Number of dimensions to reduce variable over */
+ const int nco_op_typ); /* I [enm] Operation type, default is average */
 
 #ifdef __cplusplus
 } /* end extern "C" */

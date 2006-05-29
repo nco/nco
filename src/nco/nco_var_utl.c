@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.112 2006-05-20 00:27:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.113 2006-05-29 06:29:36 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -901,7 +901,9 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 
       if(dbg_lvl_get() > 3 && prg_id != ncwa){
 	/* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm
-	   contains _wrong name_ when variables will be averaged. */
+	   contains _wrong name_ when variables will be averaged.
+	   ncwa does contain write name information now if retain_degenerate_dimensions 
+	   option is in effect, but this is the exception rather than the rule. */
 	(void)fprintf(stdout,"%s: DEBUG %s about to define variable %s with %d dimension%s%s",prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,output ID): " : "");
 	for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
 	  (void)fprintf(stdout,"%s (%d,%s)%s",var[idx]->dim[dmn_idx]->nm,dmn_idx,"unknown",(dmn_idx < dmn_nbr-1) ? ", " : "");
@@ -914,7 +916,9 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       
       if(dbg_lvl_get() > 3 && prg_id != ncwa){
 	/* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm
-	   contains _wrong name_ when variables will be averaged. */
+	   contains _wrong name_ when variables will be averaged.
+	   ncwa does contain write name information now if retain_degenerate_dimensions 
+	   option is in effect, but this is the exception rather than the rule. */
 	(void)fprintf(stdout,"%s: DEBUG %s defined variable %s with %d dimension%s%s",prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,output ID): " : "");
 	for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
 	  (void)fprintf(stdout,"%s (%d,%d)%s",var[idx]->dim[dmn_idx]->nm,dmn_idx,dmn_id_vec[dmn_idx],(dmn_idx < dmn_nbr-1) ? ", " : "");

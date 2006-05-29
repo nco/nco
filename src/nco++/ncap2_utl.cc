@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.10 2006-05-25 14:13:29 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.11 2006-05-29 06:29:36 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -26,7 +26,7 @@ bool bfll)                 /* if true fill var with data */
   /* const char fnc_nm[]="ncap_var_init()"; *//* [sng] Function name */
 
   int idx;
-  int nbr_dmn_var;
+  int dmn_var_nbr;
   int *dim_id=NULL;
   int var_id;
   int rcd;
@@ -62,12 +62,12 @@ bool bfll)                 /* if true fill var with data */
     (void)nco_redef(prs_arg->out_id);
     fl_id=prs_arg->in_id;
     
-    (void)nco_inq_varndims(fl_id,var_id,&nbr_dmn_var);
-    if(nbr_dmn_var>0){
-      dim_id=(int *)nco_malloc(nbr_dmn_var*sizeof(int));
+    (void)nco_inq_varndims(fl_id,var_id,&dmn_var_nbr);
+    if(dmn_var_nbr>0){
+      dim_id=(int *)nco_malloc(dmn_var_nbr*sizeof(int));
       
       (void)nco_inq_vardimid(fl_id,var_id,dim_id);
-      for(idx=0;idx<nbr_dmn_var;idx++){ 
+      for(idx=0;idx<dmn_var_nbr;idx++){ 
 	// get dim name
 	(void)nco_inq_dimname(fl_id,dim_id[idx],dmn_nm);
         // check if dim is already in output

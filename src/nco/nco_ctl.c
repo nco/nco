@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.131 2006-05-22 15:37:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.132 2006-05-29 06:29:36 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -91,6 +91,7 @@ nco_ddra /* [fnc] Count operations */
   
   /* Following speed parameter estimates are for clay.ess.uci.edu 
      clay is the dual opteron used in ppr_ZeM06 */
+  const float ntg_nbr_brd_fdg_fct=1.8; /* [frc] Empirical correction to broadcasting */
   const float spd_flp=153e6; /* [# s-1] Floating point operation speed */
   const float spd_ntg=200e6; /* [# s-1] Integer operation speed */
   const float spd_rd=63.375e6; /* [B s-1] Disk read bandwidth */
@@ -234,7 +235,7 @@ nco_ddra /* [fnc] Count operations */
   flp_nbr_rdc_dfl=lmn_nbr; /* [nbr] Floating point operations for reduction */
 
   /* Integer operations for broadcasting weight */
-  ntg_nbr_brd_dfl=lmn_nbr*(6*rnk_var+8*rnk_wgt+2); /* [nbr] N(6R+8R_w+2) */
+  ntg_nbr_brd_dfl=ntg_nbr_brd_fdg_fct*lmn_nbr*(6*rnk_var+8*rnk_wgt+2); /* [nbr] N(6R+8R_w+2) */
 
   /* Byte-swap integer operations per element */
   ntg_nbr_byt_swp_dfl=wrd_sz+2; /* [nbr nbr-1] W+2 */
@@ -297,11 +298,11 @@ nco_ddra /* [fnc] Count operations */
       flp_nbr_rdc+=2*lmn_nbr;
       /* One floating point divide per output element to normalize denominator by tally */
       flp_nbr_nrm+=lmn_nbr_out;
-      if(!wgt_brd_flg){
+      if(wgt_brd_flg){
 	/* fxm: Charge for broadcasting weight at least once */
 	/* Broadcasting cost for weight */
 	ntg_nbr_brd=ntg_nbr_brd_dfl;
-      } /* wgt_brd_flg */
+      } /* !wgt_brd_flg */
       if(!MRV_flg){
 	/* Collection required for denominator */
 	ntg_nbr_clc+=ntg_nbr_clc_dfl;

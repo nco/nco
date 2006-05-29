@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.61 2006-05-20 00:27:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.62 2006-05-29 06:29:36 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -328,7 +328,8 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
     } /* end if */
   } /* end loop over idx */
   
-  /* Detect and apply coordinates specified by CF convention */
+  /* Detect and apply coordinates specified by CF convention
+     http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#grid_ex2 */
   if(CNV_CCM_CCSM_CF){
     const char dlm_sng[]=" "; /* [sng] Delimiter string */
     const char fnc_nm[]="nco_var_lst_crd_add()"; /* [sng] Function name */
@@ -464,7 +465,8 @@ nco_var_lst_crd_ass_add /* [fnc] Add coordinates associated extracted variables 
     } /* end if dimension is coordinate */
   } /* end loop over idx_dmn */
   
-  /* Detect and apply coordinates specified by CF convention */
+  /* Detect and apply coordinates specified by CF convention
+     http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#grid_ex2 */
   if(CNV_CCM_CCSM_CF){
     const char dlm_sng[]=" "; /* [sng] Delimiter string */
     const char fnc_nm[]="nco_var_lst_crd_ass_add()"; /* [sng] Function name */

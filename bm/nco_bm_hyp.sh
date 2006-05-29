@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_hyp.sh,v 1.10 2006-05-28 06:59:58 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_hyp.sh,v 1.11 2006-05-29 06:29:36 zender Exp $
 
 # Purpose: Perform NCO benchmarks while subsetting 
 
@@ -18,17 +18,17 @@
 # scp ~/nco/src/nco/ncwa.c ~/nco/src/nco/nco_ctl.c ~/nco/src/nco/nco_var_avg.c ~/nco/src/nco/nco_cnf_dmn.c clay.ess.uci.edu:nco/src/nco
 # cd ~/nco/bld;make allinone;cd ~
 
-SCL_SUB_SET_FLG='1' # [flg] Use approach 1: Scale by sub-setting
+CCH_CLR_FLG='1' # [flg] Clear cache before each command
 SCL_HYP_SLB_FLG='0' # [flg] Use approach 2: Scale by hyperslabbing
-
+SCL_SUB_SET_FLG='1' # [flg] Use approach 1: Scale by sub-setting
 WGT_FLG='1' # [flg] Perform weighted averages
+
 if [ ${WGT_FLG} = '1' ]; then
     WGT_CMD='-w lat'
 else
     WGT_CMD=''
 fi # !WGT_FLG
 
-CCH_CLR_FLG='1' # [flg] Clear cache before each command
 if [ ${CCH_CLR_FLG} = '1' ]; then
     CCH_CMD="${HOME}/nco/bm/cch_clr.pl"
 else
@@ -66,13 +66,23 @@ fi # !${SCL_SUB_SET_FLG}
 # Approach 2: Scale by hyperslabbing
 if [ ${SCL_HYP_SLB_FLG} = '1' ]; then
 # Two-dimensional and scalar variables do not have time dimension
-# Error incurred by including them is minimal
-# Could exclude them with -x -v
-# NB: scaling by hyperslab uses different disk geometry than sub-setting
+# Error incurred by including small non-record variables is minimal
+# Exclude 2D variables with -x -v d2_[0-9][0-9]
+# NB: Scaling by hyperslab uses different disk geometry than sub-setting
     for fl_nbr in {01..08}; do
 	fl_nbr_sng=`printf "%02d" ${fl_nbr}`
 	${CCH_CMD}
 	/usr/bin/time -a -o ~/nco/bm/ncwa.timing -f "%e wall %s system %U user " \
-	    ${MY_BIN_DIR}/ncwa -O -F --mdl ${WGT_CMD} -d time,1,${fl_nbr} -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo_${fl_nbr_sng}.out
+	    ${MY_BIN_DIR}/ncwa -O -F --mdl ${WGT_CMD} -d time,1,${fl_nbr} -x -v 'd2_[0-9][0-9]' -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo_${fl_nbr_sng}.out
     done # end loop over fl_nbr
 fi # !${SCL_HYP_SLB_FLG}
+
+FGR_05_FLG='0'
+if [ ${FGR_05_FLG} = '1' ]; then
+    /usr/bin/time -a -o ~/nco/bm/ncwa.timing -f "%e wall %s system %U user " \
+    ${MY_BIN_DIR}/ncwa -O -a lat --mdl -w lat -p ${DATA}/nco_bm stl_5km.nc ${DATA}/nco_bm/foo_stl_lat.nc > ${DATA}/nco_bm/foo_stl_lat.out
+    /usr/bin/time -a -o ~/nco/bm/ncwa.timing -f "%e wall %s system %U user " \
+    ${MY_BIN_DIR}/ncwa -O -a lon --mdl -w lat -p ${DATA}/nco_bm stl_5km.nc ${DATA}/nco_bm/foo_stl_lon.nc > ${DATA}/nco_bm/foo_stl_lon.out
+    /usr/bin/time -a -o ~/nco/bm/ncwa.timing -f "%e wall %s system %U user " \
+    ${MY_BIN_DIR}/ncwa -O -a lat,lon --mdl -w lat -p ${DATA}/nco_bm stl_5km.nc ${DATA}/nco_bm/foo_stl_all.nc > ${DATA}/nco_bm/foo_stl_all.out
+fi # !${FGR_05_FLG}

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.129 2006-04-06 22:56:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.130 2006-05-29 06:29:36 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -21,7 +21,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
 
   int idx;
   int jdx;
-  int nbr_dmn_var;
+  int dmn_var_nbr;
   int *dim_id=NULL;
   int var_id;
   int rcd;
@@ -88,12 +88,12 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
     (void)nco_redef(prs_arg->out_id);
     fl_id=prs_arg->in_id;
     
-    (void)nco_inq_varndims(fl_id,var_id,&nbr_dmn_var);
-    if(nbr_dmn_var>0){
-      dim_id=(int *)nco_malloc(nbr_dmn_var*sizeof(int));
+    (void)nco_inq_varndims(fl_id,var_id,&dmn_var_nbr);
+    if(dmn_var_nbr>0){
+      dim_id=(int *)nco_malloc(dmn_var_nbr*sizeof(int));
       
       (void)nco_inq_vardimid(fl_id,var_id,dim_id);
-      for(idx=0;idx<nbr_dmn_var;idx++) 
+      for(idx=0;idx<dmn_var_nbr;idx++) 
 	for(jdx=0;jdx<prs_arg->nbr_dmn_in;jdx++){
 	  
 	  /* De-reference */
