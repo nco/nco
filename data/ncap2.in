@@ -6,6 +6,7 @@
    ncap2 -O -v -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
    ncks ~/foo.nc | /bin/more
 */
+
 a1=three_dmn_var_dbl+three_dmn_var_int;
 a2=sin(three_dmn_var_dbl)^2.0 + cos(three_dmn_var_dbl)^2.0;
 if(a2 > 0.99) a3=1.00;
@@ -99,7 +100,7 @@ f3()=time1(0:6:2);
 th(9,,)=th(2,,);
 //Check attribute propagation
 // With command line switch on , a var on the RHS will inhert attributes
-// from the leftermost var on the RHS
+// from the leftermost var on t he RHS
 g1=999.00;
 g1@a=10;
 g1@b=20.0;
@@ -107,7 +108,29 @@ g1@c=30.0;
 //above atts are copied to g2
 g2=g1;
 //g3 will get atts for rz 
-g3=rz*four;
+g3=rz*four; 
+// Check att propagation with mod and pow
+g4= (g1@c * g1@a) % 2.0 ^ three_dmn_var_dbl;
+// Check att propagation with a LHS hyperslab
+g4(2,0,0)=987654.0;
 //Check attribute inheritance
 // z in output should inherit atts from z in input
 z=1000;
+// attribute string handling
+h1=10.0;
+h1@units="microns";
+h1@long_name="Teslar\t";
+// variable string handling
+//Create a variable string ( currently a painfull process)
+h2[char_dmn_sml]="a";  // string is now "aaaa"
+h2()="hell";            // string is now "hell"
+// hyperslab a variable string;
+h3=two_dmn_rec_var_sng;
+h3(1,0:2)="ccc";
+h4=fl_nm;
+h4(6:11)="henrys";
+// If hyperslabbing a var in the input 
+// then the var is first copied to output e.g
+weight(0)=weight(0)+10;
+
+
