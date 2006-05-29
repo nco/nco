@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.214 2006-05-29 06:29:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.215 2006-05-29 23:25:03 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.214 2006-05-29 06:29:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.214 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.215 2006-05-29 23:25:03 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.215 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
 #ifdef __cplusplus
@@ -199,7 +199,6 @@ main(int argc,char **argv)
       {"ddra",no_argument,0,0}, /* [flg] DDRA diagnostics */
       {"mdl_cmp",no_argument,0,0}, /* [flg] DDRA diagnostics */
       {"fl_fmt",required_argument,0,0},
-      {"file_format",required_argument,0,0},
       {"file_format",required_argument,0,0},
       {"degenerate_dimensions",no_argument,0,0}, /* [flg] Retain degenerate dimensions */
       {"rdd",no_argument,0,0}, /* [flg] Retain degenerate dimensions */
@@ -553,52 +552,33 @@ main(int argc,char **argv)
       } /* end loop over idx_avg */
     } /* end loop over idx */
 
-    if(flg_rdd){
-      /* fxm: nco739 Dimensions to be averaged will not appear in output file */
-      dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-      nbr_dmn_out=0;
-      for(idx=0;idx<nbr_dmn_xtr;idx++){
-	for(idx_avg=0;idx_avg<dmn_avg_nbr;idx_avg++){
-	  if(!strcmp(dmn_avg_lst[idx_avg].nm,dim[idx]->nm)) break;
-	} /* end loop over idx_avg */
+    /* Averaged dimensions appear in output file iff flg_rdd is set */
+    dmn_out=(dmn_sct **)nco_malloc((flg_rdd ? nbr_dmn_xtr : nbr_dmn_xtr-dmn_avg_nbr)*sizeof(dmn_sct *));
+    nbr_dmn_out=0;
+    for(idx=0;idx<nbr_dmn_xtr;idx++){
+      for(idx_avg=0;idx_avg<dmn_avg_nbr;idx_avg++){
+	if(!strcmp(dmn_avg_lst[idx_avg].nm,dim[idx]->nm)) break;
+      } /* end loop over idx_avg */
+      if(idx_avg == dmn_avg_nbr || flg_rdd){
+	/* Output list comprises non-averaged and, if specified, degenerate dimensions */
 	dmn_out[nbr_dmn_out]=nco_dmn_dpl(dim[idx]);
 	(void)nco_dmn_xrf(dim[idx],dmn_out[nbr_dmn_out]);
-	if(idx_avg != dmn_avg_nbr){
-	  /* Dimension is in average list reduce output size to one */
+	if(flg_rdd){
+	  /* Cut degenerate dimensions down to size */
 	  dmn_out[nbr_dmn_out]->cnt=1L;
-	  dmn_out[nbr_dmn_out]->srt=0L;
-	  dmn_out[nbr_dmn_out]->end=0L;
-	} /* end if */
+	  dmn_out[nbr_dmn_out]->srt=dmn_out[nbr_dmn_out]->end=0L;
+	} /* !flg_rdd */
 	nbr_dmn_out++;
-      } /* end loop over idx_avg */
-    }else{
-      /* Dimensions to be averaged will not appear in output file */
-      dmn_out=(dmn_sct **)nco_malloc((nbr_dmn_xtr-dmn_avg_nbr)*sizeof(dmn_sct *));
-      nbr_dmn_out=0;
-      for(idx=0;idx<nbr_dmn_xtr;idx++){
-	for(idx_avg=0;idx_avg<dmn_avg_nbr;idx_avg++){
-	  if(!strcmp(dmn_avg_lst[idx_avg].nm,dim[idx]->nm)) break;
-	} /* end loop over idx_avg */
-	if(idx_avg == dmn_avg_nbr){
-	  dmn_out[nbr_dmn_out]=nco_dmn_dpl(dim[idx]);
-	  (void)nco_dmn_xrf(dim[idx],dmn_out[nbr_dmn_out]);
-	  nbr_dmn_out++;
-	} /* end if */
-      } /* end loop over idx_avg */
-    } /* end if */
+      } /* end if idx_avg */
+    } /* end loop over idx_xtr */
     /* Dimension average list no longer needed */
     dmn_avg_lst=nco_nm_id_lst_free(dmn_avg_lst,dmn_avg_nbr);
 
-    if(flg_rdd && (nbr_dmn_out != nbr_dmn_xtr)){
-      (void)fprintf(fp_stdout,"%s: ERROR nbr_dmn_out != nbr_dmn_xtr\n",prg_nm);
+    if(nbr_dmn_out != (flg_rdd ? nbr_dmn_xtr : nbr_dmn_xtr-dmn_avg_nbr)){
+      (void)fprintf(fp_stdout,"%s: ERROR nbr_dmn_out != %s\n",prg_nm,(flg_rdd) ? "nbr_dmn_xtr" : "nbr_dmn_xtr-dmn_avg_nbr");
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
-    if(!flg_rdd && (nbr_dmn_out != nbr_dmn_xtr-dmn_avg_nbr)){
-      (void)fprintf(fp_stdout,"%s: ERROR nbr_dmn_out != nbr_dmn_xtr-dmn_avg_nbr\n",prg_nm);
-      nco_exit(EXIT_FAILURE);
-    } /* end if */
-    
   } /* dmn_avg_nbr <= 0 */
 
   /* Fill in variable structure list for all extracted variables */
@@ -719,7 +699,7 @@ main(int argc,char **argv)
      firstprivate(): msk_out and wgt_out must be NULL on first call to nco_var_cnf_dmn()
      shared(): msk and wgt are not altered within loop
      private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,msk_out,wgt_out) private(ddra_info,idx,idx_avg,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,flg_ddra,fp_stderr,fp_stdout,in_id_arr,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
+#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,msk_out,wgt_out) private(ddra_info,idx,idx_avg,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,fp_stderr,fp_stdout,in_id_arr,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
 #endif /* !_OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       in_id=in_id_arr[omp_get_thread_num()];
@@ -796,7 +776,7 @@ main(int argc,char **argv)
       /* 20050516: fxm: destruction of var_prc_out in nco_var_avg() leaves dangling pointers in var_out? */
       /* Reduce variable over specified dimensions (tally array is set here)
 	 NB: var_prc_out[idx] is new, so corresponding var_out[idx] is dangling */
-      var_prc_out[idx]=nco_var_avg(var_prc_out[idx],dmn_avg,dmn_avg_nbr,nco_op_typ,&ddra_info);
+      var_prc_out[idx]=nco_var_avg(var_prc_out[idx],dmn_avg,dmn_avg_nbr,nco_op_typ,flg_rdd,&ddra_info);
       /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide
 	 Denominator is also tricky due to sundry normalization options
 	 These logical switches are VERY tricky---be careful modifying them */
@@ -854,7 +834,7 @@ main(int argc,char **argv)
 	    nco_exit(EXIT_FAILURE); 
 	  } /* end if */
 	/* Average weight over specified dimensions (tally array is set here) */
-	wgt_avg=nco_var_avg(wgt_avg,dmn_avg,dmn_avg_nbr,nco_op_avg,&ddra_info);
+	wgt_avg=nco_var_avg(wgt_avg,dmn_avg,dmn_avg_nbr,nco_op_avg,flg_rdd,&ddra_info);
 
 	if(MULTIPLY_BY_TALLY){
 	  /* NB: Currently this is not implemented */

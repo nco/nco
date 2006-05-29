@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.45 2006-05-29 06:29:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.46 2006-05-29 23:25:03 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -14,6 +14,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
  dmn_sct * const * const dim, /* I [sct] Dimensions over which to reduce variable */
  const int nbr_dim, /* I [sct] Number of dimensions to reduce variable over */
  const int nco_op_typ, /* I [enm] Operation type, default is average */
+ const nco_bool flg_rdd, /* I [flg] Retain degenerate dimensions */
  ddra_info_sct * const ddra_info) /* O [sct] DDRA information */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
@@ -30,13 +31,19 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
      Normalization is not done internally to nco_var_avg() to allow user more flexibility */ 
 
   /* Routine keeps track of three variables whose abbreviations are:
-     var: Input variable (already hyperslabbed)
-     avg: An array of averaging blocks, each a contiguous arrangement of all 
+     avg: Array of averaging blocks, each a contiguous arrangement of all 
           elements of var which contribute to a single element of fix.
-     fix: Output (averaged) variable */
+     fix: Output (averaged) variable
+     rdd: Output (averaged) variable which retains degenerate dimensions
+     var: Input variable (already hyperslabbed)
+     
+     It is easier to implement averaging as if all averaged dimensions are eliminated
+     This presumption allows us to ignore degenerate dimension indices
+     Including degenerate dimensions in fix would also complicate MRV-detection code 
+     The core averaging algorithm treats input data as single 1-D array
+     To retain degenerate dimensions, fxm */
 
   nco_bool AVG_DMN_ARE_MRV=False; /* [flg] Avergaging dimensions are MRV dimensions */
-  nco_bool flg_rdd=False; /* [flg] Retain degenerate dimensions */
 
   dmn_sct **dmn_avg;
   dmn_sct **dmn_fix;
@@ -50,6 +57,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   int dmn_avg_nbr;
   int dmn_fix_nbr;
   int dmn_var_nbr;
+  int dmn_rdd_nbr; /* flg_rdd ? dmn_var_nbr : dmn_fix_nbr */
 
   long avg_sz=int_CEWI;
   long fix_sz;
@@ -89,6 +97,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
       } /* end if */
     } /* end loop over idx_dmn */
     if(idx_dmn == nbr_dim){
+      /* Dimension not in averaging list */
       dmn_fix[dmn_fix_nbr]=var->dim[idx];
       /* idx_fix_var[i]=j means that ith fixed dimension is jth dimension of var */
       idx_fix_var[dmn_fix_nbr]=idx;
@@ -109,12 +118,20 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     goto cln_and_xit;
   } /* end if */
 
+  /* Use dmn_rdd_nbr rather than dmn_fix_nbr for dmn_fix memory management
+     When flg_rdd is true, than malloc() and reallloc() will create/leave enough
+     room in dmn_fix arrays to ultimately hold all dmn_rdd data
+     However, dmn_fix_nbr remains same in flg_rdd and !flg_rdd cases
+     Hence loops and averaging algorithm itself need not be re-coded
+     Reconcile contents of dmn_fix structures with dengenerate dimensions at end */
+  dmn_rdd_nbr=flg_rdd ? dmn_var_nbr : dmn_fix_nbr;
+
   /* Free extra list space */
-  dmn_fix=(dmn_sct **)nco_realloc(dmn_fix,dmn_fix_nbr*sizeof(dmn_sct *));
+  dmn_fix=(dmn_sct **)nco_realloc(dmn_fix,dmn_rdd_nbr*sizeof(dmn_sct *));
   dmn_avg=(dmn_sct **)nco_realloc(dmn_avg,dmn_avg_nbr*sizeof(dmn_sct *));
 
   /* Get rid of averaged dimensions */
-  fix->nbr_dim=dmn_fix_nbr;
+  fix->nbr_dim=dmn_rdd_nbr;
 
   avg_sz=1L;
   for(idx=0;idx<dmn_avg_nbr;idx++){
@@ -141,21 +158,14 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
       fix->is_crd_var=True;
 
   /* Trim dimension arrays to their new sizes */
-  fix->dim=(dmn_sct **)nco_realloc(fix->dim,dmn_fix_nbr*sizeof(dmn_sct *));
-  fix->dmn_id=(int *)nco_realloc(fix->dmn_id,dmn_fix_nbr*sizeof(int));
-  fix->srt=(long *)nco_realloc(fix->srt,dmn_fix_nbr*sizeof(long));
-  fix->cnt=(long *)nco_realloc(fix->cnt,dmn_fix_nbr*sizeof(long));
-  fix->end=(long *)nco_realloc(fix->end,dmn_fix_nbr*sizeof(long));
+  fix->dim=(dmn_sct **)nco_realloc(fix->dim,dmn_rdd_nbr*sizeof(dmn_sct *));
+  fix->dmn_id=(int *)nco_realloc(fix->dmn_id,dmn_rdd_nbr*sizeof(int));
+  fix->srt=(long *)nco_realloc(fix->srt,dmn_rdd_nbr*sizeof(long));
+  fix->cnt=(long *)nco_realloc(fix->cnt,dmn_rdd_nbr*sizeof(long));
+  fix->end=(long *)nco_realloc(fix->end,dmn_rdd_nbr*sizeof(long));
   
-  /* Retain degenerate dimensions? */
-  if(flg_rdd){
-    /* Simplest way to retain degenerate dimensions is average over them,
-       then insert degenerate dimensions back into list at end TODO nco739 */
-    ;
-  } /* !flg_rdd */
-
   if(avg_sz == 1L){
-    /* If averaging block size is 1, input and output value arrays are identical 
+    /* If averaging block size is 1L, input and output value arrays are identical 
        var->val was copied to fix->val by nco_var_dpl() at beginning of routine
        Only one task remains: to set fix->tally appropriately */
     long *fix_tally;
@@ -220,6 +230,8 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
       AVG_DMN_ARE_MRV=True; /* [flg] Avergaging dimensions are MRV dimensions */
     } /* idx != dmn_fix_nbr */
     
+  /* got to here with rdd mods */
+
     /* MRV algorithm simply skips this collection step 
        Some DDRA benchmarks need to know cost of collection
        Always invoke collection step by uncommenting following line: */
@@ -332,6 +344,32 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     avg_val.vp=nco_free(avg_val.vp);
   } /* end if avg_sz != 1 */
   
+  /* Retain degenerate dimensions? */
+  if(flg_rdd){
+    /* Simplest way to retain degenerate dimensions is average over them,
+       then insert degenerate dimensions back into list at end */
+
+    /* Get rid of averaged dimensions */
+    fix->nbr_dim=dmn_rdd_nbr;
+    if(var->is_rec_var) fix->is_rec_var=True;
+    fix->is_crd_var=var->is_crd_var;
+
+    /* Copy information from input variable.... */
+    for(idx=0;idx<dmn_rdd_nbr;idx++){
+      fix->dim[idx]=var->dim[idx];
+      fix->dmn_id[idx]=var->dmn_id[idx];
+      fix->srt[idx]=var->srt[idx];
+      fix->cnt[idx]=var->cnt[idx];
+      fix->end[idx]=var->end[idx];
+    } /* end loop over idx */
+    /* ...then overwrite specfific information for degenerate dimensions... */
+    for(idx=0;idx<dmn_avg_nbr;idx++){
+      fix->cnt[idx_avg_var[idx]]=1L;
+      fix->srt[idx_avg_var[idx]]=fix->end[idx_avg_var[idx]]=0L;
+    } /* end loop over idx */
+
+  } /* !flg_rdd */
+
   /* Jump here when variable is not to be reduced. This occurs when
      1. Variable contains no averaging dimensions
      2. Averaging block size is 1 */

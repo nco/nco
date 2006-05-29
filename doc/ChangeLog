@@ -1,3 +1,9 @@
+2006-05-29  Charlie Zender  <zender@uci.edu>
+
+	* Finished retain-degenerate-dimensions implementation in ncwa and mpncwa
+
+	* Update opendap.sh to DAP 3.6 download/build procedures
+
 2006-05-27  Charlie Zender  <zender@uci.edu>
 
 	* Improve rx examples in nco.texi
