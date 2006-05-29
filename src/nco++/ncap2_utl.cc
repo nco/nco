@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.11 2006-05-29 06:29:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.12 2006-05-29 13:14:10 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -177,6 +177,17 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
 
   return True;
 } /* end ncap_var_write() */
+
+
+
+// check if var is really an attribute
+nco_bool 
+ncap_var_is_att( var_sct *var) {
+  if( strchr(var->nm,'@') !=NULL ) 
+    return True;
+  return False;
+}
+
 
 
 var_sct*
@@ -419,14 +430,27 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
 (var_sct *var_1, /* I [sc,t] Variable structure containing field */
  var_sct *var_2) /* I [sct] Variable structure containing divisor */
 {
+char *swp_nm;
+
   /* Purpose: Remainder (modulo) operation of two variables (var_1%var_2) */
   /* Store result in var_2 */
+
+  /* Temporary fix */ 
+  /* swap names about so attribute propagation works */
+  /* most operations unlike this one put results in left operand */
+  if( !ncap_var_is_att(var_1) && isalpha(var_1->nm[0])) {
+    swp_nm=var_1->nm; var_1->nm=var_2->nm; var_2->nm=swp_nm;
+  }  
+  
+
   if(var_1->undefined) var_2->undefined=True;
     if(var_2->undefined) {
     var_1=nco_var_free(var_1);
     return var_2;
   }
   (void)ncap_var_retype(var_1,var_2);
+  
+
    
   /* Handle initial scan */
   if(var_1->val.vp==(void*)NULL ) {
@@ -438,7 +462,6 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
       return var_2;
     }
   } 
-
 
  
   (void)ncap_var_cnf_dmn(&var_1,&var_2);
@@ -452,40 +475,56 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
    return var_2;
 } /* end ncap_var_var_mod() */
 
-var_sct * /* O [sct] Empowerment of input variables (var_1^var_2) */
+var_sct * /* O [sct] Empowerment of input variables (var1^var_2) */
 ncap_var_var_pwr /* [fnc] Empowerment of two variables */ 
-(var_sct *var_1, /* I [sct] Variable structure containing base */
- var_sct *var_2) /* I [sct] Variable structure containing exponent */
+(var_sct *var1, /* I [sct] Variable structure containing base */
+ var_sct *var2) /* I [sct] Variable structure containing exponent */
 {
-  /* Purpose: Empower two variables (var_1^var_2) */
+  char *swp_nm;
 
-  if(var_1->undefined) var_2->undefined=True;
-    if(var_2->undefined) {
-    var_1=nco_var_free(var_1);
-    return var_2;
+  /* Purpose: Empower two variables (var1^var2) */
+
+  /* Temporary fix */ 
+  /* swap names about so attribute propagation works */
+  /* most operations unlike this one put results in left operand */
+  if( !ncap_var_is_att(var1) && isalpha(var1->nm[0])) {
+    swp_nm=var1->nm; var1->nm=var2->nm; var2->nm=swp_nm;
+  }  
+
+  if(var1->undefined){ 
+    var2->undefined=True;
+    var1=nco_var_free(var1);
+    return var2;
   }
-  /* make sure vars are at least float */
 
-  (void)ncap_var_retype(var_1,var_2);   
+
+  /* make sure vars are at least float  */
+  if(var1->type < NC_FLOAT && var2->type <NC_FLOAT ) 
+    var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
+  
+  (void)ncap_var_retype(var1,var2);   
 
   /* Handle initial scan */
-  if(var_1->val.vp==(void*)NULL ) {
-    if(var_1->nbr_dim > var_2->nbr_dim) {
-      var_2=nco_var_free(var_2);
-      return var_1;
+  if(var1->val.vp==(void*)NULL ) {
+    if(var1->nbr_dim > var2->nbr_dim) {
+      var2=nco_var_free(var2);
+      return var1;
     }else{
-      var_1=nco_var_free(var_1);
-      return var_2;
+      var1=nco_var_free(var1);
+      return var2;
     }
   } 
 
-  (void)ncap_var_cnf_dmn(&var_1,&var_2);
-  if(var_1->has_mss_val){
-    (void)nco_var_pwr(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
+  (void)ncap_var_cnf_dmn(&var1,&var2);
+  if(var1->has_mss_val){
+    (void)nco_var_pwr(var1->type,var1->sz,var1->has_mss_val,var1->mss_val,var1->val,var2->val);
   }else{
-    (void)nco_var_pwr(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
+    (void)nco_var_pwr(var1->type,var1->sz,var2->has_mss_val,var2->mss_val,var1->val,var2->val);
   } /* end else */
-   return var_2;
+
+
+   var1=nco_var_free(var1);
+   return var2;
 } /* end ncap_var_var_pwr() */
 
 var_sct *           /* O [sct] Resultant variable (actually is var_in) */
@@ -1010,12 +1049,6 @@ ncap_var_stretch /* [fnc] Stretch variables */
   return DO_CONFORM;
 } /* end ncap_var_stretch() */
 
-
-// check if var is really an attribute
-nco_bool ncap_var_is_att( var_sct *var) {
-  if( strchr(var->nm,'@') !=NULL ) return true;
-  return false;
-}
 
 
 #include "VarOp.hh" 
