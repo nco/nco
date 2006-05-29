@@ -712,6 +712,8 @@ assign
 
               var_lhs=nco_var_free(var_lhs);
               var_rhs=nco_var_free(var_rhs);
+               
+              var_nm=(char*)nco_free(var_nm);
 
                // Empty and free vector 
               for(idx=0 ; idx < nbr_dmn ; idx++)
@@ -999,6 +1001,7 @@ out returns [var_sct *var]
             strncpy(var->val.cp,tsng,(size_t)var->sz);  
             (void)cast_nctype_void(NC_CHAR,&var->val);
 
+            tsng=(char*)nco_free(tsng);
           }
     // Variable with argument list 
     |  (#( VAR_ID LMT_LIST)) => #( vid:VAR_ID lmt:LMT_LIST) {
@@ -1089,7 +1092,7 @@ out returns [var_sct *var]
             (void)nco_lmt_free(lmt_vtr[idx]);
             (void)nco_dmn_free(dmn_vtr[idx]);
           }    
-          
+          var_nm=(char*)nco_free(var_nm);
 
     }
     // plain Variable
