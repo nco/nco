@@ -143,6 +143,7 @@ primary_exp
     | INT
     | FLOAT    
     | DOUBLE
+    | NSTRING    
     | hyper_slb  //remember this includes VAR_ID & ATT_ID
   ;
 
@@ -303,6 +304,10 @@ VAR_ATT:  (LPH)(LPH|DGT)*
 
 DIM_ID: '$'! (LPH)(LPH|DGT)* {$setType(DIM_ID);}
    ;  
+
+NSTRING: '"'! ( ~('"'|'\n'))* '"'! {$setType(NSTRING);}
+   ;
+
 
 class ncoTree extends TreeParser;
 
@@ -616,14 +621,21 @@ assign
               
                var_nm=strdup(vid->getText().c_str());
 
-               // check if var is in output
+
+ 
+               // if var isn't in ouptut then copy it there
                rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
                if(rcd != NC_NOERR) {
-                  (void)fprintf(stderr,"WARNING unable to find %s in file %s. The variable to hyperslab must be in the output file\n",var_nm,prs_arg->fl_out );          
-                  nco_exit(EXIT_FAILURE); 
-               }
-             
-               var_lhs=ncap_var_init(var_nm,prs_arg,false);         
+                 var_lhs=ncap_var_init(var_nm,prs_arg,true);
+                 // copy atts to output
+                 (void)ncap_att_cpy(vid->getText(),vid->getText(),prs_arg);
+                 (void)ncap_var_write(var_lhs,prs_arg);
+                 // Get "new" var_id 
+                 (void)nco_inq_varid(prs_arg->out_id,var_nm,&var_id);
+               } 
+
+
+               var_lhs=ncap_var_init(var_nm,prs_arg,false);
 
                nbr_dmn=var_lhs->nbr_dim;
 
@@ -790,8 +802,7 @@ assign
                 string sa=att->getText();
 
                 cout <<"Saving attribute " << sa <<endl;
-
-         
+ 
                 var=out(att->getNextSibling());
                 //var_nw=nco_var_dpl(var);
                 NcapVar *Nvar=new NcapVar(sa,var);
@@ -968,6 +979,27 @@ out returns [var_sct *var]
             *var->val.dp = r;
             (void)cast_nctype_void(type,&var->val);
          }
+
+     |   str:NSTRING
+         {
+            char *tsng;
+              
+            tsng=strdup(str->getText().c_str());
+            (void)sng_ascii_trn(tsng);            
+            var=(var_sct *)nco_malloc(sizeof(var_sct));
+            /* Set defaults */
+            (void)var_dfl_set(var); 
+            /* Overwrite with attribute expression information */
+            var->nm=strdup("_zz@string");
+            var->nbr_dim=0;
+            var->sz=strlen(tsng);
+            var->type=NC_CHAR;
+            var->val.vp=(void*)nco_malloc(var->sz*nco_typ_lng(NC_CHAR));
+            (void)cast_void_nctype(NC_CHAR,&var->val);
+            strncpy(var->val.cp,tsng,(size_t)var->sz);  
+            (void)cast_nctype_void(NC_CHAR,&var->val);
+
+          }
     // Variable with argument list 
     |  (#( VAR_ID LMT_LIST)) => #( vid:VAR_ID lmt:LMT_LIST) {
 
@@ -1033,7 +1065,7 @@ out returns [var_sct *var]
              var1=(var_sct *)nco_malloc(sizeof(var_sct));
              /* Set defaults */
              (void)var_dfl_set(var1); 
-             var1->nm=strdup("scalar_var");
+             var1->nm=strdup(var_nw->nm);
              var1->nbr_dim=0;
              var1->sz=1;
              var1->type=var_nw->type;
