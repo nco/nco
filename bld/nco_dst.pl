@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.145 2006-05-30 19:56:16 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.146 2006-05-30 20:18:26 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -67,10 +67,10 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2006-05-30 19:56:16 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.145 2006-05-30 19:56:16 zender Exp $';
-my $CVS_Revision='$Revision: 1.145 $';
-my $CVSROOT='zender@cvs.sf.net:/cvsroot/nco'; # CVS repository
+my $CVS_Date='$Date: 2006-05-30 20:18:26 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.146 2006-05-30 20:18:26 zender Exp $';
+my $CVS_Revision='$Revision: 1.146 $';
+my $CVSROOT='zender@nco.cvs.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
@@ -123,7 +123,7 @@ if($data_nm eq ''){$data_nm='/data/'.$usr_nm;}
 my $dst_pth_pfx=$data_nm; # Parent of build directory
 if($dst_pth_pfx eq $HOME){die "$prg_nm: ERROR \$dst_pth_pfx eq $dst_pth_pfx";} # This could be disastrous
 if($rm_cmd =~ m/( -r)|( -R)|( --recursive)/){die "$prg_nm: ERROR Dangerous setting \$rm_cmd eq $rm_cmd";} # This would be disastrous
-#      $CVSROOT=':pserver:anonymous@cvs.sf.net:/cvsroot/nco'; # CVS repository
+#      $CVSROOT=':pserver:anonymous@nco.cvs.sourceforge.net:/cvsroot/nco'; # CVS repository
 
 $prg_dsc='NCO distribution maker'; # Program description
 ($prg_nm,$prg_vrs)=$CVS_Id =~ /: (.+).pl,v ([\d.]+)/; # Program name and version

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.178 2006-05-30 20:04:35 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.179 2006-05-30 20:18:26 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.3 are ready. 
 Highlights are significant new features in ncwa and ncap2,
@@ -39,6 +39,11 @@ http://nco.sf.net/ncap2.in demonstrates many ncap2 features.
 
 4. ncwa -b retains degenerate dimensions
    http://nco.sf.net/nco.html#ncwa
+   http://nco.sf.net/nco.html#ncwa
+   % ncwa -a lon -b in.nc out.nc;ncks -C -H -v lon out2.nc
+   lon[0] = 135
+   The -b makes "lon" a degenerate (size 1) dimension.
+   Fret not, dimensions are still "scalar-ized" by default.
 
 5. ncwa -B mask_condition option
    http://nco.sf.net/nco.html#ncwa

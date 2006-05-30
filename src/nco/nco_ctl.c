@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.135 2006-05-30 15:43:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.136 2006-05-30 20:18:26 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -619,7 +619,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "As a young teenager I prayed to ancient Greek gods, usually Apollo, for vengeance against three classmates who taunted me when I rode the school bus. Unfortunately Bret, Steve, and Randy were never punished (as far as I know). They could be the basis for J. K. Rowlings' Malfoy, Crabb, and Goyle. I'm now an atheist, and I hope they get justice in Harry Potter Book 7.\n";
+  return "The Week in Review: Ruby learned to clap when we clap. Ready, Ruby: one, two, three...\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
