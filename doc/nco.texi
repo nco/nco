@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.362 2006-05-30 07:07:19 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.363 2006-05-30 07:25:45 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2592,7 +2592,7 @@ This command tests the basic functionality of @acronym{OPeNDAP}-enabled
 @acronym{NCO} clients: 
 @example
 % ncks -o ~/foo.nc -O -C -H -v one -C -l /tmp \
--p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
+  -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
 one = 1
 % ncks -H -v one ~/foo.nc
 one = 1
@@ -2611,7 +2611,7 @@ regional mean surface pressure @w{(in Pa)}.
 @example
 ncwa -O -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l /tmp -p \
 http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
-pres.sfc.1969.nc ~/foo.nc
+  pres.sfc.1969.nc ~/foo.nc
 @end example
 @noindent
 @cindex packing
@@ -2702,7 +2702,7 @@ For example,
 @example
 ncks -R -l . -p \
 http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
-pres.sfc.1969.nc
+  pres.sfc.1969.nc
 @end example
 Note that @acronym{NCO} is never the preffered way to transport files
 from remote machines.
@@ -3410,8 +3410,8 @@ of December, 1999, from a variable whose time dimension is hours
 since the year 1900:
 @example
 % ncks -O -C -v time_udunits -d time_udunits,"1999-12-08 \
-12:00:0.0","1999-12-09 00:00:0.0",2 in.nc foo2.nc
-% time_udunits[1]=876018 hours since 1900-01-01 00:00:0.0
+  12:00:0.0","1999-12-09 00:00:0.0",2 in.nc foo2.nc
+time_udunits[1]=876018 hours since 1900-01-01 00:00:0.0
 @end example
 @noindent
 @cindex stride
@@ -3426,7 +3426,7 @@ The following example shows how one might average data in a
 time period spread across multiple input files
 @example
 ncra -O -d time,"1939-09-09 12:00:0.0","1945-05-08 00:00:0.0" \
-in1.nc in2.nc in3.nc out.nc
+  in1.nc in2.nc in3.nc out.nc
 @end example
 @noindent
 Note that there is no excess whitespace before or after the individual
@@ -8136,7 +8136,7 @@ changed to @code{height} in the variable @code{tpt}, and in the
 variable @code{prs_sfc}, if it exists.
 @example
 ncrename -a _FillValue,missing_value -a .units,CGS_units \
--a tpt@@hieght,height -a prs_sfc@@.hieght,height in.nc out.nc 
+  -a tpt@@hieght,height -a prs_sfc@@.hieght,height in.nc out.nc 
 @end example
 The presence and absence of the @samp{.} and @samp{@@} features
 cause this command to execute successfully only if a number of 
@@ -8533,15 +8533,17 @@ ncwa -a lon in.nc out1.nc
 ncwa -a lon -b in.nc out2.nc
 @end example
 @noindent
+@cindex degenerate dimension
 The first command turns @code{lon} into a scalar and the second retains 
-it as a degenerate dimension in all variables.
+@code{lon} as a degenerate dimension in all variables.
 @example
 % ncks -C -H -v lon out1.nc
 lon = 135
 % ncks -C -H -v lon out2.nc
-lon[0] = 135 lon[0] = 135
+lon[0] = 135
 @end example
-In either case the tally is simply the size of @code{lon}, or 128.
+In either case the tally is simply the size of @code{lon}, i.e.,
+for the @file{85_0112.nc} file described by the sample header above.
 
 @cindex @code{gw}
 @cindex Gaussian weights
@@ -8614,9 +8616,9 @@ $0.70 \times 8192 \approx 5734$.
 Compute the global annual mean over the maritime tropical Pacific:
 @example
 ncwa -B "ORO < 0.5"      -w gw -a lat,lon,time \
--d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
+  -d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
 ncwa -m ORO -M 0.5 -T lt -w gw -a lat,lon,time \
--d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
+  -d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
 @end example
 Further examples will use the one-switch specification of
 @var{mask_cond}.  
@@ -8625,7 +8627,7 @@ Determine the total area of the maritime tropical Pacific, assuming
 the variable @var{area} contains the area of each gridcell
 @example
 ncwa -N -v area -B "ORO < 0.5" -a lat,lon \
--d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
+  -d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
 @end example
 Weighting @var{area} (e.g., by @var{gw}) is not appropriate because
 @var{area} is @emph{already} area-weighted by definition.

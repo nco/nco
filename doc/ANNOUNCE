@@ -1,8 +1,8 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.174 2006-05-14 06:50:08 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.175 2006-05-30 07:25:44 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.2 are ready. 
 They contain a fix for empty record variables, improved CF Convention
-support, and significant new features in ncap2. 
+support, and significant new features in ncwa and ncap2. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -42,6 +42,10 @@ This behavior may change in the future.
    Coordinates listed in "coordinates" attribute are stick to the
    parent variable just like real coordinates.
    http://nco.sf.net/nco.html#cnv_CF_crd
+
+7. ncwa -B mask_condition option
+
+8. ncwa -b retain degenerate dimension
 
 Enjoy,
 Charlie
