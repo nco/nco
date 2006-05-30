@@ -1,5 +1,11 @@
 2006-05-30  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-3_1_3
+	Changes since nco-3_1_2: 
+	ncap2 attribute propagation, CF coordinates, ncwa -b -B, ncra 0 records
+
+	* Daniel fixed nco_bm.pl
+
 	* Document retain-degenerate-dimensions option in nco.texi
 	This finishes TODO nco739 and allows nco738 to be possible
 

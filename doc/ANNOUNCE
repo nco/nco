@@ -1,17 +1,17 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.177 2006-05-30 20:01:14 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.178 2006-05-30 20:04:35 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.3 are ready. 
-They contain a fix for empty record variables, improved CF Convention
-support, and significant new features in ncwa and ncap2. 
+Highlights are significant new features in ncwa and ncap2,
+improved CF Convention support, and a fix for empty record variables.
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-ncap2 is the successor to ncap. Henry Butowsky's work to address some
-of the arithmetic limitations of ncap is beginning to pay off.
-ncap2 now handles array syntax, if/then constructs and much more.
+ncap2, the successor to ncap, now has 99% of ncap's features,
+and many more high level language features, including array syntax,
+if/then constructs, and attribute propagation. 
 ncap2 is still a bit alpha, but ready to be tested for functionality.
-The sample script nco/data/ncap2.in demonstrates its features.
+http://nco.sf.net/ncap2.in demonstrates many ncap2 features. 
 
 1. ncap2 attribute propagation (Henry Butowsky)
    http://nco.sf.net/nco.html#att_prp
