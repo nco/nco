@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.134 2006-05-30 06:46:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.135 2006-05-30 15:43:14 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -738,7 +738,7 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-a ...] [-D dbg_lvl] [-d ...] [-h] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-v ...] in.nc [[out.nc]]\n");
     break;
   case ncwa:
-    opt_sng=(char *)strdup("[-4] [-A] [-a ...] [-B mask_cond] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-I] [-l path] [-m mask] [-M mask_val] [-N] [-O] [-o out.nc] [-p path] [-R] [-r] [-T mask_comp] [-t thr_nbr] [-v ...] [-w wgt] [-x] [-y op_typ] in.nc [out.nc]\n");
+    opt_sng=(char *)strdup("[-4] [-A] [-a ...] [-B mask_cond] [-b] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-I] [-l path] [-m mask] [-M mask_val] [-N] [-O] [-o out.nc] [-p path] [-R] [-r] [-T mask_comp] [-t thr_nbr] [-v ...] [-w wgt] [-x] [-y op_typ] in.nc [out.nc]\n");
     break;
   default: nco_dfl_case_prg_id_err(); break;
   } /* end switch */
