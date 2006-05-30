@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.176 2006-05-30 19:56:17 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.177 2006-05-30 20:01:14 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.3 are ready. 
 They contain a fix for empty record variables, improved CF Convention
@@ -23,6 +23,8 @@ The sample script nco/data/ncap2.in demonstrates its features.
    When the derived field is completely new (no identically-named ancestors
    exist), then it inherits the metadata (if any) of the left-most variable
    on the right hand side of the defining expression.
+   Many users have asked for this functionality--we hope you like it.   
+
    Reminder: ncap2 depends on ANTLR to build so do, e.g., 
    sudo apt-get install antlr libantlr-dev 
    before running NCO's configure

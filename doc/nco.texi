@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.363 2006-05-30 07:25:45 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.364 2006-05-30 19:56:17 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -48,8 +48,8 @@ texi2dvi --output=nco.dvi nco.texi
 texi2dvi --pdf --output=nco.pdf nco.texi
 texi2html -monolithic -verbose nco.texi
 texi2html -l2h -l2h_tmp=./l2h_tmp -monolithic -verbose nco.texi # Invoke latex2html
-cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco.sf.net:/home/groups/n/nc/nco/htdocs;cd -
-cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml dust.ess.uci.edu:/var/www/html/nco;cd -
+cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in nco.sf.net:/home/groups/n/nc/nco/htdocs;cd -
+cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:/var/www/html/nco;cd -
 
 NB: @cindex references in footnotes propogate to PDF file, but not to
     HTML files, bug-report sent to makeinfo people 20040229
@@ -98,8 +98,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 3.1.2
-@set doc-edition 3.1.2
+@set nco-edition 3.1.3
+@set doc-edition 3.1.3
 @set copyright-years 1995--2006
 @set update-year 2006
 @set update-date 29 May 2006
@@ -4694,7 +4694,7 @@ NCO supports the @acronym{CF} @code{coordinates} convention described at
 This convention allows variables to specify additional coordinates
 (including multidimensional coordinates) in a space-separated string
 attribute named @code{coordinates}. 
-NCO attached any such coordinates to the extraction list along with
+NCO attaches any such coordinates to the extraction list along with
 variable and its usual (one-dimensional) coordinates, if any.
 These auxiliary coordinates are subject to the user-specified overrides
 described in @ref{Subsetting Coordinate Variables}.
@@ -4811,6 +4811,7 @@ described in any detail in the sections below.
 @page
 @html
 <a name="ncap"></a> <!-- http://nco.sf.net/nco.html#ncap -->
+<a name="ncap2"></a> <!-- http://nco.sf.net/nco.html#ncap2 -->
 @end html
 @node ncap netCDF Arithmetic Processor, ncatted netCDF Attribute Editor, Operator Reference Manual, Operator Reference Manual
 @section @command{ncap} netCDF Arithmetic Processor
@@ -4818,6 +4819,7 @@ described in any detail in the sections below.
 @cindex lexer
 @cindex arithmetic processor
 @findex ncap
+@findex ncap2
 
 @c fxm: TODO nco549 hyper-link all switches to explanatory sections?
 @c Problem is that only works well in HTML mode
@@ -4837,7 +4839,14 @@ ncap [-4] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] [-D @var{dbg}]
 @noindent
 DESCRIPTION
 
-@command{ncap} arithmetically processes a netCDF file.
+@command{ncap} and @command{ncap2} arithmetically process netCDF files
+@footnote{@command{ncap2} is the successor to @command{ncap} which is in 
+maintenance mode.
+@command{ncap2} has a superset of the @command{ncap} functionality,
+so the @command{ncap} documentation serves for @command{ncap2} as well
+(the converse is not true).
+Functionality present only in @command{ncap2} is marked as such.
+Eventually @command{ncap} will be deprecated in favor @command{ncap2}.}.
 @cindex script file
 @cindex @code{--script-file}
 @cindex @code{--fl_spt}
@@ -4871,6 +4880,22 @@ that @command{ncap} should output @emph{only} user-defined variables.
 * Intrinsic functions::         
 * Intrinsic mathematical functions::  
 @end menu
+
+@html
+<a name="att_prp"></a> <!-- http://nco.sf.net/nco.html#att_prp -->
+@end html
+@cindex attribute propagation
+Defining new variables in terms of existing variables is one of
+@command{ncap2}'s most powerful features.
+@cindex derived fields
+Derived fields inherit the metadata (i.e., attributes) of their
+identically named ancestors, if any, in the script or input file. 
+When the derived field is completely new (no identically-named ancestors
+exist), then it inherits the metadata (if any) of the left-most variable
+on the right hand side of the defining expression.
+This metadata inheritance is called @dfn{attribute propagation}.
+Attribute propagation is intended to facilitate well-documented 
+data analysis, and we welcome suggestions to improve this feature.
 
 @html
 <a name="lhc"></a> <!-- http://nco.sf.net/nco.html#lhc -->
@@ -5518,6 +5543,12 @@ other OSs.}
 <a name="xmp_ncap"></a> <!-- http://nco.sf.net/nco.html#xmp_ncap -->
 @end html
 EXAMPLES
+
+See the @file{ncap.in} and @file{ncap2.in} scripts released with NCO 
+for more complete demonstrations of @command{ncap} and @command{ncap2}
+functionality, respectively (these scripts are available on-line at
+@url{http://nco.sf.net/ncap.in} and
+@url{http://dust.ess.uci.edu/nco/ncap2.in}).
 
 Define new attribute @var{new} for existing variable @var{one}
 as twice the existing attribute @var{double_att} of variable
