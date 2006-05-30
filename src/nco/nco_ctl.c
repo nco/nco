@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.133 2006-05-30 03:35:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.134 2006-05-30 06:46:28 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -738,7 +738,7 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-a ...] [-D dbg_lvl] [-d ...] [-h] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-v ...] in.nc [[out.nc]]\n");
     break;
   case ncwa:
-    opt_sng=(char *)strdup("[-4] [-A] [-a ...] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-I] [-l path] [-m mask] [-M val] [-N] [-O] [-o out.nc] [-p path] [-R] [-r] [-T condition] [-t thr_nbr] [-v ...] [-w wgt] [-x] [-y op_typ] [-z] in.nc [out.nc]\n");
+    opt_sng=(char *)strdup("[-4] [-A] [-a ...] [-B mask_cond] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-I] [-l path] [-m mask] [-M mask_val] [-N] [-O] [-o out.nc] [-p path] [-R] [-r] [-T mask_comp] [-t thr_nbr] [-v ...] [-w wgt] [-x] [-y op_typ] in.nc [out.nc]\n");
     break;
   default: nco_dfl_case_prg_id_err(); break;
   } /* end switch */
@@ -759,7 +759,7 @@ nco_usg_prn(void)
   } /* end if */
   if(strstr(opt_sng,"-B")){
     if(prg_lcl == ncks) (void)fprintf(stdout,"-B, --bnr, --binary\tWrite data to unformatted binary file\n");
-    if(prg_lcl == ncwa) (void)fprintf(stdout,"-B, --bool_condition, --msk_cnd mask_cnd\tMask condition\n");
+    if(prg_lcl == ncwa) (void)fprintf(stdout,"-B, --msk_cnd, --mask_condition mask_cond\tMask condition (e.g., \"ORO < 1\")\n");
   } /* end if -B */
   if(strstr(opt_sng,"-b")){
     if(prg_lcl == ncks) (void)fprintf(stdout,"-b, --fl_bnr, --binary-file fl_bnr\tUnformatted binary file to write\n");

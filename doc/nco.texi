@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.360 2006-05-30 03:35:07 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.361 2006-05-30 06:46:28 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4180,9 +4180,10 @@ ncwa -y rms -v prs_sfc -a time in.nc foo.nc
 The previous two commands give the same answer but @command{ncra} is
 preferred because it has a smaller memory footprint.
 @cindex degenerate dimension
-Also, @command{ncra} leaves the (degenerate) @code{time} dimension in the
-output file (which is usually useful) whereas @command{ncwa} removes the
-@code{time} dimension. 
+Also, by default, @command{ncra} leaves the (degenerate) @code{time}
+dimension in the output file (which is usually useful) whereas
+@command{ncwa} removes the @code{time} dimension (unless @samp{-b} is
+given).
 
 @noindent
 These operations work as expected in multi-file operators.
@@ -5637,16 +5638,17 @@ ncap -O -s "uprmvprm=(u-uavg)*(v-vavg)" foo.nc foo.nc # Covariance
 @findex ncwa
 @findex ncra
 @cindex degenerate dimension
-Whether a degenerate record dimension is a desirable or undesirable
-feature depends on the application.
+@cindex @samp{-b}
+Whether a degenerate record dimension is desirable or undesirable
+depends on the application.
 Often a degenerate @var{time} dimension is useful, e.g., for
 concatentating, but it may cause problems with arithmetic.
 Such is the case in the above example, where the first step employs
 @command{ncwa} rather than @command{ncra} for the time-averaging.
 Of course the numerical results are the same with both operators.
-The difference is that @command{ncwa} writes no @var{time} dimension to
-the output file, while @command{ncra} would write a degenerate 
-(@w{size 1}) dimension. 
+The difference is that, unless @samp{-b} is specified, @command{ncwa}
+writes no @var{time} dimension to the output file, while @command{ncra}
+defaults to keeping @var{time} as a degenerate (@w{size 1}) dimension. 
 Appending @code{u} and @code{v} to the output file would cause
 @command{ncks} to try to expand the degenerate time axis of @code{uavg}
 and @code{vavg} to the size of the non-degenerate @var{time} dimension
@@ -6216,13 +6218,13 @@ the @command{ncwa} operator, then @var{file_2} will have a @code{time}
 dimension of @w{size 1} rather than having no @code{time} dimension at
 all 
 @cindex degenerate dimension
+@cindex @samp{-b}
 @footnote{This is because @command{ncra} collapses the record dimension
 to a size @w{of 1} (making it a @dfn{degenerate} dimension), but does
-not remove it, while @command{ncwa} removes all dimensions it averages
-over.  
-In other words, @command{ncra} changes the size but not the rank of
-variables, while @command{ncwa} changes both the size and the rank of
-variables.}.   
+not remove it, while, unless @samp{-b} is given, @command{ncwa} removes
+all averaged dimensions.
+In other words, by default @command{ncra} changes variable size but not 
+rank, while, @command{ncwa} changes both variable size and rank.}.   
 In this case the input files to @command{ncbo}, @var{file_1} and
 @var{file_2}, will have unequally sized @code{time} dimensions which
 causes @command{ncbo} to fail.
@@ -7788,8 +7790,8 @@ DESCRIPTION
 @var{input-files}.
 @cindex degenerate dimension
 @cindex record dimension
-The record dimension is retained as a degenerate @w{(size 1)} dimension
-in the output variables.
+The record dimension is, by default, retained as a degenerate 
+@w{(size 1)} dimension in the output variables.
 @xref{Averaging vs. Concatenating}, for a description of the
 distinctions between the various averagers and concatenators. 
 @cindex multi-file operators
@@ -8181,6 +8183,18 @@ distinctions between the various averagers and concatenators.
 The default behavior of @command{ncwa} is to arithmetically average
 every numerical variable over all dimensions and to produce a scalar 
 result for each. 
+
+@cindex degenerate dimension
+Averaged dimensions are, by default, eliminated as dimensions.
+Their corresponding coordinates, if any, are output as scalars.
+The @samp{-b} switch 
+(and its long option equivalents @samp{--rdd} and
+@samp{--degenerate-dimensions}) causes @command{ncwa} to retain averaged  
+dimensions as degenerate (@w{size 1}) dimensions.
+This maintains the association between a dimension (or coordinate) and
+variables after averaging and simplifies, for instance, later
+concatenation along the degenerate dimension. 
+
 To average variables over only a subset of their dimensions, specify
 these dimensions in a comma-separated list following @samp{-a}, e.g.,
 @samp{-a time,lat,lon}. 
@@ -8261,8 +8275,8 @@ In the above case, this causes the value of @code{latitude} in the
 Thus, @samp{-I} specifies simple arithmetic averages for the coordinate
 variables. 
 In the case of latitude, @samp{-I} specifies that you prefer to archive
-the central latitude of the hyperslab over which variables were averaged 
-rather than the area weighted centroid of the hyperslab
+the arithmetic mean latitude of the averaged hyperslabs rather than the 
+area-weighted mean latitude.
 @footnote{If @code{lat_wgt} contains Gaussian weights then the value of 
 @code{latitude} in the @var{output-file} will be the area-weighted
 centroid of the hyperslab. 
@@ -8509,15 +8523,24 @@ results in @file{out.nc}:
 ncwa in.nc out.nc
 @end example
 @noindent
-Every variable in @file{in.nc} is reduced to a scalar in @file{out.nc} 
-because, by default, averaging is performed over all dimensions.
+All variables in @file{in.nc} are reduced to scalars in @file{out.nc} 
+since @command{ncwa} averages over all dimensions unless otherwise
+specified (with @samp{-a}).
 
 Store the zonal (longitudinal) mean of @file{in.nc} in @file{out.nc}:
 @example
-ncwa -a lon in.nc out.nc
+ncwa -a lon in.nc out1.nc
+ncwa -a lon -b in.nc out2.nc
 @end example
 @noindent
-Here the tally is simply the size of @code{lon}, or 128.
+The first command turns @code{lon} into a scalar and the second retains 
+it as a degenerate dimension in all variables.
+@example
+% ncks -C -H -v lon out1.nc
+lon = 135
+% ncks -C -H -v lon out2.nc
+@end example
+In either case the tally is simply the size of @code{lon}, or 128.
 
 @cindex @code{gw}
 @cindex Gaussian weights
@@ -8535,8 +8558,7 @@ The sum of the Gaussian weights @w{is 2.0.}
 
 Compute the area mean over the tropical Pacific:
 @example
-ncwa -w gw -a lat,lon -d lat,-20.,20. -d lon,120.,270. 
-in.nc out.nc
+ncwa -w gw -a lat,lon -d lat,-20.,20. -d lon,120.,270. in.nc out.nc
 @end example
 @noindent
 Here the tally is 

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.771 2006-05-30 03:35:07 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.772 2006-05-30 06:46:28 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -506,7 +506,9 @@ nco740. Add RDD to mpncwa
 nco741. Document RDD in nco.texi
 nco742. Add RDD to nco_ctl.c switches
 nco358. Document ncwa -z switch: Get rid of separate -M -m -T?
-nco743. 
+nco743. ncwa: rdd breaks when -a used
+	ncwa -b -a lon in.nc out2.nc
+nco744. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.46 2006-05-30 03:35:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.47 2006-05-30 06:46:28 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.46 2006-05-30 03:35:08 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.46 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.47 2006-05-30 06:46:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.47 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
   ddra_info_sct ddra_info={.MRV_flg=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
@@ -316,7 +316,6 @@ main(int argc,char **argv)
     /* Process long options without short option counterparts */
     if(opt == 0){
       if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) flg_ddra=True; /* [flg] DDRA diagnostics */
-      if(!strcmp(opt_crr,"rdd") || !strcmp(opt_crr,"degenerate_dimensions")) flg_rdd=True; /* [flg] Retain degenerate dimensions */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
     } /* opt != 0 */
     /* Process short options */
@@ -338,6 +337,12 @@ main(int argc,char **argv)
       } /* endif */
       dmn_avg_lst_in=lst_prs_2D(optarg,",",&dmn_avg_nbr);
       opt_a_flg=True;
+      break;
+    case 'B': /* Mask string to be parsed */
+      msk_cnd_sng=(char *)strdup(optarg);
+      break;
+    case 'b': /* [flg] Retain degenerate dimensions */
+      flg_rdd=True;
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
       EXTRACT_ASSOCIATED_COORDINATES=False;
@@ -432,9 +437,6 @@ main(int argc,char **argv)
       nco_op_typ_sng=(char *)strdup(optarg);
       nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
       break;
-    case 'z': /* Mask string to be parsed */
-      msk_cnd_sng=(char *)strdup(optarg);
-      break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
       nco_exit(EXIT_SUCCESS);
@@ -453,18 +455,18 @@ main(int argc,char **argv)
   
   /* Parse mask string */
   if(msk_cnd_sng){
-    int zero=0;
+    int cst_zero=0;
     /* Set arguments for scan */
     prs_arg.fl_in=NULL; /* [sng] Input data file */
     prs_arg.in_id=0; /* [id] Input data file ID */
     prs_arg.fl_out=NULL; /* [sng] Output data file */
     prs_arg.out_id=0; /* [id] Output data file ID */
     prs_arg.att_lst=NULL; /* [sct] Attributes in script */
-    prs_arg.nbr_att=&zero; /* [nbr] Number of attributes in script */
+    prs_arg.nbr_att=&cst_zero; /* [nbr] Number of attributes in script */
     prs_arg.dmn_in=NULL; /* [dmn_in] List of all dimensions in input */
     prs_arg.nbr_dmn_in=0; /* [nbr] Number of  dimensions in input */
     prs_arg.dmn_out=NULL; /* [sct] Pointer to output dimension list */
-    prs_arg.nbr_dmn_out=&zero; /* [nbr] Number of dimensions in output list */
+    prs_arg.nbr_dmn_out=&cst_zero; /* [nbr] Number of dimensions in output list */
     prs_arg.sym_tbl=NULL; /* [fnc] Symbol table for functions */
     prs_arg.sym_tbl_nbr=0; /* [nbr] Number of functions in table */
     prs_arg.ntl_scn=False; /* [flg] Initial scan of script */
