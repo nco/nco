@@ -1,6 +1,6 @@
 package NCO_benchmarks;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.10 2006-05-23 22:24:07 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.11 2006-05-30 19:11:21 zender Exp $
 
 # Purpose: library module supporting nco_bm.pl benchmark and regression tests
 # File contains BENCHMARK code (as opposed to the REGRESSION tests in "NCO_rgr.pm")
@@ -19,7 +19,7 @@ use strict;
 #use NCO_rgr qw( tst_rgr ); # module that contains tst_rgr()
 
 use NCO_bm qw(dbg_msg tst_run
-	$drc_dat @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl  $srv_sde $dodap
+	$drc_dat @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl  $srv_sd $dodap
 );
 
 require Exporter;
@@ -27,14 +27,14 @@ our @ISA = qw(Exporter);
 #export functions (top) and variables (bottom)
 our @EXPORT = qw(
 	benchmarks
-	$srv_sde $dodap $NUM_FLS $dbg_lvl $bm  $mpi_prc $opr_sng_mpi $omp_flg $fl_fmt
+	$srv_sd $dodap $NUM_FLS $dbg_lvl $bm  $mpi_prc $opr_sng_mpi $omp_flg $fl_fmt
 	$nco_D_flg $fl_out $tw_prt_bm @tst_cmd $opr_nm $dsc_sng $nsr_xpc $fl_cnt %NCO_RC
 );
 
 use vars qw(
 $drc_dat  $f  @fl_mk_dat  $in_pth  $in_pth_arg  $ipcc_dm_sz  $ldz  $lnk_fl_nme
 $MY_BIN_DIR $n  $nd  $NUM_FLS  $r  $rel_fle  $ssdwrap  $var_pfx  $var_sfx
-$var_sng @var_sz   $wait  $tw_prt_bm $srv_sde $opr_nm $dsc_sng $mpi_prc $fl_out
+$var_sng @var_sz   $wait  $tw_prt_bm $srv_sd $opr_nm $dsc_sng $mpi_prc $fl_out
 $bm $dbg_lvl $dodap $fl_cnt @fl_mk_dat $fl_fmt $fl_pth %NCO_RC $nco_D_flg
 $ncwa_scl_tst $notbodi $nsr_xpc $omp_flg $opr_sng_mpi  @tst_cmd
 );
@@ -42,7 +42,7 @@ $ncwa_scl_tst $notbodi $nsr_xpc $omp_flg $opr_sng_mpi  @tst_cmd
 sub benchmarks{
 
 	print "\nINFO: Starting Benchmarks now:\n";
-#	"\t+serverside status = $srv_sde\n\t+dodap = $dodap\n\t+$drc_dat = $drc_dat";
+#	"\t+serverside status = $srv_sd\n\t+dodap = $dodap\n\t+$drc_dat = $drc_dat";
 
 	# set up the input path and argument string
 	$in_pth = "";
@@ -51,12 +51,12 @@ sub benchmarks{
 	elsif ($dodap ne "" && $fl_pth =~ /http/ ) { $in_pth_arg = " -p $fl_pth "; }
 	elsif ($dodap eq "") { $in_pth_arg = " -p  http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata "; }
 	# hardcode for now until we come up with a robut method for doing this
-	if ($srv_sde ne "SSNOTSET") { $in_pth_arg = "-p dodsdata"; }
+	if ($srv_sd ne "SSNOTSET") { $in_pth_arg = "-p dodsdata"; }
 
 
 	################### Set up the symlinks ###################
 
-	if ($bm && $dodap eq "FALSE" && $srv_sde eq "SSNOTSET") {
+	if ($bm && $dodap eq "FALSE" && $srv_sd eq "SSNOTSET") {
 		if ($dbg_lvl > 0) {print "\nINFO: Setting up symlinks for test nc files\n";}
 		for (my $f=0; $f<$NUM_FLS; $f++) {
 			my $rel_fle = "$drc_dat/$fl_mk_dat[$f][2]" . ".nc" ;

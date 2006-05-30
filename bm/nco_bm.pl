@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.133 2006-05-30 17:54:53 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.134 2006-05-30 19:11:21 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -43,7 +43,7 @@ use vars qw(
 	    $fl_out_rgn $os_sng $fl_out $pfxd $prg_nm $prsrv_fl
 	    $pth_rmt_scp_tst $pwd $que $rcd %real_tme $cmd_rsl $rgr $server_ip
 	    $server_name $server_port $sock $spc_fmt $spc_nbr $spc_nbr_min
-	    $spc_sng $srv_sde %subbenchmarks %success %sym_link @sys_tim_arr
+	    $spc_sng $srv_sd %subbenchmarks %success %sym_link @sys_tim_arr
 	    $sys_time %sys_tme $thr_nbr $timed $timestamp $tmp $tmr_app
 	    %totbenchmarks @tst_cmd $tst_fl_mk $tst_fmt $tst_id_sng $tst_idx
 	    %tst_nbr $tw_prt_bm  $udp_rpt $USER $usg %usr_tme %wc_tbl
@@ -85,7 +85,7 @@ $prsrv_fl = 1;
 $pth_rmt_scp_tst='dust.ess.uci.edu:/var/www/html/dodsdata';
 $pwd = `pwd`; chomp $pwd;
 $que = 0;
-$srv_sde = "SSNOTSET";
+$srv_sd = "SSNOTSET";
 $thr_nbr = 0; # If not zero, pass explicit threading argument
 $timestamp = `date -u "+%x %R"`; chomp $timestamp;
 $tst_fl_mk = '0';
@@ -139,7 +139,7 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	    'regress'      => \$rgr,        # Perform regression tests
 	    'rgr'          => \$rgr,        # Perform regression tests
 	    'scaling'      => \$ncwa_scl_tst, # do scaling test on ncwa bench to see how dif var sizes change time
-	    'serverside:s' => \$srv_sde,     # Do benchmarks on server side (w/ ssdwrap)
+	    'serverside:s' => \$srv_sd,     # Do benchmarks on server side (w/ ssdwrap)
 	    'test_files=s' => \$tst_fl_mk,  # Create test files "134" does 1,3,4
 	    'tst_fl=s'     => \$tst_fl_mk,  # Create test files "134" does 1,3,4
 	    'thr_nbr=i'    => \$thr_nbr,    # Number of OMP threads to use
@@ -161,14 +161,14 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 
 $NUM_FLS = 4; # max number of files in the file creation series
 
-if ($srv_sde eq '') {$srv_sde = 1;}
+if ($srv_sd eq '') {$srv_sd = 1;}
 
 my $lcl_vars =  "\n\t \$cmd_ln = $cmd_ln\n";
 $lcl_vars .=    "\t \$caseid = $caseid\n";
 $lcl_vars .=    "\t \$rgr = $rgr\n" ;
 $lcl_vars .=    "\t \$bm = $bm\n" ;
 $lcl_vars .=    "\t \$bch_flg = $bch_flg\n";
-$lcl_vars .=    "\t \$srv_sde = [$srv_sde]\n";
+$lcl_vars .=    "\t \$srv_sd = [$srv_sd]\n";
 $lcl_vars .=    "\t \$nvr_data = $nvr_data\n";
 $lcl_vars .=    "\t \$nvr_home = $nvr_home\n";
 $lcl_vars .=    "\t \$nvr_my_bin_dir = $nvr_my_bin_dir\n";
@@ -214,14 +214,14 @@ if ($iosockfound && $NCO_RC{"udp_report"} =~ "yes"){$udp_rpt = 1;}
 # this next commented block will soon disappear as we DO need to make
 # BOTH benchmarks and regressions  run serverside
 # check that if serverside has been requested, also benchmarks have been or emit errors
-# if ($srv_sde ne "SSNOTSET" && !$bm) {
+# if ($srv_sd ne "SSNOTSET" && !$bm) {
 # 	print "\nWARN: The only option allowed with '--serverside' is '--benchmark' - continue? [Ny] ";
 # 	my $tmp = <STDIN>;
 # 	if ($tmp !~ /[Yy]/) {die "OK - try again without the serverside option\n";}
 # 	#else {$bm = 1;} #set $bm and continue
 # }
 # can't do both serverside and DAP - check that the options don't conflict
-if ($srv_sde ne "SSNOTSET" && $dodap ne 'FALSE') {
+if ($srv_sd ne "SSNOTSET" && $dodap ne 'FALSE') {
     die "\nERR: Can't combine '--serverside' and '--dap' - choose one or the other.\n";
 }
 # if testing DAP, use $case_id to specify separate dir, so don't mess with current files
@@ -468,7 +468,7 @@ if ($bm && $tst_fl_mk eq '0' && $dodap eq 'FALSE'){
 #	print "DEBUG:  in nco_bm.pl, \$fl_tmg[1][0] = $fl_tmg[1][0] & \$NUM_FLS = $NUM_FLS\n";
 
 # file creation tests
-if ($tst_fl_mk ne '0' || $srv_sde ne "SSNOTSET"){
+if ($tst_fl_mk ne '0' || $srv_sd ne "SSNOTSET"){
     my $fc = 0; $prsrv_fl = 1;
     if ($tst_fl_mk =~ "[Aa]"){$tst_fl_mk = "1234";}
     if ($tst_fl_mk =~ /1/){ @fl_tmg = NCO_bm::fl_mk(0); $fc++; }

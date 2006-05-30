@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.47 2006-05-26 20:37:02 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.48 2006-05-30 19:11:21 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions in approximate order of their usage:
@@ -41,7 +41,7 @@ our @ISA = qw(Exporter);
 our @EXPORT = qw (
 		  tst_run dbg_msg drc_dat_set bm_ntl
 		  $pfx_cmd $drc_dat @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
-		  $prsrv_fl  $srv_sde $hiresfound $dodap $bm $dbg_lvl $sock $udp_rpt
+		  $prsrv_fl  $srv_sd $hiresfound $dodap $bm $dbg_lvl $sock $udp_rpt
 		  $mpi_prc $pfx_mpi $mpi_fk
 		  );
 
@@ -57,7 +57,7 @@ use vars qw(
 	    $cmd_ln $drc_dat @fl_mk_dat $fl_pth @fl_tmg $md5found %MD5_tbl
 	    $nco_D_flg $NUM_FLS $pfxd $prsrv_fl $que $server_ip $sock $thr_nbr
 	    $dbg_sng $err_sng $tmr_app $udp_rpt %wc_tbl $pfxd $nvr_my_bin_dir
-	    $prg_nm $arg_nbr $tw_prt_bm $srv_sde @cmd_lst
+	    $prg_nm $arg_nbr $tw_prt_bm $srv_sd @cmd_lst
 	    
 	    );
 # $fl_out
@@ -567,7 +567,7 @@ sub tst_run {
     my $SS_nsr_xpc = 0;
     my $SS_OK = 1;
     if ($cmd_lst[$#cmd_lst] ne "SS_OK") {$SS_OK = 0;} # check on last el whether cmds can be SS'ed
-    if ($SS_OK && $srv_sde ne "SSNOTSET" ) {
+    if ($SS_OK && $srv_sd ne "SSNOTSET" ) {
 	# Send for processing and get back string or single value to check
 	$SS_nsr_xpc=SS_gnarly_pything(\@cmd_lst);
 	
