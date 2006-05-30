@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.217 2006-05-30 06:46:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.218 2006-05-30 07:07:19 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.217 2006-05-30 06:46:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.217 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.218 2006-05-30 07:07:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.218 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #ifdef __cplusplus
@@ -565,7 +565,7 @@ main(int argc,char **argv)
 	/* Output list comprises non-averaged and, if specified, degenerate dimensions */
 	dmn_out[nbr_dmn_out]=nco_dmn_dpl(dim[idx]);
 	(void)nco_dmn_xrf(dim[idx],dmn_out[nbr_dmn_out]);
-	if(flg_rdd){
+	if(idx_avg != dmn_avg_nbr && flg_rdd){
 	  /* Cut degenerate dimensions down to size */
 	  dmn_out[nbr_dmn_out]->cnt=1L;
 	  dmn_out[nbr_dmn_out]->srt=dmn_out[nbr_dmn_out]->end=0L;

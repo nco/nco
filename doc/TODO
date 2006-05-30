@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.772 2006-05-30 06:46:28 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.773 2006-05-30 07:07:19 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -502,12 +502,10 @@ nco739. ncwa: Add option to retain all averaged dimensions as degenerate arrays 
 	ncwa --rdd -D 1 -O -C -a lat -v wgt_one ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
 	ncwa --rdd -D 1 -O -a lat,lon,lev -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
 	ncwa --rdd -D 1 -O ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
-nco740. Add RDD to mpncwa
-nco741. Document RDD in nco.texi
-nco742. Add RDD to nco_ctl.c switches
-nco358. Document ncwa -z switch: Get rid of separate -M -m -T?
 nco743. ncwa: rdd breaks when -a used
-	ncwa -b -a lon in.nc out2.nc
+	ncwa -O -b -a lon ~/nco/data/in.nc ~/foo.nc (fails)
+	ncwa -O -b -a lon -v lon ~/nco/data/in.nc ~/foo.nc (works)
+        valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncwa -D 3 -O -b -a lon ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
 nco744. 
 ************************************************************************
 End ncoXXX TODOs

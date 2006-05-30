@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.361 2006-05-30 06:46:28 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.362 2006-05-30 07:07:19 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -8539,6 +8539,7 @@ it as a degenerate dimension in all variables.
 % ncks -C -H -v lon out1.nc
 lon = 135
 % ncks -C -H -v lon out2.nc
+lon[0] = 135 lon[0] = 135
 @end example
 In either case the tally is simply the size of @code{lon}, or 128.
 
