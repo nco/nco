@@ -1,6 +1,8 @@
 2006-05-29  Charlie Zender  <zender@uci.edu>
 
-	* Finished retain-degenerate-dimensions implementation in ncwa and mpncwa
+	* Implement mask_condition as -B and document in nco.texi
+
+	* retain-degenerate-dimensions implementation works in [mp]ncwa
 
 	* Update opendap.sh to DAP 3.6 download/build procedures
 

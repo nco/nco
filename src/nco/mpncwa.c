@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.45 2006-05-29 23:25:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.46 2006-05-30 03:35:08 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -114,16 +114,16 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
   char *msk_nm=NULL;
-  char *msk_sng=NULL; /* Mask string to be "parsed" and values given to msk_nm, msk_val, op_typ_rlt */
+  char *msk_cnd_sng=NULL; /* Mask string to be "parsed" and values given to msk_nm, msk_val, op_typ_rlt */
   char *nco_op_typ_sng; /* Operation type */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.45 2006-05-29 23:25:03 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.45 $";
-  const char * const opt_sht_lst="4Aa:CcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:z:-:";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.46 2006-05-30 03:35:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.46 $";
+  const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
   ddra_info_sct ddra_info={.MRV_flg=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
 
@@ -226,10 +226,14 @@ main(int argc,char **argv)
       {"average",required_argument,0,'a'},
       {"avg",required_argument,0,'a'},
       {"append",no_argument,0,'A'},
-      {"coords",no_argument,0,'c'},
-      {"crd",no_argument,0,'c'},
+      {"mask_condition",required_argument,0,'B'},
+      {"msk_cnd_sng",required_argument,0,'B'},
+      {"degenerate_dimensions",no_argument,0,'b'}, /* [flg] Retain degenerate dimensions */
+      {"rdd",no_argument,0,'b'}, /* [flg] Retain degenerate dimensions */
       {"no-coords",no_argument,0,'C'},
       {"no-crd",no_argument,0,'C'},
+      {"coords",no_argument,0,'c'},
+      {"crd",no_argument,0,'c'},
       {"debug",required_argument,0,'D'},
       {"dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
@@ -261,7 +265,7 @@ main(int argc,char **argv)
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
       {"suspend", no_argument,0,'S'},
-      {"truth_condition",required_argument,0,'T'},
+      {"mask_comparitor",required_argument,0,'T'},
       {"msk_cmp_typ",required_argument,0,'T'},
       {"op_rlt",required_argument,0,'T'},
       {"thr_nbr",required_argument,0,'t'},
@@ -278,8 +282,6 @@ main(int argc,char **argv)
       {"wgt_var",no_argument,0,'w'},
       {"operation",required_argument,0,'y'},
       {"op_typ",required_argument,0,'y'},
-      {"mask_string",required_argument,0,'z'},
-      {"msk_sng",required_argument,0,'z'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -431,7 +433,7 @@ main(int argc,char **argv)
       nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
       break;
     case 'z': /* Mask string to be parsed */
-      msk_sng=(char *)strdup(optarg);
+      msk_cnd_sng=(char *)strdup(optarg);
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
@@ -450,7 +452,7 @@ main(int argc,char **argv)
   } /* end while loop */
   
   /* Parse mask string */
-  if(msk_sng){
+  if(msk_cnd_sng){
     int zero=0;
     /* Set arguments for scan */
     prs_arg.fl_in=NULL; /* [sng] Input data file */
@@ -461,8 +463,8 @@ main(int argc,char **argv)
     prs_arg.nbr_att=&zero; /* [nbr] Number of attributes in script */
     prs_arg.dmn_in=NULL; /* [dmn_in] List of all dimensions in input */
     prs_arg.nbr_dmn_in=0; /* [nbr] Number of  dimensions in input */
-    prs_arg.dmn_out=NULL; /* pointer to list of dims in output */
-    prs_arg.nbr_dmn_out=&zero; /* number of dims in above list */
+    prs_arg.dmn_out=NULL; /* [sct] Pointer to output dimension list */
+    prs_arg.nbr_dmn_out=&zero; /* [nbr] Number of dimensions in output list */
     prs_arg.sym_tbl=NULL; /* [fnc] Symbol table for functions */
     prs_arg.sym_tbl_nbr=0; /* [nbr] Number of functions in table */
     prs_arg.ntl_scn=False; /* [flg] Initial scan of script */
@@ -472,8 +474,8 @@ main(int argc,char **argv)
     /* Initialize line counter */
     ncap_ln_nbr_crr=(size_t *)nco_realloc(ncap_ln_nbr_crr,ncap_ncl_dpt_crr+1UL); 
     ncap_ln_nbr_crr[ncap_ncl_dpt_crr]=1UL; /* [cnt] Line number incremented in ncap.l */
-    if(ncap_ncwa_scn(&prs_arg,msk_sng,&msk_nm,&msk_val,&op_typ_rlt) == 0) nco_exit(EXIT_FAILURE); 
-  } /* endif msk_sng */
+    if(ncap_ncwa_scn(&prs_arg,msk_cnd_sng,&msk_nm,&msk_val,&op_typ_rlt) == 0) nco_exit(EXIT_FAILURE); 
+  } /* endif msk_cnd_sng */
   
   /* Ensure we do not attempt to normalize by non-existent weight */
   if(wgt_nm == NULL) NORMALIZE_BY_WEIGHT=False;
@@ -1154,7 +1156,7 @@ main(int argc,char **argv)
   if(msk != NULL) msk=nco_var_free(msk);
   if(msk_nm != NULL) msk_nm=(char *)nco_free(msk_nm);
   if(msk_out != NULL) msk_out=nco_var_free(msk_out);
-  if(msk_sng != NULL) msk_sng=(char *)nco_free(msk_sng);
+  if(msk_cnd_sng != NULL) msk_cnd_sng=(char *)nco_free(msk_cnd_sng);
   if(wgt != NULL) wgt=nco_var_free(wgt);
   if(wgt_avg != NULL) wgt_avg=nco_var_free(wgt_avg);
   if(wgt_nm != NULL) wgt_nm=(char *)nco_free(wgt_nm);

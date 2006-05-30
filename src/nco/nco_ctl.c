@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.132 2006-05-29 06:29:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.133 2006-05-30 03:35:08 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -757,8 +757,14 @@ nco_usg_prn(void)
     if(prg_lcl == ncrename) (void)fprintf(stdout,"-a, --attribute old_att,new_att Attribute's old and new names\n");
     if(prg_lcl == ncwa) (void)fprintf(stdout,"-a, --avg, --average avg_dim1[,avg_dim2[...]] Averaging dimensions\n");
   } /* end if */
-  if(strstr(opt_sng,"-B")) (void)fprintf(stdout,"-B, --bnr, --binary\tWrite data to unformatted binary file\n");
-  if(strstr(opt_sng,"-b")) (void)fprintf(stdout,"-b, --fl_bnr, --binary-file fl_bnr\tUnformatted binary file to write\n");
+  if(strstr(opt_sng,"-B")){
+    if(prg_lcl == ncks) (void)fprintf(stdout,"-B, --bnr, --binary\tWrite data to unformatted binary file\n");
+    if(prg_lcl == ncwa) (void)fprintf(stdout,"-B, --bool_condition, --msk_cnd mask_cnd\tMask condition\n");
+  } /* end if -B */
+  if(strstr(opt_sng,"-b")){
+    if(prg_lcl == ncks) (void)fprintf(stdout,"-b, --fl_bnr, --binary-file fl_bnr\tUnformatted binary file to write\n");
+    if(prg_lcl == ncwa) (void)fprintf(stdout,"-b, --rdd, --degenerate-dimensions\tRetain degenerate dimensions\n");
+  } /* end if -b */
   if(strstr(opt_sng,"-c")) (void)fprintf(stdout,"-c, --crd, --coords\tCoordinate variables will all be processed\n");
   if(strstr(opt_sng,"-C")) (void)fprintf(stdout,"-C, --nocoords\t\tAssociated coordinate variables should not be processed\n");
   if(strstr(opt_sng,"-D")) (void)fprintf(stdout,"-D, --dbg_lvl, --debug-level dbg_lvl\tDebugging level\n");
@@ -809,7 +815,7 @@ nco_usg_prn(void)
     if(prg_lcl == ncap) (void)fprintf(stdout,"-s, --spt, --script algebra\tAlgebraic command defining single output variable\n");
   } /* end if */
   if(strstr(opt_sng,"-S")) (void)fprintf(stdout,"-S, --fl_spt, --script-file fl.nco\tScript file containing multiple algebraic commands\n");
-  if(strstr(opt_sng,"-T")) (void)fprintf(stdout,"-T, --truth_condition, --msk_cmp_typ, --op_rlt condition\tTruth condition for masking: eq,ne,ge,le,gt,lt\n");
+  if(strstr(opt_sng,"-T")) (void)fprintf(stdout,"-T, --mask_comparitor, --msk_cmp_typ, --op_rlt comparitor\tComparitor for mask condition: eq,ne,ge,le,gt,lt\n");
   if(strstr(opt_sng,"-t")) (void)fprintf(stdout,"-t, --thr_nbr, --threads, --omp_num_threads thr_nbr\tThread number for OpenMP\n");
   if(strstr(opt_sng,"-u")) (void)fprintf(stdout,"-u, --units\t\tToggle printing units of variables, if any\n");
   if(strstr(opt_sng,"-U")) (void)fprintf(stdout,"-U, --upk, --unpack\tUnpack input file\n");

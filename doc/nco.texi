@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.359 2006-05-28 03:43:37 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.360 2006-05-30 03:35:07 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -102,7 +102,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.1.2
 @set copyright-years 1995--2006
 @set update-year 2006
-@set update-date 19 May 2006
+@set update-date 29 May 2006
 @set update-month May 2006
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -5569,7 +5569,7 @@ from the continuous array named @code{ORO} in @file{in.nc}.
 # Add degenerate "record" dimension to ORO for averaging
 ncecat -O -v ORO in.nc foo.nc
 # Average degenerate "record" dimension using ORO as mask
-ncwa -a record -O -m ORO -T gt -M 1.0 foo.nc foo.nc
+ncwa -a record -O -B "ORO > 1.0" foo.nc foo.nc
 # ORO is either = 0.0 or > 1.0 everywhere
 # Create ORO_frc in [0.0,1.0) then add 0.99 and convert to int 
 ncap -O -s "ORO_frc=ORO-int(ORO)" -s "ORO_flg=int(ORO_frc+0.99)" foo.nc out.nc
@@ -8163,10 +8163,10 @@ The variable @code{prs_sfc} need not exist, and need not contain the
 @noindent
 SYNTAX
 @example
-ncwa [-4] [-A] [-a @var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
+ncwa [-4] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-I] [-l @var{path}] 
 [-M @var{mask_val}] [-m @var{mask_var}] [-N] [-n] [-O] 
-[-o @var{output-file}] [-p @var{path}] [-R] [-r] [-T @var{condition}]
+[-o @var{output-file}] [-p @var{path}] [-R] [-r] [-T @var{mask_comp}]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-W] [-w @var{weight}] [-x] [-y @var{op_typ}]
 @var{input-file} [@var{output-file}]
 @end example
@@ -8179,8 +8179,8 @@ dimensions, with options to specify weights, masks, and normalization.
 @xref{Averaging vs. Concatenating}, for a description of the
 distinctions between the various averagers and concatenators. 
 The default behavior of @command{ncwa} is to arithmetically average
-every numerical variable over all dimensions and produce a scalar
-result. 
+every numerical variable over all dimensions and to produce a scalar 
+result for each. 
 To average variables over only a subset of their dimensions, specify
 these dimensions in a comma-separated list following @samp{-a}, e.g.,
 @samp{-a time,lat,lon}. 
@@ -8209,6 +8209,9 @@ With these options, @command{ncwa} can compute sophisticated averages
 @cindex @code{--mask_variable @var{mask_var}}
 @cindex @code{--msk_nm @var{mask_var}}
 @cindex @code{--msk_var @var{mask_var}}
+@cindex @code{-B @var{mask_cond}}
+@cindex @code{--msk_cnd @var{mask_cond}}
+@cindex @code{--mask_condition @var{mask_cond}}
 @var{mask_var} and @var{weight}, if specified, are broadcast to conform
 to the variables being averaged. 
 @cindex rank
@@ -8301,37 +8304,52 @@ As expected, $\mskflg_{\idx} = 1$ when the mask condition is
 @dfn{true} and $\mskflg_{\idx} = 0$ otherwise.   
 @end tex
 
-@cindex @code{--op_rlt @var{condition}}
-@cindex @code{--truth_condition @var{condition}}
-@cindex @code{--msk_cmp_typ @var{condition}}
+@cindex @code{--op_rlt @var{mask_comp}}
+@cindex @code{--mask_comparitor @var{mask_comp}}
+@cindex @code{--msk_cmp_typ @var{mask_comp}}
+@cindex @code{--msk_cnd_sng @var{mask_cond}}
+@cindex @code{--mask_condition @var{mask_cond}}
+@cindex @code{-B @var{mask_cond}}
 The mask condition has the syntax @math{@var{mask_var}}
-@math{@var{condition}} @math{@var{mask_val}}. 
+@math{@var{mask_comp}} @math{@var{mask_val}}. 
+The preferred method to specify the mask condition is in one string with  
+the @samp{-B} or @samp{--mask_condition} switches.
+The older method is to use the three switches @samp{-m}, @samp{-T}, and
+@samp{-M} to specify the @var{mask_var}, @var{mask_comp}, and 
+@var{mask_val}, respectively.  
+@footnote{The three switches @samp{-m}, @samp{-T}, and @samp{-M} are
+maintained for backward compatibility and may be deprecated in the
+future.
+It is safest to write scripts using @samp{--mask_condition}.}.
+The @var{mask_condition} string is automatically parsed into its three
+constituents @var{mask_var}, @var{mask_comp}, and @var{mask_val}.
+
 Here @var{mask_var} is the name of the masking variable (specified with 
 @samp{-m}, @samp{--mask-variable}, @samp{--mask_variable},
 @samp{--msk_nm}, or @samp{--msk_var}).  
-The truth @var{condition} argument (specified with @samp{-T},
-@samp{--truth_condition}, @samp{--msk_cmp_typ}, or @samp{--op_rlt} may 
-be any one of the six arithmetic comparatives: @kbd{eq}, @kbd{ne},
+The truth @var{mask_comp} argument (specified with @samp{-T},
+@samp{--mask_comparitor}, @samp{--msk_cmp_typ}, or @samp{--op_rlt} may 
+be any one of the six arithmetic comparitors: @kbd{eq}, @kbd{ne},
 @kbd{gt}, @kbd{lt}, @kbd{ge}, @kbd{le}. 
 @set flg
 @tex
 These are the Fortran-style character abbreviations for the logical 
-operations $=$, $\neq$, $>$, $<$, $\ge$, $\le$. 
+comparisons $=$, $\neq$, $>$, $<$, $\ge$, $\le$. 
 @clear flg
 @end tex
 @ifinfo
 These are the Fortran-style character abbreviations for the logical 
-operations @math{==}, @math{!=}, @math{>}, @math{<}, @math{>=},
+comparisons @math{==}, @math{!=}, @math{>}, @math{<}, @math{>=},
 @math{<=}. 
 @clear flg
 @end ifinfo
 @ifset flg
 @c texi2html does not like @math{}
 These are the Fortran-style character abbreviations for the logical 
-operations @kbd{==}, @kbd{!=}, @kbd{>}, @kbd{<}, @kbd{>=},
+comparisons @kbd{==}, @kbd{!=}, @kbd{>}, @kbd{<}, @kbd{>=},
 @clear flg
 @end ifset
-The mask condition defaults to @kbd{eq} (equality).
+The mask comparitor defaults to @kbd{eq} (equality).
 @cindex @code{--mask-value @var{mask_val}}
 @cindex @code{--mask_value @var{mask_val}}
 @cindex @code{--msk_val @var{mask_val}}
@@ -8342,16 +8360,16 @@ Thus for the @var{i}'th element of the hyperslab to be averaged,
 the mask condition is 
 @set flg
 @tex
-{\it mask$_{\idx}$ condition mask\_val}.
+{\it mask$_{\idx}$ mask\_comp mask\_val}.
 @clear flg
 @end tex
 @ifinfo
-@math{mask(i)} @var{condition} @var{mask_val}.
+@math{mask(i)} @var{mask_comp} @var{mask_val}.
 @clear flg
 @end ifinfo
 @ifset flg
 @c texi2html does not like @math{}
-@var{mask}(@var{i}) @var{condition} @var{mask_val}.
+@var{mask}(@var{i}) @var{mask_comp} @var{mask_val}.
 @clear flg
 @end ifset
 
@@ -8549,9 +8567,16 @@ $ORO < 0.5$
 @math{@var{ORO} < 0.5} selects the gridpoints which are covered by
 ocean.}: 
 @example
+ncwa -B "ORO < 0.5"      -w gw -a lat,lon in.nc out.nc
 ncwa -m ORO -M 0.5 -T lt -w gw -a lat,lon in.nc out.nc
 @end example
 @noindent
+It is considerably simpler to specify the complete @var{mask_cond} with
+the single string argument to @samp{-B} than with the three separate
+switches @samp{-m}, @samp{-T}, and @samp{-M}.
+If in doubt, enclose the @var{mask_cond} with double quotes since some
+of the comparitors have special meanings to the shell.
+
 Assuming 70% of the gridpoints are maritime, then here the tally is
 @set flg
 @tex
@@ -8565,14 +8590,18 @@ $0.70 \times 8192 \approx 5734$.
 
 Compute the global annual mean over the maritime tropical Pacific:
 @example
-ncwa -m ORO -M 0.5 -T lt -w gw -a lat,lon,time 
+ncwa -B "ORO < 0.5"      -w gw -a lat,lon,time \
+-d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
+ncwa -m ORO -M 0.5 -T lt -w gw -a lat,lon,time \
 -d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
 @end example
+Further examples will use the one-switch specification of
+@var{mask_cond}.  
 
 Determine the total area of the maritime tropical Pacific, assuming
 the variable @var{area} contains the area of each gridcell
 @example
-ncwa -N -v area -m ORO -M 0.5 -T lt -a lat,lon
+ncwa -N -v area -B "ORO < 0.5" -a lat,lon \
 -d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
 @end example
 Weighting @var{area} (e.g., by @var{gw}) is not appropriate because
@@ -8590,9 +8619,9 @@ export msk_var='three_dmn_var_dbl' # Masking variable
 export thr_max='20' # Maximum allowed value
 export thr_min='10' # Minimum allowed value
 ncecat -O in.nc out.nc # Wrap out.nc in degenerate "record" dimension
-ncwa -O -a record -m $@{msk_var@} -T le -M $@{thr_max@} out.nc out.nc
+ncwa -O -a record -B "$@{msk_var@} <= $@{thr_max@}" out.nc out.nc
 ncecat -O out.nc out.nc # Wrap out.nc in degenerate "record" dimension
-ncwa -O -a record -m $@{msk_var@} -T ge -M $@{thr_min@} out.nc out.nc
+ncwa -O -a record -B "$@{msk_var@} >= $@{thr_min@}" out.nc out.nc
 @end example
 After the first use of @command{ncwa}, @file{out.nc} contains
 @var{missing_value} where @code{$@{msk_var@} >= $@{thr_max@}}.
