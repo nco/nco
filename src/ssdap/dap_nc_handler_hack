@@ -4,7 +4,7 @@ import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.26 2006-03-11 01:57:01 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.27 2006-05-31 22:32:28 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -32,7 +32,7 @@ import md5
 #          -L : skip printing of http headers. **** for easier testing
 #
 ######################################################################
-# Administrator-tunable parameters:
+# Administrator-tunable parameters: (overriden by config file)
 ######################################################################
 class local:
     disableLogging = False
@@ -59,7 +59,8 @@ class local:
 # line. An opendap url is currently detected by looking for an
 # http:// prefix.
 #
-
+# This script looks for a config file "ssdap_handler.conf",
+# located in the same directory as itself (via checking argv[0]).   
 
 
 ######################################################################
