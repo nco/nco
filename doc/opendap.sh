@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.7 2006-05-29 23:25:03 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.8 2006-06-01 05:07:35 zender Exp $
 
 # Purpose: Install OPeNDAP prior to building NCO as DAP-enabled clients
 
@@ -33,7 +33,7 @@
 
 # Usage: 
 # Set installation directory below ${DAP_ROOT}
-# ~/nco/doc/dap.sh
+# ~/nco/doc/opendap.sh
 # Default invocation retrieves, builds, and installs DAP in ${DATA}/tmp 
 
 # ${DATA}/tmp exists on most machines, and equals /tmp when ${DATA} is not defined
