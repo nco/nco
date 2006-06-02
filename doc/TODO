@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.775 2006-06-02 20:37:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.776 2006-06-02 21:35:36 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -508,7 +508,8 @@ nco746. ncap2 array tests for bds/map:
         ncap2 -v -O -s 'slon[lon]=lon_grd(0:3)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # fails
         ncap2 -v -O -s 'slon=lon_grd(1:4)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # fails
 nco747. Change lat to -45,45 and add lat_grd = -90,0,90 in in.cdl
-nco748. 
+nco748. Add ddra_tm_init() and ddra_tm_end() functions
+nco749. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
