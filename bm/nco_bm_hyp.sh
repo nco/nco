@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_hyp.sh,v 1.12 2006-06-02 05:11:46 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_hyp.sh,v 1.13 2006-06-02 05:36:20 zender Exp $
 
 # Purpose: Perform NCO benchmarks while subsetting 
 
@@ -18,7 +18,7 @@
 # scp ~/nco/src/nco/ncwa.c ~/nco/src/nco/nco_ctl.c ~/nco/src/nco/nco_var_avg.c ~/nco/src/nco/nco_cnf_dmn.c clay.ess.uci.edu:nco/src/nco
 # cd ~/nco/bld;make allinone;cd ~
 
-CCH_CLR_FLG='1' # [flg] Clear cache before each command
+CCH_CLR_FLG='0' # [flg] Clear cache before each command
 FGR_03_FLG='1' # Figure 3 is the ncbo Satellite timing figure
 FGR_04_FLG='0' # Figure 4 is the ncwa IPCC timing figure
 FGR_05_OLD_FLG='0' # FGR_05_OLD is the bar chart for ncwa
@@ -45,7 +45,7 @@ if [ ${FGR_03_FLG} = '1' -a ${SCL_SUB_SET_FLG} = '1' ]; then
 	var_nbr_sng=`printf "%02d" ${var_nbr}`
 	${CCH_CMD}
 	/usr/bin/time -a -o ~/nco/bm/ncbo.timing -f "%e wall %s system %U user " \
-	    ${MY_BIN_DIR}/ncbo -O --mdl -v "d2_0[0-${var_nbr}]" -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo_${var_nbr_sng}.out
+	    ${MY_BIN_DIR}/ncbo -O --mdl -v "d2_0[0-${var_nbr}]" -p ${DATA}/nco_bm stl_5km.nc stl_5km.nc ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo_${var_nbr_sng}.out
     done # end loop over var_nbr
 fi # !${SCL_HYP_SLB_FLG}
 
