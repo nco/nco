@@ -19,7 +19,7 @@ use vars qw(
 	    $ncwa_memcpy_INS_nowt  $ncwa_memcpy_per_el_nowt $ncwa_memcpy_per_el_wt $lmn_nbr_ttl
 	    $fl_nbr_in $fl_nbr_out $var_nbr $ncwa_NOWT_INS_multiplier $rnk $rnk @dim_vars
 	    $ncwa_ttl_cyc_mlt_nowt $ncwa_ttl_cyc_mlt_wt $ncwa_TOT_CYC_nowt $ncwa_TOT_CYC_wt $ncwa_TOT_INS_multiplier $ncbo_Icyc_per_ins $ncbo_Int_INS_per_el $stl_5km $out_fl_nm $sz_avg_blk
-	    $spd_flp $V_int_INS $ncwa_wallclock_sec_nowt $ncwa_wallclock_sec_wt $wgt_flg $wgt_reuse_flg $V_intops
+	    $spd_flp $spd_ntg $V_int_INS $ncwa_wallclock_sec_nowt $ncwa_wallclock_sec_wt $wgt_flg $wgt_reuse_flg $V_intops
 	    $ncwa_weighting_correction $ncwa_weighting_multiplier $ncwa_WT_INS_multiplier $rnk_wgt
 	    
 	    $K_Ia  $K_Mu  $F_cnt  $Ia_cnt  $Mu_cnt  $Ms_cnt  $fp_tm  $Ittl_cnt $sz_wgt_blk
@@ -28,10 +28,10 @@ use vars qw(
 	    );
 
 # Initialization: Variables that user must set/check to generate valid run
-$ncbo                       = 0; # 1 for ncbo routines, 0 for ncwa
+$ncbo                       = 1; # 1 for ncbo routines, 0 for ncwa
 $wgt_flg                        = 1; # 1 for weighting, 0 for NOT weighting (no effect on ncbo)
 $wgt_reuse_flg                  = 0; # 1 for weight re-use (new default), 0 no re-use (old default)
-$stl_5km                        = 0; # 1 if file is stl_5km file, 0 for ipcc file
+$stl_5km                        = 1; # 1 if file is stl_5km file, 0 for ipcc file
 $var_sz                         = 1; # simple initialization for dimension size
 $MRV_flg                        = 0; # Use MRV optimization 
 

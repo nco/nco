@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.346 2006-05-31 03:31:38 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.347 2006-06-02 16:23:37 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -650,8 +650,8 @@ Users at NCAR should try the <i>supported</i> executables in
 <li>ESS <tt>esmf.ess.uci.edu</tt> (AIX 5.1.0.0): <tt>/home/zender/bin/AIX</tt></li>
 <li>ESS <tt>sand.ess.uci.edu</tt> (Linux 2.6.11): <tt>/home/zender/bin/LINUXAMD64</tt></li>
 <li>CGD network (Solaris 2.7): <tt>/home/zender/bin/SUNMP</tt></li>
-<li>SCD <tt>bluesky.ucar.edu</tt> (AIX 5.1.0.35): <tt>/usr/local/bin</tt></li>
-<li>SCD <tt>lightning.ucar.edu</tt> (???): <tt>/usr/local/bin</tt></li>
+<li>SCD <tt>bluesky.ucar.edu</tt> (AIX 5.2): <tt>/usr/local/bin</tt></li>
+<li>SCD <tt>bluevista.ucar.edu</tt> (AIX 5.3): <tt>/usr/local/bin</tt></li>
 <li>SCD <tt>tempest.ucar.edu</tt> (???): <tt>/usr/local/bin</tt></li>
 </ul>
 <hr></p>
