@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.137 2006-06-02 05:36:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.138 2006-06-02 20:37:26 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -92,11 +92,23 @@ nco_ddra /* [fnc] Count operations */
   /* Following speed parameter estimates are for clay.ess.uci.edu 
      clay is the dual opteron used in ppr_ZeM06 */
   const float ntg_nbr_brd_fdg_fct=1.8; /* [frc] Empirical correction to broadcasting */
-  const float spd_flp=153e6; /* [# s-1] Floating point operation speed */
-  const float spd_ntg=200e6; /* [# s-1] Integer operation speed */
+  const float spd_flp_ncwa=153e6; /* [# s-1] Floating point operation speed */
+  const float spd_ntg_ncwa=200e6; /* [# s-1] Integer operation speed */
+  const float spd_flp_ncbo=353.2e6; /* [# s-1] Floating point operation speed */
+  const float spd_ntg_ncbo=1386.54e6; /* [# s-1] Integer operation speed */
   const float spd_rd=63.375e6; /* [B s-1] Disk read bandwidth */
   const float spd_wrt=57.865e6; /* [B s-1] Disk write bandwidth */
 
+  /* 20060602: 
+     hjm estimates faster speeds for ncbo:     
+     spd_flp_ncbo = 353.2e6: Based on unoptimized operations in tacg function
+     spd_ntg_ncbo = 1386.54e6: Based on counting unoptimized operations in tacg function
+     hjm estimates slower speeds for ncwa:     
+     spd_flp_ncwa = 153e6: Based on direct PAPI measures
+     spd_ntg_ncwa = 200e6: Based on direct measure, using large data set, calculating backwards */
+
+  float spd_flp=float_CEWI; /* [# s-1] Floating point operation speed */
+  float spd_ntg=float_CEWI; /* [# s-1] Integer operation speed */
   int rcd=NC_NOERR; /* [rcd] Return code */
 
   /* Timer information */
@@ -208,6 +220,8 @@ nco_ddra /* [fnc] Count operations */
   case nco_op_dvd: /* [enm] Divide file_1 by file_2 */
   case nco_op_mlt: /* [enm] Multiply file_1 by file_2 */
   case nco_op_sbt: /* [enm] Subtract file_2 from file_1 */
+    spd_flp=spd_flp_ncbo; /* [# s-1] Floating point operation speed */
+    spd_ntg=spd_ntg_ncbo; /* [# s-1] Integer operation speed */
     lmn_nbr_out=lmn_nbr; /* [nbr] Output elements */
     break;
     /* Types used in ncra(), ncrcat(), ncwa(): */
@@ -220,6 +234,8 @@ nco_ddra /* [fnc] Count operations */
   case nco_op_sqrt: /* [enm] Square root of mean */
   case nco_op_rms: /* [enm] Root-mean-square (normalized by N) */
   case nco_op_rmssdn: /* [enm] Root-mean square normalized by N-1 */
+    spd_flp=spd_flp_ncwa; /* [# s-1] Floating point operation speed */
+    spd_ntg=spd_ntg_ncwa; /* [# s-1] Integer operation speed */
     lmn_nbr_out=lmn_nbr/lmn_nbr_avg; /* [nbr] Output elements */
     break;
   case nco_op_nil: /* [enm] Nil or undefined operation type  */

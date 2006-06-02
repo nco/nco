@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.774 2006-05-30 07:25:44 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.775 2006-06-02 20:37:26 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -499,7 +499,16 @@ nco737. Add regression for regex'ing consecutive Q's?
 nco738. nco_cnv_cf_cll_mth_add() CF cell methods
 nco744. Add option to eliminate degenerate dimensions in ncra
 nco745. Add regression test for ncwa --rdd
-nco746. 
+nco746. ncap2 array tests for bds/map:
+        ncap2 -v -O -s 'slon[lon]=0' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # works
+        ncap2 -v -O -s 'slon[$lon]=0' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # works
+        ncap2 -v -O -s 'slon[lon]=0' -s 'slon=lon_grd(0:$lon-1)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # fails
+        ncap2 -v -O -s 'slon[lon]=0' -s 'slon=lon_grd(0:3)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # fails (but does not crash)
+        ncap2 -v -O -s 'slon[lon]=0' -s 'slon(0:3)=lon_grd(0:3)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # works
+        ncap2 -v -O -s 'slon[lon]=lon_grd(0:3)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # fails
+        ncap2 -v -O -s 'slon=lon_grd(1:4)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # fails
+nco747. Change lat to -45,45 and add lat_grd = -90,0,90 in in.cdl
+nco748. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

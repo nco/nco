@@ -132,5 +132,3 @@ h4(6:11)="henrys";
 // If hyperslabbing a var in the input 
 // then the var is first copied to output e.g
 weight(0)=weight(0)+10;
-
-
