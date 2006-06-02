@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.26 2006-06-01 05:05:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.27 2006-06-02 00:55:06 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -53,8 +53,8 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
   cvs_nm_sng_len=(int)(dlr_ptr-cvs_nm_ptr-strlen(dlr_nm_cln_spc)); /* 7 is strlen("$Name: ") */
   if(cvs_nm_sng_len > 0) dly_snp=False; else dly_snp=True;
 
-  /* If not, this is daily snapshot so use YYYYMMDD date for version string */
   if(dly_snp){
+    /* Presume this a daily snapshot, use YYYYMMDD date for version string */
     int mth;
     int day;
     int yr;
@@ -63,7 +63,7 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
 
     time_crr_time_t=time((time_t *)NULL);
     gmt_tm=gmtime(&time_crr_time_t); 
-    /* localtime() gives YYYYMMDD in MDT, but this conflicts with CVS, which uses GMT */
+    /* localtime() gives YYYYMMDD in e.g., PDT/MDT, but this conflicts with CVS, which uses GMT */
     /*    gmt_tm=localtime(&time_crr_time_t); */
 
     mth=gmt_tm->tm_mon+1;
