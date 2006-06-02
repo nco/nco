@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_hyp.sh,v 1.13 2006-06-02 05:36:20 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_hyp.sh,v 1.14 2006-06-02 06:25:07 zender Exp $
 
 # Purpose: Perform NCO benchmarks while subsetting 
 
@@ -18,12 +18,12 @@
 # scp ~/nco/src/nco/ncwa.c ~/nco/src/nco/nco_ctl.c ~/nco/src/nco/nco_var_avg.c ~/nco/src/nco/nco_cnf_dmn.c clay.ess.uci.edu:nco/src/nco
 # cd ~/nco/bld;make allinone;cd ~
 
-CCH_CLR_FLG='0' # [flg] Clear cache before each command
+CCH_CLR_FLG='1' # [flg] Clear cache before each command
 FGR_03_FLG='1' # Figure 3 is the ncbo Satellite timing figure
 FGR_04_FLG='0' # Figure 4 is the ncwa IPCC timing figure
 FGR_05_OLD_FLG='0' # FGR_05_OLD is the bar chart for ncwa
-SCL_HYP_SLB_FLG='0' # [flg] Use approach 2: Scale by hyperslabbing
-SCL_SUB_SET_FLG='1' # [flg] Use approach 1: Scale by sub-setting
+SCL_HYP_SLB_FLG='1' # [flg] Use approach 2: Scale by hyperslabbing
+SCL_SUB_SET_FLG='0' # [flg] Use approach 1: Scale by sub-setting
 WGT_FLG='1' # [flg] Perform weighted averages
 
 if [ ${WGT_FLG} = '1' ]; then
@@ -40,13 +40,40 @@ fi # !CCH_CLR_FLG
 
 # Figure 3 is the ncbo timing figure
 if [ ${FGR_03_FLG} = '1' -a ${SCL_SUB_SET_FLG} = '1' ]; then
-# NB: Scaling by hyperslab uses different disk geometry than sub-setting
+# Approach 1: Scale by sub-setting
     for var_nbr in {0..7}; do
 	var_nbr_sng=`printf "%02d" ${var_nbr}`
-	${CCH_CMD}
-	/usr/bin/time -a -o ~/nco/bm/ncbo.timing -f "%e wall %s system %U user " \
+	${CCH_CMD}; /usr/bin/time -a -o ~/nco/bm/ncbo.timing -f "%e wall %s system %U user " \
 	    ${MY_BIN_DIR}/ncbo -O --mdl -v "d2_0[0-${var_nbr}]" -p ${DATA}/nco_bm stl_5km.nc stl_5km.nc ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo_${var_nbr_sng}.out
     done # end loop over var_nbr
+fi # !${SCL_HYP_SLB_FLG}
+
+if [ ${FGR_03_FLG} = '1' -a ${SCL_HYP_SLB_FLG} = '1' ]; then
+# Approach 2: Scale by hyperslabbing
+# 1/8
+	${CCH_CMD}; /usr/bin/time -a -o ~/nco/bm/ncbo.timing -f "%e wall %s system %U user " \
+	    ${MY_BIN_DIR}/ncbo -O --mdl -d lat,0,0800 -d lon,0,1166 -p ${DATA}/nco_bm stl_5km.nc stl_5km.nc ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo_01.out
+# 2/8
+	${CCH_CMD}; /usr/bin/time -a -o ~/nco/bm/ncbo.timing -f "%e wall %s system %U user " \
+	    ${MY_BIN_DIR}/ncbo -O --mdl -d lat,0,1000 -d lon,0,2332 -p ${DATA}/nco_bm stl_5km.nc stl_5km.nc ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo_02.out
+# 3/8
+	${CCH_CMD}; /usr/bin/time -a -o ~/nco/bm/ncbo.timing -f "%e wall %s system %U user " \
+	    ${MY_BIN_DIR}/ncbo -O --mdl -d lat,0,1200 -d lon,0,2916 -p ${DATA}/nco_bm stl_5km.nc stl_5km.nc ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo_03.out
+# 4/8
+	${CCH_CMD}; /usr/bin/time -a -o ~/nco/bm/ncbo.timing -f "%e wall %s system %U user " \
+	    ${MY_BIN_DIR}/ncbo -O --mdl -d lat,0,1400 -d lon,0,3333 -p ${DATA}/nco_bm stl_5km.nc stl_5km.nc ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo_04.out
+# 5/8
+	${CCH_CMD}; /usr/bin/time -a -o ~/nco/bm/ncbo.timing -f "%e wall %s system %U user " \
+	    ${MY_BIN_DIR}/ncbo -O --mdl -d lat,0,1600 -d lon,0,3645 -p ${DATA}/nco_bm stl_5km.nc stl_5km.nc ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo_05.out
+# 6/8
+	${CCH_CMD}; /usr/bin/time -a -o ~/nco/bm/ncbo.timing -f "%e wall %s system %U user " \
+	    ${MY_BIN_DIR}/ncbo -O --mdl -d lat,0,1800 -d lon,0,3888 -p ${DATA}/nco_bm stl_5km.nc stl_5km.nc ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo_06.out
+# 7/8
+	${CCH_CMD}; /usr/bin/time -a -o ~/nco/bm/ncbo.timing -f "%e wall %s system %U user " \
+	    ${MY_BIN_DIR}/ncbo -O --mdl -d lat,0,2000 -d lon,0,4082 -p ${DATA}/nco_bm stl_5km.nc stl_5km.nc ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo_07.out
+# 8/8
+	${CCH_CMD}; /usr/bin/time -a -o ~/nco/bm/ncbo.timing -f "%e wall %s system %U user " \
+	    ${MY_BIN_DIR}/ncbo -O --mdl -p ${DATA}/nco_bm stl_5km.nc stl_5km.nc ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo_08.out
 fi # !${SCL_HYP_SLB_FLG}
 
 if [ ${FGR_04_FLG} = '1' -a ${SCL_SUB_SET_FLG} = '1' ]; then
