@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_hyp.sh,v 1.11 2006-05-29 06:29:36 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_hyp.sh,v 1.12 2006-06-02 05:11:46 zender Exp $
 
 # Purpose: Perform NCO benchmarks while subsetting 
 
@@ -19,6 +19,9 @@
 # cd ~/nco/bld;make allinone;cd ~
 
 CCH_CLR_FLG='1' # [flg] Clear cache before each command
+FGR_03_FLG='1' # Figure 3 is the ncbo Satellite timing figure
+FGR_04_FLG='0' # Figure 4 is the ncwa IPCC timing figure
+FGR_05_OLD_FLG='0' # FGR_05_OLD is the bar chart for ncwa
 SCL_HYP_SLB_FLG='0' # [flg] Use approach 2: Scale by hyperslabbing
 SCL_SUB_SET_FLG='1' # [flg] Use approach 1: Scale by sub-setting
 WGT_FLG='1' # [flg] Perform weighted averages
@@ -35,8 +38,19 @@ else
     CCH_CMD=''
 fi # !CCH_CLR_FLG
 
+# Figure 3 is the ncbo timing figure
+if [ ${FGR_03_FLG} = '1' -a ${SCL_SUB_SET_FLG} = '1' ]; then
+# NB: Scaling by hyperslab uses different disk geometry than sub-setting
+    for var_nbr in {0..7}; do
+	var_nbr_sng=`printf "%02d" ${var_nbr}`
+	${CCH_CMD}
+	/usr/bin/time -a -o ~/nco/bm/ncbo.timing -f "%e wall %s system %U user " \
+	    ${MY_BIN_DIR}/ncbo -O --mdl -v "d2_0[0-${var_nbr}]" -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo_${var_nbr_sng}.out
+    done # end loop over var_nbr
+fi # !${SCL_HYP_SLB_FLG}
+
+if [ ${FGR_04_FLG} = '1' -a ${SCL_SUB_SET_FLG} = '1' ]; then
 # Approach 1: Scale by sub-setting
-if [ ${SCL_SUB_SET_FLG} = '1' ]; then
 # 1/8
     ${CCH_CMD}; /usr/bin/time -a -o ~/nco/bm/ncwa.timing -f "%e wall %s system %U user " \
 	${MY_BIN_DIR}/ncwa -O --mdl ${WGT_CMD} -v 'd4_0[0-3],d3_0[0-7],d2_0[0-1],d1_0[0-0]' -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo_01.out
@@ -63,8 +77,8 @@ if [ ${SCL_SUB_SET_FLG} = '1' ]; then
 	${MY_BIN_DIR}/ncwa -O --mdl ${WGT_CMD} -v 'd4_[0-2][0-9],d4_3[0-1],d3_[0-5][0-9],d3_6[0-3],d2_0[0-9],d2_1[0-5],d1_0[0-7]' -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo_08.out
 fi # !${SCL_SUB_SET_FLG}
 
+if [ ${FGR_04_FLG} = '1' -a ${SCL_HYP_SLB_FLG} = '1' ]; then
 # Approach 2: Scale by hyperslabbing
-if [ ${SCL_HYP_SLB_FLG} = '1' ]; then
 # Two-dimensional and scalar variables do not have time dimension
 # Error incurred by including small non-record variables is minimal
 # Exclude 2D variables with -x -v d2_[0-9][0-9]
@@ -74,15 +88,16 @@ if [ ${SCL_HYP_SLB_FLG} = '1' ]; then
 	${CCH_CMD}
 	/usr/bin/time -a -o ~/nco/bm/ncwa.timing -f "%e wall %s system %U user " \
 	    ${MY_BIN_DIR}/ncwa -O -F --mdl ${WGT_CMD} -d time,1,${fl_nbr} -x -v 'd2_[0-9][0-9]' -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/foo.nc > ${DATA}/nco_bm/foo_${fl_nbr_sng}.out
+	${CCH_CMD}
     done # end loop over fl_nbr
 fi # !${SCL_HYP_SLB_FLG}
 
-FGR_05_FLG='0'
-if [ ${FGR_05_FLG} = '1' ]; then
+# This FGR_05_OLD refers to the old Figure 5 which had the bar chart for ncwa
+if [ ${FGR_05_OLD_FLG} = '1' ]; then
     /usr/bin/time -a -o ~/nco/bm/ncwa.timing -f "%e wall %s system %U user " \
     ${MY_BIN_DIR}/ncwa -O -a lat --mdl -w lat -p ${DATA}/nco_bm stl_5km.nc ${DATA}/nco_bm/foo_stl_lat.nc > ${DATA}/nco_bm/foo_stl_lat.out
     /usr/bin/time -a -o ~/nco/bm/ncwa.timing -f "%e wall %s system %U user " \
     ${MY_BIN_DIR}/ncwa -O -a lon --mdl -w lat -p ${DATA}/nco_bm stl_5km.nc ${DATA}/nco_bm/foo_stl_lon.nc > ${DATA}/nco_bm/foo_stl_lon.out
     /usr/bin/time -a -o ~/nco/bm/ncwa.timing -f "%e wall %s system %U user " \
     ${MY_BIN_DIR}/ncwa -O -a lat,lon --mdl -w lat -p ${DATA}/nco_bm stl_5km.nc ${DATA}/nco_bm/foo_stl_all.nc > ${DATA}/nco_bm/foo_stl_all.out
-fi # !${FGR_05_FLG}
+fi # !${FGR_05_OLD_FLG}
