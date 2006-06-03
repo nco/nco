@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.20 2006-06-03 20:36:23 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.21 2006-06-03 20:51:44 zender Exp $ 
 
 // Purpose: Implementation (declaration) of C++ interface to netCDF variable routines
 
@@ -212,7 +212,7 @@ nco_inq_varndims // [fnc] Inquire variable rank
      User may omit rcd_opt, or supply value of non-fatal netCDF return code */
   int var_id; // O [id] Variable ID
   int rcd=nco_inq_varid(nc_id,var_nm,var_id,rcd_opt);
-  rcd=nco_inq_varndims(nc_id,var_id,dmn_nbr,rcd_opt);
+  if(rcd != NC_NOERR) rcd=nco_inq_varndims(nc_id,var_id,dmn_nbr,rcd_opt);
   return rcd;
 } // end nco_inq_varndims() 
 
