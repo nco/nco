@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.19 2006-05-17 06:55:38 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.20 2006-06-03 20:36:23 zender Exp $ 
 
 // Purpose: Implementation (declaration) of C++ interface to netCDF variable routines
 
@@ -80,7 +80,7 @@ nco_inq_var // [fnc] Inquire variable
   char var_nm_chr[NC_MAX_NAME];
   int rcd=nc_inq_var(nc_id,var_id,var_nm_chr,&var_typ,&dmn_nbr,dmn_id,&att_nbr);
   var_nm=var_nm_chr;
-  if(rcd != NC_NOERR && rcd != rcd_opt) nco_err_exit(rcd,"nco_inq_var");
+  if(rcd != NC_NOERR && rcd != rcd_opt) nco_err_exit(rcd,"nco_inq_varid","Unable to inquire all metadata for given variable ID, exiting...");
   return rcd;
 } // end nco_inq_var() 
 
@@ -96,7 +96,7 @@ nco_inq_varid // [fnc] Inquire variable ID
   /* Purpose: Wrapper for nc_inq_varid()
      User may omit rcd_opt, or supply value of non-fatal netCDF return code */
   int rcd=nc_inq_varid(nc_id,var_nm.c_str(),&var_id);
-  if(rcd != NC_NOERR && rcd != rcd_opt) nco_err_exit(rcd,"nco_inq_varid","Unable to to find variable ID for variable \""+var_nm+"\", exiting...");
+  if(rcd != NC_NOERR && rcd != rcd_opt) nco_err_exit(rcd,"nco_inq_varid","Unable to find ID for variable \""+var_nm+"\", exiting...");
   return rcd;
 } // end nco_inq_varid() 
 
@@ -127,7 +127,7 @@ nco_inq_varname // [fnc] Inquire variable name
   char var_nm_chr[NC_MAX_NAME];
   int rcd=nc_inq_varname(nc_id,var_id,var_nm_chr);
   var_nm=var_nm_chr;
-  if(rcd != NC_NOERR && rcd != rcd_opt) nco_err_exit(rcd,"nco_inq_varname");
+  if(rcd != NC_NOERR && rcd != rcd_opt) nco_err_exit(rcd,"nco_inq_varname","Unable to find name for given variable ID, exiting...");
   return rcd;
 } // end nco_inq_varname() 
 
@@ -156,7 +156,7 @@ nco_inq_vartype // [fnc] Inquire variable type
   /* Purpose: Wrapper for nc_inq_vartype()
      User may omit rcd_opt, or supply value of non-fatal netCDF return code */
   int rcd=nc_inq_vartype(nc_id,var_id,&var_typ);
-  if(rcd != NC_NOERR && rcd != rcd_opt) nco_err_exit(rcd,"nco_inq_vartype");
+  if(rcd != NC_NOERR && rcd != rcd_opt) nco_err_exit(rcd,"nco_inq_vartype","Unable to find type of given variable ID, exiting...");
   return rcd;
 } // end nco_inq_vartype() 
 
@@ -197,7 +197,22 @@ nco_inq_varndims // [fnc] Inquire variable rank
   /* Purpose: Wrapper for nc_inq_varndims()
      User may omit rcd_opt, or supply value of non-fatal netCDF return code */
   int rcd=nc_inq_varndims(nc_id,var_id,&dmn_nbr);
-  if(rcd != NC_NOERR && rcd != rcd_opt) nco_err_exit(rcd,"nco_inq_varndims");
+  if(rcd != NC_NOERR && rcd != rcd_opt) nco_err_exit(rcd,"nco_inq_varndims","Unable to find number of dimensions in given variable ID, exiting...");
+  return rcd;
+} // end nco_inq_varndims() 
+
+int // O [enm] Return success code
+nco_inq_varndims // [fnc] Inquire variable rank
+(const int &nc_id, // I [enm] netCDF file ID
+ const std::string &var_nm, // I [sng] Variable name
+ int &dmn_nbr, // O [nbr] Number of dimensions
+ const int &rcd_opt) // I [enm] Optional non-fatal return code 
+{
+  /* Purpose: Wrapper for nc_inq_varndims()
+     User may omit rcd_opt, or supply value of non-fatal netCDF return code */
+  int var_id; // O [id] Variable ID
+  int rcd=nco_inq_varid(nc_id,var_nm,var_id,rcd_opt);
+  rcd=nco_inq_varndims(nc_id,var_id,dmn_nbr,rcd_opt);
   return rcd;
 } // end nco_inq_varndims() 
 
@@ -238,7 +253,7 @@ nco_inq_varnatts // [fnc] Inquire variable attributes
   /* Purpose: Wrapper for nc_inq_varnatts()
      User may omit rcd_opt, or supply value of non-fatal netCDF return code */
   int rcd=nc_inq_varnatts(nc_id,var_id,&att_nbr);
-  if(rcd != NC_NOERR && rcd != rcd_opt) nco_err_exit(rcd,"nco_inq_varnatts");
+  if(rcd != NC_NOERR && rcd != rcd_opt) nco_err_exit(rcd,"nco_inq_varnatts","Unable to find number of attributes given variable ID, exiting...");
   return rcd;
 } // end nco_inq_varnatts() 
 

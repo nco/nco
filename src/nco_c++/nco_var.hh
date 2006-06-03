@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.15 2006-05-17 06:55:38 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.16 2006-06-03 20:36:23 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface to netCDF variable routines
 
@@ -132,6 +132,14 @@ int // O [enm] Return success code
 nco_inq_varndims // [fnc] Inquire variable rank
 (const int &nc_id, // I [enm] netCDF file ID
  const int &var_id, // I [id] Variable ID
+ int &dmn_nbr, // O [nbr] Number of dimensions
+ const int &rcd_opt=NC_NOERR); // I [enm] Optional non-fatal return code 
+// end nco_inq_varndims() prototype
+
+int // O [enm] Return success code
+nco_inq_varndims // [fnc] Inquire variable rank
+(const int &nc_id, // I [enm] netCDF file ID
+ const std::string &var_nm, // I [sng] Variable name
  int &dmn_nbr, // O [nbr] Number of dimensions
  const int &rcd_opt=NC_NOERR); // I [enm] Optional non-fatal return code 
 // end nco_inq_varndims() prototype

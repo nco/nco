@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.18 2006-05-18 01:53:32 zender Exp $
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.19 2006-06-03 20:36:23 zender Exp $
 
 // Purpose: Test for C++ programs using libnco_c++ API
 
@@ -11,6 +11,7 @@
    make OPTS=D tst
    scp ~/nco/src/nco_c++/tstcc dust.ess.uci.edu:nco/src/nco_c++
    cd ${HOME}/nco/src/nco_c++;make -f Makefile.old OPTS=D -W tst.cc tst;cd -
+   cd ${HOME}/nco/src/nco_c++;make -f Makefile.old OPTS=D lib_cln cln;make -f Makefile.old OPTS=D all;cd -
    cd ${HOME}/nco/src/nco_c++;make OPTS=D tst;cd - */
 
 /* Usage:
@@ -54,10 +55,10 @@ int main(int argc,char **argv)
   long sz_nbr(1); // [nbr] Number of sizes
   register long idx; // [idx] Counting index
 
-  const std::string CVS_Date("$Date: 2006-05-18 01:53:32 $"); // [sng] CVS date string
-  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.18 2006-05-18 01:53:32 zender Exp $"); // [sng] CVS header string
-  const std::string CVS_Id("$Id: tst.cc,v 1.18 2006-05-18 01:53:32 zender Exp $"); // [sng] CVS identification string
-  const std::string CVS_Revision("$Revision: 1.18 $"); // [sng] CVS revision string
+  const std::string CVS_Date("$Date: 2006-06-03 20:36:23 $"); // [sng] CVS date string
+  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.19 2006-06-03 20:36:23 zender Exp $"); // [sng] CVS header string
+  const std::string CVS_Id("$Id: tst.cc,v 1.19 2006-06-03 20:36:23 zender Exp $"); // [sng] CVS identification string
+  const std::string CVS_Revision("$Revision: 1.19 $"); // [sng] CVS revision string
   const std::string date_cvs(CVS_Date.length() > 7 ? CVS_Date.substr(7,19) : static_cast<std::string>("Unknown")); // [sng] Date from CVS
   const std::string sbr_nm("main"); // [sng] Subroutine name
   const std::string prg_nm("libnco_c++"); // [sng] Program name
@@ -163,10 +164,13 @@ int main(int argc,char **argv)
   rcd=nco_put_var(nc_out,static_cast<std::string>("sz_nbr"),sz_nbr);
 
   int rcd_opt(NC_ENOTVAR); // [enm] Acceptable return code
-  int var_id; // [id]  Variable ID
+  int var_id; // [id] Variable ID
+  int var_ndims; // [nbr] Number of dimensions
   const std::string var_nm_nonesuch("quark"); // [sng]
   rcd=nco_inq_varid(nc_out,var_nm_nonesuch,var_id,rcd_opt);
-  std::cout << "tst: Search of output file for variable \"" << var_nm_nonesuch << "\" with rcd_opt = " << rcd_opt << " yields rcd = " << rcd << std::endl;
+  std::cout << "tst: nco_inq_varid() for variable \"" << var_nm_nonesuch << "\" with rcd_opt = " << rcd_opt << " yields rcd = " << rcd << std::endl;
+  rcd=nco_inq_varndims(nc_out,var_nm_nonesuch,var_ndims,rcd_opt);
+  std::cout << "tst: nco_inq_varndims() for variable \"" << var_nm_nonesuch << "\" with rcd_opt = " << rcd_opt << " yields rcd = " << rcd << std::endl;
 
   // Close output file
   rcd=nco_close(nc_out); // [fnc] Close netCDF file
