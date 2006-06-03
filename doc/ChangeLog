@@ -1,5 +1,7 @@
 2006-06-02  Charlie Zender  <zender@uci.edu>
 
+	* Put --disable-shared everywhere for AIX
+
 	* Add operator-specific speeds to nco_ddra()
 
 	* Add fractional time diagnostics to nco_ddra()
