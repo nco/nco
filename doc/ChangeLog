@@ -1,3 +1,7 @@
+2006-06-07  Charlie Zender  <zender@uci.edu>
+
+	* Add timer start and end calls
+
 2006-06-02  Charlie Zender  <zender@uci.edu>
 
 	* Put --disable-shared everywhere for AIX

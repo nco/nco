@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.99 2006-05-19 20:25:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.100 2006-06-07 07:52:20 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -174,17 +174,15 @@ Preprocessor macros may be used to turn bool into _Bool, false into 0 and true i
     aed_delete,
     aed_modify,
     aed_overwrite
-  }; /* end enum */
+  }; /* end aed enum */
   
-  enum nco_rlt_opr{ /* [enm] Arithmetic relations (comparisons) for masking */
-    nco_op_eq, /* Equality */
-    nco_op_ne, /* Inequality */
-    nco_op_lt, /* Less than */
-    nco_op_gt, /* Greater than */
-    nco_op_le, /* Less than or equal to */
-    nco_op_ge /* Greater than or equal to */
-  }; /* end enum */
-  
+  typedef enum { /* [enm] Memory allocation type */
+    nco_mmr_calloc, /* [enm] nco_calloc() */
+    nco_mmr_free, /* [enm] nco_free() */
+    nco_mmr_malloc, /* [enm] nco_malloc() */
+    nco_mmr_realloc /* [enm] nco_realloc() */
+  } nco_mmr_typ_enm; /* end nco_mmr_typ enum */
+
   enum nco_op_typ{ /* [enm] Operation type */
     /* Types used in ncbo(): */
     nco_op_add, /* [enm] Add file_1 to file_2 */
@@ -204,20 +202,27 @@ Preprocessor macros may be used to turn bool into _Bool, false into 0 and true i
     nco_op_nil /* [enm] Nil or undefined operation type  */
   }; /* end nco_op_typ enum */
 
-  /* Following typedef from Nie02 */
+  enum nco_rlt_opr{ /* [enm] Arithmetic relations (comparisons) for masking */
+    nco_op_eq, /* Equality */
+    nco_op_ne, /* Inequality */
+    nco_op_lt, /* Less than */
+    nco_op_gt, /* Greater than */
+    nco_op_le, /* Less than or equal to */
+    nco_op_ge /* Greater than or equal to */
+  }; /* end nco_rlt_opr enum */
+  
+  typedef enum { /* [enm] Timer flag */
+    nco_tmr_srt, /* [enm] Initialize timer (first timer call) */
+    nco_tmr_rgl, /* [enm] Regular timer call (not first or last timer call) */
+    nco_tmr_end /* [enm] Close timer (last timer call) */
+  } nco_tmr_flg; /* [enm] Timer flag */
+
   typedef enum { /* [enm] Node enumerator Nie02 nodeEnum */
     typ_scv, /* [enm] Scalar value */
     typ_sym, /* [enm] Symbol identifier */
     typ_opr /* [enm] Operator */
-  } nod_typ_enm;
+  } nod_typ_enm; /* end Node enumerator */
   /* end enumeration section */
-  
-  typedef enum { /* [enm] Memory allocation type */
-    nco_mmr_calloc, /* [enm] nco_calloc() */
-    nco_mmr_free, /* [enm] nco_free() */
-    nco_mmr_malloc, /* [enm] nco_malloc() */
-    nco_mmr_realloc /* [enm] nco_realloc() */
-  } nco_mmr_typ_enm; /* end nco_mmr_typ enum */
 
   /* Limit structure */
   typedef struct { /* lmt_sct */
@@ -281,6 +286,7 @@ Preprocessor macros may be used to turn bool into _Bool, false into 0 and true i
     long long lmn_nbr_wgt; /* [nbr] Weight size */
     nco_bool MRV_flg; /* [flg] Avergaging dimensions are MRV dimensions */
     nco_bool wgt_brd_flg; /* [flg] Broadcast weight for this variable */
+    nco_tmr_flg tmr_flg; /* [enm] Timer flag */
   } ddra_info_sct;
   
   /* Pointer union */

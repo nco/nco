@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.218 2006-05-30 07:07:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.219 2006-06-07 07:52:20 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,14 +117,14 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.218 2006-05-30 07:07:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.218 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.219 2006-06-07 07:52:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.219 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #ifdef __cplusplus
   ddra_info_sct ddra_info;
 #else /* !__cplusplus */
-  ddra_info_sct ddra_info={.MRV_flg=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
+  ddra_info_sct ddra_info={.MRV_flg=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.tmr_flg=nco_tmr_srt,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
 #endif /* !__cplusplus */
 
   dmn_sct **dim=NULL_CEWI;
@@ -175,8 +175,6 @@ main(int argc,char **argv)
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
   nm_id_sct *dmn_avg_lst;
-  
-  time_t time_crr_time_t;
   
   var_sct **var;
   var_sct **var_fix;
@@ -267,11 +265,11 @@ main(int argc,char **argv)
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
 
-  /* Start clock and save command line */ 
+  /* Start timer and save command line */ 
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+  ddra_info.tmr_flg=nco_tmr_rgl; /* [enm] Timer flag */
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-  time_crr_time_t=time((time_t *)NULL);
-  time_bfr_srt=ctime(&time_crr_time_t); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
-
+  
   NORMALIZE_BY_TALLY=NORMALIZE_BY_TALLY; /* CEWI: Avert compiler warning that variable is set but never used */
   NORMALIZE_BY_WEIGHT=NORMALIZE_BY_WEIGHT; /* CEWI: Avert compiler warning that variable is set but never used */
   
@@ -1025,6 +1023,10 @@ main(int argc,char **argv)
   var_prc=(var_sct **)nco_free(var_prc);
   var_fix=(var_sct **)nco_free(var_fix);
   var_out=(var_sct **)nco_free(var_out);
+
+  /* End timer */ 
+  ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
 
   nco_exit_gracefully();
   return EXIT_SUCCESS;

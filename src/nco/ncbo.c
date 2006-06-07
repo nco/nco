@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.87 2006-05-23 04:43:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.88 2006-06-07 07:52:20 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -110,16 +110,15 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
-  char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.87 2006-05-23 04:43:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.87 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.88 2006-06-07 07:52:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.88 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:-:";
   
 #ifdef __cplusplus
   ddra_info_sct ddra_info;
 #else /* !__cplusplus */
-  ddra_info_sct ddra_info={.MRV_flg=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
+  ddra_info_sct ddra_info={.MRV_flg=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.tmr_flg=nco_tmr_srt,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
 #endif /* !__cplusplus */
 
   dmn_sct **dim_1;
@@ -231,10 +230,10 @@ main(int argc,char **argv)
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
   
-  /* Start clock and save command line */ 
+  /* Start timer and save command line */ 
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+  ddra_info.tmr_flg=nco_tmr_rgl; /* [enm] Timer flag */
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-  time_crr_time_t=time((time_t *)NULL);
-  time_bfr_srt=ctime(&time_crr_time_t); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
@@ -689,6 +688,10 @@ main(int argc,char **argv)
   if(nbr_xtr_1 > 0) var_out=nco_var_lst_free(var_out,nbr_xtr_1);
   var_prc_out=(var_sct **)nco_free(var_prc_out);
   var_fix_out=(var_sct **)nco_free(var_fix_out);
+
+  /* End timer */ 
+  ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();

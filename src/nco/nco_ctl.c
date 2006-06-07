@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.140 2006-06-07 00:35:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.141 2006-06-07 07:52:20 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -213,6 +213,17 @@ nco_ddra /* [fnc] Count operations */
      [nbr] = Operation counts for lmn_nbr elements
      [nbr nbr-1] = Operation counts per element */
 
+  /* If first timer, initialize and return immediately */
+  if(ddra_info->tmr_flg == nco_tmr_srt){
+    tm_obs_crr=clock();
+    tm_obs_old=tm_obs_crr;
+    /* NB: Calling routine should now set tmr_flg to tmr_mdp */
+    return rcd; /* [rcd] Return code */
+  } /* !nco_tmr_srt */
+
+  /* If last timer, skip to summary statistics */
+  if(ddra_info->tmr_flg == nco_tmr_end) goto update_timers;
+
   /* Decode input */
   MRV_flg=ddra_info->MRV_flg; /* [flg] Avergaging dimensions are MRV dimensions */
   lmn_nbr=ddra_info->lmn_nbr; /* [nbr] Variable size */
@@ -385,10 +396,6 @@ nco_ddra /* [fnc] Count operations */
   tm_frc_wrt_ttl=tm_wrt_ttl/tm_ttl; /* [frc] Write time fraction */
 
   if(var_idx == 0){
-    /* Start timer code */
-    /* fxm: Initializing timer here (rather than main()) does not count first variable */
-    tm_obs_old=clock();
-
     /* Table headings */
     (void)fprintf(stdout,"%3s %8s %8s %8s %8s %5s %5s %8s %8s %8s %4s %4s %4s %4s %4s %7s %7s\n",
 		  "idx"," var_nm ","   lmn  ","   flp  ","   ntg  ","tm_io","  tm "," lmn_ttl"," flp_ttl"," ntg_ttl"," flp"," ntg","  rd"," wrt"," io"," tm_ttl"," tm_obs");
@@ -397,16 +404,22 @@ nco_ddra /* [fnc] Count operations */
   } /* var_idx != 0 */
 
   /* Update timers */
+ update_timers:
   /* NB: POSIX requires CLOCKS_PER_SEC equals 1000000 so resolution = 1 microsecond */
   tm_obs_crr=clock();
   tm_obs_dff=(float)(tm_obs_crr-tm_obs_old)/CLOCKS_PER_SEC;
   tm_obs_old=tm_obs_crr;
   tm_obs_ttl+=tm_obs_dff;
 
-  (void)fprintf(stdout,
-		"%3d %8s %8.2e %8.2e %8.2e %5.2f %5.2f %8.2e %8.2e %8.2e %4.1f %4.1f %4.1f %4.1f %4.1f %7.2f %7.2f\n",
-		var_idx,var_nm,(float)lmn_nbr,(float)flp_nbr,(float)ntg_nbr,tm_io,tm_crr,(float)lmn_nbr_ttl,(float)flp_nbr_ttl,(float)ntg_nbr_ttl,100.0*tm_frc_flp_ttl,100.0*tm_frc_ntg_ttl,100.0*tm_frc_rd_ttl,100.0*tm_frc_wrt_ttl,100.0*tm_frc_io_ttl,tm_ttl,tm_obs_ttl);
-    
+  if(ddra_info->tmr_flg != nco_tmr_end){
+    (void)fprintf(stdout,
+		  "%3d %8s %8.2e %8.2e %8.2e %5.2f %5.2f %8.2e %8.2e %8.2e %4.1f %4.1f %4.1f %4.1f %4.1f %7.2f %7.2f\n",
+		  var_idx,var_nm,(float)lmn_nbr,(float)flp_nbr,(float)ntg_nbr,tm_io,tm_crr,(float)lmn_nbr_ttl,(float)flp_nbr_ttl,(float)ntg_nbr_ttl,100.0*tm_frc_flp_ttl,100.0*tm_frc_ntg_ttl,100.0*tm_frc_rd_ttl,100.0*tm_frc_wrt_ttl,100.0*tm_frc_io_ttl,tm_ttl,tm_obs_ttl);
+  }else{    
+    /* [flg] Close timer */
+    (void)fprintf(stderr,"Total elapsed time is %7.2f s\n",tm_obs_ttl);
+  } /* !nco_tmr_end */
+
   return rcd; /* [rcd] Return code */
 } /* nco_ddra() */
 
@@ -438,14 +451,6 @@ void
 nco_exit_gracefully(void) /* [fnc] Clean up timers, file descriptors, memory, then exit */
 {
   /* Purpose: Clean up timers, file descriptors, memory, then exit */
-  char *time_bfr_end;
-  time_t time_crr_time_t;
-  
-  /* End clock */ 
-  time_crr_time_t=time((time_t *)NULL);
-  time_bfr_end=ctime(&time_crr_time_t); time_bfr_end=time_bfr_end; /* Avoid compiler warning until variable is used for something */
-  /*  (void)fprintf(stderr,"\tend = %s\n",time_bfr_end);*/
-
   (void)fclose(stderr);
   (void)fclose(stdin);
   (void)fclose(stdout);

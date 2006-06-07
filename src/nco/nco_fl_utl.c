@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.79 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.80 2006-06-07 07:52:20 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -897,7 +897,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
      Routine implements NINTAP-style specification by using static
      memory to avoid repetition in construction of filename */
 
-  static short FIRST_INVOCATION=1;
+  static short FIRST_INVOCATION=True;
 
   static char *fl_nm_1st_dgt;
   static char *fl_nm_nbr_sng;
