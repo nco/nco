@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.776 2006-06-02 21:35:36 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.777 2006-06-07 07:56:25 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -483,16 +483,14 @@ nco717. Averaging empty record variable creates an element in output!:
 	Hence averaging the file increases the data storage.
 	What to do?  Nothing.
 nco722. mpncwa: DDRA diagnostics should work in MPI mode, not just SMP mode
-nco724. attribute propagation: test
-        ncap2 -v -O -s "cnv_CF_crd2=cnv_CF_crd" -s "lon2=lon(0)" -p ~/nco/data in.nc ~/foo.nc
 nco725. attribute propagation: regression test
+        ncap2 -v -O -s "cnv_CF_crd2=cnv_CF_crd" -s "lon2=lon(0)" -p ~/nco/data in.nc ~/foo.nc
 nco726. attribute propagation: document
 nco728. Major breakage in icc regression tests (gcc, xlc fine) OpenMP related?
         Un-reproducible on other platforms
         ncra -O -v rec_var_flt_mss_val_dbl -p ~/nco/data in.nc ~/foo.nc
 	ncrcat -O -D 1 -d time,0 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo.nc
-nco734. virga: icc OMP not working at all
-nco736. bm: bm cleanups have broken regression tests
+nco734. virga: icc OMP not working at all!
 nco737. Add regression for regex'ing consecutive Q's?
 	ncks -O -v 'Q[0-1][0-9]|2[0-3]' ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
 	ncks -O -v 'Q[0-9][0-9]$' ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
@@ -508,8 +506,8 @@ nco746. ncap2 array tests for bds/map:
         ncap2 -v -O -s 'slon[lon]=lon_grd(0:3)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # fails
         ncap2 -v -O -s 'slon=lon_grd(1:4)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # fails
 nco747. Change lat to -45,45 and add lat_grd = -90,0,90 in in.cdl
-nco748. Add ddra_tm_init() and ddra_tm_end() functions
-nco749. 
+nco749. Add timer srt/end calls to mpncwa/mpncbo
+nco750. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
