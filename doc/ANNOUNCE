@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.179 2006-05-30 20:18:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.180 2006-06-07 18:45:52 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.3 are ready. 
 Highlights are significant new features in ncwa and ncap2,
@@ -13,58 +13,18 @@ if/then constructs, and attribute propagation.
 ncap2 is still a bit alpha, but ready to be tested for functionality.
 http://nco.sf.net/ncap2.in demonstrates many ncap2 features. 
 
-1. ncap2 attribute propagation (Henry Butowsky)
+Reminder: ncap2 depends on ANTLR to build so do, e.g., 
+sudo apt-get install antlr libantlr-dev 
+before running NCO's configure
+
+1. ncap2 (Henry Butowsky)
    http://nco.sf.net/nco.html#att_prp
    http://nco.sf.net/ncap2.in
-   Defining new variables in terms of existing variables is one of
-   ncap2's most powerful features.
-   Derived fields inherit the metadata (i.e., attributes) of their
-   identically named ancestors, if any, in the script or input file. 
-   When the derived field is completely new (no identically-named ancestors
-   exist), then it inherits the metadata (if any) of the left-most variable
-   on the right hand side of the defining expression.
-   Many users have asked for this functionality--we hope you like it.   
 
-   Reminder: ncap2 depends on ANTLR to build so do, e.g., 
-   sudo apt-get install antlr libantlr-dev 
-   before running NCO's configure
-
-2. ncap2 LHS array logic working (Henry Butowsky)
+2. ncap2 LHS array logic (Henry Butowsky)
    http://nco.sf.net/ncap2.in
 
-3. Support CF convention on "coordinates" attribute:
-   http://nco.sf.net/nco.html#cnv_CF_crd
-   Coordinates listed in "coordinates" attribute "stick" to the
-   parent variable just like real coordinates.
-
-4. ncwa -b retains degenerate dimensions
-   http://nco.sf.net/nco.html#ncwa
-   http://nco.sf.net/nco.html#ncwa
-   % ncwa -a lon -b in.nc out.nc;ncks -C -H -v lon out2.nc
-   lon[0] = 135
-   The -b makes "lon" a degenerate (size 1) dimension.
-   Fret not, dimensions are still "scalar-ized" by default.
-
-5. ncwa -B mask_condition option
-   http://nco.sf.net/nco.html#ncwa
-
-6. Work (or die) "correctly" with zero-record record variables
-   All record variables are zero-length prior to the storage of data.
-   Apparently having zero-length record variables is a valid state for a 
-   netCDF file. NCO now works "correctly" on such files.
-   I say "correctly" because this is somewhat subjective.
-   The only clearly bizarre behavior I am aware of is that averaging
-   a zero-record record variable over the record dimension with ncwa 
-   creates a scalar, i.e., a variable with no dimensions. 
-   Scalars must have one element, so the averaged variable has more data
-   than the initial variable.  
-   The alternative is deleting the variable completely, and I thought
-   retaining the metadata would be preferable. 
-   This behavior may change in the future.
-
-7. Build fixes for Solaris, Cygwin, NECSX and Cray
-
-8. Support netcdf4-alpha14
+3. Timers
 
 Enjoy,
 Charlie

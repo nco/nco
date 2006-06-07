@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.779 2006-06-07 18:36:04 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.780 2006-06-07 18:45:52 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -506,14 +506,13 @@ nco746. ncap2 array tests for bds/map:
         ncap2 -v -O -s 'slon[lon]=lon_grd(0:3)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # fails
         ncap2 -v -O -s 'slon=lon_grd(1:4)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # fails
 nco747. Change lat to -45,45 and add lat_grd = -90,0,90 in in.cdl
-nco749. Add timer srt/end calls to mpncwa/mpncbo
-nco750. C++ compilers must explicitly initialize timer to srt
+nco749. Merge timer srt/end calls to mpncwa/mpncbo
 nco751. Deprecate time_bfr_srt/time_bfr_end from all operators in favor of timers
-nco752. Have timers print mtd and end blocks with dbg_lvl only
 nco753. Remove warn-uninitialized warnings from nco_ddra()
 nco754. Make sure private/firstprivate aspects of ddra_info are correct
 nco755. Test timers on ESMF under openmp
-nco756. 
+nco756. Make nco_ddra() thread-safe
+nco757. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

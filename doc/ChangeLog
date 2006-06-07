@@ -1,5 +1,7 @@
 2006-06-07  Charlie Zender  <zender@uci.edu>
 
+	* Quiet MRV verbosity, stylize TIMER output
+
 	* Make ddra_info firstprivate()
 
 	* Add flg_ddra to ddra_info
