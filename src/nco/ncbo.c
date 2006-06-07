@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.90 2006-06-07 18:36:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.91 2006-06-07 22:43:27 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -94,6 +94,7 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
   nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
   
   char **fl_lst_abb=NULL; /* Option a */
@@ -111,8 +112,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.90 2006-06-07 18:36:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.90 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.91 2006-06-07 22:43:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.91 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:-:";
   
 #ifdef __cplusplus
@@ -172,8 +173,6 @@ main(int argc,char **argv)
   nm_id_sct *xtr_lst_1=NULL; /* xtr_lst_1 may be alloc()'d from NULL with -c option */
   nm_id_sct *xtr_lst_2=NULL; /* xtr_lst_2 may be alloc()'d from NULL with -c option */
   
-  time_t time_crr_time_t;
-  
   var_sct **var_1;
   var_sct **var_2;
   var_sct **var_fix_1;
@@ -189,6 +188,11 @@ main(int argc,char **argv)
       /* Long options with no argument, no short option counterpart */
       /* Long options with argument, no short option counterpart */
       {"ddra",no_argument,0,0}, /* [flg] DDRA diagnostics */
+      {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"mmr_drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
+      {"drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
+      {"dirty",no_argument,0,0}, /* [flg] Exit with dirty memory */
       {"mdl_cmp",no_argument,0,0}, /* [flg] DDRA diagnostics */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
@@ -250,6 +254,8 @@ main(int argc,char **argv)
     /* Process long options without short option counterparts */
     if(opt == 0){
       if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) ddra_info.flg_ddra=flg_ddra=True; /* [flg] DDRA diagnostics */
+      if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
     } /* opt != 0 */
     /* Process short options */
@@ -652,47 +658,50 @@ main(int argc,char **argv)
   if(FILE_1_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_1);
   if(FILE_2_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_2);
   
-  /* ncbo-unique memory */
-  if(fl_in_1 != NULL) fl_in_1=(char *)nco_free(fl_in_1);
-  if(fl_in_2 != NULL) fl_in_2=(char *)nco_free(fl_in_2);
-
-  /* NCO-generic clean-up */
-  /* Free individual strings/arrays */
-  if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
-  if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
-  if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
-  if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
-  if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
-  if(in_id_1_arr != NULL) in_id_1_arr=(int *)nco_free(in_id_1_arr);
-  if(in_id_2_arr != NULL) in_id_2_arr=(int *)nco_free(in_id_2_arr);
-  /* Free lists of strings */
-  if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
-  if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
-  if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
-  if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
-  /* Free limits */
-  for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
-  /* Free dimension lists */
-  if(nbr_dmn_xtr_1 > 0) dim_1=nco_dmn_lst_free(dim_1,nbr_dmn_xtr_1);
-  if(nbr_dmn_xtr_2 > 0) dim_2=nco_dmn_lst_free(dim_2,nbr_dmn_xtr_2);
-  if(nbr_dmn_xtr_1 > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr_1);
-  /* Free variable lists 
-     Using nco_var_lst_free() to free main var_1 and var_2 lists would fail
-     if ncap_var_prc_dmn() had to broadcast any variables because pointer
-     var_1 and var_2 still contain dangling pointer to old variable.
-     Hence, use nco_var_lst_free() to free prc and fix lists and 
-     use nco_free() to free main var_1 and var_2 lists.
-     Dangling pointers in var_1 and var_2 are unsafe: fxm TODO 578 */
-  if(nbr_var_prc_1 > 0) var_prc_1=nco_var_lst_free(var_prc_1,nbr_var_prc_1);
-  if(nbr_var_fix_1 > 0) var_fix_1=nco_var_lst_free(var_fix_1,nbr_var_fix_1);
-  if(nbr_var_prc_2 > 0) var_prc_2=nco_var_lst_free(var_prc_2,nbr_var_prc_2);
-  if(nbr_var_fix_2 > 0) var_fix_2=nco_var_lst_free(var_fix_2,nbr_var_fix_2);
-  var_1=(var_sct **)nco_free(var_1);
-  var_2=(var_sct **)nco_free(var_2);
-  if(nbr_xtr_1 > 0) var_out=nco_var_lst_free(var_out,nbr_xtr_1);
-  var_prc_out=(var_sct **)nco_free(var_prc_out);
-  var_fix_out=(var_sct **)nco_free(var_fix_out);
+  /* Clean memory unless dirty memory allowed */
+  if(flg_cln){
+    /* ncbo-unique memory */
+    if(fl_in_1 != NULL) fl_in_1=(char *)nco_free(fl_in_1);
+    if(fl_in_2 != NULL) fl_in_2=(char *)nco_free(fl_in_2);
+    
+    /* NCO-generic clean-up */
+    /* Free individual strings/arrays */
+    if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
+    if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
+    if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+    if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
+    if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+    if(in_id_1_arr != NULL) in_id_1_arr=(int *)nco_free(in_id_1_arr);
+    if(in_id_2_arr != NULL) in_id_2_arr=(int *)nco_free(in_id_2_arr);
+    /* Free lists of strings */
+    if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+    if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+    if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+    if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
+    /* Free limits */
+    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+    /* Free dimension lists */
+    if(nbr_dmn_xtr_1 > 0) dim_1=nco_dmn_lst_free(dim_1,nbr_dmn_xtr_1);
+    if(nbr_dmn_xtr_2 > 0) dim_2=nco_dmn_lst_free(dim_2,nbr_dmn_xtr_2);
+    if(nbr_dmn_xtr_1 > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr_1);
+    /* Free variable lists 
+       Using nco_var_lst_free() to free main var_1 and var_2 lists would fail
+       if ncap_var_prc_dmn() had to broadcast any variables because pointer
+       var_1 and var_2 still contain dangling pointer to old variable.
+       Hence, use nco_var_lst_free() to free prc and fix lists then
+       use nco_free() to free main var_1 and var_2 lists.
+       Dangling pointers in var_1 and var_2 are unsafe: fxm TODO 578 */
+    if(nbr_var_prc_1 > 0) var_prc_1=nco_var_lst_free(var_prc_1,nbr_var_prc_1);
+    if(nbr_var_fix_1 > 0) var_fix_1=nco_var_lst_free(var_fix_1,nbr_var_fix_1);
+    if(nbr_var_prc_2 > 0) var_prc_2=nco_var_lst_free(var_prc_2,nbr_var_prc_2);
+    if(nbr_var_fix_2 > 0) var_fix_2=nco_var_lst_free(var_fix_2,nbr_var_fix_2);
+    var_1=(var_sct **)nco_free(var_1);
+    var_2=(var_sct **)nco_free(var_2);
+    if(nbr_xtr_1 > 0) var_out=nco_var_lst_free(var_out,nbr_xtr_1);
+    var_prc_out=(var_sct **)nco_free(var_prc_out);
+    var_fix_out=(var_sct **)nco_free(var_fix_out);
+  } /* !flg_cln */
 
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */

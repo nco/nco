@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.782 2006-06-07 22:38:32 wangd Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.783 2006-06-07 22:43:27 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -507,17 +507,21 @@ nco746. ncap2 array tests for bds/map:
         ncap2 -v -O -s 'slon=lon_grd(1:4)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # fails
 nco747. Change lat to -45,45 and add lat_grd = -90,0,90 in in.cdl
 nco749. Merge timer srt/end calls to mpncwa/mpncbo
-nco751. Deprecate time_bfr_srt/time_bfr_end from all operators in favor of timers
+nco751. Deprecate time_crr_time_t/time_bfr_srt/time_bfr_end from all operators in favor of timers
 nco753. Remove warn-uninitialized warnings from nco_ddra()
 nco754. Make sure private/firstprivate aspects of ddra_info are correct
 nco755. Test timers on ESMF under openmp
 nco756. Make nco_ddra() thread-safe
 nco757. ncbo bug:
 	ncwa -O -a time -p ~/nco/data in.nc ~/foo_avg.nc
-	ncbo -O -y sub ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
-	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncbo -O -y sub ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc > ~/foo 2>&1
+	ncbo -O -D 1 ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
+	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncbo -O ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc > ~/foo 2>&1
+	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncbo -O -v one_dmn_rec_var ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc > ~/foo 2>&1
 nco756. Add --dirty flag as workaround to avoid bugs triggered by memory cleanup?
-nco757. 
+nco757. Make sure ncbo bug is not in ncflint
+nco758. Release bug-fix 3.1.4 (with --dirty flag)
+nco759. Document --dirty flag
+nco760. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
