@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.101 2006-06-07 18:06:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.102 2006-06-07 18:36:04 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -285,6 +285,7 @@ Preprocessor macros may be used to turn bool into _Bool, false into 0 and true i
     long long lmn_nbr; /* [nbr] Variable size */
     long long lmn_nbr_avg; /* [nbr] Averaging block size */
     long long lmn_nbr_wgt; /* [nbr] Weight size */
+    nco_bool flg_ddra; /* [flg] Run DDRA diagnostics */
     nco_bool MRV_flg; /* [flg] Avergaging dimensions are MRV dimensions */
     nco_bool wgt_brd_flg; /* [flg] Broadcast weight for this variable */
     nco_tmr_flg tmr_flg; /* [enm] Timer flag */

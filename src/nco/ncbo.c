@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.89 2006-06-07 18:06:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.90 2006-06-07 18:36:04 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -111,14 +111,14 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.89 2006-06-07 18:06:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.89 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.90 2006-06-07 18:36:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.90 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:-:";
   
 #ifdef __cplusplus
   ddra_info_sct ddra_info;
 #else /* !__cplusplus */
-  ddra_info_sct ddra_info={.MRV_flg=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.tmr_flg=nco_tmr_srt,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
+  ddra_info_sct ddra_info={.MRV_flg=False,.flg_ddra=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.tmr_flg=nco_tmr_srt,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
 #endif /* !__cplusplus */
 
   dmn_sct **dim_1;
@@ -249,7 +249,7 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
-      if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) flg_ddra=True; /* [flg] DDRA diagnostics */
+      if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) ddra_info.flg_ddra=flg_ddra=True; /* [flg] DDRA diagnostics */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
     } /* opt != 0 */
     /* Process short options */
@@ -521,7 +521,7 @@ main(int argc,char **argv)
   /* OpenMP notes:
      shared(): msk and wgt are not altered within loop
      private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) private(ddra_info,idx,in_id_1,in_id_2) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,flg_ddra,fp_stderr,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr_1,nbr_var_prc_1,nbr_var_prc_2,nco_op_typ,out_id,prg_nm,rcd,var_prc_1,var_prc_2,var_prc_out)
+#pragma omp parallel for default(none) firstprivate(ddra_info) private(idx,in_id_1,in_id_2) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,flg_ddra,fp_stderr,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr_1,nbr_var_prc_1,nbr_var_prc_2,nco_op_typ,out_id,prg_nm,rcd,var_prc_1,var_prc_2,var_prc_out)
 #endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc_1;idx++){
     int has_mss_val=False;

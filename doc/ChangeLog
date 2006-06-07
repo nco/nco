@@ -1,5 +1,9 @@
 2006-06-07  Charlie Zender  <zender@uci.edu>
 
+	* Make ddra_info firstprivate()
+
+	* Add flg_ddra to ddra_info
+
 	* Change timers to enumerated type
 
 	* Add metadata portion timer call

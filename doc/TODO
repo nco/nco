@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.778 2006-06-07 18:06:11 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.779 2006-06-07 18:36:04 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -510,7 +510,10 @@ nco749. Add timer srt/end calls to mpncwa/mpncbo
 nco750. C++ compilers must explicitly initialize timer to srt
 nco751. Deprecate time_bfr_srt/time_bfr_end from all operators in favor of timers
 nco752. Have timers print mtd and end blocks with dbg_lvl only
-nco753. 
+nco753. Remove warn-uninitialized warnings from nco_ddra()
+nco754. Make sure private/firstprivate aspects of ddra_info are correct
+nco755. Test timers on ESMF under openmp
+nco756. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
