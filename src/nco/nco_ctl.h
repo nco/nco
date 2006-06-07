@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.23 2006-05-02 07:08:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.24 2006-06-07 18:06:12 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -61,6 +61,9 @@ nco_ddra /* [fnc] Count operations */
 (const char * const var_nm, /* I [sng] Variable name */
  const char * const wgt_nm, /* I [sng] Weight name */
  const ddra_info_sct * const ddra_info); /* I [sct] DDRA information */
+
+void 
+nco_dfl_case_tmr_typ_err(void); /* [fnc] Print error and exit for illegal switch(tmr_typ) case */
 
 void
 nco_lbr_vrs_prn(void); /* [fnc] Print netCDF library version */

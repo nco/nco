@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.39 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.40 2006-06-07 18:06:12 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -68,12 +68,10 @@ extern "C" {
 #endif /* __cplusplus */
 
 void 
-nco_dfl_case_pck_map_err /* [fnc] Print error and exit for illegal switch(pck_map) case */
-(void);
+nco_dfl_case_pck_map_err(void); /* [fnc] Print error and exit for illegal switch(pck_map) case */
 
 void 
-nco_dfl_case_pck_plc_err /* [fnc] Print error and exit for illegal switch(nco_pck_plc) case */
-(void);
+nco_dfl_case_pck_plc_err(void); /* [fnc] Print error and exit for illegal switch(nco_pck_plc) case */
 
 nco_bool /* O [flg] NCO will attempt to pack variable */
 nco_is_packable /* [fnc] Will NCO attempt to pack variable? */

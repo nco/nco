@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.88 2006-06-07 07:52:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.89 2006-06-07 18:06:11 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.88 2006-06-07 07:52:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.88 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.89 2006-06-07 18:06:11 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.89 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:-:";
   
 #ifdef __cplusplus
@@ -231,8 +231,9 @@ main(int argc,char **argv)
   int opt_idx=0; /* Index of current long option into opt_lng array */
   
   /* Start timer and save command line */ 
+  ddra_info.tmr_flg=nco_tmr_srt;
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
-  ddra_info.tmr_flg=nco_tmr_rgl; /* [enm] Timer flag */
+  ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   
   /* Get program name and set program enum (e.g., prg=ncra) */
@@ -511,6 +512,10 @@ main(int argc,char **argv)
   /* Default operation depends on invocation name */
   if(nco_op_typ_sng == NULL) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
     
+  /* Timestamp end of metadata setup and disk layout */
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+  ddra_info.tmr_flg=nco_tmr_rgl;
+
   /* Loop over variables */
 #ifdef _OPENMP
   /* OpenMP notes:

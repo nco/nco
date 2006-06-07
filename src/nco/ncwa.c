@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.219 2006-06-07 07:52:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.220 2006-06-07 18:06:12 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -114,11 +114,10 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
-  char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.219 2006-06-07 07:52:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.219 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.220 2006-06-07 18:06:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.220 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #ifdef __cplusplus
@@ -266,8 +265,9 @@ main(int argc,char **argv)
   int opt_idx=0; /* Index of current long option into opt_lng array */
 
   /* Start timer and save command line */ 
+  ddra_info.tmr_flg=nco_tmr_srt;
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
-  ddra_info.tmr_flg=nco_tmr_rgl; /* [enm] Timer flag */
+  ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   
   NORMALIZE_BY_TALLY=NORMALIZE_BY_TALLY; /* CEWI: Avert compiler warning that variable is set but never used */
@@ -694,6 +694,10 @@ main(int argc,char **argv)
       (void)nco_var_get(in_id,msk);
     } /* end if */
 
+    /* Timestamp end of metadata setup and disk layout */
+    rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+    ddra_info.tmr_flg=nco_tmr_rgl;
+
 #ifdef _OPENMP
   /* OpenMP notes:
      firstprivate(): msk_out and wgt_out must be NULL on first call to nco_var_cnf_dmn()
@@ -705,7 +709,7 @@ main(int argc,char **argv)
       in_id=in_id_arr[omp_get_thread_num()];
       if(dbg_lvl > 0 && dbg_lvl < 10) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
       if(dbg_lvl > 0 && dbg_lvl < 10) (void)fflush(fp_stderr);
-      
+
       /* Allocate and, if necessary, initialize accumulation space for all processed variables */
       var_prc_out[idx]->sz=var_prc[idx]->sz;
       /*      if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc_flg(var_prc_out[idx]->sz*sizeof(long))) == NULL){*/

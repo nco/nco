@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.141 2006-06-07 07:52:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.142 2006-06-07 18:06:11 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -213,16 +213,20 @@ nco_ddra /* [fnc] Count operations */
      [nbr] = Operation counts for lmn_nbr elements
      [nbr nbr-1] = Operation counts per element */
 
-  /* If first timer, initialize and return immediately */
-  if(ddra_info->tmr_flg == nco_tmr_srt){
+  switch(ddra_info->tmr_flg){
+  case nco_tmr_srt: /* [enm] Initialize timer (first timer call) */
     tm_obs_crr=clock();
     tm_obs_old=tm_obs_crr;
-    /* NB: Calling routine should now set tmr_flg to tmr_mdp */
     return rcd; /* [rcd] Return code */
-  } /* !nco_tmr_srt */
-
-  /* If last timer, skip to summary statistics */
-  if(ddra_info->tmr_flg == nco_tmr_end) goto update_timers;
+    break;
+  case nco_tmr_mtd: /* [enm] Metadata timer (second timer call) */
+  case nco_tmr_end: /* [enm] Close timer (last timer call) */
+    goto update_timers;
+    break;
+  case nco_tmr_rgl: /* [enm] Regular timer call (main loop timer call) */
+    break;
+  default: nco_dfl_case_tmr_typ_err(); break;
+  } /* end switch */
 
   /* Decode input */
   MRV_flg=ddra_info->MRV_flg; /* [flg] Avergaging dimensions are MRV dimensions */
@@ -411,17 +415,36 @@ nco_ddra /* [fnc] Count operations */
   tm_obs_old=tm_obs_crr;
   tm_obs_ttl+=tm_obs_dff;
 
-  if(ddra_info->tmr_flg != nco_tmr_end){
+  switch(ddra_info->tmr_flg){
+  case nco_tmr_mtd: /* [enm] Metadata timer (second timer call) */
+    (void)fprintf(stderr,"Metadata setup and file layout time before main loop is %7.2f s\n",tm_obs_ttl);
+    break;
+  case nco_tmr_rgl: /* [enm] Regular timer call (main loop timer call) */
     (void)fprintf(stdout,
 		  "%3d %8s %8.2e %8.2e %8.2e %5.2f %5.2f %8.2e %8.2e %8.2e %4.1f %4.1f %4.1f %4.1f %4.1f %7.2f %7.2f\n",
 		  var_idx,var_nm,(float)lmn_nbr,(float)flp_nbr,(float)ntg_nbr,tm_io,tm_crr,(float)lmn_nbr_ttl,(float)flp_nbr_ttl,(float)ntg_nbr_ttl,100.0*tm_frc_flp_ttl,100.0*tm_frc_ntg_ttl,100.0*tm_frc_rd_ttl,100.0*tm_frc_wrt_ttl,100.0*tm_frc_io_ttl,tm_ttl,tm_obs_ttl);
-  }else{    
-    /* [flg] Close timer */
+    break;
+  case nco_tmr_end: /* [enm] Close timer (last timer call) */
     (void)fprintf(stderr,"Total elapsed time is %7.2f s\n",tm_obs_ttl);
-  } /* !nco_tmr_end */
+    break;
+  default: nco_dfl_case_tmr_typ_err(); break;
+  } /* end switch */
 
   return rcd; /* [rcd] Return code */
 } /* nco_ddra() */
+
+void 
+nco_dfl_case_tmr_typ_err(void) /* [fnc] Print error and exit for illegal switch(tmr_typ) case */
+{
+  /* Purpose: Convenience routine for printing error and exiting when
+     switch(tmr_typ) statement receives an illegal default case
+
+     Placing this in its own routine also has the virtue of saving many lines 
+     of code since this function is used in many many switch() statements. */
+  const char fnc_nm[]="nco_dfl_case_tmr_typ_err()";
+  (void)fprintf(stdout,"%s: ERROR switch(tmr_typ) statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch(tmr_typ) statements are fully enumerated. Exiting...\n",fnc_nm);
+  nco_err_exit(0,fnc_nm);
+} /* end nco_dfl_case_tmr_typ_err() */
 
 void
 nco_exit /* [fnc] Wrapper for exit() */

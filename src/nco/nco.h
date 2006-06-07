@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.100 2006-06-07 07:52:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.101 2006-06-07 18:06:11 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -213,7 +213,8 @@ Preprocessor macros may be used to turn bool into _Bool, false into 0 and true i
   
   typedef enum { /* [enm] Timer flag */
     nco_tmr_srt, /* [enm] Initialize timer (first timer call) */
-    nco_tmr_rgl, /* [enm] Regular timer call (not first or last timer call) */
+    nco_tmr_mtd, /* [enm] Metadata timer (second timer call) */
+    nco_tmr_rgl, /* [enm] Regular timer call (main loop timer call) */
     nco_tmr_end /* [enm] Close timer (last timer call) */
   } nco_tmr_flg; /* [enm] Timer flag */
 

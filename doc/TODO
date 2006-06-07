@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.777 2006-06-07 07:56:25 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.778 2006-06-07 18:06:11 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -507,7 +507,10 @@ nco746. ncap2 array tests for bds/map:
         ncap2 -v -O -s 'slon=lon_grd(1:4)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # fails
 nco747. Change lat to -45,45 and add lat_grd = -90,0,90 in in.cdl
 nco749. Add timer srt/end calls to mpncwa/mpncbo
-nco750. 
+nco750. C++ compilers must explicitly initialize timer to srt
+nco751. Deprecate time_bfr_srt/time_bfr_end from all operators in favor of timers
+nco752. Have timers print mtd and end blocks with dbg_lvl only
+nco753. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
