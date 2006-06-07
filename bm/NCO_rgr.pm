@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.43 2006-05-30 19:11:21 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.44 2006-06-07 22:40:26 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -219,6 +219,15 @@ sub tst_rgr {
     $opr_nm="ncbo";
 ####################
 #if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
+    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time $in_pth_arg in.nc %tempf_03%";;
+    $tst_cmd[1]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth/in.nc %tempf_03% %tempf_00%";;
+    $tst_cmd[2]="ncks -C -H -d time,9 -s '%g' -v rec_var_flt %tempf_00%";
+    $dsc_sng="Whole file difference with broadcasting (fxm TODO nco757)";
+    $tst_cmd[3] = "4.5";
+    $tst_cmd[4] = "SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array - ok
+
     $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg --op_typ='-' -v mss_val_scl $in_pth_arg in.nc in.nc %tempf_00%";;
     $tst_cmd[1]="ncks -C -H -s '%g' -v mss_val_scl %tempf_00%";
     $dsc_sng="difference scalar missing value";
@@ -281,12 +290,11 @@ sub tst_rgr {
     
     $tst_cmd[0]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg -d lon,0 -v no_mss_val $in_pth_arg in.nc in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v no_mss_val %tempf_00%";
-    $dsc_sng="difference without missing value attribute";
+    $dsc_sng="Difference without missing value attribute";
     $tst_cmd[2] = "0";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array ok
-    
     
     $tst_cmd[0]="ncwa $omp_flg -C -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc %tempf_03%";
     $tst_cmd[1]="ncbo $omp_flg -C -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth/in.nc %tempf_03% %tempf_00%";
