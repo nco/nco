@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.91 2006-06-08 00:41:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.92 2006-06-08 00:51:07 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -72,7 +72,7 @@ main(int argc,char **argv)
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool OUTPUT_TO_NEW_NETCDF_FILE=False;
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
-  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
+  nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
   
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.91 2006-06-08 00:41:52 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.91 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.92 2006-06-08 00:51:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.92 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
   extern char *optarg;

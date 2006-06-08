@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.222 2006-06-08 00:41:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.223 2006-06-08 00:51:07 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -94,7 +94,7 @@ main(int argc,char **argv)
   nco_bool NRM_BY_DNM=True; /* Option N Normalize by denominator */
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   nco_bool WGT_MSK_CRD_VAR=True; /* [flg] Weight and/or mask coordinate variables */
-  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
+  nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
   nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
   nco_bool flg_opt_a=False; /* Option a */
   nco_bool flg_rdd=False; /* [flg] Retain degenerate dimensions */
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.222 2006-06-08 00:41:52 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.222 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.223 2006-06-08 00:51:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.223 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #ifdef __cplusplus

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.94 2006-06-08 00:41:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.95 2006-06-08 00:51:07 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -132,7 +132,7 @@ main(int argc,char **argv)
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool OUTPUT_TO_NEW_NETCDF_FILE=False;
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
-  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
+  nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
   
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.94 2006-06-08 00:41:51 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.94 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.95 2006-06-08 00:51:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.95 $";
   const char * const opt_sht_lst="4Aa:D:hl:Oo:p:Rr-:";
   
   extern char *optarg;

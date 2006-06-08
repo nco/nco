@@ -1,8 +1,8 @@
 2006-06-07  Charlie Zender  <zender@uci.edu>
 
-	* Add cln,drt,mmr_cln,mmr_drt,dirty flags to all operators
+	* Make --dirty memory exits default in operators
 
-	* Add cln,drt,mmr_cln,mmr_drt,dirty flags to ncbo
+	* Add cln,drt,mmr_cln,mmr_drt,dirty flags to all operators
 
 	* Quiet MRV verbosity, stylize TIMER output
 
