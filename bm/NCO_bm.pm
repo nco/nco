@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.48 2006-05-30 19:11:21 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.49 2006-06-08 01:13:14 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions in approximate order of their usage:
@@ -69,33 +69,6 @@ if ($hiresfound == 0) {
 } else {
     print "\tTime::HiRes ... found.\n";
 } # $hiresfound
-
-
-# print "\$md5 = $md5\n";
-# print "\$fl_out = $fl_out\n";
-
-# BEGIN {eval "use Digest::MD5"; $md5found = $@ ? 0 : 1}
-# # $md5found = 0;  # uncomment to simulate no MD5
-# if ($md5 == 1) {
-# 	if ($md5found == 0) {
-# 		print "\nOoops! Digest::MD5 module not found - continuing with simpler error checking\n\n" ;
-# 	} else {
-# 		print "\tDigest::MD5 ... found.\n";
-# 	}
-# } else {
-# 	print "\tMD5 NOT requested; continuing with ncks checking of single values.\n";
-# }
-
-# $bm_drc = `pwd`; chomp $bm_drc;
-# $pfx_cmd = '';
-# $err_sng = "";
-# #if($dbg_lvl > 3){$nco_D_flg = "-D" .  "$dbg_lvl";}
-
-# # Initializations
-# # Re-constitute commandline
-# $prg_nm=$0; # $0 is program name Camel p. 136
-# $cmd_ln = "$0 "; $arg_nbr = @ARGV;
-# for (my $i=0; $i<$arg_nbr; $i++){ $cmd_ln .= "$ARGV[$i] ";}
 
 # bm_usg - informational blurb for script
 sub bm_usg {

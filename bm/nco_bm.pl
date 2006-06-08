@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.134 2006-05-30 19:11:21 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.135 2006-06-08 01:13:14 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -77,7 +77,7 @@ $md5 = 0;
 $mpi_fk = 0;
 $mpi_prc = 0; # by default, don't want no steekin MPI
 $pfx_mpi = '';
-$nco_D_flg = '';
+$nco_D_flg='--mmr_cln'; # Require operators to clean memory before exiting
 $nco_vrs_sng = '';
 $os_sng = '';
 $pfx_cmd = '';
@@ -327,7 +327,7 @@ if (length($caseid) > 80) {die "\nThe caseid string is > 80 characters - please 
 # Slurp in data for checksum hashes
 if ($md5 == 1) {	do "nco_bm_md5wc_tbl.pl" or die "Can't find the validation data (nco_bm_md5wc_tbl.pl).\n";}
 
-$nco_D_flg = "-D $dbg_lvl";
+$nco_D_flg.=" -D $dbg_lvl";
 dbg_msg(1,"WARN: Setting --debug to > 0 sets the NCO\n  command line -D flag to the same value.\n  This causes some tests to fail.\n  It is currently set to \$nco_D_flg = $nco_D_flg");
 
 # Determine where $DATA should be, prompt user if necessary

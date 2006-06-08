@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.44 2006-06-07 22:40:26 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.45 2006-06-08 01:13:14 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -48,15 +48,12 @@ sub tst_rgr {
     my $in_pth_arg = "-p $in_pth";
     $prsrv_fl = 0;
     
-## hjm++ 03-02-06 FXM does this now work without any other namespace gymnastics?
 # csz++
 # fxm: pass as arguments or use exporter/importer instead?
 # *omp_flg=*main::omp_flg;
-# *nco_D_flg=*main::nco_D_flg;
 # *dodap=*main::dodap;
 # *$fl_fmt=*main::fl_fmt;
-    
-# I DO NOT *&^%*& understand why this $fl_out needs special handling !!!
+    *nco_D_flg=*main::nco_D_flg;
     *fl_out = *main::fl_out;
     
     NCO_bm::dbg_msg(1,"in package NCO_rgr, \$dodap = $dodap");
@@ -198,13 +195,12 @@ sub tst_rgr {
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0;  # Reset array
 	
-# this test now fails - due to changed $dsc_sng?
+# Fragile: This test fails when length of command changes
 	$tst_cmd[0]="ncatted -O --hdr_pad=1000 $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tempf_00%";
 	$tst_cmd[1]="ncks -M %tempf_00% | grep hdr_pad | wc > %tempf_01%";
 	$tst_cmd[2]="cut -c 14-15  %tempf_01%";
 	$dsc_sng="Pad header with 1000 extra bytes for future metadata";
-# 	$nsr_xpc= 26 ;
-	$tst_cmd[3] = "24"; # was 26
+	$tst_cmd[3] = "27";
 	$tst_cmd[4] = "SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0;  # Reset array
