@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.183 2006-06-08 03:54:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.184 2006-06-08 21:59:17 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.183 2006-06-08 03:54:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.183 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.184 2006-06-08 21:59:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.184 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
   ddra_info_sct ddra_info;
@@ -521,6 +521,10 @@ main(int argc,char **argv)
     } /* end if */
   } /* end loop over idx */
   
+  /* Timestamp end of metadata setup and disk layout */
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+  ddra_info.tmr_flg=nco_tmr_rgl;
+
   /* Loop over input files */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
@@ -547,10 +551,6 @@ main(int argc,char **argv)
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
     
-    /* Timestamp end of metadata setup and disk layout */
-    rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
-    ddra_info.tmr_flg=nco_tmr_rgl;
-
     if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
       /* Loop over each record in current file */
 	

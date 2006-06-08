@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.123 2006-06-08 03:54:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.124 2006-06-08 21:59:17 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.123 2006-06-08 03:54:03 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.123 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.124 2006-06-08 21:59:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.124 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRt:v:x-:";
 
   ddra_info_sct ddra_info;
@@ -489,6 +489,10 @@ main(int argc,char **argv)
   /* Close first input netCDF file */
   (void)nco_close(in_id);
   
+  /* Timestamp end of metadata setup and disk layout */
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+  ddra_info.tmr_flg=nco_tmr_rgl;
+
   /* Loop over input files */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
@@ -503,10 +507,6 @@ main(int argc,char **argv)
     
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
-
-    /* Timestamp end of metadata setup and disk layout */
-    rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
-    ddra_info.tmr_flg=nco_tmr_rgl;
 
     /* OpenMP with threading over variables, not files */
 #ifdef _OPENMP
