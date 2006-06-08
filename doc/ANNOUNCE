@@ -1,30 +1,16 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.180 2006-06-07 18:45:52 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.181 2006-06-08 04:27:46 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.1.3 are ready. 
-Highlights are significant new features in ncwa and ncap2,
-improved CF Convention support, and a fix for empty record variables.
+The netCDF operators NCO version 3.1.4 are ready. 
+This is a bug-fix release only.
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-ncap2, the successor to ncap, now has 99% of ncap's features,
-and many more high level language features, including array syntax,
-if/then constructs, and attribute propagation. 
-ncap2 is still a bit alpha, but ready to be tested for functionality.
-http://nco.sf.net/ncap2.in demonstrates many ncap2 features. 
+ncbo in version 3.1.3 suffers from a trivial memory error which 
+causes it to segfault after writing a correct output file.
 
-Reminder: ncap2 depends on ANTLR to build so do, e.g., 
-sudo apt-get install antlr libantlr-dev 
-before running NCO's configure
-
-1. ncap2 (Henry Butowsky)
-   http://nco.sf.net/nco.html#att_prp
-   http://nco.sf.net/ncap2.in
-
-2. ncap2 LHS array logic (Henry Butowsky)
-   http://nco.sf.net/ncap2.in
-
-3. Timers
+There is also one user-visible change in that running any operator
+with a debug level greater than zero now reports timer results.
 
 Enjoy,
 Charlie
