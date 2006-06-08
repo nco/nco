@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.95 2006-06-08 00:51:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.96 2006-06-08 03:54:03 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -144,10 +144,12 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.95 2006-06-08 00:51:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.95 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.96 2006-06-08 03:54:03 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.96 $";
   const char * const opt_sht_lst="4Aa:D:hl:Oo:p:Rr-:";
   
+  ddra_info_sct ddra_info;
+
   extern char *optarg;
   extern int optind;
   
@@ -199,7 +201,10 @@ main(int argc,char **argv)
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
 
-  /* Start clock and save command line */ 
+  /* Start timer and save command line */ 
+  ddra_info.tmr_flg=nco_tmr_srt;
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+  ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   
   /* Get program name and set program enum (e.g., prg=ncra) */
@@ -329,6 +334,10 @@ main(int argc,char **argv)
   /* Get number of variables in file */
   (void)nco_inq(nc_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
 
+  /* Timestamp end of metadata setup and disk layout */
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+  ddra_info.tmr_flg=nco_tmr_rgl;
+
   for(idx=0;idx<nbr_aed;idx++){
 
     if(aed_lst[idx].var_nm != NULL){
@@ -391,6 +400,10 @@ main(int argc,char **argv)
     if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
   } /* !flg_cln */
   
+  /* End timer */ 
+  ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
   return EXIT_SUCCESS;

@@ -1,6 +1,8 @@
 2006-06-07  Charlie Zender  <zender@uci.edu>
 
-	* Make --clear memory exits default in regression tests
+	* Add timer start and end calls to all operators
+
+	* Make --clean memory exits default in regression tests
 
 	* Make --dirty memory exits default in operators
 
@@ -15,8 +17,6 @@
 	* Change timers to enumerated type
 
 	* Add metadata portion timer call
-
-	* Add timer start and end calls
 
 2006-06-02  Charlie Zender  <zender@uci.edu>
 

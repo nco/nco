@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.784 2006-06-08 00:41:51 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.785 2006-06-08 03:54:03 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -518,8 +518,8 @@ nco757. ncbo bug:
 nco757. Make sure ncbo bug is not in ncflint
 nco758. Release bug-fix 3.1.4 (with --dirty flag?)
 nco759. Document --dirty flag
-nco760. Merge timer srt/end calls to all codes
-nco761. 
+nco761. Merge timer srt/end calls to MPI codes
+nco762. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

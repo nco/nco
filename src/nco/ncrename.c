@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.92 2006-06-08 00:51:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.93 2006-06-08 03:54:04 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -86,9 +86,11 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.92 2006-06-08 00:51:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.92 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.93 2006-06-08 03:54:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.93 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
+
+  ddra_info_sct ddra_info;
 
   extern char *optarg;
   extern int optind;
@@ -146,7 +148,10 @@ main(int argc,char **argv)
     };
   int opt_idx=0;  /* Index of current long option into opt_lng array */
 
-  /* Start clock and save command line */ 
+  /* Start timer and save command line */ 
+  ddra_info.tmr_flg=nco_tmr_srt;
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+  ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   
   /* Get program name and set program enum (e.g., prg=ncra) */
@@ -292,6 +297,10 @@ main(int argc,char **argv)
   /* Open file enabled for writing. Place file in define mode for renaming. */
   rcd=nco_open(fl_out,NC_WRITE,&nc_id);
   (void)nco_redef(nc_id);
+
+  /* Timestamp end of metadata setup and disk layout */
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+  ddra_info.tmr_flg=nco_tmr_rgl;
 
   /* Without further ado, change names */
   for(idx=0;idx<nbr_var_rnm;idx++){
@@ -477,6 +486,11 @@ main(int argc,char **argv)
     if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
   } /* !flg_cln */
   
+  /* End timer */ 
+  ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */

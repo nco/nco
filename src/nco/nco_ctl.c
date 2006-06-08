@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.143 2006-06-07 18:36:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.144 2006-06-08 03:54:03 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -417,7 +417,7 @@ nco_ddra /* [fnc] Count operations */
 
   switch(ddra_info->tmr_flg){
   case nco_tmr_mtd: /* [enm] Metadata timer (second timer call) */
-    if(ddra_info->flg_ddra || dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: TIMER Metadata setup and file layout time before main loop took %7.2f s\n",prg_nm_get(),tm_obs_ttl);
+    if(ddra_info->flg_ddra || dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: TIMER Metadata setup and file layout before main loop took %7.2f s\n",prg_nm_get(),tm_obs_ttl);
     break;
   case nco_tmr_rgl: /* [enm] Regular timer call (main loop timer call) */
     (void)fprintf(stdout,

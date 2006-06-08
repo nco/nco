@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.193 2006-06-08 00:51:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.194 2006-06-08 03:54:03 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -122,11 +122,12 @@ main(int argc,char **argv)
 #define NCAP_SPT_NBR_MAX 100
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
-  char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.193 2006-06-08 00:51:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.193 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.194 2006-06-08 03:54:03 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.194 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
+
+  ddra_info_sct ddra_info;
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
   dmn_sct **dmn_out=NULL_CEWI; /* [lst] Dimensions written to output file */
@@ -286,7 +287,10 @@ main(int argc,char **argv)
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
   
-  /* Start clock and save command line */ 
+  /* Start timer and save command line */ 
+  ddra_info.tmr_flg=nco_tmr_srt;
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+  ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   
   /* Get program name and set program enum (e.g., prg=ncra) */
@@ -550,8 +554,12 @@ main(int argc,char **argv)
   prs_arg.nbr_var=&nbr_var_ycc; /* [nbr] Number of vars to be defined after 1st parse */
   prs_arg.nco_op_typ=nco_op_nil; /* [enm] Operation type */
 
-  /* Do two parses. 1st parse define vars in output file 
-     2nd parse initialize vars */
+  /* Timestamp end of metadata setup and disk layout */
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+  ddra_info.tmr_flg=nco_tmr_rgl;
+
+  /* Parse twice: 1st parse defines variable dimensions in output file. 
+     2nd parse initializes variable values */
   for(jdx=0;jdx<2;jdx++){
     
     prs_arg.ntl_scn=(jdx==0 ? True : False);
@@ -823,6 +831,11 @@ main(int argc,char **argv)
     var_fix_out=(var_sct **)nco_free(var_fix_out);
   } /* !flg_cln */
   
+  /* End timer */ 
+  ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */

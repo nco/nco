@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.160 2006-06-08 00:51:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.161 2006-06-08 03:54:03 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -113,9 +113,11 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.160 2006-06-08 00:51:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.160 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.161 2006-06-08 03:54:03 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.161 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
+
+  ddra_info_sct ddra_info;
 
   extern char *optarg;
   extern int optind;
@@ -224,13 +226,16 @@ main(int argc,char **argv)
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
 
-  /* Start clock and save command line */ 
+  /* Start timer and save command line */ 
+  ddra_info.tmr_flg=nco_tmr_srt;
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+  ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-  fl_bnr=(char *)strdup("ncks.bnr");
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
 
+  fl_bnr=(char *)strdup("ncks.bnr");
   /* Parse command line arguments */
   while(1){
     /* getopt_long_only() allows one dash to prefix long options */
@@ -532,6 +537,10 @@ main(int argc,char **argv)
     /* [fnc] Open unformatted binary data file for writing */
     if(NCO_BNR_WRT) fp_bnr=nco_bnr_open(fl_bnr);
 
+    /* Timestamp end of metadata setup and disk layout */
+    rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+    ddra_info.tmr_flg=nco_tmr_rgl;
+
     /* Copy variable data */
     for(idx=0;idx<nbr_xtr;idx++){
       if(dbg_lvl > 2 && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
@@ -618,6 +627,10 @@ main(int argc,char **argv)
     if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
   } /* !flg_cln */
   
+  /* End timer */ 
+  ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
   return EXIT_SUCCESS;
