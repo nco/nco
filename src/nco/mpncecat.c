@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.39 2006-05-20 04:32:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.40 2006-06-08 00:41:51 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -76,6 +76,7 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
   
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -89,10 +90,9 @@ main(int argc,char **argv)
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
-  char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.39 2006-05-20 04:32:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.39 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.40 2006-06-08 00:41:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.40 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRSt:v:x-:";
   
   dmn_sct *rec_dmn;
@@ -138,7 +138,6 @@ main(int argc,char **argv)
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
   
-  time_t time_crr_time_t;
   
   var_sct **var;
   var_sct **var_fix;
@@ -176,6 +175,12 @@ main(int argc,char **argv)
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       /* Long options with no argument, no short option counterpart */
+      {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
+      {"dirty",no_argument,0,0}, /* [flg] Exit with dirty memory */
+      {"mmr_drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
       /* Long options with argument, no short option counterpart */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
@@ -232,8 +237,6 @@ main(int argc,char **argv)
   
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-  time_crr_time_t=time((time_t *)NULL);
-  time_bfr_srt=ctime(&time_crr_time_t); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
@@ -248,6 +251,8 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
+      if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
     } /* opt != 0 */
     /* Process short options */
@@ -740,35 +745,38 @@ main(int argc,char **argv)
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 #endif /* end !ENABLE_MPI */
   
-  /* ncecat-specific memory cleanup */
-  
-  /* NCO-generic clean-up */
-  /* Free individual strings/arrays */
-  if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
-  if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
-  if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
-  if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
-  if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
-  if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
-  if(in_id_arr != NULL) in_id_arr=(int *)nco_free(in_id_arr);
-  /* Free lists of strings */
-  if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
-  if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
-  if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
-  if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
-  /* Free limits */
-  for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
-  /* Free dimension lists */
-  if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr-1); /* NB: ncecat has one fewer input than output dimension */
-  if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr); 
-  /* Free variable lists */
-  if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
-  if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);
-  var_prc=(var_sct **)nco_free(var_prc);
-  var_prc_out=(var_sct **)nco_free(var_prc_out);
-  var_fix=(var_sct **)nco_free(var_fix);
-  var_fix_out=(var_sct **)nco_free(var_fix_out);
+  /* Clean memory unless dirty memory allowed */
+  if(flg_cln){
+    /* ncecat-specific memory cleanup */
+    
+    /* NCO-generic clean-up */
+    /* Free individual strings/arrays */
+    if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
+    if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
+    if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
+    if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+    if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
+    if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+    if(in_id_arr != NULL) in_id_arr=(int *)nco_free(in_id_arr);
+    /* Free lists of strings */
+    if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+    if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+    if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+    if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
+    /* Free limits */
+    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+    /* Free dimension lists */
+    if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr-1); /* NB: ncecat has one fewer input than output dimension */
+    if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr); 
+    /* Free variable lists */
+    if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
+    if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);
+    var_prc=(var_sct **)nco_free(var_prc);
+    var_prc_out=(var_sct **)nco_free(var_prc_out);
+    var_fix=(var_sct **)nco_free(var_fix);
+    var_fix_out=(var_sct **)nco_free(var_fix_out);
+  } /* !flg_cln */
   
 #ifdef ENABLE_MPI
   MPI_Finalize();

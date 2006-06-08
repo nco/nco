@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.48 2006-05-30 07:07:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.49 2006-06-08 00:41:51 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -98,8 +98,9 @@ main(int argc,char **argv)
   nco_bool NRM_BY_DNM=True; /* Option N Normalize by denominator */
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   nco_bool WGT_MSK_CRD_VAR=True; /* [flg] Weight and/or mask coordinate variables */
-  nco_bool opt_a_flg=False; /* Option a */
+  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
   nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
+  nco_bool flg_opt_a=False; /* Option a */
   nco_bool flg_rdd=False; /* [flg] Retain degenerate dimensions */
   
   char **dmn_avg_lst_in=NULL_CEWI; /* Option a */
@@ -118,14 +119,17 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
-  char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.48 2006-05-30 07:07:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.48 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.49 2006-06-08 00:41:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.49 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
-  ddra_info_sct ddra_info={.MRV_flg=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
+#ifdef __cplusplus
+  ddra_info_sct ddra_info;
+#else /* !__cplusplus */
+  ddra_info_sct ddra_info={.MRV_flg=False,.flg_ddra=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.tmr_flg=nco_tmr_srt,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
+#endif /* !__cplusplus */
 
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out=NULL_CEWI;
@@ -178,8 +182,6 @@ main(int argc,char **argv)
   
   prs_sct prs_arg;  /* I/O [sct] Global information required in ncwa parser */
   
-  time_t time_crr_time_t;
-  
   var_sct **var;
   var_sct **var_fix;
   var_sct **var_fix_out;
@@ -212,13 +214,17 @@ main(int argc,char **argv)
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       /* Long options with no argument, no short option counterpart */
-      /* Long options with argument, no short option counterpart */
+      {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
+      {"dirty",no_argument,0,0}, /* [flg] Exit with dirty memory */
+      {"mmr_drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
       {"ddra",no_argument,0,0}, /* [flg] DDRA diagnostics */
       {"mdl_cmp",no_argument,0,0}, /* [flg] DDRA diagnostics */
+      /* Long options with argument, no short option counterpart */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
-      {"degenerate_dimensions",no_argument,0,0}, /* [flg] Retain degenerate dimensions */
-      {"rdd",no_argument,0,0}, /* [flg] Retain degenerate dimensions */
       /* Long options with short counterparts */
       {"4",no_argument,0,'4'},
       {"64bit",no_argument,0,'4'},
@@ -294,11 +300,12 @@ main(int argc,char **argv)
   MPI_Comm_rank(MPI_COMM_WORLD,&prc_rnk);
 #endif /* !ENABLE_MPI */
   
-  /* Start clock and save command line */ 
+  /* Start timer and save command line */ 
+  ddra_info.tmr_flg=nco_tmr_srt;
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+  ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-  time_crr_time_t=time((time_t *)NULL);
-  time_bfr_srt=ctime(&time_crr_time_t); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
-  
+
   NORMALIZE_BY_TALLY=NORMALIZE_BY_TALLY; /* CEWI: Avert compiler warning that variable is set but never used */
   NORMALIZE_BY_WEIGHT=NORMALIZE_BY_WEIGHT; /* CEWI: Avert compiler warning that variable is set but never used */
   
@@ -315,7 +322,9 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
-      if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) flg_ddra=True; /* [flg] DDRA diagnostics */
+      if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) ddra_info.flg_ddra=flg_ddra=True; /* [flg] DDRA diagnostics */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
     } /* opt != 0 */
     /* Process short options */
@@ -329,14 +338,14 @@ main(int argc,char **argv)
       FORCE_APPEND=!FORCE_APPEND;
       break;
     case 'a': /* Dimensions over which to average hyperslab */
-      if(opt_a_flg){
+      if(flg_opt_a){
 	(void)fprintf(fp_stdout,"%s: ERROR Option -a appears more than once\n",prg_nm);
 	(void)fprintf(fp_stdout,"%s: HINT Use -a dim1,dim2,... not -a dim1 -a dim2 ...\n",prg_nm);
 	(void)nco_usg_prn();
 	nco_exit(EXIT_FAILURE);
       } /* endif */
       dmn_avg_lst_in=lst_prs_2D(optarg,",",&dmn_avg_nbr);
-      opt_a_flg=True;
+      flg_opt_a=True;
       break;
     case 'B': /* Mask string to be parsed */
       msk_cnd_sng=(char *)strdup(optarg);
@@ -767,6 +776,10 @@ main(int argc,char **argv)
       (void)nco_var_get(in_id,msk);
     } /* end if */
     
+    /* Timestamp end of metadata setup and disk layout */
+    rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+    ddra_info.tmr_flg=nco_tmr_rgl;
+
 #ifdef ENABLE_MPI
     if(prc_rnk == rnk_mgr){ /* MPI manager code */
       /* Compensate for incrementing on each worker's first message */
@@ -832,7 +845,7 @@ main(int argc,char **argv)
 	     firstprivate(): msk_out and wgt_out must be NULL on first call to nco_var_cnf_dmn()
 	     shared(): msk and wgt are not altered within loop
 	     private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,msk_out,wgt_out) private((ddra_info,idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,fp_stderr,fp_stdout,in_id_arr,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
+#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info,msk_out,wgt_out) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,fp_stderr,fp_stdout,in_id_arr,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
 #endif /* !_OPENMP */
 	  /* UP and SMP codes main loop over variables */
 	  for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
@@ -1105,12 +1118,12 @@ main(int argc,char **argv)
 		
 		/* Assign remaining input for DDRA diagnostics */
 		ddra_info.lmn_nbr=var_prc[idx]->sz; /* [nbr] Variable size */
-		ddra_info.lmn_nbr_wgt=wgt->sz; /* [nbr] Weight size */
+		if(wgt != NULL) ddra_info.lmn_nbr_wgt=wgt->sz; /* [nbr] Weight size */
 		ddra_info.nco_op_typ=nco_op_typ; /* [enm] Operation type */
 		ddra_info.rnk_var=var_prc[idx]->nbr_dim; /* I [nbr] Variable rank (in input file) */
-		ddra_info.rnk_wgt=wgt->nbr_dim; /* [nbr] Rank of weight */
+		if(wgt != NULL) ddra_info.rnk_wgt=wgt->nbr_dim; /* [nbr] Rank of weight */
 		ddra_info.var_idx=idx; /* [enm] Index */
-		ddra_info.wrd_sz=nco_typ_lng(var_prc[idx]->type); /* [B] Bytes per element */
+	ddra_info.wrd_sz=nco_typ_lng(var_prc[idx]->type); /* [B] Bytes per element */
 		
 		/* DDRA diagnostics */
 		rcd+=nco_ddra /* [fnc] Count operations */
@@ -1153,49 +1166,56 @@ main(int argc,char **argv)
     
   } /* end loop over fl_idx */
   
-  /* ncwa-unique memory */
-  if(dmn_avg_nbr > 0) dmn_avg=(dmn_sct **)nco_free(dmn_avg);
-  if(msk != NULL) msk=nco_var_free(msk);
-  if(msk_nm != NULL) msk_nm=(char *)nco_free(msk_nm);
-  if(msk_out != NULL) msk_out=nco_var_free(msk_out);
-  if(msk_cnd_sng != NULL) msk_cnd_sng=(char *)nco_free(msk_cnd_sng);
-  if(wgt != NULL) wgt=nco_var_free(wgt);
-  if(wgt_avg != NULL) wgt_avg=nco_var_free(wgt_avg);
-  if(wgt_nm != NULL) wgt_nm=(char *)nco_free(wgt_nm);
-  if(wgt_out != NULL) wgt_out=nco_var_free(wgt_out);
-  
-  /* NCO-generic clean-up */
-  /* Free individual strings/arrays */
-  if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
-  if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
-  if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
-  if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
-  if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
-  if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
-  if(in_id_arr != NULL) in_id_arr=(int *)nco_free(in_id_arr);
-  /* Free lists of strings */
-  if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
-  if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
-  if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
-  if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
-  /* Free limits */
-  for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
-  /* Free dimension lists */
-  if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
-  if(nbr_dmn_out > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_out);
-  /* Free variable lists */
-  if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr); 
-  /* ncwa uses nco_var_lst_free() on var_prc_out because var_out has dangling pointers */
-  if(nbr_var_fix > 0) var_fix_out=nco_var_lst_free(var_fix_out,nbr_var_fix);
-  if(nbr_var_prc > 0) var_prc_out=nco_var_lst_free(var_prc_out,nbr_var_prc);
-  var_prc=(var_sct **)nco_free(var_prc);
-  var_fix=(var_sct **)nco_free(var_fix);
-  var_out=(var_sct **)nco_free(var_out);
+  /* Clean memory unless dirty memory allowed */
+  if(flg_cln){
+    /* ncwa-specific memory */
+    if(dmn_avg_nbr > 0) dmn_avg=(dmn_sct **)nco_free(dmn_avg);
+    if(msk != NULL) msk=nco_var_free(msk);
+    if(msk_nm != NULL) msk_nm=(char *)nco_free(msk_nm);
+    if(msk_out != NULL) msk_out=nco_var_free(msk_out);
+    if(msk_cnd_sng != NULL) msk_cnd_sng=(char *)nco_free(msk_cnd_sng);
+    if(wgt != NULL) wgt=nco_var_free(wgt);
+    if(wgt_avg != NULL) wgt_avg=nco_var_free(wgt_avg);
+    if(wgt_nm != NULL) wgt_nm=(char *)nco_free(wgt_nm);
+    if(wgt_out != NULL) wgt_out=nco_var_free(wgt_out);
+    
+    /* NCO-generic clean-up */
+    /* Free individual strings/arrays */
+    if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
+    if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
+    if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
+    if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+    if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
+    if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+    if(in_id_arr != NULL) in_id_arr=(int *)nco_free(in_id_arr);
+    /* Free lists of strings */
+    if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+    if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+    if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+    if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
+    /* Free limits */
+    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+    /* Free dimension lists */
+    if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
+    if(nbr_dmn_out > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_out);
+    /* Free variable lists */
+    if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr); 
+    /* ncwa uses nco_var_lst_free() on var_prc_out because var_out has dangling pointers */
+    if(nbr_var_fix > 0) var_fix_out=nco_var_lst_free(var_fix_out,nbr_var_fix);
+    if(nbr_var_prc > 0) var_prc_out=nco_var_lst_free(var_prc_out,nbr_var_prc);
+    var_prc=(var_sct **)nco_free(var_prc);
+    var_fix=(var_sct **)nco_free(var_fix);
+    var_out=(var_sct **)nco_free(var_out);
+  } /* !flg_cln */
   
 #ifdef ENABLE_MPI
   MPI_Finalize();
 #endif /* !ENABLE_MPI */
+  
+  /* End timer */ 
+  ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
   
   nco_exit_gracefully();
   return EXIT_SUCCESS;

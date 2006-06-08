@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.158 2006-05-20 04:32:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.159 2006-06-08 00:41:51 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -95,6 +95,7 @@ main(int argc,char **argv)
   nco_bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
   nco_bool PRN_VRB=False; /* [flg] Print data and metadata by default */
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -110,11 +111,10 @@ main(int argc,char **argv)
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
-  char *time_bfr_srt;
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.158 2006-05-20 04:32:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.158 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.159 2006-06-08 00:41:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.159 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
   extern char *optarg;
@@ -151,11 +151,15 @@ main(int argc,char **argv)
 
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
-  time_t time_crr_time_t;
-
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       /* Long options with no argument, no short option counterpart */
+      {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
+      {"dirty",no_argument,0,0}, /* [flg] Exit with dirty memory */
+      {"mmr_drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
       {"cmp",no_argument,0,0},
       {"compiler",no_argument,0,0},
       {"mpi_implementation",no_argument,0,0},
@@ -222,8 +226,6 @@ main(int argc,char **argv)
 
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-  time_crr_time_t=time((time_t *)NULL);
-  time_bfr_srt=ctime(&time_crr_time_t); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   fl_bnr=(char *)strdup("ncks.bnr");
   
   /* Get program name and set program enum (e.g., prg=ncra) */
@@ -243,6 +245,8 @@ main(int argc,char **argv)
 	(void)fprintf(stdout,"%s\n",nco_cmp_get());
 	nco_exit(EXIT_SUCCESS);
       } /* endif "cmp" */
+      if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")) hdr_pad=strtoul(optarg,(char **)NULL,10);
       if(!strcmp(opt_crr,"mpi_implementation")){
@@ -589,28 +593,31 @@ main(int argc,char **argv)
   /* Remove local copy of file */
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
 
-  /* ncks-unique memory */
-  if(fl_bnr != NULL) fl_bnr=(char *)nco_free(fl_bnr);
-  if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
-  if(nbr_dmn_fl > 0) lmt_rgl=nco_lmt_lst_free(lmt_rgl,nbr_dmn_fl);
-
-  /* NCO-generic clean-up */
-  /* Free individual strings/arrays */
-  if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
-  if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
-  if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
-  if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
-  if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
-  if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
-  /* Free lists of strings */
-  if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
-  if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
-  if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
-  if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
-  /* Free limits */
-  for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
-
+  /* Clean memory unless dirty memory allowed */
+  if(flg_cln){
+    /* ncks-specific memory */
+    if(fl_bnr != NULL) fl_bnr=(char *)nco_free(fl_bnr);
+    if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
+    if(nbr_dmn_fl > 0) lmt_rgl=nco_lmt_lst_free(lmt_rgl,nbr_dmn_fl);
+    
+    /* NCO-generic clean-up */
+    /* Free individual strings/arrays */
+    if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
+    if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
+    if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
+    if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+    if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
+    if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+    /* Free lists of strings */
+    if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+    if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+    if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+    if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
+    /* Free limits */
+    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+  } /* !flg_cln */
+  
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
   return EXIT_SUCCESS;

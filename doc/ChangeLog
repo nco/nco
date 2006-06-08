@@ -1,5 +1,7 @@
 2006-06-07  Charlie Zender  <zender@uci.edu>
 
+	* Add cln,drt,mmr_cln,mmr_drt,dirty flags to all operators
+
 	* Add cln,drt,mmr_cln,mmr_drt,dirty flags to ncbo
 
 	* Quiet MRV verbosity, stylize TIMER output

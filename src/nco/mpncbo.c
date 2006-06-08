@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.53 2006-05-20 04:32:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.54 2006-06-08 00:41:51 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -99,6 +99,8 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
+  nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
   
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -114,12 +116,17 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
-  char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.53 2006-05-20 04:32:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.53 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.54 2006-06-08 00:41:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.54 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRSt:v:xy:-:";
   
+#ifdef __cplusplus
+  ddra_info_sct ddra_info;
+#else /* !__cplusplus */
+  ddra_info_sct ddra_info={.MRV_flg=False,.flg_ddra=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.tmr_flg=nco_tmr_srt,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};
+#endif /* !__cplusplus */
+
   dmn_sct **dim_1;
   dmn_sct **dim_2;
   dmn_sct **dmn_out;
@@ -171,8 +178,6 @@ main(int argc,char **argv)
   nm_id_sct *xtr_lst_1=NULL; /* xtr_lst_1 may be alloc()'d from NULL with -c option */
   nm_id_sct *xtr_lst_2=NULL; /* xtr_lst_2 may be alloc()'d from NULL with -c option */
   
-  time_t time_crr_time_t;
-  
   var_sct **var_1;
   var_sct **var_2;
   var_sct **var_fix_1;
@@ -204,6 +209,12 @@ main(int argc,char **argv)
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       /* Long options with no argument, no short option counterpart */
+      {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
+      {"dirty",no_argument,0,0}, /* [flg] Exit with dirty memory */
+      {"mmr_drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
       /* Long options with argument, no short option counterpart */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
@@ -253,10 +264,11 @@ main(int argc,char **argv)
   MPI_Comm_rank(MPI_COMM_WORLD,&prc_rnk);
 #endif /* !ENABLE_MPI */
   
-  /* Start clock and save command line */ 
+  /* Start timer and save command line */ 
+  ddra_info.tmr_flg=nco_tmr_srt;
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+  ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-  time_crr_time_t=time((time_t *)NULL);
-  time_bfr_srt=ctime(&time_crr_time_t); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
@@ -271,6 +283,9 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
+      if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) ddra_info.flg_ddra=flg_ddra=True; /* [flg] DDRA diagnostics */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
     } /* opt != 0 */
     /* Process short options */
@@ -565,6 +580,10 @@ main(int argc,char **argv)
   /* Default operation depends on invocation name */
   if(nco_op_typ_sng == NULL) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
   
+  /* Timestamp end of metadata setup and disk layout */
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+  ddra_info.tmr_flg=nco_tmr_rgl;
+
 #ifdef ENABLE_MPI
   if(prc_rnk == rnk_mgr){ /* MPI manager code */
     /* Compensate for incrementing on each worker's first message */
@@ -628,7 +647,7 @@ main(int argc,char **argv)
 	/* OpenMP notes:
 	   shared(): msk and wgt are not altered within loop
 	   private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) private(idx,in_id_1,in_id_2) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr_1,nbr_var_prc_1,nbr_var_prc_2,nco_op_typ,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
+#pragma omp parallel for default(none) firstprivate(ddra_info) private(idx,in_id_1,in_id_2) shared(dbg_lvl,dim_1,fl_in_1,fl_in_2,fl_out,flg_ddra,fp_stderr,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr_1,nbr_var_prc_1,nbr_var_prc_2,nco_op_typ,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
 #endif /* !_OPENMP */
 	/* UP and SMP codes main loop over variables */ 
 	for(idx=0;idx<nbr_var_prc_1;idx++){
@@ -747,6 +766,28 @@ main(int argc,char **argv)
 	    } /* end OpenMP critical */
 	    var_prc_1[idx]->val.vp=nco_free(var_prc_1[idx]->val.vp);
 	    
+	    if(flg_ddra){
+	      /* DDRA diagnostics
+		 Usage:
+		 ncbo -O -C --mdl -p ~/nco/data in.nc in.nc ~/foo.nc
+		 ncbo -O -C --mdl -p ${DATA}/nco_bm stl_5km.nc stl_5km.nc ~/foo.nc
+		 ncbo -O -C --mdl -p ${DATA}/nco_bm ipcc_dly_T85.nc ipcc_dly_T85.nc ~/foo.nc */
+	      
+	      /* Assign remaining input for DDRA diagnostics */
+	      ddra_info.lmn_nbr=var_prc_1[idx]->sz; /* [nbr] Variable size */
+	      ddra_info.nco_op_typ=nco_op_typ; /* [enm] Operation type */
+	      ddra_info.rnk_var=var_prc_1[idx]->nbr_dim; /* I [nbr] Variable rank (in input file) */
+	      ddra_info.var_idx=idx; /* [enm] Index */
+	      ddra_info.wrd_sz=nco_typ_lng(var_prc_1[idx]->type); /* [B] Bytes per element */
+	      
+	      /* DDRA diagnostics */
+	      rcd+=nco_ddra /* [fnc] Count operations */
+		(var_prc_1[idx]->nm, /* I [sng] Variable name */
+		 (char *)NULL, /* I [sng] Weight name */
+		 &ddra_info); /* I [sct] DDRA information */
+	      
+	    } /* !flg_ddra */
+	    
 #ifdef ENABLE_MPI
 	    /* Close output file and increment written counter */
 	    nco_close(out_id);
@@ -776,51 +817,58 @@ main(int argc,char **argv)
   if(FILE_1_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_1);
   if(FILE_2_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_2);
   
-  /* ncbo-unique memory */
-  if(fl_in_1 != NULL) fl_in_1=(char *)nco_free(fl_in_1);
-  if(fl_in_2 != NULL) fl_in_2=(char *)nco_free(fl_in_2);
-  
-  /* NCO-generic clean-up */
-  /* Free individual strings/arrays */
-  if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
-  if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
-  if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
-  if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
-  if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
-  if(in_id_1_arr != NULL) in_id_1_arr=(int *)nco_free(in_id_1_arr);
-  if(in_id_2_arr != NULL) in_id_2_arr=(int *)nco_free(in_id_2_arr);
-  /* Free lists of strings */
-  if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
-  if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
-  if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
-  if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
-  /* Free limits */
-  for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
-  /* Free dimension lists */
-  if(nbr_dmn_xtr_1 > 0) dim_1=nco_dmn_lst_free(dim_1,nbr_dmn_xtr_1);
-  if(nbr_dmn_xtr_2 > 0) dim_2=nco_dmn_lst_free(dim_2,nbr_dmn_xtr_2);
-  if(nbr_dmn_xtr_1 > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr_1);
-  /* Free variable lists 
-     Using nco_var_lst_free() to free main var_1 and var_2 lists would fail
-     if ncap_var_prc_dmn() had to broadcast any variables because pointer
-     var_1 and var_2 still contain dangling pointer to old variable.
-     Hence, use nco_var_lst_free() to free prc and fix lists and 
-     use nco_free() to free main var_1 and var_2 lists.
-     Dangling pointers in var_1 and var_2 are unsafe: fxm TODO 578 */
-  if(nbr_var_prc_1 > 0) var_prc_1=nco_var_lst_free(var_prc_1,nbr_var_prc_1);
-  if(nbr_var_fix_1 > 0) var_fix_1=nco_var_lst_free(var_fix_1,nbr_var_fix_1);
-  if(nbr_var_prc_2 > 0) var_prc_2=nco_var_lst_free(var_prc_2,nbr_var_prc_2);
-  if(nbr_var_fix_2 > 0) var_fix_2=nco_var_lst_free(var_fix_2,nbr_var_fix_2);
-  var_1=(var_sct **)nco_free(var_1);
-  var_2=(var_sct **)nco_free(var_2);
-  if(nbr_xtr_1 > 0) var_out=nco_var_lst_free(var_out,nbr_xtr_1);
-  var_prc_out=(var_sct **)nco_free(var_prc_out);
-  var_fix_out=(var_sct **)nco_free(var_fix_out);
+  /* Clean memory unless dirty memory allowed */
+  if(flg_cln){
+    /* ncbo-specific memory */
+    if(fl_in_1 != NULL) fl_in_1=(char *)nco_free(fl_in_1);
+    if(fl_in_2 != NULL) fl_in_2=(char *)nco_free(fl_in_2);
+    
+    /* NCO-generic clean-up */
+    /* Free individual strings/arrays */
+    if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
+    if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
+    if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+    if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
+    if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+    if(in_id_1_arr != NULL) in_id_1_arr=(int *)nco_free(in_id_1_arr);
+    if(in_id_2_arr != NULL) in_id_2_arr=(int *)nco_free(in_id_2_arr);
+    /* Free lists of strings */
+    if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+    if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+    if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+    if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
+    /* Free limits */
+    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+    /* Free dimension lists */
+    if(nbr_dmn_xtr_1 > 0) dim_1=nco_dmn_lst_free(dim_1,nbr_dmn_xtr_1);
+    if(nbr_dmn_xtr_2 > 0) dim_2=nco_dmn_lst_free(dim_2,nbr_dmn_xtr_2);
+    if(nbr_dmn_xtr_1 > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr_1);
+    /* Free variable lists 
+       Using nco_var_lst_free() to free main var_1 and var_2 lists would fail
+       if ncap_var_prc_dmn() had to broadcast any variables because pointer
+       var_1 and var_2 still contain dangling pointer to old variable.
+       Hence, use nco_var_lst_free() to free prc and fix lists and 
+       use nco_free() to free main var_1 and var_2 lists.
+       Dangling pointers in var_1 and var_2 are unsafe: fxm TODO 578 */
+    if(nbr_var_prc_1 > 0) var_prc_1=nco_var_lst_free(var_prc_1,nbr_var_prc_1);
+    if(nbr_var_fix_1 > 0) var_fix_1=nco_var_lst_free(var_fix_1,nbr_var_fix_1);
+    if(nbr_var_prc_2 > 0) var_prc_2=nco_var_lst_free(var_prc_2,nbr_var_prc_2);
+    if(nbr_var_fix_2 > 0) var_fix_2=nco_var_lst_free(var_fix_2,nbr_var_fix_2);
+    var_1=(var_sct **)nco_free(var_1);
+    var_2=(var_sct **)nco_free(var_2);
+    if(nbr_xtr_1 > 0) var_out=nco_var_lst_free(var_out,nbr_xtr_1);
+    var_prc_out=(var_sct **)nco_free(var_prc_out);
+    var_fix_out=(var_sct **)nco_free(var_fix_out);
+  } /* !flg_cln */
   
 #ifdef ENABLE_MPI 
   MPI_Finalize();
 #endif /* !ENABLE_MPI */
+  
+  /* End timer */ 
+  ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
   
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();

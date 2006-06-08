@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.103 2006-05-20 04:32:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.104 2006-06-08 00:41:52 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -84,6 +84,7 @@ main(int argc,char **argv)
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool REDEFINED_RECORD_DIMENSION=False; /* [flg] Re-defined record dimension */
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
+  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
 
   char **dmn_rdr_lst_in=NULL_CEWI; /* Option a */
   char **fl_lst_abb=NULL; /* Option n */
@@ -103,13 +104,12 @@ main(int argc,char **argv)
   char *rec_dmn_nm_in=NULL; /* [sng] Record dimension name, original */
   char *rec_dmn_nm_out=NULL; /* [sng] Record dimension name, re-ordered */
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
-  char *time_bfr_srt;
   
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.103 2006-05-20 04:32:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.103 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.104 2006-06-08 00:41:52 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.104 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -165,7 +165,6 @@ main(int argc,char **argv)
   nm_id_sct *dmn_rdr_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
   
-  time_t time_crr_time_t;
   
   var_sct **var;
   var_sct **var_fix;
@@ -177,6 +176,12 @@ main(int argc,char **argv)
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       /* Long options with no argument, no short option counterpart */
+      {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
+      {"dirty",no_argument,0,0}, /* [flg] Exit with dirty memory */
+      {"mmr_drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
       /* Long options with argument, no short option counterpart */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
@@ -232,10 +237,6 @@ main(int argc,char **argv)
 
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-  time_crr_time_t=time((time_t *)NULL);
-  time_bfr_srt=ctime(&time_crr_time_t); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
-
-  time_bfr_srt=time_bfr_srt; /* CEWI: Avert compiler warning that variable is set but never used */
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
@@ -250,6 +251,8 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
+      if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
     } /* opt != 0 */
     /* Process short options */
@@ -812,61 +815,64 @@ main(int argc,char **argv)
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
-  /* ncpdq-specific memory cleanup */
-  if(dmn_rdr_nbr > 0){
-    /* Free dimension correspondence list */
-    for(idx=0;idx<nbr_var_prc;idx++){
-      dmn_idx_out_in[idx]=(int *)nco_free(dmn_idx_out_in[idx]);
-      dmn_rvr_in[idx]=(nco_bool *)nco_free(dmn_rvr_in[idx]);
-    } /* end loop over idx */
-    if(dmn_idx_out_in != NULL) dmn_idx_out_in=(int **)nco_free(dmn_idx_out_in);
-    if(dmn_rvr_in != NULL) dmn_rvr_in=(nco_bool **)nco_free(dmn_rvr_in);
-    if(dmn_rvr_rdr != NULL) dmn_rvr_rdr=(nco_bool *)nco_free(dmn_rvr_rdr);
-    if(dmn_rdr_nbr_in > 0) dmn_rdr_lst_in=nco_sng_lst_free(dmn_rdr_lst_in,dmn_rdr_nbr_in);
-    /* Free dimension list pointers */
-    dmn_rdr=(dmn_sct **)nco_free(dmn_rdr);
-    /* Dimension structures in dmn_rdr are owned by dmn and dmn_out, free'd later */
-  } /* endif dmn_rdr_nbr > 0 */
-  if(nco_pck_plc != nco_pck_plc_nil){
-    if(nco_pck_plc_sng != NULL) nco_pck_plc_sng=(char *)nco_free(nco_pck_plc_sng);
-    if(nco_pck_map_sng != NULL) nco_pck_map_sng=(char *)nco_free(nco_pck_map_sng);
-    if(nco_pck_plc != nco_pck_plc_upk){
-      /* No need for loop over var_prc variables to free attribute values
-	 Variable structures and attribute edit lists share same attribute values
-	 Free them only once, and do it in nco_var_free() */
-      aed_lst_add_fst=(aed_sct *)nco_free(aed_lst_add_fst);
-      aed_lst_scl_fct=(aed_sct *)nco_free(aed_lst_scl_fct);
-    } /* nco_pck_plc == nco_pck_plc_upk */
-  } /* nco_pck_plc == nco_pck_plc_nil */
-
-  /* NCO-generic clean-up */
-  /* Free individual strings/arrays */
-  if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
-  if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
-  if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
-  if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
-  if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
-  if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
-  if(in_id_arr != NULL) in_id_arr=(int *)nco_free(in_id_arr);
-  /* Free lists of strings */
-  if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
-  if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
-  if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
-  if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
-  /* Free limits */
-  for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
-  /* Free dimension lists */
-  if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
-  if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr);
-  /* Free variable lists */
-  if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
-  if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);
-  var_prc=(var_sct **)nco_free(var_prc);
-  var_prc_out=(var_sct **)nco_free(var_prc_out);
-  var_fix=(var_sct **)nco_free(var_fix);
-  var_fix_out=(var_sct **)nco_free(var_fix_out);
-
+  /* Clean memory unless dirty memory allowed */
+  if(flg_cln){
+    /* ncpdq-specific memory cleanup */
+    if(dmn_rdr_nbr > 0){
+      /* Free dimension correspondence list */
+      for(idx=0;idx<nbr_var_prc;idx++){
+	dmn_idx_out_in[idx]=(int *)nco_free(dmn_idx_out_in[idx]);
+	dmn_rvr_in[idx]=(nco_bool *)nco_free(dmn_rvr_in[idx]);
+      } /* end loop over idx */
+      if(dmn_idx_out_in != NULL) dmn_idx_out_in=(int **)nco_free(dmn_idx_out_in);
+      if(dmn_rvr_in != NULL) dmn_rvr_in=(nco_bool **)nco_free(dmn_rvr_in);
+      if(dmn_rvr_rdr != NULL) dmn_rvr_rdr=(nco_bool *)nco_free(dmn_rvr_rdr);
+      if(dmn_rdr_nbr_in > 0) dmn_rdr_lst_in=nco_sng_lst_free(dmn_rdr_lst_in,dmn_rdr_nbr_in);
+      /* Free dimension list pointers */
+      dmn_rdr=(dmn_sct **)nco_free(dmn_rdr);
+      /* Dimension structures in dmn_rdr are owned by dmn and dmn_out, free'd later */
+    } /* endif dmn_rdr_nbr > 0 */
+    if(nco_pck_plc != nco_pck_plc_nil){
+      if(nco_pck_plc_sng != NULL) nco_pck_plc_sng=(char *)nco_free(nco_pck_plc_sng);
+      if(nco_pck_map_sng != NULL) nco_pck_map_sng=(char *)nco_free(nco_pck_map_sng);
+      if(nco_pck_plc != nco_pck_plc_upk){
+	/* No need for loop over var_prc variables to free attribute values
+	   Variable structures and attribute edit lists share same attribute values
+	   Free them only once, and do it in nco_var_free() */
+	aed_lst_add_fst=(aed_sct *)nco_free(aed_lst_add_fst);
+	aed_lst_scl_fct=(aed_sct *)nco_free(aed_lst_scl_fct);
+      } /* nco_pck_plc == nco_pck_plc_upk */
+    } /* nco_pck_plc == nco_pck_plc_nil */
+    
+    /* NCO-generic clean-up */
+    /* Free individual strings/arrays */
+    if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
+    if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
+    if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
+    if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+    if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
+    if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+    if(in_id_arr != NULL) in_id_arr=(int *)nco_free(in_id_arr);
+    /* Free lists of strings */
+    if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+    if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+    if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+    if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
+    /* Free limits */
+    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+    /* Free dimension lists */
+    if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
+    if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr);
+    /* Free variable lists */
+    if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
+    if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);
+    var_prc=(var_sct **)nco_free(var_prc);
+    var_prc_out=(var_sct **)nco_free(var_prc_out);
+    var_fix=(var_sct **)nco_free(var_fix);
+    var_fix_out=(var_sct **)nco_free(var_fix_out);
+  } /* !flg_cln */
+  
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */

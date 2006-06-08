@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.16 2006-05-24 18:00:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.17 2006-06-08 00:41:52 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -104,8 +104,7 @@ main(int argc,char **argv)
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   nco_bool ATT_PROPAGATE=True;        
   nco_bool ATT_INHERIT=True;          
-
-
+  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
   
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
@@ -122,10 +121,9 @@ main(int argc,char **argv)
 #define NCAP_SPT_NBR_MAX 100
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
-  char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.16 2006-05-24 18:00:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.16 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.17 2006-06-08 00:41:52 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.17 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -222,7 +220,6 @@ main(int argc,char **argv)
   size_t sng_lng;
   size_t spt_arg_lng=size_t_CEWI;
 
-  time_t time_crr_time_t;
   
   var_sct **var;
   var_sct **var_fix;
@@ -238,6 +235,12 @@ main(int argc,char **argv)
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       /* Long options with no argument, no short option counterpart */
+      {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
+      {"dirty",no_argument,0,0}, /* [flg] Exit with dirty memory */
+      {"mmr_drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
       /* Long options with argument, no short option counterpart */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
@@ -288,8 +291,6 @@ main(int argc,char **argv)
   
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-  time_crr_time_t=time((time_t *)NULL);
-  time_bfr_srt=ctime(&time_crr_time_t); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
@@ -304,6 +305,8 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
+      if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
     } /* opt != 0 */
     /* Process short options */
@@ -750,70 +753,70 @@ main(int argc,char **argv)
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
-  /* ncap-unique memory */
-  /* fxm: ncap-specific memory freeing instructions go here */
-  int sz;
-  sz=sym_vtr.size();
-  for(idx=0; idx<sym_vtr.size() ;idx++){
-    sym_vtr[idx]->nm=(char*)nco_free(sym_vtr[idx]->nm);
-    (void)nco_free(sym_vtr[idx]);
+  /* Clean memory unless dirty memory allowed */
+  if(flg_cln){
+    /* ncap-specific memory */
+    int sz;
+    sz=sym_vtr.size();
+    for(idx=0; idx<sym_vtr.size() ;idx++){
+      sym_vtr[idx]->nm=(char*)nco_free(sym_vtr[idx]->nm);
+      (void)nco_free(sym_vtr[idx]);
     } 
-
-  printf("Freed sym_vtr\n");
-
-  if(fl_spt_usr != NULL) fl_spt_usr=(char *)nco_free(fl_spt_usr);
+    
+    printf("Freed sym_vtr\n");
+    
+    if(fl_spt_usr != NULL) fl_spt_usr=(char *)nco_free(fl_spt_usr);
+    
+    /* Free extraction lists */ 
+    xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
+    xtr_lst_a=nco_nm_id_lst_free(xtr_lst_a,nbr_lst_a);
+    
+    /* Free command line algebraic arguments, if any */
+    for(idx=0;idx<nbr_spt;idx++) spt_arg[idx]=(char *)nco_free(spt_arg[idx]);
+    if(spt_arg_cat != NULL) spt_arg_cat=(char *)nco_free(spt_arg_cat);
+    
+    /* NCO-generic clean-up */
+    /* Free individual strings/arrays */
+    if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
+    if(fl_in != NULL) fl_in=(char*)nco_free(fl_in);
+    if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
+    if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+    if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
+    if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+    /* Free lists of strings */
+    if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+    if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+    if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+    /* Free limits */
+    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
+    
+    /* Free dimension vectors */
+    if(dmn_in_vtr.size() > 0) { 
+      for(idx=0; idx < dmn_in_vtr.size(); idx++)
+	(void)nco_dmn_free(dmn_in_vtr[idx]);
+    }
+    
+    if(dmn_out_vtr.size() > 0) { 
+      for(idx=0; idx < dmn_out_vtr.size(); idx++)
+	(void)nco_dmn_free(dmn_out_vtr[idx]);
+    }
+    
+    /* Free var_vtr */
+    if(var_vtr.size() > 0) { 
+      for(idx=0; idx < var_vtr.size(); idx++)
+	delete var_vtr[idx];
+    }  
+    
+    /* Free variable lists */
+    if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
+    if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);
+    var_prc=(var_sct **)nco_free(var_prc);
+    var_prc_out=(var_sct **)nco_free(var_prc_out);
+    var_fix=(var_sct **)nco_free(var_fix);
+    var_fix_out=(var_sct **)nco_free(var_fix_out);
+  } /* !flg_cln */
   
-  /* Free extraction lists */ 
-  xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
-  xtr_lst_a=nco_nm_id_lst_free(xtr_lst_a,nbr_lst_a);
-
-  /* Free command line algebraic arguments, if any */
-  for(idx=0;idx<nbr_spt;idx++) spt_arg[idx]=(char *)nco_free(spt_arg[idx]);
-  if(spt_arg_cat != NULL) spt_arg_cat=(char *)nco_free(spt_arg_cat);
-  
-  /* NCO-generic clean-up */
-  /* Free individual strings/arrays */
-  if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
-  if(fl_in != NULL) fl_in=(char*)nco_free(fl_in);
-  if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
-  if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
-  if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
-  if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
-  /* Free lists of strings */
-  if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
-  if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
-  if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
-  /* Free limits */
-  for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-  if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
-
-  /* Free dimension vectors */
-  if(dmn_in_vtr.size() > 0) { 
-    for(idx=0; idx < dmn_in_vtr.size(); idx++)
-       (void)nco_dmn_free(dmn_in_vtr[idx]);
-  }
-
-  if(dmn_out_vtr.size() > 0) { 
-    for(idx=0; idx < dmn_out_vtr.size(); idx++)
-       (void)nco_dmn_free(dmn_out_vtr[idx]);
-  }
-  
-  /* Free var_vtr */
-  if(var_vtr.size() > 0) { 
-    for(idx=0; idx < var_vtr.size(); idx++)
-      delete var_vtr[idx];
-  }  
-
-
-
-  /* Free variable lists */
-  if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
-  if(nbr_xtr > 0) var_out=nco_var_lst_free(var_out,nbr_xtr);
-  var_prc=(var_sct **)nco_free(var_prc);
-  var_prc_out=(var_sct **)nco_free(var_prc_out);
-  var_fix=(var_sct **)nco_free(var_fix);
-  var_fix_out=(var_sct **)nco_free(var_fix_out);
-
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
