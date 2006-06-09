@@ -2,6 +2,11 @@
 
 	* Re-release this as 3.1.4
 	
+	* Always initialize flg_ddra=False in ddra_info
+	Fixes spurious TIMER info on compilers (like xlc) which do not zero data
+
+	* Re-release this as 3.1.4
+	
 	* Take mtd timer out of loop in ncra.c and ncecat.c 
 
 2006-06-07  Charlie Zender  <zender@uci.edu>

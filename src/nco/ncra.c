@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.184 2006-06-08 21:59:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.185 2006-06-09 05:13:57 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -121,11 +121,15 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.184 2006-06-08 21:59:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.184 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.185 2006-06-09 05:13:57 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.185 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
+#ifdef __cplusplus
   ddra_info_sct ddra_info;
+#else /* !__cplusplus */
+  ddra_info_sct ddra_info={.flg_ddra=False};
+#endif /* !__cplusplus */
 
   dmn_sct **dim;
   dmn_sct **dmn_out;
