@@ -1,4 +1,14 @@
+2006-06-08  Charlie Zender  <zender@uci.edu>
+
+	* Re-release this as 3.1.4
+	
+	* Take mtd timer out of loop in ncra.c and ncecat.c 
+
 2006-06-07  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-3_1_4
+	Changes since nco-3_1_4: 
+	timers, clean/dirty switches
 
 	* Add timer start and end calls to all operators
 
