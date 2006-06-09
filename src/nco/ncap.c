@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.194 2006-06-08 03:54:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.195 2006-06-09 05:19:12 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -123,11 +123,15 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.194 2006-06-08 03:54:03 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.194 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.195 2006-06-09 05:19:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.195 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
+#ifdef __cplusplus
   ddra_info_sct ddra_info;
+#else /* !__cplusplus */
+  ddra_info_sct ddra_info={.flg_ddra=False};
+#endif /* !__cplusplus */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
   dmn_sct **dmn_out=NULL_CEWI; /* [lst] Dimensions written to output file */
@@ -135,7 +139,6 @@ main(int argc,char **argv)
 
   extern char *optarg;
   extern int optind;
-
   
   /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX */
   /* Basic math: acos, asin, atan, cos, exp, fabs, log, log10, sin, sqrt, tan */

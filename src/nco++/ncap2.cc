@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.18 2006-06-08 00:51:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.19 2006-06-09 05:19:12 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -122,8 +122,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.18 2006-06-08 00:51:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.18 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.19 2006-06-09 05:19:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.19 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -142,7 +142,6 @@ main(int argc,char **argv)
   extern char *optarg;
   extern int optind;
 
-  
   /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX */
   /* Basic math: acos, asin, atan, cos, exp, fabs, log, log10, sin, sqrt, tan */
   
@@ -219,7 +218,6 @@ main(int argc,char **argv)
   
   size_t sng_lng;
   size_t spt_arg_lng=size_t_CEWI;
-
   
   var_sct **var;
   var_sct **var_fix;
@@ -418,7 +416,6 @@ main(int argc,char **argv)
       strcat(spt_arg_cat,";\n");
     } /* end else */
   } /* end if */    
-
   
   /* Create function table */
   sym_tbl_nbr= /* fxm: Make this dynamic */
@@ -513,10 +510,8 @@ main(int argc,char **argv)
   dmn_lst=nco_dmn_lst(in_id,&nbr_dmn_in);
   
   //dmn_in=(dmn_sct **)nco_malloc(nbr_dmn_in*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_in;idx++) 
-    dmn_in_vtr.push(nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm));
+  for(idx=0;idx<nbr_dmn_in;idx++) dmn_in_vtr.push(nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm));
   dmn_in=dmn_in_vtr.ptr(0);
-
   
   /* Merge hyperslab limit information into dimension structures */
   if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dmn_in,nbr_dmn_in,lmt,lmt_nbr);
@@ -531,7 +526,6 @@ main(int argc,char **argv)
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
   
   (void)nco_enddef(out_id);
-
   
   /* Set arguments for  script execution */
   prs_arg.fl_in=fl_in; /* [sng] Input data file */

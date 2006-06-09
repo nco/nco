@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.125 2006-06-08 03:54:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.126 2006-06-09 05:19:12 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -101,11 +101,15 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.125 2006-06-08 03:54:03 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.125 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.126 2006-06-09 05:19:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.126 $";
   const char * const opt_sht_lst="4ACcD:d:Fhi:l:Oo:p:rRt:v:xw:-:";
   
+#ifdef __cplusplus
   ddra_info_sct ddra_info;
+#else /* !__cplusplus */
+  ddra_info_sct ddra_info={.flg_ddra=False};
+#endif /* !__cplusplus */
 
   dmn_sct **dim;
   dmn_sct **dmn_out;

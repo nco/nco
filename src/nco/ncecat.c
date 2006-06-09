@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.124 2006-06-08 21:59:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.125 2006-06-09 05:19:12 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -87,11 +87,15 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.124 2006-06-08 21:59:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.124 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.125 2006-06-09 05:19:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.125 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRt:v:x-:";
 
+#ifdef __cplusplus
   ddra_info_sct ddra_info;
+#else /* !__cplusplus */
+  ddra_info_sct ddra_info={.flg_ddra=False};
+#endif /* !__cplusplus */
 
   dmn_sct *rec_dmn;
   dmn_sct **dim;
