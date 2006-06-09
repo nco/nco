@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.49 2006-06-08 01:13:14 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.50 2006-06-09 23:59:30 wangd Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions in approximate order of their usage:
@@ -541,13 +541,13 @@ sub tst_run {
     my $SS_OK = 1;
     if ($cmd_lst[$#cmd_lst] ne "SS_OK") {$SS_OK = 0;} # check on last el whether cmds can be SS'ed
     if ($SS_OK && $srv_sd ne "SSNOTSET" ) {
-	# Send for processing and get back string or single value to check
-	$SS_nsr_xpc=SS_gnarly_pything(\@cmd_lst);
-	
-	$cmd_rsl=$SS_nsr_xpc; # do this in one step later
-	# and undef the last one to leave the expected value as last value
-	delete $cmd_lst[$#cmd_lst];
-	$nsr_xpc=$cmd_lst[$#cmd_lst]; # pop last value to provide exepected answer
+        # Send for processing and get back string or single value to check
+        $SS_nsr_xpc=SS_gnarly_pything(\@cmd_lst);
+        
+        $cmd_rsl=$SS_nsr_xpc; # do this in one step later
+        # and undef the last one to leave the expected value as last value
+        delete $cmd_lst[$#cmd_lst];
+        $nsr_xpc=$cmd_lst[$#cmd_lst]; # pop last value to provide exepected answer
 #		print "\n##DEBUG:\t$nsr_xpc (expt)\n\t\t$cmd_rsl (SS)\n";
     } else {
 	# delete the SS value to leave "expected value" as last
@@ -767,34 +767,44 @@ sub SS_gnarly_pything {
 #	print "MY_BIN_DIR = $MY_BIN_DIR\n";
 #	print "DATA_DIR = $drc_dat\n";
     my $lst_scrt_idx = $#sscmd_lst - 2; # last script index that has content to be sent to the server.
-    my $tfname = "/tmp/nco_rgr_tmp_4scriptwrap";
-    open(TF, "> $tfname") or die "\nUnable to open temp file 'nco_rgr_tmp_4scriptwrap' in current dir.\n";
+    use File::Spec;
+    #my $tfname = "/tmp/nco_rgr_tmp_4scriptwrap";
+    my $tfname = File::Spec->catfile(".", "nco_rgr_tmp_4scriptwrap");
+    
+    open(TF, "> $tfname") or die "\nUnable to open temp file '$tfname'.\n";
     my $r = 0;
     my $sscl = ""; # 'server side cmd line' holds the SS version of the individual command lines
     while ($r <= $lst_scrt_idx) {
-	#print "before chang'g line [$r]:\n$sscmd_lst[$r] \n";
-	my $e = my @L = split(/\s+/,$sscmd_lst[$r]);
-	for (my $d=0; $d < $e; $d++) {
-	    $sscl .= $L[$d] . " "; # cp each term over to the temp line
-	    if ($L[$d] =~ /\-p/) {
-		$d++;
-		$sscl .= $dodsdata . " ";
-	    }
-	}
-	if ($r == $lst_scrt_idx && $sscmd_lst[$r] =~ /ncks/) {
-	    $sscl .= " %stdouterr% "; # SS needs this as the final term to return a value.
-	}
-	#print " cmd_ln [$r] munged for SS:\n$sscl \n"; #my $wait = <STDIN>;
-	# and write it to the temp files
-	print TF "$sscl\n";
-	$r++;
-	$sscl = "";
+        #print "before chang'g line [$r]:\n$sscmd_lst[$r] \n";
+        my $skip = 0;
+        foreach (split (/\s+/, $sscmd_lst[$r])) {
+            if ($skip == 1) { 
+                $skip = 0;
+            } elsif (/^\-(p|-pth|-path)/) { # look for -p or --pth or --path 
+                $sscl .= "-p $dodsdata "; #replace <path> with dodsdata
+                $skip = 1; # don't copy <path>
+            } elsif ( /^\-\-mmr_cln/ ) {
+                #don't pass --mmr_cln option to server
+                # until server can gracefully drop this.
+            } else { $sscl .= $_ . " ";} # copy each term over to ss cl
+        }
+        if ($r == $lst_scrt_idx && $sscmd_lst[$r] =~ /ncks/) {
+            $sscl .= " %stdouterr% "; # SS needs this as the final term to return a value.
+        }
+        #print " cmd_ln [$r] munged for SS:\n$sscl \n"; #my $wait = <STDIN>;
+        # and write it to the temp files
+        print TF "$sscl\n";
+        $r++;
+        $sscl = "";
     }
     close TF;
+    #print `cat $tfname`;
     #print "TF should be done - waiting for action\n"; #my $wait = <STDIN>;#my $wait = <STDIN>;
 # print "\n##SS cmd: $MY_BIN_DIR/scriptwrap.py  $tfname $SS_URL\nand waiting for key to tst_run"; my $wait = <STDIN>;
     # and finally EXECUTE it
-    my $xpct_val = `$MY_BIN_DIR/scriptwrap.py  $tfname $SS_URL`;
+    # FXM/FIXME : for now, look for scriptwrap.py in src/ssdap dir.
+    my $scrwrp_pth = File::Spec->catfile('..','src','ssdap','scriptwrap.py');
+    my $xpct_val = `$scrwrp_pth  $tfname $SS_URL`;
     # and now (unfortunately), write it to disk and then execute the scriptwrap.py to get a value.
     #unlink "nco_rgr_tmp_4scriptwrap" or die "Can't unlink the temp file: 'nco_rgr_tmp_4scriptwrap'\n";
     #print "returned value = $xpct_val \n"; #my $wait = <STDIN>;
