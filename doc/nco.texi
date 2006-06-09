@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.365 2006-06-08 04:27:46 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.366 2006-06-09 17:05:25 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -51,7 +51,7 @@ texi2html -l2h -l2h_tmp=./l2h_tmp -monolithic -verbose nco.texi # Invoke latex2h
 cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in nco.sf.net:/home/groups/n/nc/nco/htdocs;cd -
 cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:/var/www/html/nco;cd -
 
-NB: @cindex references in footnotes propogate to PDF file, but not to
+NB: @cindex references in footnotes propagate to PDF file, but not to
     HTML files, bug-report sent to makeinfo people 20040229
 
 Producing HTML, makeinfo vs. texi2html:
