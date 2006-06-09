@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.45 2006-06-08 01:13:14 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.46 2006-06-09 05:39:55 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -137,7 +137,7 @@ sub tst_rgr {
     
     $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=erf(1)' $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%.12f\\n' %tempf_00%";
-    $dsc_sng="Testing foo=erf(1) [fails - erf() not impl right]";
+    $dsc_sng="Testing foo=erf(1) (fails on AIX TODO ncap57)";
     $tst_cmd[2] = "0.842701";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -146,7 +146,7 @@ sub tst_rgr {
     #fails - wrong result ???
     $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=gamma(0.5)' $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%.12f\\n' %tempf_00%";
-    $dsc_sng="Testing foo=gamma(0.5) [fails - gamma() not impl right]";
+    $dsc_sng="Testing foo=gamma(0.5) (fails on AIX TODO ncap57)";
     $tst_cmd[2] = "1.772453851";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
