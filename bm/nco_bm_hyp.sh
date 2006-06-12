@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_hyp.sh,v 1.15 2006-06-02 20:37:26 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm_hyp.sh,v 1.16 2006-06-12 20:02:11 zender Exp $
 
 # Purpose: Perform NCO benchmarks while subsetting 
 
@@ -18,12 +18,12 @@
 # scp ~/nco/src/nco/ncwa.c ~/nco/src/nco/nco_ctl.c ~/nco/src/nco/nco_var_avg.c ~/nco/src/nco/nco_cnf_dmn.c clay.ess.uci.edu:nco/src/nco
 # cd ~/nco/bld;make allinone;cd ~
 
-CCH_CLR_FLG='0' # [flg] Clear cache before each command
-FGR_03_FLG='1' # Figure 3 is the ncbo Satellite timing figure
-FGR_04_FLG='0' # Figure 4 is the ncwa IPCC timing figure
+CCH_CLR_FLG='1' # [flg] Clear cache before each command
+FGR_03_FLG='0' # Figure 3 is the ncbo Satellite timing figure
+FGR_04_FLG='1' # Figure 4 is the ncwa IPCC timing figure
 FGR_05_OLD_FLG='0' # FGR_05_OLD is the bar chart for ncwa
-SCL_HYP_SLB_FLG='1' # [flg] Use approach 2: Scale by hyperslabbing
-SCL_SUB_SET_FLG='0' # [flg] Use approach 1: Scale by sub-setting
+SCL_HYP_SLB_FLG='0' # [flg] Use approach 2: Scale by hyperslabbing
+SCL_SUB_SET_FLG='1' # [flg] Use approach 1: Scale by sub-setting
 WGT_FLG='1' # [flg] Perform weighted averages
 
 if [ ${WGT_FLG} = '1' ]; then

@@ -1,3 +1,7 @@
+2006-06-12  Charlie Zender  <zender@uci.edu>
+
+	* Write initial and final timers to stdout not stderr
+
 2006-06-08  Charlie Zender  <zender@uci.edu>
 
 	* Re-release this as 3.1.4
