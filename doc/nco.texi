@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.366 2006-06-09 17:05:25 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.367 2006-06-13 20:38:36 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -34,6 +34,7 @@ Multiple files:
 M-x texinfo-multiple-files-update
 
 Usage: 
+export TEX='tex --src-specials'
 cd ~/nco/doc;texi2dvi nco.texi; makeinfo --html --ifinfo --no-split --output=nco.html nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi;makeinfo --xml --ifinfo --no-split --output=nco.xml nco.texi;makeinfo --no-headers --output=nco.txt nco.texi
 dvips -o nco.ps nco.dvi 
 dvips -Ppdf -G0 -o nco.ps nco.dvi 
