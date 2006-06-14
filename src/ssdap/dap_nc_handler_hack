@@ -4,7 +4,7 @@ import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.27 2006-05-31 22:32:28 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.28 2006-06-14 01:45:51 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -292,16 +292,19 @@ class Command:
             self.parseNormalCmd(argv[1:])
 
     def parseMetaCmd(self, argv):
-        metamap = {"ssd_initsave": self.cmdInitSave,
-                   "ssd_save": self.cmdSave,
-                   "ssd_poll": self.cmdPoll}
+        metamap = {"ssd_initsave" : self.cmdInitSave,
+                   "ssd_save" : self.cmdSave,
+                   "ssd_poll" : self.cmdPoll,
+                   "ssd_retrieve" : self.cmdRetrieve}
         metamap[self.cmd](argv)
+        self.isMeta = True
         pass
 
     def __str__(self):
         return "Command (" + self.myName + ") with cmdline: " + self.cmdLine
 
     def parseNormalCmd(self, argv):
+        self.isMeta = False
         try:
             (arglist, leftover) = SsdapCommon.specialGetOpt(self.cmd, argv)
         except getopt.GetoptError:
@@ -365,6 +368,7 @@ class Command:
 
         if ofname != "": # should have a real filename (or placeholder)
             self.absOutputs.append(ofname)
+
         self.absInputs += leftover
         if "-p" in adict:
             self.inPrefix = adict["-p"]
@@ -417,6 +421,10 @@ class Command:
         #for x in self.absOutputs: # probably only one output...
         #    for p in previous:
 
+    def safeRemove(self, fname):
+        if os.access(fname, os.F_OK | os.W_OK):
+            os.remove(fname)
+
     def buildCommandLine(self):
         line = ""
         needsDap = False
@@ -424,170 +432,229 @@ class Command:
             return
         # prefix cmd at the end.
         #line += ScriptingEnv.VALID_COMMANDS[self.cmd]
-
         
-        # pass options first
+        #print >>sys.stderr, "building cmd: ", self.cmd
         for (k,v) in self.arguments:
-            #special value handling for --op_typ='-'
-            needsProt = False
-            safe = string.letters + string.digits + "%"
-            for x in v: needsProt |= (x not in safe)
+             #special value handling for --op_typ='-'
+             needsProt = False
+             safe = string.letters + string.digits + "%"
+             for x in v: needsProt |= (x not in safe)
 
-            # add = for long options? is this necessary?
-            k1 = k
-            #if len(k) > 2: k1 = k + "="
+             # add = for long options? is this necessary?
+             k1 = k
+             #if len(k) > 2: k1 = k + "="
 
-            
-            if needsProt and not ("'" == v[0] == v[-1]):
-                line += " " + k1 + " '" + v + "'"
-            elif len(v) > 0: line += " " + k1 + " " + v
-            else:            line += " " + k1
-        # then pass commands
+
+             if needsProt and not ("'" == v[0] == v[-1]):
+                 line += " " + k1 + " '" + v + "'"
+             elif len(v) > 0: line += " " + k1 + " " + v
+             else:            line += " " + k1
+         # then pass commands
         filelist = []
         for name in self.absInputs:
             filelist.append(name)
         for name in self.absOutputs:
             if name in [ ScriptingEnv.SCRIPT_STDOUTERR,
-                         ScriptingEnv.SCRIPT_STDOUT ]:
+                          ScriptingEnv.SCRIPT_STDOUT ]:
                 continue
             filelist.append(name)
         for name in filelist:
-            if self.env.shouldRemap(name):
-                remapped = self.env.addAbsName(name)
-                assert remapped != None
-                line += " " + remapped
-            elif self.env.possibleFilename(name):
-                # add defpath for now.
-                newname = self.addInfilePrefix(name)
-                line += " " + newname
-            else:
-                needsDap |= self.env.requiresDap(name)
-                line += " " + name
+             if self.env.shouldRemap(name):
+                 remapped = self.env.addAbsName(name)
+                 self.safeRemove(remapped) # kill the file to let nco write.
+                 assert remapped != None
+                 line += " " + remapped
+             elif self.env.possibleFilename(name):
+                 # add defpath for now.
+                 newname = self.addInfilePrefix(name)
+                 line += " " + newname
+             else:
+                 needsDap |= self.env.requiresDap(name)
+                 line += " " + name
         if needsDap:
-            self.cmdLine = ScriptingEnv.VALID_DAPCOMMANDS[self.cmd] + " " + line
+             self.cmdLine = ScriptingEnv.VALID_DAPCOMMANDS[self.cmd] + " " + line
+        elif self.isMeta:
+            self.cmdLine = "echo Placeholder: meta: " + self.cmd
         else:
-            self.cmdLine = ScriptingEnv.VALID_COMMANDS[self.cmd] + " " + line
+             self.cmdLine = ScriptingEnv.VALID_COMMANDS[self.cmd] + " " + line
         logit( "real cmdline: " + self.cmdLine)
         pass
     def addInfilePrefix(self, name):
-        n = None
-        if self.inPrefix: n = os.path.join(self.inPrefix,name)
-        else: n = name                    
-        return os.path.join(self.env.env["defpath"], n)
-    
-    def cmdInitAsync(self, argv):
-        # want to close CGI connection, and then continue
-        # Return a task id that can be queried later.
-        tid = self.taskId()
-        sys.stdout.flush() # flush output before forking
-        try:
-            of = os.fork()
-        except OSError:
-            sys.stderrwrite('fork failed\n')
-            sys.exit(1)
-        if of == 0: # child process
-            # child does the real work.
-            # set async: redirect stdout/stdin etc.
-            # write stdout to task.id.stdout
-            # when finished, write task.id.result
-            self.env.setAsync()
-            pass
-            
-        else: # parent process
-            print "Your task id is", tid, "running with PID", of
-            self.env.setAsync()
-            # want to report task id and then exit.
-            # this should let the client transaction finish
-            pass
-            
-        
-        pass
+         n = None
+         if self.inPrefix: n = os.path.join(self.inPrefix,name)
+         else: n = name                    
+         return os.path.join(self.env.env["defpath"], n)
+
+    def cmdInitSave(self, argv):
+         # want to close CGI connection, and then continue
+         # Return a task id that can be queried later.
+         tid = self.taskId()
+         self.env.env["async"] = True;
+         self.arguments = [];
+         return
+         ##### fork later.....
+         sys.stdout.flush() # flush output before forking
+
+         try:
+             of = os.fork()
+         except OSError:
+             sys.stderrwrite('fork failed\n')
+             sys.exit(1)
+         if of == 0: # child process
+             # child does the real work.
+             # set async: redirect stdout/stdin etc.
+             # write stdout to task.id.stdout
+             # when finished, write task.id.result
+             self.env.setAsync()
+             pass
+
+         else: # parent process
+             print "Your task id is", tid, "running with PID", of
+             self.env.setAsync()
+             # want to report task id and then exit.
+             # this should let the client transaction finish
+             pass
+
+
+         pass
     def cmdSave(self, argv):
-        # designate real filename (or just a persistently-mapped identifier)
-        # that can be requested later.  Would like to put in normal
-        # opendap-visible space.
-        #FIXME
-        pass
+         # designate real filename (or just a persistently-mapped identifier)
+         # that can be requested later.  Would like to put in normal
+         # opendap-visible space.
+         #FIXME
+         pass
     def cmdPoll(self, argv):
-        # check for job finish. check for task.id.result. if not exist,
-        # consider reading task.id.stdout for fun.
-        #FIXME
-        pass
+         # check for job finish. check for task.id.result. if not exist,
+         # consider reading task.id.stdout for fun.
+         #FIXME
+         self.arguments = [];
+
+         j = JobPersistence()
+         i = None
+         j.close()
+         try:
+             i = j.pollFileState(int(argv[0]))
+             i = int(i)
+             print "State is ", i, "(",JobPersistence.fileStateMap[i],")"
+         except (TypeError,ValueError):
+             print "FileId not found", argv[0]
+         pass
+    def cmdRetrieve(self,argv):
+         # check for job finish. check for task.id.result. if not exist,
+         # consider reading task.id.stdout for fun.
+         #FIXME
+         self.arguments = [];
+
+         j = JobPersistence()
+         n = None
+         try:
+             s = j.pollFileState(int(argv[0]))
+             if s != 3: ## 3==saved.  better way to do this magic const?
+                 if s != None:
+                     print "File id", argv[0], " isn't ready yet."
+                     print "state is", s, JobPersistence.fileStateMap[s]
+                 else:
+                     print "File id", argv[0], " is nonexistent."
+                 raise StandardError("Bad FileId to retrieve")
+
+             n = j.pollFilename(int(argv[0]))
+             # patch output filename (use bogus handle)
+             # this is rather backwards.
+             self.env.fileMap[ScriptingEnv.SCRIPT_OUTFILE] = (0,n)
+         #except TypeError:
+         except (TypeError,ValueError,StandardError):
+             print "Problem retrieving file for id ", argv[0]
+             
+         j.close()
+         pass
 
     def execute(self, scrEnv):
-        """execute myself in a certain scripting environment"""
-        # open question: is it better to pass functions than the whole object?
-        # FIXME
-        pass 
-    
+         """execute myself in a certain scripting environment"""
+         # open question: is it better to pass functions than the whole object?
+         # FIXME
+         # should we pull in the execution functionality in here?
+         pass 
+
     def taskId(self):
-        try: return self.cachedTaskId
-        except:
-            # get fingerprint from env
-            digest = self.env.fingerprint()
-            # munge the fingerprint to reduce clashes...
-            # PIDs will be recycled, so this needs more work
-            newdig = md5.md5(digest + str(os.getpid())).digest()
-            # take first 4 bytes, convert to hex, strip off 0x and L
-            taskid = hex(struct.unpack("L",newdig[:4])[0])[2:-1]
-            self.cachedTaskId = taskid
-            return self.cachedTaskId
-        pass
+         try: return self.cachedTaskId
+         except:
+             import struct
+             # get fingerprint from env
+             digest = self.env.fingerprint()
+             # munge the fingerprint to reduce clashes...
+             # PIDs will be recycled, so this needs more work
+             newdig = md5.md5(digest + str(os.getpid())).digest()
+             # take first 4 bytes, convert to hex, strip off 0x and L
+             ## assume int is 4 bytes. works on dirt (32bit) and tephra(64bit)
+             assert struct.calcsize("I") == 4 
+             taskid = hex(struct.unpack("I",newdig[:4])[0])[2:-1]
+             #print >>sys.stderr, "taskid = ",taskid
+             self.cachedTaskId = taskid
+             return self.cachedTaskId
+         pass
 
 ######################################################################
 class DepTracker:
-    """DepTracker is a class that encapsulates logic that understands
-    the concept of job readiness and dependencies"""
+     """DepTracker is a class that encapsulates logic that understands
+     the concept of job readiness and dependencies"""
 
-    # since python has "managed variables" we can add get/set
-    # accessor/mutators later without disrupting client code
+     # since python has "managed variables" we can add get/set
+     # accessor/mutators later without disrupting client code
 
-    #for now, runnableCmds is public
-    def __init__(self, cmdlist):
-        self.execList = cmdlist[:]
-        self.nextCmdIndex = 0 # where are we in issuing jobs?
-        self.completedCmds = [] # which jobs have completed?
-        self.availableData = [] # which values are available?
-        self.pendingCmds = []
-        self.runnableCmds = []
-        self.updateRunnable()
-        pass
+     #for now, runnableCmds is public
+     def __init__(self, cmdlist):
+         self.execList = cmdlist[:]
+         self.nextCmdIndex = 0 # where are we in issuing jobs?
+         self.completedCmds = [] # which jobs have completed?
+         self.availableData = [] # which values are available?
+         self.pendingCmds = []
+         self.runnableCmds = []
+         self.updateRunnable()
+         pass
 
-    def markCompleted(self, cmd):
-        self.availableData.append(cmd.outputs)
-        self.completedCmds.append(cmd)
-        self.pendingCmds.remove(cmd)
-        self.updateRunnable()
-        pass
+     def markCompleted(self, cmd):
+         self.availableData.append(cmd.outputs)
+         self.completedCmds.append(cmd)
+         self.pendingCmds.remove(cmd)
+         self.updateRunnable()
+         pass
 
-    def markRunning(self, cmd):
-        assert cmd in self.runnableCmds
-        self.pendingCmds.append(cmd)
-        self.runnableCmds.remove(cmd)
-        pass
-    def done(self):
-        """done means that all cmds have completed.  There are no jobs
-        runnable or pending.  All results are available. completedCmds
-        should have the same length as the original execList."""
-        idle = (not self.pendingCmds) and (not self.runnableCmds)
-        reallydone = len(self.execList) == len(self.completedCmds)
-        return idle and reallydone
-    # private
-    def updateRunnable(self):
-        elist = self.execList
-        idx = self.nextCmdIndex
-        cmd = elist[idx]
-        while self.isRunnableCmd(cmd):
-            self.runnableCmds.append(cmd)
-            idx += 1
-            cmd = elist[idx]
-        self.nextCmdIndex = idx
-        pass
-    def isRunnableCmd(self, cmd):
-        for i in cmd.inputs:
-            if i not in self.availableData:
-                return False
-        return True
+     def markRunning(self, cmd):
+         assert cmd in self.runnableCmds
+         self.pendingCmds.append(cmd)
+         self.runnableCmds.remove(cmd)
+         pass
+     def done(self):
+         """done means that all cmds have completed.  There are no jobs
+         runnable or pending.  All results are available. completedCmds
+         should have the same length as the original execList."""
+         idle = (not self.pendingCmds) and (not self.runnableCmds)
+         reallydone = len(self.execList) == len(self.completedCmds)
+         return idle and reallydone
+     # private
+     def updateRunnable(self):
+         elist = self.execList
+         idx = self.nextCmdIndex
+         cmd = elist[idx]
+         while self.isRunnableCmd(cmd):
+             self.runnableCmds.append(cmd)
+             idx += 1
+             cmd = elist[idx]
+         self.nextCmdIndex = idx
+         pass
+     def isRunnableCmd(self, cmd):
+         for i in cmd.inputs:
+             if i not in self.availableData:
+                 return False
+         return True
+
+##########################################################################
+# JobPersistence : modularize the metadata info managment code
+# we will use SQLite
+##########################################################################
+from ssdap_dbutil import *
+
+        
 
 ######################################################################
 # This class should hold the state used by a single script
@@ -605,180 +672,222 @@ class ScriptingEnv:
 
     CLASS_TEMP = "tempf"
     CLASS_SEP = "_"
+    CLASS_OUT = "outf"
     MAGIC_DELIM = "%"
     NC_SUFFIX = ".nc"
     NCO_COMMANDS = ["ncap", "ncatted", "ncbo", "ncdiff",
-            "ncea", "ncecat", "ncflint", "ncks",
-            "ncpack", "ncpdq", "ncra", "ncrcat",
-            "ncrename", "ncunpack", "ncwa"]
+                    "ncea", "ncecat", "ncflint", "ncks",
+                    "ncpack", "ncpdq", "ncra", "ncrcat",
+                    "ncrename", "ncunpack", "ncwa"]
     # for now, all commands are valid in netcdf4 or over dap
     VALID_COMMANDS=dict((x, local.nc4BinPath+os.sep+x) for x in NCO_COMMANDS)
     VALID_DAPCOMMANDS=dict( (x, local.ncDapBinPath+os.sep+x) for x in NCO_COMMANDS)
 
     # room to add other commands here.
-    META_COMMANDS = ["ssd_initsave", "ssd_save", "ssd_poll"]
+    META_COMMANDS = ["ssd_initsave", "ssd_save", "ssd_poll", "ssd_retrieve"]
 
-    
+
     COMMENT_CHAR = "#"  # not used right now.
 
     def __init__(self, scriptlines, settingsDict):
-        assert type(scriptlines) == type([])
-        assert type(settingsDict) == type({})
-        self.fileMap = {}
-        self.env = settingsDict
-        self.lines = scriptlines
-        # save lines of output for each type of output.
-        # direct child output to /dev/null unless requested
-        #self.outFd = os.devnull
-        #self.popen = os.popen2 ## let's deprecate this... FIXME!
+         assert type(scriptlines) == type([])
+         assert type(settingsDict) == type({})
+         self.fileMap = {}
+         self.outTokens = []
+         self.env = settingsDict
+         self.lines = scriptlines
+         # save lines of output for each type of output.
+         # direct child output to /dev/null unless requested
+         #self.outFd = os.devnull
+         #self.popen = os.popen2 ## let's deprecate this... FIXME!
 
-        # make commandlines from each scriptline
-        self.commands = []  # list of commands (inc. comments)
-        #WARN: commands is read by the command builder
-        self.commandLine = [] # list of commandlines (no comments)
-        for line in scriptlines:
-            c = Command(line, self)
-            self.commands.append(c) # append command, regardless of parsing
-            if c.commandLine() != None:
-                #print c.commandLine()
-                self.commandLine.append(c)
+         # make commandlines from each scriptline
+         self.commands = []  # list of commands (inc. comments)
+         #WARN: commands is read by the command builder
+         self.commandLine = [] # list of commandlines (no comments)
+         lineNum = 0
+         for line in scriptlines:
+             lineNum += 1
+             c = Command(line, self)
+             self.isAsync = self.env.has_key("async") and self.env["async"] == True
 
-        logit(self.depTreeToString()) # for debug...
 
-        pass
+             if self.isAsync:
+                 self.persistCommand(lineNum, c)
+             self.commands.append(c) # append command, regardless of parsing
+             if c.commandLine() != None:
+                 #print c.commandLine()
+                 self.commandLine.append(c)
+
+         logit(self.depTreeToString()) # for debug...
+
+         pass
     @staticmethod
     def fixConfig():
-        j = os.path.join
-        c = ScriptingEnv.NCO_COMMANDS
-        ScriptingEnv.VALID_COMMANDS=dict((x, j(local.nc4BinPath,x)) for x in c)
-        ScriptingEnv.VALID_DAPCOMMANDS=dict( (x, j(local.ncDapBinPath,x)) for x in c)
-        
-    
+         j = os.path.join
+         c = ScriptingEnv.NCO_COMMANDS
+         ScriptingEnv.VALID_COMMANDS=dict((x, j(local.nc4BinPath,x)) for x in c)
+         ScriptingEnv.VALID_DAPCOMMANDS=dict( (x, j(local.ncDapBinPath,x)) for x in c)
+
+
     def shouldRemap(self, absName):
-        # return bool indicating whether this word should be xlated.
-        # keep simple for now: check a list.
-        # first, filter out %...% delimiters
-        if not (absName[0] == absName[-1] == ScriptingEnv.MAGIC_DELIM):
-            return False  # do not remap these.
-        symname = absName[1:-1] # clip ends
-        fields = string.split(symname, ScriptingEnv.CLASS_SEP)
-        if len(fields) == 2:
-            # check for tempname
-            if fields[0] == ScriptingEnv.CLASS_TEMP:
-                return True
-        return absName == ScriptingEnv.SCRIPT_OUTFILE
+         # return bool indicating whether this word should be xlated.
+         # keep simple for now: check a list.
+         # first, filter out %...% delimiters
+         if not (absName[0] == absName[-1] == ScriptingEnv.MAGIC_DELIM):
+             return False  # do not remap these.
+         symname = absName[1:-1] # clip ends
+         fields = string.split(symname, ScriptingEnv.CLASS_SEP)
+         if len(fields) == 2:
+             # check for tempname
+             if fields[0] == ScriptingEnv.CLASS_TEMP:
+                 return True
+             if fields[0] == ScriptingEnv.CLASS_OUT:
+                 return True
+         return absName == ScriptingEnv.SCRIPT_OUTFILE
     def processSpecial(self, absName):
-        """ don't use this anymore """
-        return False
-        # deprecate this way of tracking, in favor of a more general
-        # system that can be more flexible and work with per-line modifiers.
-        redirTable = {ScriptingEnv.SCRIPT_STDOUTERR : os.popen4,
-             ScriptingEnv.SCRIPT_STDOUT: os.popen2}
-        if absName in redirTable:
-            self.outFd = sys.stdout
-            self.popen = redirTable[absName]
-            return True
-        return False
+         """ don't use this anymore """
+         return False
+         # deprecate this way of tracking, in favor of a more general
+         # system that can be more flexible and work with per-line modifiers.
+         redirTable = {ScriptingEnv.SCRIPT_STDOUTERR : os.popen4,
+              ScriptingEnv.SCRIPT_STDOUT: os.popen2}
+         if absName in redirTable:
+             self.outFd = sys.stdout
+             self.popen = redirTable[absName]
+             return True
+         return False
     def possibleUrl(self, cand):
-        """return a sre.SRE_Match object if input matches our primitive regex
-        otherwise, return None"""
-        return re.match('^\w+://', cand)
+         """return a sre.SRE_Match object if input matches our primitive regex
+         otherwise, return None"""
+         return re.match('^\w+://', cand)
 
     def requiresDap(self, word):
-        return word[:7] == 'http://'
+         return word[:7] == 'http://'
 
 
     def possibleFilename(self, cand):
-        # leave urls alone.
-        if self.possibleUrl(cand): return False
+         # leave urls alone.
+         if self.possibleUrl(cand): return False
 
-        elts = string.split(cand, ".")
+         elts = string.split(cand, ".")
 
-        if len(elts) != 2: #looking for something.ext
-            return False
-        if elts[1] != "nc": # only going to detect .nc
-            return False
-        if elts[0][0] == os.sep: # do not detect with leading /
-            return False
-        return True
+         if len(elts) != 2: #looking for something.ext
+             return False
+         if elts[1] != "nc": # only going to detect .nc
+             return False
+         if elts[0][0] == os.sep: # do not detect with leading /
+             return False
+         return True
 
 
     def addAbsName(self, absName):
-        """ return a concrete name from an abstract name"""
-        if self.fileMap.has_key(absName):
-            return self.fileMap[absName][1] # reuse mapped name
-        alnum = string.letters + string.digits
-        fixName = ""
-        for i in absName:
-            if i in alnum: fixName += i
+         """ return a concrete name from an abstract name"""
+         if self.fileMap.has_key(absName):
+             return self.fileMap[absName][1] # reuse mapped name
+         alnum = string.letters + string.digits
+         fixName = ""
+         for i in absName:
+             if i in alnum: fixName += i
 
-        filepair = tempfile.mkstemp( ScriptingEnv.NC_SUFFIX,
-                        fixName,
-                        self.env["tempdir"] )
-        # filepair = (descriptor, tempfilename)
-        self.fileMap[absName] = filepair
-        # close the file, so the nco util can touch it
-        os.close(filepair[0])
-        return filepair[1]
+         filepair = tempfile.mkstemp( ScriptingEnv.NC_SUFFIX,
+                         fixName,
+                         self.env["tempdir"] )
+         # filepair = (descriptor, tempfilename)
+         self.fileMap[absName] = filepair
+         # close the file, so the nco util can touch it
+         os.close(filepair[0])
+         return filepair[1]
 
     def execute(self):
-        self.clearTemps()
-        logflush()
-        #print "about to execute..."
-        for l in self.commandLine:
-            #print l
-            pass
-        # check to make sure we don't have both an output file and outstderr
-        # make sure we're doing exactly one thing with our output
-        havefile = self.fileMap.has_key(ScriptingEnv.SCRIPT_OUTFILE)
-        # outbypass = (self.outFd != os.devnull)
-        # assert havefile ^ outbypass
-        self.serialExec()
-        pass
-    
-    def serialExec(self):
-        for c in self.commandLine:
-            logit("Starting " + str(c))
-            self.runCmdRaw(c)
-        logit("Finished cmd exec")
-        pass
-    def runCmdRaw(self, cmd):
-        outFd = os.devnull
-        if cmd.saveOutput == True:
-            outFd = sys.stdout
-        (sin,sout) = cmd.popen(cmd.commandLine())  # use the mapped popen
-        sin.close() # close the input, so it flushes
-        #out handle is now ready to be read.
-        #for x in sout:
-        #   self.outStream.append(x)
-        #   logit( "execution output: " + x)
-        # skip logging the output, and just dump to outstream.
+         #self.clearTemps() # don't need to preclear, since we do that earlier.
+         self.isParent = True
+         self.isAsync = self.env.has_key("async") and self.env["async"] == True
 
-        if outFd == os.devnull:
-            fd = open(outFd, "w")
-            shutil.copyfileobj(sout, fd)
-            fd.close()
-        else:
-            shutil.copyfileobj(sout, outFd)
+         logflush()
+         #print "about to execute..."
+         for l in self.commandLine:
+             #print l
+             pass
+         # check to make sure we don't have both an output file and outstderr
+         # make sure we're doing exactly one thing with our output
+         havefile = self.fileMap.has_key(ScriptingEnv.SCRIPT_OUTFILE)
+         # outbypass = (self.outFd != os.devnull)
+         # assert havefile ^ outbypass
+         # here, fork off:
+         # Parent: write persistent state file (or to DB), report metatag to stdout
+         # Child: continue execution, but do not return output to stdout
+         if self.env.has_key("async") and self.env["async"] == True:
+             self.asyncExecute()
+         else:
+             self.serialExec()
+         pass
+
+    def serialExec(self):
+         for c in self.commandLine:
+             logit("Starting " + str(c))
+             self.markCmdStart(c)
+             self.runCmdRaw(c)
+             self.markCmdFinish(c)
+         logit("Finished cmd exec")
+         pass
+    def runCmdRaw(self, cmd):
+         outFd = os.devnull
+         if cmd.saveOutput == True:
+             outFd = sys.stdout
+         (sin,sout) = cmd.popen(cmd.commandLine())  # use the mapped popen
+         sin.close() # close the input, so it flushes
+         #out handle is now ready to be read.
+         #for x in sout:
+         #   self.outStream.append(x)
+         #   logit( "execution output: " + x)
+         # skip logging the output, and just dump to outstream.
+
+         if outFd == os.devnull:
+             fd = open(outFd, "w")
+             shutil.copyfileobj(sout, fd)
+             fd.close()
+         else:
+             shutil.copyfileobj(sout, outFd)
 
     def depExec(self):
-        """an in-order multi-issue(not yet!) command scheduler"""
-        dept = DepTracker(self.commandLine) # track deps
-        while not dept.done():
-            # assume infinite issue width for now
-            while dept.runnableCmds:
-                cmd = dept.runnableCmds[0]
-                dept.markRunning(cmd)
-                # run/spawn cmds
-                self.runCmdRaw(cmd)
-                dept.markCompleted(cmd)
-            # check for completed jobs. how?
-            
-            
-            #here, we should sleep, since there are no runnable cmds
-            #before we check again for runnables.
-            time.sleep(1)
-        #we should be done
+         """an in-order multi-issue(not yet!) command scheduler"""
+         dept = DepTracker(self.commandLine) # track deps
+         while not dept.done():
+             # assume infinite issue width for now
+             while dept.runnableCmds:
+                 cmd = dept.runnableCmds[0]
+                 dept.markRunning(cmd)
+                 # run/spawn cmds
+                 self.runCmdRaw(cmd)
+                 dept.markCompleted(cmd)
+             # check for completed jobs. how?
+
+
+             #here, we should sleep, since there are no runnable cmds
+             #before we check again for runnables.
+             time.sleep(1)
+         #we should be done
+
+    def asyncExecute(self):
+        sys.stdout.flush() # flush output before forking
+        try:
+             pid = os.fork()
+             if pid > 0:
+                 # I am the parent: want to return tokens?
+                 #print "hello, I'm the parent, the child pid is", pid
+                 self.isParent = True
+                 print >>sys.stderr,self.outTokens
+                 os.wait()
+             else:
+                 #print "hello, I'm the child, I want to execute things normally"
+                 self.serialExec()
+                 sys.exit(0)
+        except OSError, e: 
+             print >>sys.stderr, "failed to fork for async: %d (%s)" %(e.errno,
+                                                                       e.strerror) 
+             sys.exit(1)
+        pass
         
     def spawnProcess(self):
         """run a command, capture its output in??? FIXME"""
@@ -797,7 +906,7 @@ class ScriptingEnv:
         return out
 
     def returnOutput(self, targetfd):
-        # if we have an output...
+        # if we have an output... 
         if not self.fileMap.has_key(ScriptingEnv.SCRIPT_OUTFILE):
             return  # already returned console out during exec.
 
@@ -808,11 +917,18 @@ class ScriptingEnv:
         else:
             self.httpWrite(oname, targetfd)
         pass
+    
 
     def rawWrite(self, srcfilename, targetfd):
         result = open(srcfilename)
         shutil.copyfileobj(result, targetfd)
         result.close()
+        #try:
+        #    result = open(srcfilename)
+        #    shutil.copyfileobj(result, targetfd)
+        #    result.close()
+        #except IOError:
+        #    print "couldn't return file",srcfilename
     def httpWrite(self, srcfilename, targetfd):
         print >> targetfd, "HTTP/1.0 200 OK"
         print >> targetfd, "Xssdap-server: 0.1"
@@ -828,8 +944,61 @@ class ScriptingEnv:
             (fd,fname) = self.fileMap[key]
             if os.access(fname, os.F_OK | os.W_OK):
                 os.remove(fname)
+                #print >>sys.stderr, "removed", fname, " OK!"
             else:
                 logit("I couldn't delete " + str(fname))
+        pass
+    def persistCommand(self, num, command):
+        tid = command.taskId()
+        linenum = num
+        # date in yyyy-mm-dd hh:mm format
+        date = "%04d-%02d-%02d %02d:%02d" % time.localtime()[:5]
+        cmdid = "%s%d" % (tid, linenum)
+        if command.cmd == None:
+            return # don't persist non-commmands.
+        j = JobPersistence()
+        j.insertTask(tid, linenum, cmdid)
+        j.insertCmd(cmdid, command.cmd, command.commandLine())
+        
+        def insert(out):
+            if f in self.fileMap:
+                # first part of tuple is file handle
+                concrete = self.fileMap[f][1] 
+            else:
+                concrete = f
+            return j.insertInout(cmdid, f, concrete, out, 1)
+            
+        for f in command.inputs():
+            insert(False)
+        for f in command.outputs():
+            self.outTokens.append((f,  insert(True)))
+        j.commit()
+        j.close()
+        
+    def markCmdStart(self, command):
+        """ these mark start/finish commands are similar to those in the
+        dependency tracker.  let's merge them into something coherent
+        when we get things working."""
+        if not self.isAsync:
+            return
+        # want to construct this once, can we cache it?
+        # outTokens serves as a 'chronological' view
+        fdict = dict(self.outTokens)
+        j = JobPersistence()
+        for f in command.outputs():
+            j.setFileState(fdict[f], 2)
+        j.close()
+        pass
+    def markCmdFinish(self, command):
+        if not self.isAsync:
+            return
+        # want to construct this once, can we cache it?
+        # outTokens serves as a 'chronological' view
+        fdict = dict(self.outTokens)
+        j = JobPersistence()
+        for f in command.outputs():
+            j.setFileState(fdict[f], 3)
+        j.close()
         pass
     def fingerprint(self):
         try: return self.cachedFingerprint
@@ -846,7 +1015,8 @@ class ScriptingEnv:
         """some cleanup for the scripting environment"""
         ## we should get rid of temp files, like a good citizen
         ## this might be modified if we introduce caching
-        self.clearTemps()
+        if not self.isAsync:
+            self.clearTemps()
     pass
 
 
@@ -862,7 +1032,6 @@ class FrontEnd:
         self.args = {}
         self.originalargs = sysargs
         self.env = {}
-        #print sys.argv
 
         parsed =  getopt.getopt(sysargs[1:], self.shortopts)
         self.nonpars = []
@@ -877,7 +1046,6 @@ class FrontEnd:
             newp = []
 
         for i in parsed[0]:
-            #print i
             #logfile.write(str(i)+"\n")
             self.args[i[0]] = i[1]
         #print " and fixed is ", nonpars
@@ -885,10 +1053,8 @@ class FrontEnd:
         self.args["-realfile"] = nonpars
 
         for i in newp:
-            #print i
             #logfile.write(str(i)+"\n")
             self.args[i[0]] = i[1]
-        #print self.args
 
         #logit( str(self.args))
 #       for x in  os.environ: #.get("LD_LIBRARY_PATH")
@@ -999,18 +1165,23 @@ class JobManager:  # will I have to write this?
         self.maxParallel = 2
 
 
-prestartLogging()
-readConfigFile() # have to read config file before initializing logging.
-startLogging()
-settings = FrontEnd(sys.argv)
+def execute():
+    prestartLogging()
+    readConfigFile() # have to read config file before initializing logging.
+    startLogging()
+    settings = FrontEnd(sys.argv)
 
-mode =  settings.accessmode()
-logit("Mode is " + mode)
+    mode =  settings.accessmode()
+    logit("Mode is " + mode)
 
-settings.execute()
+    settings.execute()
 
 
-logit("handler hack log closed at " + time.ctime()+ "\n")
+    logit("handler hack log closed at " + time.ctime()+ "\n")
+    pass
+
+if __name__ == '__main__':
+    execute()
 
 #########################################
 # notes for adding async support
@@ -1026,6 +1197,19 @@ logit("handler hack log closed at " + time.ctime()+ "\n")
 # The server should respond with something like
 # 5 jobs submitted, your job id: 200
 # %async-resp% yourhost, url, 5, 200
+##################################################
+#
+# Tracking async jobs: use a sqlite db
+# task table:
+# # taskid | line# | cmdid
+#
+# cmd table:
+# cmdid | cmd | cmdline
+#
+# file inputs and outputs (select 1 for output file):
+# cmdid | output(0/1) | logicalname | actualname 
+# filemap:
+# (not needed?)
 #
 #234567890123456789012345678901234567890123456789012345678901234567890123456789
 #0       1         2         3         4         5         6         7
