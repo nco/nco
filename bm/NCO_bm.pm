@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.50 2006-06-09 23:59:30 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.51 2006-06-15 23:22:44 wangd Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions in approximate order of their usage:
@@ -143,6 +143,7 @@ Copyright  1994-2006 Charlie 'my surname is' Zender (surname@uci.edu)
 USAGE
 exit(0);
 } # end bm_usg()
+# ' <-- to make emacs happy after the USAGE block
 
 
 # Initialize NCOs that need to be tested for particular conditions
@@ -753,6 +754,8 @@ sub SS_gnarly_pything {
     my $arr_ref = shift; # now passing in tst_run()'s cmd_lst via a ref to maintain NS separation
     my @sscmd_lst= @$arr_ref; # deref the ref to a new array name
     my $SS_URL = "http://sand.ess.uci.edu/cgi-bin/dods/nph-dods";
+    my $in_pth = "../data"; 
+    # this $in_pth needs to match $in_pth in NCO_rgr.pm and NCO_benchmarks.pm
     my $dodsdata = "dodsdata";
     # Write out  array replacing each $fl_out with the %temp% spec
     # First command must specify starting datadir, but client may not know it, so
@@ -780,9 +783,9 @@ sub SS_gnarly_pything {
         foreach (split (/\s+/, $sscmd_lst[$r])) {
             if ($skip == 1) { 
                 $skip = 0;
-            } elsif (/^\-(p|-pth|-path)/) { # look for -p or --pth or --path 
-                $sscl .= "-p $dodsdata "; #replace <path> with dodsdata
-                $skip = 1; # don't copy <path>
+            } elsif (/^\Q$in_pth/) { # this should be more robust
+                s/\Q$in_pth/$dodsdata/; # substitute $in_pth with $dodsdata
+                $sscl .= $_ . " ";
             } elsif ( /^\-\-mmr_cln/ ) {
                 #don't pass --mmr_cln option to server
                 # until server can gracefully drop this.
