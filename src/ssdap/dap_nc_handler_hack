@@ -4,7 +4,7 @@ import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.28 2006-06-14 01:45:51 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.29 2006-06-15 23:23:22 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -80,6 +80,7 @@ class SsdapCommon:
                      "huh", "hmm",
                      "fnc_tbl", "prn_fnc_tbl", "hst", "history",
                      "Mtd", "Metadata", "mtd", "metadata",
+                     "mmr_cln", # only on recent NCO release
                      "lcl=", "local=",
                      "nintap",
                      "output=", "fl_out=",
@@ -110,6 +111,28 @@ class SsdapCommon:
     ncksShortOpt = parserShortOpt.replace("a:","a")
     ncksLongOpt = parserLongOpt[:]
     ncksLongOpt.extend(['abc', 'alphabetize'])
+
+    # special handling for ncwa's params (mask-related)
+    # B: msk_cnd= mask_condition= (rplc)
+    # b rdd degenerate-dimensions (rplc)
+    # I: wgt_msk_crd_var= 
+    # M: msk_val= mask_value=  mask-value= (rplc)
+    # m: msk_nm= msk_var= mask_variable= mask-variable= (rplc)
+    # N nmr numerator
+    # T: mask_comparitor= msk_cmp_typ= op_rlt=
+    ncwaShortOpt = parserShortOpt.replace("Bb:","B:b")
+    ncwaShortOpt = ncwaShortOpt.replace("h","hI:")
+    ncwaShortOpt = ncwaShortOpt.replace("Mmn:","M:m:Nn:")
+    ncwaShortOpt = ncwaShortOpt.replace("t:","T:t:")
+    ncwaLongOpt = parserLongOpt[:]
+    ncwaLongOpt.extend(["msk_cnd=", "mask_condition=",
+                        "rdd", "degenerate-dimensions",
+                        "wgt_msk_crd_var=", 
+                        "msk_val=", "mask_value=",  "mask-value=",
+                        "msk_nm=", "msk_var=", "mask_variable=",
+                        "mask-variable=",
+                        "nmr", "numerator",
+                        "mask_comparitor=", "msk_cmp_typ=", "op_rlt="])
     
     @staticmethod
     def specialGetOpt(cmd, argvlist):
@@ -128,6 +151,10 @@ class SsdapCommon:
             return getopt.getopt(argvlist,
                                  SsdapCommon.ncksShortOpt,
                                  SsdapCommon.ncksLongOpt)
+        elif cmd == "ncwa":
+                        return getopt.getopt(argvlist,
+                                 SsdapCommon.ncwaShortOpt,
+                                 SsdapCommon.ncwaLongOpt)
         else:
             return getopt.getopt(argvlist,
                                  SsdapCommon.parserShortOpt,
