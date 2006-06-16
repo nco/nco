@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.367 2006-06-13 20:38:36 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.368 2006-06-16 01:32:24 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2393,10 +2393,12 @@ be set accordingly on both local and remote machines.
 @cindex @command{msrcp}
 @cindex @command{msread}
 @cindex @command{nrnet}
+@html
 <a name="mss"></a> <!-- http://nco.sf.net/nco.html#mss -->
 <a name="msrcp"></a> <!-- http://nco.sf.net/nco.html#msrcp -->
 <a name="msread"></a> <!-- http://nco.sf.net/nco.html#msread -->
 <a name="nrnet"></a> <!-- http://nco.sf.net/nco.html#nrnet -->
+@end html
 To access a file on @acronym{NCAR}'s @acronym{MSS}, specify the full
 @acronym{MSS} pathname of the remote file. 
 @acronym{NCO} will attempt to detect whether the local machine has direct
@@ -9035,17 +9037,24 @@ To examine particular metrics.
 ************************************************************************
 Task 4: Accessing data stored remotely
 ************************************************************************
-OPeNDAP servers:
+OPeNDAP server examples:
+
+UCI DAP servers:
+ncks -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
 ncrcat -O -C -D 3 -p http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata \
   -l /tmp in.nc in.nc ~/foo.nc 
 ncrcat -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata \
   -l /tmp in.nc in.nc ~/foo.nc
 
+NOAA DAP servers:
 ncwa -O -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l /tmp -p \
 http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
 pres.sfc.1969.nc ~/foo.nc
 
-The Earth System Grid (ESG): http://www.earthsystemgrid.org
+PCMDI IPCC Data Portal: 
+ncks -M -p http://username:password@@climate.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0 pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml
+
+Earth System Grid (ESG): http://www.earthsystemgrid.org
 
 CASEID='b30.025.ES01' 
 CCSM3.0 1% increasing CO2 run, T42_gx1v3, 200 years starting in year 400

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.787 2006-06-10 00:17:41 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.788 2006-06-16 01:32:24 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -519,6 +519,10 @@ nco757. Make sure above ncbo bug is not in ncflint
 nco759. Document --mmr_cln flag
 nco761. Merge timer srt/end calls to MPI codes
 nco763. Access the IPCC AR4 database via OPeNDAP: http://www-pcmdi.llnl.gov/software-portal/esg_data_portal/dapserver
+	Sample datasets look like:
+        http://climate.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0/pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml.html
+        ncks -M -p http://zender:l0trr0tk@climate.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0 pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml
+	ncks -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
 nco764. 
 ************************************************************************
 End ncoXXX TODOs
