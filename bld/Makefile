@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.371 2006-05-19 05:09:59 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.372 2006-06-17 17:20:46 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -1432,6 +1432,8 @@ tst:	dat
 	cd ${MY_BM_DIR}; \
 	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --dbg=0 --regress --udpreport ${FL_FMT_SNG} ${MPI_PRC_SNG} ${THR_NBR_SNG}
 # Targets in dat
+dap:	data
+	- cd ~/nco/data; scp in.nc in.cdl dust.ess.uci.edu:/var/www/html/dodsdata; scp in.nc in.cdl esmf.ess.uci.edu:/var/www/html/dodsdata; scp in.nc in.cdl esmf.ess.uci.edu:/data/dodsdata
 data:	dat
 dat:	${MY_DAT_DIR}/in.nc ${MY_DAT_DIR}/in_rec_zero.nc
 	-for fl in ${MDL_DAT_STB}; do cd ${MY_DAT_DIR}; ln -s -f in.nc $$fl; done
@@ -1554,7 +1556,7 @@ src_cln:
 	rm -f ${MDL_NCAP}
 # Targets in /usr/local
 sys: ${MDL_BIN_TRG}
-	- cd ${MY_BIN_DIR}; sudo /bin/cp -f ${MDL_BIN_TRG} /usr/local/bin; cd /usr/local/bin; sudo rm -f ncdiff ncea ncrcat ncunpack; sudo ln -s -f ncbo ncdiff; sudo ln -s -f ncra ncea; sudo ln -s -f ncra ncrcat; sudo ln -s -f ncpdq ncunpack; sudo ln -s -f ncpdq ncpack
+	- cd ${MY_BIN_DIR};sudo /bin/cp -f ${MDL_BIN_TRG} /usr/local/bin; cd /usr/local/bin; sudo rm -f ncdiff ncea ncrcat ncunpack; sudo ln -s -f ncbo ncdiff; sudo ln -s -f ncra ncea; sudo ln -s -f ncra ncrcat; sudo ln -s -f ncpdq ncunpack; sudo ln -s -f ncpdq ncpack; 
 sys_cln:
 	- cd /usr/local/bin;rm -f ${MDL_BIN_TRG}
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.223 2006-06-08 00:51:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.224 2006-06-17 17:20:46 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.223 2006-06-08 00:51:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.223 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.224 2006-06-17 17:20:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.224 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #ifdef __cplusplus
@@ -960,7 +960,7 @@ main(int argc,char **argv)
 	   Usage:
 	   ncwa -O -C --mdl -a lat,lon,time -w lat ~/nco/data/in.nc ~/foo.nc
 	   ncwa -O -C --mdl -a lat,lon -w lat ${DATA}/nco_bm/stl_5km.nc ~/foo.nc
-	   ncwa -O -C --mdl -a lat,lon,time -w lat ${DATA}/nco_bm/ipcc_dly_T85.nc ~/foo.nc */
+	   ncwa -O -C --mdl -a lat,lon,time -w lat ${DATA}/nco_bm/gcm_T85.nc ~/foo.nc */
 
 	/* Assign remaining input for DDRA diagnostics */
 	ddra_info.lmn_nbr=var_prc[idx]->sz; /* [nbr] Variable size */

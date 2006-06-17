@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.51 2006-06-15 23:22:44 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.52 2006-06-17 17:20:46 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions in approximate order of their usage:
@@ -225,7 +225,10 @@ sub bm_vrb {
 ##
 
 sub fl_mk_dat_ntl {
-    my $NUM_FLS = 4;
+    my $NUM_FLS = 3;
+    my $idx_stl_5km = 0;
+    my $idx_gcm_dly = 1;
+    my $idx_tms_lng = 2;
     dbg_msg(1,"fl_mk_dat_ntl: \$NUM_FLS = $NUM_FLS");
     
     if ($dbg_lvl > 2) {
@@ -235,30 +238,31 @@ sub fl_mk_dat_ntl {
     
     for (my $i = 0; $i < $NUM_FLS; $i++) { $fl_tmg[$i][1] = $fl_tmg[$i][2] = " omitted "; }
     
-#	$fl_mk_dat[0][0] = "example gene expression"; # option descriptor
-#	$fl_mk_dat[0][1] = "~50MB";                   # file size
-#	$fl_mk_dat[0][2] = $fl_tmg[0][0] = "gne_exp";                 # file name root
-#	$fl_mk_dat[0][3] = "\'base[ge_atoms,rep,treat,cell,params]=5.67f\'";
+#	$fl_mk_dat[$idx_gn_xpr][0] = "example gene expression"; # option descriptor
+#	$fl_mk_dat[$idx_gn_xpr][1] = "~50MB";                   # file size
+#	$fl_mk_dat[$idx_gn_xpr][2] = $fl_tmg[$idx_gn_xpr][0] = "gn_xpr";
+#	$fl_mk_dat[$idx_gn_xpr][3] = "\'base[ge_atoms,rep,treat,cell,params]=5.67f\'";
     
-    $fl_mk_dat[0][0] = "long skinny file"; # option descriptor
-    $fl_mk_dat[0][1] = "~52MB";                   # file size
-    $fl_mk_dat[0][2] = $fl_tmg[0][0] = "skn_lgs";                 # file name root
-    $fl_mk_dat[0][3] = "\'time[time]=1.0f;hmdty[time]=98.3f;PO2[time]=18.7f;PCO2[time]=1.92f;PN2[time]=77.4f;w_vel[time]=14.8f;w_dir[time]=321.3f;temp[time]=23.5f;lmbda_260[time]=684.2f\'";
+#    $fl_mk_dat[$idx_stl_sml][0] = "Satellite small";         # option descriptor
+#    $fl_mk_dat[$idx_stl_sml][1] = "~100MB";                  # file size
+#    $fl_mk_dat[$idx_stl_sml][2] = $fl_tmg[$idx_stl_sml][0] = "stl_sml";                 # file name root
+#    $fl_mk_dat[$idx_stl_sml][3] = "\'d2_00[lat,lon]=16.37f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=3.8f;\'";
     
-    $fl_mk_dat[1][0] = "small satellite";         # option descriptor
-    $fl_mk_dat[1][1] = "~100MB";                  # file size
-    $fl_mk_dat[1][2] = $fl_tmg[1][0] = "sml_stl";                 # file name root
-    $fl_mk_dat[1][3] = "\'d2_00[lat,lon]=16.37f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=3.8f;\'";
+    $fl_mk_dat[$idx_stl_5km][0] = "Satellite 5km";           # option descriptor
+    $fl_mk_dat[$idx_stl_5km][1] = "~300MB";                  # file size
+    $fl_mk_dat[$idx_stl_5km][2] = $fl_tmg[$idx_stl_5km][0] = "stl_5km";                 # file name root
+    $fl_mk_dat[$idx_stl_5km][3] = "\'weepy=1.23456f;d2_00[lat,lon]=2.8f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=2.8f;d2_03[lat,lon]=2.8f;d2_04[lat,lon]=2.8f;d2_05[lat,lon]=2.8f;d2_06[lat,lon]=2.8f;d2_07[lat,lon]=2.8f;\'";
     
-    $fl_mk_dat[2][0] = "5km satellite";           # option descriptor
-    $fl_mk_dat[2][1] = "~300MB";                  # file size
-    $fl_mk_dat[2][2] = $fl_tmg[2][0] = "stl_5km";                 # file name root
-    $fl_mk_dat[2][3] = "\'weepy=1.23456f;d2_00[lat,lon]=2.8f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=2.8f;d2_03[lat,lon]=2.8f;d2_04[lat,lon]=2.8f;d2_05[lat,lon]=2.8f;d2_06[lat,lon]=2.8f;d2_07[lat,lon]=2.8f;\'";
+    $fl_mk_dat[$idx_gcm_dly][0] = "GCM T85";              # option descriptor
+    $fl_mk_dat[$idx_gcm_dly][1] = "~1.2GB";                    # file size
+    $fl_mk_dat[$idx_gcm_dly][2] = $fl_tmg[$idx_gcm_dly][0] = "gcm_T85";            # file name root
+    $fl_mk_dat[$idx_gcm_dly][3] = "\'weepy=0.8f;dopey=0.8f;sleepy=0.8f;grouchy=0.8f;sneezy=0.8f;doc=0.8f;wanky=0.8f;skanky=0.8f;d1_00[time]=1.8f;d1_01[time]=1.8f;d1_02[time]=1.8f;d1_03[time]=1.8f;d1_04[time]=1.8f;d1_05[time]=1.8f;d1_06[time]=1.8f;d1_07[time]=1.8f;d2_00[lat,lon]=16.2f;d2_01[lat,lon]=16.2f;d2_02[lat,lon]=16.2f;d2_03[lat,lon]=16.2f;d2_04[lat,lon]=16.2f;d2_05[lat,lon]=16.2f;d2_06[lat,lon]=16.2f;d2_07[lat,lon]=16.2f;d2_08[lat,lon]=16.2f;d2_09[lat,lon]=16.2f;d2_10[lat,lon]=16.2f;d2_11[lat,lon]=16.2f;d2_12[lat,lon]=16.2f;d2_13[lat,lon]=16.2f;d2_14[lat,lon]=16.2f;d2_15[lat,lon]=16.2f;d3_00[time,lat,lon]=64.0f;d3_01[time,lat,lon]=64.0f;d3_02[time,lat,lon]=64.0f;d3_03[time,lat,lon]=64.0f;d3_04[time,lat,lon]=64.0f;d3_05[time,lat,lon]=64.0f;d3_06[time,lat,lon]=64.0f;d3_07[time,lat,lon]=64.0f;d3_08[time,lat,lon]=64.0f;d3_09[time,lat,lon]=64.0f;d3_10[time,lat,lon]=64.0f;d3_11[time,lat,lon]=64.0f;d3_12[time,lat,lon]=64.0f;d3_13[time,lat,lon]=64.0f;d3_14[time,lat,lon]=64.0f;d3_15[time,lat,lon]=64.0f;d3_16[time,lat,lon]=64.0f;d3_17[time,lat,lon]=64.0f;d3_18[time,lat,lon]=64.0f;d3_19[time,lat,lon]=64.0f;d3_20[time,lat,lon]=64.0f;d3_21[time,lat,lon]=64.0f;d3_22[time,lat,lon]=64.0f;d3_23[time,lat,lon]=64.0f;d3_24[time,lat,lon]=64.0f;d3_25[time,lat,lon]=64.0f;d3_26[time,lat,lon]=64.0f;d3_27[time,lat,lon]=64.0f;d3_28[time,lat,lon]=64.0f;d3_29[time,lat,lon]=64.0f;d3_30[time,lat,lon]=64.0f;d3_31[time,lat,lon]=64.0f;d3_32[time,lat,lon]=64.0f;d3_33[time,lat,lon]=64.0f;d3_34[time,lat,lon]=64.0f;d3_35[time,lat,lon]=64.0f;d3_36[time,lat,lon]=64.0f;d3_37[time,lat,lon]=64.0f;d3_38[time,lat,lon]=64.0f;d3_39[time,lat,lon]=64.0f;d3_40[time,lat,lon]=64.0f;d3_41[time,lat,lon]=64.0f;d3_42[time,lat,lon]=64.0f;d3_43[time,lat,lon]=64.0f;d3_44[time,lat,lon]=64.0f;d3_45[time,lat,lon]=64.0f;d3_46[time,lat,lon]=64.0f;d3_47[time,lat,lon]=64.0f;d3_48[time,lat,lon]=64.0f;d3_49[time,lat,lon]=64.0f;d3_50[time,lat,lon]=64.0f;d3_51[time,lat,lon]=64.0f;d3_52[time,lat,lon]=64.0f;d3_53[time,lat,lon]=64.0f;d3_54[time,lat,lon]=64.0f;d3_55[time,lat,lon]=64.0f;d3_56[time,lat,lon]=64.0f;d3_57[time,lat,lon]=64.0f;d3_58[time,lat,lon]=64.0f;d3_59[time,lat,lon]=64.0f;d3_60[time,lat,lon]=64.0f;d3_61[time,lat,lon]=64.0f;d3_62[time,lat,lon]=64.0f;d3_63[time,lat,lon]=64.0f;d4_00[time,lev,lat,lon]=1.1f;d4_01[time,lev,lat,lon]=1.2f;d4_02[time,lev,lat,lon]=1.3f;d4_03[time,lev,lat,lon]=1.4f;d4_04[time,lev,lat,lon]=1.5f;d4_05[time,lev,lat,lon]=1.6f;d4_06[time,lev,lat,lon]=1.7f;d4_07[time,lev,lat,lon]=1.8f;d4_08[time,lev,lat,lon]=1.9f;d4_09[time,lev,lat,lon]=1.11f;d4_10[time,lev,lat,lon]=1.12f;d4_11[time,lev,lat,lon]=1.13f;d4_12[time,lev,lat,lon]=1.14f;d4_13[time,lev,lat,lon]=1.15f;d4_14[time,lev,lat,lon]=1.16f;d4_15[time,lev,lat,lon]=1.17f;d4_16[time,lev,lat,lon]=1.18f;d4_17[time,lev,lat,lon]=1.19f;d4_18[time,lev,lat,lon]=1.21f;d4_19[time,lev,lat,lon]=1.22f;d4_20[time,lev,lat,lon]=1.23f;d4_21[time,lev,lat,lon]=1.24f;d4_22[time,lev,lat,lon]=1.25f;d4_23[time,lev,lat,lon]=1.26f;d4_24[time,lev,lat,lon]=1.27f;d4_25[time,lev,lat,lon]=1.28f;d4_26[time,lev,lat,lon]=1.29f;d4_27[time,lev,lat,lon]=1.312f;d4_28[time,lev,lat,lon]=1.322f;d4_29[time,lev,lat,lon]=1.332f;d4_30[time,lev,lat,lon]=1.342f;d4_31[time,lev,lat,lon]=1.352f;\'";
+
+    $fl_mk_dat[$idx_tms_lng][0] = "Long timeseries"; # option descriptor
+    $fl_mk_dat[$idx_tms_lng][1] = "~52MB";                   # file size
+    $fl_mk_dat[$idx_tms_lng][2] = $fl_tmg[$idx_tms_lng][0] = "tms_lng";                 # file name root
+    $fl_mk_dat[$idx_tms_lng][3] = "\'time[time]=1.0f;hmdty[time]=98.3f;PO2[time]=18.7f;PCO2[time]=1.92f;PN2[time]=77.4f;w_vel[time]=14.8f;w_dir[time]=321.3f;temp[time]=23.5f;lmbda_260[time]=684.2f\'";
     
-    $fl_mk_dat[3][0] = "IPCC Daily";              # option descriptor
-    $fl_mk_dat[3][1] = "~4GB";                    # file size
-    $fl_mk_dat[3][2] = $fl_tmg[3][0] = "ipcc_dly_T85";            # file name root
-    $fl_mk_dat[3][3] = "\'weepy=0.8f;dopey=0.8f;sleepy=0.8f;grouchy=0.8f;sneezy=0.8f;doc=0.8f;wanky=0.8f;skanky=0.8f;d1_00[time]=1.8f;d1_01[time]=1.8f;d1_02[time]=1.8f;d1_03[time]=1.8f;d1_04[time]=1.8f;d1_05[time]=1.8f;d1_06[time]=1.8f;d1_07[time]=1.8f;d2_00[lat,lon]=16.2f;d2_01[lat,lon]=16.2f;d2_02[lat,lon]=16.2f;d2_03[lat,lon]=16.2f;d2_04[lat,lon]=16.2f;d2_05[lat,lon]=16.2f;d2_06[lat,lon]=16.2f;d2_07[lat,lon]=16.2f;d2_08[lat,lon]=16.2f;d2_09[lat,lon]=16.2f;d2_10[lat,lon]=16.2f;d2_11[lat,lon]=16.2f;d2_12[lat,lon]=16.2f;d2_13[lat,lon]=16.2f;d2_14[lat,lon]=16.2f;d2_15[lat,lon]=16.2f;d3_00[time,lat,lon]=64.0f;d3_01[time,lat,lon]=64.0f;d3_02[time,lat,lon]=64.0f;d3_03[time,lat,lon]=64.0f;d3_04[time,lat,lon]=64.0f;d3_05[time,lat,lon]=64.0f;d3_06[time,lat,lon]=64.0f;d3_07[time,lat,lon]=64.0f;d3_08[time,lat,lon]=64.0f;d3_09[time,lat,lon]=64.0f;d3_10[time,lat,lon]=64.0f;d3_11[time,lat,lon]=64.0f;d3_12[time,lat,lon]=64.0f;d3_13[time,lat,lon]=64.0f;d3_14[time,lat,lon]=64.0f;d3_15[time,lat,lon]=64.0f;d3_16[time,lat,lon]=64.0f;d3_17[time,lat,lon]=64.0f;d3_18[time,lat,lon]=64.0f;d3_19[time,lat,lon]=64.0f;d3_20[time,lat,lon]=64.0f;d3_21[time,lat,lon]=64.0f;d3_22[time,lat,lon]=64.0f;d3_23[time,lat,lon]=64.0f;d3_24[time,lat,lon]=64.0f;d3_25[time,lat,lon]=64.0f;d3_26[time,lat,lon]=64.0f;d3_27[time,lat,lon]=64.0f;d3_28[time,lat,lon]=64.0f;d3_29[time,lat,lon]=64.0f;d3_30[time,lat,lon]=64.0f;d3_31[time,lat,lon]=64.0f;d3_32[time,lat,lon]=64.0f;d3_33[time,lat,lon]=64.0f;d3_34[time,lat,lon]=64.0f;d3_35[time,lat,lon]=64.0f;d3_36[time,lat,lon]=64.0f;d3_37[time,lat,lon]=64.0f;d3_38[time,lat,lon]=64.0f;d3_39[time,lat,lon]=64.0f;d3_40[time,lat,lon]=64.0f;d3_41[time,lat,lon]=64.0f;d3_42[time,lat,lon]=64.0f;d3_43[time,lat,lon]=64.0f;d3_44[time,lat,lon]=64.0f;d3_45[time,lat,lon]=64.0f;d3_46[time,lat,lon]=64.0f;d3_47[time,lat,lon]=64.0f;d3_48[time,lat,lon]=64.0f;d3_49[time,lat,lon]=64.0f;d3_50[time,lat,lon]=64.0f;d3_51[time,lat,lon]=64.0f;d3_52[time,lat,lon]=64.0f;d3_53[time,lat,lon]=64.0f;d3_54[time,lat,lon]=64.0f;d3_55[time,lat,lon]=64.0f;d3_56[time,lat,lon]=64.0f;d3_57[time,lat,lon]=64.0f;d3_58[time,lat,lon]=64.0f;d3_59[time,lat,lon]=64.0f;d3_60[time,lat,lon]=64.0f;d3_61[time,lat,lon]=64.0f;d3_62[time,lat,lon]=64.0f;d3_63[time,lat,lon]=64.0f;d4_00[time,lev,lat,lon]=1.1f;d4_01[time,lev,lat,lon]=1.2f;d4_02[time,lev,lat,lon]=1.3f;d4_03[time,lev,lat,lon]=1.4f;d4_04[time,lev,lat,lon]=1.5f;d4_05[time,lev,lat,lon]=1.6f;d4_06[time,lev,lat,lon]=1.7f;d4_07[time,lev,lat,lon]=1.8f;d4_08[time,lev,lat,lon]=1.9f;d4_09[time,lev,lat,lon]=1.11f;d4_10[time,lev,lat,lon]=1.12f;d4_11[time,lev,lat,lon]=1.13f;d4_12[time,lev,lat,lon]=1.14f;d4_13[time,lev,lat,lon]=1.15f;d4_14[time,lev,lat,lon]=1.16f;d4_15[time,lev,lat,lon]=1.17f;d4_16[time,lev,lat,lon]=1.18f;d4_17[time,lev,lat,lon]=1.19f;d4_18[time,lev,lat,lon]=1.21f;d4_19[time,lev,lat,lon]=1.22f;d4_20[time,lev,lat,lon]=1.23f;d4_21[time,lev,lat,lon]=1.24f;d4_22[time,lev,lat,lon]=1.25f;d4_23[time,lev,lat,lon]=1.26f;d4_24[time,lev,lat,lon]=1.27f;d4_25[time,lev,lat,lon]=1.28f;d4_26[time,lev,lat,lon]=1.29f;d4_27[time,lev,lat,lon]=1.312f;d4_28[time,lev,lat,lon]=1.322f;d4_29[time,lev,lat,lon]=1.332f;d4_30[time,lev,lat,lon]=1.342f;d4_31[time,lev,lat,lon]=1.352f;\'";
     return @fl_tmg;
 }; # end of fl_mk_dat_ntl()
 
@@ -289,14 +293,14 @@ sub fl_mk {
 # log it to common timing array
     $fl_tmg[$idx][0] = "$fl_mk_dat[$idx][2]"; # name root
     $fl_tmg[$idx][1] = $elapsed; # creation time
-    if ($idx == 0) { # skn_lgs needs some extra massaging
-	if ($dbg_lvl > 0) {print "\nextra steps for skn_lgs - ncecat...\n";}
+    if ($idx == 0) { # tms_lng needs some extra massaging
+	if ($dbg_lvl > 0) {print "\nextra steps for tms_lng - ncecat...\n";}
 	system "$pfx_cmd/ncecat -O -h $fl_in $fl_out";  # inserts a record dimension
 	if ($dbg_lvl > 0) {print "\nncpdq...\n";}
 	system "$pfx_cmd/ncpdq -O -h -a time,record $fl_in $fl_out"; # swaps time and 'record'
 	if ($dbg_lvl > 0) {print "\nncwa...\n";}
 	system "$pfx_cmd/ncwa -O -h -a record $fl_in $fl_out"; # averages 'record' out of the way
-# now skn_lgs ready for ncap'ing
+# now tms_lng ready for ncap'ing
     }
     print "\n==== Populating $fl_out file.\nTiming results:\n";
 #print "fl_mk: pfx_cmd = $pfx_cmd\n";

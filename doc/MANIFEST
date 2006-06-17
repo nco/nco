@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.20 2006-04-23 06:44:41 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.21 2006-06-17 17:20:46 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -41,12 +41,10 @@ Binary directory:
 nco/bin/README		Description of binary directory
 
 Benchmark directory:
-nco/bm/gne_exp.cdl      CDL template files for ncgen
-nco/bm/ipcc_dly_T85.cdl "
-nco/bm/skn_lgs.cdl      "
-nco/bm/sml_stl.cdl      "
-nco/bm/stl_5km.cdl      "
-nco/bm/nco_bm.pl            Core perl app that calls rest of BM pieces
+nco/bm/gcm_T85.cdl	   CDL template files for ncgen
+nco/bm/tms_lng.cdl	   CDL template files for ncgen
+nco/bm/stl_5km.cdl	   CDL template files for ncgen
+nco/bm/nco_bm.pl	   Core perl app that calls rest of BM pieces
 nco/bm/nco_bm_benchmarks.pl Benchmark tests
 nco/bm/nco_bm_md5wc_tbl.pl  Hash table for MD5 and wc values
 nco/bm/NCO_bm.pm            Common code for nco_bm.pl
@@ -55,16 +53,21 @@ nco/bm/mk_bm_plots.pl       Perl script to autoplot benchmark data
 nco/bm/nco_bm.sh            Script to run nco_bm.pl for various platforms
 
 Build directory:
-nco/bld/Makefile	Makefile used by GNU make to create NCO executables
+nco/bld/Makefile	Hand-crafted Makefile to create NCO executables
 nco/bld/nco_dst.pl	Perl script to build NCO distributions
 nco/bld/pvmgetarch	Script used by Makefile to determine native machine type
 nco/bld/libnco_c++_tst.cc Simplest front end to exercise libnco_c++.a
 nco/bld/libnco_tst.c	Simplest front end to exercise libnco.a
 
 Data Directory:
+nco/data/Makefile(v)	Autotools-generated Makefile
+nco/data/Makefile.am	Automake instructions
+nco/data/Makefile.in(v)	Autotools-generated Makefile
+nco/data/big.cdl 	CDL file to huge netCDF test files
 nco/data/in.cdl 	CDL file to generate netCDF test file in.nc
-nco/data/ncap.in	Input script for ncap
-nco/data/ncap2.in	Input script for ncap2
+nco/data/in_rec_zero.cdl 	CDL file to test zero-record files
+nco/data/ncap.in	Sample input script for ncap
+nco/data/ncap2.in	Sample input script for ncap2
 
 Documentation directory:
 nco/doc/ANNOUNCE	Announcement to accompany release notifications
@@ -97,6 +100,25 @@ nco/doc/surfit.txt	Summer research project advertisement
 nco/doc/tags_doc.sh	Generate Emacs tags for all NCO documents
 nco/doc/valgrind.txt	Valgrind suppressions file for debugging NCO 
 
+Man-page Directory:
+nco/man/Makefile(v)	Autotools-generated Makefile
+nco/man/Makefile.am	Automake instructions
+nco/man/Makefile.in(v)	Autotools-generated Makefile
+nco/man/ncap.1		ncap man page
+nco/man/ncatted.1	ncatted man page
+nco/man/ncbo.1		ncbo man page
+nco/man/ncdiff.1	ncdiff man page
+nco/man/ncea.1		ncea man page
+nco/man/ncecat.1	ncecat man page
+nco/man/ncflint.1	ncflint man page
+nco/man/ncks.1		ncks man page
+nco/man/nco.1		NCO man page
+nco/man/ncpdq.1		ncpdq man page
+nco/man/ncra.1		ncra man page
+nco/man/ncrcat.1	ncrcat man page
+nco/man/ncrename.1	ncrename man page
+nco/man/ncwa.1		ncwa man page
+
 Object directory:
 nco/obj/README		Description of object directory
 
@@ -106,9 +128,9 @@ nco/src/nco++		Source for NCO C++ operators (ncap2) and libnco++
 nco/src/nco_c++		Source for libnco_c++ C++ interface to netCDF API
 
 NCO source directory:
-nco/src/nco/Makefile
-nco/src/nco/Makefile.am
-nco/src/nco/Makefile.in
+nco/src/nco/Makefile(v)		Autotools-generated Makefile
+nco/src/nco/Makefile.am		Automake instructions
+nco/src/nco/Makefile.in(v)	Autotools-generated Makefile
 nco/src/nco/libnco.h
 nco/src/nco/mpncbo.c
 nco/src/nco/mpncecat.c
@@ -200,12 +222,13 @@ nco/src/nco/ncwa.c
 NCO C++ interface to netCDF directory:
 nco/src/nco_c++/ChangeLog
 nco/src/nco_c++/INSTALL
-nco/src/nco_c++/Makefile
-nco/src/nco_c++/Makefile.am
-nco/src/nco_c++/Makefile.in
-nco/src/nco_c++/Makefile.old
+nco/src/nco_c++/Makefile(v)	Autotools-generated Makefile
+nco/src/nco_c++/Makefile.am	Automake instructions
+nco/src/nco_c++/Makefile.in(v)	Autotools-generated Makefile
+nco/src/nco_c++/Makefile.old	Old-style, hand-edited Makefile
 nco/src/nco_c++/README
 nco/src/nco_c++/TODO
+nco/src/nco_c++/tst.cc		Front-end program to test libnco_c++
 nco/src/nco_c++/libnco_c++.hh
 nco/src/nco_c++/nco_att.cc
 nco/src/nco_c++/nco_att.hh
@@ -219,8 +242,3 @@ nco/src/nco_c++/nco_utl.cc
 nco/src/nco_c++/nco_utl.hh
 nco/src/nco_c++/nco_var.cc
 nco/src/nco_c++/nco_var.hh
-
-
-
-
-

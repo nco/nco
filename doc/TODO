@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.788 2006-06-16 01:32:24 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.789 2006-06-17 17:20:46 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -510,7 +510,7 @@ nco753. Remove warn-uninitialized warnings from nco_ddra()
 nco754. Make sure private/firstprivate aspects of ddra_info are correct
 nco755. Test timers on ESMF under openmp
 nco756. Make nco_ddra() thread-safe
-nco757. ncbo bug:
+nco757. ncbo bug: works with --mmr_drt, fails with --mmr_cln
 	ncwa -O -a time -p ~/nco/data in.nc ~/foo_avg.nc
 	ncbo --mmr_cln -O -D 1 ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc
 	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncbo --mmr_cln -O ~/nco/data/in.nc ~/foo_avg.nc ~/foo.nc > ~/foo 2>&1
@@ -521,7 +521,7 @@ nco761. Merge timer srt/end calls to MPI codes
 nco763. Access the IPCC AR4 database via OPeNDAP: http://www-pcmdi.llnl.gov/software-portal/esg_data_portal/dapserver
 	Sample datasets look like:
         http://climate.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0/pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml.html
-        ncks -M -p http://zender:l0trr0tk@climate.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0 pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml
+        ncks -M -p http://zender:password@climate.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0 pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml
 	ncks -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
 nco764. 
 ************************************************************************
@@ -652,7 +652,7 @@ sudo opcontrol --shutdown
 cat > ~/nco/bm/prf_ncbo.sh << EOF
 cd ${DATA}/nco_bm
 sudo opcontrol --reset
-time ${MY_BIN_DIR}/ncbo -O --op_typ='-' -p ${DATA}/nco_bm ipcc_dly_T85.nc ipcc_dly_T85_00.nc ${DATA}/nco_bm/prf_ncbo.nc
+time ${MY_BIN_DIR}/ncbo -O --op_typ='-' -p ${DATA}/nco_bm gcm_T85.nc gcm_T85_00.nc ${DATA}/nco_bm/prf_ncbo.nc
 opreport --demangle=smart --exclude-dependent --symbols > ~/nco/bm/prf_ncbo.txt
 EOF
 chmod a+x ~/nco/bm/prf_ncbo.sh
@@ -661,7 +661,7 @@ chmod a+x ~/nco/bm/prf_ncbo.sh
 cat > ~/nco/bm/prf_ncwa.sh << EOF
 cd ${DATA}/nco_bm
 sudo opcontrol --reset
-time ${MY_BIN_DIR}/ncwa -O -a lat,lon,lev,time -w lat -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/prf_ncwa.nc
+time ${MY_BIN_DIR}/ncwa -O -a lat,lon,lev,time -w lat -p ${DATA}/nco_bm gcm_T85.nc ${DATA}/nco_bm/prf_ncwa.nc
 opreport --demangle=smart --exclude-dependent --symbols > ~/nco/bm/prf_ncwa_avgall.txt
 EOF
 chmod a+x ~/nco/bm/prf_ncwa.sh
@@ -670,7 +670,7 @@ chmod a+x ~/nco/bm/prf_ncwa.sh
 cat > ~/nco/bm/prf_ncwa.sh << EOF
 cd ${DATA}/nco_bm
 sudo opcontrol --reset
-time ${MY_BIN_DIR}/ncwa -O -a lat,lon,lev,time -w lat -z "lat!=1.0" -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/prf_ncwa.nc
+time ${MY_BIN_DIR}/ncwa -O -a lat,lon,lev,time -w lat -z "lat!=1.0" -p ${DATA}/nco_bm gcm_T85.nc ${DATA}/nco_bm/prf_ncwa.nc
 opreport --demangle=smart --exclude-dependent --symbols > ~/nco/bm/prf_ncwa_avgall_msk.txt
 EOF
 chmod a+x ~/nco/bm/prf_ncwa.sh
@@ -679,7 +679,7 @@ chmod a+x ~/nco/bm/prf_ncwa.sh
 cat > ~/nco/bm/prf_ncwa.sh << EOF
 cd ${DATA}/nco_bm
 sudo opcontrol --reset
-time ${MY_BIN_DIR}/ncwa -O -F -d lat,,64 -d lon,,128 -d lev,,16 -d time,,4 -a lat,lon,lev,time -w lat -p ${DATA}/nco_bm ipcc_dly_T85.nc ${DATA}/nco_bm/prf_ncwa.nc
+time ${MY_BIN_DIR}/ncwa -O -F -d lat,,64 -d lon,,128 -d lev,,16 -d time,,4 -a lat,lon,lev,time -w lat -p ${DATA}/nco_bm gcm_T85.nc ${DATA}/nco_bm/prf_ncwa.nc
 opreport --demangle=smart --exclude-dependent --symbols > ~/nco/bm/prf_ncwa_hlf.txt
 EOF
 chmod a+x ~/nco/bm/prf_ncwa.sh

@@ -1,6 +1,6 @@
 package NCO_benchmarks;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.11 2006-05-30 19:11:21 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.12 2006-06-17 17:20:46 zender Exp $
 
 # Purpose: library module supporting nco_bm.pl benchmark and regression tests
 # File contains BENCHMARK code (as opposed to the REGRESSION tests in "NCO_rgr.pm")
@@ -114,7 +114,7 @@ if (0) { # DEBUGGING to skip these
 	###################
 	dbg_msg(2,"mpi_prc = $mpi_prc\nopr_sng_mpi = $opr_sng_mpi");
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-		$tst_cmd[0] = "ncap -h -O $fl_fmt $nco_D_flg -s  \"nu_var1[time,lev,lat,lon]=d4_01*d4_02*(d4_03^2)-(d4_05/d4_06)\" 	-s \"nu_var2[time,lev,lat,lon]=(d4_13/d4_02)*((d4_03^2)-(d4_05/d4_06))\" -s \"nu_var3[time,lat,lon]=(d3_08*d3_01)-(d3_05^3)-(d3_11*d3_16)\" -s \"nu_var4[time,lat,lon]=(d3_08+d3_01)-((d3_05*3)-d3_11-17.33)\" $in_pth_arg ipcc_dly_T85.nc %tempf_01%";
+		$tst_cmd[0] = "ncap -h -O $fl_fmt $nco_D_flg -s  \"nu_var1[time,lev,lat,lon]=d4_01*d4_02*(d4_03^2)-(d4_05/d4_06)\" 	-s \"nu_var2[time,lev,lat,lon]=(d4_13/d4_02)*((d4_03^2)-(d4_05/d4_06))\" -s \"nu_var3[time,lat,lon]=(d3_08*d3_01)-(d3_05^3)-(d3_11*d3_16)\" -s \"nu_var4[time,lat,lon]=(d3_08+d3_01)-((d3_05*3)-d3_11-17.33)\" $in_pth_arg gcm_T85.nc %tempf_01%";
 		$tst_cmd[1] = "ncwa -O $omp_flg -y sqrt -a lat,lon %tempf_01% %tempf_02%";
 		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00  %tempf_02% ";
 # as noted above, for serverside prep, the final '%stdouterr%' il be added in SS_gnarly_pything()
@@ -137,8 +137,8 @@ if ($dbg_lvl >= 1) {print "paused after ncap - hit return to continue"; $wait = 
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncbo -h -O $fl_fmt $nco_D_flg $omp_flg --op_typ='-' $in_pth_arg ipcc_dly_T85.nc ipcc_dly_T85_00.nc %tempf_00%";
-#		$tst_cmd[0] = "ncbo -h -O $fl_fmt $nco_D_flg $omp_flg --op_typ='-' $in_pth_arg sml_stl.nc sml_stl_00.nc %tempf_00%";  # smaller test file
+		$tst_cmd[0] = "ncbo -h -O $fl_fmt $nco_D_flg $omp_flg --op_typ='-' $in_pth_arg gcm_T85.nc gcm_T85_00.nc %tempf_00%";
+#		$tst_cmd[0] = "ncbo -h -O $fl_fmt $nco_D_flg $omp_flg --op_typ='-' $in_pth_arg stl_sml.nc stl_sml_00.nc %tempf_00%";  # smaller test file
 		if($dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
 		$tst_cmd[1] = "ncks -C -H -s '%f' -v sleepy %tempf_00% ";
 #		$tst_cmd[1] = "ncks -C -H -s '%f' -v weepy %tempf_00%"; # smaller test file
@@ -174,11 +174,11 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
 	#################### begin ncecat benchmark
 	$opr_nm='ncecat';
-	$dsc_sng = 'ncecat joining 2^5 files'; # skn_lgs.nc * 32 = 1.51GB
+	$dsc_sng = 'ncecat joining 2^5 files'; # tms_lng.nc * 32 = 1.51GB
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng, files=$fl_cnt\n";}
-		$tst_cmd[0] = "ncecat -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg skn_lgs_00.nc %tempf_00%";
+		$tst_cmd[0] = "ncecat -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg tms_lng_00.nc %tempf_00%";
 		$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg %tempf_00% %tempf_01%";
 		$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2 %tempf_01%";
 		# following required due to shortened length of test under dap.
@@ -200,7 +200,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncflint -h -O $fl_fmt $nco_D_flg   -w '0.5' $in_pth_arg ipcc_dly_T85_00.nc  ipcc_dly_T85_01.nc %tempf_00%";
+		$tst_cmd[0] = "ncflint -h -O $fl_fmt $nco_D_flg   -w '0.5' $in_pth_arg gcm_T85_00.nc  gcm_T85_01.nc %tempf_00%";
 		if($dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
 		$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt -a lat,lon %tempf_00% %tempf_01%";
 		$tst_cmd[2] = "ncks -C -H -s '%f ' -v d1_00 %tempf_01%";
@@ -221,8 +221,8 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 		#!!WARN - change back to testing the ipcc file after verify
 		# !! this one is buggered by the current ssdwrap
-		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -a '-time,-lev,-lat,-lon' $in_pth_arg  ipcc_dly_T85.nc %tempf_00%";
-		# ~2m on sand for ipcc_dly_T85.nc
+		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -a '-time,-lev,-lat,-lon' $in_pth_arg  gcm_T85.nc %tempf_00%";
+		# ~2m on sand for gcm_T85.nc
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey %tempf_00%";  #ipcc
 		$tst_cmd[2] = "0.800000";
 		$tst_cmd[3] = "SS_OK";
@@ -239,7 +239,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -a 'lon,time,lev,lat' $in_pth_arg  ipcc_dly_T85.nc %tempf_00%";
+		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -a 'lon,time,lev,lat' $in_pth_arg  gcm_T85.nc %tempf_00%";
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey %tempf_00%";  #ipcc
 		$tst_cmd[2] = "0.800000";
 		$tst_cmd[3] = "SS_OK";
@@ -256,7 +256,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -a '-lon,-time,-lev,-lat' $in_pth_arg  ipcc_dly_T85.nc %tempf_00%";
+		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -a '-lon,-time,-lev,-lat' $in_pth_arg  gcm_T85.nc %tempf_00%";
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey %tempf_00%";  #ipcc
 		$tst_cmd[2] = "0.800000";
 		$tst_cmd[3] = "SS_OK";
@@ -273,7 +273,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -P all_new  $in_pth_arg  ipcc_dly_T85.nc %tempf_00%";
+		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -P all_new  $in_pth_arg  gcm_T85.nc %tempf_00%";
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey %tempf_00%";
 		$tst_cmd[2] = "0.000000";
 		$tst_cmd[3] = "SS_OK";
@@ -291,7 +291,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 	if ($notbodi) { # too big for bodi
 		if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 #			if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-			$tst_cmd[0] = "ncra -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg ipcc_dly_T85_00.nc %tempf_00%";
+			$tst_cmd[0] = "ncra -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg gcm_T85_00.nc %tempf_00%";
 			# ~4m on sand.
 			$tst_cmd[1] =  "ncks -C -H -s '%f' -v d1_03   %tempf_00% ";
 			$tst_cmd[2] = "1.800001";
@@ -311,12 +311,12 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
  	if ($dodap eq "FALSE") { # only if not being done by remote
 		#################### begin ncrcat benchmark
 		$opr_nm='ncrcat';
-		$dsc_sng = 'ncrcat joining 2^5 files'; # skn_lgs.nc * 32 = 1.51GB
+		$dsc_sng = 'ncrcat joining 2^5 files'; # tms_lng.nc * 32 = 1.51GB
 		####################
 		if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 	#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-			$tst_cmd[0] = "ncrcat -h -O $fl_fmt $nco_D_flg $omp_flg -n 22,2,1 $in_pth_arg skn_lgs_00.nc %tempf_00%";
-#			$tst_cmd[0] = "ncrcat -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg skn_lgs_00.nc %tempf_00%";
+			$tst_cmd[0] = "ncrcat -h -O $fl_fmt $nco_D_flg $omp_flg -n 22,2,1 $in_pth_arg tms_lng_00.nc %tempf_00%";
+#			$tst_cmd[0] = "ncrcat -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg tms_lng_00.nc %tempf_00%";
 			$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg %tempf_00% %tempf_01%";
 			$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2 %tempf_01%";
 			$tst_cmd[3] = "12.759310";
@@ -369,10 +369,10 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 		if ($notbodi) { #  ipcc too big for bodi
 			#################### begin ncwa benchmark list #1c
 			$opr_nm = 'ncwa';
-			$dsc_sng = 'ncwa averaging all variables to scalars - ipcc_dly_T85.nc & sqt';
+			$dsc_sng = 'ncwa averaging all variables to scalars - gcm_T85.nc & sqt';
 			####################
 #			if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
-			$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt  -w lat -a lat,lon $in_pth_arg ipcc_dly_T85.nc %tempf_00%";
+			$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt  -w lat -a lat,lon $in_pth_arg gcm_T85.nc %tempf_00%";
 			$tst_cmd[1] = "ncks -C -H -s '%f' -v skanky  %tempf_00%";
 			$tst_cmd[2] = "0.800000";
 			$tst_cmd[3] = "SS_OK";
@@ -396,7 +396,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
 				#################### begin ncwa benchmark list #1c
 				$opr_nm='ncwa';
-				$dsc_sng = 'ncwa averaging at dif var sizes - ipcc_dly_T85.nc & sqt';
+				$dsc_sng = 'ncwa averaging at dif var sizes - gcm_T85.nc & sqt';
 				####################
 				# make vars in size of 1/2, 1/4, 1/8 of each one.
 # 				for (my $r=0; $r<5; $r++) {
@@ -407,7 +407,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 # 					}
 # 				}
 				for (my $r=0; $r<2; $r++) {
-					$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg $var_sz[$r] -y sqrt  -w lat -a lat,lon $in_pth_arg ipcc_dly_T85.nc %tempf_00%";
+					$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg $var_sz[$r] -y sqrt  -w lat -a lat,lon $in_pth_arg gcm_T85.nc %tempf_00%";
 					$tst_cmd[1] = "ncks -C -H -s '%f' -v skanky  %tempf_00%";
 					$tst_cmd[2] = "0.800000";
 					$tst_cmd[3] = "SS_OK";

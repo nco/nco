@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.55 2006-06-08 00:51:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.56 2006-06-17 17:20:46 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.55 2006-06-08 00:51:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.55 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.56 2006-06-17 17:20:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.56 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRSt:v:xy:-:";
   
 #ifdef __cplusplus
@@ -771,7 +771,7 @@ main(int argc,char **argv)
 		 Usage:
 		 ncbo -O -C --mdl -p ~/nco/data in.nc in.nc ~/foo.nc
 		 ncbo -O -C --mdl -p ${DATA}/nco_bm stl_5km.nc stl_5km.nc ~/foo.nc
-		 ncbo -O -C --mdl -p ${DATA}/nco_bm ipcc_dly_T85.nc ipcc_dly_T85.nc ~/foo.nc */
+		 ncbo -O -C --mdl -p ${DATA}/nco_bm gcm_T85.nc gcm_T85.nc ~/foo.nc */
 	      
 	      /* Assign remaining input for DDRA diagnostics */
 	      ddra_info.lmn_nbr=var_prc_1[idx]->sz; /* [nbr] Variable size */
