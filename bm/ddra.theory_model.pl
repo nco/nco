@@ -17,9 +17,9 @@ use vars qw(
 	    $ncwa_compute_sec_wt $cpu_clock_freq $spd_rd $spd_wrt $dsk_tm_in
 	    $dsk_tm_out $dsk_ttl_IO_tm $int_coeff $ncwa_est_flops $ncwa_int_INS_nowt $ncwa_int_INS_wt
 	    $ncwa_memcpy_INS_nowt  $ncwa_memcpy_per_el_nowt $ncwa_memcpy_per_el_wt $lmn_nbr_ttl
-	    $fl_nbr_in $fl_nbr_out $var_nbr $ncwa_NOWT_INS_multiplier $rnk $rnk @dim_vars
+	    $fl_nbr_in $fl_nbr_out $var_nbr $ncwa_NOWT_INS_multiplier $rnk_var @dim_vars
 	    $ncwa_ttl_cyc_mlt_nowt $ncwa_ttl_cyc_mlt_wt $ncwa_TOT_CYC_nowt $ncwa_TOT_CYC_wt $ncwa_TOT_INS_multiplier $ncbo_Icyc_per_ins $ncbo_Int_INS_per_el $stl_5km $out_fl_nm $sz_avg_blk
-	    $spd_flp $spd_ntg $V_int_INS $ncwa_wallclock_sec_nowt $ncwa_wallclock_sec_wt $wgt_flg $wgt_reuse_flg $V_intops
+	    $spd_flp $spd_ntg $V_int_INS $ncwa_wallclock_sec_nowt $ncwa_wallclock_sec_wt $wgt_flg $wru_flg $V_intops
 	    $ncwa_weighting_correction $ncwa_weighting_multiplier $ncwa_WT_INS_multiplier $rnk_wgt
 	    
 	    $K_Ia  $K_Mu  $F_cnt  $Ia_cnt  $Mu_cnt  $Ms_cnt  $fp_tm  $Ittl_cnt $sz_wgt_blk
@@ -28,29 +28,29 @@ use vars qw(
 	    );
 
 # Initialization: Variables that user must set/check to generate valid run
-$ncbo                       = 1; # 1 for ncbo routines, 0 for ncwa
-$wgt_flg                        = 1; # 1 for weighting, 0 for NOT weighting (no effect on ncbo)
-$wgt_reuse_flg                  = 0; # 1 for weight re-use (new default), 0 no re-use (old default)
-$stl_5km                        = 1; # 1 if file is stl_5km file, 0 for ipcc file
-$var_sz                         = 1; # simple initialization for dimension size
-$MRV_flg                        = 0; # Use MRV optimization 
+$ncbo      = 0; # 1 for ncbo routines, 0 for ncwa
+$wgt_flg   = 1; # 1 for weighting, 0 for NOT weighting (no effect on ncbo)
+$wru_flg   = 0; # 1 for weight re-use, 0 no re-use
+$stl_5km   = 0; # 1 if file is stl_5km file, 0 for gcm_T85 file
+$var_sz    = 1; # simple initialization for dimension size
+$MRV_flg   = 0; # Use MRV optimization 
 
 # Variables relating to size and layout of test files
-# These should be set correctly using other than standard files (stl_5km and ipcc)
+# These should be set correctly using other than standard files (stl_5km and gcm_T85)
 if ($stl_5km) {               # lat   lon
-    $rnk = @dim_vars         = (2160, 4320);
+    $rnk_var = @dim_vars         = (2160, 4320);
     $sz_wgt_blk              = 2160; # size of weight variable (lat)
     $rnk_wgt                 = 1; # Rank of weight
     $sz_avg_blk              = 2160 * 4320; # N sub A in ppr
     $var_nbr                 = 8; # nbr of variables (assuming all same size)
     $out_fl_nm               = "ddra.stl_5km.";
-} else { # assume ipcc file            lat  lon
-    $rnk = @dim_vars         = (8, 32, 128, 256); # Rank vars that are >94% of file
+} else { # assume gcm_T85 file            lat  lon
+    $rnk_var = @dim_vars         = (8, 32, 128, 256); # Rank vars that are >94% of file
     $sz_wgt_blk              = 128; # Size of weight variable (lat)
     $rnk_wgt                 = 1; # Rank of weight
     $sz_avg_blk              = 8 * 32 * 128 * 256; # N sub A in ppr
-    $var_nbr                 = 32; # for most significant vars in ipcc - 94% of file
-    $out_fl_nm               = "ddra.ipcc.";
+    $var_nbr                 = 32; # for most significant vars in gcm_T85 - 94% of file
+    $out_fl_nm               = "ddra.gcm_T85.";
 }
 
 # Number of files in and out:
@@ -93,7 +93,7 @@ $spd_ntg                   = 200e6; # int speed from direct measure, using a lar
 #$spd_flp                    = 1017e6; # floating point speed derived from BOINC measures
 #$spd_ntg                   = 2147e6; # integer speed derived from BOINC measures
 
-for (my $rnk_idx=0; $rnk_idx<$rnk; $rnk_idx++){$var_sz *= $dim_vars[$rnk_idx];} # total scalar size of all dimensions
+for (my $rnk_idx=0; $rnk_idx<$rnk_var; $rnk_idx++){$var_sz *= $dim_vars[$rnk_idx];} # total scalar size of all dimensions
 # $lmn_nbr_ttl = total nbr of elelments - only for those calcs that do not run thru the
 # Number of elements in all variables counted in loop below
 $lmn_nbr_ttl = $var_nbr * $var_sz;
@@ -119,29 +119,30 @@ if (!$ncbo) {
 	    $K_Ia = 1; # fudge for Ia
 	    $K_Mu = 1; # fudge for Mu
 	    $F_cnt = $lmn_nbr * (3 + (2/$sz_avg_blk)); # 20a
-	    $Ia_cnt = $K_Ia * ($lmn_nbr * ((22*$rnk) + (5*$rnk_wgt) + 18 + (7/$sz_avg_blk)) + (2*$sz_wgt_blk)); # 20b
-	    $Mu_cnt = $K_Mu * ($lmn_nbr * ((12*$rnk) + (3*$rnk_wgt) + 4 + ($byt_per_val + 4) / $sz_avg_blk) + ($byt_per_val*$sz_wgt_blk)); # 20c
+	    $Ia_cnt = $K_Ia * ($lmn_nbr * ((22*$rnk_var) + (5*$rnk_wgt) + 18 + (7/$sz_avg_blk)) + (2*$sz_wgt_blk)); # 20b
+	    $Mu_cnt = $K_Mu * ($lmn_nbr * ((12*$rnk_var) + (3*$rnk_wgt) + 4 + ($byt_per_val + 4) / $sz_avg_blk) + ($byt_per_val*$sz_wgt_blk)); # 20c
 	    $Ms_cnt = 3*$lmn_nbr; # 20d
+#	    $brd_cnt=$ntg_nbr_brd_fdg_fct*($lmn_nbr*(6*$rnk_var+8*$rnk_wgt+2));
 	}else{ # !wgt_flg
 	    $K_Ia = 1; # fudge for Ia
 	    $K_Mu = 1; # fudge for Mu
 	    $F_cnt = $lmn_nbr * (1 + (1/$sz_avg_blk)); # 19a
-	    $Ia_cnt = $K_Ia * ($lmn_nbr * ((9 * $rnk) + 9 + (4 / $sz_avg_blk))); # 19b
-	    $Mu_cnt = $K_Mu * ($lmn_nbr * ((5 * $rnk) + 3 + ($byt_per_val + 2) / $sz_avg_blk)); # 19c
+	    $Ia_cnt = $K_Ia * ($lmn_nbr * ((9 * $rnk_var) + 9 + (4 / $sz_avg_blk))); # 19b
+	    $Mu_cnt = $K_Mu * ($lmn_nbr * ((5 * $rnk_var) + 3 + ($byt_per_val + 2) / $sz_avg_blk)); # 19c
 	    $Ms_cnt = $lmn_nbr; # 19d
 	} # !wgt_flg
-	if($wgt_flg == 1 && $wgt_reuse_flg == 1){ # With weight re-use
+	if($wgt_flg == 1 && $wru_flg == 1){ # With weight re-use
 	    # Subtract cost of broadcasting weights
-	    $Ia_cnt-= $K_Ia * ($lmn_nbr * ((4*$rnk) + (5*$rnk_wgt) + 2)); # 12a
-	    $Mu_cnt-= $K_Mu * ($lmn_nbr * ((2*$rnk) + (3*$rnk_wgt) - 1)); # 12b
+	    $Ia_cnt-= $K_Ia * ($lmn_nbr * ((4*$rnk_var) + (5*$rnk_wgt) + 2)); # 12a
+	    $Mu_cnt-= $K_Mu * ($lmn_nbr * ((2*$rnk_var) + (3*$rnk_wgt) - 1)); # 12b
 	    $Ms_cnt-= $lmn_nbr; # 12c
-	} # end $wgt_reuse_flg
+	} # end $wru_flg
 	if($MRV_flg == 1){
 	    # Subtract collection cost for unweighted averaging
 	    # Subtract twice collection cost for weighted averaging
 	    if($wgt_flg = 1){$MRV_mlt_fct=2;}else{$MRV_mlt_fct=1;}
-	    $Ia_cnt-=$MRV_mlt_fct*$K_Ia * ($lmn_nbr * (9*$rnk + 4)); # 13a
-	    $Mu_cnt-=$MRV_mlt_fct* $K_Mu * ($lmn_nbr * (5*$rnk - 1)); # 13b
+	    $Ia_cnt-=$MRV_mlt_fct*$K_Ia * ($lmn_nbr * (9*$rnk_var + 4)); # 13a
+	    $Mu_cnt-=$MRV_mlt_fct* $K_Mu * ($lmn_nbr * (5*$rnk_var - 1)); # 13b
 	    $Ms_cnt-=$MRV_mlt_fct* $lmn_nbr; # 13c
 	} # !MRV_flg
 
