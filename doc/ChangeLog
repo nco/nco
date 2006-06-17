@@ -1,3 +1,14 @@
+2006-06-17  Charlie Zender  <zender@uci.edu>
+
+	* Add nco++/*.[ch]pp files to repository to bring ncap2 one step
+	closer to users. Still requires many antlr-distribution *.hpp files.
+
+	* Update MANIFEST, add nco++ entries
+
+	* Clean up nco_bm file create routine
+
+	* Rename IPCC_dly_T85 to gcm_T85, sml_stl to stl_sml, skn_lgs to tms_lng
+
 2006-06-12  Charlie Zender  <zender@uci.edu>
 
 	* Write initial and final timers to stdout not stderr
