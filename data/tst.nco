@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/tst.nco,v 1.6 2002-08-13 06:35:13 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/tst.nco,v 1.7 2006-06-17 23:25:12 zender Exp $ -*-C-*-
 
 // Purpose: ncap script for geophysical computations
 
@@ -68,7 +68,7 @@ ext_cff_mss3=3.825e2*mss_frc3;
 ext_cff_mss4=1.961e2*mss_frc4;
 ext_cff_mss_ttl=ext_cff_mss1+ext_cff_mss2+ext_cff_mss3+ext_cff_mss4;
 
-// This command is placed here for consistancy with NCO User's Guide ncap example
+// This command is placed here for consistency with NCO User's Guide ncap example
 a=3;b=4;c=sqrt(a^2+b^2);
 
 /*

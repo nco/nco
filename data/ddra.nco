@@ -1,0 +1,75 @@
+// $Header: /data/zender/nco_20150216/nco/data/ddra.nco,v 1.1 2006-06-17 23:25:12 zender Exp $ -*-C-*-
+
+// Purpose: Compute DDRA statistics for use in ppr_ZeM06
+// Demonstrate ncap2 scripting
+
+// Usage:
+// ncap2 -O -v -S ~/nco/data/ddra.nco ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
+
+// Compute mean dimension sizes
+dmnszavg_stl=sqrt(2160*4320);
+dmnsz_gcm_scl=1;
+dmnsz_gcm_time=8;
+dmnsz_gcm_lev=32;
+dmnsz_gcm_lat=128;
+dmnsz_gcm_lon=256;
+dmnsz_gcm_cst=1;
+varnbr_gcm_0D=8;
+varnbr_gcm_1D=8;
+varnbr_gcm_2D=16;
+varnbr_gcm_3D=64;
+varnbr_gcm_4D=32;
+varnbr_gcm_5D=0;
+varsz_gcm_0D=dmnsz_gcm_scl;
+varsz_gcm_1D=dmnsz_gcm_time;
+varsz_gcm_2D=dmnsz_gcm_lat*dmnsz_gcm_lon;
+varsz_gcm_3D=dmnsz_gcm_time*dmnsz_gcm_lat*dmnsz_gcm_lon;
+varsz_gcm_4D=dmnsz_gcm_time*dmnsz_gcm_lev*dmnsz_gcm_lat*dmnsz_gcm_lon;
+varsz_gcm_5D=dmnsz_gcm_time*dmnsz_gcm_lev*dmnsz_gcm_lat*dmnsz_gcm_lon*dmnsz_gcm_cst;
+varnbr_gcm_ttl=varnbr_gcm_1D+varnbr_gcm_2D+varnbr_gcm_3D+varnbr_gcm_4D+varnbr_gcm_5D;
+lmnnbr_gcm_0D_ttl=varsz_gcm_0D*varnbr_gcm_0D;
+lmnnbr_gcm_1D_ttl=varsz_gcm_1D*varnbr_gcm_1D;
+lmnnbr_gcm_2D_ttl=varsz_gcm_2D*varnbr_gcm_2D;
+lmnnbr_gcm_3D_ttl=varsz_gcm_3D*varnbr_gcm_3D;
+lmnnbr_gcm_4D_ttl=varsz_gcm_4D*varnbr_gcm_4D;
+lmnnbr_gcm_5D_ttl=varsz_gcm_5D*varnbr_gcm_5D;
+lmnnbr_gcm_ttl=lmnnbr_gcm_0D_ttl+lmnnbr_gcm_1D_ttl+lmnnbr_gcm_2D_ttl+lmnnbr_gcm_3D_ttl+lmnnbr_gcm_4D_ttl+lmnnbr_gcm_5D_ttl;
+dmnszavg_gcm_0D=1.0;
+dmnszavg_gcm_1D=varsz_gcm_1D^(1.0/1.0);
+dmnszavg_gcm_2D=varsz_gcm_2D^(1.0/2.0);
+dmnszavg_gcm_3D=varsz_gcm_3D^(1.0/3.0);
+dmnszavg_gcm_4D=varsz_gcm_4D^(1.0/4.0);
+dmnszavg_gcm_5D=varsz_gcm_4D^(1.0/5.0);
+dmnszavg_gcm_avg_wgt_varnbr=(varnbr_gcm_0D*dmnszavg_gcm_0D+varnbr_gcm_1D*dmnszavg_gcm_1D+varnbr_gcm_2D*dmnszavg_gcm_2D+varnbr_gcm_3D*dmnszavg_gcm_3D+varnbr_gcm_4D*dmnszavg_gcm_4D+varnbr_gcm_5D*dmnszavg_gcm_5D)/varnbr_gcm_ttl;
+dmnszavg_gcm_avg_wgt_lmnnbr=(lmnnbr_gcm_0D_ttl*dmnszavg_gcm_0D+lmnnbr_gcm_1D_ttl*dmnszavg_gcm_1D+lmnnbr_gcm_2D_ttl*dmnszavg_gcm_2D+lmnnbr_gcm_3D_ttl*dmnszavg_gcm_3D+lmnnbr_gcm_4D_ttl*dmnszavg_gcm_4D+lmnnbr_gcm_5D_ttl*dmnszavg_gcm_5D)/lmnnbr_gcm_ttl;
+
+// Throughput model
+var_nbr_apx=32; // Approximate number of variables
+
+// From nco_ddra() in nco_ctl.c
+ntg_nbr_brd_fdg_fct=1.8; /* [frc] Empirical correction to broadcasting */
+spd_flp_ncwa=153e6; /* [# s-1] Floating point operation speed */
+spd_ntg_ncwa=200e6; /* [# s-1] Integer operation speed */
+spd_flp_ncbo=353.2e6; /* [# s-1] Floating point operation speed */
+spd_ntg_ncbo=1386.54e6; /* [# s-1] Integer operation speed */
+spd_rd=63.375e6; /* [B s-1] Disk read bandwidth */
+spd_wrt=57.865e6; /* [B s-1] Disk write bandwidth */
+
+nco_op_typ_sbt=0; /* [enm] Operation type */
+nco_op_typ_avg=1; /* [enm] Operation type */
+
+// Initialize variables
+MRV_flg=0; /* [flg] Avergaging dimensions are MRV dimensions */
+lmn_nbr=var_nbr_apx*varsz_gcm_4D; /* [nbr] Variable size */
+lmn_nbr_avg=var_nbr_apx*varsz_gcm_4D; /* [nbr] Averaging block size */
+lmn_nbr_wgt=var_nbr_apx*dmnsz_gcm_lat; /* [nbr] Weight size */
+rnk_avg=4; /* [nbr] Rank of averaging space */
+rnk_var=4; /* [nbr] Variable rank (in input file) */
+rnk_wgt=1; /* [nbr] Rank of weight */
+wgt_brd_flg=0; /* [flg] Broadcast weight for this variable */
+wrd_sz=4; /* [B] Bytes per element */
+
+// Choose operation type
+nco_op_typ=nco_op_typ_avg; /* [enm] Operation type */
+spd_flp=spd_flp_ncwa;
+spd_ntg=spd_ntg_ncwa;
