@@ -1,5 +1,7 @@
 2006-06-17  Charlie Zender  <zender@uci.edu>
 
+	* Add data/ddra.nco to compute DDRA statistics
+
 	* Add nco++/*.[ch]pp files to repository to bring ncap2 one step
 	closer to users. Still requires many antlr-distribution *.hpp files.
 

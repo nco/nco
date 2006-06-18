@@ -1,13 +1,17 @@
-// $Header: /data/zender/nco_20150216/nco/data/ddra.nco,v 1.1 2006-06-17 23:25:12 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/ddra.nco,v 1.2 2006-06-18 03:06:04 zender Exp $ -*-C-*-
 
 // Purpose: Compute DDRA statistics for use in ppr_ZeM06
 // Demonstrate ncap2 scripting
 
 // Usage:
-// ncap2 -O -v -S ~/nco/data/ddra.nco ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
+// ncap2 -O -v -S ~/nco/data/ddra.nco ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
 
 // Compute mean dimension sizes
-dmnszavg_stl=sqrt(2160*4320);
+dmnsz_stl_lat=2160;
+dmnsz_stl_lon=4320;
+dmnszavg_stl=sqrt(dmnsz_stl_lat*dmnsz_stl_lon);
+varsz_stl_1D=dmnsz_stl_lat;
+varsz_stl_2D=dmnsz_stl_lat*dmnsz_stl_lon;
 dmnsz_gcm_scl=1;
 dmnsz_gcm_time=8;
 dmnsz_gcm_lev=32;
@@ -43,8 +47,34 @@ dmnszavg_gcm_5D=varsz_gcm_4D^(1.0/5.0);
 dmnszavg_gcm_avg_wgt_varnbr=(varnbr_gcm_0D*dmnszavg_gcm_0D+varnbr_gcm_1D*dmnszavg_gcm_1D+varnbr_gcm_2D*dmnszavg_gcm_2D+varnbr_gcm_3D*dmnszavg_gcm_3D+varnbr_gcm_4D*dmnszavg_gcm_4D+varnbr_gcm_5D*dmnszavg_gcm_5D)/varnbr_gcm_ttl;
 dmnszavg_gcm_avg_wgt_lmnnbr=(lmnnbr_gcm_0D_ttl*dmnszavg_gcm_0D+lmnnbr_gcm_1D_ttl*dmnszavg_gcm_1D+lmnnbr_gcm_2D_ttl*dmnszavg_gcm_2D+lmnnbr_gcm_3D_ttl*dmnszavg_gcm_3D+lmnnbr_gcm_4D_ttl*dmnszavg_gcm_4D+lmnnbr_gcm_5D_ttl*dmnszavg_gcm_5D)/lmnnbr_gcm_ttl;
 
-// Throughput model
-var_nbr_apx=32; // Approximate number of variables
+// Define constants normally in headers, e.g., enums
+nco_op_typ_sbt=0s; /* [enm] Operation type */
+nco_op_typ_avg=1s; /* [enm] Operation type */
+fl_typ_gcm=0s;
+fl_typ_stl=1s;
+
+  /* Cumulative file costs */
+lmn_nbr_ttl=0L; /* I/O [nbr] Cumulative variable size */
+ntg_nbr_ttl=0L; /* I/O [nbr] Cumulative integer operations */
+flp_nbr_ttl=0L; /* I/O [nbr] Cumulative floating point operations */
+
+  /* Cumulative times */
+tm_ntg_ttl=0.0f; /* I/O [s] Cumulative integer time */
+tm_flp_ttl=0.0f; /* I/O [s] Cumulative floating point time */
+tm_rd_ttl=0.0f; /* I/O [s] Cumulative read time */
+tm_wrt_ttl=0.0f; /* I/O [s] Cumulative write time */
+tm_io_ttl=0.0f; /* [s] I/O time */
+tm_ttl=0.0f; /* I/O [s] Cumulative time */
+
+  /* Initialize all algorithm counts for this variable to zero then increment */
+ntg_nbr_byt_swp=0L; /* [nbr] Integer operations for byte-swap */
+ntg_nbr_brd=0L; /* [nbr] Integer operations for broadcasting */
+ntg_nbr_clc=0L; /* [nbr] Integer operations for collection */
+ntg_nbr_rdc=0L; /* [nbr] Integer operations for reduction */
+ntg_nbr_nrm=0L; /* [nbr] Integer operations for normalization */
+flp_nbr_bnr=0L; /* [nbr] Floating point operations for binary arithmetic */
+flp_nbr_rdc=0L; /* [nbr] Floating point operations for reduction */
+flp_nbr_nrm=0L; /* [nbr] Floating point operations for normalization */
 
 // From nco_ddra() in nco_ctl.c
 ntg_nbr_brd_fdg_fct=1.8; /* [frc] Empirical correction to broadcasting */
@@ -55,21 +85,140 @@ spd_ntg_ncbo=1386.54e6; /* [# s-1] Integer operation speed */
 spd_rd=63.375e6; /* [B s-1] Disk read bandwidth */
 spd_wrt=57.865e6; /* [B s-1] Disk write bandwidth */
 
-nco_op_typ_sbt=0; /* [enm] Operation type */
-nco_op_typ_avg=1; /* [enm] Operation type */
-
-// Initialize variables
-MRV_flg=0; /* [flg] Avergaging dimensions are MRV dimensions */
-lmn_nbr=var_nbr_apx*varsz_gcm_4D; /* [nbr] Variable size */
-lmn_nbr_avg=var_nbr_apx*varsz_gcm_4D; /* [nbr] Averaging block size */
-lmn_nbr_wgt=var_nbr_apx*dmnsz_gcm_lat; /* [nbr] Weight size */
+// Initialize variables that could be passed into nco_ddra()
+MRV_flg=0s; /* [flg] Avergaging dimensions are MRV dimensions */
 rnk_avg=4; /* [nbr] Rank of averaging space */
 rnk_var=4; /* [nbr] Variable rank (in input file) */
 rnk_wgt=1; /* [nbr] Rank of weight */
-wgt_brd_flg=0; /* [flg] Broadcast weight for this variable */
+var_idx=0; 
+wgt_flg=1s; /* [flt] Weight name */
+wgt_brd_flg=1s; /* [flg] Broadcast weight for this variable */
 wrd_sz=4; /* [B] Bytes per element */
 
 // Choose operation type
 nco_op_typ=nco_op_typ_avg; /* [enm] Operation type */
-spd_flp=spd_flp_ncwa;
-spd_ntg=spd_ntg_ncwa;
+fl_typ=fl_typ_gcm;
+
+if(fl_typ==fl_typ_gcm){
+  var_nbr_apx=32;
+  lmn_nbr=var_nbr_apx*varsz_gcm_4D; /* [nbr] Variable size */
+  if(nco_op_typ==nco_op_typ_avg){
+    lmn_nbr_avg=var_nbr_apx*varsz_gcm_4D; /* [nbr] Averaging block size */
+    lmn_nbr_wgt=dmnsz_gcm_lat; /* [nbr] Weight size */
+  } // !nco_op_typ_avg
+}else if(fl_typ==fl_typ_stl){
+  var_nbr_apx=8;
+  lmn_nbr=var_nbr_apx*varsz_stl_2D; /* [nbr] Variable size */
+  if(nco_op_typ==nco_op_typ_avg){
+    lmn_nbr_avg=var_nbr_apx*varsz_stl_2D; /* [nbr] Averaging block size */
+    lmn_nbr_wgt=dmnsz_stl_lat; /* [nbr] Weight size */
+  } // !nco_op_typ_avg
+} // !fl_typ
+
+if(nco_op_typ==nco_op_typ_sbt){
+    spd_flp=spd_flp_ncbo; /* [# s-1] Floating point operation speed */
+    spd_ntg=spd_ntg_ncbo; /* [# s-1] Integer operation speed */
+    lmn_nbr_out=lmn_nbr; /* [nbr] Output elements */
+}else if(nco_op_typ==nco_op_typ_avg){
+    spd_flp=spd_flp_ncwa; /* [# s-1] Floating point operation speed */
+    spd_ntg=spd_ntg_ncwa; /* [# s-1] Integer operation speed */
+    lmn_nbr_out=lmn_nbr/lmn_nbr_avg; /* [nbr] Output elements */
+} // !nco_op_typ_avg
+
+flp_nbr_bnr_dfl=lmn_nbr; /* [nbr] Floating point operations for binary arithmetic */
+flp_nbr_nrm_dfl=lmn_nbr_out; /* [nbr] Floating point operations for normalization */
+flp_nbr_rdc_dfl=lmn_nbr; /* [nbr] Floating point operations for reduction */
+
+/* Integer operations for broadcasting weight */
+ntg_nbr_brd_dfl=ntg_nbr_brd_fdg_fct*lmn_nbr*(6*rnk_var+8*rnk_wgt+2); /* [nbr] N(6R+8R_w+2) */
+
+/* Byte-swap integer operations per element */
+ntg_nbr_byt_swp_dfl=wrd_sz+2; /* [nbr nbr-1] W+2 */
+
+/* Integer operations for collection */
+ntg_nbr_clc_dfl=lmn_nbr*(14*rnk_var+4); /* [nbr] N(14R+4) */
+
+/* Integer operations for normalization */
+ntg_nbr_nrm_dfl=4*lmn_nbr_out; /* [nbr] 4N/N_A = 4N_O */
+
+/* Integer operations for reduction */
+ntg_nbr_rdc_dfl=lmn_nbr*6+lmn_nbr_out; /* [nbr] N(6+N/N_A) */
+
+if(nco_op_typ==nco_op_typ_sbt){
+  /* Subtraction computation assumes variables are same size
+     fxm: Account for broadcasting */
+  /* One floating point (add/subtract/multiply/divide) per element */
+  flp_nbr_bnr=flp_nbr_bnr_dfl;
+  /* Byte-swap elements from two input files and one output file */
+  ntg_nbr_byt_swp=3*lmn_nbr*ntg_nbr_byt_swp_dfl; /* 3N(W+2) */
+  rd_nbr_byt=2*lmn_nbr*wrd_sz; /* [B] Bytes read */
+  wrt_nbr_byt=lmn_nbr_out*wrd_sz; /* [B] Bytes written */
+}else if(nco_op_typ==nco_op_typ_avg){
+  rd_nbr_byt=lmn_nbr*wrd_sz; /* [B] Bytes read */
+  wrt_nbr_byt=lmn_nbr_out*wrd_sz; /* [B] Bytes written */
+  /* One floating point add per input element to sum numerator */
+  flp_nbr_rdc=lmn_nbr;
+  /* One floating point divide per output element to normalize numerator by denominatro (tally) */
+  flp_nbr_nrm=lmn_nbr_out;
+  /* Byte-swap elements from one input file and one (rank-reduced) output file */
+  ntg_nbr_byt_swp=(lmn_nbr+lmn_nbr_out)*ntg_nbr_byt_swp_dfl;
+  if(!MRV_flg){
+    /* Collection required for numerator */
+    ntg_nbr_clc=ntg_nbr_clc_dfl; /* flg_acm */
+  } /* !MRV_flg */
+  if(wgt_flg){
+    if(var_idx == 0){
+      /* Set cost = 0 after first variable since only read weight once */
+      rd_nbr_byt=lmn_nbr_wgt*wrd_sz; /* [B] Bytes read */ /* flg_acm */
+      /* Byte-swap cost for first weight input is usually negligible */
+      ntg_nbr_byt_swp=ntg_nbr_byt_swp+lmn_nbr_wgt*ntg_nbr_byt_swp_dfl; /* OK flg_acm */
+    } /* var_idx != 0 */
+      /* One floating point multiply per input element for weight*value in numerator,
+	 and one floating point add per input element to sum weight in denominator */
+    flp_nbr_rdc=2*lmn_nbr; /* flg_acm */
+    /* One floating point divide per output element to normalize denominator by tally */
+    flp_nbr_nrm=flp_nbr_nrm+lmn_nbr_out; /* real flg_acm */
+    if(wgt_brd_flg){
+      /* fxm: Charge for broadcasting weight at least once */
+      /* Broadcasting cost for weight */
+      ntg_nbr_brd=ntg_nbr_brd_dfl;
+    } /* !wgt_brd_flg */
+    if(!MRV_flg){
+      /* Collection required for denominator */
+      ntg_nbr_clc=ntg_nbr_clc_dfl+ntg_nbr_clc_dfl; /* real acm flg */
+    } /* !MRV_flg */
+  } /* !wgt_flg */
+} // !nco_op_typ_avg
+
+flp_nbr= /* [nbr] Floating point operations */
+flp_nbr_bnr+ /* [nbr] Floating point operations for binary arithmetic */
+flp_nbr_rdc+ /* [nbr] Floating point operations for reduction */
+flp_nbr_nrm; /* [nbr] Floating point operations for normalization */
+
+ntg_nbr= /* [nbr] Integer operations */
+ntg_nbr_byt_swp+ /* [nbr] Integer operations for byte-swap */
+ntg_nbr_brd+ /* [nbr] Integer operations for broadcasting */
+ntg_nbr_clc+ /* [nbr] Integer operations for collection */
+ntg_nbr_rdc+ /* [nbr] Integer operations for reduction */
+ntg_nbr_nrm; /* [nbr] Integer operations for normalization */
+
+tm_ntg=ntg_nbr/spd_ntg; /* [s] Integer time */
+tm_flp=flp_nbr/spd_flp; /* [s] Floating point time */
+tm_rd=rd_nbr_byt/spd_rd; /* [s] Read time */
+tm_wrt=wrt_nbr_byt/spd_wrt; /* [s] Write time */
+
+tm_io=tm_rd+tm_wrt; /* [s] I/O time */
+tm_crr=tm_ntg+tm_flp+tm_rd+tm_wrt; /* [s] Time for this variable */
+
+tm_ntg_ttl=tm_ntg_ttl+tm_ntg; /* [s] Cumulative integer time */
+tm_flp_ttl=tm_flp_ttl+tm_flp; /* [s] Cumulative floating point time */
+tm_rd_ttl=tm_rd_ttl+tm_rd; /* [s] Cumulative read time */
+tm_wrt_ttl=tm_wrt_ttl+tm_wrt; /* [s] Cumulative write time */
+tm_io_ttl=tm_io_ttl+tm_io; /* [s] Cumulative I/O time */
+tm_ttl=tm_ttl+tm_crr; /* [s] Cumulative time */
+
+tm_frc_flp_ttl=tm_flp_ttl/tm_ttl; /* [frc] Floating point time fraction */
+tm_frc_io_ttl=tm_io_ttl/tm_ttl; /* [frc] I/O time fraction */
+tm_frc_ntg_ttl=tm_ntg_ttl/tm_ttl; /* [frc] Integer time fraction */
+tm_frc_rd_ttl=tm_rd_ttl/tm_ttl; /* [frc] Read time fraction */
+tm_frc_wrt_ttl=tm_wrt_ttl/tm_ttl; /* [frc] Write time fraction */

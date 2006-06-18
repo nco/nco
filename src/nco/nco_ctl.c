@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.146 2006-06-12 20:02:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.147 2006-06-18 03:06:04 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -129,12 +129,12 @@ nco_ddra /* [fnc] Count operations */
   static long long flp_nbr_ttl=0LL; /* I/O [nbr] Cumulative floating point operations */
 
   /* Cumulative times */
-  static float tm_ntg_ttl=0.0; /* I/O [s] Cumulative integer time */
-  static float tm_flp_ttl=0.0; /* I/O [s] Cumulative floating point time */
-  static float tm_rd_ttl=0.0; /* I/O [s] Cumulative read time */
-  static float tm_wrt_ttl=0.0; /* I/O [s] Cumulative write time */
-  static float tm_io_ttl=0.0; /* [s] I/O time */
-  static float tm_ttl=0.0; /* I/O [s] Cumulative time */
+  static float tm_ntg_ttl=0.0f; /* I/O [s] Cumulative integer time */
+  static float tm_flp_ttl=0.0f; /* I/O [s] Cumulative floating point time */
+  static float tm_rd_ttl=0.0f; /* I/O [s] Cumulative read time */
+  static float tm_wrt_ttl=0.0f; /* I/O [s] Cumulative write time */
+  static float tm_io_ttl=0.0f; /* [s] I/O time */
+  static float tm_ttl=0.0f; /* I/O [s] Cumulative time */
   
   /* Current variable costs */
   float tm_ntg; /* [s] Integer time */
