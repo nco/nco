@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.147 2006-06-18 03:06:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.148 2006-06-18 05:30:56 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -279,7 +279,7 @@ nco_ddra /* [fnc] Count operations */
   flp_nbr_rdc_dfl=lmn_nbr; /* [nbr] Floating point operations for reduction */
 
   /* Integer operations for broadcasting weight */
-  ntg_nbr_brd_dfl=ntg_nbr_brd_fdg_fct*lmn_nbr*(6*rnk_var+8*rnk_wgt+2); /* [nbr] N(6R+8R_w+2) */
+  ntg_nbr_brd_dfl=(long long)(ntg_nbr_brd_fdg_fct*lmn_nbr*(6*rnk_var+8*rnk_wgt+2)); /* [nbr] N(6R+8R_w+2) */
 
   /* Byte-swap integer operations per element */
   ntg_nbr_byt_swp_dfl=wrd_sz+2; /* [nbr nbr-1] W+2 */
