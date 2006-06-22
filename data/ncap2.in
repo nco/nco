@@ -1,7 +1,5 @@
 // Purpose: Sample input script for ncap2
-// Usage: 
-// ncap2 -O -v -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
-// ncks ~/foo.nc | /bin/more
+
 /* Usage: 
    ncap2 -O -v -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
    ncks ~/foo.nc | /bin/more

@@ -317,7 +317,7 @@ class ncoTree extends TreeParser;
 private:
     prs_sct *prs_arg;
     bool bcst;
-    var_sct* var_cst;;
+    var_sct* var_cst;
 public:
     void setTable(prs_sct *prs_in){
         prs_arg=prs_in;

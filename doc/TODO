@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.789 2006-06-17 17:20:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.790 2006-06-22 20:49:35 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -173,7 +173,6 @@ nco300. Activate ccmalloc libdl into configure.in for enable-debug-custom
 nco301. Unable to use DDD on autotools NCO executable with --enable-debug-custom
 nco302. Add speedy GCC optimization flags to --enable-optimize-custom
 nco303. Make test suite more comprehensive
-nco304. Use/improve flex --header-file=ncap_lex.h to de-lint compiler warnings instead of __GNUC__-specific hacks in ncap_lex.l (NB: probably requires upstream changes in flex)
 nco309. Free memory allocated in nco_fl_utl.c: fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
 nco310. Add ENABLE_DEBUG_CUSTOM, ENABLE_OPTIMIZE_CUSTOM, ... to bld/Makefile
 nco311. Automatically convert int,short to float in nco_var_pwr()
@@ -416,7 +415,6 @@ nco664. ncatted & ncrename will not work with DAP because there is not any
 	operate on.  see nco_fl_utl.c:~813 in nco_fl_mk_lcl().  
 	Currently just fails semi-gracefully.
 nco666. Grid regridding/interpolation operator ncrebin?
-nco667. rnd_nbr(): ncap does not link to rnd_nbr on AMD64 with bld/Makefile
 nco668. Prefix nco.png fractal icon with text "NC" to look like "NCO"
 nco669. Command-line switch for float->double math-promotion to avoid underflow?
 nco674. debian: replace netcdfg3 with netcdf try to build .debs again
@@ -454,9 +452,6 @@ nco681. Rename nco++:
 	ncoTree.hpp		sdo_tree.hh
 nco682. Warn when _Fillvalue defined and missing_value not
 nco683. Convert to subversion http://sf.net/docs/E09/
-nco684. ncap2 memory problem:
-	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncap2 -O -D 1 -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
-	ncap2 -O -D 1 -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
 nco685. Run static analysis tool on nco codebase
 nco689. Multislabs (multiple limits on same dimension) fail in arithmetic operators. Currently, arithmetic operators silently ignore all limit specifications after the first. Solution: Diagnose and fail with informative warning until nco690 implemented.
         ncwa -O -a lat,lon -w area -d lat,30.,90. -d lon,345.,360. -d lon,0.,195. isccpd_0112_clm_landmask.nc foo4.nc
@@ -743,8 +738,21 @@ ncap66. make ncap errors fatal, either in yyerror(), or call nco_error_exit()
 ncap70. gamma() function broken on AIX
 ncap71. Remove erf and gamma functions from AIX build
 ncap72. Stop linking to -lC on AIX. Get all float math functions by casting double versions
-ncap76. Cause LHS variables to retain attributes of pre-existing variables of same name
-ncap77. 
+ncap77. ncap2 array arithmetic bug: Answer should be 2,3,4,5
+	ncap2 -v -O -s 'three_dmn_var(0,0,:)=0.5*(three_dmn_var(0,0,:)+three_dmn_var(0,1,:))' ~/nco/data/in.nc ~/foo.nc;ncks -H -s '%g, ' -v three_dmn_var -C -d lat,0 -d lev,0 ~/foo.nc
+	produces 2, 2.5, 3, 3.5,
+	Doing it the long way produces the right answer:
+	ncks -O -C -v three_dmn_var -d lat,0 -d lev,0 ~/nco/data/in.nc ~/foo.nc
+	ncrename -O -v three_dmn_var,three_dmn_var0 ~/foo.nc
+	ncks -A -C -v three_dmn_var -d lat,0 -d lev,1 ~/nco/data/in.nc ~/foo.nc
+	ncrename -O -v three_dmn_var,three_dmn_var1 ~/foo.nc
+	ncwa -O -a lat,lev ~/foo.nc ~/foo.nc
+	ncap2 -v -O -s 'three_dmn_var_avg=0.5*(three_dmn_var0+three_dmn_var1)' ~/foo.nc ~/foo.nc
+	ncks -A -v three_dmn_var ~/nco/data/in.nc ~/foo.nc
+	ncap2 -v -O -s 'three_dmn_var(0,0,:)=three_dmn_var_avg' ~/foo.nc ~/foo.nc
+	ncks -H -s '%g, ' -v three_dmn_var -C -d lat,0 -d lev,0 ~/foo.nc
+ncap78. ncap2 ddra.nco bug
+ncap79. 
 ************************************************************************
 End ncapXXX TODOs
 ************************************************************************
@@ -774,13 +782,11 @@ bld45. Replace ENABLE_LARGEFILE with test for 64-bit offset support (i.e., netCD
 bld47. Add regression test for 64bit file format capability
 bld61. hjm Verify netCDF4 benchmarks work for Ed Hartnett
 bld64. hjm Benchmark ESMF->UCSD over OpenDAP
-bld65. stromberg Install DAP (THREDDS if necessary) on ESMF UCI
 bld67. hjm Move benchmarks to 3x3 or 4x3 portrait format on one page
 bld69. hjm make configure ignore system libs in favor of dev libs or figure
          out a way to do this (change name of local dev lib (libnco-dev)?
 bld70. hjm nco_c++ on Mac OS X: Get "make check" working (add -lstdc++, remove -lnco)
 bld74. hjm Do not pass -std=c99 unless GCC=gcc rather than g++
-bld75. Change from configure.in to configure.ac
 bld76. 
 ************************************************************************
 End bldXXX TODOs
