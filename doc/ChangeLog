@@ -1,3 +1,7 @@
+2006-06-22  Charlie Zender  <zender@uci.edu>
+
+	* Support AIX runantlr=antlr in Makefile.old for ncap2 on AIX
+
 2006-06-17  Charlie Zender  <zender@uci.edu>
 
 	* Add data/ddra.nco to compute DDRA statistics

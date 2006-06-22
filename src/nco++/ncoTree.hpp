@@ -3,7 +3,7 @@
 
 #include <antlr/config.hpp>
 #include "ncoParserTokenTypes.hpp"
-/* $ANTLR 2.7.6 (20060511): "ncoGrammer.g" -> "ncoTree.hpp"$ */
+/* $ANTLR 2.7.6 (20060530): "ncoGrammer.g" -> "ncoTree.hpp"$ */
 #include <antlr/TreeParser.hpp>
 
 #line 1 "ncoGrammer.g"
@@ -29,7 +29,7 @@ class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public n
 private:
     prs_sct *prs_arg;
     bool bcst;
-    var_sct* var_cst;;
+    var_sct* var_cst;
 public:
     void setTable(prs_sct *prs_in){
         prs_arg=prs_in;
