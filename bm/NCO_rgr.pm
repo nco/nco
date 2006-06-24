@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.47 2006-06-17 17:20:46 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.48 2006-06-24 03:28:45 wangd Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -108,7 +108,7 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array
     
 #printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
-    
+
     $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=log(e_flt)^1' $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -v foo -s '%.6f\\n' %tempf_00%";
     $dsc_sng="Testing foo=log(e_flt)^1 (fails on AIX TODO ncap57)";
@@ -178,7 +178,7 @@ sub tst_rgr {
 ####################
 	# FAILS!
 	$tst_cmd[0]="ncatted -h -O $fl_fmt $nco_D_flg -a units,,m,c,'meter second-1' $in_pth_arg in.nc %tempf_00%";
-	$tst_cmd[1]="ncks -C -m -v lev %tempf_00% | grep units | cut -d' ' -f 11-12";
+	$tst_cmd[1]="ncks -C -m -v lev %tempf_00% | grep units | cut -d' ' -f 11-12"; ## daniel:fixme cut/ncks but how to do grep?
 	$dsc_sng="Modify all existing units attributes to meter second-1";
 	$tst_cmd[2] = "meter second-1";
 	$tst_cmd[3] = "SS_OK";
@@ -198,7 +198,7 @@ sub tst_rgr {
 # Fragile: This test fails when length of command changes
 	$tst_cmd[0]="ncatted -O --hdr_pad=1000 $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tempf_00%";
 	$tst_cmd[1]="ncks -M %tempf_00% | grep hdr_pad | wc > %tempf_01%";
-	$tst_cmd[2]="cut -c 14-15  %tempf_01%";
+	$tst_cmd[2]="cut -c 14-15  %tempf_01%"; ## daniel:fixme cut/ncks, but how to do grep and wc???
 	$dsc_sng="Pad header with 1000 extra bytes for future metadata";
 	$tst_cmd[3] = "27";
 	$tst_cmd[4] = "SS_OK";
@@ -902,61 +902,68 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array
     
 # will fail SS - ncks not the last cmd
-    $tst_cmd[0]="ncwa $omp_flg  -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_dbl -a lon $in_pth_arg in.nc %tempf_00%";
-    $tst_cmd[1]="ncks -C -H -s '%f,' -v three_dmn_var_dbl %tempf_00% > %tempf_01%";
-    $tst_cmd[2]="cut -d, -f 7 %tempf_01%";
+    @tst_cmd=(); # really reset array. $#tst_cmd=0; sets last index = 0 --> list has one element.
+    push(@tst_cmd, "ncwa $omp_flg  -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_dbl -a lon $in_pth_arg in.nc %tempf_00%");
+    push(@tst_cmd, "ncks -C -H -s '%f' -v three_dmn_var_dbl -d time,3 -d lat,0 %tempf_00%");
+    # used to cut for field 7. (1 + 3x2 + 0x1 = 7)
     $dsc_sng="Dimension reduction with min switch and missing values";
-    $tst_cmd[3] = "-99";
-    $tst_cmd[4] = "SS_OK";
+    push(@tst_cmd, "-99");
+    push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    @tst_cmd=();  # Reset array
     
 # will fail SS - ncks not the last cmd
-    $tst_cmd[0]="cut -d, -f 20 %tempf_01%";
+    push(@tst_cmd, "ncwa $omp_flg  -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_dbl -a lon $in_pth_arg in.nc %tempf_00%");
+    push(@tst_cmd, "ncks -C -H -s '%f' -v three_dmn_var_dbl -d time,9 -d lat,1 %tempf_00%");
+    # used to cut for field 20. (1 + 9x2 + 1x1 = 20)
     $dsc_sng="Dimension reduction with min switch";
-    $prsrv_fl = 1;
-    $tst_cmd[1] = "77";
-    $tst_cmd[2] = "SS_OK";
+    $prsrv_fl = 1; ## this is not needed anymore-- now independent from prev test-- remove this line soon
+    push(@tst_cmd,"77");
+    push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    @tst_cmd=();  # Reset array
     
 # will fail SS - ncks not the last cmd
-    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_int -a lon $in_pth_arg in.nc %tempf_00%";
-    $tst_cmd[1]="ncks -C -H -s '%d,' -v three_dmn_var_int %tempf_00% > %tempf_01%";
-    $tst_cmd[2]="cut -d, -f 5 %tempf_01%";
+    push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_int -a lon $in_pth_arg in.nc %tempf_00%");
+    push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_int -d time,2 -d lat,0 %tempf_00%");
+    # used to cut field 5: ( 1 + 2x2 + 0x1 = 5) 
     $dsc_sng="Dimension reduction on type int with min switch and missing values";
-    $tst_cmd[3] = "-99";
-    $tst_cmd[4] = "SS_OK";
+    push(@tst_cmd, "-99");
+    push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    @tst_cmd=();  # Reset array
     
 # will fail SS - ncks not the last cmd
-    $tst_cmd[0]="cut -d, -f 7 %tempf_01%";
+    push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_int -a lon $in_pth_arg in.nc %tempf_00%");
+    push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_int -d time,3 -d lat,0 %tempf_00%");
+    # used to cut field 7: ( 1 + 3x2 + 0x1 = 7) 
     $dsc_sng="Dimension reduction on type int variable";
     $prsrv_fl = 1;
-    $tst_cmd[1] = "25";
-    $tst_cmd[2] = "SS_OK";
+    push(@tst_cmd, "25");
+    push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    @tst_cmd=();  # Reset array
     
 # will fail SS - ncks not the last cmd
-    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_sht -a lon $in_pth_arg in.nc %tempf_00%";
-    $tst_cmd[1]="ncks -C -H -s '%d,' -v three_dmn_var_sht %tempf_00% > %tempf_01%";
-    $tst_cmd[2]="cut -d, -f 20 %tempf_01%";
+    push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_sht -a lon $in_pth_arg in.nc %tempf_00%");
+    push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_sht -d time,9 -d lat,1 %tempf_00%");
+    # used to cut field 20: ( 1 + 9x2 + 1x1 = 20) 
     $dsc_sng="Dimension reduction on type short variable with min switch and missing values";
-    $tst_cmd[3] = -99;
-    $tst_cmd[4] = "SS_OK";
+    push(@tst_cmd, "-99");
+    push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    @tst_cmd=();  # Reset array
     
 # will fail SS - ncks not the last cmd
-    $tst_cmd[0]="cut -d, -f 8 %tempf_01%";
+    push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_sht -a lon $in_pth_arg in.nc %tempf_00%");
+    push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_sht -d time,3 -d lat,1 %tempf_00%");
+    # used to cut field 8: ( 1 + 3x2 + 1x1 = 8) 
     $dsc_sng="Dimension reduction on type short variable";
     $prsrv_fl = 1;
-    $tst_cmd[1] = "29";
-    $tst_cmd[2] = "SS_OK";
+    push(@tst_cmd, "29");
+    push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    @tst_cmd=();  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_rec_var $in_pth_arg in.nc %tempf_00% 2> %tempf_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_rec_var %tempf_00%";
@@ -964,7 +971,7 @@ sub tst_rgr {
     $tst_cmd[2] = "1";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    @tst_cmd=();  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v four_dmn_rec_var $in_pth_arg in.nc %tempf_00% 2> %tempf_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v four_dmn_rec_var %tempf_00%";
@@ -972,64 +979,70 @@ sub tst_rgr {
     $tst_cmd[2] = "240";
     $tst_cmd[3] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    @tst_cmd=();  # Reset array
     
 # will fail SS - ncks not the last cmd
-    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_dbl -a lat,lon $in_pth_arg in.nc %tempf_00%";
-    $tst_cmd[1]="ncks -C -H -s '%f,' -v three_dmn_var_dbl %tempf_00% > %tempf_01%";
-    $tst_cmd[2]="cut -d, -f 4 %tempf_01%";
+    push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_dbl -a lat,lon $in_pth_arg in.nc %tempf_00%");
+    push(@tst_cmd, "ncks -C -H -s '%f' -v three_dmn_var_dbl -d time,3 %tempf_00%");
+    # used to cut field 4: ( 1 + 3x1 = 4) 
     $dsc_sng="Dimension reduction on type double variable with max switch and missing values";
-    $tst_cmd[3] = "-99";
-    $tst_cmd[4] = "SS_OK";
+    push(@tst_cmd, "-99");
+    push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    @tst_cmd=();  # Reset array
     
 # will fail SS - ncks not the last cmd
-    $tst_cmd[0]="cut -d, -f 5 %tempf_01%";
+    push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_dbl -a lat,lon $in_pth_arg in.nc %tempf_00%");
+    push(@tst_cmd, "ncks -C -H -s '%f' -v three_dmn_var_dbl -d time,4 %tempf_00%"); 
+    # used to cut field 5: ( 1 + 4x1 = 5) 
     $dsc_sng="Dimension reduction on type double variable";
     $prsrv_fl = 1;
-    $tst_cmd[1] = "40";
-    $tst_cmd[2] = "SS_OK";
+    push(@tst_cmd, "40");
+    push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    @tst_cmd=();  # Reset array
     
 # will fail SS - ncks not the last cmd
-    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_int -a lat $in_pth_arg in.nc %tempf_00%";
-    $tst_cmd[1]="ncks -C -H -s '%d,' -v three_dmn_var_int %tempf_00% > %tempf_01%";
-    $tst_cmd[2]="cut -d, -f 9 %tempf_01%";
+    push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_int -a lat $in_pth_arg in.nc %tempf_00%");
+    push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_int -d time,2 -d lon,0 %tempf_00%");
+    # used to cut field 9: ( 1 + 2x4 + 0x1 = 9) 
     $dsc_sng="Dimension reduction on type int variable with min switch and missing values";
-    $tst_cmd[3] = "-99";
-    $tst_cmd[4] = "SS_OK";
+    push(@tst_cmd, "-99");
+    push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    @tst_cmd=();  # Reset array
     
 # will fail SS - ncks not the last cmd
-    $tst_cmd[0]="cut -d, -f 13 %tempf_01%";
+    push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_int -a lat $in_pth_arg in.nc %tempf_00%");
+    push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_int -d time,3 -d lon,0 %tempf_00%");
+    # used to cut field 13 = 1 + 3x4 + 0x1
     $dsc_sng="Dimension reduction on type int variable";
     $prsrv_fl = 1;
-    $tst_cmd[1] = "29";
-    $tst_cmd[2] = "SS_OK";
+    push(@tst_cmd, "29");
+    push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    @tst_cmd=();  # Reset array
     
 # will fail SS - ncks not the last cmd
-    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_sht -a lat $in_pth_arg in.nc %tempf_00%";;
-    $tst_cmd[1]="ncks -C -H -s '%d,' -v three_dmn_var_sht %tempf_00% > %tempf_01%";
-    $tst_cmd[2]="cut -d, -f 37 %tempf_01%";
+    push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_sht -a lat $in_pth_arg in.nc %tempf_00%");
+    push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_sht -d time,9 -d lon,0 %tempf_00%");
+    # used to cut field 37 = 1 + 9x4 + 0x1
     $dsc_sng="Dimension reduction on type short variable with max switch and missing values";
-    $tst_cmd[3] = "-99";
-    $tst_cmd[4] = "SS_OK";
+    push(@tst_cmd, "-99");
+    push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    @tst_cmd=();  # Reset array
     
 # will fail SS - ncks not the last cmd
-    $tst_cmd[0]="cut -d, -f 33 %tempf_01%";
+    push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_sht -a lat $in_pth_arg in.nc %tempf_00%");
+    push(@tst_cmd, "ncks -C -H -s '%d' -v three_dmn_var_sht -d time,8 -d lon,0 %tempf_00%");
+    # used to cut field 33 = 1 + 8x4 + 0x1
     $dsc_sng="Dimension reduction on type short, max switch variable";
     $prsrv_fl = 1;
-    $tst_cmd[1] = "69";
-    $tst_cmd[2] = "SS_OK";
+    push(@tst_cmd, "69");
+    push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    @tst_cmd=();  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -w lat_wgt -v lat_cpy $in_pth_arg in.nc %tempf_00% 2> %tempf_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v lat_cpy %tempf_00%";;
