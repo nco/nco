@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# $Id: scriptwrap.py,v 1.5 2006-03-09 22:26:31 mangalam Exp $
+# $Id: scriptwrap.py,v 1.6 2006-06-24 03:16:03 wangd Exp $
 # want to support url-based specification of server.
 #           ncra -n 100,1,2 -p http://server/foo/model_01.nc model_avg.nc
 # this file was originally named scriptwrap.py
@@ -96,7 +96,7 @@ class ScriptRunner:
         url = self.serverBase + "/" + name
         url += ".dods?" + self.MAGIC_CONSTRAINT
         print "url is " + url
-        s
+        
         try:
             result = urllib.urlopen(url, self.scriptData) # request from server
             if self.targetFile != self.MAGIC_DUMMY:

@@ -4,7 +4,7 @@ import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.29 2006-06-15 23:23:22 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.30 2006-06-24 03:16:03 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -555,7 +555,6 @@ class Command:
          # consider reading task.id.stdout for fun.
          #FIXME
          self.arguments = [];
-
          j = JobPersistence()
          i = None
          j.close()
@@ -571,7 +570,6 @@ class Command:
          # consider reading task.id.stdout for fun.
          #FIXME
          self.arguments = [];
-
          j = JobPersistence()
          n = None
          try:
@@ -679,7 +677,13 @@ class DepTracker:
 # JobPersistence : modularize the metadata info managment code
 # we will use SQLite
 ##########################################################################
-from ssdap_dbutil import *
+try:
+    from ssdap_dbutil import *
+except ImportError:
+    # if the import fails, we will get a symbol error when
+    # we try to use ssdap_dbutil symbols.
+    pass
+
 
         
 
