@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.135 2006-06-08 01:13:14 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.136 2006-06-25 06:54:00 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -38,7 +38,7 @@ use vars qw(
 	    $foo_xy_fl $foo_xymyx_fl $foo_y_fl $foo_yx_fl $gnu_cut $hiresfound
 	    @ifls $itmp $localhostname $md5 $md5found %MD5_tbl $mpi_fk $mpi_prc
 	    $pfx_mpi $MY_BIN_DIR $nco_D_flg %NCO_RC $nco_vrs_sng $ncwa_scl_tst $notbodi
-	    $nsr_xpc $NUM_FLS $nvr_my_bin_dir $omp_flg $opr_fmt $opr_lng_max
+	    $nsr_xpc $fl_nbr $nvr_my_bin_dir $omp_flg $opr_fmt $opr_lng_max
 	    @opr_lst @opr_lst_all @opr_lst_mpi $opr_nm $opr_rgr_mpi $opr_sng_mpi
 	    $fl_out_rgn $os_sng $fl_out $pfxd $prg_nm $prsrv_fl
 	    $pth_rmt_scp_tst $pwd $que $rcd %real_tme $cmd_rsl $rgr $server_ip
@@ -140,8 +140,8 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	    'rgr'          => \$rgr,        # Perform regression tests
 	    'scaling'      => \$ncwa_scl_tst, # do scaling test on ncwa bench to see how dif var sizes change time
 	    'serverside:s' => \$srv_sd,     # Do benchmarks on server side (w/ ssdwrap)
-	    'test_files=s' => \$tst_fl_mk,  # Create test files "134" does 1,3,4
-	    'tst_fl=s'     => \$tst_fl_mk,  # Create test files "134" does 1,3,4
+	    'test_files=s' => \$tst_fl_mk,  # "a" makes all, "13" makes files 1,3
+	    'tst_fl=s'     => \$tst_fl_mk,  # "a" makes all, "13" makes files 1,3
 	    'thr_nbr=i'    => \$thr_nbr,    # Number of OMP threads to use
 	    'udpreport'    => \$udp_rpt,  # Return timing data back to udpserver on sand
 	    'usage'        => \$usg,        # Explain how to use this thang
@@ -159,7 +159,7 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 # 	else                {print "\tDigest::MD5 ... found.\n";}
 # } else {	print "\tMD5 NOT requested; continuing with ncks checking of single values.\n";}
 
-$NUM_FLS = 4; # max number of files in the file creation series
+$fl_nbr = 3; # Maximum number of files in file creation series
 
 if ($srv_sd eq '') {$srv_sd = 1;}
 
@@ -443,8 +443,8 @@ if ($rgr){
 # Start real benchmark tests
 # Test if necessary files are available - if so, may skip creation tests
 
-# initialize filenames
-if( $tst_fl_mk ne '0' || ($bm && $dodap eq 'FALSE')){
+# Initialize filenames
+if($tst_fl_mk ne '0' || ($bm && $dodap eq 'FALSE')){
     if($dbg_lvl > 1){printf ("\n$prg_nm: Calling fl_mk_dat_ntl()...\n");}
     NCO_bm::fl_mk_dat_ntl(@fl_mk_dat); # Initialize data strings & timing array
 }
@@ -453,19 +453,19 @@ if( $tst_fl_mk ne '0' || ($bm && $dodap eq 'FALSE')){
 # If so, skip file creation if not requested
 if ($bm && $tst_fl_mk eq '0' && $dodap eq 'FALSE'){
     if ($dbg_lvl> 0){print "\nINFO: File creation tests:\n";}
-    for (my $i = 0; $i < $NUM_FLS; $i++){
-	my $fl = $fl_mk_dat[$i][2].'.nc'; # file root name stored in $fl_mk_dat[$i][2]
+    for (my $fl_idx = 0; $fl_idx < $fl_nbr; $fl_idx++){
+	my $fl = $fl_mk_dat[$fl_idx][2].'.nc'; # file root name stored in $fl_mk_dat[$fl_idx][2]
 	print "Testing for $drc_dat/$fl...\n";
 	if (-e "$drc_dat/$fl" && -r "$drc_dat/$fl") {
 	    if ($dbg_lvl> 0){printf ("%50s exists - can skip creation\n", $drc_dat . "/" . $fl);}
 	} else {
-	    my $e = $i+1;
+	    my $e = $fl_idx+1;
 	    $tst_fl_mk .= "$e";
 	}
     }
 }
 
-#	print "DEBUG:  in nco_bm.pl, \$fl_tmg[1][0] = $fl_tmg[1][0] & \$NUM_FLS = $NUM_FLS\n";
+#	print "DEBUG:  in nco_bm.pl, \$fl_tmg[1][0] = $fl_tmg[1][0] & \$fl_nbr = $fl_nbr\n";
 
 # file creation tests
 if ($tst_fl_mk ne '0' || $srv_sd ne "SSNOTSET"){

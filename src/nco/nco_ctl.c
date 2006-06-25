@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.148 2006-06-18 05:30:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.149 2006-06-25 06:54:00 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -878,7 +878,7 @@ nco_usg_prn(void)
     if(prg_lcl == ncap) (void)fprintf(stdout,"-s, --spt, --script algebra\tAlgebraic command defining single output variable\n");
   } /* end if */
   if(strstr(opt_sng,"-S")) (void)fprintf(stdout,"-S, --fl_spt, --script-file fl.nco\tScript file containing multiple algebraic commands\n");
-  if(strstr(opt_sng,"-T")) (void)fprintf(stdout,"-T, --mask_comparitor, --msk_cmp_typ, --op_rlt comparitor\tComparitor for mask condition: eq,ne,ge,le,gt,lt\n");
+  if(strstr(opt_sng,"-T")) (void)fprintf(stdout,"-T, --mask_comparator, --msk_cmp_typ, --op_rlt comparator\tComparator for mask condition: eq,ne,ge,le,gt,lt\n");
   if(strstr(opt_sng,"-t")) (void)fprintf(stdout,"-t, --thr_nbr, --threads, --omp_num_threads thr_nbr\tThread number for OpenMP\n");
   if(strstr(opt_sng,"-u")) (void)fprintf(stdout,"-u, --units\t\tToggle printing units of variables, if any\n");
   if(strstr(opt_sng,"-U")) (void)fprintf(stdout,"-U, --upk, --unpack\tUnpack input file\n");

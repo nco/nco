@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.368 2006-06-16 01:32:24 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.369 2006-06-25 06:54:00 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -8353,7 +8353,7 @@ As expected, $\mskflg_{\idx} = 1$ when the mask condition is
 @end tex
 
 @cindex @code{--op_rlt @var{mask_comp}}
-@cindex @code{--mask_comparitor @var{mask_comp}}
+@cindex @code{--mask_comparator @var{mask_comp}}
 @cindex @code{--msk_cmp_typ @var{mask_comp}}
 @cindex @code{--msk_cnd_sng @var{mask_cond}}
 @cindex @code{--mask_condition @var{mask_cond}}
@@ -8372,12 +8372,13 @@ It is safest to write scripts using @samp{--mask_condition}.}.
 The @var{mask_condition} string is automatically parsed into its three
 constituents @var{mask_var}, @var{mask_comp}, and @var{mask_val}.
 
+@cindex comparator
 Here @var{mask_var} is the name of the masking variable (specified with 
 @samp{-m}, @samp{--mask-variable}, @samp{--mask_variable},
 @samp{--msk_nm}, or @samp{--msk_var}).  
 The truth @var{mask_comp} argument (specified with @samp{-T},
-@samp{--mask_comparitor}, @samp{--msk_cmp_typ}, or @samp{--op_rlt} may 
-be any one of the six arithmetic comparitors: @kbd{eq}, @kbd{ne},
+@samp{--mask_comparator}, @samp{--msk_cmp_typ}, or @samp{--op_rlt} may 
+be any one of the six arithmetic comparators: @kbd{eq}, @kbd{ne},
 @kbd{gt}, @kbd{lt}, @kbd{ge}, @kbd{le}. 
 @set flg
 @tex
@@ -8397,7 +8398,7 @@ These are the Fortran-style character abbreviations for the logical
 comparisons @kbd{==}, @kbd{!=}, @kbd{>}, @kbd{<}, @kbd{>=},
 @clear flg
 @end ifset
-The mask comparitor defaults to @kbd{eq} (equality).
+The mask comparator defaults to @kbd{eq} (equality).
 @cindex @code{--mask-value @var{mask_val}}
 @cindex @code{--mask_value @var{mask_val}}
 @cindex @code{--msk_val @var{mask_val}}
@@ -8634,7 +8635,7 @@ It is considerably simpler to specify the complete @var{mask_cond} with
 the single string argument to @samp{-B} than with the three separate
 switches @samp{-m}, @samp{-T}, and @samp{-M}.
 If in doubt, enclose the @var{mask_cond} with double quotes since some
-of the comparitors have special meanings to the shell.
+of the comparators have special meanings to the shell.
 
 Assuming 70% of the gridpoints are maritime, then here the tally is
 @set flg

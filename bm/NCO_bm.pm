@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.52 2006-06-17 17:20:46 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.53 2006-06-25 06:54:00 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions in approximate order of their usage:
@@ -55,7 +55,7 @@ use vars qw(
 	    @sys_tim_arr $sys_time %sys_tme $timed %totbenchmarks @tst_cmd $tst_fmt
 	    $tst_id_sng %tst_nbr %usr_tme $wnt_log $timestamp $bm_drc $caseid
 	    $cmd_ln $drc_dat @fl_mk_dat $fl_pth @fl_tmg $md5found %MD5_tbl
-	    $nco_D_flg $NUM_FLS $pfxd $prsrv_fl $que $server_ip $sock $thr_nbr
+	    $nco_D_flg $fl_nbr $pfxd $prsrv_fl $que $server_ip $sock $thr_nbr
 	    $dbg_sng $err_sng $tmr_app $udp_rpt %wc_tbl $pfxd $nvr_my_bin_dir
 	    $prg_nm $arg_nbr $tw_prt_bm $srv_sd @cmd_lst
 	    
@@ -225,18 +225,18 @@ sub bm_vrb {
 ##
 
 sub fl_mk_dat_ntl {
-    my $NUM_FLS = 3;
+    my $fl_nbr = 3;
     my $idx_stl_5km = 0;
     my $idx_gcm_dly = 1;
     my $idx_tms_lng = 2;
-    dbg_msg(1,"fl_mk_dat_ntl: \$NUM_FLS = $NUM_FLS");
+    dbg_msg(1,"fl_mk_dat_ntl: \$fl_nbr = $fl_nbr");
     
     if ($dbg_lvl > 2) {
 	print "\nWaiting for keypress to proceed.\n";
 	my $tmp = <STDIN>;
     }
     
-    for (my $i = 0; $i < $NUM_FLS; $i++) { $fl_tmg[$i][1] = $fl_tmg[$i][2] = " omitted "; }
+    for (my $i = 0; $i < $fl_nbr; $i++) { $fl_tmg[$i][1] = $fl_tmg[$i][2] = " omitted "; }
     
 #	$fl_mk_dat[$idx_gn_xpr][0] = "example gene expression"; # option descriptor
 #	$fl_mk_dat[$idx_gn_xpr][1] = "~50MB";                   # file size
@@ -269,7 +269,7 @@ sub fl_mk_dat_ntl {
 # fl_mk creates files from CDL templates and populates them for benchmarks
 sub fl_mk {
     my $idx = shift;
-    my $NUM_FLS = 4;
+    my $fl_nbr = 3;
     $pfx_cmd = "$MY_BIN_DIR";
     
     if ($dbg_lvl > 2) {
@@ -317,8 +317,8 @@ sub fl_mk {
 
 # Summarize timing results of file creation tests
 sub rsl_smr_fl_mk {
-    $NUM_FLS = 4;
-    print " in rsl_smr_fl_mk,  \$fl_tmg[1][0] = $fl_tmg[1][0] & \$NUM_FLS = $NUM_FLS\n";
+    $fl_nbr = 3;
+    print " in rsl_smr_fl_mk,  \$fl_tmg[1][0] = $fl_tmg[1][0] & \$fl_nbr = $fl_nbr\n";
     if ($dbg_lvl > 0){print "Summarizing results of file creation\n";}
     my $CC = `../src/nco/ncks --compiler`;
     my $CCinfo = '';
@@ -332,10 +332,10 @@ sub rsl_smr_fl_mk {
     $reportstr .=  "      Test                       Total Wallclock Time (s) \n";
     $reportstr .=  "=====================================================\n";
     
-    for (my $i=0; $i<$NUM_FLS; $i++) {
-	$reportstr .= sprintf "Creating   %15s:           %6.4f \n", $fl_tmg[$i][0], $fl_tmg[$i][1];
-	$reportstr .= sprintf "Populating %15s:           %6.4f \n", $fl_tmg[$i][0], $fl_tmg[$i][2];
-	$udp_dat   .= sprintf "%s : %6.4f : %6.4f",$fl_tmg[$i][0], $fl_tmg[$i][1], $fl_tmg[$i][2];
+    for (my $fl_idx=0; $fl_idx<$fl_nbr; $fl_idx++) {
+	$reportstr .= sprintf "Creating   %15s:           %6.4f \n", $fl_tmg[$fl_idx][0], $fl_tmg[$fl_idx][1];
+	$reportstr .= sprintf "Populating %15s:           %6.4f \n", $fl_tmg[$fl_idx][0], $fl_tmg[$fl_idx][2];
+	$udp_dat   .= sprintf "%s : %6.4f : %6.4f",$fl_tmg[$fl_idx][0], $fl_tmg[$fl_idx][1], $fl_tmg[$fl_idx][2];
     }
     $reportstr .= sprintf "\n\n";
     print $reportstr;

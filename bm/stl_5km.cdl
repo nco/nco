@@ -1,23 +1,22 @@
-//$Header: /data/zender/nco_20150216/nco/bm/stl_5km.cdl,v 1.2 2006-02-18 00:54:54 mangalam Exp $
-// ncgen -b -o sat_5km.nc sat_5km.cdl     (-> 298,650,700 bytes)
-// takes about 7.5 (real) sec on 900MHz/512MB a22p thinkpad, 
-// most of it waiting for disk
+// $Header: /data/zender/nco_20150216/nco/bm/stl_5km.cdl,v 1.3 2006-06-25 06:54:00 zender Exp $
+
+// Usage:
+// ncgen -b -o sat_5km.nc sat_5km.cdl 
+
+// Purpose: Test file of "satellite geometry"
+// Approximately eight global scenes of 5 arcminutes = 5 km resolution
+// Total files size: 298,650,700 bytes
 
 // Valid CDF/netCDF files need not have any defined variable or data
 // Use ncap LHS-casting to define variables with big dimensions
 netcdf sat_5km{
 dimensions:
-//real variables
-    lat=2160; //180 degrees in 12ths of a degree
-    lon=4320; //360 degrees in 12ths of a degree
-    //indices
-    //n2d=8; // index for # of 2D vars
+    lat=2160; // 180 degrees in 12ths of a degree
+    lon=4320; // 360 degrees in 12ths of a degree
 variables:
-//indices
     double lat(lat);
     double lon(lon);
-
-// 8 2D vars of dim 2160x4320 (=9331200)  * 8 = 74649600
+// Eight 2D variables with shape 2160x4320 = 9331200 * 8 =74649600 B
     float d2_00(lat,lon);
     float d2_01(lat,lon);
     float d2_02(lat,lon);

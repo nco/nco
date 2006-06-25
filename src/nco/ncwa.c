@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.224 2006-06-17 17:20:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.225 2006-06-25 06:54:00 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.224 2006-06-17 17:20:46 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.224 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.225 2006-06-25 06:54:00 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.225 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #ifdef __cplusplus
@@ -249,7 +249,7 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
-      {"mask_comparitor",required_argument,0,'T'},
+      {"mask_comparator",required_argument,0,'T'},
       {"msk_cmp_typ",required_argument,0,'T'},
       {"op_rlt",required_argument,0,'T'},
       {"thr_nbr",required_argument,0,'t'},
