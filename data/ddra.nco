@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ddra.nco,v 1.4 2006-06-26 17:03:31 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/ddra.nco,v 1.5 2006-06-26 17:09:58 zender Exp $ -*-C-*-
 
 // Purpose: Compute DDRA statistics for use in ppr_ZeM06
 // Demonstrate ncap2 scripting
@@ -87,7 +87,7 @@ flp_nbr_rdc=int64_zero; /* [nbr] Floating point operations for reduction */
 flp_nbr_nrm=int64_zero; /* [nbr] Floating point operations for normalization */
 
 ntg_nbr_brd_fdg_fct=1.8; /* [frc] Empirical correction to broadcasting */
-spd_flp_ncwa=153e6; /* [# s-1] Floating point operation speed */
+spd_flp_ncwa=153e6f; /* [# s-1] Floating point operation speed */
 spd_ntg_ncwa=200e6; /* [# s-1] Integer operation speed */
 spd_flp_ncbo=353.2e6; /* [# s-1] Floating point operation speed */
 spd_ntg_ncbo=1386.54e6; /* [# s-1] Integer operation speed */
