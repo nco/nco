@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.54 2006-06-26 06:39:36 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.55 2006-06-26 23:59:58 wangd Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions in approximate order of their usage:
@@ -546,6 +546,7 @@ sub tst_run {
     my $SS_OK = 1;
     if ($cmd_lst[$#cmd_lst] ne "SS_OK") {$SS_OK = 0;} # check on last el whether cmds can be SS'ed
     if ($SS_OK && $srv_sd ne "SSNOTSET" ) {
+        SS_prepare(); # make sure things are init'ed
         # Send for processing and get back string or single value to check
         $SS_nsr_xpc=SS_gnarly_pything(\@cmd_lst);
         
@@ -743,6 +744,37 @@ sub tst_run {
 } # end tst_run()
 
 ####################
+# %SSD : a hash/dict that contains (configurable) settings for server-side dap. 
+# %SSD is used as a namespace in lieu of a package namespace.  Quick measurements 
+# of accessing by hash show a 2x exec time increase--> 
+# 2 normal var access = 1 hash access, which is small (compare to C/C++ 100x? diff)
+our %SSD; 
+
+# Initialize ssd variables.
+sub SS_init {
+    # no params for SS_init now.
+
+    use File::Spec;
+    $SSD{"url"} = "http://sand.ess.uci.edu/cgi-bin/dods/nph-dods";
+    $SSD{"inpathfrom"} = "../data"; 
+    # inpathfrom ($in_pth) needs to match $in_pth in NCO_rgr.pm 
+    # and NCO_benchmarks.pm
+    $SSD{"inpathto"} = "dodsdata";
+    # inpathto needs to match the server's path to benchmarking data
+
+    # temp-script filename -- probably want to munge to prevent conflict
+    $SSD{"tfname"} = File::Spec->catfile(".", "nco_rgr_tmp_4scriptwrap");
+    # path to scriptwrap.py (or equivalent)
+    $SSD{"scrwrp_pth"} = File::Spec->catfile('..','src','ssdap','scriptwrap.py');
+
+    # remember that we got initialized
+    $SSD{"initialized"} = 1;
+
+    # now do a quick sanity check.
+    if (my $errorstring = SS_sanity_check()) {
+        die "SS sanity check failed.: \n$errorstring\n" ;
+    }
+}
 
 # if SS_OK && the user requests a SS attempt ..
 # this needs to be functionized to:
@@ -756,14 +788,31 @@ sub tst_run {
 sub SS_gnarly_pything {
     
     my $arr_ref = shift; # now passing in tst_run()'s cmd_lst via a ref to maintain NS separation
+    my $tfname = $SSD{"tfname"};
+    SS_make_script($tfname, $arr_ref);
+    #print "TF should be done - waiting for action\n"; #my $wait = <STDIN>;#my $wait = <STDIN>;
+# print "\n##SS cmd: $MY_BIN_DIR/scriptwrap.py  $tfname $SS_URL\nand waiting for key to tst_run"; my $wait = <STDIN>;
+    # and finally EXECUTE it
+    # FXM/FIXME : for now, look for scriptwrap.py in src/ssdap dir.
+
+    my $xpct_val = SS_send_script($tfname, $SSD{"url"});
+    # and now (unfortunately), write it to disk and then execute the scriptwrap.py to get a value.
+    #unlink "nco_rgr_tmp_4scriptwrap" or die "Can't unlink the temp file: 'nco_rgr_tmp_4scriptwrap'\n";
+    #print "returned value = $xpct_val \n"; #my $wait = <STDIN>;
+    return $xpct_val;
+}
+
+# $ncks_chk = SS_gnarly_thing($tfname, \@cmd_lst);
+sub SS_make_script {
+    my $tfname = shift; # file to write script to.
+    my $arr_ref = shift; # now passing in tst_run()'s cmd_lst via a ref to maintain NS separation
     my @sscmd_lst= @$arr_ref; # deref the ref to a new array name
-    my $SS_URL = "http://sand.ess.uci.edu/cgi-bin/dods/nph-dods";
-    my $in_pth = "../data"; 
-    # this $in_pth needs to match $in_pth in NCO_rgr.pm and NCO_benchmarks.pm
-    my $dodsdata = "dodsdata";
+    my $in_pth = $SSD{"inpathfrom"};
+    my $dodsdata = $SSD{"inpathto"};
     # Write out  array replacing each $fl_out with the %temp% spec
-    # First command must specify starting datadir, but client may not know it, so
-    # substitute any '-p URL' with '-p %datadir%' which may be escaped at some level.
+    # First command must specify starting datadir, but client may not know it,
+    # so substitute any '-p URL' with '-p %datadir%' which may be escaped at 
+    # some level.
     # Further commands act on %fl_out%, so no '-p' substitution is necessary
     # Assume that '-p URL' is in first command, but check all commands for '-p'
     # because of mixed programming model, 
@@ -774,16 +823,14 @@ sub SS_gnarly_pything {
 #	print "MY_BIN_DIR = $MY_BIN_DIR\n";
 #	print "DATA_DIR = $drc_dat\n";
     my $lst_scrt_idx = $#sscmd_lst - 2; # last script index that has content to be sent to the server.
-    use File::Spec;
-    #my $tfname = "/tmp/nco_rgr_tmp_4scriptwrap";
-    my $tfname = File::Spec->catfile(".", "nco_rgr_tmp_4scriptwrap");
-    
+    local *TF;
     open(TF, "> $tfname") or die "\nUnable to open temp file '$tfname'.\n";
     my $r = 0;
     my $sscl = ""; # 'server side cmd line' holds the SS version of the individual command lines
     while ($r <= $lst_scrt_idx) {
         #print "before chang'g line [$r]:\n$sscmd_lst[$r] \n";
         my $skip = 0;
+        local $_;
         foreach (split (/\s+/, $sscmd_lst[$r])) {
             if ($skip == 1) { 
                 $skip = 0;
@@ -805,19 +852,42 @@ sub SS_gnarly_pything {
         $sscl = "";
     }
     close TF;
-    #print `cat $tfname`;
-    #print "TF should be done - waiting for action\n"; #my $wait = <STDIN>;#my $wait = <STDIN>;
-# print "\n##SS cmd: $MY_BIN_DIR/scriptwrap.py  $tfname $SS_URL\nand waiting for key to tst_run"; my $wait = <STDIN>;
-    # and finally EXECUTE it
-    # FXM/FIXME : for now, look for scriptwrap.py in src/ssdap dir.
-    my $scrwrp_pth = File::Spec->catfile('..','src','ssdap','scriptwrap.py');
-    my $xpct_val = `$scrwrp_pth  $tfname $SS_URL`;
-    # and now (unfortunately), write it to disk and then execute the scriptwrap.py to get a value.
-    #unlink "nco_rgr_tmp_4scriptwrap" or die "Can't unlink the temp file: 'nco_rgr_tmp_4scriptwrap'\n";
-    #print "returned value = $xpct_val \n"; #my $wait = <STDIN>;
+    #print `cat $tfname`; # for debugging.
+}
+
+# SS_send_script($filename, $url)
+sub SS_send_script {
+    my $fname = shift;
+    my $url = shift;
+    my $scrwrp_pth = $SSD{"scrwrp_pth"};
+
+    my $xpct_val = `$scrwrp_pth  $fname $url`;
     return $xpct_val;
 }
 
+# SS_sanity_check() returns an error string on failure; nothing if things are okay.
+# example:
+#if (my $errorstring = SS_sanity_check()) {
+#    die "SS sanity check failed.: \n$errorstring\n" ;
+#}
+sub SS_sanity_check {
+    local *F;
+    my $fname = $SSD{"tfname"};
+    open(F, ">$fname") || return "Can't open $fname for writing script file.";
+    print F "ncks --version %stdouterr%\n";
+    close(F);
+    my $versionblock = SS_send_script($fname, $SSD{"url"});
+    if ($versionblock =~ m/ncks version/) { return ;}
+    else {
+        return $versionblock;
+    }
+    return "Unhandled code path";
+}
+
+# call if we haven't been initialized.
+sub SS_prepare {
+    SS_init() unless $SSD{"initialized"};
+}
 
 
 

@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.136 2006-06-25 06:54:00 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.137 2006-06-26 23:59:58 wangd Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -478,7 +478,7 @@ if ($tst_fl_mk ne '0' || $srv_sd ne "SSNOTSET"){
     if ($fc >0) {NCO_bm::rsl_smr_fl_mk(@fl_tmg); } # Print and UDPreport creation times
 }
 
-my $doit=1; # for skipping various tests
+my $doit=1; # for skipping various tests (fxm: can we delete this? -dw)
 use NCO_benchmarks; #module that contains the actual benchmark code
 # and now, the REAL benchmarks, set up as the regression tests below to use tst_run() and rsl_smr_rgr()
 #print "DEBUG: prior to benchmark call, dodap = $dodap\n";

@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.48 2006-06-24 03:28:45 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.49 2006-06-26 23:59:58 wangd Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -315,7 +315,7 @@ sub tst_rgr {
     $tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var %tempf_00%";
     $dsc_sng="ensemble mean of int across two files";
     $tst_cmd[2] = "5";
-    $tst_cmd[3] = "NO_SS";
+    $tst_cmd[3] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
@@ -323,7 +323,7 @@ sub tst_rgr {
     $tst_cmd[1]="ncks -C -H -s '%g' -v rec_var_flt_mss_val_flt %tempf_00%";
     $dsc_sng="ensemble mean with missing values across two files";
     $tst_cmd[2] = "1.0e36";
-    $tst_cmd[3] = "NO_SS";
+    $tst_cmd[3] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
@@ -383,6 +383,7 @@ sub tst_rgr {
     $dsc_sng="identity weighting";
     $tst_cmd[2] = "1.0";
     $tst_cmd[3] = "NO_SS";
+    $tst_cmd[3] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
@@ -394,6 +395,7 @@ sub tst_rgr {
 	$dsc_sng="identity interpolation";
 	$tst_cmd[4] = "2.0";
 	$tst_cmd[5] = "NO_SS";
+	$tst_cmd[5] = "SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0;  # Reset array
     }
@@ -784,18 +786,21 @@ sub tst_rgr {
     $tst_cmd[4] = "1";
     $tst_cmd[5] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
-    
-    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon -w gw -d lat,0.0,90.0 %tempf_04% %tempf_00%";
-    $tst_cmd[1]="ncks -C -H -s '%g' -v one %tempf_00%";
+    @tst_cmd=(); # really reset array.
+
+    push(@tst_cmd, "ncks -h -O $fl_fmt $nco_D_flg -v lat_T42,lon_T42,gw_T42 $in_pth_arg in.nc %tempf_03%");
+    push(@tst_cmd, "ncrename -h -O $nco_D_flg -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon %tempf_03%");
+    push(@tst_cmd, "ncap -h -O $fl_fmt $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' %tempf_03% %tempf_04%");
+    push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon -w gw -d lat,0.0,90.0 %tempf_04% %tempf_00%");
+    push(@tst_cmd, "ncks -C -H -s '%g' -v one %tempf_00%");
     $dsc_sng="normalize by denominator upper hemisphere";
     $prsrv_fl = 1; # save previously generated files.
 #	$nsr_xpc= 1;
 # tst_run();
-    $tst_cmd[2] = 1;
-    $tst_cmd[3] = "SS_OK";
+    push(@tst_cmd, 1);
+    push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0;  # Reset array
+    @tst_cmd=();  # Reset array
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time -v pck,one_dmn_rec_var $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v pck %tempf_00%";
