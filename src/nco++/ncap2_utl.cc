@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.12 2006-05-29 13:14:10 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.13 2006-06-26 15:06:33 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -127,6 +127,8 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   int rcd; /* [rcd] Return code */
   int var_out_id;
+  
+  bool bdef=false;
 
 #ifdef NCO_RUSAGE_DBG
   long maxrss; /* [B] Maximum resident set size */
@@ -135,17 +137,43 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
 
   rcd=nco_inq_varid_flg(prs_arg->out_id,var->nm,&var_out_id);
 
+  /* if var is already in output */
   if(rcd == NC_NOERR){
-    (void)fprintf(stdout,"Warning: Variable %s has aleady been saved in %s",var->nm,prs_arg->fl_out);
-    var = nco_var_free(var);
-    return False;
+    int nbr_dmn_out;
+    var_sct* var_inf;
+    dmn_sct **dmn_out;
+
+    nbr_dmn_out=prs_arg->ptr_dmn_out_vtr->size(); //dereferencing
+    dmn_out=prs_arg->ptr_dmn_out_vtr->ptr(0);     //dereferencing
+
+    var_inf=nco_var_fll(prs_arg->out_id,var_out_id,var->nm,dmn_out,nbr_dmn_out);
+
+
+    /* check sizes are the same */
+    if(var_inf->sz != var->sz) {
+      (void)fprintf(stdout,"Warning: Variable %s (size=%ld)  has aleady been saved in %s (size=%ld)\n",var->nm,var->sz,prs_arg->fl_out,var_inf->sz);
+      var = nco_var_free(var);
+      var_inf=nco_var_free(var_inf);
+      return False;
+    }
+
+    /* convert type to disk type */
+    var=nco_var_cnf_typ(var_inf->type,var);    
+    /* free var information */
+    var_inf=nco_var_free(var_inf);        
+    
+    bdef=true;  
+
+
   }
   
   /* Put file in define mode to allow metadata writing */
   (void)nco_redef(prs_arg->out_id);
   
+
+  
   /* Define variable */   
-  (void)nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
+  if(!bdef)(void)nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
   /* Put missing value */  
   if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,mss_val_sng,var->type,1,var->mss_val.vp);
   
