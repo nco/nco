@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.53 2006-06-25 06:54:00 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.54 2006-06-26 06:39:36 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions in approximate order of their usage:
@@ -889,8 +889,8 @@ sub rsl_smr_rgr {
 	    be sent verbatim as above, anonymously, to the NCO dev team via UDP on
 	    port 29659.  If your institution has a firewall that prohibits this,
 	    it will simply fail silently.  We want this info so we can fix failures,
-	    improve efficiency, solve global warming, & bring about world peace. If
-	    you DON'T want to participate in this, type in anything OTHER than
+	    improve efficiency, mitigate global warming, and bring about world peace. If
+	    you DO NOT want to participate in this, type in anything OTHER than
    [y, Y, yes or YES].  <Enter> will also decline sending the data.
 
    Do you allow the above regression data to be sent back to the NCO dev team?
