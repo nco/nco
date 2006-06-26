@@ -4,7 +4,7 @@ import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.30 2006-06-24 03:16:03 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.31 2006-06-26 19:40:20 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -367,10 +367,14 @@ class Command:
         # check hangers-on on the tail of the line for modifiers.
         # for now, process last to first, until we get a lot of modifiers
         # and have a chance for actual conflict/precedence
-        while leftover[-1] in redirTable:
-            redirTable[leftover.pop()]()
+        if len(leftover) > 0:
+            while leftover[-1] in redirTable:
+                redirTable[leftover.pop()]()
+                # pop off the back of the list, and then do the right thing.
+                if not leftover: break
 
-            # pop off the back of the list, and then do the right thing.
+        pass
+
 
     def acceptInOut(self, adict, alist, leftover):
         # look for output file first
