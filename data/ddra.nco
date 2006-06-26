@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ddra.nco,v 1.5 2006-06-26 17:09:58 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/ddra.nco,v 1.6 2006-06-26 17:26:33 zender Exp $ -*-C-*-
 
 // Purpose: Compute DDRA statistics for use in ppr_ZeM06
 // Demonstrate ncap2 scripting
@@ -86,13 +86,13 @@ flp_nbr_bnr=int64_zero; /* [nbr] Floating point operations for binary arithmetic
 flp_nbr_rdc=int64_zero; /* [nbr] Floating point operations for reduction */
 flp_nbr_nrm=int64_zero; /* [nbr] Floating point operations for normalization */
 
-ntg_nbr_brd_fdg_fct=1.8; /* [frc] Empirical correction to broadcasting */
+ntg_nbr_brd_fdg_fct=1.8f; /* [frc] Empirical correction to broadcasting */
 spd_flp_ncwa=153e6f; /* [# s-1] Floating point operation speed */
-spd_ntg_ncwa=200e6; /* [# s-1] Integer operation speed */
-spd_flp_ncbo=353.2e6; /* [# s-1] Floating point operation speed */
-spd_ntg_ncbo=1386.54e6; /* [# s-1] Integer operation speed */
-spd_rd=63.375e6; /* [B s-1] Disk read bandwidth */
-spd_wrt=57.865e6; /* [B s-1] Disk write bandwidth */
+spd_ntg_ncwa=200e6f; /* [# s-1] Integer operation speed */
+spd_flp_ncbo=353.2e6f; /* [# s-1] Floating point operation speed */
+spd_ntg_ncbo=1386.54e6f; /* [# s-1] Integer operation speed */
+spd_rd=63.375e6f; /* [B s-1] Disk read bandwidth */
+spd_wrt=57.865e6f; /* [B s-1] Disk write bandwidth */
 
 // Initialize variables that could be passed into nco_ddra()
 MRV_flg=0s; /* [flg] Avergaging dimensions are MRV dimensions */
@@ -100,7 +100,7 @@ rnk_avg=4; /* [nbr] Rank of averaging space */
 rnk_var=4; /* [nbr] Variable rank (in input file) */
 rnk_wgt=1; /* [nbr] Rank of weight */
 var_idx=0; 
-wgt_flg=1s; /* [flt] Weight name */
+wgt_flg=0s; /* [flt] Weight name */
 wgt_brd_flg=1s; /* [flg] Broadcast weight for this variable */
 wrd_sz=4; /* [B] Bytes per element */
 
@@ -112,22 +112,20 @@ fl_typ=fl_typ_gcm;
    flg_acm: Indicates nco_ctl.c code accumulates with += 
             Usually ddra.nco does not because it computes all variables at once
 	    However, sometimes the accumulation refers to the current variable,
-	    in which case it is denoted "real" and kept
-   flg_typ_lng_lng: Indicates type changed to float to hold long longs
-*/
+	    in which case it is denoted "real" and kept */
 
 if(fl_typ==fl_typ_gcm){
   var_nbr_apx=32;
-  lmn_nbr=1.0*var_nbr_apx*varsz_gcm_4D; /* [nbr] Variable size */ /* flg_typ_lng_lng */
+  lmn_nbr=1.0*var_nbr_apx*varsz_gcm_4D; /* [nbr] Variable size */
   if(nco_op_typ==nco_op_typ_avg){
-    lmn_nbr_avg=1.0*var_nbr_apx*varsz_gcm_4D; /* [nbr] Averaging block size */ /* flg_typ_lng_lng */
+    lmn_nbr_avg=1.0*var_nbr_apx*varsz_gcm_4D; /* [nbr] Averaging block size */
     lmn_nbr_wgt=dmnsz_gcm_lat; /* [nbr] Weight size */
   } // !nco_op_typ_avg
 }else if(fl_typ==fl_typ_stl){
   var_nbr_apx=8;
-  lmn_nbr=1.0*var_nbr_apx*varsz_stl_2D; /* [nbr] Variable size */ /* flg_typ_lng_lng */
+  lmn_nbr=1.0*var_nbr_apx*varsz_stl_2D; /* [nbr] Variable size */
   if(nco_op_typ==nco_op_typ_avg){
-    lmn_nbr_avg=1.0*var_nbr_apx*varsz_stl_2D; /* [nbr] Averaging block size */ /* flg_typ_lng_lng */
+    lmn_nbr_avg=1.0*var_nbr_apx*varsz_stl_2D; /* [nbr] Averaging block size */
     lmn_nbr_wgt=dmnsz_stl_lat; /* [nbr] Weight size */
   } // !nco_op_typ_avg
 } // !fl_typ
