@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ddra.nco,v 1.3 2006-06-18 05:30:56 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/ddra.nco,v 1.4 2006-06-26 17:03:31 zender Exp $ -*-C-*-
 
 // Purpose: Compute DDRA statistics for use in ppr_ZeM06
 // Demonstrate ncap2 scripting
@@ -47,6 +47,16 @@ dmnszavg_gcm_5D=varsz_gcm_4D^(1.0/5.0);
 dmnszavg_gcm_avg_wgt_varnbr=(varnbr_gcm_0D*dmnszavg_gcm_0D+varnbr_gcm_1D*dmnszavg_gcm_1D+varnbr_gcm_2D*dmnszavg_gcm_2D+varnbr_gcm_3D*dmnszavg_gcm_3D+varnbr_gcm_4D*dmnszavg_gcm_4D+varnbr_gcm_5D*dmnszavg_gcm_5D)/varnbr_gcm_ttl;
 dmnszavg_gcm_avg_wgt_lmnnbr=(lmnnbr_gcm_0D_ttl*dmnszavg_gcm_0D+lmnnbr_gcm_1D_ttl*dmnszavg_gcm_1D+lmnnbr_gcm_2D_ttl*dmnszavg_gcm_2D+lmnnbr_gcm_3D_ttl*dmnszavg_gcm_3D+lmnnbr_gcm_4D_ttl*dmnszavg_gcm_4D+lmnnbr_gcm_5D_ttl*dmnszavg_gcm_5D)/lmnnbr_gcm_ttl;
 
+/* DDRA algorithm from nco_ctl.c:nco_ddra()
+   NB: Many numbers in this script are integers by right, e.g., lmn_nbr
+   Nearly every variable with _nbr in its name is in this category
+   However, they exceed ~2*10^9 GB and so require 64-bit integer types,
+   whereas netCDF3 only supports 32-bit integers
+   Hence, these numbers and counts are (temporarily) represented by floats
+   Once netCDF4 becomes default, should switch them to int64 type
+   For now, initialize these to int64_zero instead of 0L */
+int64_zero=0.0f; /* [flg] Variable assigned to this should be type int64 */
+
 // Define constants normally in headers, e.g., enums
 nco_op_typ_sbt=0s; /* [enm] Operation type */
 nco_op_typ_avg=1s; /* [enm] Operation type */
@@ -54,9 +64,9 @@ fl_typ_gcm=0s;
 fl_typ_stl=1s;
 
   /* Cumulative file costs */
-lmn_nbr_ttl=0L; /* I/O [nbr] Cumulative variable size */
-ntg_nbr_ttl=0L; /* I/O [nbr] Cumulative integer operations */
-flp_nbr_ttl=0L; /* I/O [nbr] Cumulative floating point operations */
+lmn_nbr_ttl=int64_zero; /* I/O [nbr] Cumulative variable size */
+ntg_nbr_ttl=int64_zero; /* I/O [nbr] Cumulative integer operations */
+flp_nbr_ttl=int64_zero; /* I/O [nbr] Cumulative floating point operations */
 
   /* Cumulative times */
 tm_ntg_ttl=0.0f; /* I/O [s] Cumulative integer time */
@@ -67,16 +77,15 @@ tm_io_ttl=0.0f; /* [s] I/O time */
 tm_ttl=0.0f; /* I/O [s] Cumulative time */
 
   /* Initialize all algorithm counts for this variable to zero then increment */
-ntg_nbr_byt_swp=0L; /* [nbr] Integer operations for byte-swap */
-ntg_nbr_brd=0L; /* [nbr] Integer operations for broadcasting */
-ntg_nbr_clc=0L; /* [nbr] Integer operations for collection */
-ntg_nbr_rdc=0L; /* [nbr] Integer operations for reduction */
-ntg_nbr_nrm=0L; /* [nbr] Integer operations for normalization */
-flp_nbr_bnr=0L; /* [nbr] Floating point operations for binary arithmetic */
-flp_nbr_rdc=0L; /* [nbr] Floating point operations for reduction */
-flp_nbr_nrm=0L; /* [nbr] Floating point operations for normalization */
+ntg_nbr_byt_swp=int64_zero; /* [nbr] Integer operations for byte-swap */
+ntg_nbr_brd=int64_zero; /* [nbr] Integer operations for broadcasting */
+ntg_nbr_clc=int64_zero; /* [nbr] Integer operations for collection */
+ntg_nbr_rdc=int64_zero; /* [nbr] Integer operations for reduction */
+ntg_nbr_nrm=int64_zero; /* [nbr] Integer operations for normalization */
+flp_nbr_bnr=int64_zero; /* [nbr] Floating point operations for binary arithmetic */
+flp_nbr_rdc=int64_zero; /* [nbr] Floating point operations for reduction */
+flp_nbr_nrm=int64_zero; /* [nbr] Floating point operations for normalization */
 
-// From nco_ddra() in nco_ctl.c
 ntg_nbr_brd_fdg_fct=1.8; /* [frc] Empirical correction to broadcasting */
 spd_flp_ncwa=153e6; /* [# s-1] Floating point operation speed */
 spd_ntg_ncwa=200e6; /* [# s-1] Integer operation speed */
