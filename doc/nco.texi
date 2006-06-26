@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.369 2006-06-25 06:54:00 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.370 2006-06-26 20:21:57 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -8896,45 +8896,45 @@ Each month in the output file is the mean of 100 input files.
 
 Normally, we store the "reduced" data in a smaller, local directory.
 
-CASEID='T42x1_40'
-#drc_in="$@{DATA@}/archive/$@{CASEID@}/atm"
-drc_in="$@{DATA@}/$@{CASEID@}"
-drc_out="$@{DATA@}/$@{CASEID@}"
+caseid='T42x1_40'
+#drc_in="$@{DATA@}/archive/$@{caseid@}/atm"
+drc_in="$@{DATA@}/$@{caseid@}"
+drc_out="$@{DATA@}/$@{caseid@}"
 mkdir -p $@{drc_out@}
 cd $@{drc_out@}
 
 Method 1: Assume all data in directory applies
 for mth in @{01..12@}; do
-  MM=`printf "%02d" $mth`
-  ncra -O -D 1 -o $@{drc_out@}/$@{CASEID@}_clm$@{MM@}.nc \
-    $@{drc_in@}/$@{CASEID@}.cam2.h0.*-$@{MM@}.nc 
+  mm=`printf "%02d" $mth`
+  ncra -O -D 1 -o $@{drc_out@}/$@{caseid@}_clm$@{mm@}.nc \
+    $@{drc_in@}/$@{caseid@}.cam2.h0.*-$@{mm@}.nc 
 done # end loop over mth
 
 Method 2: Use shell 'globbing' to construct input filenames
 for mth in @{01..12@}; do
-  MM=`printf "%02d" $mth`
-  ncra -O -D 1 -o $@{drc_out@}/$@{CASEID@}_clm$@{MM@}.nc \
-    $@{drc_in@}/$@{CASEID@}.cam2.h0.00??-$@{MM@}.nc \
-    $@{drc_in@}/$@{CASEID@}.cam2.h0.0100-$@{MM@}.nc
+  mm=`printf "%02d" $mth`
+  ncra -O -D 1 -o $@{drc_out@}/$@{caseid@}_clm$@{mm@}.nc \
+    $@{drc_in@}/$@{caseid@}.cam2.h0.00??-$@{mm@}.nc \
+    $@{drc_in@}/$@{caseid@}.cam2.h0.0100-$@{mm@}.nc
 done # end loop over mth
 
 Method 3: Construct input filename list explicitly
 for mth in @{01..12@}; do
-  MM=`printf "%02d" $mth`
+  mm=`printf "%02d" $mth`
   fl_lst_in=''
   for yr in @{0001..0100@}; do
-    YYYY=`printf "%04d" $yr`
-    fl_in=$@{CASEID@}.cam2.h0.$@{YYYY@}-$@{MM@}.nc
-    fl_lst_in="$@{fl_lst_in@} $@{CASEID@}.cam2.h0.$@{YYYY@}-$@{MM@}.nc"
+    yyyy=`printf "%04d" $yr`
+    fl_in=$@{caseid@}.cam2.h0.$@{yyyy@}-$@{mm@}.nc
+    fl_lst_in="$@{fl_lst_in@} $@{caseid@}.cam2.h0.$@{yyyy@}-$@{mm@}.nc"
   done # end loop over yr
-  ncra -O -D 1 -o $@{drc_out@}/$@{CASEID@}_clm$@{MM@}.nc -p $@{drc_in@} \
+  ncra -O -D 1 -o $@{drc_out@}/$@{caseid@}_clm$@{mm@}.nc -p $@{drc_in@} \
     $@{fl_lst_in@}
 done # end loop over mth
 
 Make sure the output file averages correct input files!
 ncks -M prints global metadata: 
 
-  ncks -M $@{drc_out@}/$@{CASEID@}_clm01.nc
+  ncks -M $@{drc_out@}/$@{caseid@}_clm01.nc
 
 The input files ncra used to create the climatological monthly mean
 will appear in the global attribute named 'history'.
@@ -8942,23 +8942,23 @@ will appear in the global attribute named 'history'.
 Use ncrcat to aggregate the climatological monthly means
 
   ncrcat -O -D 1 \
-    $@{drc_out@}/$@{CASEID@}_clm??.nc $@{drc_out@}/$@{CASEID@}_clm_0112.nc
+    $@{drc_out@}/$@{caseid@}_clm??.nc $@{drc_out@}/$@{caseid@}_clm_0112.nc
 
 Finally, create climatological means for reference.
 The climatological time-mean:
 
   ncra -O -D 1 \
-    $@{drc_out@}/$@{CASEID@}_clm_0112.nc $@{drc_out@}/$@{CASEID@}_clm.nc
+    $@{drc_out@}/$@{caseid@}_clm_0112.nc $@{drc_out@}/$@{caseid@}_clm.nc
 
 The climatological zonal-mean:
 
   ncwa -O -D 1 -a lon \
-    $@{drc_out@}/$@{CASEID@}_clm.nc $@{drc_out@}/$@{CASEID@}_clm_x.nc
+    $@{drc_out@}/$@{caseid@}_clm.nc $@{drc_out@}/$@{caseid@}_clm_x.nc
 
 The climatological time- and spatial-mean:
 
   ncwa -O -D 1 -a lon,lat,time -w gw \
-    $@{drc_out@}/$@{CASEID@}_clm.nc $@{drc_out@}/$@{CASEID@}_clm_xyt.nc
+    $@{drc_out@}/$@{caseid@}_clm.nc $@{drc_out@}/$@{caseid@}_clm_xyt.nc
 
 This file contains only scalars, e.g., "global mean temperature",
 used for summarizing global results of a climate experiment.
@@ -8967,8 +8967,8 @@ Climatological monthly anomalies = Annual Cycle:
 Subtract climatological mean from climatological monthly means. 
 Result is annual cycle, i.e., climate-mean has been removed.
 
-  ncbo -O -D 1 -o $@{drc_out@}/$@{CASEID@}_clm_0112_anm.nc \
-    $@{drc_out@}/$@{CASEID@}_clm_0112.nc $@{drc_out@}/$@{CASEID@}_clm_xyt.nc
+  ncbo -O -D 1 -o $@{drc_out@}/$@{caseid@}_clm_0112_anm.nc \
+    $@{drc_out@}/$@{caseid@}_clm_0112.nc $@{drc_out@}/$@{caseid@}_clm_xyt.nc
 
 ************************************************************************
 Task 2: Correcting monthly averages
@@ -8985,24 +8985,24 @@ dpm=(0 31 28.25 31 30 31 30 31 31 30 31 30 31) # Allows 1-based indexing
 
 Method 1: Create dpm directly in climatological monthly means
 for mth in @{01..12@}; do
-  MM=`printf "%02d" $@{mth@}`
+  mm=`printf "%02d" $@{mth@}`
   ncap -O -s "dpm=0.0*date+$@{dpm[$@{mth@}]@}" \
-    $@{drc_out@}/$@{CASEID@}_clm$@{MM@}.nc $@{drc_out@}/$@{CASEID@}_clm$@{MM@}.nc
+    $@{drc_out@}/$@{caseid@}_clm$@{mm@}.nc $@{drc_out@}/$@{caseid@}_clm$@{mm@}.nc
 done # end loop over mth
 
 Method 2: Create dpm by aggregating small files
 for mth in @{01..12@}; do
-  MM=`printf "%02d" $@{mth@}`
+  mm=`printf "%02d" $@{mth@}`
   ncap -O -v -s "dpm=$@{dpm[$@{mth@}]@}" ~/nco/data/in.nc \
-    $@{drc_out@}/foo_$@{MM@}.nc
+    $@{drc_out@}/foo_$@{mm@}.nc
 done # end loop over mth
-ncecat -O -D 1 -p $@{drc_out@} -n 12,2,2 foo_$@{MM@}.nc foo.nc
+ncecat -O -D 1 -p $@{drc_out@} -n 12,2,2 foo_$@{mm@}.nc foo.nc
 ncrename -O -D 1 -d record,time $@{drc_out@}/foo.nc
 ncatted -O -h \
   -a long_name,dpm,o,c,"Days per month" \
   -a units,dpm,o,c,"days" \
-  $@{drc_out@}/$@{CASEID@}_clm_0112.nc
-ncks -A -v dpm $@{drc_out@}/foo.nc $@{drc_out@}/$@{CASEID@}_clm_0112.nc
+  $@{drc_out@}/$@{caseid@}_clm_0112.nc
+ncks -A -v dpm $@{drc_out@}/foo.nc $@{drc_out@}/$@{caseid@}_clm_0112.nc
 
 Method 3: Create small netCDF file using ncgen
 cat > foo.cdl << EOF
@@ -9018,7 +9018,7 @@ data:
 @}
 EOF
 ncgen -b -o foo.nc foo.cdl
-ncks -A -v dpm $@{drc_out@}/foo.nc $@{drc_out@}/$@{CASEID@}_clm_0112.nc
+ncks -A -v dpm $@{drc_out@}/foo.nc $@{drc_out@}/$@{caseid@}_clm_0112.nc
 
 Another way to get correct monthly weighting is to average daily
 output files, if available.  
@@ -9030,7 +9030,7 @@ Let's say you are interested in examining the California region.
 Hyperslab your dataset to isolate the appropriate latitude/longitudes.
 
   ncks -O -D 1 -d lat,30.0,37.0 -d lon,240.0,270.0 \ 
-    $@{drc_out@}/$@{CASEID@}_clm_0112.nc $@{drc_out@}/$@{CASEID@}_clm_0112_Cal.nc
+    $@{drc_out@}/$@{caseid@}_clm_0112.nc $@{drc_out@}/$@{caseid@}_clm_0112_Cal.nc
 
 The dataset is now much smaller!
 To examine particular metrics.
@@ -9057,7 +9057,7 @@ ncks -M -p http://username:password@@climate.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/s
 
 Earth System Grid (ESG): http://www.earthsystemgrid.org
 
-CASEID='b30.025.ES01' 
+caseid='b30.025.ES01' 
 CCSM3.0 1% increasing CO2 run, T42_gx1v3, 200 years starting in year 400
 Atmospheric post-processed data, monthly averages, e.g.,
 /data/zender/tmp/b30.025.ES01.cam2.h0.TREFHT.0400-01_cat_0449-12.nc
