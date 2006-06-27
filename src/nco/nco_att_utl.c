@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.64 2006-05-13 21:34:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.65 2006-06-27 03:12:38 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -69,7 +69,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     ptr_unn var_val;
     var_sct *var=NULL_CEWI;
 
-    (void)fprintf(stdout,"%s: WARNING Replacing missing value data in variable %s\n",prg_nm_get(),var_nm);
+    (void)fprintf(stdout,"%s: INFO Replacing missing value data in variable %s\n",prg_nm_get(),var_nm);
 
     /* Take file out of define mode */
     (void)nco_enddef(nc_id);
@@ -264,10 +264,10 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
     /* Will copy overwrite an existing attribute? */
     if(rcd == NC_NOERR){
       if(var_out_id == NC_GLOBAL){
-	(void)fprintf(stderr,"%s: WARNING Overwriting global attribute %s\n",prg_nm_get(),att_nm);
+	(void)fprintf(stderr,"%s: INFO Overwriting global attribute %s\n",prg_nm_get(),att_nm);
       }else{
 	(void)nco_inq_varname(out_id,var_out_id,var_nm);
-	(void)fprintf(stderr,"%s: WARNING Overwriting attribute %s for output variable %s\n",prg_nm_get(),att_nm,var_nm);
+	(void)fprintf(stderr,"%s: INFO Overwriting attribute %s for output variable %s\n",prg_nm_get(),att_nm,var_nm);
       } /* end else */
     } /* end if */
 

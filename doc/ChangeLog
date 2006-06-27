@@ -1,3 +1,7 @@
+2006-06-26  Charlie Zender  <zender@uci.edu>
+
+	* Replace some WARNINGs with less-paranoid INFOs when -A appending
+
 2006-06-22  Charlie Zender  <zender@uci.edu>
 
 	* Support AIX runantlr=antlr in Makefile.old for ncap2 on AIX
