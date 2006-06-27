@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.790 2006-06-22 20:49:35 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.791 2006-06-27 22:19:05 wangd Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -832,6 +832,12 @@ Goal: end of February
 7. SS intermediate filename magic allow deterministic chaining of
    output files so sequential command may depend on previous commands
 8. SS and client side mods to send back multiple output files
+8.1 db-backed job control
+8.1a. client-side multi-file wrapper first iteration
+8.1b. server-side file-waiting (block-until-send) first iteration
+8.1c. client-side real async: job status, etc.
+8.1d. server-side wakeup/signalling for scalability
+
 
 Milestone: Mark's climate model analysis script "works"
            Check if design decisions/interfaces/initial parser seems good 
