@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.791 2006-06-27 22:19:05 wangd Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.792 2006-06-30 18:39:17 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -518,7 +518,9 @@ nco763. Access the IPCC AR4 database via OPeNDAP: http://www-pcmdi.llnl.gov/soft
         http://climate.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0/pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml.html
         ncks -M -p http://zender:password@climate.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0 pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml
 	ncks -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
-nco764. 
+nco764. OpenMP with pathcc segfaults with ncra
+	ncra -O ~/nco/data/in.nc ~/foo.nc # fails
+nco765. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

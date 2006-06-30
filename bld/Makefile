@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.374 2006-06-30 18:19:00 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.375 2006-06-30 18:39:17 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -944,9 +944,11 @@ ifeq (${OPTS},X)
 endif
 endif # endif G77 Fortran compiler
 ifeq (${OMP},Y)
- CFLAGS += ${OMP_FLG}
- FFLAGS += ${OMP_FLG}
- LDFLAGS := ${OMP_FLG} ${LDFLAGS}
+ CFLAGS += ${OMP_FLG_C}
+ CXXFLAGS += ${OMP_FLG_C}
+ FFLAGS += ${OMP_FLG_C}
+# LD behavior assumes C source code
+ LDFLAGS := ${OMP_FLG_C} ${LDFLAGS}
 endif # endif OMP
 endif
 # endif LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, FREEBSD

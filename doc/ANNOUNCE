@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.181 2006-06-08 04:27:46 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.182 2006-06-30 18:39:17 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.4 are ready. 
 This is a bug-fix release only.
@@ -6,11 +6,12 @@ This is a bug-fix release only.
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-ncbo in version 3.1.3 suffers from a trivial memory error which 
-causes it to segfault after writing a correct output file.
+1. Reduce severity from WARNING to INFO for some common operations
+   Intended to lower user's blood pressure 
 
-There is also one user-visible change in that running any operator
-with a debug level greater than zero now reports timer results.
+2. Build correctly with Pathscale pathcc compiler
+
+3. 
 
 Enjoy,
 Charlie

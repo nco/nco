@@ -1,5 +1,9 @@
 2006-06-30  Charlie Zender  <zender@uci.edu>
 
+	* OpenMP with pathcc segfaults with ncra
+
+	* Regressions tests pass as expected with native pathcc on ipcc
+
 	* Change to gettimeofday() to avoid strict Perl errors in NCO_bm.pl
 
 	* Tweak bld/Makefile to work with pathcc compiler on ipcc.ess.uci.edu
