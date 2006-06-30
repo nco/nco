@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.372 2006-06-17 17:20:46 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.373 2006-06-30 06:40:18 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -246,6 +246,7 @@ ifndef LINUX_CXX
  #LINUX_CXX := como
  #LINUX_CXX := icpc
  #LINUX_CXX := insure
+ #LINUX_CXX := pathCC
  #LINUX_CXX := pgCC
 endif # endif LINUX_CXX
 ifndef LINUX_CC
@@ -254,6 +255,7 @@ ifndef LINUX_CC
  #LINUX_CC := como --c99
  #LINUX_CC := icc -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE
  #LINUX_CC := insure
+ #LINUX_CC := pathcc -std=c99
  #LINUX_CC := pgcc -std=c99
 endif # endif LINUX_CC
 ifndef LINUX_FC
@@ -262,6 +264,7 @@ ifndef LINUX_FC
  #LINUX_FC := gfortran
  #LINUX_FC := ifort
  #LINUX_FC := lf95
+ #LINUX_FC := pathf95
  #LINUX_FC := pgf90
 endif # endif LINUX_CC
 endif # endif LINUX
@@ -481,7 +484,7 @@ endif # !MPI
 ifeq (${UDUNITS},Y)
  CPP_TKN_OS += -DENABLE_UDUNITS -DHAVE_UDUNITS_H
 endif # !UDUNITS
-# Assume strcasecmp() and strdup() routines are present (Comeau is exception)
+# Assume strcasecmp() and strdup() routines are present (Comeau, Pathscale are exceptions)
 CPP_TKN_OS += 
 # fxm: Define HAVE_LIBINTL, HAVE_LOCALE_H, HAVE_GETTEXT, HAVE_OMP_H
 
@@ -859,6 +862,30 @@ ifeq (${OPTS},X)
  FFLAGS += -g -C -e95
 endif
 endif # endif Intel (Kai) Fortran Compiler
+# Pathscale (QLogic) C++ Compiler
+ifeq (pathCC,$(firstword ${CXX}))
+# man -k pathscale for full listing
+# -O2 = -O: Default optimization
+# -Ofast = -O3:
+ CFLAGS := 
+ CPPFLAGS += -DNEED_STRCASECMP
+ CPPFLAGS += -DNEED_STRDUP
+ LDFLAGS := 
+ OMP_FLG_C := -apo -mp
+ifeq (${OPTS},O)
+ CFLAGS += -O3 -g ${PTH_RCH_ARG}
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+ifeq (${OPTS},R)
+ CFLAGS += -O2
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g 
+endif
+ CXXFLAGS := ${CFLAGS}
+endif # end Pathscale (QLogic) C++ Compiler
 # Portland Group C++ Compiler
 ifeq (${CC},pgcc)
 # Enable Large File Support (LFS) by default
