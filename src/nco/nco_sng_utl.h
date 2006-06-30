@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.14 2006-06-30 06:40:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.15 2006-06-30 18:19:00 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -19,6 +19,9 @@
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <string.h> /* strcmp. . . */
+#ifdef NEED_STRCASECMP
+#include <ctype.h> /* tolower. . . */
+#endif /* !NEED_STRCASECMP */
 
 /* 3rd party vendors */
 

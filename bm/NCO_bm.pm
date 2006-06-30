@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.55 2006-06-26 23:59:58 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.56 2006-06-30 18:19:00 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions in approximate order of their usage:
@@ -284,11 +284,11 @@ sub fl_mk {
     $bm_drc = "../bm"; 
     print "==== Creating $fl_mk_dat[$idx][0] data file from template in [$bm_drc]\n";
     print "Executing: $tmr_app ncgen -b -o $fl_out $bm_drc/$fl_mk_dat[$idx][2].cdl\n";
-    if ($hiresfound) {$t0 = [gettimeofday];}
+    if ($hiresfound) {$t0 = [gettimeofday()];}
     else {$t0 = time;}
 # File creation now timed
     system  "$tmr_app ncgen -b -o $fl_out $bm_drc/$fl_mk_dat[$idx][2].cdl";
-    if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
+    if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday()]);}
     else {$elapsed = time - $t0;}
 # log it to common timing array
     $fl_tmg[$idx][0] = "$fl_mk_dat[$idx][2]"; # name root
@@ -305,10 +305,10 @@ sub fl_mk {
     print "\n==== Populating $fl_out file.\nTiming results:\n";
 #print "fl_mk: pfx_cmd = $pfx_cmd\n";
     print "Executing: $tmr_app $pfx_cmd/ncap -h -O $nco_D_flg -s $fl_mk_dat[$idx][3] $fl_in $fl_out\n";
-    if ($hiresfound) {$t0 = [gettimeofday];}
+    if ($hiresfound) {$t0 = [gettimeofday()];}
     else {$t0 = time;}
     system "$tmr_app $pfx_cmd/ncap -O -h -s $fl_mk_dat[$idx][3] $fl_in $fl_out";
-    if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
+    if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday()]);}
     else {$elapsed = time - $t0;}
     $fl_tmg[$idx][2] = $elapsed; # population time
     print "==========================\nEnd of $fl_mk_dat[$idx][2] section\n==========================\n\n\n";
@@ -598,7 +598,7 @@ sub tst_run {
 	    # NB: May require ONLY HiRes timing since SERVERSIDE will be hard to do otherwise
 	    # timing code using Time::HiRes
 	    my $t0;
-	    if ($hiresfound) {$t0 = [gettimeofday];}
+	    if ($hiresfound) {$t0 = [gettimeofday()];}
 	    else {$t0 = time;}
 	    
 	    # Execute command, split off stderr to file 'nco_bm.stderr'
@@ -642,7 +642,7 @@ sub tst_run {
 		    $sys_tme{$opr_nm}  += $rev_sys_tim_arr[4] + 0;
 		}
 	    }
-	    if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
+	    if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday()]);}
 	    else {$elapsed = time - $t0;}
 	    
 	    #print "inter benchmark for $opr_nm = $subbenchmarks{$opr_nm} \n";

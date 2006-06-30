@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.149 2006-06-25 06:54:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.150 2006-06-30 18:19:00 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -30,7 +30,7 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
 #endif /* !__INTEL_COMPILER */
 #ifdef __PATHCC
   /* Some compilers, including pathcc, also define __GNUC__ by default */
-  static const char cmp_nm[]="icc";
+  static const char cmp_nm[]="pathcc";
   static const char cmp_sng[]="Token __PATHCC defined in nco_cmp_get(), probably compiled with pathcc"; /* [sng] Compiler string */
 #endif /* !__PATHCC */
 

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.373 2006-06-30 06:40:18 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.374 2006-06-30 18:19:00 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -864,16 +864,17 @@ endif
 endif # endif Intel (Kai) Fortran Compiler
 # Pathscale (QLogic) C++ Compiler
 ifeq (pathCC,$(firstword ${CXX}))
+# pathcc -show-defaults
+# shows that pathcc automatically sets many hardware-specific options
 # man -k pathscale for full listing
 # -O2 = -O: Default optimization
 # -Ofast = -O3:
  CFLAGS := 
  CPPFLAGS += -DNEED_STRCASECMP
- CPPFLAGS += -DNEED_STRDUP
- LDFLAGS := 
+ LDFLAGS += 
  OMP_FLG_C := -apo -mp
 ifeq (${OPTS},O)
- CFLAGS += -O3 -g ${PTH_RCH_ARG}
+ CFLAGS += -O3 -g ${PSC_RCH_ARG}
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g

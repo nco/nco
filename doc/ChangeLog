@@ -1,3 +1,9 @@
+2006-06-30  Charlie Zender  <zender@uci.edu>
+
+	* Change to gettimeofday() to avoid strict Perl errors in NCO_bm.pl
+
+	* Tweak bld/Makefile to work with pathcc compiler on ipcc.ess.uci.edu
+
 2006-06-26  Charlie Zender  <zender@uci.edu>
 
 	* Replace some WARNINGs with less-paranoid INFOs when -A appending
