@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.792 2006-06-30 18:39:17 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.793 2006-06-30 20:02:23 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -520,7 +520,9 @@ nco763. Access the IPCC AR4 database via OPeNDAP: http://www-pcmdi.llnl.gov/soft
 	ncks -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
 nco764. OpenMP with pathcc segfaults with ncra
 	ncra -O ~/nco/data/in.nc ~/foo.nc # fails
-nco765. 
+	ncks -M ~/foo.nc
+nco765. Regression test does not count ncra failures (19 of them) as failures
+nco766. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

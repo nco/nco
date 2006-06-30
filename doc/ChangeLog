@@ -1,6 +1,6 @@
 2006-06-30  Charlie Zender  <zender@uci.edu>
 
-	* OpenMP with pathcc segfaults with ncra
+	* OpenMP with pathcc segfaults with ncra fxm TODO nco764
 
 	* Regressions tests pass as expected with native pathcc on ipcc
 
