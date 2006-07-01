@@ -1,0 +1,21 @@
+ncecat -h -O    -n 3,2,1 dodsdata/skn_lgs_00.nc %tempf_01%
+ncwa -h -O    %tempf_01% %tempf_02%
+ncecat %tempf_02% %outfile_catout%
+ncecat -h -O -n 2,2,1 dodsdata/skn_lgs_00.nc %outfile_cat2out%
+# ncks -C -H -s '%f' -v PO2 $tempf_02% %stdouterr%
+
+# This is ncecat test 01 benchmark in async mode.
+# we will test: data passing between lines, and stdout returning.
+# ncecat -h -O  -D 1  -n 32,2,1 -p nco_bm skn_lgs_00.nc nco_bm/foo.nc
+# ncwa -h -O  -D 1  nco_bm/foo.nc nco_bm/foo.nc
+# ncks -C -H -s '%f' -v PO2 nco_bm/foo.nc
+# 
+# magic identifiers:
+# %outfile% -- return this output back to the client
+# %temp_xx% -- this is a temporary file not to be saved
+# %stdouterr% -- capture both stdout and stderr and return it instead 
+#                of the file
+#
+# for now, send back either outfile or stdouterr, not both.
+
+
