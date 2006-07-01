@@ -4,7 +4,7 @@ import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.32 2006-06-26 23:43:56 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.33 2006-07-01 05:01:53 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -234,17 +234,34 @@ def prestartLogging():
 def startLogging():
     if not local.disableLogging:
         lastcontents = local.logfile.getvalue()
+        #must overwrite local.logfile so we know we're out of prestart
         local.logfile = open(local.logLocation, "a")
         local.logfile.write(lastcontents)
+        local.logfile.flush()
+        local.logfile.close()
+        # do not keep file open --> parent/child fork issues
         #local.logfile.write("log located at " + local.logLocation + "\n")
 
 def logit(s):
     if not local.disableLogging:
-        local.logfile.write(str(local.mypid)+"=="+s+"\n")
+        import cStringIO
+        formatted = str(local.mypid) + "==" + s + "\n"
+        # check if we're still in prestart
+        if type(local.logfile) == cStringIO.OutputType:
+            local.logfile.write(formatted)
+        else:
+            lf  = open(local.logLocation, "a")
+            lf.write(formatted)
+            lf.flush()
+            lf.close()
+        pass
     #print s
+    pass
 def logflush():
+    return # no need to flush anymore: close file after every write.
     if not local.disableLogging:
-        local.logfile.flush()
+        #local.logfile.flush()
+        pass
     pass
 
 ######################################################################
@@ -330,7 +347,9 @@ class Command:
         metamap = {"ssd_initsave" : self.cmdInitSave,
                    "ssd_save" : self.cmdSave,
                    "ssd_poll" : self.cmdPoll,
-                   "ssd_retrieve" : self.cmdRetrieve}
+                   "ssd_retrieve" : self.cmdRetrieveOrBlock,
+                   "ssd_retrievenoblock" : self.cmdRetrieve }
+        logit("trying meta cmd " + self.cmd)
         metamap[self.cmd](argv)
         self.isMeta = True
         pass
@@ -531,31 +550,7 @@ class Command:
          self.env.env["async"] = True;
          self.arguments = [];
          return
-         ##### fork later.....
-         sys.stdout.flush() # flush output before forking
 
-         try:
-             of = os.fork()
-         except OSError:
-             sys.stderrwrite('fork failed\n')
-             sys.exit(1)
-         if of == 0: # child process
-             # child does the real work.
-             # set async: redirect stdout/stdin etc.
-             # write stdout to task.id.stdout
-             # when finished, write task.id.result
-             self.env.setAsync()
-             pass
-
-         else: # parent process
-             print "Your task id is", tid, "running with PID", of
-             self.env.setAsync()
-             # want to report task id and then exit.
-             # this should let the client transaction finish
-             pass
-
-
-         pass
     def cmdSave(self, argv):
          # designate real filename (or just a persistently-mapped identifier)
          # that can be requested later.  Would like to put in normal
@@ -579,11 +574,11 @@ class Command:
          pass
     def cmdRetrieve(self,argv):
          # check for job finish. check for task.id.result. if not exist,
-         # consider reading task.id.stdout for fun.
-         #FIXME
+         # consider reading task.id.stdout -- how to get partial results?
          self.arguments = [];
          j = JobPersistence()
          n = None
+         logit("going to try retrieving "+ argv[0])
          try:
              s = j.pollFileState(int(argv[0]))
              if s != 3: ## 3==saved.  better way to do this magic const?
@@ -604,6 +599,41 @@ class Command:
              
          j.close()
          pass
+    def cmdRetrieveOrBlock(self,argv):
+        sleeptime = 5 # for now, sleep 5 seconds if not ready yet.
+        # check for job finish. check for task.id.result. if not exist,
+
+        self.arguments = [];
+        j = JobPersistence()
+        n = None
+        logit("retr or block until: "+ argv[0])
+        try:
+            while 1:
+                s = j.pollFileState(int(argv[0]))
+                if s != 3: ## 3==saved.  better way to do this magic const?
+                    if s == None:
+                        print "File id", argv[0], " is nonexistent."
+                        raise StandardError("Bad FileId to retrieve")
+                    else:
+                        # not ready, ok to wait.
+                        # sleep for 10s-- (FIXME: want a signalling system)
+                        # can also wait on task pid?
+                        import time
+                        time.sleep(sleeptime)
+                    pass 
+                else:
+                    break # ok to continue
+
+            n = j.pollFilename(int(argv[0]))
+            # patch output filename (use bogus handle)
+            # this is rather backwards.
+            self.env.fileMap[ScriptingEnv.SCRIPT_OUTFILE] = (0,n)
+        #except TypeError:
+        except (TypeError,ValueError,StandardError):
+             print "Problem retrieving file for id ", argv[0]
+             
+        j.close()
+        pass
 
     def execute(self, scrEnv):
          """execute myself in a certain scripting environment"""
@@ -715,7 +745,7 @@ class ScriptingEnv:
 
     CLASS_TEMP = "tempf"
     CLASS_SEP = "_"
-    CLASS_OUT = "outf"
+    CLASS_OUT = "outfile"
     MAGIC_DELIM = "%"
     NC_SUFFIX = ".nc"
     NCO_COMMANDS = ["ncap", "ncatted", "ncbo", "ncdiff",
@@ -749,6 +779,8 @@ class ScriptingEnv:
          #WARN: commands is read by the command builder
          self.commandLine = [] # list of commandlines (no comments)
          lineNum = 0
+         self.isAsync = self.env.has_key("async") and self.env["async"] == True
+
          for line in scriptlines:
              lineNum += 1
              c = Command(line, self)
@@ -920,10 +952,23 @@ class ScriptingEnv:
                  # I am the parent: want to return tokens?
                  #print "hello, I'm the parent, the child pid is", pid
                  self.isParent = True
+                 print self.tokensDescription()
                  print >>sys.stderr,self.outTokens
-                 os.wait()
+                 # remove script outfile from env, to skip output
+                 if self.fileMap.has_key(ScriptingEnv.SCRIPT_OUTFILE):
+                     self.fileMap.pop(ScriptingEnv.SCRIPT_OUTFILE)
+                 
+                 #os.wait()
              else:
                  #print "hello, I'm the child, I want to execute things normally"
+                 devnull = os.open("/dev/null", os.O_RDONLY)
+                 os.dup2(devnull, sys.stdin.fileno())
+                 os.dup2(devnull, sys.stdout.fileno()) # silence stdout
+                 os.dup2(devnull, sys.stderr.fileno()) # silence stderr
+                 os.close(devnull)
+                 # need to dup file descriptors so httpd lets parent return.
+                 # See:
+                 # http://mail.python.org/pipermail/python-list/2001-March/032663.html
                  self.serialExec()
                  sys.exit(0)
         except OSError, e: 
@@ -947,6 +992,14 @@ class ScriptingEnv:
                         label = " [ label = \"" + o + "\" ]"
                         out +=  x.myName + " -> " + c.myName + label + ";\n"
         return out
+    def tokensDescription(self):
+        """make a description of the output tokens for this job.
+        should be parseable by a client.  think about xml for this later"""
+        output = []
+        for t in self.outTokens:
+            output.append("SSDTOKEN<< logical=\"%s\" token=\"%d\" >>"
+                          % (t[0], t[1]))
+        return "\n".join(output)
 
     def returnOutput(self, targetfd):
         # if we have an output... 
