@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.793 2006-06-30 20:02:23 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.794 2006-07-02 00:43:07 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -518,8 +518,11 @@ nco763. Access the IPCC AR4 database via OPeNDAP: http://www-pcmdi.llnl.gov/soft
         http://climate.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0/pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml.html
         ncks -M -p http://zender:password@climate.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0 pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml
 	ncks -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
-nco764. OpenMP with pathcc segfaults with ncra
+nco764. OpenMP with pathcc segfaults with ncra clean and dirty
 	ncra -O ~/nco/data/in.nc ~/foo.nc # fails
+	ncra -D 4 -O -d time,0 -v time,one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc # fails
+	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncra -D 4 -O -d time,0 -v time,one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
+
 	ncks -M ~/foo.nc
 nco765. Regression test does not count ncra failures (19 of them) as failures
 nco766. 
