@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.370 2006-06-26 20:21:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.371 2006-07-03 05:03:31 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2358,9 +2358,9 @@ Eschew using valuable passwords for @acronym{FTP} transactions, since
 @file{.netrc} passwords are potentially exposed to eavesdropping
 software
 @footnote{@acronym{NCO} does not implement command line options to
-specify @acronym{FTP} logins and passwords because of the extra security
-copying those data into the @code{history} global attribute in the
-output file (done by default) poses an unacceptable security risk.
+specify @acronym{FTP} logins and passwords because copying those data
+into the @code{history} global attribute in the output file (done by
+default) poses an unacceptable security risk. 
 }. 
 
 @html
