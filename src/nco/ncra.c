@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.186 2006-07-03 22:02:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.187 2006-07-04 00:38:44 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.186 2006-07-03 22:02:50 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.186 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.187 2006-07-04 00:38:44 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.187 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
 #ifdef __cplusplus
@@ -533,10 +533,10 @@ main(int argc,char **argv)
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
     if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-    if(dbg_lvl > 0) (void)fprintf(stderr,gettext("%s: INFO: Input file %d is %s"),prg_nm_get(),fl_idx,fl_in);
+    if(dbg_lvl > 0) (void)fprintf(stderr,gettext("%s: INFO Input file %d is %s"),prg_nm_get(),fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
-    if(dbg_lvl > 0 && FILE_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,gettext("; local file is %s"),fl_in);
+    if(dbg_lvl > 0 && FILE_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,gettext(", local file is %s"),fl_in);
     if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
 
     /* Open file once per thread to improve caching */
