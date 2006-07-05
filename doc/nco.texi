@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.371 2006-07-03 05:03:31 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.372 2006-07-05 23:58:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4715,8 +4715,10 @@ described in @ref{Subsetting Coordinate Variables}.
 Availability: @command{ncrcat}@*
 Short options: None@*
 @end cartouche
-@command{ncrcat} has been programmed to recognize @acronym{ARM}
-(Atmospheric Radiation Measurement Program) data files.
+@command{ncrcat} has been programmed to correctly handle data files
+which utilize the Atmospheric Radiation Measurement (@acronym{ARM})
+Program @uref{http://www.arm.gov/data/time.stm,convention} for
+time and time offsets.
 If you do not work with @acronym{ARM} data then you may skip this
 section. 
 @acronym{ARM} data files store time information in two variables, a

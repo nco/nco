@@ -1,6 +1,6 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.15 2006-05-13 21:39:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.16 2006-07-05 23:58:49 zender Exp $ */
 
-/* Purpose: ARM conventions */
+/* Purpose: ARM conventions, e.g., http://www.arm.gov/data/time.stm */
 
 /* Copyright (C) 1995--2006 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
@@ -12,7 +12,8 @@ nco_bool /* O [flg] File obeys ARM conventions */
 nco_cnv_arm_inq /* O [fnc] Check if file obeys ARM conventions */
 (const int nc_id) /* I [id] netCDF file ID */
 {
-  /* Purpose: Check whether file adheres to ARM time format */
+  /* Purpose: Check whether file adheres to ARM time format defined
+     http://www.arm.gov/data/time.stm */
   nco_bool CNV_ARM;
 
   const char time_sng[]="time"; /* CEWI */
