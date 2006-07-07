@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.13 2006-06-26 15:06:33 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.14 2006-07-07 14:54:07 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -503,6 +503,27 @@ char *swp_nm;
    return var_2;
 } /* end ncap_var_var_mod() */
 
+
+
+
+var_sct *        /* O [sct] Resultant variable (actually is var) */
+ncap_var_abs(    /* Purpose: Find absolute value of each element of var */
+var_sct *var)    /* I/O [sct] input variable */
+{
+
+  if(var->undefined) return var;
+
+  /* deal with inital scan */
+  if(var->val.vp==NULL) return var; 
+
+  (void)nco_var_abs(var->type,var->sz,var->has_mss_val,var->mss_val,var->val);
+  return var;
+} /* end ncap_var_abs */
+
+
+
+
+
 var_sct * /* O [sct] Empowerment of input variables (var1^var_2) */
 ncap_var_var_pwr /* [fnc] Empowerment of two variables */ 
 (var_sct *var1, /* I [sct] Variable structure containing base */
@@ -555,6 +576,8 @@ ncap_var_var_pwr /* [fnc] Empowerment of two variables */
    return var2;
 } /* end ncap_var_var_pwr() */
 
+
+ 
 var_sct *           /* O [sct] Resultant variable (actually is var_in) */
 ncap_var_fnc(   
 var_sct *var_in,    /* I/O [sng] input variable */ 
@@ -613,19 +636,6 @@ sym_sct *app)       /* I [fnc_ptr] to apply to variable */
 } /* end ncap_var_fnc() */
 
 
-var_sct *        /* O [sct] Resultant variable (actually is var) */
-ncap_var_abs(    /* Purpose: Find absolute value of each element of var */
-var_sct *var)    /* I/O [sct] input variable */
-{
-
-  if(var->undefined) return var;
-
-  /* deal with inital scan */
-  if(var->val.vp==NULL) return var; 
-
-  (void)nco_var_abs(var->type,var->sz,var->has_mss_val,var->mss_val,var->val);
-  return var;
-} /* end ncap_var_abs */
 
 
 nm_id_sct *            /* O [sct] new copy of xtr_lst */
@@ -1079,6 +1089,64 @@ ncap_var_stretch /* [fnc] Stretch variables */
 
 
 
+
+nco_bool         /* Returns True if shape of vars match (using cnt vectors) */
+nco_shp_chk(
+var_sct* var1, 
+var_sct* var2)
+{
+
+  long idx;
+  long nbr_rdmn1;
+  long nbr_rdmn2;
+  long srt1=0;
+  long srt2=0;
+ 
+  long nbr_cmp;
+
+  /* Check sizes */
+  if( var1->sz != var2->sz )
+    return False;
+
+
+
+  nbr_rdmn1=var1->nbr_dim;  
+  nbr_rdmn2=var2->nbr_dim;  
+
+  /* skip leading 1D dims */
+  for(idx=0 ; idx < (nbr_rdmn1-1) ; idx++)
+    if( var1->cnt[idx] == 1){
+      srt1++;continue;
+    } else break;
+       
+  /* skip leading 1D dims */
+  for(idx=0 ; idx < (nbr_rdmn2-1) ; idx++)
+    if( var2->cnt[idx] == 1){
+      srt2++;continue;
+    } else break;
+       
+
+  /* check sizes again */
+  if( nbr_rdmn1-srt1 != nbr_rdmn2-srt2 )
+    return False;
+    
+   
+  nbr_cmp=nbr_rdmn1-srt1;
+  /* Now compare  values */
+  for(idx=0 ; idx < nbr_cmp ;idx++)
+    if( var1->cnt[srt1++] != var2->cnt[srt2++]) break;
+
+  
+  if( idx==nbr_cmp) 
+    return True;
+  else
+    return False;
+
+
+} 
+
+
+
 #include "VarOp.hh" 
 
 var_sct *         /* O [sct] Sum of input variables (var1+var2) */
@@ -1089,7 +1157,7 @@ ncap_var_var_op   /* [fnc] Add two variables */
 { 
   nco_bool vb1;
   nco_bool vb2;
-
+  nco_bool bhyp;
 
   static VarOp<short> Vs;
   static VarOp<nco_int> Vl;
@@ -1138,7 +1206,24 @@ ncap_var_var_op   /* [fnc] Add two variables */
   if( !vb1 && !vb2 ) { 
     char *swp_nm;
     (void)ncap_var_retype(var1,var2);
-    (void)ncap_var_cnf_dmn(&var1,&var2);
+    
+    // if hyperslabs then check they conform
+    if( (var1->has_dpl_dmn ==-1 || var2->has_dpl_dmn==-1) && var1->sz >1 &&var2->sz>1){  
+
+
+    if(var1->sz != var2->sz) {
+       (void)fprintf(stderr,"%s: Hyperslabbed variable:%s and variable:%s have differnet number of elements,so connot perform atrithmetic operation\n",prg_nm_get(),var1->nm,var2->nm);
+       nco_exit(EXIT_FAILURE);
+	}
+
+
+      if( nco_shp_chk(var1,var2)==False) 
+       (void)fprintf(stderr,"%s: Warning: hyperslabbed variables:%s and variable:%s have same number of elements but have different shapes\n",prg_nm_get(),var1->nm,var2->nm);
+
+
+    }else{ 
+       (void)ncap_var_cnf_dmn(&var1,&var2);
+    }       
 
     // Bare numbers have name prefixed with"_"
     // for attribute propagation to work we need
@@ -1267,7 +1352,7 @@ ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
 
 
 var_sct*         /* O [sct] casting variable has its own private dims */ 
-ncap_mk_cst(   /* [fnc] create casting var from a list of dims */
+ncap_cst_mk(   /* [fnc] create casting var from a list of dims */
 char **sbs_lst,  /* I [sng] Array of dimension subscripts */
 int lst_nbr,     /* I [nbr] size of above list */  
 prs_sct *prs_arg)
@@ -1399,11 +1484,11 @@ prs_sct *prs_arg)
 
   return var;
 
-} // end ncap_mk_cst
+} // end ncap_cst_mk
 
 
 var_sct*
-ncap_do_cst(
+ncap_cst_do(
 var_sct* var,
 var_sct* var_cst,
 bool bntlscn)
@@ -1442,12 +1527,4 @@ bool bntlscn)
 return var;
 
 }
-
-
-
-
-
-
-
-
 
