@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.353 2006-07-07 07:58:45 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.354 2006-07-07 19:03:54 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -109,6 +109,8 @@ Send it in!<br>
 <h2>NCO News &amp; Announcements</h2>
 
 <ul>
+<li>July&nbsp;7, 2006: <a href="#Publications">Submitted manuscripts</a> which describe NCO and its scaling are available</li>
+
 <li>June&nbsp;7, 2006: NCO 3.1.4 released</li>
 
 <li>May&nbsp;30, 2006: NCO 3.1.3 released</li>
