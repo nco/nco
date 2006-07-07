@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.12 2006-05-25 12:49:17 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.13 2006-07-07 14:49:57 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -207,7 +207,7 @@ ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
 
 
 var_sct*         /* O [sct] casting variable has its own private dims */ 
-ncap_mk_cst(   /* [fnc] create casting var from a list of dims */
+ncap_cst_mk(     /* [fnc] create casting var from a list of dims */
 char **sbs_lst,  /* I [sng] Array of dimension subscripts */
 int lst_nbr,     /* I [nbr] size of above list */  
 prs_sct *prs_arg);
@@ -215,13 +215,23 @@ prs_sct *prs_arg);
 
 
 var_sct*
-ncap_do_cst(
+ncap_cst_do(
 var_sct* var,
 var_sct* var_cst,
 bool bntlscn);
 
 
 /* End funtions in ncap_utl.c */
+
+/* Let function live here for now */
+
+nco_bool         /* Returns True if shape of vars match (using cnt vectors */
+nco_shp_chk(
+var_sct* var1, 
+var_sct* var2); 
+
+
+
 
 
 #endif /* NCAP_H */
