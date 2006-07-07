@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.352 2006-07-07 03:48:15 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.353 2006-07-07 07:58:45 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -323,16 +323,16 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 <!-- http://nco.sf.net#pub -->
 <dt><a name="Publications"></a><a name="pub"></a></dt>
 <h2>Publications</h2>
-<dd><img src="blueball.gif" height=14 width=14> 
-<!-- Zen07 --> <a name="Zen07"></a> <!--http://www.ess.uci.edu/~zender#Zen07 -->
+<ul>
+<li><!-- Zen07 --> <a name="Zen07"></a> <!--http://www.ess.uci.edu/~zender#Zen07 -->
 Zender, C.&nbsp;S. (2006), netCDF Operators (NCO) for Analysis of Self-describing Gridded Geoscience Data, <i>Submitted to Environ. Modell. Softw.</i>.
 <a href="http://dust.ess.uci.edu/ppr/ppr_Zen07.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_Zen07.pdf">PDF (CSZ)</a></dd>
-<dd><img src="blueball.gif" height=14 width=14> 
-<!-- ZeM06 --> <a name="ZeM06"></a> <!--http://www.ess.uci.edu/~zender#ZeM06 -->
+<a href="http://dust.ess.uci.edu/ppr/ppr_Zen07.pdf">PDF (CSZ)</a></li>
+<li><!-- ZeM06 --> <a name="ZeM06"></a> <!--http://www.ess.uci.edu/~zender#ZeM06 -->
 Zender, C.&nbsp;S., and H.&nbsp;J. Mangalam (2006), Scaling Properties of Common Statistical Operators for Gridded Datasets, <i>Submitted to Int.&nbsp;J.&nbsp;High Perform. Comput. Appl.</i>.
 <a href="http://dust.ess.uci.edu/ppr/ppr_ZeM06.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_ZeM06.pdf">PDF (CSZ)</a></dd>
+<a href="http://dust.ess.uci.edu/ppr/ppr_ZeM06.pdf">PDF (CSZ)</a></li>
+</ul>
 <hr></p>
 
 <!-- http://nco.sf.net#vrs -->
