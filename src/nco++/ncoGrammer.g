@@ -742,14 +742,14 @@ assign
                 aRef=aRef->getNextSibling();      
               }
               // Cast is applied in VAR_ID action in function out()
-              var_cst=ncap_mk_cst(sbs_lst,dmn_nbr,prs_arg);     
+              var_cst=ncap_cst_mk(sbs_lst,dmn_nbr,prs_arg);     
               var=out(vid->getNextSibling());
               
               // Cast isn't applied to naked numbers,
               // or variables of size 1, or attributes
               // so apply it here
               if(var->sz ==1 )
-                  var=ncap_do_cst(var,var_cst,prs_arg->ntl_scn);
+                  var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
      
               var->nm=(char*)nco_free(var->nm);
 
@@ -767,6 +767,8 @@ assign
              
              } else {
                // Set class wide variables
+               int var_id;
+               int rcd;
                bcst=false;
                var_cst=(var_sct*)NULL; 
                
@@ -776,12 +778,15 @@ assign
                (void)nco_free(var->nm);                
                var->nm =strdup(vid->getText().c_str());
 
-               //Do attribute propagation
-               (void)ncap_att_cpy(vid->getText(),s_var_rhs,prs_arg);
+               // Do attribute propagation only if
+               // var doesn't already exist
+               rcd=nco_inq_varid_flg(prs_arg->out_id,var->nm ,&var_id);
 
+               if(rcd !=NC_NOERR)
+                 (void)ncap_att_cpy(vid->getText(),s_var_rhs,prs_arg);
+
+               // Write var to disk
                (void)ncap_var_write(var,prs_arg);
-               
-
         
              } // end else 
          
@@ -1062,6 +1067,12 @@ out returns [var_sct *var]
            (void)nco_get_varm(var_nw->nc_id,var_nw->id,var_nw->srt,var_nw->cnt,var_nw->srd,(long*)NULL,var_nw->val.vp,var_nw->typ_dsk);
           else
            (void)nco_get_var1(var_nw->nc_id,var_nw->id,var_nw->srt,var_nw->val.vp,var_nw->typ_dsk);
+           
+          /* a hack - we set var->has_dpl_dmn=-1 so we know we are dealing with 
+             a hyperslabed var and not a regular var  -- It shouldn't cause 
+             any abberant behaviour!! */ 
+
+           var_nw->has_dpl_dmn=-1;  
 
            //if variable is scalar -- re-organize in a  new var - loose extraneous material
            if(var_nw->sz ==1) {
@@ -1083,7 +1094,7 @@ out returns [var_sct *var]
             
 
           if(bcst && var->sz >1)
-            var=ncap_do_cst(var,var_cst,prs_arg->ntl_scn);
+            var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
           
           var_rhs=nco_var_free(var_rhs);
 
@@ -1109,7 +1120,7 @@ out returns [var_sct *var]
           var->undefined=False;
           // apply cast only if sz >1 
           if(bcst && var->sz >1)
-            var=ncap_do_cst(var,var_cst,prs_arg->ntl_scn);
+            var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
 
           // free nm (It is copied in nco_var_fll())
           nm=(char*)nco_free(nm);
