@@ -3,10 +3,8 @@
 #include "ncoParserTokenTypes.hpp"
 
 template<class T>
-class VarOp: public ncoParserTokenTypes {
-
-  //private:
-  //struct ncoParserTokenTypes TT;
+//class VarOp: public ncoParserTokenTypes {
+class VarOp {
 
 public:
   VarOp() {;}
@@ -98,6 +96,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 
       case MOD:
 	// deal with else-where - can't template this function
+
         break;
 
       case CARET:
