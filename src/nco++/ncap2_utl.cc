@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.14 2006-07-07 14:54:07 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.15 2006-07-09 09:48:02 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -453,54 +453,25 @@ ncap_sym_init                /*  [fnc] populate & return a symbol table structur
 } /* end ncap_sym_init() */
 
 
-var_sct * /* O [sct] Remainder of modulo operation of input variables (var_1%var_2) */
+var_sct * /* O [sct] Remainder of modulo operation of input variables (var1%var2) */
 ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
-(var_sct *var_1, /* I [sc,t] Variable structure containing field */
- var_sct *var_2) /* I [sct] Variable structure containing divisor */
+(var_sct *var1, /* I [sc,t] Variable structure containing field */
+ var_sct *var2) /* I [sct] Variable structure containing divisor */
 {
-char *swp_nm;
+  ptr_unn op_swp;
 
-  /* Purpose: Remainder (modulo) operation of two variables (var_1%var_2) */
-  /* Store result in var_2 */
-
-  /* Temporary fix */ 
-  /* swap names about so attribute propagation works */
-  /* most operations unlike this one put results in left operand */
-  if( !ncap_var_is_att(var_1) && isalpha(var_1->nm[0])) {
-    swp_nm=var_1->nm; var_1->nm=var_2->nm; var_2->nm=swp_nm;
-  }  
-  
-
-  if(var_1->undefined) var_2->undefined=True;
-    if(var_2->undefined) {
-    var_1=nco_var_free(var_1);
-    return var_2;
-  }
-  (void)ncap_var_retype(var_1,var_2);
-  
-
-   
-  /* Handle initial scan */
-  if(var_1->val.vp==(void*)NULL ) {
-    if(var_1->nbr_dim > var_2->nbr_dim) {
-      var_2=nco_var_free(var_2);
-      return var_1;
-    }else{
-      var_1=nco_var_free(var_1);
-      return var_2;
-    }
-  } 
-
- 
-  (void)ncap_var_cnf_dmn(&var_1,&var_2);
-  if(var_1->has_mss_val){
-    (void)nco_var_mod(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
+  if(var1->has_mss_val){
+    (void)nco_var_mod(var1->type,var1->sz,var1->has_mss_val,var1->mss_val,var1->val,var2->val);
   }else{
-    (void)nco_var_mod(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
+    (void)nco_var_mod(var1->type,var1->sz,var2->has_mss_val,var2->mss_val,var1->val,var2->val);
+    (void)nco_mss_val_cnf(var2,var1);
   } /* end else */
    
-   var_1=nco_var_free(var_1);
-   return var_2;
+  // Swap values about
+  op_swp=var1->val;var1->val=var2->val;var2->val=op_swp;
+
+   var2=nco_var_free(var2);
+   return var1;
 } /* end ncap_var_var_mod() */
 
 
@@ -525,7 +496,7 @@ var_sct *var)    /* I/O [sct] input variable */
 
 
 var_sct * /* O [sct] Empowerment of input variables (var1^var_2) */
-ncap_var_var_pwr /* [fnc] Empowerment of two variables */ 
+ncap_var_var_pwr_old /* [fnc] Empowerment of two variables */ 
 (var_sct *var1, /* I [sct] Variable structure containing base */
  var_sct *var2) /* I [sct] Variable structure containing exponent */
 {
@@ -571,9 +542,36 @@ ncap_var_var_pwr /* [fnc] Empowerment of two variables */
     (void)nco_var_pwr(var1->type,var1->sz,var2->has_mss_val,var2->mss_val,var1->val,var2->val);
   } /* end else */
 
-
+   
    var1=nco_var_free(var1);
    return var2;
+} /* end ncap_var_var_pwr() */
+
+
+
+
+var_sct * /* O [sct] Empowerment of input variables (var1^var_2) */
+ncap_var_var_pwr  /* [fnc] Empowerment of two variables */ 
+(var_sct *var1,   /* I [sct] Variable structure containing base */
+ var_sct *var2)   /* I [sct] Variable structure containing exponent */
+{
+
+  ptr_unn op_swp;
+
+  if(var1->has_mss_val){
+    (void)nco_var_pwr(var1->type,var1->sz,var1->has_mss_val,var1->mss_val,var1->val,var2->val);
+  }else{
+    (void)nco_var_pwr(var1->type,var1->sz,var2->has_mss_val,var2->mss_val,var1->val,var2->val);
+    (void)nco_mss_val_cnf(var2,var1);
+
+  } /* end else */
+  
+  // Swap values about 
+  op_swp=var1->val;var1->val=var2->val;var2->val=op_swp;
+   
+  var2=nco_var_free(var2);
+  return var1;
+
 } /* end ncap_var_var_pwr() */
 
 
@@ -1143,7 +1141,12 @@ var_sct* var2)
     return False;
 
 
-} 
+}
+ 
+// this defines an anonymous enum containing parser tokens
+#undef __cplusplus
+#include "ncoParserTokenTypes.hpp"
+#define __cplusplus
 
 
 
@@ -1158,13 +1161,12 @@ ncap_var_var_op   /* [fnc] Add two variables */
   nco_bool vb1;
   nco_bool vb2;
   nco_bool bhyp;
-
+ 
   static VarOp<short> Vs;
   static VarOp<nco_int> Vl;
   static VarOp<float> Vf;
   static VarOp<double> Vd;
   
-  struct ncoParserTokenTypes TT;
   var_sct *var_ret=(var_sct*)NULL;
 
 
@@ -1197,8 +1199,12 @@ ncap_var_var_op   /* [fnc] Add two variables */
    }
    return var_ret;
   }
-  
-  
+
+
+  // deal with pwr fuction
+  if(op== CARET && var1->type < NC_FLOAT && var2->type <NC_FLOAT ) 
+    var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
+   
   vb1 = ncap_var_is_att(var1);
   vb2 = ncap_var_is_att(var2);
 
@@ -1208,12 +1214,12 @@ ncap_var_var_op   /* [fnc] Add two variables */
     (void)ncap_var_retype(var1,var2);
     
     // if hyperslabs then check they conform
-    if( (var1->has_dpl_dmn ==-1 || var2->has_dpl_dmn==-1) && var1->sz >1 &&var2->sz>1){  
+    if( (var1->has_dpl_dmn ==-1 || var2->has_dpl_dmn==-1) && var1->sz >1 && var2->sz>1){  
 
 
-    if(var1->sz != var2->sz) {
-       (void)fprintf(stderr,"%s: Hyperslabbed variable:%s and variable:%s have differnet number of elements,so connot perform atrithmetic operation\n",prg_nm_get(),var1->nm,var2->nm);
-       nco_exit(EXIT_FAILURE);
+      if(var1->sz != var2->sz) {
+        (void)fprintf(stderr,"%s: Hyperslabbed variable:%s and variable:%s have differnet number of elements,so connot perform atrithmetic operation\n",prg_nm_get(),var1->nm,var2->nm);
+        nco_exit(EXIT_FAILURE);
 	}
 
 
@@ -1282,6 +1288,18 @@ ncap_var_var_op   /* [fnc] Add two variables */
       }
              
     }
+
+  // Deal with pwr fuction ( nb pwr function can't be templated )
+  if(op== CARET){
+    var_ret=ncap_var_var_pwr(var1,var2);
+    return var_ret;     
+  }
+  // deal with mod function
+  if(op==MOD){
+    var_ret=ncap_var_var_mod(var1,var2);
+    return var_ret;     
+  }
+
 
   switch (var1->type) {
     case NC_BYTE:
