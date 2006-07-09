@@ -838,9 +838,9 @@ out returns [var_sct *var]
 	|	#(DIVIDE var1=out var2=out)	
             { var=ncap_var_var_op(var1,var2, DIVIDE );}
 	|	#(MOD var1=out var2=out)
-	         {var=ncap_var_var_mod(var1,var2);}
+	         {var=ncap_var_var_op(var1,var2, MOD);}
     |   #(CARET var1=out var2=out)
-            {var=ncap_var_var_pwr(var1,var2);}
+            {var=ncap_var_var_op(var1,var2, CARET);}
 
     //unary Operators
     |   #(LNOT var1=out )      
