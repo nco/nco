@@ -2,6 +2,7 @@ header {
     #include <math.h>
     #include <malloc.h>
     #include <assert.h>
+    #include <ctype.h>
     #include <iostream>
     #include <string>
     #include "ncap2.hh"
@@ -44,6 +45,7 @@ statement:
         block
         |assign_statement
         | if_stmt
+        | def_dim
         //deal with empty statement
         | SEMI! { #statement = #([ NULL_NODE, "null_stmt"]); } 
     ;        
@@ -81,6 +83,10 @@ hyper_slb: (VAR_ID^|ATT_ID^) (lmt_list)?
 
 cast_slb:  (VAR_ID^|ATT_ID^) dmn_list
      ;
+
+def_dim:   DEFDIM^ LPAREN! NSTRING COMMA! expr RPAREN! SEMI! 
+     ;        
+
 
 // left association
 func_exp: primary_exp | ( FUNC^ LPAREN!  expr RPAREN! )
@@ -144,6 +150,7 @@ primary_exp
     | FLOAT    
     | DOUBLE
     | NSTRING    
+    | DIM_ID_VAL
     | hyper_slb  //remember this includes VAR_ID & ATT_ID
   ;
 
@@ -164,7 +171,7 @@ tokens {
 // token keywords
     IF ="if";
     ELSE="else";
-
+    DEFDIM="defdim";
 }
 {
 
@@ -201,6 +208,8 @@ LSQUARE: '[';
 RSQUARE: ']';
 
 COMMA: ',' ;
+
+QUOTE: '"';
 
 SEMI:	';' ;
 
@@ -302,7 +311,11 @@ VAR_ATT:  (LPH)(LPH|DGT)*
 ;
 
 
-DIM_ID: '$'! (LPH)(LPH|DGT)* {$setType(DIM_ID);}
+DIM_VAL: '$'! (LPH)(LPH|DGT)* 
+            {$setType(DIM_ID);}
+         ( ".val"!  
+            { $setType(DIM_ID_VAL);}
+         )? 
    ;  
 
 NSTRING: '"'! ( ~('"'|'\n'))* '"'! {$setType(NSTRING);}
@@ -549,7 +562,10 @@ lmt_peek returns [int nbr_dmn=0]
 
 
 statements 
+{
+var_sct *var;
 
+}
     : blk:BLOCK { 
        run(blk->getFirstChild());
             
@@ -562,12 +578,12 @@ statements
               
     | iff:IF {
       bool br;
-      var_sct *var;
+      var_sct *var1;
       RefAST ex;      
 	  //Calculate logical expression
-	  var= out( iff->getFirstChild());
-	  br=ncap_var_lgcl(var);
-	  var=nco_var_free(var);
+	  var1= out( iff->getFirstChild());
+	  br=ncap_var_lgcl(var1);
+	  var1=nco_var_free(var1);
 
       if(br) { 
          run(iff->getFirstChild()->getNextSibling() );    
@@ -577,9 +593,86 @@ statements
          if(ex && ex->getType()==ELSE ) run(ex->getFirstChild());
        }
       }
+
+
     | ELSE {
 
       }
+
+    | def:DEFDIM {
+            
+
+            int dmn_out_id;
+            const char *dmn_nm;
+           
+            long sz;
+
+            string sDim;
+          
+            dmn_sct *dmn_nw;             
+            dmn_sct *dmn_in_e;
+            dmn_sct *dmn_out_e;
+
+            
+            sDim=(def->getFirstChild()->getText());
+            dmn_nm=sDim.c_str();
+             
+            
+            var=out(def->getFirstChild()->getNextSibling());    
+            var=nco_var_cnf_typ(NC_INT,var);
+
+            (void)cast_void_nctype(NC_INT,&var->val);
+            sz=*var->val.lp;
+            var=(var_sct*)nco_var_free(var);
+
+            // Ckeck for a valid name 
+            if(!isalpha(dmn_nm[0])){
+	          (void)fprintf(stderr,"%s: WARNING: dim %s - Invalid name \n",prg_nm_get(),dmn_nm);
+               break;
+            }
+            
+
+            // Check if dimension already exists
+            dmn_in_e=prs_arg->ptr_dmn_in_vtr->find(dmn_nm);
+            dmn_out_e=prs_arg->ptr_dmn_out_vtr->find(dmn_nm);
+
+            if(dmn_in_e !=NULL || dmn_out_e !=NULL  ){ 
+	          (void)fprintf(stderr,"%s: WARNING: dim %s has already been defined in input or output\n",prg_nm_get(),dmn_nm);            
+               break;
+            }
+
+            if( sz < 0  ){ 
+	          (void)fprintf(stderr,"%s: WARNING: dim %s( sz=%ld) - dimension cannot be negative\n",prg_nm_get(),dmn_nm,sz);            
+               break;
+            }
+
+  
+            dmn_nw=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
+  
+            dmn_nw->nm=(char *)strdup(dmn_nm);
+            //dmn_nw->id=dmn_id;
+            dmn_nw->nc_id=prs_arg->out_id;
+            dmn_nw->xrf=NULL;
+            dmn_nw->val.vp=NULL;
+            dmn_nw->is_crd_dmn=False;
+            dmn_nw->is_rec_dmn=False;
+            dmn_nw->sz=sz;
+            dmn_nw->cnt=sz;
+            dmn_nw->srt=0L;
+            dmn_nw->end=sz-1;
+            dmn_nw->srd=1L;
+
+            // finally define dimension in output
+            (void)nco_redef(prs_arg->out_id);
+	        (void)nco_dmn_dfn(prs_arg->fl_out,prs_arg->out_id,&dmn_nw,1);          
+            (void)nco_enddef(prs_arg->out_id);  
+           
+            // Add dim to list 
+            (void)prs_arg->ptr_dmn_out_vtr->push(dmn_nw); 
+
+           }
+             
+
     | NULL_NODE {
             }
     ;
@@ -1006,8 +1099,47 @@ out returns [var_sct *var]
             strncpy(var->val.cp,tsng,(size_t)var->sz);  
             (void)cast_nctype_void(NC_CHAR,&var->val);
 
-            tsng=(char*)nco_free(tsng);
+            tsng=(char*)nco_free(tsng);      
+
           }
+
+    |   dval:DIM_ID_VAL
+        {
+            string sDim=dval->getText();
+            dmn_sct *dmn_fd;
+            nc_type type=NC_INT;
+           
+            // check output
+            dmn_fd=prs_arg->ptr_dmn_out_vtr->find(sDim);
+            
+            // Check input
+            if(dmn_fd==NULL)
+               dmn_fd=prs_arg->ptr_dmn_in_vtr->find(sDim);
+
+
+            if( dmn_fd==NULL ){
+                fprintf(stderr,"%s: Unable to locate dimension %s in input or output files\n",prg_nm_get(),sDim.c_str());
+                nco_exit(EXIT_FAILURE);
+            }
+
+            var=(var_sct *)nco_malloc(sizeof(var_sct));
+            /* Set defaults */
+            (void)var_dfl_set(var); 
+            /* Overwrite with attribute expression information */
+            var->nm=strdup("_dmn");
+            var->nbr_dim=0;
+            var->sz=1;
+            // Get nco type
+
+            var->type=type;
+            var->val.vp=(void*)nco_malloc(nco_typ_lng(type));
+            (void)cast_void_nctype(type,&var->val);
+            *var->val.lp = dmn_fd->sz;
+            (void)cast_nctype_void(type,&var->val);
+
+
+        }
+
     // Variable with argument list 
     |  (#( VAR_ID LMT_LIST)) => #( vid:VAR_ID lmt:LMT_LIST) {
 
