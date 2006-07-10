@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.15 2006-07-09 09:48:02 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.16 2006-07-10 14:03:56 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1087,6 +1087,67 @@ ncap_var_stretch /* [fnc] Stretch variables */
 
 
 
+nco_bool
+ncap_def_dim(
+const char *dmn_nm,
+long sz,
+prs_sct *prs_arg){
+
+  int dmn_out_id;
+          
+  dmn_sct *dmn_nw;             
+  dmn_sct *dmn_in_e;
+  dmn_sct *dmn_out_e;
+
+  // Ckeck for a valid name 
+  if(!isalpha(dmn_nm[0])){
+     (void)fprintf(stderr,"%s: WARNING: dim %s - Invalid name \n",prg_nm_get(),dmn_nm);
+     return False;;
+  }
+            
+
+  // Check if dimension already exists
+  dmn_in_e=prs_arg->ptr_dmn_in_vtr->find(dmn_nm);
+  dmn_out_e=prs_arg->ptr_dmn_out_vtr->find(dmn_nm);
+
+  if(dmn_in_e !=NULL || dmn_out_e !=NULL  ){ 
+     (void)fprintf(stderr,"%s: WARNING: dim %s has already been defined in input or output\n",prg_nm_get(),dmn_nm);            
+     return False;
+  }
+
+  if( sz < 0  ){ 
+     (void)fprintf(stderr,"%s: WARNING: dim %s( sz=%ld) - dimension cannot be negative\n",prg_nm_get(),dmn_nm,sz);            
+     return False;
+  }
+
+  
+  dmn_nw=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
+  
+  dmn_nw->nm=(char *)strdup(dmn_nm);
+            //dmn_nw->id=dmn_id;
+  dmn_nw->nc_id=prs_arg->out_id;
+  dmn_nw->xrf=NULL;
+  dmn_nw->val.vp=NULL;
+  dmn_nw->is_crd_dmn=False;
+  dmn_nw->is_rec_dmn=False;
+  dmn_nw->sz=sz;
+  dmn_nw->cnt=sz;
+  dmn_nw->srt=0L;
+  dmn_nw->end=sz-1;
+  dmn_nw->srd=1L;
+
+  // finally define dimension in output
+  (void)nco_redef(prs_arg->out_id);
+  (void)nco_dmn_dfn(prs_arg->fl_out,prs_arg->out_id,&dmn_nw,1);          
+  (void)nco_enddef(prs_arg->out_id);  
+
+  // Add dim to list 
+  (void)prs_arg->ptr_dmn_out_vtr->push(dmn_nw); 
+  return True; 
+}
+
+
+
 
 nco_bool         /* Returns True if shape of vars match (using cnt vectors) */
 nco_shp_chk(
@@ -1329,6 +1390,121 @@ ncap_var_var_op   /* [fnc] Add two variables */
   var2=nco_var_free(var2);
   return var_ret;
 }
+
+
+var_sct *          /* O [sct] Sum of input variables (var1+var2) */
+ncap_var_var_inc   /* [fnc] Add two variables */
+(var_sct *var1,    /* I [sct] Input variable structure containing first operand */
+ var_sct *var2,    /* I [sct] Input variable structure containing second operand */
+ int op,            /* Deal with incremental operators i.e +=,-=,*=,/= */
+ prs_sct *prs_arg)
+{
+  nco_bool vb1;
+  nco_bool vb2;
+
+  var_sct *var_ret;
+
+
+ 
+  static VarOp<short> Vs;
+  static VarOp<nco_int> Vl;
+  static VarOp<float> Vf;
+  static VarOp<double> Vd;
+
+   
+  vb1 = ncap_var_is_att(var1);
+  vb2 = ncap_var_is_att(var2);
+
+  // var2 to type of var1
+  var2=nco_var_cnf_typ(var1->type,var2);
+
+  // var & var
+  if(!vb1 && !vb2) {
+    nco_bool DO_CONFORM;
+    nco_bool MUST_CONFORM=True;
+    
+    var_sct *var_tmp;
+
+    var_tmp=nco_var_cnf_dmn(var1,var2,var_tmp,MUST_CONFORM,&DO_CONFORM);
+    if(var2 != var_tmp){
+      var2=nco_var_free(var2);
+      var2=var_tmp;
+    }
+  }  
+  // var & att
+  else if( !vb1 && vb2) {
+
+    if(var1->sz > 1 && var2->sz==1)
+       (void)ncap_att_stretch(var2,var1->sz);
+      
+    if(var1->sz != var2->sz) {
+       (void)fprintf(stderr,"%s: Cannot make variable:%s and attribute:%s conform. So connot perform atrithmetic operation\n",prg_nm_get(),var1->nm,var2->nm);
+       nco_exit(EXIT_FAILURE);
+	}
+       
+  }   
+  // att & var
+  else if( vb1 && !vb2){
+
+    if(var1->sz > 1 && var2->sz==1)
+       (void)ncap_att_stretch(var2,var1->sz);
+      
+    if(var1->sz != var2->sz) {
+       (void)fprintf(stderr,"%s: Cannot make attribute:%s and variable:%s conform. So connot perform atrithmetic operation\n",prg_nm_get(),var1->nm,var2->nm);
+       nco_exit(EXIT_FAILURE);
+	}
+       
+  }   
+  // att & att  
+  else if( !vb1 && !vb2){
+
+    if(var1->sz > 1 && var2->sz==1)
+       (void)ncap_att_stretch(var2,var1->sz);
+      
+    if(var1->sz != var2->sz) {
+       (void)fprintf(stderr,"%s: Cannot make attribute:%s and attribute:%s conform. So connot perform atrithmetic operation\n",prg_nm_get(),var1->nm,var2->nm);
+       nco_exit(EXIT_FAILURE);
+	}
+       
+  }   
+
+  switch (var1->type) {
+    case NC_BYTE:
+    /* Do nothing */
+      break;
+    case NC_CHAR:
+    /* Do nothing */
+      break;
+    case NC_SHORT:
+      var_ret=Vs.var_var_op(var1, var2,op);
+      break;
+    case NC_INT:
+      var_ret=Vl.var_var_op(var1, var2,op);
+      break;            
+    case NC_FLOAT:
+      var_ret=Vf.var_var_op(var1, var2,op);
+      break;
+  case NC_DOUBLE:
+      var_ret=Vd.var_var_op(var1, var2,op);
+      break;
+
+  default:
+    break;
+
+  } 
+   
+   
+  // if LHS is a variable then write to disk
+  if(!vb1){
+    var_ret=nco_var_dpl(var1);
+    ncap_var_write(var1,prs_arg);
+  }
+
+  var2=nco_var_free(var2);
+  return var_ret;
+
+}
+
   
 bool            /* O [flg] true if all var elemenst are true */
 ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
@@ -1366,6 +1542,7 @@ ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
 
   return bret;
 }
+
 
 
 
