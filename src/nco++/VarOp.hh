@@ -1,9 +1,7 @@
 #include <math.h>
 #include "ncap.h"
-#include "ncoParserTokenTypes.hpp"
 
 template<class T>
-//class VarOp: public ncoParserTokenTypes {
 class VarOp {
 
 public:
@@ -16,7 +14,7 @@ public:
 
 };
 
-
+ 
 template<class T>
 var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 
@@ -45,7 +43,8 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
     }  
  
     switch(op) {
-
+      
+      case PLUS_ASSIGN:   
       case PLUS:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]+=tp2[idx];
@@ -56,7 +55,8 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	  }
 	}  
         break;
-      
+
+      case MINUS_ASSIGN:
       case MINUS:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]-=tp2[idx];
@@ -68,7 +68,8 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 	}  
 
         break;
-      
+
+      case TIMES_ASSIGN:
       case TIMES:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]*=tp2[idx];
@@ -81,6 +82,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 
         break;
 
+      case DIVIDE_ASSIGN:
       case DIVIDE:
 	if(!bmss) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx] /= tp2[idx];
@@ -211,8 +213,6 @@ var_sct*  VarOp<T>::var_op(var_sct* var1, int op) {
     
     tp1=(T*)(var1->val.vp);
 
-
-
     if(var1->has_mss_val) {
       bmss=true;
       tmss=((T*)(var1->mss_val.vp))[0];
@@ -251,4 +251,5 @@ var_sct*  VarOp<T>::var_op(var_sct* var1, int op) {
 
     return var1;
   } // end var_op
+
 
