@@ -1,3 +1,7 @@
+2006-07-10  Charlie Zender  <zender@uci.edu>
+
+	* Add pathcc/pathCC to MPI handling in bld/Makefile
+
 2006-07-03  Charlie Zender  <zender@uci.edu>
 
 	* Clean-up ncra.c file INFO messages

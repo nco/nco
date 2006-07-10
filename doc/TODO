@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.794 2006-07-02 00:43:07 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.795 2006-07-10 23:00:43 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -525,7 +525,8 @@ nco764. OpenMP with pathcc segfaults with ncra clean and dirty
 
 	ncks -M ~/foo.nc
 nco765. Regression test does not count ncra failures (19 of them) as failures
-nco766. 
+nco766. Somehow MPI executables on IPCC also show 4 OpenMP threads
+nco767. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
