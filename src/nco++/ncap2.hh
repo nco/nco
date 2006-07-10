@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.13 2006-07-07 14:49:57 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.14 2006-07-10 14:02:22 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -188,11 +188,19 @@ nco_att_lst_mk
  int *nbr_lst);            /* O [ptr] size of output list */
 
 
+nco_bool
+ncap_def_dim(
+const char *dmn_nm,
+long sz,
+prs_sct *prs_arg);
+
+
 
 nco_bool /* O [flg] Variables now conform */
 ncap_var_stretch /* [fnc] Stretch variables */
 (var_sct **var_1, /* I/O [ptr] First variable */
  var_sct **var_2); /* I/O [ptr] Second variable */
+
 
 var_sct *         /* O [sct] Sum of input variables (var1+var2) */
 ncap_var_var_op   /* [fnc] Add two variables */
@@ -200,6 +208,13 @@ ncap_var_var_op   /* [fnc] Add two variables */
  var_sct *var2,  /* I [sct] Input variable structure containing second operand */
  int op);        /* Operation +-% */
 
+
+var_sct *           /* O [sct] Sum of input variables (var1+var2) */
+ncap_var_var_inc    /* [fnc] Add two variables */
+(var_sct *var1,     /* I [sct] Input variable structure containing first operand */
+ var_sct *var2,     /* I [sct] Input variable structure containing second operand */
+ int op,            /* Deal with incremental operators i.e +=,-=,*=,/= */
+ prs_sct *prs_arg);
   
 bool            /* O [flg] true if all var elemenst are true */
 ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
