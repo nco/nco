@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.375 2006-06-30 18:39:17 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.376 2006-07-10 22:56:53 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -1248,6 +1248,10 @@ ifeq (icpc,$(firstword ${CXX}))
  MPICC := $(subst icc,mpicc,${CC})
  MPICXX := $(subst icpc,mpicxx,${CXX})
 endif # endif Intel (Kai) C++ Compiler
+ifneq (${null},$(findstring pathcc,${CC}))
+ MPICC := $(subst pathcc,mpicc,${CC})
+ MPICXX := $(subst pathCC,mpicxx,${CXX})
+endif # endif Pathscale (QLogic) Compilers
  CPP := ${MPICC}
 endif # endif MPI
 # Use MPI modifications, if any, to build all objects
