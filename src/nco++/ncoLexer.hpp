@@ -2,7 +2,7 @@
 #define INC_ncoLexer_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.6 (20060530): "ncoGrammer.g" -> "ncoLexer.hpp"$ */
+/* $ANTLR 2.7.6 (20060511): "ncoGrammer.g" -> "ncoLexer.hpp"$ */
 #include <antlr/CommonToken.hpp>
 #include <antlr/InputBuffer.hpp>
 #include <antlr/BitSet.hpp>
@@ -13,6 +13,7 @@
     #include <math.h>
     #include <malloc.h>
     #include <assert.h>
+    #include <ctype.h>
     #include <iostream>
     #include <string>
     #include "ncap2.hh"
@@ -22,10 +23,10 @@
     ANTLR_USING_NAMESPACE(antlr);
     
 
-#line 26 "ncoLexer.hpp"
+#line 27 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 169 "ncoGrammer.g"
+#line 191 "ncoGrammer.g"
 
 
 private:
@@ -43,7 +44,7 @@ public:
 
 
 
-#line 30 "ncoLexer.hpp"
+#line 31 "ncoLexer.hpp"
 private:
 	void initLiterals();
 public:
@@ -57,6 +58,10 @@ public:
 	ncoLexer(const ANTLR_USE_NAMESPACE(antlr)LexerSharedInputState& state);
 	ANTLR_USE_NAMESPACE(antlr)RefToken nextToken();
 	public: void mASSIGN(bool _createToken);
+	public: void mPLUS_ASSIGN(bool _createToken);
+	public: void mMINUS_ASSIGN(bool _createToken);
+	public: void mTIMES_ASSIGN(bool _createToken);
+	public: void mDIVIDE_ASSIGN(bool _createToken);
 	public: void mLPAREN(bool _createToken);
 	public: void mRPAREN(bool _createToken);
 	public: void mLCURL(bool _createToken);
@@ -64,6 +69,7 @@ public:
 	public: void mLSQUARE(bool _createToken);
 	public: void mRSQUARE(bool _createToken);
 	public: void mCOMMA(bool _createToken);
+	public: void mQUOTE(bool _createToken);
 	public: void mSEMI(bool _createToken);
 	public: void mCOLON(bool _createToken);
 	public: void mCARET(bool _createToken);
@@ -91,7 +97,7 @@ public:
 	public: void mNUMBER(bool _createToken);
 	public: void mNUMBER_DOT(bool _createToken);
 	public: void mVAR_ATT(bool _createToken);
-	public: void mDIM_ID(bool _createToken);
+	public: void mDIM_VAL(bool _createToken);
 	public: void mNSTRING(bool _createToken);
 private:
 	

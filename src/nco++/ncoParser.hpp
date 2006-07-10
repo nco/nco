@@ -2,7 +2,7 @@
 #define INC_ncoParser_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.6 (20060530): "ncoGrammer.g" -> "ncoParser.hpp"$ */
+/* $ANTLR 2.7.6 (20060511): "ncoGrammer.g" -> "ncoParser.hpp"$ */
 #include <antlr/TokenStream.hpp>
 #include <antlr/TokenBuffer.hpp>
 #include "ncoParserTokenTypes.hpp"
@@ -13,6 +13,7 @@
     #include <math.h>
     #include <malloc.h>
     #include <assert.h>
+    #include <ctype.h>
     #include <iostream>
     #include <string>
     #include "ncap2.hh"
@@ -22,11 +23,11 @@
     ANTLR_USING_NAMESPACE(antlr);
     
 
-#line 26 "ncoParser.hpp"
+#line 27 "ncoParser.hpp"
 class CUSTOM_API ncoParser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public ncoParserTokenTypes
 {
 #line 1 "ncoGrammer.g"
-#line 30 "ncoParser.hpp"
+#line 31 "ncoParser.hpp"
 public:
 	void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
 protected:
@@ -54,13 +55,14 @@ public:
 	public: void program();
 	public: void statement();
 	public: void block();
-	public: void assign_statement();
 	public: void if_stmt();
+	public: void assign_statement();
+	public: void def_dim();
 	public: void expr();
 	public: void else_part();
 	public: void hyper_slb();
-	public: void cast_slb();
 	public: void lmt_list();
+	public: void cast_slb();
 	public: void dmn_list();
 	public: void func_exp();
 	public: void primary_exp();
@@ -71,6 +73,8 @@ public:
 	public: void rel_expr();
 	public: void eq_expr();
 	public: void lmul_expr();
+	public: void lor_expr();
+	public: void ass_expr();
 	public: void lmt();
 	public: void imaginary_token();
 public:
@@ -84,10 +88,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 58;
+	static const int NUM_TOKENS = 66;
 #else
 	enum {
-		NUM_TOKENS = 58
+		NUM_TOKENS = 66
 	};
 #endif
 	
