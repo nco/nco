@@ -43,8 +43,8 @@ program:
 
 statement:
         block
-        |assign_statement
         | if_stmt
+        | assign_statement
         | def_dim
         //deal with empty statement
         | SEMI! { #statement = #([ NULL_NODE, "null_stmt"]); } 
@@ -73,9 +73,12 @@ else_part
 
 
 assign_statement:
-         hyper_slb  ASSIGN^ expr SEMI!
-       | cast_slb   ASSIGN^ expr SEMI!
-    ;
+         expr SEMI!
+      ; 
+//         hyper_slb  ASSIGN^ expr SEMI!
+//       | cast_slb   ASSIGN^ expr SEMI!
+//    ;
+
 
 
 hyper_slb: (VAR_ID^|ATT_ID^) (lmt_list)?
@@ -120,9 +123,20 @@ lmul_expr:
   eq_expr ( LAND^ eq_expr )*
   ;
 
-expr:
+lor_expr:
    lmul_expr (LOR^ lmul_expr)*
     ;
+
+ass_expr: lor_expr ( ( ASSIGN^   
+                    | PLUS_ASSIGN^
+                    | MINUS_ASSIGN^ 
+                    | TIMES_ASSIGN^ 
+                    | DIVIDE_ASSIGN^
+                    ) ass_expr)?
+    ;
+
+expr: ass_expr
+    ;    
 
 lmt:
    (expr)? (COLON (expr)?)*
@@ -152,6 +166,7 @@ primary_exp
     | NSTRING    
     | DIM_ID_VAL
     | hyper_slb  //remember this includes VAR_ID & ATT_ID
+    | cast_slb
   ;
 
 
@@ -194,6 +209,14 @@ public:
 
 
 ASSIGN: '=';
+
+PLUS_ASSIGN: "+=";
+
+MINUS_ASSIGN: "-=";
+
+TIMES_ASSIGN: "*=";
+
+DIVIDE_ASSIGN: "/=";
 
 LPAREN:	'(' ;
 
@@ -576,6 +599,7 @@ var_sct *var;
 
       }
               
+
     | iff:IF {
       bool br;
       var_sct *var1;
@@ -598,79 +622,22 @@ var_sct *var;
     | ELSE {
 
       }
-
+    
     | def:DEFDIM {
             
-
-            int dmn_out_id;
-            const char *dmn_nm;
-           
-            long sz;
-
-            string sDim;
-          
-            dmn_sct *dmn_nw;             
-            dmn_sct *dmn_in_e;
-            dmn_sct *dmn_out_e;
-
+        const char *dmn_nm;
+        long sz;
             
-            sDim=(def->getFirstChild()->getText());
-            dmn_nm=sDim.c_str();
-             
+        dmn_nm=def->getFirstChild()->getText().c_str();
             
-            var=out(def->getFirstChild()->getNextSibling());    
-            var=nco_var_cnf_typ(NC_INT,var);
+        var=out(def->getFirstChild()->getNextSibling());    
+        var=nco_var_cnf_typ(NC_INT,var);
 
-            (void)cast_void_nctype(NC_INT,&var->val);
-            sz=*var->val.lp;
-            var=(var_sct*)nco_var_free(var);
-
-            // Ckeck for a valid name 
-            if(!isalpha(dmn_nm[0])){
-	          (void)fprintf(stderr,"%s: WARNING: dim %s - Invalid name \n",prg_nm_get(),dmn_nm);
-               break;
-            }
-            
-
-            // Check if dimension already exists
-            dmn_in_e=prs_arg->ptr_dmn_in_vtr->find(dmn_nm);
-            dmn_out_e=prs_arg->ptr_dmn_out_vtr->find(dmn_nm);
-
-            if(dmn_in_e !=NULL || dmn_out_e !=NULL  ){ 
-	          (void)fprintf(stderr,"%s: WARNING: dim %s has already been defined in input or output\n",prg_nm_get(),dmn_nm);            
-               break;
-            }
-
-            if( sz < 0  ){ 
-	          (void)fprintf(stderr,"%s: WARNING: dim %s( sz=%ld) - dimension cannot be negative\n",prg_nm_get(),dmn_nm,sz);            
-               break;
-            }
-
-  
-            dmn_nw=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
-  
-            dmn_nw->nm=(char *)strdup(dmn_nm);
-            //dmn_nw->id=dmn_id;
-            dmn_nw->nc_id=prs_arg->out_id;
-            dmn_nw->xrf=NULL;
-            dmn_nw->val.vp=NULL;
-            dmn_nw->is_crd_dmn=False;
-            dmn_nw->is_rec_dmn=False;
-            dmn_nw->sz=sz;
-            dmn_nw->cnt=sz;
-            dmn_nw->srt=0L;
-            dmn_nw->end=sz-1;
-            dmn_nw->srd=1L;
-
-            // finally define dimension in output
-            (void)nco_redef(prs_arg->out_id);
-	        (void)nco_dmn_dfn(prs_arg->fl_out,prs_arg->out_id,&dmn_nw,1);          
-            (void)nco_enddef(prs_arg->out_id);  
-           
-            // Add dim to list 
-            (void)prs_arg->ptr_dmn_out_vtr->push(dmn_nw); 
-
-           }
+        (void)cast_void_nctype(NC_INT,&var->val);
+        sz=*var->val.lp;
+        var=(var_sct*)nco_var_free(var);
+        (void)ncap_def_dim(dmn_nm,sz,prs_arg);
+     }
              
 
     | NULL_NODE {
@@ -976,6 +943,16 @@ out returns [var_sct *var]
     | #(NEQ  var1=out var2=out)   
             { var=ncap_var_var_op(var1,var2, NEQ );}
 
+    // Assign Operators 
+
+    | #( PLUS_ASSIGN  var1=out var2=out)  
+            { var=ncap_var_var_inc(var1,var2, PLUS_ASSIGN , prs_arg);}
+	| #( MINUS_ASSIGN var1=out var2=out)
+            { var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN, prs_arg );}
+	| #(TIMES_ASSIGN var1=out var2=out)
+            { var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN, prs_arg );}	
+	| #(DIVIDE_ASSIGN var1=out var2=out)	
+            { var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN,prs_arg );}	
 
     // Naked numbers 
     // nb Cast is not applied to these numbers
