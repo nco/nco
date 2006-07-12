@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.795 2006-07-10 23:00:43 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.796 2006-07-12 15:15:32 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -526,7 +526,9 @@ nco764. OpenMP with pathcc segfaults with ncra clean and dirty
 	ncks -M ~/foo.nc
 nco765. Regression test does not count ncra failures (19 of them) as failures
 nco766. Somehow MPI executables on IPCC also show 4 OpenMP threads
-nco767. 
+nco767. esmf shows errors building bm files 
+        nco_bm.pl --dbg=0 --test_files=A --udpreport
+nco768. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
@@ -746,20 +748,7 @@ ncap66. make ncap errors fatal, either in yyerror(), or call nco_error_exit()
 ncap70. gamma() function broken on AIX
 ncap71. Remove erf and gamma functions from AIX build
 ncap72. Stop linking to -lC on AIX. Get all float math functions by casting double versions
-ncap77. ncap2 array arithmetic bug: Answer should be 2,3,4,5
-	ncap2 -v -O -s 'three_dmn_var(0,0,:)=0.5*(three_dmn_var(0,0,:)+three_dmn_var(0,1,:))' ~/nco/data/in.nc ~/foo.nc;ncks -H -s '%g, ' -v three_dmn_var -C -d lat,0 -d lev,0 ~/foo.nc
-	produces 2, 2.5, 3, 3.5,
-	Doing it the long way produces the right answer:
-	ncks -O -C -v three_dmn_var -d lat,0 -d lev,0 ~/nco/data/in.nc ~/foo.nc
-	ncrename -O -v three_dmn_var,three_dmn_var0 ~/foo.nc
-	ncks -A -C -v three_dmn_var -d lat,0 -d lev,1 ~/nco/data/in.nc ~/foo.nc
-	ncrename -O -v three_dmn_var,three_dmn_var1 ~/foo.nc
-	ncwa -O -a lat,lev ~/foo.nc ~/foo.nc
-	ncap2 -v -O -s 'three_dmn_var_avg=0.5*(three_dmn_var0+three_dmn_var1)' ~/foo.nc ~/foo.nc
-	ncks -A -v three_dmn_var ~/nco/data/in.nc ~/foo.nc
-	ncap2 -v -O -s 'three_dmn_var(0,0,:)=three_dmn_var_avg' ~/foo.nc ~/foo.nc
-	ncks -H -s '%g, ' -v three_dmn_var -C -d lat,0 -d lev,0 ~/foo.nc
-ncap78. ncap2 ddra.nco bug
+ncap78. ncap2 ddra.nco bug?
 ncap79. 
 ************************************************************************
 End ncapXXX TODOs
