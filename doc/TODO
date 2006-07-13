@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.796 2006-07-12 15:15:32 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.797 2006-07-13 07:28:00 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -528,7 +528,10 @@ nco765. Regression test does not count ncra failures (19 of them) as failures
 nco766. Somehow MPI executables on IPCC also show 4 OpenMP threads
 nco767. esmf shows errors building bm files 
         nco_bm.pl --dbg=0 --test_files=A --udpreport
-nco768. 
+nco768. Change some common flags from toggles to hard-coded true/false
+        to avoid weird behavior when toggle switches accidentally passed twice,
+        e.g., ncks -O -O in.nc foo.nc
+nco769. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
