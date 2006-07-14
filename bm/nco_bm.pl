@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.137 2006-06-26 23:59:58 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.138 2006-07-14 20:18:54 wangd Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -370,7 +370,7 @@ bm_ntl($bch_flg,$dbg_lvl);
 use NCO_bm; # Benchmarking functions
 
 # UDP server
-$server_name = "sand.ess.uci.edu";
+$server_name = "sand.ess.uci.edu";  #change this to dust.ess.uci.edu?
 $server_ip = "128.200.14.132";
 $server_port = 29659;
 
@@ -404,7 +404,7 @@ dbg_msg(4, "before dodap assignment, \$fl_pth = $fl_pth, \$dodap = $dodap");
 # $dodap asks for and if defined, carries, the URL that's inserted in the '-p' place in nco command lines
 if ($dodap ne 'FALSE') {
     if ($dodap eq '') {
-	$fl_pth = "http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata";
+	$fl_pth = "http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata";
 	$fl_cnt = 4;
     } elsif ($dodap =~ /http/) {
 	$fl_pth = $dodap;

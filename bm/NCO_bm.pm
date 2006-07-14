@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.56 2006-06-30 18:19:00 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.57 2006-07-14 20:18:54 wangd Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions in approximate order of their usage:
@@ -89,7 +89,7 @@ where (options) are:
 --caseid {short id string}  this string can be used to identity and separate results from different runs.
 --dap {OPeNDAP url} ...retrieve test files from OPeNDAP server URL
 --opendap..............ditto.  Both take a URL of the form:
-                       http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata
+                       http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata
                        (i.e., URL points points thru the cgi-bin to the data dir)
 --dust_user.....use this to define a user who CAN log into dust for testing
 --fl_fmt........sets the file type to test.  One of:
@@ -105,7 +105,7 @@ where (options) are:
                 firewall alarms if used unless that port is open.
 --scaling.......Run ncwa benchmarks with 1/2, 1/4, 1/8 of the variables
 --serverside {server URL}..requests that benchmarks be run on server side
-      		   points to sand.ess.uci.edu unless alternate URL is given [EXPERIMENTAL]
+      		   points to dust.ess.uci.edu unless alternate URL is given [EXPERIMENTAL]
 --test_files....Test and excercise file creation script
                 'ncgen' and the Left Hand Casting ability of ncap.
                 Currently gives the option to test 4 files of increasing size and complexity:
@@ -755,7 +755,7 @@ sub SS_init {
     # no params for SS_init now.
 
     use File::Spec;
-    $SSD{"url"} = "http://sand.ess.uci.edu/cgi-bin/dods/nph-dods";
+    $SSD{"url"} = "http://dust.ess.uci.edu/cgi-bin/dods/nph-dods";
     $SSD{"inpathfrom"} = "../data"; 
     # inpathfrom ($in_pth) needs to match $in_pth in NCO_rgr.pm 
     # and NCO_benchmarks.pm

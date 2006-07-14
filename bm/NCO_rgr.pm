@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.49 2006-06-26 23:59:58 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.50 2006-07-14 20:18:54 wangd Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -73,7 +73,7 @@ sub tst_rgr {
     if ($dodap ne "FALSE") {
 	print "DEBUG: in tst_rgr(), \$dodap = $dodap \n";
 	if ($dodap ne "" && $fl_pth =~ /http/ ) { $in_pth_arg = "-p $fl_pth"; }
-	if ($dodap eq "") { $in_pth_arg = "-p http://sand.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata"; }
+	if ($dodap eq "") { $in_pth_arg = "-p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata"; }
     }
     NCO_bm::dbg_msg(1,"-------------  REGRESSION TESTS STARTED from tst_rgr()  -------------");
     
