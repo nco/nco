@@ -595,7 +595,8 @@ var_sct *var;
                 }
     | ass:ASSIGN {
  	  cout << "Type ASSIGN " <<  ass->getFirstChild()->getText() <<endl;
-      assign(ass);
+      var=assign(ass);
+      var=nco_var_free(var);
 
       }
               
@@ -645,10 +646,8 @@ var_sct *var;
     ;
 
 
-assign 
-{
-  var_sct *var;
-}
+assign returns [var_sct *var]
+
    :   (#(ASSIGN  VAR_ID ))=> #(ASSIGN  vid:VAR_ID ){
     
 
@@ -772,6 +771,10 @@ assign
 
               var_lhs=nco_var_free(var_lhs);
               var_rhs=nco_var_free(var_rhs);
+
+              //get variable again from disk!! for return value
+              var=ncap_var_init(var_nm,prs_arg,true);
+
                
               var_nm=(char*)nco_free(var_nm);
 
@@ -785,6 +788,8 @@ assign
               // Deal with LHS casting 
               int dmn_nbr=0;
               char** sbs_lst;
+              var_sct *var1;
+
               RefAST aRef;
               
               cout<< "In ASSIGN/DMN\n";
@@ -803,18 +808,22 @@ assign
               }
               // Cast is applied in VAR_ID action in function out()
               var_cst=ncap_cst_mk(sbs_lst,dmn_nbr,prs_arg);     
-              var=out(vid->getNextSibling());
+              var1=out(vid->getNextSibling());
               
               // Cast isn't applied to naked numbers,
               // or variables of size 1, or attributes
               // so apply it here
-              if(var->sz ==1 )
-                  var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
+              if(var1->sz ==1 )
+                  var1=ncap_cst_do(var1,var_cst,prs_arg->ntl_scn);
      
-              var->nm=(char*)nco_free(var->nm);
+              var1->nm=(char*)nco_free(var1->nm);
 
-              var->nm =strdup(vid->getText().c_str());
-              (void)ncap_var_write(var,prs_arg);
+              var1->nm =strdup(vid->getText().c_str());
+
+              //Copy return variable
+              var=nco_var_dpl(var1);
+              
+              (void)ncap_var_write(var1,prs_arg);
 
               bcst=false;
               var_cst=nco_var_free(var_cst); 
@@ -829,24 +838,29 @@ assign
                // Set class wide variables
                int var_id;
                int rcd;
+               var_sct *var1;
+               
                bcst=false;
                var_cst=(var_sct*)NULL; 
                
-               var=out(vid->getNextSibling());
+               var1=out(vid->getNextSibling());
                // Save name 
-               std::string s_var_rhs(var->nm);
-               (void)nco_free(var->nm);                
-               var->nm =strdup(vid->getText().c_str());
+               std::string s_var_rhs(var1->nm);
+               (void)nco_free(var1->nm);                
+               var1->nm =strdup(vid->getText().c_str());
 
                // Do attribute propagation only if
                // var doesn't already exist
-               rcd=nco_inq_varid_flg(prs_arg->out_id,var->nm ,&var_id);
+               rcd=nco_inq_varid_flg(prs_arg->out_id,var1->nm ,&var_id);
 
                if(rcd !=NC_NOERR)
                  (void)ncap_att_cpy(vid->getText(),s_var_rhs,prs_arg);
 
+               //Copy return variable
+               var=nco_var_dpl(var1);
+                
                // Write var to disk
-               (void)ncap_var_write(var,prs_arg);
+               (void)ncap_var_write(var1,prs_arg);
         
              } // end else 
          
@@ -865,16 +879,19 @@ assign
                 }break;
 
              default: {
-                var_sct *var_nw;
+                var_sct *var1;
                 string sa=att->getText();
 
                 cout <<"Saving attribute " << sa <<endl;
  
-                var=out(att->getNextSibling());
+                var1=out(att->getNextSibling());
                 //var_nw=nco_var_dpl(var);
-                NcapVar *Nvar=new NcapVar(sa,var);
+                NcapVar *Nvar=new NcapVar(sa,var1);
                 prs_arg->ptr_var_vtr->push_ow(Nvar);       
-                //(void)nco_var_free(var);
+
+                // Copy return variable
+                var=nco_var_dpl(var1);    
+                  
              } break; 
          } // end switch 
          
@@ -943,16 +960,18 @@ out returns [var_sct *var]
     | #(NEQ  var1=out var2=out)   
             { var=ncap_var_var_op(var1,var2, NEQ );}
 
-    // Assign Operators 
 
-    | #( PLUS_ASSIGN  var1=out var2=out)  
+    // Assign Operators 
+    | #(PLUS_ASSIGN  var1=out var2=out)  
             { var=ncap_var_var_inc(var1,var2, PLUS_ASSIGN , prs_arg);}
-	| #( MINUS_ASSIGN var1=out var2=out)
+	| #(MINUS_ASSIGN var1=out var2=out)
             { var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN, prs_arg );}
 	| #(TIMES_ASSIGN var1=out var2=out)
             { var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN, prs_arg );}	
 	| #(DIVIDE_ASSIGN var1=out var2=out)	
             { var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN,prs_arg );}	
+    | ass:ASSIGN 
+            { var=assign(ass); }
 
     // Naked numbers 
     // nb Cast is not applied to these numbers
