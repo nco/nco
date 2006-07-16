@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.16 2006-07-10 14:03:56 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.17 2006-07-16 15:00:01 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1498,6 +1498,14 @@ ncap_var_var_inc   /* [fnc] Add two variables */
   if(!vb1){
     var_ret=nco_var_dpl(var1);
     ncap_var_write(var1,prs_arg);
+  }else{
+    // deal with attribute
+   std::string sa(var1->nm);
+ 
+   var_ret=nco_var_dpl(var1);   
+   NcapVar *Nvar=new NcapVar(sa,var1);
+   prs_arg->ptr_var_vtr->push_ow(Nvar);       
+
   }
 
   var2=nco_var_free(var2);
