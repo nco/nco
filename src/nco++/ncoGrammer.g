@@ -35,6 +35,7 @@ tokens {
     DMN_LIST;
     LMT_LIST;
     LMT;
+    EXPR;
 }
 
 program:
@@ -74,6 +75,8 @@ else_part
 
 assign_statement:
          expr SEMI!
+       {#assign_statement = #(#[EXPR,"EXPR"],#assign_statement); }
+
       ; 
 //         hyper_slb  ASSIGN^ expr SEMI!
 //       | cast_slb   ASSIGN^ expr SEMI!
@@ -127,6 +130,8 @@ lor_expr:
    lmul_expr (LOR^ lmul_expr)*
     ;
 
+
+
 ass_expr: lor_expr ( ( ASSIGN^   
                     | PLUS_ASSIGN^
                     | MINUS_ASSIGN^ 
@@ -135,8 +140,14 @@ ass_expr: lor_expr ( ( ASSIGN^
                     ) ass_expr)?
     ;
 
+
 expr: ass_expr
+//      {#expr = #(#[EXPR,"EXPR"],#expr); }
     ;    
+
+
+
+
 
 lmt:
    (expr)? (COLON (expr)?)*
@@ -593,9 +604,13 @@ var_sct *var;
        run(blk->getFirstChild());
             
                 }
-    | ass:ASSIGN {
- 	  cout << "Type ASSIGN " <<  ass->getFirstChild()->getText() <<endl;
-      var=assign(ass);
+
+    | exp:EXPR {
+        
+      if(exp->getFirstChild()->getType() == ASSIGN)
+ 	    cout << "Type ASSIGN " <<  exp->getFirstChild()->getFirstChild()->getText() <<endl;
+
+      var=out(exp->getFirstChild());
       var=nco_var_free(var);
 
       }
@@ -617,6 +632,9 @@ var_sct *var;
          ex=iff->getFirstChild()->getNextSibling()->getNextSibling(); 
          if(ex && ex->getType()==ELSE ) run(ex->getFirstChild());
        }
+ 
+      var=(var_sct*)NULL;
+      
       }
 
 
