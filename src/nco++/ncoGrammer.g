@@ -36,6 +36,8 @@ tokens {
     LMT_LIST;
     LMT;
     EXPR;
+    POST_INC;
+    POST_DEC;
 }
 
 program:
@@ -98,9 +100,19 @@ def_dim:   DEFDIM^ LPAREN! NSTRING COMMA! expr RPAREN! SEMI!
 func_exp: primary_exp | ( FUNC^ LPAREN!  expr RPAREN! )
     ;
 
+unaryleft_exp: func_exp (
+                          in:INC^ {#in->setType(POST_INC);
+                                   #in->setText("POST_INC");}
+                        | de:DEC^ {#de->setType(POST_DEC);
+                                   #de->setText("POST_DEC");}
+                          )?
+    ;
+
 // unary right association   
-unary_exp:  func_exp | ( LNOT^| PLUS^| MINUS^ ) unary_exp
+unary_exp:  ( LNOT^| PLUS^| MINUS^ |INC^ | DEC^ ) unary_exp
+            | unaryleft_exp
 	;
+
 
 // right association
 pow_exp:    unary_exp (CARET^ pow_exp )? 
@@ -228,6 +240,10 @@ MINUS_ASSIGN: "-=";
 TIMES_ASSIGN: "*=";
 
 DIVIDE_ASSIGN: "/=";
+
+INC: "++";
+
+DEC: "--";
 
 LPAREN:	'(' ;
 
@@ -609,7 +625,7 @@ var_sct *var;
         
       if(exp->getFirstChild()->getType() == ASSIGN)
  	    cout << "Type ASSIGN " <<  exp->getFirstChild()->getFirstChild()->getText() <<endl;
-
+      cout << "first child text=" <<exp->getFirstChild()->getText()<<endl;
       var=out(exp->getFirstChild());
       var=nco_var_free(var);
 
@@ -943,8 +959,18 @@ out returns [var_sct *var]
 	|   #(MINUS var1=out )   
             { var=ncap_var_var_op(var1,(var_sct*)NULL, MINUS );}
     |   #(PLUS var1=out ) // do nothing   
-            { var= var1; }
+
+    |   #(INC var1=out )      
+            { var=ncap_var_var_inc(var1,(var_sct*)NULL, INC,prs_arg);}
+    |   #(DEC var1=out )      
+            { var=ncap_var_var_inc(var1,(var_sct*)NULL, DEC,prs_arg );}
     
+    |   #(POST_INC var1=out )      
+            { var=ncap_var_var_inc(var1,(var_sct*)NULL, POST_INC,prs_arg);}
+    |   #(POST_DEC var1=out )      
+            { var=ncap_var_var_inc(var1,(var_sct*)NULL, POST_DEC,prs_arg );}
+    
+
     // math functions 
     |  #(m:FUNC var1=out)       
          { 
@@ -978,18 +1004,17 @@ out returns [var_sct *var]
     | #(NEQ  var1=out var2=out)   
             { var=ncap_var_var_op(var1,var2, NEQ );}
 
-
     // Assign Operators 
-    | #(PLUS_ASSIGN  var1=out var2=out)  
+    | #(pls_asn:PLUS_ASSIGN  var1=out var2=out)  
             { var=ncap_var_var_inc(var1,var2, PLUS_ASSIGN , prs_arg);}
-	| #(MINUS_ASSIGN var1=out var2=out)
+	| #(min_asn:MINUS_ASSIGN var1=out var2=out)
             { var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN, prs_arg );}
-	| #(TIMES_ASSIGN var1=out var2=out)
+	| #(tim_asn:TIMES_ASSIGN var1=out var2=out)
             { var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN, prs_arg );}	
-	| #(DIVIDE_ASSIGN var1=out var2=out)	
+	| #(div_asn:DIVIDE_ASSIGN var1=out var2=out)	
             { var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN,prs_arg );}	
-    | ass:ASSIGN 
-            { var=assign(ass); }
+    | asn:ASSIGN 
+            { var=assign(asn); }
 
     // Naked numbers 
     // nb Cast is not applied to these numbers
