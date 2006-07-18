@@ -245,6 +245,29 @@ var_sct*  VarOp<T>::var_op(var_sct* var1, int op) {
 	}
         break;
 
+    case POST_INC:
+    case INC:
+	if(!bmss) {
+	  for(idx=0 ; idx<sz ; idx++) ++tp1[idx];
+	}else{
+	  for(idx=0 ; idx<sz ; idx++){
+	    if( tp1[idx] != tmss ) ++tp1[idx];
+	  }  
+	}
+        break;
+
+    case POST_DEC:
+    case DEC:
+	if(!bmss) {
+	  for(idx=0 ; idx<sz ; idx++) --tp1[idx];
+	}else{
+	  for(idx=0 ; idx<sz ; idx++){
+	    if( tp1[idx] != tmss ) --tp1[idx];
+	  }  
+	}
+        break;
+
+
       default: break;	
 
     } // end switch	
