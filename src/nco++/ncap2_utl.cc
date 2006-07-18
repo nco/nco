@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.17 2006-07-16 15:00:01 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.18 2006-07-18 13:13:52 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1213,16 +1213,14 @@ var_sct* var2)
 
 #include "VarOp.hh" 
 
-var_sct *         /* O [sct] Sum of input variables (var1+var2) */
-ncap_var_var_op   /* [fnc] Add two variables */
-(var_sct *var1,  /* I [sct] Input variable structure containing first operand */
- var_sct *var2,  /* I [sct] Input variable structure containing second operand */
- int op)        /* Operation +-% */
-{ 
-  nco_bool vb1;
-  nco_bool vb2;
-  nco_bool bhyp;
- 
+
+var_sct *
+ncap_var_var_stc
+(var_sct *var1,
+ var_sct *var2,
+ int op)
+{
+
   static VarOp<short> Vs;
   static VarOp<nco_int> Vl;
   static VarOp<float> Vf;
@@ -1248,10 +1246,10 @@ ncap_var_var_op   /* [fnc] Add two variables */
       var_ret=Vl.var_op(var1,op);
       break;            
     case NC_FLOAT:
-      var_ret=Vf.var_op(var1 ,op);
+      var_ret=Vf.var_op(var1,op);
       break;
   case NC_DOUBLE:
-      var_ret=Vd.var_op(var1, op);
+      var_ret=Vd.var_op(var1,op);
       break;
 
   default:
@@ -1259,6 +1257,59 @@ ncap_var_var_op   /* [fnc] Add two variables */
 
    }
    return var_ret;
+  }
+
+
+
+  switch (var1->type) {
+    case NC_BYTE:
+    /* Do nothing */
+      break;
+    case NC_CHAR:
+    /* Do nothing */
+      break;
+    case NC_SHORT:
+      var_ret=Vs.var_var_op(var1, var2,op);
+      break;
+    case NC_INT:
+      var_ret=Vl.var_var_op(var1, var2,op);
+      break;            
+    case NC_FLOAT:
+      var_ret=Vf.var_var_op(var1, var2,op);
+      break;
+  case NC_DOUBLE:
+      var_ret=Vd.var_var_op(var1, var2,op);
+      break;
+
+  default:
+    break;
+
+  } 
+
+  return var_ret;
+
+}
+
+
+
+
+var_sct *         /* O [sct] Sum of input variables (var1+var2) */
+ncap_var_var_op   /* [fnc] Add two variables */
+(var_sct *var1,  /* I [sct] Input variable structure containing first operand */
+ var_sct *var2,  /* I [sct] Input variable structure containing second operand */
+ int op)        /* Operation +-% */
+{ 
+  nco_bool vb1;
+  nco_bool vb2;
+  nco_bool bhyp;
+ 
+  var_sct *var_ret=(var_sct*)NULL;
+
+
+  //If var2 is null then we are dealing with a unary function
+  if( var2 == NULL){ 
+    var_ret=ncap_var_var_stc(var1,var2,op);   
+    return var_ret;
   }
 
 
@@ -1361,32 +1412,7 @@ ncap_var_var_op   /* [fnc] Add two variables */
     return var_ret;     
   }
 
-
-  switch (var1->type) {
-    case NC_BYTE:
-    /* Do nothing */
-      break;
-    case NC_CHAR:
-    /* Do nothing */
-      break;
-    case NC_SHORT:
-      var_ret=Vs.var_var_op(var1, var2,op);
-      break;
-    case NC_INT:
-      var_ret=Vl.var_var_op(var1, var2,op);
-      break;            
-    case NC_FLOAT:
-      var_ret=Vf.var_var_op(var1, var2,op);
-      break;
-  case NC_DOUBLE:
-      var_ret=Vd.var_var_op(var1, var2,op);
-      break;
-
-  default:
-    break;
-
-  } 
-
+  var_ret=ncap_var_var_stc(var1,var2,op);
   var2=nco_var_free(var2);
   return var_ret;
 }
@@ -1399,21 +1425,43 @@ ncap_var_var_inc   /* [fnc] Add two variables */
  int op,            /* Deal with incremental operators i.e +=,-=,*=,/= */
  prs_sct *prs_arg)
 {
+  const char *cvar1;
+  const char *cvar2;
   nco_bool vb1;
   nco_bool vb2;
 
-  var_sct *var_ret;
+  var_sct *var_ret=(var_sct*)NULL;
 
+  vb1 = ncap_var_is_att(var1);
 
- 
-  static VarOp<short> Vs;
-  static VarOp<nco_int> Vl;
-  static VarOp<float> Vf;
-  static VarOp<double> Vd;
+  
+  //Deal with unary functions first
+  if(var2==NULL){
+    if(op==INC||op==DEC){ 
+      var1=ncap_var_var_stc(var1,var2,op);
+      var_ret=nco_var_dpl(var1);
+    }
+    if(op==POST_INC||op==POST_DEC){ 
+      var_ret=nco_var_dpl(var1);
+      var1=ncap_var_var_stc(var1,var2,op);
+    }
+    if(!vb1){
+      (void)ncap_var_write(var1,prs_arg);  
+    }else{
+      std::string sa(var1->nm);
+      NcapVar *Nvar=new NcapVar(sa,var1);
+      prs_arg->ptr_var_vtr->push_ow(Nvar);       
+    }
+   
+    return var_ret;    
+  }
+
 
    
-  vb1 = ncap_var_is_att(var1);
   vb2 = ncap_var_is_att(var2);
+
+  cvar1= vb1? "attribute" : "variable";
+  cvar2= vb2? "attribute" : "variable";
 
   // var2 to type of var1
   var2=nco_var_cnf_typ(var1->type,var2);
@@ -1430,79 +1478,27 @@ ncap_var_var_inc   /* [fnc] Add two variables */
       var2=nco_var_free(var2);
       var2=var_tmp;
     }
-  }  
-  // var & att
-  else if( !vb1 && vb2) {
+  } else {
 
     if(var1->sz > 1 && var2->sz==1)
        (void)ncap_att_stretch(var2,var1->sz);
-      
+  }   
     if(var1->sz != var2->sz) {
-       (void)fprintf(stderr,"%s: Cannot make variable:%s and attribute:%s conform. So connot perform atrithmetic operation\n",prg_nm_get(),var1->nm,var2->nm);
+       (void)fprintf(stderr,"%s: Cannot make %s:%s and %s:%s conform. So connot perform arithmetic operation\n",prg_nm_get(),cvar1,var1->nm,cvar2,var2->nm);
        nco_exit(EXIT_FAILURE);
 	}
-       
-  }   
-  // att & var
-  else if( vb1 && !vb2){
+ 
 
-    if(var1->sz > 1 && var2->sz==1)
-       (void)ncap_att_stretch(var2,var1->sz);
-      
-    if(var1->sz != var2->sz) {
-       (void)fprintf(stderr,"%s: Cannot make attribute:%s and variable:%s conform. So connot perform atrithmetic operation\n",prg_nm_get(),var1->nm,var2->nm);
-       nco_exit(EXIT_FAILURE);
-	}
-       
-  }   
-  // att & att  
-  else if( !vb1 && !vb2){
-
-    if(var1->sz > 1 && var2->sz==1)
-       (void)ncap_att_stretch(var2,var1->sz);
-      
-    if(var1->sz != var2->sz) {
-       (void)fprintf(stderr,"%s: Cannot make attribute:%s and attribute:%s conform. So connot perform atrithmetic operation\n",prg_nm_get(),var1->nm,var2->nm);
-       nco_exit(EXIT_FAILURE);
-	}
-       
-  }   
-
-  switch (var1->type) {
-    case NC_BYTE:
-    /* Do nothing */
-      break;
-    case NC_CHAR:
-    /* Do nothing */
-      break;
-    case NC_SHORT:
-      var_ret=Vs.var_var_op(var1, var2,op);
-      break;
-    case NC_INT:
-      var_ret=Vl.var_var_op(var1, var2,op);
-      break;            
-    case NC_FLOAT:
-      var_ret=Vf.var_var_op(var1, var2,op);
-      break;
-  case NC_DOUBLE:
-      var_ret=Vd.var_var_op(var1, var2,op);
-      break;
-
-  default:
-    break;
-
-  } 
+   var1=ncap_var_var_stc(var1,var2,op);
    
+   var_ret=nco_var_dpl(var1);
    
   // if LHS is a variable then write to disk
   if(!vb1){
-    var_ret=nco_var_dpl(var1);
     ncap_var_write(var1,prs_arg);
   }else{
     // deal with attribute
    std::string sa(var1->nm);
- 
-   var_ret=nco_var_dpl(var1);   
    NcapVar *Nvar=new NcapVar(sa,var1);
    prs_arg->ptr_var_vtr->push_ow(Nvar);       
 
