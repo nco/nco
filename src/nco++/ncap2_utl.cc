@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.18 2006-07-18 13:13:52 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.19 2006-07-19 11:44:39 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1430,6 +1430,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
   nco_bool vb1;
   nco_bool vb2;
 
+
   var_sct *var_ret=(var_sct*)NULL;
 
   vb1 = ncap_var_is_att(var1);
@@ -1468,16 +1469,23 @@ ncap_var_var_inc   /* [fnc] Add two variables */
 
   // var & var
   if(!vb1 && !vb2) {
-    nco_bool DO_CONFORM;
-    nco_bool MUST_CONFORM=True;
+    nco_bool DO_CONFORM=True;;
     
-    var_sct *var_tmp;
+    var_sct *var_tmp=(var_sct*)NULL;
 
-    var_tmp=nco_var_cnf_dmn(var1,var2,var_tmp,MUST_CONFORM,&DO_CONFORM);
+    var_tmp=nco_var_cnf_dmn(var1,var2,var_tmp,True,&DO_CONFORM);
     if(var2 != var_tmp){
       var2=nco_var_free(var2);
       var2=var_tmp;
     }
+
+    if(DO_CONFORM==False) {
+       (void)fprintf(stderr,"%s: Cannot make variable:%s and variable:%s conform. So connot perform arithmetic operation\n",prg_nm_get(),cvar1,var1->nm,cvar2,var2->nm);
+       nco_exit(EXIT_FAILURE);
+    }
+ 
+
+
   } else {
 
     if(var1->sz > 1 && var2->sz==1)
