@@ -1,3 +1,11 @@
+2006-07-19  Henry Butowsky  <henryb@ntlworld.com>
+	* First cut of C like it iteration operators
+	* these are +=,-=,*=,/=  --,++ (pre & post)
+	* New code checked out OK with valgrind
+	* Need to add code to check that first operand
+	* is a valid Lvalue -also need some new regression
+	  tests to fully test this new feature
+
 2006-07-12  Charlie Zender  <zender@uci.edu>
 
 	* Improve, add, clarify, rx examples in nco.texi, in.cdl
