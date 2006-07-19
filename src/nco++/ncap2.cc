@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.19 2006-06-09 05:19:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.20 2006-07-19 11:41:04 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -122,8 +122,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.19 2006-06-09 05:19:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.19 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.20 2006-07-19 11:41:04 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.20 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -757,7 +757,6 @@ main(int argc,char **argv)
       (void)nco_free(sym_vtr[idx]);
     } 
     
-    printf("Freed sym_vtr\n");
     
     if(fl_spt_usr != NULL) fl_spt_usr=(char *)nco_free(fl_spt_usr);
     
