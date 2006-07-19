@@ -100,6 +100,7 @@ def_dim:   DEFDIM^ LPAREN! NSTRING COMMA! expr RPAREN! SEMI!
 func_exp: primary_exp | ( FUNC^ LPAREN!  expr RPAREN! )
     ;
 
+// unary left association   
 unaryleft_exp: func_exp (
                           in:INC^ {#in->setType(POST_INC);
                                    #in->setText("POST_INC");}
@@ -115,34 +116,32 @@ unary_exp:  ( LNOT^| PLUS^| MINUS^ |INC^ | DEC^ ) unary_exp
 
 
 // right association
-pow_exp:    unary_exp (CARET^ pow_exp )? 
+pow_exp: unary_exp (CARET^ pow_exp )? 
     ;
 
 mexpr:
-		pow_exp ( (TIMES^ | DIVIDE^ | MOD^) pow_exp)*
+		 pow_exp ( (TIMES^ | DIVIDE^ | MOD^) pow_exp)*
 	;
 
 add_expr:
-		mexpr ( (PLUS^ | MINUS^ ) mexpr)* 
+		 mexpr ( (PLUS^ | MINUS^ ) mexpr)* 
 	;
 
 rel_expr:
-      add_expr (( LTHAN^ | GTHAN^ | GEQ^ | LEQ^ ) add_expr)*
+        add_expr (( LTHAN^ | GTHAN^ | GEQ^ | LEQ^ ) add_expr)*
     ;
 
 eq_expr:
-   rel_expr (( EQ^ | NEQ^ ) rel_expr)*
-  ;
-
-lmul_expr:
-  eq_expr ( LAND^ eq_expr )*
-  ;
-
-lor_expr:
-   lmul_expr (LOR^ lmul_expr)*
+        rel_expr (( EQ^ | NEQ^ ) rel_expr)*
     ;
 
+lmul_expr:
+        eq_expr ( LAND^ eq_expr )*
+    ;
 
+lor_expr:
+        lmul_expr (LOR^ lmul_expr)*
+    ;
 
 ass_expr: lor_expr ( ( ASSIGN^   
                     | PLUS_ASSIGN^
@@ -152,24 +151,17 @@ ass_expr: lor_expr ( ( ASSIGN^
                     ) ass_expr)?
     ;
 
-
-expr: ass_expr
-//      {#expr = #(#[EXPR,"EXPR"],#expr); }
+expr:   ass_expr
     ;    
 
 
-
-
-
-lmt:
-   (expr)? (COLON (expr)?)*
-   { #lmt = #( [LMT, "lmt"], #lmt ); }
-    ;
+lmt:    (expr)? (COLON (expr)?)*
+        { #lmt = #( [LMT, "lmt"], #lmt ); }
+   ;
         
 
-lmt_list
-  : LPAREN! lmt (COMMA! lmt)*  RPAREN!
-   { #lmt_list = #( [LMT_LIST, "lmt_list"], #lmt_list ); }
+lmt_list: LPAREN! lmt (COMMA! lmt)*  RPAREN!
+          { #lmt_list = #( [LMT_LIST, "lmt_list"], #lmt_list ); }
   ;
 // Use vars in dimension list so dims in [] can
 // be used with or with out $ prefix. ie "$lon" or "lon" 
@@ -625,7 +617,6 @@ var_sct *var;
         
       if(exp->getFirstChild()->getType() == ASSIGN)
  	    cout << "Type ASSIGN " <<  exp->getFirstChild()->getFirstChild()->getText() <<endl;
-      cout << "first child text=" <<exp->getFirstChild()->getText()<<endl;
       var=out(exp->getFirstChild());
       var=nco_var_free(var);
 
