@@ -143,7 +143,11 @@ lor_expr:
         lmul_expr (LOR^ lmul_expr)*
     ;
 
-ass_expr: lor_expr ( ( ASSIGN^   
+cond_expr: lor_expr ( QUESTION^ ass_expr COLON! cond_expr)?
+    ;
+
+
+ass_expr: cond_expr ( ( ASSIGN^   
                     | PLUS_ASSIGN^
                     | MINUS_ASSIGN^ 
                     | TIMES_ASSIGN^ 
@@ -236,6 +240,8 @@ DIVIDE_ASSIGN: "/=";
 INC: "++";
 
 DEC: "--";
+
+QUESTION: '?';
 
 LPAREN:	'(' ;
 
@@ -960,6 +966,16 @@ out returns [var_sct *var]
             { var=ncap_var_var_inc(var1,(var_sct*)NULL, POST_INC,prs_arg);}
     |   #(POST_DEC var1=out )      
             { var=ncap_var_var_inc(var1,(var_sct*)NULL, POST_DEC,prs_arg );}
+
+    |   #( qus:QUESTION var1=out) {
+           bool br;
+           br=ncap_var_lgcl(var1);
+           var1=nco_var_free(var1);
+           if(br) 
+             var=out(qus->getFirstChild()->getNextSibling());
+           else
+             var=out(qus->getFirstChild()->getNextSibling()->getNextSibling());      
+         }   
     
 
     // math functions 
