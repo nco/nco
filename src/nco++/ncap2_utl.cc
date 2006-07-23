@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.19 2006-07-19 11:44:39 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.20 2006-07-23 10:36:53 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -101,7 +101,6 @@ bool bfll)                 /* if true fill var with data */
   var=nco_var_fll(fl_id,var_id,var_nm,dmn_out,nbr_dmn_out);
   /*  var->nm=(char *)nco_malloc((strlen(var_nm)+1UL)*sizeof(char));
   (void)strcpy(var->nm,var_nm); */
-
   /* Tally is not required yet since ncap does not perform cross-file operations (yet) */
   /* var->tally=(long *)nco_malloc_dbg(var->sz*sizeof(long),"Unable to malloc() tally buffer in variable initialization",fnc_nm);
       (void)nco_zero_long(var->sz,var->tally); */
@@ -1558,19 +1557,20 @@ ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
 
 
 
-var_sct*         /* O [sct] casting variable has its own private dims */ 
-ncap_cst_mk(   /* [fnc] create casting var from a list of dims */
-char **sbs_lst,  /* I [sng] Array of dimension subscripts */
-int lst_nbr,     /* I [nbr] size of above list */  
+var_sct*                           /* O [sct] casting variable has its own private dims */ 
+ncap_cst_mk(                       /* [fnc] create casting var from a list of dims */
+NcapVector<std::string> &str_vtr,  /* I [sng] list of dimension subscripts */
 prs_sct *prs_arg)
 {
 
   static const char * const tpl_nm="Internally generated template";
   
   
+
   int dmn_nbr; /* [nbr] Number of dimensions */
   int idx; /* [idx] Counter */
-  
+
+  const char *lst_nm;    /* for dereferencing */  
   double val=1.0; /* [frc] Value of template */
   
   var_sct *var=(var_sct*)NULL; /* [sct] Variable */
@@ -1579,7 +1579,7 @@ prs_sct *prs_arg)
   dmn_sct *dmn_item;
   dmn_sct *dmn_new;
 
-  dmn_nbr = lst_nbr;
+  dmn_nbr = str_vtr.size();
 
 
   //  sbs_lst=lst_prs_2D(sbs_sng,sbs_dlm,&dmn_nbr); 
@@ -1587,18 +1587,18 @@ prs_sct *prs_arg)
   dmn=(dmn_sct **)nco_malloc(dmn_nbr*sizeof(dmn_sct *));
   (void)nco_redef(prs_arg->out_id);
   for(idx=0;idx<dmn_nbr;idx++){
-    
+    lst_nm=str_vtr[idx].c_str();
     // Search dmn_out_vtr for dimension
-    dmn_item=prs_arg->ptr_dmn_out_vtr->find(sbs_lst[idx]);
+    dmn_item=prs_arg->ptr_dmn_out_vtr->find(lst_nm);
     if(dmn_item != NULL){ 
       dmn[idx]=dmn_item;
       continue;
     }
     // Search dmn_in_vtr for dimension
-    dmn_item=prs_arg->ptr_dmn_in_vtr->find(sbs_lst[idx]);
+    dmn_item=prs_arg->ptr_dmn_in_vtr->find(lst_nm);
     // die if not in list
     if(dmn_item == NULL) {
-      (void)fprintf(stderr,"Warning: Unrecognized dimension \"%s\" in LHS subscripts",sbs_lst[idx]);
+      (void)fprintf(stderr,"Warning: Unrecognized dimension \"%s\" in LHS subscripts",lst_nm);
       exit(1);
     }  
     dmn_new=nco_dmn_dpl(dmn_item);
