@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.113 2006-05-29 06:29:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.114 2006-07-23 10:39:51 hmb Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -604,6 +604,8 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
   /* Purpose: Allocate and retrieve given variable hyperslab from disk into memory
      If variable is packed on disk then inquire about scale_factor and add_offset */
+  long idx;
+  long mult_srd=1L;
   const char fnc_nm[]="nco_var_get()"; /* [sng] Function name */
 
   var->val.vp=(void *)nco_malloc_dbg(var->sz*nco_typ_lng(var->typ_dsk),"Unable to malloc() value buffer when retrieving variable from disk",fnc_nm);
@@ -621,9 +623,18 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   /* 20050629: Removing this critical region and calling with identical nc_id's causes multiple ncwa/ncra regressions */
   { /* begin potential OpenMP critical */
     /* Block is critical/thread-safe for identical/distinct in_id's */
-    if(var->sz > 1){
+
+    /* see if we have a stride >1 */
+    for(idx=0; idx <var->nbr_dim ; idx++)
+      mult_srd*=var->srd[idx];
+
+    if(mult_srd >1) { 
+      (void)nco_get_varm(nc_id,var->id,var->srt,var->cnt,var->srd,(long*)NULL,var->val.vp,var->typ_dsk);
+    }else{    
+
+    if(var->sz > 1)
       (void)nco_get_vara(nc_id,var->id,var->srt,var->cnt,var->val.vp,var->typ_dsk);
-    }else{
+    else
       (void)nco_get_var1(nc_id,var->id,var->srt,var->val.vp,var->typ_dsk);
     } /* end else */
   } /* end potential OpenMP critical */
