@@ -55,36 +55,28 @@ statement:
 
 
 // a bracketed block
-block
-  : LCURL! (statement)* RCURL!
-  { #block = #( [BLOCK, "block"], #block ); }
-  ;
+block:
+    LCURL! (statement)* RCURL!
+    { #block = #( [BLOCK, "block"], #block ); }
+    ;
 
-
-
-if_stmt
-  : IF^ LPAREN! expr RPAREN! statement 
+if_stmt:
+    IF^ LPAREN! expr RPAREN! statement 
     ( (ELSE) => else_part
       | () // nothing 
      )
-  ;
+     ;
 
-else_part
-  : ELSE^ statement
-  ;
-
+else_part:
+    ELSE^ statement
+     ;
 
 
 assign_statement:
          expr SEMI!
        {#assign_statement = #(#[EXPR,"EXPR"],#assign_statement); }
 
-      ; 
-//         hyper_slb  ASSIGN^ expr SEMI!
-//       | cast_slb   ASSIGN^ expr SEMI!
-//    ;
-
-
+     ; 
 
 hyper_slb: (VAR_ID^|ATT_ID^) (lmt_list)?
      ;
@@ -815,13 +807,12 @@ assign returns [var_sct *var]
 
                 } break;
 
-            case DMN_LIST:{
               // Deal with LHS casting 
-              int dmn_nbr=0;
-              char** sbs_lst;
-              var_sct *var1;
+            case DMN_LIST:{
 
-              RefAST aRef;
+              var_sct *var1;
+              NcapVector<std::string> str_vtr;
+              RefAST  aRef;
               
               cout<< "In ASSIGN/DMN\n";
 
@@ -829,16 +820,15 @@ assign returns [var_sct *var]
               bcst=true;  
               var_cst=(var_sct*)NULL;
 
-              sbs_lst=(char**)nco_calloc(NC_MAX_DIMS, sizeof(char*));
               aRef=vid->getFirstChild()->getFirstChild();
          
-              // Get dimension names in list       
+              // pPut dimension names in vector       
               while(aRef) {
-                sbs_lst[dmn_nbr++]=strdup(aRef->getText().c_str());
+                str_vtr.push(aRef->getText());
                 aRef=aRef->getNextSibling();      
               }
               // Cast is applied in VAR_ID action in function out()
-              var_cst=ncap_cst_mk(sbs_lst,dmn_nbr,prs_arg);     
+              var_cst=ncap_cst_mk(str_vtr,prs_arg);     
               var1=out(vid->getNextSibling());
               
               // Cast isn't applied to naked numbers,
@@ -858,7 +848,6 @@ assign returns [var_sct *var]
 
               bcst=false;
               var_cst=nco_var_free(var_cst); 
-              (void)nco_sng_lst_free(sbs_lst,NC_MAX_DIMS);    
 
              } break;
 
@@ -967,6 +956,7 @@ out returns [var_sct *var]
     |   #(POST_DEC var1=out )      
             { var=ncap_var_var_inc(var1,(var_sct*)NULL, POST_DEC,prs_arg );}
 
+    //ternary Operator
     |   #( qus:QUESTION var1=out) {
            bool br;
            br=ncap_var_lgcl(var1);
@@ -1239,12 +1229,8 @@ out returns [var_sct *var]
           // We need data in var so that LHS logic in assign can access var shape 
           var_nw=nco_var_fll(var_rhs->nc_id,var_rhs->id,var_nm, dmn_vtr.ptr(0),dmn_vtr.size());
 
-          // Now get data from disk -can't use nco_var_get() -as it lacks stride
-          var_nw->val.vp=(void*)nco_malloc(var_nw->sz*nco_typ_lng(var_nw->typ_dsk));
-          if(var_nw->sz >1)  
-           (void)nco_get_varm(var_nw->nc_id,var_nw->id,var_nw->srt,var_nw->cnt,var_nw->srd,(long*)NULL,var_nw->val.vp,var_nw->typ_dsk);
-          else
-           (void)nco_get_var1(var_nw->nc_id,var_nw->id,var_nw->srt,var_nw->val.vp,var_nw->typ_dsk);
+          // Now get data from disk - use nco_var_get() 
+          (void)nco_var_get(var_nw->nc_id,var_nw); 
            
           /* a hack - we set var->has_dpl_dmn=-1 so we know we are dealing with 
              a hyperslabed var and not a regular var  -- It shouldn't cause 
