@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.114 2006-07-23 10:39:51 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.115 2006-07-25 06:59:30 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -605,7 +605,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   /* Purpose: Allocate and retrieve given variable hyperslab from disk into memory
      If variable is packed on disk then inquire about scale_factor and add_offset */
   long idx;
-  long mult_srd=1L;
+  long srd_prd=1L; /* [nbr] Product of strides */
   const char fnc_nm[]="nco_var_get()"; /* [sng] Function name */
 
   var->val.vp=(void *)nco_malloc_dbg(var->sz*nco_typ_lng(var->typ_dsk),"Unable to malloc() value buffer when retrieving variable from disk",fnc_nm);
@@ -624,18 +624,16 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   { /* begin potential OpenMP critical */
     /* Block is critical/thread-safe for identical/distinct in_id's */
 
-    /* see if we have a stride >1 */
-    for(idx=0; idx <var->nbr_dim ; idx++)
-      mult_srd*=var->srd[idx];
+    /* Is stride > 1? */
+    for(idx=0;idx<var->nbr_dim;idx++) srd_prd*=var->srd[idx];
 
-    if(mult_srd >1) { 
-      (void)nco_get_varm(nc_id,var->id,var->srt,var->cnt,var->srd,(long*)NULL,var->val.vp,var->typ_dsk);
+    if(srd_prd > 1){ 
+      (void)nco_get_varm(nc_id,var->id,var->srt,var->cnt,var->srd,(long *)NULL,var->val.vp,var->typ_dsk);
     }else{    
-
-    if(var->sz > 1)
-      (void)nco_get_vara(nc_id,var->id,var->srt,var->cnt,var->val.vp,var->typ_dsk);
-    else
-      (void)nco_get_var1(nc_id,var->id,var->srt,var->val.vp,var->typ_dsk);
+      if(var->sz > 1)
+	(void)nco_get_vara(nc_id,var->id,var->srt,var->cnt,var->val.vp,var->typ_dsk);
+      else
+	(void)nco_get_var1(nc_id,var->id,var->srt,var->val.vp,var->typ_dsk);
     } /* end else */
   } /* end potential OpenMP critical */
   
