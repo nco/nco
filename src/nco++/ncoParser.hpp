@@ -66,6 +66,7 @@ public:
 	public: void dmn_list();
 	public: void func_exp();
 	public: void primary_exp();
+	public: void unaryleft_exp();
 	public: void unary_exp();
 	public: void pow_exp();
 	public: void mexpr();
@@ -74,6 +75,7 @@ public:
 	public: void eq_expr();
 	public: void lmul_expr();
 	public: void lor_expr();
+	public: void cond_expr();
 	public: void ass_expr();
 	public: void lmt();
 	public: void imaginary_token();
@@ -88,10 +90,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 66;
+	static const int NUM_TOKENS = 72;
 #else
 	enum {
-		NUM_TOKENS = 66
+		NUM_TOKENS = 72
 	};
 #endif
 	
@@ -127,6 +129,10 @@ private:
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_14;
 	static const unsigned long _tokenSet_15_data_[];
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_15;
+	static const unsigned long _tokenSet_16_data_[];
+	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_16;
+	static const unsigned long _tokenSet_17_data_[];
+	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_17;
 };
 
 #endif /*INC_ncoParser_hpp_*/

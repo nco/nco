@@ -24,7 +24,7 @@
 #line 25 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 351 "ncoGrammer.g"
+#line 368 "ncoGrammer.g"
 
 
 private:
@@ -259,7 +259,7 @@ public:
 	}
 	public: int  lmt_peek(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: void statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
-	public: void assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
+	public: var_sct * assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * out(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 public:
 	ANTLR_USE_NAMESPACE(antlr)RefAST getAST()
@@ -273,10 +273,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 66;
+	static const int NUM_TOKENS = 72;
 #else
 	enum {
-		NUM_TOKENS = 66
+		NUM_TOKENS = 72
 	};
 #endif
 	

@@ -26,7 +26,7 @@
 #line 27 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 191 "ncoGrammer.g"
+#line 202 "ncoGrammer.g"
 
 
 private:
@@ -62,6 +62,9 @@ public:
 	public: void mMINUS_ASSIGN(bool _createToken);
 	public: void mTIMES_ASSIGN(bool _createToken);
 	public: void mDIVIDE_ASSIGN(bool _createToken);
+	public: void mINC(bool _createToken);
+	public: void mDEC(bool _createToken);
+	public: void mQUESTION(bool _createToken);
 	public: void mLPAREN(bool _createToken);
 	public: void mRPAREN(bool _createToken);
 	public: void mLCURL(bool _createToken);
