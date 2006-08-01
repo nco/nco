@@ -89,16 +89,18 @@ f2(1,:,::2)=1111;
 f4=th(0,0,0)+th(9,1,3);
 time1(0:4)=.4444;
 time1(5:9)=.5555;
-//Create some attributes --can derive form vars
+//Create some attributes --can derive from vars
 f2@one=time(::3);
 f2@two=1000.0;
 f2@three=f2@one*f2@two;
 // hyperlslab on the LHS & RHS 
+// Empty brackets indicate the entire variable
+// is to be hyperslabbed.
 f3()=time1(0:6:2);
 th(9,,)=th(2,,);
 //Check attribute propagation
 // With command line switch on , a var on the RHS will inhert attributes
-// from the leftermost var on t he RHS
+// from the leftermost var ont he RHS
 g1=999.00;
 g1@a=10;
 g1@b=20.0;
@@ -130,3 +132,63 @@ h4(6:11)="henrys";
 // If hyperslabbing a var in the input 
 // then the var is first copied to output e.g
 weight(0)=weight(0)+10;
+//Increment  decrement operators
+//Deceptively complex expression
+// time is read from the input file
+// its elements are incremented by one and then the result is
+// written to the output file and subsequently then assigned to i2
+// i2 is then written to file
+i2=++time;
+// time in the output is now decremented by one
+// and ALL elements of of i2 & i3 are equal
+i3=time--;
+if(i2==i3) i2@equal=1; else i2@equal=0;
+// can string together operators
+i4=i5=i6=0;
+// below the result is i4=10, i5=10,i6=0
+i4+=i5+=i6+10;
+// below the result is i4=80  i5=8 i6=2
+i4*=i5-=i6=2;
+// can use assign in an if then i7=0,0,0,0,0,0,0,0,0,0
+if( 0==(i7=i3-i2) ) i7@equals=1; else i7@equals=0;
+// all elements of i7 now 10
+i7()=10;  
+// all elements of i7 now 11
+i7+=1;
+// ternary operator -similar to the one in C 
+// in below attribute is assigned the string "true"
+i7@test = ( i7 >9 ? "true" : "false");
+i8=0;
+// Side effects 
+j1=0;
+// Unlike C there is no short circuiting with AND/OR
+// so in the below statement the result is that
+// j1=1 and j1@bool is undeclared
+if(0 && j1++) j1@bool="true"; 
+// similarly after below j1=0 j1@bool is still undeclared
+if( 1 || --j1 ) j1@bool="true"; 
+j2=10;
+j3=1;
+// There are no side effects with the ternary operator e.g
+// the result is that j2=10 ,j3=2 , j4=2;
+j4= ( i7<9 ? ++j2 : ++j3);
+// Defining Dimensions
+// use the defdim function. Dimensions in the input file CANNOT
+// be redefined in the output. Dimensions are imutable and
+// once defined in  cannot be redefined
+// (nb defdim should return a bool value indicating success or failure)
+defdim("x",1);
+defdim("y",4);
+defdim("z",9);
+//cast a new variable
+k1[$x,$y,$z]=1.01d;
+// the "value" of a dimension can be used in an expression
+// by postfixing it with val ie.
+if( $x.val==1 && $y.val < 5 && $z.val==9)
+  k1@max=9;
+//
+k1@size=$x.val*$y.val*$z.val;
+// hyperlsab with dim values
+k1(0,0,0:($z.val-3))=2.01d;
+
+
