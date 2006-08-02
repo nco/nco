@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.138 2006-07-14 20:18:54 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.139 2006-08-02 06:54:42 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -132,8 +132,8 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	    'help'         => \$usg,        # Explain how to use this thang
 	    'log'          => \$wnt_log,    # Log output
 	    'mpi_prc=i'    => \$mpi_prc,    # Number MPI processes to use
-	    'mpi_fake'	   => \$mpi_fk,    # Run SMP version of MPI code
-	    'fake_mpi'	   => \$mpi_fk,    # Run SMP version of MPI code
+	    'mpi_fake'	   => \$mpi_fk,     # Run SMP version of MPI code
+	    'fake_mpi'	   => \$mpi_fk,     # Run SMP version of MPI code
 	    'queue'        => \$que,        # Bypass all interactive stuff
 	    'pth_rmt_scp_tst' => \$pth_rmt_scp_tst, # [drc] Path to scp regression test file
 	    'regress'      => \$rgr,        # Perform regression tests
@@ -143,7 +143,7 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	    'test_files=s' => \$tst_fl_mk,  # "a" makes all, "13" makes files 1,3
 	    'tst_fl=s'     => \$tst_fl_mk,  # "a" makes all, "13" makes files 1,3
 	    'thr_nbr=i'    => \$thr_nbr,    # Number of OMP threads to use
-	    'udpreport'    => \$udp_rpt,  # Return timing data back to udpserver on sand
+	    'udpreport'    => \$udp_rpt,    # Return timing data back to udpserver on sand
 	    'usage'        => \$usg,        # Explain how to use this thang
 	    'caseid=s'     => \$caseid,     # short string to tag test dir and batch queue
 	    'xdata=s'	   => \$xdat_pth,   # Explicit data path
