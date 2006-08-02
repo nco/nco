@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.376 2006-07-10 22:56:53 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.377 2006-08-02 05:52:53 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -23,6 +23,7 @@
 # make THR_NBR=2 bm                  # OpenMP benchmarks
 # make NETCDF4=Y                     # netCDF4 features
 # make PNETCDF=Y                     # pnetCDF features
+# make ZNETCDF=Y                     # znetCDF features
 
 # Usage (Compilation):
 # cd ~/nco/bld;make;cd -             # Default build
@@ -162,13 +163,16 @@ endif # endif USR_TKN
 ifndef VRS_SNG
  VRS_SNG := $(shell date +%Y%m%d)
 endif # endif VRS_SNG
+ifndef ${ZNETCDF} # znetcdf support
+ ZNETCDF := N
+endif # endif ZNETCDF
 # Derived-tokens based on primary tokens
 # These tokens should not be altered by hand
 
 # NB: CPP_TKN is recursively expanded variable, define only when components are ready
 CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
 
-# Default NCO build. DAP, NETCDF4, and PNETCDF clauses may overwrite this
+# Default NCO build. DAP, NETCDF4, PNETCDF, and ZNETCDF clauses may overwrite this
 NC_LDFLAGS := -L${NETCDF_LIB}
 NC_LIBS := -lnetcdf 
 
@@ -237,6 +241,12 @@ ifeq (${PNETCDF},Y)
  NC_LDFLAGS := -L${NETCDF_LIB}
  NC_LIBS += -lpnetcdf
 endif # endif PNETCDF
+
+ifeq (${ZNETCDF},Y)
+# Enable znetcdf functionality
+ NC_LDFLAGS := -L${NETCDF_LIB}
+ NC_LIBS += -lznetcdf
+endif # endif ZNETCDF
 
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
 # Decide among the plethora of Linux compilers
@@ -1230,6 +1240,11 @@ ifeq (${PNETCDF},Y)
 endif
 # endif PNETCDF
 
+ifeq (${ZNETCDF},Y)
+ CPPFLAGS += -DENABLE_ZNETCDF
+endif
+# endif ZNETCDF
+
 # Default to MPICC, MPICXX to CC, CXX and cross your fingers
 MPICC := ${CC}
 MPICXX := ${CXX}
@@ -1675,6 +1690,7 @@ dbg:
 	@printf "VPATH = ${VPATH}\n"
 	@printf "VRS_SNG = ${VRS_SNG}\n"
 	@printf "YACC = ${YACC}\n"
+	@printf "ZNETCDF = ${ZNETCDF}\n"
 distclean: dst_cln
 dst_cln: cln bin_cln dat_cln doc_cln root_cln
 	cd ${MY_BLD_DIR}; rm -f *~

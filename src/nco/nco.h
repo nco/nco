@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.102 2006-06-07 18:36:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.103 2006-08-02 05:52:53 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -145,6 +145,13 @@ Preprocessor macros may be used to turn bool into _Bool, false into 0 and true i
 #define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
 #endif
 #endif /* !ENABLE_NETCDF4 */
+
+  /* Define compatibility tokens when user does not have znetCDF */
+#ifndef ENABLE_ZNETCDF
+#ifndef NC_COMPRESS
+# define NC_COMPRESS 0x200 /* bn file is compressed */
+#endif
+#endif /* !ENABLE_ZNETCDF */
 
 #ifndef EXIT_SUCCESS /* Most likely this is a SUN4 machine */
 # define EXIT_SUCCESS 0
