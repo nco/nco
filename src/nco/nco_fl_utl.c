@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.80 2006-06-07 07:52:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.81 2006-08-02 05:52:53 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -32,6 +32,8 @@ nco_create_mode_mrg /* [fnc] Merge clobber mode with user-specified file format 
     nccreate_mode|=NC_NETCDF4;
   }else if(fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     nccreate_mode|=NC_NETCDF4|NC_CLASSIC_MODEL;
+  }else if(fl_out_fmt == NC_COMPRESS){
+    nccreate_mode|=NC_COMPRESS;
   } /* end else fl_out_fmt */
 
   return nccreate_mode;
@@ -63,6 +65,13 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
 #else /* !ENABLE_NETCDF4 */
     (void)fprintf(stderr,"%s: ERROR This NCO was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try with different (or no) specified file format, such as \"classic\" or \"64bit\".\n",prg_nm_get());
 #endif /* !ENABLE_NETCDF4 */
+  }else if(strstr("znetcdf",fl_fmt_sng)){
+#ifdef ENABLE_ZNETCDF
+    /* If "znetcdf" contains string */
+    *fl_fmt_enm=NC_COMPRESS;
+#else /* !ENABLE_ZNETCDF */
+    (void)fprintf(stderr,"%s: ERROR This NCO was not built with znetCDF (http://snow.cit.cornell.edu/noon/z_netcdf.html) and cannot create the requested znetCDF file format. HINT: Re-try with different (or no) specified file format, such as \"classic\" or \"64bit\".\n",prg_nm_get());
+#endif /* !ENABLE_ZNETCDF */
   }else{
     (void)fprintf(stderr,"%s: ERROR Unknown output file format \"%s\" requested. Valid formats are (unambiguous leading characters of) \"classic\", \"64bit\", \"netcdf4\", and \"netcdf4_classic\".\n",prg_nm_get(),fl_fmt_sng);
     nco_exit(EXIT_FAILURE);
