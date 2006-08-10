@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.377 2006-08-02 05:52:53 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.378 2006-08-10 22:27:47 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -266,7 +266,7 @@ ifndef LINUX_CC
  #LINUX_CC := icc -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE
  #LINUX_CC := insure
  #LINUX_CC := pathcc -std=c99
- #LINUX_CC := pgcc -std=c99
+ #LINUX_CC := pgcc -c9x
 endif # endif LINUX_CC
 ifndef LINUX_FC
 # Fortran compiler for Linux
@@ -898,16 +898,16 @@ endif
  CXXFLAGS := ${CFLAGS}
 endif # end Pathscale (QLogic) C++ Compiler
 # Portland Group C++ Compiler
-ifeq (${CC},pgcc)
+ifeq (pgcc,$(firstword ${CC}))
 # Enable Large File Support (LFS) by default
  CFLAGS := -Mlfs
  LDFLAGS += -Mlfs
- OMP_FLG := -mp
+ OMP_FLG_C := -mp
+ifeq (${OPTS},O)
+ CFLAGS += -fast ${PGI_RCH_ARG}
+endif
 ifeq (${OPTS},D)
  CFLAGS += -g
-endif
-ifeq (${OPTS},O)
- CFLAGS += -fast
 endif
 ifeq (${OPTS},R)
  CFLAGS += 
@@ -920,7 +920,7 @@ endif # endif Portland Group C++ Compiler
 # Portland Group Fortran Compiler
 ifeq (${FC},pgf90)
  FFLAGS := -Mextend -Mnosecond_underscore -byteswapio -Mrecursive -Mdalign -Ktrap=fp -Mlfs
- OMP_FLG := -mp
+ OMP_FLG_F := -mp
 ifeq (${PRC},D)
  FFLAGS += -Mr8 -Mi4
 endif
