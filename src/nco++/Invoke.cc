@@ -55,7 +55,7 @@ filename=fl_spt_usr;
 	  parser= new ncoParser(*lexer);
 	  parser->setFilename(filename);
 
-	  ASTFactory ast_factory;
+	  ASTFactory ast_factory("ncoAST",ncoAST::factory);
 	  parser->initializeASTFactory(ast_factory);
 	  parser->setASTFactory(&ast_factory);
 
@@ -100,67 +100,3 @@ filename=fl_spt_usr;
 
 
 }              
-
-/*	
-int switchboard(RefAST t, ncoTree &walker) {
-bool br;;
-var_sct *var;
-
-RefAST a;
-	while(t) {
-	  switch (t->getType()) { 
-
-	  case TokenTypes.BLOCK:
-	    printf("Type BLOCK\n");
-	      switchboard(t->getFirstChild(),walker);
-	    break;
-
-	  case TokenTypes.ASSIGN:
-	    (void)walker.assign(t); 
-	    cout << "Type ASSIGN " <<  t->getFirstChild()->getText() <<endl;;
-	    break;
-
-
-	  case TokenTypes.IF:
-	    //Calculate logical expression
-	    var= walker.out( t->getFirstChild());
-	    br=ncap_var_lgcl(var);
-	    var=nco_var_free(var);
-	    printf("conditional= %d\n", br);
-	    
-            // See if else is present
-	    a=t->getFirstChild()->getNextSibling()->getNextSibling();
-
-	    if( a && a->getType() == TokenTypes.ELSE) 
-	       printf("Else exists\n");
-
-	      
-	    if(br) switchboard(t->getFirstChild()->getNextSibling(),walker );
-	      else if(a) { switchboard(a->getFirstChild(),walker);}
-
-	    break;
-	  
-
-	  case TokenTypes.ELSE:
-	    //exit function !
-	     return 0;
-	     break;
-
-	    // empty statement -do nothing  
-	  case TokenTypes.NULL_NODE:
-	    printf("Type NULL\n");
-	    break;
-
-          default:
-	    printf("default %d\n",t->getType() );
-	    break;
-	  }
-
-	  t=t->getNextSibling();
-	  
-	}
-
-	return 1;
-}
-
-*/
