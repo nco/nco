@@ -63,8 +63,7 @@ block:
 if_stmt:
     IF^ LPAREN! expr RPAREN! statement 
     ( (ELSE) => else_part
-      | () // nothing 
-     )
+     )?
      ;
 
 else_part:
@@ -905,6 +904,9 @@ assign returns [var_sct *var]
                 cout <<"Saving attribute " << sa <<endl;
  
                 var1=out(att->getNextSibling());
+                (void)nco_free(var1->nm);
+                var1->nm=strdup(sa.c_str());
+
                 //var_nw=nco_var_dpl(var);
                 NcapVar *Nvar=new NcapVar(sa,var1);
                 prs_arg->ptr_var_vtr->push_ow(Nvar);       
@@ -946,14 +948,14 @@ out returns [var_sct *var]
             { var=ncap_var_var_op(var1,(var_sct*)NULL, MINUS );}
     |   #(PLUS var1=out ) // do nothing   
 
-    |   #(INC var1=out )      
+    |   #(INC var1=out_asn )      
             { var=ncap_var_var_inc(var1,(var_sct*)NULL, INC,prs_arg);}
-    |   #(DEC var1=out )      
+    |   #(DEC var1=out_asn )      
             { var=ncap_var_var_inc(var1,(var_sct*)NULL, DEC,prs_arg );}
     
-    |   #(POST_INC var1=out )      
+    |   #(POST_INC var1=out_asn )      
             { var=ncap_var_var_inc(var1,(var_sct*)NULL, POST_INC,prs_arg);}
-    |   #(POST_DEC var1=out )      
+    |   #(POST_DEC var1=out_asn )      
             { var=ncap_var_var_inc(var1,(var_sct*)NULL, POST_DEC,prs_arg );}
 
     //ternary Operator
@@ -1002,13 +1004,13 @@ out returns [var_sct *var]
             { var=ncap_var_var_op(var1,var2, NEQ );}
 
     // Assign Operators 
-    | #(pls_asn:PLUS_ASSIGN  var1=out var2=out)  
+    | #(pls_asn:PLUS_ASSIGN  var1=out_asn var2=out)  
             { var=ncap_var_var_inc(var1,var2, PLUS_ASSIGN , prs_arg);}
-	| #(min_asn:MINUS_ASSIGN var1=out var2=out)
+	| #(min_asn:MINUS_ASSIGN var1=out_asn var2=out)
             { var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN, prs_arg );}
-	| #(tim_asn:TIMES_ASSIGN var1=out var2=out)
+	| #(tim_asn:TIMES_ASSIGN var1=out_asn var2=out)
             { var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN, prs_arg );}	
-	| #(div_asn:DIVIDE_ASSIGN var1=out var2=out)	
+	| #(div_asn:DIVIDE_ASSIGN var1=out_asn var2=out)	
             { var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN,prs_arg );}	
     | asn:ASSIGN 
             { var=assign(asn); }
@@ -1291,7 +1293,6 @@ out returns [var_sct *var]
 
         } /* end action */
     // PLain attribute
-
     |   att:ATT_ID { 
             // check "output"
             NcapVar *Nvar;
@@ -1311,3 +1312,42 @@ out returns [var_sct *var]
         }    
 ;
 
+
+// Return a var or att WITHOUT applying a cast 
+// and checks that the operand is a valid Lvalue
+// ie that the var or att has NO children!!
+out_asn returns [var_sct *var]
+
+	:   v:VAR_ID       
+        { 
+          var=ncap_var_init(v->getText().c_str(),prs_arg,true);
+          if(var== (var_sct*)NULL){
+               nco_exit(EXIT_FAILURE);
+          }
+          var->undefined=False;
+         
+          if(v->getFirstChild() !=NULL) {
+
+           cout<<prg_nm_get() <<" : " << prs_arg->fl_in 
+           <<" Invalid Lvalue near " << v->getText() <<endl; 
+           nco_exit(EXIT_FAILURE);
+          }
+        } /* end action */
+    // Plain attribute
+    |   att:ATT_ID { 
+            // check "output"
+            NcapVar *Nvar;
+            Nvar=prs_arg->ptr_var_vtr->find(att->getText());
+            var=(var_sct*)NULL;    
+
+            var = (Nvar !=NULL) ?
+                  nco_var_dpl(Nvar->var):
+                  ncap_att_init(att->getText(),prs_arg);
+
+            if(var== (var_sct*)NULL){
+                fprintf(stderr,"unable to locate attribute %s in input or output files\n",att->getText().c_str());
+                nco_exit(EXIT_FAILURE);
+            }
+             
+        }    
+;
