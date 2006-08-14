@@ -13,7 +13,9 @@
 #include "ncoLexer.hpp"
 #include "ncoParser.hpp"
 #include "ncoTree.hpp"
-
+#include <antlr/NoViableAltForCharException.hpp>
+#include <antlr/CharStreamException.hpp>
+#include <antlr/TokenStreamException.hpp>
 #include "ncap2.hh"
 
 
@@ -71,11 +73,26 @@ filename=fl_spt_usr;
 	   }
 	   printf("Paser tree printed\n");
 
-	}  catch(ANTLRException& e) {
-	cerr << "exception: " << e.getMessage() << endl;
-	}
+	}  
 
-	
+            catch (RecognitionException& pe) {
+              parser->reportError(pe);
+              // bomb out
+              nco_exit(EXIT_FAILURE);
+	   }
+
+             catch (TokenStreamException& te) {
+	      cerr << te.getMessage();
+              // bomb out
+              nco_exit(EXIT_FAILURE);
+	   }
+
+             catch (CharStreamException& ce) {
+               cerr << ce.getMessage();
+              // bomb out
+              nco_exit(EXIT_FAILURE);
+	   }
+
 	t=a;
 
     try {   
