@@ -5,6 +5,7 @@ header {
     #include <ctype.h>
     #include <iostream>
     #include <string>
+    #include <sstream>
     #include "ncap2.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
@@ -24,6 +25,7 @@ options {
     k=3;
 	genHashLines = true;		// include line number information
 	buildAST = true;			// uses CommonAST by default
+    defaultErrorHandler=false;
     //analyzerDebug = true;
     //codeGenDebug= true;
 }
@@ -51,7 +53,7 @@ statement:
         | def_dim
         //deal with empty statement
         | SEMI! { #statement = #([ NULL_NODE, "null_stmt"]); } 
-    ;        
+   ;        
 
 
 // a bracketed block
@@ -188,7 +190,8 @@ imaginary_token
 class ncoLexer extends Lexer;
 options {
     k = 3;
-
+    defaultErrorHandler=false;
+    filter=BLASTOUT;
 }
 
 
@@ -293,6 +296,22 @@ protected LPHDGT:  ( 'a'..'z' | 'A'..'Z' | '_' | '0'..'9');
 protected XPN:     ( 'e' | 'E' ) ( '+' | '-' )? ('0'..'9')+ ;
 
 
+protected BLASTOUT: .
+         {
+          // blast out of lexer & parser
+          // Can't use RecognitionException() as 
+          // this is caught in lexer -- use TokenStreamRecognitionException()
+          // instead -- This takes us back to try block in Invoke          
+
+          ostringstream os;
+          char ch=LA(0);
+          os << getFilename() <<":"<<getLine()<<":"<<getColumn() 
+             <<": unexpected char : '" << ch <<"'"<< endl;
+
+          ANTLR_USE_NAMESPACE(antlr)RecognitionException re(os.str());
+          throw  ANTLR_USE_NAMESPACE(antlr)TokenStreamRecognitionException(re);
+         }  
+    ;     
 
 
 
@@ -359,6 +378,9 @@ DIM_VAL: '$'! (LPH)(LPH|DGT)*
 
 NSTRING: '"'! ( ~('"'|'\n'))* '"'! {$setType(NSTRING);}
    ;
+
+
+
 
 
 class ncoTree extends TreeParser;
