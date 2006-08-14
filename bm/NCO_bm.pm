@@ -1,9 +1,9 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.57 2006-07-14 20:18:54 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.58 2006-08-14 19:53:20 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
-# Module contains following functions in approximate order of their usage:
+# Module contains following functions:
 
 # bm_ntl().........initialization, set NCOs to be tested under different conditions
 # bm_usg().........dumps usage text

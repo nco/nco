@@ -1,12 +1,12 @@
 package NCO_benchmarks;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.13 2006-06-25 06:54:00 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.14 2006-08-14 19:53:20 zender Exp $
 
 # Purpose: library module supporting nco_bm.pl benchmark and regression tests
 # File contains BENCHMARK code (as opposed to the REGRESSION tests in "NCO_rgr.pm")
 # Module contains following functions in approximate order of usage:
 
-# benchmarks().........the entire set of benchmarks
+# benchmarks().........Entire set of NCO benchmarks
 
 # NB: When adding tests, _be sure to use -O to overwrite files_
 # Otherwise, script hangs waiting for interactive response to overwrite queries

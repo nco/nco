@@ -2,13 +2,14 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.139 2006-08-02 06:54:42 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.140 2006-08-14 19:53:20 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
 # ~/nco/bm/nco_bm.pl ncra # Test one operator
 # ~/nco/bm/nco_bm.pl --thr_nbr=2 --regress --udpreport # Test OpenMP
 # ~/nco/bm/nco_bm.pl --mpi_prc=2 --regress --udpreport # Test MPI
+# ~/nco/bm/nco_bm.pl --tst_fl=a --udpreport # Create all test files
 # ~/nco/bm/nco_bm.pl --dap --regress --udpreport # Test OPeNDAP on sand
 # ~/nco/bm/nco_bm.pl --dap=http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata --regress --udpreport # Test OPeNDAP on soot
 # scp ~/nco/bm/nco_bm.pl esmf.ess.uci.edu:nco/bm
@@ -69,7 +70,7 @@ $caseid = '';
 $dbg_lvl = 0; # [enm] Print tests during execution for debugging
 $dodap = 'FALSE'; # Unless redefined by the command line, it does not get reset
 $dust_usr = '';
-$fl_cnt = 32; # nbr of files to process (reduced to 4 if using remote/dods files
+$fl_cnt = 32; # nbr of files to process (reduced to 4 if using remote/dods files)
 $fl_fmt = 'classic'; # file format for wirting
 $fl_pth = '';
 $gnu_cut = 1;
@@ -470,12 +471,12 @@ if ($bm && $tst_fl_mk eq '0' && $dodap eq 'FALSE'){
 # file creation tests
 if ($tst_fl_mk ne '0' || $srv_sd ne "SSNOTSET"){
     my $fc = 0; $prsrv_fl = 1;
-    if ($tst_fl_mk =~ "[Aa]"){$tst_fl_mk = "1234";}
-    if ($tst_fl_mk =~ /1/){ @fl_tmg = NCO_bm::fl_mk(0); $fc++; }
-    if ($tst_fl_mk =~ /2/){ @fl_tmg = NCO_bm::fl_mk(1); $fc++; }
-    if ($tst_fl_mk =~ /3/){ @fl_tmg = NCO_bm::fl_mk(2); $fc++; }
-    if ($notbodi && $tst_fl_mk =~ /4/) { @fl_tmg = NCO_bm::fl_mk(3); $fc++; }
-    if ($fc >0) {NCO_bm::rsl_smr_fl_mk(@fl_tmg); } # Print and UDPreport creation times
+    if ($tst_fl_mk =~ "[Aa]"){$tst_fl_mk="123";}
+    if ($tst_fl_mk =~ /1/){@fl_tmg=NCO_bm::fl_mk(0);$fc++;}
+    if ($tst_fl_mk =~ /2/){@fl_tmg=NCO_bm::fl_mk(1);$fc++;}
+    if ($tst_fl_mk =~ /3/){@fl_tmg=NCO_bm::fl_mk(2);$fc++;}
+    if ($notbodi && $tst_fl_mk =~ /4/){@fl_tmg = NCO_bm::fl_mk(3); $fc++;} # csz: broken
+    if ($fc > 0){NCO_bm::rsl_smr_fl_mk(@fl_tmg); } # Print and UDPreport creation times
 }
 
 my $doit=1; # for skipping various tests (fxm: can we delete this? -dw)
