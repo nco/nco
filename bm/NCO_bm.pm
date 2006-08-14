@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.58 2006-08-14 19:53:20 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.59 2006-08-14 20:05:00 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -220,15 +220,13 @@ sub bm_vrb {
     if($wnt_log) {printf (LOG "$ts");}
 } # end of bm_vrb($dbg_lvl, $wnt_log, informational string to output )
 
-##
-## fl_mk_dat_ntl() sets up the data for the (currently) 4 files that are created for later tests.
-##
-
 sub fl_mk_dat_ntl {
-    my $fl_nbr = 3;
-    my $idx_stl_5km = 0;
-    my $idx_gcm_dly = 1;
-    my $idx_tms_lng = 2;
+# Purpose: fl_mk_dat_ntl() sets up data for the (currently) three files 
+# that are created for later tests 
+    my $fl_nbr=3;
+    my $idx_stl_5km=0;
+    my $idx_gcm_dly=1;
+    my $idx_tms_lng=2;
     dbg_msg(1,"fl_mk_dat_ntl: \$fl_nbr = $fl_nbr");
     
     if ($dbg_lvl > 2) {
