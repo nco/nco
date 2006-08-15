@@ -13,7 +13,6 @@
 #include "ncoLexer.hpp"
 #include "ncoParser.hpp"
 #include "ncoTree.hpp"
-#include <antlr/NoViableAltForCharException.hpp>
 #include <antlr/CharStreamException.hpp>
 #include <antlr/TokenStreamException.hpp>
 #include "ncap2.hh"
@@ -57,7 +56,7 @@ filename=fl_spt_usr;
 	  parser= new ncoParser(*lexer);
 	  parser->setFilename(filename);
 
-	  ASTFactory ast_factory("ncoAST",ncoAST::factory);
+	  ASTFactory ast_factory;
 	  parser->initializeASTFactory(ast_factory);
 	  parser->setASTFactory(&ast_factory);
 
