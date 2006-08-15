@@ -14,6 +14,7 @@
     #include <ctype.h>
     #include <iostream>
     #include <string>
+    #include <sstream>
     #include "ncap2.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
@@ -21,10 +22,10 @@
     ANTLR_USING_NAMESPACE(antlr);
     
 
-#line 25 "ncoTree.hpp"
+#line 26 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 368 "ncoGrammer.g"
+#line 389 "ncoGrammer.g"
 
 
 private:
@@ -240,7 +241,7 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
 
 
 
-#line 29 "ncoTree.hpp"
+#line 30 "ncoTree.hpp"
 public:
 	ncoTree();
 	static void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
@@ -261,6 +262,7 @@ public:
 	public: void statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * out(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
+	public: var_sct * out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 public:
 	ANTLR_USE_NAMESPACE(antlr)RefAST getAST()
 	{
@@ -273,10 +275,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 72;
+	static const int NUM_TOKENS = 73;
 #else
 	enum {
-		NUM_TOKENS = 72
+		NUM_TOKENS = 73
 	};
 #endif
 	

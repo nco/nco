@@ -16,6 +16,7 @@
     #include <ctype.h>
     #include <iostream>
     #include <string>
+    #include <sstream>
     #include "ncap2.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
@@ -23,10 +24,10 @@
     ANTLR_USING_NAMESPACE(antlr);
     
 
-#line 27 "ncoLexer.hpp"
+#line 28 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 202 "ncoGrammer.g"
+#line 204 "ncoGrammer.g"
 
 
 private:
@@ -44,7 +45,7 @@ public:
 
 
 
-#line 31 "ncoLexer.hpp"
+#line 32 "ncoLexer.hpp"
 private:
 	void initLiterals();
 public:
@@ -94,6 +95,7 @@ public:
 	protected: void mLPH(bool _createToken);
 	protected: void mLPHDGT(bool _createToken);
 	protected: void mXPN(bool _createToken);
+	protected: void mBLASTOUT(bool _createToken);
 	public: void mWhitespace(bool _createToken);
 	public: void mCPP_COMMENT(bool _createToken);
 	public: void mC_COMMENT(bool _createToken);

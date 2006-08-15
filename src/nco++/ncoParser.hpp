@@ -16,6 +16,7 @@
     #include <ctype.h>
     #include <iostream>
     #include <string>
+    #include <sstream>
     #include "ncap2.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
@@ -23,11 +24,11 @@
     ANTLR_USING_NAMESPACE(antlr);
     
 
-#line 27 "ncoParser.hpp"
+#line 28 "ncoParser.hpp"
 class CUSTOM_API ncoParser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public ncoParserTokenTypes
 {
 #line 1 "ncoGrammer.g"
-#line 31 "ncoParser.hpp"
+#line 32 "ncoParser.hpp"
 public:
 	void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
 protected:
@@ -90,10 +91,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 72;
+	static const int NUM_TOKENS = 73;
 #else
 	enum {
-		NUM_TOKENS = 72
+		NUM_TOKENS = 73
 	};
 #endif
 	
@@ -107,32 +108,6 @@ private:
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_3;
 	static const unsigned long _tokenSet_4_data_[];
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_4;
-	static const unsigned long _tokenSet_5_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_5;
-	static const unsigned long _tokenSet_6_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_6;
-	static const unsigned long _tokenSet_7_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_7;
-	static const unsigned long _tokenSet_8_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_8;
-	static const unsigned long _tokenSet_9_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_9;
-	static const unsigned long _tokenSet_10_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_10;
-	static const unsigned long _tokenSet_11_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_11;
-	static const unsigned long _tokenSet_12_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_12;
-	static const unsigned long _tokenSet_13_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_13;
-	static const unsigned long _tokenSet_14_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_14;
-	static const unsigned long _tokenSet_15_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_15;
-	static const unsigned long _tokenSet_16_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_16;
-	static const unsigned long _tokenSet_17_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_17;
 };
 
 #endif /*INC_ncoParser_hpp_*/

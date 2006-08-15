@@ -73,13 +73,14 @@ struct CUSTOM_API ncoParserTokenTypes {
 		LPH = 62,
 		LPHDGT = 63,
 		XPN = 64,
-		Whitespace = 65,
-		CPP_COMMENT = 66,
-		C_COMMENT = 67,
-		NUMBER = 68,
-		NUMBER_DOT = 69,
-		VAR_ATT = 70,
-		DIM_VAL = 71,
+		BLASTOUT = 65,
+		Whitespace = 66,
+		CPP_COMMENT = 67,
+		C_COMMENT = 68,
+		NUMBER = 69,
+		NUMBER_DOT = 70,
+		VAR_ATT = 71,
+		DIM_VAL = 72,
 		NULL_TREE_LOOKAHEAD = 3
 	};
 #ifdef __cplusplus

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.20 2006-07-23 10:36:53 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.21 2006-08-15 04:29:53 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1471,34 +1471,31 @@ ncap_var_var_inc   /* [fnc] Add two variables */
     nco_bool DO_CONFORM=True;;
     
     var_sct *var_tmp=(var_sct*)NULL;
-
+    
     var_tmp=nco_var_cnf_dmn(var1,var2,var_tmp,True,&DO_CONFORM);
     if(var2 != var_tmp){
       var2=nco_var_free(var2);
       var2=var_tmp;
     }
-
+    
     if(DO_CONFORM==False) {
-       (void)fprintf(stderr,"%s: Cannot make variable:%s and variable:%s conform. So connot perform arithmetic operation\n",prg_nm_get(),cvar1,var1->nm,cvar2,var2->nm);
-       nco_exit(EXIT_FAILURE);
+      (void)fprintf(stderr,"%s: Cannot make variable:%s and variable:%s conform. So cannot perform arithmetic operation\n",prg_nm_get(),var1->nm,var2->nm);
+      nco_exit(EXIT_FAILURE);
     }
- 
-
-
+    
   } else {
-
+    
     if(var1->sz > 1 && var2->sz==1)
-       (void)ncap_att_stretch(var2,var1->sz);
+      (void)ncap_att_stretch(var2,var1->sz);
   }   
-    if(var1->sz != var2->sz) {
-       (void)fprintf(stderr,"%s: Cannot make %s:%s and %s:%s conform. So connot perform arithmetic operation\n",prg_nm_get(),cvar1,var1->nm,cvar2,var2->nm);
-       nco_exit(EXIT_FAILURE);
-	}
- 
-
-   var1=ncap_var_var_stc(var1,var2,op);
-   
-   var_ret=nco_var_dpl(var1);
+  if(var1->sz != var2->sz) {
+    (void)fprintf(stderr,"%s: Cannot make %s:%s and %s:%s conform. So cannot perform arithmetic operation\n",prg_nm_get(),cvar1,var1->nm,cvar2,var2->nm);
+    nco_exit(EXIT_FAILURE);
+  }
+  
+  var1=ncap_var_var_stc(var1,var2,op);
+  
+  var_ret=nco_var_dpl(var1);
    
   // if LHS is a variable then write to disk
   if(!vb1){
