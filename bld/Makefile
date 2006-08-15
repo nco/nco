@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.378 2006-08-10 22:27:47 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.379 2006-08-15 21:38:57 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -524,13 +524,16 @@ YACC := bison
 # AIX VA Compiler Collection
 ifneq (${null},$(findstring xl,${CC}))
 # Additional switch to fix compiler warnings on csz.c
+# -qarch=auto : Automatically detect architecture of compiling machine and assume execution on same machine
 # -qmaxmem=num Limit memory used by space intensive optimizations to <num> kilobytes
 # -qspill=size Size in B of register allocation spill area, mie needs > 1040 B
 # -qsrcmsg prints transgressing source line with finger
- CFLAGS := -qmaxmem=8192 -qspill=2048 -qsrcmsg
+# -qsuppress=1501-245 : Suppress RLIM_INFINITY memory message due to ulimits
+# -qtune=auto : Optimize executable for architecture detected during compilation
+ CFLAGS := -qmaxmem=8192 -qspill=2048 -qsrcmsg -qsuppress=1501-245
  FFLAGS := -NS2000 -qfixed=132 -qsrcmsg
 # -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
- LDFLAGS += -bh:5
+ LDFLAGS += -bh:5 -qsuppress=1501-245
 #LDFLAGS += -lxlf90 # Required for linking Fortran objects
 ifeq (${OMP},Y)
  FC := xlf95_r
