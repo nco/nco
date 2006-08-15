@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.379 2006-08-15 21:38:57 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.380 2006-08-15 21:41:40 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -523,6 +523,7 @@ LINT := lint
 YACC := bison
 # AIX VA Compiler Collection
 ifneq (${null},$(findstring xl,${CC}))
+# Visual Age compiler defaults specified in /etc/vac.cfg
 # Additional switch to fix compiler warnings on csz.c
 # -qarch=auto : Automatically detect architecture of compiling machine and assume execution on same machine
 # -qmaxmem=num Limit memory used by space intensive optimizations to <num> kilobytes

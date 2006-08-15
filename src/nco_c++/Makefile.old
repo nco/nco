@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.43 2006-05-25 20:17:09 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.44 2006-08-15 21:41:40 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -472,9 +472,13 @@ YACC := bison
 ifneq (${null},$(findstring xl,${CC}))
 # Visual Age compiler defaults specified in /etc/vac.cfg
 # Additional switch to fix compiler warnings on csz.c
+# -qarch=auto : Automatically detect architecture of compiling machine and assume execution on same machine
 # -qmaxmem=num Limit memory used by space intensive optimizations to <num> kilobytes
 # -qspill=size Size in B of register allocation spill area, mie needs > 1040 B
- CFLAGS := -qmaxmem=8192 -qspill=2048
+# -qsrcmsg prints transgressing source line with finger
+# -qsuppress=1501-245 : Suppress RLIM_INFINITY memory message due to ulimits
+# -qtune=auto : Optimize executable for architecture detected during compilation
+ CFLAGS := -qmaxmem=8192 -qspill=2048 -qsrcmsg -qsuppress=1501-245
  FFLAGS := -NS2000 -qfixed=132
 # -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
  LDFLAGS += -bh:5
