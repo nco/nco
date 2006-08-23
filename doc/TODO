@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.804 2006-08-23 22:00:03 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.805 2006-08-23 22:00:24 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -514,11 +514,6 @@ nco763. Access the IPCC AR4 database via OPeNDAP: http://www-pcmdi.llnl.gov/soft
 nco768. Change some common flags from toggles to hard-coded true/false
         to avoid weird behavior when toggle switches accidentally passed twice,
         e.g., ncks -O -O in.nc foo.nc
-nco770. pathcc fails ncra/ncrcat regressions with thr_nbr > 1, regardless of mmr_cln/drt
-	ncra --thr_nbr=2 --mmr_drt -O -D 2 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc
-	ncks -d time,0 -v one_dmn_rec_var -p ~/nco/data in.nc ~/foo1.nc 
-	ncrcat --thr_nbr=2 --mmr_drt -O -D 2 -v one_dmn_rec_var ~/foo1.nc ~/foo1.nc ~/foo.nc
-	ddd pins problem between ncra.c lines 710--715
 nco771. 
 ************************************************************************
 End ncoXXX TODOs
