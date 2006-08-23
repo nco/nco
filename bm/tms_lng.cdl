@@ -1,33 +1,35 @@
 // $Header Exp $
-// when sent thru ncgen:
-// ncgen -b -o skn_lgs.nc skn_lgs.cdl 
+// ncgen -b -o tms_lng.nc tms_lng.cdl 
 
-// this netCDF template should yeild a file size of initially 10.5MB
-// and then finally ~52.5MB, after the other variables have been added.
+// Purpose: Template for long time-series
+// Template yields initialize file size of ~10.5 MB with time as fixed dimension
+// Processing is used to convert time fixed dimension to record dimension
+// This is easier than initializing time with ~1 million floats in this file
+// Final size is ~52.5MB, after other variables have been added
 
-// ../src/nco/ncecat -O skn_lgs.nc skn_lgs.nc
-// ../src/nco/ncpdq -O -a time,record skn_lgs.nc skn_lgs.nc
-// ../src/nco/ncrename -O -v record,species_id skn_lgs.nc skn_lgs.nc
-// ../src/nco/ncap -O -s "hmdty[time]=98.3f;PCO2[time]=1.92f;PN2[time]=77.4f;w_vel[time]=14.8f;w_dir[time]=321.3f;temp[time]=23.5f;lmbda_260[time]=684.2f" skn_lgs.nc skn_lgs.nc
-//~50s altogether (much longer than the creation of the non-record time series)
+// Processing takes ~50s altogether:
+// ncecat -O tms_lng.nc tms_lng.nc
+// ncpdq -O -a time,record tms_lng.nc tms_lng.nc
+// ncrename -O -v record,species_id tms_lng.nc tms_lng.nc
+// ncap -O -s "hmdty[time]=98.3f;PCO2[time]=1.92f;PN2[time]=77.4f;w_vel[time]=14.8f;w_dir[time]=321.3f;temp[time]=23.5f;lmbda_260[time]=684.2f" tms_lng.nc tms_lng.nc
 
-// Valid CDF/netCDF files need not have any defined variable or data
-// Use ncap LHS-casting to define variables with big dimensions
-netcdf skn_lgs{
+netcdf tms_lng{
+
 dimensions:
-    time=1314900; // sampling 8 vars at 1Hz for a year 1314900
+    time=1314900; // Sample 8 fields at 1 Hz for one year = 8*86400*365 = 1314900
+
 variables:
-//indices
+// Coordinates
     double time(time);
 
-// 1D vars of dim 1314900
+// 1-D variables of dimension time
     float PO2(time);
-// using lat only as a scalar weighting variable
+// Use for scalar weight
     double lat;
 
-// need to define the values for time dimension, but is there a way to do it by 
-// iteration or script rather than by explicit assignment
+// Valid netCDF files need not have any defined variable or data
+// Use ncap LHS-casting to define variables with big dimensions
+// Define values for time later once ncap2 iteration works
 data:
 lat=76.917;
-
 }

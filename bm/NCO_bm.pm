@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.59 2006-08-14 20:05:00 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.60 2006-08-23 04:42:14 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -10,7 +10,7 @@ package NCO_bm;
 # bm_vrb().........small fnc() to print to both screen and log
 # drc_dat_set()....figures out where to write output data
 # fl_mk()..........creates test files
-# fl_mk_dat_ntl()..initializes data used to create test files
+# fl_mtd_ntl().....Initialize meta-data used to create test files
 # rsl_chk_MD5_wc().checks output via md5/wc validation
 # rsl_smr_fl_mk()..summarize results of file creation tests
 # rsl_smr_rgr()....summarize results of both regression and benchmark tests
@@ -40,7 +40,7 @@ our @ISA = qw(Exporter);
 #export functions (top) and variables (bottom)
 our @EXPORT = qw (
 		  tst_run dbg_msg drc_dat_set bm_ntl
-		  $pfx_cmd $drc_dat @fl_mk_dat $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
+		  $pfx_cmd $drc_dat @fl_mtd_sct $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
 		  $prsrv_fl  $srv_sd $hiresfound $dodap $bm $dbg_lvl $sock $udp_rpt
 		  $mpi_prc $pfx_mpi $mpi_fk
 		  );
@@ -54,7 +54,7 @@ use vars qw(
 	    $cmd_rsl $spc_fmt $spc_nbr $spc_nbr_min $spc_sng %subbenchmarks %success
 	    @sys_tim_arr $sys_time %sys_tme $timed %totbenchmarks @tst_cmd $tst_fmt
 	    $tst_id_sng %tst_nbr %usr_tme $wnt_log $timestamp $bm_drc $caseid
-	    $cmd_ln $drc_dat @fl_mk_dat $fl_pth @fl_tmg $md5found %MD5_tbl
+	    $cmd_ln $drc_dat @fl_mtd_sct $fl_pth @fl_tmg $md5found %MD5_tbl
 	    $nco_D_flg $fl_nbr $pfxd $prsrv_fl $que $server_ip $sock $thr_nbr
 	    $dbg_sng $err_sng $tmr_app $udp_rpt %wc_tbl $pfxd $nvr_my_bin_dir
 	    $prg_nm $arg_nbr $tw_prt_bm $srv_sd @cmd_lst
@@ -220,14 +220,13 @@ sub bm_vrb {
     if($wnt_log) {printf (LOG "$ts");}
 } # end of bm_vrb($dbg_lvl, $wnt_log, informational string to output )
 
-sub fl_mk_dat_ntl {
-# Purpose: fl_mk_dat_ntl() sets up data for the (currently) three files 
-# that are created for later tests 
+sub fl_mtd_ntl {
+# Purpose: fl_mtd_ntl() initializes metadata for all test files
     my $fl_nbr=3;
     my $idx_stl_5km=0;
     my $idx_gcm_dly=1;
     my $idx_tms_lng=2;
-    dbg_msg(1,"fl_mk_dat_ntl: \$fl_nbr = $fl_nbr");
+    dbg_msg(1,"fl_mtd_ntl: \$fl_nbr = $fl_nbr");
     
     if ($dbg_lvl > 2) {
 	print "\nWaiting for keypress to proceed.\n";
@@ -236,36 +235,37 @@ sub fl_mk_dat_ntl {
     
     for (my $i = 0; $i < $fl_nbr; $i++) { $fl_tmg[$i][1] = $fl_tmg[$i][2] = " omitted "; }
     
-#	$fl_mk_dat[$idx_gn_xpr][0] = "example gene expression"; # option descriptor
-#	$fl_mk_dat[$idx_gn_xpr][1] = "~50MB";                   # file size
-#	$fl_mk_dat[$idx_gn_xpr][2] = $fl_tmg[$idx_gn_xpr][0] = "gn_xpr";
-#	$fl_mk_dat[$idx_gn_xpr][3] = "\'base[ge_atoms,rep,treat,cell,params]=5.67f\'";
+#	$fl_mtd_sct[$idx_gn_xpr][0] = "example gene expression"; # option descriptor
+#	$fl_mtd_sct[$idx_gn_xpr][1] = "~50MB";                   # file size
+#	$fl_mtd_sct[$idx_gn_xpr][2] = $fl_tmg[$idx_gn_xpr][0] = "gn_xpr";
+#	$fl_mtd_sct[$idx_gn_xpr][3] = "\'base[ge_atoms,rep,treat,cell,params]=5.67f\'";
     
-#    $fl_mk_dat[$idx_stl_sml][0] = "Satellite small";         # option descriptor
-#    $fl_mk_dat[$idx_stl_sml][1] = "~100MB";                  # file size
-#    $fl_mk_dat[$idx_stl_sml][2] = $fl_tmg[$idx_stl_sml][0] = "stl_sml";                 # file name root
-#    $fl_mk_dat[$idx_stl_sml][3] = "\'d2_00[lat,lon]=16.37f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=3.8f;\'";
+#    $fl_mtd_sct[$idx_stl_sml][0] = "Satellite small";         # option descriptor
+#    $fl_mtd_sct[$idx_stl_sml][1] = "~100MB";                  # file size
+#    $fl_mtd_sct[$idx_stl_sml][2] = $fl_tmg[$idx_stl_sml][0] = "stl_sml";                 # file name root
+#    $fl_mtd_sct[$idx_stl_sml][3] = "\'d2_00[lat,lon]=16.37f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=3.8f;\'";
     
-    $fl_mk_dat[$idx_stl_5km][0] = "Satellite 5km";           # option descriptor
-    $fl_mk_dat[$idx_stl_5km][1] = "~300MB";                  # file size
-    $fl_mk_dat[$idx_stl_5km][2] = $fl_tmg[$idx_stl_5km][0] = "stl_5km";                 # file name root
-    $fl_mk_dat[$idx_stl_5km][3] = "\'weepy=1.23456f;d2_00[lat,lon]=2.8f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=2.8f;d2_03[lat,lon]=2.8f;d2_04[lat,lon]=2.8f;d2_05[lat,lon]=2.8f;d2_06[lat,lon]=2.8f;d2_07[lat,lon]=2.8f;\'";
+    $fl_mtd_sct[$idx_stl_5km][0] = "Satellite 5km";           # option descriptor
+    $fl_mtd_sct[$idx_stl_5km][1] = "~300MB";                  # file size
+    $fl_mtd_sct[$idx_stl_5km][2] = $fl_tmg[$idx_stl_5km][0] = "stl_5km";                 # file name root
+    $fl_mtd_sct[$idx_stl_5km][3] = "\'weepy=1.23456f;d2_00[lat,lon]=2.8f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=2.8f;d2_03[lat,lon]=2.8f;d2_04[lat,lon]=2.8f;d2_05[lat,lon]=2.8f;d2_06[lat,lon]=2.8f;d2_07[lat,lon]=2.8f;\'";
     
-    $fl_mk_dat[$idx_gcm_dly][0] = "GCM T85";              # option descriptor
-    $fl_mk_dat[$idx_gcm_dly][1] = "~1.2GB";                    # file size
-    $fl_mk_dat[$idx_gcm_dly][2] = $fl_tmg[$idx_gcm_dly][0] = "gcm_T85";            # file name root
-    $fl_mk_dat[$idx_gcm_dly][3] = "\'weepy=0.8f;dopey=0.8f;sleepy=0.8f;grouchy=0.8f;sneezy=0.8f;doc=0.8f;wanky=0.8f;skanky=0.8f;d1_00[time]=1.8f;d1_01[time]=1.8f;d1_02[time]=1.8f;d1_03[time]=1.8f;d1_04[time]=1.8f;d1_05[time]=1.8f;d1_06[time]=1.8f;d1_07[time]=1.8f;d2_00[lat,lon]=16.2f;d2_01[lat,lon]=16.2f;d2_02[lat,lon]=16.2f;d2_03[lat,lon]=16.2f;d2_04[lat,lon]=16.2f;d2_05[lat,lon]=16.2f;d2_06[lat,lon]=16.2f;d2_07[lat,lon]=16.2f;d2_08[lat,lon]=16.2f;d2_09[lat,lon]=16.2f;d2_10[lat,lon]=16.2f;d2_11[lat,lon]=16.2f;d2_12[lat,lon]=16.2f;d2_13[lat,lon]=16.2f;d2_14[lat,lon]=16.2f;d2_15[lat,lon]=16.2f;d3_00[time,lat,lon]=64.0f;d3_01[time,lat,lon]=64.0f;d3_02[time,lat,lon]=64.0f;d3_03[time,lat,lon]=64.0f;d3_04[time,lat,lon]=64.0f;d3_05[time,lat,lon]=64.0f;d3_06[time,lat,lon]=64.0f;d3_07[time,lat,lon]=64.0f;d3_08[time,lat,lon]=64.0f;d3_09[time,lat,lon]=64.0f;d3_10[time,lat,lon]=64.0f;d3_11[time,lat,lon]=64.0f;d3_12[time,lat,lon]=64.0f;d3_13[time,lat,lon]=64.0f;d3_14[time,lat,lon]=64.0f;d3_15[time,lat,lon]=64.0f;d3_16[time,lat,lon]=64.0f;d3_17[time,lat,lon]=64.0f;d3_18[time,lat,lon]=64.0f;d3_19[time,lat,lon]=64.0f;d3_20[time,lat,lon]=64.0f;d3_21[time,lat,lon]=64.0f;d3_22[time,lat,lon]=64.0f;d3_23[time,lat,lon]=64.0f;d3_24[time,lat,lon]=64.0f;d3_25[time,lat,lon]=64.0f;d3_26[time,lat,lon]=64.0f;d3_27[time,lat,lon]=64.0f;d3_28[time,lat,lon]=64.0f;d3_29[time,lat,lon]=64.0f;d3_30[time,lat,lon]=64.0f;d3_31[time,lat,lon]=64.0f;d3_32[time,lat,lon]=64.0f;d3_33[time,lat,lon]=64.0f;d3_34[time,lat,lon]=64.0f;d3_35[time,lat,lon]=64.0f;d3_36[time,lat,lon]=64.0f;d3_37[time,lat,lon]=64.0f;d3_38[time,lat,lon]=64.0f;d3_39[time,lat,lon]=64.0f;d3_40[time,lat,lon]=64.0f;d3_41[time,lat,lon]=64.0f;d3_42[time,lat,lon]=64.0f;d3_43[time,lat,lon]=64.0f;d3_44[time,lat,lon]=64.0f;d3_45[time,lat,lon]=64.0f;d3_46[time,lat,lon]=64.0f;d3_47[time,lat,lon]=64.0f;d3_48[time,lat,lon]=64.0f;d3_49[time,lat,lon]=64.0f;d3_50[time,lat,lon]=64.0f;d3_51[time,lat,lon]=64.0f;d3_52[time,lat,lon]=64.0f;d3_53[time,lat,lon]=64.0f;d3_54[time,lat,lon]=64.0f;d3_55[time,lat,lon]=64.0f;d3_56[time,lat,lon]=64.0f;d3_57[time,lat,lon]=64.0f;d3_58[time,lat,lon]=64.0f;d3_59[time,lat,lon]=64.0f;d3_60[time,lat,lon]=64.0f;d3_61[time,lat,lon]=64.0f;d3_62[time,lat,lon]=64.0f;d3_63[time,lat,lon]=64.0f;d4_00[time,lev,lat,lon]=1.1f;d4_01[time,lev,lat,lon]=1.2f;d4_02[time,lev,lat,lon]=1.3f;d4_03[time,lev,lat,lon]=1.4f;d4_04[time,lev,lat,lon]=1.5f;d4_05[time,lev,lat,lon]=1.6f;d4_06[time,lev,lat,lon]=1.7f;d4_07[time,lev,lat,lon]=1.8f;d4_08[time,lev,lat,lon]=1.9f;d4_09[time,lev,lat,lon]=1.11f;d4_10[time,lev,lat,lon]=1.12f;d4_11[time,lev,lat,lon]=1.13f;d4_12[time,lev,lat,lon]=1.14f;d4_13[time,lev,lat,lon]=1.15f;d4_14[time,lev,lat,lon]=1.16f;d4_15[time,lev,lat,lon]=1.17f;d4_16[time,lev,lat,lon]=1.18f;d4_17[time,lev,lat,lon]=1.19f;d4_18[time,lev,lat,lon]=1.21f;d4_19[time,lev,lat,lon]=1.22f;d4_20[time,lev,lat,lon]=1.23f;d4_21[time,lev,lat,lon]=1.24f;d4_22[time,lev,lat,lon]=1.25f;d4_23[time,lev,lat,lon]=1.26f;d4_24[time,lev,lat,lon]=1.27f;d4_25[time,lev,lat,lon]=1.28f;d4_26[time,lev,lat,lon]=1.29f;d4_27[time,lev,lat,lon]=1.312f;d4_28[time,lev,lat,lon]=1.322f;d4_29[time,lev,lat,lon]=1.332f;d4_30[time,lev,lat,lon]=1.342f;d4_31[time,lev,lat,lon]=1.352f;\'";
+    $fl_mtd_sct[$idx_gcm_dly][0] = "GCM T85";              # option descriptor
+    $fl_mtd_sct[$idx_gcm_dly][1] = "~1.2GB";                    # file size
+    $fl_mtd_sct[$idx_gcm_dly][2] = $fl_tmg[$idx_gcm_dly][0] = "gcm_T85";            # file name root
+    $fl_mtd_sct[$idx_gcm_dly][3] = "\'weepy=0.8f;dopey=0.8f;sleepy=0.8f;grouchy=0.8f;sneezy=0.8f;doc=0.8f;wanky=0.8f;skanky=0.8f;d1_00[time]=1.8f;d1_01[time]=1.8f;d1_02[time]=1.8f;d1_03[time]=1.8f;d1_04[time]=1.8f;d1_05[time]=1.8f;d1_06[time]=1.8f;d1_07[time]=1.8f;d2_00[lat,lon]=16.2f;d2_01[lat,lon]=16.2f;d2_02[lat,lon]=16.2f;d2_03[lat,lon]=16.2f;d2_04[lat,lon]=16.2f;d2_05[lat,lon]=16.2f;d2_06[lat,lon]=16.2f;d2_07[lat,lon]=16.2f;d2_08[lat,lon]=16.2f;d2_09[lat,lon]=16.2f;d2_10[lat,lon]=16.2f;d2_11[lat,lon]=16.2f;d2_12[lat,lon]=16.2f;d2_13[lat,lon]=16.2f;d2_14[lat,lon]=16.2f;d2_15[lat,lon]=16.2f;d3_00[time,lat,lon]=64.0f;d3_01[time,lat,lon]=64.0f;d3_02[time,lat,lon]=64.0f;d3_03[time,lat,lon]=64.0f;d3_04[time,lat,lon]=64.0f;d3_05[time,lat,lon]=64.0f;d3_06[time,lat,lon]=64.0f;d3_07[time,lat,lon]=64.0f;d3_08[time,lat,lon]=64.0f;d3_09[time,lat,lon]=64.0f;d3_10[time,lat,lon]=64.0f;d3_11[time,lat,lon]=64.0f;d3_12[time,lat,lon]=64.0f;d3_13[time,lat,lon]=64.0f;d3_14[time,lat,lon]=64.0f;d3_15[time,lat,lon]=64.0f;d3_16[time,lat,lon]=64.0f;d3_17[time,lat,lon]=64.0f;d3_18[time,lat,lon]=64.0f;d3_19[time,lat,lon]=64.0f;d3_20[time,lat,lon]=64.0f;d3_21[time,lat,lon]=64.0f;d3_22[time,lat,lon]=64.0f;d3_23[time,lat,lon]=64.0f;d3_24[time,lat,lon]=64.0f;d3_25[time,lat,lon]=64.0f;d3_26[time,lat,lon]=64.0f;d3_27[time,lat,lon]=64.0f;d3_28[time,lat,lon]=64.0f;d3_29[time,lat,lon]=64.0f;d3_30[time,lat,lon]=64.0f;d3_31[time,lat,lon]=64.0f;d3_32[time,lat,lon]=64.0f;d3_33[time,lat,lon]=64.0f;d3_34[time,lat,lon]=64.0f;d3_35[time,lat,lon]=64.0f;d3_36[time,lat,lon]=64.0f;d3_37[time,lat,lon]=64.0f;d3_38[time,lat,lon]=64.0f;d3_39[time,lat,lon]=64.0f;d3_40[time,lat,lon]=64.0f;d3_41[time,lat,lon]=64.0f;d3_42[time,lat,lon]=64.0f;d3_43[time,lat,lon]=64.0f;d3_44[time,lat,lon]=64.0f;d3_45[time,lat,lon]=64.0f;d3_46[time,lat,lon]=64.0f;d3_47[time,lat,lon]=64.0f;d3_48[time,lat,lon]=64.0f;d3_49[time,lat,lon]=64.0f;d3_50[time,lat,lon]=64.0f;d3_51[time,lat,lon]=64.0f;d3_52[time,lat,lon]=64.0f;d3_53[time,lat,lon]=64.0f;d3_54[time,lat,lon]=64.0f;d3_55[time,lat,lon]=64.0f;d3_56[time,lat,lon]=64.0f;d3_57[time,lat,lon]=64.0f;d3_58[time,lat,lon]=64.0f;d3_59[time,lat,lon]=64.0f;d3_60[time,lat,lon]=64.0f;d3_61[time,lat,lon]=64.0f;d3_62[time,lat,lon]=64.0f;d3_63[time,lat,lon]=64.0f;d4_00[time,lev,lat,lon]=1.1f;d4_01[time,lev,lat,lon]=1.2f;d4_02[time,lev,lat,lon]=1.3f;d4_03[time,lev,lat,lon]=1.4f;d4_04[time,lev,lat,lon]=1.5f;d4_05[time,lev,lat,lon]=1.6f;d4_06[time,lev,lat,lon]=1.7f;d4_07[time,lev,lat,lon]=1.8f;d4_08[time,lev,lat,lon]=1.9f;d4_09[time,lev,lat,lon]=1.11f;d4_10[time,lev,lat,lon]=1.12f;d4_11[time,lev,lat,lon]=1.13f;d4_12[time,lev,lat,lon]=1.14f;d4_13[time,lev,lat,lon]=1.15f;d4_14[time,lev,lat,lon]=1.16f;d4_15[time,lev,lat,lon]=1.17f;d4_16[time,lev,lat,lon]=1.18f;d4_17[time,lev,lat,lon]=1.19f;d4_18[time,lev,lat,lon]=1.21f;d4_19[time,lev,lat,lon]=1.22f;d4_20[time,lev,lat,lon]=1.23f;d4_21[time,lev,lat,lon]=1.24f;d4_22[time,lev,lat,lon]=1.25f;d4_23[time,lev,lat,lon]=1.26f;d4_24[time,lev,lat,lon]=1.27f;d4_25[time,lev,lat,lon]=1.28f;d4_26[time,lev,lat,lon]=1.29f;d4_27[time,lev,lat,lon]=1.312f;d4_28[time,lev,lat,lon]=1.322f;d4_29[time,lev,lat,lon]=1.332f;d4_30[time,lev,lat,lon]=1.342f;d4_31[time,lev,lat,lon]=1.352f;\'";
 
-    $fl_mk_dat[$idx_tms_lng][0] = "Long timeseries"; # option descriptor
-    $fl_mk_dat[$idx_tms_lng][1] = "~52MB";                   # file size
-    $fl_mk_dat[$idx_tms_lng][2] = $fl_tmg[$idx_tms_lng][0] = "tms_lng";                 # file name root
-    $fl_mk_dat[$idx_tms_lng][3] = "\'time[time]=1.0f;hmdty[time]=98.3f;PO2[time]=18.7f;PCO2[time]=1.92f;PN2[time]=77.4f;w_vel[time]=14.8f;w_dir[time]=321.3f;temp[time]=23.5f;lmbda_260[time]=684.2f\'";
+    $fl_mtd_sct[$idx_tms_lng][0] = "Long timeseries"; # option descriptor
+    $fl_mtd_sct[$idx_tms_lng][1] = "~52MB";                   # file size
+    $fl_mtd_sct[$idx_tms_lng][2] = $fl_tmg[$idx_tms_lng][0] = "tms_lng";                 # file name root
+    $fl_mtd_sct[$idx_tms_lng][3] = "\'time[time]=1.0f;hmdty[time]=98.3f;PO2[time]=18.7f;PCO2[time]=1.92f;PN2[time]=77.4f;w_vel[time]=14.8f;w_dir[time]=321.3f;temp[time]=23.5f;lmbda_260[time]=684.2f\'";
     
     return @fl_tmg;
-}; # end of fl_mk_dat_ntl()
+}; # end of fl_mtd_ntl()
 
-# fl_mk creates files from CDL templates and populates them for benchmarks
 sub fl_mk {
+# Purpose: Create files from CDL templates and populate them for benchmarks
+# Must be called after fl_mtd_ntl()
     my $idx = shift;
     my $fl_nbr = 3;
     $pfx_cmd = "$MY_BIN_DIR";
@@ -278,45 +278,45 @@ sub fl_mk {
     my $t0;
     my $elapsed;
     
-    my $fl_in = my $fl_out = "$drc_dat/$fl_mk_dat[$idx][2].nc" ;
+    my $fl_in = my $fl_out = "$drc_dat/$fl_mtd_sct[$idx][2].nc" ;
     $bm_drc = "../bm"; 
-    print "==== Creating $fl_mk_dat[$idx][0] data file from template in [$bm_drc]\n";
-    print "Executing: $tmr_app ncgen -b -o $fl_out $bm_drc/$fl_mk_dat[$idx][2].cdl\n";
+    print "==== Creating $fl_mtd_sct[$idx][0] data file from template in [$bm_drc]\n";
+    print "Executing: $tmr_app ncgen -b -o $fl_out $bm_drc/$fl_mtd_sct[$idx][2].cdl\n";
     if ($hiresfound) {$t0 = [gettimeofday()];}
     else {$t0 = time;}
 # File creation now timed
-    system  "$tmr_app ncgen -b -o $fl_out $bm_drc/$fl_mk_dat[$idx][2].cdl";
+    system  "$tmr_app ncgen -b -o $fl_out $bm_drc/$fl_mtd_sct[$idx][2].cdl";
     if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday()]);}
     else {$elapsed = time - $t0;}
 # log it to common timing array
-    $fl_tmg[$idx][0] = "$fl_mk_dat[$idx][2]"; # name root
+    $fl_tmg[$idx][0] = "$fl_mtd_sct[$idx][2]"; # name root
     $fl_tmg[$idx][1] = $elapsed; # creation time
-    if ($idx == 0) { # tms_lng needs some extra massaging
+    if ($idx == 2) { # tms_lng needs some extra massaging
+# Now tms_lng ready for ncap'ing
 	if ($dbg_lvl > 0) {print "\nextra steps for tms_lng - ncecat...\n";}
 	system "$pfx_cmd/ncecat -O -h $fl_in $fl_out";  # inserts a record dimension
 	if ($dbg_lvl > 0) {print "\nncpdq...\n";}
 	system "$pfx_cmd/ncpdq -O -h -a time,record $fl_in $fl_out"; # swaps time and 'record'
 	if ($dbg_lvl > 0) {print "\nncwa...\n";}
-	system "$pfx_cmd/ncwa -O -h -a record $fl_in $fl_out"; # averages 'record' out of the way
-# now tms_lng ready for ncap'ing
+	system "$pfx_cmd/ncwa -O -h -a record $fl_in $fl_out"; # averages 'record'
     }
     print "\n==== Populating $fl_out file.\nTiming results:\n";
 #print "fl_mk: pfx_cmd = $pfx_cmd\n";
-    print "Executing: $tmr_app $pfx_cmd/ncap -h -O $nco_D_flg -s $fl_mk_dat[$idx][3] $fl_in $fl_out\n";
+    print "Executing: $tmr_app $pfx_cmd/ncap -h -O $nco_D_flg -s $fl_mtd_sct[$idx][3] $fl_in $fl_out\n";
     if ($hiresfound) {$t0 = [gettimeofday()];}
     else {$t0 = time;}
-    system "$tmr_app $pfx_cmd/ncap -O -h -s $fl_mk_dat[$idx][3] $fl_in $fl_out";
+    system "$tmr_app $pfx_cmd/ncap -O -h -s $fl_mtd_sct[$idx][3] $fl_in $fl_out";
     if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday()]);}
     else {$elapsed = time - $t0;}
     $fl_tmg[$idx][2] = $elapsed; # population time
-    print "==========================\nEnd of $fl_mk_dat[$idx][2] section\n==========================\n\n\n";
+    print "==========================\nEnd of $fl_mtd_sct[$idx][2] section\n==========================\n\n\n";
     return @fl_tmg;
 } # end sub fl_mk
 
 # Summarize timing results of file creation tests
 sub rsl_smr_fl_mk {
     $fl_nbr = 3;
-    print " in rsl_smr_fl_mk,  \$fl_tmg[1][0] = $fl_tmg[1][0] & \$fl_nbr = $fl_nbr\n";
+#    print " in rsl_smr_fl_mk,  \$fl_tmg[1][0] = $fl_tmg[1][0] & \$fl_nbr = $fl_nbr\n";
     if ($dbg_lvl > 0){print "Summarizing results of file creation\n";}
     my $CC = `../src/nco/ncks --compiler`;
     my $CCinfo = '';
@@ -326,7 +326,7 @@ sub rsl_smr_fl_mk {
     my $reportstr = '';
     my $idstring = `uname -a` . "using: " . $CCinfo; chomp $idstring;
     my $udp_dat = "File Creation | $timestamp | $idstring | ";
-    $reportstr .= "\n\nNCO File Creation Test Result Summary: [$timestamp]\n$idstring\n";
+    $reportstr .= "NCO File Creation Test Result Summary: [$timestamp]\n$idstring\n";
     $reportstr .=  "      Test                       Total Wallclock Time (s) \n";
     $reportstr .=  "=====================================================\n";
     

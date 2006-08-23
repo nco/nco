@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.140 2006-08-14 19:53:20 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.141 2006-08-23 04:42:14 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -34,7 +34,7 @@ use vars qw(
 	    $aix_mpi_nvr_pfx $aix_mpi_sgl_nvr_pfx $arg_nbr $bch_flg $bm
 	    @bm_cmd_ary $bm_drc $caseid $cmd_ln $dbg_lvl $dodap $dot_fmt $dot_nbr
 	    $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng $drc_dat
-	    $dust_usr %failure $fl_cnt @fl_mk_dat $fl_fmt $fl_pth @fl_tmg
+	    $dust_usr %failure $fl_cnt @fl_mtd_sct $fl_fmt $fl_pth @fl_tmg
 	    $foo1_fl $foo2_fl $foo_avg_fl $foo_fl $foo_T42_fl $foo_tst $foo_x_fl
 	    $foo_xy_fl $foo_xymyx_fl $foo_y_fl $foo_yx_fl $gnu_cut $hiresfound
 	    @ifls $itmp $localhostname $md5 $md5found %MD5_tbl $mpi_fk $mpi_prc
@@ -446,8 +446,8 @@ if ($rgr){
 
 # Initialize filenames
 if($tst_fl_mk ne '0' || ($bm && $dodap eq 'FALSE')){
-    if($dbg_lvl > 1){printf ("\n$prg_nm: Calling fl_mk_dat_ntl()...\n");}
-    NCO_bm::fl_mk_dat_ntl(@fl_mk_dat); # Initialize data strings & timing array
+    if($dbg_lvl > 1){printf ("\n$prg_nm: Calling fl_mtd_ntl()...\n");}
+    NCO_bm::fl_mtd_ntl(@fl_mtd_sct); # Initialize data strings & timing array
 }
 
 # Check if files have already been created
@@ -455,7 +455,7 @@ if($tst_fl_mk ne '0' || ($bm && $dodap eq 'FALSE')){
 if ($bm && $tst_fl_mk eq '0' && $dodap eq 'FALSE'){
     if ($dbg_lvl> 0){print "\nINFO: File creation tests:\n";}
     for (my $fl_idx = 0; $fl_idx < $fl_nbr; $fl_idx++){
-	my $fl = $fl_mk_dat[$fl_idx][2].'.nc'; # file root name stored in $fl_mk_dat[$fl_idx][2]
+	my $fl = $fl_mtd_sct[$fl_idx][2].'.nc'; # file root name stored in $fl_mtd_sct[$fl_idx][2]
 	print "Testing for $drc_dat/$fl...\n";
 	if (-e "$drc_dat/$fl" && -r "$drc_dat/$fl") {
 	    if ($dbg_lvl> 0){printf ("%50s exists - can skip creation\n", $drc_dat . "/" . $fl);}
