@@ -1,5 +1,8 @@
 2006-08-23  Charlie Zender  <zender@uci.edu>
 
+	* Change default to CCACHE=N because ccache interacts so poorly
+	with OpenMP switches during builds
+
 	* Re-fix NCO_rgr.pm to directly access main:: variables fl_fmt,
 	omp_flg, nco_D_flg, fl_out
 
