@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.800 2006-08-23 02:06:16 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.801 2006-08-23 04:47:11 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -466,7 +466,6 @@ nco702. How to mix new ncwa behavior with -I wgt_msk_crd_var?
 nco705. Add lmn_nbr_wgt and DID_BROADCAST outputs to nco_var_cnf_dmn()?
 nco706. Add DID_REDUCE outputs to nco_var_avg_reduce()?
 nco709. Change wgt_brd_flg (may have wrong meaning)
-nco710. Create correct ncwa predictions for each 1/8th
 nco717. Averaging empty record variable creates an element in output!:
 	ncwa -O ~/nco/data/in_rec_zero.nc ~/foo.nc
 	ncwa -O -a lon ~/nco/data/in_rec_zero.nc ~/foo.nc
@@ -512,8 +511,6 @@ nco763. Access the IPCC AR4 database via OPeNDAP: http://www-pcmdi.llnl.gov/soft
         http://climate.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0/pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml.html
         ncks -M -p http://zender:password@climate.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0 pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml
 	ncks -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
-nco767. esmf shows errors building bm files 
-        nco_bm.pl --dbg=0 --test_files=A --udpreport
 nco768. Change some common flags from toggles to hard-coded true/false
         to avoid weird behavior when toggle switches accidentally passed twice,
         e.g., ncks -O -O in.nc foo.nc

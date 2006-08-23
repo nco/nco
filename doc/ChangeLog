@@ -14,7 +14,8 @@
 	* More benchmark cleanup
 
 	* Fix specialized nco_bm.pl file processing for tms_lng.nc
-
+	This resolves TODO nco767.
+	
 2006-08-10  Charlie Zender  <zender@uci.edu>
 
 	* pgcc -c9x currently fails to handle C99 designated initializers
