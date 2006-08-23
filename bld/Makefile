@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.382 2006-08-23 04:28:04 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.383 2006-08-23 06:28:15 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -140,9 +140,15 @@ endif # endif OMP
 ifndef OPTS
  OPTS := O
 endif
+ifndef PGI_RCH_ARG
+ PGI_RCH_ARG :=
+endif # endif PGI_RCH_ARG
 ifndef ${PNETCDF} # pnetCDF support
  PNETCDF := N
 endif # endif PNETCDF
+ifndef PSC_RCH_ARG
+ PSC_RCH_ARG :=
+endif # endif PSC_RCH_ARG
 ifndef RPM
  RPM := N
 endif # endif RPM
@@ -905,6 +911,9 @@ endif # end Pathscale (QLogic) C++ Compiler
 ifeq (pgcc,$(firstword ${CC}))
 # Enable Large File Support (LFS) by default
  CFLAGS := -Mlfs
+# Pass kludgy PGI identifier to flag for broken C99 designated initializers etc.
+ CPPFLAGS := $(filter-out -DHAVE_C99,${CPPFLAGS})
+ CPPFLAGS += -DPGI_CC
  LDFLAGS += -Mlfs
  OMP_FLG_C := -mp
 ifeq (${OPTS},O)
@@ -1679,6 +1688,8 @@ dbg:
 	@printf "NETCDF_LIB = ${NETCDF_LIB}\n"
 	@printf "NETCDF_ROOT = ${NETCDF_ROOT}\n"
 	@printf "OMP = ${OMP}\n"
+	@printf "PGI_RCH_ARG = ${PGI_RCH_ARG}\n"
+	@printf "PSC_RCH_ARG = ${PSC_RCH_ARG}\n"
 	@printf "PNETCDF = ${PNETCDF}\n"
 	@printf "PVM_ARCH = ${PVM_ARCH}\n"
 	@printf "RPM = ${RPM}\n"
