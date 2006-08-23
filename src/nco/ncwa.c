@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.228 2006-07-19 22:10:54 wangd Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.229 2006-08-23 18:04:58 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,11 +117,11 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.228 2006-07-19 22:10:54 wangd Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.228 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.229 2006-08-23 18:04:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.229 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
-#ifdef __cplusplus
+#if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
 #else /* !__cplusplus */
   ddra_info_sct ddra_info={.MRV_flg=False,.flg_ddra=False,.lmn_nbr=0LL,.lmn_nbr_avg=0LL,.lmn_nbr_wgt=0LL,.nco_op_typ=nco_op_nil,.rnk_avg=0,.rnk_var=0,.rnk_wgt=0,.tmr_flg=nco_tmr_srt,.var_idx=0,.wgt_brd_flg=False,.wrd_sz=0};

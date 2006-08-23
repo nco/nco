@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.94 2006-06-09 05:19:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.95 2006-08-23 18:04:58 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -86,11 +86,11 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.94 2006-06-09 05:19:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.94 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.95 2006-08-23 18:04:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.95 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
-#ifdef __cplusplus
+#if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
 #else /* !__cplusplus */
   ddra_info_sct ddra_info={.flg_ddra=False};

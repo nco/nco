@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.162 2006-06-09 05:19:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.163 2006-08-23 18:04:58 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -113,11 +113,11 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.162 2006-06-09 05:19:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.162 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.163 2006-08-23 18:04:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.163 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
-#ifdef __cplusplus
+#if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
 #else /* !__cplusplus */
   ddra_info_sct ddra_info={.flg_ddra=False};

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.97 2006-06-09 05:19:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.98 2006-08-23 18:04:58 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -144,11 +144,11 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.97 2006-06-09 05:19:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.97 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.98 2006-08-23 18:04:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.98 $";
   const char * const opt_sht_lst="4Aa:D:hl:Oo:p:Rr-:";
   
-#ifdef __cplusplus
+#if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
 #else /* !__cplusplus */
   ddra_info_sct ddra_info={.flg_ddra=False};
