@@ -1,5 +1,10 @@
 2006-08-22  Charlie Zender  <zender@uci.edu>
 
+	* Verified that pathcc OpenMP problems have disappeared and were
+	likely due to ccache inadvertently mixing OpenMP-enabled and
+	dis-abled object code. Must be more careful about that in future.
+	This resolves TODO nco765 and 766
+	
 	* Add more informative OpenMP diagnostics
 
 	* Fix OpenMP flag-passing in Makefile for Intel icc compilers
