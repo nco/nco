@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.383 2006-08-23 06:28:15 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.384 2006-08-23 17:41:36 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -764,7 +764,7 @@ endif
  CXXFLAGS := ${CFLAGS}
 endif # endif Comeau C Compiler
 # GNU Compiler Collection
-ifneq (${null},$(findstring gcc,${CC}))
+ifeq (gcc,$(firstword ${CC}))
  CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
  CFLAGS := -Wall
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
