@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.32 2006-05-20 06:12:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.33 2006-08-23 01:58:10 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -41,16 +41,18 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped shared in parallel clause */
 
+  char * nvr_OMP_NUM_THREADS; /* [sng] Environment variable OMP_NUM_THREADS */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
 
   nco_bool USR_SPC_THR_RQS=False;
 
-  const int dyn_thr=1; /* [flg] Allow system to dynamically set number of threads */
+  int dyn_thr=1; /* [flg] Allow system to dynamically set number of threads */
 
+  int ntg_OMP_NUM_THREADS=int_CEWI; // [nbr] OMP_NUM_THREADS environment variable
+  int prc_nbr_max; /* [nbr] Maximum number of processors available */
   int thr_nbr_act; /* O [nbr] Number of threads NCO uses */
   int thr_nbr_max_fsh=4; /* [nbr] Maximum number of threads program can use efficiently */
   int thr_nbr_max=int_CEWI; /* [nbr] Maximum number of threads system allows */
-  int prc_nbr_max; /* [nbr] Maximum number of processors available */
   int thr_nbr_rqs=int_CEWI; /* [nbr] Number of threads to request */
 
 #ifndef _OPENMP
@@ -86,6 +88,10 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
   } /* end error */
 
   if(dbg_lvl_get() > 2){
+    if((nvr_OMP_NUM_THREADS=getenv("OMP_NUM_THREADS")) != NULL) ntg_OMP_NUM_THREADS=(int)strtol(nvr_OMP_NUM_THREADS,(char **)NULL,10);
+/* [sng] Environment variable OMP_NUM_THREADS */
+    (void)fprintf(fp_stderr,"%s: INFO Environment variable OMP_NUM_THREADS ",prg_nm_get());
+    if(ntg_OMP_NUM_THREADS > 0) (void)fprintf(fp_stderr,"= %d\n",ntg_OMP_NUM_THREADS); else (void)fprintf(fp_stderr,"does not exist\n");
     (void)fprintf(fp_stderr,"%s: INFO Number of processors available is %d\n",prg_nm_get(),prc_nbr_max);
     (void)fprintf(fp_stderr,"%s: INFO Maximum number of threads system allows is %d\n",prg_nm_get(),thr_nbr_max);
   } /* endif dbg */
@@ -131,7 +137,9 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     
     /* Automatic algorithm tries to play nice with others */
     (void)omp_set_dynamic(dyn_thr); /* [flg] Allow system to dynamically set number of threads */
-    if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO Allowing OS to dynamically set threads\n",prg_nm_get());
+    if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO %s OS to dynamically set threads\n",prg_nm_get(),(dyn_thr ? "Allowing" : "Not allowing"));
+    dyn_thr=omp_get_dynamic(); /* [flg] Allow system to dynamically set number of threads */
+    if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO System will%s utilize dynamic threading\n",prg_nm_get(),(dyn_thr ? "" : " not"));
 
     /* Apply program/system limitations */
     if(thr_nbr_max > thr_nbr_max_fsh){

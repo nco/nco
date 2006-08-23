@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.380 2006-08-15 21:41:40 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.381 2006-08-23 01:58:10 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -835,7 +835,7 @@ ifeq (icc,$(firstword ${CC}))
 # remark #1572: floating-point equality and inequality comparisons are unreliable
  CFLAGS := -w1
  CPPFLAGS += -no-gcc
- OMP_FLG := -openmp -openmp_report0
+ OMP_FLG_C := -openmp -openmp_report0
 ifeq (${OPTS},O)
  CFLAGS += -O3 -g ${ICC_RCH_ARG}
 endif
@@ -857,7 +857,7 @@ ifeq (${FC},ifc)
  FFLAGS := -extend_source -implicitnone -vms -e95 -fpp2
 # -lVaxlib needed for iargc_, getarg_
  LDFLAGS += -lVaxlib
- OMP_FLG := -openmp
+ OMP_FLG_C := -openmp
 ifeq (${PRC},D)
  FFLAGS += -i4 -r8 -doubletemps
 else

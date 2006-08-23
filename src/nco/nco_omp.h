@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.h,v 1.16 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.h,v 1.17 2006-08-23 01:58:10 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -14,7 +14,7 @@
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
-#include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
+#include <stdlib.h> /* strtod, strtol, malloc, getopt, getenv, exit */
 #include <string.h> /* strcmp. . . */
 #include <unistd.h> /* POSIX stuff */
 

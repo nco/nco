@@ -1,3 +1,7 @@
+2006-08-22  Charlie Zender  <zender@uci.edu>
+
+	* Fix OpenMP flag-passing for Intel icc compilers
+
 2006-08-10  Charlie Zender  <zender@uci.edu>
 
 	* pgcc -c9x currently fails to handle C99 designated initializers
