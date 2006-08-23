@@ -1,5 +1,8 @@
 2006-08-23  Charlie Zender  <zender@uci.edu>
 
+	* Re-fix NCO_rgr.pm to directly access main:: variables fl_fmt,
+	omp_flg, nco_D_flg, fl_out
+
 	* Kludge for pgcc compiler to workaround C99 designated	initializers
 	Timers should be OK but DDRA answers for ncbo, ncwa should not be 
 	trusted with pgcc (or any C++ compiler).

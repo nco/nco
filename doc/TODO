@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.802 2006-08-23 06:28:15 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.803 2006-08-23 21:00:21 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -514,8 +514,8 @@ nco763. Access the IPCC AR4 database via OPeNDAP: http://www-pcmdi.llnl.gov/soft
 nco768. Change some common flags from toggles to hard-coded true/false
         to avoid weird behavior when toggle switches accidentally passed twice,
         e.g., ncks -O -O in.nc foo.nc
-nco769. workaround timers issues due to pgcc PGI lack of C99-designated initializer 
-nco770. 
+nco770. pathcc fails regressions with thr_nbr > 1, regardless of mmr_cln/drt
+nco771. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
