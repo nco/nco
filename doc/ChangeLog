@@ -1,6 +1,8 @@
 2006-08-22  Charlie Zender  <zender@uci.edu>
 
-	* Fix OpenMP flag-passing for Intel icc compilers
+	* Add more informative OpenMP diagnostics
+
+	* Fix OpenMP flag-passing in Makefile for Intel icc compilers
 
 2006-08-10  Charlie Zender  <zender@uci.edu>
 
