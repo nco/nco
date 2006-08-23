@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.51 2006-08-23 04:42:14 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.52 2006-08-23 20:37:41 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -50,17 +50,18 @@ sub tst_rgr {
     
 # csz++
 # fxm: pass as arguments or use exporter/importer instead?
-# *omp_flg=*main::omp_flg;
-# *dodap=*main::dodap;
-# *$fl_fmt=*main::fl_fmt;
+    *dodap=*main::dodap;
+    *fl_fmt=*main::fl_fmt;
+    *omp_flg=*main::omp_flg;
     *nco_D_flg=*main::nco_D_flg;
     *fl_out = *main::fl_out;
     
     NCO_bm::dbg_msg(1,"in package NCO_rgr, \$dodap = $dodap");
+    NCO_bm::dbg_msg(1,"in package NCO_rgr, \$fl_fmt = $fl_fmt");
+    NCO_bm::dbg_msg(1,"in package NCO_rgr, \$fl_out = $fl_out");
+    NCO_bm::dbg_msg(1,"in package NCO_rgr, \$nco_D_flg = $nco_D_flg");
     NCO_bm::dbg_msg(1,"in package NCO_rgr, \$omp_flg = $omp_flg");
 # csz--
-    
-    NCO_bm::dbg_msg(1,"File format set to [$fl_fmt]");
     
 # in general, $fl_out    -> %tempf_00%
 #             $foo_fl     -> %tempf_01%
@@ -68,7 +69,6 @@ sub tst_rgr {
 #             $foo_avg_fl -> %tempf_03%
 #             $foo1_fl    -> %tempf_01%
 #             $foo2_fl    -> %tempf_02%
-    
     
     if ($dodap ne "FALSE") {
 	print "DEBUG: in tst_rgr(), \$dodap = $dodap \n";
@@ -100,7 +100,7 @@ sub tst_rgr {
 # printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
     
     $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'tpt_mod=tpt%273.0f' $in_pth_arg in.nc %tempf_00%";
-    $tst_cmd[1]="ncks -C -H -v  tpt_mod -s '%.1f ' %tempf_00%";
+    $tst_cmd[1]="ncks -C -H -v tpt_mod -s '%.1f ' %tempf_00%";
     $dsc_sng="Testing float modulo float";
     $tst_cmd[2] = "0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 ";
     $tst_cmd[3] = "SS_OK";

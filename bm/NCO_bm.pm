@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.60 2006-08-23 04:42:14 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.61 2006-08-23 20:37:41 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -144,7 +144,6 @@ USAGE
 exit(0);
 } # end bm_usg()
 # ' <-- to make emacs happy after the USAGE block
-
 
 # Initialize NCOs that need to be tested for particular conditions
 sub bm_ntl($$){

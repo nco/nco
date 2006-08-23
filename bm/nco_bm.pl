@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.141 2006-08-23 04:42:14 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.142 2006-08-23 20:37:41 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -329,7 +329,7 @@ if (length($caseid) > 80) {die "\nThe caseid string is > 80 characters - please 
 if ($md5 == 1) {	do "nco_bm_md5wc_tbl.pl" or die "Can't find the validation data (nco_bm_md5wc_tbl.pl).\n";}
 
 $nco_D_flg.=" -D $dbg_lvl";
-dbg_msg(1,"WARN: Setting --debug to > 0 sets the NCO\n  command line -D flag to the same value.\n  This causes some tests to fail.\n  It is currently set to \$nco_D_flg = $nco_D_flg");
+dbg_msg(1,"WARN: Setting --debug to > 0 sets the NCO\n command-line -D flag to the same value.\n  This causes some tests to fail.\n  It is currently set to \$nco_D_flg = $nco_D_flg");
 
 # Determine where $DATA should be, prompt user if necessary
 if ($xdat_pth eq '') {
@@ -394,7 +394,7 @@ if ($wnt_log) {
 }
 
 # Pass explicit threading argument
-if ($thr_nbr > 0){$omp_flg="--thr_nbr=$thr_nbr";}else{$omp_flg=' ';}
+if ($thr_nbr > 0){$omp_flg="--thr_nbr=$thr_nbr";}else{$omp_flg='';}
 
 # does dodap require that we ignore both MPI and OpenMP?  Let's leave it in for now.
 # If dodap is not set then test with local files
