@@ -1,5 +1,7 @@
 2006-08-24  Charlie Zender  <zender@uci.edu>
 
+	* Correct OPeNDAP version test in configure.in
+
 	* Utilize ncap2 incremental operators in ddra.nco
 
 	* Quiet ncap2 informational messages
