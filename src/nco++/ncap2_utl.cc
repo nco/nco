@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.21 2006-08-15 04:29:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.22 2006-08-24 19:59:13 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -10,7 +10,6 @@
 #include <ctype.h>
 #include <string>
 #include "ncap2.hh" /* netCDF arithmetic processor */
-
 
 /* have removed extern -- (not linking to ncap_lex.l */
 /*extern*/ char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in ncap_lex.l) */

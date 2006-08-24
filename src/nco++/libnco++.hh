@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco++/libnco++.hh,v 1.3 2006-02-18 01:40:46 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco++/libnco++.hh,v 1.4 2006-08-24 19:59:13 zender Exp $ 
 
 // Purpose: Prototypes, typedefs, and global variables for libnco++
 
@@ -7,7 +7,7 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* libnco++.hh headers depend on system headers and libnco.a headers
-   Thus libnco++.a requires  libncoa to function correctly
+   Thus libnco++.a requires libnco.a to function correctly
    User must also supply prg_nm_get() and dbg_lvl_get() */
 
 // Usage:
@@ -21,5 +21,6 @@
 #include "ncoParser.hpp" //
 #include "ncoTree.hpp" // 
 #include "NcapVarVector.hh" // 
+#include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
 
 #endif // LIBNCOXX_HH  

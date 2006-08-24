@@ -16,103 +16,103 @@
 #include <antlr/CharStreamException.hpp>
 #include <antlr/TokenStreamException.hpp>
 #include "ncap2.hh"
-
+#include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
 
 int parse_antlr(prs_sct *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
 {
-
-ANTLR_USING_NAMESPACE(std);
-ANTLR_USING_NAMESPACE(antlr);
-
-int idx;
-char *filename;
- 
-istringstream *sin=NULL;
-ifstream *in=NULL;
-
-ncoLexer *lexer=NULL;
-ncoParser *parser=NULL;
-
-RefAST t,a;
-bool bchk;
-
-
-
-filename=fl_spt_usr;   
-
-     try {
-        
-       if( cmd_ln_sng ){
-	 sin= new  istringstream(cmd_ln_sng);
-	 lexer= new ncoLexer( *sin, prs_arg);
-       }else {
-         in=new ifstream(filename);          
-	 lexer= new ncoLexer( *in, prs_arg);
-       }     
-
-
-	  lexer->setFilename(filename);
-           
-	  parser= new ncoParser(*lexer);
-	  parser->setFilename(filename);
-
-	  ASTFactory ast_factory;
-	  parser->initializeASTFactory(ast_factory);
-	  parser->setASTFactory(&ast_factory);
-
-
-	  // Parse the input expressions
-	  parser->program();
-	  a = parser->getAST();
-	  t=a;
-	  //print the parse tree
-	   while( t ) {
-		cout << t->toStringTree() << endl;
-		t=t->getNextSibling();
-	   }
-	   printf("Paser tree printed\n");
-
-	}  
-
-            catch (RecognitionException& pe) {
-              parser->reportError(pe);
-              // bomb out
-              nco_exit(EXIT_FAILURE);
-	   }
-
-             catch (TokenStreamException& te) {
-	      cerr << te.getMessage();
-              // bomb out
-              nco_exit(EXIT_FAILURE);
-	   }
-
-             catch (CharStreamException& ce) {
-               cerr << ce.getMessage();
-              // bomb out
-              nco_exit(EXIT_FAILURE);
-	   }
-
-	t=a;
-
-    try {   
-	  ncoTree walker(prs_arg);
-	  printf("Walker initialized\n");
-          // Run script
-	  walker.run(t);
-
-	}  catch(std::exception& e) {
-	cerr << "exception: " << e.what() << endl;
-	}	
-
-
-        cout<< "run complete\n";
-      
-        delete lexer;
-        delete parser;        
-        if(sin) delete sin;
-        if(in) delete in;
-       
-        return 1;
-
-
+  
+  ANTLR_USING_NAMESPACE(std);
+  ANTLR_USING_NAMESPACE(antlr);
+  
+  const std::string fnc_nm("parse_antlr"); // [sng] Function name
+  
+  int idx;
+  char *filename;
+  
+  istringstream *sin=NULL;
+  ifstream *in=NULL;
+  
+  ncoLexer *lexer=NULL;
+  ncoParser *parser=NULL;
+  
+  RefAST t,a;
+  bool bchk;
+  
+  filename=fl_spt_usr;   
+  
+  try {
+    
+    if( cmd_ln_sng ){
+      sin= new  istringstream(cmd_ln_sng);
+      lexer= new ncoLexer( *sin, prs_arg);
+    }else {
+      in=new ifstream(filename);          
+      lexer= new ncoLexer( *in, prs_arg);
+    }     
+    
+    
+    lexer->setFilename(filename);
+    
+    parser= new ncoParser(*lexer);
+    parser->setFilename(filename);
+    
+    ASTFactory ast_factory;
+    parser->initializeASTFactory(ast_factory);
+    parser->setASTFactory(&ast_factory);
+    
+    
+    // Parse the input expressions
+    parser->program();
+    a = parser->getAST();
+    t=a;
+    // Print parser tree
+    if(dbg_lvl_get() > 0){
+      dbg_prn(fnc_nm,"Printing parser tree...");
+      while( t ) {
+	cout << t->toStringTree() << endl;
+	t=t->getNextSibling();
+      }
+      dbg_prn(fnc_nm,"Parser tree printed");
+    } // endif dbg
+    
+  }  
+  
+  catch (RecognitionException& pe) {
+    parser->reportError(pe);
+    // bomb out
+    nco_exit(EXIT_FAILURE);
+  }
+  
+  catch (TokenStreamException& te) {
+    cerr << te.getMessage();
+    // bomb out
+    nco_exit(EXIT_FAILURE);
+  }
+  
+  catch (CharStreamException& ce) {
+    cerr << ce.getMessage();
+    // bomb out
+    nco_exit(EXIT_FAILURE);
+  }
+  
+  t=a;
+  
+  try {   
+    ncoTree walker(prs_arg);
+    if(dbg_lvl_get() > 0) dbg_prn(fnc_nm,"Walker initialized");
+    // Run script
+    walker.run(t);
+    
+  }  catch(std::exception& e) {
+    cerr << "exception: " << e.what() << endl;
+  }	
+  
+  if(dbg_lvl_get() > 0) dbg_prn(fnc_nm,"Walker completed");
+  
+  delete lexer;
+  delete parser;        
+  if(sin) delete sin;
+  if(in) delete in;
+  
+  return 1;
 }              

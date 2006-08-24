@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.19 2006-08-24 00:38:19 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.20 2006-08-24 19:59:13 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -1203,7 +1203,6 @@ obj_dir :
 	- if ! test -d ${MY_OBJ_DIR}; then mkdir ${MY_OBJ_DIR}; fi
 
 # Targets in bin
-# fxm: ncap2_utl.o, Invoke.o, and NcapVarVector.o should be in libnco++.a
 NCAP2_OBJ := ${MY_OBJ_DIR}/ncap2.o
 ncap2:	${MY_BIN_DIR}/ncap2
 ${MY_BIN_DIR}/ncap2:	${NCAP2_OBJ} lib
@@ -1242,6 +1241,7 @@ inc_cln :
 lib : inc $(libnco++).a
 	-cd ../../bld; ${MAKE} $@ # Rebuild libnco if necessary
 $(libnco++).a : inc $(libnco++).a(${MY_OBJ_DIR}/ncap2_utl.o) \
+	$(libnco++).a(${MY_OBJ_DIR}/sdo_utl.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/Invoke.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/NcapVarVector.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/ncoLexer.o) \
