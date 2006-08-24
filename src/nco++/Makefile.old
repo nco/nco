@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.18 2006-08-15 21:41:40 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.19 2006-08-24 00:38:19 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -85,7 +85,7 @@ ifndef ANTLR_LIB
  ANTLR_LIB := ${ANTLR_ROOT}/lib # Directory containing libantlr.a
 endif
 ifndef ${CCACHE}
- CCACHE := Y
+ CCACHE := N
 endif # CCACHE
 ifndef DAP
  DAP := N
