@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.103 2006-08-02 05:52:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.104 2006-08-24 20:44:42 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -25,11 +25,11 @@
    C++ compilers will use type-safe version
    C89 and C99 compilers use less type-safe version that is standards-compliant */
 #ifdef __cplusplus
-#define CST_X_PTR_CST_PTR_CST_Y(x,y) const x * const * const y
-#define X_CST_PTR_CST_PTR_Y(x,y) x const * const * y
+# define CST_X_PTR_CST_PTR_CST_Y(x,y) const x * const * const y
+# define X_CST_PTR_CST_PTR_Y(x,y) x const * const * y
 #else /* !__cplusplus */
-#define CST_X_PTR_CST_PTR_CST_Y(x,y) x * const * const y
-#define X_CST_PTR_CST_PTR_Y(x,y) x * const * y
+# define CST_X_PTR_CST_PTR_CST_Y(x,y) x * const * const y
+# define X_CST_PTR_CST_PTR_Y(x,y) x * const * y
 #endif /* !__cplusplus */
 #ifdef __cplusplus
 
@@ -43,11 +43,11 @@ extern "C" {
 /* Replace restrict by __restrict in g++ compiler
    Substitute whitespace for __restrict in all other C++ compilers */
 #ifdef __cplusplus
-#ifdef __GNUG__
-#define restrict __restrict
-#else /* !__GNUG__ */
-#define restrict
-#endif /* !__GNUG__ */
+# ifdef __GNUG__
+#  define restrict __restrict
+# else /* !__GNUG__ */
+#  define restrict
+# endif /* !__GNUG__ */
 #endif /* !__cplusplus */
 
 /* Boolean values */
@@ -63,15 +63,15 @@ During its standardization process, the C++ programming language introduced the 
 Preprocessor macros may be used to turn bool into _Bool, false into 0 and true into 1, allowing compatibility with the aforementioned C99 use of the stdbool.h header." */
 #define nco_bool int
 #ifndef __cplusplus
-#ifndef bool
-#define bool int
-#endif /* bool */
+# ifndef bool
+#  define bool int
+# endif /* bool */
 #endif /* __cplusplus */
 #ifndef True
-#define True 1
+# define True 1
 #endif /* True */
 #ifndef False
-#define False 0
+# define False 0
 #endif /* False */
   
   /* Variables marked CEWI "Compiler Error Warning Initialization" are initialized
@@ -127,30 +127,30 @@ Preprocessor macros may be used to turn bool into _Bool, false into 0 and true i
   /* Define compatibility tokens when user does not have netCDF4 */
 #ifndef ENABLE_NETCDF4
 /* Single compatibility token new to netCDF4 netcdf.h */
-#define NC_NETCDF4     (0x1000) /* Use netCDF-4/HDF5 format */
+# define NC_NETCDF4     (0x1000) /* Use netCDF-4/HDF5 format */
 /* Four compatibility tokens from netCDF3.6 netcdf.h */
-#ifndef NC_CLASSIC_MODEL
-# define NC_CLASSIC_MODEL (0x0008) /* Enforce strict netcdf-3 rules. */
-#endif
-#ifndef NC_FORMAT_CLASSIC
-# define NC_FORMAT_CLASSIC (1)
-#endif
-#ifndef NC_FORMAT_64BIT
-# define NC_FORMAT_64BIT   (2)
-#endif
-#ifndef NC_FORMAT_NETCDF4
-#define NC_FORMAT_NETCDF4 (3)
-#endif
-#ifndef NC_FORMAT_NETCDF4_CLASSIC
-#define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
-#endif
+# ifndef NC_CLASSIC_MODEL
+#  define NC_CLASSIC_MODEL (0x0008) /* Enforce strict netcdf-3 rules. */
+# endif
+# ifndef NC_FORMAT_CLASSIC
+#  define NC_FORMAT_CLASSIC (1)
+# endif
+# ifndef NC_FORMAT_64BIT
+#  define NC_FORMAT_64BIT   (2)
+# endif
+# ifndef NC_FORMAT_NETCDF4
+#  define NC_FORMAT_NETCDF4 (3)
+# endif
+# ifndef NC_FORMAT_NETCDF4_CLASSIC
+#  define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
+# endif
 #endif /* !ENABLE_NETCDF4 */
 
   /* Define compatibility tokens when user does not have znetCDF */
 #ifndef ENABLE_ZNETCDF
-#ifndef NC_COMPRESS
-# define NC_COMPRESS 0x200 /* bn file is compressed */
-#endif
+# ifndef NC_COMPRESS
+#  define NC_COMPRESS 0x200 /* bn file is compressed */
+# endif
 #endif /* !ENABLE_ZNETCDF */
 
 #ifndef EXIT_SUCCESS /* Most likely this is a SUN4 machine */

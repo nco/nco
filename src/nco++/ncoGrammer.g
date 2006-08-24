@@ -9,6 +9,7 @@ header {
     #include "ncap2.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
+    #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
     
@@ -634,11 +635,13 @@ var_sct *var;
 
     | exp:EXPR {
         
-      if(exp->getFirstChild()->getType() == ASSIGN)
- 	    cout << "Type ASSIGN " <<  exp->getFirstChild()->getFirstChild()->getText() <<endl;
-      var=out(exp->getFirstChild());
-      var=nco_var_free(var);
-
+       if(exp->getFirstChild()->getType() == ASSIGN){
+          if(dbg_lvl_get() > 0){
+             dbg_prn("Type ASSIGN "+exp->getFirstChild()->getFirstChild()->getText());
+          }
+       }
+       var=out(exp->getFirstChild());
+       var=nco_var_free(var);
       }
               
 
@@ -1350,9 +1353,9 @@ out_asn returns [var_sct *var]
          
           if(v->getFirstChild() !=NULL) {
 
-           cout<<prg_nm_get() <<" : " << prs_arg->fl_in 
-           <<" Invalid Lvalue near " << v->getText() <<endl; 
-           nco_exit(EXIT_FAILURE);
+                cout<<prg_nm_get() <<" : " << prs_arg->fl_in 
+                <<" Invalid Lvalue near " << v->getText() <<endl; 
+                nco_exit(EXIT_FAILURE);
           }
         } /* end action */
     // Plain attribute

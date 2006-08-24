@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.23 2006-06-18 03:06:04 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.24 2006-08-24 20:44:42 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -271,4 +271,6 @@ nco/src/nco++/ncoParserTokenTypes.hpp(v)
 nco/src/nco++/ncoParserTokenTypes.txt
 nco/src/nco++/ncoTree.cpp(v)
 nco/src/nco++/ncoTree.hpp(v)
+nco/src/nco++/sdo_utl.cc	Stand-alone C++ utilities C++ code
+nco/src/nco++/sdo_utl.hh	Stand-alone C++ utilities header, templates
 nco/src/nco++/VarOp.hh

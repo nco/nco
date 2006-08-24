@@ -1,3 +1,9 @@
+2006-08-24  Charlie Zender  <zender@uci.edu>
+
+	* Quiet ncap2 informational messages
+
+	* Add sdo_utl.cc sdo_utl.hh to libnco++
+
 2006-08-23  Charlie Zender  <zender@uci.edu>
 
 	* Change default to CCACHE=N because ccache interacts so poorly
