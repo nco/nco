@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.156 2006-08-02 06:04:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.157 2006-08-24 23:31:15 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -141,19 +141,19 @@ nco_ddra /* [fnc] Count operations */
   float tm_flp; /* [s] Floating point time */
   float tm_rd; /* [s] Read time */
   float tm_wrt; /* [s] Write time */
-  float tm_io; /* [s] I/O time */
-  float tm_crr; /* [s] Time for this variable */
-  long long ntg_nbr; /* [nbr] Integer operations */
-  long long flp_nbr; /* [nbr] Floating point operations */
-  long long rd_nbr_byt=int_CEWI; /* [B] Bytes read */
-  long long wrt_nbr_byt=int_CEWI; /* [B] Bytes written */
+  float tm_io=float_CEWI; /* [s] I/O time */
+  float tm_crr=float_CEWI; /* [s] Time for this variable */
+  long long ntg_nbr=long_long_CEWI; /* [nbr] Integer operations */
+  long long flp_nbr=long_long_CEWI; /* [nbr] Floating point operations */
+  long long rd_nbr_byt=long_long_CEWI; /* [B] Bytes read */
+  long long wrt_nbr_byt=long_long_CEWI; /* [B] Bytes written */
   
   /* Summary statistics */
-  float tm_frc_flp_ttl; /* [frc] Floating point time fraction */
-  float tm_frc_io_ttl; /* [frc] I/O time fraction */
-  float tm_frc_ntg_ttl; /* [frc] Integer time fraction */
-  float tm_frc_rd_ttl; /* [frc] Read time fraction */
-  float tm_frc_wrt_ttl; /* [frc] Write time fraction */
+  float tm_frc_flp_ttl=float_CEWI; /* [frc] Floating point time fraction */
+  float tm_frc_io_ttl=float_CEWI; /* [frc] I/O time fraction */
+  float tm_frc_ntg_ttl=float_CEWI; /* [frc] Integer time fraction */
+  float tm_frc_rd_ttl=float_CEWI; /* [frc] Read time fraction */
+  float tm_frc_wrt_ttl=float_CEWI; /* [frc] Write time fraction */
 
   /* Default algorithm costs if invoked */
   long long ntg_nbr_byt_swp_dfl; /* [nbr] Integer operations for byte-swap */
@@ -180,9 +180,9 @@ nco_ddra /* [fnc] Count operations */
   int rnk_avg; /* [nbr] Rank of averaging space */
   int rnk_var; /* [nbr] Variable rank (in input file) */
   int rnk_wgt; /* [nbr] Rank of weight */
-  int var_idx; /* [enm] Index */
+  int var_idx=int_CEWI; /* [enm] Index */
   int wrd_sz; /* [B] Bytes per element */
-  long long lmn_nbr; /* [nbr] Variable size */
+  long long lmn_nbr=int_CEWI; /* [nbr] Variable size */
   long long lmn_nbr_avg; /* [nbr] Averaging block size */
   long long lmn_nbr_wgt; /* [nbr] Weight size */
   nco_bool MRV_flg; /* [flg] Avergaging dimensions are MRV dimensions */
