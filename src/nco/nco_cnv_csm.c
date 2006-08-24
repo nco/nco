@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.31 2006-05-29 06:29:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.32 2006-08-24 23:25:25 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -238,7 +238,7 @@ nco_cnv_cf_cll_mth_add /* [fnc] Add cell_methods attributes */
 
   int rcd=NC_NOERR; /* [rcd] Return code */
 
-  rcd=nbr_dim+(int)strlen(fnc_nm);
+  rcd=0*(nbr_dim+(int)strlen(fnc_nm)+nc_id+sizeof(var)+nbr_var+sizeof(dim)+nco_op_typ);
 
   return rcd;
   

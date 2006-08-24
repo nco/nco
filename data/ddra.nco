@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ddra.nco,v 1.7 2006-08-24 23:11:35 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/ddra.nco,v 1.8 2006-08-24 23:25:25 zender Exp $ -*-C-*-
 
 // Purpose: Compute DDRA statistics for use in ppr_ZeM06
 // Demonstrate ncap2 scripting
@@ -100,7 +100,7 @@ rnk_avg=4; /* [nbr] Rank of averaging space */
 rnk_var=4; /* [nbr] Variable rank (in input file) */
 rnk_wgt=1; /* [nbr] Rank of weight */
 var_idx=0; 
-wgt_flg=0s; /* [flt] Weight name */
+wgt_flg=0s; /* [flg] Weight variable */
 wgt_brd_flg=1s; /* [flg] Broadcast weight for this variable */
 wrd_sz=4; /* [B] Bytes per element */
 
@@ -112,7 +112,7 @@ fl_typ=fl_typ_gcm;
    flg_acm: Indicates nco_ctl.c code accumulates with += 
             Usually ddra.nco does not because it computes all variables at once
 	    However, sometimes the accumulation refers to the current variable,
-	    in which case it is denoted "real" and kept */
+	    in which case it is denoted "real flg_acm" and kept */
 
 if(fl_typ==fl_typ_gcm){
   var_nbr_apx=32;
