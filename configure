@@ -27259,6 +27259,20 @@ _ACEOF
 		cc ) CFLAGS="${CFLAGS} -h2 -hmath vector -hxint" ; ;;
 	    esac
 	    ;;
+	x86_64*-linux* )
+	    case ${CC} in
+		pathcc ) CFLAGS="${CFLAGS} -O3 -march=opteron -mmmx -msse -msse2 -m3dnow -pipe -fexpensive-optimizations" ; ;;
+		    case ${CXX} in
+			pathCC ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
+		pgcc ) CFLAGS="${CFLAGS} -tp=k8-64 -fast -fastsse -Minfo=all" ; ;;
+		    case ${CXX} in
+			pgCC ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
+	    esac
+	    ;;
     esac
 fi
 # End enable_optimize_custom

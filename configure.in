@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.180 2006-08-25 05:34:45 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.181 2006-08-25 05:46:05 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -922,6 +922,20 @@ if test "${enable_optimize_custom}" = 'yes'; then
 	sx*-nec-superux* )
 	    case ${CC} in
 		cc ) CFLAGS="${CFLAGS} -h2 -hmath vector -hxint" ; ;;
+	    esac
+	    ;;
+	x86_64*-linux* )
+	    case ${CC} in
+		pathcc ) CFLAGS="${CFLAGS} -O3 -march=opteron -mmmx -msse -msse2 -m3dnow -pipe -fexpensive-optimizations" ; ;;
+		    case ${CXX} in
+			pathCC ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
+		pgcc ) CFLAGS="${CFLAGS} -tp=k8-64 -fast -fastsse -Minfo=all" ; ;;
+		    case ${CXX} in
+			pgCC ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
 	    esac
 	    ;;
     esac
