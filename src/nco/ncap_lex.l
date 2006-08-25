@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.56 2006-04-06 22:56:20 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.57 2006-08-25 15:53:15 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -82,7 +82,7 @@
 #define YY_DECL int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg)
   YY_DECL;
 
-#if (defined(__GNUC__) || defined(__INTEL_COMPILER)) && (defined(ENABLE_DEBUG_CUSTOM) || defined(ENABLE_OPTIMIZE_CUSTOM))
+#if (defined(__GNUC__) || defined(__INTEL_COMPILER)) && !defined(__PATHCC__)  && !defined(PGI_CC) && (defined(ENABLE_DEBUG_CUSTOM) || defined(ENABLE_OPTIMIZE_CUSTOM))
   /* CEWI fxm 20040110 Prototype functions that cause warnings with pedantic GCC compiling
      Portability of this entire section is questionable, so enclose in ifdef GCC
      We already assume lexer is flex since AT&T lex does not understand <EOF> rules
