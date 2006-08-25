@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.179 2006-08-25 05:24:54 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.180 2006-08-25 05:34:45 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -228,10 +228,10 @@ AC_LANG_POP(C++)
 
 AC_ARG_ENABLE(netcdf4,AS_HELP_STRING([--enable-netcdf4],[Use netCDF Version 4 (WARNING: Experimental) [[default=no]]]),enable_netcdf4=yes,enable_netcdf4=no)
 
-# Check to see if netcdf4 is requested
+# Check to see if netCDF4 is requested
 echo "DEBUG: enable_netcdf4: ${enable_netcdf4} & enable_dap: ${enable_dap}"
 if (test "${enable_netcdf4}" != 'no' && test "${enable_dap}" != 'no'); then
-	# override the netcdf4 request
+	# override netCDF4 request
 	echo ""
 	echo "WARNING: Requested both netCDF4 and DAP support---overriding netcdf4"
 	echo "NCO will be built with DAP support and without netCDF4/HDF5 support"
@@ -274,7 +274,7 @@ AM_CONDITIONAL(TEST_DAP,[test "${enable_dap}" = 'yes'])
 # End DAP support
 
 
-# Begin Mandatory Link Test with libnetcdf.a
+# Begin mandatory link test with libnetcdf.a
 # Make precious variables for ./configure --help
 AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
 AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
@@ -748,10 +748,10 @@ esac
 # Begin custom GCC switches
 # Perform elaborate "or" test since autoconf does not like [ -o ] syntax
 GCC_OR_GXX='no'
-if test "x${GCC}" = 'xyes'; then
+if (test "x${CC}" = 'xgcc' &&  test "x${GCC}" = 'xyes'); then
     GCC_OR_GXX='yes'
 fi
-if test "x${GXX}" = 'xyes'; then
+if (test "x${CXX}" = 'xg++' && test "x${GXX}" = 'xyes'); then
     GCC_OR_GXX='yes'
 fi
 if test "x${GCC_OR_GXX}" = 'xyes' ; then

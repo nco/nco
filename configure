@@ -22090,10 +22090,10 @@ else
   enable_netcdf4=no
 fi;
 
-# Check to see if netcdf4 is requested
+# Check to see if netCDF4 is requested
 echo "DEBUG: enable_netcdf4: ${enable_netcdf4} & enable_dap: ${enable_dap}"
 if (test "${enable_netcdf4}" != 'no' && test "${enable_dap}" != 'no'); then
-	# override the netcdf4 request
+	# override netCDF4 request
 	echo ""
 	echo "WARNING: Requested both netCDF4 and DAP support---overriding netcdf4"
 	echo "NCO will be built with DAP support and without netCDF4/HDF5 support"
@@ -22235,7 +22235,7 @@ fi
 # End DAP support
 
 
-# Begin Mandatory Link Test with libnetcdf.a
+# Begin mandatory link test with libnetcdf.a
 # Make precious variables for ./configure --help
 
 
@@ -26915,10 +26915,10 @@ esac
 # Begin custom GCC switches
 # Perform elaborate "or" test since autoconf does not like [ -o ] syntax
 GCC_OR_GXX='no'
-if test "x${GCC}" = 'xyes'; then
+if (test "x${CC}" = 'xgcc' &&  test "x${GCC}" = 'xyes'); then
     GCC_OR_GXX='yes'
 fi
-if test "x${GXX}" = 'xyes'; then
+if (test "x${CXX}" = 'xg++' && test "x${GXX}" = 'xyes'); then
     GCC_OR_GXX='yes'
 fi
 if test "x${GCC_OR_GXX}" = 'xyes' ; then
