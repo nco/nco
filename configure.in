@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.182 2006-08-25 05:48:56 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.183 2006-08-25 15:52:34 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -818,6 +818,25 @@ if test "${enable_debug_custom}" = 'yes'; then
 		cc ) CFLAGS="${CFLAGS} -h rounddiv -h indef -h bounds -h nofastmd -h nofastmodulus" ; ;;
 	    esac
 	    ;;
+	i*86-pc-linux* | x86_64*-linux* )
+	    case ${CC} in
+		icc ) CFLAGS="${CFLAGS} -Wall -wd810,981,1572 -inline_debug_info"
+		    case ${CXX} in
+			icpc ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
+		pathcc ) CFLAGS="${CFLAGS}"
+		    case ${CXX} in
+			pathCC ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
+		pgcc ) CFLAGS="${CFLAGS} -Mbounds -Minfo=all"
+		    case ${CXX} in
+			pgCC ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
+	    esac
+	    ;;
 	mips*-sgi-irix* )
 	    if test "x${CC}" = xcc; then
 		CFLAGS="${CFLAGS} -trapuv"
@@ -893,6 +912,25 @@ if test "${enable_optimize_custom}" = 'yes'; then
 		cc ) CFLAGS="${CFLAGS} -h rounddiv -h nofastmd -h nofastmodulus" ; ;;
 	    esac
 	    ;;
+	i*86-pc-linux* )
+	    case ${CC} in
+		icc ) CFLAGS="${CFLAGS} -O3 -axW -mcpu=pentium4"
+		    case ${CXX} in
+			icpc ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
+		pathcc ) CFLAGS="${CFLAGS} -O3 -mmmx -msse -msse2 -m3dnow -pipe -fexpensive-optimizations"
+		    case ${CXX} in
+			pathCC ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
+		pgcc ) CFLAGS="${CFLAGS} -fast -fastsse -Minfo=all"
+		    case ${CXX} in
+			pgCC ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
+	    esac
+	    ;;
 	mips*-sgi-irix* )
 	    if test "x${CC}" = xcc; then
 		CFLAGS="${CFLAGS} -O2"
@@ -926,6 +964,11 @@ if test "${enable_optimize_custom}" = 'yes'; then
 	    ;;
 	x86_64*-linux* )
 	    case ${CC} in
+		icc ) CFLAGS="${CFLAGS} -O3 -axW -mcpu=pentium4"
+		    case ${CXX} in
+			icpc ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
 		pathcc ) CFLAGS="${CFLAGS} -O3 -march=opteron -mmmx -msse -msse2 -m3dnow -pipe -fexpensive-optimizations"
 		    case ${CXX} in
 			pathCC ) CXXFLAGS="${CFLAGS}"

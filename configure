@@ -26995,6 +26995,25 @@ _ACEOF
 		cc ) CFLAGS="${CFLAGS} -h rounddiv -h indef -h bounds -h nofastmd -h nofastmodulus" ; ;;
 	    esac
 	    ;;
+	i*86-pc-linux* | x86_64*-linux* )
+	    case ${CC} in
+		icc ) CFLAGS="${CFLAGS} -Wall -wd810,981,1572 -inline_debug_info"
+		    case ${CXX} in
+			icpc ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
+		pathcc ) CFLAGS="${CFLAGS}"
+		    case ${CXX} in
+			pathCC ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
+		pgcc ) CFLAGS="${CFLAGS} -Mbounds -Minfo=all"
+		    case ${CXX} in
+			pgCC ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
+	    esac
+	    ;;
 	mips*-sgi-irix* )
 	    if test "x${CC}" = xcc; then
 		CFLAGS="${CFLAGS} -trapuv"
@@ -27228,6 +27247,25 @@ _ACEOF
 		cc ) CFLAGS="${CFLAGS} -h rounddiv -h nofastmd -h nofastmodulus" ; ;;
 	    esac
 	    ;;
+	i*86-pc-linux* )
+	    case ${CC} in
+		icc ) CFLAGS="${CFLAGS} -O3 -axW -mcpu=pentium4"
+		    case ${CXX} in
+			icpc ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
+		pathcc ) CFLAGS="${CFLAGS} -O3 -mmmx -msse -msse2 -m3dnow -pipe -fexpensive-optimizations"
+		    case ${CXX} in
+			pathCC ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
+		pgcc ) CFLAGS="${CFLAGS} -fast -fastsse -Minfo=all"
+		    case ${CXX} in
+			pgCC ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
+	    esac
+	    ;;
 	mips*-sgi-irix* )
 	    if test "x${CC}" = xcc; then
 		CFLAGS="${CFLAGS} -O2"
@@ -27261,6 +27299,11 @@ _ACEOF
 	    ;;
 	x86_64*-linux* )
 	    case ${CC} in
+		icc ) CFLAGS="${CFLAGS} -O3 -axW -mcpu=pentium4"
+		    case ${CXX} in
+			icpc ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
 		pathcc ) CFLAGS="${CFLAGS} -O3 -march=opteron -mmmx -msse -msse2 -m3dnow -pipe -fexpensive-optimizations"
 		    case ${CXX} in
 			pathCC ) CXXFLAGS="${CFLAGS}"
