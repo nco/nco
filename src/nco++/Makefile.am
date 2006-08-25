@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.4 2006-08-24 19:59:13 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.5 2006-08-25 00:32:50 zender Exp $
 
 # Purpose: Process this file with automake to produce Makefile.in
 
@@ -20,9 +20,11 @@ Invoke.o : ncoGrammer.g
 ncap2_LDFLAGS = -lantlr -lnco
 INCLUDES = -I./ -I../nco
 
-DISTCLEANFILES=ncoLexer.hpp ncoParser.hpp ncoParserTokenTypes.hpp ncoParserTokenTypes.txt ncoTree.hpp
-
-CLEANFILES=ncap2 ncoLexer.hpp ncoParser.hpp ncoParserTokenTypes.hpp ncoParserTokenTypes.txt ncoTree.hpp
+# 20060824: *.hpp and *.cpp files are now part of source tree
+# DISTCLEANFILES=ncoLexer.hpp ncoParser.hpp ncoParserTokenTypes.hpp ncoParserTokenTypes.txt ncoTree.hpp
+# CLEANFILES=ncap2 ncoLexer.hpp ncoParser.hpp ncoParserTokenTypes.hpp ncoParserTokenTypes.txt ncoTree.hpp
+DISTCLEANFILES=ncoParserTokenTypes.txt
+CLEANFILES=ncap2 ncoParserTokenTypes.txt
 
 # Following libraries are included based on configure options
 # Down here as a reminder.
