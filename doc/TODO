@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.805 2006-08-23 22:00:24 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.806 2006-08-25 00:51:39 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -514,7 +514,8 @@ nco763. Access the IPCC AR4 database via OPeNDAP: http://www-pcmdi.llnl.gov/soft
 nco768. Change some common flags from toggles to hard-coded true/false
         to avoid weird behavior when toggle switches accidentally passed twice,
         e.g., ncks -O -O in.nc foo.nc
-nco771. 
+nco771. libtool for ncap2 needs to convert -lnco to ../nco/.libs/libnco.so
+nco772. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

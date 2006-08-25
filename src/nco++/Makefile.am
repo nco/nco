@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.5 2006-08-25 00:32:50 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.6 2006-08-25 00:49:47 zender Exp $
 
 # Purpose: Process this file with automake to produce Makefile.in
 
@@ -14,8 +14,8 @@ ncap2_SOURCES = Invoke.cc ncap2.cc ncap2_utl.cc sdo_utl.cc NcapVarVector.cc ncoL
 
 # Invoke 'runantlr' on ncoGrammer.g to generate required hpp files
 #Invoke.cc : ncoGrammer.g
-Invoke.o : ncoGrammer.g
-	${ANTLR} ncoGrammer.g
+#Invoke.o : ncoGrammer.g
+#	${ANTLR} ncoGrammer.g
 
 ncap2_LDFLAGS = -lantlr -lnco
 INCLUDES = -I./ -I../nco
