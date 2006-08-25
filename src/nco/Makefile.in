@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.69 2006-08-24 20:48:00 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.70 2006-08-25 05:15:47 zender Exp $ -*-makefile-*-
 
 
 srcdir = @srcdir@
@@ -410,7 +410,7 @@ lib_LTLIBRARIES = libnco.la
 # This creates version-stamped shared-library, e.g., libnco-2.9.4.so
 libnco_la_LDFLAGS = -release @VERSION@
 libnco_la_SOURCES = \
-$(HEADER_SRC) \
+${HEADER_SRC} \
 ${NCO_GETOPT} \
 nco_att_utl.c \
 nco_bnr.c \

@@ -1082,10 +1082,10 @@ Optional Features:
   --enable-maintainer-mode  enable make rules and dependencies not useful
 			  (and sometimes confusing) to the casual installer
   --disable-largefile     omit support for large files
-  --enable-dap            Build OPeNDAP/DODS-enabled clients (conflicts with
-                          netcdf4) [default=yes]
+  --enable-dap            Build DAP-enabled clients with OPeNDAP (conflicts
+                          with netcdf4) [default=yes]
   --enable-ncoxx          Build the ncoxx dir [default=yes]
-  --enable-netcdf4        Use netcdf versiion 4 (WARNING: Experimental)
+  --enable-netcdf4        Use netCDF Version 4 (WARNING: Experimental)
                           [default=no]
   --enable-mpi            Build NCOs for Message Passing Interface (detects
                           LAM or MPICH2) [default=no]
@@ -1131,8 +1131,8 @@ Some influential environment variables:
   NETCDF_INC  Location of netCDF headers (compile-time)
   NETCDF_LIB  Location of netCDF library (compile-time)
   NETCDF4_ROOT
-              Root of NETCDF4 installation - must be separate from netcdf3.x
-              (compile-time)
+              Root of netCDF4 installation---must be separate from netCDF3.x
+              installataion (compile-time)
   HDF5_LIB_DIR
               Location of HDF5 libraries (compile-time)
   DEFS        List of MPI NCOs - not user configurable
@@ -2309,7 +2309,7 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 if test -n "$ac_tool_prefix"; then
-  for ac_prog in xlc_r xlc acc cc     gcc gcc-2     icc  como c89
+  for ac_prog in xlc_r xlc acc cc     gcc     icc  pgcc pathcc como c89
   do
     # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
 set dummy $ac_tool_prefix$ac_prog; ac_word=$2
@@ -2351,7 +2351,7 @@ fi
 fi
 if test -z "$CC"; then
   ac_ct_CC=$CC
-  for ac_prog in xlc_r xlc acc cc     gcc gcc-2     icc  como c89
+  for ac_prog in xlc_r xlc acc cc     gcc     icc  pgcc pathcc como c89
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -3190,7 +3190,7 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 if test -n "$ac_tool_prefix"; then
-  for ac_prog in $CCC xlC_r xlC aCC CC cxx g++ g++-2 c++ icpc como
+  for ac_prog in $CCC xlC_r xlC aCC CC cxx g++ c++ icpc pgCC pathCC como
   do
     # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
 set dummy $ac_tool_prefix$ac_prog; ac_word=$2
@@ -3232,7 +3232,7 @@ fi
 fi
 if test -z "$CXX"; then
   ac_ct_CXX=$CXX
-  for ac_prog in $CCC xlC_r xlC aCC CC cxx g++ g++-2 c++ icpc como
+  for ac_prog in $CCC xlC_r xlC aCC CC cxx g++ c++ icpc pgCC pathCC como
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -21790,8 +21790,8 @@ nco_LIBS_no_DAP="${LIBS}"
 # definition for NC_64BIT_OFFSET here. This should be fixed in nc-dap 3.6.
 # Sorry about version numbers being confusing... jhrg 6/3/05
 
-# fxm: is DAP_ROOT (or DODS_ROOT) an obselete variable in DAP 3.5+?
-# hjm thinks so.  Eliminate these 3 lines after running the dap tests with it disabled.
+# fxm: is DAP_ROOT (or DODS_ROOT) an obsolete variable in DAP 3.5+?
+# Eliminate these 3 lines after running the dap tests with it disabled.
 #  AC_ARG_VAR([DAP_ROOT],[Root of DAP installation] (compile-time))
 # Check whether --enable-dap or --disable-dap was given.
 if test "${enable_dap+set}" = set; then
@@ -22067,9 +22067,9 @@ fi
 
 
 		if (test "${enable_ncoxx}" = 'no'); then
-			echo "INFO: No antlr support - you need to install the antlr development package to build the nco++ dir"
+			echo "INFO: ANTLR support not found. To build the nco++ directory and ncap2, you must install antlr and the antlr development package, e.g., apt-get install antlr libantlr-dev"
 		else
-			echo "INFO: ANTLR development support found - can build nco++"
+			echo "INFO: ANTLR development support found---will build nco++"
 		fi
 	else
 		enable_ncoxx="no"
@@ -22095,8 +22095,8 @@ echo "DEBUG: enable_netcdf4: ${enable_netcdf4} & enable_dap: ${enable_dap}"
 if (test "${enable_netcdf4}" != 'no' && test "${enable_dap}" != 'no'); then
 	# override the netcdf4 request
 	echo ""
-	echo "WARNING: Requested both netcdf4 and DAP support - overriding netcdf4"
-	echo "NCOs will be built with DAP support but NOT netcdf4/hdf5 support"
+	echo "WARNING: Requested both netCDF4 and DAP support---overriding netcdf4"
+	echo "NCO will be built with DAP support and without netCDF4/HDF5 support"
 	echo ""
 	enable_netcdf4='no'
 fi
@@ -22240,20 +22240,17 @@ fi
 
 
 
-# if don't want netcdf4 capabilities, but are using the netcdf4 lib, need to
-# link with hdf5 libs to enable the link - ie as if you wanted netcdf4
-#following line enables & initializes the configure option
-
-
+# Must link with HDF5 if netCDF4 libnetcdf used but netCDF4 capabilities not wanted
+# Following line enables and initializes this configure option
 echo ""
 echo "################################################"
-echo "# Testing whether libnetcdf is version 4 or 3  #"
+echo "# Testing whether libnetcdf is Version 3 or 4 #"
 echo "################################################"
 echo ""
 echo "DEBUG: enable_netcdf4: ${enable_netcdf4} & enable_dap: ${enable_dap}"
 
 
-# test if he set NETCDF4_ROOT and it at least exists
+# Test if user set NETCDF4_ROOT and it exists
 if ( test "${enable_netcdf4}" = 'yes'); then
 	if (test "${NETCDF4_ROOT}" != ""); then
 		if (test -d "${NETCDF4_ROOT}"); then
@@ -22261,8 +22258,8 @@ if ( test "${enable_netcdf4}" = 'yes'); then
 			CPPFLAGS="-I${NETCDF4_ROOT}/include $CPPFLAGS";\
 			LDFLAGS="-L${NETCDF4_ROOT}/lib $LDFLAGS";
 			if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
-				# check libnetcdf for netcdf4 function to test which one it is..
-				# and netcdf4 (at alpha10) conflicts with shared libs - fxm - check after final release.
+				# Check libnetcdf for a netCDF4 functions
+				# fxm: netCDF4 alpha10 barfs with shared libs, check after final release
 				enable_shared='no'
 				echo "$as_me:$LINENO: checking for nc_check_for_hdf5 in -lnetcdf" >&5
 echo $ECHO_N "checking for nc_check_for_hdf5 in -lnetcdf... $ECHO_C" >&6
@@ -22340,12 +22337,12 @@ fi
 				#X#CPPFLAGS="${CPPFLAGS} -DNC_64BIT_OFFSET"
 			fi
 		else
-			echo "NETCDF4_ROOT set but doesn't exist - skipping netcdf4 config";\
+			echo "NETCDF4_ROOT set but does not exist---skipping netCDF4 configuration";\
 			enable_netcdf4='no'
 		fi
 	else
-		echo "You set '--enable-netcdf4' but did not set NETCDF4_ROOT";\
-		echo "you need to set both to enable NETCDF4.  I'll try it anyway...";\
+		echo "User set '--enable-netcdf4' but did not set NETCDF4_ROOT";\
+		echo "Must set both to enable netCDF4.  Will try to configure netCDF anyway...";\
 
 echo "$as_me:$LINENO: checking for nc_check_for_hdf5 in -lnetcdf4" >&5
 echo $ECHO_N "checking for nc_check_for_hdf5 in -lnetcdf4... $ECHO_C" >&6
@@ -22427,33 +22424,32 @@ echo "DEBUG: LIBS = ${LIBS}"
 
 
 # Begin HDF5 test
-# note that netcdf4 requires the libhdf5 & libhdf5_hl to link correctly
-
+# NB: netCDF4 requires libhdf5 and libhdf5_hl to link correctly
 if test "${enable_dap}" = 'no'; then
-    { echo "$as_me:$LINENO: WARNING: Did not request OpenDAP; checking for version of libnetcdf to use" >&5
-echo "$as_me: WARNING: Did not request OpenDAP; checking for version of libnetcdf to use" >&2;}
+    { echo "$as_me:$LINENO: WARNING: Did not request OPeNDAP; checking for version of libnetcdf to use" >&5
+echo "$as_me: WARNING: Did not request OPeNDAP; checking for version of libnetcdf to use" >&2;}
 fi
 
 echo ""
 echo "#############################################"
-echo "# Testing for HDF5 & HDF5_HL & NETCDF4 libs #"
+echo "# Testing for HDF5 & HDF5_HL & netCDF4 libs #"
 echo "#############################################"
 echo ""
 echo "DEBUG: LIBS = ${LIBS}"
 
-# Check for HDF5 libraries unless told otherwise.  HDF5 libs can be in standard places
-# but netcdf4 HAVE to be isolated in NETCDF4_ROOT to avoid conflicting with libnetcdf (3.x)
-# this may be redundant if the previous netcdf4 AC_CHECK_LIB succeeded tho...?
+# Check for HDF5 libraries unless told otherwise
+# HDF5 libraries may be in standard places but netCDF4 libnetcdf must be
+# in NETCDF4_ROOT to avoid conflicting with netCDF3 libnetcdf
+# Is this redundant if previous netCDF4 AC_CHECK_LIB succeeded?
 if (test "${enable_netcdf4}" = 'yes' && test "${enable_dap}" = 'no'); then
-	# assume HDF5 libs are in std places but allow builder to specify another
+	# Assume HDF5 libraries are in standard places, let user override
 
 	# Add ${HDF5_LIB_DIR} to search path if present
 	if test "${HDF5_LIB_DIR}"; then
 		LDFLAGS="-L${HDF5_LIB_DIR} ${LDFLAGS} "
 	fi
 
-	# if using NETCDF4, require HDF5 libs to be known to system before the nc_open test
-	# so check for the HDF5 libs
+	# If using netCDF4, require HDF5 libraries before nc_open() test
 	echo "$as_me:$LINENO: checking for H5Fcreate in -lhdf5" >&5
 echo $ECHO_N "checking for H5Fcreate in -lhdf5... $ECHO_C" >&6
 if test "${ac_cv_lib_hdf5_H5Fcreate+set}" = set; then
@@ -22524,8 +22520,8 @@ else
 fi
 
 	if test "${nco_have_hdf5}" = 'yes'; then
-		# include HDF5 libs in LIBS line
-		LIBS="-lhdf5  ${LIBS}"
+		# Include HDF5 libraries in LIBS line
+		LIBS="-lhdf5 ${LIBS}"
 	fi
 	echo "$as_me:$LINENO: checking for H5LTcreate_compound_type in -lhdf5_hl" >&5
 echo $ECHO_N "checking for H5LTcreate_compound_type in -lhdf5_hl... $ECHO_C" >&6
@@ -22597,10 +22593,10 @@ else
 fi
 
 	if test "${nco_have_hdf5}" != 'yes'; then
-		{ echo "$as_me:$LINENO: WARNING: NETCDF4 support disabled (missing HDF5 libraries)" >&5
-echo "$as_me: WARNING: NETCDF4 support disabled (missing HDF5 libraries)" >&2;}
+		{ echo "$as_me:$LINENO: WARNING: netCDF4 support disabled (missing HDF5 libraries)" >&5
+echo "$as_me: WARNING: netCDF4 support disabled (missing HDF5 libraries)" >&2;}
 	elif test "${nco_have_hdf5_hl}" = 'yes'; then
-		# include HDF5_hl libs in LIBS line
+		# Include HDF5_hl libs in LIBS line
 		LIBS="-lhdf5_hl ${LIBS}"
 
 cat >>confdefs.h <<\_ACEOF
@@ -22610,7 +22606,7 @@ _ACEOF
 	fi  # End test for HDF5 libs
 
 elif (test "${enable_netcdf4}" = 'no' && test "${enable_dap}" = 'no'); then
-	# this next stanza should only be tried if --enable-netcdf4=no / --disable-netcdf4
+	# Try next stanza iff --enable-netcdf4=no / --disable-netcdf4
 	# && look for real netCDF library only if enable_dap is false. jhrg 05/26/05
 	# HOWEVER: if have installed libnetcdf4 instead of libnetcdf3x, have to also link in
 	# the hdf5 libs to get it to compile correctly, just as above.
@@ -22640,8 +22636,8 @@ elif (test "${enable_netcdf4}" = 'no' && test "${enable_dap}" = 'no'); then
 fi # enable_dap
 
 
-# at this point we either want NC4 and have HDF5 or have used DAP's libnetcdf
-# or don't have HDF5 and don't want NC4 (aka just want NC3.x)
+# At this point we either want netCDF4 and have HDF5 or have used DAP's libnetcdf
+# or do not have HDF5 and do not want netCDF4 (aka just want netCDF3)
 
 for ac_header in netcdf.h
 do
@@ -22791,7 +22787,7 @@ fi
 
 done
 
-# NCO does not support netCDF2
+# NCO no longer supports netCDF2
 
 cat >>confdefs.h <<\_ACEOF
 #define NO_NETCDF_2 1
@@ -22874,7 +22870,7 @@ if test $ac_cv_lib_netcdf_nc_open = yes; then
 	{ echo "$as_me:$LINENO: Good news: Simple program compiles and links to libnetcdf.a with default compiler flags" >&5
 echo "$as_me: Good news: Simple program compiles and links to libnetcdf.a with default compiler flags" >&6;}
     if (test "${have_hdf5}" = 'yes' && test "${have_hdf5_ul}" = 'yes') ; then
-        echo "Great!  This build can support some NETCDF4 features."
+        echo "Great!  This build will support some netCDF4 features."
     fi
 
 else
@@ -22907,8 +22903,6 @@ echo "$as_me: Bad news: Simple program does not compile and link to libnetcdf.a 
 	    x86_64-unknown-linux-gnu )
 		case ${CC} in
 		    gcc ) CFLAGS="${CFLAGS} -m64" ; LDFLAGS="${LDFLAGS} -m64" ; ;;
-# fxm: Add pgcc switches
-#		    pgcc ) CFLAGS="${CFLAGS} -64 -mips4" ; LDFLAGS="${LDFLAGS} -64" ; ;;
 		esac
 		;;
 	esac
@@ -25583,7 +25577,7 @@ fi
 # If --enable-largefile define ENABLE_LARGEFILE
 # fxm: TODO bld45 Obsolete! Replace with test for 64-bit offset support (i.e., netCDF 3.6)
 if test "${enable_largefile}" = 'yes'; then
-    echo "We recommend against using this approach; use only if you cannot use netcdf 3.6 and above.  That said, we'll try..."
+    echo "We recommend against using this approach; use only if you cannot use netCDF 3.6 and above.  That said, we'll try..."
 
 cat >>confdefs.h <<\_ACEOF
 #define ENABLE_LARGEFILE 1
@@ -26896,7 +26890,10 @@ fi
 case ${host} in
     i*86-*-linux-gnu )
 	case ${CC} in
+	    como ) CFLAGS="${CFLAGS} --c99" ; ;;
 	    icc ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -D_BSD_SOURCE -D_POSIX_SOURCE -no-gcc" ; ;;
+	    pathcc ) CFLAGS="${CFLAGS} -std=c99" ; ;;
+	    pgcc ) CFLAGS="${CFLAGS} -c9x" ; CPPFLAGS="${CPPFLAGS} -DPGI_CC" ; ;;
 	esac
 	;;
     powerpc-ibm-aix* )

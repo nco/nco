@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.157 2006-08-24 23:31:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.158 2006-08-25 05:15:47 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -17,7 +17,7 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   static const char cmp_nm[]="xlc"; /* [sng] Compiler name */
   static const char cmp_sng[]="Token _AIX_ defined in nco_cmp_get(), probably compiled with xlc"; /* [sng] Compiler string */
 #endif /* !_AIX */
-#if defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__)
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__) && !defined(PGI_CC)
   /* Testing for GCC macros early is dangerous because some compilers, 
      including Intel's, define GCC macros for compatibility */
   static const char cmp_nm[]="gcc"; /* [sng] Compiler name */
@@ -33,14 +33,18 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   static const char cmp_nm[]="pathcc";
   static const char cmp_sng[]="Token __PATHCC__ defined in nco_cmp_get(), probably compiled with pathcc"; /* [sng] Compiler string */
 #endif /* !__PATHCC__ */
+#ifdef PGI_CC
+  static const char cmp_nm[]="pgcc";
+  static const char cmp_sng[]="Token PGI_CC defined in nco_cmp_get(), probably compiled with pgcc"; /* [sng] Compiler string */
+#endif /* !PGI_CC */
 
   /* In case none of the above tokens matched */
-#if !defined(_AIX) && !defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__)
+#if !defined(_AIX) && !defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__) && !defined(PGI_CC)
   /* Unknown compiler */
   static const char cmp_nm[]="unknown"; /* [sng] Compiler name */
   static const char cmp_sng[]="Unknown compiler tokens in nco_cmp_get(), compiler is unknown"; /* [sng] Compiler string */
 #endif /* !unknown */
-  if(dbg_lvl_get() > 4) (void)fprintf(stderr,"%s: INFO %s reports compiler name is %s, compiler string is %s\n",prg_nm_get(),fnc_nm,cmp_nm,cmp_sng);
+  if(dbg_lvl_get() > 4) (void)fprintf(stderr,"%s: INFO %s reports compiler name is %s\n%s\n",prg_nm_get(),fnc_nm,cmp_nm,cmp_sng);
 
   return cmp_nm;
 } /* end nco_cmp_get() */
