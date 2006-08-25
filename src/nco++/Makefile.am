@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.6 2006-08-25 00:49:47 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.7 2006-08-25 05:05:19 zender Exp $ -*-makefile-*-
 
 # Purpose: Process this file with automake to produce Makefile.in
 
