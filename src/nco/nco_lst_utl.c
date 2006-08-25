@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.40 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.41 2006-08-25 00:07:32 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -288,8 +288,8 @@ nco_cmp_chr /* [fnc] Compare two characters */
   /* Purpose: Compare two characters
      Function is suitable for argument to ANSI C qsort() routine in stdlib.h
      Code based on responses to my comp.lang.c thread 20040101 */
-  const char * const val_1_cp=(char *)val_1;
-  const char * const val_2_cp=(char *)val_2;
+  const char * const val_1_cp=(const char *)val_1;
+  const char * const val_2_cp=(const char *)val_2;
   return *val_1_cp < *val_2_cp ? -1 : (*val_1_cp > *val_2_cp);
   /* Alternative one-liner:
      return (*val_1_cp > *val_2_cp) - (*val_1_cp < *val_2_cp); */
@@ -303,8 +303,8 @@ nco_cmp_int /* [fnc] Compare two integers */
   /* Purpose: Compare two integers
      Function is suitable for argument to ANSI C qsort() routine in stdlib.h
      Code based on responses to my comp.lang.c thread 20040101 */
-  const int * const val_1_ip=(int *)val_1;
-  const int * const val_2_ip=(int *)val_2;
+  const int * const val_1_ip=(const int *)val_1;
+  const int * const val_2_ip=(const int *)val_2;
   return *val_1_ip < *val_2_ip ? -1 : (*val_1_ip > *val_2_ip);
   /* Alternative one-liner:
      return (*val_1_ip > *val_2_ip) - (*val_1_ip < *val_2_ip); */
