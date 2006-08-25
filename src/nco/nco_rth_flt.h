@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.22 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.23 2006-08-25 00:09:16 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -75,6 +75,10 @@ extern "C" {
   float truncf(float);
 
 #endif /* HPUX */
+
+double /* O [frc] Random fraction in [0,1] */
+rnd_nbr /* [fnc] Generate random fraction in [0,1] */
+(double x); /* I [frc] Immaterial */
 
 #ifdef __cplusplus
 } /* end extern "C" */
