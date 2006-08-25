@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.8 2006-08-25 05:15:47 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.9 2006-08-25 05:24:54 zender Exp $ -*-makefile-*-
 
 # Purpose: Process this file with automake to produce Makefile.in
 
@@ -19,7 +19,8 @@ ncap2_SOURCES = Invoke.cc ncap2.cc ncap2_utl.cc sdo_utl.cc NcapVarVector.cc ncoL
 
 #ncap2_LDFLAGS = -lantlr -lnco
 #ncap2_LDFLAGS = -lantlr -L../src/nco/.libs -lnco
-ncap2_LDADD = -lantlr libnco.la
+ncap2_LDADD = -lantlr
+ncap2_LDFLAGS = -L../src/nco/.libs -lnco
 INCLUDES = -I./ -I../nco
 
 # 20060824: *.hpp and *.cpp files are now part of source tree

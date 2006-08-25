@@ -2309,7 +2309,7 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 if test -n "$ac_tool_prefix"; then
-  for ac_prog in xlc_r xlc acc cc     gcc     icc  pgcc pathcc como c89
+  for ac_prog in xlc_r xlc acc cc     pathcc pgcc gcc     icc  como c89
   do
     # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
 set dummy $ac_tool_prefix$ac_prog; ac_word=$2
@@ -2351,7 +2351,7 @@ fi
 fi
 if test -z "$CC"; then
   ac_ct_CC=$CC
-  for ac_prog in xlc_r xlc acc cc     gcc     icc  pgcc pathcc como c89
+  for ac_prog in xlc_r xlc acc cc     pathcc pgcc gcc     icc  como c89
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -3190,7 +3190,7 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 if test -n "$ac_tool_prefix"; then
-  for ac_prog in $CCC xlC_r xlC aCC CC cxx g++ c++ icpc pgCC pathCC como
+  for ac_prog in $CCC xlC_r xlC aCC CC cxx pathCC pgCC g++ c++ icpc como
   do
     # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
 set dummy $ac_tool_prefix$ac_prog; ac_word=$2
@@ -3232,7 +3232,7 @@ fi
 fi
 if test -z "$CXX"; then
   ac_ct_CXX=$CXX
-  for ac_prog in $CCC xlC_r xlC aCC CC cxx g++ c++ icpc pgCC pathCC como
+  for ac_prog in $CCC xlC_r xlC aCC CC cxx pathCC pgCC g++ c++ icpc como
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
