@@ -1,5 +1,11 @@
 2006-08-24  Charlie Zender  <zender@uci.edu>
 
+	* Add pgcc, pathcc support to autotools builds
+
+	* Only add GCC flags when sure compilers are gcc and g++
+
+	* Re-arrange compiler ordering to AC_PROC_CC
+
 	* Prototype nco_var_lst_crd_xcl() in nco_var_lst.h
 
 	* Prototype rnd_nbr() in nco_rth_utl.h
