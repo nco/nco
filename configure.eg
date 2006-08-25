@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.123 2006-06-02 16:23:37 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.124 2006-08-25 00:15:39 zender Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -72,7 +72,7 @@ Method 3. Recommended/current custom ./configure invocation
 
 ************************************************************************
 To build NCO versions > 2.9.9 with netCDF versions < 3.6, define the
-pre-processor token NC_64BIT_OFFSET to '0', e.g., CPPFLAGS=-DNC_64BIT_OFFSET='0'
+pre-processor token NC_64BIT_OFFSET to '0', e.g., CPPFLAGS='-DNC_64BIT_OFFSET=0'
 
 ************************************************************************
 Start AIX

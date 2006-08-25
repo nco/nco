@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.385 2006-08-23 22:00:03 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.386 2006-08-25 00:15:33 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -511,7 +511,7 @@ ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 #CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
  CXX := xlC_r
 # CXX := g++
- CPP := xlc -c -qlanglvl=extc99  -qsuppress=1501-245 -I/usr/lpp/ppe.poe/include
+ CPP := xlc -c -qlanglvl=extc99 -qsuppress=1501-245 -I/usr/lpp/ppe.poe/include
  FC := xlf95_r
 ifneq (${null},$(findstring xl,${CC}))
 # /usr/include headers must occur before Visual Age headers to prevent xlC pragma warnings
@@ -555,7 +555,7 @@ ifeq (${OPTS},O)
 # -O : -O3 is safe, -O5 is dangerous
 # -qstrict: Ensure that -O3 optimizations do not alter program semantics
 # -Q : Inline all appropriate subprograms
- CFLAGS := -O3 -g -qstrict -Q
+ CFLAGS += -O3 -g -qstrict -Q
  FFLAGS += -O3 -g -qstrict -Q
 endif
 ifeq (${OPTS},D)

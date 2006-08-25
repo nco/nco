@@ -1,6 +1,13 @@
 2006-08-24  Charlie Zender  <zender@uci.edu>
 
-	* Eliminate unutilized variable warnings in nco_ddra(), cnv_ccsm*
+	* Prototype nco_var_lst_crd_xcl() in nco_var_lst.h
+
+	* Prototype rnd_nbr() in nco_rth_utl.h
+
+	* Fix cast-qual warnings in newer qsort()-compatible comparison
+	routines nco_cmp_chr() and nco_cmp_int() in nco_lst_utl.c
+
+	* Eliminate un-utilized variable warnings in nco_ddra(), cnv_ccsm*
 
 	* Correct OPeNDAP version test in configure.in
 
