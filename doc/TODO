@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.807 2006-08-25 16:03:34 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.808 2006-08-25 16:38:15 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -514,8 +514,7 @@ nco763. Access the IPCC AR4 database via OPeNDAP: http://www-pcmdi.llnl.gov/soft
 nco768. Change some common flags from toggles to hard-coded true/false
         to avoid weird behavior when toggle switches accidentally passed twice,
         e.g., ncks -O -O in.nc foo.nc
-nco772. Add SMP support switches to configure.in for pathcc, pgicc, icc
-nco773. 
+nco772. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
@@ -764,14 +763,12 @@ bld43. Implement Martin Schmidt's suggestion for AIX autoconf builds posted to d
 bld44. Add support for autopackage format? http://www.wildgardenseed.com/apkg/
 bld45. Replace ENABLE_LARGEFILE with test for 64-bit offset support (i.e., netCDF 3.6) in configure.in and nco_ctl.c
 bld47. Add regression test for 64bit file format capability
-bld61. hjm Verify netCDF4 benchmarks work for Ed Hartnett
-bld64. hjm Benchmark ESMF->UCSD over OpenDAP
-bld67. hjm Move benchmarks to 3x3 or 4x3 portrait format on one page
-bld69. hjm make configure ignore system libs in favor of dev libs or figure
-         out a way to do this (change name of local dev lib (libnco-dev)?
+bld61. Verify netCDF4 benchmarks work for Ed Hartnett
 bld70. hjm nco_c++ on Mac OS X: Get "make check" working (add -lstdc++, remove -lnco)
 bld74. hjm Do not pass -std=c99 unless GCC=gcc rather than g++
-bld76. 
+bld76. Add SMP support switches to configure.in for pathcc, pgicc, icc
+bld77. Make sure C99 switches like -std=c99 do not get passed to CXX
+bld78. 
 ************************************************************************
 End bldXXX TODOs
 ************************************************************************
