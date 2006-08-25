@@ -26888,7 +26888,7 @@ fi
 # Perform standard additions to compilers and preprocessor flags before testing anything
 # NB: These flags take effect regardless of enable-[debug/optimize]-custom setting
 case ${host} in
-    i*86-*-linux-gnu )
+    i*86-*-linux-gnu | x86_64*-linux* )
 	case ${CC} in
 	    como ) CFLAGS="${CFLAGS} --c99" ; ;;
 	    icc ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -D_BSD_SOURCE -D_POSIX_SOURCE -no-gcc" ; ;;
