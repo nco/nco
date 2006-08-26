@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.187 2006-08-26 05:03:28 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.188 2006-08-26 06:01:46 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -257,7 +257,7 @@ if test "${enable_dap}" != 'no'; then
 	AC_CHECK_LIB([nc-dap],[nc_open],,enable_dap=no)
 	AC_LANG_POP([C++])
 
-# fxm 20060825: Why is this necessary? Seems to confuse icpc
+# fxm 20060825: Why is this necessary? It confuses icc. Perhaps xlC needs it?
 #   LIBS="${LIBS} -lstdc++"
 
 	if test "${enable_dap}" = 'no'; then
@@ -729,6 +729,9 @@ case ${host} in
 	    pathcc ) CFLAGS="${CFLAGS} -std=c99" ; ;;
 	    pgcc ) CFLAGS="${CFLAGS} -c9x" ; CPPFLAGS="${CPPFLAGS} -DPGI_CC" ; ;;
 	esac
+	case ${CXX} in
+	    icpc ) CXXFLAGS="${CXXFLAGS} -cxxlib-icc" ; ;;
+	esac
 	;;
     powerpc-ibm-aix* )
 	case ${CC} in
@@ -823,17 +826,17 @@ if test "${enable_debug_custom}" = 'yes'; then
 	    case ${CC} in
 		icc ) CFLAGS="${CFLAGS} -Wall -wd810,981,1572 -inline_debug_info"
 		    case ${CXX} in
-			icpc ) CXXFLAGS="${CFLAGS}"
+			icpc ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
 		pathcc ) CFLAGS="${CFLAGS}"
 		    case ${CXX} in
-			pathCC ) CXXFLAGS="${CFLAGS}"
+			pathCC ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
 		pgcc ) CFLAGS="${CFLAGS} -Mbounds -Minfo=all"
 		    case ${CXX} in
-			pgCC ) CXXFLAGS="${CFLAGS}"
+			pgCC ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
 	    esac
@@ -849,7 +852,7 @@ if test "${enable_debug_custom}" = 'yes'; then
 	    case ${CC} in
 		xlc* ) CFLAGS="${CFLAGS} -qflttrap -qidirfirst -qlonglong -qwarn64 -qcheck=all -qhalt=s"
 		    case ${CXX} in
-			xlC* ) CXXFLAGS="${CFLAGS}"
+			xlC* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
 	    esac
@@ -917,17 +920,17 @@ if test "${enable_optimize_custom}" = 'yes'; then
 	    case ${CC} in
 		icc ) CFLAGS="${CFLAGS} -O3 -axW -mcpu=pentium4"
 		    case ${CXX} in
-			icpc ) CXXFLAGS="${CFLAGS}"
+			icpc ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
 		pathcc ) CFLAGS="${CFLAGS} -O3 -mmmx -msse -msse2 -m3dnow -pipe -fexpensive-optimizations"
 		    case ${CXX} in
-			pathCC ) CXXFLAGS="${CFLAGS}"
+			pathCC ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
 		pgcc ) CFLAGS="${CFLAGS} -fast -fastsse -Minfo=all"
 		    case ${CXX} in
-			pgCC ) CXXFLAGS="${CFLAGS}"
+			pgCC ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
 	    esac
@@ -943,7 +946,7 @@ if test "${enable_optimize_custom}" = 'yes'; then
 # -Q : Inline all appropriate subprograms
 		xlc* ) CFLAGS="${CFLAGS} -O3 -qstrict -Q"
 		    case ${CXX} in
-			xlC* ) CXXFLAGS="${CFLAGS}"
+			xlC* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
 	    esac
@@ -967,17 +970,17 @@ if test "${enable_optimize_custom}" = 'yes'; then
 	    case ${CC} in
 		icc ) CFLAGS="${CFLAGS} -O3 -axW -mcpu=pentium4"
 		    case ${CXX} in
-			icpc ) CXXFLAGS="${CFLAGS}"
+			icpc ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
 		pathcc ) CFLAGS="${CFLAGS} -O3 -march=opteron -mmmx -msse -msse2 -m3dnow -pipe -fexpensive-optimizations"
 		    case ${CXX} in
-			pathCC ) CXXFLAGS="${CFLAGS}"
+			pathCC ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
 		pgcc ) CFLAGS="${CFLAGS} -tp=k8-64 -fast -fastsse -Minfo=all"
 		    case ${CXX} in
-			pgCC ) CXXFLAGS="${CFLAGS}"
+			pgCC ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
 	    esac
