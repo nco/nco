@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.808 2006-08-25 16:38:15 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.809 2006-08-26 06:35:28 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -768,7 +768,8 @@ bld70. hjm nco_c++ on Mac OS X: Get "make check" working (add -lstdc++, remove -
 bld74. hjm Do not pass -std=c99 unless GCC=gcc rather than g++
 bld76. Add SMP support switches to configure.in for pathcc, pgicc, icc
 bld77. Make sure C99 switches like -std=c99 do not get passed to CXX
-bld78. 
+bld78. Fix CXXFLAGS for icc enable-custom-optimize
+bld79. 
 ************************************************************************
 End bldXXX TODOs
 ************************************************************************
