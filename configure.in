@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.184 2006-08-25 16:03:34 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.185 2006-08-26 00:04:07 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -128,8 +128,8 @@ AM_CONFIG_HEADER(config.h)
 # CC and CXX have preferred lists
 # AC_PROG_CC sets GCC to 'yes' when GCC is detected
 # AC_PROG_CC sets CFLAGS = -g [-O2 iff GCC]
-AC_PROG_CC( xlc_r xlc acc cc     pathcc pgcc gcc     icc  como c89)
-AC_PROG_CXX(xlC_r xlC aCC CC cxx pathCC pgCC g++ c++ icpc como)
+AC_PROG_CC( xlc_r xlc acc cc     pathcc pgcc icc  gcc     como c89)
+AC_PROG_CXX(xlC_r xlC aCC CC cxx pathCC pgCC icpc g++ c++ como)
 AC_PROG_CPP
 AC_PROG_CXXCPP
 AC_PROG_CC_STDC
@@ -210,7 +210,7 @@ AC_ARG_ENABLE(
 
 AC_LANG_PUSH(C++)
 if (test "${enable_ncoxx}" != 'no'); then
-	# check for runantlr
+	# Check for runantlr
 	AC_CHECK_PROG(RUNANTLR,runantlr,"TRUE","FALSE")
 	if (test "${RUNANTLR}" = 'TRUE'); then
 		AC_CHECK_LIB([antlr],[_ZN5antlr11CommonToken7factoryEv],enable_ncoxx=yes,enable_ncoxx=no,-lstdc++)
@@ -1026,9 +1026,18 @@ fi
 
 # Drop C99 switches when compiling NCO with C++ compiler, e.g., CC=g++
 case ${CC} in
-    g\+\+* | icpc* ) CC=`echo "${CC}" | sed -e 's/-std=c99//'` ; CC=`echo "${CC}" | sed -e 's/-pedantic//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/-std=c99//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/-Wmissing-prototypes//'` ; ;;
-    xlC* ) CC=`echo "${CC}" | sed -e 's/-qlanglvl=extc99//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/-qlanglvl=extc99//'` ; CFLAGS="${CFLAGS} -qlonglong" ; ;;
+    g\+\+* | icpc* ) CC=`echo "${CC}" | sed -e 's/ -std=c99//'` ; CC=`echo "${CC}" | sed -e 's/ -pedantic//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/ -std=c99//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/ -Wmissing-prototypes//'` ; ;;
+    xlC* ) CC=`echo "${CC}" | sed -e 's/ -qlanglvl=extc99//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/ -qlanglvl=extc99//'` ; CFLAGS="${CFLAGS} -qlonglong" ; ;;
 esac
+
+# Drop C99 switches accidentally incorporated into CXXFLAGS
+# (for when laziness led me to copy CXXFLAGS from CFLAGS)
+case ${CXX} in
+    g\+\+* | icpc* | pathCC* ) CXX=`echo "${CXX}" | sed -e 's/ -std=c99//'` ; CXXFLAGS=`echo "${CXXFLAGS}" | sed -e 's/ -std=c99//'` ; ;;
+    pgCC* ) CXX=`echo "${CXX}" | sed -e 's/ -c9x//'` ; CXXFLAGS=`echo "${CXXFLAGS}" | sed -e 's/ -c9x//'` ; ;;
+esac
+
+echo ""
 
 echo ""
 echo "###############################"
