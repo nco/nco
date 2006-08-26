@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.185 2006-08-26 00:04:07 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.186 2006-08-26 04:32:45 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -204,7 +204,7 @@ AC_ARG_ENABLE(dap,AS_HELP_STRING([--enable-dap],[Build DAP-enabled clients with 
 
 AC_ARG_ENABLE(
     ncoxx,
-    AS_HELP_STRING([--enable-ncoxx],[Build the ncoxx dir [[default=yes]]]),
+    AS_HELP_STRING([--enable-ncoxx],[Build nco++ directory and ncap2 [[default=yes]]]),
     enable_ncoxx=${enableval},
     [enable_ncoxx=yes])
 
@@ -213,7 +213,7 @@ if (test "${enable_ncoxx}" != 'no'); then
 	# Check for runantlr
 	AC_CHECK_PROG(RUNANTLR,runantlr,"TRUE","FALSE")
 	if (test "${RUNANTLR}" = 'TRUE'); then
-		AC_CHECK_LIB([antlr],[_ZN5antlr11CommonToken7factoryEv],enable_ncoxx=yes,enable_ncoxx=no,-lstdc++)
+		AC_CHECK_LIB([antlr],[_ZN5antlr11CommonToken7factoryEv],enable_ncoxx=yes,enable_ncoxx=no,stdc++)
 		AC_CHECK_HEADER([antlr/CommonToken.hpp],enable_ncoxx=yes,enable_ncoxx=no)
 		if (test "${enable_ncoxx}" = 'no'); then
 			echo "INFO: ANTLR support not found. To build the nco++ directory and ncap2, you must install antlr and the antlr development package, e.g., apt-get install antlr libantlr-dev"

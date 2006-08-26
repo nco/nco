@@ -1,6 +1,6 @@
-# $Header: /data/zender/nco_20150216/nco/src/Makefile.am,v 1.4 2006-03-15 17:25:30 mangalam Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/Makefile.am,v 1.5 2006-08-26 04:32:45 zender Exp $ -*-makefile-*-
 
-SUBDIRS = nco @NCOXX@ @NCO_CXX@
+SUBDIRS = nco @NCO_CXX@ @NCOXX@
 
 # if NCOXX
 # SUBDIRS += nco++

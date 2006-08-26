@@ -1,5 +1,9 @@
 2006-08-25  Charlie Zender  <zender@uci.edu>
 
+	* icc improvements to get icpc working
+
+	* Direct autoconf to build nco_c++ prior to nco++
+
 	* pathcc and pathCC now work with autotools
 
 2006-08-24  Charlie Zender  <zender@uci.edu>

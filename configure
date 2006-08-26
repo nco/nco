@@ -1084,7 +1084,7 @@ Optional Features:
   --disable-largefile     omit support for large files
   --enable-dap            Build DAP-enabled clients with OPeNDAP (conflicts
                           with netcdf4) [default=yes]
-  --enable-ncoxx          Build the ncoxx dir [default=yes]
+  --enable-ncoxx          Build nco++ directory and ncap2 [default=yes]
   --enable-netcdf4        Use netCDF Version 4 (WARNING: Experimental)
                           [default=no]
   --enable-mpi            Build NCOs for Message Passing Interface (detects
@@ -21816,7 +21816,7 @@ ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ex
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 if (test "${enable_ncoxx}" != 'no'); then
-	# check for runantlr
+	# Check for runantlr
 	# Extract the first word of "runantlr", so it can be a program name with args.
 set dummy runantlr; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -21860,7 +21860,7 @@ if test "${ac_cv_lib_antlr__ZN5antlr11CommonToken7factoryEv+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lantlr -lstdc++ $LIBS"
+LIBS="-lantlr stdc++ $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
