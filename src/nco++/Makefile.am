@@ -1,15 +1,17 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.10 2006-08-25 06:02:10 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.11 2006-08-26 05:03:28 zender Exp $ -*-makefile-*-
 
-# Purpose: Process this file with automake to produce Makefile.in
+# Purpose: Template builds for nco++ directory
+# Process this file with automake to produce Makefile.in
 
-# Executable in this directory is ncap2
+# ncap2 is only executable in this directory
 bin_PROGRAMS = ncap2
 
 ANTLR = runantlr
 
-# ncolib_SOURCES includes all ../nco C sources except for operator main() files
+# ncolib_SOURCES includes all ../nco C-sources except for operator main() files
 # These are all built before nco++
 
+# fxm: Split off all sources except front-end into nco++ library
 ncap2_SOURCES = Invoke.cc ncap2.cc ncap2_utl.cc sdo_utl.cc NcapVarVector.cc ncoLexer.cpp ncoParser.cpp ncoTree.cpp
 
 # Invoke 'runantlr' on ncoGrammer.g to generate required hpp files
@@ -17,8 +19,6 @@ ncap2_SOURCES = Invoke.cc ncap2.cc ncap2_utl.cc sdo_utl.cc NcapVarVector.cc ncoL
 #Invoke.o : ncoGrammer.g
 #	${ANTLR} ncoGrammer.g
 
-#ncap2_LDFLAGS = -lantlr -lnco
-#ncap2_LDFLAGS = -lantlr -L../nco -lnco
 ncap2_LDADD = -lnco -lantlr
 ncap2_LDFLAGS = -L../nco
 INCLUDES = -I./ -I../nco
@@ -39,4 +39,3 @@ CLEANFILES=ncap2 ncoParserTokenTypes.txt
 # -lnetcdf -lhdf5 -lhdf5_hl
 # Udunits
 # -ludunits
-

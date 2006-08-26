@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/Makefile.in,v 1.38 2006-08-26 04:32:45 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/Makefile.in,v 1.39 2006-08-26 05:03:28 zender Exp $ -*-makefile-*-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -503,10 +503,6 @@ uninstall-info: uninstall-info-recursive
 	mostlyclean-recursive pdf pdf-am ps ps-am tags tags-recursive \
 	uninstall uninstall-am uninstall-info-am
 
-
-# if NCOXX
-# SUBDIRS += nco++
-# endif
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

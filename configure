@@ -21854,9 +21854,9 @@ echo "${ECHO_T}no" >&6
 fi
 
 	if (test "${RUNANTLR}" = 'TRUE'); then
-		echo "$as_me:$LINENO: checking for _ZN5antlr11CommonToken7factoryEv in -lantlr" >&5
-echo $ECHO_N "checking for _ZN5antlr11CommonToken7factoryEv in -lantlr... $ECHO_C" >&6
-if test "${ac_cv_lib_antlr__ZN5antlr11CommonToken7factoryEv+set}" = set; then
+		echo "$as_me:$LINENO: checking for initializeASTFactory in -lantlr" >&5
+echo $ECHO_N "checking for initializeASTFactory in -lantlr... $ECHO_C" >&6
+if test "${ac_cv_lib_antlr_initializeASTFactory+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -21874,11 +21874,11 @@ extern "C"
 #endif
 /* We use char because int might match the return type of a gcc2
    builtin and then its argument prototype would still apply.  */
-char _ZN5antlr11CommonToken7factoryEv ();
+char initializeASTFactory ();
 int
 main ()
 {
-_ZN5antlr11CommonToken7factoryEv ();
+initializeASTFactory ();
   ;
   return 0;
 }
@@ -21904,20 +21904,20 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_antlr__ZN5antlr11CommonToken7factoryEv=yes
+  ac_cv_lib_antlr_initializeASTFactory=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_lib_antlr__ZN5antlr11CommonToken7factoryEv=no
+ac_cv_lib_antlr_initializeASTFactory=no
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_antlr__ZN5antlr11CommonToken7factoryEv" >&5
-echo "${ECHO_T}$ac_cv_lib_antlr__ZN5antlr11CommonToken7factoryEv" >&6
-if test $ac_cv_lib_antlr__ZN5antlr11CommonToken7factoryEv = yes; then
+echo "$as_me:$LINENO: result: $ac_cv_lib_antlr_initializeASTFactory" >&5
+echo "${ECHO_T}$ac_cv_lib_antlr_initializeASTFactory" >&6
+if test $ac_cv_lib_antlr_initializeASTFactory = yes; then
   enable_ncoxx=yes
 else
   enable_ncoxx=no
@@ -22067,9 +22067,9 @@ fi
 
 
 		if (test "${enable_ncoxx}" = 'no'); then
-			echo "INFO: ANTLR support not found. To build the nco++ directory and ncap2, you must install antlr and the antlr development package, e.g., apt-get install antlr libantlr-dev"
+			echo "INFO: ANTLR support not found. To build the nco++ directory and ncap2, please install antlr and the antlr development package, e.g., apt-get install antlr libantlr-dev"
 		else
-			echo "INFO: ANTLR development support found---will build nco++"
+			echo "INFO: ANTLR development support found---will build nco++ directory and ncap2"
 		fi
 	else
 		enable_ncoxx="no"
@@ -22115,7 +22115,7 @@ if test "${enable_dap}" != 'no'; then
 		LIBS="`ncdap-config --libs` ${LIBS}"
 	fi
 
-    ac_ext=cc
+	ac_ext=cc
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -22196,14 +22196,15 @@ else
   enable_dap=no
 fi
 
-    ac_ext=c
+	ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-    LIBS="${LIBS} -lstdc++"
+# fxm 20060825: Why is this necessary? Seems to confuse icpc
+#   LIBS="${LIBS} -lstdc++"
 
 	if test "${enable_dap}" = 'no'; then
 		{ echo "$as_me:$LINENO: WARNING: DAP support disabled (missing libraries)" >&5
@@ -25577,7 +25578,7 @@ fi
 # If --enable-largefile define ENABLE_LARGEFILE
 # fxm: TODO bld45 Obsolete! Replace with test for 64-bit offset support (i.e., netCDF 3.6)
 if test "${enable_largefile}" = 'yes'; then
-    echo "We recommend against using this approach; use only if you cannot use netCDF 3.6 and above.  That said, we'll try..."
+    echo "This approach to large file support (LFS) is deprecated; use only if netCDF 3.6 is unavailable..."
 
 cat >>confdefs.h <<\_ACEOF
 #define ENABLE_LARGEFILE 1
