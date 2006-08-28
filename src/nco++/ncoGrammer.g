@@ -190,7 +190,7 @@ imaginary_token
 
 class ncoLexer extends Lexer;
 options {
-    k = 3;
+    k = 4;
     defaultErrorHandler=false;
     filter=BLASTOUT;
 }
@@ -201,6 +201,8 @@ tokens {
     IF ="if";
     ELSE="else";
     DEFDIM="defdim";
+    SHIFTL="<<";
+    SHIFTR=">>";
 }
 {
 
@@ -276,6 +278,7 @@ EQ: "==" ;
 
 NEQ: "!=" ;
 
+
 LTHAN:  '<' ;
 
 GTHAN:  '>' ;
@@ -314,6 +317,17 @@ protected BLASTOUT: .
          }  
     ;     
 
+
+UNUSED_OPS: ( "%=" | "^=" | "&=" | "|=" ) {
+  
+          ostringstream os;
+          os << getFilename() <<":"<<getLine()<<":"<<getColumn() 
+             <<": unused operator : '" << getText() <<"'"<< endl;
+
+          ANTLR_USE_NAMESPACE(antlr)RecognitionException re(os.str());
+          throw  ANTLR_USE_NAMESPACE(antlr)TokenStreamRecognitionException(re);
+         }  
+    ;    
 
 
 // Whitespace -- ignored
