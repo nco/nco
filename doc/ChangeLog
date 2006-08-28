@@ -1,3 +1,7 @@
+2006-08-26  Charlie Zender  <zender@uci.edu>
+
+	* icc/icpc autoconf build/link succeeds but C++ executables segfault
+
 2006-08-25  Charlie Zender  <zender@uci.edu>
 
 	* icc improvements to get icpc working
