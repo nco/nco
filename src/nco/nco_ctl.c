@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.158 2006-08-25 05:15:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.159 2006-08-29 18:04:35 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -691,7 +691,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "The Week in Review: She crawls, dragging her left leg like a wolf in a trap, and eats soggy Cheerios, tongue darting like a lizard at a mealworm buffet...\n";
+  return "Happy First Birthday Ruby (and Katrina)!\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 

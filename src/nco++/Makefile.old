@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.22 2006-08-26 06:34:22 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.23 2006-08-29 18:04:35 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -760,6 +760,7 @@ endif # endif GNU Compiler Collection
 # Intel (Kai) C++ Compiler
 ifeq (icpc,$(firstword ${CXX}))
 # -cxxlib-gcc: link using C++ run-time libraries provided with GCC (default) (generated code is binary compatible with g++)
+# -lcprts : Eliminates most undefined references when linking with -cxxlib-gcc
 # -cxxlib-icc: link using C++ run-time libraries provided by Intel (generated code is not binary compatible with g++)
 # -fast: enable -xP -O3 -ipo -static
 # -ipo[n]: enable multi-file IP optimizations (between files)
