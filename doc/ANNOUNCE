@@ -1,17 +1,35 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.182 2006-06-30 18:39:17 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.183 2006-08-29 17:50:28 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.1.4 are ready. 
-This is a bug-fix release only.
+The netCDF operators NCO version 3.1.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
+This release has new features only for ncap2. Henry Butowsky has added
+vastly more powerful array support, definition and referencing of new
+dimensions, and improved error messages, e.g.,
+
+ncap2 -s 'defdim("x",64);x[x]=1.0;x(::2)=0' in.nc out.nc
+
+Many more examples are in http://nco.sf.net/ncap2.in
+
+Those interested in NCO internals might want to read two submitted
+manuscripts which describe NCO and its scaling. These are at
+
+http://nco.sf.net#Publications
+
+Build/runtime changes:
+
 1. Reduce severity from WARNING to INFO for some common operations
    Intended to lower user's blood pressure 
 
-2. Build correctly with Pathscale pathcc compiler
+2. Improve Pathscale pathcc/pathCC support (bld/Makefile and autoconf)
 
-3. 
+3. Improve PGI pgcc/pgCC support (bld/Makefile and autoconf)
+
+4. Improve Intel icc/icpc support (bld/Makefile and autoconf)
+
+5. Regression test/benchmark script (nco_bm.pl) improvements
 
 Enjoy,
 Charlie

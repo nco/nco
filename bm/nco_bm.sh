@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.12 2005-10-28 18:14:40 zender Exp $ -*-shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.sh,v 1.13 2006-08-29 17:50:28 zender Exp $ -*-shell-script-*-
 
 # Purpose: Run NCO benchmark script in batch environment
 
@@ -40,33 +40,27 @@
 ##@ wall_clock_limit = 3800
 #@ queue
 
-# NQS tokens
-# -A nbr        Project number (CMS=03010063, AMWG=93300075, ESMF=36271012)
-# -J m          Append NQS output to stdout
-# -eo           Glue together stderr and stdout
-# -l mpp_p=nbr  Maximum # of CPUs = OMP_NUM_THREADS+4
-# -lm sz -lm sz Maximum memory footprint
-# -lt tm -lT tm Maximum run time in queue
-# -me           Send mail when job ends
-# -o fl_out     Output file
-# -q queue_name Queue name
-# -s shell      Shell to use (default is /bin/sh)
+## Job Name
+#PBS -N esmfipcc00
+## Exports all environment variables to the job
+#PBS -V
+## Combine stdout with stderr
+#PBS -j oe
+## Number of nodes:queue_name:mpi_processes_per_node
+#PBS -l nodes=2:regular:ppn=1
+##PBS -l nodes=compute-0-6+compute-0-7
+## Maximum wallclock time in HHH:MM:SS
+##PBS -l walltime=150:00:00
+## notify user via email at beginning and end
+#PBS -m ea
+## PBS output file
+#PBS -o /home/zender/cam/esmfipcc00.txt
+## Queue name
+#PBS -q regular
 
-# UCI and NCAR both
-#QSUB -me
-#QSUB -J m
-
-# UCI only
-#QSUB -q q4
-##QSUB -q genq1_4
-#QSUB -l mpp_p=8
-#QSUB -eo -o /home/ess/zender/zender/nco/bm/nco_bm.txt
-
-# NCAR only
-##QSUB -q ded_4
-##QSUB -eo -o /fs/cgd/home0/zender/nco/bm/nco_bm.txt
-##QSUB -lt 420000 -lT 420000
-##QSUB -lm 650Mb -lM 650Mb
+## Shell
+#$ -S /bin/bash
+#$ -pe mpi 2
 
 # Main code
 set timestamp
@@ -75,7 +69,7 @@ date
 unalias -a # Turn off aliases
 
 # OS-generic
-export NTASKS=3 # MPI
+export NTASKS=2 # MPI
 PVM_ARCH=`~zender/sh/pvmgetarch`
 HOST=`hostname`
 # OS-specific
@@ -101,7 +95,7 @@ case "${PVM_ARCH}" in
 	;; # endif AIX*
     LINUX* ) 
 	export DATA=/data/${USER}
-	export MY_BIN_DIR=/home/${USER}/bin/LINUX
+	export MY_BIN_DIR=/home/${USER}/bin/${PVM_ARCH}
 	export NTHREADS=2
 # Attempt to get sufficient stack memory
 	ulimit -s unlimited

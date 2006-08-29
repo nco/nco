@@ -26894,7 +26894,8 @@ case ${host} in
 	    pgcc ) CFLAGS="${CFLAGS} -c9x" ; CPPFLAGS="${CPPFLAGS} -DPGI_CC" ; ;;
 	esac
 	case ${CXX} in
-	    icpc ) CXXFLAGS="${CXXFLAGS} -cxxlib-icc" ; ;;
+#	    icpc ) CXXFLAGS="${CXXFLAGS} -cxxlib-icc" ; ;;
+	    icpc ) CXXFLAGS="${CXXFLAGS} -cxxlib-gcc" ; ;;
 	esac
 	;;
     powerpc-ibm-aix* )

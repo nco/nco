@@ -1,9 +1,10 @@
 // Purpose: Sample input script for ncap2
 
+// URL: http://nco.sf.net/ncap2.in
+
 /* Usage: 
    ncap2 -O -v -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
-   ncks ~/foo.nc | /bin/more
-*/
+   ncks ~/foo.nc | /bin/more */
 
 a1=three_dmn_var_dbl+three_dmn_var_int;
 a2=sin(three_dmn_var_dbl)^2.0 + cos(three_dmn_var_dbl)^2.0;
