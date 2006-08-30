@@ -177,7 +177,7 @@ primary_exp
     | FLOAT    
     | DOUBLE
     | NSTRING    
-    | DIM_ID_VAL
+    | DIM_ID_SIZE
     | hyper_slb  //remember this includes VAR_ID & ATT_ID
     | cast_slb
   ;
@@ -386,8 +386,8 @@ VAR_ATT:  (LPH)(LPH|DGT)*
 
 DIM_VAL: '$'! (LPH)(LPH|DGT)* 
             {$setType(DIM_ID);}
-         ( ".val"!  
-            { $setType(DIM_ID_VAL);}
+         ( ".size"!  
+            { $setType(DIM_ID_SIZE);}
          )? 
    ;  
 
@@ -450,6 +450,7 @@ vector<ast_lmt_sct> &ast_lmt_vtr)
       lRef=aRef->getFirstChild();
 
       nbr_dmn=lmt_peek(aRef);      
+      //nbr_dmn=lRef->getNumberOfChildren();
 
       for(idx=0 ; idx < nbr_dmn ; idx++){
          hyp.ind[0]=ANTLR_USE_NAMESPACE(antlr)nullAST;
@@ -1180,7 +1181,7 @@ out returns [var_sct *var]
 
           }
 
-    |   dval:DIM_ID_VAL
+    |   dval:DIM_ID_SIZE
         {
             string sDim=dval->getText();
             dmn_sct *dmn_fd;
