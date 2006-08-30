@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.142 2006-08-23 20:37:41 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.143 2006-08-30 20:09:02 wangd Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -38,6 +38,7 @@ use vars qw(
 	    $foo1_fl $foo2_fl $foo_avg_fl $foo_fl $foo_T42_fl $foo_tst $foo_x_fl
 	    $foo_xy_fl $foo_xymyx_fl $foo_y_fl $foo_yx_fl $gnu_cut $hiresfound
 	    @ifls $itmp $localhostname $md5 $md5found %MD5_tbl $mpi_fk $mpi_prc
+        $mpi_upx
 	    $pfx_mpi $MY_BIN_DIR $nco_D_flg %NCO_RC $nco_vrs_sng $ncwa_scl_tst $notbodi
 	    $nsr_xpc $fl_nbr $nvr_my_bin_dir $omp_flg $opr_fmt $opr_lng_max
 	    @opr_lst @opr_lst_all @opr_lst_mpi $opr_nm $opr_rgr_mpi $opr_sng_mpi
@@ -77,6 +78,7 @@ $gnu_cut = 1;
 $md5 = 0;
 $mpi_fk = 0;
 $mpi_prc = 0; # by default, don't want no steekin MPI
+$mpi_upx = '';
 $pfx_mpi = '';
 $nco_D_flg='--mmr_cln'; # Require operators to clean memory before exiting
 $nco_vrs_sng = '';
@@ -133,6 +135,7 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	    'help'         => \$usg,        # Explain how to use this thang
 	    'log'          => \$wnt_log,    # Log output
 	    'mpi_prc=i'    => \$mpi_prc,    # Number MPI processes to use
+        'mpi_upx=s'    => \$mpi_upx,    # User-supplied mpirun prefix
 	    'mpi_fake'	   => \$mpi_fk,     # Run SMP version of MPI code
 	    'fake_mpi'	   => \$mpi_fk,     # Run SMP version of MPI code
 	    'queue'        => \$que,        # Bypass all interactive stuff
@@ -318,6 +321,7 @@ if ($mpi_prc > 0 && $os_sng =~ /inux/) {
     if (!$lam_ok && !$mpich_ok) {
 	print "\nWARN: you asked for an MPI run (--mpi_prc=$mpi_prc) but you don't seem to be running either LAM-MPI or MPICH (no running lamd or mpd).\nIf the run fails, you might try running one of those 2 MPI systems.\n";
     }
+    if($mpi_upx ne "") { $mpich_ok = 1; } # force mpi if user supplies prefix
 }
 
 # Any irrationally exuberant values?

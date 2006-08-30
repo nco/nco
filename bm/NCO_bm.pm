@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.61 2006-08-23 20:37:41 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.62 2006-08-30 20:09:02 wangd Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -42,13 +42,14 @@ our @EXPORT = qw (
 		  tst_run dbg_msg drc_dat_set bm_ntl
 		  $pfx_cmd $drc_dat @fl_mtd_sct $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
 		  $prsrv_fl  $srv_sd $hiresfound $dodap $bm $dbg_lvl $sock $udp_rpt
-		  $mpi_prc $pfx_mpi $mpi_fk
+		  $mpi_prc $pfx_mpi $mpi_fk $mpi_upx
 		  );
 
 use vars qw(
 	    $aix_mpi_nvr_pfx $aix_mpi_sgl_nvr_pfx $bm $dbg_lvl $dodap $dot_fmt
 	    $dot_nbr $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng
-	    $pfx_fk $hiresfound $md5 $mpi_prc $pfx_mpi $mpi_fk $MY_BIN_DIR %NCO_RC $nsr_xpc
+	    $pfx_fk $hiresfound $md5 $mpi_prc $pfx_mpi $mpi_fk $mpi_upx
+        $MY_BIN_DIR %NCO_RC $nsr_xpc
 	    $opr_fmt $opr_lng_max @opr_lst @opr_lst_all @opr_lst_mpi
 	    $opr_nm $opr_rgr_mpi $opr_sng_mpi $os_nm  $pfx_cmd %real_tme
 	    $cmd_rsl $spc_fmt $spc_nbr $spc_nbr_min $spc_sng %subbenchmarks %success
@@ -466,7 +467,9 @@ sub tst_run {
     # To hold them to one process, must add explicit prefix ($aix_mpi_sgl_nvr), added below
     my $aix = 0; if ($os_nm =~ /AIX/) {$aix = 1;} # yafv for aix
     if($aix){$pfx_mpi = " $aix_mpi_nvr_pfx $MY_BIN_DIR/mp";}
-    else    {$pfx_mpi = " mpirun -np $mpi_prc $MY_BIN_DIR/mp";} # Assume Linux-like MPI
+    elsif($mpi_upx eq "") {# Assume Linux-like MPI
+        $pfx_mpi = " mpirun -np $mpi_prc $MY_BIN_DIR/mp";
+    } else { $pfx_mpi = " ". $mpi_upx . "  $MY_BIN_DIR/mp"; } # use user-supplied prefix
     $pfxd = 1; $timed = 1;
     
     my $pwd=`pwd`; chomp $pwd;
