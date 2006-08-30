@@ -1,10 +1,9 @@
 // Purpose: Sample input script for ncap2
 
-// URL: http://nco.sf.net/ncap2.in
-
 /* Usage: 
    ncap2 -O -v -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
-   ncks ~/foo.nc | /bin/more */
+   ncks ~/foo.nc | /bin/more
+*/
 
 a1=three_dmn_var_dbl+three_dmn_var_int;
 a2=sin(three_dmn_var_dbl)^2.0 + cos(three_dmn_var_dbl)^2.0;
@@ -184,12 +183,14 @@ defdim("z",9);
 //cast a new variable
 k1[$x,$y,$z]=1.01d;
 // the "value" of a dimension can be used in an expression
-// by postfixing it with val ie.
-if( $x.val==1 && $y.val < 5 && $z.val==9)
+// by postfixing it with size ie.
+if( $x.size==1 && $y.size < 5 && $z.size==9)
   k1@max=9;
 //
-k1@size=$x.val*$y.val*$z.val;
+k1@size=$x.size*$y.size*$z.size;
 // hyperlsab with dim values
-k1(0,0,0:($z.val-3))=2.01d;
-
+k1(0,0,0:($z.size-3))=2.01d;
+//
+k2=4.0;
+k3=k2+=10;
 
