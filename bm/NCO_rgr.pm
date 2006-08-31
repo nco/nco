@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.52 2006-08-23 20:37:41 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.53 2006-08-31 23:15:08 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -559,7 +559,7 @@ sub tst_rgr {
     $dsc_sng="reverse coordinate";
     $tst_cmd[2] = "90";
     $tst_cmd[3] = "SS_OK";
-    NCO_bm::tst_run(\@tst_cmd);
+    if($mpi_prc == 0 || ($mpi_prc > 0 && $localhostname !~ /pbs/)){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a -lat,-lev,-lon -v three_dmn_var $in_pth_arg in.nc %tempf_00%";
@@ -567,7 +567,7 @@ sub tst_rgr {
     $dsc_sng="reverse three dimensional variable";
     $tst_cmd[2] = 23;
     $tst_cmd[3] = "SS_OK";
-    NCO_bm::tst_run(\@tst_cmd);
+    if($mpi_prc == 0 || ($mpi_prc > 0 && $localhostname !~ /pbs/)){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a lon,lat -v three_dmn_var $in_pth_arg in.nc %tempf_00%";
@@ -575,7 +575,7 @@ sub tst_rgr {
     $dsc_sng="re-order three dimensional variable";
     $tst_cmd[2] = "11";
     $tst_cmd[3] = "SS_OK";
-    NCO_bm::tst_run(\@tst_cmd);
+    if($mpi_prc == 0 || ($mpi_prc > 0 && $localhostname !~ /pbs/)){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -P all_new -v upk $in_pth_arg in.nc %tempf_00%";
@@ -584,7 +584,7 @@ sub tst_rgr {
     $dsc_sng="Pack and then unpack scalar (uses only add_offset)";
     $tst_cmd[3] = "3";
     $tst_cmd[4] = "SS_OK";
-    NCO_bm::tst_run(\@tst_cmd);
+    if($mpi_prc == 0 || ($mpi_prc > 0 && $localhostname !~ /pbs/)){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0;  # Reset array
     
     
@@ -611,7 +611,7 @@ sub tst_rgr {
     $opr_nm='ncra';
 ####################
     
-#        if ($mpi_prc == 0 || ($mpi_prc > 0 && $localhostname !~ /sand/)) { # test hangs because of ncrcat TODO nco593
+#        if ($mpi_prc == 0 || ($mpi_prc > 0 && $localhostname !~ /sand/)) { # test hangs because of ncrcat TODO nco772
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tempf_01% 2> %tempf_02%";
     $tst_cmd[1]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y avg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tempf_00%";
     $tst_cmd[2]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time %tempf_00% %tempf_00%";

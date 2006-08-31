@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.16 2005-10-25 07:50:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.17 2006-08-31 23:15:08 zender Exp $ -*-text-*-
 
 Installing an MPI Environment for NCO:
 
@@ -71,6 +71,9 @@ MPICH (version 1, http://www-unix.mcs.anl.gov/mpi/mpich) Instructions:
    sudo rpm -i mpich mpich-doc
    sudo yum install mpich mpich-doc
    sudo rpm -i mpich-1.2.5.2-1mdk.i586.rpm
+
+2. Test mpich version:
+   mpichversion # Report MPICH1 version and device (ch_p4 indicates GB Ethernet)
 
 ************************************************************************
 MPICH2 (i.e., MPICH version 2, http://www-unix.mcs.anl.gov/mpi/mpich2) Instructions:
