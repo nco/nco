@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.54 2006-09-01 00:03:13 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.55 2006-09-01 00:57:54 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -65,7 +65,6 @@ sub tst_rgr {
     NCO_bm::dbg_msg(1,"in package NCO_rgr, \$localhostname = $localhostname");
     NCO_bm::dbg_msg(1,"in package NCO_rgr, \$nco_D_flg = $nco_D_flg");
     NCO_bm::dbg_msg(1,"in package NCO_rgr, \$omp_flg = $omp_flg");
-    print "DEBUG: in tst_rgr(), \$localhostname = $localhostname \n";
 # csz--
     
 # in general, $fl_out    -> %tempf_00%
