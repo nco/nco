@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.53 2006-08-31 23:15:08 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.54 2006-09-01 00:03:13 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -21,12 +21,12 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw (
 		  tst_rgr
-		  $fl_out $dodap $pfx_cmd $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl $nsr_xpc
+		  $fl_out $dodap $dbg_lvl $pfx_cmd $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl $nsr_xpc
 		  $foo1_fl $foo_fl $foo_tst $fl_out_rgn $foo_avg_fl $foo_x_fl $foo_y_fl $foo_yx_fl
 		  $foo_xy_fl  $foo_xymyx_fl $pth_rmt_scp_tst $omp_flg $nco_D_flg %NCO_RC
 		  );
 use vars qw(
-	    $dodap $dsc_sng $dust_usr $fl_fmt $fl_pth $foo1_fl $foo2_fl $foo_avg_fl
+	    $dodap $dbg_lvl $dsc_sng $dust_usr $fl_fmt $fl_pth $foo1_fl $foo2_fl $foo_avg_fl
 	    $foo_fl $foo_tst $foo_x_fl $foo_xy_fl
 	    $foo_xymyx_fl $foo_y_fl $foo_yx_fl $mpi_prc $nco_D_flg $localhostname
 	    $nsr_xpc $omp_flg $opr_nm $opr_rgr_mpi $fl_out_rgn
@@ -50,17 +50,22 @@ sub tst_rgr {
     
 # csz++
 # fxm: pass as arguments or use exporter/importer instead?
+    *dbg_lvl=*main::dbg_lvl;
     *dodap=*main::dodap;
     *fl_fmt=*main::fl_fmt;
-    *omp_flg=*main::omp_flg;
-    *nco_D_flg=*main::nco_D_flg;
     *fl_out = *main::fl_out;
+    *localhostname=*main::localhostname;
+    *nco_D_flg=*main::nco_D_flg;
+    *omp_flg=*main::omp_flg;
     
+    NCO_bm::dbg_msg(1,"in package NCO_rgr, \$dbg_lvl = $dbg_lvl");
     NCO_bm::dbg_msg(1,"in package NCO_rgr, \$dodap = $dodap");
     NCO_bm::dbg_msg(1,"in package NCO_rgr, \$fl_fmt = $fl_fmt");
     NCO_bm::dbg_msg(1,"in package NCO_rgr, \$fl_out = $fl_out");
+    NCO_bm::dbg_msg(1,"in package NCO_rgr, \$localhostname = $localhostname");
     NCO_bm::dbg_msg(1,"in package NCO_rgr, \$nco_D_flg = $nco_D_flg");
     NCO_bm::dbg_msg(1,"in package NCO_rgr, \$omp_flg = $omp_flg");
+    print "DEBUG: in tst_rgr(), \$localhostname = $localhostname \n";
 # csz--
     
 # in general, $fl_out    -> %tempf_00%
@@ -91,7 +96,7 @@ sub tst_rgr {
 # this stanza also requires a script on the SS.
     $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -v -S ncap.in $in_pth_arg in.nc %tempf_00%  %stdouterr%";
     $dsc_sng="running ncap.in script into nco_tst.pl";
-    $tst_cmd[1] = "ncap: WARNING Replacing missing value data in variable val_half_half";
+    $tst_cmd[1] = "ncap: INFO Replacing missing value data in variable val_half_half";
 #	$tst_cmd[2] = "NO_SS";
     $tst_cmd[2] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -559,7 +564,7 @@ sub tst_rgr {
     $dsc_sng="reverse coordinate";
     $tst_cmd[2] = "90";
     $tst_cmd[3] = "SS_OK";
-    if($mpi_prc == 0 || ($mpi_prc > 0 && $localhostname !~ /pbs/)){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a -lat,-lev,-lon -v three_dmn_var $in_pth_arg in.nc %tempf_00%";
@@ -567,7 +572,7 @@ sub tst_rgr {
     $dsc_sng="reverse three dimensional variable";
     $tst_cmd[2] = 23;
     $tst_cmd[3] = "SS_OK";
-    if($mpi_prc == 0 || ($mpi_prc > 0 && $localhostname !~ /pbs/)){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a lon,lat -v three_dmn_var $in_pth_arg in.nc %tempf_00%";
@@ -575,7 +580,7 @@ sub tst_rgr {
     $dsc_sng="re-order three dimensional variable";
     $tst_cmd[2] = "11";
     $tst_cmd[3] = "SS_OK";
-    if($mpi_prc == 0 || ($mpi_prc > 0 && $localhostname !~ /pbs/)){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0;  # Reset array
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -P all_new -v upk $in_pth_arg in.nc %tempf_00%";
@@ -584,7 +589,7 @@ sub tst_rgr {
     $dsc_sng="Pack and then unpack scalar (uses only add_offset)";
     $tst_cmd[3] = "3";
     $tst_cmd[4] = "SS_OK";
-    if($mpi_prc == 0 || ($mpi_prc > 0 && $localhostname !~ /pbs/)){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0;  # Reset array
     
     
