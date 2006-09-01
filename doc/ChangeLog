@@ -1,3 +1,10 @@
+2006-08-31  Charlie Zender  <zender@uci.edu>
+
+	* Try not to invoke mpncpdq in regression tests on pbs
+
+	* Add link to mpirun to $MY_BIN_DIR when building MPI executables
+	with bld/Makefile
+
 2006-08-26  Charlie Zender  <zender@uci.edu>
 
 	* icc/icpc autoconf build/link succeeds but C++ executables segfault

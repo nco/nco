@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.17 2006-08-31 23:15:08 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/mpi.txt,v 1.18 2006-09-01 17:37:10 zender Exp $ -*-text-*-
 
 Installing an MPI Environment for NCO:
 
@@ -62,7 +62,10 @@ Up-to-date versions of LAM-MPI are distributed in RPM and Deb formats.
    sudo rpm -i lam-7.0.6-3.i386.rpm
 
 2. Start lamd if not already running:
-   lamboot & # Start lamd
+   lamboot -v # Start lamd in verbose mode 
+
+3. End lamd
+   lamwipe # Kill lamd
 
 ************************************************************************
 MPICH (version 1, http://www-unix.mcs.anl.gov/mpi/mpich) Instructions:
