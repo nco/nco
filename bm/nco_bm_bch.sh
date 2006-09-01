@@ -2,6 +2,7 @@
 
 # Usage: 
 # NB: This command should be run from the NCO benchmark directory
+# chmod a+x ~/nco/bm/nco_bm_bch.sh
 # cd ~/nco/bm;./nco_bm_bch.sh
 
 if [ -n "${DATA}" ]; then
@@ -37,5 +38,6 @@ export MY_BIN_DIR=$MY_BIN_DIR
 
 $CMD_LN --mpi_prc=\$NSLOTS --mpi_upx "$MPIRUN -np \$NSLOTS -machinefile \$TMP/machines"
 EOF1
+
 qsub $SCRIPT
 rm $SCRIPT
