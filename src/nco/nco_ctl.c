@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.160 2006-09-04 16:26:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.161 2006-09-04 16:33:56 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -15,27 +15,27 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   const char fnc_nm[]="nco_cmp_get()";
 #ifdef _AIX
   static const char cmp_nm[]="xlc"; /* [sng] Compiler name */
-  static const char cmp_sng[]="Token _AIX_ defined in nco_cmp_get(), probably compiled with xlc"; /* [sng] Compiler string */
+  static const char cmp_sng[]="Token _AIX_ defined in nco_cmp_get(), probably compiled with AIX xlc_r or xlc"; /* [sng] Compiler string */
 #endif /* !_AIX */
 #if defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__) && !defined(PGI_CC)
   /* Testing for GCC macros early is dangerous because some compilers, 
      including Intel's, define GCC macros for compatibility */
   static const char cmp_nm[]="gcc"; /* [sng] Compiler name */
-  static const char cmp_sng[]="Token __GNUC__ defined in nco_cmp_get(), probably compiled with gcc"; /* [sng] Compiler string */
+  static const char cmp_sng[]="Token __GNUC__ defined in nco_cmp_get(), probably compiled with GNU gcc"; /* [sng] Compiler string */
 #endif /* !__GNUC__ */
 #ifdef __INTEL_COMPILER
   /* Some compilers, including icc, also define __GNUC__ by default */
   static const char cmp_nm[]="icc";
-  static const char cmp_sng[]="Token __INTEL_COMPILER defined in nco_cmp_get(), probably compiled with icc"; /* [sng] Compiler string */
+  static const char cmp_sng[]="Token __INTEL_COMPILER defined in nco_cmp_get(), probably compiled with Intel icc"; /* [sng] Compiler string */
 #endif /* !__INTEL_COMPILER */
 #ifdef __PATHCC__
   /* Some compilers, including pathcc, also define __GNUC__ by default */
   static const char cmp_nm[]="pathcc";
-  static const char cmp_sng[]="Token __PATHCC__ defined in nco_cmp_get(), probably compiled with pathcc"; /* [sng] Compiler string */
+  static const char cmp_sng[]="Token __PATHCC__ defined in nco_cmp_get(), probably compiled with PathScale (Qlogic) pathcc"; /* [sng] Compiler string */
 #endif /* !__PATHCC__ */
 #ifdef PGI_CC
   static const char cmp_nm[]="pgcc";
-  static const char cmp_sng[]="Token PGI_CC defined in nco_cmp_get(), probably compiled with pgcc"; /* [sng] Compiler string */
+  static const char cmp_sng[]="Token PGI_CC defined in nco_cmp_get(), probably compiled with PGI pgcc"; /* [sng] Compiler string */
 #endif /* !PGI_CC */
 
   /* In case none of the above tokens matched */
