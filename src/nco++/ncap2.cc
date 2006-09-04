@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.20 2006-07-19 11:41:04 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.21 2006-09-04 14:50:44 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -73,7 +73,9 @@
 #define MAIN_PROGRAM_FILE
 #include "ncap2.hh" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
 #include "libnco++.hh" /* netCDF Operator (NCO) C++ library */
-#include "libnco.h" /* netCDF Operator (NCO) library */
+#include "libnco.h"    /* netCDF Operator (NCO) library */
+#include "sdo_utl.hh"  /* error messages etc */
+
 
 /* Global variables */
 size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap_lex.l) */
@@ -83,6 +85,7 @@ char **ncap_fl_spt_glb=NULL; /* [fl] Script file */
 int 
 main(int argc,char **argv)
 {
+  const char fnc_nm[]="main"; 
   FILE *yyin; /* file handle used to check file existance */
   int parse_antlr(prs_sct*,char*,char*);
 
@@ -122,8 +125,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.20 2006-07-19 11:41:04 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.20 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.21 2006-09-04 14:50:44 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.21 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -344,13 +347,11 @@ main(int argc,char **argv)
       break;
     case 'n': /* NINTAP-style abbreviation of files to process */
       /* Currently not used in ncap but should be to allow processing multiple input files by same script */
-      (void)fprintf(stderr,"%s: ERROR %s does not currently implement -n option\n",prg_nm_get(),prg_nm_get());
+      err_prn(fnc_nm,std::string(prg_nm_get())+ " does not currently implement -n option\n");
       fl_lst_abb=lst_prs_2D(optarg,",",&abb_arg_nbr);
-      if(abb_arg_nbr < 1 || abb_arg_nbr > 3){
-	(void)fprintf(stderr,"%s: ERROR Incorrect abbreviation for file list\n",prg_nm);
-	(void)nco_usg_prn();
-	nco_exit(EXIT_FAILURE);
-      } /* end if */
+      if(abb_arg_nbr < 1 || abb_arg_nbr > 3)
+	err_prn(fnc_nm, "Incorrect abbreviation for file list\n");
+
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
@@ -371,7 +372,9 @@ main(int argc,char **argv)
       break;
     case 's': /* Copy command script for later processing */
       spt_arg[nbr_spt++]=(char *)strdup(optarg);
-      if(nbr_spt == NCAP_SPT_NBR_MAX-1) (void)fprintf(stderr,"%s: WARNING No more than %d script arguments allowed. TODO #24\n",prg_nm_get(),NCAP_SPT_NBR_MAX);
+      if(nbr_spt == NCAP_SPT_NBR_MAX-1) 
+        wrn_prn(fnc_nm,"No more than " +nbr2sng(NCAP_SPT_NBR_MAX) + " allowed. TODO# 24.");
+      //(void)fprintf(stderr,"%s:  %d script arguments allowed. TODO #24\n",prg_nm_get(),NCAP_SPT_NBR_MAX);
       break;
     case 'S': /* Read command script from file rather than from command line */
       fl_spt_usr=(char *)strdup(optarg);
@@ -382,16 +385,15 @@ main(int argc,char **argv)
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
-      if(EXCLUDE_INPUT_LIST) (void)fprintf(stderr,"%s: ERROR %s does not currently implement -x option\n",prg_nm_get(),prg_nm_get());
-      nco_exit(EXIT_FAILURE);
+      if(EXCLUDE_INPUT_LIST) 
+        err_prn(fnc_nm,std::string(prg_nm_get())+ " does not currently implement -x option\n");
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
       nco_exit(EXIT_SUCCESS);
       break;
     case '-': /* Long options are not allowed */
-      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());
-      nco_exit(EXIT_FAILURE);
+      err_prn(fnc_nm,"Long options are not available in this build. Use single letter options instead.\n");
       break;
     default: /* Print proper usage */
       (void)nco_usg_prn();
@@ -481,7 +483,7 @@ main(int argc,char **argv)
   /* Advanced Rounding: nearbyint, round, trunc */
   /* sym_vtr.push(ncap_sym_init("nearbyint",nearbyint,nearbyintf)); *//* Round to integer value in floating point format using current rounding direction, do not raise inexact exceptions */
   /* sym_vtr.push(ncap_sym_init("round",round,roundf)); *//* Round to nearest integer away from zero */
-  /* sym_vtr.push(ncap_sym_init("trunc",trunc,truncf)); *//* Round to nearest integer not larger in absolute value */
+     sym_vtr.push(ncap_sym_init("trunc",trunc,truncf));  /* Round to nearest integer not larger in absolute value */
   /* sym_vtr.push(ncap_sym_init("rint",rint,rintf)); *//* Round to integer value in floating point format using current rounding direction, raise inexact exceptions */
    
   if(PRN_FNC_TBL){
@@ -547,25 +549,21 @@ main(int argc,char **argv)
     
   if(fl_spt_usr == NULL){
     /* No script file specified, look for command-line scripts */
-    if(nbr_spt == 0){
-       (void)fprintf(stderr,"%s: ERROR no script file or command line scripts specified\n",prg_nm_get());
-       (void)fprintf(stderr,"%s: HINT Use, e.g., -s \"foo=bar\"\n",prg_nm_get());
-       nco_exit(EXIT_FAILURE);
-      } /* end if */
+    if(nbr_spt == 0)
+      err_prn(fnc_nm,"No script file or command line scripts specified\nHINT Use, e.g., -s \"foo=bar\"\n");
       
      /* Print all command-line scripts */
      if(dbg_lvl_get() > 0){
-       for(idx=0;idx<nbr_spt;idx++) (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
+       for(idx=0;idx<nbr_spt;idx++) 
+         (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
      } /* endif debug */
       
      /* Parse command line scripts */
      fl_spt_usr=(char *)strdup("Command-line script");
      }else{ /* ...endif command-line scripts, begin script file... */
       /* Open script file for reading */
-      if((yyin=fopen(fl_spt_usr,"r")) == NULL){
-        (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt_usr);
-        nco_exit(EXIT_FAILURE);
-      } /* end if */
+      if((yyin=fopen(fl_spt_usr,"r")) == NULL)
+        err_prn(fnc_nm,"Unable to open script file "+std::string(fl_spt_usr));
       fclose(yyin); 
     } /* end else script file */
     
