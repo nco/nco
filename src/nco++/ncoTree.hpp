@@ -13,8 +13,8 @@
     #include <assert.h>
     #include <ctype.h>
     #include <iostream>
-    #include <string>
     #include <sstream>
+    #include <string>
     #include "ncap2.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
@@ -26,7 +26,7 @@
 #line 27 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 390 "ncoGrammer.g"
+#line 407 "ncoGrammer.g"
 
 
 private:
@@ -61,7 +61,8 @@ lmt_init(
 RefAST aRef, 
 vector<ast_lmt_sct> &ast_lmt_vtr) 
 {
-   
+      const std::string fnc_nm("lmt_init"); // [sng] Function name   
+
       int idx;
       int nbr_dmn;   
       int nbr_cln; // Number of colons in limit
@@ -76,6 +77,7 @@ vector<ast_lmt_sct> &ast_lmt_vtr)
       lRef=aRef->getFirstChild();
 
       nbr_dmn=lmt_peek(aRef);      
+      //nbr_dmn=lRef->getNumberOfChildren();
 
       for(idx=0 ; idx < nbr_dmn ; idx++){
          hyp.ind[0]=ANTLR_USE_NAMESPACE(antlr)nullAST;
@@ -111,9 +113,8 @@ vector<ast_lmt_sct> &ast_lmt_vtr)
                  hyp.ind[2]=cRef;
                  break;
 
-         default: printf("Error: too many indicies\n");
-                  nco_exit(EXIT_FAILURE);                  
-                 break;      
+         default: err_prn(fnc_nm,"Too many hyperslab indices");
+                  break;  
         }
 
        eRef=lRef->getFirstChild();
@@ -276,10 +277,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 73;
+	static const int NUM_TOKENS = 77;
 #else
 	enum {
-		NUM_TOKENS = 73
+		NUM_TOKENS = 77
 	};
 #endif
 	

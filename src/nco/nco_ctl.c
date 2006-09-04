@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.159 2006-08-29 18:04:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.160 2006-09-04 16:26:03 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -44,7 +44,8 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   static const char cmp_nm[]="unknown"; /* [sng] Compiler name */
   static const char cmp_sng[]="Unknown compiler tokens in nco_cmp_get(), compiler is unknown"; /* [sng] Compiler string */
 #endif /* !unknown */
-  if(dbg_lvl_get() > 4) (void)fprintf(stderr,"%s: INFO %s reports compiler name is %s\n%s\n",prg_nm_get(),fnc_nm,cmp_nm,cmp_sng);
+
+  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO %s reports compiler name is \"%s\"\n%s\n",prg_nm_get(),fnc_nm,cmp_nm,cmp_sng);
 
   return cmp_nm;
 } /* end nco_cmp_get() */
@@ -77,15 +78,15 @@ nco_mpi_get(void) /* [fnc] Return MPI implementation */
 #ifndef MPI_VERSION
   /* MPI is not installed */
   static const char mpi_nm[]="none"; /* [sng] MPI name */
-  static const char mpi_sng[]="No MPI tokens found in nco_cmp_get(), MPI environment is not active"; /* [sng] MPI string */
+  static const char mpi_sng[]="No MPI tokens found in nco_mpi_get(), MPI environment is not active"; /* [sng] MPI string */
 #else /* MPI_VERSION */
   /* Unknown MPI implementation */
   static const char mpi_nm[]="unknown"; /* [sng] MPI name */
-  static const char mpi_sng[]="Unknown MPI tokens found in nco_cmp_get(), MPI environment is present but of unknown pedigree"; /* [sng] MPI string */
+  static const char mpi_sng[]="Unknown MPI tokens found in nco_mpi_get(), MPI environment is present but of unknown pedigree"; /* [sng] MPI string */
 #endif /* MPI_VERSION */
 #endif /* !unknown */
 
-  if(dbg_lvl_get() > 4) (void)fprintf(stderr,"%s: INFO %s reports MPI implementation name is %s, MPI implementation string is %s\n",prg_nm_get(),fnc_nm,mpi_nm,mpi_sng);
+  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO %s reports MPI implementation name is \"%s\"\n%s\n",prg_nm_get(),fnc_nm,mpi_nm,mpi_sng);
   return mpi_nm;
 } /* end nco_mpi_get() */
 
@@ -691,7 +692,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Happy First Birthday Ruby (and Katrina)!\n";
+  return "She walks!\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 

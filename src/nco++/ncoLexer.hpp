@@ -15,8 +15,8 @@
     #include <assert.h>
     #include <ctype.h>
     #include <iostream>
-    #include <string>
     #include <sstream>
+    #include <string>
     #include "ncap2.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
@@ -28,7 +28,7 @@
 #line 29 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 205 "ncoGrammer.g"
+#line 208 "ncoGrammer.g"
 
 
 private:
@@ -97,6 +97,7 @@ public:
 	protected: void mLPHDGT(bool _createToken);
 	protected: void mXPN(bool _createToken);
 	protected: void mBLASTOUT(bool _createToken);
+	public: void mUNUSED_OPS(bool _createToken);
 	public: void mWhitespace(bool _createToken);
 	public: void mCPP_COMMENT(bool _createToken);
 	public: void mC_COMMENT(bool _createToken);
@@ -113,6 +114,8 @@ private:
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_1;
 	static const unsigned long _tokenSet_2_data_[];
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_2;
+	static const unsigned long _tokenSet_3_data_[];
+	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_3;
 };
 
 #endif /*INC_ncoLexer_hpp_*/

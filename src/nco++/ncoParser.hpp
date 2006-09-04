@@ -15,8 +15,8 @@
     #include <assert.h>
     #include <ctype.h>
     #include <iostream>
-    #include <string>
     #include <sstream>
+    #include <string>
     #include "ncap2.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
@@ -92,10 +92,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 73;
+	static const int NUM_TOKENS = 77;
 #else
 	enum {
-		NUM_TOKENS = 73
+		NUM_TOKENS = 77
 	};
 #endif
 	
