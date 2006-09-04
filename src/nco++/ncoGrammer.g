@@ -178,6 +178,7 @@ primary_exp
     | DOUBLE
     | NSTRING    
     | DIM_ID_SIZE
+    | ATT_ID_SIZE
     | hyper_slb  //remember this includes VAR_ID & ATT_ID
     | cast_slb
   ;
@@ -380,7 +381,9 @@ VAR_ATT:  (LPH)(LPH|DGT)*
                $setType(FUNC);             
              else $setType(VAR_ID); 
            }   
-         ('@'(LPH)(LPH|DGT)*  {$setType(ATT_ID); } )?
+         (  ('@'(LPH)(LPH|DGT)*  {$setType(ATT_ID); } )
+            ( ".size"! { $setType(ATT_ID_SIZE); })?
+         )?
 ;
 
 
@@ -1220,6 +1223,40 @@ out returns [var_sct *var]
             (void)cast_nctype_void(type,&var->val);
 
 
+        }
+
+    |   aval:ATT_ID_SIZE
+        {
+            long att_sz;
+            nc_type type=NC_INT;
+            NcapVar *Nvar;
+
+            Nvar=prs_arg->ptr_var_vtr->find(aval->getText());
+            if(Nvar !=NULL){
+                att_sz=Nvar->var->sz;
+            }else{
+                var_sct *var_tmp;    
+                var_tmp=ncap_att_init(att->getText(),prs_arg);
+                if(var_tmp== (var_sct*)NULL)
+                   err_prn(fnc_nm,"Unable to locate attribute " +aval->getText()+ " in input or output files.");
+                att_sz=var->sz;
+                var_tmp=nco_var_free(var_tmp);
+            }
+
+            var=(var_sct *)nco_malloc(sizeof(var_sct));
+            /* Set defaults */
+            (void)var_dfl_set(var); 
+            /* Overwrite with attribute expression information */
+            var->nm=strdup("_att");
+            var->nbr_dim=0;
+            var->sz=1;
+            // Get nco type
+
+            var->type=type;
+            var->val.vp=(void*)nco_malloc(nco_typ_lng(type));
+            (void)cast_void_nctype(type,&var->val);
+            *var->val.lp = att_sz;
+            (void)cast_nctype_void(type,&var->val);
         }
 
     // Variable with argument list 
