@@ -4,8 +4,8 @@ header {
     #include <assert.h>
     #include <ctype.h>
     #include <iostream>
-    #include <string>
     #include <sstream>
+    #include <string>
     #include "ncap2.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
@@ -435,7 +435,8 @@ lmt_init(
 RefAST aRef, 
 vector<ast_lmt_sct> &ast_lmt_vtr) 
 {
-   
+      const std::string fnc_nm("lmt_init"); // [sng] Function name   
+
       int idx;
       int nbr_dmn;   
       int nbr_cln; // Number of colons in limit
@@ -486,9 +487,8 @@ vector<ast_lmt_sct> &ast_lmt_vtr)
                  hyp.ind[2]=cRef;
                  break;
 
-         default: printf("Error: too many indicies\n");
-                  nco_exit(EXIT_FAILURE);                  
-                 break;      
+         default: err_prn(fnc_nm,"Too many hyperslab indices");
+                  break;  
         }
 
        eRef=lRef->getFirstChild();
@@ -711,7 +711,8 @@ var_sct *var;
 assign returns [var_sct *var]
 
    :   (#(ASSIGN  VAR_ID ))=> #(ASSIGN  vid:VAR_ID ){
-    
+
+          const std::string fnc_nm("assign_var"); 
 
           if(vid->getFirstChild()) {
 
@@ -762,13 +763,11 @@ assign returns [var_sct *var]
 
                // Now populate lmt_vtr;
                if( lmt_mk(lmt_Ref,lmt_vtr) == 0){
-                  printf("zero return for lmt_vtr\n");
-                  nco_exit(EXIT_FAILURE);
+                  err_prn(fnc_nm,"Invalid hyperslab limits for variable "+ vid->getText());
                }
 
                if( lmt_vtr.size() != nbr_dmn){
-                   (void)fprintf(stderr,"Error: Number of limits doesn't  match number of dimensions\n" );                                      
-                   nco_exit(EXIT_FAILURE);     
+                  err_prn(fnc_nm,"Number of hyperslab limits for variable "+ vid->getText()+" doesn't match number of dimensions");
                }
 
                 // add dim names to dimension list 
@@ -797,8 +796,7 @@ assign returns [var_sct *var]
                // make sure var_lhs and var_rhs are the same size
                // and that they are the same shape (ie they conform!!)          
                if(var_rhs->sz != var_lhs->sz){
-                 (void)fprintf(stderr,"Error: Mismatch - number of elements on LHS(%li) doesn't equal number of elements on RHS(%li)\n",var_lhs->sz,var_rhs->sz );                                      
-                   nco_exit(EXIT_FAILURE); 
+                 err_prn(fnc_nm, "Hyperslab for "+vid->getText()+" - number of elements on LHS(" +nbr2sng(var_lhs->sz) +  ") doesn't equal number of elements on RHS(" +nbr2sng(var_rhs->sz) +  ")");                                       
                  }
 
           
@@ -853,7 +851,10 @@ assign returns [var_sct *var]
               NcapVector<std::string> str_vtr;
               RefAST  aRef;
               
-              cout<< "In ASSIGN/DMN\n";
+
+              if(dbg_lvl_get() > 0)
+                dbg_prn(fnc_nm,"In ASSIGN/DMN");
+
 
               // set class wide variables
               bcst=true;  
@@ -926,7 +927,9 @@ assign returns [var_sct *var]
        } // end action
  
    |   (#(ASSIGN  ATT_ID ))=> #(ASSIGN  att:ATT_ID ){
-    
+
+          const std::string fnc_nm("assign_att");
+     
           switch( att->getNextSibling()->getType()){
             
             case LMT_LIST:{
@@ -941,7 +944,8 @@ assign returns [var_sct *var]
                 var_sct *var1;
                 string sa=att->getText();
 
-                cout <<"Saving attribute " << sa <<endl;
+                if(dbg_lvl_get() > 0)
+                  dbg_prn(fnc_nm,"Saving attribute " +sa);
  
                 var1=out(att->getNextSibling());
                 (void)nco_free(var1->nm);
@@ -963,6 +967,7 @@ assign returns [var_sct *var]
 
 out returns [var_sct *var]
 {
+    const std::string fnc_nm("out"); 
 	var_sct *var1;
     var_sct *var2;
 }  
@@ -1196,8 +1201,7 @@ out returns [var_sct *var]
 
 
             if( dmn_fd==NULL ){
-                fprintf(stderr,"%s: Unable to locate dimension %s in input or output files\n",prg_nm_get(),sDim.c_str());
-                nco_exit(EXIT_FAILURE);
+                err_prn(fnc_nm,"Unable to locate dimension " +dval->getText()+ " in input or output files ");
             }
 
             var=(var_sct *)nco_malloc(sizeof(var_sct));
@@ -1243,8 +1247,7 @@ out returns [var_sct *var]
           }
 
          if( lmt_vtr.size() != nbr_dmn){
-            (void)fprintf(stderr,"Error: Number of limits doesn't match number of dimensions\n" );                                      
-            nco_exit(EXIT_FAILURE);     
+            err_prn(fnc_nm,"Number of hyperslab limits for variable "+ vid->getText()+" doesn't match number of dimensions");
          }
 
           // add dim names to dimension list 
@@ -1345,8 +1348,7 @@ out returns [var_sct *var]
                 var=ncap_att_init(att->getText(),prs_arg);
 
             if(var== (var_sct*)NULL){
-                fprintf(stderr,"unable to locate attribute %s in input or output files\n",att->getText().c_str());
-                nco_exit(EXIT_FAILURE);
+                err_prn(fnc_nm,"Unable to locate attribute " +att->getText()+ " in input or output files.");
             }
              
         }    
@@ -1357,20 +1359,20 @@ out returns [var_sct *var]
 // and checks that the operand is a valid Lvalue
 // ie that the var or att has NO children!!
 out_asn returns [var_sct *var]
+{
+const std::string fnc_nm("assign_asn"); 
+}
 
-	:   v:VAR_ID       
+	:   vid:VAR_ID       
         { 
-          var=ncap_var_init(v->getText().c_str(),prs_arg,true);
+          var=ncap_var_init(vid->getText().c_str(),prs_arg,true);
           if(var== (var_sct*)NULL){
                nco_exit(EXIT_FAILURE);
           }
           var->undefined=False;
          
-          if(v->getFirstChild() !=NULL) {
-
-                cout<<prg_nm_get() <<" : " << prs_arg->fl_in 
-                <<" Invalid Lvalue near " << v->getText() <<endl; 
-                nco_exit(EXIT_FAILURE);
+          if(vid->getFirstChild() !=NULL) {
+                err_prn(fnc_nm,"Invalid Lvalue defintion of variable " +vid->getText() );
           }
         } /* end action */
     // Plain attribute
@@ -1384,10 +1386,11 @@ out_asn returns [var_sct *var]
                   nco_var_dpl(Nvar->var):
                   ncap_att_init(att->getText(),prs_arg);
 
-            if(var== (var_sct*)NULL){
-                fprintf(stderr,"unable to locate attribute %s in input or output files\n",att->getText().c_str());
-                nco_exit(EXIT_FAILURE);
-            }
-             
+            if(var== (var_sct*)NULL)
+                err_prn(fnc_nm,"Unable to locate attribute " +att->getText()+ " in input or output files");
+            
+            if(att->getFirstChild() !=NULL) 
+                err_prn(fnc_nm,"Invalid Lvalue defintion of attribute " +att->getText() );
+            
         }    
 ;

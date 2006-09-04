@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.22 2006-08-24 19:59:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.23 2006-09-04 14:51:49 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -8,8 +8,11 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <iostream>
+#include <sstream>
 #include <string>
 #include "ncap2.hh" /* netCDF arithmetic processor */
+#include "sdo_utl.hh"
 
 /* have removed extern -- (not linking to ncap_lex.l */
 /*extern*/ char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in ncap_lex.l) */
@@ -22,7 +25,8 @@ bool bfll)                 /* if true fill var with data */
 {
   /* Purpose: Initialize variable structure, retrieve variable values from disk
      Parser calls ncap_var_init() when it encounters a new RHS variable */
-  /* const char fnc_nm[]="ncap_var_init()"; *//* [sng] Function name */
+
+  const char fnc_nm[]="ncap_var_init"; 
 
   int idx;
   int dmn_var_nbr;
@@ -51,7 +55,9 @@ bool bfll)                 /* if true fill var with data */
     rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
     if(rcd != NC_NOERR){
       /* Return NULL if variable not in input or output file */
-      (void)fprintf(stderr,"WARNING unable to find %s in %s or %s\n",var_nm,prs_arg->fl_in,prs_arg->fl_out);    
+      std::ostringstream os;
+      os<<"Unable to find variable " <<var_nm << " in " << prs_arg->fl_in <<" or " << prs_arg->fl_out;
+      wrn_prn(fnc_nm,os.str());
       return (var_sct *)NULL;
     } /* end if */
     
@@ -75,24 +81,38 @@ bool bfll)                 /* if true fill var with data */
         dmn_fd= prs_arg->ptr_dmn_in_vtr->find(dmn_nm);
 	// not in list -- crash out
 	if(dmn_fd == (dmn_sct*)NULL){
-	  (void)fprintf(stderr,"%s: DEBUG New dimension %s not found in %s or %s\n",prg_nm_get(),dmn_nm ,prs_arg->fl_in, prs_arg->fl_out);
-	  exit(1);
+          std::ostringstream os;
+          os<<"Unable to find dimension " <<dmn_nm << " in " << prs_arg->fl_in <<" or " << prs_arg->fl_out;
+          err_prn(fnc_nm,os.str());
 	}
+	   
         dmn_nw=nco_dmn_dpl(dmn_fd);
 	(void)nco_dmn_xrf(dmn_nw,dmn_fd);
 	// write dim to output
 	(void)nco_dmn_dfn(prs_arg->fl_out,prs_arg->out_id,&dmn_nw,1);          
 	// Add new dim to output list
 	(void)prs_arg->ptr_dmn_out_vtr->push(dmn_nw);
-	  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Found new dimension %s in input variable %s in file %s. Defining dimension %s in output file %s\n",prg_nm_get(),dmn_nm,var_nm,prs_arg->fl_in,dmn_nm,prs_arg->fl_out);
 
+	if(dbg_lvl_get() > 2) {
+          std::ostringstream os;
+          os<<"Found new dimension " << dmn_nm << " in input variable " << var_nm <<" in file " <<prs_arg->fl_in;
+          os<<". Deining dimension " << dmn_nm << " in ouput file " << prs_arg->fl_out;
+          dbg_prn(fnc_nm,os.str());
+
+	}
       }
       (void)nco_free(dim_id);
     }
     (void)nco_enddef(prs_arg->out_id); 
   } // end else  
   
-  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: parser VAR action called ncap_var_init() to retrieve %s from disk\n",prg_nm_get(),var_nm);
+  if(dbg_lvl_get() > 2) {
+    std::ostringstream os;
+    os<< "Parser VAR action called ncap_var_init() to retrieve " <<var_nm <<" from disk";
+    dbg_prn(fnc_nm,os.str());  
+  }
+
+
 
   nbr_dmn_out=prs_arg->ptr_dmn_out_vtr->size();
   dmn_out=prs_arg->ptr_dmn_out_vtr->ptr(0);
@@ -123,6 +143,8 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
   const char mss_val_sng[]="missing_value"; /* [sng] Unidata standard string for missing value */
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
+  const char fnc_nm[]="ncap_var_write"; 
+
   int rcd; /* [rcd] Return code */
   int var_out_id;
   
@@ -149,7 +171,12 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
 
     /* check sizes are the same */
     if(var_inf->sz != var->sz) {
-      (void)fprintf(stdout,"Warning: Variable %s (size=%ld)  has aleady been saved in %s (size=%ld)\n",var->nm,var->sz,prs_arg->fl_out,var_inf->sz);
+      std::ostringstream os;
+      os<< "Variable "<< var->nm << " size=" << var->sz << " has aleady been saved in ";
+      os<< prs_arg->fl_out << " with size=" << var_inf->sz;
+       
+      wrn_prn(fnc_nm,os.str());  
+
       var = nco_var_free(var);
       var_inf=nco_var_free(var_inf);
       return False;
@@ -194,7 +221,11 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
 #ifdef NCO_RUSAGE_DBG
   /* Compile: cd ~/nco/bld;make 'USR_TKN=-DNCO_RUSAGE_DBG';cd - */
   /* Print rusage memory usage statistics */
-  if(dbg_lvl_get() >= 0) (void)fprintf(stdout,"%s: INFO ncap_var_write() writing variable %s\n",prg_nm_get(),var->nm);
+  if(dbg_lvl_get() >= 0) {
+    std::ostringstream os;
+    os<<" Writing variable "<<var_nm; <<" to disk.";
+    dbg_prn(fnc_nm,os.str());
+  }
   maxrss=nco_mmr_rusage_prn((int)0);
 #endif /* !NCO_RUSAGE_DBG */
 
@@ -829,6 +860,8 @@ ncap_var_stretch /* [fnc] Stretch variables */
      var_lsr_out=var_lsr only if variables already conform
      var_gtr_out is required since both variables may change
      var_gtr_out=var_gtr unless convolution is required */
+
+  const char fnc_nm[]="ncap_var_stretch"; 
   
   nco_bool CONFORMABLE=False; /* [flg] Whether var_lsr can be made to conform to var_gtr */
   nco_bool CONVOLVE=False; /* [flg] var_1 and var_2 had to be convolved */
@@ -881,20 +914,37 @@ ncap_var_stretch /* [fnc] Stretch variables */
 	/* Dimensions in var_lsr and var_gtr are mutually exclusive */
 	CONFORMABLE=False;
 	if(MUST_CONFORM){
-	  (void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
-	  nco_exit(EXIT_FAILURE);
+          err_prn(fnc_nm,std::string(var_lsr->nm)+ " and " +std::string(var_gtr->nm) +" share no dimensions. "); 
+       //(void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
+       //nco_exit(EXIT_FAILURE);
 	}else{
-	  if(dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: DEBUG %s and %s share no dimensions: Attempting to convolve...\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
+	  if(dbg_lvl_get() >= 1) 
+          wrn_prn(fnc_nm,std::string(var_lsr->nm)+ " and " +std::string(var_gtr->nm) +" share no dimensions. Attempting to convolve..."); 
+	    //(void)fprintf(stdout,"\n%s: DEBUG %s and %s share no dimensions: Attempting to convolve...\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
 	  CONVOLVE=True;
 	} /* endif */
       }else if(var_lsr_var_gtr_dmn_shr_nbr > 0 && var_lsr_var_gtr_dmn_shr_nbr < var_lsr->nbr_dim){
 	/* Some, but not all, of var_lsr dimensions are in var_gtr */
 	CONFORMABLE=False;
 	if(MUST_CONFORM){
-	  (void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr);
-	  nco_exit(EXIT_FAILURE);
+	  std::ostringstream os;
+          os<<var_lsr_var_gtr_dmn_shr_nbr<< " dimensions of " << var_lsr->nm << " belong to template ";
+          os<<var_gtr->nm <<" but " << (var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr) <<" do not.";
+          err_prn(fnc_nm,os.str());
+
+	  //(void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr);
+	  //nco_exit(EXIT_FAILURE);
 	}else{
-	  if(dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s, could attempt stretching???\n",prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm);
+	  if(dbg_lvl_get() >= 1){ 
+	  std::ostringstream os;
+          os<<var_lsr_var_gtr_dmn_shr_nbr << " dimensions of " << var_lsr->nm << " belong to template ";
+          os<<var_gtr->nm << " but " << (var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr) <<" do not:";
+          os<<"Not broadcasting " << var_lsr->nm<< "to " <<var_gtr->nm;
+          os<<"could attempt stretching???";
+          wrn_prn(fnc_nm,os.str());
+          }
+
+	    //(void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s, could attempt stretching???\n",prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm);
 	  CONVOLVE=True;
 	} /* endif */
       } /* end if */
@@ -925,7 +975,10 @@ ncap_var_stretch /* [fnc] Stretch variables */
   if(var_lsr_out == NULL && CONVOLVE){
     /* Convolve variables by returned stretched variables with minimum possible number of dimensions */
     int dmn_nbr; /* Number of dimensions in convolution */
-    if(dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: WARNING Convolution not yet implemented, results of operation between %s and %s are unpredictable\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
+    if(dbg_lvl_get() >= 1) 
+      dbg_prn(fnc_nm,"Convolution not yet implemented, results of operation between " +std::string(var_lsr->nm) 
+              + " and "+std::string(var_gtr->nm) + "are unpredictable");
+    //(void)fprintf(stdout,"\n%s: WARNING Convolution not yet implemented, results of operation between %s and %s are unpredictable\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
     /* Dimensions in convolution are union of dimensions in variables */
     dmn_nbr=var_lsr->nbr_dim+var_gtr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr; /* Number of dimensions in convolution */
     dmn_nbr=dmn_nbr; /* CEWI: Avert compiler warning that variable is set but never used */
@@ -1023,8 +1076,11 @@ ncap_var_stretch /* [fnc] Stretch variables */
 	  } /* end if */
 	  /* Sanity check */
 	  if(idx_dmn == var_gtr->nbr_dim-1){
-	    (void)fprintf(stdout,"%s: ERROR var_lsr %s has dimension %s but var_gtr %s does not deep in ncap_var_stretch()\n",prg_nm_get(),var_lsr->nm,var_lsr->dim[idx]->nm,var_gtr->nm);
-	    nco_exit(EXIT_FAILURE);
+            err_prn(fnc_nm,"var_lsr " + std::string(var_lsr->nm)+ " has dimension "+ std::string(var_lsr->dim[idx]->nm)
+                    + " but var_gtr " + std::string(var_gtr->nm)+ " does not deep in ncap_var_stretch.");
+          
+	    //(void)fprintf(stdout,"%s: ERROR var_lsr %s has dimension %s but var_gtr %s does not deep in ncap_var_stretch()\n",prg_nm_get(),var_lsr->nm,var_lsr->dim[idx]->nm,var_gtr->nm);
+	    //nco_exit(EXIT_FAILURE);
 	  } /* end if err */
 	} /* end loop over greater variable dimensions */
       } /* end loop over lesser variable dimensions */
@@ -1090,6 +1146,7 @@ ncap_def_dim(
 const char *dmn_nm,
 long sz,
 prs_sct *prs_arg){
+  const char fnc_nm[]="ncap_def_dim"; 
 
   int dmn_out_id;
           
@@ -1099,8 +1156,8 @@ prs_sct *prs_arg){
 
   // Ckeck for a valid name 
   if(!isalpha(dmn_nm[0])){
-     (void)fprintf(stderr,"%s: WARNING: dim %s - Invalid name \n",prg_nm_get(),dmn_nm);
-     return False;;
+    wrn_prn(fnc_nm,"dim \""+ std::string(dmn_nm) + "\" - Invalid name.");
+    return False;;
   }
             
 
@@ -1109,13 +1166,15 @@ prs_sct *prs_arg){
   dmn_out_e=prs_arg->ptr_dmn_out_vtr->find(dmn_nm);
 
   if(dmn_in_e !=NULL || dmn_out_e !=NULL  ){ 
-     (void)fprintf(stderr,"%s: WARNING: dim %s has already been defined in input or output\n",prg_nm_get(),dmn_nm);            
+     wrn_prn(fnc_nm,"dim \""+ std::string(dmn_nm) + "\" - already exists in input/output."); 
      return False;
   }
 
-  if( sz < 0  ){ 
-     (void)fprintf(stderr,"%s: WARNING: dim %s( sz=%ld) - dimension cannot be negative\n",prg_nm_get(),dmn_nm,sz);            
-     return False;
+  if( sz < 0  ){
+    std::ostringstream os;
+    os<<"dim " << dmn_nm << "(size=" <<sz <<") dimension can't be negative.";
+    wrn_prn(fnc_nm,os.str()); 
+    return False;
   }
 
   
@@ -1297,6 +1356,8 @@ ncap_var_var_op   /* [fnc] Add two variables */
  var_sct *var2,  /* I [sct] Input variable structure containing second operand */
  int op)        /* Operation +-% */
 { 
+  const char fnc_nm[]="ncap_var_var_op"; 
+
   nco_bool vb1;
   nco_bool vb2;
   nco_bool bhyp;
@@ -1328,19 +1389,22 @@ ncap_var_var_op   /* [fnc] Add two variables */
 
 
       if(var1->sz != var2->sz) {
-        (void)fprintf(stderr,"%s: Hyperslabbed variable:%s and variable:%s have differnet number of elements,so connot perform atrithmetic operation\n",prg_nm_get(),var1->nm,var2->nm);
-        nco_exit(EXIT_FAILURE);
-	}
+	std::ostringstream os;
+	os<<"Hyperslabbed variable:"<<var1->nm <<" and variable:"<<var2->nm <<"have differnet number of elements,so connot perform arithmetic operation.";
+	err_prn(fnc_nm,os.str());
+         
+      }
+      if( nco_shp_chk(var1,var2)==False){ 
+	std::ostringstream os;
+        os<<"Hyperslabbed variable:"<<var1->nm <<" and variable:"<<var2->nm <<"have same  number of elements, but different shapes.";
+	wrn_prn(fnc_nm,os.str());
 
+      }
 
-      if( nco_shp_chk(var1,var2)==False) 
-       (void)fprintf(stderr,"%s: Warning: hyperslabbed variables:%s and variable:%s have same number of elements but have different shapes\n",prg_nm_get(),var1->nm,var2->nm);
-
-
-    }else{ 
-       (void)ncap_var_cnf_dmn(&var1,&var2);
-    }       
-
+    }else{   
+      (void)ncap_var_cnf_dmn(&var1,&var2);
+     }
+  
     // Bare numbers have name prefixed with"_"
     // for attribute propagation to work we need
     // to swap names about if first operand is a bare number
@@ -1356,9 +1420,11 @@ ncap_var_var_op   /* [fnc] Add two variables */
       (void)ncap_var_cnf_dmn(&var1,&var2);
       
     if(var1->sz != var2->sz) {
-       (void)fprintf(stderr,"%s: Cannot make variable:%s and attribute:%s conform. So connot perform atrithmetic operation\n",prg_nm_get(),var1->nm,var2->nm);
-       nco_exit(EXIT_FAILURE);
-	}
+      std::ostringstream os;
+      os<<"Cannot make variable:"<<var1->nm <<" and attribute:"<<var2->nm <<" conform. So connot perform arithmetic operation.";
+      err_prn(fnc_nm,os.str()); 
+    }
+      
        
     // att & var
     }else if( vb1 && !vb2){
@@ -1370,8 +1436,9 @@ ncap_var_var_op   /* [fnc] Add two variables */
       (void)ncap_var_cnf_dmn(&var1,&var2);
       
      if(var1->sz != var2->sz) {
-       (void)fprintf(stderr,"%s: Cannot make variable:%s and attribute:%s conform. So connot perform atrithmetic operation\n",prg_nm_get(),var2->nm,var1->nm);
-       nco_exit(EXIT_FAILURE);
+      std::ostringstream os;
+      os<<"Cannot make attribute:"<<var1->nm <<" and variable:"<<var2->nm <<" conform. So connot perform arithmetic operation.";
+      err_prn(fnc_nm,os.str()); 
      }
      // Swap values around in var1 and var2;   
      val_swp=var1->val;
@@ -1393,11 +1460,12 @@ ncap_var_var_op   /* [fnc] Add two variables */
 
       // Crash out if atts not equal size
       if(var1->sz != var2->sz) {
-       (void)fprintf(stderr,"%s: Cannot make attribute:%s and attribute:%s conform. So connot perform atrithmetic operation\n",prg_nm_get(),var2->nm,var1->nm);
-       nco_exit(EXIT_FAILURE);
+        std::ostringstream os;
+        os<<"Cannot make attribute:"<<var1->nm <<" and attribute:"<<var2->nm <<" conform. So connot perform arithmetic operation.";
+         err_prn(fnc_nm,os.str()); 
       }
-             
     }
+             
 
   // Deal with pwr fuction ( nb pwr function can't be templated )
   if(op== CARET){
@@ -1413,7 +1481,7 @@ ncap_var_var_op   /* [fnc] Add two variables */
   var_ret=ncap_var_var_stc(var1,var2,op);
   var2=nco_var_free(var2);
   return var_ret;
-}
+  }
 
 
 var_sct *          /* O [sct] Sum of input variables (var1+var2) */
@@ -1423,6 +1491,8 @@ ncap_var_var_inc   /* [fnc] Add two variables */
  int op,            /* Deal with incremental operators i.e +=,-=,*=,/= */
  prs_sct *prs_arg)
 {
+
+  const char fnc_nm[]="ncap_var_var_inc"; 
   const char *cvar1;
   const char *cvar2;
   nco_bool vb1;
@@ -1478,20 +1548,24 @@ ncap_var_var_inc   /* [fnc] Add two variables */
     }
     
     if(DO_CONFORM==False) {
-      (void)fprintf(stderr,"%s: Cannot make variable:%s and variable:%s conform. So cannot perform arithmetic operation\n",prg_nm_get(),var1->nm,var2->nm);
-      nco_exit(EXIT_FAILURE);
+      std::ostringstream os;
+      os<<"Cannot make variable:"<<var1->nm <<" and variable:"<<var2->nm <<" conform. So connot perform arithmetic operation.";
+      err_prn(fnc_nm,os.str()); 
     }
-    
+    // att & var ,att & att  
   } else {
     
     if(var1->sz > 1 && var2->sz==1)
       (void)ncap_att_stretch(var2,var1->sz);
   }   
+
+
   if(var1->sz != var2->sz) {
-    (void)fprintf(stderr,"%s: Cannot make %s:%s and %s:%s conform. So cannot perform arithmetic operation\n",prg_nm_get(),cvar1,var1->nm,cvar2,var2->nm);
-    nco_exit(EXIT_FAILURE);
+      std::ostringstream os;
+      os<<"Cannot make " << cvar1<<":"<<var1->nm <<" and " <<cvar2 <<":"<<var2->nm <<" conform. So connot perform arithmetic operation.";
+      err_prn(fnc_nm,os.str()); 
   }
-  
+
   var1=ncap_var_var_stc(var1,var2,op);
   
   var_ret=nco_var_dpl(var1);
@@ -1558,7 +1632,7 @@ ncap_cst_mk(                       /* [fnc] create casting var from a list of di
 NcapVector<std::string> &str_vtr,  /* I [sng] list of dimension subscripts */
 prs_sct *prs_arg)
 {
-
+  const char fnc_nm[]="ncap_cst_mk"; 
   static const char * const tpl_nm="Internally generated template";
   
   
@@ -1594,8 +1668,7 @@ prs_sct *prs_arg)
     dmn_item=prs_arg->ptr_dmn_in_vtr->find(lst_nm);
     // die if not in list
     if(dmn_item == NULL) {
-      (void)fprintf(stderr,"Warning: Unrecognized dimension \"%s\" in LHS subscripts",lst_nm);
-      exit(1);
+      err_prn(fnc_nm,"Unrecognized dimension \""+std::string(lst_nm)+ "\"in LHS subscripts");
     }  
     dmn_new=nco_dmn_dpl(dmn_item);
     // Define in output file 
@@ -1610,8 +1683,7 @@ prs_sct *prs_arg)
   /* Check that un-limited dimension is first dimension */
   for(idx=1;idx<dmn_nbr;idx++)
     if(dmn[idx]->is_rec_dmn){
-      (void)sprintf(ncap_err_sng,"Warning:\"%s\" is the record dimension. It can only be the first dimension in a list",dmn[idx]->nm);
-   (void)fprintf(stderr,ncap_err_sng);
+      wrn_prn(fnc_nm,"\""+std::string(dmn[idx]->nm)+"\" is the record dimension. It must be the first dimension in a list");
       goto end_LHS_sbs;                     
     } /* endif */
 
@@ -1655,10 +1727,8 @@ prs_sct *prs_arg)
 
   /* Allocate space for variable values 
      fxm: more efficient and safer to use nco_calloc() and not fill with values? */
-  if((var->val.vp=(void *)nco_malloc_flg(var->sz*nco_typ_lng(var->type))) == NULL){
-    (void)fprintf(stderr,"%s: ERROR Unable to malloc() %ld*%lu bytes for var_LHS() in lexer\n",prg_nm_get(),var->sz,(unsigned long)nco_typ_lng(var->type));
-    nco_exit(EXIT_FAILURE); 
-  } /* end if */
+  var->val.vp=(void *)nco_malloc_flg(var->sz*nco_typ_lng(var->type));
+
   
   /* Copy arbitrary value into variable 
      Placing a uniform value in variable should be unnecessary since variable
@@ -1677,8 +1747,11 @@ prs_sct *prs_arg)
  end_var:
 
    
-  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Lexer creating LHS cast template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),var->nm,var->nbr_dim,var->sz);
-  
+  if(dbg_lvl_get() > 2) {
+    std::ostringstream os;
+    os<<"creating LHS cast template var->nm " <<var->nm <<" var->nbr_dim " <<var->nbr_dim <<" var->sz " <<var->sz; 
+    wrn_prn(fnc_nm,os.str());
+  }
   /* Free dimension list memory */
 
    
@@ -1696,6 +1769,7 @@ var_sct* var,
 var_sct* var_cst,
 bool bntlscn)
 {
+  const char fnc_nm[]="ncap_cst_do"; 
 
   var_sct* var_tmp;
 
@@ -1722,7 +1796,12 @@ bool bntlscn)
      var=var_tmp;
    }
   
-  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching variable %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),var->nm,var_cst->nm,var_cst->nbr_dim,var_cst->sz);
+   if(dbg_lvl_get() > 2){
+     std::ostringstream os;
+    os<<"Stretching variable "<<var->nm << "with LHS template var->nm "<<var_cst->nm <<"var->nbr_dim " <<var_cst->nbr_dim; 
+    os<<" var->sz " <<var_cst->sz;
+    wrn_prn(fnc_nm,os.str());
+   }
     
    var->undefined=False;
   }
