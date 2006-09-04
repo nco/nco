@@ -1236,10 +1236,10 @@ out returns [var_sct *var]
                 att_sz=Nvar->var->sz;
             }else{
                 var_sct *var_tmp;    
-                var_tmp=ncap_att_init(att->getText(),prs_arg);
+                var_tmp=ncap_att_init(aval->getText(),prs_arg);
                 if(var_tmp== (var_sct*)NULL)
                    err_prn(fnc_nm,"Unable to locate attribute " +aval->getText()+ " in input or output files.");
-                att_sz=var->sz;
+                att_sz=var_tmp->sz;
                 var_tmp=nco_var_free(var_tmp);
             }
 
