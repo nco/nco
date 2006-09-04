@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.389 2006-09-01 17:37:09 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.390 2006-09-04 16:49:24 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -914,7 +914,7 @@ ifeq (pgcc,$(firstword ${CC}))
  CFLAGS := -Mlfs
 # Pass kludgy PGI identifier to flag for broken C99 designated initializers etc.
  CPPFLAGS := $(filter-out -DHAVE_C99,${CPPFLAGS})
- CPPFLAGS += -DPGI_CC
+ CPPFLAGS := -DPGI_CC ${CPPFLAGS}
  LDFLAGS += -Mlfs
  OMP_FLG_C := -mp
 ifeq (${OPTS},O)
