@@ -1288,18 +1288,23 @@ out returns [var_sct *var]
          }
 
           // add dim names to dimension list 
-          for(idx=0 ; idx < nbr_dmn;idx++) 
+          for(idx=0 ; idx < nbr_dmn;idx++)
             lmt_vtr[idx]->nm=strdup(var_rhs->dim[idx]->nm);   
                         
           // fill out limit structure
            for(idx=0 ; idx < nbr_dmn ;idx++)
             (void)nco_lmt_evl(var_rhs->nc_id,lmt_vtr[idx],0L,prs_arg->FORTRAN_IDX_CNV);
-
+           
            // copy lmt_sct to dmn_sct;
            for(idx=0 ;idx <nbr_dmn ; idx++){
               dmn_nw=(dmn_sct*)nco_malloc(sizeof(dmn_sct));
               dmn_nw->nm=strdup(lmt_vtr[idx]->nm);
-              dmn_nw->id=lmt_vtr[idx]->id;
+
+              // Fudge -if the variable is from input then nco_lmt_evl
+              // overwrites the dim id's with their input file values
+              // we want the dim ids from output  
+              dmn_nw->id=var_rhs->dim[idx]->id;
+              //dmn_nw->id=lmt_vtr[idx]->id;
               dmn_nw->cnt=lmt_vtr[idx]->cnt;  
               dmn_nw->srt=lmt_vtr[idx]->srt;  
               dmn_nw->end=lmt_vtr[idx]->end;  
