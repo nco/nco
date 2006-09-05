@@ -89,7 +89,7 @@ f2(1,:,::2)=1111;
 f4=th(0,0,0)+th(9,1,3);
 time1(0:4)=.4444;
 time1(5:9)=.5555;
-//Create some attributes --can derive from vars
+// Create attributes and derive attributes from variables
 f2@one=time(::3);
 f2@two=1000.0;
 f2@three=f2@one*f2@two;
@@ -98,25 +98,24 @@ f2@three=f2@one*f2@two;
 // is to be hyperslabbed.
 f3()=time1(0:6:2);
 th(9,,)=th(2,,);
-//Check attribute propagation
-// With command line switch on , a var on the RHS will inhert attributes
-// from the leftermost var ont he RHS
+// Check attribute propagation
+// LHS-variable inherits attributes from left-most RHS-variable
 g1=999.00;
 g1@a=10;
 g1@b=20.0;
 g1@c=30.0;
-//above atts are copied to g2
+// Above attributes are copied to g2
 g2=g1;
-//g3 will get atts for rz 
+//g3 will get attributes for rz 
 g3=rz*four; 
-// Check att propagation with mod and pow
+// Check attribute propagation with mod and pow
 g4= (g1@c * g1@a) % 2.0 ^ three_dmn_var_dbl;
 // Check att propagation with a LHS hyperslab
 g4(2,0,0)=987654.0;
-//Check attribute inheritance
+// Check attribute inheritance
 // z in output should inherit atts from z in input
 z=1000;
-// attribute string handling
+// Attribute string handling
 h1=10.0;
 h1@units="microns";
 h1@long_name="Teslar\t";
