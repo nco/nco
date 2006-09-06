@@ -1323,7 +1323,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,ATT_ID);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1376 "ncoGrammer.g"
+#line 1381 "ncoGrammer.g"
 				
 				// check "output"
 				NcapVar *Nvar;
@@ -1520,7 +1520,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 							}
 							
 							// add dim names to dimension list 
-							for(idx=0 ; idx < nbr_dmn;idx++) 
+							for(idx=0 ; idx < nbr_dmn;idx++)
 							lmt_vtr[idx]->nm=strdup(var_rhs->dim[idx]->nm);   
 							
 							// fill out limit structure
@@ -1531,7 +1531,12 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 							for(idx=0 ;idx <nbr_dmn ; idx++){
 							dmn_nw=(dmn_sct*)nco_malloc(sizeof(dmn_sct));
 							dmn_nw->nm=strdup(lmt_vtr[idx]->nm);
-							dmn_nw->id=lmt_vtr[idx]->id;
+							
+							// Fudge -if the variable is from input then nco_lmt_evl
+							// overwrites the dim id's with their input file values
+							// we want the dim ids from output  
+							dmn_nw->id=var_rhs->dim[idx]->id;
+							//dmn_nw->id=lmt_vtr[idx]->id;
 							dmn_nw->cnt=lmt_vtr[idx]->cnt;  
 							dmn_nw->srt=lmt_vtr[idx]->srt;  
 							dmn_nw->end=lmt_vtr[idx]->end;  
@@ -1584,7 +1589,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 							var_nm=(char*)nco_free(var_nm);
 							
 							
-#line 1588 "ncoTree.cpp"
+#line 1593 "ncoTree.cpp"
 						}
 					}
 					else if ((_t->getType() == VAR_ID)) {
@@ -1592,7 +1597,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 						match(_t,VAR_ID);
 						_t = _t->getNextSibling();
 						if ( inputState->guessing==0 ) {
-#line 1357 "ncoGrammer.g"
+#line 1362 "ncoGrammer.g"
 							
 							
 							char *nm;
@@ -1611,7 +1616,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 							nm=(char*)nco_free(nm);
 							
 							
-#line 1615 "ncoTree.cpp"
+#line 1620 "ncoTree.cpp"
 						}
 					}
 		else {
@@ -1633,17 +1638,17 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 }
 
 var_sct * ncoTree::out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
-#line 1398 "ncoGrammer.g"
+#line 1403 "ncoGrammer.g"
 	var_sct *var;
-#line 1639 "ncoTree.cpp"
+#line 1644 "ncoTree.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefAST out_asn_AST_in = (_t == ANTLR_USE_NAMESPACE(antlr)RefAST(ASTNULL)) ? ANTLR_USE_NAMESPACE(antlr)nullAST : _t;
 	ANTLR_USE_NAMESPACE(antlr)RefAST vid = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST att = ANTLR_USE_NAMESPACE(antlr)nullAST;
-#line 1398 "ncoGrammer.g"
+#line 1403 "ncoGrammer.g"
 	
 	const std::string fnc_nm("assign_asn"); 
 	
-#line 1647 "ncoTree.cpp"
+#line 1652 "ncoTree.cpp"
 	
 	try {      // for error handling
 		if (_t == ANTLR_USE_NAMESPACE(antlr)nullAST )
@@ -1655,7 +1660,7 @@ var_sct * ncoTree::out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,VAR_ID);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1404 "ncoGrammer.g"
+#line 1409 "ncoGrammer.g"
 				
 				var=ncap_var_init(vid->getText().c_str(),prs_arg,true);
 				if(var== (var_sct*)NULL){
@@ -1667,7 +1672,7 @@ var_sct * ncoTree::out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				err_prn(fnc_nm,"Invalid Lvalue defintion of variable " +vid->getText() );
 				}
 				
-#line 1671 "ncoTree.cpp"
+#line 1676 "ncoTree.cpp"
 			}
 			break;
 		}
@@ -1677,7 +1682,7 @@ var_sct * ncoTree::out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,ATT_ID);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1416 "ncoGrammer.g"
+#line 1421 "ncoGrammer.g"
 				
 				// check "output"
 				NcapVar *Nvar;
@@ -1695,7 +1700,7 @@ var_sct * ncoTree::out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				err_prn(fnc_nm,"Invalid Lvalue defintion of attribute " +att->getText() );
 				
 				
-#line 1699 "ncoTree.cpp"
+#line 1704 "ncoTree.cpp"
 			}
 			break;
 		}
