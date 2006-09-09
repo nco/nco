@@ -4,7 +4,7 @@ import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.35 2006-09-06 22:17:25 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.36 2006-09-09 01:03:26 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -816,7 +816,8 @@ class ScriptingEnv:
          if not (absName[0] == absName[-1] == ScriptingEnv.MAGIC_DELIM):
              return False  # do not remap these.
          symname = absName[1:-1] # clip ends
-         fields = string.split(symname, ScriptingEnv.CLASS_SEP)
+         #split, but only once, so we don't destroy the rhs's underscores
+         fields = string.split(symname, ScriptingEnv.CLASS_SEP,1)
          if len(fields) == 2:
              # check for tempname
              if fields[0] == ScriptingEnv.CLASS_TEMP:
@@ -850,10 +851,9 @@ class ScriptingEnv:
          if self.possibleUrl(cand): return False
 
          elts = string.split(cand, ".")
-
-         if len(elts) != 2: #looking for something.ext
-             return False
-         if elts[1] != "nc": # only going to detect .nc
+         # originally, we looked for file.ext, but this is restricting since
+         # file conventions have name.info.info.ext commonly.
+         if elts[-1] != "nc": # only going to detect .nc
              return False
          if elts[0][0] == os.sep: # do not detect with leading /
              return False
