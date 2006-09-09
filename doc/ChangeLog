@@ -5,6 +5,11 @@
 	* Add link to mpirun to $MY_BIN_DIR when building MPI executables
 	with bld/Makefile
 
+2006-08-30  Daniel Wang  <wangd@uci.edu>
+
+	* Added --mpi_upx <user-specified mpi command> option to nco_bm.pl
+	to allow job-scheduler mpi directives like -machinefile
+
 2006-08-26  Charlie Zender  <zender@uci.edu>
 
 	* icc/icpc autoconf build/link succeeds but C++ executables segfault
