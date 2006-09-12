@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.376 2006-09-12 19:30:27 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.377 2006-09-12 22:52:16 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3562,6 +3562,7 @@ values (@pxref{Hyperslabs}).
 
 @html
 <a name="srd"></a> <!-- http://nco.sf.net/nco.html#srd -->
+<a name="stride"></a> <!-- http://nco.sf.net/nco.html#stride -->
 @end html
 @node Stride, Missing Values, Wrapped Coordinates, Common features
 @section Stride 
@@ -3649,6 +3650,7 @@ ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 
 @html
 <a name="mss_val"></a> <!-- http://nco.sf.net/nco.html#mss_val -->
+<a name="mss"></a> <!-- http://nco.sf.net/nco.html#mss -->
 @end html
 @node Missing Values, Packed data, Stride, Common features
 @section Missing values
@@ -3778,6 +3780,7 @@ important information from being lost.
 
 @html
 <a name="pck"></a> <!-- http://nco.sf.net/nco.html#pck -->
+<a name="pack"></a> <!-- http://nco.sf.net/nco.html#pack -->
 @end html
 @node Packed data, Operation Types, Missing Values, Common features
 @section Packed data
@@ -4444,6 +4447,7 @@ ncap -O -s "tpt=short(tpt);prs=double(prs);" in.nc out.nc
 
 @html
 <a name="ovr"></a> <!-- http://nco.sf.net/nco.html#ovr -->
+<a name="-O"></a> <!-- http://nco.sf.net/nco.html#-O -->
 @end html
 @node Batch Mode, History Attribute, Type Conversion, Common features
 @section Batch Mode
@@ -4480,6 +4484,7 @@ interactive keyboard input.
 
 @html
 <a name="hst"></a> <!-- http://nco.sf.net/nco.html#hst -->
+<a name="history"></a> <!-- http://nco.sf.net/nco.html#history -->
 <a name="-h"></a> <!-- http://nco.sf.net/nco.html#-h -->
 @end html
 @node History Attribute, File List Attributes, Batch Mode, Common features
@@ -4767,6 +4772,7 @@ whenever these @acronym{ARM}-specific procedures are executed.
 
 @html
 <a name="vrs"></a> <!-- http://nco.sf.net/nco.html#vrs -->
+<a name="version"></a> <!-- http://nco.sf.net/nco.html#version -->
 @end html
 @node Operator Version,  , ARM Conventions, Common features
 @section Operator Version

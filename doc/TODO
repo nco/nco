@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.811 2006-09-12 19:30:27 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.812 2006-09-12 22:52:16 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -519,7 +519,8 @@ nco773. Fail in non-ncks when stride requested on non-record dimensions (cf. nco
 	ncks -O -v three_dmn_rec_var -d lon,,,2 -p ~/nco/data in.nc ~/foo.nc
 	ncrcat -O -v three_dmn_rec_var -d lon,,,2 -p ~/nco/data in.nc in.nc ~/foo.nc
 	ncks -C -v three_dmn_rec_var ~/foo.nc
-nco774. 
+nco774. Release 3.1.6 when stride seems robust
+nco775. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
