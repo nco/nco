@@ -1,13 +1,15 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.183 2006-08-29 17:50:28 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.184 2006-09-12 19:30:27 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release has new features only for ncap2. Henry Butowsky has added
-vastly more powerful array support, definition and referencing of new
-dimensions, and improved error messages, e.g.,
+This release supports the stride argument for all dimensions for all
+hyperslabbing operators. Formerly, only ncks offered full stride
+support for all dimensions. 
+
+This release has new features only for ncap2. Henry Butowsky has ...
 
 ncap2 -s 'defdim("x",64);x[x]=1.0;x(::2)=0' in.nc out.nc
 
@@ -20,16 +22,18 @@ http://nco.sf.net#Publications
 
 Build/runtime changes:
 
-1. Reduce severity from WARNING to INFO for some common operations
+1. Support stride in all dimensions for all hyperslabbing operators 
+
+2. Reduce severity of inter-file non-monotonicity from WARNING to INFO
    Intended to lower user's blood pressure 
 
-2. Improve Pathscale pathcc/pathCC support (bld/Makefile and autoconf)
+fxm. Improve Pathscale pathcc/pathCC support (bld/Makefile and autoconf)
 
-3. Improve PGI pgcc/pgCC support (bld/Makefile and autoconf)
+fxm. Improve PGI pgcc/pgCC support (bld/Makefile and autoconf)
 
-4. Improve Intel icc/icpc support (bld/Makefile and autoconf)
+fxm. Improve Intel icc/icpc support (bld/Makefile and autoconf)
 
-5. Regression test/benchmark script (nco_bm.pl) improvements
+fxm. Regression test/benchmark script (nco_bm.pl) improvements
 
 Enjoy,
 Charlie

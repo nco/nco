@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.41 2006-06-08 00:51:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.42 2006-09-12 19:30:30 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.41 2006-06-08 00:51:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.41 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.42 2006-09-12 19:30:30 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.42 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRSt:v:x-:";
   
   dmn_sct *rec_dmn;
@@ -538,8 +538,8 @@ main(int argc,char **argv)
   } /* prc_rnk != rnk_mgr */
 #endif /* !ENABLE_MPI */
   
-  /* Zero start vectors for all output variables */
-  (void)nco_var_srt_zero(var_out,nbr_xtr);
+  /* Assign zero-start and unity-stride vectors to output variables */
+  (void)nco_var_srd_srt_set(var_out,nbr_xtr);
   
 #ifdef ENABLE_MPI
   if(prc_rnk == rnk_mgr){ /* prc_rnk != rnk_mgr */

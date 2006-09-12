@@ -1,3 +1,13 @@
+2006-09-12  Charlie Zender  <zender@uci.edu>
+
+	* Revise stride documentation in nco.texi and usage strings
+
+	* Stride now works on non-ncks non-record dimensions, fixes TODO nco773
+
+	* Set stride = 1 in nco_var_srt_srd_set(), formerly nco_var_srt_zero()
+
+	* Implement stride in nco_var_val_cpy()
+
 2006-08-31  Charlie Zender  <zender@uci.edu>
 
 	* Try not to invoke mpncpdq in regression tests on pbs

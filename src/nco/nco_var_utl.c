@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.115 2006-07-25 06:59:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.116 2006-09-12 19:30:31 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -240,7 +240,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
   }else{ /* end if variable is a scalar */
-    if(var_sz > 0){ /* Allow for zero-size record variables TODO nco711 */
+    if(var_sz > 0){ /* Allow for zero-size record variables */
       nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_type);
       nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_type);
     } /* end if var_sz */
@@ -604,7 +604,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
   /* Purpose: Allocate and retrieve given variable hyperslab from disk into memory
      If variable is packed on disk then inquire about scale_factor and add_offset */
-  long idx;
+  int idx;
   long srd_prd=1L; /* [nbr] Product of strides */
   const char fnc_nm[]="nco_var_get()"; /* [sng] Function name */
 
@@ -627,14 +627,14 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
     /* Is stride > 1? */
     for(idx=0;idx<var->nbr_dim;idx++) srd_prd*=var->srd[idx];
 
-    if(srd_prd > 1){ 
-      (void)nco_get_varm(nc_id,var->id,var->srt,var->cnt,var->srd,(long *)NULL,var->val.vp,var->typ_dsk);
-    }else{    
-      if(var->sz > 1)
+    if(srd_prd == 1L){ 
+      if(var->sz > 1L)
 	(void)nco_get_vara(nc_id,var->id,var->srt,var->cnt,var->val.vp,var->typ_dsk);
       else
 	(void)nco_get_var1(nc_id,var->id,var->srt,var->val.vp,var->typ_dsk);
-    } /* end else */
+    }else{ 
+      (void)nco_get_varm(nc_id,var->id,var->srt,var->cnt,var->srd,(long *)NULL,var->val.vp,var->typ_dsk);
+    } /* endif non-unity stride  */
   } /* end potential OpenMP critical */
   
   /* Packing properties initially obtained by nco_pck_dsk_inq() in nco_var_fll()
@@ -1029,6 +1029,8 @@ nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
      from input file to output file. Only data (not metadata) are copied. */
   
   int idx;
+  int dmn_idx;
+  long srd_prd=1L; /* [nbr] Product of strides */
   
   for(idx=0;idx<nbr_var;idx++){
     var[idx]->xrf->val.vp=var[idx]->val.vp=(void *)nco_malloc(var[idx]->sz*nco_typ_lng(var[idx]->type));
@@ -1036,14 +1038,23 @@ nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
       nco_get_var1(in_id,var[idx]->id,var[idx]->srt,var[idx]->val.vp,var[idx]->type);
       nco_put_var1(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->val.vp,var[idx]->type);
     }else{ /* end if variable is a scalar */
-      if(var[idx]->sz > 0){ /* Allow for zero-size record variables TODO nco711 */
-	nco_get_vara(in_id,var[idx]->id,var[idx]->srt,var[idx]->cnt,var[idx]->val.vp,var[idx]->type);
-	nco_put_vara(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->val.vp,var[idx]->type);
+      if(var[idx]->sz > 0){ /* Do nothing for zero-size record variables */
+
+	/* Is stride > 1? */
+	for(dmn_idx=0;dmn_idx<var[idx]->nbr_dim;dmn_idx++) srd_prd*=var[idx]->srd[dmn_idx];
+
+	if(srd_prd == 1L){ 
+	  nco_get_vara(in_id,var[idx]->id,var[idx]->srt,var[idx]->cnt,var[idx]->val.vp,var[idx]->type);
+	  nco_put_vara(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->val.vp,var[idx]->type);
+	}else{
+	  (void)nco_get_varm(in_id,var[idx]->id,var[idx]->srt,var[idx]->cnt,var[idx]->srd,(long *)NULL,var[idx]->val.vp,var[idx]->type);
+	  (void)nco_put_varm(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->srd,(long *)NULL,var[idx]->xrf->val.vp,var[idx]->type);
+	} /* endif variable has non-unity stride */
       } /* end if var_sz */
     } /* end if variable is an array */
     var[idx]->val.vp=var[idx]->xrf->val.vp=nco_free(var[idx]->val.vp);
   } /* end loop over idx */
-
+    
 } /* end nco_var_val_cpy() */
 
 var_sct * /* O [sct] Variable structure */
@@ -1208,8 +1219,8 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
 } /* end nco_var_mtd_refresh() */
 
 void
-nco_var_srt_zero /* [fnc] Zero srt array of variable structure */
-(var_sct ** const var, /* I [sct] Variables whose srt arrays will be zeroed */
+nco_var_srd_srt_set /* [fnc] Assign zero-start and unity-stride vectors to variables */
+(var_sct ** const var, /* I [sct] Variables whose start and stride arrays to set */
  const int nbr_var) /* I [nbr] Number of structures in variable structure list */
 {
   /* Purpose: Zero srt array of variable structure */
@@ -1217,8 +1228,11 @@ nco_var_srt_zero /* [fnc] Zero srt array of variable structure */
   int idx;
   int idx_dmn;
 
-  for(idx=0;idx<nbr_var;idx++)
-    for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++)
+  for(idx=0;idx<nbr_var;idx++){
+    for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
       var[idx]->srt[idx_dmn]=0L;
-
-} /* end nco_var_srt_zero() */
+      var[idx]->srd[idx_dmn]=1L;
+    } /* end loop over dimensions */
+  } /* end loop over variables */
+  
+} /* end nco_var_srd_srt_set() */

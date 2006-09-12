@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.42 2006-06-08 00:51:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.43 2006-09-12 19:30:31 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.42 2006-06-08 00:51:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.42 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.43 2006-09-12 19:30:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.43 $";
   const char * const opt_sht_lst="4ACcD:d:Fhi:l:Oo:p:rRSt:v:xw:-:";
   
   dmn_sct **dim;
@@ -487,8 +487,8 @@ main(int argc,char **argv)
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc_1,&var_prc_out,&nbr_var_prc);
   
-  /* Zero start vectors for all output variables */
-  (void)nco_var_srt_zero(var_out,nbr_xtr);
+  /* Assign zero-start and unity-stride vectors to output variables */
+  (void)nco_var_srd_srt_set(var_out,nbr_xtr);
   
 #ifdef ENABLE_MPI
   if(prc_rnk == rnk_mgr){ /* MPI manager code */

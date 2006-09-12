@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.109 2006-08-23 18:04:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.110 2006-09-12 19:30:31 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.109 2006-08-23 18:04:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.109 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.110 2006-09-12 19:30:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.110 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -703,8 +703,8 @@ main(int argc,char **argv)
   /* Take output file out of define mode */
   (void)nco_enddef(out_id);
   
-  /* Zero start vectors for all output variables */
-  (void)nco_var_srt_zero(var_out,nbr_xtr);
+  /* Assign zero-start and unity-stride vectors to output variables */
+  (void)nco_var_srd_srt_set(var_out,nbr_xtr);
 
   /* Copy variable data for non-processed variables */
   (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);

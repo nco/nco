@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.57 2006-06-08 00:51:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.58 2006-09-12 19:30:31 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.57 2006-06-08 00:51:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.57 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.58 2006-09-12 19:30:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.58 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -571,8 +571,8 @@ main(int argc,char **argv)
   /* Pre-processor token spaghetti here is necessary so that 
      1. UP/SMP/MPI codes all zero srt vectors before calling nco_var_val_cpy() 
      2. No codes zero srt vectors more than once */
-  /* Zero start vectors for all output variables */
-  (void)nco_var_srt_zero(var_out,nbr_xtr);
+  /* Assign zero-start and unity-stride vectors to output variables */
+  (void)nco_var_srd_srt_set(var_out,nbr_xtr);
 
 #ifdef ENABLE_MPI
   if(prc_rnk == rnk_mgr){ /* MPI manager code */

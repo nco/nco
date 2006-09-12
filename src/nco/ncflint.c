@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.128 2006-08-23 18:04:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.129 2006-09-12 19:30:31 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -101,8 +101,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.128 2006-08-23 18:04:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.128 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.129 2006-09-12 19:30:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.129 $";
   const char * const opt_sht_lst="4ACcD:d:Fhi:l:Oo:p:rRt:v:xw:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -481,8 +481,8 @@ main(int argc,char **argv)
   /* Take output file out of define mode */
   (void)nco_enddef(out_id);
   
-  /* Zero start vectors for all output variables */
-  (void)nco_var_srt_zero(var_out,nbr_xtr);
+  /* Assign zero-start and unity-stride vectors to output variables */
+  (void)nco_var_srd_srt_set(var_out,nbr_xtr);
 
   /* Copy variable data for non-processed variables */
   (void)nco_var_val_cpy(in_id_1,out_id,var_fix,nbr_var_fix);

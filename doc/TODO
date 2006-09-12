@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.810 2006-08-31 23:15:08 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.811 2006-09-12 19:30:27 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -515,7 +515,11 @@ nco768. Change some common flags from toggles to hard-coded true/false
         to avoid weird behavior when toggle switches accidentally passed twice,
         e.g., ncks -O -O in.nc foo.nc
 nco772. ncpdq fails MPI regression tests on pbs, possibly others
-nco773. 
+nco773. Fail in non-ncks when stride requested on non-record dimensions (cf. nco690):
+	ncks -O -v three_dmn_rec_var -d lon,,,2 -p ~/nco/data in.nc ~/foo.nc
+	ncrcat -O -v three_dmn_rec_var -d lon,,,2 -p ~/nco/data in.nc in.nc ~/foo.nc
+	ncks -C -v three_dmn_rec_var ~/foo.nc
+nco774. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

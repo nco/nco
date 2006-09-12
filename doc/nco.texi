@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.375 2006-08-29 17:50:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.376 2006-09-12 19:30:27 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -99,12 +99,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 3.1.5
-@set doc-edition 3.1.5
+@set nco-edition 3.1.6
+@set doc-edition 3.1.6
 @set copyright-years 1995--2006
 @set update-year 2006
-@set update-date 29 August 2006
-@set update-month August 2006
+@set update-date 12 September 2006
+@set update-month September 2006
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -3187,6 +3187,7 @@ The coordinate value for a cross-section is the coordinate-variable
 value closest to the specified value and must lie within the range or
 coordinate-variable values. 
 
+@cindex stride
 Coordinate values should be specified using real notation with a decimal 
 point required in the value, whereas dimension indices are specified
 using integer notation without a decimal point. 
@@ -3195,6 +3196,9 @@ dimension indices.
 It is independent of the type of any netCDF coordinate variables.
 For a given dimension, the specified limits must both be coordinate
 values (with decimal points) or dimension indices (no decimal points).
+The @var{stride} option, if any, must be a dimension index, not a
+coordinate value.
+@xref{Stride}, for more information on the @var{stride} option.
 
 @cindex @code{NC_BYTE}
 @cindex @code{NC_CHAR}
@@ -3265,8 +3269,8 @@ For example, suppose it is desired to operate on all longitudes
 from 10.0 to 20.0 and from 80.0 to @w{90.0 degrees}.
 The combined range of longitudes is not selectable in a single 
 hyperslab specfication of the form 
-@samp{-d @var{lon},@var{min},@var{max}} or  
-@samp{-d @var{lon},@var{min},@var{max},@var{stride}} because its
+@samp{-d @var{dimension},@var{min},@var{max}} or  
+@samp{-d @var{dimension},@var{min},@var{max},@var{stride}} because its
 elements are irregularly spaced in coordinate space (and presumably 
 in index space too). 
 The multislab specification for obtaining these values is simply
@@ -3279,13 +3283,8 @@ ncks -d lon,10.,15. -d lon,15.,20. -d lon,80.,90. in.nc out.nc
 @noindent
 Any number of hyperslabs specifications may be chained together
 to specify the multislab.
-Multislabs are more efficient than the alternative of sequentially
-performing hyperslab operations and concatenating the results.
-@cindex I/O
-This is because @acronym{NCO} employs a novel multislab algorithm to
-minimize the number of I/O operations when retrieving irregularly spaced
-data from disk.
 
+@cindex stride
 Users may specify redundant ranges of indices in a multislab, e.g., 
 @example
 ncks -d lon,0,4 -d lon,2,9,2 in.nc out.nc
@@ -3296,6 +3295,16 @@ longitude value up to the tenth.
 Elements 0, 2, @w{and 4} are specified by both hyperslab arguments (hence
 this is redundant) but will count only once if an arithmetic operation
 is being performed.  
+This example uses index-based (not coordinate-based) multislabs because
+the @var{stride} option only supports index-based hyper-slabbing. 
+@xref{Stride}, for more information on the @var{stride} option.
+
+Multislabs are more efficient than the alternative of sequentially
+performing hyperslab operations and concatenating the results.
+@cindex I/O
+This is because @acronym{NCO} employs a novel multislab algorithm to
+minimize the number of I/O operations when retrieving irregularly spaced
+data from disk.
 The @acronym{NCO} multislab algorithm retrieves each element from disk
 once and only once.
 Thus users may take some shortcuts in specifying multislabs and the
@@ -3420,7 +3429,7 @@ time_udunits[1]=876018 hours since 1900-01-01 00:00:0.0
 @noindent
 @cindex stride
 @cindex whitespace
-Here, the user invokes the stride (@pxref{Stride}) capability to obtain
+Here, the user invokes the stride (@pxref{Stride}) capability to obtain 
 every other timeslice.
 This is possible because the UDUnits feature is additive, not
 exclusive---it works in conjunction with all other hyperslabbing
@@ -3561,21 +3570,24 @@ values (@pxref{Hyperslabs}).
 @cindex @code{--dimension @var{dim},[@var{min}],[@var{max}],@var{stride}}
 @cindex @code{--dmn @var{dim},[@var{min}],[@var{max}],@var{stride}}
 @cartouche
-Availability: @command{ncks}, @command{ncra}, @command{ncrcat}@*
+Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
+@command{ncflint}, @command{ncks}, @command{ncpdq}, @command{ncra},
+@command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-d}@*
 Long options: @samp{--dimension}, @samp{--dmn}@*
 @end cartouche
-@command{ncks} offers support for specifying a @dfn{stride} for any
-hyperslab, while @command{ncra} and @command{ncrcat} suport the
-@var{stride} argument only for the record dimension.
+All data operators support specifying a @dfn{stride} for any and all
+dimensions at the same time.
 The @var{stride} is the spacing between consecutive points in a
 hyperslab. 
-@w{A @var{stride}} @w{of 1} means pick all the elements of the
-hyperslab, but a @var{stride} @w{of 2} means skip every other element,
-etc. 
-Using the @var{stride} option with @command{ncra} and @command{ncrcat}
-makes it possible, for instance, to average or concatenate regular
-intervals across multi-file input data sets.
+@w{A @var{stride}} @w{of 1} picks all the elements of the hyperslab, and
+a @var{stride} @w{of 2} skips every other element, etc.@.
+@command{ncks} multislabs support strides, and are more powerful than
+the regular hyperslabs supported by the other operators
+(@pxref{Multislabs}).
+Using the @var{stride} option for the record dimension with
+@command{ncra} and @command{ncrcat} makes it possible, for instance, to
+average or concatenate regular intervals across multi-file input data sets.
 
 The @var{stride} is specified as the optional fourth argument to the
 @samp{-d} hyperslab specification:  
@@ -3626,10 +3638,10 @@ ncks -d time,2,,12 8501_8912.nc 8589_03.nc
 @end example
 @xref{ncks netCDF Kitchen Sink}, for more information on @command{ncks}.
 
-The @var{stride} option is supported by @command{ncra} and
-@command{ncrcat} for the record dimension only.
-This makes it possible, for instance, to average or concatenate regular
-intervals across multi-file input data sets.
+Applying the @var{stride} option to the record dimension in
+@command{ncra} and @command{ncrcat} makes it possible, for instance, to
+average or concatenate regular intervals across multi-file input data
+sets. 
 @example
 ncra -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8589_03.nc
 ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
@@ -6082,7 +6094,7 @@ omitted in batch scripts.
 SYNTAX
 @example 
 ncbo [-4] [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] 
+[-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] 
 [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}]
 @var{file_1} @var{file_2} [@var{file_3}]
@@ -6420,7 +6432,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 SYNTAX
 @example
 ncea [-4] [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
+[-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
@@ -6529,7 +6541,7 @@ Additionally, only data inside the tropics is included.
 SYNTAX
 @example
 ncecat [-4] [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
+[-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] 
 [@var{input-files}] [@var{output-file}]
@@ -6639,7 +6651,7 @@ of changing variable dimensionality, including the record dimension.
 SYNTAX
 @example
 ncflint [-4] [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-i @var{var},@var{val3}]
+[-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-i @var{var},@var{val3}]
 [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] 
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-x]
 @var{file_1} @var{file_2} [@var{file_3}]
@@ -7330,7 +7342,7 @@ For more details @xref{Wrapped Coordinates}.
 SYNTAX
 @example
 ncpdq [-4] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
+[-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-M @var{pck_map}] [-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] 
 [-R] [-r] [-t @var{thr_nbr}] [-U] [-v @var{var}[,@dots{}]] [-x]
 @var{input-file} [@var{output-file}]
@@ -8204,7 +8216,7 @@ The variable @code{prs_sfc} need not exist, and need not contain the
 SYNTAX
 @example
 ncwa [-4] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-I] [-l @var{path}] 
+[-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-I] [-l @var{path}] 
 [-M @var{mask_val}] [-m @var{mask_var}] [-N] [-n] [-O] 
 [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-T @var{mask_comp}]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-W] [-w @var{weight}] [-x] [-y @var{op_typ}]

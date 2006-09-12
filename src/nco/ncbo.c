@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.96 2006-08-23 18:04:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.97 2006-09-12 19:30:31 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.96 2006-08-23 18:04:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.96 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.97 2006-09-12 19:30:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.97 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -500,8 +500,8 @@ main(int argc,char **argv)
   /* Take output file out of define mode */
   (void)nco_enddef(out_id);
   
-  /* Zero start vectors for all output variables */
-  (void)nco_var_srt_zero(var_out,nbr_xtr_1);
+  /* Assign zero-start and unity-stride vectors to output variables */
+  (void)nco_var_srd_srt_set(var_out,nbr_xtr_1);
   
   /* Copy variable data for non-processed variables */
   (void)nco_var_val_cpy(in_id_1,out_id,var_fix_1,nbr_var_fix_1);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.55 2006-08-23 18:04:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.56 2006-09-12 19:30:31 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.55 2006-08-23 18:04:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.55 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.56 2006-09-12 19:30:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.56 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -723,8 +723,8 @@ main(int argc,char **argv)
   } /* prc_rnk != rnk_mgr */
 #endif /* !ENABLE_MPI */
   
-  /* Zero start vectors for all output variables */
-  (void)nco_var_srt_zero(var_out,nbr_xtr);
+  /* Assign zero-start and unity-stride vectors to output variables */
+  (void)nco_var_srd_srt_set(var_out,nbr_xtr);
   
   /* Close first input netCDF file */
   nco_close(in_id);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.57 2006-08-23 18:04:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.58 2006-09-12 19:30:30 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.57 2006-08-23 18:04:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.57 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.58 2006-09-12 19:30:30 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.58 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRSt:v:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -509,8 +509,8 @@ main(int argc,char **argv)
   /* Merge two variable lists into same order */
   rcd=nco_var_lst_mrg(&var_prc_1,&var_prc_2,&nbr_var_prc_1,&nbr_var_prc_2); 
   
-  /* Zero start vectors for all output variables */
-  (void)nco_var_srt_zero(var_out,nbr_xtr_1);
+  /* Assign zero-start and unity-stride vectors to output variables */
+  (void)nco_var_srd_srt_set(var_out,nbr_xtr_1);
   
 #ifdef ENABLE_MPI 
   if(prc_rnk == rnk_mgr){ /* MPI manager code */
