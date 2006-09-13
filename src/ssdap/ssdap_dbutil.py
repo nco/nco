@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.1 2006-06-14 01:45:51 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.2 2006-09-13 22:03:56 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -206,6 +206,10 @@ class JobPersistence:
                 print entry[1]
                 self.showTask(tid)
         # look for filestates
+        self.showFileTable()
+        #print >>sys.stderr, ttable
+    def showFileTable(self):
+        cur = self.cursor()
         cur.execute("select rowid,concretename,state from filestate")
         fstate = cur.fetchall()
         if fstate == []:
@@ -215,6 +219,7 @@ class JobPersistence:
                 print row[0], "Concrete", row[1], "with state", row[2],
                 print "(", JobPersistence.fileStateMap[row[2]], ")"
         #print >>sys.stderr, ttable
+        
     def showTask(self, tid):
         cur = self.cursor()
         cmd = 'select cmdid from tasktable where taskid="%s"' % (tid)
@@ -254,10 +259,15 @@ def selfTest():
     j.deleteTables()
     j.close()
     pass
-def quickshow():
+def quickShow():
     j = JobPersistence()
     j.showState()
     j.close()
+def fileShow():
+    j = JobPersistence()
+    j.showFileTable()
+    j.close()
+
 def deleteTables():
     j = JobPersistence()
     print "ok, deleting tables from ssdap"

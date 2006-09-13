@@ -4,7 +4,7 @@ import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.36 2006-09-09 01:03:26 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.37 2006-09-13 22:03:56 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -341,11 +341,15 @@ class Command:
             return
         self.myName = mycmd + str(len(self.env.commands))
         self.cmd = mycmd
-
+        commentStart = len(argv)
+        for x in range(len(argv)):
+            if argv[x][0] == "#":
+                commentStart = x
+                break
         if self.cmd in ScriptingEnv.META_COMMANDS:
-            self.parseMetaCmd(argv[1:])
+            self.parseMetaCmd(argv[1:commentStart])
         else:
-            self.parseNormalCmd(argv[1:])
+            self.parseNormalCmd(argv[1:commentStart])
 
     def parseMetaCmd(self, argv):
         metamap = {"ssd_initsave" : self.cmdInitSave,
@@ -908,7 +912,7 @@ class ScriptingEnv:
              self.markCmdStart(c)
              self.runCmdRaw(c)
              self.markCmdFinish(c)
-         logit("Finished cmd exec")
+             logit("Finished cmd exec")
          pass
     def runCmdRaw(self, cmd):
          outFd = os.devnull
@@ -1253,7 +1257,9 @@ class FrontEnd:
             pass
 
         #self.env["local"] = "true"
-        scriptenv = ScriptingEnv(self.scriptlines, self.env)
+        import profile
+        profile.run( 'scriptenv = ScriptingEnv(self.scriptlines, self.env)'\
+                     '/tmp/latestInitprofile')
         scriptenv.execute() #####
         #print "Skipping real execution for now"
         scriptenv.returnOutput(sys.stdout)
