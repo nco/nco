@@ -5,17 +5,19 @@
 # 2. Submit script to batch system
 # 3. Cleanup
 
+# Source: Daniel Wang and Charlie Zender
+
 # Usage: 
 # NB: Run this command from NCO's benchmark directory (nco/bm)
 # chmod a+x ~/nco/bm/nco_bm_bch.sh
 # cd ~/nco/bm;./nco_bm_bch.sh
 
-if [ -n "${DATA}" ]; then
+if [ -z "${DATA}" ]; then
 # ${DATA} must be writable directory on cluster-shared filesystem
 # Benchmarks will create a sub-directory in ${DATA}
     DATA="/data/${USER}"
 fi # endif
-if [ -n "${MY_BIN_DIR}" ]; then
+if [ -z "${MY_BIN_DIR}" ]; then
     MY_BIN_DIR="/home/${USER}/ncotree/nco/bin"
 fi # endif
 
