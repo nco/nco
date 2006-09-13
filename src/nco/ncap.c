@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.196 2006-08-23 18:04:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.197 2006-09-13 20:47:26 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.196 2006-08-23 18:04:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.196 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.197 2006-09-13 20:47:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.197 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -144,9 +144,7 @@ main(int argc,char **argv)
   /* Basic math: acos, asin, atan, cos, exp, fabs, log, log10, sin, sqrt, tan */
   
   /* GNU g++ barfs at these float declartions -- remove if g++ used */
-
 #ifndef __GNUG__
-  
   extern float acosf(float);
   extern float asinf(float);
   extern float atanf(float);
