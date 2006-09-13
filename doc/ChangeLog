@@ -1,5 +1,7 @@
 2006-09-12  Charlie Zender  <zender@uci.edu>
 
+	* Remove trunc() symbol (which AIX lacks) from ncap2 to simplify AIX builds
+
 	* Revise stride documentation in nco.texi and usage strings
 
 	* Stride now works on non-ncks non-record dimensions, fixes TODO nco773

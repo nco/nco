@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.22 2006-09-05 05:49:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.23 2006-09-13 04:39:17 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.22 2006-09-05 05:49:08 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.22 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.23 2006-09-13 04:39:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.23 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -150,9 +150,7 @@ main(int argc,char **argv)
   /* Basic math: acos, asin, atan, cos, exp, fabs, log, log10, sin, sqrt, tan */
   
   /* GNU g++ barfs at these float declartions -- remove if g++ used */
-
 #ifndef __GNUG__
-  
   extern float acosf(float);
   extern float asinf(float);
   extern float atanf(float);
@@ -484,7 +482,7 @@ main(int argc,char **argv)
   /* Advanced Rounding: nearbyint, round, trunc */
   /* sym_vtr.push(ncap_sym_init("nearbyint",nearbyint,nearbyintf)); *//* Round to integer value in floating point format using current rounding direction, do not raise inexact exceptions */
   /* sym_vtr.push(ncap_sym_init("round",round,roundf)); *//* Round to nearest integer away from zero */
-     sym_vtr.push(ncap_sym_init("trunc",trunc,truncf));  /* Round to nearest integer not larger in absolute value */
+  /* sym_vtr.push(ncap_sym_init("trunc",trunc,truncf)); *//* Round to nearest integer not larger in absolute value */
   /* sym_vtr.push(ncap_sym_init("rint",rint,rintf)); *//* Round to integer value in floating point format using current rounding direction, raise inexact exceptions */
    
   if(PRN_FNC_TBL){
