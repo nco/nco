@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.128 2006-09-12 19:30:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.129 2006-09-14 17:01:53 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.128 2006-09-12 19:30:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.128 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.129 2006-09-14 17:01:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.129 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRt:v:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -419,6 +419,7 @@ main(int argc,char **argv)
     rec_dmn->is_rec_dmn=True;
     rec_dmn->sz=0L;
     rec_dmn->cnt=0L;
+    rec_dmn->srd=0L;
     rec_dmn->srt=0L;
     rec_dmn->end=rec_dmn->sz-1L;
       
@@ -454,22 +455,25 @@ main(int argc,char **argv)
       var_prc_out[idx]->dim=(dmn_sct **)nco_realloc(var_prc_out[idx]->dim,var_prc_out[idx]->nbr_dim*sizeof(dmn_sct *));
       var_prc_out[idx]->dmn_id=(int *)nco_realloc(var_prc_out[idx]->dmn_id,var_prc_out[idx]->nbr_dim*sizeof(int));
       var_prc_out[idx]->cnt=(long *)nco_realloc(var_prc_out[idx]->cnt,var_prc_out[idx]->nbr_dim*sizeof(long));
-      var_prc_out[idx]->srt=(long *)nco_realloc(var_prc_out[idx]->srt,var_prc_out[idx]->nbr_dim*sizeof(long));
       var_prc_out[idx]->end=(long *)nco_realloc(var_prc_out[idx]->end,var_prc_out[idx]->nbr_dim*sizeof(long));
+      var_prc_out[idx]->srd=(long *)nco_realloc(var_prc_out[idx]->srd,var_prc_out[idx]->nbr_dim*sizeof(long));
+      var_prc_out[idx]->srt=(long *)nco_realloc(var_prc_out[idx]->srt,var_prc_out[idx]->nbr_dim*sizeof(long));
       
-      /* Move current array by one to make room for new record dimension info */
+      /* Moves current array by one to make room for new record dimension info */
       (void)memmove((void *)(var_prc_out[idx]->dim+1),(void *)(var_prc_out[idx]->dim),(var_prc_out[idx]->nbr_dim-1)*sizeof(dmn_sct *));
       (void)memmove((void *)(var_prc_out[idx]->dmn_id+1),(void *)(var_prc_out[idx]->dmn_id),(var_prc_out[idx]->nbr_dim-1)*sizeof(int));
       (void)memmove((void *)(var_prc_out[idx]->cnt+1),(void *)(var_prc_out[idx]->cnt),(var_prc_out[idx]->nbr_dim-1)*sizeof(long));
-      (void)memmove((void *)(var_prc_out[idx]->srt+1),(void *)(var_prc_out[idx]->srt),(var_prc_out[idx]->nbr_dim-1)*sizeof(long));
       (void)memmove((void *)(var_prc_out[idx]->end+1),(void *)(var_prc_out[idx]->end),(var_prc_out[idx]->nbr_dim-1)*sizeof(long));
+      (void)memmove((void *)(var_prc_out[idx]->srd+1),(void *)(var_prc_out[idx]->srd),(var_prc_out[idx]->nbr_dim-1)*sizeof(long));
+      (void)memmove((void *)(var_prc_out[idx]->srt+1),(void *)(var_prc_out[idx]->srt),(var_prc_out[idx]->nbr_dim-1)*sizeof(long));
       
       /* Insert value for new record dimension */
       var_prc_out[idx]->dim[0]=rec_dmn;
       var_prc_out[idx]->dmn_id[0]=rec_dmn->id;
       var_prc_out[idx]->cnt[0]=1L;
-      var_prc_out[idx]->srt[0]=-1L;
       var_prc_out[idx]->end[0]=-1L;
+      var_prc_out[idx]->srd[0]=-1L;
+      var_prc_out[idx]->srt[0]=-1L;
 		    
     } /* end loop over idx */
     

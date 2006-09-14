@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.812 2006-09-12 22:52:16 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.813 2006-09-14 17:01:53 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -520,7 +520,13 @@ nco773. Fail in non-ncks when stride requested on non-record dimensions (cf. nco
 	ncrcat -O -v three_dmn_rec_var -d lon,,,2 -p ~/nco/data in.nc in.nc ~/foo.nc
 	ncks -C -v three_dmn_rec_var ~/foo.nc
 nco774. Release 3.1.6 when stride seems robust
-nco775. 
+nco775. ncecat failure on ashes/virga in regression test w/w/o mmr_drt
+	ncks -h -O -v one -p ~/nco/data in.nc /data/zender/nco_bm/tempf_00.nc
+	ncks -h -O -v one -p ~/nco/data in.nc /data/zender/nco_bm/tempf_01.nc
+	ncecat -h -O --mmr_cln -D 0 /data/zender/nco_bm/tempf_00.nc /data/zender/nco_bm/tempf_01.nc /data/zender/nco_bm/tempf_02.nc # segfault on virga/ashes
+	ncks /data/zender/nco_bm/tempf_00.nc
+nco776. Minor, fixable memory leaks in ncecat
+nco777. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

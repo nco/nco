@@ -1,3 +1,7 @@
+2006-09-14  Charlie Zender  <zender@uci.edu>
+
+	* Fix ncecat/mpncecat regressions caused by new stride capability
+
 2006-09-12  Charlie Zender  <zender@uci.edu>
 
 	* Remove trunc() symbol (which AIX lacks) from ncap2 to simplify AIX builds
