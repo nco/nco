@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.813 2006-09-14 17:01:53 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.814 2006-09-14 17:43:15 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -520,13 +520,20 @@ nco773. Fail in non-ncks when stride requested on non-record dimensions (cf. nco
 	ncrcat -O -v three_dmn_rec_var -d lon,,,2 -p ~/nco/data in.nc in.nc ~/foo.nc
 	ncks -C -v three_dmn_rec_var ~/foo.nc
 nco774. Release 3.1.6 when stride seems robust
-nco775. ncecat failure on ashes/virga in regression test w/w/o mmr_drt
-	ncks -h -O -v one -p ~/nco/data in.nc /data/zender/nco_bm/tempf_00.nc
-	ncks -h -O -v one -p ~/nco/data in.nc /data/zender/nco_bm/tempf_01.nc
-	ncecat -h -O --mmr_cln -D 0 /data/zender/nco_bm/tempf_00.nc /data/zender/nco_bm/tempf_01.nc /data/zender/nco_bm/tempf_02.nc # segfault on virga/ashes
-	ncks /data/zender/nco_bm/tempf_00.nc
 nco776. Minor, fixable memory leaks in ncecat
-nco777. 
+nco777. ncra regression on ipcc only w/w/o mmr_drt with > 1 thread.
+	May indicate problem with timer behavior in OpenMP code.
+	ncra -O -t 1 --mmr_drt -D 1 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc # works fine
+	ncra -O -t 2 --mmr_drt -D 1 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc # fails
+	cra: INFO omp_set_num_threads() used to set execution environment to spawn teams of 2 threads
+	ncra: CONVENTION File "Conventions" attribute is "CF-1.0"
+	ncra: TIMER Metadata setup and file layout before main loop took    0.00 s
+	ncra: INFO Input file 0 is /home/zender/nco/data/in.nc
+	ncra: INFO Input file 1 is /home/zender/nco/data/in.nc
+	ncra: INFO Moving /home/zender/foo.nc.pid7069.ncra.tmp to /home/zender/foo.nc...done
+	**** Segmentation fault!  Fault address: 0x20
+	ncra: TIMER Wallclock-elapsed time for command is    0.00 s
+nco778. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
