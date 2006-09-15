@@ -1,3 +1,7 @@
+2006-09-15  Charlie Zender  <zender@uci.edu>
+
+	* Change ncbo type difference from warning to level 1 info message
+
 2006-09-14  Charlie Zender  <zender@uci.edu>
 
 	* Fix ncecat/mpncecat regressions caused by new stride capability
