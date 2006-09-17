@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.814 2006-09-14 17:43:15 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.815 2006-09-17 22:49:19 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -533,7 +533,10 @@ nco777. ncra regression on ipcc only w/w/o mmr_drt with > 1 thread.
 	ncra: INFO Moving /home/zender/foo.nc.pid7069.ncra.tmp to /home/zender/foo.nc...done
 	**** Segmentation fault!  Fault address: 0x20
 	ncra: TIMER Wallclock-elapsed time for command is    0.00 s
-nco778. 
+nco778. ncrename should allow renaming dimensions to existing dimensions so long as dimension size does not change. Problem is that netCDF nc_rename_dim() disallows this.
+	ncks -O -v lev,lat_grd -p ~/nco/data in.nc ~/foo.nc
+	ncrename -O -d lev,lat_grd ~/foo.nc ~/foo.nc
+nco779. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
