@@ -310,8 +310,8 @@ protected BLASTOUT: .
 
           ostringstream os;
           char ch=LA(0);
-          os << getFilename() <<":"<<getLine()<<":"<<getColumn() 
-             <<": unexpected char : '" << ch <<"'"<< endl;
+          os << getFilename() <<" Line "<< getLine() <<" Column "<< getColumn() 
+             <<": unexpected character: '" << ch <<"'"<< endl;
 
           ANTLR_USE_NAMESPACE(antlr)RecognitionException re(os.str());
           throw  ANTLR_USE_NAMESPACE(antlr)TokenStreamRecognitionException(re);
@@ -341,7 +341,6 @@ CPP_COMMENT: "//" (~'\n')* '\n'
     { $setType(antlr::Token::SKIP); newline(); }
     ;
 
-
 C_COMMENT:       
 		"/*"
  		( { LA(2) != '/' }? '*'
@@ -352,27 +351,28 @@ C_COMMENT:
         { $setType(antlr::Token::SKIP);}
         ;
 
-
-NUMBER:
-	(DGT)+	{ $setType(INT); }
-	( ( '.'  (DGT)* (XPN)? ) { $setType(DOUBLE); }
-       | (XPN)         { $setType(DOUBLE);}
-       | ('L'|'l')!    { $setType(INT);   }
-       | ('S'|'s')!    { $setType(SHORT); }
-       | ('B'|'b')!    { $setType(BYTE);  }
-    )?
-    (    ('F'|'f')!    { $setType(FLOAT); }
-       | ('D'|'d')!    { $setType(DOUBLE);}
-    )?        
-;
-
-// deal with number like .123, .2e3 ,.123f, 0.23d
+// Numbers like .123, .2e3 ,.123f, 0.23d
+// csz: Treat "l" or "L" following decimal point as "long double" as per C++
 NUMBER_DOT:
       '.' (DGT)+ (XPN)? { $setType(DOUBLE); }  
       ( ('D'|'d')!     {  $setType(DOUBLE);}
        |('F'|'f')!     {  $setType(FLOAT);}
+       |('L'|'l')!     {  $setType(DOUBLE);}
       )?        
     ;
+
+NUMBER:
+	(DGT)+	{ $setType(INT); }
+	( ( '.'  (DGT)* ((XPN)? | ('L'|'l')! )) { $setType(DOUBLE); } // 3.14e0, 3.14L, 3.14l
+       | (XPN)         { $setType(DOUBLE);} // 3e0
+       | ('L'|'l')!    { $setType(INT);   } // 3l, 3L
+       | ('S'|'s')!    { $setType(SHORT); } // 3s, 3S
+       | ('B'|'b')!    { $setType(BYTE);  } // 3b, 3B
+    )?
+    (    ('F'|'f')!    { $setType(FLOAT); } // 3F, 3f
+       | ('D'|'d')!    { $setType(DOUBLE);} // 3D, 3d
+    )?        
+;
 
 // Return var or attribute (var_nm@att_nm)
 VAR_ATT:  (LPH)(LPH|DGT)*   
@@ -386,7 +386,6 @@ VAR_ATT:  (LPH)(LPH|DGT)*
          )?
 ;
 
-
 DIM_VAL: '$'! (LPH)(LPH|DGT)* 
             {$setType(DIM_ID);}
          ( ".size"!  
@@ -397,13 +396,7 @@ DIM_VAL: '$'! (LPH)(LPH|DGT)*
 NSTRING: '"'! ( ~('"'|'\n'))* '"'! {$setType(NSTRING);}
    ;
 
-
-
-
-
 class ncoTree extends TreeParser;
-
-
 {
 
 private:

@@ -1,4 +1,4 @@
-/* $ANTLR 2.7.6 (20060530): "ncoGrammer.g" -> "ncoParser.cpp"$ */
+/* $ANTLR 2.7.5 (20050629): "ncoGrammer.g" -> "ncoParser.cpp"$ */
 #include "ncoParser.hpp"
 #include <antlr/NoViableAltException.hpp>
 #include <antlr/SemanticException.hpp>
@@ -1691,8 +1691,8 @@ const char* ncoParser::tokenNames[] = {
 	"Whitespace",
 	"CPP_COMMENT",
 	"C_COMMENT",
-	"NUMBER",
 	"NUMBER_DOT",
+	"NUMBER",
 	"VAR_ATT",
 	"DIM_VAL",
 	0

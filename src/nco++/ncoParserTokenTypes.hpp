@@ -1,7 +1,7 @@
 #ifndef INC_ncoParserTokenTypes_hpp_
 #define INC_ncoParserTokenTypes_hpp_
 
-/* $ANTLR 2.7.6 (20060530): "ncoGrammer.g" -> "ncoParserTokenTypes.hpp"$ */
+/* $ANTLR 2.7.5 (20050629): "ncoGrammer.g" -> "ncoParserTokenTypes.hpp"$ */
 
 #ifndef CUSTOM_API
 # define CUSTOM_API
@@ -81,8 +81,8 @@ struct CUSTOM_API ncoParserTokenTypes {
 		Whitespace = 70,
 		CPP_COMMENT = 71,
 		C_COMMENT = 72,
-		NUMBER = 73,
-		NUMBER_DOT = 74,
+		NUMBER_DOT = 73,
+		NUMBER = 74,
 		VAR_ATT = 75,
 		DIM_VAL = 76,
 		NULL_TREE_LOOKAHEAD = 3
