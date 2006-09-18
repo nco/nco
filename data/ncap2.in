@@ -179,12 +179,11 @@ j4= ( i7<9 ? ++j2 : ++j3);
 defdim("x",1);
 defdim("y",4);
 defdim("z",9);
-//cast a new variable
+// LHS Cast a new variable with new dimensions
 k1[$x,$y,$z]=1.01d;
-// the "value" of a dimension can be used in an expression
-// by postfixing it with size ie.
+// Dimension size can be used in an expression by postfixing it with "size" e.g.,
 if( $x.size==1 && $y.size < 5 && $z.size==9)
-  k1@max=9;
+k1@max=9;
 //
 k1@size=$x.size*$y.size*$z.size;
 // hyperlsab with dim values
