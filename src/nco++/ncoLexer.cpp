@@ -1118,8 +1118,8 @@ void ncoLexer::mBLASTOUT(bool _createToken) {
 	
 	ostringstream os;
 	char ch=LA(0);
-	os << getFilename() <<":"<<getLine()<<":"<<getColumn() 
-	<<": unexpected char : '" << ch <<"'"<< endl;
+	os << getFilename() << " line " << getLine() << ", column "<< getColumn() 
+	<<": unexpected character '" << ch << "'" << endl;
 	
 	ANTLR_USE_NAMESPACE(antlr)RecognitionException re(os.str());
 	throw  ANTLR_USE_NAMESPACE(antlr)TokenStreamRecognitionException(re);
@@ -1170,8 +1170,8 @@ void ncoLexer::mUNUSED_OPS(bool _createToken) {
 	
 	
 	ostringstream os;
-	os << getFilename() <<":"<<getLine()<<":"<<getColumn() 
-	<<": unused operator : '" << getText() <<"'"<< endl;
+	os << getFilename() << " line " << getLine() << ", column "<< getColumn() 
+	<< ": unused operator '" << getText() << "'" << endl;
 	
 	ANTLR_USE_NAMESPACE(antlr)RecognitionException re(os.str());
 	throw  ANTLR_USE_NAMESPACE(antlr)TokenStreamRecognitionException(re);

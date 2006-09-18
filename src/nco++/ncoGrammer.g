@@ -310,8 +310,8 @@ protected BLASTOUT: .
 
           ostringstream os;
           char ch=LA(0);
-          os << getFilename() <<" Line "<< getLine() <<" Column "<< getColumn() 
-             <<": unexpected character: '" << ch <<"'"<< endl;
+          os << getFilename() << " line " << getLine() << ", column "<< getColumn() 
+             << ": unexpected character '" << ch << "'" << endl;
 
           ANTLR_USE_NAMESPACE(antlr)RecognitionException re(os.str());
           throw  ANTLR_USE_NAMESPACE(antlr)TokenStreamRecognitionException(re);
@@ -322,8 +322,8 @@ protected BLASTOUT: .
 UNUSED_OPS: ( "%=" | "^=" | "&=" | "|=" ) {
   
           ostringstream os;
-          os << getFilename() <<":"<<getLine()<<":"<<getColumn() 
-             <<": unused operator : '" << getText() <<"'"<< endl;
+          os << getFilename() << " line " << getLine() << ", column "<< getColumn() 
+             << ": unused operator '" << getText() << "'" << endl;
 
           ANTLR_USE_NAMESPACE(antlr)RecognitionException re(os.str());
           throw  ANTLR_USE_NAMESPACE(antlr)TokenStreamRecognitionException(re);
