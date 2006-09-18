@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.24 2006-08-24 20:44:42 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.25 2006-09-18 18:45:24 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -64,12 +64,13 @@ nco/data/Makefile(v)	Autotools-generated Makefile
 nco/data/Makefile.am	Automake instructions
 nco/data/Makefile.in(v)	Autotools-generated Makefile
 nco/data/big.cdl 	CDL file to huge netCDF test files
+nco/data/ddra.nco	Sample ncap2 script that computes DDRA statistics
 nco/data/in.cdl 	CDL file to generate netCDF test file in.nc
 nco/data/in_rec_zero.cdl 	CDL file to test zero-record files
-nco/data/ncap.in	Sample input script for ncap
-nco/data/ncap2.in	Sample input script for ncap2
+nco/data/ncap.in	Sample ncap input script
+nco/data/ncap2.in	Sample ncap2 input script
+nco/data/psd.nco	Sample ncap2 script that computes particle size distributions
 nco/data/tst.nco	Sample ncap script that computes geophysical quantities
-nco/data/ddra.nco	Sample ncap script that computes DDRA statistics
 
 Documentation directory:
 nco/doc/ANNOUNCE	Announcement to accompany release notifications

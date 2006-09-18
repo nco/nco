@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.815 2006-09-17 22:49:19 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.816 2006-09-18 18:45:24 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -756,8 +756,8 @@ ncap66. make ncap errors fatal, either in yyerror(), or call nco_error_exit()
 ncap70. gamma() function broken on AIX
 ncap71. Remove erf and gamma functions from AIX build
 ncap72. Stop linking to -lC on AIX. Get all float math functions by casting double versions
-ncap78. ncap2 ddra.nco bug?
-ncap79. 
+ncap79. make abs() synonym for fabs() and pow() and ** synonyms for ^
+ncap80. 
 ************************************************************************
 End ncapXXX TODOs
 ************************************************************************

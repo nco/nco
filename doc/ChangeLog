@@ -1,3 +1,11 @@
+2006-09-18  Charlie Zender  <zender@uci.edu>
+
+	* Confirmed psd.nco works correctly
+
+	* Add psd.nco, an ncap2 script for particle size distributions
+
+	* Make ncap2 read 3.14L as float not erroneous int as per C++
+
 2006-09-15  Charlie Zender  <zender@uci.edu>
 
 	* Change ncbo type difference from warning to level 1 info message
