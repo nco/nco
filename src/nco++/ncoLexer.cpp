@@ -1119,7 +1119,7 @@ void ncoLexer::mBLASTOUT(bool _createToken) {
 	ostringstream os;
 	char ch=LA(0);
 	os << getFilename() << " line " << getLine() << ", column "<< getColumn() 
-	<<": unexpected character '" << ch << "'" << endl;
+	<< ": unexpected character '" << ch << "'" << endl;
 	
 	ANTLR_USE_NAMESPACE(antlr)RecognitionException re(os.str());
 	throw  ANTLR_USE_NAMESPACE(antlr)TokenStreamRecognitionException(re);
