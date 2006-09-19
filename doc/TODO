@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.816 2006-09-18 18:45:24 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.817 2006-09-19 00:58:45 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -506,7 +506,7 @@ nco757. ncbo bug: works with --mmr_drt, fails with --mmr_cln
 nco757. Make sure above ncbo bug is not in ncflint
 nco759. Document --mmr_cln flag
 nco761. Merge timer srt/end calls to MPI codes
-nco763. Access the IPCC AR4 database via OPeNDAP: http://www-pcmdi.llnl.gov/software-portal/esg_data_portal/dapserver
+nco763. Access IPCC AR4 database via OPeNDAP: http://www-pcmdi.llnl.gov/software-portal/esg_data_portal/dapserver
 	Sample datasets look like:
         http://climate.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0/pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml.html
         ncks -M -p http://zender:password@climate.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0 pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml
@@ -515,11 +515,6 @@ nco768. Change some common flags from toggles to hard-coded true/false
         to avoid weird behavior when toggle switches accidentally passed twice,
         e.g., ncks -O -O in.nc foo.nc
 nco772. ncpdq fails MPI regression tests on pbs, possibly others
-nco773. Fail in non-ncks when stride requested on non-record dimensions (cf. nco690):
-	ncks -O -v three_dmn_rec_var -d lon,,,2 -p ~/nco/data in.nc ~/foo.nc
-	ncrcat -O -v three_dmn_rec_var -d lon,,,2 -p ~/nco/data in.nc in.nc ~/foo.nc
-	ncks -C -v three_dmn_rec_var ~/foo.nc
-nco774. Release 3.1.6 when stride seems robust
 nco776. Minor, fixable memory leaks in ncecat
 nco777. ncra regression on ipcc only w/w/o mmr_drt with > 1 thread.
 	May indicate problem with timer behavior in OpenMP code.
@@ -536,7 +531,11 @@ nco777. ncra regression on ipcc only w/w/o mmr_drt with > 1 thread.
 nco778. ncrename should allow renaming dimensions to existing dimensions so long as dimension size does not change. Problem is that netCDF nc_rename_dim() disallows this.
 	ncks -O -v lev,lat_grd -p ~/nco/data in.nc ~/foo.nc
 	ncrename -O -d lev,lat_grd ~/foo.nc ~/foo.nc
-nco779. 
+nco779. Add non-record stride checks to regression tests e.g.,
+	ncks -O -v three_dmn_rec_var -d lon,,,2 -p ~/nco/data in.nc ~/foo.nc
+	ncrcat -O -v three_dmn_rec_var -d lon,,,2 -p ~/nco/data in.nc in.nc ~/foo.nc
+	ncks -C -v three_dmn_rec_var ~/foo.nc
+nco780. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

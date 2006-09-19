@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.40 2006-09-18 20:09:23 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.41 2006-09-19 00:58:45 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -70,6 +70,7 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
 6. To synchronize .debs with new releases, follow this procedure:
    cd ~/nco/bld
    make tags
+# Put cute version-specific string in nco_ctl.c:nco_nmn_get()
 # Install correct version numbers before updating Debian
 # tags-query replace 3_1_6 with X_Y_Z+1
 # tags-query replace 3.1.6 with X.Y.Z+1
