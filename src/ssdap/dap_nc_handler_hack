@@ -4,7 +4,7 @@ import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.37 2006-09-13 22:03:56 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.38 2006-09-19 00:56:04 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -1126,24 +1126,28 @@ class ScriptingEnv:
 
 
 class FrontEnd:
-    # put in url .../foo.nc.dods?superduperscript11"
+    # expecting something like:
+    # http://hostname/cgi-bin/nph-dods/dodsdata/foo.nc.dods?superduperscript11"
+    # 
     MAGIC_CONSTRAINT = "superduperscript11"
     # use in script to indicate what file should be sent back.
 
     def __init__(self, sysargs):
+        "setup a frontend parser to interact with the outside world's input"
         # -d and -f options are supposed to be deprecated
-        self.shortopts = "Lcd:r:o:e:f:l:u:v:"
+        self.shortOpts = "Lcd:r:o:e:f:l:u:v:"
+        self.longOpts = ["dryparse="]
         self.args = {}
         self.originalargs = sysargs
         self.env = {}
 
-        parsed =  getopt.getopt(sysargs[1:], self.shortopts)
+        parsed =  getopt.getopt(sysargs[1:], self.shortOpts, self.longOpts)
         self.nonpars = []
         self.newp = []
         if parsed[1] != []:
             #logit( "nonparseable avail."+str(parsed[1]))
             nonpars = parsed[1][0]
-            newp = getopt.getopt(parsed[1][1:],self.shortopts)
+            newp = getopt.getopt(parsed[1][1:],self.shortOpts)
             newp = newp[0]
         else:
             nonpars = ""
@@ -1166,11 +1170,15 @@ class FrontEnd:
 
         pass
     def accessmode(self):
-        if "-o" not in self.args:
+        """Return the appropriate execution mode, given the object's
+    initialization parameters."""
+        if ("-o" not in self.args):
             return "helpmode"
         return self.args["-o"]
     def passthrough(self):
-        """ this should bounce the call to the default opendap netcdf handler"""
+        """An execution possibility.  Use this when we don't have a
+    custom handler for these options.  This should bounce the call to
+    the default opendap netcdf handler."""
         newargs = [local.passthroughPath] + self.originalargs[1:]
         newline = ""
         ## need to substitute null strings to provide null -e option
@@ -1186,6 +1194,9 @@ class FrontEnd:
         shutil.copyfileobj(sout, sys.stdout)
 
     def argReport(args):
+        """Return a string containing an argument report for the
+        initialization parameters.  This should be useful for
+        debugging."""
         report = ""
         report += "scratch space loc(-r): " + self.args["-r"] + "\n"
         report += "originalurl(-u): " + self.args["-u"] + "\n"
@@ -1222,6 +1233,8 @@ class FrontEnd:
 
 
     def execute(self):
+        """Perform the task that (hopefully) got parsed in this object's
+        initialization."""
         jumptable={'dods' : self.runhacked,
                'DODS' : self.runhacked,
                'das' :  self.passthrough,
