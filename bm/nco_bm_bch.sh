@@ -39,30 +39,33 @@ cat > ${SCRIPT} <<EOF1
 #PBS -V
 ## Combine stdout with stderr
 #PBS -j oe
-## Number of nodes:queue_name:mpi_processes_per_node
-#PBS -l nodes=2:regular:ppn=1
-##PBS -l nodes=compute-0-10+compute-0-11
 ## Notify user via email at end or if aborted
 #PBS -m ea
 ## PBS output file
 #PBS -o /home/zender/cam/esmfipcc02.txt
 ## Queue name
 #PBS -q regular
+## Number of nodes:mpi_processes_per_node
+#PBS -l nodes=${MPI_PRC}:ppn=1
+##PBS -l nodes=compute-0-10+compute-0-11
 
-#$ -S /bin/bash
-## /bin/sh may have broken .profile (???) that affects batch logins
-## Parallel environment
-#$ -pe mpich ${MPI_PRC}
+# Grid Engine (aka SGE) (e.g., for pbs.ess.uci.edu)
 ## Job Name
 #$ -N ${CASEID}
-## Set P4_GLOBMEMSIZE (p4 recv errors otherwise)
-#$ -v P4_GLOBMEMSIZE=10000000
+#$ -S /bin/bash
+## /bin/sh may have broken .profile (???) that affects batch logins
 ## Run in current directory
 #$ -cwd
 ## Combine stdout with stderr
 #$ -j yes
 ## Notify user via email at end or if aborted
 ##$ -m ea
+## SGE output file
+#$ -o ${CASEID}.txt
+## Parallel environment (NB: This sets NSLOTS = total # of MPI processes on all nodes)
+#$ -pe mpich ${MPI_PRC}
+## Set P4_GLOBMEMSIZE (p4 recv errors otherwise)
+#$ -v P4_GLOBMEMSIZE=10000000
 export DATA=${DATA}
 export MY_BIN_DIR=${MY_BIN_DIR}
 
