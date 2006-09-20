@@ -4,7 +4,7 @@ import re, string, time
 import md5
        
        
-# $Id: dap_nc_handler_hack,v 1.38 2006-09-19 00:56:04 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.39 2006-09-20 18:21:38 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -236,6 +236,7 @@ def prestartLogging():
         p = str(local.mypid)
         local.logfile.write("handler "+p+" log open at " + time.ctime()+"\n")
 def startLogging():
+    """Officially start the logging system."""
     if not local.disableLogging:
         lastcontents = local.logfile.getvalue()
         #must overwrite local.logfile so we know we're out of prestart
@@ -247,6 +248,7 @@ def startLogging():
         #local.logfile.write("log located at " + local.logLocation + "\n")
 
 def logit(s):
+    """Add the string s to the current logfile."""
     if not local.disableLogging:
         import cStringIO
         formatted = str(local.mypid) + "==" + s + "\n"
@@ -262,6 +264,9 @@ def logit(s):
     #print s
     pass
 def logflush():
+    """Force a flush of the log.  (deprecated)
+    No need to call this anymore since writes always flush immediately
+    in anticipation of contention from multiple process writers. """
     return # no need to flush anymore: close file after every write.
     if not local.disableLogging:
         #local.logfile.flush()
@@ -1141,7 +1146,15 @@ class FrontEnd:
         self.originalargs = sysargs
         self.env = {}
 
-        parsed =  getopt.getopt(sysargs[1:], self.shortOpts, self.longOpts)
+	try:
+	    parsed =  getopt.getopt(sysargs[1:], 
+				    self.shortOpts,
+				    self.longOpts)
+	except:
+	    logit("Error. getopt couldn't parse options in FrontEnd::__init__()")
+	    logit("args:" +str(sysargs[1:]))
+	    sys.exit(1)
+
         self.nonpars = []
         self.newp = []
         if parsed[1] != []:
@@ -1172,7 +1185,9 @@ class FrontEnd:
     def accessmode(self):
         """Return the appropriate execution mode, given the object's
     initialization parameters."""
-        if ("-o" not in self.args):
+	if("--dryparse" in self.args):
+	    return "dryparse"
+        if("-o" not in self.args):
             return "helpmode"
         return self.args["-o"]
     def passthrough(self):
@@ -1224,6 +1239,11 @@ class FrontEnd:
                     self.runScript()
                     return
         self.passthrough()  ## passthrough everything else.
+    def runparseonly(self):
+        """A debug execution.  This is just like runhacked, but without
+            the actual script execution part"""
+        pass
+
 
     def printusage(self):
         print """
@@ -1244,7 +1264,8 @@ class FrontEnd:
                'DDX' :  self.passthrough,
                'BLOB':  self.passthrough,
                'Version': self.passthrough,
-               'helpmode': self.printusage
+               'helpmode': self.printusage,
+               'dryparse': self.runparseonly,         
                }
         jumptable[self.accessmode()]()  ## make the call
         pass
@@ -1285,6 +1306,8 @@ class JobManager:  # will I have to write this?
 
 
 def execute():
+    """A "main" function that serves to set things in motion.
+    This function is called if the script is run from the shell."""
     prestartLogging()
     readConfigFile() # have to read config file before initializing logging.
     startLogging()
