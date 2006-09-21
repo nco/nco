@@ -44,7 +44,7 @@ fi # endif ${HOST}
 case "${HOST}" in 
     esmf* ) MPI_CMD=`which mpirun` ; SBM_CMD='llsubmit' ; Q_NM='com_rg8' ; ;; # endif UCI ESMF
     ipcc* ) MPI_CMD=`which mpiexec` ; SBM_CMD='qsub' ; Q_NM='regular' ; ;; # endif UCI IPCC
-    mpc* ) MPI_CMD=`which mpirun` ; SBM_CMD='qsub' ; Q_NM='gen' ; ;; # endif UCI MPC
+    mpc* ) MPI_CMD=`which mpirun` ; SBM_CMD='qsub' ; Q_NM='opteron' ; ;; # endif UCI MPC
     * ) # Default 
 	echo "$0: ERROR Unable to find Torque options for ${HOST}..."
 	exit 0 # Bail out if this is a non-interactive shell
