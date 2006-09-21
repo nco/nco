@@ -21,7 +21,6 @@ if [ -z "${MY_BIN_DIR}" ]; then
     MY_BIN_DIR="/home/${USER}/ncotree/nco/bin"
 fi # endif
 
-MPIRUN=`which mpirun` # Steal current MPI instance path
 MPI_PRC='3' # [nbr] Number of MPI processes to spawn
 PWD=`pwd`
 SCRIPT=`uuidgen`
@@ -31,8 +30,29 @@ XPT_DSC='NCO_benchmark_script' # [sng] Experiment description
 CMD_LN="${FL_PL} --bch --dbg=0 --caseid='${CASEID}' --xpt_dsc='${XPT_DSC}' --regress --udpreport"
 #CMD_LN="${FL_PL} --dbg=0 --caseid='${CASEID}' --xpt_dsc='${XPT_DSC}' --regress --udpreport ncbo"
 
+if [ -z "${HOST}" ]; then
+    if fl_is_exe /bin/hostname ; then
+	export HOST=`/bin/hostname`
+    elif fl_is_exe /usr/bin/hostname ; then
+	export HOST=`/usr/bin/hostname`
+    else
+	echo "$0: ERROR Unable to determine ${HOST}, exiting..."
+	exit 1 # Bail out
+    fi # endif hostname exists
+fi # endif ${HOST}
+
+case "${HOST}" in 
+    esmf* ) MPI_CMD=`which mpirun` ; SBM_CMD='llsubmit' ; Q_NM='com_rg8' ; ;; # endif UCI ESMF
+    ipcc* ) MPI_CMD=`which mpiexec` ; SBM_CMD='qsub' ; Q_NM='regular' ; ;; # endif UCI IPCC
+    mpc* ) MPI_CMD=`which mpirun` ; SBM_CMD='qsub' ; Q_NM='gen' ; ;; # endif UCI MPC
+    * ) # Default 
+	echo "$0: ERROR Unable to find Torque options for ${HOST}..."
+	exit 0 # Bail out if this is a non-interactive shell
+	;; # endif default
+esac # endcase ${HOST}
+
 cat > ${SCRIPT} <<EOF1
-# Torque (e.g., for ipcc.ess.uci.edu)
+# Torque (e.g., ipcc.ess.uci.edu, mpc.uci.edu)
 ## Job Name
 #PBS -N ${CASEID}
 ## Export all environment variables to job
@@ -42,14 +62,14 @@ cat > ${SCRIPT} <<EOF1
 ## Notify user via email at end or if aborted
 #PBS -m ea
 ## PBS output file
-#PBS -o /home/zender/cam/esmfipcc02.txt
+#PBS -o ${CASEID}.txt
 ## Queue name
-#PBS -q regular
+#PBS -q ${Q_NM}
 ## Number of nodes:mpi_processes_per_node
 #PBS -l nodes=${MPI_PRC}:ppn=1
 ##PBS -l nodes=compute-0-10+compute-0-11
 
-# Grid Engine (aka SGE) (e.g., for pbs.ess.uci.edu)
+# Grid Engine (aka SGE) (e.g., pbs.ess.uci.edu)
 ## Job Name
 #$ -N ${CASEID}
 #$ -S /bin/bash
@@ -69,8 +89,9 @@ cat > ${SCRIPT} <<EOF1
 export DATA=${DATA}
 export MY_BIN_DIR=${MY_BIN_DIR}
 
-$CMD_LN --mpi_prc=\$NSLOTS --mpi_upx "$MPIRUN -np \$NSLOTS -machinefile \${PE_HOSTFILE}"
+${CMD_LN} --mpi_prc=\${NSLOTS} --mpi_upx "${MPI_CMD} -np \${NSLOTS} -machinefile \${PE_HOSTFILE}"
 EOF1
 
-qsub ${SCRIPT} # fxm: Make depend on batch system
+# Submit script to scheduler
+${SBM_CMD} ${SCRIPT}
 rm ${SCRIPT} # cleanup
