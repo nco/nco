@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.3 2006-09-21 20:22:42 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.4 2006-09-21 23:56:16 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -26,7 +26,10 @@ class JobPersistence:
         else: self.dbFilename = dbfile
         self.dbconnection = None
         self.dbcursor = None
-        self.inOutList = []
+        self.inOutList = [] # cache inserts to batch until commit
+        self.cmdList = [] # cache inserts to batch until commit
+        self.stateList = [] # cache inserts to batch until commit
+        
         pass
     def connection(self):
         """only for intra-class use"""
@@ -45,6 +48,8 @@ class JobPersistence:
         return self.dbcursor
     def commit(self):
         """force a db commit"""
+        self.insertInOut2Commit()
+        self.commitCmds()
         if self.connected:
             self.dbconnection.commit()
         else:
@@ -136,11 +141,22 @@ class JobPersistence:
         sqlcmd = """insert into cmdtable (cmdid, cmd, cmdline)
         values ('%s','%s',\"%s\");""" 
 
-        cur = self.cursor()
+        self.cmdList.append((str(cmdid), str(cmd), str(cmdline)))
         #print >>sys.stderr, sqlcmd % (cmdid, cmd, cmdline)
-        cur.execute(sqlcmd % (cmdid, cmd, cmdline))
+        #cur = self.cursor()
+        #cur.execute(sqlcmd % (cmdid, cmd, cmdline))
+        
         pass
-    def insertInout(self, cmdid, logical, concrete, output, state):
+    def commitCmds(self):
+        
+        if(len(self.cmdList) > 0):
+            cur = self.cursor()
+            cur.executemany("""insert into cmdtable (cmdid, cmd, cmdline)
+            values (?,?,?)""", self.cmdList)
+            self.cmdList = []
+        
+                        
+    def insertInout(self, cmdid, logical, concrete, output, state, isTemp):
         """insert a tuple in the inout table.
         cmdid -- id of relevant command
         logical -- logical filename
@@ -151,7 +167,7 @@ class JobPersistence:
         returns a token to allow later retrieval of output file
         """
         # compare performance for deferred commit
-        return self.insertInout2(cmdid, logical, concrete, output, state)
+        return self.insertInOut2(cmdid, logical, concrete, output, state, isTemp)
         import sys
         fileid = None
         statecmd = self.insertFilestateTemplate
@@ -168,7 +184,7 @@ class JobPersistence:
             fileid = row[0][0]
             pass
         return fileid
-    def insertInOut2(self, cmdid, logical, concrete, output, state):
+    def insertInOut2(self, cmdid, logical, concrete, output, state, isTemp):
         """insert a tuple in the inout table.
         cmdid -- id of relevant command
         logical -- logical filename
@@ -184,25 +200,38 @@ class JobPersistence:
         numcmd = self.selectFileIdTemplate
         cur = self.cursor()
         outnum = [0,1][output == True]
-        self.inOutList.append("'%s',%d,'%s','%s',%d" % (cmdid, outnum, logical, concrete, state))
+        #self.inOutList.append("'%s',%d,'%s','%s',%d" % (cmdid, outnum, logical, concrete, state))
+        self.inOutList.append((str(cmdid), outnum,
+                               str(logical), str(concrete), state))
         #defer this to a batch insert right before committing.
         #sqlcmd = self.insertInoutTemplate % (cmdid, outnum, logical, concrete, state)
         #print >>sys.stderr, sqlcmd
         #cur.execute(sqlcmd)
 
         if output: # insert into the token table if it's an output
-            cur.execute(statecmd % (concrete, state))
-            cur.execute(numcmd % concrete)
-            row = cur.fetchall()
-            fileid = row[0][0]
+            if not isTemp: # only insert real files now, defer temps.
+                # skipping 'select' of temp fileids
+                # performance of  persistCommand from 64s to 6s
+                cur.execute(statecmd % (concrete, state))
+                cur.execute(numcmd % concrete)
+                row = cur.fetchall()
+                fileid = row[0][0]
+            else:
+                self.stateList.append((str(concrete),state))
             pass
         return fileid
     def insertInOut2Commit(self):
         substTemp = """insert into inouttable 
-        (cmdid, output, logicalname, concretename, state) values (?)"""
+        (cmdid, output, logicalname, concretename, state) values (?,?,?,?,?)"""
         cur = self.cursor()
-        cur.executemany(substTemp, self.inOutList)
-        self.inOutList = []
+        if(len(self.inOutList) > 0):
+            cur.executemany(substTemp, self.inOutList)
+            self.inOutList = []
+        if(len(self.stateList) > 0):
+            cur.executemany("""insert into filestate (concretename, state)
+            values (?,?)""", self.stateList)
+            self.stateList = []
+        pass
 
     def pollFileState(self, id):
         cur = self.cursor()
@@ -304,12 +333,14 @@ def selfTest():
     j.deleteTables()
     j.close()
     pass
-def quickShow(dbfilename = None):
+def fixDbFilename(dbfilename):
     if dbfilename == []:
-        dbfilename = None
+        return None
     elif type(dbfilename) == type([]):
-        dbfilename = dbfilename[0]
-    j = JobPersistence(dbfilename)
+        return dbfilename[0]
+    
+def quickShow(dbfilename = None):
+    j = JobPersistence(fixDbFilename(dbfilename))
     j.showState()
     j.close()
 def fileShow():
@@ -317,14 +348,14 @@ def fileShow():
     j.showFileTable()
     j.close()
 
-def deleteTables():
-    j = JobPersistence()
+def deleteTables(dbfilename = None):
+    j = JobPersistence(fixDbFilename(dbfilename))
     print "ok, deleting tables from ssdap"
     j.deleteTables()
     j.close()
     pass
-def buildTables():
-    j = JobPersistence()
+def buildTables(dbfilename = None):
+    j = JobPersistence(fixDbFilename(dbfilename))
     print "ok, building new tables for ssdap"
     j.buildTables()
     j.close()

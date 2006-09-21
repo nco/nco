@@ -1,10 +1,10 @@
 #!/usr/bin/env python2.4
+# -*- mode: python -*-       
 import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-       
-# $Id: dap_nc_handler_hack,v 1.39 2006-09-20 18:21:38 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.40 2006-09-21 23:56:16 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -45,6 +45,7 @@ class local:
     # pass original DAP commands to the original dap handler.
     passthroughPath = "/usr/local/bin/dap_nc_handler"
 
+    dbFilename = None
     disableHTTP = True # Recommend: True (until client code is fix'd)
     # this is for command-line debugging
 
@@ -189,8 +190,10 @@ def readConfigFile(fname = "ssdap_handler.conf"):
                "/home/wangd/opendap/iroot/nco_dap_bin"),
               ("passthroughPath", "targets", "passthroughPath",
                "/home/wangd/opendap/iroot/bin/dap_nc_handler"),
+              ("dbFilename", "database", "dbFilename", None),
               ("disableHTTP", "global", "disableHTTP", True),
-              ("disableParallel", "global", "disableParallel", True) ]
+              ("disableParallel", "global", "disableParallel", True)
+              ]
     remap = {"True" : True, "False" : False, "Yes" : True, "No" : False }
 
 
@@ -561,6 +564,9 @@ class Command:
          # Return a task id that can be queried later.
          tid = self.taskId()
          self.env.env["async"] = True;
+         # open a db connection
+         o = self.env.instanceJobPersistence()
+         assert o != None
          self.arguments = [];
          return
 
@@ -575,11 +581,10 @@ class Command:
          # consider reading task.id.stdout for fun.
          #FIXME
          self.arguments = [];
-         j = JobPersistence()
+         privatedb = JobPersistence(local.dbFilename)
          i = None
-         j.close()
          try:
-             i = j.pollFileState(int(argv[0]))
+             i = privatedb.pollFileState(int(argv[0]))
              i = int(i)
              print "State is ", i, "(",JobPersistence.fileStateMap[i],")"
          except (TypeError,ValueError):
@@ -589,11 +594,11 @@ class Command:
          # check for job finish. check for task.id.result. if not exist,
          # consider reading task.id.stdout -- how to get partial results?
          self.arguments = [];
-         j = JobPersistence()
+         privatedb = JobPersistence(local.dbFilename)
          n = None
          logit("going to try retrieving "+ argv[0])
          try:
-             s = j.pollFileState(int(argv[0]))
+             s = privatedb.pollFileState(int(argv[0]))
              if s != 3: ## 3==saved.  better way to do this magic const?
                  if s != None:
                      print "File id", argv[0], " isn't ready yet."
@@ -602,7 +607,7 @@ class Command:
                      print "File id", argv[0], " is nonexistent."
                  raise StandardError("Bad FileId to retrieve")
 
-             n = j.pollFilename(int(argv[0]))
+             n = privatedb.pollFilename(int(argv[0]))
              # patch output filename (use bogus handle)
              # this is rather backwards.
              self.env.fileMap[ScriptingEnv.SCRIPT_OUTFILE] = (0,n)
@@ -610,14 +615,14 @@ class Command:
          except (TypeError,ValueError,StandardError):
              print "Problem retrieving file for id ", argv[0]
              
-         j.close()
+         privatedb.close()
          pass
     def cmdRetrieveOrBlock(self,argv):
         sleeptime = 5 # for now, sleep 5 seconds if not ready yet.
         # check for job finish. check for task.id.result. if not exist,
 
         self.arguments = [];
-        j = JobPersistence()
+        j = JobPersistence(local.dbFilename)
         n = None
         logit("retr or block until: "+ argv[0])
         try:
@@ -760,6 +765,7 @@ class ScriptingEnv:
     CLASS_SEP = "_"
     CLASS_OUT = "outfile"
     MAGIC_DELIM = "%"
+    CLASS_TEMP_PREFIX = MAGIC_DELIM + CLASS_TEMP
     NC_SUFFIX = ".nc"
     NCO_COMMANDS = ["ncap", "ncatted", "ncbo", "ncdiff",
                     "ncea", "ncecat", "ncflint", "ncks",
@@ -806,7 +812,11 @@ class ScriptingEnv:
              if c.commandLine() != None:
                  #print c.commandLine()
                  self.commandLine.append(c)
-
+         if self.isAsync:
+             j = self.instanceJobPersistence()
+             j.commit()
+             j.close()
+         
          logit(self.depTreeToString()) # for debug...
 
          pass
@@ -1013,7 +1023,18 @@ class ScriptingEnv:
             output.append("SSDTOKEN<< logical=\"%s\" token=\"%d\" >>"
                           % (t[0], t[1]))
         return "\n".join(output)
-
+    def instanceJobPersistence(self):
+        """finds the class's instance of a JobPersistence object,
+        creating if necessary if it doesn't exist, and caching for
+        future use."""
+        if self.env.has_key("JobPersistence"):
+            o = self.env["JobPersistence"] 
+            if o != None:
+                return o
+        o = JobPersistence(local.dbFilename)
+        self.env["JobPersistence"] = o
+        return o
+        
     def returnOutput(self, targetfd):
         # if we have an output... 
         if not self.fileMap.has_key(ScriptingEnv.SCRIPT_OUTFILE):
@@ -1065,7 +1086,7 @@ class ScriptingEnv:
         cmdid = "%s%d" % (tid, linenum)
         if command.cmd == None:
             return # don't persist non-commmands.
-        j = JobPersistence()
+        j = self.instanceJobPersistence()
         j.insertTask(tid, linenum, cmdid)
         j.insertCmd(cmdid, command.cmd, command.commandLine())
         
@@ -1075,14 +1096,16 @@ class ScriptingEnv:
                 concrete = self.fileMap[f][1] 
             else:
                 concrete = f
-            return j.insertInout(cmdid, f, concrete, out, 1)
+            return j.insertInout(cmdid, f, concrete, out, 1,
+                                 f.startswith(ScriptingEnv.CLASS_TEMP_PREFIX))
             
         for f in command.inputs():
             insert(False)
         for f in command.outputs():
             self.outTokens.append((f,  insert(True)))
-        j.commit()
-        j.close()
+        # defer commit/close until all commands ready.
+        #j.commit()
+        #j.close()
         
     def markCmdStart(self, command):
         """ these mark start/finish commands are similar to those in the
@@ -1093,7 +1116,7 @@ class ScriptingEnv:
         # want to construct this once, can we cache it?
         # outTokens serves as a 'chronological' view
         fdict = dict(self.outTokens)
-        j = JobPersistence()
+        j = self.instanceJobPersistence()
         for f in command.outputs():
             j.setFileState(fdict[f], 2)
         j.close()
@@ -1104,7 +1127,7 @@ class ScriptingEnv:
         # want to construct this once, can we cache it?
         # outTokens serves as a 'chronological' view
         fdict = dict(self.outTokens)
-        j = JobPersistence()
+        j = self.instanceJobPersistence()
         for f in command.outputs():
             j.setFileState(fdict[f], 3)
         j.close()
@@ -1141,7 +1164,7 @@ class FrontEnd:
         "setup a frontend parser to interact with the outside world's input"
         # -d and -f options are supposed to be deprecated
         self.shortOpts = "Lcd:r:o:e:f:l:u:v:"
-        self.longOpts = ["dryparse="]
+        self.longOpts = ["dryparse=", "with-db"]
         self.args = {}
         self.originalargs = sysargs
         self.env = {}
@@ -1242,6 +1265,27 @@ class FrontEnd:
     def runparseonly(self):
         """A debug execution.  This is just like runhacked, but without
             the actual script execution part"""
+        scriptFilename = self.args["--dryparse"]
+        async = False
+        if "--with-db" in self.args:
+            async = True
+        self.parseOnlyHelper(scriptFilename, async)
+
+    def parseOnlyHelper(self, fname, isAsync):
+        """a helper for runparseonly.  Helpful for interactive debugging"""
+        print "Only parsing", fname, "for db"
+        self.readScriptFromFile(fname)
+        if(isAsync):
+            self.env["async"] = True # set async mode.
+
+        scriptingenv = None
+        # fill env with proper keys:
+        self.env["defpath"] = "."
+        self.env["tempdir"] = "/tmp"
+
+        scriptenv = ScriptingEnv(self.scriptlines, self.env)
+        print "Parsed OK!"
+        ###scriptenv.execute() #####
         pass
 
 
@@ -1278,6 +1322,10 @@ class FrontEnd:
         #logit( "we got POST data: \n"+str(lines))
         self.scriptlines = lines
         pass
+    def readScriptFromFile(self, filename):
+        self.scriptlines = open(filename).readlines()
+        pass
+
     def runScript(self):
         self.env["tempdir"] = self.args["-r"]
         (filepath, filename) = os.path.split(self.args["-realfile"])
@@ -1291,9 +1339,7 @@ class FrontEnd:
             pass
 
         #self.env["local"] = "true"
-        import profile
-        profile.run( 'scriptenv = ScriptingEnv(self.scriptlines, self.env)'\
-                     '/tmp/latestInitprofile')
+        scriptenv = ScriptingEnv(self.scriptlines, self.env)
         scriptenv.execute() #####
         #print "Skipping real execution for now"
         scriptenv.returnOutput(sys.stdout)
@@ -1322,6 +1368,23 @@ def execute():
     logit("handler hack log closed at " + time.ctime()+ "\n")
     pass
 
+def doProfile():
+    import profile
+    basename = "bench03"
+    profile.run('profilePass("' + basename + '.ssdap")',
+                basename + '.pyprofile')
+
+
+    import pstats
+    p = pstats.Stats(basename + '.pyprofile')
+    return p
+def profilePass(filename):
+    """profile the parser over a ssdap file"""
+    prestartLogging()
+    readConfigFile()
+    settings = FrontEnd(["./dummy.py", "--dryparse", filename, "--with-db"])
+    settings.execute()
+    
 if __name__ == '__main__':
     execute()
 
