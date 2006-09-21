@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.2 2006-09-13 22:03:56 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.3 2006-09-21 20:22:42 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -13,12 +13,20 @@ class JobPersistence:
                     3 : "saved",
                     4 : "removed"
                     }
+    insertInoutTemplate = """insert into inouttable
+        (cmdid, output, logicalname, concretename, state)
+        values ('%s',%d,'%s','%s',%d);""" 
+    insertFilestateTemplate = """insert into filestate (concretename, state)
+        values ('%s',%d);"""
+    selectFileIdTemplate = "select rowid from filestate where concretename=\"%s\";"
     
     def __init__(self, dbfile = defaultDbFilename):
         self.connected = False
-        self.dbFilename = dbfile
+        if dbfile == None: self.dbFilename = self.defaultDbFilename
+        else: self.dbFilename = dbfile
         self.dbconnection = None
         self.dbcursor = None
+        self.inOutList = []
         pass
     def connection(self):
         """only for intra-class use"""
@@ -36,6 +44,7 @@ class JobPersistence:
             self.dbcursor = self.connection().cursor()
         return self.dbcursor
     def commit(self):
+        """force a db commit"""
         if self.connected:
             self.dbconnection.commit()
         else:
@@ -43,6 +52,7 @@ class JobPersistence:
         
 
     def close(self):
+        """force closing the db and releasing of db handles"""
         if self.connected:
             self.dbconnection.commit()
             self.dbcursor.close()
@@ -112,23 +122,23 @@ class JobPersistence:
         """inserts a task into the right tables"""
         sqlcmd = """insert into tasktable (taskid, linenum, cmdid, date)
         values ('%s',%d,'%s','%s');""" 
-        print >>sys.stderr, sqlcmd
+        #print >>sys.stderr, sqlcmd
         import time
         #today = "%04d%02d%02d" % time.localtime()[:3]
         # date in yyyy-mm-dd hh:mm format
         today = "%04d-%02d-%02d %02d:%02d" % time.localtime()[:5]
         cur = self.cursor()
 
-        cur.executescript(sqlcmd % (taskid, linenum, cmdid, today))
-        print >>sys.stderr, "inserted task in db (uncommit)"
+        cur.execute(sqlcmd % (taskid, linenum, cmdid, today))
+        #print >>sys.stderr, "inserted task in db (uncommit)"
         pass
     def insertCmd(self, cmdid, cmd, cmdline):
         sqlcmd = """insert into cmdtable (cmdid, cmd, cmdline)
         values ('%s','%s',\"%s\");""" 
 
         cur = self.cursor()
-        print >>sys.stderr, sqlcmd % (cmdid, cmd, cmdline)
-        cur.executescript(sqlcmd % (cmdid, cmd, cmdline))
+        #print >>sys.stderr, sqlcmd % (cmdid, cmd, cmdline)
+        cur.execute(sqlcmd % (cmdid, cmd, cmdline))
         pass
     def insertInout(self, cmdid, logical, concrete, output, state):
         """insert a tuple in the inout table.
@@ -140,25 +150,60 @@ class JobPersistence:
 
         returns a token to allow later retrieval of output file
         """
+        # compare performance for deferred commit
+        return self.insertInout2(cmdid, logical, concrete, output, state)
         import sys
         fileid = None
-        cmdtemplate = """insert into inouttable
-        (cmdid, output, logicalname, concretename, state)
-        values ('%s',%d,'%s','%s',%d);""" 
-        statecmd = """insert into filestate (concretename, state)
-        values ('%s',%d);"""
-        numcmd = "select rowid from filestate where concretename=\"%s\";"
+        statecmd = self.insertFilestateTemplate
+        numcmd = self.selectFileIdTemplate
         cur = self.cursor()
         outnum = [0,1][output == True]
-        sqlcmd = cmdtemplate % (cmdid, outnum, logical, concrete, state)
-        print >>sys.stderr, sqlcmd
-        cur.executescript(sqlcmd)
+        sqlcmd = self.insertInoutTemplate % (cmdid, outnum, logical, concrete, state)
+        #print >>sys.stderr, sqlcmd
+        cur.execute(sqlcmd)
         if output: # insert into the token table if it's an output
-            cur.executescript(statecmd % (concrete, state))
+            cur.execute(statecmd % (concrete, state))
             cur.execute(numcmd % concrete)
             row = cur.fetchall()
             fileid = row[0][0]
+            pass
         return fileid
+    def insertInOut2(self, cmdid, logical, concrete, output, state):
+        """insert a tuple in the inout table.
+        cmdid -- id of relevant command
+        logical -- logical filename
+        concrete -- concrete-mapped filename
+        output -- True if this is an output, False, otherwise
+        state -- filestate (planned(1), saved(2), removed(3)
+
+        returns a token to allow later retrieval of output file
+        """
+        import sys
+        fileid = None
+        statecmd = self.insertFilestateTemplate
+        numcmd = self.selectFileIdTemplate
+        cur = self.cursor()
+        outnum = [0,1][output == True]
+        self.inOutList.append("'%s',%d,'%s','%s',%d" % (cmdid, outnum, logical, concrete, state))
+        #defer this to a batch insert right before committing.
+        #sqlcmd = self.insertInoutTemplate % (cmdid, outnum, logical, concrete, state)
+        #print >>sys.stderr, sqlcmd
+        #cur.execute(sqlcmd)
+
+        if output: # insert into the token table if it's an output
+            cur.execute(statecmd % (concrete, state))
+            cur.execute(numcmd % concrete)
+            row = cur.fetchall()
+            fileid = row[0][0]
+            pass
+        return fileid
+    def insertInOut2Commit(self):
+        substTemp = """insert into inouttable 
+        (cmdid, output, logicalname, concretename, state) values (?)"""
+        cur = self.cursor()
+        cur.executemany(substTemp, self.inOutList)
+        self.inOutList = []
+
     def pollFileState(self, id):
         cur = self.cursor()
         cur.execute("select state from filestate where rowid=%d" % id)
@@ -259,8 +304,12 @@ def selfTest():
     j.deleteTables()
     j.close()
     pass
-def quickShow():
-    j = JobPersistence()
+def quickShow(dbfilename = None):
+    if dbfilename == []:
+        dbfilename = None
+    elif type(dbfilename) == type([]):
+        dbfilename = dbfilename[0]
+    j = JobPersistence(dbfilename)
     j.showState()
     j.close()
 def fileShow():
@@ -281,14 +330,17 @@ def buildTables():
     j.close()
     pass
 def parseArgs():
-    jumptable = {"show" : quickshow,
+    jumptable = {"show" : quickShow,
                  "deletedb" : deleteTables,
                  "builddb" : buildTables,
                  "selftest" : selfTest
                  }
     import sys
     if (len(sys.argv) > 1) and sys.argv[1] in jumptable:
-        jumptable[sys.argv[1]]()
+        if len(sys.argv) > 2:
+            jumptable[sys.argv[1]](sys.argv[2:])
+        else:
+            jumptable[sys.argv[1]]()
     else:
         print sys.argv[0], "is a handy tool to manage your ",
         print "ssdap persistent state."
