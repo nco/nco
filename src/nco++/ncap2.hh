@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.15 2006-07-23 10:35:33 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.16 2006-09-22 14:42:33 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -244,6 +244,9 @@ nco_shp_chk(
 var_sct* var1, 
 var_sct* var2); 
 
+nco_bool        /* Reurns True if var has attribute style name */
+ncap_var_is_att( 
+var_sct *var);
 
 
 
