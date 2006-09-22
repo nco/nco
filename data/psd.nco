@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/psd.nco,v 1.4 2006-09-18 19:14:38 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/psd.nco,v 1.5 2006-09-22 15:14:15 zender Exp $ -*-C-*-
 
 // Purpose: ncap script for particle size distributions
 
@@ -11,23 +11,7 @@ pi@long_name="Pi";
 pi@units="fraction";
 
 defdim("dmt",13); // [] Diameter dimension
-
-// fxm: Get array initializing working
-//dmt_nma[dmt]={0.1,0.1861,0.2366,0.3009,0.3825,0.4864,0.5915,0.6185,0.7864,0.8281,1.0,1.183,2.366};
-dmt_nma[dmt]=0.0; // [um] Number mean diameter analytic
-dmt_nma(0)=0.1; 
-dmt_nma(1)=0.1861; 
-dmt_nma(2)=0.2366; 
-dmt_nma(3)=0.3009; 
-dmt_nma(4)=0.3825; 
-dmt_nma(5)=0.4864; 
-dmt_nma(6)=0.5915; 
-dmt_nma(7)=0.6185; 
-dmt_nma(8)=0.7864; 
-dmt_nma(9)=0.8281; 
-dmt_nma(10)=1.0; 
-dmt_nma(11)=1.183; 
-dmt_nma(12)=2.366; 
+dmt_nma[dmt]={0.1,0.1861,0.2366,0.3009,0.3825,0.4864,0.5915,0.6185,0.7864,0.8281,1.0,1.183,2.366}; // [um] Number mean diameter analytic
 
 // Find dmt_nma for which dmt_saa=1.0: 
 // ncap -v -O -s "gsd=2.0;dmt_saa=1.0;dmt_nma=dmt_saa*exp(-1.0*(ln(gsd))^2.0);" ${HOME}/nco/data/in.nc ~/foo.nc;ncks -H -C -u ~/foo.nc
