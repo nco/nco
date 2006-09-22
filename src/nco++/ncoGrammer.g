@@ -37,6 +37,7 @@ tokens {
     ARG_LIST;
     DMN_LIST;
     LMT_LIST;
+    VALUE_LIST;
     LMT;
     EXPR;
     POST_INC;
@@ -146,7 +147,7 @@ ass_expr: cond_expr ( ( ASSIGN^
                     | MINUS_ASSIGN^ 
                     | TIMES_ASSIGN^ 
                     | DIVIDE_ASSIGN^
-                    ) ass_expr)?
+                    ) (ass_expr|value_list) )?
     ;
 
 expr:   ass_expr
@@ -164,10 +165,15 @@ lmt_list: LPAREN! lmt (COMMA! lmt)*  RPAREN!
 // Use vars in dimension list so dims in [] can
 // be used with or with out $ prefix. ie "$lon" or "lon" 
 // So parser is compatible with ncap1
-dmn_list
-   :LSQUARE! (VAR_ID|DIM_ID) (COMMA! (VAR_ID|DIM_ID))* RSQUARE!
+dmn_list:
+   LSQUARE! (VAR_ID|DIM_ID) (COMMA! (VAR_ID|DIM_ID))* RSQUARE!
       { #dmn_list = #( [DMN_LIST, "dmn_list"], #dmn_list ); }
     ;
+
+value_list:
+      LCURL! expr (COMMA! expr)* RCURL!  
+      { #value_list = #( [VALUE_LIST, "value_list"], #value_list ); }
+    ;        
     
 primary_exp
     : (LPAREN! expr RPAREN! ) 
@@ -867,10 +873,29 @@ assign returns [var_sct *var]
               var_cst=ncap_cst_mk(str_vtr,prs_arg);     
               var1=out(vid->getNextSibling());
               
-              // Cast isn't applied to naked numbers,
-              // or variables of size 1, or attributes
-              // so apply it here
-              if(var1->sz ==1 )
+              // deal with rhs attribute              
+              if( ncap_var_is_att(var1)) {
+                if(var1->sz ==1 )
+                  var1=ncap_cst_do(var1,var_cst,prs_arg->ntl_scn);
+                else if( var1->sz==var_cst->sz ) {
+                  ptr_unn val_swp;  // Used to swap values around       
+              
+                  var_cst=nco_var_cnf_typ(var1->type,var_cst);
+                  (void)ncap_att_stretch(var1,var_cst->sz);
+ 
+                  val_swp=var_cst->val; 
+                  var_cst->val=var1->val;
+                  var1->val=val_swp;
+                  
+                  var1=nco_var_free(var1);
+                  var1=nco_var_dpl(var_cst);                  
+                  
+                  }                                       
+                else
+                  err_prn(fnc_nm, "LHS cast for "+vid->getText()+" - cannot make RHS attribute "+ std::string(var1->nm) + " conform."); 
+              
+              // deal with rhs bare number && rhs hyperslab with single element
+              } else if(var1->sz ==1 )
                   var1=ncap_cst_do(var1,var_cst,prs_arg->ntl_scn);
      
               var1->nm=(char*)nco_free(var1->nm);
@@ -1386,7 +1411,64 @@ out returns [var_sct *var]
                 err_prn(fnc_nm,"Unable to locate attribute " +att->getText()+ " in input or output files.");
             }
              
-        }    
+        }
+
+      // Value list -- stuff values into var which is attribute
+     |   vlst:VALUE_LIST {
+
+         char *cp;
+         int nbr_lst;
+         int idx;
+         int tsz;
+         
+
+         nc_type type=NC_NAT;
+         var_sct *var_ret;                        
+         RefAST rRef;
+         //NcapVector<var_sct*> exp_vtr;
+         std::vector<var_sct*> exp_vtr;
+         
+         rRef=vlst->getFirstChild();
+
+         while(rRef){
+           exp_vtr.push_back(out(rRef));   
+           rRef=rRef->getNextSibling();
+         }       
+         nbr_lst=exp_vtr.size();
+         
+         // find highest type
+         for(idx=0;idx <nbr_lst ;idx++)
+           if(exp_vtr[idx]->type > type) type=exp_vtr[idx]->type;     
+
+         // convert every element in vector to highest type
+         for(idx=0;idx <nbr_lst ;idx++)
+            exp_vtr[idx]=nco_var_cnf_typ(type,exp_vtr[idx]);  
+
+         var_ret=(var_sct *)nco_malloc(sizeof(var_sct));
+         /* Set defaults */
+         (void)var_dfl_set(var_ret); 
+
+         /* Overwrite with attribute expression information */
+         var_ret->nm=strdup("_zz@value_list");
+         var_ret->nbr_dim=0;
+         var_ret->sz=nbr_lst;
+         var_ret->type=type;
+
+         tsz=nco_typ_lng(type);
+         var_ret->val.vp=(void*)nco_malloc(nbr_lst*tsz);
+           
+         for(idx=0;idx <nbr_lst ; idx++){
+          cp=(char*)(var_ret->val.vp)+ (ptrdiff_t)(idx*tsz);
+          memcpy(cp,exp_vtr[idx]->val.vp,tsz);
+         }    
+         
+         // Free vector        
+         for(idx=0 ; idx < nbr_lst ; idx++)
+           (void)nco_var_free(exp_vtr[idx]);    
+
+         var=var_ret;
+
+     }
 ;
 
 
