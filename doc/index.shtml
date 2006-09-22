@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.359 2006-09-18 20:09:24 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.360 2006-09-22 19:12:39 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -352,7 +352,7 @@ Instead, retrieve all recently tagged versions
 <a name="#Download">with CVS</a> or from    
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO/SDO 3.1.7</b>: (<i>In progress</i>) Improve <tt>ncap2</tt> performance (by &ldquo;double-parsing&rdquo;);
+<li><b>NCO/SDO 3.1.7</b>: (<i>In progress</i>) Improve <tt>ncap2</tt> performance (by &ldquo;double-parsing&rdquo;); support <tt>ncap2</tt> array initialization;
 <li><b>NCO/SDO 3.1.6</b>: Support <a href="http://nco.sf.net/nco.html#srd">stride</a> in all hyperslabbing operators; change more WARNINGs to INFOs
 <li><b>NCO/SDO 3.1.5</b>: New <tt>ncap2</tt> array and hyperslab features; change some WARNINGs to INFOs, add Pathscale and update PGI and Intel compiler support
 <li><b>NCO/SDO 3.1.4</b>: Fix <tt>ncbo</tt> memory problem; report timer results

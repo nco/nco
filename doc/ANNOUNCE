@@ -1,25 +1,20 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.185 2006-09-18 20:09:23 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.186 2006-09-22 19:12:39 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.6 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release supports the stride argument for all dimensions for all
-hyperslabbing operators. Formerly, only ncks offered full stride
-support for all dimensions, while ncra and ncrcat only supported stride
-for the record (time) dimension. Now non-record stride commands work
-everywhere, e.g., subset every other longitude and every other
-timestep from multiple files into one file:
+This release supports powerful new ncap2 features such as array
+initialization:
 
-ncrcat -d time,,,2 -d lon,,,2 in_*.nc out.nc
+defdim("lon",4);a1[$lon]={0,90,180,270};
 
 Build/runtime changes:
 
-1. Support stride in all dimensions for all hyperslabbing operators 
-
-2. Reduce severity of inter-file non-monotonicity from WARNING to INFO
-   Intended to lower user's blood pressure 
+1. Support array initialization in ncap2
+   
+2. fxm.
 
 Enjoy,
 Charlie
