@@ -2,7 +2,7 @@
 #define INC_ncoParser_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.5 (20050629): "ncoGrammer.g" -> "ncoParser.hpp"$ */
+/* $ANTLR 2.7.6 (20060511): "ncoGrammer.g" -> "ncoParser.hpp"$ */
 #include <antlr/TokenStream.hpp>
 #include <antlr/TokenBuffer.hpp>
 #include "ncoParserTokenTypes.hpp"
@@ -79,6 +79,7 @@ public:
 	public: void lor_expr();
 	public: void cond_expr();
 	public: void ass_expr();
+	public: void value_list();
 	public: void lmt();
 	public: void imaginary_token();
 public:
@@ -92,10 +93,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 77;
+	static const int NUM_TOKENS = 78;
 #else
 	enum {
-		NUM_TOKENS = 77
+		NUM_TOKENS = 78
 	};
 #endif
 	
