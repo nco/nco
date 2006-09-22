@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.40 2006-09-21 23:56:16 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.41 2006-09-22 00:39:59 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -335,7 +335,7 @@ class Command:
 
     def parseOriginalLine(self):
 
-        argv = shlex.split(self.original)
+        argv = shlex.split(self.original, True) # True--> shlex eats the comments
 
         if len(argv) < 1:
             return # nothing to parse
@@ -349,15 +349,10 @@ class Command:
             return
         self.myName = mycmd + str(len(self.env.commands))
         self.cmd = mycmd
-        commentStart = len(argv)
-        for x in range(len(argv)):
-            if argv[x][0] == "#":
-                commentStart = x
-                break
         if self.cmd in ScriptingEnv.META_COMMANDS:
-            self.parseMetaCmd(argv[1:commentStart])
+            self.parseMetaCmd(argv[1:])
         else:
-            self.parseNormalCmd(argv[1:commentStart])
+            self.parseNormalCmd(argv[1:])
 
     def parseMetaCmd(self, argv):
         metamap = {"ssd_initsave" : self.cmdInitSave,
