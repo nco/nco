@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.143 2006-08-30 20:09:02 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.144 2006-09-25 01:52:41 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -10,6 +10,7 @@
 # ~/nco/bm/nco_bm.pl --thr_nbr=2 --regress --udpreport # Test OpenMP
 # ~/nco/bm/nco_bm.pl --mpi_prc=2 --regress --udpreport # Test MPI
 # ~/nco/bm/nco_bm.pl --tst_fl=a --udpreport # Create all test files
+# ~/nco/bm/nco_bm.pl --fl_fmt=netcdf4 --udpreport # Test netCDF4
 # ~/nco/bm/nco_bm.pl --dap --regress --udpreport # Test OPeNDAP on sand
 # ~/nco/bm/nco_bm.pl --dap=http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata --regress --udpreport # Test OPeNDAP on soot
 # scp ~/nco/bm/nco_bm.pl esmf.ess.uci.edu:nco/bm
@@ -180,61 +181,51 @@ $lcl_vars .=    "\t \$nvr_my_bin_dir = $nvr_my_bin_dir\n";
 $lcl_vars .=    "\t \@ENV = @ENV\n";
 $lcl_vars .=    "\t \@INC:\n";
 foreach my $subpth (@INC) {$lcl_vars .= "\t   $subpth\n"}
-dbg_msg(1,$lcl_vars); # spit the whole thing out.
+dbg_msg(1,$lcl_vars); # Print local variables
 
-if ($ARGV == 0) {	NCO_bm::bm_usg();}
+if($ARGV == 0){NCO_bm::bm_usg();}
 
 # Test file format
 if ($fl_fmt eq "64bit" || $fl_fmt eq "netcdf4" || $fl_fmt eq "netcdf4_classic") {
-    $fl_fmt = "--fl_fmt=" . $fl_fmt;
+    $fl_fmt="--fl_fmt=".$fl_fmt;
     dbg_msg(1,"File format set to [$fl_fmt]");
 }elsif ($fl_fmt eq "classic"){
-    $fl_fmt = " ";
-} else {
+    $fl_fmt="";
+}else{
     die "File format specified (--fl_fmt) must be one of:\n  classic, 64bit, netcdf4, or netcdf4_classic\nPlease repeat and specify one of these.\n\n";
-}
+} # endif
 
 # Read values from ~/.ncorc, if present, into global hash
 if (-e "$ENV{'HOME'}/.ncorc" && -r "$ENV{'HOME'}/.ncorc" && !-z "$ENV{'HOME'}/.ncorc" ){ # if exists, readable, nonzero
     # Read into %NCO_RC hash (file format is "name" => "value"
     open(RC, "$ENV{'HOME'}/.ncorc") or die "Can't open user's ~/.ncorc file for reading.\n";
-    my $ln_cnt = 0;
+    my $ln_cnt=0;
     while (<RC>){
 	$ln_cnt++;
-	if ($_ !~ /^#/) { # ignore comments
+	if ($_ !~ /^#/) { # Ignore comments
 	    my $N = my @L = split('=');
-	    chomp $L[1]; # if should have a \n on it so get rid of it.
+	    chomp $L[1]; # Get rid of \n, if any
 	    if ($N != 2) {print "ERR: typo in ~/.ncorc file on line $ln_cnt.\nFormat is: 'Name=value'\nIgnoring error for now\n";}
 	    $NCO_RC{$L[0]} = $L[1];
-	    # print "DEBUG: NCO_RC{$L[0]} = $L[1] \n";
 	}
     }
 }
 
-# Allow UDP reporting if Perl has found IO::Socket and OK by ~/.ncorc
-# Fail if user sets it to 'no'
-if ($iosockfound && $NCO_RC{"udp_report"} =~ "yes"){$udp_rpt = 1;}
+# Allow UDP reporting if Perl found IO::Socket and OK by ~/.ncorc
+# Fail if user sets reporting to 'no'
+if ($iosockfound && $NCO_RC{"udp_report"} =~ "yes"){$udp_rpt=1;}
 
-# this next commented block will soon disappear as we DO need to make
-# BOTH benchmarks and regressions  run serverside
-# check that if serverside has been requested, also benchmarks have been or emit errors
-# if ($srv_sd ne "SSNOTSET" && !$bm) {
-# 	print "\nWARN: The only option allowed with '--serverside' is '--benchmark' - continue? [Ny] ";
-# 	my $tmp = <STDIN>;
-# 	if ($tmp !~ /[Yy]/) {die "OK - try again without the serverside option\n";}
-# 	#else {$bm = 1;} #set $bm and continue
-# }
-# can't do both serverside and DAP - check that the options don't conflict
+# Check that serverside and DAP options do not conflict
 if ($srv_sd ne "SSNOTSET" && $dodap ne 'FALSE') {
     die "\nERR: Can't combine '--serverside' and '--dap' - choose one or the other.\n";
 }
-# if testing DAP, use $case_id to specify separate dir, so don't mess with current files
-if ($dodap ne 'FALSE') {$caseid = "DAP_DIR"; print "\nDAP_DIR set as caseid. \n";}
+# If testing DAP, use $caseid to specify separate directory, so don't mess with current files
+if($dodap ne 'FALSE'){$caseid="DAP_DIR";print "\nDAP_DIR set as caseid.\n";}
 
-# set up some host-specific id's
+# Set up some host-specific IDs
 $os_sng = `uname`; chomp $os_sng;
 
-# check for user trying to run benchmarks on the UCI esmf interactive node:
+# Check for user trying to run benchmarks on UCI ESMF interactive node:
 if ($nvr_host =~ /esmf04m/ && $bm) {
     print "\n\nAre you sure you want to run the NCO benchmarks on the interactive node?\n";
     print "Enter 'y' to continue.  Anything else cancels. [Default No]: ";

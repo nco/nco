@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.186 2006-09-22 19:12:39 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.187 2006-09-25 01:52:41 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.6 are ready. 
 
@@ -14,7 +14,9 @@ Build/runtime changes:
 
 1. Support array initialization in ncap2
    
-2. fxm.
+2. Update netCDF4 support to alpha16
+
+3. 
 
 Enjoy,
 Charlie

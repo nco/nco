@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.377 2006-09-12 22:52:16 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.378 2006-09-25 01:52:41 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -460,7 +460,7 @@ netCDF itself.
 * Availability::                
 * Compatability::               
 * Libraries::                   
-* netCDF2 vs. netCDF3 and HDF Support::  
+* netCDF2/3/4 and HDF4/5 Support::  
 * Help Requests and Bug Reports::  
 @end menu
 
@@ -542,6 +542,7 @@ This tests incorporates an image using the @code{@@image} command.
 @cindex @acronym{SGI}
 @cindex @acronym{HP}
 @cindex @acronym{DEC}
+@cindex @acronym{PGI}
 @cindex Cray
 @cindex Digital
 @cindex Sun
@@ -551,6 +552,8 @@ This tests incorporates an image using the @code{@@image} command.
 @cindex Macintosh
 @cindex Microsoft
 @cindex Windows
+@cindex PathScale
+@cindex QLogic
 @cindex compatability
 @cindex portability
 @cindex installation
@@ -591,6 +594,10 @@ compiling with @w{C compilers} including those from
 @cindex @command{cxx}
 @cindex @command{gcc}
 @cindex @command{icc}
+@cindex @command{pgcc}
+@cindex @command{pgCC}
+@cindex @command{pathcc}
+@cindex @command{pathCC}
 @cindex @command{xlC}
 @cindex @command{xlc}
 @acronym{GNU} (@samp{gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE} -Wall)
@@ -604,6 +611,8 @@ Cray (@samp{cc}),
 @acronym{IBM} (@samp{xlc -c -qlanglvl=extc99}),
 Intel (@samp{icc -std=c99}),
 @acronym{NEC} (@samp{cc}),
+PathScale (QLogic) (@samp{pathcc -std=c99}),
+@acronym{PGI} (@samp{pgcc -c9x}),
 @acronym{SGI} (@samp{cc -LANG:std}),
 and
 Sun (@samp{cc}).
@@ -620,6 +629,8 @@ Cray (@samp{CC}),
 @acronym{IBM} (@samp{xlC}),
 Intel (@samp{icc}),
 @acronym{NEC} (@samp{c++}),
+PathScale (Qlogic) (@samp{pathCC}),
+@acronym{PGI} (@samp{pgCC}),
 @acronym{SGI} (@samp{CC -LANG:std}),
 and
 Sun (@samp{CC -LANG:std}).
@@ -797,7 +808,7 @@ The @acronym{NCO} operators should behave identically on Windows and
 @html
 <a name="lbr"></a> <!-- http://nco.sf.net/nco.html#lbr -->
 @end html
-@node Libraries, netCDF2 vs. netCDF3 and HDF Support, Compatability, Introduction
+@node Libraries, netCDF2/3/4 and HDF4/5 Support, Compatability, Introduction
 @section Libraries
 @cindex libraries
 @cindex @code{LD_LIBRARY_PATH}
@@ -829,8 +840,8 @@ simply need to alter your library search path.
 As a final remedy, you may re-compile and install @acronym{NCO} with all
 operators statically linked.  
 
-@node netCDF2 vs. netCDF3 and HDF Support, Help Requests and Bug Reports, Libraries, Introduction
-@section netCDF2 vs.@: netCDF3 and HDF Support
+@node netCDF2/3/4 and HDF4/5 Support, Help Requests and Bug Reports, Libraries, Introduction
+@section netCDF2/3/4 and HDF4/5 Support
 @cindex netCDF2
 @cindex netCDF3
 netCDF @w{version 2} was released in 1993.
@@ -896,6 +907,8 @@ installation).
 
 @cindex Unidata
 @cindex @acronym{NCSA}
+@cindex netCDF4
+@cindex @acronym{HDF5}
 @acronym{HDF} @w{version 5} became available in 1999, but did not
 support netCDF (or, for that matter, Fortran) as of December 1999.
 By early 2001, @acronym{HDF5} did support Fortran90.
@@ -917,7 +930,7 @@ See @ref{Selecting Output File Format} for more details.
 <a name="hlp"></a> <!-- http://nco.sf.net/nco.html#hlp -->
 <a name="bug"></a> <!-- http://nco.sf.net/nco.html#bug -->
 @end html
-@node Help Requests and Bug Reports,  , netCDF2 vs. netCDF3 and HDF Support, Introduction
+@node Help Requests and Bug Reports,  , netCDF2/3/4 and HDF4/5 Support, Introduction
 @section Help Requests and Bug Reports
 @cindex reporting bugs
 @cindex bugs, reporting
@@ -5566,6 +5579,7 @@ other OSs.}
 @noindent
 @html
 <a name="xmp_ncap"></a> <!-- http://nco.sf.net/nco.html#xmp_ncap -->
+<a name="xmp_ncap2"></a> <!-- http://nco.sf.net/nco.html#xmp_ncap2 -->
 @end html
 EXAMPLES
 
