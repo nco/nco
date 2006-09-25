@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.817 2006-09-19 00:58:45 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.818 2006-09-25 07:34:15 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -403,7 +403,7 @@ nco652. Polish/finish ncap random number generator
 nco653. Segregate MPI from non-MPI builds completely in bld/Makefile on AIX
 nco655. Incorporate BLAS if possible?
 nco657. Add new netCDF4 types to arithmetic code
-nco658. netcdf4 regression in ncks test #1
+nco658. netcdf4 regression in ncks test #1: Regression re-verified 20060924
         make NETCDF4=Y FL_FMT=netcdf4 tst 
         ncks -O --fl_fmt=netcdf4 -v lat_T42 ~/nco/data/in.nc ~/foo.nc;od -An -c -N4 ~/foo.nc
         ncrename -O -d lat_T42,lat -v lat_T42,lat ~/foo.nc
