@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.818 2006-09-25 07:34:15 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.819 2006-09-26 00:47:53 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -535,7 +535,8 @@ nco779. Add non-record stride checks to regression tests e.g.,
 	ncks -O -v three_dmn_rec_var -d lon,,,2 -p ~/nco/data in.nc ~/foo.nc
 	ncrcat -O -v three_dmn_rec_var -d lon,,,2 -p ~/nco/data in.nc in.nc ~/foo.nc
 	ncks -C -v three_dmn_rec_var ~/foo.nc
-nco780. 
+nco780. bm: ncap regression test 8 
+nco781. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

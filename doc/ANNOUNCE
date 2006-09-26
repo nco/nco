@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.187 2006-09-25 01:52:41 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.188 2006-09-26 00:47:53 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.6 are ready. 
 
@@ -16,7 +16,10 @@ Build/runtime changes:
    
 2. Update netCDF4 support to alpha16
 
-3. 
+3. Quiet output of common ncks and ncatted operations to reduce user paranoia
+   Previous INFO messages now seen only with dbg_lvl > 0
+
+4. 
 
 Enjoy,
 Charlie

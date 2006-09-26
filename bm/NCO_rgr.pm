@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.55 2006-09-01 00:57:54 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.56 2006-09-26 00:47:53 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -90,11 +90,11 @@ sub tst_rgr {
     $opr_nm='ncap';
 ####################
     
-# this stanza will not map to the way the SS is done - needs a %stdouterr% added but all the rest of them
+# This stanza will not map to the way the SS is done - needs a %stdouterr% added but all the rest of them
 # have an ncks which triggers this addition from the sub tst_run() -> gnarly_pything.
 # this stanza also requires a script on the SS.
     $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -v -S ncap.in $in_pth_arg in.nc %tempf_00%  %stdouterr%";
-    $dsc_sng="running ncap.in script into nco_tst.pl";
+    $dsc_sng="running ncap.in script in nco_bm.pl";
     $tst_cmd[1] = "ncap: INFO Replacing missing value data in variable val_half_half";
 #	$tst_cmd[2] = "NO_SS";
     $tst_cmd[2] = "SS_OK";
