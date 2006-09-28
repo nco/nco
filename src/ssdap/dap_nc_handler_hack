@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.41 2006-09-22 00:39:59 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.42 2006-09-28 22:54:33 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -50,6 +50,9 @@ class local:
     # this is for command-line debugging
 
     disableParallel = True
+
+    dashPath = None
+    useDashHelper = False
     
     if sys.version_info[:2] < (2,4): # 2.4 adds @staticmethod syntax
         print """You have python version %s, and >=2.4 is required.
@@ -1320,6 +1323,14 @@ class FrontEnd:
     def readScriptFromFile(self, filename):
         self.scriptlines = open(filename).readlines()
         pass
+    def externalScriptParse(self):
+        if(local.useDash and local.dashPath):
+            # if a dash helper is available, use it.
+            pobj = Popen3(local.dashPath, self.scriptlines.join("\n"), True)
+            return pobj.err.split("\n")
+        else:
+            return self.scriptlines
+        
 
     def runScript(self):
         self.env["tempdir"] = self.args["-r"]
@@ -1344,6 +1355,44 @@ class FrontEnd:
 class JobManager:  # will I have to write this?
     def __init__(self):
         self.maxParallel = 2
+
+class Popen3:
+   """
+   This is a deadlock-safe version of popen that returns
+   an object with errorlevel, out (a string) and err (a string).
+   (capturestderr may not work under windows.)
+   Example: print Popen3('grep spam','\n\nhere spam\n\n').out
+
+   Modified to ignore stdout (Daniel Wang 9-28-06)
+
+   Source credit: 
+   http://www.python.org/doc/faq/library.html
+   Date:	$Date: 2006-09-28 22:54:33 $
+   Version:	$Revision: 1.42 $
+   """
+   def __init__(self,command,input=None,capturestderr=None):
+       #outfile=tempfile.mktemp()
+       outfile="/dev/null"
+       command="( %s ) > %s" % (command,outfile)
+       if input:
+           infile=tempfile.mktemp()
+           open(infile,"w").write(input)
+           command=command+" <"+infile
+       if capturestderr:
+           errfile=tempfile.mktemp()
+           command=command+" 2>"+errfile
+       self.errorlevel=os.system(command) >> 8
+       #self.out=open(outfile,"r").read()
+       self.out=None
+       #os.remove(outfile)
+       if input:
+           os.remove(infile)
+       if capturestderr:
+           self.err=open(errfile,"r").read()
+           os.remove(errfile)
+
+
+
 
 
 def execute():
