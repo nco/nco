@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.820 2006-09-27 01:00:20 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.821 2006-10-02 17:50:20 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -515,8 +515,8 @@ nco768. Change some common flags from toggles to hard-coded true/false
         to avoid weird behavior when toggle switches accidentally passed twice,
         e.g., ncks -O -O in.nc foo.nc
 nco772. ncpdq fails MPI regression tests on pbs, possibly others
-nco776. Minor, fixable memory leaks in ncecat
-nco777. ncra regression on ipcc only w/w/o mmr_drt with > 1 thread.
+nco776. Minor, fixable memory leaks in ncecat, fix with valgrind
+nco777. ncra regression on ipcc/pathscale (only) w/w/o mmr_drt with > 1 thread.
 	May indicate problem with timer behavior in OpenMP code.
 	ncra -O -t 1 --mmr_drt -D 1 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc # works fine
 	ncra -O -t 2 --mmr_drt -D 1 -v one_dmn_rec_var -p ~/nco/data in.nc in.nc ~/foo.nc # fails
