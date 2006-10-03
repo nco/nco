@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.4 2006-09-21 23:56:16 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.5 2006-10-03 01:18:32 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -13,8 +13,8 @@ class JobPersistence:
                     3 : "saved",
                     4 : "removed"
                     }
-    insertInoutTemplate = """insert into inouttable
-        (cmdid, output, logicalname, concretename, state)
+    insertInoutTemplate = """insert into cmdFileRelation
+        (taskrow, linenum, output, logicalname, concretename, state)
         values ('%s',%d,'%s','%s',%d);""" 
     insertFilestateTemplate = """insert into filestate (concretename, state)
         values ('%s',%d);"""
@@ -67,32 +67,39 @@ class JobPersistence:
         self.dbconnection = None
             
     def buildTables(self):
+        """Builds the set of tables needed for async operation"""
         ##
         ## consider having a table to store the actual script
         ## this would help for debugging and output caching
         ##
-        taskcommand = ["create table tasktable (",
+        taskcommand = ["create table tasks (",
                        "  taskid varchar(8),",
-                       "  linenum integer(8),", # 8 digits of lines is a lot
-                       "  cmdid varchar(16),", #for now, concat taskid, linenum
                        "  date date",
                        ");"]
-        cmdcommand = ["create table cmdtable (",
-                       "  cmdid varchar(16),",
-                       "  cmd varchar(80),", # e.g. ncwa, ncra
-                       "  cmdline varchar(256)", # command line(with paths)
+        cmdcommand = ["create table cmds (",
+                      "  taskrow integer(8),", 
+                      "  linenum integer(8),", # 8 digits of lines is a lot
+                      "  cmd varchar(80),", # e.g. ncwa, ncra
+                      "  cmdline varchar(256)", # command line(with paths)
                        ");"]
-        inoutcommand = ["create table inouttable (",
-                        "  cmdid varchar(16),",
+        inoutcommand = ["create table cmdFileRelation (",
+                        "  taskrow integer(8),",
+                        "  linenum integer(8),",
                         "  output tinyint(1),",
                         "  logicalname varchar(128),", # 
                         "  concretename varchar(192),", #
                         "  state tinyint(2)" # track file state 
                         ");"]
-        filestate = ["create table filestate (",
+        filestate = ["create table fileState (",
                        "  concretename varchar(192),"
                        "  state tinyint(2)",
                        ");"]
+        readylist = ["create table readyList (",
+                     " taskrow integer(8),",
+                     " cmdrow integer(8),",
+                     " concretename varchar(192)", # track concrete,
+                     # so we can update the filestate without querying.
+                     ");"]
 
                        
         # files can be planned, active, saved, removed, etc.
@@ -101,8 +108,10 @@ class JobPersistence:
         cur = self.cursor()
         try:
             cmd = "".join(taskcommand + ["\n"] + cmdcommand +
-                          ["\n"] + inoutcommand + ["\n"] + filestate)
+                          ["\n"] + inoutcommand + ["\n"] + filestate
+                          + ["\n"] + readylist)
             cur.executescript("".join(cmd))
+            #print "trying to execute cmd:",cmd
             #cur.executescript("".join(cmdcommand))
             #cur.executescript("".join(inoutcommand))
             print >>sys.stderr, "made tables in db (uncommit)"
@@ -111,10 +120,11 @@ class JobPersistence:
         pass
     
     def deleteTables(self):
-        deletecmd = [ "drop table tasktable;",
-                      "drop table cmdtable;",
-                      "drop table inouttable;",
-                      "drop table filestate;", 
+        deletecmd = [ "drop table tasks;",
+                      "drop table cmds;",
+                      "drop table cmdFileRelation;",
+                      "drop table fileState;",
+                      "drop table readyList;"
                     ];
         cur = self.cursor()
         try:
@@ -123,10 +133,11 @@ class JobPersistence:
         except sqlite.OperationalError:
             print >>sys.stderr, "error dropping tables from DB"
         pass
-    def insertTask(self, taskid,linenum,cmdid):
-        """inserts a task into the right tables"""
-        sqlcmd = """insert into tasktable (taskid, linenum, cmdid, date)
-        values ('%s',%d,'%s','%s');""" 
+    def insertTask(self, taskid):
+        """inserts a task into the right tables,
+        returns resultant rownumber for use in other tables"""
+        sqlcmd = """insert into tasks (taskid, date)
+        values ('%s','%s');""" 
         #print >>sys.stderr, sqlcmd
         import time
         #today = "%04d%02d%02d" % time.localtime()[:3]
@@ -135,46 +146,59 @@ class JobPersistence:
         cur = self.cursor()
 
         cur.execute(sqlcmd % (taskid, linenum, cmdid, today))
+        sqlcmd = """select rowid from tasks where taskid=\"%s\";""";
+        cur.execute(sqlcmd % (taskid))
+        row = cur.fetchall()
+        rownum = row[0][0]
+        assert len(row) == 1
         #print >>sys.stderr, "inserted task in db (uncommit)"
-        pass
-    def insertCmd(self, cmdid, cmd, cmdline):
-        sqlcmd = """insert into cmdtable (cmdid, cmd, cmdline)
-        values ('%s','%s',\"%s\");""" 
+        return rownum 
 
-        self.cmdList.append((str(cmdid), str(cmd), str(cmdline)))
+    def insertCmd(self, taskrow, linenum, cmd, cmdline):
+        """Inserts a command (i.e. a script line) into the right tables"""
+
+
+        sqlcmd = """insert into cmds (taskrow, linenum, cmd, cmdline)
+        values (%d, %d,'%s',\"%s\");""" 
+
+        self.cmdList.append((taskrow, linenum, str(cmd), str(cmdline)))
         #print >>sys.stderr, sqlcmd % (cmdid, cmd, cmdline)
         #cur = self.cursor()
         #cur.execute(sqlcmd % (cmdid, cmd, cmdline))
         
         pass
     def commitCmds(self):
-        
+        """Commit whatever command entries are currently queued."""
         if(len(self.cmdList) > 0):
             cur = self.cursor()
-            cur.executemany("""insert into cmdtable (cmdid, cmd, cmdline)
-            values (?,?,?)""", self.cmdList)
+            cur.executemany("""insert into cmds (taskrow, linenum, cmd, cmdline)
+            values (?,?,?,?)""", self.cmdList)
             self.cmdList = []
-        
+            
                         
-    def insertInout(self, cmdid, logical, concrete, output, state, isTemp):
+    def insertInout(self, taskrow, linenum, logical, concrete, output, state, isTemp):
         """insert a tuple in the inout table.
         cmdid -- id of relevant command
         logical -- logical filename
         concrete -- concrete-mapped filename
         output -- True if this is an output, False, otherwise
-        state -- filestate (planned(1), saved(2), removed(3)
+        state -- filestate (planned(1), saved-needed(2),
+                            saved-deletable(3), removed(4)
 
         returns a token to allow later retrieval of output file
         """
         # compare performance for deferred commit
-        return self.insertInOut2(cmdid, logical, concrete, output, state, isTemp)
+        
+        return self.insertInOut2(taskrow, linenum,
+                                 logical, concrete, output, state, isTemp)
         import sys
         fileid = None
         statecmd = self.insertFilestateTemplate
         numcmd = self.selectFileIdTemplate
         cur = self.cursor()
         outnum = [0,1][output == True]
-        sqlcmd = self.insertInoutTemplate % (cmdid, outnum, logical, concrete, state)
+        sqlcmd = self.insertInoutTemplate % (taskrow, linenum,
+                                             outnum, logical, concrete, state)
         #print >>sys.stderr, sqlcmd
         cur.execute(sqlcmd)
         if output: # insert into the token table if it's an output
@@ -184,7 +208,7 @@ class JobPersistence:
             fileid = row[0][0]
             pass
         return fileid
-    def insertInOut2(self, cmdid, logical, concrete, output, state, isTemp):
+    def insertInOut2(self, taskrow, linenum, logical, concrete, output, state, isTemp):
         """insert a tuple in the inout table.
         cmdid -- id of relevant command
         logical -- logical filename
@@ -192,7 +216,8 @@ class JobPersistence:
         output -- True if this is an output, False, otherwise
         state -- filestate (planned(1), saved(2), removed(3)
 
-        returns a token to allow later retrieval of output file
+        Returns a token to allow later retrieval of output file,
+          but only if isTemp is false.
         """
         import sys
         fileid = None
@@ -200,8 +225,7 @@ class JobPersistence:
         numcmd = self.selectFileIdTemplate
         cur = self.cursor()
         outnum = [0,1][output == True]
-        #self.inOutList.append("'%s',%d,'%s','%s',%d" % (cmdid, outnum, logical, concrete, state))
-        self.inOutList.append((str(cmdid), outnum,
+        self.inOutList.append((taskrow, linenum, outnum,
                                str(logical), str(concrete), state))
         #defer this to a batch insert right before committing.
         #sqlcmd = self.insertInoutTemplate % (cmdid, outnum, logical, concrete, state)
@@ -221,8 +245,10 @@ class JobPersistence:
             pass
         return fileid
     def insertInOut2Commit(self):
-        substTemp = """insert into inouttable 
-        (cmdid, output, logicalname, concretename, state) values (?,?,?,?,?)"""
+        """Commit those inserts that were queued earlier during insertInOut2"""
+        substTemp = """insert into cmdFileRelation
+        (taskrow, linenum, output, logicalname, concretename, state)
+        values (?,?,?,?,?,?)"""
         cur = self.cursor()
         if(len(self.inOutList) > 0):
             cur.executemany(substTemp, self.inOutList)
@@ -234,6 +260,8 @@ class JobPersistence:
         pass
 
     def pollFileState(self, id):
+        """Check the state of a file with the supplied id
+        Returns: the state of the file, if it exists."""
         cur = self.cursor()
         cur.execute("select state from filestate where rowid=%d" % id)
         states = cur.fetchall()
@@ -257,11 +285,27 @@ class JobPersistence:
             return names[0][0]
         else:
             return
+    def cmdWithInput(self, concretename):
+        """Return a list of cmdids that have inputid as one of their input"""
+        cur = self.cursor()
+        # first find the affected commands
+        cur.execute("""select (taskrow,linenum) from cmdFileRelation where
+        (output=0, concretename='%s'""" % (concretename))
+        rows = cur.fetchall()
+        ## FIXME: still need to return list of (taskrow, linenum) tuples
+        
+        return None ## dummy return
+    def makeReady(self, cmdList):
+        # for each cmd in the list, check the filestates of its input files
+        getfiles = """select * from cmdFileRelation INNER JOIN fileState
+        where (taskrow=%d, linenum=%d)"""
+
+            
         
     def showState(self):
         cur = self.cursor()
         # look for tasks
-        cur.execute("select * from tasktable;")
+        cur.execute("select * from tasks;")
         ttable = cur.fetchall()
         taskdict = {}
         if ttable == []:
@@ -326,12 +370,16 @@ def selfTest():
     j = JobPersistence("sometest_db")
     j.buildTables()
     j.close()
+    print " build and close"
     j.deleteTables()
     j.close()
+    print " delete and closed"
     j.buildTables()
     j.close()
+    print " build and closed"
     j.deleteTables()
     j.close()
+    print " delete and closed"
     pass
 def fixDbFilename(dbfilename):
     if dbfilename == []:

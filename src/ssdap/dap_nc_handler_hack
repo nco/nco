@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.42 2006-09-28 22:54:33 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.43 2006-10-03 01:18:32 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -659,8 +659,16 @@ class Command:
          pass 
 
     def taskId(self):
-         try: return self.cachedTaskId
-         except:
+        """returns: taskid for the script.
+
+        The taskId (statistically) uniquely identifies the script so
+        that it is not confused with another script with different
+        content or submission time.  Submission time is uniquified by
+        using the PID of the parsing process.  Might consider not
+        caring about PID when we want to
+        cache results from identical scripts."""
+        try: return self.cachedTaskId
+        except:
              import struct
              # get fingerprint from env
              digest = self.env.fingerprint()
@@ -674,7 +682,7 @@ class Command:
              #print >>sys.stderr, "taskid = ",taskid
              self.cachedTaskId = taskid
              return self.cachedTaskId
-         pass
+        pass
 
 ######################################################################
 class DepTracker:
@@ -797,7 +805,6 @@ class ScriptingEnv:
          self.commandLine = [] # list of commandlines (no comments)
          lineNum = 0
          self.isAsync = self.env.has_key("async") and self.env["async"] == True
-
          for line in scriptlines:
              lineNum += 1
              c = Command(line, self)
@@ -1085,7 +1092,9 @@ class ScriptingEnv:
         if command.cmd == None:
             return # don't persist non-commmands.
         j = self.instanceJobPersistence()
-        j.insertTask(tid, linenum, cmdid)
+        if not self.persistedTask:
+            self.persistedTask = j.insertTask(tid)
+            assert self.persistedTask != None
         j.insertCmd(cmdid, command.cmd, command.commandLine())
         
         def insert(out):
@@ -1367,8 +1376,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2006-09-28 22:54:33 $
-   Version:	$Revision: 1.42 $
+   Date:	$Date: 2006-10-03 01:18:32 $
+   Version:	$Revision: 1.43 $
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()
