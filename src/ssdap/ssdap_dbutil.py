@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.7 2006-10-04 10:16:36 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.8 2006-10-04 22:12:58 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -309,7 +309,7 @@ class JobPersistence:
         LEFT JOIN fileState USING (concretename)
         where taskrow=%d AND linenum=%d AND output=0 AND state IS NOT NULL;"""
         getoutput = """select concretename from cmdFileRelation
-        LEFT JOIN fileState USING (concretename)
+        JOIN fileState USING (concretename)
         where taskrow=%d AND linenum=%d AND output=1;"""
         readyTemplate = """insert into readyList
         (taskrow,linenum,concretename) values (?,?,?)"""
@@ -322,7 +322,7 @@ class JobPersistence:
             ready = True
             f = cur.fetchall()
             for t in f:
-                if t[1] != 2: # if state is not saved
+                if t[1] != 3: # if state is not saved
                     ready = False
                     print "cmdList: %d,%d has %s in %s --> not ready" % (
                         taskrow, linenum, t[0], str(t[1]))
@@ -335,7 +335,39 @@ class JobPersistence:
             pass
         if len(addReady) > 0: cur.executemany(readyTemplate, addReady)
         return len(addReady)
-
+    def initMakeReady(self, taskrow):
+        """Find all ready jobs and put them on the readylist
+        Warning: logic duplication between this and makeReady.
+        Refactoring these two is a priority.
+        """
+        sql = """select linenum,output,concretename,state from cmds LEFT JOIN
+        cmdFileRelation USING (taskrow,linenum) LEFT JOIN fileState
+        USING (concretename)
+        WHERE taskrow=%d"""
+        ## this SQL command is not appropriate!!! fix!
+        cur = self.cursor()
+        cur.execute(sql % taskrow)
+        readyCmds = {}
+        f = cur.fetchall()
+        for (linenum, output,concretename, state) in f:
+            print "cmdList: %d,%d has %s in %s" % (
+                taskrow, linenum, concretename, state)
+            ready = readyCmds.get(linenum, (True,None))
+            if not output: #output is either missing or false(input)
+                if (state is not None) and (state != 3): #if not saved?
+                    readyCmds[linenum] = (False,ready[1])
+                    print "Not Ready %d,%d has %s in %s" % (
+                        taskrow, linenum, concretename, state)
+            else: readyCmds[linenum] = (ready[0],concretename)
+        i = readyCmds.items()
+        # filter for only the true values, and then pick the first
+        # half of the tuple
+        i = map(lambda x:(taskrow,x[0],x[1][1]), filter(lambda x: x[1][0], i))
+        i.sort()
+        sql = "insert into readyList VALUES(?,?,?)"
+        cur.executemany(sql,i)
+        
+        pass
     def fetchAndLockNextCmd(self,taskrow):
         # fetch a cmd from ready list
         cmd = """select rowid,concretename,cmdLine from readyList JOIN cmds
@@ -437,15 +469,37 @@ def selfTest():
     j.close()
     print " build and close"
     row = j.insertTask("AABBCCDD")
+    # a command with no input and one independent output (ready to go)
+    j.insertCmd(row, 2, "ncap", "ncap -o %outf_indep.nc%")
+    j.insertInout(row, 2, "%outf_indep.nc%", "/tmp/temp1111outf_indep.nc", 
+                  True, 1, False)
+    # a command with one input(orig) and one output(temp) (ready to go)
+    j.insertCmd(row, 5, "ncwa", "ncwa in.nc %tempf_other.nc%")
+    j.insertInout(row, 5, "in.nc", "in.nc", 
+                  False, 1, False)
+    j.insertInout(row, 5, "%tempf_other.nc%", "/tmp/temp0000tempf_other.nc", 
+                  True, 1, True)
+    # a command with two inputs (orig+depend) and one output
     j.insertCmd(row, 10, "ncwa", "ncwa in.nc %tempf_other.nc% %outf_out.nc%")
-    j.insertInout(row, 10, "%tempf_other.nc%", "/tmp/temp1111tempf_other.nc", 
+    j.insertInout(row, 10, "in.nc", "in.nc", 
+                  False, 1, False)
+    j.insertInout(row, 10, "%tempf_other.nc%", "/tmp/temp0000tempf_other.nc", 
                   False, 1, True)
     j.insertInout(row, 10, "%outf_out.nc%", "/tmp/temp1111outf_out.nc", 
                   True, 1, False)
+    # a command with two inputs (orig+depend) and one output
+    j.insertCmd(row, 12, "ncap", "ncwa in.nc %outf_out.nc% %outf_out2.nc%")
+    j.insertInout(row, 12, "in.nc", "in.nc", 
+                  False, 1, False)
+    j.insertInout(row, 12, "%outf_out.nc%", "/tmp/temp1111outf_out.nc", 
+                  False, 1, False)
+    j.insertInout(row, 12, "%outf_out2.nc%", "/tmp/temp2222outf_out2.nc", 
+                  True, 1, False)
     j.commit()
     j.showState()
-    clist = j.cmdsWithInput("/tmp/temp1111tempf_other.nc")
-    j.makeReady(clist)
+    j.initMakeReady(row)
+    #    clist = j.cmdsWithInput("/tmp/temp1111tempf_other.nc")
+    #j.makeReady(clist)
     j.close()
 
     return
