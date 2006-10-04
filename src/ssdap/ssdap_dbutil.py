@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.6 2006-10-04 00:27:22 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.7 2006-10-04 10:16:36 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -87,16 +87,15 @@ class JobPersistence:
                         "  linenum integer(8),",
                         "  output tinyint(1),",
                         "  logicalname varchar(128),", # 
-                        "  concretename varchar(192),", #
-                        "  state tinyint(2)" # track file state 
-                        ");"]
+                        "  concretename varchar(192)", #
+                        ");"]  
         filestate = ["create table fileState (",
                        "  concretename varchar(192),"
-                       "  state tinyint(2)",
+                       "  state tinyint(2)", #need this consistent with other table?
                        ");"]
         readylist = ["create table readyList (",
                      " taskrow integer(8),",
-                     " cmdrow integer(8),",
+                     " linenum integer(8),",
                      " concretename varchar(192)", # track concrete,
                      # so we can update the filestate without querying.
                      ");"]
@@ -226,7 +225,7 @@ class JobPersistence:
         cur = self.cursor()
         outnum = [0,1][output == True]
         self.inOutList.append((taskrow, linenum, outnum,
-                               str(logical), str(concrete), state))
+                               str(logical), str(concrete)))
         #defer this to a batch insert right before committing.
         #sqlcmd = self.insertInoutTemplate % (cmdid, outnum, logical, concrete, state)
         #print >>sys.stderr, sqlcmd
@@ -247,8 +246,8 @@ class JobPersistence:
     def insertInOut2Commit(self):
         """Commit those inserts that were queued earlier during insertInOut2"""
         substTemp = """insert into cmdFileRelation
-        (taskrow, linenum, output, logicalname, concretename, state)
-        values (?,?,?,?,?,?)"""
+        (taskrow, linenum, output, logicalname, concretename)
+        values (?,?,?,?,?)"""
         cur = self.cursor()
         print "inout commit has %d inout and %d state to commit" % (
             len(self.inOutList), len(self.stateList))
@@ -298,22 +297,61 @@ class JobPersistence:
     def makeReady(self, cmdList):
         """input: cmdList is a list of tuples (taskrow,linenum)
         for each tuple, check to see if it has any unready input files
-        if there are no unready input files, add job to the ready list"""
+        if there are no unready input files, add job to the ready list
+
+        Idea: If this results in a ready job, might just return the job
+        instead of putting it on the list--> avoid the db update and
+        continue working.
+        """
         # for each cmd in the list, check the filestates of its input files
-        getfiles = """select * from cmdFileRelation INNER JOIN fileState
-        where taskrow=%d AND linenum=%d;"""
+        # might want LEFT JOIN
+        getfiles = """select concretename,state from cmdFileRelation
+        LEFT JOIN fileState USING (concretename)
+        where taskrow=%d AND linenum=%d AND output=0 AND state IS NOT NULL;"""
+        getoutput = """select concretename from cmdFileRelation
+        LEFT JOIN fileState USING (concretename)
+        where taskrow=%d AND linenum=%d AND output=1;"""
+        readyTemplate = """insert into readyList
+        (taskrow,linenum,concretename) values (?,?,?)"""
+
         cur = self.cursor()
+        addReady = []
         # consider batching up the select command if db access is expensive
         for (taskrow, linenum) in cmdList:
             cur.execute(getfiles % (taskrow, linenum))
             ready = True
             f = cur.fetchall()
             for t in f:
-                print t
+                if t[1] != 2: # if state is not saved
+                    ready = False
+                    print "cmdList: %d,%d has %s in %s --> not ready" % (
+                        taskrow, linenum, t[0], str(t[1]))
+                    break
+            if ready:
+                cur.execute(getoutput % (taskrow, linenum))
+                f = cur.fetchall()
+                assert len(f) == 1
+                addReady.append((taskrow,linenum,f[0][0]))
+            pass
+        if len(addReady) > 0: cur.executemany(readyTemplate, addReady)
+        return len(addReady)
 
-        print """ """
-            
-        
+    def fetchAndLockNextCmd(self,taskrow):
+        # fetch a cmd from ready list
+        cmd = """select rowid,concretename,cmdLine from readyList JOIN cmds
+        USING (taskrow,linenum) where taskrow=%d limit 1;"""
+        cur = self.cursor()
+        cur.execute(cmd % taskrow)
+        rows = cur.fetchall()
+        mycommand = row[0]
+        # drop the cmd from the list
+        cmd = """delete from readyList where rowid=%d;"""
+        cur.execute(cmd % mycommand[0])
+        # update the filestate to running
+        # hope filename doesn't have any quotes!
+        cmd = "update fileState set state=2 where concretename='%s';"
+        cur.execute(cmd % mycommand[1])
+        return mycommand[2] # only need to return the command line.
     def showState(self):
         cur = self.cursor()
         # look for tasks
@@ -363,6 +401,15 @@ class JobPersistence:
         """Pretty-prints a row from the cmds table"""
         cmdtemplate = "row %d, line %d, cmd %s, cmdline= %s"
         print cmdtemplate % tuple
+        cur = self.cursor()
+        cmd = 'select * from cmdFileRelation LEFT JOIN fileState \
+        using (concretename) where taskrow=%d and linenum=%d;'
+        cur.execute(cmd % (tuple[0],tuple[1]) )
+        for t in cur:
+            print "  ",["Inputfile","Outputfile"][t[2]],
+            state = self.fileStateMap.get(t[5], "NULL")
+            print "logical=%s, real=%s, state=%s (%s)" % (t[3],t[4],str(t[5]),state)
+                                                          
         pass
     def showCmd(self, cid):
         cur = self.cursor()
