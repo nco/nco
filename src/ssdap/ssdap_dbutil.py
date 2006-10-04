@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.8 2006-10-04 22:12:58 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.9 2006-10-04 23:45:01 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -276,6 +276,11 @@ class JobPersistence:
         cur = self.cursor()
         template = "update filestate set state=%d where rowid=%d" 
         cur.execute(template % (state,id))
+    def setFileStateByName(self, concretename, state):
+        cur = self.cursor()
+        template = "update filestate set state=%d where concretename=\'%s\'" 
+        cur.execute(template % (state,concretename))
+        
     def pollFilename(self, id):
         cur = self.cursor()
         cur.execute("select concretename from filestate where rowid=%d" % id)
@@ -350,14 +355,14 @@ class JobPersistence:
         readyCmds = {}
         f = cur.fetchall()
         for (linenum, output,concretename, state) in f:
-            print "cmdList: %d,%d has %s in %s" % (
-                taskrow, linenum, concretename, state)
+            #print "cmdList: %d,%d has %s in %s" % (
+            #    taskrow, linenum, concretename, state)
             ready = readyCmds.get(linenum, (True,None))
             if not output: #output is either missing or false(input)
                 if (state is not None) and (state != 3): #if not saved?
                     readyCmds[linenum] = (False,ready[1])
-                    print "Not Ready %d,%d has %s in %s" % (
-                        taskrow, linenum, concretename, state)
+            #        print "Not Ready %d,%d has %s in %s" % (
+            #            taskrow, linenum, concretename, state)
             else: readyCmds[linenum] = (ready[0],concretename)
         i = readyCmds.items()
         # filter for only the true values, and then pick the first
@@ -370,12 +375,15 @@ class JobPersistence:
         pass
     def fetchAndLockNextCmd(self,taskrow):
         # fetch a cmd from ready list
-        cmd = """select rowid,concretename,cmdLine from readyList JOIN cmds
-        USING (taskrow,linenum) where taskrow=%d limit 1;"""
+        cmd = """SELECT readyList.rowid,concretename,cmdLine
+        FROM readyList JOIN cmds
+        USING (taskrow,linenum) WHERE taskrow=%d LIMIT 1;"""
         cur = self.cursor()
         cur.execute(cmd % taskrow)
         rows = cur.fetchall()
-        mycommand = row[0]
+        if len(rows) < 1:
+            return None 
+        mycommand = rows[0]
         # drop the cmd from the list
         cmd = """delete from readyList where rowid=%d;"""
         cur.execute(cmd % mycommand[0])
@@ -383,11 +391,12 @@ class JobPersistence:
         # hope filename doesn't have any quotes!
         cmd = "update fileState set state=2 where concretename='%s';"
         cur.execute(cmd % mycommand[1])
-        return mycommand[2] # only need to return the command line.
+        # return cmdline and output concretename
+        return (mycommand[2],mycommand[1]) 
     def showState(self):
         cur = self.cursor()
         # look for tasks
-        cur.execute("select taskid,rowid,date from tasks;")
+        cur.execute("select taskid,rowid,date from tasks LIMIT 200;")
         ttable = cur.fetchall()
         taskdict = {}
         if ttable == []:
@@ -408,10 +417,11 @@ class JobPersistence:
                 self.showTaskCommandsByRow(entry[0])
         # look for filestates
         self.showFileTable()
+        self.showReadyList()
         #print >>sys.stderr, ttable
     def showFileTable(self):
         cur = self.cursor()
-        cur.execute("select rowid,concretename,state from filestate")
+        cur.execute("select rowid,concretename,state from filestate LIMIT 200")
         fstate = cur.fetchall()
         if fstate == []:
             print "No Files in DB"
@@ -423,7 +433,7 @@ class JobPersistence:
         
     def showTaskCommandsByRow(self, taskrow):
         cur = self.cursor()
-        cmd = 'select * from cmds where taskrow="%s"' % (taskrow)
+        cmd = 'select * from cmds where taskrow="%s" LIMIT 200' % (taskrow)
         cur.execute(cmd)
         for cidtuple in cur.fetchall():
             self.showCmdTuple(cidtuple)
@@ -459,11 +469,24 @@ class JobPersistence:
             print "  Outputfile: logical=%s, real=%s, state=%d" % fields[2:]
         pass
         
-        
+    def showReadyList(self):
+        sql = "select * from readyList JOIN cmds USING (taskrow,linenum) LIMIT 200;"
+        cur = self.cursor()
+        cur.execute(sql)
+        for r in cur.fetchall():
+            print "ready cmd: task=%d line=%d, out=%s, cmd=%s, cmdline=%s" % (
+                r[0], r[1], r[2], r[3], r[4])
+
+            
     pass
 
-def selfTest():
-    print "doing basic internal build/delete/build/delete test."
+
+def selfTest(args=[]):
+    buildOnly = False
+    if len(args) > 0:
+        if "build" in args:
+            buildOnly = True
+    print "doing basic internal build/fill/run/delete/build/delete test."
     j = JobPersistence("sometest_db")
     j.buildTables()
     j.close()
@@ -496,13 +519,30 @@ def selfTest():
     j.insertInout(row, 12, "%outf_out2.nc%", "/tmp/temp2222outf_out2.nc", 
                   True, 1, False)
     j.commit()
-    j.showState()
     j.initMakeReady(row)
     #    clist = j.cmdsWithInput("/tmp/temp1111tempf_other.nc")
     #j.makeReady(clist)
     j.close()
+    j.showState()
+    # now, pretend like we're executing.
+    while True:
+        try:
+            (cline,outname) = j.fetchAndLockNextCmd(row)
+        except TypeError:
+            print ":::no more lines to run!"
+            break
+        print ":::pretending to run %s" % (cline)
+        j.showState()
+        print ":::fake produce %s" % (outname)
+        affected = j.cmdsWithInput(outname)
+        j.setFileStateByName(outname, 3) # mark completed
+        j.makeReady(affected)
+        j.close()
+        j.showState()
+    
 
-    return
+    if buildOnly:
+        return
     j.deleteTables()
     j.close()
     print " delete and closed"
@@ -518,25 +558,29 @@ def fixDbFilename(dbfilename):
         return None
     elif type(dbfilename) == type([]):
         return dbfilename[0]
+    else:
+        return dbfilename
     
 def quickShow(dbfilename = None):
     j = JobPersistence(fixDbFilename(dbfilename))
     j.showState()
     j.close()
-def fileShow():
-    j = JobPersistence()
+def fileShow(dbfilename = None):
+    j = JobPersistence(fixDbFilename(dbfilename))
     j.showFileTable()
     j.close()
 
 def deleteTables(dbfilename = None):
-    j = JobPersistence(fixDbFilename(dbfilename))
-    print "ok, deleting tables from ssdap"
+    realdb = fixDbFilename(dbfilename)
+    j = JobPersistence(realdb)
+    print "ok, deleting tables from ssdap @ %s" % (str(realdb))
     j.deleteTables()
     j.close()
     pass
 def buildTables(dbfilename = None):
-    j = JobPersistence(fixDbFilename(dbfilename))
-    print "ok, building new tables for ssdap"
+    realdb = fixDbFilename(dbfilename)
+    j = JobPersistence(realdb)
+    print "ok, building new tables for ssdap @ %s" % (str(realdb))
     j.buildTables()
     j.close()
     pass

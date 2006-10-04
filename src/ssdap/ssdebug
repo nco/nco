@@ -1,37 +1,47 @@
 #!/usr/bin/env python
+# -*- mode: python -*- $Id: ssdebug,v 1.2 2006-10-04 23:45:01 wangd Exp $
 import sys
 import cgitb
 import cgi
 
 cgitb.enable()
 sys.stderr = sys.stdout
+# use my own ssdap path
+sys.path.append("/home/wangd/ssdapSpace/nco/src/ssdap")
+# hack in the db path for now:
+#dbfilename = None
+dbfilename = "/var/www/ssdapscratch/ssdap_db.sqlite"
 
 class SsdInterface:
     def __init__(self):
         self.actions = {"rebuilddb": self.rebuildDb,
                         "showdb": self.showDb,
                         "help": self.printHelp,
-                        "ls" : self.listFiles}
+                        "ls" : self.listFiles,
+                        "env" : self.showEnv,
+                        "filedb" : self.showFileDb }
     
     def rebuildDb(self,form):
         """resets the db, clearing entries and using the latest schema"""
-        import sys
-        sys.path.append("/home/wangd/ssdapSpace/nco/src/ssdap")
         import ssdap_dbutil
+        print "dbfilename is ", dbfilename
         try:
-            ssdap_dbutil.deleteTables()
+            ssdap_dbutil.deleteTables(dbfilename)
         except:
             pass # ok if error deleting tables.
-        ssdap_dbutil.buildTables()
+        ssdap_dbutil.buildTables(dbfilename)
         
         return "Done rebuilding db"
     def showDb(self,form):
         """prints the db state"""
-        import sys
-        sys.path.append("/home/wangd/ssdapSpace/nco/src/ssdap")
         import ssdap_dbutil
-        ssdap_dbutil.quickshow()
+        ssdap_dbutil.quickShow(dbfilename)
         
+        return "done with output"
+    def showFileDb(self, form):
+        """prints the filestate in the db"""
+        import ssdap_dbutil
+        ssdap_dbutil.fileShow(dbfilename)
         return "done with output"
     def printHelp(self,form):
         """prints a brief help message showing available commands"""
@@ -41,6 +51,13 @@ class SsdInterface:
         print "</pre>"
         
         return "done with output"
+    def showEnv(self, form):
+        """prints the cgi script's available env vars"""
+        import os
+        for k in os.environ:
+            print "%-20s : %s" %(k,os.environ[k])
+        print "</pre>"
+        return "done printing env"
     def listFiles(self,form):
         """does a normal ls file listing. sorta-secure"""
         if not form.has_key("path"):
@@ -52,7 +69,7 @@ class SsdInterface:
             print "invalid path specified, try again"
             return
         import os
-        ppath = os.path.join("/var/www/html",path)
+        ppath = os.path.join(os.getenv("DOCUMENT_ROOT"),path)
         print "<pre>BEGIN listing for :",path
         #no leading /
         try:
