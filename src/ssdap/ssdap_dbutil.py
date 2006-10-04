@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.5 2006-10-03 01:18:32 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.6 2006-10-04 00:27:22 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -138,14 +138,14 @@ class JobPersistence:
         returns resultant rownumber for use in other tables"""
         sqlcmd = """insert into tasks (taskid, date)
         values ('%s','%s');""" 
-        #print >>sys.stderr, sqlcmd
+        # print >>sys.stderr, sqlcmd
         import time
-        #today = "%04d%02d%02d" % time.localtime()[:3]
+        # today = "%04d%02d%02d" % time.localtime()[:3]
         # date in yyyy-mm-dd hh:mm format
         today = "%04d-%02d-%02d %02d:%02d" % time.localtime()[:5]
         cur = self.cursor()
 
-        cur.execute(sqlcmd % (taskid, linenum, cmdid, today))
+        cur.execute(sqlcmd % (taskid, today))
         sqlcmd = """select rowid from tasks where taskid=\"%s\";""";
         cur.execute(sqlcmd % (taskid))
         row = cur.fetchall()
@@ -250,6 +250,8 @@ class JobPersistence:
         (taskrow, linenum, output, logicalname, concretename, state)
         values (?,?,?,?,?,?)"""
         cur = self.cursor()
+        print "inout commit has %d inout and %d state to commit" % (
+            len(self.inOutList), len(self.stateList))
         if(len(self.inOutList) > 0):
             cur.executemany(substTemp, self.inOutList)
             self.inOutList = []
@@ -285,27 +287,37 @@ class JobPersistence:
             return names[0][0]
         else:
             return
-    def cmdWithInput(self, concretename):
+    def cmdsWithInput(self, concretename):
         """Return a list of cmdids that have inputid as one of their input"""
         cur = self.cursor()
         # first find the affected commands
-        cur.execute("""select (taskrow,linenum) from cmdFileRelation where
-        (output=0, concretename='%s'""" % (concretename))
+        cur.execute("""select taskrow,linenum from cmdFileRelation where
+        output=0 AND concretename='%s';""" % (concretename))
         rows = cur.fetchall()
-        ## FIXME: still need to return list of (taskrow, linenum) tuples
-        
-        return None ## dummy return
+        return rows # should return list of (taskrow, linenum) tuples
     def makeReady(self, cmdList):
+        """input: cmdList is a list of tuples (taskrow,linenum)
+        for each tuple, check to see if it has any unready input files
+        if there are no unready input files, add job to the ready list"""
         # for each cmd in the list, check the filestates of its input files
         getfiles = """select * from cmdFileRelation INNER JOIN fileState
-        where (taskrow=%d, linenum=%d)"""
+        where taskrow=%d AND linenum=%d;"""
+        cur = self.cursor()
+        # consider batching up the select command if db access is expensive
+        for (taskrow, linenum) in cmdList:
+            cur.execute(getfiles % (taskrow, linenum))
+            ready = True
+            f = cur.fetchall()
+            for t in f:
+                print t
 
+        print """ """
             
         
     def showState(self):
         cur = self.cursor()
         # look for tasks
-        cur.execute("select * from tasks;")
+        cur.execute("select taskid,rowid,date from tasks;")
         ttable = cur.fetchall()
         taskdict = {}
         if ttable == []:
@@ -314,15 +326,16 @@ class JobPersistence:
             for row in ttable:
                 taskid = row[0]
                 if taskid not in taskdict:
-                    taskdict[taskid] = (1, row[3])
+                    taskdict[taskid] = row[1:]
                 else:
-                    entry = taskdict[taskid]
-                    taskdict[taskid] = (entry[0] + 1, entry[1])
+                    print "warning, duplicate task in tasks table, id=",
+                    print taskid, " Ignoring..."
             for tid in taskdict:
                 entry = taskdict[tid]
-                print "TaskId:", tid, "has", entry[0], "lines, dated",
+                print "TaskId:", tid, "is dated",
                 print entry[1]
-                self.showTask(tid)
+                #self.showTaskById(tid)
+                self.showTaskCommandsByRow(entry[0])
         # look for filestates
         self.showFileTable()
         #print >>sys.stderr, ttable
@@ -338,14 +351,19 @@ class JobPersistence:
                 print "(", JobPersistence.fileStateMap[row[2]], ")"
         #print >>sys.stderr, ttable
         
-    def showTask(self, tid):
+    def showTaskCommandsByRow(self, taskrow):
         cur = self.cursor()
-        cmd = 'select cmdid from tasktable where taskid="%s"' % (tid)
+        cmd = 'select * from cmds where taskrow="%s"' % (taskrow)
         cur.execute(cmd)
         for cidtuple in cur.fetchall():
-            self.showCmd(cidtuple[0])
+            self.showCmdTuple(cidtuple)
         pass
 
+    def showCmdTuple(self, tuple):
+        """Pretty-prints a row from the cmds table"""
+        cmdtemplate = "row %d, line %d, cmd %s, cmdline= %s"
+        print cmdtemplate % tuple
+        pass
     def showCmd(self, cid):
         cur = self.cursor()
         cmd = 'select * from cmdtable where cmdid="%s"' % (cid)
@@ -371,6 +389,19 @@ def selfTest():
     j.buildTables()
     j.close()
     print " build and close"
+    row = j.insertTask("AABBCCDD")
+    j.insertCmd(row, 10, "ncwa", "ncwa in.nc %tempf_other.nc% %outf_out.nc%")
+    j.insertInout(row, 10, "%tempf_other.nc%", "/tmp/temp1111tempf_other.nc", 
+                  False, 1, True)
+    j.insertInout(row, 10, "%outf_out.nc%", "/tmp/temp1111outf_out.nc", 
+                  True, 1, False)
+    j.commit()
+    j.showState()
+    clist = j.cmdsWithInput("/tmp/temp1111tempf_other.nc")
+    j.makeReady(clist)
+    j.close()
+
+    return
     j.deleteTables()
     j.close()
     print " delete and closed"
