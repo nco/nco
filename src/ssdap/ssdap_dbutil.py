@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.9 2006-10-04 23:45:01 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.10 2006-10-05 07:24:28 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -249,8 +249,8 @@ class JobPersistence:
         (taskrow, linenum, output, logicalname, concretename)
         values (?,?,?,?,?)"""
         cur = self.cursor()
-        print "inout commit has %d inout and %d state to commit" % (
-            len(self.inOutList), len(self.stateList))
+        #print "inout commit has %d inout and %d state to commit" % (
+        #    len(self.inOutList), len(self.stateList))
         if(len(self.inOutList) > 0):
             cur.executemany(substTemp, self.inOutList)
             self.inOutList = []
@@ -361,15 +361,17 @@ class JobPersistence:
             if not output: #output is either missing or false(input)
                 if (state is not None) and (state != 3): #if not saved?
                     readyCmds[linenum] = (False,ready[1])
+                    continue
             #        print "Not Ready %d,%d has %s in %s" % (
             #            taskrow, linenum, concretename, state)
-            else: readyCmds[linenum] = (ready[0],concretename)
+            readyCmds[linenum] = (ready[0],concretename)
         i = readyCmds.items()
         # filter for only the true values, and then pick the first
         # half of the tuple
         i = map(lambda x:(taskrow,x[0],x[1][1]), filter(lambda x: x[1][0], i))
         i.sort()
-        sql = "insert into readyList VALUES(?,?,?)"
+        sql = "insert into readyList VALUES(?,?,?);"
+        cur.execute("delete from readyList where taskrow=%d;" % (taskrow))
         cur.executemany(sql,i)
         
         pass
@@ -392,7 +394,22 @@ class JobPersistence:
         cmd = "update fileState set state=2 where concretename='%s';"
         cur.execute(cmd % mycommand[1])
         # return cmdline and output concretename
-        return (mycommand[2],mycommand[1]) 
+        return (mycommand[2],mycommand[1])
+    def cmdsLeft(self, taskrow):
+        """Checks to see if there are any cmds left to exec.
+        Check by seeing if there are any more output files that are not
+        running or saved or removed.
+        """
+        sql = """SELECT state from cmds
+        JOIN cmdFileRelation USING (taskrow,linenum)
+        JOIN fileState USING (concretename)
+        WHERE taskrow=%d AND output=1 AND state=1"""
+        cur = self.cursor()
+        cur.execute(sql % taskrow)
+        # FIXME: can we use sql count() instead?
+        f = cur.fetchall()
+        return len(f) > 0
+
     def showState(self):
         cur = self.cursor()
         # look for tasks
@@ -476,7 +493,6 @@ class JobPersistence:
         for r in cur.fetchall():
             print "ready cmd: task=%d line=%d, out=%s, cmd=%s, cmdline=%s" % (
                 r[0], r[1], r[2], r[3], r[4])
-
             
     pass
 
@@ -562,7 +578,9 @@ def fixDbFilename(dbfilename):
         return dbfilename
     
 def quickShow(dbfilename = None):
-    j = JobPersistence(fixDbFilename(dbfilename))
+    realdb = fixDbFilename(dbfilename)
+    j = JobPersistence(realdb)
+    print "showing tables for ssdap @ %s" % (str(realdb))
     j.showState()
     j.close()
 def fileShow(dbfilename = None):

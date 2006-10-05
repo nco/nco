@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.43 2006-10-03 01:18:32 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.44 2006-10-05 07:24:28 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -804,12 +804,13 @@ class ScriptingEnv:
          #WARN: commands is read by the command builder
          self.commandLine = [] # list of commandlines (no comments)
          lineNum = 0
+         # None --> script not in DB; integer-> row in tasks table
+         self.persistedTask = None 
          self.isAsync = self.env.has_key("async") and self.env["async"] == True
          for line in scriptlines:
              lineNum += 1
              c = Command(line, self)
              self.isAsync = self.env.has_key("async") and self.env["async"] == True
-
 
              if self.isAsync:
                  self.persistCommand(lineNum, c)
@@ -823,7 +824,7 @@ class ScriptingEnv:
              j.close()
          
          logit(self.depTreeToString()) # for debug...
-
+         
          pass
     @staticmethod
     def fixConfig():
@@ -954,51 +955,96 @@ class ScriptingEnv:
              shutil.copyfileobj(sout, outFd)
 
     def depExec(self):
-         """an in-order multi-issue(not yet!) command scheduler"""
-         dept = DepTracker(self.commandLine) # track deps
-         while not dept.done():
-             # assume infinite issue width for now
-             while dept.runnableCmds:
-                 cmd = dept.runnableCmds[0]
-                 dept.markRunning(cmd)
-                 # run/spawn cmds
-                 self.runCmdRaw(cmd)
-                 dept.markCompleted(cmd)
-             # check for completed jobs. how?
+        """an in-order multi-issue(not yet!) command scheduler"""
+        dept = DepTracker(self.commandLine) # track deps
+        while not dept.done():
+            # assume infinite issue width for now
+            while dept.runnableCmds:
+                cmd = dept.runnableCmds[0]
+                dept.markRunning(cmd)
+                # run/spawn cmds
+                self.runCmdRaw(cmd)
+                dept.markCompleted(cmd)
+            # check for completed jobs. how?
+
+            #here, we should sleep, since there are no runnable cmds
+            #before we check again for runnables.
+            time.sleep(1)
+        #we should be done
+    def dbDepExec(self, nslots=1):
+         """Run the script in parallel with dependencies derived from db
+         nslots indicates the maximum process issue width (# max in flight)"""
+         j = self.instanceJobPersistence()
+         j.initMakeReady(self.persistedTask)
+         j.commit()
+         j.close()
+         self.sleepTime = 1+((nslots-1)/4)
+         tospawn = nslots-1
+         for i in range(tospawn):
+             pid = os.fork()
+             if pid > 0: continue # parent continues to fork again
+             else: break # child exits the loop to start work
+         self.dbExecWorker() # get some work done
 
 
-             #here, we should sleep, since there are no runnable cmds
-             #before we check again for runnables.
-             time.sleep(1)
-         #we should be done
+    def dbExecWorker(self):
+         import time,subprocess
+         j = self.instanceJobPersistence()
+         while True:
+             try:
+                 (cline,outname) = j.fetchAndLockNextCmd(self.persistedTask)
+                 j.close()
+             except TypeError:
+                 jobsLeft = j.cmdsLeft(self.persistedTask)
+                 j.commit()
+                 if jobsLeft:
+                     time.sleep(self.sleepTime)
+                     continue
+                 break
+             # self.markCmdStart(c)  # already done by locking
+             try: # derived from: http://pydoc.org/2.4.1/subprocess.html
+                 retcode = subprocess.call(cline, shell=True)
+                 if retcode < 0:
+                     print >>sys.stderr, "Error code %d in %s" %(retcode,cline)
+                     break
+             except OSError, e:
+                 print >>sys.stderr, "Failed %s --> %s, " %(cline,outname)
+                 print >>sys.stderr, e
+                 break
+             j.setFileStateByName(outname, 3) # mark completed
+             affected = j.cmdsWithInput(outname)
+             j.makeReady(affected)
+             j.close()
+         j.close()
 
     def asyncExecute(self):
         sys.stdout.flush() # flush output before forking
         try:
-             pid = os.fork()
-             if pid > 0:
-                 # I am the parent: want to return tokens?
-                 #print "hello, I'm the parent, the child pid is", pid
-                 self.isParent = True
-                 print self.tokensDescription()
-                 print >>sys.stderr,self.outTokens
-                 # remove script outfile from env, to skip output
-                 if self.fileMap.has_key(ScriptingEnv.SCRIPT_OUTFILE):
-                     self.fileMap.pop(ScriptingEnv.SCRIPT_OUTFILE)
-                 
-                 #os.wait()
-             else:
-                 #print "hello, I'm the child, I want to execute things normally"
-                 devnull = os.open("/dev/null", os.O_RDONLY)
-                 os.dup2(devnull, sys.stdin.fileno())
-                 os.dup2(devnull, sys.stdout.fileno()) # silence stdout
-                 os.dup2(devnull, sys.stderr.fileno()) # silence stderr
-                 os.close(devnull)
-                 # need to dup file descriptors so httpd lets parent return.
-                 # See:
-                 # http://mail.python.org/pipermail/python-list/2001-March/032663.html
-                 self.serialExec()
-                 sys.exit(0)
+            pid = os.fork()
+            if pid > 0:
+                # I am the parent: want to return tokens?
+                #print "hello, I'm the parent, the child pid is", pid
+                self.isParent = True
+                print self.tokensDescription()
+                # remove script outfile from env, to skip output
+                if self.fileMap.has_key(ScriptingEnv.SCRIPT_OUTFILE):
+                    self.fileMap.pop(ScriptingEnv.SCRIPT_OUTFILE)
+                    #os.wait()
+            else:
+                #print "hello, I'm the child, I want to execute things normally"
+                devnull = os.open("/dev/null", os.O_RDONLY)
+                os.dup2(devnull, sys.stdin.fileno())
+                os.dup2(devnull, sys.stdout.fileno()) # silence stdout
+                os.dup2(devnull, sys.stderr.fileno()) # silence stderr
+                os.close(devnull)
+                # need to dup file descriptors so httpd lets parent return.
+                # See:
+                # http://mail.python.org/pipermail/python-list/2001-March/032663.html
+                # don't do either exec for now.
+                #self.serialExec()
+                self.dbDepExec()
+                logit("done with dbDepExec()")
+                sys.exit(0)
         except OSError, e: 
              print >>sys.stderr, "failed to fork for async: %d (%s)" %(e.errno,
                                                                        e.strerror) 
@@ -1024,7 +1070,9 @@ class ScriptingEnv:
         """make a description of the output tokens for this job.
         should be parseable by a client.  think about xml for this later"""
         output = []
+        
         for t in self.outTokens:
+            if not t[1]: continue
             output.append("SSDTOKEN<< logical=\"%s\" token=\"%d\" >>"
                           % (t[0], t[1]))
         return "\n".join(output)
@@ -1095,21 +1143,23 @@ class ScriptingEnv:
         if not self.persistedTask:
             self.persistedTask = j.insertTask(tid)
             assert self.persistedTask != None
-        j.insertCmd(cmdid, command.cmd, command.commandLine())
+        j.insertCmd(self.persistedTask, linenum,
+                    command.cmd, command.commandLine())
         
-        def insert(out):
-            if f in self.fileMap:
+        def insert(f, map, out):
+            if f in map:
                 # first part of tuple is file handle
-                concrete = self.fileMap[f][1] 
+                concrete = map[f][1] 
             else:
                 concrete = f
-            return j.insertInout(cmdid, f, concrete, out, 1,
+            return j.insertInout(self.persistedTask, linenum, f, concrete,
+                                 out, 1, # if (not out): ignore state spec
                                  f.startswith(ScriptingEnv.CLASS_TEMP_PREFIX))
             
         for f in command.inputs():
-            insert(False)
+            insert(f, self.fileMap, False)
         for f in command.outputs():
-            self.outTokens.append((f,  insert(True)))
+            self.outTokens.append((f,  insert(f,self.fileMap,True)))
         # defer commit/close until all commands ready.
         #j.commit()
         #j.close()
@@ -1376,8 +1426,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2006-10-03 01:18:32 $
-   Version:	$Revision: 1.43 $
+   Date:	$Date: 2006-10-05 07:24:28 $
+   Version:	$Revision: 1.44 $
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()
