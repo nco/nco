@@ -1,10 +1,10 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.10 2006-10-05 07:24:28 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.11 2006-10-06 01:39:55 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
-import sys
+import sys,os
 
 class JobPersistence:
     defaultDbFilename = "/tmp/mydb_ssdap"
@@ -60,7 +60,8 @@ class JobPersistence:
         """force closing the db and releasing of db handles"""
         if self.connected:
             self.dbconnection.commit()
-            self.dbcursor.close()
+            if self.dbcursor is not None:
+                self.dbcursor.close()
             self.dbconnection.close()
             self.connected = False
         self.dbcursor = None
@@ -377,24 +378,60 @@ class JobPersistence:
         pass
     def fetchAndLockNextCmd(self,taskrow):
         # fetch a cmd from ready list
-        cmd = """SELECT readyList.rowid,concretename,cmdLine
+        cmd = """SELECT taskrow,linenum,concretename,cmdLine
         FROM readyList JOIN cmds
-        USING (taskrow,linenum) WHERE taskrow=%d LIMIT 1;"""
-        cur = self.cursor()
-        cur.execute(cmd % taskrow)
-        rows = cur.fetchall()
-        if len(rows) < 1:
-            return None 
-        mycommand = rows[0]
-        # drop the cmd from the list
-        cmd = """delete from readyList where rowid=%d;"""
-        cur.execute(cmd % mycommand[0])
-        # update the filestate to running
-        # hope filename doesn't have any quotes!
-        cmd = "update fileState set state=2 where concretename='%s';"
-        cur.execute(cmd % mycommand[1])
-        # return cmdline and output concretename
-        return (mycommand[2],mycommand[1])
+        USING (taskrow,linenum) WHERE taskrow=%d;"""
+        #print >>open("/tmp/foo1","a"), os.getpid(),"prefetch: close existing connection"
+
+        #print >>open("/tmp/foo1","a"), os.getpid(),"getting connection"
+        rows = None
+        for i in range(3):
+            try:
+                self.close() # force everything to drop first.
+                con = self.connection()
+                oldLevel = con.isolation_level
+                con.isolation_level = "EXCLUSIVE" # set for stricter locking.
+                cur = con.cursor()
+                cur.execute(cmd % taskrow)
+                rows = cur.fetchall()
+                result = None
+                break
+            except:
+                #print >>open("/tmp/foo1","a"), os.getpid(),"db error, retrying"
+                import time
+                time.sleep(0.2) # sleep for 0.2 seconds
+                continue
+            
+        if not rows:
+            return None
+        if len(rows) > 0:
+            #print >>open("/tmp/foo1","a"), os.getpid(),"got ready:",rows
+            mycommand = rows[0]
+            # return cmdline and output concretename
+            result = (mycommand[3],mycommand[2])
+            # drop the cmd from the list
+            cmd = """delete from readyList where taskrow=%d AND linenum=%d;"""
+            cur.execute(cmd % (mycommand[0],mycommand[1]))
+            #print >>open("/tmp/foo1","a"), os.getpid(),"deleted"
+            # update the filestate to running
+            # hope filename doesn't have any quotes!
+            cmd = "update fileState set state=2 where concretename='%s';"
+            cur.execute(cmd % mycommand[2])
+            #print >>open("/tmp/foo1","a"), os.getpid(),"patched filestate"
+            #cur.execute("select * from readyList;")
+            #print >>open("/tmp/foo1","a"), os.getpid(),cur.fetchall()
+        # cleanup
+        #print >>open("/tmp/foo1","a"), os.getpid(),"nulling cursor"
+        cur.close()
+        cur = None
+        #print >>open("/tmp/foo1","a"), os.getpid(),"committing"
+        con.commit() # commit our transaction (hopefully)
+        #print >>open("/tmp/foo1","a"), os.getpid(),"resetting isolation"
+        con.isolation_level = oldLevel
+        self.close() # force everything to flush
+        #print >>open("/tmp/foo1","a"), os.getpid(),"left immediate"
+        #print >>open("/tmp/foo1","a"), os.getpid(),"close error",sys.exc_info()
+        return result
     def cmdsLeft(self, taskrow):
         """Checks to see if there are any cmds left to exec.
         Check by seeing if there are any more output files that are not

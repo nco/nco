@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.44 2006-10-05 07:24:28 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.45 2006-10-06 01:39:55 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -287,6 +287,7 @@ class Command:
     to provide constants in generating a command line."""
     def __init__(self, line, scriptenv):
         self.original = line
+        self.isMeta = False
         self.env = scriptenv
         self.cmdLine = None #empty commmandline for now
         self.myName = ""
@@ -298,7 +299,7 @@ class Command:
         self.inPrefix = ""
         self.saveOutput = False
         self.popen = os.popen2
-
+        
         self.parseOriginalLine()
         self.buildCommandLine()
         pass
@@ -343,7 +344,7 @@ class Command:
         if len(argv) < 1:
             return # nothing to parse
 
-        mycmd = argv[0]
+        mycmd = argv[0].strip() # drop leading/trailing whitespace
         if mycmd[0] == "#": #comment: nothing to parse.
             return
         valids = ScriptingEnv.META_COMMANDS + ScriptingEnv.NCO_COMMANDS
@@ -383,7 +384,8 @@ class Command:
         argdict = dict(arglist)
         self.acceptModifiers(argdict, arglist, leftover)
         self.acceptInOut(argdict, arglist, leftover)
-        self.fixupDependencies()
+        #skip this when we are testing db-backed scheduling.
+        #self.fixupDependencies()
         self.arguments = arglist
         pass
 
@@ -546,10 +548,10 @@ class Command:
         if needsDap:
              self.cmdLine = ScriptingEnv.VALID_DAPCOMMANDS[self.cmd] + " " + line
         elif self.isMeta:
-            self.cmdLine = "echo Placeholder: meta: " + self.cmd
+            self.cmdLine = "##echo Placeholder: meta: " + self.cmd
         else:
              self.cmdLine = ScriptingEnv.VALID_COMMANDS[self.cmd] + " " + line
-        logit( "real cmdline: " + self.cmdLine)
+        #logit( "real cmdline: " + self.cmdLine)
         pass
     def addInfilePrefix(self, name):
          n = None
@@ -812,7 +814,7 @@ class ScriptingEnv:
              c = Command(line, self)
              self.isAsync = self.env.has_key("async") and self.env["async"] == True
 
-             if self.isAsync:
+             if self.isAsync and (c.cmd is not None) and not c.isMeta:
                  self.persistCommand(lineNum, c)
              self.commands.append(c) # append command, regardless of parsing
              if c.commandLine() != None:
@@ -822,8 +824,10 @@ class ScriptingEnv:
              j = self.instanceJobPersistence()
              j.commit()
              j.close()
-         
-         logit(self.depTreeToString()) # for debug...
+
+         # for performance, skip dep tree stuff since it's not needed
+         # in the db model
+         #logit(self.depTreeToString()) # for debug...
          
          pass
     @staticmethod
@@ -980,30 +984,44 @@ class ScriptingEnv:
          j.close()
          self.sleepTime = 1+((nslots-1)/4)
          tospawn = nslots-1
+         logit("ready to spawn %d workers" % (tospawn))
          for i in range(tospawn):
              pid = os.fork()
              if pid > 0: continue # parent continues to fork again
-             else: break # child exits the loop to start work
+             else:
+                 local.mypid = os.getpid()
+                 break # child exits the loop to start work
          self.dbExecWorker() # get some work done
 
 
     def dbExecWorker(self):
          import time,subprocess
+         logit("beginning worker  loop")
          j = self.instanceJobPersistence()
          while True:
              try:
+                 #logit("worker checking for job")
                  (cline,outname) = j.fetchAndLockNextCmd(self.persistedTask)
                  j.close()
+                 #logit("worker got job  "+cline)
              except TypeError:
                  jobsLeft = j.cmdsLeft(self.persistedTask)
                  j.commit()
                  if jobsLeft:
                      time.sleep(self.sleepTime)
+                     #logit("worker sleeping for work")
                      continue
+                 #logit("worker exit: no more work")
                  break
+             except:
+                 import traceback
+                 logit("unknown exception"+str(traceback.format_exc()))
+                 
              # self.markCmdStart(c)  # already done by locking
              try: # derived from: http://pydoc.org/2.4.1/subprocess.html
+                 #logit("worker spawning %s" % (cline))
                  retcode = subprocess.call(cline, shell=True)
+                 #logit("worker finished %s, retcode: %d" % (cline,retcode))
                  if retcode < 0:
                      print >>sys.stderr, "Error code %d in %s" %(retcode,cline)
                      break
@@ -1011,10 +1029,14 @@ class ScriptingEnv:
                  print >>sys.stderr, "Failed %s --> %s, " %(cline,outname)
                  print >>sys.stderr, e
                  break
-             j.setFileStateByName(outname, 3) # mark completed
-             affected = j.cmdsWithInput(outname)
-             j.makeReady(affected)
-             j.close()
+             try:
+                 j.setFileStateByName(outname, 3) # mark completed
+                 affected = j.cmdsWithInput(outname)
+                 j.makeReady(affected)
+                 j.close()
+             except:
+                 import traceback
+                 logit("unknown exception"+str(traceback.format_exc()))
          j.close()
 
     def asyncExecute(self):
@@ -1042,7 +1064,7 @@ class ScriptingEnv:
                 # http://mail.python.org/pipermail/python-list/2001-March/032663.html
                 # don't do either exec for now.
                 #self.serialExec()
-                self.dbDepExec()
+                self.dbDepExec(4)
                 logit("done with dbDepExec()")
                 sys.exit(0)
         except OSError, e: 
@@ -1426,8 +1448,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2006-10-05 07:24:28 $
-   Version:	$Revision: 1.44 $
+   Date:	$Date: 2006-10-06 01:39:55 $
+   Version:	$Revision: 1.45 $
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()
@@ -1464,7 +1486,7 @@ def execute():
 
     mode =  settings.accessmode()
     logit("Mode is " + mode)
-
+    logit("python profile if available (parent only) at: " + "/tmp/%s.pyprofile" % str(os.getpid()))
     settings.execute()
 
 
@@ -1489,7 +1511,11 @@ def profilePass(filename):
     settings.execute()
     
 if __name__ == '__main__':
-    execute()
+    if True:
+        import profile
+        profile.run('execute()', "/tmp/%s.pyprofile" % str(os.getpid()))
+    else:
+        execute()
 
 #########################################
 # notes for adding async support
