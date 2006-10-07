@@ -1,10 +1,10 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.11 2006-10-06 01:39:55 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.12 2006-10-07 02:13:46 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
-import sys,os
+import os, sys, time
 
 class JobPersistence:
     defaultDbFilename = "/tmp/mydb_ssdap"
@@ -73,33 +73,34 @@ class JobPersistence:
         ## consider having a table to store the actual script
         ## this would help for debugging and output caching
         ##
-        taskcommand = ["create table tasks (",
-                       "  taskid varchar(8),",
-                       "  date date",
+        taskcommand = ["CREATE TABLE tasks (",
+                       "  taskid VARCHAR(8),",
+                       "  date DATE",
                        ");"]
-        cmdcommand = ["create table cmds (",
-                      "  taskrow integer(8),", 
-                      "  linenum integer(8),", # 8 digits of lines is a lot
-                      "  cmd varchar(80),", # e.g. ncwa, ncra
-                      "  cmdline varchar(256)", # command line(with paths)
-                       ");"]
-        inoutcommand = ["create table cmdFileRelation (",
-                        "  taskrow integer(8),",
-                        "  linenum integer(8),",
-                        "  output tinyint(1),",
-                        "  logicalname varchar(128),", # 
-                        "  concretename varchar(192)", #
-                        ");"]  
-        filestate = ["create table fileState (",
-                       "  concretename varchar(192),"
+        cmdcommand = ["CREATE TABLE cmds (",
+                      "  taskrow INTEGER(8),", 
+                      "  linenum INTEGER(8),", # 8 digits of lines is a lot
+                      "  cmd VARCHAR(80),", # e.g. ncwa, ncra
+                      "  cmdline VARCHAR(256)", # command line(with paths)
+                       "); CREATE INDEX rowlinecmd ON cmds(taskrow,linenum);"]
+        inoutcommand = ["CREATE TABLE cmdFileRelation (",
+                        "  taskrow INTEGER(8),",
+                        "  linenum INTEGER(8),",
+                        "  output TINYINT(1),",
+                        "  logicalname VARCHAR(128),", # 
+                        "  concretename VARCHAR(192)", #
+                        ");  CREATE INDEX rowlinecmdrelation ON ",
+                        "     cmdFileRelation(taskrow,linenum);"]  
+        filestate = ["CREATE TABLE fileState (",
+                       "  concretename VARCHAR(192),"
                        "  state tinyint(2)", #need this consistent with other table?
-                       ");"]
-        readylist = ["create table readyList (",
-                     " taskrow integer(8),",
-                     " linenum integer(8),",
-                     " concretename varchar(192)", # track concrete,
+                       "); CREATE INDEX namestate ON fileState(concretename);"]
+        readylist = ["CREATE TABLE readyList (",
+                     " taskrow INTEGER(8),",
+                     " linenum INTEGER(8),",
+                     " concretename VARCHAR(192)", # track concrete,
                      # so we can update the filestate without querying.
-                     ");"]
+                     "); CREATE INDEX rowready ON readyList(taskrow);"]
 
                        
         # files can be planned, active, saved, removed, etc.
@@ -278,10 +279,25 @@ class JobPersistence:
         template = "update filestate set state=%d where rowid=%d" 
         cur.execute(template % (state,id))
     def setFileStateByName(self, concretename, state):
+        """retries until successful."""
         cur = self.cursor()
         template = "update filestate set state=%d where concretename=\'%s\'" 
         cur.execute(template % (state,concretename))
-        
+    def keepTrying(self,f,*pargs,**kwargs):
+        """This keeps trying an operation until it succeeds.
+        Transient DB exceptions are explicitly caught."""
+        while True:  # keep trying to update db.  If this update is
+            # lost, then all of the dependents will fail.
+            try:
+                self.cursor().close()
+                return f(*pargs, **kwargs) # mark completed
+            except sqlite.OperationalError, e:
+                # this happens when the db is locked.
+                #self.connection().rollback()
+                time.sleep(0.2) # sleep for 1/5 seconds.
+                print >>open("/tmp/foo1","a"), os.getpid(),"retrying",f, e
+    
+
     def pollFilename(self, id):
         cur = self.cursor()
         cur.execute("select concretename from filestate where rowid=%d" % id)
@@ -350,11 +366,12 @@ class JobPersistence:
         cmdFileRelation USING (taskrow,linenum) LEFT JOIN fileState
         USING (concretename)
         WHERE taskrow=%d"""
-        ## this SQL command is not appropriate!!! fix!
+
         cur = self.cursor()
         cur.execute(sql % taskrow)
         readyCmds = {}
         f = cur.fetchall()
+        c = 0
         for (linenum, output,concretename, state) in f:
             #print "cmdList: %d,%d has %s in %s" % (
             #    taskrow, linenum, concretename, state)
@@ -366,6 +383,10 @@ class JobPersistence:
             #        print "Not Ready %d,%d has %s in %s" % (
             #            taskrow, linenum, concretename, state)
             readyCmds[linenum] = (ready[0],concretename)
+            c = c + 1
+            if (c % 250) == 0:
+                print >>open("/tmp/foo1","a"), os.getpid(),"initMakeReady",c
+                
         i = readyCmds.items()
         # filter for only the true values, and then pick the first
         # half of the tuple
@@ -376,43 +397,69 @@ class JobPersistence:
         cur.executemany(sql,i)
         
         pass
+    def initMakeReady2(self, taskrow):
+        """UNFINISHED! don't use"""
+        sql = """select linenum,concretename from cmds LEFT JOIN
+        cmdFileRelation USING (taskrow,linenum)
+        WHERE taskrow=%d AND output=1"""
+
+        # get outputs first
+        cur = self.cursor()
+        cur.execute(sql % taskrow)
+        f = cur.fetchall()
+        #outs = dict(map(lambda x: (x[0],f))
+        sql = """select linenum,concretename from cmds LEFT JOIN
+        cmdFileRelation USING (taskrow,linenum)
+        WHERE taskrow=%d AND output=0 AND state != """
+        
+        
     def fetchAndLockNextCmd(self,taskrow):
         # fetch a cmd from ready list
         cmd = """SELECT taskrow,linenum,concretename,cmdLine
         FROM readyList JOIN cmds
-        USING (taskrow,linenum) WHERE taskrow=%d;"""
+        USING (taskrow,linenum) WHERE taskrow=%d LIMIT 1;"""
         #print >>open("/tmp/foo1","a"), os.getpid(),"prefetch: close existing connection"
 
         #print >>open("/tmp/foo1","a"), os.getpid(),"getting connection"
         rows = None
+        con = None
+        oldLevel = None
         for i in range(3):
             try:
                 self.close() # force everything to drop first.
                 con = self.connection()
-                oldLevel = con.isolation_level
-                con.isolation_level = "EXCLUSIVE" # set for stricter locking.
+                self.cursor().close()
+                if not oldLevel:
+                    oldLevel = con.isolation_level
+                # try explicit locking--> w/o isolation_level
+                # con.isolation_level = "EXCLUSIVE" # set for stricter locking.
+                #print >>open("/tmp/foo1","a"), os.getpid(),"old isolation",oldLevel
+                con.isolation_level = None
                 cur = con.cursor()
+                cur.execute("BEGIN EXCLUSIVE;") # force transaction start
                 cur.execute(cmd % taskrow)
                 rows = cur.fetchall()
+                print >>open("/tmp/foo1","a"), os.getpid(),"Select OK! AA"
                 result = None
                 break
             except:
-                #print >>open("/tmp/foo1","a"), os.getpid(),"db error, retrying"
-                import time
+                cur.close()
+                print >>open("/tmp/foo1","a"), os.getpid(),"db error, retrying"
                 time.sleep(0.2) # sleep for 0.2 seconds
                 continue
             
         if not rows:
-            return None
-        if len(rows) > 0:
-            #print >>open("/tmp/foo1","a"), os.getpid(),"got ready:",rows
+            rows = None
+            result = None
+        elif len(rows) > 0:
+            print >>open("/tmp/foo1","a"), os.getpid(),"got ready:",rows
             mycommand = rows[0]
             # return cmdline and output concretename
             result = (mycommand[3],mycommand[2])
             # drop the cmd from the list
             cmd = """delete from readyList where taskrow=%d AND linenum=%d;"""
             cur.execute(cmd % (mycommand[0],mycommand[1]))
-            #print >>open("/tmp/foo1","a"), os.getpid(),"deleted"
+            print >>open("/tmp/foo1","a"), os.getpid(),"deleted"
             # update the filestate to running
             # hope filename doesn't have any quotes!
             cmd = "update fileState set state=2 where concretename='%s';"
@@ -420,16 +467,20 @@ class JobPersistence:
             #print >>open("/tmp/foo1","a"), os.getpid(),"patched filestate"
             #cur.execute("select * from readyList;")
             #print >>open("/tmp/foo1","a"), os.getpid(),cur.fetchall()
+        try:
+            cur.execute("COMMIT;")
+        except:
+            pass # OK if commit fails.
         # cleanup
         #print >>open("/tmp/foo1","a"), os.getpid(),"nulling cursor"
         cur.close()
         cur = None
-        #print >>open("/tmp/foo1","a"), os.getpid(),"committing"
+        print >>open("/tmp/foo1","a"), os.getpid(),"committing"
         con.commit() # commit our transaction (hopefully)
-        #print >>open("/tmp/foo1","a"), os.getpid(),"resetting isolation"
+        print >>open("/tmp/foo1","a"), os.getpid(),"resetting isolation"
         con.isolation_level = oldLevel
         self.close() # force everything to flush
-        #print >>open("/tmp/foo1","a"), os.getpid(),"left immediate"
+        print >>open("/tmp/foo1","a"), os.getpid(),"left exclusive"
         #print >>open("/tmp/foo1","a"), os.getpid(),"close error",sys.exc_info()
         return result
     def cmdsLeft(self, taskrow):
@@ -442,9 +493,18 @@ class JobPersistence:
         JOIN fileState USING (concretename)
         WHERE taskrow=%d AND output=1 AND state=1"""
         cur = self.cursor()
-        cur.execute(sql % taskrow)
-        # FIXME: can we use sql count() instead?
-        f = cur.fetchall()
+        f = None
+        while True:
+            try:
+                cur.execute(sql % taskrow)
+                # FIXME: can we use sql count() instead?
+                f = cur.fetchall()
+                cur.close()
+                break
+            except:
+                cur.close()
+                time.sleep(0.5)
+        self.commit()
         return len(f) > 0
 
     def showState(self):

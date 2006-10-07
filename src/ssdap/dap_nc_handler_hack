@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.45 2006-10-06 01:39:55 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.46 2006-10-07 02:13:46 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -278,6 +278,11 @@ def logflush():
         #local.logfile.flush()
         pass
     pass
+
+######################################################################
+# Some globals to aid in profiling.
+# can put things in here so that they can be accessed in global scope
+profileVar = {}  
 
 ######################################################################
 class Command:
@@ -979,7 +984,9 @@ class ScriptingEnv:
          """Run the script in parallel with dependencies derived from db
          nslots indicates the maximum process issue width (# max in flight)"""
          j = self.instanceJobPersistence()
+         logit("filling the readyList")
          j.initMakeReady(self.persistedTask)
+         logit("readyList ready")
          j.commit()
          j.close()
          self.sleepTime = 1+((nslots-1)/4)
@@ -996,56 +1003,77 @@ class ScriptingEnv:
 
     def dbExecWorker(self):
          import time,subprocess
-         logit("beginning worker  loop")
+         logit("beginning worker loop")
          j = self.instanceJobPersistence()
+         (cline,outname) = (None,None)
+         jobsrun = 0
          while True:
              try:
-                 #logit("worker checking for job")
+                 logit("worker checking for job")
                  (cline,outname) = j.fetchAndLockNextCmd(self.persistedTask)
                  j.close()
-                 #logit("worker got job  "+cline)
+                 logit("worker got job  "+cline)
              except TypeError:
                  jobsLeft = j.cmdsLeft(self.persistedTask)
-                 j.commit()
                  if jobsLeft:
-                     time.sleep(self.sleepTime)
-                     #logit("worker sleeping for work")
+                     time.sleep(2*self.sleepTime)
+                     logit("worker sleeping for work" + time.asctime())
                      continue
-                 #logit("worker exit: no more work")
+                 logit("worker exit: no more work")
                  break
              except:
                  import traceback
                  logit("unknown exception"+str(traceback.format_exc()))
-                 
-             # self.markCmdStart(c)  # already done by locking
+                 break
+             # At this point, consider marking a running state, so that
+             # workers can see each others' jobs and avoid duplication.
              try: # derived from: http://pydoc.org/2.4.1/subprocess.html
-                 #logit("worker spawning %s" % (cline))
+                 logit("worker spawning %s" % (cline))
                  retcode = subprocess.call(cline, shell=True)
-                 #logit("worker finished %s, retcode: %d" % (cline,retcode))
+                 logit("worker finished %s, retcode: %d" % (cline,retcode))
                  if retcode < 0:
                      print >>sys.stderr, "Error code %d in %s" %(retcode,cline)
                      break
              except OSError, e:
                  print >>sys.stderr, "Failed %s --> %s, " %(cline,outname)
                  print >>sys.stderr, e
+                 logit("Failed %s --> %s, " %(cline,outname))
                  break
-             try:
-                 j.setFileStateByName(outname, 3) # mark completed
-                 affected = j.cmdsWithInput(outname)
-                 j.makeReady(affected)
-                 j.close()
-             except:
-                 import traceback
-                 logit("unknown exception"+str(traceback.format_exc()))
+             jobsrun = jobsrun + 1
+             logit("marking finish")
+             self.dbMarkFinish(outname)
+             logit("done marking")
+             if jobsrun > 10: # for profiling...
+                 break
          j.close()
 
+    def dbMarkFinish(self, concretename):
+        """Mark a file as saved in the db, and update the ready list.
+        no transactions should be in flight at this point.
+        """
+        j = self.instanceJobPersistence()
+        def updateState():
+            j.setFileStateByName(concretename, 3)
+            j.commit()
+        def updateReady():
+            affected = j.cmdsWithInput(concretename)
+            j.makeReady(affected)
+            j.close()
+        # keep trying to update db.  If this update is
+        # lost, then all of the dependents will fail.
+        logit("updating filestate")
+        j.keepTrying(updateState)
+        logit("updating readylist")
+        j.keepTrying(updateReady)
+        logit("exit markfinish")
+               
     def asyncExecute(self):
         sys.stdout.flush() # flush output before forking
         try:
             pid = os.fork()
             if pid > 0:
                 # I am the parent: want to return tokens?
-                #print "hello, I'm the parent, the child pid is", pid
+                # print "hello, I'm the parent, the child pid is", pid
                 self.isParent = True
                 print self.tokensDescription()
                 # remove script outfile from env, to skip output
@@ -1053,18 +1081,27 @@ class ScriptingEnv:
                     self.fileMap.pop(ScriptingEnv.SCRIPT_OUTFILE)
                     #os.wait()
             else:
-                #print "hello, I'm the child, I want to execute things normally"
-                devnull = os.open("/dev/null", os.O_RDONLY)
-                os.dup2(devnull, sys.stdin.fileno())
-                os.dup2(devnull, sys.stdout.fileno()) # silence stdout
-                os.dup2(devnull, sys.stderr.fileno()) # silence stderr
-                os.close(devnull)
+                if False: # while debugging, don't detach output...
+                    devnull = os.open("/dev/null", os.O_RDONLY)
+                    os.dup2(devnull, sys.stdin.fileno())
+                    os.dup2(devnull, sys.stdout.fileno()) # silence stdout
+                    os.dup2(devnull, sys.stderr.fileno()) # silence stderr
+                    os.close(devnull)
+                    
                 # need to dup file descriptors so httpd lets parent return.
                 # See:
                 # http://mail.python.org/pipermail/python-list/2001-March/032663.html
-                # don't do either exec for now.
+                # should provide a configfile option to control ser/dep exec
                 #self.serialExec()
-                self.dbDepExec(4)
+                if True:
+                    profileVar['depexecer'] = self
+                    import profile
+                    profilename = "/tmp/%s.pyprofile" % (str(os.getpid()))
+                    logit("depexec profile at: " + profilename)
+                    profile.run('profileVar["depexecer"].dbDepExec(4)', profilename)
+
+                else:
+                    self.dbDepExec(2)
                 logit("done with dbDepExec()")
                 sys.exit(0)
         except OSError, e: 
@@ -1243,20 +1280,20 @@ class FrontEnd:
         "setup a frontend parser to interact with the outside world's input"
         # -d and -f options are supposed to be deprecated
         self.shortOpts = "Lcd:r:o:e:f:l:u:v:"
-        self.longOpts = ["dryparse=", "with-db"]
+        self.longOpts = ["dryparse=", "local=", "with-db"]
         self.args = {}
         self.originalargs = sysargs
         self.env = {}
 
-	try:
-	    parsed =  getopt.getopt(sysargs[1:], 
-				    self.shortOpts,
-				    self.longOpts)
-	except:
-	    logit("Error. getopt couldn't parse options in FrontEnd::__init__()")
-	    logit("args:" +str(sysargs[1:]))
-	    sys.exit(1)
-
+        try:
+            parsed =  getopt.getopt(sysargs[1:], 
+                                    self.shortOpts,
+                                    self.longOpts)
+        except Exception, e:
+            logit("Error. getopt couldn't parse options in FrontEnd::__init__()")
+            logit("args:" +str(sysargs[1:]))
+            sys.exit(1)
+    
         self.nonpars = []
         self.newp = []
         if parsed[1] != []:
@@ -1278,24 +1315,26 @@ class FrontEnd:
         for i in newp:
             #logfile.write(str(i)+"\n")
             self.args[i[0]] = i[1]
-
+        print "init ok!"
         #logit( str(self.args))
-#       for x in  os.environ: #.get("LD_LIBRARY_PATH")
-    #       print x
+        #       for x in  os.environ: #.get("LD_LIBRARY_PATH")
+        #       print x
 
         pass
     def accessmode(self):
         """Return the appropriate execution mode, given the object's
-    initialization parameters."""
-	if("--dryparse" in self.args):
-	    return "dryparse"
+        initialization parameters."""
+        if("--local" in self.args):
+            return "local"
+        if("--dryparse" in self.args):
+            return "dryparse"
         if("-o" not in self.args):
             return "helpmode"
         return self.args["-o"]
     def passthrough(self):
         """An execution possibility.  Use this when we don't have a
-    custom handler for these options.  This should bounce the call to
-    the default opendap netcdf handler."""
+        custom handler for these options.  This should bounce the call to
+        the default opendap netcdf handler."""
         newargs = [local.passthroughPath] + self.originalargs[1:]
         newline = ""
         ## need to substitute null strings to provide null -e option
@@ -1326,7 +1365,7 @@ class FrontEnd:
         else: report += "constraint: no\n"
         return report
 
-    def runhacked(self):
+    def runHacked(self):
         """this is where we should go ahead and run the script that we got passed."""
 
         if "-e" in self.args:
@@ -1341,7 +1380,7 @@ class FrontEnd:
                     self.runScript()
                     return
         self.passthrough()  ## passthrough everything else.
-    def runparseonly(self):
+    def runParseonly(self):
         """A debug execution.  This is just like runhacked, but without
             the actual script execution part"""
         scriptFilename = self.args["--dryparse"]
@@ -1366,8 +1405,36 @@ class FrontEnd:
         print "Parsed OK!"
         ###scriptenv.execute() #####
         pass
+    def runLocal(self):
+        scriptFilename = self.args["--local"]
+        async = False
+        if "--with-db" in self.args:
+            async = True
+        self.localHelper(scriptFilename, async)
+    def localHelper(self, fname, isAsync): 
+        self.readScriptFromFile(fname)
+        if(isAsync):
+            self.env["async"] = True # set async mode.
 
+        scriptingenv = None
+        # fill env with proper keys:
+        self.env["defpath"] = "."
+        self.env["tempdir"] = "/tmp"
 
+        # now, patch up all the dap expectations
+        self.env["tempdir"] = "/tmp"
+        (filepath, filename) = os.path.split(self.args["-realfile"])
+
+        self.env["defpath"] = "/var/www/html/"
+        self.env["requestedfile"] = "dummy.nc"
+
+        (urlpath, ufilename) = ("http://localhost/cgi-bin/nph-dods", "dummy.nc")
+        print "local exec starting..."
+        scriptenv = ScriptingEnv(self.scriptlines, self.env)
+        scriptenv.execute() #####
+        #scriptenv.returnOutput(sys.stdout)
+        
+        
     def printusage(self):
         print """
         This script is to be called by an opendap
@@ -1378,8 +1445,8 @@ class FrontEnd:
     def execute(self):
         """Perform the task that (hopefully) got parsed in this object's
         initialization."""
-        jumptable={'dods' : self.runhacked,
-               'DODS' : self.runhacked,
+        jumptable={'dods' : self.runHacked,
+               'DODS' : self.runHacked,
                'das' :  self.passthrough,
                'DAS' :  self.passthrough,
                'dds' :  self.passthrough,
@@ -1388,7 +1455,8 @@ class FrontEnd:
                'BLOB':  self.passthrough,
                'Version': self.passthrough,
                'helpmode': self.printusage,
-               'dryparse': self.runparseonly,         
+               'dryparse': self.runParseonly,
+               'local': self.runLocal
                }
         jumptable[self.accessmode()]()  ## make the call
         pass
@@ -1448,8 +1516,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2006-10-06 01:39:55 $
-   Version:	$Revision: 1.45 $
+   Date:	$Date: 2006-10-07 02:13:46 $
+   Version:	$Revision: 1.46 $
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()
@@ -1511,7 +1579,7 @@ def profilePass(filename):
     settings.execute()
     
 if __name__ == '__main__':
-    if True:
+    if False:
         import profile
         profile.run('execute()', "/tmp/%s.pyprofile" % str(os.getpid()))
     else:
