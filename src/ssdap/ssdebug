@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-# -*- mode: python -*- $Id: ssdebug,v 1.2 2006-10-04 23:45:01 wangd Exp $
-import sys
+# -*- mode: python -*- $Id: ssdebug,v 1.3 2006-10-11 23:44:29 wangd Exp $
+import os, sys
 import cgitb
 import cgi
 
@@ -20,10 +20,23 @@ class SsdInterface:
                         "ls" : self.listFiles,
                         "env" : self.showEnv,
                         "filedb" : self.showFileDb }
-    
+    def buildUrl(self, action):
+        # host, portnum, scriptpath,command
+        template = "http://%s:%s%s?action=%s"
+        return template % (os.environ["SERVER_NAME"],
+                           str(os.environ["SERVER_PORT"]),
+                           os.environ["SCRIPT_NAME"],
+                           action)
+    def handyHeader(self):
+        pre = '<span id="toolbar"> Handy Toolbar: '
+        bulk = ' | '.join(map( lambda x : '<a href="%s">%s</a>' 
+                               % (self.buildUrl(x),x), self.actions.keys()))
+        post = '</span>'
+        return "".join([pre,bulk,post])
     def rebuildDb(self,form):
         """resets the db, clearing entries and using the latest schema"""
         import ssdap_dbutil
+        print self.handyHeader()
         print "dbfilename is ", dbfilename
         try:
             ssdap_dbutil.deleteTables(dbfilename)
@@ -35,16 +48,19 @@ class SsdInterface:
     def showDb(self,form):
         """prints the db state"""
         import ssdap_dbutil
+        print self.handyHeader()
         ssdap_dbutil.quickShow(dbfilename)
         
         return "done with output"
     def showFileDb(self, form):
         """prints the filestate in the db"""
         import ssdap_dbutil
+        print self.handyHeader()
         ssdap_dbutil.fileShow(dbfilename)
         return "done with output"
     def printHelp(self,form):
         """prints a brief help message showing available commands"""
+        print self.handyHeader()
         print "<pre>available commands:"
         for a in self.actions:
             print "%-20s : %s" %(a, self.actions[a].func_doc)
@@ -53,13 +69,14 @@ class SsdInterface:
         return "done with output"
     def showEnv(self, form):
         """prints the cgi script's available env vars"""
-        import os
+        print self.handyHeader()
         for k in os.environ:
             print "%-20s : %s" %(k,os.environ[k])
         print "</pre>"
         return "done printing env"
     def listFiles(self,form):
         """does a normal ls file listing. sorta-secure"""
+        print self.handyHeader()
         if not form.has_key("path"):
             print "no path specified, specify with parameter 'path'"
             return
@@ -68,7 +85,6 @@ class SsdInterface:
            or (path.find("..") > -1):
             print "invalid path specified, try again"
             return
-        import os
         ppath = os.path.join(os.getenv("DOCUMENT_ROOT"),path)
         print "<pre>BEGIN listing for :",path
         #no leading /
