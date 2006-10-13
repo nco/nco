@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.12 2006-10-07 02:13:46 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.13 2006-10-13 01:47:53 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -35,7 +35,7 @@ class JobPersistence:
         """only for intra-class use"""
         if not self.connected:
             # Create a connection to the database file "mydb"
-            self.dbconnection = sqlite.connect(self.dbFilename)
+            self.dbconnection = sqlite.connect(self.dbFilename)            
             self.dbcursor = None
             self.connected = True
         return self.dbconnection
@@ -279,10 +279,22 @@ class JobPersistence:
         template = "update filestate set state=%d where rowid=%d" 
         cur.execute(template % (state,id))
     def setFileStateByName(self, concretename, state):
-        """retries until successful."""
-        cur = self.cursor()
-        template = "update filestate set state=%d where concretename=\'%s\'" 
-        cur.execute(template % (state,concretename))
+        """."""
+        template = "BEGIN EXCLUSIVE; UPDATE filestate set state=%d where concretename=\'%s\' ; COMMIT;"
+        con = self.connection()
+        oldIsolate = con.isolation_level
+        con.isolation_level = None
+        cur = con.cursor()
+        deferred = None
+        try:
+            cur.executescript(template % (state,concretename))
+        except Exception, e:
+            deferred = e
+        con.isolation_level = oldIsolate
+        if deferred is not None:
+            raise deferred
+        pass
+            
     def keepTrying(self,f,*pargs,**kwargs):
         """This keeps trying an operation until it succeeds.
         Transient DB exceptions are explicitly caught."""
@@ -583,10 +595,15 @@ class JobPersistence:
             print "  Outputfile: logical=%s, real=%s, state=%d" % fields[2:]
         pass
         
-    def showReadyList(self):
+    def showReadyList(self, taskrow=None):
         sql = "select * from readyList JOIN cmds USING (taskrow,linenum) LIMIT 200;"
+        sqltemp = "select * from readyList JOIN cmds USING (taskrow,linenum) where taskrow=%d LIMIT 200;"
+        
         cur = self.cursor()
-        cur.execute(sql)
+        if taskrow is not None:
+            cur.execute(sqltemp % taskrow)
+        else:
+            cur.execute(sql)
         for r in cur.fetchall():
             print "ready cmd: task=%d line=%d, out=%s, cmd=%s, cmdline=%s" % (
                 r[0], r[1], r[2], r[3], r[4])
