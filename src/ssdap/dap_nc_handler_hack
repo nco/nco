@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.46 2006-10-07 02:13:46 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.47 2006-10-16 21:06:27 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -570,8 +570,9 @@ class Command:
          tid = self.taskId()
          self.env.env["async"] = True;
          # open a db connection
-         o = self.env.instanceJobPersistence()
-         assert o != None
+         #o = self.env.instanceJobPersistence()
+         # lazy-opening of db.
+         # assert o != None
          self.arguments = [];
          return
 
@@ -814,21 +815,25 @@ class ScriptingEnv:
          # None --> script not in DB; integer-> row in tasks table
          self.persistedTask = None 
          self.isAsync = self.env.has_key("async") and self.env["async"] == True
+         pop = None
          for line in scriptlines:
              lineNum += 1
              c = Command(line, self)
              self.isAsync = self.env.has_key("async") and self.env["async"] == True
 
              if self.isAsync and (c.cmd is not None) and not c.isMeta:
-                 self.persistCommand(lineNum, c)
+                 if pop is None:
+                     j = self.instanceJobPersistence()
+                     pop = j.newPopulationTransaction()
+                     assert pop is not None
+                 self.persistCommand(lineNum, c, pop)
              self.commands.append(c) # append command, regardless of parsing
              if c.commandLine() != None:
-                 #print c.commandLine()
                  self.commandLine.append(c)
-         if self.isAsync:
-             j = self.instanceJobPersistence()
-             j.commit()
-             j.close()
+             pass # done looping through lines
+         if pop is not None:
+             pop.finish()
+             pop = None
 
          # for performance, skip dep tree stuff since it's not needed
          # in the db model
@@ -983,12 +988,13 @@ class ScriptingEnv:
     def dbDepExec(self, nslots=1):
          """Run the script in parallel with dependencies derived from db
          nslots indicates the maximum process issue width (# max in flight)"""
-         j = self.instanceJobPersistence()
+         prep = self.instanceJobPersistence().newPreparationTransaction()
          logit("filling the readyList")
-         j.initMakeReady(self.persistedTask)
+         prep.execute()
+         prep = None
          logit("readyList ready")
-         j.commit()
-         j.close()
+#         j.showReadyList(self.persistedTask)
+#         return
          self.sleepTime = 1+((nslots-1)/4)
          tospawn = nslots-1
          logit("ready to spawn %d workers" % (tospawn))
@@ -1004,18 +1010,22 @@ class ScriptingEnv:
     def dbExecWorker(self):
          import time,subprocess
          logit("beginning worker loop")
-         j = self.instanceJobPersistence()
          (cline,outname) = (None,None)
          jobsrun = 0
          while True:
              try:
                  logit("worker checking for job")
-                 (cline,outname) = j.fetchAndLockNextCmd(self.persistedTask)
-                 j.close()
+                 j = self.instanceJobPersistence()
+                 fetch = j.newFetchAndLockTransaction()
+                 tup = fetch.execute()
+                 fetch = None
+                 (cline,outname) = tup
                  logit("worker got job  "+cline)
              except TypeError:
-                 jobsLeft = j.cmdsLeft(self.persistedTask)
-                 if jobsLeft:
+                 poll = self.instanceJobPersistence().newPollingTransaction()
+                 jobsLeft = poll.cmdsLeft()
+                 poll = None
+                 if jobsLeft > 0:
                      time.sleep(2*self.sleepTime)
                      logit("worker sleeping for work" + time.asctime())
                      continue
@@ -1041,15 +1051,20 @@ class ScriptingEnv:
                  break
              jobsrun = jobsrun + 1
              logit("marking finish")
-             self.dbMarkFinish(outname)
+             #self.dbMarkFinish(outname)
+             cmt = self.instanceJobPersistence().newCommitCmdResultTransaction()
+             cmt.execute(outname)
+             cmt = None
+             # new interface:
              logit("done marking")
-             if jobsrun > 10: # for profiling...
+             if jobsrun > 9910: # for profiling...
                  break
          j.close()
 
     def dbMarkFinish(self, concretename):
         """Mark a file as saved in the db, and update the ready list.
         no transactions should be in flight at this point.
+        **** This method/function is sorta deprecated ****
         """
         j = self.instanceJobPersistence()
         def updateState():
@@ -1061,7 +1076,7 @@ class ScriptingEnv:
             j.close()
         # keep trying to update db.  If this update is
         # lost, then all of the dependents will fail.
-        logit("updating filestate")
+        logit("updating filestate"+str(os.getpid()))
         j.keepTrying(updateState)
         logit("updating readylist")
         j.keepTrying(updateReady)
@@ -1190,20 +1205,19 @@ class ScriptingEnv:
             else:
                 logit("I couldn't delete " + str(fname))
         pass
-    def persistCommand(self, num, command):
-        tid = command.taskId()
-        linenum = num
+    def persistCommand(self, linenum, command, trans):
+        """ linenum: line number of the command
+            command: the acutal command (which binary are we exec'ing)
+            trans: the populationtransaction we're using"""
         # date in yyyy-mm-dd hh:mm format
-        date = "%04d-%02d-%02d %02d:%02d" % time.localtime()[:5]
-        cmdid = "%s%d" % (tid, linenum)
+        #date = "%04d-%02d-%02d %02d:%02d" % time.localtime()[:5]
         if command.cmd == None:
             return # don't persist non-commmands.
-        j = self.instanceJobPersistence()
         if not self.persistedTask:
-            self.persistedTask = j.insertTask(tid)
+            tid = command.taskId()
+            self.persistedTask = trans.insertTask(tid)
             assert self.persistedTask != None
-        j.insertCmd(self.persistedTask, linenum,
-                    command.cmd, command.commandLine())
+        trans.insertCmd( linenum, command.cmd, command.commandLine())
         
         def insert(f, map, out):
             if f in map:
@@ -1211,18 +1225,16 @@ class ScriptingEnv:
                 concrete = map[f][1] 
             else:
                 concrete = f
-            return j.insertInout(self.persistedTask, linenum, f, concrete,
-                                 out, 1, # if (not out): ignore state spec
-                                 f.startswith(ScriptingEnv.CLASS_TEMP_PREFIX))
+            return trans.insertInOut( linenum, f, concrete,
+                                      out, 1, # if (not out): ignore state spec
+                                      f.startswith(ScriptingEnv.CLASS_TEMP_PREFIX))
             
         for f in command.inputs():
             insert(f, self.fileMap, False)
         for f in command.outputs():
             self.outTokens.append((f,  insert(f,self.fileMap,True)))
         # defer commit/close until all commands ready.
-        #j.commit()
-        #j.close()
-        
+        pass
     def markCmdStart(self, command):
         """ these mark start/finish commands are similar to those in the
         dependency tracker.  let's merge them into something coherent
@@ -1315,7 +1327,6 @@ class FrontEnd:
         for i in newp:
             #logfile.write(str(i)+"\n")
             self.args[i[0]] = i[1]
-        print "init ok!"
         #logit( str(self.args))
         #       for x in  os.environ: #.get("LD_LIBRARY_PATH")
         #       print x
@@ -1516,8 +1527,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2006-10-07 02:13:46 $
-   Version:	$Revision: 1.46 $
+   Date:	$Date: 2006-10-16 21:06:27 $
+   Version:	$Revision: 1.47 $
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()
