@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.14 2006-10-16 21:06:27 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.15 2006-10-16 22:28:27 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -215,8 +215,8 @@ class JobPersistence:
                     filter(lambda x: x[1][0], i))
             i.sort()
             sql = "INSERT INTO readyList VALUES(?,?,?);"
-            cur.execute("DELETE FROM readyList WHERE taskrow=%d;"
-                        % (self.taskRow))
+            cur.execute("DELETE FROM readyList WHERE taskrow=?;",
+                        (self.taskRow,))
             cur.executemany(sql,i)
             cur.execute("COMMIT;")
             cur.close()
@@ -244,10 +244,10 @@ class JobPersistence:
             # fetch a cmd from ready list
             cmd = """SELECT taskrow,linenum,concretename,cmdLine
             FROM readyList JOIN cmds
-            USING (taskrow,linenum) WHERE taskrow=%d LIMIT 1;"""
+            USING (taskrow,linenum) WHERE taskrow=? LIMIT 1;"""
             rows = None
             con = None
-            cur.execute(cmd % self.taskRow)
+            cur.execute(cmd, (self.taskRow,))
             rows = cur.fetchall()
             if not rows:
                 rows = None
@@ -258,13 +258,13 @@ class JobPersistence:
                 # return cmdline and output concretename
                 result = (mycommand[3],mycommand[2])
                 # drop the cmd from the list
-                cmd = """DELETE FROM readyList WHERE taskrow=%d AND linenum=%d;"""
-                cur.execute(cmd % (mycommand[0],mycommand[1]))
+                cmd = """DELETE FROM readyList WHERE taskrow=? AND linenum=?;"""
+                cur.execute(cmd, (mycommand[0],mycommand[1]))
                 print >>open("/tmp/foo1","a"), os.getpid(),"deleted"
                 # update the filestate to running
                 # hope filename doesn't have any quotes!
-                cmd = "UPDATE fileState SET state=2 WHERE concretename='%s';"
-                cur.execute(cmd % mycommand[2])
+                cmd = "UPDATE fileState SET state=2 WHERE concretename=?;"
+                cur.execute(cmd, (mycommand[2],))
             cur.execute("COMMIT;")
             cur.close()
             return result
@@ -274,16 +274,18 @@ class JobPersistence:
         def __init__(self, connection):
             self.connection = connection
             pass
+
         def execute(self, concretename):
             cur = self.connection.cursor()
-            cur.execute("BEGIN IMMEDIATE;")
+            cur.execute("BEGIN EXCLUSIVE;")
             print >>open("/tmp/foo1","a"), os.getpid(),"cmtcmd", time.asctime()
             stime = time.time()
+            self.helpExec(concretename)
             cur.execute("""UPDATE fileState SET state=3
-                           WHERE concretename='%s';""" % concretename)
+                           WHERE concretename=?;""", (concretename,))
             # find all commands affected by the committed's output
             cur.execute("""SELECT taskrow,linenum FROM cmdFileRelation
-            WHERE output=0 AND concretename='%s';""" % (concretename))
+            WHERE output=0 AND concretename=?;""", (concretename,))
             rows = cur.fetchall()
 
             # find the outputfilename for this command, but only if the count
@@ -291,12 +293,12 @@ class JobPersistence:
             cmd = """SELECT concretename FROM cmdFileRelation
             WHERE (SELECT COUNT(*) FROM cmdFileRelation
                                    JOIN fileState USING(concretename)
-                                   WHERE taskrow=%d AND linenum=%d
+                                   WHERE taskrow=? AND linenum=?
                                    AND output=0 AND state<>3
-                  )=0 AND taskrow=%d AND linenum=%d AND output=1;"""
+                  )=0 AND taskrow=? AND linenum=? AND output=1;"""
             newReady=[]
             for (taskrow,linenum) in rows:
-                cur.execute(cmd % (taskrow,linenum,taskrow,linenum))
+                cur.execute(cmd, (taskrow,linenum,taskrow,linenum))
                 ctuple = cur.fetchall()
                 if len(ctuple) == 1:
                     newReady.append((taskrow, linenum, ctuple[0][0]))
@@ -327,13 +329,12 @@ class JobPersistence:
             sql = """SELECT COUNT(state) FROM cmds
             JOIN cmdFileRelation USING (taskrow,linenum)
             JOIN fileState USING (concretename)
-            WHERE taskrow=%d AND output=1 AND state=1;"""
+            WHERE taskrow=? AND output=1 AND state=1;"""
             cur = self.connection.cursor()
-            cur.execute("BEGIN;")
-            cur.execute(sql % self.taskRow)
+            cur.execute("BEGIN IMMEDIATE;")
+            cur.execute(sql,(self.taskRow,))
             result = cur.fetchall()[0][0]
             cur.execute("COMMIT;")
-            print "cmdsleft returning", result
             return result
         pass
     
@@ -351,7 +352,16 @@ class JobPersistence:
         """only for intra-class use"""
         if not self.connected:
             # Create a connection to the database file "mydb"
-            self.dbconnection = sqlite.connect(self.dbFilename)            
+            self.dbconnection = sqlite.connect(self.dbFilename)
+            # add: cached_statements=200 param for pysqlite 2.1.0+
+            # tune for faster performance
+            # see: http://www.sqlite.org/pragma.html
+            cur = self.dbconnection.cursor()
+            cur.execute("PRAGMA synchronous = off;")
+            cachesize = 5000000 # 5MB?
+            cur.execute("PRAGMA cache_size = %s;" %(cachesize/1500))
+            cur.close()
+            cur = None
             self.dbcursor = None
             self.connected = True
         return self.dbconnection
