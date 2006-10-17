@@ -22259,12 +22259,12 @@ if ( test "${enable_netcdf4}" = 'yes'); then
 			CPPFLAGS="-I${NETCDF4_ROOT}/include ${CPPFLAGS}";\
 			LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
 			if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
-				# Check libnetcdf for a netCDF4 functions
+				# Check libnetcdf for a netCDF4 function
 				# fxm: netCDF4 alpha10 barfs with shared libs, check after final release
 				enable_shared='no'
-				echo "$as_me:$LINENO: checking for nc_check_for_hdf5 in -lnetcdf" >&5
-echo $ECHO_N "checking for nc_check_for_hdf5 in -lnetcdf... $ECHO_C" >&6
-if test "${ac_cv_lib_netcdf_nc_check_for_hdf5+set}" = set; then
+				echo "$as_me:$LINENO: checking for find_nc4_file in -lnetcdf" >&5
+echo $ECHO_N "checking for find_nc4_file in -lnetcdf... $ECHO_C" >&6
+if test "${ac_cv_lib_netcdf_find_nc4_file+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -22282,11 +22282,11 @@ extern "C"
 #endif
 /* We use char because int might match the return type of a gcc2
    builtin and then its argument prototype would still apply.  */
-char nc_check_for_hdf5 ();
+char find_nc4_file ();
 int
 main ()
 {
-nc_check_for_hdf5 ();
+find_nc4_file ();
   ;
   return 0;
 }
@@ -22312,20 +22312,20 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_netcdf_nc_check_for_hdf5=yes
+  ac_cv_lib_netcdf_find_nc4_file=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_lib_netcdf_nc_check_for_hdf5=no
+ac_cv_lib_netcdf_find_nc4_file=no
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_nc_check_for_hdf5" >&5
-echo "${ECHO_T}$ac_cv_lib_netcdf_nc_check_for_hdf5" >&6
-if test $ac_cv_lib_netcdf_nc_check_for_hdf5 = yes; then
+echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_find_nc4_file" >&5
+echo "${ECHO_T}$ac_cv_lib_netcdf_find_nc4_file" >&6
+if test $ac_cv_lib_netcdf_find_nc4_file = yes; then
   LIBS="-lnetcdf -lhdf5 -lhdf5_hl ${LIBS}"
 cat >>confdefs.h <<\_ACEOF
 #define ENABLE_NETCDF4 1
@@ -22335,7 +22335,6 @@ else
   enable_netcdf4=no
 fi
 
-				#X#CPPFLAGS="${CPPFLAGS} -DNC_64BIT_OFFSET"
 			fi
 		else
 			echo "NETCDF4_ROOT set but does not exist---skipping netCDF4 configuration";\
@@ -22345,9 +22344,9 @@ fi
 		echo "User set '--enable-netcdf4' but did not set NETCDF4_ROOT";\
 		echo "Must set both to enable netCDF4.  Will try to configure netCDF anyway...";\
 
-echo "$as_me:$LINENO: checking for nc_check_for_hdf5 in -lnetcdf4" >&5
-echo $ECHO_N "checking for nc_check_for_hdf5 in -lnetcdf4... $ECHO_C" >&6
-if test "${ac_cv_lib_netcdf4_nc_check_for_hdf5+set}" = set; then
+echo "$as_me:$LINENO: checking for find_nc4_file in -lnetcdf4" >&5
+echo $ECHO_N "checking for find_nc4_file in -lnetcdf4... $ECHO_C" >&6
+if test "${ac_cv_lib_netcdf4_find_nc4_file+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -22365,11 +22364,11 @@ extern "C"
 #endif
 /* We use char because int might match the return type of a gcc2
    builtin and then its argument prototype would still apply.  */
-char nc_check_for_hdf5 ();
+char find_nc4_file ();
 int
 main ()
 {
-nc_check_for_hdf5 ();
+find_nc4_file ();
   ;
   return 0;
 }
@@ -22395,20 +22394,20 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_netcdf4_nc_check_for_hdf5=yes
+  ac_cv_lib_netcdf4_find_nc4_file=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_lib_netcdf4_nc_check_for_hdf5=no
+ac_cv_lib_netcdf4_find_nc4_file=no
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf4_nc_check_for_hdf5" >&5
-echo "${ECHO_T}$ac_cv_lib_netcdf4_nc_check_for_hdf5" >&6
-if test $ac_cv_lib_netcdf4_nc_check_for_hdf5 = yes; then
+echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf4_find_nc4_file" >&5
+echo "${ECHO_T}$ac_cv_lib_netcdf4_find_nc4_file" >&6
+if test $ac_cv_lib_netcdf4_find_nc4_file = yes; then
   cat >>confdefs.h <<_ACEOF
 #define HAVE_LIBNETCDF4 1
 _ACEOF
@@ -22422,7 +22421,6 @@ fi
 	fi
 fi
 echo "DEBUG: LIBS = ${LIBS}"
-
 
 # Begin HDF5 test
 # NB: netCDF4 requires libhdf5 and libhdf5_hl to link correctly

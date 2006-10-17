@@ -1,3 +1,8 @@
+2006-10-16  Charlie Zender  <zender@uci.edu>
+
+	* Test for find_nc4_file() not nc_check_for_hdf5() in configure.in
+	as per patch from Simon Wood 	
+
 2006-09-18  Charlie Zender  <zender@uci.edu>
 
 	* Confirmed psd.nco works correctly

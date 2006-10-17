@@ -1,9 +1,9 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.191 2006-09-18 20:09:23 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.192 2006-10-17 05:22:23 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
 
-# Copyright (C) 2003--2006 Charlie Zender and Rorik Peterson
+# Copyright (C) 2003--2006 Charlie Zender
 # This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
 # See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text
 
@@ -298,11 +298,10 @@ if ( test "${enable_netcdf4}" = 'yes'); then
 			CPPFLAGS="-I${NETCDF4_ROOT}/include ${CPPFLAGS}";\
 			LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
 			if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
-				# Check libnetcdf for a netCDF4 functions
+				# Check libnetcdf for a netCDF4 function
 				# fxm: netCDF4 alpha10 barfs with shared libs, check after final release
 				enable_shared='no'
-				AC_CHECK_LIB([netcdf],[nc_check_for_hdf5],[LIBS="-lnetcdf -lhdf5 -lhdf5_hl ${LIBS}" AC_DEFINE(ENABLE_NETCDF4,1,Have included NETCDF4 support)],[enable_netcdf4=no],[-lhdf5 -lhdf5_hl])
-				#X#CPPFLAGS="${CPPFLAGS} -DNC_64BIT_OFFSET"
+				AC_CHECK_LIB([netcdf],[find_nc4_file],[LIBS="-lnetcdf -lhdf5 -lhdf5_hl ${LIBS}" AC_DEFINE(ENABLE_NETCDF4,1,Have included NETCDF4 support)],[enable_netcdf4=no],[-lhdf5 -lhdf5_hl])
 			fi
 		else
 			echo "NETCDF4_ROOT set but does not exist---skipping netCDF4 configuration";\
@@ -311,11 +310,10 @@ if ( test "${enable_netcdf4}" = 'yes'); then
 	else
 		echo "User set '--enable-netcdf4' but did not set NETCDF4_ROOT";\
 		echo "Must set both to enable netCDF4.  Will try to configure netCDF anyway...";\
-		AC_CHECK_LIB([netcdf4],[nc_check_for_hdf5],,enable_netcdf4=no,[-lhdf5 -lhdf5_hl])
+		AC_CHECK_LIB([netcdf4],[find_nc4_file],,enable_netcdf4=no,[-lhdf5 -lhdf5_hl])
 	fi
 fi
 echo "DEBUG: LIBS = ${LIBS}"
-
 
 # Begin HDF5 test
 # NB: netCDF4 requires libhdf5 and libhdf5_hl to link correctly

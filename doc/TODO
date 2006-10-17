@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.822 2006-10-07 22:25:06 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.823 2006-10-17 05:22:23 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -537,8 +537,8 @@ nco779. Add non-record stride checks to regression tests e.g.,
 	ncks -C -v three_dmn_rec_var ~/foo.nc
 nco780. bm: ncap regression test 8 fails because of quieter info messages
 nco781. Add ncks option to suppress creating temporary output file in -A mode, simply copy input file first
-nco782. 
-
+nco782. --enable-optimize-custom fails with netCDF4 which shadows "access" variable
+nco783. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

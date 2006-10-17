@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.130 2006-08-26 06:35:28 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.131 2006-10-17 05:22:23 zender Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -253,6 +253,18 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
+# gcc/g++ Zender uses this to compile NCO with GCC and netCDF4
+# --enable-optimize-custom fails with netCDF4 which shadows "access" variable
+export GNU_TRP=`~/nco/autobld/config.guess`
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+CC='gcc' CXX='g++' NETCDF4_ROOT='/usr/local/netcdf4' ./configure --enable-netcdf4 --disable-dap --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
+/bin/cp -f nco.libtool nco.libtool.${GNU_TRP}.foo
+make clean;make > nco.make.${GNU_TRP}.foo 2>&1
+make check >> nco.make.${GNU_TRP}.foo 2>&1
+make install >> nco.make.${GNU_TRP}.foo 2>&1
+scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
+
 gcc/g++ Developers use --enable-maintainer-mode to verify auto-tools work correctly, and to mandate rebuilding of "special files" (ncap_yacc.c, ncap_lex.c) correctly:
 (requires complete, up-to-date, GNU development toolchain):
 export GNU_TRP=`~/nco/autobld/config.guess`
@@ -318,17 +330,15 @@ End LINUX
 ************************************************************************
 Begin NETCDF4
 ************************************************************************
-NETCDF4/netcdf4
-To build with netcdf4, we require changes from the default process:
+To build NCO with netCDF4, we require changes from the default process:
 
-- You should build the hdf5 libs and install them as you normally would (you 
-  could install them in /usr/local, for example).  
+- Build HDF5 libraries and install them as you normally would, e.g., in /usr/local
 
-- you must identify the installation (--prefix=) dir for netcdf4.  ie where 
-  you installed it.  This must be kept spearate from the usual /usr/local 
-  prefix because the netcdf4 lib is still called libnetcdf.a and until netcdf4
-  is debugged, you'll want both of them around.  The configure options 
-  to use for netcdf4 are:
+- Identify the installation (--prefix=) directory for netCDF4.
+  Keep this separate from the netCDF3 installation because the netCDF4 
+  library is still called libnetcdf.a and until netCDF4 is debugged, 
+  you'll want both netCDF3 and netCDF4 around.  
+  The configure options to use for netCDF4 are:
 
   ./configure --enable-netcdf4 --disable-dap --disable-shared \
   NETCDF4_ROOT=/where/you/unpacked/netcdf4
@@ -336,7 +346,7 @@ To build with netcdf4, we require changes from the default process:
   Alternatively, you can export an environment variable NETCDF4_ROOT to 
   the same value and the configure script will pick it up.
 
-- currently (11.29.05), building NCOs with NETCDF4 and MPI are NOT compatible. 
+- As of 20051129, building NCO with netCDF4 and MPI does not work
 
 ************************************************************************
 End NETCDF4
