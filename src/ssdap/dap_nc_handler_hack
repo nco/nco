@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.48 2006-10-18 00:35:42 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.49 2006-10-18 23:59:53 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -53,6 +53,9 @@ class local:
 
     dashPath = None
     useDashHelper = False
+
+    scratchPath = None
+    resultPath = None
     
     if sys.version_info[:2] < (2,4): # 2.4 adds @staticmethod syntax
         print """You have python version %s, and >=2.4 is required.
@@ -191,6 +194,8 @@ def readConfigFile(fname = "ssdap_handler.conf"):
                "/home/wangd/opendap/iroot/nco_ncdf4_bin"),
               ("ncDapBinPath", "targets", "opendapnco",
                "/home/wangd/opendap/iroot/nco_dap_bin"),
+              ("scratchPath", "targets", "scratchPath", None),
+              ("resultPath", "targets", "resultPath", None),
               ("passthroughPath", "targets", "passthroughPath",
                "/home/wangd/opendap/iroot/bin/dap_nc_handler"),
               ("dbFilename", "database", "dbFilename", None),
@@ -619,7 +624,11 @@ class Command:
              self.env.fileMap[ScriptingEnv.SCRIPT_OUTFILE] = (0,n)
          #except TypeError:
          except (TypeError,ValueError,StandardError):
+             import traceback
              print "Problem retrieving file for id ", argv[0]
+             logit("Exception while retriving file id %s: %s" %
+                   argv[0], str(traceback.format_exc()))
+
              
          privatedb.close()
          pass
@@ -642,7 +651,6 @@ class Command:
                         # not ready, ok to wait.
                         # sleep for 10s-- (FIXME: want a signalling system)
                         # can also wait on task pid?
-                        import time
                         time.sleep(sleeptime)
                     pass 
                 else:
@@ -1009,32 +1017,35 @@ class ScriptingEnv:
 
 
     def dbExecWorker(self):
-         import time,subprocess
-         logit("beginning worker loop")
-         (cline,outname) = (None,None)
-         jobsrun = 0
-         while True:
-             try:
-                 logit("worker checking for job")
-                 j = self.instanceJobPersistence()
-                 fetch = j.newFetchAndLockTransaction()
-                 tup = fetch.executeBlocking()
-                 fetch = None
-                 (cline,outname) = tup
-             except TypeError:
-                 poll = self.instanceJobPersistence().newPollingTransaction()
-                 jobsLeft = poll.cmdsLeft()
-                 poll = None
-                 if jobsLeft > 0:
-                     time.sleep(2*self.sleepTime)
-                     logit("worker sleeping for work" + time.asctime())
-                     continue
-                 logit("worker exit: no more work")
-                 break
-             except:
-                 import traceback
-                 logit("unknown exception"+str(traceback.format_exc()))
-                 break
+        """Main worker function for running jobs/cmds.
+        10/18/06-- need to refactor into nicer pieces."""
+        import subprocess
+        logit("beginning worker loop")
+        (cline,outname) = (None,None)
+        jobsrun = 0
+        while True:
+             if cline is None:  #otherwise, we have a job ready!
+                 try:
+                     logit("worker checking for job")
+                     j = self.instanceJobPersistence()
+                     fetch = j.newFetchAndLockTransaction()
+                     tup = fetch.executeBlocking()
+                     fetch = None
+                     (cline,outname) = tup
+                 except TypeError:
+                     poll = self.instanceJobPersistence().newPollingTransaction()
+                     jobsLeft = poll.cmdsLeft()
+                     poll = None
+                     if jobsLeft > 0:
+                         time.sleep(2*self.sleepTime)
+                         logit("worker sleeping for work" + time.asctime())
+                         continue
+                     logit("worker exit: no more work")
+                     break
+                 except:
+                     import traceback
+                     logit("unknown exception"+str(traceback.format_exc()))
+                     break
              # At this point, consider marking a running state, so that
              # workers can see each others' jobs and avoid duplication.
              try: # derived from: http://pydoc.org/2.4.1/subprocess.html
@@ -1050,36 +1061,26 @@ class ScriptingEnv:
                  logit("Failed %s --> %s, " %(cline,outname))
                  break
              jobsrun = jobsrun + 1
-             #self.dbMarkFinish(outname)
-             cmt = self.instanceJobPersistence().newCommitCmdResultTransaction()
-             cmt.executeBlocking(outname)
-             cmt = None
-             # new interface:
-             logit("done marking")
+             j = self.instanceJobPersistence()
+             if False:
+                 cmt = j.newCommitCmdResultTransaction()
+                 cmt.executeBlocking(outname)
+                 (cline, outname) = (None,None)
+                 cmt = None
+             else:
+                 try:
+                     cmt = j.newCommitAndFetchTransaction()
+                     tup = cmt.executeBlocking(outname)
+                     (cline, outname) = (None,None)
+                     if type(tup) is tuple and len(tup) == 2:
+                         (cline, outname) = tup
+                 except:
+                     import traceback
+                     logit("unknown exception"+str(traceback.format_exc()))
+                     break
              if jobsrun > 9910: # for profiling...
                  break
-         j.close()
-
-    def dbMarkFinish(self, concretename):
-        """Mark a file as saved in the db, and update the ready list.
-        no transactions should be in flight at this point.
-        **** This method/function is sorta deprecated ****
-        """
-        j = self.instanceJobPersistence()
-        def updateState():
-            j.setFileStateByName(concretename, 3)
-            j.commit()
-        def updateReady():
-            affected = j.cmdsWithInput(concretename)
-            j.makeReady(affected)
-            j.close()
-        # keep trying to update db.  If this update is
-        # lost, then all of the dependents will fail.
-        logit("updating filestate"+str(os.getpid()))
-        j.keepTrying(updateState)
-        logit("updating readylist")
-        j.keepTrying(updateReady)
-        logit("exit markfinish")
+        j.close()
                
     def asyncExecute(self):
         sys.stdout.flush() # flush output before forking
@@ -1493,7 +1494,15 @@ class FrontEnd:
         
 
     def runScript(self):
-        self.env["tempdir"] = self.args["-r"]
+        if local.resultPath is not None:
+            self.env["resultdir"] = local.resultPath
+        else:  # otherwise, use OPeNDAP default
+            self.env["resultdir"] = self.args["-r"]
+        if local.scratchPath is not None:
+            self.env["tempdir"] = local.scratchPath
+        else:  # otherwise, use OPeNDAP default
+            self.env["tempdir"] = self.args["-r"]
+        
         (filepath, filename) = os.path.split(self.args["-realfile"])
 
         self.env["defpath"] = filepath # use for default path.
@@ -1527,8 +1536,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2006-10-18 00:35:42 $
-   Version:	$Revision: 1.48 $
+   Date:	$Date: 2006-10-18 23:59:53 $
+   Version:	$Revision: 1.49 $
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()

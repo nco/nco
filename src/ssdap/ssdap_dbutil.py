@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.16 2006-10-18 00:35:42 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.17 2006-10-18 23:59:53 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -343,7 +343,7 @@ class JobPersistence:
             cur.close()
             pass        
         pass # end of CommitCmdResultTransaction class def
-    class CommitAndFetchTransaction:
+    class CommitAndFetchTransaction(Transaction):
         """A combo transaction that commits a command and returns the first cmd
         made ready as a result, if it exists.  If one exists, this saves
         a db transaction to fetch the next ready command.
@@ -357,7 +357,7 @@ class JobPersistence:
             cur = self.connection.cursor() 
             self.cursor = cur # in case transaction gets rolled back, etc.
             cur.execute("BEGIN EXCLUSIVE;")
-            print >>open("/tmp/foo1","a"), os.getpid(),"cmtcmd", time.asctime()
+            print >>open("/tmp/foo1","a"), os.getpid(),"cmtfch", time.asctime()
             stime = time.time()
             cur.execute("""UPDATE fileState SET state=3
                            WHERE concretename=?;""", (concretename,))
@@ -384,6 +384,7 @@ class JobPersistence:
             (taskrow,linenum,concretename) VALUES (?,?,?)"""
             result = None
             if len(newReady) > 0:
+                print len(newReady), "commands produced.  stealing one"
                 # steal the first cmd and pre-"fetch-and-lock" it
                 fetchedCmd = newReady.pop(0)
                 result = self.markStart(fetchedCmd)
@@ -400,10 +401,13 @@ class JobPersistence:
             fetch = "SELECT cmdLine FROM cmds WHERE taskrow=? AND linenum=?;"
             update = "UPDATE fileState SET state=2 WHERE concretename=?;"
             self.cursor.execute(fetch, (taskrow, linenum))
+            print "executed",fetch,taskrow,linenum
             rows = self.cursor.fetchall()
+            print "got",rows
             assert len(rows) == 1
-            result = rows[0][0]
-            self.cursor.execute(cmd, (concretename,))
+            result = (rows[0][0],concretename)
+            self.cursor.execute(update, (concretename,))
+            print "executed",update,concretename
             return result
         
     class PollingTransaction:
@@ -514,6 +518,8 @@ class JobPersistence:
                                             self.currentTaskRow)
     def newCommitCmdResultTransaction(self):
         return self.CommitCmdResultTransaction(self.connection())
+    def newCommitAndFetchTransaction(self):
+        return self.CommitAndFetchTransaction(self.connection())
     def newPollingTransaction(self):
         return self.PollingTransaction(self.connection(),
                                        self.currentTaskRow)
@@ -700,18 +706,8 @@ class JobPersistence:
             
     pass
 
-
-def selfTest(args=[]):
-    buildOnly = False
-    if len(args) > 0:
-        if "build" in args:
-            buildOnly = True
-    print "doing basic internal build/fill/run/delete/build/delete test."
-    j = JobPersistence("sometest_db")
-    j.buildTables()
-    j.close()
-    print " build and close"
-    pop = j.newPopulationTransaction()
+def selfPopulateAndPrep(jobpers):
+    pop = jobpers.newPopulationTransaction()
     row = pop.insertTask("AABBCCDD")
     # a command with no input and one independent output (ready to go)
     pop.insertCmd(2, "ncap", "ncap -o %outf_indep.nc%")
@@ -741,26 +737,48 @@ def selfTest(args=[]):
                     True, 1, False)
     pop.finish()
     pop = None # null-out because we're paranoid
-    prep = j.newPreparationTransaction()
+    prep = jobpers.newPreparationTransaction()
     prep.execute()
     prep = None
+    pass
+def selfTest(args=[]):
+    buildOnly = False
+    if len(args) > 0:
+        if "build" in args:
+            buildOnly = True
+    print "doing basic internal build/fill/run/delete/build/delete test."
+    j = JobPersistence("sometest_db")
+    j.buildTables()
+    j.close()
+    print " build and close"
+    selfPopulateAndPrep(j)
     #    clist = j.cmdsWithInput("/tmp/temp1111tempf_other.nc")
     j.showState()
     # now, pretend like we're executing.
+    (cline, outname) = (None,None)
     while True:
         try:
-            fetch = j.newFetchAndLockTransaction()
-            (cline,outname) = fetch.execute()
-            fetch = None
+            if cline is None:
+                fetch = j.newFetchAndLockTransaction()
+                (cline,outname) = fetch.execute()
+                fetch = None
+            else:
+                print ":::opt skip fetch"
         except TypeError:
             print ":::no more lines to run!"
             break
         print ":::pretending to run %s" % (cline)
+        
         j.showState()
         print ":::fake produce %s" % (outname)
-        cmtcmd = j.newCommitCmdResultTransaction()
-        cmtcmd.execute(outname)
+        cmtcmd = j.newCommitAndFetchTransaction()
+        tup = cmtcmd.execute(outname)
         cmtcmd = None
+        (cline, outname) = (None,None)
+        print "opt fetch got",tup
+        if type(tup) is tuple and len(tup) == 2:
+            (cline, outname) = tup
+            print "opt got tuple!", tup
         j.showState()
     
 
