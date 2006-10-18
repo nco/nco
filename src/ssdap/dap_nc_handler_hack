@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.47 2006-10-16 21:06:27 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.48 2006-10-18 00:35:42 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -995,6 +995,7 @@ class ScriptingEnv:
          logit("readyList ready")
 #         j.showReadyList(self.persistedTask)
 #         return
+         self.instanceJobPersistence().close() # force closing before fork.
          self.sleepTime = 1+((nslots-1)/4)
          tospawn = nslots-1
          logit("ready to spawn %d workers" % (tospawn))
@@ -1017,10 +1018,9 @@ class ScriptingEnv:
                  logit("worker checking for job")
                  j = self.instanceJobPersistence()
                  fetch = j.newFetchAndLockTransaction()
-                 tup = fetch.execute()
+                 tup = fetch.executeBlocking()
                  fetch = None
                  (cline,outname) = tup
-                 logit("worker got job  "+cline)
              except TypeError:
                  poll = self.instanceJobPersistence().newPollingTransaction()
                  jobsLeft = poll.cmdsLeft()
@@ -1050,10 +1050,9 @@ class ScriptingEnv:
                  logit("Failed %s --> %s, " %(cline,outname))
                  break
              jobsrun = jobsrun + 1
-             logit("marking finish")
              #self.dbMarkFinish(outname)
              cmt = self.instanceJobPersistence().newCommitCmdResultTransaction()
-             cmt.execute(outname)
+             cmt.executeBlocking(outname)
              cmt = None
              # new interface:
              logit("done marking")
@@ -1084,6 +1083,7 @@ class ScriptingEnv:
                
     def asyncExecute(self):
         sys.stdout.flush() # flush output before forking
+        self.instanceJobPersistence().close() # force closing before fork.
         try:
             pid = os.fork()
             if pid > 0:
@@ -1527,8 +1527,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2006-10-16 21:06:27 $
-   Version:	$Revision: 1.47 $
+   Date:	$Date: 2006-10-18 00:35:42 $
+   Version:	$Revision: 1.48 $
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()

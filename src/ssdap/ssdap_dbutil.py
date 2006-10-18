@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.15 2006-10-16 22:28:27 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.16 2006-10-18 00:35:42 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -13,6 +13,30 @@ class JobPersistence:
                     3 : "saved",
                     4 : "removed"
                     }
+    class Transaction:
+        def executeBlocking(self, *pargs, **kwargs):
+            """This keeps trying an operation until it succeeds.
+            Transient DB exceptions are explicitly caught."""
+            while True:
+                try:
+                    return self.execute(*pargs, **kwargs)
+                except sqlite.OperationalError, e:
+                    # if db is locked, wait and retry.
+                    if 'database is locked' in str(e):
+                        print >>open("/tmp/foo1","a"), os.getpid(),"dbretry(lock)"
+                        time.sleep(0.5)
+                        continue
+                    elif 'SQL statements in progress' in str(e):
+                        self.cursor.execute("ROLLBACK;")
+                        self.cursor.close()
+                        print >>open("/tmp/foo1","a"), os.getpid(),"dbretry(inprogress)", pargs
+                        time.sleep(0.5)
+                        continue                        
+                    else: #otherwise, pass the exception upwards.
+                        raise
+                pass
+            pass
+        pass # end of Transaction class
     class PopulationTransaction:
         """An interface for the task of loading the db from a script parsing
         run.  Don't forget to call finish() when you're done!"""
@@ -223,7 +247,7 @@ class JobPersistence:
             pass
             
         pass # end of PreparationTransaction class def
-    class FetchAndLockTransaction:
+    class FetchAndLockTransaction(Transaction):
         """An interface class for a transaction that fetches the next ready
         job, takes it off the list, and returns it"""
         def __init__(self, connection, taskRow):
@@ -240,7 +264,11 @@ class JobPersistence:
         def execute(self):
             """Fetches the next scripted command for the bound task"""
             cur = self.connection.cursor()
+            self.cursor = cur # in case transaction gets rolled back
             cur.execute("BEGIN EXCLUSIVE;")
+            #print >>open("/tmp/foo1","a"), os.getpid(),"fetchlock", time.asctime()
+            #stime = time.time()
+
             # fetch a cmd from ready list
             cmd = """SELECT taskrow,linenum,concretename,cmdLine
             FROM readyList JOIN cmds
@@ -260,27 +288,30 @@ class JobPersistence:
                 # drop the cmd from the list
                 cmd = """DELETE FROM readyList WHERE taskrow=? AND linenum=?;"""
                 cur.execute(cmd, (mycommand[0],mycommand[1]))
-                print >>open("/tmp/foo1","a"), os.getpid(),"deleted"
                 # update the filestate to running
                 # hope filename doesn't have any quotes!
                 cmd = "UPDATE fileState SET state=2 WHERE concretename=?;"
                 cur.execute(cmd, (mycommand[2],))
+
+            #etime = time.time()
+            #print >>open("/tmp/foo1","a"), os.getpid(),"unlock after", etime-stime
             cur.execute("COMMIT;")
             cur.close()
             return result
             
         pass # end of FetchAndLockTransaction class def
-    class CommitCmdResultTransaction:
+    class CommitCmdResultTransaction(Transaction):
         def __init__(self, connection):
             self.connection = connection
+            connection.isolation_level = None
             pass
-
+                
         def execute(self, concretename):
             cur = self.connection.cursor()
+            self.cursor = cur # in case transaction gets rolled back
             cur.execute("BEGIN EXCLUSIVE;")
             print >>open("/tmp/foo1","a"), os.getpid(),"cmtcmd", time.asctime()
             stime = time.time()
-            self.helpExec(concretename)
             cur.execute("""UPDATE fileState SET state=3
                            WHERE concretename=?;""", (concretename,))
             # find all commands affected by the committed's output
@@ -312,6 +343,69 @@ class JobPersistence:
             cur.close()
             pass        
         pass # end of CommitCmdResultTransaction class def
+    class CommitAndFetchTransaction:
+        """A combo transaction that commits a command and returns the first cmd
+        made ready as a result, if it exists.  If one exists, this saves
+        a db transaction to fetch the next ready command.
+        UNFINISHED"""
+        def __init__(self, connection):
+            self.connection = connection
+            connection.isolation_level = None
+            self.cursor = None
+            pass
+        def execute(self, concretename):
+            cur = self.connection.cursor() 
+            self.cursor = cur # in case transaction gets rolled back, etc.
+            cur.execute("BEGIN EXCLUSIVE;")
+            print >>open("/tmp/foo1","a"), os.getpid(),"cmtcmd", time.asctime()
+            stime = time.time()
+            cur.execute("""UPDATE fileState SET state=3
+                           WHERE concretename=?;""", (concretename,))
+            # find all commands affected by the committed's output
+            cur.execute("""SELECT taskrow,linenum FROM cmdFileRelation
+            WHERE output=0 AND concretename=?;""", (concretename,))
+            rows = cur.fetchall()
+
+            # find the outputfilename for this command, but only if the count
+            # of its inputfiles that are not in the saved state is zero
+            cmd = """SELECT concretename FROM cmdFileRelation
+            WHERE (SELECT COUNT(*) FROM cmdFileRelation
+                                   JOIN fileState USING(concretename)
+                                   WHERE taskrow=? AND linenum=?
+                                   AND output=0 AND state<>3
+                  )=0 AND taskrow=? AND linenum=? AND output=1;"""
+            newReady=[]
+            for (taskrow,linenum) in rows:
+                cur.execute(cmd, (taskrow,linenum,taskrow,linenum))
+                ctuple = cur.fetchall()
+                if len(ctuple) == 1:
+                    newReady.append((taskrow, linenum, ctuple[0][0]))
+            readyTemplate = """INSERT INTO readyList
+            (taskrow,linenum,concretename) VALUES (?,?,?)"""
+            result = None
+            if len(newReady) > 0:
+                # steal the first cmd and pre-"fetch-and-lock" it
+                fetchedCmd = newReady.pop(0)
+                result = self.markStart(fetchedCmd)
+                if len(newReady) > 0:  # now insert if there's more.
+                    cur.executemany(readyTemplate, newReady)
+            cur.execute("COMMIT;")
+            etime = time.time()
+            print >>open("/tmp/foo1","a"), os.getpid(),"unlock after", etime-stime
+            cur.close()
+            return result
+        def markStart(self, readyTuple):
+            """helper for the case where a new ready job exists."""
+            (taskrow, linenum, concretename) = readyTuple
+            fetch = "SELECT cmdLine FROM cmds WHERE taskrow=? AND linenum=?;"
+            update = "UPDATE fileState SET state=2 WHERE concretename=?;"
+            self.cursor.execute(fetch, (taskrow, linenum))
+            rows = self.cursor.fetchall()
+            assert len(rows) == 1
+            result = rows[0][0]
+            self.cursor.execute(cmd, (concretename,))
+            return result
+        
     class PollingTransaction:
         def __init__(self, connection, taskRow):
             assert type(connection) == sqlite.Connection
@@ -357,10 +451,23 @@ class JobPersistence:
             # tune for faster performance
             # see: http://www.sqlite.org/pragma.html
             cur = self.dbconnection.cursor()
-            cur.execute("PRAGMA synchronous = off;")
-            cachesize = 5000000 # 5MB?
-            cur.execute("PRAGMA cache_size = %s;" %(cachesize/1500))
+            while True:
+                try:
+                    cur.execute("PRAGMA synchronous = off;")
+                    cachesize = 5000000 # 5MB?
+                    cur.execute("PRAGMA cache_size = %s;" %(cachesize/1500))
+                    break
+                except sqlite.OperationalError, e:
+                    # if db is locked, wait and retry.
+                    if 'database is locked' in str(e):
+                        print >>open("/tmp/foo1","a"), os.getpid(),"dbretry"
+                        time.sleep(0.5)
+                        continue
+                    else: #otherwise, pass the exception upwards.
+                        raise e
+                pass
             cur.close()
+
             cur = None
             self.dbcursor = None
             self.connected = True
@@ -390,7 +497,8 @@ class JobPersistence:
             self.connected = False
         self.dbcursor = None
         self.dbconnection = None
-        self.currentTaskRow = None
+        # don't do this. want to close db w/o losing context.
+        #self.currentTaskRow = None 
         pass
     def newPopulationTransaction(self):
         def callback(row):
