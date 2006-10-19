@@ -1,3 +1,7 @@
+2006-10-19  Charlie Zender  <zender@uci.edu>
+
+	* Add hdr_pad documentation to nco_ctl.c, nco.texi as per TODO nco650
+
 2006-10-16  Charlie Zender  <zender@uci.edu>
 
 	* Test for find_nc4_file() not nc_check_for_hdf5() in configure.in

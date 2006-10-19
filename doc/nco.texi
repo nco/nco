@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.378 2006-09-25 01:52:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.379 2006-10-19 19:20:50 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5746,7 +5746,7 @@ Knowing when to use @command{ncwa -a time} rather than the default
 @noindent
 SYNTAX
 @example
-ncatted [-a @var{att_dsc}] [-a @dots{}] [-D @var{dbg}] [-h]
+ncatted [-a @var{att_dsc}] [-a @dots{}] [-D @var{dbg}] [-h] [--hdr_pad nbr]
 [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
 @var{input-file} [[@var{output-file}]]
 @end example
@@ -6114,7 +6114,7 @@ omitted in batch scripts.
 SYNTAX
 @example 
 ncbo [-4] [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] 
+[-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h]
 [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}]
 @var{file_1} @var{file_2} [@var{file_3}]
@@ -6907,7 +6907,8 @@ SYNTAX
 @example
 ncks [-4] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]]
-[-F] [-H] [-h] [-l @var{path}] [-M] [-m] [-O] [-o @var{output-file}] 
+[-F] [-H] [-h] [--hdr_pad nbr] [-l @var{path}] [-M] [-m] 
+[-O] [-o @var{output-file}] 
 [-P] [-p @var{path}] [-Q] [-q] [-R] [-r] [-s @var{format}] [-u] 
 [-v @var{var}[,@dots{}]] [-x] @var{input-file} [[@var{output-file}]]
 @end example
@@ -8072,7 +8073,7 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 SYNTAX
 @example
 ncrename [-a @var{old_name},@var{new_name}] [-a @dots{}] [-D @var{dbg}] 
-[-d @var{old_name},@var{new_name}] [-d @dots{}] [-h] [-l @var{path}]
+[-d @var{old_name},@var{new_name}] [-d @dots{}] [-h] [--hdr_pad nbr] [-l @var{path}]
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-v @var{old_name},@var{new_name}] [-v @dots{}]
 @var{input-file} [[@var{output-file}]]
