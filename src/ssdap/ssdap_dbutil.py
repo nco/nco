@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.17 2006-10-18 23:59:53 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.18 2006-10-20 22:27:46 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -270,9 +270,14 @@ class JobPersistence:
             #stime = time.time()
 
             # fetch a cmd from ready list
+            #cmd = """SELECT taskrow,linenum,concretename,cmdLine
+            #FROM readyList JOIN cmds
+            #USING (taskrow,linenum) WHERE taskrow=? LIMIT 1;"""
+            # select most 
             cmd = """SELECT taskrow,linenum,concretename,cmdLine
             FROM readyList JOIN cmds
-            USING (taskrow,linenum) WHERE taskrow=? LIMIT 1;"""
+            USING (taskrow,linenum) WHERE taskrow=?
+            ORDER BY linenum LIMIT 1;"""
             rows = None
             con = None
             cur.execute(cmd, (self.taskRow,))
@@ -384,7 +389,6 @@ class JobPersistence:
             (taskrow,linenum,concretename) VALUES (?,?,?)"""
             result = None
             if len(newReady) > 0:
-                print len(newReady), "commands produced.  stealing one"
                 # steal the first cmd and pre-"fetch-and-lock" it
                 fetchedCmd = newReady.pop(0)
                 result = self.markStart(fetchedCmd)
@@ -401,13 +405,10 @@ class JobPersistence:
             fetch = "SELECT cmdLine FROM cmds WHERE taskrow=? AND linenum=?;"
             update = "UPDATE fileState SET state=2 WHERE concretename=?;"
             self.cursor.execute(fetch, (taskrow, linenum))
-            print "executed",fetch,taskrow,linenum
             rows = self.cursor.fetchall()
-            print "got",rows
             assert len(rows) == 1
             result = (rows[0][0],concretename)
             self.cursor.execute(update, (concretename,))
-            print "executed",update,concretename
             return result
         
     class PollingTransaction:
@@ -558,7 +559,15 @@ class JobPersistence:
                      " linenum INTEGER(8),",
                      " concretename VARCHAR(192)", # track concrete,
                      # so we can update the filestate without querying.
-                     "); CREATE INDEX rowready ON readyList(taskrow);"]
+                     "); CREATE INDEX rowready ON readyList(taskrow);",
+                     " CREATE INDEX rowlineready",
+                     " ON readyList(taskrow,linenum);"]
+        useList = ["CREATE TABLE useList ( concretename VARCHAR(192));",
+                   " CREATE INDEX nameuselist ON useList(concretename);"]
+        useCount = ["CREATE TABLE useCount ( concretename VARCHAR(192), ",
+                   " count INTEGER(4) );",
+                   " CREATE INDEX nameusecount ON useCount(concretename);"]
+
 
                        
         # files can be planned, active, saved, removed, etc.
@@ -566,9 +575,10 @@ class JobPersistence:
 
         cur = self.cursor()
         try:
-            cmd = "".join(taskcommand + ["\n"] + cmdcommand +
-                          ["\n"] + inoutcommand + ["\n"] + filestate
-                          + ["\n"] + readylist)
+            cmd = "".join(taskcommand + ["\n"] + cmdcommand 
+                          + ["\n"] + inoutcommand + ["\n"] + filestate
+                          + ["\n"] + readylist + ["\n"] + useList
+                          + ["\n"] + useCount )
             cur.executescript("".join(cmd))
             #print "trying to execute cmd:",cmd
             #cur.executescript("".join(cmdcommand))
@@ -579,15 +589,18 @@ class JobPersistence:
         pass
     
     def deleteTables(self):
-        deletecmd = [ "drop table tasks;",
-                      "drop table cmds;",
-                      "drop table cmdFileRelation;",
-                      "drop table fileState;",
-                      "drop table readyList;"
+        deletecmd = [ "DROP TABLE tasks;",
+                      "DROP TABLE cmds;",
+                      "DROP TABLE cmdFileRelation;",
+                      "DROP TABLE fileState;",
+                      "DROP TABLE readyList;",
+                      "DROP TABLE useList;",
+                      "DROP TABLE useCount;"
                     ];
+        # sqlite automatically drops indexes 
         cur = self.cursor()
         try:
-            cur.executescript("".join(deletecmd))
+            cur.executescript("\n".join(deletecmd))
             print >>sys.stderr, "tables dropped ok (uncommit)"
         except sqlite.OperationalError:
             print >>sys.stderr, "error dropping tables from DB"
