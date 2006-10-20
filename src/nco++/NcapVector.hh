@@ -36,9 +36,25 @@ public:
   T find(std::string snm) {
     return find(snm.c_str());
   }
+
+  int findi(std::string snm){
+    int idx;
+    int sz=t_vector.size();
+    const char *nm=snm.c_str();
+
+    for(idx=0 ; idx < sz; idx++)
+      if(!strcmp(nm, t_vector[idx]->nm)) break;
+    if(idx < sz) 
+	return idx; 
+    else
+	 return -1;
+
+  }
+
   T operator[] (long idx) const {
     return t_vector[idx];
   }
+
   T* ptr(long idx) {
     return &t_vector[idx];
   }
