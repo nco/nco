@@ -4,7 +4,7 @@ NcapVar* NcapVarVector::find(const char*nm){
   long idx;
   long sz=t_vector.size();
     for(idx=0; idx<sz;idx++)
-      if(!strcmp(nm, t_vector[idx]->s_va_nm.c_str()))
+      if(!strcmp(nm, t_vector[idx]->getFll().c_str()))
 	return t_vector[idx];
       return NULL;
 }
@@ -23,10 +23,24 @@ long NcapVarVector::findi(std::string s_fnm){
   long idx;
   long sz=t_vector.size();
     for(idx=0; idx<sz;idx++)
-      if( s_fnm==t_vector[idx]->s_va_nm)
+      if( s_fnm==t_vector[idx]->getFll())
 	return idx;
       return -1;
 }
+
+
+// remove top value
+NcapVar *NcapVarVector::pop(){
+    NcapVar *Ntmp; 
+
+    if(t_vector.size() > 0 ) {
+      Ntmp=t_vector.back();
+      t_vector.pop_back();
+      return Ntmp;
+    }else
+      return NULL;
+}
+
 
 
 
@@ -34,7 +48,7 @@ long NcapVarVector::findi(std::string s_fnm){
 void NcapVarVector::push_ow(NcapVar *Nvar){
   long lret;
   NcapVar *Ntmp;
-  lret=findi(Nvar->s_va_nm);
+  lret=findi(Nvar->getFll());
   if(lret >= 0 ) {
     // delete current value
     Ntmp= t_vector[lret];
@@ -42,6 +56,14 @@ void NcapVarVector::push_ow(NcapVar *Nvar){
     t_vector[lret]=Nvar;
     delete Ntmp;
   }else   
+    (void)t_vector.push_back(Nvar);
+
+}
+
+
+
+// add to vector
+void NcapVarVector::push(NcapVar *Nvar){
     (void)t_vector.push_back(Nvar);
 
 }
