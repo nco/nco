@@ -18,6 +18,9 @@
 #include "ncap2.hh"
 #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
 
+//forward declaration
+void ncap_def_ntl_scn(prs_sct*);
+
 int parse_antlr(prs_sct *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
 {
   
@@ -28,7 +31,7 @@ int parse_antlr(prs_sct *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
   
   int idx;
   char *filename;
-  
+
   istringstream *sin=NULL;
   ifstream *in=NULL;
   
@@ -37,8 +40,9 @@ int parse_antlr(prs_sct *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
   
   RefAST t,a;
   bool bchk;
+
   
-  filename=fl_spt_usr;   
+  filename=strdup(fl_spt_usr);   
   
   try {
     
@@ -98,10 +102,25 @@ int parse_antlr(prs_sct *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
   t=a;
   
   try {   
+
+
     ncoTree walker(prs_arg);
     if(dbg_lvl_get() > 0) dbg_prn(fnc_nm,"Walker initialized");
-    // Run script
+    // Run script Initial scan
+         
+    cout<<"INITAL SCAN\n";
+    prs_arg->ntl_scn=True;
     walker.run(t);
+  
+    (void)nco_redef(prs_arg->out_id);  
+    (void)ncap_def_ntl_scn(prs_arg);
+    (void)nco_enddef(prs_arg->out_id);  
+  
+    cout<<"FINAL SCAN\n"; 
+    prs_arg->ntl_scn=False;
+    walker.run(t);
+
+
     
   }  catch(std::exception& e) {
     cerr << "exception: " << e.what() << endl;
@@ -113,6 +132,47 @@ int parse_antlr(prs_sct *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
   delete parser;        
   if(sin) delete sin;
   if(in) delete in;
+
+  (void)nco_free(filename);
   
   return 1;
 }              
+
+// define variables captured on first parse
+void ncap_def_ntl_scn(prs_sct *prs_arg)
+{
+int idx;
+int sz;
+int var_id;
+NcapVar *Nvar;
+NcapVar *Cvar;
+var_sct *var1;
+
+ 
+sz=prs_arg->ptr_int_vtr->size();
+
+ cout<<"Defining vars from first parse nbr var= "<<prs_arg->ptr_int_vtr->size()<<endl;
+ for(idx=0; idx < sz ; idx++){
+   // de-reference
+   Nvar=(*prs_arg->ptr_int_vtr)[idx];
+   var1=Nvar->var;
+   if( !Nvar->flg_udf && Nvar->xpr_typ==ncap_var) {
+     cout<<Nvar->getFll()<<endl;
+     // define variable
+     (void)nco_def_var(prs_arg->out_id,var1->nm,var1->type,var1->nbr_dim,var1->dmn_id,&var_id);
+     Nvar->var->id=var_id;
+     Nvar->flg_stt=1;
+     // save newly defined var in output vector
+
+     Cvar=new NcapVar(*Nvar);
+     prs_arg->ptr_var_vtr->push(Cvar);
+      
+   } 
+   delete Nvar;  
+ }
+ 
+ // empty int_vtr
+  for(idx=0 ; idx <sz ; idx++)
+   (void)prs_arg->ptr_int_vtr->pop();
+
+}

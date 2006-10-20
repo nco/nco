@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.16 2006-09-22 14:42:33 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.17 2006-10-20 15:35:42 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -79,6 +79,7 @@ public:
   NcapVector<dmn_sct*> *ptr_dmn_out_vtr; //Vector of dimensions in output file file
   NcapVector<sym_sct*> *ptr_sym_vtr;     //Vector of functions nb doesn't change
   NcapVarVector *ptr_var_vtr;            // list of attributes & variables
+  NcapVarVector *ptr_int_vtr;            // stores vars/atts in FIRST PARSE
   bool ntl_scn;                          // [flg] Initial scan of script 
   bool FORTRAN_IDX_CNV;                  //Use fortran convention with hyperslab indices
   bool ATT_PROPAGATE;                    //Var on LHS gets attributtes from the leftermost var on the RHS
@@ -112,6 +113,14 @@ nco_bool                /* O [flg] true if var has been stretched */
 ncap_att_stretch    /* stretch a single valued attribute from 1 to sz */
 (var_sct* var,      /* I/O [sct] variable */       
  long nw_sz);       /* I [nbr] new var size */
+
+
+
+
+var_sct *      /* initalize var to defaults & undefined to true */
+ncap_var_udf
+(const char *var_nm);
+
 
  
 int             
@@ -216,6 +225,18 @@ ncap_var_var_inc    /* [fnc] Add two variables */
  int op,            /* Deal with incremental operators i.e +=,-=,*=,/= */
  prs_sct *prs_arg);
   
+
+var_sct *             /* O [sct] Sum of input variables (var1+var2) INITIAL SCAN ONLY */
+ncap_var_var_op_ntl   /* [fnc] Add two variables */
+(var_sct *var1,       /* I [sct] Input variable structure containing first operand */
+ var_sct *var2,       /* I [sct] Input variable structure containing second operand */
+ int op);             /* Operation +-% */
+ 
+
+
+
+
+
 bool            /* O [flg] true if all var elemenst are true */
 ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
 (var_sct* var);  /* I [sct] input variable */

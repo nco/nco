@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.23 2006-09-04 14:51:49 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.24 2006-10-20 15:38:20 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -12,6 +12,7 @@
 #include <sstream>
 #include <string>
 #include "ncap2.hh" /* netCDF arithmetic processor */
+#include "NcapVar.hh"
 #include "sdo_utl.hh"
 
 /* have removed extern -- (not linking to ncap_lex.l */
@@ -34,7 +35,9 @@ bool bfll)                 /* if true fill var with data */
   int var_id;
   int rcd;
   int fl_id;
-
+  
+  bool bskp_npt=false;
+  
   char dmn_nm[NC_MAX_NAME];
 
   dmn_sct *dmn_fd; 
@@ -45,10 +48,55 @@ bool bfll)                 /* if true fill var with data */
   
   var_sct *var;
 
+  NcapVar *Nvar;
+
+  // INITIAL SCAN
+  if(prs_arg->ntl_scn){
+    // check int vtr
+    Nvar=prs_arg->ptr_int_vtr->find(var_nm);
+    // check var_vtr (output)  
+    if(Nvar==NULL)
+      Nvar=prs_arg->ptr_var_vtr->find(var_nm);
+   
+    if(Nvar) {
+      var=Nvar->cpyVarNoData();
+      return var;
+    }
+    bfll=false;
+  }
+
+  // FINAL SCAN
+  // We have a  dilema -- its possible for a variable to exist in input & output 
+  // with the var in output defined but empty - -this could occur with the
+  // increment/decrement ops e.g time++, four+=10 or a LHS hyperslab 
+  // e.g time(0:2)=666 or var on LHS & RHS at the same time time()=time*10;
+  // So what we want to happen in these cases is read the original var from
+  // input. --Later on in the script the empty var in output will be populated 
+  // and subsequent reads will occur from  output 
+  if(!prs_arg->ntl_scn){
+    Nvar=prs_arg->ptr_var_vtr->find(var_nm);
+   
+    // var is defined in O and populated
+    if(Nvar && Nvar->flg_stt==2){
+      //var=Nvar->cpyVarNoData();
+      //var=Nvar->cpyVar();
+      //fl_id=prs_arg->out_id; 
+      //yuck - yuck use a goto
+      //goto lbl_end; 
+    }
+    // var is defined in O but NOT populated
+    // Set flag so read is tried only from input
+    // Maybe not the best solution ?
+    // what else ??? 
+    if(Nvar && Nvar->flg_stt==1){
+      bskp_npt=true;
+
+    } 
+  }
 
   /* Check output file for var */  
   rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
-  if(rcd == NC_NOERR ){
+  if(rcd == NC_NOERR && !bskp_npt){
     fl_id=prs_arg->out_id;
   }else{
     /* Check input file for ID */
@@ -123,6 +171,8 @@ bool bfll)                 /* if true fill var with data */
   /* Tally is not required yet since ncap does not perform cross-file operations (yet) */
   /* var->tally=(long *)nco_malloc_dbg(var->sz*sizeof(long),"Unable to malloc() tally buffer in variable initialization",fnc_nm);
       (void)nco_zero_long(var->sz,var->tally); */
+
+lbl_end:
   var->tally=(long *)NULL;
 
   /* Retrieve variable values from disk into memory */
@@ -149,24 +199,45 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
   int var_out_id;
   
   bool bdef=false;
+  NcapVar *Nvar;
+  
 
 #ifdef NCO_RUSAGE_DBG
   long maxrss; /* [B] Maximum resident set size */
 #endif /* !NCO_RUSAGE_DBG */
 
 
-  rcd=nco_inq_varid_flg(prs_arg->out_id,var->nm,&var_out_id);
+  // INITIAL SCAN
+  if(prs_arg->ntl_scn){
+    Nvar=prs_arg->ptr_var_vtr->find(var->nm);
+    if(Nvar) { 
+      var=nco_var_free(var);
+      return True;
+    }
 
-  /* if var is already in output */
-  if(rcd == NC_NOERR){
-    int nbr_dmn_out;
+    Nvar=prs_arg->ptr_int_vtr->find(var->nm);
+    if(Nvar) { 
+      var=nco_var_free(var);
+      return True;
+    }  
+      
+    Nvar=new NcapVar(var);
+    prs_arg->ptr_int_vtr->push(Nvar);
+    std::cout<<"Variable pushed in write " <<Nvar->getFll() << " " <<Nvar->flg_udf <<" "<<Nvar->var->undefined<<std::endl;
+    return True;
+  } 
+
+  // FINAL SCAN
+  Nvar=prs_arg->ptr_var_vtr->find(var->nm);
+  if(Nvar) bdef=true;
+
+
+  // var is already defined & populated in output 
+  if(bdef && Nvar->flg_stt==2){
+    ptr_unn val_swp;  // Used to swap values around
+    var_sct* var_swp;
     var_sct* var_inf;
-    dmn_sct **dmn_out;
-
-    nbr_dmn_out=prs_arg->ptr_dmn_out_vtr->size(); //dereferencing
-    dmn_out=prs_arg->ptr_dmn_out_vtr->ptr(0);     //dereferencing
-
-    var_inf=nco_var_fll(prs_arg->out_id,var_out_id,var->nm,dmn_out,nbr_dmn_out);
+    var_inf=Nvar->cpyVarNoData();
 
 
     /* check sizes are the same */
@@ -184,18 +255,23 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
 
     /* convert type to disk type */
     var=nco_var_cnf_typ(var_inf->type,var);    
-    /* free var information */
-    var_inf=nco_var_free(var_inf);        
+
+    //Swap values about
+    var_inf->val=var->val;var->val.vp=(void*)NULL;
+    var_swp=var;var=var_inf;var_inf=var_swp;
     
-    bdef=true;  
+    var_inf=nco_var_free(var_inf);
 
+    var_out_id=var->id;
+   
+  } 
 
-  }
+  rcd=nco_inq_varid_flg(prs_arg->out_id,var->nm,&var_out_id);
   
+
   /* Put file in define mode to allow metadata writing */
   (void)nco_redef(prs_arg->out_id);
   
-
   
   /* Define variable */   
   if(!bdef)(void)nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
@@ -229,8 +305,19 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
   maxrss=nco_mmr_rusage_prn((int)0);
 #endif /* !NCO_RUSAGE_DBG */
 
-  /* Free varible */
-  var=nco_var_free(var);
+
+  // save variable to output vector if new
+  if(!bdef) {
+    var->val.vp=(void*)nco_free(var->val.vp);
+    var->id=var_out_id;
+    Nvar=new NcapVar(var);
+    (void)prs_arg->ptr_var_vtr->push(Nvar);          
+  } else {
+    var=nco_var_free(var);
+  }
+
+  //Set flag -  indicates var is DEFINED && POPULATED
+  Nvar->flg_stt=2;
 
   return True;
 } /* end ncap_var_write() */
@@ -245,7 +332,20 @@ ncap_var_is_att( var_sct *var) {
   return False;
 }
 
+// initalize var to defaults & undefined to true;
+var_sct *
+ncap_var_udf(const char *var_nm)
+{ 
+  var_sct *var_ret;
 
+  var_ret=(var_sct *)nco_malloc(sizeof(var_sct));
+
+  // Set defaults 
+  (void)var_dfl_set(var_ret); 
+  var_ret->nm=strdup(var_nm);
+  var_ret->undefined=True;
+  return var_ret;
+}
 
 var_sct*
 ncap_att_get
@@ -281,15 +381,15 @@ ncap_att_get
   // maybe needed ?
   var_ret->nbr_dim=0;
 
-  var_ret->val.vp=(void *)nco_malloc(sz*nco_typ_lng(type));
-
-
-  rcd=nco_get_att(prs_arg->in_id,var_id,att_nm,var_ret->val.vp,type);
-  if (rcd !=NC_NOERR) {
+  // Fill with data if NOT an initial scan
+  if(!prs_arg->ntl_scn){
+   var_ret->val.vp=(void *)nco_malloc(sz*nco_typ_lng(type));
+   rcd=nco_get_att(prs_arg->in_id,var_id,att_nm,var_ret->val.vp,type);
+   if (rcd !=NC_NOERR) {
     var_ret=nco_var_free(var_ret);
     return (var_sct*)NULL;
+   }
   }
-
   return var_ret; 
 }
 
@@ -411,7 +511,7 @@ ncap_att_gnrl
 
     sz=var_vtr.size();
     for(idx=0; idx < sz ; idx++){
-      if( (var_vtr)[idx]->type != ncap_att) continue;
+      if( (var_vtr)[idx]->xpr_typ != ncap_att) continue;
       if( s_src == var_vtr[idx]->getVar() ){
         // Create string for new attribute
         s_fll= s_dst +"@"+(var_vtr[idx]->getAtt());
@@ -431,8 +531,9 @@ ncap_att_gnrl
         continue;
       } 
 
-      Nvar=new NcapVar( s_out,att_vtr[idx]); 
+      Nvar=new NcapVar(nco_var_dpl(att_vtr[idx]),s_out ); 
       prs_arg->ptr_var_vtr->push_ow(Nvar);
+      (void)nco_var_free(att_vtr[idx]);
     }
 
 
@@ -801,7 +902,7 @@ nco_att_lst_mk
   nm_id_sct *xtr_lst=NULL;  
   for(idx=0;idx<var_vtr.size();idx++){
     // Check for attribute
-    if( var_vtr[idx]->type !=ncap_att) continue;
+    if( var_vtr[idx]->xpr_typ !=ncap_att) continue;
     (void)strcpy(var_nm, var_vtr[idx]->getVar().c_str());
 
     rcd=nco_inq_varid_flg(out_id,var_nm,&var_id);
@@ -1364,6 +1465,14 @@ ncap_var_var_op   /* [fnc] Add two variables */
  
   var_sct *var_ret=(var_sct*)NULL;
 
+  //if inital scan than call up "shadow" function 
+  if(var1->val.vp == (void*)NULL){
+    var_ret=ncap_var_var_op_ntl(var1,var2,op);
+    return var_ret;
+  }
+   
+   
+
 
   //If var2 is null then we are dealing with a unary function
   if( var2 == NULL){ 
@@ -1484,6 +1593,82 @@ ncap_var_var_op   /* [fnc] Add two variables */
   }
 
 
+
+
+
+
+var_sct *             /* O [sct] Sum of input variables (var1+var2) INITIAL SCAN ONLY */
+ncap_var_var_op_ntl   /* [fnc] Add two variables */
+(var_sct *var1,       /* I [sct] Input variable structure containing first operand */
+ var_sct *var2,       /* I [sct] Input variable structure containing second operand */
+ int op)              /* Operation +-% */
+{ 
+  const char fnc_nm[]="ncap_var_var_op_ntl"; 
+
+  nco_bool vb1;
+  nco_bool vb2;
+ 
+
+  //If var2 is null then we are dealing with a unary function
+  if( var2 == NULL)
+    return var1;
+  
+
+
+  // deal with pwr fuction
+  if(op== CARET && var1->type < NC_FLOAT && var2->type <NC_FLOAT ) 
+    var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
+   
+  vb1 = ncap_var_is_att(var1);
+  vb2 = ncap_var_is_att(var2);
+
+  // var & var
+  if( !vb1 && !vb2 ) { 
+    if(var1->undefined ||var2->undefined){
+      var1->undefined=True;
+      var2=nco_var_free(var2);
+      return var1;
+    }
+
+    (void)ncap_var_retype(var1,var2);
+    // Do variable conformance with empty variables
+    if(var1->nbr_dim > var2->nbr_dim) {
+      var2=nco_var_free(var2);
+      return var1;
+    }else{
+      var1=nco_var_free(var1);
+      return var2;
+    }
+
+  }
+    // var & att
+      else if( !vb1 && vb2 ){ 
+        var2=nco_var_free(var2);    
+        return var1;
+      }   
+    // att & var
+      else if( vb1 && !vb2){
+      var1=nco_var_free(var1);
+      return var2;  
+      }
+    // att && att
+      else if (vb1 && vb2) {
+      (void)ncap_var_retype(var1,var2);
+  
+      if(var1->sz >= var2->sz) {
+        var2=nco_var_free(var1);
+        return var1;
+      } else {
+        var1=nco_var_free(var1);
+        return var2;
+      }
+
+      }
+     
+}
+
+
+
 var_sct *          /* O [sct] Sum of input variables (var1+var2) */
 ncap_var_var_inc   /* [fnc] Add two variables */
 (var_sct *var1,    /* I [sct] Input variable structure containing first operand */
@@ -1503,6 +1688,24 @@ ncap_var_var_inc   /* [fnc] Add two variables */
 
   vb1 = ncap_var_is_att(var1);
 
+  // If initial Scan
+  if(prs_arg->ntl_scn){
+    
+    // deal with variable
+    if(!vb1){
+      var_ret=nco_var_dpl(var1); 
+      (void)ncap_var_write(var1,prs_arg);  
+      // deal with attribute 
+    }else{
+      var_ret=var1;
+    }
+    if(var2) 
+      var2=(var_sct*)nco_var_free(var2);
+  
+    return var_ret;
+  }   
+    
+   
   
   //Deal with unary functions first
   if(var2==NULL){
@@ -1518,7 +1721,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
       (void)ncap_var_write(var1,prs_arg);  
     }else{
       std::string sa(var1->nm);
-      NcapVar *Nvar=new NcapVar(sa,var1);
+      NcapVar *Nvar=new NcapVar(var1,sa);
       prs_arg->ptr_var_vtr->push_ow(Nvar);       
     }
    
@@ -1576,7 +1779,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
   }else{
     // deal with attribute
    std::string sa(var1->nm);
-   NcapVar *Nvar=new NcapVar(sa,var1);
+   NcapVar *Nvar=new NcapVar(var1,sa);
    prs_arg->ptr_var_vtr->push_ow(Nvar);       
 
   }
@@ -1724,6 +1927,8 @@ prs_sct *prs_arg)
     var->val.vp=(void*)NULL;
     goto end_var;
   }
+
+  
 
   /* Allocate space for variable values 
      fxm: more efficient and safer to use nco_calloc() and not fill with values? */
