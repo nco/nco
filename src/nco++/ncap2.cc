@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.24 2006-10-20 00:13:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.25 2006-10-20 15:34:14 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -108,7 +108,7 @@ main(int argc,char **argv)
   nco_bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   nco_bool ATT_PROPAGATE=True;        
   nco_bool ATT_INHERIT=True;          
-  nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
+  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
   
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.24 2006-10-20 00:13:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.24 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.25 2006-10-20 15:34:14 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.25 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -142,6 +142,10 @@ main(int argc,char **argv)
   
   // Holder for attributtes and vectors
   NcapVarVector var_vtr;
+  
+  // Holder for attributtes and vectors in FIRST PARSE
+  NcapVarVector int_vtr;
+
 
   extern char *optarg;
   extern int optind;
@@ -538,7 +542,7 @@ main(int argc,char **argv)
   prs_arg.ptr_dmn_out_vtr=&dmn_out_vtr;
   prs_arg.ptr_sym_vtr=&sym_vtr;
   prs_arg.ptr_var_vtr=&var_vtr;
-  
+  prs_arg.ptr_int_vtr=&int_vtr;
   prs_arg.ntl_scn=False;   //[flg] Initial scan of script */
   prs_arg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
   prs_arg.ATT_PROPAGATE=ATT_PROPAGATE;      
@@ -698,7 +702,7 @@ main(int argc,char **argv)
   for(idx=0;idx<var_vtr.size();idx++){
 
     // Check if attrribute
-    if( var_vtr[idx]->type != ncap_att) continue;
+    if( var_vtr[idx]->xpr_typ != ncap_att) continue;
    
     att_item.att_nm=strdup(var_vtr[idx]->getAtt().c_str());
     att_item.var_nm=strdup(var_vtr[idx]->getVar().c_str());
