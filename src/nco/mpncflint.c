@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.43 2006-09-12 19:30:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.44 2006-10-20 00:13:01 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.43 2006-09-12 19:30:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.43 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.44 2006-10-20 00:13:01 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.44 $";
   const char * const opt_sht_lst="4ACcD:d:Fhi:l:Oo:p:rRSt:v:xw:-:";
   
   dmn_sct **dim;
@@ -198,9 +198,9 @@ main(int argc,char **argv)
       {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
       {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
       {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-      {"drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
-      {"dirty",no_argument,0,0}, /* [flg] Exit with dirty memory */
-      {"mmr_drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
+      {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+      {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+      {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       /* Long options with argument, no short option counterpart */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},

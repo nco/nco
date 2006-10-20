@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.98 2006-09-15 19:25:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.99 2006-10-20 00:13:01 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.98 2006-09-15 19:25:57 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.98 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.99 2006-10-20 00:13:01 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.99 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -189,9 +189,9 @@ main(int argc,char **argv)
       {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
       {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
       {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-      {"drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
-      {"dirty",no_argument,0,0}, /* [flg] Exit with dirty memory */
-      {"mmr_drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
+      {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+      {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+      {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"ddra",no_argument,0,0}, /* [flg] DDRA diagnostics */
       {"mdl_cmp",no_argument,0,0}, /* [flg] DDRA diagnostics */
       /* Long options with argument, no short option counterpart */

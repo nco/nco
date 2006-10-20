@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.23 2006-09-13 04:39:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.24 2006-10-20 00:13:01 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.23 2006-09-13 04:39:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.23 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.24 2006-10-20 00:13:01 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.24 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -238,9 +238,9 @@ main(int argc,char **argv)
       {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
       {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
       {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-      {"drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
-      {"dirty",no_argument,0,0}, /* [flg] Exit with dirty memory */
-      {"mmr_drt",no_argument,0,0}, /* [flg] Exit with dirty memory */
+      {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+      {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+      {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       /* Long options with argument, no short option counterpart */
       {"fl_fmt",required_argument,0,0},
       {"file_format",required_argument,0,0},
