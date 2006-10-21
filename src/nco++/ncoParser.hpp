@@ -2,7 +2,7 @@
 #define INC_ncoParser_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.6 (20060530): "ncoGrammer.g" -> "ncoParser.hpp"$ */
+/* $ANTLR 2.7.5 (20050629): "ncoGrammer.g" -> "ncoParser.hpp"$ */
 #include <antlr/TokenStream.hpp>
 #include <antlr/TokenBuffer.hpp>
 #include "ncoParserTokenTypes.hpp"
@@ -93,10 +93,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 78;
+	static const int NUM_TOKENS = 79;
 #else
 	enum {
-		NUM_TOKENS = 78
+		NUM_TOKENS = 79
 	};
 #endif
 	

@@ -1,4 +1,4 @@
-/* $ANTLR 2.7.6 (20060530): "ncoGrammer.g" -> "ncoParser.cpp"$ */
+/* $ANTLR 2.7.5 (20050629): "ncoGrammer.g" -> "ncoParser.cpp"$ */
 #include "ncoParser.hpp"
 #include <antlr/NoViableAltException.hpp>
 #include <antlr/SemanticException.hpp>
@@ -333,7 +333,7 @@ void ncoParser::hyper_slb() {
 		ANTLR_USE_NAMESPACE(antlr)RefAST tmp15_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
 		if ( inputState->guessing == 0 ) {
 			tmp15_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp15_AST);
+			astFactory->addASTChild(currentAST, tmp15_AST);
 		}
 		match(VAR_ID);
 		break;
@@ -343,7 +343,7 @@ void ncoParser::hyper_slb() {
 		ANTLR_USE_NAMESPACE(antlr)RefAST tmp16_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
 		if ( inputState->guessing == 0 ) {
 			tmp16_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp16_AST);
+			astFactory->addASTChild(currentAST, tmp16_AST);
 		}
 		match(ATT_ID);
 		break;
@@ -460,7 +460,7 @@ void ncoParser::cast_slb() {
 		ANTLR_USE_NAMESPACE(antlr)RefAST tmp20_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
 		if ( inputState->guessing == 0 ) {
 			tmp20_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp20_AST);
+			astFactory->addASTChild(currentAST, tmp20_AST);
 		}
 		match(VAR_ID);
 		break;
@@ -470,7 +470,7 @@ void ncoParser::cast_slb() {
 		ANTLR_USE_NAMESPACE(antlr)RefAST tmp21_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
 		if ( inputState->guessing == 0 ) {
 			tmp21_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp21_AST);
+			astFactory->addASTChild(currentAST, tmp21_AST);
 		}
 		match(ATT_ID);
 		break;
@@ -1700,7 +1700,7 @@ void ncoParser::imaginary_token() {
 
 void ncoParser::initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory )
 {
-	factory.setMaxNodeType(77);
+	factory.setMaxNodeType(78);
 }
 const char* ncoParser::tokenNames[] = {
 	"<0>",
@@ -1781,6 +1781,7 @@ const char* ncoParser::tokenNames[] = {
 	"NUMBER",
 	"VAR_ATT",
 	"DIM_VAL",
+	"LMT_DMN",
 	0
 };
 

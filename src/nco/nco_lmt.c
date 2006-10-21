@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.50 2006-05-07 21:52:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.51 2006-10-21 00:49:11 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -844,7 +844,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
      does not attempt to validate dimensions or their ranges
      against those present in input netCDF file. */
   
-  /* Valid syntax adheres to nm,[min_sng][,[max_sng]][,srd_sng] */
+  /* Valid syntax adheres to nm,[min_sng][,[max_sng[,[srd_sng]]]] */
   
   void nco_usg_prn(void);
   
@@ -868,10 +868,11 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
        arg_nbr < 2 || /* Need more than just dimension name */
        arg_nbr > 4 || /* Too much information */
        arg_lst[0] == NULL || /* Dimension name not specified */
+       (arg_nbr == 2 && arg_lst[1] == NULL) || /* No min specified */
        (arg_nbr == 3 && arg_lst[1] == NULL && arg_lst[2] == NULL) || /* No min or max when stride not specified */
        (arg_nbr == 4 && arg_lst[3] == NULL) || /* Stride should be specified */
        False){
-      (void)fprintf(stdout,"%s: ERROR in hyperslab specification for dimension %s\n",prg_nm_get(),lmt_arg[idx]);
+      (void)fprintf(stdout,"%s: ERROR in hyperslab specification for dimension %s\n%s: HINT Conform request to hyperslab documentation at http://nco.sf.net#hyp\n",prg_nm_get(),lmt_arg[idx],prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end if */
     

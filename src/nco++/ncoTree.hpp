@@ -3,7 +3,7 @@
 
 #include <antlr/config.hpp>
 #include "ncoParserTokenTypes.hpp"
-/* $ANTLR 2.7.6 (20060530): "ncoGrammer.g" -> "ncoTree.hpp"$ */
+/* $ANTLR 2.7.5 (20050629): "ncoGrammer.g" -> "ncoTree.hpp"$ */
 #include <antlr/TreeParser.hpp>
 
 #line 1 "ncoGrammer.g"
@@ -262,6 +262,7 @@ public:
 	}
 	public: int  lmt_peek(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: void statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
+	public: var_sct * assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * out(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
@@ -277,10 +278,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 78;
+	static const int NUM_TOKENS = 79;
 #else
 	enum {
-		NUM_TOKENS = 78
+		NUM_TOKENS = 79
 	};
 #endif
 	
