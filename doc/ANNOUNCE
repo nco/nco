@@ -1,23 +1,21 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.188 2006-09-26 00:47:53 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.189 2006-10-21 00:54:56 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.6 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release supports powerful new ncap2 features such as array
-initialization:
+This release supports powerful new ncap2 features such as fxm
 
-defdim("lon",4);a1[$lon]={0,90,180,270};
+
 
 Build/runtime changes:
 
-1. Support array initialization in ncap2
-   
-2. Update netCDF4 support to alpha16
+1. Update netCDF4 support to alpha17
 
-3. Quiet output of common ncks and ncatted operations to reduce user paranoia
-   Previous INFO messages now seen only with dbg_lvl > 0
+2. Die gracefully rather than segfault on mal-formed hyperslab strings
+
+3. Document hdr_pad options
 
 4. 
 

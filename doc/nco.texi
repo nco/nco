@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.380 2006-10-20 03:01:46 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.381 2006-10-21 00:54:56 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3157,6 +3157,7 @@ lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0
 @html
 <a name="dmn"></a> <!-- http://nco.sf.net/nco.html#dmn -->
 <a name="-d"></a> <!-- http://nco.sf.net/nco.html#-d -->
+<a name="hyp"></a> <!-- http://nco.sf.net/nco.html#hyp -->
 @end html
 @node Hyperslabs, Multislabs, C and Fortran Index Conventions, Common features
 @section Hyperslabs 

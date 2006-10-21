@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.825 2006-10-20 20:03:32 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.826 2006-10-21 00:54:56 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -536,9 +536,6 @@ nco779. Add non-record stride checks to regression tests e.g.,
 	ncks -C -v three_dmn_rec_var ~/foo.nc
 nco780. bm: ncap regression test 8 fails because of quieter info messages
 nco781. Add ncks option to suppress creating temporary output file in -A mode, simply copy input file first
-nco782. --enable-optimize-custom fails with netCDF4 which shadows "access" variable
-nco783. Print error instead of segfault on mal-formed hyperslab specs., e.g.,
-        ncks -O -D 5 -d time, ~/nco/data/in.nc ~/foo.nc
 nco784. 
 ************************************************************************
 End ncoXXX TODOs
