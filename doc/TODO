@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.826 2006-10-21 00:54:56 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.827 2006-10-23 17:37:13 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -535,7 +535,7 @@ nco779. Add non-record stride checks to regression tests e.g.,
 	ncrcat -O -v three_dmn_rec_var -d lon,,,2 -p ~/nco/data in.nc in.nc ~/foo.nc
 	ncks -C -v three_dmn_rec_var ~/foo.nc
 nco780. bm: ncap regression test 8 fails because of quieter info messages
-nco781. Add ncks option to suppress creating temporary output file in -A mode, simply copy input file first
+nco781. Add ncks option to suppress creating temporary output file in -A mode, simply copy input file first? Seems unlikely this will save time.
 nco784. 
 ************************************************************************
 End ncoXXX TODOs
