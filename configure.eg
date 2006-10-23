@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.131 2006-10-17 05:22:23 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.132 2006-10-23 22:13:10 zender Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -475,6 +475,10 @@ End LINUXSPARC64
 ************************************************************************
 Start MACOSX
 Status: works.  rorik Thu Oct 30 12:09:15 AKST 2003
+MACOSX requires netCDF3.x be built with CFLAGS=-fno-common to link with NCO 
+This may also be the case for netCDF4.
+NCO's configure detects MACOSX adds '-fno-common' automatically to CFLAGS
+MACOSX also requires '--disable-shared' on the configure line
 ************************************************************************
 zender@cg1:~/nco/bld$ ~/sh/pvmgetarch;uname -a;~/nco/autobld/config.guess
 MACOSX
@@ -491,14 +495,6 @@ make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
-
-hjm++
-MACOSX rquires CFLAGS=-fno-common for building netcdf3.x to allow linking with nco
-this may also be the case for netcdf4/hdf5
-MACOSX is detected and the '-fno-common' is added automatically to CFLAGS in nco's configure.
-ALso requires '--disable-shared' on the configure line.
-hjm--
-
 ************************************************************************
 End MACOSX
 ************************************************************************
