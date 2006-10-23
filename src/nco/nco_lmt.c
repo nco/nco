@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.51 2006-10-21 00:49:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.52 2006-10-23 00:44:35 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -844,7 +844,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
      does not attempt to validate dimensions or their ranges
      against those present in input netCDF file. */
   
-  /* Valid syntax adheres to nm,[min_sng][,[max_sng[,[srd_sng]]]] */
+  /* Valid syntax adheres to nm,[min_sng][,[max_sng][,[srd_sng]]] */
   
   void nco_usg_prn(void);
   
