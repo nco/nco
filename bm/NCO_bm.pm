@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.62 2006-08-30 20:09:02 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.63 2006-10-24 17:21:38 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -291,25 +291,27 @@ sub fl_mk {
 # log it to common timing array
     $fl_tmg[$idx][0] = "$fl_mtd_sct[$idx][2]"; # name root
     $fl_tmg[$idx][1] = $elapsed; # creation time
-    if ($idx == 2) { # tms_lng needs some extra massaging
-# Now tms_lng ready for ncap'ing
-	if ($dbg_lvl > 0) {print "\nextra steps for tms_lng - ncecat...\n";}
+    if ($idx == 2) { # tms_lng needs extra massaging
+# tms_lng ready for ncap'ing
+	if ($dbg_lvl > 0) {print "extra steps for tms_lng - ncecat...\n";}
 	system "$pfx_cmd/ncecat -O -h $fl_in $fl_out";  # inserts a record dimension
-	if ($dbg_lvl > 0) {print "\nncpdq...\n";}
+	if ($dbg_lvl > 0) {print "ncpdq...\n";}
 	system "$pfx_cmd/ncpdq -O -h -a time,record $fl_in $fl_out"; # swaps time and 'record'
-	if ($dbg_lvl > 0) {print "\nncwa...\n";}
+	if ($dbg_lvl > 0) {print "ncwa...\n";}
 	system "$pfx_cmd/ncwa -O -h -a record $fl_in $fl_out"; # averages 'record'
     }
     print "\n==== Populating $fl_out file.\nTiming results:\n";
-#print "fl_mk: pfx_cmd = $pfx_cmd\n";
-    print "Executing: $tmr_app $pfx_cmd/ncap -h -O $nco_D_flg -s $fl_mtd_sct[$idx][3] $fl_in $fl_out\n";
     if ($hiresfound) {$t0 = [gettimeofday()];}
     else {$t0 = time;}
-    system "$tmr_app $pfx_cmd/ncap -O -h -s $fl_mtd_sct[$idx][3] $fl_in $fl_out";
+# csz 20061024: Test whether ncap2 works as well as ncap here    
+#    system "$tmr_app $pfx_cmd/ncap -O -h -s $fl_mtd_sct[$idx][3] $fl_in $fl_out";
+#    print "Executing: $tmr_app $pfx_cmd/ncap -h -O $nco_D_flg -s $fl_mtd_sct[$idx][3] $fl_in $fl_out\n";
+    print "Executing: $tmr_app $pfx_cmd/ncap2 -h -O $nco_D_flg -s $fl_mtd_sct[$idx][3] $fl_in $fl_out\n";
+    system "$tmr_app $pfx_cmd/ncap2 -O -h -s $fl_mtd_sct[$idx][3] $fl_in $fl_out";
     if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday()]);}
     else {$elapsed = time - $t0;}
     $fl_tmg[$idx][2] = $elapsed; # population time
-    print "==========================\nEnd of $fl_mtd_sct[$idx][2] section\n==========================\n\n\n";
+    print "==========================\nEnd of $fl_mtd_sct[$idx][2] section\n==========================\n";
     return @fl_tmg;
 } # end sub fl_mk
 

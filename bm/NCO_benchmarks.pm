@@ -1,6 +1,6 @@
 package NCO_benchmarks;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.15 2006-08-23 04:42:14 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.16 2006-10-24 17:21:38 zender Exp $
 
 # Purpose: library module supporting nco_bm.pl benchmark and regression tests
 # File contains BENCHMARK code (as opposed to the REGRESSION tests in "NCO_rgr.pm")
@@ -108,7 +108,7 @@ sub benchmarks{
 if (0) { # DEBUGGING to skip these
 } # [DEBUGGING to skip these] down to here
 
-	#################### begin ncap benchmark hjm - needs to be verified.
+	#################### begin ncap benchmark
 	$opr_nm='ncap';
 	$dsc_sng = 'ncap long algebraic operation';
 	###################
@@ -151,7 +151,6 @@ if ($dbg_lvl >= 1) {print "paused after ncap - hit return to continue"; $wait = 
 
 if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
-
 	#################### begin ncea benchmark
 	$opr_nm='ncea';
 	$dsc_sng = 'ncea averaging 2^5 files';
@@ -170,7 +169,6 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
 if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
-
 
 	#################### begin ncecat benchmark
 	$opr_nm='ncecat';
@@ -191,8 +189,6 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
 if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
-
-
 
 	#################### begin ncflint benchmark  - needs to be verified and md5/wc sums created.
 	$opr_nm='ncflint';
