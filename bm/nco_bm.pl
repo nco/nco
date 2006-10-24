@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.144 2006-09-25 01:52:41 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.145 2006-10-24 21:59:52 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -68,6 +68,8 @@ $USER = $ENV{'USER'};
 $aix_mpi_nvr_pfx = '';
 $aix_mpi_sgl_nvr_pfx = '';
 $bch_flg=0; # [flg] Batch behavior
+$bm=0; # [flg] Perform benchmarks
+$rgr=0; # [flg] Perform regression tests
 $caseid = '';
 $dbg_lvl = 0; # [enm] Print tests during execution for debugging
 $dodap = 'FALSE'; # Unless redefined by the command line, it does not get reset
@@ -78,7 +80,7 @@ $fl_pth = '';
 $gnu_cut = 1;
 $md5 = 0;
 $mpi_fk = 0;
-$mpi_prc = 0; # by default, don't want no steekin MPI
+$mpi_prc = 0; # [flg] Use MPI
 $mpi_upx = '';
 $pfx_mpi = '';
 $nco_D_flg='--mmr_cln'; # Require operators to clean memory before exiting

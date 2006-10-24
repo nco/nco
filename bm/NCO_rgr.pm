@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.56 2006-09-26 00:47:53 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.57 2006-10-24 21:59:52 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -93,7 +93,7 @@ sub tst_rgr {
 # This stanza will not map to the way the SS is done - needs a %stdouterr% added but all the rest of them
 # have an ncks which triggers this addition from the sub tst_run() -> gnarly_pything.
 # this stanza also requires a script on the SS.
-    $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -v -S ncap.in $in_pth_arg in.nc %tempf_00%  %stdouterr%";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -S ncap.in $in_pth_arg in.nc %tempf_00%  %stdouterr%";
     $dsc_sng="running ncap.in script in nco_bm.pl";
     $tst_cmd[1] = "ncap: INFO Replacing missing value data in variable val_half_half";
 #	$tst_cmd[2] = "NO_SS";
@@ -103,7 +103,7 @@ sub tst_rgr {
     
 # printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
     
-    $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'tpt_mod=tpt%273.0f' $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'tpt_mod=tpt%273.0f' $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -v tpt_mod -s '%.1f ' %tempf_00%";
     $dsc_sng="Testing float modulo float";
     $tst_cmd[2] = "0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 ";
@@ -113,7 +113,7 @@ sub tst_rgr {
     
 #printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
 
-    $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=log(e_flt)^1' $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=log(e_flt)^1' $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -v foo -s '%.6f\\n' %tempf_00%";
     $dsc_sng="Testing foo=log(e_flt)^1 (fails on AIX TODO ncap57)";
     $tst_cmd[2] = "1.000000";
@@ -123,7 +123,7 @@ sub tst_rgr {
 #print "paused - hit return to continue"; my $wait = <STDIN>;
     
 # where did e_dbl tst_run??  it's in in.cdl but gets lost thru the rgrs...?
-    $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=log(e_dbl)^1' $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=log(e_dbl)^1' $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%.12f\\n' %tempf_00%";
     $dsc_sng="Testing foo=log(e_dbl)^1";
     $tst_cmd[2] = "1.000000000000";
@@ -131,7 +131,7 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-    $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=4*atan(1)' $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=4*atan(1)' $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%.12f\\n' %tempf_00%";
     $dsc_sng="Testing foo=4*atan(1)";
     $tst_cmd[2] = "3.141592741013";
@@ -139,7 +139,7 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-    $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=erf(1)' $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=erf(1)' $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%.12f\\n' %tempf_00%";
     $dsc_sng="Testing foo=erf(1) (fails on AIX TODO ncap57)";
     $tst_cmd[2] = "0.842701";
@@ -148,7 +148,7 @@ sub tst_rgr {
     $#tst_cmd=0;  # Reset array
     
     #fails - wrong result ???
-    $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=gamma(0.5)' $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=gamma(0.5)' $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%.12f\\n' %tempf_00%";
     $dsc_sng="Testing foo=gamma(0.5) (fails on AIX TODO ncap57)";
     $tst_cmd[2] = "1.772453851";
@@ -156,7 +156,7 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-    $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'pi=4*atan(1);foo=sin(pi/2)' $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'pi=4*atan(1);foo=sin(pi/2)' $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -v foo -s '%.12f\\n' %tempf_00%";
     $dsc_sng="Testing foo=sin(pi/2)";
     $tst_cmd[2] = "1.000000000000";
@@ -164,7 +164,7 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
-    $tst_cmd[0]="ncap -h -O $fl_fmt $nco_D_flg -C -v -s 'pi=4*atan(1);foo=cos(pi)' $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'pi=4*atan(1);foo=cos(pi)' $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -v foo -s '%.12f\\n' %tempf_00%";
     $dsc_sng="Testing foo=cos(pi)";
     $tst_cmd[2] = "-1.000000000000";

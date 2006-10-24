@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.63 2006-10-24 17:21:38 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.64 2006-10-24 21:59:52 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -124,16 +124,13 @@ where (options) are:
 
 nco_bm.pl is a semi-automated script for testing the accuracy and
 robustness of the NCO (netCDF Operators), typically after they are
-built, using the 'make benchmark' command.  In this mode, a user should
-never have to see this message, so this is all I'll say about it.
+built, using the 'make benchmark' command.
+This script can also collect benchmark statistics via sending 
+test results to a UDP server.
 
-In NCO debug/testing  mode, it tries to validate the NCOs for both
-accuracy and robustness.  It also can collect benchmark statistics via
-sending test results to a UDP server.
-
-NB: When adding tests, be sure to use -O to overwrite files.
-Otherwise, script hangs waiting for interactive response to
-overwrite queries. Also, unless history is required, use '-h' to inhibit
+NB: When adding tests, use NCO's '-O' switch to overwrite files.
+Otherwise, the script hangs waiting for interactive responses.
+Also, unless history is required, use '-h' to inhibit
 appending history to file.
 
 This script is part of the netCDF Operators package:
@@ -303,9 +300,7 @@ sub fl_mk {
     print "\n==== Populating $fl_out file.\nTiming results:\n";
     if ($hiresfound) {$t0 = [gettimeofday()];}
     else {$t0 = time;}
-# csz 20061024: Test whether ncap2 works as well as ncap here    
-#    system "$tmr_app $pfx_cmd/ncap -O -h -s $fl_mtd_sct[$idx][3] $fl_in $fl_out";
-#    print "Executing: $tmr_app $pfx_cmd/ncap -h -O $nco_D_flg -s $fl_mtd_sct[$idx][3] $fl_in $fl_out\n";
+# csz 20061024: Changed ncap to ncap2 with no speed penalty (double-parsing works)
     print "Executing: $tmr_app $pfx_cmd/ncap2 -h -O $nco_D_flg -s $fl_mtd_sct[$idx][3] $fl_in $fl_out\n";
     system "$tmr_app $pfx_cmd/ncap2 -O -h -s $fl_mtd_sct[$idx][3] $fl_in $fl_out";
     if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday()]);}

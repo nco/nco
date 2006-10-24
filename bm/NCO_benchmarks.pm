@@ -1,6 +1,6 @@
 package NCO_benchmarks;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.16 2006-10-24 17:21:38 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.17 2006-10-24 21:59:52 zender Exp $
 
 # Purpose: library module supporting nco_bm.pl benchmark and regression tests
 # File contains BENCHMARK code (as opposed to the REGRESSION tests in "NCO_rgr.pm")
@@ -108,13 +108,15 @@ sub benchmarks{
 if (0) { # DEBUGGING to skip these
 } # [DEBUGGING to skip these] down to here
 
-	#################### begin ncap benchmark
-	$opr_nm='ncap';
-	$dsc_sng = 'ncap long algebraic operation';
+	#################### begin ncap2 benchmark
+	$opr_nm='ncap2';
+	$dsc_sng = 'ncap2 long algebraic operation';
 	###################
 	dbg_msg(2,"mpi_prc = $mpi_prc\nopr_sng_mpi = $opr_sng_mpi");
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-		$tst_cmd[0] = "ncap -h -O $fl_fmt $nco_D_flg -s  \"nu_var1[time,lev,lat,lon]=d4_01*d4_02*(d4_03^2)-(d4_05/d4_06)\" 	-s \"nu_var2[time,lev,lat,lon]=(d4_13/d4_02)*((d4_03^2)-(d4_05/d4_06))\" -s \"nu_var3[time,lat,lon]=(d3_08*d3_01)-(d3_05^3)-(d3_11*d3_16)\" -s \"nu_var4[time,lat,lon]=(d3_08+d3_01)-((d3_05*3)-d3_11-17.33)\" $in_pth_arg gcm_T85.nc %tempf_01%";
+# csz 20061024: Changed ncap to ncap2 with no 40% speed penalty
+# Not sure why ncap2 is much slower at long arithmetic expressions
+		$tst_cmd[0] = "ncap2 -h -O $fl_fmt $nco_D_flg -s \"nu_var1[time,lev,lat,lon]=d4_01*d4_02*(d4_03^2)-(d4_05/d4_06)\" -s \"nu_var2[time,lev,lat,lon]=(d4_13/d4_02)*((d4_03^2)-(d4_05/d4_06))\" -s \"nu_var3[time,lat,lon]=(d3_08*d3_01)-(d3_05^3)-(d3_11*d3_16)\" -s \"nu_var4[time,lat,lon]=(d3_08+d3_01)-((d3_05*3)-d3_11-17.33)\" $in_pth_arg gcm_T85.nc %tempf_01%";
 		$tst_cmd[1] = "ncwa -O $omp_flg -y sqrt -a lat,lon %tempf_01% %tempf_02%";
 		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00  %tempf_02% ";
 # as noted above, for serverside prep, the final '%stdouterr%' il be added in SS_gnarly_pything()
@@ -127,9 +129,9 @@ if (0) { # DEBUGGING to skip these
 		tst_run(\@tst_cmd);
 		$#tst_cmd=0; # reset the array
 		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng]\n";}
-	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
+	} else {print "Skipping Benchmark because $opr_nm does not support MPI\n";}
 
-if ($dbg_lvl >= 1) {print "paused after ncap - hit return to continue"; $wait = <STDIN>;}
+if ($dbg_lvl >= 1) {print "paused after ncap2 - hit return to continue"; $wait = <STDIN>;}
 
 	#################### begin ncbo benchmark
 	$opr_nm='ncbo';
