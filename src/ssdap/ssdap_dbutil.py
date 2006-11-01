@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.18 2006-10-20 22:27:46 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.19 2006-11-01 01:44:29 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -245,7 +245,7 @@ class JobPersistence:
             cur.execute("COMMIT;")
             cur.close()
             pass
-            
+        
         pass # end of PreparationTransaction class def
     class FetchAndLockTransaction(Transaction):
         """An interface class for a transaction that fetches the next ready
@@ -311,7 +311,7 @@ class JobPersistence:
             connection.isolation_level = None
             pass
                 
-        def execute(self, concretename):
+        def execute(self, concretename, cmdlinenum = None):
             cur = self.connection.cursor()
             self.cursor = cur # in case transaction gets rolled back
             cur.execute("BEGIN EXCLUSIVE;")
@@ -342,17 +342,59 @@ class JobPersistence:
             (taskrow,linenum,concretename) VALUES (?,?,?)"""
             if len(newReady) > 0:
                 cur.executemany(readyTemplate, newReady)
+            # update the useList
+            self.updateUseList(concretename)
             cur.execute("COMMIT;")
             etime = time.time()
             print >>open("/tmp/foo1","a"), os.getpid(),"unlock after", etime-stime
             cur.close()
-            pass        
+            pass
+        def updateUseList(self, concretename, linenum=None):
+            # insert inputfilenames for the cmd(by linenum)
+            # which produced this output file.
+            sql = """INSERT INTO useList
+            SELECT concretename FROM cmdFileRelation
+            WHERE output=0 AND taskrow=? AND linenum=(SELECT linenum
+            FROM cmdFileRelation WHERE taskrow=? AND output=1
+            AND concretename=?);""" # taskrow,taskrow,concretename(output)
+            # not sure how expensive this will be...
+            # may want index on taskrow,concretename
+
+            # find all of our inputs
+            sql = """SELECT concretename FROM cmdFileRelation
+            WHERE output=0 AND taskrow=? AND linenum=(SELECT linenum
+            FROM cmdFileRelation WHERE taskrow=? AND output=1
+            AND concretename=?);""" # taskrow,taskrow,concretename(output)
+            cur.execute(sql, (taskrow,taskrow,concretename))
+            inputlist = cur.fetchall()
+            for i in inputlist:
+                # get usecount
+                sql = """select count from useCount where concretename=?;"
+                cur.execute(sql, i)
+                c = cur.fetchall()
+                # get current count
+                sql = "select count(*) from uselist where concretename=?;"
+                cur.execute(sql, i)
+                cc = cur.fetchall()
+                if (cc[0] + 1) == c[0]: # could use >=
+                    logit("reaping file %s",concretename)
+                    #delete the file, then update its filestate.
+                    queueForDeletion(concretename)
+                else:
+                    assert cc[0] < c[0] # assert that our count isn't corrupt
+                    updateUseListHelper(concretename)
+                
+            # once inserted, for each of the files, if the number of
+            # entries is the same as the number of times the file
+            # should be used (its usecount), then we can delete it.
+            "select concretename from ZXCVSD where (select count(*) from uselist where concretename=?) == select count from usecount where name=?)"
+            
         pass # end of CommitCmdResultTransaction class def
     class CommitAndFetchTransaction(Transaction):
         """A combo transaction that commits a command and returns the first cmd
         made ready as a result, if it exists.  If one exists, this saves
         a db transaction to fetch the next ready command.
-        UNFINISHED"""
+        """
         def __init__(self, connection):
             self.connection = connection
             connection.isolation_level = None
@@ -434,7 +476,36 @@ class JobPersistence:
             cur.execute(sql,(self.taskRow,))
             result = cur.fetchall()[0][0]
             cur.execute("COMMIT;")
+            cur.close()
             return result
+        pass
+    class SetFileStateTransaction:
+        """A transaction that makes a change to a filestate"""
+        def __init__(self, connection):
+            self.connection = connection
+            connection.isolation_level = None
+            self.cursor = None
+            pass
+        def setByName(self, concretename, newState):
+            """Sets the state of a file in the fileState table.""" 
+            cur = self.connection.cursor()
+            cur.execute("BEGIN IMMEDIATE;")
+            cur.execute("UPDATE fileState SET state=? WHERE concretename=?;",
+                        (newState,concretename))
+            cur.execute("COMMIT;")
+            cur.close()
+            cur = None
+            return True
+        def setById(self, idtoken, newState):
+            """Sets the state of a file in the fileState table.""" 
+            cur = self.connection.cursor()
+            cur.execute("BEGIN IMMEDIATE;")
+            cur.execute("UPDATE fileState SET state=? WHERE rowid=?;",
+                        (newState,idtoken))
+            cur.execute("COMMIT;")
+            cur.close()
+            cur = None
+            return True
         pass
     
     
@@ -524,6 +595,9 @@ class JobPersistence:
     def newPollingTransaction(self):
         return self.PollingTransaction(self.connection(),
                                        self.currentTaskRow)
+    def newSetFileStateTransaction(self):
+        return self.SetFileStateTransaction(self.connection())
+
     def buildTables(self):
         """Builds the set of tables needed for async operation"""
         ##
