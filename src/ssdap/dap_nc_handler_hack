@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.50 2006-11-01 01:57:42 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.51 2006-11-01 02:05:34 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -1097,7 +1097,7 @@ class ScriptingEnv:
                     self.fileMap.pop(ScriptingEnv.SCRIPT_OUTFILE)
                     #os.wait()
             else:
-                if False: # while debugging, don't detach output...
+                if True: # while debugging, don't detach output...
                     devnull = os.open("/dev/null", os.O_RDONLY)
                     os.dup2(devnull, sys.stdin.fileno())
                     os.dup2(devnull, sys.stdout.fileno()) # silence stdout
@@ -1530,8 +1530,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2006-11-01 01:57:42 $
-   Version:	$Revision: 1.50 $
+   Date:	$Date: 2006-11-01 02:05:34 $
+   Version:	$Revision: 1.51 $
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()
