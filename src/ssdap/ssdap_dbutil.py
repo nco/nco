@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.19 2006-11-01 01:44:29 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.20 2006-11-01 01:57:42 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -343,7 +343,7 @@ class JobPersistence:
             if len(newReady) > 0:
                 cur.executemany(readyTemplate, newReady)
             # update the useList
-            self.updateUseList(concretename)
+            #self.updateUseList(concretename) # freeze for benchmarking 10/31/06
             cur.execute("COMMIT;")
             etime = time.time()
             print >>open("/tmp/foo1","a"), os.getpid(),"unlock after", etime-stime
@@ -369,7 +369,7 @@ class JobPersistence:
             inputlist = cur.fetchall()
             for i in inputlist:
                 # get usecount
-                sql = """select count from useCount where concretename=?;"
+                sql = "select count from useCount where concretename=?;"
                 cur.execute(sql, i)
                 c = cur.fetchall()
                 # get current count
@@ -387,14 +387,13 @@ class JobPersistence:
             # once inserted, for each of the files, if the number of
             # entries is the same as the number of times the file
             # should be used (its usecount), then we can delete it.
-            "select concretename from ZXCVSD where (select count(*) from uselist where concretename=?) == select count from usecount where name=?)"
-            
+            dummy = """select concretename from ZXCVSD where (select count(*) from uselist where concretename=?) == select count from usecount where name=?)"""
+            pass
         pass # end of CommitCmdResultTransaction class def
     class CommitAndFetchTransaction(Transaction):
         """A combo transaction that commits a command and returns the first cmd
         made ready as a result, if it exists.  If one exists, this saves
-        a db transaction to fetch the next ready command.
-        """
+        a db transaction to fetch the next ready command. """
         def __init__(self, connection):
             self.connection = connection
             connection.isolation_level = None
