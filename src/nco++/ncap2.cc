@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.25 2006-10-20 15:34:14 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.26 2006-11-02 01:38:32 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -26,7 +26,7 @@
    Please contact the NCO project at http://nco.sf.net or write to
    Charlie Zender
    Department of Earth System Science
-   University of California at Irvine
+   University of California, Irvine
    Irvine, CA 92697-3100 */
 
 /* Usage:
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.25 2006-10-20 15:34:14 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.25 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.26 2006-11-02 01:38:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.26 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */

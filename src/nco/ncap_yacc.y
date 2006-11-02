@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.44 2006-04-06 22:56:21 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.45 2006-11-02 01:38:32 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -26,7 +26,7 @@
    Please contact the NCO project at http://nco.sf.net or write to
    Charlie Zender
    Department of Earth System Science
-   University of California at Irvine
+   University of California, Irvine
    Irvine, CA 92697-3100 */
 
 /* Usage:

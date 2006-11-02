@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.198 2006-10-20 00:13:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.199 2006-11-02 01:38:32 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -26,7 +26,7 @@
    Please contact the NCO project at http://nco.sf.net or write to
    Charlie Zender
    Department of Earth System Science
-   University of California at Irvine
+   University of California, Irvine
    Irvine, CA 92697-3100 */
 
 /* Usage:
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.198 2006-10-20 00:13:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.198 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.199 2006-11-02 01:38:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.199 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
 #if defined(__cplusplus) || defined(PGI_CC)

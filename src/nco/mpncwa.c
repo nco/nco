@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.57 2006-10-20 00:13:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.58 2006-11-02 01:38:32 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -27,7 +27,7 @@
    Please contact the NCO project at http://nco.sf.net or write to
    Charlie Zender
    Department of Earth System Science
-   University of California at Irvine
+   University of California, Irvine
    Irvine, CA 92697-3100 */
 
 /* fxm: 19981202 Deactivated -n and -W switches while I rethink the normalization switches */
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.57 2006-10-20 00:13:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.57 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.58 2006-11-02 01:38:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.58 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)

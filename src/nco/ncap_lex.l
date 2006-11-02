@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.57 2006-08-25 15:53:15 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.58 2006-11-02 01:38:32 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -25,7 +25,7 @@
    Please contact the NCO project at http://nco.sf.net or write to
    Charlie Zender
    Department of Earth System Science
-   University of California at Irvine
+   University of California, Irvine
    Irvine, CA 92697-3100 */
 
   /* Example lexers:

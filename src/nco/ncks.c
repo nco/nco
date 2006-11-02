@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.165 2006-10-20 00:13:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.166 2006-11-02 01:38:32 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -27,7 +27,7 @@
    Please contact the NCO project at http://nco.sf.net or write to
    Charlie Zender
    Department of Earth System Science
-   University of California at Irvine
+   University of California, Irvine
    Irvine, CA 92697-3100 */
 
 /* Usage:
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.165 2006-10-20 00:13:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.165 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.166 2006-11-02 01:38:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.166 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.382 2006-10-23 00:44:35 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.383 2006-11-02 01:38:32 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -23,7 +23,7 @@ with the help of your suggestions, improvements, bug-reports, and patches.
 Charlie Zender <surname at uci dot edu> (yes, my surname is zender)
 Department of Earth System Science
 3200 Croul Hall
-University of California at Irvine
+University of California, Irvine
 Irvine, CA 92697-3100
 
 After editing any hyperlink locations, use 
@@ -236,7 +236,7 @@ with the help of your suggestions, improvements, bug-reports, and patches.@*
 Charlie Zender <surname at uci dot edu> (yes, my surname is zender)@*
 3200 Croul Hall@*
 Department of Earth System Science@*
-University of California at Irvine@*
+University of California, Irvine@*
 Irvine, CA 92697-3100@*
 
 @ignore
@@ -270,7 +270,7 @@ ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 
 @author by Charlie Zender
 @author Department of Earth System Science
-@author University of California at Irvine
+@author University of California, Irvine
 @html
 <p>WWW readers: Having trouble finding the section you want?</p> 
 <p>Search for keywords in the <a href="#index">(hyper) index</a> at the end</p>
@@ -289,7 +289,7 @@ and is consistent with @w{version 2} of @file{texinfo.tex}.
 Published by Charlie Zender@*
 Department of Earth System Science@*
 3200 Croul Hall@*
-University of California at Irvine@*
+University of California, Irvine@*
 Irvine, CA 92697-3100 USA@*
 
 Permission is granted to copy, distribute and/or modify this document
@@ -304,7 +304,7 @@ with the help of your suggestions, improvements, bug-reports, and patches.@*
 Charlie Zender <surname at uci dot edu> (yes, my surname is zender)@*
 Department of Earth System Science@*
 3200 Croul Hall@*
-University of California at Irvine@*
+University of California, Irvine@*
 Irvine, CA 92697-3100@*
 @sp 2
 @c Cover art by Robynn Rudel
