@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.360 2006-09-22 19:12:39 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.361 2006-11-02 00:52:41 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -327,9 +327,13 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 <hr></p>
 
 <!-- http://nco.sf.net#pub -->
-<dt><a name="Publications"></a><a name="pub"></a></dt>
+<dt><a name="Publications"></a><a name="pub"></a><a name="pubs"></a></dt>
 <h2>Publications</h2>
 <ul>
+<li><!-- ZeW07 --> <a name="ZeW07"></a> <!--http://www.ess.uci.edu/~zender#ZeW07 -->
+Zender, C.&nbsp;S., and D.&nbsp;L. Wang (2007), High performance distributed data reduction and analysis with the netCDF Operators (NCO), <i>Proceedings of the 23rd AMS Conference on Interactive Information and Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology</i>, 3B.4., January 14&ndash;18, San Antonio,&nbsp;TX. American Meteorological Society, AMS Press, Boston,&nbsp;MA.
+<a href="http://dust.ess.uci.edu/ppr/ppr_ZeW07.bib">BibTeX</a>
+<a href="http://dust.ess.uci.edu/ppr/ppr_ZeW07.pdf">PDF (CSZ)</a></li>
 <li><!-- Zen07 --> <a name="Zen07"></a> <!--http://www.ess.uci.edu/~zender#Zen07 -->
 Zender, C.&nbsp;S. (2006), netCDF Operators (NCO) for Analysis of Self-describing Gridded Geoscience Data, <i>Submitted to Environ. Modell. Softw.</i>.
 <a href="http://dust.ess.uci.edu/ppr/ppr_Zen07.bib">BibTeX</a>
