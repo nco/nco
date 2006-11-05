@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.23 2006-08-29 18:04:35 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.24 2006-11-05 06:55:57 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -561,7 +561,7 @@ ${MY_DPN_DIR}/%.d : %.cc
 	rm -f $*.i $*.o $*.u;
 endif # endif AIX VA Compiler Collection
 # GNU Compiler Collection
-ifneq (${null},$(findstring gcc,${CC}))
+ifeq (${CXX},g++)
  CFLAGS := -Wall -Wunused
 ifeq (${OPTS},O)
  CFLAGS += -O -g ${GCC_RCH_ARG}
@@ -705,7 +705,7 @@ endif
  CXXFLAGS := ${CFLAGS}
 endif # endif Comeau C Compiler
 # GNU Compiler Collection
-ifneq (${null},$(findstring gcc,${CC}))
+ifeq (${CXX},g++)
  CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
  CFLAGS := -Wall -Wno-unused-variable
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
