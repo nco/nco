@@ -64,14 +64,14 @@ block:
     { #block = #( [BLOCK, "block"], #block ); }
     ;
 
+
 if_stmt:
     IF^ LPAREN! expr RPAREN! statement 
-    ( (ELSE) => else_part
-     )?
-     ;
-
-else_part:
-    ELSE^ statement
+   ( //standard if-else ambiguity
+    options {
+             warnWhenFollowAmbig = false;
+                        } :
+   ELSE statement )?
      ;
 
 
@@ -200,6 +200,7 @@ options {
     k = 4;
     defaultErrorHandler=false;
     filter=BLASTOUT;
+    testLiterals=false;
 }
 
 
@@ -381,7 +382,7 @@ NUMBER:
 ;
 
 // Return var or attribute (var_nm@att_nm)
-VAR_ATT:  (LPH)(LPH|DGT)*   
+VAR_ATT options {testLiterals=true;} :  (LPH)(LPH|DGT)*   
             {// check function table
             if( prs_arg->ptr_sym_vtr->find($getText) !=NULL )
                $setType(FUNC);             
@@ -421,14 +422,6 @@ public:
         // then be defined 
         bcst=false;  
         ncoTree();
-    }
-
-public:
-    void run(RefAST tr){
-        while(tr) {
-          (void)statements(tr);   
-          tr=tr->getNextSibling();   
-        }
     }
 
 
@@ -619,6 +612,102 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
 
 
 
+public:
+    void run(RefAST tr){
+        while(tr) {
+          (void)statements(tr);   
+          tr=tr->getNextSibling();   
+        }
+    }
+
+public:
+    void run_dbl(RefAST tr,int icnt){
+     int idx=0;
+     RefAST ntr=tr;
+      
+     //small list dont bother with double parsing     
+     if(icnt <4) goto small;
+
+     //Initial scan
+     prs_arg->ntl_scn=True;
+     while(idx++ < icnt){
+       (void)statements(ntr);   
+       ntr=ntr->getNextSibling();   
+     }
+
+     //Define variables in output
+    (void)nco_redef(prs_arg->out_id);  
+    (void)ncap_def_ntl_scn(prs_arg);
+    (void)nco_enddef(prs_arg->out_id);  
+
+small: 
+     idx=0;
+     ntr=tr;
+     //Final scan
+     prs_arg->ntl_scn=False;
+     while(idx++ < icnt){
+       (void)statements(ntr);   
+       ntr=ntr->getNextSibling();   
+     }
+
+   }
+
+public:
+    void run_exe(RefAST tr){
+    // number of statements in block
+    int nbr_stmt=0;
+    int idx;
+    int icnt=0;
+    int gtyp;
+    
+    RefAST etr=ANTLR_USE_NAMESPACE(antlr)nullAST;
+    RefAST ntr;
+   
+    ntr=tr;
+    do nbr_stmt++; 
+    while(ntr=ntr->getNextSibling());        
+            
+     
+    
+    if(nbr_stmt <4){
+        prs_arg->ntl_scn=False;
+        ntr=tr;
+        do (void)statements(ntr);   
+        while(ntr=ntr->getNextSibling());   
+        goto exit;
+    }
+  
+    ntr=tr;
+
+    for(idx=0 ; idx < nbr_stmt; idx++){
+      gtyp=ntr->getType();
+      // we have hit an IF or a code block
+      if(gtyp==BLOCK || gtyp==IF ||gtyp==DEFDIM ) {
+        if(icnt>0) 
+         (void)run_dbl(etr,icnt);
+        icnt=0;
+        etr=ANTLR_USE_NAMESPACE(antlr)nullAST;; 
+        prs_arg->ntl_scn=False;
+        (void)statements(ntr);      
+       }
+
+       if(gtyp==EXPR || gtyp== NULL_NODE) 
+        if(icnt++==0) etr=ntr;
+        
+       
+      ntr=ntr->getNextSibling();
+      
+    } // end for
+    if(icnt >0)
+       (void)run_dbl(etr,icnt);      
+
+      
+exit: ;     
+            
+
+    } // end run_exe
+
+
 } // end native block
 
 
@@ -647,42 +736,52 @@ var_sct *var;
 }
     : blk:BLOCK { 
        //cout <<"Num of Children in block="<<blk->getNumberOfChildren()<<endl;
-       run(blk->getFirstChild());
+       run_exe(blk->getFirstChild());
             
                 }
 
     | exp:EXPR {
-        
-       if(exp->getFirstChild()->getType() == ASSIGN){
-          if(dbg_lvl_get() > 0){
-             dbg_prn("Type ASSIGN "+exp->getFirstChild()->getFirstChild()->getText());
-          }
-       }
        var=out(exp->getFirstChild());
        var=nco_var_free(var);
       }
               
 
     | iff:IF {
+    //if can have only 3 or 5 parts  , 1 node and 2 or 4 siblings
+    // IFF LOGICAL_EXP STATEMENT1 ELSE STATEMENT2
       bool br;
       var_sct *var1;
-      RefAST ex;      
+      RefAST dref;
 	  //Calculate logical expression
 	  var1= out( iff->getFirstChild());
 	  br=ncap_var_lgcl(var1);
 	  var1=nco_var_free(var1);
+      
+      dref=iff->getFirstChild()->getNextSibling();
 
-      if(br) { 
-         run(iff->getFirstChild()->getNextSibling() );    
-	     }else{ 
-           // See if else exists 
-         ex=iff->getFirstChild()->getNextSibling()->getNextSibling(); 
-         if(ex && ex->getType()==ELSE ) run(ex->getFirstChild());
-       }
+      if(br){ 
+         // Execute 3rd sibling  
+         if(dref->getType()==BLOCK)
+           run_exe(dref->getFirstChild());
+         else
+           statements(dref);     
+            
+	  }else{ 
+      // See if else exists (third sibling)
+         dref=iff->getFirstChild()->getNextSibling()->getNextSibling(); 
+         if(dref && dref->getType()==ELSE ){
+           // Execute 4th sibling
+           if(dref->getNextSibling()->getType()==BLOCK)
+             run_exe(dref->getNextSibling()->getFirstChild());
+           else
+             statements(dref->getNextSibling());     
+             
+         }
+     }
  
       var=(var_sct*)NULL;
       
-      }
+    }// end action
 
 
     | ELSE {
@@ -719,7 +818,7 @@ const std::string fnc_nm("assign_ntl");
 
 
               if(dbg_lvl_get() > 0)
-                dbg_prn(fnc_nm,"in asssign_ntl-var/lmt\n");
+                dbg_prn(fnc_nm,vid->getText()+"(limits)");
 
 
                int rcd;
@@ -756,7 +855,7 @@ const std::string fnc_nm("assign_ntl");
               
 
               if(dbg_lvl_get() > 0)
-                dbg_prn(fnc_nm,"in asssign_ntl-var/dmn\n");
+                dbg_prn(fnc_nm,vid1->getText()+"[dims]");
 
               var_nm=vid1->getText().c_str(); 
 
@@ -792,6 +891,7 @@ const std::string fnc_nm("assign_ntl");
                     var=(var_sct*)NULL;
                  } else {
                    var_cst=nco_var_cnf_typ(var1->type,var_cst);
+                   var_cst->typ_dsk=var1->type;
                    var=nco_var_dpl(var_cst);
 
                    }
@@ -822,7 +922,7 @@ const std::string fnc_nm("assign_ntl");
               
 
               if(dbg_lvl_get() > 0)
-                dbg_prn(fnc_nm,"in asssign_ntl/var\n");
+                dbg_prn(fnc_nm,vid2->getText());
              
 
                var_sct *var1;
@@ -858,6 +958,10 @@ const std::string fnc_nm("assign_ntl");
         //In Initial scan all newly defined atts are flagged as Undefined
         var_sct *var1;
         NcapVar *Nvar;
+
+        if(dbg_lvl_get() > 0)
+          dbg_prn(fnc_nm,att2->getText());
+
       
         var1=ncap_var_udf(att2->getText().c_str());
 
@@ -886,6 +990,10 @@ const std::string fnc_nm("assign");
                int var_id; 
                char *var_nm;
                
+              if(dbg_lvl_get() > 0)
+                dbg_prn(fnc_nm,vid->getText()+"(limits)");
+
+
                RefAST lmt_Ref;
                lmt_sct *lmt_ptr;
                var_sct *var_lhs;
@@ -1017,9 +1125,8 @@ const std::string fnc_nm("assign");
               NcapVector<std::string> str_vtr;
               RefAST  aRef;
               
-
               if(dbg_lvl_get() > 0)
-                dbg_prn(fnc_nm,"In ASSIGN/DMN");
+                dbg_prn(fnc_nm,vid1->getText()+"[dims]");
 
 
               // set class wide variables
@@ -1070,6 +1177,8 @@ const std::string fnc_nm("assign");
               //Copy return variable
               var=nco_var_dpl(var1);
               
+              //call to nco_var_get() in ncap_var_init() uses this property
+              var1->typ_dsk=var1->type;
               (void)ncap_var_write(var1,prs_arg);
 
               bcst=false;
@@ -1083,6 +1192,11 @@ const std::string fnc_nm("assign");
                int rcd;
                var_sct *var1;
                NcapVar *Nvar;
+
+              if(dbg_lvl_get() > 0)
+                dbg_prn(fnc_nm,vid2->getText());
+
+
                
                bcst=false;
                var_cst=(var_sct*)NULL; 
@@ -1126,7 +1240,7 @@ const std::string fnc_nm("assign");
             string sa=att2->getText();
 
             if(dbg_lvl_get() > 0)
-              dbg_prn(fnc_nm,"Saving attribute " +sa);
+              dbg_prn(fnc_nm,sa);
  
             var1=out(att2->getNextSibling());
             (void)nco_free(var1->nm);
@@ -1265,6 +1379,7 @@ out returns [var_sct *var]
             var->nbr_dim=0;
             var->sz=1;
             var->type=type;
+            var->typ_dsk=type;
             // Get nco type
             if(!prs_arg->ntl_scn){
              ival=atoi(c->getText().c_str());
@@ -1287,6 +1402,7 @@ out returns [var_sct *var]
             var->nbr_dim=0;
             var->sz=1;
             var->type=type;
+            var->typ_dsk=type;
             if(!prs_arg->ntl_scn){
              ival=atoi(s->getText().c_str());
              var->val.vp=(void*)nco_malloc(nco_typ_lng(type));
@@ -1307,6 +1423,7 @@ out returns [var_sct *var]
             var->nbr_dim=0;
             var->sz=1;
             var->type=type;
+            var->typ_dsk=type;
             if(!prs_arg->ntl_scn){
             // Get nco type
             ival=atoi(i->getText().c_str());
@@ -1329,6 +1446,7 @@ out returns [var_sct *var]
             var->nbr_dim=0;
             var->sz=1;
             var->type=type;
+            var->typ_dsk=type;
             // Get nco type
             if(!prs_arg->ntl_scn){
               fval=atof(f->getText().c_str());
@@ -1351,6 +1469,7 @@ out returns [var_sct *var]
             var->nbr_dim=0;
             var->sz=1;
             var->type=type;
+            var->typ_dsk=type;
             // Get nco type
             if(!prs_arg->ntl_scn){
               r=strtod(d->getText().c_str(),(char**)NULL);
@@ -1400,6 +1519,8 @@ out returns [var_sct *var]
 
 
             if( dmn_fd==NULL ){
+
+                if(prs_arg->ntl_scn) return ncap_var_udf("_dmn"); 
                 err_prn(fnc_nm,"Unable to locate dimension " +dval->getText()+ " in input or output files ");
             }
 
@@ -1413,11 +1534,13 @@ out returns [var_sct *var]
             // Get nco type
 
             var->type=type;
-            var->val.vp=(void*)nco_malloc(nco_typ_lng(type));
-            (void)cast_void_nctype(type,&var->val);
-            *var->val.lp = dmn_fd->sz;
-            (void)cast_nctype_void(type,&var->val);
-
+            var->typ_dsk=type;
+            if(!prs_arg->ntl_scn) {
+              var->val.vp=(void*)nco_malloc(nco_typ_lng(type));
+              (void)cast_void_nctype(type,&var->val);
+              *var->val.lp = dmn_fd->sz;
+              (void)cast_nctype_void(type,&var->val);
+            }
 
         }
 
@@ -1449,6 +1572,7 @@ out returns [var_sct *var]
             // Get nco type
 
             var->type=type;
+            var->typ_dsk=type;
             var->val.vp=(void*)nco_malloc(nco_typ_lng(type));
             (void)cast_void_nctype(type,&var->val);
             *var->val.lp = att_sz;
@@ -1468,17 +1592,20 @@ out returns [var_sct *var]
 
           NcapVector<lmt_sct*> lmt_vtr;
           NcapVector<dmn_sct*> dmn_vtr;
-   
+
+
+          //if initial scan return undef
+          if(prs_arg->ntl_scn){  
+            //var=ncap_var_udf(vid->getText().c_str());       
+              var=ncap_var_udf("_rhs_undefined");       
+              goto end;  // cannot use return var!!
+            
+          }
+
           var_nm=strdup(vid->getText().c_str()); 
           var_rhs=ncap_var_init(var_nm,prs_arg,false);            
           nbr_dmn=var_rhs->nbr_dim;          
           lRef=lmt;
-
-          //if initial scan return undef
-          if(prs_arg->ntl_scn){  
-            var=ncap_var_udf(vid->getText().c_str());       
-            return var;
-          }
 
 
           // Now populate lmt_vtr                  
@@ -1559,6 +1686,9 @@ out returns [var_sct *var]
             (void)nco_dmn_free(dmn_vtr[idx]);
           }    
           var_nm=(char*)nco_free(var_nm);
+
+end: ;
+      
 
     }
     // plain Variable
