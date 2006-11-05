@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.24 2006-10-20 15:38:20 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.25 2006-11-05 18:03:48 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -78,11 +78,11 @@ bool bfll)                 /* if true fill var with data */
    
     // var is defined in O and populated
     if(Nvar && Nvar->flg_stt==2){
-      //var=Nvar->cpyVarNoData();
+      var=Nvar->cpyVarNoData();
       //var=Nvar->cpyVar();
-      //fl_id=prs_arg->out_id; 
+      fl_id=prs_arg->out_id; 
       //yuck - yuck use a goto
-      //goto lbl_end; 
+      goto lbl_end; 
     }
     // var is defined in O but NOT populated
     // Set flag so read is tried only from input
@@ -223,7 +223,6 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
       
     Nvar=new NcapVar(var);
     prs_arg->ptr_int_vtr->push(Nvar);
-    std::cout<<"Variable pushed in write " <<Nvar->getFll() << " " <<Nvar->flg_udf <<" "<<Nvar->var->undefined<<std::endl;
     return True;
   } 
 
@@ -308,13 +307,16 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
 
   // save variable to output vector if new
   if(!bdef) {
-    var->val.vp=(void*)nco_free(var->val.vp);
-    var->id=var_out_id;
-    Nvar=new NcapVar(var);
+    var_sct *var1;
+    var1=nco_var_dpl(var);
+    var1->val.vp=(void*)nco_free(var1->val.vp);
+    var1->id=var_out_id;
+    var1->nc_id=prs_arg->out_id;
+    Nvar=new NcapVar(var1);
     (void)prs_arg->ptr_var_vtr->push(Nvar);          
-  } else {
-    var=nco_var_free(var);
-  }
+  } 
+    
+   var=nco_var_free(var);
 
   //Set flag -  indicates var is DEFINED && POPULATED
   Nvar->flg_stt=2;
@@ -1466,7 +1468,7 @@ ncap_var_var_op   /* [fnc] Add two variables */
   var_sct *var_ret=(var_sct*)NULL;
 
   //if inital scan than call up "shadow" function 
-  if(var1->val.vp == (void*)NULL){
+  if(var1->val.vp == (void*)NULL  ){
     var_ret=ncap_var_var_op_ntl(var1,var2,op);
     return var_ret;
   }
@@ -1656,7 +1658,7 @@ ncap_var_var_op_ntl   /* [fnc] Add two variables */
       (void)ncap_var_retype(var1,var2);
   
       if(var1->sz >= var2->sz) {
-        var2=nco_var_free(var1);
+        var2=nco_var_free(var2);
         return var1;
       } else {
         var1=nco_var_free(var1);
@@ -2015,3 +2017,50 @@ return var;
 
 }
 
+
+
+// define variables captured on first parse
+void ncap_def_ntl_scn(prs_sct *prs_arg)
+{
+int idx;
+int sz;
+int var_id;
+NcapVar *Nvar;
+NcapVar *Cvar;
+var_sct *var1;
+
+static int icnt; 
+
+const std::string fnc_nm("ncap_def_ntl_scn"); 
+
+sz=prs_arg->ptr_int_vtr->size();
+
+
+ for(idx=0; idx < sz ; idx++){
+   // de-reference
+   Nvar=(*prs_arg->ptr_int_vtr)[idx];
+   var1=Nvar->var;
+   if( !Nvar->flg_udf && Nvar->xpr_typ==ncap_var) {
+               
+     if(dbg_lvl_get() > 0)
+       dbg_prn(fnc_nm, Nvar->getFll()+" - defined in output.");
+
+     // define variable
+     (void)nco_def_var(prs_arg->out_id,var1->nm,var1->type,var1->nbr_dim,var1->dmn_id,&var_id);
+     Nvar->var->id=var_id;
+     Nvar->var->nc_id=prs_arg->out_id;
+     Nvar->flg_stt=1;
+     // save newly defined var in output vector
+
+     Cvar=new NcapVar(*Nvar);
+     prs_arg->ptr_var_vtr->push(Cvar);
+      
+   } 
+   delete Nvar;  
+ }
+ 
+ // empty int_vtr
+  for(idx=0 ; idx <sz ; idx++)
+   (void)prs_arg->ptr_int_vtr->pop();
+
+}
