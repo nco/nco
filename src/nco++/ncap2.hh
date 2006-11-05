@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.17 2006-10-20 15:35:42 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.18 2006-11-05 18:04:55 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -270,6 +270,9 @@ ncap_var_is_att(
 var_sct *var);
 
 
+void            /* define variables captured on first parse */
+ncap_def_ntl_scn(
+prs_sct *prs_arg);
 
 
 #endif /* NCAP_H */
