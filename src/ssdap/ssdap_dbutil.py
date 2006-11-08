@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.21 2006-11-08 01:54:05 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.22 2006-11-08 02:07:35 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -345,51 +345,10 @@ class JobPersistence:
             (taskrow,linenum,concretename) VALUES (?,?,?)"""
             if len(newReady) > 0:
                 cur.executemany(readyTemplate, newReady)
-            # update the useList
-            #self.updateUseList(concretename) # freeze for benchmarking 10/31/06
             cur.execute("COMMIT;")
             etime = time.time()
             print >>open("/tmp/foo1","a"), os.getpid(),"unlock after", etime-stime
             cur.close()
-            pass
-        def updateUseList(self, concretename, linenum=None):
-            # insert inputfilenames for the cmd(by linenum)
-            # which produced this output file.
-            sql = """INSERT INTO useList
-            SELECT concretename FROM cmdFileRelation
-            WHERE output=0 AND taskrow=? AND linenum=(SELECT linenum
-            FROM cmdFileRelation WHERE taskrow=? AND output=1
-            AND concretename=?);""" # taskrow,taskrow,concretename(output)
-            # not sure how expensive this will be...
-            # may want index on taskrow,concretename
-
-            # find all of our inputs
-            sql = """SELECT concretename FROM cmdFileRelation
-            WHERE output=0 AND taskrow=? AND linenum=(SELECT linenum
-            FROM cmdFileRelation WHERE taskrow=? AND output=1
-            AND concretename=?);""" # taskrow,taskrow,concretename(output)
-            cur.execute(sql, (taskrow,taskrow,concretename))
-            inputlist = cur.fetchall()
-            for i in inputlist:
-                # get usecount
-                sql = "select count from useCount where concretename=?;"
-                cur.execute(sql, i)
-                c = cur.fetchall()
-                # get current count
-                sql = "select count(*) from uselist where concretename=?;"
-                cur.execute(sql, i)
-                cc = cur.fetchall()
-                if (cc[0] + 1) == c[0]: # could use >=
-                    logit("reaping file %s",concretename)
-                    #delete the file, then update its filestate.
-                    queueForDeletion(concretename)
-                else:
-                    assert cc[0] < c[0] # assert that our count isn't corrupt
-                    updateUseListHelper(concretename)
-                
-            # once inserted, for each of the files, if the number of
-            # entries is the same as the number of times the file
-            # should be used (its usecount), then we can delete it.
             pass
         pass # end of CommitCmdResultTransaction class def
     class CommitAndFetchTransaction(Transaction):
@@ -462,19 +421,31 @@ class JobPersistence:
             return result
         def updateDeleteTracker(self, inputlist):
             fetch = "SELECT count FROM useList WHERE concretename=?;"
+            deleteList = []
+            updateList = []
+            setList = []
             for (concretename, count) in inputlist:
                 self.cursor.execute(fetch, (concretename,))
                 rows = self.cursor.fetchall()
-                assert len(rows) is 1
-                if rows[0][0] is (count-1): # ok to delete
-                    deleteList.append(concretename)
-                else: # increment counter
-                    updateList.append((rows[0][0]+1, concretename))
+                curcount = None
+                if len(rows) is 0:
+                    if count is 1: # only supposed to be used once, ok to del
+                        deleteList.append(concretename)
+                    else:
+                        setList.append((concretename, 1))
+                else:
+                    assert len(rows) is 1
+                    if rows[0][0] is (count-1): # ok to delete
+                        deleteList.append(concretename)
+                    else: # increment counter
+                        updateList.append((rows[0][0]+1, concretename))
             # now, apply updates and deletes to list
             update = "UPDATE useList SET count=? WHERE concretename=?"
             self.cursor.executemany(update, updateList)
             delete = "DELETE FROM useList WHERE concretename=?"
             self.cursor.executemany(delete, deleteList)
+            set = "INSERT INTO useList VALUES(?,?);"
+            self.cursor.executemany(set, setList)
             # defer real deletes to occur outside the transaction.
             self.deleteList = deleteList 
             pass
@@ -664,7 +635,7 @@ class JobPersistence:
                         " ON cmdFileRelation(concretename);"]  
         filestate = ["CREATE TABLE fileState (",
                        "  concretename VARCHAR(192),"
-                       "  state tinyint(2)", #need this consistent with other table?
+                       "  state TINYINT(2)", #need this consistent with other table?
                        "); CREATE INDEX namestate ON fileState(concretename);"]
         readylist = ["CREATE TABLE readyList (",
                      " taskrow INTEGER(8),",
@@ -674,27 +645,18 @@ class JobPersistence:
                      "); CREATE INDEX rowready ON readyList(taskrow);",
                      " CREATE INDEX rowlineready",
                      " ON readyList(taskrow,linenum);"]
-        useList = ["CREATE TABLE useList ( concretename VARCHAR(192));",
+        useList = ["CREATE TABLE useList ( concretename VARCHAR(192),",
+                   " count INTEGER(4));",
                    " CREATE INDEX nameuselist ON useList(concretename);"]
-        useCount = ["CREATE TABLE useCount ( concretename VARCHAR(192), ",
-                   " count INTEGER(4) );",
-                   " CREATE INDEX nameusecount ON useCount(concretename);"]
 
-
-                       
         # files can be planned, active, saved, removed, etc.
-        
 
         cur = self.cursor()
         try:
             cmd = "".join(taskcommand + ["\n"] + cmdcommand 
                           + ["\n"] + inoutcommand + ["\n"] + filestate
-                          + ["\n"] + readylist + ["\n"] + useList
-                          + ["\n"] + useCount )
+                          + ["\n"] + readylist + ["\n"] + useList )
             cur.executescript("".join(cmd))
-            #print "trying to execute cmd:",cmd
-            #cur.executescript("".join(cmdcommand))
-            #cur.executescript("".join(inoutcommand))
             print >>sys.stderr, "made tables in db (uncommit)"
         except sqlite.OperationalError:
             print >>sys.stderr, "error making tables in DB"
