@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.51 2006-11-01 02:05:34 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.52 2006-11-08 01:54:05 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -295,8 +295,9 @@ class Command:
     to be executed.  Each line in the script line maps to approximately
     one command.  The Command class depends on the scripting environment
     to provide constants in generating a command line."""
-    def __init__(self, line, scriptenv):
+    def __init__(self, line, lineNum, scriptenv):
         self.original = line
+        self.lineNum = lineNum
         self.isMeta = False
         self.env = scriptenv
         self.cmdLine = None #empty commmandline for now
@@ -819,6 +820,9 @@ class ScriptingEnv:
          self.commands = []  # list of commands (inc. comments)
          #WARN: commands is read by the command builder
          self.commandLine = [] # list of commandlines (no comments)
+         # keep own table of linenum -> cmd, to allow non-db
+         # dependency processing.
+         self.lineToCommand = {}
          lineNum = 0
          # None --> script not in DB; integer-> row in tasks table
          self.persistedTask = None 
@@ -826,9 +830,9 @@ class ScriptingEnv:
          pop = None
          for line in scriptlines:
              lineNum += 1
-             c = Command(line, self)
+             c = Command(line, lineNum, self)
              self.isAsync = self.env.has_key("async") and self.env["async"] == True
-
+             self.lineToCommand[lineNum] = c
              if self.isAsync and (c.cmd is not None) and not c.isMeta:
                  if pop is None:
                      j = self.instanceJobPersistence()
@@ -1015,69 +1019,108 @@ class ScriptingEnv:
                  break # child exits the loop to start work
          self.dbExecWorker() # get some work done
 
-
+    def dbFetchJob(self):
+        """Try to fetch a job from the db.  If none exist, keep trying,
+        but if task is done, return None.
+        Return: tuple: (commandline, outputfilename, linenum)
+        """
+        (cline, outname, linenum) = (None,None,None)
+        while True:
+            try:
+                logit("worker checking for job")
+                j = self.instanceJobPersistence()
+                fetch = j.newFetchAndLockTransaction()
+                tup = fetch.executeBlocking()
+                fetch = None
+                (cline, outname, linenum) = tup
+            except TypeError:
+                poll = self.instanceJobPersistence().newPollingTransaction()
+                jobsLeft = poll.cmdsLeft()
+                poll = None
+                if jobsLeft > 0:
+                    time.sleep(2*self.sleepTime)
+                    logit("worker sleeping for work" + time.asctime())
+                    continue
+                logit("worker exit: no more work")
+                break
+        except:
+            import traceback
+            logit("unknown exception "+str(traceback.format_exc()))
+            return (None,None,None)
+        return (cline,outname,linenum)
+    def workerJobSpawn(self, cline):
+        import subprocess
+        # At this point, consider marking a running state, so that
+        # workers can see each others' jobs and avoid duplication.
+        retcode = None
+        try: # derived from: http://pydoc.org/2.4.1/subprocess.html
+            logit("worker spawning %s" % (cline))
+            retcode = subprocess.call(cline, shell=True)
+            logit("worker finished %s, retcode: %d" % (cline,retcode))
+            if retcode < 0:
+                print >>sys.stderr, "Error code %d in %s" %(retcode,cline)
+                return None
+        except OSError, e:
+            print >>sys.stderr, "Failed %s --> %s, " %(cline,outname)
+            print >>sys.stderr, e
+            logit("Failed %s --> %s, " %(cline,outname))
+            return None
+        return retcode
+    def depFindInputs(linenum):
+        # now, find my input files
+        me = self.lineToCommand[linenum]
+        # find my inputs (and get their concretenames)
+        #inputs = map(lambda f: self.fileMap[f], me.inputs())
+        inputs = []
+        for p in me.parents():
+            # assume single output for cmdlines
+            outs = p.outputs()
+            assert len(outs) == 1
+            concretename = self.fileMap[outs[0]]
+            # find out how many children the parent has.
+            count = len(p.children()) 
+            inputs.append((concretename,count))
+        return inputs
     def dbExecWorker(self):
         """Main worker function for running jobs/cmds.
         10/18/06-- need to refactor into nicer pieces."""
-        import subprocess
         logit("beginning worker loop")
-        (cline,outname) = (None,None)
+        (cline,outname,linenum) = (None, None, None)
         jobsrun = 0
         while True:
              if cline is None:  #otherwise, we have a job ready!
-                 try:
-                     logit("worker checking for job")
-                     j = self.instanceJobPersistence()
-                     fetch = j.newFetchAndLockTransaction()
-                     tup = fetch.executeBlocking()
-                     fetch = None
-                     (cline,outname) = tup
-                 except TypeError:
-                     poll = self.instanceJobPersistence().newPollingTransaction()
-                     jobsLeft = poll.cmdsLeft()
-                     poll = None
-                     if jobsLeft > 0:
-                         time.sleep(2*self.sleepTime)
-                         logit("worker sleeping for work" + time.asctime())
-                         continue
-                     logit("worker exit: no more work")
+                 (cline,outname,linenum) = self.dbFetchJob()
+                 if not cline:
                      break
-                 except:
-                     import traceback
-                     logit("unknown exception"+str(traceback.format_exc()))
-                     break
-             # At this point, consider marking a running state, so that
-             # workers can see each others' jobs and avoid duplication.
-             try: # derived from: http://pydoc.org/2.4.1/subprocess.html
-                 logit("worker spawning %s" % (cline))
-                 retcode = subprocess.call(cline, shell=True)
-                 logit("worker finished %s, retcode: %d" % (cline,retcode))
-                 if retcode < 0:
-                     print >>sys.stderr, "Error code %d in %s" %(retcode,cline)
-                     break
-             except OSError, e:
-                 print >>sys.stderr, "Failed %s --> %s, " %(cline,outname)
-                 print >>sys.stderr, e
-                 logit("Failed %s --> %s, " %(cline,outname))
+             if not workerJobSpawn(cline):
                  break
+
+             inputs = self.depFindInputs(linenum)
+             
+             # pass the inputs down to the db layer and implement
+             # deletion-tracking logic there.  it violates original
+             # design intent, but makes for simpler code.  when we
+             # know differently, then rethink (maybe pass a function
+             # object down to the persistence layer to encapsulate
+             # the deletion handling logic.
              jobsrun = jobsrun + 1
              j = self.instanceJobPersistence()
-             if False:
-                 cmt = j.newCommitCmdResultTransaction()
-                 cmt.executeBlocking(outname)
+             #if False:
+                 #cmt = j.newCommitCmdResultTransaction()
+                 #cmt.executeBlocking(outname)
+                 #(cline, outname) = (None,None)
+                 #cmt = None
+             #else:
+             try:
+                 cmt = j.newCommitAndFetchTransaction()
+                 tup = cmt.executeBlocking(outname, inputs)
                  (cline, outname) = (None,None)
-                 cmt = None
-             else:
-                 try:
-                     cmt = j.newCommitAndFetchTransaction()
-                     tup = cmt.executeBlocking(outname)
-                     (cline, outname) = (None,None)
-                     if type(tup) is tuple and len(tup) == 2:
-                         (cline, outname) = tup
-                 except:
-                     import traceback
-                     logit("unknown exception"+str(traceback.format_exc()))
-                     break
+                 if type(tup) is tuple and len(tup) == 3:
+                     (cline, outname, linenum) = tup
+             except:
+                 import traceback
+                 logit("unknown exception"+str(traceback.format_exc()))
+                 break
              if jobsrun > 9910: # for profiling...
                  break
         j.close()
@@ -1530,8 +1573,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2006-11-01 02:05:34 $
-   Version:	$Revision: 1.51 $
+   Date:	$Date: 2006-11-08 01:54:05 $
+   Version:	$Revision: 1.52 $
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()

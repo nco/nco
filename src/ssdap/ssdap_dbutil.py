@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.20 2006-11-01 01:57:42 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.21 2006-11-08 01:54:05 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -35,6 +35,9 @@ class JobPersistence:
                     else: #otherwise, pass the exception upwards.
                         raise
                 pass
+            if "postExecute" in dir(self):
+                # run post-transactional execute stuff
+                self.postExecute()
             pass
         pass # end of Transaction class
     class PopulationTransaction:
@@ -174,7 +177,7 @@ class JobPersistence:
                 cur.executemany(substTemp, self.inOutList)
                 self.inOutList = []
             if(len(self.stateList) > 0):
-                cur.executemany("""insert into filestate (concretename, state)
+                cur.executemany("""INSERT INTO filestate (concretename, state)
                 values (?,?)""", self.stateList)
                 self.stateList = []
                 cur.execute("COMMIT;")
@@ -288,8 +291,8 @@ class JobPersistence:
             elif len(rows) > 0:
                 print >>open("/tmp/foo1","a"), os.getpid(),"got ready:",rows
                 mycommand = rows[0]
-                # return cmdline and output concretename
-                result = (mycommand[3],mycommand[2])
+                # return cmdline and output concretename and linenum
+                result = (mycommand[3],mycommand[2], mycommand[1])
                 # drop the cmd from the list
                 cmd = """DELETE FROM readyList WHERE taskrow=? AND linenum=?;"""
                 cur.execute(cmd, (mycommand[0],mycommand[1]))
@@ -387,19 +390,25 @@ class JobPersistence:
             # once inserted, for each of the files, if the number of
             # entries is the same as the number of times the file
             # should be used (its usecount), then we can delete it.
-            dummy = """select concretename from ZXCVSD where (select count(*) from uselist where concretename=?) == select count from usecount where name=?)"""
             pass
         pass # end of CommitCmdResultTransaction class def
     class CommitAndFetchTransaction(Transaction):
         """A combo transaction that commits a command and returns the first cmd
         made ready as a result, if it exists.  If one exists, this saves
-        a db transaction to fetch the next ready command. """
+        a db transaction to fetch the next ready command.
+        -- correct usage:
+         either through executeBlocking or execute/postExecute sequence
+        """
         def __init__(self, connection):
             self.connection = connection
             connection.isolation_level = None
             self.cursor = None
             pass
-        def execute(self, concretename):
+        def execute(self, concretename, inputlist):
+            """ concretename : concrete filename that is being finished
+                inputlist : list of tuples of (file, count), consisting of
+                            files and counts of how many times they should
+                            be used before being deleted."""
             cur = self.connection.cursor() 
             self.cursor = cur # in case transaction gets rolled back, etc.
             cur.execute("BEGIN EXCLUSIVE;")
@@ -447,10 +456,40 @@ class JobPersistence:
             update = "UPDATE fileState SET state=2 WHERE concretename=?;"
             self.cursor.execute(fetch, (taskrow, linenum))
             rows = self.cursor.fetchall()
-            assert len(rows) == 1
-            result = (rows[0][0],concretename)
+            assert len(rows) is 1
+            result = (rows[0][0], concretename, linenum)
             self.cursor.execute(update, (concretename,))
             return result
+        def updateDeleteTracker(self, inputlist):
+            fetch = "SELECT count FROM useList WHERE concretename=?;"
+            for (concretename, count) in inputlist:
+                self.cursor.execute(fetch, (concretename,))
+                rows = self.cursor.fetchall()
+                assert len(rows) is 1
+                if rows[0][0] is (count-1): # ok to delete
+                    deleteList.append(concretename)
+                else: # increment counter
+                    updateList.append((rows[0][0]+1, concretename))
+            # now, apply updates and deletes to list
+            update = "UPDATE useList SET count=? WHERE concretename=?"
+            self.cursor.executemany(update, updateList)
+            delete = "DELETE FROM useList WHERE concretename=?"
+            self.cursor.executemany(delete, deleteList)
+            # defer real deletes to occur outside the transaction.
+            self.deleteList = deleteList 
+            pass
+        def postExecute(self):
+            """after transaction completes, process deferred behavior.
+            --delete queued files."""
+            if "deleteList" not in dir(self):
+                return
+            for f in self.deleteList:
+                try:
+                    os.unlink(f)
+                except OSError,e:
+                    # log error... FIXME before going production
+                    print >>open("/tmp/foo1","a"), os.getpid(),"error deleting", f
+            pass
         
     class PollingTransaction:
         def __init__(self, connection, taskRow):
@@ -936,6 +975,22 @@ def parseArgs():
 if __name__ == '__main__':
     parseArgs()
     #test()
+
+############################################################
+# Ugly facts about ssdap_dbutil
+# dap_handler_hack allows commands to have multiple outputs
+# the db schema assumes that commands have only one output
+# this facilitates a simpler readylist, so that we can
+# update the state of the output file without doing a query
+# to figure out what our output files are.
+#
+# however! if we assume that we have a dataflow tree/graph
+# in memory, then it becomes cheap to check what we depend
+# on and what depends on us.  Therefore!  We should refactor
+# towards having this dep tree in memory, since it
+# reduces our db load anyway.
+
+
 
 ############################################################
 # spare code section
