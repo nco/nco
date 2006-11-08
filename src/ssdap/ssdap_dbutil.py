@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.22 2006-11-08 02:07:35 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.23 2006-11-08 22:54:18 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -17,9 +17,11 @@ class JobPersistence:
         def executeBlocking(self, *pargs, **kwargs):
             """This keeps trying an operation until it succeeds.
             Transient DB exceptions are explicitly caught."""
+            val = None
             while True:
                 try:
-                    return self.execute(*pargs, **kwargs)
+                    val =  self.execute(*pargs, **kwargs)
+                    break
                 except sqlite.OperationalError, e:
                     # if db is locked, wait and retry.
                     if 'database is locked' in str(e):
@@ -403,6 +405,7 @@ class JobPersistence:
                 result = self.markStart(fetchedCmd)
                 if len(newReady) > 0:  # now insert if there's more.
                     cur.executemany(readyTemplate, newReady)
+            self.updateDeleteTracker(inputlist)
             cur.execute("COMMIT;")
             etime = time.time()
             print >>open("/tmp/foo1","a"), os.getpid(),"unlock after", etime-stime
@@ -430,13 +433,15 @@ class JobPersistence:
                 curcount = None
                 if len(rows) is 0:
                     if count is 1: # only supposed to be used once, ok to del
-                        deleteList.append(concretename)
+                        deleteList.append((concretename,))
+                        print "marked",concretename,"for deletion"
                     else:
                         setList.append((concretename, 1))
                 else:
                     assert len(rows) is 1
                     if rows[0][0] is (count-1): # ok to delete
                         deleteList.append(concretename)
+                        print "marked",concretename,"for deletion"
                     else: # increment counter
                         updateList.append((rows[0][0]+1, concretename))
             # now, apply updates and deletes to list
@@ -456,10 +461,11 @@ class JobPersistence:
                 return
             for f in self.deleteList:
                 try:
-                    os.unlink(f)
+                    print "unlinking f", f[0]
+                    os.unlink(f[0])
                 except OSError,e:
                     # log error... FIXME before going production
-                    print >>open("/tmp/foo1","a"), os.getpid(),"error deleting", f
+                    print >>open("/tmp/foo1","a"), os.getpid(),"error deleting", f[0]
             pass
         
     class PollingTransaction:
@@ -668,8 +674,7 @@ class JobPersistence:
                       "DROP TABLE cmdFileRelation;",
                       "DROP TABLE fileState;",
                       "DROP TABLE readyList;",
-                      "DROP TABLE useList;",
-                      "DROP TABLE useCount;"
+                      "DROP TABLE useList;"
                     ];
         # sqlite automatically drops indexes 
         cur = self.cursor()
@@ -727,6 +732,7 @@ class JobPersistence:
         # look for filestates
         self.showFileTable()
         self.showReadyList()
+        self.showUseList()
         #print >>sys.stderr, ttable
     def showFileTable(self):
         cur = self.cursor()
@@ -790,22 +796,32 @@ class JobPersistence:
         for r in cur.fetchall():
             print "ready cmd: task=%d line=%d, out=%s, cmd=%s, cmdline=%s" % (
                 r[0], r[1], r[2], r[3], r[4])
+    def showUseList(self, taskrow=None):
+        sql = "SELECT * FROM useList LIMIT 200;"
+        cur = self.cursor()
+        cur.execute(sql)
+        for r in cur.fetchall():
+            print "useList: %s count=%d\n" % r
             
     pass
 
+
 def selfPopulateAndPrep(jobpers):
+    inputdict = {}
     pop = jobpers.newPopulationTransaction()
     row = pop.insertTask("AABBCCDD")
     # a command with no input and one independent output (ready to go)
     pop.insertCmd(2, "ncap", "ncap -o %outf_indep.nc%")
     pop.insertInOut(2, "%outf_indep.nc%", "/tmp/temp1111outf_indep.nc", 
                     True, 1, False)
+    inputdict[2] = []
     # a command with one input(orig) and one output(temp) (ready to go)
     pop.insertCmd(5, "ncwa", "ncwa in.nc %tempf_other.nc%")
     pop.insertInOut(5, "in.nc", "in.nc", 
                     False, 1, False)
     pop.insertInOut(5, "%tempf_other.nc%", "/tmp/temp0000tempf_other.nc", 
                     True, 1, True)
+    inputdict[5] = []
     # a command with two inputs (orig+depend) and one output
     pop.insertCmd(10, "ncwa", "ncwa in.nc %tempf_other.nc% %outf_out.nc%")
     pop.insertInOut(10, "in.nc", "in.nc", 
@@ -814,6 +830,7 @@ def selfPopulateAndPrep(jobpers):
                     False, 1, True)
     pop.insertInOut(10, "%outf_out.nc%", "/tmp/temp1111outf_out.nc", 
                     True, 1, False)
+    inputdict[10] = [("/tmp/temp0000tempf_other.nc", 1)]
     # a command with two inputs (orig+depend) and one output
     pop.insertCmd(12, "ncap", "ncwa in.nc %outf_out.nc% %outf_out2.nc%")
     pop.insertInOut(12, "in.nc", "in.nc", 
@@ -822,12 +839,13 @@ def selfPopulateAndPrep(jobpers):
                     False, 1, False)
     pop.insertInOut(12, "%outf_out2.nc%", "/tmp/temp2222outf_out2.nc", 
                     True, 1, False)
+    inputdict[12] = [("/tmp/temp1111outf_out.nc", 1)]
     pop.finish()
     pop = None # null-out because we're paranoid
     prep = jobpers.newPreparationTransaction()
     prep.execute()
     prep = None
-    pass
+    return inputdict
 def selfTest(args=[]):
     buildOnly = False
     if len(args) > 0:
@@ -838,16 +856,16 @@ def selfTest(args=[]):
     j.buildTables()
     j.close()
     print " build and close"
-    selfPopulateAndPrep(j)
+    inputdict = selfPopulateAndPrep(j)
     #    clist = j.cmdsWithInput("/tmp/temp1111tempf_other.nc")
     j.showState()
     # now, pretend like we're executing.
-    (cline, outname) = (None,None)
+    (cline, outname, linenum) = (None, None, None)
     while True:
         try:
             if cline is None:
                 fetch = j.newFetchAndLockTransaction()
-                (cline,outname) = fetch.execute()
+                (cline, outname, linenum) = fetch.execute()
                 fetch = None
             else:
                 print ":::opt skip fetch"
@@ -856,19 +874,19 @@ def selfTest(args=[]):
             break
         print ":::pretending to run %s" % (cline)
         
-        j.showState()
+        #j.showState()
         print ":::fake produce %s" % (outname)
         cmtcmd = j.newCommitAndFetchTransaction()
-        tup = cmtcmd.execute(outname)
+        tup = cmtcmd.executeBlocking(outname, inputdict[linenum])
         cmtcmd = None
         (cline, outname) = (None,None)
         print "opt fetch got",tup
-        if type(tup) is tuple and len(tup) == 2:
-            (cline, outname) = tup
+        if type(tup) is tuple and len(tup) is 3:
+            (cline, outname, linenum) = tup
             print "opt got tuple!", tup
-        j.showState()
-    
-
+        #j.showState()
+        
+    j.showState()
     if buildOnly:
         return
     j.deleteTables()
