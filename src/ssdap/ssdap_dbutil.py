@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.23 2006-11-08 22:54:18 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.24 2006-11-08 23:15:39 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -651,7 +651,8 @@ class JobPersistence:
                      "); CREATE INDEX rowready ON readyList(taskrow);",
                      " CREATE INDEX rowlineready",
                      " ON readyList(taskrow,linenum);"]
-        useList = ["CREATE TABLE useList ( concretename VARCHAR(192),",
+        useList = ["CREATE TABLE useList (",
+                   " concretename VARCHAR(192),",
                    " count INTEGER(4));",
                    " CREATE INDEX nameuselist ON useList(concretename);"]
 
@@ -659,9 +660,9 @@ class JobPersistence:
 
         cur = self.cursor()
         try:
-            cmd = "".join(taskcommand + ["\n"] + cmdcommand 
+            cmd = "".join(taskcommand + ["\n"] + cmdcommand
                           + ["\n"] + inoutcommand + ["\n"] + filestate
-                          + ["\n"] + readylist + ["\n"] + useList )
+                          + ["\n"] + readylist + ["\n"] + useList)
             cur.executescript("".join(cmd))
             print >>sys.stderr, "made tables in db (uncommit)"
         except sqlite.OperationalError:

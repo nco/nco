@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.52 2006-11-08 01:54:05 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.53 2006-11-08 23:15:39 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -1043,9 +1043,10 @@ class ScriptingEnv:
                     continue
                 logit("worker exit: no more work")
                 break
-        except:
-            import traceback
-            logit("unknown exception "+str(traceback.format_exc()))
+            except:
+                import traceback
+                logit("unknown exception "+str(traceback.format_exc()))
+                break
             return (None,None,None)
         return (cline,outname,linenum)
     def workerJobSpawn(self, cline):
@@ -1573,8 +1574,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2006-11-08 01:54:05 $
-   Version:	$Revision: 1.52 $
+   Date:	$Date: 2006-11-08 23:15:39 $
+   Version:	$Revision: 1.53 $
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()
