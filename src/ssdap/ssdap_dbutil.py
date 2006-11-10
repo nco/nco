@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.25 2006-11-10 01:42:10 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.26 2006-11-10 01:52:12 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -286,14 +286,13 @@ class JobPersistence:
             ORDER BY linenum LIMIT 1;"""
             rows = None
             con = None
-            print >>open("/tmp/foo1","a"), os.getpid(),"checking db"
             cur.execute(cmd, (self.taskRow,))
             rows = cur.fetchall()
             if not rows:
                 rows = None
                 result = None
             elif len(rows) > 0:
-                print >>open("/tmp/foo1","a"), os.getpid(),"got ready:",rows
+                #print >>open("/tmp/foo1","a"), os.getpid(),"got ready:",rows
                 mycommand = rows[0]
                 # return cmdline and output concretename and linenum
                 result = (mycommand[3],mycommand[2], mycommand[1])
@@ -309,7 +308,6 @@ class JobPersistence:
             #print >>open("/tmp/foo1","a"), os.getpid(),"unlock after", etime-stime
             cur.execute("COMMIT;")
             cur.close()
-            print >>open("/tmp/foo1","a"), os.getpid(),"returning", result
             return result
             
         pass # end of FetchAndLockTransaction class def
@@ -435,21 +433,18 @@ class JobPersistence:
             updateList = []
             setList = []
             for (concretename, count) in inputlist:
-                print >>open("/tmp/foo1","a"), os.getpid(), "concretename is %s and count is %d" %(concretename,count)
                 self.cursor.execute(fetch, (concretename,))
                 rows = self.cursor.fetchall()
                 curcount = None
                 if len(rows) is 0:
                     if count is 1: # only supposed to be used once, ok to del
                         deleteList.append((concretename,))
-                        print "marked",concretename,"for deletion"
                     else:
                         setList.append((concretename, 1))
                 else:
                     assert len(rows) is 1
                     if rows[0][0] is (count-1): # ok to delete
                         deleteList.append(concretename)
-                        print "marked",concretename,"for deletion"
                     else: # increment counter
                         updateList.append((rows[0][0]+1, concretename))
             # now, apply updates and deletes to list
@@ -461,13 +456,12 @@ class JobPersistence:
             self.cursor.executemany(set, setList)
             # defer real deletes to occur outside the transaction.
             self.deleteList = deleteList
-            print >>open("/tmp/foo1","a"), os.getpid(),"del_list:", deleteList
             pass
         def postExecute(self):
             """after transaction completes, process deferred behavior.
             --delete queued files."""
-            if "deleteList" not in dir(self):
-                return
+            #if "deleteList" not in dir(self): # should always be true
+            #    return
             for f in self.deleteList:
                 try:
                     print "unlinking f", f[0]

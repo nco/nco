@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.54 2006-11-10 01:42:11 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.55 2006-11-10 01:52:12 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -1025,11 +1025,11 @@ class ScriptingEnv:
         (cline, outname, linenum) = (None,None,None)
         while True:
             try:
-                logit("worker checking for job")
+                logit("worker checking for job " + time.asctime())
                 j = self.instanceJobPersistence()
                 fetch = j.newFetchAndLockTransaction()
                 tup = fetch.executeBlocking()
-                logit("got "+str(tup)+" from db") # Debug ----
+                ##logit("got "+str(tup)+" from db") # Debug ----
                 fetch = None
                 (cline, outname, linenum) = tup
                 break
@@ -1039,7 +1039,7 @@ class ScriptingEnv:
                 poll = None
                 if jobsLeft > 0:
                     time.sleep(2*self.sleepTime)
-                    logit("worker sleeping for work" + time.asctime())
+                    # logit("worker sleeping for work" + time.asctime())
                     continue
                 logit("worker exit: no more work")
                 break
@@ -1058,7 +1058,6 @@ class ScriptingEnv:
         try: # derived from: http://pydoc.org/2.4.1/subprocess.html
             logit("worker spawning %s" % (cline))
             retcode = subprocess.call(cline, shell=True)
-            logit("worker finished %s, retcode: %d" % (cline,retcode))
             if retcode < 0:
                 print >>sys.stderr, "Error code %d in %s" %(retcode,cline)
                 return None
@@ -1074,7 +1073,6 @@ class ScriptingEnv:
         # find my inputs (and get their concretenames)
         #inputs = map(lambda f: self.fileMap[f], me.inputs())
         inputs = []
-        logit("finding inputs") # Debug ----
         for p in me.parents():
             # assume single output for cmdlines
             outs = p.outputs()
@@ -1084,8 +1082,6 @@ class ScriptingEnv:
             # find out how many children the parent has.
             count = len(p.children()) 
             inputs.append((concretename,count))
-            logit("append %s %d for %s" %(concretename,count,str(p))) # Debug ----
-        logit("found inputs:" + str(inputs)) # Debug ----
         return inputs
     def dbExecWorker(self):
         """Main worker function for running jobs/cmds.
@@ -1097,15 +1093,11 @@ class ScriptingEnv:
              if cline is None:  #otherwise, we have a job ready!
                  (cline,outname,linenum) = self.dbFetchJob()
                  #either we have a job, or there is none left.
-                 logit("dbfetchjob returned " + cline) # Debug ----
                  if not cline:
                      break
-             logit("ready to spawn") # Debug ----
              if self.workerJobSpawn(cline) is None:
                  break
-             logit("job finished, post-complete stage") # Debug ----
              inputs = self.depFindInputs(linenum)
-             logit("got cmdinputs" + str(inputs)) # Debug ----
              # pass the inputs down to the db layer and implement
              # deletion-tracking logic there.  it violates original
              # design intent, but makes for simpler code.  when we
@@ -1122,9 +1114,7 @@ class ScriptingEnv:
              #else:
              try:
                  cmt = j.newCommitAndFetchTransaction()
-                 logit("ready to commit") # Debug ----
                  tup = cmt.executeBlocking(outname, inputs)
-                 logit("commit OK") # Debug ----
                  (cline, outname) = (None,None)
                  if type(tup) is tuple and len(tup) == 3:
                      (cline, outname, linenum) = tup
@@ -1162,21 +1152,12 @@ class ScriptingEnv:
                 # See:
                 # http://mail.python.org/pipermail/python-list/2001-March/032663.html
                 # should provide a configfile option to control ser/dep exec
-                for i in range(len(self.lines)):
-                    try:
-                        inp = self.depFindInputs(i)
-                        logit("deptest: %d %s" % (i,str(inp)))
-                    except:
-                        import traceback
-                        logit("deptest: exception for %d" %(i))
-                        logit(traceback.format_exc())
-
 
                 if False:
                     self.serialExec()
                     logit("done with async-init'd serialExec()")
                     sys.exit(0)
-                if True:
+                elif True:
                     profileVar['depexecer'] = self
                     import profile
                     profilename = "/tmp/%s.pyprofile" % (str(os.getpid()))
@@ -1595,8 +1576,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2006-11-10 01:42:11 $
-   Version:	$Revision: 1.54 $
+   Date:	$Date: 2006-11-10 01:52:12 $
+   Version:	$Revision: 1.55 $
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()
