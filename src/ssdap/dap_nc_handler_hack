@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.55 2006-11-10 01:52:12 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.56 2006-11-10 02:21:45 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -540,18 +540,19 @@ class Command:
                 continue
             filelist.append(name)
         for name in filelist:
-             if self.env.shouldRemap(name):
-                 remapped = self.env.addAbsName(name)
-                 self.safeRemove(remapped) # kill the file to let nco write.
-                 assert remapped != None
-                 line += " " + remapped
-             elif self.env.possibleFilename(name):
-                 # add defpath for now.
-                 newname = self.addInfilePrefix(name)
-                 line += " " + newname
-             else:
-                 needsDap |= self.env.requiresDap(name)
-                 line += " " + name
+            remaptype = self.env.shouldRemap(name)
+            if remaptype:
+                remapped = self.env.addAbsName(name, remaptype)
+                self.safeRemove(remapped) # kill the file to let nco write.
+                assert remapped != None
+                line += " " + remapped
+            elif self.env.possibleFilename(name):
+                # add defpath for now.
+                newname = self.addInfilePrefix(name)
+                line += " " + newname
+            else:
+                needsDap |= self.env.requiresDap(name)
+                line += " " + name
         if needsDap:
              self.cmdLine = ScriptingEnv.VALID_DAPCOMMANDS[self.cmd] + " " + line
         elif self.isMeta:
@@ -870,21 +871,11 @@ class ScriptingEnv:
          if len(fields) == 2:
              # check for tempname
              if fields[0] == ScriptingEnv.CLASS_TEMP:
-                 return True
+                 return "temp"
              if fields[0] == ScriptingEnv.CLASS_OUT:
-                 return True
-         return absName == ScriptingEnv.SCRIPT_OUTFILE
-    def processSpecial(self, absName):
-         """ don't use this anymore """
-         return False
-         # deprecate this way of tracking, in favor of a more general
-         # system that can be more flexible and work with per-line modifiers.
-         redirTable = {ScriptingEnv.SCRIPT_STDOUTERR : os.popen4,
-              ScriptingEnv.SCRIPT_STDOUT: os.popen2}
-         if absName in redirTable:
-             self.outFd = sys.stdout
-             self.popen = redirTable[absName]
-             return True
+                 return "output"
+         if absName == ScriptingEnv.SCRIPT_OUTFILE:
+             return "output"
          return False
     def possibleUrl(self, cand):
          """return a sre.SRE_Match object if input matches our primitive regex
@@ -909,7 +900,7 @@ class ScriptingEnv:
          return True
 
 
-    def addAbsName(self, absName):
+    def addAbsName(self, absName, fType):
          """ return a concrete name from an abstract name"""
          if self.fileMap.has_key(absName):
              return self.fileMap[absName][1] # reuse mapped name
@@ -917,10 +908,11 @@ class ScriptingEnv:
          fixName = ""
          for i in absName:
              if i in alnum: fixName += i
-
+         path = {"temp" : self.env["tempdir"],
+                 "output" : self.env["resultdir"]
+                 }[fType]
          filepair = tempfile.mkstemp( ScriptingEnv.NC_SUFFIX,
-                         fixName,
-                         self.env["tempdir"] )
+                         fixName, path )
          # filepair = (descriptor, tempfilename)
          self.fileMap[absName] = filepair
          # close the file, so the nco util can touch it
@@ -1174,10 +1166,6 @@ class ScriptingEnv:
              sys.exit(1)
         pass
         
-    def spawnProcess(self):
-        """run a command, capture its output in??? FIXME"""
-        pass
-    
     def depTreeToString(self):
         out = "Script dependency digraph: \n"
         for x in self.commands:
@@ -1470,16 +1458,22 @@ class FrontEnd:
 
         scriptingenv = None
         # fill env with proper keys:
-        self.env["defpath"] = "."
-        self.env["tempdir"] = "/tmp"
+        if local.resultPath is not None:
+            self.env["resultdir"] = local.resultPath
+        else:
+            self.env["resultdir"] = "/tmp"
+        if local.scratchPath is not None:
+            self.env["tempdir"] = local.scratchPath
+        else:  
+            self.env["tempdir"] = "/tmp"
 
         # now, patch up all the dap expectations
-        self.env["tempdir"] = "/tmp"
         (filepath, filename) = os.path.split(self.args["-realfile"])
 
         self.env["defpath"] = "/var/www/html/"
         self.env["requestedfile"] = "dummy.nc"
-
+        print "tempdir at", self.env["tempdir"]
+        print "resultdir at", self.env["resultdir"]
         (urlpath, ufilename) = ("http://localhost/cgi-bin/nph-dods", "dummy.nc")
         print "local exec starting..."
         scriptenv = ScriptingEnv(self.scriptlines, self.env)
@@ -1576,8 +1570,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2006-11-10 01:52:12 $
-   Version:	$Revision: 1.55 $
+   Date:	$Date: 2006-11-10 02:21:45 $
+   Version:	$Revision: 1.56 $
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()
@@ -1611,7 +1605,7 @@ def execute():
     readConfigFile() # have to read config file before initializing logging.
     startLogging()
     settings = FrontEnd(sys.argv)
-
+    
     mode =  settings.accessmode()
     logit("Mode is " + mode)
     logit("python profile if available (parent only) at: " + "/tmp/%s.pyprofile" % str(os.getpid()))
