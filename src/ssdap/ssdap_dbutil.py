@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.24 2006-11-08 23:15:39 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.25 2006-11-10 01:42:10 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -40,6 +40,7 @@ class JobPersistence:
             if "postExecute" in dir(self):
                 # run post-transactional execute stuff
                 self.postExecute()
+            return val
             pass
         pass # end of Transaction class
     class PopulationTransaction:
@@ -285,6 +286,7 @@ class JobPersistence:
             ORDER BY linenum LIMIT 1;"""
             rows = None
             con = None
+            print >>open("/tmp/foo1","a"), os.getpid(),"checking db"
             cur.execute(cmd, (self.taskRow,))
             rows = cur.fetchall()
             if not rows:
@@ -307,6 +309,7 @@ class JobPersistence:
             #print >>open("/tmp/foo1","a"), os.getpid(),"unlock after", etime-stime
             cur.execute("COMMIT;")
             cur.close()
+            print >>open("/tmp/foo1","a"), os.getpid(),"returning", result
             return result
             
         pass # end of FetchAndLockTransaction class def
@@ -423,11 +426,16 @@ class JobPersistence:
             self.cursor.execute(update, (concretename,))
             return result
         def updateDeleteTracker(self, inputlist):
+            """inputlist is a list of tuples of (concretename, usagecount)
+            where usagecount is the number of times this file is consumed during
+            the dataflow
+            """
             fetch = "SELECT count FROM useList WHERE concretename=?;"
             deleteList = []
             updateList = []
             setList = []
             for (concretename, count) in inputlist:
+                print >>open("/tmp/foo1","a"), os.getpid(), "concretename is %s and count is %d" %(concretename,count)
                 self.cursor.execute(fetch, (concretename,))
                 rows = self.cursor.fetchall()
                 curcount = None
@@ -452,7 +460,8 @@ class JobPersistence:
             set = "INSERT INTO useList VALUES(?,?);"
             self.cursor.executemany(set, setList)
             # defer real deletes to occur outside the transaction.
-            self.deleteList = deleteList 
+            self.deleteList = deleteList
+            print >>open("/tmp/foo1","a"), os.getpid(),"del_list:", deleteList
             pass
         def postExecute(self):
             """after transaction completes, process deferred behavior.
@@ -462,6 +471,7 @@ class JobPersistence:
             for f in self.deleteList:
                 try:
                     print "unlinking f", f[0]
+                    print >>open("/tmp/foo1","a"), os.getpid(),"try del", f[0]
                     os.unlink(f[0])
                 except OSError,e:
                     # log error... FIXME before going production
