@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.43 2006-11-11 07:00:52 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.44 2006-11-11 20:58:29 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -6,7 +6,7 @@
 Debian:	    http://packages.debian.org/unstable/math/nco.html
 Gentoo:	    http://gentoo-stable.iq-computing.de/browse?type=version&category=app-sci&package=nco&version=2.2.0
 
-Rod02 is Bible for packaging .deb's: /data/zender/tmp/maint-guide.en.pdf
+Rod05 is Bible for packaging .deb's: /data/zender/tmp/debian.pdf
 Questions on procedure go to Debian Mentors <debian-mentors@lists.debian.org> 
 
 0. Install Debian packages required to build new packages
@@ -87,8 +87,18 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
    chmod a+x ~/nco/debian/rules
 # Build Debs using Debian libraries and include
    export NETCDF_LIB=/usr/lib NETCDF_INC=/usr/include
-   cd ~/nco;cvs commit -m "";dpkg-buildpackage -rfakeroot > foo 2>&1
+   cd ~/nco;cvs commit -m "";dpkg-buildpackage -rfakeroot > ~/nco/foo 2>&1
+# Copy to distribution site
+   scp ~/nco_3.1.7* dust.ess.uci.edu:/var/www/html/nco/src
+   scp ~/nco/foo dust.ess.uci.edu:/var/www/html/nco/src/nco_3.1.7-1.dpkg-buildpackage.txt
 # Save all files in emacs before tagging
 # Tag CVS code after changing files in ~/nco/debian
    cd ~/nco;cvs commit -m "Preparing nco-3.1.7 release";cvs tag -c nco-3_1_7
    ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-3_1_7
+ 
+http://dust.ess.uci.edu/nco/src/nco_3.1.7-1.dpkg-buildpackage.txt
+http://dust.ess.uci.edu/nco/src/nco_3.1.7-1.dsc
+http://dust.ess.uci.edu/nco/src/nco_3.1.7-1_i386.changes
+http://dust.ess.uci.edu/nco/src/nco_3.1.7-1_i386.deb
+http://dust.ess.uci.edu/nco/src/nco_3.1.7-1.tar.gz
+
