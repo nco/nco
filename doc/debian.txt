@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.42 2006-11-11 05:34:21 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.43 2006-11-11 07:00:52 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -11,6 +11,9 @@ Questions on procedure go to Debian Mentors <debian-mentors@lists.debian.org>
 
 0. Install Debian packages required to build new packages
 apt-get install dh-make debhelper devscripts fakeroot gnupg debian-policy developers-reference
+
+0.5 Create key to sign packages
+   gpg --gen-key
 
 1. Create ~/nco/debian directory to hold Debian configuration files
    Following files were
@@ -45,6 +48,7 @@ dh_make -e zender@uci.edu -f ../nco-3.1.7.tar.gz
 
    cd ~/nco;/bin/rm *.gz
    cd ~/nco/nco-3.1.7;
+   export NETCDF_LIB=/usr/lib NETCDF_INC=/usr/include
    dpkg-buildpackage -rfakeroot > foo 2>&1
 
 4. Find out which packages new package needs for building
@@ -81,6 +85,8 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
    dch -v 3.1.7-1 # Update changelog
 # For unknown reason rules file may lose its executable bit
    chmod a+x ~/nco/debian/rules
+# Build Debs using Debian libraries and include
+   export NETCDF_LIB=/usr/lib NETCDF_INC=/usr/include
    cd ~/nco;cvs commit -m "";dpkg-buildpackage -rfakeroot > foo 2>&1
 # Save all files in emacs before tagging
 # Tag CVS code after changing files in ~/nco/debian

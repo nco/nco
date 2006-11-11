@@ -24693,20 +24693,16 @@ _ACEOF
 	fi  # End test for HDF5 libs
 
 elif (test "${enable_netcdf4}" = 'no' && test "${enable_dap}" = 'no'); then
-	# Try next stanza iff --enable-netcdf4=no / --disable-netcdf4
-	# && look for real netCDF library only if enable_dap is false. jhrg 05/26/05
-	# HOWEVER: if have installed libnetcdf4 instead of libnetcdf3x, have to also link in
-	# the hdf5 libs to get it to compile correctly, just as above.
-	# Add user-specified netCDF locations, if any, else add /usr/local locations if they exist
+	# Try next stanza iff enable-netcdf4=no
+        # Look for real netCDF library iff enable_dap=no jhrg 05/26/05
+	# However: If libnetcdf4 installed instead of libnetcdf3x,
+	# must link with HDF5 libraries to compile correctly.
+	# User-specified netCDF locations, if any, take precedence
 	if test "${NETCDF_LIB}"; then
 		if test -d "${NETCDF_LIB}"; then
 			LDFLAGS="-L${NETCDF_LIB} ${LDFLAGS} "
 		else
 			echo "WARNING: NETCDF_LIB location \"${NETCDF_LIB}\" does not exist!"
-		fi
-	else
-		if test -d "/usr/local/lib"; then
-			LDFLAGS="-L/usr/local/lib ${LDFLAGS}"
 		fi
 	fi # !NETCDF_LIB
 	if test "${NETCDF_INC}"; then
@@ -24715,13 +24711,8 @@ elif (test "${enable_netcdf4}" = 'no' && test "${enable_dap}" = 'no'); then
 		else
 			echo "WARNING: NETCDF_INC location \"${NETCDF_INC}\" does not exist!"
 		fi
-	else
-		if test -d "/usr/local/include"; then
-			CPPFLAGS="-I/usr/local/include ${CPPFLAGS}"
-		fi
 	fi # !NETCDF_INC
 fi # enable_dap
-
 
 # At this point we either want netCDF4 and have HDF5 or have used DAP's libnetcdf
 # or do not have HDF5 and do not want netCDF4 (aka just want netCDF3)
@@ -27101,7 +27092,7 @@ if (test "${enable_mpi}" = 'yes'); then
 	# Following may have to AC_DEFINE ENABLE_MPI to pass to Makefile
 	# Check whether --enable-mpi was given.
 if test "${enable_mpi+set}" = set; then
-  enableval=$enable_mpi; enable_mpi=yes
+  enableval=$enable_mpi; enable_mpi=${enableval}
 else
   enable_mpi=no
 fi

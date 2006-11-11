@@ -1,5 +1,9 @@
 2006-11-10  Charlie Zender  <zender@uci.edu>
 
+	* Tweak configure.in to work with pure Debian assumptions
+
+	* Fix --disable-netcdf4 handling in configure.in
+
 	* Merged Debian nco_2.9.9-3.diff into upstream sources
 
 	* Removed UDUnits support from Debian build
