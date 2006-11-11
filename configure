@@ -24102,7 +24102,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 # Check whether --enable-netcdf4 was given.
 if test "${enable_netcdf4+set}" = set; then
-  enableval=$enable_netcdf4; enable_netcdf4=yes
+  enableval=$enable_netcdf4; enable_netcdf4=${enableval}
 else
   enable_netcdf4=no
 fi

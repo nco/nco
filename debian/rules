@@ -45,6 +45,7 @@ config.status: configure
 		    --disable-dap \
 		    --disable-nco_cplusplus \
 		    --disable-ncoxx \
+		    --disable-netcdf4 \
 		    --disable-udunits \
 		    --disable-static
 

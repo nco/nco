@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.193 2006-11-11 05:34:21 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.194 2006-11-11 06:00:58 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -226,7 +226,7 @@ if (test "${enable_ncoxx}" != 'no'); then
 fi
 AC_LANG_POP([C++])
 
-AC_ARG_ENABLE(netcdf4,AS_HELP_STRING([--enable-netcdf4],[Use netCDF Version 4 (WARNING: Experimental) [[default=no]]]),enable_netcdf4=yes,enable_netcdf4=no)
+AC_ARG_ENABLE(netcdf4,AS_HELP_STRING([--enable-netcdf4],[Use netCDF Version 4 (WARNING: Experimental) [[default=no]]]),enable_netcdf4=${enableval},enable_netcdf4=no)
 
 # Check to see if netCDF4 is requested
 echo "DEBUG: enable_netcdf4: ${enable_netcdf4} & enable_dap: ${enable_dap}"
