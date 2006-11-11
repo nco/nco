@@ -1,3 +1,9 @@
+nco (3.1.7-1) unstable; urgency=low
+
+  * ncap2 double-parsing, incorporate downstream debian nco_2.9.9-3 patches
+
+ -- Charlie Zender <zender@localhost.localdomain>  Fri, 10 Nov 2006 21:32:19 -0800
+
 nco (3.1.6-1) unstable; urgency=low
 
   * Support stride in all dimensions for all hyperslabbing operators
