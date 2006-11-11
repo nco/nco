@@ -1,10 +1,11 @@
-#!/bin/sh -e
+#!/bin/sh
+set -e
 
 if [ "$1" = configure ]; then
     install-info --quiet \
       --section "netCDF" "netCDF" \
       --description="netCDF Operator suite." \
       /usr/share/info/nco.info
-    pkg=nco
 fi
+
 #DEBHELPER#

@@ -64,11 +64,54 @@ nco (3.0.0-1) unstable; urgency=low
 
  -- Charlie Zender <zender@uci.edu>  Thu, 24 Mar 2005 12:46:10 -0800
 
-nco (2.9.9-1) unstable; urgency=low
+nco (2.9.9-3) unstable; urgency=low
+
+  * QA upload.
+  * Add missing build dependencies on flex and bison.
+  * debian/rules: Add (empty) binary-indep target.  Closes: #395719.
+  * Conforms to Standards version 3.7.2.
+
+ -- Matej Vela <vela@debian.org>  Sat, 28 Oct 2006 16:22:58 +0200
+
+nco (2.9.9-2) unstable; urgency=medium
+
+  * QA upload.
+  * Remove unnecessary build dependency on netcdfg3; let netcdfg-dev pull
+    in the appropriate library package.  Closes: #352026.
+  * Move libnco from /usr/lib to /usr/lib/nco.  Providing a public library
+    would require a separate libnco-2.9.9 package, which is overkill ATM.
+  * data/udunits.dat: Used only with UDUnits, which is not packaged for
+    Debian; remove.
+  * debian/copyright:
+    - Update FSF address.
+    - Remove outdated (and no longer required) list of changes.
+  * debian/nco.doc-base:
+    - Word-wrap description.
+    - Change section to Apps/Math.
+    - Add a stanza for info files.
+  * debian/postinst, debian/prerm, debian/info: Invoke install-info
+    manually with a section argument as nco.info doesn't specify one.
+  * debian/postrm: Remove cruft.
+  * debian/rules:
+    - Pass CFLAGS to configure.
+    - When DEB_BUILD_GNU_TYPE and DEB_HOST_GNU_TYPE are the same, pass
+      only --build to configure (otherwise it enters cross-compile mode).
+    - Let dh_strip handle DEB_BUILD_OPTIONS=nostrip.
+  * Conforms to Standards version 3.6.2.
+
+ -- Matej Vela <vela@debian.org>  Sun, 12 Feb 2006 10:21:06 +0100
+
+nco (2.9.9-1) unstable; urgency=medium
+
+  * QA upload integrating long due changes due to Charlie Zender and Rorik Peterson.
+    (closes: #254627,#254625,#265106)
+  * Maintainer set to QA team.
+
+  [ Rorik Peterson ]
 
   * 1. ncbo threading 2. ncpdq -P packing
 
- -- Charlie Zender <zender@uci.edu>  Fri,  3 Sep 2004 22:05:59 -0700
+ -- Francesco Paolo Lovergine <frankie@debian.org>  Sat, 25 Sep 2004 12:14:26 +0200
 
 nco (2.9.8-1) unstable; urgency=low
 

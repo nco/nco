@@ -1,2 +1,8 @@
-#!/bin/sh -e
+#!/bin/sh
+set -e
+
+if [ "$1" = remove ] || [ "$1" = upgrade ]; then
+	install-info --quiet --remove /usr/share/info/nco.info
+fi
+
 #DEBHELPER#

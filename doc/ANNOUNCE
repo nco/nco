@@ -1,13 +1,21 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.189 2006-10-21 00:54:56 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.190 2006-11-11 05:17:01 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.6 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release supports powerful new ncap2 features such as fxm
+This release marks the deprecation of ncap for ncap2.
+ncap2 is backward-compatible with ncap, and provides much
+more powerful functionality now and its features are improving.
+We will continue to ship ncap though we encourage migration to ncap2 
+starting now.
 
-
+Note that building ncap2 requires the ANTLR library and headers which 
+in turn require Java. It is trivial to install ANTLR with Linux (i.e.,
+apt-get install antlr libantlr-dev) but non-trivial on big-iron UNIX
+if sysadmins are not used to supporting Java or ANTLR. So if you want
+ncap2 on non-Linux machines, be nice to your sysadmins.
 
 Build/runtime changes:
 
@@ -17,7 +25,7 @@ Build/runtime changes:
 
 3. Document hdr_pad options
 
-4. 
+4. ncap2 supports "double-parsing"
 
 Enjoy,
 Charlie

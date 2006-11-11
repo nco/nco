@@ -21,29 +21,36 @@ export DH_OPTIONS
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
+ifeq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
+	confflags := --build=$(DEB_BUILD_GNU_TYPE)
+else
+	confflags := --build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
+endif
 
-CFLAGS = -Wall -g
-
+export CFLAGS := -Wall -g
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
 else
 	CFLAGS += -O2
 endif
-ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
-	INSTALL_PROGRAM += -s
-endif
 
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
-	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --disable-nco_cplusplus --disable-static UDUNITS_PATH=/usr/share/nco/udunits.dat
+	./configure $(confflags) \
+		    --prefix=/usr \
+		    --mandir=/usr/share/man \
+		    --infodir=/usr/share/info \
+		    --libdir=/usr/lib/nco \
+		    --disable-nco_cplusplus \
+		    --disable-udunits \
+		    --disable-static
 
 #Architecture 
 build: build-arch
 
 build-arch: build-arch-stamp
 build-arch-stamp:  config.status
-	
 	# Add here commands to compile the arch part of the package.
 	$(MAKE) 
 	cd doc && $(MAKE) nco.info
@@ -57,7 +64,7 @@ clean:
 
 	# Add here commands to clean up after the build process.
 	-$(MAKE) distclean
-	
+
 	dh_clean
 
 
@@ -85,7 +92,6 @@ binary-common:
 	dh_installchangelogs doc/ChangeLog
 	dh_installdocs doc/*.html
 	dh_installexamples
-	dh_install data/udunits.dat /usr/share/nco/
 #	dh_installmenu
 #	dh_installdebconf	
 #	dh_installlogrotate	
@@ -94,7 +100,7 @@ binary-common:
 #	dh_installmime
 #	dh_installinit
 #	dh_installcron
-	dh_installinfo -a
+	dh_installinfo
 	dh_installman
 	dh_link
 	dh_strip
@@ -102,17 +108,20 @@ binary-common:
 	dh_fixperms
 #	dh_perl
 #	dh_python
-	dh_makeshlibs
 	dh_installdeb
-# add the lib directory since there are multiple binaries, see dh_makeshlibs(1)
-	dh_shlibdeps -l debian/nco/usr/lib
+	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
+
+# Build architecture independant packages using the common target.
+binary-indep: build install
+# (Uncomment this next line if you have such packages.)
+#	 $(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
 
 # Build architecture dependant packages using the common target.
 binary-arch: build-arch install-arch
 	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-common
 
-binary: binary-arch 
-.PHONY: build clean binary-arch binary install install-arch 
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install install-arch 

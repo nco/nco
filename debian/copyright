@@ -4,19 +4,19 @@ This is the Debian GNU/Linux prepackaged version of the netCDF Operators
 This package was originally put together by Brian Mays <brian@debian.org>
 from software obtained from
  ftp://ftp.cgd.ucar.edu/pub/zender/nco/
-Beginning March, 2003, Charlie Zender attempted to merge Debian changes
-into upstream source in SourceForge CVS repository
-More information can be found at:
- http://nco.sourceforge.net
-Modifications of NCO package for Debian GNU/Linux Copyright (C)
-1999-2002 Brian Mays and are released under the GPL (on Debian systems
-see "/usr/share/common-licenses/GPL").
 
-Changes:
- * added Debian GNU/Linux package maintenance system files
- * removed makefile dependence on rpm
- * added arm support
- * added man pages
+Modifications of NCO package for Debian GNU/Linux made from 1999--2002
+are Copyright (C) Brian Mays and were released under the GPL 
+(on Debian systems see "/usr/share/common-licenses/GPL").
+
+Beginning March, 2003, Charlie Zender merged Debian changes into 
+upstream source in SourceForge CVS repository. 
+More information at package homepage http://nco.sourceforge.net
+
+On June 15, 2003, Charlie Zender changed the NCO license, except where  
+explicitly noted otherwise, from GPL to GPL version 2 (not any later version).
+Also at this time the explicit compatibility exceptions for the HDF, netCDF,
+OPeNDAP, and UDUnits licenses were introduced.
 
 NCO is copyright (C) 1995--2006 Charlie Zender
 
@@ -37,7 +37,7 @@ NCO is copyright (C) 1995--2006 Charlie Zender
    
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA.
 
    The original author of this software, Charlie Zender, wants to improve it
    with the help of your suggestions, improvements, bug-reports, and patches.

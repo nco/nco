@@ -1,9 +1,9 @@
 Source: nco
 Section: math
 Priority: optional
-Maintainer: Rorik Peterson <rorik@chabuku.iarc.uaf.edu>
-Build-Depends: debhelper (>> 4.0.0), netcdf3, netcdf-dev, texinfo
-Standards-Version: 3.6.1
+Maintainer: Debian QA Group <packages@qa.debian.org>
+Build-Depends: debhelper (>> 4.0.0), netcdfg-dev, flex, bison, texinfo
+Standards-Version: 3.7.2
 
 Package: nco
 Architecture: any

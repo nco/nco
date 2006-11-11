@@ -1,3 +1,14 @@
+2006-11-10  Charlie Zender  <zender@uci.edu>
+
+	* Merged Debian nco_2.9.9-3.diff into upstream sources
+
+	* Removed UDUnits support from Debian build
+
+	* Update debian/convert, copyright, prerm, rules, nco.doc-base,
+	postinst, 
+
+	* Added udunits.dat for eventual Debian compatibility
+
 2006-10-24  Charlie Zender  <zender@uci.edu>
 
 	* Replace ncap by ncap2 in all benchmarks and in regression tests
