@@ -1,8 +1,8 @@
 info_TEXINFOS = nco.texi
 EXTRA_DIST = nco.pdf nco.ps nco.html VERSION
-CLEANFILES = nco.info* nco.html
+CLEANFILES = nco.info* nco.html nco.pdf
 
-# our own additions for NCO; they may be supported by automake later on
+# Our own additions for NCO; they may be supported by automake later on
 html_docs = nco.html
 .texi.html:
 	$(MAKEINFO) --html --no-split $<

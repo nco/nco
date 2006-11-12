@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.46 2006-11-12 20:20:53 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.47 2006-11-12 22:40:14 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -133,10 +133,10 @@ Matej Vela <vela@debian.org>, Daniel Baumann <daniel@debian.org>, Warren Turkal 
 # Lintian check of packages
 cd ~/nco;dpkg-buildpackage -rfakeroot -uc -us > ~/nco/foo 2>&1
 sudo dpkg --install ~/nco_3.1.7-1_i386.deb
-sudo dpkg --remove ~/nco_3.1.7-1_i386.deb
+lintian ~/nco_3.1.7-1_i386.deb
+sudo dpkg --remove nco
 
-# Lintian check of packages
-zender@ashes:~$ lintian ~/nco_3.1.7-1_i386.deb
+csz: shouldn't this be a file not a directory?
 E: nco: doc-base-file-references-missing-file nco:15 /usr/share/doc/nco/nco.html
 
 # Warnings/errors in .build to fix

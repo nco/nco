@@ -1,7 +1,7 @@
 Source: nco
 Section: math
 Priority: optional
-Maintainer: Debian QA Group <packages@qa.debian.org>
+Maintainer: Charlie Zender <zender@uci.edu>
 Build-Depends: debhelper (>> 4.0.0), netcdfg-dev, flex, bison, texinfo
 Standards-Version: 3.7.2
 

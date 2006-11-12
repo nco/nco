@@ -1,5 +1,7 @@
 2006-11-12  Charlie Zender  <zender@uci.edu>
 
+	* Update copyright year in man pages
+
 	* Do not create mpncdiff,mpncea,mpncrcat links when enable_mpi=false
 
 2006-11-10  Charlie Zender  <zender@uci.edu>
@@ -15,7 +17,7 @@
 	* Update debian/convert, copyright, prerm, rules, nco.doc-base,
 	postinst, 
 
-	* Added udunits.dat for eventual Debian compatibility
+	* Added udunits.dat for eventual Debian compatibility (a mistake?)
 
 2006-10-24  Charlie Zender  <zender@uci.edu>
 
