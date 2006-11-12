@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.191 2006-11-11 05:34:21 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.192 2006-11-12 22:58:37 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.7 are ready. 
 
@@ -8,14 +8,17 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 This release marks the deprecation of ncap for ncap2.
 ncap2 is backward-compatible with ncap, and provides much
 more powerful functionality now and its features are improving.
-We will continue to ship ncap though we encourage migration to ncap2 
-starting now.
+We encourage migration to ncap2 starting now.
+We will maintain ncap for the foreseeable future.
 
-Note that building ncap2 requires the ANTLR library and headers which 
-in turn require Java. It is trivial to install ANTLR with Linux (i.e.,
-apt-get install antlr libantlr-dev) but non-trivial on big-iron UNIX
-if sysadmins are not used to supporting Java or ANTLR. So if you want
-ncap2 on non-Linux machines, be nice to your sysadmins.
+Building ncap2 requires the ANTLR library and headers which in turn
+require Java. It is trivial to install ANTLR with Linux (i.e., apt-get
+install antlr libantlr-dev) but non-trivial on big-iron UNIX if
+sysadmins are not used to supporting Java or ANTLR. 
+If you want ncap2 on non-Linux machines, be nice to your sysadmins!
+
+Finally this release marks the return of pre-built, up-to-date, Debian
+binary packages. Grab 'em from http://nco.sf.net#debian
 
 Build/runtime changes:
 
@@ -26,6 +29,8 @@ Build/runtime changes:
 3. Document hdr_pad options
 
 4. ncap2 supports "double-parsing"
+
+5. Update Debian support
 
 Enjoy,
 Charlie
