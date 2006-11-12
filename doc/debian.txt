@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.44 2006-11-11 20:58:29 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.45 2006-11-12 06:59:44 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -95,10 +95,32 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
 # Tag CVS code after changing files in ~/nco/debian
    cd ~/nco;cvs commit -m "Preparing nco-3.1.7 release";cvs tag -c nco-3_1_7
    ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-3_1_7
- 
+
+# Location of build diagnostics for mentors to help 
 http://dust.ess.uci.edu/nco/src/nco_3.1.7-1.dpkg-buildpackage.txt
 http://dust.ess.uci.edu/nco/src/nco_3.1.7-1.dsc
 http://dust.ess.uci.edu/nco/src/nco_3.1.7-1_i386.changes
 http://dust.ess.uci.edu/nco/src/nco_3.1.7-1_i386.deb
 http://dust.ess.uci.edu/nco/src/nco_3.1.7-1.tar.gz
 
+# Becoming a Debian developer
+http://www.debian.org/devel/join/newmaint
+
+Work-Needing and Prospective Packages (WNPP)
+Intent to Adopt (ITA)
+Request for Package (RFP)
+
+# NCO orphan/ITA bug
+http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=273322
+# netCDF orphan/ITA bug
+http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=321336
+
+# Debian QA member who is de facto NCO maintainer
+Matej Vela <vela@debian.org>
+# Listed as wanting to adopt nco and netcdf packages
+Daniel Baumann <daniel.baumann@panthera-systems.net>
+Daniel Baumann <daniel@debian.org>
+# Created netCDF 3.6.1 package
+Warren Turkal <wt@atmos.colostate.edu>
+
+Matej Vela <vela@debian.org>, Daniel Baumann <daniel@debian.org>, Warren Turkal <wt@atmos.colostate.edu>
