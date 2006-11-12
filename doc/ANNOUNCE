@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.192 2006-11-12 22:58:37 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.193 2006-11-12 23:02:19 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.7 are ready. 
 
@@ -26,7 +26,7 @@ Build/runtime changes:
 
 2. Die gracefully rather than segfault on mal-formed hyperslab strings
 
-3. Document hdr_pad options
+3. Document --hdr_pad options http://nco.sf.net/nco.html#hdr
 
 4. ncap2 supports "double-parsing"
 

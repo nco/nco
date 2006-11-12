@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.362 2006-11-11 05:34:21 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.363 2006-11-12 22:58:37 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -530,15 +530,11 @@ testing and porting of NCO on the
 <li><a href="http://www.debian.org">Debian</a> GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-3.1.7</a></li>
 -->
 <a href="http://packages.debian.org/unstable/math/nco.html">Debian GNU/Linux homepage for NCO</a>.
-<a href="http://www.debian.org">debs</a> by Rorik Peterson and Charlie Zender:
-<li><i>We cannot produce up-to-date Debian NCO packages until the Debian
-netCDF maintainer upgrades the netCDF package to version&nbsp;3.6.
-Links to the Debian NCO packages below will remain broken until that time.</i></li>
+<a href="http://www.debian.org">debs</a> by Charlie Zender:
 <li><a href="src/nco_3.1.7-1_i386.deb">nco_3.1.7-1_i386.deb</a> (<!--#fsize file="src/nco_3.1.7-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
 <li><a href="src/nco_3.1.7-1.dsc">nco_3.1.7-1.dsc</a> (<!--#fsize file="src/nco_3.1.7-1.dsc"-->): Description</li>
 <li><a href="src/nco_3.1.7-1.tar.gz">nco_3.1.7-1.tar.gz</a> (<!--#fsize file="src/nco_3.1.7-1.tar.gz"-->): Gzipped Source Tarball</li>
-<li><a
-href="src/nco_3.1.7-1_i386.changes">nco_3.1.7-1_i386.changes</a> (<!--#fsize file="src/nco_3.1.7-1.changes"-->): Changes</li> (An SSI error here is expected since there are no changes between the official tarball and the Debian tarball so #fsize reports an error. Anyone know?)
+<li><a href="src/nco_3.1.7-1_i386.changes">nco_3.1.7-1_i386.changes</a> (<!--#fsize file="src/nco_3.1.7-1.changes"-->): Changes</li> (An SSI error here is expected since there are no changes between the official tarball and the Debian tarball so #fsize reports an error. Anyone know?)
 </ul>
 
 <a name="redhat"></a>
