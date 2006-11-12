@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.71 2006-10-27 00:02:12 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.72 2006-11-12 20:20:53 zender Exp $ -*-makefile-*-
 
 
 srcdir = @srcdir@
@@ -366,7 +366,7 @@ mpncpdq_LDADD = libnco.la
 mpncra_SOURCES = mpncra.c
 mpncra_LDADD = libnco.la
 
-# ncwa also requires ncap_yacc.y, but that should already be built with ncap
+# ncwa also requires ncap_yacc.y which should already have been built for ncap
 ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l ncap_yacc.c
 ncwa_LDADD = libnco.la
 mpncwa_SOURCES = mpncwa.c ncap_utl.c ncap_lex.l ncap_yacc.c
@@ -975,9 +975,9 @@ install-exec-hook:
 	cd $(DESTDIR)$(bindir) && ln -s -f ncbo ncdiff || (rm -f ncdiff && ln -s -f ncbo ncdiff)
 	cd $(DESTDIR)$(bindir) && ln -s -f ncra ncea || (rm -f ncea && ln -s -f ncra ncea)
 	cd $(DESTDIR)$(bindir) && ln -s -f ncra ncrcat || (rm -f ncrcat && ln -s -f ncra ncrcat)
-	cd $(DESTDIR)$(bindir) && ln -s -f mpncbo mpncdiff || (rm -f mpncdiff && ln -s -f mpncbo mpncdiff)
-	cd $(DESTDIR)$(bindir) && ln -s -f mpncra mpncea || (rm -f mpncea && ln -s -f mpncra mpncea)
-	cd $(DESTDIR)$(bindir) && ln -s -f mpncra mpncrcat || (rm -f mpncrcat && ln -s -f mpncra mpncrcat)
+@ENABLE_MPI_TRUE@	cd $(DESTDIR)$(bindir) && ln -s -f mpncbo mpncdiff || (rm -f mpncdiff && ln -s -f mpncbo mpncdiff)
+@ENABLE_MPI_TRUE@	cd $(DESTDIR)$(bindir) && ln -s -f mpncra mpncea || (rm -f mpncea && ln -s -f mpncra mpncea)
+@ENABLE_MPI_TRUE@	cd $(DESTDIR)$(bindir) && ln -s -f mpncra mpncrcat || (rm -f mpncrcat && ln -s -f mpncra mpncrcat)
 
 uninstall-hook:
 	cd $(DESTDIR)$(bindir) && rm -f ncdiff ncea ncrcat mpncdiff mpncea mpncrcat

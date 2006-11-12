@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.45 2006-11-12 06:59:44 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.46 2006-11-12 20:20:53 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -16,13 +16,12 @@ apt-get install dh-make debhelper devscripts fakeroot gnupg debian-policy develo
    gpg --gen-key
 
 1. Create ~/nco/debian directory to hold Debian configuration files
-   Following files were
 
 2. Debian build procedure recommends placing entire package source in
    subdirectory of main package. 
    For starters, we wish to create .debs of tagged releases, e.g., nco-3.1.7
    First we create a clean source distribution of nco and place it in nco-3.1.7
-   Once automated, we will use cvs co -rnco-3_1_7 to get the source
+   Once automated, we will use cvs co -rnco-3_1_7 to get source
    Until we know what is necessary, however, we just copy a snapshot
    
    2.1 Clean all build files from development directory
@@ -87,7 +86,10 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
    chmod a+x ~/nco/debian/rules
 # Build Debs using Debian libraries and include
    export NETCDF_LIB=/usr/lib NETCDF_INC=/usr/include
-   cd ~/nco;cvs commit -m "";dpkg-buildpackage -rfakeroot > ~/nco/foo 2>&1
+   cd ~/nco;cvs commit -m "Preparing nco-3.1.7 release";
+# -uc -us : Tell dpkg-buildpackage not to sign the package upload
+# -rfakeroot : 
+   cd ~/nco;dpkg-buildpackage -rfakeroot -uc -us > ~/nco/foo 2>&1
 # Copy to distribution site
    scp ~/nco_3.1.7* dust.ess.uci.edu:/var/www/html/nco/src
    scp ~/nco/foo dust.ess.uci.edu:/var/www/html/nco/src/nco_3.1.7-1.dpkg-buildpackage.txt
@@ -105,10 +107,13 @@ http://dust.ess.uci.edu/nco/src/nco_3.1.7-1.tar.gz
 
 # Becoming a Debian developer
 http://www.debian.org/devel/join/newmaint
+# Debian mentor FAQ
+http://people.debian.org/~mpalmer/debian-mentors_FAQ.html
 
 Work-Needing and Prospective Packages (WNPP)
 Intent to Adopt (ITA)
 Request for Package (RFP)
+Request for Sponsor (RFS)
 
 # NCO orphan/ITA bug
 http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=273322
@@ -124,3 +129,36 @@ Daniel Baumann <daniel@debian.org>
 Warren Turkal <wt@atmos.colostate.edu>
 
 Matej Vela <vela@debian.org>, Daniel Baumann <daniel@debian.org>, Warren Turkal <wt@atmos.colostate.edu>
+
+# Lintian check of packages
+cd ~/nco;dpkg-buildpackage -rfakeroot -uc -us > ~/nco/foo 2>&1
+sudo dpkg --install ~/nco_3.1.7-1_i386.deb
+sudo dpkg --remove ~/nco_3.1.7-1_i386.deb
+
+# Lintian check of packages
+zender@ashes:~$ lintian ~/nco_3.1.7-1_i386.deb
+E: nco: doc-base-file-references-missing-file nco:15 /usr/share/doc/nco/nco.html
+
+# Warnings/errors in .build to fix
+libtool: install: warning: remember to run `libtool --finish /usr/lib/nco'
+libtool: install: warning: `libnco.la' has not been installed in `/usr/lib/nco'
+libtool: install: warning: `libnco.la' has not been installed in `/usr/lib/nco'
+libtool: install: warning: `libnco.la' has not been installed in `/usr/lib/nco'
+libtool: install: warning: `libnco.la' has not been installed in `/usr/lib/nco'
+libtool: install: warning: `libnco.la' has not been installed in `/usr/lib/nco'
+libtool: install: warning: `libnco.la' has not been installed in `/usr/lib/nco'
+dpkg-shlibdeps: warning: could not find any packages for libnco-3.1.7.so
+dpkg-shlibdeps: warning: unable to find dependency information for shared library libnco (soname 3.1.7, path libnco-3.1.7.so, dependency field Depends)
+dh_builddeb tar: -: file name read contains nul character
+
+# From Thijs Kinkhorst <thijs@debian.org>
+- Your package is "Debian native" while there's no reason to. You should
+make it a regular package, i.e. with an orig.tar.gz as it is released
+upstream, and a .diff.gz containing Debian-specific changes.
+
+As with the specifics of your package the following:
+- You have put the debian/ directory into upstream CVS. This is no
+problem, but it must *not* be in any released tarballs. There's detailed
+information / discussion about this to be found in the -mentors list
+archives, but in short: this gets weird if someone changes the package
+within Debian without committing it to upstream (e.g. a later NMU).

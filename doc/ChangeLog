@@ -1,3 +1,7 @@
+2006-11-12  Charlie Zender  <zender@uci.edu>
+
+	* Do not create mpncdiff,mpncea,mpncrcat links when enable_mpi=false
+
 2006-11-10  Charlie Zender  <zender@uci.edu>
 
 	* Tweak configure.in to work with pure Debian assumptions

@@ -1,6 +1,9 @@
 nco (3.1.7-1) unstable; urgency=low
 
   * ncap2 double-parsing, incorporate downstream debian nco_2.9.9-3 patches
+  * Most NCO bug-fixes and features from 2.9.9--3.1.7:
+    - ncap2 not incorporated yet because antlr dependencies not handled
+    - libnco_c++ and lib_nco++ not build yet
 
  -- Charlie Zender <zender@localhost.localdomain>  Fri, 10 Nov 2006 21:32:19 -0800
 

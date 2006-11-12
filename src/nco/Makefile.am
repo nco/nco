@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.am,v 1.34 2006-08-25 05:05:19 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.am,v 1.35 2006-11-12 20:20:53 zender Exp $ -*-makefile-*-
 
 if BUILD_YACC_SOURCE
 NCAP=ncap
@@ -27,7 +27,7 @@ endif
 if ENABLE_MPI
 bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename mpncbo mpncecat mpncflint mpncpdq mpncra mpncwa ${NCWA}
 else
-bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename  ${NCWA}
+bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ${NCWA}
 endif
 
 AM_YFLAGS = -d
@@ -74,8 +74,7 @@ mpncpdq_LDADD = libnco.la
 mpncra_SOURCES = mpncra.c
 mpncra_LDADD = libnco.la
 
-
-# ncwa also requires ncap_yacc.y, but that should already be built with ncap
+# ncwa also requires ncap_yacc.y which should already have been built for ncap
 ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l ncap_yacc.c
 ncwa_LDADD = libnco.la
 
@@ -172,9 +171,11 @@ install-exec-hook:
 	cd $(DESTDIR)$(bindir) && ln -s -f ncbo ncdiff || (rm -f ncdiff && ln -s -f ncbo ncdiff)
 	cd $(DESTDIR)$(bindir) && ln -s -f ncra ncea || (rm -f ncea && ln -s -f ncra ncea)
 	cd $(DESTDIR)$(bindir) && ln -s -f ncra ncrcat || (rm -f ncrcat && ln -s -f ncra ncrcat)
+if ENABLE_MPI
 	cd $(DESTDIR)$(bindir) && ln -s -f mpncbo mpncdiff || (rm -f mpncdiff && ln -s -f mpncbo mpncdiff)
 	cd $(DESTDIR)$(bindir) && ln -s -f mpncra mpncea || (rm -f mpncea && ln -s -f mpncra mpncea)
 	cd $(DESTDIR)$(bindir) && ln -s -f mpncra mpncrcat || (rm -f mpncrcat && ln -s -f mpncra mpncrcat)
+endif
 
 uninstall-hook:
 	cd $(DESTDIR)$(bindir) && rm -f ncdiff ncea ncrcat mpncdiff mpncea mpncrcat
