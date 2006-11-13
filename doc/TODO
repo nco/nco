@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.830 2006-11-12 23:08:58 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.831 2006-11-13 00:08:58 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -537,8 +537,10 @@ nco779. Add non-record stride checks to regression tests e.g.,
 nco780. bm: ncap regression test 8 fails because of quieter info messages
 nco781. Add ncks option to suppress creating temporary output file in -A mode, simply copy input file first? Seems unlikely this will save time.
 nco784. Build NCO on NMI test lab http://nmi.cs.wisc.edu/
-nco786. Make lintian-clean
-nco787. 
+nco786. dbn: Make lintian-clean
+nco787. dbn: Remove nco/debian from tarfiles
+nco788. dbn: Add package.doc-base
+nco789. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.47 2006-11-12 22:40:14 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.48 2006-11-13 00:08:58 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -131,6 +131,11 @@ Warren Turkal <wt@atmos.colostate.edu>
 Matej Vela <vela@debian.org>, Daniel Baumann <daniel@debian.org>, Warren Turkal <wt@atmos.colostate.edu>
 
 # Lintian check of packages
+/bin/rm -r ${DATA}/nco-3.1.7 # Cleanup
+cd ${DATA};cvs -d zender@nco.cvs.sourceforge.net:/cvsroot/nco export -kkv -r nco-3_1_7 -d nco-3.1.7 nco # Export
+/bin/rm -r ${DATA}/nco-3.1.7/debian
+
+
 cd ~/nco;dpkg-buildpackage -rfakeroot -uc -us > ~/nco/foo 2>&1
 sudo dpkg --install ~/nco_3.1.7-1_i386.deb
 lintian ~/nco_3.1.7-1_i386.deb

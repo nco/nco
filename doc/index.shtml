@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.363 2006-11-12 22:58:37 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.364 2006-11-13 00:08:58 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -534,7 +534,7 @@ testing and porting of NCO on the
 <li><a href="src/nco_3.1.7-1_i386.deb">nco_3.1.7-1_i386.deb</a> (<!--#fsize file="src/nco_3.1.7-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
 <li><a href="src/nco_3.1.7-1.dsc">nco_3.1.7-1.dsc</a> (<!--#fsize file="src/nco_3.1.7-1.dsc"-->): Description</li>
 <li><a href="src/nco_3.1.7-1.tar.gz">nco_3.1.7-1.tar.gz</a> (<!--#fsize file="src/nco_3.1.7-1.tar.gz"-->): Gzipped Source Tarball</li>
-<li><a href="src/nco_3.1.7-1_i386.changes">nco_3.1.7-1_i386.changes</a> (<!--#fsize file="src/nco_3.1.7-1.changes"-->): Changes</li> (An SSI error here is expected since there are no changes between the official tarball and the Debian tarball so #fsize reports an error. Anyone know?)
+<li><a href="src/nco_3.1.7-1_i386.changes">nco_3.1.7-1_i386.changes</a> (<!--#fsize file="src/nco_3.1.7-1_i386.changes"-->): Changes</li> (An SSI error here is expected since there are no changes between the official tarball and the Debian tarball so #fsize reports an error. Anyone know?)
 </ul>
 
 <a name="redhat"></a>
