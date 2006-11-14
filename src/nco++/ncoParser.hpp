@@ -2,7 +2,7 @@
 #define INC_ncoParser_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.5 (20050629): "ncoGrammer.g" -> "ncoParser.hpp"$ */
+/* $ANTLR 2.7.6 (20060903): "ncoGrammer.g" -> "ncoParser.hpp"$ */
 #include <antlr/TokenStream.hpp>
 #include <antlr/TokenBuffer.hpp>
 #include "ncoParserTokenTypes.hpp"
@@ -61,7 +61,6 @@ public:
 	public: void assign_statement();
 	public: void def_dim();
 	public: void expr();
-	public: void else_part();
 	public: void hyper_slb();
 	public: void lmt_list();
 	public: void cast_slb();

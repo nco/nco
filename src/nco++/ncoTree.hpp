@@ -3,7 +3,7 @@
 
 #include <antlr/config.hpp>
 #include "ncoParserTokenTypes.hpp"
-/* $ANTLR 2.7.5 (20050629): "ncoGrammer.g" -> "ncoTree.hpp"$ */
+/* $ANTLR 2.7.6 (20060903): "ncoGrammer.g" -> "ncoTree.hpp"$ */
 #include <antlr/TreeParser.hpp>
 
 #line 1 "ncoGrammer.g"
@@ -26,7 +26,7 @@
 #line 27 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 406 "ncoGrammer.g"
+#line 407 "ncoGrammer.g"
 
 
 private:
@@ -45,14 +45,6 @@ public:
         // then be defined 
         bcst=false;  
         ncoTree();
-    }
-
-public:
-    void run(RefAST tr){
-        while(tr) {
-          (void)statements(tr);   
-          tr=tr->getNextSibling();   
-        }
     }
 
 
@@ -241,6 +233,102 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
 
 } /* end lmt_mk */
 
+
+
+public:
+    void run(RefAST tr){
+        while(tr) {
+          (void)statements(tr);   
+          tr=tr->getNextSibling();   
+        }
+    }
+
+public:
+    void run_dbl(RefAST tr,int icnt){
+     int idx=0;
+     RefAST ntr=tr;
+      
+     //small list dont bother with double parsing     
+     if(icnt <4) goto small;
+
+     //Initial scan
+     prs_arg->ntl_scn=True;
+     while(idx++ < icnt){
+       (void)statements(ntr);   
+       ntr=ntr->getNextSibling();   
+     }
+
+     //Define variables in output
+    (void)nco_redef(prs_arg->out_id);  
+    (void)ncap_def_ntl_scn(prs_arg);
+    (void)nco_enddef(prs_arg->out_id);  
+
+small: 
+     idx=0;
+     ntr=tr;
+     //Final scan
+     prs_arg->ntl_scn=False;
+     while(idx++ < icnt){
+       (void)statements(ntr);   
+       ntr=ntr->getNextSibling();   
+     }
+
+   }
+
+public:
+    void run_exe(RefAST tr){
+    // number of statements in block
+    int nbr_stmt=0;
+    int idx;
+    int icnt=0;
+    int gtyp;
+    
+    RefAST etr=ANTLR_USE_NAMESPACE(antlr)nullAST;
+    RefAST ntr;
+   
+    ntr=tr;
+    do nbr_stmt++; 
+    while(ntr=ntr->getNextSibling());        
+            
+     
+    
+    if(nbr_stmt <4){
+        prs_arg->ntl_scn=False;
+        ntr=tr;
+        do (void)statements(ntr);   
+        while(ntr=ntr->getNextSibling());   
+        goto exit;
+    }
+  
+    ntr=tr;
+
+    for(idx=0 ; idx < nbr_stmt; idx++){
+      gtyp=ntr->getType();
+      // we have hit an IF or a code block
+      if(gtyp==BLOCK || gtyp==IF ||gtyp==DEFDIM ) {
+        if(icnt>0) 
+         (void)run_dbl(etr,icnt);
+        icnt=0;
+        etr=ANTLR_USE_NAMESPACE(antlr)nullAST;; 
+        prs_arg->ntl_scn=False;
+        (void)statements(ntr);      
+       }
+
+       if(gtyp==EXPR || gtyp== NULL_NODE) 
+        if(icnt++==0) etr=ntr;
+        
+       
+      ntr=ntr->getNextSibling();
+      
+    } // end for
+    if(icnt >0)
+       (void)run_dbl(etr,icnt);      
+
+      
+exit: ;     
+            
+
+    } // end run_exe
 
 
 #line 31 "ncoTree.hpp"
