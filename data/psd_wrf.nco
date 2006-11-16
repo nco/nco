@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/psd_wrf.nco,v 1.1 2006-11-16 23:16:01 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/psd_wrf.nco,v 1.2 2006-11-16 23:28:00 zender Exp $ -*-C-*-
 
 // Purpose: ncap script for WRF particle size distributions
 // Based on psd.nco
@@ -66,4 +66,13 @@ ovr_frc@long_name="Fraction of lognormal distribution between endpoints";
 ovr_frc@units="fraction";
 
 ovr_frc_ttl=sum(ovr_frc); // [frc] Sum of overlap fractions
+ovr_frc_ttl@long_name="Sum of overlap fractions";
+ovr_frc_ttl@units="fraction";
+
 ovr_frc_nrm=ovr_frc/ovr_frc_ttl; // [frc] Normalized overlap fractions
+ovr_frc_nrm@long_name="Normalized overlap fractions"
+ovr_frc_nrm@units="fraction";
+
+ovr_frc_nrm_ttl=sum(ovr_frc_nrm); // [frc] Sum of normalized overlap fractions
+ovr_frc_nrm_ttl@long_name="Sum of normalized overlap fractions"
+ovr_frc_nrm_ttl@units="fraction";

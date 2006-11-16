@@ -1,3 +1,7 @@
+2006-11-16  Charlie Zender  <zender@uci.edu>
+
+	* Added new demonstration ncap2 script data/psd_wrf.nco
+
 2006-11-12  Charlie Zender  <zender@uci.edu>
 
 	* Update copyright year in man pages

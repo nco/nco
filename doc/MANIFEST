@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.26 2006-11-11 05:17:01 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.27 2006-11-16 23:28:00 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -71,6 +71,7 @@ nco/data/ncap.in	Sample ncap input script
 nco/data/nco_bnch.sh	Old (deprecated) NCO benchmark script
 nco/data/ncap2.in	Sample ncap2 input script
 nco/data/psd.nco	Sample ncap2 script that computes particle size distributions
+nco/data/psd_wrf.nco	Sample ncap2 script that computes WRF particle size distributions
 nco/data/tst.nco	Sample ncap script that computes geophysical quantities
 nco/data/udunits.dat	UDUnits database for Debian compatibility
 
