@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.25 2006-11-05 18:03:48 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.26 2006-11-17 20:55:59 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -143,8 +143,8 @@ bool bfll)                 /* if true fill var with data */
 
 	if(dbg_lvl_get() > 2) {
           std::ostringstream os;
-          os<<"Found new dimension " << dmn_nm << " in input variable " << var_nm <<" in file " <<prs_arg->fl_in;
-          os<<". Deining dimension " << dmn_nm << " in ouput file " << prs_arg->fl_out;
+          os << "Found new dimension " << dmn_nm << " in input variable " << var_nm <<" in file " <<prs_arg->fl_in;
+          os << ". Defining dimension " << dmn_nm << " in output file " << prs_arg->fl_out;
           dbg_prn(fnc_nm,os.str());
 
 	}
@@ -334,7 +334,7 @@ ncap_var_is_att( var_sct *var) {
   return False;
 }
 
-// initalize var to defaults & undefined to true;
+// initialize var to defaults & undefined to true;
 var_sct *
 ncap_var_udf(const char *var_nm)
 { 
@@ -616,7 +616,7 @@ var_sct *var)    /* I/O [sct] input variable */
 
   if(var->undefined) return var;
 
-  /* deal with inital scan */
+  /* deal with initial scan */
   if(var->val.vp==NULL) return var; 
 
   (void)nco_var_abs(var->type,var->sz,var->has_mss_val,var->mss_val,var->val);
@@ -725,7 +725,7 @@ sym_sct *app)       /* I [fnc_ptr] to apply to variable */
   /* Promote variable to NC_FLOAT */
   if(var_in->type < NC_FLOAT) var_in=nco_var_cnf_typ((nc_type)NC_FLOAT,var_in);
 
-  /* deal with inital scan */
+  /* deal with initial scan */
   if(var_in->val.vp==NULL) return var_in; 
   
 
@@ -1467,23 +1467,19 @@ ncap_var_var_op   /* [fnc] Add two variables */
  
   var_sct *var_ret=(var_sct*)NULL;
 
-  //if inital scan than call up "shadow" function 
+  // If initial scan than call up "shadow" function 
   if(var1->val.vp == (void*)NULL  ){
     var_ret=ncap_var_var_op_ntl(var1,var2,op);
     return var_ret;
   }
-   
-   
 
-
-  //If var2 is null then we are dealing with a unary function
+  // If var2 is null then we are dealing with a unary function
   if( var2 == NULL){ 
     var_ret=ncap_var_var_stc(var1,var2,op);   
     return var_ret;
   }
 
-
-  // deal with pwr fuction
+  // Deal with pwr fuction
   if(op== CARET && var1->type < NC_FLOAT && var2->type <NC_FLOAT ) 
     var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
    
@@ -1923,19 +1919,15 @@ prs_sct *prs_arg)
     var->sz*=var->cnt[idx];
   } /* end loop over dim */
 
-
-  /* don't initalize val in intial scan  */
+  /* Do not initialize val in initial scan  */
   if(prs_arg->ntl_scn) {
     var->val.vp=(void*)NULL;
     goto end_var;
   }
 
-  
-
   /* Allocate space for variable values 
      fxm: more efficient and safer to use nco_calloc() and not fill with values? */
   var->val.vp=(void *)nco_malloc_flg(var->sz*nco_typ_lng(var->type));
-
   
   /* Copy arbitrary value into variable 
      Placing a uniform value in variable should be unnecessary since variable
