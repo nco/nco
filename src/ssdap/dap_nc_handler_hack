@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.56 2006-11-10 02:21:45 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.57 2006-11-18 02:46:02 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -310,9 +310,9 @@ class Command:
         self.inPrefix = ""
         self.saveOutput = False
         self.popen = os.popen2
-        
-        self.parseOriginalLine()
-        self.buildCommandLine()
+        if False: # defer these to the command factory.
+            self.parseOriginalLine()
+            self.buildCommandLine()
         pass
 
     def commandLine(self):
@@ -322,9 +322,11 @@ class Command:
         # update self
         if comm not in self.dependents:
             self.dependents.append(comm)
-        #update child
-        if self not in comm.parents():
-            comm.addParent(self)
+            #update child
+            comm.ancestors.append(self)
+        # following check is only for sanity.
+        #if self not in comm.parents(): 
+
     def addParent(self, comm):
         assert isinstance(comm, Command)
         # update self
@@ -332,7 +334,8 @@ class Command:
             self.ancestors.append(comm)
         # update parent
         if self not in comm.children():
-            comm.addChild(self)
+            comm.dependents.append(self)
+
 
     def children(self):
         return self.dependents
@@ -370,6 +373,7 @@ class Command:
             self.parseNormalCmd(argv[1:])
 
     def parseMetaCmd(self, argv):
+        """ deprecate in commandfactory version"""
         metamap = {"ssd_initsave" : self.cmdInitSave,
                    "ssd_save" : self.cmdSave,
                    "ssd_poll" : self.cmdPoll,
@@ -380,6 +384,7 @@ class Command:
         self.isMeta = True
         pass
 
+    
     def __str__(self):
         return "Command (" + self.myName + ") with cmdline: " + self.cmdLine
 
@@ -399,6 +404,8 @@ class Command:
         self.arguments = arglist
         pass
 
+    def setOutputModifiers(self, adict, alist, leftover):
+        return self.acceptModifiers(adict, alist, leftover)
     def acceptModifiers(self, adict, alist, leftover):
         """accept special things like %stdouterr% and %stdout% so that
         specify how to handle a particular line."""
@@ -566,7 +573,7 @@ class Command:
          if self.inPrefix: n = os.path.join(self.inPrefix,name)
          else: n = name                    
          return os.path.join(self.env.env["defpath"], n)
-
+    #deprecated...
     def cmdInitSave(self, argv):
          # want to close CGI connection, and then continue
          # Return a task id that can be queried later.
@@ -639,7 +646,7 @@ class Command:
         n = None
         logit("retr or block until: "+ argv[0])
         try:
-            while 1:
+            while True:
                 s = j.pollFileState(int(argv[0]))
                 if s != 3: ## 3==saved.  better way to do this magic const?
                     if s == None:
@@ -802,55 +809,81 @@ class ScriptingEnv:
     COMMENT_CHAR = "#"  # not used right now.
 
     def __init__(self, scriptlines, settingsDict):
-         assert type(scriptlines) == type([])
-         assert type(settingsDict) == type({})
-         self.fileMap = {}
-         self.outTokens = []
-         self.env = settingsDict
-         self.lines = scriptlines
-         # save lines of output for each type of output.
-         # direct child output to /dev/null unless requested
-         #self.outFd = os.devnull
-         #self.popen = os.popen2 ## let's deprecate this... FIXME!
+        assert type(scriptlines) == type([])
+        assert type(settingsDict) == type({})
+        self.fileMap = {}
+        self.outTokens = []
+        self.env = settingsDict
+        self.lines = scriptlines
+        # save lines of output for each type of output.
+        # direct child output to /dev/null unless requested
+        #self.outFd = os.devnull
+        #self.popen = os.popen2 ## let's deprecate this... FIXME!
+        
+        # make commandlines from each scriptline
+        self.commands = []  # list of commands (inc. comments)
+        #WARN: commands is read by the command builder
+        self.commandsByOutput = {}
+        #WARN: so we can find commands by their absOutput filename
+        self.commandLine = [] # list of commandlines (no comments)
+        # keep own table of linenum -> cmd, to allow non-db
+        # dependency processing.
+        self.lineToCommand = {}
+        lineNum = 0
+        # None --> script not in DB; integer-> row in tasks table
+        self.persistedTask = None 
 
-         # make commandlines from each scriptline
-         self.commands = []  # list of commands (inc. comments)
-         #WARN: commands is read by the command builder
-         self.commandsByOutput = {}
-         #WARN: so we can find commands by their absOutput filename
-         self.commandLine = [] # list of commandlines (no comments)
-         # keep own table of linenum -> cmd, to allow non-db
-         # dependency processing.
-         self.lineToCommand = {}
-         lineNum = 0
-         # None --> script not in DB; integer-> row in tasks table
-         self.persistedTask = None 
-         self.isAsync = self.env.has_key("async") and self.env["async"] == True
-         pop = None
-         for line in scriptlines:
-             lineNum += 1
-             c = Command(line, lineNum, self)
-             self.isAsync = self.env.has_key("async") and self.env["async"] == True
-             self.lineToCommand[lineNum] = c
-             if self.isAsync and (c.cmd is not None) and not c.isMeta:
-                 if pop is None:
-                     j = self.instanceJobPersistence()
-                     pop = j.newPopulationTransaction()
-                     assert pop is not None
-                 self.persistCommand(lineNum, c, pop)
-             self.commands.append(c) # append command, regardless of parsing
-             if c.commandLine() != None:
+        class Persister: # use this to wrap access to persistence since
+            # python doesn't have real function closures
+            def __init__(self, instFunc, persFunc):
+                self.instFunc = instFunc
+                self.persFunc = persFunc
+                self.trans = None
+            def do(self, command):
+                if self.trans is None:
+                    jp = self.instFunc()
+                    self.trans = jp.newPopulationTransaction()
+                self.persFunc(command, self.trans)
+            def close(self):
+                if self.trans is not None:
+                    self.trans.finish()
+                    self.trans = None
+        p = Persister(self.instanceJobPersistence, self.persistCommand)
+        cf = CommandFactory(p, self)
+        cf.addScriptLines(scriptlines)
+        cf.finalize()
+        p.close()
+        self.commandLine = cf.commandLines
+        self.commands = cf.commandList
+        self.isAsync = cf.isAsync
+        local.comfact = cf
+        return
+        self.isAsync = self.env.has_key("async") and self.env["async"] == True
+        pop = None
+        for line in scriptlines:
+            lineNum += 1
+            c = Command(line, lineNum, self)
+            self.isAsync = self.env.has_key("async") and self.env["async"] == True
+            self.lineToCommand[lineNum] = c
+            if self.isAsync and (c.cmd is not None) and not c.isMeta:
+                if pop is None:
+                    j = self.instanceJobPersistence()
+                    pop = j.newPopulationTransaction()
+                    assert pop is not None
+                self.persistCommand(c, pop)
+            self.commands.append(c) # append command, regardless of parsing
+            if c.commandLine() != None:
                  self.commandLine.append(c)
-             pass # done looping through lines
-         if pop is not None:
+            pass # done looping through lines
+        if pop is not None:
              pop.finish()
              pop = None
 
-         # for performance, skip dep tree stuff since it's not needed
-         # in the db model
-         #logit(self.depTreeToString()) # for debug...
+        # for performance, skip dep tree stuff since it's not needed
+        # in the db model
+        #logit(self.depTreeToString()) # for debug...
          
-         pass
+        pass
     @staticmethod
     def fixConfig():
          j = os.path.join
@@ -922,7 +955,7 @@ class ScriptingEnv:
     def execute(self):
          #self.clearTemps() # don't need to preclear, since we do that earlier.
          self.isParent = True
-         self.isAsync = self.env.has_key("async") and self.env["async"] == True
+         #self.isAsync = self.env.has_key("async") and self.env["async"] == True
 
          logflush()
          #print "about to execute..."
@@ -937,7 +970,7 @@ class ScriptingEnv:
          # here, fork off:
          # Parent: write persistent state file (or to DB), report metatag to stdout
          # Child: continue execution, but do not return output to stdout
-         if self.env.has_key("async") and self.env["async"] == True:
+         if self.isAsync:
              self.asyncExecute()
          else:
              self.serialExec()
@@ -1050,14 +1083,17 @@ class ScriptingEnv:
         try: # derived from: http://pydoc.org/2.4.1/subprocess.html
             logit("worker spawning %s" % (cline))
             retcode = subprocess.call(cline, shell=True)
+            logit("retcode was %d" % retcode)
             if retcode < 0:
                 print >>sys.stderr, "Error code %d in %s" %(retcode,cline)
                 return None
+            pass
         except OSError, e:
             print >>sys.stderr, "Failed %s --> %s, " %(cline,outname)
             print >>sys.stderr, e
             logit("Failed %s --> %s, " %(cline,outname))
             return None
+        logit("returning... %d" % retcode)
         return retcode
     def depFindInputs(self, linenum):
         # now, find my input files
@@ -1087,6 +1123,7 @@ class ScriptingEnv:
                  #either we have a job, or there is none left.
                  if not cline:
                      break
+             
              if self.workerJobSpawn(cline) is None:
                  break
              inputs = self.depFindInputs(linenum)
@@ -1242,12 +1279,15 @@ class ScriptingEnv:
             else:
                 logit("I couldn't delete " + str(fname))
         pass
-    def persistCommand(self, linenum, command, trans):
+    def persistCommand(self, command, trans):
         """ linenum: line number of the command
             command: the acutal command (which binary are we exec'ing)
             trans: the populationtransaction we're using"""
         # date in yyyy-mm-dd hh:mm format
         #date = "%04d-%02d-%02d %02d:%02d" % time.localtime()[:5]
+        #logit("persisting cmd %s" %(command))
+        linenum = command.lineNum
+        assert linenum is not None
         if command.cmd == None:
             return # don't persist non-commmands.
         if not self.persistedTask:
@@ -1440,6 +1480,7 @@ class FrontEnd:
         # fill env with proper keys:
         self.env["defpath"] = "."
         self.env["tempdir"] = "/tmp"
+        self.env["resultdir"] = "/tmp"
 
         scriptenv = ScriptingEnv(self.scriptlines, self.env)
         print "Parsed OK!"
@@ -1558,6 +1599,260 @@ class FrontEnd:
 class JobManager:  # will I have to write this?
     def __init__(self):
         self.maxParallel = 2
+# To be a command factory, we need to be able to:
+# parse commands, understand dependencies, and build command lines
+# This means we need to know:
+# -- what commands are valid
+# -- what are metacommands (and how to ensure their execution)
+# -- how to persist (or possess a function that does it)
+# -- pathnames to deferred commands
+# -- (syntaxes of commands)
+# --
+class CommandFactory:
+    """build commands.  Separates logic for building commands from
+    ScriptingEnv and Command as much as possible.  Indirect dependence
+    on persistence layer via a function closure
+    public interface:
+    CommandFactory(), addScriptLines(), finalize(), commandList,
+    commandLineList    
+    """
+    def __init__(self, pers, env):
+        """pers is a function that accepts a command as a single argument"""
+        self.env = env
+        self.commandLines = [] # public
+        self.commandList = [] # public
+        self.nextLineNum = 1
+        self.nextLineNumGen = 3000
+        self.finalized = False 
+        self.isAsync = False # public
+        self.persister = pers
+        self.buildComplexStructs()
+        self.lineList = []
+        pass
+    def addScriptLines(self, linelist):
+        assert not self.finalized
+        # for now, just concatenate and defer parsing.
+        self.lineList.extend(linelist)
+    
+    def finalize(self):
+        assert not self.finalized 
+        # do all the parsing that we couldn't do earlier
+        nextLineNumGen = self.chooseNextLineNumGen()
+        for l in self.lineList:
+            self.processLine(l)
+        map(self.persister.do, self.commandList)
+        self.finalized = True        
+
+    # below: non-public functions
+    def buildComplexStructs(self):
+        self.valids = ScriptingEnv.META_COMMANDS + ScriptingEnv.NCO_COMMANDS
+        
+
+    def chooseNextLineNumGen(self):
+        """choose a good line number for assigning to generated
+        commands.
+        For now, take largest number divisible by 100 >= totallines*2 """
+        llen = 2 * len(self.lineList)
+        return llen + (100-(llen % 100))
+
+    def execMeta(self, cmd, argv):
+        metamap = {"ssd_initsave" : self.cmdInitSave,
+                   "ssd_save" : None, #not implemented
+                   "ssd_poll" : self.cmdPoll,
+                   "ssd_retrieve" : self.cmdRetrieveOrBlock,
+                   "ssd_retrievenoblock" : self.cmdRetrieve }
+        logit("exec'ing meta cmd " + cmd)
+        metamap[cmd](argv)
+        pass
+
+        
+    def processLine(self, linestring):
+        lineNum = self.nextLineNum
+        self.nextLineNum += 1
+        #parseOriginalLine()
+        argv = shlex.split(linestring, True) # True--> shlex eats the comments
+
+        if len(argv) < 1:
+            return # nothing to parse
+        rawname = argv[0]
+        if rawname not in self.valids:
+            logit("WARN: bad script line: %d: %s" %(lineNum, linestring))
+            return
+        shortName = rawname + str(lineNum)
+        if rawname in ScriptingEnv.META_COMMANDS:
+            # don't need to construct Command for meta
+            newcmds = self.execMeta(rawname, argv[1:])
+            # does not need command-line or deferred exec.
+            # but file retrieve needs a command
+            ## fixme: add new filename.
+            return # FIXME?
+        else:
+            newcmds = self.buildNormalCmd(rawname, lineNum, argv[1:])
+        #for c in newcmds: # boilerplate
+        #    c.original = linestring
+            
+        pass
+
+    def cmdInitSave(self, argv):
+        self.isAsync = True
+        return
+    def cmdPoll(self, argv):
+        privatedb = JobPersistence(local.dbFilename)
+        i = None
+        try:
+            poll = privatedb.newPollingTransaction()
+            i = poll.pollFileStateById(int(argv[0]))
+            poll = None
+            i = int(i)
+            text = JobPersistence.fileStateMap[i]
+            print "State of %s is %d (%s)" % (argv[0], i, text)
+        except (TypeError,ValueError):
+            print "FileId not found", argv[0]
+        privatedb.close()
+        return
+    def cmdRetrieveOrBlock(self, argv):
+        return self.cmdRetrieve(argv, True)
+    def cmdRetrieve(self, argv, shouldBlock = False):
+        privatedb = JobPersistence(local.dbFilename)
+        n = None
+        sleeptime = 5  ## want to make this configurable
+        logit("Trying to retrieve "+ argv[0])
+        try:
+            while True:
+                poll = privatedb.newPollingTransaction()
+                i = poll.pollFileStateById(int(argv[0]))
+                if s != 3: ## 3==saved.  better way to do this magic const?
+                    if s != None:
+                        time.sleep(sleeptime)
+                        continue
+                    else:
+                        print "File id", argv[0], " is nonexistent."
+                        raise StandardError("Bad FileId to retrieve")
+             
+            n = poll.pollFilenameId(int(argv[0]))
+            # patch output filename (use bogus handle)
+            # this is rather backwards.
+            #FIXME!!!!!
+            self.env.fileMap[ScriptingEnv.SCRIPT_OUTFILE] = (0,n)
+        #except TypeError:
+        except (TypeError,ValueError,StandardError):
+            import traceback
+            print "Problem retrieving file for id ", argv[0]
+            logit("Exception while retriving file id %s: %s" %
+                  (argv[0], str(traceback.format_exc())) )    
+        privatedb.close()
+        pass
+        
+    def buildNormalCmd(self, cmd, lineNum, argv):
+        #print "building ",cmd,argv
+        # FIXME: factory will add linenum later. (what about origline and env?)
+        newcmd = Command("",0,self.env) # bogus stuff because we will fill them later.
+        newcmd.isMeta = False
+        newcmd.lineNum = lineNum
+        self.env.lineToCommand[lineNum] = newcmd
+        try:
+            (arglist, leftover) = SsdapCommon.specialGetOpt(cmd, argv)
+        except getopt.GetoptError:
+            import traceback
+            logit("Error parsing(getopt) command: " + cmd + str(argv))
+            logit(traceback.format_exc())
+            raise ValueError, 'Command.parse error'
+        argdict = dict(arglist)
+        newcmd.setOutputModifiers(argdict, arglist, leftover)
+        newcmd.acceptInOut(argdict, arglist, leftover)
+        newcmd.fixupDependencies() # we use the deptree to reduce db load
+        newcmd.arguments = arglist
+        newcmd.cmd = cmd
+        #buildCommandLine()
+        line = ""
+        needsDap = False
+        if newcmd == None: # don't build cmdline for non-cmds
+            logit("ineffectual cmd: %d:%s" % (lineNum, linestring))
+            return
+        
+
+        for (k,v) in newcmd.arguments:
+             #special value handling for --op_typ='-'
+             safe = string.letters + string.digits + "%"
+             #needsProt = False
+             #for x in v: needsProt |= (x not in safe)
+             needsProt = reduce(lambda x,y: x|(y not in safe), v, False)
+
+             # not necessary to add = for long opts             
+             if needsProt and not ("'" == v[0] == v[-1]):
+                 line += " " + k + " '" + v + "'"
+                 #only protect the non-protected
+             elif len(v) > 0: line += " " + k + " " + v
+             else:            line += " " + k
+             pass
+
+        # then pass commands
+        def dapMapper(name):
+            if self.env.requiresDap(name):
+                return self.dapToLocal(name)
+            else: return name
+        newlist = map(dapMapper, newcmd.absInputs)
+        newcmd.absInputs = newlist
+
+        def fileGen(cmd):
+            for name in cmd.absInputs:
+                yield name
+            for name in cmd.absOutputs:
+                if name in [ ScriptingEnv.SCRIPT_STDOUTERR,
+                             ScriptingEnv.SCRIPT_STDOUT ]:
+                    continue
+                yield name
+
+        for name in fileGen(newcmd):
+            remaptype = self.env.shouldRemap(name)
+            if remaptype:
+                remapped = self.env.addAbsName(name, remaptype)
+                # want to move saferemove to factory class
+                newcmd.safeRemove(remapped) # kill the file to let nco write.
+                assert remapped != None
+                line += " " + remapped
+            elif self.env.possibleFilename(name):
+                # add defpath for now.
+                newname = newcmd.addInfilePrefix(name)
+                line += " " + newname
+            else:
+                needsDap |= self.env.requiresDap(name)
+                
+                line += " " + name
+        if needsDap:
+             newcmd.cmdLine = ScriptingEnv.VALID_DAPCOMMANDS[cmd] + " " + line
+        elif newcmd.isMeta:
+            newcmd.cmdLine = "##echo Placeholder: meta: " + cmd
+        else:
+            newcmd.cmdLine = ScriptingEnv.VALID_COMMANDS[cmd] + " " + line
+        #logit( "real cmdline: " + self.cmdLine)
+        self.commandList.append(newcmd)
+        pass
+    def dapToLocal(self, name):
+        # digest dap line into a shortname
+        if name in dapMap: # check to see if it's already been fetched
+            return dapMap[name]
+        # otherwise, generate a fetch command, and name the tempfile.
+        lineNum = nextLineNumGen
+        nextLineNumGen += 1
+        absname = "%tempf_remote%d%" % (nextLineNumGen)
+        self.addFetchCommand(name, lineNum, absname)
+        return absname
+    def addFetchCommand(self, dapurl, lineNum, absname):
+        rawcmd = "rfetch"
+        original = "rfetch %s %s" % (dapurl, absname)
+        # FIXME: don't forget to map rfetch to a real commandline.
+        newcmd = Command(original, lineNum, self.env)
+        newcmd.isMeta = False
+        newcmd.absOutputs = [absname]
+        newcmd.absInputs = []
+        newcmd.popen = os.popen2
+        newcmd.saveOutput = False
+
+        newcmd.fixupDependencies()
+        newcmd.buildCommandLine()
+        self.commandList.append(newcmd)
+    pass
 
 class Popen3:
    """
@@ -1570,8 +1865,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2006-11-10 02:21:45 $
-   Version:	$Revision: 1.56 $
+   Date:	$Date: 2006-11-18 02:46:02 $
+   Version:	$Revision: 1.57 $
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()
@@ -1629,6 +1924,7 @@ def profilePass(filename):
     """profile the parser over a ssdap file"""
     prestartLogging()
     readConfigFile()
+    startLogging()
     settings = FrontEnd(["./dummy.py", "--dryparse", filename, "--with-db"])
     settings.execute()
     
@@ -1666,9 +1962,60 @@ if __name__ == '__main__':
 # cmdid | output(0/1) | logicalname | actualname 
 # filemap:
 # (not needed?)
+##################################################
+# Lex/Parse sequence: (11.13.06)
+# 1) meta or normal cmd
+# 2) shlex the line
+# 3) figure out output redirection (needed?)
+# 4) detect inputs and outputs
+# 5) connect cmd together with dependencies
+#
+# To handle command-splitting, we should shift command building to a
+#command factory, which could generate multiple commands from a single
+#input line.  We also need to figure out how to map commands, if the
+#original command line number can't be used to identify backend
+#commands.
+# Interim solution for line numbering:  Since the backend schedules
+#according to dependencies, the actual line number doesn't matter
+#*that* much.  So, assign unused line numbers to the generated lines.
+
 #
 #234567890123456789012345678901234567890123456789012345678901234567890123456789
 #0       1         2         3         4         5         6         7
 #
+
+# oldsystem usecase for command building (from ScriptingEnv)
+#          for line in scriptlines:
+#              lineNum += 1
+#              c = Command(line, lineNum, self)
+#              self.isAsync = self.env.has_key("async") and self.env["async"] == True
+#              self.lineToCommand[lineNum] = c
+#              if self.isAsync and (c.cmd is not None) and not c.isMeta:
+#                  if pop is None:
+#                      j = self.instanceJobPersistence()
+#                      pop = j.newPopulationTransaction()
+#                      assert pop is not None
+#                  self.persistCommand(lineNum, c, pop)
+#              self.commands.append(c) # append command, regardless of parsing
+#              if c.commandLine() != None:
+#                  self.commandLine.append(c)
+
+# factory usecase:
+# class Persister: # use this to wrap access to persistence since
+#                  # python doesn't have real function closures
+#     def __init__(self, instfunc, persFunc):
+#         self.instFunc = instfunc
+#         self.trans = None
+#     def do(command):
+#         if self.trans is None:
+#             self.trans = instFunc()
+#         persFunc(command, self.trans)
+# p = Persister(self.instanceJobPersistence, self.persistCommand)
+# cf = CommandFactory(p)
+# cf.addScriptLines(scriptlines)
+# cf.finalize()
+# self.commandLine = cf.commandLines
+# self.commands = cf.commandList
+# self.isAsync = cf.isAsync
 
 

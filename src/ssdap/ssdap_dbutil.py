@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.26 2006-11-10 01:52:12 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.27 2006-11-18 02:46:02 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -80,19 +80,27 @@ class JobPersistence:
             sqlcmd = """BEGIN IMMEDIATE;
             INSERT INTO tasks (taskid, date) VALUES ('%s','%s');
             COMMIT;"""
+            sqlcmd2 = "INSERT INTO tasks (taskid, date) VALUES ('%s','%s');"
              # today = "%04d%02d%02d" % time.localtime()[:3]
             # date in yyyy-mm-dd hh:mm format
             today = "%04d-%02d-%02d %02d:%02d" % time.localtime()[:5]
             cur = self.connection.cursor()
             try:
-                cur.executescript(sqlcmd % (taskid, today))
+                cur.execute("BEGIN IMMEDIATE;")
+                cur.execute(sqlcmd2 % (taskid, today))
+                cur.execute("COMMIT;")
             except:
+                import traceback
+                print >>open("/tmp/foo1","a"), os.getpid(),"exception", traceback.format_exc()
+
                 while True:
                     time.sleep(0.2) # sleep for a little bit. MAGIC#
                     try:
                         cur.execute("COMMIT;")
                         break
                     except:
+                        print >>open("/tmp/foo1","a"), os.getpid(),"exception2", traceback.format_exc()
+
                         pass
             
             sqlcmd = """select rowid from tasks where taskid=\"%s\";"""
@@ -444,7 +452,7 @@ class JobPersistence:
                 else:
                     assert len(rows) is 1
                     if rows[0][0] is (count-1): # ok to delete
-                        deleteList.append(concretename)
+                        deleteList.append((concretename,))
                     else: # increment counter
                         updateList.append((rows[0][0]+1, concretename))
             # now, apply updates and deletes to list
@@ -475,9 +483,10 @@ class JobPersistence:
     class PollingTransaction:
         def __init__(self, connection, taskRow):
             assert type(connection) == sqlite.Connection
-            assert type(taskRow) == int
             self.connection = connection
-            self.taskRow = taskRow
+            if taskRow is not None:
+                self.taskRow = taskRow
+                assert type(taskRow) == int
             # setup the cursor: do manual transaction management.
             connection.isolation_level = None
 
@@ -494,6 +503,32 @@ class JobPersistence:
             cur.execute("BEGIN IMMEDIATE;")
             cur.execute(sql,(self.taskRow,))
             result = cur.fetchall()[0][0]
+            cur.execute("COMMIT;")
+            cur.close()
+            return result
+        def pollFileStateById(self, id):
+            """Check the state of a file with the supplied id
+            Returns: the state of the file, if it exists."""
+            cur = self.connection.cursor()
+            cur.execute("BEGIN;")
+            cur.execute("SELECT state FROM filestate WHERE rowid=?;",
+                        (id,))
+            states = cur.fetchall()
+            result = None
+            if states is not None and len(states) == 1:
+                result = states[0][0]
+            cur.execute("COMMIT;")
+            cur.close()
+            return result
+        def pollFilenameById(self, id):
+            cur = self.connection.cursor()
+            sql = "SELECT concretename FROM filestate WHERE rowid=?;"
+            cur.execute("BEGIN;")
+            cur.execute(sql, (id,))
+            names = cur.fetchall()
+            result = None
+            if names is not None and len(names) == 1:
+                result = names[0][0]
             cur.execute("COMMIT;")
             cur.close()
             return result
@@ -612,8 +647,10 @@ class JobPersistence:
     def newCommitAndFetchTransaction(self):
         return self.CommitAndFetchTransaction(self.connection())
     def newPollingTransaction(self):
-        return self.PollingTransaction(self.connection(),
-                                       self.currentTaskRow)
+        if self.currentTaskRow is not None:
+            return self.PollingTransaction(self.connection(),
+                                           self.currentTaskRow)
+        else: return self.PollingTransaction(self.connection(), None)
     def newSetFileStateTransaction(self):
         return self.SetFileStateTransaction(self.connection())
 
