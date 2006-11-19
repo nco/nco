@@ -1145,8 +1145,8 @@ const std::string fnc_nm("assign");
               var_cst=ncap_cst_mk(str_vtr,prs_arg);     
               var1=out(dmn->getNextSibling());
               
-              // deal with rhs attribute              
-              if( ncap_var_is_att(var1)) {
+              // deal with rhs attribute or rhs hyperslab              
+              if( ncap_var_is_att(var1)|| var1->has_dpl_dmn==-1) {
                 if(var1->sz ==1 )
                   var1=ncap_cst_do(var1,var_cst,prs_arg->ntl_scn);
                 else if( var1->sz==var_cst->sz ) {
@@ -1674,9 +1674,10 @@ out returns [var_sct *var]
              var=var_nw;
             }   
             
-
+          /* Casting a hyperslab --this makes my brain  hurt!!! 
           if(bcst && var->sz >1)
             var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
+          */
           
           var_rhs=nco_var_free(var_rhs);
 
