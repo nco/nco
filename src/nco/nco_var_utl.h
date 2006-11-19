@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.41 2006-09-12 19:30:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.42 2006-11-19 20:25:03 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -35,6 +35,7 @@
 #include "nco_bnr.h" /* Binary write utilities */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
+#include "nco_mss_val.h" /* Missing value utilities */
 #include "nco_pck.h" /* Packing and unpacking variables */
 
 #ifdef __cplusplus

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.27 2006-06-02 00:55:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.28 2006-11-19 20:25:03 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -152,9 +152,6 @@ copyright_prn /* [fnc] Print copyright notice */
   int date_cvs_lng;
   int vrs_cvs_lng;
   
-  /* C pre-processor macros for instantiating variable values with string tokens */
-#define XTKN2SNG(x) #x
-#define TKN2SNG(x) XTKN2SNG(x)
   const char date_cpp[]=__DATE__; /* [sng] Date from C pre-processor */
   /*  const char time_cpp[]=__TIME__; *//* [sng] Time from C pre-processor */
   const char vrs_cpp[]=TKN2SNG(VERSION); /* [sng] Version from C pre-processor */

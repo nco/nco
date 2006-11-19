@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.66 2006-09-25 22:15:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.67 2006-11-19 20:25:03 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -51,7 +51,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
      architected differently from other NCO operators. */
   if(
      aed.att_nm /* Linux strcmp() dumps core if attribute name is blank */
-     && strcmp(aed.att_nm,"missing_value") == 0 /* Current attribute is "missing_value" */
+     && strcmp(aed.att_nm,nco_mss_val_sng_get()) == 0 /* Current attribute is "missing_value" */
      && var_id != NC_GLOBAL /* Current attribute is not global */
      && (aed.mode == aed_modify || aed.mode == aed_overwrite)  /* Modifying or overwriting existing value */
      && rcd == NC_NOERR /* Only when existing missing_value attribute is modified */
@@ -114,7 +114,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 
     /* Sanity check */
     if(var->has_mss_val == False){
-      (void)fprintf(stdout,"%s: ERROR \"missing_value\" attribute does not exist in nco_aed_prc()\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR \"NCO_MSS_VAL_SNG\" attribute does not exist in nco_aed_prc()\n",prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
@@ -273,7 +273,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       } /* end if */
     } /* end if dbg */
 
-    if(PCK_ATT_CPY || strcmp(att_nm,"missing_value")){
+    if(PCK_ATT_CPY || strcmp(att_nm,nco_mss_val_sng_get())){
       /* Copy all attributes except missing_value with fast library routine */
       (void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
     }else{

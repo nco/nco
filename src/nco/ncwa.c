@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.232 2006-11-02 01:38:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.233 2006-11-19 20:25:03 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.232 2006-11-02 01:38:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.232 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.233 2006-11-19 20:25:03 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.233 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -637,7 +637,7 @@ main(int argc,char **argv)
       if(!var_prc_out[idx]->has_mss_val){
 	var_prc_out[idx]->has_mss_val=True;
 	var_prc_out[idx]->mss_val=nco_mss_val_mk(var_prc[idx]->type);
-	(void)nco_put_att(out_id,var_prc_out[idx]->id,"missing_value",var_prc_out[idx]->type,1,var_prc_out[idx]->mss_val.vp);
+	(void)nco_put_att(out_id,var_prc_out[idx]->id,nco_mss_val_sng_get(),var_prc_out[idx]->type,1,var_prc_out[idx]->mss_val.vp);
       } /* end if */
     } /* end for */
   } /* end if */

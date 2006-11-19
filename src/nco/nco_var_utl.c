@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.117 2006-09-14 17:01:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.118 2006-11-19 20:25:03 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1212,7 +1212,7 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
      Now un-necessary since multi-file packing ostensibly works
      Leave code here in case we find it does not work */
   if(nco_is_rth_opr(prg_get()) && var->pck_dsk){
-    if(var->has_mss_val) (void)fprintf(stdout,"%s: WARNING Variable \"%s\" is packed and has valid \"missing_value\" attribute in multi-file arithmetic operator. Arithmetic on this variable will only be correct if...\n",prg_nm_get(),var_nm);
+    if(var->has_mss_val) (void)fprintf(stdout,"%s: WARNING Variable \"%s\" is packed and has valid \"NCO_MSS_VAL_SNG\" attribute in multi-file arithmetic operator. Arithmetic on this variable will only be correct if...\n",prg_nm_get(),var_nm);
   } /* endif variable is packed */
 #endif /* endif False */
 

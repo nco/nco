@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.40 2006-01-31 06:42:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.41 2006-11-19 20:25:03 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -145,7 +145,7 @@ nco_cnv_mss_val_typ  /* [fnc] Convert missing_value, if any, to mss_val_out_typ 
 
   /* Simple error-checking and diagnostics */
   if(dbg_lvl_get() > 2){
-    (void)fprintf(stderr,"%s: DEBUG %s missing_value attribute of variable %s from type %s to type %s\n",prg_nm_get(),mss_val_out_typ > var_in_typ ? "Promoting" : "Demoting",var->nm,nco_typ_sng(var_in_typ),nco_typ_sng(mss_val_out_typ));
+    (void)fprintf(stderr,"%s: DEBUG %s NCO_MSS_VAL_SNG attribute of variable %s from type %s to type %s\n",prg_nm_get(),mss_val_out_typ > var_in_typ ? "Promoting" : "Demoting",var->nm,nco_typ_sng(var_in_typ),nco_typ_sng(mss_val_out_typ));
   } /* end if */
   
   /* Sequence of following commands is important (copy before overwriting!) */

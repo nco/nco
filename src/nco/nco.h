@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.104 2006-08-24 20:44:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.105 2006-11-19 20:25:03 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -21,6 +21,12 @@
 /* Personal headers */
 #include "nco_typ.h" /* Type definitions, opaque types */
 
+  /* C pre-processor macros for instantiating variable values with string tokens
+     Macros for token pasting described at http://www.parashift.com/c++-faq-lite
+     Layer of indirection is required, use public macro to call private macro */
+#define TKN2SNG_PRV(x) #x
+#define TKN2SNG(x) TKN2SNG_PRV(x)
+
 /* Encapsulate C++ const usage in C99-safe macro 
    C++ compilers will use type-safe version
    C89 and C99 compilers use less type-safe version that is standards-compliant */
@@ -31,6 +37,7 @@
 # define CST_X_PTR_CST_PTR_CST_Y(x,y) x * const * const y
 # define X_CST_PTR_CST_PTR_Y(x,y) x * const * y
 #endif /* !__cplusplus */
+
 #ifdef __cplusplus
 
 /* Use C-bindings so C++-compiled and C-compiled libraries are compatible */
@@ -100,6 +107,7 @@ Preprocessor macros may be used to turn bool into _Bool, false into 0 and true i
 #define NCO_REC_DMN_UNDEFINED -1
   
   /* Prototype global functions before defining them in next block */
+  char *nco_mss_val_sng_get(void); /* [sng] Missing value attribute name */
   char *prg_nm_get(void);
   int prg_get(void);
   unsigned short dbg_lvl_get(void);
@@ -117,6 +125,15 @@ Preprocessor macros may be used to turn bool into _Bool, false into 0 and true i
   unsigned short dbg_lvl=0; /* [enm] Debugging level */
   unsigned short dbg_lvl_get(void){return dbg_lvl;} /* [enm] Debugging level */
   
+#ifndef NCO_MSS_VAL_SNG
+# define NCO_MSS_VAL_SNG missing_value
+# define NCO_NON_MSS_VAL_SNG _Fillvalue
+#endif /* NCO_MSS_VAL_SNG */
+
+  /* Unidata standard string for missing value */
+  char nco_mss_val_sng[]=TKN2SNG(NCO_MSS_VAL_SNG); /* [sng] Missing value attribute name */
+  char *nco_mss_val_sng_get(void){return nco_mss_val_sng;} /* [sng] Missing value attribute name */
+
 #else /* MAIN_PROGRAM_FILE is NOT defined, i.e., current file does not contain main() */
   
   /* External references to global variables are declared as extern here

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.61 2006-04-06 22:56:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.62 2006-11-19 20:25:03 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -820,7 +820,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
 
     if(max_mns_min_dbl > max_mns_min_dbl_wrn){
       (void)fprintf(stdout,"%s: WARNING %s reports data range of variable %s is = %g. The linear data packing technique defined by netCDF's packing convention and implemented by NCO result in significant precision loss over such a great range.\n",prg_nm_get(),fnc_nm,var->nm,max_mns_min_dbl);
-      if(var->has_mss_val) (void)fprintf(stdout,"%s: HINT variable %s has missing_value = %g. Consider specifying new missing_value to reduce range of data needing packing. See http://nco.sf.net/nco.html#ncatted for examples of how to change the missing_value attribute.\n",prg_nm_get(),fnc_nm,ptr_unn_mss_val_dbl.dp[0]);
+      if(var->has_mss_val) (void)fprintf(stdout,"%s: HINT variable %s has NCO_MSS_VAL_SNG = %g. Consider specifying new NCO_MSS_VAL_SNG to reduce range of data needing packing. See http://nco.sf.net/nco.html#ncatted for examples of how to change the NCO_MSS_VAL_SNG attribute.\n",prg_nm_get(),fnc_nm,ptr_unn_mss_val_dbl.dp[0]);
     } /* endif large data range */
 
     /* Free minimum and maximum values */
@@ -884,7 +884,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
     /* Dupe var_scv_sub() into subtracting missing values when all values are missing */
     if(PURE_MSS_VAL_FLD){
       has_mss_val_tmp=False;
-      (void)fprintf(stdout,"%s: INFO %s reports variable %s is completely missing_value = %g. Why do you store variables with no valid values?\n",prg_nm_get(),fnc_nm,var->nm,add_fst_dbl);
+      (void)fprintf(stdout,"%s: INFO %s reports variable %s is completely NCO_MSS_VAL_SNG = %g. Why do you store variables with no valid values?\n",prg_nm_get(),fnc_nm,var->nm,add_fst_dbl);
     } /* !PURE_MSS_VAL_FLD */
     (void)var_scv_sub(var->type,var->sz,has_mss_val_tmp,var->mss_val,var->val,&add_fst_scv);
   } /* endif */

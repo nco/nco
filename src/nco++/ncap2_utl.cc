@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.26 2006-11-17 20:55:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.27 2006-11-19 20:25:03 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -182,15 +182,13 @@ lbl_end:
   return var;
 } /* end ncap_var_init() */
 
-
 int                /* O  [bool] bool - ture if sucessful */
 ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */ 
 (var_sct *var,     /* I  [sct] variable to be written - freed at end */  
  prs_sct *prs_arg) /* I/O vectors of atts & vars & file names  */
 {
-
   /* Purpose: Define variable in output file and write variable */
-  const char mss_val_sng[]="missing_value"; /* [sng] Unidata standard string for missing value */
+  /*  const char mss_val_sng[]="missing_value"; *//* [sng] Unidata standard string for missing value */
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   const char fnc_nm[]="ncap_var_write"; 
@@ -200,12 +198,10 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
   
   bool bdef=false;
   NcapVar *Nvar;
-  
 
 #ifdef NCO_RUSAGE_DBG
   long maxrss; /* [B] Maximum resident set size */
 #endif /* !NCO_RUSAGE_DBG */
-
 
   // INITIAL SCAN
   if(prs_arg->ntl_scn){
@@ -266,16 +262,14 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
   } 
 
   rcd=nco_inq_varid_flg(prs_arg->out_id,var->nm,&var_out_id);
-  
 
   /* Put file in define mode to allow metadata writing */
   (void)nco_redef(prs_arg->out_id);
   
-  
   /* Define variable */   
   if(!bdef)(void)nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
   /* Put missing value */  
-  if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,mss_val_sng,var->type,1,var->mss_val.vp);
+  if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
   
       /* Write/overwrite scale_factor and add_offset attributes */
   if(var->pck_ram){ /* Variable is packed in memory */
@@ -304,7 +298,6 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
   maxrss=nco_mmr_rusage_prn((int)0);
 #endif /* !NCO_RUSAGE_DBG */
 
-
   // save variable to output vector if new
   if(!bdef) {
     var_sct *var1;
@@ -323,8 +316,6 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
 
   return True;
 } /* end ncap_var_write() */
-
-
 
 // check if var is really an attribute
 nco_bool 
@@ -395,7 +386,6 @@ ncap_att_get
   return var_ret; 
 }
 
-
 var_sct *                  /* O [sct] variable containing attribute */
 ncap_att_init(             /*   [fnc] Grab an attribute from input file */
 const std::string s_va_nm, /* I [sng] att name of form var_nm&att_nm */ 
@@ -411,9 +401,6 @@ size_t  att_char_posn;
 var_sct *var_ret;
 
 //check if we have an attribute
-
-
-
 if( (att_char_posn =s_va_nm.find("@")) ==std::string::npos )
   return (var_sct*)NULL; 
 
@@ -463,7 +450,6 @@ ncap_att_stretch  /* stretch a single valued attribute from 1 to sz */
 
 } /* end ncap_att_stretch */
 
-  
 int
 ncap_att_gnrl
 (const std::string s_dst,
@@ -479,13 +465,11 @@ ncap_att_gnrl
 
   var_sct *var_att;
 
-
   std::string s_fll;
  
   NcapVar *Nvar;
   NcapVarVector var_vtr;   
   NcapVector <var_sct*> att_vtr; //hold new attributtes.
-    
         
   // De-reference 
   var_vtr= *prs_arg->ptr_var_vtr;
@@ -510,7 +494,6 @@ ncap_att_gnrl
       } // end for
     }// end rcd
 
-
     sz=var_vtr.size();
     for(idx=0; idx < sz ; idx++){
       if( (var_vtr)[idx]->xpr_typ != ncap_att) continue;
@@ -522,7 +505,6 @@ ncap_att_gnrl
 	var_att->nm=strdup(s_fll.c_str());
         att_vtr.push(var_att);  
       } 
-
     }
     // add new att to list;
     for(idx=0 ; idx < att_vtr.size() ; idx++){
@@ -538,36 +520,27 @@ ncap_att_gnrl
       (void)nco_var_free(att_vtr[idx]);
     }
 
-
     return att_vtr.size();
     
 } /* end ncap_att_gnrl() */
-
-
   
 int
 ncap_att_cpy
 (const std::string s_dst,
  const std::string s_src,
- prs_sct  *prs_arg
-){
+ prs_sct  *prs_arg)
+{
  
   int nbr_att=0;
 
   if(prs_arg->ATT_PROPAGATE && s_dst != s_src )
       nbr_att=ncap_att_gnrl(s_dst,s_src,prs_arg);
 
-
   if(prs_arg->ATT_INHERIT)
       nbr_att=ncap_att_gnrl(s_dst,s_dst,prs_arg);
 
-
-
-
-
   return nbr_att;
 }
-
 
 sym_sct *                    /* O [sct] return sym_sct */
 ncap_sym_init                /*  [fnc] populate & return a symbol table structure */
@@ -583,7 +556,6 @@ ncap_sym_init                /*  [fnc] populate & return a symbol table structur
   symbol->fnc_flt=fnc_flt;
   return symbol;
 } /* end ncap_sym_init() */
-
 
 var_sct * /* O [sct] Remainder of modulo operation of input variables (var1%var2) */
 ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
@@ -606,9 +578,6 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
    return var1;
 } /* end ncap_var_var_mod() */
 
-
-
-
 var_sct *        /* O [sct] Resultant variable (actually is var) */
 ncap_var_abs(    /* Purpose: Find absolute value of each element of var */
 var_sct *var)    /* I/O [sct] input variable */
@@ -622,10 +591,6 @@ var_sct *var)    /* I/O [sct] input variable */
   (void)nco_var_abs(var->type,var->sz,var->has_mss_val,var->mss_val,var->val);
   return var;
 } /* end ncap_var_abs */
-
-
-
-
 
 var_sct * /* O [sct] Empowerment of input variables (var1^var_2) */
 ncap_var_var_pwr_old /* [fnc] Empowerment of two variables */ 
@@ -648,7 +613,6 @@ ncap_var_var_pwr_old /* [fnc] Empowerment of two variables */
     var1=nco_var_free(var1);
     return var2;
   }
-
 
   /* make sure vars are at least float  */
   if(var1->type < NC_FLOAT && var2->type <NC_FLOAT ) 
@@ -674,13 +638,9 @@ ncap_var_var_pwr_old /* [fnc] Empowerment of two variables */
     (void)nco_var_pwr(var1->type,var1->sz,var2->has_mss_val,var2->mss_val,var1->val,var2->val);
   } /* end else */
 
-   
    var1=nco_var_free(var1);
    return var2;
 } /* end ncap_var_var_pwr() */
-
-
-
 
 var_sct * /* O [sct] Empowerment of input variables (var1^var_2) */
 ncap_var_var_pwr  /* [fnc] Empowerment of two variables */ 
@@ -705,8 +665,6 @@ ncap_var_var_pwr  /* [fnc] Empowerment of two variables */
   return var1;
 
 } /* end ncap_var_var_pwr() */
-
-
  
 var_sct *           /* O [sct] Resultant variable (actually is var_in) */
 ncap_var_fnc(   
@@ -727,8 +685,6 @@ sym_sct *app)       /* I [fnc_ptr] to apply to variable */
 
   /* deal with initial scan */
   if(var_in->val.vp==NULL) return var_in; 
-  
-
   
   op1=var_in->val;
   sz=var_in->sz;
@@ -765,9 +721,6 @@ sym_sct *app)       /* I [fnc_ptr] to apply to variable */
   return var_in;
 } /* end ncap_var_fnc() */
 
-
-
-
 nm_id_sct *            /* O [sct] new copy of xtr_lst */
 nco_var_lst_copy(      /*   [fnc] Purpose: Copy xtr_lst and return new list */
 nm_id_sct *xtr_lst,    /* I  [sct] input list */ 
@@ -784,7 +737,6 @@ int lst_nbr)           /* I  [nbr] number of elements in list */
   } /* end loop over variable */
   return xtr_new_lst;           
 } /* end nco_var_lst_copy() */
-
 
 nm_id_sct *             /* O [sct] New list */
 nco_var_lst_sub(
@@ -1242,8 +1194,6 @@ ncap_var_stretch /* [fnc] Stretch variables */
   return DO_CONFORM;
 } /* end ncap_var_stretch() */
 
-
-
 nco_bool
 ncap_def_dim(
 const char *dmn_nm,
@@ -1262,7 +1212,6 @@ prs_sct *prs_arg){
     wrn_prn(fnc_nm,"dim \""+ std::string(dmn_nm) + "\" - Invalid name.");
     return False;;
   }
-            
 
   // Check if dimension already exists
   dmn_in_e=prs_arg->ptr_dmn_in_vtr->find(dmn_nm);
@@ -1279,7 +1228,6 @@ prs_sct *prs_arg){
     wrn_prn(fnc_nm,os.str()); 
     return False;
   }
-
   
   dmn_nw=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
   
@@ -1305,9 +1253,6 @@ prs_sct *prs_arg){
   (void)prs_arg->ptr_dmn_out_vtr->push(dmn_nw); 
   return True; 
 }
-
-
-
 
 nco_bool         /* Returns True if shape of vars match (using cnt vectors) */
 nco_shp_chk(
@@ -1354,13 +1299,11 @@ var_sct* var2)
   /* Now compare  values */
   for(idx=0 ; idx < nbr_cmp ;idx++)
     if( var1->cnt[srt1++] != var2->cnt[srt2++]) break;
-
   
   if( idx==nbr_cmp) 
     return True;
   else
     return False;
-
 
 }
  
@@ -1369,10 +1312,7 @@ var_sct* var2)
 #include "ncoParserTokenTypes.hpp"
 #define __cplusplus
 
-
-
 #include "VarOp.hh" 
-
 
 var_sct *
 ncap_var_var_stc
@@ -1419,8 +1359,6 @@ ncap_var_var_stc
    return var_ret;
   }
 
-
-
   switch (var1->type) {
     case NC_BYTE:
     /* Do nothing */
@@ -1449,9 +1387,6 @@ ncap_var_var_stc
   return var_ret;
 
 }
-
-
-
 
 var_sct *         /* O [sct] Sum of input variables (var1+var2) */
 ncap_var_var_op   /* [fnc] Add two variables */

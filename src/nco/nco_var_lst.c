@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.62 2006-05-29 06:29:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.63 2006-11-19 20:25:03 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -776,7 +776,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       var_prc_out[*nbr_var_prc]=var_out[idx];
       ++*nbr_var_prc;
       if(((var[idx]->type == NC_CHAR) || (var[idx]->type == NC_BYTE)) && ((prg_id != ncecat) && (prg_id != ncpdq) && (prg_id != ncrcat))){
-	(void)fprintf(stderr,"%s: WARNING Variable %s is of type %s, for which processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var[idx]->nm,nco_typ_sng(var[idx]->type));
+	if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var[idx]->nm,nco_typ_sng(var[idx]->type));
       } /* end if */
     } /* end else */
   } /* end loop over var */
