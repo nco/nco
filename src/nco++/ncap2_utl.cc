@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.27 2006-11-19 20:25:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.28 2006-11-19 21:41:30 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1525,11 +1525,6 @@ ncap_var_var_op   /* [fnc] Add two variables */
   return var_ret;
   }
 
-
-
-
-
-
 var_sct *             /* O [sct] Sum of input variables (var1+var2) INITIAL SCAN ONLY */
 ncap_var_var_op_ntl   /* [fnc] Add two variables */
 (var_sct *var1,       /* I [sct] Input variable structure containing first operand */
@@ -1540,7 +1535,6 @@ ncap_var_var_op_ntl   /* [fnc] Add two variables */
 
   nco_bool vb1;
   nco_bool vb2;
- 
 
   //If var2 is null then we are dealing with a unary function
   if( var2 == NULL)
@@ -1595,12 +1589,11 @@ ncap_var_var_op_ntl   /* [fnc] Add two variables */
         var1=nco_var_free(var1);
         return var2;
       }
-
       }
-     
+  /* Should not reach end of this function */
+  nco_exit(EXIT_FAILURE);
+  return var1;
 }
-
-
 
 var_sct *          /* O [sct] Sum of input variables (var1+var2) */
 ncap_var_var_inc   /* [fnc] Add two variables */
@@ -1615,7 +1608,6 @@ ncap_var_var_inc   /* [fnc] Add two variables */
   const char *cvar2;
   nco_bool vb1;
   nco_bool vb2;
-
 
   var_sct *var_ret=(var_sct*)NULL;
 
