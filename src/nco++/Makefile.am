@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.11 2006-08-26 05:03:28 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.12 2006-11-19 23:58:30 zender Exp $ -*-makefile-*-
 
 # Purpose: Template builds for nco++ directory
 # Process this file with automake to produce Makefile.in
@@ -11,13 +11,13 @@ ANTLR = runantlr
 # ncolib_SOURCES includes all ../nco C-sources except for operator main() files
 # These are all built before nco++
 
-# fxm: Split off all sources except front-end into nco++ library
-ncap2_SOURCES = Invoke.cc ncap2.cc ncap2_utl.cc sdo_utl.cc NcapVarVector.cc ncoLexer.cpp ncoParser.cpp ncoTree.cpp
-
 # Invoke 'runantlr' on ncoGrammer.g to generate required hpp files
 #Invoke.cc : ncoGrammer.g
 #Invoke.o : ncoGrammer.g
 #	${ANTLR} ncoGrammer.g
+
+# fxm: Split off all sources except front-end into nco++ library
+ncap2_SOURCES = Invoke.cc ncap2.cc ncap2_utl.cc sdo_utl.cc NcapVarVector.cc ncoLexer.cpp ncoParser.cpp ncoTree.cpp
 
 ncap2_LDADD = -lnco -lantlr
 ncap2_LDFLAGS = -L../nco

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.48 2006-11-13 00:08:58 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.49 2006-11-19 23:58:27 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -19,19 +19,19 @@ apt-get install dh-make debhelper devscripts fakeroot gnupg debian-policy develo
 
 2. Debian build procedure recommends placing entire package source in
    subdirectory of main package. 
-   For starters, we wish to create .debs of tagged releases, e.g., nco-3.1.7
-   First we create a clean source distribution of nco and place it in nco-3.1.7
-   Once automated, we will use cvs co -rnco-3_1_7 to get source
+   For starters, we wish to create .debs of tagged releases, e.g., nco-3.1.8
+   First we create a clean source distribution of nco and place it in nco-3.1.8
+   Once automated, we will use cvs co -rnco-3_1_8 to get source
    Until we know what is necessary, however, we just copy a snapshot
    
    2.1 Clean all build files from development directory
 
 cd ~/nco;make distclean;cd bld;make clean;cd ~
 tar cvzf ./nco/nco.tar.gz ./nco/*
-cd ~/nco;tar xvzf nco.tar.gz;mv nco nco-3.1.7
-/bin/rm nco.tar.gz;tar cvzf nco-3.1.7.tar.gz ./nco-3.1.7/*
-cd ~/nco/nco-3.1.7
-dh_make -e zender@uci.edu -f ../nco-3.1.7.tar.gz
+cd ~/nco;tar xvzf nco.tar.gz;mv nco nco-3.1.8
+/bin/rm nco.tar.gz;tar cvzf nco-3.1.8.tar.gz ./nco-3.1.8/*
+cd ~/nco/nco-3.1.8
+dh_make -e zender@uci.edu -f ../nco-3.1.8.tar.gz
 
     2.2 The preceding steps created template debian files for a .deb,
     Those files now reside in ~/nco/debian.
@@ -46,7 +46,7 @@ dh_make -e zender@uci.edu -f ../nco-3.1.7.tar.gz
    from previous build
 
    cd ~/nco;/bin/rm *.gz
-   cd ~/nco/nco-3.1.7;
+   cd ~/nco/nco-3.1.8;
    export NETCDF_LIB=/usr/lib NETCDF_INC=/usr/include
    dpkg-buildpackage -rfakeroot > foo 2>&1
 
@@ -75,35 +75,35 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
    make tags
 # Put cute version-specific string in nco_ctl.c:nco_nmn_get()
 # Install correct version numbers before updating Debian
-# tags-query replace 3_1_7 with X_Y_Z+1
-# tags-query replace 3.1.7 with X.Y.Z+1
+# tags-query replace 3_1_8 with X_Y_Z+1
+# tags-query replace 3.1.8 with X.Y.Z+1
 # If tags-query replace does not work, be sure to manually change
 # versions in configure.in, debian/files, doc/ANNOUNCE, doc/debian.txt,
 # doc/index.shtml, doc/nco.texi, bld/nco_dst.pl, doc/VERSION 
    cd ~/nco/debian
-   dch -v 3.1.7-1 # Update changelog
+   dch -v 3.1.8-1 # Update changelog
 # For unknown reason rules file may lose its executable bit
    chmod a+x ~/nco/debian/rules
 # Build Debs using Debian libraries and include
    export NETCDF_LIB=/usr/lib NETCDF_INC=/usr/include
-   cd ~/nco;cvs commit -m "Preparing nco-3.1.7 release";
+   cd ~/nco;cvs commit -m "Preparing nco-3.1.8 release"
 # -uc -us : Tell dpkg-buildpackage not to sign the package upload
 # -rfakeroot : 
    cd ~/nco;dpkg-buildpackage -rfakeroot -uc -us > ~/nco/foo 2>&1
 # Copy to distribution site
-   scp ~/nco_3.1.7* dust.ess.uci.edu:/var/www/html/nco/src
-   scp ~/nco/foo dust.ess.uci.edu:/var/www/html/nco/src/nco_3.1.7-1.dpkg-buildpackage.txt
+   scp ~/nco_3.1.8* dust.ess.uci.edu:/var/www/html/nco/src
+   scp ~/nco/foo dust.ess.uci.edu:/var/www/html/nco/src/nco_3.1.8-1.dpkg-buildpackage.txt
 # Save all files in emacs before tagging
 # Tag CVS code after changing files in ~/nco/debian
-   cd ~/nco;cvs commit -m "Preparing nco-3.1.7 release";cvs tag -c nco-3_1_7
-   ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-3_1_7
+   cd ~/nco;cvs commit -m "Preparing nco-3.1.8 release";cvs tag -c nco-3_1_8
+   ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-3_1_8
 
 # Location of build diagnostics for mentors to help 
-http://dust.ess.uci.edu/nco/src/nco_3.1.7-1.dpkg-buildpackage.txt
-http://dust.ess.uci.edu/nco/src/nco_3.1.7-1.dsc
-http://dust.ess.uci.edu/nco/src/nco_3.1.7-1_i386.changes
-http://dust.ess.uci.edu/nco/src/nco_3.1.7-1_i386.deb
-http://dust.ess.uci.edu/nco/src/nco_3.1.7-1.tar.gz
+http://dust.ess.uci.edu/nco/src/nco_3.1.8-1.dpkg-buildpackage.txt
+http://dust.ess.uci.edu/nco/src/nco_3.1.8-1.dsc
+http://dust.ess.uci.edu/nco/src/nco_3.1.8-1_i386.changes
+http://dust.ess.uci.edu/nco/src/nco_3.1.8-1_i386.deb
+http://dust.ess.uci.edu/nco/src/nco_3.1.8-1.tar.gz
 
 # Becoming a Debian developer
 http://www.debian.org/devel/join/newmaint
@@ -131,14 +131,14 @@ Warren Turkal <wt@atmos.colostate.edu>
 Matej Vela <vela@debian.org>, Daniel Baumann <daniel@debian.org>, Warren Turkal <wt@atmos.colostate.edu>
 
 # Lintian check of packages
-/bin/rm -r ${DATA}/nco-3.1.7 # Cleanup
-cd ${DATA};cvs -d zender@nco.cvs.sourceforge.net:/cvsroot/nco export -kkv -r nco-3_1_7 -d nco-3.1.7 nco # Export
-/bin/rm -r ${DATA}/nco-3.1.7/debian
+/bin/rm -r ${DATA}/nco-3.1.8 # Cleanup
+cd ${DATA};cvs -d zender@nco.cvs.sourceforge.net:/cvsroot/nco export -kkv -r nco-3_1_8 -d nco-3.1.8 nco # Export
+/bin/rm -r ${DATA}/nco-3.1.8/debian
 
 
 cd ~/nco;dpkg-buildpackage -rfakeroot -uc -us > ~/nco/foo 2>&1
-sudo dpkg --install ~/nco_3.1.7-1_i386.deb
-lintian ~/nco_3.1.7-1_i386.deb
+sudo dpkg --install ~/nco_3.1.8-1_i386.deb
+lintian ~/nco_3.1.8-1_i386.deb
 sudo dpkg --remove nco
 
 csz: shouldn't this be a file not a directory?
@@ -152,8 +152,8 @@ libtool: install: warning: `libnco.la' has not been installed in `/usr/lib/nco'
 libtool: install: warning: `libnco.la' has not been installed in `/usr/lib/nco'
 libtool: install: warning: `libnco.la' has not been installed in `/usr/lib/nco'
 libtool: install: warning: `libnco.la' has not been installed in `/usr/lib/nco'
-dpkg-shlibdeps: warning: could not find any packages for libnco-3.1.7.so
-dpkg-shlibdeps: warning: unable to find dependency information for shared library libnco (soname 3.1.7, path libnco-3.1.7.so, dependency field Depends)
+dpkg-shlibdeps: warning: could not find any packages for libnco-3.1.8.so
+dpkg-shlibdeps: warning: unable to find dependency information for shared library libnco (soname 3.1.8, path libnco-3.1.8.so, dependency field Depends)
 dh_builddeb tar: -: file name read contains nul character
 
 # From Thijs Kinkhorst <thijs@debian.org>

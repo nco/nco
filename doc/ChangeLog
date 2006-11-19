@@ -1,5 +1,7 @@
 2006-11-19  Charlie Zender  <zender@uci.edu>
 
+	* Update debian build-dependencies to include antlr
+
 	* Make missing_value implementation generic and allow compile-time
 	override with Makefile variable
 	cd ~/nco/bld;make USR_TKN='-DNCO_MSS_VAL_SNG=_Fillvalue';cd -

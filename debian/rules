@@ -2,18 +2,18 @@
 # -*- makefile -*-
 # debian/rules file - for nco
 # Copyright 1999-2002 by Brian Mays
-# Copyright 2003 by Charlie Zender
-#
+# Copyright 2003-2006 by Charlie Zender
+
 # Sample debian/rules that uses debhelper.
 # GNU copyright 1997 to 1999 by Joey Hess.
-#
+
 # Modified to make a template file for a multi-binary package with separated
 # build-arch and build-indep targets  by Bill Allombert 2001
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-# This has to be exported to make some magic below work.
+# Export this to make some magic below work
 export DH_OPTIONS
 
 # These are used for cross-compiling and for saving the configure script
@@ -44,7 +44,6 @@ config.status: configure
 		    --libdir=/usr/lib/nco \
 		    --disable-dap \
 		    --disable-nco_cplusplus \
-		    --disable-ncoxx \
 		    --disable-netcdf4 \
 		    --disable-udunits \
 		    --disable-static
@@ -70,7 +69,6 @@ clean:
 
 	dh_clean
 
-
 install: install-arch
 
 install-arch:
@@ -86,9 +84,8 @@ install-arch:
 	# NCO installs header files by default, which we don't want
 	dh_install -a --exclude="*.h *.hh"
 
-# Must not depend on anything. This is to be called by
-# binary-arch/binary-multi
-# in another 'make' thread.
+# Must not depend on anything 
+# This is to be called by binary-arch/binary-multi in another 'make' thread
 binary-common:
 	dh_testdir
 	dh_testroot
@@ -117,12 +114,12 @@ binary-common:
 	dh_md5sums
 	dh_builddeb
 
-# Build architecture independant packages using the common target.
+# Build architecture independant packages using the common target
 binary-indep: build install
 # (Uncomment this next line if you have such packages.)
 #	 $(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
 
-# Build architecture dependant packages using the common target.
+# Build architecture dependant packages using the common target
 binary-arch: build-arch install-arch
 	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-common
 

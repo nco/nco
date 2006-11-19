@@ -2,17 +2,18 @@ Source: nco
 Section: math
 Priority: optional
 Maintainer: Charlie Zender <zender@uci.edu>
-Build-Depends: debhelper (>> 4.0.0), netcdfg-dev, flex, bison, texinfo
+Build-Depends: debhelper (>> 4.0.0), netcdfg-dev, flex, bison, texinfo, antlr, libantlr-dev
 Standards-Version: 3.7.2
 
 Package: nco
 Architecture: any
 Depends: ${shlibs:Depends}
 Description: netCDF Operators
- NCO is a suite of programs known as operators.  Each operator is
- a standalone, command line program that is executed at the UNIX
- shell-level.  The operators take one or more netCDF files as input,
- perform an operation (e.g., averaging or hyperslabbing), and produce
- a netCDF file as output.  The operators are primarily designed to aid
- manipulation and analysis of data.  This reflects their origin, but the
- operators are as general as netCDF itself.
+ NCO is a suite of programs known as operators.  The operators are 
+ standalone, command-line programs executable in a POSIX shell.  
+ All operators take one or more netCDF files as input, perform an 
+ operation (e.g., averaging or hyperslabbing), and produce a single
+ output netCDF file.  NCO was originally designed to facilitate 
+ manipulation and analysis of climate data, though it works on any 
+ netCDF format datasets.
+ 
