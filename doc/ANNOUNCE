@@ -1,36 +1,20 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.193 2006-11-12 23:02:19 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.194 2006-11-19 22:11:25 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.7 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release marks the deprecation of ncap for ncap2.
-ncap2 is backward-compatible with ncap, and provides much
-more powerful functionality now and its features are improving.
-We encourage migration to ncap2 starting now.
-We will maintain ncap for the foreseeable future.
-
-Building ncap2 requires the ANTLR library and headers which in turn
-require Java. It is trivial to install ANTLR with Linux (i.e., apt-get
-install antlr libantlr-dev) but non-trivial on big-iron UNIX if
-sysadmins are not used to supporting Java or ANTLR. 
-If you want ncap2 on non-Linux machines, be nice to your sysadmins!
-
 Finally this release marks the return of pre-built, up-to-date, Debian
 binary packages. Grab 'em from http://nco.sf.net#debian
 
 Build/runtime changes:
 
-1. Update netCDF4 support to alpha17
+1. Warn when _Fillvalue defined and missing_value not
 
-2. Die gracefully rather than segfault on mal-formed hyperslab strings
+2. Compile-time option to treat _Fillvalue (instead of missing_value) as missing
 
-3. Document --hdr_pad options http://nco.sf.net/nco.html#hdr
-
-4. ncap2 supports "double-parsing"
-
-5. Update Debian support
+3. Debian packages include ncap2 fxm
 
 Enjoy,
 Charlie

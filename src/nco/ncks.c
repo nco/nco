@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.167 2006-11-19 20:25:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.168 2006-11-19 22:11:25 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.167 2006-11-19 20:25:03 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.167 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.168 2006-11-19 22:11:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.168 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -375,9 +375,6 @@ main(int argc,char **argv)
     } /* end switch */
     if(opt_crr != NULL) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
-
-  /* dbg */
-  (void)fprintf(stderr,"NCO_MSS_VAL_SNG = hello\n");
 
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
