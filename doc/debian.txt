@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.49 2006-11-19 23:58:27 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.50 2006-11-20 01:10:19 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -137,9 +137,9 @@ cd ${DATA};cvs -d zender@nco.cvs.sourceforge.net:/cvsroot/nco export -kkv -r nco
 
 
 cd ~/nco;dpkg-buildpackage -rfakeroot -uc -us > ~/nco/foo 2>&1
+sudo dpkg --remove nco
 sudo dpkg --install ~/nco_3.1.8-1_i386.deb
 lintian ~/nco_3.1.8-1_i386.deb
-sudo dpkg --remove nco
 
 csz: shouldn't this be a file not a directory?
 E: nco: doc-base-file-references-missing-file nco:15 /usr/share/doc/nco/nco.html

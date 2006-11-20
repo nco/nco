@@ -23756,11 +23756,9 @@ rm -f conftest*
 fi
 
 
-echo ""
 echo "########################################"
 echo "#  Testing for DAP (aka DODS) support  #"
 echo "########################################"
-echo ""
 # Begin DAP (aka DODS) support
 # Store pre-DAP LIBS value to restore from later
 nco_LIBS_no_DAP="${LIBS}"
@@ -24100,6 +24098,9 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
+echo "#################################"
+echo "#  Testing for netCDF4 support  #"
+echo "#################################"
 # Check whether --enable-netcdf4 was given.
 if test "${enable_netcdf4+set}" = set; then
   enableval=$enable_netcdf4; enable_netcdf4=${enableval}
@@ -24109,7 +24110,7 @@ fi
 
 
 # Check to see if netCDF4 is requested
-echo "DEBUG: enable_netcdf4: ${enable_netcdf4} & enable_dap: ${enable_dap}"
+echo "DEBUG: enable_netcdf4 = ${enable_netcdf4} and enable_dap = ${enable_dap}"
 if (test "${enable_netcdf4}" != 'no' && test "${enable_dap}" != 'no'); then
 	# override netCDF4 request
 	echo ""
@@ -24117,7 +24118,7 @@ if (test "${enable_netcdf4}" != 'no' && test "${enable_dap}" != 'no'); then
 	echo "NCO will be built with DAP support and without netCDF4/HDF5 support"
 	echo ""
 	enable_netcdf4='no'
-fi
+fi # End test for netCDF4 libs
 
 # Check for DAP libraries unless told not to
 if test "${enable_dap}" != 'no'; then
@@ -24267,7 +24268,6 @@ fi
 
 # End DAP support
 
-
 # Begin mandatory link test with libnetcdf.a
 # Make precious variables for ./configure --help
 
@@ -24275,12 +24275,10 @@ fi
 
 # Must link with HDF5 if netCDF4 libnetcdf used but netCDF4 capabilities not wanted
 # Following line enables and initializes this configure option
-echo ""
 echo "################################################"
-echo "# Testing whether libnetcdf is Version 3 or 4 #"
+echo "# Testing whether libnetcdf is Version 3 or 4  #"
 echo "################################################"
-echo ""
-echo "DEBUG: enable_netcdf4: ${enable_netcdf4} & enable_dap: ${enable_dap}"
+echo "DEBUG: enable_netcdf4: ${enable_netcdf4} and enable_dap: ${enable_dap}"
 
 
 # Test if user set NETCDF4_ROOT and it exists
@@ -24489,13 +24487,10 @@ if test "${enable_dap}" = 'no'; then
 echo "$as_me: WARNING: Did not request OPeNDAP; checking for version of libnetcdf to use" >&2;}
 fi
 
-echo ""
 echo "#############################################"
 echo "# Testing for HDF5 & HDF5_HL & netCDF4 libs #"
 echo "#############################################"
-echo ""
 echo "DEBUG: LIBS = ${LIBS}"
-
 # Check for HDF5 libraries unless told otherwise
 # HDF5 libraries may be in standard places but netCDF4 libnetcdf must be
 # in NETCDF4_ROOT to avoid conflicting with netCDF3 libnetcdf
@@ -24690,7 +24685,7 @@ cat >>confdefs.h <<\_ACEOF
 #define ENABLE_NETCDF4 1
 _ACEOF
 
-	fi  # End test for HDF5 libs
+	fi # End test for HDF5 libs
 
 elif (test "${enable_netcdf4}" = 'no' && test "${enable_dap}" = 'no'); then
 	# Try next stanza iff enable-netcdf4=no
@@ -27046,13 +27041,10 @@ if test $ac_cv_lib_nco_nco_open = yes; then
 fi
 
 
-	echo ""
-	echo "##########################################################"
-	echo "#     Sorting out MacOSX build parameters                #"
-	echo "# enable_libnco = ${enable_libnco} and MACOSX = ${MACOSX} #"
-	echo "##########################################################"
-	echo ""
-
+echo "##########################################################"
+echo "#     Sorting out MacOSX build parameters                #"
+echo "##########################################################"
+echo "DEBUG: enable_libnco = ${enable_libnco} and MACOSX = ${MACOSX}"
 if ((test "${enable_libnco}" = 'yes') && (test "${MACOSX}" != 1)); then
 	echo "Thank God - NOT MacOSX - adding -lnco to LIBS"
 	LIBS="-lnco ${LIBS}"
@@ -27066,12 +27058,10 @@ echo "DEBUG: After library checks LIBS=$LIBS"
 echo "DEBUG: enable_mpi = '${enable_mpi}'"
 
 if (test "${enable_mpi}" = 'yes'); then
-	echo ""
 	echo "##################################################"
 	echo "#  Sorting out MPI (LAM/MPICH) build parameters  #"
 	echo "#        (only works on Linux so far)            #"
 	echo "##################################################"
-	echo ""
 #	AC_ARG_VAR([BIN_MPI_PROGRAMS],[List of MPI NCOs - not user configurable])
 
 
@@ -27778,13 +27768,11 @@ echo "$as_me: MISSING liblam - could not find a liblam.a|so." >&6;}
 		# 'enable_shared' value is passed to build system via AC_DEFINE below
 		enable_shared='no'
 	fi
-	# Daniel, just delete the following 3 lines when ncap2 is MPI-ready
-	# and right now, can't build the ncap2 as an MPI so disable it here, regardless
+	# Delete following three lines when ncap2 is MPI-ready
+	# Currently there is no MPI version of ncap2
 	echo "INFO: Cannnot currently build ncap2 with MPI - disabling ncap2 build."
 	enable_ncoxx='no'
-
 	echo "### End MPI Checks ###"
-	echo ""
 fi
 
 
@@ -28652,13 +28640,9 @@ _ACEOF
 fi
 # End rx
 
-# Old placement of Shared libs stanza
-
-echo ""
 echo "########################################"
 echo "#     Testing for UDUNITS support      #"
 echo "########################################"
-echo ""
 # Begin UDUnits
 # MacOS X requires libudport for threaded functions
 { echo "$as_me:$LINENO: checking for tdelete" >&5
@@ -29966,13 +29950,9 @@ case ${CXX} in
     pgCC* ) CXX=`echo "${CXX}" | sed -e 's/ -c9x//'` ; CXXFLAGS=`echo "${CXXFLAGS}" | sed -e 's/ -c9x//'` ; ;;
 esac
 
-echo ""
-
-echo ""
 echo "###############################"
 echo "#    Require Shared Libs?     #"
 echo "###############################"
-
 # If --enable-shared define ENABLE_SHARED
 echo "DEBUG: enable_shared: ${enable_shared} "
 if (test "${enable_shared}" = 'yes' && test "${enable_netcdf4}" = 'no'); then
@@ -32955,7 +32935,6 @@ fi
 
 # Echo build parameters for debugging
 echo ""
-echo ""
 echo "Configuration Parameters:"
 echo "AR_FLAGS............. ${AR_FLAGS}"
 echo "CC................... ${CC}"
@@ -32974,9 +32953,8 @@ echo "LIBS................. ${LIBS}"
 echo "NETCDF4_ROOT......... ${NETCDF4_ROOT}"
 
 # Inform users of the very useful configure.eg
-echo ""
 echo "*******************************************************************"
-echo "If the build process fails, please examine the file 'configure.eg'"
+echo "If the build fails, please examine the file 'configure.eg'"
 echo "in the top-level NCO directory.  It contains examples known to"
 echo "build NCO for various platforms and compilers."
 echo "*******************************************************************"
