@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.196 2006-11-19 23:58:26 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.197 2006-11-20 16:53:10 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -128,8 +128,11 @@ AM_CONFIG_HEADER(config.h)
 # CC and CXX have preferred lists
 # AC_PROG_CC sets GCC to 'yes' when GCC is detected
 # AC_PROG_CC sets CFLAGS = -g [-O2 iff GCC]
-AC_PROG_CC( xlc_r xlc acc cc     pathcc pgcc icc  gcc     como c89)
-AC_PROG_CXX(xlC_r xlC aCC CC cxx pathCC pgCC icpc g++ c++ como)
+# 20061120: Require alternative compilers be passed to configure as environment variables
+#AC_PROG_CC( xlc_r xlc acc cc     pathcc pgcc icc  gcc     como c89)
+#AC_PROG_CXX(xlC_r xlC aCC CC cxx pathCC pgCC icpc g++ c++ como)
+AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_CPP
 AC_PROG_CXXCPP
 AC_PROG_CC_STDC

@@ -1,3 +1,13 @@
+2006-11-20  Charlie Zender  <zender@uci.edu>
+
+	* Include ncap2 in debian distribution
+
+	* Remove compiler-preference list arguments to AC_PROG_CC and
+	AC_PROG_CXX in configure.in. Presence was breaking builds on 
+	virga where broken icpc compiler was automatically selected.
+	Henceforth non-default compilers must be specified as environment
+	variables as in configure.eg
+
 2006-11-19  Charlie Zender  <zender@uci.edu>
 
 	* Create ncap2 manpage for debian compatibility

@@ -1,5 +1,7 @@
 nco (3.1.8-2) unstable; urgency=low
 
+  * Include ncap2 executable and man page
+  * Add package dependencies on antlr, libantlr-dev 
   * Fix HTML documentation location in nco.doc-base
 
  -- Charlie Zender <zender@uci.edu>  Mon, 20 Nov 2006 08:22:22 -0800
