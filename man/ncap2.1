@@ -1,0 +1,141 @@
+.TH NCAP2 1
+.SH NAME
+ncap2 \- netCDF Arithmetic Processor, Next Generation
+.SH SYNTAX
+ncap2 [-A] [-C] [-c] [-D 
+.IR dbg ]
+[-d 
+.IR dim ,[
+.IR "min" ][,[
+.IR "max" ]]]
+[-F] [-f]
+[-h] [-l 
+.IR path ]
+[-O] [-o 
+.IR output-file ]
+[-p 
+.IR path ]
+[-R] [-r] [-S 
+.IR script-file ] [-s 
+.IR script ] [-v 
+.IR var [,...]]
+.I input-file [
+.I output-file ]
+.SH DESCRIPTION
+.PP
+.B ncap2
+supercedes and is backwards-compatible with 
+.B ncap
+which is now deprecated.
+Both operators arithmetically process netCDF files.
+The primary 
+.B ncap2 
+documentation is currently the sample script
+<http://nco.sf.net/ncap2.in> 
+The remainder of this manpage is identical to the 
+.B ncap
+manpage.
+
+The processing instructions are contained either in the 
+.B NCO
+script file 
+.B fl.nco
+or in a sequence of command line arguments.
+The options 
+.B -s
+(or long options 
+.B --spt
+or 
+.B --script)
+are used for in-line scripts and 
+.B -S
+(or long options 
+.B --fl_spt
+or 
+.B --script-file)
+are used to provide the filename where (usually multiple) scripting
+commands are pre-stored.    
+.B ncap2
+was written to perform arbitrary albebraic
+transformations of data and archive the results as easily as possible.
+Missing values are treated correctly.
+The results of the algebraic manipulations are called 
+.I derived fields. 
+
+Unlike the other operators, 
+.B ncap2
+does not accept a list of
+variables to be operated on as an argument to 
+.B -v.
+Rather, the 
+.B -v 
+switch takes no arguments and indicates that 
+.B ncap2
+should output 
+.I only
+user-defined variables. 
+.B ncap2
+does not accept or understand the 
+.B -x 
+switch.
+.PP
+.SH EXAMPLES
+.PP
+Compute the square of variable 
+.BR T
+.RS
+ncap2 -s "T2=T*T" in.nc out.nc
+.RE
+
+.\" NB: Append man_end.txt here
+.\" $Header: /data/zender/nco_20150216/nco/man/ncap2.1,v 1.1 2006-11-20 01:06:54 zender Exp $ -*-nroff-*-
+.\" Purpose: Trailer file for common ending to NCO man pages
+.\" Usage: 
+.\" Append this file to end of NCO man pages immediately after marker
+.\" that says "Append man_end.txt here"
+.SH AUTHOR
+.B NCO
+manual pages written by Charlie Zender and Brian Mays.
+
+.SH "REPORTING BUGS"
+Report bugs to <http://sf.net/bugs/?group_id=3331>.
+
+.SH COPYRIGHT
+Copyright \(co 1995-2006 Charlie Zender
+.br
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+.SH "SEE ALSO"
+The full documentation for
+.B NCO
+is maintained as a Texinfo manual called the 
+.B NCO User's Guide.
+Because 
+.B NCO
+is mathematical in nature, the documentation includes TeX-intensive
+portions not viewable on character-based displays. 
+Hence the only complete and authoritative versions of the 
+.B NCO User's Guide 
+are the PDF (recommended), DVI, and Postscript versions at
+<http://nco.sf.net/nco.pdf>, <http://nco.sf.net/nco.dvi>,
+and <http://nco.sf.net/nco.ps>, respectively.
+HTML and XML versions
+are available at <http://nco.sf.net/nco.html> and
+<http://nco.sf.net/nco.xml>, respectively.
+
+If the
+.B info
+and
+.B NCO
+programs are properly installed at your site, the command
+.IP
+.B info nco
+.PP
+should give you access to the complete manual, except for the
+TeX-intensive portions.
+
+.SH HOMEPAGE
+The 
+.B NCO
+homepage at <http://nco.sf.net> contains more information.
