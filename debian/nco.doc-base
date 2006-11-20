@@ -12,5 +12,5 @@ Index: /usr/share/info/nco.info.gz
 Files: /usr/share/info/nco.*
 
 Format: HTML
-Index: /usr/share/doc/nco/nco.html
-Files: /usr/share/doc/nco/nco.html
+Index: /usr/share/doc/nco/html/index.html
+Files: /usr/share/doc/nco/html/*
