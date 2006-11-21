@@ -2,23 +2,22 @@ This is the Debian GNU/Linux prepackaged version of the netCDF Operators
 (NCO).
 
 This package was originally put together by Brian Mays <brian@debian.org>
-from software obtained from
- ftp://ftp.cgd.ucar.edu/pub/zender/nco/
+from software obtained from ftp://ftp.cgd.ucar.edu/pub/zender/nco
 
-Modifications of NCO package for Debian GNU/Linux made from 1999--2002
+NCO package modifications for Debian GNU/Linux made from 1999-2002
 are Copyright (C) Brian Mays and were released under the GPL 
 (on Debian systems see "/usr/share/common-licenses/GPL").
 
-Beginning March, 2003, Charlie Zender merged Debian changes into 
-upstream source in SourceForge CVS repository. 
+Beginning March, 2003, Charlie Zender and Rorik Peterson took over 
+NCO Debian package maintenance merged them into the upstream source.
 More information at package homepage http://nco.sourceforge.net
 
 On June 15, 2003, Charlie Zender changed the NCO license, except where  
 explicitly noted otherwise, from GPL to GPL version 2 (not any later version).
-Also at this time the explicit compatibility exceptions for the HDF, netCDF,
-OPeNDAP, and UDUnits licenses were introduced.
+Also at this time the explicit exceptions to the GPL for compatibility with
+the HDF, netCDF, OPeNDAP, and UDUnits licenses were formally introduced.
 
-NCO is copyright (C) 1995--2006 Charlie Zender
+NCO is copyright (C) 1995-2006 Charlie Zender
 
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
