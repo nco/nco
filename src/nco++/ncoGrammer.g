@@ -95,14 +95,24 @@ def_dim:   DEFDIM^ LPAREN! NSTRING COMMA! expr RPAREN! SEMI!
 func_exp: primary_exp | ( FUNC^ LPAREN!  expr RPAREN! )
     ;
 
+// dot operator -- properties
+// not sure this is best place for this rule
+prop: ( PSIZE |PTYPE |PMIN |PMAX |PSUM |PAVG| VAR_ID)
+    ;
+
+
+prop_exp: func_exp ( DOT^ prop)?
+    ;
+
 // unary left association   
-unaryleft_exp: func_exp (
+unaryleft_exp: prop_exp (
                           in:INC^ {#in->setType(POST_INC);
                                    #in->setText("POST_INC");}
                         | de:DEC^ {#de->setType(POST_DEC);
                                    #de->setText("POST_DEC");}
                           )?
     ;
+
 
 // unary right association   
 unary_exp:  ( LNOT^| PLUS^| MINUS^ |INC^ | DEC^ ) unary_exp
@@ -115,7 +125,7 @@ pow_exp: unary_exp (CARET^ pow_exp )?
     ;
 
 mexpr:
-		 pow_exp ( (TIMES^ | DIVIDE^ | MOD^) pow_exp)*
+		 pow_exp ( (TIMES^ | DIVIDE^ | MOD^ ) pow_exp)*
 	;
 
 add_expr:
@@ -211,6 +221,15 @@ tokens {
     DEFDIM="defdim";
     SHIFTL="<<";
     SHIFTR=">>";
+
+// Properties & Methods
+    PSIZE="size";
+    PTYPE="type";
+    PMIN="min";
+    PMAX="max";
+    PSUM="sum";
+    PAVG="avg";
+    
 }
 {
 
@@ -301,6 +320,7 @@ LNOT: '!' ;
 
 LOR: "||" ;
 
+DOT: '.';
 
 protected DGT:     ('0'..'9');
 protected LPH:     ( 'a'..'z' | 'A'..'Z' | '_' );
@@ -388,10 +408,8 @@ VAR_ATT options {testLiterals=true;} :  (LPH)(LPH|DGT)*
                $setType(FUNC);             
              else $setType(VAR_ID); 
            }   
-         (  ('@'(LPH)(LPH|DGT)*  {$setType(ATT_ID); } )
-            ( ".size"! { $setType(ATT_ID_SIZE); })?
-         )?
-;
+           ('@'(LPH)(LPH|DGT)*  {$setType(ATT_ID); } )?
+   ;
 
 DIM_VAL: '$'! (LPH)(LPH|DGT)* 
             {$setType(DIM_ID);}
@@ -1365,6 +1383,89 @@ out returns [var_sct *var]
                 var=assign(asn);
             }  
 
+    // Properties - nb first operand an expr --second operand property
+    | #(DOT var1=out prp:.) {
+            // de-reference 
+            ddra_info_sct ddra_info;            
+
+
+            if(var1->undefined){ 
+              var=var1;
+              // n.b can't use return -- as this results with
+              // problems with automagically generated code 
+              goto end_dot;
+            }
+
+            // blow out if unrecognized property
+            if(prp->getType()==VAR_ID){
+              std::string serr;
+              std::string sva(ncap_var_is_att(var1)?"Attribute" :"Variable");
+              serr= sva+" " + std::string(var1->nm)+ " has unrecognized property "+ "\""+prp->getText()+"\"";
+              err_prn(fnc_nm,serr );
+              }
+
+            // Initial scan
+            if(prs_arg->ntl_scn){
+             
+             switch(prp->getType()){
+                 case PSIZE:
+                 case PTYPE:
+                      var= ncap_sclr_var_mk("_property",NC_INT,false);
+                      break;  
+                                      
+                 case PMIN:
+                 case PMAX:
+                 case PSUM:
+                 case PAVG:
+                      var=ncap_sclr_var_mk("_property",var1->type,false);
+                      break;
+             } 
+             var1=nco_var_free(var1);
+            }
+
+            // Final scan
+            if(!prs_arg->ntl_scn){
+             
+             switch(prp->getType()){
+                 case PSIZE:
+                      var= ncap_sclr_var_mk("_property",NC_INT,true);
+                      (void)cast_void_nctype(NC_INT,&var->val);
+                      *var->val.lp = var1->sz;
+                      (void)cast_nctype_void(NC_INT,&var->val);
+                      var1=nco_var_free(var1); 
+                      break;
+                 case PTYPE:
+                      var= ncap_sclr_var_mk("_property",NC_INT,true);
+                      (void)cast_void_nctype(NC_INT,&var->val);
+                      *var->val.lp = (int)var1->type;
+                      (void)cast_nctype_void(NC_INT,&var->val);
+                      var1=nco_var_free(var1); 
+                      break;
+
+                 case PMIN:
+                      var=nco_var_avg(var1,var1->dim,var1->nbr_dim,nco_op_min,False,&ddra_info);
+                      break; 
+                 case PMAX:
+                      var=nco_var_avg(var1,var1->dim,var1->nbr_dim,nco_op_max,False,&ddra_info);
+                      break;
+                 case PSUM:
+                      var=nco_var_avg(var1,var1->dim,var1->nbr_dim,nco_op_ttl,False,&ddra_info);
+                      break;
+                 case PAVG:
+                      var=nco_var_avg(var1,var1->dim,var1->nbr_dim,nco_op_avg,False,&ddra_info);
+                      break;
+
+
+             } 
+             //var1=nco_var_free(var1);
+             // var1 is freed in nco_var_avg()
+
+            }
+
+end_dot: ;
+
+          }//end action           
+
     // Naked numbers 
     // nb Cast is not applied to these numbers
 	|	c:BYTE		
@@ -1542,41 +1643,6 @@ out returns [var_sct *var]
               (void)cast_nctype_void(type,&var->val);
             }
 
-        }
-
-    |   aval:ATT_ID_SIZE
-        {
-            long att_sz;
-            nc_type type=NC_INT;
-            NcapVar *Nvar;
-
-            Nvar=prs_arg->ptr_var_vtr->find(aval->getText());
-            if(Nvar !=NULL){
-                att_sz=Nvar->var->sz;
-            }else{
-                var_sct *var_tmp;    
-                var_tmp=ncap_att_init(aval->getText(),prs_arg);
-                if(var_tmp== (var_sct*)NULL)
-                   err_prn(fnc_nm,"Unable to locate attribute " +aval->getText()+ " in input or output files.");
-                att_sz=var_tmp->sz;
-                var_tmp=nco_var_free(var_tmp);
-            }
-
-            var=(var_sct *)nco_malloc(sizeof(var_sct));
-            /* Set defaults */
-            (void)var_dfl_set(var); 
-            /* Overwrite with attribute expression information */
-            var->nm=strdup("_att");
-            var->nbr_dim=0;
-            var->sz=1;
-            // Get nco type
-
-            var->type=type;
-            var->typ_dsk=type;
-            var->val.vp=(void*)nco_malloc(nco_typ_lng(type));
-            (void)cast_void_nctype(type,&var->val);
-            *var->val.lp = att_sz;
-            (void)cast_nctype_void(type,&var->val);
         }
 
     // Variable with argument list 
