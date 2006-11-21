@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.28 2006-11-19 21:41:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.29 2006-11-21 14:29:34 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1934,6 +1934,100 @@ bool bntlscn)
 
 return var;
 
+}
+
+/* Create a scalar variable of type, if bfll then malloc ptr_unn */
+var_sct*
+ncap_sclr_var_mk(
+char* var_nm,
+nc_type type,
+bool bfll=false)
+{
+  var_sct *var;
+  var=(var_sct *)nco_malloc(sizeof(var_sct));
+  /* Set defaults */
+  (void)var_dfl_set(var); 
+  /* Overwrite with variable expression information */
+  var->nm=strdup(var_nm);
+  var->nbr_dim=0;
+  var->sz=1;
+  var->type=type;
+  var->typ_dsk=type;
+  
+  if(bfll)
+    var->val=nco_mss_val_mk(type);  
+   
+  return var;
+
+}
+
+
+var_sct *
+ncap_sclr_var_mk(
+char *var_nm,
+short sdt)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_SHORT,true);
+  (void)cast_void_nctype(NC_SHORT,&var->val);
+  *var->val.sp=sdt;
+  (void)cast_nctype_void(NC_SHORT,&var->val);
+  return var;
+}
+
+
+var_sct *
+ncap_sclr_var_mk(
+char *var_nm,
+int idt)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_INT,true);
+  (void)cast_void_nctype(NC_INT,&var->val);
+  *var->val.lp=idt;
+  (void)cast_nctype_void(NC_INT,&var->val);
+  return var;
+}
+
+var_sct *
+ncap_sclr_var_mk(
+char *var_nm,
+long ldt)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_INT,true);
+  (void)cast_void_nctype(NC_INT,&var->val);
+  *var->val.lp=ldt;
+  (void)cast_nctype_void(NC_INT,&var->val);
+  return var;
+}
+
+
+var_sct *
+ncap_sclr_var_mk(
+char *var_nm,
+float fdt)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_FLOAT,true);
+  (void)cast_void_nctype(NC_FLOAT,&var->val);
+  *var->val.fp=fdt;
+  (void)cast_nctype_void(NC_FLOAT,&var->val);
+  return var;
+}
+
+
+var_sct *
+ncap_sclr_var_mk(
+char *var_nm,
+double ddt)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_DOUBLE,true);
+  (void)cast_void_nctype(NC_DOUBLE,&var->val);
+  *var->val.dp=ddt;
+  (void)cast_nctype_void(NC_DOUBLE,&var->val);
+  return var;
 }
 
 
