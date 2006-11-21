@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.19 2006-11-17 20:55:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.20 2006-11-21 12:43:06 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -65,7 +65,6 @@ typedef struct{ /* nm_lst_sct */
 typedef struct{
   ANTLR_USE_NAMESPACE(antlr)RefAST ind[3];
 } ast_lmt_sct;   
-
 
 
 typedef struct{ /* prs_sct */
@@ -242,6 +241,13 @@ void            /* define variables captured on first parse */
 ncap_def_ntl_scn(
 prs_sct *prs_arg);
 
+
+/* Create a scalar variable of type, if bfill then malloc ptr_unn */
+var_sct*
+ncap_sclr_var_mk(
+char* var_nm,
+nc_type type,
+bool bfll);
 
 #endif /* NCAP_H */
 
