@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.51 2006-11-20 16:53:12 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.52 2006-11-21 01:04:32 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -137,11 +137,14 @@ cd ${DATA};cvs -d zender@nco.cvs.sourceforge.net:/cvsroot/nco export -kkv -r nco
 
 cd ~/nco;dpkg-buildpackage -rfakeroot -uc -us > ~/nco/foo 2>&1
 sudo dpkg --remove nco
-sudo dpkg --install ~/nco_3.1.8-1_i386.deb
-lintian ~/nco_3.1.8-1_i386.deb
+sudo dpkg --install ~/nco_3.1.8-2_i386.deb
+lintian ~/nco_3.1.8-2_i386.deb
 
-csz: shouldn't this be a file not a directory?
+csz: How to build .htmls in /usr/share/doc/nco/html rather than /usr/share/doc/nco/nco.html?
 E: nco: doc-base-file-references-missing-file nco:15 /usr/share/doc/nco/nco.html
+E: nco: shlib-with-non-pic-code usr/lib/nco/libnco-3.1.8.so
+http://lintian.debian.org/reports/Tshlib-with-non-pic-code.html
+
 
 # Warnings/errors in .build to fix
 libtool: install: warning: remember to run `libtool --finish /usr/lib/nco'

@@ -1,5 +1,7 @@
 2006-11-20  Charlie Zender  <zender@uci.edu>
 
+	* Alter documentation rules to not-split 
+
 	* Include ncap2 in debian distribution
 
 	* Remove compiler-preference list arguments to AC_PROG_CC and

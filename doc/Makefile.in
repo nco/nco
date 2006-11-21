@@ -60,7 +60,6 @@ TEXINFOS = nco.texi
 TEXI2DVI = texi2dvi
 TEXI2PDF = $(TEXI2DVI) --pdf --batch
 MAKEINFOHTML = $(MAKEINFO) --html
-AM_MAKEINFOHTMLFLAGS = $(AM_MAKEINFOFLAGS)
 DVIPS = dvips
 am__installdirs = "$(DESTDIR)$(infodir)"
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -205,16 +204,22 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 info_TEXINFOS = nco.texi
-EXTRA_DIST = nco.pdf nco.ps nco.html VERSION
-CLEANFILES = nco.info* nco.html nco.pdf
+EXTRA_DIST = nco nco.pdf nco.ps VERSION
 
-# Our own additions for NCO; they may be supported by automake later on
-html_docs = nco.html
-pdf_docs = nco.pdf
+# csz 20061120 override default MAKEINFOHTML defaults:
+# Treat HTML branches same as info branches
+AM_MAKEINFOHTMLFLAGS = --ifinfo
+# Create single HTML file instead of file-per-node
+#AM_MAKEINFOHTMLFLAGS = --ifinfo --no-split
+
+# Automake manual section 14:
+# If configure built it, 'distclean' should delete it
+# If make built it, 'clean' should delete it
+CLEANFILES = nco nco.css nco.info* nco.pdf nco.txt nco.xml
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .dvi .html .pdf .ps .texi
+.SUFFIXES: .dvi .ps
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -510,11 +515,15 @@ uninstall-am: uninstall-info-am
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	uninstall uninstall-am uninstall-info-am
 
-.texi.html:
-	$(MAKEINFO) --html --no-split $<
-.PHONY: html_docs pdf_docs
-.texi.pdf:
-	$(TEXI2DVI) --pdf $<
+
+# Our own additions for NCO; they may be supported by automake later on
+#html_docs = nco.html
+#.texi.html:
+#	$(MAKEINFO) --html --no-split $<
+#.PHONY: html_docs pdf_docs
+#pdf_docs = nco.pdf
+#.texi.pdf:
+#	$(TEXI2DVI) --pdf $<
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

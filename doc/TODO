@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.832 2006-11-19 20:25:02 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.833 2006-11-21 01:04:32 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -539,10 +539,11 @@ nco781. Add ncks option to suppress creating temporary output file in -A mode, s
 nco784. Build NCO on NMI test lab http://nmi.cs.wisc.edu/
 nco786. dbn: Make lintian-clean
 nco787. dbn: Remove nco/debian from tarfiles
-nco788. dbn: Add package.doc-base
 nco789. Add regression test for behavior when _Fillvalue defined and missing_value not	      
 	ncwa -O -a lon -v fll_val,mss_val ~/nco/data/in.nc ~/foo.nc
         ncks -H -C ~/foo.nc
+nco790. Clarify overwrite/append/cancel message and do not show append unless -A present
+nco791. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
