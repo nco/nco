@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: ssdap_dbutil.py,v 1.27 2006-11-18 02:46:02 wangd Exp $
+# $Id: ssdap_dbutil.py,v 1.28 2006-11-21 01:56:02 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -427,7 +427,7 @@ class JobPersistence:
             update = "UPDATE fileState SET state=2 WHERE concretename=?;"
             self.cursor.execute(fetch, (taskrow, linenum))
             rows = self.cursor.fetchall()
-            assert len(rows) is 1
+            assert len(rows) == 1
             result = (rows[0][0], concretename, linenum)
             self.cursor.execute(update, (concretename,))
             return result
@@ -443,18 +443,19 @@ class JobPersistence:
             for (concretename, count) in inputlist:
                 self.cursor.execute(fetch, (concretename,))
                 rows = self.cursor.fetchall()
-                curcount = None
-                if len(rows) is 0:
-                    if count is 1: # only supposed to be used once, ok to del
+                if len(rows) == 0:
+                    if count == 1: # only supposed to be used once, ok to del
                         deleteList.append((concretename,))
                     else:
                         setList.append((concretename, 1))
                 else:
-                    assert len(rows) is 1
-                    if rows[0][0] is (count-1): # ok to delete
+                    assert len(rows) == 1
+                    curcount = int(rows[0][0]) + 1 # increment counter
+                    if curcount == count: # ok to delete
+                        print >>open("/tmp/foo1","a"), "ok to del",concretename
                         deleteList.append((concretename,))
-                    else: # increment counter
-                        updateList.append((rows[0][0]+1, concretename))
+                    else: 
+                        updateList.append((curcount, concretename))
             # now, apply updates and deletes to list
             update = "UPDATE useList SET count=? WHERE concretename=?"
             self.cursor.executemany(update, updateList)
@@ -923,7 +924,7 @@ def selfTest(args=[]):
         cmtcmd = None
         (cline, outname) = (None,None)
         print "opt fetch got",tup
-        if type(tup) is tuple and len(tup) is 3:
+        if type(tup) == tuple and len(tup) == 3:
             (cline, outname, linenum) = tup
             print "opt got tuple!", tup
         #j.showState()

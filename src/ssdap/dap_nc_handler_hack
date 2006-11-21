@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.57 2006-11-18 02:46:02 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.58 2006-11-21 01:56:02 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -200,7 +200,8 @@ def readConfigFile(fname = "ssdap_handler.conf"):
                "/home/wangd/opendap/iroot/bin/dap_nc_handler"),
               ("dbFilename", "database", "dbFilename", None),
               ("disableHTTP", "global", "disableHTTP", True),
-              ("disableParallel", "global", "disableParallel", True)
+              ("disableParallel", "global", "disableParallel", True),
+              ("nslots", "global", "nslots", 2)
               ]
     remap = {"True" : True, "False" : False, "Yes" : True, "No" : False }
 
@@ -228,6 +229,9 @@ def readConfigFile(fname = "ssdap_handler.conf"):
         #    print section
         #    for option in config.options(section):
         #        print " ", option, "=", config.get(section, option)
+        # fix type for nslots.
+        if type(local.nslots) is not int:
+            local.nslots = int(local.nslots)
         ScriptingEnv.fixConfig()
         pass
     except AttributeError:
@@ -1083,7 +1087,6 @@ class ScriptingEnv:
         try: # derived from: http://pydoc.org/2.4.1/subprocess.html
             logit("worker spawning %s" % (cline))
             retcode = subprocess.call(cline, shell=True)
-            logit("retcode was %d" % retcode)
             if retcode < 0:
                 print >>sys.stderr, "Error code %d in %s" %(retcode,cline)
                 return None
@@ -1093,7 +1096,6 @@ class ScriptingEnv:
             print >>sys.stderr, e
             logit("Failed %s --> %s, " %(cline,outname))
             return None
-        logit("returning... %d" % retcode)
         return retcode
     def depFindInputs(self, linenum):
         # now, find my input files
@@ -1181,20 +1183,21 @@ class ScriptingEnv:
                 # See:
                 # http://mail.python.org/pipermail/python-list/2001-March/032663.html
                 # should provide a configfile option to control ser/dep exec
-
                 if False:
                     self.serialExec()
                     logit("done with async-init'd serialExec()")
                     sys.exit(0)
-                elif True:
+                elif False:
                     profileVar['depexecer'] = self
                     import profile
                     profilename = "/tmp/%s.pyprofile" % (str(os.getpid()))
                     logit("depexec profile at: " + profilename)
                     profile.run('profileVar["depexecer"].dbDepExec(4)', profilename)
 
-                else:
-                    self.dbDepExec(2)
+                else: #normal execution
+                    assert (type(local.nslots) == int) and (local.nslots > 0)
+                    logit("dbexec with %d slots" % local.nslots)
+                    self.dbDepExec(local.nslots)
                 logit("done with dbDepExec()")
                 sys.exit(0)
         except OSError, e: 
@@ -1865,8 +1868,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2006-11-18 02:46:02 $
-   Version:	$Revision: 1.57 $
+   Date:	$Date: 2006-11-21 01:56:02 $
+   Version:	$Revision: 1.58 $
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()
@@ -2018,4 +2021,6 @@ if __name__ == '__main__':
 # self.commands = cf.commandList
 # self.isAsync = cf.isAsync
 
-
+# contention ratio.  given d=#disks and p=#processes, and assuming that each process uses a particular disk w/p 1/d (i.e. files it needs are randomly spread among the disks), we have:
+# p(zero contention) = ((d-1)!/(d-1-p)!)/d^(p-1)
+#
