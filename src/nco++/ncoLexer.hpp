@@ -28,7 +28,7 @@
 #line 29 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 215 "ncoGrammer.g"
+#line 234 "ncoGrammer.g"
 
 
 private:
@@ -92,6 +92,7 @@ public:
 	public: void mLAND(bool _createToken);
 	public: void mLNOT(bool _createToken);
 	public: void mLOR(bool _createToken);
+	public: void mDOT(bool _createToken);
 	protected: void mDGT(bool _createToken);
 	protected: void mLPH(bool _createToken);
 	protected: void mLPHDGT(bool _createToken);

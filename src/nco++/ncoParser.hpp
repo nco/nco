@@ -67,6 +67,8 @@ public:
 	public: void dmn_list();
 	public: void func_exp();
 	public: void primary_exp();
+	public: void prop();
+	public: void prop_exp();
 	public: void unaryleft_exp();
 	public: void unary_exp();
 	public: void pow_exp();
@@ -92,10 +94,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 79;
+	static const int NUM_TOKENS = 86;
 #else
 	enum {
-		NUM_TOKENS = 79
+		NUM_TOKENS = 86
 	};
 #endif
 	

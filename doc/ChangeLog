@@ -1,3 +1,15 @@
+2006-11-21  Charlie Zender  <zender@uci.edu>
+
+	* More package fixes suggested by Daniel Baumann:
+
+	* Removed debian/docs, alphabetize control, less precise debhelper
+	version, refine copyright history, remove debian/doc, de-comment
+	debian/rules, 
+
+	* Remove debian/[postinst,prerm, postrm]. These only contained
+	instructions for handling *.info files. Rely on dh_installinit to
+	automagically create these instructions.   
+
 2006-11-20  Charlie Zender  <zender@uci.edu>
 
 	* Alter documentation rules to not-split 
