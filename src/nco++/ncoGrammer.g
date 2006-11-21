@@ -1428,17 +1428,11 @@ out returns [var_sct *var]
              
              switch(prp->getType()){
                  case PSIZE:
-                      var= ncap_sclr_var_mk("_property",NC_INT,true);
-                      (void)cast_void_nctype(NC_INT,&var->val);
-                      *var->val.lp = var1->sz;
-                      (void)cast_nctype_void(NC_INT,&var->val);
+                      var= ncap_sclr_var_mk("_property",var1->sz);
                       var1=nco_var_free(var1); 
                       break;
                  case PTYPE:
-                      var= ncap_sclr_var_mk("_property",NC_INT,true);
-                      (void)cast_void_nctype(NC_INT,&var->val);
-                      *var->val.lp = (int)var1->type;
-                      (void)cast_nctype_void(NC_INT,&var->val);
+                      var= ncap_sclr_var_mk("_property",(int)var1->type);
                       var1=nco_var_free(var1); 
                       break;
 
@@ -1493,94 +1487,46 @@ end_dot: ;
 
 	|	s:SHORT			
           {  
-            int ival;
-            nc_type type=NC_SHORT;
-            var=(var_sct *)nco_malloc(sizeof(var_sct));
-            /* Set defaults */
-            (void)var_dfl_set(var); 
-            /* Overwrite with attribute expression information */
-            var->nm=strdup("_short");
-            var->nbr_dim=0;
-            var->sz=1;
-            var->type=type;
-            var->typ_dsk=type;
-            if(!prs_arg->ntl_scn){
-             ival=atoi(s->getText().c_str());
-             var->val.vp=(void*)nco_malloc(nco_typ_lng(type));
-             (void)cast_void_nctype(type,&var->val);
-             *var->val.sp = ival;
-             (void)cast_nctype_void(type,&var->val);
+            if(prs_arg->ntl_scn)
+              var=ncap_sclr_var_mk("_short",NC_SHORT,false);
+            else {
+              int ival;
+              ival=atoi(s->getText().c_str());
+              var=ncap_sclr_var_mk("_short", (short)ival);
             }
-           }
+          }
+
 	|	i:INT			
           {  
-            int ival;
-            nc_type type=NC_INT;
-            var=(var_sct *)nco_malloc(sizeof(var_sct));
-            /* Set defaults */
-            (void)var_dfl_set(var); 
-            /* Overwrite with attribute expression information */
-            var->nm=strdup("_int");
-            var->nbr_dim=0;
-            var->sz=1;
-            var->type=type;
-            var->typ_dsk=type;
-            if(!prs_arg->ntl_scn){
-            // Get nco type
-            ival=atoi(i->getText().c_str());
-            var->val.vp=(void*)nco_malloc(nco_typ_lng(type));
-            (void)cast_void_nctype(type,&var->val);
-            *var->val.lp = ival;
-            (void)cast_nctype_void(type,&var->val);
+            if(prs_arg->ntl_scn)
+              var=ncap_sclr_var_mk("_int",NC_INT,false);
+            else {
+              int ival;
+              ival=atoi(i->getText().c_str());
+              var=ncap_sclr_var_mk("_int", ival);
             }
-         }
+           }
 
     |   f:FLOAT        
           {  
-            float  fval;
-            nc_type type=NC_FLOAT;
-            var=(var_sct *)nco_malloc(sizeof(var_sct));
-            /* Set defaults */
-            (void)var_dfl_set(var); 
-            /* Overwrite with attribute expression information */
-            var->nm=strdup("_float");
-            var->nbr_dim=0;
-            var->sz=1;
-            var->type=type;
-            var->typ_dsk=type;
-            // Get nco type
-            if(!prs_arg->ntl_scn){
+            if(prs_arg->ntl_scn)
+              var=ncap_sclr_var_mk("_float",NC_FLOAT,false);
+            else {
+              float fval;
               fval=atof(f->getText().c_str());
-              var->val.vp=(void*)nco_malloc(nco_typ_lng(type));
-              (void)cast_void_nctype(type,&var->val);
-              *var->val.fp = fval;
-              (void)cast_nctype_void(type,&var->val);
+              var=ncap_sclr_var_mk("_float", fval);
             }
            }
-
     |   d:DOUBLE        
-        {  
-            double r;
-            nc_type type=NC_DOUBLE;
-            var=(var_sct *)nco_malloc(sizeof(var_sct));
-            /* Set defaults */
-            (void)var_dfl_set(var); 
-            /* Overwrite with attribute expression information */
-            var->nm=strdup("_double");
-            var->nbr_dim=0;
-            var->sz=1;
-            var->type=type;
-            var->typ_dsk=type;
-            // Get nco type
-            if(!prs_arg->ntl_scn){
-              r=strtod(d->getText().c_str(),(char**)NULL);
-              var->val.vp=(void*)nco_malloc(nco_typ_lng(type));
-              (void)cast_void_nctype(type,&var->val);
-              *var->val.dp = r;
-              (void)cast_nctype_void(type,&var->val);
+          {  
+            if(prs_arg->ntl_scn)
+              var=ncap_sclr_var_mk("_double",NC_DOUBLE,false);
+            else {
+              float dval;
+              dval=strtod(d->getText().c_str(),(char**)NULL );
+              var=ncap_sclr_var_mk("_double", dval);
             }
-         }
-
+           }
      |   str:NSTRING
          {
             char *tsng;
@@ -1609,41 +1555,23 @@ end_dot: ;
         {
             string sDim=dval->getText();
             dmn_sct *dmn_fd;
-            nc_type type=NC_INT;
            
             // check output
-            dmn_fd=prs_arg->ptr_dmn_out_vtr->find(sDim);
-            
-            // Check input
-            if(dmn_fd==NULL)
+            if(prs_arg->ntl_scn){
+              var=ncap_sclr_var_mk("_dmn",NC_INT,false);
+            }else{ 
+              // Check output 
+              dmn_fd=prs_arg->ptr_dmn_out_vtr->find(sDim);
+              // Check input
+              if(dmn_fd==NULL)
                dmn_fd=prs_arg->ptr_dmn_in_vtr->find(sDim);
 
-
-            if( dmn_fd==NULL ){
-
-                if(prs_arg->ntl_scn) return ncap_var_udf("_dmn"); 
-                err_prn(fnc_nm,"Unable to locate dimension " +dval->getText()+ " in input or output files ");
-            }
-
-            var=(var_sct *)nco_malloc(sizeof(var_sct));
-            /* Set defaults */
-            (void)var_dfl_set(var); 
-            /* Overwrite with attribute expression information */
-            var->nm=strdup("_dmn");
-            var->nbr_dim=0;
-            var->sz=1;
-            // Get nco type
-
-            var->type=type;
-            var->typ_dsk=type;
-            if(!prs_arg->ntl_scn) {
-              var->val.vp=(void*)nco_malloc(nco_typ_lng(type));
-              (void)cast_void_nctype(type,&var->val);
-              *var->val.lp = dmn_fd->sz;
-              (void)cast_nctype_void(type,&var->val);
-            }
-
-        }
+              if( dmn_fd==NULL ){
+               err_prn(fnc_nm,"Unable to locate dimension " +dval->getText()+ " in input or output files ");
+               }
+               var=ncap_sclr_var_mk("_dmn",dmn_fd->sz);
+            } // end else 
+          } // end action 
 
     // Variable with argument list 
     |  (VAR_ID LMT_LIST) => ( vid:VAR_ID lmt:LMT_LIST) {
