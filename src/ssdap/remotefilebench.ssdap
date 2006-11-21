@@ -1,0 +1,4 @@
+ssd_initsave
+ncwa http://localhost/cgi-bin/nph-dods/dodsdata/skn_lgs.nc %tempf_one.nc%
+ncwa dodsdata/skn_lgs.nc %tempf_two.nc%
+ncrcat %tempf_one.nc% %tempf_two.nc% %outfile_dual.nc%

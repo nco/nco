@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.58 2006-11-21 01:56:02 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.59 2006-11-21 06:11:45 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -31,6 +31,8 @@ import md5
 #
 #          -L : skip printing of http headers. **** for easier testing
 #
+# "Simple" test: 
+# ./dap_nc_handler_hack --local full_resamp.ssdap --with-db 
 ######################################################################
 # Administrator-tunable parameters: (overriden by config file)
 ######################################################################
@@ -847,6 +849,7 @@ class ScriptingEnv:
                 if self.trans is None:
                     jp = self.instFunc()
                     self.trans = jp.newPopulationTransaction()
+                print "persisting ",str(command)
                 self.persFunc(command, self.trans)
             def close(self):
                 if self.trans is not None:
@@ -861,6 +864,8 @@ class ScriptingEnv:
         self.commands = cf.commandList
         self.isAsync = cf.isAsync
         local.comfact = cf
+        #logit(self.depTreeToString()) # for debug...
+
         return
         self.isAsync = self.env.has_key("async") and self.env["async"] == True
         pop = None
@@ -1089,6 +1094,7 @@ class ScriptingEnv:
             retcode = subprocess.call(cline, shell=True)
             if retcode < 0:
                 print >>sys.stderr, "Error code %d in %s" %(retcode,cline)
+                logit("Failed %s --> %s, code %d " %(cline,outname, retcode))
                 return None
             pass
         except OSError, e:
@@ -1146,6 +1152,7 @@ class ScriptingEnv:
              try:
                  cmt = j.newCommitAndFetchTransaction()
                  tup = cmt.executeBlocking(outname, inputs)
+                 logit("%s commit OK" % cline)
                  (cline, outname) = (None,None)
                  if type(tup) is tuple and len(tup) == 3:
                      (cline, outname, linenum) = tup
@@ -1292,13 +1299,14 @@ class ScriptingEnv:
         linenum = command.lineNum
         assert linenum is not None
         if command.cmd == None:
+            print "missing cmd for ",command.lineNum
             return # don't persist non-commmands.
         if not self.persistedTask:
             tid = command.taskId()
             self.persistedTask = trans.insertTask(tid)
             assert self.persistedTask != None
         trans.insertCmd( linenum, command.cmd, command.commandLine())
-        
+
         def insert(f, map, out):
             if f in map:
                 # first part of tuple is file handle
@@ -1308,7 +1316,6 @@ class ScriptingEnv:
             return trans.insertInOut( linenum, f, concrete,
                                       out, 1, # if (not out): ignore state spec
                                       f.startswith(ScriptingEnv.CLASS_TEMP_PREFIX))
-            
         for f in command.inputs():
             insert(f, self.fileMap, False)
         for f in command.outputs():
@@ -1631,6 +1638,7 @@ class CommandFactory:
         self.persister = pers
         self.buildComplexStructs()
         self.lineList = []
+        self.dapMap = {}
         pass
     def addScriptLines(self, linelist):
         assert not self.finalized
@@ -1643,6 +1651,7 @@ class CommandFactory:
         nextLineNumGen = self.chooseNextLineNumGen()
         for l in self.lineList:
             self.processLine(l)
+        logit("%d lines to %d commands" %(len(self.lineList),len(self.commandList)))
         map(self.persister.do, self.commandList)
         self.finalized = True        
 
@@ -1681,7 +1690,6 @@ class CommandFactory:
         if rawname not in self.valids:
             logit("WARN: bad script line: %d: %s" %(lineNum, linestring))
             return
-        shortName = rawname + str(lineNum)
         if rawname in ScriptingEnv.META_COMMANDS:
             # don't need to construct Command for meta
             newcmds = self.execMeta(rawname, argv[1:])
@@ -1690,7 +1698,7 @@ class CommandFactory:
             ## fixme: add new filename.
             return # FIXME?
         else:
-            newcmds = self.buildNormalCmd(rawname, lineNum, argv[1:])
+            newcmds = self.buildNormalCmd(rawname, lineNum, argv[1:], linestring)
         #for c in newcmds: # boilerplate
         #    c.original = linestring
             
@@ -1746,12 +1754,14 @@ class CommandFactory:
         privatedb.close()
         pass
         
-    def buildNormalCmd(self, cmd, lineNum, argv):
+    def buildNormalCmd(self, cmd, lineNum, argv, original):
         #print "building ",cmd,argv
         # FIXME: factory will add linenum later. (what about origline and env?)
-        newcmd = Command("",0,self.env) # bogus stuff because we will fill them later.
+        newcmd = Command(original,lineNum,self.env) # bogus stuff because we will fill them later.
         newcmd.isMeta = False
         newcmd.lineNum = lineNum
+        newcmd.myName = cmd + str(lineNum)
+
         self.env.lineToCommand[lineNum] = newcmd
         try:
             (arglist, leftover) = SsdapCommon.specialGetOpt(cmd, argv)
@@ -1763,7 +1773,7 @@ class CommandFactory:
         argdict = dict(arglist)
         newcmd.setOutputModifiers(argdict, arglist, leftover)
         newcmd.acceptInOut(argdict, arglist, leftover)
-        newcmd.fixupDependencies() # we use the deptree to reduce db load
+
         newcmd.arguments = arglist
         newcmd.cmd = cmd
         #buildCommandLine()
@@ -1829,32 +1839,38 @@ class CommandFactory:
         else:
             newcmd.cmdLine = ScriptingEnv.VALID_COMMANDS[cmd] + " " + line
         #logit( "real cmdline: " + self.cmdLine)
+        newcmd.fixupDependencies() # we use the deptree to reduce db load
         self.commandList.append(newcmd)
         pass
     def dapToLocal(self, name):
         # digest dap line into a shortname
-        if name in dapMap: # check to see if it's already been fetched
+        if name in self.dapMap: # check to see if it's already been marked for fetch
             return dapMap[name]
         # otherwise, generate a fetch command, and name the tempfile.
-        lineNum = nextLineNumGen
-        nextLineNumGen += 1
-        absname = "%tempf_remote%d%" % (nextLineNumGen)
+        lineNum = self.nextLineNumGen
+        self.nextLineNumGen += 1
+        absname = "%stempf_remote%d%s" % ("%", lineNum, "%")
         self.addFetchCommand(name, lineNum, absname)
         return absname
     def addFetchCommand(self, dapurl, lineNum, absname):
-        rawcmd = "rfetch"
-        original = "rfetch %s %s" % (dapurl, absname)
+        rawcmd = "ncks"
+        original = "ncks -O -q -M %s %s" % (dapurl, absname)
         # FIXME: don't forget to map rfetch to a real commandline.
         newcmd = Command(original, lineNum, self.env)
+        newcmd.myName = "ncks%d" % lineNum
         newcmd.isMeta = False
         newcmd.absOutputs = [absname]
         newcmd.absInputs = []
         newcmd.popen = os.popen2
         newcmd.saveOutput = False
-
+        newcmd.cmd = rawcmd
+        self.env.lineToCommand[lineNum] = newcmd
         newcmd.fixupDependencies()
-        newcmd.buildCommandLine()
+        remapped = self.env.addAbsName(absname, "temp")
+        args = " -O -q -M %s %s" % (dapurl, remapped)
+        newcmd.cmdLine = ScriptingEnv.VALID_DAPCOMMANDS[rawcmd] + args
         self.commandList.append(newcmd)
+        return
     pass
 
 class Popen3:
@@ -1868,8 +1884,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2006-11-21 01:56:02 $
-   Version:	$Revision: 1.58 $
+   Date:	$Date: 2006-11-21 06:11:45 $
+   Version:	$Revision: 1.59 $
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()
@@ -2022,5 +2038,7 @@ if __name__ == '__main__':
 # self.isAsync = cf.isAsync
 
 # contention ratio.  given d=#disks and p=#processes, and assuming that each process uses a particular disk w/p 1/d (i.e. files it needs are randomly spread among the disks), we have:
-# p(zero contention) = ((d-1)!/(d-1-p)!)/d^(p-1)
+# p(zero contention) = ???
+# is it:  1- ((d-1)!/(d-p-1)!)/(d^(p-1))?  but this doesn't seem to work in matlab?
+#
 #
