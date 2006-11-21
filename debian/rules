@@ -53,7 +53,6 @@ build: build-arch
 
 build-arch: build-arch-stamp
 build-arch-stamp:  config.status
-	# Add here commands to compile the arch part of the package.
 	$(MAKE) 
 	cd doc && $(MAKE) nco.info
 #	cd doc && $(MAKE) nco.ps
@@ -64,7 +63,6 @@ clean:
 	dh_testroot
 	rm -f build-arch-stamp build-indep-stamp config-stamp
 
-	# Add here commands to clean up after the build process.
 	-$(MAKE) distclean
 
 	dh_clean
@@ -81,7 +79,7 @@ install-arch:
 	# debian/tmp.
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/nco
 
-	# NCO installs header files by default, which we don't want
+	# NCO installs header files by default, which we do not want (yet)
 	dh_install -a --exclude="*.h *.hh"
 
 # Must not depend on anything 
@@ -92,14 +90,6 @@ binary-common:
 	dh_installchangelogs doc/ChangeLog
 	dh_installdocs doc/*.html
 	dh_installexamples
-#	dh_installmenu
-#	dh_installdebconf	
-#	dh_installlogrotate	
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_installinit
-#	dh_installcron
 	dh_installinfo
 	dh_installman
 	dh_link
