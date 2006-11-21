@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.53 2006-11-21 01:42:21 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.54 2006-11-21 21:52:52 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -81,7 +81,7 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
 # versions in configure.in, debian/files, doc/ANNOUNCE, doc/debian.txt,
 # doc/index.shtml, doc/nco.texi, bld/nco_dst.pl, doc/VERSION 
    cd ~/nco/debian
-   dch -v 3.1.8-2 # Update changelog
+   dch -v 3.1.8-1 # Update changelog
 # For unknown reason rules file may lose its executable bit
    chmod a+x ~/nco/debian/rules
 # Build Debs using Debian libraries and include
@@ -92,18 +92,18 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
    cd ~/nco;dpkg-buildpackage -rfakeroot -uc -us > ~/nco/foo 2>&1
 # Copy to distribution site
    scp ~/nco_3.1.8* dust.ess.uci.edu:/var/www/html/nco/src
-   scp ~/nco/foo dust.ess.uci.edu:/var/www/html/nco/src/nco_3.1.8-2.dpkg-buildpackage.txt
+   scp ~/nco/foo dust.ess.uci.edu:/var/www/html/nco/src/nco_3.1.8-1.dpkg-buildpackage.txt
 # Save all files in emacs before tagging
 # Tag CVS code after changing files in ~/nco/debian
    cd ~/nco;cvs commit -m "Preparing nco-3.1.8 release";cvs tag -c nco-3_1_8
    ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-3_1_8
 
 # Location of build diagnostics for mentors to help 
-http://dust.ess.uci.edu/nco/src/nco_3.1.8-2.dpkg-buildpackage.txt
-http://dust.ess.uci.edu/nco/src/nco_3.1.8-2.dsc
-http://dust.ess.uci.edu/nco/src/nco_3.1.8-2_i386.changes
-http://dust.ess.uci.edu/nco/src/nco_3.1.8-2_i386.deb
-http://dust.ess.uci.edu/nco/src/nco_3.1.8-2.tar.gz
+http://dust.ess.uci.edu/nco/src/nco_3.1.8-1.dpkg-buildpackage.txt
+http://dust.ess.uci.edu/nco/src/nco_3.1.8-1.dsc
+http://dust.ess.uci.edu/nco/src/nco_3.1.8-1_i386.changes
+http://dust.ess.uci.edu/nco/src/nco_3.1.8-1_i386.deb
+http://dust.ess.uci.edu/nco/src/nco_3.1.8-1.tar.gz
 
 # Becoming a Debian developer
 http://www.debian.org/devel/join/newmaint
@@ -137,8 +137,8 @@ cd ${DATA};cvs -d zender@nco.cvs.sourceforge.net:/cvsroot/nco export -kkv -r nco
 
 cd ~/nco;dpkg-buildpackage -rfakeroot -uc -us > ~/nco/foo 2>&1
 sudo dpkg --remove nco
-sudo dpkg --install ~/nco_3.1.8-2_i386.deb
-lintian ~/nco_3.1.8-2_i386.deb
+sudo dpkg --install ~/nco_3.1.8-1_i386.deb
+lintian ~/nco_3.1.8-1_i386.deb
 
 csz: How to build .htmls in /usr/share/doc/nco/html rather than /usr/share/doc/nco/nco.html?
 E: nco: doc-base-file-references-missing-file nco:15 /usr/share/doc/nco/nco.html

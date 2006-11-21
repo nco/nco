@@ -1,17 +1,18 @@
-nco (3.1.8-2) unstable; urgency=low
+nco (3.1.8-1) unstable; urgency=low
 
+  * Removed debian/docs, alphabetize control, less precise debhelper
+    version, refine copyright history, remove debian/doc, de-comment
+    debian/rules, 
+  * Remove debian/[postinst,prerm, postrm]. These only contained
+    instructions for handling *.info files. Rely on dh_installinit to
+    automagically create these instructions.   
   * Include ncap2 executable and man page
   * Add package dependencies on antlr, libantlr-dev 
   * Fix HTML documentation location in nco.doc-base
-
- -- Charlie Zender <zender@uci.edu>  Mon, 20 Nov 2006 08:22:22 -0800
-
-nco (3.1.8-1) unstable; urgency=low
-
   * Compile-time determination of _Fillvalue vs. missing_value
   * (Try to) incorporate ncap2 in deb package
 
- -- Charlie Zender <zender@uci.edu>  Sun, 19 Nov 2006 15:24:03 -0800
+ -- Charlie Zender <zender@uci.edu>  Mon, 20 Nov 2006 08:22:22 -0800
 
 nco (3.1.7-1) unstable; urgency=low
 
