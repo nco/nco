@@ -1,5 +1,7 @@
 nco (3.1.8-1) unstable; urgency=low
 
+  * Create non-native debian packages
+  * Add @dircategory netCDF to nco.texi
   * Removed debian/docs, alphabetize control, less precise debhelper
     version, refine copyright history, remove debian/doc, de-comment
     debian/rules, 
@@ -8,9 +10,8 @@ nco (3.1.8-1) unstable; urgency=low
     automagically create these instructions.   
   * Include ncap2 executable and man page
   * Add package dependencies on antlr, libantlr-dev 
-  * Fix HTML documentation location in nco.doc-base
+  * Kludge HTML documentation location in nco.doc-base
   * Compile-time determination of _Fillvalue vs. missing_value
-  * (Try to) incorporate ncap2 in deb package
 
  -- Charlie Zender <zender@uci.edu>  Mon, 20 Nov 2006 08:22:22 -0800
 

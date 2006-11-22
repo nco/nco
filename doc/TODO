@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.833 2006-11-21 01:04:32 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.834 2006-11-22 18:03:48 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -415,7 +415,6 @@ nco664. ncatted & ncrename will not work with DAP because there is not any
 nco666. Grid regridding/interpolation operator ncrebin?
 nco668. Prefix nco.png fractal icon with text "NC" to look like "NCO"
 nco669. Command-line switch for float->double math-promotion to avoid underflow?
-nco674. debian: replace netcdfg3 with netcdf try to build .debs again
 nco675. ncap2: Makefile generates redundant antlr runs
 nco680. ncap memory double-free:
 	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncap -O -s 'foo=unpack(pck)' ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
@@ -537,13 +536,12 @@ nco779. Add non-record stride checks to regression tests e.g.,
 nco780. bm: ncap regression test 8 fails because of quieter info messages
 nco781. Add ncks option to suppress creating temporary output file in -A mode, simply copy input file first? Seems unlikely this will save time.
 nco784. Build NCO on NMI test lab http://nmi.cs.wisc.edu/
-nco786. dbn: Make lintian-clean
-nco787. dbn: Remove nco/debian from tarfiles
 nco789. Add regression test for behavior when _Fillvalue defined and missing_value not	      
 	ncwa -O -a lon -v fll_val,mss_val ~/nco/data/in.nc ~/foo.nc
         ncks -H -C ~/foo.nc
 nco790. Clarify overwrite/append/cancel message and do not show append unless -A present
-nco791. 
+nco791. make linda-clean
+nco792. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
