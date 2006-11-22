@@ -10,7 +10,7 @@
 # Modified to make a template file for a multi-binary package with separated
 # build-arch and build-indep targets  by Bill Allombert 2001
 
-# Uncomment this to turn on verbose mode.
+# Uncomment this to turn on verbose mode
 #export DH_VERBOSE=1
 
 # Export this to make some magic below work
@@ -36,7 +36,6 @@ endif
 
 config.status: configure
 	dh_testdir
-	# Add here commands to configure the package.
 	./configure $(confflags) \
 		    --prefix=/usr \
 		    --mandir=/usr/share/man \
@@ -54,17 +53,17 @@ build: build-arch
 build-arch: build-arch-stamp
 build-arch-stamp:  config.status
 	$(MAKE) 
-	cd doc && $(MAKE) nco.info
-#	cd doc && $(MAKE) nco.ps
 	cd doc && $(MAKE) nco.html
+	cd doc && $(MAKE) nco.info
+# Documentation to distribute in future
+#	cd doc && $(MAKE) nco.ps
+#	cd doc && $(MAKE) nco.ps
 
 clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-arch-stamp build-indep-stamp config-stamp
-
 	-$(MAKE) distclean
-
 	dh_clean
 
 install: install-arch
