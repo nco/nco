@@ -1,4 +1,5 @@
+# $Id: remotefilebench.ssdap,v 1.2 2006-11-22 19:43:44 wangd Exp $
 ssd_initsave
-ncwa http://localhost/cgi-bin/nph-dods/dodsdata/skn_lgs.nc %tempf_one.nc%
+ncwa http://tephra.ess.uci.edu/cgi-bin/nph-dods/dodsdata/skn_lgs.nc %tempf_one.nc%
 ncwa dodsdata/skn_lgs.nc %tempf_two.nc%
 ncrcat %tempf_one.nc% %tempf_two.nc% %outfile_dual.nc%
