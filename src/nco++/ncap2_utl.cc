@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.29 2006-11-21 14:29:34 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.30 2006-11-22 06:14:14 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1941,7 +1941,7 @@ var_sct*
 ncap_sclr_var_mk(
 char* var_nm,
 nc_type type,
-bool bfll=false)
+bool bfll)
 {
   var_sct *var;
   var=(var_sct *)nco_malloc(sizeof(var_sct));
