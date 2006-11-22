@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.368 2006-11-22 18:53:30 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.369 2006-11-22 20:42:22 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -333,9 +333,9 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 <h2>Publications</h2>
 <ul>
 <li><!-- ZeW07 --> <a name="ZeW07"></a> <!--http://www.ess.uci.edu/~zender#ZeW07 -->
-Zender, C.&nbsp;S., and D.&nbsp;L. Wang (2007), High performance distributed data reduction and analysis with the netCDF Operators (NCO), <i>Proceedings of the 23rd AMS Conference on Interactive Information and Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology</i>, 3B.4., January 14&ndash;18, San Antonio,&nbsp;TX. American Meteorological Society, AMS Press, Boston,&nbsp;MA.
-<a href="http://dust.ess.uci.edu/ppr/ppr_ZeW07.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_ZeW07.pdf">PDF (CSZ)</a></li>
+Zender, C.&nbsp;S., and D.&nbsp;L. Wang (2007), High performance distributed data reduction and analysis with the netCDF Operators (NCO), <i>Proceedings of the 23rd AMS Conference on Interactive Information and Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology</i>, Paper 3B.4., January 14&ndash;18, San Antonio,&nbsp;TX. American Meteorological Society, AMS Press, Boston,&nbsp;MA.
+<a href="http://dust.ess.uci.edu/ppr/abs_xtn_ZeW07.bib">BibTeX</a>
+<a href="http://dust.ess.uci.edu/ppr/abs_xtn_ZeW07.pdf">PDF (CSZ)</a></li>
 <li><!-- Zen07 --> <a name="Zen07"></a> <!--http://www.ess.uci.edu/~zender#Zen07 -->
 Zender, C.&nbsp;S. (2006), netCDF Operators (NCO) for Analysis of Self-describing Gridded Geoscience Data, <i>Submitted to Environ. Modell. Softw.</i>.
 <a href="http://dust.ess.uci.edu/ppr/ppr_Zen07.bib">BibTeX</a>
@@ -358,7 +358,7 @@ Instead, retrieve all recently tagged versions
 <a name="#Download">with CVS</a> or from    
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO/SDO 3.1.8</b>: (<i>In progress</i>) Debian/Ubuntu package conformance;
+<li><b>NCO/SDO 3.1.8</b>: (<i>In progress</i>) <tt>ncap2</tt> in Debian/Ubuntu packages; Support <tt>_Fillvalue</tt>
 <li><b>NCO/SDO 3.1.7</b>: <tt>ncap2</tt> &ldquo;double-parsing&rdquo;, array initialization, supercedes <tt>ncap</tt>
 <li><b>NCO/SDO 3.1.6</b>: Support <a href="http://nco.sf.net/nco.html#srd">stride</a> in all hyperslabbing operators; change more WARNINGs to INFOs
 <li><b>NCO/SDO 3.1.5</b>: New <tt>ncap2</tt> array and hyperslab features; change some WARNINGs to INFOs, add Pathscale and update PGI and Intel compiler support

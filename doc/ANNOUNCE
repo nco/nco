@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.195 2006-11-19 23:58:27 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.196 2006-11-22 20:42:22 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.8 are ready. 
 
@@ -8,13 +8,19 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 Finally this release marks the return of pre-built, up-to-date, Debian
 binary packages. Grab 'em from http://nco.sf.net#debian
 
+Two extended abstracts describe new results with Distributed Data
+Reduction and Analysis using NCO. We will present these at the San 
+Antonio AMS in January (with newer results). All NCO pubs are at: 
+
+http://nco.sf.net#pub
+
 Build/runtime changes:
 
 1. Warn when _Fillvalue defined and missing_value not
 
 2. Compile-time option to treat _Fillvalue (instead of missing_value) as missing
 
-3. Debian packages include ncap2 fxm
+3. Debian/Ubuntu packages include ncap2
 
 Enjoy,
 Charlie
