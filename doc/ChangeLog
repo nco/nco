@@ -1,5 +1,9 @@
 2006-11-21  Charlie Zender  <zender@uci.edu>
 
+	* Add @dircategory netCDF to nco.texi
+
+	* Patch ncap2 with ncap_sclr_var_mk() prototypes to re-enable builds
+
 	* More package fixes suggested by Daniel Baumann:
 
 	* Removed debian/docs, alphabetize control, less precise debhelper

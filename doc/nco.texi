@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.385 2006-11-19 23:58:27 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.386 2006-11-22 07:05:43 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -183,6 +183,8 @@ x
 
 @end tex
 
+@c install-info installs NCO info into this category
+@dircategory netCDF
 @direntry
 * NCO::        User's Guide for the netCDF Operator suite
 @end direntry

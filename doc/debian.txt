@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.54 2006-11-21 21:52:52 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.55 2006-11-22 07:05:43 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -46,7 +46,7 @@ dh_make -e zender@uci.edu -f ../nco-3.1.8.tar.gz
    from previous build
 
    cd ~/nco;/bin/rm *.gz
-   cd ~/nco/nco-3.1.8;
+   cd ~/nco/nco-3.1.8
    export NETCDF_LIB=/usr/lib NETCDF_INC=/usr/include
    dpkg-buildpackage -rfakeroot > foo 2>&1
 
@@ -89,10 +89,10 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
    cd ~/nco;cvs commit -m "Preparing nco-3.1.8 release"
 # -uc -us : Tell dpkg-buildpackage not to sign the package upload
 # -rfakeroot : 
-   cd ~/nco;dpkg-buildpackage -rfakeroot -uc -us > ~/nco/foo 2>&1
+   cd ~/nco;dpkg-buildpackage -rfakeroot -uc -us > ~/foo.nco 2>&1
 # Copy to distribution site
    scp ~/nco_3.1.8* dust.ess.uci.edu:/var/www/html/nco/src
-   scp ~/nco/foo dust.ess.uci.edu:/var/www/html/nco/src/nco_3.1.8-1.dpkg-buildpackage.txt
+   scp ~/foo.nco dust.ess.uci.edu:/var/www/html/nco/src/nco_3.1.8-1.dpkg-buildpackage.txt
 # Save all files in emacs before tagging
 # Tag CVS code after changing files in ~/nco/debian
    cd ~/nco;cvs commit -m "Preparing nco-3.1.8 release";cvs tag -c nco-3_1_8
@@ -132,13 +132,19 @@ Matej Vela <vela@debian.org>, Daniel Baumann <daniel@debian.org>, Warren Turkal 
 
 # Lintian check of packages
 /bin/rm -r ${DATA}/nco-3.1.8 # Cleanup
-cd ${DATA};cvs -d zender@nco.cvs.sourceforge.net:/cvsroot/nco export -kkv -r nco-3_1_8 -d nco-3.1.8 nco # Export
+cd ${DATA};cvs -d zender@nco.cvs.sourceforge.net:/cvsroot/nco export -kkv -r nco-3_1_8 -d nco-3.1.8 nco # Export base on tag
+cd ${DATA};cvs -d zender@nco.cvs.sourceforge.net:/cvsroot/nco export -kkv -D "1 second ago" -d nco-3.1.8 nco # Export based on date
 /bin/rm -r ${DATA}/nco-3.1.8/debian
 
-cd ~/nco;dpkg-buildpackage -rfakeroot -uc -us > ~/nco/foo 2>&1
+
+export NETCDF_LIB=/usr/lib NETCDF_INC=/usr/include
+cd ~/nco;dpkg-buildpackage -rfakeroot -uc -us > ~/foo.nco 2>&1
+cd ${DATA}/nco-3.1.8;dpkg-buildpackage -rfakeroot -uc -us > ~/foo.nco 2>&1
 sudo dpkg --remove nco
 sudo dpkg --install ~/nco_3.1.8-1_i386.deb
 lintian ~/nco_3.1.8-1_i386.deb
+# Debian Policy Manual
+file:///usr/share/doc/debian-policy/policy.html/
 
 csz: How to build .htmls in /usr/share/doc/nco/html rather than /usr/share/doc/nco/nco.html?
 E: nco: doc-base-file-references-missing-file nco:15 /usr/share/doc/nco/nco.html
