@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_handler_hack,v 1.59 2006-11-21 06:11:45 wangd Exp $
+# $Id: dap_nc_handler_hack,v 1.60 2006-11-22 19:38:06 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -251,6 +251,7 @@ def prestartLogging():
         import cStringIO
         local.logfile = cStringIO.StringIO()
         p = str(local.mypid)
+        local.logfile.write("SSDAP/SWAMP dap_handler_hack %s\n" % "$Revision: 1.60 $")
         local.logfile.write("handler "+p+" log open at " + time.ctime()+"\n")
 def startLogging():
     """Officially start the logging system."""
@@ -1884,8 +1885,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2006-11-21 06:11:45 $
-   Version:	$Revision: 1.59 $
+   Date:	$Date: 2006-11-22 19:38:06 $
+   Version:	$Revision: 1.60 $
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()
