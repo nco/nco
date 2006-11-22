@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.58 2006-11-22 18:03:48 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.59 2006-11-22 23:14:24 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -112,7 +112,7 @@ http://dust.ess.uci.edu/nco/src/nco_3.1.8-1.dpkg-buildpackage.txt
 http://dust.ess.uci.edu/nco/src/nco_3.1.8-1.dsc
 http://dust.ess.uci.edu/nco/src/nco_3.1.8-1_i386.changes
 http://dust.ess.uci.edu/nco/src/nco_3.1.8-1_i386.deb
-http://dust.ess.uci.edu/nco/src/nco_3.1.8-1.tar.gz
+http://dust.ess.uci.edu/nco/src/nco_3.1.8.orig.tar.gz
 
 # Becoming a Debian developer
 http://www.debian.org/devel/join/newmaint
@@ -148,7 +148,7 @@ Matej Vela <vela@debian.org>, Daniel Baumann <daniel@debian.org>, Warren Turkal 
 /bin/rm -rf ${DATA}/nco-3.1.8 ${DATA}/nco_3.1.8* # Cleanup
 cd ${DATA};cvs -d zender@nco.cvs.sourceforge.net:/cvsroot/nco export -kkv -r nco-3_1_8 -d nco-3.1.8 nco # Export base on tag
 cd ${DATA};cvs -d zender@nco.cvs.sourceforge.net:/cvsroot/nco export -kkv -D "1 second ago" -d nco-3.1.8 nco # Export based on date
-tar cvzf ./nco_3.1.8.orig.tar.gz --exclude='nco-3.1.8/debian*' ./nco-3.1.8 
+tar cvzf ./nco_3.1.8.orig.tar.gz --exclude='nco-3.1.8/debian*' --exclude='.cvsignore' ./nco-3.1.8 
 export NETCDF_LIB=/usr/lib NETCDF_INC=/usr/include
 cd ${DATA}/nco-3.1.8;dpkg-buildpackage -rfakeroot -uc -us > ~/foo.nco 2>&1
 sudo dpkg --remove nco
@@ -158,7 +158,7 @@ linda ${DATA}/nco_3.1.8-1_i386.deb
 ls -l ${DATA}/nco_3.1.8*
 m ~/foo.nco
 scp ${DATA}/nco_3.1.8* dust.ess.uci.edu:/var/www/html/nco/src
-scp ~/foo.nco dust.ess.uci.edu:/var/www/html/nco/src/nco_3.1.8-1.dpkg-buildpackage.txt
+scp ${DATA}/nco_3.1.8* nco.sf.net:/home/groups/n/nc/nco/htdocs
 
 csz: How to build .htmls in /usr/share/doc/nco/html rather than /usr/share/doc/nco/nco.html?
 E: nco: doc-base-file-references-missing-file nco:15 /usr/share/doc/nco/nco.html

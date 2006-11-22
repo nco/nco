@@ -88,15 +88,12 @@ binary-common:
 	dh_testroot
 	dh_installchangelogs doc/ChangeLog
 	dh_installdocs doc/*.html
-	dh_installexamples
 	dh_installinfo
 	dh_installman
 	dh_link
 	dh_strip
 	dh_compress 
 	dh_fixperms
-#	dh_perl
-#	dh_python
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
