@@ -47,7 +47,7 @@ config.status: configure
 		    --disable-udunits \
 		    --disable-static
 
-#Architecture 
+# Architecture 
 build: build-arch
 
 build-arch: build-arch-stamp
@@ -74,8 +74,7 @@ install-arch:
 	dh_clean -a
 	dh_installdirs -a
 
-	# Add here commands to install the arch part of the package into 
-	# debian/tmp.
+	# Commands to install the arch part of the package into debian/tmp
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/nco
 
 	# NCO installs header files by default, which we do not want (yet)
