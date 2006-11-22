@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.12 2006-11-19 23:58:30 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.am,v 1.13 2006-11-22 20:11:29 zender Exp $ -*-makefile-*-
 
 # Purpose: Template builds for nco++ directory
 # Process this file with automake to produce Makefile.in
@@ -29,13 +29,14 @@ INCLUDES = -I./ -I../nco
 DISTCLEANFILES=ncoParserTokenTypes.txt
 CLEANFILES=ncap2 ncoParserTokenTypes.txt
 
-# Following libraries are included based on configure options
-# Down here as a reminder.
+# Configure automatigically includes following libraries as requested:
+# Keep list here as reminder:
+# ncap2:
 # -lnco++ -lnco -lnco_c++ -lantlr
-# -lxlf90 # Required for linking Fortran objects
-# OPeNDAP
-# -lnc-dods -ldap++ -lnc-dods -ldap++ -lxml2 -lcurl -lpthread -ldl -lz
-# netcdf4
+# OPeNDAP:
+# -lnc-dap -ldap -lxml2 -lcurl (Linux)
+# -lnc-dap -ldap -lxml2 -lcurl -lcrypto -liconv -lssl -lz (AIX)
+# netCDF4:
 # -lnetcdf -lhdf5 -lhdf5_hl
-# Udunits
+# UDUnits:
 # -ludunits

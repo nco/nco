@@ -1,6 +1,6 @@
 2006-11-22  Charlie Zender  <zender@uci.edu>
 
-	* Update DAP build for ncap2
+	* Update bld/Makefiles for DAP build for ncap2
 
 	* More precise language for interactive o/a/e command
 
