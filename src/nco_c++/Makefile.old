@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.49 2006-11-05 06:55:58 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.50 2006-11-22 20:06:09 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -225,7 +225,7 @@ ifeq (${DAP},Y)
 # fxm: OPeNDAP bloats executables, should automagically enable stripping?
 # http://www.opendap.org/user/guide-html/guide_28.html
 ifndef DAP_ROOT
-# Directory containing libdap++.a, libnc-dap.a
+# Directory containing libdap.a, libnc-dap.a
  DAP_ROOT := /usr/local
 endif # DAP_ROOT
  NC_LDFLAGS := -L${DAP_ROOT}/lib
@@ -235,8 +235,14 @@ endif # DAP_ROOT
 # NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
 # DODS 3.4.X:
 # NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lxml2 -lcurl -lpthread -ldl -lz
+# DAP 3.5.0-3.5.1:
+# NC_LIBS := -lnc-dap -ldap++ -lxml2 -lcurl
 # DAP 3.5+:
- NC_LIBS := -lnc-dap -ldap++ -lxml2 -lcurl
+ NC_LIBS := -lnc-dap -ldap -lxml2 -lcurl
+# In addition, AIX OPeNDAP requires these libraries...
+ifneq (${null},$(findstring AIX,${PVM_ARCH}))
+ NC_LIBS += -lcrypto -liconv -lssl -lz
+endif # end AIX
 # Get netCDF from OPeNDAP version
  NETCDF_INC=${DAP_ROOT}/include/libnc-dap
  NETCDF_LIB=${DAP_ROOT}/lib

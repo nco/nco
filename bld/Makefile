@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.391 2006-11-21 21:52:52 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.392 2006-11-22 20:06:08 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -187,7 +187,7 @@ ifeq (${DAP},Y)
 # fxm: OPeNDAP bloats executables, should automagically enable stripping?
 # http://www.opendap.org/user/guide-html/guide_28.html
 ifndef DAP_ROOT
-# Directory containing libdap++.a, libnc-dap.a
+# Directory containing libdap.a, libnc-dap.a
  DAP_ROOT := /usr/local
 endif # DAP_ROOT
  NC_LDFLAGS := -L${DAP_ROOT}/lib

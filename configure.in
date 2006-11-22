@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.197 2006-11-20 16:53:10 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.198 2006-11-22 20:06:07 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -266,7 +266,7 @@ if test "${enable_dap}" != 'no'; then
 	elif test "${enable_dap}" = 'yes'; then
 		AC_DEFINE([ENABLE_DAP],[1],[Compile operators with OPeNDAP/DODS support])
 		AC_MSG_NOTICE([DAP support enabled])
-		# libtool cleans up duplicate library links (e.g., dap++, nc-dap) unless told not to
+		# libtool cleans up duplicate library links (e.g., dap, nc-dap) unless told not to
 		# New (3.5.0+) version of libnc-dap does not require duplicate libraries jhrg 6/3/05
 		LIBTOOL="${LIBTOOL} --tag=CXX --preserve-dup-deps"
 	fi
