@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.81 2006-08-02 05:52:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.82 2006-11-22 18:53:31 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1166,7 +1166,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 	nco_exit(EXIT_FAILURE);
       } /* end if */
       if(nbr_itr > 1) (void)fprintf(stdout,"%s: ERROR Invalid response.\n",prg_nm_get());
-      (void)fprintf(stdout,"%s: %s exists---`o'verwrite, `a'ppend/replace, or `e'xit (o/a/e)? ",prg_nm_get(),fl_out);
+      (void)fprintf(stdout,"%s: %s exists---`e'xit, `o'verwrite (i.e., delete existing file), or `a'ppend (i.e., replace variables in existing file) (e/o/a)? ",prg_nm_get(),fl_out);
       (void)fflush(stdout);
       /*       fgets() reads (at most one less than USR_RPL_MAX_LNG) to first newline or EOF */
       rcd_fgets=fgets(usr_rpl,USR_RPL_MAX_LNG,stdin);
