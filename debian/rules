@@ -38,9 +38,11 @@ config.status: configure
 	dh_testdir
 	./configure $(confflags) \
 		    --prefix=/usr \
-		    --mandir=/usr/share/man \
+		    --docdir=/usr/share/doc/nco \
+		    --htmldir=/usr/share/doc/nco/html \
 		    --infodir=/usr/share/info \
 		    --libdir=/usr/lib/nco \
+		    --mandir=/usr/share/man \
 		    --disable-dap \
 		    --disable-nco_cplusplus \
 		    --disable-netcdf4 \
@@ -86,7 +88,7 @@ binary-common:
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs doc/ChangeLog
-	dh_installdocs doc/nco.html/*.html
+	dh_installdocs
 	dh_installinfo
 	dh_installman
 	dh_link
