@@ -61,7 +61,7 @@ build-arch-stamp:  config.status
 	$(MAKE) 
 	cd doc && $(MAKE) html
 	cd doc && $(MAKE) nco.info
-	mkdir -p -f /usr/share/doc/nco/html
+	mkdir -p /usr/share/doc/nco/html
 	cp doc/*.html /usr/share/doc/nco/html
 	
 # Documentation to distribute in future
