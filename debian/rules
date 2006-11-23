@@ -93,7 +93,7 @@ binary-common:
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs doc/ChangeLog
-#	dh_installdocs doc/nco.html/*.html
+	dh_installdocs
 	dh_installinfo
 	dh_installman
 	dh_link
