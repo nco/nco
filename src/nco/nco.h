@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.106 2006-11-19 22:11:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.107 2006-11-23 21:42:45 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -126,10 +126,10 @@ Preprocessor macros may be used to turn bool into _Bool, false into 0 and true i
   unsigned short dbg_lvl_get(void){return dbg_lvl;} /* [enm] Debugging level */
   
   /* NCO_MSS_VAL_SNG contains the name of the attribute whose value is treated as
-     "missing" during arithmetic. Choose either missing_value of _Fillvalue. */
+     "missing" during arithmetic. Choose either missing_value of _FillValue. */
 #ifndef NCO_MSS_VAL_SNG
 # define NCO_MSS_VAL_SNG missing_value
-  /* # define NCO_MSS_VAL_SNG _Fillvalue */
+  /* # define NCO_MSS_VAL_SNG _FillValue */
 #endif /* NCO_MSS_VAL_SNG */
 
   /* Unidata standard string for missing values */

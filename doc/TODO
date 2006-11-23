@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.834 2006-11-22 18:03:48 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.835 2006-11-23 21:42:45 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -22,7 +22,6 @@ nco128. Ensure target 'dir' is made before *.d dependency files
 nco152. Change make or nco_dst.pl to add docs to /usr/doc in RPM
 nco164. Spiff up NCO homepage web page (Logo?)
 nco165. Create Makefile dependency to do 'make dir' if lib, obj, bin directories do not exist
-nco178. Make _FillValue behave same as missing_value
 nco212. Ensure structures are always passed by reference (default is pass by value)
 nco312. Make TODO list more legible (change to, e.g., Emacs list/outline mode, LaTeX, Wiki?) 
 nco313. Redo TODO subject categorization by discriminating based on skills required to tackle. Initial cateogorization might be e.g., autotools, bison, C, C++, Debian, flex, HTML, Perl, RPM, www, TeXInfo
@@ -447,7 +446,6 @@ nco681. Rename nco++:
 	ncoParserTokenTypes.txt	sdo_tkn_typ.txt
 	ncoTree.cpp		sdo_tree.cc
 	ncoTree.hpp		sdo_tree.hh
-nco682. Warn when _Fillvalue defined and missing_value not
 nco683. Convert to subversion http://sf.net/docs/E09/
 nco685. Run static analysis tool on nco codebase
 nco689. Multislabs (multiple limits on same dimension) fail in arithmetic operators. Currently, arithmetic operators silently ignore all limit specifications after the first. Solution: Diagnose and fail with informative warning until nco690 implemented.
@@ -533,15 +531,13 @@ nco779. Add non-record stride checks to regression tests e.g.,
 	ncks -O -v three_dmn_rec_var -d lon,,,2 -p ~/nco/data in.nc ~/foo.nc
 	ncrcat -O -v three_dmn_rec_var -d lon,,,2 -p ~/nco/data in.nc in.nc ~/foo.nc
 	ncks -C -v three_dmn_rec_var ~/foo.nc
-nco780. bm: ncap regression test 8 fails because of quieter info messages
 nco781. Add ncks option to suppress creating temporary output file in -A mode, simply copy input file first? Seems unlikely this will save time.
 nco784. Build NCO on NMI test lab http://nmi.cs.wisc.edu/
-nco789. Add regression test for behavior when _Fillvalue defined and missing_value not	      
+nco789. Add regression test for behavior when _FillValue defined and missing_value not	      
 	ncwa -O -a lon -v fll_val,mss_val ~/nco/data/in.nc ~/foo.nc
         ncks -H -C ~/foo.nc
-nco790. Clarify overwrite/append/cancel message and do not show append unless -A present
-nco791. make linda-clean
-nco792. 
+nco792. Improve compile-ability of _FillValue behavior
+nco793. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

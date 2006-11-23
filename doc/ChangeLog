@@ -1,5 +1,7 @@
 2006-11-23  Charlie Zender  <zender@uci.edu>
 
+	* Fix typo now use _FillValue not _Fillvalue
+
 	* Fix nco_bm.pl success test for ncap2 reading ncap2.in
 
 	* Regression/benchmarks now use ncap2 everywhere

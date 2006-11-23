@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.28 2006-11-19 22:11:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.29 2006-11-23 21:42:45 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -210,14 +210,14 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
 
   /* has_mss_val is typed as int not bool because it was sent to Fortran routines */
 
-  static nco_bool WRN_FIRST=True; /* [flg] No warnings yet for _Fillvalue/missing_value problem */
+  static nco_bool WRN_FIRST=True; /* [flg] No warnings yet for _FillValue/missing_value problem */
 
   char att_nm[NC_MAX_NAME];
   
   long att_sz;
   int idx;
   
-  nco_bool has_fll_val=False; /* [flg] Has _Fillvalue attribute */
+  nco_bool has_fll_val=False; /* [flg] Has _FillValue attribute */
 
   size_t att_lng;
 
@@ -234,7 +234,7 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
 
   for(idx=0;idx<var->nbr_att;idx++){
     (void)nco_inq_attname(nc_id,var->id,idx,att_nm);
-    if(WRN_FIRST && !(int)strcasecmp(att_nm,"_Fillvalue")) has_fll_val=True;
+    if(WRN_FIRST && !(int)strcasecmp(att_nm,"_FillValue")) has_fll_val=True;
     if((int)strcasecmp(att_nm,"missing_value")) continue;
     (void)nco_inq_att(nc_id,var->id,att_nm,&att_typ,&att_sz);
     if(att_sz != 1L && att_typ != NC_CHAR){
@@ -268,11 +268,11 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
     break;
   } /* end loop over att */
 
-  /* Warn when _Fillvalue is and missing_value is not defined */
+  /* Warn when _FillValue is and missing_value is not defined */
   if(has_fll_val && !var->has_mss_val && WRN_FIRST){
-    (void)fprintf(stderr,"%s: WARNING Variable %s has attribute \"_Fillvalue\" but not \"missing_value\". To comply with netCDF conventions, NCO ignores values that equal the %s when performing arithmetic. Confusingly, values equal to the _Fillvalue should also be neglected. However, it is tedious and (possibly) computationally expensive to check each value against multiple missing values during arithmetic on large variables. So NCO thinks that processing variables with a \"_Fillvalue\" attribute and no \"%s\" attribute may produce undesired arithmetic results (i.e., where values that were intended to be neglected were not, in fact, neglected). We suggest you rename all \"_Fillvalue\" attributes to \"%s\" or include both \"_Fillvalue\" and \"%s\" attributes (with the _same values_) for all variables that have either attribute. Because it is long, this message is only printed once per operator even though multiple variables may have the same attribute configuration. More information on missing values is given at:\nhttp://nco.sf.net/nco.html#mss_val\nExamples of renaming attributes are at:\nhttp://nco.sf.net/nco.html#xmp_ncrename\nExamples of creating and deleting attributes are at:\nhttp://nco.sf.net/nco.html#xmp_ncatted\n",prg_nm_get(),var->nm,nco_mss_val_sng_get(),nco_mss_val_sng_get(),nco_mss_val_sng_get(),nco_mss_val_sng_get());
+    (void)fprintf(stderr,"%s: WARNING Variable %s has attribute \"_FillValue\" but not \"missing_value\". To comply with netCDF conventions, NCO ignores values that equal the %s when performing arithmetic. Confusingly, values equal to the _FillValue should also be neglected. However, it is tedious and (possibly) computationally expensive to check each value against multiple missing values during arithmetic on large variables. So NCO thinks that processing variables with a \"_FillValue\" attribute and no \"%s\" attribute may produce undesired arithmetic results (i.e., where values that were intended to be neglected were not, in fact, neglected). We suggest you rename all \"_FillValue\" attributes to \"%s\" or include both \"_FillValue\" and \"%s\" attributes (with the _same values_) for all variables that have either attribute. Because it is long, this message is only printed once per operator even though multiple variables may have the same attribute configuration. More information on missing values is given at:\nhttp://nco.sf.net/nco.html#mss_val\nExamples of renaming attributes are at:\nhttp://nco.sf.net/nco.html#xmp_ncrename\nExamples of creating and deleting attributes are at:\nhttp://nco.sf.net/nco.html#xmp_ncatted\n",prg_nm_get(),var->nm,nco_mss_val_sng_get(),nco_mss_val_sng_get(),nco_mss_val_sng_get(),nco_mss_val_sng_get());
     WRN_FIRST=False;
-  } /* endif _Fillvalue is and missing_value is not defined */
+  } /* endif _FillValue is and missing_value is not defined */
 
   return var->has_mss_val;
 
