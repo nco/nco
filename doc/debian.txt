@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.63 2006-11-23 06:04:12 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.64 2006-11-23 07:45:39 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -158,31 +158,3 @@ m ~/foo.nco
 scp ${DATA}/nco_3.1.8* dust.ess.uci.edu:/var/www/html/nco/src
 scp ${DATA}/nco_3.1.8* nco.sf.net:/home/groups/n/nc/nco/htdocs
 
-csz: How to build .htmls in /usr/share/doc/nco/html rather than /usr/share/doc/nco/nco.html?
-E: nco: doc-base-file-references-missing-file nco:15 /usr/share/doc/nco/nco.html
-E: nco: shlib-with-non-pic-code usr/lib/nco/libnco-3.1.8.so
-http://lintian.debian.org/reports/Tshlib-with-non-pic-code.html
-
-# Warnings/errors in .build to fix
-libtool: install: warning: remember to run `libtool --finish /usr/lib/nco'
-libtool: install: warning: `libnco.la' has not been installed in `/usr/lib/nco'
-libtool: install: warning: `libnco.la' has not been installed in `/usr/lib/nco'
-libtool: install: warning: `libnco.la' has not been installed in `/usr/lib/nco'
-libtool: install: warning: `libnco.la' has not been installed in `/usr/lib/nco'
-libtool: install: warning: `libnco.la' has not been installed in `/usr/lib/nco'
-libtool: install: warning: `libnco.la' has not been installed in `/usr/lib/nco'
-dpkg-shlibdeps: warning: could not find any packages for libnco-3.1.8.so
-dpkg-shlibdeps: warning: unable to find dependency information for shared library libnco (soname 3.1.8, path libnco-3.1.8.so, dependency field Depends)
-dh_builddeb tar: -: file name read contains nul character
-
-# From Thijs Kinkhorst <thijs@debian.org>
-- Your package is "Debian native" while there's no reason to. You should
-make it a regular package, i.e. with an orig.tar.gz as it is released
-upstream, and a .diff.gz containing Debian-specific changes.
-
-As with the specifics of your package the following:
-- You have put the debian/ directory into upstream CVS. This is no
-problem, but it must *not* be in any released tarballs. There's detailed
-information / discussion about this to be found in the -mentors list
-archives, but in short: this gets weird if someone changes the package
-within Debian without committing it to upstream (e.g. a later NMU).

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.371 2006-11-23 06:48:59 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.372 2006-11-23 07:45:39 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -554,7 +554,12 @@ Fedora Core release lag upstream by no more than 6&ndash;8 months.
 Searching <a href="http://rpmfind.net">rpmfind.net</a> for NCO leads
 to these 
 <a href="http://rpmfind.net/linux/rpm2html/search.php?query=nco">NCO RPMs</a>.
+<li><a href="http://download.fedora.redhat.com/pub/fedora/linux/extras/6/i386/repodata/repoview/nco-0-3.1.5-3.fc6.html">nco-0-3.1.5-3.fc6.html</a>: Fedora Core&nbsp;6 NCO homepage</li>
+<li><a href="http://download.fedora.redhat.com/pub/fedora/linux/extras/6/i386/repodata/repoview/nco-devel-0-3.1.5-3.fc6.html">nco-devel-0-3.1.5-3.fc6.html</a>: Fedora Core&nbsp;6 NCO development homepage</li>
+
 </ul>
+
+
 
 <a name="gentoo"></a>
 <a name="gnt"></a>
