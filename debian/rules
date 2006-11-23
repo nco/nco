@@ -53,11 +53,11 @@ build: build-arch
 build-arch: build-arch-stamp
 build-arch-stamp:  config.status
 	$(MAKE) 
-	cd doc && $(MAKE) nco.html
+	cd doc && $(MAKE) html
 	cd doc && $(MAKE) nco.info
 # Documentation to distribute in future
 #	cd doc && $(MAKE) nco.ps
-#	cd doc && $(MAKE) nco.ps
+#	cd doc && $(MAKE) nco.dvi
 
 clean:
 	dh_testdir
@@ -86,7 +86,7 @@ binary-common:
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs doc/ChangeLog
-	dh_installdocs doc/*.html
+	dh_installdocs doc/nco.html/*.html
 	dh_installinfo
 	dh_installman
 	dh_link

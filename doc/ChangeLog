@@ -1,5 +1,11 @@
 2006-11-22  Charlie Zender  <zender@uci.edu>
 
+	* Exclude all .cvsignore's from tarballs
+
+	* Replace 'unstable' with 'UNRELEASED' from 3.0.0-3.1.7
+
+	* Change debian/nco.doc-base to debian/doc-base
+
 	* Update bld/Makefiles for DAP build for ncap2
 
 	* More precise language for interactive o/a/e command

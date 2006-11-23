@@ -207,7 +207,9 @@ info_TEXINFOS = nco.texi
 EXTRA_DIST = nco nco.pdf nco.ps VERSION
 
 # csz 20061120 override default MAKEINFOHTML defaults:
-# Treat HTML branches same as info branches
+# --ifinfo: Treat HTML branches same as info branches
+# --output=html: Output to html directory
+# Unfortunately, autoconf overrides --output
 AM_MAKEINFOHTMLFLAGS = --ifinfo
 # Create single HTML file instead of file-per-node
 #AM_MAKEINFOHTMLFLAGS = --ifinfo --no-split
@@ -215,7 +217,7 @@ AM_MAKEINFOHTMLFLAGS = --ifinfo
 # Automake manual section 14:
 # If configure built it, 'distclean' should delete it
 # If make built it, 'clean' should delete it
-CLEANFILES = nco nco.css nco.info* nco.pdf nco.txt nco.xml
+CLEANFILES = nco nco.info* nco.pdf nco.txt nco.xml
 all: all-am
 
 .SUFFIXES:
@@ -516,7 +518,7 @@ uninstall-am: uninstall-info-am
 	uninstall uninstall-am uninstall-info-am
 
 
-# Our own additions for NCO; they may be supported by automake later on
+# Additions for NCO; automake may support these later on
 #html_docs = nco.html
 #.texi.html:
 #	$(MAKEINFO) --html --no-split $<

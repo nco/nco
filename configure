@@ -24450,7 +24450,7 @@ _ACEOF
 
 		{ echo "$as_me:$LINENO: DAP support enabled" >&5
 echo "$as_me: DAP support enabled" >&6;}
-		# libtool cleans up duplicate library links (e.g., dap++, nc-dap) unless told not to
+		# libtool cleans up duplicate library links (e.g., dap, nc-dap) unless told not to
 		# New (3.5.0+) version of libnc-dap does not require duplicate libraries jhrg 6/3/05
 		LIBTOOL="${LIBTOOL} --tag=CXX --preserve-dup-deps"
 	fi
