@@ -1,7 +1,7 @@
 Document: nco
-Title: NCO Manual
+Title: NCO User's Guide
 Author: zender@uci.edu
-Abstract: This manual describes NCO, the netCDF Operators.
+Abstract: This manual describes the netCDF Operators, NCO. 
  NCO is a suite of programs, or operators, that take netCDF files as
  input, perform an operation (e.g. averaging or hyperslabbing) and
  produce an output netCDF file.
