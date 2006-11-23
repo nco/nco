@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.30 2006-11-22 06:14:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.31 2006-11-23 17:00:37 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -224,8 +224,11 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
 
   // FINAL SCAN
   Nvar=prs_arg->ptr_var_vtr->find(var->nm);
-  if(Nvar) bdef=true;
-
+  if(Nvar) {
+    // temporary fix make typ_dsk same as type
+    Nvar->var->typ_dsk=Nvar->var->type;
+    bdef=true;
+  } 
 
   // var is already defined & populated in output 
   if(bdef && Nvar->flg_stt==2){
@@ -305,6 +308,8 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
     var1->val.vp=(void*)nco_free(var1->val.vp);
     var1->id=var_out_id;
     var1->nc_id=prs_arg->out_id;
+    //temporary fix .. make typ_dsk same as type
+    var1->typ_dsk=var1->type;
     Nvar=new NcapVar(var1);
     (void)prs_arg->ptr_var_vtr->push(Nvar);          
   } 
@@ -681,7 +686,7 @@ sym_sct *app)       /* I [fnc_ptr] to apply to variable */
   
   
   /* Promote variable to NC_FLOAT */
-  if(var_in->type < NC_FLOAT) var_in=nco_var_cnf_typ((nc_type)NC_FLOAT,var_in);
+  if(var_in->type < NC_FLOAT) var_in=nco_var_cnf_typ( NC_FLOAT,var_in);
 
   /* deal with initial scan */
   if(var_in->val.vp==NULL) return var_in; 
@@ -717,6 +722,8 @@ sym_sct *app)       /* I [fnc_ptr] to apply to variable */
   default: nco_dfl_case_nc_type_err(); break;
   }/* end switch */
   
+
+
   if(var_in->has_mss_val) (void)cast_nctype_void(var_in->type,&(var_in->mss_val));
   return var_in;
 } /* end ncap_var_fnc() */
