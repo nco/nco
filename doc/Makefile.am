@@ -15,11 +15,12 @@ AM_MAKEINFOHTMLFLAGS = --ifinfo
 CLEANFILES = nco nco.info* nco.pdf nco.txt nco.xml
 
 # Additions for NCO; automake may support these later on
-#html_docs = nco.html
-#.texi.html:
+html_docs = nco.html
+.texi.html:
+	$(MAKEINFO) --html $<
 #	$(MAKEINFO) --html --no-split $<
-#.PHONY: html_docs pdf_docs
-#pdf_docs = nco.pdf
-#.texi.pdf:
-#	$(TEXI2DVI) --pdf $<
+.PHONY: html_docs pdf_docs
+pdf_docs = nco.pdf
+.texi.pdf:
+	$(TEXI2DVI) --pdf $<
 	

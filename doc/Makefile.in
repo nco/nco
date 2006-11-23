@@ -218,10 +218,14 @@ AM_MAKEINFOHTMLFLAGS = --ifinfo
 # If configure built it, 'distclean' should delete it
 # If make built it, 'clean' should delete it
 CLEANFILES = nco nco.info* nco.pdf nco.txt nco.xml
+
+# Additions for NCO; automake may support these later on
+html_docs = nco.html
+pdf_docs = nco.pdf
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .dvi .ps
+.SUFFIXES: .dvi .html .pdf .ps .texi
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -517,15 +521,12 @@ uninstall-am: uninstall-info-am
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	uninstall uninstall-am uninstall-info-am
 
-
-# Additions for NCO; automake may support these later on
-#html_docs = nco.html
-#.texi.html:
+.texi.html:
+	$(MAKEINFO) --html $<
 #	$(MAKEINFO) --html --no-split $<
-#.PHONY: html_docs pdf_docs
-#pdf_docs = nco.pdf
-#.texi.pdf:
-#	$(TEXI2DVI) --pdf $<
+.PHONY: html_docs pdf_docs
+.texi.pdf:
+	$(TEXI2DVI) --pdf $<
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -61,8 +61,6 @@ build-arch-stamp:  config.status
 	$(MAKE) 
 	cd doc && $(MAKE) html
 	cd doc && $(MAKE) nco.info
-	install -d debian/nco/usr/share/doc/nco/html
-	install -m 644 doc/nco.html/*.html debian/nco/usr/share/doc/nco/html
 # Documentation to distribute in future
 #	cd doc && $(MAKE) nco.ps
 #	cd doc && $(MAKE) nco.dvi
@@ -81,11 +79,9 @@ install-arch:
 	dh_testroot
 	dh_clean -a
 	dh_installdirs -a
-
-	# Commands to install the arch part of the package into debian/tmp
+# Commands to install the arch part of the package into debian/tmp
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/nco
-
-	# NCO installs header files by default, which we do not want (yet)
+# NCO installs header files by default, which we do not want (yet)
 	dh_install -a --exclude="*.h *.hh"
 
 # Must not depend on anything 
@@ -95,6 +91,8 @@ binary-common:
 	dh_testroot
 	dh_installchangelogs doc/ChangeLog
 	dh_installdocs
+	install -d debian/nco/usr/share/doc/nco/html
+	install -m 644 doc/nco.html/*.html debian/nco/usr/share/doc/nco/html
 	dh_installinfo
 	dh_installman
 	dh_link
