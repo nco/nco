@@ -61,7 +61,7 @@ build-arch-stamp:  config.status
 	$(MAKE) 
 	cd doc && $(MAKE) html
 	cd doc && $(MAKE) nco.info
-	-cp doc/*.html /usr/share/doc/nco/html
+	-cp doc/nco.html/*.html /usr/share/doc/nco/html
 # Documentation to distribute in future
 #	cd doc && $(MAKE) nco.ps
 #	cd doc && $(MAKE) nco.dvi
