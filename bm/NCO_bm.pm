@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.64 2006-10-24 21:59:52 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.65 2006-11-23 19:47:22 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -78,7 +78,7 @@ sub bm_usg {
   Usage:
     nco_bm.pl (options) [list of operators to test from the following list]
 	
-ncap ncatted ncbo ncflint ncea ncecat
+ncap2 ncatted ncbo ncflint ncea ncecat
 ncks ncpdq ncra ncrcat ncrename ncwa net      (default tests all)
 	
 where (options) are:
@@ -150,7 +150,7 @@ sub bm_ntl($$){
     my $dbg_lvl; # [flg] Debugging level
     ($bch_flg,$dbg_lvl)=@_;
 # Enumerate operators to test
-    @opr_lst_all = qw( ncap ncdiff ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa net );
+    @opr_lst_all = qw( ncap2 ncdiff ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa net );
     @opr_lst_mpi = qw( ncbo ncecat ncflint ncpdq ncra ncwa ncpdq ncra);
     $opr_sng_mpi = "ncbo ncdiff ncecat ncflint ncea ncpdq ncra ncwa "; # ncpdq ncra MPI, but fail bench
     $opr_rgr_mpi = "ncbo ncdiff ncecat ncflint ncea ncpdq ncra ncwa ncrcat"; # need all of them for regression

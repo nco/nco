@@ -1899,7 +1899,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 #line 1500 "ncoGrammer.g"
 				
 				if(prs_arg->ntl_scn)
-				var=ncap_sclr_var_mk("_int",NC_INT,false);
+				var=ncap_sclr_var_mk("_int",NC_INT);
 				else {
 				int ival;
 				ival=atoi(i->getText().c_str());
@@ -1941,7 +1941,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				if(prs_arg->ntl_scn)
 				var=ncap_sclr_var_mk("_double",NC_DOUBLE,false);
 				else {
-				float dval;
+				double dval;
 				dval=strtod(d->getText().c_str(),(char**)NULL );
 				var=ncap_sclr_var_mk("_double", dval);
 				}

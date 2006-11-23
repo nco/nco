@@ -182,7 +182,7 @@ defdim("z",9);
 // LHS Cast a new variable with new dimensions
 k1[$x,$y,$z]=1.01d;
 // Dimension size can be used in an expression by postfixing it with "size" e.g.,
-if( $x.size==1 && $y.size < 5 && $z.size==9)
+if($x.size==1 && $y.size < 5 && $z.size==9)
 k1@max=9;
 //
 k1@size=$x.size*$y.size*$z.size;

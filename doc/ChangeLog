@@ -1,3 +1,9 @@
+2006-11-23  Charlie Zender  <zender@uci.edu>
+
+	* Fix nco_bm.pl success test for ncap2 reading ncap2.in
+
+	* Regression/benchmarks now use ncap2 everywhere
+
 2006-11-22  Charlie Zender  <zender@uci.edu>
 
 	* Exclude all .cvsignore's from tarballs

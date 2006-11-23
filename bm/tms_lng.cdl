@@ -11,7 +11,7 @@
 // ncecat -O tms_lng.nc tms_lng.nc
 // ncpdq -O -a time,record tms_lng.nc tms_lng.nc
 // ncrename -O -v record,species_id tms_lng.nc tms_lng.nc
-// ncap -O -s "hmdty[time]=98.3f;PCO2[time]=1.92f;PN2[time]=77.4f;w_vel[time]=14.8f;w_dir[time]=321.3f;temp[time]=23.5f;lmbda_260[time]=684.2f" tms_lng.nc tms_lng.nc
+// ncap2 -O -s "hmdty[time]=98.3f;PCO2[time]=1.92f;PN2[time]=77.4f;w_vel[time]=14.8f;w_dir[time]=321.3f;temp[time]=23.5f;lmbda_260[time]=684.2f" tms_lng.nc tms_lng.nc
 
 netcdf tms_lng{
 

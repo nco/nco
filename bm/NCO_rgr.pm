@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.57 2006-10-24 21:59:52 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.58 2006-11-23 19:47:22 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -85,19 +85,20 @@ sub tst_rgr {
     
     
 ####################
-#### ncap tests ####
+#### ncap2 tests ####
 ####################
-    $opr_nm='ncap';
+    $opr_nm='ncap2';
 ####################
     
 # This stanza will not map to the way the SS is done - needs a %stdouterr% added but all the rest of them
 # have an ncks which triggers this addition from the sub tst_run() -> gnarly_pything.
 # this stanza also requires a script on the SS.
-    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -S ncap.in $in_pth_arg in.nc %tempf_00%  %stdouterr%";
-    $dsc_sng="running ncap.in script in nco_bm.pl";
-    $tst_cmd[1] = "ncap: INFO Replacing missing value data in variable val_half_half";
-#	$tst_cmd[2] = "NO_SS";
-    $tst_cmd[2] = "SS_OK";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -S ncap2.in $in_pth_arg in.nc %tempf_00% %stdouterr%";
+    $dsc_sng="running ncap2.in script in nco_bm.pl";
+    $tst_cmd[1]="ncks -C -H -v b2 -s '%d' %tempf_00%";
+    $tst_cmd[2] = "999";
+#	$tst_cmd[3] = "NO_SS";
+    $tst_cmd[3] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0;  # Reset array
     
@@ -424,7 +425,7 @@ sub tst_rgr {
 ####################
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v lat_T42,lon_T42,gw_T42 $in_pth_arg in.nc %tempf_03%";
     $tst_cmd[1]="ncrename -h -O $nco_D_flg -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon %tempf_03%";
-    $tst_cmd[2]="ncap -h -O $fl_fmt $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' %tempf_03% %tempf_04%";
+    $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' %tempf_03% %tempf_04%";
     $tst_cmd[3]="ncks -C -H -s '%g' -v one -F -d lon,128 -d lat,64 %tempf_04% ";
     $dsc_sng="Create T42 variable named one, uniformly 1.0 over globe in %tempf_03% ";
     $tst_cmd[4] = 1;
@@ -784,7 +785,7 @@ sub tst_rgr {
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v lat_T42,lon_T42,gw_T42 $in_pth_arg in.nc %tempf_03%";
     $tst_cmd[1]="ncrename -h -O $nco_D_flg -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon %tempf_03%";
-    $tst_cmd[2]="ncap -h -O $fl_fmt $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' %tempf_03% %tempf_04%";
+    $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' %tempf_03% %tempf_04%";
     $tst_cmd[3]="ncks -C -H -s '%g' -v one -F -d lon,128 -d lat,64 %tempf_04%";
     $dsc_sng="Creating %tempf_03% again ";
     $tst_cmd[4] = "1";
@@ -794,7 +795,7 @@ sub tst_rgr {
 
     push(@tst_cmd, "ncks -h -O $fl_fmt $nco_D_flg -v lat_T42,lon_T42,gw_T42 $in_pth_arg in.nc %tempf_03%");
     push(@tst_cmd, "ncrename -h -O $nco_D_flg -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon %tempf_03%");
-    push(@tst_cmd, "ncap -h -O $fl_fmt $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' %tempf_03% %tempf_04%");
+    push(@tst_cmd, "ncap2 -h -O $fl_fmt $nco_D_flg -s 'one[lat,lon]=lat*lon*0.0+1.0' -s 'zero[lat,lon]=lat*lon*0.0' %tempf_03% %tempf_04%");
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon -w gw -d lat,0.0,90.0 %tempf_04% %tempf_00%");
     push(@tst_cmd, "ncks -C -H -s '%g' -v one %tempf_00%");
     $dsc_sng="normalize by denominator upper hemisphere";
