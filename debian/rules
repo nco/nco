@@ -36,6 +36,10 @@ endif
 
 config.status: configure
 	dh_testdir
+# Explicitly set Debian system netCDF directories to override development netCDF
+# installations in, e.g., /usr/local
+	NETCDF_INC='/usr/include' \
+	NETCDF_LIB='/usr/lib' \
 	./configure $(confflags) \
 		    --prefix=/usr \
 		    --docdir=/usr/share/doc/nco \
@@ -57,6 +61,9 @@ build-arch-stamp:  config.status
 	$(MAKE) 
 	cd doc && $(MAKE) html
 	cd doc && $(MAKE) nco.info
+	mkdir -p -f /usr/share/doc/nco/html
+	cp doc/*.html /usr/share/doc/nco/html
+	
 # Documentation to distribute in future
 #	cd doc && $(MAKE) nco.ps
 #	cd doc && $(MAKE) nco.dvi
@@ -88,7 +95,7 @@ binary-common:
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs doc/ChangeLog
-	dh_installdocs doc/nco.html/*.html
+#	dh_installdocs doc/nco.html/*.html
 	dh_installinfo
 	dh_installman
 	dh_link
