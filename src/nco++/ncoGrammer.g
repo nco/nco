@@ -1499,7 +1499,7 @@ end_dot: ;
 	|	i:INT			
           {  
             if(prs_arg->ntl_scn)
-              var=ncap_sclr_var_mk("_int",NC_INT,false);
+              var=ncap_sclr_var_mk("_int",NC_INT);
             else {
               int ival;
               ival=atoi(i->getText().c_str());
@@ -1522,7 +1522,7 @@ end_dot: ;
             if(prs_arg->ntl_scn)
               var=ncap_sclr_var_mk("_double",NC_DOUBLE,false);
             else {
-              float dval;
+              double dval;
               dval=strtod(d->getText().c_str(),(char**)NULL );
               var=ncap_sclr_var_mk("_double", dval);
             }
