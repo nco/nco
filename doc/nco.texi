@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.386 2006-11-22 07:05:43 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.387 2006-11-24 19:10:51 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1696,14 +1696,14 @@ operators (@pxref{OpenMP Threading}).
 The peak and sustained memory usage will scale accordingly,
 i.e., by the number of threads.
 Memory consumption patterns of all operators are similar, with
-the exception of @command{ncap}.
+the exception of @command{ncap2}.
 
 @menu
 * Single and Multi-file Operators::  
-* Memory for ncap::             
+* Memory for ncap2::            
 @end menu
 
-@node Single and Multi-file Operators, Memory for ncap, Memory Requirements, Memory Requirements
+@node Single and Multi-file Operators, Memory for ncap2, Memory Requirements, Memory Requirements
 @subsection Single and Multi-file Operators
 
 @cindex multi-file operators
@@ -1746,18 +1746,18 @@ concatenated, contribute to @math{MS}.
 Memory is never allocated to hold variables which do not appear in the 
 output file (@pxref{Subsetting Variables}). 
 
-@node Memory for ncap,  , Single and Multi-file Operators, Memory Requirements
-@subsection Memory for @command{ncap}
-@cindex @command{ncap}
+@node Memory for ncap2,  , Single and Multi-file Operators, Memory Requirements
+@subsection Memory for @command{ncap2}
+@cindex @command{ncap2}
 @cindex binary operations
 @cindex unary operations
 @cindex memory leaks
 @cindex left hand casting
-@command{ncap} has unique memory requirements due its ability to process
+@command{ncap2} has unique memory requirements due its ability to process
 arbitrarily long scripts of any complexity.
-All script acceptable to @command{ncap} are ultimately processed as a
+All script acceptable to @command{ncap2} are ultimately processed as a
 sequence of binary or unary operations.
-@command{ncap} requires @math{MS <= 2VT} under most conditions.
+@command{ncap2} requires @math{MS <= 2VT} under most conditions.
 An exception to this is when left hand casting (@pxref{Left hand
 casting}) is used to stretch the size of derived variables beyond the
 size of any input variables.
@@ -1766,7 +1766,7 @@ defined by left hand casting.
 In this case, @math{MS <= 2VC}.
 
 @findex malloc()
-@command{ncap} scripts are complete dynamic and may be of arbitrary
+@command{ncap2} scripts are complete dynamic and may be of arbitrary
 length. 
 A script that contains many thousands of operations, may uncover a
 slow memory leak even though each single operation consumes little
@@ -1854,10 +1854,10 @@ feature is automatic and cannot be controlled by the user.
 * Subsetting Coordinate Variables::  
 * C and Fortran Index Conventions::  
 * Hyperslabs::                  
-* Multislabs::                  
-* UDUnits Support::             
-* Wrapped Coordinates::         
 * Stride::                      
+* Multislabs::                  
+* Wrapped Coordinates::         
+* UDUnits Support::             
 * Missing Values::              
 * Packed data::                 
 * Operation Types::             
@@ -2751,7 +2751,7 @@ when your other preferred methods are not available locally.
 @cindex @code{--file_format}
 @cindex @code{--64bit}
 @cartouche
-Availability: @command{ncap}, @command{ncbo}, @command{ncea},
+Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncpdq}, @command{ncra},
 @command{ncrcat}, @command{ncwa}@*
 Short options: @samp{-4}@*
@@ -2903,7 +2903,7 @@ build time.
 @cindex @code{--exclude}
 @cindex @code{--xcl}
 @cartouche
-Availability: (@command{ncap}), @command{ncbo}, @command{ncea},
+Availability: (@command{ncap2}), @command{ncbo}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-v}, @samp{-x}@*
@@ -2926,12 +2926,12 @@ Remember, if averaging or concatenating large files stresses your
 systems memory or disk resources, then the easiest solution is often to
 use the @samp{-v} option to retain only the variables you 
 really need (@pxref{Memory Requirements}).
-Note that, due to its special capabilities, @command{ncap} interprets
+Note that, due to its special capabilities, @command{ncap2} interprets
 the @samp{-v} switch differently
-(@pxref{ncap netCDF Arithmetic Processor}).
-For @command{ncap}, the @samp{-v} switch takes no arguments and indicates
+(@pxref{ncap2 netCDF Arithmetic Processor}).
+For @command{ncap2}, the @samp{-v} switch takes no arguments and indicates
 that @emph{only} user-defined variables should be output.
-@command{ncap} neither accepts nor understands the @var{-x} switch.
+@command{ncap2} neither accepts nor understands the @var{-x} switch.
 
 @html
 <a name="rx"></a> <!-- http://nco.sf.net/nco.html#rx -->
@@ -3070,7 +3070,7 @@ filename expansion (globbing).
 @cindex @code{--coords}
 @cindex @code{--crd}
 @cartouche
-Availability: @command{ncap}, @command{ncbo}, @command{ncea},
+Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-C}, @samp{-c}@*
@@ -3161,7 +3161,7 @@ lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0
 <a name="-d"></a> <!-- http://nco.sf.net/nco.html#-d -->
 <a name="hyp"></a> <!-- http://nco.sf.net/nco.html#hyp -->
 @end html
-@node Hyperslabs, Multislabs, C and Fortran Index Conventions, Common features
+@node Hyperslabs, Stride, C and Fortran Index Conventions, Common features
 @section Hyperslabs 
 @cindex hyperslab
 @cindex dimension limits
@@ -3265,7 +3265,7 @@ This option may be specified more than once in a single command
 <a name="srd"></a> <!-- http://nco.sf.net/nco.html#srd -->
 <a name="stride"></a> <!-- http://nco.sf.net/nco.html#stride -->
 @end html
-@node Stride, Missing Values, Wrapped Coordinates, Common features
+@node Stride, Multislabs, Hyperslabs, Common features
 @section Stride 
 @cindex stride
 @cindex @code{-d @var{dim},[@var{min}],[@var{max}],@var{stride}}
@@ -3355,7 +3355,7 @@ ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 <a name="msa"></a> <!-- http://nco.sf.net/nco.html#msa -->
 <a name="mlt"></a> <!-- http://nco.sf.net/nco.html#mlt -->
 @end html
-@node Multislabs, UDUnits Support, Hyperslabs, Common features
+@node Multislabs, Wrapped Coordinates, Stride, Common features
 @section Multislabs 
 @cindex multislab
 @cindex @code{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}
@@ -3448,7 +3448,7 @@ future.
 @html
 <a name="wrp"></a> <!-- http://nco.sf.net/nco.html#wrp -->
 @end html
-@node Wrapped Coordinates, Stride, UDUnits Support, Common features
+@node Wrapped Coordinates, UDUnits Support, Multislabs, Common features
 @section Wrapped Coordinates
 @cindex wrapped coordinates
 @cindex longitude
@@ -3520,7 +3520,7 @@ values (@pxref{Hyperslabs}).
 @html
 <a name="UDUnits"></a> <!-- http://nco.sf.net/nco.html#UDUnits -->
 @end html
-@node UDUnits Support, Wrapped Coordinates, Multislabs, Common features
+@node UDUnits Support, Missing Values, Wrapped Coordinates, Common features
 @section UDUnits Support 
 @cindex UDUnits
 @cindex Unidata
@@ -3683,14 +3683,14 @@ esoteric units (e.g., furlongs, pounds per square inch, fortnights).
 <a name="mss_val"></a> <!-- http://nco.sf.net/nco.html#mss_val -->
 <a name="mss"></a> <!-- http://nco.sf.net/nco.html#mss -->
 @end html
-@node Missing Values, Packed data, Stride, Common features
+@node Missing Values, Packed data, UDUnits Support, Common features
 @section Missing values
 @cindex missing values
 @cindex data, missing 
 @cindex averaging data
 @cindex @code{missing_value}
 @cartouche
-Availability: @command{ncap}, @command{ncbo}, @command{ncea},
+Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
 @command{ncflint}, @command{ncpdq}, @command{ncra}, @command{ncwa}@* 
 Short options: None@*
 @end cartouche
@@ -3823,7 +3823,7 @@ important information from being lost.
 @cindex @command{pack(x)}
 @cindex @command{unpack(x)}
 @cartouche
-Availability: @command{ncap}, @command{ncbo}, @command{ncea},
+Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
 @command{ncflint}, @command{ncpdq}, @command{ncra}, @command{ncwa}@* 
 Short options: None@*
 @end cartouche
@@ -3931,7 +3931,7 @@ output files.
 Completely packing and unpacking files is easily accomplished with
 @command{ncpdq} (@pxref{ncpdq netCDF Permute Dimensions Quickly}).
 Packing and unpacking individual variables may be done with 
-@command{ncpdq} and the @command{ncap} 
+@command{ncpdq} and the @command{ncap2} 
 @command{pack()} and @command{unpack()} functions
 (@pxref{Intrinsic functions}).
 
@@ -4311,7 +4311,7 @@ required by the @command{ncbo} operation in the third step.
 @section Type Conversion
 @cindex type conversion
 @cartouche
-Availability: @command{ncap}, @command{ncbo}, @command{ncea},
+Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
 @command{ncra}, @command{ncwa}@* 
 Short options: None@*
 @end cartouche
@@ -4465,16 +4465,16 @@ will have the value @var{n} when converted to an integer.
 
 @node Manual type conversion,  , Automatic type conversion, Type Conversion
 @subsection Manual type conversion
-@cindex @command{ncap}
-@command{ncap} provides intrinsic functions for performing manual type
+@cindex @command{ncap2}
+@command{ncap2} provides intrinsic functions for performing manual type
 conversions.
 This, for example, converts variable @code{tpt} to external type
 @code{NC_SHORT} (a C-type @code{short}), and variable @code{prs} to
 external type @code{NC_DOUBLE} (a C-type @code{double}). 
 @example
-ncap -O -s "tpt=short(tpt);prs=double(prs);" in.nc out.nc
+ncap2 -O -s "tpt=short(tpt);prs=double(prs);" in.nc out.nc
 @end example
-@xref{ncap netCDF Arithmetic Processor}, for more details.
+@xref{ncap2 netCDF Arithmetic Processor}, for more details.
 
 @html
 <a name="ovr"></a> <!-- http://nco.sf.net/nco.html#ovr -->
@@ -4849,7 +4849,7 @@ Only options specific to, or most useful with, a particular operator are
 described in any detail in the sections below.  
 
 @menu
-* ncap netCDF Arithmetic Processor::  
+* ncap2 netCDF Arithmetic Processor::  
 * ncatted netCDF Attribute Editor::  
 * ncbo netCDF Binary Operator::  
 * ncea netCDF Ensemble Averager::  
@@ -4868,8 +4868,8 @@ described in any detail in the sections below.
 <a name="ncap"></a> <!-- http://nco.sf.net/nco.html#ncap -->
 <a name="ncap2"></a> <!-- http://nco.sf.net/nco.html#ncap2 -->
 @end html
-@node ncap netCDF Arithmetic Processor, ncatted netCDF Attribute Editor, Operator Reference Manual, Operator Reference Manual
-@section @command{ncap} netCDF Arithmetic Processor
+@node ncap2 netCDF Arithmetic Processor, ncatted netCDF Attribute Editor, Operator Reference Manual, Operator Reference Manual
+@section @command{ncap2} netCDF Arithmetic Processor
 @cindex parser
 @cindex lexer
 @cindex arithmetic processor
@@ -4884,7 +4884,7 @@ described in any detail in the sections below.
 @noindent
 SYNTAX
 @example
-ncap [-4] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] [-D @var{dbg}] 
+ncap2 [-4] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-f]
 [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-s @var{algebra}] [-S @var{fl.nco}] [-v]
@@ -4895,13 +4895,12 @@ ncap [-4] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] [-D @var{dbg}]
 DESCRIPTION
 
 @command{ncap} and @command{ncap2} arithmetically process netCDF files
-@footnote{@command{ncap2} is the successor to @command{ncap} which is in 
-maintenance mode.
-@command{ncap2} has a superset of the @command{ncap} functionality,
-so the @command{ncap} documentation serves for @command{ncap2} as well
-(the converse is not true).
-Functionality present only in @command{ncap2} is marked as such.
-Eventually @command{ncap} will be deprecated in favor @command{ncap2}.}.
+@footnote{@command{ncap2} is the successor to @command{ncap} which was
+put into maintenance mode in November, 2006. 
+This documentation refers to @command{ncap2}, which has a superset of
+the @command{ncap} functionality. 
+Eventually @command{ncap} will be deprecated in favor @command{ncap2}.
+@command{ncap2} will be renamed @command{ncap} in 2007.}.
 @cindex script file
 @cindex @code{--script-file}
 @cindex @code{--fl_spt}
@@ -4913,25 +4912,25 @@ The options @samp{-s} (or long options @samp{--spt} or @samp{--script})
 are used for in-line scripts and @samp{-S} (or long options
 @samp{--fl_spt} or @samp{--script-file}) are used to provide the
 filename where (usually multiple) scripting commands are pre-stored.   
-@command{ncap} was written to perform arbitrary albebraic
+@command{ncap2} was written to perform arbitrary albebraic
 transformations of data and archive the results as easily as possible.
 @cindex derived fields
 @xref{Missing Values}, for treatment of missing values.
 The results of the algebraic manipulations are called 
 @dfn{derived fields}. 
 
-Unlike the other operators, @command{ncap} does not accept a list of
+Unlike the other operators, @command{ncap2} does not accept a list of
 variables to be operated on as an argument to @samp{-v} 
 (@pxref{Subsetting Variables}).
 Rather, the @samp{-v} switch takes no arguments and indicates
-that @command{ncap} should output @emph{only} user-defined variables.
-@command{ncap} does not accept or understand the @var{-x} switch.
+that @command{ncap2} should output @emph{only} user-defined variables.
+@command{ncap2} does not accept or understand the @var{-x} switch.
 
-@c @subsection Scripting Mathematical Processing with @command{ncap}
+@c @subsection Scripting Mathematical Processing with @command{ncap2}
 
 @menu
 * Left hand casting::           
-* Syntax of ncap statements::   
+* Syntax of ncap2 statements::  
 * Intrinsic functions::         
 * Intrinsic mathematical functions::  
 @end menu
@@ -4956,13 +4955,13 @@ data analysis, and we welcome suggestions to improve this feature.
 <a name="lhc"></a> <!-- http://nco.sf.net/nco.html#lhc -->
 <a name="lhs"></a> <!-- http://nco.sf.net/nco.html#lhs -->
 @end html
-@node Left hand casting, Syntax of ncap statements, ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
+@node Left hand casting, Syntax of ncap2 statements, ncap2 netCDF Arithmetic Processor, ncap2 netCDF Arithmetic Processor
 @subsection Left hand casting
 @cindex hybrid coordinate system 
 @cindex left hand casting
 @cindex @acronym{LHS}
 The following examples demonstrate the utility of the 
-@dfn{left hand casting} ability of @command{ncap}.
+@dfn{left hand casting} ability of @command{ncap2}.
 Consider first this simple, artificial, example.
 If @var{lat} and @var{lon} are one dimensional coordinates of
 dimensions @var{lat} and @var{lon}, respectively, then addition
@@ -4983,8 +4982,8 @@ This is called @dfn{left hand casting} because the user resolves the
 dimensional ordering of the @acronym{RHS} of the expression by
 specifying the desired ordering on the @acronym{LHS}.
 @example
-ncap -O -s "lat_lon[lat,lon]=lat+lon" in.nc out.nc
-ncap -O -s "lon_lat[lon,lat]=lat+lon" in.nc out.nc
+ncap2 -O -s "lat_lon[lat,lon]=lat+lon" in.nc out.nc
+ncap2 -O -s "lon_lat[lon,lat]=lat+lon" in.nc out.nc
 @end example
 The explicit list of dimensions on the @acronym{LHS}, @code{[lat,lon]}
 resolves the otherwise ambiguous ordering of dimensions in
@@ -4992,7 +4991,7 @@ resolves the otherwise ambiguous ordering of dimensions in
 In effect, the @acronym{LHS} @dfn{casts} its rank properties onto the 
 @acronym{RHS}.
 Without @acronym{LHS} casting, the dimensional ordering of @var{lat_lon}
-would be undefined and, hopefully, @command{ncap} would print an error
+would be undefined and, hopefully, @command{ncap2} would print an error
 message. 
 
 Consider now a slightly more complex example.
@@ -5011,7 +5010,7 @@ constant elevation (also one spatial dimension).
 This command constructs a four-dimensional pressure @code{prs_mdp}
 from the four input variables of mixed rank and orthogonality:
 @example
-ncap -O -s "prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm" in.nc out.nc
+ncap2 -O -s "prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm" in.nc out.nc
 @end example
 Manipulating the four fields which define the pressure in a hybrid
 coordinate system is easy with left hand casting.
@@ -5019,11 +5018,11 @@ coordinate system is easy with left hand casting.
 @html
 <a name="syn"></a> <!-- http://nco.sf.net/nco.html#syn -->
 @end html
-@node Syntax of ncap statements, Intrinsic functions, Left hand casting, ncap netCDF Arithmetic Processor
-@subsection Syntax of @command{ncap} statements
+@node Syntax of ncap2 statements, Intrinsic functions, Left hand casting, ncap2 netCDF Arithmetic Processor
+@subsection Syntax of @command{ncap2} statements
 @cindex statement
 @cindex syntax
-Mastering @command{ncap} is relatively simple.
+Mastering @command{ncap2} is relatively simple.
 Each valid statement @var{statement} consists of standard forward
 algebraic expression. 
 The @file{fl.nco}, if present, is simply a list of such statements,
@@ -5071,12 +5070,12 @@ variable name.
 @html
 <a name="fnc"></a> <!-- http://nco.sf.net/nco.html#fnc -->
 @end html
-@node Intrinsic functions, Intrinsic mathematical functions, Syntax of ncap statements, ncap netCDF Arithmetic Processor
+@node Intrinsic functions, Intrinsic mathematical functions, Syntax of ncap2 statements, ncap2 netCDF Arithmetic Processor
 @subsection Intrinsic functions
-@command{ncap} contains a small (and growing) library of intrinsic
+@command{ncap2} contains a small (and growing) library of intrinsic
 functions. 
 In addition to the standard mathematical functions 
-(@pxref{Intrinsic mathematical functions}), @command{ncap} currently
+(@pxref{Intrinsic mathematical functions}), @command{ncap2} currently
 supports packing and unpacking.
 @cindex packing
 @cindex unpacking
@@ -5093,7 +5092,7 @@ The standard unpacking algorithm is applied to variable @var{x}.
 <a name="typ_cst"></a> <!-- http://nco.sf.net/nco.html#typ_cst -->
 <a name="cst"></a> <!-- http://nco.sf.net/nco.html#cst -->
 @end html
-These intrinsic functions allow @command{ncap} to convert variables on
+These intrinsic functions allow @command{ncap2} to convert variables on
 disk among the available types supported by netCDF.
 @cindex type conversion
 @cindex promotion
@@ -5129,9 +5128,9 @@ Converts @var{x} to external type @code{NC_SHORT}, a C-type @code{short}.
 @html
 <a name="mth"></a> <!-- http://nco.sf.net/nco.html#mth -->
 @end html
-@node Intrinsic mathematical functions,  , Intrinsic functions, ncap netCDF Arithmetic Processor
+@node Intrinsic mathematical functions,  , Intrinsic functions, ncap2 netCDF Arithmetic Processor
 @subsection Intrinsic mathematical functions
-@command{ncap} supports the standard mathematical functions supplied with
+@command{ncap2} supports the standard mathematical functions supplied with
 most operating systems.
 @cindex addition
 @cindex subtraction
@@ -5611,30 +5610,30 @@ Define new attribute @var{new} for existing variable @var{one}
 as twice the existing attribute @var{double_att} of variable
 @var{att_var}: 
 @example
-ncap -O -s "one@@new=2*att_var@@double_att" in.nc out.nc
+ncap2 -O -s "one@@new=2*att_var@@double_att" in.nc out.nc
 @end example
 
 Average variables of mixed types (result is of type @code{double}):
 @example
-ncap -O -s "average=(var_float+var_double+var_int)/3" in.nc out.nc 
+ncap2 -O -s "average=(var_float+var_double+var_int)/3" in.nc out.nc 
 @end example
 
-Multiple commands may be given to @command{ncap} in three ways.
+Multiple commands may be given to @command{ncap2} in three ways.
 First, the commands may be placed in a script which is executed, e.g.,
 @file{tst.nco}. 
 Second, the commands may be individually specified with multiple
-@samp{-s} arguments to the same @command{ncap} invocation.
+@samp{-s} arguments to the same @command{ncap2} invocation.
 Third, the commands may be chained together into a single @samp{-s}
-argument to @command{ncap}.
+argument to @command{ncap2}.
 Assuming the file @file{tst.nco} contains the commands
-@code{a=3;b=4;c=sqrt(a^2+b^2);}, then the following @command{ncap}
+@code{a=3;b=4;c=sqrt(a^2+b^2);}, then the following @command{ncap2}
 invocations produce identical results:
 @example
-ncap -O -v -S tst.nco in.nc out.nc
-ncap -O -v -s "a=3" -s "b=4" -s "c=sqrt(a^2+b^2)" in.nc out.nc
-ncap -O -v -s "a=3;b=4;c=sqrt(a^2+b^2)" in.nc out.nc
+ncap2 -O -v -S tst.nco in.nc out.nc
+ncap2 -O -v -s "a=3" -s "b=4" -s "c=sqrt(a^2+b^2)" in.nc out.nc
+ncap2 -O -v -s "a=3;b=4;c=sqrt(a^2+b^2)" in.nc out.nc
 @end example
-The second and third examples show that @command{ncap} does not require
+The second and third examples show that @command{ncap2} does not require
 that a trailing semi-colon @samp{;} be placed at the end of a @samp{-s}
 argument, although a trailing semi-colon @samp{;} is always allowed.
 However, semi-colons are required to separate individual assignment
@@ -5650,25 +5649,27 @@ The flag should have @w{value 1.0} where the array @w{exceeds 1.0},
 and @w{value 0.0} elsewhere.
 This example creates the binary flag @code{ORO_flg} in @file{out.nc}
 from the continuous array named @code{ORO} in @file{in.nc}.
-@cindex masked average
-@findex ncecat
-@findex ncwa
-@cindex degenerate dimension
 @example
-# Add degenerate "record" dimension to ORO for averaging
-ncecat -O -v ORO in.nc foo.nc
-# Average degenerate "record" dimension using ORO as mask
-ncwa -a record -O -B "ORO > 1.0" foo.nc foo.nc
-# ORO is either = 0.0 or > 1.0 everywhere
-# Create ORO_frc in [0.0,1.0) then add 0.99 and convert to int 
-ncap -O -s "ORO_frc=ORO-int(ORO)" -s "ORO_flg=int(ORO_frc+0.99)" foo.nc out.nc
-# ORO_flg now equals 0 or 1
+ncap2 -O -s "ORO_flg=(ORO > 1.0)" foo.nc out.nc
 @end example
+Suppose your task is to change all values of @code{ORO} which 
+@w{equal 1.0} to the new @w{value 2.0}:
+@example
+ncap2 -s 'ORO_msk=(ORO==1.0);ORO=ORO_msk*2.0+!ORO_msk*ORO' in.nc out.nc
+@end example
+@cindex mask
+This creates and uses @code{ORO_msk} to mask the subsequent arithmetic
+operation.
+Values of @code{ORO} are only changed where @code{ORO_msk} is true,
+i.e., where @code{ORO} @w{equals 1.0}.
+@cindex Fortran90
+In the future, @command{ncap2} will support the Fortran90 @code{where} 
+construct to further simplify this syntax.
 
 @html
 <a name="cvr"></a> <!-- http://nco.sf.net/nco.html#cvr -->
 @end html
-This example uses @command{ncap} to compute the covariance of two
+This example uses @command{ncap2} to compute the covariance of two
 variables. 
 Let the variables @var{@wndznl{}} and @var{@wndmrd{}} be the horizontal 
 wind components. 
@@ -5711,13 +5712,13 @@ We will store the covariance in the variable @code{uprmvprm}.
 ncwa -O -a time -v u,v in.nc foo.nc # Compute time mean of u,v
 ncrename -O -v u,uavg -v v,vavg foo.nc # Rename to avoid conflict
 ncks -A -v uavg,vavg foo.nc in.nc # Place time means with originals
-ncap -O -s "uprmvprm=u*v-uavg*vavg" in.nc in.nc # Covariance
+ncap2 -O -s "uprmvprm=u*v-uavg*vavg" in.nc in.nc # Covariance
 ncra -O -v uprmvprm in.nc foo.nc # Time-mean covariance
 @end example
 The mathmatically inclined will note that the same covariance would be
-obtained by replacing the step involving @command{ncap} with
+obtained by replacing the step involving @command{ncap2} with
 @example
-ncap -O -s "uprmvprm=(u-uavg)*(v-vavg)" foo.nc foo.nc # Covariance
+ncap2 -O -s "uprmvprm=(u-uavg)*(v-vavg)" foo.nc foo.nc # Covariance
 @end example
 
 @cindex appending data
@@ -5754,7 +5755,7 @@ Knowing when to use @command{ncwa -a time} rather than the default
 @html
 <a name="ncatted"></a> <!-- http://nco.sf.net/nco.html#ncatted -->
 @end html
-@node ncatted netCDF Attribute Editor, ncbo netCDF Binary Operator, ncap netCDF Arithmetic Processor, Operator Reference Manual
+@node ncatted netCDF Attribute Editor, ncbo netCDF Binary Operator, ncap2 netCDF Arithmetic Processor, Operator Reference Manual
 @section @command{ncatted} netCDF Attribute Editor
 @cindex attributes
 @cindex attribute names
@@ -7399,12 +7400,12 @@ The @dfn{pdq} may stand for ``Permute Dimensions Quickly'',
 
 @cindex @code{add_offset}
 @cindex @code{scale_factor}
-@cindex @command{ncap}
+@cindex @command{ncap2}
 @cindex packing policy
 @unnumberedsubsec Packing and Unpacking Functions
 The @command{ncpdq} packing (and unpacking) algorithms are described 
 in @ref{Intrinsic functions}, and are also implemented in
-@command{ncap}. 
+@command{ncap2}. 
 @command{ncpdq} extends the functionality of these algorithms by 
 providing high level control of the @dfn{packing policy} so that
 users can pack (and unpack) entire files consistently with one command. 
@@ -8790,7 +8791,7 @@ The primary contributors to @acronym{NCO} development are:
 @item Charlie Zender
 Concept, design and implementation of @acronym{NCO} from 1995-2000.
 Since then mainly autotools, bug-squashing, documentation, packing,
-@acronym{NCO} library redesign, @command{ncap} features, @command{ncbo}, 
+@acronym{NCO} library redesign, @command{ncap2} features, @command{ncbo}, 
 @command{ncpdq}, SMP threading and MPI parallelization, project
 coordination, and releases. 
 @cindex Henry Butowsky
@@ -8800,7 +8801,7 @@ support in @command{ncra} and @command{ncwa}.
 Type conversion for arithmetic.
 Migration to netCDF3 API.
 @cindex I/O
-@command{ncap} parser, lexer, @w{and I/O}.
+@command{ncap2} parser, lexer, @w{and I/O}.
 Multislabbing algorithm.
 Variable wildcarding.
 Various hacks.
@@ -9041,14 +9042,14 @@ dpm=(0 31 28.25 31 30 31 30 31 31 30 31 30 31) # Allows 1-based indexing
 Method 1: Create dpm directly in climatological monthly means
 for mth in @{01..12@}; do
   mm=`printf "%02d" $@{mth@}`
-  ncap -O -s "dpm=0.0*date+$@{dpm[$@{mth@}]@}" \
+  ncap2 -O -s "dpm=0.0*date+$@{dpm[$@{mth@}]@}" \
     $@{drc_out@}/$@{caseid@}_clm$@{mm@}.nc $@{drc_out@}/$@{caseid@}_clm$@{mm@}.nc
 done # end loop over mth
 
 Method 2: Create dpm by aggregating small files
 for mth in @{01..12@}; do
   mm=`printf "%02d" $@{mth@}`
-  ncap -O -v -s "dpm=$@{dpm[$@{mth@}]@}" ~/nco/data/in.nc \
+  ncap2 -O -v -s "dpm=$@{dpm[$@{mth@}]@}" ~/nco/data/in.nc \
     $@{drc_out@}/foo_$@{mm@}.nc
 done # end loop over mth
 ncecat -O -D 1 -p $@{drc_out@} -n 12,2,2 foo_$@{mm@}.nc foo.nc
