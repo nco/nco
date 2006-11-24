@@ -40,7 +40,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.72 2006-11-24 19:10:50 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.73 2006-11-24 20:19:39 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -198,7 +198,7 @@ variables:
 
 	float scalar_var;
 	scalar_var:long_name = "scalar variable";
-	scalar_var:units = "Fraction";
+	scalar_var:units = "fraction";
 
 	float float_var;
 	float_var:long_name = "float";
@@ -315,11 +315,11 @@ variables:
 
 	float three_dmn_var(lat,lev,lon);
 	three_dmn_var:long_name = "three dimensional variable with CCM coordinate convention C=[lat,lev,lon], Fortran=(lon,lev,lat)";
-	three_dmn_var:units = "Fraction";
+	three_dmn_var:units = "fraction";
 
 	float three_dmn_var_crd(lev,lat,lon);
 	three_dmn_var_crd:long_name = "three dimensional variable with COORDS coordinate convention C=[lev,lat,lon], Fortran=(lon,lat,lev)";
-	three_dmn_var_crd:units = "Fraction";
+	three_dmn_var_crd:units = "fraction";
 
 	float prs_sfc(time,lat,lon);
 	prs_sfc:long_name = "Surface pressure";
@@ -434,31 +434,31 @@ variables:
 
 	float two_dmn_var(lat,lev);
 	two_dmn_var:long_name = "two dimensional variable";
-	two_dmn_var:units = "Fraction";
+	two_dmn_var:units = "fraction";
 
 	float var_msk(lat,lon);
 	var_msk:long_name = "Float field for testing masks and wheres";
-	var_msk:units = "Fraction";
+	var_msk:units = "fraction";
 
 	float mask(lat,lon);
-	mask:long_name = "mask variable like ORO";
-	mask:units = "Fraction";
+	mask:long_name = "Purpose is to mask a variable like ORO";
+	mask:units = "fraction";
 
 	float ORO(lat,lon);
-	ORO:long_name = "Orography";
-	ORO:units = "Fraction";
+	ORO:long_name = "Orography, an enumerated yet continuous type: ocean=0.0, land=1.0, sea ice=2.0";
+	ORO:units = "fraction";
 
 	float weight(lat);
 	weight:long_name = "Gaussian weight";
-	weight:units = "Fraction";
+	weight:units = "fraction";
 
 	float gw(lat);
 	gw:long_name = "gw variable like gw";
-	gw:units = "Fraction";
+	gw:units = "fraction";
 
 	float gw_T42(lat_T42);
 	gw_T42:long_name = "gw variable like gw_T42";
-	gw_T42:units = "Fraction";
+	gw_T42:units = "fraction";
 
 	float rec_var_flt(time);
 	rec_var_flt:long_name = "record variable, float";
@@ -598,7 +598,6 @@ variables:
 	v:units = "meter second-1";
 
 data:
-	ORO=1.,1.,1.,1.,1.,1.,1.,1.;
 	att_var=10.;
 	bnd_var=1,2,3,4,5,6;
 	byte_var='z';
@@ -640,6 +639,7 @@ data:
 	lon_T42=0.000000,2.812500,5.625000,8.437500,11.250000,14.062500,16.875000,19.687500,22.500000,25.312500,28.125000,30.937500,33.750000,36.562500,39.375000,42.187500,45.000000,47.812500,50.625000,53.437500,56.250000,59.062500,61.875000,64.687500,67.500000,70.312500,73.125000,75.937500,78.750000,81.562500,84.375000,87.187500,90.000000,92.812500,95.625000,98.437500,101.250000,104.062500,106.875000,109.687500,112.500000,115.312500,118.125000,120.937500,123.750000,126.562500,129.375000,132.187500,135.000000,137.812500,140.625000,143.437500,146.250000,149.062500,151.875000,154.687500,157.500000,160.312500,163.125000,165.937500,168.750000,171.562500,174.375000,177.187500,180.000000,182.812500,185.625000,188.437500,191.250000,194.062500,196.875000,199.687500,202.500000,205.312500,208.125000,210.937500,213.750000,216.562500,219.375000,222.187500,225.000000,227.812500,230.625000,233.437500,236.250000,239.062500,241.875000,244.687500,247.500000,250.312500,253.125000,255.937500,258.750000,261.562500,264.375000,267.187500,270.000000,272.812500,275.625000,278.437500,281.250000,284.062500,286.875000,289.687500,292.500000,295.312500,298.125000,300.937500,303.750000,306.562500,309.375000,312.187500,315.000000,317.812500,320.625000,323.437500,326.250000,329.062500,331.875000,334.687500,337.500000,340.312500,343.125000,345.937500,348.750000,351.562500,354.375000,357.187500;
 	mask=0.,1.,0.,0.,1.,1.,0.,2.;
 	var_msk=0.,1.,0.,0.,1.,1.,0.,2.;
+	ORO=0.,1.,0.,0.,1.,1.,0.,2.;
 //	mask=0.,0.,0.,0.,0.,0.,0.,0.;
 //	mask=1.,1.,1.,1.,1.,1.,1.,1.;
 	fll_val=73,-999,73,-999;

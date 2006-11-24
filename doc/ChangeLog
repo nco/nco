@@ -1,5 +1,7 @@
 2006-11-24  Charlie Zender  <zender@uci.edu>
 
+	* Change ORO values in in.cdl
+
 	* Change ncap to ncap2 in nco.texi
 
 	* Remove *lex.c, *yacc.c, .cvsignore, and debian from _all_ tarballs

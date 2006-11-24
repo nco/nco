@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.387 2006-11-24 19:10:51 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.388 2006-11-24 20:19:39 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5650,18 +5650,18 @@ and @w{value 0.0} elsewhere.
 This example creates the binary flag @code{ORO_flg} in @file{out.nc}
 from the continuous array named @code{ORO} in @file{in.nc}.
 @example
-ncap2 -O -s "ORO_flg=(ORO > 1.0)" foo.nc out.nc
+ncap2 -O -s "ORO_flg=(ORO > 1.0)" in.nc out.nc
 @end example
 Suppose your task is to change all values of @code{ORO} which 
-@w{equal 1.0} to the new @w{value 2.0}:
+@w{equal 2.0} to the new @w{value 3.0}:
 @example
-ncap2 -s 'ORO_msk=(ORO==1.0);ORO=ORO_msk*2.0+!ORO_msk*ORO' in.nc out.nc
+ncap2 -s 'ORO_msk=(ORO==2.0);ORO=ORO_msk*3.0+!ORO_msk*ORO' in.nc out.nc
 @end example
 @cindex mask
 This creates and uses @code{ORO_msk} to mask the subsequent arithmetic
 operation.
 Values of @code{ORO} are only changed where @code{ORO_msk} is true,
-i.e., where @code{ORO} @w{equals 1.0}.
+i.e., where @code{ORO} @w{equals 2.0}.
 @cindex Fortran90
 In the future, @command{ncap2} will support the Fortran90 @code{where} 
 construct to further simplify this syntax.
@@ -8668,8 +8668,7 @@ $64 \times 128 = 8192$.
 
 @cindex @code{ORO}
 @cindex climate model
-Compute the area mean over the globe, but include only points for
-which 
+Compute the area-mean over the globe using only points for which 
 @set flg
 @tex
 $ORO < 0.5$
@@ -8680,8 +8679,7 @@ $ORO < 0.5$
 @clear flg
 @end ifset
 @footnote{@code{ORO} stands for @dfn{Orography} in some climate models.  
-@math{@var{ORO} < 0.5} selects the gridpoints which are covered by
-ocean.}: 
+@math{@var{ORO} < 0.5} selects ocean-covered gridpoints.}: 
 @example
 ncwa -B "ORO < 0.5"      -w gw -a lat,lon in.nc out.nc
 ncwa -m ORO -M 0.5 -T lt -w gw -a lat,lon in.nc out.nc

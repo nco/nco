@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.198 2006-11-24 19:10:50 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.199 2006-11-24 20:19:39 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.8 are ready. 
 
@@ -10,7 +10,7 @@ On Fri, 11 Nov 2005, Waylon Collins posed netcdfgroup this problem:
 "Any datum of variable X, within netCDF file with filename F.nc,
 that equals 32, change it to the value 45. Thus, the original file
 F.nc is now altered, or the altered file is now named G.nc"
-The ncap2 solution is:
+The ncap2 solution is
 
 ncap2 -s 'mask=(X==32);X=mask*45+!mask*X' F.nc G.nc
 
