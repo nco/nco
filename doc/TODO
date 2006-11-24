@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.835 2006-11-23 21:42:45 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.836 2006-11-24 07:39:00 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -537,7 +537,9 @@ nco789. Add regression test for behavior when _FillValue defined and missing_val
 	ncwa -O -a lon -v fll_val,mss_val ~/nco/data/in.nc ~/foo.nc
         ncks -H -C ~/foo.nc
 nco792. Improve compile-ability of _FillValue behavior
-nco793. 
+nco793. 3033. ncap2 -O -v -s "if(mask==1) mask=32" ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
+nco794. Automagically use _FillValue when missing missing_value not present
+nco795. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

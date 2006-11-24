@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.372 2006-11-23 07:45:39 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.373 2006-11-24 07:39:00 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -358,7 +358,7 @@ Instead, retrieve all recently tagged versions
 <a name="#Download">with CVS</a> or from    
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO/SDO 3.1.8</b>: (<i>In progress</i>) <tt>ncap2</tt> in Debian/Ubuntu packages; Support <tt>_Fillvalue</tt>
+<li><b>NCO/SDO 3.1.8</b>: (<i>In progress</i>) <tt>ncap2</tt> in Debian packages; Support <tt>_FillValue</tt>
 <li><b>NCO/SDO 3.1.7</b>: <tt>ncap2</tt> &ldquo;double-parsing&rdquo;, array initialization, supercedes <tt>ncap</tt>
 <li><b>NCO/SDO 3.1.6</b>: Support <a href="http://nco.sf.net/nco.html#srd">stride</a> in all hyperslabbing operators; change more WARNINGs to INFOs
 <li><b>NCO/SDO 3.1.5</b>: New <tt>ncap2</tt> array and hyperslab features; change some WARNINGs to INFOs, add Pathscale and update PGI and Intel compiler support
@@ -538,8 +538,8 @@ testing and porting of NCO on the
 <li><a href="nco_3.1.8-1_i386.changes">nco_3.1.8-1_i386.changes</a> (<!--#fsize file="nco_3.1.8-1_i386.changes"-->): Changes since last deb package (last updated <!--#flastmod file="nco_3.1.8-1_i386.changes"-->)</li>
 <li><a href="nco_3.1.8.orig.tar.gz">nco_3.1.8.orig.tar.gz</a> (<!--#fsize file="nco_3.1.8.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="nco_3.1.8.orig.tar.gz"-->)</li>
 <li><a href="nco_3.1.8-1.diff.gz">nco_3.1.8-1.diff.gz</a> (<!--#fsize file="nco_3.1.8-1_i386.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="nco_3.1.8-1_i386.changes"-->)</li>
-Thanks to Brian Mays, Rorik Peterson, and Daniel Baumann for packaging
-NCO for Debian.
+Thanks to Daniel Baumann, Francesco Lovergine, Brian Mays, Rorik
+Peterson, and Matej Vela for packaging NCO for Debian over the years.
 </ul>
 
 <a name="redhat"></a>
@@ -645,8 +645,9 @@ The NCO project has various Q&amp;A and discussion forums described
 </li>
 <li><i>Where can I find prebuilt NCO executables?</i>
 Pre-built executables of some versions of NCO for the operating
-systems <a href="#Download">described above</a> (Debian GNU/Linux,
-Fedora/RedHat GNU/Linux, Gentoo GNU/Linux, and Mac&nbsp;OS&nbsp;X).
+systems <a href="#Download">described above</a> (Debian-compatible
+GNU/Linux, Fedora/RedHat GNU/Linux, Gentoo GNU/Linux, and
+Mac&nbsp;OS&nbsp;X). 
 If you have an account at UCI or SDSC, try the locations in my
 personal home directories listed below (AIX, IRIX).
 At NCAR, first try <tt>/usr/local/bin</tt> (AIX, IRIX).
