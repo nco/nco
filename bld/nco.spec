@@ -1,5 +1,5 @@
 Name:           nco
-Version:        3.1.5
+Version:        3.1.7
 Release:        3%{?dist}
 Summary:        Suite of programs for manipulating NetCDF/HDF4 files
 Group:          Applications/Engineering
@@ -10,11 +10,11 @@ URL:            http://nco.sourceforge.net/
 #  using the following recommended commands:
 #    cvs -d:pserver:anonymous@nco.cvs.sourceforge.net:/cvsroot/nco login
 #    cvs -z3 -d:pserver:anonymous@nco.cvs.sourceforge.net:/cvsroot/nco \
-#        co -r nco-3_1_5 -d nco-%{version} nco
-#    tar -czf nco-%{version}.tar.gz --exclude='nco-3.1.5/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude='ncap_yacc.[ch]' ./nco-%{version}
+#        co -r nco-3_1_7 -d nco-%{version} nco
+#    tar -czf nco-%{version}.tar.gz --exclude='nco-3.1.7/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude='ncap_yacc.[ch]' ./nco-%{version}
 Source0:        nco-%{version}.tar.gz
-Patch0:		nco_install_C_headers.patch
-Patch1:         nco_find_udunits-dat.patch
+#Patch0:		nco_install_C_headers.patch
+#Patch1:         nco_find_udunits-dat.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  bison, flex
@@ -51,8 +51,8 @@ This package contains the NCO header files and static libs.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
+#%patch0 -p1
+#%patch1 -p1
 
 %build
 aclocal
