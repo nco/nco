@@ -1,6 +1,6 @@
 2006-11-24  Charlie Zender  <zender@uci.edu>
 
-	* Change 'redhat' to 'rpm' in bld/Makefile
+	* Change 'redhat' to 'rpm' and 'rpm -ba' to 'rpmbuild -ba' in bld/Makefile
 
 	* Merge Fedora nco.spec UDUnits patch into configure.in
 

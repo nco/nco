@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.393 2006-11-25 00:46:54 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.394 2006-11-25 01:15:08 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -1456,7 +1456,7 @@ libnco_c++_tst:   ${MY_BLD_DIR}/libnco_c++_tst
 ${MY_BLD_DIR}/libnco_c++_tst:	${MY_BLD_DIR}/libnco_c++_tst.o lib
 	${CXX} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
-rpm:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.5.1 rpm
+rpm:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=3.1.8 rpm
 	cd ${DATA}/tmp; \
 	/bin/rm -fr ${DATA}/tmp/nco*; \
 	cp -r ${HOME}/nco nco-${NCO_VRS}; \
@@ -1465,18 +1465,18 @@ rpm:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo 
 	/bin/rm -f /usr/src/rpm/SPECS/nco-${NCO_VRS}.spec; \
 	ln -s ${HOME}/nco/bld/nco.spec /usr/src/rpm/SPECS/nco-${NCO_VRS}.spec; \
 	cd /usr/src/rpm/SPECS; \
-	rpm -ba nco-${NCO_VRS}.spec;
-rpmnet:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.5.1 rpmnet
+	rpmbuild -ba nco-${NCO_VRS}.spec;
+rpmnet:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=3.1.8 rpmnet
 	- if test -f /usr/src/rpm/SOURCES/nco-${NCO_VRS}.tar.gz; then printf "Using existing nco-${NCO_VRS}.tar.gz\n" ; else ${MY_BIN_DIR}/ncks -R -p ftp://dust.ess.uci.edu/pub/zender/nco -l /usr/src/rpm/SOURCES nco-${NCO_VRS}.tar.gz; fi
 	/bin/rm -f /usr/src/rpm/SPECS/nco-${NCO_VRS}.spec; \
 	cd /usr/src/rpm/SOURCES; \
 	tar xvzf nco-${NCO_VRS}.tar.gz ./nco-${NCO_VRS}/bld/nco.spec; \
 	mv ./nco-${NCO_VRS}/bld/nco.spec /usr/src/rpm/SPECS/nco.spec; \
 	cd /usr/src/rpm/SPECS; \
-	rpm -ba nco.spec; \
+	rpmbuild -ba nco.spec; \
 	scp /usr/src/rpm/SRPMS/nco-${NCO_VRS}-*.src.rpm /usr/src/rpm/RPMS/i386/nco-${NCO_VRS}-*.i386.rpm zender@dust.ess.uci.edu:/var/www/html/nco
 	scp /usr/src/rpm/SRPMS/nco-${NCO_VRS}-*.src.rpm /usr/src/rpm/RPMS/i386/nco-${NCO_VRS}-*.i386.rpm zender@nco.sourceforge.net:/home/groups/ftp/pub/nco
-	ncftpput upload.sourceforge.net /incoming /usr/src/rpm/SRPMS/nco-2.5.1-*.src.rpm /usr/src/rpm/RPMS/i386/nco-2.5.1-*.i386.rpm /usr/src/rpm/SOURCES/nco-2.5.1.tar.gz
+	ncftpput upload.sourceforge.net /incoming /usr/src/rpm/SRPMS/nco-3.1.8-*.src.rpm /usr/src/rpm/RPMS/i386/nco-3.1.8-*.i386.rpm /usr/src/rpm/SOURCES/nco-3.1.8.tar.gz
 rpm_cln:
 	rpm --erase ${MDL_RPM_NST_NM}
 # Targets in bm
