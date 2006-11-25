@@ -1,5 +1,7 @@
 2006-11-24  Charlie Zender  <zender@uci.edu>
 
+	* Change 'redhat' to 'rpm' in bld/Makefile
+
 	* Merge Fedora nco.spec UDUnits patch into configure.in
 
 	* Update bld/nco.spec to Fedora Core 6 spec for nco-3.1.5
