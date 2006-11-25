@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.388 2006-11-24 20:19:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.389 2006-11-25 00:37:52 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -349,7 +349,7 @@ file(s), performs an operation (e.g., averaging, hyperslabbing, or
 renaming), and outputs a processed netCDF file. 
 Although most users of netCDF data are involved in scientific research,
 these data formats, and thus @acronym{NCO}, are generic and are equally
-useful in fields like finance.  
+useful in fields from agriculture to zoology.
 The @acronym{NCO} User's Guide illustrates @acronym{NCO} use with
 examples from the field of climate modeling and analysis. 
 The @acronym{NCO} homepage is @uref{http://nco.sf.net}, and
