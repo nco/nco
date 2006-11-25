@@ -29051,7 +29051,12 @@ if test "${enable_udunits}" != 'no'; then
   elif test "${NETCDF_INC}"; then
     nco_udunits_dat="${NETCDF_INC}/../etc/udunits.dat"
   else
-    nco_udunits_dat="/usr/local/etc/udunits.dat"
+# Patch from Fedora Core 6 nco.spec:
+      for udunits_fdat_file in /usr/local/etc/udunits.dat /etc/udunits.dat ; do
+	  if test -e "$udunits_fdat_file" ; then
+	      nco_udunits_dat="$udunits_fdat_file"
+	  fi
+      done
   fi
 # warn if udunits.dat is not found, but continue anyway since the builder may savy and know to add it later, like when building packages (e.g. .debs)
   as_ac_File=`echo "ac_cv_file_$nco_udunits_dat" | $as_tr_sh`

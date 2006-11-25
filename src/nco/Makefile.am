@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.am,v 1.35 2006-11-12 20:20:53 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.am,v 1.36 2006-11-25 00:29:39 zender Exp $ -*-makefile-*-
 
 if BUILD_YACC_SOURCE
 NCAP=ncap
@@ -125,6 +125,11 @@ lib_LTLIBRARIES = libnco.la
 
 # This creates version-stamped shared-library, e.g., libnco-2.9.4.so
 libnco_la_LDFLAGS = -release @VERSION@
+
+# Fedora Core nco.spec in nco-3.1.2 wants to install headers
+# Maybe smart/required for -devel packages
+# Comment-out until other programs actuall use libnco
+#include_HEADERS = $(HEADER_SRC)
 
 libnco_la_SOURCES = \
 ${HEADER_SRC} \
