@@ -1,3 +1,7 @@
+2006-11-27  Charlie Zender  <zender@uci.edu>
+
+	* Remove pgiCC OpenMP threading on ncap2 (compiler limitation)
+
 2006-11-24  Charlie Zender  <zender@uci.edu>
 
 	* Change 'redhat' to 'rpm' and 'rpm -ba' to 'rpmbuild -ba' in bld/Makefile
