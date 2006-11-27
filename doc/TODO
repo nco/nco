@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.837 2006-11-26 21:04:15 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.838 2006-11-27 19:20:30 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -538,9 +538,8 @@ nco789. Add regression test for behavior when _FillValue defined and missing_val
         ncks -H -C ~/foo.nc
 nco792. Improve compile-ability of _FillValue behavior
 nco794. Automagically use _FillValue when missing missing_value not present
-nco795. pgCC: support for exception handling is disabled (why?) so ncap2/antlr files won't build and must explicitly code around them in ccc
-        cd ~/nco/src/nco++;pgCC -DNDEBUG -DpgiFortran -DPRC_FLT -DABORT_ON_ERROR -DLINUXAMD64 -DNO_NETCDF_2 -DVERSION='20061126' -DHOSTNAME='tephra' -DUSER='zender' -DNCO_ABORT_ON_ERROR -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY -DHAVE_MKSTEMP -DHAVE_GETOPT_H -DHAVE_GETOPT_LONG -DENABLE_UDUNITS -DHAVE_UDUNITS_H -DHAVE_CSTDLIB -DHAVE_INLINE -I. -I../nco -I/usr/local/include  -I/usr/local/include -I/usr/local/include --exceptions  -Mlfs -mp -c ncap2.cc -o /home/zender/obj/LINUXAMD64/ncap2.o
-nco796. 
+nco796. pgCC does not support exception handling with codes compiled with OpenMP (-mp) switch so ncap2/antlr files must be built serially
+nco797. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
