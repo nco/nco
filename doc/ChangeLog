@@ -1,5 +1,11 @@
 2006-11-27  Charlie Zender  <zender@uci.edu>
 
+	* Re-format long description in debian/control
+
+	* Remove unused $(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
+
+	* Change Debian section from "math" to "science" in control and doc-base
+
 	* Remove pgiCC OpenMP threading on ncap2 (compiler limitation)
 
 2006-11-24  Charlie Zender  <zender@uci.edu>

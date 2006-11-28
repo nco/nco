@@ -1,5 +1,8 @@
 nco (3.1.8-1) unstable; urgency=low
 
+  * Change long description	
+  * Remove unused make command in control
+  * Change section from "math" to "science" in control and doc-base
   * Remove ncap_lex.c, ncap_yacc.[ch] from tarball
   * Remove pgiCC OpenMP threading on ncap2
   * Exclude all .cvsignore's

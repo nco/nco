@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.395 2006-11-25 01:21:10 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.396 2006-11-28 02:12:00 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -41,8 +41,8 @@
 # cd ~/nco/bld;make MPI_FAKE=Y;cd -  # MPI spoof
 # cd ~/nco/bld;make UDUNITS=Y;cd -   # UDUnits support
 # cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
-# 32-bit ABI on NCAR AIX systems:
-# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib32/r4i4 make --jobs=1 lib_cln cln all ABI=32 UDUNITS=N;cd -
+# 64-bit ABI on NCAR AIX systems:
+# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 UDUNITS_INC=/contrib/include UDUNITS_LIB=/contrib/lib make --jobs=1 non_ncap ABI=64;cd -
 # 32-bit ABI on NCAR IRIX systems:
 # cd ~/nco/bld;NETCDF_LIB=/usr/local/lib32/r4i4 UDUNITS_INC=/contrib/include UDUNITS_LIB=/contrib/lib make --jobs=1 lib_cln cln all ABI=32;cd -
 
