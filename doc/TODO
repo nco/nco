@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.838 2006-11-27 19:20:30 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.839 2006-11-30 01:45:00 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -539,7 +539,8 @@ nco789. Add regression test for behavior when _FillValue defined and missing_val
 nco792. Improve compile-ability of _FillValue behavior
 nco794. Automagically use _FillValue when missing missing_value not present
 nco796. pgCC does not support exception handling with codes compiled with OpenMP (-mp) switch so ncap2/antlr files must be built serially
-nco797. 
+nco797. Find Fedora core machine to try RPM builds on
+nco798. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
