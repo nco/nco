@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.199 2006-11-24 20:19:39 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.200 2006-11-30 06:28:35 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.8 are ready. 
 
@@ -12,7 +12,10 @@ that equals 32, change it to the value 45. Thus, the original file
 F.nc is now altered, or the altered file is now named G.nc"
 The ncap2 solution is
 
-ncap2 -s 'mask=(X==32);X=mask*45+!mask*X' F.nc G.nc
+ncap2 -s 'mask=(X==32); X=mask*45+!mask*X' F.nc G.nc
+
+ncap2 mimics C syntax so Emacs C-mode correctly highlights ncap2
+scripts. See, e.g., nco/data/ddra.nco
 
 B. Pre-built, up-to-date, Debian Sid binary packages are available
 and they include ncap2. Get them directly with "apt-get install nco".
