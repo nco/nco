@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.31 2006-11-23 17:00:37 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.32 2006-11-30 15:38:01 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1943,6 +1943,26 @@ return var;
 
 }
 
+
+
+dmn_sct**                          /* O    [sct] list of new dims to limit over */ 
+ncap_dmn_mtd(
+var_sct *var,                      /* I   [sct] var with list of dims */
+NcapVector<std::string> &str_vtr,  /* I   [sng] list of dimension names */
+prs_sct *prs_arg){
+
+
+
+
+
+
+}
+
+
+
+
+
+
 /* Create a scalar variable of type, if bfll then malloc ptr_unn */
 var_sct*
 ncap_sclr_var_mk(
@@ -1969,6 +1989,36 @@ bool bfll)
 }
 
 
+
+var_sct *
+ncap_sclr_var_mk(
+char *var_nm,
+unsigned char cdt)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_CHAR,true);
+  (void)cast_void_nctype(NC_CHAR,&var->val);
+  *var->val.cp=cdt;
+  (void)cast_nctype_void(NC_CHAR,&var->val);
+  return var;
+}
+
+
+var_sct *
+ncap_sclr_var_mk(
+char *var_nm,
+signed char bdt)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_BYTE,true);
+  (void)cast_void_nctype(NC_BYTE,&var->val);
+  *var->val.bp=bdt;
+  (void)cast_nctype_void(NC_BYTE,&var->val);
+  return var;
+}
+
+
+
 var_sct *
 ncap_sclr_var_mk(
 char *var_nm,
@@ -1981,6 +2031,8 @@ short sdt)
   (void)cast_nctype_void(NC_SHORT,&var->val);
   return var;
 }
+
+
 
 
 var_sct *
