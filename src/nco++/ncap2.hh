@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.21 2006-11-22 06:14:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.22 2006-11-30 15:36:04 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -212,6 +212,7 @@ bool            /* O [flg] true if all var elemenst are true */
 ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
 (var_sct* var);  /* I [sct] input variable */
 
+
 var_sct*                           /* O [sct] casting variable has its own private dims */ 
 ncap_cst_mk(                       /* [fnc] create casting var from a list of dims */
 NcapVector<std::string> &str_vtr,  /* I [sng] list of dimension subscripts */
@@ -242,12 +243,36 @@ ncap_def_ntl_scn(
 prs_sct *prs_arg);
 
 
+
+dmn_sct**                           /* O [sct] list of new dims to limit over */ 
+ncap_dmn_mtd(
+var_sct *var,                       /*  [sct] create casting var from a list of dims */
+NcapVector<std::string> &str_vtr,  /* I [sng] list of dimension names */
+prs_sct *prs_arg);
+
+
 /* Create a scalar variable of type, if bfill then malloc ptr_unn */
+
+
+
 var_sct*
 ncap_sclr_var_mk(
 char* var_nm,
 nc_type type,
 bool bfll=false);
+
+
+
+var_sct *
+ncap_sclr_var_mk(
+char *var_nm,
+unsigned char cdt);
+
+
+var_sct *
+ncap_sclr_var_mk(
+char *var_nm,
+signed char bdt);
 
 var_sct *
 ncap_sclr_var_mk(
