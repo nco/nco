@@ -36,8 +36,10 @@ tokens {
     BLOCK;
     ARG_LIST;
     DMN_LIST;
+    DMN_ARG_LIST;
     LMT_LIST;
     VALUE_LIST;
+    FUNC_ARG;
     LMT;
     EXPR;
     POST_INC;
@@ -90,10 +92,21 @@ cast_slb:  (VAR_ID|ATT_ID) dmn_list
 def_dim:   DEFDIM^ LPAREN! NSTRING COMMA! expr RPAREN! SEMI! 
      ;        
 
+arg_list: expr|dmn_arg_list|DIM_ID|DIM_MTD_ID
+     ;
+
+func_arg:  LPAREN! (arg_list)? (COMMA! arg_list)*   RPAREN! 
+      { #func_arg = #( [FUNC_ARG, "func_arg"], #func_arg ); }
+     ;   
+
 
 // left association
-func_exp: primary_exp | ( FUNC^ LPAREN!  expr RPAREN! )
-    ;
+//func_exp: primary_exp | ( FUNC^ LPAREN!  expr RPAREN! )
+//    ;
+
+func_exp: primary_exp | ( FUNC^ func_arg )
+      ;
+
 
 // dot operator -- properties
 // not sure this is best place for this rule
@@ -101,7 +114,7 @@ prop: ( PSIZE |PTYPE |PMIN |PMAX |PSUM |PAVG| VAR_ID)
     ;
 
 
-prop_exp: func_exp ( DOT^ prop)?
+prop_exp: func_exp ( DOT^ prop (func_arg)? )?
     ;
 
 // unary left association   
@@ -180,6 +193,12 @@ dmn_list:
       { #dmn_list = #( [DMN_LIST, "dmn_list"], #dmn_list ); }
     ;
 
+// list of dims eg /$Lat,$time,$0,$1/
+dmn_arg_list:
+    DIVIDE! (DIM_ID|DIM_MTD_ID) (COMMA! (DIM_ID|DIM_MTD_ID))*  DIVIDE!
+      { #dmn_arg_list = #( [DMN_ARG_LIST, "dmn_arg_list"], #dmn_arg_list ); }
+    ;        
+
 value_list:
       LCURL! expr (COMMA! expr)* RCURL!  
       { #value_list = #( [VALUE_LIST, "value_list"], #value_list ); }
@@ -194,7 +213,6 @@ primary_exp
     | DOUBLE
     | NSTRING    
     | DIM_ID_SIZE
-    | ATT_ID_SIZE
     | hyper_slb  //remember this includes VAR_ID & ATT_ID
     | cast_slb
   ;
@@ -417,6 +435,11 @@ DIM_VAL: '$'! (LPH)(LPH|DGT)*
             { $setType(DIM_ID_SIZE);}
          )? 
    ;  
+
+// Shorthand for naming dims in method e.g $0,$1, $2 etc
+DIM_MTD_ID: '$'! (DGT)+
+   ;            
+
 
 NSTRING: '"'! ( ~('"'|'\n'))* '"'! {$setType(NSTRING);}
    ;
@@ -832,7 +855,7 @@ assign_ntl returns [var_sct *var]
 {
 const std::string fnc_nm("assign_ntl"); 
 }
-   :   (#(ASSIGN  VAR_ID LMT_LIST ))=> #(ASSIGN  vid:VAR_ID lmt:LMT_LIST){
+   : (VAR_ID LMT_LIST )=> (vid:VAR_ID lmt:LMT_LIST){
 
 
               if(dbg_lvl_get() > 0)
@@ -862,7 +885,7 @@ const std::string fnc_nm("assign_ntl");
                var_nm=(char*)nco_free(var_nm);                                  
         }                    
  
-        | (#(ASSIGN  VAR_ID DMN_LIST ))=> #(ASSIGN  vid1:VAR_ID dmn:DMN_LIST){   
+        | (VAR_ID DMN_LIST )=> (vid1:VAR_ID dmn:DMN_LIST){   
                                
               int idx;
               const char *var_nm;
@@ -936,7 +959,7 @@ const std::string fnc_nm("assign_ntl");
               
             }
 
-          | (#(ASSIGN  VAR_ID ))=> #(ASSIGN  vid2:VAR_ID){   
+          | vid2:VAR_ID {   
               
 
               if(dbg_lvl_get() > 0)
@@ -965,13 +988,13 @@ const std::string fnc_nm("assign_ntl");
         
            } // end action
        
-   |   (#(ASSIGN  ATT_ID LMT_LIST))=> #(ASSIGN  att:ATT_ID LMT_LIST){
+   |   (ATT_ID LMT_LIST)=> (att:ATT_ID LMT_LIST){
         ;
         } 
-   |   (#(ASSIGN  ATT_ID LMT_DMN))=> #(ASSIGN  att1:ATT_ID DMN_LIST){
+   |   (ATT_ID LMT_DMN)=>  (att1:ATT_ID DMN_LIST){
         ;
         } 
-   |   (#(ASSIGN  ATT_ID ))=> #(ASSIGN  att2:ATT_ID){
+   | att2:ATT_ID {
        
         //In Initial scan all newly defined atts are flagged as Undefined
         var_sct *var1;
@@ -999,7 +1022,7 @@ assign returns [var_sct *var]
 const std::string fnc_nm("assign"); 
 }
 
-   :   (#(ASSIGN  VAR_ID LMT_LIST ))=> #(ASSIGN  vid:VAR_ID lmt:LMT_LIST){
+   :   (VAR_ID LMT_LIST )=> (vid:VAR_ID lmt:LMT_LIST){
 
                int idx;
                int jdx;
@@ -1137,7 +1160,7 @@ const std::string fnc_nm("assign");
         } // end action
 
         // Deal with LHS casting 
-        | (#(ASSIGN  VAR_ID DMN_LIST ))=> #(ASSIGN  vid1:VAR_ID dmn:DMN_LIST){   
+        | (VAR_ID DMN_LIST )=> (vid1:VAR_ID dmn:DMN_LIST){   
 
               var_sct *var1;
               NcapVector<std::string> str_vtr;
@@ -1204,7 +1227,7 @@ const std::string fnc_nm("assign");
 
           } // end action
            
-          | (#(ASSIGN  VAR_ID ))=> #(ASSIGN  vid2:VAR_ID){   
+          | vid2:VAR_ID {   
                // Set class wide variables
                int var_id;
                int rcd;
@@ -1245,13 +1268,13 @@ const std::string fnc_nm("assign");
                          
        } // end action
  
-   |   (#(ASSIGN  ATT_ID LMT_LIST))=> #(ASSIGN  att:ATT_ID LMT_LIST){
+   |   (ATT_ID LMT_LIST) => (att:ATT_ID LMT_LIST){
         ;
         } 
-   |   (#(ASSIGN  ATT_ID LMT_DMN))=> #(ASSIGN  att1:ATT_ID DMN_LIST){
+   |   (ATT_ID LMT_DMN)=> (att1:ATT_ID DMN_LIST){
         ;
         } 
-   |   (#(ASSIGN  ATT_ID ))=> #(ASSIGN  att2:ATT_ID){
+   |  att2:ATT_ID {
        
 
             var_sct *var1;
@@ -1335,7 +1358,7 @@ out returns [var_sct *var]
     
 
     // math functions 
-    |  #(m:FUNC var1=out)       
+    |  #(m:FUNC #(FUNC_ARG var1=out))      
          { 
           sym_sct * sym_ptr;
             
@@ -1376,17 +1399,24 @@ out returns [var_sct *var]
             { var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN, prs_arg );}	
 	| #(div_asn:DIVIDE_ASSIGN var1=out_asn var2=out)	
             { var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN,prs_arg );}	
-    | asn:ASSIGN 
+    | #(ASSIGN asn:. ) 
             { if(prs_arg->ntl_scn)
                 var=assign_ntl(asn); 
               else
                 var=assign(asn);
             }  
 
-    // Properties - nb first operand an expr --second operand property
-    | #(DOT var1=out prp:.) {
+    // Properties - nb first operand an expr --second operand property 
+    | #(DOT var1=out prp:. mtd:FUNC_ARG) {
+      
+            int nbr_arg;
+            int idx;
+            RefAST aRef;
+            NcapVector<std::string> str_vtr;
             // de-reference 
-            ddra_info_sct ddra_info;            
+            ddra_info_sct ddra_info;        
+            
+            dmn_sct **dims;    
 
 
             if(var1->undefined){ 
@@ -1403,6 +1433,46 @@ out returns [var_sct *var]
               serr= sva+" " + std::string(var1->nm)+ " has unrecognized property "+ "\""+prp->getText()+"\"";
               err_prn(fnc_nm,serr );
               }
+
+            // Process method arguments if any exist !! 
+            if(mtd && (nbr_arg=mtd->getNumberOfChildren()) >0){  
+              aRef=mtd->getFirstChild();
+              while(aRef){
+               
+                switch(aRef->getType()){
+                 case DIM_ID: 
+                 case DIM_MTD_ID:{  
+                      str_vtr.push(aRef->getText());
+                      break;    
+                      }
+                        
+                 // This is garanteed to contain at least one DIM_ID or DIM_MTD  
+                 // and NOTHING else --no need to type check!!
+                 case DMN_ARG_LIST: 
+                      { RefAST bRef=aRef->getFirstChild();
+                        while(bRef){
+                          str_vtr.push(bRef->getText());
+                          bRef=bRef->getNextSibling();
+                        }  
+                        break;
+                      } 
+            
+                 // ignore expr type argument
+                 default: break;
+              
+                } // end switch
+                aRef=aRef->getNextSibling();
+              }
+              cout<< "Method Args\n"; 
+              for(idx=0 ; idx < str_vtr.size() ;idx++)
+               cout << str_vtr[idx] <<endl;
+              
+              // Create list of dims to average over
+              // var1->dim is garanteed to be populated
+              dims=ncap_dmn_mtd(var1, str_vtr, prs_arg);                     
+             
+
+             }
 
             // Initial scan
             if(prs_arg->ntl_scn){
@@ -1462,33 +1532,24 @@ end_dot: ;
 
     // Naked numbers 
     // nb Cast is not applied to these numbers
-	|	c:BYTE		
+
+	|	c:BYTE			
           {  
-            int ival;
-            nc_type type=NC_BYTE;
-            var=(var_sct *)nco_malloc(sizeof(var_sct));
-            /* Set defaults */
-            (void)var_dfl_set(var); 
-            /* Overwrite with attribute expression information */
-            var->nm=strdup("_byte");
-            var->nbr_dim=0;
-            var->sz=1;
-            var->type=type;
-            var->typ_dsk=type;
-            // Get nco type
-            if(!prs_arg->ntl_scn){
-             ival=atoi(c->getText().c_str());
-             var->val.vp=(void*)nco_malloc(nco_typ_lng(type));
-             (void)cast_void_nctype(type,&var->val);
-             *var->val.bp = (signed char)ival;
-             (void)cast_nctype_void(type,&var->val);
+            if(prs_arg->ntl_scn)
+              var=ncap_sclr_var_mk("_short",NC_BYTE);
+            else {
+              int ival;
+              ival=atoi(c->getText().c_str());
+              var=ncap_sclr_var_mk("_short", (signed char)ival);
             }
-           }
+          }
+
+
 
 	|	s:SHORT			
           {  
             if(prs_arg->ntl_scn)
-              var=ncap_sclr_var_mk("_short",NC_SHORT,false);
+              var=ncap_sclr_var_mk("_short",NC_SHORT);
             else {
               int ival;
               ival=atoi(s->getText().c_str());
@@ -1510,7 +1571,7 @@ end_dot: ;
     |   f:FLOAT        
           {  
             if(prs_arg->ntl_scn)
-              var=ncap_sclr_var_mk("_float",NC_FLOAT,false);
+              var=ncap_sclr_var_mk("_float",NC_FLOAT);
             else {
               float fval;
               fval=atof(f->getText().c_str());
@@ -1520,7 +1581,7 @@ end_dot: ;
     |   d:DOUBLE        
           {  
             if(prs_arg->ntl_scn)
-              var=ncap_sclr_var_mk("_double",NC_DOUBLE,false);
+              var=ncap_sclr_var_mk("_double",NC_DOUBLE);
             else {
               double dval;
               dval=strtod(d->getText().c_str(),(char**)NULL );
