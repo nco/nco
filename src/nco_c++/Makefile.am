@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.am,v 1.8 2005-11-09 21:15:48 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.am,v 1.9 2006-12-02 21:35:18 zender Exp $ -*-makefile-*-
 
 lib_LTLIBRARIES = libnco_c++.la
 
@@ -17,4 +17,5 @@ tst_SOURCES = tst.cc
 tst_LDADD = -lnco_c++
 
 TESTS = tst
+	ln -f -s ../../data/in.nc in.nc
 
