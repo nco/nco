@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/data/Makefile.in,v 1.25 2006-12-02 21:35:16 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.in,v 1.26 2006-12-03 01:58:23 zender Exp $ -*-makefile-*-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -192,11 +192,13 @@ EXTRA_DIST = big.cdl in.cdl in_rec_zero.cdl ncap.in ncap.in2 ncap2.in tst.nco
 # If configure built it, 'distclean' should delete it
 # If make built it, 'clean' should delete it
 DISTCLEANFILES = foo*
-CLEANFILES = 85.nc 86.nc 87.nc 88.nc 89.nc foo.nc h0001.nc h0002.nc h0003.nc in.nc in_red_zero.nc ../src/nco_c++/in.nc
+
+# Build procedure produces these files:
+CLEANFILES = 85.nc 86.nc 87.nc 88.nc 89.nc foo.nc h0001.nc h0002.nc h0003.nc in.nc in_rec_zero.nc ../src/nco_c++/in.nc
+MAINTAINERCLEANFILES = Makefile.in
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cdl .nc
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -300,6 +302,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-am
 
 clean-am: clean-generic clean-libtool mostlyclean-am
@@ -357,11 +360,13 @@ uninstall-am: uninstall-info-am
 	uninstall-info-am
 
 
-# NCO-specific definitions
-all: test_data
-.PHONY: test_data
-.cdl.nc:
-	ncgen -o $@ $<
+# netCDF build rules
+%.nc : %.cdl
+	ncgen -o $@ $< 
+
+all: ${test_data}
+
+test: check
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
