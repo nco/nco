@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.65 2006-11-23 19:47:22 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.66 2006-12-03 06:55:02 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -156,7 +156,7 @@ sub bm_ntl($$){
     $opr_rgr_mpi = "ncbo ncdiff ncecat ncflint ncea ncpdq ncra ncwa ncrcat"; # need all of them for regression
     
     if (scalar @ARGV > 0){@opr_lst=@ARGV;}else{@opr_lst=@opr_lst_all;}
-    if (defined $ENV{'MY_BIN_DIR'} &&  $ENV{'MY_BIN_DIR'} ne ""){$MY_BIN_DIR=$ENV{'MY_BIN_DIR'};}
+    if (defined $ENV{'MY_BIN_DIR'} && $ENV{'MY_BIN_DIR'} ne ""){$MY_BIN_DIR=$ENV{'MY_BIN_DIR'};}
     else{
 # Set and verify MY_BIN_DIR
 	$MY_BIN_DIR=abs_path("../src/nco");

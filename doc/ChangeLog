@@ -3,6 +3,12 @@
 	* cvs tag -c nco-3_1_8
 	Changes since nco-3_1_7: 
 
+	* Noticed that configure;make;make test breaks because ncap2 is
+	not available in ../src/nco like all other executables	
+
+	* Link nco_c++/in.nc to ../../data/in.nc
+
+	* Fix all rule in data so *.nc are always built 
 
 2006-11-29  Charlie Zender  <zender@uci.edu>
 
