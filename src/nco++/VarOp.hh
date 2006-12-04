@@ -175,7 +175,7 @@ var_sct* VarOp<T>::var_var_op(var_sct* var1, var_sct* var2, int op) {
 
       case EQ:
 	if(!bmss) {
-	  for(idx=0 ; idx<sz ; idx++) tp1[idx]=tp1[idx] == tp2[idx];
+	  for(idx=0 ; idx<sz ; idx++) tp1[idx]= (tp1[idx]==tp2[idx]);
 	}else{
 	  for(idx=0 ; idx<sz ; idx++){
 	    if( tp1[idx] != tmss && tp2[idx] != tmss)
@@ -266,6 +266,17 @@ var_sct*  VarOp<T>::var_op(var_sct* var1, int op) {
 	  }  
 	}
         break;
+
+    case SQR2:
+	if(!bmss) {
+	  for(idx=0 ; idx<sz ; idx++) tp1[idx]*=tp1[idx];
+	}else{
+	  for(idx=0 ; idx<sz ; idx++){
+	    if( tp1[idx] != tmss ) tp1[idx]*=tp1[idx];
+	  }  
+	}
+        break;
+
 
 
       default: break;	
