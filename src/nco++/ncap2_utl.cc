@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.32 2006-11-30 15:38:01 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.33 2006-12-04 13:38:47 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1943,20 +1943,57 @@ return var;
 
 }
 
+// returns true if string is only made of 0..9 chars
+bool
+str_is_num(
+std::string snm)
+{ 
+ int idx;
+ for(idx=0 ; idx < snm.size(); idx++)
+   if( !isdigit(snm[idx])) break;
+
+ return ( idx==snm.size() ? true: false);
 
 
-dmn_sct**                          /* O    [sct] list of new dims to limit over */ 
+}
+
+
+NcapVector<dmn_sct*>                /* O    [sct] list of new dims to limit over */ 
 ncap_dmn_mtd(
 var_sct *var,                      /* I   [sct] var with list of dims */
 NcapVector<std::string> &str_vtr,  /* I   [sng] list of dimension names */
 prs_sct *prs_arg){
 
+int idx;
+int jdx;
+int icnt;
+int nbr_dim=var->nbr_dim;
+
+NcapVector<dmn_sct*> dmn_vtr;
 
 
+for(idx=0 ; idx <str_vtr.size() ; idx++){
+  // deal with position args e.g $0,$1,$2 etc
+  if( str_is_num(str_vtr[idx])) {
+    icnt=atoi(str_vtr[idx].c_str());
+    if(icnt < nbr_dim && !dmn_vtr.find(var->dim[icnt]->nm)) 
+      dmn_vtr.push( var->dim[icnt]);
+  }else{
+    // deal with regular dim names
+    for(jdx=0 ; jdx < nbr_dim ; jdx++)
+      if( str_vtr[idx]== std::string(var->dim[jdx]->nm))
+        break;
+      if(jdx <nbr_dim && !dmn_vtr.find(str_vtr[idx])) 
+    if(jdx <nbr_dim) 
+        dmn_vtr.push(var->dim[jdx]);
+  }
 
-
+ } // end loop
+return dmn_vtr;  
 
 }
+     
+  
 
 
 
