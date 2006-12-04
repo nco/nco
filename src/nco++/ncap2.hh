@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.22 2006-11-30 15:36:04 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.23 2006-12-04 13:40:41 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -244,7 +244,7 @@ prs_sct *prs_arg);
 
 
 
-dmn_sct**                           /* O [sct] list of new dims to limit over */ 
+NcapVector<dmn_sct*>                /* O [sct] list of new dims to limit over */ 
 ncap_dmn_mtd(
 var_sct *var,                       /*  [sct] create casting var from a list of dims */
 NcapVector<std::string> &str_vtr,  /* I [sng] list of dimension names */
