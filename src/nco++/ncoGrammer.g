@@ -44,6 +44,9 @@ tokens {
     EXPR;
     POST_INC;
     POST_DEC;
+    SQR2;
+    PROP; // used to differenciate properties & methods
+    
 }
 
 program:
@@ -108,17 +111,24 @@ func_exp: primary_exp | ( FUNC^ func_arg )
       ;
 
 
+
 // dot operator -- properties
 // not sure this is best place for this rule
-prop: ( PSIZE |PTYPE |PMIN |PMAX |PSUM |PAVG| VAR_ID)
+meth: ( PAVG|PAVGSQR|PMAX|PMIN|PRMS|PRMSSDN|PSQR|ARVG|PTTL)
     ;
 
 
-prop_exp: func_exp ( DOT^ prop (func_arg)? )?
+prop_exp: func_exp (node:DOT^ {#node->setType(PROP);
+                               #node->setText("property");}(PSIZE|PTYPE|PNDIMS))?
+    ;
+
+// Method call all methods must in include () otherwise
+// they will be treated as a property 
+meth_exp: prop_exp ( DOT^ meth func_arg )*
     ;
 
 // unary left association   
-unaryleft_exp: prop_exp (
+unaryleft_exp: meth_exp (
                           in:INC^ {#in->setType(POST_INC);
                                    #in->setText("POST_INC");}
                         | de:DEC^ {#de->setType(POST_DEC);
@@ -240,15 +250,22 @@ tokens {
     SHIFTL="<<";
     SHIFTR=">>";
 
-// Properties & Methods
+// Properties 
     PSIZE="size";
     PTYPE="type";
-    PMIN="min";
-    PMAX="max";
-    PSUM="sum";
+    PNDIMS="ndims";
+// Methods
     PAVG="avg";
-    
+    PAVGSQR="avgsqr";
+    PMAX="max";
+    PMIN="min";
+    PRMS="rms";
+    PRMSSDN="rmssdn";
+    PSQRAVG="sqravg";
+    PTTL="total";
 }
+
+
 {
 
 private:
@@ -1406,37 +1423,65 @@ out returns [var_sct *var]
                 var=assign(asn);
             }  
 
-    // Properties - nb first operand an expr --second operand property 
-    | #(DOT var1=out prp:. mtd:FUNC_ARG) {
+    // The following properties are shared by vars & atts
+    | #(PROP var1=out prp:.) {
+
+       if(prs_arg->ntl_scn){
+         var1=nco_var_free(var1);
+         var= ncap_sclr_var_mk("_property",NC_INT,false);        
+       } else { 
+
+         switch(prp->getType()){ 
+           case PSIZE:
+             var= ncap_sclr_var_mk("_property",(int)var1->sz);
+             break;
+           case PTYPE:
+             var= ncap_sclr_var_mk("_property",(int)var1->type);
+             break;
+           case PNDIMS:
+             var=ncap_sclr_var_mk("_property",(int)var1->nbr_dim);            
+
+          } // end switch
+         var1=nco_var_free(var1); 
+      }
+    } 
+
+    // These methods are only for vars
+    | #(DOT var1=out mtd:. args:FUNC_ARG) {
       
             int nbr_arg;
             int idx;
+            int nbr_dim;
+            dmn_sct **dim;
+           
             RefAST aRef;
             NcapVector<std::string> str_vtr;
+            NcapVector<dmn_sct*> dmn_vtr;
             // de-reference 
             ddra_info_sct ddra_info;        
             
             dmn_sct **dims;    
 
 
-            if(var1->undefined){ 
-              var=var1;
+            if(var1->undefined || prs_arg->ntl_scn){ 
+              var1=nco_var_free(var1);
+              var=ncap_var_udf("_dot_methods");
               // n.b can't use return -- as this results with
               // problems with automagically generated code 
               goto end_dot;
             }
 
-            // blow out if unrecognized property
-            if(prp->getType()==VAR_ID){
+            // blow out if unrecognized method
+            if(mtd->getType()==VAR_ID){
               std::string serr;
               std::string sva(ncap_var_is_att(var1)?"Attribute" :"Variable");
-              serr= sva+" " + std::string(var1->nm)+ " has unrecognized property "+ "\""+prp->getText()+"\"";
+              serr= sva+" " + std::string(var1->nm)+ " has unrecognized method "+ "\""+mtd->getText()+"\"";
               err_prn(fnc_nm,serr );
               }
 
             // Process method arguments if any exist !! 
-            if(mtd && (nbr_arg=mtd->getNumberOfChildren()) >0){  
-              aRef=mtd->getFirstChild();
+            if(args && (nbr_arg=args->getNumberOfChildren()) >0){  
+              aRef=args->getFirstChild();
               while(aRef){
                
                 switch(aRef->getType()){
@@ -1462,66 +1507,64 @@ out returns [var_sct *var]
               
                 } // end switch
                 aRef=aRef->getNextSibling();
-              }
-              cout<< "Method Args\n"; 
-              for(idx=0 ; idx < str_vtr.size() ;idx++)
-               cout << str_vtr[idx] <<endl;
-              
-              // Create list of dims to average over
-              // var1->dim is garanteed to be populated
-              dims=ncap_dmn_mtd(var1, str_vtr, prs_arg);                     
-             
+              } // end while
 
-             }
+              dmn_vtr=ncap_dmn_mtd(var1, str_vtr, prs_arg);
+              }           
 
-            // Initial scan
-            if(prs_arg->ntl_scn){
-             
-             switch(prp->getType()){
-                 case PSIZE:
-                 case PTYPE:
-                      var= ncap_sclr_var_mk("_property",NC_INT,false);
-                      break;  
-                                      
-                 case PMIN:
-                 case PMAX:
-                 case PSUM:
-                 case PAVG:
-                      var=ncap_sclr_var_mk("_property",var1->type,false);
-                      break;
-             } 
-             var1=nco_var_free(var1);
-            }
 
+              if(dmn_vtr.size() >0){
+               dim=dmn_vtr.ptr(0);
+               nbr_dim=dmn_vtr.size();                           
+              } else {
+               dim=var1->dim;
+               nbr_dim=var1->nbr_dim; 
+              }    
+
+            
             // Final scan
             if(!prs_arg->ntl_scn){
              
-             switch(prp->getType()){
-                 case PSIZE:
-                      var= ncap_sclr_var_mk("_property",var1->sz);
-                      var1=nco_var_free(var1); 
+             switch(mtd->getType()){
+
+                 case PAVG:
+                      var=nco_var_avg(var1,dim,nbr_dim,nco_op_avg,False,&ddra_info);
                       break;
-                 case PTYPE:
-                      var= ncap_sclr_var_mk("_property",(int)var1->type);
-                      var1=nco_var_free(var1); 
+
+                 case PAVGSQR:
+                      var1=ncap_var_var_op(var1, (var_sct*)NULL,SQR2);
+                      var=nco_var_avg(var1,dim,nbr_dim,nco_op_avgsqr,False,&ddra_info);
+                      break;
+
+                 case PMAX:
+                      var=nco_var_avg(var1,dim,nbr_dim,nco_op_max,False,&ddra_info);
                       break;
 
                  case PMIN:
-                      var=nco_var_avg(var1,var1->dim,var1->nbr_dim,nco_op_min,False,&ddra_info);
+                      var=nco_var_avg(var1,dim,nbr_dim,nco_op_min,False,&ddra_info);
                       break; 
-                 case PMAX:
-                      var=nco_var_avg(var1,var1->dim,var1->nbr_dim,nco_op_max,False,&ddra_info);
+
+                 case PRMS:
+                      var1=ncap_var_var_op(var1, (var_sct*)NULL,SQR2);
+                      var=nco_var_avg(var1,dim,nbr_dim,nco_op_rms,False,&ddra_info);
                       break;
-                 case PSUM:
-                      var=nco_var_avg(var1,var1->dim,var1->nbr_dim,nco_op_ttl,False,&ddra_info);
+
+                 case PRMSSDN:
+                      var1=ncap_var_var_op(var1, (var_sct*)NULL,SQR2);
+                      var=nco_var_avg(var1,dim,nbr_dim,nco_op_rmssdn,False,&ddra_info);
                       break;
-                 case PAVG:
-                      var=nco_var_avg(var1,var1->dim,var1->nbr_dim,nco_op_avg,False,&ddra_info);
+
+                 case PSQRAVG:
+                      var=nco_var_avg(var1,dim,nbr_dim,nco_op_sqravg,False,&ddra_info);
                       break;
+
+                 case PTTL:
+                      var=nco_var_avg(var1,dim,nbr_dim,nco_op_ttl,False,&ddra_info);
+                      break;
+
 
 
              } 
-             //var1=nco_var_free(var1);
              // var1 is freed in nco_var_avg()
 
             }
@@ -1543,8 +1586,6 @@ end_dot: ;
               var=ncap_sclr_var_mk("_short", (signed char)ival);
             }
           }
-
-
 
 	|	s:SHORT			
           {  
