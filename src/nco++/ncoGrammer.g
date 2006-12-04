@@ -1529,11 +1529,15 @@ out returns [var_sct *var]
 
                  case PAVG:
                       var=nco_var_avg(var1,dim,nbr_dim,nco_op_avg,False,&ddra_info);
+                      // use tally to normalize
+                      (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
                       break;
 
                  case PAVGSQR:
                       var1=ncap_var_var_op(var1, (var_sct*)NULL,SQR2);
                       var=nco_var_avg(var1,dim,nbr_dim,nco_op_avgsqr,False,&ddra_info);
+                      // normalize
+                      (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
                       break;
 
                  case PMAX:
@@ -1547,15 +1551,27 @@ out returns [var_sct *var]
                  case PRMS:
                       var1=ncap_var_var_op(var1, (var_sct*)NULL,SQR2);
                       var=nco_var_avg(var1,dim,nbr_dim,nco_op_rms,False,&ddra_info);
+                      // normalize
+                      (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
+                      // take root
+	                  (void)nco_var_sqrt(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val,var->val);  
                       break;
 
                  case PRMSSDN:
                       var1=ncap_var_var_op(var1, (var_sct*)NULL,SQR2);
                       var=nco_var_avg(var1,dim,nbr_dim,nco_op_rmssdn,False,&ddra_info);
+                       // normalize
+                      (void)nco_var_nrm_sdn(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
+                      // take root
+  	                  (void)nco_var_sqrt(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val,var->val);  
                       break;
 
                  case PSQRAVG:
                       var=nco_var_avg(var1,dim,nbr_dim,nco_op_sqravg,False,&ddra_info);
+                      // normalize 
+                      (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
+                      // square mean
+                      (void)nco_var_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,var->val);
                       break;
 
                  case PTTL:
