@@ -2,7 +2,7 @@
 #define INC_ncoParser_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.6 (20060511): "ncoGrammer.g" -> "ncoParser.hpp"$ */
+/* $ANTLR 2.7.6 (20060903): "ncoGrammer.g" -> "ncoParser.hpp"$ */
 #include <antlr/TokenStream.hpp>
 #include <antlr/TokenBuffer.hpp>
 #include "ncoParserTokenTypes.hpp"
@@ -65,10 +65,14 @@ public:
 	public: void lmt_list();
 	public: void cast_slb();
 	public: void dmn_list();
+	public: void arg_list();
+	public: void dmn_arg_list();
+	public: void func_arg();
 	public: void func_exp();
 	public: void primary_exp();
-	public: void prop();
+	public: void meth();
 	public: void prop_exp();
+	public: void meth_exp();
 	public: void unaryleft_exp();
 	public: void unary_exp();
 	public: void pow_exp();
@@ -94,10 +98,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 86;
+	static const int NUM_TOKENS = 97;
 #else
 	enum {
-		NUM_TOKENS = 86
+		NUM_TOKENS = 97
 	};
 #endif
 	
@@ -111,6 +115,10 @@ private:
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_3;
 	static const unsigned long _tokenSet_4_data_[];
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_4;
+	static const unsigned long _tokenSet_5_data_[];
+	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_5;
+	static const unsigned long _tokenSet_6_data_[];
+	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_6;
 };
 
 #endif /*INC_ncoParser_hpp_*/

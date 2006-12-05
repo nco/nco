@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.840 2006-11-30 07:21:59 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.841 2006-12-05 01:50:38 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -541,7 +541,9 @@ nco794. Automagically use _FillValue when missing missing_value not present
 nco796. pgCC does not support exception handling with codes compiled with OpenMP (-mp) switch so ncap2/antlr files must be built serially
 nco797. Find Fedora core machine to try RPM builds on
 nco798. Try Opendap 3.6.2 beta compatible
-nco799. 
+nco799. Extend -n 3,4,1 NINTAP switch to handle regular expressions
+nco800. Extend -n 3,4,1 NINTAP switch to -n 3,4,1,offset to work with CCSM patterns
+nco801. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
