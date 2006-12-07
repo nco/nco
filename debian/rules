@@ -42,7 +42,6 @@ config.status: configure
 	NETCDF_LIB='/usr/lib' \
 	./configure $(confflags) \
 		    --prefix=/usr \
-		    --docdir=/usr/share/doc/nco \
 		    --htmldir=/usr/share/doc/nco/html \
 		    --infodir=/usr/share/info \
 		    --libdir=/usr/lib/nco \

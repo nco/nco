@@ -1,5 +1,6 @@
 nco (3.1.8-1) unstable; urgency=low
 
+  * ncap2 methods work, nascent _FillValue support
   * Add psd.nco example for ncap2
   * Fix in.nc and tst path issues in make check
   * Change long description	
@@ -23,7 +24,7 @@ nco (3.1.8-1) unstable; urgency=low
   * Kludge HTML documentation location in nco.doc-base
   * Compile-time determination of _Fillvalue vs. missing_value
 
- -- Charlie Zender <zender@uci.edu>  Mon, 20 Nov 2006 08:22:22 -0800
+ -- Charlie Zender <zender@uci.edu>  Wed, 6 Dec 2006 08:22:22 -0800
 
 nco (3.1.7-1) UNRELEASED; urgency=low
 
