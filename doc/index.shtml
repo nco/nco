@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.376 2006-12-05 16:17:54 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.377 2006-12-07 20:07:03 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -332,16 +332,29 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 <dt><a name="Publications"></a><a name="pub"></a><a name="pubs"></a></dt>
 <h2>Publications</h2>
 <ul>
-<!-- WZJ07 --> <a name="WZJ07"></a> <!--http://www.ess.uci.edu/~zender#WZJ07 -->
-Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2007), DAP-enabled Server-side Data Reduction and Analysis, <i>Proceedings of the 23rd AMS Conference on Interactive Information and Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology</i>, Paper 3B.2., January 14&ndash;18, San Antonio,&nbsp;TX. American Meteorological Society, AMS Press, Boston,&nbsp;MA.},
+
+<li><!-- WZJ07 --> <a name="WZJ07"></a> <!--http://www.ess.uci.edu/~zender#WZJ07 -->
+Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2007), DAP-enabled Server-side Data Reduction and Analysis, <i>Proceedings of the 23rd AMS Conference on Interactive Information and Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology</i>, Paper 3B.2., January 14&ndash;18, San Antonio,&nbsp;TX. American Meteorological Society, AMS Press, Boston,&nbsp;MA.
+<a href="http://dust.ess.uci.edu/ppr/abs_xtn_WZJ07.bib">BibTeX</a>
+<a href="http://dust.ess.uci.edu/ppr/abs_xtn_WZJ07.pdf">PDF</a></li>
+
 <li><!-- ZeW07 --> <a name="ZeW07"></a> <!--http://www.ess.uci.edu/~zender#ZeW07 -->
 Zender, C.&nbsp;S., and D.&nbsp;L. Wang (2007), High performance distributed data reduction and analysis with the netCDF Operators (NCO), <i>Proceedings of the 23rd AMS Conference on Interactive Information and Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology</i>, Paper 3B.4., January 14&ndash;18, San Antonio,&nbsp;TX. American Meteorological Society, AMS Press, Boston,&nbsp;MA.
 <a href="http://dust.ess.uci.edu/ppr/abs_xtn_ZeW07.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/abs_xtn_ZeW07.pdf">PDF (CSZ)</a></li>
+<a href="http://dust.ess.uci.edu/ppr/abs_xtn_ZeW07.pdf">PDF</a></li>
+
+<li><!-- ZMW06 --> <a name="ZMW06"></a> <!-- http://dust.ess.uci.edu/ppr/pst_ZMW06.pdf -->
+Zender, C.&nbsp;S., H.&nbsp;J. Mangalam, and D.&nbsp;L. Wang:
+<i>Improving Scaling Properties of Common Statistical Operators for Gridded Geoscience Datasets</i>.
+Presented to the Fall Meeting of the American Geophysical Union, 
+San Francisco,&nbsp;CA, December 5&ndash;9, 2006.
+<a href="http://dust.ess.uci.edu/ppr/pst_ZMW06.pdf">PDF</a>
+
 <li><!-- Zen07 --> <a name="Zen07"></a> <!--http://www.ess.uci.edu/~zender#Zen07 -->
 Zender, C.&nbsp;S. (2006), netCDF Operators (NCO) for Analysis of Self-describing Gridded Geoscience Data, <i>Submitted to Environ. Modell. Softw.</i>.
 <a href="http://dust.ess.uci.edu/ppr/ppr_Zen07.bib">BibTeX</a>
 <a href="http://dust.ess.uci.edu/ppr/ppr_Zen07.pdf">PDF (CSZ)</a></li>
+
 <li><!-- ZeM06 --> <a name="ZeM06"></a> <!--http://www.ess.uci.edu/~zender#ZeM06 -->
 Zender, C.&nbsp;S., and H.&nbsp;J. Mangalam (2006), Scaling Properties of Common Statistical Operators for Gridded Datasets, <i>Submitted to Int.&nbsp;J.&nbsp;High Perform. Comput. Appl.</i>.
 <a href="http://dust.ess.uci.edu/ppr/ppr_ZeM06.bib">BibTeX</a>
