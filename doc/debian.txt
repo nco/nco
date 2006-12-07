@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.68 2006-11-27 23:12:28 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.69 2006-12-07 06:26:21 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -94,12 +94,6 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
    chmod a+x ~/nco/debian/rules
 # Build Debs using Debian libraries and include
    cd ~/nco;cvs commit -m "Preparing nco-3.1.8 release"
-# -uc -us : Tell dpkg-buildpackage not to sign the package upload
-# -rfakeroot : 
-   cd ~/nco;dpkg-buildpackage -rfakeroot -uc -us > ~/foo.nco 2>&1
-# Copy to distribution site 
-   scp ${DATA}/nco_3.1.8* dust.ess.uci.edu:/var/www/html/nco/src
-   scp ~/foo.nco dust.ess.uci.edu:/var/www/html/nco/src/nco_3.1.8-1.dpkg-buildpackage.txt
 # Save all files in emacs before tagging
 # Tag CVS code after changing files in ~/nco/debian
    cd ~/nco;cvs commit -m "Preparing nco-3.1.8 release";cvs tag -c nco-3_1_8
