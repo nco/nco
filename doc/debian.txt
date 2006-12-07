@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.70 2006-12-07 17:35:14 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.71 2006-12-07 17:35:54 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -140,8 +140,8 @@ Matej Vela <vela@debian.org>, Daniel Baumann <daniel@debian.org>, Warren Turkal 
 # Non-native debian builds Rod05 p. 46
 cd ~/nco;cvc
 /bin/rm -rf ${DATA}/nco-3.1.8 ${DATA}/nco_3.1.8* ${DATA}/debian # Initial cleanup
-#cd ${DATA};cvs -d zender@nco.cvs.sourceforge.net:/cvsroot/nco export -kkv -r nco-3_1_8 -d nco-3.1.8 nco # Export based on tag
-cd ${DATA};cvs -d zender@nco.cvs.sourceforge.net:/cvsroot/nco export -kkv -D "1 second ago" -d nco-3.1.8 nco # Export most recent
+cd ${DATA};cvs -d zender@nco.cvs.sourceforge.net:/cvsroot/nco export -kkv -r nco-3_1_8 -d nco-3.1.8 nco # Export based on tag
+#cd ${DATA};cvs -d zender@nco.cvs.sourceforge.net:/cvsroot/nco export -kkv -D "1 second ago" -d nco-3.1.8 nco # Export most recent
 tar cvzf ./nco_3.1.8.orig.tar.gz --exclude='nco-3.1.8/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-3.1.8 
 mv ./nco-3.1.8/debian ${DATA}/debian # Move debian directory elsewhere temporarily
 /bin/rm -rf ${DATA}/nco-3.1.8 # Remove cvs-exported directory
