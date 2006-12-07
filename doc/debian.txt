@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.69 2006-12-07 06:26:21 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.70 2006-12-07 17:35:14 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -147,6 +147,7 @@ mv ./nco-3.1.8/debian ${DATA}/debian # Move debian directory elsewhere temporari
 /bin/rm -rf ${DATA}/nco-3.1.8 # Remove cvs-exported directory
 tar xvzf ./nco_3.1.8.orig.tar.gz # Untar to get directory without excluded files
 mv ${DATA}/debian ./nco-3.1.8 # Replace debian directory
+/bin/rm -f ./nco-3.1.8/debian/.cvsignore # Remove cvsignore before deb build
 cd ${DATA}/nco-3.1.8;dpkg-buildpackage -rfakeroot -uc -us > ~/foo.nco 2>&1
 sudo dpkg --remove nco
 sudo dpkg --install ${DATA}/nco_3.1.8-1_i386.deb
