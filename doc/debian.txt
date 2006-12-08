@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.72 2006-12-07 20:22:49 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.73 2006-12-08 10:53:52 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -13,7 +13,8 @@ dpkg-source -x netcdf_3.6.1-0.1.dsc
 Debian:	    http://packages.debian.org/unstable/math/nco.html
 Gentoo:	    http://gentoo-stable.iq-computing.de/browse?type=version&category=app-sci&package=nco&version=2.2.0
 
-Rod05 is Bible for packaging .deb's: /data/zender/tmp/debian.pdf
+Debian New Maintainer's Guide (Rod05) is Bible for packaging .deb's: 
+/data/zender/tmp/debian.pdf
 # Debian Policy Manual
 file:///usr/share/doc/debian-policy/policy.html/
 Questions on procedure go to Debian Mentors <debian-mentors@lists.debian.org> 
@@ -113,6 +114,7 @@ http://people.debian.org/~mpalmer/debian-mentors_FAQ.html
 
 Debian Acronyms & Abbreviations:
 BTS Bug Tracking System
+DNMG Debian New Maintainer's Guide
 FTBFS Fails to Build from Source
 ITA Intent to Adopt
 NMU Non-Naintainer Upload

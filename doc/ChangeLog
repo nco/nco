@@ -1,3 +1,7 @@
+2006-12-08  Charlie Zender  <zender@uci.edu>
+
+	* nco-3_1_8-1 is in Debian experimental
+
 2006-12-06  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-3_1_8
@@ -5,8 +9,7 @@
 
 2006-12-03  Henry Butowsky  <henryb@ntlworld.com>
 
-	* Commited second cut of variable methods &
-	  var/att properties
+	* Commited second cut of variable methods & var/att properties
 
 2006-12-02  Charlie Zender  <zender@uci.edu>
 
@@ -19,7 +22,7 @@
 
 2006-11-29  Charlie Zender  <zender@uci.edu>
 
-	* NB: psd.nco uncovered an scanner error with ncap2 comment fields
+	* NB: psd.nco uncovered a bizarre scanner error with ncap2 comment fields
 
 	* Add equal-V/S approximation for Tallandier depth hoar to psd.nco
 	
