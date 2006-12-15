@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.378 2006-12-09 23:52:34 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.379 2006-12-15 02:50:23 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -542,8 +542,8 @@ testing and porting of NCO on the
 <a href="http://sf.net/docman/display_doc.php?docid=762&group_id=1">SourceForge Compile Farm</a> and 
 <a href="http://www.testdrive.compaq.com">HP Testdrive</a> sites.
 
-<a name="debian"></a><a name="dbn"></a>
-<a name="ubuntu"></a><a name="ubn"></a>
+<a name="debian"></a><a name="dbn"></a> <!-- http://nco.sf.net#debian -->
+<a name="ubuntu"></a><a name="ubn"></a> <!-- http://nco.sf.net#ubuntu -->
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
 <ul>
 <!--
@@ -551,7 +551,8 @@ testing and porting of NCO on the
 -->
 <a href="http://packages.debian.org/unstable/math/nco.html">Debian GNU/Linux homepage for NCO</a>. 
 <tt>apt-get install nco</tt> installs the standard NCO for your Debian-compatible&nbsp;OS.
-<dt>Debian package for most recent NCO release (install with <tt>dpkg --install nco_3.1.8-1_i386.deb</tt>):</dt>
+<dt>Debian package for most recent NCO release (install with, e.g., <tt>dpkg --install nco_3.1.8-1_i386.deb</tt>):</dt>
+<li><a href="nco_3.1.8-1_amd64.deb">nco_3.1.8-1_amd64.deb</a> (<!--#fsize file="nco_3.1.8-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="nco_3.1.8-1_amd64.deb"-->)</li>
 <li><a href="nco_3.1.8-1_i386.deb">nco_3.1.8-1_i386.deb</a> (<!--#fsize file="nco_3.1.8-1_i386.deb"-->): Executables i386-compatible (last updated <!--#flastmod file="nco_3.1.8-1_i386.deb"-->)</li>
 <li><a href="nco_3.1.8-1.dsc">nco_3.1.8-1.dsc</a> (<!--#fsize file="nco_3.1.8-1.dsc"-->): Description (last updated <!--#flastmod file="nco_3.1.8-1.dsc"-->)</li>
 <li><a href="nco_3.1.8-1_i386.changes">nco_3.1.8-1_i386.changes</a> (<!--#fsize file="nco_3.1.8-1_i386.changes"-->): Changes since last deb package (last updated <!--#flastmod file="nco_3.1.8-1_i386.changes"-->)</li>
