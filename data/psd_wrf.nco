@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/psd_wrf.nco,v 1.7 2006-12-04 16:42:17 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/psd_wrf.nco,v 1.8 2006-12-28 22:47:39 zender Exp $ -*-C-*-
 
 // Purpose: ncap script for WRF particle size distributions
 // Based on psd.nco
@@ -9,7 +9,10 @@
 
 /* Ancillary simulations:
 # 20061117: Compute mass fractions for eight size bins in WRF-Chem model:
-dead --dbg=1 --time_nbr=451189 ${DATA}/esh/paws_Ptr_19910101_20031231.nc ~/foo.nc > ~/foo 2>&1 &
+dead --dbg=1 --time_nbr=451189 ${DATA}/esh/paws_Ptr_19910101_20031231.nc ${DATA}/esh/dead_psd_wrf_paws_Ptr.nc > ~/foo 2>&1 &
+dead --dbg=1 --time_nbr=451189 ${DATA}/esh/paws_Ptr_19910101_20031231.nc ${DATA}/esh/dead_psd_cam_paws_Ptr.nc > ~/foo 2>&1 &
+ln -s -f ${DATA}/esh/dead_psd_wrf_paws_Ptr.nc ~/foo.nc
+
 # Normalize mass fractions after imposing CAM mass fractions for largest two bins (which are identical between CAM and WRF)
 ncap2 -D 1 -O \
 -s 'flx_mss_vrt_dst_avg=flx_mss_vrt_dst.avg($time,$lon)' \
