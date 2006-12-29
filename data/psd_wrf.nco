@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/psd_wrf.nco,v 1.9 2006-12-29 15:09:16 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/psd_wrf.nco,v 1.10 2006-12-29 19:46:00 zender Exp $ -*-C-*-
 
 // Purpose: ncap script for WRF particle size distributions
 // Based on psd.nco
@@ -7,6 +7,7 @@
    ncap2 -v -O -D 1 -S ${HOME}/nco/data/psd_wrf.nco ${HOME}/nco/data/in.nc ~/foo_psd.nc
    ncks -C -H -u -v ovr_mss_frc,ovr_mss_frc_ttl,ovr_mss_frc_nrm,ovr_mss_frc_nrm_ttl ~/foo_psd.nc
    ncks -C -H -u -v ovr_nbr_frc,ovr_nbr_frc_ttl,ovr_nbr_frc_nrm,ovr_nbr_frc_nrm_ttl ~/foo_psd.nc
+   ncks -C -H -u -v nbr_spc_rsl ~/foo_psd.nc
    ncks -C -H -u -v dmt_nwa,dmt_saa,dmt_vaa ~/foo_psd.nc */
 
 /* Ancillary simulations:
@@ -37,18 +38,39 @@ pi=3.1415926535897932384626433832795029L; // (3.14159265358979323846264338327950
 pi@long_name="Pi";
 pi@units="fraction";
 
-defdim("dmt",8); // [nbr] Diameter dimension
-dmt_min[dmt]={0.0390625, 0.078125, 0.15625, 0.3125, 0.625, 1.25, 2.5,  5.0}; // [um] Minimum diameter
-dmt_max[dmt]={0.078125 , 0.15625 , 0.3125 , 0.625,  1.25 , 2.5 , 5.0, 10.0}; // [um] Maximum diameter
-dmt_vma[dmt]=3.5; // [um] Volume median diameter analytic
-dns_prt[dmt]=2500.0; // [kg m-3] Density of particle
+/* NB: "Scalar" quantities are those which _could_ be size-dependent, though
+   are size-indenpendent (hence "scalar") in the default DEAD implementation */
+psd_cam=0s; // [flg] CAM size grid
+psd_wrf=1s; // [flg] WRF size grid
+
+// Choose PSD
+psd_typ=psd_wrf; // [enm] Size grid type
+
+if(psd_typ==psd_cam){
+  sz_nbr=4; // [nbr] Number of particle size bins
+  defdim("dmt",sz_nbr); // [nbr] Diameter dimension
+  dmt_min[dmt]={0.1, 1.0, 2.5,  5.0}; // [um] Minimum diameter
+  dmt_max[dmt]={1.0, 2.5, 5.0, 10.0}; // [um] Maximum diameter
+}else if(psd_typ==psd_wrf){
+  sz_nbr=8; // [nbr] Number of particle size bins
+  defdim("dmt",sz_nbr); // [nbr] Diameter dimension
+  dmt_min[dmt]={0.0390625, 0.078125, 0.15625, 0.3125, 0.625, 1.25, 2.5,  5.0}; // [um] Minimum diameter
+  dmt_max[dmt]={0.078125 , 0.15625 , 0.3125 , 0.625,  1.25 , 2.5 , 5.0, 10.0}; // [um] Maximum diameter
+} // !psd_typ
+
+dmt_vma_scl=3.5; // [um] Volume median diameter analytic, scalar
+dns_prt_scl=2500.0; // [kg m-3] Density of particle, scalar
+dmt_vma[dmt]=dmt_vma_scl; // [um] Volume median diameter analytic
+dns_prt[dmt]=dns_prt_scl; // [kg m-3] Density of particle
+cnc_nbr_ttl=1.0; // [# m-3] Number concentration analytic
 
 // Set coordinate equal to number median diamter for now
 dmt_ctr=0.5*(dmt_min+dmt_max); // [um] Diameter at bin center
 dmt=dmt_ctr; // [um] Diameter coordinate
 
 // Compute fraction of lognormal distribution that lies between two endpoints
-gsd=2.0; // [frc] Geometric standard deviation
+gsd_scl=2.0; // [frc] Geometric standard deviation, scalar
+gsd=gsd_scl; // [frc] Geometric standard deviation
 gsd@long_name="Geometric standard deviation";
 gsd@units="fraction";
 
@@ -120,3 +142,13 @@ ovr_nbr_frc_nrm@units="fraction";
 ovr_nbr_frc_nrm_ttl=ovr_nbr_frc_nrm.total(); // [frc] Sum of normalized number overlap fractions
 ovr_nbr_frc_nrm_ttl@long_name="Sum of normalized number overlap fractions";
 ovr_nbr_frc_nrm_ttl@units="fraction";
+
+// Compute resolved absolute quantities
+dmt_nma_scl=dmt_vma_scl*exp(-3.0*(ln(gsd))^2.0); // [um] Number median diameter analytic, scalar
+vlm_anl_scl=cnc_nbr_ttl*dmt_nma_scl*exp(4.5*(ln(gsd))^2.0); // [m3 m-3] Volume concentration analytic
+mss_anl_scl=dns_prt_scl*vlm_anl_scl; // [kg m-3] Mass concentration analytic
+nbr_anl_scl=cnc_nbr_ttl; // [# m-3] Number concentration analytic
+mss_rsl=ovr_mss_frc*mss_anl_scl; // [kg m-3] Mass concentration resolved
+nbr_rsl=ovr_nbr_frc*nbr_anl_scl; // [# m-3] Number concentration resolved
+nbr_spc_rsl=nbr_rsl/mss_rsl; // [# kg-1] Specific concentration resolved
+
