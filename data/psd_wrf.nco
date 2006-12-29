@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/psd_wrf.nco,v 1.10 2006-12-29 19:46:00 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/psd_wrf.nco,v 1.11 2006-12-29 23:09:41 zender Exp $ -*-C-*-
 
 // Purpose: ncap script for WRF particle size distributions
 // Based on psd.nco
@@ -7,7 +7,7 @@
    ncap2 -v -O -D 1 -S ${HOME}/nco/data/psd_wrf.nco ${HOME}/nco/data/in.nc ~/foo_psd.nc
    ncks -C -H -u -v ovr_mss_frc,ovr_mss_frc_ttl,ovr_mss_frc_nrm,ovr_mss_frc_nrm_ttl ~/foo_psd.nc
    ncks -C -H -u -v ovr_nbr_frc,ovr_nbr_frc_ttl,ovr_nbr_frc_nrm,ovr_nbr_frc_nrm_ttl ~/foo_psd.nc
-   ncks -C -H -u -v nbr_spc_rsl ~/foo_psd.nc
+   ncks -C -H -u -v mss_rsl,nbr_rsl,nbr_spc_rsl ~/foo_psd.nc
    ncks -C -H -u -v dmt_nwa,dmt_saa,dmt_vaa ~/foo_psd.nc */
 
 /* Ancillary simulations:
@@ -44,29 +44,46 @@ psd_cam=0s; // [flg] CAM size grid
 psd_wrf=1s; // [flg] WRF size grid
 
 // Choose PSD
-psd_typ=psd_wrf; // [enm] Size grid type
+psd_typ=psd_cam; // [enm] Size grid type
 
 if(psd_typ==psd_cam){
   sz_nbr=4; // [nbr] Number of particle size bins
   defdim("dmt",sz_nbr); // [nbr] Diameter dimension
-  dmt_min[dmt]={0.1, 1.0, 2.5,  5.0}; // [um] Minimum diameter
-  dmt_max[dmt]={1.0, 2.5, 5.0, 10.0}; // [um] Maximum diameter
+  dmt_min_mcr[dmt]={0.1, 1.0, 2.5,  5.0}; // [um] Minimum diameter
+  dmt_max_mcr[dmt]={1.0, 2.5, 5.0, 10.0}; // [um] Maximum diameter
 }else if(psd_typ==psd_wrf){
   sz_nbr=8; // [nbr] Number of particle size bins
   defdim("dmt",sz_nbr); // [nbr] Diameter dimension
-  dmt_min[dmt]={0.0390625, 0.078125, 0.15625, 0.3125, 0.625, 1.25, 2.5,  5.0}; // [um] Minimum diameter
-  dmt_max[dmt]={0.078125 , 0.15625 , 0.3125 , 0.625,  1.25 , 2.5 , 5.0, 10.0}; // [um] Maximum diameter
+  dmt_min_mcr[dmt]={0.0390625, 0.078125, 0.15625, 0.3125, 0.625, 1.25, 2.5,  5.0}; // [um] Minimum diameter
+  dmt_max_mcr[dmt]={0.078125 , 0.15625 , 0.3125 , 0.625,  1.25 , 2.5 , 5.0, 10.0}; // [um] Maximum diameter
 } // !psd_typ
 
-dmt_vma_scl=3.5; // [um] Volume median diameter analytic, scalar
+dmt_min=1.0e-6*dmt_min_mcr; // [m] Minimum diameter
+dmt_min@long_name="Minimum diameter";
+dmt_min@units="meter";
+
+dmt_max=1.0e-6*dmt_max_mcr; // [m] Maximum diameter
+dmt_max@long_name="Maximum diameter";
+dmt_max@units="meter";
+
+dmt_vma_mcr_scl=3.5; // [um] Volume median diameter analytic, scalar
+dmt_vma_scl=1.0e-6*dmt_vma_mcr_scl; // [m] Volume median diameter analytic, scalar
+dmt_vma[dmt]=dmt_vma_scl; // [m] Volume median diameter analytic
+
 dns_prt_scl=2500.0; // [kg m-3] Density of particle, scalar
-dmt_vma[dmt]=dmt_vma_scl; // [um] Volume median diameter analytic
 dns_prt[dmt]=dns_prt_scl; // [kg m-3] Density of particle
+dns_prt@long_name="Density of particle";
+dns_prt@units="kilogram meter-3";
+
 cnc_nbr_ttl=1.0; // [# m-3] Number concentration analytic
+cnc_nbr_ttl@long_name="Number concentration analytic";
+cnc_nbr_ttl@units="number meter-3";
 
 // Set coordinate equal to number median diamter for now
-dmt_ctr=0.5*(dmt_min+dmt_max); // [um] Diameter at bin center
-dmt=dmt_ctr; // [um] Diameter coordinate
+dmt_ctr=0.5*(dmt_min+dmt_max); // [m] Diameter at bin center
+dmt=dmt_ctr; // [m] Diameter coordinate
+dmt@long_name="Diameter coordinate";
+dmt@units="meter";
 
 // Compute fraction of lognormal distribution that lies between two endpoints
 gsd_scl=2.0; // [frc] Geometric standard deviation, scalar
@@ -74,40 +91,34 @@ gsd=gsd_scl; // [frc] Geometric standard deviation
 gsd@long_name="Geometric standard deviation";
 gsd@units="fraction";
 
-dmt_nma=dmt_vma*exp(-3.0*(ln(gsd))^2.0); // [um] Number median diameter analytic
-dmt_naa=dmt_nma*exp(0.5*(ln(gsd))^2.0); // [um] Number mean diameter analytic
-dmt_nwa=dmt_nma*exp(0.5*(ln(gsd))^2.0); // [um] Number weighted mean diameter analytic
-dmt_saa=dmt_nma*exp(1.0*(ln(gsd))^2.0); // [um] Surface area mean diameter analytic
-dmt_vaa=dmt_nma*exp(1.5*(ln(gsd))^2.0); // [um] Volume mean diameter analytic
-dmt_sma=dmt_nma*exp(2.0*(ln(gsd))^2.0); // [um] Surface area median diameter analytic
-dmt_swa=dmt_nma*exp(2.5*(ln(gsd))^2.0); // [um] Surface area weighted mean diameter analytic
-//dmt_vma=dmt_nma*exp(3.0*(ln(gsd))^2.0); // [um] Volume median diameter analytic
-dmt_vwa=dmt_nma*exp(3.5*(ln(gsd))^2.0); // [um] Volume weighted mean diameter analytic
+dmt_nma=dmt_vma*exp(-3.0*(ln(gsd))^2.0); // [m] Number median diameter analytic
+dmt_naa=dmt_nma*exp(0.5*(ln(gsd))^2.0); // [m] Number mean diameter analytic
+dmt_nwa=dmt_nma*exp(0.5*(ln(gsd))^2.0); // [m] Number weighted mean diameter analytic
+dmt_saa=dmt_nma*exp(1.0*(ln(gsd))^2.0); // [m] Surface area mean diameter analytic
+dmt_vaa=dmt_nma*exp(1.5*(ln(gsd))^2.0); // [m] Volume mean diameter analytic
+dmt_sma=dmt_nma*exp(2.0*(ln(gsd))^2.0); // [m] Surface area median diameter analytic
+dmt_swa=dmt_nma*exp(2.5*(ln(gsd))^2.0); // [m] Surface area weighted mean diameter analytic
+//dmt_vma=dmt_nma*exp(3.0*(ln(gsd))^2.0); // [m] Volume median diameter analytic
+dmt_vwa=dmt_nma*exp(3.5*(ln(gsd))^2.0); // [m] Volume weighted mean diameter analytic
 
 dmt_naa@long_name="Number mean diameter analytic";
-dmt_naa@units="micron";
+dmt_naa@units="meter";
 dmt_nma@long_name="Number median diameter analytic";
-dmt_nma@units="micron";
+dmt_nma@units="meter";
 dmt_nwa@long_name="Number weighted mean diameter analytic";
-dmt_nwa@units="micron";
+dmt_nwa@units="meter";
 dmt_saa@long_name="Surface area mean diameter analytic";
-dmt_saa@units="micron";
+dmt_saa@units="meter";
 dmt_sma@long_name="Surface area median diameter analytic";
-dmt_sma@units="micron";
+dmt_sma@units="meter";
 dmt_swa@long_name="Surface area weighted mean diameter analytic";
-dmt_swa@units="micron";
+dmt_swa@units="meter";
 dmt_vaa@long_name="Volume mean diameter analytic";
-dmt_vaa@units="micron";
+dmt_vaa@units="meter";
 dmt_vma@long_name="Volume median diameter analytic";
-dmt_vma@units="micron";
+dmt_vma@units="meter";
 dmt_vwa@long_name="Volume weighted mean diameter analytic";
-dmt_vwa@units="micron";
-
-dmt_min@long_name="Minimum diameter";
-dmt_min@units="micron";
-
-dmt_max@long_name="Maximum diameter";
-dmt_max@units="micron";
+dmt_vwa@units="meter";
 
 // ncap2 -v -O -s "gsd=2.0;dmt_vma=2.5;dmt_min=5.0;dmt_max=10.0;ovr_mss_frc=0.5*(erf(log(dmt_max/dmt_vma)/(sqrt(2.0)*log(gsd)))-erf(log(dmt_min/dmt_vma)/(sqrt(2.0)*log(gsd))))));" ${HOME}/nco/data/in.nc ~/foo.nc;ncks -H -C -u ~/foo.nc
 ovr_mss_frc=0.5*(erf(log(dmt_max/dmt_vma)/(sqrt(2.0)*log(gsd)))-erf(log(dmt_min/dmt_vma)/(sqrt(2.0)*log(gsd)))); // [frc] Fraction of lognormal mass distribution between endpoints
@@ -145,10 +156,31 @@ ovr_nbr_frc_nrm_ttl@units="fraction";
 
 // Compute resolved absolute quantities
 dmt_nma_scl=dmt_vma_scl*exp(-3.0*(ln(gsd))^2.0); // [um] Number median diameter analytic, scalar
-vlm_anl_scl=cnc_nbr_ttl*dmt_nma_scl*exp(4.5*(ln(gsd))^2.0); // [m3 m-3] Volume concentration analytic
+dmt_nma_scl@long_name="Number median diameter analytic, scalar";
+dmt_nma_scl@units="meter";
+
+vlm_anl_scl=cnc_nbr_ttl*(pi/6.0)*(dmt_nma_scl^3.0)*exp(4.5*(ln(gsd))^2.0); // [m3 m-3] Volume concentration analytic
+vlm_anl_scl@long_name="Volume concentration analytic";
+vlm_anl_scl@units="meter3 meter-3";
+
 mss_anl_scl=dns_prt_scl*vlm_anl_scl; // [kg m-3] Mass concentration analytic
+mss_anl_scl@long_name="Mass concentration analytic";
+mss_anl_scl@units="kilogram meter-3";
+
 nbr_anl_scl=cnc_nbr_ttl; // [# m-3] Number concentration analytic
+nbr_anl_scl@long_name="Number concentration analytic";
+nbr_anl_scl@units="number meter-3";
+
+// NB: Multiply by absoluted (not normalized) mass fraction
 mss_rsl=ovr_mss_frc*mss_anl_scl; // [kg m-3] Mass concentration resolved
+mss_rsl@long_name="Mass concentration resolved";
+mss_rsl@units="kilogram meter-3";
+
 nbr_rsl=ovr_nbr_frc*nbr_anl_scl; // [# m-3] Number concentration resolved
+nbr_rsl@long_name="Number concentration resolved";
+nbr_rsl@units="number meter-3";
+
 nbr_spc_rsl=nbr_rsl/mss_rsl; // [# kg-1] Specific concentration resolved
+nbr_spc_rsl@long_name="Specific concentration resolved";
+nbr_spc_rsl@units="number kilogram-1";
 
