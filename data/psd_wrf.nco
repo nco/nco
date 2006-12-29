@@ -1,11 +1,13 @@
-// $Header: /data/zender/nco_20150216/nco/data/psd_wrf.nco,v 1.8 2006-12-28 22:47:39 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/psd_wrf.nco,v 1.9 2006-12-29 15:09:16 zender Exp $ -*-C-*-
 
 // Purpose: ncap script for WRF particle size distributions
 // Based on psd.nco
 
 /* Usage:
-   ncap2 -v -O -D 1 -S ${HOME}/nco/data/psd_wrf.nco ${HOME}/nco/data/in.nc ~/foo.nc
-   ncks -C -H -u -v dmt_nwa,dmt_saa,dmt_vaa ~/foo.nc */
+   ncap2 -v -O -D 1 -S ${HOME}/nco/data/psd_wrf.nco ${HOME}/nco/data/in.nc ~/foo_psd.nc
+   ncks -C -H -u -v ovr_mss_frc,ovr_mss_frc_ttl,ovr_mss_frc_nrm,ovr_mss_frc_nrm_ttl ~/foo_psd.nc
+   ncks -C -H -u -v ovr_nbr_frc,ovr_nbr_frc_ttl,ovr_nbr_frc_nrm,ovr_nbr_frc_nrm_ttl ~/foo_psd.nc
+   ncks -C -H -u -v dmt_nwa,dmt_saa,dmt_vaa ~/foo_psd.nc */
 
 /* Ancillary simulations:
 # 20061117: Compute mass fractions for eight size bins in WRF-Chem model:
@@ -14,10 +16,11 @@ dead --dbg=1 --time_nbr=451189 ${DATA}/esh/paws_Ptr_19910101_20031231.nc ${DATA}
 ln -s -f ${DATA}/esh/dead_psd_wrf_paws_Ptr.nc ~/foo.nc
 
 # Normalize mass fractions after imposing CAM mass fractions for largest two bins (which are identical between CAM and WRF)
-ncap2 -D 1 -O \
+ncap2 -v -D 1 -O \
 -s 'flx_mss_vrt_dst_avg=flx_mss_vrt_dst.avg($time,$lon)' \
--s 'flx_mss_vrt_dst_ttl=flx_mss_vrt_dst.total()' \
+-s 'flx_mss_vrt_dst_ttl=flx_mss_vrt_dst_avg.total()' \
 -s 'flx_mss_vrt_dst_nrm=flx_mss_vrt_dst_avg/flx_mss_vrt_dst_ttl' \
+-s 'flx_mss_vrt_dst_nrm_ttl=flx_mss_vrt_dst_nrm.total()' \
 -s 'defdim("x",6);flx_mss_vrt_dst_nrm_trc[$x]=flx_mss_vrt_dst_nrm(0:5)' \
 -s 'flx_mss_vrt_dst_nrm_trc_nrm=flx_mss_vrt_dst_nrm_trc*(1.0-(0.17+0.67))/flx_mss_vrt_dst_nrm_trc.total()' \
 -s 'flx_mss_vrt_dst_nrm_crc=flx_mss_vrt_dst_nrm' \
@@ -26,7 +29,7 @@ ncap2 -D 1 -O \
 -s 'flx_mss_vrt_dst_nrm_crc(7)=0.67' \
 -s 'flx_mss_vrt_dst_nrm_crc_ttl=flx_mss_vrt_dst_nrm_crc.total()' \
 ~/foo.nc ~/foo_wrf.nc # Normalize mass fractions
-ncks -C -v flx_mss_vrt_dst_nrm,flx_mss_vrt_dst_nrm_crc,flx_mss_vrt_dst_nrm_crc_ttl ~/foo_wrf.nc # Answers
+ncks -C -v flx_mss_vrt_dst_nrm,flx_mss_vrt_dst_nrm_ttl,flx_mss_vrt_dst_nrm_crc,flx_mss_vrt_dst_nrm_crc_ttl ~/foo_wrf.nc # Answers
 ncks -C -s "%8.3e, " -v flx_mss_vrt_dst_nrm,flx_mss_vrt_dst_nrm_crc ~/foo_wrf.nc # Answers formatted
  */
 
@@ -35,9 +38,10 @@ pi@long_name="Pi";
 pi@units="fraction";
 
 defdim("dmt",8); // [nbr] Diameter dimension
-dmt_min[dmt]={0.0390625,0.078125,0.15625,0.3125,0.625,1.25,2.5,5.0}; // [um] Minimum diameter
-dmt_max[dmt]={0.078125,0.15625,0.3125,0.625,1.25,2.5,5.0,10.0}; // [um] Maximum diameter
+dmt_min[dmt]={0.0390625, 0.078125, 0.15625, 0.3125, 0.625, 1.25, 2.5,  5.0}; // [um] Minimum diameter
+dmt_max[dmt]={0.078125 , 0.15625 , 0.3125 , 0.625,  1.25 , 2.5 , 5.0, 10.0}; // [um] Maximum diameter
 dmt_vma[dmt]=3.5; // [um] Volume median diameter analytic
+dns_prt[dmt]=2500.0; // [kg m-3] Density of particle
 
 // Set coordinate equal to number median diamter for now
 dmt_ctr=0.5*(dmt_min+dmt_max); // [um] Diameter at bin center
@@ -83,19 +87,36 @@ dmt_min@units="micron";
 dmt_max@long_name="Maximum diameter";
 dmt_max@units="micron";
 
-// ncap2 -v -O -s "gsd=2.0;dmt_vma=2.5;dmt_min=5.0;dmt_max=10.0;ovr_frc=0.5*(erf(log(dmt_max/dmt_vma)/(sqrt(2.0)*log(gsd)))-erf(log(dmt_min/dmt_vma)/(sqrt(2.0)*log(gsd))))));" ${HOME}/nco/data/in.nc ~/foo.nc;ncks -H -C -u ~/foo.nc
-ovr_frc=0.5*(erf(log(dmt_max/dmt_vma)/(sqrt(2.0)*log(gsd)))-erf(log(dmt_min/dmt_vma)/(sqrt(2.0)*log(gsd)))); // [frc] Fraction of lognormal distribution between endpoints
-ovr_frc@long_name="Fraction of lognormal distribution between endpoints";
-ovr_frc@units="fraction";
+// ncap2 -v -O -s "gsd=2.0;dmt_vma=2.5;dmt_min=5.0;dmt_max=10.0;ovr_mss_frc=0.5*(erf(log(dmt_max/dmt_vma)/(sqrt(2.0)*log(gsd)))-erf(log(dmt_min/dmt_vma)/(sqrt(2.0)*log(gsd))))));" ${HOME}/nco/data/in.nc ~/foo.nc;ncks -H -C -u ~/foo.nc
+ovr_mss_frc=0.5*(erf(log(dmt_max/dmt_vma)/(sqrt(2.0)*log(gsd)))-erf(log(dmt_min/dmt_vma)/(sqrt(2.0)*log(gsd)))); // [frc] Fraction of lognormal mass distribution between endpoints
+ovr_mss_frc@long_name="Fraction of lognormal mass distribution between endpoints";
+ovr_mss_frc@units="fraction";
 
-ovr_frc_ttl=sum(ovr_frc); // [frc] Sum of overlap fractions
-ovr_frc_ttl@long_name="Sum of overlap fractions";
-ovr_frc_ttl@units="fraction";
+ovr_mss_frc_ttl=ovr_mss_frc.total(); // [frc] Sum of mass overlap fractions
+ovr_mss_frc_ttl@long_name="Sum of mass overlap fractions";
+ovr_mss_frc_ttl@units="fraction";
 
-ovr_frc_nrm=ovr_frc/ovr_frc_ttl; // [frc] Normalized overlap fractions
-ovr_frc_nrm@long_name="Normalized overlap fractions";
-ovr_frc_nrm@units="fraction";
+ovr_mss_frc_nrm=ovr_mss_frc/ovr_mss_frc_ttl; // [frc] Normalized mass overlap fractions
+ovr_mss_frc_nrm@long_name="Normalized mass overlap fractions";
+ovr_mss_frc_nrm@units="fraction";
 
-ovr_frc_nrm_ttl=sum(ovr_frc_nrm); // [frc] Sum of normalized overlap fractions
-ovr_frc_nrm_ttl@long_name="Sum of normalized overlap fractions";
-ovr_frc_nrm_ttl@units="fraction";
+ovr_mss_frc_nrm_ttl=ovr_mss_frc_nrm.total(); // [frc] Sum of normalized mass overlap fractions
+ovr_mss_frc_nrm_ttl@long_name="Sum of normalized mass overlap fractions";
+ovr_mss_frc_nrm_ttl@units="fraction";
+
+// ncap2 -v -O -s "gsd=2.0;dmt_nma=2.5;dmt_min=5.0;dmt_max=10.0;ovr_nbr_frc=0.5*(erf(log(dmt_max/dmt_nma)/(sqrt(2.0)*log(gsd)))-erf(log(dmt_min/dmt_nma)/(sqrt(2.0)*log(gsd))))));" ${HOME}/nco/data/in.nc ~/foo.nc;ncks -H -C -u ~/foo.nc
+ovr_nbr_frc=0.5*(erf(log(dmt_max/dmt_nma)/(sqrt(2.0)*log(gsd)))-erf(log(dmt_min/dmt_nma)/(sqrt(2.0)*log(gsd)))); // [frc] Fraction of lognormal number distribution between endpoints
+ovr_nbr_frc@long_name="Fraction of lognormal number distribution between endpoints";
+ovr_nbr_frc@units="fraction";
+
+ovr_nbr_frc_ttl=ovr_nbr_frc.total(); // [frc] Sum of number overlap fractions
+ovr_nbr_frc_ttl@long_name="Sum of number overlap fractions";
+ovr_nbr_frc_ttl@units="fraction";
+
+ovr_nbr_frc_nrm=ovr_nbr_frc/ovr_nbr_frc_ttl; // [frc] Normalized number overlap fractions
+ovr_nbr_frc_nrm@long_name="Normalized number overlap fractions";
+ovr_nbr_frc_nrm@units="fraction";
+
+ovr_nbr_frc_nrm_ttl=ovr_nbr_frc_nrm.total(); // [frc] Sum of normalized number overlap fractions
+ovr_nbr_frc_nrm_ttl@long_name="Sum of normalized number overlap fractions";
+ovr_nbr_frc_nrm_ttl@units="fraction";
