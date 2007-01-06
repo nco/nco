@@ -1,3 +1,7 @@
+2007-01-05  Charlie Zender  <zender@uci.edu>
+
+	* Add missing #xmp_ncecat link to nco.texi
+
 2006-12-08  Charlie Zender  <zender@uci.edu>
 
 	* nco-3_1_8-1 is in Debian experimental

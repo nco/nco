@@ -4,13 +4,13 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.389 2006-11-25 00:37:52 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.390 2007-01-06 02:28:59 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
 URL: http://nco.sf.net/nco.texi
 
-Copyright (C) 1995--2006 Charlie Zender
+Copyright (C) 1995--2007 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1
 or any later version published by the Free Software Foundation;
@@ -101,10 +101,10 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @c Define edition, date, ...
 @set nco-edition 3.1.8
 @set doc-edition 3.1.8
-@set copyright-years 1995--2006
-@set update-year 2006
-@set update-date 11 November 2006
-@set update-month November 2006
+@set copyright-years 1995--2007
+@set update-year 2007
+@set update-date 5 January 2007
+@set update-month January 2007
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -920,7 +920,7 @@ separately downloaded from the
 @uref{http://my.unidata.ucar.edu/content/software/netcdf/netcdf-4,netCDF4}
 website. 
 We are eager for @acronym{HDF5} to complete netCDF support.
-This is scheduled to occur sometime in 2006, with the releases of 
+This is scheduled to occur sometime in 2007, with the releases of 
 HDF @w{version 1.8} and netCDF @w{version 4}, which are collaborations 
 between Unidata and @acronym{NCSA}. 
 @acronym{NCO} version 3.0.3 added support for reading/writing
@@ -6629,6 +6629,9 @@ Normally this means all the input files are the same size, and contain
 data on different realizations of the same variables.
 
 @noindent
+@html
+<a name="xmp_ncecat"></a> <!-- http://nco.sf.net/nco.html#xmp_ncecat -->
+@end html
 EXAMPLES
 
 Consider a model experiment which generated five realizations of one
