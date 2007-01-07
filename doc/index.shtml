@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.379 2006-12-15 02:50:23 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.380 2007-01-07 00:31:28 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -58,8 +58,7 @@ Try to disable Spammers' machines:
 <p><hr width="100%"></p>
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
-If you like NCO and want to support its further development with a
-little money, click on the PayPal button: 
+You may donate to the NCO development effort through PayPal:
 <center><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 <input type="hidden" name="cmd" value="_xclick">
 <input type="hidden" name="business" value="zender@uci.edu">
