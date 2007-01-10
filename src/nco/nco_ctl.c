@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.166 2006-11-22 20:06:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.167 2007-01-10 01:34:00 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -101,7 +101,7 @@ nco_ddra /* [fnc] Count operations */
   const char fnc_nm[]="nco_ddra()";
   
   /* Following speed parameter estimates are for clay.ess.uci.edu 
-     clay is the dual opteron used in ppr_ZeM06 */
+     clay is the dual opteron used in ppr_ZeM07 */
   const float ntg_nbr_brd_fdg_fct=1.8; /* [frc] Empirical correction to broadcasting */
   const float spd_flp_ncwa=153e6; /* [# s-1] Floating point operation speed */
   const float spd_ntg_ncwa=200e6; /* [# s-1] Integer operation speed */
