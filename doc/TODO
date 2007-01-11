@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.841 2006-12-05 01:50:38 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.842 2007-01-11 01:53:32 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -543,7 +543,9 @@ nco797. Find Fedora core machine to try RPM builds on
 nco798. Try Opendap 3.6.2 beta compatible
 nco799. Extend -n 3,4,1 NINTAP switch to handle regular expressions
 nco800. Extend -n 3,4,1 NINTAP switch to -n 3,4,1,offset to work with CCSM patterns
-nco801. 
+nco801. ncwa missing value problems?:
+	ncwa -a time ~/all.nc ~/all-mean.nc
+nco802. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
