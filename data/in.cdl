@@ -40,7 +40,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.73 2006-11-24 20:19:39 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.74 2007-01-13 05:45:57 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -597,6 +597,14 @@ variables:
 	v:long_name = "Meridional wind speed";
 	v:units = "meter second-1";
 
+	float var_nm-dash;
+	var_nm-dash:long_name = "Variable and attribute names include dash characters";
+	var_nm-dash:att_nm-dash = 1.0e36f;
+
+	float var_nm.dot;
+	var_nm.dot:long_name = "Variable and attribute names include dot characters";
+	var_nm.dot:att_nm.dot = 1.0e36f;
+
 data:
 	att_var=10.;
 	bnd_var=1,2,3,4,5,6;
@@ -802,6 +810,8 @@ data:
 	val_one_mss=1.,1.0e36;
 	val_one_mss_int=1,-99;
 	val_one_one_int=1,1;
+	var_nm-dash=1.0;
+	var_nm.dot=1.0;
 	weight=10.,10.;
 	wgt_one=1.,1.;
 	wvl=0.5e-6,1.0e-6;

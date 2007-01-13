@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.58 2006-11-02 01:38:32 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.59 2007-01-13 05:45:58 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -145,6 +145,7 @@
    LPH [A-Za-z_] Alphabetic character
    LPHDGT [A-Za-z0-9_] Alphanumeric character
    XPN [eE][+-]?[0-9]+ Real number Exponent */
+DOT '.'
 DGT [0-9]
 LPH [A-Za-z_]
 LPHDGT [A-Za-z0-9_]
@@ -414,8 +415,6 @@ short/[ ]*\( { lval_ptr->cnv_type = NC_SHORT;return CNV_TYPE;}
 int/[ ]*\( { lval_ptr->cnv_type = NC_INT;return CNV_TYPE;} 
 float/[ ]*\( { lval_ptr->cnv_type = NC_FLOAT;return CNV_TYPE;} 
 double/[ ]*\( { lval_ptr->cnv_type = NC_DOUBLE;return CNV_TYPE;} 
-
-
 
 M_PI {return NAMED_CONSTANT;}
 

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.843 2007-01-12 01:27:15 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.844 2007-01-13 05:45:58 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -543,7 +543,12 @@ nco797. Find Fedora core machine to try RPM builds on
 nco798. Try Opendap 3.6.2 beta compatible
 nco799. Extend -n 3,4,1 NINTAP switch to handle regular expressions
 nco800. Extend -n 3,4,1 NINTAP switch to -n 3,4,1,offset to work with CCSM patterns
-nco802. 
+nco802. Handle dashes and dots in ncap2: use backslashes for quoting?
+	ncks -H -v var_nm-dash,var_nm.dot ~/nco/data/in.nc
+	ncea -O -v var_nm-dash,var_nm.dot -p ~/nco/data in.nc in.nc ~/foo.nc
+	ncks ~/foo.nc
+	ncap2 -O -v -s "var_out=var_nm-dash+var_nm.dot" ~/nco/data/in.nc ~/foo.nc
+nco803.
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

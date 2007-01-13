@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.390 2007-01-06 02:28:59 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.391 2007-01-13 05:45:58 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2609,7 +2609,7 @@ accessible by a @acronym{OPeNDAP} server.
 This command tests the basic functionality of @acronym{OPeNDAP}-enabled  
 @acronym{NCO} clients: 
 @example
-% ncks -o ~/foo.nc -O -C -H -v one -C -l /tmp \
+% ncks -o ~/foo.nc -O -C -H -v one -l /tmp \
   -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
 one = 1
 % ncks -H -v one ~/foo.nc

@@ -12,14 +12,10 @@ header {
     #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
-    
 }
 options {
 	language="Cpp";
 }
-
-
-
 
 class ncoParser extends Parser;
 options {
@@ -362,11 +358,10 @@ protected LPH:     ( 'a'..'z' | 'A'..'Z' | '_' );
 protected LPHDGT:  ( 'a'..'z' | 'A'..'Z' | '_' | '0'..'9');
 protected XPN:     ( 'e' | 'E' ) ( '+' | '-' )? ('0'..'9')+ ;
 
-
 protected BLASTOUT: .
          {
-          // blast out of lexer & parser
-          // Can't use RecognitionException() as 
+          // Blast out of lexer and parser
+          // Cannot use RecognitionException() as 
           // this is caught in lexer -- use TokenStreamRecognitionException()
           // instead -- This takes us back to try block in Invoke          
 
@@ -380,7 +375,6 @@ protected BLASTOUT: .
          }  
     ;     
 
-
 UNUSED_OPS: ( "%=" | "^=" | "&=" | "|=" ) {
   
           ostringstream os;
@@ -391,7 +385,6 @@ UNUSED_OPS: ( "%=" | "^=" | "&=" | "|=" ) {
           throw  ANTLR_USE_NAMESPACE(antlr)TokenStreamRecognitionException(re);
          }  
     ;    
-
 
 // Whitespace -- ignored
 Whitespace	
