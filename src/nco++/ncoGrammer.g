@@ -1453,17 +1453,6 @@ out returns [var_sct *var]
             // de-reference 
             ddra_info_sct ddra_info;        
             
-            dmn_sct **dims;    
-
-
-            if(var1->undefined || prs_arg->ntl_scn){ 
-              var1=nco_var_free(var1);
-              var=ncap_var_udf("_dot_methods");
-              // n.b can't use return -- as this results with
-              // problems with automagically generated code 
-              goto end_dot;
-            }
-
             // blow out if unrecognized method
             if(mtd->getType()==VAR_ID){
               std::string serr;
@@ -1504,6 +1493,38 @@ out returns [var_sct *var]
 
               dmn_vtr=ncap_dmn_mtd(var1, str_vtr, prs_arg);
               }           
+
+
+            // Initial scan 
+            if(prs_arg->ntl_scn){
+              nbr_dim=var1->nbr_dim;
+
+              if(var1->undefined)
+                var=ncap_var_udf("_dot_methods");  
+              // deal with average over all dims or scalar var
+              else if( nbr_dim==0 || dmn_vtr.size()== 0 || dmn_vtr.size()==nbr_dim)  
+                var=ncap_sclr_var_mk("_dot_methods",var->type);    
+              else {
+              // cast a variable with the correct dims in the correct order
+               dim=var1->dim;
+                NcapVector<std::string> cst_vtr;              
+
+                for(idx=0 ; idx < nbr_dim ; idx++){
+                  std::string sdm(dim[idx]->nm);    
+                  if( dmn_vtr.findi(sdm) == -1)
+                     cst_vtr.push(sdm);       
+                }                
+            
+                var=ncap_cst_mk(cst_vtr,prs_arg);
+                var=nco_var_cnf_typ(var1->type,var);
+               }
+
+              var1=nco_var_free(var1);
+              // n.b can't use return -- as this results with
+              // problems with automagically generated code 
+              goto end_dot;
+            }
+
 
 
               if(dmn_vtr.size() >0){
@@ -1865,12 +1886,12 @@ end: ;
          
          rRef=vlst->getFirstChild();
 
-         //if Initial scan return undefined
+         /*
          if(prs_arg->ntl_scn){
               var=ncap_var_udf("_zz@value_list");  
               return var;
          }   
-
+         */
 
          while(rRef){
            exp_vtr.push_back(out(rRef));   
@@ -1881,6 +1902,32 @@ end: ;
          // find highest type
          for(idx=0;idx <nbr_lst ;idx++)
            if(exp_vtr[idx]->type > type) type=exp_vtr[idx]->type;     
+
+
+         // Inital Scan
+         if(prs_arg->ntl_scn){
+           for(idx=0 ; idx <nbr_lst ; idx++) 
+            if(exp_vtr[idx]->undefined) break;
+
+           // Exit if an element in the list is "undefined" 
+           if(idx < nbr_lst){ 
+             var_ret=ncap_var_udf("_zz@value_list");  
+             goto end_val;  
+           }
+
+           var_ret=(var_sct *)nco_malloc(sizeof(var_sct));
+           /* Set defaults */
+           (void)var_dfl_set(var_ret); 
+
+           /* Overwrite with attribute expression information */
+           var_ret->nm=strdup("_zz@value_list");
+           var_ret->nbr_dim=0;
+           var_ret->sz=nbr_lst;
+           var_ret->type=type;
+           
+           goto end_val;          
+
+         } // end initial scan
 
          // convert every element in vector to highest type
          for(idx=0;idx <nbr_lst ;idx++)
@@ -1905,7 +1952,7 @@ end: ;
          }    
          
          // Free vector        
-         for(idx=0 ; idx < nbr_lst ; idx++)
+end_val: for(idx=0 ; idx < nbr_lst ; idx++)
            (void)nco_var_free(exp_vtr[idx]);    
 
          var=var_ret;
