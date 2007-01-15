@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.381 2007-01-10 01:34:00 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.382 2007-01-15 00:17:42 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -602,7 +602,7 @@ to these
 <hr></p>
 
 <!-- http://nco.sf.net#RTFM -->
-<dt><a name="RTFM"></a></dt>
+`<<dt><a name="RTFM"></a></dt>
 <h2>Documentation and User's Guide</h2> 
 <p>View the NCO User's Guide in any of these formats:
 <ul>
