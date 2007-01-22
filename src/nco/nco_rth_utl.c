@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.25 2006-04-21 20:33:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.26 2007-01-22 04:04:24 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
-/* Copyright (C) 1995--2006 Charlie Zender
+/* Copyright (C) 1995--2007 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 

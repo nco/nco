@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.97 2006-11-02 01:38:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.98 2007-01-22 04:04:24 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
 /* Purpose: Rename dimensions, variables, and attributes of a netCDF file */
 
-/* Copyright (C) 1995--2006 Charlie Zender
+/* Copyright (C) 1995--2007 Charlie Zender
 
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.97 2006-11-02 01:38:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.97 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.98 2007-01-22 04:04:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.98 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)

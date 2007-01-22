@@ -1,3 +1,9 @@
+2007-01-21  Charlie Zender  <zender@uci.edu>
+
+	* Change copyright year to 2007
+
+	* Built and tested with libdap-3.7.3 and libnc-dap-3.7.0
+
 2007-01-12  Charlie Zender  <zender@uci.edu>
 
 	* Add variables and attributes with dashes and dots to in.cdl

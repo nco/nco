@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.35 2006-05-05 01:12:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.36 2007-01-22 04:04:23 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
-/* Copyright (C) 1995--2006 Charlie Zender and Henry Butowsky
+/* Copyright (C) 1995--2007 Charlie Zender and Henry Butowsky
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 

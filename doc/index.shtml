@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.382 2007-01-15 00:17:42 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.383 2007-01-22 04:04:22 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -814,8 +814,9 @@ To build NCO versions &ge;&nbsp;3.0.0 with older netCDF versions
 Do this, e.g., with <tt>CPPFLAGS='-DNC_64BIT_OFFSET=0'</tt> or
 <tt>USR_TKN='-DNC_64BIT_OFFSET=0'</tt> if you use <tt>configure</tt> 
 or <tt>bld/Makefile</tt>, respectively.
-Users attempting to build NCO with OPeNDAP should use this workaround
-because OPeNDAP only supports netCDF version 3.5 functionality.
+Users attempting to build NCO with OPeNDAP versions &le; 3.6.x may
+need this workaround because OPeNDAP did not fully support netCDF
+version&nbsp;3.6.x functionality until OPeNDAP versions &ge;&nbsp;3.7.0.
 (The indicator for this problem is a build error like 
 <tt>"nco_fl_utl.c", line 30.20: 1506-045 (S) Undeclared identifier
 NC_64BIT_OFFSET</tt>.)  

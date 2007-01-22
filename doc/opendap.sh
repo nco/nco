@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.9 2006-06-16 01:32:24 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/opendap.sh,v 1.10 2007-01-22 04:04:22 zender Exp $
 
 # Purpose: Install OPeNDAP prior to building NCO as DAP-enabled clients
 
@@ -41,37 +41,41 @@
 cd ${DATA}/tmp
 # Remove debris from last DAP install
 /bin/rm -r -f DODS* libnc-dap* libdap*
-wget ftp://ftp.unidata.ucar.edu/pub/opendap/source/libdap-3.6.2.tar.gz
-wget ftp://ftp.unidata.ucar.edu/pub/opendap/source/libnc-dap-3.6.0.tar.gz
+wget ftp://ftp.unidata.ucar.edu/pub/opendap/source/libdap-3.7.3.tar.gz
+wget ftp://ftp.unidata.ucar.edu/pub/opendap/source/libnc-dap-3.7.0.tar.gz
 # Resolve DAP dependencies on external libraries
 apt-file search libcurl.a
-sudo apt-get install libcurl3-dev          
+sudo aptitude install libcurl3-dev          
 apt-file search libxml2.a
-sudo apt-get install libxml2-dev
+sudo aptitude install libxml2-dev
 # Assume tar is GNU tar, otherwise must gunzip tarballs first
 # NCO only needs these packages pre-installed to enable NCO as DAP clients...
-tar xvzf libdap-3.6.2.tar.gz # Provides libdap++.a
-tar xvzf libnc-dap-3.6.0.tar.gz # Provides libnc-dap.a
+tar xvzf libdap-3.7.3.tar.gz # Provides libdap++.a
+tar xvzf libnc-dap-3.7.0.tar.gz # Provides libnc-dap.a
 
-# Go to common source directory shared by all DAP packages
-cd ${DATA}/tmp/libdap-3.6.2
 # Set permanent installation directory (/tmp is not permanent!)
-export DAP_ROOT=/usr/local # For server (rather than private) installs
+export DAP_ROOT='/usr/local' # For server (rather than private) installs
 #export DAP_ROOT=`pwd` 
+sudo /bin/rm -r ${DAP_ROOT}/include/libdap ${DAP_ROOT}/include/libnc-dap
+sudo /bin/rm ${DAP_ROOT}/lib/libdap* ${DAP_ROOT}/lib/libnc-dap*
+# Go to common source directory shared by all DAP packages
+cd ${DATA}/tmp/libdap-3.7.3
 # Set compiler environment variables CC and CXX before building
 # export OBJECT_MODE='64' # AIX-specific hack
 # AIX:
 # CC='xlc_r' CFLAGS='-qsmp=omp' CXX='xlC_r' LDFLAGS='-brtl' FC='g95' ./configure --prefix=${DAP_ROOT}
 # LINUX:
-FC='g95' ./configure --prefix=${DAP_ROOT}
+FC='gfortran' ./configure --prefix=${DAP_ROOT}
+#FC='g95' ./configure --prefix=${DAP_ROOT}
 # CC='icc -std=c99' CFLAGS='-O3 -g -mp -w1' CPPFLAGS='' CXX='icpc' CXXFLAGS='-O3 -g -mp -w1' FC='ifort' FFLAGS='-O3 -g -axW -mp -vec_report1' F90FLAGS='-O3 -g -axW -mp -vec_report1' ./configure --prefix=${DAP_ROOT}
 # LINUXAMD64: Explicitly set 64-bit?
 # CFLAGS='-m64' CXXFLAGS='-m64' ./configure --prefix=${DAP_ROOT}
 # Build necessary libraries
 make
 sudo make install
-cd ${DATA}/tmp/libnc-dap-3.6.0
-FC='g95' ./configure --prefix=${DAP_ROOT}
+cd ${DATA}/tmp/libnc-dap-3.7.0
+FC='gfortran' ./configure --prefix=${DAP_ROOT}
+#FC='g95' ./configure --prefix=${DAP_ROOT}
 make
 sudo make install
 

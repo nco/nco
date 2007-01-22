@@ -23,13 +23,12 @@
     #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
-    
 
-#line 29 "ncoParser.hpp"
+#line 28 "ncoParser.hpp"
 class CUSTOM_API ncoParser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public ncoParserTokenTypes
 {
 #line 1 "ncoGrammer.g"
-#line 33 "ncoParser.hpp"
+#line 32 "ncoParser.hpp"
 public:
 	void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
 protected:

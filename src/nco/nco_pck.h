@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.40 2006-06-07 18:06:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.41 2007-01-22 04:04:23 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
-/* Copyright (C) 1995--2006 Charlie Zender
+/* Copyright (C) 1995--2007 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 

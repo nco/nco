@@ -21,12 +21,11 @@
     #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
-    
 
-#line 27 "ncoTree.hpp"
+#line 26 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 465 "ncoGrammer.g"
+#line 458 "ncoGrammer.g"
 
 
 private:
@@ -331,7 +330,7 @@ exit: ;
     } // end run_exe
 
 
-#line 31 "ncoTree.hpp"
+#line 30 "ncoTree.hpp"
 public:
 	ncoTree();
 	static void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );

@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.h,v 1.17 2006-08-23 01:58:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.h,v 1.18 2007-01-22 04:04:23 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
-/* Copyright (C) 1995--2006 Charlie Zender
+/* Copyright (C) 1995--2007 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
