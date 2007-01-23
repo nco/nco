@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.48 2007-01-22 04:04:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.49 2007-01-23 04:41:06 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -230,8 +230,6 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
       AVG_DMN_ARE_MRV=True; /* [flg] Avergaging dimensions are MRV dimensions */
     } /* idx != dmn_fix_nbr */
     
-  /* got to here with rdd mods */
-
     /* MRV algorithm simply skips this collection step 
        Some DDRA benchmarks need to know cost of collection
        Always invoke collection step by uncommenting following line: */
@@ -405,7 +403,7 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
      result in corresponding element in second operand. 
      Currently arithmetic operation performed is summation of elements in op1
      Input operands are assumed to have conforming types, but not dimensions or sizes
-     nco_var_avg_reduce() knows nothing about dimensions
+     nco_var_avg_reduce_ttl() knows nothing about dimensions
      Routine is one dimensional array operator acting serially on each element of input buffer op1
      Calling rouine knows exactly how rank of output, op2, is reduced from rank of input
      Routine only does summation rather than averaging in order to remain flexible
