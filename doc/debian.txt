@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.74 2006-12-15 02:50:23 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.75 2007-01-24 18:08:31 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -90,7 +90,7 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
 # versions in configure.in, debian/files, doc/ANNOUNCE, doc/debian.txt,
 # doc/index.shtml, doc/nco.texi, bld/nco_dst.pl, doc/VERSION 
    cd ~/nco/debian
-   dch -v 3.1.8-1 # Update changelog
+   dch -v 3.1.8-2 # Update changelog
 # For unknown reason rules file may lose its executable bit
    chmod a+x ~/nco/debian/rules
 # Build Debs using Debian libraries and include
@@ -101,10 +101,10 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
    ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-3_1_8
 
 # Location of build diagnostics for mentors to help 
-http://dust.ess.uci.edu/nco/src/nco_3.1.8-1.dpkg-buildpackage.txt
-http://dust.ess.uci.edu/nco/src/nco_3.1.8-1.dsc
-http://dust.ess.uci.edu/nco/src/nco_3.1.8-1_i386.changes
-http://dust.ess.uci.edu/nco/src/nco_3.1.8-1_i386.deb
+http://dust.ess.uci.edu/nco/src/nco_3.1.8-2.dpkg-buildpackage.txt
+http://dust.ess.uci.edu/nco/src/nco_3.1.8-2.dsc
+http://dust.ess.uci.edu/nco/src/nco_3.1.8-2_i386.changes
+http://dust.ess.uci.edu/nco/src/nco_3.1.8-2_i386.deb
 http://dust.ess.uci.edu/nco/src/nco_3.1.8.orig.tar.gz
 
 # Becoming a Debian developer
@@ -152,9 +152,9 @@ mv ${DATA}/debian ./nco-3.1.8 # Replace debian directory
 /bin/rm -f ./nco-3.1.8/debian/.cvsignore # Remove cvsignore before deb build
 cd ${DATA}/nco-3.1.8;dpkg-buildpackage -rfakeroot -uc -us > ~/foo.nco 2>&1
 sudo dpkg --remove nco
-sudo dpkg --install ${DATA}/nco_3.1.8-1_*.deb
-lintian ${DATA}/nco_3.1.8-1_*.deb
-linda ${DATA}/nco_3.1.8-1_*.deb
+sudo dpkg --install ${DATA}/nco_3.1.8-2_*.deb
+lintian ${DATA}/nco_3.1.8-2_*.deb
+linda ${DATA}/nco_3.1.8-2_*.deb
 ls -l ${DATA}/nco_3.1.8*
 m ~/foo.nco
 scp ${DATA}/nco_3.1.8* dust.ess.uci.edu:/var/www/html/nco/src
