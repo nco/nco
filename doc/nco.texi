@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.392 2007-01-22 04:04:22 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.393 2007-01-26 16:28:57 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4274,6 +4274,13 @@ than the number of time samples.
 The procedure to compute the variance is identical except for the use of
 @samp{-y var} instead of @samp{-y rmssdn} in the final step.
 
+@command{ncap2} can alsocompute statistics like standard deviations.
+@example
+ncap2 -s "prs_sfc_anm=prs_sfc-prs_sfc.avg($time)" 
+      -s "(1.0/($time.size-1))*sqrt((prs_sfc_anm^2).total($time))"
+      in.nc out.nc
+@end example
+
 The procedure to compute the spatial standard deviation of a field
 in a single file @file{in.nc} involves three steps.
 @example
@@ -5722,6 +5729,15 @@ obtained by replacing the step involving @command{ncap2} with
 @example
 ncap2 -O -s "uprmvprm=(u-uavg)*(v-vavg)" foo.nc foo.nc # Covariance
 @end example
+
+As of @acronym{NCO} version 3.1.8 (December, 2006), @command{ncap2}
+can compute averages, and thus covariances, by itself:
+@example
+ncap2 -O -s "uavg=u.avg($time);vavg=v.avg($time);uprmvprm=u*v-uavg*vavg" \
+         -s "uprmvrpmavg=uprmvprm.avg($time)" in.nc foo.nc
+@end example
+We have not seen a simpler method to script and execute powerful
+arithmetic than @command{ncap2}.
 
 @cindex appending data
 @cindex time-averaging
