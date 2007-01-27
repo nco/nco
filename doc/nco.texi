@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.393 2007-01-26 16:28:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.394 2007-01-27 02:02:25 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,7 +103,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.1.8
 @set copyright-years 1995--2007
 @set update-year 2007
-@set update-date 21 January 2007
+@set update-date 26 January 2007
 @set update-month January 2007
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -3964,7 +3964,7 @@ Packing and unpacking individual variables may be done with
 @cindex @code{--operation @var{op_typ}}
 @cindex @code{--op_typ @var{op_typ}}
 @cartouche
-Availability: @command{ncra}, @command{ncea}, @command{ncwa}@*
+Availability: @command{ncap2}, @command{ncra}, @command{ncea}, @command{ncwa}@*
 Short options: @samp{-y}@*
 Long options: @samp{--operation}, @samp{--op_typ}@*
 @end cartouche
@@ -4274,12 +4274,27 @@ than the number of time samples.
 The procedure to compute the variance is identical except for the use of
 @samp{-y var} instead of @samp{-y rmssdn} in the final step.
 
-@command{ncap2} can alsocompute statistics like standard deviations.
+@command{ncap2} can also compute statistics like standard deviations.
+Brute-force implementation of formulae is one option, e.g.,
 @example
-ncap2 -s "prs_sfc_anm=prs_sfc-prs_sfc.avg($time)" 
-      -s "(1.0/($time.size-1))*sqrt((prs_sfc_anm^2).total($time))"
+ncap2 -s "prs_sfc_sdn=sqrt((prs_sfc-prs_sfc.avg($time)^2).total($time))/($time.size-1)"
       in.nc out.nc
 @end example
+The operation may, of course, be broken into multiple steps in order 
+to archive intermediate quantities, such as the time-anomalies
+@example
+ncap2 -s "prs_sfc_anm=prs_sfc-prs_sfc.avg($time)"
+      -s "prs_sfc_sdn=sqrt((prs_sfc_anm^2).total($time))/($time.size-1)"
+      in.nc out.nc
+@end example
+
+@command{ncap2} supports intrinsic standard deviation functions
+(@pxref{Operation Types}) which simplify the above expression to
+@example
+ncap2 -s "prs_sfc_sdn=prs_sfc.rmssdn($time)" in.nc out.nc
+@end example
+These instrinsic functions return the answer in the fastest, most
+concise way possible. 
 
 The procedure to compute the spatial standard deviation of a field
 in a single file @file{in.nc} involves three steps.
@@ -4299,6 +4314,14 @@ The initial output file is then overwritten with the gridpoint
 deviations from the spatial mean.
 Finally the root-mean-square of the appropriately weighted spatial
 deviations is taken.  
+
+The @command{ncap2} solution to the spatially-weighted standard
+deviation problem is 
+@example
+ncap2 -s "prs_sfc_sdn=(prs_sfc*gw).rmssdn($lat,$lon)" in.nc out.nc
+@end example
+Note that weight multiplies the variable prior to computing the
+standard deviation.
 
 The procedure to compute the standard deviation of a time-series across
 multiple files involves one extra step since all the input must first be
