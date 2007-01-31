@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_swamp,v 1.60 2007-01-31 00:28:52 wangd Exp $
+# $Id: dap_nc_swamp,v 1.61 2007-01-31 01:19:15 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -251,7 +251,7 @@ def prestartLogging():
         import cStringIO
         local.logfile = cStringIO.StringIO()
         p = str(local.mypid)
-        local.logfile.write("SSDAP/SWAMP dap_handler_hack %s\n" % "$Revision: 1.60 $")
+        local.logfile.write("SSDAP/SWAMP dap_handler_hack %s\n" % "$Revision: 1.61 $")
         local.logfile.write("handler "+p+" log open at " + time.ctime()+"\n")
 def startLogging():
     """Officially start the logging system."""
@@ -772,7 +772,7 @@ class DepTracker:
 # we will use SQLite
 ##########################################################################
 try:
-    from ssdap_dbutil import *
+    from swamp_dbutil import *
 except ImportError:
     # if the import fails, we will get a symbol error when
     # we try to use ssdap_dbutil symbols.
@@ -1885,8 +1885,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2007-01-31 00:28:52 $
-   Version:	$Revision: 1.60 $
+   Date:	$Date: 2007-01-31 01:19:15 $
+   Version:	$Revision: 1.61 $
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()
