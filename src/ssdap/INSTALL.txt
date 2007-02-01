@@ -1,0 +1,19 @@
+SWAMP -- the Script Workflow Analysis for MultiProcessing system
+First version, 2006
+Author: Daniel L. Wang, wangd@uci.edu
+--------------------------------------------------
+
+System requirements:
+-- NCO, the netCDF Operators http://nco.sourceforge.net  
+   SWAMP has been tested with NCO 3.
+  
+
+Install steps:
+-- Configure OPeNDAP to use SWAMP as its netCDF (.nc) handler.
+Edit dap-server.rc, located in the same directory as OPeNDAP's nph-dods.  Probably at /var/www/cgi-bin/dap-server.rc
+  Look for existing "handler ... dap_nc_handler line"
+  Note the existing path to dap_nc_handler
+  Replace with path to dap_nc_swamp
+
+-- Configure SWAMP in swamp_handler.conf --> should be placed in the same place as dap_nc_swamp
+  
