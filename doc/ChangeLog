@@ -1,3 +1,7 @@
+2007-01-30  Daniel L. Wang  <wangd@uci.edu>
+
+	* Changed names in ssdap/ to reflect name change from SSDAP to SWAMP
+
 2007-01-24  Charlie Zender  <zender@uci.edu>
 
 	* Committing nco-3_1_8-2 for upload to Debian unstable
