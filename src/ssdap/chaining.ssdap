@@ -1,4 +1,4 @@
-ncecat -h -O    -n 3,2,1 nco_bm/skn_lgs_00.nc %tempf_01%
+ncecat -h -O    -n 3,2,1 dodsdata/skn_lgs_00.nc %tempf_01%
 ncwa -h -O    %tempf_01% %tempf_02%
 ncecat %tempf_02% %outfile%
 # ncks -C -H -s '%f' -v PO2 $tempf_02% %stdouterr%

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- mode: python -*- $Id: ssdebug,v 1.3 2006-10-11 23:44:29 wangd Exp $
+# -*- mode: python -*- $Id: ssdebug,v 1.4 2007-02-03 01:04:18 wangd Exp $
 import os, sys
 import cgitb
 import cgi
@@ -110,7 +110,7 @@ class External:
         print 
         print "<html><head><title>simple ssdap serverside</title></head>"
         print "<h1></h1>"
-        print "<P>Hello, ssdap serverside debugger!</p>"
+        print "<P>Hello, swamp serverside debugger!</p>"
     def parseParams(self):
         self.form = cgi.FieldStorage()
     def complain(self):
@@ -123,11 +123,11 @@ class External:
             output = s.execute(action, self.form, self.complain)
             if output == None:
                 print "Action", action, " returned nothing"
-                self.complain()
             else:
                 print output
             print "</pre>"
         else:
+            print s.execute("help",{},self.complain)
             self.complain()
     def close(self):
         print "\n</body></html>\n"

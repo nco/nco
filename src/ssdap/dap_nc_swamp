@@ -4,10 +4,13 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_swamp,v 1.61 2007-01-31 01:19:15 wangd Exp $
+# $Id: dap_nc_swamp,v 1.62 2007-02-03 01:04:18 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
+
+### Temporary (1/31/07) TODO
+# - pick commonly available paths as defaults in configuration.
 
 # we potentially have to handle: das, dds, dods, ascii, info
 # das -- ??
@@ -72,7 +75,7 @@ class local:
 # line. An opendap url is currently detected by looking for an
 # http:// prefix.
 #
-# This script looks for a config file "ssdap_handler.conf",
+# This script looks for a config file "swamp_handler.conf",
 # located in the same directory as itself (via checking argv[0]).   
 
 
@@ -185,7 +188,7 @@ class SsdapCommon:
 ############################################################
 # config file reader
 
-def readConfigFile(fname = "ssdap_handler.conf"):
+def readConfigFile(fname = "swamp_handler.conf"):
     # can add other mappings from config file to local settings"
     # set some defaults.
     # form: (local varname, section, item, defaultvalue)
@@ -251,7 +254,7 @@ def prestartLogging():
         import cStringIO
         local.logfile = cStringIO.StringIO()
         p = str(local.mypid)
-        local.logfile.write("SSDAP/SWAMP dap_handler_hack %s\n" % "$Revision: 1.61 $")
+        local.logfile.write("SSDAP/SWAMP dap_handler_hack %s\n" % "$Revision: 1.62 $")
         local.logfile.write("handler "+p+" log open at " + time.ctime()+"\n")
 def startLogging():
     """Officially start the logging system."""
@@ -850,7 +853,7 @@ class ScriptingEnv:
                 if self.trans is None:
                     jp = self.instFunc()
                     self.trans = jp.newPopulationTransaction()
-                print "persisting ",str(command)
+                    #print "persisting ",str(command)
                 self.persFunc(command, self.trans)
             def close(self):
                 if self.trans is not None:
@@ -987,13 +990,14 @@ class ScriptingEnv:
          pass
 
     def serialExec(self):
-         for c in self.commandLine:
-             logit("Starting " + str(c))
-             self.markCmdStart(c)
-             self.runCmdRaw(c)
-             self.markCmdFinish(c)
-             logit("Finished cmd exec")
-         pass
+        #print self.commands
+        for c in self.commands:
+            logit("Starting " + str(c.cmdLine))
+            self.markCmdStart(c)
+            self.runCmdRaw(c)
+            self.markCmdFinish(c)
+            logit("Finished cmd exec")
+        pass
     def runCmdRaw(self, cmd):
          outFd = os.devnull
          if cmd.saveOutput == True:
@@ -1885,8 +1889,8 @@ class Popen3:
 
    Source credit: 
    http://www.python.org/doc/faq/library.html
-   Date:	$Date: 2007-01-31 01:19:15 $
-   Version:	$Revision: 1.61 $
+   Date:	<Date: 2005-12-16 19:21:20 -0700 (Fri, 16 Dec 2005) >
+   Version:	<Revision: 8684 >
    """
    def __init__(self,command,input=None,capturestderr=None):
        #outfile=tempfile.mktemp()
