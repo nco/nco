@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.33 2006-12-04 13:38:47 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.34 2007-02-05 15:03:25 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2171,5 +2171,86 @@ sz=prs_arg->ptr_int_vtr->size();
  // empty int_vtr
   for(idx=0 ; idx <sz ; idx++)
    (void)prs_arg->ptr_int_vtr->pop();
+
+}
+
+
+//Extract Lvalues from Expression
+void ncap_mpi_get_lvl(
+RefAST ntr,
+std::vector<std::string> &str_vtr
+)
+{
+  RefAST tr=ntr->getFirstChild();
+ 
+  switch(ntr->getType()){
+    case PLUS_ASSIGN:
+    case MINUS_ASSIGN:
+    case TIMES_ASSIGN:
+    case DIVIDE_ASSIGN:
+      str_vtr.push_back(tr->getText());        
+      (void)ncap_mpi_get_lvl(tr->getNextSibling(),str_vtr);
+      break;
+
+    case ASSIGN:
+      // Grab text from first element in assign ie. text for VAR_ID or ATT_ID
+      str_vtr.push_back(tr->getText());
+      // Check child for LValues in LMT_LIST
+      (void)ncap_mpi_get_lvl(tr,str_vtr);
+      // Process RHS of equal sign
+      (void)ncap_mpi_get_lvl(tr->getNextSibling(),str_vtr);
+      
+      break;
+
+    // All these unary ops are Gauranteed to only
+    // contain VAR_ID or ATT_ID !! no need to error
+    // check
+    case INC:
+    case DEC:
+    case POST_INC:
+    case POST_DEC:
+      str_vtr.push_back(tr->getText());
+      break;
+
+    default:
+        while(tr){
+	 (void)ncap_mpi_get_lvl(tr,str_vtr);
+         tr=tr->getNextSibling();
+        }  
+	break; 
+  }
+     
+} // ncap_mpi_get_lvl   
+
+
+
+// Sort expressions for MPI optimization
+int ncap_mpi_srt(RefAST tr, int icnt)
+{
+const std::string fnc_nm("ncap_mpi_srt"); 
+  int idx;
+  RefAST ntr;
+  // std::vector<std::string> str_vtr; 
+
+    std::cout <<"Sort Expressions Preparation"<<std::endl;    
+    
+    idx=0;ntr=tr;
+
+      while(idx++<icnt ) {
+ 
+	if( ntr->getType() == EXPR ) {
+             std::vector<std::string> str_vtr; 
+             (void)ncap_mpi_get_lvl(ntr->getFirstChild(),str_vtr);
+	     std::cout << ntr->toStringTree();
+	     std::cout <<"---";
+             for(int jdx=0 ; jdx < str_vtr.size() ; jdx++)
+	       std::cout << str_vtr[jdx] <<" ";
+
+	     std::cout<<std::endl;
+	     ntr=ntr->getNextSibling();
+	}
+      }
+    std::cout <<"End Sort Expressions Preparation"<<std::endl;    
+    return 0;
 
 }
