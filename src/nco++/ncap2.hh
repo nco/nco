@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.23 2006-12-04 13:40:41 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.24 2007-02-05 15:04:33 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -242,6 +242,11 @@ void            /* define variables captured on first parse */
 ncap_def_ntl_scn(
 prs_sct *prs_arg);
 
+
+int            /* Sort expressions for MPI Optimization */  
+ncap_mpi_srt(
+RefAST ntr,
+int icnt);
 
 
 NcapVector<dmn_sct*>                /* O [sct] list of new dims to limit over */ 
