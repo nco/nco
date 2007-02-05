@@ -12,10 +12,14 @@ header {
     #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
+    
 }
 options {
 	language="Cpp";
 }
+
+
+
 
 class ncoParser extends Parser;
 options {
@@ -82,10 +86,10 @@ assign_statement:
 
      ; 
 
-hyper_slb: (VAR_ID|ATT_ID) (lmt_list)?
+hyper_slb: (VAR_ID^ |ATT_ID ^) (lmt_list)?
      ;
 
-cast_slb:  (VAR_ID|ATT_ID) dmn_list
+cast_slb:  (VAR_ID^ |ATT_ID^ ) dmn_list
      ;
 
 def_dim:   DEFDIM^ LPAREN! NSTRING COMMA! expr RPAREN! SEMI! 
@@ -358,10 +362,11 @@ protected LPH:     ( 'a'..'z' | 'A'..'Z' | '_' );
 protected LPHDGT:  ( 'a'..'z' | 'A'..'Z' | '_' | '0'..'9');
 protected XPN:     ( 'e' | 'E' ) ( '+' | '-' )? ('0'..'9')+ ;
 
+
 protected BLASTOUT: .
          {
-          // Blast out of lexer and parser
-          // Cannot use RecognitionException() as 
+          // blast out of lexer & parser
+          // Can't use RecognitionException() as 
           // this is caught in lexer -- use TokenStreamRecognitionException()
           // instead -- This takes us back to try block in Invoke          
 
@@ -375,6 +380,7 @@ protected BLASTOUT: .
          }  
     ;     
 
+
 UNUSED_OPS: ( "%=" | "^=" | "&=" | "|=" ) {
   
           ostringstream os;
@@ -385,6 +391,7 @@ UNUSED_OPS: ( "%=" | "^=" | "&=" | "|=" ) {
           throw  ANTLR_USE_NAMESPACE(antlr)TokenStreamRecognitionException(re);
          }  
     ;    
+
 
 // Whitespace -- ignored
 Whitespace	
@@ -691,6 +698,10 @@ public:
     (void)ncap_def_ntl_scn(prs_arg);
     (void)nco_enddef(prs_arg->out_id);  
 
+
+    // Sort expressions - MPI preparation
+    //(void)ncap_mpi_srt(tr,icnt);
+
 small: 
      idx=0;
      ntr=tr;
@@ -865,7 +876,7 @@ assign_ntl returns [var_sct *var]
 {
 const std::string fnc_nm("assign_ntl"); 
 }
-   : (VAR_ID LMT_LIST )=> (vid:VAR_ID lmt:LMT_LIST){
+   : (#(VAR_ID LMT_LIST ))=> #(vid:VAR_ID lmt:LMT_LIST){
 
 
               if(dbg_lvl_get() > 0)
@@ -895,7 +906,7 @@ const std::string fnc_nm("assign_ntl");
                var_nm=(char*)nco_free(var_nm);                                  
         }                    
  
-        | (VAR_ID DMN_LIST )=> (vid1:VAR_ID dmn:DMN_LIST){   
+        | (#(VAR_ID DMN_LIST ))=> #(vid1:VAR_ID dmn:DMN_LIST){   
                                
               int idx;
               const char *var_nm;
@@ -937,7 +948,7 @@ const std::string fnc_nm("assign_ntl");
                  // Cast is applied in VAR_ID action in function out()
                  var_cst=ncap_cst_mk(str_vtr,prs_arg);
 
-                 var1=out(dmn->getNextSibling());
+                 var1=out(vid1->getNextSibling());
                  if(var1->undefined) {
                     var=(var_sct*)NULL;
                  } else {
@@ -998,10 +1009,10 @@ const std::string fnc_nm("assign_ntl");
         
            } // end action
        
-   |   (ATT_ID LMT_LIST)=> (att:ATT_ID LMT_LIST){
+   |   (#(ATT_ID LMT_LIST))=> #(att:ATT_ID LMT_LIST){
         ;
         } 
-   |   (ATT_ID LMT_DMN)=>  (att1:ATT_ID DMN_LIST){
+   |   (#(ATT_ID LMT_DMN))=>  #(att1:ATT_ID DMN_LIST){
         ;
         } 
    | att2:ATT_ID {
@@ -1032,7 +1043,7 @@ assign returns [var_sct *var]
 const std::string fnc_nm("assign"); 
 }
 
-   :   (VAR_ID LMT_LIST )=> (vid:VAR_ID lmt:LMT_LIST){
+   :   (#(VAR_ID LMT_LIST ))=> #(vid:VAR_ID lmt:LMT_LIST){
 
                int idx;
                int jdx;
@@ -1108,7 +1119,7 @@ const std::string fnc_nm("assign");
                    var_lhs->sz *= lmt_vtr[idx]->cnt;
                 }
                // Calculate RHS variable                  
-               var_rhs=out(lmt->getNextSibling());         
+               var_rhs=out(vid->getNextSibling());         
                // Convert to LHS type
                var_rhs=nco_var_cnf_typ(var_lhs->type,var_rhs);             
                
@@ -1170,7 +1181,7 @@ const std::string fnc_nm("assign");
         } // end action
 
         // Deal with LHS casting 
-        | (VAR_ID DMN_LIST )=> (vid1:VAR_ID dmn:DMN_LIST){   
+        | (#(VAR_ID DMN_LIST ))=> #(vid1:VAR_ID dmn:DMN_LIST){   
 
               var_sct *var1;
               NcapVector<std::string> str_vtr;
@@ -1194,7 +1205,7 @@ const std::string fnc_nm("assign");
               }
               // Cast is applied in VAR_ID action in function out()
               var_cst=ncap_cst_mk(str_vtr,prs_arg);     
-              var1=out(dmn->getNextSibling());
+              var1=out(vid1->getNextSibling());
               
               // deal with rhs attribute or rhs hyperslab              
               if( ncap_var_is_att(var1)|| var1->has_dpl_dmn==-1) {
@@ -1278,15 +1289,14 @@ const std::string fnc_nm("assign");
                          
        } // end action
  
-   |   (ATT_ID LMT_LIST) => (att:ATT_ID LMT_LIST){
+   |   (#(ATT_ID LMT_LIST)) => #(att:ATT_ID LMT_LIST){
         ;
         } 
-   |   (ATT_ID LMT_DMN)=> (att1:ATT_ID DMN_LIST){
+   |   (#(ATT_ID LMT_DMN))=> #(att1:ATT_ID DMN_LIST){
         ;
         } 
    |  att2:ATT_ID {
        
-
             var_sct *var1;
             string sa=att2->getText();
 
@@ -1706,7 +1716,7 @@ end_dot: ;
           } // end action 
 
     // Variable with argument list 
-    |  (VAR_ID LMT_LIST) => ( vid:VAR_ID lmt:LMT_LIST) {
+    | (#(VAR_ID LMT_LIST)) => #( vid:VAR_ID lmt:LMT_LIST) {
           int idx;
           int nbr_dmn;
           char *var_nm;
@@ -1885,6 +1895,7 @@ end: ;
          std::vector<var_sct*> exp_vtr;
          
          rRef=vlst->getFirstChild();
+         //rRef=vlst->getNextSibling();
 
          /*
          if(prs_arg->ntl_scn){
@@ -1906,6 +1917,10 @@ end: ;
 
          // Inital Scan
          if(prs_arg->ntl_scn){
+
+           //skip loop if highest type is double 
+           if(type==NC_DOUBLE) idx=nbr_lst;
+
            for(idx=0 ; idx <nbr_lst ; idx++) 
             if(exp_vtr[idx]->undefined) break;
 
