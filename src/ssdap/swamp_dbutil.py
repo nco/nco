@@ -1,10 +1,33 @@
 #!/usr/bin/env python
        
-# $Id: swamp_dbutil.py,v 1.28 2007-01-31 00:36:52 wangd Exp $
+# $Id: swamp_dbutil.py,v 1.29 2007-02-06 02:16:54 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
 import os, sys, time
+
+
+class local:
+    @staticmethod
+    def defaultLogit(s):
+        print "dbutil:", s
+
+    @staticmethod
+    def setLogger():
+        """setLogger()-- via some Python introspection,
+        search the calling stack to find dap_nc_swamp's logging facility."""
+        import inspect
+        s = inspect.stack()
+        global logit
+        for c in s: # for each context in the call stack...
+            if "logit" in c[0].f_locals: # first in tuple is frame
+                logit = c[0].f_locals["logit"]
+        if logit is None:
+            logit = local.defaultLogit
+            #print >>open("/tmp/foo1","a"), dir(local)
+        logit("logger initialized")
+local.setLogger()
+
 
 class JobPersistence:
     defaultDbFilename = "/tmp/mydb_ssdap"
@@ -25,13 +48,13 @@ class JobPersistence:
                 except sqlite.OperationalError, e:
                     # if db is locked, wait and retry.
                     if 'database is locked' in str(e):
-                        print >>open("/tmp/foo1","a"), os.getpid(),"dbretry(lock)"
+                        #print >>open("/tmp/foo1","a"), os.getpid(),"dbretry(lock)"
                         time.sleep(0.5)
                         continue
                     elif 'SQL statements in progress' in str(e):
                         self.cursor.execute("ROLLBACK;")
                         self.cursor.close()
-                        print >>open("/tmp/foo1","a"), os.getpid(),"dbretry(inprogress)", pargs
+                        #print >>open("/tmp/foo1","a"), os.getpid(),"dbretry(inprogress)", pargs
                         time.sleep(0.5)
                         continue                        
                     else: #otherwise, pass the exception upwards.
@@ -85,25 +108,27 @@ class JobPersistence:
             # date in yyyy-mm-dd hh:mm format
             today = "%04d-%02d-%02d %02d:%02d" % time.localtime()[:5]
             cur = self.connection.cursor()
+            #logit(sqlcmd2 % (taskid, today))
+            tries = 0
             try:
                 cur.execute("BEGIN IMMEDIATE;")
                 cur.execute(sqlcmd2 % (taskid, today))
                 cur.execute("COMMIT;")
             except:
-                import traceback
-                print >>open("/tmp/foo1","a"), os.getpid(),"exception", traceback.format_exc()
-
+                tries += 1
+                if tries > 20:
+                    raise "Too busy: DB is too busy to accept updates right now"
                 while True:
                     time.sleep(0.2) # sleep for a little bit. MAGIC#
                     try:
                         cur.execute("COMMIT;")
                         break
                     except:
-                        print >>open("/tmp/foo1","a"), os.getpid(),"exception2", traceback.format_exc()
+                        #print >>open("/tmp/foo1","a"), os.getpid(),"exception2", traceback.format_exc()
 
                         pass
             
-            sqlcmd = """select rowid from tasks where taskid=\"%s\";"""
+            sqlcmd = """SELECT rowid FROM tasks WHERE taskid=\"%s\";"""
             cur.execute("BEGIN;")
             cur.execute(sqlcmd % (taskid))
             row = cur.fetchall()
@@ -243,8 +268,8 @@ class JobPersistence:
                     #            taskrow, linenum, concretename, state)
                 readyCmds[linenum] = (ready[0],concretename)
                 c = c + 1
-                if (c % 1000) == 0:
-                    print >>open("/tmp/foo1","a"), os.getpid(),"initMakeReady",c
+                #if (c % 1000) == 0:
+                    #print >>open("/tmp/foo1","a"), os.getpid(),"initMakeReady",c
                 
             i = readyCmds.items()
             # filter for only the true values, and then pick the first
@@ -329,7 +354,7 @@ class JobPersistence:
             cur = self.connection.cursor()
             self.cursor = cur # in case transaction gets rolled back
             cur.execute("BEGIN EXCLUSIVE;")
-            print >>open("/tmp/foo1","a"), os.getpid(),"cmtcmd", time.asctime()
+            #print >>open("/tmp/foo1","a"), os.getpid(),"cmtcmd", time.asctime()
             stime = time.time()
             cur.execute("""UPDATE fileState SET state=3
                            WHERE concretename=?;""", (concretename,))
@@ -358,7 +383,7 @@ class JobPersistence:
                 cur.executemany(readyTemplate, newReady)
             cur.execute("COMMIT;")
             etime = time.time()
-            print >>open("/tmp/foo1","a"), os.getpid(),"unlock after", etime-stime
+            #print >>open("/tmp/foo1","a"), os.getpid(),"unlock after", etime-stime
             cur.close()
             pass
         pass # end of CommitCmdResultTransaction class def
@@ -382,7 +407,7 @@ class JobPersistence:
             cur = self.connection.cursor() 
             self.cursor = cur # in case transaction gets rolled back, etc.
             cur.execute("BEGIN EXCLUSIVE;")
-            print >>open("/tmp/foo1","a"), os.getpid(),"cmtfch", time.asctime()
+            #print >>open("/tmp/foo1","a"), os.getpid(),"cmtfch", time.asctime()
             stime = time.time()
             cur.execute("""UPDATE fileState SET state=3
                            WHERE concretename=?;""", (concretename,))
@@ -417,7 +442,7 @@ class JobPersistence:
             self.updateDeleteTracker(inputlist)
             cur.execute("COMMIT;")
             etime = time.time()
-            print >>open("/tmp/foo1","a"), os.getpid(),"unlock after", etime-stime
+            #print >>open("/tmp/foo1","a"), os.getpid(),"unlock after", etime-stime
             cur.close()
             return result
         def markStart(self, readyTuple):
@@ -452,7 +477,7 @@ class JobPersistence:
                     assert len(rows) == 1
                     curcount = int(rows[0][0]) + 1 # increment counter
                     if curcount == count: # ok to delete
-                        print >>open("/tmp/foo1","a"), "ok to del",concretename
+                        #print >>open("/tmp/foo1","a"), "ok to del",concretename
                         deleteList.append((concretename,))
                     else: 
                         updateList.append((curcount, concretename))
@@ -474,11 +499,11 @@ class JobPersistence:
             for f in self.deleteList:
                 try:
                     print "unlinking f", f[0]
-                    print >>open("/tmp/foo1","a"), os.getpid(),"try del", f[0]
+                    #print >>open("/tmp/foo1","a"), os.getpid(),"try del", f[0]
                     os.unlink(f[0])
                 except OSError,e:
-                    # log error... FIXME before going production
-                    print >>open("/tmp/foo1","a"), os.getpid(),"error deleting", f[0]
+                    logit("error deleting %s"%(f[0]))
+                    # log error... 
             pass
         
     class PollingTransaction:
@@ -591,7 +616,7 @@ class JobPersistence:
                 except sqlite.OperationalError, e:
                     # if db is locked, wait and retry.
                     if 'database is locked' in str(e):
-                        print >>open("/tmp/foo1","a"), os.getpid(),"dbretry"
+                        #print >>open("/tmp/foo1","a"), os.getpid(),"dbretry"
                         time.sleep(0.5)
                         continue
                     else: #otherwise, pass the exception upwards.
@@ -709,6 +734,7 @@ class JobPersistence:
             print >>sys.stderr, "made tables in db (uncommit)"
         except sqlite.OperationalError:
             print >>sys.stderr, "error making tables in DB"
+            pass
         pass
     
     def deleteTables(self):

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- mode: python -*- $Id: ssdebug,v 1.4 2007-02-03 01:04:18 wangd Exp $
+# -*- mode: python -*- $Id: ssdebug,v 1.5 2007-02-06 02:16:53 wangd Exp $
 import os, sys
 import cgitb
 import cgi
@@ -10,7 +10,7 @@ sys.stderr = sys.stdout
 sys.path.append("/home/wangd/ssdapSpace/nco/src/ssdap")
 # hack in the db path for now:
 #dbfilename = None
-dbfilename = "/var/www/ssdapscratch/ssdap_db.sqlite"
+dbfilename = "/dev/shm/ssdap_ram.sqlite"
 
 class SsdInterface:
     def __init__(self):
@@ -35,28 +35,28 @@ class SsdInterface:
         return "".join([pre,bulk,post])
     def rebuildDb(self,form):
         """resets the db, clearing entries and using the latest schema"""
-        import ssdap_dbutil
+        import swamp_dbutil
         print self.handyHeader()
         print "dbfilename is ", dbfilename
         try:
-            ssdap_dbutil.deleteTables(dbfilename)
+            swamp_dbutil.deleteTables(dbfilename)
         except:
             pass # ok if error deleting tables.
-        ssdap_dbutil.buildTables(dbfilename)
+        swamp_dbutil.buildTables(dbfilename)
         
         return "Done rebuilding db"
     def showDb(self,form):
         """prints the db state"""
-        import ssdap_dbutil
+        import swamp_dbutil
         print self.handyHeader()
-        ssdap_dbutil.quickShow(dbfilename)
+        swamp_dbutil.quickShow(dbfilename)
         
         return "done with output"
     def showFileDb(self, form):
         """prints the filestate in the db"""
-        import ssdap_dbutil
+        import swamp_dbutil
         print self.handyHeader()
-        ssdap_dbutil.fileShow(dbfilename)
+        swamp_dbutil.fileShow(dbfilename)
         return "done with output"
     def printHelp(self,form):
         """prints a brief help message showing available commands"""

@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_swamp,v 1.62 2007-02-03 01:04:18 wangd Exp $
+# $Id: dap_nc_swamp,v 1.63 2007-02-06 02:16:53 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -61,7 +61,11 @@ class local:
 
     scratchPath = None
     resultPath = None
-    
+
+    nslots = 1
+    #runtime variables
+    logfile = None
+    mypid = 0
     if sys.version_info[:2] < (2,4): # 2.4 adds @staticmethod syntax
         print """You have python version %s, and >=2.4 is required.
 """ %(sys.version)
@@ -210,7 +214,6 @@ def readConfigFile(fname = "swamp_handler.conf"):
               ]
     remap = {"True" : True, "False" : False, "Yes" : True, "No" : False }
 
-
     try:
         import ConfigParser
         config = ConfigParser.ConfigParser()
@@ -220,7 +223,9 @@ def readConfigFile(fname = "swamp_handler.conf"):
             filepath = os.path.join(os.path.split(sys.argv[0])[0],
                                     fname)
         else: filepath = fname
+        logit("reading configfile %s" % (filepath))
         config.read(filepath)
+
         for m in cfgmap:
             if config.has_option(m[1], m[2]):
                 val = config.get(m[1],m[2])
@@ -254,8 +259,9 @@ def prestartLogging():
         import cStringIO
         local.logfile = cStringIO.StringIO()
         p = str(local.mypid)
-        local.logfile.write("SSDAP/SWAMP dap_handler_hack %s\n" % "$Revision: 1.62 $")
+        local.logfile.write("SSDAP/SWAMP dap_handler_hack %s\n" % "$Revision: 1.63 $")
         local.logfile.write("handler "+p+" log open at " + time.ctime()+"\n")
+
 def startLogging():
     """Officially start the logging system."""
     if not local.disableLogging:
@@ -276,7 +282,7 @@ def logit(s):
         # check if we're still in prestart
         if type(local.logfile) == cStringIO.OutputType:
             local.logfile.write(formatted)
-        else:
+        elif local.logfile is not None:
             lf  = open(local.logLocation, "a")
             lf.write(formatted)
             lf.flush()
@@ -775,7 +781,7 @@ class DepTracker:
 # we will use SQLite
 ##########################################################################
 try:
-    from swamp_dbutil import *
+    from swamp_dbutil import JobPersistence
 except ImportError:
     # if the import fails, we will get a symbol error when
     # we try to use ssdap_dbutil symbols.
@@ -808,6 +814,7 @@ class ScriptingEnv:
                     "ncea", "ncecat", "ncflint", "ncks",
                     "ncpack", "ncpdq", "ncra", "ncrcat",
                     "ncrename", "ncunpack", "ncwa"]
+    #print >>open("/tmp/foo1","a"), dir(local)
     # for now, all commands are valid in netcdf4 or over dap
     VALID_COMMANDS=dict((x, local.nc4BinPath+os.sep+x) for x in NCO_COMMANDS)
     VALID_DAPCOMMANDS=dict( (x, local.ncDapBinPath+os.sep+x) for x in NCO_COMMANDS)
@@ -968,10 +975,8 @@ class ScriptingEnv:
     def execute(self):
          #self.clearTemps() # don't need to preclear, since we do that earlier.
          self.isParent = True
-         #self.isAsync = self.env.has_key("async") and self.env["async"] == True
 
          logflush()
-         #print "about to execute..."
          for l in self.commandLine:
              #print l
              pass

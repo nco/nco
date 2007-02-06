@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-./scriptwrap.py chaining.ssdap http://localhost:8000/cgi/nph-dods globout.nc
+./swampsendscript.py chaining.ssdap http://localhost/cgi-bin/nph-dods globout.nc
 
 

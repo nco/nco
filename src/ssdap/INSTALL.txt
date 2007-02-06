@@ -58,3 +58,11 @@ intermediate files once they have been fully consumed.
 0 -- do not dump
 2 -- mount on pass 2.  We should mount it after its mount point is
 mounted (probably the / filesystem)
+
+
+-------
+Common Problems:
+Is SWAMP finding the config file properly?
+Is SWAMP allowed to write to the scratch path and the output path?
+Is SWAMP allowed to write to the database?
+Is the database consistent?  You can refresh the database with the db tool.
