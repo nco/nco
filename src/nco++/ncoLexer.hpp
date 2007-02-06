@@ -23,11 +23,12 @@
     #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
+    
 
-#line 28 "ncoLexer.hpp"
+#line 29 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 265 "ncoGrammer.g"
+#line 269 "ncoGrammer.g"
 
 
 private:
@@ -45,7 +46,7 @@ public:
 
 
 
-#line 32 "ncoLexer.hpp"
+#line 33 "ncoLexer.hpp"
 private:
 	void initLiterals();
 public:

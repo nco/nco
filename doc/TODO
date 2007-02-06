@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.846 2007-02-03 01:32:43 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.847 2007-02-06 01:59:37 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -549,7 +549,8 @@ nco802. Handle dashes and dots in ncap2: use backslashes for quoting?
 	ncks ~/foo.nc
 	ncap2 -O -v -s "var_out=var_nm-dash+var_nm.dot" ~/nco/data/in.nc ~/foo.nc
 nco803. Link to UCSD proposal by Kraig Winters /data/zender/prp/prp_winters.pdf
-nco804. 
+nco804. Re-make debian 3.1.8-2 release
+nco805. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
