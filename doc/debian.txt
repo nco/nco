@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.77 2007-02-08 17:11:02 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.78 2007-02-08 23:24:07 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -161,4 +161,4 @@ ls -l ${DATA}/nco_3.1.8*
 m ~/foo.nco
 scp ${DATA}/nco_3.1.8* dust.ess.uci.edu:/var/www/html/nco/src
 scp ${DATA}/nco_3.1.8* nco.sf.net:/home/groups/n/nc/nco/htdocs
-
+dupload -t mentors nco_3.1.8-2_i386.changes
