@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.79 2007-02-08 23:40:11 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.80 2007-02-08 23:52:56 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -152,8 +152,9 @@ mv ./nco-3.1.8/debian ${DATA}/debian # Move debian directory elsewhere temporari
 tar xvzf ./nco_3.1.8.orig.tar.gz # Untar to get directory without excluded files
 mv ${DATA}/debian ./nco-3.1.8 # Replace debian directory
 /bin/rm -f ./nco-3.1.8/debian/.cvsignore # Remove cvsignore before deb build
-#cd ${DATA}/nco-3.1.8;dpkg-buildpackage -rfakeroot -uc -us > ~/foo.nco 2>&1
-cd ${DATA}/nco-3.1.8;dpkg-buildpackage -rfakeroot -sa > ~/foo.nco 2>&1
+#cd ${DATA}/nco-3.1.8;dpkg-buildpackage -rfakeroot -uc -us > ~/foo.nco 2>&1 # -uc -us: Do not sign changes or source files
+#cd ${DATA}/nco-3.1.8;dpkg-buildpackage -rfakeroot -sa > ~/foo.nco 2>&1 # -sa: Include _orig.tar.gz in .changes 
+cd ${DATA}/nco-3.1.8;dpkg-buildpackage -rfakeroot > ~/foo.nco 2>&1
 sudo dpkg --remove nco
 sudo dpkg --install ${DATA}/nco_3.1.8-2_*.deb
 lintian ${DATA}/nco_3.1.8-2_*.deb
