@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="SwampService"
+   targetNamespace="http://tephra.ess.uci.edu/swamp_service.wsdl"
+   xmlns="http://schemas.xmlsoap.org/wsdl/"
+   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+   xmlns:tns="http://tephra.ess.uci.edu/swamp_service.wsdl"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ 
+   <message name="SayHelloRequest">
+      <part name="firstName" type="xsd:string"/>
+   </message>
+   <message name="SuccessStatusResponse">
+      <part name="success" type="xsd:boolean"/>
+      <part name="success" type="xsd:string"/>
+   </message>
+
+<!-- WSDL template sourced from: 
+     http://www.oreilly.com/catalog/webservess/chapter/ch06.html --> 
+<!--    <portType name="Hello_PortType"> -->
+<!--       <operation name="sayHello"> -->
+<!--          <input message="tns:SayHelloRequest"/> -->
+<!--          <output message="tns:SayHelloResponse"/> -->
+<!--       </operation> -->
+<!--    </portType> -->
+
+   <portType name="Swamp_PortType">
+      <operation name="rebuildDb">
+         <output message="tns:SuccessStatusResponse"/>
+      </operation>
+     
+      <operation name="showDb">
+         <output message="tns:SuccessStatusResponse"/>
+      </operation>
+     
+   </portType>
+
+   <binding name="Swamp_Binding" type="tns:Swamp_PortType">
+      <soap:binding style="rpc" 
+         transport="http://schemas.xmlsoap.org/soap/http"/>
+      <operation name="rebuildDb">
+         <soap:operation soapAction="rebuildDb"/>
+         <output>
+            <soap:body
+               encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+               namespace="urn:whatisthisfor"
+               use="encoded"/>
+         </output>
+      </operation>
+   </binding>
+ 
+   <service name="Swamp_Service">
+      <documentation>WSDL File for SwampService</documentation>
+      <port binding="tns:Swamp_Binding" name="Swamp_Port">
+         <soap:address 
+            location="http://localhost:8080/soap/servlet/rpcrouter"/>
+      </port>
+   </service>
+</definitions>
+
