@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.24 2007-02-05 15:04:33 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.25 2007-02-12 16:56:13 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -67,6 +67,18 @@ typedef struct{
 } ast_lmt_sct;   
 
 
+/* Used to do an pre-mpi sort */
+ struct exp_sct_tmp { 
+  ANTLR_USE_NAMESPACE(antlr)RefAST etr;
+  std::vector<std::string> lvl_vtr; // lvalues
+  std::vector<int>    dpd_vtr; // dependencies
+  std::vector<exp_sct_tmp**> srp_vtr; //self reverential pointer
+} ;	
+
+typedef struct exp_sct_tmp exp_sct;
+
+
+
 typedef struct{ /* prs_sct */
 public:
   char *fl_in; /* [sng] Input data file */
@@ -84,6 +96,7 @@ public:
   bool ATT_PROPAGATE;                    //Var on LHS gets attributtes from the leftermost var on the RHS
   bool ATT_INHERIT;                      //Var on LHS inherits attributtes from var of the same name
                                          // in the input file 
+  bool NCAP_MPI_SORT;                    // sort exressions after second parse for MPI optimization
                                               
 } prs_sct;
 
@@ -246,7 +259,11 @@ prs_sct *prs_arg);
 int            /* Sort expressions for MPI Optimization */  
 ncap_mpi_srt(
 RefAST ntr,
-int icnt);
+int icnt,
+prs_sct *prs_arg,
+std::vector< std::vector<RefAST> > &all_ast_vtr); // Return a Vector of Vectors
+
+
 
 
 NcapVector<dmn_sct*>                /* O [sct] list of new dims to limit over */ 
