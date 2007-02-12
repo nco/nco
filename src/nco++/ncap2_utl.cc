@@ -1,10 +1,11 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.34 2007-02-05 15:03:25 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.35 2007-02-12 17:01:35 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
 /* Copyright (C) 1995--2005 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
 
 #include <assert.h>
 #include <ctype.h>
@@ -2174,8 +2175,103 @@ sz=prs_arg->ptr_int_vtr->size();
 
 }
 
+// See if any VAR_ID/ATT_ID match any in str_vtr
+// if so return true
+bool 
+ncap_mpi_srh_str(
+RefAST ntr,
+std::vector<std::string> &str_vtr
+)
+{
 
-//Extract Lvalues from Expression
+ RefAST tr=ntr->getFirstChild();
+
+ if(ntr->getType()== VAR_ID || ntr->getType() == ATT_ID )
+   // see if ID is in vector
+   if( binary_search(str_vtr.begin(),str_vtr.end(),ntr->getText()))
+       return true;
+ 
+
+ /*  
+ if(ntr->getType()== VAR_ID || ntr->getType() == ATT_ID ){
+   for(int idx=0 ; idx<str_vtr.size() ; idx++)
+     if( ntr->getText() == str_vtr[idx])
+       return true;
+ }
+ */
+  // examine all child nodes
+  while(tr){
+    if( ncap_mpi_srh_str(tr,str_vtr) )
+      return true;
+    tr=tr->getNextSibling();
+  }  
+
+  return false;
+}
+
+// Subtract matching elements of
+// one list of strings from another
+bool
+ncap_sub_str_str(
+std::vector<std::string> &in_vtr,
+std::vector<std::string> &mb_vtr
+)
+{
+int idx;
+int jdx;
+int nbr_mb=mb_vtr.size();
+
+ std::vector<std::string> out_vtr;
+
+  if(mb_vtr.size()==0) 
+    return false;
+  
+ for(idx=0 ; idx < in_vtr.size() ; idx++){
+    for(jdx=0 ; jdx < nbr_mb; jdx++)       
+      if( in_vtr[idx]== mb_vtr[jdx])
+	break;
+      if(jdx==nbr_mb) 
+        out_vtr.push_back(in_vtr[idx]);
+ }
+ // no change
+ if(in_vtr.size()==out_vtr.size())
+   return false;
+   
+  // some elements subtracted
+ in_vtr.swap(out_vtr);
+
+ return true;
+ /*
+ in_vtr.clear();
+ for(idx=0 ; idx <out_vtr.size() ; idx++)
+   in_vtr.push_back(out_vtr[idx]);
+  return true;
+ */
+}
+
+
+
+//Extract all VAR_ID & ATT_ID from Expression
+void ncap_mpi_get_id(
+RefAST ntr,
+std::vector<std::string> &str_vtr
+)
+{
+
+ RefAST tr=ntr->getFirstChild();
+ 
+ if(ntr->getType()== VAR_ID || ntr->getType() == ATT_ID )
+    str_vtr.push_back(ntr->getText());
+
+  // examine all child nodes
+  while(tr){
+    (void)ncap_mpi_get_id(tr,str_vtr);
+    tr=tr->getNextSibling();
+  }  
+}
+
+
+//Extract all LValues from Expression
 void ncap_mpi_get_lvl(
 RefAST ntr,
 std::vector<std::string> &str_vtr
@@ -2224,33 +2320,169 @@ std::vector<std::string> &str_vtr
 
 
 
+bool
+ncap_evl_srp(
+std::vector<exp_sct_tmp**> &srp_vtr //self reverential pointer
+)
+{
+  if(srp_vtr.empty()) 
+    return true;
+
+  for(int idx=0 ; idx < srp_vtr.size() ; idx++)
+    if( *srp_vtr[idx] != NULL) 
+      return false;
+
+  return true;
+
+
+}
+
 // Sort expressions for MPI optimization
-int ncap_mpi_srt(RefAST tr, int icnt)
+//ntr is a pointer to nbr_lst statements of type EXPR
+int ncap_mpi_srt(
+RefAST ntr,   
+int nbr_lst,
+prs_sct *prs_arg,
+std::vector< std::vector<RefAST> > &all_ast_vtr)
 {
 const std::string fnc_nm("ncap_mpi_srt"); 
   int idx;
-  RefAST ntr;
-  // std::vector<std::string> str_vtr; 
+  int jdx;
+  RefAST tr;
 
-    std::cout <<"Sort Expressions Preparation"<<std::endl;    
-    
-    idx=0;ntr=tr;
+  exp_sct *exp_ptr;
 
-      while(idx++<icnt ) {
- 
-	if( ntr->getType() == EXPR ) {
-             std::vector<std::string> str_vtr; 
-             (void)ncap_mpi_get_lvl(ntr->getFirstChild(),str_vtr);
-	     std::cout << ntr->toStringTree();
-	     std::cout <<"---";
-             for(int jdx=0 ; jdx < str_vtr.size() ; jdx++)
-	       std::cout << str_vtr[jdx] <<" ";
+  std::vector<exp_sct*> exp_vtr;
 
-	     std::cout<<std::endl;
-	     ntr=ntr->getNextSibling();
-	}
+
+ // populate exp_vtr;
+    if(dbg_lvl_get() > 0)
+      dbg_prn(fnc_nm,"Start");
+
+
+
+
+    idx=0;tr=ntr;
+
+      while(idx++<nbr_lst ) {
+
+         std::vector<std::string> cl_vtr;
+	 exp_ptr=new exp_sct();
+
+         // Initialise structure with AST and Lvalues
+	 //exp_ptr->etr=tr->getFirstChild();         
+	 exp_ptr->etr=tr;         
+         (void)ncap_mpi_get_lvl(tr->getFirstChild(),cl_vtr);
+         //Sort Lvalues for speed
+         sort(cl_vtr.begin(), cl_vtr.end());
+         // remove any duplicates
+         std::vector<std::string>::iterator we=unique(cl_vtr.begin(), cl_vtr.end());
+         if(we < cl_vtr.end())  
+           cl_vtr.erase(we,cl_vtr.end()); 
+
+         exp_ptr->lvl_vtr=cl_vtr;
+
+         exp_vtr.push_back(exp_ptr);
+         tr=tr->getNextSibling();
       }
-    std::cout <<"End Sort Expressions Preparation"<<std::endl;    
+
+
+      // Populate dependency vector
+      for(idx=0 ; idx < nbr_lst ;idx++) {
+	// initialize local vars
+        exp_ptr=exp_vtr[idx];
+        // need a local copy of Lvalues
+        // will subtract strings from this as we go through
+        // the inner loop
+        std::vector<std::string> out_lvl_vtr=exp_ptr->lvl_vtr; 	
+        // expression without Lvalues
+        if(out_lvl_vtr.empty()) 
+          continue;
+      
+	//Inner loop
+        for(jdx=(idx+1); jdx< nbr_lst ; jdx++){
+          // See if inner-loop exprssion depends
+          // on outer-loop expression 
+	  if( ncap_mpi_srh_str(exp_ptr->etr, exp_vtr[jdx]->lvl_vtr) ||
+              ncap_mpi_srh_str(exp_vtr[jdx]->etr,out_lvl_vtr)) {
+ 
+	    exp_vtr[jdx]->dpd_vtr.push_back(idx);
+            exp_vtr[jdx]->srp_vtr.push_back( &exp_vtr[idx]);
+            // subtract Lvalues as we go
+            (bool)ncap_sub_str_str(out_lvl_vtr, exp_vtr[jdx]->lvl_vtr);
+	  }
+	  // break out of inner loop if out_lvl_vtr empty
+	  if(out_lvl_vtr.empty())
+            break ;
+
+	 }// loop jdx 
+      }// loop idx
+
+
+      // print out whole  structure
+      /*
+      for(idx=0; idx<nbr_lst ; idx++){
+	// dereference
+	exp_ptr=exp_vtr[idx];
+	std::cout << exp_ptr->etr->toStringTree();
+	std::cout <<"\n Lvalues  ";
+        for(int jdx=0 ; jdx < exp_ptr->lvl_vtr.size() ; jdx++)
+	  std::cout << exp_ptr->lvl_vtr[jdx] <<" ";
+
+     	std::cout <<"\n Dependency  ";
+        for(int jdx=0 ; jdx < exp_ptr->dpd_vtr.size() ; jdx++)
+	  std::cout << exp_ptr->dpd_vtr[jdx] <<" ";
+	std::cout<<"\n";
+
+
+      }
+      */
+
+
+       
+      int icnt=0;
+
+      while(icnt <nbr_lst){
+
+        // Store list of dependent structures
+        std::vector<RefAST> ast_vtr;
+	std::vector<int> grp_vtr;
+       
+        for(idx=0; idx <nbr_lst; idx++){
+          if( exp_vtr[idx]==NULL) 
+            continue;
+          if( ncap_evl_srp(exp_vtr[idx]->srp_vtr))
+	    grp_vtr.push_back(idx);
+	}// end idx
+
+        for(idx=0 ; idx <grp_vtr.size(); idx++){
+ 	  ast_vtr.push_back( exp_vtr[grp_vtr[idx]]->etr);
+          delete exp_vtr[grp_vtr[idx]];
+          exp_vtr[grp_vtr[idx]]=NULL;
+        } //end idx
+
+        // Save vector in another vector !! 
+        all_ast_vtr.push_back(ast_vtr);
+        icnt+=grp_vtr.size();
+          
+
+      } // end while
+
+      //Print out vectors
+      if(dbg_lvl_get() >0) {
+        for(idx=0 ; idx<all_ast_vtr.size(); idx++){
+          for(jdx=0 ; jdx<all_ast_vtr[idx].size(); jdx++)
+	    std::cout << all_ast_vtr[idx][jdx]->toStringTree()<<std::endl;
+	  std::cout <<"-------------------------------\n";
+          } //end idx
+      }
+
+    if(dbg_lvl_get() > 0)
+      dbg_prn(fnc_nm,"End");       
+
+
     return 0;
 
 }
+
+
