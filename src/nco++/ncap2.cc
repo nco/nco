@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.27 2007-01-22 04:04:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.28 2007-02-12 16:57:25 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.27 2007-01-22 04:04:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.27 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.28 2007-02-12 16:57:25 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.28 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -388,8 +388,10 @@ main(int argc,char **argv)
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
+      /*
       if(EXCLUDE_INPUT_LIST) 
         err_prn(fnc_nm,std::string(prg_nm_get())+ " does not currently implement -x option\n");
+      */
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
@@ -546,7 +548,8 @@ main(int argc,char **argv)
   prs_arg.ntl_scn=False;   //[flg] Initial scan of script */
   prs_arg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
   prs_arg.ATT_PROPAGATE=ATT_PROPAGATE;      
-  prs_arg.ATT_INHERIT=ATT_INHERIT;          
+  prs_arg.ATT_INHERIT=ATT_INHERIT;
+  prs_arg.NCAP_MPI_SORT=EXCLUDE_INPUT_LIST;
 
 
     
