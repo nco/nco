@@ -286,76 +286,75 @@ public:
 }
 
 
-ASSIGN: '=';
+ASSIGN options { paraphrase="="; } : '=';
 
-PLUS_ASSIGN: "+=";
+PLUS_ASSIGN options { paraphrase="+="; }  : "+=";
 
-MINUS_ASSIGN: "-=";
+MINUS_ASSIGN options { paraphrase="-=";}  : "-=";
 
-TIMES_ASSIGN: "*=";
+TIMES_ASSIGN options { paraphrase="*=";}  : "*=";
 
-DIVIDE_ASSIGN: "/=";
+DIVIDE_ASSIGN options { paraphrase="/=";} : "/=";
 
-INC: "++";
+INC options { paraphrase="++"; }: "++";
 
-DEC: "--";
+DEC options { paraphrase="--"; }: "--";
 
-QUESTION: '?';
+QUESTION options { paraphrase="?";} : '?';
 
-LPAREN:	'(' ;
+LPAREN options { paraphrase="("; } :	'(' ;
 
-RPAREN:	')' ;
+RPAREN options { paraphrase=")";} :	')' ;
 
-LCURL : '{' ;
+LCURL options { paraphrase="{"; } : '{' ;
 
-RCURL : '}' ;
+RCURL options { paraphrase="}";} : '}' ;
 
-LSQUARE: '[';
+LSQUARE options { paraphrase="["; } : '[';
 
-RSQUARE: ']';
+RSQUARE options { paraphrase="]"; } : ']';
 
-COMMA: ',' ;
+COMMA options { paraphrase=",";} : ',' ;
 
-QUOTE: '"';
+QUOTE options { paraphrase="\""; }: '"';
 
-SEMI:	';' ;
+SEMI options { paraphrase=";";} :	';' ;
 
-COLON: ':' ;
+COLON options { paraphrase=":";}:  ':' ;
 
 // Operators
 
-CARET: '^' ;
+CARET options { paraphrase="power of operator";} : '^' ;
 
-TIMES:	'*' ;
+TIMES options { paraphrase="*";} :	'*' ;
 
-DIVIDE:	'/';
+DIVIDE options { paraphrase="/";} :	'/';
 
-MOD:	'%' ;
+MOD options { paraphrase="%"; } :	'%' ;
 
-PLUS:	'+' ;
+PLUS options {paraphrase="+";} :	'+' ;
 
-MINUS:	'-' ;
+MINUS options { paraphrase="-";} :	'-' ;
 
-EQ: "==" ;
+EQ options { paraphrase="=="; }  : "==" ;
 
-NEQ: "!=" ;
+NEQ options { paraphrase="!=";} : "!=" ;
 
+LTHAN options { paraphrase="<";} :  '<' ;
 
-LTHAN:  '<' ;
+GTHAN options { paraphrase=">"; } :  '>' ;
 
-GTHAN:  '>' ;
+LEQ options { paraphrase="<="; }:  "<=" ;
 
-LEQ:  "<=" ;
+GEQ options { paraphrase=">=";} :  ">=" ;
 
-GEQ:  ">=" ;
+LAND options { paraphrase="&&";}: "&&" ;
 
-LAND: "&&" ;
+LNOT options { paraphrase="!";} : '!' ;
 
-LNOT: '!' ;
+LOR options { paraphrase="||";}: "||" ;
 
-LOR: "||" ;
-
-DOT: '.';
+DOT options {paraphrase="dot operator";} : '.';
 
 protected DGT:     ('0'..'9');
 protected LPH:     ( 'a'..'z' | 'A'..'Z' | '_' );
@@ -394,16 +393,18 @@ UNUSED_OPS: ( "%=" | "^=" | "&=" | "|=" ) {
 
 
 // Whitespace -- ignored
-Whitespace	
+Whitespace options {paraphrase="white space"; } 	
 	: ( ' ' |'\t' { tab(); } | '\f' |'\n' { newline(); })
 		{ $setType(antlr::Token::SKIP);}
 	;
 
-CPP_COMMENT: "//" (~'\n')* '\n'
+CPP_COMMENT options {paraphrase="a comment"; } 
+        : "//" (~'\n')* '\n'
     { $setType(antlr::Token::SKIP); newline(); }
     ;
 
-C_COMMENT:       
+C_COMMENT options {paraphrase="a comment"; } 
+        :       
 		"/*"
  		( { LA(2) != '/' }? '*'
 		        | ( '\r' | '\n' )		{newline();}
@@ -415,7 +416,8 @@ C_COMMENT:
 
 // Numbers like .123, .2e3 ,.123f, 0.23d
 // csz: Treat "l" or "L" following decimal point as "long double" as per C++
-NUMBER_DOT:
+NUMBER_DOT options {paraphrase="a floating point number"; } 
+     :
       '.' (DGT)+ (XPN)? { $setType(DOUBLE); }  
       ( ('D'|'d')!     {  $setType(DOUBLE);}
        |('F'|'f')!     {  $setType(FLOAT);}
@@ -437,16 +439,18 @@ NUMBER:
 ;
 
 // Return var or attribute (var_nm@att_nm)
-VAR_ATT options {testLiterals=true;} :  (LPH)(LPH|DGT)*   
+VAR_ATT options {testLiterals=true; paraphrase="variable or attribute identifier"; } 
+        :  (LPH)(LPH|DGT)*   
             {// check function table
             if( prs_arg->ptr_sym_vtr->find($getText) !=NULL )
                $setType(FUNC);             
              else $setType(VAR_ID); 
            }   
-           ('@'(LPH)(LPH|DGT)*  {$setType(ATT_ID); } )?
+           ('@'(LPH)(LPH|DGT)*  {$setType(ATT_ID); })?
    ;
 
-DIM_VAL: '$'! (LPH)(LPH|DGT)* 
+DIM_VAL options { paraphrase="dimension identifier"; } 
+        : '$'! (LPH)(LPH|DGT)* 
             {$setType(DIM_ID);}
          ( ".size"!  
             { $setType(DIM_ID_SIZE);}
@@ -454,11 +458,15 @@ DIM_VAL: '$'! (LPH)(LPH|DGT)*
    ;  
 
 // Shorthand for naming dims in method e.g $0,$1, $2 etc
-DIM_MTD_ID: '$'! (DGT)+
+DIM_MTD_ID 
+  options{paraphrase="dimension identifier";} 
+  : '$'! (DGT)+
    ;            
 
 
-NSTRING: '"'! ( ~('"'|'\n'))* '"'! {$setType(NSTRING);}
+NSTRING
+  options{paraphrase="a string";} 
+  : '"'! ( ~('"'|'\n'))* '"'! {$setType(NSTRING);}
    ;
 
 class ncoTree extends TreeParser;
