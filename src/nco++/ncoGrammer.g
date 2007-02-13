@@ -86,11 +86,11 @@ assign_statement:
 
      ; 
 
-hyper_slb: (VAR_ID^ |ATT_ID ^) (lmt_list)?
+hyper_slb: (VAR_ID^ |ATT_ID ^) (lmt_list|dmn_list)?
      ;
 
-cast_slb:  (VAR_ID^ |ATT_ID^ ) dmn_list
-     ;
+//cast_slb:  (VAR_ID^ |ATT_ID^ ) dmn_list
+//     ;
 
 def_dim:   DEFDIM^ LPAREN! NSTRING COMMA! expr RPAREN! SEMI! 
      ;        
@@ -224,7 +224,6 @@ primary_exp
     | NSTRING    
     | DIM_ID_SIZE
     | hyper_slb  //remember this includes VAR_ID & ATT_ID
-    | cast_slb
   ;
 
 
@@ -2012,16 +2011,16 @@ const std::string fnc_nm("assign_asn");
 	:   vid:VAR_ID       
         { 
           int rtyp=0;
+          if(vid->getFirstChild())
+               err_prn(fnc_nm,"Invalid Lvalue " +vid->getText() );
+
           var=ncap_var_init(vid->getText().c_str(),prs_arg,true);
           if(var== (var_sct*)NULL){
                nco_exit(EXIT_FAILURE);
           }
          
-          if(vid->getNextSibling())
-            rtyp=vid->getNextSibling()->getType();
-          if(rtyp==LMT_LIST || rtyp==DMN_LIST) {
-                err_prn(fnc_nm,"Invalid Lvalue defintion of variable " +vid->getText() );
-          }
+
+
         } /* end action */
     // Plain attribute
     |   att:ATT_ID { 
@@ -2029,6 +2028,10 @@ const std::string fnc_nm("assign_asn");
             int rtyp;
             NcapVar *Nvar=NULL;
          
+            if(att->getFirstChild())
+                err_prn(fnc_nm,"Invalid Lvalue " +att->getText() );
+
+
             if(prs_arg->ntl_scn)
               Nvar=prs_arg->ptr_int_vtr->find(att->getText());
 
@@ -2054,12 +2057,6 @@ const std::string fnc_nm("assign_asn");
             if(prs_arg->ntl_scn && var->val.vp !=NULL)
                 var->val.vp=(void*)nco_free(var->val.vp);
 
-            if(att->getNextSibling())
-               rtyp=att->getNextSibling()->getType();            
-            if(rtyp==LMT_LIST || rtyp==DMN_LIST) {
-                err_prn(fnc_nm,"Invalid Lvalue defintion of attribute " +att->getText() );
-            
-            }
 
        }// end action    
 ;
