@@ -26,7 +26,7 @@
 #line 27 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 465 "ncoGrammer.g"
+#line 472 "ncoGrammer.g"
 
 
 private:
@@ -265,7 +265,24 @@ public:
 
 
     // Sort expressions - MPI preparation
-    //(void)ncap_mpi_srt(tr,icnt);
+    if(prs_arg->NCAP_MPI_SORT){  
+       prs_arg->ntl_scn=False;
+      // nb A vector of vectors
+      std::vector< std::vector<RefAST> > all_ast_vtr;
+
+      // Populate  vector 
+      (void)ncap_mpi_srt(tr,icnt,prs_arg,all_ast_vtr);
+
+      // Evaluate expressions
+      for(int idx=0 ; idx<all_ast_vtr.size(); idx++)
+        for(int jdx=0 ; jdx<all_ast_vtr[idx].size(); jdx++)
+	     (void)statements(all_ast_vtr[idx][jdx]);
+        
+    goto end;
+    } //end if
+
+   
+
 
 small: 
      idx=0;
@@ -276,7 +293,7 @@ small:
        (void)statements(ntr);   
        ntr=ntr->getNextSibling();   
      }
-
+end: ;
    }
 
 public:

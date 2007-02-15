@@ -63,7 +63,6 @@ public:
 	public: void expr();
 	public: void hyper_slb();
 	public: void lmt_list();
-	public: void cast_slb();
 	public: void dmn_list();
 	public: void arg_list();
 	public: void dmn_arg_list();
@@ -117,8 +116,6 @@ private:
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_4;
 	static const unsigned long _tokenSet_5_data_[];
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_5;
-	static const unsigned long _tokenSet_6_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_6;
 };
 
 #endif /*INC_ncoParser_hpp_*/

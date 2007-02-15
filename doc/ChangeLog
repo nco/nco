@@ -1,3 +1,7 @@
+2007-02-14  Charlie Zender  <zender@uci.edu>
+
+	* Declare <algorithm> in ncap2_utl.cc and std::-qualify functions
+
 2007-01-30  Daniel L. Wang  <wangd@uci.edu>
 
 	* Changed names in ssdap/ to reflect name change from SSDAP to SWAMP

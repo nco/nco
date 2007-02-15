@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.35 2007-02-12 17:01:35 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.36 2007-02-15 00:21:25 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -9,6 +9,7 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -2188,7 +2189,7 @@ std::vector<std::string> &str_vtr
 
  if(ntr->getType()== VAR_ID || ntr->getType() == ATT_ID )
    // see if ID is in vector
-   if( binary_search(str_vtr.begin(),str_vtr.end(),ntr->getText()))
+   if( std::binary_search(str_vtr.begin(),str_vtr.end(),ntr->getText()))
        return true;
  
 
@@ -2374,9 +2375,9 @@ const std::string fnc_nm("ncap_mpi_srt");
 	 exp_ptr->etr=tr;         
          (void)ncap_mpi_get_lvl(tr->getFirstChild(),cl_vtr);
          //Sort Lvalues for speed
-         sort(cl_vtr.begin(), cl_vtr.end());
+         std::sort(cl_vtr.begin(), cl_vtr.end());
          // remove any duplicates
-         std::vector<std::string>::iterator we=unique(cl_vtr.begin(), cl_vtr.end());
+         std::vector<std::string>::iterator we=std::unique(cl_vtr.begin(), cl_vtr.end());
          if(we < cl_vtr.end())  
            cl_vtr.erase(we,cl_vtr.end()); 
 
