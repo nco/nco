@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.192 2007-01-22 04:04:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.193 2007-02-15 00:00:16 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.192 2007-01-22 04:04:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.192 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.193 2007-02-15 00:00:16 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.193 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -447,12 +447,13 @@ main(int argc,char **argv)
   } /* end loop over idx */
 
   /* Create stand-alone limit structure just for record dimension */
-  if(prg == ncra || prg == ncrcat){
-    if(rec_dmn_id == NCO_REC_DMN_UNDEFINED){
+  if(rec_dmn_id == NCO_REC_DMN_UNDEFINED){
+    if(prg == ncra || prg == ncrcat){
       (void)fprintf(stdout,gettext("%s: ERROR input file %s lacks a record dimension\n"),prg_nm_get(),fl_in);
       if(fl_nbr == 1)(void)fprintf(stdout,gettext("%s: HINT Use ncks instead of %s\n"),prg_nm_get(),prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* endif */
+  }else{ /* Record dimension exists */
     lmt_rec=nco_lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_IDX_CNV);
   } /* endif */
 
@@ -546,9 +547,9 @@ main(int argc,char **argv)
     /* Variables may have different ID, missing_value, type, in each file */
     for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
     
-    /* Each file can have a different number of records to process
+    /* Files may have different numbers of records to process
        NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
-    if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,idx_rec_out,FORTRAN_IDX_CNV);
+    if(rec_dmn_id != NCO_REC_DMN_UNDEFINED) (void)nco_lmt_evl(in_id,lmt_rec,idx_rec_out,FORTRAN_IDX_CNV);
     
     /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
     if(CNV_ARM) base_time_crr=nco_cnv_arm_base_time_get(in_id);
@@ -556,10 +557,10 @@ main(int argc,char **argv)
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
     
+    if((rec_dmn_id != NCO_REC_DMN_UNDEFINED) && (lmt_rec->srt > lmt_rec->end)) (void)fprintf(fp_stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
+	
     if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
       /* Loop over each record in current file */
-	
-      if(lmt_rec->srt > lmt_rec->end) (void)fprintf(fp_stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
 	
       for(idx_rec=lmt_rec->srt;idx_rec<=lmt_rec->end;idx_rec+=lmt_rec->srd){
 	if(fl_idx == fl_nbr-1 && idx_rec >= 1L+lmt_rec->end-lmt_rec->srd) LAST_RECORD=True;
@@ -628,12 +629,20 @@ main(int argc,char **argv)
 	/* End of ncra, ncrcat section */
       }else{ /* ncea */
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_idx,fp_stderr,in_id_arr,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_idx,fp_stderr,in_id_arr,lmt_rec,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out)
 #endif /* !_OPENMP */
 	for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 	  in_id=in_id_arr[omp_get_thread_num()];
 	  if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	  if(dbg_lvl > 0) (void)fflush(fp_stderr);
+
+	  /* Update hyperslab start indices to current record for each variable */
+	  if(var_prc[idx]->is_rec_var){
+	    var_prc[idx]->srt[0]=lmt_rec->srt;
+	    var_prc[idx]->end[0]=lmt_rec->end;
+	    var_prc[idx]->cnt[0]=lmt_rec->cnt;
+	  } /* endif record variable */
+
 	  /* Retrieve variable from disk into memory */
 	  (void)nco_var_get(in_id,var_prc[idx]);
 	  
@@ -734,8 +743,8 @@ main(int argc,char **argv)
   
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
-    /* ncra-specific memory cleanup */
-    if(prg == ncra || prg == ncrcat) lmt_rec=nco_lmt_free(lmt_rec);
+    /* Record file specific memory cleanup */
+    if(rec_dmn_id == NCO_REC_DMN_UNDEFINED) lmt_rec=nco_lmt_free(lmt_rec);
     
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
