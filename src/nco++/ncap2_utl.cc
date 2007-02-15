@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.36 2007-02-15 00:21:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.37 2007-02-15 15:26:59 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1460,7 +1460,7 @@ ncap_var_var_op   /* [fnc] Add two variables */
     // for attribute propagation to work we need
     // to swap names about if first operand is a bare number
     // and second operand is a var
-    if( !isalpha(var1->nm[0]) && isalpha(var2->nm[0]) ){
+    if( (var1->nm[0]=='~') && (var2->nm[0]!='~') ){
       swp_nm=var1->nm; var1->nm=var2->nm; var2->nm=swp_nm; 
     }  
 
