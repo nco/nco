@@ -2,7 +2,7 @@
 	* Changed prefix of parser generated vars from
 	  '_' to '~'. Attribute propagation & inheritance
 	  should now work correctly with vars prefixed by '_'.
-	  Next step is to gets/vars/att working with '.' & '-'
+          Can now quote vars and atts   '--u@..-v' 
 2007-02-14  Charlie Zender  <zender@uci.edu>
 
 	* Declare <algorithm> in ncap2_utl.cc and std::-qualify functions
