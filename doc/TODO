@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.851 2007-02-15 00:21:24 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.852 2007-02-15 01:18:23 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -552,12 +552,12 @@ nco803. Link to UCSD proposal by Kraig Winters /data/zender/prp/prp_winters.pdf
 nco804. Re-make debian 3.1.8-2 release
 nco805. dbn: Make package rebuild-able without re-checking out
         cannot represent change to data/big.nc: binary file contents changed
-nco806. Dave Allured request on 20070213 for ncea to resolve hyperslab indices on each file so this works:
+nco807. Merge ncra.c v.1.192-1.193 changes (per-file record limit checks) into mpncra.c
+nco808. Dave Allured request on 20070213 for ncea to resolve hyperslab indices for all dimensions on each file so this works:
         ncea -d time,"2010-1-1 0:0:0","2020-12-31 0:0:0" run*.nc output.nc
         ncea -O -d time,"2010-1-1 0:0:0","2020-12-31 0:0:0" ~/giss*.nc ~/output.nc
 	ncea -O -D 5 -d time,1.,5. -p ~/nco/data in.nc in.nc ~/foo.nc
-nco807. Merge ncra.c v.1.192-1.193 changes (per-file record limit checks) into mpncra.c
-nco808. 
+nco809. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
