@@ -437,7 +437,7 @@ NUMBER:
     )?        
 ;
 
-// Return var or attribute (var_nm@att_nm)
+// Return var or att (var_nm@att_nm)
 VAR_ATT options {testLiterals=true; paraphrase="variable or attribute identifier"; } 
         :  (LPH)(LPH|DGT)*   
             {// check function table
@@ -446,6 +446,13 @@ VAR_ATT options {testLiterals=true; paraphrase="variable or attribute identifier
              else $setType(VAR_ID); 
            }   
            ('@'(LPH)(LPH|DGT)*  {$setType(ATT_ID); })?
+   ;
+
+// Return a quoted var or att (var_nm@att_nm)
+VAR_ATT_QT :( '\''!)
+            ((LPHDGT|'-'|'.')+      {$setType(VAR_ID);})
+            ( '@' (LPHDGT|'-'|'.')+ {$setType(ATT_ID);})?
+            ('\''!)
    ;
 
 DIM_VAL options { paraphrase="dimension identifier"; } 
