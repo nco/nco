@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.37 2007-02-15 15:26:59 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.38 2007-02-20 13:47:26 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1210,18 +1210,26 @@ long sz,
 prs_sct *prs_arg){
   const char fnc_nm[]="ncap_def_dim"; 
 
+  int idx;
+  int len;
   int dmn_out_id;
+  char ch; 
           
   dmn_sct *dmn_nw;             
   dmn_sct *dmn_in_e;
   dmn_sct *dmn_out_e;
-
+  
+  
+  
+  len=strlen(dmn_nm);
   // Ckeck for a valid name 
-  if(!isalpha(dmn_nm[0])){
-    wrn_prn(fnc_nm,"dim \""+ std::string(dmn_nm) + "\" - Invalid name.");
-    return False;;
-  }
-
+  for(idx=0 ; idx < len ; idx++){ 
+    ch=dmn_nm[idx];
+    if( !( isalpha(ch) || ch=='.' || ch=='_' ||ch=='-') ){ 
+      wrn_prn(fnc_nm,"dim \""+ std::string(dmn_nm) + "\" - Invalid dimension name.");
+      return False;;
+    }
+  }         
   // Check if dimension already exists
   dmn_in_e=prs_arg->ptr_dmn_in_vtr->find(dmn_nm);
   dmn_out_e=prs_arg->ptr_dmn_out_vtr->find(dmn_nm);
