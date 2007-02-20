@@ -398,7 +398,8 @@ Whitespace options {paraphrase="white space"; }
 	;
 
 CPP_COMMENT options {paraphrase="a comment"; } 
-        : "//" (~'\n')* '\n'
+       //  : "//" (~'\n')* '\n'
+		: "//" (~('\n'|'\r'))* ('\n'|'\r'('\n')?)?
     { $setType(antlr::Token::SKIP); newline(); }
     ;
 
@@ -448,11 +449,20 @@ VAR_ATT options {testLiterals=true; paraphrase="variable or attribute identifier
            ('@'(LPH)(LPH|DGT)*  {$setType(ATT_ID); })?
    ;
 
-// Return a quoted var or att (var_nm@att_nm)
+
+
+// Return a quoted dim, var or att (var_nm@att_nm)
 VAR_ATT_QT :( '\''!)
-            ((LPHDGT|'-'|'.')+      {$setType(VAR_ID);})
-            ( '@' (LPHDGT|'-'|'.')+ {$setType(ATT_ID);})?
-            ('\''!)
+            (
+             (
+               ((LPHDGT|'-'|'.')+      {$setType(VAR_ID);})
+               ( '@' (LPHDGT|'-'|'.')+ {$setType(ATT_ID);})?
+               ('\''!)
+              )|
+              ( ('$'! (LPHDGT|'-'|'.')+ {$setType(DIM_ID);})
+               ('\''!) ( ".size"! { $setType(DIM_ID_SIZE);})?
+              )? 
+             ) 
    ;
 
 DIM_VAL options { paraphrase="dimension identifier"; } 
