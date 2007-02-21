@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.852 2007-02-15 01:18:23 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.853 2007-02-21 20:55:50 wangd Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -869,6 +869,10 @@ Milestone: Mark's climate model analysis script "works"
            
 9. SS understand dependencies (i.e., dependence of commands within script)
 10. Smarter scheduling of operations (i.e., non-sequential script execution)
+11. Basic security: file path validator (configurable?)
+12. Basic security: argument validator (watch for backticks, pipes and other shell constructs)
+13. Docs about security concerns
+14. Charlie xml filefetch test.
 
 Random cleanup items:
 1. Rework/consolidate tests in src/ssdap for less redundancy, less clutter, 
@@ -876,6 +880,8 @@ Random cleanup items:
 2. Create simple SSDAP functionality test so a user can verify the ability to 
    use SSDAP scripts. Want to call this script from the bm script during 
    regression testing.
+3. Modularize parser (clear place to add new operators)
+4. Modularize executor (clear interface to build new frontend)
 
 ************************************************************************
 End dlwXXX plan
