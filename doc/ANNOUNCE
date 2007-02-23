@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.202 2007-02-23 19:49:44 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.203 2007-02-23 20:39:06 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.8 are ready. 
 
@@ -26,11 +26,9 @@ http://nco.sf.net#pub
 
 Build/runtime changes:
 
-1. Warn when ((_FillValue is) and (missing_value is not)) defined
+1. Update to DAP for netCDF 3.6.2
 
-2. Compile-time option to treat _FillValue (instead of missing_value) as missing
-
-3. Debian/Ubuntu packages include ncap2
+2. Debian/Ubuntu packages include ncap2
 
 Enjoy,
 Charlie

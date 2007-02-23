@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.237 2007-02-23 20:26:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.238 2007-02-23 20:39:06 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.237 2007-02-23 20:26:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.237 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.238 2007-02-23 20:39:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.238 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -887,8 +887,9 @@ main(int argc,char **argv)
 	/* Branch for normalization when no weights were specified
 	   Normalization is just due to tally */
         if(var_prc[idx]->is_crd_var){
-          /* Prevent coordinate variables from encountering nco_var_nrm_sdn() */
-          (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+	  /* Return linear averages of coordinates unless computing extrema
+	     Prevent coordinate variables from encountering nco_var_nrm_sdn() */
+	  if((nco_op_typ != nco_op_min) && (nco_op_typ != nco_op_max)) (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
         }else{ /* !var_prc[idx]->is_crd_var */
 	  switch(nco_op_typ){
 	  case nco_op_avg: /* Normalize sum by tally to create mean */
