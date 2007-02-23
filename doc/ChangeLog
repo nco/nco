@@ -1,5 +1,8 @@
 2007-02-23  Charlie Zender  <zender@uci.edu>
 
+	* Do not normalize coordinates by tallys/weights when no tallys
+	exist (i.e., minimization, maximization, totals). Fixes TODO nco810.
+
 	* Add nco_dbg_typ_enm to nco.h and implement in ncwa.c
 
 	* Add ncwa coordinate-minimization bug to regression test

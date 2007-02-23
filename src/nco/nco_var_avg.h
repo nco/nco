@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.h,v 1.15 2007-01-22 04:04:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.h,v 1.16 2007-02-23 19:43:59 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -41,7 +41,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
  ddra_info_sct * const ddra_info); /* O [sct] DDRA information */
 
 void
-nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
+nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz_op1, /* I [nbr] Size (in elements) of op1 */
  const long sz_op2, /* I [nbr] Size (in elements) of op2 */
@@ -52,7 +52,7 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
  ptr_unn op2); /* O [sct] Sum of each block of op1 */
 
 void
-nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of op2 */
+nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op2 */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz_op1, /* I [nbr] Size (in elements) of op1 */
  const long sz_op2, /* I [nbr] Size (in elements) of op2 */
@@ -62,7 +62,7 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
  ptr_unn op2); /* O [sct] Minimum of each block of op1 */
 
 void
-nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of op2 */
+nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op2 */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz_op1, /* I [nbr] Size (in elements) of op1 */
  const long sz_op2, /* I [nbr] Size (in elements) of op2 */

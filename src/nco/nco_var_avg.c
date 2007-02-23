@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.49 2007-01-23 04:41:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.50 2007-02-23 19:43:59 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -319,13 +319,13 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
        in same order as blocks' average values will appear in output buffer. 
        Averaging routines can take advantage of this by casting avg_val to 
        two dimensional variable and averaging over inner dimension. 
-       nco_var_avg_reduce_*() sets tally array */
+       nco_var_avg_rdc_*() sets tally array */
     switch(nco_op_typ){
     case nco_op_max:
-      (void)nco_var_avg_reduce_max(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);
+      (void)nco_var_avg_rdc_max(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);
       break;
     case nco_op_min:
-      (void)nco_var_avg_reduce_min(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);
+      (void)nco_var_avg_rdc_min(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);
       break;
     case nco_op_avg: /* Operations: Previous=none, Current=sum, Next=normalize and root */
     case nco_op_sqravg: /* Operations: Previous=none, Current=sum, Next=normalize and square */
@@ -334,7 +334,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     case nco_op_rmssdn: /* Operations: Previous=square, Current=sum, Next=normalize and root */
     case nco_op_ttl: /* Operations: Previous=none, Current=sum, Next=none */
     default:
-      (void)nco_var_avg_reduce_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);	  		
+      (void)nco_var_avg_rdc_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);	  		
       break;
     } /* end case */
     
@@ -388,7 +388,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 } /* end nco_var_avg() */
 
 void
-nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
+nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz_op1, /* I [nbr] Size (in elements) of op1 */
  const long sz_op2, /* I [nbr] Size (in elements) of op2 */
@@ -403,7 +403,7 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
      result in corresponding element in second operand. 
      Currently arithmetic operation performed is summation of elements in op1
      Input operands are assumed to have conforming types, but not dimensions or sizes
-     nco_var_avg_reduce_ttl() knows nothing about dimensions
+     nco_var_avg_rdc_ttl() knows nothing about dimensions
      Routine is one dimensional array operator acting serially on each element of input buffer op1
      Calling rouine knows exactly how rank of output, op2, is reduced from rank of input
      Routine only does summation rather than averaging in order to remain flexible
@@ -668,10 +668,10 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
 
-} /* end nco_var_avg_reduce_ttl() */
+} /* end nco_var_avg_rdc_ttl() */
 
 void
-nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of op2 */
+nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op2 */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz_op1, /* I [nbr] Size (in elements) of op1 */
  const long sz_op2, /* I [nbr] Size (in elements) of op2 */
@@ -684,10 +684,10 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
      result in corresponding element in second operand. Operands are assumed to have
      conforming types, but not dimensions or sizes. */
 
-  /* nco_var_avg_reduce_min() is derived from nco_var_avg_reduce_ttl()
+  /* nco_var_avg_rdc_min() is derived from nco_var_avg_rdc_ttl()
      Routines are very similar but tallies are not incremented
-     See nco_var_avg_reduce_ttl() for more algorithmic documentation
-     nco_var_avg_reduce_max() is derived from nco_var_avg_reduce_min() */
+     See nco_var_avg_rdc_ttl() for more algorithmic documentation
+     nco_var_avg_rdc_max() is derived from nco_var_avg_rdc_min() */
 
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
@@ -953,10 +953,10 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end nco_var_avg_reduce_min() */
+} /* end nco_var_avg_rdc_min() */
 
 void
-nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of op2 */
+nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op2 */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz_op1, /* I [nbr] Size (in elements) of op1 */
  const long sz_op2, /* I [nbr] Size (in elements) of op2 */
@@ -969,10 +969,10 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
      result in corresponding element in second operand. Operands are assumed to have
      conforming types, but not dimensions or sizes. */
 
-  /* nco_var_avg_reduce_min() is derived from nco_var_avg_reduce_ttl()
+  /* nco_var_avg_rdc_min() is derived from nco_var_avg_rdc_ttl()
      Routines are very similar but tallies are not incremented
-     See nco_var_avg_reduce_ttl() for more algorithmic documentation
-     nco_var_avg_reduce_max() is derived from nco_var_avg_reduce_min() */
+     See nco_var_avg_rdc_ttl() for more algorithmic documentation
+     nco_var_avg_rdc_max() is derived from nco_var_avg_rdc_min() */
 
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
@@ -1238,4 +1238,4 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
 
-} /* end nco_var_avg_reduce_max() */
+} /* end nco_var_avg_rdc_max() */

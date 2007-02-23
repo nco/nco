@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.109 2007-02-23 18:55:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.110 2007-02-23 19:43:59 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -219,7 +219,8 @@ extern "C" {
     nco_dbg_io, /* Subroutine I/O */
     nco_dbg_vec, /* Entire vectors */
     nco_dbg_vrb, /* Verbose, print everything possible */
-    nco_dbg_old /* Old debugging blocks not used anymore */
+    nco_dbg_old, /* Old debugging blocks not used anymore */
+    nco_dbg_nbr /* Number of debugging types. Should be last enumerated value. */
   }; /* end nco_dbg_typ_enm */
 
   typedef enum { /* [enm] Memory allocation type */

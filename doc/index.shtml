@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.384 2007-01-24 18:08:31 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.385 2007-02-23 19:52:28 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -376,6 +376,7 @@ Instead, retrieve all recently tagged versions
 <ul>
 <li><b>NCO/SDO 3.1.9</b>: (<i>In progress</i>) <tt>ncap2</tt> in RPM packages; 
 Update to DAP for netCDF 3.6.2;
+Fix problem where <tt>ncwa</tt> reported <tt>NaN/inf</tt> for coordinate variable minimization;
 <li><b>NCO/SDO 3.1.8</b>: Support <tt>_FillValue</tt> with compile-time switch; Debian package synchronized, includes <tt>ncap2</tt> 
 <li><b>NCO/SDO 3.1.7</b>: <tt>ncap2</tt> &ldquo;double-parsing&rdquo;, array initialization, supercedes <tt>ncap</tt>
 <li><b>NCO/SDO 3.1.6</b>: Support <a href="http://nco.sf.net/nco.html#srd">stride</a> in all hyperslabbing operators; change more WARNINGs to INFOs
