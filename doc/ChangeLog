@@ -1,8 +1,14 @@
+2007-02-23  Charlie Zender  <zender@uci.edu>
+
+	* Add ncwa coordinate-minimization bug to regression test
+
 2007-02-15  Henry Butowsky  <henryb@ntlworld.com>
+
 	* Changed prefix of parser generated vars from
 	  '_' to '~'. Attribute propagation & inheritance
 	  should now work correctly with vars prefixed by '_'.
           Can now quote vars and atts   '--u@..-v' 
+
 2007-02-14  Charlie Zender  <zender@uci.edu>
 
 	* Declare <algorithm> in ncap2_utl.cc and std::-qualify functions

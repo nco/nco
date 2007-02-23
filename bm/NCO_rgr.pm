@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.58 2006-11-23 19:47:22 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.59 2007-02-23 17:22:28 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -807,6 +807,14 @@ sub tst_rgr {
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=();  # Reset array
     
+    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v lat $in_pth_arg in.nc %tempf_00%";
+    $tst_cmd[1]="ncks -C -H -s '%g' -v lat %tempf_00%";
+    $dsc_sng="minimize coordinate variable";
+    $tst_cmd[2] = "-90";
+    $tst_cmd[3] = "SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array
+
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time -v pck,one_dmn_rec_var $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v pck %tempf_00%";
     $dsc_sng="pass through non-averaged (i.e., non-processed) packed data to output";

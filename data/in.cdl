@@ -40,7 +40,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.74 2007-01-13 05:45:57 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.75 2007-02-23 17:22:28 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -73,6 +73,14 @@ variables:
 	float lon(lon);
 	lon:long_name = "Longitude (typically midpoints)";
 	lon:units = "degrees_east";
+
+	double lond(lon);
+	lond:long_name = "Longitude (typically midpoints), double precision";
+	lond:units = "degrees_east";
+
+	float lonf(lon);
+	lonf:long_name = "Longitude (typically midpoints), single precision";
+	lonf:units = "degrees_east";
 
 	float lon_grd(lon_grd);
 	lon_grd:long_name = "Longitude grid (typically interfaces)";
@@ -641,6 +649,8 @@ data:
 	lev_var=100.,500.,1000.;
 	lev_wgt=10,2,1;
 	lon=0,90,180,270;
+	lond=0,90,180,270;
+	lonf=0,90,180,270;
 	lon_grd=-45,45,135,225,315;
 	lon_wgt=0.347855,0.652145,0.652145,0.347855;
 //	lon_T42=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127;
