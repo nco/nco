@@ -1,5 +1,7 @@
 2007-02-23  Charlie Zender  <zender@uci.edu>
 
+	* Add nco_dbg_typ_enm to nco.h and implement in ncwa.c
+
 	* Add ncwa coordinate-minimization bug to regression test
 
 2007-02-15  Henry Butowsky  <henryb@ntlworld.com>

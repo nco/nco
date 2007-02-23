@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.108 2007-01-22 04:04:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.109 2007-02-23 18:55:17 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -59,15 +59,15 @@ extern "C" {
 
 /* Boolean values */
 /* From Wikipedia:
-"On a recent C compiler (supporting the C99 standard), there is a _Bool type, which is used to define bool by the stdbool.h header: 
+   "On a recent C compiler (supporting the C99 standard), there is a _Bool type, which is used to define bool by the stdbool.h header: 
 
-#include <stdbool.h>
-bool b = false;
-...
-b = true;
+   #include <stdbool.h>
+   bool b = false;
+   ...
+   b = true;
 
-During its standardization process, the C++ programming language introduced the bool, true and false keywords, adding a native datatype to support boolean data.
-Preprocessor macros may be used to turn bool into _Bool, false into 0 and true into 1, allowing compatibility with the aforementioned C99 use of the stdbool.h header." */
+   During its standardization process, the C++ programming language introduced the bool, true and false keywords, adding a native datatype to support boolean data.
+   Preprocessor macros may be used to turn bool into _Bool, false into 0 and true into 1, allowing compatibility with the aforementioned C99 use of the stdbool.h header." */
 #define nco_bool int
 #ifndef __cplusplus
 # ifndef bool
@@ -106,6 +106,11 @@ Preprocessor macros may be used to turn bool into _Bool, false into 0 and true i
      NB: nc_inq() family is defined to return -1 for missing record dimensions */
 #define NCO_REC_DMN_UNDEFINED -1
   
+  /* Debugging level that quiets all non-requested informational messages
+     This value is compared against user-selected dbg_lvl 
+     Running operators with --quiet automatically sets dbg_lvl=NCO_DBG_QUIET */
+#define NCO_DBG_QUIET 6
+
   /* Prototype global functions before defining them in next block */
   char *nco_mss_val_sng_get(void); /* [sng] Missing value attribute name */
   char *prg_nm_get(void);
@@ -202,6 +207,21 @@ Preprocessor macros may be used to turn bool into _Bool, false into 0 and true i
     aed_overwrite
   }; /* end aed enum */
   
+  enum nco_dbg_typ_enm{ /* [enm] Debugging levels */
+    /* List in increasing levels of verbosity */
+    nco_dbg_quiet, /* Quiet all non-error messages. */
+    nco_dbg_std, /* Standard mode. Minimal, but some, messages. */
+    nco_dbg_fl, /* Filenames */
+    nco_dbg_scl, /* Scalars, other per-file information  */
+    nco_dbg_var, /* Variables, highest level per-file loop information */
+    nco_dbg_crr, /* Current task */
+    nco_dbg_sbr, /* Subroutine names on entry and exit */
+    nco_dbg_io, /* Subroutine I/O */
+    nco_dbg_vec, /* Entire vectors */
+    nco_dbg_vrb, /* Verbose, print everything possible */
+    nco_dbg_old /* Old debugging blocks not used anymore */
+  }; /* end nco_dbg_typ_enm */
+
   typedef enum { /* [enm] Memory allocation type */
     nco_mmr_calloc, /* [enm] nco_calloc() */
     nco_mmr_free, /* [enm] nco_free() */

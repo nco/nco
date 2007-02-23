@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.33 2007-01-22 04:04:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.34 2007-02-23 18:55:17 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -223,7 +223,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   } /* end if variable is a scalar */
   (void)fflush(stdout);
   
-  /* Free the space allocated for dimension info. */
+  /* Free space allocated for dimension information */
   for(idx=0;idx<nbr_dim;idx++) dim[idx].nm=(char *)nco_free(dim[idx].nm);
   if(nbr_dim > 0){
     dim=(dmn_sct *)nco_free(dim);
@@ -287,7 +287,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
   (void)nco_inq_var(in_id,var.id,(char *)NULL,&var.type,&var.nbr_dim,(int *)NULL,(int *)NULL);
 
   if(var.nbr_dim > 0){
-    /* Allocate space for dimension info */
+    /* Allocate space for dimension information */
     dim=(dmn_sct *)nco_malloc(var.nbr_dim*sizeof(dmn_sct));
     dmn_cnt=(long *)nco_malloc(var.nbr_dim*sizeof(long));
     dmn_id=(int *)nco_malloc(var.nbr_dim*sizeof(int));

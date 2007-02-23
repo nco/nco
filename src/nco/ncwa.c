@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.234 2007-01-22 04:04:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.235 2007-02-23 18:55:17 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.234 2007-01-22 04:04:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.234 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.235 2007-02-23 18:55:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.235 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -515,7 +515,7 @@ main(int argc,char **argv)
     for(idx=0;idx<dmn_avg_nbr;idx++){
       dmn_avg_lst_in[idx]=(char *)strdup(dmn_lst[idx].nm);
     } /* end loop over idx */
-    (void)fprintf(stderr,"%s: INFO No dimensions specified with -a, therefore reducing (averaging, taking minimum, etc.) over all dimensions\n",prg_nm);
+    if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO No dimensions specified with -a, therefore reducing (averaging, taking minimum, etc.) over all dimensions\n",prg_nm);
   } /* end if dmn_avg_nbr == 0 */
   /* Dimension list no longer needed */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr);
@@ -540,7 +540,7 @@ main(int argc,char **argv)
       if(idx != nbr_dmn_xtr){
 	dmn_avg[idx_avg]=dim[idx];
       }else{
-	(void)fprintf(stderr,"%s: WARNING reducing dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_avg_lst[idx_avg].nm);
+	if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING reducing dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_avg_lst[idx_avg].nm);
 	/* Collapse dimension average list by omitting irrelevent dimension */
 	(void)memmove(dmn_avg_lst+idx_avg*sizeof(nm_id_sct),dmn_avg_lst+(idx_avg+1)*sizeof(nm_id_sct),(dmn_avg_nbr-idx_avg-1)*sizeof(nm_id_sct));
 	--dmn_avg_nbr;
@@ -606,7 +606,7 @@ main(int argc,char **argv)
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,dmn_avg,dmn_avg_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* We now have final list of variables to extract. Phew. */
-  if(dbg_lvl > 1){
+  if(dbg_lvl >= nco_dbg_var){
     for(idx=0;idx<nbr_xtr;idx++) (void)fprintf(stderr,"var[%d]->nm = %s, ->id=[%d]\n",idx,var[idx]->nm,var[idx]->id);
     for(idx=0;idx<nbr_var_fix;idx++) (void)fprintf(stderr,"var_fix[%d]->nm = %s, ->id=[%d]\n",idx,var_fix[idx]->nm,var_fix[idx]->id);
     for(idx=0;idx<nbr_var_prc;idx++) (void)fprintf(stderr,"var_prc[%d]->nm = %s, ->id=[%d]\n",idx,var_prc[idx]->nm,var_prc[idx]->id);
@@ -614,7 +614,7 @@ main(int argc,char **argv)
   
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
-  if(dbg_lvl > 4) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
+  if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
 
   /* Copy all global attributes */
   (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
@@ -661,11 +661,11 @@ main(int argc,char **argv)
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
     if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-    if(dbg_lvl > 0) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in);
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
-    if(dbg_lvl > 0 && FILE_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,", local file is %s",fl_in);
-    if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
+    if(dbg_lvl >= nco_dbg_fl && FILE_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,", local file is %s",fl_in);
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
     
     /* Open file once per thread to improve caching */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in,NC_NOWRITE,in_id_arr+thr_idx);
@@ -717,8 +717,8 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       in_id=in_id_arr[omp_get_thread_num()];
-      if(dbg_lvl > 0 && dbg_lvl < 10) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-      if(dbg_lvl > 0 && dbg_lvl < 10) (void)fflush(fp_stderr);
+      if(dbg_lvl >= nco_dbg_var && dbg_lvl < 10) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+      if(dbg_lvl >= nco_dbg_var && dbg_lvl < 10) (void)fflush(fp_stderr);
 
       /* Allocate and, if necessary, initialize accumulation space for all processed variables */
       var_prc_out[idx]->sz=var_prc[idx]->sz;
@@ -985,7 +985,7 @@ main(int argc,char **argv)
       
     } /* end (OpenMP parallel for) loop over idx */
     
-    if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
+    if(dbg_lvl >= nco_dbg_var) (void)fprintf(stderr,"\n");
     
     /* Close input netCDF file */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
