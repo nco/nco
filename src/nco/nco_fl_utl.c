@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.83 2007-01-22 04:04:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.84 2007-02-23 21:59:29 zender Exp $ */
 
 /* Purpose: File manipulation */
 
 /* Copyright (C) 1995--2007 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
-   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+   See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_fl_utl.h" /* File manipulation */
 

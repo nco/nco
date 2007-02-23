@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.168 2007-01-22 04:04:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.169 2007-02-23 21:59:28 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
 /* Copyright (C) 1995--2007 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
-   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+   See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_ctl.h" /* Program flow control functions */
 
@@ -692,7 +692,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Me: \"You married a genius!\" Her: \"I did?\"\n";
+  return "Winner of the 2007 Sexiest Software Award\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 

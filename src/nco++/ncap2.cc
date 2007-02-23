@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.28 2007-02-12 16:57:25 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.29 2007-02-23 21:59:32 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -6,8 +6,8 @@
 
 /* Copyright (C) 1995--2007 Charlie Zender
 
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
-   The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+   The full license text is at http://www.gnu.org/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
    As a special exception to the terms of the GPL, you are permitted 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.28 2007-02-12 16:57:25 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.28 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.29 2007-02-23 21:59:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.29 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.101 2007-01-22 04:04:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.102 2007-02-23 21:59:27 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -6,8 +6,8 @@
 
 /* Copyright (C) 1995--2007 Charlie Zender
 
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
-   The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+   The full license text is at http://www.gnu.org/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
    As a special exception to the terms of the GPL, you are permitted 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.101 2007-01-22 04:04:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.101 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.102 2007-02-23 21:59:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.102 $";
   const char * const opt_sht_lst="4Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)

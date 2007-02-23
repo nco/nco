@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.46 2007-01-22 04:04:23 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.47 2007-02-23 21:59:27 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -6,8 +6,8 @@
   
 /* Copyright (C) 1995--2007 Charlie Zender
      
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
-   The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+   The full license text is at http://www.gnu.org/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
    As a special exception to the terms of the GPL, you are permitted 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.98 2007-01-22 04:04:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.99 2007-02-23 21:59:32 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -6,8 +6,8 @@
 
 /* Copyright (C) 1995--2007 Charlie Zender
 
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
-   The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+   The full license text is at http://www.gnu.org/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
    As a special exception to the terms of the GPL, you are permitted 
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.98 2007-01-22 04:04:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.98 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.99 2007-02-23 21:59:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.99 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)

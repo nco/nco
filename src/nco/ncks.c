@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.170 2007-02-22 21:00:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.171 2007-02-23 21:59:28 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -7,8 +7,8 @@
 
 /* Copyright (C) 1995--2007 Charlie Zender
 
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
-   The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+   The full license text is at http://www.gnu.org/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
    As a special exception to the terms of the GPL, you are permitted 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.170 2007-02-22 21:00:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.170 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.171 2007-02-23 21:59:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.171 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)

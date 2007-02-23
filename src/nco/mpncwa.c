@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.63 2007-02-23 20:39:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.64 2007-02-23 21:59:27 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -7,8 +7,8 @@
 
 /* Copyright (C) 1995--2007 Charlie Zender
 
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
-   The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+   The full license text is at http://www.gnu.org/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
 
    As a special exception to the terms of the GPL, you are permitted 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.63 2007-02-23 20:39:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.63 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.64 2007-02-23 21:59:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.64 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
