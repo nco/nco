@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.236 2007-02-23 19:43:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.237 2007-02-23 20:26:32 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.236 2007-02-23 19:43:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.236 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.237 2007-02-23 20:26:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.237 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -862,7 +862,6 @@ main(int argc,char **argv)
 	  (void)fprintf(fp_stdout,"%s: ERROR Weight in denominator weight = 0.0, will cause SIGFPE\n%s: HINT Sum of masked, averaged weights must be non-zero\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
 	} /* end if */
 	/* Divide numerator by masked, averaged, weights */
-	/* fxm: Treat coordinates differently? */
 	switch(nco_op_typ){
 	case nco_op_avg: /* Normalize sum by weighted tally to create mean */
 	case nco_op_sqravg: /* Normalize sum by weighted tally to create mean */
@@ -887,28 +886,32 @@ main(int argc,char **argv)
       }else if(NRM_BY_DNM){
 	/* Branch for normalization when no weights were specified
 	   Normalization is just due to tally */
-	/* fxm: Treat coordinates differently? */
-	switch(nco_op_typ){
-	case nco_op_avg: /* Normalize sum by tally to create mean */
-	case nco_op_sqravg: /* Normalize sum by tally to create mean */
-	case nco_op_avgsqr: /* Normalize sum of squares by tally to create mean square */
-	case nco_op_rms: /* Normalize sum of squares by tally to create mean square */
-	case nco_op_sqrt: /* Normalize sum by tally to create mean */
-	  (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
-	  break;
-	case nco_op_rmssdn: /* Normalize sum of squares by tally-1 to create mean square for sdn */
-	  (void)nco_var_nrm_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
-	  break;
-	case nco_op_min: /* Minimum is already in buffer, do nothing */
-	case nco_op_max: /* Maximum is already in buffer, do nothing */	
-	case nco_op_ttl: /* Total is already in buffer, do nothing */	
-	  break;
-	default:
-	  (void)fprintf(fp_stdout,"%s: ERROR Illegal nco_op_typ in non-weighted normalization\n",prg_nm);
-	  nco_exit(EXIT_FAILURE);
-	  break;
+        if(var_prc[idx]->is_crd_var){
+          /* Prevent coordinate variables from encountering nco_var_nrm_sdn() */
+          (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+        }else{ /* !var_prc[idx]->is_crd_var */
+	  switch(nco_op_typ){
+	  case nco_op_avg: /* Normalize sum by tally to create mean */
+	  case nco_op_sqravg: /* Normalize sum by tally to create mean */
+	  case nco_op_avgsqr: /* Normalize sum of squares by tally to create mean square */
+	  case nco_op_rms: /* Normalize sum of squares by tally to create mean square */
+	  case nco_op_sqrt: /* Normalize sum by tally to create mean */
+	    (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+	    break;
+	  case nco_op_rmssdn: /* Normalize sum of squares by tally-1 to create mean square for sdn */
+	    (void)nco_var_nrm_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+	    break;
+	  case nco_op_min: /* Minimum is already in buffer, do nothing */
+	  case nco_op_max: /* Maximum is already in buffer, do nothing */	
+	  case nco_op_ttl: /* Total is already in buffer, do nothing */	
+	    break;
+	  default:
+	    (void)fprintf(fp_stdout,"%s: ERROR Illegal nco_op_typ in non-weighted normalization\n",prg_nm);
+	    nco_exit(EXIT_FAILURE);
+	    break;
 	} /* end switch */
-      }else if(!NRM_BY_DNM){
+       } /* !var_prc[idx]->is_crd_var */
+       }else if(!NRM_BY_DNM){
 	/* User turned off normalization so we are done */
 	;
       }else{
