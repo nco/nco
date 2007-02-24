@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.399 2007-02-23 21:59:27 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.400 2007-02-24 01:14:55 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -1627,7 +1627,7 @@ src_cln:
 	rm -f ${MDL_NCAP}
 # Targets in /usr/local
 sys: ${MDL_BIN_TRG}
-	- cd ${MY_BIN_DIR};sudo /bin/cp -f ${MDL_BIN_TRG} /usr/local/bin; cd /usr/local/bin; sudo rm -f ncdiff ncea ncrcat ncunpack; sudo ln -s -f ncbo ncdiff; sudo ln -s -f ncra ncea; sudo ln -s -f ncra ncrcat; sudo ln -s -f ncpdq ncunpack; sudo ln -s -f ncpdq ncpack; 
+	- cd ${MY_BIN_DIR};sudo /bin/cp -f ${MDL_BIN_TRG} /usr/local/bin; cd /usr/local/bin; sudo rm -f ncdiff ncea ncrcat ncunpack; sudo ln -s -f ncbo ncdiff; sudo ln -s -f ncra ncea; sudo ln -s -f ncra ncrcat; sudo ln -s -f ncpdq ncunpack; sudo ln -s -f ncpdq ncpack; cd ../src/nco++; ${MAKE} -f Makefile.old $@
 sys_cln:
 	- cd /usr/local/bin;rm -f ${MDL_BIN_TRG}
 
