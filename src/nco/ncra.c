@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.197 2007-02-24 01:26:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.198 2007-02-24 07:13:50 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.197 2007-02-24 01:26:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.197 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.198 2007-02-24 07:13:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.198 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -534,11 +534,11 @@ main(int argc,char **argv)
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
     if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-    if(dbg_lvl > 0) (void)fprintf(stderr,gettext("%s: INFO Input file %d is %s"),prg_nm_get(),fl_idx,fl_in);
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,gettext("%s: INFO Input file %d is %s"),prg_nm_get(),fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
-    if(dbg_lvl > 0 && FILE_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,gettext(", local file is %s"),fl_in);
-    if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
+    if(dbg_lvl >= nco_dbg_fl && FILE_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,gettext(", local file is %s"),fl_in);
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
 
     /* Open file once per thread to improve caching */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in,NC_NOWRITE,in_id_arr+thr_idx);
@@ -565,14 +565,14 @@ main(int argc,char **argv)
       for(idx_rec=lmt_rec->srt;idx_rec<=lmt_rec->end;idx_rec+=lmt_rec->srd){
 	if(fl_idx == fl_nbr-1 && idx_rec >= 1L+lmt_rec->end-lmt_rec->srd) LAST_RECORD=True;
 	/* Process all variables in current record */
-	if(dbg_lvl > 1) (void)fprintf(fp_stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
+	if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,in_id_arr,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
 #endif /* !_OPENMP */
 	  for(idx=0;idx<nbr_var_prc;idx++){
 	    in_id=in_id_arr[omp_get_thread_num()];
-	    if(dbg_lvl > 2) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	    if(dbg_lvl > 0) (void)fflush(fp_stderr);
+	    if(dbg_lvl > nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	    if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	    /* Update hyperslab start indices to current record for each variable */
 	    var_prc[idx]->srt[0]=idx_rec;
 	    var_prc[idx]->end[0]=idx_rec;
@@ -613,7 +613,7 @@ main(int argc,char **argv)
 	    var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	  } /* end (OpenMP parallel for) loop over variables */
 	  idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
-	  if(dbg_lvl > 2) (void)fprintf(fp_stderr,"\n");
+	  if(dbg_lvl > nco_dbg_var) (void)fprintf(fp_stderr,"\n");
 	} /* end loop over idx_rec */
 	/* Warn if fewer than number of requested records were read and final file has been processed */
 	if(lmt_rec->lmt_typ == lmt_dmn_idx && lmt_rec->is_usr_spc_min && lmt_rec->is_usr_spc_max){
@@ -633,8 +633,8 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
 	for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 	  in_id=in_id_arr[omp_get_thread_num()];
-	  if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	  if(dbg_lvl > 0) (void)fflush(fp_stderr);
+	  if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	  if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 
 	  /* Update hyperslab start indices to current record for each variable */
 	  if(var_prc[idx]->is_rec_var){
@@ -658,7 +658,7 @@ main(int argc,char **argv)
 	} /* end (OpenMP parallel for) loop over idx */
       } /* end else ncea */
       
-      if(dbg_lvl > 1) (void)fprintf(fp_stderr,"\n");
+      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,"\n");
       
       /* Close input netCDF file */
       for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
