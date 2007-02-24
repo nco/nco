@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.47 2007-02-23 21:59:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.48 2007-02-24 07:42:05 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.47 2007-02-23 21:59:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.47 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.48 2007-02-24 07:42:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.48 $";
   const char * const opt_sht_lst="4ACcD:d:Fhi:l:Oo:p:rRSt:v:xw:-:";
   
   dmn_sct **dim;
@@ -408,20 +408,20 @@ main(int argc,char **argv)
   /* Parse filenames */
   fl_idx=0; /* Input file _1 */
   fl_in_1=nco_fl_nm_prs(fl_in_1,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-  if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in_1);
+  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in_1);
   /* Make sure file is on local system and is readable or die trying */
   fl_in_1=nco_fl_mk_lcl(fl_in_1,fl_pth_lcl,&FILE_1_RETRIEVED_FROM_REMOTE_LOCATION);
-  if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in_1);
+  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"local file %s:\n",fl_in_1);
   /* Open file once per thread to improve caching */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in_1,NC_NOWRITE,in_id_1_arr+thr_idx);
   in_id_1=in_id_1_arr[0];
 
   fl_idx=1; /* Input file _2 */
   fl_in_2=nco_fl_nm_prs(fl_in_2,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-  if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in_2);
+  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in_2);
   /* Make sure file is on local system and is readable or die trying */
   fl_in_2=nco_fl_mk_lcl(fl_in_2,fl_pth_lcl,&FILE_2_RETRIEVED_FROM_REMOTE_LOCATION);
-  if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in_2);
+  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"local file %s:\n",fl_in_2);
   /* Open file once per thread to improve caching */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in_2,NC_NOWRITE,in_id_2_arr+thr_idx);
   in_id_2=in_id_2_arr[0];
@@ -611,7 +611,7 @@ main(int argc,char **argv)
     wgt_2=scl_mk_var(val_gnr_unn,NC_DOUBLE);
   } /* end if CMD_LN_NTP_WGT */
   
-  if(dbg_lvl > 1) (void)fprintf(stderr,"wgt_1 = %g, wgt_2 = %g\n",wgt_1->val.dp[0],wgt_2->val.dp[0]);
+  if(dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,"wgt_1 = %g, wgt_2 = %g\n",wgt_1->val.dp[0],wgt_2->val.dp[0]);
   
   /* Create structure list for second file */
   var_prc_2=(var_sct **)nco_malloc(nbr_var_prc*sizeof(var_sct *));
@@ -685,8 +685,8 @@ main(int argc,char **argv)
 	/* UP and SMP codes main loop over variables */
 	for(idx=0;idx<nbr_var_prc;idx++){
 #endif /* !ENABLE_MPI */
-	  if(dbg_lvl > 0) (void)fprintf(fp_stderr,"%s, ",var_prc_1[idx]->nm);
-	  if(dbg_lvl > 0) (void)fflush(fp_stderr);
+	  if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"%s, ",var_prc_1[idx]->nm);
+	  if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	  
 	  in_id_1=in_id_1_arr[omp_get_thread_num()];
 	  in_id_2=in_id_2_arr[omp_get_thread_num()];
@@ -770,7 +770,7 @@ main(int argc,char **argv)
   } /* end (OpenMP parallel for) loop over idx */
 #endif /* !ENABLE_MPI */
   
-  if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
+  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
   
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);

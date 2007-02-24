@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.43 2007-02-23 21:59:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.44 2007-02-24 07:42:05 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.43 2007-02-23 21:59:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.43 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.44 2007-02-24 07:42:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.44 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:RrSt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -781,10 +781,10 @@ main(int argc,char **argv)
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
     if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-    if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
-    if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"local file %s:\n",fl_in);
     
     /* Open file once per thread to improve caching */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in,NC_NOWRITE,in_id_arr+thr_idx);
@@ -864,8 +864,8 @@ main(int argc,char **argv)
 	  in_id=in_id_arr[omp_get_thread_num()];
 	  /* fxm TODO nco638 temporary fix? */
 	  var_prc[idx]->nc_id=in_id; 
-	  if(dbg_lvl > 1) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	  if(dbg_lvl > 0) (void)fflush(fp_stderr);
+	  if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	  if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	  
 	  /* Retrieve variable from disk into memory */
 	  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
@@ -939,7 +939,7 @@ main(int argc,char **argv)
   }  /* end (OpenMP parallel for) loop over idx */
 #endif /* !ENABLE_MPI */
   
-  if(dbg_lvl > 0) (void)fprintf(fp_stderr,"\n");
+  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(fp_stderr,"\n");
   
 #ifdef ENABLE_MPI
   MPI_Barrier(MPI_COMM_WORLD);

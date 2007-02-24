@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.171 2007-02-23 21:59:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.172 2007-02-24 07:42:06 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.171 2007-02-23 21:59:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.171 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.172 2007-02-24 07:42:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.172 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -548,7 +548,7 @@ main(int argc,char **argv)
     /* Copy variable data */
     for(idx=0;idx<nbr_xtr;idx++){
       if(dbg_lvl > 2 && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
-      if(dbg_lvl > 0) (void)fflush(stderr);
+      if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
       /* Old hyperslab routines */
       /* NB: nco_cpy_var_val_lmt() contains OpenMP critical region */
       /* if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm); */

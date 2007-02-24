@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.133 2007-02-23 21:59:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.134 2007-02-24 07:42:06 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.133 2007-02-23 21:59:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.133 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.134 2007-02-24 07:42:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.134 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRt:v:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -505,11 +505,11 @@ main(int argc,char **argv)
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
     if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr, fl_lst_abb,fl_pth);
-    if(dbg_lvl > 0) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in);
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
-    if(dbg_lvl > 0 && FILE_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,", local file is %s",fl_in);
-    if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
+    if(dbg_lvl >= nco_dbg_fl && FILE_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,", local file is %s",fl_in);
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
     
     /* Open file once per thread to improve caching */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in,NC_NOWRITE,in_id_arr+thr_idx);
@@ -525,7 +525,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_prc;idx++){
       in_id=in_id_arr[omp_get_thread_num()];
       if(dbg_lvl > 1) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
-      if(dbg_lvl > 0) (void)fflush(fp_stderr);
+      if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
       /* Variables may have different ID, missing_value, type, in each file */
       (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
       /* Retrieve variable from disk into memory */

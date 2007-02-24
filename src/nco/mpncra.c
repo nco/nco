@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.64 2007-02-23 21:59:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.65 2007-02-24 07:42:06 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.64 2007-02-23 21:59:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.64 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.65 2007-02-24 07:42:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.65 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -645,7 +645,7 @@ main(int argc,char **argv)
     idx_rec=lmt_rec->srt;
     if(fl_idx == fl_nbr-1 && idx_rec >= 1L+lmt_rec->end-lmt_rec->srd) LAST_RECORD=True;
     /* Process all variables in first record */
-    if(dbg_lvl > 1) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
+    if(dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
     
     if(prc_rnk == rnk_mgr){ /* MPI manager code */
       /* Compensate for incrementing on each worker's first message */
@@ -712,7 +712,7 @@ main(int argc,char **argv)
 	  lcl_nbr_var++;
           var_prc_out[idx]->id=msg_bfr[2];
 	  if(dbg_lvl > 2) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	  if(dbg_lvl > 0) (void)fflush(fp_stderr);
+	  if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	  /* Update hyperslab start indices to current record for each variable */
 	  var_prc[idx]->srt[0]=idx_rec;
 	  var_prc[idx]->end[0]=idx_rec;
@@ -825,8 +825,8 @@ main(int argc,char **argv)
 	  lcl_idx_lst[lcl_nbr_var]=idx; /* storing the indices for subsequent processing by the worker */
 	  lcl_nbr_var++;
 	  var_prc_out[idx]->id=msg_bfr[2];
-	  if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	  if(dbg_lvl > 0) (void)fflush(fp_stderr);
+	  if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	  if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	  /* Retrieve variable from disk into memory */
 	  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
 	  (void)nco_var_get(in_id,var_prc[idx]);
@@ -847,7 +847,7 @@ main(int argc,char **argv)
     } /* endif Worker */
   } /* end else ncea */
   
-  if(dbg_lvl > 1) (void)fprintf(stderr,"\n");
+  if(dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,"\n");
   
   /* Close input netCDF file */
   nco_close(in_id);
@@ -873,10 +873,10 @@ main(int argc,char **argv)
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
     if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-    if(dbg_lvl > 0) (void)fprintf(stderr,gettext("\nInput file %d is %s; "),fl_idx,fl_in);
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,gettext("\nInput file %d is %s; "),fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
-    if(dbg_lvl > 0) (void)fprintf(stderr,gettext("local file %s:\n"),fl_in);
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,gettext("local file %s:\n"),fl_in);
     
     /* Open file once per thread to improve caching */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in,NC_NOWRITE,in_id_arr+thr_idx);
@@ -947,7 +947,7 @@ main(int argc,char **argv)
 	      idx=lcl_idx_lst[jdx];
 #endif /* !ENABLE_MPI */
 	      /* Process all variables in current record */
-	      if(dbg_lvl > 1) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
+	      if(dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
 #if 0
 	      /* NB: Immediately preceding MPI for scope confounds Emacs indentation
 		 Fake end scope restores correct indentation, simplifies code-checking */
@@ -962,7 +962,7 @@ main(int argc,char **argv)
 #endif /* ENABLE_MPI */
 	      in_id=in_id_arr[omp_get_thread_num()];
 	      if(dbg_lvl > 2) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	      if(dbg_lvl > 0) (void)fflush(fp_stderr);
+	      if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	      /* Update hyperslab start indices to current record for each variable */
 	      var_prc[idx]->srt[0]=idx_rec;
 	      var_prc[idx]->end[0]=idx_rec;
@@ -1074,8 +1074,8 @@ main(int argc,char **argv)
 	    for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 #endif /* !ENABLE_MPI */	
 	      in_id=in_id_arr[omp_get_thread_num()];
-	      if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	      if(dbg_lvl > 0) (void)fflush(fp_stderr);
+	      if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	      if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	      /* Retrieve variable from disk into memory */
 	      /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
 	      (void)nco_var_get(in_id,var_prc[idx]);
@@ -1098,7 +1098,7 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
       } /* end else ncea */
       
-      if(dbg_lvl > 1) (void)fprintf(stderr,"\n");
+      if(dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,"\n");
       
       /* Close input netCDF file */
       for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);

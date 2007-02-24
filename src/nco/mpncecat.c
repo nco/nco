@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.47 2007-02-23 21:59:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.48 2007-02-24 07:42:05 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.47 2007-02-23 21:59:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.47 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.48 2007-02-24 07:42:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.48 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRSt:v:x-:";
   
   dmn_sct *rec_dmn;
@@ -586,10 +586,10 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
     /* Parse filename */
     if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-    if(dbg_lvl > 0) (void)fprintf(fp_stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(fp_stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
-    if(dbg_lvl > 0) (void)fprintf(fp_stderr,"local file %s:\n",fl_in);
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(fp_stderr,"local file %s:\n",fl_in);
     
     /* Open file once per thread to improve caching */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_open(fl_in,NC_NOWRITE,in_id_arr+thr_idx);
@@ -674,8 +674,8 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
        /* Common code for UP and MPI */ /* fxm: requires C99 as is? */
 	    in_id=in_id_arr[omp_get_thread_num()];
-	    if(dbg_lvl > 1) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
-	    if(dbg_lvl > 0) (void)fflush(fp_stderr);
+	    if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
+	    if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	    /* Variables may have different ID, missing_value, type, in each file */
 	    (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
 	    /* Retrieve variable from disk into memory */
@@ -729,7 +729,7 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
     
     idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
-    if(dbg_lvl > 1) (void)fprintf(stderr,"\n");
+    if(dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,"\n");
     
     /* Close input netCDF file */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);

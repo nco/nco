@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.239 2007-02-23 21:59:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.240 2007-02-24 07:42:06 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.239 2007-02-23 21:59:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.239 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.240 2007-02-24 07:42:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.240 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -717,8 +717,8 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       in_id=in_id_arr[omp_get_thread_num()];
-      if(dbg_lvl >= nco_dbg_var && dbg_lvl < 10) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-      if(dbg_lvl >= nco_dbg_var && dbg_lvl < 10) (void)fflush(fp_stderr);
+      if(dbg_lvl >= nco_dbg_var && dbg_lvl < nco_dbg_nbr) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+      if(dbg_lvl >= nco_dbg_var && dbg_lvl < nco_dbg_nbr) (void)fflush(fp_stderr);
 
       /* Allocate and, if necessary, initialize accumulation space for all processed variables */
       var_prc_out[idx]->sz=var_prc[idx]->sz;
