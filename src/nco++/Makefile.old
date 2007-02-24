@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.27 2007-02-23 21:59:32 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.28 2007-02-24 01:14:56 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -1275,6 +1275,11 @@ ncoTree.cpp : ncoGrammer.g
 	${ANTLR} ncoGrammer.g
 src_cln :
 	rm -f ${NCAP2_ANTLR_GENERATED_CPP} ${NCAP2_ANTLR_GENERATED_HPP} ${NCAP2_ANTLR_GENERATED_TXT}
+# Targets in /usr/local
+sys: ${MDL_BIN_TRG}
+	- cd ${MY_BIN_DIR};sudo /bin/cp -f ${MDL_BIN_TRG} /usr/local/bin; 
+sys_cln:
+	- cd /usr/local/bin;rm -f ${MDL_BIN_TRG}
 # Housekeeping
 clean : cln
 cln : dat_cln dpn_cln obj_cln

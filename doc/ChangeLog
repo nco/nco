@@ -1,5 +1,7 @@
 2007-02-23  Charlie Zender  <zender@uci.edu>
 
+	* Add sys target to nco++ Makefile.old for ncap2
+
 	* Do not normalize coordinates by tallys/weights when no tallys
 	exist (i.e., minimization, maximization, totals). Fixes TODO nco810.
 
