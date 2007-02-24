@@ -8,8 +8,8 @@ URL:            http://nco.sourceforge.net/
 
 #  The NCO web site now recommends CVS so the tar.gz was obtained
 #  using the following recommended commands:
-#    cvs -d:pserver:anonymous@nco.cvs.sourceforge.net:/cvsroot/nco login
-#    cvs -z3 -d:pserver:anonymous@nco.cvs.sourceforge.net:/cvsroot/nco co -r nco-3_1_7 -d nco-%{version} nco
+#    cvs -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco login
+#    cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-3_1_7 -d nco-%{version} nco
 #    tar -czf nco-%{version}.tar.gz --exclude='nco-3.1.7/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude='ncap_yacc.[ch]' ./nco-%{version}
 Source0:        nco-%{version}.tar.gz
 #Patch0:		nco_install_C_headers.patch
