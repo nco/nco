@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.65 2007-02-24 07:42:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.66 2007-02-25 05:38:36 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.65 2007-02-24 07:42:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.65 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.66 2007-02-25 05:38:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.66 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -711,7 +711,7 @@ main(int argc,char **argv)
 	  /* csz: got to here reading logic */
 	  lcl_nbr_var++;
           var_prc_out[idx]->id=msg_bfr[2];
-	  if(dbg_lvl > 2) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	  if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	  if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	  /* Update hyperslab start indices to current record for each variable */
 	  var_prc[idx]->srt[0]=idx_rec;
@@ -768,7 +768,7 @@ main(int argc,char **argv)
 	  /* Free current input buffer */
 	  var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	  
-	  if(dbg_lvl > 2) (void)fprintf(stderr,"\n");
+	  if(dbg_lvl >= nco_dbg_var) (void)fprintf(stderr,"\n");
 	} /* !idx_all_wrk_ass */
       } /* while(1) loop requesting work/token in Worker */
       idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
@@ -961,7 +961,7 @@ main(int argc,char **argv)
 	    for(idx=0;idx<nbr_var_prc;idx++){
 #endif /* ENABLE_MPI */
 	      in_id=in_id_arr[omp_get_thread_num()];
-	      if(dbg_lvl > 2) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	      if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	      if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	      /* Update hyperslab start indices to current record for each variable */
 	      var_prc[idx]->srt[0]=idx_rec;
@@ -1034,7 +1034,7 @@ main(int argc,char **argv)
 	    } /* !ncrcat */
 #endif /* !ENABLE_MPI */
 	    idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
-	    if(dbg_lvl > 2) (void)fprintf(stderr,"\n");
+	    if(dbg_lvl >= nco_dbg_var) (void)fprintf(stderr,"\n");
 #ifdef ENABLE_MPI
 	  } /* !Worker */
 	} /* end else ! fl_idx=0,idx_rec=srt */

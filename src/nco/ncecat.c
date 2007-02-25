@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.134 2007-02-24 07:42:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.135 2007-02-25 05:38:36 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.134 2007-02-24 07:42:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.134 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.135 2007-02-25 05:38:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.135 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRt:v:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -524,7 +524,7 @@ main(int argc,char **argv)
     /* Process all variables in current file */
     for(idx=0;idx<nbr_var_prc;idx++){
       in_id=in_id_arr[omp_get_thread_num()];
-      if(dbg_lvl > 1) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
+      if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
       if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
       /* Variables may have different ID, missing_value, type, in each file */
       (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
@@ -549,7 +549,7 @@ main(int argc,char **argv)
       } /* end OpenMP critical */
       
     } /* end (OpenMP parallel for) loop over idx */
-    if(dbg_lvl > 1) (void)fprintf(stderr,"\n");
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
 
     idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
     

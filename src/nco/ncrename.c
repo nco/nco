@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.99 2007-02-23 21:59:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.100 2007-02-25 05:38:37 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.99 2007-02-23 21:59:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.99 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.100 2007-02-25 05:38:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.100 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -312,14 +312,14 @@ main(int argc,char **argv)
       rcd=nco_inq_varid_flg(nc_id,var_rnm_lst[idx].old_nm+1,&var_rnm_lst[idx].id);
       if(rcd == NC_NOERR){
 	(void)nco_rename_var(nc_id,var_rnm_lst[idx].id,var_rnm_lst[idx].new_nm);
-	if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed variable \'%s\' to \'%s\'\n",var_rnm_lst[idx].old_nm+1,var_rnm_lst[idx].new_nm);
+	if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"Renamed variable \'%s\' to \'%s\'\n",var_rnm_lst[idx].old_nm+1,var_rnm_lst[idx].new_nm);
       }else{
 	(void)fprintf(stderr,"%s: WARNING Variable \"%s\" not present in %s, skipping it.\n",prg_nm,var_rnm_lst[idx].old_nm+1,fl_in);
       } /* end if */
     }else{ /* Variable name does not contain '.' so variable presence is required */
       rcd=nco_inq_varid(nc_id,var_rnm_lst[idx].old_nm,&var_rnm_lst[idx].id);
       (void)nco_rename_var(nc_id,var_rnm_lst[idx].id,var_rnm_lst[idx].new_nm);
-      if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed variable \'%s\' to \'%s\'\n",var_rnm_lst[idx].old_nm,var_rnm_lst[idx].new_nm);
+      if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"Renamed variable \'%s\' to \'%s\'\n",var_rnm_lst[idx].old_nm,var_rnm_lst[idx].new_nm);
     } /* end else */
   } /* end loop over idx */
 
@@ -329,7 +329,7 @@ main(int argc,char **argv)
       rcd=nco_inq_dimid_flg(nc_id,dmn_rnm_lst[idx].old_nm+1,&dmn_rnm_lst[idx].id);
       if(rcd == NC_NOERR){
 	(void)nco_rename_dim(nc_id,dmn_rnm_lst[idx].id,dmn_rnm_lst[idx].new_nm);
-	if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed dimension \'%s\' to \'%s\'\n",dmn_rnm_lst[idx].old_nm+1,dmn_rnm_lst[idx].new_nm);
+	if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"Renamed dimension \'%s\' to \'%s\'\n",dmn_rnm_lst[idx].old_nm+1,dmn_rnm_lst[idx].new_nm);
       }else{
 	(void)fprintf(stderr,"%s: WARNING Dimension \'%s\' not present in %s, skipping it.\n",prg_nm,dmn_rnm_lst[idx].old_nm+1,fl_in);
       } /* end if */
@@ -337,7 +337,7 @@ main(int argc,char **argv)
     }else{
       rcd=nco_inq_dimid(nc_id,dmn_rnm_lst[idx].old_nm,&dmn_rnm_lst[idx].id);
       (void)nco_rename_dim(nc_id,dmn_rnm_lst[idx].id,dmn_rnm_lst[idx].new_nm);
-      if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed dimension \'%s\' to \'%s\'\n",dmn_rnm_lst[idx].old_nm,dmn_rnm_lst[idx].new_nm);
+      if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"Renamed dimension \'%s\' to \'%s\'\n",dmn_rnm_lst[idx].old_nm,dmn_rnm_lst[idx].new_nm);
     } /* end else */
   } /* end loop over idx */
 
@@ -373,7 +373,7 @@ main(int argc,char **argv)
 	      if(rcd == NC_NOERR){
 		(void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm);
 		nbr_rnm++;
-		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm,(var_nm[0] == '.' ? var_nm+1 : var_nm));
+		if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm,(var_nm[0] == '.' ? var_nm+1 : var_nm));
 	      }else{
 		(void)fprintf(stderr,"%s: WARNING Attribute \'%s\' not present in variable \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm+1,(var_nm[0] == '.' ? var_nm+1 : var_nm));
 	      } /* endelse */
@@ -382,7 +382,7 @@ main(int argc,char **argv)
 	      if(rcd == NC_NOERR){
 		(void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
 		nbr_rnm++;
-		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm,(var_nm[0] == '.' ? var_nm+1 : var_nm));
+		if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm,(var_nm[0] == '.' ? var_nm+1 : var_nm));
 	      } /* endif attribute is present */
 	    } /* endelse attribute must be present */  
 	  }else{
@@ -402,9 +402,9 @@ main(int argc,char **argv)
 		char var_nm[NC_MAX_NAME];
 		
 		(void)nco_inq_varname(nc_id,var_id,var_nm);
-		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm,var_nm);
+		if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm,var_nm);
 	      }else{
-		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed global attribute \'%s\' to \'%s\'\n",att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm);
+		if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"Renamed global attribute \'%s\' to \'%s\'\n",att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm);
 	      } /* end else */
 	    } /* end if */
 	    
@@ -419,9 +419,9 @@ main(int argc,char **argv)
 		char var_nm[NC_MAX_NAME];
 		
 		(void)nco_inq_varname(nc_id,var_id,var_nm);
-		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm,var_nm);
+		if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm,var_nm);
 	      }else{
-		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed global attribute \'%s\' to \'%s\'\n",att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
+		if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"Renamed global attribute \'%s\' to \'%s\'\n",att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
 	      } /* end else */
 	    } /* end if */
 	  } /* end else */
@@ -458,7 +458,7 @@ main(int argc,char **argv)
     (void)nco_enddef(nc_id);
   }else{
     (void)nco__enddef(nc_id,hdr_pad);
-    if(dbg_lvl > 1) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes \n",prg_nm_get(),(unsigned long)hdr_pad);
+    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes \n",prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
 
   /* Close the open netCDF file */

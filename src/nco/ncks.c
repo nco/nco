@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.172 2007-02-24 07:42:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.173 2007-02-25 05:38:36 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.172 2007-02-24 07:42:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.172 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.173 2007-02-25 05:38:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.173 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -504,6 +504,7 @@ main(int argc,char **argv)
   if(NCO_BNR_WRT && fl_out == NULL){
     /* Native binary files depend on writing netCDF file to enter generic I/O logic */
     (void)fprintf(stdout,"%s: ERROR Native binary files cannot be written unless netCDF output filename also specified. HINT: Repeat command with throw-away netCDF file specified for output file (e.g., -o foo.nc)\n",prg_nm_get());
+    nco_exit(EXIT_FAILURE);
   } /* endif NCO_BNR_WRT */
     
   if(fl_out != NULL){
@@ -535,7 +536,7 @@ main(int argc,char **argv)
       (void)nco_enddef(out_id);
     }else{
       (void)nco__enddef(out_id,hdr_pad);
-      if(dbg_lvl > 1) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes \n",prg_nm_get(),(unsigned long)hdr_pad);
+      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes \n",prg_nm_get(),(unsigned long)hdr_pad);
     } /* hdr_pad */
     
     /* [fnc] Open unformatted binary data file for writing */
@@ -547,7 +548,7 @@ main(int argc,char **argv)
 
     /* Copy variable data */
     for(idx=0;idx<nbr_xtr;idx++){
-      if(dbg_lvl > 2 && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
+      if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
       if(dbg_lvl >= nco_dbg_var) (void)fflush(stderr);
       /* Old hyperslab routines */
       /* NB: nco_cpy_var_val_lmt() contains OpenMP critical region */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.64 2007-02-24 07:42:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.65 2007-02-25 05:38:36 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.64 2007-02-24 07:42:05 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.64 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.65 2007-02-25 05:38:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.65 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRSt:v:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -470,7 +470,7 @@ main(int argc,char **argv)
     (void)nco_dmn_xrf(dim_1[idx],dmn_out[idx]); 
   } /* end loop over idx */
   
-  if(dbg_lvl > 3){
+  if(dbg_lvl >= nco_dbg_sbr){
     for(idx=0;idx<nbr_xtr_1;idx++) (void)fprintf(stderr,"xtr_lst_1[%d].nm = %s, .id= %d\n",idx,xtr_lst_1[idx].nm,xtr_lst_1[idx].id);
   } /* end if */
   
@@ -706,7 +706,7 @@ main(int argc,char **argv)
 	  /* fxm: TODO 268 allow var1 or var2 to typecast */
 	  /* Make sure var2 conforms to type of var1 */
 	  if(var_prc_1[idx]->type != var_prc_2[idx]->type){
-	    if(dbg_lvl > 0) (void)fprintf(fp_stderr,"%s: INFO Input variables do not conform in type:\nFile 1 = %s variable %s has type %s\nFile 2 = %s variable %s has type %s\nFile 3 = %s variable %s will have type %s\n",prg_nm,fl_in_1,var_prc_1[idx]->nm,nco_typ_sng(var_prc_1[idx]->type),fl_in_2,var_prc_2[idx]->nm,nco_typ_sng(var_prc_2[idx]->type),fl_out,var_prc_1[idx]->nm,nco_typ_sng(var_prc_1[idx]->type));
+	    if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO Input variables do not conform in type:\nFile 1 = %s variable %s has type %s\nFile 2 = %s variable %s has type %s\nFile 3 = %s variable %s will have type %s\n",prg_nm,fl_in_1,var_prc_1[idx]->nm,nco_typ_sng(var_prc_1[idx]->type),fl_in_2,var_prc_2[idx]->nm,nco_typ_sng(var_prc_2[idx]->type),fl_out,var_prc_1[idx]->nm,nco_typ_sng(var_prc_1[idx]->type));
 	  }  /* endif different type */
 	  var_prc_2[idx]=nco_var_cnf_typ(var_prc_1[idx]->type,var_prc_2[idx]);
 	  

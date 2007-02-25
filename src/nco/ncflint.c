@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.134 2007-02-24 07:42:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.135 2007-02-25 05:38:36 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -101,8 +101,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.134 2007-02-24 07:42:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.134 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.135 2007-02-25 05:38:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.135 $";
   const char * const opt_sht_lst="4ACcD:d:Fhi:l:Oo:p:rRt:v:xw:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -556,7 +556,7 @@ main(int argc,char **argv)
     wgt_2=scl_mk_var(val_gnr_unn,NC_DOUBLE);
   } /* end if CMD_LN_NTP_WGT */
 
-  if(dbg_lvl > 1) (void)fprintf(stderr,"wgt_1 = %g, wgt_2 = %g\n",wgt_1->val.dp[0],wgt_2->val.dp[0]);
+  if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"wgt_1 = %g, wgt_2 = %g\n",wgt_1->val.dp[0],wgt_2->val.dp[0]);
 
   /* Create structure list for second file */
   var_prc_2=(var_sct **)nco_malloc(nbr_var_prc*sizeof(var_sct *));

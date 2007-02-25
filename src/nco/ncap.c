@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.201 2007-02-23 21:59:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.202 2007-02-25 05:38:36 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.201 2007-02-23 21:59:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.201 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.202 2007-02-25 05:38:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.202 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -607,7 +607,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_ycc;idx++){
       /* Define variables in output */
       /* Kill variables classified as undefined */
-      if(dbg_lvl > 1) (void)fprintf(stdout,"%s: Checking var_ycc[%d]->undefined for variable %s...\n",prg_nm_get(),idx,var_ycc[idx]->nm);
+      if(dbg_lvl >= nco_dbg_var) (void)fprintf(stdout,"%s: Checking var_ycc[%d]->undefined for variable %s...\n",prg_nm_get(),idx,var_ycc[idx]->nm);
       if(var_ycc[idx]->undefined){
 	/* 20060225: TODO nco680 free() list at end or risk double-free()'ing*/
 	var_ycc[idx]=nco_var_free(var_ycc[idx]); 

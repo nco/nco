@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.44 2007-02-24 07:42:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.45 2007-02-25 05:38:36 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.44 2007-02-24 07:42:05 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.44 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.45 2007-02-25 05:38:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.45 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:RrSt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -446,7 +446,7 @@ main(int argc,char **argv)
   /* No re-order dimensions specified implies packing request */
   if(dmn_rdr_nbr == 0){
     if(nco_pck_plc == nco_pck_plc_nil) nco_pck_plc=nco_pck_plc_get(nco_pck_plc_sng);
-    if(dbg_lvl > 0) (void)fprintf(stderr,"%s: DEBUG Packing map is %s and packing policy is %s\n",prg_nm_get(),nco_pck_map_sng_get(nco_pck_map),nco_pck_plc_sng_get(nco_pck_plc));
+    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Packing map is %s and packing policy is %s\n",prg_nm_get(),nco_pck_map_sng_get(nco_pck_map),nco_pck_plc_sng_get(nco_pck_plc));
   } /* endif */
   
   /* From this point forward, assume ncpdq operator packs or re-orders, not both */
@@ -529,7 +529,7 @@ main(int argc,char **argv)
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
   
   /* We now have final list of variables to extract. Phew. */
-  if(dbg_lvl > 2){
+  if(dbg_lvl >= nco_dbg_var){
     for(idx=0;idx<nbr_xtr;idx++) (void)fprintf(stderr,"var[%d]->nm = %s, ->id=[%d]\n",idx,var[idx]->nm,var[idx]->id);
     for(idx=0;idx<nbr_var_fix;idx++) (void)fprintf(stderr,"var_fix[%d]->nm = %s, ->id=[%d]\n",idx,var_fix[idx]->nm,var_fix[idx]->id);
     for(idx=0;idx<nbr_var_prc;idx++) (void)fprintf(stderr,"var_prc[%d]->nm = %s, ->id=[%d]\n",idx,var_prc[idx]->nm,var_prc[idx]->id);
@@ -627,14 +627,14 @@ main(int argc,char **argv)
       /* ...Will variable be record variable in output file?... */
       if(dmn_out_idx == var_fix[idx]->nbr_dim){
 	/* ...No. Variable will be non-record---does this change its status?... */
-	if(dbg_lvl > 2) if(var_fix[idx]->is_rec_var == True) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",prg_nm,var_fix[idx]->nm);
+	if(dbg_lvl >= nco_dbg_var) if(var_fix[idx]->is_rec_var == True) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",prg_nm,var_fix[idx]->nm);
 	/* Assign record flag dictated by re-order */
 	var_fix[idx]->is_rec_var=False; 
       }else{ /* ...otherwise variable will be record variable... */
 	/* ...Yes. Variable will be record... */
 	/* ...Will becoming record variable change its status?... */
 	if(var_fix[idx]->is_rec_var == False){
-	  if(dbg_lvl > 2) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",prg_nm,var_fix[idx]->nm);
+	  if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",prg_nm,var_fix[idx]->nm);
 	  /* Change record flag to status dictated by re-order */
 	  var_fix[idx]->is_rec_var=True;
 	} /* endif status changing from non-record to record */
@@ -649,7 +649,7 @@ main(int argc,char **argv)
       /* ...Will variable be record variable in output file?... */
       if(dmn_out_idx == var_prc_out[idx]->nbr_dim){
 	/* ...No. Variable will be non-record---does this change its status?... */
-	if(dbg_lvl > 2) if(var_prc_out[idx]->is_rec_var == True) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",prg_nm,var_prc_out[idx]->nm);
+	if(dbg_lvl >= nco_dbg_var) if(var_prc_out[idx]->is_rec_var == True) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",prg_nm,var_prc_out[idx]->nm);
 	/* Assign record flag dictated by re-order */
 	var_prc_out[idx]->is_rec_var=False; 
       }else{ /* ...otherwise variable will be record variable... */
@@ -666,7 +666,7 @@ main(int argc,char **argv)
 	} /* endif has_dpl_dmn */
 	/* ...Will becoming record variable change its status?... */
 	if(var_prc_out[idx]->is_rec_var == False){
-	  if(dbg_lvl > 2) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",prg_nm,var_prc_out[idx]->nm);
+	  if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",prg_nm,var_prc_out[idx]->nm);
 	  /* Change record flag to status dictated by re-order */
 	  var_prc_out[idx]->is_rec_var=True;
 	  /* ...Swap dimension information for multi-dimensional variables... */
