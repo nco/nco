@@ -1,3 +1,9 @@
+2007-02-24  Charlie Zender  <zender@uci.edu>
+
+	* Finished (I think) quieting all non-fatal INFO/DEBUG/WARNINGS
+	in main() routines, and converted from naked numbers to consistent 
+	and descriptive enums
+
 2007-02-23  Charlie Zender  <zender@uci.edu>
 
 	* Add sys target to nco++ Makefile.old for ncap2

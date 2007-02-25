@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.116 2007-02-25 05:38:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.117 2007-02-25 06:10:07 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.116 2007-02-25 05:38:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.116 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.117 2007-02-25 06:10:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.117 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -459,7 +459,7 @@ main(int argc,char **argv)
       for(idx=0;idx<nbr_dmn_xtr;idx++){
 	if(!strcmp(dmn_rdr_lst[idx_rdr].nm,dim[idx]->nm)) break;
       } /* end loop over idx_rdr */
-      if(idx != nbr_dmn_xtr) dmn_rdr[dmn_rdr_nbr_utl++]=dim[idx]; else (void)fprintf(stderr,"%s: WARNING re-ordering dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_rdr_lst[idx_rdr].nm);
+      if(idx != nbr_dmn_xtr) dmn_rdr[dmn_rdr_nbr_utl++]=dim[idx]; else if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING re-ordering dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_rdr_lst[idx_rdr].nm);
     } /* end loop over idx_rdr */
     dmn_rdr_nbr=dmn_rdr_nbr_utl;
     /* Collapse extra dimension structure space to prevent accidentally using it */
@@ -510,7 +510,7 @@ main(int argc,char **argv)
   
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
-  if(dbg_lvl > 4) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
+  if(dbg_lvl >= nco_dbg_sbr) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
 
   /* Copy global attributes */
   (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
@@ -552,7 +552,7 @@ main(int argc,char **argv)
 	  /* ...and current output record dimension already differs from input record dimension... */
 	  if(REDEFINED_RECORD_DIMENSION){
 	    /* ...then requested re-order requires multiple record dimensions... */
-	    (void)fprintf(fp_stdout,"%s: WARNING Re-order requests multiple record dimensions\n. Only first request will be honored (netCDF allows only one record dimension). Record dimensions involved [original,first change request (honored),latest change request (made by variable %s)]=[%s,%s,%s]\n",prg_nm,var_prc[idx]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
+	    if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: WARNING Re-order requests multiple record dimensions\n. Only first request will be honored (netCDF allows only one record dimension). Record dimensions involved [original,first change request (honored),latest change request (made by variable %s)]=[%s,%s,%s]\n",prg_nm,var_prc[idx]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
 	    break;
 	  }else{ /* !REDEFINED_RECORD_DIMENSION */
 	    /* ...otherwise, update output record dimension name... */
@@ -573,7 +573,7 @@ main(int argc,char **argv)
      Hence making following logic prettier or funcionalizing is not high priority.
      Logic may need to be simplified/re-written once netCDF4 is released. */
   if(REDEFINED_RECORD_DIMENSION){
-    (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change record dimension from %s to %s. netCDF allows only one record dimension. Hence %s will make %s record (least rapidly varying) dimension in all variables that contain it.\n",prg_nm,rec_dmn_nm_in,rec_dmn_nm_out,prg_nm,rec_dmn_nm_out);
+    if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change record dimension from %s to %s. netCDF allows only one record dimension. Hence %s will make %s record (least rapidly varying) dimension in all variables that contain it.\n",prg_nm,rec_dmn_nm_in,rec_dmn_nm_out,prg_nm,rec_dmn_nm_out);
     /* Changing record dimension may invalidate is_rec_var flag
        Updating is_rec_var flag to correct value, even if value is ignored,
        helps keep user appraised of unexpected dimension re-orders.
@@ -809,7 +809,7 @@ main(int argc,char **argv)
 	     (nco_pck_plc == nco_pck_plc_xst_new_att && var_prc[idx]->pck_ram)
 	     ){
 	    /* Replace dummy packing attributes with final values, or delete them */
-	    if(dbg_lvl >= 5) (void)fprintf(stderr,"%s: main() replacing dummy packing attribute values for variable %s\n",prg_nm,var_prc[idx]->nm);
+	    if(dbg_lvl >= nco_dbg_io) (void)fprintf(stderr,"%s: main() replacing dummy packing attribute values for variable %s\n",prg_nm,var_prc[idx]->nm);
 	    (void)nco_aed_prc(out_id,aed_lst_add_fst[idx].id,aed_lst_add_fst[idx]);
 	    (void)nco_aed_prc(out_id,aed_lst_scl_fct[idx].id,aed_lst_scl_fct[idx]);
 	  } /* endif variable is newly packed by this operator */

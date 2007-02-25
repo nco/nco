@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.13 2007-02-23 21:59:32 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.14 2007-02-25 06:10:07 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface utilities for netCDF routines
 
@@ -35,6 +35,23 @@
    Hence nco_utl.hh is the appropriate place to define library-wide variables
    fxm: Make this extern and instantiate in .cc file? */
 const int NCO_NOERR=NC_NOERR; // [enm] Variable'ize CPP macro for use in function parameter initialization
+
+// Same debugging types as in nco.h
+enum nco_dbg_typ_enm{ /* [enm] Debugging levels */
+  /* List in increasing levels of verbosity */
+  nco_dbg_quiet, /* Quiet all non-error messages. */
+  nco_dbg_std, /* Standard mode. Minimal, but some, messages. */
+  nco_dbg_fl, /* Filenames */
+  nco_dbg_scl, /* Scalars, other per-file information  */
+  nco_dbg_var, /* Variables, highest level per-file loop information */
+  nco_dbg_crr, /* Current task */
+  nco_dbg_sbr, /* Subroutine names on entry and exit */
+  nco_dbg_io, /* Subroutine I/O */
+  nco_dbg_vec, /* Entire vectors */
+  nco_dbg_vrb, /* Verbose, print everything possible */
+  nco_dbg_old, /* Old debugging blocks not used anymore */
+  nco_dbg_nbr /* Number of debugging types. Should be last enumerated value. */
+  }; /* end nco_dbg_typ_enm */
 
 // Personal headers
 #include <nco_att.hh> // C++ interface to netCDF attribute routines

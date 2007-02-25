@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.66 2007-02-25 05:38:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.67 2007-02-25 06:10:06 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.66 2007-02-25 05:38:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.66 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.67 2007-02-25 06:10:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.67 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -641,7 +641,7 @@ main(int argc,char **argv)
   
   if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
     /* Loop over each record in current file */
-    if(lmt_rec->srt > lmt_rec->end) (void)fprintf(stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
+    if(dbg_lvl >= nco_dbg_std && lmt_rec->srt > lmt_rec->end) (void)fprintf(stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
     idx_rec=lmt_rec->srt;
     if(fl_idx == fl_nbr-1 && idx_rec >= 1L+lmt_rec->end-lmt_rec->srd) LAST_RECORD=True;
     /* Process all variables in first record */
@@ -900,7 +900,7 @@ main(int argc,char **argv)
     
     if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
       /* Loop over each record in current file */
-      if(lmt_rec->srt > lmt_rec->end) (void)fprintf(stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
+      if(dbg_lvl >= nco_dbg_std && lmt_rec->srt > lmt_rec->end) (void)fprintf(stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
       for(idx_rec=lmt_rec->srt;idx_rec<=lmt_rec->end;idx_rec+=lmt_rec->srd){
 	if(fl_idx == fl_nbr-1 && idx_rec >= 1L+lmt_rec->end-lmt_rec->srd) LAST_RECORD=True;
 	
@@ -1047,7 +1047,7 @@ main(int argc,char **argv)
 	if(lmt_rec->lmt_typ == lmt_dmn_idx && lmt_rec->is_usr_spc_min && lmt_rec->is_usr_spc_max){
 	  long rec_nbr_rqs; /* Number of records user requested */
 	  rec_nbr_rqs=1L+(lmt_rec->max_idx-lmt_rec->min_idx)/lmt_rec->srd;
-	  if(fl_idx == fl_nbr-1 && rec_nbr_rqs != idx_rec_out) (void)fprintf(stdout,gettext("%s: WARNING User requested %li records but only %li were found\n"),prg_nm_get(),rec_nbr_rqs,idx_rec_out);
+	  if(dbg_lvl >= nco_dbg_std && fl_idx == fl_nbr-1 && rec_nbr_rqs != idx_rec_out) (void)fprintf(stdout,gettext("%s: WARNING User requested %li records but only %li were found\n"),prg_nm_get(),rec_nbr_rqs,idx_rec_out);
 	} /* end if */
 	/* Error if no records were read and final file has been processed */
 	if(idx_rec_out <= 0 && fl_idx == fl_nbr-1){

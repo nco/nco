@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.202 2007-02-25 05:38:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.203 2007-02-25 06:10:06 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.202 2007-02-25 05:38:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.202 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.203 2007-02-25 06:10:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.203 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -574,7 +574,7 @@ main(int argc,char **argv)
       } /* end if */
       
       /* Print all command-line scripts */
-      if(dbg_lvl_get() > 0){
+      if(dbg_lvl_get() > nco_dbg_scl){
 	for(idx=0;idx<nbr_spt;idx++) (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
       } /* endif debug */
       

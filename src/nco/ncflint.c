@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.135 2007-02-25 05:38:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.136 2007-02-25 06:10:06 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -101,8 +101,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.135 2007-02-25 05:38:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.135 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.136 2007-02-25 06:10:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.136 $";
   const char * const opt_sht_lst="4ACcD:d:Fhi:l:Oo:p:rRt:v:xw:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -628,7 +628,7 @@ main(int argc,char **argv)
     if(var_prc_out[idx] != NULL) var_prc_out[idx]=nco_var_free(var_prc_out[idx]);
     
   } /* end (OpenMP parallel for) loop over idx */
-  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
+  if(dbg_lvl >= nco_dbg_var) (void)fprintf(stderr,"\n");
   
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);

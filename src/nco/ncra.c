@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.198 2007-02-24 07:13:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.199 2007-02-25 06:10:07 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.198 2007-02-24 07:13:50 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.198 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.199 2007-02-25 06:10:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.199 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -557,7 +557,7 @@ main(int argc,char **argv)
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
     
-    if((rec_dmn_id != NCO_REC_DMN_UNDEFINED) && (lmt_rec->srt > lmt_rec->end)) (void)fprintf(fp_stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
+    if(dbg_lvl >= nco_dbg_std && (rec_dmn_id != NCO_REC_DMN_UNDEFINED) && (lmt_rec->srt > lmt_rec->end)) (void)fprintf(fp_stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
 	
     if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
       /* Loop over each record in current file */
@@ -571,7 +571,7 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
 	  for(idx=0;idx<nbr_var_prc;idx++){
 	    in_id=in_id_arr[omp_get_thread_num()];
-	    if(dbg_lvl > nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	    if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	    if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	    /* Update hyperslab start indices to current record for each variable */
 	    var_prc[idx]->srt[0]=idx_rec;
@@ -613,13 +613,13 @@ main(int argc,char **argv)
 	    var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	  } /* end (OpenMP parallel for) loop over variables */
 	  idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
-	  if(dbg_lvl > nco_dbg_var) (void)fprintf(fp_stderr,"\n");
+	  if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"\n");
 	} /* end loop over idx_rec */
 	/* Warn if fewer than number of requested records were read and final file has been processed */
 	if(lmt_rec->lmt_typ == lmt_dmn_idx && lmt_rec->is_usr_spc_min && lmt_rec->is_usr_spc_max){
 	  long rec_nbr_rqs; /* Number of records user requested */
 	  rec_nbr_rqs=1L+(lmt_rec->max_idx-lmt_rec->min_idx)/lmt_rec->srd;
-	  if(fl_idx == fl_nbr-1 && rec_nbr_rqs != idx_rec_out) (void)fprintf(fp_stdout,gettext("%s: WARNING User requested %li records but only %li were found\n"),prg_nm_get(),rec_nbr_rqs,idx_rec_out);
+	  if(dbg_lvl >= nco_dbg_std && fl_idx == fl_nbr-1 && rec_nbr_rqs != idx_rec_out) (void)fprintf(fp_stdout,gettext("%s: WARNING User requested %li records but only %li were found\n"),prg_nm_get(),rec_nbr_rqs,idx_rec_out);
 	} /* end if */
 	/* Error if no records were read and final file has been processed */
 	if(idx_rec_out <= 0 && fl_idx == fl_nbr-1){
