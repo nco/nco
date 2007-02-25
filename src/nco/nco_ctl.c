@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.170 2007-02-24 07:13:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.171 2007-02-25 21:24:29 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -45,7 +45,7 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   static const char cmp_sng[]="Unknown compiler tokens in nco_cmp_get(), compiler is unknown"; /* [sng] Compiler string */
 #endif /* !unknown */
 
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO %s reports compiler name is \"%s\"\n%s\n",prg_nm_get(),fnc_nm,cmp_nm,cmp_sng);
+  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s reports compiler name is \"%s\"\n%s\n",prg_nm_get(),fnc_nm,cmp_nm,cmp_sng);
 
   return cmp_nm;
 } /* end nco_cmp_get() */
@@ -86,7 +86,7 @@ nco_mpi_get(void) /* [fnc] Return MPI implementation */
 #endif /* MPI_VERSION */
 #endif /* !unknown */
 
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO %s reports MPI implementation name is \"%s\"\n%s\n",prg_nm_get(),fnc_nm,mpi_nm,mpi_sng);
+  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s reports MPI implementation name is \"%s\"\n%s\n",prg_nm_get(),fnc_nm,mpi_nm,mpi_sng);
   return mpi_nm;
 } /* end nco_mpi_get() */
 
@@ -422,7 +422,7 @@ nco_ddra /* [fnc] Count operations */
 
   switch(ddra_info->tmr_flg){
   case nco_tmr_mtd: /* [enm] Metadata timer (second timer call) */
-    if(ddra_info->flg_ddra || dbg_lvl_get() > 0) (void)fprintf(stdout,"%s: TIMER Metadata setup and file layout before main loop took %7.2f s\n",prg_nm_get(),tm_obs_ttl);
+    if(ddra_info->flg_ddra || dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: TIMER Metadata setup and file layout before main loop took %7.2f s\n",prg_nm_get(),tm_obs_ttl);
     break;
   case nco_tmr_rgl: /* [enm] Regular timer call (main loop timer call) */
     (void)fprintf(stdout,
@@ -430,7 +430,7 @@ nco_ddra /* [fnc] Count operations */
 		  var_idx,var_nm,(float)lmn_nbr,(float)flp_nbr,(float)ntg_nbr,tm_io,tm_crr,(float)lmn_nbr_ttl,(float)flp_nbr_ttl,(float)ntg_nbr_ttl,100.0*tm_frc_flp_ttl,100.0*tm_frc_ntg_ttl,100.0*tm_frc_rd_ttl,100.0*tm_frc_wrt_ttl,100.0*tm_frc_io_ttl,tm_ttl,tm_obs_ttl);
     break;
   case nco_tmr_end: /* [enm] Close timer (last timer call) */
-    if(ddra_info->flg_ddra || dbg_lvl_get() > 0) (void)fprintf(stdout,"%s: TIMER Wallclock-elapsed time for command is %7.2f s\n",prg_nm_get(),tm_obs_ttl);
+    if(ddra_info->flg_ddra || dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: TIMER Wallclock-elapsed time for command is %7.2f s\n",prg_nm_get(),tm_obs_ttl);
     break;
   default: nco_dfl_case_tmr_typ_err(); break;
   } /* end switch */
@@ -466,7 +466,7 @@ nco_exit /* [fnc] Wrapper for exit() */
   if(rcd == EXIT_SUCCESS){
     exit(rcd);
   }else{
-    if(dbg_lvl_get() > 1) (void)fprintf(stdout,"%s: ERROR exiting through %s which will now call %s\n",prg_nm_get(),fnc_nm,exit_nm);
+    if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: ERROR exiting through %s which will now call %s\n",prg_nm_get(),fnc_nm,exit_nm);
 #ifdef NCO_ABORT_ON_ERROR
     abort();
 #else /* !NCO_ABORT_ON_ERROR */

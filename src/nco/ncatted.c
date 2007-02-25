@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.103 2007-02-25 05:38:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.104 2007-02-25 21:24:29 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.103 2007-02-25 05:38:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.103 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.104 2007-02-25 21:24:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.104 $";
   const char * const opt_sht_lst="4Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -314,7 +314,7 @@ main(int argc,char **argv)
         
         usr_reply='z';
         while(usr_reply != 'n' && usr_reply != 'y'){
-          (void)fprintf(stdout,"ncrename: overwrite %s (y/n)? ",fl_out);
+          (void)fprintf(stdout,"%s: overwrite %s (y/n)? ",prg_nm_get(),fl_out);
 	  (void)fflush(stdout);
           usr_reply=(char)fgetc(stdin);
         } /* end while */
