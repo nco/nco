@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.69 2007-02-23 21:59:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.70 2007-02-26 16:20:29 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -69,7 +69,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     ptr_unn var_val;
     var_sct *var=NULL_CEWI;
 
-    if(dbg_lvl_get() > 0) (void)fprintf(stdout,"%s: INFO Replacing missing value data in variable %s\n",prg_nm_get(),var_nm);
+    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Replacing missing value data in variable %s\n",prg_nm_get(),var_nm);
 
     /* Take file out of define mode */
     (void)nco_enddef(nc_id);
@@ -262,7 +262,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
 	continue;
     
     /* Inform user when copy will overwrite an existing attribute */
-    if(dbg_lvl_get() > 0){
+    if(dbg_lvl_get() >= nco_dbg_std){
       if(rcd == NC_NOERR){
 	if(var_out_id == NC_GLOBAL){
 	  (void)fprintf(stderr,"%s: INFO Overwriting global attribute %s\n",prg_nm_get(),att_nm);
@@ -449,7 +449,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
     /* NB: ncattinq(), unlike strlen(), counts terminating NUL for stored NC_CHAR arrays */
     (void)nco_inq_att(out_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
     if(att_typ != NC_CHAR){
-      (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s. Therefore current command line will not be appended to %s in output file.\n",prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),att_nm);
+      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s. Therefore current command line will not be appended to %s in output file.\n",prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),att_nm);
       return;
     } /* end if */
 
@@ -607,7 +607,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	/* Number of elements which must be concatenated into single string value */
 	long lmn_nbr;
 	lmn_nbr=arg_nbr-idx_att_val_arg; 
-	if(dbg_lvl_get() >= 2) (void)fprintf(stdout,"%s: WARNING NC_CHAR (string) attribute is embedded with %li literal element delimiters (\"%s\"), re-assembling...\n",prg_nm_get(),lmn_nbr-1L,dlm_sng);
+	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: WARNING NC_CHAR (string) attribute is embedded with %li literal element delimiters (\"%s\"), re-assembling...\n",prg_nm_get(),lmn_nbr-1L,dlm_sng);
 	/* Rewrite list, splicing in original delimiter string */
 	/* fxm: TODO nco527 this is probably where ncatted memory is lost */
 	arg_lst[idx_att_val_arg]=sng_lst_cat(arg_lst+idx_att_val_arg,lmn_nbr,dlm_sng);
@@ -665,7 +665,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 
   } /* end loop over aed */
   
-  if(dbg_lvl_get() == 5){
+  if(dbg_lvl_get() >= nco_dbg_io){
     for(idx=0;idx<nbr_aed;idx++){
       (void)fprintf(stderr,"aed_lst[%d].att_nm = %s\n",idx,aed_lst[idx].att_nm);
       (void)fprintf(stderr,"aed_lst[%d].var_nm = %s\n",idx,aed_lst[idx].var_nm == NULL ? "NULL" : aed_lst[idx].var_nm);
@@ -772,7 +772,7 @@ nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */
     
   } /* end loop over rnm_lst */
 
-  if(dbg_lvl_get() == 5){
+  if(dbg_lvl_get() >= nco_dbg_io){
     for(idx=0;idx<nbr_rnm;idx++){
       (void)fprintf(stderr,"%s\n",rnm_lst[idx].old_nm);
       (void)fprintf(stderr,"%s\n",rnm_lst[idx].new_nm);
