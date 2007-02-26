@@ -1,21 +1,24 @@
+#include <string.h>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 template<class T>
-class NcapVector {
+class NcapVector : public std::vector<T> {
 
-protected:
-  typename std::vector<T> t_vector;
 
 public:
+
+
+
   void push(const T &x) {
-    t_vector.push_back(x);
+    this->push_back(x);
   }
   T pop() {
     T tret(0);
-    if(t_vector.size() > 0 ) {
-      tret=t_vector.back();
-      t_vector.pop_back();
+    if(this->size() > 0 ) {
+      tret=this->back();
+      this->pop_back();
       return tret;
     }else{
       return NULL;
@@ -24,11 +27,11 @@ public:
 
   T find (const char *nm) {
     int idx;
-    int sz=t_vector.size();
+    int sz=this->size();
     for(idx=0 ; idx < sz; idx++)
-      if(!strcmp(nm, t_vector[idx]->nm)) break;
+      if(!strcmp(nm, (*this)[idx]->nm)) break;
     if(idx < sz) 
-	return t_vector[idx]; 
+	return (*this)[idx]; 
     else
 	 return NULL;
   }
@@ -39,11 +42,11 @@ public:
 
   int findi(std::string snm){
     int idx;
-    int sz=t_vector.size();
+    int sz=this->size();
     const char *nm=snm.c_str();
 
     for(idx=0 ; idx < sz; idx++)
-      if(!strcmp(nm, t_vector[idx]->nm)) break;
+      if(!strcmp(nm, (*this)[idx]->nm)) break;
     if(idx < sz) 
 	return idx; 
     else
@@ -51,16 +54,47 @@ public:
 
   }
 
-  T operator[] (long idx) const {
-    return t_vector[idx];
+ 
+  struct less_mag : public std::binary_function< T, T, bool> 
+   {
+       bool operator()( T t1, T t2) { 
+         return ( strcmp(t1->nm,t2->nm)<0) ; 
+         }
+  };
+
+  
+
+
+    
+  bool Cmp(T t1,T t2)
+   {
+    if( strcmp(t1->nm,t2->nm)<0 )  return true;
+    return false;
+  }
+  
+     
+ 
+  void sort(){
+    std::sort(this->begin(), this->end(),less_mag()  );
   }
 
+  // search -- only on a sorted vector
+  bool search(std::string snm){
+      bool bret;
+      T t1;
+      t1->nm=strdup(snm.c_str());
+
+      bret= std::binary_search( this->begin(),this->end(),t1,less_mag());
+      (void)free(t1->nm);
+
+      return bret;
+  }       
+ 
+  /*
   T* ptr(long idx) {
-    return &t_vector[idx];
+    return &((*this)[idx]);
   }
+  */
 
-  long size(){
-    return t_vector.size();
-  }
 };
 
