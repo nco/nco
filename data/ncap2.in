@@ -191,4 +191,12 @@ k1(0,0,0:($z.size-3))=2.01d;
 //
 k2=4.0;
 k3=k2+=10;
+//
+// quoting of vars/atts/dim ie names which contain '.' or '-'
+defdim("--list.A",10);
+'..m1'['$--list.A']=100.1;
+'..m1'(0)=90.1;
+'..m1@--lost'=23;
+
+
 
