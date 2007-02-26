@@ -6,6 +6,7 @@ header {
     #include <iostream>
     #include <sstream>
     #include <string>
+    #include <algorithm>
     #include "ncap2.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
@@ -378,7 +379,7 @@ protected BLASTOUT: .
          }  
     ;     
 
-
+	
 UNUSED_OPS: ( "%=" | "^=" | "&=" | "|=" ) {
   
           ostringstream os;
@@ -397,11 +398,13 @@ Whitespace options {paraphrase="white space"; }
 		{ $setType(antlr::Token::SKIP);}
 	;
 
+
+
 CPP_COMMENT options {paraphrase="a comment"; } 
-       //  : "//" (~'\n')* '\n'
-		: "//" (~('\n'|'\r'))* ('\n'|'\r'('\n')?)?
+    : "//" (~'\n')* '\n'
     { $setType(antlr::Token::SKIP); newline(); }
     ;
+
 
 C_COMMENT options {paraphrase="a comment"; } 
         :       
@@ -442,9 +445,11 @@ NUMBER:
 VAR_ATT options {testLiterals=true; paraphrase="variable or attribute identifier"; } 
         :  (LPH)(LPH|DGT)*   
             {// check function table
-            if( prs_arg->ptr_sym_vtr->find($getText) !=NULL )
+
+            if( prs_arg->ptr_sym_vtr->search($getText) )
                $setType(FUNC);             
              else $setType(VAR_ID); 
+
            }   
            ('@'(LPH)(LPH|DGT)*  {$setType(ATT_ID); })?
    ;
@@ -1579,7 +1584,7 @@ out returns [var_sct *var]
 
 
               if(dmn_vtr.size() >0){
-               dim=dmn_vtr.ptr(0);
+               dim=&dmn_vtr[0];
                nbr_dim=dmn_vtr.size();                           
               } else {
                dim=var1->dim;
@@ -1822,7 +1827,7 @@ end_dot: ;
  
           // Fudge -- fill out var again -but using dims defined in dmn_vtr
           // We need data in var so that LHS logic in assign can access var shape 
-          var_nw=nco_var_fll(var_rhs->nc_id,var_rhs->id,var_nm, dmn_vtr.ptr(0),dmn_vtr.size());
+          var_nw=nco_var_fll(var_rhs->nc_id,var_rhs->id,var_nm, &dmn_vtr[0],dmn_vtr.size());
 
           // Now get data from disk - use nco_var_get() 
           (void)nco_var_get(var_nw->nc_id,var_nw); 
