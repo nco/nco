@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.39 2007-02-23 21:59:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.40 2007-02-26 16:11:28 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -165,7 +165,7 @@ bool bfll)                 /* if true fill var with data */
 
 
   nbr_dmn_out=prs_arg->ptr_dmn_out_vtr->size();
-  dmn_out=prs_arg->ptr_dmn_out_vtr->ptr(0);
+  dmn_out=& ( (*prs_arg->ptr_dmn_out_vtr)[0]);
 
   var=nco_var_fll(fl_id,var_id,var_nm,dmn_out,nbr_dmn_out);
   /*  var->nm=(char *)nco_malloc((strlen(var_nm)+1UL)*sizeof(char));
