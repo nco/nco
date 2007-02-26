@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.29 2007-02-23 21:59:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.30 2007-02-26 16:12:39 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.29 2007-02-23 21:59:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.29 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.30 2007-02-26 16:12:39 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.30 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -490,6 +490,9 @@ main(int argc,char **argv)
   /* sym_vtr.push(ncap_sym_init("round",round,roundf)); *//* Round to nearest integer away from zero */
   /* sym_vtr.push(ncap_sym_init("trunc",trunc,truncf)); *//* Round to nearest integer not larger in absolute value */
   /* sym_vtr.push(ncap_sym_init("rint",rint,rintf)); *//* Round to integer value in floating point format using current rounding direction, raise inexact exceptions */
+
+  /* now sort sym_vtr */
+  sym_vtr.sort(); 
    
   if(PRN_FNC_TBL){
     /* ncap TODO #43: alphabetize this list */ 
@@ -518,7 +521,10 @@ main(int argc,char **argv)
   
   //dmn_in=(dmn_sct **)nco_malloc(nbr_dmn_in*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_in;idx++) dmn_in_vtr.push(nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm));
-  dmn_in=dmn_in_vtr.ptr(0);
+
+  //sort vector
+  dmn_in_vtr.sort();
+  dmn_in=&dmn_in_vtr[0];
   
   /* Merge hyperslab limit information into dimension structures */
   if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dmn_in,nbr_dmn_in,lmt,lmt_nbr);
@@ -685,7 +691,7 @@ main(int argc,char **argv)
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
-    var[idx]=nco_var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dmn_in_vtr.ptr(0),dmn_in_vtr.size());
+    var[idx]=nco_var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,&dmn_in_vtr[0],dmn_in_vtr.size());
     var_out[idx]=nco_var_dpl(var[idx]);
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
