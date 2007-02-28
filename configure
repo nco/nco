@@ -872,7 +872,7 @@ MAINTAINER_MODE_FALSE
 MAINT
 LIBOBJS
 POW_LIB
-RUNANTLR
+HAVE_RUNANTLR
 TEST_DAP_TRUE
 TEST_DAP_FALSE
 NETCDF_INC
@@ -24002,11 +24002,11 @@ if (test "${enable_ncoxx}" != 'no'); then
 set dummy runantlr; ac_word=$2
 { echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
-if test "${ac_cv_prog_RUNANTLR+set}" = set; then
+if test "${ac_cv_prog_HAVE_RUNANTLR+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test -n "$RUNANTLR"; then
-  ac_cv_prog_RUNANTLR="$RUNANTLR" # Let the user override the test.
+  if test -n "$HAVE_RUNANTLR"; then
+  ac_cv_prog_HAVE_RUNANTLR="$HAVE_RUNANTLR" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
 for as_dir in $PATH
@@ -24015,7 +24015,7 @@ do
   test -z "$as_dir" && as_dir=.
   for ac_exec_ext in '' $ac_executable_extensions; do
   if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_RUNANTLR=""TRUE""
+    ac_cv_prog_HAVE_RUNANTLR="'yes'"
     echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -24023,27 +24023,27 @@ done
 done
 IFS=$as_save_IFS
 
-  test -z "$ac_cv_prog_RUNANTLR" && ac_cv_prog_RUNANTLR=""FALSE""
+  test -z "$ac_cv_prog_HAVE_RUNANTLR" && ac_cv_prog_HAVE_RUNANTLR="'no'"
 fi
 fi
-RUNANTLR=$ac_cv_prog_RUNANTLR
-if test -n "$RUNANTLR"; then
-  { echo "$as_me:$LINENO: result: $RUNANTLR" >&5
-echo "${ECHO_T}$RUNANTLR" >&6; }
+HAVE_RUNANTLR=$ac_cv_prog_HAVE_RUNANTLR
+if test -n "$HAVE_RUNANTLR"; then
+  { echo "$as_me:$LINENO: result: $HAVE_RUNANTLR" >&5
+echo "${ECHO_T}$HAVE_RUNANTLR" >&6; }
 else
   { echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6; }
 fi
 
 
-	if (test "${RUNANTLR}" = 'TRUE'); then
+	if (test "${HAVE_RUNANTLR}" = 'yes'); then
 		{ echo "$as_me:$LINENO: checking for ASTFactory in -lantlr" >&5
 echo $ECHO_N "checking for ASTFactory in -lantlr... $ECHO_C" >&6; }
 if test "${ac_cv_lib_antlr_ASTFactory+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lantlr stdc++ $LIBS"
+LIBS="-lantlr -lstdc++ $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -24120,7 +24120,8 @@ else
   enable_ncoxx=no
 fi
 
-		if test "${ac_cv_header_antlr_CommonToken_hpp+set}" = set; then
+		if (test "${enable_ncoxx}" = 'yes'); then
+		    if test "${ac_cv_header_antlr_CommonToken_hpp+set}" = set; then
   { echo "$as_me:$LINENO: checking for antlr/CommonToken.hpp" >&5
 echo $ECHO_N "checking for antlr/CommonToken.hpp... $ECHO_C" >&6; }
 if test "${ac_cv_header_antlr_CommonToken_hpp+set}" = set; then
@@ -24281,13 +24282,14 @@ else
 fi
 
 
-		if (test "${enable_ncoxx}" = 'no'); then
-			echo "INFO: ANTLR support not found. To build the nco++ directory and ncap2, please install antlr and the antlr development package, e.g., apt-get install antlr libantlr-dev"
-		else
+		    if (test "${enable_ncoxx}" = 'yes'); then
 			echo "INFO: ANTLR development support found---will build nco++ directory and ncap2"
+		    else
+			echo "INFO: ANTLR support not found. To build the nco++ directory and ncap2, please install antlr and the antlr development package, e.g., apt-get install antlr libantlr-dev"
+		    fi
+		else
+		    enable_ncoxx="no"
 		fi
-	else
-		enable_ncoxx="no"
 	fi
 fi
 ac_ext=c
@@ -27330,7 +27332,7 @@ fi
 
   test -n "$MPI_CC" && break
 done
-test -n "$MPI_CC" || MPI_CC=""NONE""
+test -n "$MPI_CC" || MPI_CC="'None'"
 
 
 	# If MPI_CC = 'mpcc' (AIX), everything else is set up correctly, so no need to check for mpi.h, libmpi etc
@@ -31042,7 +31044,7 @@ MAINTAINER_MODE_FALSE!$MAINTAINER_MODE_FALSE$ac_delim
 MAINT!$MAINT$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 POW_LIB!$POW_LIB$ac_delim
-RUNANTLR!$RUNANTLR$ac_delim
+HAVE_RUNANTLR!$HAVE_RUNANTLR$ac_delim
 TEST_DAP_TRUE!$TEST_DAP_TRUE$ac_delim
 TEST_DAP_FALSE!$TEST_DAP_FALSE$ac_delim
 NETCDF_INC!$NETCDF_INC$ac_delim
@@ -32518,7 +32520,7 @@ MAINTAINER_MODE_FALSE!$MAINTAINER_MODE_FALSE$ac_delim
 MAINT!$MAINT$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 POW_LIB!$POW_LIB$ac_delim
-RUNANTLR!$RUNANTLR$ac_delim
+HAVE_RUNANTLR!$HAVE_RUNANTLR$ac_delim
 TEST_DAP_TRUE!$TEST_DAP_TRUE$ac_delim
 TEST_DAP_FALSE!$TEST_DAP_FALSE$ac_delim
 NETCDF_INC!$NETCDF_INC$ac_delim
