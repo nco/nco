@@ -27000,6 +27000,10 @@ fi
 
 
 	if (test "${HAVE_ANTLR}" = 'yes'); then
+	    if test "${ANTLR_INC}"; then
+# Add ${ANTLR_INC} to search path if present
+		CPPFLAGS="${CPPFLAGS} -I${ANTLR_INC}"
+	    fi
 # 20070228: Avoid CHECK_LIB on C++ libraries (requires too-complex link-test scripts)
 #		AC_CHECK_LIB([antlr],[ASTFactory],enable_ncoxx=yes,enable_ncoxx=no,[-lstdc++])
 	    if test "${ac_cv_header_antlr_CommonToken_hpp+set}" = set; then
