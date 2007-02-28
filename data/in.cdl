@@ -40,7 +40,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.75 2007-02-23 17:22:28 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.76 2007-02-28 17:26:00 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -145,6 +145,12 @@ variables:
 	float fll_val(lon);
 	fll_val:long_name = "_FillValue example";
 	fll_val:_FillValue = -999.0f;
+
+	float nm_spc;
+	nm_spc:long_name = "Variable name with space (invalid)";
+
+	float nm_pnd;
+	nm_pnd:long_name = "Variable name with pound symbol (invalid)";
 
 	float no_mss_val(lon);
 	no_mss_val:long_name = "no missing value";
@@ -667,6 +673,8 @@ data:
 	mss_val_fst=-999,73,-999,73;
 	mss_val_scl=1.0e36;
 	negative_one=-1.;
+	nm_pnd=1;
+	nm_spc=1;
 	no_mss_val=73,1.0e36,73,1.0e36;
 	non_nul_trm_char_one_dmn='a','b';
 	non_nul_trm_char_two_dmn="abcd","efgh","ijkm";

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.205 2007-02-28 08:02:51 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.206 2007-02-28 17:26:00 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -208,7 +208,7 @@ AC_ARG_ENABLE(ncoxx,AS_HELP_STRING([--enable-ncoxx],[Build nco++ directory and n
 AC_LANG_PUSH([C++])
 if (test "${enable_ncoxx}" != 'no'); then
 	# Check for antlr (which may be called runantlr)
-	AC_CHECK_PROG(HAVE_ANTLR,runantlr,'yes','no')
+	AC_CHECK_PROG(HAVE_ANTLR,runantlr,yes,no)
 	if (test "${HAVE_ANTLR}" = 'yes'); then
 		AC_CHECK_LIB([antlr],[ASTFactory],enable_ncoxx=yes,enable_ncoxx=no,[-lstdc++])
 		if (test "${enable_ncoxx}" = 'yes'); then
