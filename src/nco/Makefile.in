@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.78 2007-02-28 06:40:17 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.79 2007-02-28 08:02:52 zender Exp $ -*-makefile-*-
 
 
 srcdir = @srcdir@
@@ -227,8 +227,8 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
 GREP = @GREP@
+HAVE_ANTLR = @HAVE_ANTLR@
 HAVE_MPI_H = @HAVE_MPI_H@
-HAVE_RUNANTLR = @HAVE_RUNANTLR@
 HDF5_LIB_DIR = @HDF5_LIB_DIR@
 I18N_SHARE = @I18N_SHARE@
 INSTALL_DATA = @INSTALL_DATA@
