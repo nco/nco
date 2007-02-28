@@ -872,7 +872,6 @@ MAINTAINER_MODE_FALSE
 MAINT
 LIBOBJS
 POW_LIB
-HAVE_ANTLR
 TEST_DAP_TRUE
 TEST_DAP_FALSE
 NETCDF_INC
@@ -881,6 +880,7 @@ NETCDF4_ROOT
 HDF5_LIB_DIR
 NCO_NEED_GETOPT_LONG_TRUE
 NCO_NEED_GETOPT_LONG_FALSE
+HAVE_ANTLR
 HAVE_MPI_H
 MPICH2_ROOT
 LAM_ROOT
@@ -1516,9 +1516,9 @@ Optional Features:
   --disable-largefile     omit support for large files
   --enable-dap            Build DAP-enabled clients with OPeNDAP (conflicts
                           with netcdf4) [default=yes]
-  --enable-ncoxx          Build nco++ directory and ncap2 [default=yes]
   --enable-netcdf4        Use netCDF Version 4 (WARNING: Experimental)
                           [default=no]
+  --enable-ncoxx          Build nco++ directory and ncap2 [default=yes]
   --enable-mpi            Build NCOs for Message Passing Interface (detects
                           LAM or MPICH2) [default=no]
   --enable-fortran        Use Fortran arithmetic (deprecated) [default=no]
@@ -23982,239 +23982,6 @@ else
 fi
 
 
-# Check whether --enable-ncoxx was given.
-if test "${enable_ncoxx+set}" = set; then
-  enableval=$enable_ncoxx; enable_ncoxx=${enableval}
-else
-  enable_ncoxx=yes
-fi
-
-
-ac_ext=cpp
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-
-if (test "${enable_ncoxx}" != 'no'); then
-	# Check for antlr (which may be called runantlr)
-	# Extract the first word of "runantlr", so it can be a program name with args.
-set dummy runantlr; ac_word=$2
-{ echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
-if test "${ac_cv_prog_HAVE_ANTLR+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$HAVE_ANTLR"; then
-  ac_cv_prog_HAVE_ANTLR="$HAVE_ANTLR" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_HAVE_ANTLR="yes"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_HAVE_ANTLR" && ac_cv_prog_HAVE_ANTLR="no"
-fi
-fi
-HAVE_ANTLR=$ac_cv_prog_HAVE_ANTLR
-if test -n "$HAVE_ANTLR"; then
-  { echo "$as_me:$LINENO: result: $HAVE_ANTLR" >&5
-echo "${ECHO_T}$HAVE_ANTLR" >&6; }
-else
-  { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-fi
-
-
-	if (test "${HAVE_ANTLR}" = 'yes'); then
-# 20070228: Avoid CHECK_LIB on C++ libraries (requires too-complex link-test scripts)
-#		AC_CHECK_LIB([antlr],[ASTFactory],enable_ncoxx=yes,enable_ncoxx=no,[-lstdc++])
-	    if test "${ac_cv_header_antlr_CommonToken_hpp+set}" = set; then
-  { echo "$as_me:$LINENO: checking for antlr/CommonToken.hpp" >&5
-echo $ECHO_N "checking for antlr/CommonToken.hpp... $ECHO_C" >&6; }
-if test "${ac_cv_header_antlr_CommonToken_hpp+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-{ echo "$as_me:$LINENO: result: $ac_cv_header_antlr_CommonToken_hpp" >&5
-echo "${ECHO_T}$ac_cv_header_antlr_CommonToken_hpp" >&6; }
-else
-  # Is the header compilable?
-{ echo "$as_me:$LINENO: checking antlr/CommonToken.hpp usability" >&5
-echo $ECHO_N "checking antlr/CommonToken.hpp usability... $ECHO_C" >&6; }
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-$ac_includes_default
-#include <antlr/CommonToken.hpp>
-_ACEOF
-rm -f conftest.$ac_objext
-if { (ac_try="$ac_compile"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_compile") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_cxx_werror_flag" || test ! -s conftest.err'
-  { (case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_try") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest.$ac_objext'
-  { (case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_try") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_header_compiler=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_header_compiler=no
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-{ echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
-echo "${ECHO_T}$ac_header_compiler" >&6; }
-
-# Is the header present?
-{ echo "$as_me:$LINENO: checking antlr/CommonToken.hpp presence" >&5
-echo $ECHO_N "checking antlr/CommonToken.hpp presence... $ECHO_C" >&6; }
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <antlr/CommonToken.hpp>
-_ACEOF
-if { (ac_try="$ac_cpp conftest.$ac_ext"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } >/dev/null; then
-  if test -s conftest.err; then
-    ac_cpp_err=$ac_cxx_preproc_warn_flag
-    ac_cpp_err=$ac_cpp_err$ac_cxx_werror_flag
-  else
-    ac_cpp_err=
-  fi
-else
-  ac_cpp_err=yes
-fi
-if test -z "$ac_cpp_err"; then
-  ac_header_preproc=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-  ac_header_preproc=no
-fi
-
-rm -f conftest.err conftest.$ac_ext
-{ echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
-echo "${ECHO_T}$ac_header_preproc" >&6; }
-
-# So?  What about this header?
-case $ac_header_compiler:$ac_header_preproc:$ac_cxx_preproc_warn_flag in
-  yes:no: )
-    { echo "$as_me:$LINENO: WARNING: antlr/CommonToken.hpp: accepted by the compiler, rejected by the preprocessor!" >&5
-echo "$as_me: WARNING: antlr/CommonToken.hpp: accepted by the compiler, rejected by the preprocessor!" >&2;}
-    { echo "$as_me:$LINENO: WARNING: antlr/CommonToken.hpp: proceeding with the compiler's result" >&5
-echo "$as_me: WARNING: antlr/CommonToken.hpp: proceeding with the compiler's result" >&2;}
-    ac_header_preproc=yes
-    ;;
-  no:yes:* )
-    { echo "$as_me:$LINENO: WARNING: antlr/CommonToken.hpp: present but cannot be compiled" >&5
-echo "$as_me: WARNING: antlr/CommonToken.hpp: present but cannot be compiled" >&2;}
-    { echo "$as_me:$LINENO: WARNING: antlr/CommonToken.hpp:     check for missing prerequisite headers?" >&5
-echo "$as_me: WARNING: antlr/CommonToken.hpp:     check for missing prerequisite headers?" >&2;}
-    { echo "$as_me:$LINENO: WARNING: antlr/CommonToken.hpp: see the Autoconf documentation" >&5
-echo "$as_me: WARNING: antlr/CommonToken.hpp: see the Autoconf documentation" >&2;}
-    { echo "$as_me:$LINENO: WARNING: antlr/CommonToken.hpp:     section \"Present But Cannot Be Compiled\"" >&5
-echo "$as_me: WARNING: antlr/CommonToken.hpp:     section \"Present But Cannot Be Compiled\"" >&2;}
-    { echo "$as_me:$LINENO: WARNING: antlr/CommonToken.hpp: proceeding with the preprocessor's result" >&5
-echo "$as_me: WARNING: antlr/CommonToken.hpp: proceeding with the preprocessor's result" >&2;}
-    { echo "$as_me:$LINENO: WARNING: antlr/CommonToken.hpp: in the future, the compiler will take precedence" >&5
-echo "$as_me: WARNING: antlr/CommonToken.hpp: in the future, the compiler will take precedence" >&2;}
-    ( cat <<\_ASBOX
-## ------------------------------ ##
-## Report this to help@nco.sf.net ##
-## ------------------------------ ##
-_ASBOX
-     ) | sed "s/^/$as_me: WARNING:     /" >&2
-    ;;
-esac
-{ echo "$as_me:$LINENO: checking for antlr/CommonToken.hpp" >&5
-echo $ECHO_N "checking for antlr/CommonToken.hpp... $ECHO_C" >&6; }
-if test "${ac_cv_header_antlr_CommonToken_hpp+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_cv_header_antlr_CommonToken_hpp=$ac_header_preproc
-fi
-{ echo "$as_me:$LINENO: result: $ac_cv_header_antlr_CommonToken_hpp" >&5
-echo "${ECHO_T}$ac_cv_header_antlr_CommonToken_hpp" >&6; }
-
-fi
-if test $ac_cv_header_antlr_CommonToken_hpp = yes; then
-  enable_ncoxx=yes
-else
-  enable_ncoxx=no
-fi
-
-
-	    if (test "${enable_ncoxx}" = 'yes'); then
-		echo "INFO: ANTLR development support found---will build nco++ directory and ncap2"
-	    fi
-	fi
-fi
-if (test "${enable_ncoxx}" != 'yes'); then
-    echo "INFO: ANTLR support not found. To build the nco++ directory and ncap2, please install antlr and the antlr development package, e.g., apt-get install antlr libantlr-dev"
-fi
-ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
-
 echo "#################################"
 echo "#  Testing for netCDF4 support  #"
 echo "#################################"
@@ -27174,6 +26941,242 @@ fi
 
 echo "DEBUG: After library checks LIBS=$LIBS"
 echo "DEBUG: enable_mpi = '${enable_mpi}'"
+
+echo "#################################"
+echo "#  Testing for ANTLR support    #"
+echo "#################################"
+# Check whether --enable-ncoxx was given.
+if test "${enable_ncoxx+set}" = set; then
+  enableval=$enable_ncoxx; enable_ncoxx=${enableval}
+else
+  enable_ncoxx=yes
+fi
+
+
+ac_ext=cpp
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
+if (test "${enable_ncoxx}" != 'no'); then
+	# Check for antlr (which may be called runantlr)
+	# Extract the first word of "runantlr", so it can be a program name with args.
+set dummy runantlr; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_prog_HAVE_ANTLR+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$HAVE_ANTLR"; then
+  ac_cv_prog_HAVE_ANTLR="$HAVE_ANTLR" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_HAVE_ANTLR="yes"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_HAVE_ANTLR" && ac_cv_prog_HAVE_ANTLR="no"
+fi
+fi
+HAVE_ANTLR=$ac_cv_prog_HAVE_ANTLR
+if test -n "$HAVE_ANTLR"; then
+  { echo "$as_me:$LINENO: result: $HAVE_ANTLR" >&5
+echo "${ECHO_T}$HAVE_ANTLR" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+
+
+	if (test "${HAVE_ANTLR}" = 'yes'); then
+# 20070228: Avoid CHECK_LIB on C++ libraries (requires too-complex link-test scripts)
+#		AC_CHECK_LIB([antlr],[ASTFactory],enable_ncoxx=yes,enable_ncoxx=no,[-lstdc++])
+	    if test "${ac_cv_header_antlr_CommonToken_hpp+set}" = set; then
+  { echo "$as_me:$LINENO: checking for antlr/CommonToken.hpp" >&5
+echo $ECHO_N "checking for antlr/CommonToken.hpp... $ECHO_C" >&6; }
+if test "${ac_cv_header_antlr_CommonToken_hpp+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_header_antlr_CommonToken_hpp" >&5
+echo "${ECHO_T}$ac_cv_header_antlr_CommonToken_hpp" >&6; }
+else
+  # Is the header compilable?
+{ echo "$as_me:$LINENO: checking antlr/CommonToken.hpp usability" >&5
+echo $ECHO_N "checking antlr/CommonToken.hpp usability... $ECHO_C" >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <antlr/CommonToken.hpp>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_cxx_werror_flag" || test ! -s conftest.err'
+  { (case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_try") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_try") 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_header_compiler=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_header_compiler=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+{ echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+echo "${ECHO_T}$ac_header_compiler" >&6; }
+
+# Is the header present?
+{ echo "$as_me:$LINENO: checking antlr/CommonToken.hpp presence" >&5
+echo $ECHO_N "checking antlr/CommonToken.hpp presence... $ECHO_C" >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <antlr/CommonToken.hpp>
+_ACEOF
+if { (ac_try="$ac_cpp conftest.$ac_ext"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null; then
+  if test -s conftest.err; then
+    ac_cpp_err=$ac_cxx_preproc_warn_flag
+    ac_cpp_err=$ac_cpp_err$ac_cxx_werror_flag
+  else
+    ac_cpp_err=
+  fi
+else
+  ac_cpp_err=yes
+fi
+if test -z "$ac_cpp_err"; then
+  ac_header_preproc=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+
+rm -f conftest.err conftest.$ac_ext
+{ echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+echo "${ECHO_T}$ac_header_preproc" >&6; }
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc:$ac_cxx_preproc_warn_flag in
+  yes:no: )
+    { echo "$as_me:$LINENO: WARNING: antlr/CommonToken.hpp: accepted by the compiler, rejected by the preprocessor!" >&5
+echo "$as_me: WARNING: antlr/CommonToken.hpp: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { echo "$as_me:$LINENO: WARNING: antlr/CommonToken.hpp: proceeding with the compiler's result" >&5
+echo "$as_me: WARNING: antlr/CommonToken.hpp: proceeding with the compiler's result" >&2;}
+    ac_header_preproc=yes
+    ;;
+  no:yes:* )
+    { echo "$as_me:$LINENO: WARNING: antlr/CommonToken.hpp: present but cannot be compiled" >&5
+echo "$as_me: WARNING: antlr/CommonToken.hpp: present but cannot be compiled" >&2;}
+    { echo "$as_me:$LINENO: WARNING: antlr/CommonToken.hpp:     check for missing prerequisite headers?" >&5
+echo "$as_me: WARNING: antlr/CommonToken.hpp:     check for missing prerequisite headers?" >&2;}
+    { echo "$as_me:$LINENO: WARNING: antlr/CommonToken.hpp: see the Autoconf documentation" >&5
+echo "$as_me: WARNING: antlr/CommonToken.hpp: see the Autoconf documentation" >&2;}
+    { echo "$as_me:$LINENO: WARNING: antlr/CommonToken.hpp:     section \"Present But Cannot Be Compiled\"" >&5
+echo "$as_me: WARNING: antlr/CommonToken.hpp:     section \"Present But Cannot Be Compiled\"" >&2;}
+    { echo "$as_me:$LINENO: WARNING: antlr/CommonToken.hpp: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: antlr/CommonToken.hpp: proceeding with the preprocessor's result" >&2;}
+    { echo "$as_me:$LINENO: WARNING: antlr/CommonToken.hpp: in the future, the compiler will take precedence" >&5
+echo "$as_me: WARNING: antlr/CommonToken.hpp: in the future, the compiler will take precedence" >&2;}
+    ( cat <<\_ASBOX
+## ------------------------------ ##
+## Report this to help@nco.sf.net ##
+## ------------------------------ ##
+_ASBOX
+     ) | sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+{ echo "$as_me:$LINENO: checking for antlr/CommonToken.hpp" >&5
+echo $ECHO_N "checking for antlr/CommonToken.hpp... $ECHO_C" >&6; }
+if test "${ac_cv_header_antlr_CommonToken_hpp+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_header_antlr_CommonToken_hpp=$ac_header_preproc
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_header_antlr_CommonToken_hpp" >&5
+echo "${ECHO_T}$ac_cv_header_antlr_CommonToken_hpp" >&6; }
+
+fi
+if test $ac_cv_header_antlr_CommonToken_hpp = yes; then
+  enable_ncoxx=yes
+else
+  enable_ncoxx=no
+fi
+
+
+	    if (test "${enable_ncoxx}" = 'yes'); then
+		echo "INFO: ANTLR development support found---will build nco++ directory and ncap2"
+	    fi
+	fi
+fi
+if (test "${enable_ncoxx}" != 'yes'); then
+    echo "INFO: ANTLR support not found. To build the nco++ directory and ncap2, please install antlr and the antlr development package, e.g., apt-get install antlr libantlr-dev"
+fi
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
 
 if (test "${enable_mpi}" = 'yes'); then
 	echo "##################################################"
@@ -30960,7 +30963,6 @@ MAINTAINER_MODE_FALSE!$MAINTAINER_MODE_FALSE$ac_delim
 MAINT!$MAINT$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 POW_LIB!$POW_LIB$ac_delim
-HAVE_ANTLR!$HAVE_ANTLR$ac_delim
 TEST_DAP_TRUE!$TEST_DAP_TRUE$ac_delim
 TEST_DAP_FALSE!$TEST_DAP_FALSE$ac_delim
 NETCDF_INC!$NETCDF_INC$ac_delim
@@ -30969,6 +30971,7 @@ NETCDF4_ROOT!$NETCDF4_ROOT$ac_delim
 HDF5_LIB_DIR!$HDF5_LIB_DIR$ac_delim
 NCO_NEED_GETOPT_LONG_TRUE!$NCO_NEED_GETOPT_LONG_TRUE$ac_delim
 NCO_NEED_GETOPT_LONG_FALSE!$NCO_NEED_GETOPT_LONG_FALSE$ac_delim
+HAVE_ANTLR!$HAVE_ANTLR$ac_delim
 HAVE_MPI_H!$HAVE_MPI_H$ac_delim
 MPICH2_ROOT!$MPICH2_ROOT$ac_delim
 LAM_ROOT!$LAM_ROOT$ac_delim
@@ -32436,7 +32439,6 @@ MAINTAINER_MODE_FALSE!$MAINTAINER_MODE_FALSE$ac_delim
 MAINT!$MAINT$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 POW_LIB!$POW_LIB$ac_delim
-HAVE_ANTLR!$HAVE_ANTLR$ac_delim
 TEST_DAP_TRUE!$TEST_DAP_TRUE$ac_delim
 TEST_DAP_FALSE!$TEST_DAP_FALSE$ac_delim
 NETCDF_INC!$NETCDF_INC$ac_delim
@@ -32445,6 +32447,7 @@ NETCDF4_ROOT!$NETCDF4_ROOT$ac_delim
 HDF5_LIB_DIR!$HDF5_LIB_DIR$ac_delim
 NCO_NEED_GETOPT_LONG_TRUE!$NCO_NEED_GETOPT_LONG_TRUE$ac_delim
 NCO_NEED_GETOPT_LONG_FALSE!$NCO_NEED_GETOPT_LONG_FALSE$ac_delim
+HAVE_ANTLR!$HAVE_ANTLR$ac_delim
 HAVE_MPI_H!$HAVE_MPI_H$ac_delim
 MPICH2_ROOT!$MPICH2_ROOT$ac_delim
 LAM_ROOT!$LAM_ROOT$ac_delim

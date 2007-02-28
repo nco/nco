@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.207 2007-02-28 17:44:57 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.208 2007-02-28 21:08:02 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -202,26 +202,6 @@ nco_LIBS_no_DAP="${LIBS}"
 # Eliminate these 3 lines after running the dap tests with it disabled.
 #  AC_ARG_VAR([DAP_ROOT],[Root of DAP installation] (compile-time))
 AC_ARG_ENABLE(dap,AS_HELP_STRING([--enable-dap],[Build DAP-enabled clients with OPeNDAP (conflicts with netcdf4)  [[default=yes]]]),enable_dap=${enableval},enable_dap=yes)
-
-AC_ARG_ENABLE(ncoxx,AS_HELP_STRING([--enable-ncoxx],[Build nco++ directory and ncap2 [[default=yes]]]),enable_ncoxx=${enableval},[enable_ncoxx=yes])
-
-AC_LANG_PUSH([C++])
-if (test "${enable_ncoxx}" != 'no'); then
-	# Check for antlr (which may be called runantlr)
-	AC_CHECK_PROG(HAVE_ANTLR,runantlr,yes,no)
-	if (test "${HAVE_ANTLR}" = 'yes'); then
-# 20070228: Avoid CHECK_LIB on C++ libraries (requires too-complex link-test scripts)
-#		AC_CHECK_LIB([antlr],[ASTFactory],enable_ncoxx=yes,enable_ncoxx=no,[-lstdc++])
-	    AC_CHECK_HEADER([antlr/CommonToken.hpp],enable_ncoxx=yes,enable_ncoxx=no)
-	    if (test "${enable_ncoxx}" = 'yes'); then
-		echo "INFO: ANTLR development support found---will build nco++ directory and ncap2"
-	    fi
-	fi
-fi
-if (test "${enable_ncoxx}" != 'yes'); then
-    echo "INFO: ANTLR support not found. To build the nco++ directory and ncap2, please install antlr and the antlr development package, e.g., apt-get install antlr libantlr-dev"
-fi
-AC_LANG_POP([C++])
 
 echo "#################################"
 echo "#  Testing for netCDF4 support  #"
@@ -480,6 +460,29 @@ fi
 
 echo "DEBUG: After library checks LIBS=$LIBS"
 echo "DEBUG: enable_mpi = '${enable_mpi}'"
+
+echo "#################################"
+echo "#  Testing for ANTLR support    #"
+echo "#################################"
+AC_ARG_ENABLE(ncoxx,AS_HELP_STRING([--enable-ncoxx],[Build nco++ directory and ncap2 [[default=yes]]]),enable_ncoxx=${enableval},[enable_ncoxx=yes])
+
+AC_LANG_PUSH([C++])
+if (test "${enable_ncoxx}" != 'no'); then
+	# Check for antlr (which may be called runantlr)
+	AC_CHECK_PROG(HAVE_ANTLR,runantlr,yes,no)
+	if (test "${HAVE_ANTLR}" = 'yes'); then
+# 20070228: Avoid CHECK_LIB on C++ libraries (requires too-complex link-test scripts)
+#		AC_CHECK_LIB([antlr],[ASTFactory],enable_ncoxx=yes,enable_ncoxx=no,[-lstdc++])
+	    AC_CHECK_HEADER([antlr/CommonToken.hpp],enable_ncoxx=yes,enable_ncoxx=no)
+	    if (test "${enable_ncoxx}" = 'yes'); then
+		echo "INFO: ANTLR development support found---will build nco++ directory and ncap2"
+	    fi
+	fi
+fi
+if (test "${enable_ncoxx}" != 'yes'); then
+    echo "INFO: ANTLR support not found. To build the nco++ directory and ncap2, please install antlr and the antlr development package, e.g., apt-get install antlr libantlr-dev"
+fi
+AC_LANG_POP([C++])
 
 if (test "${enable_mpi}" = 'yes'); then
 	echo "##################################################"
