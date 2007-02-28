@@ -24883,7 +24883,7 @@ echo "$as_me: Bad news: Simple program does not compile and link to libnetcdf.a 
 		case ${CC} in
 # Pass -X 64 to symbol extractor or libtool fails
 		    gcc ) CFLAGS="${CFLAGS} -maix64" ; ;;
-		    xlc* ) CFLAGS="${CFLAGS} -q64 " ; CXXFLAGS="${CXXFLAGS} -q64 "; LDFLAGS="${LDFLAGS} -q64 " ; AR="ar -X 64" ; NM="nm -B -X 64" ; ;;
+		    xlc* ) CFLAGS="${CFLAGS} -q64" ; CXXFLAGS="${CXXFLAGS} -q64"; LDFLAGS="${LDFLAGS} -q64" ; AR="ar -X 64" ; NM="nm -B -X 64" ; ;;
 		esac
 		;;
 	    sparc-sun-solaris2* )
@@ -29542,7 +29542,7 @@ case ${host} in
 # -qmaxmem=num Limit memory used by space intensive optimizations to <num> kilobytes
 # -qspill=size Size in B of register allocation spill area, mie needs > 1040 B
 # -qlanglvl=extc99: Include orthogonal extensions to C99 standard
-	    xlc* ) CFLAGS="${CFLAGS} -O3 -g -qstrict -Q -qsmp=omp -qlanglvl=extc99 -qmaxmem=8192 -qspill=2048 -q64" ; ;;
+	    xlc* ) CFLAGS="${CFLAGS} -O3 -g -qstrict -Q -qsmp=omp -qlanglvl=extc99 -qmaxmem=8192 -qspill=2048 -q64" ; LDFLAGS="${LDFLAGS} -lC" ; ;;
 #    CPPFLAGS="${CPPFLAGS} -qlanglvl=extended"
 	esac
 	case ${CXX} in
