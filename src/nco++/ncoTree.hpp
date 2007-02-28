@@ -3,7 +3,7 @@
 
 #include <antlr/config.hpp>
 #include "ncoParserTokenTypes.hpp"
-/* $ANTLR 2.7.6 (20060530): "ncoGrammer.g" -> "ncoTree.hpp"$ */
+/* $ANTLR 2.7.6 (20060903): "ncoGrammer.g" -> "ncoTree.hpp"$ */
 #include <antlr/TreeParser.hpp>
 
 #line 1 "ncoGrammer.g"
@@ -15,6 +15,7 @@
     #include <iostream>
     #include <sstream>
     #include <string>
+    #include <algorithm>
     #include "ncap2.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
@@ -23,10 +24,10 @@
     ANTLR_USING_NAMESPACE(antlr);
     
 
-#line 27 "ncoTree.hpp"
+#line 28 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 472 "ncoGrammer.g"
+#line 494 "ncoGrammer.g"
 
 
 private:
@@ -352,7 +353,7 @@ exit: ;
     } // end run_exe
 
 
-#line 31 "ncoTree.hpp"
+#line 32 "ncoTree.hpp"
 public:
 	ncoTree();
 	static void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
@@ -387,10 +388,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 97;
+	static const int NUM_TOKENS = 98;
 #else
 	enum {
-		NUM_TOKENS = 97
+		NUM_TOKENS = 98
 	};
 #endif
 	

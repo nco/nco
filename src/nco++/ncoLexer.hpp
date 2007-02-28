@@ -2,7 +2,7 @@
 #define INC_ncoLexer_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.6 (20060530): "ncoGrammer.g" -> "ncoLexer.hpp"$ */
+/* $ANTLR 2.7.6 (20060903): "ncoGrammer.g" -> "ncoLexer.hpp"$ */
 #include <antlr/CommonToken.hpp>
 #include <antlr/InputBuffer.hpp>
 #include <antlr/BitSet.hpp>
@@ -17,6 +17,7 @@
     #include <iostream>
     #include <sstream>
     #include <string>
+    #include <algorithm>
     #include "ncap2.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
@@ -25,10 +26,10 @@
     ANTLR_USING_NAMESPACE(antlr);
     
 
-#line 29 "ncoLexer.hpp"
+#line 30 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 268 "ncoGrammer.g"
+#line 269 "ncoGrammer.g"
 
 
 private:
@@ -46,7 +47,7 @@ public:
 
 
 
-#line 33 "ncoLexer.hpp"
+#line 34 "ncoLexer.hpp"
 private:
 	void initLiterals();
 public:
@@ -105,6 +106,7 @@ public:
 	public: void mNUMBER_DOT(bool _createToken);
 	public: void mNUMBER(bool _createToken);
 	public: void mVAR_ATT(bool _createToken);
+	public: void mVAR_ATT_QT(bool _createToken);
 	public: void mDIM_VAL(bool _createToken);
 	public: void mDIM_MTD_ID(bool _createToken);
 	public: void mNSTRING(bool _createToken);
@@ -120,6 +122,8 @@ private:
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_3;
 	static const unsigned long _tokenSet_4_data_[];
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_4;
+	static const unsigned long _tokenSet_5_data_[];
+	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_5;
 };
 
 #endif /*INC_ncoLexer_hpp_*/
