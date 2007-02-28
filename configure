@@ -24015,7 +24015,7 @@ do
   test -z "$as_dir" && as_dir=.
   for ac_exec_ext in '' $ac_executable_extensions; do
   if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_HAVE_ANTLR="'yes'"
+    ac_cv_prog_HAVE_ANTLR="yes"
     echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -24023,7 +24023,7 @@ done
 done
 IFS=$as_save_IFS
 
-  test -z "$ac_cv_prog_HAVE_ANTLR" && ac_cv_prog_HAVE_ANTLR="'no'"
+  test -z "$ac_cv_prog_HAVE_ANTLR" && ac_cv_prog_HAVE_ANTLR="no"
 fi
 fi
 HAVE_ANTLR=$ac_cv_prog_HAVE_ANTLR
@@ -24037,91 +24037,9 @@ fi
 
 
 	if (test "${HAVE_ANTLR}" = 'yes'); then
-		{ echo "$as_me:$LINENO: checking for ASTFactory in -lantlr" >&5
-echo $ECHO_N "checking for ASTFactory in -lantlr... $ECHO_C" >&6; }
-if test "${ac_cv_lib_antlr_ASTFactory+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lantlr -lstdc++ $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char ASTFactory ();
-int
-main ()
-{
-return ASTFactory ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_cxx_werror_flag" || test ! -s conftest.err'
-  { (case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_try") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest$ac_exeext'
-  { (case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_try") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_antlr_ASTFactory=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_lib_antlr_ASTFactory=no
-fi
-
-rm -f core conftest.err conftest.$ac_objext \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ echo "$as_me:$LINENO: result: $ac_cv_lib_antlr_ASTFactory" >&5
-echo "${ECHO_T}$ac_cv_lib_antlr_ASTFactory" >&6; }
-if test $ac_cv_lib_antlr_ASTFactory = yes; then
-  enable_ncoxx=yes
-else
-  enable_ncoxx=no
-fi
-
-		if (test "${enable_ncoxx}" = 'yes'); then
-		    if test "${ac_cv_header_antlr_CommonToken_hpp+set}" = set; then
+# 20070228: Avoid CHECK_LIB on C++ libraries (requires too-complex link-test scripts)
+#		AC_CHECK_LIB([antlr],[ASTFactory],enable_ncoxx=yes,enable_ncoxx=no,[-lstdc++])
+	    if test "${ac_cv_header_antlr_CommonToken_hpp+set}" = set; then
   { echo "$as_me:$LINENO: checking for antlr/CommonToken.hpp" >&5
 echo $ECHO_N "checking for antlr/CommonToken.hpp... $ECHO_C" >&6; }
 if test "${ac_cv_header_antlr_CommonToken_hpp+set}" = set; then
@@ -24282,10 +24200,9 @@ else
 fi
 
 
-		    if (test "${enable_ncoxx}" = 'yes'); then
-			echo "INFO: ANTLR development support found---will build nco++ directory and ncap2"
-		    fi
-		fi
+	    if (test "${enable_ncoxx}" = 'yes'); then
+		echo "INFO: ANTLR development support found---will build nco++ directory and ncap2"
+	    fi
 	fi
 fi
 if (test "${enable_ncoxx}" != 'yes'); then
