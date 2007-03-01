@@ -1,3 +1,6 @@
+#ifndef INC_NcapVector_hh_
+#define INC_NcapVector_hh_
+
 #include <string.h>
 #include <string>
 #include <vector>
@@ -79,13 +82,16 @@ public:
   }
 
   // search -- only on a sorted vector
-  bool search(std::string snm){
+  bool bsearch(T t1){
       bool bret;
+      /*
+      char *cpr; 
       T t1;
-      t1->nm=strdup(snm.c_str());
-
+      cpr=strdup(snm.c_str());
+      t1->nm=cpr;
+      */
+ 
       bret= std::binary_search( this->begin(),this->end(),t1,less_mag());
-      (void)free(t1->nm);
 
       return bret;
   }       
@@ -98,3 +104,4 @@ public:
 
 };
 
+#endif
