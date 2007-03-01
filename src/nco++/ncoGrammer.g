@@ -11,6 +11,7 @@ header {
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
     #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
+    #include "NcapVector.hh"
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
     
@@ -445,8 +446,10 @@ NUMBER:
 VAR_ATT options {testLiterals=true; paraphrase="variable or attribute identifier"; } 
         :  (LPH)(LPH|DGT)*   
             {// check function table
+            sym_sct *sym_srh;
+            sym_srh=ncap_sym_init($getText.c_str(),cos,cosf); 
 
-            if( prs_arg->ptr_sym_vtr->search($getText) )
+            if( prs_arg->ptr_sym_vtr->bsearch(sym_srh))
                $setType(FUNC);             
              else $setType(VAR_ID); 
 
