@@ -741,8 +741,8 @@ public:
       (void)ncap_mpi_srt(tr,icnt,prs_arg,all_ast_vtr);
 
       // Evaluate expressions
-      for(int idx=0 ; idx<all_ast_vtr.size(); idx++)
-        for(int jdx=0 ; jdx<all_ast_vtr[idx].size(); jdx++)
+      for(unsigned idx=0 ; idx<all_ast_vtr.size(); idx++)
+        for(unsigned jdx=0 ; jdx<all_ast_vtr[idx].size(); jdx++)
 	     (void)statements(all_ast_vtr[idx][jdx]);
         
     goto end;
@@ -932,7 +932,7 @@ const std::string fnc_nm("assign_ntl");
                 dbg_prn(fnc_nm,vid->getText()+"(limits)");
 
 
-               int rcd;
+
                char *var_nm; 
                var_sct *var_lhs;
                NcapVar *Nvar;              
@@ -1095,8 +1095,6 @@ const std::string fnc_nm("assign");
    :   (#(VAR_ID LMT_LIST ))=> #(vid:VAR_ID lmt:LMT_LIST){
 
                int idx;
-               int jdx;
-               int rcd;
                int nbr_dmn;
                int var_id; 
                char *var_nm;
@@ -1106,7 +1104,6 @@ const std::string fnc_nm("assign");
 
 
                RefAST lmt_Ref;
-               lmt_sct *lmt_ptr;
                var_sct *var_lhs;
                var_sct *var_rhs;
                NcapVector<lmt_sct*> lmt_vtr;          
@@ -1299,8 +1296,7 @@ const std::string fnc_nm("assign");
            
           | vid2:VAR_ID {   
                // Set class wide variables
-               int var_id;
-               int rcd;
+
                var_sct *var1;
                NcapVar *Nvar;
 
@@ -2035,7 +2031,6 @@ const std::string fnc_nm("assign_asn");
 
 	:   vid:VAR_ID       
         { 
-          int rtyp=0;
           if(vid->getFirstChild())
                err_prn(fnc_nm,"Invalid Lvalue " +vid->getText() );
 
@@ -2050,7 +2045,6 @@ const std::string fnc_nm("assign_asn");
     // Plain attribute
     |   att:ATT_ID { 
             // check "output"
-            int rtyp;
             NcapVar *Nvar=NULL;
          
             if(att->getFirstChild())
