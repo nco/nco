@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.395 2007-03-02 00:04:40 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.396 2007-03-02 07:36:32 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3177,8 +3177,8 @@ lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0
 @end example
 
 @html
-<a name="dmn"></a> <!-- http://nco.sf.net/nco.html#dmn -->
 <a name="-d"></a> <!-- http://nco.sf.net/nco.html#-d -->
+<a name="dmn"></a> <!-- http://nco.sf.net/nco.html#dmn -->
 <a name="hyp"></a> <!-- http://nco.sf.net/nco.html#hyp -->
 @end html
 @node Hyperslabs, Stride, C and Fortran Index Conventions, Common features
@@ -6543,15 +6543,28 @@ DESCRIPTION
 arbitrary number (an @dfn{ensemble}) of @var{input-files}, with each
 file receiving an equal weight in the average.
 @cindex ensemble
-Each variable in the @var{output-file} will be the same size as the same 
-variable in any one of the in the @var{input-files}, and all
-@var{input-files} must be the same size. 
 @command{ncea} averages entire files, and weights each file evenly.
 This is distinct from @command{ncra}, which only averages over the
 record dimension (e.g., time), and weights each record in the record
 dimension evenly,  
+
+Variables in the @var{output-file} are the same size as the variable
+in each of the @var{input-files}, and all @var{input-files} must be
+the same size.
+@cindex record dimension
+@cindex hyperslab
+The only exception is that @command{ncea} allows files to differ in
+the record dimension size if the requested record hyperslab
+(@pxref{Hyperslabs}) resolves to the same size for all files. 
+@command{ncea} recomputes the record dimension hyperslab limits for
+each input file so that coordinate limits may be used to select equal
+length timeseries from unequal length files.
+@cindex IPCC
+This simplifies analysis of unequal length timeseries from simulation
+ensembles (e.g., the IPCC AR4 archive).  
+
 @cindex operation types
-@command{ncra} @emph{always averages} coordinate variables regardless of 
+@command{ncea} @emph{always averages} coordinate variables regardless of 
 the arithmetic operation type performed on the non-coordinate variables. 
 (@pxref{Operation Types}). 
 @cindex record dimension
@@ -6651,18 +6664,28 @@ DESCRIPTION
 @command{ncecat} concatenates an arbitrary number of input files into a 
 single output file.
 @cindex record dimension
-A new record dimension acts as the glue to bind the input files data
+A new record dimension acts as the glue to bind the input file data
 together.
 Each variable in each input file becomes one record in the same variable
 in the output file. 
+The @var{input-files} are stored consecutively as records in 
+@var{output-file}.
 All @var{input-files} must contain all extracted variables (or else
 there would be "gaps" in the output file).
+
 Each extracted variable must be constant in size and rank across all
 @var{input-files}. 
-The @var{input-files} are stored consecutively as a single record in 
-@var{output file}.
-Thus, the @var{output file} size is the sum of the sizes of the
-extracted variable in the input files. 
+@cindex record dimension
+@cindex hyperslab
+The only exception is that @command{ncecat} allows files to differ in
+the record dimension size if the requested record hyperslab
+(@pxref{Hyperslabs}) resolves to the same size for all files. 
+@cindex IPCC
+This allows easier gluing/averaging of unequal length timeseries from 
+simulation ensembles (e.g., the IPCC AR4 archive). 
+
+Thus, the @var{output-file} size is the sum of the sizes of the
+extracted variables in the input files. 
 @xref{Averaging vs. Concatenating}, for a description of the
 distinctions between the various averagers and concatenators. 
 @cindex multi-file operators

@@ -1,5 +1,7 @@
 2007-03-01  Charlie Zender  <zender@uci.edu>
 
+	* Document new ncea/ncecat per-file record dimension hyperslabs
+
 	* Add #include <functional> to NcapVector.hh to provide STL
 	binary_function routines
 
@@ -7,6 +9,12 @@
 	headers from antlr headers and thus fix AIX/ESMF ncap2 build
 
 	* Start new dedication
+
+2007-02-28  Charlie Zender  <zender@uci.edu>
+
+	* Link with -lC on all xlc_* compiles
+
+	* Re-work configure.in to accept ANTLR_INC, be friendlier on AIX
 
 2007-02-27  Charlie Zender  <zender@uci.edu>
 

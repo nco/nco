@@ -1,44 +1,48 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.204 2007-03-02 00:04:39 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.205 2007-03-02 07:36:32 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.8 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
+Release 3.1.9 contains a small ncwa bugfix, new ncea/ncecat features,
+new ncap2 features, and configure support for AIX with ncap2.
+
 A. ncwa bugfix: 
    ncwa reported NaN/inf for minimization/maximization/summation of
    coordinate variables. This has been fixed. Thanks to Michael Schulz  
    for reporting this bug.
 
-A. ncap2 (http://nco.sf.net/nco.html#ncap2) grows more powerful.
-
-A. ncecat and ncea allow files to differ in record dimension size,
-   so long as the requested (with -d start.,end.) hyperslab is the
-   same size in all dimensions.
+B. ncecat and ncea now allow files to differ in record dimension size 
+   iff the requested (with -d start.,end.) record hyperslab resolves
+   to the same size for all files.
    This allows easier gluing/averaging of unequal length timeseries
    from an ensemble of simulations (e.g., the IPCC AR4 archive).
 
-A. The "configure" install method now works for ncap2 on AIX
-   Thanks to Martin Schutz for 
+C. ncap2 (http://nco.sf.net/nco.html#ncap2) grows more powerful.
+   Henry keeps adding features. See ~/nco/data/ncap2.in.
+   Once threading and for loops are done we'll document it all. 
 
-B. Pre-built, up-to-date, Debian Sid binary packages are available
-and they include ncap2. Get them directly with "apt-get install nco".
-Other users, e.g., Ubuntu, get them from http://nco.sf.net#debian
-We plan to add ncap2 to RPM packages in 3.1.9.
+D. The "configure" install method now works for ncap2 on AIX
+   Thanks to Martin Schutz for encouraging us to finish this.
 
-C. Three extended abstracts describe new results with Distributed Data 
-Reduction and Analysis using NCO. We will present these at the 
-San Francisco AGU conference in December, and at the San Antonio AMS
-IIPC conference in January (with newer results---come say "Hi!").
-All NCO publications, extended abstracts, and posters are at:  
+E. Pre-built, up-to-date, Debian Sid binary packages are available.
+   Debian/Ubuntu users may get them from http://nco.sf.net#debian
+   Soon "apt-get install nco" will retrieve these versions.
+   We gave up putting ncap2 in RPM packages in 3.1.9 because we don't
+   have an up-to-date Fedora system to build on.
 
-http://nco.sf.net#pub
+F. We've recently presented two posters (AGU) and three talks (AMS and
+   Opendap conf.) on NCO and the Server side system now called SWAMP.
+   NCO publications, extended abstracts, and posters are at:  
+
+   http://nco.sf.net#pub
 
 Build/runtime changes:
 
 1. Update to DAP for netCDF 3.6.2
 
-2. Debian/Ubuntu packages include ncap2
+2. Allow specification of ANTLR_INC to configure, improve AIX linkage
 
 Enjoy,
 Charlie
