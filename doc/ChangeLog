@@ -1,5 +1,8 @@
 2007-03-01  Charlie Zender  <zender@uci.edu>
 
+	* Add #include <functional> to NcapVector.hh to provide STL
+	binary_function routines
+
 	* Add C_INC option to configure.in to disambiguate C-library
 	headers from antlr headers and thus fix AIX/ESMF ncap2 build
 

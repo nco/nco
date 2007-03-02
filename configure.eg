@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.135 2007-03-02 00:04:37 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.136 2007-03-02 00:59:48 zender Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -92,10 +92,11 @@ powerpc-ibm-aix5.1.0.0
 For ABI=64:
 # babyblue, bluesky, blackforest, dave, esmf
 # Enable OpenMP with CFLAGS and LDFLAGS ='-qsmp=omp'
-# C_INC refers to a directory that is guaranteed to be searched first
-# C_INC is useful on AIX platforms that have alternative C-compilers (e.g., gcc) installed in a directory (e.g., /usr/local) searched for other software (e.g., antlr)
+# C_INC is a directory guaranteed to be searched first
+# C_INC is useful on AIX platforms that have alternative C-headers (e.g., gcc) installed in a directory (e.g., /usr/local/include) searched for other (e.g., antlr) headers
 # Specifying both C_INC and ANTLR_INC would cause the pre-processor to grab 
 # C-headers from C_INC and antlr headers from ANTLR_INC
+# C_INC is necessary to disambiguate native C-headers (/usr/include) from antlr headers (/usr/local/include) on the UCI ESMF
 export GNU_TRP=`~/nco/autobld/config.guess`
 export OBJECT_MODE='64' # AIX-specific hack
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean

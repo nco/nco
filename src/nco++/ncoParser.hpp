@@ -22,15 +22,16 @@
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
     #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
+    #include "NcapVector.hh"
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
     
 
-#line 30 "ncoParser.hpp"
+#line 31 "ncoParser.hpp"
 class CUSTOM_API ncoParser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public ncoParserTokenTypes
 {
 #line 1 "ncoGrammer.g"
-#line 34 "ncoParser.hpp"
+#line 35 "ncoParser.hpp"
 public:
 	void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
 protected:

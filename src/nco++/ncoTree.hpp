@@ -20,14 +20,15 @@
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
     #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
+    #include "NcapVector.hh"
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
     
 
-#line 28 "ncoTree.hpp"
+#line 29 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 494 "ncoGrammer.g"
+#line 497 "ncoGrammer.g"
 
 
 private:
@@ -353,7 +354,7 @@ exit: ;
     } // end run_exe
 
 
-#line 32 "ncoTree.hpp"
+#line 33 "ncoTree.hpp"
 public:
 	ncoTree();
 	static void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
