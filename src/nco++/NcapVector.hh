@@ -13,8 +13,6 @@ class NcapVector : public std::vector<T> {
 
 public:
 
-
-
   void push(const T &x) {
     this->push_back(x);
   }
@@ -56,6 +54,12 @@ public:
     else
 	 return -1;
 
+  }
+
+  // stop compiler warnings
+  int size(){
+    // Call base class version 
+    return (int)(std::vector<T>::size());
   }
 
  
