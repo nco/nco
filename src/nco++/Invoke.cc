@@ -4,6 +4,10 @@
  * a istringstream is constructed with the string from the ostringstream and
  * fed to the lexer.
  */
+
+
+// this defines an anonymous enum containing parser tokens
+
 #include <stdio.h>
 #include <malloc.h>
 #include <fstream>
@@ -18,6 +22,10 @@
 #include "ncap2.hh"
 #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
 
+
+
+
+
 //forward declaration
 void ncap_def_ntl_scn(prs_sct*);
 
@@ -29,7 +37,6 @@ int parse_antlr(prs_sct *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
   
   const std::string fnc_nm("parse_antlr"); // [sng] Function name
   
-  int idx;
   char *filename;
 
   istringstream *sin=NULL;
@@ -39,8 +46,6 @@ int parse_antlr(prs_sct *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
   ncoParser *parser=NULL;
   
   RefAST t,a;
-  bool bchk;
-
   
   filename=strdup(fl_spt_usr);   
   
@@ -141,4 +146,5 @@ int parse_antlr(prs_sct *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
   (void)nco_free(filename);
   
   return 1;
-}              
+}
+
