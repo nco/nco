@@ -2,6 +2,7 @@
 #define INC_NcapVector_hh_
 
 #include <string.h>
+#include <functional>
 #include <string>
 #include <vector>
 #include <algorithm>
