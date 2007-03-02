@@ -276,8 +276,8 @@ public:
       (void)ncap_mpi_srt(tr,icnt,prs_arg,all_ast_vtr);
 
       // Evaluate expressions
-      for(int idx=0 ; idx<all_ast_vtr.size(); idx++)
-        for(int jdx=0 ; jdx<all_ast_vtr[idx].size(); jdx++)
+      for(unsigned idx=0 ; idx<all_ast_vtr.size(); idx++)
+        for(unsigned jdx=0 ; jdx<all_ast_vtr[idx].size(); jdx++)
 	     (void)statements(all_ast_vtr[idx][jdx]);
         
     goto end;
