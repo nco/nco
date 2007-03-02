@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.394 2007-01-27 02:02:25 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.395 2007-03-02 00:04:40 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -419,7 +419,7 @@ October 2000@*
 Irvine, California@*
 
 @sp 2
-The most remarkable advances in  @acronym{NCO} capabilities in the last  
+The most remarkable advances in @acronym{NCO} capabilities in the last  
 few years are due to contributions from the Open Source community.
 Especially noteworthy are the contributions of Henry Butowsky and Rorik 
 Peterson.@* 
@@ -428,6 +428,24 @@ Peterson.@*
 Charlie Zender@*
 January 2003@*
 Irvine, California@*
+
+@ignore
+@sp 2
+@acronym{NCO} owes much of its progress since 2004 to resources made
+available by the US National Science Foundation (NSF).
+These supported me to maintain core @acronym{NCO} code, while graduate
+students and programmers advanced @acronym{NCO} in new directions. 
+Gayathri Venkitachalam helped implement @acronym{MPI}.
+Harry Mangalam improved regression testing and benchmarking.
+Daniel Wang developed the server-side capability, @acronym{SWAMP}.
+Henry Butowsky, a long-time contributor, developed @command{ncap2}. 
+.@* 
+@sp 1
+@noindent
+Charlie Zender@*
+March 2007@*
+Irvine, California@*
+@end ignore
 
 @html
 <a name="smr"></a> <!-- http://nco.sf.net/nco.html#smr -->
@@ -8883,8 +8901,10 @@ Compatibility with large PIDs.
 @cindex Keith Lindsay
 @cindex Martin Dix
 @cindex Mike Page
-@item Martin Dix, Keith Lindsay, Mike Page
-Excellent bug reports.
+@cindex Martin Schmidt
+@cindex Michael Schulz
+@item Martin Dix, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz
+Excellent bug reports and feature requests.
 @end table
 
 @html

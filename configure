@@ -26953,6 +26953,16 @@ else
 fi
 
 
+if test "${C_INC}"; then
+# Prepend ${C_INC} to search path if present
+# C_INC refers to a directory that is guaranteed to be searched first
+# C_INC is useful on AIX platforms that have alternative C-compilers (e.g., gcc) installed in a directory (e.g., /usr/local) searched for other software (e.g., antlr)
+# Specifying both C_INC and ANTLR_INC would cause the pre-processor to grab
+# C-headers from C_INC and antlr headers from ANTLR_INC
+# Using C_INC is required on UCI's ESMF
+	CPPFLAGS="-I${C_INC} ${CPPFLAGS}"
+fi
+
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'

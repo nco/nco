@@ -1,3 +1,10 @@
+2007-03-01  Charlie Zender  <zender@uci.edu>
+
+	* Add C_INC option to configure.in to disambiguate C-library
+	headers from antlr headers and thus fix AIX/ESMF ncap2 build
+
+	* Start new dedication
+
 2007-02-27  Charlie Zender  <zender@uci.edu>
 
 	* Change configure.in to check for ASTFactory() in libantlr.a
