@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.40 2007-02-26 16:11:28 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.41 2007-03-02 13:07:22 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -234,7 +234,6 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
 
   // var is already defined & populated in output 
   if(bdef && Nvar->flg_stt==2){
-    ptr_unn val_swp;  // Used to swap values around
     var_sct* var_swp;
     var_sct* var_inf;
     var_inf=Nvar->cpyVarNoData();
@@ -1212,7 +1211,6 @@ prs_sct *prs_arg){
 
   int idx;
   int len;
-  int dmn_out_id;
   char ch; 
           
   dmn_sct *dmn_nw;             
@@ -1415,7 +1413,6 @@ ncap_var_var_op   /* [fnc] Add two variables */
 
   nco_bool vb1;
   nco_bool vb2;
-  nco_bool bhyp;
  
   var_sct *var_ret=(var_sct*)NULL;
 
@@ -1958,7 +1955,7 @@ bool
 str_is_num(
 std::string snm)
 { 
- int idx;
+ unsigned idx;
  for(idx=0 ; idx < snm.size(); idx++)
    if( !isdigit(snm[idx])) break;
 
@@ -2148,8 +2145,6 @@ NcapVar *Nvar;
 NcapVar *Cvar;
 var_sct *var1;
 
-static int icnt; 
-
 const std::string fnc_nm("ncap_def_ntl_scn"); 
 
 sz=prs_arg->ptr_int_vtr->size();
@@ -2226,9 +2221,9 @@ std::vector<std::string> &in_vtr,
 std::vector<std::string> &mb_vtr
 )
 {
-int idx;
-int jdx;
-int nbr_mb=mb_vtr.size();
+unsigned int idx;
+unsigned int jdx;
+unsigned int nbr_mb=mb_vtr.size();
 
  std::vector<std::string> out_vtr;
 
@@ -2257,6 +2252,7 @@ int nbr_mb=mb_vtr.size();
   return true;
  */
 }
+
 
 
 
@@ -2334,10 +2330,12 @@ ncap_evl_srp(
 std::vector<exp_sct_tmp**> &srp_vtr //self reverential pointer
 )
 {
+  unsigned int idx;
+
   if(srp_vtr.empty()) 
     return true;
 
-  for(int idx=0 ; idx < srp_vtr.size() ; idx++)
+  for(idx=0 ; idx < srp_vtr.size() ; idx++)
     if( *srp_vtr[idx] != NULL) 
       return false;
 
@@ -2464,7 +2462,7 @@ const std::string fnc_nm("ncap_mpi_srt");
 	    grp_vtr.push_back(idx);
 	}// end idx
 
-        for(idx=0 ; idx <grp_vtr.size(); idx++){
+        for(idx=0 ; idx <(int)grp_vtr.size(); idx++){
  	  ast_vtr.push_back( exp_vtr[grp_vtr[idx]]->etr);
           delete exp_vtr[grp_vtr[idx]];
           exp_vtr[grp_vtr[idx]]=NULL;
@@ -2472,15 +2470,15 @@ const std::string fnc_nm("ncap_mpi_srt");
 
         // Save vector in another vector !! 
         all_ast_vtr.push_back(ast_vtr);
-        icnt+=grp_vtr.size();
+        icnt+=(int)grp_vtr.size();
           
 
       } // end while
 
       //Print out vectors
       if(dbg_lvl_get() >0) {
-        for(idx=0 ; idx<all_ast_vtr.size(); idx++){
-          for(jdx=0 ; jdx<all_ast_vtr[idx].size(); jdx++)
+        for(idx=0 ; idx<(int)all_ast_vtr.size(); idx++){
+          for(jdx=0 ; jdx<(int)all_ast_vtr[idx].size(); jdx++)
 	    std::cout << all_ast_vtr[idx][jdx]->toStringTree()<<std::endl;
 	  std::cout <<"-------------------------------\n";
           } //end idx
