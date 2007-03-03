@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_swamp,v 1.63 2007-02-06 02:16:53 wangd Exp $
+# $Id: dap_nc_swamp,v 1.64 2007-03-03 01:49:01 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -199,6 +199,7 @@ def readConfigFile(fname = "swamp_handler.conf"):
     cfgmap = [("disableLogging", "log", "disable", False),
               ("logLocation",    "log", "location",
                "/home/wangd/opendap/iroot/ssdap.log"),
+
               ("nc4BinPath", "targets", "netcdf4nco",
                "/home/wangd/opendap/iroot/nco_ncdf4_bin"),
               ("ncDapBinPath", "targets", "opendapnco",
@@ -207,10 +208,14 @@ def readConfigFile(fname = "swamp_handler.conf"):
               ("resultPath", "targets", "resultPath", None),
               ("passthroughPath", "targets", "passthroughPath",
                "/home/wangd/opendap/iroot/bin/dap_nc_handler"),
+
               ("dbFilename", "database", "dbFilename", None),
+
               ("disableHTTP", "global", "disableHTTP", True),
               ("disableParallel", "global", "disableParallel", True),
-              ("nslots", "global", "nslots", 2)
+              ("nslots", "global", "nslots", 2),
+
+              ("sshSpawn", "experimental", "sshSpawn", None)
               ]
     remap = {"True" : True, "False" : False, "Yes" : True, "No" : False }
 
@@ -259,7 +264,7 @@ def prestartLogging():
         import cStringIO
         local.logfile = cStringIO.StringIO()
         p = str(local.mypid)
-        local.logfile.write("SSDAP/SWAMP dap_handler_hack %s\n" % "$Revision: 1.63 $")
+        local.logfile.write("SSDAP/SWAMP dap_handler_hack %s\n" % "$Revision: 1.64 $")
         local.logfile.write("handler "+p+" log open at " + time.ctime()+"\n")
 
 def startLogging():
@@ -475,8 +480,10 @@ class Command:
 
         if ofname != "": # should have a real filename (or placeholder)
             self.absOutputs.append(ofname)
-
+            self.env.toutlist.append(ofname)
         self.absInputs += leftover
+
+        self.env.tinlist.update(map(lambda x:(x,1),leftover))
         if "-p" in adict:
             self.inPrefix = adict["-p"]
             keys = [x[0] for x in alist]
@@ -830,6 +837,8 @@ class ScriptingEnv:
         assert type(settingsDict) == type({})
         self.fileMap = {}
         self.outTokens = []
+        self.toutlist = []
+        self.tinlist = {}
         self.env = settingsDict
         self.lines = scriptlines
         # save lines of output for each type of output.
@@ -988,6 +997,15 @@ class ScriptingEnv:
          # here, fork off:
          # Parent: write persistent state file (or to DB), report metatag to stdout
          # Child: continue execution, but do not return output to stdout
+         logit("dep resolution")
+         temps = filter(lambda x: x in self.tinlist, self.toutlist)
+         print >>open("/tmp/foo1","a"), temps
+#          for f in temps:
+#              if isnotremapped(f):
+#                  remap(f)
+#                  rebuildaffectedcommandlines()
+         
+         logit("dep finish")
          if self.isAsync:
              self.asyncExecute()
          else:
@@ -1007,6 +1025,11 @@ class ScriptingEnv:
          outFd = os.devnull
          if cmd.saveOutput == True:
              outFd = sys.stdout
+         # last chance to (re)build commandline
+         # don't know if file is leaf unless peeking at future
+         # so... tempfile detect should be done after all parse, but
+         # remapping and command-line gen can take place just-in-time
+         # before exec.
          (sin,sout) = cmd.popen(cmd.commandLine())  # use the mapped popen
          sin.close() # close the input, so it flushes
          #out handle is now ready to be read.
@@ -1094,8 +1117,12 @@ class ScriptingEnv:
             #should not get here.
             return (None,None,None)
         return (cline,outname,linenum)
+    def workerCommandSpawn(self, command):
+        
+        pass
     def workerJobSpawn(self, cline):
         import subprocess
+        
         # At this point, consider marking a running state, so that
         # workers can see each others' jobs and avoid duplication.
         retcode = None
@@ -1113,6 +1140,22 @@ class ScriptingEnv:
             logit("Failed %s --> %s, " %(cline,outname))
             return None
         return retcode
+    def workerRemoteJobSpawn(self, cmd):
+        """Spawn a command remotely"""
+        assert local.sshSpawn is not None
+        #local.sshSpawn should be something like "ssh -x localhost"
+        # it won't really work if ssh keys aren't setup.
+        clist = local.sshSpawn.split()
+        #some work here to merge command line with the clist.
+        # should probably just make a command line, quote it, and send
+        # it to ssh.
+        # need: some work to make sure we can build a commandline at this point
+        # since we will need to, when filename maps are deferred.
+        return 0 # FAKE for now.
+        import subprocess
+        subprocess.call(clist, shell=False) # for safety, don't treat as shell
+        pass
+    
     def depFindInputs(self, linenum):
         # now, find my input files
         me = self.lineToCommand[linenum]
@@ -1136,42 +1179,48 @@ class ScriptingEnv:
         (cline,outname,linenum) = (None, None, None)
         jobsrun = 0
         while True:
-             if cline is None:  #otherwise, we have a job ready!
-                 (cline,outname,linenum) = self.dbFetchJob()
-                 #either we have a job, or there is none left.
-                 if not cline:
-                     break
-             
-             if self.workerJobSpawn(cline) is None:
-                 break
-             inputs = self.depFindInputs(linenum)
-             # pass the inputs down to the db layer and implement
-             # deletion-tracking logic there.  it violates original
-             # design intent, but makes for simpler code.  when we
-             # know differently, then rethink (maybe pass a function
-             # object down to the persistence layer to encapsulate
-             # the deletion handling logic.
-             jobsrun = jobsrun + 1
-             j = self.instanceJobPersistence()
-             #if False:
-                 #cmt = j.newCommitCmdResultTransaction()
-                 #cmt.executeBlocking(outname)
-                 #(cline, outname) = (None,None)
-                 #cmt = None
-             #else:
-             try:
-                 cmt = j.newCommitAndFetchTransaction()
-                 tup = cmt.executeBlocking(outname, inputs)
-                 logit("%s commit OK" % cline)
-                 (cline, outname) = (None,None)
-                 if type(tup) is tuple and len(tup) == 3:
-                     (cline, outname, linenum) = tup
-             except:
-                 import traceback
-                 logit("unknown exception"+str(traceback.format_exc()))
-                 break
-             if jobsrun > 9910: # for profiling...
-                 break
+            if cline is None:  #otherwise, we have a job ready!
+                (cline,outname,linenum) = self.dbFetchJob()
+                #either we have a job, or there is none left.
+                if not cline:
+                    break
+
+            cmd = self.commandToLine(linenum)
+            if 1:
+                if self.workerJobSpawn(cline) is None:
+                    break
+            else:
+                if self.remoteJobSpawn(cmd) is None:
+                    break
+                
+            inputs = self.depFindInputs(linenum)
+            # pass the inputs down to the db layer and implement
+            # deletion-tracking logic there.  it violates original
+            # design intent, but makes for simpler code.  when we
+            # know differently, then rethink (maybe pass a function
+            # object down to the persistence layer to encapsulate
+            # the deletion handling logic.
+            jobsrun = jobsrun + 1
+            j = self.instanceJobPersistence()
+            #if False:
+                #cmt = j.newCommitCmdResultTransaction()
+                #cmt.executeBlocking(outname)
+                #(cline, outname) = (None,None)
+                #cmt = None
+            #else:
+            try:
+                cmt = j.newCommitAndFetchTransaction()
+                tup = cmt.executeBlocking(outname, inputs)
+                logit("%s commit OK" % cline)
+                (cline, outname) = (None,None)
+                if type(tup) is tuple and len(tup) == 3:
+                    (cline, outname, linenum) = tup
+            except:
+                import traceback
+                logit("unknown exception"+str(traceback.format_exc()))
+                break
+            if jobsrun > 9910: # for profiling...
+                break
         j.close()
                
     def asyncExecute(self):
@@ -1648,7 +1697,8 @@ class CommandFactory:
         self.persister = pers
         self.buildComplexStructs()
         self.lineList = []
-        self.dapMap = {}
+        self.dapMap = {} # map remote urls to temp filenames
+        #  resulting from synthesized fetches.
         pass
     def addScriptLines(self, linelist):
         assert not self.finalized
@@ -2052,3 +2102,33 @@ if __name__ == '__main__':
 # is it:  1- ((d-1)!/(d-p-1)!)/(d^(p-1))?  but this doesn't seem to work in matlab?
 #
 #
+# will need to *edit* originals to disambiguate filenames. simple method, prepend original, non path'd filename with the line number?
+#
+# filename remapping (when names are aliased) is like register renaming:
+# ----
+# http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=877952&isnumber=18997
+# The design space of register renaming techniques
+#
+# http://ieeexplore.ieee.org/xpl/RecentCon.jsp?punumber=937
+# Register renaming and dynamic speculation: an alternative approach
+# http://portal.acm.org/citation.cfm?id=255235.255288
+
+# R.M. Tomasulo. An efficient algorithm for exploiting multiple arithmetic units. IBM Journal of Research and Development, 11(1):25-33, January 1967.
+
+# Look-Ahead Processors
+# http://portal.acm.org/citation.cfm?id=356657&dl=GUIDE&coll=GUIDE&CFID=11024650&CFTOKEN=91719170
+# article{356657,
+#  author = {Robert M. Keller},
+#  title = {Look-Ahead Processors},
+#  journal = {ACM Comput. Surv.},
+#  volume = {7},
+#  number = {4},
+#  year = {1975},
+#  issn = {0360-0300},
+#  pages = {177--195},
+#  doi = {http://doi.acm.org/10.1145/356654.356657},
+#  publisher = {ACM Press},
+#  address = {New York, NY, USA},
+#  }
+
+

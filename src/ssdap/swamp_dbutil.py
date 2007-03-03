@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: swamp_dbutil.py,v 1.29 2007-02-06 02:16:54 wangd Exp $
+# $Id: swamp_dbutil.py,v 1.30 2007-03-03 01:49:01 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -22,9 +22,12 @@ class local:
         for c in s: # for each context in the call stack...
             if "logit" in c[0].f_locals: # first in tuple is frame
                 logit = c[0].f_locals["logit"]
-        if logit is None:
+        try:
+            if logit is None:
+                logit = local.defaultLogit
+                #print >>open("/tmp/foo1","a"), dir(local)
+        except:
             logit = local.defaultLogit
-            #print >>open("/tmp/foo1","a"), dir(local)
         logit("logger initialized")
 local.setLogger()
 
@@ -498,7 +501,7 @@ class JobPersistence:
             #    return
             for f in self.deleteList:
                 try:
-                    print "unlinking f", f[0]
+                    #print "unlinking f", f[0]
                     #print >>open("/tmp/foo1","a"), os.getpid(),"try del", f[0]
                     os.unlink(f[0])
                 except OSError,e:
