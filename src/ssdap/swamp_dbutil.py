@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: swamp_dbutil.py,v 1.30 2007-03-03 01:49:01 wangd Exp $
+# $Id: swamp_dbutil.py,v 1.31 2007-03-03 02:14:53 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -599,6 +599,7 @@ class JobPersistence:
         else: self.dbFilename = dbfile
         self.dbconnection = None
         self.dbcursor = None
+        self.currentTaskRow = None
         
         pass
     def connection(self):

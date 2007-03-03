@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_swamp,v 1.64 2007-03-03 01:49:01 wangd Exp $
+# $Id: dap_nc_swamp,v 1.65 2007-03-03 02:14:52 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -264,7 +264,7 @@ def prestartLogging():
         import cStringIO
         local.logfile = cStringIO.StringIO()
         p = str(local.mypid)
-        local.logfile.write("SSDAP/SWAMP dap_handler_hack %s\n" % "$Revision: 1.64 $")
+        local.logfile.write("SSDAP/SWAMP dap_handler_hack %s\n" % "$Revision: 1.65 $")
         local.logfile.write("handler "+p+" log open at " + time.ctime()+"\n")
 
 def startLogging():
@@ -1185,11 +1185,11 @@ class ScriptingEnv:
                 if not cline:
                     break
 
-            cmd = self.commandToLine(linenum)
             if 1:
                 if self.workerJobSpawn(cline) is None:
                     break
             else:
+                cmd = self.commandToLine(linenum)
                 if self.remoteJobSpawn(cmd) is None:
                     break
                 
@@ -1792,14 +1792,19 @@ class CommandFactory:
             while True:
                 poll = privatedb.newPollingTransaction()
                 i = poll.pollFileStateById(int(argv[0]))
-                if s != 3: ## 3==saved.  better way to do this magic const?
-                    if s != None:
-                        time.sleep(sleeptime)
-                        continue
-                    else:
-                        print "File id", argv[0], " is nonexistent."
-                        raise StandardError("Bad FileId to retrieve")
-             
+
+                # FIXME: this logic is faulty.
+                if int(i) != 3: ## 3==saved.  better way to do this magic const?
+                    logit("not ready, state is "+str(i))
+                    time.sleep(sleeptime)
+                    continue
+                else:
+                    break
+                    # this logic is broken... but we are rewriting anyway.
+                    print "File id", argv[0], " is nonexistent."
+                    raise StandardError("Bad FileId to retrieve")
+            logit("pass okay")
+            return
             n = poll.pollFilenameId(int(argv[0]))
             # patch output filename (use bogus handle)
             # this is rather backwards.
