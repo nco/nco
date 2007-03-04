@@ -23997,29 +23997,29 @@ fi
 # Check to see if netCDF4 is requested
 echo "DEBUG: enable_netcdf4 = ${enable_netcdf4} and enable_dap = ${enable_dap}"
 if (test "${enable_netcdf4}" != 'no' && test "${enable_dap}" != 'no'); then
-	# override netCDF4 request
-	echo ""
-	echo "WARNING: Requested both netCDF4 and DAP support---overriding netcdf4"
-	echo "NCO will be built with DAP support and without netCDF4/HDF5 support"
-	echo ""
-	enable_netcdf4='no'
+# Override netCDF4 request
+    echo ""
+    echo "WARNING: Requested both netCDF4 and DAP support---overriding netcdf4"
+    echo "NCO will be built with DAP support and without netCDF4/HDF5 support"
+    echo ""
+    enable_netcdf4='no'
 fi # End test for netCDF4 libs
 
 # Check for DAP libraries unless told not to
 if test "${enable_dap}" != 'no'; then
-	if which ncdap-config > /dev/null; then
-		CPPFLAGS="${CPPFLAGS} `ncdap-config --cflags`"
-		nc_dap_ver=`ncdap-config --version`
-		nc_dap_ver_M=`echo ${nc_dap_ver} | sed 's@^libnc-dap \([0-9]\)*\.\([0-9]*\)\.\([0-9]*\)$@\1@'`
-		nc_dap_ver_m=`echo ${nc_dap_ver} | sed 's@^libnc-dap \([0-9]\)*\.\([0-9]*\)\.\([0-9]*\)$@\2@'`
-		# Change this test once OPeNDAP 3.6 supports netCDF 3.6
-		if test ${nc_dap_ver_M} -le 3 -a ${nc_dap_ver_m} -le 6; then
-	 	   CPPFLAGS="${CPPFLAGS} -DNC_64BIT_OFFSET"
-		fi
-		LIBS="`ncdap-config --libs` ${LIBS}"
+    if which ncdap-config > /dev/null; then
+	CPPFLAGS="${CPPFLAGS} `ncdap-config --cflags`"
+	nc_dap_ver=`ncdap-config --version`
+	nc_dap_ver_mjr=`echo ${nc_dap_ver} | sed 's@^libnc-dap \([0-9]\)*\.\([0-9]*\)\.\([0-9]*\)$@\1@'`
+	nc_dap_ver_mnr=`echo ${nc_dap_ver} | sed 's@^libnc-dap \([0-9]\)*\.\([0-9]*\)\.\([0-9]*\)$@\2@'`
+# Change this test once OPeNDAP 3.6 supports netCDF 3.6
+	if test ${nc_dap_ver_mjr} -le 3 -a ${nc_dap_ver_mnr} -le 6; then
+	    CPPFLAGS="${CPPFLAGS} -DNC_64BIT_OFFSET"
 	fi
+	LIBS="`ncdap-config --libs` ${LIBS}"
+    fi
 
-	ac_ext=cpp
+    ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -24114,32 +24114,29 @@ else
   enable_dap=no
 fi
 
-	ac_ext=c
+    ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-# fxm 20060825: Why is this necessary? It confuses icc. Perhaps xlC needs it?
-#   LIBS="${LIBS} -lstdc++"
-
-	if test "${enable_dap}" = 'no'; then
-		{ echo "$as_me:$LINENO: WARNING: DAP support disabled (missing libraries)" >&5
+    if test "${enable_dap}" = 'no'; then
+	{ echo "$as_me:$LINENO: WARNING: DAP support disabled (missing libraries)" >&5
 echo "$as_me: WARNING: DAP support disabled (missing libraries)" >&2;}
-		LIBS="${nco_LIBS_no_DAP}"
-	elif test "${enable_dap}" = 'yes'; then
+	LIBS="${nco_LIBS_no_DAP}"
+    elif test "${enable_dap}" = 'yes'; then
 
 cat >>confdefs.h <<\_ACEOF
 #define ENABLE_DAP 1
 _ACEOF
 
-		{ echo "$as_me:$LINENO: DAP support enabled" >&5
+	{ echo "$as_me:$LINENO: DAP support enabled" >&5
 echo "$as_me: DAP support enabled" >&6;}
-		# libtool cleans up duplicate library links (e.g., dap, nc-dap) unless told not to
-		# New (3.5.0+) version of libnc-dap does not require duplicate libraries jhrg 6/3/05
-		LIBTOOL="${LIBTOOL} --tag=CXX --preserve-dup-deps"
-	fi
+# libtool cleans up duplicate library links (e.g., dap, nc-dap) unless told not to
+# New (3.5.0+) version of libnc-dap does not require duplicate libraries jhrg 6/3/05
+	LIBTOOL="${LIBTOOL} --tag=CXX --preserve-dup-deps"
+    fi
 fi
 
 
@@ -24167,17 +24164,17 @@ echo "DEBUG: enable_netcdf4: ${enable_netcdf4} and enable_dap: ${enable_dap}"
 
 
 # Test if user set NETCDF4_ROOT and it exists
-if ( test "${enable_netcdf4}" = 'yes'); then
-	if (test "${NETCDF4_ROOT}" != ""); then
-		if (test -d "${NETCDF4_ROOT}"); then
-			echo "NETCDF4_ROOT is set and exists - assuming it is real";\
-			CPPFLAGS="-I${NETCDF4_ROOT}/include ${CPPFLAGS}";\
-			LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
-			if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
-				# Check libnetcdf for a netCDF4 function
-				# fxm: netCDF4 alpha10 barfs with shared libs, check after final release
-				enable_shared='no'
-				{ echo "$as_me:$LINENO: checking for find_nc4_file in -lnetcdf" >&5
+if test "${enable_netcdf4}" = 'yes'; then
+    if test "${NETCDF4_ROOT}" != ""; then
+	if test -d "${NETCDF4_ROOT}"; then
+	    echo "NETCDF4_ROOT is set and exists - assuming it is real";\
+		CPPFLAGS="-I${NETCDF4_ROOT}/include ${CPPFLAGS}";\
+		LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
+	    if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
+# Check libnetcdf for a netCDF4 function
+# fxm: netCDF4 alpha10 barfs with shared libs, check after final release
+		enable_shared='no'
+		{ echo "$as_me:$LINENO: checking for find_nc4_file in -lnetcdf" >&5
 echo $ECHO_N "checking for find_nc4_file in -lnetcdf... $ECHO_C" >&6; }
 if test "${ac_cv_lib_netcdf_find_nc4_file+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -24264,14 +24261,14 @@ else
   enable_netcdf4=no
 fi
 
-			fi
-		else
-			echo "NETCDF4_ROOT set but does not exist---skipping netCDF4 configuration";\
-			enable_netcdf4='no'
-		fi
+	    fi
 	else
-		echo "User set '--enable-netcdf4' but did not set NETCDF4_ROOT";\
-		echo "Must set both to enable netCDF4.  Will try to configure netCDF anyway...";\
+	    echo "NETCDF4_ROOT set but does not exist---skipping netCDF4 configuration";\
+		enable_netcdf4='no'
+	fi
+    else
+	echo "User set '--enable-netcdf4' but did not set NETCDF4_ROOT";\
+	    echo "Must set both to enable netCDF4.  Will try to configure netCDF anyway...";\
 
 { echo "$as_me:$LINENO: checking for find_nc4_file in -lnetcdf4" >&5
 echo $ECHO_N "checking for find_nc4_file in -lnetcdf4... $ECHO_C" >&6; }
@@ -24361,7 +24358,7 @@ else
   enable_netcdf4=no
 fi
 
-	fi
+    fi
 fi
 echo "DEBUG: LIBS = ${LIBS}"
 
@@ -24381,15 +24378,15 @@ echo "DEBUG: LIBS = ${LIBS}"
 # in NETCDF4_ROOT to avoid conflicting with netCDF3 libnetcdf
 # Is this redundant if previous netCDF4 AC_CHECK_LIB succeeded?
 if (test "${enable_netcdf4}" = 'yes' && test "${enable_dap}" = 'no'); then
-	# Assume HDF5 libraries are in standard places, let user override
+# Assume HDF5 libraries are in standard places, let user override
 
-	# Add ${HDF5_LIB_DIR} to search path if present
-	if test "${HDF5_LIB_DIR}"; then
-		LDFLAGS="-L${HDF5_LIB_DIR} ${LDFLAGS} "
-	fi
+# Add ${HDF5_LIB_DIR} to search path if present
+    if test "${HDF5_LIB_DIR}"; then
+	LDFLAGS="-L${HDF5_LIB_DIR} ${LDFLAGS} "
+    fi
 
-	# If using netCDF4, require HDF5 libraries before nc_open() test
-	{ echo "$as_me:$LINENO: checking for H5Fcreate in -lhdf5" >&5
+# If using netCDF4, require HDF5 libraries before nc_open() test
+    { echo "$as_me:$LINENO: checking for H5Fcreate in -lhdf5" >&5
 echo $ECHO_N "checking for H5Fcreate in -lhdf5... $ECHO_C" >&6; }
 if test "${ac_cv_lib_hdf5_H5Fcreate+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -24472,11 +24469,11 @@ else
   enable_netcdf4='no'
 fi
 
-	if test "${nco_have_hdf5}" = 'yes'; then
-		# Include HDF5 libraries in LIBS line
-		LIBS="-lhdf5 ${LIBS}"
-	fi
-	{ echo "$as_me:$LINENO: checking for H5LTcreate_compound_type in -lhdf5_hl" >&5
+    if test "${nco_have_hdf5}" = 'yes'; then
+# Include HDF5 libraries in LIBS line
+	LIBS="-lhdf5 ${LIBS}"
+    fi
+    { echo "$as_me:$LINENO: checking for H5LTcreate_compound_type in -lhdf5_hl" >&5
 echo $ECHO_N "checking for H5LTcreate_compound_type in -lhdf5_hl... $ECHO_C" >&6; }
 if test "${ac_cv_lib_hdf5_hl_H5LTcreate_compound_type+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -24559,39 +24556,39 @@ else
   enable_netcdf4=no
 fi
 
-	if test "${nco_have_hdf5}" != 'yes'; then
-		{ echo "$as_me:$LINENO: WARNING: netCDF4 support disabled (missing HDF5 libraries)" >&5
+    if test "${nco_have_hdf5}" != 'yes'; then
+	{ echo "$as_me:$LINENO: WARNING: netCDF4 support disabled (missing HDF5 libraries)" >&5
 echo "$as_me: WARNING: netCDF4 support disabled (missing HDF5 libraries)" >&2;}
-	elif test "${nco_have_hdf5_hl}" = 'yes'; then
+    elif test "${nco_have_hdf5_hl}" = 'yes'; then
 		# Include HDF5_hl libs in LIBS line
-		LIBS="-lhdf5_hl ${LIBS}"
+	LIBS="-lhdf5_hl ${LIBS}"
 
 cat >>confdefs.h <<\_ACEOF
 #define ENABLE_NETCDF4 1
 _ACEOF
 
-	fi # End test for HDF5 libs
+    fi # End test for HDF5 libs
 
 elif (test "${enable_netcdf4}" = 'no' && test "${enable_dap}" = 'no'); then
-	# Try next stanza iff enable-netcdf4=no
-        # Look for real netCDF library iff enable_dap=no jhrg 05/26/05
-	# However: If libnetcdf4 installed instead of libnetcdf3x,
-	# must link with HDF5 libraries to compile correctly.
-	# User-specified netCDF locations, if any, take precedence
-	if test "${NETCDF_LIB}"; then
-		if test -d "${NETCDF_LIB}"; then
-			LDFLAGS="-L${NETCDF_LIB} ${LDFLAGS} "
-		else
-			echo "WARNING: NETCDF_LIB location \"${NETCDF_LIB}\" does not exist!"
-		fi
-	fi # !NETCDF_LIB
-	if test "${NETCDF_INC}"; then
-		if test -d "${NETCDF_INC}"; then
-			CPPFLAGS="-I${NETCDF_INC} ${CPPFLAGS} "
-		else
-			echo "WARNING: NETCDF_INC location \"${NETCDF_INC}\" does not exist!"
-		fi
-	fi # !NETCDF_INC
+# Try next stanza iff enable-netcdf4=no
+# Look for real netCDF library iff enable_dap=no jhrg 05/26/05
+# However: If libnetcdf4 installed instead of libnetcdf3x,
+# must link with HDF5 libraries to compile correctly.
+# User-specified netCDF locations, if any, take precedence
+    if test "${NETCDF_LIB}"; then
+	if test -d "${NETCDF_LIB}"; then
+	    LDFLAGS="-L${NETCDF_LIB} ${LDFLAGS} "
+	else
+	    echo "WARNING: NETCDF_LIB location \"${NETCDF_LIB}\" does not exist!"
+	fi
+    fi # !NETCDF_LIB
+    if test "${NETCDF_INC}"; then
+	if test -d "${NETCDF_INC}"; then
+	    CPPFLAGS="-I${NETCDF_INC} ${CPPFLAGS} "
+	else
+	    echo "WARNING: NETCDF_INC location \"${NETCDF_INC}\" does not exist!"
+	fi
+    fi # !NETCDF_INC
 fi # enable_dap
 
 # At this point we either want netCDF4 and have HDF5 or have used DAP's libnetcdf
@@ -24777,9 +24774,9 @@ if (test "${enable_dap}" = 'no' && test "${enable_netcdf4}" = 'no'); then
 # Check for 'nc_open()' using default compiler flags
 # If this fails, check for 'nc_close()' with 64-bit ABI flags (if known)
 # [nc_open() is cached---checking for it twice does not work]
-{ echo "$as_me:$LINENO: Checking default compiler flags" >&5
+    { echo "$as_me:$LINENO: Checking default compiler flags" >&5
 echo "$as_me: Checking default compiler flags" >&6;}
-{ echo "$as_me:$LINENO: checking for nc_open in -lnetcdf" >&5
+    { echo "$as_me:$LINENO: checking for nc_open in -lnetcdf" >&5
 echo $ECHO_N "checking for nc_open in -lnetcdf... $ECHO_C" >&6; }
 if test "${ac_cv_lib_netcdf_nc_open+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -24858,48 +24855,48 @@ fi
 echo "${ECHO_T}$ac_cv_lib_netcdf_nc_open" >&6; }
 if test $ac_cv_lib_netcdf_nc_open = yes; then
 
-	LIBS="-lnetcdf ${LIBS}"
-	{ echo "$as_me:$LINENO: Good news: Simple program compiles and links to libnetcdf.a with default compiler flags" >&5
+	    LIBS="-lnetcdf ${LIBS}"
+	    { echo "$as_me:$LINENO: Good news: Simple program compiles and links to libnetcdf.a with default compiler flags" >&5
 echo "$as_me: Good news: Simple program compiles and links to libnetcdf.a with default compiler flags" >&6;}
-    if (test "${have_hdf5}" = 'yes' && test "${have_hdf5_ul}" = 'yes') ; then
-        echo "Great!  This build will support some netCDF4 features."
-    fi
+	    if (test "${have_hdf5}" = 'yes' && test "${have_hdf5_ul}" = 'yes') ; then
+		echo "Great!  This build will support some netCDF4 features."
+	    fi
 
 else
 
 # Linking failed, so add 64-bit compiler flags and try again
-	{ echo "$as_me:$LINENO: Bad news: Simple program does not compile and link to libnetcdf.a with default compiler flags. Will try with 64-bit ABI flags..." >&5
+	    { echo "$as_me:$LINENO: Bad news: Simple program does not compile and link to libnetcdf.a with default compiler flags. Will try with 64-bit ABI flags..." >&5
 echo "$as_me: Bad news: Simple program does not compile and link to libnetcdf.a with default compiler flags. Will try with 64-bit ABI flags..." >&6;}
 
-	case ${host} in
+	    case ${host} in
 # fxm csz: Test for existance of user-defined vars before overwriting
-	    mips*-sgi-irix* )
+		mips*-sgi-irix* )
 
-		case ${CC} in
-		    cc ) CFLAGS="${CFLAGS} -64 -mips4" ; LDFLAGS="${LDFLAGS} -64" ; ;;
-		    gcc ) CFLAGS="${CFLAGS} -mabi=64" ; LDFLAGS="${LDFLAGS} -mips4 -L/usr/local/lib/mabi=64" ; ;;
-		esac
-		;;
-	    powerpc-ibm-aix* )
-		case ${CC} in
+		    case ${CC} in
+			cc ) CFLAGS="${CFLAGS} -64 -mips4" ; LDFLAGS="${LDFLAGS} -64" ; ;;
+			    gcc ) CFLAGS="${CFLAGS} -mabi=64" ; LDFLAGS="${LDFLAGS} -mips4 -L/usr/local/lib/mabi=64" ; ;;
+		    esac
+		    ;;
+		powerpc-ibm-aix* )
+		    case ${CC} in
 # Pass -X 64 to symbol extractor or libtool fails
-		    gcc ) CFLAGS="${CFLAGS} -maix64" ; ;;
-		    xlc* ) CFLAGS="${CFLAGS} -q64" ; CXXFLAGS="${CXXFLAGS} -q64"; LDFLAGS="${LDFLAGS} -q64" ; AR="ar -X 64" ; NM="nm -B -X 64" ; ;;
-		esac
-		;;
-	    sparc-sun-solaris2* )
-		case ${CC} in
-		    cc ) CFLAGS="${CFLAGS} -xarch=v9" ; LDFLAGS="${LDFLAGS} -xarch=v9" ; ;;
-		esac
-		;;
-	    x86_64-unknown-linux-gnu )
-		case ${CC} in
-		    gcc ) CFLAGS="${CFLAGS} -m64" ; LDFLAGS="${LDFLAGS} -m64" ; ;;
-		esac
-		;;
-	esac
+			gcc ) CFLAGS="${CFLAGS} -maix64" ; ;;
+			    xlc* ) CFLAGS="${CFLAGS} -q64" ; CXXFLAGS="${CXXFLAGS} -q64"; LDFLAGS="${LDFLAGS} -q64" ; AR="ar -X 64" ; NM="nm -B -X 64" ; ;;
+		    esac
+		    ;;
+		sparc-sun-solaris2* )
+		    case ${CC} in
+			cc ) CFLAGS="${CFLAGS} -xarch=v9" ; LDFLAGS="${LDFLAGS} -xarch=v9" ; ;;
+		    esac
+		    ;;
+		x86_64-unknown-linux-gnu )
+		    case ${CC} in
+			gcc ) CFLAGS="${CFLAGS} -m64" ; LDFLAGS="${LDFLAGS} -m64" ; ;;
+		    esac
+		    ;;
+	    esac
 
-	{ echo "$as_me:$LINENO: checking for nc_close in -lnetcdf" >&5
+	    { echo "$as_me:$LINENO: checking for nc_close in -lnetcdf" >&5
 echo $ECHO_N "checking for nc_close in -lnetcdf... $ECHO_C" >&6; }
 if test "${ac_cv_lib_netcdf_nc_close+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -24981,14 +24978,14 @@ if test $ac_cv_lib_netcdf_nc_close = yes; then
 echo "$as_me: Adding 64-bit ABI compiler flags" >&6;}
 else
 
-		echo "ERROR: Unable to compile and link executable with \"libnetcdf.a\" with LDFLAGS=${LDFLAGS}"
-		echo "1. If netCDF is not installed, then download and install it:"
-		echo "http://www.unidata.ucar.edu/packages/netcdf"
-		echo "2. If netCDF is installed correctly, set NETCDF_LIB to directory with libnetcdf.a"
-		echo "3. If configure fails here with NETCDF_LIB set correctly, try changing CC and/or CFLAGS until compilation and linking to libnetcdf.a works"
-		echo "Currently CC=\"${CC}\" and CFLAGS=\"${CFLAGS}\" do not work with libnetcdf.a"
-		echo "Set environment variables CC and CFLAGS to working values and then re-run ./configure"
-		{ { echo "$as_me:$LINENO: error: Mandatory netCDF link test failed" >&5
+		    echo "ERROR: Unable to compile and link executable with \"libnetcdf.a\" with LDFLAGS=${LDFLAGS}"
+		    echo "1. If netCDF is not installed, then download and install it:"
+		    echo "http://www.unidata.ucar.edu/packages/netcdf"
+		    echo "2. If netCDF is installed correctly, set NETCDF_LIB to directory with libnetcdf.a"
+		    echo "3. If configure fails here with NETCDF_LIB set correctly, try changing CC and/or CFLAGS until compilation and linking to libnetcdf.a works"
+		    echo "Currently CC=\"${CC}\" and CFLAGS=\"${CFLAGS}\" do not work with libnetcdf.a"
+		    echo "Set environment variables CC and CFLAGS to working values and then re-run ./configure"
+		    { { echo "$as_me:$LINENO: error: Mandatory netCDF link test failed" >&5
 echo "$as_me: error: Mandatory netCDF link test failed" >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -26932,8 +26929,8 @@ echo "#     Sorting out MacOSX build parameters                #"
 echo "##########################################################"
 echo "DEBUG: enable_libnco = ${enable_libnco} and MACOSX = ${MACOSX}"
 if ((test "${enable_libnco}" = 'yes') && (test "${MACOSX}" != 1)); then
-	echo "Thank God - NOT MacOSX - adding -lnco to LIBS"
-	LIBS="-lnco ${LIBS}"
+    echo "Thank God - NOT MacOSX - adding -lnco to LIBS"
+    LIBS="-lnco ${LIBS}"
 fi
 # End Library checks
 
@@ -26961,7 +26958,7 @@ if test "${C_INC}"; then
 # Specifying both C_INC and ANTLR_INC would cause the pre-processor to grab
 # C-headers from C_INC and antlr headers from ANTLR_INC
 # Using C_INC is required on UCI's ESMF
-	CPPFLAGS="-I${C_INC} ${CPPFLAGS}"
+    CPPFLAGS="-I${C_INC} ${CPPFLAGS}"
 fi
 
 ac_ext=cpp
@@ -26970,7 +26967,7 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-if (test "${enable_ncoxx}" != 'no'); then
+if test "${enable_ncoxx}" != 'no'; then
     if test "${ANTLR_ROOT}"; then
 	if !test "${ANTLR_BIN}"; then
 	    ANTLR_BIN="${ANTLR_ROOT}/bin"
@@ -27033,7 +27030,7 @@ echo "${ECHO_T}no" >&6; }
 fi
 
 
-    if (test "${HAVE_ANTLR}" = 'no'); then
+    if test "${HAVE_ANTLR}" = 'no'; then
 # Check for antlr executable installed as antlr (antlr ~= java antlr.Tool)
 	# Extract the first word of "antlr", so it can be a program name with args.
 set dummy antlr; ac_word=$2
@@ -27074,9 +27071,9 @@ fi
 
 
     fi
-    if (test "${HAVE_ANTLR}" = 'yes'); then
+    if test "${HAVE_ANTLR}" = 'yes'; then
 # 20070228: Avoid CHECK_LIB on C++ libraries (requires too-complex link-test scripts)
-#		AC_CHECK_LIB([antlr],[ASTFactory],enable_ncoxx=yes,enable_ncoxx=no,[-lstdc++])
+# AC_CHECK_LIB([antlr],[ASTFactory],enable_ncoxx=yes,enable_ncoxx=no,[-lstdc++])
 	if test "${ac_cv_header_antlr_CommonToken_hpp+set}" = set; then
   { echo "$as_me:$LINENO: checking for antlr/CommonToken.hpp" >&5
 echo $ECHO_N "checking for antlr/CommonToken.hpp... $ECHO_C" >&6; }
@@ -27238,12 +27235,12 @@ else
 fi
 
 
-	if (test "${enable_ncoxx}" = 'yes'); then
+	if test "${enable_ncoxx}" = 'yes'; then
 	    echo "INFO: ANTLR development support found---will build nco++ directory and ncap2"
 	fi
     fi
 fi
-if (test "${enable_ncoxx}" != 'yes'); then
+if test "${enable_ncoxx}" != 'yes'; then
     echo "INFO: ANTLR support not found. To build the nco++ directory and ncap2, please install antlr and the antlr development package, e.g., apt-get install antlr libantlr-dev"
 fi
 ac_ext=c
@@ -27253,11 +27250,11 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-if (test "${enable_mpi}" = 'yes'); then
-	echo "##################################################"
-	echo "#  Sorting out MPI (LAM/MPICH) build parameters  #"
-	echo "#        (only works on Linux so far)            #"
-	echo "##################################################"
+if test "${enable_mpi}" = 'yes'; then
+    echo "##################################################"
+    echo "#  Sorting out MPI (LAM/MPICH) build parameters  #"
+    echo "#        (only works on Linux so far)            #"
+    echo "##################################################"
 #	AC_ARG_VAR([BIN_MPI_PROGRAMS],[List of MPI NCOs - not user configurable])
 
 
@@ -27269,14 +27266,14 @@ if (test "${enable_mpi}" = 'yes'); then
 
 
 #	echo "before loop, MPICH2_ROOT = ${MPICH2_ROOT}"
-	if (test "${MPICH2_ROOT}" != ""); then
+    if test "${MPICH2_ROOT}" != ""; then
 #		echo "in loop, MPICH2_ROOT = ${MPICH2_ROOT}"
-		CPPFLAGS="-I${MPICH2_ROOT}/include ${CPPFLAGS}"
-		LDFLAGS="-L${MPICH2_ROOT}/lib ${LDFLAGS}"
-	fi
+	CPPFLAGS="-I${MPICH2_ROOT}/include ${CPPFLAGS}"
+	LDFLAGS="-L${MPICH2_ROOT}/lib ${LDFLAGS}"
+    fi
 
-	# Following may have to AC_DEFINE ENABLE_MPI to pass to Makefile
-	# Check whether --enable-mpi was given.
+# Following may have to AC_DEFINE ENABLE_MPI to pass to Makefile
+    # Check whether --enable-mpi was given.
 if test "${enable_mpi+set}" = set; then
   enableval=$enable_mpi; enable_mpi=${enableval}
 else
@@ -27284,8 +27281,8 @@ else
 fi
 
 
-	# Is mpicc (Linux) or mpcc (AIX) present?
-	for ac_prog in mpicc  mpcc
+# Is mpicc (Linux) or mpcc (AIX) present?
+    for ac_prog in mpicc  mpcc
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
@@ -27329,11 +27326,11 @@ done
 test -n "$MPI_CC" || MPI_CC="'None'"
 
 
-	# If MPI_CC = 'mpcc' (AIX), everything else is set up correctly, so no need to check for mpi.h, libmpi etc
+# If MPI_CC = 'mpcc' (AIX), everything else is set up correctly, so no need to check for mpi.h, libmpi etc
 
-	if test "${MPI_CC}" = "mpicc"; then
-		# is there an mpi.h?
-		if test "${ac_cv_header_mpi_h+set}" = set; then
+    if test "${MPI_CC}" = "mpicc"; then
+# Is there an mpi.h?
+	if test "${ac_cv_header_mpi_h+set}" = set; then
   { echo "$as_me:$LINENO: checking for mpi.h" >&5
 echo $ECHO_N "checking for mpi.h... $ECHO_C" >&6; }
 if test "${ac_cv_header_mpi_h+set}" = set; then
@@ -27496,7 +27493,7 @@ _ACEOF
 fi
 
 
-		if test "${ac_cv_header_mpi_h+set}" = set; then
+	if test "${ac_cv_header_mpi_h+set}" = set; then
   { echo "$as_me:$LINENO: checking for mpi.h" >&5
 echo $ECHO_N "checking for mpi.h... $ECHO_C" >&6; }
 if test "${ac_cv_header_mpi_h+set}" = set; then
@@ -27651,27 +27648,27 @@ echo "${ECHO_T}$ac_cv_header_mpi_h" >&6; }
 
 fi
 if test $ac_cv_header_mpi_h = yes; then
-  HAVE_MPI_H="yes"
+  HAVE_MPI_H='yes'
 else
-  HAVE_MPI_H="no"
+  HAVE_MPI_H='no'
 fi
 
 
-		if test "${HAVE_MPI_H}" = "yes"; then
-			# define for src/nco/Makefile.in
-			CC="mpicc"
-			CPP="mpicc"
-			{ echo "$as_me:$LINENO: MPI enabled" >&5
+	if test "${HAVE_MPI_H}" = 'yes'; then
+# Define for src/nco/Makefile.in
+	    CC='mpicc'
+	    CPP='mpicc'
+	    { echo "$as_me:$LINENO: MPI enabled" >&5
 echo "$as_me: MPI enabled" >&6;}
-		else
-			{ echo "$as_me:$LINENO: MPI DISabled" >&5
-echo "$as_me: MPI DISabled" >&6;}
-		fi
+	else
+	    { echo "$as_me:$LINENO: MPI disabled" >&5
+echo "$as_me: MPI disabled" >&6;}
+	fi
 
-		# Test for MPICH2 1st and, if found, skip LAM test
-		if (test "${enable_mpi}" = 'yes' && test "${HAVE_MPI_H}" = "yes" ); then
+# Test for MPICH2 1st and, if found, skip LAM test
+	if (test "${enable_mpi}" = 'yes' && test "${HAVE_MPI_H}" = 'yes'); then
 			# Test for diagnostic libraries, 1st MPICH2
-			{ echo "$as_me:$LINENO: checking for library containing aio_write64" >&5
+	    { echo "$as_me:$LINENO: checking for library containing aio_write64" >&5
 echo $ECHO_N "checking for library containing aio_write64... $ECHO_C" >&6; }
 if test "${ac_cv_search_aio_write64+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -27770,7 +27767,7 @@ if test "$ac_res" != no; then
 
 fi
   # automatically add libray to ${LIBS}
-			{ echo "$as_me:$LINENO: checking for MPIDU_Sock_get_sock_id in -lmpich" >&5
+	    { echo "$as_me:$LINENO: checking for MPIDU_Sock_get_sock_id in -lmpich" >&5
 echo $ECHO_N "checking for MPIDU_Sock_get_sock_id in -lmpich... $ECHO_C" >&6; }
 if test "${ac_cv_lib_mpich_MPIDU_Sock_get_sock_id+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -27853,17 +27850,17 @@ else
   enable_mpich2=no
 fi
 
-			if test "${enable_mpich2}" = 'yes'; then
-				LIBS="-lmpich ${LIBS}";
-			else
-				echo "MISSING libmpich. Will test for LAM-MPI";
-			fi
-		fi
+	    if test "${enable_mpich2}" = 'yes'; then
+		LIBS="-lmpich ${LIBS}";
+	    else
+		echo "MISSING libmpich. Will test for LAM-MPI";
+	    fi
+	fi
 
 		# test for LAM-MPI
-		if (test "${enable_mpi}" = 'yes' && test "${HAVE_MPI_H}" = 'yes' && test "${enable_mpich2}" = 'no'); then
+	if (test "${enable_mpi}" = 'yes' && test "${HAVE_MPI_H}" = 'yes' && test "${enable_mpich2}" = 'no'); then
 			# test for diagnostic libs, 1st LAM_ROOT
-			{ echo "$as_me:$LINENO: checking for lam_F_free_hdl in -llam" >&5
+	    { echo "$as_me:$LINENO: checking for lam_F_free_hdl in -llam" >&5
 echo $ECHO_N "checking for lam_F_free_hdl in -llam... $ECHO_C" >&6; }
 if test "${ac_cv_lib_lam_lam_F_free_hdl+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -27946,29 +27943,29 @@ else
   enable_lam=no
 fi
 
-			if test "${enable_lam}" = 'yes'; then
-				LIBS="-llam -lmpi ${LIBS}";
-				{ echo "$as_me:$LINENO: Found liblam - MPI-LAM enabled" >&5
+	    if test "${enable_lam}" = 'yes'; then
+		LIBS="-llam -lmpi ${LIBS}";
+		{ echo "$as_me:$LINENO: Found liblam - MPI-LAM enabled" >&5
 echo "$as_me: Found liblam - MPI-LAM enabled" >&6;}
-			else
-				{ echo "$as_me:$LINENO: MISSING liblam - could not find a liblam.a|so." >&5
+	    else
+		{ echo "$as_me:$LINENO: MISSING liblam - could not find a liblam.a|so." >&5
 echo "$as_me: MISSING liblam - could not find a liblam.a|so." >&6;}
-			fi
-		fi
+	    fi
 	fi
+    fi
 
-	# finish MPI section by echoing MPI-related vars if all other params are OK.
-	if ( test "${enable_mpich2}" = 'yes' || test "${enable_lam}" = 'yes'); then
-		echo "MPI: Using MPI_CC=${MPI_CC} and LIBS=${LIBS}"
-		echo "MPI: Building shared libs conflicts with MPI; shared libs have been disabled."
-		# 'enable_shared' value is passed to build system via AC_DEFINE below
-		enable_shared='no'
-	fi
-	# Delete following three lines when ncap2 is MPI-ready
-	# Currently there is no MPI version of ncap2
-	echo "INFO: Cannnot currently build ncap2 with MPI - disabling ncap2 build."
-	enable_ncoxx='no'
-	echo "### End MPI Checks ###"
+	# Finish MPI section by echoing MPI-related variables
+    if (test "${enable_mpich2}" = 'yes' || test "${enable_lam}" = 'yes'); then
+	echo "MPI: Using MPI_CC=${MPI_CC} and LIBS=${LIBS}"
+	echo "MPI: Building shared libs conflicts with MPI; shared libs have been disabled."
+# 'enable_shared' value is passed to build system via AC_DEFINE below
+	enable_shared='no'
+    fi
+# Delete following three lines when ncap2 is MPI-ready
+# Currently there is no MPI version of ncap2
+    echo "INFO: Cannnot currently build ncap2 with MPI - disabling ncap2 build."
+    enable_ncoxx='no'
+    echo "### End MPI Checks ###"
 fi
 
 
@@ -28036,8 +28033,8 @@ if test "${I18N_SHARE}"; then
 	echo "WARNING: I18N_SHARE location \"${I18N_SHARE}\" does not exist!"
     fi
 else
-    if test -d "/usr/share/locale"; then
-	I18N_SHARE="/usr/share/locale"
+    if test -d '/usr/share/locale'; then
+	I18N_SHARE='/usr/share/locale'
     fi
 fi
 # Check whether --enable-i18n was given.
@@ -28175,7 +28172,7 @@ else
   nco_have_regex=yes
 fi
 
-if test "x${nco_have_regex}" = xyes; then
+if test "x${nco_have_regex}" = 'xyes'; then
     if test "${ac_cv_header_regex_h+set}" = set; then
   { echo "$as_me:$LINENO: checking for regex.h" >&5
 echo $ECHO_N "checking for regex.h... $ECHO_C" >&6; }
@@ -28827,7 +28824,7 @@ else
 fi
 
 fi
-if test "x${nco_have_regex}" = xyes; then
+if test "x${nco_have_regex}" = 'xyes'; then
 
 cat >>confdefs.h <<\_ACEOF
 #define NCO_HAVE_REGEX_FUNCTIONALITY 1
@@ -29039,24 +29036,24 @@ fi
 
 # Check for UDUnits libraries unless told not to
 if test "${enable_udunits}" != 'no'; then
-  if test "${UDUNITS_PATH}"; then
+    if test "${UDUNITS_PATH}"; then
 # Add ${UDUNITS_PATH}/lib to search path if present
-    nco_udunits_dat=${UDUNITS_PATH}/etc/udunits.dat
-    LDFLAGS="${LDFLAGS} -L${UDUNITS_PATH}/lib"
-    CPPFLAGS="${CPPFLAGS} -I${UDUNITS_PATH}/include"
+	nco_udunits_dat=${UDUNITS_PATH}/etc/udunits.dat
+	LDFLAGS="${LDFLAGS} -L${UDUNITS_PATH}/lib"
+	CPPFLAGS="${CPPFLAGS} -I${UDUNITS_PATH}/include"
 #    nco_udunits_dat=${UDUNITS_PATH}/src/lib/udunits.dat
-  elif test "${NETCDF_INC}"; then
-    nco_udunits_dat="${NETCDF_INC}/../etc/udunits.dat"
-  else
+    elif test "${NETCDF_INC}"; then
+	nco_udunits_dat="${NETCDF_INC}/../etc/udunits.dat"
+    else
 # Patch from Fedora Core 6 nco.spec:
-      for udunits_fdat_file in /usr/local/etc/udunits.dat /etc/udunits.dat ; do
-	  if test -e "$udunits_fdat_file" ; then
-	      nco_udunits_dat="$udunits_fdat_file"
-	  fi
-      done
-  fi
+	for udunits_fdat_file in /usr/local/etc/udunits.dat /etc/udunits.dat ; do
+	    if test -e "$udunits_fdat_file" ; then
+		nco_udunits_dat="$udunits_fdat_file"
+	    fi
+	done
+    fi
 # Warn if udunits.dat is not found, but continue anyway since the builder may be savvy enough to add it when building packages (e.g., .debs)
-  as_ac_File=`echo "ac_cv_file_$nco_udunits_dat" | $as_tr_sh`
+    as_ac_File=`echo "ac_cv_file_$nco_udunits_dat" | $as_tr_sh`
 { echo "$as_me:$LINENO: checking for $nco_udunits_dat" >&5
 echo $ECHO_N "checking for $nco_udunits_dat... $ECHO_C" >&6; }
 if { as_var=$as_ac_File; eval "test \"\${$as_var+set}\" = set"; }; then
@@ -29090,7 +29087,7 @@ _ACEOF
 
   # MacOS X requires libudport for threaded functions
   # Following need to know about non-standard Lib locations if used
-  { echo "$as_me:$LINENO: checking for tdelete" >&5
+    { echo "$as_me:$LINENO: checking for tdelete" >&5
 echo $ECHO_N "checking for tdelete... $ECHO_C" >&6; }
 if test "${ac_cv_func_tdelete+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -29371,7 +29368,7 @@ else
 fi
 
     if test "${UDUNITS_PATH}"; then
-       as_ac_File=`echo "ac_cv_file_${UDUNITS_PATH}/include/udunits.h" | $as_tr_sh`
+	as_ac_File=`echo "ac_cv_file_${UDUNITS_PATH}/include/udunits.h" | $as_tr_sh`
 { echo "$as_me:$LINENO: checking for ${UDUNITS_PATH}/include/udunits.h" >&5
 echo $ECHO_N "checking for ${UDUNITS_PATH}/include/udunits.h... $ECHO_C" >&6; }
 if { as_var=$as_ac_File; eval "test \"\${$as_var+set}\" = set"; }; then
@@ -29401,7 +29398,7 @@ else
 fi
 
     else
-      if test "${ac_cv_header_udunits_h+set}" = set; then
+	if test "${ac_cv_header_udunits_h+set}" = set; then
   { echo "$as_me:$LINENO: checking for udunits.h" >&5
 echo $ECHO_N "checking for udunits.h... $ECHO_C" >&6; }
 if test "${ac_cv_header_udunits_h+set}" = set; then
@@ -29579,7 +29576,7 @@ _ACEOF
 
 	{ echo "$as_me:$LINENO: UDUnits support enabled" >&5
 echo "$as_me: UDUnits support enabled" >&6;}
-fi
+    fi
 # When empty, utInit() uses environment variable UDUNITS_PATH, if any (see nco_lmt.c)
 # Thus UDUNITS_PATH need not be known at compile time
 #   AC_ARG_VAR([UDUNITS_PATH],Location of UDUnits database 'udunits.dat' (run-time))
@@ -29597,9 +29594,9 @@ case ${host} in
     i*86-*-linux-gnu | x86_64*-linux* )
 	case ${CC} in
 	    como ) CFLAGS="${CFLAGS} --c99" ; ;;
-	    icc ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -D_BSD_SOURCE -D_POSIX_SOURCE -no-gcc" ; ;;
-	    pathcc ) CFLAGS="${CFLAGS} -std=c99" ; ;;
-	    pgcc ) CFLAGS="${CFLAGS} -c9x" ; CPPFLAGS="${CPPFLAGS} -DPGI_CC" ; ;;
+		icc ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -D_BSD_SOURCE -D_POSIX_SOURCE -no-gcc" ; ;;
+		pathcc ) CFLAGS="${CFLAGS} -std=c99" ; ;;
+		pgcc ) CFLAGS="${CFLAGS} -c9x" ; CPPFLAGS="${CPPFLAGS} -DPGI_CC" ; ;;
 	esac
 	case ${CXX} in
 #	    icpc ) CXXFLAGS="${CXXFLAGS} -cxxlib-icc" ; ;;
@@ -29612,7 +29609,7 @@ case ${host} in
 # -qmaxmem=num Limit memory used by space intensive optimizations to <num> kilobytes
 # -qspill=size Size in B of register allocation spill area, mie needs > 1040 B
 # -qlanglvl=extc99: Include orthogonal extensions to C99 standard
-	    xlc* ) CFLAGS="${CFLAGS} -O3 -g -qstrict -Q -qsmp=omp -qlanglvl=extc99 -qmaxmem=8192 -qspill=2048 -q64" ; LDFLAGS="${LDFLAGS} -lC" ; ;;
+		xlc* ) CFLAGS="${CFLAGS} -O3 -g -qstrict -Q -qsmp=omp -qlanglvl=extc99 -qmaxmem=8192 -qspill=2048 -q64" ; LDFLAGS="${LDFLAGS} -lC" ; ;;
 #    CPPFLAGS="${CPPFLAGS} -qlanglvl=extended"
 	esac
 	case ${CXX} in
@@ -29625,7 +29622,7 @@ esac
 # Begin custom GCC switches
 # Perform elaborate "or" test since autoconf does not like [ -o ] syntax
 GCC_OR_GXX='no'
-if (test "x${CC}" = 'xgcc' &&  test "x${GCC}" = 'xyes'); then
+if (test "x${CC}" = 'xgcc' && test "x${GCC}" = 'xyes'); then
     GCC_OR_GXX='yes'
 fi
 if (test "x${CXX}" = 'xg++' && test "x${GXX}" = 'xyes'); then
@@ -29685,7 +29682,7 @@ cat >>confdefs.h <<\_ACEOF
 #define ENABLE_DEBUG_CUSTOM 1
 _ACEOF
 
-    if (test "x${CC}" = 'xgcc' &&  test "x${GCC}" = 'xyes'); then
+    if (test "x${CC}" = 'xgcc' && test "x${GCC}" = 'xyes'); then
 	CC="${CC} ${GCC_CMD_ARGS}"
 # fxm: What to do with default -g -O2 flags? Be redundant for now...
 	CFLAGS="${CFLAGS} ${GCC_CFLAGS}"
@@ -30107,13 +30104,13 @@ if test "${path_to_ncgen}"; then
 echo "$as_me: Creating sample netCDF data files for self-tests" >&6;}
     ${path_to_ncgen} -b -o data/in.nc data/in.cdl
     for fl in 85.nc 86.nc 87.nc 88.nc 89.nc h0001.nc h0002.nc h0003.nc; do
-	if (test -f data/${fl}); then
+	if test -f data/${fl}; then
 	    printf ""
 	else
 	    ${LN_S} in.nc data/${fl};
 	fi
     done
-    if (test -f src/nco_c++/in.nc); then
+    if test -f src/nco_c++/in.nc; then
 	printf ""
     else
 	${LN_S} ../../data/in.nc src/nco_c++/in.nc
@@ -30127,9 +30124,9 @@ fi
 
 # Tell GNU C compiler to use C99 standard (older gcc versions default to C89)
 # fxm: only do this for gcc, not g++
-if (test $ac_compiler_gnu = "yes"); then
+if test $ac_compiler_gnu = 'yes'; then
     CFLAGS="${CFLAGS} -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE"
-    if (test "${MACOSX}" = 1); then
+    if test "${MACOSX}" = '1'; then
 	CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'`
 	CFLAGS="-fno-common $CFLAGS"
 # MacOSX does not understand shared libraries
@@ -30162,7 +30159,7 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 else
-	echo "DEBUG: enable_shared: rejected due to netcdf4 requirement"
+    echo "DEBUG: enable_shared: rejected due to netcdf4 requirement"
 #	AC_DEFINE(ENABLE_SHARED,0,Enable shared libraries)
 fi
 # End Shared

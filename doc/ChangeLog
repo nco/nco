@@ -1,6 +1,6 @@
 2007-03-03  Charlie Zender  <zender@uci.edu>
 
-	* Add ANTLR_ROOT to set ANTLR_INC and ANTLR_LIB simultaneously
+	* Add ANTLR_ROOT to simultaneously set ANTLR_BIN, ANTLR_INC, ANTLR_LIB
 
 2007-03-01  Charlie Zender  <zender@uci.edu>
 
