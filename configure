@@ -26970,8 +26970,26 @@ ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ex
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 if (test "${enable_ncoxx}" != 'no'); then
-	# Check for antlr (which may be called runantlr)
-	# Extract the first word of "runantlr", so it can be a program name with args.
+    if test "${ANTLR_ROOT}"; then
+	if !test "${ANTLR_INC}"; then
+# Add ${ANTLR_INC} to search path if present
+	    ANTLR_INC="${ANTLR_ROOT}/include"
+	fi
+	if !test "${ANTLR_LIB}"; then
+# Add ${ANTLR_INC} to search path if present
+	    ANTLR_LIB="${ANTLR_ROOT}/lib"
+	fi
+    fi
+    if test "${ANTLR_INC}"; then
+# Add ${ANTLR_INC} to search path if present
+	CPPFLAGS="${CPPFLAGS} -I${ANTLR_INC}"
+    fi
+    if test "${ANTLR_LIB}"; then
+# Add ${ANTLR_LIB} to search path if present
+	LDFLAGS="${LDFLAGS} -L${ANTLR_LIB}"
+    fi
+# Check for antlr (which may be called runantlr)
+    # Extract the first word of "runantlr", so it can be a program name with args.
 set dummy runantlr; ac_word=$2
 { echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
@@ -27009,14 +27027,14 @@ echo "${ECHO_T}no" >&6; }
 fi
 
 
-	if (test "${HAVE_ANTLR}" = 'yes'); then
-	    if test "${ANTLR_INC}"; then
+    if (test "${HAVE_ANTLR}" = 'yes'); then
+	if test "${ANTLR_INC}"; then
 # Add ${ANTLR_INC} to search path if present
-		CPPFLAGS="${CPPFLAGS} -I${ANTLR_INC}"
-	    fi
+	    CPPFLAGS="${CPPFLAGS} -I${ANTLR_INC}"
+	fi
 # 20070228: Avoid CHECK_LIB on C++ libraries (requires too-complex link-test scripts)
 #		AC_CHECK_LIB([antlr],[ASTFactory],enable_ncoxx=yes,enable_ncoxx=no,[-lstdc++])
-	    if test "${ac_cv_header_antlr_CommonToken_hpp+set}" = set; then
+	if test "${ac_cv_header_antlr_CommonToken_hpp+set}" = set; then
   { echo "$as_me:$LINENO: checking for antlr/CommonToken.hpp" >&5
 echo $ECHO_N "checking for antlr/CommonToken.hpp... $ECHO_C" >&6; }
 if test "${ac_cv_header_antlr_CommonToken_hpp+set}" = set; then
@@ -27177,10 +27195,10 @@ else
 fi
 
 
-	    if (test "${enable_ncoxx}" = 'yes'); then
-		echo "INFO: ANTLR development support found---will build nco++ directory and ncap2"
-	    fi
+	if (test "${enable_ncoxx}" = 'yes'); then
+	    echo "INFO: ANTLR development support found---will build nco++ directory and ncap2"
 	fi
+    fi
 fi
 if (test "${enable_ncoxx}" != 'yes'); then
     echo "INFO: ANTLR support not found. To build the nco++ directory and ncap2, please install antlr and the antlr development package, e.g., apt-get install antlr libantlr-dev"

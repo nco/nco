@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.211 2007-03-02 00:04:37 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.212 2007-03-04 03:54:54 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -478,20 +478,38 @@ fi
 
 AC_LANG_PUSH([C++])
 if (test "${enable_ncoxx}" != 'no'); then
-	# Check for antlr (which may be called runantlr)
-	AC_CHECK_PROG(HAVE_ANTLR,runantlr,yes,no)
-	if (test "${HAVE_ANTLR}" = 'yes'); then
-	    if test "${ANTLR_INC}"; then
+    if test "${ANTLR_ROOT}"; then
+	if !test "${ANTLR_INC}"; then
 # Add ${ANTLR_INC} to search path if present
-		CPPFLAGS="${CPPFLAGS} -I${ANTLR_INC}"
-	    fi
+	    ANTLR_INC="${ANTLR_ROOT}/include"
+	fi
+	if !test "${ANTLR_LIB}"; then
+# Add ${ANTLR_INC} to search path if present
+	    ANTLR_LIB="${ANTLR_ROOT}/lib"
+	fi
+    fi
+    if test "${ANTLR_INC}"; then
+# Add ${ANTLR_INC} to search path if present
+	CPPFLAGS="${CPPFLAGS} -I${ANTLR_INC}"
+    fi
+    if test "${ANTLR_LIB}"; then
+# Add ${ANTLR_LIB} to search path if present
+	LDFLAGS="${LDFLAGS} -L${ANTLR_LIB}"
+    fi
+# Check for antlr (which may be called runantlr)
+    AC_CHECK_PROG(HAVE_ANTLR,runantlr,yes,no)
+    if (test "${HAVE_ANTLR}" = 'yes'); then
+	if test "${ANTLR_INC}"; then
+# Add ${ANTLR_INC} to search path if present
+	    CPPFLAGS="${CPPFLAGS} -I${ANTLR_INC}"
+	fi
 # 20070228: Avoid CHECK_LIB on C++ libraries (requires too-complex link-test scripts)
 #		AC_CHECK_LIB([antlr],[ASTFactory],enable_ncoxx=yes,enable_ncoxx=no,[-lstdc++])
-	    AC_CHECK_HEADER([antlr/CommonToken.hpp],enable_ncoxx=yes,enable_ncoxx=no)
-	    if (test "${enable_ncoxx}" = 'yes'); then
-		echo "INFO: ANTLR development support found---will build nco++ directory and ncap2"
-	    fi
+	AC_CHECK_HEADER([antlr/CommonToken.hpp],enable_ncoxx=yes,enable_ncoxx=no)
+	if (test "${enable_ncoxx}" = 'yes'); then
+	    echo "INFO: ANTLR development support found---will build nco++ directory and ncap2"
 	fi
+    fi
 fi
 if (test "${enable_ncoxx}" != 'yes'); then
     echo "INFO: ANTLR support not found. To build the nco++ directory and ncap2, please install antlr and the antlr development package, e.g., apt-get install antlr libantlr-dev"
