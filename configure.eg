@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.139 2007-03-04 04:55:35 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.140 2007-03-04 06:37:24 zender Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -336,6 +336,8 @@ cd ${HOME}/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 ANTLR_ROOT='/software/antlr' CC='pgcc' CXX='pgCC' UDUNITS_PATH='/software/udunits' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man >&! nco.configure.${GNU_TRP}.foo 
 # Csh
 setenv ANTLR_ROOT '/software/antlr';setenv CC 'pgcc';setenv CXX 'pgCC';setenv UDUNITS_PATH '/software/udunits';./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man >&! nco.configure.${GNU_TRP}.foo 
+# env
+env ANTLR_ROOT='/software/antlr' CC='pgcc' CXX='pgCC' PATH=${PATH}\:'/software/netcdf/bin'\:'/software/antlr/bin' UDUNITS_PATH='/software/udunits' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man >&! nco.configure.${GNU_TRP}.foo 
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1

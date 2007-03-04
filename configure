@@ -26969,13 +26969,13 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 if test "${enable_ncoxx}" != 'no'; then
     if test "${ANTLR_ROOT}"; then
-	if !test "${ANTLR_BIN}"; then
+	if test -z "${ANTLR_BIN}"; then
 	    ANTLR_BIN="${ANTLR_ROOT}/bin"
 	fi
-	if !test "${ANTLR_INC}"; then
+	if test -z "${ANTLR_INC}"; then
 	    ANTLR_INC="${ANTLR_ROOT}/include"
 	fi
-	if !test "${ANTLR_LIB}"; then
+	if test -z "${ANTLR_LIB}"; then
 	    ANTLR_LIB="${ANTLR_ROOT}/lib"
 	fi
     fi
