@@ -1,10 +1,10 @@
-# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.7 2006-12-03 01:58:23 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.8 2007-03-04 07:04:03 zender Exp $ -*-makefile-*-
 
 test_data = in.nc in_rec_zero.nc big.nc
 
 # netCDF build rules
 %.nc : %.cdl
-	ncgen -o $@ $< 
+	@PATH_TO_NCGEN@ -o $@ $< 
 
 all: ${test_data}
 

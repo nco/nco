@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.216 2007-03-04 06:37:24 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.217 2007-03-04 07:04:03 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -1002,13 +1002,14 @@ fi
 # End enable_optimize_custom
 
 ######################################################
-# Previous Location of the PVMARCH stuff
+# Previous Location of PVM_ARCH stuff
 ######################################################
 # Begin netCDF test data
-AC_PATH_PROG(path_to_ncgen,ncgen,,)
-if test "${path_to_ncgen}"; then
+AC_PATH_PROG(PATH_TO_NCGEN,ncgen,,)
+if test "${PATH_TO_NCGEN}"; then
     AC_MSG_NOTICE(Creating sample netCDF data files for self-tests)
-    ${path_to_ncgen} -b -o data/in.nc data/in.cdl
+    ${PATH_TO_NCGEN} -b -o data/in.nc data/in.cdl
+    AC_SUBST(PATH_TO_NCGEN)
     for fl in 85.nc 86.nc 87.nc 88.nc 89.nc h0001.nc h0002.nc h0003.nc; do
 	if test -f data/${fl}; then
 	    printf ""
@@ -1083,7 +1084,6 @@ else
     NCO_CXX=
 fi
 AC_SUBST(NCO_CXX)
-AC_OUTPUT
 
 #echo "DEBUG: enable_ncoxx: ${enable_ncoxx} "
 if test "${enable_ncoxx}" = 'yes' ; then
@@ -1094,8 +1094,10 @@ else
 fi
 echo "DEBUG: enable_ncoxx: ${enable_ncoxx} and NCOXX = ${NCOXX}"
 AC_SUBST(NCOXX)
-AC_OUTPUT
 # End config
+
+# Every autoconf script finishes by calling AC_OUTPUT to generate and run config.status
+AC_OUTPUT
 
 # Echo build parameters for debugging
 echo ""
