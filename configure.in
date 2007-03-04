@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.212 2007-03-04 03:54:54 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.213 2007-03-04 04:13:42 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -496,13 +496,13 @@ if (test "${enable_ncoxx}" != 'no'); then
 # Add ${ANTLR_LIB} to search path if present
 	LDFLAGS="${LDFLAGS} -L${ANTLR_LIB}"
     fi
-# Check for antlr (which may be called runantlr)
+# Check for antlr executable installed as runantlr (runantlr ~= java antlr.Tool)
     AC_CHECK_PROG(HAVE_ANTLR,runantlr,yes,no)
+    if (test "${HAVE_ANTLR}" = 'no'); then
+# Check for antlr executable installed as antlr (antlr ~= java antlr.Tool)
+	AC_CHECK_PROG(HAVE_ANTLR,antlr,yes,no)
+    fi
     if (test "${HAVE_ANTLR}" = 'yes'); then
-	if test "${ANTLR_INC}"; then
-# Add ${ANTLR_INC} to search path if present
-	    CPPFLAGS="${CPPFLAGS} -I${ANTLR_INC}"
-	fi
 # 20070228: Avoid CHECK_LIB on C++ libraries (requires too-complex link-test scripts)
 #		AC_CHECK_LIB([antlr],[ASTFactory],enable_ncoxx=yes,enable_ncoxx=no,[-lstdc++])
 	AC_CHECK_HEADER([antlr/CommonToken.hpp],enable_ncoxx=yes,enable_ncoxx=no)
@@ -696,13 +696,12 @@ if test "${enable_udunits}" != 'no'; then
 	  fi
       done
   fi
-# warn if udunits.dat is not found, but continue anyway since the builder may savy and know to add it later, like when building packages (e.g. .debs)
+# Warn if udunits.dat is not found, but continue anyway since the builder may be savvy enough to add it when building packages (e.g., .debs)
   AC_CHECK_FILE([$nco_udunits_dat],,AC_WARN([file $nco_udunits_dat was not found but will be compiled into NCO. Some executables may fail without it.]))
   # Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file
   AC_DEFINE_UNQUOTED([UDUNITS_PATH],["$nco_udunits_dat"],[Location of UDUnits data file])
   # MacOS X requires libudport for threaded functions
   # Following need to know about non-standard Lib locations if used
-
   AC_CHECK_FUNC(tdelete,,AC_CHECK_LIB([udport],[tdelete]))
     AC_MSG_NOTICE([NB: Following tests of UDUnits library and header must succeed for UDUnits support:])
     AC_CHECK_LIB([udunits],[utInit],,enable_udunits=no)
@@ -720,12 +719,12 @@ if test "${enable_udunits}" != 'no'; then
 fi
 # When empty, utInit() uses environment variable UDUNITS_PATH, if any (see nco_lmt.c)
 # Thus UDUNITS_PATH need not be known at compile time
-#    AC_ARG_VAR([UDUNITS_PATH],Location of UDUnits database 'udunits.dat' (run-time))
-    AC_ARG_VAR([UDUNITS_PATH], Root dir of compiled UDUnits code if not installed for system)
+#   AC_ARG_VAR([UDUNITS_PATH],Location of UDUnits database 'udunits.dat' (run-time))
+    AC_ARG_VAR([UDUNITS_PATH],Root directory of compiled UDUnits code if not installed in system directory)
 fi
 echo "DEBUG: After UDUnits tests LIBS = ${LIBS}"
 # This would activate conditional UDUnits tests, if there were any
-#AM_CONDITIONAL(TEST_UDUNITS,[test "${enable_udunits}" = 'yes'])
+# AM_CONDITIONAL(TEST_UDUNITS,[test "${enable_udunits}" = 'yes'])
 # End UDUnits
 
 # Begin Default OS-specific Compiler Arguments

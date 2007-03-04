@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.137 2007-03-04 03:54:53 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.138 2007-03-04 04:13:42 zender Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -247,7 +247,7 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 sudo make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
-# g++/g++ Zender uses this to compile NCO with g++
+# g++/g++ Zender uses this to compile NCO with g++ (not recommended!)
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='g++' CXX='g++' ./configure --disable-shared --disable-udunits --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
@@ -333,9 +333,9 @@ pgcc on mpc64.nacs.uci.edu (C-shell environment):
 setenv GNU_TRP `${HOME}/nco/autobld/config.guess`
 cd ${HOME}/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 # Bash
-ANTLR_INC='/software/antlr/include' CC='pgcc' CXX='pgCC' UDUNITS_PATH='/software/udunits' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man >&! nco.configure.${GNU_TRP}.foo 
+ANTLR_ROOT='/software/antlr' CC='pgcc' CXX='pgCC' UDUNITS_PATH='/software/udunits' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man >&! nco.configure.${GNU_TRP}.foo 
 # Csh
-setenv ANTLR_INC '/software/antlr/include';setenv CC 'pgcc';setenv CXX 'pgCC';setenv UDUNITS_PATH '/software/udunits';./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man >&! nco.configure.${GNU_TRP}.foo 
+setenv ANTLR_ROOT '/software/antlr/include';setenv CC 'pgcc';setenv CXX 'pgCC';setenv UDUNITS_PATH '/software/udunits';./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man >&! nco.configure.${GNU_TRP}.foo 
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
