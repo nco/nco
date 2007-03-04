@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.213 2007-03-04 04:13:42 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.214 2007-03-04 04:55:35 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -479,28 +479,33 @@ fi
 AC_LANG_PUSH([C++])
 if (test "${enable_ncoxx}" != 'no'); then
     if test "${ANTLR_ROOT}"; then
+	if !test "${ANTLR_BIN}"; then
+	    ANTLR_BIN="${ANTLR_ROOT}/bin"
+	fi
 	if !test "${ANTLR_INC}"; then
-# Add ${ANTLR_INC} to search path if present
 	    ANTLR_INC="${ANTLR_ROOT}/include"
 	fi
 	if !test "${ANTLR_LIB}"; then
-# Add ${ANTLR_INC} to search path if present
 	    ANTLR_LIB="${ANTLR_ROOT}/lib"
 	fi
     fi
+    if test "${ANTLR_BIN}"; then
+# Add ${ANTLR_BIN}, if present, to binary search path
+	PATH="${PATH}:${ANTLR_BIN}"
+    fi
     if test "${ANTLR_INC}"; then
-# Add ${ANTLR_INC} to search path if present
+# Add ${ANTLR_INC}, if present, to include search path
 	CPPFLAGS="${CPPFLAGS} -I${ANTLR_INC}"
     fi
     if test "${ANTLR_LIB}"; then
-# Add ${ANTLR_LIB} to search path if present
+# Add ${ANTLR_LIB}, if present, to library search path
 	LDFLAGS="${LDFLAGS} -L${ANTLR_LIB}"
     fi
 # Check for antlr executable installed as runantlr (runantlr ~= java antlr.Tool)
-    AC_CHECK_PROG(HAVE_ANTLR,runantlr,yes,no)
+    AC_CHECK_PROG(HAVE_ANTLR,runantlr,yes,no,${PATH})
     if (test "${HAVE_ANTLR}" = 'no'); then
 # Check for antlr executable installed as antlr (antlr ~= java antlr.Tool)
-	AC_CHECK_PROG(HAVE_ANTLR,antlr,yes,no)
+	AC_CHECK_PROG(HAVE_ANTLR,antlr,yes,no,${PATH})
     fi
     if (test "${HAVE_ANTLR}" = 'yes'); then
 # 20070228: Avoid CHECK_LIB on C++ libraries (requires too-complex link-test scripts)

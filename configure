@@ -26972,21 +26972,26 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 if (test "${enable_ncoxx}" != 'no'); then
     if test "${ANTLR_ROOT}"; then
+	if !test "${ANTLR_BIN}"; then
+	    ANTLR_BIN="${ANTLR_ROOT}/bin"
+	fi
 	if !test "${ANTLR_INC}"; then
-# Add ${ANTLR_INC} to search path if present
 	    ANTLR_INC="${ANTLR_ROOT}/include"
 	fi
 	if !test "${ANTLR_LIB}"; then
-# Add ${ANTLR_INC} to search path if present
 	    ANTLR_LIB="${ANTLR_ROOT}/lib"
 	fi
     fi
+    if test "${ANTLR_BIN}"; then
+# Add ${ANTLR_BIN}, if present, to binary search path
+	PATH="${PATH}:${ANTLR_BIN}"
+    fi
     if test "${ANTLR_INC}"; then
-# Add ${ANTLR_INC} to search path if present
+# Add ${ANTLR_INC}, if present, to include search path
 	CPPFLAGS="${CPPFLAGS} -I${ANTLR_INC}"
     fi
     if test "${ANTLR_LIB}"; then
-# Add ${ANTLR_LIB} to search path if present
+# Add ${ANTLR_LIB}, if present, to library search path
 	LDFLAGS="${LDFLAGS} -L${ANTLR_LIB}"
     fi
 # Check for antlr executable installed as runantlr (runantlr ~= java antlr.Tool)
@@ -27001,7 +27006,7 @@ else
   ac_cv_prog_HAVE_ANTLR="$HAVE_ANTLR" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
+for as_dir in ${PATH}
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
@@ -27041,7 +27046,7 @@ else
   ac_cv_prog_HAVE_ANTLR="$HAVE_ANTLR" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
+for as_dir in ${PATH}
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
