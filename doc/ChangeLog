@@ -1,3 +1,9 @@
+2007-03-06  Charlie Zender  <zender@uci.edu>
+
+	* Fix [mp]ncwa so normalization occurs and mean coordinates are
+	returned when totals with weighting are requested.
+	Regression test caught this error I re-introduced 20070223.
+
 2007-03-03  Charlie Zender  <zender@uci.edu>
 
 	* Add ANTLR_ROOT to simultaneously set ANTLR_BIN, ANTLR_INC, ANTLR_LIB

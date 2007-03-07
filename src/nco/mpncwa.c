@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.67 2007-02-25 06:10:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.68 2007-03-07 06:29:41 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.67 2007-02-25 06:10:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.67 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.68 2007-03-07 06:29:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.68 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -989,30 +989,15 @@ main(int argc,char **argv)
 		   We deviously accomplish this by dividing denominator by tally */
 		(void)nco_var_nrm(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,wgt_avg->tally,wgt_avg->val);
 	      } /* endif */
-	      /* Divide numerator by denominator */
-	      /* Diagnose common PEBCAK before it causes core dump */
-	      if(var_prc_out[idx]->sz == 1L && var_prc_out[idx]->type == NC_INT && var_prc_out[idx]->val.lp[0] == 0){
-		(void)fprintf(fp_stdout,"%s: ERROR Weight in denominator weight = 0.0, will cause SIGFPE\n%s: HINT Sum of masked, averaged weights must be non-zero\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
-	      } /* end if */
-		/* Divide numerator by masked, averaged, weights */
-	      switch(nco_op_typ){
-	      case nco_op_avg: /* Normalize sum by weighted tally to create mean */
-	      case nco_op_sqravg: /* Normalize sum by weighted tally to create mean */
-	      case nco_op_avgsqr: /* Normalize sum of squares by weighted tally to create mean square */
-	      case nco_op_rms: /* Normalize sum of squares by weighted tally to create mean square */
-	      case nco_op_sqrt: /* Normalize sum by weighted tally to create mean */
-	      case nco_op_rmssdn: /* Normalize sum of squares by weighted tally-1 to create mean square for sdn */
+	      /* Rather complex conditional statement is shorter than switch() */
+	      if( /* Normalize by weighted tally if ....  */
+		 (nco_op_typ != nco_op_min) && /* ...operation is not min() and... */
+		 (nco_op_typ != nco_op_max) && /* ...operation is not max() and... */
+		 (nco_op_typ != nco_op_ttl || /* ...operation is not ttl() or... */
+		  var_prc[idx]->is_crd_var) /* ...variable is a coordinate */
+		 ){ /* Divide numerator by masked, averaged, weights */
 		(void)nco_var_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
-		break;
-	      case nco_op_min: /* Minimum is already in buffer, do nothing */
-	      case nco_op_max: /* Maximum is already in buffer, do nothing */	
-	      case nco_op_ttl: /* Total is already in buffer, do nothing */	
-		break;
-	      default:
-		(void)fprintf(fp_stdout,"%s: ERROR Illegal nco_op_typ in weighted normalization\n",prg_nm);
-		nco_exit(EXIT_FAILURE);
-		break;
-	      } /* end switch */
+	      } /* endif */
 	      /* Free wgt_avg, but keep wgt_out, after each use */
 	      if(wgt_avg != NULL) wgt_avg=nco_var_free(wgt_avg);
 	      /* End of branch for normalization when weights were specified */
