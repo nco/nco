@@ -78,7 +78,7 @@ e2=11111.0;
 //Create some vars
 th=three_dmn_var_dbl;
 f1[$time,$lat]=666;
-f2[$time,$lat,lon]=time*2;
+f2[$time,$lat,$lon]=time*2;
 f3[$lon]=time(3);
 time1=time;
 // hyperslab with RHS a scalar
