@@ -4,7 +4,7 @@ import getopt, os, shlex, sys, tempfile, shutil
 import re, string, time
 import md5
        
-# $Id: dap_nc_swamp,v 1.65 2007-03-03 02:14:52 wangd Exp $
+# $Id: dap_nc_swamp,v 1.66 2007-03-08 19:37:32 wangd Exp $
 # This is:  -- a wrapper-replacement for dap_nc_handler used by opendap.
 #           -- It provides a script handling facility, but redirects most
 #              normal calls to the original dap_nc_handler
@@ -264,7 +264,7 @@ def prestartLogging():
         import cStringIO
         local.logfile = cStringIO.StringIO()
         p = str(local.mypid)
-        local.logfile.write("SSDAP/SWAMP dap_handler_hack %s\n" % "$Revision: 1.65 $")
+        local.logfile.write("SSDAP/SWAMP dap_nc_swamp %s\n" % "$Revision: 1.66 $")
         local.logfile.write("handler "+p+" log open at " + time.ctime()+"\n")
 
 def startLogging():
@@ -610,90 +610,13 @@ class Command:
          return
 
     def cmdSave(self, argv):
-         # designate real filename (or just a persistently-mapped identifier)
-         # that can be requested later.  Would like to put in normal
-         # opendap-visible space.
-         #FIXME
-         pass
+        raise StandardError("unsupported call path")
     def cmdPoll(self, argv):
-         # check for job finish. check for task.id.result. if not exist,
-         # consider reading task.id.stdout for fun.
-         #FIXME
-         self.arguments = [];
-         privatedb = JobPersistence(local.dbFilename)
-         i = None
-         try:
-             i = privatedb.pollFileState(int(argv[0]))
-             i = int(i)
-             print "State is ", i, "(",JobPersistence.fileStateMap[i],")"
-         except (TypeError,ValueError):
-             print "FileId not found", argv[0]
-         pass
+        raise StandardError("unsupported call path")
     def cmdRetrieve(self,argv):
-         # check for job finish. check for task.id.result. if not exist,
-         # consider reading task.id.stdout -- how to get partial results?
-         self.arguments = [];
-         privatedb = JobPersistence(local.dbFilename)
-         n = None
-         logit("going to try retrieving "+ argv[0])
-         try:
-             s = privatedb.pollFileState(int(argv[0]))
-             if s != 3: ## 3==saved.  better way to do this magic const?
-                 if s != None:
-                     print "File id", argv[0], " isn't ready yet."
-                     print "state is", s, JobPersistence.fileStateMap[s]
-                 else:
-                     print "File id", argv[0], " is nonexistent."
-                 raise StandardError("Bad FileId to retrieve")
-
-             n = privatedb.pollFilename(int(argv[0]))
-             # patch output filename (use bogus handle)
-             # this is rather backwards.
-             self.env.fileMap[ScriptingEnv.SCRIPT_OUTFILE] = (0,n)
-         #except TypeError:
-         except (TypeError,ValueError,StandardError):
-             import traceback
-             print "Problem retrieving file for id ", argv[0]
-             logit("Exception while retriving file id %s: %s" %
-                   argv[0], str(traceback.format_exc()))
-
-             
-         privatedb.close()
-         pass
+        raise StandardError("unsupported call path")
     def cmdRetrieveOrBlock(self,argv):
-        sleeptime = 5 # for now, sleep 5 seconds if not ready yet.
-        # check for job finish. check for task.id.result. if not exist,
-
-        self.arguments = [];
-        j = JobPersistence(local.dbFilename)
-        n = None
-        logit("retr or block until: "+ argv[0])
-        try:
-            while True:
-                s = j.pollFileState(int(argv[0]))
-                if s != 3: ## 3==saved.  better way to do this magic const?
-                    if s == None:
-                        print "File id", argv[0], " is nonexistent."
-                        raise StandardError("Bad FileId to retrieve")
-                    else:
-                        # not ready, ok to wait.
-                        # sleep for 10s-- (FIXME: want a signalling system)
-                        # can also wait on task pid?
-                        time.sleep(sleeptime)
-                    pass 
-                else:
-                    break # ok to continue
-
-            n = j.pollFilename(int(argv[0]))
-            # patch output filename (use bogus handle)
-            # this is rather backwards.
-            self.env.fileMap[ScriptingEnv.SCRIPT_OUTFILE] = (0,n)
-        #except TypeError:
-        except (TypeError,ValueError,StandardError):
-             print "Problem retrieving file for id ", argv[0]
-             
-        j.close()
-        pass
+        raise StandardError("unsupported call path")
 
     def execute(self, scrEnv):
          """execute myself in a certain scripting environment"""
@@ -1146,6 +1069,8 @@ class ScriptingEnv:
         #local.sshSpawn should be something like "ssh -x localhost"
         # it won't really work if ssh keys aren't setup.
         clist = local.sshSpawn.split()
+        clist.extend(cmd.cmdLine.split())
+        logit("will run "+ " ".join(clist))
         #some work here to merge command line with the clist.
         # should probably just make a command line, quote it, and send
         # it to ssh.
@@ -1185,12 +1110,13 @@ class ScriptingEnv:
                 if not cline:
                     break
 
-            if 1:
+            if False:
                 if self.workerJobSpawn(cline) is None:
                     break
             else:
-                cmd = self.commandToLine(linenum)
-                if self.remoteJobSpawn(cmd) is None:
+                cmd = self.lineToCommand[linenum]
+                logit("found cmd " + cmd.cmdLine)
+                if self.workerRemoteJobSpawn(cmd) is None:
                     break
                 
             inputs = self.depFindInputs(linenum)
@@ -1805,7 +1731,7 @@ class CommandFactory:
                     raise StandardError("Bad FileId to retrieve")
             logit("pass okay")
             return
-            n = poll.pollFilenameId(int(argv[0]))
+            n = poll.pollFilenameById(int(argv[0]))
             # patch output filename (use bogus handle)
             # this is rather backwards.
             #FIXME!!!!!

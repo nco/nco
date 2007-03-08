@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: swamp_dbutil.py,v 1.31 2007-03-03 02:14:53 wangd Exp $
+# $Id: swamp_dbutil.py,v 1.32 2007-03-08 19:37:32 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -545,7 +545,7 @@ class JobPersistence:
             states = cur.fetchall()
             result = None
             if states is not None and len(states) == 1:
-                result = states[0][0]
+                result = int(states[0][0])
             cur.execute("COMMIT;")
             cur.close()
             return result
@@ -561,6 +561,7 @@ class JobPersistence:
             cur.execute("COMMIT;")
             cur.close()
             return result
+
         pass
     class SetFileStateTransaction:
         """A transaction that makes a change to a filestate"""
