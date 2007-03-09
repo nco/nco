@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.41 2007-03-02 13:07:22 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.42 2007-03-09 08:26:57 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1059,7 +1059,6 @@ ncap_var_stretch /* [fnc] Stretch variables */
   
   if(var_lsr_out == NULL){
     /* Expand lesser variable (var_lsr) to match size of greater variable */
-    const char fnc_nm[]="ncap_var_stretch()"; /* [sng] Function name */
     char *var_lsr_cp;
     char *var_lsr_out_cp;
     
@@ -1545,8 +1544,6 @@ ncap_var_var_op_ntl   /* [fnc] Add two variables */
  var_sct *var2,       /* I [sct] Input variable structure containing second operand */
  int op)              /* Operation +-% */
 { 
-  const char fnc_nm[]="ncap_var_var_op_ntl"; 
-
   nco_bool vb1;
   nco_bool vb2;
 
@@ -1978,7 +1975,6 @@ int nbr_dim=var->nbr_dim;
 
 NcapVector<dmn_sct*> dmn_vtr;
 
-
 for(idx=0 ; idx <str_vtr.size() ; idx++){
   // deal with position args e.g $0,$1,$2 etc
   if( str_is_num(str_vtr[idx])) {
@@ -1999,13 +1995,6 @@ for(idx=0 ; idx <str_vtr.size() ; idx++){
 return dmn_vtr;  
 
 }
-     
-  
-
-
-
-
-
 
 /* Create a scalar variable of type, if bfll then malloc ptr_unn */
 var_sct*
@@ -2132,8 +2121,6 @@ double ddt)
   (void)cast_nctype_void(NC_DOUBLE,&var->val);
   return var;
 }
-
-
 
 // define variables captured on first parse
 void ncap_def_ntl_scn(prs_sct *prs_arg)

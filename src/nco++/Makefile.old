@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.31 2007-03-04 08:04:36 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.32 2007-03-09 08:26:57 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -76,7 +76,7 @@ ifndef ${ABI}
 endif # endif ABI
 ifndef ANTLR
  ANTLR := runantlr
-endif
+endif # endif ANTLR
 ifndef ANTLR_ROOT
  ANTLR_ROOT := /usr/local
 endif
@@ -481,7 +481,7 @@ endif # SGI
 
 # Works on AIX and AIX46K
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
-# Oddly, AIX calls the executable antlr, which I prefer to runantlr
+# AIX calls executable antlr not runantlr
 ANTLR := antlr
 # 20030804: Always use re-entrant (_r) compilers---Jim Edwards NCAR/IBM 
 CC := xlc_r -qlanglvl=extc99
@@ -1288,6 +1288,7 @@ cln : dat_cln dpn_cln obj_cln
 debug: dbg
 dbg:
 	@printf "ABI = ${ABI}\n"
+	@printf "ANTLR = ${ANTLR}\n"
 	@printf "AR = ${AR}\n"
 	@printf "BNR_SFX = ${BNR_SFX}\n"
 	@printf "CC = ${CC}\n"

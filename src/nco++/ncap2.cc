@@ -1,6 +1,6 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.30 2007-02-26 16:12:39 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.31 2007-03-09 08:26:57 zender Exp $ */
 
-/* ncap -- netCDF arithmetic processor */
+/* ncap2 -- netCDF arithmetic processor */
 
 /* Purpose: Compute user-defined derived fields using forward algebraic notation applied to netCDF files */
 
@@ -126,12 +126,11 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.30 2007-02-26 16:12:39 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.30 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.31 2007-03-09 08:26:57 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.31 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
-  dmn_sct **dmn_out=NULL_CEWI; /* [lst] Dimensions written to output file */
   dmn_sct *dmn_new;
   dmn_sct *dmn_item;
 
@@ -202,7 +201,6 @@ main(int argc,char **argv)
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_dmn_ass=int_CEWI;/* Number of dimensions in temporary list */
   int nbr_dmn_in=int_CEWI; /* Number of dimensions in dim_in */
-  int nbr_dmn_out=0; /* [nbr] Number of dimensions in list dmn_out */
   int nbr_lst_a=0; /* size of xtr_lst_a */
   int nbr_spt=0; /* Option s. NB: nbr_spt gets incremented */
   int nbr_var_fix; /* nbr_var_fix gets incremented */
