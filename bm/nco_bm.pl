@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.145 2006-10-24 21:59:52 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.146 2007-03-09 03:32:04 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -11,6 +11,7 @@
 # ~/nco/bm/nco_bm.pl --mpi_prc=2 --regress --udpreport # Test MPI
 # ~/nco/bm/nco_bm.pl --tst_fl=a --udpreport # Create all test files
 # ~/nco/bm/nco_bm.pl --fl_fmt=netcdf4 --udpreport # Test netCDF4
+# ~/nco/bm/nco_bm.pl --nco_D_flg='--mmr_drt' --regress # Relax memory cleanup
 # ~/nco/bm/nco_bm.pl --dap --regress --udpreport # Test OPeNDAP on sand
 # ~/nco/bm/nco_bm.pl --dap=http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata --regress --udpreport # Test OPeNDAP on soot
 # scp ~/nco/bm/nco_bm.pl esmf.ess.uci.edu:nco/bm
@@ -138,11 +139,12 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	    'help'         => \$usg,        # Explain how to use this thang
 	    'log'          => \$wnt_log,    # Log output
 	    'mpi_prc=i'    => \$mpi_prc,    # Number MPI processes to use
-        'mpi_upx=s'    => \$mpi_upx,    # User-supplied mpirun prefix
+	    'mpi_upx=s'    => \$mpi_upx,    # User-supplied mpirun prefix
 	    'mpi_fake'	   => \$mpi_fk,     # Run SMP version of MPI code
 	    'fake_mpi'	   => \$mpi_fk,     # Run SMP version of MPI code
 	    'queue'        => \$que,        # Bypass all interactive stuff
 	    'pth_rmt_scp_tst' => \$pth_rmt_scp_tst, # [drc] Path to scp regression test file
+	    'nco_D_flg'    => \$nco_D_flg,  # Additional flags to each operator
 	    'regress'      => \$rgr,        # Perform regression tests
 	    'rgr'          => \$rgr,        # Perform regression tests
 	    'scaling'      => \$ncwa_scl_tst, # do scaling test on ncwa bench to see how dif var sizes change time
