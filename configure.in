@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.217 2007-03-04 07:04:03 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.218 2007-03-09 08:01:21 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -223,11 +223,15 @@ fi # End test for netCDF4 libs
 if test "${enable_dap}" != 'no'; then
     if which ncdap-config > /dev/null; then
 	CPPFLAGS="${CPPFLAGS} `ncdap-config --cflags`"
-	nc_dap_ver=`ncdap-config --version`
-	nc_dap_ver_mjr=`echo ${nc_dap_ver} | sed 's@^libnc-dap \([[0-9]]\)*\.\([[0-9]]*\)\.\([[0-9]]*\)$@\1@'`
-	nc_dap_ver_mnr=`echo ${nc_dap_ver} | sed 's@^libnc-dap \([[0-9]]\)*\.\([[0-9]]*\)\.\([[0-9]]*\)$@\2@'`
-# Change this test once OPeNDAP 3.6 supports netCDF 3.6
-	if test ${nc_dap_ver_mjr} -le 3 -a ${nc_dap_ver_mnr} -le 6; then
+	nc_dap_vrs=`ncdap-config --version`
+	nc_dap_vrs_mjr=`echo ${nc_dap_vrs} | sed 's@^libnc-dap \([[0-9]]\)*\.\([[0-9]]*\)\.\([[0-9]]*\)$@\1@'`
+	nc_dap_vrs_mnr=`echo ${nc_dap_vrs} | sed 's@^libnc-dap \([[0-9]]\)*\.\([[0-9]]*\)\.\([[0-9]]*\)$@\2@'`
+	nc_dap_vrs_pch=`echo ${nc_dap_vrs} | sed 's@^libnc-dap \([[0-9]]\)*\.\([[0-9]]*\)\.\([[0-9]]*\)$@\3@'`
+	if test ${nc_dap_vrs_mjr} -le 3 -a ${nc_dap_vrs_mnr} -le 6 -a ${nc_dap_vrs_pch} -le 1 ; then
+# OPeNDAP versions <= 3.6.1 do not support netCDF 3.6 
+	    CPPFLAGS="${CPPFLAGS} -DNC_64BIT_OFFSET"
+	else
+# fxm: Above mjr/mnr/pch rx's appear broken, so always add this token
 	    CPPFLAGS="${CPPFLAGS} -DNC_64BIT_OFFSET"
 	fi
 	LIBS="`ncdap-config --libs` ${LIBS}"

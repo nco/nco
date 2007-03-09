@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.146 2007-03-09 03:32:04 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.147 2007-03-09 08:01:26 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -75,8 +75,8 @@ $caseid = '';
 $dbg_lvl = 0; # [enm] Print tests during execution for debugging
 $dodap = 'FALSE'; # Unless redefined by the command line, it does not get reset
 $dust_usr = '';
-$fl_cnt = 32; # nbr of files to process (reduced to 4 if using remote/dods files)
-$fl_fmt = 'classic'; # file format for wirting
+$fl_cnt = 32; # [nbr] Files to process (reduced to 4 if using remote/dap files)
+$fl_fmt = 'classic'; # file format for writing
 $fl_pth = '';
 $gnu_cut = 1;
 $md5 = 0;
@@ -84,7 +84,7 @@ $mpi_fk = 0;
 $mpi_prc = 0; # [flg] Use MPI
 $mpi_upx = '';
 $pfx_mpi = '';
-$nco_D_flg='--mmr_cln'; # Require operators to clean memory before exiting
+$nco_D_flg='--mmr_drt'; # Require operators to clean memory before exiting
 $nco_vrs_sng = '';
 $os_sng = '';
 $pfx_cmd = '';
@@ -105,7 +105,7 @@ $xdat_pth = ''; # explicit data path; more powerful than $drc_dat
 $localhostname = `hostname`; chomp $localhostname;
 $notbodi = 0; # specific for hjm's puny laptop
 my $pfxd = 0;
-if ($localhostname !~ "bodi") {$notbodi = 1} # spare the poor laptop
+if ($localhostname !~ "bodi") {$notbodi = 1} # Spare the poor laptop
 $ARGV = @ARGV;
 
 my $iosockfound;

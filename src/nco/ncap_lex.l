@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.61 2007-02-23 21:59:27 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.62 2007-03-09 08:01:28 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -90,7 +90,7 @@
      See also 20040112 thread in comp.compilers */
   /* Implicit declaration warnings: -D_POSIX_SOURCE also avoids fileno warning */
   int fileno(FILE *); /* fixes: warning: implicit declaration of function `fileno', -D_POSIX_SOURCE also avoids this warning */
-  int yy_flex_realloc(void *,size_t); /* fixes: warning: implicit declaration of function `yy_flex_realloc'. Is this obsolete? Other versions of flex on Linux seem to want void * yy_flex_realloc(void *,size_t), which actually makes more sense given that it is a realloc() function */
+  /* int yy_flex_realloc(void *,size_t); *//* fixes: warning: implicit declaration of function `yy_flex_realloc'. Is this obsolete? Other versions of flex on Linux seem to want void * yy_flex_realloc(void *,size_t), which actually makes more sense given that it is a realloc() function */
   /* 20050318: Fedora Core 2 flex 2.5.4 gcc 3.4.2 This prototype causes 
      error: conflicting types for 'yy_flex_realloc' */
   /* Missing prototypes warnings: Triggered by -Wmissing-prototypes */

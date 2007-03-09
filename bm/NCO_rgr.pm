@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.61 2007-03-09 03:32:03 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.62 2007-03-09 08:01:26 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -223,7 +223,7 @@ sub tst_rgr {
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time $in_pth_arg in.nc %tempf_03%";;
     $tst_cmd[1]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth/in.nc %tempf_03% %tempf_00%";;
     $tst_cmd[2]="ncks -C -H -d time,9 -s '%g' -v rec_var_flt %tempf_00%";
-    $dsc_sng="Whole file difference with broadcasting (OK to fail here fxm TODO nco757 works with --mmr_drt, fails on OSs like FC Linux which have C-library armor)";
+    $dsc_sng="Whole file difference with broadcasting (OK to fail here fxm TODO nco757. Works with --mmr_drt, triggers segfault on OSs like FC Linux which have C-library armor. Harmless Failure caused by free'ing dangling pointer during memory cleanup.)";
     $tst_cmd[3] = "4.5";
     $tst_cmd[4] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
