@@ -1,3 +1,12 @@
+2007-03-09  Charlie Zender  <zender@uci.edu>
+
+	* Un-shadow variables in ncoGrammar.g
+
+2007-03-08  Charlie Zender  <zender@uci.edu>
+
+	* Avoid FC6 redefinition of yy_flex_realloc() in ncap_lex.l
+	Note sure if this will bite me on another platform
+
 2007-03-06  Charlie Zender  <zender@uci.edu>
 
 	* Fix [mp]ncwa so normalization occurs and mean coordinates are

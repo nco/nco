@@ -276,9 +276,9 @@ public:
       (void)ncap_mpi_srt(tr,icnt,prs_arg,all_ast_vtr);
 
       // Evaluate expressions
-      for(unsigned idx=0 ; idx<all_ast_vtr.size(); idx++)
-        for(unsigned jdx=0 ; jdx<all_ast_vtr[idx].size(); jdx++)
-	     (void)statements(all_ast_vtr[idx][jdx]);
+      for(unsigned vtr_idx=0 ; vtr_idx<all_ast_vtr.size(); vtr_idx++)
+        for(unsigned jdx=0 ; jdx<all_ast_vtr[vtr_idx].size(); jdx++)
+	     (void)statements(all_ast_vtr[vtr_idx][jdx]);
         
     goto end;
     } //end if
