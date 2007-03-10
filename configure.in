@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.218 2007-03-09 08:01:21 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.219 2007-03-10 09:06:22 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -518,7 +518,7 @@ if test "${enable_ncoxx}" != 'no'; then
     fi
 fi
 if test "${enable_ncoxx}" != 'yes'; then
-    echo "INFO: ANTLR support not found. To build the nco++ directory and ncap2, please install antlr and the antlr development package, e.g., apt-get install antlr libantlr-dev"
+    echo "INFO: ANTLR support not found. To build the nco++ directory and ncap2, please install antlr and the antlr C++ development package, e.g., apt-get install antlr libantlr-dev"
 fi
 AC_LANG_POP([C++])
 
@@ -532,14 +532,13 @@ if test "${enable_mpi}" = 'yes'; then
     AC_ARG_VAR([HAVE_MPI_H],[configure finds mpi.h - not user configurable])
 #	AC_ARG_VAR([ENABLE_MPI],[configure finds mpi.h - not user configurable])
     
-	# based on this, if MPI_CC is defined, have to include <mpi.h> and include mpnc* build targets to be made with MPI_CC
-	# the rest can be made with ${CC} as usual.
-    
+# If MPI_CC is defined, include <mpi.h> and include mpnc* build targets for MPI_CC
+# Rest can be made with ${CC} as usual
     AC_ARG_VAR([MPICH2_ROOT],[Root of non-std MPICH2 installation] (compile-time))
     AC_ARG_VAR([LAM_ROOT],[Root of non-std LAM installation] (compile-time))
 #	echo "before loop, MPICH2_ROOT = ${MPICH2_ROOT}"
     if test "${MPICH2_ROOT}" != ""; then
-#		echo "in loop, MPICH2_ROOT = ${MPICH2_ROOT}"
+#	echo "in loop, MPICH2_ROOT = ${MPICH2_ROOT}"
 	CPPFLAGS="-I${MPICH2_ROOT}/include ${CPPFLAGS}"
 	LDFLAGS="-L${MPICH2_ROOT}/lib ${LDFLAGS}"
     fi
@@ -780,6 +779,7 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
     
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
 # CFLAGS += -Werror -Wall -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4
+# 20070310: Change to no-shadow so ncoLexer.cpp compiles
     GCC_CMD_ARGS='-std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE'
     GCC_BASE_FLAGS='-Werror -Wall -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4'
     GCC_CFLAGS="${GCC_BASE_FLAGS} -Wmissing-prototypes"
