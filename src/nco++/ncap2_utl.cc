@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.42 2007-03-09 08:26:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.43 2007-03-10 08:13:15 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1957,17 +1957,13 @@ std::string snm)
    if( !isdigit(snm[idx])) break;
 
  return ( idx==snm.size() ? true: false);
-
-
 }
-
 
 NcapVector<dmn_sct*>                /* O    [sct] list of new dims to limit over */ 
 ncap_dmn_mtd(
 var_sct *var,                      /* I   [sct] var with list of dims */
-NcapVector<std::string> &str_vtr,  /* I   [sng] list of dimension names */
-prs_sct *prs_arg){
-
+NcapVector<std::string> &str_vtr)  /* I   [sng] list of dimension names */
+{
 int idx;
 int jdx;
 int icnt;

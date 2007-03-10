@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.26 2007-02-23 21:59:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.27 2007-03-10 08:13:15 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -255,7 +255,6 @@ void            /* define variables captured on first parse */
 ncap_def_ntl_scn(
 prs_sct *prs_arg);
 
-
 int            /* Sort expressions for MPI Optimization */  
 ncap_mpi_srt(
 RefAST ntr,
@@ -263,27 +262,17 @@ int icnt,
 prs_sct *prs_arg,
 std::vector< std::vector<RefAST> > &all_ast_vtr); // Return a Vector of Vectors
 
-
-
-
 NcapVector<dmn_sct*>                /* O [sct] list of new dims to limit over */ 
 ncap_dmn_mtd(
 var_sct *var,                       /*  [sct] create casting var from a list of dims */
-NcapVector<std::string> &str_vtr,  /* I [sng] list of dimension names */
-prs_sct *prs_arg);
-
+NcapVector<std::string> &str_vtr);  /* I [sng] list of dimension names */
 
 /* Create a scalar variable of type, if bfill then malloc ptr_unn */
-
-
-
 var_sct*
 ncap_sclr_var_mk(
 char* var_nm,
 nc_type type,
 bool bfll=false);
-
-
 
 var_sct *
 ncap_sclr_var_mk(
