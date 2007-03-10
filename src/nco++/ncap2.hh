@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.27 2007-03-10 08:13:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.28 2007-03-10 08:18:08 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -259,7 +259,6 @@ int            /* Sort expressions for MPI Optimization */
 ncap_mpi_srt(
 RefAST ntr,
 int icnt,
-prs_sct *prs_arg,
 std::vector< std::vector<RefAST> > &all_ast_vtr); // Return a Vector of Vectors
 
 NcapVector<dmn_sct*>                /* O [sct] list of new dims to limit over */ 

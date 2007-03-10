@@ -273,7 +273,7 @@ public:
       std::vector< std::vector<RefAST> > all_ast_vtr;
 
       // Populate  vector 
-      (void)ncap_mpi_srt(tr,icnt,prs_arg,all_ast_vtr);
+      (void)ncap_mpi_srt(tr,icnt,all_ast_vtr);
 
       // Evaluate expressions
       for(unsigned vtr_idx=0 ; vtr_idx<all_ast_vtr.size(); vtr_idx++)

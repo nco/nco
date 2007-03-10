@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.43 2007-03-10 08:13:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.44 2007-03-10 08:18:08 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2332,7 +2332,6 @@ std::vector<exp_sct_tmp**> &srp_vtr //self reverential pointer
 int ncap_mpi_srt(
 RefAST ntr,   
 int nbr_lst,
-prs_sct *prs_arg,
 std::vector< std::vector<RefAST> > &all_ast_vtr)
 {
 const std::string fnc_nm("ncap_mpi_srt"); 

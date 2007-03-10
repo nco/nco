@@ -1690,7 +1690,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				aRef=aRef->getNextSibling();
 				} // end while
 				
-				dmn_vtr=ncap_dmn_mtd(var1, str_vtr, prs_arg);
+				dmn_vtr=ncap_dmn_mtd(var1, str_vtr);
 				}           
 				
 				
