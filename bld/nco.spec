@@ -111,13 +111,16 @@ fi
 # %{_libdir}/libnco++.so
 
 %changelog
-* Sat Mar 10 2007 Charlie Zender <zender@uci.edu> - 3.1.8-2
+* Sat Mar 10 2007 Charlie Zender <zender@uci.edu> - 3.1.9-1
+- new 3.1.9 to synchronize upstream, debs, and RPMs
+
+* Sat Mar 10 2007 Charlie Zender <zender@uci.edu> - 3.1.8-1
 - clean up nco.spec
 - verify ncap2 is built and distributed
 - buildrequire libdap, libdap-devel, libnc-dap, libnc-dap-devel 
 - new upstream 3.1.8
 
-* Sat Nov 11 2006 Charlie Zender <zender@uci.edu> - 3.1.8-1
+* Sat Nov 11 2006 Charlie Zender <zender@uci.edu> - 3.1.7-1
 - Merge Fedora nco.spec UDUnits patch into upstream configure.in
 - new upstream 3.1.7
 
