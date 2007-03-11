@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.391 2007-03-11 05:26:11 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.392 2007-03-11 21:04:25 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -108,7 +108,29 @@ Send it in!<br>
 <h2>NCO News &amp; Announcements</h2>
 
 <ul>
-<li>March&nbsp;12, 2007: NCO 3.1.9 released</li>
+<li>March&nbsp;10, 2007: NCO 3.1.9 released</li>
+
+<li>February&nbsp;22, 2006: 
+<a href="http://dust.ess.uci.edu/smn/smn_WZJ07_opendap_200702.pdf">Talk</a>
+on SWAMP at OPeNDAP Developer's Workshop, Boulder, Colorado</li>
+
+<li>January&nbsp;15, 2006: 
+<a href="http://dust.ess.uci.edu/smn/smn_nco_ams_200701.pdf">Talk</a> and
+<a href="http://dust.ess.uci.edu/ppr/abs_xtn_ZeW07.pdf">Extended Abstract</a>
+on NCO architecture and Scaling at AMS IIPS, San Antonio, Texas</li>
+
+<li>January&nbsp;15, 2006: 
+<a href="http://dust.ess.uci.edu/smn/smn_WZJ07_ams_200701.pdf">Talk</a> and
+<a href="http://dust.ess.uci.edu/ppr/abs_xtn_WZJ07.pdf">Extended Abstract</a>
+on SWAMP at AMS IIPS, San Antonio, Texas</li>
+
+<li>December&nbsp;9, 2006: 
+<a href="http://dust.ess.uci.edu/ppr/pst_ZMW06.pdf">Poster</a> on NCO
+Scaling at Fall AGU, San Francisco, California</li> 
+
+<li>December&nbsp;9, 2006: 
+<a href="http://dust.ess.uci.edu/ppr/pst_WZJ06.pdf">Poster</a> on
+SWAMP at Fall AGU, San Francisco, California</li> 
 
 <li>December&nbsp;6, 2006: NCO 3.1.8 released</li>
 
@@ -603,7 +625,7 @@ Searching <a href="http://rpmfind.net">rpmfind.net</a> for NCO yields these
 <hr></p>
 
 <!-- http://nco.sf.net#RTFM -->
-`<<dt><a name="RTFM"></a></dt>
+<dt><a name="RTFM"></a></dt>
 <h2>Documentation and User's Guide</h2> 
 <p>View the NCO User's Guide in any of these formats:
 <ul>

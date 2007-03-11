@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.85 2007-03-11 05:26:11 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.86 2007-03-11 21:04:25 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -163,11 +163,11 @@ scp ${DATA}/nco_3.1.9* dust.ess.uci.edu:/var/www/html/nco/src
 scp ${DATA}/nco_3.1.9* nco.sf.net:/home/groups/n/nc/nco/htdocs/src
 cd ${DATA};dupload -t mentors nco_3.1.9-1_i386.changes
 
-# RPM builds
+# RPM builds as root
 export rpm_root='/usr/src/redhat'
 # export sudo_sng='' # sudo not-necessary when builing in user directories
 export sudo_sng='sudo' # sudo necessary when building in system directories
-cd ~/nco;cvc
+cd ~/nco;cvc;cvu
 /bin/rm -rf ${DATA}/nco-3.1.9 ${DATA}/nco-3.1.9* # Cleanup last build
 ${sudo_sng} /bin/rm -r -f \
 ${rpm_root}/BUILD/nco-3.1.9 \
@@ -178,10 +178,9 @@ ${rpm_root}/SOURCES/nco-3.1.9.tar.gz \
 ${rpm_root}/SPECS/nco-3.1.9.spec \
 ${rpm_root}/SRPMS/nco-3.1.9-?.src.rpm
 cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-3_1_9-1 -d nco-3.1.9 nco # Export based on tag
-tar cvzf ./nco-3.1.9.tar.gz --exclude='nco-3.1.9/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-3.1.9 
-#/bin/rm -rf ${DATA}/nco-3.1.9 # Remove cvs-exported directory
-${sudo_sng} /bin/cp ${DATA}/nco-3.1.9.tar.gz ${rpm_root}/SOURCES
 ${sudo_sng} ln -s ${HOME}/nco/bld/nco.spec ${rpm_root}/SPECS/nco-3.1.9.spec
+tar cvzf ./nco-3.1.9.tar.gz --exclude='nco-3.1.9/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-3.1.9 
+${sudo_sng} /bin/cp ${DATA}/nco-3.1.9.tar.gz ${rpm_root}/SOURCES
 cd ${rpm_root}/SPECS
 ${sudo_sng} rpmbuild -ba --sign nco-3.1.9.spec > ~/foo.nco 2>&1
 scp \
@@ -196,3 +195,38 @@ ${rpm_root}/RPMS/i386/nco-debuginfo-3.1.9-?.i386.rpm \
 ${rpm_root}/RPMS/i386/nco-devel-3.1.9-?.i386.rpm \
 ${rpm_root}/SRPMS/nco-3.1.9-?.src.rpm \
 nco.sf.net:/home/groups/n/nc/nco/htdocs/src
+
+# RPM builds as user
+# http://myy.helia.fi/~karte/linux/doc/rpm-build-as-user.html
+export rpm_root="${DATA}/rpm/nco"
+cd ~/nco;cvc;cvu
+mkdir -p ${DATA}/rpm/nco/TMP ${DATA}/rpm/nco/BUILD
+/bin/rm -rf ${DATA}/nco-3.1.9 ${DATA}/nco-3.1.9* # Cleanup last build
+/bin/rm -r -f \
+${rpm_root}/nco-3.1.9-?.src.rpm \
+${rpm_root}/nco-3.1.9.spec \
+${rpm_root}/nco-3.1.9.tar.gz \
+${rpm_root}/i386/nco-3.1.9-?.i386.rpm \
+${rpm_root}/i386/nco-debuginfo-3.1.9-?.i386.rpm \
+${rpm_root}/i386/nco-devel-3.1.9-?.i386.rpm
+cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-3_1_9-1 -d nco-3.1.9 nco # Export based on tag
+tar cvzf ./nco-3.1.9.tar.gz --exclude='nco-3.1.9/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-3.1.9 
+/bin/cp ${DATA}/nco-3.1.9.tar.gz ${rpm_root}
+ln -s ${HOME}/nco/bld/nco.spec ${rpm_root}/nco.spec
+cd ${rpm_root}
+rpmbuild -ba --sign nco.spec > ~/foo.nco 2>&1
+rpmlint ${rpm_root}/i386/nco-3.1.9-?.i386.rpm
+scp \
+${rpm_root}/i386/nco-3.1.9-?.i386.rpm \
+${rpm_root}/i386/nco-debuginfo-3.1.9-?.i386.rpm \
+${rpm_root}/i386/nco-devel-3.1.9-?.i386.rpm \
+${rpm_root}/nco-3.1.9-?.src.rpm \
+dust.ess.uci.edu:/var/www/html/nco/src
+scp \
+${rpm_root}/i386/nco-3.1.9-?.i386.rpm \
+${rpm_root}/i386/nco-debuginfo-3.1.9-?.i386.rpm \
+${rpm_root}/i386/nco-devel-3.1.9-?.i386.rpm \
+${rpm_root}/nco-3.1.9-?.src.rpm \
+nco.sf.net:/home/groups/n/nc/nco/htdocs/src
+sudo yum remove nco
+sudo yum install ${rpm_root}/i386/nco-3.1.9-?.i386.rpm
