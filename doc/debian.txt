@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.84 2007-03-11 05:00:44 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.85 2007-03-11 05:26:11 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -160,7 +160,7 @@ linda ${DATA}/nco_3.1.9-1_*.deb
 ls -l ${DATA}/nco_3.1.9*
 m ~/foo.nco
 scp ${DATA}/nco_3.1.9* dust.ess.uci.edu:/var/www/html/nco/src
-scp ${DATA}/nco_3.1.9* nco.sf.net:/home/groups/n/nc/nco/htdocs
+scp ${DATA}/nco_3.1.9* nco.sf.net:/home/groups/n/nc/nco/htdocs/src
 cd ${DATA};dupload -t mentors nco_3.1.9-1_i386.changes
 
 # RPM builds
@@ -195,4 +195,4 @@ ${rpm_root}/RPMS/i386/nco-3.1.9-?.i386.rpm \
 ${rpm_root}/RPMS/i386/nco-debuginfo-3.1.9-?.i386.rpm \
 ${rpm_root}/RPMS/i386/nco-devel-3.1.9-?.i386.rpm \
 ${rpm_root}/SRPMS/nco-3.1.9-?.src.rpm \
-nco.sf.net:/home/groups/n/nc/nco/htdocs
+nco.sf.net:/home/groups/n/nc/nco/htdocs/src

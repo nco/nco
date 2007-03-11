@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.390 2007-03-11 04:43:26 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.391 2007-03-11 05:26:11 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -551,25 +551,25 @@ testing and porting of NCO on the
 <li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-3.1.9</a></li>
 -->
 <a href="http://packages.debian.org/unstable/math/nco.html">Debian GNU/Linux homepage for NCO</a>. 
-<tt>apt-get install nco</tt> installs the standard NCO for your Debian-compatible&nbsp;OS.
-<dt>Debian package for most recent NCO release (install with, e.g., <tt>dpkg --install nco_3.1.9-1_i386.deb</tt>):</dt>
-<li><a href="nco_3.1.9-1_amd64.deb">nco_3.1.9-1_amd64.deb</a> (<!--#fsize file="nco_3.1.9-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="nco_3.1.9-1_amd64.deb"-->)</li>
-<li><a href="nco_3.1.9-1_i386.deb">nco_3.1.9-1_i386.deb</a> (<!--#fsize file="nco_3.1.9-1_i386.deb"-->): Executables i386-compatible (last updated <!--#flastmod file="nco_3.1.9-1_i386.deb"-->)</li>
-<li><a href="nco_3.1.9-1.dsc">nco_3.1.9-1.dsc</a> (<!--#fsize file="nco_3.1.9-1.dsc"-->): Description (last updated <!--#flastmod file="nco_3.1.9-1.dsc"-->)</li>
-<li><a href="nco_3.1.9-1_i386.changes">nco_3.1.9-1_i386.changes</a> (<!--#fsize file="nco_3.1.9-1_i386.changes"-->): Changes since last deb package (last updated <!--#flastmod file="nco_3.1.9-1_i386.changes"-->)</li>
-<li><a href="nco_3.1.9.orig.tar.gz">nco_3.1.9.orig.tar.gz</a> (<!--#fsize file="nco_3.1.9.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="nco_3.1.9.orig.tar.gz"-->)</li>
-<li><a href="nco_3.1.9-1.diff.gz">nco_3.1.9-1.diff.gz</a> (<!--#fsize file="nco_3.1.9-1_i386.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="nco_3.1.9-1_i386.changes"-->)</li>
+&lsquo;<tt>apt-get install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
+<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_3.1.9-1_i386.deb</tt>&rsquo;):</dt>
+<li><a href="src/nco_3.1.9-1_amd64.deb">nco_3.1.9-1_amd64.deb</a> (<!--#fsize file="src/nco_3.1.9-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_3.1.9-1_amd64.deb"-->)</li>
+<li><a href="src/nco_3.1.9-1_i386.deb">nco_3.1.9-1_i386.deb</a> (<!--#fsize file="src/nco_3.1.9-1_i386.deb"-->): Executables i386-compatible (last updated <!--#flastmod file="src/nco_3.1.9-1_i386.deb"-->)</li>
+<li><a href="src/nco_3.1.9-1.dsc">nco_3.1.9-1.dsc</a> (<!--#fsize file="src/nco_3.1.9-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_3.1.9-1.dsc"-->)</li>
+<li><a href="src/nco_3.1.9-1_i386.changes">nco_3.1.9-1_i386.changes</a> (<!--#fsize file="src/nco_3.1.9-1_i386.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_3.1.9-1_i386.changes"-->)</li>
+<li><a href="src/nco_3.1.9.orig.tar.gz">nco_3.1.9.orig.tar.gz</a> (<!--#fsize file="src/nco_3.1.9.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_3.1.9.orig.tar.gz"-->)</li>
+<li><a href="src/nco_3.1.9-1.diff.gz">nco_3.1.9-1.diff.gz</a> (<!--#fsize file="src/nco_3.1.9-1_i386.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_3.1.9-1_i386.changes"-->)</li>
 Thanks to Daniel Baumann, Francesco Lovergine, Brian Mays, Rorik
 Peterson, and Matej Vela for packaging NCO for Debian over the years.
 </ul>
 
 <a name="redhat"></a><a name="rhl"></a><a name="rpm"></a>
 <a name="fedora"></a><a name="fdr"></a><a name="fc"></a>
-<h3><a href="http://fedora.redhat.com">Fedora GNU/Linux</a></h3>
+<h3><a href="http://fedora.redhat.com">Fedora</a> GNU/Linux</h3>
 <ul>
-<dt>Most recent NCO release packaged (by us) as Fedora Core&nbsp;6 RPM (install with, e.g., <tt>yum install nco-3.1.9-1.i386.rpm</tt>):</dt>
-<li><a href="nco-3.1.9-1.i386.rpm">nco-3.1.9-1.i386.rpm</a> (<!--#fsize file="nco-3.1.9-1.i386.rpm"-->): Executables i386-compatible (last updated <!--#flastmod file="nco-3.1.9-1.i386.rpm"-->)</li>
-<li><a href="nco-3.1.9-1.src.rpm">nco-3.1.9-1.src.rpm</a> (<!--#fsize file="nco-3.1.9-1.src.rpm"-->): Source (last updated <!--#flastmod file="nco-3.1.9-1.src.rpm"-->)</li>
+<dt>Most recent NCO release packaged (by us) as Fedora Core&nbsp;6 RPMs (install with, e.g., &lsquo;<tt>yum install nco-3.1.9-1.i386.rpm</tt>&rsquo;):</dt>
+<li><a href="src/nco-3.1.9-1.i386.rpm">nco-3.1.9-1.i386.rpm</a> (<!--#fsize file="src/nco-3.1.9-1.i386.rpm"-->): Executables i386-compatible (last updated <!--#flastmod file="src/nco-3.1.9-1.i386.rpm"-->)</li>
+<li><a href="src/nco-3.1.9-1.src.rpm">nco-3.1.9-1.src.rpm</a> (<!--#fsize file="src/nco-3.1.9-1.src.rpm"-->): Source (last updated <!--#flastmod file="src/nco-3.1.9-1.src.rpm"-->)</li>
 NCO is part of the Fedora Extras distribution (thanks to Ed Hill).
 As such, the NCO <a href="http://www.rpm.org">RPMs</a> in the current
 Fedora Core release lag our upstream RPMs by no more than 6&ndash;8 months.
@@ -583,7 +583,7 @@ Searching <a href="http://rpmfind.net">rpmfind.net</a> for NCO yields these
 
 <a name="gentoo"></a>
 <a name="gnt"></a>
-<h3><a href="http://www.gentoo.org">Gentoo GNU/Linux</a></h3>
+<h3><a href="http://www.gentoo.org">Gentoo</a> GNU/Linux</h3>
 <ul>
 <a href="http://packages.gentoo.org/packages/?category=sci-misc;name=nco">Gentoo GNU/Linux homepage for NCO</a>.
 <a href="http://www.gentoo.org/doc/en/portage-manual.xml">Portage packages</a> by George Shapavalov and Patrick Kursawe:
