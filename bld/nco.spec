@@ -1,29 +1,31 @@
 Name:           nco
 Version:        3.1.8
 Release:        3%{?dist}
-Summary:        Suite of programs for manipulating NetCDF/HDF4 files
+Summary:        Suite of programs for manipulating netCDF files
 Group:          Applications/Engineering
 License:        GPL
 URL:            http://nco.sourceforge.net/
 
-#  The NCO web site now recommends CVS so the tar.gz was obtained
-#  using the following recommended commands:
-#    cvs -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco login
-#    cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-3_1_7 -d nco-%{version} nco
-#    tar -czf nco-%{version}.tar.gz --exclude='nco-3.1.7/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude='ncap_yacc.[ch]' ./nco-%{version}
+# Obtain tar.gz for NCO version 3.1.8 from NCO using CVS:
+# cvs -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco login
+# cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-3_1_8 -d nco-%{version} nco
+# tar czf nco-%{version}.tar.gz --exclude='nco-3.1.8/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude='ncap_yacc.[ch]' ./nco-%{version}
 Source0:        nco-%{version}.tar.gz
 #Patch0:		nco_install_C_headers.patch
 #Patch1:         nco_find_udunits-dat.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:  bison, flex
-BuildRequires:  netcdf-devel, libtool, automake, autoconf
-#  BuildRequires:  udunits, udunits-devel, opendap-devel
+BuildRequires:  automake, autoconf, libtool
+BuildRequires:  netcdf, netcdf-devel
 BuildRequires:  udunits, udunits-devel
-BuildRequires:  curl-devel, libxml2-devel, librx-devel
-#  Unfortunately, opendap does not build on FC-4 or later.  When 
-#  its fixed, opendap-devel will be listed as a BuildRequires.
-#  In the mean time, nco will be built without opendap support.
+# Required for ncap:
+BuildRequires:  bison, flex
+# Required for ncap2:
+#BuildRequires:  antlr antlr-c++-devel
+# Following libraries required to DAP-enable NCO:
+BuildRequires:  curl, curl-devel 
+BuildRequires:  libxml2, libxml2-devel
+BuildRequires:  libdap, libdap-devel, libnc-dap, libnc-dap-devel
 
 %package devel
 Summary:        Development files for NCO
@@ -41,12 +43,12 @@ averaging, hyperslabbing, or renaming), and outputs a processed netCDF
 file.  Although most users of netCDF and HDF data are involved in
 scientific research, these data formats, and thus NCO, are generic and
 are equally useful in fields from agriculture to zoology.  The NCO
-User's Guide illustrates NCO use with examples from the field of
+Users Guide illustrates NCO use with examples from the field of
 climate modeling and analysis.  The NCO homepage is
-http://nco.sourceforge.net/.
+http://nco.sourceforge.net
 
 %description devel
-This package contains the NCO header files and static libs.
+This package contains NCO header files and static libraries.
 
 %prep
 %setup -q
@@ -78,7 +80,6 @@ rm -f ${RPM_BUILD_ROOT}%{_bindir}/mpnc*
 %clean
 rm -rf ${RPM_BUILD_ROOT}
 
-
 %post
 /sbin/ldconfig
 /sbin/install-info %{_infodir}/nco.info.gz \
@@ -105,9 +106,19 @@ fi
 %{_libdir}/libnco*.a
 %{_libdir}/libnco.so
 %{_libdir}/libnco_c++.so
-
+# %{_libdir}/libnco++.so
 
 %changelog
+* Sat Mar 10 2007 Charlie Zender <zender@uci.edu> - 3.1.8-2
+- clean up nco.spec
+- verify ncap2 is built and distributed
+- buildrequire libdap, libdap-devel, libnc-dap, libnc-dap-devel 
+- new upstream 3.1.8
+
+* Sat Nov 11 2006 Charlie Zender <zender@uci.edu> - 3.1.8-1
+- Merge Fedora nco.spec UDUnits patch into upstream configure.in
+- new upstream 3.1.7
+
 * Sat Sep  2 2006 Ed Hill <ed@eh3.com> - 3.1.5-3
 - br bison as well
 
@@ -179,4 +190,8 @@ fi
 
 * Sat Jul 17 2004 Ed Hill <eh3@mit.edu> - 0:2.9.7-0.fdr.0
 - Initial working version
+
+* Wed Mar  1 2000 Charlie Zender <zender@uci.edu> - 1.1.45-1
+- Added original nco.spec to bld directory
+
 
