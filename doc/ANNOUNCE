@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.206 2007-03-11 02:45:21 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.207 2007-03-11 02:58:32 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.9 are ready. 
 
@@ -20,6 +20,7 @@ B. ncecat and ncea now allow files to differ in record dimension size
    from an ensemble of simulations (e.g., the IPCC AR4 archive).
 
 C. ncap2 (http://nco.sf.net/nco.html#ncap2) grows more powerful.
+   ncap2 now accepts quoted variable names, e.g., 'HNO3-'
    Henry keeps adding features. See ~/nco/data/ncap2.in.
    Once threading and for loops are done we'll document it all. 
 
@@ -29,8 +30,11 @@ D. The "configure" install method now works for ncap2 on AIX
 E. Pre-built, up-to-date, Debian Sid binary packages are available.
    Debian/Ubuntu users may get them from http://nco.sf.net#debian
    Soon "apt-get install nco" will retrieve these versions.
-   We gave up putting ncap2 in RPM packages in 3.1.9 because we don't
-   have an up-to-date Fedora system to build on.
+
+F. We are building and distributing RPM packages with ncap2
+   http://nco.sf.net/src/nco-3.1.9-1.i386.rpm
+   (Thanks to Harry Mangalam for installing an up-to-date Fedora
+   system for us to build on). 
 
 F. We've recently presented two posters (AGU) and three talks (AMS and
    Opendap conf.) on NCO and the Server side system now called SWAMP.

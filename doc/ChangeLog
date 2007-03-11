@@ -1,6 +1,6 @@
 2007-03-10  Charlie Zender  <zender@uci.edu>
 
-	* cvs tag -c nco-3_1_9
+	* cvs tag -c nco-3_1_9 nco-3_1_9-1
 	Changes since nco-3_1_8: nc[wre]a normalization, ncap2 qutoes
 	variables, quieter output, RPMs support ncap2, ncecat does
 	per-file hyperslab expansion
@@ -9,6 +9,9 @@
 	Resulting executables work fine on local files
 	DAP access is enabled, but broken. Unsure why.
 
+	* enable-optimize-custom and -Wall are close to working on ncap2
+	Should be possible to get this working again by 3.2.0
+	
 	* Cryptographically sign RPMs with GPG during BFS
 
 	* Tweak nco.spec
