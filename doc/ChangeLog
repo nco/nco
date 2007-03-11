@@ -1,6 +1,8 @@
 2007-03-10  Charlie Zender  <zender@uci.edu>
 
-	* cvs tag -c nco-3_1_9;cvs tag -c nco-3_1_9-1
+	* cd ~/nco;cvs tag -d nco-3_1_9;cvs tag -d nco-3_1_9-1
+	  cd ~/nco;cvs commit -m "Preparing nco-3.1.9 release"
+	  cvs tag -c nco-3_1_9;cvs tag -c nco-3_1_9-1
 	Changes since nco-3_1_8: nc[wre]a normalization, ncap2 qutoes
 	variables, quieter output, RPMs support ncap2, ncecat does
 	per-file hyperslab expansion
