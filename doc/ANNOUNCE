@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.208 2007-03-11 03:13:56 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.209 2007-03-11 04:43:26 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.9 are ready. 
 
@@ -6,7 +6,7 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 Release 3.1.9 contains a small ncwa bugfix, new ncea/ncecat features,
-new ncap2 features, and configure support for AIX with ncap2.
+new ncap2 features, configure support for AIX, and RPMs with ncap2.
 
 A. ncwa bugfix: 
    ncwa reported NaN/inf for minimization/maximization/summation of
@@ -31,7 +31,7 @@ E. Pre-built, up-to-date, Debian Sid binary packages are available.
    Debian/Ubuntu users may get them from http://nco.sf.net#debian
    Soon "apt-get install nco" will retrieve these versions.
 
-F. We are building and distributing RPM packages with ncap2
+F. We have built and distributing RPM packages with ncap2
    http://nco.sf.net/src/nco-3.1.9-1.i386.rpm
    (Thanks to Harry Mangalam for installing an up-to-date Fedora
    system for us to build on). 

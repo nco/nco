@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.389 2007-03-11 03:13:56 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.390 2007-03-11 04:43:26 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -563,21 +563,17 @@ Thanks to Daniel Baumann, Francesco Lovergine, Brian Mays, Rorik
 Peterson, and Matej Vela for packaging NCO for Debian over the years.
 </ul>
 
-<a name="redhat"></a>
-<a name="fedora"></a>
-<a name="fdr"></a>
-<a name="fc"></a>
-<a name="rhl"></a>
+<a name="redhat"></a><a name="rhl"></a><a name="rpm"></a>
+<a name="fedora"></a><a name="fdr"></a><a name="fc"></a>
 <h3><a href="http://fedora.redhat.com">Fedora GNU/Linux</a></h3>
 <ul>
-<dt>RPM package for most recent NCO release (install with, e.g., <tt>yum install nco-3.1.9-1.i386.rpm</tt>):</dt>
+<dt>Most recent NCO release packaged (by us) as Fedora Core&nbsp;6 RPM (install with, e.g., <tt>yum install nco-3.1.9-1.i386.rpm</tt>):</dt>
 <li><a href="nco-3.1.9-1.i386.rpm">nco-3.1.9-1.i386.rpm</a> (<!--#fsize file="nco-3.1.9-1.i386.rpm"-->): Executables i386-compatible (last updated <!--#flastmod file="nco-3.1.9-1.i386.rpm"-->)</li>
 <li><a href="nco-3.1.9-1.src.rpm">nco-3.1.9-1.src.rpm</a> (<!--#fsize file="nco-3.1.9-1.src.rpm"-->): Source (last updated <!--#flastmod file="nco-3.1.9-1.src.rpm"-->)</li>
 NCO is part of the Fedora Extras distribution (thanks to Ed Hill).
 As such, the NCO <a href="http://www.rpm.org">RPMs</a> in the current
-Fedora Core release lag upstream by no more than 6&ndash;8 months.
-Searching <a href="http://rpmfind.net">rpmfind.net</a> for NCO leads
-to these 
+Fedora Core release lag our upstream RPMs by no more than 6&ndash;8 months.
+Searching <a href="http://rpmfind.net">rpmfind.net</a> for NCO yields these 
 <a href="http://rpmfind.net/linux/rpm2html/search.php?query=nco">NCO RPMs</a>:
 <li><a href="http://download.fedora.redhat.com/pub/fedora/linux/extras/6/i386/repodata/repoview/nco-0-3.1.5-3.fc6.html">nco-0-3.1.5-3.fc6.html</a>: Official Fedora Core&nbsp;6 NCO binary package (contains all executables) homepage</li>
 <li><a href="http://download.fedora.redhat.com/pub/fedora/linux/extras/6/i386/repodata/repoview/nco-devel-0-3.1.5-3.fc6.html">nco-devel-0-3.1.5-3.fc6.html</a>: Official Fedora Core&nbsp;6 NCO development package (contains libraries and headers) homepage</li>
