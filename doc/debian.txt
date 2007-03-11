@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.82 2007-03-11 02:45:21 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.83 2007-03-11 04:15:08 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -179,8 +179,8 @@ ${rpm_root}/RPMS/i386/nco-devel-3.1.9-?.i386.rpm \
 ${rpm_root}/SOURCES/nco-3.1.9.tar.gz \
 ${rpm_root}/SPECS/nco-3.1.9.spec \
 ${rpm_root}/SRPMS/nco-3.1.9-?.src.rpm
-cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-3_1_9 -d nco-3.1.9 nco # Export based on tag
-tar cvzf ./nco_3.1.9.orig.tar.gz --exclude='nco-3.1.9/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-3.1.9 
+cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-3_1_9-1 -d nco-3.1.9 nco # Export based on tag
+tar cvzf ./nco-3.1.9.tar.gz --exclude='nco-3.1.9/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-3.1.9 
 #/bin/rm -rf ${DATA}/nco-3.1.9 # Remove cvs-exported directory
 ${sudo_sng} /bin/cp ${DATA}/nco-3.1.9.tar.gz ${rpm_root}/SOURCES
 ${sudo_sng} ln -s ${HOME}/nco/bld/nco.spec ${rpm_root}/SPECS/nco-3.1.9.spec
