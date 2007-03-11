@@ -1,5 +1,5 @@
 Name:           nco
-Version:        3.1.8
+Version:        3.1.9
 Release:        3%{?dist}
 Summary:        Suite of programs for manipulating netCDF files
 Group:          Applications/Engineering

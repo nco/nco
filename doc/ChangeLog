@@ -1,3 +1,20 @@
+2007-03-10  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-3_1_9
+	Changes since nco-3_1_8: nc[wre]a normalization, ncap2 qutoes
+	variables, quieter output, RPMs support ncap2, ncecat does
+	per-file hyperslab expansion
+
+	* NCO 3.1.8 RPM builds/installs/removes properly with FC6
+	Resulting executables work fine on local files
+	DAP access is enabled, but broken. Unsure why.
+
+	* Cryptographically sign RPMs with GPG during BFS
+
+	* Tweak nco.spec
+
+	* Change to CFLAGS to -Wno-shadow so ncoLexer.cpp compiles
+
 2007-03-09  Charlie Zender  <zender@uci.edu>
 
 	* Un-shadow variables in ncoGrammar.g
