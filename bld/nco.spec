@@ -60,6 +60,8 @@ aclocal
 autoheader
 automake --foreign
 autoconf
+# Explicitly set system netCDF directories to override development netCDF
+# installations in, e.g., /usr/local
 export CPPFLAGS=-I%{_includedir}/netcdf-3
 export LDFLAGS=-L%{_libdir}/netcdf-3
 export CFLAGS="$RPM_OPT_FLAGS -fPIC"
