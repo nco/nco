@@ -4,7 +4,7 @@ nco (3.1.9-1) unstable; urgency=low
 
  -- Charlie Zender <zender@uci.edu>  Sat, 10 Mar 2007 18:47:03 -0800
 
-nco (3.1.8-2) unstable; urgency=low
+nco (3.1.8-2) UNRELEASED; urgency=low
 
   * Bump version for upload to Debian unstable
 
