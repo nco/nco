@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.388 2007-03-11 02:45:21 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.389 2007-03-11 03:13:56 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -566,6 +566,7 @@ Peterson, and Matej Vela for packaging NCO for Debian over the years.
 <a name="redhat"></a>
 <a name="fedora"></a>
 <a name="fdr"></a>
+<a name="fc"></a>
 <a name="rhl"></a>
 <h3><a href="http://fedora.redhat.com">Fedora GNU/Linux</a></h3>
 <ul>

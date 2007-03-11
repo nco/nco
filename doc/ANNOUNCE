@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.207 2007-03-11 02:58:32 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.208 2007-03-11 03:13:56 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.9 are ready. 
 
@@ -37,7 +37,7 @@ F. We are building and distributing RPM packages with ncap2
    system for us to build on). 
 
 F. We've recently presented two posters (AGU) and three talks (AMS and
-   Opendap conf.) on NCO and the Server side system now called SWAMP.
+   Opendap conf.) on NCO and the Server-side system now called SWAMP.
    NCO publications, extended abstracts, and posters are at:  
 
    http://nco.sf.net#pub
