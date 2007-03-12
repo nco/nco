@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.392 2007-03-11 21:04:25 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.393 2007-03-12 04:14:37 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -355,24 +355,61 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 
 <!-- http://nco.sf.net#pub -->
 <dt><a name="Publications"></a><a name="pub"></a><a name="pubs"></a></dt>
-<h2>Publications</h2>
+<h2>Publications and Presentations</h2>
 <ul>
 
 <li><!-- WZJ07 --> <a name="WZJ07"></a> <!--http://www.ess.uci.edu/~zender#WZJ07 -->
-Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2007), DAP-enabled Server-side Data Reduction and Analysis, <i>Proceedings of the 23rd AMS Conference on Interactive Information and Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology</i>, Paper 3B.2., January 14&ndash;18, San Antonio,&nbsp;TX. American Meteorological Society, AMS Press, Boston,&nbsp;MA.
+Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2007), 
+<i>Server-side Data Reduction and Analysis with Script Workflow Analysis for Multi-Processing</i>.
+Presented by D.&nbsp;Wang to the OPeNDAP Developer's Workshop,
+Boulder, CO, February 21&ndash;23, 2007.
+<a href="http://dust.ess.uci.edu/smn/smn_WZJ07_opendap_200702.pdf">PDF</a></li>
+
+<li><!-- WZJ07 --> <a name="WZJ07"></a> <!--http://www.ess.uci.edu/~zender#WZJ07 -->
+Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2007), 
+<i>Server-side Data Reduction and Analysis with Script Workflow Analysis for Multi-Processing</i>.
+Presented by D.&nbsp;Wang to the 23rd AMS Conference on Interactive Information and
+Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology,
+San Antonio, TX, January 14&ndash;18, 2007.
+<a href="http://dust.ess.uci.edu/smn/smn_WZJ07_ams_200701.pdf">PDF</a></li>
+
+<li><!-- WZJ07 --> <a name="WZJ07"></a> <!--http://www.ess.uci.edu/~zender#WZJ07 -->
+Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2007), 
+DAP-enabled Server-side Data Reduction and Analysis, 
+<i>Proceedings of the 23rd AMS Conference on Interactive Information and Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology</i>, 
+Paper 3B.2., January 14&ndash;18, San Antonio,&nbsp;TX. American Meteorological Society, AMS Press, Boston,&nbsp;MA.
 <a href="http://dust.ess.uci.edu/ppr/abs_xtn_WZJ07.bib">BibTeX</a>
 <a href="http://dust.ess.uci.edu/ppr/abs_xtn_WZJ07.pdf">PDF</a></li>
 
 <li><!-- ZeW07 --> <a name="ZeW07"></a> <!--http://www.ess.uci.edu/~zender#ZeW07 -->
-Zender, C.&nbsp;S., and D.&nbsp;L. Wang (2007), High performance distributed data reduction and analysis with the netCDF Operators (NCO), <i>Proceedings of the 23rd AMS Conference on Interactive Information and Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology</i>, Paper 3B.4., January 14&ndash;18, San Antonio,&nbsp;TX. American Meteorological Society, AMS Press, Boston,&nbsp;MA.
+Zender, C.&nbsp;S., and D.&nbsp;L. Wang (2007), 
+<i>High performance distributed data reduction and analysis with the netCDF Operators (NCO)</i>. 
+Presented to the 23rd AMS Conference on Interactive Information and Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology, January 14&ndash;18, 
+San Antonio,&nbsp;TX, January 14&ndash;18, 2007.
+<a href="http://dust.ess.uci.edu/smn/smn_nco_ams_200701.pdf">PDF</a></li>
+
+<li><!-- ZeW07 --> <a name="ZeW07"></a> <!--http://www.ess.uci.edu/~zender#ZeW07 -->
+Zender, C.&nbsp;S., and D.&nbsp;L. Wang (2007), 
+High performance distributed data reduction and analysis with the netCDF Operators (NCO), 
+<i>Proceedings of the 23rd AMS Conference on Interactive Information and Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology</i>, 
+Paper 3B.4., January 14&ndash;18, San Antonio,&nbsp;TX. American Meteorological Society, AMS Press, Boston,&nbsp;MA.
 <a href="http://dust.ess.uci.edu/ppr/abs_xtn_ZeW07.bib">BibTeX</a>
 <a href="http://dust.ess.uci.edu/ppr/abs_xtn_ZeW07.pdf">PDF</a></li>
 
+<li><!-- WZJ06 --> <a name="WZJ06"></a> <!-- http://dust.ess.uci.edu/ppr/pst_WZJ06.pdf -->
+Wang, D.&nbsp, Zender, C.&nbsp;S., and S.&nbsp;F. Jenks (2006): 
+<i>Server-side netCDF Data Reduction and Analysis</i>.
+Presented by D.&nbsp;Wang to the Fall Meeting of the American Geophysical Union, 
+San Francisco,&nbsp;CA, December 5&ndash;9, 2006.
+<i>Eos Trans. AGU</i>, <b>87</b>(52), Fall Meet. Suppl., Abstract IN53B-0826.
+<a href="http://dust.ess.uci.edu/ppr/pst_WZJ06.pdf">PDF</a>
+
 <li><!-- ZMW06 --> <a name="ZMW06"></a> <!-- http://dust.ess.uci.edu/ppr/pst_ZMW06.pdf -->
-Zender, C.&nbsp;S., H.&nbsp;J. Mangalam, and D.&nbsp;L. Wang:
+Zender, C.&nbsp;S., H.&nbsp;J. Mangalam, and D.&nbsp;L. Wang (2006):
 <i>Improving Scaling Properties of Common Statistical Operators for Gridded Geoscience Datasets</i>.
 Presented to the Fall Meeting of the American Geophysical Union, 
 San Francisco,&nbsp;CA, December 5&ndash;9, 2006.
+<i>Eos Trans. AGU</i>, <b>87</b>(52), Fall Meet. Suppl., Abstract IN53B-0827.
 <a href="http://dust.ess.uci.edu/ppr/pst_ZMW06.pdf">PDF</a>
 
 <li><!-- Zen07 --> <a name="Zen07"></a> <!--http://www.ess.uci.edu/~zender#Zen07 -->
