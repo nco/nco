@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.44 2007-03-10 08:18:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.45 2007-03-13 14:51:59 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -33,7 +33,7 @@ bool bfll)                 /* if true fill var with data */
 
   int idx;
   int dmn_var_nbr;
-  int *dim_id=NULL;
+  int *dim_id=NULL_CEWI;
   int var_id;
   int rcd;
   int fl_id;
@@ -108,7 +108,7 @@ bool bfll)                 /* if true fill var with data */
       std::ostringstream os;
       os<<"Unable to find variable " <<var_nm << " in " << prs_arg->fl_in <<" or " << prs_arg->fl_out;
       wrn_prn(fnc_nm,os.str());
-      return (var_sct *)NULL;
+      return NULL_CEWI;
     } /* end if */
     
     /* Find dimensions used in var
@@ -130,7 +130,7 @@ bool bfll)                 /* if true fill var with data */
 	// Get dim from input list
         dmn_fd= prs_arg->ptr_dmn_in_vtr->find(dmn_nm);
 	// not in list -- crash out
-	if(dmn_fd == (dmn_sct*)NULL){
+	if(dmn_fd == NULL_CEWI){
           std::ostringstream os;
           os<<"Unable to find dimension " <<dmn_nm << " in " << prs_arg->fl_in <<" or " << prs_arg->fl_out;
           err_prn(fnc_nm,os.str());
@@ -326,7 +326,7 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
 // check if var is really an attribute
 nco_bool 
 ncap_var_is_att( var_sct *var) {
-  if( strchr(var->nm,'@') !=NULL ) 
+  if( strchr(var->nm,'@') !=NULL_CEWI ) 
     return True;
   return False;
 }
@@ -362,7 +362,7 @@ ncap_att_get
   
   rcd=nco_inq_att_flg(prs_arg->in_id,var_id,att_nm,&type,&sz);
   if (rcd == NC_ENOTATT) 
-    return (var_sct*)NULL;
+    return NULL_CEWI;
 
 
   var_ret=(var_sct*)nco_malloc(sizeof(var_sct));
@@ -386,7 +386,7 @@ ncap_att_get
    rcd=nco_get_att(prs_arg->in_id,var_id,att_nm,var_ret->val.vp,type);
    if (rcd !=NC_NOERR) {
     var_ret=nco_var_free(var_ret);
-    return (var_sct*)NULL;
+    return NULL_CEWI;
    }
   }
   return var_ret; 
@@ -408,7 +408,7 @@ var_sct *var_ret;
 
 //check if we have an attribute
 if( (att_char_posn =s_va_nm.find("@")) ==std::string::npos )
-  return (var_sct*)NULL; 
+  return NULL_CEWI; 
 
 var_nm=s_va_nm.substr(0,att_char_posn);
 att_nm=s_va_nm.substr(att_char_posn+1);
@@ -418,7 +418,7 @@ if(var_nm == "global")
   else{
     rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm.c_str(),&var_id);
     if (rcd !=NC_NOERR) 
-      return (var_sct*)NULL;
+      return NULL_CEWI;
   }
 
   var_ret=ncap_att_get(var_id,var_nm.c_str(),att_nm.c_str(),prs_arg);
@@ -861,7 +861,7 @@ nco_att_lst_mk
   int var_id;
   int size=0;
   char var_nm[NC_MAX_NAME];
-  nm_id_sct *xtr_lst=NULL;  
+  nm_id_sct *xtr_lst=NULL_CEWI;  
   for(idx=0;idx<var_vtr.size();idx++){
     // Check for attribute
     if( var_vtr[idx]->xpr_typ !=ncap_att) continue;
@@ -935,10 +935,10 @@ ncap_var_stretch /* [fnc] Stretch variables */
   int idx_dmn;
   int var_lsr_var_gtr_dmn_shr_nbr=0; /* [nbr] Number of dimensions shared by var_lsr and var_gtr */
   
-  var_sct *var_gtr=NULL; /* [ptr] Pointer to variable structure of greater rank */
-  var_sct *var_lsr=NULL; /* [ptr] Pointer to variable structure to lesser rank */
-  var_sct *var_gtr_out=NULL; /* [ptr] Pointer to stretched version of greater rank variable */
-  var_sct *var_lsr_out=NULL; /* [ptr] Pointer to stretched version of lesser rank variable */
+  var_sct *var_gtr=NULL_CEWI; /* [ptr] Pointer to variable structure of greater rank */
+  var_sct *var_lsr=NULL_CEWI; /* [ptr] Pointer to variable structure to lesser rank */
+  var_sct *var_gtr_out=NULL_CEWI; /* [ptr] Pointer to stretched version of greater rank variable */
+  var_sct *var_lsr_out=NULL_CEWI; /* [ptr] Pointer to stretched version of lesser rank variable */
   
   /* Initialize flag to false. Overwrite by true after successful conformance */
   DO_CONFORM=False;
@@ -956,7 +956,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
   var_gtr_out=var_gtr;
   
   /* Does lesser variable (var_lsr) conform to greater variable's dimensions? */
-  if(var_lsr_out == NULL){
+  if(var_lsr_out == NULL_CEWI){
     if(var_gtr->nbr_dim > 0){
       /* Test that all dimensions in var_lsr appear in var_gtr */
       for(idx=0;idx<var_lsr->nbr_dim;idx++){
@@ -1035,7 +1035,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
     } /* end if */
   } /* endif var_lsr_out == NULL */
   
-  if(var_lsr_out == NULL && CONVOLVE){
+  if(var_lsr_out == NULL_CEWI && CONVOLVE){
     /* Convolve variables by returned stretched variables with minimum possible number of dimensions */
     int dmn_nbr; /* Number of dimensions in convolution */
     if(dbg_lvl_get() >= 1) 
@@ -1057,7 +1057,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
     var_gtr=nco_var_free(var_gtr);
   } /* endif STRETCH */
   
-  if(var_lsr_out == NULL){
+  if(var_lsr_out == NULL_CEWI){
     /* Expand lesser variable (var_lsr) to match size of greater variable */
     char *var_lsr_cp;
     char *var_lsr_out_cp;
@@ -1231,7 +1231,7 @@ prs_sct *prs_arg){
   dmn_in_e=prs_arg->ptr_dmn_in_vtr->find(dmn_nm);
   dmn_out_e=prs_arg->ptr_dmn_out_vtr->find(dmn_nm);
 
-  if(dmn_in_e !=NULL || dmn_out_e !=NULL  ){ 
+  if(dmn_in_e !=NULL_CEWI || dmn_out_e !=NULL_CEWI  ){ 
      wrn_prn(fnc_nm,"dim \""+ std::string(dmn_nm) + "\" - already exists in input/output."); 
      return False;
   }
@@ -1248,8 +1248,8 @@ prs_sct *prs_arg){
   dmn_nw->nm=(char *)strdup(dmn_nm);
             //dmn_nw->id=dmn_id;
   dmn_nw->nc_id=prs_arg->out_id;
-  dmn_nw->xrf=NULL;
-  dmn_nw->val.vp=NULL;
+  dmn_nw->xrf=NULL_CEWI;
+  dmn_nw->val.vp=NULL_CEWI;
   dmn_nw->is_crd_dmn=False;
   dmn_nw->is_rec_dmn=False;
   dmn_nw->sz=sz;
@@ -1340,11 +1340,11 @@ ncap_var_var_stc
   static VarOp<float> Vf;
   static VarOp<double> Vd;
   
-  var_sct *var_ret=(var_sct*)NULL;
+  var_sct *var_ret=NULL_CEWI;
 
 
   //If var2 is null then we are dealing with a unary function
-  if( var2 == NULL) {
+  if( var2 == NULL_CEWI) {
 
    switch (var1->type) {
     case NC_BYTE:
@@ -1413,7 +1413,7 @@ ncap_var_var_op   /* [fnc] Add two variables */
   nco_bool vb1;
   nco_bool vb2;
  
-  var_sct *var_ret=(var_sct*)NULL;
+  var_sct *var_ret=NULL_CEWI;
 
   // If initial scan than call up "shadow" function 
   if(var1->val.vp == (void*)NULL  ){
@@ -1422,7 +1422,7 @@ ncap_var_var_op   /* [fnc] Add two variables */
   }
 
   // If var2 is null then we are dealing with a unary function
-  if( var2 == NULL){ 
+  if( var2 == NULL_CEWI){ 
     var_ret=ncap_var_var_stc(var1,var2,op);   
     return var_ret;
   }
@@ -1548,7 +1548,7 @@ ncap_var_var_op_ntl   /* [fnc] Add two variables */
   nco_bool vb2;
 
   //If var2 is null then we are dealing with a unary function
-  if( var2 == NULL)
+  if( var2 == NULL_CEWI)
     return var1;
   
 
@@ -1620,7 +1620,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
   nco_bool vb1;
   nco_bool vb2;
 
-  var_sct *var_ret=(var_sct*)NULL;
+  var_sct *var_ret=NULL_CEWI;
 
   vb1 = ncap_var_is_att(var1);
 
@@ -1644,7 +1644,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
    
   
   //Deal with unary functions first
-  if(var2==NULL){
+  if(var2==NULL_CEWI){
     if(op==INC||op==DEC){ 
       var1=ncap_var_var_stc(var1,var2,op);
       var_ret=nco_var_dpl(var1);
@@ -1678,7 +1678,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
   if(!vb1 && !vb2) {
     nco_bool DO_CONFORM=True;;
     
-    var_sct *var_tmp=(var_sct*)NULL;
+    var_sct *var_tmp=NULL_CEWI;
     
     var_tmp=nco_var_cnf_dmn(var1,var2,var_tmp,True,&DO_CONFORM);
     if(var2 != var_tmp){
@@ -1782,7 +1782,7 @@ prs_sct *prs_arg)
   const char *lst_nm;    /* for dereferencing */  
   double val=1.0; /* [frc] Value of template */
   
-  var_sct *var=(var_sct*)NULL; /* [sct] Variable */
+  var_sct *var=NULL_CEWI; /* [sct] Variable */
   
   dmn_sct **dmn; /* [dmn] Dimension structure list */
   dmn_sct *dmn_item;
@@ -1806,7 +1806,7 @@ prs_sct *prs_arg)
     // Search dmn_in_vtr for dimension
     dmn_item=prs_arg->ptr_dmn_in_vtr->find(lst_nm);
     // die if not in list
-    if(dmn_item == NULL) {
+    if(dmn_item == NULL_CEWI) {
       err_prn(fnc_nm,"Unrecognized dimension \""+std::string(lst_nm)+ "\"in LHS subscripts");
     }  
     dmn_new=nco_dmn_dpl(dmn_item);
@@ -2319,7 +2319,7 @@ std::vector<exp_sct_tmp**> &srp_vtr //self reverential pointer
     return true;
 
   for(idx=0 ; idx < srp_vtr.size() ; idx++)
-    if( *srp_vtr[idx] != NULL) 
+    if( *srp_vtr[idx] != NULL_CEWI) 
       return false;
 
   return true;
