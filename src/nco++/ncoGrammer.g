@@ -452,6 +452,9 @@ VAR_ATT options {testLiterals=true; paraphrase="variable or attribute identifier
             if( prs_arg->ptr_sym_vtr->bsearch(sym_srh))
                $setType(FUNC);             
              else $setType(VAR_ID); 
+             
+            (void)nco_free(sym_srh->nm);
+           (void)nco_free(sym_srh);
 
            }   
            ('@'(LPH)(LPH|DGT)*  {$setType(ATT_ID); })?
@@ -890,7 +893,7 @@ var_sct *var;
          }
      }
  
-      var=(var_sct*)NULL;
+      var=NULL_CEWI;
       
     }// end action
 
@@ -924,6 +927,7 @@ var_sct *var;
 assign_ntl returns [var_sct *var]
 {
 const std::string fnc_nm("assign_ntl"); 
+var=NULL_CEWI;
 }
    : (#(VAR_ID LMT_LIST ))=> #(vid:VAR_ID lmt:LMT_LIST){
 
@@ -972,7 +976,7 @@ const std::string fnc_nm("assign_ntl");
 
               // set class wide variables
               bcst=true;  
-              var_cst=(var_sct*)NULL;
+              var_cst=NULL_CEWI;
 
               aRef=dmn->getFirstChild();
          
@@ -990,7 +994,7 @@ const std::string fnc_nm("assign_ntl");
 
                // return undef if dim missing 
                if( idx <str_vtr.size()){
-                  var=(var_sct*)NULL;
+                  var=NULL_CEWI;
 
                } else {
 
@@ -999,7 +1003,7 @@ const std::string fnc_nm("assign_ntl");
 
                  var1=out(vid1->getNextSibling());
                  if(var1->undefined) {
-                    var=(var_sct*)NULL;
+                    var=NULL_CEWI;
                  } else {
                    var_cst=nco_var_cnf_typ(var1->type,var_cst);
                    var_cst->typ_dsk=var1->type;
@@ -1040,7 +1044,7 @@ const std::string fnc_nm("assign_ntl");
                
                // Set class wide variables           
                bcst=false;
-               var_cst=(var_sct*)NULL; 
+               var_cst=NULL_CEWI; 
                
 
                // get shape from RHS
@@ -1090,6 +1094,7 @@ const std::string fnc_nm("assign_ntl");
 assign returns [var_sct *var]
 {
 const std::string fnc_nm("assign"); 
+var=NULL_CEWI;
 }
 
    :   (#(VAR_ID LMT_LIST ))=> #(vid:VAR_ID lmt:LMT_LIST){
@@ -1111,8 +1116,8 @@ const std::string fnc_nm("assign");
                lmt_Ref=vid->getFirstChild();
 
                bcst=false;
-               var_cst=(var_sct*)NULL;
-               var=(var_sct*)NULL;
+               var_cst=NULL_CEWI;
+               var=NULL_CEWI;
                NcapVar *Nvar; 
                
               
@@ -1239,7 +1244,7 @@ const std::string fnc_nm("assign");
 
               // set class wide variables
               bcst=true;  
-              var_cst=(var_sct*)NULL;
+              var_cst=NULL_CEWI;
 
               //aRef=vid->getFirstChild()->getFirstChild();
               aRef=dmn->getFirstChild();
@@ -1306,7 +1311,7 @@ const std::string fnc_nm("assign");
 
                
                bcst=false;
-               var_cst=(var_sct*)NULL; 
+               var_cst=NULL_CEWI; 
               
               
                var1=out(vid2->getNextSibling());
@@ -1368,6 +1373,7 @@ out returns [var_sct *var]
     const std::string fnc_nm("out"); 
 	var_sct *var1;
     var_sct *var2;
+    var=NULL_CEWI;
 }  
     // arithmetic operators 
 
@@ -1386,20 +1392,20 @@ out returns [var_sct *var]
 
     //unary Operators
     |   #(LNOT var1=out )      
-            { var=ncap_var_var_op(var1,(var_sct*)NULL, LNOT );}
+            { var=ncap_var_var_op(var1,NULL_CEWI, LNOT );}
 	|   #(MINUS var1=out )   
-            { var=ncap_var_var_op(var1,(var_sct*)NULL, MINUS );}
+            { var=ncap_var_var_op(var1,NULL_CEWI, MINUS );}
     |   #(PLUS var1=out ) // do nothing   
 
     |   #(INC var1=out_asn )      
-            { var=ncap_var_var_inc(var1,(var_sct*)NULL, INC,prs_arg);}
+            { var=ncap_var_var_inc(var1,NULL_CEWI, INC,prs_arg);}
     |   #(DEC var1=out_asn )      
-            { var=ncap_var_var_inc(var1,(var_sct*)NULL, DEC,prs_arg );}
+            { var=ncap_var_var_inc(var1,NULL_CEWI, DEC,prs_arg );}
     
     |   #(POST_INC var1=out_asn )      
-            { var=ncap_var_var_inc(var1,(var_sct*)NULL, POST_INC,prs_arg);}
+            { var=ncap_var_var_inc(var1,NULL_CEWI, POST_INC,prs_arg);}
     |   #(POST_DEC var1=out_asn )      
-            { var=ncap_var_var_inc(var1,(var_sct*)NULL, POST_DEC,prs_arg );}
+            { var=ncap_var_var_inc(var1,NULL_CEWI, POST_DEC,prs_arg );}
 
     //ternary Operator
     |   #( qus:QUESTION var1=out) {
@@ -1558,7 +1564,7 @@ out returns [var_sct *var]
                 var=ncap_var_udf("~dot_methods");  
               // deal with average over all dims or scalar var
               else if( nbr_dim==0 || dmn_vtr.size()== 0 || dmn_vtr.size()==nbr_dim)  
-                var=ncap_sclr_var_mk("~dot_methods",var->type);    
+                var=ncap_sclr_var_mk("~dot_methods",var1->type);    
               else {
               // cast a variable with the correct dims in the correct order
                dim=var1->dim;
@@ -1603,7 +1609,7 @@ out returns [var_sct *var]
                       break;
 
                  case PAVGSQR:
-                      var1=ncap_var_var_op(var1, (var_sct*)NULL,SQR2);
+                      var1=ncap_var_var_op(var1, NULL_CEWI,SQR2);
                       var=nco_var_avg(var1,dim,nbr_dim,nco_op_avgsqr,False,&ddra_info);
                       // normalize
                       (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
@@ -1618,7 +1624,7 @@ out returns [var_sct *var]
                       break; 
 
                  case PRMS:
-                      var1=ncap_var_var_op(var1, (var_sct*)NULL,SQR2);
+                      var1=ncap_var_var_op(var1, NULL_CEWI,SQR2);
                       var=nco_var_avg(var1,dim,nbr_dim,nco_op_rms,False,&ddra_info);
                       // normalize
                       (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
@@ -1627,7 +1633,7 @@ out returns [var_sct *var]
                       break;
 
                  case PRMSSDN:
-                      var1=ncap_var_var_op(var1, (var_sct*)NULL,SQR2);
+                      var1=ncap_var_var_op(var1, NULL_CEWI,SQR2);
                       var=nco_var_avg(var1,dim,nbr_dim,nco_op_rmssdn,False,&ddra_info);
                        // normalize
                       (void)nco_var_nrm_sdn(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
@@ -1709,9 +1715,9 @@ end_dot: ;
             if(prs_arg->ntl_scn)
               var=ncap_sclr_var_mk("~double",NC_DOUBLE);
             else {
-              double dval;
-              dval=strtod(d->getText().c_str(),(char**)NULL );
-              var=ncap_sclr_var_mk("~double", dval);
+              double dvar;
+              dvar=strtod(d->getText().c_str(),(char**)NULL );
+              var=ncap_sclr_var_mk("~double", dvar);
             }
            }
      |   str:NSTRING
@@ -1750,10 +1756,10 @@ end_dot: ;
               // Check output 
               dmn_fd=prs_arg->ptr_dmn_out_vtr->find(sDim);
               // Check input
-              if(dmn_fd==NULL)
+              if(dmn_fd==NULL_CEWI)
                dmn_fd=prs_arg->ptr_dmn_in_vtr->find(sDim);
 
-              if( dmn_fd==NULL ){
+              if( dmn_fd==NULL_CEWI ){
                err_prn(fnc_nm,"Unable to locate dimension " +dval->getText()+ " in input or output files ");
                }
                var=ncap_sclr_var_mk("~dmn",dmn_fd->sz);
@@ -1767,7 +1773,6 @@ end_dot: ;
           char *var_nm;
           var_sct *var_rhs;
           var_sct *var_nw;
-          var_sct *var1;
           dmn_sct *dmn_nw;
           RefAST lRef;           
 
@@ -1903,19 +1908,19 @@ end: ;
             if(Nvar==NULL) 
               Nvar=prs_arg->ptr_var_vtr->find(att->getText());
 
-            var=(var_sct*)NULL;    
+            var=NULL_CEWI;    
             if(Nvar !=NULL)
                 var=nco_var_dpl(Nvar->var);
             else    
                 // Check input file for attribute
                 var=ncap_att_init(att->getText(),prs_arg);
 
-            if(!prs_arg->ntl_scn && var==NULL ){
+            if(!prs_arg->ntl_scn && var==NULL_CEWI ){
                 err_prn(fnc_nm,"Unable to locate attribute " +att->getText()+ " in input or output files.");
             }
             
             // if att not found return undefined
-            if(prs_arg->ntl_scn && var==NULL )
+            if(prs_arg->ntl_scn && var==NULL_CEWI )
                 var=ncap_var_udf(att->getText().c_str());
             
 
@@ -2026,7 +2031,8 @@ end_val: for(idx=0 ; idx < nbr_lst ; idx++)
 // ie that the var or att has NO children!!
 out_asn returns [var_sct *var]
 {
-const std::string fnc_nm("assign_asn"); 
+const std::string fnc_nm("assign_asn");
+var=NULL_CEWI; 
 }
 
 	:   vid:VAR_ID       
@@ -2035,7 +2041,7 @@ const std::string fnc_nm("assign_asn");
                err_prn(fnc_nm,"Invalid Lvalue " +vid->getText() );
 
           var=ncap_var_init(vid->getText().c_str(),prs_arg,true);
-          if(var== (var_sct*)NULL){
+          if(var== NULL_CEWI){
                nco_exit(EXIT_FAILURE);
           }
          
@@ -2057,19 +2063,19 @@ const std::string fnc_nm("assign_asn");
             if(Nvar==NULL) 
               Nvar=prs_arg->ptr_var_vtr->find(att->getText());
 
-            var=(var_sct*)NULL;    
+            var=NULL_CEWI;    
             if(Nvar !=NULL)
                 var=nco_var_dpl(Nvar->var);
             else    
                 var=ncap_att_init(att->getText(),prs_arg);
 
 
-            if(!prs_arg->ntl_scn && var==NULL ){
+            if(!prs_arg->ntl_scn && var==NULL_CEWI ){
                 err_prn(fnc_nm,"Unable to locate attribute " +att->getText()+ " in input or output files.");
             }
             
             // if att not found return undefined
-            if(prs_arg->ntl_scn && var==NULL )
+            if(prs_arg->ntl_scn && var==NULL_CEWI )
                 var=ncap_var_udf(att->getText().c_str());
             
 
