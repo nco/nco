@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.31 2007-03-09 08:26:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.32 2007-03-13 14:51:16 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -81,7 +81,7 @@
 /* Global variables */
 size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap_lex.l) */
 size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap_lex.l) */
-char **ncap_fl_spt_glb=NULL; /* [fl] Script file */
+char **ncap_fl_spt_glb=NULL_CEWI; /* [fl] Script file */
 
 int 
 main(int argc,char **argv)
@@ -110,24 +110,24 @@ main(int argc,char **argv)
   nco_bool ATT_INHERIT=True;          
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
   
-  char **fl_lst_abb=NULL; /* Option n */
+  char **fl_lst_abb=NULL_CEWI; /* Option n */
   char **fl_lst_in;
   char **var_lst_in=NULL_CEWI;
   char *cmd_ln;
-  char *fl_in=NULL;
-  char *fl_out=NULL; /* Option o */
+  char *fl_in=NULL_CEWI;
+  char *fl_out=NULL_CEWI; /* Option o */
   char *fl_out_tmp;
-  char *fl_pth=NULL; /* Option p */
-  char *fl_pth_lcl=NULL; /* Option l */
-  char *fl_spt_usr=NULL; /* Option s */
+  char *fl_pth=NULL_CEWI; /* Option p */
+  char *fl_pth_lcl=NULL_CEWI; /* Option l */
+  char *fl_spt_usr=NULL_CEWI; /* Option s */
   char *lmt_arg[NC_MAX_DIMS];
-  char *opt_crr=NULL; /* [sng] String representation of current long-option name */
+  char *opt_crr=NULL_CEWI; /* [sng] String representation of current long-option name */
 #define NCAP_SPT_NBR_MAX 100
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
-  char *spt_arg_cat=NULL; /* [sng] User-specified script */
+  char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.31 2007-03-09 08:26:57 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.31 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.32 2007-03-13 14:51:16 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.32 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -216,9 +216,9 @@ main(int argc,char **argv)
   
   lmt_sct **lmt=NULL_CEWI;
   
-  nm_id_sct *dmn_lst=NULL;
-  nm_id_sct *xtr_lst=NULL; /* Non-processed variables to copy to OUTPUT */
-  nm_id_sct *xtr_lst_a=NULL; /* Initialize to ALL variables in OUTPUT file */
+  nm_id_sct *dmn_lst=NULL_CEWI;
+  nm_id_sct *xtr_lst=NULL_CEWI; /* Non-processed variables to copy to OUTPUT */
+  nm_id_sct *xtr_lst_a=NULL_CEWI; /* Initialize to ALL variables in OUTPUT file */
   
   size_t sng_lng;
   size_t spt_arg_lng=size_t_CEWI;
@@ -557,7 +557,7 @@ main(int argc,char **argv)
 
 
     
-  if(fl_spt_usr == NULL){
+  if(fl_spt_usr == NULL_CEWI){
     /* No script file specified, look for command-line scripts */
     if(nbr_spt == 0)
       err_prn(fnc_nm,"No script file or command line scripts specified\nHINT Use, e.g., -s \"foo=bar\"\n");
@@ -572,7 +572,7 @@ main(int argc,char **argv)
      fl_spt_usr=(char *)strdup("Command-line script");
      }else{ /* ...endif command-line scripts, begin script file... */
       /* Open script file for reading */
-      if((yyin=fopen(fl_spt_usr,"r")) == NULL)
+      if((yyin=fopen(fl_spt_usr,"r")) == NULL_CEWI)
         err_prn(fnc_nm,"Unable to open script file "+std::string(fl_spt_usr));
       fclose(yyin); 
     } /* end else script file */
@@ -766,7 +766,7 @@ main(int argc,char **argv)
     } 
     
     
-    if(fl_spt_usr != NULL) fl_spt_usr=(char *)nco_free(fl_spt_usr);
+    if(fl_spt_usr != NULL_CEWI) fl_spt_usr=(char *)nco_free(fl_spt_usr);
     
     /* Free extraction lists */ 
     xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
@@ -774,20 +774,20 @@ main(int argc,char **argv)
     
     /* Free command line algebraic arguments, if any */
     for(idx=0;idx<nbr_spt;idx++) spt_arg[idx]=(char *)nco_free(spt_arg[idx]);
-    if(spt_arg_cat != NULL) spt_arg_cat=(char *)nco_free(spt_arg_cat);
+    if(spt_arg_cat != NULL_CEWI) spt_arg_cat=(char *)nco_free(spt_arg_cat);
     
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
-    if(cmd_ln != NULL) cmd_ln=(char *)nco_free(cmd_ln);
-    if(fl_in != NULL) fl_in=(char*)nco_free(fl_in);
-    if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
-    if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
-    if(fl_pth != NULL) fl_pth=(char *)nco_free(fl_pth);
-    if(fl_pth_lcl != NULL) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+    if(cmd_ln != NULL_CEWI) cmd_ln=(char *)nco_free(cmd_ln);
+    if(fl_in != NULL_CEWI) fl_in=(char*)nco_free(fl_in);
+    if(fl_out != NULL_CEWI) fl_out=(char *)nco_free(fl_out);
+    if(fl_out_tmp != NULL_CEWI) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+    if(fl_pth != NULL_CEWI) fl_pth=(char *)nco_free(fl_pth);
+    if(fl_pth_lcl != NULL_CEWI) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
     /* Free lists of strings */
-    if(fl_lst_in != NULL && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
-    if(fl_lst_in != NULL && fl_lst_abb != NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
-    if(fl_lst_abb != NULL) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+    if(fl_lst_in != NULL_CEWI && fl_lst_abb == NULL_CEWI) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+    if(fl_lst_in != NULL_CEWI && fl_lst_abb != NULL_CEWI) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+    if(fl_lst_abb != NULL_CEWI) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
