@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.1 2007-03-10 04:20:02 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.2 2007-03-13 01:47:12 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -322,6 +322,7 @@ class NcoParser:
                 keys = [y[0] for y in alist]
                 o = alist.pop(keys.index(x)) # o is a tuple.
                 ofname = adict.pop(x)
+                
                 assert o[1] == ofname
                 
         if ofname == "":
@@ -339,7 +340,7 @@ class NcoParser:
             p = alist.pop(keys.index("-p"))
             adict.pop("-p")
         # handle ncap -S script input
-        if cmd == "ncap":
+        if (cmd == "ncap") and adict.has_key("-S"):
             inlist.append(adict["-S"])
         # now patch all the inputs
         if inPrefix is not None:
@@ -354,9 +355,102 @@ class NcoParser:
         if len(argv) < 1:
             return False
         else:
-            return (argv[0] in NcoParser.commands)
-    
+            return (argv[0] in NcoParser.commands)    
+
+    # Command and CommandFactory do not have dependencies on NCO things.
+    class Command:
+        """this is needed because we want to build a dependency tree."""
+        def __init__(self, cmd, argtriple, inouts, referenceLineNum):
+            self.cmd = cmd
+            self.parsedOpts = argtriple[0] # adict
+            self.argList = argtriple[1] # alist
+            self.leftover = argtriple[2] # leftover
+            self.inputs = inouts[0]
+            self.outputs = inouts[1]
+            self.referenceLineNum
+    class CommandFactory:
+        """this is needed because we want to:
+        a) connect commands together
+        b) rename outputs.
+        To create a new command, we need:
+          a) which commands created my inputs?
+          b) what should I remap the file to?
+        So:
+          -- a mapping: script filename -> producing command
+          -- script filename -> logical name (probably the same,
+                                              but may be munged)
+          -- logical name -> producing command.  This is important
+             for finding your parent.
+          For each output, create a new scriptname->logical name mapping,
+          incrementing the logical name if a mapping already exists.  
+          
+        """
+        def __init__(self):
+            self.commandByLogicalOut = {}
+            self.logicalOutByScript = {}
+            pass
+
+        def mapInput(self, scriptFilename):
+            try:
+                return self.logicalOutByScript[s]
+            except KeyError:
+                if self.allowedConcreteInput(s):
+                    return s
+                else:
+                    logging.error("%s is not allowed as an input filename" %(s)
+                    raise StandardError
+            pass
+
+        def mapOutput(self, scriptFilename):
+            s = scriptFilename
+            if scriptFilename in self.logicalOutByScript:
+                s = self.nextOutputName(self.logicalOutByScript[s])
+            else:
+                s = self.cleanOutputName(s)
+            self.logicalOutByScript[scriptFilename] = s
+            return s
+                    
+        def allowedConcreteInput(self, inputFilename):
+            # fix this...
+            return True
+
+        def cleanOutputName(self, scriptFilename):
+            # I can't think of a "good" or "best" way, so for now,
+            # we'll just take the last part and garble it a little
+            (head,tail) = os.path.split(scriptFilename)
+            if tail == "":
+                logging.error("empty filename: %s"%(scriptFilename))
+                raise StandardError
+            if head != "":
+                # take the last 4 hex digits of the head's hash value
+                head = ("%x" % hash(head))[-4:]
+            return head+tail
+
+        def nextOutputName(self, logical):
+            # does the logical name end with .1 or .2 or .3 or .99?
+            # (has it already been incremented?)
+            m = re.match("(.*\.)(\d+)$", logical)
+
+            if m is not None:
+                # increment the trailing digit(s)
+                return m.group(1) + str(1 + int(m.group(1)))
+            else:
+                return logical + ".1"
+
+        def newCommand(self, cmd, argtriple,
+                       inouts, referenceLineNum):
+            # first, reassign inputs and outputs.
+            newinputs = map(self.mapInput, inouts[0])
+            newoutputs = map(self.mapOutput, inouts[1])
+
+            c = Command(cmd, argtriple, inouts, referenceLineNum)
+            
+            for out in inouts[1]:
+                self.commandByLogicalOut[out]
     pass
+
+
+
 
 class ParserCommand:
     def __init__(self):
@@ -399,7 +493,10 @@ class Parser:
     # * extract an ordered list of command tuples
     # * command tuple = (original, command, inputlist, outputlist,
     #                    arglist, leftover)
-    # 
+    #
+    # Modules are used to isolate logic pertaining to specific binaries.
+    # A module *accepts* a command line and *parses* it.    
+    
 # put in a sanity check
 #     if len(leftover) <= 1:
 #         # only one leftover...leave it to be captured by the inputter
@@ -424,13 +521,28 @@ class Parser:
         pass
 
     def handlerDefaults(self):
-        self.modules = [NcoParser]
+        self.modules = [(NcoParser, NcoCommandFactory)]
 
         pass
         
 
     def parseScript(self, script):
+        """Parse and accept/reject commands in a script, where the script
+        is a single string containing script lines"""
         vp = VariableParser()
+        def accept(obj,argv):
+            for mod in self.modules:
+                if mod[0].accepts(argv):
+                    (arglist,leftover) = mod[0].parse(line,argv)
+                    logging.debug(" ".join([str(x)
+                                            for x in ["accept!",
+                                                      argv[0],
+                                                      arglist,
+                                                      leftover]
+                                            ]))
+                    mod[1].newCommand()
+                    return True
+            return False
         for line in script.splitlines():
             self.lineNum += 1
             original = line.strip()
@@ -450,17 +562,12 @@ class Parser:
             if not isinstance(line, str):
                 continue
             argv = shlex.split(line)
-            def accept(obj,argv):
-                for mod in self.modules:
-                    if mod.accepts(argv):
-                        (arglist,leftover) = mod.parse(line,argv)
-                        logging.debug(" ".join([str(x) for x in ["accept!", argv[0], arglist, leftover]]))
-
-                        return True
             if not accept(self, argv):
                 logging.debug(" ".join(["reject:", str(len(argv)), str(argv)]))
-            print vp.varMap
+            logging.debug(str(vp.varMap))
+
         pass
+    
     pass
 
 def testParser():
@@ -511,6 +618,20 @@ for yr in `seq $Y1 $LAST_YR`; do
     p = Parser()
     p.parseScript(test1)
 
+def testParser2():
+    logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(message)s',
+                        datefmt='%d%b%Y %H:%M:%S')
 
-testParser()
-testExpand()
+    p = Parser()
+    portionlist = open("full_resamp.swamp").readlines()[:10]
+    portion = "".join(portionlist)
+
+    p.parseScript(portion)
+
+def main():
+    testParser2()
+    testExpand()
+
+if __name__ == '__main__':
+    main()
