@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.86 2007-03-11 21:04:25 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.87 2007-03-14 16:01:35 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -145,11 +145,9 @@ cd ~/nco;cvc
 cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-3_1_9-1 -d nco-3.1.9 nco # Export based on tag
 #cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -D "1 second ago" -d nco-3.1.9 nco # Export most recent
 tar cvzf ./nco_3.1.9.orig.tar.gz --exclude='nco-3.1.9/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-3.1.9 
-mv ./nco-3.1.9/debian ${DATA}/debian # Move debian directory elsewhere temporarily
 /bin/rm -rf ${DATA}/nco-3.1.9 # Remove cvs-exported directory
 tar xvzf ./nco_3.1.9.orig.tar.gz # Untar to get directory without excluded files
-mv ${DATA}/debian ./nco-3.1.9 # Replace debian directory
-/bin/rm -f ./nco-3.1.9/debian/.cvsignore # Remove cvsignore before deb build
+mkdir ./nco-3.1.9/debian;cd ~/nco/debian;cp changelog compat control convert copyright doc-base files info rules ${DATA}/nco-3.1.9/debian # Replace debian directory with _CURRENT_ (main trunk) settings
 #cd ${DATA}/nco-3.1.9;dpkg-buildpackage -rfakeroot -uc -us > ~/foo.nco 2>&1 # -uc -us: Do not sign changes or source files
 #cd ${DATA}/nco-3.1.9;dpkg-buildpackage -rfakeroot -sa > ~/foo.nco 2>&1 # -sa: Include _orig.tar.gz in .changes 
 cd ${DATA}/nco-3.1.9;dpkg-buildpackage -rfakeroot > ~/foo.nco 2>&1
