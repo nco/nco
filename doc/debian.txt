@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.87 2007-03-14 16:01:35 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.88 2007-03-14 23:12:45 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -147,7 +147,7 @@ cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-3_1_9-1 
 tar cvzf ./nco_3.1.9.orig.tar.gz --exclude='nco-3.1.9/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-3.1.9 
 /bin/rm -rf ${DATA}/nco-3.1.9 # Remove cvs-exported directory
 tar xvzf ./nco_3.1.9.orig.tar.gz # Untar to get directory without excluded files
-mkdir ./nco-3.1.9/debian;cd ~/nco/debian;cp changelog compat control convert copyright doc-base files info rules ${DATA}/nco-3.1.9/debian # Replace debian directory with _CURRENT_ (main trunk) settings
+mkdir ${DATA}/nco-3.1.9/debian;cd ~/nco/debian;cp changelog compat control convert copyright doc-base files info rules ${DATA}/nco-3.1.9/debian # Replace debian directory with _CURRENT_ (main trunk) settings
 #cd ${DATA}/nco-3.1.9;dpkg-buildpackage -rfakeroot -uc -us > ~/foo.nco 2>&1 # -uc -us: Do not sign changes or source files
 #cd ${DATA}/nco-3.1.9;dpkg-buildpackage -rfakeroot -sa > ~/foo.nco 2>&1 # -sa: Include _orig.tar.gz in .changes 
 cd ${DATA}/nco-3.1.9;dpkg-buildpackage -rfakeroot > ~/foo.nco 2>&1
@@ -204,27 +204,27 @@ mkdir -p ${DATA}/rpm/nco/TMP ${DATA}/rpm/nco/BUILD
 ${rpm_root}/nco-3.1.9-?.src.rpm \
 ${rpm_root}/nco-3.1.9.spec \
 ${rpm_root}/nco-3.1.9.tar.gz \
-${rpm_root}/i386/nco-3.1.9-?.i386.rpm \
-${rpm_root}/i386/nco-debuginfo-3.1.9-?.i386.rpm \
-${rpm_root}/i386/nco-devel-3.1.9-?.i386.rpm
+${rpm_root}/*/nco-3.1.9-?.*.rpm \
+${rpm_root}/*/nco-debuginfo-3.1.9-?.*.rpm \
+${rpm_root}/*/nco-devel-3.1.9-?.*.rpm
 cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-3_1_9-1 -d nco-3.1.9 nco # Export based on tag
 tar cvzf ./nco-3.1.9.tar.gz --exclude='nco-3.1.9/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-3.1.9 
 /bin/cp ${DATA}/nco-3.1.9.tar.gz ${rpm_root}
 ln -s ${HOME}/nco/bld/nco.spec ${rpm_root}/nco.spec
 cd ${rpm_root}
 rpmbuild -ba --sign nco.spec > ~/foo.nco 2>&1
-rpmlint ${rpm_root}/i386/nco-3.1.9-?.i386.rpm
+rpmlint ${rpm_root}/*/nco-3.1.9-?.*.rpm
 scp \
-${rpm_root}/i386/nco-3.1.9-?.i386.rpm \
-${rpm_root}/i386/nco-debuginfo-3.1.9-?.i386.rpm \
-${rpm_root}/i386/nco-devel-3.1.9-?.i386.rpm \
+${rpm_root}/*/nco-3.1.9-?.*.rpm \
+${rpm_root}/*/nco-debuginfo-3.1.9-?.*.rpm \
+${rpm_root}/*/nco-devel-3.1.9-?.*.rpm \
 ${rpm_root}/nco-3.1.9-?.src.rpm \
 dust.ess.uci.edu:/var/www/html/nco/src
 scp \
-${rpm_root}/i386/nco-3.1.9-?.i386.rpm \
-${rpm_root}/i386/nco-debuginfo-3.1.9-?.i386.rpm \
-${rpm_root}/i386/nco-devel-3.1.9-?.i386.rpm \
+${rpm_root}/*/nco-3.1.9-?.*.rpm \
+${rpm_root}/*/nco-debuginfo-3.1.9-?.*.rpm \
+${rpm_root}/*/nco-devel-3.1.9-?.*.rpm \
 ${rpm_root}/nco-3.1.9-?.src.rpm \
 nco.sf.net:/home/groups/n/nc/nco/htdocs/src
 sudo yum remove nco
-sudo yum install ${rpm_root}/i386/nco-3.1.9-?.i386.rpm
+sudo yum install ${rpm_root}/*/nco-3.1.9-?.*.rpm
