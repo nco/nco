@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.2 2007-03-13 01:47:12 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.3 2007-03-16 23:32:48 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -17,6 +17,7 @@ import logging
 import os
 import re
 import shlex
+import types
 from pyparsing import *
 
 # SWAMP imports
@@ -304,12 +305,23 @@ class NcoParser:
         pass
 
     @staticmethod
-    def parse(original, argv):
+    def parse(original, argv, lineNumber=0, factory=None):
         cmd = argv[0]
-        (arglist, leftover) = NcoParser.specialGetOpt(argv)
-        argdict = dict(arglist)
-        (ins, outs) = NcoParser.findInOuts(cmd, argdict, arglist, leftover)
-        return (arglist, leftover) #fix....
+        (argList, leftover) = NcoParser.specialGetOpt(argv)
+        argDict = dict(argList)
+        (ins, outs) = NcoParser.findInOuts(cmd, argDict, argList, leftover)
+        # logging.debug(" ".join([str(x)
+#                                 for x in ["accept!", argv[0],
+#                                           argList, leftover]
+#                                 ]))
+        if factory is not None:
+            # assert for now to catch stupid mistakes.
+            assert isinstance(factory, NcoParser.CommandFactory)
+            return factory.newCommand(cmd,
+                                      (argDict, argList, leftover),
+                                      (ins,outs), lineNumber)
+        else:
+            return cmd
 
     @staticmethod
     def findInOuts(cmd, adict, alist, leftover):
@@ -367,7 +379,7 @@ class NcoParser:
             self.leftover = argtriple[2] # leftover
             self.inputs = inouts[0]
             self.outputs = inouts[1]
-            self.referenceLineNum
+            self.referenceLineNum = referenceLineNum
     class CommandFactory:
         """this is needed because we want to:
         a) connect commands together
@@ -392,12 +404,12 @@ class NcoParser:
 
         def mapInput(self, scriptFilename):
             try:
-                return self.logicalOutByScript[s]
+                return self.logicalOutByScript[scriptFilename]
             except KeyError:
-                if self.allowedConcreteInput(s):
-                    return s
+                if self.allowedConcreteInput(scriptFilename):
+                    return scriptFilename
                 else:
-                    logging.error("%s is not allowed as an input filename" %(s)
+                    logging.error("%s is not allowed as an input filename" %(s))
                     raise StandardError
             pass
 
@@ -443,10 +455,11 @@ class NcoParser:
             newinputs = map(self.mapInput, inouts[0])
             newoutputs = map(self.mapOutput, inouts[1])
 
-            c = Command(cmd, argtriple, inouts, referenceLineNum)
+            c = NcoParser.Command(cmd, argtriple, inouts, referenceLineNum)
             
             for out in inouts[1]:
-                self.commandByLogicalOut[out]
+                self.commandByLogicalOut[out] = c
+            return c
     pass
 
 
@@ -521,26 +534,19 @@ class Parser:
         pass
 
     def handlerDefaults(self):
-        self.modules = [(NcoParser, NcoCommandFactory)]
+        self.modules = [(NcoParser, None)]
 
         pass
         
 
-    def parseScript(self, script):
+    def parseScript(self, script, factory):
         """Parse and accept/reject commands in a script, where the script
         is a single string containing script lines"""
         vp = VariableParser()
-        def accept(obj,argv):
-            for mod in self.modules:
+        def accept(obj, argv):
+            for mod in obj.modules:
                 if mod[0].accepts(argv):
-                    (arglist,leftover) = mod[0].parse(line,argv)
-                    logging.debug(" ".join([str(x)
-                                            for x in ["accept!",
-                                                      argv[0],
-                                                      arglist,
-                                                      leftover]
-                                            ]))
-                    mod[1].newCommand()
+                    cmd = mod[0].parse(line, argv, obj.lineNum, factory)
                     return True
             return False
         for line in script.splitlines():
@@ -562,13 +568,45 @@ class Parser:
             if not isinstance(line, str):
                 continue
             argv = shlex.split(line)
-            if not accept(self, argv):
+            command = accept(self, argv)
+            if isinstance(command, types.InstanceType):
+                command.referenceLineNum = self.lineNum
+            if not command:
                 logging.debug(" ".join(["reject:", str(len(argv)), str(argv)]))
-            logging.debug(str(vp.varMap))
+
 
         pass
     
     pass
+
+
+class SwampInterface:
+
+    def __init__(self):
+        pass
+
+    def submit(self, script):
+        p = Parser()
+        sch = Scheduler()
+        p.commandHandler(sch)
+        p.parseScript(script, NcoParser.CommandFactory)
+        task = sch.taskId()
+        return task
+
+    def fileStatus(self, logicalname):
+        state = 0
+        # go check db for state
+        return state
+
+
+    def taskFileStatus(self, taskid):
+        state = 0
+        logname = "dummy.nc"
+        url = "NA"
+        # want to return list of files + state + url if available
+        return [(state, logname, url)]
+        
+        
 
 def testParser():
     test1 = """#!/usr/local/bin/bash
@@ -616,7 +654,7 @@ for yr in `seq $Y1 $LAST_YR`; do
 #                    filename='/tmp/myapp.log',
 #                    filemode='w')
     p = Parser()
-    p.parseScript(test1)
+    p.parseScript(test1, None)
 
 def testParser2():
     logging.basicConfig(level=logging.DEBUG,
@@ -626,12 +664,12 @@ def testParser2():
     p = Parser()
     portionlist = open("full_resamp.swamp").readlines()[:10]
     portion = "".join(portionlist)
-
-    p.parseScript(portion)
+    cf = NcoParser.CommandFactory()
+    p.parseScript(portion, cf)
 
 def main():
     testParser2()
-    testExpand()
+    #testExpand()
 
 if __name__ == '__main__':
     main()
