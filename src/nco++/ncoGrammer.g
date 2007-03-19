@@ -964,7 +964,7 @@ var=NULL_CEWI;
               int idx;
               const char *var_nm;
               var_sct *var1;
-              NcapVector<std::string> str_vtr;
+              std::vector<std::string> str_vtr;
               RefAST  aRef;
               NcapVar *Nvar;
               
@@ -982,7 +982,7 @@ var=NULL_CEWI;
          
               // pPut dimension names in vector       
               while(aRef) {
-                str_vtr.push(aRef->getText());
+                str_vtr.push_back(aRef->getText());
                 aRef=aRef->getNextSibling();      
               }
               
@@ -1235,7 +1235,7 @@ var=NULL_CEWI;
         | (#(VAR_ID DMN_LIST ))=> #(vid1:VAR_ID dmn:DMN_LIST){   
 
               var_sct *var1;
-              NcapVector<std::string> str_vtr;
+              std::vector<std::string> str_vtr;
               RefAST  aRef;
               
               if(dbg_lvl_get() > 0)
@@ -1251,7 +1251,7 @@ var=NULL_CEWI;
          
               // pPut dimension names in vector       
               while(aRef) {
-                str_vtr.push(aRef->getText());
+                str_vtr.push_back(aRef->getText());
                 aRef=aRef->getNextSibling();      
               }
               // Cast is applied in VAR_ID action in function out()
@@ -1568,12 +1568,12 @@ out returns [var_sct *var]
               else {
               // cast a variable with the correct dims in the correct order
                dim=var1->dim;
-                NcapVector<std::string> cst_vtr;              
+                std::vector<std::string> cst_vtr;              
 
                 for(idx=0 ; idx < nbr_dim ; idx++){
                   std::string sdm(dim[idx]->nm);    
                   if( dmn_vtr.findi(sdm) == -1)
-                     cst_vtr.push(sdm);       
+                     cst_vtr.push_back(sdm);       
                 }                
             
                 var=ncap_cst_mk(cst_vtr,prs_arg);
