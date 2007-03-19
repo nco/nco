@@ -1,6 +1,7 @@
 #ifndef INC_NcapVector_hh_
 #define INC_NcapVector_hh_
 
+#include <malloc.h>
 #include <string.h>
 #include <functional>
 #include <string>
@@ -13,9 +14,13 @@ class NcapVector : public std::vector<T> {
 
 public:
 
+  /*
   void push(const T &x) {
     this->push_back(x);
   }
+  
+  
+
   T pop() {
     T tret(0);
     if(this->size() > 0 ) {
@@ -26,6 +31,8 @@ public:
       return NULL;
     }
   }
+
+  */
 
   T find (const char *nm) {
     int idx;
@@ -89,14 +96,20 @@ public:
   // search -- only on a sorted vector
   bool bsearch(T t1){
       bool bret;
-      /*
-      char *cpr; 
-      T t1;
-      cpr=strdup(snm.c_str());
-      t1->nm=cpr;
-      */
+      char *cpr;
+      size_t snbr; 
+       T t2;
+
+       //snbr=sizeof(T);
+       //std::cout<<"\n\nIndrection sizeof="<<snbr<<std::endl;
+       
+       //t2= (T)malloc(sizeof(*T));
+       //t2->nm=t1->nm;
+      // t2=t1;
+
  
       bret= std::binary_search( this->begin(),this->end(),t1,less_mag());
+      //delete t2;
 
       return bret;
   }       
