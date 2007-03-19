@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.28 2007-03-10 08:18:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.29 2007-03-19 16:03:07 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -228,7 +228,7 @@ ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
 
 var_sct*                           /* O [sct] casting variable has its own private dims */ 
 ncap_cst_mk(                       /* [fnc] create casting var from a list of dims */
-NcapVector<std::string> &str_vtr,  /* I [sng] list of dimension subscripts */
+std::vector<std::string> &str_vtr,  /* I [sng] list of dimension subscripts */
 prs_sct *prs_arg);
 
 var_sct*
