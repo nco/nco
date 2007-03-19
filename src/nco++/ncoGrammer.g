@@ -694,7 +694,7 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
     if(lmt_ptr->max_sng == NULL) lmt_ptr->is_usr_spc_max=False; else lmt_ptr->is_usr_spc_max=True;
     if(lmt_ptr->min_sng == NULL) lmt_ptr->is_usr_spc_min=False; else lmt_ptr->is_usr_spc_min=True;
 
-    lmt_vtr.push(lmt_ptr);
+    lmt_vtr.push_back(lmt_ptr);
 
 
    } // end idx
@@ -1509,7 +1509,7 @@ out returns [var_sct *var]
             dmn_sct **dim;
            
             RefAST aRef;
-            NcapVector<std::string> str_vtr;
+            std::vector<std::string> str_vtr;
             NcapVector<dmn_sct*> dmn_vtr;
             // de-reference 
             ddra_info_sct ddra_info;        
@@ -1530,7 +1530,7 @@ out returns [var_sct *var]
                 switch(aRef->getType()){
                  case DIM_ID: 
                  case DIM_MTD_ID:{  
-                      str_vtr.push(aRef->getText());
+                      str_vtr.push_back(aRef->getText());
                       break;    
                       }
                         
@@ -1539,7 +1539,7 @@ out returns [var_sct *var]
                  case DMN_ARG_LIST: 
                       { RefAST bRef=aRef->getFirstChild();
                         while(bRef){
-                          str_vtr.push(bRef->getText());
+                          str_vtr.push_back(bRef->getText());
                           bRef=bRef->getNextSibling();
                         }  
                         break;
@@ -1826,7 +1826,7 @@ end_dot: ;
               dmn_nw->srt=lmt_vtr[idx]->srt;  
               dmn_nw->end=lmt_vtr[idx]->end;  
               dmn_nw->srd=lmt_vtr[idx]->srd;  
-              dmn_vtr.push(dmn_nw);
+              dmn_vtr.push_back(dmn_nw);
            }  
  
           // Fudge -- fill out var again -but using dims defined in dmn_vtr
