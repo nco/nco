@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.46 2007-03-19 16:04:09 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.47 2007-03-19 16:33:14 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -141,7 +141,7 @@ bool bfll)                 /* if true fill var with data */
 	// write dim to output
 	(void)nco_dmn_dfn(prs_arg->fl_out,prs_arg->out_id,&dmn_nw,1);          
 	// Add new dim to output list
-	(void)prs_arg->ptr_dmn_out_vtr->push(dmn_nw);
+	(void)prs_arg->ptr_dmn_out_vtr->push_back(dmn_nw);
 
 	if(dbg_lvl_get() > 2) {
           std::ostringstream os;
@@ -495,7 +495,7 @@ ncap_att_gnrl
 	  s_fll=s_dst+"@"+ s_att;
           nco_free(var_att->nm);
           var_att->nm=strdup(s_fll.c_str());
-          att_vtr.push(var_att); 
+          att_vtr.push_back(var_att); 
        } 
       } // end for
     }// end rcd
@@ -509,7 +509,7 @@ ncap_att_gnrl
         var_att=nco_var_dpl(var_vtr[idx]->var);
 	nco_free(var_att->nm);
 	var_att->nm=strdup(s_fll.c_str());
-        att_vtr.push(var_att);  
+        att_vtr.push_back(var_att);  
       } 
     }
     // add new att to list;
@@ -1264,7 +1264,7 @@ prs_sct *prs_arg){
   (void)nco_enddef(prs_arg->out_id);  
 
   // Add dim to list 
-  (void)prs_arg->ptr_dmn_out_vtr->push(dmn_nw); 
+  (void)prs_arg->ptr_dmn_out_vtr->push_back(dmn_nw); 
   return True; 
 }
 
@@ -1813,7 +1813,7 @@ prs_sct *prs_arg)
     // Define in output file 
     (void)nco_dmn_dfn(prs_arg->fl_out,prs_arg->out_id,&dmn_new,1);
     // add to out list
-    (void)prs_arg->ptr_dmn_out_vtr->push(dmn_new);
+    (void)prs_arg->ptr_dmn_out_vtr->push_back(dmn_new);
     (void)nco_dmn_xrf(dmn_new,dmn_item);
     dmn[idx]=dmn_new;
   }
@@ -1962,7 +1962,7 @@ std::string snm)
 NcapVector<dmn_sct*>                /* O    [sct] list of new dims to limit over */ 
 ncap_dmn_mtd(
 var_sct *var,                      /* I   [sct] var with list of dims */
-NcapVector<std::string> &str_vtr)  /* I   [sng] list of dimension names */
+std::vector<std::string> &str_vtr)  /* I   [sng] list of dimension names */
 {
 int idx;
 int jdx;
@@ -1976,7 +1976,7 @@ for(idx=0 ; idx <str_vtr.size() ; idx++){
   if( str_is_num(str_vtr[idx])) {
     icnt=atoi(str_vtr[idx].c_str());
     if(icnt < nbr_dim && !dmn_vtr.find(var->dim[icnt]->nm)) 
-      dmn_vtr.push( var->dim[icnt]);
+      dmn_vtr.push_back( var->dim[icnt]);
   }else{
     // deal with regular dim names
     for(jdx=0 ; jdx < nbr_dim ; jdx++)
@@ -1984,7 +1984,7 @@ for(idx=0 ; idx <str_vtr.size() ; idx++){
         break;
       if(jdx <nbr_dim && !dmn_vtr.find(str_vtr[idx])) 
     if(jdx <nbr_dim) 
-        dmn_vtr.push(var->dim[jdx]);
+        dmn_vtr.push_back(var->dim[jdx]);
   }
 
  } // end loop
