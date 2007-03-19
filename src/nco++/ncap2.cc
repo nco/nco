@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.32 2007-03-13 14:51:16 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.33 2007-03-19 16:34:05 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.32 2007-03-13 14:51:16 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.32 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.33 2007-03-19 16:34:05 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.33 $";
   const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -433,25 +433,25 @@ main(int argc,char **argv)
     ;
   /* Basic math: acos, asin, atan, cos, exp, log, log10, rnd_nbr, sin, sqrt, tan */
 
-  sym_vtr.push(ncap_sym_init("acos",acos,acosf));  
-  sym_vtr.push(ncap_sym_init("asin",asin,asinf));
-  sym_vtr.push(ncap_sym_init("atan",atan,atanf));
-  sym_vtr.push(ncap_sym_init("cos",cos,cosf));  
-  sym_vtr.push(ncap_sym_init("exp",exp,expf));
-  sym_vtr.push(ncap_sym_init("fabs",fabs,fabsf));
-  sym_vtr.push(ncap_sym_init("log",log,logf));
-  sym_vtr.push(ncap_sym_init("log10",log10,log10f));
-  //sym_vtr.push(ncap_sym_init("rnd_nbr",rnd_nbr,rnd_nbrf));
-  sym_vtr.push(ncap_sym_init("sin",sin,sinf));
-  sym_vtr.push(ncap_sym_init("sqrt",sqrt,sqrtf));
-  sym_vtr.push(ncap_sym_init("tan",tan,tanf));
+  sym_vtr.push_back(ncap_sym_init("acos",acos,acosf));  
+  sym_vtr.push_back(ncap_sym_init("asin",asin,asinf));
+  sym_vtr.push_back(ncap_sym_init("atan",atan,atanf));
+  sym_vtr.push_back(ncap_sym_init("cos",cos,cosf));  
+  sym_vtr.push_back(ncap_sym_init("exp",exp,expf));
+  sym_vtr.push_back(ncap_sym_init("fabs",fabs,fabsf));
+  sym_vtr.push_back(ncap_sym_init("log",log,logf));
+  sym_vtr.push_back(ncap_sym_init("log10",log10,log10f));
+  //sym_vtr.push_back(ncap_sym_init("rnd_nbr",rnd_nbr,rnd_nbrf));
+  sym_vtr.push_back(ncap_sym_init("sin",sin,sinf));
+  sym_vtr.push_back(ncap_sym_init("sqrt",sqrt,sqrtf));
+  sym_vtr.push_back(ncap_sym_init("tan",tan,tanf));
 
   /* Basic math synonyms: ln */
-  sym_vtr.push(ncap_sym_init("ln",log,logf)); /* ln() is synonym for log() */
+  sym_vtr.push_back(ncap_sym_init("ln",log,logf)); /* ln() is synonym for log() */
   
   /* Basic Rounding: ceil, fl<oor */
-  sym_vtr.push(ncap_sym_init("ceil",ceil,ceilf)); /* Round up to nearest integer */
-  sym_vtr.push(ncap_sym_init("floor",floor,floorf)); /* Round down to nearest integer */
+  sym_vtr.push_back(ncap_sym_init("ceil",ceil,ceilf)); /* Round up to nearest integer */
+  sym_vtr.push_back(ncap_sym_init("floor",floor,floorf)); /* Round down to nearest integer */
   
   /* fxm: Change whole function symbol table section to autotools format #if HAVE_ERF ... */
 
@@ -461,9 +461,9 @@ main(int argc,char **argv)
      20050610: C99 mandates support for erf(), erfc(), tgamma()
      Eventually users without C99 will forego ncap */
 #if defined(LINUX) || defined(LINUXAMD64)  || defined(MACOSX)
-  sym_vtr.push(ncap_sym_init("erf",erf,erff));
-  sym_vtr.push(ncap_sym_init("erfc",erfc,erfcf));
-  sym_vtr.push(ncap_sym_init("gamma",tgamma,tgammaf));
+  sym_vtr.push_back(ncap_sym_init("erf",erf,erff));
+  sym_vtr.push_back(ncap_sym_init("erfc",erfc,erfcf));
+  sym_vtr.push_back(ncap_sym_init("gamma",tgamma,tgammaf));
 #endif /* !LINUX */
 
   /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh
@@ -471,12 +471,12 @@ main(int argc,char **argv)
      20050610: C99 mandates support for acosh(), asinh(), atanh(), cosh(), sinh(), tanh()
      Eventually users without C99 will forego ncap */
 #if defined(LINUX) || defined(LINUXAMD64)
-  sym_vtr.push(ncap_sym_init("acosh",acosh,acoshf));
-  sym_vtr.push(ncap_sym_init("asinh",asinh,asinhf));
-  sym_vtr.push(ncap_sym_init("atanh",atanh,atanhf));
-  sym_vtr.push(ncap_sym_init("cosh",cosh,coshf));
-  sym_vtr.push(ncap_sym_init("sinh",sinh,sinhf));
-  sym_vtr.push(ncap_sym_init("tanh",tanh,tanhf));
+  sym_vtr.push_back(ncap_sym_init("acosh",acosh,acoshf));
+  sym_vtr.push_back(ncap_sym_init("asinh",asinh,asinhf));
+  sym_vtr.push_back(ncap_sym_init("atanh",atanh,atanhf));
+  sym_vtr.push_back(ncap_sym_init("cosh",cosh,coshf));
+  sym_vtr.push_back(ncap_sym_init("sinh",sinh,sinhf));
+  sym_vtr.push_back(ncap_sym_init("tanh",tanh,tanhf));
 #endif /* !LINUX */
   
   /* 20020703: AIX, MACOSX, SGI*, WIN32 do not define rintf
@@ -518,7 +518,7 @@ main(int argc,char **argv)
   dmn_lst=nco_dmn_lst(in_id,&nbr_dmn_in);
   
   //dmn_in=(dmn_sct **)nco_malloc(nbr_dmn_in*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_in;idx++) dmn_in_vtr.push(nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm));
+  for(idx=0;idx<nbr_dmn_in;idx++) dmn_in_vtr.push_back(nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm));
 
   //sort vector
   dmn_in_vtr.sort();
@@ -635,7 +635,7 @@ main(int argc,char **argv)
     dmn_new=nco_dmn_dpl(dmn_item);
     (void)nco_dmn_dfn(fl_out,out_id,&dmn_new,1);
     (void)nco_dmn_xrf(dmn_new,dmn_item);
-    (void)dmn_out_vtr.push(dmn_new);
+    (void)dmn_out_vtr.push_back(dmn_new);
    }  /* end loop over idx */
   
   /* Free current list of all dimensions in input file */
@@ -657,7 +657,7 @@ main(int argc,char **argv)
 	(void)nco_dmn_xrf(dmn_new,dmn_item);
 	/* Write dimension to output */
 	(void)nco_dmn_dfn(fl_out,out_id,&dmn_new,1);
-	(void)dmn_out_vtr.push(dmn_new);
+	(void)dmn_out_vtr.push_back(dmn_new);
       } /* end if */
       /* Add coordinate variable to extraction list, dimension has already been output */
       if(dmn_in_vtr[idx]->xrf){
