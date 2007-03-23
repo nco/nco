@@ -1784,7 +1784,7 @@ end_dot: ;
     | (#(VAR_ID LMT_LIST)) => #( vid:VAR_ID lmt:LMT_LIST) {
           int idx;
           int nbr_dmn;
-          char *var_nm;
+          const char *var_nm;
           var_sct *var_rhs;
           var_sct *var_nw;
           dmn_sct *dmn_nw;
@@ -1802,7 +1802,7 @@ end_dot: ;
             
           }
 
-          var_nm=strdup(vid->getText().c_str()); 
+          var_nm=vid->getText().c_str(); 
           var_rhs=ncap_var_init(vid->getText(),prs_arg,false);            
           nbr_dmn=var_rhs->nbr_dim;          
           lRef=lmt;
@@ -1886,10 +1886,7 @@ end_dot: ;
             (void)nco_lmt_free(lmt_vtr[idx]);
             (void)nco_dmn_free(dmn_vtr[idx]);
           }    
-          var_nm=(char*)nco_free(var_nm);
-
 end: ;
-      
 
     }
     // plain Variable
