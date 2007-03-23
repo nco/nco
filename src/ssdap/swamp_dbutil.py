@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: swamp_dbutil.py,v 1.32 2007-03-08 19:37:32 wangd Exp $
+# $Id: swamp_dbutil.py,v 1.33 2007-03-23 01:11:57 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -593,7 +593,7 @@ class JobPersistence:
         pass
     
     
-    def __init__(self, dbfile = defaultDbFilename):
+    def __init__(self, dbfile=defaultDbFilename, createIfEmpty=False):
         """ctor for JobPersistence"""
         self.connected = False
         if dbfile == None: self.dbFilename = self.defaultDbFilename
@@ -601,13 +601,14 @@ class JobPersistence:
         self.dbconnection = None
         self.dbcursor = None
         self.currentTaskRow = None
-        
+        self.createIfEmpty = createIfEmpty
         pass
     def connection(self):
         """only for intra-class use"""
         if not self.connected:
             # Create a connection to the database file "mydb"
             self.dbconnection = sqlite.connect(self.dbFilename)
+            
             # add: cached_statements=200 param for pysqlite 2.1.0+
             # tune for faster performance
             # see: http://www.sqlite.org/pragma.html
@@ -627,6 +628,12 @@ class JobPersistence:
                     else: #otherwise, pass the exception upwards.
                         raise e
                 pass
+            try:
+                cur.execute("SELECT * FROM tasks WHERE 1=2")
+                cur.fetchall() # flush the cursor
+            except: # if the table doesn't exist, create it.
+                self.buildTables(cur)
+            
             cur.close()
 
             cur = None
@@ -685,7 +692,7 @@ class JobPersistence:
     def newSetFileStateTransaction(self):
         return self.SetFileStateTransaction(self.connection())
 
-    def buildTables(self):
+    def buildTables(self, cursor=None):
         """Builds the set of tables needed for async operation"""
         ##
         ## consider having a table to store the actual script
@@ -729,8 +736,10 @@ class JobPersistence:
                    " CREATE INDEX nameuselist ON useList(concretename);"]
 
         # files can be planned, active, saved, removed, etc.
-
-        cur = self.cursor()
+        if cursor is None:
+            cur = self.cursor()
+        else:
+            cur = cursor
         try:
             cmd = "".join(taskcommand + ["\n"] + cmdcommand
                           + ["\n"] + inoutcommand + ["\n"] + filestate

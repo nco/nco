@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.3 2007-03-16 23:32:48 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.4 2007-03-23 01:11:57 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -14,14 +14,25 @@ __author__ = "Daniel L. Wang <wangd@uci.edu>"
 # Python imports
 import getopt
 import logging
+import md5
 import os
 import re
 import shlex
+import struct
+import time
 import types
 from pyparsing import *
 
 # SWAMP imports
 #
+from swamp_dbutil import JobPersistence
+
+
+#
+#
+class local:
+    dbFilename = "slave.sqlite"
+    pass
 
 class VariableParser:
     """treats shell vars "a=b" and env vars "export a=b" as the same for now.
@@ -525,6 +536,7 @@ class Parser:
         self.lineNum=0
         self.modules = []
         self.handlerDefaults()
+        self.handleFunc = None
         pass
 
     def handlers(self, newHandlers):
@@ -538,7 +550,12 @@ class Parser:
 
         pass
         
-
+    def commandHandler(self, handle):
+        """handler is a function reference.  the function is a unary
+        function: handle(ParserCommand)"""
+        self.handleFunc = handle
+        pass
+    
     def parseScript(self, script, factory):
         """Parse and accept/reject commands in a script, where the script
         is a single string containing script lines"""
@@ -547,7 +564,7 @@ class Parser:
             for mod in obj.modules:
                 if mod[0].accepts(argv):
                     cmd = mod[0].parse(line, argv, obj.lineNum, factory)
-                    return True
+                    return cmd
             return False
         for line in script.splitlines():
             self.lineNum += 1
@@ -571,14 +588,73 @@ class Parser:
             command = accept(self, argv)
             if isinstance(command, types.InstanceType):
                 command.referenceLineNum = self.lineNum
+                command.original = original
             if not command:
                 logging.debug(" ".join(["reject:", str(len(argv)), str(argv)]))
-
+            elif self.handleFunc is not None:
+                self.handleFunc(command)
+                
 
         pass
     
     pass
 
+class Scheduler:
+    def __init__(self):
+        self.transaction = None
+        self.env = {}
+        self.taskId = self.makeTaskId()
+        pass
+    def makeTaskId(self):
+        # As SWAMP matures, we should rethink the purpose of a taskid
+        # It's used now to disambiguate different tasks in the database
+        # and to provide a longer-lived way to reference a specific task.
+
+        # if we just need to disambiguate, just get some entropy.
+        # this should get us enough entropy
+        digest = md5.md5(str(time.time())).digest()
+        # take first 4 bytes, convert to hex, strip off 0x and L
+        ## assume int is 4 bytes. works on dirt (32bit) and tephra(64bit)
+        assert struct.calcsize("I") == 4 
+        taskid = hex(struct.unpack("I",digest[:4])[0])[2:-1]
+        return taskid
+    
+    def instanceJobPersistence(self):
+        """finds the class's instance of a JobPersistence object,
+        creating if necessary if it doesn't exist, and caching for
+        future use."""
+        if self.env.has_key("JobPersistence"):
+            o = self.env["JobPersistence"] 
+            if o != None:
+                return o
+        o = JobPersistence(local.dbFilename, True)
+        self.env["JobPersistence"] = o
+        return o
+
+
+    def initTransaction(self):
+        assert self.transaction is None
+        jp = self.instanceJobPersistence()
+        trans = jp.newPopulationTransaction()
+        self.persistedTask = trans.insertTask(self.taskId)
+        assert self.persistedTask is not None
+        self.transaction = trans
+        pass
+    
+    def schedule(self, parserCommand):
+        if self.transaction is None:
+            self.initTransaction()
+        print "scheduling", parserCommand
+        print dir(parserCommand)
+        self.transaction.insertCmd(parserCommand.referenceLineNum,
+                                   parserCommand.cmd, parserCommand.original)
+        #concrete = logical # defer concrete mapping
+        #self.transaction.insertInOut(linenum, logical, concrete, isInput, isTemp)
+        
+        pass
+    def finish(self):
+        self.transaction.finish()
+        pass
 
 class SwampInterface:
 
@@ -588,9 +664,11 @@ class SwampInterface:
     def submit(self, script):
         p = Parser()
         sch = Scheduler()
-        p.commandHandler(sch)
-        p.parseScript(script, NcoParser.CommandFactory)
-        task = sch.taskId()
+        p.commandHandler(sch.schedule)
+        cf = NcoParser.CommandFactory()
+        p.parseScript(script, cf)
+        sch.finish()
+        task = sch.taskId
         return task
 
     def fileStatus(self, logicalname):
@@ -667,9 +745,17 @@ def testParser2():
     cf = NcoParser.CommandFactory()
     p.parseScript(portion, cf)
 
+
+def testSwampInterface():
+    portionlist = open("full_resamp.swamp").readlines()[:10]
+    portion = "".join(portionlist)
+    si = SwampInterface()
+    taskid = si.submit(portion)
+    
 def main():
-    testParser2()
+    #testParser2()
     #testExpand()
+    testSwampInterface()
 
 if __name__ == '__main__':
     main()
