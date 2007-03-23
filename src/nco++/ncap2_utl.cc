@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.47 2007-03-19 16:33:14 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.48 2007-03-23 16:29:37 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -20,9 +20,11 @@
 /* have removed extern -- (not linking to ncap_lex.l */
 /*extern*/ char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in ncap_lex.l) */
 
+
+
 var_sct *                  /* O [sct] initialized variable */
 ncap_var_init(
-const char * const var_nm, /* I [sng] variable name constant */
+const std::string &snm,    /* I [sng] variable name constant */
 prs_sct *prs_arg,          /* I/O  vectors of atts,vars,dims, filenames */
 bool bfll)                 /* if true fill var with data */ 
 {
@@ -41,6 +43,7 @@ bool bfll)                 /* if true fill var with data */
   bool bskp_npt=false;
   
   char dmn_nm[NC_MAX_NAME];
+  const char *var_nm;
 
   dmn_sct *dmn_fd; 
   dmn_sct *dmn_nw;
@@ -51,6 +54,9 @@ bool bfll)                 /* if true fill var with data */
   var_sct *var;
 
   NcapVar *Nvar;
+
+  var_nm=snm.c_str();
+
 
   // INITIAL SCAN
   if(prs_arg->ntl_scn){
