@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.30 2007-03-19 16:32:27 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.31 2007-03-23 16:28:48 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -105,7 +105,7 @@ public:
 
 var_sct *                  /* O [sct] initialized variable */
 ncap_var_init(
-const char * const var_nm, /* I [sng] variable name constant */
+const std::string &snm, /* I [sng] variable name constant */
 prs_sct *prs_arg,          /* I/O  vectors of atts,vars,dims, filenames */
 bool bfll);                /* if true fill var with data */ 
 
