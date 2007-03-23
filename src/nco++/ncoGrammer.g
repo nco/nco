@@ -140,7 +140,7 @@ unaryleft_exp: meth_exp (
 
 
 // unary right association   
-unary_exp:  ( LNOT^| PLUS^| MINUS^ |INC^ | DEC^ ) unary_exp
+unary_exp:  ( LNOT^| PLUS^| MINUS^ |INC^ | DEC^ | TIMES^ ) unary_exp
             | unaryleft_exp
 	;
 
@@ -924,7 +924,7 @@ var_sct *var;
     ;
 
 // Parse assign statement - Initial Scan
-assign_ntl returns [var_sct *var]
+assign_ntl [bool bram] returns [var_sct *var]
 {
 const std::string fnc_nm("assign_ntl"); 
 var=NULL_CEWI;
@@ -936,14 +936,13 @@ var=NULL_CEWI;
                 dbg_prn(fnc_nm,vid->getText()+"(limits)");
 
 
-
-               char *var_nm; 
+               const char *var_nm; 
                var_sct *var_lhs;
                NcapVar *Nvar;              
 
-               var_nm=strdup(vid->getText().c_str());
+               var_nm=vid->getText().c_str();
 
-               var_lhs=ncap_var_init(var_nm,prs_arg,false);
+               var_lhs=ncap_var_init(vid->getText(),prs_arg,false);
                if(var_lhs){
                  var=nco_var_dpl(var_lhs);
                  (void)ncap_var_write(var_lhs,prs_arg);
@@ -956,7 +955,7 @@ var=NULL_CEWI;
                  Nvar=new NcapVar(var_lhs);
                  (void)prs_arg->ptr_int_vtr->push_ow(Nvar);
                }
-               var_nm=(char*)nco_free(var_nm);                                  
+               //var_nm=(char*)nco_free(var_nm);                                  
         }                    
  
         | (#(VAR_ID DMN_LIST ))=> #(vid1:VAR_ID dmn:DMN_LIST){   
@@ -1045,7 +1044,7 @@ var=NULL_CEWI;
                // Set class wide variables           
                bcst=false;
                var_cst=NULL_CEWI; 
-               
+             
 
                // get shape from RHS
                var1=out(vid2->getNextSibling());
@@ -1091,7 +1090,7 @@ var=NULL_CEWI;
     ; // end assign block
 
 
-assign returns [var_sct *var]
+assign [bool bram] returns [var_sct *var]
 {
 const std::string fnc_nm("assign"); 
 var=NULL_CEWI;
@@ -1102,7 +1101,7 @@ var=NULL_CEWI;
                int idx;
                int nbr_dmn;
                int var_id; 
-               char *var_nm;
+               const char *var_nm;
                
               if(dbg_lvl_get() > 0)
                 dbg_prn(fnc_nm,vid->getText()+"(limits)");
@@ -1123,7 +1122,7 @@ var=NULL_CEWI;
               
 
               
-               var_nm=strdup(vid->getText().c_str());
+               var_nm=vid->getText().c_str();
 
                lmt_Ref=lmt;               
 
@@ -1134,7 +1133,7 @@ var=NULL_CEWI;
                if(Nvar==NULL || ( Nvar && Nvar->flg_stt==1)){              
                   // if var isn't in ouptut then copy it there
                  //rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
-                 var_lhs=ncap_var_init(var_nm,prs_arg,true);
+                 var_lhs=ncap_var_init(vid->getText(),prs_arg,true);
 
                  // copy atts to output
                  (void)ncap_att_cpy(vid->getText(),vid->getText(),prs_arg);
@@ -1144,7 +1143,7 @@ var=NULL_CEWI;
                // Get "new" var_id   
                (void)nco_inq_varid(prs_arg->out_id,var_nm,&var_id);
 
-               var_lhs=ncap_var_init(var_nm,prs_arg,false);
+               var_lhs=ncap_var_init(vid->getText(),prs_arg,false);
 
                nbr_dmn=var_lhs->nbr_dim;
 
@@ -1220,11 +1219,9 @@ var=NULL_CEWI;
               var_rhs=nco_var_free(var_rhs);
 
               //get variable again from disk!! for return value
-              var=ncap_var_init(var_nm,prs_arg,true);
+              var=ncap_var_init(vid->getText(),prs_arg,true);
 
                
-              var_nm=(char*)nco_free(var_nm);
-
                // Empty and free vector 
               for(idx=0 ; idx < nbr_dmn ; idx++)
                 (void)nco_lmt_free(lmt_vtr[idx]);
@@ -1287,7 +1284,7 @@ var=NULL_CEWI;
 
               var1->nm =strdup(vid1->getText().c_str());
 
-              //Copy return variable
+              //Copy return variable<
               var=nco_var_dpl(var1);
               
               //call to nco_var_get() in ncap_var_init() uses this property
@@ -1471,10 +1468,27 @@ out returns [var_sct *var]
 	| #(div_asn:DIVIDE_ASSIGN var1=out_asn var2=out)	
             { var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN,prs_arg );}	
     | #(ASSIGN asn:. ) 
-            { if(prs_arg->ntl_scn)
-                var=assign_ntl(asn); 
-              else
-                var=assign(asn);
+            {
+              // Check for RAM variable - if present 
+              // change tree - for example from:
+              //     ( EXPR ( = ( * n1 ) ( + four four ) ) )
+              // to  ( EXPR ( = n1 ( + four four ) ) )
+             RefAST tr;
+             bool bram;
+             if(asn->getType()==TIMES){
+               tr=asn->getFirstChild();
+               tr->setNextSibling(asn->getNextSibling());
+               bram=true;
+             } else { 
+               tr=asn; 
+               bram=true;
+             }
+
+             if(prs_arg->ntl_scn)
+               var=assign_ntl(tr,bram); 
+             else
+               var=assign(tr,bram);
+               
             }  
 
     // The following properties are shared by vars & atts
@@ -1789,7 +1803,7 @@ end_dot: ;
           }
 
           var_nm=strdup(vid->getText().c_str()); 
-          var_rhs=ncap_var_init(var_nm,prs_arg,false);            
+          var_rhs=ncap_var_init(vid->getText(),prs_arg,false);            
           nbr_dmn=var_rhs->nbr_dim;          
           lRef=lmt;
 
@@ -1882,7 +1896,7 @@ end: ;
 	|   v:VAR_ID       
         { 
 
-          var=ncap_var_init(v->getText().c_str(), prs_arg,true);
+          var=ncap_var_init(v->getText(), prs_arg,true);
           if(var== NULL){
                if(prs_arg->ntl_scn){
                  var=ncap_var_udf(v->getText().c_str());
@@ -2040,7 +2054,7 @@ var=NULL_CEWI;
           if(vid->getFirstChild())
                err_prn(fnc_nm,"Invalid Lvalue " +vid->getText() );
 
-          var=ncap_var_init(vid->getText().c_str(),prs_arg,true);
+          var=ncap_var_init(vid->getText(),prs_arg,true);
           if(var== NULL_CEWI){
                nco_exit(EXIT_FAILURE);
           }
