@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.394 2007-03-24 23:06:38 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.395 2007-03-24 23:33:42 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -653,11 +653,14 @@ Searching <a href="http://rpmfind.net">rpmfind.net</a> for NCO yields these
 <a name="drw"></a>
 <a name="macosx"></a>
 <a name="osx"></a>
+<a name="macports"></a>
+<a name="fink"></a>
 <h3><a href="http://www.apple.com/macosx/">Mac&nbsp;OS&nbsp;X/Darwin</a></h3>
 <ul>
-<a href="http://fink.sf.net/pdb/package.php/nco">Mac&nbsp;OS&nbsp;X/Darwin homepage for NCO</a>.
-<a href="http://fink.sf.net">Fink packages</a> by Takeshi Enomoto:
-<li><a href="http://fink.sf.net/pdb/package.php/nco">nco-2.9.9-darwin-powerpc.deb</a>: Mac&nbsp;OS&nbsp;X&nbsp;10.3, PowerPC package</li>
+<a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">MacPorts homepage for NCO</a>.
+<a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a> infrastructure by Takeshi Enomoto:
+<li><a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">Portfile</a> Currently for NCO 3.1.9</li>
+Old and deprecated <a href="http://fink.sf.net/pdb/package.php/nco">Fink packages for NCO</a>
 </ul>
 <hr></p>
 

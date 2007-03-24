@@ -226,7 +226,7 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
     if(lmt_ptr->max_sng == NULL) lmt_ptr->is_usr_spc_max=False; else lmt_ptr->is_usr_spc_max=True;
     if(lmt_ptr->min_sng == NULL) lmt_ptr->is_usr_spc_min=False; else lmt_ptr->is_usr_spc_min=True;
 
-    lmt_vtr.push(lmt_ptr);
+    lmt_vtr.push_back(lmt_ptr);
 
 
    } // end idx
@@ -373,8 +373,12 @@ public:
 	}
 	public: int  lmt_peek(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: void statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
-	public: var_sct * assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
-	public: var_sct * assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
+	public: var_sct * assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
+		bool bram
+	);
+	public: var_sct * assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
+		bool bram
+	);
 	public: var_sct * out(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 public:
