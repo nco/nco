@@ -482,7 +482,7 @@
 /* Compatibility pvmgetarch token for IRIX on SGI MIPS */
 #undef SGIMP64
 
-/* The size of a `int*', as computed by sizeof. */
+/* The size of `int*', as computed by sizeof. */
 #undef SIZEOF_INTP
 
 /* Define to 1 if you have the ANSI C header files. */
@@ -534,7 +534,7 @@
 /* Define to `int' if <sys/types.h> does not define. */
 #undef pid_t
 
-/* Define to `unsigned' if <sys/types.h> does not define. */
+/* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
 
 /* Define to `int' if <sys/types.h> doesn't define. */

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.220 2007-03-11 02:45:20 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.221 2007-03-24 23:06:38 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -98,7 +98,7 @@ case ${host} in
 	;;
     mips*-sgi-irix* ) AC_DEFINE(SGIMP64,1,Compatibility pvmgetarch token for IRIX on SGI MIPS)
 	;;
-    powerpc-apple-darwin* ) AC_DEFINE(MACOSX,1,Compatibility pvmgetarch token for Apple Mac OSX) MACOSX=1 ;
+    *-apple-darwin* ) AC_DEFINE(MACOSX,1,Compatibility pvmgetarch token for Apple Mac OSX) MACOSX=1 ;
 	;;
     powerpc-ibm-aix* ) AC_DEFINE(AIX,1,Compatibility pvmgetarch token for AIX on IBM PowerPC)
 	;;
@@ -862,7 +862,7 @@ if test "${enable_debug_custom}" = 'yes'; then
 		CFLAGS="${CFLAGS} -trapuv"
 	    fi
 	    ;;
-	powerpc-apple-darwin* )
+	*-apple-darwin* )
 	    ;;
 	powerpc-ibm-aix* )
 	    case ${CC} in
