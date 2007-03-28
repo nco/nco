@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.4 2007-03-23 01:11:57 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.5 2007-03-28 07:49:51 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -391,6 +391,41 @@ class NcoParser:
             self.inputs = inouts[0]
             self.outputs = inouts[1]
             self.referenceLineNum = referenceLineNum
+            pass
+        # need to map all non-input filenames.
+        # apply algorithm to find temps and outputs
+        # then mark them as remappable.
+        # this can be done in the mapping function.
+        
+        def remapFiles(self, mapFunction):
+            pass
+        def remapFile(self, logical, mapInput, mapOutput):
+            if logical in self.inputs:
+                return mapInput(logical)
+            elif logical in self.outputs:
+                return mapOutput(logical)
+            else:
+                return logical
+            
+        def makeCommandLine(self, mapInput, mapOutput):
+            cmdLine = [self.cmd]
+            # the "map" version looks a little funny.
+            #cmdLine += map(lambda (k,v): [k, self.remapFile(v,
+            #                                            mapInput,
+            #                                            mapOutput)],
+            #               self.argList)
+            cmdLine += reduce(lambda a,t: a+[t[0], self.remapFile(t[1],
+                                                                  mapInput,
+                                                                  mapOutput)],
+                              self.argList, [])
+            
+            cmdLine += map(lambda f: self.remapFile(f, mapInput, mapOutput),
+                           self.leftover)
+            # don't forget to remove the '' entries
+            # that got pulled in from the arglist
+            return filter(lambda x: x != '', cmdLine)
+            pass
+        
     class CommandFactory:
         """this is needed because we want to:
         a) connect commands together
@@ -465,7 +500,9 @@ class NcoParser:
             # first, reassign inputs and outputs.
             newinputs = map(self.mapInput, inouts[0])
             newoutputs = map(self.mapOutput, inouts[1])
-
+            print inouts
+            inouts = (newinputs, newoutputs)
+            print inouts
             c = NcoParser.Command(cmd, argtriple, inouts, referenceLineNum)
             
             for out in inouts[1]:
@@ -644,13 +681,17 @@ class Scheduler:
     def schedule(self, parserCommand):
         if self.transaction is None:
             self.initTransaction()
-        print "scheduling", parserCommand
-        print dir(parserCommand)
         self.transaction.insertCmd(parserCommand.referenceLineNum,
                                    parserCommand.cmd, parserCommand.original)
         #concrete = logical # defer concrete mapping
-        #self.transaction.insertInOut(linenum, logical, concrete, isInput, isTemp)
+        def insert(f, isOutput):
+            self.transaction.insertInOutDefer(parserCommand.referenceLineNum,
+                                          f, f, isOutput, 1)
+            pass
+        map(lambda f: insert(f, False), parserCommand.inputs)
+        map(lambda f: insert(f, True), parserCommand.outputs)
         
+        print parserCommand.makeCommandLine(lambda x: x, lambda y:y)
         pass
     def finish(self):
         self.transaction.finish()
@@ -745,6 +786,18 @@ def testParser2():
     cf = NcoParser.CommandFactory()
     p.parseScript(portion, cf)
 
+def testParser3():
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(levelname)s %(message)s',
+                        datefmt='%d%b%Y %H:%M:%S')
+
+    p = Parser()
+    portionlist = ["ncwa in.nc temp.nc", "ncwa temp.nc temp.nc",
+                   "ncwa temp.nc out.nc"]
+    portion = "\n".join(portionlist)
+    cf = NcoParser.CommandFactory()
+    p.parseScript(portion, cf)
+ 
 
 def testSwampInterface():
     portionlist = open("full_resamp.swamp").readlines()[:10]
@@ -753,7 +806,7 @@ def testSwampInterface():
     taskid = si.submit(portion)
     
 def main():
-    #testParser2()
+    #testParser3()
     #testExpand()
     testSwampInterface()
 

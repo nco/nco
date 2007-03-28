@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: swamp_dbutil.py,v 1.33 2007-03-23 01:11:57 wangd Exp $
+# $Id: swamp_dbutil.py,v 1.34 2007-03-28 07:49:50 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -200,6 +200,21 @@ class JobPersistence:
                 else:
                     self.stateList.append((str(concrete),state))
             return fileid
+        def insertInOutDefer(self, linenum, logical, concrete,
+                             output, state):
+            """an "always-defer" version of insertInOut.  Logical names
+            have become canonical, since we assume we'll have
+            file-renaming code. to prevent ambiguity.
+            Also, we're deferring concrete name assignment until run-time,
+            to facilitate work delegation.
+            """
+            assert self.taskRow is not None
+            outnum = [0,1][output == True]
+            self.inOutList.append((self.taskRow, linenum, outnum,
+                                   str(logical), str(concrete)))
+            if output:
+                self.stateList.append((str(concrete),state))
+            return None            
         def commitInOuts(self):
             """Commit those inserts that were queued earlier during insertInOut
             Shouldn't need to be called by client code.  Might make this a
