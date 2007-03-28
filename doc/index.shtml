@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.395 2007-03-24 23:33:42 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.396 2007-03-28 16:52:43 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -1157,6 +1157,7 @@ Bug-fixes:
 
 <!-- http://nco.sf.net#Contact -->
 <!-- http://nco.sf.net#help -->
+<a name="hlp"></a><a name="help"></a><a name="Help"></a>
 <dt><a name="Contact"></a></dt>
 <h2>Contacting Us:</h2>
 <p>Contact us through the Project Forums (rather than personal e-mail)
