@@ -1,3 +1,8 @@
+2007-03-29  Charlie Zender  <zender@uci.edu>
+
+	* Fold in Daniel's nco.spec change required for 64-bit builds on
+	hybrid 32/64-bit systems, e.g., RHEL, CentOS 
+
 2007-03-29  Henry Butowsky <henryb@hush.com>
 	 
 	* first cut of RAM variables new syntax works

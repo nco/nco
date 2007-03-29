@@ -8,7 +8,7 @@ URL:            http://nco.sourceforge.net/
 
 # Obtain NCO version 3.1.9-1 tar.gz from Sourceforge using CVS:
 # cvs -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco login
-# cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-3_1_8-1 -d nco-%{version} nco
+# cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-3_1_9-1 -d nco-%{version} nco
 # tar czf nco-%{version}.tar.gz --exclude='nco-3.1.9/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude='ncap_yacc.[ch]' ./nco-%{version}
 Source0:        nco-%{version}.tar.gz
 #Patch0:		nco_install_C_headers.patch
@@ -63,6 +63,8 @@ autoconf
 # Explicitly set system netCDF directories to override development netCDF
 # installations in, e.g., /usr/local
 export CPPFLAGS=-I%{_includedir}/netcdf-3
+# Required for 64-bit builds on hybrid 32/64-bit systems, e.g., RHEL, CentOS
+# export LDFLAGS="-L%{_libdir}/netcdf-3 -L/usr/lib64"
 export LDFLAGS=-L%{_libdir}/netcdf-3
 export CFLAGS="$RPM_OPT_FLAGS -fPIC"
 export CXXFLAGS="$RPM_OPT_FLAGS -fpermissive -fPIC"
