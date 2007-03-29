@@ -37,12 +37,13 @@ public:
 
   //constructors n.b var->nm should match var_nm@att_nm
 
-  NcapVar(var_sct *var_in, std::string sin="" ) {
+  NcapVar(var_sct *var_in, std::string sin="") {
     size_t  att_char_posn;
     if(sin=="") sin=std::string(var_in->nm);
 
     var=var_in;
     fll_nm=sin;  
+    //flg_mem=_flg_mem;  
 
     rfr_ast=ANTLR_USE_NAMESPACE(antlr)nullAST; 
     flg_udf=(var_in->undefined==True);
@@ -102,10 +103,15 @@ public:
 
   //Copy variable no data
   var_sct *cpyVarNoData(){
+    void *vp;
     var_sct *var_ret;
+
+    vp=var->val.vp;
+    var->val.vp=(void*)NULL;
     var_ret=nco_var_dpl(var);
-    if(var_ret->val.vp !=NULL) 
-      var_ret->val.vp=(void*)nco_free(var_ret->val.vp);
+    
+    // Restore Original Value
+    var->val.vp=vp;
 
     return var_ret;
   }

@@ -945,7 +945,7 @@ var=NULL_CEWI;
                var_lhs=ncap_var_init(vid->getText(),prs_arg,false);
                if(var_lhs){
                  var=nco_var_dpl(var_lhs);
-                 (void)ncap_var_write(var_lhs,prs_arg);
+                 (void)ncap_var_write(var_lhs,false,prs_arg);
                } else {
 
                  // set var to udf
@@ -955,7 +955,6 @@ var=NULL_CEWI;
                  Nvar=new NcapVar(var_lhs);
                  (void)prs_arg->ptr_int_vtr->push_ow(Nvar);
                }
-               //var_nm=(char*)nco_free(var_nm);                                  
         }                    
  
         | (#(VAR_ID DMN_LIST ))=> #(vid1:VAR_ID dmn:DMN_LIST){   
@@ -1022,7 +1021,7 @@ var=NULL_CEWI;
                 var->nm=(char*)nco_free(var->nm);
                 var->nm=strdup(var_nm);
                 var1=nco_var_dpl(var);
-                ncap_var_write(var1,prs_arg);
+                ncap_var_write(var1,bram,prs_arg);
              }
 
               if(var_cst)
@@ -1056,7 +1055,7 @@ var=NULL_CEWI;
                 
                // Write var to int_vtr
                // if var already in int_vtr or var_vtr then write call does nothing
-               (void)ncap_var_write(var1,prs_arg);
+               (void)ncap_var_write(var1,bram,prs_arg);
                
         
            } // end action
@@ -1137,7 +1136,7 @@ var=NULL_CEWI;
 
                  // copy atts to output
                  (void)ncap_att_cpy(vid->getText(),vid->getText(),prs_arg);
-                 (void)ncap_var_write(var_lhs,prs_arg);
+                 (void)ncap_var_write(var_lhs,false,prs_arg);
                }
  
                // Get "new" var_id   
@@ -1289,7 +1288,7 @@ var=NULL_CEWI;
               
               //call to nco_var_get() in ncap_var_init() uses this property
               var1->typ_dsk=var1->type;
-              (void)ncap_var_write(var1,prs_arg);
+              (void)ncap_var_write(var1,bram,prs_arg);
 
               bcst=false;
               var_cst=nco_var_free(var_cst); 
@@ -1332,7 +1331,7 @@ var=NULL_CEWI;
                //Copy return variable
                var=nco_var_dpl(var1);
                // Write var to disk
-               (void)ncap_var_write(var1,prs_arg);
+               (void)ncap_var_write(var1,bram,prs_arg);
                          
        } // end action
  
@@ -1378,6 +1377,12 @@ out returns [var_sct *var]
            { var=ncap_var_var_op(var1,var2, PLUS );}
 	|  (#(MINUS out out)) => #( MINUS var1=out var2=out)
             { var=ncap_var_var_op(var1,var2, MINUS );}
+    |  (#(TIMES #(POST_INC out)))=> #( TIMES #(POST_INC var1=out_asn)){
+             var=ncap_var_var_inc(var1,NULL_CEWI,POST_INC,true,prs_arg);      
+       } 
+    |  (#(TIMES #(POST_DEC out)))=> #( TIMES #(POST_DEC var1=out_asn)){
+             var=ncap_var_var_inc(var1,NULL_CEWI,POST_DEC,true,prs_arg);      
+       } 
 	|	#(TIMES var1=out var2=out)
             { var=ncap_var_var_op(var1,var2, TIMES );}	
 	|	#(DIVIDE var1=out var2=out)	
@@ -1395,14 +1400,16 @@ out returns [var_sct *var]
     |   #(PLUS var1=out ) // do nothing   
 
     |   #(INC var1=out_asn )      
-            { var=ncap_var_var_inc(var1,NULL_CEWI, INC,prs_arg);}
+            { var=ncap_var_var_inc(var1,NULL_CEWI,INC,false,prs_arg);}
     |   #(DEC var1=out_asn )      
-            { var=ncap_var_var_inc(var1,NULL_CEWI, DEC,prs_arg );}
+            { var=ncap_var_var_inc(var1,NULL_CEWI, DEC,false,prs_arg );}
     
-    |   #(POST_INC var1=out_asn )      
-            { var=ncap_var_var_inc(var1,NULL_CEWI, POST_INC,prs_arg);}
-    |   #(POST_DEC var1=out_asn )      
-            { var=ncap_var_var_inc(var1,NULL_CEWI, POST_DEC,prs_arg );}
+    |   #(POST_INC var1=out_asn ){
+            var=ncap_var_var_inc(var1,NULL_CEWI,POST_INC,false,prs_arg);
+        }
+    |   #(POST_DEC var1=out_asn ){      
+            var=ncap_var_var_inc(var1,NULL_CEWI,POST_DEC,false,prs_arg);
+        }
 
     //ternary Operator
     |   #( qus:QUESTION var1=out) {
@@ -1459,14 +1466,23 @@ out returns [var_sct *var]
             { var=ncap_var_var_op(var1,var2, NEQ );}
 
     // Assign Operators 
-    | #(pls_asn:PLUS_ASSIGN  var1=out_asn var2=out)  
-            { var=ncap_var_var_inc(var1,var2, PLUS_ASSIGN , prs_arg);}
-	| #(min_asn:MINUS_ASSIGN var1=out_asn var2=out)
-            { var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN, prs_arg );}
-	| #(tim_asn:TIMES_ASSIGN var1=out_asn var2=out)
-            { var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN, prs_arg );}	
-	| #(div_asn:DIVIDE_ASSIGN var1=out_asn var2=out)	
-            { var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN,prs_arg );}	
+    | #(PLUS_ASSIGN pls_asn:. var2=out) {
+       var1=out_asn(pls_asn);
+       var=ncap_var_var_inc(var1,var2, PLUS_ASSIGN ,(pls_asn->getType()==TIMES), prs_arg);
+       }
+	| #(MINUS_ASSIGN min_asn:. var2=out){
+       var1=out_asn(min_asn);
+       var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN ,(min_asn->getType()==TIMES), prs_arg);
+       }
+	| #(TIMES_ASSIGN tim_asn:. var2=out){       
+       var1=out_asn(tim_asn);
+       var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN ,(tim_asn->getType()==TIMES), prs_arg);
+       }
+	| #(DIVIDE_ASSIGN div_asn:. var2=out){	
+       var1=out_asn(div_asn);
+       var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN ,(div_asn->getType()==TIMES), prs_arg);
+       }
+
     | #(ASSIGN asn:. ) 
             {
               // Check for RAM variable - if present 
@@ -1481,7 +1497,7 @@ out returns [var_sct *var]
                bram=true;
              } else { 
                tr=asn; 
-               bram=true;
+               bram=false;
              }
 
              if(prs_arg->ntl_scn)
@@ -2046,7 +2062,18 @@ const std::string fnc_nm("assign_asn");
 var=NULL_CEWI; 
 }
 
-	:   vid:VAR_ID       
+   : #(TIMES vid1:VAR_ID)
+        { 
+          if(vid1->getFirstChild())
+               err_prn(fnc_nm,"Invalid Lvalue " +vid1->getText() );
+
+          var=ncap_var_init(vid1->getText(),prs_arg,true);
+          if(var== NULL_CEWI){
+               nco_exit(EXIT_FAILURE);
+          }
+
+        }
+	|   vid:VAR_ID       
         { 
           if(vid->getFirstChild())
                err_prn(fnc_nm,"Invalid Lvalue " +vid->getText() );

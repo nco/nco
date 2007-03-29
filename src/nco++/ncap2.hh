@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.31 2007-03-23 16:28:48 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.32 2007-03-29 11:50:36 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -112,6 +112,7 @@ bool bfll);                /* if true fill var with data */
 int                /* O  [bool] bool - ture if sucessful */
 ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */ 
 (var_sct *var,     /* I  [sct] variable to be written - freed at end */  
+ bool bram,        /* I  [bool] true if a ram only variable */
 prs_sct *prs_arg); /* I/O vectors of atts & vars & file names  */
 
 
@@ -213,6 +214,7 @@ ncap_var_var_inc    /* [fnc] Add two variables */
 (var_sct *var1,     /* I [sct] Input variable structure containing first operand */
  var_sct *var2,     /* I [sct] Input variable structure containing second operand */
  int op,            /* Deal with incremental operators i.e +=,-=,*=,/= */
+ bool bram,         /* I [flg] Make a RAM variable */
  prs_sct *prs_arg);
 
 var_sct *             /* O [sct] Sum of input variables (var1+var2) INITIAL SCAN ONLY */
