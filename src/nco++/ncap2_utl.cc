@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.48 2007-03-23 16:29:37 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.49 2007-03-29 11:50:08 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -73,6 +73,7 @@ bool bfll)                 /* if true fill var with data */
     bfll=false;
   }
 
+
   // FINAL SCAN
   // We have a  dilema -- its possible for a variable to exist in input & output 
   // with the var in output defined but empty - -this could occur with the
@@ -85,13 +86,21 @@ bool bfll)                 /* if true fill var with data */
     Nvar=prs_arg->ptr_var_vtr->find(var_nm);
    
     // var is defined in O and populated
-    if(Nvar && Nvar->flg_stt==2){
+    if(Nvar && Nvar->flg_stt==2 && !Nvar->flg_mem){
       var=Nvar->cpyVarNoData();
       //var=Nvar->cpyVar();
       fl_id=prs_arg->out_id; 
       //yuck - yuck use a goto
       goto lbl_end; 
     }
+    // var is defined in O and populated && a RAM variable
+    if(Nvar && Nvar->flg_stt==2 && Nvar->flg_mem){
+      var=Nvar->cpyVar();
+      var->tally=(long *)NULL;
+      return var;
+    }
+
+
     // var is defined in O but NOT populated
     // Set flag so read is tried only from input
     // Maybe not the best solution ?
@@ -190,9 +199,10 @@ lbl_end:
   return var;
 } /* end ncap_var_init() */
 
-int                /* O  [bool] bool - ture if sucessful */
+int                /* O  [bool] bool - true if sucessful */
 ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */ 
 (var_sct *var,     /* I  [sct] variable to be written - freed at end */  
+ bool bram,        /* I  [bool] true if a ram only variable */
  prs_sct *prs_arg) /* I/O vectors of atts & vars & file names  */
 {
   /* Purpose: Define variable in output file and write variable */
@@ -225,7 +235,8 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
       return True;
     }  
       
-    Nvar=new NcapVar(var);
+    Nvar=new NcapVar(var,"");
+    Nvar->flg_mem=bram;
     prs_arg->ptr_int_vtr->push(Nvar);
     return True;
   } 
@@ -238,8 +249,60 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
     bdef=true;
   } 
 
+
+  // Deal with a RAM variable
+  if(bdef && Nvar->flg_mem){
+    var_sct *var_inf;
+    var_sct* var_swp;
+
+    var_inf=Nvar->cpyVarNoData();
+
+
+    /* check sizes are the same */
+    if(var_inf->sz != var->sz) {
+      std::ostringstream os;
+      os<< "RAM Variable "<< var->nm << " size=" << var->sz << " has aleady been saved in ";
+      os<< prs_arg->fl_out << " with size=" << var_inf->sz;
+       
+      wrn_prn(fnc_nm,os.str());  
+
+      var = nco_var_free(var);
+      var_inf=nco_var_free(var_inf);
+      return False;
+    }
+
+    /* convert type to disk type */
+    var=nco_var_cnf_typ(var_inf->type,var);    
+
+    //Swap values about  
+
+    var_inf->val=var->val;
+    var->val.vp=(void*)NULL;
+
+
+    // Check for "new" missing value;
+    if(var->has_mss_val){
+    //Swap values about  
+     var_swp->mss_val.vp=var_inf->mss_val.vp;
+     var_inf->mss_val.vp=var->mss_val.vp; 
+     var->mss_val.vp=var_swp->mss_val.vp;
+     var_inf->has_mss_val=true; 
+    }     
+    (void)nco_var_free(Nvar->var);  
+     Nvar->var=var_inf;     
+     Nvar->flg_stt=2;
+
+     assert(Nvar->var->val.vp !=NULL);
+
+    (void)nco_var_free(var);
+
+    return true;
+  }
+
+
+
   // var is already defined & populated in output 
-  if(bdef && Nvar->flg_stt==2){
+  if(bdef && !Nvar->flg_mem && Nvar->flg_stt==2){
     var_sct* var_swp;
     var_sct* var_inf;
     var_inf=Nvar->cpyVarNoData();
@@ -270,6 +333,18 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
     var_out_id=var->id;
    
   } 
+
+  // Deal with a new RAM only variable
+  if(!bdef && bram){
+    NcapVar *NewNvar=new NcapVar(var,"");
+    NewNvar->flg_mem=bram;
+    NewNvar->flg_stt=2;
+    NewNvar->var->id=-1;
+    NewNvar->var->nc_id=-1;
+    prs_arg->ptr_var_vtr->push(NewNvar);
+    return True;
+  }
+
 
   rcd=nco_inq_varid_flg(prs_arg->out_id,var->nm,&var_out_id);
 
@@ -1617,6 +1692,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
 (var_sct *var1,    /* I [sct] Input variable structure containing first operand */
  var_sct *var2,    /* I [sct] Input variable structure containing second operand */
  int op,            /* Deal with incremental operators i.e +=,-=,*=,/= */
+ bool bram,         /* I [bool] If true make a RAM variable */ 
  prs_sct *prs_arg)
 {
 
@@ -1636,7 +1712,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
     // deal with variable
     if(!vb1){
       var_ret=nco_var_dpl(var1); 
-      (void)ncap_var_write(var1,prs_arg);  
+      (void)ncap_var_write(var1,bram,prs_arg);  
       // deal with attribute 
     }else{
       var_ret=var1;
@@ -1660,7 +1736,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
       var1=ncap_var_var_stc(var1,var2,op);
     }
     if(!vb1){
-      (void)ncap_var_write(var1,prs_arg);  
+      (void)ncap_var_write(var1,bram,prs_arg);  
     }else{
       std::string sa(var1->nm);
       NcapVar *Nvar=new NcapVar(var1,sa);
@@ -1717,7 +1793,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
    
   // if LHS is a variable then write to disk
   if(!vb1){
-    ncap_var_write(var1,prs_arg);
+    ncap_var_write(var1,bram,prs_arg);
   }else{
     // deal with attribute
    std::string sa(var1->nm);
@@ -2146,13 +2222,20 @@ sz=prs_arg->ptr_int_vtr->size();
    if( !Nvar->flg_udf && Nvar->xpr_typ==ncap_var) {
                
      if(dbg_lvl_get() > 0)
-       dbg_prn(fnc_nm, Nvar->getFll()+" - defined in output.");
+       dbg_prn(fnc_nm, Nvar->getFll()+ ( !Nvar->flg_mem ? " - defined in output.": " - RAM variable") );
 
      // define variable
-     (void)nco_def_var(prs_arg->out_id,var1->nm,var1->type,var1->nbr_dim,var1->dmn_id,&var_id);
-     Nvar->var->id=var_id;
-     Nvar->var->nc_id=prs_arg->out_id;
-     Nvar->flg_stt=1;
+     if(!Nvar->flg_mem) {
+       (void)nco_def_var(prs_arg->out_id,var1->nm,var1->type,var1->nbr_dim,var1->dmn_id,&var_id);
+       Nvar->var->id=var_id;
+       Nvar->var->nc_id=prs_arg->out_id;
+       Nvar->flg_stt=1;
+     } else { 
+       //deal with RAM only var        
+       Nvar->var->id=-1;
+       Nvar->var->nc_id=-1;
+       Nvar->flg_stt=1;
+     }
      // save newly defined var in output vector
 
      Cvar=new NcapVar(*Nvar);
