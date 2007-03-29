@@ -1,3 +1,9 @@
+2007-03-29  Henry Butowsky <henryb@hush.com>
+	 
+	* first cut of RAM variables new syntax works
+	with assign operators (=,-=,+=,/=, *=) and post increment &
+	post decrement operators
+
 2007-03-24  Charlie Zender  <zender@uci.edu>
 
 	* Update configure.in for Mac OS X on Intel
