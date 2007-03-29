@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.5 2007-03-28 07:49:51 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.6 2007-03-29 18:24:41 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -158,7 +158,7 @@ class VariableParser:
         scanString
     def apply(self, fragment):
         fragment = self.expand2(fragment)
-        print "try ", fragment
+        #print "try ", fragment
         identifier = VariableParser.identifier.copy()
         def tryconvert(v):
             if v in self.varMap:
@@ -500,9 +500,9 @@ class NcoParser:
             # first, reassign inputs and outputs.
             newinputs = map(self.mapInput, inouts[0])
             newoutputs = map(self.mapOutput, inouts[1])
-            print inouts
+
             inouts = (newinputs, newoutputs)
-            print inouts
+
             c = NcoParser.Command(cmd, argtriple, inouts, referenceLineNum)
             
             for out in inouts[1]:
@@ -653,7 +653,7 @@ class Scheduler:
         # take first 4 bytes, convert to hex, strip off 0x and L
         ## assume int is 4 bytes. works on dirt (32bit) and tephra(64bit)
         assert struct.calcsize("I") == 4 
-        taskid = hex(struct.unpack("I",digest[:4])[0])[2:-1]
+        taskid = hex(struct.unpack("I",digest[:4])[0])[2:10] 
         return taskid
     
     def instanceJobPersistence(self):
@@ -690,8 +690,9 @@ class Scheduler:
             pass
         map(lambda f: insert(f, False), parserCommand.inputs)
         map(lambda f: insert(f, True), parserCommand.outputs)
-        
-        print parserCommand.makeCommandLine(lambda x: x, lambda y:y)
+
+
+        cmdline = parserCommand.makeCommandLine(lambda x: x, lambda y:y)
         pass
     def finish(self):
         self.transaction.finish()
@@ -710,12 +711,24 @@ class SwampInterface:
         p.parseScript(script, cf)
         sch.finish()
         task = sch.taskId
+        print len(task)
         return task
 
+
     def fileStatus(self, logicalname):
-        state = 0
+        """return state of file by name"""
+
         # go check db for state
-        return state
+        dbfile = "/dev/shm/ssdap_ram.sqlite"
+        jp = JobPersistence(dbfile)
+        poll = jp.newPollingTransaction()
+        i = poll.pollFileStateByLogical(logicalname)
+        jp.close()
+        if i is not None:
+            return i
+        else:
+            return -32768
+        pass
 
 
     def taskFileStatus(self, taskid):
@@ -801,10 +814,11 @@ def testParser3():
 
 def testSwampInterface():
     portionlist = open("full_resamp.swamp").readlines()[:10]
+    #portionlist = open("full_resamp.swamp").readlines()
     portion = "".join(portionlist)
     si = SwampInterface()
     taskid = si.submit(portion)
-    
+    print "submitted with taskid=", taskid
 def main():
     #testParser3()
     #testExpand()
@@ -812,3 +826,13 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+#timing results:
+#
+# case 1: 1.2Ghz Pentium M laptop, 512MB,
+# complete full_resamp parse/submit w/command-line building
+# swamp_common.py,v 1.6
+#
+# real    2m54.891s
+# user    2m52.979s
+# sys     0m1.724s

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: swamp_dbutil.py,v 1.34 2007-03-28 07:49:50 wangd Exp $
+# $Id: swamp_dbutil.py,v 1.35 2007-03-29 18:24:41 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -186,8 +186,8 @@ class JobPersistence:
                     # performance of  persistCommand from 64s to 6s
                     cur = self.connection.cursor()
                     cur.execute("BEGIN IMMEDIATE;")
-                    cur.execute("INSERT INTO fileState VALUES(?,?);",
-                                (concrete, state))
+                    cur.execute("INSERT INTO fileState VALUES(?,?,?);",
+                                (self.taskId, concrete, state))
                     cur.execute("COMMIT;")
                     cur.execute("BEGIN;")
                     sql = """SELECT rowid FROM fileState
@@ -198,7 +198,7 @@ class JobPersistence:
                     cur.execute("COMMIT;")
                     cur.close()
                 else:
-                    self.stateList.append((str(concrete),state))
+                    self.stateList.append((self.taskId, str(concrete), state))
             return fileid
         def insertInOutDefer(self, linenum, logical, concrete,
                              output, state):
@@ -213,7 +213,7 @@ class JobPersistence:
             self.inOutList.append((self.taskRow, linenum, outnum,
                                    str(logical), str(concrete)))
             if output:
-                self.stateList.append((str(concrete),state))
+                self.stateList.append((self.taskId, str(concrete), state))
             return None            
         def commitInOuts(self):
             """Commit those inserts that were queued earlier during insertInOut
@@ -231,8 +231,8 @@ class JobPersistence:
                 cur.executemany(substTemp, self.inOutList)
                 self.inOutList = []
             if(len(self.stateList) > 0):
-                cur.executemany("""INSERT INTO filestate (concretename, state)
-                values (?,?)""", self.stateList)
+                cur.executemany("""INSERT INTO filestate (taskId, concretename, state)
+                values (?,?,?)""", self.stateList)
                 self.stateList = []
                 cur.execute("COMMIT;")
                 cur.close()
@@ -564,6 +564,26 @@ class JobPersistence:
             cur.execute("COMMIT;")
             cur.close()
             return result
+        def pollFileStateByLogical(self, logical):
+            """Check the state of a file with the supplied logical name
+            Returns: the state of the file, if it exists."""
+            # Right now, the filestate has "concretename", but
+            # the state should really be tied to the logical, rather than
+            # the concrete.  Perhaps we need a table for mapping logical
+            # to concrete, or a deterministic mapping so we don't need
+            # the table. 
+            cur = self.connection.cursor()
+            cur.execute("BEGIN;")
+            cur.execute("SELECT state FROM filestate WHERE concretename=?;",
+                        (id,))
+            states = cur.fetchall()
+            result = None
+            if states is not None and len(states) == 1:
+                result = int(states[0][0])
+            cur.execute("COMMIT;")
+            cur.close()
+            return result
+        
         def pollFilenameById(self, id):
             cur = self.connection.cursor()
             sql = "SELECT concretename FROM filestate WHERE rowid=?;"
@@ -734,9 +754,11 @@ class JobPersistence:
                         " CREATE INDEX namecmdrelation ",
                         " ON cmdFileRelation(concretename);"]  
         filestate = ["CREATE TABLE fileState (",
-                       "  concretename VARCHAR(192),"
-                       "  state TINYINT(2)", #need this consistent with other table?
-                       "); CREATE INDEX namestate ON fileState(concretename);"]
+                     " taskId CHAR(8),",
+                     "  concretename VARCHAR(192),",
+                     "  state TINYINT(2)", #need this consistent with other table?
+                     "); CREATE INDEX namestate ON fileState(concretename);",
+                     " CREATE INDEX idnamestate ON fileState(taskId,concretename);"]
         readylist = ["CREATE TABLE readyList (",
                      " taskrow INTEGER(8),",
                      " linenum INTEGER(8),",
