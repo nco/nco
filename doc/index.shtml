@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.396 2007-03-28 16:52:43 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.397 2007-03-30 00:50:11 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -108,7 +108,9 @@ Send it in!<br>
 <h2>NCO News &amp; Announcements</h2>
 
 <ul>
-<li>March&nbsp;10, 2007: NCO 3.1.9 released</li>
+<li>March&nbsp;29, 2007: NCO 3.1.9 x86_64 RPMs released</li>
+
+<li>March&nbsp;10, 2007: NCO 3.1.9 released (with i386/x86_64 debs and i386 RPMs)</li>
 
 <li>February&nbsp;22, 2006: 
 <a href="http://dust.ess.uci.edu/smn/smn_WZJ07_opendap_200702.pdf">Talk</a>
@@ -624,11 +626,15 @@ Peterson, and Matej Vela for packaging NCO for Debian over the years.
 
 <a name="redhat"></a><a name="rhl"></a><a name="rpm"></a>
 <a name="fedora"></a><a name="fdr"></a><a name="fc"></a>
-<h3><a href="http://fedora.redhat.com">Fedora</a> GNU/Linux</h3>
+<a name="centos"></a><a name="cnt"></a><a name="rhel"></a>
+<h3><a href="http://fedora.redhat.com">Fedora</a> and <a href="http://www.centos.org">CentOS</a> GNU/Linux</h3>
 <ul>
-<dt>Most recent NCO release packaged (by us) as Fedora Core&nbsp;6 RPMs (install with, e.g., &lsquo;<tt>yum install nco-3.1.9-1.i386.rpm</tt>&rsquo;):</dt>
-<li><a href="src/nco-3.1.9-1.i386.rpm">nco-3.1.9-1.i386.rpm</a> (<!--#fsize file="src/nco-3.1.9-1.i386.rpm"-->): Executables i386-compatible (last updated <!--#flastmod file="src/nco-3.1.9-1.i386.rpm"-->)</li>
+<dt>Our most recent NCO RPMs (install with, e.g., &lsquo;<tt>yum install nco-3.1.9-1.i386.rpm</tt>&rsquo;):</dt>
+<li><a href="src/nco-3.1.9-1.i386.rpm">nco-3.1.9-1.i386.rpm</a> (<!--#fsize file="src/nco-3.1.9-1.i386.rpm"-->): Executables for i386/Fedora Core&nbsp;6-compatible environments (last updated <!--#flastmod file="src/nco-3.1.9-1.i386.rpm"-->)</li>
 <li><a href="src/nco-3.1.9-1.src.rpm">nco-3.1.9-1.src.rpm</a> (<!--#fsize file="src/nco-3.1.9-1.src.rpm"-->): Source (last updated <!--#flastmod file="src/nco-3.1.9-1.src.rpm"-->)</li>
+<li><a href="src/nco-3.1.9-1.x86_64.rpm">nco-3.1.9-1.x86_64.rpm</a> (<!--#fsize file="src/nco-3.1.9-1.x86_64.rpm"-->): Executables for x86_64/CentOS&nbsp;4-compatible environments (last updated <!--#flastmod file="src/nco-3.1.9-1.x86_64.rpm"-->)</li>
+<li>More information on x86_64 RPMs available <a href="http://dust.ess.uci.edu/~wangd/s9y">here</a></li>
+
 NCO is part of the Fedora Extras distribution (thanks to Ed Hill).
 As such, the NCO <a href="http://www.rpm.org">RPMs</a> in the current
 Fedora Core release lag our upstream RPMs by no more than 6&ndash;8 months.
@@ -674,9 +680,9 @@ Old and deprecated <a href="http://fink.sf.net/pdb/package.php/nco">Fink package
 <li><a href="./nco.info">Info</a> GNU Info (<tt>M-x Info</tt>, <tt>emacs</tt>)</li>
 <li><a href="./nco.pdf">PDF</a> Portable Document Format (<tt>ghostview</tt>, <tt>acroread</tt>, <tt>xpdf</tt>)</li>
 <li><a href="./nco.ps">Postscript</a> Printing (<tt>ghostview</tt>)</li>
-<li><a href="./nco.texi">TeXInfo</a> Documentation Source code (<tt>emacs</tt>)</h2> </li>
-<li><a href="./nco.txt">Text</a> Plain text (<tt>more</tt>)</h2> </li>
-<li><a href="./nco.xml">XML</a> Extensible Markup Language (<tt>mozilla</tt>)</h2> </li>
+<li><a href="./nco.texi">TeXInfo</a> Documentation Source code (<tt>emacs</tt>)</h2></li>
+<li><a href="./nco.txt">Text</a> Plain text (<tt>more</tt>)</h2></li>
+<li><a href="./nco.xml">XML</a> Extensible Markup Language (<tt>mozilla</tt>)</h2></li>
 </ul>
 <tt>nco.texi</tt> is the most up-to-date.
 Files <tt>nco.dvi</tt>, <tt>nco.ps</tt>, and <tt>nco.pdf</tt> are
@@ -687,9 +693,11 @@ The screen-oriented formats&mdash;<tt>nco.html</tt>,
 all the documentation except the highly mathematical sections.
 
 <h3>Other documentation:</h3>
-This 
-<a href="http://dust.ess.uci.edu/doc/abb/abb.pdf">abbreviation key</a>
-unlocks the hidden mysteries of all the source code abbreviations and acronyms.
+<ul>
+<li>This <a href="http://dust.ess.uci.edu/doc/abb/abb.pdf">abbreviation key</a> unlocks the mysteries of the source code abbreviations and acronyms.</li>
+
+Unidata netCDF for Developers Workshop <a href="http://www.unidata.ucar.edu/software/netcdf/docs/workshop/utilities/Nco.html">NCO examples</a></li>
+</ul>
 
 <!-- This documentation went MIA sometime in 2004:
 <a href="http://www.cgd.ucar.edu/csm/support/Document/pdf/nco.pdf">pamphlet</a> and
