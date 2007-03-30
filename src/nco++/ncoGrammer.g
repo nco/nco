@@ -1578,7 +1578,11 @@ out returns [var_sct *var]
                       } 
             
                  // ignore expr type argument
-                 default: break;
+                 default:
+                      std::string serr;
+                      serr="Argument \""+aRef->getText()+"\" to method "+mtd->getText()+" is not a dimension";      
+                      wrn_prn(fnc_nm,serr);
+                      break;
               
                 } // end switch
                 aRef=aRef->getNextSibling();
