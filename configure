@@ -29639,7 +29639,7 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
 # CFLAGS += -Werror -Wall -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4
 # 20070310: Change to no-shadow so ncoLexer.cpp compiles
     GCC_CMD_ARGS='-std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE'
-    GCC_BASE_FLAGS='-Werror -Wall -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4'
+    GCC_BASE_FLAGS='-Wall -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4'
     GCC_CFLAGS="${GCC_BASE_FLAGS} -Wmissing-prototypes"
     GCC_CXXFLAGS="${GCC_BASE_FLAGS}"
 # Compilation flags recommended by GSL that I like and use:
