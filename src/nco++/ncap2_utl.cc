@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.49 2007-03-29 11:50:08 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.50 2007-03-30 03:59:06 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2050,10 +2050,12 @@ int idx;
 int jdx;
 int icnt;
 int nbr_dim=var->nbr_dim;
+int str_vtr_sz;
 
 NcapVector<dmn_sct*> dmn_vtr;
 
-for(idx=0 ; idx <str_vtr.size() ; idx++){
+str_vtr_sz=str_vtr.size();
+for(idx=0 ; idx <str_vtr_sz ; idx++){
   // deal with position args e.g $0,$1,$2 etc
   if( str_is_num(str_vtr[idx])) {
     icnt=atoi(str_vtr[idx].c_str());

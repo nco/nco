@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.398 2007-03-11 04:15:08 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.399 2007-03-30 03:55:06 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,7 +103,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.1.9
 @set copyright-years 1995--2007
 @set update-year 2007
-@set update-date 12 March 2007
+@set update-date 29 March 2007
 @set update-month March 2007
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -1834,11 +1834,14 @@ implemented.
 
 @item
 @cindex Yorick
-Some random access operations on large files on certain architectures
-(e.g., @w{400 MB} on @acronym{UNICOS}) are @emph{much} slower with these 
-operators than with similar operations performed using languages that
-bypass the netCDF interface (e.g., Yorick).  
-The cause for this is not understood at present.
+In the late 1990s it was discovered that some random access operations
+on large files on certain architectures (e.g., @acronym{UNICOS}) were
+much slower with @acronym{NCO} than with similar operations performed
+using languages that bypass the netCDF interface (e.g., Yorick).    
+This may be a penalty of unnecessary byte-swapping in the netCDF
+interface.  
+It is unclear whether such problems exist in present day (2007)
+netCDF/@acronym{NCO} environments.
 @end enumerate
 
 @html

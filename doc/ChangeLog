@@ -1,5 +1,7 @@
 2007-03-29  Charlie Zender  <zender@uci.edu>
 
+	* Fix ncap2 comparison between signed/unsigned integer expression warnings
+
 	* Fold in Daniel's nco.spec change required for 64-bit builds on
 	hybrid 32/64-bit systems, e.g., RHEL, CentOS 
 

@@ -965,6 +965,7 @@ var=NULL_CEWI;
               std::vector<std::string> str_vtr;
               RefAST  aRef;
               NcapVar *Nvar;
+              int str_vtr_sz;
               
 
               if(dbg_lvl_get() > 0)
@@ -985,13 +986,14 @@ var=NULL_CEWI;
               }
               
               //Check that all dims exist
-              for(idx=0 ; idx < str_vtr.size() ; idx++)
+              str_vtr_sz=str_vtr.size();
+              for(idx=0 ; idx < str_vtr_sz ; idx++)
                 if(   prs_arg->ptr_dmn_in_vtr->findi(str_vtr[idx]) ==-1             
                    && prs_arg->ptr_dmn_out_vtr->findi(str_vtr[idx]) ==-1)      
                   break;
 
                // return undef if dim missing 
-               if( idx <str_vtr.size()){
+               if( idx <str_vtr_sz){
                   var=NULL_CEWI;
 
                } else {
