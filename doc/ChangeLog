@@ -1,3 +1,12 @@
+2007-03-30  Charlie Zender  <zender@uci.edu>
+
+	* Implement all GCC custom switches in nco++, nco_c++ directories
+	nco directory and configure.in have all cust switches except -Werror
+	-Werror still triggers problems with ncap_lex.c
+
+	* Add wildcards to end of all compiler tests in configure.in
+	so that, e.g., CC='gcc' tests same as CC='gcc -std=c99'
+
 2007-03-29  Charlie Zender  <zender@uci.edu>
 
 	* Fix ncap2 comparison between signed/unsigned integer expression warnings

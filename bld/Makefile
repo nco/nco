@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.411 2007-03-11 03:17:01 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.412 2007-03-30 18:08:23 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -770,7 +770,7 @@ ifeq (gcc,$(firstword ${CC}))
  CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
  CFLAGS := -Wall
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
-# CFLAGS += -Werror -Wall -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4
+ CFLAGS += -Wall -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4
 # Compilation flags recommended by GSL that I like and use:
 # -D_BSD_SOURCE: Support 4.3 BSD Unix extensions to ANSI C (prevents nameser.h warnings)
 # -D_POSIX_SOURCE: Support POSIX.1 standard additions to ANSI C (prevents fileno warnings)
@@ -808,7 +808,7 @@ ifeq (${OPTS},R)
  CFLAGS += 
 endif
 ifeq (${OPTS},X)
- CFLAGS += -g -O -pg -fno-inline
+ CFLAGS += -g -O -pg -fno-inline -Werror
  LDFLAGS += -pg
 # LDFLAGS += /usr/local/lib/ccmalloc-gcc.o -L/usr/local/lib -lccmalloc -ldl
 endif
