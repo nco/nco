@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.399 2007-03-30 03:55:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.400 2007-03-31 22:27:41 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4298,21 +4298,21 @@ The procedure to compute the variance is identical except for the use of
 @command{ncap2} can also compute statistics like standard deviations.
 Brute-force implementation of formulae is one option, e.g.,
 @example
-ncap2 -s "prs_sfc_sdn=sqrt((prs_sfc-prs_sfc.avg($time)^2).total($time))/($time.size-1)"
+ncap2 -s 'prs_sfc_sdn=sqrt((prs_sfc-prs_sfc.avg($time)^2).total($time))/($time.size-1)'
       in.nc out.nc
 @end example
 The operation may, of course, be broken into multiple steps in order 
 to archive intermediate quantities, such as the time-anomalies
 @example
-ncap2 -s "prs_sfc_anm=prs_sfc-prs_sfc.avg($time)"
-      -s "prs_sfc_sdn=sqrt((prs_sfc_anm^2).total($time))/($time.size-1)"
+ncap2 -s 'prs_sfc_anm=prs_sfc-prs_sfc.avg($time)'
+      -s 'prs_sfc_sdn=sqrt((prs_sfc_anm^2).total($time))/($time.size-1)'
       in.nc out.nc
 @end example
 
 @command{ncap2} supports intrinsic standard deviation functions
 (@pxref{Operation Types}) which simplify the above expression to
 @example
-ncap2 -s "prs_sfc_sdn=prs_sfc.rmssdn($time)" in.nc out.nc
+ncap2 -s 'prs_sfc_sdn=prs_sfc.rmssdn($time)' in.nc out.nc
 @end example
 These instrinsic functions return the answer in the fastest, most
 concise way possible. 
@@ -4339,7 +4339,7 @@ deviations is taken.
 The @command{ncap2} solution to the spatially-weighted standard
 deviation problem is 
 @example
-ncap2 -s "prs_sfc_sdn=(prs_sfc*gw).rmssdn($lat,$lon)" in.nc out.nc
+ncap2 -s 'prs_sfc_sdn=(prs_sfc*gw).rmssdn($lat,$lon)' in.nc out.nc
 @end example
 Note that weight multiplies the variable prior to computing the
 standard deviation.
@@ -4525,7 +4525,7 @@ This, for example, converts variable @code{tpt} to external type
 @code{NC_SHORT} (a C-type @code{short}), and variable @code{prs} to
 external type @code{NC_DOUBLE} (a C-type @code{double}). 
 @example
-ncap2 -O -s "tpt=short(tpt);prs=double(prs);" in.nc out.nc
+ncap2 -O -s 'tpt=short(tpt);prs=double(prs)' in.nc out.nc
 @end example
 @xref{ncap2 netCDF Arithmetic Processor}, for more details.
 
@@ -5035,8 +5035,8 @@ This is called @dfn{left hand casting} because the user resolves the
 dimensional ordering of the @acronym{RHS} of the expression by
 specifying the desired ordering on the @acronym{LHS}.
 @example
-ncap2 -O -s "lat_lon[lat,lon]=lat+lon" in.nc out.nc
-ncap2 -O -s "lon_lat[lon,lat]=lat+lon" in.nc out.nc
+ncap2 -O -s 'lat_lon[lat,lon]=lat+lon' in.nc out.nc
+ncap2 -O -s 'lon_lat[lon,lat]=lat+lon' in.nc out.nc
 @end example
 The explicit list of dimensions on the @acronym{LHS}, @code{[lat,lon]}
 resolves the otherwise ambiguous ordering of dimensions in
@@ -5063,7 +5063,7 @@ constant elevation (also one spatial dimension).
 This command constructs a four-dimensional pressure @code{prs_mdp}
 from the four input variables of mixed rank and orthogonality:
 @example
-ncap2 -O -s "prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm" in.nc out.nc
+ncap2 -O -s 'prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm' in.nc out.nc
 @end example
 Manipulating the four fields which define the pressure in a hybrid
 coordinate system is easy with left hand casting.
@@ -5657,18 +5657,18 @@ See the @file{ncap.in} and @file{ncap2.in} scripts released with NCO
 for more complete demonstrations of @command{ncap} and @command{ncap2}
 functionality, respectively (these scripts are available on-line at
 @url{http://nco.sf.net/ncap.in} and
-@url{http://dust.ess.uci.edu/nco/ncap2.in}).
+@url{http://nco.sf.net/ncap2.in}).
 
 Define new attribute @var{new} for existing variable @var{one}
 as twice the existing attribute @var{double_att} of variable
 @var{att_var}: 
 @example
-ncap2 -O -s "one@@new=2*att_var@@double_att" in.nc out.nc
+ncap2 -O -s 'one@@new=2*att_var@@double_att' in.nc out.nc
 @end example
 
 Average variables of mixed types (result is of type @code{double}):
 @example
-ncap2 -O -s "average=(var_float+var_double+var_int)/3" in.nc out.nc 
+ncap2 -O -s 'average=(var_float+var_double+var_int)/3' in.nc out.nc 
 @end example
 
 Multiple commands may be given to @command{ncap2} in three ways.
@@ -5683,8 +5683,8 @@ Assuming the file @file{tst.nco} contains the commands
 invocations produce identical results:
 @example
 ncap2 -O -v -S tst.nco in.nc out.nc
-ncap2 -O -v -s "a=3" -s "b=4" -s "c=sqrt(a^2+b^2)" in.nc out.nc
-ncap2 -O -v -s "a=3;b=4;c=sqrt(a^2+b^2)" in.nc out.nc
+ncap2 -O -v -s 'a=3' -s 'b=4' -s 'c=sqrt(a^2+b^2)' in.nc out.nc
+ncap2 -O -v -s 'a=3;b=4;c=sqrt(a^2+b^2)' in.nc out.nc
 @end example
 The second and third examples show that @command{ncap2} does not require
 that a trailing semi-colon @samp{;} be placed at the end of a @samp{-s}
@@ -5703,7 +5703,7 @@ and @w{value 0.0} elsewhere.
 This example creates the binary flag @code{ORO_flg} in @file{out.nc}
 from the continuous array named @code{ORO} in @file{in.nc}.
 @example
-ncap2 -O -s "ORO_flg=(ORO > 1.0)" in.nc out.nc
+ncap2 -O -s 'ORO_flg=(ORO > 1.0)' in.nc out.nc
 @end example
 Suppose your task is to change all values of @code{ORO} which 
 @w{equal 2.0} to the new @w{value 3.0}:
@@ -5765,23 +5765,57 @@ We will store the covariance in the variable @code{uprmvprm}.
 ncwa -O -a time -v u,v in.nc foo.nc # Compute time mean of u,v
 ncrename -O -v u,uavg -v v,vavg foo.nc # Rename to avoid conflict
 ncks -A -v uavg,vavg foo.nc in.nc # Place time means with originals
-ncap2 -O -s "uprmvprm=u*v-uavg*vavg" in.nc in.nc # Covariance
+ncap2 -O -s 'uprmvprm=u*v-uavg*vavg' in.nc in.nc # Covariance
 ncra -O -v uprmvprm in.nc foo.nc # Time-mean covariance
 @end example
 The mathmatically inclined will note that the same covariance would be
 obtained by replacing the step involving @command{ncap2} with
 @example
-ncap2 -O -s "uprmvprm=(u-uavg)*(v-vavg)" foo.nc foo.nc # Covariance
+ncap2 -O -s 'uprmvprm=(u-uavg)*(v-vavg)' foo.nc foo.nc # Covariance
 @end example
 
 As of @acronym{NCO} version 3.1.8 (December, 2006), @command{ncap2}
 can compute averages, and thus covariances, by itself:
 @example
-ncap2 -O -s "uavg=u.avg($time);vavg=v.avg($time);uprmvprm=u*v-uavg*vavg" \
-         -s "uprmvrpmavg=uprmvprm.avg($time)" in.nc foo.nc
+ncap2 -O -s 'uavg=u.avg($time);vavg=v.avg($time);uprmvprm=u*v-uavg*vavg' \
+         -s 'uprmvrpmavg=uprmvprm.avg($time)' in.nc foo.nc
 @end example
 We have not seen a simpler method to script and execute powerful
 arithmetic than @command{ncap2}.
+
+@cindex globbing
+@cindex shell
+@cindex quotes
+@cindex extended regular expressions
+@cindex regular expressions
+@command{ncap2} utilizes many meta-characters which can confuse the
+command-line shell if not quoted properly.
+The issues are the same as those which arise in utilizing extended
+regular expressions to subset variables (@pxref{Subsetting Variables}).
+The example above will fail with no quotes and with double quotes.
+This is because shell globbing tries to @dfn{interpolate} the value of
+@code{$time} from the shell environment unless it is quoted:
+@example
+ncap2 -O -s 'uavg=u.avg($time)' in.nc foo.nc # Correct
+ncap2 -O -s uavg=u.avg('$time') in.nc foo.nc # Correct (and dangerous)
+ncap2 -O -s  uavg=u.avg($time) in.nc foo.nc  # Fails ($time := '')
+ncap2 -O -s "uavg=u.avg($time)" in.nc foo.nc # Fails ($time := '')
+@end example
+Without the single quotes, the shell replaces @code{$time} with an
+empty string.
+The command @command{ncap2} receives from the shell is
+@code{uavg=u.avg()}. 
+This causes @command{ncap2} to average over all dimensions rather than
+just the @var{time} dimension, and unintended consequence.
+
+We recommend using single quotes to protect @command{ncap2}
+command-line scripts from the shell, even when such protection is not
+strictly necessary. 
+Expert users may violate this rule to exploit the ability to use shell
+variables in @command{ncap2} command-line scripts 
+(@pxref{CCSM Example}). 
+In such cases it may be necessary to use the shell backslash character
+@samp{\} to protect the @command{ncap2} meta-character.
 
 @cindex appending data
 @cindex time-averaging
@@ -7359,17 +7393,17 @@ lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0
 lat[0]=-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
 ...
 lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
-% ncks -s "%f\n" -C -v three_dmn_var in.nc
+% ncks -s '%f\n' -C -v three_dmn_var in.nc
 0.000000
 1.000000
 ...
 23.000000
-% ncks -s "%+16.10f\n" -C -v three_dmn_var in.nc
+% ncks -s '%+16.10f\n' -C -v three_dmn_var in.nc
    +0.0000000000
    +1.0000000000
 ...
   +23.0000000000
-% ncks -s "%f, " -C -v three_dmn_var in.nc
+% ncks -s '%f, ' -C -v three_dmn_var in.nc
 0.000000, 1.000000, ..., 23.000000,
 @end example
 @noindent
@@ -7388,7 +7422,7 @@ ncks -v fl_nm in.nc
 The @code{%c} formatting code is useful for printing 
 multidimensional arrays of characters representing fixed length strings
 @example
-ncks -s "%c" -v fl_nm_arr in.nc
+ncks -s '%c' -v fl_nm_arr in.nc
 @end example
 @noindent
 @cindex @code{core dump}
