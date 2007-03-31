@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.400 2007-03-31 22:27:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.401 2007-03-31 22:39:47 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5788,18 +5788,19 @@ arithmetic than @command{ncap2}.
 @cindex quotes
 @cindex extended regular expressions
 @cindex regular expressions
-@command{ncap2} utilizes many meta-characters which can confuse the
-command-line shell if not quoted properly.
+@command{ncap2} utilizes many meta-characters 
+(e.g., @samp{$}, @samp{?}, @samp{;}, @samp{()}, @samp{[]})
+that can confuse the command-line shell if not quoted properly.
 The issues are the same as those which arise in utilizing extended
 regular expressions to subset variables (@pxref{Subsetting Variables}).
 The example above will fail with no quotes and with double quotes.
 This is because shell globbing tries to @dfn{interpolate} the value of
 @code{$time} from the shell environment unless it is quoted:
 @example
-ncap2 -O -s 'uavg=u.avg($time)' in.nc foo.nc # Correct
-ncap2 -O -s uavg=u.avg('$time') in.nc foo.nc # Correct (and dangerous)
-ncap2 -O -s  uavg=u.avg($time) in.nc foo.nc  # Fails ($time := '')
-ncap2 -O -s "uavg=u.avg($time)" in.nc foo.nc # Fails ($time := '')
+ncap2 -O -s 'uavg=u.avg($time)'  in.nc foo.nc # Correct (recommended)
+ncap2 -O -s  uavg=u.avg('$time') in.nc foo.nc # Correct (and dangerous)
+ncap2 -O -s  uavg=u.avg($time)   in.nc foo.nc # Fails ($time = '')
+ncap2 -O -s "uavg=u.avg($time)"  in.nc foo.nc # Fails ($time = '')
 @end example
 Without the single quotes, the shell replaces @code{$time} with an
 empty string.
