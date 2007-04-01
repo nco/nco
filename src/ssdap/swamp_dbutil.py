@@ -1,6 +1,6 @@
 #!/usr/bin/env python
        
-# $Id: swamp_dbutil.py,v 1.35 2007-03-29 18:24:41 wangd Exp $
+# $Id: swamp_dbutil.py,v 1.36 2007-04-01 03:45:49 wangd Exp $
 # This is:  -- a module for managing state persistence for the dap handler.
 #           -- Uses a SQLite backend.
 from pysqlite2 import dbapi2 as sqlite
@@ -575,7 +575,7 @@ class JobPersistence:
             cur = self.connection.cursor()
             cur.execute("BEGIN;")
             cur.execute("SELECT state FROM filestate WHERE concretename=?;",
-                        (id,))
+                        (logical,))
             states = cur.fetchall()
             result = None
             if states is not None and len(states) == 1:
@@ -583,7 +583,23 @@ class JobPersistence:
             cur.execute("COMMIT;")
             cur.close()
             return result
-        
+
+        def pollFileStateByTaskId(self, taskid):
+            cur = self.connection.cursor()
+            cur.execute("BEGIN;")
+            cur.execute("SELECT state,concretename FROM filestate WHERE taskid=?;",
+                        (taskid,))
+            states = cur.fetchall()
+            result = states[:]
+            cur.execute("COMMIT;")
+            cur.close()
+            return result
+            result = None
+            if states is not None and len(states) == 1:
+                result = int(states[0][0])
+            return result
+            pass
+
         def pollFilenameById(self, id):
             cur = self.connection.cursor()
             sql = "SELECT concretename FROM filestate WHERE rowid=?;"

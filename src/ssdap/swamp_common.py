@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.6 2007-03-29 18:24:41 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.7 2007-04-01 03:45:49 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -13,15 +13,21 @@ __author__ = "Daniel L. Wang <wangd@uci.edu>"
 
 # Python imports
 import getopt
+import glob
 import logging
 import md5
 import os
+import operator
 import re
 import shlex
 import struct
+import subprocess
 import time
 import types
 from pyparsing import *
+from SOAPpy import SOAPProxy # for remote execution        
+
+
 
 # SWAMP imports
 #
@@ -446,14 +452,18 @@ class NcoParser:
         def __init__(self):
             self.commandByLogicalOut = {}
             self.logicalOutByScript = {}
+            self.logicalOuts = []
             pass
 
         def mapInput(self, scriptFilename):
-            try:
-                return self.logicalOutByScript[scriptFilename]
-            except KeyError:
-                if self.allowedConcreteInput(scriptFilename):
-                    return scriptFilename
+            temps = filter(lambda f: re.match(scriptFilename, f),
+                           self.logicalOuts)
+            if temps:
+                return temps
+            else:
+                inList = self.expandConcreteInput(scriptFilename)
+                if inList:
+                    return inList
                 else:
                     logging.error("%s is not allowed as an input filename" %(s))
                     raise StandardError
@@ -468,9 +478,9 @@ class NcoParser:
             self.logicalOutByScript[scriptFilename] = s
             return s
                     
-        def allowedConcreteInput(self, inputFilename):
-            # fix this...
-            return True
+        def expandConcreteInput(self, inputFilename):
+            res = glob.glob(inputFilename)
+            return res
 
         def cleanOutputName(self, scriptFilename):
             # I can't think of a "good" or "best" way, so for now,
@@ -498,15 +508,16 @@ class NcoParser:
         def newCommand(self, cmd, argtriple,
                        inouts, referenceLineNum):
             # first, reassign inputs and outputs.
-            newinputs = map(self.mapInput, inouts[0])
+            newinputs = reduce(operator.add, map(self.mapInput, inouts[0]))
             newoutputs = map(self.mapOutput, inouts[1])
-
             inouts = (newinputs, newoutputs)
-
+            # patch arguments: make new leftovers
+            argtriple = (argtriple[0], argtriple[1], newinputs + newoutputs)
             c = NcoParser.Command(cmd, argtriple, inouts, referenceLineNum)
             
             for out in inouts[1]:
                 self.commandByLogicalOut[out] = c
+                self.logicalOuts.append(out)
             return c
     pass
 
@@ -637,10 +648,12 @@ class Parser:
     pass
 
 class Scheduler:
-    def __init__(self):
+    def __init__(self, executor=None):
         self.transaction = None
         self.env = {}
         self.taskId = self.makeTaskId()
+        self.executor = executor
+        self.cmdList = []
         pass
     def makeTaskId(self):
         # As SWAMP matures, we should rethink the purpose of a taskid
@@ -690,37 +703,51 @@ class Scheduler:
             pass
         map(lambda f: insert(f, False), parserCommand.inputs)
         map(lambda f: insert(f, True), parserCommand.outputs)
+        self.cmdList.append(parserCommand)
 
-
-        cmdline = parserCommand.makeCommandLine(lambda x: x, lambda y:y)
         pass
     def finish(self):
         self.transaction.finish()
         pass
-
+    def executeAll(self):
+        def run(cmd):
+            if self.executor:
+                tok = self.executor.launch(cmd)
+                retcode = self.executor.join(tok)
+                return retcode
+        for c in self.cmdList:
+            ret = run(c)
+            if ret != 0:
+                print "ret was ",ret
+                logging.error("error running command %s" % (c))
+                break
+        pass
+    
 class SwampInterface:
 
-    def __init__(self):
+    def __init__(self, executor):
+        self.executor = executor
         pass
 
     def submit(self, script):
         p = Parser()
-        sch = Scheduler()
+        sch = Scheduler(self.executor)
         p.commandHandler(sch.schedule)
         cf = NcoParser.CommandFactory()
         p.parseScript(script, cf)
         sch.finish()
+        sch.executeAll()
         task = sch.taskId
-        print len(task)
+        #print len(task)
         return task
 
+        
 
     def fileStatus(self, logicalname):
         """return state of file by name"""
 
         # go check db for state
-        dbfile = "/dev/shm/ssdap_ram.sqlite"
-        jp = JobPersistence(dbfile)
+        jp = JobPersistence(local.dbFilename)
         poll = jp.newPollingTransaction()
         i = poll.pollFileStateByLogical(logicalname)
         jp.close()
@@ -735,11 +762,100 @@ class SwampInterface:
         state = 0
         logname = "dummy.nc"
         url = "NA"
+        # go check db for state
+        jp = JobPersistence(local.dbFilename)
+        poll = jp.newPollingTransaction()
+        i = poll.pollFileStateByTaskId(taskid)
+        jp.close()
+        if i is not None:
+            return i
+        else:
+            return -32768
+        pass
+
         # want to return list of files + state + url if available
         return [(state, logname, url)]
-        
-        
 
+    pass
+
+class FakeExecutor:
+    def __init__(self):
+        self.running = []
+        self.fakeToken = 0
+        pass
+    def launch(self, cmd):
+        cmdLine = cmd.makeCommandLine(lambda x: x, lambda y:y)
+        print "fakeran",cmdLine
+        self.fakeToken += 1
+        self.running.append(self.fakeToken)
+        return self.fakeToken
+    def join(self, token):
+        if token in self.running:
+            self.running.remove(token)
+            return True  # return False upon try-but-fail
+        else:
+            raise StandardError("Tried to join non-running job")
+    pass
+
+class LocalExecutor:
+    def __init__(self):
+        self.running = {}
+        self.token = 0
+        self.cwd = os.getcwd()
+        pass
+    def applyPath(self, p):
+        if p[0] == os.sep: # ignore if absolute path
+            return p
+        else:
+            return self.cwd + os.sep + p
+    def launch(self, cmd):
+        cmdLine = cmd.makeCommandLine(self.applyPath, self.applyPath)
+        logging.debug("-exec-> %s"% " ".join(cmdLine))
+        retcode = subprocess.call(cmdLine, shell=False)
+        self.token += 1
+        self.running[self.token] = retcode
+        return self.token
+    def join(self, token):
+        if token in self.running:
+            retcode = self.running.pop(token)
+            return retcode
+        else:
+            raise StandardError("Tried to join non-running job")
+    pass
+
+class RemoteExecutor:
+    def __init__(self):
+        self.target = "http://localhost:8080"
+        self.rpc = SOAPProxy(self.target)
+        self.running = {}
+        self.token = 0
+        pass
+    def launch(self, cmd):
+        cmdLine = cmd.makeCommandLine(lambda x: x, lambda y:y)
+        remoteToken = self.rpc.slaveSpawn(cmdLine)
+        self.token += 1        
+        self.running[self.token] = remoteToken
+        return self.token
+
+    def _waitForFinish(self, token):
+        """helper function"""
+        remoteToken = self.running[token]
+        while True:
+            # check state:
+            state = self.rpc.slaveJobStatus(remoteToken)
+            if state is "Finished":
+                return True
+            os.sleep(10) # sleep for a while.  need to tune this.
+        pass
+        
+    def join(self, token):
+        if token in self.running:
+            self.waitForFinish(token)
+            self.running.pop(token)
+            return True
+        else:
+            raise StandardError("Tried to join non-running job")
+    
 def testParser():
     test1 = """#!/usr/local/bin/bash
 # Analysis script for CAM/CLM output.
@@ -813,10 +929,14 @@ def testParser3():
  
 
 def testSwampInterface():
+    logging.basicConfig(level=logging.DEBUG)
     portionlist = open("full_resamp.swamp").readlines()[:10]
     #portionlist = open("full_resamp.swamp").readlines()
     portion = "".join(portionlist)
-    si = SwampInterface()
+    fe = FakeExecutor()
+    le = LocalExecutor()
+    #si = SwampInterface(fe)
+    si = SwampInterface(le)
     taskid = si.submit(portion)
     print "submitted with taskid=", taskid
 def main():
