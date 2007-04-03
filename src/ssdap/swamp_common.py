@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.7 2007-04-01 03:45:49 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.8 2007-04-03 03:44:53 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -12,7 +12,9 @@ __author__ = "Daniel L. Wang <wangd@uci.edu>"
 #__all__ = ["Parser"] # I should fill this in when I understand it better
 
 # Python imports
+import cPickle as pickle
 import getopt
+from fnmatch import fnmatch
 import glob
 import logging
 import md5
@@ -32,14 +34,12 @@ from SOAPpy import SOAPProxy # for remote execution
 # SWAMP imports
 #
 from swamp_dbutil import JobPersistence
+from swamp_config import Config
 
-
+# define global swamp logger
+log = logging.getLogger("SWAMP")
 #
 #
-class local:
-    dbFilename = "slave.sqlite"
-    pass
-
 class VariableParser:
     """treats shell vars "a=b" and env vars "export a=b" as the same for now.
     """
@@ -333,7 +333,7 @@ class NcoParser:
 #                                 ]))
         if factory is not None:
             # assert for now to catch stupid mistakes.
-            assert isinstance(factory, NcoParser.CommandFactory)
+            assert isinstance(factory, CommandFactory)
             return factory.newCommand(cmd,
                                       (argDict, argList, leftover),
                                       (ins,outs), lineNumber)
@@ -386,140 +386,162 @@ class NcoParser:
         else:
             return (argv[0] in NcoParser.commands)    
 
-    # Command and CommandFactory do not have dependencies on NCO things.
-    class Command:
-        """this is needed because we want to build a dependency tree."""
-        def __init__(self, cmd, argtriple, inouts, referenceLineNum):
-            self.cmd = cmd
-            self.parsedOpts = argtriple[0] # adict
-            self.argList = argtriple[1] # alist
-            self.leftover = argtriple[2] # leftover
-            self.inputs = inouts[0]
-            self.outputs = inouts[1]
-            self.referenceLineNum = referenceLineNum
-            pass
-        # need to map all non-input filenames.
-        # apply algorithm to find temps and outputs
-        # then mark them as remappable.
-        # this can be done in the mapping function.
-        
-        def remapFiles(self, mapFunction):
-            pass
-        def remapFile(self, logical, mapInput, mapOutput):
-            if logical in self.inputs:
-                return mapInput(logical)
-            elif logical in self.outputs:
-                return mapOutput(logical)
-            else:
-                return logical
-            
-        def makeCommandLine(self, mapInput, mapOutput):
-            cmdLine = [self.cmd]
-            # the "map" version looks a little funny.
-            #cmdLine += map(lambda (k,v): [k, self.remapFile(v,
-            #                                            mapInput,
-            #                                            mapOutput)],
-            #               self.argList)
-            cmdLine += reduce(lambda a,t: a+[t[0], self.remapFile(t[1],
-                                                                  mapInput,
-                                                                  mapOutput)],
-                              self.argList, [])
-            
-            cmdLine += map(lambda f: self.remapFile(f, mapInput, mapOutput),
-                           self.leftover)
-            # don't forget to remove the '' entries
-            # that got pulled in from the arglist
-            return filter(lambda x: x != '', cmdLine)
-            pass
-        
-    class CommandFactory:
-        """this is needed because we want to:
-        a) connect commands together
-        b) rename outputs.
-        To create a new command, we need:
-          a) which commands created my inputs?
-          b) what should I remap the file to?
-        So:
-          -- a mapping: script filename -> producing command
-          -- script filename -> logical name (probably the same,
-                                              but may be munged)
-          -- logical name -> producing command.  This is important
-             for finding your parent.
-          For each output, create a new scriptname->logical name mapping,
-          incrementing the logical name if a mapping already exists.  
-          
-        """
-        def __init__(self):
-            self.commandByLogicalOut = {}
-            self.logicalOutByScript = {}
-            self.logicalOuts = []
-            pass
+# Command and CommandFactory do not have dependencies on NCO things.
+class Command:
+    """this is needed because we want to build a dependency tree."""
 
-        def mapInput(self, scriptFilename):
-            temps = filter(lambda f: re.match(scriptFilename, f),
-                           self.logicalOuts)
-            if temps:
-                return temps
-            else:
-                inList = self.expandConcreteInput(scriptFilename)
-                if inList:
-                    return inList
-                else:
-                    logging.error("%s is not allowed as an input filename" %(s))
-                    raise StandardError
-            pass
+    def __init__(self, cmd, argtriple, inouts, referenceLineNum):
+        self.cmd = cmd
+        self.parsedOpts = argtriple[0] # adict
+        self.argList = argtriple[1] # alist
+        self.leftover = argtriple[2] # leftover
+        self.inputs = inouts[0]
+        self.outputs = inouts[1]
+        self.referenceLineNum = referenceLineNum
+        self.actualOutputs = []
+        pass
 
-        def mapOutput(self, scriptFilename):
-            s = scriptFilename
-            if scriptFilename in self.logicalOutByScript:
-                s = self.nextOutputName(self.logicalOutByScript[s])
+    # need to map all non-input filenames.
+    # apply algorithm to find temps and outputs
+    # then mark them as remappable.
+    # this can be done in the mapping function.
+    def remapFiles(self, mapFunction):
+        pass
+    def remapFile(self, logical, mapInput, mapOutput):
+        if logical in self.inputs:
+            return mapInput(logical)
+        elif logical in self.outputs:
+            phy = mapOutput(logical)
+            self.actualOutputs.append(phy)
+            return phy
+        else:
+            return logical
+            
+    def makeCommandLine(self, mapInput, mapOutput):
+        cmdLine = [self.cmd]
+        # the "map" version looks a little funny.
+        #cmdLine += map(lambda (k,v): [k, self.remapFile(v,
+        #                                            mapInput,
+        #                                            mapOutput)],
+        #               self.argList)
+        cmdLine += reduce(lambda a,t: a+[t[0], self.remapFile(t[1],
+                                                              mapInput,
+                                                              mapOutput)],
+                          self.argList, [])
+            
+        cmdLine += map(lambda f: self.remapFile(f, mapInput, mapOutput),
+                       self.leftover)
+        # don't forget to remove the '' entries
+        # that got pulled in from the arglist
+        return filter(lambda x: x != '', cmdLine)
+
+    pass # end of Command class
+        
+class CommandFactory:
+    """this is needed because we want to:
+    a) connect commands together
+    b) rename outputs.
+    To create a new command, we need:
+    a) which commands created my inputs?
+    b) what should I remap the file to?
+    So:
+    -- a mapping: script filename -> producing command
+    -- script filename -> logical name (probably the same,
+    but may be munged)
+    -- logical name -> producing command.  This is important
+    for finding your parent.
+    For each output, create a new scriptname->logical name mapping,
+    incrementing the logical name if a mapping already exists.  
+    
+    """
+    def __init__(self, config):
+        self.config = config
+        self.commandByLogicalOut = {}
+        self.logicalOutByScript = {}
+        self.logicalOuts = []
+        pass
+
+    def mapInput(self, scriptFilename):
+        temps = filter(lambda f: fnmatch(f, scriptFilename),
+                       self.logicalOuts)
+        # FIXME: should really match against filemap, since
+        # logicals may be renamed
+        if temps:
+            return temps
+        else:
+            inList = self.expandConcreteInput(scriptFilename)
+            if inList:
+                return inList
             else:
-                s = self.cleanOutputName(s)
-            self.logicalOutByScript[scriptFilename] = s
-            return s
+                log.error("%s is not allowed as an input filename"
+                              % (scriptFilename))
+                raise StandardError("Input illegal or nonexistant %s"
+                                    % (scriptFilename))
+        pass
+
+    def mapOutput(self, scriptFilename):
+        s = scriptFilename
+        if scriptFilename in self.logicalOutByScript:
+            s = self.nextOutputName(self.logicalOutByScript[s])
+        else:
+            s = self.cleanOutputName(s)
+        self.logicalOutByScript[scriptFilename] = s
+        return s
                     
-        def expandConcreteInput(self, inputFilename):
-            res = glob.glob(inputFilename)
-            return res
+    def expandConcreteInput(self, inputFilename):
+        save = os.getcwd()
+        os.chdir(self.config.execSourcePath)
+        res = glob.glob(inputFilename)
+        #logging.error("globbing %s from %s"%(inputFilename,os.curdir))
+        #logging.error("-- %s --%s"%(str(res),str(glob.glob("camsom1pdf/*"))))
+        os.chdir(save)
+        return res
 
-        def cleanOutputName(self, scriptFilename):
-            # I can't think of a "good" or "best" way, so for now,
-            # we'll just take the last part and garble it a little
-            (head,tail) = os.path.split(scriptFilename)
-            if tail == "":
-                logging.error("empty filename: %s"%(scriptFilename))
-                raise StandardError
-            if head != "":
-                # take the last 4 hex digits of the head's hash value
-                head = ("%x" % hash(head))[-4:]
-            return head+tail
+    def cleanOutputName(self, scriptFilename):
+        # I can't think of a "good" or "best" way, so for now,
+        # we'll just take the last part and garble it a little
+        (head,tail) = os.path.split(scriptFilename)
+        if tail == "":
+            log.error("empty filename: %s"%(scriptFilename))
+            raise StandardError
+        if head != "":
+            # take the last 4 hex digits of the head's hash value
+            head = ("%x" % hash(head))[-4:]
+        return head+tail
 
-        def nextOutputName(self, logical):
-            # does the logical name end with .1 or .2 or .3 or .99?
-            # (has it already been incremented?)
-            m = re.match("(.*\.)(\d+)$", logical)
+    def nextOutputName(self, logical):
+        # does the logical name end with .1 or .2 or .3 or .99?
+        # (has it already been incremented?)
+        m = re.match("(.*\.)(\d+)$", logical)
 
-            if m is not None:
-                # increment the trailing digit(s)
-                return m.group(1) + str(1 + int(m.group(1)))
-            else:
-                return logical + ".1"
+        if m is not None:
+            # increment the trailing digit(s)
+            return m.group(1) + str(1 + int(m.group(1)))
+        else:
+            return logical + ".1"
 
-        def newCommand(self, cmd, argtriple,
-                       inouts, referenceLineNum):
-            # first, reassign inputs and outputs.
-            newinputs = reduce(operator.add, map(self.mapInput, inouts[0]))
-            newoutputs = map(self.mapOutput, inouts[1])
-            inouts = (newinputs, newoutputs)
-            # patch arguments: make new leftovers
-            argtriple = (argtriple[0], argtriple[1], newinputs + newoutputs)
-            c = NcoParser.Command(cmd, argtriple, inouts, referenceLineNum)
+    def newCommand(self, cmd, argtriple,
+                   inouts, referenceLineNum):
+        # first, reassign inputs and outputs.
+        newinputs = reduce(operator.add, map(self.mapInput, inouts[0]))
+        newoutputs = map(self.mapOutput, inouts[1])
+        inouts = (newinputs, newoutputs)
+        # patch arguments: make new leftovers
+        argtriple = (argtriple[0], argtriple[1], newinputs + newoutputs)
+        c = Command(cmd, argtriple, inouts, referenceLineNum)
             
-            for out in inouts[1]:
-                self.commandByLogicalOut[out] = c
-                self.logicalOuts.append(out)
-            return c
-    pass
+        for out in inouts[1]:
+            self.commandByLogicalOut[out] = c
+            self.logicalOuts.append(out)
+        return c
+
+    def unpickleCommand(self, pickled):
+        return pickle.loads(pickled)
+
+    def pickleCommand(self, cmd):
+        return pickle.dumps(cmd)
+
+    pass # end of CommandFactory class
 
 
 
@@ -585,6 +607,8 @@ class Parser:
         self.modules = []
         self.handlerDefaults()
         self.handleFunc = None
+        self.commands = []
+        self.variableParser = VariableParser()
         pass
 
     def handlers(self, newHandlers):
@@ -603,52 +627,54 @@ class Parser:
         function: handle(ParserCommand)"""
         self.handleFunc = handle
         pass
-    
-    def parseScript(self, script, factory):
-        """Parse and accept/reject commands in a script, where the script
-        is a single string containing script lines"""
-        vp = VariableParser()
+    def parseScriptLine(self, factory, line):
         def accept(obj, argv):
             for mod in obj.modules:
                 if mod[0].accepts(argv):
                     cmd = mod[0].parse(line, argv, obj.lineNum, factory)
                     return cmd
             return False
-        for line in script.splitlines():
-            self.lineNum += 1
-            original = line.strip()
-            comment = None
-            # for now, do not detect sh dialect 
-            linesp = original.split("#", 1) # chop up comments
+        self.lineNum += 1
+        original = line.strip()
+        comment = None
+        # for now, do not detect sh dialect 
+        linesp = original.split("#", 1) # chop up comments
+        
+        if len(linesp) > 1:
+            line, comment = linesp
+        else:
+            line = original
             
-            if len(linesp) > 1:
-                line, comment = linesp
-            else:
-                line = original
-
-            if (len(line) < 1): # skip comment-only line
-                continue
+        if (len(line) < 1): # skip comment-only line
+            return
                 
-            line = vp.apply(line)
-            if not isinstance(line, str):
-                continue
-            argv = shlex.split(line)
-            command = accept(self, argv)
-            if isinstance(command, types.InstanceType):
-                command.referenceLineNum = self.lineNum
-                command.original = original
-            if not command:
-                logging.debug(" ".join(["reject:", str(len(argv)), str(argv)]))
-            elif self.handleFunc is not None:
-                self.handleFunc(command)
-                
-
+        line = self.variableParser.apply(line)
+        if not isinstance(line, str):
+            return None
+        argv = shlex.split(line)
+        command = accept(self, argv)
+        if isinstance(command, types.InstanceType):
+            command.referenceLineNum = self.lineNum
+            command.original = original
+        if not command:
+            logging.debug(" ".join(["reject:", str(len(argv)), str(argv)]))
+        elif self.handleFunc is not None:
+            self.handleFunc(command)
+        return command
+    
+    def parseScript(self, script, factory):
+        """Parse and accept/reject commands in a script, where the script
+        is a single string containing script lines"""
+        vp = VariableParser()
+        for line in script.splitlines():
+            self.parseScriptLine(factory, line)
         pass
     
     pass
 
 class Scheduler:
-    def __init__(self, executor=None):
+    def __init__(self, config, executor=None):
+        self.config = config
         self.transaction = None
         self.env = {}
         self.taskId = self.makeTaskId()
@@ -677,7 +703,7 @@ class Scheduler:
             o = self.env["JobPersistence"] 
             if o != None:
                 return o
-        o = JobPersistence(local.dbFilename, True)
+        o = JobPersistence(self.config.dbFilename, True)
         self.env["JobPersistence"] = o
         return o
 
@@ -725,15 +751,19 @@ class Scheduler:
     
 class SwampInterface:
 
-    def __init__(self, executor):
-        self.executor = executor
+    def __init__(self, config, executor=None):
+        self.config = config
+        if executor:
+            self.executor = executor
+        else:
+            self.executor = FakeExecutor()
         pass
 
     def submit(self, script):
         p = Parser()
-        sch = Scheduler(self.executor)
+        sch = Scheduler(self.config, self.executor)
         p.commandHandler(sch.schedule)
-        cf = NcoParser.CommandFactory()
+        cf = CommandFactory(self.config)
         p.parseScript(script, cf)
         sch.finish()
         sch.executeAll()
@@ -747,7 +777,7 @@ class SwampInterface:
         """return state of file by name"""
 
         # go check db for state
-        jp = JobPersistence(local.dbFilename)
+        jp = JobPersistence(self.config.dbFilename)
         poll = jp.newPollingTransaction()
         i = poll.pollFileStateByLogical(logicalname)
         jp.close()
@@ -763,7 +793,7 @@ class SwampInterface:
         logname = "dummy.nc"
         url = "NA"
         # go check db for state
-        jp = JobPersistence(local.dbFilename)
+        jp = JobPersistence(self.config.dbFilename)
         poll = jp.newPollingTransaction()
         i = poll.pollFileStateByTaskId(taskid)
         jp.close()
@@ -798,22 +828,26 @@ class FakeExecutor:
     pass
 
 class LocalExecutor:
-    def __init__(self):
+    def __init__(self, filemap):
         self.running = {}
+        self.cmds = {}
         self.token = 0
-        self.cwd = os.getcwd()
+        self.filemap = filemap
+        print >>open("/home/wangd/ssdapSpace/ssdap_cli.log","a"), "execinit",self, self.launch
         pass
-    def applyPath(self, p):
-        if p[0] == os.sep: # ignore if absolute path
-            return p
-        else:
-            return self.cwd + os.sep + p
     def launch(self, cmd):
-        cmdLine = cmd.makeCommandLine(self.applyPath, self.applyPath)
-        logging.debug("-exec-> %s"% " ".join(cmdLine))
+        print >>open("/home/wangd/ssdapSpace/ssdap_cli.log","a"), "launch"
+        l = logging.getLogger("SWAMP")
+        l.debug("launch!")
+
+
+        cmdLine = cmd.makeCommandLine(self.filemap.mapReadFile,
+                                      self.filemap.mapWriteFile)
+        log.debug("-exec-> %s"% " ".join(cmdLine))
         retcode = subprocess.call(cmdLine, shell=False)
         self.token += 1
         self.running[self.token] = retcode
+        self.cmds[self.token] = cmd
         return self.token
     def join(self, token):
         if token in self.running:
@@ -821,7 +855,9 @@ class LocalExecutor:
             return retcode
         else:
             raise StandardError("Tried to join non-running job")
-    pass
+    def actualOuts(self, token):
+        return self.cmds[token].actualOutputs
+    pass # end class LocalExecutor
 
 class RemoteExecutor:
     def __init__(self):
@@ -850,11 +886,35 @@ class RemoteExecutor:
         
     def join(self, token):
         if token in self.running:
-            self.waitForFinish(token)
+            self._waitForFinish(token)
             self.running.pop(token)
             return True
         else:
             raise StandardError("Tried to join non-running job")
+    pass # end class RemoteExecutor
+
+
+class FileMapper:
+    def __init__(self, name, readParent, writeParent):
+        # we assume that logical aliases are eliminated at this point.
+        self.physical = {} # map logical to physical
+        self.logical = {} # map physical to logical
+        self.readPrefix = readParent + os.sep 
+        self.writePrefix = writeParent + os.sep + name + "_"
+        pass
+    def clean():
+        pass
+    def mapReadFile(self, f):
+        if f in self.physical:
+            return self.physical[f]
+        else:
+            return self.readPrefix + f
+        return self.prefix + f
+    def mapWriteFile(self, f):
+        pf = self.writePrefix + f
+        self.logical[pf] = f
+        self.physical[f] = pf
+        return pf
     
 def testParser():
     test1 = """#!/usr/local/bin/bash
@@ -897,7 +957,7 @@ for yr in `seq $Y1 $LAST_YR`; do
 
 """
     logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s %(levelname)s %(message)s',
+                        format='%(asctime)s %(levelname)s %(message)s',
                         datefmt='%d%b%Y %H:%M:%S')
 #                    filename='/tmp/myapp.log',
 #                    filemode='w')
@@ -906,13 +966,13 @@ for yr in `seq $Y1 $LAST_YR`; do
 
 def testParser2():
     logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s %(levelname)s %(message)s',
+                        format='%(asctime)s %(levelname)s %(message)s',
                         datefmt='%d%b%Y %H:%M:%S')
 
     p = Parser()
     portionlist = open("full_resamp.swamp").readlines()[:10]
     portion = "".join(portionlist)
-    cf = NcoParser.CommandFactory()
+    cf = CommandFactory(Config.dummyConfig())
     p.parseScript(portion, cf)
 
 def testParser3():
@@ -924,7 +984,7 @@ def testParser3():
     portionlist = ["ncwa in.nc temp.nc", "ncwa temp.nc temp.nc",
                    "ncwa temp.nc out.nc"]
     portion = "\n".join(portionlist)
-    cf = NcoParser.CommandFactory()
+    cf = CommandFactory(Config.dummyConfig())
     p.parseScript(portion, cf)
  
 
@@ -933,10 +993,14 @@ def testSwampInterface():
     portionlist = open("full_resamp.swamp").readlines()[:10]
     #portionlist = open("full_resamp.swamp").readlines()
     portion = "".join(portionlist)
+    c = Config("swamp.conf")
+    c.read()
     fe = FakeExecutor()
-    le = LocalExecutor()
+    le = LocalExecutor(FileMapper("swampTest%d"%os.getpid(),
+                                  c.execSourcePath,
+                                  c.execScratchPath ))
     #si = SwampInterface(fe)
-    si = SwampInterface(le)
+    si = SwampInterface(c, le)
     taskid = si.submit(portion)
     print "submitted with taskid=", taskid
 def main():
