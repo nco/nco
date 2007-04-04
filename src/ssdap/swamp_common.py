@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.8 2007-04-03 03:44:53 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.9 2007-04-04 03:25:58 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -386,6 +386,17 @@ class NcoParser:
         else:
             return (argv[0] in NcoParser.commands)    
 
+class NcoBinaryFinder:
+    def __init__(self, config):
+        self.config = config
+        pass
+    def __call__(self, cmd):
+        # for now, always pick one nco binary,
+        # regardless of netcdf4 or opendap.
+        return self.config.execNcoDap + os.sep + cmd.cmd
+    
+        
+
 # Command and CommandFactory do not have dependencies on NCO things.
 class Command:
     """this is needed because we want to build a dependency tree."""
@@ -416,7 +427,7 @@ class Command:
             return phy
         else:
             return logical
-            
+
     def makeCommandLine(self, mapInput, mapOutput):
         cmdLine = [self.cmd]
         # the "map" version looks a little funny.
@@ -529,12 +540,14 @@ class CommandFactory:
         # patch arguments: make new leftovers
         argtriple = (argtriple[0], argtriple[1], newinputs + newoutputs)
         c = Command(cmd, argtriple, inouts, referenceLineNum)
+                    
             
         for out in inouts[1]:
             self.commandByLogicalOut[out] = c
             self.logicalOuts.append(out)
         return c
 
+    # I don't really need the pickling done in the factory anymore...
     def unpickleCommand(self, pickled):
         return pickle.loads(pickled)
 
@@ -546,16 +559,6 @@ class CommandFactory:
 
 
 
-class ParserCommand:
-    def __init__(self):
-#         self.original = ""
-#         self.command = ""
-#         self.inputList = [""]
-#         self.outputList = [""]
-#         self.arglist = [""]
-#         self.leftover = [""]
-        pass
-    pass
 class Parser:
     """Parse a SWAMP script for NCO(for now) commands"""
 
@@ -757,6 +760,14 @@ class SwampInterface:
             self.executor = executor
         else:
             self.executor = FakeExecutor()
+
+        if config.execSlaveNodes > 0:
+            self.remote = []
+            for i in range(config.execSlaveNodes):
+                s = config.slave[i]
+                self.remote.append(RemoteExecutor(s[0], s[1]))
+        else:
+            self.remote = None
         pass
 
     def submit(self, script):
@@ -828,47 +839,85 @@ class FakeExecutor:
     pass
 
 class LocalExecutor:
-    def __init__(self, filemap):
+    def __init__(self, binaryFinder, filemap, slots=1):
+        self.binaryFinder = binaryFinder
+        self.filemap = filemap
+        self.slots = slots
         self.running = {}
         self.cmds = {}
         self.token = 0
-        self.filemap = filemap
-        print >>open("/home/wangd/ssdapSpace/ssdap_cli.log","a"), "execinit",self, self.launch
+
         pass
+
     def launch(self, cmd):
-        print >>open("/home/wangd/ssdapSpace/ssdap_cli.log","a"), "launch"
-        l = logging.getLogger("SWAMP")
-        l.debug("launch!")
-
-
         cmdLine = cmd.makeCommandLine(self.filemap.mapReadFile,
                                       self.filemap.mapWriteFile)
         log.debug("-exec-> %s"% " ".join(cmdLine))
-        retcode = subprocess.call(cmdLine, shell=False)
+        # make sure there's room to write the output
+        self.clearFiles(cmd.actualOutputs)
+        pid = os.spawnv(os.P_NOWAIT, self.binaryFinder(cmd), cmdLine)
+        log.debug("child pid: "+str(pid))
         self.token += 1
-        self.running[self.token] = retcode
+        self.running[self.token] = pid
         self.cmds[self.token] = cmd
         return self.token
+
+    def poll(self, token):
+        if token in self.running:
+            pid = self.running[token]
+            (pid2, status) = os.waitpid(pid,os.WNOHANG)
+            
+            if (pid2 != 0) and os.WIFEXITED(status):
+                log.debug("poll pid %d (%d) -> %d"%(pid, pid2, status))
+                return os.WEXITSTATUS(status)
+            else:
+                return None
+        else:
+            raise StandardError("Tried to poll non-running job")
+
     def join(self, token):
         if token in self.running:
-            retcode = self.running.pop(token)
-            return retcode
+            pid = self.running.pop(token)
+            (pid, status) = os.waitpid(pid,0)
+            log.debug("got "+str(pid)+" " +str(status)+"after spawning")
+            return status
         else:
             raise StandardError("Tried to join non-running job")
     def actualOuts(self, token):
         return self.cmds[token].actualOutputs
+
+    def clearFiles(self, filelist):
+        for f in filelist:
+            if os.access(f, os.F_OK):
+                if os.access(f, os.W_OK):
+                    os.remove(fname)
+                else:
+                    raise StandardError("Tried to unlink read-only %s"
+                                        % (fname))
+            pass
+        pass
+
     pass # end class LocalExecutor
 
 class RemoteExecutor:
-    def __init__(self):
-        self.target = "http://localhost:8080"
-        self.rpc = SOAPProxy(self.target)
+    def __init__(self, url, slots):
+        """ url: SOAP url for SWAMP slave
+            slots: max number of running slots"""
+        self.url = url
+        self.slots = slots
+        self.rpc = SOAPProxy(url)
+        self.rpc.reset()
         self.running = {}
         self.token = 0
         pass
+
+    def busy(self):
+        # soon, we should put code here to check for process finishes and
+        # cache their results.
+        return len(self.running) >= self.slots
+    
     def launch(self, cmd):
-        cmdLine = cmd.makeCommandLine(lambda x: x, lambda y:y)
-        remoteToken = self.rpc.slaveSpawn(cmdLine)
+        remoteToken = self.rpc.slaveExec(pickle.dumps(cmd))
         self.token += 1        
         self.running[self.token] = remoteToken
         return self.token
@@ -878,17 +927,24 @@ class RemoteExecutor:
         remoteToken = self.running[token]
         while True:
             # check state:
-            state = self.rpc.slaveJobStatus(remoteToken)
-            if state is "Finished":
-                return True
-            os.sleep(10) # sleep for a while.  need to tune this.
+            state = self.rpc.pollState(remoteToken)
+            if state is not None:
+                if state == 0:
+                    return True
+                else:
+                    log.error("slave %s error while executing" % self.url)
+                    return False
+            time.sleep(0.2) # sleep for a while.  need to tune this.
         pass
         
     def join(self, token):
         if token in self.running:
-            self._waitForFinish(token)
+            ret = self._waitForFinish(token)
             self.running.pop(token)
-            return True
+            if ret == 0:
+                return True
+            else:
+                return False
         else:
             raise StandardError("Tried to join non-running job")
     pass # end class RemoteExecutor
@@ -902,19 +958,35 @@ class FileMapper:
         self.readPrefix = readParent + os.sep 
         self.writePrefix = writeParent + os.sep + name + "_"
         pass
+
     def clean():
         pass
+
     def mapReadFile(self, f):
         if f in self.physical:
             return self.physical[f]
         else:
             return self.readPrefix + f
         return self.prefix + f
+
     def mapWriteFile(self, f):
         pf = self.writePrefix + f
         self.logical[pf] = f
         self.physical[f] = pf
         return pf
+
+    def _cleanPhysical(self, p):
+        try:
+            os.unlink(p)
+            f = self.logical.pop(p)
+            self.physical.pop(f)
+        except IOError, e:
+            pass
+    
+    def cleanPhysicals(self):
+        physicals = self.logical.keys()
+        map(self._cleanPhysical, physicals)
+        
     
 def testParser():
     test1 = """#!/usr/local/bin/bash
@@ -996,11 +1068,18 @@ def testSwampInterface():
     c = Config("swamp.conf")
     c.read()
     fe = FakeExecutor()
-    le = LocalExecutor(FileMapper("swampTest%d"%os.getpid(),
+    le = LocalExecutor(NcoBinaryFinder(c),
+                       FileMapper("swampTest%d"%os.getpid(),
                                   c.execSourcePath,
                                   c.execScratchPath ))
+    
     #si = SwampInterface(fe)
     si = SwampInterface(c, le)
+
+    #evilly force the interface to use a remote executor
+    assert len(si.remote) > 0
+    si.executor = si.remote[0]
+
     taskid = si.submit(portion)
     print "submitted with taskid=", taskid
 def main():
