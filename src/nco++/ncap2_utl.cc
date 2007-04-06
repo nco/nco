@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.50 2007-03-30 03:59:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.51 2007-04-06 12:00:47 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -253,7 +253,7 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
   // Deal with a RAM variable
   if(bdef && Nvar->flg_mem){
     var_sct *var_inf;
-    var_sct* var_swp;
+    ptr_unn ptr_swp;
 
     var_inf=Nvar->cpyVarNoData();
 
@@ -283,9 +283,9 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
     // Check for "new" missing value;
     if(var->has_mss_val){
     //Swap values about  
-     var_swp->mss_val.vp=var_inf->mss_val.vp;
+     ptr_swp.vp=var_inf->mss_val.vp;
      var_inf->mss_val.vp=var->mss_val.vp; 
-     var->mss_val.vp=var_swp->mss_val.vp;
+     var->mss_val.vp=ptr_swp.vp;
      var_inf->has_mss_val=true; 
     }     
     (void)nco_var_free(Nvar->var);  
@@ -2252,6 +2252,113 @@ sz=prs_arg->ptr_int_vtr->size();
    (void)prs_arg->ptr_int_vtr->pop();
 
 }
+
+
+void 
+ncap_get_mem( 
+int dpt,                       // current depth
+int dpt_max,                   // Max depth ( same as number of dims) 
+std::vector<int> &shp_vtr,     
+NcapVector<dmn_sct*> &dmn_vtr, // New vectors
+var_sct *var_in, 
+void *vp_out){
+
+void *vp_in;
+long idx;      
+
+long srt=dmn_vtr[dpt]->srt;
+long end=dmn_vtr[dpt]->end;
+long cnt=dmn_vtr[dpt]->cnt;
+long srd=dmn_vtr[dpt]->srd;
+ 
+size_t slb_sz=nco_typ_lng(var_in->type);
+
+ std::cout <<"Hyperslab vars "<<srt<<" "<<end<<" "<<cnt<<" "<<srd<<std::endl;
+
+  if(dpt == dpt_max-1){
+
+    char *cp_srt;
+    char *cp_end;
+    long cdx=0;
+
+    vp_in=var_in->val.vp;
+
+    //cp_srt=(char*)(var_in->val.vp)+(ptrdiff_t)(srt*slb_sz);
+    for(idx=srt ; idx>end ; idx+=srd ){
+
+      //cp_srt=
+      cp_end=(char*)vp_out + (ptrdiff_t)(cdx*slb_sz);
+
+      cdx++; 
+      (void)memcpy((void*)cp_end,(void*)((char*)vp_in+(ptrdiff_t)(idx*slb_sz)),slb_sz);
+        
+
+    }
+
+  }
+
+}
+
+ 
+var_sct*
+nco_var_get_mem(
+const char* var_nm,
+var_sct *var_in,
+NcapVector<dmn_sct*> &dmn_vtr){
+
+int idx;
+int ncnt=1;
+int dmn_nbr=var_in->nbr_dim;
+
+var_sct* var_ret;  
+void  *vp_out;
+void *vp;
+std::vector<int> shp_vtr;
+
+ 
+// Create shape vector for var_in
+ shp_vtr.push_back(ncnt);
+ for(idx=dmn_nbr-1 ; idx>0 ; idx--){
+   ncnt*=var_in->dim[idx]->cnt;  
+     shp_vtr.push_back(ncnt);
+     }
+ // reverse vector
+ std::reverse(shp_vtr.begin(),shp_vtr.end() ); 
+
+ for(idx=0 ; idx<dmn_nbr ;idx++)
+   std::cout << shp_vtr[idx]<<" ";
+ std::cout<<"---------\n";    
+
+
+ // Find space for output data
+ ncnt=1;
+ for(idx=0 ;idx < dmn_nbr ; idx++)
+   ncnt*=dmn_vtr[idx]->cnt; 
+
+ // Alloc space for output variables value
+ vp_out=(void*)nco_malloc(ncnt*nco_typ_lng(var_in->type));
+
+ vp=vp_out; // vp_out increments in ncap_get_mem need to save a local pointer
+           
+
+ (void)ncap_get_mem(0,dmn_nbr,shp_vtr,dmn_vtr,var_in,vp_out);
+ 
+ 
+
+ var_ret=nco_var_dpl(var_in);
+ var_ret->sz=ncnt;
+
+ (void)nco_free(var_ret->val.vp);
+ var_ret->val.vp=vp;  
+
+
+
+  return var_ret;
+}
+
+
+
+
 
 // See if any VAR_ID/ATT_ID match any in str_vtr
 // if so return true
