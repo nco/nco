@@ -1804,12 +1804,15 @@ end_dot: ;
 
     // Variable with argument list 
     | (#(VAR_ID LMT_LIST)) => #( vid:VAR_ID lmt:LMT_LIST) {
+          bool bram;   // Check for a RAM variable
           int idx;
           int nbr_dmn;
           const char *var_nm;
           var_sct *var_rhs;
           var_sct *var_nw;
           dmn_sct *dmn_nw;
+          
+          NcapVar *Nvar;
           RefAST lRef;           
 
           NcapVector<lmt_sct*> lmt_vtr;
@@ -1824,11 +1827,24 @@ end_dot: ;
             
           }
 
+     
+
           var_nm=vid->getText().c_str(); 
           var_rhs=ncap_var_init(vid->getText(),prs_arg,false);            
           nbr_dmn=var_rhs->nbr_dim;          
           lRef=lmt;
 
+          // Check for RAM variable
+          Nvar=prs_arg->ptr_var_vtr->find(var_nm);
+          if(Nvar && Nvar->flg_mem){ 
+             bram=true;
+             var_rhs=nco_var_free(var_rhs);
+              
+             var_rhs=Nvar->cpyVar();
+             var_rhs->nc_id=prs_arg->out_id;
+           }else{
+             bram=false;
+           }
 
           // Now populate lmt_vtr                  
           if( lmt_mk(lRef,lmt_vtr) == 0){
@@ -1865,12 +1881,24 @@ end_dot: ;
               dmn_vtr.push_back(dmn_nw);
            }  
  
-          // Fudge -- fill out var again -but using dims defined in dmn_vtr
-          // We need data in var so that LHS logic in assign can access var shape 
-          var_nw=nco_var_fll(var_rhs->nc_id,var_rhs->id,var_nm, &dmn_vtr[0],dmn_vtr.size());
 
-          // Now get data from disk - use nco_var_get() 
-          (void)nco_var_get(var_nw->nc_id,var_nw); 
+           if(!bram){
+            // Fudge -- fill out var again -but using dims defined in dmn_vtr
+            // We need data in var so that LHS logic in assign can access var shape 
+            var_nw=nco_var_fll(var_rhs->nc_id,var_rhs->id,var_nm, &dmn_vtr[0],dmn_vtr.size());
+
+            // Now get data from disk - use nco_var_get() 
+            (void)nco_var_get(var_nw->nc_id,var_nw); 
+           }
+            
+           // Ram variable -do an in memory get  
+           if(bram){
+
+              //Do an in memory get 
+              var_nw=nco_var_get_mem(var_nm,var_rhs,dmn_vtr);
+                //var_nw=nco_var_dpl(var_rhs);
+           }
+                
            
           /* a hack - we set var->has_dpl_dmn=-1 so we know we are dealing with 
              a hyperslabed var and not a regular var  -- It shouldn't cause 
