@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapslave.py,v 1.2 2007-04-04 03:25:58 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapslave.py,v 1.3 2007-04-06 00:24:00 wangd Exp $
 # Copyright (c) 2007 Daniel L. Wang
 from swamp_common import *
 from swamp_config import Config 
@@ -99,6 +99,7 @@ class SimpleJobManager:
         root.putChild(self.config.slavePubPath, fileResource)
         root.putChild(self.config.slaveSoapPath, TwistedSoapWrapper(self))
         reactor.listenTCP(self.config.slavePort, tServer.Site(root))
+        log.debug("starting Twisted soap slave")
         reactor.run()
         pass
     pass # end class SimpleJobManager

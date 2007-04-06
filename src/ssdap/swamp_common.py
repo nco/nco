@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.9 2007-04-04 03:25:58 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.10 2007-04-06 00:24:00 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -13,9 +13,11 @@ __author__ = "Daniel L. Wang <wangd@uci.edu>"
 
 # Python imports
 import cPickle as pickle
+import copy # for shallow object copies for pickling
 import getopt
 from fnmatch import fnmatch
 import glob
+from heapq import * # for minheap implementation
 import logging
 import md5
 import os
@@ -401,23 +403,40 @@ class NcoBinaryFinder:
 class Command:
     """this is needed because we want to build a dependency tree."""
 
-    def __init__(self, cmd, argtriple, inouts, referenceLineNum):
+    def __init__(self, cmd, argtriple, inouts, parents, referenceLineNum):
         self.cmd = cmd
         self.parsedOpts = argtriple[0] # adict
         self.argList = argtriple[1] # alist
         self.leftover = argtriple[2] # leftover
         self.inputs = inouts[0]
         self.outputs = inouts[1]
+        self.parents = parents
         self.referenceLineNum = referenceLineNum
         self.actualOutputs = []
+        self.children = []
         pass
+
+    # sort on referencelinenum
+    def __cmp__(self, other):
+        return cmp(self.referenceLineNum, other.referenceLineNum)
+
+    def __hash__(self): # have to define hash, since __cmp__ is defined
+        return id(self)
+
+    def pickleNoRef(self):
+        safecopy = copy.copy(self)
+        safecopy.parents = None
+        safecopy.children = None
+        return pickle.dumps(safecopy)
+
 
     # need to map all non-input filenames.
     # apply algorithm to find temps and outputs
     # then mark them as remappable.
     # this can be done in the mapping function.
     def remapFiles(self, mapFunction):
-        pass
+        raise StandardError("unimplemented function Command.remapFiles")
+    
     def remapFile(self, logical, mapInput, mapOutput):
         if logical in self.inputs:
             return mapInput(logical)
@@ -470,6 +489,7 @@ class CommandFactory:
         self.commandByLogicalOut = {}
         self.logicalOutByScript = {}
         self.logicalOuts = []
+        self.guessTemps = {}
         pass
 
     def mapInput(self, scriptFilename):
@@ -537,22 +557,31 @@ class CommandFactory:
         newinputs = reduce(operator.add, map(self.mapInput, inouts[0]))
         newoutputs = map(self.mapOutput, inouts[1])
         inouts = (newinputs, newoutputs)
+
         # patch arguments: make new leftovers
         argtriple = (argtriple[0], argtriple[1], newinputs + newoutputs)
-        c = Command(cmd, argtriple, inouts, referenceLineNum)
-                    
-            
+
+        # link commands: first find parents 
+        inputsWithParents = filter(self.commandByLogicalOut.has_key, newinputs)
+        parents = map(lambda f: self.commandByLogicalOut[f], inputsWithParents)
+
+        # build cmd, with links to parents
+        c = Command(cmd, argtriple, inouts, parents, referenceLineNum)
+
+        # then link parents back to cmd
+        map(lambda p: p.children.append(c), parents)
+        # and mark files as temporary
+        self.guessTemps.update(map(lambda f:(f,c), inputsWithParents))
+
         for out in inouts[1]:
             self.commandByLogicalOut[out] = c
             self.logicalOuts.append(out)
         return c
 
-    # I don't really need the pickling done in the factory anymore...
     def unpickleCommand(self, pickled):
+        # not sure this needs to be done in the factory
+        # -- maybe some fixup code though
         return pickle.loads(pickled)
-
-    def pickleCommand(self, cmd):
-        return pickle.dumps(cmd)
 
     pass # end of CommandFactory class
 
@@ -738,7 +767,7 @@ class Scheduler:
     def finish(self):
         self.transaction.finish()
         pass
-    def executeAll(self):
+    def executeSerialAll(self):
         def run(cmd):
             if self.executor:
                 tok = self.executor.launch(cmd)
@@ -750,8 +779,94 @@ class Scheduler:
                 print "ret was ",ret
                 logging.error("error running command %s" % (c))
                 break
+    def executeParallelAll(self):
+        pd = ParallelDispatcher(self.config, [self.executor])
+        pd.dispatchAll(self.cmdList)
         pass
+    pass # end of class Scheduler
+
+class ParallelDispatcher:
+    def __init__(self, config, executorList):
+        self.config = config
+        self.executors = executorList
+        self.finished = {}
+        pass
+
+    def isReady(self, cmd):
+        # if there are no unfinished parents...
+        return 0 == len(filter(lambda c: c not in self.finished, cmd.parents))
+
+
+    def findReady(self, queued):
+        return filter(self.isReady, queued)
+
+    def extractReady(self, queued):
+        """returns a tuple (ready,queued)
+        filter is elegant to generate r, but updating q is O(n_r*n_q),
+        whereas this generates r and q in O(n_q)
+        """
+        print self.finished
+        r = []
+        q = []
+        for c in queued:
+            if self.isReady(c):
+                r.append(c)
+            else:
+                q.append(c)
+        return (r,q)
+        
+        
+    def findMadeReady(self, justFinished):
+        """Generally, len(justFinished.children) << len(queued).
+        n_j * n_q'  << n_q, since n_j << n_q
+        and n_q'(position number of justfinishedchild << n_q, so
+        it's generally cheaper just to find+remove the ready
+        elements instead of iterating over the entire list."""
+        assert justFinished in self.finished
+        return filter(self.isReady, justFinished.children)
     
+    def dispatch(self, executor, cmd):
+        log.debug("dispatching %s %d" %(cmd.cmd, cmd.referenceLineNum))
+        token = executor.launch(cmd)
+        self.running[token] = cmd
+
+    def graduate(self, token, code):
+        cmd = self.running.pop(token)
+
+        if code != 0:
+            s = "Bad return code %s from cmdline %s" % (code, cmd.cmd)
+            log.error(s)
+            raise StandardError(s)
+        else:
+            # figure out which one finished, and graduate it.
+            self.finished[cmd] = code
+            log.debug("finished exec'ing %s %d" %(cmd.cmd,
+                                                  cmd.referenceLineNum))
+            newready = self.findMadeReady(cmd)
+            map(lambda x: heappush(self.ready,x), newready)
+        
+    
+    def dispatchAll(self, cmdList):
+        self.running = {} # token -> cmd
+        (self.ready, self.queued) = self.extractReady(cmdList)
+
+        # Consider 'processor affinity' to reduce data migration.
+        executor = self.executors[0]
+        while True:
+            # if there are free slots in an executor, run what's ready
+            if executor.busy() or not self.ready:
+                if not self.running: # done!
+                    break
+                (token, code) = executor.waitAny()
+                self.graduate(token, code)
+            else:
+                # not busy + jobs to run, so 'make it so'
+                cmd = heappop(self.ready)
+                self.dispatch(executor, cmd)
+            continue # redundant, but safe
+        pass # end def dispatchAll
+    pass # end class ParallelDispatcher
+        
 class SwampInterface:
 
     def __init__(self, config, executor=None):
@@ -777,7 +892,7 @@ class SwampInterface:
         cf = CommandFactory(self.config)
         p.parseScript(script, cf)
         sch.finish()
-        sch.executeAll()
+        sch.executeParallelAll()
         task = sch.taskId
         #print len(task)
         return task
@@ -844,10 +959,15 @@ class LocalExecutor:
         self.filemap = filemap
         self.slots = slots
         self.running = {}
+        self.finished = {}
         self.cmds = {}
         self.token = 0
 
         pass
+    def busy(self):
+        # soon, we should put code here to check for process finishes and
+        # cache their results.
+        return len(self.running) >= self.slots
 
     def launch(self, cmd):
         cmdLine = cmd.makeCommandLine(self.filemap.mapReadFile,
@@ -863,13 +983,18 @@ class LocalExecutor:
         return self.token
 
     def poll(self, token):
+        if token in self.finished:
+            return self.finished[token]
         if token in self.running:
             pid = self.running[token]
             (pid2, status) = os.waitpid(pid,os.WNOHANG)
             
             if (pid2 != 0) and os.WIFEXITED(status):
                 log.debug("poll pid %d (%d) -> %d"%(pid, pid2, status))
-                return os.WEXITSTATUS(status)
+                code = os.WEXITSTATUS(status)
+                self.finished[token] = code
+                self.running.pop(token)
+                return code
             else:
                 return None
         else:
@@ -879,7 +1004,13 @@ class LocalExecutor:
         if token in self.running:
             pid = self.running.pop(token)
             (pid, status) = os.waitpid(pid,0)
+            
             log.debug("got "+str(pid)+" " +str(status)+"after spawning")
+            if os.WIFEXITED(status):
+                status = os.WEXITSTATUS(status)
+            else:
+                status = -1
+            self.finished[token] = status
             return status
         else:
             raise StandardError("Tried to join non-running job")
@@ -906,9 +1037,12 @@ class RemoteExecutor:
         self.url = url
         self.slots = slots
         self.rpc = SOAPProxy(url)
+        log.debug("reset slave at %s with %d slots" %(url,slots))
         self.rpc.reset()
         self.running = {}
+        self.finished = {}
         self.token = 0
+        self.sleepTime = 0.2
         pass
 
     def busy(self):
@@ -917,37 +1051,67 @@ class RemoteExecutor:
         return len(self.running) >= self.slots
     
     def launch(self, cmd):
-        remoteToken = self.rpc.slaveExec(pickle.dumps(cmd))
+        remoteToken = self.rpc.slaveExec(cmd.pickleNoRef())
         self.token += 1        
         self.running[self.token] = remoteToken
         return self.token
 
+    def discard(self, token):
+        assert token in self.finished
+        self.finished.pop(token)
+        # consider releasing files too.
+
+    def waitAny(self):
+        while True:
+            for (token, rToken) in self.running.items():
+                state = self._pollRemote(rToken)
+                if state is not None:
+                    self.finished[token] = state
+                    self.running.pop(token)
+                    return (token, state)
+            time.sleep(self.sleepTime)
+        pass
+
+    def poll(self, token):
+        if token in self.finished:
+            return self.finished[token]
+        elif token in self.running:
+            state = self._pollRemote(self.running[token])
+            if state is not None:
+                self.finished[token] = state
+                self.running.pop(token)
+        else:
+            raise StandardError("RemoteExecutor.poll: bad token")
+
+    def _pollRemote(self, remoteToken):
+        state = self.rpc.pollState(remoteToken)
+        if state is not None:
+            if state != 0:
+                log.error("slave %s error while executing" % self.url)
+        return state # always return, whether None, 0 or nonzero
+
+            
     def _waitForFinish(self, token):
         """helper function"""
         remoteToken = self.running[token]
         while True:
-            # check state:
-            state = self.rpc.pollState(remoteToken)
+            state = self._pollRemote(remoteToken)
             if state is not None:
-                if state == 0:
-                    return True
-                else:
-                    log.error("slave %s error while executing" % self.url)
-                    return False
-            time.sleep(0.2) # sleep for a while.  need to tune this.
+                return state
+            time.sleep(self.sleepTime) # sleep for a while.  need to tune this.
         pass
         
     def join(self, token):
         if token in self.running:
             ret = self._waitForFinish(token)
             self.running.pop(token)
-            if ret == 0:
-                return True
-            else:
-                return False
+            self.finished[token] = ret
+            return ret
+        elif token in self.finished:
+            return self.finished[token]
         else:
-            raise StandardError("Tried to join non-running job")
-    pass # end class RemoteExecutor
+            raise StandardError("RemotExecutor.join: bad token")
+    pass # end class RemoteExecutor 
 
 
 class FileMapper:
