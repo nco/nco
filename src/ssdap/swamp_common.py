@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.11 2007-04-10 05:30:59 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.12 2007-04-10 06:48:10 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -824,8 +824,10 @@ class Scheduler:
                 log.debug( "ret was "+str(ret))
                 log.error("error running command %s" % (c))
                 break
-    def executeParallelAll(self):
-        pd = ParallelDispatcher(self.config, [self.executor])
+    def executeParallelAll(self, executors=None):
+        if executors is None:
+            executors = [self.executor]
+        pd = ParallelDispatcher(self.config, executors)
         pd.dispatchAll(self.cmdList)
         pass
     pass # end of class Scheduler
@@ -839,6 +841,8 @@ class ParallelDispatcher:
         self.tempFiles = {} # logicalout -> (useCount, )
         # not okay to declare file death until everything is parsed.
         self.execLocation = {} # logicalout -> executor
+        self.sleepTime = 0.2
+        self.running = {} # (e,etoken) -> cmd
         pass
 
     def fileLoc(self, file):
@@ -888,8 +892,9 @@ class ParallelDispatcher:
     
     def dispatch(self, executor, cmd):
         log.debug("dispatching %s %d" %(cmd.cmd, cmd.referenceLineNum))
-        token = executor.launch(cmd, map(lambda f:self.fileLoc(f), cmd.inputsWithParents))
-        self.running[token] = cmd
+        etoken = executor.launch(cmd, map(lambda f:(f, self.fileLoc(f)),
+                                          cmd.inputsWithParents))
+        self.running[(executor, etoken)] = cmd
 
     def releaseFiles(self, files):
         log.info("ready to delete " + str(files))
@@ -897,7 +902,7 @@ class ParallelDispatcher:
                           self.execLocation[f]),
             files)
 
-    def graduate(self, token, code):
+    def _graduate(self, token, code):
         cmd = self.running.pop(token)
 
         if code != 0:
@@ -907,37 +912,64 @@ class ParallelDispatcher:
         else:
             # figure out which one finished, and graduate it.
             self.finished[cmd] = code
-            log.debug("finished exec'ing %s %d" %(cmd.cmd,
+            log.debug("graduating %s %d" %(cmd.cmd,
                                                   cmd.referenceLineNum))
             # update the readylist
             newready = self.findMadeReady(cmd)
             map(lambda x: heappush(self.ready,x), newready)
             # delete consumed files.
-            self.releaseFiles(filter(lambda f: self.isDead(f, cmd),
-                                     cmd.inputsWithParents))
-            
-            map(lambda o: appendList(self.execLocation, o, self.executors[0]),
-                cmd.outputs)
+            if self.okayToReap:
+                self.releaseFiles(filter(lambda f: self.isDead(f, cmd),
+                                         cmd.inputsWithParents))
+            e = token[0] # token is (executor, etoken)
+            log.debug("linking %s to executor %s" %(str(cmd.outputs), str(e)))
+            map(lambda o: appendList(self.execLocation, o, e), cmd.outputs)
             # hardcoded for now.
 
-    
+    def _pollAny(self):
+        for e in self.executors:
+            # should be faster to iterate over self.executors
+            # than self.running
+            r = e.pollAny()
+            if r is not None:
+                self._graduate((e, r[0]), r[1])
+                return ((e, r[0]), r[1])
+        return None
+
+    def _waitAnyExecutor(self):
+        while True:
+            r = self._pollAny()
+            if r is not None:
+                return r
+            time.sleep(self.sleepTime)
+
+        
+    def _nextFreeExecutor(self):
+        """Return next free executor. Try to pursue a policy of
+        packing nodes tight so as to maximize locality.
+        We'll go fancier some other time."""
+        for e in self.executors:
+            if not e.busy():
+                return e
+        return None
+
     def dispatchAll(self, cmdList):
         self.running = {} # token -> cmd
         (self.ready, self.queued) = self.extractReady(cmdList)
 
         # Consider 'processor affinity' to reduce data migration.
-        executor = self.executors[0]
         while True:
             # if there are free slots in an executor, run what's ready
-            if executor.busy() or not self.ready:
+            e = self._nextFreeExecutor() 
+            if e is None or not self.ready:
                 if not self.running: # done!
                     break
-                (token, code) = executor.waitAny()
-                self.graduate(token, code)
+                r = self._waitAnyExecutor()
+                #self._graduate(token, code)
             else:
                 # not busy + jobs to run, so 'make it so'
                 cmd = heappop(self.ready)
-                self.dispatch(executor, cmd)
+                self.dispatch(e, cmd)
             continue # redundant, but safe
         pass # end def dispatchAll
     pass # end class ParallelDispatcher
@@ -967,7 +999,7 @@ class SwampInterface:
         cf = CommandFactory(self.config)
         p.parseScript(script, cf)
         sch.finish()
-        sch.executeParallelAll()
+        sch.executeParallelAll(self.remote)
         task = sch.taskId
         #print len(task)
         return task
@@ -1106,6 +1138,7 @@ class LocalExecutor:
                                         % (fname))
             pass
         pass
+
     def _fetchLogicals(self, logicals, srcs):
         log.info("srcs: " + str(srcs))
         if len(logicals) == 0:
@@ -1155,18 +1188,27 @@ class RemoteExecutor:
         assert token in self.finished
         self.finished.pop(token)
         # consider releasing files too.
+
     def discardFile(self, file):
         log.debug("req discard of %s on %s" %(file, self.url))
         self.actual.pop(file)
         self.rpc.discardFile(file)
 
+    def pollAny(self):
+        for (token, rToken) in self.running.items():
+            state = self._pollRemote(rToken)
+            if state is not None:
+                self._graduate(token, state)
+                return (token, state)
+        return None
+
     def waitAny(self):
+        """wait for something to happen. better be something running,
+        otherwise you'll wait forever."""
         while True:
-            for (token, rToken) in self.running.items():
-                state = self._pollRemote(rToken)
-                if state is not None:
-                    self._graduate(token, state)
-                    return (token, state)
+            r = self.pollAny()
+            if r is not None:
+                return r
             time.sleep(self.sleepTime)
         pass
 
