@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.10 2007-04-06 00:24:00 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.11 2007-04-10 05:30:59 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -24,10 +24,12 @@ import os
 import operator
 import re
 import shlex
+import shutil
 import struct
 import subprocess
 import time
 import types
+import urllib
 from pyparsing import *
 from SOAPpy import SOAPProxy # for remote execution        
 
@@ -42,6 +44,14 @@ from swamp_config import Config
 log = logging.getLogger("SWAMP")
 #
 #
+
+#local module helpers:
+def appendList(aDict, key, val):
+    l = aDict.get(key,[])
+    l.append(val)
+    aDict[key] = l
+
+
 class VariableParser:
     """treats shell vars "a=b" and env vars "export a=b" as the same for now.
     """
@@ -94,6 +104,7 @@ class VariableParser:
     @staticmethod
     def parse(original, argv):
         pass
+
     def accepts(argv):
         if argv[0] == "export":
             return isAssign(argv[1:])
@@ -414,6 +425,8 @@ class Command:
         self.referenceLineNum = referenceLineNum
         self.actualOutputs = []
         self.children = []
+        self.factory = None
+        self.inputSrcs = []
         pass
 
     # sort on referencelinenum
@@ -427,6 +440,7 @@ class Command:
         safecopy = copy.copy(self)
         safecopy.parents = None
         safecopy.children = None
+        safecopy.factory = None
         return pickle.dumps(safecopy)
 
 
@@ -442,7 +456,7 @@ class Command:
             return mapInput(logical)
         elif logical in self.outputs:
             phy = mapOutput(logical)
-            self.actualOutputs.append(phy)
+            self.actualOutputs.append((logical, phy))
             return phy
         else:
             return logical
@@ -487,18 +501,22 @@ class CommandFactory:
     def __init__(self, config):
         self.config = config
         self.commandByLogicalOut = {}
+        self.commandByLogicalIn = {}
         self.logicalOutByScript = {}
-        self.logicalOuts = []
-        self.guessTemps = {}
+        self.scriptOuts = set() # list of script-defined outputs
+        # scriptOuts is logicalOutByScript.keys(), except in ordering
+        self.scrFileUseCount = {} 
         pass
 
     def mapInput(self, scriptFilename):
         temps = filter(lambda f: fnmatch(f, scriptFilename),
-                       self.logicalOuts)
+                       self.scriptOuts)
         # FIXME: should really match against filemap, since
         # logicals may be renamed
         if temps:
-            return temps
+            # we need to convert script filenames to logicals
+            # to handle real dependencies
+            return map(lambda s: self.logicalOutByScript[s], temps)
         else:
             inList = self.expandConcreteInput(scriptFilename)
             if inList:
@@ -551,9 +569,20 @@ class CommandFactory:
         else:
             return logical + ".1"
 
+    @staticmethod
+    def incCount(aDict, key):
+        aDict[key] = 1 + aDict.get(key,0)
+
+    @staticmethod
+    def appendList(aDict, key, val):
+        l = aDict.get(key,[])
+        l.append(val)
+        aDict[key] = l
+
     def newCommand(self, cmd, argtriple,
                    inouts, referenceLineNum):
         # first, reassign inputs and outputs.
+        scriptouts = inouts[1]
         newinputs = reduce(operator.add, map(self.mapInput, inouts[0]))
         newoutputs = map(self.mapOutput, inouts[1])
         inouts = (newinputs, newoutputs)
@@ -563,19 +592,32 @@ class CommandFactory:
 
         # link commands: first find parents 
         inputsWithParents = filter(self.commandByLogicalOut.has_key, newinputs)
+        map(lambda f: CommandFactory.incCount(self.scrFileUseCount,f),
+            inputsWithParents)
+        
         parents = map(lambda f: self.commandByLogicalOut[f], inputsWithParents)
 
+        
         # build cmd, with links to parents
         c = Command(cmd, argtriple, inouts, parents, referenceLineNum)
 
         # then link parents back to cmd
         map(lambda p: p.children.append(c), parents)
-        # and mark files as temporary
-        self.guessTemps.update(map(lambda f:(f,c), inputsWithParents))
 
+        # update scriptOuts 
+        self.scriptOuts.update(scriptouts)
+        
+        # update parent tracker.
         for out in inouts[1]:
             self.commandByLogicalOut[out] = c
-            self.logicalOuts.append(out)
+
+        # link inputs to find new cmd
+        map(lambda f: CommandFactory.appendList(self.commandByLogicalIn,f,c),
+            inputsWithParents)
+
+        # additional cmd properties to help delete tracking
+        c.factory = self
+        c.inputsWithParents = inputsWithParents
         return c
 
     def unpickleCommand(self, pickled):
@@ -700,6 +742,9 @@ class Parser:
         vp = VariableParser()
         for line in script.splitlines():
             self.parseScriptLine(factory, line)
+        log.debug("factory cmd_By_log_in: " + str(factory.commandByLogicalIn))
+        log.debug("factory uselist " + str(factory.scrFileUseCount))
+        
         pass
     
     pass
@@ -776,8 +821,8 @@ class Scheduler:
         for c in self.cmdList:
             ret = run(c)
             if ret != 0:
-                print "ret was ",ret
-                logging.error("error running command %s" % (c))
+                log.debug( "ret was "+str(ret))
+                log.error("error running command %s" % (c))
                 break
     def executeParallelAll(self):
         pd = ParallelDispatcher(self.config, [self.executor])
@@ -790,7 +835,24 @@ class ParallelDispatcher:
         self.config = config
         self.executors = executorList
         self.finished = {}
+        self.okayToReap = True
+        self.tempFiles = {} # logicalout -> (useCount, )
+        # not okay to declare file death until everything is parsed.
+        self.execLocation = {} # logicalout -> executor
         pass
+
+    def fileLoc(self, file):
+        """ return url of logical output file"""
+        execs = self.execLocation[file]
+        if len(execs) > 0:
+            return execs[0].actual[file] # return the first one
+        else:
+            return None
+        
+    def isDead(self, file, consumingCmd):
+        # Find the producing cmd, see if all its children are finished.
+        return 0 == len(filter(lambda c: c not in self.finished,
+                               consumingCmd.factory.commandByLogicalIn[file]))
 
     def isReady(self, cmd):
         # if there are no unfinished parents...
@@ -805,7 +867,6 @@ class ParallelDispatcher:
         filter is elegant to generate r, but updating q is O(n_r*n_q),
         whereas this generates r and q in O(n_q)
         """
-        print self.finished
         r = []
         q = []
         for c in queued:
@@ -827,8 +888,14 @@ class ParallelDispatcher:
     
     def dispatch(self, executor, cmd):
         log.debug("dispatching %s %d" %(cmd.cmd, cmd.referenceLineNum))
-        token = executor.launch(cmd)
+        token = executor.launch(cmd, map(lambda f:self.fileLoc(f), cmd.inputsWithParents))
         self.running[token] = cmd
+
+    def releaseFiles(self, files):
+        log.info("ready to delete " + str(files))
+        map(lambda f: map(lambda l: l.discardFile(f),
+                          self.execLocation[f]),
+            files)
 
     def graduate(self, token, code):
         cmd = self.running.pop(token)
@@ -842,9 +909,17 @@ class ParallelDispatcher:
             self.finished[cmd] = code
             log.debug("finished exec'ing %s %d" %(cmd.cmd,
                                                   cmd.referenceLineNum))
+            # update the readylist
             newready = self.findMadeReady(cmd)
             map(lambda x: heappush(self.ready,x), newready)
-        
+            # delete consumed files.
+            self.releaseFiles(filter(lambda f: self.isDead(f, cmd),
+                                     cmd.inputsWithParents))
+            
+            map(lambda o: appendList(self.execLocation, o, self.executors[0]),
+                cmd.outputs)
+            # hardcoded for now.
+
     
     def dispatchAll(self, cmdList):
         self.running = {} # token -> cmd
@@ -970,11 +1045,15 @@ class LocalExecutor:
         return len(self.running) >= self.slots
 
     def launch(self, cmd):
+        # make sure our inputs are ready
+        missing = filter(lambda f: not self.filemap.existsForRead(f),
+                         cmd.inputs)
+        self._fetchLogicals(missing, cmd.inputSrcs)
         cmdLine = cmd.makeCommandLine(self.filemap.mapReadFile,
                                       self.filemap.mapWriteFile)
         log.debug("-exec-> %s"% " ".join(cmdLine))
         # make sure there's room to write the output
-        self.clearFiles(cmd.actualOutputs)
+        self.clearFiles(map(lambda t: t[1], cmd.actualOutputs))
         pid = os.spawnv(os.P_NOWAIT, self.binaryFinder(cmd), cmdLine)
         log.debug("child pid: "+str(pid))
         self.token += 1
@@ -1027,7 +1106,21 @@ class LocalExecutor:
                                         % (fname))
             pass
         pass
-
+    def _fetchLogicals(self, logicals, srcs):
+        log.info("srcs: " + str(srcs))
+        if len(logicals) == 0:
+            return
+        log.info("need fetch for %s from %s" %(str(logicals),str(srcs)))
+        d = dict(srcs)
+        for lf in logicals:
+            phy = self.filemap.mapWriteFile(lf)
+            log.info("fetching %s from %s" % (lf, d[lf]))
+            rf = urllib.urlopen(d[lf])
+            target = open(phy, "wb")
+            shutil.copyfileobj(rf, target)
+            target.close()
+        pass
+    
     pass # end class LocalExecutor
 
 class RemoteExecutor:
@@ -1043,6 +1136,7 @@ class RemoteExecutor:
         self.finished = {}
         self.token = 0
         self.sleepTime = 0.2
+        self.actual = {}
         pass
 
     def busy(self):
@@ -1050,7 +1144,8 @@ class RemoteExecutor:
         # cache their results.
         return len(self.running) >= self.slots
     
-    def launch(self, cmd):
+    def launch(self, cmd, locations=[]):
+        cmd.inputSrcs = locations 
         remoteToken = self.rpc.slaveExec(cmd.pickleNoRef())
         self.token += 1        
         self.running[self.token] = remoteToken
@@ -1060,14 +1155,17 @@ class RemoteExecutor:
         assert token in self.finished
         self.finished.pop(token)
         # consider releasing files too.
+    def discardFile(self, file):
+        log.debug("req discard of %s on %s" %(file, self.url))
+        self.actual.pop(file)
+        self.rpc.discardFile(file)
 
     def waitAny(self):
         while True:
             for (token, rToken) in self.running.items():
                 state = self._pollRemote(rToken)
                 if state is not None:
-                    self.finished[token] = state
-                    self.running.pop(token)
+                    self._graduate(token, state)
                     return (token, state)
             time.sleep(self.sleepTime)
         pass
@@ -1078,8 +1176,7 @@ class RemoteExecutor:
         elif token in self.running:
             state = self._pollRemote(self.running[token])
             if state is not None:
-                self.finished[token] = state
-                self.running.pop(token)
+                self._graduate(token, state)
         else:
             raise StandardError("RemoteExecutor.poll: bad token")
 
@@ -1090,7 +1187,18 @@ class RemoteExecutor:
                 log.error("slave %s error while executing" % self.url)
         return state # always return, whether None, 0 or nonzero
 
-            
+    def _addFinishOutput(self, logical, actual):
+        self.actual[logical] = actual
+
+    def _graduate(self, token, retcode):
+        self.running.pop(token)
+        self.finished[token] = retcode
+        outputs = self.rpc.pollOutputs(token)
+        log.debug("adding " + str(outputs))
+        for x in outputs:
+            self._addFinishOutput(x[0],x[1])
+        log.debug("new actual: " + str(self.actual))
+
     def _waitForFinish(self, token):
         """helper function"""
         remoteToken = self.running[token]
@@ -1104,8 +1212,7 @@ class RemoteExecutor:
     def join(self, token):
         if token in self.running:
             ret = self._waitForFinish(token)
-            self.running.pop(token)
-            self.finished[token] = ret
+            self._graduate(token, ret)
             return ret
         elif token in self.finished:
             return self.finished[token]
@@ -1125,6 +1232,8 @@ class FileMapper:
 
     def clean():
         pass
+    def existsForRead(self, f):
+        return os.access(self.mapReadFile(f), os.R_OK)
 
     def mapReadFile(self, f):
         if f in self.physical:
@@ -1141,17 +1250,53 @@ class FileMapper:
 
     def _cleanPhysical(self, p):
         try:
-            os.unlink(p)
+            if os.access(p, os.F_OK):
+                os.unlink(p)
             f = self.logical.pop(p)
             self.physical.pop(f)
-        except IOError, e:
+        except IOError:
             pass
+
+    def discardLogical(self, f):
+        p = self.physical.pop(f)
+        if os.access(p, os.F_OK):
+            os.unlink(p)
+            log.debug("Unlink OK: %s" %(f))
+        self.logical.pop(p)
     
     def cleanPhysicals(self):
         physicals = self.logical.keys()
         map(self._cleanPhysical, physicals)
         
     
+######################################################################
+######################################################################
+testScript4 = """!/usr/bin/env bash
+ncrcat -O camsom1pdf/camsom1pdf.cam2.h1.0001*.nc camsom1pdf_00010101_00011231.nc # pack the year into a single series
+ ncap -O -s "loctime[time,lon]=float(0.001+time+(lon/360.0))" -s "mask2[time,lon]=byte(ceil(0.006000-abs(loctime-floor(loctime)-0.25)))" camsom1pdf_00010101_00011231.nc yrm_0001am.nc
+ ncwa -O --rdd -v WINDSPD -a time -d time,0,143 -B "mask2 == 1" yrm_0001am.nc yr_0001d0_am.nc.deleteme
+ncap -O -h -s "time=0.25+floor(time)" yr_0001d0_am.nc.deleteme yr_0001d0_am.nc
+
+ncwa -O --rdd -v WINDSPD -a time -d time,144,287 -B "mask2 == 1" yrm_0001am.nc yr_0001d1_am.nc.deleteme
+ncap -O -h -s "time=0.25+floor(time)" yr_0001d1_am.nc.deleteme yr_0001d1_am.nc
+
+ncwa -O --rdd -v WINDSPD -a time -d time,288,431 -B "mask2 == 1" yrm_0001am.nc yr_0001d2_am.nc.deleteme
+ncap -O -h -s "time=0.25+floor(time)" yr_0001d2_am.nc.deleteme yr_0001d2_am.nc
+
+ncwa -O --rdd -v WINDSPD -a time -d time,432,575 -B "mask2 == 1" yrm_0001am.nc yr_0001d3_am.nc.deleteme
+ncap -O -h -s "time=0.25+floor(time)" yr_0001d3_am.nc.deleteme yr_0001d3_am.nc
+
+ncwa -O --rdd -v WINDSPD -a time -d time,576,719 -B "mask2 == 1" yrm_0001am.nc yr_0001d4_am.nc.deleteme
+ncap -O -h -s "time=0.25+floor(time)" yr_0001d4_am.nc.deleteme yr_0001d4_am.nc
+
+ncwa -O --rdd -v WINDSPD -a time -d time,720,863 -B "mask2 == 1" yrm_0001am.nc yr_0001d5_am.nc.deleteme
+ncap -O -h -s "time=0.25+floor(time)" yr_0001d5_am.nc.deleteme yr_0001d5_am.nc
+
+ncwa -O --rdd -v WINDSPD -a time -d time,864,1007 -B "mask2 == 1" yrm_0001am.nc yr_0001d6_am.nc.deleteme
+
+"""
+
+        
 def testParser():
     test1 = """#!/usr/local/bin/bash
 # Analysis script for CAM/CLM output.
@@ -1226,9 +1371,12 @@ def testParser3():
 
 def testSwampInterface():
     logging.basicConfig(level=logging.DEBUG)
-    portionlist = open("full_resamp.swamp").readlines()[:10]
-    #portionlist = open("full_resamp.swamp").readlines()
-    portion = "".join(portionlist)
+    wholelist = open("full_resamp.swamp").readlines()
+    portionlist = wholelist[:10]
+    test = [ "".join(portionlist),
+             "".join(wholelist),
+             testScript4]
+
     c = Config("swamp.conf")
     c.read()
     fe = FakeExecutor()
@@ -1243,8 +1391,7 @@ def testSwampInterface():
     #evilly force the interface to use a remote executor
     assert len(si.remote) > 0
     si.executor = si.remote[0]
-
-    taskid = si.submit(portion)
+    taskid = si.submit(test[2])
     print "submitted with taskid=", taskid
 def main():
     #testParser3()

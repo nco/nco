@@ -1,10 +1,11 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapslave.py,v 1.3 2007-04-06 00:24:00 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapslave.py,v 1.4 2007-04-10 05:30:59 wangd Exp $
 # Copyright (c) 2007 Daniel L. Wang
 from swamp_common import *
 from swamp_config import Config 
 import cPickle as pickle
 import logging
 import SOAPpy
+from threading import Thread
 import twisted.web.soap as tSoap
 import twisted.web.resource as tResource
 import twisted.web.server as tServer
@@ -12,6 +13,19 @@ import twisted.web.static as tStatic
 
 log = logging.getLogger("SWAMP")
 
+class LaunchThread(Thread):
+    def __init__(self, executor, cmd, updateFunc):
+        Thread.__init__(self) 
+        self.executor = executor
+        self.cmd = cmd
+        self.updateFunc = updateFunc
+        pass
+    def run(self):
+        self.updateFunc(self) # put myself as placeholder
+        etoken = self.executor.launch(self.cmd)
+        self.updateFunc(etoken) # update with real token
+
+    
 class SimpleJobManager:
     """SimpleJobManager manages slave tasks run on this system.
     We will want to add contexts so that different tasks do not collide in
@@ -49,20 +63,37 @@ class SimpleJobManager:
         # Clean up trash from before:
         # - For now, don't worry about checking jobs still in progress
         # - Delete all the physical files we allocated in the file mapper
+        log.info("Reset requested")
         self.fileMapper.cleanPhysicals()
+        log.info("Reset finish")
         
     def slaveExec(self, pickledCommand):
         cf = CommandFactory(self.config)
         p = cf.unpickleCommand(pickledCommand)
         log.info("received cmd: %s" % (str(p)))
-        etoken = self.localExec.launch(p)
         token = self.token + 1
-        self.jobs[token] = etoken
+        self._threadedLaunch(p, token)
         self.token = token
         return token
 
+    def _updateToken(self, token, etoken):
+        self.jobs[token] = etoken
+        
+    def _threadedLaunch(self, cmd, token):
+        launchthread = LaunchThread(self.localExec, cmd,
+                                    lambda et: self._updateToken(token, et))
+        launchthread.start()
+        #launchthread.join()
+        return 
+
     def pollState(self, token):
-        assert token in self.jobs
+        if token not in self.jobs:
+            time.sleep(0.2) # possible race
+            if token not in self.jobs:
+                log.warning("token not ready after waiting.")
+                return None
+        if isinstance(self.jobs[token], Thread):
+            return None # token not even ready, arg fetch.
         res = self.localExec.poll(self.jobs[token])
         if res is not None:
             return res
@@ -76,9 +107,16 @@ class SimpleJobManager:
     def pollOutputs(self, token):
         assert token in self.jobs
         outs = self.localExec.actualOuts(self.jobs[token])
+        log.debug("outs is " + str(outs))
+        return map(lambda t: (t[0], self.actualToPub(t[1])), outs)
+        #map(lambda f: (f,self.actualToPub(f)), outs) 
+        #return outs
+
+    def discardFile(self, f):
+        log.debug("Try discarding "+str(f))
+        self.fileMapper.discardLogical(f)
+        log.debug("ok discarding "+str(f))
         
-        return map(self.actualToPub, outs) 
-    
 
     def startSlaveServer(self):
         #SOAPpy.Config.debug =1
@@ -88,6 +126,7 @@ class SimpleJobManager:
         server.registerFunction(self.pollState)
         server.registerFunction(self.pollOutputs)
         server.registerFunction(self.reset)
+        server.registerFunction(self.discardFile)
         server.serve_forever()
         pass
 
@@ -115,6 +154,8 @@ class TwistedSoapWrapper(tSoap.SOAPPublisher):
         return self.jobManager.pollState(token)
     def soap_pollOutputs(self, token):
         return self.jobManager.pollOutputs(token)
+    def soap_discardFile(self, file):
+        return self.jobManager.discardFile(file)
 
 
 
@@ -125,14 +166,17 @@ def fakeCommand():
     ins = ["camsom1pdf/camsom1pdf.cam2.h1.0001-01-01-00000.nc"]
     outs = ["out.nc"]
     linenum = 20
-    return cf.pickleCommand(cf.newCommand("ncwa", ({},[],ins+outs),(ins,outs), linenum))
+    c = cf.newCommand("ncwa", ({},[],ins+outs),(ins,outs), linenum)
+    return c.pickleNoRef()
+
 
 def selfTest():
     pass
 
 def clientTest():
     import SOAPpy
-    server = SOAPpy.SOAPProxy("http://localhost:8080/SOAP")
+    #server = SOAPpy.SOAPProxy("http://localhost:8080/SOAP")
+    server = SOAPpy.SOAPProxy("http://localhost:8080")
     server.reset()
     tok = server.slaveExec(fakeCommand())
     print "submitted, got token: ", tok
