@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapslave.py,v 1.5 2007-04-10 06:48:10 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapslave.py,v 1.6 2007-04-12 01:32:51 wangd Exp $
 # Copyright (c) 2007 Daniel L. Wang
 from swamp_common import *
 from swamp_config import Config 
@@ -49,7 +49,8 @@ class SimpleJobManager:
         self.jobs = {} # dict: tokens -> jobstate
         self.fileMapper = FileMapper("slave%d"%os.getpid(),
                                      self.config.execSourcePath,
-                                     self.config.execScratchPath )
+                                     self.config.execScratchPath,
+                                     self.config.execBulkPath)
 
         self.localExec = LocalExecutor(NcoBinaryFinder(self.config),
                                        self.fileMapper)

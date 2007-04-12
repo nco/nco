@@ -1,4 +1,4 @@
-#$Id: swamp_config.py,v 1.1 2007-04-10 23:55:09 wangd Exp $
+#$Id: swamp_config.py,v 1.2 2007-04-12 01:32:51 wangd Exp $
 # swamp_config.py
 # Copyright (c) 2007 Daniel L. Wang
 import ConfigParser
@@ -25,6 +25,7 @@ class Config:
               ("execScratchPath", "exec", "scratchPath", "."),
               ("execResultPath", "exec", "resultPath", "."),
               ("execSourcePath", "exec", "sourcePath", "."),
+              ("execBulkPath", "exec", "bulkPath", "."),
               
 
               ("execLocalSlots", "exec", "localSlots", 2),

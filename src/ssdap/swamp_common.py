@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.12 2007-04-10 06:48:10 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.13 2007-04-12 01:32:51 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -1146,7 +1146,7 @@ class LocalExecutor:
         log.info("need fetch for %s from %s" %(str(logicals),str(srcs)))
         d = dict(srcs)
         for lf in logicals:
-            phy = self.filemap.mapWriteFile(lf)
+            phy = self.filemap.mapBulkFile(lf)
             log.info("fetching %s from %s" % (lf, d[lf]))
             rf = urllib.urlopen(d[lf])
             target = open(phy, "wb")
@@ -1264,12 +1264,13 @@ class RemoteExecutor:
 
 
 class FileMapper:
-    def __init__(self, name, readParent, writeParent):
+    def __init__(self, name, readParent, writeParent, bulkParent):
         # we assume that logical aliases are eliminated at this point.
         self.physical = {} # map logical to physical
         self.logical = {} # map physical to logical
         self.readPrefix = readParent + os.sep 
         self.writePrefix = writeParent + os.sep + name + "_"
+        self.bulkPrefix = bulkParent + os.sep + name + "_"
         pass
 
     def clean():
@@ -1284,11 +1285,17 @@ class FileMapper:
             return self.readPrefix + f
         return self.prefix + f
 
-    def mapWriteFile(self, f):
-        pf = self.writePrefix + f
+    def mapWriteFile(self, f, altPrefix=None):
+        if altPrefix is not None:
+            pf = altPrefix + f
+        else:
+            pf = self.writePrefix + f
         self.logical[pf] = f
         self.physical[f] = pf
         return pf
+
+    def mapBulkFile(self, f):
+        return self.mapWriteFile(f, self.bulkPrefix)
 
     def _cleanPhysical(self, p):
         try:
@@ -1425,7 +1432,8 @@ def testSwampInterface():
     le = LocalExecutor(NcoBinaryFinder(c),
                        FileMapper("swampTest%d"%os.getpid(),
                                   c.execSourcePath,
-                                  c.execScratchPath ))
+                                  c.execScratchPath,
+                                  c.execBulkPath))
     
     #si = SwampInterface(fe)
     si = SwampInterface(c, le)
