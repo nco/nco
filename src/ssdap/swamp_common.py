@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.18 2007-04-12 12:07:00 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.19 2007-04-12 13:15:57 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -1230,7 +1230,14 @@ class LocalExecutor:
         for lf in logicals:
             phy = self.filemap.mapBulkFile(lf)
             log.debug("fetching %s from %s" % (lf, d[lf]))
-            urllib.urlretrieve(d[lf], phy)
+            #urllib.urlretrieve(d[lf], phy)
+            # urlretrieve dies on interrupt signals
+            # Use curl: fail silently, silence output, write to file
+            rc = os.spawnv(os.P_WAIT, '/usr/bin/curl',
+                           ['curl', "-f", "-s", "-o", phy, d[lf]])
+            if rc != 0:
+                raise StandardError("error fetching %s (curl code=%d)" %
+                                    (d[lf], rc))
         pass
     
     pass # end class LocalExecutor
@@ -1288,6 +1295,19 @@ class RemoteExecutor:
                 return (token, state)
         return None
 
+    def pollAll(self):
+        lTokens = []
+        rTokens = []
+        fins = []
+        for (token, rToken) in self.running.items():
+            lTokens.append(token)
+            rTokens.append(rToken)
+        states = self.rpc.pollMany(rTokens)
+        for i in range(len(lTokens)):
+            if states[i] is not None:
+                self._graduate(lTokens[i], states[i])
+                fins.append((lTokens[i], states[i]))
+  
     def waitAny(self):
         """wait for something to happen. better be something running,
         otherwise you'll wait forever."""
