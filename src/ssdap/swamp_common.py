@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.17 2007-04-12 11:28:11 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.18 2007-04-12 12:07:00 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -867,7 +867,6 @@ class ParallelDispatcher:
         self.tempFiles = {} # logicalout -> (useCount, )
         # not okay to declare file death until everything is parsed.
         self.execLocation = {} # logicalout -> executor
-        self.roundRobinIndex = 0
         self.sleepTime = 0.2
         self.running = {} # (e,etoken) -> cmd
         self.execPollRR = None
@@ -946,7 +945,7 @@ class ParallelDispatcher:
                 executor = e[0]
                 break
         if not executor:
-            executor = self.execDispatchRR.next()
+            executor = self._nextFreeExecutor()
         etoken = executor.launch(cmd, inputLocs)
         self.running[(executor, etoken)] = cmd
 
@@ -1017,17 +1016,10 @@ class ParallelDispatcher:
         """Return next free executor. Try to pursue a policy of
         packing nodes tight so as to maximize locality.
         We'll go fancier some other time."""
-        ind = self.roundRobinIndex
-        if True:
-            for i in range(len(self.executors)):
-                ind = (ind + 1) % len(self.executors)
-                if not self.executors[ind].busy():
-                    self.roundRobinIndex = ind
-                    return self.executors[ind]
-        else:
-            for e in self.executors:
-                if not e.busy():
-                    return e
+        for ei in self.executors:
+            e = self.execDispatchRR.next()
+            if not e.busy():
+                return e
         return None
 
     def dispatchAll(self, cmdList):
