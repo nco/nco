@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.15 2007-04-12 02:59:29 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.16 2007-04-12 04:03:52 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -916,7 +916,7 @@ class ParallelDispatcher:
         self.running[(executor, etoken)] = cmd
 
     def releaseFiles(self, files):
-        log.info("ready to delete " + str(files))
+        log.debug("ready to delete " + str(files))
         map(lambda f: map(lambda l: l.discardFile(f),
                           self.execLocation[f]),
             files)
@@ -941,8 +941,8 @@ class ParallelDispatcher:
                 self.releaseFiles(filter(lambda f: self.isDead(f, cmd),
                                          cmd.inputsWithParents))
             e = token[0] # token is (executor, etoken)
-            log.debug("linking %s to executor %s" %(str(cmd.outputs), str(e)))
             map(lambda o: appendList(self.execLocation, o, e), cmd.outputs)
+            execs = self.execLocation[cmd.outputs[0]]
             # hardcoded for now.
 
     def _pollAny(self):
@@ -1001,6 +1001,14 @@ class SwampInterface:
 
     def __init__(self, config, executor=None):
         self.config = config
+        cfile = logging.FileHandler(self.config.logLocation)
+        formatter = logging.Formatter('%(name)s:%(levelname)s %(message)s')
+        cfile.setFormatter(formatter)
+        log.addHandler(cfile)
+        log.setLevel(self.config.logLevel)
+        log.info("Swamp master logging at "+self.config.logLocation)
+        self.config.dumpSettings(log, logging.DEBUG)
+
         if executor:
             self.executor = executor
         else:
@@ -1257,13 +1265,12 @@ class RemoteExecutor:
         self.actual[logical] = actual
 
     def _graduate(self, token, retcode):
-        self.running.pop(token)
+        rToken = self.running.pop(token)
         self.finished[token] = retcode
-        outputs = self.rpc.pollOutputs(token)
+        outputs = self.rpc.pollOutputs(rToken)
         log.debug("adding " + str(outputs))
         for x in outputs:
             self._addFinishOutput(x[0],x[1])
-        log.debug("new actual: " + str(self.actual))
 
     def _waitForFinish(self, token):
         """helper function"""
@@ -1367,6 +1374,8 @@ ncap -O -h -s "time=0.25+floor(time)" yr_0001d5_am.nc.deleteme yr_0001d5_am.nc
 
 ncwa -O --rdd -v WINDSPD -a time -d time,864,1007 -B "mask2 == 1" yrm_0001am.nc yr_0001d6_am.nc.deleteme
 
+ncrcat -O camsom1pdf/camsom1pdf.cam2.h1.0002*.nc camsom1pdf_00020101_00021231.nc # pack the year into a single series
+ ncap -O -s "loctime[time,lon]=float(0.001+time+(lon/360.0))" -s "mask2[time,lon]=byte(ceil(0.006000-abs(loctime-floor(loctime)-0.25)))" camsom1pdf_00020101_00021231.nc yrm_0002am.nc
 """
 
         
@@ -1443,7 +1452,7 @@ def testParser3():
  
 
 def testSwampInterface():
-    logging.basicConfig(level=logging.DEBUG)
+    #logging.basicConfig(level=logging.DEBUG)
     wholelist = open("full_resamp.swamp").readlines()
     portionlist = wholelist[:10]
     test = [ "".join(portionlist),
@@ -1452,7 +1461,6 @@ def testSwampInterface():
 
     c = Config("swamp.conf")
     c.read()
-    log.info("after configread at " + time.ctime())
     fe = FakeExecutor()
     le = LocalExecutor(NcoBinaryFinder(c),
                        FileMapper("swampTest%d"%os.getpid(),
@@ -1462,6 +1470,7 @@ def testSwampInterface():
     
     #si = SwampInterface(fe)
     si = SwampInterface(c, le)
+    log.info("after configread at " + time.ctime())
 
     #evilly force the interface to use a remote executor
     assert len(si.remote) > 0
