@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.13 2007-04-12 01:32:51 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.14 2007-04-12 02:23:53 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -1428,6 +1428,7 @@ def testSwampInterface():
 
     c = Config("swamp.conf")
     c.read()
+    log.info("after configread at " + time.ctime())
     fe = FakeExecutor()
     le = LocalExecutor(NcoBinaryFinder(c),
                        FileMapper("swampTest%d"%os.getpid(),
@@ -1442,6 +1443,7 @@ def testSwampInterface():
     assert len(si.remote) > 0
     si.executor = si.remote[0]
     taskid = si.submit(test[2])
+    log.info("finish at " + time.ctime())
     print "submitted with taskid=", taskid
 def main():
     #testParser3()
