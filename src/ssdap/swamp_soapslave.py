@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapslave.py,v 1.7 2007-04-12 11:28:12 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapslave.py,v 1.8 2007-04-12 14:09:40 wangd Exp $
 # Copyright (c) 2007 Daniel L. Wang
 from swamp_common import *
 from swamp_config import Config 
@@ -108,6 +108,9 @@ class SimpleJobManager:
         else:
             return None
 
+    def pollStateMany(self, tokenList):
+        return map(self.pollState, tokenList)
+
     def actualToPub(self, f):
         relative = f.split(self.config.execScratchPath + os.sep, 1)
         if len(relative) < 2:
@@ -141,6 +144,7 @@ class SimpleJobManager:
         server = SOAPpy.SOAPServer(("localhost", self.config.slavePort))
         server.registerFunction(self.slaveExec)
         server.registerFunction(self.pollState)
+        server.registerFunction(self.pollStateMany)
         server.registerFunction(self.pollOutputs)
         server.registerFunction(self.reset)
         server.registerFunction(self.discardFile)
@@ -172,6 +176,8 @@ class TwistedSoapWrapper(tSoap.SOAPPublisher):
         return self.jobManager.slaveExec(pickled)
     def soap_pollState(self, token):
         return self.jobManager.pollState(token)
+    def soap_pollStateMany(self, tokenList):
+        return self.jobManager.pollStateMany(tokenList)
     def soap_pollOutputs(self, token):
         return self.jobManager.pollOutputs(token)
     def soap_discardFile(self, file):

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.19 2007-04-12 13:15:57 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.20 2007-04-12 14:09:40 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -1152,7 +1152,9 @@ class LocalExecutor:
         self.finished = {}
         self.cmds = {}
         self.token = 0
-
+        self.fetchLock = threading.Lock()
+        
+        
         pass
     def busy(self):
         # soon, we should put code here to check for process finishes and
@@ -1226,15 +1228,29 @@ class LocalExecutor:
         if len(logicals) == 0:
             return
         log.info("need fetch for %s from %s" %(str(logicals),str(srcs)))
+            
         d = dict(srcs)
         for lf in logicals:
+            self.fetchLock.acquire()
+            if self.filemap.existsForRead(lf):
+                self.fetchLock.release()
+                continue
             phy = self.filemap.mapBulkFile(lf)
             log.debug("fetching %s from %s" % (lf, d[lf]))
             #urllib.urlretrieve(d[lf], phy)
             # urlretrieve dies on interrupt signals
             # Use curl: fail silently, silence output, write to file
-            rc = os.spawnv(os.P_WAIT, '/usr/bin/curl',
+            pid = os.spawnv(os.P_NOWAIT, '/usr/bin/curl',
                            ['curl', "-f", "-s", "-o", phy, d[lf]])
+            rc = None
+            while rc is None:
+                try:
+                    (p,rc) = os.waitpid(pid,0)
+                    rc = os.WEXITSTATUS(rc)
+                    log.debug("fetch OK (code=%d)"%rc)
+                except OSError:
+                    pass
+            self.fetchLock.release()
             if rc != 0:
                 raise StandardError("error fetching %s (curl code=%d)" %
                                     (d[lf], rc))
@@ -1256,6 +1272,7 @@ class RemoteExecutor:
         self.token = 0
         self.sleepTime = 0.2
         self.actual = {}
+        self.pollCache = []
         pass
 
     def busy(self):
@@ -1288,11 +1305,13 @@ class RemoteExecutor:
         self.rpc.discardFiles(fileList)
 
     def pollAny(self):
-        for (token, rToken) in self.running.items():
-            state = self._pollRemote(rToken)
-            if state is not None:
-                self._graduate(token, state)
-                return (token, state)
+        if self.pollCache:
+            return self.pollCache.pop()
+        f = self.pollAll()
+        if f:
+            top = f.pop()
+            self.pollCache += f
+            return top
         return None
 
     def pollAll(self):
@@ -1302,12 +1321,15 @@ class RemoteExecutor:
         for (token, rToken) in self.running.items():
             lTokens.append(token)
             rTokens.append(rToken)
-        states = self.rpc.pollMany(rTokens)
+        states = self.rpc.pollStateMany(rTokens)
         for i in range(len(lTokens)):
             if states[i] is not None:
                 self._graduate(lTokens[i], states[i])
                 fins.append((lTokens[i], states[i]))
-  
+        if fins:
+            return fins
+        return None
+    
     def waitAny(self):
         """wait for something to happen. better be something running,
         otherwise you'll wait forever."""
