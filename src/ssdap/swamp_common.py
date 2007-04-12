@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.14 2007-04-12 02:23:53 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.15 2007-04-12 02:59:29 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -15,7 +15,7 @@ __author__ = "Daniel L. Wang <wangd@uci.edu>"
 import cPickle as pickle
 import copy # for shallow object copies for pickling
 import getopt
-from fnmatch import fnmatch
+import fnmatch
 import glob
 from heapq import * # for minheap implementation
 import logging
@@ -28,6 +28,7 @@ import shutil
 import struct
 import subprocess
 import time
+import threading
 import types
 import urllib
 from pyparsing import *
@@ -509,8 +510,7 @@ class CommandFactory:
         pass
 
     def mapInput(self, scriptFilename):
-        temps = filter(lambda f: fnmatch(f, scriptFilename),
-                       self.scriptOuts)
+        temps = fnmatch.filter(self.scriptOuts, scriptFilename)
         # FIXME: should really match against filemap, since
         # logicals may be renamed
         if temps:
@@ -740,10 +740,15 @@ class Parser:
         """Parse and accept/reject commands in a script, where the script
         is a single string containing script lines"""
         vp = VariableParser()
+        lineCount = 0
         for line in script.splitlines():
             self.parseScriptLine(factory, line)
-        log.debug("factory cmd_By_log_in: " + str(factory.commandByLogicalIn))
-        log.debug("factory uselist " + str(factory.scrFileUseCount))
+            lineCount += 1
+            if (lineCount % 500) == 0:
+                log.debug("%d lines parsed" % (lineCount))
+   
+        #log.debug("factory cmd_By_log_in: " + str(factory.commandByLogicalIn))
+        #log.debug("factory uselist " + str(factory.scrFileUseCount))
         
         pass
     
@@ -807,7 +812,7 @@ class Scheduler:
         map(lambda f: insert(f, False), parserCommand.inputs)
         map(lambda f: insert(f, True), parserCommand.outputs)
         self.cmdList.append(parserCommand)
-
+        
         pass
     def finish(self):
         self.transaction.finish()
@@ -831,6 +836,20 @@ class Scheduler:
         pd.dispatchAll(self.cmdList)
         pass
     pass # end of class Scheduler
+
+class EarlyExecutor(threading.Thread):
+    def __init__(self, executor, cmdlist, stopFunc):
+        Thread.__init__(self) 
+        self.executor = executor
+        self.cmdList = cmdlist
+        self.stopFunc = stopFunc
+        pass
+    def run(self):
+        while not self.stopFunc():
+            tok = self.executor.launch(cmd)
+            retcode = self.executor.join(tok)
+        # NOT FINISHED
+            
 
 class ParallelDispatcher:
     def __init__(self, config, executorList):
@@ -972,6 +991,10 @@ class ParallelDispatcher:
                 self.dispatch(e, cmd)
             continue # redundant, but safe
         pass # end def dispatchAll
+
+    def earlyStart(self, cmdlist):
+        # NOT FINISHED
+        pass
     pass # end class ParallelDispatcher
         
 class SwampInterface:
@@ -999,6 +1022,7 @@ class SwampInterface:
         cf = CommandFactory(self.config)
         p.parseScript(script, cf)
         sch.finish()
+        log.info("after parse: " + time.ctime())
         sch.executeParallelAll(self.remote)
         task = sch.taskId
         #print len(task)
