@@ -1,9 +1,10 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapslave.py,v 1.6 2007-04-12 01:32:51 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapslave.py,v 1.7 2007-04-12 11:28:12 wangd Exp $
 # Copyright (c) 2007 Daniel L. Wang
 from swamp_common import *
 from swamp_config import Config 
 import cPickle as pickle
 import logging
+import os
 import SOAPpy
 from threading import Thread
 import twisted.web.soap as tSoap
@@ -51,13 +52,17 @@ class SimpleJobManager:
                                      self.config.execSourcePath,
                                      self.config.execScratchPath,
                                      self.config.execBulkPath)
-
+        self.scratchSub = "s"
+        self.bulkSub = "b"
+        
         self.localExec = LocalExecutor(NcoBinaryFinder(self.config),
                                        self.fileMapper)
 
-        self.exportPrefix = "http://%s:%d/%s/" % (self.config.slaveHostname,
+        self.exportPrefix = "http://%s:%d/%s" % (self.config.slaveHostname,
                                                  self.config.slavePort,
                                                  self.config.slavePubPath)
+        self.scratchExportPref = self.exportPrefix + self.scratchSub + "/"
+        self.bulkExportPref = self.exportPrefix + self.bulkSub + "/"
         self.token = 0
         pass
     def reset(self):
@@ -71,10 +76,12 @@ class SimpleJobManager:
     def slaveExec(self, pickledCommand):
         cf = CommandFactory(self.config)
         p = cf.unpickleCommand(pickledCommand)
-        log.info("received cmd: %s" % (str(p)))
-        token = self.token + 1
+        log.info("received cmd: %s %d outs=%s" % (p.cmd,
+                                                  p.referenceLineNum,
+                                                  str(p.outputs)))
+        self.token += 1
+        token = self.token
         self._threadedLaunch(p, token)
-        self.token = token
         return token
 
     def _updateToken(self, token, etoken):
@@ -102,8 +109,12 @@ class SimpleJobManager:
             return None
 
     def actualToPub(self, f):
-        relative = f.split(self.config.execScratchPath + os.sep, 1)[1]
-        return self.exportPrefix + relative
+        relative = f.split(self.config.execScratchPath + os.sep, 1)
+        if len(relative) < 2:
+            relative = f.split(self.config.execBulkPath + os.sep, 1)
+            return self.bulkExportPref + relative[1]
+        else:
+            return self.scratchExportPref + relative[1]
     
     def pollOutputs(self, token):
         assert token in self.jobs
@@ -114,10 +125,15 @@ class SimpleJobManager:
         #return outs
 
     def discardFile(self, f):
-        log.debug("Try discarding "+str(f))
+        log.debug("Discarding "+str(f))
         self.fileMapper.discardLogical(f)
-        log.debug("ok discarding "+str(f))
-        
+
+    def discardFiles(self, fList):
+        log.debug("Bulk discard "+str(fList))
+        #for f in fList:
+        for i in range(len(fList)):
+            self.fileMapper.discardLogical(fList[i])
+        #map(self.fileMapper.discardLogical, fList)
 
     def startSlaveServer(self):
         #SOAPpy.Config.debug =1
@@ -128,15 +144,18 @@ class SimpleJobManager:
         server.registerFunction(self.pollOutputs)
         server.registerFunction(self.reset)
         server.registerFunction(self.discardFile)
+        server.registerFunction(self.discardFiles)
         server.serve_forever()
         pass
 
     def startTwistedSlaveServer(self):
         from twisted.internet import reactor
         root = tResource.Resource()
-        fileResource = tStatic.File(self.config.execScratchPath)
+        scratchFileRes = tStatic.File(self.config.execScratchPath)
+        bulkFileRes = tStatic.File(self.config.execBulkPath)
         tStatic.loadMimeTypes() # load from /etc/mime.types
-        root.putChild(self.config.slavePubPath, fileResource)
+        root.putChild(self.config.slavePubPath+self.scratchSub, scratchFileRes)
+        root.putChild(self.config.slavePubPath+self.bulkSub, bulkFileRes)
         root.putChild(self.config.slaveSoapPath, TwistedSoapWrapper(self))
         reactor.listenTCP(self.config.slavePort, tServer.Site(root))
         log.debug("starting Twisted soap slave")
@@ -157,6 +176,8 @@ class TwistedSoapWrapper(tSoap.SOAPPublisher):
         return self.jobManager.pollOutputs(token)
     def soap_discardFile(self, file):
         return self.jobManager.discardFile(file)
+    def soap_discardFiles(self, file):
+        return self.jobManager.discardFiles(file)
 
 
 

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.16 2007-04-12 04:03:52 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.17 2007-04-12 11:28:11 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -18,6 +18,7 @@ import getopt
 import fnmatch
 import glob
 from heapq import * # for minheap implementation
+import itertools
 import logging
 import md5
 import os
@@ -51,6 +52,12 @@ def appendList(aDict, key, val):
     l = aDict.get(key,[])
     l.append(val)
     aDict[key] = l
+
+def appendListMulKey(aDict, keys, val):
+    for k in keys:
+        l = aDict.get(k,[])
+        l.append(val)
+        aDict[k] = l
 
 
 class VariableParser:
@@ -635,7 +642,7 @@ class Parser:
 
     # Try to keep parse state SMALL!  Don't track too much for parsing.
     # Only a few things will cause us to keep state across multiple lines:
-    # - "\" continuation
+    # - \ continuation
     # - for-loop constructs
     # - defined variables
     # - if-then-else constructs not an impl priority.
@@ -860,15 +867,26 @@ class ParallelDispatcher:
         self.tempFiles = {} # logicalout -> (useCount, )
         # not okay to declare file death until everything is parsed.
         self.execLocation = {} # logicalout -> executor
+        self.roundRobinIndex = 0
         self.sleepTime = 0.2
         self.running = {} # (e,etoken) -> cmd
+        self.execPollRR = None
+        self.execDispatchRR = None
         pass
 
     def fileLoc(self, file):
         """ return url of logical output file"""
         execs = self.execLocation[file]
         if len(execs) > 0:
-            return execs[0].actual[file] # return the first one
+            try:
+                return execs[0].actual[file] # return the first one
+            except KeyError:
+                msg = ["Key error for %s." % (file),
+                       "execLocation is %s" % (str(self.execLocation))]
+                for e in self.executors:
+                    msg.append("%s has actual: %s" %(str(e), str(e.actual)))
+                log.error("\n".join(msg))
+                execs[0].actual[file] # re-raise error.
         else:
             return None
         
@@ -881,6 +899,12 @@ class ParallelDispatcher:
         # if there are no unfinished parents...
         return 0 == len(filter(lambda c: c not in self.finished, cmd.parents))
 
+    def _allBusy(self):
+        for e in self.executors:
+            if not e.busy():
+                return False
+        return True
+        
 
     def findReady(self, queued):
         return filter(self.isReady, queued)
@@ -909,23 +933,48 @@ class ParallelDispatcher:
         assert justFinished in self.finished
         return filter(self.isReady, justFinished.children)
     
-    def dispatch(self, executor, cmd):
-        log.debug("dispatching %s %d" %(cmd.cmd, cmd.referenceLineNum))
-        etoken = executor.launch(cmd, map(lambda f:(f, self.fileLoc(f)),
-                                          cmd.inputsWithParents))
+    def dispatch(self, cmd):
+        log.info("dispatching %s %d" %(cmd.cmd, cmd.referenceLineNum))
+        inputLocs = map(lambda f:(f, self.fileLoc(f)),
+                        cmd.inputsWithParents)
+        # look for a more appropriate executor:
+        # pick host of first file if not busy.
+        execs = map(lambda f:self.execLocation[f], cmd.inputsWithParents)
+        executor = None
+        for e in execs:
+            if not e[0].busy():
+                executor = e[0]
+                break
+        if not executor:
+            executor = self.execDispatchRR.next()
+        etoken = executor.launch(cmd, inputLocs)
         self.running[(executor, etoken)] = cmd
 
     def releaseFiles(self, files):
+        if len(files) == 0:
+            return
         log.debug("ready to delete " + str(files))
-        map(lambda f: map(lambda l: l.discardFile(f),
-                          self.execLocation[f]),
+        # collect by executors
+        eList = {}
+        map(lambda f: appendListMulKey(eList, self.execLocation[f],f),
             files)
+        for (k,v) in eList.items():
+            k.discardFiles(v)
+        # cleanup execLocation
+        map(self.execLocation.pop, files)
+#        map(lambda f: map(lambda e: e.discardFile(f),
+#                          self.execLocation[f]),
+#            files)
+
+
+
 
     def _graduate(self, token, code):
         cmd = self.running.pop(token)
 
         if code != 0:
-            s = "Bad return code %s from cmdline %s" % (code, cmd.cmd)
+            s = "Bad return code %s from cmdline %s %d outs=%s" % (
+                code, cmd.cmd, cmd.referenceLineNum, str(cmd.outputs))
             log.error(s)
             raise StandardError(s)
         else:
@@ -946,7 +995,8 @@ class ParallelDispatcher:
             # hardcoded for now.
 
     def _pollAny(self):
-        for e in self.executors:
+        for i in range(len(self.executors)):
+            e = self.execPollRR.next()
             # should be faster to iterate over self.executors
             # than self.running
             r = e.pollAny()
@@ -967,20 +1017,29 @@ class ParallelDispatcher:
         """Return next free executor. Try to pursue a policy of
         packing nodes tight so as to maximize locality.
         We'll go fancier some other time."""
-        for e in self.executors:
-            if not e.busy():
-                return e
+        ind = self.roundRobinIndex
+        if True:
+            for i in range(len(self.executors)):
+                ind = (ind + 1) % len(self.executors)
+                if not self.executors[ind].busy():
+                    self.roundRobinIndex = ind
+                    return self.executors[ind]
+        else:
+            for e in self.executors:
+                if not e.busy():
+                    return e
         return None
 
     def dispatchAll(self, cmdList):
         self.running = {} # token -> cmd
+        self.execPollRR = itertools.cycle(self.executors)
+        self.execDispatchRR = itertools.cycle(self.executors)
         (self.ready, self.queued) = self.extractReady(cmdList)
 
         # Consider 'processor affinity' to reduce data migration.
         while True:
             # if there are free slots in an executor, run what's ready
-            e = self._nextFreeExecutor() 
-            if e is None or not self.ready:
+            if self._allBusy() or not self.ready:
                 if not self.running: # done!
                     break
                 r = self._waitAnyExecutor()
@@ -988,7 +1047,7 @@ class ParallelDispatcher:
             else:
                 # not busy + jobs to run, so 'make it so'
                 cmd = heappop(self.ready)
-                self.dispatch(e, cmd)
+                self.dispatch(cmd)
             continue # redundant, but safe
         pass # end def dispatchAll
 
@@ -1164,7 +1223,7 @@ class LocalExecutor:
         for f in filelist:
             if os.access(f, os.F_OK):
                 if os.access(f, os.W_OK):
-                    os.remove(fname)
+                    os.remove(f)
                 else:
                     raise StandardError("Tried to unlink read-only %s"
                                         % (fname))
@@ -1172,18 +1231,14 @@ class LocalExecutor:
         pass
 
     def _fetchLogicals(self, logicals, srcs):
-        log.info("srcs: " + str(srcs))
         if len(logicals) == 0:
             return
         log.info("need fetch for %s from %s" %(str(logicals),str(srcs)))
         d = dict(srcs)
         for lf in logicals:
             phy = self.filemap.mapBulkFile(lf)
-            log.info("fetching %s from %s" % (lf, d[lf]))
-            rf = urllib.urlopen(d[lf])
-            target = open(phy, "wb")
-            shutil.copyfileobj(rf, target)
-            target.close()
+            log.debug("fetching %s from %s" % (lf, d[lf]))
+            urllib.urlretrieve(d[lf], phy)
         pass
     
     pass # end class LocalExecutor
@@ -1210,7 +1265,9 @@ class RemoteExecutor:
         return len(self.running) >= self.slots
     
     def launch(self, cmd, locations=[]):
-        cmd.inputSrcs = locations 
+        cmd.inputSrcs = locations
+        log.debug("launch %s %d to %s" %(cmd.cmd,
+                                         cmd.referenceLineNum, self.url))
         remoteToken = self.rpc.slaveExec(cmd.pickleNoRef())
         self.token += 1        
         self.running[self.token] = remoteToken
@@ -1225,6 +1282,11 @@ class RemoteExecutor:
         log.debug("req discard of %s on %s" %(file, self.url))
         self.actual.pop(file)
         self.rpc.discardFile(file)
+
+    def discardFiles(self, fileList):
+        log.debug("req discard of %s on %s" %(str(fileList), self.url))
+        map(self.actual.pop, fileList)
+        self.rpc.discardFiles(fileList)
 
     def pollAny(self):
         for (token, rToken) in self.running.items():
@@ -1295,13 +1357,17 @@ class RemoteExecutor:
 
 
 class FileMapper:
-    def __init__(self, name, readParent, writeParent, bulkParent):
+    def __init__(self, name, readParent, writeParent, bulkParent,
+                 panicSize=1000000000):
         # we assume that logical aliases are eliminated at this point.
         self.physical = {} # map logical to physical
         self.logical = {} # map physical to logical
         self.readPrefix = readParent + os.sep 
         self.writePrefix = writeParent + os.sep + name + "_"
+        self.writeParent = writeParent
         self.bulkPrefix = bulkParent + os.sep + name + "_"
+        self.bulkParent = bulkParent
+        self.panicSize = panicSize
         pass
 
     def clean():
@@ -1316,11 +1382,24 @@ class FileMapper:
             return self.readPrefix + f
         return self.prefix + f
 
+    def spaceLeft(self, fname):
+        (head,tail) = os.path.split(fname)
+        s = os.statvfs(head)
+        space = (s.f_bavail * s.f_bsize)
+        #log.info("ok to write %s because %d free" %(fname,space))
+        # Enough space left if (available > paniclimit)
+        return (s.f_bavail * s.f_bsize) > self.panicSize
+
+
     def mapWriteFile(self, f, altPrefix=None):
         if altPrefix is not None:
             pf = altPrefix + f
         else:
             pf = self.writePrefix + f
+        if not self.spaceLeft(pf):
+            pf = self.bulkPrefix + f
+            log.info("mapping %s to bulk at %s" %(f,pf))
+           
         self.logical[pf] = f
         self.physical[f] = pf
         return pf
@@ -1427,16 +1506,22 @@ for yr in `seq $Y1 $LAST_YR`; do
     p = Parser()
     p.parseScript(test1, None)
 
+profref = None
+
 def testParser2():
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s %(levelname)s %(message)s',
                         datefmt='%d%b%Y %H:%M:%S')
-
+    wholelist = open("full_resamp.swamp").readlines()
+    test = [ "".join(wholelist[:10]),
+             "".join(wholelist[:400]),
+             "".join(wholelist),
+             testScript4]
+    
     p = Parser()
-    portionlist = open("full_resamp.swamp").readlines()[:10]
-    portion = "".join(portionlist)
     cf = CommandFactory(Config.dummyConfig())
-    p.parseScript(portion, cf)
+    p.parseScript(test[1], cf)
+
 
 def testParser3():
     logging.basicConfig(level=logging.DEBUG,
@@ -1454,8 +1539,8 @@ def testParser3():
 def testSwampInterface():
     #logging.basicConfig(level=logging.DEBUG)
     wholelist = open("full_resamp.swamp").readlines()
-    portionlist = wholelist[:10]
-    test = [ "".join(portionlist),
+    test = [ "".join(wholelist[:10]),
+             "".join(wholelist[:4000]),
              "".join(wholelist),
              testScript4]
 
@@ -1475,7 +1560,7 @@ def testSwampInterface():
     #evilly force the interface to use a remote executor
     assert len(si.remote) > 0
     si.executor = si.remote[0]
-    taskid = si.submit(test[2])
+    taskid = si.submit(test[3])
     log.info("finish at " + time.ctime())
     print "submitted with taskid=", taskid
 def main():
