@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.21 2007-04-13 02:38:17 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.22 2007-04-13 04:17:02 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -1191,7 +1191,8 @@ class LocalExecutor:
         log.debug("-exec-> %s"% " ".join(cmdLine))
         # make sure there's room to write the output
         self.clearFiles(map(lambda t: t[1], cmd.actualOutputs))
-        pid = os.spawnv(os.P_NOWAIT, self.binaryFinder(cmd), cmdLine)
+        pid = self.resistErrno513(os.P_NOWAIT,
+                                  self.binaryFinder(cmd), cmdLine)
         log.debug("child pid: "+str(pid))
 
         self.running[token] = pid
@@ -1289,10 +1290,8 @@ class LocalExecutor:
         rc = None
         while rc is None:
             try:
-                log.info("rc is %s" % (str(rc)))
                 (p,rc) = os.waitpid(pid,0)
                 rc = os.WEXITSTATUS(rc)
-                log.info("fetch OK (code=%d)"%rc)
             except OSError, e:
                 if not (e.errno == 4):
                     raise
@@ -1302,6 +1301,16 @@ class LocalExecutor:
                 raise StandardError("error fetching %s (curl code=%d)" %
                                     (url, rc))
 
+    def resistErrno513(self, option, binPath, arglist):
+        pid = None
+        while pid is None:
+            try:
+                pid = os.spawnv(option, binPath, arglist)
+            except OSError, e:
+                if not (e.errno == 513):
+                    raise
+                pass #retry on ERESTARTNOINTR
+        return pid
         
     pass # end class LocalExecutor
 
