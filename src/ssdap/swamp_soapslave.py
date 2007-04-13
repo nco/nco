@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapslave.py,v 1.8 2007-04-12 14:09:40 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapslave.py,v 1.9 2007-04-13 02:38:17 wangd Exp $
 # Copyright (c) 2007 Daniel L. Wang
 from swamp_common import *
 from swamp_config import Config 
@@ -6,7 +6,7 @@ import cPickle as pickle
 import logging
 import os
 import SOAPpy
-from threading import Thread
+import threading 
 import twisted.web.soap as tSoap
 import twisted.web.resource as tResource
 import twisted.web.server as tServer
@@ -14,9 +14,9 @@ import twisted.web.static as tStatic
 
 log = logging.getLogger("SWAMP")
 
-class LaunchThread(Thread):
+class LaunchThread(threading.Thread):
     def __init__(self, executor, cmd, updateFunc):
-        Thread.__init__(self) 
+        threading.Thread.__init__(self) 
         self.executor = executor
         self.cmd = cmd
         self.updateFunc = updateFunc
@@ -64,6 +64,7 @@ class SimpleJobManager:
         self.scratchExportPref = self.exportPrefix + self.scratchSub + "/"
         self.bulkExportPref = self.exportPrefix + self.bulkSub + "/"
         self.token = 0
+        self.tokenLock = threading.Lock()
         pass
     def reset(self):
         # Clean up trash from before:
@@ -76,11 +77,12 @@ class SimpleJobManager:
     def slaveExec(self, pickledCommand):
         cf = CommandFactory(self.config)
         p = cf.unpickleCommand(pickledCommand)
-        log.info("received cmd: %s %d outs=%s" % (p.cmd,
-                                                  p.referenceLineNum,
-                                                  str(p.outputs)))
+        self.tokenLock.acquire()
         self.token += 1
-        token = self.token
+        token = self.token + 0
+        self.tokenLock.release()
+        log.info("received cmd: %s %d token=%d outs=%s"
+                 % (p.cmd, p.referenceLineNum, token, str(p.outputs)))
         self._threadedLaunch(p, token)
         return token
 
@@ -100,10 +102,11 @@ class SimpleJobManager:
             if token not in self.jobs:
                 log.warning("token not ready after waiting.")
                 return None
-        if isinstance(self.jobs[token], Thread):
+        if isinstance(self.jobs[token], threading.Thread):
             return None # token not even ready, arg fetch.
         res = self.localExec.poll(self.jobs[token])
         if res is not None:
+            log.info("Token %d returned %s" % (token, str(res)))
             return res
         else:
             return None

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.20 2007-04-12 14:09:40 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.21 2007-04-13 02:38:17 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -880,11 +880,24 @@ class ParallelDispatcher:
             try:
                 return execs[0].actual[file] # return the first one
             except KeyError:
-                msg = ["Key error for %s." % (file),
-                       "execLocation is %s" % (str(self.execLocation))]
+                i = 0
+                emap = {}
+                msg = ["#Key error for %s" % (file),
+                       "badkey = '%s'" %(file)]
                 for e in self.executors:
-                    msg.append("%s has actual: %s" %(str(e), str(e.actual)))
-                log.error("\n".join(msg))
+                    nicename = "e%dactual" % i
+                    emap[e] = nicename
+                    msg.append("%s = %s" %(nicename, str(e.actual)))
+                    i += 1
+                msg.append("#Key %s maps to %s" %(file,
+                                                 map(lambda e: emap[e],
+                                                     self.execLocation[file])))
+                locstr = str(self.execLocation)
+                for (k,v) in emap.items():
+                    locstr = locstr.replace(str(k),v)
+                msg.append("eLoc = " + locstr) 
+                open("mykeyerror.py","w").write("\n".join(msg))
+                log.error("writing debug file to mykeyerror.py")
                 execs[0].actual[file] # re-raise error.
         else:
             return None
@@ -1151,9 +1164,10 @@ class LocalExecutor:
         self.running = {}
         self.finished = {}
         self.cmds = {}
-        self.token = 0
+        self.token = 10
+        self.tokenLock = threading.Lock()
         self.fetchLock = threading.Lock()
-        
+        self.fetchFile = None
         
         pass
     def busy(self):
@@ -1162,10 +1176,16 @@ class LocalExecutor:
         return len(self.running) >= self.slots
 
     def launch(self, cmd):
+        self.tokenLock.acquire()
+        self.token += 1
+        token = self.token
+        self.tokenLock.release()
         # make sure our inputs are ready
         missing = filter(lambda f: not self.filemap.existsForRead(f),
                          cmd.inputs)
         self._fetchLogicals(missing, cmd.inputSrcs)
+        # doublecheck that remaining logicals are available.
+        self._verifyLogicals(set(cmd.inputs).difference(missing))
         cmdLine = cmd.makeCommandLine(self.filemap.mapReadFile,
                                       self.filemap.mapWriteFile)
         log.debug("-exec-> %s"% " ".join(cmdLine))
@@ -1173,10 +1193,10 @@ class LocalExecutor:
         self.clearFiles(map(lambda t: t[1], cmd.actualOutputs))
         pid = os.spawnv(os.P_NOWAIT, self.binaryFinder(cmd), cmdLine)
         log.debug("child pid: "+str(pid))
-        self.token += 1
-        self.running[self.token] = pid
-        self.cmds[self.token] = cmd
-        return self.token
+
+        self.running[token] = pid
+        self.cmds[token] = cmd
+        return token
 
     def poll(self, token):
         if token in self.finished:
@@ -1224,38 +1244,65 @@ class LocalExecutor:
             pass
         pass
 
+    def _verifyLogicals(self, logicals):
+        if len(logicals) == 0:
+            return
+        for f in logicals:
+            while f == self.fetchFile:
+                time.sleep(0.1)
+                
     def _fetchLogicals(self, logicals, srcs):
         if len(logicals) == 0:
             return
         log.info("need fetch for %s from %s" %(str(logicals),str(srcs)))
-            
+        
         d = dict(srcs)
         for lf in logicals:
             self.fetchLock.acquire()
             if self.filemap.existsForRead(lf):
                 self.fetchLock.release()
+                log.debug("satisfied by other thread")
                 continue
+            self.fetchFile = lf
             phy = self.filemap.mapBulkFile(lf)
             log.debug("fetching %s from %s" % (lf, d[lf]))
-            #urllib.urlretrieve(d[lf], phy)
-            # urlretrieve dies on interrupt signals
-            # Use curl: fail silently, silence output, write to file
-            pid = os.spawnv(os.P_NOWAIT, '/usr/bin/curl',
-                           ['curl', "-f", "-s", "-o", phy, d[lf]])
-            rc = None
-            while rc is None:
-                try:
-                    (p,rc) = os.waitpid(pid,0)
-                    rc = os.WEXITSTATUS(rc)
-                    log.debug("fetch OK (code=%d)"%rc)
-                except OSError:
-                    pass
+            self._fetchPhysical(phy, d[lf])
+            self.fetchFile = None
             self.fetchLock.release()
+
+        pass
+    def _fetchPhysical(self, physical, url):
+        #urllib.urlretrieve(d[lf], phy)
+        # urlretrieve dies on interrupt signals
+        # Use curl: fail silently, silence output, write to file
+        tries = 1
+        maxTries = 3
+        pid = None
+        while pid is None:
+            try:
+                pid = os.spawnv(os.P_NOWAIT, '/usr/bin/curl',
+                                ['curl', "-f", "-s", "-o", physical, url])
+            except OSError, e:
+                if not (e.errno == 513):
+                    raise
+                pass #retry on ERESTARTNOINTR
+        rc = None
+        while rc is None:
+            try:
+                log.info("rc is %s" % (str(rc)))
+                (p,rc) = os.waitpid(pid,0)
+                rc = os.WEXITSTATUS(rc)
+                log.info("fetch OK (code=%d)"%rc)
+            except OSError, e:
+                if not (e.errno == 4):
+                    raise
+                log.info("Retry, got errno 4 (interrupted syscall)")
+                continue
             if rc != 0:
                 raise StandardError("error fetching %s (curl code=%d)" %
-                                    (d[lf], rc))
-        pass
-    
+                                    (url, rc))
+
+        
     pass # end class LocalExecutor
 
 class RemoteExecutor:
@@ -1269,7 +1316,7 @@ class RemoteExecutor:
         self.rpc.reset()
         self.running = {}
         self.finished = {}
-        self.token = 0
+        self.token = 100
         self.sleepTime = 0.2
         self.actual = {}
         self.pollCache = []
@@ -1364,7 +1411,7 @@ class RemoteExecutor:
         rToken = self.running.pop(token)
         self.finished[token] = retcode
         outputs = self.rpc.pollOutputs(rToken)
-        log.debug("adding " + str(outputs))
+        log.debug("adding %s from %s" % (str(outputs), str(rToken)))
         for x in outputs:
             self._addFinishOutput(x[0],x[1])
 
@@ -1414,7 +1461,7 @@ class FileMapper:
             return self.physical[f]
         else:
             return self.readPrefix + f
-        return self.prefix + f
+        pass
 
     def spaceLeft(self, fname):
         (head,tail) = os.path.split(fname)
