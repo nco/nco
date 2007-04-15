@@ -1210,7 +1210,17 @@ var=NULL_CEWI;
 	            (void)nco_put_vara(prs_arg->out_id,var_id,dmn_srt,dmn_cnt,var_rhs->val.vp,var_rhs->type);
                else
 	            (void)nco_put_vars(prs_arg->out_id,var_id,dmn_srt,dmn_cnt,dmn_srd,var_rhs->val.vp,var_rhs->type);
-    
+              
+                   
+                // Do an in-memory nco_put_var
+                /*
+                var_sct *var_tst;
+                var_tst=ncap_var_init(vid->getText(),prs_arg,true);
+                (void)nco_put_var_mem(var_tst,var_rhs,lmt_vtr);
+                (void)ncap_var_write(var_tst,false,prs_arg); 
+                */ 
+
+               
                dmn_srt=(long *)nco_free(dmn_srt);
                dmn_cnt=(long *)nco_free(dmn_cnt);
                dmn_srd=(long *)nco_free(dmn_srd);
@@ -1895,7 +1905,7 @@ end_dot: ;
            if(bram){
 
               //Do an in memory get 
-              var_nw=nco_var_get_mem(var_rhs,dmn_vtr);
+              var_nw=nco_get_var_mem(var_rhs,dmn_vtr);
                 //var_nw=nco_var_dpl(var_rhs);
            }
                 
