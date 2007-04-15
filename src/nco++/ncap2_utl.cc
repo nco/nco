@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.51 2007-04-06 12:00:47 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.52 2007-04-15 09:38:12 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2253,81 +2253,92 @@ sz=prs_arg->ptr_int_vtr->size();
 
 }
 
-
+// Do an in-memory hyperslab !!
 void 
 ncap_get_mem( 
-int dpt,                       // current depth
+int dpt,                       // Current depth
 int dpt_max,                   // Max depth ( same as number of dims) 
-std::vector<int> &shp_vtr,     
+std::vector<int> &shp_vtr,     // shape of input var (in bytes)
 NcapVector<dmn_sct*> &dmn_vtr, // New vectors
-var_sct *var_in, 
-void *vp_out){
+char *cp_in,                   // Pointer to (char*)var_in->val.vp
+char *&cp_out){                // Reference pointer to space for new var values
 
-void *vp_in;
+const std::string fnc_nm("ncap_get_mem"); 
+
+
 long idx;      
-
 long srt=dmn_vtr[dpt]->srt;
 long end=dmn_vtr[dpt]->end;
 long cnt=dmn_vtr[dpt]->cnt;
 long srd=dmn_vtr[dpt]->srd;
- 
-size_t slb_sz=nco_typ_lng(var_in->type);
+long slb_sz=shp_vtr[dpt];
 
- std::cout <<"Hyperslab vars "<<srt<<" "<<end<<" "<<cnt<<" "<<srd<<std::endl;
+char *cp_srt=cp_in+ptrdiff_t(srt*slb_sz);
+char *cp_end=cp_out;
 
-  if(dpt == dpt_max-1){
 
-    char *cp_srt;
-    char *cp_end;
-    long cdx=0;
-
-    vp_in=var_in->val.vp;
-
-    //cp_srt=(char*)(var_in->val.vp)+(ptrdiff_t)(srt*slb_sz);
-    for(idx=srt ; idx>end ; idx+=srd ){
-
-      //cp_srt=
-      cp_end=(char*)vp_out + (ptrdiff_t)(cdx*slb_sz);
-
-      cdx++; 
-      (void)memcpy((void*)cp_end,(void*)((char*)vp_in+(ptrdiff_t)(idx*slb_sz)),slb_sz);
-        
-
-    }
-
+  if(dbg_lvl_get() > 2){
+      std::ostringstream os;
+      os<<"Depth=" << dpt<<" "<<dmn_vtr[dpt]->nm<<" "<<srt<<" "<<end<<" "<<cnt<<" "<<srd;
+      dbg_prn(fnc_nm,os.str());
   }
 
-}
+
+  if(dpt == dpt_max-1){
+    
+
+    if(srd==1) 
+      (void)memcpy(cp_end, cp_srt, ptrdiff_t(cnt*shp_vtr[dpt]));
+    else { 
+     
+      for(idx=0 ; idx<cnt ; idx++ ){
+        (void)memcpy(cp_end,cp_srt,slb_sz);
+        cp_end+=slb_sz;
+        cp_srt+=(ptrdiff_t)(srd*slb_sz);
+      }
+    } // end else
+    // increment output pointer (n.b space already alloc-ed)
+   cp_out+=ptrdiff_t(cnt*slb_sz);
+   
+  }
+
+  if(dpt < dpt_max-1){
+     for(idx=0; idx <cnt ;idx++){
+       (void)ncap_get_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,cp_srt,cp_out);
+       cp_srt+= ptrdiff_t(srd*slb_sz);
+     }
+  }  
+} /* ncap_get_mem */
 
  
 var_sct*
 nco_var_get_mem(
-const char* var_nm,
 var_sct *var_in,
 NcapVector<dmn_sct*> &dmn_vtr){
 
 int idx;
-int ncnt=1;
-int dmn_nbr=var_in->nbr_dim;
+int ncnt;
+int dmn_nbr;
+ int dpt_max;
 
-var_sct* var_ret;  
 void  *vp_out;
-void *vp;
+char *cp_out; 
 std::vector<int> shp_vtr;
 
- 
-// Create shape vector for var_in
+var_sct* var_ret;  
+
+dmn_nbr=var_in->nbr_dim;
+
+ ncnt=nco_typ_lng(var_in->type); 
+ // Create shape vector for var_in
  shp_vtr.push_back(ncnt);
  for(idx=dmn_nbr-1 ; idx>0 ; idx--){
    ncnt*=var_in->dim[idx]->cnt;  
      shp_vtr.push_back(ncnt);
      }
+
  // reverse vector
  std::reverse(shp_vtr.begin(),shp_vtr.end() ); 
-
- for(idx=0 ; idx<dmn_nbr ;idx++)
-   std::cout << shp_vtr[idx]<<" ";
- std::cout<<"---------\n";    
 
 
  // Find space for output data
@@ -2338,23 +2349,28 @@ std::vector<int> shp_vtr;
  // Alloc space for output variables value
  vp_out=(void*)nco_malloc(ncnt*nco_typ_lng(var_in->type));
 
- vp=vp_out; // vp_out increments in ncap_get_mem need to save a local pointer
-           
+ cp_out=(char*)vp_out;
 
- (void)ncap_get_mem(0,dmn_nbr,shp_vtr,dmn_vtr,var_in,vp_out);
- 
- 
+ // work out max depth we have to go to 
+ dpt_max=dmn_nbr;
 
+ for(idx=dmn_nbr-1; idx>0 ; idx--)
+   if( var_in->dim[idx]->cnt == dmn_vtr[idx]->cnt) 
+     dpt_max--;
+   else
+     break;
+ 
+ // Call in-memory nco_var_get() (n.b is recursive of course!!)
+ (void)ncap_get_mem(0,dpt_max,shp_vtr,dmn_vtr,(char*)var_in->val.vp,cp_out);
+ 
  var_ret=nco_var_dpl(var_in);
  var_ret->sz=ncnt;
 
  (void)nco_free(var_ret->val.vp);
- var_ret->val.vp=vp;  
-
-
+ var_ret->val.vp=vp_out;  
 
   return var_ret;
-}
+} /* end nco_var_get_mem()  */
 
 
 
