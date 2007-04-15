@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.22 2007-04-13 04:17:02 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.23 2007-04-15 22:48:43 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -867,7 +867,7 @@ class ParallelDispatcher:
         self.tempFiles = {} # logicalout -> (useCount, )
         # not okay to declare file death until everything is parsed.
         self.execLocation = {} # logicalout -> executor
-        self.sleepTime = 0.2
+        self.sleepTime = 0.100 # originally set at 0.200
         self.running = {} # (e,etoken) -> cmd
         self.execPollRR = None
         self.execDispatchRR = None
@@ -1004,6 +1004,7 @@ class ParallelDispatcher:
             e = token[0] # token is (executor, etoken)
             map(lambda o: appendList(self.execLocation, o, e), cmd.outputs)
             execs = self.execLocation[cmd.outputs[0]]
+            execs[0].actual[cmd.outputs[0]]
             # hardcoded for now.
 
     def _pollAny(self):
@@ -1188,7 +1189,7 @@ class LocalExecutor:
         self._verifyLogicals(set(cmd.inputs).difference(missing))
         cmdLine = cmd.makeCommandLine(self.filemap.mapReadFile,
                                       self.filemap.mapWriteFile)
-        log.debug("-exec-> %s"% " ".join(cmdLine))
+        log.debug("%d-exec-> %s" % (token," ".join(cmdLine)))
         # make sure there's room to write the output
         self.clearFiles(map(lambda t: t[1], cmd.actualOutputs))
         pid = self.resistErrno513(os.P_NOWAIT,
@@ -1265,7 +1266,8 @@ class LocalExecutor:
                 log.debug("satisfied by other thread")
                 continue
             self.fetchFile = lf
-            phy = self.filemap.mapBulkFile(lf)
+            #phy = self.filemap.mapBulkFile(lf) # 
+            phy = self.filemap.mapWriteFile(lf)
             log.debug("fetching %s from %s" % (lf, d[lf]))
             self._fetchPhysical(phy, d[lf])
             self.fetchFile = None
@@ -1448,7 +1450,7 @@ class RemoteExecutor:
 
 class FileMapper:
     def __init__(self, name, readParent, writeParent, bulkParent,
-                 panicSize=1000000000):
+                 panicSize=3000000000):
         # we assume that logical aliases are eliminated at this point.
         self.physical = {} # map logical to physical
         self.logical = {} # map physical to logical
@@ -1630,7 +1632,7 @@ def testSwampInterface():
     #logging.basicConfig(level=logging.DEBUG)
     wholelist = open("full_resamp.swamp").readlines()
     test = [ "".join(wholelist[:10]),
-             "".join(wholelist[:4000]),
+             "".join(wholelist[:6000]),
              "".join(wholelist),
              testScript4]
 
@@ -1650,7 +1652,7 @@ def testSwampInterface():
     #evilly force the interface to use a remote executor
     assert len(si.remote) > 0
     si.executor = si.remote[0]
-    taskid = si.submit(test[3])
+    taskid = si.submit(test[2])
     log.info("finish at " + time.ctime())
     print "submitted with taskid=", taskid
 def main():
