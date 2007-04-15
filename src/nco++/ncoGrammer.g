@@ -1895,7 +1895,7 @@ end_dot: ;
            if(bram){
 
               //Do an in memory get 
-              var_nw=nco_var_get_mem(var_nm,var_rhs,dmn_vtr);
+              var_nw=nco_var_get_mem(var_rhs,dmn_vtr);
                 //var_nw=nco_var_dpl(var_rhs);
            }
                 
