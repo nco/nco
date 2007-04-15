@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.52 2007-04-15 09:38:12 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.53 2007-04-15 12:00:08 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2255,7 +2255,7 @@ sz=prs_arg->ptr_int_vtr->size();
 
 // Do an in-memory hyperslab !!
 void 
-ncap_get_mem( 
+ncap_get_var_mem( 
 int dpt,                       // Current depth
 int dpt_max,                   // Max depth ( same as number of dims) 
 std::vector<int> &shp_vtr,     // shape of input var (in bytes)
@@ -2263,7 +2263,7 @@ NcapVector<dmn_sct*> &dmn_vtr, // New vectors
 char *cp_in,                   // Pointer to (char*)var_in->val.vp
 char *&cp_out){                // Reference pointer to space for new var values
 
-const std::string fnc_nm("ncap_get_mem"); 
+const std::string fnc_nm("ncap_get_var_mem"); 
 
 
 long idx;      
@@ -2304,15 +2304,15 @@ char *cp_end=cp_out;
 
   if(dpt < dpt_max-1){
      for(idx=0; idx <cnt ;idx++){
-       (void)ncap_get_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,cp_srt,cp_out);
+       (void)ncap_get_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,cp_srt,cp_out);
        cp_srt+= ptrdiff_t(srd*slb_sz);
      }
   }  
-} /* ncap_get_mem */
+} /* ncap_get_var_mem */
 
  
 var_sct*
-nco_var_get_mem(
+nco_get_var_mem(
 var_sct *var_in,
 NcapVector<dmn_sct*> &dmn_vtr){
 
@@ -2337,7 +2337,7 @@ dmn_nbr=var_in->nbr_dim;
      shp_vtr.push_back(ncnt);
      }
 
- // reverse vector
+ // Reverse vector
  std::reverse(shp_vtr.begin(),shp_vtr.end() ); 
 
 
@@ -2351,17 +2351,16 @@ dmn_nbr=var_in->nbr_dim;
 
  cp_out=(char*)vp_out;
 
- // work out max depth we have to go to 
+ // Work out max depth we have to go to 
  dpt_max=dmn_nbr;
-
  for(idx=dmn_nbr-1; idx>0 ; idx--)
    if( var_in->dim[idx]->cnt == dmn_vtr[idx]->cnt) 
      dpt_max--;
    else
      break;
  
- // Call in-memory nco_var_get() (n.b is recursive of course!!)
- (void)ncap_get_mem(0,dpt_max,shp_vtr,dmn_vtr,(char*)var_in->val.vp,cp_out);
+ // Call in-memory nco_get_var() (n.b is recursive of course!!)
+ (void)ncap_get_var_mem(0,dpt_max,shp_vtr,dmn_vtr,(char*)var_in->val.vp,cp_out);
  
  var_ret=nco_var_dpl(var_in);
  var_ret->sz=ncnt;
@@ -2370,7 +2369,120 @@ dmn_nbr=var_in->nbr_dim;
  var_ret->val.vp=vp_out;  
 
   return var_ret;
-} /* end nco_var_get_mem()  */
+} /* end nco_get_var_mem()  */
+
+
+
+
+void
+ncap_put_var_mem(
+int dpt,                       // Current depth
+int dpt_max,                   // Max depth ( same as number of dims) 
+std::vector<int> &shp_vtr,     // shape of input var (in bytes)
+NcapVector<lmt_sct*> &dmn_vtr, // New vectors
+char *cp_out,                  // Pointer to (char*)var_in->val.vp
+char *&cp_in)                  // Slab to be "put" 
+{
+
+
+const std::string fnc_nm("ncap_put_var_mem"); 
+
+
+long idx;      
+long srt=dmn_vtr[dpt]->srt;
+long end=dmn_vtr[dpt]->end;
+long cnt=dmn_vtr[dpt]->cnt;
+long srd=dmn_vtr[dpt]->srd;
+long slb_sz=shp_vtr[dpt];
+
+char *cp_srt=cp_in;
+char *cp_end=cp_out+ptrdiff_t(srt*slb_sz);;
+
+
+  if(dbg_lvl_get() > 2){
+      std::ostringstream os;
+      os<<"Depth=" << dpt<<" "<<dmn_vtr[dpt]->nm<<" "<<srt<<" "<<end<<" "<<cnt<<" "<<srd;
+      dbg_prn(fnc_nm,os.str());
+  }
+
+
+  if(dpt == dpt_max-1){
+    
+
+    if(srd==1) 
+      (void)memcpy(cp_end, cp_srt, ptrdiff_t(cnt*shp_vtr[dpt]));
+    else { 
+     
+      for(idx=0 ; idx<cnt ; idx++ ){
+        (void)memcpy(cp_end,cp_srt,slb_sz);
+        cp_srt+=slb_sz;
+        cp_end+=(ptrdiff_t)(srd*slb_sz);
+      }
+    } // end else
+    // increment input pointer 
+   cp_in+=ptrdiff_t(cnt*slb_sz);
+   
+  }
+
+  if(dpt < dpt_max-1){
+     for(idx=0; idx <cnt ;idx++){
+       (void)ncap_put_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,cp_end,cp_in);
+       cp_srt+= ptrdiff_t(srd*slb_sz);
+     }
+  }  
+
+}
+
+
+
+// Do an in memory nco_put_var()  
+void
+nco_put_var_mem(
+var_sct *var_in,
+var_sct *var_nw,
+NcapVector<lmt_sct*> &dmn_vtr)
+{
+
+int idx;
+int ncnt;
+int dmn_nbr;
+int dpt_max;
+
+char *cp_out; 
+std::vector<int> shp_vtr;
+
+
+dmn_nbr=var_in->nbr_dim;
+
+ ncnt=nco_typ_lng(var_in->type); 
+ // Create shape vector for var_in
+ shp_vtr.push_back(ncnt);
+ for(idx=dmn_nbr-1 ; idx>0 ; idx--){
+   ncnt*=var_in->dim[idx]->cnt;  
+     shp_vtr.push_back(ncnt);
+     }
+
+ // Reverse vector
+ std::reverse(shp_vtr.begin(),shp_vtr.end() ); 
+
+ // Work out max depth we have to go to 
+ dpt_max=dmn_nbr;
+ for(idx=dmn_nbr-1; idx>0 ; idx--)
+   if( var_in->dim[idx]->cnt == dmn_vtr[idx]->cnt) 
+     dpt_max--;
+   else
+     break;
+
+ cp_out=(char*)var_nw->val.vp;
+
+
+ // Call in-memory nco_put_var_mem (n.b is recursive of course!!)
+ (void)ncap_put_var_mem(0,dpt_max,shp_vtr,dmn_vtr,(char*)var_in->val.vp,cp_out);
+
+
+} /* end nco_put_var_mem() */
+
+
 
 
 
