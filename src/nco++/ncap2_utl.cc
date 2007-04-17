@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.53 2007-04-15 12:00:08 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.54 2007-04-17 14:40:57 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2284,7 +2284,7 @@ char *cp_end=cp_out;
   }
 
 
-  if(dpt == dpt_max-1){
+  if(dpt == dpt_max){
     
 
     if(srd==1) 
@@ -2302,7 +2302,7 @@ char *cp_end=cp_out;
    
   }
 
-  if(dpt < dpt_max-1){
+  if(dpt < dpt_max ){
      for(idx=0; idx <cnt ;idx++){
        (void)ncap_get_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,cp_srt,cp_out);
        cp_srt+= ptrdiff_t(srd*slb_sz);
@@ -2360,7 +2360,7 @@ dmn_nbr=var_in->nbr_dim;
      break;
  
  // Call in-memory nco_get_var() (n.b is recursive of course!!)
- (void)ncap_get_var_mem(0,dpt_max,shp_vtr,dmn_vtr,(char*)var_in->val.vp,cp_out);
+ (void)ncap_get_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,(char*)var_in->val.vp,cp_out);
  
  var_ret=nco_var_dpl(var_in);
  var_ret->sz=ncnt;
@@ -2406,7 +2406,7 @@ char *cp_end=cp_out+ptrdiff_t(srt*slb_sz);;
   }
 
 
-  if(dpt == dpt_max-1){
+  if(dpt == dpt_max){
     
 
     if(srd==1) 
@@ -2424,7 +2424,7 @@ char *cp_end=cp_out+ptrdiff_t(srt*slb_sz);;
    
   }
 
-  if(dpt < dpt_max-1){
+  if(dpt < dpt_max){
      for(idx=0; idx <cnt ;idx++){
        (void)ncap_put_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,cp_end,cp_in);
        cp_srt+= ptrdiff_t(srd*slb_sz);
@@ -2477,7 +2477,7 @@ dmn_nbr=var_in->nbr_dim;
 
 
  // Call in-memory nco_put_var_mem (n.b is recursive of course!!)
- (void)ncap_put_var_mem(0,dpt_max,shp_vtr,dmn_vtr,(char*)var_in->val.vp,cp_out);
+ (void)ncap_put_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,(char*)var_in->val.vp,cp_out);
 
 
 } /* end nco_put_var_mem() */
