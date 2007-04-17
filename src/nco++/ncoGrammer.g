@@ -1190,26 +1190,22 @@ var=NULL_CEWI;
               // Now ready to put values 
               {
                long mult_srd=1L;
-               long *dmn_srt;
-               long *dmn_cnt;
-               long *dmn_srd;
-    
-               dmn_srt=(long *)nco_malloc(nbr_dmn*sizeof(long));
-               dmn_cnt=(long *)nco_malloc(nbr_dmn*sizeof(long));
-               dmn_srd=(long *)nco_malloc(nbr_dmn*sizeof(long));
+               std::vector<long> dmn_srt_vtr;
+               std::vector<long> dmn_cnt_vtr;
+               std::vector<long> dmn_srd_vtr;
     
                for(idx=0;idx<nbr_dmn;idx++){
-                 dmn_srt[idx]=lmt_vtr[idx]->srt;
-                 dmn_cnt[idx]=lmt_vtr[idx]->cnt;
-                 dmn_srd[idx]=lmt_vtr[idx]->srd;
-                    mult_srd*=lmt_vtr[idx]->srd;
+                 dmn_srt_vtr.push_back(lmt_vtr[idx]->srt);
+                 dmn_cnt_vtr.push_back(lmt_vtr[idx]->cnt);
+                 dmn_srd_vtr.push_back(lmt_vtr[idx]->srd);  
+                 mult_srd*=lmt_vtr[idx]->srd;
                } /* end loop over idx */
     
                /* Check for stride */
                if(mult_srd == 1L)
-	            (void)nco_put_vara(prs_arg->out_id,var_id,dmn_srt,dmn_cnt,var_rhs->val.vp,var_rhs->type);
+	            (void)nco_put_vara(prs_arg->out_id,var_id,&dmn_srt_vtr[0],&dmn_cnt_vtr[0],var_rhs->val.vp,var_rhs->type);
                else
-	            (void)nco_put_vars(prs_arg->out_id,var_id,dmn_srt,dmn_cnt,dmn_srd,var_rhs->val.vp,var_rhs->type);
+	            (void)nco_put_vars(prs_arg->out_id,var_id,&dmn_srt_vtr[0],&dmn_cnt_vtr[0],&dmn_srd_vtr[0],var_rhs->val.vp,var_rhs->type);
               
                    
                 // Do an in-memory nco_put_var
@@ -1219,11 +1215,7 @@ var=NULL_CEWI;
                 (void)nco_put_var_mem(var_tst,var_rhs,lmt_vtr);
                 (void)ncap_var_write(var_tst,false,prs_arg); 
                 */ 
-
                
-               dmn_srt=(long *)nco_free(dmn_srt);
-               dmn_cnt=(long *)nco_free(dmn_cnt);
-               dmn_srd=(long *)nco_free(dmn_srd);
               } // end put block !!
 
               var_lhs=nco_var_free(var_lhs);
@@ -1450,11 +1442,17 @@ out returns [var_sct *var]
           sym_sct * sym_ptr;
             
           sym_ptr= prs_arg->ptr_sym_vtr->find(m->getText());
-          if(sym_ptr !=NULL)   var=ncap_var_fnc(var1,sym_ptr); 
-            else{
+          if(sym_ptr ==NULL) { 
               cout << "Function  " << m->getText() << " not found" << endl;
               exit(1);
-               } 
+           } 
+           // Catch delete function
+           if(m->getText() == "delete"){
+               ;
+    
+           } else     
+           var=ncap_var_fnc(var1,sym_ptr);
+
           }
 
 
