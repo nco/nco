@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.203 2007-02-25 06:10:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.204 2007-04-18 05:29:37 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -123,9 +123,9 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.203 2007-02-25 06:10:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.203 $";
-  const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
+  const char * const CVS_Id="$Id: ncap.c,v 1.204 2007-04-18 05:29:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.204 $";
+  const char * const opt_sht_lst="4ACcD:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -254,8 +254,6 @@ main(int argc,char **argv)
       {"no-crd",no_argument,0,'C'},
       {"debug",required_argument,0,'D'},
       {"dbg_lvl",required_argument,0,'D'},
-      {"dimension",required_argument,0,'d'},
-      {"dmn",required_argument,0,'d'},
       {"fnc_tbl",no_argument,0,'f'},
       {"prn_fnc_tbl",no_argument,0,'f'},
       {"ftn",no_argument,0,'F'},

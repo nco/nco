@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.33 2007-03-19 16:34:05 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.34 2007-04-18 05:29:37 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -126,9 +126,9 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.33 2007-03-19 16:34:05 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.33 $";
-  const char * const opt_sht_lst="4ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.34 2007-04-18 05:29:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.34 $";
+  const char * const opt_sht_lst="4ACcD:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
   dmn_sct *dmn_new;
@@ -329,10 +329,6 @@ main(int argc,char **argv)
       break;
     case 'D': /* Debugging level. Default is 0. */
       dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
-      break;
-    case 'd': /* Copy argument for later processing */
-      lmt_arg[lmt_nbr]=(char *)strdup(optarg);
-      lmt_nbr++;
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;

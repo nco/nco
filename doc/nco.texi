@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.401 2007-03-31 22:39:47 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.402 2007-04-18 05:29:37 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4270,6 +4270,7 @@ ncea -y max -v prs_sfc jan.nc feb.nc march.nc out.nc
 
 @html
 <a name="stddvn"></a> <!-- http://nco.sf.net/nco.html#stddvn -->
+<a name="sdn"></a> <!-- http://nco.sf.net/nco.html#sdn -->
 @end html
 @noindent
 It is possible to use a combination of these operations to compute
@@ -4280,14 +4281,13 @@ pressure at all points in a single file @file{in.nc} involves three
 steps. 
 @example
 ncwa -O -v prs_sfc -a time in.nc out.nc
-ncbo -O --op_typ=sub -v prs_sfc in.nc out.nc out.nc 
+ncbo -O -v prs_sfc in.nc out.nc out.nc 
 ncra -O -y rmssdn out.nc out.nc
 @end example
-First the output file @file{out.nc} is contructed containing the
-temporal mean of @code{prs_sfc}.
-Next @file{out.nc} is overwritten with the deviation from the mean.
-Finally @file{out.nc} is overwritten with the root-mean-square of
-itself. 
+First construct the temporal mean of @code{prs_sfc} in the file
+@file{out.nc}.
+Next overwrite @file{out.nc} with the anomaly (deviation from the mean).
+Finally overwrite @file{out.nc} with the root-mean-square of itself. 
 Note the use of @samp{-y rmssdn} (rather than @samp{-y rms}) in the
 final step. 
 This ensures the standard deviation is correctly normalized by one fewer
@@ -4304,24 +4304,23 @@ ncap2 -s 'prs_sfc_sdn=sqrt((prs_sfc-prs_sfc.avg($time)^2).total($time))/($time.s
 The operation may, of course, be broken into multiple steps in order 
 to archive intermediate quantities, such as the time-anomalies
 @example
-ncap2 -s 'prs_sfc_anm=prs_sfc-prs_sfc.avg($time)'
-      -s 'prs_sfc_sdn=sqrt((prs_sfc_anm^2).total($time))/($time.size-1)'
+ncap2 -s 'prs_sfc_anm=prs_sfc-prs_sfc.avg($time)' \
+      -s 'prs_sfc_sdn=sqrt((prs_sfc_anm^2).total($time))/($time.size-1)' \
       in.nc out.nc
 @end example
 
 @command{ncap2} supports intrinsic standard deviation functions
 (@pxref{Operation Types}) which simplify the above expression to
 @example
-ncap2 -s 'prs_sfc_sdn=prs_sfc.rmssdn($time)' in.nc out.nc
+ncap2 -s 'prs_sfc_sdn=(prs_sfc-prs_sfc.avg($time)).rmssdn($time)' in.nc out.nc
 @end example
-These instrinsic functions return the answer in the fastest, most
-concise way possible. 
+These instrinsic functions compute the answer quickly and concisely.
 
 The procedure to compute the spatial standard deviation of a field
 in a single file @file{in.nc} involves three steps.
 @example
 ncwa -O -v prs_sfc,gw -a lat,lon -w gw in.nc out.nc
-ncbo -O --op_typ=sub -v prs_sfc,gw in.nc out.nc out.nc
+ncbo -O -v prs_sfc,gw in.nc out.nc out.nc
 ncwa -O -y rmssdn -v prs_sfc -a lat,lon -w gw out.nc out.nc
 @end example
 First the appropriately weighted (with @samp{-w gw}) spatial mean values
@@ -4339,10 +4338,11 @@ deviations is taken.
 The @command{ncap2} solution to the spatially-weighted standard
 deviation problem is 
 @example
-ncap2 -s 'prs_sfc_sdn=(prs_sfc*gw).rmssdn($lat,$lon)' in.nc out.nc
+ncap2 -s 'prs_sfc_sdn=(prs_sfc*gw-prs_sfc*gw.avg($lat,$lon)).rmssdn($lat,$lon)' \
+      in.nc out.nc
 @end example
-Note that weight multiplies the variable prior to computing the
-standard deviation.
+Be sure to multiply the variable by the weight prior to computing the
+the anomalies and the standard deviation.
 
 The procedure to compute the standard deviation of a time-series across
 multiple files involves one extra step since all the input must first be
@@ -4350,7 +4350,7 @@ collected into one file.
 @example
 ncrcat -O -v tpt in.nc in.nc foo1.nc
 ncwa -O -a time foo1.nc foo2.nc
-ncbo -O --op_typ=sub -v tpt foo1.nc foo2.nc foo2.nc
+ncbo -O -v tpt foo1.nc foo2.nc foo2.nc
 ncra -O -y rmssdn foo2.nc out.nc
 @end example
 The first step assembles all the data into a single file.
@@ -4938,7 +4938,7 @@ described in any detail in the sections below.
 SYNTAX
 @example
 ncap2 [-4] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-f]
+[-F] [-f]
 [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-s @var{algebra}] [-S @var{fl.nco}] [-v]
 @var{input-file} [@var{output-file}]  

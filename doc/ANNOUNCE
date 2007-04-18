@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.209 2007-03-11 04:43:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.210 2007-04-18 05:29:37 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.9 are ready. 
 
@@ -8,24 +8,16 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 Release 3.1.9 contains a small ncwa bugfix, new ncea/ncecat features,
 new ncap2 features, configure support for AIX, and RPMs with ncap2.
 
-A. ncwa bugfix: 
-   ncwa reported NaN/inf for minimization/maximization/summation of
-   coordinate variables. This has been fixed. Thanks to Michael Schulz  
-   for reporting this bug.
+A. Documentation bugfix: 
+   Some ncap2 standard deviation examples neglected the anomaly step
 
-B. ncecat and ncea now allow files to differ in record dimension size 
-   iff the requested (with -d start.,end.) record hyperslab resolves
-   to the same size for all files.
-   This allows easier gluing/averaging of unequal length timeseries
-   from an ensemble of simulations (e.g., the IPCC AR4 archive).
+B. Documentation bugfix: 
+   ncap2 has never accepted the -d hyperslab argument
 
 C. ncap2 (http://nco.sf.net/nco.html#ncap2) grows more powerful.
    ncap2 now accepts quoted variable names, e.g., 'HNO3-'
    Henry keeps adding features. See ~/nco/data/ncap2.in.
    Once threading and for loops are done we'll document it all. 
-
-D. The "configure" install method now works for ncap2 on AIX
-   Thanks to Martin Schutz for encouraging us to finish this.
 
 E. Pre-built, up-to-date, Debian Sid binary packages are available.
    Debian/Ubuntu users may get them from http://nco.sf.net#debian

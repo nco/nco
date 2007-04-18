@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.173 2007-03-11 21:04:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.174 2007-04-18 05:29:37 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -782,7 +782,7 @@ nco_usg_prn(void)
 
   switch(prg_lcl){
   case ncap:
-    opt_sng=(char *)strdup("[-4] [-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-f] [-h] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-s algebra] [-S fl.nco] [-v] in.nc [out.nc]\n");
+    opt_sng=(char *)strdup("[-4] [-A] [-C] [-c] [-D dbg_lvl] [-F] [-f] [-h] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-s algebra] [-S fl.nco] [-v] in.nc [out.nc]\n");
     break;
   case ncatted:
     opt_sng=(char *)strdup("[-a ...] [-D dbg_lvl] [-h] [--hdr_pad nbr] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] in.nc [[out.nc]]\n");

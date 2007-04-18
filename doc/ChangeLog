@@ -1,3 +1,9 @@
+2007-04-17  Charlie Zender  <zender@uci.edu>
+
+	* Remove obsolete -d hyperslab options from ncap, ncap2 code and docs
+
+	* Insert computation of anomaly in ncap2 standard deviation examples
+
 2007-03-31  Charlie Zender  <zender@uci.edu>
 
 	* Change -s "" to -s '' in most all examples to prevent
