@@ -1,3 +1,8 @@
+2007-04-18   Henry Butowsky <henryb@hush.com>
+	* nco_put_var_mem() & nco_get_var_mem() tested.
+	  can now hyperslab RAM vars on the RHS.
+	  RAM hyperslabs on the LHS to follow shortly
+
 2007-04-17  Charlie Zender  <zender@uci.edu>
 
 	* Remove obsolete -d hyperslab options from ncap, ncap2 code and docs
