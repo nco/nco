@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.117 2007-02-25 06:10:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.118 2007-04-18 17:06:15 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.117 2007-02-25 06:10:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.117 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.118 2007-04-18 17:06:15 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.118 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -275,7 +275,7 @@ main(int argc,char **argv)
       FORCE_APPEND=!FORCE_APPEND;
       break;
     case 'a': /* Re-order dimensions */
-      dmn_rdr_lst_in=lst_prs_2D(optarg,",",&dmn_rdr_nbr_in);
+      dmn_rdr_lst_in=nco_lst_prs_2D(optarg,",",&dmn_rdr_nbr_in);
       dmn_rdr_nbr=dmn_rdr_nbr_in;
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
@@ -334,7 +334,7 @@ main(int argc,char **argv)
       /* Replace commas with hashes when within braces (convert back later) */
       optarg_lcl=(char *)strdup(optarg);
       (void)nco_lst_comma2hash(optarg_lcl);
-      var_lst_in=lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
+      var_lst_in=nco_lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
       optarg_lcl=(char *)nco_free(optarg_lcl);
       nbr_xtr=var_lst_in_nbr;
       break;
@@ -378,7 +378,7 @@ main(int argc,char **argv)
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id_in);
   
   /* Form initial extraction list which may include extended regular expressions */
-  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXTRACT_ALL_COORDINATES,&nbr_xtr);
+  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&nbr_xtr);
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);

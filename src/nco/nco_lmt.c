@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.54 2007-02-23 21:59:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.55 2007-04-18 17:06:15 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -861,7 +861,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
   for(idx=0;idx<lmt_nbr;idx++){
     /* Process hyperslab specifications as normal text list */
     /* fxm: probably need to free arg_lst sometime... */
-    arg_lst=lst_prs_2D(lmt_arg[idx],dlm_sng,&arg_nbr);
+    arg_lst=nco_lst_prs_2D(lmt_arg[idx],dlm_sng,&arg_nbr);
     
     /* Check syntax */
     if(
@@ -976,7 +976,7 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
     /* Clear date and time */
     year=0L; month=0L; day=0L; hour=0L; min=0L; sec=(double)0;
     /* Break up date string copy delimited by dashes */
-    arg_lst=lst_prs_2D(lmt_sng,"-",&arg_nbr);
+    arg_lst=nco_lst_prs_2D(lmt_sng,"-",&arg_nbr);
     /* Fill in year, month, day */
     if((arg_nbr > 0) && (arg_lst[0] != NULL)) year=strtol(arg_lst[0],(char **)NULL,10);
     if((arg_nbr > 1) && (arg_lst[1] != NULL)) month=strtol(arg_lst[1],(char **)NULL,10);
@@ -987,7 +987,7 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
     if(arg_lst[2] != NULL) arg_lst[arg_nbr-1]++;
     /* Break up remaining time string delimited by colons */
     if(arg_lst[2] != NULL){
-      arg_lst=lst_prs_2D(arg_lst[2],":",&arg_nbr);
+      arg_lst=nco_lst_prs_2D(arg_lst[2],":",&arg_nbr);
       /* Fill in hour, minute, second */
       if((arg_nbr > 0) && strlen(arg_lst[0]) > 2){ /* HHMM spec */
 	hour=strtol(arg_lst[0],(char **)NULL,10);

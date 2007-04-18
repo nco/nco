@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.858 2007-03-11 02:48:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.859 2007-04-18 17:06:11 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -539,18 +539,10 @@ nco789. Add regression test for behavior when _FillValue defined and missing_val
 nco792. Improve compile-ability of _FillValue behavior
 nco794. Automagically use _FillValue when missing missing_value not present
 nco796. pgCC does not support exception handling with codes compiled with OpenMP (-mp) switch so ncap2/antlr files must be built serially
-nco797. Find Fedora core machine to try RPM builds on
 nco798. Try Opendap 3.6.2 beta compatible
 nco799. Extend -n 3,4,1 NINTAP switch to handle regular expressions
 nco800. Extend -n 3,4,1 NINTAP switch to -n 3,4,1,offset to work with CCSM patterns
-nco802. Handle dashes and dots in ncap2: use backslashes for quoting?
-	ncks -H -v var_nm-dash,var_nm.dot ~/nco/data/in.nc
-	ncea -O -v var_nm-dash,var_nm.dot -p ~/nco/data in.nc in.nc ~/foo.nc
-	ncks ~/foo.nc
-	ncap2 -O -v -s "var_out=var_nm-dash+var_nm.dot" ~/nco/data/in.nc ~/foo.nc
 nco803. Link to UCSD proposal by Kraig Winters /data/zender/prp/prp_winters.pdf
-nco805. dbn: Make package rebuild-able without re-checking out
-        cannot represent change to data/big.nc: binary file contents changed
 nco807. Merge ncra.c v.1.192-1.193 changes (per-file record limit checks) into mpncra.c
 nco808. Dave Allured request on 20070213 for ncea to resolve hyperslab indices for all dimensions on each file so this works:
         ncea -d time,"2010-1-1 0:0:0","2020-12-31 0:0:0" run*.nc output.nc
@@ -559,7 +551,8 @@ nco808. Dave Allured request on 20070213 for ncea to resolve hyperslab indices f
 nco809. Implement --quiet option to suppress WARNINGs and INFOs
 nco812. Investigate make check errors on FC6
 nco813. Implement ncap2 in nco.spec on FC6
-nco814. 
+nco814. Regression test for forgiving exclusion list handling
+        ncks -O -D 2 -x -v not_present ~/nco/data/in.nc ~/foo.nc
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

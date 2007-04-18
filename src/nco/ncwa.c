@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.241 2007-03-07 06:29:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.242 2007-04-18 17:06:15 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.241 2007-03-07 06:29:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.241 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.242 2007-04-18 17:06:15 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.242 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -315,7 +315,7 @@ main(int argc,char **argv)
 	(void)nco_usg_prn();
 	nco_exit(EXIT_FAILURE);
       } /* endif */
-      dmn_avg_lst_in=lst_prs_2D(optarg,",",&dmn_avg_nbr);
+      dmn_avg_lst_in=nco_lst_prs_2D(optarg,",",&dmn_avg_nbr);
       flg_opt_a=True;
       break;
     case 'B': /* Mask string to be parsed */
@@ -392,7 +392,7 @@ main(int argc,char **argv)
       /* Replace commas with hashes when within braces (convert back later) */
       optarg_lcl=(char *)strdup(optarg);
       (void)nco_lst_comma2hash(optarg_lcl);
-      var_lst_in=lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
+      var_lst_in=nco_lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
       optarg_lcl=(char *)nco_free(optarg_lcl);
       nbr_xtr=var_lst_in_nbr;
       break;
@@ -477,7 +477,7 @@ main(int argc,char **argv)
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
   
   /* Form initial extraction list which may include extended regular expressions */
-  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXTRACT_ALL_COORDINATES,&nbr_xtr);
+  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&nbr_xtr);
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);

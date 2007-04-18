@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.65 2007-02-23 21:59:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.66 2007-04-18 17:06:15 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -13,10 +13,14 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
 (const int nc_id, /* I [enm] netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  char * const * const var_lst_in, /* I [sng] User-specified list of variable names and rx's */
+ const nco_bool EXCLUDE_INPUT_LIST, /* I [flg] Exclude rather than extract */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
 {
   /* Purpose: Create variable extraction list with or without regular expressions */
+  
+  char *var_sng;
+  char var_nm[NC_MAX_NAME];
   
   int idx;
   int jdx;
@@ -25,37 +29,33 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
   int rx_mch_nbr;
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
   
-  char *var_sng;
-  
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
-  nm_id_sct *in_lst=NULL; 
-  nco_bool *in_bool=NULL;
+  nm_id_sct *fl_in_var_lst=NULL; /* [sct] All variables in input file */
+  nco_bool *var_xtr_rqs=NULL; /* [flg] Variable specified in extraction list */
   
   /* Create list of all variables in input file */
-  char var_nm[NC_MAX_NAME];
-  
-  in_lst=(nm_id_sct *)nco_malloc(nbr_var*sizeof(nm_id_sct));
+  fl_in_var_lst=(nm_id_sct *)nco_malloc(nbr_var*sizeof(nm_id_sct));
   for(idx=0;idx<nbr_var;idx++){
     /* Get name of each variable */
     (void)nco_inq_varname(nc_id,idx,var_nm);
-    in_lst[idx].nm=(char *)strdup(var_nm);
-    in_lst[idx].id=idx;
+    fl_in_var_lst[idx].nm=(char *)strdup(var_nm);
+    fl_in_var_lst[idx].id=idx;
   } /* end loop over idx */
   
   /* Return all variables if .. */
   if(*nbr_xtr == 0 && !EXTRACT_ALL_COORDINATES){
     *nbr_xtr=nbr_var;
-    return in_lst;
-  } /* end if */     
+    return fl_in_var_lst;
+  } /* end if */
   
   /* Initialize and allocacte nco_bool array to all False */
-  in_bool=(nco_bool *)nco_calloc((size_t)nbr_var,sizeof(nco_bool));
+  var_xtr_rqs=(nco_bool *)nco_calloc((size_t)nbr_var,sizeof(nco_bool));
   
   /* Loop through var_lst_in */
   for(idx=0;idx<*nbr_xtr;idx++){
     var_sng=var_lst_in[idx];
     
-    /* Convert pounds (#s) back to commas */
+    /* Convert pound signs (back) to commas */
     while(*var_sng){
       if(*var_sng == '#') *var_sng=',';
       var_sng++;
@@ -66,112 +66,69 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
     if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
       /* ...and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
-      rx_mch_nbr=nco_var_meta_search(nbr_var,in_lst,var_sng,in_bool);
+      rx_mch_nbr=nco_var_meta_search(nbr_var,fl_in_var_lst,var_sng,var_xtr_rqs);
       if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: http://nco.sf.net/nco.html#rx",prg_nm_get(),var_sng); 
       continue;
 #else
-      (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) is unavailable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
+      (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
       nco_exit(EXIT_FAILURE);
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
     } /* end if regular expression */
     
-    /* Normal variable so search through var array */
+    /* Normal variable so search through variable array */
     for(jdx=0;jdx<nbr_var;jdx++)
-      if(!strcmp(var_sng,in_lst[jdx].nm)) break;
-    /* No matches found so die gently */
-    if(jdx == nbr_var){
-      (void)fprintf(stdout,"%s: ERROR nco_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
-      nco_exit(EXIT_FAILURE);
+      if(!strcmp(var_sng,fl_in_var_lst[jdx].nm)) break;
+
+    if(jdx != nbr_var){
+      /* Mark this variable as requested for inclusion by user */
+      var_xtr_rqs[jdx]=True;
     }else{
-      in_bool[jdx]=True;
+      if(EXCLUDE_INPUT_LIST){ 
+	/* Variable need not be present if list will be excluded later... */
+	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var_lst_mk() reports explicitly excluded variable \"%s\" is not in input file anyway\n",prg_nm_get(),var_sng); 
+      }else{ /* !EXCLUDE_INPUT_LIST */
+	/* Variable should be included but no matches found so die */
+	(void)fprintf(stdout,"%s: ERROR nco_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
+	nco_exit(EXIT_FAILURE);
+      } /* !EXCLUDE_INPUT_LIST */
     } /* end else */
+
   } /* end loop over var_lst_in */
   
-  /* Create final list of vars using var list and bool array */
+  /* Create final variable list using bool array */
   
   /* malloc() xtr_lst to maximium size(nbr_var) */
   xtr_lst=(nm_id_sct *)nco_malloc(nbr_var*sizeof(nm_id_sct));
   nbr_tmp=0; /* nbr_tmp is incremented */
   for(idx=0;idx<nbr_var;idx++){
     /* Copy var to output array */
-    if(in_bool[idx]){
-      xtr_lst[nbr_tmp].nm=(char *)strdup(in_lst[idx].nm);
-      xtr_lst[nbr_tmp].id=in_lst[idx].id;
+    if(var_xtr_rqs[idx]){
+      xtr_lst[nbr_tmp].nm=(char *)strdup(fl_in_var_lst[idx].nm);
+      xtr_lst[nbr_tmp].id=fl_in_var_lst[idx].id;
       nbr_tmp++;
     } /* end if */
-    (void)nco_free(in_lst[idx].nm);
+    (void)nco_free(fl_in_var_lst[idx].nm);
   } /* end loop over var */
   
   /* realloc() list to actual size */  
   xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,nbr_tmp*sizeof(nm_id_sct));
 
-  (void)nco_free(in_lst);
-  (void)nco_free(in_bool);
+  (void)nco_free(fl_in_var_lst);
+  (void)nco_free(var_xtr_rqs);
 
   *nbr_xtr=nbr_tmp;    
   return xtr_lst;
 } /* end nco_var_lst_mk() */
-
-nm_id_sct * /* O [sct] Variable extraction list */
-nco_var_lst_mk_old /* [fnc] Create variable extraction list */
-(const int nc_id, /* I [enm] netCDF file ID */
- const int nbr_var, /* I [nbr] Number of variables in input file */
- CST_X_PTR_CST_PTR_CST_Y(char,var_lst_in), /* I [sng] User-specified list of variable names */
- const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */
- int * const nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
-{
-  /* Purpose: Create variable extraction list 
-     NB: Routine is deprecated in favor of nco_var_lst_mk() */
-
-  nco_bool err_flg=False;
-  int rcd=NC_NOERR; /* [rcd] Return code */
-  int idx;
-
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
-
-  if(*nbr_xtr > 0){
-    /* If user named variables with -v option then check validity of user's list and find IDs */
-    xtr_lst=(nm_id_sct *)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
-     
-    for(idx=0;idx<*nbr_xtr;idx++){
-      xtr_lst[idx].nm=(char *)strdup(var_lst_in[idx]);
-      rcd=nco_inq_varid_flg(nc_id,xtr_lst[idx].nm,&xtr_lst[idx].id);
-      if(rcd != NC_NOERR){
-	(void)fprintf(stdout,"%s: ERROR nco_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),xtr_lst[idx].nm);
-	err_flg=True;
-      } /* endif */
-    } /* end loop over idx */
-    
-    if(err_flg) nco_exit(EXIT_FAILURE);
-  }else if(!EXTRACT_ALL_COORDINATES){
-    /* If the user did not specify variables with the -v option,
-       and the user did not request automatic processing of all coords,
-       then extract all variables in file. In this case
-       we can assume variable IDs range from 0..nbr_var-1. */
-    char var_nm[NC_MAX_NAME];
-    
-    *nbr_xtr=nbr_var;
-    xtr_lst=(nm_id_sct *)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
-    for(idx=0;idx<nbr_var;idx++){
-      /* Get name of each variable. */
-      (void)nco_inq_varname(nc_id,idx,var_nm);
-      xtr_lst[idx].nm=(char *)strdup(var_nm);
-      xtr_lst[idx].id=idx;
-    } /* end loop over idx */
-  } /* end else */
-
-  return xtr_lst;
-} /* end nco_var_lst_mk_old() */
 
 /* Compile following routines only if regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
 
 int /* O [nbr] Number of matches found */
 nco_var_meta_search /* [fnc] Search for pattern matches in var string list */
-(int nbr_var, /* I [nbr] number of vars in srch_sng and size of in_bool */
- nm_id_sct *in_lst, /* I [sct] List of all variables in input file (with IDs) */
+(int nbr_var, /* I [nbr] Number of variables in srch_sng and size of var_xtr_rqs */
+ nm_id_sct *fl_in_var_lst, /* I [sct] All variables in input file (with IDs) */
  char *rexp, /* I [sng] Regular expression pattern */
- nco_bool *in_bool) /* O [flg] Matched vars holder */
+ nco_bool *var_xtr_rqs) /* O [flg] Matched variable holder */
 {
   /* If regular expression does not compile then program dies */
   int idx;
@@ -221,8 +178,8 @@ nco_var_meta_search /* [fnc] Search for pattern matches in var string list */
 
   /* Search each var string for matches */
   for(idx=0;idx<nbr_var;idx++){  
-    if(!regexec(rx,in_lst[idx].nm,no_sub,result,eflags)){
-      in_bool[idx]=True;
+    if(!regexec(rx,fl_in_var_lst[idx].nm,no_sub,result,eflags)){
+      var_xtr_rqs[idx]=True;
       nbr_mtch++;
     } /* end if */
   } /* end loop over variables */
@@ -245,7 +202,7 @@ nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
 {
   /* Purpose: Convert exclusion list to extraction list
      User wants to extract all variables except those currently in list
-     Since it is hard to edit existing list, copy existing extraction list into 
+     It is hard to edit existing list so copy existing extraction list into 
      exclusion list, then construct new extraction list from scratch. */
 
   char var_nm[NC_MAX_NAME];
@@ -372,7 +329,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
 	  /* NUL-terminate attribute */
 	  att_val[att_sz]='\0';
 	  /* Split list into separate coordinate names */
-	  crd_lst=lst_prs_2D(att_val,dlm_sng,&nbr_crd);
+	  crd_lst=nco_lst_prs_2D(att_val,dlm_sng,&nbr_crd);
 	  /* ...for each coordinate in "coordinates" attribute... */
 	  for(idx_crd=0;idx_crd<nbr_crd;idx_crd++){
 	    /* Verify "coordinate" exists in input file */
@@ -503,7 +460,7 @@ nco_var_lst_crd_ass_add /* [fnc] Add coordinates associated extracted variables 
 	  /* NUL-terminate attribute */
 	  att_val[att_sz]='\0';
 	  /* Split list into separate coordinate names */
-	  crd_lst=lst_prs_2D(att_val,dlm_sng,&nbr_crd);
+	  crd_lst=nco_lst_prs_2D(att_val,dlm_sng,&nbr_crd);
 	  /* ...for each coordinate in "coordinates" attribute... */
 	  for(idx_crd=0;idx_crd<nbr_crd;idx_crd++){
 	    /* Verify "coordinate" exists in input file */

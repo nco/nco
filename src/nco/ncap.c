@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.204 2007-04-18 05:29:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.205 2007-04-18 17:06:14 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.204 2007-04-18 05:29:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.204 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.205 2007-04-18 17:06:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.205 $";
   const char * const opt_sht_lst="4ACcD:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -347,7 +347,7 @@ main(int argc,char **argv)
     case 'n': /* NINTAP-style abbreviation of files to process */
       /* Currently not used in ncap but should be to allow processing multiple input files by same script */
       (void)fprintf(stderr,"%s: ERROR %s does not currently implement -n option\n",prg_nm_get(),prg_nm_get());
-      fl_lst_abb=lst_prs_2D(optarg,",",&abb_arg_nbr);
+      fl_lst_abb=nco_lst_prs_2D(optarg,",",&abb_arg_nbr);
       if(abb_arg_nbr < 1 || abb_arg_nbr > 3){
 	(void)fprintf(stderr,"%s: ERROR Incorrect abbreviation for file list\n",prg_nm);
 	(void)nco_usg_prn();
@@ -623,14 +623,14 @@ main(int argc,char **argv)
   rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int*)NULL);
   
   /* Make list of all new variables in output_file */  
-  xtr_lst_a=nco_var_lst_mk(out_id,nbr_var_fl,var_lst_in,False,&nbr_lst_a);
+  xtr_lst_a=nco_var_lst_mk(out_id,nbr_var_fl,var_lst_in,False,False,&nbr_lst_a);
   
   if(PROCESS_ALL_VARS){
     /* Get number of variables in input file */
     rcd=nco_inq(in_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
     
     /* Form initial list of all variables in input file */
-    xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,False,&nbr_xtr);
+    xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,False,False,&nbr_xtr);
   }else{
     /* Make list of variables of new attributes whose parent variable is only in input file */
     xtr_lst=nco_att_lst_mk(in_id,out_id,att_lst,nbr_att,&nbr_xtr);

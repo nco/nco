@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.402 2007-04-18 05:29:37 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.403 2007-04-18 17:06:12 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,8 +103,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.1.9
 @set copyright-years 1995--2007
 @set update-year 2007
-@set update-date 29 March 2007
-@set update-month March 2007
+@set update-date 18 April 2007
+@set update-month April 2007
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -2916,10 +2916,14 @@ build time.
 
 @html
 <a name="var"></a> <!-- http://nco.sf.net/nco.html#var -->
+<a name="xcl"></a> <!-- http://nco.sf.net/nco.html#xcl -->
+<a name="sbs"></a> <!-- http://nco.sf.net/nco.html#sbs -->
 @end html
 @node Subsetting Variables, Subsetting Coordinate Variables, Large File Support, Common features
 @section Subsetting Variables
 @cindex subsetting
+@cindex exclusion
+@cindex extraction
 @cindex @code{-v @var{var}}
 @cindex @code{--variable @var{var}}
 @cindex @code{-x}
@@ -2944,16 +2948,24 @@ The @samp{-x} option causes the list of variables specified with
 @samp{-v} to be @emph{excluded} rather than @emph{extracted}.
 Thus @samp{-x} saves typing when you only want to extract fewer than
 half of the variables in a file.
+
+Variables explicitly specified for extraction with
+@samp{-v @var{var}[,@dots{}]} @emph{must} be present in the input file 
+or an error will result.
+Variables explicitly specified for @emph{exclusion} with
+@samp{-x -v @var{var}[,@dots{}]} need not be present in the input
+file.
 @cindex memory requirements
 Remember, if averaging or concatenating large files stresses your
 systems memory or disk resources, then the easiest solution is often to
-use the @samp{-v} option to retain only the variables you 
-really need (@pxref{Memory Requirements}).
-Note that, due to its special capabilities, @command{ncap2} interprets
-the @samp{-v} switch differently
-(@pxref{ncap2 netCDF Arithmetic Processor}).
-For @command{ncap2}, the @samp{-v} switch takes no arguments and indicates
-that @emph{only} user-defined variables should be output.
+use the @samp{-v} option to retain only the most important variables
+(@pxref{Memory Requirements}).
+
+Due to its special capabilities, @command{ncap2} interprets the
+@samp{-v} switch differently 
+(@pxref{ncap2 netCDF Arithmetic Processor}). 
+For @command{ncap2}, the @samp{-v} switch takes no arguments and
+indicates that @emph{only} user-defined variables should be output. 
 @command{ncap2} neither accepts nor understands the @var{-x} switch.
 
 @html
@@ -7430,6 +7442,9 @@ ncks -s '%c' -v fl_nm_arr in.nc
 Using the @code{%s} format code on strings which are not NUL-terminated 
 (and thus not technically strings) is likely to result in a core dump.
 
+@cindex subsetting
+@cindex exclusion
+@cindex extraction
 Create netCDF @file{out.nc} containing all variables, and any associated 
 coordinates, except variable @code{time}, from netCDF @file{in.nc}:
 @example

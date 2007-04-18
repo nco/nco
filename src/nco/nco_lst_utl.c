@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.43 2007-02-23 21:59:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.44 2007-04-18 17:06:15 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -14,7 +14,7 @@
    See code in ${DATA}/tmp/testsort */
 
 void 
-indexx /* [fnc] Sort array of integers */
+nco_srt_ntg /* [fnc] Sort array of integers */
 (const int lmn_nbr, /* I [nbr] Number of elements */
  const int * const arr_in, /* I [idx] Array to sort */
  int * const idx) /* O [idx] Indices to sorted array */
@@ -22,12 +22,12 @@ indexx /* [fnc] Sort array of integers */
   /* Purpose: Stub for Numerical Recipes-compatible indexx() routine */
   long foo=sizeof(lmn_nbr)+sizeof(arr_in)+sizeof(idx); /* CEWI */
   foo++; /* CEWI */
-  (void)fprintf(stdout,"%s: ERROR indexx() routine should not be called\n",prg_nm_get());
+  (void)fprintf(stdout,"%s: ERROR nco_srt_ntg() routine should not be called\n",prg_nm_get());
   nco_exit(EXIT_FAILURE);
-} /* end indexx() */
+} /* end nco_srt_ntg() */
 
 void 
-indexx_alpha /* [fnc] Sort array of strings */
+nco_srt_lph /* [fnc] Sort array of strings */
 (const int lmn_nbr, /* I [nbr] Number of elements */
  char * const * const arr_in, /* I [sng] Strings to sort */
  int * const idx) /* O [idx] Indices to sorted array */
@@ -35,9 +35,9 @@ indexx_alpha /* [fnc] Sort array of strings */
   /* Purpose: Stub for Numerical Recipes-compatible indexx_alpha() routine */
   long foo=sizeof(lmn_nbr)+sizeof(arr_in)+sizeof(idx); /* CEWI */
   foo++; /* CEWI */
-  (void)fprintf(stdout,"%s: ERROR indexx_alpha() routine should not be called\n",prg_nm_get());
+  (void)fprintf(stdout,"%s: ERROR nco_srt_lph() routine should not be called\n",prg_nm_get());
   nco_exit(EXIT_FAILURE);
-} /* end indexx() */
+} /* end nco_srt_lph() */
 
 nm_id_sct * /* O [sct] Sorted output list */
 lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
@@ -102,7 +102,7 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
 } /* end lst_heapsort() */
 
 char ** /* O [sng] Array of list elements */
-lst_prs_1D /* [fnc] Create 1D array of strings from given string and delimiter */
+nco_lst_prs_1D /* [fnc] Create 1D array of strings from given string and delimiter */
 (char * const sng_in, /* I/O [sng] Delimited argument list (delimiters are changed to NULL on output */
  const char * const dlm_sng, /* I [sng] Delimiter string */
  int * const nbr_lst) /* O [nbr] number of elements in list */
@@ -119,13 +119,13 @@ lst_prs_1D /* [fnc] Create 1D array of strings from given string and delimiter *
      It was obtained by inserting delimiters in a single string 
      Hence do not try to separately free() each member of list of strings
 
-     Contrasting lst_prs_1D() to successor lst_prs_2D():
-     lst_prs_2D() creates two-dimensional output string list, i.e., list of pointers to separately malloc()'d buffers
-     lst_prs_2D() does not modify input
-     lst_prs_2D() output list should be free'd by nco_sng_lst_free()
-     lst_prs_1D() creates one-dimensional string list by inserting NULs into single buffer
-     lst_prs_1D() modifies input (by inserting NULs)
-     lst_prs_1D() output list may be free'd by nco_free() */
+     Contrasting nco_lst_prs_1D() to successor nco_lst_prs_2D():
+     nco_lst_prs_2D() creates two-dimensional output string list, i.e., list of pointers to separately malloc()'d buffers
+     nco_lst_prs_2D() does not modify input
+     nco_lst_prs_2D() output list should be free'd by nco_sng_lst_free()
+     nco_lst_prs_1D() creates one-dimensional string list by inserting NULs into single buffer
+     nco_lst_prs_1D() modifies input (by inserting NULs)
+     nco_lst_prs_1D() output list may be free'd by nco_free() */
 
   /* Number of list members is always one more than number of delimiters, e.g.,
      foo,,3, has 4 arguments: "foo", "", "3" and "".
@@ -177,7 +177,7 @@ lst_prs_1D /* [fnc] Create 1D array of strings from given string and delimiter *
     if(strlen(lst[idx]) == 0) lst[idx]=NULL;
 
   if(dbg_lvl_get() == 5){
-    (void)fprintf(stderr,"lst_prs_1d() reports %d elements in list delimited by \"%s\"\n",*nbr_lst,dlm_sng);
+    (void)fprintf(stderr,"nco_lst_prs_1d() reports %d elements in list delimited by \"%s\"\n",*nbr_lst,dlm_sng);
     for(idx=0;idx<*nbr_lst;idx++) 
       (void)fprintf(stderr,"lst[%d] = %s\n",idx,(lst[idx] == NULL) ? "NULL" : lst[idx]);
     (void)fprintf(stderr,"\n");
@@ -185,10 +185,10 @@ lst_prs_1D /* [fnc] Create 1D array of strings from given string and delimiter *
   } /* end debug */
 
   return lst;
-} /* end lst_prs_1D() */
+} /* end nco_lst_prs_1D() */
 
 char ** /* O [sng] List of strings */
-lst_prs_2D /* [fnc] Create list of strings from given string and delimiter */
+nco_lst_prs_2D /* [fnc] Create list of strings from given string and delimiter */
 (const char * const sng_in, /* I [sng] Delimited argument list */
  const char * const dlm_sng, /* I [sng] Delimiter string */
  int * const nbr_lst) /* O [nbr] number of elements in list */
@@ -197,13 +197,13 @@ lst_prs_2D /* [fnc] Create list of strings from given string and delimiter */
      Algorithm recursively copies all text up to delimiter into new string and
      then appends new string to output list
      Output list has no delimiter strings
-     Contrasting lst_prs_2D() to predecessor lst_prs_1D():
-     lst_prs_2D() creates two-dimensional output string list, i.e., list of pointers to separately malloc()'d buffers
-     lst_prs_2D() does not modify input
-     lst_prs_2D() output list should be free'd by nco_sng_lst_free()
-     lst_prs_1D() creates one-dimensional string list by inserting NULs into single buffer
-     lst_prs_1D() modifies input (by inserting NULs)
-     lst_prs_1D() output list may be free'd by nco_free() */
+     Contrasting nco_lst_prs_2D() to predecessor nco_lst_prs_1D():
+     nco_lst_prs_2D() creates two-dimensional output string list, i.e., list of pointers to separately malloc()'d buffers
+     nco_lst_prs_2D() does not modify input
+     nco_lst_prs_2D() output list should be free'd by nco_sng_lst_free()
+     nco_lst_prs_1D() creates one-dimensional string list by inserting NULs into single buffer
+     nco_lst_prs_1D() modifies input (by inserting NULs)
+     nco_lst_prs_1D() output list may be free'd by nco_free() */
 
   /* Number of list members is always one more than number of delimiters, e.g.,
      foo,,3, has 4 arguments: "foo", "", "3" and "".
@@ -267,7 +267,7 @@ lst_prs_2D /* [fnc] Create list of strings from given string and delimiter */
     if(strlen(sng_lst_out[idx]) == 0) sng_lst_out[idx]=NULL;
 
   if(dbg_lvl_get() == 5){
-    (void)fprintf(stderr,"lst_prs_2D() reports %d elements in list delimited by \"%s\"\n",*nbr_lst,dlm_sng);
+    (void)fprintf(stderr,"nco_lst_prs_2D() reports %d elements in list delimited by \"%s\"\n",*nbr_lst,dlm_sng);
     for(idx=0;idx<*nbr_lst;idx++) 
       (void)fprintf(stderr,"sng_lst_out[%d] = %s\n",idx,(sng_lst_out[idx] == NULL) ? "NULL" : sng_lst_out[idx]);
     (void)fprintf(stderr,"\n");
@@ -278,7 +278,7 @@ lst_prs_2D /* [fnc] Create list of strings from given string and delimiter */
   sng_in_cpy=(char *)nco_free(sng_in_cpy); 
 
   return sng_lst_out;
-} /* end lst_prs_2D() */
+} /* end nco_lst_prs_2D() */
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_chr /* [fnc] Compare two characters */

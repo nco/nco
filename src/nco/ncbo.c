@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.104 2007-02-25 05:38:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.105 2007-04-18 17:06:14 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.104 2007-02-25 05:38:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.104 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.105 2007-04-18 17:06:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.105 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -315,7 +315,7 @@ main(int argc,char **argv)
       /* Replace commas with hashes when within braces (convert back later) */
       optarg_lcl=(char *)strdup(optarg);
       (void)nco_lst_comma2hash(optarg_lcl);
-      var_lst_in=lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
+      var_lst_in=nco_lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
       optarg_lcl=(char *)nco_free(optarg_lcl);
       nbr_xtr_1=nbr_xtr_2=var_lst_in_nbr;
       break;
@@ -381,8 +381,8 @@ main(int argc,char **argv)
   (void)nco_inq(in_id_2,&nbr_dmn_fl_2,&nbr_var_fl_2,(int *)NULL,(int *)NULL);
   
   /* Form initial extraction list which may include extended regular expressions */
-  xtr_lst_1=nco_var_lst_mk(in_id_1,nbr_var_fl_1,var_lst_in,EXTRACT_ALL_COORDINATES,&nbr_xtr_1);
-  xtr_lst_2=nco_var_lst_mk(in_id_2,nbr_var_fl_2,var_lst_in,EXTRACT_ALL_COORDINATES,&nbr_xtr_2);
+  xtr_lst_1=nco_var_lst_mk(in_id_1,nbr_var_fl_1,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&nbr_xtr_1);
+  xtr_lst_2=nco_var_lst_mk(in_id_2,nbr_var_fl_2,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&nbr_xtr_2);
   
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) xtr_lst_1=nco_var_lst_xcl(in_id_1,nbr_var_fl_1,xtr_lst_1,&nbr_xtr_1);

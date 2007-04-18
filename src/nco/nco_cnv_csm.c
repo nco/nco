@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.35 2007-02-23 21:59:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.36 2007-04-18 17:06:15 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -183,7 +183,7 @@ nco_cnv_cf_crd_add /* [fnc] Add coordinates defined by CF convention */
 	/* NUL-terminate attribute */
 	att_val[att_sz]='\0';
 	/* Split list into separate coordinate names */
-	crd_lst=lst_prs_2D(att_val,dlm_sng,&nbr_crd);
+	crd_lst=nco_lst_prs_2D(att_val,dlm_sng,&nbr_crd);
 	/* ...for each coordinate in "coordinates" attribute... */
 	for(idx_crd=0;idx_crd<nbr_crd;idx_crd++){
 	  /* Verify "coordinate" exists in input file */

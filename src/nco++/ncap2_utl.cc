@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.54 2007-04-17 14:40:57 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.55 2007-04-18 17:06:16 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1872,8 +1872,7 @@ prs_sct *prs_arg)
 
   dmn_nbr = str_vtr.size();
 
-
-  //  sbs_lst=lst_prs_2D(sbs_sng,sbs_dlm,&dmn_nbr); 
+  //  sbs_lst=nco_lst_prs_2D(sbs_sng,sbs_dlm,&dmn_nbr); 
 
   dmn=(dmn_sct **)nco_malloc(dmn_nbr*sizeof(dmn_sct *));
   (void)nco_redef(prs_arg->out_id);

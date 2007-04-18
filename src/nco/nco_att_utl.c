@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.70 2007-02-26 16:20:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.71 2007-04-18 17:06:15 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -530,7 +530,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
   for(idx=0;idx<nbr_aed;idx++){
 
     /* Process attribute edit specifications as normal text list */
-    arg_lst=lst_prs_2D(aed_arg[idx],dlm_sng,&arg_nbr);
+    arg_lst=nco_lst_prs_2D(aed_arg[idx],dlm_sng,&arg_nbr);
 
     /* Check syntax */
     if(

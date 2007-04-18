@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.135 2007-02-25 05:38:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.136 2007-04-18 17:06:14 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.135 2007-02-25 05:38:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.135 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.136 2007-04-18 17:06:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.136 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRt:v:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -261,7 +261,7 @@ main(int argc,char **argv)
       fl_pth_lcl=(char *)strdup(optarg);
       break;
     case 'n': /* NINTAP-style abbreviation of files to process */
-      fl_lst_abb=lst_prs_2D(optarg,",",&abb_arg_nbr);
+      fl_lst_abb=nco_lst_prs_2D(optarg,",",&abb_arg_nbr);
       if(abb_arg_nbr < 1 || abb_arg_nbr > 5){
 	(void)fprintf(stdout,"%s: ERROR Incorrect abbreviation for file list\n",prg_nm);
 	(void)nco_usg_prn();
@@ -292,7 +292,7 @@ main(int argc,char **argv)
       /* Replace commas with hashes when within braces (convert back later) */
       optarg_lcl=(char *)strdup(optarg);
       (void)nco_lst_comma2hash(optarg_lcl);
-      var_lst_in=lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
+      var_lst_in=nco_lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
       optarg_lcl=(char *)nco_free(optarg_lcl);
       nbr_xtr=var_lst_in_nbr;
       break;
@@ -336,7 +336,7 @@ main(int argc,char **argv)
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
   
   /* Form initial extraction list which may include extended regular expressions */
-  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXTRACT_ALL_COORDINATES,&nbr_xtr);
+  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&nbr_xtr);
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);

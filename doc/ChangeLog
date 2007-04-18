@@ -1,6 +1,11 @@
+2007-04-18  Charlie Zender  <zender@uci.edu>
+
+	* Allow absent variables with EXCLUDE_INPUT_LIST in nco_var_lst_mk()
+
 2007-04-18   Henry Butowsky <henryb@hush.com>
-	* nco_put_var_mem() & nco_get_var_mem() tested.
-	  can now hyperslab RAM vars on the RHS.
+
+	* Tested nco_put_var_mem() & nco_get_var_mem()
+	  Can now hyperslab RAM vars on the RHS
 	  RAM hyperslabs on the LHS to follow shortly
 
 2007-04-17  Charlie Zender  <zender@uci.edu>

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.29 2007-02-23 21:59:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.30 2007-04-18 17:06:15 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -31,25 +31,25 @@ extern "C" {
 #endif /* __cplusplus */
 
 void 
-indexx /* [fnc] Sort array of integers */
+nco_srt_ntg /* [fnc] Sort array of integers */
 (const int lmn_nbr, /* I [nbr] Number of elements */
  const int * const arr_in, /* I [idx] Array to sort */
  int * const idx); /* O [idx] Indices to sorted array */
 
 void 
-indexx_alpha /* [fnc] Sort array of strings */
+nco_srt_lph /* [fnc] Sort array of strings */
 (const int lmn_nbr, /* I [nbr] Number of elements */
  char * const * const arr_in, /* I [sng] Strings to sort */
  int * const idx); /* O [idx] Indices to sorted array */
 
 char ** /* O [sng] Array of list elements */
-lst_prs_1D /* [fnc] Create 1D array of strings from given string and delimiter */
+nco_lst_prs_1D /* [fnc] Create 1D array of strings from given string and delimiter */
 (char * const sng_in, /* I/O [sng] Delimited argument list (delimiters are changed to NULL on output */
  const char * const dlm_sng, /* I [sng] Delimiter string */
  int * const nbr_lst); /* O [nbr] Number of elements in list */
 
 char ** /* O [sng] List of strings */
-lst_prs_2D /* [fnc] Create 2D list of strings from given string and delimiter */
+nco_lst_prs_2D /* [fnc] Create 2D list of strings from given string and delimiter */
 (const char * const sng_in, /* I [sng] Delimited argument list */
  const char * const dlm_sng, /* I [sng] Delimiter string */
  int * const nbr_lst); /* O [nbr] Number of elements in list */
