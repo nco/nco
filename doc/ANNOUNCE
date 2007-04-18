@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.210 2007-04-18 05:29:37 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.211 2007-04-18 15:55:21 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.9 are ready. 
 
@@ -12,10 +12,10 @@ A. Documentation bugfix:
    Some ncap2 standard deviation examples neglected the anomaly step
 
 B. Documentation bugfix: 
-   ncap2 has never accepted the -d hyperslab argument
+   ncap and ncap2 have never accepted the -d hyperslab argument
 
 C. ncap2 (http://nco.sf.net/nco.html#ncap2) grows more powerful.
-   ncap2 now accepts quoted variable names, e.g., 'HNO3-'
+   fxm
    Henry keeps adding features. See ~/nco/data/ncap2.in.
    Once threading and for loops are done we'll document it all. 
 
@@ -23,10 +23,8 @@ E. Pre-built, up-to-date, Debian Sid binary packages are available.
    Debian/Ubuntu users may get them from http://nco.sf.net#debian
    Soon "apt-get install nco" will retrieve these versions.
 
-F. We have built and distributing RPM packages with ncap2
+F. Pre-built, up-to-date, RPM packages are available.
    http://nco.sf.net/src/nco-3.1.9-1.i386.rpm
-   (Thanks to Harry Mangalam for installing an up-to-date Fedora
-   system for us to build on). 
 
 F. We've recently presented two posters (AGU) and three talks (AMS and
    Opendap conf.) on NCO and the Server-side system now called SWAMP.
@@ -36,9 +34,7 @@ F. We've recently presented two posters (AGU) and three talks (AMS and
 
 Build/runtime changes:
 
-1. Update to DAP for netCDF 3.6.2
-
-2. Allow specification of ANTLR_INC to configure, improve AIX linkage
+1. fxm
 
 Enjoy,
 Charlie
