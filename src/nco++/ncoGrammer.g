@@ -945,7 +945,7 @@ var=NULL_CEWI;
                var_lhs=ncap_var_init(vid->getText(),prs_arg,false);
                if(var_lhs){
                  var=nco_var_dpl(var_lhs);
-                 (void)ncap_var_write(var_lhs,false,prs_arg);
+                 (void)ncap_var_write(var_lhs,bram,prs_arg);
                } else {
 
                  // set var to udf
@@ -1128,24 +1128,43 @@ var=NULL_CEWI;
                lmt_Ref=lmt;               
 
                Nvar=prs_arg->ptr_var_vtr->find(var_nm);
-               
- 
+               //set ram flag to flag in var_vtr 
+               if(Nvar) bram=Nvar->flg_mem;
+
+
               // if var undefined in O or defined but not populated
-               if(Nvar==NULL || ( Nvar && Nvar->flg_stt==1)){              
+               if(Nvar && !bram && Nvar->flg_stt==1){              
                   // if var isn't in ouptut then copy it there
-                 //rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
                  var_lhs=ncap_var_init(vid->getText(),prs_arg,true);
 
                  // copy atts to output
                  (void)ncap_att_cpy(vid->getText(),vid->getText(),prs_arg);
                  (void)ncap_var_write(var_lhs,false,prs_arg);
                }
- 
+
+               if(Nvar==NULL && !bram){ 
+                 var_lhs=ncap_var_init(vid->getText(),prs_arg,true);
+                 // copy atts to output
+                 (void)ncap_att_cpy(vid->getText(),vid->getText(),prs_arg);
+                 (void)ncap_var_write(var_lhs,false,prs_arg);
+               }
+
+                if(Nvar==NULL && bram){
+                  std::cout<<"Nvar==NULL && bram)\n";
+                  var_lhs=ncap_var_init(vid->getText(),prs_arg,true);
+                  (void)ncap_var_write(var_lhs,true,prs_arg);
+                }
+               
+
                // Get "new" var_id   
-               (void)nco_inq_varid(prs_arg->out_id,var_nm,&var_id);
+               if(!bram){
+                 (void)nco_inq_varid(prs_arg->out_id,var_nm,&var_id);
+                 var_lhs=ncap_var_init(vid->getText(),prs_arg,false);
+               }
 
-               var_lhs=ncap_var_init(vid->getText(),prs_arg,false);
-
+               if(bram)
+                 var_lhs=ncap_var_init(vid->getText(),prs_arg,true);
+                   
                nbr_dmn=var_lhs->nbr_dim;
 
                // Now populate lmt_vtr;
@@ -1188,7 +1207,19 @@ var=NULL_CEWI;
 
           
               // Now ready to put values 
-              {
+              
+              
+             // Put RAM var
+              if(bram){
+                var_sct *var_tst;
+                var_tst=ncap_var_init(vid->getText(),prs_arg,true);
+                (void)nco_put_var_mem(var_tst,var_rhs,lmt_vtr);
+                (void)ncap_var_write(var_tst,true,prs_arg); 
+              }
+              
+
+              // Regular var
+              if(!bram){ 
                long mult_srd=1L;
                std::vector<long> dmn_srt_vtr;
                std::vector<long> dmn_cnt_vtr;
@@ -1206,17 +1237,10 @@ var=NULL_CEWI;
 	            (void)nco_put_vara(prs_arg->out_id,var_id,&dmn_srt_vtr[0],&dmn_cnt_vtr[0],var_rhs->val.vp,var_rhs->type);
                else
 	            (void)nco_put_vars(prs_arg->out_id,var_id,&dmn_srt_vtr[0],&dmn_cnt_vtr[0],&dmn_srd_vtr[0],var_rhs->val.vp,var_rhs->type);
-              
-                   
-                // Do an in-memory nco_put_var
-                /*
-                var_sct *var_tst;
-                var_tst=ncap_var_init(vid->getText(),prs_arg,true);
-                (void)nco_put_var_mem(var_tst,var_rhs,lmt_vtr);
-                (void)ncap_var_write(var_tst,false,prs_arg); 
-                */ 
                
               } // end put block !!
+
+
 
               var_lhs=nco_var_free(var_lhs);
               var_rhs=nco_var_free(var_rhs);
