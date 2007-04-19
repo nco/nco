@@ -1,13 +1,15 @@
 2007-04-18  Charlie Zender  <zender@uci.edu>
 
-	* nco_var_nrm_sdn() is mss_val when N=0 or 1.
+	* Remove obsolete NR indexx*() routines
+
+	* nco_var_nrm_sdn() returns mss_val when N=0 or 1
 
 	* Allow absent variables with EXCLUDE_INPUT_LIST in nco_var_lst_mk()
 
 2007-04-18   Henry Butowsky <henryb@hush.com>
 
 	* Tested nco_put_var_mem() & nco_get_var_mem()
-	  Can now hyperslab RAM vars on the RHS
+	  Can now hyperslab RAM variables on the RHS
 	  RAM hyperslabs on the LHS to follow shortly
 
 2007-04-17  Charlie Zender  <zender@uci.edu>
@@ -18,8 +20,8 @@
 
 2007-03-31  Charlie Zender  <zender@uci.edu>
 
-	* Change -s "" to -s '' in most all examples to prevent
-	unintended ncap2 behavior
+	* Change -s "" to -s '' in most all examples to prevent	unintended
+	ncap2 behavior 
 
 2007-03-30  Charlie Zender  <zender@uci.edu>
 
