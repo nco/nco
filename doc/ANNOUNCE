@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.214 2007-04-19 04:09:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.215 2007-04-19 06:57:06 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.9 are ready. 
 
@@ -23,9 +23,8 @@ A. Documentation bugfix:
    Some ncap2 standard deviation examples neglected the anomaly step
 
 B. Documentation bugfix: 
-   ncap and ncap2 have never accepted the -d hyperslab argument
-   Thanks to Andrew Wittenan for pointing this out
-
+   ncap and ncap2 have never accepted the -d hyperslab argument.
+   Thanks to Andrew Wittenan for pointing this out.
 
 D. ncap2 (http://nco.sf.net/nco.html#ncap2) grows more powerful.
    fxm
