@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.40 2007-02-23 21:59:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.41 2007-04-19 00:22:41 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -1106,34 +1106,34 @@ nco_var_nrm_sdn /* [fnc] Normalize value of first operand by count-1 in tally ar
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.fp[idx]/=(tally[idx]-1);
+      for(idx=0;idx<sz;idx++) op1.fp[idx]/=tally[idx]-1L;
     }else{
       const float mss_val_flt=*mss_val.fp;
-      for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.fp[idx]/=(tally[idx]-1); else op1.fp[idx]=mss_val_flt;
+      for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.fp[idx]/=tally[idx]-1L; else op1.fp[idx]=mss_val_flt;
     } /* end else */
     break;
   case NC_DOUBLE:
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.dp[idx]/=(tally[idx]-1);
+      for(idx=0;idx<sz;idx++) op1.dp[idx]/=tally[idx]-1L;
     }else{
       const double mss_val_dbl=*mss_val.dp;
-      for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.dp[idx]/=(tally[idx]-1); else op1.dp[idx]=mss_val_dbl;
+      for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.dp[idx]/=tally[idx]-1L; else op1.dp[idx]=mss_val_dbl;
     } /* end else */
     break;
   case NC_INT:
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.lp[idx]/=(tally[idx]-1);
+      for(idx=0;idx<sz;idx++) op1.lp[idx]/=tally[idx]-1L;
     }else{
       const nco_int mss_val_lng=*mss_val.lp;
-      for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.lp[idx]/=(tally[idx]-1); else op1.lp[idx]=mss_val_lng;
+      for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.lp[idx]/=tally[idx]-1L; else op1.lp[idx]=mss_val_lng;
     } /* end else */
     break;
   case NC_SHORT:
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.sp[idx]/=(tally[idx]-1);
+      for(idx=0;idx<sz;idx++) op1.sp[idx]/=tally[idx]-1L;
     }else{
       const short mss_val_sht=*mss_val.sp;
-      for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.sp[idx]/=(tally[idx]-1); else op1.sp[idx]=mss_val_sht;
+      for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.sp[idx]/=tally[idx]-1L; else op1.sp[idx]=mss_val_sht;
     } /* end else */
     break;
   case NC_CHAR:

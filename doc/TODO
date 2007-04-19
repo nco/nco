@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.860 2007-04-18 23:56:23 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.861 2007-04-19 00:22:41 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -558,7 +558,11 @@ nco815. When N=0 rms and rmssdn should be missing value (if present) undefined o
         Currently, when N=0 rmssdn gives -0 (wrong!)
         Currently, when N=0 rms gives 0 (wrong! with Scott's file)
         Currently, when N=0 rms gives inf (wrong! with in.nc)
+        Currently, when N=1 rms gives inf (wrong! with in.nc)
+	ncra -O -y rms -v rec_var_flt_mss_val_flt_all ~/nco/data/in.nc ~/foo.nc
 	ncra -O -y rms -v '^rec_var_flt_mss_val_flt_all.?' ~/nco/data/in.nc ~/foo.nc
+	ncks -H -m ~/foo.nc
+	ncra -O -y rmssdn -v '^rec_var_flt_mss_val_flt_all.?' ~/nco/data/in.nc ~/foo.nc
 nco816. 
 ************************************************************************
 End ncoXXX TODOs

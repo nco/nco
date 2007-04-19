@@ -1,5 +1,7 @@
 2007-04-18  Charlie Zender  <zender@uci.edu>
 
+	* nco_var_nrm_sdn() is mss_val when N=0 or 1.
+
 	* Allow absent variables with EXCLUDE_INPUT_LIST in nco_var_lst_mk()
 
 2007-04-18   Henry Butowsky <henryb@hush.com>

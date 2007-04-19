@@ -40,7 +40,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.77 2007-04-18 23:56:23 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.78 2007-04-19 00:26:29 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -507,13 +507,13 @@ variables:
 
 	float rec_var_flt_mss_val_flt_all(time);
 	rec_var_flt_mss_val_flt_all:long_name = "record variable, float, with float missing values in every position";
-//	rec_var_flt_mss_val_flt_all:missing_value = 1.0e36f;
-	rec_var_flt_mss_val_flt_all:missing_value = -999.0f;
+	rec_var_flt_mss_val_flt_all:missing_value = 1.0e36f;
+//	rec_var_flt_mss_val_flt_all:missing_value = -999.0f;
 
 	float rec_var_flt_mss_val_flt_all_but_one(time);
 	rec_var_flt_mss_val_flt_all_but_one:long_name = "record variable, float, with float missing values in every position";
-//	rec_var_flt_mss_val_flt_all_but_one:missing_value = 1.0e36f;
-	rec_var_flt_mss_val_flt_all_but_one:missing_value = -999.0f;
+	rec_var_flt_mss_val_flt_all_but_one:missing_value = 1.0e36f;
+//	rec_var_flt_mss_val_flt_all_but_one:missing_value = -999.0f;
 
 	short rec_var_flt_pck(time);
 	rec_var_flt_pck:long_name = "record variable, float, packed";
