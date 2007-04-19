@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.861 2007-04-19 00:22:41 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.862 2007-04-19 00:57:32 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -553,17 +553,10 @@ nco812. Investigate make check errors on FC6
 nco813. Implement ncap2 in nco.spec on FC6
 nco814. Regression test for forgiving exclusion list handling
         ncks -O -D 2 -x -v not_present ~/nco/data/in.nc ~/foo.nc
-nco815. When N=0 rms and rmssdn should be missing value (if present) undefined or error otherwise
-	When N=1 rmssdn should be missing value (if present) undefined or error otherwise
-        Currently, when N=0 rmssdn gives -0 (wrong!)
-        Currently, when N=0 rms gives 0 (wrong! with Scott's file)
-        Currently, when N=0 rms gives inf (wrong! with in.nc)
-        Currently, when N=1 rms gives inf (wrong! with in.nc)
-	ncra -O -y rms -v rec_var_flt_mss_val_flt_all ~/nco/data/in.nc ~/foo.nc
-	ncra -O -y rms -v '^rec_var_flt_mss_val_flt_all.?' ~/nco/data/in.nc ~/foo.nc
-	ncks -H -m ~/foo.nc
+nco816. Add regression tests for rmssdn when N=0, N=1 N=2
 	ncra -O -y rmssdn -v '^rec_var_flt_mss_val_flt_all.?' ~/nco/data/in.nc ~/foo.nc
-nco816. 
+	ncks -H -m ~/foo.nc
+nco817. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.399 2007-04-18 17:06:11 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.400 2007-04-19 00:54:54 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -440,6 +440,7 @@ Instead, retrieve all recently tagged versions
 <li><b>NCO/SDO 3.2.0</b>: (<i>In progress</i>) 
 More forgiving exclusion list (<tt>-x -v <i>var_nm</i></tt>) 
 <a href="http://nco.sf.net/nco.html#xcl">handling</a>;
+Fix <tt>rmssdn</tt> normalization;
 Support Mac OS&nbsp;X on Intel; 
 Documentation bugfixes;
 <li><b>NCO/SDO 3.1.9</b>: <tt>ncap2</tt> in RPM packages; Quieter output; AIX <tt>configure</tt>supports <tt>ncap2</tt>; Update to DAP for netCDF 3.6.2; Fix <tt>nc[erw]a</tt> for coordinate min/max/ttl; <tt>ncecat</tt> allows files to differ in record dimension size;

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.212 2007-04-18 17:06:10 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.213 2007-04-19 00:54:54 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.1.9 are ready. 
 
@@ -7,6 +7,10 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 Release 3.1.9 contains a small ncwa bugfix, new ncea/ncecat features,
 new ncap2 features, configure support for AIX, and RPMs with ncap2.
+
+A. Arithmetic bugfix.
+   rmssdn now normalizes cases where N=0 or N=1 correctly.
+   It returns the missing value (when present) or an error (if not).
 
 A. List handling has changed so that explicitly excluded variables 
    need not be present, e.g., "-x -v var_not_present" will not fail.  

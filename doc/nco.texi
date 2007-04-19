@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.403 2007-04-18 17:06:12 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.404 2007-04-19 00:54:54 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -8974,12 +8974,14 @@ AIX architecture support.
 @cindex Juliana Rew
 @item Juliana Rew
 Compatibility with large PIDs.
+@cindex Scott Capps
+@cindex Mark Flanner
 @cindex Keith Lindsay
 @cindex Martin Dix
 @cindex Mike Page
 @cindex Martin Schmidt
 @cindex Michael Schulz
-@item Martin Dix, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz
+@item Scott Capps, Martin Dix, Mark Flanner, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz
 Excellent bug reports and feature requests.
 @end table
 
