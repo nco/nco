@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.400 2007-04-19 00:54:54 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.401 2007-04-20 00:26:58 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -747,6 +747,8 @@ If you have an account at UCI or SDSC, try the locations in my
 personal home directories listed below (AIX, IRIX).
 At NCAR, first try <tt>/usr/local/bin</tt> (AIX, IRIX).
 Otherwise, you are on your own.</li>
+<a name="NCAR"></a> <!-- http://nco.sf.net#NCAR -->
+<a name="ncar"></a> <!-- http://nco.sf.net#ncar -->
 <li><i>Does NCAR support NCO?</i>
 The NCAR SCD Technical Consulting Group (TCG) supports NCO like other
 community software packages such as <tt>lapack</tt>. 
@@ -783,13 +785,13 @@ Moreover they may be compiled with debugging enabled and thus may be
 Users at NCAR should try the <i>supported</i> executables in
 <tt>/usr/local/bin</tt> first. 
 <ul>
-<li>ESS <tt>soot.ess.uci.edu</tt> (Linux 2.6.10): <tt>/home/zender/bin/LINUX</tt></li>
+<li>ESS <tt>soot.ess.uci.edu</tt> (Linux 2.6.19): <tt>/home/zender/bin/LINUX</tt></li>
 <li>ESS <tt>esmf.ess.uci.edu</tt> (AIX 5.1.0.0): <tt>/home/zender/bin/AIX</tt></li>
-<li>ESS <tt>sand.ess.uci.edu</tt> (Linux 2.6.11): <tt>/home/zender/bin/LINUXAMD64</tt></li>
+<li>ESS <tt>sand.ess.uci.edu</tt> (Linux 2.6.19): <tt>/home/zender/bin/LINUXAMD64</tt></li>
 <li>CGD network (Solaris 2.7): <tt>/home/zender/bin/SUNMP</tt></li>
-<li>SCD <tt>bluesky.ucar.edu</tt> (AIX 5.2): <tt>/usr/local/bin</tt></li>
+<li>SCD <tt>blueice.ucar.edu</tt> (AIX 5.3): <tt>/usr/local/bin</tt></li>
 <li>SCD <tt>bluevista.ucar.edu</tt> (AIX 5.3): <tt>/usr/local/bin</tt></li>
-<li>SCD <tt>tempest.ucar.edu</tt> (???): <tt>/usr/local/bin</tt></li>
+<li>SCD <tt>tempest.ucar.edu</tt> (IRIX 6.5): <tt>/usr/local/bin</tt></li>
 </ul>
 <hr></p>
 
