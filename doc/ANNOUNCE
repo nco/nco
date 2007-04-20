@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.216 2007-04-20 05:23:20 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.217 2007-04-20 05:30:02 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.2.0 are ready. 
 
@@ -8,45 +8,34 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 Release 3.2.0 contains a small ncwa bugfix, new ncea/ncecat features,
 new ncap2 features, configure support for AIX, and RPMs with ncap2.
 
-A. Arithmetic bugfix.
-   rmssdn now correctly normalizes cases where N=0 or N=1.
+A. Arithmetic bugfix:
+   The rmssdn method now correctly normalizes cases where N=0 or N=1.
    It returns the missing value (when present) or an error (if not).
    Thanks to Scott Capps for sending up the flare.
 
-A. List handling has changed so that explicitly excluded variables 
+B. List handling has changed so that explicitly excluded variables 
    need not be present, e.g., "-x -v var_not_present" will not fail.  
    Previously, excluded variables had to be present. 
    http://nco.sf.net/nco.html#xcl
    Thanks to user Derecho for suggesting this.
 
-A. Documentation bugfix: 
-   Some ncap2 standard deviation examples neglected the anomaly step
+C. Documentation bugfix: 
+   Some ncap2 standard deviation examples neglected the anomaly step.
 
-B. Documentation bugfix: 
+D. Documentation bugfix: 
    ncap and ncap2 have never accepted the -d hyperslab argument.
    Thanks to Andrew Wittenan for pointing this out.
 
-D. ncap2 (http://nco.sf.net/nco.html#ncap2) grows more powerful.
-   fxm
-   Henry keeps adding features. See ~/nco/data/ncap2.in.
+E. ncap2 (http://nco.sf.net/nco.html#ncap2) grows more powerful.
+   Henry has added support for RAM variables. See ~/nco/data/ncap2.in.
    Once threading and for loops are done we'll document it all. 
 
-E. Pre-built, up-to-date, Debian Sid binary packages are available.
+F. Pre-built, up-to-date, Debian Sid binary packages are available.
    Debian/Ubuntu users may get them from http://nco.sf.net#debian
-   Soon "apt-get install nco" will retrieve these versions.
+   "apt-get install nco" also retrieves these versions
 
-F. Pre-built, up-to-date, RPM packages are available.
+G. Pre-built, up-to-date, RPM packages are available, e.g.,
    http://nco.sf.net/src/nco-3.2.0-1.i386.rpm
-
-F. We've recently presented two posters (AGU) and three talks (AMS and
-   Opendap conf.) on NCO and the Server-side system now called SWAMP.
-   NCO publications, extended abstracts, and posters are at:  
-
-   http://nco.sf.net#pub
-
-Build/runtime changes:
-
-1. fxm
 
 Enjoy,
 Charlie
