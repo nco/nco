@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.90 2007-04-20 05:23:20 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.91 2007-04-20 18:54:41 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -160,7 +160,7 @@ ls -l ${DATA}/nco_3.2.0*
 m ~/foo.nco
 scp ${DATA}/nco_3.2.0* dust.ess.uci.edu:/var/www/html/nco/src
 scp ${DATA}/nco_3.2.0* nco.sf.net:/home/groups/n/nc/nco/htdocs/src
-cd ${DATA};dupload -t mentors nco_3.2.0-1_i386.changes
+cd ${DATA};dupload -t mentors nco_3.2.0-1_*.changes
 
 # RPM builds as root
 export rpm_root='/usr/src/redhat'

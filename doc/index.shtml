@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.402 2007-04-20 05:23:20 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.403 2007-04-20 18:54:41 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -678,14 +678,14 @@ Old and deprecated <a href="http://fink.sf.net/pdb/package.php/nco">Fink package
 <h2>Documentation and User's Guide</h2> 
 <p>View the NCO User's Guide in any of these formats:
 <ul>
-<li><a href="./nco.dvi">DVI</a> Device Independent (<tt>xdvi</tt>)</li>
+<li><a href="./nco.dvi">DVI</a> Device Independent (<tt>kdvi</tt>, <tt>xdvi</tt>)</li>
 <li><a href="./nco.html">HTML</a> Hypertext (any browser)</li>
 <li><a href="./nco.info">Info</a> GNU Info (<tt>M-x Info</tt>, <tt>emacs</tt>)</li>
-<li><a href="./nco.pdf">PDF</a> Portable Document Format (<tt>ghostview</tt>, <tt>acroread</tt>, <tt>xpdf</tt>)</li>
-<li><a href="./nco.ps">Postscript</a> Printing (<tt>ghostview</tt>)</li>
+<li><a href="./nco.pdf">PDF</a> Portable Document Format (<tt>acroread</tt>, <tt>evince</tt>, <tt>kpdf</tt>, <tt>xpdf</tt>)</li>
+<li><a href="./nco.ps">Postscript</a> Printing (<tt>ghostview</tt>, <tt>kghostview</tt>)</li>
 <li><a href="./nco.texi">TeXInfo</a> Documentation Source code (<tt>emacs</tt>)</h2></li>
 <li><a href="./nco.txt">Text</a> Plain text (<tt>more</tt>)</h2></li>
-<li><a href="./nco.xml">XML</a> Extensible Markup Language (<tt>mozilla</tt>)</h2></li>
+<li><a href="./nco.xml">XML</a> Extensible Markup Language (<tt>firefox</tt>)</h2></li>
 </ul>
 <tt>nco.texi</tt> is the most up-to-date.
 Files <tt>nco.dvi</tt>, <tt>nco.ps</tt>, and <tt>nco.pdf</tt> are

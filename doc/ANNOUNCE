@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.217 2007-04-20 05:30:02 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.218 2007-04-20 18:54:41 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.2.0 are ready. 
 
@@ -39,4 +39,4 @@ G. Pre-built, up-to-date, RPM packages are available, e.g.,
 
 Enjoy,
 Charlie
-   
+ 

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.405 2007-04-20 05:23:20 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.406 2007-04-20 18:54:41 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5640,9 +5640,9 @@ The @acronym{ANSI} standard does not require, but many compilers provide,
 an extended set of mathematical functions that apply to single
 (@code{float}) and quadruple (@code{long double}) precision variables. 
 Using these functions (e.g., @code{sinf} for @code{float}, 
-@code{sinl} for @code{long double}), when available, is more efficient
-than casting variables to type @code{double}, performing the operation,
-and then recasting.
+@code{sinl} for @code{long double}), when available, is (presumably)
+more efficient than casting variables to type @code{double},
+performing the operation, and then re-casting.
 @acronym{NCO} uses the faster intrinsic functions when they are
 available, and uses the casting method when they are not.
 }.
@@ -8905,8 +8905,8 @@ This includes a box of imported chocolate.
 Mmm.
 Appreciation and gifts are definitely better than money.
 Naturally, I'm too lazy to split and send gifts to the other developers.
-However, unlike some @acronym{NCO} developers, I have a high-paying "real job".
-My intention is to split monetary donations among the active developers
+However, unlike some @acronym{NCO} developers, I have a steady "real job".
+My intent is to split monetary donations among the active developers
 and to send them their shares via PayPal.}. 
 So you could be the first!
 
