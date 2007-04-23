@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.141 2007-04-23 22:31:26 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.142 2007-04-23 23:09:39 zender Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -94,7 +94,7 @@ For ABI=64:
 # C_INC is useful on AIX platforms that have alternative C-headers (e.g., gcc) installed in a directory (e.g., /usr/local/include) searched for other (e.g., antlr) headers
 # Specifying both C_INC and ANTLR_INC would cause the pre-processor to grab 
 # C-headers from C_INC and antlr headers from ANTLR_INC
-# C_INC is necessary to disambiguate native C-headers (/usr/include) from antlr headers (/usr/local/include) on the UCI ESMF
+# C_INC disambiguates native C-headers (/usr/include) from antlr headers (/usr/local/include) on UCI's ESMF
 export GNU_TRP=`~/nco/autobld/config.guess`
 export OBJECT_MODE='64' # AIX-specific hack
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
