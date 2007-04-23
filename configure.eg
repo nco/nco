@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.140 2007-03-04 06:37:24 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.141 2007-04-23 22:31:26 zender Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -77,8 +77,6 @@ pre-processor token NC_64BIT_OFFSET to '0', e.g., CPPFLAGS='-DNC_64BIT_OFFSET=0'
 ************************************************************************
 Start AIX
 status: Appears to work
-Updated 5/27/2003   Jim Edwards
-Compiler warnings about incorrect file suffix and duplicate symbols may be safely ignored.
 On AIX, shared libraries and static libraries use the same namespace
 Hence, probably safer to either disable-shared or disable-static
 hjm: until DODS/DAP and the above mentioned shared/static problem is resolved,
@@ -90,7 +88,7 @@ AIX bs1201en 1 5 0023F7EA4C00
 powerpc-ibm-aix5.1.0.0
 
 For ABI=64:
-# babyblue, bluesky, blackforest, dave, esmf
+# blueice, bluevista, dave, esmf
 # Enable OpenMP with CFLAGS and LDFLAGS ='-qsmp=omp'
 # C_INC is a directory guaranteed to be searched first
 # C_INC is useful on AIX platforms that have alternative C-headers (e.g., gcc) installed in a directory (e.g., /usr/local/include) searched for other (e.g., antlr) headers
