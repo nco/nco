@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.405 2007-04-24 18:13:43 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.406 2007-04-24 20:11:00 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -116,16 +116,16 @@ Send it in!<br>
 
 <li>March&nbsp;10, 2007: NCO 3.1.9 released (with i386/x86_64 debs and i386 RPMs)</li>
 
-<li>February&nbsp;22, 2006: 
+<li>February&nbsp;22, 2007: 
 <a href="http://dust.ess.uci.edu/smn/smn_WZJ07_opendap_200702.pdf">Talk</a>
 on SWAMP at OPeNDAP Developer's Workshop, Boulder, Colorado</li>
 
-<li>January&nbsp;15, 2006: 
+<li>January&nbsp;15, 2007: 
 <a href="http://dust.ess.uci.edu/smn/smn_nco_ams_200701.pdf">Talk</a> and
 <a href="http://dust.ess.uci.edu/ppr/abs_xtn_ZeW07.pdf">Extended Abstract</a>
 on NCO architecture and Scaling at AMS IIPS, San Antonio, Texas</li>
 
-<li>January&nbsp;15, 2006: 
+<li>January&nbsp;15, 2007: 
 <a href="http://dust.ess.uci.edu/smn/smn_WZJ07_ams_200701.pdf">Talk</a> and
 <a href="http://dust.ess.uci.edu/ppr/abs_xtn_WZJ07.pdf">Extended Abstract</a>
 on SWAMP at AMS IIPS, San Antonio, Texas</li>
@@ -442,6 +442,8 @@ Instead, retrieve all recently tagged versions
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
 <li><b>NCO/SDO 3.2.1</b>: (<i>In progress</i>) 
+Backport to IRIX&nbsp;6.5; 
+
 <li><b>NCO/SDO 3.2.0</b>: More forgiving exclusion list (<tt>-x -v <i>var_nm</i></tt>) <a href="http://nco.sf.net/nco.html#xcl">handling</a>; Fix <tt>rmssdn</tt> normalization; Support Mac OS&nbsp;X on Intel; Documentation bugfixes;
 <li><b>NCO/SDO 3.1.9</b>: <tt>ncap2</tt> in RPM packages; Quieter output; AIX <tt>configure</tt> supports <tt>ncap2</tt>; Update to DAP for netCDF 3.6.2; Fix <tt>nc[erw]a</tt> for coordinate min/max/ttl; <tt>ncecat</tt> allows files to differ in record dimension size;
 <li><b>NCO/SDO 3.1.8</b>: Support <tt>_FillValue</tt> with compile-time switch; Debian package synchronized, includes <tt>ncap2</tt> 
