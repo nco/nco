@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.142 2007-04-23 23:09:39 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.143 2007-04-24 00:52:48 zender Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -522,13 +522,14 @@ Start SGIMP64
 Status: -LANG:std not passed to final CC link command for tst.o
 ************************************************************************
 zender@krein:~/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess
-SGIMP64
-IRIX64 krein 6.5 10100655 IP27 mips
+GIMP64
+IRIX64 tempest 6.5 07080049 IP35 mips
+mips-sgi-irix6.5
 
 cc/CC ABI64:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='cc' CFLAGS='-64 -mips4' CXX='CC -LANG:std' CXXFLAGS='-64 -mips4 -LANG:std' NETCDF_INC='/usr/local/include' LDFLAGS='-LANG:std' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+CC='cc -c99' CFLAGS='-64 -mips4' CXX='CC -64 -LANG:std' CXXFLAGS='-64 -mips4 -LANG:std' NETCDF_INC='/usr/local/include' LDFLAGS='-64 -LANG:std' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
@@ -538,7 +539,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TR
 cc/CC ABI32:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='cc' CXX='CC' CXXFLAGS='-LANG:std' NETCDF_INC='/usr/local/include' LDFLAGS='-LANG:std' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+CC='cc c99' CXX='CC' CXXFLAGS='-LANG:std' NETCDF_INC='/usr/local/include' LDFLAGS='-LANG:std' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
