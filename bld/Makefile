@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.414 2007-04-24 00:30:23 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.415 2007-04-24 17:31:19 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -11,7 +11,6 @@
 # scp ~/nco/bld/Makefile cg1.calit2.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile dust.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile esmf.ess.uci.edu:nco/bld
-# scp ~/nco/bld/Makefile goldhill.cgd.ucar.edu:nco/bld
 # scp ~/nco/bld/Makefile soot.ess.uci.edu:nco/bld
 
 # Usage (testing):
@@ -43,7 +42,7 @@
 # cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
 # 64-bit ABI on UCI MPC systems:
 # cd ${HOME}/nco/bld;env ANTLR='/software/antlr/bin/antlr' ANTLR_ROOT='/software/antlr' UDUNITS_INC='/software/udunits/include' UDUNITS_LIB='/software/udunits/lib' make --jobs=1 ABI=64 allinone;cd -
-# 64-bit ABI on NCAR AIX systems:
+# 64-bit ABI on NCAR AIX/IRIX systems:
 # cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 UDUNITS_INC=/contrib/include UDUNITS_LIB=/contrib/lib make --jobs=1 allinone ABI=64;cd -
 # 32-bit ABI on NCAR IRIX systems:
 # cd ~/nco/bld;NETCDF_LIB=/usr/local/lib32/r4i4 UDUNITS_INC=/contrib/include UDUNITS_LIB=/contrib/lib make --jobs=1 lib_cln cln all ABI=32;cd -
@@ -1110,11 +1109,16 @@ SGI_ABI_FLG := -n32 -mips3 ${OMP_FLG}
 # endif SGI6
 else
 # SGI64, SGIMP64
+ifeq (${ABI},64)
 GCC_ABI_FLG := -mabi=64
 GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips4 -L/usr/local/lib/mabi=64
 SGI_ABI_FLG := -64 -mips4 ${OMP_FLG}
-# endif SGI64, SGIMP64
-endif
+else
+GCC_ABI_FLG := -mabi=32
+GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips4
+SGI_ABI_FLG := -n32 -mips4 ${OMP_FLG}
+endif # endif ABI
+endif # endif SGI64, SGIMP64
 ifeq (${CC},gcc)
  LDFLAGS += $(GCC_LDFLAGS_SZ_SPC) ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq (${OPTS},O)
