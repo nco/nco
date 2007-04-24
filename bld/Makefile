@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.413 2007-04-20 05:23:19 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.414 2007-04-24 00:30:23 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -1088,7 +1088,7 @@ ifeq (${OMP},Y)
  OMP_FLG := -mp -mpio
 endif # endif OMP
 CXX := CC -LANG:std
-CC := cc
+CC := cc -c99
 # 20000302: -w suppresses warnings which will swamp linker
 #CXX := g++ -w
 #CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
@@ -1132,10 +1132,10 @@ endif
  CXXFLAGS := ${CFLAGS}
 endif
 # endif CC=gcc
-ifeq (${CC},cc)
+ifeq (cc,$(firstword ${CC}))
  LDFLAGS += ${SGI_ABI_FLG} ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq (${OPTS},O)
- CFLAGS += ${SGI_ABI_FLG} -O2 -g
+ CFLAGS += ${SGI_ABI_FLG} -O2 -g3
 endif
 ifeq (${OPTS},R)
  CFLAGS += ${SGI_ABI_FLG}
