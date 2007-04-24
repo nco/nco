@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.404 2007-04-23 22:31:26 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.405 2007-04-24 18:13:43 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -50,6 +50,7 @@ Try to disable Spammers' machines:
 </td>
 
 <td align="right" valign="top">
+[<a href="http://www.antlr.org">ANTLR</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 
@@ -88,7 +89,7 @@ You may donate to the NCO development effort through PayPal:
 <li><a href="#FAQ">FAQ</a></li>
 <li><a href="#HPCC">Using NCO at UCI, NCAR, and other HPCCs</a></li>
 <li><a href="#BM">Benchmarks</a></li>
-<li><a href="#Bugs">Common NCO Build/Run Problems</a></li>
+<li><a href="#Rqr">Building NCO from Source: Practices and Problems</a></li>
 <li><a href="#Contact">Contacting us</a></li>
 </ul>
 </td>
@@ -442,7 +443,7 @@ Instead, retrieve all recently tagged versions
 <ul>
 <li><b>NCO/SDO 3.2.1</b>: (<i>In progress</i>) 
 <li><b>NCO/SDO 3.2.0</b>: More forgiving exclusion list (<tt>-x -v <i>var_nm</i></tt>) <a href="http://nco.sf.net/nco.html#xcl">handling</a>; Fix <tt>rmssdn</tt> normalization; Support Mac OS&nbsp;X on Intel; Documentation bugfixes;
-<li><b>NCO/SDO 3.1.9</b>: <tt>ncap2</tt> in RPM packages; Quieter output; AIX <tt>configure</tt>supports <tt>ncap2</tt>; Update to DAP for netCDF 3.6.2; Fix <tt>nc[erw]a</tt> for coordinate min/max/ttl; <tt>ncecat</tt> allows files to differ in record dimension size;
+<li><b>NCO/SDO 3.1.9</b>: <tt>ncap2</tt> in RPM packages; Quieter output; AIX <tt>configure</tt> supports <tt>ncap2</tt>; Update to DAP for netCDF 3.6.2; Fix <tt>nc[erw]a</tt> for coordinate min/max/ttl; <tt>ncecat</tt> allows files to differ in record dimension size;
 <li><b>NCO/SDO 3.1.8</b>: Support <tt>_FillValue</tt> with compile-time switch; Debian package synchronized, includes <tt>ncap2</tt> 
 <li><b>NCO/SDO 3.1.7</b>: <tt>ncap2</tt> &ldquo;double-parsing&rdquo;, array initialization, supercedes <tt>ncap</tt>
 <li><b>NCO/SDO 3.1.6</b>: Support <a href="http://nco.sf.net/nco.html#srd">stride</a> in all hyperslabbing operators; change more WARNINGs to INFOs
@@ -827,14 +828,32 @@ Debs (by Zach Lowry) for MPICH2 are
 <a href="http://torvalds.cs.mtsu.edu/~zach/debian/current/">here</a>.</p>
 <hr>
 
-<!-- http://nco.sf.net#bugs -->
-<dt><a name="Bugs"></a><a name="bugs"></a></dt>
+<dt><a name="Rqr"></a><a name="rqr"></a></dt> <!-- http://nco.sf.net#rqr -->
+<h2>NCO Build-from-Source Requirements</h2>
+
+<ul><b>Best Practices:</b>
+
+<a name="bld_rqr"></a> <!-- http://nco.sf.net#bld_rqr -->
+<li>Install
+<a href="http://www.antlr.org">ANTLR</a> (required for <tt>ncap2</tt>), 
+<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> (absolutely required), and 
+<a href="http://opendap.org">OPeNDAP</a> (enables network transparency), and
+<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (allows dimensional unit transformations).
+If possible build these all with the same compiler (and switches).
+NCO is mostly written in&nbsp;C99, so you can mix and match compilers
+although this is frequently difficult in practice and is not recommended.
+The exception is <b>ncap2</b> which is written in&nbsp;C++.
+ANTLR, OPeNDAP, and NCO must be built with the same compiler
+to properly resolve the C++ name-mangling.
+</li>
+
+</ul>
+
 <h2>Common NCO Build/Run Problems</h2>
 
 <ul><b>Generic Build Problems:</b>
 
-<!-- http://nco.sf.net#bld_cnf -->
-<a name="bld_cnf"></a>
+<a name="bld_cnf"></a> <!-- http://nco.sf.net#bld_cnf -->
 <li><i>Using <tt>./configure</tt> build mechanism:</i>
 The file <tt>configure.eg</tt> contains a table which describes the 
 success you can expect building NCO with the <tt>./configure</tt>
@@ -964,9 +983,7 @@ The workaround is to configure with <tt>--disable-shared</tt>.
 <!-- http://nco.sf.net#bld_irix -->
 <a name="bld_irix"></a>
 <li><i>IRIX build problems:</i>
-The most common problem with building on IRIX with SGI's
-<tt>cc</tt>/<tt>CC</tt> is that they are not
-<a href="http://nco.sf.net#bld_c99">C99-compliant</a>.
+The most common problem with building on SGI IRIX is and out-of-date toolchain.
 </li>
 
 <!-- http://nco.sf.net#bld_osx -->
@@ -1208,6 +1225,7 @@ site.</li>
 </td>
 
 <td align="right" valign="top">
+[<a href="http://www.antlr.org">ANTLR</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 

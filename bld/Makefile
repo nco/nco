@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.415 2007-04-24 17:31:19 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.416 2007-04-24 18:13:43 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -1102,21 +1102,18 @@ LEX := flex
 LINT := lint
 YACC := bison
 ifeq (${PVM_ARCH},SGI6)
-# SGI6
-GCC_ABI_FLG := -mabi=32
-GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips3 
-SGI_ABI_FLG := -n32 -mips3 ${OMP_FLG}
-# endif SGI6
-else
-# SGI64, SGIMP64
+ GCC_ABI_FLG := -mabi=32
+ GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips3 
+ SGI_ABI_FLG := -n32 -mips3 ${OMP_FLG}
+else # SGI64, SGIMP64
 ifeq (${ABI},64)
-GCC_ABI_FLG := -mabi=64
-GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips4 -L/usr/local/lib/mabi=64
-SGI_ABI_FLG := -64 -mips4 ${OMP_FLG}
-else
-GCC_ABI_FLG := -mabi=32
-GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips4
-SGI_ABI_FLG := -n32 -mips4 ${OMP_FLG}
+ GCC_ABI_FLG := -mabi=64
+ GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips4 -L/usr/local/lib/mabi=64
+ SGI_ABI_FLG := -64 -mips4 ${OMP_FLG}
+else # ABI=32
+ GCC_ABI_FLG := -mabi=32
+ GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips4
+ SGI_ABI_FLG := -n32 -mips4 ${OMP_FLG}
 endif # endif ABI
 endif # endif SGI64, SGIMP64
 ifeq (${CC},gcc)
