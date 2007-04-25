@@ -40,7 +40,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.80 2007-04-25 17:16:14 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.81 2007-04-25 18:34:42 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -73,8 +73,11 @@ variables:
 	lon_2D_rrg:long_name = "Longitude on 2D irregular grid";
 	lon_2D_rrg:units = "degrees_east";
 
-	int lat_times_lon;
-	lat_times_lon:long_name = "Number of elements in 2D coordinate grids. Both rectangular and non-rectangular test 2D grids have this many elements.";
+	int lat_times_lon(lat_times_lon);
+	lat_times_lon:long_name = "Element index (i.e., C-based storage order) for 2D coordinate grids";
+
+	int lat_times_lon_nbr;
+	lat_times_lon_nbr:long_name = "Number of elements in 2D coordinate grids. Both rectangular and non-rectangular test 2D grids have this many elements.";
 
 	float lev(lev);
 	lev:purpose = "Monotonically increasing coordinate pressure";
@@ -642,6 +645,12 @@ variables:
 	v:long_name = "Meridional wind speed";
 	v:units = "meter second-1";
 
+	float var_2D_rct(lat_times_lon);
+	var_2D_rct:long_name = "Variable on 2D rectangular grid";
+
+	float var_2D_rrg(lat_times_lon);
+	var_2D_rrg:long_name = "Variable on 2D irregular grid";
+
 	float var_nm-dash;
 	var_nm-dash:long_name = "Variable and attribute names include dash characters";
 	var_nm-dash:att_nm-dash = 1.0e36f;
@@ -674,7 +683,8 @@ data:
 	hybm=0.0187849,0.457453,0.992528;
 	P0=100000;
 	lat=-90,90;
-	lat_times_lon=8;
+	lat_times_lon=0,1,2,3,4,5,6,7;
+	lat_times_lon_nbr=8;
 	lat_2D_rct=-90, -90,  -90,  -90,  90, 90,  90,  90;
 	lon_2D_rct=  0,  90,  180,  270,   0, 90, 180, 270;
 	lat_2D_rrg=-90, -30,  -30,    0,   0, 30,  30,  90;
@@ -869,6 +879,8 @@ data:
 	val_one_one_int=1,1;
 	var_nm-dash=1.0;
 	var_nm.dot=1.0;
+	var_2D_rct=0.,1.,0.,0.,1.,1.,0.,2.;
+	var_2D_rrg=0.,1.,0.,0.,1.,1.,0.,2.;
 	weight=10.,10.;
 	wgt_one=1.,1.;
 	wvl=0.5e-6,1.0e-6;
