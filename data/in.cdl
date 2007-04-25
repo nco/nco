@@ -40,7 +40,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.81 2007-04-25 18:34:42 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.82 2007-04-25 19:13:11 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -57,27 +57,43 @@ variables:
 	float lon_T42(lon_T42);
 	float lat_T42(lat_T42);
 
-	float lat_2D_rct(lat_times_lon);
-	lat_2D_rct:long_name = "Latitude on 2D rectangular grid";
-	lat_2D_rct:units = "degrees_north";
+	float lat_1D_rct(lat_times_lon);
+	lat_1D_rct:long_name = "Latitude for 2D rectangular grid stored as 1D arrays";
+	lat_1D_rct:units = "degrees_north";
 
-	float lon_2D_rct(lat_times_lon);
-	lon_2D_rct:long_name = "Longitude on 2D rectangular grid";
-	lon_2D_rct:units = "degrees_east";
+	float lon_1D_rct(lat_times_lon);
+	lon_1D_rct:long_name = "Longitude for 2D rectangular grid stored as 1D arrays";
+	lon_1D_rct:units = "degrees_east";
 
-	float lat_2D_rrg(lat_times_lon);
-	lat_2D_rrg:long_name = "Latitude on 2D irregular grid";
-	lat_2D_rrg:units = "degrees_north";
+	float lat_1D_rrg(lat_times_lon);
+	lat_1D_rrg:long_name = "Latitude for 2D irregular grid stored as 1D arrays";
+	lat_1D_rrg:units = "degrees_north";
 
-	float lon_2D_rrg(lat_times_lon);
-	lon_2D_rrg:long_name = "Longitude on 2D irregular grid";
-	lon_2D_rrg:units = "degrees_east";
+	float lon_1D_rrg(lat_times_lon);
+	lon_1D_rrg:long_name = "Longitude for 2D irregular grid stored as 1D arrays";
+	lon_1D_rrg:units = "degrees_east";
 
 	int lat_times_lon(lat_times_lon);
-	lat_times_lon:long_name = "Element index (i.e., C-based storage order) for 2D coordinate grids";
+	lat_times_lon:long_name = "Element index (i.e., C-based storage order) for 2D coordinate grids stored as 1D arrays";
+
+	float lat_2D_rct(lat,lon);
+	lat_2D_rct:long_name = "Latitude for 2D rectangular grid stored as 2D array";
+	lat_2D_rct:units = "degrees_north";
+
+	float lon_2D_rct(lat,lon);
+	lon_2D_rct:long_name = "Longitude for 2D rectangular grid stored as 2D array";
+	lon_2D_rct:units = "degrees_east";
+
+	float lat_2D_rrg(lat,lon);
+	lat_2D_rrg:long_name = "Latitude for 2D irregular grid stored as 2D array";
+	lat_2D_rrg:units = "degrees_north";
+
+	float lon_2D_rrg(lat,lon);
+	lon_2D_rrg:long_name = "Longitude for 2D irregular grid stored as 2D array";
+	lon_2D_rrg:units = "degrees_east";
 
 	int lat_times_lon_nbr;
-	lat_times_lon_nbr:long_name = "Number of elements in 2D coordinate grids. Both rectangular and non-rectangular test 2D grids have this many elements.";
+	lat_times_lon_nbr:long_name = "Number of elements in 2D coordinate grids. Rectangular and irregular test grids have this many total elements. The coordinates and elements are stored as 1D or 2D arrays for grid types 1D and 2D respectively.";
 
 	float lev(lev);
 	lev:purpose = "Monotonically increasing coordinate pressure";
@@ -645,11 +661,17 @@ variables:
 	v:long_name = "Meridional wind speed";
 	v:units = "meter second-1";
 
-	float var_2D_rct(lat_times_lon);
-	var_2D_rct:long_name = "Variable on 2D rectangular grid";
+	float var_1D_rct(lat_times_lon);
+	var_1D_rct:long_name = "Variable for 2D rectangular grid stored as 1D arrays";
 
-	float var_2D_rrg(lat_times_lon);
-	var_2D_rrg:long_name = "Variable on 2D irregular grid";
+	float var_1D_rrg(lat_times_lon);
+	var_1D_rrg:long_name = "Variable for 2D irregular grid stored as 1D arrays";
+
+	float var_2D_rct(lat,lon);
+	var_2D_rct:long_name = "Variable for 2D rectangular grid stored as 2D array";
+
+	float var_2D_rrg(lat,lon);
+	var_2D_rrg:long_name = "Variable for 2D irregular grid stored as 2D array";
 
 	float var_nm-dash;
 	var_nm-dash:long_name = "Variable and attribute names include dash characters";
@@ -685,6 +707,10 @@ data:
 	lat=-90,90;
 	lat_times_lon=0,1,2,3,4,5,6,7;
 	lat_times_lon_nbr=8;
+	lat_1D_rct=-90, -90,  -90,  -90,  90, 90,  90,  90;
+	lon_1D_rct=  0,  90,  180,  270,   0, 90, 180, 270;
+	lat_1D_rrg=-90, -30,  -30,    0,   0, 30,  30,  90;
+	lon_1D_rrg=  0,   0,  180,    0, 180,  0, 180,   0;
 	lat_2D_rct=-90, -90,  -90,  -90,  90, 90,  90,  90;
 	lon_2D_rct=  0,  90,  180,  270,   0, 90, 180, 270;
 	lat_2D_rrg=-90, -30,  -30,    0,   0, 30,  30,  90;
@@ -879,6 +905,8 @@ data:
 	val_one_one_int=1,1;
 	var_nm-dash=1.0;
 	var_nm.dot=1.0;
+	var_1D_rct=0.,1.,0.,0.,1.,1.,0.,2.;
+	var_1D_rrg=0.,1.,0.,0.,1.,1.,0.,2.;
 	var_2D_rct=0.,1.,0.,0.,1.,1.,0.,2.;
 	var_2D_rrg=0.,1.,0.,0.,1.,1.,0.,2.;
 	weight=10.,10.;
