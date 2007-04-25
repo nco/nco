@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.407 2007-04-25 17:16:14 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.408 2007-04-25 17:18:48 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -714,12 +714,11 @@ of C99 mathematical special functions.
 These include the standarized gamma function (called @code{tgamma()} 
 for ``true gamma''). 
 @cindex automagic
-@acronym{NCO} may automagically takes advantage of some extensions
-to @w{@acronym{ANSI} C} when compiled with the @acronym{GNU} Compiler 
-Collection, @acronym{GCC}. 
+@acronym{NCO} automagically takes advantage of some @acronym{GNU}
+Compiler Collection (@acronym{GCC}) extensions to @w{@acronym{ANSI} C}.
 
 As of July 2000 and @acronym{NCO} @w{version 1.2}, @acronym{NCO} no
-longer supports performing arithmetic operations in Fortran.
+longer performs arithmetic operations in Fortran.
 We decided to sacrifice executable speed for code maintainability.
 Since no objective statistics were ever performed to quantify 
 the difference in speed between the Fortran and @w{C code},
