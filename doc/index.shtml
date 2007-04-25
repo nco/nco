@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.406 2007-04-24 20:11:00 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.407 2007-04-25 00:49:03 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -209,18 +209,18 @@ Note that the <a href="./nco.html#averagers">&ldquo;averagers&rdquo;</a>
 are misnamed because they perform many non-linear operations as well,
 e.g., total, minimum, maximum, RMS: 
 <ul>
-<li><a href="./nco.html#ncap"><b>ncap</b></a> and <a href="./nco.html#ncap2"><b>ncap2</b></a> netCDF Arithmetic Processors (<a href="./nco.html#xmp_ncap">examples</b>)</li>
-<li><a href="./nco.html#ncatted"><b>ncatted</b></a> netCDF Attribute Editor (<a href="./nco.html#xmp_ncatted">examples</b>)</li>
-<li><a href="./nco.html#ncbo"><b>ncbo</b></a> netCDF Binary Operator (includes <tt>ncadd</tt>, <tt>ncsubtract</tt>, <tt>ncmultiply</tt>, <tt>ncdivide</tt>) (<a href="./nco.html#xmp_ncbo">examples</b>)</li>
-<li><a href="./nco.html#ncea"><b>ncea</b></a> netCDF Ensemble Averager (<a href="./nco.html#xmp_ncea">examples</b>)</li>
-<li><a href="./nco.html#ncecat"><b>ncecat</b></a> netCDF Ensemble Concatenator (<a href="./nco.html#xmp_ncecat">examples</b>)</li>
-<li><a href="./nco.html#ncflint"><b>ncflint</b></a> netCDF File Interpolator (<a href="./nco.html#xmp_ncflint">examples</b>)</li>
-<li><a href="./nco.html#ncks"><b>ncks</b></a> netCDF Kitchen Sink (<a href="./nco.html#xmp_ncks">examples</b>)</li>
-<li><a href="./nco.html#ncpdq"><b>ncpdq</b></a> netCDF Permute Dimensions Quickly, Pack Data Quietly (<a href="./nco.html#xmp_ncpdq">examples</b>)</li>
-<li><a href="./nco.html#ncra"><b>ncra</b></a> netCDF Record Averager (<a href="./nco.html#xmp_ncra">examples</b>)</li>
-<li><a href="./nco.html#ncrcat"><b>ncrcat</b></a> netCDF Record Concatenator (<a href="./nco.html#xmp_ncrcat">examples</b>)</li>
-<li><a href="./nco.html#ncrename"><b>ncrename</b></a> netCDF Renamer (<a href="./nco.html#xmp_ncrename">examples</b>)</li>
-<li><a href="./nco.html#ncwa"><b>ncwa</b></a></td> netCDF Weighted Averager (<a href="./nco.html#xmp_ncwa">examples</b>)</li>
+<li><a href="./nco.html#ncap"><tt>ncap</tt></a> and <a href="./nco.html#ncap2"><tt>ncap2</tt></a> netCDF Arithmetic Processors (<a href="./nco.html#xmp_ncap">examples</a>)</li>
+<li><a href="./nco.html#ncatted"><tt>ncatted</tt></a> netCDF Attribute Editor (<a href="./nco.html#xmp_ncatted">examples</a>)</li>
+<li><a href="./nco.html#ncbo"><tt>ncbo</tt></a> netCDF Binary Operator (includes <tt>ncadd</tt>, <tt>ncsubtract</tt>, <tt>ncmultiply</tt>, <tt>ncdivide</tt>) (<a href="./nco.html#xmp_ncbo">examples</a>)</li>
+<li><a href="./nco.html#ncea"><tt>ncea</tt></a> netCDF Ensemble Averager (<a href="./nco.html#xmp_ncea">examples</a>)</li>
+<li><a href="./nco.html#ncecat"><tt>ncecat</tt></a> netCDF Ensemble Concatenator (<a href="./nco.html#xmp_ncecat">examples</a>)</li>
+<li><a href="./nco.html#ncflint"><tt>ncflint</tt></a> netCDF File Interpolator (<a href="./nco.html#xmp_ncflint">examples</a>)</li>
+<li><a href="./nco.html#ncks"><tt>ncks</tt></a> netCDF Kitchen Sink (<a href="./nco.html#xmp_ncks">examples</a>)</li>
+<li><a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> netCDF Permute Dimensions Quickly, Pack Data Quietly (<a href="./nco.html#xmp_ncpdq">examples</a>)</li>
+<li><a href="./nco.html#ncra"><tt>ncra</tt></a> netCDF Record Averager (<a href="./nco.html#xmp_ncra">examples</a>)</li>
+<li><a href="./nco.html#ncrcat"><tt>ncrcat</tt></a> netCDF Record Concatenator (<a href="./nco.html#xmp_ncrcat">examples</a>)</li>
+<li><a href="./nco.html#ncrename"><tt>ncrename</tt></a> netCDF Renamer (<a href="./nco.html#xmp_ncrename">examples</a>)</li>
+<li><a href="./nco.html#ncwa"><tt>ncwa</tt></a></td> netCDF Weighted Averager (<a href="./nco.html#xmp_ncwa">examples</a>)</li>
 </ul>
 
 <p>The operators are as general as 
@@ -838,13 +838,13 @@ Debs (by Zach Lowry) for MPICH2 are
 <a name="bld_rqr"></a> <!-- http://nco.sf.net#bld_rqr -->
 <li>Install
 <a href="http://www.antlr.org">ANTLR</a> (required for <tt>ncap2</tt>), 
-<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> (absolutely required), and 
+<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> (absolutely required), 
 <a href="http://opendap.org">OPeNDAP</a> (enables network transparency), and
 <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (allows dimensional unit transformations).
 If possible build these all with the same compiler (and switches).
 NCO is mostly written in&nbsp;C99, so you can mix and match compilers
 although this is frequently difficult in practice and is not recommended.
-The exception is <b>ncap2</b> which is written in&nbsp;C++.
+The exception is <tt>ncap2</tt> which is written in&nbsp;C++.
 ANTLR, OPeNDAP, and NCO must be built with the same compiler
 to properly resolve the C++ name-mangling.
 </li>
