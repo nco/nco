@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.406 2007-04-20 18:54:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.407 2007-04-25 17:16:14 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -633,7 +633,7 @@ Intel (@samp{icc -std=c99}),
 @acronym{NEC} (@samp{cc}),
 PathScale (QLogic) (@samp{pathcc -std=c99}),
 @acronym{PGI} (@samp{pgcc -c9x}),
-@acronym{SGI} (@samp{cc -LANG:std}),
+@acronym{SGI} (@samp{cc -c99}),
 and
 Sun (@samp{cc}).
 @cindex C++
