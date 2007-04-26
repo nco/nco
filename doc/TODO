@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.863 2007-04-25 18:34:44 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.864 2007-04-26 00:58:49 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -555,8 +555,8 @@ nco814. Regression test for forgiving exclusion list handling
 nco816. Add regression tests for rmssdn when N=0, N=1, N=2
 	ncra -O -y rmssdn -v '^rec_var_flt_mss_val_flt_all.?' ~/nco/data/in.nc ~/foo.nc
 	ncks -H -m ~/foo.nc
-nco817. Document how to work with 2D coordinate grids
-	ncks -H -v '.?_2D.?' ~/nco/data/in.nc
+nco817. Document how to work with 1D/2D coordinate grids
+	ncks -H -v '.?_[0-9]D.?' ~/nco/data/in.nc
 nco818. 
 ************************************************************************
 End ncoXXX TODOs
