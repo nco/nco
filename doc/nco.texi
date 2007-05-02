@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.408 2007-04-25 17:18:48 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.409 2007-05-02 15:33:06 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5130,6 +5130,112 @@ The filename @file{script} is interpreted relative to the run directory.
 The at-sign @code{@@} is used to delineate an attribute name from a
 variable name.
 @end table 
+
+@html
+<a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
+<a name="rct"></a> <!-- http://nco.sf.net/nco.html#rct -->
+@end html
+@node Irregular grids
+@subsection Irregular Grids
+@cindex irregular grids
+@cindex rectangular grids
+@cindex non-rectangular grids
+@cindex non-standard grids
+@cindex mask
+@c fxm need to edit rrg sxn beginning here
+netCDF was developed for and initially used with grids comprised of
+orthogonal dimensions forming a rectangular coordinate system.
+We call such grids @emph{standard} or @emph{rectangular}.
+Grids are @emph{irregular} if the spacing between adjacent 
+coordinates values is not constant.
+Grids are @emph{non-rectangular} if the elements in any dimension
+depend on another dimension.
+@cindex wrapped coordinates
+Wrapped coordinates (@pxref{Wrapped Coordinates}), such as longitude,
+are a minor variation
+
+The preferred @acronym{NCO} technique to analyze data on non-standard
+coordinate grids is to create a region mask with @command{ncap2}, and
+then to use the mask within @command{ncap2} for variable-specific
+processing, and/or with other operators (e.g., @command{ncwa},
+@command{ncdiff}) for entire file processing. 
+
+Before describing the construction of masks, let us review how
+irregularly gridded geoscience data are described.
+Say that latitude and longitude are stored as @var{R}-dimensional
+arrays and the product of the dimension sizes is the total number of  
+elements N in the other variables.
+Geoscience applications tend to use @math{@var{R}=1}, 
+@math{@var{R}=2}, and @math{@var{R}=3}.
+
+
+
+
+If the grid is has no simple representation (e.g., discontinuous) then it makes
+sense to store all coordinates as 1D arrays with the same size as
+the number of grid points. These gridpoints can be completely
+independent of all the other (own weight, area, etc.). 
+
+@var{R}=1: lat(number_of_gridpoints) and lon(number_of_gridpoints)
+
+If the horizontal grid is time-invariant then @var{R}=2 is common:
+
+@var{R}=2: lat(south_north,east_west) and lon(south_north,east_west)
+
+The WRF (Weather and Research Forecast) model uses @var{R}=3
+
+@var{R}=3: lat(time,south_north,east_west), lon(time,south_north,east_west)
+
+and so supports grids that change with time.
+
+Grids with @var{R} > 1 often use missing values to indicated empty points.
+For example, so-called "staggered grids" will use fewer east_west
+points near the poles and more near the equator. netCDF only accepts
+rectangular arrays so space must be allocated for the maximum number
+of east_west points at all latitudes. Then the application writes
+missing values into the unused points near the poles.
+
+Let's demonstrate the recommended ncap2 analysis technique by
+constructing a region mask for an @var{R}=2 grid. We wish to find, say,
+the mean temperature within [lat_min,lat_max] and [lon_min,lon_max]:
+
+ncap2 -O -s \
+'mask= (lat >= lat_min && lat <= lat_max) && (lon >= lon_min && > lon <= lon_max);' \
+in.nc out.nc
+
+Once you have a mask, you can use it on specific variables:
+
+ncap2 -O -s 'temperature_avg=(temperature*mask).avg()' in.nc out.nc
+
+and you can apply it to entire files:
+
+ncwa -O -a lat,lon -m mask -w area in.nc out.nc
+
+You can put this altogether on the command line or in a script, e.g.,
+cleaner.
+
+cat > ncap2.in << EOF
+mask = (lat >= lat_min && lat <= lat_max) && (lon >= lon_min && > lon <= lon_max);
+if(mask.total() > 0){ // Check that mask contains some valid values
+  temperature_avg=(temperature*mask).avg(); // Average temperature
+  temperature_max=(temperature*mask).max(); // Maximum temperature
+}
+EOF
+ncap2 -O -S ncap2.in in.nc out.nc
+
+For the WRF file creating the mask looks like
+
+mask = (XLAT >= lat_min && XLAT <= lat_max) && (XLONG >= lon_min && > XLONG <= lon_max);
+
+In practice with WRF it's a bit more complicated because you must
+use the global metadata to determine the grid staggering and offsets
+to translate XLAT and XLONG into real latitudes and longitudes and
+missing points. The WRF grid documentation should describe this.
+
+A few notes:
+Irregular regions are the union of arrays lat/lon_min/max's. 
+The mask procedure is identical for all @var{R}.
+@c fxm need to edit rrg sxn down to here
 
 @html
 <a name="fnc"></a> <!-- http://nco.sf.net/nco.html#fnc -->
