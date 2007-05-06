@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.409 2007-05-02 15:33:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.410 2007-05-06 05:52:25 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4995,6 +4995,7 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 @menu
 * Left hand casting::           
 * Syntax of ncap2 statements::  
+* Irregular grids::             
 * Intrinsic functions::         
 * Intrinsic mathematical functions::  
 @end menu
@@ -5082,7 +5083,7 @@ coordinate system is easy with left hand casting.
 @html
 <a name="syn"></a> <!-- http://nco.sf.net/nco.html#syn -->
 @end html
-@node Syntax of ncap2 statements, Intrinsic functions, Left hand casting, ncap2 netCDF Arithmetic Processor
+@node Syntax of ncap2 statements, Irregular grids, Left hand casting, ncap2 netCDF Arithmetic Processor
 @subsection Syntax of @command{ncap2} statements
 @cindex statement
 @cindex syntax
@@ -5132,10 +5133,11 @@ variable name.
 @end table 
 
 @html
+<a name="grd"></a> <!-- http://nco.sf.net/nco.html#grd -->
 <a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
 <a name="rct"></a> <!-- http://nco.sf.net/nco.html#rct -->
 @end html
-@node Irregular grids
+@node Irregular grids, Intrinsic functions, Syntax of ncap2 statements, ncap2 netCDF Arithmetic Processor
 @subsection Irregular Grids
 @cindex irregular grids
 @cindex rectangular grids
@@ -5143,17 +5145,41 @@ variable name.
 @cindex non-standard grids
 @cindex mask
 @c fxm need to edit rrg sxn beginning here
+@acronym{NCO} is capable of analyzing datasets for many different
+underlying coordinate grid types.
 netCDF was developed for and initially used with grids comprised of
 orthogonal dimensions forming a rectangular coordinate system.
-We call such grids @emph{standard} or @emph{rectangular}.
-Grids are @emph{irregular} if the spacing between adjacent 
-coordinates values is not constant.
+We call such grids @emph{standard} grids.
+It is increasingly common for datasets to use metadata to describe
+much more complex grids.
+Let us first define three important coordinate grid properties:
+rectangularity, regularity, and fxm.
+
+Grids are @emph{regular} if the spacing between adjacent is constant. 
+For example, a 4-by-5 degree latitude-longitude grid is regular
+because the spacings between adjacent latitudes (@w{4 degrees}) are
+constant as are the (@w{5 degrees}) spacings between adjacent
+longitudes. 
+Spacing in @emph{irregular} grids depends on the location along the
+coordinate. 
+Grids such as Gaussian grids have uneven spacing in latitude (points 
+cluster near the equator) and so are irregular.
+
+Grids are @emph{rectangular} if the number of elements in any
+dimension is not a function of any other dimension.
+For example, a T42 Gaussian latitude-longitude grid is rectangular
+because there are the same number of longitudes (128) for each of the 
+(64) latitudes.
 Grids are @emph{non-rectangular} if the elements in any dimension
 depend on another dimension.
-@cindex wrapped coordinates
-Wrapped coordinates (@pxref{Wrapped Coordinates}), such as longitude,
-are a minor variation
+Non-rectangular grids present many special challenges to 
+analysis software like @acronym{NCO}.
 
+Wrapped coordinates (@pxref{Wrapped Coordinates}), such as longitude,
+are independent of these grid properties (regularity,
+rectangularity). 
+
+@cindex wrapped coordinates
 The preferred @acronym{NCO} technique to analyze data on non-standard
 coordinate grids is to create a region mask with @command{ncap2}, and
 then to use the mask within @command{ncap2} for variable-specific
@@ -5168,13 +5194,11 @@ elements N in the other variables.
 Geoscience applications tend to use @math{@var{R}=1}, 
 @math{@var{R}=2}, and @math{@var{R}=3}.
 
-
-
-
-If the grid is has no simple representation (e.g., discontinuous) then it makes
-sense to store all coordinates as 1D arrays with the same size as
-the number of grid points. These gridpoints can be completely
-independent of all the other (own weight, area, etc.). 
+If the grid is has no simple representation (e.g., discontinuous) then
+it makes sense to store all coordinates as 1D arrays with the same
+size as the number of grid points. 
+These gridpoints can be completely independent of all the other (own
+weight, area, etc.).  
 
 @var{R}=1: lat(number_of_gridpoints) and lon(number_of_gridpoints)
 
@@ -5198,34 +5222,38 @@ missing values into the unused points near the poles.
 Let's demonstrate the recommended ncap2 analysis technique by
 constructing a region mask for an @var{R}=2 grid. We wish to find, say,
 the mean temperature within [lat_min,lat_max] and [lon_min,lon_max]:
-
-ncap2 -O -s \
-'mask= (lat >= lat_min && lat <= lat_max) && (lon >= lon_min && > lon <= lon_max);' \
-in.nc out.nc
+@example
+ncap2 -O -s 'mask= (lat >= lat_min && lat <= lat_max) && \
+                   (lon >= lon_min && lon <= lon_max);' in.nc out.nc
+@end example
 
 Once you have a mask, you can use it on specific variables:
-
+@example
 ncap2 -O -s 'temperature_avg=(temperature*mask).avg()' in.nc out.nc
-
+@end example
 and you can apply it to entire files:
-
+@example
 ncwa -O -a lat,lon -m mask -w area in.nc out.nc
+@end example
 
 You can put this altogether on the command line or in a script, e.g.,
 cleaner.
-
+@example
 cat > ncap2.in << EOF
 mask = (lat >= lat_min && lat <= lat_max) && (lon >= lon_min && > lon <= lon_max);
-if(mask.total() > 0){ // Check that mask contains some valid values
+if(mask.total() > 0)@{ // Check that mask contains some valid values
   temperature_avg=(temperature*mask).avg(); // Average temperature
   temperature_max=(temperature*mask).max(); // Maximum temperature
-}
+@}
 EOF
 ncap2 -O -S ncap2.in in.nc out.nc
+@end example
 
 For the WRF file creating the mask looks like
 
+@example
 mask = (XLAT >= lat_min && XLAT <= lat_max) && (XLONG >= lon_min && > XLONG <= lon_max);
+@end example
 
 In practice with WRF it's a bit more complicated because you must
 use the global metadata to determine the grid staggering and offsets
@@ -5240,7 +5268,7 @@ The mask procedure is identical for all @var{R}.
 @html
 <a name="fnc"></a> <!-- http://nco.sf.net/nco.html#fnc -->
 @end html
-@node Intrinsic functions, Intrinsic mathematical functions, Syntax of ncap2 statements, ncap2 netCDF Arithmetic Processor
+@node Intrinsic functions, Intrinsic mathematical functions, Irregular grids, ncap2 netCDF Arithmetic Processor
 @subsection Intrinsic functions
 @command{ncap2} contains a small (and growing) library of intrinsic
 functions. 

@@ -1,33 +1,23 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.218 2007-04-20 18:54:41 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.219 2007-05-06 05:55:15 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.2.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Release 3.2.0 contains a small ncwa bugfix, new ncea/ncecat features,
-new ncap2 features, configure support for AIX, and RPMs with ncap2.
+Release 3.2.0 contains new documentation, new ncap2 features,
+and better configure support for IRIX.
 
 A. Arithmetic bugfix:
-   The rmssdn method now correctly normalizes cases where N=0 or N=1.
-   It returns the missing value (when present) or an error (if not).
-   Thanks to Scott Capps for sending up the flare.
 
-B. List handling has changed so that explicitly excluded variables 
-   need not be present, e.g., "-x -v var_not_present" will not fail.  
-   Previously, excluded variables had to be present. 
-   http://nco.sf.net/nco.html#xcl
-   Thanks to user Derecho for suggesting this.
-
-C. Documentation bugfix: 
-   Some ncap2 standard deviation examples neglected the anomaly step.
+C. New Documentation:
+   Working with non-standar grids, e.g., 2D grids 
+   http://nco.sf.net/nco.html#grd
 
 D. Documentation bugfix: 
-   ncap and ncap2 have never accepted the -d hyperslab argument.
-   Thanks to Andrew Wittenan for pointing this out.
 
 E. ncap2 (http://nco.sf.net/nco.html#ncap2) grows more powerful.
-   Henry has added support for RAM variables. See ~/nco/data/ncap2.in.
+   Henry has ...
    Once threading and for loops are done we'll document it all. 
 
 F. Pre-built, up-to-date, Debian Sid binary packages are available.

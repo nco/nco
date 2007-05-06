@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.408 2007-05-02 15:33:06 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.409 2007-05-06 05:52:25 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -59,19 +59,7 @@ Try to disable Spammers' machines:
 <p><hr width="100%"></p>
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
-You may donate to the NCO development effort through PayPal:
-<center><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-<input type="hidden" name="cmd" value="_xclick">
-<input type="hidden" name="business" value="zender@uci.edu">
-<input type="hidden" name="item_name" value="NCO development">
-<input type="hidden" name="item_number" value="nco_dnt_dvl">
-<input type="hidden" name="no_note" value="1">
-<input type="hidden" name="currency_code" value="USD">
-<input type="hidden" name="tax" value="0">
-<input type="image" src="https://www.paypal.com/images/x-click-but04.gif" border="0" name="submit" alt="Donate to NCO with PayPal - it's fast, free and secure!">
-</form></center>
-
-<p><h2>Current version is <!--#include virtual="VERSION"--> last updated on <!--#flastmod file="VERSION"--> </h2>
+<p><h2>Current NCO version is <!--#include virtual="VERSION"--> last updated on <!--#flastmod file="VERSION"--> </h2>
 
 <table border=0 width=100%>
 
@@ -81,15 +69,16 @@ You may donate to the NCO development effort through PayPal:
 <li><a href="#Definition">What is NCO?</a></li>
 <li><a href="#Contribute">How to Contribute</a></li>
 <li><a href="#prp_sei">NCO&rarr;SDO Project</a></li>
-<li><a href="#Version">Version Summary</a></li>
 <li><a href="#Publications">Publications</a></li>
+<li><a href="#Version">Version Summary</a></li>
 <li><a href="#Download">Download/CVS NCO Software</a></li>
 <li><a href="#RTFM">Documentation and User's Guide</a></li>
 <li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
 <li><a href="#FAQ">FAQ</a></li>
 <li><a href="#HPCC">Using NCO at UCI, NCAR, and other HPCCs</a></li>
 <li><a href="#BM">Benchmarks</a></li>
-<li><a href="#Rqr">Building NCO from Source: Practices and Problems</a></li>
+<li><a href="#bld">Building from Source</a></li>
+<li><a href="#bug">Known Problems</a></li>
 <li><a href="#Contact">Contacting us</a></li>
 </ul>
 </td>
@@ -267,7 +256,8 @@ pay-per-feature basis.
 <input type="hidden" name="no_note" value="1">
 <input type="hidden" name="currency_code" value="USD">
 <input type="hidden" name="tax" value="0">
-<input type="image" src="https://www.paypal.com/images/x-click-but04.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!">
+<input type="image" src="https://www.paypal.com/images/x-click-but04.gif" border="0"
+name="submit" alt="Donate to NCO with PayPal - it's fast, free and secure!">
 </form>
 These homepage donation counters track the influence of your monetary
 donations on NCO development: 
@@ -831,7 +821,8 @@ Debs (by Zach Lowry) for MPICH2 are
 <hr>
 
 <dt><a name="Rqr"></a><a name="rqr"></a></dt> <!-- http://nco.sf.net#rqr -->
-<h2>NCO Build-from-Source Requirements</h2>
+<dt><a name="bld"></a></dt> <!-- http://nco.sf.net#bld -->
+<h2>Build-from-Source Requirements</h2>
 
 <ul><b>Best Practices:</b>
 
@@ -840,37 +831,44 @@ Debs (by Zach Lowry) for MPICH2 are
 <a href="http://www.antlr.org">ANTLR</a> (required for <tt>ncap2</tt>), 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> (absolutely required), 
 <a href="http://opendap.org">OPeNDAP</a> (enables network transparency), and
-<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (allows dimensional unit transformations).
+<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (allows dimensional unit transformations) 
+before building NCO.
 If possible build these all with the same compiler (and switches).
-NCO is mostly written in&nbsp;C99, so you can mix and match compilers
-although this is frequently difficult in practice and is not recommended.
+NCO is mostly written in&nbsp;C99, and although you <i>can</i> mix and
+match compilers, this is often difficult in practice and is not recommended.
 The exception is <tt>ncap2</tt> which is written in&nbsp;C++.
-ANTLR, OPeNDAP, and NCO must be built with the same compiler
+ANTLR, OPeNDAP, and NCO must be built with the same C++ compiler
 to properly resolve the C++ name-mangling.
 </li>
 
 </ul>
 
-<h2>Common NCO Build/Run Problems</h2>
+<h2>Hints to Build-from-Source:</h2>
 
-<ul><b>Generic Build Problems:</b>
+<ul><b>Generic Build Hints:</b>
 
 <a name="bld_cnf"></a> <!-- http://nco.sf.net#bld_cnf -->
-<li><i>Using <tt>./configure</tt> build mechanism:</i>
+<li><i>The two build NCO build mechanisms:</i>
+NCO has two build mechanisms: (1)&nbsp;GNU configure and 
+(2)&nbsp; a custom Makefile (<tt>bld/Makefile</tt>).
+designed for hand-editing.
+Try the traditional GNU configure method, i.e.,
+<tt>./configure;make;make check;make install</tt>, first.
+This method involves no hand-editing of makefiles, but trouble-free
+builds with it are less common than we would like.  
 The file <tt>configure.eg</tt> contains a table which describes the 
 success you can expect building NCO with the <tt>./configure</tt>
 mechanism. 
-Trouble-free installation with <tt>./configure;make;make check;make install</tt> is
-less common than we would like. 
-All platforms continue to work fine with the <tt>bld/Makefile</tt> method: <tt>cd ~/nco/bld;make all;make test</tt>.
+Please contribute patches required to get the <tt>./configure</tt> 
+mechanism working properly for NCO on your platform.
+The <a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>
+contains gory details of successful (and failed) builds for many platforms.  
+<br>
+All platforms continue to work fine with the <tt>bld/Makefile</tt>
+method: <tt>cd ~/nco/bld;make all;make test</tt>. 
 Disadvantages are that <tt>bld/Makefile</tt> (1)&nbsp;Usually requires
 editing to fix your platforms paths; (2)&nbsp;Does not support shared
 libraries; and (3)&nbsp;Requires a degree from Hogwarts to understand.
-So please send in the patches required to get the <tt>./configure</tt> 
-mechanism working properly for NCO, <tt>nco_c++</tt>, and
-<a href="http://opendap.org">OPeNDAP</a> on your platform.  
-The <a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>
-contains gory details of successful (and failed) builds for many platforms.  
 </li>
 
 <!-- http://nco.sf.net#bld_chn -->
@@ -882,10 +880,11 @@ Two of the most common reasons that <tt>ncap</tt> fails to build are
 (1)&nbsp;GNU <tt>bison</tt> is out-of-date (upgrade <tt>bison</tt>)
 and (2)&nbsp;<tt>--enable-optimize-*</tt> is specified to 
 <tt>configure</tt> (do not specify it).<br>
+</li>
 
 <!-- http://nco.sf.net#bld_c99 -->
 <a name="bld_c99"></a>
-<i>C99-compliance &amp; old compilers:</i>
+<li><i>C99-compliance &amp; old compilers:</i>
 NCO versions &ge;&nbsp;2.9.8 requires compilers which
 support the 1999 ISO C-Standard called&nbsp;C99.
 Currently, the only C99 feature NCO takes advantage of is restricted
@@ -896,10 +895,11 @@ before compiling NCO.
 Do this, e.g., with <tt>CPPFLAGS='-Drestrict='</tt>.
 More details on C99 compatibility are in the header file
 <a href="http://nco.cvs.sf.net/nco/nco/src/nco/nco.h"><tt>nco/src/nco/nco.h</tt></a>.<br>
+</li>
 
 <!-- http://nco.sf.net#bld_netcdf -->
 <a name="bld_netcdf"></a>
-<i>Old netCDF libraries:</i>
+<li><i>Old netCDF libraries:</i>
 NCO versions &ge;&nbsp;3.0.0 require netCDF versions
 &ge;&nbsp;3.6 to take advantage of the new 64-bit offset file type.  
 The library <i>and</i> include directories (e.g., <tt>/usr/lib</tt> and
@@ -924,7 +924,7 @@ support <tt>nc_type NC_NAT</tt> in NCO source code.
 
 <!-- http://nco.sf.net#bld_ncap -->
 <a name="bld_ncap"></a>
-<li><i><tt>ncap</tt> build problems:</i>
+<li><i><tt>ncap</tt> build hints:</i>
 <tt>ncap</tt> is a very sophisticated and somewhat fragile program.
 <tt>ncap</tt> requires <tt>flex</tt> to build correctly.
 AT&T <tt>lex</tt> will not work because it does not understand
@@ -943,7 +943,7 @@ If <tt>ncap</tt> keeps you from building NCO, and you do not need
 
 <!-- http://nco.sf.net#bld_DAP -->
 </a><a name="bld_dap"></a></a><a name="bld_DAP"></a><a name="bld_DODS"></a><a name="bld_OPeNDAP">
-<li><i>Build Problems with OPeNDAP/DODS:</i><br>
+<li><i>Build Hints with OPeNDAP/DODS:</i><br>
 NCO versions 3.1.3&mdash; support automatic building and linking
 for <a href="http://opendap.org">OPeNDAP</a> versions&nbsp;3.6.x and
 GCC versions&nbsp;4.0+.<br>
@@ -961,7 +961,7 @@ No other version combinations are supported.
 
 <!-- http://nco.sf.net#bld_nco_c++ -->
 <a name="bld_nco_c++"></a>
-<li><i><tt>libnco_c++</tt> build problems:</i>
+<li><i><tt>libnco_c++</tt> build hints:</i>
 <tt>libnco_c++</tt> requires a good C++ compiler to build correctly.
 Few people need <tt>libnco_c++</tt>, so the workaround is not to build it.
 This is done by configuring with <tt>--disable-nco_cplusplus</tt>.
@@ -969,10 +969,10 @@ This is done by configuring with <tt>--disable-nco_cplusplus</tt>.
 
 </ul>
 
-<ul><b>Platform-Specific Build Problems:</b>
+<ul><b>Platform-Specific Build Hints:</b>
 <!-- http://nco.sf.net#bld_aix -->
 <a name="bld_aix"></a>
-<li><i>AIX build problems:</i>
+<li><i>AIX build hints:</i>
 NCO versions 2.8.7+ do not build with autotools under AIX when
 <tt>--enable-optimize-*</tt> is selected.
 The workaround is to not use <tt>--enable-optimize-*</tt>.
@@ -984,13 +984,13 @@ The workaround is to configure with <tt>--disable-shared</tt>.
 
 <!-- http://nco.sf.net#bld_irix -->
 <a name="bld_irix"></a>
-<li><i>IRIX build problems:</i>
+<li><i>IRIX build hints:</i>
 The most common problem with building on SGI IRIX is and out-of-date toolchain.
 </li>
 
 <!-- http://nco.sf.net#bld_osx -->
 <a name="bld_osx"></a>
-<li><i>Mac OS&nbsp;X build problems:</i>
+<li><i>Mac OS&nbsp;X build hints:</i>
 Mac OS&nbsp;X users report success building NCO without patches so
 long as they (1)&nbsp;Install the latest version of <tt>bison</tt>,
 (2)&nbsp;Disable shared libraries and (3)&nbsp;Disable extended regular
@@ -1012,7 +1012,7 @@ working <tt>cut</tt>, e.g., from the GNU <tt>coreutils</tt> package.
 
 <!-- http://nco.sf.net#bld_slr -->
 <a name="bld_slr"></a>
-<li><i>Solaris build problems:</i>
+<li><i>Solaris build hints:</i>
 All recent NCO versions build with autotools on Solaris 2.7&mdash;2.9.
 The most common problem with building on Solaris with
 <tt>cc</tt>/<tt>CC</tt> is that <tt>bison</tt> may be out-of-date.
@@ -1025,7 +1025,7 @@ The fix is to upgrade to the current NCO version.
 
 <!-- http://nco.sf.net#bld_sx -->
 <a name="bld_sx"></a>
-<li><i>SX build problems:</i>
+<li><i>SX build hints:</i>
 NEC&nbsp;SX does not understand the <tt>S_ISLNK</tt> macro, 
 preferring instead the (non-POSIX) <tt>S_IFLNK</tt> macro.
 This macro appears in the file 
@@ -1036,7 +1036,7 @@ Will someone with NEC&nbsp;SX please send us a working patch?
 
 <!-- http://nco.sf.net#bld_wnd -->
 <a name="bld_wnd"></a>
-<li><i>Windows build problems:</i>
+<li><i>Windows build hints:</i>
 Building on Microsoft Windows is possible with Cygwin.
 The resulting executables will behave normally on local files,
 but will not have most of NCO's network functionality
@@ -1045,6 +1045,44 @@ See the <a href="http://nco.sf.net/nco.html#wnd">User's Guide</a>
 for more details.
 </li>
 </ul>
+<hr></p>
+
+<dt><a name="bug"></a></dt> <!-- http://nco.sf.net#bug -->
+<dt><a name="prb"></a></dt> <!-- http://nco.sf.net#prb -->
+<h2>Known Problems</h2>
+
+Problems with current release:
+
+<ul><b>Platform-specific Run-time Problems:</b>
+<a name="bug_ncap_flt_fnc_aix"></a>
+<li><i>Float-valued intrinsic arithmetic functions in <tt>ncap</tt> on AIX:</i>
+<tt>ncap</tt> versions through 3.2.0 have a bug that causes all float-valued
+intrinsic math functions to fail under AIX.
+Float-valued math functions are the ISO&nbsp;C99 functions, e.g.,
+<tt>cosf()</tt>, <tt>fabsf()</tt>, <tt>logf()</tt>.
+The user does not invoke these functions directly&mdash;
+the user always specifies the <i>generic function name</i>, e.g.,
+<tt>cos()</tt>, <tt>abs()</tt>, <tt>log()</tt>.
+NCO automatically calls the native single precision (i.e.,
+float-valued) math functions when the generic function argument 
+is a native float (e.g., naked constants like <tt>1.0f</tt> or
+variables stored as <tt>NC_FLOAT</tt>).
+Double precision arguments cause NCO to invoke the standard
+(double-valued) form of the generic function, e.g., <tt>cos()</tt>, 
+<tt>fabs()</tt>, <tt>log()</tt>. 
+<!-- Whevnever this bug is fixed, here is some text
+Version info:
+<tt>ncap</tt> float functions work in AIX (<a href="#bug_ncap_flt_fnc_aix">long-time bug</a>, upgrade will be required for AIX ncap users)
+ANNOUNCE info:
+First, AIX NCO installations should upgrade to this version to get the
+AIX-specific ncap bug-fix.
+Bug-fixes:
+1. fxm: AIX uses NCO-supplied float-valued functions (e.g., cosf())
+-->
+</li>
+</ul>
+
+Problems with older releases:
 
 <ul><b>Generic Run-time Problems:</b>
 <!-- http://nco.sf.net#bug_idx_hyp -->
@@ -1156,35 +1194,6 @@ Version&nbsp;2.8.7 fixes this problem.
 </li>
 </ul>
 
-<ul><b>Platform-specific Run-time Problems:</b>
-<a name="bug_ncap_flt_fnc_aix"></a>
-<li><i>Float-valued intrinsic arithmetic functions in <tt>ncap</tt> on AIX:</i>
-<tt>ncap</tt> versions through 3.2.0 have a bug that causes all float-valued
-intrinsic math functions to fail under AIX.
-Float-valued math functions are the ISO&nbsp;C99 functions, e.g.,
-<tt>cosf()</tt>, <tt>fabsf()</tt>, <tt>logf()</tt>.
-The user does not invoke these functions directly&mdash;
-the user always specifies the <i>generic function name</i>, e.g.,
-<tt>cos()</tt>, <tt>abs()</tt>, <tt>log()</tt>.
-NCO automatically calls the native single precision (i.e.,
-float-valued) math functions when the generic function argument 
-is a native float (e.g., naked constants like <tt>1.0f</tt> or
-variables stored as <tt>NC_FLOAT</tt>).
-Double precision arguments cause NCO to invoke the standard
-(double-valued) form of the generic function, e.g., <tt>cos()</tt>, 
-<tt>fabs()</tt>, <tt>log()</tt>. 
-Version 3.2.0 fixes this problem by using its own float-valued
-functions instead of the native AIX functions. 
-<!-- Whevnever this bug is fixed, here is some text
-Version info:
-<tt>ncap</tt> float functions work in AIX (<a href="#bug_ncap_flt_fnc_aix">long-time bug</a>, upgrade will be required for AIX ncap users)
-ANNOUNCE info:
-First, AIX NCO installations should upgrade to this version to get the
-AIX-specific ncap bug-fix.
-Bug-fixes:
-1. fxm: AIX uses NCO-supplied float-valued functions (e.g., cosf())
--->
-</li>
 </ul>
 <p><hr></p>
 
