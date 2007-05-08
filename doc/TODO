@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.867 2007-05-08 19:45:29 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.868 2007-05-08 19:47:43 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -564,7 +564,8 @@ nco819. ncks: Implement way to _not_ copy all global attributes when appending
         ncks ~/foo.nc
         ncks -h -A -G -v two ~/nco/data/in.nc ~/foo.nc
         ncks ~/foo.nc
-nco820. 
+nco820. Document solution (i.e., switch) to nco819 in nco_ctl.c and manual 
+nco821. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
