@@ -131,8 +131,8 @@ h4(6:11)="henrys";
 // If hyperslabbing a var in the input 
 // then the var is first copied to output e.g
 weight(0)=weight(0)+10;
-//Increment  decrement operators
-//Deceptively complex expression
+// Increment and decrement operators
+// Deceptively complex expression
 // time is read from the input file
 // its elements are incremented by one and then the result is
 // written to the output file and subsequently then assigned to i2

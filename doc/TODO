@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.868 2007-05-08 19:47:43 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.869 2007-05-08 21:47:53 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -564,8 +564,27 @@ nco819. ncks: Implement way to _not_ copy all global attributes when appending
         ncks ~/foo.nc
         ncks -h -A -G -v two ~/nco/data/in.nc ~/foo.nc
         ncks ~/foo.nc
-nco820. Document solution (i.e., switch) to nco819 in nco_ctl.c and manual 
-nco821. 
+nco820. Document nco819 solution (i.e., switch) in nco_ctl.c and manual 
+nco821. ncrename netCDF4 regressions with nco_bm.pl:
+	cd ~/nco/bm;./nco_bm.pl --fl_fmt=netcdf4 --regress --udpreport ncks
+	ncks -O -C -v '.?T42$' ~/nco/data/in.nc ~/foo.nc
+	ncrename -h -O --mmr_drt -D 0 -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon ~/foo.nc # works
+	ncrename -h -O --mmr_drt -D 0 -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon ${DATA}/nco_bm/tempf_03.nc # fails, causes ncks regression
+nco822. ncap2 netCDF4 regressions with nco_bm.pl:
+	cd ~/nco/bm;./nco_bm.pl --fl_fmt=netcdf4 --regress --udpreport ncap2
+	ncap2 -h -O --fl_fmt=netcdf4 --mmr_drt -D 5 -v -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc # fails, causes ncap2 regression with nco_bm.pl
+	Script dies with:
+	ncap2: DEBUG ncap_def_ntl_scn(): i3 - defined in output.
+	ERROR: program exiting through nco_err_exit() which will now call abort()
+	nco_err_exit(): ERROR nco_enddef
+	HDF error
+	Aborted (core dumped)
+nco822. ncatted netCDF4 regressions with nco_bm.pl:
+	cd ~/nco/bm;./nco_bm.pl --fl_fmt=netcdf4 --regress --udpreport ncatted
+	ncatted -h -O --fl_fmt=netcdf4 -D 1 -a units,,m,c,'meter second-1' ~/nco/data/in.nc ~/foo.nc
+	Dies with
+	ncatted: unrecognized option `--fl_fmt=netcdf4'
+nco823. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
