@@ -1585,7 +1585,7 @@ Some influential environment variables:
   NETCDF_LIB  Location of netCDF library (compile-time)
   NETCDF4_ROOT
               Root of netCDF4 installation---must be separate from netCDF3.x
-              installataion (compile-time)
+              installation (compile-time)
   HDF5_LIB_DIR
               Location of HDF5 libraries (compile-time)
   DEFS        List of MPI NCOs - not user configurable
@@ -1595,8 +1595,8 @@ Some influential environment variables:
   I18N_SHARE  Root of internationalization (i18n) locale directories
               (run-time)
   UDUNITS_PATH
-              Root directory of compiled UDUnits code if not installed in
-              system directory
+              Root directory of UDUnits (normally contains etc, include, and
+              lib subdirectories)
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.

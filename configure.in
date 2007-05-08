@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.225 2007-04-25 17:16:13 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.226 2007-05-08 20:16:41 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -267,7 +267,7 @@ echo "# Testing whether libnetcdf is Version 3 or 4  #"
 echo "################################################"
 echo "DEBUG: enable_netcdf4: ${enable_netcdf4} and enable_dap: ${enable_dap}"
 
-AC_ARG_VAR([NETCDF4_ROOT],[Root of netCDF4 installation---must be separate from netCDF3.x installataion] (compile-time))
+AC_ARG_VAR([NETCDF4_ROOT],[Root of netCDF4 installation---must be separate from netCDF3.x installation] (compile-time))
 # Test if user set NETCDF4_ROOT and it exists
 if test "${enable_netcdf4}" = 'yes'; then
     if test "${NETCDF4_ROOT}" != ""; then
@@ -725,7 +725,7 @@ if test "${enable_udunits}" != 'no'; then
 # When empty, utInit() uses environment variable UDUNITS_PATH, if any (see nco_lmt.c)
 # Thus UDUNITS_PATH need not be known at compile time
 #   AC_ARG_VAR([UDUNITS_PATH],Location of UDUnits database 'udunits.dat' (run-time))
-    AC_ARG_VAR([UDUNITS_PATH],Root directory of compiled UDUnits code if not installed in system directory)
+    AC_ARG_VAR([UDUNITS_PATH],Root directory of UDUnits (normally contains etc, include, and lib subdirectories))
 fi
 echo "DEBUG: After UDUnits tests LIBS = ${LIBS}"
 # This would activate conditional UDUnits tests, if there were any
