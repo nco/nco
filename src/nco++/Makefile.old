@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.34 2007-03-30 23:25:06 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.35 2007-05-08 17:12:36 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -1025,11 +1025,11 @@ endif
 
 # SGI6, SGI64, SGIMP64
 ifneq (,$(findstring SGI,${PVM_ARCH}))
-#CXX := CC -LANG:std
-#CC := cc
+CXX := CC -LANG:std
+CC := cc -c99
 # 20000302: -w suppresses warnings which will swamp linker
-CXX := g++ -w
-CC := gcc
+#CXX := g++ -w
+#CC := gcc
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := f90 -cpp
 LD := ld
@@ -1038,19 +1038,21 @@ LEX := flex
 LINT := lint
 YACC := bison
 ifeq (${PVM_ARCH},SGI6)
-# SGI6
-GCC_ABI_FLG := -mabi=32
-GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips3 
-SGI_ABI_FLG := -n32 -mips3
-# endif SGI6
-else
-# SGI64, SGIMP64
-GCC_ABI_FLG := -mabi=64
-GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips4 -L/usr/local/lib/mabi=64
-SGI_ABI_FLG := -64 -mips4
-# endif SGI64, SGIMP64
-endif
-ifeq (${CC},gcc)
+ GCC_ABI_FLG := -mabi=32
+ GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips3 
+ SGI_ABI_FLG := -n32 -mips3 ${OMP_FLG}
+else # SGI64, SGIMP64
+ifeq (${ABI},64)
+ GCC_ABI_FLG := -mabi=64
+ GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips4 -L/usr/local/lib/mabi=64
+ SGI_ABI_FLG := -64 -mips4 ${OMP_FLG}
+else # ABI=32
+ GCC_ABI_FLG := -mabi=32
+ GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips4
+ SGI_ABI_FLG := -n32 -mips4 ${OMP_FLG}
+endif # endif ABI
+endif # endif SGI64, SGIMP64
+ifeq (gcc,$(firstword ${CC}))
  LDFLAGS := $(GCC_LDFLAGS_SZ_SPC) ${LDFLAGS}
  CFLAGS := ${GCC_ABI_FLG} -Wall
 ifeq (${OPTS},O)
@@ -1068,7 +1070,7 @@ endif
  CXXFLAGS := ${CFLAGS}
 endif
 # endif CC=gcc
-ifeq (${CC},cc)
+ifeq (CC,$(firstword ${CXX}))
 # SGI Native C++ headers are in /usr/include/CC
  LDFLAGS := ${SGI_ABI_FLG} ${LDFLAGS}
  CFLAGS := ${SGI_ABI_FLG}
@@ -1084,6 +1086,7 @@ endif
 ifeq (${OPTS},X)
  CFLAGS += -g -trapuv
 endif
+ CXXFLAGS := ${CFLAGS}
 endif
 # endif CC=cc
 # Fortran flags
@@ -1129,7 +1132,7 @@ ifeq (${CC},cc)
  LDFLAGS += -xarch=v9
 endif # endif Sun compiler
 # GNU Compiler Collection
-ifeq (${CC},gcc)
+ifeq (gcc,$(firstword ${CC}))
  CFLAGS += -mabi=64
  FFLAGS += -mabi=64
  LDFLAGS += -mabi=64

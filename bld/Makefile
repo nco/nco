@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.416 2007-04-24 18:13:43 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.417 2007-05-08 17:12:36 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -42,10 +42,12 @@
 # cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
 # 64-bit ABI on UCI MPC systems:
 # cd ${HOME}/nco/bld;env ANTLR='/software/antlr/bin/antlr' ANTLR_ROOT='/software/antlr' UDUNITS_INC='/software/udunits/include' UDUNITS_LIB='/software/udunits/lib' make --jobs=1 ABI=64 allinone;cd -
-# 64-bit ABI on NCAR AIX/IRIX systems:
+# 64-bit ABI on NCAR AIX systems:
 # cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 UDUNITS_INC=/contrib/include UDUNITS_LIB=/contrib/lib make --jobs=1 allinone ABI=64;cd -
+# 64-bit ABI on NCAR IRIX systems:
+# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 UDUNITS_INC=/contrib/udunits-1.12.4/include UDUNITS_LIB=/contrib/udunits-1.12.4/lib make --jobs=1 allinone ABI=64;cd -
 # 32-bit ABI on NCAR IRIX systems:
-# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib32/r4i4 UDUNITS_INC=/contrib/include UDUNITS_LIB=/contrib/lib make --jobs=1 lib_cln cln all ABI=32;cd -
+# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib32/r4i4 UDUNITS_INC=/contrib/include UDUNITS_LIB=/contrib/lib make --jobs=1 allinone ABI=32;cd -
 
 # Top-level tokens defining directory structure
 # These tokens may be over-ridden by environment variables or when invoking make, e.g., make DAP=Y
@@ -1116,19 +1118,20 @@ else # ABI=32
  SGI_ABI_FLG := -n32 -mips4 ${OMP_FLG}
 endif # endif ABI
 endif # endif SGI64, SGIMP64
-ifeq (${CC},gcc)
+ifeq (gcc,$(firstword ${CC}))
  LDFLAGS += $(GCC_LDFLAGS_SZ_SPC) ${TMP_LDFLAGS} ${TMP_LIBS} -lm
+ CFLAGS := ${GCC_ABI_FLG} -Wall
 ifeq (${OPTS},O)
-CFLAGS += ${GCC_ABI_FLG} -O2 -g -Wall
+ CFLAGS += -O2
 endif
 ifeq (${OPTS},R)
- CFLAGS += ${GCC_ABI_FLG} -Wall
+ CFLAGS += 
 endif
 ifeq (${OPTS},D)
- CFLAGS += ${GCC_ABI_FLG} -g -Wall
+ CFLAGS += -g
 endif
 ifeq (${OPTS},X)
- CFLAGS += ${GCC_ABI_FLG} -g -O -Wall
+ CFLAGS += -g -O
 endif
  CXXFLAGS := ${CFLAGS}
 endif
@@ -1136,31 +1139,32 @@ endif
 ifeq (cc,$(firstword ${CC}))
  LDFLAGS += ${SGI_ABI_FLG} ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq (${OPTS},O)
- CFLAGS += ${SGI_ABI_FLG} -O2 -g3
+ CFLAGS += -O2
 endif
 ifeq (${OPTS},R)
- CFLAGS += ${SGI_ABI_FLG}
+ CFLAGS += 
 endif
 ifeq (${OPTS},D)
- CFLAGS += ${SGI_ABI_FLG} -g
+ CFLAGS += -g
 endif
 ifeq (${OPTS},X)
- CFLAGS += ${SGI_ABI_FLG} -g -trapuv
+ CFLAGS += -g -trapuv
 endif
 endif
 # endif CC=cc
 # Fortran flags
+FFLAGS := ${SGI_ABI_FLG} -extend_source
 ifeq (${OPTS},O)
- FFLAGS := ${SGI_ABI_FLG} -O2 -g -extend_source
+ FFLAGS := -O2 -g
 endif
 ifeq (${OPTS},R)
- FFLAGS := ${SGI_ABI_FLG} -extend_source
+ FFLAGS := 
 endif
 ifeq (${OPTS},D)
- FFLAGS := ${SGI_ABI_FLG} -g -extend_source
+ FFLAGS := -g
 endif
 ifeq (${OPTS},X)
- FFLAGS := ${SGI_ABI_FLG} -g -extend_source -check_bounds -trapuv
+ FFLAGS := -g -check_bounds -trapuv
 endif
 # end fortran flags
 endif
