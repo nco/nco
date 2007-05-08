@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.54 2007-05-08 17:12:36 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.55 2007-05-08 17:14:37 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -998,11 +998,11 @@ endif
 
 # SGI6, SGI64, SGIMP64
 ifneq (,$(findstring SGI,${PVM_ARCH}))
-#CXX := CC -LANG:std
-#CC := cc
+CXX := CC -LANG:std
+CC := cc -c99
 # 20000302: -w suppresses warnings which will swamp linker
-CXX := g++ -w
-CC := gcc
+#CXX := g++ -w
+#CC := gcc
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90 -cpp
 LD := ld
