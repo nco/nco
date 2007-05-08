@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.411 2007-05-06 05:55:15 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.412 2007-05-08 02:12:50 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7524,6 +7524,15 @@ order.
 Of course the internal storage of variable in a netCDF file should be
 transparent to the user, but there are cases when alphabetizing a file 
 is useful (see description of @code{-a} switch).
+
+Copy all global attributes from netCDF file @file{in.nc} to file
+@file{out.nc}: 
+@example
+# Copy global attributes and extraneous variable
+ncks -A -v one ~/nco/data/in.nc ~/out.nc
+# Remove extraneous variable
+ncks -O -x -v one ~/out.nc ~/out.nc
+@end example
 
 @cindex @code{printf()}
 @cindex @code{\n} (linefeed)
