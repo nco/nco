@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.175 2007-04-20 05:23:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.176 2007-05-08 19:37:25 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -571,8 +571,9 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 
   /* Behavior of nc_inq_libvers() depends on library versions. Return values are:
      netCDF 3.4--3.6.x: "3.4 of May 16 1998 14:06:16 $"
-     netCDF 4.0-alpha1-4.0-alpha10: NULL
-     netCDF 4.0-alpha11-present: "4.0-alpha11" */  
+     netCDF 4.0-alpha1--4.0-alpha10: NULL
+     netCDF 4.0-alpha11--4.0-alpha16: "4.0-alpha11"
+     netCDF 4.0-beta1--present: "4.0-beta1" */  
   lbr_sng=(char *)strdup(nc_inq_libvers());
   /* (void)fprintf(stderr,"%s: nco_lbr_vrs_prn() returns %s\n",prg_nm_get(),lbr_sng);*/
   of_ptr=strstr(lbr_sng," of ");

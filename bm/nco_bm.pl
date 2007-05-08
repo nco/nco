@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.147 2007-03-09 08:01:26 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.148 2007-05-08 19:37:24 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -10,7 +10,7 @@
 # ~/nco/bm/nco_bm.pl --thr_nbr=2 --regress --udpreport # Test OpenMP
 # ~/nco/bm/nco_bm.pl --mpi_prc=2 --regress --udpreport # Test MPI
 # ~/nco/bm/nco_bm.pl --tst_fl=a --udpreport # Create all test files
-# ~/nco/bm/nco_bm.pl --fl_fmt=netcdf4 --udpreport # Test netCDF4
+# ~/nco/bm/nco_bm.pl --fl_fmt=netcdf4 --regress --udpreport # Test netCDF4
 # ~/nco/bm/nco_bm.pl --nco_D_flg='--mmr_drt' --regress # Relax memory cleanup
 # ~/nco/bm/nco_bm.pl --dap --regress --udpreport # Test OPeNDAP on sand
 # ~/nco/bm/nco_bm.pl --dap=http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata --regress --udpreport # Test OPeNDAP on soot

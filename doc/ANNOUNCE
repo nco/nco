@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.219 2007-05-06 05:55:15 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.220 2007-05-08 19:37:25 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.2.0 are ready. 
 
@@ -8,7 +8,11 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 Release 3.2.0 contains new documentation, new ncap2 features,
 and better configure support for IRIX.
 
-A. Arithmetic bugfix:
+A. New ncks -G feature inhibits automatic copying of global attributes
+   during appends. Formerly there was no way to append a variable from
+   in.nc to out.nc without bringing all the global metadata with it.
+   Now 'ncks -G -A -v var in.nc out.nc' appends only the variable, not
+   the global metadata.
 
 C. New Documentation:
    Working with non-standar grids, e.g., 2D grids 

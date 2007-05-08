@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.865 2007-05-08 16:32:27 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.866 2007-05-08 19:37:25 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -558,7 +558,18 @@ nco816. Add regression tests for rmssdn when N=0, N=1, N=2
 nco817. Document how to work with 1D/2D coordinate grids
 	ncks -H -v '.?_[0-9]D.?' ~/nco/data/in.nc
 nco818. ncks: Implement way to copy all global attributes from in.nc to out.nc
-nco819. 
+        ncks -O -v one ~/nco/data/in.nc ~/foo.nc
+	ncatted -O -a ,global,d,, ~/foo.nc
+        ncks ~/foo.nc
+        ncks -A -x ~/nco/data/in.nc ~/foo.nc
+        ncks ~/foo.nc
+nco819. ncks: Implement way to not copy all global attributes when appending
+        ncks -O -v one ~/nco/data/in.nc ~/foo.nc
+	ncatted -O -a ,global,d,, ~/foo.nc
+        ncks ~/foo.nc
+        ncks -A -v two ~/nco/data/in.nc ~/foo.nc
+        ncks ~/foo.nc
+nco820. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.412 2007-05-08 02:12:50 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.413 2007-05-08 19:37:25 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,7 +103,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.2.0
 @set copyright-years 1995--2007
 @set update-year 2007
-@set update-date 5 May 2007
+@set update-date 8 May 2007
 @set update-month May 2007
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -1527,6 +1527,7 @@ This makes determining the data provenance at a later date difficult.
 @cindex @code{nco_input_file_number}
 @cindex @code{nco_input_file_list}
 @cindex global attributes
+@cindex attributes, global
 To remedy this situation, multi-file operators store the number of
 input files in the @code{nco_input_file_number} global attribute and the
 input file list itself in the @code{nco_input_file_list} global attribute
@@ -5838,6 +5839,30 @@ However, semi-colons are required to separate individual assignment
 statements chained together as a single @samp{-s} argument. 
 
 @html
+<a name="xmp_grw"></a> <!-- http://nco.sf.net/nco.html#xmp_grw -->
+@end html
+@cindex growing dimensions
+@cindex dimensions, growing
+@command{ncap2} may be used to ``grow'' dimensions, i.e., to increase
+dimension sizes without altering existing data.
+Say @file{in.nc} has @code{ORO(lat,lon)} and the user wishes a new
+file with @code{new_ORO(new_lat,new_lon)} that contains zeros in the
+undefined portions of the new grid.
+@example
+defdim("new_lat",$lat.size+1); // Define new dimension sizes
+defdim("new_lon",$lon.size+1);
+new_ORO[$new_lat,$new_lon]=0.0f; // Initialize to zero
+new_ORO(0:$lat.size-1,0:$lon.size-1)=ORO; // Fill valid data
+@end example
+The commands to define new coordinate variables @code{new_lat}
+and @code{new_lon} in the output file follow a similar pattern.
+One would might store these commands in a script @file{grow.nco}
+and then execute the script with
+@example
+ncap2 -O -v -S grow.nco in.nc out.nc
+@end example
+
+@html
 <a name="flg"></a> <!-- http://nco.sf.net/nco.html#flg -->
 @end html
 @cindex flags
@@ -6306,6 +6331,7 @@ The values of @var{att_type} and @var{att_val} were left blank because
 they are superfluous in @dfn{Delete} mode. 
 
 @cindex global attributes
+@cindex attributes, global
 Delete all attributes associated with the @code{tpt} variable:
 @example
 ncatted -O -a ,tpt,d,, in.nc
@@ -7525,14 +7551,36 @@ Of course the internal storage of variable in a netCDF file should be
 transparent to the user, but there are cases when alphabetizing a file 
 is useful (see description of @code{-a} switch).
 
-Copy all global attributes from netCDF file @file{in.nc} to file
+@html
+<a name="xmp_att_glb_cpy"></a> <!-- http://nco.sf.net/nco.html#xmp_att_glb_cpy -->
+@end html
+@cindex global attributes
+@cindex attributes, global
+@cindex subsetting
+@cindex exclusion
+@cindex extraction
+@cindex @code{-v @var{var}}
+@cindex @code{--variable @var{var}}
+@cindex @code{-x}
+@cindex @code{--exclude}
+@cindex @code{--xcl}
+Copy all global attributes (and no variables) from @file{in.nc} to
 @file{out.nc}: 
 @example
-# Copy global attributes and extraneous variable
-ncks -A -v one ~/nco/data/in.nc ~/out.nc
-# Remove extraneous variable
-ncks -O -x -v one ~/out.nc ~/out.nc
+ncks -A -x ~/nco/data/in.nc ~/out.nc
 @end example
+The @samp{-x} switch tells NCO to use the complement of the extraction
+list (@pxref{Subsetting Variables}). 
+Since no extraction list is explicitly specified (with @samp{-v}),
+the default is to extract all variables.
+The complement of all variables is no variables.
+@cindex @code{-A}
+@cindex @code{--apn}
+@cindex @code{--append}
+@cindex appending to files
+Without any variables to extract, the append (@samp{-A}) command
+(@pxref{Appending Variables}) has only to extract and copy
+(i.e., append) global attributes to the output file.
 
 @cindex @code{printf()}
 @cindex @code{\n} (linefeed)
