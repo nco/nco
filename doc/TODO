@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.875 2007-05-09 06:18:51 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.876 2007-05-09 07:09:33 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -567,8 +567,9 @@ nco819. ncks: Implement way to _not_ copy all global attributes when appending
 nco820. Document nco819 solution (i.e., switch) in nco_ctl.c and manual 
 nco821. ncrename netCDF4 regressions with nco_bm.pl:
 	cd ~/nco/bm;./nco_bm.pl --fl_fmt=netcdf4 --regress --udpreport ncks
-	ncks -O -C --fl_fmt=netcdf4 -v '.?T42$' ~/nco/data/in.nc ~/foo.nc
-	ncrename -h -O --mmr_drt -D 0 -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon ~/foo.nc # fails
+	ncks -h -G -O -C --fl_fmt=netcdf4 -v lat ~/nco/data/in.nc ~/foo.nc
+	ncks -O -C --fl_fmt=netcdf4 -v lat ~/nco/data/in.nc ~/foo.nc
+	ncrename -O -D 1 -d lat,new_lat -v lat,new_lat ~/foo.nc # fails
 nco822. ncap2 netCDF4 regressions with nco_bm.pl:
 	cd ~/nco/bm;./nco_bm.pl --fl_fmt=netcdf4 --regress --udpreport ncap2
 	ncap2 -h -O --fl_fmt=netcdf4 --mmr_drt -D 5 -v -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc # fails, causes ncap2 regression with nco_bm.pl
