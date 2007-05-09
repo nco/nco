@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.175 2007-05-08 19:37:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.176 2007-05-09 22:54:21 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -74,7 +74,7 @@ main(int argc,char **argv)
 {
   nco_bool ALPHABETIZE_OUTPUT=True; /* Option a */
   nco_bool CNV_CCM_CCSM_CF;
-  nco_bool CPY_GLB_ATT=True; /* [flg] Copy global attributes Option G */
+  nco_bool CPY_GLB_ATT=True; /* [flg] Copy global attributes to output file */
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -115,9 +115,9 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.175 2007-05-08 19:37:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.175 $";
-  const char * const opt_sht_lst="4aABb:CcD:d:FGHhl:MmOo:Pp:qQrRs:uv:x-:";
+  const char * const CVS_Id="$Id: ncks.c,v 1.176 2007-05-09 22:54:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.176 $";
+  const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -300,9 +300,6 @@ main(int argc,char **argv)
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
-      break;
-    case 'G': /* Copy global attributes */
-      CPY_GLB_ATT=!CPY_GLB_ATT;
       break;
     case 'H': /* Toggle printing data to screen */
       PRN_VAR_DATA_TGL=True;
@@ -518,7 +515,7 @@ main(int argc,char **argv)
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
     
     /* Copy global attributes */
-    if(CPY_GLB_ATT) (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
+    if(PRN_GLB_METADATA) (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
     
     /* Catenate timestamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
@@ -529,7 +526,7 @@ main(int argc,char **argv)
       /* Define variable in output file */
       if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm);
       /* Copy variable's attributes */
-      (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,True);
+      if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,True);
     } /* end loop over idx */
     
     /* Turn off default filling behavior to enhance efficiency */

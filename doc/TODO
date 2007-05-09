@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.878 2007-05-09 17:45:15 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.879 2007-05-09 22:54:19 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -558,13 +558,31 @@ nco816. Add regression tests for rmssdn when N=0, N=1, N=2
 nco817. Document how to work with 1D/2D coordinate grids
 	ncks -H -v '.?_[0-9]D.?' ~/nco/data/in.nc
 nco819. ncks: Implement way to _not_ copy all global attributes when appending
-	Keep -G (kludgy) or use -M?
         ncks -O -v one ~/nco/data/in.nc ~/foo.nc
 	ncatted -h -O -a ,global,d,, ~/foo.nc
         ncks ~/foo.nc
         ncks -h -A -G -v two ~/nco/data/in.nc ~/foo.nc
         ncks ~/foo.nc
 nco820. Document nco819 solution (i.e., switch) in nco_ctl.c and manual 
+        Currently true: (checked)
+        ncks -O ~/nco/data/in.nc ~/out.nc        # Copy all variable and global metadata
+        ncks -O -v one ~/nco/data/in.nc ~/out.nc # Copy variable but not global metadata
+        
+        Currently maybe true: (unchecked)
+        ncks -O -v one ~/nco/data/in.nc ~/out.nc # Copy variable but not global metadata
+        ncks -M -O -v one ~/nco/data/in.nc ~/out.nc # Copy global but not variable metadata
+        ncks -A -v one ~/nco/data/in.nc ~/out.nc # Copy variable but not global metadata
+        
+        Desired behavior:
+        ncks -O           ~/nco/data/in.nc ~/out.nc # Copy all variable and global metadata
+        ncks -O    -v one ~/nco/data/in.nc ~/out.nc # Copy all variable and global metadata
+        ncks -A    -v one ~/nco/data/in.nc ~/out.nc # Copy variable but not global metadata
+        ncks -A -m -v one ~/nco/data/in.nc ~/out.nc # Copy only data (no metadata)
+        ncks -A -M -v one ~/nco/data/in.nc ~/out.nc # Copy all variable and global metadata
+        
+        ncks -O -v one ~/nco/data/in.nc ~/out.nc # Copy variable but not global metadata
+        ncks -M -O -v one ~/nco/data/in.nc ~/out.nc # Copy global but not variable metadata
+        ncks -A -v one ~/nco/data/in.nc ~/out.nc # Copy variable but not global metadata
 nco821. ncrename netCDF4 regression
 	cd ~/nco/bm;./nco_bm.pl --fl_fmt=netcdf4 --regress --udpreport ncks
 	ncks -h -G -O -C --fl_fmt=netcdf4 -v lat ~/nco/data/in.nc ~/foo.nc
