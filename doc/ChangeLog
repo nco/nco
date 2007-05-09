@@ -1,5 +1,9 @@
 2007-05-08  Charlie Zender  <zender@uci.edu>
 
+	* Put ${NETCDF_INC} before ${ANTLR_INC} in CPPFLAGS in nco++ Makefile
+	This ensures netCDF4 in /usr/local/netcdf4 is searched before
+	ANTLR in /usr/local (which often contains netCDF3 as well).
+
 	* Add "copy global attributes" example to ncks documentation
 
 	* Add "growing dimensions" example to ncap2 documentation

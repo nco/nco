@@ -1,11 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.55 2007-04-18 17:06:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.56 2007-05-09 05:58:27 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
 /* Copyright (C) 1995--2005 Charlie Zender
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.org/copyleft/gpl.html for full license text */
-
 
 #include <assert.h>
 #include <ctype.h>
@@ -19,8 +18,6 @@
 
 /* have removed extern -- (not linking to ncap_lex.l */
 /*extern*/ char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in ncap_lex.l) */
-
-
 
 var_sct *                  /* O [sct] initialized variable */
 ncap_var_init(
@@ -2097,10 +2094,7 @@ bool bfll)
     var->val=nco_mss_val_mk(type);  
    
   return var;
-
 }
-
-
 
 var_sct *
 ncap_sclr_var_mk(
@@ -2115,7 +2109,6 @@ unsigned char cdt)
   return var;
 }
 
-
 var_sct *
 ncap_sclr_var_mk(
 char *var_nm,
@@ -2129,8 +2122,6 @@ signed char bdt)
   return var;
 }
 
-
-
 var_sct *
 ncap_sclr_var_mk(
 char *var_nm,
@@ -2143,9 +2134,6 @@ short sdt)
   (void)cast_nctype_void(NC_SHORT,&var->val);
   return var;
 }
-
-
-
 
 var_sct *
 ncap_sclr_var_mk(
@@ -2173,7 +2161,6 @@ long ldt)
   return var;
 }
 
-
 var_sct *
 ncap_sclr_var_mk(
 char *var_nm,
@@ -2186,7 +2173,6 @@ float fdt)
   (void)cast_nctype_void(NC_FLOAT,&var->val);
   return var;
 }
-
 
 var_sct *
 ncap_sclr_var_mk(

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.418 2007-05-09 04:57:44 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.419 2007-05-09 05:58:24 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -775,14 +775,15 @@ ifeq (gcc,$(firstword ${CC}))
 # -D_BSD_SOURCE: Support 4.3 BSD Unix extensions to ANSI C (prevents nameser.h warnings)
 # -D_POSIX_SOURCE: Support POSIX.1 standard additions to ANSI C (prevents fileno warnings)
 # -pedantic: Disallow non-ISO constructs (including type long long) (sometimes useful)
-# -Werror: Consider warnings as errors
 # -W: Extra warnings, including missing return values, comparison of signed with unsigned
 # -Wall: Warn about common programming problems
-# -Wmissing-prototypes: Warn if missing prototypes
-# -Wshadow: Warn if local variable has same name as other local variable
-# -Wpointer-arith: Warn if pointer arithmetic on types without size, e.g., void
-# -Wcast-qual: Warn if const qualifier removed from pointer
 # -Wcast-align: Warn if casting pointer to type of different size
+# -Wcast-qual: Warn if const qualifier removed from pointer
+# -Werror: Consider warnings as errors
+# -Wmissing-prototypes: Warn if missing prototypes
+# -Wpointer-arith: Warn if pointer arithmetic on types without size, e.g., void
+# -Wshadow: Warn if local variable has same name as other local variable
+# -Wunused: Warn on unused functions, labels, parameters, values, and variables
 # -Wwrite-strings: Apply const-qualifier to string constants, die if overwritten
 # -fno-common: Prevent global variables from being simultaneously defined in different files
 # -g: Put debugging symbols in executable
