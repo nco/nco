@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.69 2007-02-23 21:59:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.70 2007-05-09 17:45:16 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -66,7 +66,12 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
   /* On occasion, routine is called with non-netCDF errors, e.g., by nco_dfl_case_nc_type_err()
      non-netCDF errors call nco_err_exit() with rcd == 0
      Only attempt to print netCDF error messages when rcd != 0 */
-  if(rcd != NC_NOERR) (void)fprintf(stderr,"%s: ERROR %s\n%s\n",fnc_nm,msg,nc_strerror(rcd));
+  if(msg) (void)fprintf(stderr,"%s: ERROR Short NCO-generated message (usually function name where error was triggered) is: %s\n",fnc_nm,msg);
+  if(rcd == NC_NOERR){
+    (void)fprintf(stderr,"%s: ERROR Error code is 0 which indicates an inconvenient truth in the NCO code (not in the netCDF layer)\n",fnc_nm);
+  }else{
+    (void)fprintf(stderr,"%s: ERROR Error code is %d which nc_strerror() translates as\n%s\n",fnc_nm,rcd,nc_strerror(rcd));
+  } /*  */
 #ifdef NCO_ABORT_ON_ERROR
   /* abort() produces core dump and traceback information
      Most debuggers (e.g., gdb) use this information to print the calling tree that produced the abort()
@@ -359,7 +364,7 @@ nco_redef(const int nc_id)
   /* Purpose: Wrapper for nc_redef() */
   int rcd;
   rcd=nc_redef(nc_id);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_redef");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_redef()");
   return rcd;
 } /* end nco_redef */
 
@@ -369,7 +374,7 @@ nco_set_fill(const int nc_id,const int fill_mode,int * const old_mode)
   /* Purpose: Wrapper for nc_set_fill() */
   int rcd;
   rcd=nc_set_fill(nc_id,fill_mode,old_mode);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_set_fill");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_set_fill()");
   return rcd;
 } /* end nco_set_fill */
 
@@ -379,7 +384,7 @@ nco_enddef(const int nc_id)
   /* Purpose: Wrapper for nc_enddef() */
   int rcd;
   rcd=nc_enddef(nc_id);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_enddef");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_enddef()");
   return rcd;
 } /* end nco_enddef */
 
@@ -396,7 +401,7 @@ nco__enddef /* [fnc] Wrapper for nc__enddef */
   const size_t r_align=4UL; /* [B] Alignment of beginning of data section for record variables */
   /* nc_enddef(ncid) is equivalent to nc__enddef(ncid,0,4,0,4) */
   rcd=nc__enddef(nc_id,hdr_pad,v_align,v_minfree,r_align);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco__enddef");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco__enddef()");
   return rcd;
 } /* end nco__enddef */
 
@@ -406,7 +411,7 @@ nco_sync(const int nc_id)
   /* Purpose: Wrapper for nc_sync() */
   int rcd;
   rcd=nc_sync(nc_id);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_sync");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_sync()");
   return rcd;
 } /* end nco_sync */
 
@@ -416,7 +421,7 @@ nco_abort(const int nc_id)
   /* Purpose: Wrapper for nc_abort() */
   int rcd;
   rcd=nc_abort(nc_id);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_abort");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_abort()");
   return rcd;
 } /* end nco_abort */
 
@@ -437,7 +442,7 @@ nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * cons
   /* Purpose: Wrapper for nc_inq() */
   int rcd;
   rcd=nc_inq(nc_id,dmn_nbr_fl,var_nbr_fl,att_glb_nbr,rec_dmn_id);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq()");
   return rcd;
 } /* end nco_inq */
 
@@ -447,7 +452,7 @@ nco_inq_ndims(const int nc_id,int * const dmn_nbr_fl)
   /* Purpose: Wrapper for nc_inq_ndims() */
   int rcd;
   rcd=nc_inq_ndims(nc_id,dmn_nbr_fl);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_ndims");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_ndims()");
   return rcd;
 }/* end nco_inq_ndims */
 
@@ -457,7 +462,7 @@ nco_inq_nvars(const int nc_id,int * const var_nbr_fl)
   /* Purpose: Wrapper for nc_inq_nvars() */
   int rcd;
   rcd=nc_inq_nvars(nc_id,var_nbr_fl);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_nvars");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_nvars()");
   return rcd;
 }/* end nco_inq_nvars */
 
@@ -467,7 +472,7 @@ nco_inq_natts(const int nc_id,int * const att_glb_nbr)
   /* Purpose: Wrapper for nc_inq_natts() */
   int rcd;
   rcd=nc_inq_natts(nc_id,att_glb_nbr);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_natts");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_natts()");
   return rcd;
 }/* end nco_inq_natts */
 
@@ -477,7 +482,7 @@ nco_inq_unlimdim(const int nc_id,int * const rec_dmn_id)
   /* Purpose: Wrapper for nc_inq_unlimdim() */
   int rcd;
   rcd=nc_inq_unlimdim(nc_id,rec_dmn_id);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_unlimdim");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_unlimdim()");
   return rcd;
 }/* end nco_inq_unlimdim */
 /* End File routines */
@@ -489,7 +494,7 @@ nco_def_dim(const int nc_id,const char * const dmn_nm,const long dmn_sz,int * co
   /* Purpose: Wrapper for nc_def_dim() */
   int rcd;
   rcd=nc_def_dim(nc_id,dmn_nm,(size_t)dmn_sz,dmn_id);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_dim");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_dim()");
   return rcd;
 } /* end nco_def_dim */
 
@@ -515,7 +520,7 @@ nco_inq_dimid_flg(const int nc_id,const char * const dmn_nm,int * const dmn_id)
   int rcd;
   rcd=nc_inq_dimid(nc_id,dmn_nm,dmn_id);
   if(rcd == NC_EBADDIM) return rcd;
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimid_flg");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimid_flg()");
   return rcd;
 } /* end nco_inq_dimid */
 
@@ -525,7 +530,7 @@ nco_inq_dim(const int nc_id,const int dmn_id,char *dmn_nm,long *dmn_sz)
   /* Purpose: Wrapper for nc_inq_dim() */
   int rcd;
   rcd=nc_inq_dim(nc_id,dmn_id,dmn_nm,(size_t *)dmn_sz);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dim");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dim()");
   return rcd;
 }/* end nco_inq_dim */
 
@@ -536,7 +541,7 @@ nco_inq_dim_flg(const int nc_id,const int dmn_id,char *dmn_nm,long *dmn_sz)
   int rcd;
   rcd=nc_inq_dim(nc_id,dmn_id,dmn_nm,(size_t *)dmn_sz);
   if(rcd == NC_EBADDIM) return rcd;
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dim_flg");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dim_flg()");
   return rcd;
 }/* end nco_inq_dim */
 
@@ -546,7 +551,7 @@ nco_inq_dimname(const int nc_id,const int dmn_id,char *dmn_nm)
   /* Purpose: Wrapper for nc_inq_dimname() */
   int rcd;
   rcd=nc_inq_dimname(nc_id,dmn_id,dmn_nm);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimname");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimname()");
   return rcd;
 } /* end nco_inq_dimname */
 
@@ -556,7 +561,7 @@ nco_inq_dimlen(const int nc_id,const int dmn_id,long *dmn_sz)
   /* Purpose: Wrapper for nc_inq_dimlen() */
   int rcd;
   rcd=nc_inq_dimlen(nc_id,dmn_id,(size_t *)dmn_sz);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimlen");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimlen()");
   return rcd;
 } /* end nco_inq_dimlen */
 
@@ -566,7 +571,7 @@ nco_rename_dim(const int nc_id,const int dmn_id,const char * const dmn_nm)
   /* Purpose: Wrapper for nc_rename_dim() */
   int rcd;
   rcd=nc_rename_dim(nc_id,dmn_id,dmn_nm);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_dim");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_dim()");
   return rcd;
 }  /* end nco_inq_rename_dim */
 /* End Dimension routines */
@@ -578,7 +583,7 @@ nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,cons
   /* Purpose: Wrapper for nc_def_var() */
   int rcd;
   rcd=nc_def_var(nc_id,var_nm,var_typ,dmn_nbr,dmn_id,var_id);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var()");
   return rcd;
 } /* end nco_def_var */
 
@@ -588,7 +593,7 @@ nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type *var_ty
   /* Purpose: Wrapper for nco_inq_var() */
   int rcd;
   rcd=nc_inq_var(nc_id,var_id,var_nm,var_typ,dmn_nbr,dmn_id,nbr_att);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var()");
   return rcd;
 } /* end nco_inq_var */
 
@@ -611,7 +616,7 @@ nco_inq_varid_flg(const int nc_id,const char * const var_nm,int * const var_id)
   int rcd;
   rcd=nc_inq_varid(nc_id,var_nm,var_id);
   if(rcd == NC_ENOTVAR) return rcd;
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varid_flg");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varid_flg()");
   return rcd;
 } /* end nco_inq_varid */
 
@@ -621,7 +626,7 @@ nco_inq_varname(const int nc_id,const int var_id,char * const var_nm)
   /* Purpose: Wrapper for nc_inq_varname() */
   int rcd;
   rcd=nc_inq_varname(nc_id,var_id,var_nm);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varname");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varname()");
   return rcd;
 } /* end nco_inq_varname */
 
@@ -631,7 +636,7 @@ nco_inq_vartype(const int nc_id,const int var_id,nc_type * const var_typ)
   /* Purpose: Wrapper for nc_inq_vartype() */
   int rcd;
   rcd=nc_inq_vartype(nc_id,var_id,var_typ);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_vartype");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_vartype()");
   return rcd;
 } /* end nco_inq_vartype */
 
@@ -641,7 +646,7 @@ nco_inq_varndims(const int nc_id,const int var_id,int * const dmn_nbr)
   /* Purpose: Wrapper for nc_inq_varndims() */
   int rcd;
   rcd=nc_inq_varndims(nc_id,var_id,dmn_nbr);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varndims");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varndims()");
   return rcd;
 } /* end nco_inq_varndims */
 
@@ -651,7 +656,7 @@ nco_inq_vardimid(const int nc_id,const int var_id,int * const dmn_id)
   /* Purpose: Wrapper for nc_inq_vardimid() */
   int rcd;
   rcd=nc_inq_vardimid(nc_id,var_id,dmn_id);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_vardimid");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_vardimid()");
   return rcd;
 } /* end nco_inq_vardimid */
 
@@ -661,7 +666,7 @@ nco_inq_varnatts(const int nc_id,const int var_id,int * const nbr_att)
   /* Purpose: Wrapper for nc_inq_varnatts() */
   int rcd;
   rcd=nc_inq_varnatts(nc_id,var_id,nbr_att);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varnatts");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varnatts()");
   return rcd;
 } /* end nco_inq_varnatts */
 
@@ -671,7 +676,7 @@ nco_rename_var(const int nc_id,const int var_id,const char * const var_nm)
   /* Purpose: Wrapper for nc_rename_var() */
   int rcd;
   rcd=nc_rename_var(nc_id,var_id,var_nm);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_var");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_var()");
   return rcd;
 } /* end nco_rename_var */
 
@@ -681,7 +686,7 @@ nco_copy_var(const int nc_in_id,const int var_id,const int nc_out_id)
   /* Purpose: Wrapper for nc_copy_var() */
   int rcd;
   rcd=nc_copy_var(nc_in_id,var_id,nc_out_id);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_copy_var");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_copy_var()");
   return rcd;
 } /* end nco_copy_var */
 
@@ -709,7 +714,7 @@ nco_get_var1(const int nc_id,const int var_id,const long * const srt,void * cons
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var1");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var1()");
   return rcd;
 } /* end nco_get_var1 */
 
@@ -734,7 +739,7 @@ nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void 
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var1");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var1()");
   return rcd;
 } /* end nco_put_var1 */
 
@@ -759,7 +764,7 @@ nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long 
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_vara");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_vara()");
   return rcd;
 } /* end nco_get_vara */
 
@@ -784,7 +789,7 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara()");
   return rcd;
 } /* end nco_put_vara */
 
@@ -809,7 +814,7 @@ nco_get_vars(const int nc_id,const int var_id,const long * const srt,const long 
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_vars");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_vars()");
   return rcd;
 } /* end nco_get_vars */
 
@@ -834,7 +839,7 @@ nco_put_vars(const int nc_id,const int var_id,const long * const srt,const long 
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vars");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vars()");
   return rcd;
 } /* end nco_put_vars */
 
@@ -860,7 +865,7 @@ nco_get_varm(const int nc_id,const int var_id,const long * const srt,const long 
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_varm");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_varm()");
   return rcd;
 } /* end nco_get_varm */
 
@@ -885,7 +890,7 @@ nco_put_varm(const int nc_id,const int var_id,const long * const srt,const long 
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_varm");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_varm()");
   return rcd;
 } /* end nco_put_varm */
 /* End Variable routines */
@@ -926,7 +931,7 @@ nco_inq_attid(const int nc_id,const int var_id,const char * const att_nm,int * c
   /* Purpose: Wrapper for nc_inq_attid() */
   int rcd;
   rcd=nc_inq_attid(nc_id,var_id,att_nm,att_id);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_attid");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_attid()");
   return rcd;
 } /* end nco_inq_attid */
 
@@ -951,7 +956,7 @@ nco_inq_atttype(const int nc_id,const int var_id,const char * const att_nm,nc_ty
   /* Purpose: Wrapper for nc_inq_atttype() */
   int rcd;
   rcd=nc_inq_atttype(nc_id,var_id,att_nm,att_typ);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_atttype");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_atttype()");
   return rcd;
 } /* end nco_inq_atttype */
 
@@ -961,7 +966,7 @@ nco_inq_attlen(const int nc_id,const int var_id,const char * const att_nm,long *
   /* Purpose: Wrapper for nc_inq_attlen() */
   int rcd;
   rcd=nc_inq_attlen(nc_id,var_id,att_nm,(size_t *)att_sz);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_attlen");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_attlen()");
   return rcd;
 } /* end nco_inq_attlen */
 
@@ -971,7 +976,7 @@ nco_inq_attname(const int nc_id,const int var_id,const int att_id,char * const a
   /* Purpose: Wrapper for nc_inq_attname() */
   int rcd;
   rcd=nc_inq_attname(nc_id,var_id,att_id,att_nm);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_attname");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_attname()");
   return rcd;
 } /* end nco_inq_attname */
 
@@ -981,7 +986,7 @@ nco_copy_att(const int nc_id_in,const int var_id_in,const char * const att_nm,co
   /* Purpose: Wrapper for nc_copy_att() */
   int rcd;
   rcd=nc_copy_att(nc_id_in,var_id_in,att_nm,nc_id_out,var_id_out);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_copy_att");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_copy_att()");
   return rcd;
 }  /* end nco_copy_att */
 
@@ -991,7 +996,7 @@ nco_rename_att(const int nc_id,const int var_id,const char * const att_nm,const 
   /* Purpose: Wrapper for nc_rename_att() */
   int rcd;
   rcd=nc_rename_att(nc_id,var_id,att_nm,att_new_nm);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_att");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_att()");
   return rcd;
 }  /* end nco_rename_att */
 
@@ -1001,7 +1006,7 @@ nco_del_att(const int nc_id,const int var_id,const char * const att_nm)
   /* Purpose: Wrapper for nc_del_att() */
   int rcd;
   rcd=nc_del_att(nc_id,var_id,att_nm);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_del_att");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_del_att()");
   return rcd;
 } /* end nco_del_att */
 
@@ -1027,7 +1032,7 @@ nco_put_att(const int nc_id,const int var_id,const char * const att_nm,const nc_
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_att");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_att()");
   return rcd;
 } /* end nco_put_att */
 
@@ -1053,7 +1058,7 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_att");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_att()");
   return rcd;
 } /* end nco_get_att */
 /* End Attribute routines */

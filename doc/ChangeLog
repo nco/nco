@@ -1,5 +1,8 @@
 2007-05-09  Charlie Zender  <zender@uci.edu>
 
+	* Re-format error messages to print error code if available, 
+	and to always print msg, if any
+
 	* Changed prototype and disambiguated ncap_sclr_var_mk()
 	This allows g++ 4.1.2 to compile ncap2 again.
 
