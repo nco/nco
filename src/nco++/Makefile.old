@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.35 2007-05-08 17:12:36 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.36 2007-05-09 04:57:45 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -106,6 +106,9 @@ else
 endif # endif GSL_LIB
 ifndef I18N
  I18N := Y
+ MY_SHR_DIR := ${HOME}/share
+ MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
+ MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
 endif # endif I18N
 ifndef ICC_RCH_ARG
  ICC_RCH_ARG :=
@@ -260,6 +263,11 @@ ifeq (${I18N},Y)
  MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
  MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
 endif
+
+ifeq (${NETCDF4},Y)
+ CPPFLAGS += -DENABLE_NETCDF4
+endif
+# endif NETCDF4
 
 # Message Passing Interface (MPI)
 ifeq (${MPI_FAKE},Y)
@@ -910,7 +918,8 @@ endif # endif G77 Fortran compiler
 ifeq (${OMP},Y)
  CFLAGS += ${OMP_FLG_C}
  CXXFLAGS += ${OMP_FLG_C}
- FFLAGS += ${OMP_FLG_C}
+ FFLAGS += ${OMP_FLG_F}
+# LD behavior assumes C source code
  LDFLAGS := ${OMP_FLG_C} ${LDFLAGS}
 endif # endif OMP
 endif
@@ -1053,7 +1062,7 @@ else # ABI=32
 endif # endif ABI
 endif # endif SGI64, SGIMP64
 ifeq (gcc,$(firstword ${CC}))
- LDFLAGS := $(GCC_LDFLAGS_SZ_SPC) ${LDFLAGS}
+ LDFLAGS := $(GCC_LDFLAGS_SZ_SPC) ${TMP_LDFLAGS} ${TMP_LIBS} -lm
  CFLAGS := ${GCC_ABI_FLG} -Wall
 ifeq (${OPTS},O)
  CFLAGS += -O2
@@ -1072,7 +1081,7 @@ endif
 # endif CC=gcc
 ifeq (CC,$(firstword ${CXX}))
 # SGI Native C++ headers are in /usr/include/CC
- LDFLAGS := ${SGI_ABI_FLG} ${LDFLAGS}
+ LDFLAGS := ${SGI_ABI_FLG} ${TMP_LDFLAGS} ${TMP_LIBS} -lm
  CFLAGS := ${SGI_ABI_FLG}
 ifeq (${OPTS},O)
  CFLAGS += -O2
@@ -1166,8 +1175,7 @@ CPP := cpp-2
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -Di386 ${CPP_PTH} -I${ANTLR_INC} -I${NETCDF_INC}
 FC := g77-2
 LD := ld
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
-LDFLAGS += 
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1311,6 +1319,7 @@ dbg:
 	@printf "FL_FMT = ${FL_FMT}\n"
 	@printf "GCC_RCH_ARG = ${GCC_RCH_ARG}\n"
 	@printf "HOST = ${HOST}\n"
+	@printf "HOSTNAME = ${HOSTNAME}\n"
 	@printf "ICC_RCH_ARG = ${ICC_RCH_ARG}\n"
 	@printf "LAMMPICC = ${LAMMPICC}\n"
 	@printf "LAMMPICXX = ${LAMMPICXX}\n"
@@ -1339,6 +1348,7 @@ dbg:
 	@printf "MY_DPN_DIR = ${MY_DPN_DIR}\n"
 	@printf "MY_INC_DIR = ${MY_INC_DIR}\n"
 	@printf "MY_LIB_DIR = ${MY_LIB_DIR}\n"
+	@printf "MY_SHR_DIR = ${MY_SHR_DIR}\n"
 	@printf "MY_OBJ_DIR = ${MY_OBJ_DIR}\n"
 	@printf "NCO_LDFLAGS = $(NCO_LDFLAGS)\n"
 	@printf "NCO_LIBS = $(NCO_LIBS)\n"
@@ -1351,7 +1361,9 @@ dbg:
 	@printf "NETCDF_LIB = ${NETCDF_LIB}\n"
 	@printf "NETCDF_ROOT = ${NETCDF_ROOT}\n"
 	@printf "OMP = ${OMP}\n"
+	@printf "OPTS = ${OPTS}\n"
 	@printf "PNETCDF = ${PNETCDF}\n"
+	@printf "PRC = ${PRC}\n"
 	@printf "PVM_ARCH = ${PVM_ARCH}\n"
 	@printf "RPM = ${RPM}\n"
 	@printf "SRC_LST = $(SRC_LST)\n"
@@ -1363,6 +1375,7 @@ dbg:
 	@printf "UDUNITS = $(UDUNITS)\n"
 	@printf "UDUNITS_INC = $(UDUNITS_INC)\n"
 	@printf "UDUNITS_LIB = $(UDUNITS_LIB)\n"
+	@printf "UNAMES = ${UNAMES}\n"
 	@printf "VPATH = ${VPATH}\n"
 	@printf "VRS_SNG = ${VRS_SNG}\n"
 	@printf "YACC = ${YACC}\n"

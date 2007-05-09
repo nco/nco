@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.62 2007-03-09 08:01:26 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.63 2007-05-09 04:57:45 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -182,7 +182,7 @@ sub tst_rgr {
 	$opr_nm="ncatted";
 ####################
 	# FAILS!
-	$tst_cmd[0]="ncatted -h -O $fl_fmt $nco_D_flg -a units,,m,c,'meter second-1' $in_pth_arg in.nc %tempf_00%";
+	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a units,,m,c,'meter second-1' $in_pth_arg in.nc %tempf_00%";
 	$tst_cmd[1]="ncks -C -m -v lev %tempf_00% | grep units | cut -d' ' -f 11-12"; ## daniel:fixme cut/ncks but how to do grep?
 	$dsc_sng="Modify all existing units attributes to meter second-1";
 	$tst_cmd[2] = "meter second-1";
@@ -192,7 +192,7 @@ sub tst_rgr {
 	
 #printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
 	
-	$tst_cmd[0]="ncatted -h -O $fl_fmt $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tempf_00%";
+	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tempf_00%";
 	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v val_one_mss %tempf_00%";
 	$dsc_sng="Change missing_value attribute from 1.0e36 to 0.0";
 	$tst_cmd[2] = "0";

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.104 2007-02-25 21:24:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.105 2007-05-09 04:57:45 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.104 2007-02-25 21:24:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.104 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.105 2007-05-09 04:57:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.105 $";
   const char * const opt_sht_lst="4Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -331,7 +331,7 @@ main(int argc,char **argv)
   } /* end if */
 
   /* Open file. Writing must be enabled and file should be in define mode for renaming */
-  if(dbg_lvl == 8) ncopen_mode|=NC_SHARE;
+  /*  if(dbg_lvl == 8) ncopen_mode|=NC_SHARE;*/
   rcd=nco_open(fl_out,ncopen_mode,&nc_id);
   (void)nco_redef(nc_id);
 

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.55 2007-05-08 17:14:37 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.56 2007-05-09 04:57:47 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -33,7 +33,6 @@
 # Top-level tokens defining directory structure
 # These tokens may be over-ridden by environment variables or when invoking make, e.g. make DODS=Y
 MY_BLD_DIR := ../../bld
-MY_INC_DIR := ${HOME}/include
 ifndef PVM_ARCH
  PVM_ARCH := $(shell ${MY_BLD_DIR}/pvmgetarch)
 endif
@@ -48,6 +47,9 @@ ifndef MY_OBJ_DIR
 endif
 ifndef MY_DAT_DIR
  MY_DAT_DIR := ../../data
+endif
+ifndef MY_INC_DIR
+ MY_INC_DIR := ${HOME}/include
 endif
 ifndef MY_BLD_DIR
  MY_BLD_DIR := .
@@ -67,12 +69,12 @@ ifndef ${ABI}
 endif # endif ABI
 ifndef ANTLR
  ANTLR := runantlr
-endif
+endif # endif ANTLR
 ifndef ANTLR_ROOT
  ANTLR_ROOT := /usr/local
 endif
 ifndef ANTLR_INC
- ANTLR_INC := ${ANTLR_ROOT}/include # Directory containing antlr.h
+ ANTLR_INC := ${ANTLR_ROOT}/include # Directory containing AST.hpp
 endif
 ifndef ANTLR_LIB
  ANTLR_LIB := ${ANTLR_ROOT}/lib # Directory containing libantlr.a
@@ -254,6 +256,11 @@ ifeq (${I18N},Y)
  MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
  MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
 endif
+
+ifeq (${NETCDF4},Y)
+ CPPFLAGS += -DENABLE_NETCDF4
+endif
+# endif NETCDF4
 
 # Message Passing Interface (MPI)
 ifeq (${MPI_FAKE},Y)
@@ -455,6 +462,8 @@ endif # SGI
 
 # Works on AIX and AIX46K
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
+# AIX calls executable antlr not runantlr
+ANTLR := antlr
 # 20030804: Always use re-entrant (_r) compilers---Jim Edwards NCAR/IBM 
 CC := xlc_r -qlanglvl=extc99
 #CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
@@ -470,7 +479,7 @@ endif # xlC compilers
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} ${GSL_INC} -I/usr/local/include
 FC := xlf95_r
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += -bh:5 ${TMP_LDFLAGS} ${TMP_LIBS}
 LEX := flex
 LINT := lint
 YACC := bison
@@ -541,7 +550,7 @@ ${MY_DPN_DIR}/%.d : %.cc
 	rm -f $*.i $*.o $*.u;
 endif # endif AIX VA Compiler Collection
 # GNU Compiler Collection
-ifneq (${null},$(findstring gcc,${CC}))
+ifeq (${CXX},g++)
  CFLAGS := -Wall -Wunused
 ifeq (${OPTS},O)
  CFLAGS += -O -g ${GCC_RCH_ARG}
@@ -590,7 +599,7 @@ FFLAGS := -c ${OMP_FLG} -automatic -fpe3
 FIXEDFLAGS := -extend_source
 FREEFLAGS := -DHIDE_SHR_MSG -free
 LD := ld
-LDFLAGS += ${OMP_FLG} -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += ${OMP_FLG} ${TMP_LDFLAGS} ${TMP_LIBS}
 LEX := flex
 LINT := lint
 YACC := bison
@@ -624,7 +633,7 @@ CPP := cpp
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
 LDFLAGS += -L/lib -lf
 LEX := lex
 LINT := lint
@@ -662,7 +671,7 @@ CPP := ${CXX}
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DHAVE_INLINE ${CPP_PTH} -I${NETCDF_INC} 
 FC := ${LINUX_FC}
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
 LEX := flex
 LINT := lint
 YACC := bison
@@ -897,7 +906,7 @@ CPP := ${CC}
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
 FC := f90
 LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 LEX := flex
 LINT := lint
 YACC := bison
@@ -935,7 +944,7 @@ CPP := c++ -E
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
 FC := f90
 LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 # LDFLAGS += -L/lib -lf
 endif
@@ -969,7 +978,7 @@ CPP := /lib/cpp -P
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
 FC := xlf
 LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -lxlf90 -lxlf
 endif
@@ -1006,7 +1015,7 @@ CC := cc -c99
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90 -cpp
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS}
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1026,7 +1035,7 @@ else # ABI=32
 endif # endif ABI
 endif # endif SGI64, SGIMP64
 ifeq (gcc,$(firstword ${CC}))
- LDFLAGS := $(GCC_LDFLAGS_SZ_SPC) ${LDFLAGS}
+ LDFLAGS := $(GCC_LDFLAGS_SZ_SPC) ${TMP_LDFLAGS} ${TMP_LIBS} -lm
  CFLAGS := ${GCC_ABI_FLG} -Wall
 ifeq (${OPTS},O)
  CFLAGS += -O2
@@ -1045,7 +1054,7 @@ endif
 # endif CC=gcc
 ifeq (CC,$(firstword ${CXX}))
 # SGI Native C++ headers are in /usr/include/CC
- LDFLAGS := ${SGI_ABI_FLG} ${LDFLAGS}
+ LDFLAGS := ${SGI_ABI_FLG} ${TMP_LDFLAGS} ${TMP_LIBS} -lm
  CFLAGS := ${SGI_ABI_FLG}
 ifeq (${OPTS},O)
  CFLAGS += -O2
@@ -1092,7 +1101,7 @@ FC := f90 -DHIDE_SHR_MSG
 #FFLAGS := -xs -stackvar -e -Qoption f90comp -r8const
 FFLAGS := -xs -stackvar -e 
 LD := ld
-LDFLAGS := -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf -lsunmath -lsocket -lnsl
+LDFLAGS := ${TMP_LDFLAGS} ${TMP_LIBS} -lsunmath -lsocket -lnsl
 #LDFLAGS += -lF77 -lM77 -lresolv
 LEX := lex
 LINT := lint
@@ -1139,8 +1148,7 @@ CPP := cpp-2
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -Di386 ${CPP_PTH} -I${NETCDF_INC}
 FC := g77-2
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
-LDFLAGS += 
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1241,6 +1249,7 @@ cln : dat_cln dpn_cln obj_cln
 debug: dbg
 dbg:
 	@printf "ABI = ${ABI}\n"
+	@printf "ANTLR = ${ANTLR}\n"
 	@printf "AR = ${AR}\n"
 	@printf "BNR_SFX = ${BNR_SFX}\n"
 	@printf "CC = ${CC}\n"
@@ -1286,8 +1295,7 @@ dbg:
 	@printf "MY_BLD_DIR = ${MY_BLD_DIR}\n"
 	@printf "MY_DAT_DIR = ${MY_DAT_DIR}\n"
 	@printf "MY_DOC_DIR = ${MY_DOC_DIR}\n"
-	@printf "MY_DPN_DIR_RX = ${MY_DPN_DIR_RX}\n"
-	@printf "MY_ES_DIR = ${MY_ES_DIR}\n"
+	@printf "MY_DPN_DIR = ${MY_DPN_DIR}\n"
 	@printf "MY_INC_DIR = ${MY_INC_DIR}\n"
 	@printf "MY_LIB_DIR = ${MY_LIB_DIR}\n"
 	@printf "MY_SHR_DIR = ${MY_SHR_DIR}\n"
