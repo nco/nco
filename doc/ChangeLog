@@ -1,5 +1,7 @@
 2007-05-08  Charlie Zender  <zender@uci.edu>
 
+	* Remove OpenMP and thr_nbr references from ncrename.c
+
 	* Fix regressions stemming from passing --fl_fmt to ncatted
 
 	* Put ${NETCDF_INC} before ${ANTLR_INC} in CPPFLAGS in nco++ Makefile

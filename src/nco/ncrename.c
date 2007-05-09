@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.100 2007-02-25 05:38:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.101 2007-05-09 06:18:51 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.100 2007-02-25 05:38:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.100 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.101 2007-05-09 06:18:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.101 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -108,7 +108,6 @@ main(int argc,char **argv)
   int nc_id;  
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   
   rnm_sct *var_rnm_lst=NULL_CEWI;
   rnm_sct *dmn_rnm_lst=NULL_CEWI;
@@ -443,10 +442,6 @@ main(int argc,char **argv)
   
   /* Catenate timestamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);
-  
-  /* Initialize thread information */
-  thr_nbr=nco_openmp_ini(thr_nbr);
-  if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(nc_id,thr_nbr);
   
 #ifdef _OPENMP
   /* fxm: hack to get libxlsmp library linked in */
