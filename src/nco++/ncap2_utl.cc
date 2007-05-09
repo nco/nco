@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.56 2007-05-09 05:58:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.57 2007-05-09 06:05:24 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2075,7 +2075,7 @@ return dmn_vtr;
 /* Create a scalar variable of type, if bfll then malloc ptr_unn */
 var_sct*
 ncap_sclr_var_mk(
-char* var_nm,
+const char *var_nm,
 nc_type type,
 bool bfll)
 {
@@ -2098,7 +2098,7 @@ bool bfll)
 
 var_sct *
 ncap_sclr_var_mk(
-char *var_nm,
+const char *var_nm,
 unsigned char cdt)
 {
   var_sct *var;
@@ -2111,7 +2111,7 @@ unsigned char cdt)
 
 var_sct *
 ncap_sclr_var_mk(
-char *var_nm,
+const char *var_nm,
 signed char bdt)
 {
   var_sct *var;
@@ -2124,7 +2124,7 @@ signed char bdt)
 
 var_sct *
 ncap_sclr_var_mk(
-char *var_nm,
+const char *var_nm,
 short sdt)
 {
   var_sct *var;
@@ -2137,7 +2137,7 @@ short sdt)
 
 var_sct *
 ncap_sclr_var_mk(
-char *var_nm,
+const char *var_nm,
 int idt)
 {
   var_sct *var;
@@ -2150,7 +2150,7 @@ int idt)
 
 var_sct *
 ncap_sclr_var_mk(
-char *var_nm,
+const char *var_nm,
 long ldt)
 {
   var_sct *var;
@@ -2163,7 +2163,7 @@ long ldt)
 
 var_sct *
 ncap_sclr_var_mk(
-char *var_nm,
+const char *var_nm,
 float fdt)
 {
   var_sct *var;
@@ -2176,7 +2176,7 @@ float fdt)
 
 var_sct *
 ncap_sclr_var_mk(
-char *var_nm,
+const char *var_nm,
 double ddt)
 {
   var_sct *var;

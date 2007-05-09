@@ -1,5 +1,7 @@
 2007-05-08  Charlie Zender  <zender@uci.edu>
 
+	* Fix regressions stemming from passing --fl_fmt to ncatted
+
 	* Put ${NETCDF_INC} before ${ANTLR_INC} in CPPFLAGS in nco++ Makefile
 	This ensures netCDF4 in /usr/local/netcdf4 is searched before
 	ANTLR in /usr/local (which often contains netCDF3 as well).
