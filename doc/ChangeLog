@@ -1,5 +1,11 @@
 2007-05-09  Charlie Zender  <zender@uci.edu>
 
+	* Comment out unused variables. These caused noisy compiles.
+	Retain some for future use in cases where they might help in
+	debugging or where their presence enhances code symmetry or would
+	be non-trivial to re-introduce. Mark such variables as CEWI
+	RUVICFFU = Retain Unused Variables In Comments For Future Use
+
 	* Re-format error messages to print error code if available, 
 	and to always print msg, if any
 

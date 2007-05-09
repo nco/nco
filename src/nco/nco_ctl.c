@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.176 2007-05-08 19:37:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.177 2007-05-09 23:29:16 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -98,6 +98,8 @@ nco_ddra /* [fnc] Count operations */
 {
   /* Purpose: Estimate operation counts required */
 
+  /* 20070509 CEWI RUVICFFU: ntg_nbr_rdc_dfl, ntg_nbr_nrm_dfl, flp_nbr_rdc_dfl, flp_nbr_nrm_dfl, rnk_avg */
+
   const char fnc_nm[]="nco_ddra()";
   
   /* Following speed parameter estimates are for clay.ess.uci.edu 
@@ -164,11 +166,11 @@ nco_ddra /* [fnc] Count operations */
   long long ntg_nbr_byt_swp_dfl; /* [nbr] Integer operations for byte-swap */
   long long ntg_nbr_brd_dfl; /* [nbr] Integer operations for broadcasting */
   long long ntg_nbr_clc_dfl; /* [nbr] Integer operations for collection */
-  long long ntg_nbr_rdc_dfl; /* [nbr] Integer operations for reduction */
-  long long ntg_nbr_nrm_dfl; /* [nbr] Integer operations for normalization */
+  /* long long ntg_nbr_rdc_dfl; */ /* [nbr] Integer operations for reduction */
+  /* long long ntg_nbr_nrm_dfl; */ /* [nbr] Integer operations for normalization */
   long long flp_nbr_bnr_dfl; /* [nbr] Floating point operations for binary arithmetic */
-  long long flp_nbr_rdc_dfl; /* [nbr] Floating point operations for reduction */
-  long long flp_nbr_nrm_dfl; /* [nbr] Floating point operations for normalization */
+  /* long long flp_nbr_rdc_dfl; */ /* [nbr] Floating point operations for reduction */
+  /* long long flp_nbr_nrm_dfl; */ /* [nbr] Floating point operations for normalization */
 
   /* Initialize all algorithm counts for this variable to zero then increment */
   long long ntg_nbr_byt_swp=0LL; /* [nbr] Integer operations for byte-swap */
@@ -182,7 +184,7 @@ nco_ddra /* [fnc] Count operations */
 
   /* Copies of DDRA information */
   int nco_op_typ; /* [enm] Operation type */
-  int rnk_avg; /* [nbr] Rank of averaging space */
+  /* int rnk_avg; */ /* [nbr] Rank of averaging space */
   int rnk_var; /* [nbr] Variable rank (in input file) */
   int rnk_wgt; /* [nbr] Rank of weight */
   int var_idx=int_CEWI; /* [enm] Index */
@@ -239,7 +241,7 @@ nco_ddra /* [fnc] Count operations */
   lmn_nbr_avg=ddra_info->lmn_nbr_avg; /* [nbr] Averaging block size */
   lmn_nbr_wgt=ddra_info->lmn_nbr_wgt; /* [nbr] Weight size */
   nco_op_typ=ddra_info->nco_op_typ; /* [enm] Operation type */
-  rnk_avg=ddra_info->rnk_avg; /* [nbr] Rank of averaging space */
+  /* rnk_avg=ddra_info->rnk_avg; */ /* [nbr] Rank of averaging space */
   rnk_var=ddra_info->rnk_var; /* [nbr] Variable rank (in input file) */
   rnk_wgt=ddra_info->rnk_wgt; /* [nbr] Rank of weight */
   var_idx=ddra_info->var_idx; /* [enm] Index */
@@ -280,8 +282,8 @@ nco_ddra /* [fnc] Count operations */
   } /* end switch */
 
   flp_nbr_bnr_dfl=lmn_nbr; /* [nbr] Floating point operations for binary arithmetic */
-  flp_nbr_nrm_dfl=lmn_nbr_out; /* [nbr] Floating point operations for normalization */
-  flp_nbr_rdc_dfl=lmn_nbr; /* [nbr] Floating point operations for reduction */
+  /* flp_nbr_nrm_dfl=lmn_nbr_out; */ /* [nbr] Floating point operations for normalization */
+  /* flp_nbr_rdc_dfl=lmn_nbr; */ /* [nbr] Floating point operations for reduction */
 
   /* Integer operations for broadcasting weight */
   ntg_nbr_brd_dfl=(long long)(ntg_nbr_brd_fdg_fct*lmn_nbr*(6*rnk_var+8*rnk_wgt+2)); /* [nbr] N(6R+8R_w+2) */
@@ -293,10 +295,10 @@ nco_ddra /* [fnc] Count operations */
   ntg_nbr_clc_dfl=lmn_nbr*(14*rnk_var+4); /* [nbr] N(14R+4) */
 
   /* Integer operations for normalization */
-  ntg_nbr_nrm_dfl=4*lmn_nbr_out; /* [nbr] 4N/N_A = 4N_O */
+  /* ntg_nbr_nrm_dfl=4*lmn_nbr_out; */ /* [nbr] 4N/N_A = 4N_O */
 
   /* Integer operations for reduction */
-  ntg_nbr_rdc_dfl=lmn_nbr*6+lmn_nbr_out; /* [nbr] N(6+N/N_A) */
+  /* ntg_nbr_rdc_dfl=lmn_nbr*6+lmn_nbr_out; */ /* [nbr] N(6+N/N_A) */
 
   switch(nco_op_typ){
     /* Types used in ncbo(), ncflint() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.61 2007-02-23 21:59:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.62 2007-05-09 23:29:16 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -452,6 +452,8 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
      Host routine passes dimension reversing flags in dmn_rvr_rdr
      Dimensions may be re-ordered, reversed, or both */
   
+  /* 20070509 CEWI RUVICFFU: dmn_idx_rdr_in */
+
   const char fnc_nm[]="nco_var_dmn_rdr_mtd()"; /* [sng] Function name */
   
   char *rec_dmn_nm_out=NULL; /* [sng] Name of record dimension, if any, required by re-order */
@@ -459,10 +461,10 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   dmn_sct **dmn_in=NULL; /* [sct] List of dimension structures in input order */
   dmn_sct **dmn_out; /* [sct] List of dimension structures in output order */
   
-  int dmn_idx_in_shr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->share  Purely diagnostic */
+  int dmn_idx_in_shr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->share Purely diagnostic */
   int dmn_idx_in_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->output */
   int dmn_idx_in_rdr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->re-order NB: Purely diagnostic */
-  int dmn_idx_rdr_in[NC_MAX_DIMS]; /* [idx] Dimension correspondence, re-order->input NB: Purely diagnostic */
+  /* int dmn_idx_rdr_in[NC_MAX_DIMS]; */ /* [idx] Dimension correspondence, re-order->input NB: Purely diagnostic */
   int dmn_idx_shr_rdr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, share->re-order */	  
   int dmn_idx_shr_in[NC_MAX_DIMS]; /* [idx] Dimension correspondence, share->input */	  
   int dmn_idx_shr_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, share->output */	  
@@ -483,11 +485,11 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   dmn_out_nbr=var_out->nbr_dim;
 
   /* Initialize dimension maps to missing_value to aid debugging */
-  if(dbg_lvl_get() > 3){
+  if(dbg_lvl_get() == nco_dbg_old){
     for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
       dmn_idx_out_in[dmn_out_idx]=idx_err;
-    for(dmn_rdr_idx=0;dmn_rdr_idx<dmn_rdr_nbr;dmn_rdr_idx++)
-      dmn_idx_rdr_in[dmn_rdr_idx]=idx_err;
+    /* for(dmn_rdr_idx=0;dmn_rdr_idx<dmn_rdr_nbr;dmn_rdr_idx++)
+       dmn_idx_rdr_in[dmn_rdr_idx]=idx_err; */
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
       dmn_idx_in_shr[dmn_in_idx]=idx_err;
       dmn_idx_in_rdr[dmn_in_idx]=idx_err;
@@ -518,7 +520,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
       /* ...by comparing names, not dimension IDs... */
       if(!strcmp(var_in->dim[dmn_in_idx]->nm,dmn_rdr[dmn_rdr_idx]->nm)){
 	dmn_idx_in_rdr[dmn_in_idx]=dmn_rdr_idx;
-	dmn_idx_rdr_in[dmn_rdr_idx]=dmn_in_idx;
+	/* dmn_idx_rdr_in[dmn_rdr_idx]=dmn_in_idx; */
 	dmn_idx_shr_rdr[dmn_shr_nbr]=dmn_rdr_idx;
 	dmn_idx_shr_in[dmn_shr_nbr]=dmn_in_idx;
 	dmn_idx_in_shr[dmn_in_idx]=dmn_shr_nbr;
@@ -645,6 +647,8 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
      Description of re-ordering concepts is in nco_var_dmn_rdr_mtd()
      Description of actual re-ordering algorithm is in nco_var_dmn_rdr_val() */
 
+  /* 20070509 CEWI RUVICFFU: dmn_in, dmn_id_out */
+
   nco_bool IDENTITY_REORDER=False; /* [flg] User requested identity re-ordering */
 
   char *val_in_cp; /* [ptr] Input data location as char pointer */
@@ -652,10 +656,10 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
   
   const char fnc_nm[]="nco_var_dmn_rdr_val()"; /* [sng] Function name */
 
-  dmn_sct **dmn_in=NULL; /* [sct] List of dimension structures in input order */
+  /* dmn_sct **dmn_in=NULL; */ /* [sct] List of dimension structures in input order */
   dmn_sct **dmn_out; /* [sct] List of dimension structures in output order */
-  
-  int *dmn_id_out; /* [id] Contiguous vector of dimension IDs */
+
+  /* int *dmn_id_out; */ /* [id] Contiguous vector of dimension IDs */
   int dmn_idx; /* [idx] Index over dimensions */
   int dmn_in_idx; /* [idx] Counting index for dmn_in */
   int dmn_in_nbr; /* [nbr] Number of dimensions in input variable */
@@ -684,10 +688,10 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
      2. var_out->val buffer has been allocated (calling routine must do this) */
 
   /* Get ready to re-order */
-  dmn_id_out=var_out->dmn_id;
+  /* dmn_id_out=var_out->dmn_id; */
+  /* dmn_in=var_in->dim; */
   dmn_in_nbr_m1=dmn_in_nbr-1;
   dmn_out=var_out->dim;
-  dmn_in=var_in->dim;
   typ_sz=nco_typ_lng(var_out->type);
   val_in_cp=(char *)var_in->val.vp;
   val_out_cp=(char *)var_out->val.vp;
