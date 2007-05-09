@@ -1655,18 +1655,18 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				
 				if(prs_arg->ntl_scn){
 				var1=nco_var_free(var1);
-				var= ncap_sclr_var_mk("~property",NC_INT,false);        
+				var= ncap_sclr_var_mk(static_cast<std::string>("~property"),NC_INT,false);        
 				} else { 
 				
 				switch(prp->getType()){ 
 				case PSIZE:
-				var= ncap_sclr_var_mk("~property",(int)var1->sz);
+				var= ncap_sclr_var_mk(static_cast<std::string>("~property"),(int)var1->sz);
 				break;
 				case PTYPE:
-				var= ncap_sclr_var_mk("~property",(int)var1->type);
+				var= ncap_sclr_var_mk(static_cast<std::string>("~property"),(int)var1->type);
 				break;
 				case PNDIMS:
-				var=ncap_sclr_var_mk("~property",(int)var1->nbr_dim);            
+				var=ncap_sclr_var_mk(static_cast<std::string>("~property"),(int)var1->nbr_dim);            
 				
 				} // end switch
 				var1=nco_var_free(var1); 
@@ -1761,7 +1761,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				var=ncap_var_udf("~dot_methods");  
 				// deal with average over all dims or scalar var
 				else if( nbr_dim==0 || dmn_vtr.size()== 0 || dmn_vtr.size()==nbr_dim)  
-				var=ncap_sclr_var_mk("~dot_methods",var1->type);    
+				var=ncap_sclr_var_mk(static_cast<std::string>("~dot_methods"),var1->type,false);    
 				else {
 				// cast a variable with the correct dims in the correct order
 				dim=var1->dim;
@@ -1873,11 +1873,11 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 #line 1739 "ncoGrammer.g"
 				
 				if(prs_arg->ntl_scn)
-				var=ncap_sclr_var_mk("~short",NC_BYTE);
+				var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_BYTE,false);
 				else {
 				int ival;
 				ival=atoi(c->getText().c_str());
-				var=ncap_sclr_var_mk("~short", (signed char)ival);
+				var=ncap_sclr_var_mk(static_cast<std::string>("~short"), (signed char)ival);
 				}
 				
 #line 1884 "ncoTree.cpp"
@@ -1893,11 +1893,11 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 #line 1750 "ncoGrammer.g"
 				
 				if(prs_arg->ntl_scn)
-				var=ncap_sclr_var_mk("~short",NC_SHORT);
+				var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_SHORT,false);
 				else {
 				int ival;
 				ival=atoi(s->getText().c_str());
-				var=ncap_sclr_var_mk("~short", (short)ival);
+				var=ncap_sclr_var_mk(static_cast<std::string>("~short"), (short)ival);
 				}
 				
 #line 1904 "ncoTree.cpp"
@@ -1913,11 +1913,11 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 #line 1761 "ncoGrammer.g"
 				
 				if(prs_arg->ntl_scn)
-				var=ncap_sclr_var_mk("~int",NC_INT);
+				var=ncap_sclr_var_mk(static_cast<std::string>("~int"),NC_INT,false);
 				else {
 				int ival;
 				ival=atoi(i->getText().c_str());
-				var=ncap_sclr_var_mk("~int", ival);
+				var=ncap_sclr_var_mk(static_cast<std::string>("~int"), ival);
 				}
 				
 #line 1924 "ncoTree.cpp"
@@ -1933,11 +1933,11 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 #line 1772 "ncoGrammer.g"
 				
 				if(prs_arg->ntl_scn)
-				var=ncap_sclr_var_mk("~float",NC_FLOAT);
+				var=ncap_sclr_var_mk(static_cast<std::string>("~float"),NC_FLOAT,false);
 				else {
 				float fval;
 				fval=atof(f->getText().c_str());
-				var=ncap_sclr_var_mk("~float", fval);
+				var=ncap_sclr_var_mk(static_cast<std::string>("~float"), fval);
 				}
 				
 #line 1944 "ncoTree.cpp"
@@ -1953,11 +1953,11 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 #line 1782 "ncoGrammer.g"
 				
 				if(prs_arg->ntl_scn)
-				var=ncap_sclr_var_mk("~double",NC_DOUBLE);
+				var=ncap_sclr_var_mk(static_cast<std::string>("~double"),NC_DOUBLE,false);
 				else {
 				double dvar;
 				dvar=strtod(d->getText().c_str(),(char**)NULL );
-				var=ncap_sclr_var_mk("~double", dvar);
+				var=ncap_sclr_var_mk(static_cast<std::string>("~double"), dvar);
 				}
 				
 #line 1964 "ncoTree.cpp"
@@ -2010,7 +2010,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				
 				// check output
 				if(prs_arg->ntl_scn){
-				var=ncap_sclr_var_mk("~dmn",NC_INT,false);
+				var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),NC_INT,false);
 				}else{ 
 				// Check output 
 				dmn_fd=prs_arg->ptr_dmn_out_vtr->find(sDim);
@@ -2021,7 +2021,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				if( dmn_fd==NULL_CEWI ){
 				err_prn(fnc_nm,"Unable to locate dimension " +dval->getText()+ " in input or output files ");
 				}
-				var=ncap_sclr_var_mk("~dmn",dmn_fd->sz);
+				var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),dmn_fd->sz);
 				} // end else 
 				
 #line 2028 "ncoTree.cpp"

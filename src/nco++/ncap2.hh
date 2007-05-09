@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.37 2007-05-09 06:05:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.38 2007-05-09 16:25:19 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -271,60 +271,56 @@ std::vector<std::string> &str_vtr);  /* I [sng] list of dimension names */
 /* Create a scalar variable of type, if bfill then malloc ptr_unn */
 var_sct*
 ncap_sclr_var_mk(
-const char *var_nm,
+const std::string var_nm,
 nc_type type,
-bool bfll=false);
+//bool bfll=false); fxm csz
+bool bfll);
 
 var_sct *
 ncap_sclr_var_mk(
-const char *var_nm,
+const std::string var_nm,
 unsigned char cdt);
 
 var_sct *
 ncap_sclr_var_mk(
-const char *var_nm,
+const std::string var_nm,
 signed char bdt);
 
 var_sct *
 ncap_sclr_var_mk(
-const char *var_nm,
+const std::string var_nm,
 short sdt);
 
 var_sct *
 ncap_sclr_var_mk(
-const char *var_nm,
+const std::string var_nm,
 int idt);
 
 var_sct *
 ncap_sclr_var_mk(
-const char *var_nm,
+const std::string var_nm,
 long ldt);
 
 var_sct *
 ncap_sclr_var_mk(
-const char *var_nm,
+const std::string var_nm,
 float fdt);
 
 var_sct *
 ncap_sclr_var_mk(
-const char *var_nm,
+const std::string var_nm,
 double ddt);
-
  
 var_sct*
 nco_get_var_mem(
 var_sct *var_rhs,
 NcapVector<dmn_sct*> &dmn_vtr);
 
- 
 void
 nco_put_var_mem(
 var_sct *var_in,
 var_sct *var_nw,
 NcapVector<lmt_sct*> &lmt_vtr);
-
-
-
 
 #endif /* NCAP_H */
 
