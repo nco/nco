@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.70 2007-05-09 17:45:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.71 2007-05-09 18:35:51 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -61,17 +61,21 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
   case NC_ERANGE: (void)fprintf(stdout,"ERROR Result not representable in output file\nHINT: This may occur when an arithmetic operation results in a value not representible by the output variable type and NCO attempts to write that variable to an output file, with, e.g., nc_put_var*(). For more details, see\nhttp://nco.sf.net/nco.html#typ_cnv\n\nPossible workaround: Permanently promote the variable before attempting the arithmetic operation. For example,\nncap -O -s \'foo=double(foo);\' in.nc in.nc\n"); break;
   } /* end switch */
 
-  (void)fprintf(stdout,"ERROR: program exiting through %s which will now call %s\n",fnc_nm,exit_fnc_nm);
+  /* Print NCO-generated error message, if any */
+  if(msg) (void)fprintf(stderr,"%s: ERROR Short NCO-generated message (usually function name where error was triggered): %s\n",fnc_nm,msg);
 
   /* On occasion, routine is called with non-netCDF errors, e.g., by nco_dfl_case_nc_type_err()
      non-netCDF errors call nco_err_exit() with rcd == 0
      Only attempt to print netCDF error messages when rcd != 0 */
-  if(msg) (void)fprintf(stderr,"%s: ERROR Short NCO-generated message (usually function name where error was triggered) is: %s\n",fnc_nm,msg);
+  (void)fprintf(stderr,"%s: ERROR Error code is %d. ",fnc_nm,rcd);
   if(rcd == NC_NOERR){
-    (void)fprintf(stderr,"%s: ERROR Error code is 0 which indicates an inconvenient truth in the NCO code (not in the netCDF layer)\n",fnc_nm);
+    (void)fprintf(stderr,"This indicates an inconvenient truth in the NCO code (not in the netCDF layer)\n");
   }else{
-    (void)fprintf(stderr,"%s: ERROR Error code is %d which nc_strerror() translates as\n%s\n",fnc_nm,rcd,nc_strerror(rcd));
-  } /*  */
+    (void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
+  } /* !NC_NOERR */
+
+  (void)fprintf(stdout,"%s: ERROR NCO will now exit with system call %s\n",fnc_nm,exit_fnc_nm);
+
 #ifdef NCO_ABORT_ON_ERROR
   /* abort() produces core dump and traceback information
      Most debuggers (e.g., gdb) use this information to print the calling tree that produced the abort()
