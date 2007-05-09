@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.876 2007-05-09 07:09:33 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.877 2007-05-09 16:32:45 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -572,15 +572,13 @@ nco821. ncrename netCDF4 regressions with nco_bm.pl:
 	ncrename -O -D 1 -d lat,new_lat -v lat,new_lat ~/foo.nc # fails
 nco822. ncap2 netCDF4 regressions with nco_bm.pl:
 	cd ~/nco/bm;./nco_bm.pl --fl_fmt=netcdf4 --regress --udpreport ncap2
-	ncap2 -h -O --fl_fmt=netcdf4 --mmr_drt -D 5 -v -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc # fails, causes ncap2 regression with nco_bm.pl
+	ncap2 -O --fl_fmt=netcdf4 -D 5 -v -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc # fails, causes ncap2 regression with nco_bm.pl
 	Script dies with:
 	ncap2: DEBUG ncap_def_ntl_scn(): i3 - defined in output.
 	ERROR: program exiting through nco_err_exit() which will now call abort()
 	nco_err_exit(): ERROR nco_enddef
 	HDF error
 	Aborted (core dumped)
-nco824. Unable to build ncap2 because of
-	ncoGrammer.g:1774: error: call of overloaded 'ncap_sclr_var_mk(const char [7], int)' is ambiguous
 nco825. 
 ************************************************************************
 End ncoXXX TODOs
