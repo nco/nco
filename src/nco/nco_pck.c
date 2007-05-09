@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.66 2007-02-25 21:24:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.67 2007-05-09 23:57:00 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -475,23 +475,23 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
 
  var_upk_try_to_pck: /* end goto */
   /* Variable is not yet packed---try to pack it */
-  if((nco_pck_plc_alw=nco_pck_plc_typ_get(nco_pck_map,var_in->type,&nc_typ_pck_out))){
+  if(nco_pck_plc_typ_get(nco_pck_map,var_in->type,&nc_typ_pck_out)){
     var_out->type=nc_typ_pck_out;
     if(dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stdout,"%s: DEBUG %s will pack variable %s from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->type),nco_typ_sng(var_out->type));
   }else{
     if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s packing policy %s with packing map %s does not allow packing variable %s of type %s, skipping...\n",prg_nm_get(),fnc_nm,nco_pck_plc_sng_get(nco_pck_plc),nco_pck_map_sng_get(nco_pck_map),var_in->nm,nco_typ_sng(var_in->type));
-  } /* endif nco_pck_plc_alw */
+  } /* !nco_pck_plc_alw */
   return;
   
  var_pck_try_to_rpk: /* end goto */
   /* Variable is already packed---try to re-pack it 
      Final packed variable type may differ from original */
-  if((nco_pck_plc_alw=nco_pck_plc_typ_get(nco_pck_map,var_in->typ_upk,&nc_typ_pck_out))){
+  if(nco_pck_plc_typ_get(nco_pck_map,var_in->typ_upk,&nc_typ_pck_out)){
     var_out->type=nc_typ_pck_out;
     if(dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stdout,"%s: DEBUG %s will re-pack variable %s of expanded type %s from current packing (type %s) into new packing of type %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->typ_upk),nco_typ_sng(var_in->type),nco_typ_sng(var_out->type));
   }else{
     if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: WARNING %s variable %s of expanded type %s is already packed into type %s and re-packing is requested but packing policy %s and packing map %s does not allow re-packing variables of type %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->typ_upk),nco_typ_sng(var_in->type),nco_pck_plc_sng_get(nco_pck_plc),nco_pck_map_sng_get(nco_pck_map),nco_typ_sng(var_in->typ_upk));
-  } /* endif nco_pck_plc_alw */
+  } /* !nco_pck_plc_alw */
   return;
 
 } /* end nco_pck_mtd() */
@@ -509,7 +509,6 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
   const char fnc_nm[]="nco_pck_val()"; /* [sng] Function name */
   nco_bool PCK_VAR_WITH_NEW_PCK_ATT=False; /* [flg] Insert new scale_factor and add_offset into lists */
   nc_type typ_out; /* [enm] Type in output file */
-  nco_bool nco_pck_plc_alw; /* [flg] Packing policy allows packing nc_typ_in */
   
   /* typ_out contains type of variable defined in output file
      as defined by var_out->type which was set in var_pck_mtd() 
@@ -563,12 +562,12 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
 
  var_upk_try_to_pck: /* end goto */
   /* Variable is not yet packed---try to pack it */
-  if((nco_pck_plc_alw=nco_pck_plc_typ_get(nco_pck_map,var_out->type,(nc_type *)NULL))){
+  if(nco_pck_plc_typ_get(nco_pck_map,var_out->type,(nc_type *)NULL)){
     if(dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stdout,"%s: INFO %s packing variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk),nco_typ_sng(typ_out));
     var_out=nco_var_pck(var_out,typ_out,&PCK_VAR_WITH_NEW_PCK_ATT);
   }else{
     if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s packing policy %s with packing map %s does not allow packing variable %s of type %s, skipping...\n",prg_nm_get(),fnc_nm,nco_pck_plc_sng_get(nco_pck_plc),nco_pck_map_sng_get(nco_pck_map),var_in->nm,nco_typ_sng(var_out->typ_upk));
-  } /* endif nco_pck_plc_alw */ 
+  } /* !nco_pck_plc_alw */ 
   /* Packing function nco_var_pck() usually free()'s var_out->val.vp 
      Hence var_in->val.vp is left with a dangling pointer
      In ncpdq, var_in->val.vp and var_out->val.vp point to same buffer 

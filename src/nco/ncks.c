@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.176 2007-05-09 22:54:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.177 2007-05-09 23:57:00 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -74,7 +74,6 @@ main(int argc,char **argv)
 {
   nco_bool ALPHABETIZE_OUTPUT=True; /* Option a */
   nco_bool CNV_CCM_CCSM_CF;
-  nco_bool CPY_GLB_ATT=True; /* [flg] Copy global attributes to output file */
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -115,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.176 2007-05-09 22:54:21 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.176 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.177 2007-05-09 23:57:00 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.177 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)

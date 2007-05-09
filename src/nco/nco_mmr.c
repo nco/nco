@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.30 2007-02-23 21:59:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.31 2007-05-09 23:57:00 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -309,6 +309,10 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
 (const int rusage_who) /* [enm] RUSAGE_SELF, RUSAGE_CHILDREN, RUSAGE_LWP */
 {
   /* Purpose: Track memory statistics */
+
+  /* Routine is intended to be purely diagnostic.
+     Currently only accessed by ncap when compiled with NCO_RUSAGE_DBG */
+
   /* NB: As of kernel 2.6.9, Linux only maintains rusage fields ru_utime, ru_stime, ru_minflt, ru_majflt, and ru_nswap */
   int rcd;
   int sz_pg; /* [B] Page size in Bytes */
@@ -331,6 +335,9 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
      ru_maxrss [kB], ru_ixrss [kB s], ru_idrss [kB], ru_idrss [kB]
      http://publib.boulder.ibm.com/infocenter/pseries/index.jsp?topic=/com.ibm.aix.doc/libs/basetrf1/getrusage_64.htm
 
+     IRIX uses bytes [B] for size [sz] and 
+     ru_maxrss [kB], ru_ixrss [pg tck], ru_idrss [pg], ru_idrss [pg]
+
      Linux does not implement these fields yet
      ru_maxrss, ru_ixrss, ru_idrss, ru_idrss
 
@@ -339,17 +346,20 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
      http://docs.sun.com/app/docs/doc/816-5168/6mbb3hr9o?a=view */
 
 #ifdef AIX
-  (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is AIX so rusage uses kilobytes [kB] for size and seconds [s] for time. Page size is %d B.\n",prg_nm_get(),sz_pg);
+  (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is AIX so rusage uses kilobytes [kB] for size and seconds [s] for time. Page size is %d kB.\n",prg_nm_get(),sz_pg);
 #endif /* !AIX */
 #ifdef CRAY
-  (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is CRAY so rusage units for page size ticks are unknown.\n",prg_nm_get());
+  (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is CRAY so rusage units for page size and time are unknown.\n",prg_nm_get());
 #endif /* !CRAY */
 #ifdef LINUX
   (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is LINUX so rusage does not implement ru_maxrss, ru_ixrss, ru_idrss, and ru_idrss. Page size is %d B.\n",prg_nm_get(),sz_pg);
 #endif /* !LINUX */
 #ifdef NECSX
-  (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is NECSX so rusage units for page size ticks are unknown.\n",prg_nm_get());
+  (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is NECSX so rusage units for page size and time are unknown.\n",prg_nm_get());
 #endif /* !NECSX */
+#ifdef SGI
+  (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is SGIMP64 so rusage uses bytes [B] for size, while time units are unknown. Page size is %d B.\n",prg_nm_get(),sz_pg);
+#endif /* !SGI */
 #ifdef SUNMP
   (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is SUNMP so rusage uses pages [pg] for size and ticks [tck] for time. Page size is %d B.\n",prg_nm_get(),sz_pg);
 #endif /* !SUNMP */
