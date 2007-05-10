@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.31 2007-05-09 23:57:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.32 2007-05-10 00:02:18 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -357,9 +357,9 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
 #ifdef NECSX
   (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is NECSX so rusage units for page size and time are unknown.\n",prg_nm_get());
 #endif /* !NECSX */
-#ifdef SGI
+#ifdef SGIMP64
   (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is SGIMP64 so rusage uses bytes [B] for size, while time units are unknown. Page size is %d B.\n",prg_nm_get(),sz_pg);
-#endif /* !SGI */
+#endif /* !SGIMP64 */
 #ifdef SUNMP
   (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is SUNMP so rusage uses pages [pg] for size and ticks [tck] for time. Page size is %d B.\n",prg_nm_get(),sz_pg);
 #endif /* !SUNMP */
