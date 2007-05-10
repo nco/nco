@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.120 2007-02-23 21:59:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.121 2007-05-09 23:57:00 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -982,9 +982,8 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
        Recall ncap calls ncap_var_write() to define newly packed LHS variables 
        If operator will attempt to pack some variables... */
     if(nco_pck_plc != nco_pck_plc_nil && nco_pck_plc != nco_pck_plc_upk){ 
-      nco_bool nco_pck_plc_alw; /* O [flg] Packing policy allows packing nc_typ_in */
       /* ...and expanded variable is pack-able... */
-      if((nco_pck_plc_alw=nco_pck_plc_typ_get(nco_pck_map,var[idx]->typ_upk,(nc_type *)NULL))){
+      if(nco_pck_plc_typ_get(nco_pck_map,var[idx]->typ_upk,(nc_type *)NULL)){
 	/* ...and operator will pack this particular variable... */
 	if(
 	   /* ...either because operator newly packs all variables... */
@@ -1012,7 +1011,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	  (void)nco_put_att(out_id,var[idx]->id,add_fst_sng,typ_out,1,zero_var->val.vp);
 	  zero_var=(var_sct *)nco_var_free(zero_var);
 	} /* endif this variable will be packed or re-packed */
-      } /* endif nco_pck_plc_alw */
+      } /* !nco_pck_plc_alw */
     } /* endif nco_pck_plc involves packing */
   } /* end loop over idx variables to define */
 } /* end nco_var_dfn() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.118 2007-04-18 17:06:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.119 2007-05-09 23:57:00 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.118 2007-04-18 17:06:15 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.118 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.119 2007-05-09 23:57:00 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.119 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -787,14 +787,13 @@ main(int argc,char **argv)
     /* Write/overwrite packing attributes for newly packed and re-packed variables 
        Logic here should nearly mimic logic in nco_var_dfn() */
     if(nco_pck_plc != nco_pck_plc_nil && nco_pck_plc != nco_pck_plc_upk){
-      nco_bool nco_pck_plc_alw; /* [flg] Packing policy allows packing nc_typ_in */
       /* ...put file in define mode to allow metadata writing... */
       (void)nco_redef(out_id);
       /* ...loop through all variables that may have been packed... */
       for(idx=0;idx<nbr_var_prc;idx++){
 	/* nco_var_dfn() pre-defined dummy packing attributes in output file 
 	   only for input variables considered "packable" */
-	if((nco_pck_plc_alw=nco_pck_plc_typ_get(nco_pck_map,var_prc[idx]->typ_upk,(nc_type *)NULL))){
+	if(nco_pck_plc_typ_get(nco_pck_map,var_prc[idx]->typ_upk,(nc_type *)NULL)){
 	  /* Verify input variable was newly packed by this operator
 	     Writing pre-existing (non-re-packed) attributes here would fail because
 	     nco_pck_dsk_inq() never fills in var->scl_fct.vp and var->add_fst.vp
@@ -813,7 +812,7 @@ main(int argc,char **argv)
 	    (void)nco_aed_prc(out_id,aed_lst_add_fst[idx].id,aed_lst_add_fst[idx]);
 	    (void)nco_aed_prc(out_id,aed_lst_scl_fct[idx].id,aed_lst_scl_fct[idx]);
 	  } /* endif variable is newly packed by this operator */
-	} /* endif nco_pck_plc_alw */
+	} /* !nco_pck_plc_alw */
       } /* end loop over var_prc */
       (void)nco_enddef(out_id);
     } /* nco_pck_plc == nco_pck_plc_nil || nco_pck_plc == nco_pck_plc_upk */

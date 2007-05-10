@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.67 2007-05-09 23:57:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.68 2007-05-10 00:00:02 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -432,7 +432,6 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
   /* Purpose: Alter metadata according to packing specification */
   const char fnc_nm[]="nco_pck_mtd()"; /* [sng] Function name */
   nc_type nc_typ_pck_out; /* [enm] Type to pack to */
-  nco_bool nco_pck_plc_alw; /* [flg] Packing policy allows packing nc_typ_in */
   
   switch(nco_pck_plc){
   case nco_pck_plc_all_xst_att:
