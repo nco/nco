@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.32 2007-05-10 00:02:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.33 2007-05-10 00:04:27 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -367,7 +367,7 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
   /* fxm: CEWI, not necessary */
   rcd=rusage_who;
   /* fxm: use input argument rusage_who instead or RUSAGE_SELF */
-  rcd=getrusage(RUSAGE_SELF,&usg);
+  rcd=0*rcd+getrusage(RUSAGE_SELF,&usg);
   (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports: rusage.ru_utime.tv_sec = user time used = %li s, rusage.ru_utime.tv_usec = user time used = %li us, rusage.ru_stime.tv_sec = system time used = %li s, rusage.ru_stime.tv_usec = system time used = %li us, rusage.ru_maxrss = maximum resident set size = %li [sz], rusage.ru_ixrss = integral shared memory size =  %li [sz tm], rusage.ru_idrss = integral unshared data size = %li [sz], rusage.ru_isrss = integral unshared stack size = %li [sz], rusage.ru_minflt = page reclaims = %li, rusage.ru_majflt = page faults = %li, rusage.ru_nswap = swaps = %li\n",prg_nm_get(),usg.ru_utime.tv_sec,usg.ru_utime.tv_usec,usg.ru_stime.tv_sec,usg.ru_stime.tv_usec,usg.ru_maxrss,usg.ru_ixrss,usg.ru_idrss,usg.ru_isrss,usg.ru_minflt,usg.ru_majflt,usg.ru_nswap);
 
   return (long)usg.ru_maxrss; /* [B] Maximum resident set size */
