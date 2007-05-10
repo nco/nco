@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.410 2007-05-09 22:54:19 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.411 2007-05-10 18:14:56 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -98,6 +98,10 @@ Send it in!<br>
 <h2>NCO News &amp; Announcements</h2>
 
 <ul>
+
+<li>May&nbsp;2, 2007: 
+<a href="http://dust.ess.uci.edu/smn/smn_WZJ07_gpc_200705.pdf">Talk</a>
+on SWAMP at GPC, Paris, France</li> 
 
 <li>April&nbsp;20, 2007: NCO 3.2.0 released (with i386/x86_64 debs and RPMs)</li>
 
@@ -353,6 +357,14 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 <dt><a name="Publications"></a><a name="pub"></a><a name="pubs"></a></dt>
 <h2>Publications and Presentations</h2>
 <ul>
+
+<li><!-- WZJ07 --> <a name="WZJ07"></a> <!--http://www.ess.uci.edu/~zender#WZJ07 -->
+Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2007), 
+<i>Server-side Parallel Data Reduction and Analysis</i>.
+Presented by D.&nbsp;Wang to the International Conference on Grid and
+Pervasive Computing (GPC),
+Paris, France, May 1&ndash;4, 2007. 
+<a href="http://dust.ess.uci.edu/smn/smn_WZJ07_gpc_200705.pdf">PDF</a></li>
 
 <li><!-- WZJ07 --> <a name="WZJ07"></a> <!--http://www.ess.uci.edu/~zender#WZJ07 -->
 Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2007), 

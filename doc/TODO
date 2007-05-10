@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.879 2007-05-09 22:54:19 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.880 2007-05-10 18:14:56 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -599,7 +599,8 @@ nco822. ncap2 netCDF4 regressions with nco_bm.pl:
 	nco_err_exit(): ERROR nco_enddef
 	HDF error
 	Aborted (core dumped)
-nco825. 
+nco825. Interim ncks metadata copying solution causes ncbo and ncflint regressions
+nco826. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
