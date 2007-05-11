@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.880 2007-05-10 18:14:56 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.881 2007-05-11 23:48:09 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -600,7 +600,8 @@ nco822. ncap2 netCDF4 regressions with nco_bm.pl:
 	HDF error
 	Aborted (core dumped)
 nco825. Interim ncks metadata copying solution causes ncbo and ncflint regressions
-nco826. 
+nco826. ncwa optimization: do not allocate tally when var_sz=var_avg since this this always indicates a no-op, e.g., removing a degenerate dimension.
+nco827. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
