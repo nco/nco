@@ -1,6 +1,6 @@
 /* config.h.in.  Generated from configure.in by autoheader.  */
 
-/* Compatibility pvmgetarch token for AIX on IBM PowerPC */
+/* Compatibility pvmgetarch token for AIX on IBM RS6000 */
 #undef AIX
 
 /* Compatibility pvmgetarch token for UNICOS on DEC Alpha */
@@ -340,7 +340,7 @@
 /* Compatibility pvmgetarch token for Linux on AMD x86_64 */
 #undef LINUXAMD64
 
-/* Compatibility pvmgetarch token for AIX on IBM RS6000 */
+/* Compatibility pvmgetarch token for Linux on PowerPC */
 #undef LINUXPPC
 
 /* Compatibility pvmgetarch token for Linux on Sun Sparc */
