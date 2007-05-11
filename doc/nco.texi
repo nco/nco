@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.413 2007-05-08 19:37:25 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.414 2007-05-11 19:55:07 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1697,9 +1697,9 @@ multi-file @acronym{NCO} operators consume is given in
 Many people use @acronym{NCO} on gargantuan files which dwarf the
 memory available (free @acronym{RAM} plus swap space) even on today's powerful
 machines. 
-These users will want @acronym{NCO} to consume the absolute minimum 
-peak memory possible so that their scripts do not have to tediously cut
-files into smaller pieces that fit into memory.
+These users want @acronym{NCO} to consume the least memory possible
+so that their scripts do not have to tediously cut files into smaller
+pieces that fit into memory. 
 We commend these greedy users for pushing @acronym{NCO} to its limits!
 
 @cindex threads
@@ -1756,13 +1756,42 @@ The operators have the following memory requirements:
 @command{ncecat} requires @math{MS <= VT}. 
 @command{ncra} requires @math{MS = 2FR + VR}. 
 @command{ncea} requires @math{MS = 2FT + VT}. 
-@command{ncbo} requires @math{MS <= 2VT}.
-@command{ncpdq} requires @math{MS <= 2VT}.
-@command{ncflint} requires @math{MS <= 2VT}.
-Note that only variables which are processed, i.e., averaged or
-concatenated, contribute to @math{MS}.
-Memory is never allocated to hold variables which do not appear in the 
-output file (@pxref{Subsetting Variables}). 
+@command{ncbo} requires @math{MS <= 3VT} 
+(both input variables and the output variable).
+@command{ncflint} requires @math{MS <= 3VT}
+(both input variables and the output variable).
+@command{ncpdq} requires @math{MS <= 2VT}
+(one input variable and the output variable).
+@command{ncwa} requires @math{MS <= 7VT} (see below).
+Note that only variables that are processed, e.g., averaged,
+concatenated, or differenced, contribute to @math{MS}. 
+Variables which do not appear in the output file 
+(@pxref{Subsetting Variables}) are never read and contribute nothing
+to the memory requirements. 
+
+@html
+<a name="mmr_ncwa"></a> <!-- http://nco.sf.net/nco.html#mmr_ncwa -->
+@end html
+@command{ncwa} consumes between two and seven times the memory of a
+variable in order to process it. 
+Peak consumption occurs when storing simultaneously in memory 
+one input variable, one input weight, one conformed/working weight,
+one input mask, one conformed/working mask, one tally array, and the
+output variable. 
+When invoked, the weighting and masking features contribute up to
+two-sevenths of these requirements apiece.
+If weights and masks are @emph{not} specified 
+(i.e., no @samp{-w} or @samp{-a} options)
+then @command{ncwa} requirements drop to @math{MS <= 3VT}
+(one input variable, one tally array, and the output variable). 
+
+@cindex OpenMP
+@cindex threads
+The above memory requirements must be multiplied by the number of
+threads @var{thr_nbr} (@pxref{OpenMP Threading}).
+@cindex @code{-t @var{thr_nbr}}
+If this causes problems then reduce (with @samp{-t @var{thr_nbr}}) the
+number of threads.
 
 @node Memory for ncap2,  , Single and Multi-file Operators, Memory Requirements
 @subsection Memory for @command{ncap2}
@@ -1793,9 +1822,9 @@ Memory leaks are usually identifiable by their memory usage signature.
 Leaks cause peak memory usage to increase monotonically with time
 regardless of script complexity. 
 Slow leaks are very difficult to find.
-Sometimes a @command{malloc()} failure is the only noticeable clue to
-their existance.
-If you have good reasons to believe that a @command{malloc()} failure
+Sometimes a @command{malloc()} (or @command{new[]}) failure is the
+only noticeable clue to their existance.
+If you have good reasons to believe that a memory allocation failure  
 is ultimately due to an @acronym{NCO} memory leak (rather than
 inadequate @acronym{RAM} on your system), then we would be very
 interested in receiving a detailed bug report. 

@@ -1,3 +1,7 @@
+2007-05-11  Charlie Zender  <zender@uci.edu>
+
+	* Explain ncwa memory usage in nco.texi
+
 2007-05-09  Charlie Zender  <zender@uci.edu>
 
 	* Comment out unused variables. These caused noisy compiles.
