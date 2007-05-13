@@ -1,5 +1,7 @@
 2007-05-12  Charlie Zender  <zender@uci.edu>
 
+	* ncks does not copy scale_factor and add_offset to output files?!
+
 	* ncks reports input file type, e.g., NC_FORMAT_CLASSIC,
 	NC_FORMAT_NETCDF4 
 

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.883 2007-05-13 06:17:10 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.884 2007-05-13 06:45:38 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -594,7 +594,6 @@ nco822. ncap2 netCDF4 regressions with nco_bm.pl:
 	Aborted (core dumped)
 nco825. Interim ncks metadata copying solution causes ncbo and ncflint regressions
 nco826. ncwa optimization: do not allocate tally when var_sz=var_avg since this this always indicates a no-op, e.g., removing a degenerate dimension.
-nco827. ncks: add diagnostic file format (netcdf4) to ncks output
 nco828. ncks: returns file ID = 65536 on netCDF4 files: why?
 	ncks -O --fl_fmt=netcdf4 ~/nco/data/in.nc ~/nco/data/in_4.nc
         ncks -m ~/nco/data/in_4.nc
@@ -608,7 +607,12 @@ nco830. ncbo fails diffing packed variables between netcdf3 and netcdf4 files
 	ncbo -O -4 -C -v rec_var_flt_pck -p ~/nco/data in_4.nc in_4.nc ~/foo.nc # works
 	ncbo -O -4 -C -v rec_var_flt_pck -p ~/nco/data in.nc in.nc ~/foo.nc # works
 	ncks ~/foo.nc
-nco831. 
+nco831. ncks does not copy scale_factor and add_offset to output files?!
+	ncks -O --fl_fmt=netcdf4 ~/nco/data/in.nc ~/nco/data/in_4.nc
+	ncks -O -C -v rec_var_flt_pck -p ~/nco/data in.nc
+	ncks -O -C -v rec_var_flt_pck -p ~/nco/data in_4.nc
+nco832. Cast remaining True and False's with (nco_bool) everywhere
+nco833. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

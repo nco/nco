@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.66 2007-04-18 17:06:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.67 2007-05-13 06:45:38 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.66 2007-04-18 17:06:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.66 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.67 2007-05-13 06:45:38 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.67 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRSt:v:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -519,7 +519,7 @@ main(int argc,char **argv)
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
     
     /* Copy global attributes */
-    (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,True);
+    (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
     
     /* Catenate time-stamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);

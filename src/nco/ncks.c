@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.178 2007-05-13 06:17:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.179 2007-05-13 06:45:40 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.178 2007-05-13 06:17:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.178 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.179 2007-05-13 06:45:40 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.179 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -515,7 +515,7 @@ main(int argc,char **argv)
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
     
     /* Copy global attributes */
-    if(PRN_GLB_METADATA) (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
+    if(PRN_GLB_METADATA) (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
     
     /* Catenate timestamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
@@ -526,7 +526,7 @@ main(int argc,char **argv)
       /* Define variable in output file */
       if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm);
       /* Copy variable's attributes */
-      if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,True);
+      if(PRN_VAR_METADATA) (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,(nco_bool)True);
     } /* end loop over idx */
     
     /* Turn off default filling behavior to enhance efficiency */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.47 2007-04-18 17:06:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.48 2007-05-13 06:45:39 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.47 2007-04-18 17:06:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.47 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.48 2007-05-13 06:45:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.48 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:RrSt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -543,7 +543,7 @@ main(int argc,char **argv)
     if(dbg_lvl >= nco_dbg_sbr) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
     
     /* Copy global attributes */
-    (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
+    (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
     
     /* Catenate time-stamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.71 2007-04-18 17:06:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.72 2007-05-13 06:45:40 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -256,7 +256,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       
     /* If instructed not to copy packing attributes... */
     if(!PCK_ATT_CPY)
-      /* ...verify attributed is "scale_factor" or "add_offset" ... */
+      /* ...and attribute is "scale_factor" or "add_offset" ... */
       if(!strcmp(att_nm,"scale_factor") || !strcmp(att_nm,"add_offset"))
 	/* ...then skip remainder of loop, thereby skipping attribute copy... */
 	continue;

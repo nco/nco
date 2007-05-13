@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.35 2007-04-18 17:06:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.36 2007-05-13 06:45:41 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.35 2007-04-18 17:06:16 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.35 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.36 2007-05-13 06:45:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.36 $";
   const char * const opt_sht_lst="4ACcD:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -527,7 +527,7 @@ main(int argc,char **argv)
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
   
   /* Copy global attributes */
-  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
+  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
   
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
