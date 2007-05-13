@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.63 2007-05-09 04:57:45 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.64 2007-05-13 06:17:09 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -255,7 +255,7 @@ sub tst_rgr {
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v mss_val_fst $in_pth_arg in.nc %tempf_00%";
     $tst_cmd[1]="ncrename -h -O $nco_D_flg -v mss_val_fst,mss_val %tempf_00%";
-    $tst_cmd[2]="ncbo $omp_flg  -h -O $fl_fmt $nco_D_flg -y '-' -v mss_val %tempf_00% ../data/in.nc %tempf_01% 2> %tempf_02%";
+    $tst_cmd[2]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg -y '-' -v mss_val %tempf_00% ../data/in.nc %tempf_01% 2> %tempf_02%";
     $tst_cmd[3]="ncks -C -H -s '%f,' -v mss_val %tempf_01%";
     $dsc_sng="missing_values differ between files";
     $tst_cmd[4] = "-999.000000,-999.000000,-999.000000,-999.000000";

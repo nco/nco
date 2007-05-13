@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.71 2007-05-09 18:35:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.72 2007-05-13 06:17:11 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -271,6 +271,26 @@ f90_typ_nm /* [fnc] Return string describing native Fortran90 type */
   return (char *)NULL;
 } /* end f90_typ_nm() */
 
+const char * /* O [sng] String describing file format */
+nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
+(const int fl_fmt) /* I [enm] netCDF file format */
+{
+  switch(fl_fmt){
+  case NC_FORMAT_CLASSIC:
+    return "NC_FORMAT_CLASSIC";
+  case NC_FORMAT_64BIT:
+    return "NC_FORMAT_64BIT";
+  case NC_FORMAT_NETCDF4:
+    return "NC_FORMAT_NETCDF4";
+  case NC_FORMAT_NETCDF4_CLASSIC:
+    return "NC_FORMAT_NETCDF4_CLASSIC";
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_fmt_sng() */
+
 void
 nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal switch(nc_type) case */
 {
@@ -451,6 +471,16 @@ nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * cons
 } /* end nco_inq */
 
 int
+nco_inq_format(const int nc_id,int * const fl_fmt)
+{
+  /* Purpose: Wrapper for nc_inq_format() */
+  int rcd;
+  rcd=nc_inq_format(nc_id,fl_fmt);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_format()");
+  return rcd;
+} /* end nco_inq_format */
+
+int
 nco_inq_ndims(const int nc_id,int * const dmn_nbr_fl)
 {
   /* Purpose: Wrapper for nc_inq_ndims() */
@@ -458,7 +488,7 @@ nco_inq_ndims(const int nc_id,int * const dmn_nbr_fl)
   rcd=nc_inq_ndims(nc_id,dmn_nbr_fl);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_ndims()");
   return rcd;
-}/* end nco_inq_ndims */
+} /* end nco_inq_ndims */
 
 int
 nco_inq_nvars(const int nc_id,int * const var_nbr_fl)
@@ -468,7 +498,7 @@ nco_inq_nvars(const int nc_id,int * const var_nbr_fl)
   rcd=nc_inq_nvars(nc_id,var_nbr_fl);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_nvars()");
   return rcd;
-}/* end nco_inq_nvars */
+} /* end nco_inq_nvars */
 
 int
 nco_inq_natts(const int nc_id,int * const att_glb_nbr)
@@ -478,7 +508,7 @@ nco_inq_natts(const int nc_id,int * const att_glb_nbr)
   rcd=nc_inq_natts(nc_id,att_glb_nbr);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_natts()");
   return rcd;
-}/* end nco_inq_natts */
+} /* end nco_inq_natts */
 
 int
 nco_inq_unlimdim(const int nc_id,int * const rec_dmn_id)
@@ -488,7 +518,7 @@ nco_inq_unlimdim(const int nc_id,int * const rec_dmn_id)
   rcd=nc_inq_unlimdim(nc_id,rec_dmn_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_unlimdim()");
   return rcd;
-}/* end nco_inq_unlimdim */
+} /* end nco_inq_unlimdim */
 /* End File routines */
 
 /* Begin Dimension routines (_dim) */

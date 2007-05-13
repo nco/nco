@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.221 2007-05-09 22:54:19 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.222 2007-05-13 06:17:10 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.2.0 are ready. 
 
@@ -21,7 +21,7 @@ C. New Documentation:
    Working with non-standar grids, e.g., 2D grids 
    http://nco.sf.net/nco.html#grd
 
-D. Documentation bugfix: 
+D. ncks reports input file type, e.g., NC_FORMAT_CLASSIC, NC_FORMAT_NETCDF4
 
 E. ncap2 (http://nco.sf.net/nco.html#ncap2) grows more powerful.
    Henry has ...

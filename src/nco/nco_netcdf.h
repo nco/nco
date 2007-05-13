@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.35 2007-02-23 21:59:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.36 2007-05-13 06:17:11 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -65,6 +65,10 @@ nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
 const char * /* O [sng] String describing type */
 nco_typ_sng /* [fnc] Convert netCDF type enum to string */
 (const nc_type type); /* I [enm] netCDF type */
+
+const char * /* O [sng] String describing file format */
+nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
+(const int fl_fmt); /* I [enm] netCDF file format */
 /* End Utility Routines */
 
 #if 0
@@ -89,6 +93,7 @@ int nco_sync(const int nc_id);
 int nco_abort(const int nc_id);
 int nco_close(const int nc_id);
 int nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * const att_glb_nbr,int * const rec_dmn_id);
+int nco_inq_format(const int nc_id,int * const fl_fmt);
 int nco_inq_ndims(const int nc_id,int * const dmn_nbr_fl);
 int nco_inq_nvars(const int nc_id,int * const var_nbr_fl);
 int nco_inq_natts(const int nc_id,int * const att_glb_nbr);

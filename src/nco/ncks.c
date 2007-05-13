@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.177 2007-05-09 23:57:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.178 2007-05-13 06:17:11 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.177 2007-05-09 23:57:00 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.177 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.178 2007-05-13 06:17:11 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.178 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -131,6 +131,7 @@ main(int argc,char **argv)
 
   int abb_arg_nbr=0;
   int fl_nbr=0;
+  int fl_in_fmt; /* [enm] Input file format */
   int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int glb_att_nbr;
@@ -390,7 +391,7 @@ main(int argc,char **argv)
   
   /* Get number of variables, dimensions, and global attributes in file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&glb_att_nbr,&rec_dmn_id);
-  
+
   /* Form initial extraction list which may include extended regular expressions */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&nbr_xtr);
 
@@ -567,7 +568,8 @@ main(int argc,char **argv)
   } /* end if fl_out != NULL */
   
   if(PRN_GLB_METADATA){
-    (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, id = %i\n",fl_in,nbr_dmn_fl,nbr_var_fl,glb_att_nbr,in_id);
+    (void)nco_inq_format(in_id,&fl_in_fmt);
+    (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, id = %i, type = %s\n",fl_in,nbr_dmn_fl,nbr_var_fl,glb_att_nbr,in_id,nco_fmt_sng(fl_in_fmt));
     if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
       char rec_dmn_nm[NC_MAX_NAME];
       long rec_dmn_sz;
