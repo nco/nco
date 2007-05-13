@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.884 2007-05-13 06:45:38 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.885 2007-05-13 07:12:24 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -611,8 +611,8 @@ nco831. ncks does not copy scale_factor and add_offset to output files?!
 	ncks -O --fl_fmt=netcdf4 ~/nco/data/in.nc ~/nco/data/in_4.nc
 	ncks -O -C -v rec_var_flt_pck -p ~/nco/data in.nc
 	ncks -O -C -v rec_var_flt_pck -p ~/nco/data in_4.nc
-nco832. Cast remaining True and False's with (nco_bool) everywhere
-nco833. 
+nco833. Change ncks from PRN_ to OUT_ so above commands copy attributes
+nco834. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
