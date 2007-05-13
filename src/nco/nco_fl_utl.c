@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.85 2007-02-25 21:24:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.86 2007-05-13 01:21:29 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1052,6 +1052,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 
   if(FORCE_OVERWRITE && FORCE_APPEND){
     (void)fprintf(stdout,"%s: ERROR FORCE_OVERWRITE and FORCE_APPEND are both set\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: HINT: Overwrite (-O) and Append (-A) options are mutually exclusive. Re-run your command, setting at most one of these switches.\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* end if */
 

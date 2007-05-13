@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.415 2007-05-11 23:48:09 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.416 2007-05-13 01:21:28 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7484,6 +7484,35 @@ By default @command{ncks} prints global metadata to screen if no netCDF
 output file and no variable extraction list is specified (with @samp{-v}).  
 Use @samp{-M} to print global metadata to screen if a netCDF output is 
 specified, or if a variable extraction list is specified (with @samp{-v}). 
+
+The various combinations of printing switches can be confusing.
+In an attempt to anticipate what most users want to do, @command{ncks}
+uses context-sensitive defaults for printing.
+Our goal is to minimize the use of switches required to accomplish the
+common operations.
+We assume that users creating a new file or overwriting (e.g., with
+@samp{-O}) an existing file usually wish to copy all global and
+variable-specific attributes to the new file.
+In contrast, we assume that users appending (e.g., with @samp{-A} an
+explicit variable list from one file to another usually wish to copy
+only the variable-specific attributes to the output file.
+The switches @samp{-H}, @samp{-M}, and @samp{-m} switches are
+implemented as toggles which reverse the default behavior.
+The most confusing aspect of this is that @samp{-M} inhibits copying
+global metadata in overwrite mode and causes copying of global
+metadata in append mode.
+@example
+ncks -O              in.nc out.nc # Copy all variable and global metadata
+ncks -O       -v one in.nc out.nc # Copy all variable and global metadata
+ncks -O -M    -v one in.nc out.nc # Copy variable but not global metadata
+ncks -O -m    -v one in.nc out.nc # Copy global but not variable metadata
+ncks -O -M -m -v one in.nc out.nc # Copy only data (no metadata)
+ncks -A              in.nc out.nc # Copy all variable and global metadata
+ncks -A       -v one in.nc out.nc # Copy variable but not global metadata
+ncks -A -M    -v one in.nc out.nc # Copy all variable and global metadata
+ncks -A -m    -v one in.nc out.nc # Copy only data (no metadata)
+ncks -A -M -m -v one in.nc out.nc # Copy global but not variable metadata
+@end example
 
 @cindex @command{ncdump}
 @cindex @code{-m}
