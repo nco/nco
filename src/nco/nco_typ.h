@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.12 2007-02-23 21:59:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.13 2007-05-14 19:59:18 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -68,6 +68,7 @@ C code." */
 #define	NC_UINT 	9	/* unsigned 4-byte int */
 #define	NC_INT64 	10	/* signed 8-byte int */
 #define	NC_UINT64 	11	/* unsigned 8-byte int */
+#define	NC_STRING 	12	/* string */
 #endif /* !ENABLE_NETCDF4 */
 
 /* C pre-processor can compare integers not strings
@@ -82,6 +83,7 @@ C code." */
 #define NCO_TYP_UINT 7
 #define NCO_TYP_INT64 8
 #define NCO_TYP_UINT64 9
+#define NCO_TYP_STRING 10
 
 /* NC_BYTE handling */
 #ifndef NCO_BYTE
@@ -285,7 +287,7 @@ typedef long nco_int; /* [typ] NC_INT */
 
 /* NC_UINT handling */
 #ifndef NCO_UINT
-/* Only valid options is NCO_TYP_UINT
+/* Only valid option is NCO_TYP_UINT
    Default is NCO_TYP_UINT, which treats NC_UINT as C-type unsigned int */
 # define NCO_UINT NCO_TYP_UINT
 #endif /* NCO_UINT */
@@ -310,7 +312,7 @@ typedef unsigned int nco_uint; /* [typ] NC_UINT */
 
 /* NC_INT64 handling */
 #ifndef NCO_INT64
-/* Only valid options is NCO_TYP_INT64
+/* Only valid option is NCO_TYP_INT64
    Default is NCO_TYP_INT64, which treats NC_INT64 as C-type long long */
 # define NCO_INT64 NCO_TYP_INT64
 #endif /* NCO_INT64 */
@@ -335,7 +337,7 @@ typedef long long nco_int64; /* [typ] NC_INT64 */
 
 /* NC_UINT64 handling */
 #ifndef NCO_UINT64
-/* Only valid options is NCO_TYP_UINT64
+/* Only valid option is NCO_TYP_UINT64
    Default is NCO_TYP_UINT64, which treats NC_UINT64 as C-type unsigned long long */
 # define NCO_UINT64 NCO_TYP_UINT64
 #endif /* NCO_UINT64 */
@@ -357,6 +359,33 @@ typedef unsigned long long nco_uint64; /* [typ] NC_UINT64 */
 #else
 #error "ERROR: Unrecognized NCO_UINT64 token"
 #endif /* NCO_UINT64 */
+
+/* NC_STRING handling */
+#ifndef NCO_STRING
+/* 20070514: netcdf4-beta1 only supports nc_put_var_string() and nc_get_var_string() */
+/* Only valid option is NCO_TYP_STRING
+   Default is NCO_TYP_STRING, which treats NC_STRING as C-type char */
+# define NCO_STRING NCO_TYP_STRING
+#endif /* NCO_STRING */
+#if NCO_STRING == NCO_TYP_STRING
+/* Treat NC_STRING as C-type char * */
+typedef char * nco_string; /* [typ] NC_STRING */
+# define NCO_STRING_SNG "char *"
+# define NCO_STRING_IO_SFX string
+# define NCO_GET_ATT_STRING nc_get_att_string
+# define NCO_GET_VAR1_STRING nc_get_var1_string
+# define NCO_GET_VARA_STRING nc_get_vara_string
+# define NCO_GET_VARS_STRING nc_get_vars_string
+# define NCO_GET_VARM_STRING nc_get_varm_string
+/* nc_put_att_string() is unique---it uses strlen() to determine argument length */
+# define NCO_PUT_ATT_STRING(a,b,c,d,e,f) nc_put_att_string(a,b,c,e,f)
+# define NCO_PUT_VAR1_STRING nc_put_var1_string
+# define NCO_PUT_VARA_STRING nc_put_vara_string
+# define NCO_PUT_VARS_STRING nc_put_vars_string
+# define NCO_PUT_VARM_STRING nc_put_varm_string
+#else
+#error "ERROR: Unrecognized NCO_STRING token"
+#endif /* NCO_STRING */
 
 #ifdef __cplusplus
 extern "C" {

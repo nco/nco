@@ -1,3 +1,12 @@
+2007-05-14  Charlie Zender  <zender@uci.edu>
+
+	* Implement NC_STRING support stubs in nco_typ.h
+
+	* Support NC_INT64 in nco_c++ 
+
+	* Complete netCDF4 type support (except NC_STRING) in nco_prn.c, nco_msa.c
+	ncks now prints netCDF4 atomic types correctly
+
 2007-05-13  Charlie Zender  <zender@uci.edu>
 
 	* Support netCDF4 types in nco_typ_fmt_sng()

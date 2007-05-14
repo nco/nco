@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.111 2007-02-23 21:59:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.112 2007-05-14 19:59:18 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -351,6 +351,7 @@ extern "C" {
     nco_uint * restrict uip;
     nco_int64 * restrict i64p;
     nco_uint64 * restrict ui64p;
+    nco_string * restrict sngp;
     void * restrict vp;
   } ptr_unn;
 
@@ -367,6 +368,7 @@ extern "C" {
     nco_uint ui;
     nco_int64 i64;
     nco_uint64 ui64;
+    nco_string sng;
   } val_unn;
 
   /* Scalar value structure */

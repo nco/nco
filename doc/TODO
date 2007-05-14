@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.887 2007-05-14 04:10:15 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.888 2007-05-14 19:59:17 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -578,7 +578,8 @@ nco828. ncks: returns file ID = 65536 on netCDF4 files: why?
 	ncks -O --fl_fmt=netcdf4 ~/nco/data/in.nc ~/nco/data/in_4.nc
         ncks -m ~/nco/data/in_4.nc
 	od -An -c -N4 ~/nco/data/in_4.nc
-nco834. 
+nco834. Add atomic type string NC_STRING to nco_c++ get/put var
+nco835. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
