@@ -1,5 +1,7 @@
 2007-05-13  Charlie Zender  <zender@uci.edu>
 
+	* Support netCDF4 types in nco_typ_fmt_sng()
+
 	* Make tst.cc produce netCDF4 files when compiled with netCDF4
 
 	* Printing changes fix many netcdf4 regressions

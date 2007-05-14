@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.35 2007-02-23 21:59:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.36 2007-05-14 06:50:21 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -120,6 +120,13 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
   /* NB: %hhi is GNU extension, not ANSI standard */
   /* static const char fmt_NC_BYTE[]="%hhi";*/ /* Takes signed char as arg and prints 0..255 (unfortunately) */
   /* static const char fmt_NC_BYTE[]="%hhu";*/ /* Takes unsigned char as arg and prints 0..255 */
+
+  static const char fmt_NC_UBYTE[]="%hhu"; /*  */
+  static const char fmt_NC_USHORT[]="%hu"; /*  */
+  static const char fmt_NC_UINT[]="%u"; /*  */
+  static const char fmt_NC_INT64[]="%li"; /*  */
+  static const char fmt_NC_UINT64[]="%lu"; /*  */
+
   switch (typ){
   case NC_FLOAT:
     return fmt_NC_FLOAT;
@@ -133,6 +140,16 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
     return fmt_NC_CHAR;
   case NC_BYTE:
     return fmt_NC_BYTE;
+  case NC_UBYTE:
+    return fmt_NC_UBYTE; 
+  case NC_USHORT:
+    return fmt_NC_USHORT; 
+  case NC_UINT:
+    return fmt_NC_UINT; 
+  case NC_INT64:
+    return fmt_NC_INT64; 
+  case NC_UINT64:
+    return fmt_NC_UINT64; 
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
