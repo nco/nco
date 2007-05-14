@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.180 2007-05-14 03:04:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.181 2007-05-14 06:29:41 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.180 2007-05-14 03:04:14 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.180 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.181 2007-05-14 06:29:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.181 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -412,7 +412,7 @@ main(int argc,char **argv)
     
   /* We now have final list of variables to extract. Phew. */
   
-  /* fxm: subroutineize this code block */
+  /* fxm: subroutine-ize this code block */
   /* Place all dimensions in lmt_all_lst */
   lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
 
@@ -429,7 +429,7 @@ main(int argc,char **argv)
     lmt_all_crr->WRP=False;
     lmt_all_crr->BASIC_DMN=True;
 
-    /* Initialize lmt_rgl struct */
+    /* Initialize lmt_rgl structure */
     lmt_rgl[idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
     lmt_rgl[idx]->nm=strdup(lmt_all_crr->dmn_nm);
     lmt_rgl[idx]->id=idx;
@@ -441,13 +441,13 @@ main(int argc,char **argv)
     lmt_rgl[idx]->min_sng=NULL;
     lmt_rgl[idx]->max_sng=NULL;
     lmt_rgl[idx]->srd_sng=NULL;
-    /* A hack so we know struct has been initialized */
+    /* A hack so we know structure has been initialized */
     lmt_rgl[idx]->lmt_typ=-1;
   
     lmt_all_crr->lmt_dmn[0]=lmt_rgl[idx];
   } /* end loop over dimensions */
 
-  /* subroutineize this code block */
+  /* fxm: subroutine-ize this code block */
   /* Add user specified limits lmt_all_lst */
   for(idx=0;idx<lmt_nbr;idx++){
     /* Find coordinate/dimension values associated with user-specified limits
