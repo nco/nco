@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.179 2007-05-13 06:45:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.180 2007-05-14 03:04:14 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.179 2007-05-13 06:45:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.179 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.180 2007-05-14 03:04:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.180 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -475,40 +475,52 @@ main(int argc,char **argv)
   
   /* Split up wrapped limits */
   for(idx=0;idx<nbr_dmn_fl;idx++)
-    if(lmt_all_lst[idx]->BASIC_DMN == False)
-      (void)nco_msa_wrp_splt(lmt_all_lst[idx]);
+    if(lmt_all_lst[idx]->BASIC_DMN == False) (void)nco_msa_wrp_splt(lmt_all_lst[idx]);
   
   /* Find and store final size of each dimension */
-  for(idx=0;idx<nbr_dmn_fl;idx++){
-    (void)nco_msa_clc_cnt(lmt_all_lst[idx]);
-  } /* end loop over dimensions */
+  for(idx=0;idx<nbr_dmn_fl;idx++) (void)nco_msa_clc_cnt(lmt_all_lst[idx]);
   
-  if(PRN_VRB || (fl_out == NULL && !PRN_VAR_DATA_TGL && !PRN_VAR_METADATA_TGL && !PRN_GLB_METADATA_TGL)){
-    /* Verbose printing simply means assume user wants the deluxe frills by default */
-    if(PRN_DMN_UNITS_TGL) PRN_DMN_UNITS=False; else PRN_DMN_UNITS=True;
+  if(fl_out){
+    /* Copy everything (all data and metadata) to output file by default */
     if(PRN_VAR_DATA_TGL) PRN_VAR_DATA=False; else PRN_VAR_DATA=True;
     if(PRN_VAR_METADATA_TGL) PRN_VAR_METADATA=False; else PRN_VAR_METADATA=True;
-    /* Assume user wants to see global metadata unless variable extraction is invoked */
-    if(var_lst_in == NULL) PRN_GLB_METADATA=True;
-    if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=!PRN_GLB_METADATA;
-  }else{ /* end if PRN_VRB */
-    /* Default is to print data and metadata to screen if output file is not specified */
-    if(PRN_DMN_UNITS_TGL) PRN_DMN_UNITS=True; else PRN_DMN_UNITS=False;
-    if(PRN_VAR_DATA_TGL) PRN_VAR_DATA=True; else PRN_VAR_DATA=False;
-    if(PRN_VAR_METADATA_TGL) PRN_VAR_METADATA=True; else PRN_VAR_METADATA=False;
-    if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=True; else PRN_GLB_METADATA=False;
-  } /* endelse */
+    if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=False; else PRN_GLB_METADATA=True;
+    if(FORCE_APPEND){
+      /* When appending, do not copy global metadata by default */
+      if(var_lst_in) PRN_GLB_METADATA=False; else PRN_GLB_METADATA=True;
+      if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=!PRN_GLB_METADATA;
+    } /* !FORCE_APPEND */
+  }else{ /* !fl_out */
+    /* Only input file is specified, so some printing should occur */
+    if(PRN_VRB || (!PRN_VAR_DATA_TGL && !PRN_VAR_METADATA_TGL && !PRN_GLB_METADATA_TGL)){
+      /* Verbose printing simply means assume user wants deluxe frills by default */
+      if(PRN_DMN_UNITS_TGL) PRN_DMN_UNITS=False; else PRN_DMN_UNITS=True;
+      if(PRN_VAR_DATA_TGL) PRN_VAR_DATA=False; else PRN_VAR_DATA=True;
+      if(PRN_VAR_METADATA_TGL) PRN_VAR_METADATA=False; else PRN_VAR_METADATA=True;
+      /* Assume user wants global metadata unless variable extraction is invoked */
+      if(var_lst_in == NULL) PRN_GLB_METADATA=True;
+      if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=!PRN_GLB_METADATA;
+    }else{ /* end if PRN_VRB */
+      /* Default is to print data and metadata to screen if output file is not specified */
+      if(PRN_DMN_UNITS_TGL) PRN_DMN_UNITS=True; else PRN_DMN_UNITS=False;
+      if(PRN_VAR_DATA_TGL) PRN_VAR_DATA=True; else PRN_VAR_DATA=False;
+      if(PRN_VAR_METADATA_TGL) PRN_VAR_METADATA=True; else PRN_VAR_METADATA=False;
+      if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=True; else PRN_GLB_METADATA=False;
+      
+      /* PRN_QUIET turns off all printing to screen */
+      if(PRN_QUIET) PRN_VAR_DATA=PRN_VAR_METADATA=PRN_GLB_METADATA=False;
+      
+    } /* !PRN_VRB */  
+  } /* !fl_out */  
 
-  /* PRN_QUIET is catch-all which turns off all printing to screen */
-  if(PRN_QUIET) PRN_VAR_DATA=PRN_VAR_METADATA=PRN_GLB_METADATA=False;
-
-  if(NCO_BNR_WRT && fl_out == NULL){
+  if(NCO_BNR_WRT && !fl_out){
     /* Native binary files depend on writing netCDF file to enter generic I/O logic */
-    (void)fprintf(stdout,"%s: ERROR Native binary files cannot be written unless netCDF output filename also specified. HINT: Repeat command with throw-away netCDF file specified for output file (e.g., -o foo.nc)\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Native binary files cannot be written unless netCDF output filename also specified. HINT: Repeat command with dummy netCDF file specified for output file (e.g., -o foo.nc)\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif NCO_BNR_WRT */
     
-  if(fl_out != NULL){
+  if(fl_out){
+    /* Output file was specified so PRN_ tokens refer to (meta)data copying */
     int out_id;  
     
     /* Open output file */
@@ -519,10 +531,10 @@ main(int argc,char **argv)
     
     /* Catenate timestamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-
+    
     for(idx=0;idx<nbr_xtr;idx++){
       int var_out_id;
-
+      
       /* Define variable in output file */
       if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm);
       /* Copy variable's attributes */
@@ -531,7 +543,7 @@ main(int argc,char **argv)
     
     /* Turn off default filling behavior to enhance efficiency */
     rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
-  
+    
     /* Take output file out of define mode */
     if(hdr_pad == 0UL){
       (void)nco_enddef(out_id);
@@ -542,11 +554,11 @@ main(int argc,char **argv)
     
     /* [fnc] Open unformatted binary data file for writing */
     if(NCO_BNR_WRT) fp_bnr=nco_bnr_open(fl_bnr);
-
+    
     /* Timestamp end of metadata setup and disk layout */
     rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
     ddra_info.tmr_flg=nco_tmr_rgl;
-
+    
     /* Copy variable data */
     for(idx=0;idx<nbr_xtr;idx++){
       if(dbg_lvl >= nco_dbg_var && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
@@ -558,48 +570,51 @@ main(int argc,char **argv)
       /* NB: nco_cpy_var_val_mlt_lmt() contains OpenMP critical region */
       if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm);
     } /* end loop over idx */
-
+    
     /* [fnc] Close unformatted binary data file */
     if(NCO_BNR_WRT) (void)nco_bnr_close(fp_bnr,fl_bnr);
-
+    
     /* Close output file and move it from temporary to permanent location */
     (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
-
-  } /* end if fl_out != NULL */
-  
-  if(PRN_GLB_METADATA){
-    (void)nco_inq_format(in_id,&fl_in_fmt);
-    (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, id = %i, type = %s\n",fl_in,nbr_dmn_fl,nbr_var_fl,glb_att_nbr,in_id,nco_fmt_sng(fl_in_fmt));
-    if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
-      char rec_dmn_nm[NC_MAX_NAME];
-      long rec_dmn_sz;
-      
-      (void)nco_inq_dim(in_id,rec_dmn_id,rec_dmn_nm,&rec_dmn_sz);
-      (void)fprintf(stdout,"Record dimension: name = %s, size = %li\n\n",rec_dmn_nm,rec_dmn_sz);
-    } /* end if */
     
-    /* Print all global attributes */
-    (void)nco_prn_att(in_id,NC_GLOBAL);
-  } /* endif PRN_GLB_METADATA */
+  }else{ /* !fl_out */
+    /* No output file was specified so PRN_ tokens refer to screen printing */
+    if(PRN_GLB_METADATA){
+      (void)nco_inq_format(in_id,&fl_in_fmt);
+      (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, id = %i, type = %s\n",fl_in,nbr_dmn_fl,nbr_var_fl,glb_att_nbr,in_id,nco_fmt_sng(fl_in_fmt));
+      if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
+	char rec_dmn_nm[NC_MAX_NAME];
+	long rec_dmn_sz;
+	
+	(void)nco_inq_dim(in_id,rec_dmn_id,rec_dmn_nm,&rec_dmn_sz);
+	(void)fprintf(stdout,"Record dimension: name = %s, size = %li\n\n",rec_dmn_nm,rec_dmn_sz);
+      } /* end if */
+      
+      /* Print global attributes */
+      (void)nco_prn_att(in_id,NC_GLOBAL);
+    } /* endif PRN_GLB_METADATA */
+    
+    if(PRN_VAR_METADATA){
+      for(idx=0;idx<nbr_xtr;idx++){
+	/* Print variable's definition */
+	(void)nco_prn_var_dfn(in_id,xtr_lst[idx].nm);
+	/* Print variable's attributes */
+	(void)nco_prn_att(in_id,xtr_lst[idx].id);
+      } /* end loop over idx */
+    } /* end if PRN_VAR_METADATA */
+    
+    /* if(!fl_out && PRN_VAR_DATA){ */
+    /* NB: nco_prn_var_val_lmt() with same nc_id contains OpenMP critical region */
+    /* for(idx=0;idx<nbr_xtr;idx++) (void)nco_prn_var_val_lmt(in_id,xtr_lst[idx].nm,lmt,lmt_nbr,dlm_sng,FORTRAN_IDX_CNV,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL);
+       } */
+    
+    if(PRN_VAR_DATA){
+      /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
+      for(idx=0;idx<nbr_xtr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL);
+    } /* end if PRN_VAR_DATA */
+    
+  } /* !fl_out */
   
-  if(PRN_VAR_METADATA){
-    for(idx=0;idx<nbr_xtr;idx++){
-      /* Print variable's definition */
-      (void)nco_prn_var_dfn(in_id,xtr_lst[idx].nm);
-      /* Print variable's attributes */
-      (void)nco_prn_att(in_id,xtr_lst[idx].id);
-    } /* end loop over idx */
-  } /* end if PRN_VAR_METADATA */
-
-  /* if(PRN_VAR_DATA){ */
-  /* NB: nco_prn_var_val_lmt() with same nc_id contains OpenMP critical region */
-  /* for(idx=0;idx<nbr_xtr;idx++) (void)nco_prn_var_val_lmt(in_id,xtr_lst[idx].nm,lmt,lmt_nbr,dlm_sng,FORTRAN_IDX_CNV,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL);
-     } */
-
-  if(PRN_VAR_DATA){
-    /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
-    for(idx=0;idx<nbr_xtr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL);
-  } /* end if PRN_VAR_DATA */
   /* Extraction list no longer needed */
   xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
   
@@ -608,7 +623,7 @@ main(int argc,char **argv)
   
   /* Remove local copy of file */
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
-
+  
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
     /* ncks-specific memory */
@@ -637,8 +652,9 @@ main(int argc,char **argv)
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
-
+  
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
   return EXIT_SUCCESS;
+
 } /* end main() */
