@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.17 2007-02-23 21:59:32 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.18 2007-05-14 18:36:37 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface to netCDF variable routines
 
@@ -256,6 +256,17 @@ nco_put_vara // [fnc] Write variable to netCDF file
  const short * const &var_val); // I [frc] Variable value
 // end nco_put_vara<size_t *,size_t *,short *>() prototype
 
+#ifdef ENABLE_NETCDF4
+int // O [enm] Return success code
+nco_put_vara // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const size_t * const &var_srt, // I [idx] Start vector
+ const size_t * const &var_cnt, // I [nbr] Count vector
+ const long long * const &var_val); // I [frc] Variable value
+// end nco_put_vara<size_t *,size_t *,long long *>() prototype
+#endif // !ENABLE_NETCDF4
+
 // Overload 2: Write array given name, start, count vectors
 template<typename typ_ntr>
 int // O [enm] Return success code
@@ -342,6 +353,15 @@ nco_put_var // [fnc] Write variable to netCDF file
  const int &var_id, // I [id] Variable ID
  const short * const &var_val); // I [frc] Variable value
 // end nco_put_var<short *>() prototype
+
+#ifdef ENABLE_NETCDF4
+int // O [enm] Return success code
+nco_put_var // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const long long * const &var_val); // I [frc] Variable value
+// end nco_put_var<long long *>() prototype
+#endif // !ENABLE_NETCDF4
 
 template<typename typ_ntr>
 int // O [enm] Return success code
@@ -431,6 +451,15 @@ nco_put_var // [fnc] Write variable to netCDF file
  const short &var_val); // I [frc] Variable value
 // end nco_put_var<short>() prototype
 
+#ifdef ENABLE_NETCDF4
+int // O [enm] Return success code
+nco_put_var // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const long long &var_val); // I [frc] Variable value
+// end nco_put_var<long long>() prototype
+#endif // !ENABLE_NETCDF4
+
 // Overload 4: Write scalar given name
 // Overload 4: int nco_put_var(const int &nc_id,const int &var_id,const <T> &var_val)
 template<typename typ_ntr>
@@ -455,35 +484,51 @@ nco_get_var // [fnc] Ingest variable from netCDF file
 (const int &nc_id, // I [enm] netCDF file ID
  const int &var_id, // I [id] Variable ID
  float *&var_val); // O [frc] Variable value
-// end nco_get_var<float>() prototype
+// end nco_get_var<float *>() prototype
 
 int // O [enm] Return success code
 nco_get_var // [fnc] Ingest variable from netCDF file
 (const int &nc_id, // I [enm] netCDF file ID
  const int &var_id, // I [id] Variable ID
  double *&var_val); // O [frc] Variable value
-// end nco_get_var<double>() prototype
+// end nco_get_var<double *>() prototype
 
 int // O [enm] Return success code
 nco_get_var // [fnc] Ingest variable from netCDF file
 (const int &nc_id, // I [enm] netCDF file ID
  const int &var_id, // I [id] Variable ID
  long double *&var_val); // O [frc] Variable value
-// end nco_get_var<long double>() prototype
+// end nco_get_var<long double *>() prototype
 
 int // O [enm] Return success code
 nco_get_var // [fnc] Ingest variable from netCDF file
 (const int &nc_id, // I [enm] netCDF file ID
  const int &var_id, // I [id] Variable ID
  int *&var_val); // O [frc] Variable value
-// end nco_get_var<int>() prototype
+// end nco_get_var<int *>() prototype
 
 int // O [enm] Return success code
 nco_get_var // [fnc] Ingest variable from netCDF file
 (const int &nc_id, // I [enm] netCDF file ID
  const int &var_id, // I [id] Variable ID
  long *&var_val); // O [frc] Variable value
-// end nco_get_var<long>() prototype
+// end nco_get_var<long *>() prototype
+
+int // O [enm] Return success code
+nco_get_var // [fnc] Ingest variable from netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ short *&var_val); // O [frc] Variable value
+// end nco_get_var<short *>() prototype
+
+#ifdef ENABLE_NETCDF4
+int // O [enm] Return success code
+nco_get_var // [fnc] Ingest variable from netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ long long *&var_val); // O [frc] Variable value
+// end nco_get_var<long long *>()
+#endif // !ENABLE_NETCDF4
 
 // Overload 1.5: Get array given ID
 float * // O [frc] Variable value

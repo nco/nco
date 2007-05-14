@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.36 2007-05-14 06:50:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.37 2007-05-14 18:36:36 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -83,9 +83,24 @@ nco_prn_att /* [fnc] Print all attributes of single variable */
       } /* end loop over element */
       break;
     case NC_BYTE:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,"%c",att[idx].val.bp[att_lmn]);
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.bp[att_lmn]);
       break;
+    case NC_UBYTE:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.ubp[att_lmn]);
+      break;
+    case NC_USHORT:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,(long)att[idx].val.usp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      break;
+    case NC_UINT:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,(long)att[idx].val.uip[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      break;
+    case NC_INT64:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,(long)att[idx].val.i64p[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      break;
+    case NC_UINT64:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,(long)att[idx].val.ui64p[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
     default: nco_dfl_case_nc_type_err(); break;
+      break;
     } /* end switch */
     (void)fprintf(stdout,"\n");
     
@@ -123,9 +138,9 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 
   static const char fmt_NC_UBYTE[]="%hhu"; /*  */
   static const char fmt_NC_USHORT[]="%hu"; /*  */
-  static const char fmt_NC_UINT[]="%u"; /*  */
-  static const char fmt_NC_INT64[]="%li"; /*  */
-  static const char fmt_NC_UINT64[]="%lu"; /*  */
+  static const char fmt_NC_UINT[]="%lu"; /*  */
+  static const char fmt_NC_INT64[]="%lli"; /*  */
+  static const char fmt_NC_UINT64[]="%llu"; /*  */
 
   switch (typ){
   case NC_FLOAT:
@@ -448,6 +463,11 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
       case NC_INT: (void)fprintf(stdout,dlm_sng,var.val.lp[lmn]); break;
       case NC_CHAR: (void)fprintf(stdout,dlm_sng,var.val.cp[lmn]); break;
       case NC_BYTE: (void)fprintf(stdout,dlm_sng,var.val.bp[lmn]); break;
+      case NC_UBYTE: (void)fprintf(stdout,dlm_sng,var.val.ubp[lmn]); break;
+      case NC_USHORT: (void)fprintf(stdout,dlm_sng,var.val.usp[lmn]); break;
+      case NC_UINT: (void)fprintf(stdout,dlm_sng,var.val.uip[lmn]); break;
+      case NC_INT64: (void)fprintf(stdout,dlm_sng,var.val.i64p[lmn]); break;
+      case NC_UINT64: (void)fprintf(stdout,dlm_sng,var.val.ui64p[lmn]); break;
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
     } /* end loop over element */
@@ -468,6 +488,11 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
       (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng);
       break;
     case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,(unsigned char)var.val.bp[lmn],unit_sng); break;
+    case NC_UBYTE: (void)fprintf(stdout,var_sng,var_nm,var.val.ubp[lmn],unit_sng); break;
+    case NC_USHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.usp[lmn],unit_sng); break;
+    case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,var.val.uip[lmn],unit_sng); break;
+    case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,var.val.i64p[lmn],unit_sng); break;
+    case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,var.val.ui64p[lmn],unit_sng); break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* end if variable is a scalar, byte, or character */
@@ -571,6 +596,11 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 	      case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.lp[crd_idx_crr]); break;
 	      case NC_CHAR: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]); break;
 	      case NC_BYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,(unsigned char)dim[dmn_idx].val.bp[crd_idx_crr]); break;
+	      case NC_UBYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ubp[crd_idx_crr]); break;
+	      case NC_USHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.usp[crd_idx_crr]); break;
+	      case NC_UINT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.uip[crd_idx_crr]); break;
+	      case NC_INT64: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.i64p[crd_idx_crr]); break;
+	      case NC_UINT64: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ui64p[crd_idx_crr]); break;
 	      default: nco_dfl_case_nc_type_err(); break;
 	      } /* end switch */
 	    }else{ /* if dimension is not a coordinate... */
@@ -618,6 +648,11 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
       case NC_INT: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.lp[lmn],unit_sng); break;
       case NC_CHAR: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.cp[lmn],unit_sng); break;
       case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,idx_crr,(unsigned char)var.val.bp[lmn],unit_sng); break;
+      case NC_UBYTE:
+      case NC_USHORT:
+      case NC_UINT:
+      case NC_INT64:
+      case NC_UINT64:
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
     } /* end loop over element */
