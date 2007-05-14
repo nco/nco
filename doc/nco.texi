@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.416 2007-05-13 01:21:28 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.417 2007-05-14 04:10:16 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7417,6 +7417,9 @@ Writing packed variables in binary format is not supported.
 Add @dfn{stride} argument to hyperslabber. 
 For a complete description of the @var{stride} argument, @xref{Stride}.
 
+@html
+<a name="prn"></a> <!-- http://nco.sf.net/nco.html#prn -->
+@end html
 @cindex @code{-H}
 @cindex @code{--hieronymus}
 @item -H 

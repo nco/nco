@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.222 2007-05-13 06:17:10 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.223 2007-05-14 04:10:13 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.2.0 are ready. 
 
@@ -8,20 +8,25 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 Release 3.2.0 contains new documentation, new ncap2 features,
 and better configure support for IRIX.
 
-A. New ncks feature to control copying attributes to output files.
+A. ncks copying of variable and global metadata is configurable (-m, -M).
    Formerly there was no way to append a variable from in.nc to out.nc
    without bringing its metadata and all global metadata with it. 
-   Now ncks copies the only metadata that it would print.
-   ncks -v one in.nc out.nc # Copy variable and global metadata
-   ncks -A -v one in.nc out.nc # Copy variable but not global metadata
-   ncks -O -v one in.nc out.nc # Copy variable but not global metadata
-   ncks -O -v one in.nc out.nc # Copy global but not variable metadata
+   ncks -A           in.nc out.nc # Copy variable and global metadata
+   ncks -O           in.nc out.nc # Copy variable and global metadata
+   ncks -v one       in.nc out.nc # Copy variable and global metadata
+   ncks -O -v one    in.nc out.nc # Copy variable and global metadata
+   ncks -A -v one    in.nc out.nc # Copy variable not global metadata
+   ncks -O -M -v one in.nc out.nc # Copy variable not global metadata
+   ncks -O -m -v one in.nc out.nc # Copy global not variable metadata
+   ncks -O -M -m -v one in.nc out.nc # Copy data only, no metadata
+   http://nco.sf.net/nco.html#prn has more details.
 
 C. New Documentation:
    Working with non-standar grids, e.g., 2D grids 
    http://nco.sf.net/nco.html#grd
 
-D. ncks reports input file type, e.g., NC_FORMAT_CLASSIC, NC_FORMAT_NETCDF4
+D. ncks reports input file type (e.g., NC_FORMAT_CLASSIC,
+   NC_FORMAT_NETCDF4) as part of global metadata
 
 E. ncap2 (http://nco.sf.net/nco.html#ncap2) grows more powerful.
    Henry has ...

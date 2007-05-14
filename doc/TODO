@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.886 2007-05-14 03:04:14 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.887 2007-05-14 04:10:15 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -557,25 +557,6 @@ nco816. Add regression tests for rmssdn when N=0, N=1, N=2
 	ncks -H -m ~/foo.nc
 nco817. Document how to work with 1D/2D coordinate grids
 	ncks -H -v '.?_[0-9]D.?' ~/nco/data/in.nc
-nco819. ncks: Implement way to _not_ copy all global attributes when appending
-        ncks -O -v one ~/nco/data/in.nc ~/foo.nc
-	ncatted -h -O -a ,global,d,, ~/foo.nc
-        ncks ~/foo.nc
-        ncks -h -A -G -v two ~/nco/data/in.nc ~/foo.nc
-        ncks ~/foo.nc
-nco820. Document nco819 solution (i.e., switch) in nco_ctl.c and manual 
-	Remove fxm from each desired behavior once checked
-        Desired behavior:
-        ncks -O              ~/nco/data/in.nc ~/out.nc # Copy all variable and global metadata
-        ncks -O       -v one ~/nco/data/in.nc ~/out.nc # Copy all variable and global metadata
-        ncks -O -M    -v one ~/nco/data/in.nc ~/out.nc # Copy variable but not global metadata
-        ncks -O -m    -v one ~/nco/data/in.nc ~/out.nc # Copy global but not variable metadata
-        ncks -O -M -m -v one ~/nco/data/in.nc ~/out.nc # Copy only data (no metadata)
-        ncks -A              ~/nco/data/in.nc ~/out.nc # Copy all variable and global metadata
-        ncks -A       -v one ~/nco/data/in.nc ~/out.nc # Copy variable but not global metadata
-        ncks -A -M    -v one ~/nco/data/in.nc ~/out.nc # Copy all variable and global metadata
-        ncks -A -m    -v one ~/nco/data/in.nc ~/out.nc # Copy only data (no metadata)
-        ncks -A -M -m -v one ~/nco/data/in.nc ~/out.nc # Copy global but not variable metadata
 nco821. ncrename netCDF4 regression
 	cd ~/nco/bm;./nco_bm.pl --fl_fmt=netcdf4 --regress --udpreport ncks
 	ncks -h -G -O -C --fl_fmt=netcdf4 -v lat ~/nco/data/in.nc ~/foo.nc
@@ -592,21 +573,11 @@ nco822. ncap2 netCDF4 regressions with nco_bm.pl:
 	nco_err_exit(): ERROR nco_enddef
 	HDF error
 	Aborted (core dumped)
-nco825. Interim ncks metadata copying solution causes ncbo and ncflint regressions
 nco826. ncwa optimization: do not allocate tally when var_sz=var_avg since this this always indicates a no-op, e.g., removing a degenerate dimension.
 nco828. ncks: returns file ID = 65536 on netCDF4 files: why?
 	ncks -O --fl_fmt=netcdf4 ~/nco/data/in.nc ~/nco/data/in_4.nc
         ncks -m ~/nco/data/in_4.nc
 	od -An -c -N4 ~/nco/data/in_4.nc
-nco829. ncbo has trouble mixing subtraction between netcdf3 and netcdf4 files
-	ncbo -O -4 -p ~/nco/data in.nc in_4.nc ~/foo.nc
-nco830. ncbo fails diffing packed variables between netcdf3 and netcdf4 files
-	Trouble occurs when input files mixed, regardless of output file type
-	ncbo -O -C -v rec_var_flt_pck -p ~/nco/data in.nc in_4.nc ~/foo.nc # fails
-	ncbo -O -4 -C -v rec_var_flt_pck -p ~/nco/data in.nc in_4.nc ~/foo.nc # fails
-	ncbo -O -4 -C -v rec_var_flt_pck -p ~/nco/data in_4.nc in_4.nc ~/foo.nc # works
-	ncbo -O -4 -C -v rec_var_flt_pck -p ~/nco/data in.nc in.nc ~/foo.nc # works
-	ncks ~/foo.nc
 nco834. 
 ************************************************************************
 End ncoXXX TODOs
