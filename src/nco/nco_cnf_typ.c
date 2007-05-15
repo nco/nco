@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.43 2007-02-23 21:59:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.44 2007-05-15 23:51:59 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -33,6 +33,24 @@ cast_void_nctype /* [fnc] Cast generic pointer to netCDF type */
   case NC_BYTE:
     ptr->bp=(nco_byte *)ptr->vp;
     break;
+  case NC_UBYTE:
+    ptr->ubp=(nco_ubyte *)ptr->vp;
+    break;
+  case NC_USHORT:
+    ptr->usp=(nco_ushort *)ptr->vp;
+    break;
+  case NC_UINT:
+    ptr->uip=(nco_uint *)ptr->vp;
+    break;
+  case NC_INT64:
+    ptr->i64p=(nco_int64 *)ptr->vp;
+    break;
+  case NC_UINT64:
+    ptr->ui64p=(nco_uint64 *)ptr->vp;
+    break;
+  case NC_STRING:
+    ptr->sngp=(nco_string *)ptr->vp;
+    break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 } /* end cast_void_nctype() */
@@ -61,6 +79,24 @@ cast_nctype_void /* [fnc] Cast generic pointer in ptr_unn structure from type ty
     break;
   case NC_BYTE:
     ptr->vp=(void *)ptr->bp;
+    break;
+  case NC_UBYTE:
+    ptr->vp=(void *)ptr->ubp;
+    break;
+  case NC_USHORT:
+    ptr->vp=(void *)ptr->usp;
+    break;
+  case NC_UINT:
+    ptr->vp=(void *)ptr->uip;
+    break;
+  case NC_INT64:
+    ptr->vp=(void *)ptr->i64p;
+    break;
+  case NC_UINT64:
+    ptr->vp=(void *)ptr->ui64p;
+    break;
+  case NC_STRING:
+    ptr->vp=(void *)ptr->sngp;
     break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -251,6 +287,12 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.bp[idx];} break;
+    case NC_UBYTE: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.ubp[idx];} break;
+    case NC_USHORT: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.usp[idx];} break;
+    case NC_UINT: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.uip[idx];} break;
+    case NC_INT64: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.i64p[idx];} break;
+    case NC_UINT64: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.ui64p[idx];} break;
+    case NC_STRING: break;
     default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_DOUBLE:
@@ -262,6 +304,12 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
       /* valgrind detects uninitialized write errors in following line with GCC 3.4 */
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.dp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.dp[idx]=val_in.bp[idx];} break;
+    case NC_UBYTE: for(idx=0L;idx<sz;idx++) {val_out.dp[idx]=val_in.ubp[idx];} break;
+    case NC_USHORT: for(idx=0L;idx<sz;idx++) {val_out.dp[idx]=val_in.usp[idx];} break;
+    case NC_UINT: for(idx=0L;idx<sz;idx++) {val_out.dp[idx]=val_in.uip[idx];} break;
+    case NC_INT64: for(idx=0L;idx<sz;idx++) {val_out.dp[idx]=val_in.i64p[idx];} break;
+    case NC_UINT64: for(idx=0L;idx<sz;idx++) {val_out.dp[idx]=val_in.ui64p[idx];} break;
+    case NC_STRING: break;
     default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_INT:
@@ -272,6 +320,12 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.lp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.lp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.lp[idx]=val_in.bp[idx];} break;
+    case NC_UBYTE: for(idx=0L;idx<sz;idx++) {val_out.lp[idx]=val_in.ubp[idx];} break;
+    case NC_USHORT: for(idx=0L;idx<sz;idx++) {val_out.lp[idx]=val_in.usp[idx];} break;
+    case NC_UINT: for(idx=0L;idx<sz;idx++) {val_out.lp[idx]=val_in.uip[idx];} break;
+    case NC_INT64: for(idx=0L;idx<sz;idx++) {val_out.lp[idx]=val_in.i64p[idx];} break;
+    case NC_UINT64: for(idx=0L;idx<sz;idx++) {val_out.lp[idx]=val_in.ui64p[idx];} break;
+    case NC_STRING: break;
     default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_SHORT:
@@ -282,6 +336,12 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.bp[idx];} break;
+    case NC_UBYTE: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.ubp[idx];} break;
+    case NC_USHORT: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.usp[idx];} break;
+    case NC_UINT: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.uip[idx];} break;
+    case NC_INT64: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.i64p[idx];} break;
+    case NC_UINT64: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.ui64p[idx];} break;
+    case NC_STRING: break;
     default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_CHAR:
@@ -292,6 +352,12 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.bp[idx];} break;
+    case NC_UBYTE: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.ubp[idx];} break;
+    case NC_USHORT: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.usp[idx];} break;
+    case NC_UINT: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.uip[idx];} break;
+    case NC_INT64: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.i64p[idx];} break;
+    case NC_UINT64: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.ui64p[idx];} break;
+    case NC_STRING: break;
     default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_BYTE:
@@ -302,6 +368,108 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.bp[idx];} break;
+    case NC_UBYTE: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.ubp[idx];} break;
+    case NC_USHORT: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.usp[idx];} break;
+    case NC_UINT: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.uip[idx];} break;
+    case NC_INT64: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.i64p[idx];} break;
+    case NC_UINT64: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.ui64p[idx];} break;
+    case NC_STRING: break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } break;
+  case NC_UBYTE:
+    switch(var_in_typ){
+    case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.ubp[idx]=(nco_ubyte)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.ubp[idx]=(nco_ubyte)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_INT: for(idx=0L;idx<sz;idx++) {val_out.ubp[idx]=val_in.lp[idx];} break;
+    case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.ubp[idx]=val_in.sp[idx];} break;
+    case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.ubp[idx]=val_in.cp[idx];} break;
+    case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.ubp[idx]=val_in.bp[idx];} break;
+    case NC_UBYTE: for(idx=0L;idx<sz;idx++) {val_out.ubp[idx]=val_in.ubp[idx];} break;
+    case NC_USHORT: for(idx=0L;idx<sz;idx++) {val_out.ubp[idx]=val_in.usp[idx];} break;
+    case NC_UINT: for(idx=0L;idx<sz;idx++) {val_out.ubp[idx]=val_in.uip[idx];} break;
+    case NC_INT64: for(idx=0L;idx<sz;idx++) {val_out.ubp[idx]=val_in.i64p[idx];} break;
+    case NC_UINT64: for(idx=0L;idx<sz;idx++) {val_out.ubp[idx]=val_in.ui64p[idx];} break;
+    case NC_STRING: break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } break;
+  case NC_USHORT:
+    switch(var_in_typ){
+    case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.usp[idx]=(nco_ushort)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.usp[idx]=(nco_ushort)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_INT: for(idx=0L;idx<sz;idx++) {val_out.usp[idx]=val_in.lp[idx];} break;
+    case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.usp[idx]=val_in.sp[idx];} break;
+    case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.usp[idx]=val_in.cp[idx];} break;
+    case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.usp[idx]=val_in.bp[idx];} break;
+    case NC_UBYTE: for(idx=0L;idx<sz;idx++) {val_out.usp[idx]=val_in.ubp[idx];} break;
+    case NC_USHORT: for(idx=0L;idx<sz;idx++) {val_out.usp[idx]=val_in.usp[idx];} break;
+    case NC_UINT: for(idx=0L;idx<sz;idx++) {val_out.usp[idx]=val_in.uip[idx];} break;
+    case NC_INT64: for(idx=0L;idx<sz;idx++) {val_out.usp[idx]=val_in.i64p[idx];} break;
+    case NC_UINT64: for(idx=0L;idx<sz;idx++) {val_out.usp[idx]=val_in.ui64p[idx];} break;
+    case NC_STRING: break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } break;
+  case NC_UINT:
+    switch(var_in_typ){
+    case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.uip[idx]=(nco_uint)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.uip[idx]=(nco_uint)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_INT: for(idx=0L;idx<sz;idx++) {val_out.uip[idx]=val_in.lp[idx];} break;
+    case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.uip[idx]=val_in.sp[idx];} break;
+    case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.uip[idx]=val_in.cp[idx];} break;
+    case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.uip[idx]=val_in.bp[idx];} break;
+    case NC_UBYTE: for(idx=0L;idx<sz;idx++) {val_out.uip[idx]=val_in.ubp[idx];} break;
+    case NC_USHORT: for(idx=0L;idx<sz;idx++) {val_out.uip[idx]=val_in.usp[idx];} break;
+    case NC_UINT: for(idx=0L;idx<sz;idx++) {val_out.uip[idx]=val_in.uip[idx];} break;
+    case NC_INT64: for(idx=0L;idx<sz;idx++) {val_out.uip[idx]=val_in.i64p[idx];} break;
+    case NC_UINT64: for(idx=0L;idx<sz;idx++) {val_out.uip[idx]=val_in.ui64p[idx];} break;
+    case NC_STRING: break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } break;
+  case NC_INT64:
+    switch(var_in_typ){
+    case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.i64p[idx]=(nco_int64)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.i64p[idx]=(nco_int64)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_INT: for(idx=0L;idx<sz;idx++) {val_out.i64p[idx]=val_in.lp[idx];} break;
+    case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.i64p[idx]=val_in.sp[idx];} break;
+    case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.i64p[idx]=val_in.cp[idx];} break;
+    case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.i64p[idx]=val_in.bp[idx];} break;
+    case NC_UBYTE: for(idx=0L;idx<sz;idx++) {val_out.i64p[idx]=val_in.ubp[idx];} break;
+    case NC_USHORT: for(idx=0L;idx<sz;idx++) {val_out.i64p[idx]=val_in.usp[idx];} break;
+    case NC_UINT: for(idx=0L;idx<sz;idx++) {val_out.i64p[idx]=val_in.uip[idx];} break;
+    case NC_INT64: for(idx=0L;idx<sz;idx++) {val_out.i64p[idx]=val_in.i64p[idx];} break;
+    case NC_UINT64: for(idx=0L;idx<sz;idx++) {val_out.i64p[idx]=val_in.ui64p[idx];} break;
+    case NC_STRING: break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } break;
+  case NC_UINT64:
+    switch(var_in_typ){
+    case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.ui64p[idx]=(nco_uint64)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.ui64p[idx]=(nco_uint64)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_INT: for(idx=0L;idx<sz;idx++) {val_out.ui64p[idx]=val_in.lp[idx];} break;
+    case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.ui64p[idx]=val_in.sp[idx];} break;
+    case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.ui64p[idx]=val_in.cp[idx];} break;
+    case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.ui64p[idx]=val_in.bp[idx];} break;
+    case NC_UBYTE: for(idx=0L;idx<sz;idx++) {val_out.ui64p[idx]=val_in.ubp[idx];} break;
+    case NC_USHORT: for(idx=0L;idx<sz;idx++) {val_out.ui64p[idx]=val_in.usp[idx];} break;
+    case NC_UINT: for(idx=0L;idx<sz;idx++) {val_out.ui64p[idx]=val_in.uip[idx];} break;
+    case NC_INT64: for(idx=0L;idx<sz;idx++) {val_out.ui64p[idx]=val_in.i64p[idx];} break;
+    case NC_UINT64: for(idx=0L;idx<sz;idx++) {val_out.ui64p[idx]=val_in.ui64p[idx];} break;
+    case NC_STRING: break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } break;
+  case NC_STRING:
+    switch(var_in_typ){
+    case NC_FLOAT: break;
+    case NC_DOUBLE: break;
+    case NC_INT: break;
+    case NC_SHORT: break;
+    case NC_CHAR: break;
+    case NC_BYTE: break;
+    case NC_UBYTE: break;
+    case NC_USHORT: break;
+    case NC_UINT: break;
+    case NC_INT64: break;
+    case NC_UINT64: break;
+    case NC_STRING: for(idx=0L;idx<sz;idx++) {val_out.sngp[idx]=val_in.sngp[idx];} break;
     default: nco_dfl_case_nc_type_err(); break;
     } break;
   default: nco_dfl_case_nc_type_err(); break;
@@ -352,6 +520,12 @@ nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
     case NC_SHORT: *val_out.fp=*val_in.sp; break;
     case NC_CHAR: *val_out.fp=strtod((const char *)val_in.cp,(char **)NULL); break;
     case NC_BYTE: *val_out.fp=*val_in.bp; break;
+    case NC_UBYTE: *val_out.fp=*val_in.ubp; break;
+    case NC_USHORT: *val_out.fp=*val_in.usp; break;
+    case NC_UINT: *val_out.fp=*val_in.uip; break;
+    case NC_INT64: *val_out.fp=*val_in.i64p; break;
+    case NC_UINT64: *val_out.fp=*val_in.ui64p; break;
+    case NC_STRING: break;
     default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_DOUBLE:
@@ -362,6 +536,12 @@ nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
     case NC_SHORT: *val_out.dp=*val_in.sp; break;
     case NC_CHAR: *val_out.dp=strtod((const char *)val_in.cp,(char **)NULL); break;
     case NC_BYTE: *val_out.dp=*val_in.bp; break;
+    case NC_UBYTE: *val_out.dp=*val_in.ubp; break;
+    case NC_USHORT: *val_out.dp=*val_in.usp; break;
+    case NC_UINT: *val_out.dp=*val_in.uip; break;
+    case NC_INT64: *val_out.dp=*val_in.i64p; break;
+    case NC_UINT64: *val_out.dp=*val_in.ui64p; break;
+    case NC_STRING: break;
     default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_INT:
@@ -372,6 +552,12 @@ nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
     case NC_SHORT: *val_out.lp=*val_in.sp; break;
     case NC_CHAR: *val_out.lp=(nco_int)strtod((const char *)val_in.cp,(char **)NULL); break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_BYTE: *val_out.lp=*val_in.bp; break;
+    case NC_UBYTE: *val_out.lp=*val_in.ubp; break;
+    case NC_USHORT: *val_out.lp=*val_in.usp; break;
+    case NC_UINT: *val_out.lp=*val_in.uip; break;
+    case NC_INT64: *val_out.lp=*val_in.i64p; break;
+    case NC_UINT64: *val_out.lp=*val_in.ui64p; break;
+    case NC_STRING: break;
     default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_SHORT:
@@ -382,6 +568,12 @@ nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
     case NC_SHORT: *val_out.sp=*val_in.sp; break;
     case NC_CHAR: *val_out.sp=(short)strtod((const char *)val_in.cp,(char **)NULL); break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_BYTE: *val_out.sp=*val_in.bp; break;
+    case NC_UBYTE: *val_out.sp=*val_in.ubp; break;
+    case NC_USHORT: *val_out.sp=*val_in.usp; break;
+    case NC_UINT: *val_out.sp=*val_in.uip; break;
+    case NC_INT64: *val_out.sp=*val_in.i64p; break;
+    case NC_UINT64: *val_out.sp=*val_in.ui64p; break;
+    case NC_STRING: break;
     default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_CHAR:
@@ -392,6 +584,12 @@ nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
     case NC_SHORT: *val_out.cp=*val_in.sp; break;
     case NC_CHAR: *val_out.cp=*val_in.cp; break;
     case NC_BYTE: *val_out.cp=*val_in.bp; break;
+    case NC_UBYTE: *val_out.cp=*val_in.ubp; break;
+    case NC_USHORT: *val_out.cp=*val_in.usp; break;
+    case NC_UINT: *val_out.cp=*val_in.uip; break;
+    case NC_INT64: *val_out.cp=*val_in.i64p; break;
+    case NC_UINT64: *val_out.cp=*val_in.ui64p; break;
+    case NC_STRING: break;
     default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_BYTE:
@@ -402,6 +600,108 @@ nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
     case NC_SHORT: *val_out.bp=*val_in.sp; break;
     case NC_CHAR: *val_out.bp=*val_in.cp; break;
     case NC_BYTE: *val_out.bp=*val_in.bp; break;
+    case NC_UBYTE: *val_out.bp=*val_in.ubp; break;
+    case NC_USHORT: *val_out.bp=*val_in.usp; break;
+    case NC_UINT: *val_out.bp=*val_in.uip; break;
+    case NC_INT64: *val_out.bp=*val_in.i64p; break;
+    case NC_UINT64: *val_out.bp=*val_in.ui64p; break;
+    case NC_STRING: break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } break;
+  case NC_UBYTE:
+    switch(typ_in){
+    case NC_FLOAT: *val_out.ubp=(nco_ubyte)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: *val_out.ubp=(nco_ubyte)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_INT: *val_out.ubp=*val_in.lp; break;
+    case NC_SHORT: *val_out.ubp=*val_in.sp; break;
+    case NC_CHAR: *val_out.ubp=*val_in.cp; break;
+    case NC_BYTE: *val_out.ubp=*val_in.bp; break;
+    case NC_UBYTE: *val_out.ubp=*val_in.ubp; break;
+    case NC_USHORT: *val_out.ubp=*val_in.usp; break;
+    case NC_UINT: *val_out.ubp=*val_in.uip; break;
+    case NC_INT64: *val_out.ubp=*val_in.i64p; break;
+    case NC_UINT64: *val_out.ubp=*val_in.ui64p; break;
+    case NC_STRING: break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } break;
+  case NC_USHORT:
+    switch(typ_in){
+    case NC_FLOAT: *val_out.usp=(nco_ushort)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: *val_out.usp=(nco_ushort)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_INT: *val_out.usp=*val_in.lp; break;
+    case NC_SHORT: *val_out.usp=*val_in.sp; break;
+    case NC_CHAR: *val_out.usp=*val_in.cp; break;
+    case NC_BYTE: *val_out.usp=*val_in.bp; break;
+    case NC_UBYTE: *val_out.usp=*val_in.ubp; break;
+    case NC_USHORT: *val_out.usp=*val_in.usp; break;
+    case NC_UINT: *val_out.usp=*val_in.uip; break;
+    case NC_INT64: *val_out.usp=*val_in.i64p; break;
+    case NC_UINT64: *val_out.usp=*val_in.ui64p; break;
+    case NC_STRING: break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } break;
+  case NC_UINT:
+    switch(typ_in){
+    case NC_FLOAT: *val_out.uip=(nco_uint)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: *val_out.uip=(nco_uint)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_INT: *val_out.uip=*val_in.lp; break;
+    case NC_SHORT: *val_out.uip=*val_in.sp; break;
+    case NC_CHAR: *val_out.uip=*val_in.cp; break;
+    case NC_BYTE: *val_out.uip=*val_in.bp; break;
+    case NC_UBYTE: *val_out.uip=*val_in.ubp; break;
+    case NC_USHORT: *val_out.uip=*val_in.usp; break;
+    case NC_UINT: *val_out.uip=*val_in.uip; break;
+    case NC_INT64: *val_out.uip=*val_in.i64p; break;
+    case NC_UINT64: *val_out.uip=*val_in.ui64p; break;
+    case NC_STRING: break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } break;
+  case NC_INT64:
+    switch(typ_in){
+    case NC_FLOAT: *val_out.i64p=(nco_int64)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: *val_out.i64p=(nco_int64)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_INT: *val_out.i64p=*val_in.lp; break;
+    case NC_SHORT: *val_out.i64p=*val_in.sp; break;
+    case NC_CHAR: *val_out.i64p=*val_in.cp; break;
+    case NC_BYTE: *val_out.i64p=*val_in.bp; break;
+    case NC_UBYTE: *val_out.i64p=*val_in.ubp; break;
+    case NC_USHORT: *val_out.i64p=*val_in.usp; break;
+    case NC_UINT: *val_out.i64p=*val_in.uip; break;
+    case NC_INT64: *val_out.i64p=*val_in.i64p; break;
+    case NC_UINT64: *val_out.i64p=*val_in.ui64p; break;
+    case NC_STRING: break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } break;
+  case NC_UINT64:
+    switch(typ_in){
+    case NC_FLOAT: *val_out.ui64p=(nco_uint64)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: *val_out.ui64p=(nco_uint64)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_INT: *val_out.ui64p=*val_in.lp; break;
+    case NC_SHORT: *val_out.ui64p=*val_in.sp; break;
+    case NC_CHAR: *val_out.ui64p=*val_in.cp; break;
+    case NC_BYTE: *val_out.ui64p=*val_in.bp; break;
+    case NC_UBYTE: *val_out.ui64p=*val_in.ubp; break;
+    case NC_USHORT: *val_out.ui64p=*val_in.usp; break;
+    case NC_UINT: *val_out.ui64p=*val_in.uip; break;
+    case NC_INT64: *val_out.ui64p=*val_in.i64p; break;
+    case NC_UINT64: *val_out.ui64p=*val_in.ui64p; break;
+    case NC_STRING: break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } break;
+  case NC_STRING:
+    switch(typ_in){
+    case NC_FLOAT: break;
+    case NC_DOUBLE: break;
+    case NC_INT: break;
+    case NC_SHORT: break;
+    case NC_CHAR: break;
+    case NC_BYTE: break;
+    case NC_UBYTE: break;
+    case NC_USHORT: break;
+    case NC_UINT: break;
+    case NC_INT64: break;
+    case NC_UINT64: break;
+    case NC_STRING: *val_out.sngp=*val_in.sngp; break;
     default: nco_dfl_case_nc_type_err(); break;
     } break;
   default: nco_dfl_case_nc_type_err(); break;
@@ -424,39 +724,6 @@ nco_scv_cnf_typ /* [fnc] Convert scalar attribute to typ_new using C implicit co
   scv_sct scv_new;
 
   switch (typ_new){ 
-  case NC_BYTE:
-    switch(typ_old){
-    case NC_FLOAT: scv_new.val.b=(nco_byte)(scv_old->val).f; break;
-    case NC_DOUBLE: scv_new.val.b=(nco_byte)(scv_old->val).d; break;
-    case NC_INT: scv_new.val.b=(scv_old->val).l; break;
-    case NC_SHORT: scv_new.val.b=(scv_old->val).s; break;
-    case NC_BYTE: scv_new.val.b=(scv_old->val).b; break;
-    case NC_CHAR: break;
-    case NC_NAT: break;
-    } break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_SHORT:
-    switch(typ_old){
-    case NC_FLOAT: scv_new.val.s=(short)(scv_old->val).f; break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_DOUBLE: scv_new.val.s=(short)(scv_old->val).d; break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_INT: scv_new.val.s=(scv_old->val).l; break;
-    case NC_SHORT: scv_new.val.s=(scv_old->val).s; break;
-    case NC_BYTE: scv_new.val.s=(scv_old->val).b; break;
-    case NC_CHAR: break;
-    case NC_NAT: break;    
-    } break;
-  case NC_INT:
-    switch(typ_old){
-    case NC_FLOAT: scv_new.val.l=(nco_int)(scv_old->val).f; break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_DOUBLE: scv_new.val.l=(nco_int)(scv_old->val).d; break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_INT: scv_new.val.l =scv_old->val.l; break;
-    case NC_SHORT: scv_new.val.l=(scv_old->val).s; break;
-    case NC_BYTE: scv_new.val.l=(scv_old->val).b; break;
-    case NC_CHAR: break;
-    case NC_NAT: break;
-    } break;
   case NC_FLOAT:
     switch(typ_old){
     case NC_FLOAT: scv_new.val.f=(scv_old->val).f; break; 
@@ -464,6 +731,12 @@ nco_scv_cnf_typ /* [fnc] Convert scalar attribute to typ_new using C implicit co
     case NC_INT: scv_new.val.f=(scv_old->val).l; break;
     case NC_SHORT: scv_new.val.f=(scv_old->val).s; break;
     case NC_BYTE: scv_new.val.f=(scv_old->val).b; break;
+    case NC_UBYTE: scv_new.val.f=(scv_old->val).ub; break;
+    case NC_USHORT: scv_new.val.f=(scv_old->val).us; break;
+    case NC_UINT: scv_new.val.f=(scv_old->val).ui; break;
+    case NC_INT64: scv_new.val.f=(scv_old->val).i64; break;
+    case NC_UINT64: scv_new.val.f=(scv_old->val).ui64; break;
+    case NC_STRING: break;
     case NC_CHAR: break;
     case NC_NAT: break;    
     } break;
@@ -474,14 +747,167 @@ nco_scv_cnf_typ /* [fnc] Convert scalar attribute to typ_new using C implicit co
     case NC_INT: scv_new.val.d=(scv_old->val).l; break;
     case NC_SHORT: scv_new.val.d=(scv_old->val).s; break;
     case NC_BYTE: scv_new.val.d=(scv_old->val).b; break;
+    case NC_UBYTE: scv_new.val.d=(scv_old->val).ub; break;
+    case NC_USHORT: scv_new.val.d=(scv_old->val).us; break;
+    case NC_UINT: scv_new.val.d=(scv_old->val).ui; break;
+    case NC_INT64: scv_new.val.d=(scv_old->val).i64; break;
+    case NC_UINT64: scv_new.val.d=(scv_old->val).ui64; break;
+    case NC_STRING: break;
     case NC_CHAR: break;
     case NC_NAT: break;    
+    } break;
+  case NC_INT:
+    switch(typ_old){
+    case NC_FLOAT: scv_new.val.l=(nco_int)(scv_old->val).f; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: scv_new.val.l=(nco_int)(scv_old->val).d; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_INT: scv_new.val.l =scv_old->val.l; break;
+    case NC_SHORT: scv_new.val.l=(scv_old->val).s; break;
+    case NC_BYTE: scv_new.val.l=(scv_old->val).b; break;
+    case NC_UBYTE: scv_new.val.l=(scv_old->val).ub; break;
+    case NC_USHORT: scv_new.val.l=(scv_old->val).us; break;
+    case NC_UINT: scv_new.val.l=(scv_old->val).ui; break;
+    case NC_INT64: scv_new.val.l=(scv_old->val).i64; break;
+    case NC_UINT64: scv_new.val.l=(scv_old->val).ui64; break;
+    case NC_STRING: break;
+    case NC_CHAR: break;
+    case NC_NAT: break;
+    } break;
+  case NC_SHORT:
+    switch(typ_old){
+    case NC_FLOAT: scv_new.val.s=(short)(scv_old->val).f; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: scv_new.val.s=(short)(scv_old->val).d; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_INT: scv_new.val.s=(scv_old->val).l; break;
+    case NC_SHORT: scv_new.val.s=(scv_old->val).s; break;
+    case NC_BYTE: scv_new.val.s=(scv_old->val).b; break;
+    case NC_UBYTE: scv_new.val.s=(scv_old->val).ub; break;
+    case NC_USHORT: scv_new.val.s=(scv_old->val).us; break;
+    case NC_UINT: scv_new.val.s=(scv_old->val).ui; break;
+    case NC_INT64: scv_new.val.s=(scv_old->val).i64; break;
+    case NC_UINT64: scv_new.val.s=(scv_old->val).ui64; break;
+    case NC_STRING: break;
+    case NC_CHAR: break;
+    case NC_NAT: break;    
+    } break;
+  case NC_CHAR:
+    /* Do nothing */
+    break;
+  case NC_BYTE:
+    switch(typ_old){
+    case NC_FLOAT: scv_new.val.b=(nco_byte)(scv_old->val).f; break;
+    case NC_DOUBLE: scv_new.val.b=(nco_byte)(scv_old->val).d; break;
+    case NC_INT: scv_new.val.b=(scv_old->val).l; break;
+    case NC_SHORT: scv_new.val.b=(scv_old->val).s; break;
+    case NC_BYTE: scv_new.val.b=(scv_old->val).b; break;
+    case NC_UBYTE: scv_new.val.b=(scv_old->val).ub; break;
+    case NC_USHORT: scv_new.val.b=(scv_old->val).us; break;
+    case NC_UINT: scv_new.val.b=(scv_old->val).ui; break;
+    case NC_INT64: scv_new.val.b=(scv_old->val).i64; break;
+    case NC_UINT64: scv_new.val.b=(scv_old->val).ui64; break;
+    case NC_STRING: break;
+    case NC_CHAR: break;
+    case NC_NAT: break;
+    } break;
+  case NC_UBYTE:
+    switch(typ_old){
+    case NC_FLOAT: scv_new.val.ub=(nco_ubyte)(scv_old->val).f; break;
+    case NC_DOUBLE: scv_new.val.ub=(nco_ubyte)(scv_old->val).d; break;
+    case NC_INT: scv_new.val.ub=(scv_old->val).l; break;
+    case NC_SHORT: scv_new.val.ub=(scv_old->val).s; break;
+    case NC_BYTE: scv_new.val.ub=(scv_old->val).b; break;
+    case NC_UBYTE: scv_new.val.ub=(scv_old->val).ub; break;
+    case NC_USHORT: scv_new.val.ub=(scv_old->val).us; break;
+    case NC_UINT: scv_new.val.ub=(scv_old->val).ui; break;
+    case NC_INT64: scv_new.val.ub=(scv_old->val).i64; break;
+    case NC_UINT64: scv_new.val.ub=(scv_old->val).ui64; break;
+    case NC_STRING: break;
+    case NC_CHAR: break;
+    case NC_NAT: break;
+    } break;
+  case NC_USHORT:
+    switch(typ_old){
+    case NC_FLOAT: scv_new.val.us=(nco_ushort)(scv_old->val).f; break;
+    case NC_DOUBLE: scv_new.val.us=(nco_ushort)(scv_old->val).d; break;
+    case NC_INT: scv_new.val.us=(scv_old->val).l; break;
+    case NC_SHORT: scv_new.val.us=(scv_old->val).s; break;
+    case NC_BYTE: scv_new.val.us=(scv_old->val).b; break;
+    case NC_UBYTE: scv_new.val.us=(scv_old->val).ub; break;
+    case NC_USHORT: scv_new.val.us=(scv_old->val).us; break;
+    case NC_UINT: scv_new.val.us=(scv_old->val).ui; break;
+    case NC_INT64: scv_new.val.us=(scv_old->val).i64; break;
+    case NC_UINT64: scv_new.val.us=(scv_old->val).ui64; break;
+    case NC_STRING: break;
+    case NC_CHAR: break;
+    case NC_NAT: break;
+    } break;
+  case NC_UINT:
+    switch(typ_old){
+    case NC_FLOAT: scv_new.val.ui=(nco_uint)(scv_old->val).f; break;
+    case NC_DOUBLE: scv_new.val.ui=(nco_uint)(scv_old->val).d; break;
+    case NC_INT: scv_new.val.ui=(scv_old->val).l; break;
+    case NC_SHORT: scv_new.val.ui=(scv_old->val).s; break;
+    case NC_BYTE: scv_new.val.ui=(scv_old->val).b; break;
+    case NC_UBYTE: scv_new.val.ui=(scv_old->val).ub; break;
+    case NC_USHORT: scv_new.val.ui=(scv_old->val).us; break;
+    case NC_UINT: scv_new.val.ui=(scv_old->val).ui; break;
+    case NC_INT64: scv_new.val.ui=(scv_old->val).i64; break;
+    case NC_UINT64: scv_new.val.ui=(scv_old->val).ui64; break;
+    case NC_STRING: break;
+    case NC_CHAR: break;
+    case NC_NAT: break;
+    } break;
+  case NC_INT64:
+    switch(typ_old){
+    case NC_FLOAT: scv_new.val.i64=(nco_int64)(scv_old->val).f; break;
+    case NC_DOUBLE: scv_new.val.i64=(nco_int64)(scv_old->val).d; break;
+    case NC_INT: scv_new.val.i64=(scv_old->val).l; break;
+    case NC_SHORT: scv_new.val.i64=(scv_old->val).s; break;
+    case NC_BYTE: scv_new.val.i64=(scv_old->val).b; break;
+    case NC_UBYTE: scv_new.val.i64=(scv_old->val).ub; break;
+    case NC_USHORT: scv_new.val.i64=(scv_old->val).us; break;
+    case NC_UINT: scv_new.val.i64=(scv_old->val).ui; break;
+    case NC_INT64: scv_new.val.i64=(scv_old->val).i64; break;
+    case NC_UINT64: scv_new.val.i64=(scv_old->val).ui64; break;
+    case NC_STRING: break;
+    case NC_CHAR: break;
+    case NC_NAT: break;
+    } break;
+  case NC_UINT64:
+    switch(typ_old){
+    case NC_FLOAT: scv_new.val.ui64=(nco_uint64)(scv_old->val).f; break;
+    case NC_DOUBLE: scv_new.val.ui64=(nco_uint64)(scv_old->val).d; break;
+    case NC_INT: scv_new.val.ui64=(scv_old->val).l; break;
+    case NC_SHORT: scv_new.val.ui64=(scv_old->val).s; break;
+    case NC_BYTE: scv_new.val.ui64=(scv_old->val).b; break;
+    case NC_UBYTE: scv_new.val.ui64=(scv_old->val).ub; break;
+    case NC_USHORT: scv_new.val.ui64=(scv_old->val).us; break;
+    case NC_UINT: scv_new.val.ui64=(scv_old->val).ui; break;
+    case NC_INT64: scv_new.val.ui64=(scv_old->val).i64; break;
+    case NC_UINT64: scv_new.val.ui64=(scv_old->val).ui64; break;
+    case NC_STRING: break;
+    case NC_CHAR: break;
+    case NC_NAT: break;
+    } break;
+  case NC_STRING:
+    switch(typ_old){
+    case NC_FLOAT: break;
+    case NC_DOUBLE: break;
+    case NC_INT: break;
+    case NC_SHORT: break;
+    case NC_BYTE: break;
+    case NC_UBYTE: break;
+    case NC_USHORT: break;
+    case NC_UINT: break;
+    case NC_INT64: break;
+    case NC_UINT64: break;
+    case NC_STRING: break;
+    case NC_CHAR: break;
+    case NC_NAT: break;
     } break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   scv_new.type=typ_new;
   *scv_old=scv_new;
-  return 1;      
+  return True;
 } /* end nco_scv_cnf_typ */
 
 nc_type /* O [enm] Highest precision of input variables */

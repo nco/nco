@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.203 2007-05-15 18:37:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.204 2007-05-15 23:51:59 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.203 2007-05-15 18:37:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.203 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.204 2007-05-15 23:51:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.204 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -729,7 +729,7 @@ main(int argc,char **argv)
   /* Copy averages to output file and free averaging buffers */
   if(prg == ncra || prg == ncea){
     for(idx=0;idx<nbr_var_prc;idx++){
-      /* Revert any arithmetic promotion but leave unpacking (for now) */
+      /* Revert any arithmetic promotion but leave unpacked (for now) */
       var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
       /* Packing/Unpacking */
       if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(out_id,var_prc_out[idx],nco_pck_plc);
