@@ -1,5 +1,11 @@
 2007-05-15  Charlie Zender  <zender@uci.edu>
 
+	* cd ~/nco;cvs tag -d nco-3_2_0_alpha1
+	  cd ~/nco;cvs commit -m "Working subset of netCDF4 atomic type features with no regressions"
+	  cvs tag -c nco-3_2_0_alpha1
+
+	* Regression tests all fine except for known netCDF4/HDF defects
+
 	* Make fl_out_fmt>=fl_in_fmt ("consanguinity") NCO-wide TODO nco836
 
 	* This seemed to introduce ncap2 regression in both netCDF3/4
