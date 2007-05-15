@@ -1,3 +1,7 @@
+2007-05-15  Charlie Zender  <zender@uci.edu>
+
+	* Use ISO standard strto(l,d,ul) not ato(f,i) to parse ncap2 atomic types
+
 2007-05-14  Charlie Zender  <zender@uci.edu>
 
 	* Support NC_STRING in ncks functions, nco_prn.c, nco_msa.c, libnco_c++

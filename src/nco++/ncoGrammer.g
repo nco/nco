@@ -1734,7 +1734,7 @@ end_dot: ;
 
     |	c:BYTE			
         {  
-            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<nco_char>(std::strtol(c->getText().c_str(),(char **)NULL,10)));
+            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<signed char>(std::strtol(c->getText().c_str(),(char **)NULL,10)));
         } // end BYTE
 	|	s:SHORT			
         {  
