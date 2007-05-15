@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.59 2007-05-15 18:03:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.60 2007-05-15 21:44:52 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2072,13 +2072,13 @@ return dmn_vtr;
 
 }
 
-/* Create a scalar variable of type, if bfll then malloc ptr_unn */
-var_sct*
-ncap_sclr_var_mk(
-const std::string var_nm,
-nc_type type,
-bool bfll)
+var_sct *
+ncap_sclr_var_mk
+(const std::string var_nm,
+ nc_type type,
+ bool bfll)
 {
+  /* Purpose: Create a scalar variable of type, if bfll then malloc ptr_unn */
   var_sct *var;
   var=(var_sct *)nco_malloc(sizeof(var_sct));
   /* Set defaults */
@@ -2090,9 +2090,73 @@ bool bfll)
   var->type=type;
   var->typ_dsk=type;
   
-  if(bfll)
-    var->val=nco_mss_val_mk(type);  
+  if(bfll) var->val=nco_mss_val_mk(type);  
    
+  return var;
+} // end ncap_sclr_var_mk<string,int,bool>()
+
+var_sct *
+ncap_sclr_var_mk(
+const std::string var_nm,
+float fdt)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_FLOAT,true);
+  (void)cast_void_nctype(NC_FLOAT,&var->val);
+  *var->val.fp=fdt;
+  (void)cast_nctype_void(NC_FLOAT,&var->val);
+  return var;
+} // end ncap_sclr_var_mk<float>()
+
+var_sct *
+ncap_sclr_var_mk(
+const std::string var_nm,
+double ddt)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_DOUBLE,true);
+  (void)cast_void_nctype(NC_DOUBLE,&var->val);
+  *var->val.dp=ddt;
+  (void)cast_nctype_void(NC_DOUBLE,&var->val);
+  return var;
+}
+
+var_sct *
+ncap_sclr_var_mk(
+const std::string var_nm,
+long ldt)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_INT,true);
+  (void)cast_void_nctype(NC_INT,&var->val);
+  *var->val.lp=ldt;
+  (void)cast_nctype_void(NC_INT,&var->val);
+  return var;
+}
+
+var_sct *
+ncap_sclr_var_mk(
+const std::string var_nm,
+int idt)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_INT,true);
+  (void)cast_void_nctype(NC_INT,&var->val);
+  *var->val.lp=idt;
+  (void)cast_nctype_void(NC_INT,&var->val);
+  return var;
+}
+
+var_sct *
+ncap_sclr_var_mk(
+const std::string var_nm,
+short sdt)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_SHORT,true);
+  (void)cast_void_nctype(NC_SHORT,&var->val);
+  *var->val.sp=sdt;
+  (void)cast_nctype_void(NC_SHORT,&var->val);
   return var;
 }
 
@@ -2119,71 +2183,6 @@ signed char bdt)
   (void)cast_void_nctype(NC_BYTE,&var->val);
   *var->val.bp=bdt;
   (void)cast_nctype_void(NC_BYTE,&var->val);
-  return var;
-}
-
-var_sct *
-ncap_sclr_var_mk(
-const std::string var_nm,
-short sdt)
-{
-  var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_SHORT,true);
-  (void)cast_void_nctype(NC_SHORT,&var->val);
-  *var->val.sp=sdt;
-  (void)cast_nctype_void(NC_SHORT,&var->val);
-  return var;
-}
-
-var_sct *
-ncap_sclr_var_mk(
-const std::string var_nm,
-int idt)
-{
-  var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_INT,true);
-  (void)cast_void_nctype(NC_INT,&var->val);
-  *var->val.lp=idt;
-  (void)cast_nctype_void(NC_INT,&var->val);
-  return var;
-}
-
-var_sct *
-ncap_sclr_var_mk(
-const std::string var_nm,
-long ldt)
-{
-  var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_INT,true);
-  (void)cast_void_nctype(NC_INT,&var->val);
-  *var->val.lp=ldt;
-  (void)cast_nctype_void(NC_INT,&var->val);
-  return var;
-}
-
-var_sct *
-ncap_sclr_var_mk(
-const std::string var_nm,
-float fdt)
-{
-  var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_FLOAT,true);
-  (void)cast_void_nctype(NC_FLOAT,&var->val);
-  *var->val.fp=fdt;
-  (void)cast_nctype_void(NC_FLOAT,&var->val);
-  return var;
-}
-
-var_sct *
-ncap_sclr_var_mk(
-const std::string var_nm,
-double ddt)
-{
-  var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_DOUBLE,true);
-  (void)cast_void_nctype(NC_DOUBLE,&var->val);
-  *var->val.dp=ddt;
-  (void)cast_nctype_void(NC_DOUBLE,&var->val);
   return var;
 }
 

@@ -1730,26 +1730,16 @@ end_dot: ;
           } // end action
 
     // Naked numbers: Cast is not applied to these numbers
-    |	c:BYTE			
-        {  
-            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<signed char>(std::strtol(c->getText().c_str(),(char **)NULL,10)));
-        } // end BYTE
-	|	s:SHORT			
-        {  
-            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_SHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<short>(std::strtol(s->getText().c_str(),(char **)NULL,10)));
-        } // end SHORT
-	|	i:INT			
-        {  
-            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int"),NC_INT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int"),static_cast<int>(std::strtol(i->getText().c_str(),(char **)NULL,10)));
-        } // end INT
     |   f:FLOAT        
-        {  
-            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~float"),NC_FLOAT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~float"),static_cast<float>(std::strtod(f->getText().c_str(),(char **)NULL)));
-        } // end FLOAT
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~float"),NC_FLOAT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~float"),static_cast<float>(std::strtod(f->getText().c_str(),(char **)NULL)));} // end FLOAT
     |   d:DOUBLE        
-        {  
-            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~double"),NC_DOUBLE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~double"),strtod(d->getText().c_str(),(char **)NULL));
-        } // end DOUBLE
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~double"),NC_DOUBLE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~double"),strtod(d->getText().c_str(),(char **)NULL));} // end DOUBLE
+	|	i:INT			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int"),NC_INT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int"),static_cast<int>(std::strtol(i->getText().c_str(),(char **)NULL,10)));} // end INT
+	|	s:SHORT			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_SHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<short>(std::strtol(s->getText().c_str(),(char **)NULL,10)));} // end SHORT
+    |	c:BYTE			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<signed char>(std::strtol(c->getText().c_str(),(char **)NULL,10)));} // end BYTE
     |   str:NSTRING
         {
             char *tsng;
