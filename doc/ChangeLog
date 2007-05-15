@@ -2,6 +2,8 @@
 
 	* Make fl_out_fmt>=fl_in_fmt ("consanguinity") NCO-wide TODO nco836
 
+	* This seemed to introduce ncap2 regression in both netCDF3/4
+
 	* Use ISO standard strto(l,d,ul) not ato(f,i) to parse ncap2 atomic types
 
 2007-05-14  Charlie Zender  <zender@uci.edu>

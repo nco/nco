@@ -1729,9 +1729,7 @@ end_dot: ;
 
           } // end action
 
-    // Naked numbers 
-    // Cast is not applied to these numbers
-
+    // Naked numbers: Cast is not applied to these numbers
     |	c:BYTE			
         {  
             if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<signed char>(std::strtol(c->getText().c_str(),(char **)NULL,10)));
@@ -1750,7 +1748,7 @@ end_dot: ;
         } // end FLOAT
     |   d:DOUBLE        
         {  
-            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~double"),NC_DOUBLE,false); else ncap_sclr_var_mk(static_cast<std::string>("~double"),strtod(d->getText().c_str(),(char **)NULL));
+            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~double"),NC_DOUBLE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~double"),strtod(d->getText().c_str(),(char **)NULL));
         } // end DOUBLE
     |   str:NSTRING
         {
