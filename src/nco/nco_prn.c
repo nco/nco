@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.37 2007-05-14 18:36:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.38 2007-05-15 05:19:11 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -648,11 +648,11 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
       case NC_INT: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.lp[lmn],unit_sng); break;
       case NC_CHAR: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.cp[lmn],unit_sng); break;
       case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,idx_crr,(unsigned char)var.val.bp[lmn],unit_sng); break;
-      case NC_UBYTE:
-      case NC_USHORT:
-      case NC_UINT:
-      case NC_INT64:
-      case NC_UINT64:
+      case NC_UBYTE: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.ubp[lmn],unit_sng); break;
+      case NC_USHORT: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.usp[lmn],unit_sng); break;
+      case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.uip[lmn],unit_sng); break;
+      case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.i64p[lmn],unit_sng); break;
+      case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.ui64p[lmn],unit_sng); break;
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
     } /* end loop over element */
