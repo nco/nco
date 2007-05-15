@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.87 2007-05-14 06:29:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.88 2007-05-15 05:48:49 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -32,10 +32,10 @@ nco_create_mode_mrg /* [fnc] Merge clobber mode with user-specified file format 
     nccreate_mode|=NC_NETCDF4;
   }else if(fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     nccreate_mode|=NC_NETCDF4|NC_CLASSIC_MODEL;
-  }else if(fl_out_fmt == NC_COMPRESS){
+  }else if(fl_out_fmt == NC_COMPRESS){ /* fxm: is NC_COMPRESS legal? */
     nccreate_mode|=NC_COMPRESS;
-  }else{
-    (void)fprintf(stderr,"%s: ERROR nco_create_mode_mrg() received unknown file format\n",prg_nm_get());
+  }else if(fl_out_fmt != NC_FORMAT_CLASSIC){
+    (void)fprintf(stderr,"%s: ERROR nco_create_mode_mrg() received unknown file format = %d\n",prg_nm_get(),fl_out_fmt);
     nco_exit(EXIT_FAILURE);
   } /* end else fl_out_fmt */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.181 2007-05-14 06:29:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.182 2007-05-15 05:48:49 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.181 2007-05-14 06:29:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.181 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.182 2007-05-15 05:48:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.182 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -388,6 +388,7 @@ main(int argc,char **argv)
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
+  (void)nco_inq_format(in_id,&fl_in_fmt);
   
   /* Get number of variables, dimensions, and global attributes in file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&glb_att_nbr,&rec_dmn_id);
@@ -523,6 +524,10 @@ main(int argc,char **argv)
     /* Output file was specified so PRN_ tokens refer to (meta)data copying */
     int out_id;  
     
+    /* Make output and input files consanguinous */
+    /* fxm: TODO nco836 Allow user to override format consanguinity with, e.g., -3 switch */
+    if(fl_in_fmt == NC_FORMAT_NETCDF4) fl_out_fmt=NC_FORMAT_NETCDF4;
+
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
     
@@ -580,7 +585,6 @@ main(int argc,char **argv)
   }else{ /* !fl_out */
     /* No output file was specified so PRN_ tokens refer to screen printing */
     if(PRN_GLB_METADATA){
-      (void)nco_inq_format(in_id,&fl_in_fmt);
       (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, id = %i, type = %s\n",fl_in,nbr_dmn_fl,nbr_var_fl,glb_att_nbr,in_id,nco_fmt_sng(fl_in_fmt));
       if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
 	char rec_dmn_nm[NC_MAX_NAME];

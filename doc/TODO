@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.888 2007-05-14 19:59:17 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.889 2007-05-15 05:48:47 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -579,7 +579,11 @@ nco828. ncks: returns file ID = 65536 on netCDF4 files: why?
         ncks -m ~/nco/data/in_4.nc
 	od -An -c -N4 ~/nco/data/in_4.nc
 nco834. Add atomic type string NC_STRING to nco_c++ get/put var
-nco835. 
+nco835. ncks uint64_var(ULLONG_MAX) = int64_var(LLONG_MAX)
+	ccc
+	ncks -v '.?_var$' ~/c++/foo.nc
+nco836. Allow user to override format consanguinity with, e.g., -3 switch
+nco837. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

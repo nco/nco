@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.39 2007-05-14 18:36:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.40 2007-05-15 05:48:50 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -763,10 +763,10 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var.val.lp[lmn],unit_sng); break;
     case NC_CHAR:
       if(var.val.cp[lmn] != '\0'){
-        (void)sprintf(var_sng,"%%s='%s' %%s\n",nco_typ_fmt_sng(var.type));
+        (void)sprintf(var_sng,"%%s = '%s' %%s\n",nco_typ_fmt_sng(var.type));
         (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng);
       }else{ /* Deal with NUL character here */
-        (void)fprintf(stdout, "%s=\"\" %s\n",var_nm,unit_sng);
+        (void)fprintf(stdout, "%s = \"\" %s\n",var_nm,unit_sng);
       } /* end if */
       break;
     case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,(unsigned char)var.val.bp[lmn],unit_sng); break;
