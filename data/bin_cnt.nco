@@ -2,7 +2,7 @@
 
 /* Usage: 
    ncap2 -O -v -S ~/nco/data/bin_cnt.nco ~/nco/data/in.nc ~/foo.nc
-   ncap2 -O -v -S ~/nco/data/bin_cnt.nco ${DATA}/quikscat.nc ~/foo.nc
+   ncap2 -D 1 -O -v -S ~/nco/data/bin_cnt.nco /data/scapps/qscat/daily/2000/tmp/2000.nc /tmp/foo.nc
    ncks ~/foo.nc | /bin/more
 */
 
@@ -10,8 +10,7 @@ flg_tst=1s; // [flg] TST size grid
 flg_prd=0s; // [flg] PRD size grid
 
 // Choose test or production mode
-flg_typ=flg_tst; // [enm] Size grid type
-
+flg_typ=flg_prd; // [enm] Size grid type
 
 if(flg_typ==flg_tst) bin_nbr=3; else bin_nbr=40;
 defdim("bin",bin_nbr); // [nbr] Bin dimension
@@ -27,13 +26,14 @@ if(flg_typ==flg_tst){
 } // !flg_typ
 wnd_min[bin]=wnd_grd(0:bin_nbr-1); // [m s-1] Minimum speed
 wnd_max[bin]=wnd_grd(1:bin_nbr); // [m s-1] Maximum speed
+// Initialize loop variables as RAM variables  
 bin_cnt[lat,lon,bin]=0; // [nbr] Number of wind speeds within bin
 bin_flg[time,lat,lon]=0s; // [flg] Wind speed within current bin
 bin_idx=0; // [idx] Current bin index
 
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
+*bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+*bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+*bin_idx++; // [idx] Current bin index
 
 bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
 bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
@@ -42,7 +42,7 @@ bin_idx++; // [idx] Current bin index
 bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
 bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
 bin_idx++; // [idx] Current bin index
-  
+
 if(flg_typ==flg_prd){
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
@@ -188,5 +188,8 @@ if(flg_typ==flg_prd){
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
   bin_idx++; // [idx] Current bin index
 } // !flg_prd
-  
-  
+
+// Write last value of RAM variables  
+bin_cnt=*bin_cnt;
+bin_flg=*bin_flg;
+bin_idx=*bin_idx;
