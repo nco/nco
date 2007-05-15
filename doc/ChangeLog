@@ -1,5 +1,9 @@
 2007-05-14  Charlie Zender  <zender@uci.edu>
 
+	* Temporarily make fl_out_fmt=fl_in_fmt ("consanguinity") in ncks
+
+	* Fix fl_out_fmt bug for NC_FORMAT_CLASSIC
+
 	* Add all new netcdf4 atomic data types (except string) to libnco_c++
 
 	* Implement NC_STRING support stubs in nco_typ.h

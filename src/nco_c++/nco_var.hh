@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.19 2007-05-15 05:19:11 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.20 2007-05-15 06:23:30 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface to netCDF variable routines
 
@@ -319,6 +319,17 @@ nco_put_vara // [fnc] Write variable to netCDF file
  const size_t * const &var_cnt, // I [nbr] Count vector
  const unsigned long long * const &var_val); // I [frc] Variable value
 // end nco_put_vara<size_t *,size_t *,unsigned long long *>() prototype
+
+#if 0
+int // O [enm] Return success code
+nco_put_vara // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const size_t * const &var_srt, // I [idx] Start vector
+ const size_t * const &var_cnt, // I [nbr] Count vector
+ const char * * const &var_val); // I [frc] Variable value
+// end nco_put_vara<size_t *,size_t *,char * *>() prototype
+#endif // !0 20070514 Function not in netCDF4-beta1
 #endif // !ENABLE_NETCDF4
 
 // Overload 2: Write array given name, start, count vectors
@@ -457,6 +468,13 @@ nco_put_var // [fnc] Write variable to netCDF file
  const int &var_id, // I [id] Variable ID
  const unsigned long long * const &var_val); // I [frc] Variable value
 // end nco_put_var<unsigned long long *>() prototype
+
+int // O [enm] Return success code
+nco_put_var // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const char * * const &var_val); // I [frc] Variable value
+// end nco_put_var<char * *>() prototype
 #endif // !ENABLE_NETCDF4
 
 template<typename typ_ntr>
@@ -596,6 +614,13 @@ nco_put_var // [fnc] Write variable to netCDF file
  const int &var_id, // I [id] Variable ID
  const unsigned long long &var_val); // I [frc] Variable value
 // end nco_put_var<unsigned long long>() prototype
+
+int // O [enm] Return success code
+nco_put_var // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const char * &var_val); // I [frc] Variable value
+// end nco_put_var<char *>() prototype
 #endif // !ENABLE_NETCDF4
 
 // Overload 4: Write scalar given name
@@ -708,6 +733,13 @@ nco_get_var // [fnc] Ingest variable from netCDF file
  const int &var_id, // I [id] Variable ID
  unsigned long long *&var_val); // O [frc] Variable value
 // end nco_get_var<unsigned long long *>()
+
+int // O [enm] Return success code
+nco_get_var // [fnc] Ingest variable from netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ char * *&var_val); // O [frc] Variable value
+// end nco_get_var<char * *>()
 #endif // !ENABLE_NETCDF4
 
 // Overload 1.5: Get array given ID
