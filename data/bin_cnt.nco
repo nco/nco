@@ -6,15 +6,25 @@
    ncks ~/foo.nc | /bin/more
 */
 
-bin_nbr=40; // [nbr] Number of wind speed bins
+flg_tst=1s; // [flg] TST size grid
+flg_prd=0s; // [flg] PRD size grid
+
+// Choose test or production mode
+flg_typ=flg_tst; // [enm] Size grid type
+
+
+if(flg_typ==flg_tst) bin_nbr=3; else bin_nbr=40;
 defdim("bin",bin_nbr); // [nbr] Bin dimension
 defdim("bin_grd",bin_nbr+1); // [nbr] Bin grid dimension
 wnd_grd[bin_grd]=0.0f;
-wnd_grd={0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12,
-	 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-	 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
-	 37, 38, 39, 40};
-}; // [m s-1] Minimum speed
+if(flg_typ==flg_tst){
+  wnd_grd={0,  1,  2,  3};
+}else if(flg_typ==flg_prd){
+  wnd_grd={0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12,
+	   13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+	   25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
+	   37, 38, 39, 40};
+} // !flg_typ
 wnd_min[bin]=wnd_grd(0:bin_nbr-1); // [m s-1] Minimum speed
 wnd_max[bin]=wnd_grd(1:bin_nbr); // [m s-1] Maximum speed
 bin_cnt[lat,lon,bin]=0; // [nbr] Number of wind speeds within bin
@@ -32,148 +42,151 @@ bin_idx++; // [idx] Current bin index
 bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
 bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
 bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
-bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
-bin_idx++; // [idx] Current bin index
-
+  
+if(flg_typ==flg_prd){
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+  
+  bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+  bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Number of wind speeds within bin
+  bin_idx++; // [idx] Current bin index
+} // !flg_prd
+  
+  
