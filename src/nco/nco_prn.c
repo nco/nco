@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.38 2007-05-15 05:19:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.39 2007-05-15 06:31:35 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -99,6 +99,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable */
       break;
     case NC_UINT64:
       for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,(long)att[idx].val.ui64p[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+    case NC_STRING:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,(long)att[idx].val.sngp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
     default: nco_dfl_case_nc_type_err(); break;
       break;
     } /* end switch */
@@ -141,6 +143,7 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
   static const char fmt_NC_UINT[]="%lu"; /*  */
   static const char fmt_NC_INT64[]="%lli"; /*  */
   static const char fmt_NC_UINT64[]="%llu"; /*  */
+  static const char fmt_NC_STRING[]="%s"; /*  */
 
   switch (typ){
   case NC_FLOAT:
@@ -165,6 +168,8 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
     return fmt_NC_INT64; 
   case NC_UINT64:
     return fmt_NC_UINT64; 
+  case NC_STRING:
+    return fmt_NC_STRING; 
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
@@ -468,6 +473,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
       case NC_UINT: (void)fprintf(stdout,dlm_sng,var.val.uip[lmn]); break;
       case NC_INT64: (void)fprintf(stdout,dlm_sng,var.val.i64p[lmn]); break;
       case NC_UINT64: (void)fprintf(stdout,dlm_sng,var.val.ui64p[lmn]); break;
+      case NC_STRING: (void)fprintf(stdout,dlm_sng,var.val.sngp[lmn]); break;
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
     } /* end loop over element */
@@ -493,6 +499,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
     case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,var.val.uip[lmn],unit_sng); break;
     case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,var.val.i64p[lmn],unit_sng); break;
     case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,var.val.ui64p[lmn],unit_sng); break;
+    case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var.val.sngp[lmn],unit_sng); break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* end if variable is a scalar, byte, or character */
@@ -601,6 +608,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 	      case NC_UINT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.uip[crd_idx_crr]); break;
 	      case NC_INT64: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.i64p[crd_idx_crr]); break;
 	      case NC_UINT64: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ui64p[crd_idx_crr]); break;
+	      case NC_STRING: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.sngp[crd_idx_crr]); break;
 	      default: nco_dfl_case_nc_type_err(); break;
 	      } /* end switch */
 	    }else{ /* if dimension is not a coordinate... */
@@ -653,6 +661,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
       case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.uip[lmn],unit_sng); break;
       case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.i64p[lmn],unit_sng); break;
       case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.ui64p[lmn],unit_sng); break;
+      case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.sngp[lmn],unit_sng); break;
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
     } /* end loop over element */

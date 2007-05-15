@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.40 2007-05-15 05:48:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.41 2007-05-15 06:31:35 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -726,6 +726,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       case NC_UINT: (void)fprintf(stdout,dlm_sng,var.val.uip[lmn]); break;
       case NC_INT64: (void)fprintf(stdout,dlm_sng,var.val.i64p[lmn]); break;
       case NC_UINT64: (void)fprintf(stdout,dlm_sng,var.val.ui64p[lmn]); break;
+      case NC_STRING: (void)fprintf(stdout,dlm_sng,var.val.sngp[lmn]); break;
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
     } /* end loop over element */
@@ -775,6 +776,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,var.val.uip[lmn],unit_sng); break;
     case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,var.val.i64p[lmn],unit_sng); break;
     case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,var.val.ui64p[lmn],unit_sng); break;
+    case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var.val.sngp[lmn],unit_sng); break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* end if variable is a scalar, byte, or character */
@@ -891,6 +893,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	  case NC_UINT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.uip[crd_idx_crr]); break;
 	  case NC_INT64: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.i64p[crd_idx_crr]); break;
 	  case NC_UINT64: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ui64p[crd_idx_crr]); break;
+	  case NC_STRING: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.sngp[crd_idx_crr]); break;
 	  default: nco_dfl_case_nc_type_err(); break;
 	  } /* end switch */
 	} /* end loop over dimensions */
@@ -965,6 +968,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.uip[lmn],unit_sng); break;
       case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.i64p[lmn],unit_sng); break;
       case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.ui64p[lmn],unit_sng); break;
+      case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.sngp[lmn],unit_sng); break;
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
     } /* end loop over elements */
