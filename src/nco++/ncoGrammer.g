@@ -20,9 +20,6 @@ options {
 	language="Cpp";
 }
 
-
-
-
 class ncoParser extends Parser;
 options {
     k=3;
@@ -1737,11 +1734,11 @@ end_dot: ;
 
     |	c:BYTE			
         {  
-            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<nco_char>(std::strtol(i->getText().c_str(),(char **)NULL,10)));
+            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<nco_char>(std::strtol(c->getText().c_str(),(char **)NULL,10)));
         } // end BYTE
 	|	s:SHORT			
         {  
-            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_SHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<short>(std::strtol(i->getText().c_str(),(char **)NULL,10)));
+            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_SHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<short>(std::strtol(s->getText().c_str(),(char **)NULL,10)));
         } // end SHORT
 	|	i:INT			
         {  

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.58 2007-05-09 16:25:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.59 2007-05-15 18:03:42 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -765,7 +765,7 @@ sym_sct *app)       /* I [fnc_ptr] to apply to variable */
   
   
   /* Promote variable to NC_FLOAT */
-  if(var_in->type < NC_FLOAT) var_in=nco_var_cnf_typ( NC_FLOAT,var_in);
+  if(var_in->type < NC_FLOAT) var_in=nco_var_cnf_typ(NC_FLOAT,var_in);
 
   /* deal with initial scan */
   if(var_in->val.vp==NULL) return var_in; 
@@ -1424,12 +1424,12 @@ ncap_var_var_stc
   //If var2 is null then we are dealing with a unary function
   if( var2 == NULL_CEWI) {
 
-   switch (var1->type) {
+    switch (var1->type) {
     case NC_BYTE:
-    /* Do nothing */
+      /* Do nothing */
       break;
     case NC_CHAR:
-    /* Do nothing */
+      /* Do nothing */
       break;
     case NC_SHORT:
       var_ret=Vs.var_op(var1,op);
@@ -1440,10 +1440,10 @@ ncap_var_var_stc
     case NC_FLOAT:
       var_ret=Vf.var_op(var1,op);
       break;
-  case NC_DOUBLE:
+    case NC_DOUBLE:
       var_ret=Vd.var_op(var1,op);
       break;
-
+      
   default:
     break;
 
