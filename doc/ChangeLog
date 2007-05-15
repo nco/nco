@@ -1,12 +1,14 @@
 2007-05-15  Charlie Zender  <zender@uci.edu>
 
+	* Make fl_out_fmt>=fl_in_fmt ("consanguinity") NCO-wide TODO nco836
+
 	* Use ISO standard strto(l,d,ul) not ato(f,i) to parse ncap2 atomic types
 
 2007-05-14  Charlie Zender  <zender@uci.edu>
 
 	* Support NC_STRING in ncks functions, nco_prn.c, nco_msa.c, libnco_c++
 
-	* Temporarily make fl_out_fmt=fl_in_fmt ("consanguinity") in ncks
+	* Temporarily make fl_out_fmt>=fl_in_fmt ("consanguinity") in ncks
 
 	* Fix fl_out_fmt bug for NC_FORMAT_CLASSIC
 

@@ -121,7 +121,7 @@ h1@units="microns";
 h1@long_name="Teslar\t";
 // variable string handling
 //Create a variable string ( currently a painfull process)
-h2[char_dmn_sml]="a";  // string is now "aaaa"
+h2[char_dmn_sml]="a";  // string is now "aaa"
 h2()="hell";            // string is now "hell"
 // hyperslab a variable string;
 h3=two_dmn_rec_var_sng;

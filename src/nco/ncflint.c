@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.138 2007-05-13 06:45:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.139 2007-05-15 18:37:28 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -101,8 +101,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.138 2007-05-13 06:45:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.138 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.139 2007-05-15 18:37:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.139 $";
   const char * const opt_sht_lst="4ACcD:d:Fhi:l:Oo:p:rRt:v:xw:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -131,6 +131,8 @@ main(int argc,char **argv)
   int abb_arg_nbr=0;
   int fl_idx;
   int fl_nbr=0;
+  int fl_in_fmt_1; /* [enm] Input file format */
+  int fl_in_fmt_2; /* [enm] Input file format */
   int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int has_mss_val=False;
@@ -399,6 +401,8 @@ main(int argc,char **argv)
   
   /* Get number of variables and dimensions in file */
   (void)nco_inq(in_id_1,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,(int *)NULL);
+  (void)nco_inq_format(in_id_1,&fl_in_fmt_1);
+  (void)nco_inq_format(in_id_2,&fl_in_fmt_2);
   
   /* Form initial extraction list which may include extended regular expressions */
   xtr_lst=nco_var_lst_mk(in_id_1,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&nbr_xtr);
@@ -457,6 +461,9 @@ main(int argc,char **argv)
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc_1,&var_prc_out,&nbr_var_prc);
+
+  /* Make output and input files consanguinous fxm: TODO nco836 */
+  if(fl_in_fmt_1 == NC_FORMAT_NETCDF4 || fl_in_fmt_2 == NC_FORMAT_NETCDF4) fl_out_fmt=NC_FORMAT_NETCDF4;
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);

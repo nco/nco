@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.183 2007-05-15 18:11:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.184 2007-05-15 18:37:28 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.183 2007-05-15 18:11:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.183 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.184 2007-05-15 18:37:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.184 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -524,8 +524,8 @@ main(int argc,char **argv)
     /* Output file was specified so PRN_ tokens refer to (meta)data copying */
     int out_id;  
     
-    /* Make output and input files consanguinous */
     /* fxm: TODO nco836 Allow user to override format consanguinity with, e.g., -3 switch */
+    /* Make output and input files consanguinous fxm: TODO nco836 */
     if(fl_in_fmt == NC_FORMAT_NETCDF4) fl_out_fmt=NC_FORMAT_NETCDF4;
 
     /* Open output file */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.48 2007-05-13 06:45:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.49 2007-05-15 18:37:27 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.48 2007-05-13 06:45:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.48 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.49 2007-05-15 18:37:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.49 $";
   const char * const opt_sht_lst="4Aa:CcD:d:Fhl:M:Oo:P:p:RrSt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -140,6 +140,7 @@ main(int argc,char **argv)
   int dmn_rdr_nbr_utl=0; /* [nbr] Number of dimension to re-order, utilized */
   int fl_idx=int_CEWI;
   int fl_nbr=0;
+  int fl_in_fmt; /* [enm] Input file format */
   int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
@@ -400,6 +401,7 @@ main(int argc,char **argv)
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id_in);
+  (void)nco_inq_format(in_id,&fl_in_fmt);
   
   /* Form initial extraction list which may include extended regular expressions */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&nbr_xtr);
@@ -538,7 +540,10 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
   if(prc_rnk == rnk_mgr){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
-    /* Open output file */
+    /* Make output and input files consanguinous fxm: TODO nco836 */
+  if(fl_in_fmt == NC_FORMAT_NETCDF4) fl_out_fmt=NC_FORMAT_NETCDF4;
+
+  /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
     if(dbg_lvl >= nco_dbg_sbr) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
     

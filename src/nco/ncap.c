@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.206 2007-05-13 06:45:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.207 2007-05-15 18:37:27 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.206 2007-05-13 06:45:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.206 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.207 2007-05-15 18:37:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.207 $";
   const char * const opt_sht_lst="4ACcD:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -184,6 +184,7 @@ main(int argc,char **argv)
 
   int abb_arg_nbr=0;
   int fl_nbr=0;
+  int fl_in_fmt; /* [enm] Input file format */
   int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
@@ -523,6 +524,9 @@ main(int argc,char **argv)
   /* Merge hyperslab limit information into dimension structures */
   if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dmn_in,nbr_dmn_in,lmt,lmt_nbr);
   
+  /* Make output and input files consanguinous fxm: TODO nco836 */
+  if(fl_in_fmt == NC_FORMAT_NETCDF4) fl_out_fmt=NC_FORMAT_NETCDF4;
+
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
   
@@ -621,6 +625,7 @@ main(int argc,char **argv)
   
   /* Get number of variables in output file */
   rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int*)NULL);
+  (void)nco_inq_format(in_id,&fl_in_fmt);
   
   /* Make list of all new variables in output_file */  
   xtr_lst_a=nco_var_lst_mk(out_id,nbr_var_fl,var_lst_in,False,False,&nbr_lst_a);
