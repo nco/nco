@@ -1730,68 +1730,35 @@ out returns [var_sct *var]
 
 end_dot: ;
 
-          }//end action           
+          } // end action
 
     // Naked numbers 
-    // nb Cast is not applied to these numbers
+    // Cast is not applied to these numbers
 
-	|	c:BYTE			
-          {  
-            if(prs_arg->ntl_scn)
-              var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_BYTE,false);
-            else {
-              int ival;
-              ival=atoi(c->getText().c_str());
-              var=ncap_sclr_var_mk(static_cast<std::string>("~short"), (signed char)ival);
-            }
-          }
-
+    |	c:BYTE			
+        {  
+            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<nco_char>(std::strtol(i->getText().c_str(),(char **)NULL,10)));
+        } // end BYTE
 	|	s:SHORT			
-          {  
-            if(prs_arg->ntl_scn)
-              var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_SHORT,false);
-            else {
-              int ival;
-              ival=atoi(s->getText().c_str());
-              var=ncap_sclr_var_mk(static_cast<std::string>("~short"), (short)ival);
-            }
-          }
-
+        {  
+            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_SHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<short>(std::strtol(i->getText().c_str(),(char **)NULL,10)));
+        } // end SHORT
 	|	i:INT			
-          {  
-            if(prs_arg->ntl_scn)
-              var=ncap_sclr_var_mk(static_cast<std::string>("~int"),NC_INT,false);
-            else {
-              int ival;
-              ival=atoi(i->getText().c_str());
-              var=ncap_sclr_var_mk(static_cast<std::string>("~int"), ival);
-            }
-           }
-
+        {  
+            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int"),NC_INT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int"),static_cast<int>(std::strtol(i->getText().c_str(),(char **)NULL,10)));
+        } // end INT
     |   f:FLOAT        
-          {  
-            if(prs_arg->ntl_scn)
-              var=ncap_sclr_var_mk(static_cast<std::string>("~float"),NC_FLOAT,false);
-            else {
-              float fval;
-              fval=atof(f->getText().c_str());
-              var=ncap_sclr_var_mk(static_cast<std::string>("~float"), fval);
-            }
-           }
+        {  
+            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~float"),NC_FLOAT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~float"),static_cast<float>(std::strtod(f->getText().c_str(),(char **)NULL)));
+        } // end FLOAT
     |   d:DOUBLE        
-          {  
-            if(prs_arg->ntl_scn)
-              var=ncap_sclr_var_mk(static_cast<std::string>("~double"),NC_DOUBLE,false);
-            else {
-              double dvar;
-              dvar=strtod(d->getText().c_str(),(char**)NULL );
-              var=ncap_sclr_var_mk(static_cast<std::string>("~double"), dvar);
-            }
-           }
-     |   str:NSTRING
-         {
+        {  
+            if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~double"),NC_DOUBLE,false); else ncap_sclr_var_mk(static_cast<std::string>("~double"),strtod(d->getText().c_str(),(char **)NULL));
+        } // end DOUBLE
+    |   str:NSTRING
+        {
             char *tsng;
-              
+            
             tsng=strdup(str->getText().c_str());
             (void)sng_ascii_trn(tsng);            
             var=(var_sct *)nco_malloc(sizeof(var_sct));
@@ -1803,38 +1770,36 @@ end_dot: ;
             var->sz=strlen(tsng);
             var->type=NC_CHAR;
             if(!prs_arg->ntl_scn){
-             var->val.vp=(void*)nco_malloc(var->sz*nco_typ_lng(NC_CHAR));
-             (void)cast_void_nctype(NC_CHAR,&var->val);
-             strncpy(var->val.cp,tsng,(size_t)var->sz);  
-             (void)cast_nctype_void(NC_CHAR,&var->val);
+                var->val.vp=(void*)nco_malloc(var->sz*nco_typ_lng(NC_CHAR));
+                (void)cast_void_nctype(NC_CHAR,&var->val);
+                strncpy(var->val.cp,tsng,(size_t)var->sz);  
+                (void)cast_nctype_void(NC_CHAR,&var->val);
             }
             tsng=(char*)nco_free(tsng);      
-
-          }
-
+        }
     |   dval:DIM_ID_SIZE
         {
             string sDim=dval->getText();
             dmn_sct *dmn_fd;
-           
+            
             // check output
             if(prs_arg->ntl_scn){
-              var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),NC_INT,false);
+                var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),NC_INT,false);
             }else{ 
-              // Check output 
-              dmn_fd=prs_arg->ptr_dmn_out_vtr->find(sDim);
-              // Check input
-              if(dmn_fd==NULL_CEWI)
-               dmn_fd=prs_arg->ptr_dmn_in_vtr->find(sDim);
-
-              if( dmn_fd==NULL_CEWI ){
-               err_prn(fnc_nm,"Unable to locate dimension " +dval->getText()+ " in input or output files ");
-               }
-               var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),dmn_fd->sz);
+                // Check output 
+                dmn_fd=prs_arg->ptr_dmn_out_vtr->find(sDim);
+                // Check input
+                if(dmn_fd==NULL_CEWI)
+                dmn_fd=prs_arg->ptr_dmn_in_vtr->find(sDim);
+                
+                if( dmn_fd==NULL_CEWI ){
+                    err_prn(fnc_nm,"Unable to locate dimension " +dval->getText()+ " in input or output files ");
+                }
+                var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),dmn_fd->sz);
             } // end else 
-          } // end action 
-
-    // Variable with argument list 
+        } // end action 
+        
+        // Variable with argument list 
     | (#(VAR_ID LMT_LIST)) => #( vid:VAR_ID lmt:LMT_LIST) {
           bool bram;   // Check for a RAM variable
           int idx;
