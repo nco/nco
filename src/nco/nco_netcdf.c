@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.72 2007-05-13 06:17:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.73 2007-05-15 06:49:03 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -121,6 +121,8 @@ nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
     return sizeof(nco_int64);
   case NC_UINT64:
     return sizeof(nco_uint64);
+  case NC_STRING:
+    return sizeof(nco_string);
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
@@ -155,6 +157,8 @@ nco_typ_sng /* [fnc] Convert netCDF type enum to string */
     return "NC_INT64";
   case NC_UINT64:
     return "NC_UINT64";
+  case NC_STRING:
+    return "NC_STRING";
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
@@ -193,6 +197,8 @@ c_typ_nm /* [fnc] Return string describing native C type */
     return "NCO_INT64_SNG";
   case NC_UINT64:
     return "NCO_UINT64_SNG";
+  case NC_STRING:
+    return "NCO_STRING_SNG";
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
@@ -228,6 +234,8 @@ f77_typ_nm /* [fnc] Return string describing native Fortran77 type */
     return "integer*8";
   case NC_UINT64:
     return "integer*8";
+  case NC_STRING:
+    return "character fxm";
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
@@ -264,6 +272,8 @@ f90_typ_nm /* [fnc] Return string describing native Fortran90 type */
     return "integer(selected_int_kind(8))";
   case NC_UINT64:
     return "integer(selected_int_kind(8))";
+  case NC_STRING:
+    return "character(1) fxm";
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
@@ -745,6 +755,9 @@ nco_get_var1(const int nc_id,const int var_id,const long * const srt,void * cons
   case NC_UINT: rcd=NCO_GET_VAR1_UINT(nc_id,var_id,(const size_t *)srt,(nco_uint *)vp); break;
   case NC_INT64: rcd=NCO_GET_VAR1_INT64(nc_id,var_id,(const size_t *)srt,(nco_int64 *)vp); break;
   case NC_UINT64: rcd=NCO_GET_VAR1_UINT64(nc_id,var_id,(const size_t *)srt,(nco_uint64 *)vp); break;
+#if 0
+  case NC_STRING: rcd=NCO_GET_VAR1_STRING(nc_id,var_id,(const size_t *)srt,(nco_string *)vp); break;
+#endif /* !0 */
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -770,6 +783,9 @@ nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void 
   case NC_UINT: rcd=NCO_PUT_VAR1_UINT(nc_id,var_id,(const size_t *)srt,(const nco_uint *)vp); break;
   case NC_INT64: rcd=NCO_PUT_VAR1_INT64(nc_id,var_id,(const size_t *)srt,(const nco_int64 *)vp); break;
   case NC_UINT64: rcd=NCO_PUT_VAR1_UINT64(nc_id,var_id,(const size_t *)srt,(const nco_uint64 *)vp); break;
+#if 0
+  case NC_STRING: rcd=NCO_PUT_VAR1_STRING(nc_id,var_id,(const size_t *)srt,(const nco_string *)vp); break;
+#endif /* !0 */
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -795,6 +811,9 @@ nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long 
   case NC_UINT: rcd=NCO_GET_VARA_UINT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(nco_uint *)vp); break;
   case NC_INT64: rcd=NCO_GET_VARA_INT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(nco_int64 *)vp); break;
   case NC_UINT64: rcd=NCO_GET_VARA_UINT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(nco_uint64 *)vp); break;
+#if 0
+  case NC_STRING: rcd=NCO_GET_VARA_STRING(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(nco_string *)vp); break;
+#endif /* !0 */
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -820,6 +839,9 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
   case NC_UINT: rcd=NCO_PUT_VARA_UINT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_uint *)vp); break;
   case NC_INT64: rcd=NCO_PUT_VARA_INT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_int64 *)vp); break;
   case NC_UINT64: rcd=NCO_PUT_VARA_UINT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_uint64 *)vp); break;
+#if 0
+  case NC_STRING: rcd=NCO_PUT_VARA_STRING(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_string *)vp); break;
+#endif /* !0 */
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -845,6 +867,9 @@ nco_get_vars(const int nc_id,const int var_id,const long * const srt,const long 
   case NC_UINT: rcd=NCO_GET_VARS_UINT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(nco_uint *)vp); break;
   case NC_INT64: rcd=NCO_GET_VARS_INT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(nco_int64 *)vp); break;
   case NC_UINT64: rcd=NCO_GET_VARS_UINT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(nco_uint64 *)vp); break;
+#if 0
+  case NC_STRING: rcd=NCO_GET_VARS_STRING(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(nco_string *)vp); break;
+#endif /* !0 */
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -870,6 +895,9 @@ nco_put_vars(const int nc_id,const int var_id,const long * const srt,const long 
   case NC_UINT: rcd=NCO_PUT_VARS_UINT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const nco_uint *)vp); break;
   case NC_INT64: rcd=NCO_PUT_VARS_INT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const nco_int64 *)vp); break;
   case NC_UINT64: rcd=NCO_PUT_VARS_UINT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const nco_uint64 *)vp); break;
+#if 0
+  case NC_STRING: rcd=NCO_PUT_VARS_STRING(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const nco_string *)vp); break;
+#endif /* !0 */
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -896,6 +924,9 @@ nco_get_varm(const int nc_id,const int var_id,const long * const srt,const long 
   case NC_UINT: rcd=NCO_GET_VARM_UINT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(nco_uint *)vp); break;
   case NC_INT64: rcd=NCO_GET_VARM_INT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(nco_int64 *)vp); break;
   case NC_UINT64: rcd=NCO_GET_VARM_UINT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(nco_uint64 *)vp); break;
+#if 0
+  case NC_STRING: rcd=NCO_GET_VARM_STRING(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(nco_string *)vp); break;
+#endif /* !0 */
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -921,6 +952,9 @@ nco_put_varm(const int nc_id,const int var_id,const long * const srt,const long 
   case NC_UINT: rcd=NCO_PUT_VARM_UINT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(const nco_uint *)vp); break;
   case NC_INT64: rcd=NCO_PUT_VARM_INT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(const nco_int64 *)vp); break;
   case NC_UINT64: rcd=NCO_PUT_VARM_UINT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(const nco_uint64 *)vp); break;
+#if 0
+  case NC_STRING: rcd=NCO_PUT_VARM_STRING(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const ptrdiff_t *)map,(const nco_string *)vp); break;
+#endif /* !0 */
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -1063,6 +1097,9 @@ nco_put_att(const int nc_id,const int var_id,const char * const att_nm,const nc_
   case NC_UINT: rcd=NCO_PUT_ATT_UINT(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_uint *)vp); break;
   case NC_INT64: rcd=NCO_PUT_ATT_INT64(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_int64 *)vp); break;
   case NC_UINT64: rcd=NCO_PUT_ATT_UINT64(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_uint64 *)vp); break;
+#if 0
+  case NC_STRING: rcd=NCO_PUT_ATT_STRING(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_string *)vp); break;
+#endif /* !0 */
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -1089,6 +1126,9 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
   case NC_UINT: rcd=NCO_GET_ATT_UINT(nc_id,var_id,att_nm,(nco_uint *)vp); break;
   case NC_INT64: rcd=NCO_GET_ATT_INT64(nc_id,var_id,att_nm,(nco_int64 *)vp); break;
   case NC_UINT64: rcd=NCO_GET_ATT_UINT64(nc_id,var_id,att_nm,(nco_uint64 *)vp); break;
+#if 0
+  case NC_STRING: rcd=NCO_GET_ATT_STRING(nc_id,var_id,att_nm,(nco_string *)vp); break;
+#endif /* !0 */
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
