@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.41 2007-04-19 00:22:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.42 2007-05-16 01:12:04 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -22,7 +22,7 @@ nco_var_abs /* [fnc] Replace op1 values by their absolute values */
   /* Absolute value is currently defined as op1:=abs(op1) */  
   
   /* NB: Many compilers need to #include "nco_rth_flt.h" for fabsf() prototype */
-
+  
   long idx;
   
   /* Typecast pointer to values before access */
@@ -70,12 +70,23 @@ nco_var_abs /* [fnc] Replace op1 values by their absolute values */
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR:
-    /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing fxm: do something? */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_USHORT: break; /* Do nothing */
+  case NC_UINT: break; /* Do nothing */
+  case NC_INT64: 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.i64p[idx]=llabs(op1.i64p[idx]);
+    }else{
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++){
+	if(op1.i64p[idx] != mss_val_int64) op1.i64p[idx]=llabs(op1.i64p[idx]);
+      } /* end for */
+    } /* end else */
     break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_UINT64: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -98,16 +109,16 @@ nco_var_add /* [fnc] Add first operand to second operand */
      Assume operands conform, are same type, and are in memory
      nco_var_add() does _not_ increment tally counter
      nco_var_add_tll_ncra() does increment tally counter */
-
+  
   /* Addition is currently defined as op2:=op1+op2 */
-
+  
   long idx;
-
+  
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
-
+  
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
@@ -149,13 +160,9 @@ nco_var_add /* [fnc] Add first operand to second operand */
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
-    default: nco_dfl_case_nc_type_err(); break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -178,16 +185,16 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
      Assume operands conform, are same type, and are in memory
      nco_var_add() does _not_ increment tally counter
      nco_var_add_tll_ncflint() does increment tally counter */
-
+  
   /* Addition is currently defined as op2:=op1+op2 */
-
+  
   long idx;
-
+  
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
-
+  
   /* Return missing_value where either or both input values are missing 
      Algorithm used since 20040603 
      NB: Tally is incremented but not used */
@@ -224,7 +231,7 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
 	  tally[idx]++;
 	}else{
 	  op2.dp[idx]=mss_val_dbl;
-	}/* end else */
+	} /* end else */
       } /* end for */
     } /* end else */
     break;
@@ -264,15 +271,11 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-
+  
   /* Used this block of code until 20040603. 
      It keeps track of tally but does not do anything with it later */
 #if 0
@@ -341,19 +344,15 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 #endif /* endif 0 */
-
+  
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
-
+  
 } /* end nco_var_add_tll_ncflint() */
 
 void
@@ -380,29 +379,29 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
      2. Assume running sum is valid and is stored in op2
      3. Assume new record is stored in op1
      4. Check only if new record (not running sum) equals missing_value
-        Note that missing_value is associated with op1, i.e., new record, not running sum
+     Note that missing_value is associated with op1, i.e., new record, not running sum
      5. Accumulate running sum only if new record is valid
      6. Increment tally
-  Difference between nco_var_add_tll_ncra() and nco_var_add_tll_ncflint() is that
-  nco_var_add_tll_ncflint() checks both operands against the missing_value, whereas 
-  nco_var_add_tll_ncra() only checks first operand (new record) against missing_value
-  nco_var_add_tll_ncflint() algorithm fails as running average algorithm when
-  missing value is zero because running sum is bootstrapped to zero and this
-  causes comparison to missing_value to always be true.
-  nco_var_add_tll_ncflint() also fails as running average algorithm whenever
-  running sum happens to equal missing_value (regardless if missing value is zero).
-  NCO uses nco_var_add_tll_ncflint() only for ncflint
-  NCO uses nco_var_add_tll_ncra() only for ncra/ncea */
-
+     Difference between nco_var_add_tll_ncra() and nco_var_add_tll_ncflint() is that
+     nco_var_add_tll_ncflint() checks both operands against the missing_value, whereas 
+     nco_var_add_tll_ncra() only checks first operand (new record) against missing_value
+     nco_var_add_tll_ncflint() algorithm fails as running average algorithm when
+     missing value is zero because running sum is bootstrapped to zero and this
+     causes comparison to missing_value to always be true.
+     nco_var_add_tll_ncflint() also fails as running average algorithm whenever
+     running sum happens to equal missing_value (regardless if missing value is zero).
+     NCO uses nco_var_add_tll_ncflint() only for ncflint
+     NCO uses nco_var_add_tll_ncra() only for ncra/ncea */
+  
   /* Addition is currently defined as op2:=op1+op2 */
-
+  
   long idx;
-
+  
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
-
+  
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
@@ -468,18 +467,14 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-
+  
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
-
+  
 } /* end nco_var_add_tll_ncra() */
 
 void
@@ -495,9 +490,9 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
   /* Purpose: Divide value of first operand by value of second operand 
      and store result in second operand. 
      Assume operands conform, are same type, and are in memory */
-
+  
   /* Variable-variable division is currently defined as op2:=op2/op1 */  
-
+  
   long idx;
   
   /* Typecast pointer to values before access */
@@ -546,15 +541,11 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
       } /* end for */
     } /* end else */
     break; /* end NC_SHORT */
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-
+  
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
@@ -639,12 +630,8 @@ nco_var_max_bnr /* [fnc] Maximize two operands */
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 } /* end nco_var_max_bnr() */
@@ -728,12 +715,8 @@ nco_var_min_bnr /* [fnc] Minimize two operands */
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 } /* end nco_var_min_bnr() */
@@ -802,15 +785,11 @@ nco_var_mlt /* [fnc] Multiply first operand by second operand */
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-
+  
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
@@ -888,7 +867,7 @@ nco_var_mod /* [fnc] Remainder (modulo) operation of two variables */
     break; /* end NC_BYTE */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-
+  
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
@@ -908,9 +887,9 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Mask third operand where first and second operands fail comparison
      Set third operand to missing value wherever second operand fails comparison with first operand */
-
+  
   /* Masking is currently defined as: if(op2 !op_typ_rlt op1) then op3:=mss_val */  
-
+  
   long idx;
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
@@ -918,7 +897,7 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
   nco_byte mss_val_byt=nco_byte_CEWI;
   nco_int mss_val_lng=nco_int_CEWI;
   short mss_val_sht=short_CEWI;
-
+  
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op2);
   (void)cast_void_nctype(type,&op3);
@@ -928,7 +907,7 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
     (void)fprintf(stdout,"%s: ERROR has_mss_val is inconsistent with purpose of var_ask(), i.e., has_mss_val is not True\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* end else */
-
+  
   if(has_mss_val){
     switch(type){
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
@@ -940,7 +919,7 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
-
+  
   /* NB: Explicit coercion when comparing op2 to op1 is necessary */
   switch(type){
   case NC_FLOAT:
@@ -1005,10 +984,10 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
     break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-
+  
   /* It is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
-
+  
 } /* end nco_var_msk() */
 
 void
@@ -1022,15 +1001,15 @@ nco_var_nrm /* [fnc] Normalize value of first operand by count in tally array */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Normalize value of first operand by count in tally array */
-
+  
   /* Normalization is currently defined as op1:=op1/tally */  
-
+  
   long idx;
-
+  
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
-
+  
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
@@ -1068,18 +1047,14 @@ nco_var_nrm /* [fnc] Normalize value of first operand by count in tally array */
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.sp[idx]/=tally[idx]; else op1.sp[idx]=mss_val_sht;
     } /* end else */
     break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-
+  
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
-
+  
 } /* end nco_var_nrm() */
 
 void
@@ -1092,17 +1067,17 @@ nco_var_nrm_sdn /* [fnc] Normalize value of first operand by count-1 in tally ar
  ptr_unn op1) /* I/O [val] Values of first operand on input, normalized result on output */
 {
   /* Purpose: Normalize value of first operand by count-1 in tally array */
-
+  
   /* Normalization is currently defined as op1:=op1/(--tally) */  
-
+  
   /* nco_var_nrm_sdn() is based on nco_var_nrm() and algorithms should be kept consistent with eachother */
-
+  
   long idx;
-
+  
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
-
+  
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
@@ -1136,18 +1111,14 @@ nco_var_nrm_sdn /* [fnc] Normalize value of first operand by count-1 in tally ar
       for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.sp[idx]/=tally[idx]-1L; else op1.sp[idx]=mss_val_sht;
     } /* end else */
     break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-
+  
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
-
+  
 } /* end of nco_var_nrm_sdn */
 
 void
@@ -1163,9 +1134,9 @@ nco_var_pwr /* [fnc] Raise first operand to power of second operand */
   /* Purpose: Raise value of first operand to power of second operand 
      and store result in second operand. 
      Assume operands conform, are same type, and are in memory */
-
+  
   /* Em-powering is currently defined as op2:=op1^op2 */  
-
+  
   long idx;
   
   /* Typecast pointer to values before access */
@@ -1200,14 +1171,10 @@ nco_var_pwr /* [fnc] Raise first operand to power of second operand */
   case NC_SHORT:
     (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",prg_nm_get());
     break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
-  }/* end switch */
+  } /* end switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
@@ -1226,16 +1193,16 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
   /* Purpose: Subtract value of first operand from value of second operand 
      and store result in second operand. 
      Assume operands conform, are same type, and are in memory */
-
+  
   /* Subtraction is currently defined as op2:=op2-op1 */
-
+  
   long idx;
-
+  
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
-
+  
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
@@ -1277,13 +1244,9 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
-    default: nco_dfl_case_nc_type_err(); break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -1303,18 +1266,18 @@ nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second opera
 {
   /* Purpose: Place squareroot of first operand in value of second operand 
      Assume operands conform, are same type, and are in memory */
-
+  
   /* Square root is currently defined as op2:=sqrt(op1) */
-
+  
   /* NB: Many compilers need to #include "nco_rth_flt.h" for sqrtf() prototype */
-
+  
   long idx;
-
+  
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
-
+  
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
@@ -1380,18 +1343,14 @@ nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second opera
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-
+  
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
-
+  
 } /* end nco_var_sqrt() */
 
 void
@@ -1401,7 +1360,7 @@ nco_var_zero /* [fnc] Zero value of first operand */
  ptr_unn op1) /* O [val] Values of first operand zeroed on output */
 {
   /* Purpose: Zero value of first operand */
-
+  
   /* fxm: According to hjm, floats and ints all use same bit pattern for zero
      ccc --tst=bnr --int_foo=0 
      and
@@ -1409,7 +1368,7 @@ nco_var_zero /* [fnc] Zero value of first operand */
      confirm this.
      Hence, it may be faster to use memset() system call to zero memory 
      Same approach is used in nco_zero_long() */
-
+  
   size_t sz_byt; /* [B] Number of bytes in variable buffer */
   sz_byt=(size_t)sz*nco_typ_lng(type);
   switch(type){
@@ -1419,22 +1378,18 @@ nco_var_zero /* [fnc] Zero value of first operand */
   case NC_SHORT:
     (void)memset(op1.vp,0,sz_byt);
     break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
-    default: nco_dfl_case_nc_type_err(); break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-
+  
 #if 0
   /* Presumably this old method used until 20050321 is slower because of pointer de-referencing */
   long idx;
-
+  
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
-
+  
   switch(type){
   case NC_FLOAT:
     for(idx=0;idx<sz;idx++) op1.fp[idx]=0.0;
@@ -1448,18 +1403,14 @@ nco_var_zero /* [fnc] Zero value of first operand */
   case NC_SHORT:
     for(idx=0;idx<sz;idx++) op1.sp[idx]=0;
     break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
-    default: nco_dfl_case_nc_type_err(); break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 #endif /* !0 */
-
+  
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
-
+  
 } /* end nco_var_zero() */
 

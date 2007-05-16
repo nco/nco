@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.27 2007-02-23 21:59:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.28 2007-05-16 01:12:04 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -165,12 +165,8 @@ vec_set /* [fnc] Fill every value of first operand with value of second operand 
   case NC_SHORT:
     for(idx=0;idx<sz;idx++) op1.sp[idx]=(short)op2; /* Coerce to avoid C++ compiler assignment warning */
     break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
     default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 

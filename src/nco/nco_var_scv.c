@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.25 2007-02-23 21:59:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.26 2007-05-16 01:12:04 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
@@ -78,12 +78,8 @@ var_scv_add /* [fnc] Add scalar to variable */
     } /* end else */
     break;
   } /* endif NC_SHORT */
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -162,12 +158,8 @@ var_scv_sub /* [fnc] Subtract scalar from variable */
     } /* end else */
     break;
   }
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -246,12 +238,8 @@ var_scv_mlt /* [fnc] Multiply variable by scalar */
     } /* end else */
     break;
   }
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -330,12 +318,8 @@ var_scv_dvd /* [fnc] Divide variable by scalar */
     } /* end else */
     break;
   } /* endif NC_SHORT */
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -414,12 +398,8 @@ scv_var_dvd /* [fnc] Divide scalar by variable */
     } /* end else */
     break;
   } /* endif NC_SHORT */
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -512,12 +492,8 @@ var_scv_mod /* [fnc] Modulo variable by scalar */
     } /* end else */
     break;
   } /* endif NC_SHORT */
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -607,12 +583,8 @@ scv_var_mod /* [fnc] Modulo scalar by variable */
     } /* end else */
     break;
   } /* endif NC_SHORT */
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -662,19 +634,11 @@ var_scv_pwr /* [fnc] Empower variable by scalar */
     } /* end else */
     break;
   } /* end NC_DOUBLE */
-  case NC_INT:
-    /* Do nothing */
     /* fxm: nco322 Implement integer empowerment? GSL? */
-    break;
-  case NC_SHORT:
-    /* Do nothing */
-    break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_INT: break; /* Do nothing */
+  case NC_SHORT: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   }/* end switch */
   
@@ -727,19 +691,11 @@ scv_var_pwr /* [fnc] Empower scalar by variable */
     } /* end else */
     break;
   } /* end NC_DOUBLE */
-  case NC_INT:
-    /* Do nothing */
     /* fxm: nco322 Implement integer empowerment? GSL? */
-    break;
-  case NC_SHORT:
-    /* Do nothing */
-    break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
+  case NC_INT: break; /* Do nothing */
+  case NC_SHORT: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   }/* end switch */
   
