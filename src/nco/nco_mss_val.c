@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.32 2007-02-23 21:59:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.33 2007-05-16 01:30:37 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -29,6 +29,12 @@ nco_mss_val_mk /* [fnc] Return default missing value for type type */
   case NC_SHORT: *mss_val.sp=NC_FILL_SHORT; break;
   case NC_CHAR: *mss_val.cp=NC_FILL_CHAR; break;
   case NC_BYTE: *mss_val.bp=NC_FILL_BYTE; break;
+  case NC_UBYTE: *mss_val.ubp=NC_FILL_UBYTE; break;
+  case NC_USHORT: *mss_val.usp=NC_FILL_USHORT; break;
+  case NC_UINT: *mss_val.uip=NC_FILL_UINT; break;
+  case NC_INT64: *mss_val.i64p=NC_FILL_INT64; break;
+  case NC_UINT64: *mss_val.ui64p=NC_FILL_UINT64; break;
+  case NC_STRING: *mss_val.sngp='\0'; break; /* fxm: NC_FILL_STRING? TODO nco839 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
@@ -72,6 +78,12 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
     case NC_SHORT: MSS_VAL_EQL=(*var1->mss_val.sp == *var2->mss_val.sp); break;
     case NC_CHAR: MSS_VAL_EQL=(*var1->mss_val.cp == *var2->mss_val.cp); break;
     case NC_BYTE: MSS_VAL_EQL=(*var1->mss_val.bp == *var2->mss_val.bp); break;
+    case NC_UBYTE: MSS_VAL_EQL=(*var1->mss_val.ubp == *var2->mss_val.ubp); break;
+    case NC_USHORT: MSS_VAL_EQL=(*var1->mss_val.usp == *var2->mss_val.usp); break;
+    case NC_UINT: MSS_VAL_EQL=(*var1->mss_val.uip == *var2->mss_val.uip); break;
+    case NC_INT64: MSS_VAL_EQL=(*var1->mss_val.i64p == *var2->mss_val.i64p); break;
+    case NC_UINT64: MSS_VAL_EQL=(*var1->mss_val.ui64p == *var2->mss_val.ui64p); break;
+    case NC_STRING: MSS_VAL_EQL=(*var1->mss_val.sngp == *var2->mss_val.sngp); break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
     if(!MSS_VAL_EQL){
@@ -87,6 +99,12 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
       case NC_INT: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.lp[0]); break;
       case NC_CHAR: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.cp[0]); break;
       case NC_BYTE: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.bp[0]); break;
+      case NC_UBYTE: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.ubp[0]); break;
+      case NC_USHORT: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.usp[0]); break;
+      case NC_UINT: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.uip[0]); break;
+      case NC_INT64: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.i64p[0]); break;
+      case NC_UINT64: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.ui64p[0]); break;
+      case NC_STRING: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.sngp[0]); break;
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
       fmt_sng=nco_typ_fmt_sng(var2->type);
@@ -97,6 +115,12 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
       case NC_INT: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.lp[0]); break;
       case NC_CHAR: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.cp[0]); break;
       case NC_BYTE: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.bp[0]); break;
+      case NC_UBYTE: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.ubp[0]); break;
+      case NC_USHORT: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.usp[0]); break;
+      case NC_UINT: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.uip[0]); break;
+      case NC_INT64: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.i64p[0]); break;
+      case NC_UINT64: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.ui64p[0]); break;
+      case NC_STRING: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.sngp[0]); break;
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
       (void)fprintf(stderr,"%s: WARNING Input variables have different NCO_MSS_VAL_SNG's:\nFile 1 variable %s has NCO_MSS_VAL_SNG type = %s, value = %s\nFile 2 variable %s has NCO_MSS_VAL_SNG type = %s, value = %s\nFile 3 variable %s will have NCO_MSS_VAL_SNG type = %s, value = %s\nWill translate values of var2 equaling mss_val2 to mss_val1 before arithmetic operation\n",prg_nm_get(),var1->nm,nco_typ_sng(var1->type),mss_val_1_sng,var2->nm,nco_typ_sng(var2->type),mss_val_2_sng,var1->nm,nco_typ_sng(var1->type),mss_val_1_sng);
@@ -154,6 +178,36 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
       const nco_byte mss_val_1_byt=*var1->mss_val.bp;
       const nco_byte mss_val_2_byt=*var2->mss_val.bp; 
       for(idx=0L;idx<var_sz;idx++) if(var_val.bp[idx] == mss_val_2_byt) var_val.bp[idx]=mss_val_1_byt; 
+    } break;
+    case NC_UBYTE: {
+      const nco_ubyte mss_val_1_ubyte=*var1->mss_val.ubp;
+      const nco_ubyte mss_val_2_ubyte=*var2->mss_val.ubp; 
+      for(idx=0L;idx<var_sz;idx++) if(var_val.ubp[idx] == mss_val_2_ubyte) var_val.ubp[idx]=mss_val_1_ubyte; 
+    } break;
+    case NC_USHORT: {
+      const nco_ushort mss_val_1_ushort=*var1->mss_val.usp;
+      const nco_ushort mss_val_2_ushort=*var2->mss_val.usp; 
+      for(idx=0L;idx<var_sz;idx++) if(var_val.usp[idx] == mss_val_2_ushort) var_val.usp[idx]=mss_val_1_ushort; 
+    } break;
+    case NC_UINT: {
+      const nco_uint mss_val_1_uint=*var1->mss_val.uip;
+      const nco_uint mss_val_2_uint=*var2->mss_val.uip; 
+      for(idx=0L;idx<var_sz;idx++) if(var_val.uip[idx] == mss_val_2_uint) var_val.uip[idx]=mss_val_1_uint; 
+    } break;
+    case NC_INT64: {
+      const nco_int64 mss_val_1_int64=*var1->mss_val.i64p;
+      const nco_int64 mss_val_2_int64=*var2->mss_val.i64p; 
+      for(idx=0L;idx<var_sz;idx++) if(var_val.i64p[idx] == mss_val_2_int64) var_val.i64p[idx]=mss_val_1_int64; 
+    } break;
+    case NC_UINT64: {
+      const nco_uint64 mss_val_1_uint64=*var1->mss_val.ui64p;
+      const nco_uint64 mss_val_2_uint64=*var2->mss_val.ui64p; 
+      for(idx=0L;idx<var_sz;idx++) if(var_val.ui64p[idx] == mss_val_2_uint64) var_val.ui64p[idx]=mss_val_1_uint64; 
+    } break;
+    case NC_STRING: {
+      const nco_string mss_val_1_string=*var1->mss_val.sngp;
+      const nco_string mss_val_2_string=*var2->mss_val.sngp; 
+      for(idx=0L;idx<var_sz;idx++) if(var_val.sngp[idx] == mss_val_2_string) var_val.sngp[idx]=mss_val_1_string; 
     } break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
