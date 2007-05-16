@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/psd_wrf.nco,v 1.12 2006-12-29 23:33:39 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/psd_wrf.nco,v 1.13 2007-05-16 05:02:48 zender Exp $ -*-C++-*-
 
 // Purpose: ncap script for WRF particle size distributions
 // Based on psd.nco
