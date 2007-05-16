@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.889 2007-05-15 05:48:47 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.890 2007-05-16 00:06:05 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -583,7 +583,9 @@ nco835. ncks uint64_var(ULLONG_MAX) = int64_var(LLONG_MAX)
 	ccc
 	ncks -v '.?_var$' ~/c++/foo.nc
 nco836. Allow user to override format consanguinity with, e.g., -3 switch
-nco837. 
+nco837. need single letter (preferably) abbreviations for netCDF4 atomic types to use as arguments to ncatted 'type'
+nco838. Document solution to nco837.
+nco839. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

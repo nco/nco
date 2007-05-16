@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.72 2007-05-13 06:45:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.73 2007-05-16 00:06:06 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -141,6 +141,12 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     case NC_SHORT: for(idx=0L;idx<var_sz;idx++) {if(var_val.sp[idx] == *mss_val_crr.sp) var_val.sp[idx]=*mss_val_new.sp;} break;
     case NC_CHAR: for(idx=0L;idx<var_sz;idx++) {if(var_val.cp[idx] == *mss_val_crr.cp) var_val.cp[idx]=*mss_val_new.cp;} break;
     case NC_BYTE: for(idx=0L;idx<var_sz;idx++) {if(var_val.bp[idx] == *mss_val_crr.bp) var_val.bp[idx]=*mss_val_new.bp;} break;
+    case NC_UBYTE: for(idx=0L;idx<var_sz;idx++) {if(var_val.ubp[idx] == *mss_val_crr.ubp) var_val.ubp[idx]=*mss_val_new.ubp;} break;
+    case NC_USHORT: for(idx=0L;idx<var_sz;idx++) {if(var_val.usp[idx] == *mss_val_crr.usp) var_val.usp[idx]=*mss_val_new.usp;} break;
+    case NC_UINT: for(idx=0L;idx<var_sz;idx++) {if(var_val.uip[idx] == *mss_val_crr.uip) var_val.uip[idx]=*mss_val_new.uip;} break;
+    case NC_INT64: for(idx=0L;idx<var_sz;idx++) {if(var_val.i64p[idx] == *mss_val_crr.i64p) var_val.i64p[idx]=*mss_val_new.i64p;} break;
+    case NC_UINT64: for(idx=0L;idx<var_sz;idx++) {if(var_val.ui64p[idx] == *mss_val_crr.ui64p) var_val.ui64p[idx]=*mss_val_new.ui64p;} break;
+    case NC_STRING: for(idx=0L;idx<var_sz;idx++) {if(var_val.sngp[idx] == *mss_val_crr.sngp) var_val.sngp[idx]=*mss_val_new.sngp;} break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
 
@@ -595,9 +601,16 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       case 's':	aed_lst[idx].type=NC_SHORT; break;
       case 'c':	aed_lst[idx].type=NC_CHAR; break;
       case 'b':	aed_lst[idx].type=NC_BYTE; break;
+	/* fxm TODO nco837 */
+      case 'z':	aed_lst[idx].type=NC_UBYTE; break;
+      case 'y':	aed_lst[idx].type=NC_USHORT; break;
+      case 'x':	aed_lst[idx].type=NC_UINT; break;
+      case 'w':	aed_lst[idx].type=NC_INT64; break;
+      case 'v':	aed_lst[idx].type=NC_UINT64; break;
+      case 'u':	aed_lst[idx].type=NC_STRING; break;
       default: 
 	(void)fprintf(stderr,"%s: ERROR `%s' is not a supported netCDF data type\n",prg_nm_get(),arg_lst[3]);
-	(void)fprintf(stderr,"%s: HINT: Valid data types are `c' = char, `f' = float, `d' = double,`s' = short, `l' = long, `b' = byte",prg_nm_get());
+	(void)fprintf(stderr,"%s: HINT: Valid data types are `c' = char, `f' = float, `d' = double,`s' = short, 'l' = `i' = integer, `b' = byte",prg_nm_get());
 	nco_exit(EXIT_FAILURE);
 	break;
       } /* end switch */
@@ -650,6 +663,12 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	case NC_SHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.sp[lmn]=(short)val_arg_dbl[lmn];} break; 
 	case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=(nco_char)val_arg_dbl[lmn];} break; 
 	case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=(nco_byte)val_arg_dbl[lmn];} break; 
+	case NC_UBYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.ubp[lmn]=(nco_ubyte)val_arg_dbl[lmn];} break; 
+	case NC_USHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.usp[lmn]=(nco_ushort)val_arg_dbl[lmn];} break; 
+	case NC_UINT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.uip[lmn]=(nco_uint)val_arg_dbl[lmn];} break; 
+	case NC_INT64: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.i64p[lmn]=(nco_int64)val_arg_dbl[lmn];} break; 
+	case NC_UINT64: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.ui64p[lmn]=(nco_uint64)val_arg_dbl[lmn];} break; 
+	case NC_STRING: break;
 	default: nco_dfl_case_nc_type_err(); break;
 	} /* end switch */
 	
