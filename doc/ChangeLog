@@ -1,5 +1,7 @@
 2007-05-15  Charlie Zender  <zender@uci.edu>
 
+	* Add netCDF4 atomic types to nco_scl_utl.c
+
 	* Add netCDF4 atomic types to nco_mss_val.c
 
 	* Add netCDF4 atomic types to nco_att_utl.c

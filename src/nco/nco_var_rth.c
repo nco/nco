@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.42 2007-05-16 01:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.43 2007-05-16 05:12:56 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -859,12 +859,8 @@ nco_var_mod /* [fnc] Remainder (modulo) operation of two variables */
       } /* end for */
     } /* end else */
     break; /* end NC_SHORT */
-  case NC_CHAR:
-    /* Do nothing */
-    break; /* end NC_CHAR */
-  case NC_BYTE:
-    /* Do nothing */
-    break; /* end NC_BYTE */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_BYTE: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -1413,4 +1409,3 @@ nco_var_zero /* [fnc] Zero value of first operand */
      because we have only operated on local copies of them. */
   
 } /* end nco_var_zero() */
-

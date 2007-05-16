@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.17 2007-02-23 21:59:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.18 2007-05-16 05:12:56 zender Exp $ */
 
 /* Purpose: Scalar utilities */
 
@@ -52,6 +52,12 @@ scl_mk_var /* [fnc] Convert scalar value of any type into NCO variable */
   case NC_SHORT: val_ptr_unn.sp=&val.s; break;
   case NC_CHAR: val_ptr_unn.cp=&val.c; break;
   case NC_BYTE: val_ptr_unn.bp=&val.b; break;
+  case NC_UBYTE: val_ptr_unn.ubp=&val.ub; break;
+  case NC_USHORT: val_ptr_unn.usp=&val.us; break;
+  case NC_UINT: val_ptr_unn.uip=&val.ui; break;
+  case NC_INT64: val_ptr_unn.i64p=&val.i64; break;
+  case NC_UINT64: val_ptr_unn.ui64p=&val.ui64; break;
+  case NC_STRING: val_ptr_unn.sngp=&val.sng; break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
@@ -128,7 +134,7 @@ ptr_unn_2_scv /* [fnc] Convert ptr_unn to scalar value structure */
 {
   /* Purpose: Convert ptr_unn to scalar value structure
      Assumes that val is initially cast to void
-     Note does not convert cp (strings) as these are not handled by scv_sct
+     Does not convert cp (strings) as these are not handled by scv_sct
      NB: netCDF attributes may contain multiple values
      Only FIRST value in memory block is converted */
   
@@ -136,11 +142,17 @@ ptr_unn_2_scv /* [fnc] Convert ptr_unn to scalar value structure */
   (void)cast_void_nctype(type,&val);
   switch(type){
   case NC_FLOAT: scv.val.f=*val.fp; break;
-  case NC_DOUBLE: scv.val.d =*val.dp; break;
-  case NC_INT: scv.val.l =*val.lp; break;
+  case NC_DOUBLE: scv.val.d=*val.dp; break;
+  case NC_INT: scv.val.l=*val.lp; break;
   case NC_SHORT: scv.val.s=*val.sp; break;
-  case NC_BYTE: scv.val.b =*val.bp; break;
+  case NC_BYTE: scv.val.b=*val.bp; break;
   case NC_CHAR: break; /* Do nothing */
+  case NC_UBYTE: scv.val.ub=*val.ubp; break;
+  case NC_USHORT: scv.val.us=*val.usp; break;
+  case NC_UINT: scv.val.ui=*val.uip; break;
+  case NC_INT64: scv.val.i64=*val.i64p; break;
+  case NC_UINT64: scv.val.ui64=*val.ui64p; break;
+  case NC_STRING: scv.val.sng=*val.sngp; break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   scv.type=type;
