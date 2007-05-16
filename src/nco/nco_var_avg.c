@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.51 2007-02-23 21:59:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.52 2007-05-16 06:05:08 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -654,14 +654,8 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     } /* end if */
 #endif /* __GNUC__ */
     break;
-  case NC_CHAR:
-    /* Do nothing except avoid compiler warnings */
-    mss_val_chr=mss_val_chr;
-    break;
-  case NC_BYTE:
-    /* Do nothing except avoid compiler warnings */
-    mss_val_byt=mss_val_byt;
-    break;
+  case NC_CHAR: mss_val_chr=mss_val_chr; break; /* CEWI */
+  case NC_BYTE: mss_val_byt=mss_val_byt; break; /* CEWI */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -939,14 +933,8 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     } /* end if */
 #endif /* __GNUC__ */
     break;
-  case NC_CHAR:
-    /* Do nothing except avoid compiler warnings */
-    mss_val_chr=mss_val_chr;
-    break;
-  case NC_BYTE:
-    /* Do nothing except avoid compiler warnings */
-    mss_val_byt=mss_val_byt;
-    break;
+  case NC_CHAR: mss_val_chr=mss_val_chr; break; /* CEWI */
+  case NC_BYTE: mss_val_byt=mss_val_byt; break; /* CEWI */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end  switch */
   
@@ -1224,14 +1212,8 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     } /* end if */
 #endif /* __GNUC__ */
     break;
-  case NC_CHAR:
-    /* Do nothing except avoid compiler warnings */
-    mss_val_chr=mss_val_chr;
-    break;
-  case NC_BYTE:
-    /* Do nothing except avoid compiler warnings */
-    mss_val_byt=mss_val_byt;
-    break;
+  case NC_CHAR: mss_val_chr=mss_val_chr; break; /* CEWI */
+  case NC_BYTE: mss_val_byt=mss_val_byt; break; /* CEWI */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end  switch */
   

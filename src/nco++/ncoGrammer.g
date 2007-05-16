@@ -1581,155 +1581,147 @@ out returns [var_sct *var]
               std::string sva(ncap_var_is_att(var1)?"Attribute" :"Variable");
               serr= sva+" " + std::string(var1->nm)+ " has unrecognized method "+ "\""+mtd->getText()+"\"";
               err_prn(fnc_nm,serr );
-              }
-
+            }
+            
             // Process method arguments if any exist !! 
             if(args && (nbr_arg=args->getNumberOfChildren()) >0){  
-              aRef=args->getFirstChild();
-              while(aRef){
-               
-                switch(aRef->getType()){
-                 case DIM_ID: 
-                 case DIM_MTD_ID:{  
-                      str_vtr.push_back(aRef->getText());
-                      break;    
-                      }
+                aRef=args->getFirstChild();
+                while(aRef){
+                    
+                    switch(aRef->getType()){
+                    case DIM_ID: 
+                    case DIM_MTD_ID:{  
+                            str_vtr.push_back(aRef->getText());
+                            break;    
+                        }
                         
-                 // This is garanteed to contain at least one DIM_ID or DIM_MTD  
-                 // and NOTHING else --no need to type check!!
-                 case DMN_ARG_LIST: 
-                      { RefAST bRef=aRef->getFirstChild();
-                        while(bRef){
-                          str_vtr.push_back(bRef->getText());
-                          bRef=bRef->getNextSibling();
-                        }  
+                        // This is garanteed to contain at least one DIM_ID or DIM_MTD  
+                        // and NOTHING else --no need to type check!!
+                    case DMN_ARG_LIST: 
+                        { RefAST bRef=aRef->getFirstChild();
+                            while(bRef){
+                                str_vtr.push_back(bRef->getText());
+                                bRef=bRef->getNextSibling();
+                            }  
+                            break;
+                        } 
+                        
+                        // ignore expr type argument
+                    default:
+                        std::string serr;
+                        serr="Argument \""+aRef->getText()+"\" to method "+mtd->getText()+" is not a dimension";      
+                        wrn_prn(fnc_nm,serr);
                         break;
-                      } 
+                        
+                    } // end switch
+                    aRef=aRef->getNextSibling();
+                } // end while
+                
+                dmn_vtr=ncap_dmn_mtd(var1, str_vtr);
+            }           
             
-                 // ignore expr type argument
-                 default:
-                      std::string serr;
-                      serr="Argument \""+aRef->getText()+"\" to method "+mtd->getText()+" is not a dimension";      
-                      wrn_prn(fnc_nm,serr);
-                      break;
-              
-                } // end switch
-                aRef=aRef->getNextSibling();
-              } // end while
-
-              dmn_vtr=ncap_dmn_mtd(var1, str_vtr);
-              }           
-
-
             // Initial scan 
             if(prs_arg->ntl_scn){
-              nbr_dim=var1->nbr_dim;
-
-              if(var1->undefined)
+                nbr_dim=var1->nbr_dim;
+                
+                if(var1->undefined)
                 var=ncap_var_udf("~dot_methods");  
-              // deal with average over all dims or scalar var
-              else if( nbr_dim==0 || dmn_vtr.size()== 0 || dmn_vtr.size()==nbr_dim)  
+                // deal with average over all dims or scalar var
+                else if( nbr_dim==0 || dmn_vtr.size()== 0 || dmn_vtr.size()==nbr_dim)  
                 var=ncap_sclr_var_mk(static_cast<std::string>("~dot_methods"),var1->type,false);    
-              else {
-              // cast a variable with the correct dims in the correct order
-               dim=var1->dim;
-                std::vector<std::string> cst_vtr;              
-
-                for(idx=0 ; idx < nbr_dim ; idx++){
-                  std::string sdm(dim[idx]->nm);    
-                  if( dmn_vtr.findi(sdm) == -1)
-                     cst_vtr.push_back(sdm);       
-                }                
-            
-                var=ncap_cst_mk(cst_vtr,prs_arg);
-                var=nco_var_cnf_typ(var1->type,var);
-               }
-
-              var1=nco_var_free(var1);
-              // n.b can't use return -- as this results with
-              // problems with automagically generated code 
-              goto end_dot;
+                else {
+                    // cast a variable with the correct dims in the correct order
+                    dim=var1->dim;
+                    std::vector<std::string> cst_vtr;              
+                    
+                    for(idx=0 ; idx < nbr_dim ; idx++){
+                        std::string sdm(dim[idx]->nm);    
+                        if( dmn_vtr.findi(sdm) == -1)
+                        cst_vtr.push_back(sdm);       
+                    }                
+                    
+                    var=ncap_cst_mk(cst_vtr,prs_arg);
+                    var=nco_var_cnf_typ(var1->type,var);
+                }
+                
+                var1=nco_var_free(var1);
+                // NB: cannot use return -- as this results with
+                // problems with automagically generated code 
+                goto end_dot;
             }
-
-
-
-              if(dmn_vtr.size() >0){
-               dim=&dmn_vtr[0];
-               nbr_dim=dmn_vtr.size();                           
-              } else {
-               dim=var1->dim;
-               nbr_dim=var1->nbr_dim; 
-              }    
-
+            
+            if(dmn_vtr.size() >0){
+                dim=&dmn_vtr[0];
+                nbr_dim=dmn_vtr.size();                           
+            } else {
+                dim=var1->dim;
+                nbr_dim=var1->nbr_dim; 
+            }    
             
             // Final scan
             if(!prs_arg->ntl_scn){
-             
-             switch(mtd->getType()){
-
-                 case PAVG:
-                      var=nco_var_avg(var1,dim,nbr_dim,nco_op_avg,False,&ddra_info);
-                      // use tally to normalize
-                      (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
-                      break;
-
-                 case PAVGSQR:
-                      var1=ncap_var_var_op(var1, NULL_CEWI,SQR2);
-                      var=nco_var_avg(var1,dim,nbr_dim,nco_op_avgsqr,False,&ddra_info);
-                      // normalize
-                      (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
-                      break;
-
-                 case PMAX:
-                      var=nco_var_avg(var1,dim,nbr_dim,nco_op_max,False,&ddra_info);
-                      break;
-
-                 case PMIN:
-                      var=nco_var_avg(var1,dim,nbr_dim,nco_op_min,False,&ddra_info);
-                      break; 
-
-                 case PRMS:
-                      var1=ncap_var_var_op(var1, NULL_CEWI,SQR2);
-                      var=nco_var_avg(var1,dim,nbr_dim,nco_op_rms,False,&ddra_info);
-                      // normalize
-                      (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
-                      // take root
-	                  (void)nco_var_sqrt(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val,var->val);  
-                      break;
-
-                 case PRMSSDN:
-                      var1=ncap_var_var_op(var1, NULL_CEWI,SQR2);
-                      var=nco_var_avg(var1,dim,nbr_dim,nco_op_rmssdn,False,&ddra_info);
-                       // normalize
-                      (void)nco_var_nrm_sdn(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
-                      // take root
-  	                  (void)nco_var_sqrt(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val,var->val);  
-                      break;
-
-                 case PSQRAVG:
-                      var=nco_var_avg(var1,dim,nbr_dim,nco_op_sqravg,False,&ddra_info);
-                      // normalize 
-                      (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
-                      // square mean
-                      (void)nco_var_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,var->val);
-                      break;
-
-                 case PTTL:
-                      var=nco_var_avg(var1,dim,nbr_dim,nco_op_ttl,False,&ddra_info);
-                      break;
-
-
-
-             } 
-             // var1 is freed in nco_var_avg()
-
+                
+                switch(mtd->getType()){
+                    
+                case PAVG:
+                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_avg,False,&ddra_info);
+                    // Use tally to normalize
+                    (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
+                    break;
+                    
+                case PAVGSQR:
+                    var1=ncap_var_var_op(var1, NULL_CEWI,SQR2);
+                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_avgsqr,False,&ddra_info);
+                    // Normalize
+                    (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
+                    break;
+                    
+                case PMAX:
+                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_max,False,&ddra_info);
+                    break;
+                    
+                case PMIN:
+                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_min,False,&ddra_info);
+                    break; 
+                    
+                case PRMS:
+                    var1=ncap_var_var_op(var1, NULL_CEWI,SQR2);
+                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_rms,False,&ddra_info);
+                    // Normalize
+                    (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
+                    // Take root
+                    (void)nco_var_sqrt(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val,var->val);  
+                    break;
+                    
+                case PRMSSDN:
+                    var1=ncap_var_var_op(var1, NULL_CEWI,SQR2);
+                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_rmssdn,False,&ddra_info);
+                    // Normalize
+                    (void)nco_var_nrm_sdn(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
+                    // Take root
+                    (void)nco_var_sqrt(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val,var->val);  
+                    break;
+                    
+                case PSQRAVG:
+                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_sqravg,False,&ddra_info);
+                    // Normalize 
+                    (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
+                    // Square mean
+                    (void)nco_var_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,var->val);
+                    break;
+                    
+                case PTTL:
+                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_ttl,False,&ddra_info);
+                    break;
+                } 
+                // var1 is freed in nco_var_avg()
             }
-
-end_dot: ;
-
-          } // end action
-
-    // Naked numbers: Cast is not applied to these numbers
+            
+            end_dot: ;
+            
+        } // end action
+        
+        // Naked numbers: Cast is not applied to these numbers
     |   f:FLOAT        
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~float"),NC_FLOAT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~float"),static_cast<float>(std::strtod(f->getText().c_str(),(char **)NULL)));} // end FLOAT
     |   d:DOUBLE        
@@ -1786,11 +1778,11 @@ end_dot: ;
         
         // Variable with argument list 
     | (#(VAR_ID LMT_LIST)) => #( vid:VAR_ID lmt:LMT_LIST) {
-          bool bram;   // Check for a RAM variable
-          int idx;
-          int nbr_dmn;
-          const char *var_nm;
-          var_sct *var_rhs;
+            bool bram;   // Check for a RAM variable
+            int idx;
+            int nbr_dmn;
+            const char *var_nm;
+            var_sct *var_rhs;
           var_sct *var_nw;
           dmn_sct *dmn_nw;
           
