@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.891 2007-05-16 01:30:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.892 2007-05-17 01:28:14 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -586,7 +586,8 @@ nco836. Allow user to override format consanguinity with, e.g., -3 switch
 nco837. need single letter (preferably) abbreviations for netCDF4 atomic types to use as arguments to ncatted 'type'
 nco838. Document solution to nco837.
 nco839. What, if anything, should NC_FILL_STRING be?
-nco840. 
+nco840. ncap: make sure methods (e.g., total()) respect missing values
+nco841. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
