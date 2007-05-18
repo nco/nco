@@ -1,5 +1,7 @@
 2007-05-18  Charlie Zender  <zender@uci.edu>
 
+	* Use -Wno-switch to quiet GCC enum warnings on netCDF4 case labels
+
 	* Introduce nco_short in nco_var_scv.c, nco_var_rth.c, nco_var_avg.c
 
 	* cvs tag -c nco-3_2_1_alpha2

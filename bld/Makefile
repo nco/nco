@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.421 2007-05-09 23:29:13 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.422 2007-05-18 18:01:27 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -783,6 +783,7 @@ ifeq (gcc,$(firstword ${CC}))
 # -Wmissing-prototypes: Warn if missing prototypes
 # -Wpointer-arith: Warn if pointer arithmetic on types without size, e.g., void
 # -Wshadow: Warn if local variable has same name as other local variable
+# -Wswitch: Warn if switch statement has enumerated index and case label outside enumeration range
 # -Wunused: Warn on unused functions, labels, parameters, values, and variables
 # -Wwrite-strings: Apply const-qualifier to string constants, die if overwritten
 # -fno-common: Prevent global variables from being simultaneously defined in different files
@@ -803,7 +804,7 @@ ifeq (${OPTS},O)
  CFLAGS += -O -g ${GCC_RCH_ARG}
 endif
 ifeq (${OPTS},D)
- CFLAGS += -g
+ CFLAGS += -g -Wno-switch
 endif
 ifeq (${OPTS},R)
  CFLAGS += 

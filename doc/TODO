@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.895 2007-05-18 17:03:33 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.896 2007-05-18 18:01:27 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -589,7 +589,8 @@ nco839. What, if anything, should NC_FILL_STRING be?
 nco840. ncap: make sure methods (e.g., total()) respect missing values
 nco841. netCDF3/netCDF4 netcdf.h enum nc_type change generates beaucoup GCC warnings
 nco844. Link forward-compatibility stub for nc_inq_format() into configure.in
-nco845. 
+nco845. Add -Wno-switch to quiet GCC enum warnings on netCDF4 case labels?
+nco846. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
