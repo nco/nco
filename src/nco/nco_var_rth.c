@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.45 2007-05-18 19:59:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.46 2007-05-18 21:20:25 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -70,7 +70,6 @@ nco_var_abs /* [fnc] Replace op1 values by their absolute values */
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR: break; /* Do nothing */
   case NC_BYTE: break; /* Do nothing fxm: do something? */
   case NC_UBYTE: break; /* Do nothing */
   case NC_USHORT: break; /* Do nothing */
@@ -86,6 +85,7 @@ nco_var_abs /* [fnc] Replace op1 values by their absolute values */
     } /* end else */
     break;
   case NC_UINT64: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
   case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -160,8 +160,50 @@ nco_var_add /* [fnc] Add first operand to second operand */
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR: break; /* Do nothing */
+  case NC_USHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.usp[idx]+=op1.usp[idx];
+    }else{
+      const nco_ushort mss_val_ushort=*mss_val.usp;
+      for(idx=0;idx<sz;idx++){
+	if((op2.usp[idx] != mss_val_ushort) && (op1.usp[idx] != mss_val_ushort)) op2.usp[idx]+=op1.usp[idx]; else op2.usp[idx]=mss_val_ushort;
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.uip[idx]+=op1.uip[idx];
+    }else{
+      const nco_uint mss_val_uint=*mss_val.uip;
+      for(idx=0;idx<sz;idx++){
+	if((op2.uip[idx] != mss_val_uint) && (op1.uip[idx] != mss_val_uint)) op2.uip[idx]+=op1.uip[idx]; else op2.uip[idx]=mss_val_uint;
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_INT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.i64p[idx]+=op1.i64p[idx];
+    }else{
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++){
+	if((op2.i64p[idx] != mss_val_int64) && (op1.i64p[idx] != mss_val_int64)) op2.i64p[idx]+=op1.i64p[idx]; else op2.i64p[idx]=mss_val_int64;
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.ui64p[idx]+=op1.ui64p[idx];
+    }else{
+      const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+      for(idx=0;idx<sz;idx++){
+	if((op2.ui64p[idx] != mss_val_uint64) && (op1.ui64p[idx] != mss_val_uint64)) op2.ui64p[idx]+=op1.ui64p[idx]; else op2.ui64p[idx]=mss_val_uint64;
+      } /* end for */
+    } /* end else */
+    break;
   case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -271,8 +313,82 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR: break; /* Do nothing */
+  case NC_USHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.usp[idx]+=op1.usp[idx];
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const nco_ushort mss_val_ushort=*mss_val.usp;
+      for(idx=0;idx<sz;idx++){
+	if((op2.usp[idx] != mss_val_ushort) && (op1.usp[idx] != mss_val_ushort)){
+	  op2.usp[idx]+=op1.usp[idx];
+	  tally[idx]++;
+	}else{
+	  op2.usp[idx]=mss_val_ushort;
+	} /* end else */
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.uip[idx]+=op1.uip[idx];
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const nco_uint mss_val_uint=*mss_val.uip;
+      for(idx=0;idx<sz;idx++){
+	if((op2.uip[idx] != mss_val_uint) && (op1.uip[idx] != mss_val_uint)){
+	  op2.uip[idx]+=op1.uip[idx];
+	  tally[idx]++;
+	}else{
+	  op2.uip[idx]=mss_val_uint;
+	} /* end else */
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_INT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.i64p[idx]+=op1.i64p[idx];
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++){
+	if((op2.i64p[idx] != mss_val_int64) && (op1.i64p[idx] != mss_val_int64)){
+	  op2.i64p[idx]+=op1.i64p[idx];
+	  tally[idx]++;
+	}else{
+	  op2.i64p[idx]=mss_val_int64;
+	} /* end else */
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.ui64p[idx]+=op1.ui64p[idx];
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+      for(idx=0;idx<sz;idx++){
+	if((op2.ui64p[idx] != mss_val_uint64) && (op1.ui64p[idx] != mss_val_uint64)){
+	  op2.ui64p[idx]+=op1.ui64p[idx];
+	  tally[idx]++;
+	}else{
+	  op2.ui64p[idx]=mss_val_uint64;
+	} /* end else */
+      } /* end for */
+    } /* end else */
+    break;
   case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -344,8 +460,74 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR: break; /* Do nothing */
+  case NC_USHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.usp[idx]+=op1.usp[idx];
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const nco_ushort mss_val_ushort=*mss_val.usp;
+      for(idx=0;idx<sz;idx++){
+	if((op2.usp[idx] != mss_val_ushort) && (op1.usp[idx] != mss_val_ushort)){
+	  op2.usp[idx]+=op1.usp[idx];
+	  tally[idx]++;
+	} /* end if */
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.uip[idx]+=op1.uip[idx];
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const nco_uint mss_val_uint=*mss_val.uip;
+      for(idx=0;idx<sz;idx++){
+	if((op2.uip[idx] != mss_val_uint) && (op1.uip[idx] != mss_val_uint)){
+	  op2.uip[idx]+=op1.uip[idx];
+	  tally[idx]++;
+	} /* end if */
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_INT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.i64p[idx]+=op1.i64p[idx];
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++){
+	if((op2.i64p[idx] != mss_val_int64) && (op1.i64p[idx] != mss_val_int64)){
+	  op2.i64p[idx]+=op1.i64p[idx];
+	  tally[idx]++;
+	} /* end if */
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.ui64p[idx]+=op1.ui64p[idx];
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+      for(idx=0;idx<sz;idx++){
+	if((op2.ui64p[idx] != mss_val_uint64) && (op1.ui64p[idx] != mss_val_uint64)){
+	  op2.ui64p[idx]+=op1.ui64p[idx];
+	  tally[idx]++;
+	} /* end if */
+      } /* end for */
+    } /* end else */
+    break;
   case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 #endif /* endif 0 */
@@ -467,8 +649,74 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR: break; /* Do nothing */
+  case NC_USHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.usp[idx]+=op1.usp[idx];
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const nco_ushort mss_val_ushort=*mss_val.usp;
+      for(idx=0;idx<sz;idx++){
+	if(op1.usp[idx] != mss_val_ushort){
+	  op2.usp[idx]+=op1.usp[idx];
+	  tally[idx]++;
+	} /* end if */
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.uip[idx]+=op1.uip[idx];
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const nco_uint mss_val_uint=*mss_val.uip;
+      for(idx=0;idx<sz;idx++){
+	if(op1.uip[idx] != mss_val_uint){
+	  op2.uip[idx]+=op1.uip[idx];
+	  tally[idx]++;
+	} /* end if */
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_INT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.i64p[idx]+=op1.i64p[idx];
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++){
+	if(op1.i64p[idx] != mss_val_int64){
+	  op2.i64p[idx]+=op1.i64p[idx];
+	  tally[idx]++;
+	} /* end if */
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.ui64p[idx]+=op1.ui64p[idx];
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+      for(idx=0;idx<sz;idx++){
+	if(op1.ui64p[idx] != mss_val_uint64){
+	  op2.ui64p[idx]+=op1.ui64p[idx];
+	  tally[idx]++;
+	} /* end if */
+      } /* end for */
+    } /* end else */
+    break;
   case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -541,8 +789,50 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
       } /* end for */
     } /* end else */
     break; /* end NC_SHORT */
-  case NC_CHAR: break; /* Do nothing */
+  case NC_USHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.usp[idx]/=op1.usp[idx];
+    }else{
+      const nco_ushort mss_val_ushort=*mss_val.usp;
+      for(idx=0;idx<sz;idx++){
+	if((op2.usp[idx] != mss_val_ushort) && (op1.usp[idx] != mss_val_ushort)) op2.usp[idx]/=op1.usp[idx]; else op2.usp[idx]=mss_val_ushort;
+      } /* end for */
+    } /* end else */
+    break; /* end NC_USHORT */
+  case NC_UINT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.uip[idx]/=op1.uip[idx];
+    }else{
+      const nco_uint mss_val_uint=*mss_val.uip;
+      for(idx=0;idx<sz;idx++){
+	if((op2.uip[idx] != mss_val_uint) && (op1.uip[idx] != mss_val_uint)) op2.uip[idx]/=op1.uip[idx]; else op2.uip[idx]=mss_val_uint;
+      } /* end for */
+    } /* end else */
+    break; /* end NC_UINT */
+  case NC_INT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.i64p[idx]/=op1.i64p[idx];
+    }else{
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++){
+	if((op2.i64p[idx] != mss_val_int64) && (op1.i64p[idx] != mss_val_int64)) op2.i64p[idx]/=op1.i64p[idx]; else op2.i64p[idx]=mss_val_int64;
+      } /* end for */
+    } /* end else */
+    break; /* end NC_INT64 */
+  case NC_UINT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.ui64p[idx]/=op1.ui64p[idx];
+    }else{
+      const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+      for(idx=0;idx<sz;idx++){
+	if((op2.ui64p[idx] != mss_val_uint64) && (op1.ui64p[idx] != mss_val_uint64)) op2.ui64p[idx]/=op1.ui64p[idx]; else op2.ui64p[idx]=mss_val_uint64;
+      } /* end for */
+    } /* end else */
+    break; /* end NC_UINT64 */
   case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -630,8 +920,70 @@ nco_var_max_bnr /* [fnc] Maximize two operands */
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR: break; /* Do nothing */
+  case NC_USHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) 
+	if(op2.usp[idx] < op1.usp[idx])
+	  op2.usp[idx]=op1.usp[idx];
+    }else{
+      const nco_ushort mss_val_ushort=*mss_val.usp;
+      for(idx=0;idx<sz;idx++){
+	if(op2.usp[idx] == mss_val_ushort) 
+	  op2.usp[idx]=op1.usp[idx];
+	else if((op1.usp[idx] != mss_val_ushort) && (op2.usp[idx] < op1.usp[idx]))
+	  op2.usp[idx]=op1.usp[idx]; 
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) 
+	if(op2.uip[idx] < op1.uip[idx])
+	  op2.uip[idx]=op1.uip[idx];
+    }else{
+      const nco_uint mss_val_uint=*mss_val.uip;
+      for(idx=0;idx<sz;idx++){
+	if(op2.uip[idx] == mss_val_uint) 
+	  op2.uip[idx]=op1.uip[idx];
+	else if((op1.uip[idx] != mss_val_uint) && (op2.uip[idx] < op1.uip[idx]))
+	  op2.uip[idx]=op1.uip[idx]; 
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_INT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) 
+	if(op2.i64p[idx] < op1.i64p[idx])
+	  op2.i64p[idx]=op1.i64p[idx];
+    }else{
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++){
+	if(op2.i64p[idx] == mss_val_int64) 
+	  op2.i64p[idx]=op1.i64p[idx];
+	else if((op1.i64p[idx] != mss_val_int64) && (op2.i64p[idx] < op1.i64p[idx]))
+	  op2.i64p[idx]=op1.i64p[idx]; 
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) 
+	if(op2.ui64p[idx] < op1.ui64p[idx])
+	  op2.ui64p[idx]=op1.ui64p[idx];
+    }else{
+      const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+      for(idx=0;idx<sz;idx++){
+	if(op2.ui64p[idx] == mss_val_uint64) 
+	  op2.ui64p[idx]=op1.ui64p[idx];
+	else if((op1.ui64p[idx] != mss_val_uint64) && (op2.ui64p[idx] < op1.ui64p[idx]))
+	  op2.ui64p[idx]=op1.ui64p[idx]; 
+      } /* end for */
+    } /* end else */
+    break;
   case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 } /* end nco_var_max_bnr() */
@@ -715,8 +1067,66 @@ nco_var_min_bnr /* [fnc] Minimize two operands */
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR: break; /* Do nothing */
+  case NC_USHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) 
+	if(op2.usp[idx] > op1.usp[idx])  op2.usp[idx]=op1.usp[idx];
+    }else{
+      const nco_ushort mss_val_ushort=*mss_val.usp;
+      for(idx=0;idx<sz;idx++){
+	if(op2.usp[idx] == mss_val_ushort) 
+	  op2.usp[idx]=op1.usp[idx];
+	else if((op1.usp[idx] != mss_val_ushort) && (op2.usp[idx] > op1.usp[idx]))
+	  op2.usp[idx]=op1.usp[idx]; 
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) 
+	if(op2.uip[idx] > op1.uip[idx])  op2.uip[idx]=op1.uip[idx];
+    }else{
+      const nco_uint mss_val_uint=*mss_val.uip;
+      for(idx=0;idx<sz;idx++){
+	if(op2.uip[idx] == mss_val_uint) 
+	  op2.uip[idx]=op1.uip[idx];
+	else if((op1.uip[idx] != mss_val_uint) && (op2.uip[idx] > op1.uip[idx]))
+	  op2.uip[idx]=op1.uip[idx]; 
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_INT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) 
+	if(op2.i64p[idx] > op1.i64p[idx])  op2.i64p[idx]=op1.i64p[idx];
+    }else{
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++){
+	if(op2.i64p[idx] == mss_val_int64) 
+	  op2.i64p[idx]=op1.i64p[idx];
+	else if((op1.i64p[idx] != mss_val_int64) && (op2.i64p[idx] > op1.i64p[idx]))
+	  op2.i64p[idx]=op1.i64p[idx]; 
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) 
+	if(op2.ui64p[idx] > op1.ui64p[idx])  op2.ui64p[idx]=op1.ui64p[idx];
+    }else{
+      const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+      for(idx=0;idx<sz;idx++){
+	if(op2.ui64p[idx] == mss_val_uint64) 
+	  op2.ui64p[idx]=op1.ui64p[idx];
+	else if((op1.ui64p[idx] != mss_val_uint64) && (op2.ui64p[idx] > op1.ui64p[idx]))
+	  op2.ui64p[idx]=op1.ui64p[idx]; 
+      } /* end for */
+    } /* end else */
+    break;
   case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 } /* end nco_var_min_bnr() */
@@ -785,8 +1195,50 @@ nco_var_mlt /* [fnc] Multiply first operand by second operand */
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR: break; /* Do nothing */
+  case NC_USHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.usp[idx]*=op1.usp[idx];
+    }else{
+      const nco_ushort mss_val_ushort=*mss_val.usp;
+      for(idx=0;idx<sz;idx++){
+	if((op2.usp[idx] != mss_val_ushort) && (op1.usp[idx] != mss_val_ushort)) op2.usp[idx]*=op1.usp[idx]; else op2.usp[idx]=mss_val_ushort;
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.uip[idx]*=op1.uip[idx];
+    }else{
+      const nco_uint mss_val_uint=*mss_val.uip;
+      for(idx=0;idx<sz;idx++){
+	if((op2.uip[idx] != mss_val_uint) && (op1.uip[idx] != mss_val_uint)) op2.uip[idx]*=op1.uip[idx]; else op2.uip[idx]=mss_val_uint;
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_INT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.i64p[idx]*=op1.i64p[idx];
+    }else{
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++){
+	if((op2.i64p[idx] != mss_val_int64) && (op1.i64p[idx] != mss_val_int64)) op2.i64p[idx]*=op1.i64p[idx]; else op2.i64p[idx]=mss_val_int64;
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.ui64p[idx]*=op1.ui64p[idx];
+    }else{
+      const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+      for(idx=0;idx<sz;idx++){
+	if((op2.ui64p[idx] != mss_val_uint64) && (op1.ui64p[idx] != mss_val_uint64)) op2.ui64p[idx]*=op1.ui64p[idx]; else op2.ui64p[idx]=mss_val_uint64;
+      } /* end for */
+    } /* end else */
+    break;
   case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -859,8 +1311,50 @@ nco_var_mod /* [fnc] Remainder (modulo) operation of two variables */
       } /* end for */
     } /* end else */
     break; /* end NC_SHORT */
-  case NC_CHAR: break; /* Do nothing */
+  case NC_USHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.usp[idx]=op1.usp[idx]%op2.usp[idx];
+    }else{
+      const nco_ushort mss_val_ushort=*mss_val.usp;
+      for(idx=0;idx<sz;idx++){
+	if((op2.usp[idx] != mss_val_ushort) && (op1.usp[idx] != mss_val_ushort)) op2.usp[idx]=op1.usp[idx]%op2.usp[idx]; else op2.usp[idx]=mss_val_ushort;
+      } /* end for */
+    } /* end else */
+    break; /* end NC_USHORT */
+  case NC_UINT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.uip[idx]=op1.uip[idx]%op2.uip[idx];
+    }else{
+      const nco_uint mss_val_uint=*mss_val.uip;
+      for(idx=0;idx<sz;idx++){
+	if((op2.uip[idx] != mss_val_uint) && (op1.uip[idx] != mss_val_uint)) op2.uip[idx]=op1.uip[idx]%op2.uip[idx]; else op2.uip[idx]=mss_val_uint;
+      } /* end for */
+    } /* end else */
+    break; /* end NC_UINT */
+  case NC_INT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.i64p[idx]=op1.i64p[idx]%op2.i64p[idx];
+    }else{
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++){
+	if((op2.i64p[idx] != mss_val_int64) && (op1.i64p[idx] != mss_val_int64)) op2.i64p[idx]=op1.i64p[idx]%op2.i64p[idx]; else op2.i64p[idx]=mss_val_int64;
+      } /* end for */
+    } /* end else */
+    break; /* end NC_INT64 */
+  case NC_UINT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.ui64p[idx]=op1.ui64p[idx]%op2.ui64p[idx];
+    }else{
+      const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+      for(idx=0;idx<sz;idx++){
+	if((op2.ui64p[idx] != mss_val_uint64) && (op1.ui64p[idx] != mss_val_uint64)) op2.ui64p[idx]=op1.ui64p[idx]%op2.ui64p[idx]; else op2.ui64p[idx]=mss_val_uint64;
+      } /* end for */
+    } /* end else */
+    break; /* end NC_UINT64 */
   case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -889,10 +1383,16 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
   long idx;
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
-  nco_char mss_val_char=nco_char_CEWI;
-  nco_byte mss_val_byte=nco_byte_CEWI;
   nco_int mss_val_lng=nco_int_CEWI;
   nco_short mss_val_short=nco_short_CEWI;
+  nco_ushort mss_val_ushort=nco_ushort_CEWI;
+  nco_uint mss_val_uint=nco_uint_CEWI;
+  nco_int64 mss_val_int64=nco_int64_CEWI;
+  nco_uint64 mss_val_uint64=nco_uint64_CEWI;
+  nco_byte mss_val_byte=nco_byte_CEWI;
+  nco_ubyte mss_val_ubyte=nco_ubyte_CEWI;
+  nco_char mss_val_char=nco_char_CEWI;
+  nco_string mss_val_string=nco_string_CEWI;
   
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op2);
@@ -908,10 +1408,16 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
     switch(type){
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
     case NC_DOUBLE: mss_val_dbl=*mss_val.dp; break;
-    case NC_SHORT: mss_val_short=*mss_val.sp; break;
     case NC_INT: mss_val_lng=*mss_val.lp; break;
+    case NC_SHORT: mss_val_short=*mss_val.sp; break;
+    case NC_USHORT: mss_val_ushort=*mss_val.usp; break;
+    case NC_UINT: mss_val_uint=*mss_val.uip; break;
+    case NC_INT64: mss_val_int64=*mss_val.i64p; break;
+    case NC_UINT64: mss_val_uint64=*mss_val.ui64p; break;
     case NC_BYTE: mss_val_byte=*mss_val.bp; break;
+    case NC_UBYTE: mss_val_ubyte=*mss_val.ubp; break;
     case NC_CHAR: mss_val_char=*mss_val.cp; break;
+    case NC_STRING: mss_val_string=*mss_val.sngp; break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
@@ -958,14 +1464,44 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
     case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.sp[idx] <  (nco_short)op1) op3.sp[idx]=mss_val_short; break;
     } /* end switch */
     break;
-  case NC_CHAR:
+  case NC_USHORT:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.cp[idx] != (nco_char)op1) op3.cp[idx]=mss_val_char; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.cp[idx] == (nco_char)op1) op3.cp[idx]=mss_val_char; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >= (nco_char)op1) op3.cp[idx]=mss_val_char; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <= (nco_char)op1) op3.cp[idx]=mss_val_char; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >  (nco_char)op1) op3.cp[idx]=mss_val_char; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <  (nco_char)op1) op3.cp[idx]=mss_val_char; break;
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.usp[idx] != (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.usp[idx] == (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.usp[idx] >= (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.usp[idx] <= (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.usp[idx] >  (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.usp[idx] <  (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; break;
+    } /* end switch */
+    break;
+  case NC_UINT:
+    switch(op_typ_rlt){
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.uip[idx] != (nco_uint)op1) op3.uip[idx]=mss_val_uint; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.uip[idx] == (nco_uint)op1) op3.uip[idx]=mss_val_uint; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.uip[idx] >= (nco_uint)op1) op3.uip[idx]=mss_val_uint; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.uip[idx] <= (nco_uint)op1) op3.uip[idx]=mss_val_uint; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.uip[idx] >  (nco_uint)op1) op3.uip[idx]=mss_val_uint; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.uip[idx] <  (nco_uint)op1) op3.uip[idx]=mss_val_uint; break;
+    } /* end switch */
+    break;
+  case NC_INT64:
+    switch(op_typ_rlt){
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.i64p[idx] != (nco_int64)op1) op3.i64p[idx]=mss_val_int64; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.i64p[idx] == (nco_int64)op1) op3.i64p[idx]=mss_val_int64; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.i64p[idx] >= (nco_int64)op1) op3.i64p[idx]=mss_val_int64; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.i64p[idx] <= (nco_int64)op1) op3.i64p[idx]=mss_val_int64; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.i64p[idx] >  (nco_int64)op1) op3.i64p[idx]=mss_val_int64; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.i64p[idx] <  (nco_int64)op1) op3.i64p[idx]=mss_val_int64; break;
+    } /* end switch */
+    break;
+  case NC_UINT64:
+    switch(op_typ_rlt){
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] != (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] == (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] >= (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] <= (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] >  (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] <  (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; break;
     } /* end switch */
     break;
   case NC_BYTE:
@@ -978,6 +1514,27 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
     case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <  (nco_byte)op1) op3.bp[idx]=mss_val_byte; break;
     } /* end switch */
     break;
+  case NC_UBYTE:
+    switch(op_typ_rlt){
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.ubp[idx] != (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.ubp[idx] == (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.ubp[idx] >= (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.ubp[idx] <= (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.ubp[idx] >  (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.ubp[idx] <  (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; break;
+    } /* end switch */
+    break;
+  case NC_CHAR:
+    switch(op_typ_rlt){
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.cp[idx] != (nco_char)op1) op3.cp[idx]=mss_val_char; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.cp[idx] == (nco_char)op1) op3.cp[idx]=mss_val_char; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >= (nco_char)op1) op3.cp[idx]=mss_val_char; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <= (nco_char)op1) op3.cp[idx]=mss_val_char; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >  (nco_char)op1) op3.cp[idx]=mss_val_char; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <  (nco_char)op1) op3.cp[idx]=mss_val_char; break;
+    } /* end switch */
+    break;
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -1043,8 +1600,42 @@ nco_var_nrm /* [fnc] Normalize value of first operand by count in tally array */
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.sp[idx]/=tally[idx]; else op1.sp[idx]=mss_val_short;
     } /* end else */
     break;
-  case NC_CHAR: break; /* Do nothing */
+  case NC_USHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.usp[idx]/=tally[idx];
+    }else{
+      const nco_ushort mss_val_ushort=*mss_val.usp;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.usp[idx]/=tally[idx]; else op1.usp[idx]=mss_val_ushort;
+    } /* end else */
+    break;
+  case NC_UINT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.uip[idx]/=tally[idx];
+    }else{
+      const nco_uint mss_val_uint=*mss_val.uip;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.uip[idx]/=tally[idx]; else op1.uip[idx]=mss_val_uint;
+    } /* end else */
+    break;
+  case NC_INT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.i64p[idx]/=tally[idx];
+    }else{
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.i64p[idx]/=tally[idx]; else op1.i64p[idx]=mss_val_int64;
+    } /* end else */
+    break;
+  case NC_UINT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.ui64p[idx]/=tally[idx];
+    }else{
+      const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.ui64p[idx]/=tally[idx]; else op1.ui64p[idx]=mss_val_uint64;
+    } /* end else */
+    break;
   case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -1107,8 +1698,42 @@ nco_var_nrm_sdn /* [fnc] Normalize value of first operand by count-1 in tally ar
       for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.sp[idx]/=tally[idx]-1L; else op1.sp[idx]=mss_val_short;
     } /* end else */
     break;
-  case NC_CHAR: break; /* Do nothing */
+  case NC_USHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.usp[idx]/=tally[idx]-1L;
+    }else{
+      const nco_ushort mss_val_ushort=*mss_val.usp;
+      for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.usp[idx]/=tally[idx]-1L; else op1.usp[idx]=mss_val_ushort;
+    } /* end else */
+    break;
+  case NC_UINT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.uip[idx]/=tally[idx]-1L;
+    }else{
+      const nco_uint mss_val_uint=*mss_val.uip;
+      for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.uip[idx]/=tally[idx]-1L; else op1.uip[idx]=mss_val_uint;
+    } /* end else */
+    break;
+  case NC_INT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.i64p[idx]/=tally[idx]-1L;
+    }else{
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.i64p[idx]/=tally[idx]-1L; else op1.i64p[idx]=mss_val_int64;
+    } /* end else */
+    break;
+  case NC_UINT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.ui64p[idx]/=tally[idx]-1L;
+    }else{
+      const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+      for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.ui64p[idx]/=tally[idx]-1L; else op1.ui64p[idx]=mss_val_uint64;
+    } /* end else */
+    break;
   case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -1167,8 +1792,22 @@ nco_var_pwr /* [fnc] Raise first operand to power of second operand */
   case NC_SHORT:
     (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",prg_nm_get());
     break;
-  case NC_CHAR: break; /* Do nothing */
+  case NC_USHORT:
+    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",prg_nm_get());
+    break;
+  case NC_UINT:
+    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",prg_nm_get());
+    break;
+  case NC_INT64:
+    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",prg_nm_get());
+    break;
+  case NC_UINT64:
+    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",prg_nm_get());
+    break;
   case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -1240,8 +1879,50 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR: break; /* Do nothing */
+  case NC_USHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.usp[idx]-=op1.usp[idx];
+    }else{
+      const nco_ushort mss_val_ushort=*mss_val.usp;
+      for(idx=0;idx<sz;idx++){
+	if((op2.usp[idx] != mss_val_ushort) && (op1.usp[idx] != mss_val_ushort)) op2.usp[idx]-=op1.usp[idx]; else op2.usp[idx]=mss_val_ushort;
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.uip[idx]-=op1.uip[idx];
+    }else{
+      const nco_uint mss_val_uint=*mss_val.uip;
+      for(idx=0;idx<sz;idx++){
+	if((op2.uip[idx] != mss_val_uint) && (op1.uip[idx] != mss_val_uint)) op2.uip[idx]-=op1.uip[idx]; else op2.uip[idx]=mss_val_uint;
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_INT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.i64p[idx]-=op1.i64p[idx];
+    }else{
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++){
+	if((op2.i64p[idx] != mss_val_int64) && (op1.i64p[idx] != mss_val_int64)) op2.i64p[idx]-=op1.i64p[idx]; else op2.i64p[idx]=mss_val_int64;
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.ui64p[idx]-=op1.ui64p[idx];
+    }else{
+      const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+      for(idx=0;idx<sz;idx++){
+	if((op2.ui64p[idx] != mss_val_uint64) && (op1.ui64p[idx] != mss_val_uint64)) op2.ui64p[idx]-=op1.ui64p[idx]; else op2.ui64p[idx]=mss_val_uint64;
+      } /* end for */
+    } /* end else */
+    break;
   case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -1339,8 +2020,74 @@ nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second opera
       } /* end for */
     } /* end else */
     break;
-  case NC_CHAR: break; /* Do nothing */
+  case NC_USHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.usp[idx]=(nco_ushort)sqrt((double)(op1.usp[idx]));
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const nco_ushort mss_val_ushort=*mss_val.usp;
+      for(idx=0;idx<sz;idx++){
+	if(op1.usp[idx] != mss_val_ushort){
+	  op2.usp[idx]=(nco_ushort)sqrt((double)(op1.usp[idx]));
+	  tally[idx]++;
+	} /* end if */
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.uip[idx]=(nco_uint)sqrt((double)(op1.uip[idx]));
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const nco_uint mss_val_uint=*mss_val.uip;
+      for(idx=0;idx<sz;idx++){
+	if(op1.uip[idx] != mss_val_uint){
+	  op2.uip[idx]=(nco_uint)sqrt((double)(op1.uip[idx]));
+	  tally[idx]++;
+	} /* end if */
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_INT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.i64p[idx]=(nco_int64)sqrt((double)(op1.i64p[idx]));
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const nco_int64 mss_val_int64=*mss_val.i64p;
+      for(idx=0;idx<sz;idx++){
+	if(op1.i64p[idx] != mss_val_int64){
+	  op2.i64p[idx]=(nco_int64)sqrt((double)(op1.i64p[idx]));
+	  tally[idx]++;
+	} /* end if */
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_UINT64:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.ui64p[idx]=(nco_uint64)sqrt((double)(op1.ui64p[idx]));
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+      for(idx=0;idx<sz;idx++){
+	if(op1.ui64p[idx] != mss_val_uint64){
+	  op2.ui64p[idx]=(nco_uint64)sqrt((double)(op1.ui64p[idx]));
+	  tally[idx]++;
+	} /* end if */
+      } /* end for */
+    } /* end else */
+    break;
   case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -1372,10 +2119,16 @@ nco_var_zero /* [fnc] Zero value of first operand */
   case NC_DOUBLE:
   case NC_INT:
   case NC_SHORT:
+  case NC_USHORT:
+  case NC_UINT:
+  case NC_INT64:
+  case NC_UINT64:
     (void)memset(op1.vp,0,sz_byt);
     break;
-  case NC_CHAR: break; /* Do nothing */
   case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -1399,8 +2152,22 @@ nco_var_zero /* [fnc] Zero value of first operand */
   case NC_SHORT:
     for(idx=0;idx<sz;idx++) op1.sp[idx]=0;
     break;
-  case NC_CHAR: break; /* Do nothing */
+  case NC_USHORT:
+    for(idx=0;idx<sz;idx++) op1.usp[idx]=0;
+    break;
+  case NC_UINT:
+    for(idx=0;idx<sz;idx++) op1.uip[idx]=0;
+    break;
+  case NC_INT64:
+    for(idx=0;idx<sz;idx++) op1.i64p[idx]=0;
+    break;
+  case NC_UINT64:
+    for(idx=0;idx<sz;idx++) op1.ui64p[idx]=0;
+    break;
   case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 #endif /* !0 */

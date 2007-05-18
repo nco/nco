@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.113 2007-05-18 19:59:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.114 2007-05-18 21:20:25 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -103,6 +103,7 @@ extern "C" {
 #define nco_uint_CEWI 0U
 #define nco_int64_CEWI 0LL
 #define nco_uint64_CEWI 0ULL
+#define nco_string_CEWI NULL
 #define short_CEWI 0
 #define size_t_CEWI 0UL
   
