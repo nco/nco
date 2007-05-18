@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.28 2007-05-16 01:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.29 2007-05-18 23:26:22 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -160,13 +160,27 @@ vec_set /* [fnc] Fill every value of first operand with value of second operand 
     for(idx=0;idx<sz;idx++) op1.dp[idx]=op2;
     break;
   case NC_INT:
-    for(idx=0;idx<sz;idx++) op1.lp[idx]=(long)op2; /* Coerce to avoid C++ compiler assignment warning */
+    for(idx=0;idx<sz;idx++) op1.lp[idx]=(nco_int)op2; /* Coerce to avoid C++ compiler assignment warning */
     break;
   case NC_SHORT:
-    for(idx=0;idx<sz;idx++) op1.sp[idx]=(short)op2; /* Coerce to avoid C++ compiler assignment warning */
+    for(idx=0;idx<sz;idx++) op1.sp[idx]=(nco_short)op2; /* Coerce to avoid C++ compiler assignment warning */
     break;
-  case NC_CHAR: break; /* Do nothing */
+  case NC_USHORT:
+    for(idx=0;idx<sz;idx++) op1.usp[idx]=(nco_ushort)op2; /* Coerce to avoid C++ compiler assignment warning */
+    break;
+  case NC_UINT:
+    for(idx=0;idx<sz;idx++) op1.uip[idx]=(nco_uint)op2; /* Coerce to avoid C++ compiler assignment warning */
+    break;
+  case NC_INT64:
+    for(idx=0;idx<sz;idx++) op1.i64p[idx]=(nco_int64)op2; /* Coerce to avoid C++ compiler assignment warning */
+    break;
+  case NC_UINT64:
+    for(idx=0;idx<sz;idx++) op1.ui64p[idx]=(nco_uint64)op2; /* Coerce to avoid C++ compiler assignment warning */
+    break;
   case NC_BYTE: break; /* Do nothing */
+  case NC_UBYTE: break; /* Do nothing */
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
     default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 

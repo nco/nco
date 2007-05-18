@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.244 2007-05-15 18:37:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.245 2007-05-18 23:26:22 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.244 2007-05-15 18:37:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.244 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.245 2007-05-18 23:26:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.245 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -819,8 +819,14 @@ main(int argc,char **argv)
 	  case NC_DOUBLE: mss_val_dbl=wgt_avg->mss_val.dp[0]; break; 
 	  case NC_INT: mss_val_dbl=wgt_avg->mss_val.lp[0]; break;
 	  case NC_SHORT: mss_val_dbl=wgt_avg->mss_val.sp[0]; break;
-	  case NC_CHAR: mss_val_dbl=wgt_avg->mss_val.cp[0]; break;
+	  case NC_USHORT: mss_val_dbl=wgt_avg->mss_val.usp[0]; break;
+	  case NC_UINT: mss_val_dbl=wgt_avg->mss_val.uip[0]; break;
+	  case NC_INT64: mss_val_dbl=wgt_avg->mss_val.i64p[0]; break;
+	  case NC_UINT64: mss_val_dbl=wgt_avg->mss_val.ui64p[0]; break;
 	  case NC_BYTE: mss_val_dbl=wgt_avg->mss_val.bp[0]; break;
+	  case NC_UBYTE: mss_val_dbl=wgt_avg->mss_val.cp[0]; break;
+	  case NC_CHAR: mss_val_dbl=wgt_avg->mss_val.cp[0]; break;
+	  case NC_STRING: break; /* Do nothing */
 	  default: nco_dfl_case_nc_type_err(); break;
 	  } /* end switch */
 	  /* Second, mask wgt_avg where variable is missing value */

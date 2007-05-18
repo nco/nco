@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.72 2007-05-18 22:37:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.73 2007-05-18 23:26:22 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.72 2007-05-18 22:37:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.72 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.73 2007-05-18 23:26:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.73 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -960,7 +960,7 @@ main(int argc,char **argv)
 		case NC_BYTE: mss_val_dbl=wgt_avg->mss_val.bp[0]; break;
 		case NC_UBYTE: mss_val_dbl=wgt_avg->mss_val.cp[0]; break;
 		case NC_CHAR: mss_val_dbl=wgt_avg->mss_val.cp[0]; break;
-		case NC_STRING: mss_val_dbl=wgt_avg->mss_val.sngp[0]; break;
+		case NC_STRING: break; /* Do nothing */
 		default: nco_dfl_case_nc_type_err(); break;
 		} /* end switch */
 		/* Second, mask wgt_avg where variable is missing value */

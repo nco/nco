@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.63 2007-04-18 17:06:14 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.64 2007-05-18 23:26:22 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -323,54 +323,111 @@ XPN [eE][+-]?[0-9]+
   return SCV;
 } /* end float */
 
+{DGT}+([LL]|[ll]) {
+  /* int64 */
+  nco_int64 int64_tkn;
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing an int64 %s\n",yytext); 
+  if(sscanf((char *)yytext,"%lli",&int64_tkn) != 1){
+    sprintf(ncap_err_sng,"Bad int64 constant: %s",(char *)yytext);
+    yyerror(prs_arg,ncap_err_sng);
+  } /* endif err */
+  lval_ptr->scv.val.l=int64_tkn;
+  lval_ptr->scv.type=NC_INT64;
+  return SCV;
+} /* end int64 */
+
+{DGT}+([ULL]|[ull]) {
+  /* uint64 */
+  nco_uint64 uint64_tkn;
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a uint64 %s\n",yytext); 
+  if(sscanf((char *)yytext,"%llu",&uint64_tkn) != 1){
+    sprintf(ncap_err_sng,"Bad uint64 constant: %s",(char *)yytext);
+    yyerror(prs_arg,ncap_err_sng);
+  } /* endif err */
+  lval_ptr->scv.val.l=uint64_tkn;
+  lval_ptr->scv.type=NC_UINT64;
+  return SCV;
+} /* end uint64 */
+
 {DGT}+[lL]? {
-  /* Long */
-  double dbl_tkn;
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing an integer %s\n",yytext); 
-  dbl_tkn=strtod((char *)yytext, (char **)(NULL));
-  if (dbl_tkn < INT_MIN || dbl_tkn > INT_MAX){
-    lval_ptr->scv.val.d=dbl_tkn;
-    lval_ptr->scv.type=NC_DOUBLE;
-    return SCV;
-  }else{
-    lval_ptr->scv.val.l=(nco_int)dbl_tkn;
-    lval_ptr->scv.type=NC_INT;
-    return SCV;
-  } /* end else */
-} /* end long */
+  /* int */
+  nco_int int_tkn;
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing an int %s\n",yytext); 
+  if(sscanf((char *)yytext,"%li",&int_tkn) != 1){
+    sprintf(ncap_err_sng,"Bad int constant: %s",(char *)yytext);
+    yyerror(prs_arg,ncap_err_sng);
+  } /* endif err */
+  lval_ptr->scv.val.l=int_tkn;
+  lval_ptr->scv.type=NC_INT;
+  return SCV;
+} /* end int */
+
+{DGT}+[uU]? {
+  /* uint */
+  nco_uint uint_tkn;
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a uint %s\n",yytext); 
+  if(sscanf((char *)yytext,"%u",&uint_tkn) != 1){
+    sprintf(ncap_err_sng,"Bad uint constant: %s",(char *)yytext);
+    yyerror(prs_arg,ncap_err_sng);
+  } /* endif err */
+  lval_ptr->scv.val.ui=uint_tkn;
+  lval_ptr->scv.type=NC_UINT;
+  return SCV;
+} /* end uint */
 
 {DGT}+[sS] {
   /* Short */
-  short sht_tkn;
+  nco_short short_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a short %s\n",yytext); 	
-  if(sscanf((char *)yytext,"%hd",&sht_tkn) != 1){
+  if(sscanf((char *)yytext,"%hi",&short_tkn) != 1){
     sprintf(ncap_err_sng,"Bad short constant: %s",(char *)yytext);
     yyerror(prs_arg,ncap_err_sng);
   } /* endif err */
-  lval_ptr->scv.val.s=sht_tkn;
+  lval_ptr->scv.val.s=short_tkn;
+  lval_ptr->scv.type=NC_SHORT;
+  return SCV;
+} /* end short */
+
+{DGT}+([us]|[US]) {
+  /* Short */
+  nco_ushort short_tkn;
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a ushort %s\n",yytext); 	
+  if(sscanf((char *)yytext,"%hu",&short_tkn) != 1){
+    sprintf(ncap_err_sng,"Bad short constant: %s",(char *)yytext);
+    yyerror(prs_arg,ncap_err_sng);
+  } /* endif err */
+  lval_ptr->scv.val.s=short_tkn;
   lval_ptr->scv.type=NC_SHORT;
   return SCV;
 } /* end short */
 
 {DGT}+[Bb] {
-  /* Byte */
-  int byt_tkn;
+  /* byte */
+  nco_byte byte_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a byte %s\n",yytext); 
-  if(sscanf((char *)yytext,"%d",&byt_tkn) != 1){
+  if(sscanf((char *)yytext,"%hhi",&byte_tkn) != 1){
     sprintf(ncap_err_sng,"#Bad byte: %s",yytext);
     yyerror(prs_arg, ncap_err_sng);
     return EPROVOKE;
   } /* endif err */
-  if(byt_tkn < -128 || byt_tkn > 127){
-    lval_ptr->scv.val.l=byt_tkn;
-    lval_ptr->scv.type=NC_INT;
-    return SCV;    
-  }else{ 
-    lval_ptr->scv.val.b=byt_tkn;
-    lval_ptr->scv.type=NC_BYTE;
-    return SCV;                    
-  } /* end else */
+  lval_ptr->scv.val.b=byte_tkn;
+  lval_ptr->scv.type=NC_BYTE;
+  return SCV;                    
 } /* end byte */
+
+{DGT}+([UB]|[ub]) {
+  /* ubyte */
+  nco_ubyte ubyte_tkn;
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a ubyte %s\n",yytext); 
+  if(sscanf((char *)yytext,"%hhu",&ubyte_tkn) != 1){
+    sprintf(ncap_err_sng,"#Bad byte: %s",yytext);
+    yyerror(prs_arg, ncap_err_sng);
+    return EPROVOKE;
+  } /* endif err */
+  lval_ptr->scv.val.ub=ubyte_tkn;
+  lval_ptr->scv.type=NC_UBYTE;
+  return SCV;                    
+} /* end ubyte */
 
 foo1_zyx {return ABS;} /* Strategy for lexing control statements: 
 1. Look for language control statements (if, while, do, for)
