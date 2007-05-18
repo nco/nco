@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.413 2007-05-18 03:57:47 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.414 2007-05-18 06:30:44 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -863,23 +863,23 @@ to properly resolve the C++ name-mangling.
 <a name="bld_cnf"></a> <!-- http://nco.sf.net#bld_cnf -->
 <li><i>The two build NCO build mechanisms:</i>
 NCO has two build mechanisms: (1)&nbsp;GNU configure and 
-(2)&nbsp; a custom Makefile (<tt>bld/Makefile</tt>).
+(2)&nbsp; a custom Makefile (<tt>nco/bld/Makefile</tt>)
 designed for hand-editing.
-Try the traditional GNU configure method, i.e.,
-<tt>./configure;make;make check;make install</tt>, first.
+Try the traditional GNU <tt>configure</tt> method first, i.e.,
+<tt>./configure;make;make check;make install</tt>. 
 This method involves no hand-editing of makefiles, but trouble-free
 builds with it are less common than we would like.  
-The file <tt>configure.eg</tt> contains a table which describes the 
-success you can expect building NCO with the <tt>./configure</tt>
+The file <tt>nco/configure.eg</tt> contains a table which describes the 
+success you can expect building NCO with the <tt>configure</tt>
 mechanism. 
-Please contribute patches required to get the <tt>./configure</tt> 
+Please contribute patches required to get the <tt>configure</tt> 
 mechanism working properly for NCO on your platform.
 The <a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>
 contains gory details of successful (and failed) builds for many platforms.  
 <br>
-All platforms continue to work fine with the <tt>bld/Makefile</tt>
+All platforms continue to work fine with the <tt>nco/bld/Makefile</tt>
 method: <tt>cd ~/nco/bld;make all;make test</tt>. 
-Disadvantages are that <tt>bld/Makefile</tt> (1)&nbsp;Usually requires
+Disadvantages are that <tt>nco/bld/Makefile</tt> (1)&nbsp;Usually requires
 editing to fix your platforms paths; (2)&nbsp;Does not support shared
 libraries; and (3)&nbsp;Requires a degree from Hogwarts to understand.
 </li>
