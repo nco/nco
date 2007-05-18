@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.37 2007-05-15 18:37:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.38 2007-05-18 21:27:35 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.37 2007-05-15 18:37:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.37 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.38 2007-05-18 21:27:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.38 $";
   const char * const opt_sht_lst="4ACcD:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -510,6 +510,7 @@ main(int argc,char **argv)
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
+  (void)nco_inq_format(in_id,&fl_in_fmt);
   
   /* Form list of all dimensions in file */  
   dmn_lst=nco_dmn_lst(in_id,&nbr_dmn_in);
@@ -555,8 +556,6 @@ main(int argc,char **argv)
   prs_arg.ATT_INHERIT=ATT_INHERIT;
   prs_arg.NCAP_MPI_SORT=EXCLUDE_INPUT_LIST;
 
-
-    
   if(fl_spt_usr == NULL_CEWI){
     /* No script file specified, look for command-line scripts */
     if(nbr_spt == 0)
@@ -577,14 +576,11 @@ main(int argc,char **argv)
       fclose(yyin); 
     } /* end else script file */
     
-    /* Invoke ANTLR parser */
-     
-    rcd=parse_antlr(&prs_arg,fl_spt_usr,spt_arg_cat);
-
+  /* Invoke ANTLR parser */
+  rcd=parse_antlr(&prs_arg,fl_spt_usr,spt_arg_cat);
     
   /* Get number of variables in output file */
   rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int*)NULL);
-  (void)nco_inq_format(in_id,&fl_in_fmt);
   
   /* Make list of all new variables in output_file */  
   xtr_lst_a=nco_var_lst_mk(out_id,nbr_var_fl,var_lst_in,False,False,&nbr_lst_a);

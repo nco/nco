@@ -1,5 +1,7 @@
 2007-05-18  Charlie Zender  <zender@uci.edu>
 
+	* Define fl_in_fmt before using in ncap.c, ncap2.cc
+
 	* Working build with netCDF4 atomic types in nco_var_rth.c, nco_var_scv.c
 
 	* Working build with netCDF4 atomic types in nco_var_avg.c
