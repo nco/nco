@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.15 2007-05-18 17:27:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.16 2007-05-18 22:37:46 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -76,6 +76,11 @@ C code." */
 #define NC_FILL_INT64   ((long long)-92233720)
 #define NC_FILL_UINT64  ((unsigned long long)18446744)
 #endif /* !ENABLE_NETCDF4 */
+
+/* fxm: Move inside ENABLE_NETCDF4 once netCDF4 netcdf.h finally defines this */
+#ifndef NC_FILL_STRING
+#define NC_FILL_STRING NULL
+#endif /* NC_FILL_STRING */
 
 /* C pre-processor can compare integers not strings
    Enumerate integer values corresponding to each type and compare those instead */

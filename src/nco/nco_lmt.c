@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.55 2007-04-18 17:06:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.56 2007-05-18 22:37:45 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -339,8 +339,14 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       case NC_DOUBLE: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.dp[idx];} break; 
       case NC_INT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.lp[idx];} break;
       case NC_SHORT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.sp[idx];} break;
-      case NC_CHAR: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.cp[idx];} break;
+      case NC_USHORT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.usp[idx];} break;
+      case NC_UINT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.uip[idx];} break;
+      case NC_INT64: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.i64p[idx];} break;
+      case NC_UINT64: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.ui64p[idx];} break;
       case NC_BYTE: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.bp[idx];} break;
+      case NC_UBYTE: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.ubp[idx];} break;
+      case NC_CHAR: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.cp[idx];} break;
+      case NC_STRING: break; /* Do nothing */
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
       

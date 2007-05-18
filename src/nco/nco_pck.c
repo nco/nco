@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.68 2007-05-10 00:00:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.69 2007-05-18 22:37:45 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -113,12 +113,18 @@ nco_is_packable /* [fnc] Will NCO attempt to pack variable? */
   switch(nc_typ_in){ 
   case NC_FLOAT: 
   case NC_DOUBLE: 
+  case NC_INT64: 
+  case NC_UINT64: 
   case NC_INT: 
+  case NC_UINT: 
     return True;
     break;
   case NC_SHORT: 
+  case NC_USHORT: 
   case NC_CHAR: 
   case NC_BYTE: 
+  case NC_UBYTE: 
+  case NC_STRING:
     return False;
     break;
   default: nco_dfl_case_nc_type_err(); break;
@@ -231,11 +237,17 @@ nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
     switch(nc_typ_in){ 
     case NC_DOUBLE: 
     case NC_FLOAT: 
+    case NC_INT64: 
+    case NC_UINT64: 
     case NC_INT: 
+    case NC_UINT: 
       nc_typ_pck_out_tmp=NC_SHORT; nco_pck_plc_alw=True; break;
     case NC_SHORT: 
-    case NC_CHAR: 
+    case NC_USHORT: 
     case NC_BYTE: 
+    case NC_UBYTE: 
+    case NC_CHAR: 
+    case NC_STRING: 
       nc_typ_pck_out_tmp=nc_typ_in; nco_pck_plc_alw=False; break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end nc_type switch */ 
@@ -244,11 +256,17 @@ nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
     switch(nc_typ_in){ 
     case NC_DOUBLE: 
     case NC_FLOAT: 
+    case NC_INT64: 
+    case NC_UINT64: 
     case NC_INT: 
+    case NC_UINT: 
     case NC_SHORT: 
+    case NC_USHORT: 
       nc_typ_pck_out_tmp=NC_CHAR; nco_pck_plc_alw=True; break;
-    case NC_CHAR: 
     case NC_BYTE: 
+    case NC_UBYTE: 
+    case NC_CHAR: 
+    case NC_STRING: 
       nc_typ_pck_out_tmp=nc_typ_in; nco_pck_plc_alw=False; break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end nc_type switch */ 
@@ -257,24 +275,38 @@ nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
     switch(nc_typ_in){ 
     case NC_DOUBLE: 
     case NC_FLOAT: 
+    case NC_INT64: 
+    case NC_UINT64: 
     case NC_INT: 
+    case NC_UINT: 
     case NC_SHORT: 
+    case NC_USHORT: 
       nc_typ_pck_out_tmp=NC_BYTE; nco_pck_plc_alw=True; break;
-    case NC_CHAR: 
     case NC_BYTE: 
+    case NC_UBYTE: 
+    case NC_CHAR: 
+    case NC_STRING: 
       nc_typ_pck_out_tmp=nc_typ_in; nco_pck_plc_alw=False; break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end nc_type switch */ 
     break;
   case nco_pck_map_nxt_lsr:
     switch(nc_typ_in){ 
-    case NC_DOUBLE: nc_typ_pck_out_tmp=NC_INT; nco_pck_plc_alw=True; break; 
+    case NC_DOUBLE: 
+    case NC_INT64: 
+    case NC_UINT64: 
+      nc_typ_pck_out_tmp=NC_INT; nco_pck_plc_alw=True; break; 
     case NC_FLOAT: 
     case NC_INT: 
+    case NC_UINT: 
       nc_typ_pck_out_tmp=NC_SHORT; nco_pck_plc_alw=True; break;
-    case NC_SHORT: nc_typ_pck_out_tmp=NC_BYTE; nco_pck_plc_alw=True; break;
-    case NC_CHAR: 
+    case NC_SHORT: 
+    case NC_USHORT: 
+      nc_typ_pck_out_tmp=NC_BYTE; nco_pck_plc_alw=True; break;
     case NC_BYTE: 
+    case NC_UBYTE: 
+    case NC_CHAR: 
+    case NC_STRING: 
       nc_typ_pck_out_tmp=nc_typ_in; nco_pck_plc_alw=False; break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end nc_type switch */ 
@@ -284,10 +316,16 @@ nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
     case NC_DOUBLE: 
     case NC_FLOAT: 
       nc_typ_pck_out_tmp=NC_SHORT; nco_pck_plc_alw=True; break;
-    case NC_INT:
-    case NC_SHORT:
-    case NC_CHAR:
-    case NC_BYTE:
+    case NC_INT64: 
+    case NC_UINT64: 
+    case NC_INT: 
+    case NC_UINT: 
+    case NC_SHORT: 
+    case NC_USHORT: 
+    case NC_BYTE: 
+    case NC_UBYTE: 
+    case NC_CHAR: 
+    case NC_STRING: 
       nc_typ_pck_out_tmp=nc_typ_in; nco_pck_plc_alw=False; break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end nc_type switch */ 
@@ -297,10 +335,16 @@ nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
     case NC_DOUBLE: 
     case NC_FLOAT: 
       nc_typ_pck_out_tmp=NC_CHAR; nco_pck_plc_alw=True; break;
-    case NC_INT:
-    case NC_SHORT:
-    case NC_CHAR:
-    case NC_BYTE:
+    case NC_INT64: 
+    case NC_UINT64: 
+    case NC_INT: 
+    case NC_UINT: 
+    case NC_SHORT: 
+    case NC_USHORT: 
+    case NC_BYTE: 
+    case NC_UBYTE: 
+    case NC_CHAR: 
+    case NC_STRING: 
       nc_typ_pck_out_tmp=nc_typ_in; nco_pck_plc_alw=False; break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end nc_type switch */ 
@@ -310,10 +354,16 @@ nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
     case NC_DOUBLE: 
     case NC_FLOAT: 
       nc_typ_pck_out_tmp=NC_BYTE; nco_pck_plc_alw=True; break;
-    case NC_INT:
-    case NC_SHORT:
-    case NC_CHAR:
-    case NC_BYTE:
+    case NC_INT64: 
+    case NC_UINT64: 
+    case NC_INT: 
+    case NC_UINT: 
+    case NC_SHORT: 
+    case NC_USHORT: 
+    case NC_BYTE: 
+    case NC_UBYTE: 
+    case NC_CHAR: 
+    case NC_STRING: 
       nc_typ_pck_out_tmp=nc_typ_in; nco_pck_plc_alw=False; break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end nc_type switch */ 
@@ -326,7 +376,7 @@ nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
   
   /* Only fill in nc_typ_pck_out if it is non-NULL */
   if(nc_typ_pck_out != NULL) *nc_typ_pck_out=nc_typ_pck_out_tmp;
-
+  
   return nco_pck_plc_alw; /* O [flg] Packing policy allows packing nc_typ_in */
 } /* end nco_pck_plc_typ_get() */
 
@@ -668,7 +718,9 @@ nco_var_pck /* [fnc] Pack variable in memory */
   if(var->val.vp == NULL) (void)fprintf(stdout,"%s: ERROR %s called with empty var->val.vp\n",prg_nm_get(),fnc_nm);
   
   /* Packed type must be NC_BYTE, NC_CHAR, NC_SHORT, or NC_INT */
-  if(nc_typ_pck == NC_FLOAT || nc_typ_pck == NC_DOUBLE){
+  if(nc_typ_pck == NC_FLOAT || nc_typ_pck == NC_DOUBLE || 
+     nc_typ_pck == NC_UINT  || nc_typ_pck == NC_USHORT || 
+     nc_typ_pck == NC_UBYTE || nc_typ_pck == NC_STRING){
     (void)fprintf(stdout,"%s: ERROR %s called to pack variable %s with invalid packed type nc_typ_pck = %s\n",prg_nm_get(),fnc_nm,var->nm,nco_typ_sng(nc_typ_pck));
     nco_exit(EXIT_FAILURE);
   } /* endif */
@@ -677,7 +729,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
      Definition of "packable" determined by nco_pck_plc_typ_get()
      Prefer not to make nco_var_pck() rely directly on nco_pck_plc_typ_get()
      However, certain types are never packable */
-  if(var->type == NC_CHAR || var->type == NC_BYTE){
+  if(var->type == NC_BYTE || var->type == NC_UBYTE || var->type == NC_CHAR || var->type == NC_STRING){
     (void)fprintf(stdout,"%s: ERROR %s is asked to pack variable %s of type %s\n",prg_nm_get(),fnc_nm,var->nm,nco_typ_sng(var->type));
     nco_exit(EXIT_FAILURE);
   } /* endif */
@@ -761,8 +813,14 @@ nco_var_pck /* [fnc] Pack variable in memory */
       case NC_DOUBLE: mss_val_dfl_dbl=NC_FILL_DOUBLE; break; 
       case NC_INT: mss_val_dfl_dbl=NC_FILL_INT; break;
       case NC_SHORT: mss_val_dfl_dbl=NC_FILL_SHORT; break;
-      case NC_CHAR: mss_val_dfl_dbl=NC_FILL_CHAR; break;
+      case NC_USHORT: mss_val_dfl_dbl=NC_FILL_USHORT; break;
+      case NC_UINT: mss_val_dfl_dbl=NC_FILL_UINT; break;
+      case NC_INT64: mss_val_dfl_dbl=NC_FILL_INT64; break;
+      case NC_UINT64: mss_val_dfl_dbl=NC_FILL_UINT64; break;
       case NC_BYTE: mss_val_dfl_dbl=NC_FILL_BYTE; break;
+      case NC_UBYTE: mss_val_dfl_dbl=NC_FILL_UBYTE; break;
+      case NC_CHAR: mss_val_dfl_dbl=NC_FILL_CHAR; break;
+      case NC_STRING: break; /* Do nothing */
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */ 
       if(dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: %s mss_val_dfl = %g\n",prg_nm_get(),fnc_nm,mss_val_dfl_dbl);
