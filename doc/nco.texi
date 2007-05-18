@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.417 2007-05-14 04:10:16 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.418 2007-05-18 03:57:47 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,7 +103,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.2.0
 @set copyright-years 1995--2007
 @set update-year 2007
-@set update-date 8 May 2007
+@set update-date 17 May 2007
 @set update-month May 2007
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -7505,16 +7505,16 @@ The most confusing aspect of this is that @samp{-M} inhibits copying
 global metadata in overwrite mode and causes copying of global
 metadata in append mode.
 @example
-ncks -O              in.nc out.nc # Copy all variable and global metadata
-ncks -O       -v one in.nc out.nc # Copy all variable and global metadata
-ncks -O -M    -v one in.nc out.nc # Copy variable but not global metadata
-ncks -O -m    -v one in.nc out.nc # Copy global but not variable metadata
-ncks -O -M -m -v one in.nc out.nc # Copy only data (no metadata)
-ncks -A              in.nc out.nc # Copy all variable and global metadata
-ncks -A       -v one in.nc out.nc # Copy variable but not global metadata
-ncks -A -M    -v one in.nc out.nc # Copy all variable and global metadata
-ncks -A -m    -v one in.nc out.nc # Copy only data (no metadata)
-ncks -A -M -m -v one in.nc out.nc # Copy global but not variable metadata
+ncks -O              in.nc out.nc # Copy   all variable and global attributes
+ncks -O       -v one in.nc out.nc # Copy   all variable and global attributes
+ncks -O -M    -v one in.nc out.nc # Copy   variable but not global attributes
+ncks -O    -m -v one in.nc out.nc # Copy   global but not variable attributes
+ncks -O -M -m -v one in.nc out.nc # Copy   only data (no attributes)
+ncks -A              in.nc out.nc # Append all variable and global attributes
+ncks -A       -v one in.nc out.nc # Append variable but not global attributes
+ncks -A -M    -v one in.nc out.nc # Append all variable and global attributes
+ncks -A    -m -v one in.nc out.nc # Append only data (no attributes)
+ncks -A -M -m -v one in.nc out.nc # Append global but not variable attributes
 @end example
 
 @cindex @command{ncdump}

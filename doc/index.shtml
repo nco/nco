@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.412 2007-05-14 18:36:35 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.413 2007-05-18 03:57:47 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -621,7 +621,9 @@ testing and porting of NCO on the
 <!--
 <li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-3.2.0</a></li>
 -->
-<a href="http://packages.debian.org/unstable/math/nco.html">Debian GNU/Linux homepage for NCO</a>. 
+<a href="http://packages.debian.org/unstable/math/nco.html">Debian</a> and 
+<a href="http://packages.ubuntulinux.org/gutsy/source/nco">Ubuntu</a>
+GNU/Linux homepages for NCO. 
 &lsquo;<tt>apt-get install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
 <dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_3.2.0-1_i386.deb</tt>&rsquo;):</dt>
 <li><a href="src/nco_3.2.0-1_amd64.deb">nco_3.2.0-1_amd64.deb</a> (<!--#fsize file="src/nco_3.2.0-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_3.2.0-1_amd64.deb"-->)</li>
@@ -654,15 +656,13 @@ Searching <a href="http://rpmfind.net">rpmfind.net</a> for NCO yields these
 <li><a href="http://download.fedora.redhat.com/pub/fedora/linux/extras/6/i386/repodata/repoview/nco-devel-0-3.1.5-3.fc6.html">nco-devel-0-3.1.5-3.fc6.html</a>: Official Fedora Core&nbsp;6 NCO development package (contains libraries and headers) homepage</li>
 </ul>
 
-
-
 <a name="gentoo"></a>
 <a name="gnt"></a>
 <h3><a href="http://www.gentoo.org">Gentoo</a> GNU/Linux</h3>
 <ul>
 <a href="http://packages.gentoo.org/packages/?category=sci-misc;name=nco">Gentoo GNU/Linux homepage for NCO</a>.
 <a href="http://www.gentoo.org/doc/en/portage-manual.xml">Portage packages</a> by George Shapavalov and Patrick Kursawe:
-<li><a href="http://cpan.cybercomm.nl/pub/gentoo-portage/sci-misc/nco/nco-2.9.1.ebuild">nco-2.9.1.ebuild</a>: Gentoo&nbsp;1, i386 package</li>
+<li><a href="http://packages.gentoo.org/ebuilds/?nco-3.2.0">nco-3.2.0</a>: Latest(?) Gentoo package</li>
 </ul>
 
 <a name="darwin"></a>

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.223 2007-05-14 04:10:13 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.224 2007-05-18 03:57:47 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.2.0 are ready. 
 
@@ -11,14 +11,16 @@ and better configure support for IRIX.
 A. ncks copying of variable and global metadata is configurable (-m, -M).
    Formerly there was no way to append a variable from in.nc to out.nc
    without bringing its metadata and all global metadata with it. 
-   ncks -A           in.nc out.nc # Copy variable and global metadata
-   ncks -O           in.nc out.nc # Copy variable and global metadata
-   ncks -v one       in.nc out.nc # Copy variable and global metadata
-   ncks -O -v one    in.nc out.nc # Copy variable and global metadata
-   ncks -A -v one    in.nc out.nc # Copy variable not global metadata
-   ncks -O -M -v one in.nc out.nc # Copy variable not global metadata
-   ncks -O -m -v one in.nc out.nc # Copy global not variable metadata
-   ncks -O -M -m -v one in.nc out.nc # Copy data only, no metadata
+   ncks -A           in.nc out.nc # Append variable and global attributes
+   ncks -O           in.nc out.nc # Copy   variable and global attributes
+   ncks -v one       in.nc out.nc # Copy   variable and global attributes
+   ncks -O -v one    in.nc out.nc # Copy   variable and global attributes
+   ncks -A -v one    in.nc out.nc # Append variable not global attributes
+   ncks -A -M -v one in.nc out.nc # Append variable not global attributes
+   ncks -O -M -v one in.nc out.nc # Copy   variable not global attributes
+   ncks -O -m -v one in.nc out.nc # Copy   global not variable attributes
+   ncks -O -M -m -v one in.nc out.nc # Copy   data only, no attributes
+   ncks -A    -m -v one in.nc out.nc # Append data only, no attributes
    http://nco.sf.net/nco.html#prn has more details.
 
 C. New Documentation:
@@ -27,6 +29,10 @@ C. New Documentation:
 
 D. ncks reports input file type (e.g., NC_FORMAT_CLASSIC,
    NC_FORMAT_NETCDF4) as part of global metadata
+
+E. ncks prints all netCDF4 atomic data types (NC_UBYTE, NC_INT64, etc.) 
+
+E. Fix ncap2 .total() method to correctly handle missing_values fxm
 
 E. ncap2 (http://nco.sf.net/nco.html#ncap2) grows more powerful.
    Henry has ...
