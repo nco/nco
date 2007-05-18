@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.13 2007-05-14 19:59:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.14 2007-05-18 06:39:25 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -69,6 +69,12 @@ C code." */
 #define	NC_INT64 	10	/* signed 8-byte int */
 #define	NC_UINT64 	11	/* unsigned 8-byte int */
 #define	NC_STRING 	12	/* string */
+/* Fill values for netCDF4 datatypes. Referenced in nco_mss_val.c: */
+#define NC_FILL_UBYTE   (255)
+#define NC_FILL_USHORT  (65535)
+#define NC_FILL_UINT    (4294967295U)
+#define NC_FILL_INT64   ((long long)-92233720)
+#define NC_FILL_UINT64  ((unsigned long long)18446744)
 #endif /* !ENABLE_NETCDF4 */
 
 /* C pre-processor can compare integers not strings
