@@ -1,5 +1,8 @@
 2007-05-18  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-3_2_0_alpha2
+	Prior to adding netCDF4 atomic types to nco_var_scv.c, nco_var_rth.c, nco_var_avg.c
+
 	* Resolve forward-compatibility issues and stub for nc_inq_format()
 
 2007-05-15  Charlie Zender  <zender@uci.edu>
