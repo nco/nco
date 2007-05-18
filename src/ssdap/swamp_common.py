@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.23 2007-04-15 22:48:43 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.24 2007-05-18 00:46:26 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -967,11 +967,18 @@ class ParallelDispatcher:
             return
         log.debug("ready to delete " + str(files))
         # collect by executors
-        eList = {}
-        map(lambda f: appendListMulKey(eList, self.execLocation[f],f),
-            files)
-        for (k,v) in eList.items():
-            k.discardFiles(v)
+
+        if False: # old way deletes files by where they were produced
+            eList = {}
+            map(lambda f: appendListMulKey(eList, self.execLocation[f],f),
+                files)
+            for (k,v) in eList.items():
+                log.debug("Discard: "+str(k)+"  :  "+str(v))
+                k.discardFiles(v)
+        else: # new way looks at where files reside (may have been downloaded)
+            map(lambda e: e.discardFilesIfHosted(files), self.executors)
+            
+            
         # cleanup execLocation
         map(self.execLocation.pop, files)
 #        map(lambda f: map(lambda e: e.discardFile(f),
@@ -1169,6 +1176,7 @@ class LocalExecutor:
         self.tokenLock = threading.Lock()
         self.fetchLock = threading.Lock()
         self.fetchFile = None
+        self.rFetchedFiles = {}
         
         pass
     def busy(self):
@@ -1184,9 +1192,12 @@ class LocalExecutor:
         # make sure our inputs are ready
         missing = filter(lambda f: not self.filemap.existsForRead(f),
                          cmd.inputs)
-        self._fetchLogicals(missing, cmd.inputSrcs)
+        fetched = self._fetchLogicals(missing, cmd.inputSrcs)
+        self.rFetchedFiles[token] = fetched
         # doublecheck that remaining logicals are available.
-        self._verifyLogicals(set(cmd.inputs).difference(missing))
+        fetched = self._verifyLogicals(set(cmd.inputs).difference(missing))
+        self.rFetchedFiles[token] += fetched
+        
         cmdLine = cmd.makeCommandLine(self.filemap.mapReadFile,
                                       self.filemap.mapWriteFile)
         log.debug("%d-exec-> %s" % (token," ".join(cmdLine)))
@@ -1235,6 +1246,9 @@ class LocalExecutor:
     def actualOuts(self, token):
         return self.cmds[token].actualOutputs
 
+    def fetchedSrcs(self,token):
+        return self.rFetchedFiles[token]
+
     def clearFiles(self, filelist):
         for f in filelist:
             if os.access(f, os.F_OK):
@@ -1248,14 +1262,16 @@ class LocalExecutor:
 
     def _verifyLogicals(self, logicals):
         if len(logicals) == 0:
-            return
+            return []
         for f in logicals:
             while f == self.fetchFile:
                 time.sleep(0.1)
+        return []
                 
     def _fetchLogicals(self, logicals, srcs):
+        fetched = []
         if len(logicals) == 0:
-            return
+            return []
         log.info("need fetch for %s from %s" %(str(logicals),str(srcs)))
         
         d = dict(srcs)
@@ -1270,10 +1286,11 @@ class LocalExecutor:
             phy = self.filemap.mapWriteFile(lf)
             log.debug("fetching %s from %s" % (lf, d[lf]))
             self._fetchPhysical(phy, d[lf])
+            fetched.append((lf, phy))
             self.fetchFile = None
             self.fetchLock.release()
+        return fetched
 
-        pass
     def _fetchPhysical(self, physical, url):
         #urllib.urlretrieve(d[lf], phy)
         # urlretrieve dies on interrupt signals
@@ -1356,6 +1373,12 @@ class RemoteExecutor:
         log.debug("req discard of %s on %s" %(file, self.url))
         self.actual.pop(file)
         self.rpc.discardFile(file)
+
+    def discardFilesIfHosted(self, fileList):
+        hosted = filter(lambda f: f in self.actual, fileList)
+        if hosted:
+            return self.discardFiles(hosted)
+        
 
     def discardFiles(self, fileList):
         log.debug("req discard of %s on %s" %(str(fileList), self.url))
@@ -1652,7 +1675,7 @@ def testSwampInterface():
     #evilly force the interface to use a remote executor
     assert len(si.remote) > 0
     si.executor = si.remote[0]
-    taskid = si.submit(test[2])
+    taskid = si.submit(test[1])
     log.info("finish at " + time.ctime())
     print "submitted with taskid=", taskid
 def main():

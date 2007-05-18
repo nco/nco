@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapslave.py,v 1.9 2007-04-13 02:38:17 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapslave.py,v 1.10 2007-05-18 00:46:26 wangd Exp $
 # Copyright (c) 2007 Daniel L. Wang
 from swamp_common import *
 from swamp_config import Config 
@@ -125,6 +125,7 @@ class SimpleJobManager:
     def pollOutputs(self, token):
         assert token in self.jobs
         outs = self.localExec.actualOuts(self.jobs[token])
+        outs += self.localExec.fetchedSrcs(self.jobs[token])
         log.debug("outs is " + str(outs) + " for " + str(token))
         return map(lambda t: (t[0], self.actualToPub(t[1])), outs)
         #map(lambda f: (f,self.actualToPub(f)), outs) 
