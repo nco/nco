@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.44 2007-05-18 17:27:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.45 2007-05-18 19:59:08 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -892,7 +892,7 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
   nco_char mss_val_char=nco_char_CEWI;
   nco_byte mss_val_byte=nco_byte_CEWI;
   nco_int mss_val_lng=nco_int_CEWI;
-  nco_short mss_val_short=short_CEWI;
+  nco_short mss_val_short=nco_short_CEWI;
   
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op2);

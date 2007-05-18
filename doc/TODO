@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.896 2007-05-18 18:01:27 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.897 2007-05-18 19:59:07 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -590,7 +590,11 @@ nco840. ncap: make sure methods (e.g., total()) respect missing values
 nco841. netCDF3/netCDF4 netcdf.h enum nc_type change generates beaucoup GCC warnings
 nco844. Link forward-compatibility stub for nc_inq_format() into configure.in
 nco845. Add -Wno-switch to quiet GCC enum warnings on netCDF4 case labels?
-nco846. 
+nco846. netCDF4: switch to long long array offsets everywhere? 
+        e.g., can long tally hold > 2 GB array?
+nco847. tally at least switch to type (unsigned long), perhaps size_t, and perhaps (unsigned long long)
+nco848. Add regression to demonstrate breakage on variables with 2--4 GB elements
+nco849. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

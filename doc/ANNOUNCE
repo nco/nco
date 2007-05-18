@@ -1,12 +1,14 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.224 2007-05-18 03:57:47 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.225 2007-05-18 19:59:06 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.2.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Release 3.2.0 contains new documentation, new ncap2 features,
-and better configure support for IRIX.
+Release 3.2.1 contains functional (though limited) netCDF4 support,
+improved attribute copying, new documentation, new ncap2 features, 
+and better IRIX support.
+This release _requires_ netCDF 3.6.1 or newer to build correctly.
 
 A. ncks copying of variable and global metadata is configurable (-m, -M).
    Formerly there was no way to append a variable from in.nc to out.nc
