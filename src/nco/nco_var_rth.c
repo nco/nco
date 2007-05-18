@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.43 2007-05-16 05:12:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.44 2007-05-18 17:27:38 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -64,9 +64,9 @@ nco_var_abs /* [fnc] Replace op1 values by their absolute values */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) if(op1.sp[idx] < 0 ) op1.sp[idx]=-op1.sp[idx] ;
     }else{
-      const short mss_val_sht=*mss_val.sp;
+      const nco_short mss_val_short=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
-	if(op1.sp[idx] != mss_val_sht && op1.sp[idx] < 0 ) op1.sp[idx]=-op1.sp[idx];
+	if(op1.sp[idx] != mss_val_short && op1.sp[idx] < 0 ) op1.sp[idx]=-op1.sp[idx];
       } /* end for */
     } /* end else */
     break;
@@ -154,9 +154,9 @@ nco_var_add /* [fnc] Add first operand to second operand */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.sp[idx]+=op1.sp[idx];
     }else{
-      const short mss_val_sht=*mss_val.sp;
+      const nco_short mss_val_short=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
-	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)) op2.sp[idx]+=op1.sp[idx]; else op2.sp[idx]=mss_val_sht;
+	if((op2.sp[idx] != mss_val_short) && (op1.sp[idx] != mss_val_short)) op2.sp[idx]+=op1.sp[idx]; else op2.sp[idx]=mss_val_short;
       } /* end for */
     } /* end else */
     break;
@@ -260,13 +260,13 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
 	tally[idx]++;
       } /* end for */
     }else{
-      const short mss_val_sht=*mss_val.sp;
+      const nco_short mss_val_short=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
-	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)){
+	if((op2.sp[idx] != mss_val_short) && (op1.sp[idx] != mss_val_short)){
 	  op2.sp[idx]+=op1.sp[idx];
 	  tally[idx]++;
 	}else{
-	  op2.sp[idx]=mss_val_sht;
+	  op2.sp[idx]=mss_val_short;
 	} /* end else */
       } /* end for */
     } /* end else */
@@ -335,9 +335,9 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
 	tally[idx]++;
       } /* end for */
     }else{
-      const short mss_val_sht=*mss_val.sp;
+      const nco_short mss_val_short=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
-	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)){
+	if((op2.sp[idx] != mss_val_short) && (op1.sp[idx] != mss_val_short)){
 	  op2.sp[idx]+=op1.sp[idx];
 	  tally[idx]++;
 	} /* end if */
@@ -458,9 +458,9 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
 	tally[idx]++;
       } /* end for */
     }else{
-      const short mss_val_sht=*mss_val.sp;
+      const nco_short mss_val_short=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
-	if(op1.sp[idx] != mss_val_sht){
+	if(op1.sp[idx] != mss_val_short){
 	  op2.sp[idx]+=op1.sp[idx];
 	  tally[idx]++;
 	} /* end if */
@@ -535,9 +535,9 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.sp[idx]/=op1.sp[idx];
     }else{
-      const short mss_val_sht=*mss_val.sp;
+      const nco_short mss_val_short=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
-	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)) op2.sp[idx]/=op1.sp[idx]; else op2.sp[idx]=mss_val_sht;
+	if((op2.sp[idx] != mss_val_short) && (op1.sp[idx] != mss_val_short)) op2.sp[idx]/=op1.sp[idx]; else op2.sp[idx]=mss_val_short;
       } /* end for */
     } /* end else */
     break; /* end NC_SHORT */
@@ -621,11 +621,11 @@ nco_var_max_bnr /* [fnc] Maximize two operands */
 	if(op2.sp[idx] < op1.sp[idx])
 	  op2.sp[idx]=op1.sp[idx];
     }else{
-      const short mss_val_sht=*mss_val.sp;
+      const nco_short mss_val_short=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
-	if(op2.sp[idx] == mss_val_sht) 
+	if(op2.sp[idx] == mss_val_short) 
 	  op2.sp[idx]=op1.sp[idx];
-	else if((op1.sp[idx] != mss_val_sht) && (op2.sp[idx] < op1.sp[idx]))
+	else if((op1.sp[idx] != mss_val_short) && (op2.sp[idx] < op1.sp[idx]))
 	  op2.sp[idx]=op1.sp[idx]; 
       } /* end for */
     } /* end else */
@@ -706,11 +706,11 @@ nco_var_min_bnr /* [fnc] Minimize two operands */
       for(idx=0;idx<sz;idx++) 
 	if(op2.sp[idx] > op1.sp[idx])  op2.sp[idx]=op1.sp[idx];
     }else{
-      const short mss_val_sht=*mss_val.sp;
+      const nco_short mss_val_short=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
-	if(op2.sp[idx] == mss_val_sht) 
+	if(op2.sp[idx] == mss_val_short) 
 	  op2.sp[idx]=op1.sp[idx];
-	else if((op1.sp[idx] != mss_val_sht) && (op2.sp[idx] > op1.sp[idx]))
+	else if((op1.sp[idx] != mss_val_short) && (op2.sp[idx] > op1.sp[idx]))
 	  op2.sp[idx]=op1.sp[idx]; 
       } /* end for */
     } /* end else */
@@ -779,9 +779,9 @@ nco_var_mlt /* [fnc] Multiply first operand by second operand */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.sp[idx]*=op1.sp[idx];
     }else{
-      const short mss_val_sht=*mss_val.sp;
+      const nco_short mss_val_short=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
-	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)) op2.sp[idx]*=op1.sp[idx]; else op2.sp[idx]=mss_val_sht;
+	if((op2.sp[idx] != mss_val_short) && (op1.sp[idx] != mss_val_short)) op2.sp[idx]*=op1.sp[idx]; else op2.sp[idx]=mss_val_short;
       } /* end for */
     } /* end else */
     break;
@@ -853,9 +853,9 @@ nco_var_mod /* [fnc] Remainder (modulo) operation of two variables */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.sp[idx]=op1.sp[idx]%op2.sp[idx];
     }else{
-      const short mss_val_sht=*mss_val.sp;
+      const nco_short mss_val_short=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
-	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)) op2.sp[idx]=op1.sp[idx]%op2.sp[idx]; else op2.sp[idx]=mss_val_sht;
+	if((op2.sp[idx] != mss_val_short) && (op1.sp[idx] != mss_val_short)) op2.sp[idx]=op1.sp[idx]%op2.sp[idx]; else op2.sp[idx]=mss_val_short;
       } /* end for */
     } /* end else */
     break; /* end NC_SHORT */
@@ -889,10 +889,10 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
   long idx;
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
-  nco_char mss_val_chr=nco_char_CEWI;
-  nco_byte mss_val_byt=nco_byte_CEWI;
+  nco_char mss_val_char=nco_char_CEWI;
+  nco_byte mss_val_byte=nco_byte_CEWI;
   nco_int mss_val_lng=nco_int_CEWI;
-  short mss_val_sht=short_CEWI;
+  nco_short mss_val_short=short_CEWI;
   
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op2);
@@ -908,10 +908,10 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
     switch(type){
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
     case NC_DOUBLE: mss_val_dbl=*mss_val.dp; break;
-    case NC_SHORT: mss_val_sht=*mss_val.sp; break;
+    case NC_SHORT: mss_val_short=*mss_val.sp; break;
     case NC_INT: mss_val_lng=*mss_val.lp; break;
-    case NC_BYTE: mss_val_byt=*mss_val.bp; break;
-    case NC_CHAR: mss_val_chr=*mss_val.cp; break;
+    case NC_BYTE: mss_val_byte=*mss_val.bp; break;
+    case NC_CHAR: mss_val_char=*mss_val.cp; break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
@@ -950,32 +950,32 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
     break;
   case NC_SHORT:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.sp[idx] != (short)op1) op3.sp[idx]=mss_val_sht; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.sp[idx] == (short)op1) op3.sp[idx]=mss_val_sht; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.sp[idx] >= (short)op1) op3.sp[idx]=mss_val_sht; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.sp[idx] <= (short)op1) op3.sp[idx]=mss_val_sht; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.sp[idx] >  (short)op1) op3.sp[idx]=mss_val_sht; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.sp[idx] <  (short)op1) op3.sp[idx]=mss_val_sht; break;
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.sp[idx] != (nco_short)op1) op3.sp[idx]=mss_val_short; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.sp[idx] == (nco_short)op1) op3.sp[idx]=mss_val_short; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.sp[idx] >= (nco_short)op1) op3.sp[idx]=mss_val_short; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.sp[idx] <= (nco_short)op1) op3.sp[idx]=mss_val_short; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.sp[idx] >  (nco_short)op1) op3.sp[idx]=mss_val_short; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.sp[idx] <  (nco_short)op1) op3.sp[idx]=mss_val_short; break;
     } /* end switch */
     break;
   case NC_CHAR:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.cp[idx] != (nco_char)op1) op3.cp[idx]=mss_val_chr; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.cp[idx] == (nco_char)op1) op3.cp[idx]=mss_val_chr; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >= (nco_char)op1) op3.cp[idx]=mss_val_chr; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <= (nco_char)op1) op3.cp[idx]=mss_val_chr; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >  (nco_char)op1) op3.cp[idx]=mss_val_chr; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <  (nco_char)op1) op3.cp[idx]=mss_val_chr; break;
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.cp[idx] != (nco_char)op1) op3.cp[idx]=mss_val_char; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.cp[idx] == (nco_char)op1) op3.cp[idx]=mss_val_char; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >= (nco_char)op1) op3.cp[idx]=mss_val_char; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <= (nco_char)op1) op3.cp[idx]=mss_val_char; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >  (nco_char)op1) op3.cp[idx]=mss_val_char; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <  (nco_char)op1) op3.cp[idx]=mss_val_char; break;
     } /* end switch */
     break;
   case NC_BYTE:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.bp[idx] != (nco_byte)op1) op3.bp[idx]=mss_val_byt; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.bp[idx] == (nco_byte)op1) op3.bp[idx]=mss_val_byt; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >= (nco_byte)op1) op3.bp[idx]=mss_val_byt; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <= (nco_byte)op1) op3.bp[idx]=mss_val_byt; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >  (nco_byte)op1) op3.bp[idx]=mss_val_byt; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <  (nco_byte)op1) op3.bp[idx]=mss_val_byt; break;
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.bp[idx] != (nco_byte)op1) op3.bp[idx]=mss_val_byte; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.bp[idx] == (nco_byte)op1) op3.bp[idx]=mss_val_byte; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >= (nco_byte)op1) op3.bp[idx]=mss_val_byte; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <= (nco_byte)op1) op3.bp[idx]=mss_val_byte; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >  (nco_byte)op1) op3.bp[idx]=mss_val_byte; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <  (nco_byte)op1) op3.bp[idx]=mss_val_byte; break;
     } /* end switch */
     break;
   default: nco_dfl_case_nc_type_err(); break;
@@ -1039,8 +1039,8 @@ nco_var_nrm /* [fnc] Normalize value of first operand by count in tally array */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]/=tally[idx];
     }else{
-      const short mss_val_sht=*mss_val.sp;
-      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.sp[idx]/=tally[idx]; else op1.sp[idx]=mss_val_sht;
+      const nco_short mss_val_short=*mss_val.sp;
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.sp[idx]/=tally[idx]; else op1.sp[idx]=mss_val_short;
     } /* end else */
     break;
   case NC_CHAR: break; /* Do nothing */
@@ -1103,8 +1103,8 @@ nco_var_nrm_sdn /* [fnc] Normalize value of first operand by count-1 in tally ar
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]/=tally[idx]-1L;
     }else{
-      const short mss_val_sht=*mss_val.sp;
-      for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.sp[idx]/=tally[idx]-1L; else op1.sp[idx]=mss_val_sht;
+      const nco_short mss_val_short=*mss_val.sp;
+      for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.sp[idx]/=tally[idx]-1L; else op1.sp[idx]=mss_val_short;
     } /* end else */
     break;
   case NC_CHAR: break; /* Do nothing */
@@ -1234,9 +1234,9 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.sp[idx]-=op1.sp[idx];
     }else{
-      const short mss_val_sht=*mss_val.sp;
+      const nco_short mss_val_short=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
-	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)) op2.sp[idx]-=op1.sp[idx]; else op2.sp[idx]=mss_val_sht;
+	if((op2.sp[idx] != mss_val_short) && (op1.sp[idx] != mss_val_short)) op2.sp[idx]-=op1.sp[idx]; else op2.sp[idx]=mss_val_short;
       } /* end for */
     } /* end else */
     break;
@@ -1326,14 +1326,14 @@ nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second opera
   case NC_SHORT:
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++){
-	op2.sp[idx]=(short)sqrt((double)(op1.sp[idx]));
+	op2.sp[idx]=(nco_short)sqrt((double)(op1.sp[idx]));
 	tally[idx]++;
       } /* end for */
     }else{
-      const short mss_val_sht=*mss_val.sp;
+      const nco_short mss_val_short=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
-	if(op1.sp[idx] != mss_val_sht){
-	  op2.sp[idx]=(short)sqrt((double)(op1.sp[idx]));
+	if(op1.sp[idx] != mss_val_short){
+	  op2.sp[idx]=(nco_short)sqrt((double)(op1.sp[idx]));
 	  tally[idx]++;
 	} /* end if */
       } /* end for */

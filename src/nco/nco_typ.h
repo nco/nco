@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.14 2007-05-18 06:39:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.15 2007-05-18 17:27:37 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -90,6 +90,10 @@ C code." */
 #define NCO_TYP_INT64 8
 #define NCO_TYP_UINT64 9
 #define NCO_TYP_STRING 10
+
+/* Tokens to give semantic compatibility between easy- and hard-to-handle types
+   i.e., nco_short is always short and easy-to-handle */
+typedef short nco_short; /* [typ] NC_SHORT */
 
 /* NC_BYTE handling */
 #ifndef NCO_BYTE

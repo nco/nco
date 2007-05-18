@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.52 2007-05-16 06:05:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.53 2007-05-18 17:27:38 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -428,10 +428,10 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
   long idx_blk;
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
-  nco_char mss_val_chr;
-  nco_byte mss_val_byt;
+  nco_char mss_val_char;
+  nco_byte mss_val_byte;
   nco_int mss_val_lng=nco_int_CEWI;
-  short mss_val_sht=short_CEWI;
+  nco_short mss_val_short=short_CEWI;
 
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
@@ -442,10 +442,10 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     switch(type){
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
     case NC_DOUBLE: mss_val_dbl=*mss_val.dp; break;
-    case NC_SHORT: mss_val_sht=*mss_val.sp; break;
+    case NC_SHORT: mss_val_short=*mss_val.sp; break;
     case NC_INT: mss_val_lng=*mss_val.lp; break;
-    case NC_BYTE: mss_val_byt=*mss_val.bp; break;
-    case NC_CHAR: mss_val_chr=*mss_val.cp; break;
+    case NC_BYTE: mss_val_byte=*mss_val.bp; break;
+    case NC_CHAR: mss_val_char=*mss_val.cp; break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
@@ -620,18 +620,18 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
 	const long blk_off=idx_op2*sz_blk;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
-	  if(op1.sp[idx_op1] != mss_val_sht){
+	  if(op1.sp[idx_op1] != mss_val_short){
 	    op2.sp[idx_op2]+=op1.sp[idx_op1];
 	    tally[idx_op2]++;
 	  } /* end if */
 	} /* end loop over idx_blk */
-	if(tally[idx_op2] == 0L) op2.sp[idx_op2]=mss_val_sht;
+	if(tally[idx_op2] == 0L) op2.sp[idx_op2]=mss_val_short;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
-      short op1_2D[sz_op2][sz_blk];
+      nco_short op1_2D[sz_op2][sz_blk];
       
       (void)memcpy((void *)op1_2D,(void *)(op1.sp),sz_op1*nco_typ_lng(type));
       
@@ -643,19 +643,19 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
       }else{
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_sht){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_short){
 	      op2.sp[idx_op2]+=op1_2D[idx_op2][idx_blk];
 	      tally[idx_op2]++;
 	    } /* end if */
 	  } /* end loop over idx_blk */
-	  if(tally[idx_op2] == 0L) op2.sp[idx_op2]=mss_val_sht;
+	  if(tally[idx_op2] == 0L) op2.sp[idx_op2]=mss_val_short;
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
     break;
-  case NC_CHAR: mss_val_chr=mss_val_chr; break; /* CEWI */
-  case NC_BYTE: mss_val_byt=mss_val_byt; break; /* CEWI */
+  case NC_BYTE: mss_val_byte=mss_val_byte; break; /* CEWI */
+  case NC_CHAR: mss_val_char=mss_val_char; break; /* CEWI */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
@@ -694,9 +694,9 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
   nco_int mss_val_lng=nco_int_CEWI;
-  short mss_val_sht=short_CEWI;
-  nco_char mss_val_chr;
-  nco_byte mss_val_byt;
+  nco_short mss_val_short=short_CEWI;
+  nco_char mss_val_char;
+  nco_byte mss_val_byte;
   
   nco_bool flg_mss=False; /* [flg] Block has valid (non-missing) values */
   
@@ -709,10 +709,10 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     switch(type){
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
     case NC_DOUBLE: mss_val_dbl=*mss_val.dp; break;
-    case NC_SHORT: mss_val_sht=*mss_val.sp; break;
+    case NC_SHORT: mss_val_short=*mss_val.sp; break;
     case NC_INT: mss_val_lng=*mss_val.lp; break;
-    case NC_BYTE: mss_val_byt=*mss_val.bp; break;
-    case NC_CHAR: mss_val_chr=*mss_val.cp; break;
+    case NC_BYTE: mss_val_byte=*mss_val.bp; break;
+    case NC_CHAR: mss_val_char=*mss_val.cp; break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
@@ -897,18 +897,18 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
 	flg_mss=False;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
-	  if(op1.sp[idx_op1] != mss_val_sht){
+	  if(op1.sp[idx_op1] != mss_val_short){
 	    if(!flg_mss || op2.sp[idx_op2] > op1.sp[idx_op1]) op2.sp[idx_op2]=op1.sp[idx_op1];
 	    flg_mss=True;
 	  } /* end if */
 	} /* end loop over idx_blk */
-	if(!flg_mss) op2.sp[idx_op2]=mss_val_sht;
+	if(!flg_mss) op2.sp[idx_op2]=mss_val_short;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
-      short op1_2D[sz_op2][sz_blk];
+      nco_short op1_2D[sz_op2][sz_blk];
       
       (void)memcpy((void *)op1_2D,(void *)(op1.sp),sz_op1*nco_typ_lng(type));
       
@@ -922,19 +922,19 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_sht){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_short){
 	      if(!flg_mss  || op2.sp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
 	      flg_mss=True;
 	    } /* end if */
 	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.sp[idx_op2]=mss_val_sht;
+	  if(!flg_mss) op2.sp[idx_op2]=mss_val_short;
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
     break;
-  case NC_CHAR: mss_val_chr=mss_val_chr; break; /* CEWI */
-  case NC_BYTE: mss_val_byt=mss_val_byt; break; /* CEWI */
+  case NC_BYTE: mss_val_byte=mss_val_byte; break; /* CEWI */
+  case NC_CHAR: mss_val_char=mss_val_char; break; /* CEWI */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end  switch */
   
@@ -973,9 +973,9 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
   nco_int mss_val_lng=nco_int_CEWI;
-  short mss_val_sht=short_CEWI;
-  nco_char mss_val_chr;
-  nco_byte mss_val_byt;
+  nco_short mss_val_short=short_CEWI;
+  nco_char mss_val_char;
+  nco_byte mss_val_byte;
   
   nco_bool flg_mss=False;
   
@@ -988,10 +988,10 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     switch(type){
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
     case NC_DOUBLE: mss_val_dbl=*mss_val.dp; break;
-    case NC_SHORT: mss_val_sht=*mss_val.sp; break;
+    case NC_SHORT: mss_val_short=*mss_val.sp; break;
     case NC_INT: mss_val_lng=*mss_val.lp; break;
-    case NC_BYTE: mss_val_byt=*mss_val.bp; break;
-    case NC_CHAR: mss_val_chr=*mss_val.cp; break;
+    case NC_BYTE: mss_val_byte=*mss_val.bp; break;
+    case NC_CHAR: mss_val_char=*mss_val.cp; break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
@@ -1176,18 +1176,18 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
 	flg_mss=False;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
-	  if(op1.sp[idx_op1] != mss_val_sht){
+	  if(op1.sp[idx_op1] != mss_val_short){
 	    if(!flg_mss || op2.sp[idx_op2] < op1.sp[idx_op1]) op2.sp[idx_op2]=op1.sp[idx_op1];
 	    flg_mss=True;
 	  } /* end if */
 	} /* end loop over idx_blk */
-	if(!flg_mss) op2.sp[idx_op2]=mss_val_sht;
+	if(!flg_mss) op2.sp[idx_op2]=mss_val_short;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
     /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
-      short op1_2D[sz_op2][sz_blk];
+      nco_short op1_2D[sz_op2][sz_blk];
       
       (void)memcpy((void *)op1_2D,(void *)(op1.sp),sz_op1*nco_typ_lng(type));
       
@@ -1201,19 +1201,19 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_sht){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_short){
 	      if(!flg_mss  || op2.sp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
 	      flg_mss=True;
 	    } /* end if */
 	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.sp[idx_op2]=mss_val_sht;
+	  if(!flg_mss) op2.sp[idx_op2]=mss_val_short;
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
     break;
-  case NC_CHAR: mss_val_chr=mss_val_chr; break; /* CEWI */
-  case NC_BYTE: mss_val_byt=mss_val_byt; break; /* CEWI */
+  case NC_BYTE: mss_val_byte=mss_val_byte; break; /* CEWI */
+  case NC_CHAR: mss_val_char=mss_val_char; break; /* CEWI */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end  switch */
   

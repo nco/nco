@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.60 2007-05-15 21:44:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.61 2007-05-18 17:27:38 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -763,7 +763,6 @@ sym_sct *app)       /* I [fnc_ptr] to apply to variable */
 
   if(var_in->undefined) return var_in;
   
-  
   /* Promote variable to NC_FLOAT */
   if(var_in->type < NC_FLOAT) var_in=nco_var_cnf_typ(NC_FLOAT,var_in);
 
@@ -800,8 +799,6 @@ sym_sct *app)       /* I [fnc_ptr] to apply to variable */
   }
   default: nco_dfl_case_nc_type_err(); break;
   }/* end switch */
-  
-
 
   if(var_in->has_mss_val) (void)cast_nctype_void(var_in->type,&(var_in->mss_val));
   return var_in;
@@ -1830,9 +1827,9 @@ ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
       for(idx=0;idx<sz;idx++) 
 	if(!op1.sp[idx]) break;
     }else{
-      const short mss_val_sht=*(var->mss_val.sp);
+      const short mss_val_short=*(var->mss_val.sp);
       for(idx=0;idx<sz;idx++) 
-	if( !op1.sp[idx] &&  op1.sp[idx] !=mss_val_sht ) break; 
+	if( !op1.sp[idx] &&  op1.sp[idx] !=mss_val_short ) break; 
     }
     
   if(idx <sz) bret=false;
