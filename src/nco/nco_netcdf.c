@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.73 2007-05-15 06:49:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.74 2007-05-18 16:36:43 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -290,6 +290,16 @@ nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
     return "NC_FORMAT_CLASSIC";
   case NC_FORMAT_64BIT:
     return "NC_FORMAT_64BIT";
+    /* NB: nco_netcdf.c does not #include nco.h which #defines forward-compatibility tokens
+       This barrier helps segregate NCO from wrappers
+       Re-define minimal sub-set of tokens in nco_netcdf.c as necessary
+       This small exception to the barrier */
+#ifndef NC_FORMAT_NETCDF4
+# define NC_FORMAT_NETCDF4 (3)
+#endif
+#ifndef NC_FORMAT_NETCDF4_CLASSIC
+# define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
+#endif
   case NC_FORMAT_NETCDF4:
     return "NC_FORMAT_NETCDF4";
   case NC_FORMAT_NETCDF4_CLASSIC:
@@ -480,11 +490,18 @@ nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * cons
   return rcd;
 } /* end nco_inq */
 
+#if NEED_NC_INQ_FORMAT
+/* Stub for nc_inq_format(), which appeared in netCDF 3.6.1 */
+int nc_inq_format(int nc_id, int * const fl_fmt){return NC_NOERR;}
+#endif /* !NEED_NC_INQ_FORMAT */
+
 int
 nco_inq_format(const int nc_id,int * const fl_fmt)
 {
   /* Purpose: Wrapper for nc_inq_format() */
   int rcd;
+  /* NB: Function nc_inq_format(int ncid, int *formatp) appeared in netCDF 3.6.1
+     Forward compatibility prototype required for systems with netCDF < 3.6.1 */
   rcd=nc_inq_format(nc_id,fl_fmt);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_format()");
   return rcd;

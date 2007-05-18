@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.893 2007-05-18 16:36:43 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.894 2007-05-18 16:40:22 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -588,8 +588,6 @@ nco838. Document solution to nco837.
 nco839. What, if anything, should NC_FILL_STRING be?
 nco840. ncap: make sure methods (e.g., total()) respect missing values
 nco841. netCDF3 netCDF4 netcdf.h enum nc_type problem
-nco842. ESMF nco bld/Makefile failures on new code
-nco843. Make forward-compatibility stub for nc_inq_format()?
 nco844. Link forward-compatibility stub for nc_inq_format() into configure.in
 nco845. 
 ************************************************************************

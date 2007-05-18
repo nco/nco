@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.414 2007-05-18 06:30:44 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.415 2007-05-18 16:36:43 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -933,6 +933,8 @@ version&nbsp;3.6.x functionality until OPeNDAP versions &ge;&nbsp;3.7.0.
 NC_64BIT_OFFSET</tt>.)  
 All modern NCO versions require netCDF versions &ge;&nbsp;3.5.0 to
 support <tt>nc_type NC_NAT</tt> in NCO source code.  
+NCO versions 3.2.1 and greater (May, 2007) require netCDF versions
+&ge;&nbsp;3.6.0 to resolve the <tt>nc_inq_format()</tt> function.
 </li>
 
 <!-- http://nco.sf.net#bld_ncap -->

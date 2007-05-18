@@ -1,3 +1,7 @@
+2007-05-18  Charlie Zender  <zender@uci.edu>
+
+	* Resolve forward-compatibility issues and stub for nc_inq_format()
+
 2007-05-15  Charlie Zender  <zender@uci.edu>
 
 	* Add netCDF4 atomic types to nco_scl_utl.c
