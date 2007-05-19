@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.66 2007-05-19 07:08:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.67 2007-05-19 07:14:04 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2152,7 +2152,7 @@ nco_byte val_byte)
   return var;
 }
 
-#ifndef ENABLE_NETCDF4
+#ifdef ENABLE_NETCDF4
 var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,

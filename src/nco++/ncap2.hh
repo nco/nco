@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.39 2007-05-19 07:08:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.40 2007-05-19 07:14:04 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -307,7 +307,7 @@ ncap_sclr_var_mk(
 const std::string var_nm,
 nco_byte val_byte);
 
-#ifndef ENABLE_NETCDF4
+#ifdef ENABLE_NETCDF4
 var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,
