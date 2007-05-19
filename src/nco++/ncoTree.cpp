@@ -1911,7 +1911,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
 #line 1734 "ncoGrammer.g"
-				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),static_cast<nco_byte>std::strtol(b->getText().c_str(),(char **)NULL,10)));
+				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),static_cast<nco_byte>(std::strtol(b->getText().c_str(),(char **)NULL,10)));
 #line 1916 "ncoTree.cpp"
 			}
 			break;

@@ -1731,7 +1731,7 @@ out returns [var_sct *var]
 	|	s:SHORT			
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_SHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<nco_short>(std::strtol(s->getText().c_str(),(char **)NULL,10)));} // end SHORT
     |	b:BYTE			
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),static_cast<nco_byte>std::strtol(b->getText().c_str(),(char **)NULL,10)));} // end BYTE
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),static_cast<nco_byte>(std::strtol(b->getText().c_str(),(char **)NULL,10)));} // end BYTE
     |   str:NSTRING
         {
             char *tsng;
