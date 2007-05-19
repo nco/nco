@@ -1727,11 +1727,11 @@ out returns [var_sct *var]
     |   d:DOUBLE        
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~double"),NC_DOUBLE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~double"),strtod(d->getText().c_str(),(char **)NULL));} // end DOUBLE
 	|	i:INT			
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int"),NC_INT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int"),static_cast<int>(std::strtol(i->getText().c_str(),(char **)NULL,10)));} // end INT
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int"),NC_INT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int"),static_cast<nco_int>(std::strtol(i->getText().c_str(),(char **)NULL,10)));} // end INT
 	|	s:SHORT			
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_SHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<short>(std::strtol(s->getText().c_str(),(char **)NULL,10)));} // end SHORT
-    |	c:BYTE			
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<signed char>(std::strtol(c->getText().c_str(),(char **)NULL,10)));} // end BYTE
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_SHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<nco_short>(std::strtol(s->getText().c_str(),(char **)NULL,10)));} // end SHORT
+    |	b:BYTE			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),static_cast<nco_byte>std::strtol(b->getText().c_str(),(char **)NULL,10)));} // end BYTE
     |   str:NSTRING
         {
             char *tsng;

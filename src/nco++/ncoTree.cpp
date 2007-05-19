@@ -1114,7 +1114,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 	ANTLR_USE_NAMESPACE(antlr)RefAST d = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST i = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST s = ANTLR_USE_NAMESPACE(antlr)nullAST;
-	ANTLR_USE_NAMESPACE(antlr)RefAST c = ANTLR_USE_NAMESPACE(antlr)nullAST;
+	ANTLR_USE_NAMESPACE(antlr)RefAST b = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST str = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST dval = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST vid = ANTLR_USE_NAMESPACE(antlr)nullAST;
@@ -1887,7 +1887,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
 #line 1730 "ncoGrammer.g"
-				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int"),NC_INT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int"),static_cast<int>(std::strtol(i->getText().c_str(),(char **)NULL,10)));
+				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int"),NC_INT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int"),static_cast<nco_int>(std::strtol(i->getText().c_str(),(char **)NULL,10)));
 #line 1892 "ncoTree.cpp"
 			}
 			break;
@@ -1899,19 +1899,19 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
 #line 1732 "ncoGrammer.g"
-				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_SHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<short>(std::strtol(s->getText().c_str(),(char **)NULL,10)));
+				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_SHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<nco_short>(std::strtol(s->getText().c_str(),(char **)NULL,10)));
 #line 1904 "ncoTree.cpp"
 			}
 			break;
 		}
 		case BYTE:
 		{
-			c = _t;
+			b = _t;
 			match(_t,BYTE);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
 #line 1734 "ncoGrammer.g"
-				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<signed char>(std::strtol(c->getText().c_str(),(char **)NULL,10)));
+				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),static_cast<nco_byte>std::strtol(b->getText().c_str(),(char **)NULL,10)));
 #line 1916 "ncoTree.cpp"
 			}
 			break;
