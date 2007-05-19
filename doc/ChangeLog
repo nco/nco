@@ -1,5 +1,9 @@
 2007-05-19  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-3_2_1_alpha3
+	After netCDF4'ing most files. 
+	netCDF4 references in ncoGrammer.g break netCDF3 ncap2
+
 	* Success at creating all netCDF4 atomic types with ncap2 except NC_UBYTE
 
 	* Add netCDF4 atomic types (except NC_STRING) ncoGrammer.g

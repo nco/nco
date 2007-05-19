@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.901 2007-05-19 07:29:17 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.902 2007-05-19 08:01:21 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -597,7 +597,7 @@ nco848. Add regression to demonstrate breakage on variables with 2--4 GB element
 nco849. Verify ncap ll,LL,ull,ULL,us,ui parsing works
 nco850. Add netCDF4 atomic types to ncap_utl.c, ncap_yacc.y
 nco851. How to add ENABLE_NETCDF4 #ifdefs to ncoGrammer.g?
-nco852. 
+nco852. UBYTE does not work
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
