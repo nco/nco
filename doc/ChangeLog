@@ -1,12 +1,14 @@
 2007-05-18  Charlie Zender  <zender@uci.edu>
 
-	* Fix type spaghetti in nco_lst_utl.c
+	* Add netCDF4 atomic types (except NC_STRING) ncap2_utl.cc
 
 	* Replace nc_type with nco_rth_prc_rnk() in ncap2.cc
 
+	* Fix type spaghetti in nco_lst_utl.c
+
 	* Create nco_rth_prc_rnk(nc_type) to determine relative precision
 
-	* Add netCDF4 atomic types (except NC_STRING) ncap_lex.l
+	* Add netCDF4 atomic types (except NC_STRING) to ncap_lex.l
 
 	* Add netCDF4 atomic types to nco_rec_var.c, nco_rth_utl.c
 

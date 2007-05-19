@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.63 2007-05-19 00:11:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.64 2007-05-19 00:34:20 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -765,9 +765,9 @@ sym_sct *app)       /* I [fnc_ptr] to apply to variable */
   if(var_in->undefined) return var_in;
   
   /* Promote variable to NC_FLOAT */
-  if(var_in->type < NC_FLOAT) var_in=nco_var_cnf_typ(NC_FLOAT,var_in);
+  if(nco_rth_prc_rnk(var_in->type) < nco_rth_prc_rnk_float) var_in=nco_var_cnf_typ(NC_FLOAT,var_in);
 
-  /* deal with initial scan */
+  /* Deal with initial scan */
   if(var_in->val.vp==NULL) return var_in; 
   
   op1=var_in->val;
@@ -1411,11 +1411,14 @@ ncap_var_var_stc
  int op)
 {
 
-  static VarOp<short> Vs;
-  static VarOp<nco_int> Vl;
-  static VarOp<float> Vf;
   static VarOp<double> Vd;
-  
+  static VarOp<float> Vf;
+  static VarOp<nco_int> Vl;
+  static VarOp<nco_short> Vs;
+  static VarOp<nco_ushort> Vus;
+  static VarOp<nco_uint> Vui;
+  static VarOp<nco_int64> Vint64;
+  static VarOp<nco_uint64> Vuint64;
   var_sct *var_ret=NULL_CEWI;
 
 
@@ -1423,55 +1426,37 @@ ncap_var_var_stc
   if( var2 == NULL_CEWI) {
 
     switch (var1->type) {
-    case NC_BYTE:
-      /* Do nothing */
-      break;
-    case NC_CHAR:
-      /* Do nothing */
-      break;
-    case NC_SHORT:
-      var_ret=Vs.var_op(var1,op);
-      break;
-    case NC_INT:
-      var_ret=Vl.var_op(var1,op);
-      break;            
-    case NC_FLOAT:
-      var_ret=Vf.var_op(var1,op);
-      break;
-    case NC_DOUBLE:
-      var_ret=Vd.var_op(var1,op);
-      break;
-      
-  default:
-    break;
-
+    case NC_DOUBLE: var_ret=Vd.var_op(var1,op); break;
+    case NC_FLOAT: var_ret=Vf.var_op(var1,op); break;
+    case NC_INT: var_ret=Vl.var_op(var1,op); break;            
+    case NC_SHORT: var_ret=Vs.var_op(var1,op); break;
+    case NC_USHORT: var_ret=Vus.var_op(var1,op); break;
+    case NC_UINT: var_ret=Vui.var_op(var1,op); break;
+    case NC_INT64: var_ret=Vint64.var_op(var1,op); break;
+    case NC_UINT64: var_ret=Vuint64.var_op(var1,op); break;
+    case NC_BYTE: break; /* Do nothing */
+    case NC_UBYTE: break; /* Do nothing */
+    case NC_CHAR: break; /* Do nothing */
+    case NC_STRING: break; /* Do nothing */
+    default: nco_dfl_case_nc_type_err(); break;
    }
    return var_ret;
   }
 
   switch (var1->type) {
-    case NC_BYTE:
-    /* Do nothing */
-      break;
-    case NC_CHAR:
-    /* Do nothing */
-      break;
-    case NC_SHORT:
-      var_ret=Vs.var_var_op(var1, var2,op);
-      break;
-    case NC_INT:
-      var_ret=Vl.var_var_op(var1, var2,op);
-      break;            
-    case NC_FLOAT:
-      var_ret=Vf.var_var_op(var1, var2,op);
-      break;
-  case NC_DOUBLE:
-      var_ret=Vd.var_var_op(var1, var2,op);
-      break;
-
-  default:
-    break;
-
+  case NC_DOUBLE: var_ret=Vd.var_var_op(var1,var2,op); break;
+    case NC_FLOAT: var_ret=Vf.var_var_op(var1,var2,op); break;
+    case NC_INT:var_ret=Vl.var_var_op(var1,var2,op); break;            
+    case NC_SHORT: var_ret=Vs.var_var_op(var1,var2,op); break;
+    case NC_USHORT: var_ret=Vus.var_var_op(var1,var2,op); break;
+    case NC_UINT: var_ret=Vui.var_var_op(var1,var2,op); break;
+    case NC_INT64: var_ret=Vint64.var_var_op(var1,var2,op); break;
+    case NC_UINT64: var_ret=Vuint64.var_var_op(var1,var2,op); break;
+    case NC_BYTE: break; /* Do nothing */
+    case NC_UBYTE: break; /* Do nothing */
+    case NC_CHAR: break; /* Do nothing */
+    case NC_STRING: break; /* Do nothing */
+    default: nco_dfl_case_nc_type_err(); break;
   } 
 
   return var_ret;
@@ -1504,8 +1489,7 @@ ncap_var_var_op   /* [fnc] Add two variables */
   }
 
   // Deal with pwr fuction
-  if(op== CARET && var1->type < NC_FLOAT && var2->type <NC_FLOAT ) 
-    var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
+  if(op == CARET && nco_rth_prc_rnk(var1->type) < nco_rth_prc_rnk_float &&  nco_rth_prc_rnk(var2->type) < nco_rth_prc_rnk_float) var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
    
   vb1 = ncap_var_is_att(var1);
   vb2 = ncap_var_is_att(var2);
@@ -1623,16 +1607,13 @@ ncap_var_var_op_ntl   /* [fnc] Add two variables */
   nco_bool vb1;
   nco_bool vb2;
 
-  //If var2 is null then we are dealing with a unary function
-  if( var2 == NULL_CEWI)
+  // If var2 is null then we are dealing with a unary function
+  if(var2 == NULL_CEWI)
     return var1;
-  
-
 
   // deal with pwr fuction
-  if(op== CARET && var1->type < NC_FLOAT && var2->type <NC_FLOAT ) 
-    var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
-   
+  if(op == CARET && nco_rth_prc_rnk(var1->type) < nco_rth_prc_rnk_float && nco_rth_prc_rnk(var2->type) < nco_rth_prc_rnk_float) var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
+
   vb1 = ncap_var_is_att(var1);
   vb2 = ncap_var_is_att(var2);
 
@@ -2096,12 +2077,12 @@ ncap_sclr_var_mk
 var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,
-float fdt)
+float val_float)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_FLOAT,true);
   (void)cast_void_nctype(NC_FLOAT,&var->val);
-  *var->val.fp=fdt;
+  *var->val.fp=val_float;
   (void)cast_nctype_void(NC_FLOAT,&var->val);
   return var;
 } // end ncap_sclr_var_mk<float>()
@@ -2109,12 +2090,12 @@ float fdt)
 var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,
-double ddt)
+double val_double)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_DOUBLE,true);
   (void)cast_void_nctype(NC_DOUBLE,&var->val);
-  *var->val.dp=ddt;
+  *var->val.dp=val_double;
   (void)cast_nctype_void(NC_DOUBLE,&var->val);
   return var;
 }
@@ -2122,12 +2103,12 @@ double ddt)
 var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,
-long ldt)
+long val_long)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_INT,true);
   (void)cast_void_nctype(NC_INT,&var->val);
-  *var->val.lp=ldt;
+  *var->val.lp=val_long;
   (void)cast_nctype_void(NC_INT,&var->val);
   return var;
 }
@@ -2135,12 +2116,12 @@ long ldt)
 var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,
-int idt)
+int val_int)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_INT,true);
   (void)cast_void_nctype(NC_INT,&var->val);
-  *var->val.lp=idt;
+  *var->val.lp=val_int;
   (void)cast_nctype_void(NC_INT,&var->val);
   return var;
 }
@@ -2148,12 +2129,12 @@ int idt)
 var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,
-short sdt)
+nco_short val_short)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_SHORT,true);
   (void)cast_void_nctype(NC_SHORT,&var->val);
-  *var->val.sp=sdt;
+  *var->val.sp=val_short;
   (void)cast_nctype_void(NC_SHORT,&var->val);
   return var;
 }
@@ -2161,12 +2142,12 @@ short sdt)
 var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,
-unsigned char cdt)
+nco_char val_char)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_CHAR,true);
   (void)cast_void_nctype(NC_CHAR,&var->val);
-  *var->val.cp=cdt;
+  *var->val.cp=val_char;
   (void)cast_nctype_void(NC_CHAR,&var->val);
   return var;
 }
@@ -2174,15 +2155,95 @@ unsigned char cdt)
 var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,
-signed char bdt)
+nco_byte val_byte)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_BYTE,true);
   (void)cast_void_nctype(NC_BYTE,&var->val);
-  *var->val.bp=bdt;
+  *var->val.bp=val_byte;
   (void)cast_nctype_void(NC_BYTE,&var->val);
   return var;
 }
+
+var_sct *
+ncap_sclr_var_mk(
+const std::string var_nm,
+nco_ubyte val_ubyte)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_UBYTE,true);
+  (void)cast_void_nctype(NC_UBYTE,&var->val);
+  *var->val.sp=val_ubyte;
+  (void)cast_nctype_void(NC_UBYTE,&var->val);
+  return var;
+}
+
+var_sct *
+ncap_sclr_var_mk(
+const std::string var_nm,
+nco_ushort val_ushort)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_USHORT,true);
+  (void)cast_void_nctype(NC_USHORT,&var->val);
+  *var->val.sp=val_ushort;
+  (void)cast_nctype_void(NC_USHORT,&var->val);
+  return var;
+}
+
+var_sct *
+ncap_sclr_var_mk(
+const std::string var_nm,
+nco_uint val_uint)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_UINT,true);
+  (void)cast_void_nctype(NC_UINT,&var->val);
+  *var->val.sp=val_uint;
+  (void)cast_nctype_void(NC_UINT,&var->val);
+  return var;
+}
+
+var_sct *
+ncap_sclr_var_mk(
+const std::string var_nm,
+nco_int64 val_int64)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_INT64,true);
+  (void)cast_void_nctype(NC_INT64,&var->val);
+  *var->val.sp=val_int64;
+  (void)cast_nctype_void(NC_INT64,&var->val);
+  return var;
+}
+
+var_sct *
+ncap_sclr_var_mk(
+const std::string var_nm,
+nco_uint64 val_uint64)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_UINT64,true);
+  (void)cast_void_nctype(NC_UINT64,&var->val);
+  *var->val.sp=val_uint64;
+  (void)cast_nctype_void(NC_UINT64,&var->val);
+  return var;
+}
+
+/* fxm: Allow ncap2 to instantiate NC_STRINGs
+var_sct *
+ncap_sclr_var_mk(
+const std::string var_nm,
+nco_string val_string)
+{
+  var_sct *var;
+  var=ncap_sclr_var_mk(var_nm,NC_STRING,true);
+  (void)cast_void_nctype(NC_STRING,&var->val);
+  *var->val.sp=val_string;
+  (void)cast_nctype_void(NC_STRING,&var->val);
+  return var;
+}
+*/ 
 
 // define variables captured on first parse
 void ncap_def_ntl_scn(prs_sct *prs_arg)

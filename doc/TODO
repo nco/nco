@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.899 2007-05-18 23:26:21 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.900 2007-05-19 00:34:19 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -595,7 +595,8 @@ nco846. netCDF4: switch to long long array offsets everywhere?
 nco847. switch sz, tally to type (unsigned long), perhaps size_t, and perhaps (unsigned long long)
 nco848. Add regression to demonstrate breakage on variables with 2--4 GB elements
 nco849. Verify ncap ll,LL,ull,ULL,us,ui parsing works
-nco850. 
+nco850. Add netCDF4 atomic types to ncap_utl.c, ncap_yacc.y
+nco851. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
