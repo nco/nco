@@ -1,5 +1,8 @@
 2007-05-19  Charlie Zender  <zender@uci.edu>
 
+	* Verified that ddra.nco works with int64 types so storing large
+	counts as floats no longer necessary! 
+
 	* cvs tag -c nco-3_2_1_alpha3
 	After netCDF4'ing most files. 
 	netCDF4 references in ncoGrammer.g break netCDF3 ncap2
