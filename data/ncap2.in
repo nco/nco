@@ -121,7 +121,7 @@ h1@units="microns";
 h1@long_name="Teslar\t";
 // variable string handling
 //Create a variable string ( currently a painfull process)
-h2[char_dmn_sml]="a";  // string is now "aaa"
+h2[char_dmn_lng04]="a";  // string is now "aaa"
 h2()="hell";            // string is now "hell"
 // hyperslab a variable string;
 h3=two_dmn_rec_var_sng;
@@ -197,6 +197,11 @@ defdim("--list.A",10);
 '..m1'['$--list.A']=100.1;
 '..m1'(0)=90.1;
 '..m1@--lost'=23;
-
-
+var_double=1.0;
+var_float=1.0f;
+var_int=1;
+var_short=1s;
+var_byte=1b;
+var_char[char_dmn_lng04]="Hell";
+//var_ushort=1us;
 

@@ -215,11 +215,13 @@ value_list:
     
 primary_exp
     : (LPAREN! expr RPAREN! ) 
-    | BYTE
-    | SHORT
-    | INT
     | FLOAT    
     | DOUBLE
+    | INT
+    | SHORT
+    | USHORT
+    | UINT
+    | BYTE
     | NSTRING    
     | DIM_ID_SIZE
     | hyper_slb  //remember this includes VAR_ID & ATT_ID
@@ -398,13 +400,13 @@ Whitespace options {paraphrase="white space"; }
 
 
 
-CPP_COMMENT options {paraphrase="a comment"; } 
+CXX_COMMENT options {paraphrase="a C++-style comment"; } 
     : "//" (~'\n')* '\n'
     { $setType(antlr::Token::SKIP); newline(); }
     ;
 
 
-C_COMMENT options {paraphrase="a comment"; } 
+C_COMMENT options {paraphrase="a C-style comment"; } 
         :       
 		"/*"
  		( { LA(2) != '/' }? '*'
@@ -432,6 +434,8 @@ NUMBER:
        | (XPN)         { $setType(DOUBLE);} // 3e0
        | ('L'|'l')!    { $setType(INT);   } // 3l, 3L
        | ('S'|'s')!    { $setType(SHORT); } // 3s, 3S
+       | ("US"|"us")!  { $setType(USHORT); } // 3us, 3US
+       | ('U'|'u')!    { $setType(UINT); } // 3u, 3U
        | ('B'|'b')!    { $setType(BYTE);  } // 3b, 3B
     )?
     (    ('F'|'f')!    { $setType(FLOAT); } // 3F, 3f
@@ -1543,18 +1547,18 @@ out returns [var_sct *var]
 
        if(prs_arg->ntl_scn){
          var1=nco_var_free(var1);
-         var= ncap_sclr_var_mk(static_cast<std::string>("~property"),NC_INT,false);        
+         var=ncap_sclr_var_mk(static_cast<std::string>("~property"),NC_INT,false);        
        } else { 
 
          switch(prp->getType()){ 
            case PSIZE:
-             var= ncap_sclr_var_mk(static_cast<std::string>("~property"),(int)var1->sz);
+             var=ncap_sclr_var_mk(static_cast<std::string>("~property"),(nco_int)var1->sz);
              break;
            case PTYPE:
-             var= ncap_sclr_var_mk(static_cast<std::string>("~property"),(int)var1->type);
+             var=ncap_sclr_var_mk(static_cast<std::string>("~property"),(nco_int)var1->type);
              break;
            case PNDIMS:
-             var=ncap_sclr_var_mk(static_cast<std::string>("~property"),(int)var1->nbr_dim);            
+             var=ncap_sclr_var_mk(static_cast<std::string>("~property"),(nco_int)var1->nbr_dim);            
 
           } // end switch
          var1=nco_var_free(var1); 
@@ -1722,16 +1726,20 @@ out returns [var_sct *var]
         } // end action
         
         // Naked numbers: Cast is not applied to these numbers
-    |   f:FLOAT        
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~float"),NC_FLOAT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~float"),static_cast<float>(std::strtod(f->getText().c_str(),(char **)NULL)));} // end FLOAT
-    |   d:DOUBLE        
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~double"),NC_DOUBLE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~double"),strtod(d->getText().c_str(),(char **)NULL));} // end DOUBLE
-	|	i:INT			
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int"),NC_INT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int"),static_cast<nco_int>(std::strtol(i->getText().c_str(),(char **)NULL,10)));} // end INT
-	|	s:SHORT			
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_SHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<nco_short>(std::strtol(s->getText().c_str(),(char **)NULL,10)));} // end SHORT
-    |	b:BYTE			
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),static_cast<nco_byte>(std::strtol(b->getText().c_str(),(char **)NULL,10)));} // end BYTE
+    |   val_float:FLOAT        
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~float"),NC_FLOAT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~float"),static_cast<float>(std::strtod(val_float->getText().c_str(),(char **)NULL)));} // end FLOAT
+    |   val_double:DOUBLE        
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~double"),NC_DOUBLE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~double"),strtod(val_double->getText().c_str(),(char **)NULL));} // end DOUBLE
+	|	val_int:INT			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int"),NC_INT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int"),static_cast<nco_int>(std::strtol(val_int->getText().c_str(),(char **)NULL,10)));} // end INT
+	|	val_short:SHORT			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_SHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<nco_short>(std::strtol(val_short->getText().c_str(),(char **)NULL,10)));} // end SHORT
+	|	val_ushort:USHORT			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~ushort"),NC_USHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~ushort"),static_cast<nco_ushort>(std::strtoul(val_ushort->getText().c_str(),(char **)NULL,10)));} // end USHORT
+	|	val_uint:UINT			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~uint"),NC_UINT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~uint"),static_cast<nco_uint>(std::strtoul(val_uint->getText().c_str(),(char **)NULL,10)));} // end UINT
+    |	val_byte:BYTE			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),static_cast<nco_byte>(std::strtol(val_byte->getText().c_str(),(char **)NULL,10)));} // end BYTE
     |   str:NSTRING
         {
             char *tsng;

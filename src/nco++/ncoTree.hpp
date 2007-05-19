@@ -28,7 +28,7 @@
 #line 29 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 497 "ncoGrammer.g"
+#line 501 "ncoGrammer.g"
 
 
 private:
@@ -393,10 +393,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 98;
+	static const int NUM_TOKENS = 100;
 #else
 	enum {
-		NUM_TOKENS = 98
+		NUM_TOKENS = 100
 	};
 #endif
 	

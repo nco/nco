@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.38 2007-05-09 16:25:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.39 2007-05-19 07:08:53 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -268,6 +268,7 @@ ncap_dmn_mtd(
 var_sct *var,                       /*  [sct] create casting var from a list of dims */
 std::vector<std::string> &str_vtr);  /* I [sng] list of dimension names */
 
+// ncap_sclr_var_mk() overloads
 /* Create a scalar variable of type, if bfill then malloc ptr_unn */
 var_sct*
 ncap_sclr_var_mk(
@@ -279,38 +280,61 @@ bool bfll);
 var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,
-unsigned char cdt);
+float val_float);
 
 var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,
-signed char bdt);
+double val_double);
 
 var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,
-short sdt);
+nco_int val_int);
 
 var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,
-int idt);
+nco_short val_short);
 
 var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,
-long ldt);
+nco_char val_char);
 
 var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,
-float fdt);
+nco_byte val_byte);
+
+#ifndef ENABLE_NETCDF4
+var_sct *
+ncap_sclr_var_mk(
+const std::string var_nm,
+nco_ubyte val_ubyte);
 
 var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,
-double ddt);
- 
+nco_ushort val_ushort);
+
+var_sct *
+ncap_sclr_var_mk(
+const std::string var_nm,
+nco_uint val_uint);
+
+var_sct *
+ncap_sclr_var_mk(
+const std::string var_nm,
+nco_int64 val_int64);
+
+var_sct *
+ncap_sclr_var_mk(
+const std::string var_nm,
+nco_uint64 val_uint64);
+#endif /* !ENABLE_NETCDF4 */
+// end ncap_sclr_var_mk() overloads
+
 var_sct*
 nco_get_var_mem(
 var_sct *var_rhs,

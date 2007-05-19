@@ -38,12 +38,12 @@
 
 netcdf in {
 dimensions:
-	dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,lon=4,lon_grd=5,char_dmn_lng=80,char_dmn_sml=4,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,time=unlimited;
+	dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng04=4,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,time=unlimited;
 variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.2 2007-05-14 05:35:06 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.3 2007-05-19 07:08:51 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -286,18 +286,18 @@ variables:
 	char char_var_multinul(lev);
 	char_var_multinul:long_name = "Character variable containing multiple NULs";
 
-	char fl_nm(char_dmn_lng);
+	char fl_nm(char_dmn_lng80);
 	fl_nm:long_name = "Variable contains a file name";
 
-	char fl_nm_arr(fl_dmn,char_dmn_lng);
+	char fl_nm_arr(fl_dmn,char_dmn_lng80);
 	fl_nm_arr:long_name = "Variable that contains a short array of file names";
 	fl_nm_arr:units = "[sng]";
 
-	char non_nul_trm_char_one_dmn(char_dmn_sml);
+	char non_nul_trm_char_one_dmn(char_dmn_lng04);
 	non_nul_trm_char_one_dmn:long_name = "Variable contains a one-dimensional array of characters that is not NUL-terminated";
 	non_nul_trm_char_one_dmn:units = "[chr]";
 
-	char non_nul_trm_char_two_dmn(fl_dmn,char_dmn_sml);
+	char non_nul_trm_char_two_dmn(fl_dmn,char_dmn_lng04);
 	non_nul_trm_char_two_dmn:long_name = "Variable contains a two-dimensional array of characters that are not NUL-terminated";
 	non_nul_trm_char_two_dmn:units = "[chr]";
 

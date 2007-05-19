@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.133 2007-02-23 21:59:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.134 2007-05-19 07:08:53 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -368,7 +368,6 @@ ncap_var_var_dvd /* [fnc] Divide two variables (var_2/var_1) */
       return var_2;
     }
   } 
-   
 
   (void)ncap_var_cnf_dmn(&var_1,&var_2);
   if(var_1->has_mss_val){
@@ -442,8 +441,6 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
       return var_2;
     }
   } 
-
-
  
   (void)ncap_var_cnf_dmn(&var_1,&var_2);
   if(var_1->has_mss_val){
@@ -463,10 +460,6 @@ ncap_var_var_pwr /* [fnc] Empowerment of two variables */
 {
   /* Purpose: Empower two variables (var_1^var_2) */
 
-
-
-
-
   /* Purpose: Add two variables */
   /* Store result in var_2 */
   if(var_1->undefined) var_2->undefined=True;
@@ -475,7 +468,7 @@ ncap_var_var_pwr /* [fnc] Empowerment of two variables */
     return var_2;
   }
   /* make sure vars are at least float */
-  if(var_1 ->type < NC_FLOAT && var_2->type <NC_FLOAT ) var_1=nco_var_cnf_typ((nc_type)NC_FLOAT,var_1);
+  if(var_1->type < nco_rth_prc_rnk_float && var_2->type < nco_rth_prc_rnk_float ) var_1=nco_var_cnf_typ((nc_type)NC_FLOAT,var_1);
 
   (void)ncap_var_retype(var_1,var_2);   
 
@@ -549,12 +542,10 @@ ncap_var_fnc(var_sct *var_in,sym_sct *app)
   
   
   /* Promote variable to NC_FLOAT */
-  if(var_in->type < NC_FLOAT) var_in=nco_var_cnf_typ((nc_type)NC_FLOAT,var_in);
+  if(var_in->type < nco_rth_prc_rnk_float) var_in=nco_var_cnf_typ((nc_type)NC_FLOAT,var_in);
 
-  /* deal with inital scan */
+  /* Deal with inital scan */
   if(var_in->val.vp==NULL) return var_in; 
-  
-
   
   op1=var_in->val;
   sz=var_in->sz;
@@ -705,7 +696,7 @@ ncap_var_scv_pwr(var_sct *var,scv_sct scv)
   /* Purpose: Empower each element in var by scv */
   /* Promote scv and var to NC_FLOAT if necessary since C has no integer empowerment 
      This reduces type conversion warnings (it is not done to avoid overflow) */
-  if(var->type < NC_FLOAT) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
+  if(var->type < nco_rth_prc_rnk_float) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
   (void)nco_scv_cnf_typ(var->type,&scv);
 
   /* deal with inital scan */
@@ -723,7 +714,7 @@ ncap_scv_var_pwr(scv_sct scv,var_sct *var)
      This reduces type conversion warnings (it is not done to avoid overflow) */
   if(var->undefined) return var;
 
-  if(var->type < NC_FLOAT) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
+  if(var->type < nco_rth_prc_rnk_float) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
   (void)nco_scv_cnf_typ(var->type,&scv);
 
   /* deal with inital scan */

@@ -30,7 +30,7 @@
 #line 31 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 267 "ncoGrammer.g"
+#line 269 "ncoGrammer.g"
 
 
 private:
@@ -102,7 +102,7 @@ public:
 	protected: void mBLASTOUT(bool _createToken);
 	public: void mUNUSED_OPS(bool _createToken);
 	public: void mWhitespace(bool _createToken);
-	public: void mCPP_COMMENT(bool _createToken);
+	public: void mCXX_COMMENT(bool _createToken);
 	public: void mC_COMMENT(bool _createToken);
 	public: void mNUMBER_DOT(bool _createToken);
 	public: void mNUMBER(bool _createToken);

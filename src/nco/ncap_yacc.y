@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.47 2007-02-23 21:59:27 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.48 2007-05-19 07:08:53 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -214,11 +214,18 @@ PRINT '(' var_xpr ')' ';' {
   if(dbg_lvl_get() > 1){
     (void)fprintf(stderr,"Saving in array attribute %s@%s=",$1.var_nm,$1.att_nm);
     switch($3.type){
-    case NC_BYTE: (void)fprintf(stderr,"%d\n",$3.val.b); break;
-    case NC_SHORT: (void)fprintf(stderr,"%d\n",$3.val.s); break;
-    case NC_INT: (void)fprintf(stderr,"%ld\n",$3.val.l); break;
     case NC_FLOAT: (void)fprintf(stderr,"%G\n",$3.val.f); break;		  
     case NC_DOUBLE: (void)fprintf(stderr,"%.5G\n",$3.val.d);break;
+    case NC_INT: (void)fprintf(stderr,"%ld\n",$3.val.l); break;
+    case NC_SHORT: (void)fprintf(stderr,"%hi\n",$3.val.s); break;
+    case NC_BYTE: (void)fprintf(stderr,"%hhi\n",$3.val.b); break;
+    case NC_UBYTE: (void)fprintf(stderr,"%hhu\n",$3.val.ub); break;
+    case NC_USHORT: (void)fprintf(stderr,"%hu\n",$3.val.us); break;
+    case NC_UINT: (void)fprintf(stderr,"%u\n",$3.val.ui); break;
+    case NC_INT64: (void)fprintf(stderr,"%lld\n",$3.val.i64); break;
+    case NC_UINT64: (void)fprintf(stderr,"%llu\n",$3.val.ui64); break;
+    case NC_CHAR: (void)fprintf(stderr,"%c\n",$3.val.c); break;
+    case NC_STRING: (void)fprintf(stderr,"%s\n",$3.val.sng); break;
     default: break;
     } /* end switch */
   } /* end if */
@@ -378,7 +385,7 @@ scv_xpr '+' scv_xpr {
   $$=$2;
 }
 | scv_xpr '^' scv_xpr {
-  if($1.type <= NC_FLOAT && $3.type <= NC_FLOAT) {
+  if(nco_rth_prc_rnk($1.type) <= nco_rth_prc_rnk_float && nco_rth_prc_rnk($3.type) <= nco_rth_prc_rnk_float) {
     (void)nco_scv_cnf_typ((nc_type)NC_FLOAT,&$1);
     (void)nco_scv_cnf_typ((nc_type)NC_FLOAT,&$3);
     $$.val.f=powf($1.val.f,$3.val.f);
@@ -391,7 +398,7 @@ scv_xpr '+' scv_xpr {
   } /* end else */
 } /* end scv_xpr '^' scv_xpr */
 | POWER '(' scv_xpr ',' scv_xpr ')' { /* fxm: ncap52 this is identical to previous clause except for argument numbering, should be functionalized to use common code */
-  if($3.type <= NC_FLOAT && $5.type <= NC_FLOAT) {
+  if(nco_rth_prc_rnk($3.type) <= nco_rth_prc_rnk_float && nco_rth_prc_rnk($5.type) <= nco_rth_prc_rnk_float) {
     (void)nco_scv_cnf_typ((nc_type)NC_FLOAT,&$3);
     (void)nco_scv_cnf_typ((nc_type)NC_FLOAT,&$5);
     $$.val.f=powf($3.val.f,$5.val.f);
@@ -407,7 +414,7 @@ scv_xpr '+' scv_xpr {
   $$=ncap_scv_abs($3);
 }
 | FUNCTION '(' scv_xpr ')' {
-  if($3.type <= NC_FLOAT) {
+  if(nco_rth_prc_rnk($3.type) <= nco_rth_prc_rnk_float) {
     (void)nco_scv_cnf_typ((nc_type)NC_FLOAT,&$3);
     $$.val.f=(*($1->fnc_flt))($3.val.f);
     $$.type=NC_FLOAT;
@@ -417,7 +424,7 @@ scv_xpr '+' scv_xpr {
   } /* end else */
 } /* end FUNCTION '(' scv_xpr ')' */
 | CNV_TYPE '(' scv_xpr ')' {
-  (void)nco_scv_cnf_typ( $1,&$3);
+  (void)nco_scv_cnf_typ($1,&$3);
   $$=$3;
 }
 | '(' scv_xpr ')' {$$=$2;}
@@ -446,8 +453,15 @@ sng_xpr '+' sng_xpr {
   case NC_DOUBLE: sprintf(bfr,"%.10G",$3.val.d); break;
   case NC_FLOAT: sprintf(bfr,"%G",$3.val.f); break;
   case NC_INT: sprintf(bfr,"%ld",$3.val.l); break;
-  case NC_SHORT: sprintf(bfr,"%d",$3.val.s); break;
-  case NC_BYTE: sprintf(bfr,"%d",$3.val.b); break;
+  case NC_SHORT: sprintf(bfr,"%hi",$3.val.s); break;
+  case NC_BYTE: sprintf(bfr,"%hhi",$3.val.b); break;
+  case NC_UBYTE: sprintf(bfr,"%hhu",$3.val.ub); break;
+  case NC_USHORT: sprintf(bfr,"%hu",$3.val.us); break;
+  case NC_UINT: sprintf(bfr,"%u",$3.val.ui); break;
+  case NC_INT64: sprintf(bfr,"%lld",$3.val.i64); break;
+  case NC_UINT64: sprintf(bfr,"%llu",$3.val.ui64); break;
+  case NC_CHAR: sprintf(bfr,"%c",$3.val.c); break;
+  case NC_STRING: sprintf(bfr,"%s",$3.val.sng); break;
   default:  break;
   } /* end switch */
   $$=strdup(bfr);      
@@ -462,6 +476,13 @@ sng_xpr '+' sng_xpr {
   case NC_INT: sprintf(bfr,$5,$3.val.l); break;
   case NC_SHORT: sprintf(bfr,$5,$3.val.s); break;
   case NC_BYTE: sprintf(bfr,$5,$3.val.b); break;
+  case NC_UBYTE: sprintf(bfr,$5,$3.val.ub); break;
+  case NC_USHORT: sprintf(bfr,$5,$3.val.us); break;
+  case NC_UINT: sprintf(bfr,$5,$3.val.ui); break;
+  case NC_INT64: sprintf(bfr,$5,$3.val.i64); break;
+  case NC_UINT64: sprintf(bfr,$5,$3.val.ui64); break;
+  case NC_CHAR: sprintf(bfr,$5,$3.val.c); break;
+  case NC_STRING: sprintf(bfr,$5,$3.val.sng); break;
   default:  break;
   } /* end switch */
   $5=(char *)nco_free($5);

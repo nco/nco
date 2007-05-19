@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.65 2007-05-19 05:38:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.66 2007-05-19 07:08:53 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1417,8 +1417,8 @@ ncap_var_var_stc
   static VarOp<nco_short> Vs;
   static VarOp<nco_ushort> Vus;
   static VarOp<nco_uint> Vui;
-  static VarOp<nco_int64> Vint64;
-  static VarOp<nco_uint64> Vuint64;
+  static VarOp<nco_int64> Vi64;
+  static VarOp<nco_uint64> Vui64;
   var_sct *var_ret=NULL_CEWI;
 
 
@@ -1432,8 +1432,8 @@ ncap_var_var_stc
     case NC_SHORT: var_ret=Vs.var_op(var1,op); break;
     case NC_USHORT: var_ret=Vus.var_op(var1,op); break;
     case NC_UINT: var_ret=Vui.var_op(var1,op); break;
-    case NC_INT64: var_ret=Vint64.var_op(var1,op); break;
-    case NC_UINT64: var_ret=Vuint64.var_op(var1,op); break;
+    case NC_INT64: var_ret=Vi64.var_op(var1,op); break;
+    case NC_UINT64: var_ret=Vui64.var_op(var1,op); break;
     case NC_BYTE: break; /* Do nothing */
     case NC_UBYTE: break; /* Do nothing */
     case NC_CHAR: break; /* Do nothing */
@@ -1450,8 +1450,8 @@ ncap_var_var_stc
     case NC_SHORT: var_ret=Vs.var_var_op(var1,var2,op); break;
     case NC_USHORT: var_ret=Vus.var_var_op(var1,var2,op); break;
     case NC_UINT: var_ret=Vui.var_var_op(var1,var2,op); break;
-    case NC_INT64: var_ret=Vint64.var_var_op(var1,var2,op); break;
-    case NC_UINT64: var_ret=Vuint64.var_var_op(var1,var2,op); break;
+    case NC_INT64: var_ret=Vi64.var_var_op(var1,var2,op); break;
+    case NC_UINT64: var_ret=Vui64.var_var_op(var1,var2,op); break;
     case NC_BYTE: break; /* Do nothing */
     case NC_UBYTE: break; /* Do nothing */
     case NC_CHAR: break; /* Do nothing */
@@ -2103,20 +2103,7 @@ double val_double)
 var_sct *
 ncap_sclr_var_mk(
 const std::string var_nm,
-long val_long)
-{
-  var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_INT,true);
-  (void)cast_void_nctype(NC_INT,&var->val);
-  *var->val.lp=val_long;
-  (void)cast_nctype_void(NC_INT,&var->val);
-  return var;
-}
-
-var_sct *
-ncap_sclr_var_mk(
-const std::string var_nm,
-int val_int)
+nco_int val_int)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_INT,true);
@@ -2174,7 +2161,7 @@ nco_ubyte val_ubyte)
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_UBYTE,true);
   (void)cast_void_nctype(NC_UBYTE,&var->val);
-  *var->val.sp=val_ubyte;
+  *var->val.ubp=val_ubyte;
   (void)cast_nctype_void(NC_UBYTE,&var->val);
   return var;
 }
@@ -2187,7 +2174,7 @@ nco_ushort val_ushort)
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_USHORT,true);
   (void)cast_void_nctype(NC_USHORT,&var->val);
-  *var->val.sp=val_ushort;
+  *var->val.usp=val_ushort;
   (void)cast_nctype_void(NC_USHORT,&var->val);
   return var;
 }
@@ -2200,7 +2187,7 @@ nco_uint val_uint)
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_UINT,true);
   (void)cast_void_nctype(NC_UINT,&var->val);
-  *var->val.sp=val_uint;
+  *var->val.uip=val_uint;
   (void)cast_nctype_void(NC_UINT,&var->val);
   return var;
 }
@@ -2213,7 +2200,7 @@ nco_int64 val_int64)
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_INT64,true);
   (void)cast_void_nctype(NC_INT64,&var->val);
-  *var->val.sp=val_int64;
+  *var->val.i64p=val_int64;
   (void)cast_nctype_void(NC_INT64,&var->val);
   return var;
 }
@@ -2226,7 +2213,7 @@ nco_uint64 val_uint64)
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_UINT64,true);
   (void)cast_void_nctype(NC_UINT64,&var->val);
-  *var->val.sp=val_uint64;
+  *var->val.ui64p=val_uint64;
   (void)cast_nctype_void(NC_UINT64,&var->val);
   return var;
 }
@@ -2240,7 +2227,7 @@ nco_string val_string)
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_STRING,true);
   (void)cast_void_nctype(NC_STRING,&var->val);
-  *var->val.sp=val_string;
+  *var->val.sngp=val_string;
   (void)cast_nctype_void(NC_STRING,&var->val);
   return var;
 }
