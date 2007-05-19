@@ -218,10 +218,12 @@ primary_exp
     | FLOAT    
     | DOUBLE
     | INT
+    | BYTE
     | SHORT
     | USHORT
     | UINT
-    | BYTE
+    | INT64
+    | UINT64
     | NSTRING    
     | DIM_ID_SIZE
     | hyper_slb  //remember this includes VAR_ID & ATT_ID
@@ -434,9 +436,12 @@ NUMBER:
        | (XPN)         { $setType(DOUBLE);} // 3e0
        | ('L'|'l')!    { $setType(INT);   } // 3l, 3L
        | ('S'|'s')!    { $setType(SHORT); } // 3s, 3S
+       | ('B'|'b')!    { $setType(BYTE);  } // 3b, 3B
+       | ("UB"|"ub")!  { $setType(UBYTE); } // 3ub, 3UB
        | ("US"|"us")!  { $setType(USHORT); } // 3us, 3US
        | ('U'|'u')!    { $setType(UINT); } // 3u, 3U
-       | ('B'|'b')!    { $setType(BYTE);  } // 3b, 3B
+       | ("LL"|"ll")!  { $setType(INT64); } // 3ll, 3LL
+       | ("ULL"|"ull")!  { $setType(UINT64); } // 3ull, 3ULL
     )?
     (    ('F'|'f')!    { $setType(FLOAT); } // 3F, 3f
        | ('D'|'d')!    { $setType(DOUBLE);} // 3D, 3d
@@ -1734,12 +1739,20 @@ out returns [var_sct *var]
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int"),NC_INT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int"),static_cast<nco_int>(std::strtol(val_int->getText().c_str(),(char **)NULL,10)));} // end INT
 	|	val_short:SHORT			
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),NC_SHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<nco_short>(std::strtol(val_short->getText().c_str(),(char **)NULL,10)));} // end SHORT
+    |	val_byte:BYTE			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),static_cast<nco_byte>(std::strtol(val_byte->getText().c_str(),(char **)NULL,10)));} // end BYTE
+#ifdef ENABLE_NETCDF4
+	|	val_ubyte:UBYTE			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~ubyte"),NC_UBYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~ubyte"),static_cast<nco_ubyte>(std::strtoul(val_ubyte->getText().c_str(),(char **)NULL,10)));} // end UBYTE
 	|	val_ushort:USHORT			
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~ushort"),NC_USHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~ushort"),static_cast<nco_ushort>(std::strtoul(val_ushort->getText().c_str(),(char **)NULL,10)));} // end USHORT
 	|	val_uint:UINT			
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~uint"),NC_UINT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~uint"),static_cast<nco_uint>(std::strtoul(val_uint->getText().c_str(),(char **)NULL,10)));} // end UINT
-    |	val_byte:BYTE			
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),static_cast<nco_byte>(std::strtol(val_byte->getText().c_str(),(char **)NULL,10)));} // end BYTE
+	|	val_int64:INT64			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int64"),NC_INT64,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int64"),static_cast<nco_int64>(std::strtoll(val_int64->getText().c_str(),(char **)NULL,10)));} // end INT64
+	|	val_uint64:UINT64			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~uint64"),NC_UINT64,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~uint64"),static_cast<nco_uint64>(std::strtoull(val_uint64->getText().c_str(),(char **)NULL,10)));} // end UINT64
+#endif /* !ENABLE_NETCDF4 */
     |   str:NSTRING
         {
             char *tsng;
