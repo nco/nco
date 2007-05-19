@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.62 2007-05-19 00:02:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.63 2007-05-19 00:11:35 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -699,7 +699,8 @@ ncap_var_var_pwr_old /* [fnc] Empowerment of two variables */
   }
 
   /* Make sure variables are at least float */
-  if(var1->type < NC_FLOAT && var2->type <NC_FLOAT ) 
+  if(nco_rth_prc_rnk(var1->type) < nco_rth_prc_rnk_float && 
+     nco_rth_prc_rnk(var2->type) < nco_rth_prc_rnk_float )
     var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
   
   (void)ncap_var_retype(var1,var2);   

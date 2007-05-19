@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.45 2007-05-18 22:37:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.46 2007-05-19 00:11:35 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -367,50 +367,61 @@ nco_cmp_ptr_unn /* Compare values of two pointer unions of same type */
     const float * const op2_fp=op2.fp;
     return *op1_fp < *op2_fp ? -1 : (*op1_fp > *op2_fp);}
     break;
-  case NC_DOUBLE: break;
+  case NC_DOUBLE:
     {const double * const op1_dp=op1.dp;
     const double * const op2_dp=op2.dp;
     return *op1_dp < *op2_dp ? -1 : (*op1_dp > *op2_dp);}
-  case NC_INT: break;
+    break;
+  case NC_INT:
     {const nco_int * const op1_lp=op1.lp;
     const nco_int * const op2_lp=op2.lp;
     return *op1_lp < *op2_lp ? -1 : (*op1_lp > *op2_lp);}
-  case NC_SHORT: break;
+    break;
+  case NC_SHORT:
     {const short * const op1_sp=op1.sp;
     const short * const op2_sp=op2.sp;
     return *op1_sp < *op2_sp ? -1 : (*op1_sp > *op2_sp);}
-  case NC_USHORT: break;
-    {const nco_ushort * const op1_sp=op1.sp;
-    const nco_ushort * const op2_sp=op2.sp;
-    return *op1_sp < *op2_sp ? -1 : (*op1_sp > *op2_sp);}
-  case NC_UINT: break;
-    {const nco_uint * const op1_sp=op1.sp;
-    const nco_uint * const op2_sp=op2.sp;
-    return *op1_sp < *op2_sp ? -1 : (*op1_sp > *op2_sp);}
-  case NC_INT64: break;
-    {const nco_int64 * const op1_sp=op1.sp;
-    const nco_int64 * const op2_sp=op2.sp;
-    return *op1_sp < *op2_sp ? -1 : (*op1_sp > *op2_sp);}
-  case NC_UINT64: break;
-    {const nco_uint64 * const op1_sp=op1.sp;
-    const nco_uint64 * const op2_sp=op2.sp;
-    return *op1_sp < *op2_sp ? -1 : (*op1_sp > *op2_sp);}
-  case NC_BYTE: break;
+    break;
+  case NC_USHORT:
+    {const nco_ushort * const op1_usp=op1.usp;
+    const nco_ushort * const op2_usp=op2.usp;
+    return *op1_usp < *op2_usp ? -1 : (*op1_usp > *op2_usp);}
+    break;
+  case NC_UINT:
+    {const nco_uint * const op1_uip=op1.uip;
+    const nco_uint * const op2_uip=op2.uip;
+    return *op1_uip < *op2_uip ? -1 : (*op1_uip > *op2_uip);}
+    break;
+  case NC_INT64:
+    {const nco_int64 * const op1_i64p=op1.i64p;
+    const nco_int64 * const op2_i64p=op2.i64p;
+    return *op1_i64p < *op2_i64p ? -1 : (*op1_i64p > *op2_i64p);}
+    break;
+  case NC_UINT64:
+    {const nco_uint64 * const op1_ui64p=op1.ui64p;
+    const nco_uint64 * const op2_ui64p=op2.ui64p;
+    return *op1_ui64p < *op2_ui64p ? -1 : (*op1_ui64p > *op2_ui64p);}
+    break;
+  case NC_BYTE:
     {const nco_byte * const op1_bp=op1.bp;
     const nco_byte * const op2_bp=op2.bp;
     return *op1_bp < *op2_bp ? -1 : (*op1_bp > *op2_bp);}
-  case NC_UBYTE: break;
-    {const nco_ubyte * const op1_cp=op1.cp;
-    const nco_ubyte * const op2_cp=op2.cp;
-    return *op1_cp < *op2_cp ? -1 : (*op1_cp > *op2_cp);}
-  case NC_CHAR: break;
+    break;
+  case NC_UBYTE:
+    {const nco_ubyte * const op1_ubp=op1.ubp;
+    const nco_ubyte * const op2_ubp=op2.ubp;
+    return *op1_ubp < *op2_ubp ? -1 : (*op1_ubp > *op2_ubp);}
+    break;
+  case NC_CHAR:
     {const nco_char * const op1_cp=op1.cp;
     const nco_char * const op2_cp=op2.cp;
     return *op1_cp < *op2_cp ? -1 : (*op1_cp > *op2_cp);}
-  case NC_STRING: break;
-    {const nco_string * const op1_cp=op1.cp;
-    const nco_string * const op2_cp=op2.cp;
-    return *op1_cp < *op2_cp ? -1 : (*op1_cp > *op2_cp);}
+    break;
+  case NC_STRING:
+    {const nco_string * const op1_sngp=op1.sngp;
+    const nco_string * const op2_sngp=op2.sngp;
+    return *op1_sngp < *op2_sngp ? -1 : (*op1_sngp > *op2_sngp);}
+    break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 

@@ -1,5 +1,7 @@
 2007-05-18  Charlie Zender  <zender@uci.edu>
 
+	* Fix type spaghetti in nco_lst_utl.c
+
 	* Replace nc_type with nco_rth_prc_rnk() in ncap2.cc
 
 	* Create nco_rth_prc_rnk(nc_type) to determine relative precision
