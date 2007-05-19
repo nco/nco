@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.61 2007-05-18 17:27:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.62 2007-05-19 00:02:10 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -686,7 +686,7 @@ ncap_var_var_pwr_old /* [fnc] Empowerment of two variables */
   /* Purpose: Empower two variables (var1^var2) */
 
   /* Temporary fix */ 
-  /* swap names about so attribute propagation works */
+  /* Swap names about so attribute propagation works */
   /* most operations unlike this one put results in left operand */
   if( !ncap_var_is_att(var1) && isalpha(var1->nm[0])) {
     swp_nm=var1->nm; var1->nm=var2->nm; var2->nm=swp_nm;
@@ -698,7 +698,7 @@ ncap_var_var_pwr_old /* [fnc] Empowerment of two variables */
     return var2;
   }
 
-  /* make sure vars are at least float  */
+  /* Make sure variables are at least float */
   if(var1->type < NC_FLOAT && var2->type <NC_FLOAT ) 
     var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
   

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.29 2007-05-18 23:26:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.30 2007-05-19 00:02:10 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -7,6 +7,31 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_rth_utl.h" /* Arithmetic controls and utilities */
+
+nco_rth_prc_rnk_enm /* [enm] Ranked precision of arithmetic type */
+nco_rth_prc_rnk /* [fnc] Rank precision of arithmetic type */
+(const nc_type nco_typ) /* I [enm] netCDF type of operand */
+{
+  /* Purpose: Ranked precision of arithmetic type */
+  switch(nco_typ){
+  case NC_FLOAT: return nco_rth_prc_rnk_float;
+  case NC_DOUBLE: return nco_rth_prc_rnk_double;
+  case NC_INT: return nco_rth_prc_rnk_int;
+  case NC_SHORT: return nco_rth_prc_rnk_short;
+  case NC_CHAR: return nco_rth_prc_rnk_char;
+  case NC_BYTE: return nco_rth_prc_rnk_byte;
+  case NC_UBYTE: return nco_rth_prc_rnk_ubyte;
+  case NC_USHORT: return nco_rth_prc_rnk_ushort;
+  case NC_UINT: return nco_rth_prc_rnk_uint;
+  case NC_INT64: return nco_rth_prc_rnk_int64;
+  case NC_UINT64: return nco_rth_prc_rnk_uint64;
+  case NC_STRING: return nco_rth_prc_rnk_string;
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return 0;
+} /* end nco_rth_prc_rnk() */
 
 void 
 nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea */

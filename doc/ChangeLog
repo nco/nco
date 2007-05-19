@@ -1,5 +1,9 @@
 2007-05-18  Charlie Zender  <zender@uci.edu>
 
+	* Replace nc_type with nco_rth_prc_rnk() in ncap2.cc
+
+	* Create nco_rth_prc_rnk(nc_type) to determine relative precision
+
 	* Add netCDF4 atomic types (except NC_STRING) ncap_lex.l
 
 	* Add netCDF4 atomic types to nco_rec_var.c, nco_rth_utl.c

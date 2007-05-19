@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.15 2007-02-23 21:59:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.16 2007-05-19 00:02:10 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -48,6 +48,10 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
 int /* O [enm] Relational operation */
 nco_op_prs_rlt /* [fnc] Convert Fortran abbreviation for relational operator into NCO operation key */
 (const char * const op_sng); /* I [sng] Fortran representation of relational operator */
+
+nco_rth_prc_rnk_enm /* [enm] Ranked precision of arithmetic type */
+nco_rth_prc_rnk /* [fnc] Rank precision of arithmetic type */
+(const nc_type type); /* I [enm] netCDF type of operand */
 
 void
 vec_set /* [fnc] Fill every value of first operand with value of second operand */

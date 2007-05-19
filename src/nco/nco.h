@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.114 2007-05-18 21:20:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.115 2007-05-19 00:02:09 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -236,6 +236,22 @@ extern "C" {
     nco_mmr_malloc, /* [enm] nco_malloc() */
     nco_mmr_realloc /* [enm] nco_realloc() */
   } nco_mmr_typ_enm; /* end nco_mmr_typ enum */
+
+  typedef enum { /* [enm] Arithmetic precision rank */
+    /* Ranked ordering of "arithmetic precision" from lowest to highest */
+    nco_rth_prc_rnk_string, /* [enm] */ /* Least precise */
+    nco_rth_prc_rnk_char, /* [enm] */
+    nco_rth_prc_rnk_ubyte, /* [enm] */
+    nco_rth_prc_rnk_byte, /* [enm] */
+    nco_rth_prc_rnk_ushort, /* [enm] */
+    nco_rth_prc_rnk_short, /* [enm] */
+    nco_rth_prc_rnk_uint, /* [enm] */
+    nco_rth_prc_rnk_int, /* [enm] */
+    nco_rth_prc_rnk_uint64, /* [enm] */
+    nco_rth_prc_rnk_int64, /* [enm] */
+    nco_rth_prc_rnk_float, /* [enm] */
+    nco_rth_prc_rnk_double /* [enm] */ /* Most precise */
+  } nco_rth_prc_rnk_enm; /* end nco_rth_prc_rnk enum */
 
   enum nco_op_typ{ /* [enm] Operation type */
     /* Types used in ncbo(): */

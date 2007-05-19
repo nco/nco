@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.74 2007-05-18 16:36:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.75 2007-05-19 00:02:09 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -62,7 +62,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
   } /* end switch */
 
   /* Print NCO-generated error message, if any */
-  if(msg) (void)fprintf(stderr,"%s: ERROR Short NCO-generated message (usually function name where error was triggered): %s\n",fnc_nm,msg);
+  if(msg) (void)fprintf(stderr,"%s: ERROR Short NCO-generated message (usually name of function that triggered error): %s\n",fnc_nm,msg);
 
   /* On occasion, routine is called with non-netCDF errors, e.g., by nco_dfl_case_nc_type_err()
      non-netCDF errors call nco_err_exit() with rcd == 0
