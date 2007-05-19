@@ -203,5 +203,5 @@ var_int=1;
 var_short=1s;
 var_byte=1b;
 var_char[char_dmn_lng04]="Hell";
-var_ushort=1us;
+//var_ushort=1us;
 
