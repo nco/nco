@@ -1,3 +1,9 @@
+2007-05-19  Charlie Zender  <zender@uci.edu>
+
+	* Success at creating all netCDF4 atomic types with ncap2 except NC_UBYTE
+
+	* Add netCDF4 atomic types (except NC_STRING) ncoGrammer.g
+
 2007-05-18  Charlie Zender  <zender@uci.edu>
 
 	* Add netCDF4 atomic types (except NC_STRING) ncap2_utl.cc, ncap_yacc.y
