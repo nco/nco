@@ -1,0 +1,22 @@
+// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.1 2007-05-20 21:16:31 zender Exp $ -*-C++-*-
+
+// Purpose: Sample input script for netCDF4-enabled ncap2
+
+/* Usage: 
+   ncap2 -O -v -S ~/nco/data/netcdf4.nco ~/nco/data/in_4.nc ~/foo.nc
+   ncks ~/foo.nc | /bin/more
+*/
+
+// First make sure netCDF3 commands work 
+var_double=1.0;
+var_float=1.0f;
+var_int=1;
+var_short=1s;
+var_byte=1b;
+var_char[char_dmn_lng04]="Hell";
+// Following lines _require_ netCDF4:
+//var_ubyte=1ub; // NB: fxm TODO nco852 UBYTE currently broken
+var_ushort=1us;
+var_uint=1u;
+var_int64=1ll;
+var_uint64=1ull;
