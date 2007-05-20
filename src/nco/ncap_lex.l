@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.64 2007-05-18 23:26:22 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.65 2007-05-20 19:44:44 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -299,7 +299,7 @@ XPN [eE][+-]?[0-9]+
 } /* end quoted strings */
 
 {DGT}*\.{DGT}*({XPN})?[LlDd]?|{DGT}*({XPN})[LlDd]? {
-  /* Double or long double */
+  /* double or long double */
   /* NB: Tempted to prepend lexer expressions for floats and doubles with [+-]? 
      so that unary plus/minus is handled in lexer rather than parser.
      However, this has unintended side effects so let parser handle it for now */
@@ -310,20 +310,20 @@ XPN [eE][+-]?[0-9]+
 } /* end double or long double */
 
 {DGT}*\.{DGT}*({XPN})?[Ff]|{DGT}*({XPN})[Ff] {
-  /* Float */
-  float flt_tkn;
+  /* float */
+  float float_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a float %s\n",yytext); 
-  if(sscanf((char *)yytext,"%e",&flt_tkn) != 1){
+  if(sscanf((char *)yytext,"%e",&float_tkn) != 1){
     sprintf(ncap_err_sng,"#Bad float: %s",yytext);
     yyerror(prs_arg, ncap_err_sng);
     return EPROVOKE;
   } /* endif */
-  lval_ptr->scv.val.f=flt_tkn;
+  lval_ptr->scv.val.f=float_tkn;
   lval_ptr->scv.type=NC_FLOAT;
   return SCV;
 } /* end float */
 
-{DGT}+([LL]|[ll]) {
+{DGT}+("LL"|"ll") {
   /* int64 */
   nco_int64 int64_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing an int64 %s\n",yytext); 
@@ -336,7 +336,7 @@ XPN [eE][+-]?[0-9]+
   return SCV;
 } /* end int64 */
 
-{DGT}+([ULL]|[ull]) {
+{DGT}+("ULL"|"ull") {
   /* uint64 */
   nco_uint64 uint64_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a uint64 %s\n",yytext); 
@@ -362,7 +362,7 @@ XPN [eE][+-]?[0-9]+
   return SCV;
 } /* end int */
 
-{DGT}+[uU]? {
+{DGT}+([uU]|"ul"|"UL") {
   /* uint */
   nco_uint uint_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a uint %s\n",yytext); 
@@ -376,7 +376,7 @@ XPN [eE][+-]?[0-9]+
 } /* end uint */
 
 {DGT}+[sS] {
-  /* Short */
+  /* short */
   nco_short short_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a short %s\n",yytext); 	
   if(sscanf((char *)yytext,"%hi",&short_tkn) != 1){
@@ -388,8 +388,8 @@ XPN [eE][+-]?[0-9]+
   return SCV;
 } /* end short */
 
-{DGT}+([us]|[US]) {
-  /* Short */
+{DGT}+("us"|"US") {
+  /* ushort */
   nco_ushort short_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a ushort %s\n",yytext); 	
   if(sscanf((char *)yytext,"%hu",&short_tkn) != 1){
@@ -397,7 +397,7 @@ XPN [eE][+-]?[0-9]+
     yyerror(prs_arg,ncap_err_sng);
   } /* endif err */
   lval_ptr->scv.val.s=short_tkn;
-  lval_ptr->scv.type=NC_SHORT;
+  lval_ptr->scv.type=NC_USHORT;
   return SCV;
 } /* end short */
 
@@ -415,7 +415,7 @@ XPN [eE][+-]?[0-9]+
   return SCV;                    
 } /* end byte */
 
-{DGT}+([UB]|[ub]) {
+{DGT}+("UB"|"ub") {
   /* ubyte */
   nco_ubyte ubyte_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a ubyte %s\n",yytext); 

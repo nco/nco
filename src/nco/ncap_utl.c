@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.134 2007-05-19 07:08:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.135 2007-05-20 19:44:44 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -292,14 +292,19 @@ ncap_scv_2_ptr_unn
   case NC_DOUBLE: *val.dp=scv.val.d; break;
   case NC_INT: *val.lp=scv.val.l; break;
   case NC_SHORT: *val.sp=scv.val.s; break;
+  case NC_USHORT: *val.usp=scv.val.us; break;
+  case NC_UINT: *val.uip=scv.val.ui; break;
+  case NC_INT64: *val.i64p=scv.val.i64; break;
+  case NC_UINT64: *val.ui64p=scv.val.ui64; break;
   case NC_BYTE: *val.bp=scv.val.b; break;
+  case NC_UBYTE: *val.ubp=scv.val.ub; break;
   case NC_CHAR: break; /* do nothing */
+  case NC_STRING: break; /* do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   (void)cast_nctype_void(type,&val);
   return val;
 } /* end ncap_scv_2_ptr_unn() */
-
 
 var_sct * /* O [sct] Sum of input variables (var_1+var_2) */
 ncap_var_var_add /* [fnc] Add two variables */
@@ -467,8 +472,8 @@ ncap_var_var_pwr /* [fnc] Empowerment of two variables */
     var_1=nco_var_free(var_1);
     return var_2;
   }
-  /* make sure vars are at least float */
-  if(var_1->type < nco_rth_prc_rnk_float && var_2->type < nco_rth_prc_rnk_float ) var_1=nco_var_cnf_typ((nc_type)NC_FLOAT,var_1);
+  /* Make sure vars are at least float precision */
+  if(nco_rth_prc_rnk(var_1->type) < nco_rth_prc_rnk_float && nco_rth_prc_rnk(var_2->type < nco_rth_prc_rnk_float)) var_1=nco_var_cnf_typ((nc_type)NC_FLOAT,var_1);
 
   (void)ncap_var_retype(var_1,var_2);   
 
@@ -542,9 +547,9 @@ ncap_var_fnc(var_sct *var_in,sym_sct *app)
   
   
   /* Promote variable to NC_FLOAT */
-  if(var_in->type < nco_rth_prc_rnk_float) var_in=nco_var_cnf_typ((nc_type)NC_FLOAT,var_in);
+  if(nco_rth_prc_rnk(var_in->type) < nco_rth_prc_rnk_float) var_in=nco_var_cnf_typ((nc_type)NC_FLOAT,var_in);
 
-  /* Deal with inital scan */
+  /* Handle initial scan differently */
   if(var_in->val.vp==NULL) return var_in; 
   
   op1=var_in->val;
@@ -696,7 +701,7 @@ ncap_var_scv_pwr(var_sct *var,scv_sct scv)
   /* Purpose: Empower each element in var by scv */
   /* Promote scv and var to NC_FLOAT if necessary since C has no integer empowerment 
      This reduces type conversion warnings (it is not done to avoid overflow) */
-  if(var->type < nco_rth_prc_rnk_float) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
+  if(nco_rth_prc_rnk(var->type) < nco_rth_prc_rnk_float) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
   (void)nco_scv_cnf_typ(var->type,&scv);
 
   /* deal with inital scan */
@@ -714,7 +719,7 @@ ncap_scv_var_pwr(scv_sct scv,var_sct *var)
      This reduces type conversion warnings (it is not done to avoid overflow) */
   if(var->undefined) return var;
 
-  if(var->type < nco_rth_prc_rnk_float) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
+  if(nco_rth_prc_rnk(var->type) < nco_rth_prc_rnk_float) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
   (void)nco_scv_cnf_typ(var->type,&scv);
 
   /* deal with inital scan */
@@ -764,33 +769,6 @@ ncap_scv_clc
   }
   */
   switch(scv_out.type){ 
-  case NC_BYTE:
-    switch(op){
-    case '+': scv_out.val.b=scv_1.val.b+scv_2.val.b;break;
-    case '-': scv_out.val.b=scv_1.val.b-scv_2.val.b;break;
-    case '/': scv_out.val.b=scv_1.val.b/scv_2.val.b;break;
-    case '*': scv_out.val.b=scv_1.val.b*scv_2.val.b;break;
-    case '%': scv_out.val.b=scv_1.val.b%scv_2.val.b;break;
-    } break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_SHORT:
-    switch(op){
-    case '+': scv_out.val.s=scv_1.val.s+scv_2.val.s;break;
-    case '-': scv_out.val.s=scv_1.val.s-scv_2.val.s;break;
-    case '/': scv_out.val.s=scv_1.val.s/scv_2.val.s;break;
-    case '*': scv_out.val.s=scv_1.val.s*scv_2.val.s;break;
-    case '%': scv_out.val.s=scv_1.val.s%scv_2.val.s;break;
-    } break;
-  case NC_INT:
-    switch(op){
-    case '+': scv_out.val.l=scv_1.val.l+scv_2.val.l;break;
-    case '-': scv_out.val.l=scv_1.val.l-scv_2.val.l;break;
-    case '/': scv_out.val.l=scv_1.val.l/scv_2.val.l;break;
-    case '*': scv_out.val.l=scv_1.val.l*scv_2.val.l;break;
-    case '%': scv_out.val.l=scv_1.val.l%scv_2.val.l;break;
-    } break;
   case NC_FLOAT:
     switch(op){
     case '+': scv_out.val.f=scv_1.val.f+scv_2.val.f;break;
@@ -807,6 +785,72 @@ ncap_scv_clc
     case '*': scv_out.val.d=scv_1.val.d*scv_2.val.d;break;
     case '%': scv_out.val.d=fmod(scv_1.val.d,fabs(scv_2.val.d));break;
     } break;
+  case NC_INT:
+    switch(op){
+    case '+': scv_out.val.l=scv_1.val.l+scv_2.val.l;break;
+    case '-': scv_out.val.l=scv_1.val.l-scv_2.val.l;break;
+    case '/': scv_out.val.l=scv_1.val.l/scv_2.val.l;break;
+    case '*': scv_out.val.l=scv_1.val.l*scv_2.val.l;break;
+    case '%': scv_out.val.l=scv_1.val.l%scv_2.val.l;break;
+    } break;
+  case NC_SHORT:
+    switch(op){
+    case '+': scv_out.val.s=scv_1.val.s+scv_2.val.s;break;
+    case '-': scv_out.val.s=scv_1.val.s-scv_2.val.s;break;
+    case '/': scv_out.val.s=scv_1.val.s/scv_2.val.s;break;
+    case '*': scv_out.val.s=scv_1.val.s*scv_2.val.s;break;
+    case '%': scv_out.val.s=scv_1.val.s%scv_2.val.s;break;
+    } break;
+  case NC_USHORT:
+    switch(op){
+    case '+': scv_out.val.us=scv_1.val.us+scv_2.val.us;break;
+    case '-': scv_out.val.us=scv_1.val.us-scv_2.val.us;break;
+    case '/': scv_out.val.us=scv_1.val.us/scv_2.val.us;break;
+    case '*': scv_out.val.us=scv_1.val.us*scv_2.val.us;break;
+    case '%': scv_out.val.us=scv_1.val.us%scv_2.val.us;break;
+    } break;
+  case NC_UINT:
+    switch(op){
+    case '+': scv_out.val.ui=scv_1.val.ui+scv_2.val.ui;break;
+    case '-': scv_out.val.ui=scv_1.val.ui-scv_2.val.ui;break;
+    case '/': scv_out.val.ui=scv_1.val.ui/scv_2.val.ui;break;
+    case '*': scv_out.val.ui=scv_1.val.ui*scv_2.val.ui;break;
+    case '%': scv_out.val.ui=scv_1.val.ui%scv_2.val.ui;break;
+    } break;
+  case NC_INT64:
+    switch(op){
+    case '+': scv_out.val.i64=scv_1.val.i64+scv_2.val.i64;break;
+    case '-': scv_out.val.i64=scv_1.val.i64-scv_2.val.i64;break;
+    case '/': scv_out.val.i64=scv_1.val.i64/scv_2.val.i64;break;
+    case '*': scv_out.val.i64=scv_1.val.i64*scv_2.val.i64;break;
+    case '%': scv_out.val.i64=scv_1.val.i64%scv_2.val.i64;break;
+    } break;
+  case NC_UINT64:
+    switch(op){
+    case '+': scv_out.val.ui64=scv_1.val.ui64+scv_2.val.ui64;break;
+    case '-': scv_out.val.ui64=scv_1.val.ui64-scv_2.val.ui64;break;
+    case '/': scv_out.val.ui64=scv_1.val.ui64/scv_2.val.ui64;break;
+    case '*': scv_out.val.ui64=scv_1.val.ui64*scv_2.val.ui64;break;
+    case '%': scv_out.val.ui64=scv_1.val.ui64%scv_2.val.ui64;break;
+    } break;
+  case NC_BYTE:
+    switch(op){
+    case '+': scv_out.val.b=scv_1.val.b+scv_2.val.b;break;
+    case '-': scv_out.val.b=scv_1.val.b-scv_2.val.b;break;
+    case '/': scv_out.val.b=scv_1.val.b/scv_2.val.b;break;
+    case '*': scv_out.val.b=scv_1.val.b*scv_2.val.b;break;
+    case '%': scv_out.val.b=scv_1.val.b%scv_2.val.b;break;
+    } break;
+  case NC_UBYTE:
+    switch(op){
+    case '+': scv_out.val.ub=scv_1.val.ub+scv_2.val.ub;break;
+    case '-': scv_out.val.ub=scv_1.val.ub-scv_2.val.ub;break;
+    case '/': scv_out.val.ub=scv_1.val.ub/scv_2.val.ub;break;
+    case '*': scv_out.val.ub=scv_1.val.ub*scv_2.val.ub;break;
+    case '%': scv_out.val.ub=scv_1.val.ub%scv_2.val.ub;break;
+    } break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   }/* end switch */    
   
@@ -821,32 +865,23 @@ ncap_scv_abs(scv_sct scv)
 #ifndef __GNUG__ 
   extern float fabsf(float); /* Sun math.h does not include fabsf() prototype */
 #endif   
-
-
   
   scv_sct scv_out;
   scv_out.type=scv.type;
   
-  
   switch(scv.type){ 
-  case NC_BYTE:
-    scv_out.val.b=((scv.val.b >= 0) ? scv.val.b : -scv.val.b);
-    break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_SHORT:
-    scv_out.val.s=((scv.val.s >= 0) ? scv.val.s : -scv.val.s);
-    break;
-  case NC_INT:
-    scv_out.val.l=labs(scv.val.l); /* int abs(int), long labs(long) */
-    break;            
-  case NC_FLOAT:
-    scv_out.val.f=fabsf(scv.val.f);
-    break;
-  case NC_DOUBLE:
-    scv_out.val.d=fabs(scv.val.d);
-    break;
+  case NC_FLOAT: scv_out.val.f=fabsf(scv.val.f); break;
+  case NC_DOUBLE: scv_out.val.d=fabs(scv.val.d); break;
+  case NC_INT: scv_out.val.l=labs(scv.val.l); break; /* int abs(int), long labs(long) */ break;            
+  case NC_SHORT: scv_out.val.s=((scv.val.s >= 0) ? scv.val.s : -scv.val.s); break;
+  case NC_USHORT: scv_out.val.us=scv.val.us; break;
+  case NC_UINT: scv_out.val.ui=scv.val.ui; break;
+  case NC_INT64: scv_out.val.i64=llabs(scv.val.i64); break;
+  case NC_UINT64: scv_out.val.ui64=scv.val.ui64; break;
+  case NC_BYTE: scv_out.val.b=((scv.val.b >= 0) ? scv.val.b : -scv.val.b); break;
+  case NC_UBYTE: scv_out.val.ub=scv.val.ub; break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;    
   } /* end switch */
   return scv_out;
@@ -855,25 +890,23 @@ ncap_scv_abs(scv_sct scv)
 int 
 ncap_scv_minus(scv_sct *scv)
 {
+  /* Purpose: Return negative of input */
   switch(scv->type){ 
-  case NC_BYTE:
-    scv->val.b=-scv->val.b; 
+  case NC_FLOAT: scv->val.f=-scv->val.f; break;
+  case NC_DOUBLE: scv->val.d=-scv->val.d; break;
+  case NC_INT: scv->val.l=-scv->val.l; break;            
+  case NC_SHORT: scv->val.s=-scv->val.s; break;
+  case NC_INT64: scv->val.i64=-scv->val.i64; break;
+  case NC_BYTE: scv->val.b=-scv->val.b; break;
+  case NC_USHORT: /* NB: Unsigned */
+  case NC_UINT: /* NB: Unsigned */
+  case NC_UINT64: /* NB: Unsigned */
+  case NC_UBYTE: /* NB: Unsigned */
+    (void)fprintf(stdout,"%s: ERROR ncap_scr_minus() reports attempt to convert unsigned integer type to a negative number\n",prg_nm_get());
+    nco_exit(EXIT_FAILURE);
     break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_SHORT:
-    scv->val.s=-scv->val.s;
-    break;
-  case NC_INT:
-    scv->val.l=-scv->val.l;
-    break;            
-  case NC_FLOAT:
-    scv->val.f=-scv->val.f;
-    break;
-  case NC_DOUBLE:
-    scv->val.d=-scv->val.d;
-    break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;  
   } /* end switch */    
   return scv->type;

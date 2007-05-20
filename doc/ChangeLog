@@ -1,3 +1,9 @@
+2007-05-20  Charlie Zender  <zender@uci.edu>
+
+	* Verified ncap ll,LL,ull,ULL,us,ui parsing works
+
+	* Finished netCDF4'ing ncap_lex.l, ncap_yacc.y, ncap_utl.c
+
 2007-05-19  Charlie Zender  <zender@uci.edu>
 
 	* Verified that ddra.nco works with int64 types so storing large

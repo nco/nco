@@ -204,7 +204,7 @@ var_short=1s;
 var_byte=1b;
 var_char[char_dmn_lng04]="Hell";
 // Following lines _require_ netCDF4:
-var_ubyte=1ub;
+//var_ubyte=1ub; // NB: UBYTE currently broken
 var_ushort=1us;
 var_uint=1u;
 var_int64=1ll;
