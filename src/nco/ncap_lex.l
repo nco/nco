@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.65 2007-05-20 19:44:44 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.66 2007-05-20 19:56:20 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -466,12 +466,18 @@ pack/[ ]*\( {return PACK;}
 pow/[ ]*\( {return POWER;}
 upk/[ ]*\( {return UNPACK;}
 unpack/[ ]*\( {return UNPACK;}
-byte/[ ]*\( { lval_ptr->cnv_type = NC_BYTE;return CNV_TYPE;} 
-char/[ ]*\( { lval_ptr->cnv_type = NC_CHAR;return CNV_TYPE;} 
-short/[ ]*\( { lval_ptr->cnv_type = NC_SHORT;return CNV_TYPE;} 
-int/[ ]*\( { lval_ptr->cnv_type = NC_INT;return CNV_TYPE;} 
 float/[ ]*\( { lval_ptr->cnv_type = NC_FLOAT;return CNV_TYPE;} 
 double/[ ]*\( { lval_ptr->cnv_type = NC_DOUBLE;return CNV_TYPE;} 
+long/[ ]*\( { lval_ptr->cnv_type = NC_INT;return CNV_TYPE;} 
+int/[ ]*\( { lval_ptr->cnv_type = NC_INT;return CNV_TYPE;} 
+short/[ ]*\( { lval_ptr->cnv_type = NC_SHORT;return CNV_TYPE;} 
+ushort/[ ]*\( { lval_ptr->cnv_type = NC_USHORT;return CNV_TYPE;} 
+uint/[ ]*\( { lval_ptr->cnv_type = NC_UINT;return CNV_TYPE;} 
+int64/[ ]*\( { lval_ptr->cnv_type = NC_INT64;return CNV_TYPE;} 
+uint64/[ ]*\( { lval_ptr->cnv_type = NC_UINT64;return CNV_TYPE;} 
+ubyte/[ ]*\( { lval_ptr->cnv_type = NC_UBYTE;return CNV_TYPE;} 
+byte/[ ]*\( { lval_ptr->cnv_type = NC_BYTE;return CNV_TYPE;} 
+char/[ ]*\( { lval_ptr->cnv_type = NC_CHAR;return CNV_TYPE;} 
 
 M_PI {return NAMED_CONSTANT;}
 

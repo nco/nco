@@ -1,5 +1,7 @@
 2007-05-20  Charlie Zender  <zender@uci.edu>
 
+	* Add netCDF4 casting functions ushort(), int64(), etc. to ncap_lex.l
+
 	* Verified ncap ll,LL,ull,ULL,us,ui parsing works
 
 	* Finished netCDF4'ing ncap_lex.l, ncap_yacc.y, ncap_utl.c
