@@ -1755,7 +1755,30 @@ void ncoLexer::mNUMBER(bool _createToken) {
 		break;
 	}
 	default:
-		if ((LA(1) == 0x55 /* 'U' */  || LA(1) == 0x75 /* 'u' */ ) && (LA(2) == 0x42 /* 'B' */  || LA(2) == 0x62 /* 'b' */ )) {
+		if ((LA(1) == 0x55 /* 'U' */  || LA(1) == 0x75 /* 'u' */ ) && (LA(2) == 0x4c /* 'L' */  || LA(2) == 0x6c /* 'l' */ ) && (LA(3) == 0x4c /* 'L' */  || LA(3) == 0x6c /* 'l' */ )) {
+			{
+			switch ( LA(1)) {
+			case 0x55 /* 'U' */ :
+			{
+				match("ULL");
+				break;
+			}
+			case 0x75 /* 'u' */ :
+			{
+				match("ull");
+				break;
+			}
+			default:
+			{
+				throw ANTLR_USE_NAMESPACE(antlr)NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());
+			}
+			}
+			}
+#line 444 "ncoGrammer.g"
+			_ttype = UINT64;
+#line 1780 "ncoLexer.cpp"
+		}
+		else if ((LA(1) == 0x55 /* 'U' */  || LA(1) == 0x75 /* 'u' */ ) && (LA(2) == 0x42 /* 'B' */  || LA(2) == 0x62 /* 'b' */ )) {
 			{
 			switch ( LA(1)) {
 			case 0x55 /* 'U' */ :
@@ -1776,7 +1799,7 @@ void ncoLexer::mNUMBER(bool _createToken) {
 			}
 #line 440 "ncoGrammer.g"
 			_ttype = UBYTE;
-#line 1780 "ncoLexer.cpp"
+#line 1803 "ncoLexer.cpp"
 		}
 		else if ((LA(1) == 0x55 /* 'U' */  || LA(1) == 0x75 /* 'u' */ ) && (LA(2) == 0x53 /* 'S' */  || LA(2) == 0x73 /* 's' */ )) {
 			{
@@ -1799,7 +1822,7 @@ void ncoLexer::mNUMBER(bool _createToken) {
 			}
 #line 441 "ncoGrammer.g"
 			_ttype = USHORT;
-#line 1803 "ncoLexer.cpp"
+#line 1826 "ncoLexer.cpp"
 		}
 		else if ((LA(1) == 0x4c /* 'L' */  || LA(1) == 0x6c /* 'l' */ ) && (LA(2) == 0x4c /* 'L' */  || LA(2) == 0x6c /* 'l' */ )) {
 			{
@@ -1822,29 +1845,6 @@ void ncoLexer::mNUMBER(bool _createToken) {
 			}
 #line 443 "ncoGrammer.g"
 			_ttype = INT64;
-#line 1826 "ncoLexer.cpp"
-		}
-		else if ((LA(1) == 0x55 /* 'U' */  || LA(1) == 0x75 /* 'u' */ ) && (LA(2) == 0x4c /* 'L' */  || LA(2) == 0x6c /* 'l' */ )) {
-			{
-			switch ( LA(1)) {
-			case 0x55 /* 'U' */ :
-			{
-				match("ULL");
-				break;
-			}
-			case 0x75 /* 'u' */ :
-			{
-				match("ull");
-				break;
-			}
-			default:
-			{
-				throw ANTLR_USE_NAMESPACE(antlr)NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());
-			}
-			}
-			}
-#line 444 "ncoGrammer.g"
-			_ttype = UINT64;
 #line 1849 "ncoLexer.cpp"
 		}
 		else if ((LA(1) == 0x4c /* 'L' */  || LA(1) == 0x6c /* 'l' */ ) && (true)) {
@@ -1870,24 +1870,24 @@ void ncoLexer::mNUMBER(bool _createToken) {
 			_ttype = INT;
 #line 1872 "ncoLexer.cpp"
 		}
-		else if ((LA(1) == 0x55 /* 'U' */  || LA(1) == 0x75 /* 'u' */ ) && (true)) {
+		else if ((LA(1) == 0x55 /* 'U' */  || LA(1) == 0x75 /* 'u' */ ) && (true) && (true)) {
 			{
-			switch ( LA(1)) {
-			case 0x55 /* 'U' */ :
-			{
+			if ((LA(1) == 0x55 /* 'U' */ ) && (LA(2) == 0x4c /* 'L' */ )) {
+				match("UL");
+			}
+			else if ((LA(1) == 0x75 /* 'u' */ ) && (LA(2) == 0x6c /* 'l' */ )) {
+				match("ul");
+			}
+			else if ((LA(1) == 0x55 /* 'U' */ ) && (true)) {
 				match('U' /* charlit */ );
-				break;
 			}
-			case 0x75 /* 'u' */ :
-			{
+			else if ((LA(1) == 0x75 /* 'u' */ ) && (true)) {
 				match('u' /* charlit */ );
-				break;
 			}
-			default:
-			{
+			else {
 				throw ANTLR_USE_NAMESPACE(antlr)NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());
 			}
-			}
+			
 			}
 #line 442 "ncoGrammer.g"
 			_ttype = UINT;

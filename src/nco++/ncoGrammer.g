@@ -439,7 +439,7 @@ NUMBER:
        | ('B'|'b')!    { $setType(BYTE);  } // 3b, 3B
        | ("UB"|"ub")!  { $setType(UBYTE); } // 3ub, 3UB
        | ("US"|"us")!  { $setType(USHORT); } // 3us, 3US
-       | ('U'|'u')!    { $setType(UINT); } // 3u, 3U
+       | ('U'|'u'|"UL"|"ul")!    { $setType(UINT); } // 3u, 3U, 3ul, 3UL
        | ("LL"|"ll")!  { $setType(INT64); } // 3ll, 3LL
        | ("ULL"|"ull")!  { $setType(UINT64); } // 3ull, 3ULL
     )?
