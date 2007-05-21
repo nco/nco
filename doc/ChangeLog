@@ -1,5 +1,7 @@
 2007-05-20  Charlie Zender  <zender@uci.edu>
 
+	* AIX xlC has ncap2 build problem: "std::strtoll" is not declared.
+
 	* Cast all naked nc_type tokens being thrown around in ncap2 code
 	In addition to being bad programming style, these naked tokens 
 	trigger the netCDF3/netCDF4 nc_type incompatibility bug.
@@ -83,7 +85,7 @@
 
 	* Add netCDF4 atomic types to nco_cnf_typ.c
 
-	* cvs tag -c nco-3_2_0_alpha1
+	* cvs tag -c nco-3_2_1_alpha1
 	Working subset of netCDF4 atomic type features with no regressions
 
 	* Regression tests all fine except for known netCDF4/HDF defects

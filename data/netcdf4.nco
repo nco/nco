@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.1 2007-05-20 21:16:31 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.2 2007-05-21 05:58:40 zender Exp $ -*-C++-*-
 
 // Purpose: Sample input script for netCDF4-enabled ncap2
 
@@ -20,3 +20,11 @@ var_ushort=1us;
 var_uint=1u;
 var_int64=1ll;
 var_uint64=1ull;
+// Test arithmetic ranges
+var_ushort_ngt=-var_ushort; // 20070520: = 65535
+var_ushort_ngt_2=-1us; // 20070520: = 65535
+var_ushort_ttl=var_short+var_short;
+var_uint64_sum_int64_int64=var_int64+var_int64;
+var_uint64_1=var_uint64_2=9223372036854775807ull;
+var_uint64_ttl=var_uint64_1+var_uint64_2; // 20070520: = 9223372036854775807ull Fails!
+var_uint64_prd=2ull*9223372036854775807ull; // 20070520: = 9223372036854775807ull Fails

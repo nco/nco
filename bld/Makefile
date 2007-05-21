@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.422 2007-05-18 18:01:27 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.423 2007-05-21 05:58:39 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -535,12 +535,13 @@ ifneq (${null},$(findstring xl,${CC}))
 # Visual Age compiler defaults specified in /etc/vac.cfg
 # Additional switch to fix compiler warnings on csz.c
 # -qarch=auto : Automatically detect architecture of compiling machine and assume execution on same machine
+# -qlonglong allow long long integers (and strtoll(), strtoull()) (default on in C not C++)
 # -qmaxmem=num Limit memory used by space intensive optimizations to <num> kilobytes
 # -qspill=size Size in B of register allocation spill area, mie needs > 1040 B
 # -qsrcmsg prints transgressing source line with finger
 # -qsuppress=1501-245 : Suppress RLIM_INFINITY memory message due to ulimits
 # -qtune=auto : Optimize executable for architecture detected during compilation
- CFLAGS := -qmaxmem=8192 -qspill=2048 -qsrcmsg -qsuppress=1501-245
+ CFLAGS := -qlonglong -qmaxmem=8192 -qspill=2048 -qsrcmsg -qsuppress=1501-245
  FFLAGS := -NS2000 -qfixed=132 -qsrcmsg
 # -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
  LDFLAGS += -bh:5 -qsuppress=1501-245
@@ -568,7 +569,6 @@ endif
 ifeq (${OPTS},X)
 # -qflttrap generates instructions for floating point exceptions
 # -qidirfirst uses headers found in -I directories first
-# -qlonglong allow long long integers
 # -qmakedep creates .d file
 # -qwarn64 check for possible long-to-integer or pointer-to-integer truncation
 # -qhalt=e stop compiler if error severity equals or exceeds i, w, e, s, u

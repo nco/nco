@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.21 2007-02-23 21:59:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.22 2007-05-21 05:58:41 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -7,6 +7,20 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_sng_utl.h" /* String utilities */
+
+#ifdef NEED_STRTOLL
+long long int /* O [nbr] String as long long integer */
+strtoll /* [fnc] Convert string to a long long integer */
+(const char *nptr, 
+ char **endptr, 
+ int base)
+{
+  /* Purpose: Compatibility function for strtoll()
+     Needed by some C++ compilers, e.g., AIX xlC */
+  long long nbr_out=0LL;
+  return nbr_out;
+} /* end strtoll() */
+#endif /* !NEED_STRTOLL */
 
 #ifdef NEED_STRCASECMP
 int /* O [enm] [-1,0,1] sng_1 [<,=,>] sng_2 */
