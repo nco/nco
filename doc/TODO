@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.904 2007-05-20 19:56:20 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.905 2007-05-21 01:26:28 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -595,10 +595,13 @@ nco846. netCDF4: switch to long long array offsets everywhere?
 nco847. switch sz, tally to type (unsigned long), perhaps size_t, and perhaps (unsigned long long)
 nco848. Add regression to demonstrate breakage on variables with 2--4 GB elements
 nco851. How to add ENABLE_NETCDF4 #ifdefs to ncoGrammer.g?
+	cpp -DENABLE_NETCDF4 ncoGrammer.g
 nco852. UBYTE does not work with ncap2:
 	ncap2 -D 0 -O -v -s "var_ubyte=1ub;" ~/nco/data/in_4.nc ~/foo.nc
 	Command-line script:1:10: unexpected token: =
-nco853. 
+nco853. Enable arithmetic for NC_BYTE and NC_UBYTE everywhere?
+nco854. Use NC_BYTE instead of NC_SHORT for logical in ncap2?
+nco855. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

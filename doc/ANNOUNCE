@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.225 2007-05-18 19:59:06 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.226 2007-05-21 01:26:27 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.2.0 are ready. 
 
@@ -24,6 +24,8 @@ A. ncks copying of variable and global metadata is configurable (-m, -M).
    ncks -O -M -m -v one in.nc out.nc # Copy   data only, no attributes
    ncks -A    -m -v one in.nc out.nc # Append data only, no attributes
    http://nco.sf.net/nco.html#prn has more details.
+
+B. GCC 4.2 compatibility: fxm
 
 C. New Documentation:
    Working with non-standar grids, e.g., 2D grids 

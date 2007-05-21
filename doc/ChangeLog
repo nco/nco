@@ -1,8 +1,15 @@
 2007-05-20  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-3_2_1_alpha4
+	netCDF4 works fine with all operators and regression tests.
+	Exceptions are that ncap2 does not work with ubyte and that
+	netCDF3 does not build because ncoGrammer.g lacks netcdf4 #ifdef's
+
+	* Add netcdf4.nco test script for netCDF4-enabled ncap2
+
 	* Add netCDF4 casting functions ushort(), int64(), etc. to ncap_lex.l
 
-	* Verified ncap ll,LL,ull,ULL,us,ui parsing works
+	* Verified ncap ll,LL,ull,ULL,us,ui, etc. parsing works
 
 	* Finished netCDF4'ing ncap_lex.l, ncap_yacc.y, ncap_utl.c
 

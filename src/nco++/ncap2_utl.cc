@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.67 2007-05-19 07:14:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.68 2007-05-21 01:26:28 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -21,15 +21,15 @@
 
 var_sct *                  /* O [sct] initialized variable */
 ncap_var_init(
-const std::string &snm,    /* I [sng] variable name constant */
-prs_sct *prs_arg,          /* I/O  vectors of atts,vars,dims, filenames */
-bool bfll)                 /* if true fill var with data */ 
+	      const std::string &snm,    /* I [sng] variable name constant */
+	      prs_sct *prs_arg,          /* I/O  vectors of atts,vars,dims, filenames */
+	      bool bfll)                 /* if true fill var with data */ 
 {
   /* Purpose: Initialize variable structure, retrieve variable values from disk
      Parser calls ncap_var_init() when it encounters a new RHS variable */
-
+  
   const char fnc_nm[]="ncap_var_init"; 
-
+  
   int idx;
   int dmn_var_nbr;
   int *dim_id=NULL_CEWI;
@@ -41,7 +41,7 @@ bool bfll)                 /* if true fill var with data */
   
   char dmn_nm[NC_MAX_NAME];
   const char *var_nm;
-
+  
   dmn_sct *dmn_fd; 
   dmn_sct *dmn_nw;
   
@@ -49,12 +49,12 @@ bool bfll)                 /* if true fill var with data */
   int nbr_dmn_out  ;  // dereferencing
   
   var_sct *var;
-
+  
   NcapVar *Nvar;
-
+  
   var_nm=snm.c_str();
-
-
+  
+  
   // INITIAL SCAN
   if(prs_arg->ntl_scn){
     // check int vtr
@@ -62,15 +62,15 @@ bool bfll)                 /* if true fill var with data */
     // check var_vtr (output)  
     if(Nvar==NULL)
       Nvar=prs_arg->ptr_var_vtr->find(var_nm);
-   
+    
     if(Nvar) {
       var=Nvar->cpyVarNoData();
       return var;
     }
     bfll=false;
   }
-
-
+  
+  
   // FINAL SCAN
   // We have a  dilema -- its possible for a variable to exist in input & output 
   // with the var in output defined but empty - -this could occur with the
@@ -81,7 +81,7 @@ bool bfll)                 /* if true fill var with data */
   // and subsequent reads will occur from  output 
   if(!prs_arg->ntl_scn){
     Nvar=prs_arg->ptr_var_vtr->find(var_nm);
-   
+    
     // var is defined in O and populated
     if(Nvar && Nvar->flg_stt==2 && !Nvar->flg_mem){
       var=Nvar->cpyVarNoData();
@@ -96,18 +96,18 @@ bool bfll)                 /* if true fill var with data */
       var->tally=(long *)NULL;
       return var;
     }
-
-
+    
+    
     // var is defined in O but NOT populated
     // Set flag so read is tried only from input
     // Maybe not the best solution ?
     // what else ??? 
     if(Nvar && Nvar->flg_stt==1){
       bskp_npt=true;
-
+      
     } 
   }
-
+  
   /* Check output file for var */  
   rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
   if(rcd == NC_NOERR && !bskp_npt){
@@ -147,20 +147,20 @@ bool bfll)                 /* if true fill var with data */
           os<<"Unable to find dimension " <<dmn_nm << " in " << prs_arg->fl_in <<" or " << prs_arg->fl_out;
           err_prn(fnc_nm,os.str());
 	}
-	   
+	
         dmn_nw=nco_dmn_dpl(dmn_fd);
 	(void)nco_dmn_xrf(dmn_nw,dmn_fd);
 	// write dim to output
 	(void)nco_dmn_dfn(prs_arg->fl_out,prs_arg->out_id,&dmn_nw,1);          
 	// Add new dim to output list
 	(void)prs_arg->ptr_dmn_out_vtr->push_back(dmn_nw);
-
+	
 	if(dbg_lvl_get() > 2) {
           std::ostringstream os;
           os << "Found new dimension " << dmn_nm << " in input variable " << var_nm <<" in file " <<prs_arg->fl_in;
           os << ". Defining dimension " << dmn_nm << " in output file " << prs_arg->fl_out;
           dbg_prn(fnc_nm,os.str());
-
+	  
 	}
       }
       (void)nco_free(dim_id);
@@ -173,26 +173,26 @@ bool bfll)                 /* if true fill var with data */
     os<< "Parser VAR action called ncap_var_init() to retrieve " <<var_nm <<" from disk";
     dbg_prn(fnc_nm,os.str());  
   }
-
-
-
+  
+  
+  
   nbr_dmn_out=prs_arg->ptr_dmn_out_vtr->size();
   dmn_out=& ( (*prs_arg->ptr_dmn_out_vtr)[0]);
-
+  
   var=nco_var_fll(fl_id,var_id,var_nm,dmn_out,nbr_dmn_out);
   /*  var->nm=(char *)nco_malloc((strlen(var_nm)+1UL)*sizeof(char));
-  (void)strcpy(var->nm,var_nm); */
+      (void)strcpy(var->nm,var_nm); */
   /* Tally is not required yet since ncap does not perform cross-file operations (yet) */
   /* var->tally=(long *)nco_malloc_dbg(var->sz*sizeof(long),"Unable to malloc() tally buffer in variable initialization",fnc_nm);
-      (void)nco_zero_long(var->sz,var->tally); */
-
-lbl_end:
+     (void)nco_zero_long(var->sz,var->tally); */
+  
+ lbl_end:
   var->tally=(long *)NULL;
-
+  
   /* Retrieve variable values from disk into memory */
   if(bfll)
-     (void)nco_var_get(fl_id,var); 
-
+    (void)nco_var_get(fl_id,var); 
+  
   return var;
 } /* end ncap_var_init() */
 
@@ -207,17 +207,17 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   const char fnc_nm[]="ncap_var_write"; 
-
+  
   int rcd; /* [rcd] Return code */
   int var_out_id;
   
   bool bdef=false;
   NcapVar *Nvar;
-
+  
 #ifdef NCO_RUSAGE_DBG
   long maxrss; /* [B] Maximum resident set size */
 #endif /* !NCO_RUSAGE_DBG */
-
+  
   // INITIAL SCAN
   if(prs_arg->ntl_scn){
     Nvar=prs_arg->ptr_var_vtr->find(var->nm);
@@ -225,19 +225,19 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
       var=nco_var_free(var);
       return True;
     }
-
+    
     Nvar=prs_arg->ptr_int_vtr->find(var->nm);
     if(Nvar) { 
       var=nco_var_free(var);
       return True;
     }  
-      
+    
     Nvar=new NcapVar(var,"");
     Nvar->flg_mem=bram;
     prs_arg->ptr_int_vtr->push(Nvar);
     return True;
   } 
-
+  
   // FINAL SCAN
   Nvar=prs_arg->ptr_var_vtr->find(var->nm);
   if(Nvar) {
@@ -245,92 +245,92 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
     Nvar->var->typ_dsk=Nvar->var->type;
     bdef=true;
   } 
-
-
+  
+  
   // Deal with a RAM variable
   if(bdef && Nvar->flg_mem){
     var_sct *var_inf;
     ptr_unn ptr_swp;
-
+    
     var_inf=Nvar->cpyVarNoData();
-
-
+    
+    
     /* check sizes are the same */
     if(var_inf->sz != var->sz) {
       std::ostringstream os;
       os<< "RAM Variable "<< var->nm << " size=" << var->sz << " has aleady been saved in ";
       os<< prs_arg->fl_out << " with size=" << var_inf->sz;
-       
+      
       wrn_prn(fnc_nm,os.str());  
-
+      
       var = nco_var_free(var);
       var_inf=nco_var_free(var_inf);
       return False;
     }
-
+    
     /* convert type to disk type */
     var=nco_var_cnf_typ(var_inf->type,var);    
-
+    
     //Swap values about  
-
+    
     var_inf->val=var->val;
     var->val.vp=(void*)NULL;
-
-
+    
+    
     // Check for "new" missing value;
     if(var->has_mss_val){
-    //Swap values about  
-     ptr_swp.vp=var_inf->mss_val.vp;
-     var_inf->mss_val.vp=var->mss_val.vp; 
-     var->mss_val.vp=ptr_swp.vp;
-     var_inf->has_mss_val=true; 
+      //Swap values about  
+      ptr_swp.vp=var_inf->mss_val.vp;
+      var_inf->mss_val.vp=var->mss_val.vp; 
+      var->mss_val.vp=ptr_swp.vp;
+      var_inf->has_mss_val=true; 
     }     
     (void)nco_var_free(Nvar->var);  
-     Nvar->var=var_inf;     
-     Nvar->flg_stt=2;
-
-     assert(Nvar->var->val.vp !=NULL);
-
+    Nvar->var=var_inf;     
+    Nvar->flg_stt=2;
+    
+    assert(Nvar->var->val.vp !=NULL);
+    
     (void)nco_var_free(var);
-
+    
     return true;
   }
-
-
-
+  
+  
+  
   // var is already defined & populated in output 
   if(bdef && !Nvar->flg_mem && Nvar->flg_stt==2){
     var_sct* var_swp;
     var_sct* var_inf;
     var_inf=Nvar->cpyVarNoData();
-
-
+    
+    
     /* check sizes are the same */
     if(var_inf->sz != var->sz) {
       std::ostringstream os;
       os<< "Variable "<< var->nm << " size=" << var->sz << " has aleady been saved in ";
       os<< prs_arg->fl_out << " with size=" << var_inf->sz;
-       
+      
       wrn_prn(fnc_nm,os.str());  
-
+      
       var = nco_var_free(var);
       var_inf=nco_var_free(var_inf);
       return False;
     }
-
+    
     /* convert type to disk type */
     var=nco_var_cnf_typ(var_inf->type,var);    
-
+    
     //Swap values about
     var_inf->val=var->val;var->val.vp=(void*)NULL;
     var_swp=var;var=var_inf;var_inf=var_swp;
     
     var_inf=nco_var_free(var_inf);
-
+    
     var_out_id=var->id;
-   
+    
   } 
-
+  
   // Deal with a new RAM only variable
   if(!bdef && bram){
     NcapVar *NewNvar=new NcapVar(var,"");
@@ -341,10 +341,10 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
     prs_arg->ptr_var_vtr->push(NewNvar);
     return True;
   }
-
-
+  
+  
   rcd=nco_inq_varid_flg(prs_arg->out_id,var->nm,&var_out_id);
-
+  
   /* Put file in define mode to allow metadata writing */
   (void)nco_redef(prs_arg->out_id);
   
@@ -353,12 +353,12 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
   /* Put missing value */  
   if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
   
-      /* Write/overwrite scale_factor and add_offset attributes */
+  /* Write/overwrite scale_factor and add_offset attributes */
   if(var->pck_ram){ /* Variable is packed in memory */
-  if(var->has_scl_fct) (void)nco_put_att(prs_arg->out_id,var_out_id,scl_fct_sng,var->typ_upk,1,var->scl_fct.vp);
-  if(var->has_add_fst) (void)nco_put_att(prs_arg->out_id,var_out_id,add_fst_sng,var->typ_upk,1,var->add_fst.vp);
-      } /* endif pck_ram */
-
+    if(var->has_scl_fct) (void)nco_put_att(prs_arg->out_id,var_out_id,scl_fct_sng,var->typ_upk,1,var->scl_fct.vp);
+    if(var->has_add_fst) (void)nco_put_att(prs_arg->out_id,var_out_id,add_fst_sng,var->typ_upk,1,var->add_fst.vp);
+  } /* endif pck_ram */
+  
   /* Take output file out of define mode */
   (void)nco_enddef(prs_arg->out_id);
   
@@ -379,7 +379,7 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
   }
   maxrss=nco_mmr_rusage_prn((int)0);
 #endif /* !NCO_RUSAGE_DBG */
-
+  
   // save variable to output vector if new
   if(!bdef) {
     var_sct *var1;
@@ -392,12 +392,12 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
     Nvar=new NcapVar(var1);
     (void)prs_arg->ptr_var_vtr->push(Nvar);          
   } 
-    
-   var=nco_var_free(var);
-
+  
+  var=nco_var_free(var);
+  
   //Set flag -  indicates var is DEFINED && POPULATED
   Nvar->flg_stt=2;
-
+  
   return True;
 } /* end ncap_var_write() */
 
@@ -414,9 +414,9 @@ var_sct *
 ncap_var_udf(const char *var_nm)
 { 
   var_sct *var_ret;
-
+  
   var_ret=(var_sct *)nco_malloc(sizeof(var_sct));
-
+  
   // Set defaults 
   (void)var_dfl_set(var_ret); 
   var_ret->nm=strdup(var_nm);
@@ -434,15 +434,15 @@ ncap_att_get
   long sz;
   int rcd;
   char *ln_nm;
-
+  
   nc_type type;
   var_sct *var_ret;
   
   rcd=nco_inq_att_flg(prs_arg->in_id,var_id,att_nm,&type,&sz);
   if (rcd == NC_ENOTATT) 
     return NULL_CEWI;
-
-
+  
+  
   var_ret=(var_sct*)nco_malloc(sizeof(var_sct));
   (void)var_dfl_set(var_ret);
   
@@ -457,48 +457,48 @@ ncap_att_get
   var_ret->sz=sz;
   // maybe needed ?
   var_ret->nbr_dim=0;
-
+  
   // Fill with data if NOT an initial scan
   if(!prs_arg->ntl_scn){
-   var_ret->val.vp=(void *)nco_malloc(sz*nco_typ_lng(type));
-   rcd=nco_get_att(prs_arg->in_id,var_id,att_nm,var_ret->val.vp,type);
-   if (rcd !=NC_NOERR) {
-    var_ret=nco_var_free(var_ret);
-    return NULL_CEWI;
-   }
+    var_ret->val.vp=(void *)nco_malloc(sz*nco_typ_lng(type));
+    rcd=nco_get_att(prs_arg->in_id,var_id,att_nm,var_ret->val.vp,type);
+    if (rcd !=NC_NOERR) {
+      var_ret=nco_var_free(var_ret);
+      return NULL_CEWI;
+    }
   }
   return var_ret; 
 }
 
 var_sct *                  /* O [sct] variable containing attribute */
 ncap_att_init(             /*   [fnc] Grab an attribute from input file */
-const std::string s_va_nm, /* I [sng] att name of form var_nm&att_nm */ 
-prs_sct *prs_arg)          /* I/O vectors of atts & vars & file names  */
+	      const std::string s_va_nm, /* I [sng] att name of form var_nm&att_nm */ 
+	      prs_sct *prs_arg)          /* I/O vectors of atts & vars & file names  */
 {
-int rcd;
-int var_id;
-
-std::string var_nm;
-std::string att_nm;
-size_t  att_char_posn;
-
-var_sct *var_ret;
-
-//check if we have an attribute
-if( (att_char_posn =s_va_nm.find("@")) ==std::string::npos )
-  return NULL_CEWI; 
-
-var_nm=s_va_nm.substr(0,att_char_posn);
-att_nm=s_va_nm.substr(att_char_posn+1);
-
-if(var_nm == "global")
-  var_id=NC_GLOBAL;
+  int rcd;
+  int var_id;
+  
+  std::string var_nm;
+  std::string att_nm;
+  size_t  att_char_posn;
+  
+  var_sct *var_ret;
+  
+  //check if we have an attribute
+  if( (att_char_posn =s_va_nm.find("@")) ==std::string::npos )
+    return NULL_CEWI; 
+  
+  var_nm=s_va_nm.substr(0,att_char_posn);
+  att_nm=s_va_nm.substr(att_char_posn+1);
+  
+  if(var_nm == "global")
+    var_id=NC_GLOBAL;
   else{
     rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm.c_str(),&var_id);
     if (rcd !=NC_NOERR) 
       return NULL_CEWI;
   }
-
+  
   var_ret=ncap_att_get(var_id,var_nm.c_str(),att_nm.c_str(),prs_arg);
   
   return var_ret;
@@ -509,12 +509,12 @@ ncap_att_stretch  /* stretch a single valued attribute from 1 to sz */
 (var_sct* var,    /* I/O [sct] variable */       
  long nw_sz)      /* I [nbr] new var size */
 {
-
+  
   long  idx;
   long  var_typ_sz;  
   void* vp;
   char *cp;
-
+  
   if(var->sz == 1L && nw_sz >1){
     
     var_typ_sz=nco_typ_lng(var->type);
@@ -523,15 +523,15 @@ ncap_att_stretch  /* stretch a single valued attribute from 1 to sz */
       cp=(char*)vp + (ptrdiff_t)(idx*var_typ_sz);
       memcpy(cp,var->val.vp ,var_typ_sz);
     }
-  
+    
     var->val.vp=(void*)nco_free(var->val.vp);
     var->sz=nw_sz;
     var->val.vp=vp;
     return true;
   }
   
-    return false; 
-
+  return false; 
+  
 } /* end ncap_att_stretch */
 
 int
@@ -539,90 +539,90 @@ ncap_att_gnrl
 (const std::string s_dst,
  const std::string s_src,
  prs_sct  *prs_arg
-){
+ ){
   int idx;
   int sz;
   int rcd;
   int var_id; 
   int nbr_att;
   char att_nm[NC_MAX_NAME];
-
+  
   var_sct *var_att;
-
+  
   std::string s_fll;
- 
+  
   NcapVar *Nvar;
   NcapVarVector var_vtr;   
   NcapVector <var_sct*> att_vtr; //hold new attributtes.
-        
+  
   // De-reference 
   var_vtr= *prs_arg->ptr_var_vtr;
-
-    // get var_id
+  
+  // get var_id
   rcd=nco_inq_varid_flg(prs_arg->in_id,s_src.c_str(),&var_id);
-          
+  
   if(rcd == NC_NOERR){
     (void)nco_inq_varnatts(prs_arg->in_id,var_id,&nbr_att);
     // loop though attributes
     for(idx=0; idx <nbr_att ; idx++){
       (void)nco_inq_attname(prs_arg->in_id,var_id,idx,att_nm);
-       var_att=ncap_att_get(var_id,s_src.c_str(),att_nm,prs_arg);
-       // now add to list( change the name!!)
-       if(var_att){ 
-          std::string s_att(att_nm);
-	  s_fll=s_dst+"@"+ s_att;
-          nco_free(var_att->nm);
-          var_att->nm=strdup(s_fll.c_str());
-          att_vtr.push_back(var_att); 
-       } 
-      } // end for
-    }// end rcd
-
-    sz=var_vtr.size();
-    for(idx=0; idx < sz ; idx++){
-      if( (var_vtr)[idx]->xpr_typ != ncap_att) continue;
-      if( s_src == var_vtr[idx]->getVar() ){
-        // Create string for new attribute
-        s_fll= s_dst +"@"+(var_vtr[idx]->getAtt());
-        var_att=nco_var_dpl(var_vtr[idx]->var);
+      var_att=ncap_att_get(var_id,s_src.c_str(),att_nm,prs_arg);
+      // now add to list( change the name!!)
+      if(var_att){ 
+	std::string s_att(att_nm);
+	s_fll=s_dst+"@"+ s_att;
 	nco_free(var_att->nm);
 	var_att->nm=strdup(s_fll.c_str());
-        att_vtr.push_back(var_att);  
+	att_vtr.push_back(var_att); 
       } 
-    }
-    // add new att to list;
-    for(idx=0 ; idx < att_vtr.size() ; idx++){
-      std::string s_out(att_vtr[idx]->nm);
-      // skip missing values
-      if( s_out.find("@missing_value") != std::string::npos){
-	(void)nco_var_free(att_vtr[idx]);
-        continue;
-      } 
-
-      Nvar=new NcapVar(nco_var_dpl(att_vtr[idx]),s_out ); 
-      prs_arg->ptr_var_vtr->push_ow(Nvar);
-      (void)nco_var_free(att_vtr[idx]);
-    }
-
-    return att_vtr.size();
-    
-} /* end ncap_att_gnrl() */
+    } // end for
+  }// end rcd
   
+  sz=var_vtr.size();
+  for(idx=0; idx < sz ; idx++){
+    if( (var_vtr)[idx]->xpr_typ != ncap_att) continue;
+    if( s_src == var_vtr[idx]->getVar() ){
+      // Create string for new attribute
+      s_fll= s_dst +"@"+(var_vtr[idx]->getAtt());
+      var_att=nco_var_dpl(var_vtr[idx]->var);
+      nco_free(var_att->nm);
+      var_att->nm=strdup(s_fll.c_str());
+      att_vtr.push_back(var_att);  
+    } 
+  }
+  // add new att to list;
+  for(idx=0 ; idx < att_vtr.size() ; idx++){
+    std::string s_out(att_vtr[idx]->nm);
+    // skip missing values
+    if( s_out.find("@missing_value") != std::string::npos){
+      (void)nco_var_free(att_vtr[idx]);
+      continue;
+    } 
+    
+    Nvar=new NcapVar(nco_var_dpl(att_vtr[idx]),s_out ); 
+    prs_arg->ptr_var_vtr->push_ow(Nvar);
+    (void)nco_var_free(att_vtr[idx]);
+  }
+  
+  return att_vtr.size();
+  
+} /* end ncap_att_gnrl() */
+
 int
 ncap_att_cpy
 (const std::string s_dst,
  const std::string s_src,
  prs_sct  *prs_arg)
 {
- 
+  
   int nbr_att=0;
-
+  
   if(prs_arg->ATT_PROPAGATE && s_dst != s_src )
-      nbr_att=ncap_att_gnrl(s_dst,s_src,prs_arg);
-
+    nbr_att=ncap_att_gnrl(s_dst,s_src,prs_arg);
+  
   if(prs_arg->ATT_INHERIT)
-      nbr_att=ncap_att_gnrl(s_dst,s_dst,prs_arg);
-
+    nbr_att=ncap_att_gnrl(s_dst,s_dst,prs_arg);
+  
   return nbr_att;
 }
 
@@ -647,31 +647,31 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
  var_sct *var2) /* I [sct] Variable structure containing divisor */
 {
   ptr_unn op_swp;
-
+  
   if(var1->has_mss_val){
     (void)nco_var_mod(var1->type,var1->sz,var1->has_mss_val,var1->mss_val,var1->val,var2->val);
   }else{
     (void)nco_var_mod(var1->type,var1->sz,var2->has_mss_val,var2->mss_val,var1->val,var2->val);
     (void)nco_mss_val_cnf(var2,var1);
   } /* end else */
-   
+  
   // Swap values about
   op_swp=var1->val;var1->val=var2->val;var2->val=op_swp;
-
-   var2=nco_var_free(var2);
-   return var1;
+  
+  var2=nco_var_free(var2);
+  return var1;
 } /* end ncap_var_var_mod() */
 
 var_sct *        /* O [sct] Resultant variable (actually is var) */
 ncap_var_abs(    /* Purpose: Find absolute value of each element of var */
-var_sct *var)    /* I/O [sct] input variable */
+	     var_sct *var)    /* I/O [sct] input variable */
 {
-
+  
   if(var->undefined) return var;
-
+  
   /* deal with initial scan */
   if(var->val.vp==NULL) return var; 
-
+  
   (void)nco_var_abs(var->type,var->sz,var->has_mss_val,var->mss_val,var->val);
   return var;
 } /* end ncap_var_abs */
@@ -682,29 +682,29 @@ ncap_var_var_pwr_old /* [fnc] Empowerment of two variables */
  var_sct *var2) /* I [sct] Variable structure containing exponent */
 {
   char *swp_nm;
-
+  
   /* Purpose: Empower two variables (var1^var2) */
-
+  
   /* Temporary fix */ 
   /* Swap names about so attribute propagation works */
   /* most operations unlike this one put results in left operand */
   if( !ncap_var_is_att(var1) && isalpha(var1->nm[0])) {
     swp_nm=var1->nm; var1->nm=var2->nm; var2->nm=swp_nm;
   }  
-
+  
   if(var1->undefined){ 
     var2->undefined=True;
     var1=nco_var_free(var1);
     return var2;
   }
-
+  
   /* Make sure variables are at least float */
   if(nco_rth_prc_rnk(var1->type) < nco_rth_prc_rnk_float && 
      nco_rth_prc_rnk(var2->type) < nco_rth_prc_rnk_float )
     var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
   
   (void)ncap_var_retype(var1,var2);   
-
+  
   /* Handle initial scan */
   if(var1->val.vp==(void*)NULL ) {
     if(var1->nbr_dim > var2->nbr_dim) {
@@ -715,16 +715,16 @@ ncap_var_var_pwr_old /* [fnc] Empowerment of two variables */
       return var2;
     }
   } 
-
+  
   (void)ncap_var_cnf_dmn(&var1,&var2);
   if(var1->has_mss_val){
     (void)nco_var_pwr(var1->type,var1->sz,var1->has_mss_val,var1->mss_val,var1->val,var2->val);
   }else{
     (void)nco_var_pwr(var1->type,var1->sz,var2->has_mss_val,var2->mss_val,var1->val,var2->val);
   } /* end else */
-
-   var1=nco_var_free(var1);
-   return var2;
+  
+  var1=nco_var_free(var1);
+  return var2;
 } /* end ncap_var_var_pwr() */
 
 var_sct * /* O [sct] Empowerment of input variables (var1^var_2) */
@@ -732,41 +732,41 @@ ncap_var_var_pwr  /* [fnc] Empowerment of two variables */
 (var_sct *var1,   /* I [sct] Variable structure containing base */
  var_sct *var2)   /* I [sct] Variable structure containing exponent */
 {
-
+  
   ptr_unn op_swp;
-
+  
   if(var1->has_mss_val){
     (void)nco_var_pwr(var1->type,var1->sz,var1->has_mss_val,var1->mss_val,var1->val,var2->val);
   }else{
     (void)nco_var_pwr(var1->type,var1->sz,var2->has_mss_val,var2->mss_val,var1->val,var2->val);
     (void)nco_mss_val_cnf(var2,var1);
-
+    
   } /* end else */
   
   // Swap values about 
   op_swp=var1->val;var1->val=var2->val;var2->val=op_swp;
-   
+  
   var2=nco_var_free(var2);
   return var1;
-
+  
 } /* end ncap_var_var_pwr() */
- 
+
 var_sct *           /* O [sct] Resultant variable (actually is var_in) */
 ncap_var_fnc(   
-var_sct *var_in,    /* I/O [sng] input variable */ 
-sym_sct *app)       /* I [fnc_ptr] to apply to variable */
+	     var_sct *var_in,    /* I/O [sng] input variable */ 
+	     sym_sct *app)       /* I [fnc_ptr] to apply to variable */
 {
   /* Purpose: Evaluate fnc_dbl(var) or fnc_flt(var) for each value in variable
      Float and double functions are in app */
   long idx;
   long sz;
   ptr_unn op1;
-
+  
   if(var_in->undefined) return var_in;
   
   /* Promote variable to NC_FLOAT */
   if(nco_rth_prc_rnk(var_in->type) < nco_rth_prc_rnk_float) var_in=nco_var_cnf_typ(NC_FLOAT,var_in);
-
+  
   /* Deal with initial scan */
   if(var_in->val.vp==NULL) return var_in; 
   
@@ -800,15 +800,15 @@ sym_sct *app)       /* I [fnc_ptr] to apply to variable */
   }
   default: nco_dfl_case_nc_type_err(); break;
   }/* end switch */
-
+  
   if(var_in->has_mss_val) (void)cast_nctype_void(var_in->type,&(var_in->mss_val));
   return var_in;
 } /* end ncap_var_fnc() */
 
 nm_id_sct *            /* O [sct] new copy of xtr_lst */
 nco_var_lst_copy(      /*   [fnc] Purpose: Copy xtr_lst and return new list */
-nm_id_sct *xtr_lst,    /* I  [sct] input list */ 
-int lst_nbr)           /* I  [nbr] number of elements in list */
+		 nm_id_sct *xtr_lst,    /* I  [sct] input list */ 
+		 int lst_nbr)           /* I  [nbr] number of elements in list */
 {
   int idx;
   nm_id_sct *xtr_new_lst;
@@ -824,10 +824,10 @@ int lst_nbr)           /* I  [nbr] number of elements in list */
 
 nm_id_sct *             /* O [sct] New list */
 nco_var_lst_sub(
-nm_id_sct *xtr_lst,     /* I [sct] input list */   
-int *nbr_xtr,           /* I/O [ptr] size of xtr_lst and new list */
-nm_id_sct *xtr_lst_b,   /* I [sct] list to be subtracted */   
-int nbr_lst_b)          /* I [nbr] size eof xtr_lst_b */ 
+		nm_id_sct *xtr_lst,     /* I [sct] input list */   
+		int *nbr_xtr,           /* I/O [ptr] size of xtr_lst and new list */
+		nm_id_sct *xtr_lst_b,   /* I [sct] list to be subtracted */   
+		int nbr_lst_b)          /* I [nbr] size eof xtr_lst_b */ 
 {
   /* Purpose: Subtract from xtr_lst any elements from xtr_lst_b which are present and return new list */
   int idx;
@@ -853,17 +853,17 @@ int nbr_lst_b)          /* I [nbr] size eof xtr_lst_b */
   xtr_new_lst=(nm_id_sct*)nco_realloc(xtr_new_lst,xtr_nbr_new*sizeof(nm_id_sct)); 
   /* free old list */
   xtr_lst=nco_nm_id_lst_free(xtr_lst,*nbr_xtr);
-
+  
   *nbr_xtr=xtr_nbr_new;
   return xtr_new_lst;     
 }/* end nco_var_lst_sub */
 
 nm_id_sct *            /* O [sct] -- new list */
 nco_var_lst_add(
-nm_id_sct *xtr_lst,    /* I [sct] input list */ 
-int *nbr_xtr,          /* I/O [ptr] -- size of xtr_lst & new output list */ 
-nm_id_sct *xtr_lst_a,  /* I [sct] list of elemenst to be added to new list */
-int nbr_lst_a)         /* I [nbr] size of xtr_lst_a */
+		nm_id_sct *xtr_lst,    /* I [sct] input list */ 
+		int *nbr_xtr,          /* I/O [ptr] -- size of xtr_lst & new output list */ 
+		nm_id_sct *xtr_lst_a,  /* I [sct] list of elemenst to be added to new list */
+		int nbr_lst_a)         /* I [nbr] size of xtr_lst_a */
 {
   /* Purpose: Add to xtr_lst any elements from xtr_lst_a not already present and return new list */
   int idx;
@@ -942,7 +942,7 @@ nco_att_lst_mk
     // Check for attribute
     if( var_vtr[idx]->xpr_typ !=ncap_att) continue;
     (void)strcpy(var_nm, var_vtr[idx]->getVar().c_str());
-
+    
     rcd=nco_inq_varid_flg(out_id,var_nm,&var_id);
     if(rcd== NC_NOERR) continue;   
     rcd=nco_inq_varid_flg(in_id,var_nm,&var_id);   
@@ -999,7 +999,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
      var_lsr_out=var_lsr only if variables already conform
      var_gtr_out is required since both variables may change
      var_gtr_out=var_gtr unless convolution is required */
-
+  
   const char fnc_nm[]="ncap_var_stretch"; 
   
   nco_bool CONFORMABLE=False; /* [flg] Whether var_lsr can be made to conform to var_gtr */
@@ -1054,12 +1054,12 @@ ncap_var_stretch /* [fnc] Stretch variables */
 	CONFORMABLE=False;
 	if(MUST_CONFORM){
           err_prn(fnc_nm,std::string(var_lsr->nm)+ " and " +std::string(var_gtr->nm) +" share no dimensions. "); 
-       //(void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
-       //nco_exit(EXIT_FAILURE);
+	  //(void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
+	  //nco_exit(EXIT_FAILURE);
 	}else{
 	  if(dbg_lvl_get() >= 1) 
-          wrn_prn(fnc_nm,std::string(var_lsr->nm)+ " and " +std::string(var_gtr->nm) +" share no dimensions. Attempting to convolve..."); 
-	    //(void)fprintf(stdout,"\n%s: DEBUG %s and %s share no dimensions: Attempting to convolve...\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
+	    wrn_prn(fnc_nm,std::string(var_lsr->nm)+ " and " +std::string(var_gtr->nm) +" share no dimensions. Attempting to convolve..."); 
+	  //(void)fprintf(stdout,"\n%s: DEBUG %s and %s share no dimensions: Attempting to convolve...\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
 	  CONVOLVE=True;
 	} /* endif */
       }else if(var_lsr_var_gtr_dmn_shr_nbr > 0 && var_lsr_var_gtr_dmn_shr_nbr < var_lsr->nbr_dim){
@@ -1070,20 +1070,20 @@ ncap_var_stretch /* [fnc] Stretch variables */
           os<<var_lsr_var_gtr_dmn_shr_nbr<< " dimensions of " << var_lsr->nm << " belong to template ";
           os<<var_gtr->nm <<" but " << (var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr) <<" do not.";
           err_prn(fnc_nm,os.str());
-
+	  
 	  //(void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr);
 	  //nco_exit(EXIT_FAILURE);
 	}else{
 	  if(dbg_lvl_get() >= 1){ 
-	  std::ostringstream os;
-          os<<var_lsr_var_gtr_dmn_shr_nbr << " dimensions of " << var_lsr->nm << " belong to template ";
-          os<<var_gtr->nm << " but " << (var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr) <<" do not:";
-          os<<"Not broadcasting " << var_lsr->nm<< "to " <<var_gtr->nm;
-          os<<"could attempt stretching???";
-          wrn_prn(fnc_nm,os.str());
+	    std::ostringstream os;
+	    os<<var_lsr_var_gtr_dmn_shr_nbr << " dimensions of " << var_lsr->nm << " belong to template ";
+	    os<<var_gtr->nm << " but " << (var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr) <<" do not:";
+	    os<<"Not broadcasting " << var_lsr->nm<< "to " <<var_gtr->nm;
+	    os<<"could attempt stretching???";
+	    wrn_prn(fnc_nm,os.str());
           }
-
-	    //(void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s, could attempt stretching???\n",prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm);
+	  
+	  //(void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s, could attempt stretching???\n",prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm);
 	  CONVOLVE=True;
 	} /* endif */
       } /* end if */
@@ -1124,7 +1124,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
     /* fxm: these should go away soon */
     var_lsr_out=nco_var_dpl(var_lsr);
     var_gtr_out=nco_var_dpl(var_gtr);
-
+    
     /* for(idx_dmn=0;idx_dmn<var_gtr->nbr_dim;idx_dmn++){;}
        if(var_lsr_var_gtr_dmn_shr_nbr == 0); else; */
     
@@ -1216,7 +1216,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
 	  if(idx_dmn == var_gtr->nbr_dim-1){
             err_prn(fnc_nm,"var_lsr " + std::string(var_lsr->nm)+ " has dimension "+ std::string(var_lsr->dim[idx]->nm)
                     + " but var_gtr " + std::string(var_gtr->nm)+ " does not deep in ncap_var_stretch.");
-          
+	    
 	    //(void)fprintf(stdout,"%s: ERROR var_lsr %s has dimension %s but var_gtr %s does not deep in ncap_var_stretch()\n",prg_nm_get(),var_lsr->nm,var_lsr->dim[idx]->nm,var_gtr->nm);
 	    //nco_exit(EXIT_FAILURE);
 	  } /* end if err */
@@ -1279,15 +1279,15 @@ ncap_var_stretch /* [fnc] Stretch variables */
 
 nco_bool
 ncap_def_dim(
-const char *dmn_nm,
-long sz,
-prs_sct *prs_arg){
+	     const char *dmn_nm,
+	     long sz,
+	     prs_sct *prs_arg){
   const char fnc_nm[]="ncap_def_dim"; 
-
+  
   int idx;
   int len;
   char ch; 
-          
+  
   dmn_sct *dmn_nw;             
   dmn_sct *dmn_in_e;
   dmn_sct *dmn_out_e;
@@ -1306,12 +1306,12 @@ prs_sct *prs_arg){
   // Check if dimension already exists
   dmn_in_e=prs_arg->ptr_dmn_in_vtr->find(dmn_nm);
   dmn_out_e=prs_arg->ptr_dmn_out_vtr->find(dmn_nm);
-
+  
   if(dmn_in_e !=NULL_CEWI || dmn_out_e !=NULL_CEWI  ){ 
-     wrn_prn(fnc_nm,"dim \""+ std::string(dmn_nm) + "\" - already exists in input/output."); 
-     return False;
+    wrn_prn(fnc_nm,"dim \""+ std::string(dmn_nm) + "\" - already exists in input/output."); 
+    return False;
   }
-
+  
   if( sz < 0  ){
     std::ostringstream os;
     os<<"dim " << dmn_nm << "(size=" <<sz <<") dimension can't be negative.";
@@ -1322,7 +1322,7 @@ prs_sct *prs_arg){
   dmn_nw=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
   
   dmn_nw->nm=(char *)strdup(dmn_nm);
-            //dmn_nw->id=dmn_id;
+  //dmn_nw->id=dmn_id;
   dmn_nw->nc_id=prs_arg->out_id;
   dmn_nw->xrf=NULL_CEWI;
   dmn_nw->val.vp=NULL_CEWI;
@@ -1333,12 +1333,12 @@ prs_sct *prs_arg){
   dmn_nw->srt=0L;
   dmn_nw->end=sz-1;
   dmn_nw->srd=1L;
-
+  
   // finally define dimension in output
   (void)nco_redef(prs_arg->out_id);
   (void)nco_dmn_dfn(prs_arg->fl_out,prs_arg->out_id,&dmn_nw,1);          
   (void)nco_enddef(prs_arg->out_id);  
-
+  
   // Add dim to list 
   (void)prs_arg->ptr_dmn_out_vtr->push_back(dmn_nw); 
   return True; 
@@ -1346,45 +1346,44 @@ prs_sct *prs_arg){
 
 nco_bool         /* Returns True if shape of vars match (using cnt vectors) */
 nco_shp_chk(
-var_sct* var1, 
-var_sct* var2)
+	    var_sct* var1, 
+	    var_sct* var2)
 {
-
+  
   long idx;
   long nbr_rdmn1;
   long nbr_rdmn2;
   long srt1=0;
   long srt2=0;
- 
+  
   long nbr_cmp;
-
+  
   /* Check sizes */
   if( var1->sz != var2->sz )
     return False;
-
-
-
+  
+  
+  
   nbr_rdmn1=var1->nbr_dim;  
   nbr_rdmn2=var2->nbr_dim;  
-
+  
   /* skip leading 1D dims */
   for(idx=0 ; idx < (nbr_rdmn1-1) ; idx++)
     if( var1->cnt[idx] == 1){
       srt1++;continue;
     } else break;
-       
+  
   /* skip leading 1D dims */
   for(idx=0 ; idx < (nbr_rdmn2-1) ; idx++)
     if( var2->cnt[idx] == 1){
       srt2++;continue;
     } else break;
-       
-
+  
+  
   /* check sizes again */
   if( nbr_rdmn1-srt1 != nbr_rdmn2-srt2 )
     return False;
-    
-   
+  
   nbr_cmp=nbr_rdmn1-srt1;
   /* Now compare  values */
   for(idx=0 ; idx < nbr_cmp ;idx++)
@@ -1394,10 +1393,9 @@ var_sct* var2)
     return True;
   else
     return False;
-
 }
- 
-// this defines an anonymous enum containing parser tokens
+
+// This defines an anonymous enum containing parser tokens
 #undef __cplusplus
 #include "ncoParserTokenTypes.hpp"
 #define __cplusplus
@@ -1410,7 +1408,6 @@ ncap_var_var_stc
  var_sct *var2,
  int op)
 {
-
   static VarOp<double> Vd;
   static VarOp<float> Vf;
   static VarOp<nco_int> Vl;
@@ -1419,12 +1416,13 @@ ncap_var_var_stc
   static VarOp<nco_uint> Vui;
   static VarOp<nco_int64> Vi64;
   static VarOp<nco_uint64> Vui64;
+  static VarOp<nco_byte> Vb;
+  static VarOp<nco_ubyte> Vub;
   var_sct *var_ret=NULL_CEWI;
-
-
+  
   //If var2 is null then we are dealing with a unary function
   if( var2 == NULL_CEWI) {
-
+    
     switch (var1->type) {
     case NC_DOUBLE: var_ret=Vd.var_op(var1,op); break;
     case NC_FLOAT: var_ret=Vf.var_op(var1,op); break;
@@ -1434,33 +1432,32 @@ ncap_var_var_stc
     case NC_UINT: var_ret=Vui.var_op(var1,op); break;
     case NC_INT64: var_ret=Vi64.var_op(var1,op); break;
     case NC_UINT64: var_ret=Vui64.var_op(var1,op); break;
-    case NC_BYTE: break; /* Do nothing */
-    case NC_UBYTE: break; /* Do nothing */
+    case NC_BYTE: var_ret=Vb.var_op(var1,op); break;
+    case NC_UBYTE: var_ret=Vub.var_op(var1,op); break;
     case NC_CHAR: break; /* Do nothing */
     case NC_STRING: break; /* Do nothing */
     default: nco_dfl_case_nc_type_err(); break;
-   }
-   return var_ret;
+    }
+    return var_ret;
   }
-
+  
   switch (var1->type) {
   case NC_DOUBLE: var_ret=Vd.var_var_op(var1,var2,op); break;
-    case NC_FLOAT: var_ret=Vf.var_var_op(var1,var2,op); break;
-    case NC_INT:var_ret=Vl.var_var_op(var1,var2,op); break;            
-    case NC_SHORT: var_ret=Vs.var_var_op(var1,var2,op); break;
-    case NC_USHORT: var_ret=Vus.var_var_op(var1,var2,op); break;
-    case NC_UINT: var_ret=Vui.var_var_op(var1,var2,op); break;
-    case NC_INT64: var_ret=Vi64.var_var_op(var1,var2,op); break;
-    case NC_UINT64: var_ret=Vui64.var_var_op(var1,var2,op); break;
-    case NC_BYTE: break; /* Do nothing */
-    case NC_UBYTE: break; /* Do nothing */
-    case NC_CHAR: break; /* Do nothing */
-    case NC_STRING: break; /* Do nothing */
-    default: nco_dfl_case_nc_type_err(); break;
+  case NC_FLOAT: var_ret=Vf.var_var_op(var1,var2,op); break;
+  case NC_INT:var_ret=Vl.var_var_op(var1,var2,op); break;            
+  case NC_SHORT: var_ret=Vs.var_var_op(var1,var2,op); break;
+  case NC_USHORT: var_ret=Vus.var_var_op(var1,var2,op); break;
+  case NC_UINT: var_ret=Vui.var_var_op(var1,var2,op); break;
+  case NC_INT64: var_ret=Vi64.var_var_op(var1,var2,op); break;
+  case NC_UINT64: var_ret=Vui64.var_var_op(var1,var2,op); break;
+  case NC_BYTE: var_ret=Vb.var_var_op(var1,var2,op); break;
+  case NC_UBYTE: var_ret=Vub.var_var_op(var1,var2,op); break;
+  case NC_CHAR: break; /* Do nothing */
+  case NC_STRING: break; /* Do nothing */
+  default: nco_dfl_case_nc_type_err(); break;
   } 
-
+  
   return var_ret;
-
 }
 
 var_sct *         /* O [sct] Sum of input variables (var1+var2) */
@@ -1470,30 +1467,30 @@ ncap_var_var_op   /* [fnc] Add two variables */
  int op)        /* Operation +-% */
 { 
   const char fnc_nm[]="ncap_var_var_op"; 
-
+  
   nco_bool vb1;
   nco_bool vb2;
- 
+  
   var_sct *var_ret=NULL_CEWI;
-
+  
   // If initial scan than call up "shadow" function 
   if(var1->val.vp == (void*)NULL  ){
     var_ret=ncap_var_var_op_ntl(var1,var2,op);
     return var_ret;
   }
-
+  
   // If var2 is null then we are dealing with a unary function
   if( var2 == NULL_CEWI){ 
     var_ret=ncap_var_var_stc(var1,var2,op);   
     return var_ret;
   }
-
+  
   // Deal with pwr fuction
   if(op == CARET && nco_rth_prc_rnk(var1->type) < nco_rth_prc_rnk_float &&  nco_rth_prc_rnk(var2->type) < nco_rth_prc_rnk_float) var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
-   
+  
   vb1 = ncap_var_is_att(var1);
   vb2 = ncap_var_is_att(var2);
-
+  
   // var & var
   if( !vb1 && !vb2 ) { 
     char *swp_nm;
@@ -1501,25 +1498,19 @@ ncap_var_var_op   /* [fnc] Add two variables */
     
     // if hyperslabs then check they conform
     if( (var1->has_dpl_dmn ==-1 || var2->has_dpl_dmn==-1) && var1->sz >1 && var2->sz>1){  
-
-
       if(var1->sz != var2->sz) {
 	std::ostringstream os;
 	os<<"Hyperslabbed variable:"<<var1->nm <<" and variable:"<<var2->nm <<"have differnet number of elements,so connot perform arithmetic operation.";
 	err_prn(fnc_nm,os.str());
-         
       }
       if( nco_shp_chk(var1,var2)==False){ 
 	std::ostringstream os;
         os<<"Hyperslabbed variable:"<<var1->nm <<" and variable:"<<var2->nm <<"have same  number of elements, but different shapes.";
 	wrn_prn(fnc_nm,os.str());
-
       }
-
     }else{   
       (void)ncap_var_cnf_dmn(&var1,&var2);
-     }
-  
+    }
     // Bare numbers have name prefixed with"_"
     // for attribute propagation to work we need
     // to swap names about if first operand is a bare number
@@ -1527,61 +1518,57 @@ ncap_var_var_op   /* [fnc] Add two variables */
     if( (var1->nm[0]=='~') && (var2->nm[0]!='~') ){
       swp_nm=var1->nm; var1->nm=var2->nm; var2->nm=swp_nm; 
     }  
-
     // var & att
   }else  if( !vb1 && vb2 ){ 
     var2=nco_var_cnf_typ(var1->type,var2);
     if(var1->sz > 1 && var2->sz==1)
       (void)ncap_var_cnf_dmn(&var1,&var2);
-      
+    
     if(var1->sz != var2->sz) {
       std::ostringstream os;
       os<<"Cannot make variable:"<<var1->nm <<" and attribute:"<<var2->nm <<" conform. So connot perform arithmetic operation.";
       err_prn(fnc_nm,os.str()); 
     }
-      
-       
+    
     // att & var
-    }else if( vb1 && !vb2){
-      var_sct *var_swp;
-      ptr_unn val_swp;  // Used to swap values around
-
-      var1=nco_var_cnf_typ(var2->type,var1);
-     if(var2->sz > 1 && var1->sz==1)
-      (void)ncap_var_cnf_dmn(&var1,&var2);
-      
-     if(var1->sz != var2->sz) {
+  }else if( vb1 && !vb2){
+    var_sct *var_swp;
+    ptr_unn val_swp;  // Used to swap values around
+    
+    var1=nco_var_cnf_typ(var2->type,var1);
+    if(var2->sz > 1 && var1->sz==1) (void)ncap_var_cnf_dmn(&var1,&var2);
+    
+    if(var1->sz != var2->sz){
       std::ostringstream os;
       os<<"Cannot make attribute:"<<var1->nm <<" and variable:"<<var2->nm <<" conform. So connot perform arithmetic operation.";
       err_prn(fnc_nm,os.str()); 
-     }
-     // Swap values around in var1 and var2;   
-     val_swp=var1->val;
-     var1->val=var2->val;
-     var2->val=val_swp;;
-     // Swap names about 
-     var_swp=var1;
-     var1=var2;
-     var2=var_swp;
-
-     // att && att
-    } else if (vb1 && vb2) {
-      (void)ncap_var_retype(var1,var2);
-     
-      if( var1->sz ==1 && var2->sz >1) 
-	(void)ncap_att_stretch(var1,var2->sz);
-      else if(var1->sz >1 && var2->sz==1)
-	(void)ncap_att_stretch(var2,var1->sz);
-
-      // Crash out if atts not equal size
-      if(var1->sz != var2->sz) {
-        std::ostringstream os;
-        os<<"Cannot make attribute:"<<var1->nm <<" and attribute:"<<var2->nm <<" conform. So connot perform arithmetic operation.";
-         err_prn(fnc_nm,os.str()); 
-      }
     }
-             
-
+    // Swap values around in var1 and var2;   
+    val_swp=var1->val;
+    var1->val=var2->val;
+    var2->val=val_swp;;
+    // Swap names about 
+    var_swp=var1;
+    var1=var2;
+    var2=var_swp;
+    
+    // att && att
+  } else if (vb1 && vb2) {
+    (void)ncap_var_retype(var1,var2);
+    
+    if( var1->sz ==1 && var2->sz >1) 
+      (void)ncap_att_stretch(var1,var2->sz);
+    else if(var1->sz >1 && var2->sz==1)
+      (void)ncap_att_stretch(var2,var1->sz);
+    
+    // Crash out if atts not equal size
+    if(var1->sz != var2->sz) {
+      std::ostringstream os;
+      os<<"Cannot make attribute:"<<var1->nm <<" and attribute:"<<var2->nm <<" conform. So connot perform arithmetic operation.";
+      err_prn(fnc_nm,os.str()); 
+    }
+  }
+  
   // Deal with pwr fuction ( nb pwr function can't be templated )
   if(op== CARET){
     var_ret=ncap_var_var_pwr(var1,var2);
@@ -1592,11 +1579,11 @@ ncap_var_var_op   /* [fnc] Add two variables */
     var_ret=ncap_var_var_mod(var1,var2);
     return var_ret;     
   }
-
+  
   var_ret=ncap_var_var_stc(var1,var2,op);
   var2=nco_var_free(var2);
   return var_ret;
-  }
+}
 
 var_sct *             /* O [sct] Sum of input variables (var1+var2) INITIAL SCAN ONLY */
 ncap_var_var_op_ntl   /* [fnc] Add two variables */
@@ -1606,17 +1593,17 @@ ncap_var_var_op_ntl   /* [fnc] Add two variables */
 { 
   nco_bool vb1;
   nco_bool vb2;
-
+  
   // If var2 is null then we are dealing with a unary function
   if(var2 == NULL_CEWI)
     return var1;
-
+  
   // deal with pwr fuction
   if(op == CARET && nco_rth_prc_rnk(var1->type) < nco_rth_prc_rnk_float && nco_rth_prc_rnk(var2->type) < nco_rth_prc_rnk_float) var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
-
+  
   vb1 = ncap_var_is_att(var1);
   vb2 = ncap_var_is_att(var2);
-
+  
   // var & var
   if( !vb1 && !vb2 ) { 
     if(var1->undefined ||var2->undefined){
@@ -1624,7 +1611,7 @@ ncap_var_var_op_ntl   /* [fnc] Add two variables */
       var2=nco_var_free(var2);
       return var1;
     }
-
+    
     (void)ncap_var_retype(var1,var2);
     // Do variable conformance with empty variables
     if(var1->nbr_dim > var2->nbr_dim) {
@@ -1634,30 +1621,30 @@ ncap_var_var_op_ntl   /* [fnc] Add two variables */
       var1=nco_var_free(var1);
       return var2;
     }
-
+    
   }
-    // var & att
-      else if( !vb1 && vb2 ){ 
-        var2=nco_var_free(var2);    
-        return var1;
-      }   
-    // att & var
-      else if( vb1 && !vb2){
+  // var & att
+  else if( !vb1 && vb2 ){ 
+    var2=nco_var_free(var2);    
+    return var1;
+  }   
+  // att & var
+  else if( vb1 && !vb2){
+    var1=nco_var_free(var1);
+    return var2;  
+  }
+  // att && att
+  else if (vb1 && vb2) {
+    (void)ncap_var_retype(var1,var2);
+    
+    if(var1->sz >= var2->sz) {
+      var2=nco_var_free(var2);
+      return var1;
+    } else {
       var1=nco_var_free(var1);
-      return var2;  
-      }
-    // att && att
-      else if (vb1 && vb2) {
-      (void)ncap_var_retype(var1,var2);
-  
-      if(var1->sz >= var2->sz) {
-        var2=nco_var_free(var2);
-        return var1;
-      } else {
-        var1=nco_var_free(var1);
-        return var2;
-      }
-      }
+      return var2;
+    }
+  }
   /* Should not reach end of this function */
   nco_exit(EXIT_FAILURE);
   return var1;
@@ -1671,17 +1658,16 @@ ncap_var_var_inc   /* [fnc] Add two variables */
  bool bram,         /* I [bool] If true make a RAM variable */ 
  prs_sct *prs_arg)
 {
-
   const char fnc_nm[]="ncap_var_var_inc"; 
   const char *cvar1;
   const char *cvar2;
   nco_bool vb1;
   nco_bool vb2;
-
+  
   var_sct *var_ret=NULL_CEWI;
-
+  
   vb1 = ncap_var_is_att(var1);
-
+  
   // If initial Scan
   if(prs_arg->ntl_scn){
     
@@ -1695,11 +1681,9 @@ ncap_var_var_inc   /* [fnc] Add two variables */
     }
     if(var2) 
       var2=(var_sct*)nco_var_free(var2);
-  
+    
     return var_ret;
   }   
-    
-   
   
   //Deal with unary functions first
   if(var2==NULL_CEWI){
@@ -1718,20 +1702,18 @@ ncap_var_var_inc   /* [fnc] Add two variables */
       NcapVar *Nvar=new NcapVar(var1,sa);
       prs_arg->ptr_var_vtr->push_ow(Nvar);       
     }
-   
+    
     return var_ret;    
   }
-
-
-   
+  
   vb2 = ncap_var_is_att(var2);
-
+  
   cvar1= vb1? "attribute" : "variable";
   cvar2= vb2? "attribute" : "variable";
-
+  
   // var2 to type of var1
   var2=nco_var_cnf_typ(var1->type,var2);
-
+  
   // var & var
   if(!vb1 && !vb2) {
     nco_bool DO_CONFORM=True;;
@@ -1755,35 +1737,31 @@ ncap_var_var_inc   /* [fnc] Add two variables */
     if(var1->sz > 1 && var2->sz==1)
       (void)ncap_att_stretch(var2,var1->sz);
   }   
-
-
-  if(var1->sz != var2->sz) {
-      std::ostringstream os;
-      os<<"Cannot make " << cvar1<<":"<<var1->nm <<" and " <<cvar2 <<":"<<var2->nm <<" conform. So connot perform arithmetic operation.";
-      err_prn(fnc_nm,os.str()); 
-  }
-
-  var1=ncap_var_var_stc(var1,var2,op);
   
+  if(var1->sz != var2->sz) {
+    std::ostringstream os;
+    os<<"Cannot make " << cvar1<<":"<<var1->nm <<" and " <<cvar2 <<":"<<var2->nm <<" conform. So connot perform arithmetic operation.";
+    err_prn(fnc_nm,os.str()); 
+  }
+  
+  var1=ncap_var_var_stc(var1,var2,op);
   var_ret=nco_var_dpl(var1);
-   
+  
   // if LHS is a variable then write to disk
   if(!vb1){
     ncap_var_write(var1,bram,prs_arg);
   }else{
     // deal with attribute
-   std::string sa(var1->nm);
-   NcapVar *Nvar=new NcapVar(var1,sa);
-   prs_arg->ptr_var_vtr->push_ow(Nvar);       
-
+    std::string sa(var1->nm);
+    NcapVar *Nvar=new NcapVar(var1,sa);
+    prs_arg->ptr_var_vtr->push_ow(Nvar);       
+    
   }
-
   var2=nco_var_free(var2);
   return var_ret;
-
 }
 
-  
+
 bool            /* O [flg] true if all var elemenst are true */
 ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
 (var_sct* var)  /* I [sct] input variable */
@@ -1796,47 +1774,40 @@ ncap_var_lgcl   /* [fnc] calculate a aggregate bool value from a variable */
   
   // Convert to type SHORT
   var=nco_var_cnf_typ((nc_type)NC_SHORT,var);  
-
+  
   type=NC_SHORT;
   sz = var->sz;
   op1=var->val;
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   if(var->has_mss_val) (void)cast_void_nctype(type,&var->mss_val);
-
-
-    if(!var->has_mss_val){
-      for(idx=0;idx<sz;idx++) 
-	if(!op1.sp[idx]) break;
-    }else{
-      const short mss_val_short=*(var->mss_val.sp);
-      for(idx=0;idx<sz;idx++) 
-	if( !op1.sp[idx] &&  op1.sp[idx] !=mss_val_short ) break; 
-    }
-    
-  if(idx <sz) bret=false;
-
+  
+  if(!var->has_mss_val){
+    for(idx=0;idx<sz;idx++) 
+      if(!op1.sp[idx]) break;
+  }else{
+    const short mss_val_short=*(var->mss_val.sp);
+    for(idx=0;idx<sz;idx++) 
+      if(!op1.sp[idx] && op1.sp[idx] != mss_val_short) break; 
+  }
+  if(idx < sz) bret=false;
+  
   if(var->has_mss_val) (void)cast_nctype_void(type,&var->mss_val);
-
+  
   return bret;
 }
 
-
-
-
-var_sct*                           /* O [sct] casting variable has its own private dims */ 
-ncap_cst_mk(                       /* [fnc] create casting var from a list of dims */
-std::vector<std::string> &str_vtr,  /* I [sng] list of dimension subscripts */
-prs_sct *prs_arg)
+var_sct* /* O [sct] casting variable has its own private dims */ 
+ncap_cst_mk( /* [fnc] create casting var from a list of dims */
+	    std::vector<std::string> &str_vtr,  /* I [sng] list of dimension subscripts */
+	    prs_sct *prs_arg)
 {
   const char fnc_nm[]="ncap_cst_mk"; 
   static const char * const tpl_nm="Internally generated template";
   
-  
-
   int dmn_nbr; /* [nbr] Number of dimensions */
   int idx; /* [idx] Counter */
-
+  
   const char *lst_nm;    /* for dereferencing */  
   double val=1.0; /* [frc] Value of template */
   
@@ -1845,11 +1816,11 @@ prs_sct *prs_arg)
   dmn_sct **dmn; /* [dmn] Dimension structure list */
   dmn_sct *dmn_item;
   dmn_sct *dmn_new;
-
+  
   dmn_nbr = str_vtr.size();
-
+  
   //  sbs_lst=nco_lst_prs_2D(sbs_sng,sbs_dlm,&dmn_nbr); 
-
+  
   dmn=(dmn_sct **)nco_malloc(dmn_nbr*sizeof(dmn_sct *));
   (void)nco_redef(prs_arg->out_id);
   for(idx=0;idx<dmn_nbr;idx++){
@@ -1875,14 +1846,14 @@ prs_sct *prs_arg)
     dmn[idx]=dmn_new;
   }
   (void)nco_enddef(prs_arg->out_id);
-
+  
   /* Check that un-limited dimension is first dimension */
   for(idx=1;idx<dmn_nbr;idx++)
     if(dmn[idx]->is_rec_dmn){
       wrn_prn(fnc_nm,"\""+std::string(dmn[idx]->nm)+"\" is the record dimension. It must be the first dimension in a list");
       goto end_LHS_sbs;                     
     } /* endif */
-
+  
   /* Create template variable to cast all RHS expressions */
   var=(var_sct *)nco_malloc(sizeof(var_sct));
   
@@ -1913,13 +1884,13 @@ prs_sct *prs_arg)
     var->srd[idx]=dmn[idx]->srd;
     var->sz*=var->cnt[idx];
   } /* end loop over dim */
-
+  
   /* Do not initialize val in initial scan  */
   if(prs_arg->ntl_scn) {
     var->val.vp=(void*)NULL;
     goto end_var;
   }
-
+  
   /* Allocate space for variable values 
      fxm: more efficient and safer to use nco_calloc() and not fill with values? */
   var->val.vp=(void *)nco_malloc_flg(var->sz*nco_typ_lng(var->type));
@@ -1939,34 +1910,31 @@ prs_sct *prs_arg)
     for(idx=0;idx<var_sz;idx++) (void)memcpy(var_val_cp+idx,(void *)(&val),var_typ_sz);
   } /* end scope */
  end_var:
-
-   
+  
   if(dbg_lvl_get() > 2) {
     std::ostringstream os;
     os<<"creating LHS cast template var->nm " <<var->nm <<" var->nbr_dim " <<var->nbr_dim <<" var->sz " <<var->sz; 
     wrn_prn(fnc_nm,os.str());
   }
   /* Free dimension list memory */
-
-   
+  
  end_LHS_sbs: /* Errors encountered during LHS processing jump to here */
   /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
-
+  
   return var;
-
 } // end ncap_cst_mk
 
 
 var_sct*
 ncap_cst_do(
-var_sct* var,
-var_sct* var_cst,
-bool bntlscn)
+	    var_sct* var,
+	    var_sct* var_cst,
+	    bool bntlscn)
 {
   const char fnc_nm[]="ncap_cst_do"; 
-
+  
   var_sct* var_tmp;
-
+  
   if(bntlscn) {
     var_tmp=nco_var_dpl(var_cst);
     var_tmp->id=var->id;
@@ -1978,77 +1946,76 @@ bool bntlscn)
     var_tmp->val.vp=(void*)NULL;
     var=nco_var_free(var);
     var=var_tmp;
-  
-  }else{
-
-   /* User intends LHS to cast RHS to same dimensionality
-      Stretch newly initialized variable to size of LHS template */
-   var_tmp=var;
-   (void)ncap_var_stretch(&var_tmp,&var_cst);
-   if(var_tmp != var) { 
-     var=nco_var_free(var); 
-     var=var_tmp;
-   }
-  
-   if(dbg_lvl_get() > 2){
-     std::ostringstream os;
-    os<<"Stretching variable "<<var->nm << "with LHS template var->nm "<<var_cst->nm <<"var->nbr_dim " <<var_cst->nbr_dim; 
-    os<<" var->sz " <<var_cst->sz;
-    wrn_prn(fnc_nm,os.str());
-   }
     
-   var->undefined=False;
+  }else{
+    
+    /* User intends LHS to cast RHS to same dimensionality
+       Stretch newly initialized variable to size of LHS template */
+    var_tmp=var;
+    (void)ncap_var_stretch(&var_tmp,&var_cst);
+    if(var_tmp != var) { 
+      var=nco_var_free(var); 
+      var=var_tmp;
+    }
+    
+    if(dbg_lvl_get() > 2){
+      std::ostringstream os;
+      os<<"Stretching variable "<<var->nm << "with LHS template var->nm "<<var_cst->nm <<"var->nbr_dim " <<var_cst->nbr_dim; 
+      os<<" var->sz " <<var_cst->sz;
+      wrn_prn(fnc_nm,os.str());
+    }
+    
+    var->undefined=False;
   }
-
-return var;
-
+  
+  return var;
 }
 
-// returns true if string is only made of 0..9 chars
+// Return true if string is only made of 0..9 chars
 bool
 str_is_num(
-std::string snm)
+	   std::string snm)
 { 
- unsigned idx;
- for(idx=0 ; idx < snm.size(); idx++)
-   if( !isdigit(snm[idx])) break;
-
- return ( idx==snm.size() ? true: false);
+  unsigned idx;
+  for(idx=0 ; idx < snm.size(); idx++)
+    if(!isdigit(snm[idx])) break;
+  
+  return (idx==snm.size() ? true: false);
 }
 
 NcapVector<dmn_sct*>                /* O    [sct] list of new dims to limit over */ 
 ncap_dmn_mtd(
-var_sct *var,                      /* I   [sct] var with list of dims */
-std::vector<std::string> &str_vtr)  /* I   [sng] list of dimension names */
+	     var_sct *var,                      /* I   [sct] var with list of dims */
+	     std::vector<std::string> &str_vtr)  /* I   [sng] list of dimension names */
 {
-int idx;
-int jdx;
-int icnt;
-int nbr_dim=var->nbr_dim;
-int str_vtr_sz;
-
-NcapVector<dmn_sct*> dmn_vtr;
-
-str_vtr_sz=str_vtr.size();
-for(idx=0 ; idx <str_vtr_sz ; idx++){
-  // deal with position args e.g $0,$1,$2 etc
-  if( str_is_num(str_vtr[idx])) {
-    icnt=atoi(str_vtr[idx].c_str());
-    if(icnt < nbr_dim && !dmn_vtr.find(var->dim[icnt]->nm)) 
-      dmn_vtr.push_back( var->dim[icnt]);
-  }else{
-    // deal with regular dim names
-    for(jdx=0 ; jdx < nbr_dim ; jdx++)
-      if( str_vtr[idx]== std::string(var->dim[jdx]->nm))
-        break;
+  int idx;
+  int jdx;
+  int icnt;
+  int nbr_dim=var->nbr_dim;
+  int str_vtr_sz;
+  
+  NcapVector<dmn_sct*> dmn_vtr;
+  
+  str_vtr_sz=str_vtr.size();
+  for(idx=0 ; idx <str_vtr_sz ; idx++){
+    // deal with position args e.g $0,$1,$2 etc
+    if( str_is_num(str_vtr[idx])) {
+      icnt=atoi(str_vtr[idx].c_str());
+      if(icnt < nbr_dim && !dmn_vtr.find(var->dim[icnt]->nm)) 
+	dmn_vtr.push_back( var->dim[icnt]);
+    }else{
+      // deal with regular dim names
+      for(jdx=0 ; jdx < nbr_dim ; jdx++)
+	if( str_vtr[idx]== std::string(var->dim[jdx]->nm))
+	  break;
       if(jdx <nbr_dim && !dmn_vtr.find(str_vtr[idx])) 
-    if(jdx <nbr_dim) 
-        dmn_vtr.push_back(var->dim[jdx]);
-  }
-
- } // end loop
-return dmn_vtr;  
-
+	if(jdx <nbr_dim) 
+	  dmn_vtr.push_back(var->dim[jdx]);
+    }
+    
+  } // end loop
+  return dmn_vtr;  
+  
 }
 
 var_sct *
@@ -2070,14 +2037,14 @@ ncap_sclr_var_mk
   var->typ_dsk=type;
   
   if(bfll) var->val=nco_mss_val_mk(type);  
-   
+  
   return var;
 } // end ncap_sclr_var_mk<string,int,bool>()
 
 var_sct *
 ncap_sclr_var_mk(
-const std::string var_nm,
-float val_float)
+		 const std::string var_nm,
+		 float val_float)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_FLOAT,true);
@@ -2089,8 +2056,8 @@ float val_float)
 
 var_sct *
 ncap_sclr_var_mk(
-const std::string var_nm,
-double val_double)
+		 const std::string var_nm,
+		 double val_double)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_DOUBLE,true);
@@ -2102,8 +2069,8 @@ double val_double)
 
 var_sct *
 ncap_sclr_var_mk(
-const std::string var_nm,
-nco_int val_int)
+		 const std::string var_nm,
+		 nco_int val_int)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_INT,true);
@@ -2115,8 +2082,8 @@ nco_int val_int)
 
 var_sct *
 ncap_sclr_var_mk(
-const std::string var_nm,
-nco_short val_short)
+		 const std::string var_nm,
+		 nco_short val_short)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_SHORT,true);
@@ -2128,8 +2095,8 @@ nco_short val_short)
 
 var_sct *
 ncap_sclr_var_mk(
-const std::string var_nm,
-nco_char val_char)
+		 const std::string var_nm,
+		 nco_char val_char)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_CHAR,true);
@@ -2141,8 +2108,8 @@ nco_char val_char)
 
 var_sct *
 ncap_sclr_var_mk(
-const std::string var_nm,
-nco_byte val_byte)
+		 const std::string var_nm,
+		 nco_byte val_byte)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_BYTE,true);
@@ -2155,8 +2122,8 @@ nco_byte val_byte)
 #ifdef ENABLE_NETCDF4
 var_sct *
 ncap_sclr_var_mk(
-const std::string var_nm,
-nco_ubyte val_ubyte)
+		 const std::string var_nm,
+		 nco_ubyte val_ubyte)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_UBYTE,true);
@@ -2168,8 +2135,8 @@ nco_ubyte val_ubyte)
 
 var_sct *
 ncap_sclr_var_mk(
-const std::string var_nm,
-nco_ushort val_ushort)
+		 const std::string var_nm,
+		 nco_ushort val_ushort)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_USHORT,true);
@@ -2181,8 +2148,8 @@ nco_ushort val_ushort)
 
 var_sct *
 ncap_sclr_var_mk(
-const std::string var_nm,
-nco_uint val_uint)
+		 const std::string var_nm,
+		 nco_uint val_uint)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_UINT,true);
@@ -2194,8 +2161,8 @@ nco_uint val_uint)
 
 var_sct *
 ncap_sclr_var_mk(
-const std::string var_nm,
-nco_int64 val_int64)
+		 const std::string var_nm,
+		 nco_int64 val_int64)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_INT64,true);
@@ -2207,8 +2174,8 @@ nco_int64 val_int64)
 
 var_sct *
 ncap_sclr_var_mk(
-const std::string var_nm,
-nco_uint64 val_uint64)
+		 const std::string var_nm,
+		 nco_uint64 val_uint64)
 {
   var_sct *var;
   var=ncap_sclr_var_mk(var_nm,NC_UINT64,true);
@@ -2219,110 +2186,109 @@ nco_uint64 val_uint64)
 }
 
 /* fxm: Allow ncap2 to instantiate NC_STRINGs
-var_sct *
-ncap_sclr_var_mk(
-const std::string var_nm,
-nco_string val_string)
-{
-  var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_STRING,true);
-  (void)cast_void_nctype(NC_STRING,&var->val);
-  *var->val.sngp=val_string;
-  (void)cast_nctype_void(NC_STRING,&var->val);
-  return var;
-}
+   var_sct *
+   ncap_sclr_var_mk(
+   const std::string var_nm,
+   nco_string val_string)
+   {
+   var_sct *var;
+   var=ncap_sclr_var_mk(var_nm,NC_STRING,true);
+   (void)cast_void_nctype(NC_STRING,&var->val);
+   *var->val.sngp=val_string;
+   (void)cast_nctype_void(NC_STRING,&var->val);
+   return var;
+   }
 */ 
 #endif /* !ENABLE_NETCDF4 */
 
 // define variables captured on first parse
 void ncap_def_ntl_scn(prs_sct *prs_arg)
 {
-int idx;
-int sz;
-int var_id;
-NcapVar *Nvar;
-NcapVar *Cvar;
-var_sct *var1;
-
-const std::string fnc_nm("ncap_def_ntl_scn"); 
-
-sz=prs_arg->ptr_int_vtr->size();
-
-
- for(idx=0; idx < sz ; idx++){
-   // de-reference
-   Nvar=(*prs_arg->ptr_int_vtr)[idx];
-   var1=Nvar->var;
-   if( !Nvar->flg_udf && Nvar->xpr_typ==ncap_var) {
-               
-     if(dbg_lvl_get() > 0)
-       dbg_prn(fnc_nm, Nvar->getFll()+ ( !Nvar->flg_mem ? " - defined in output.": " - RAM variable") );
-
-     // define variable
-     if(!Nvar->flg_mem) {
-       (void)nco_def_var(prs_arg->out_id,var1->nm,var1->type,var1->nbr_dim,var1->dmn_id,&var_id);
-       Nvar->var->id=var_id;
-       Nvar->var->nc_id=prs_arg->out_id;
-       Nvar->flg_stt=1;
-     } else { 
-       //deal with RAM only var        
-       Nvar->var->id=-1;
-       Nvar->var->nc_id=-1;
-       Nvar->flg_stt=1;
-     }
-     // save newly defined var in output vector
-
-     Cvar=new NcapVar(*Nvar);
-     prs_arg->ptr_var_vtr->push(Cvar);
+  int idx;
+  int sz;
+  int var_id;
+  NcapVar *Nvar;
+  NcapVar *Cvar;
+  var_sct *var1;
+  
+  const std::string fnc_nm("ncap_def_ntl_scn"); 
+  
+  sz=prs_arg->ptr_int_vtr->size();
+  
+  for(idx=0; idx < sz ; idx++){
+    // de-reference
+    Nvar=(*prs_arg->ptr_int_vtr)[idx];
+    var1=Nvar->var;
+    if( !Nvar->flg_udf && Nvar->xpr_typ==ncap_var) {
       
-   } 
-   delete Nvar;  
- }
- 
- // empty int_vtr
+      if(dbg_lvl_get() > 0)
+	dbg_prn(fnc_nm, Nvar->getFll()+ ( !Nvar->flg_mem ? " - defined in output.": " - RAM variable") );
+      
+      // define variable
+      if(!Nvar->flg_mem) {
+	(void)nco_def_var(prs_arg->out_id,var1->nm,var1->type,var1->nbr_dim,var1->dmn_id,&var_id);
+	Nvar->var->id=var_id;
+	Nvar->var->nc_id=prs_arg->out_id;
+	Nvar->flg_stt=1;
+      } else { 
+	//deal with RAM only var        
+	Nvar->var->id=-1;
+	Nvar->var->nc_id=-1;
+	Nvar->flg_stt=1;
+      }
+      // save newly defined var in output vector
+      
+      Cvar=new NcapVar(*Nvar);
+      prs_arg->ptr_var_vtr->push(Cvar);
+      
+    } 
+    delete Nvar;  
+  }
+  
+  // empty int_vtr
   for(idx=0 ; idx <sz ; idx++)
-   (void)prs_arg->ptr_int_vtr->pop();
-
+    (void)prs_arg->ptr_int_vtr->pop();
+  
 }
 
 // Do an in-memory hyperslab !!
 void 
 ncap_get_var_mem( 
-int dpt,                       // Current depth
-int dpt_max,                   // Max depth ( same as number of dims) 
-std::vector<int> &shp_vtr,     // shape of input var (in bytes)
-NcapVector<dmn_sct*> &dmn_vtr, // New vectors
-char *cp_in,                   // Pointer to (char*)var_in->val.vp
-char *&cp_out){                // Reference pointer to space for new var values
-
-const std::string fnc_nm("ncap_get_var_mem"); 
-
-
-long idx;      
-long srt=dmn_vtr[dpt]->srt;
-long end=dmn_vtr[dpt]->end;
-long cnt=dmn_vtr[dpt]->cnt;
-long srd=dmn_vtr[dpt]->srd;
-long slb_sz=shp_vtr[dpt];
-
-char *cp_srt=cp_in+ptrdiff_t(srt*slb_sz);
-char *cp_end=cp_out;
-
-
+		 int dpt,                       // Current depth
+		 int dpt_max,                   // Max depth ( same as number of dims) 
+		 std::vector<int> &shp_vtr,     // shape of input var (in bytes)
+		 NcapVector<dmn_sct*> &dmn_vtr, // New vectors
+		 char *cp_in,                   // Pointer to (char*)var_in->val.vp
+		 char *&cp_out){                // Reference pointer to space for new var values
+  
+  const std::string fnc_nm("ncap_get_var_mem"); 
+  
+  
+  long idx;      
+  long srt=dmn_vtr[dpt]->srt;
+  long end=dmn_vtr[dpt]->end;
+  long cnt=dmn_vtr[dpt]->cnt;
+  long srd=dmn_vtr[dpt]->srd;
+  long slb_sz=shp_vtr[dpt];
+  
+  char *cp_srt=cp_in+ptrdiff_t(srt*slb_sz);
+  char *cp_end=cp_out;
+  
+  
   if(dbg_lvl_get() > 2){
-      std::ostringstream os;
-      os<<"Depth=" << dpt<<" "<<dmn_vtr[dpt]->nm<<" "<<srt<<" "<<end<<" "<<cnt<<" "<<srd;
-      dbg_prn(fnc_nm,os.str());
+    std::ostringstream os;
+    os<<"Depth=" << dpt<<" "<<dmn_vtr[dpt]->nm<<" "<<srt<<" "<<end<<" "<<cnt<<" "<<srd;
+    dbg_prn(fnc_nm,os.str());
   }
-
-
+  
+  
   if(dpt == dpt_max){
     
-
+    
     if(srd==1) 
       (void)memcpy(cp_end, cp_srt, ptrdiff_t(cnt*shp_vtr[dpt]));
     else { 
-     
+      
       for(idx=0 ; idx<cnt ; idx++ ){
         (void)memcpy(cp_end,cp_srt,slb_sz);
         cp_end+=slb_sz;
@@ -2330,76 +2296,76 @@ char *cp_end=cp_out;
       }
     } // end else
     // increment output pointer (n.b space already alloc-ed)
-   cp_out+=ptrdiff_t(cnt*slb_sz);
-   
+    cp_out+=ptrdiff_t(cnt*slb_sz);
+    
   }
-
+  
   if(dpt < dpt_max ){
-     for(idx=0; idx <cnt ;idx++){
-       (void)ncap_get_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,cp_srt,cp_out);
-       cp_srt+= ptrdiff_t(srd*slb_sz);
-     }
+    for(idx=0; idx <cnt ;idx++){
+      (void)ncap_get_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,cp_srt,cp_out);
+      cp_srt+= ptrdiff_t(srd*slb_sz);
+    }
   }  
 } /* ncap_get_var_mem */
 
- 
+
 var_sct*
 nco_get_var_mem(
-var_sct *var_in,
-NcapVector<dmn_sct*> &dmn_vtr){
-
-int idx;
-int ncnt;
-int dmn_nbr;
- int dpt_max;
-
-void  *vp_out;
-char *cp_out; 
-std::vector<int> shp_vtr;
-
-var_sct* var_ret;  
-
-dmn_nbr=var_in->nbr_dim;
-
- ncnt=nco_typ_lng(var_in->type); 
- // Create shape vector for var_in
- shp_vtr.push_back(ncnt);
- for(idx=dmn_nbr-1 ; idx>0 ; idx--){
-   ncnt*=var_in->dim[idx]->cnt;  
-     shp_vtr.push_back(ncnt);
-     }
-
- // Reverse vector
- std::reverse(shp_vtr.begin(),shp_vtr.end() ); 
-
-
- // Find space for output data
- ncnt=1;
- for(idx=0 ;idx < dmn_nbr ; idx++)
-   ncnt*=dmn_vtr[idx]->cnt; 
-
- // Alloc space for output variables value
- vp_out=(void*)nco_malloc(ncnt*nco_typ_lng(var_in->type));
-
- cp_out=(char*)vp_out;
-
- // Work out max depth we have to go to 
- dpt_max=dmn_nbr;
- for(idx=dmn_nbr-1; idx>0 ; idx--)
-   if( var_in->dim[idx]->cnt == dmn_vtr[idx]->cnt) 
-     dpt_max--;
-   else
-     break;
- 
- // Call in-memory nco_get_var() (n.b is recursive of course!!)
- (void)ncap_get_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,(char*)var_in->val.vp,cp_out);
- 
- var_ret=nco_var_dpl(var_in);
- var_ret->sz=ncnt;
-
- (void)nco_free(var_ret->val.vp);
- var_ret->val.vp=vp_out;  
-
+		var_sct *var_in,
+		NcapVector<dmn_sct*> &dmn_vtr){
+  
+  int idx;
+  int ncnt;
+  int dmn_nbr;
+  int dpt_max;
+  
+  void  *vp_out;
+  char *cp_out; 
+  std::vector<int> shp_vtr;
+  
+  var_sct* var_ret;  
+  
+  dmn_nbr=var_in->nbr_dim;
+  
+  ncnt=nco_typ_lng(var_in->type); 
+  // Create shape vector for var_in
+  shp_vtr.push_back(ncnt);
+  for(idx=dmn_nbr-1 ; idx>0 ; idx--){
+    ncnt*=var_in->dim[idx]->cnt;  
+    shp_vtr.push_back(ncnt);
+  }
+  
+  // Reverse vector
+  std::reverse(shp_vtr.begin(),shp_vtr.end() ); 
+  
+  
+  // Find space for output data
+  ncnt=1;
+  for(idx=0 ;idx < dmn_nbr ; idx++)
+    ncnt*=dmn_vtr[idx]->cnt; 
+  
+  // Alloc space for output variables value
+  vp_out=(void*)nco_malloc(ncnt*nco_typ_lng(var_in->type));
+  
+  cp_out=(char*)vp_out;
+  
+  // Work out max depth we have to go to 
+  dpt_max=dmn_nbr;
+  for(idx=dmn_nbr-1; idx>0 ; idx--)
+    if( var_in->dim[idx]->cnt == dmn_vtr[idx]->cnt) 
+      dpt_max--;
+    else
+      break;
+  
+  // Call in-memory nco_get_var() (n.b is recursive of course!!)
+  (void)ncap_get_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,(char*)var_in->val.vp,cp_out);
+  
+  var_ret=nco_var_dpl(var_in);
+  var_ret->sz=ncnt;
+  
+  (void)nco_free(var_ret->val.vp);
+  var_ret->val.vp=vp_out;  
+  
   return var_ret;
 } /* end nco_get_var_mem()  */
 
@@ -2408,43 +2374,43 @@ dmn_nbr=var_in->nbr_dim;
 
 void
 ncap_put_var_mem(
-int dpt,                       // Current depth
-int dpt_max,                   // Max depth ( same as number of dims) 
-std::vector<int> &shp_vtr,     // shape of input var (in bytes)
-NcapVector<lmt_sct*> &dmn_vtr, // New vectors
-char *cp_out,                  // Pointer to (char*)var_in->val.vp
-char *&cp_in)                  // Slab to be "put" 
+		 int dpt,                       // Current depth
+		 int dpt_max,                   // Max depth ( same as number of dims) 
+		 std::vector<int> &shp_vtr,     // shape of input var (in bytes)
+		 NcapVector<lmt_sct*> &dmn_vtr, // New vectors
+		 char *cp_out,                  // Pointer to (char*)var_in->val.vp
+		 char *&cp_in)                  // Slab to be "put" 
 {
-
-
-const std::string fnc_nm("ncap_put_var_mem"); 
-
-
-long idx;      
-long srt=dmn_vtr[dpt]->srt;
-long end=dmn_vtr[dpt]->end;
-long cnt=dmn_vtr[dpt]->cnt;
-long srd=dmn_vtr[dpt]->srd;
-long slb_sz=shp_vtr[dpt];
-
-char *cp_srt=cp_in;
-char *cp_end=cp_out+ptrdiff_t(srt*slb_sz);;
-
-
+  
+  
+  const std::string fnc_nm("ncap_put_var_mem"); 
+  
+  
+  long idx;      
+  long srt=dmn_vtr[dpt]->srt;
+  long end=dmn_vtr[dpt]->end;
+  long cnt=dmn_vtr[dpt]->cnt;
+  long srd=dmn_vtr[dpt]->srd;
+  long slb_sz=shp_vtr[dpt];
+  
+  char *cp_srt=cp_in;
+  char *cp_end=cp_out+ptrdiff_t(srt*slb_sz);;
+  
+  
   if(dbg_lvl_get() > 2){
-      std::ostringstream os;
-      os<<"Depth=" << dpt<<" "<<dmn_vtr[dpt]->nm<<" "<<srt<<" "<<end<<" "<<cnt<<" "<<srd;
-      dbg_prn(fnc_nm,os.str());
+    std::ostringstream os;
+    os<<"Depth=" << dpt<<" "<<dmn_vtr[dpt]->nm<<" "<<srt<<" "<<end<<" "<<cnt<<" "<<srd;
+    dbg_prn(fnc_nm,os.str());
   }
-
-
+  
+  
   if(dpt == dpt_max){
     
-
+    
     if(srd==1) 
       (void)memcpy(cp_end, cp_srt, ptrdiff_t(cnt*shp_vtr[dpt]));
     else { 
-     
+      
       for(idx=0 ; idx<cnt ; idx++ ){
         (void)memcpy(cp_end,cp_srt,slb_sz);
         cp_srt+=slb_sz;
@@ -2452,17 +2418,17 @@ char *cp_end=cp_out+ptrdiff_t(srt*slb_sz);;
       }
     } // end else
     // increment input pointer 
-   cp_in+=ptrdiff_t(cnt*slb_sz);
-   
+    cp_in+=ptrdiff_t(cnt*slb_sz);
+    
   }
-
+  
   if(dpt < dpt_max){
-     for(idx=0; idx <cnt ;idx++){
-       (void)ncap_put_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,cp_end,cp_in);
-       cp_srt+= ptrdiff_t(srd*slb_sz);
-     }
+    for(idx=0; idx <cnt ;idx++){
+      (void)ncap_put_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,cp_end,cp_in);
+      cp_srt+= ptrdiff_t(srd*slb_sz);
+    }
   }  
-
+  
 }
 
 
@@ -2470,48 +2436,48 @@ char *cp_end=cp_out+ptrdiff_t(srt*slb_sz);;
 // Do an in memory nco_put_var()  
 void
 nco_put_var_mem(
-var_sct *var_in,
-var_sct *var_nw,
-NcapVector<lmt_sct*> &dmn_vtr)
+		var_sct *var_in,
+		var_sct *var_nw,
+		NcapVector<lmt_sct*> &dmn_vtr)
 {
-
-int idx;
-int ncnt;
-int dmn_nbr;
-int dpt_max;
-
-char *cp_out; 
-std::vector<int> shp_vtr;
-
-
-dmn_nbr=var_in->nbr_dim;
-
- ncnt=nco_typ_lng(var_in->type); 
- // Create shape vector for var_in
- shp_vtr.push_back(ncnt);
- for(idx=dmn_nbr-1 ; idx>0 ; idx--){
-   ncnt*=var_in->dim[idx]->cnt;  
-     shp_vtr.push_back(ncnt);
-     }
-
- // Reverse vector
- std::reverse(shp_vtr.begin(),shp_vtr.end() ); 
-
- // Work out max depth we have to go to 
- dpt_max=dmn_nbr;
- for(idx=dmn_nbr-1; idx>0 ; idx--)
-   if( var_in->dim[idx]->cnt == dmn_vtr[idx]->cnt) 
-     dpt_max--;
-   else
-     break;
-
- cp_out=(char*)var_nw->val.vp;
-
-
- // Call in-memory nco_put_var_mem (n.b is recursive of course!!)
- (void)ncap_put_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,(char*)var_in->val.vp,cp_out);
-
-
+  
+  int idx;
+  int ncnt;
+  int dmn_nbr;
+  int dpt_max;
+  
+  char *cp_out; 
+  std::vector<int> shp_vtr;
+  
+  
+  dmn_nbr=var_in->nbr_dim;
+  
+  ncnt=nco_typ_lng(var_in->type); 
+  // Create shape vector for var_in
+  shp_vtr.push_back(ncnt);
+  for(idx=dmn_nbr-1 ; idx>0 ; idx--){
+    ncnt*=var_in->dim[idx]->cnt;  
+    shp_vtr.push_back(ncnt);
+  }
+  
+  // Reverse vector
+  std::reverse(shp_vtr.begin(),shp_vtr.end() ); 
+  
+  // Work out max depth we have to go to 
+  dpt_max=dmn_nbr;
+  for(idx=dmn_nbr-1; idx>0 ; idx--)
+    if( var_in->dim[idx]->cnt == dmn_vtr[idx]->cnt) 
+      dpt_max--;
+    else
+      break;
+  
+  cp_out=(char*)var_nw->val.vp;
+  
+  
+  // Call in-memory nco_put_var_mem (n.b is recursive of course!!)
+  (void)ncap_put_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,(char*)var_in->val.vp,cp_out);
+  
+  
 } /* end nco_put_var_mem() */
 
 
@@ -2524,33 +2490,33 @@ dmn_nbr=var_in->nbr_dim;
 // if so return true
 bool 
 ncap_mpi_srh_str(
-RefAST ntr,
-std::vector<std::string> &str_vtr
-)
+		 RefAST ntr,
+		 std::vector<std::string> &str_vtr
+		 )
 {
-
- RefAST tr=ntr->getFirstChild();
-
- if(ntr->getType()== VAR_ID || ntr->getType() == ATT_ID )
-   // see if ID is in vector
-   if( std::binary_search(str_vtr.begin(),str_vtr.end(),ntr->getText()))
-       return true;
- 
-
- /*  
- if(ntr->getType()== VAR_ID || ntr->getType() == ATT_ID ){
-   for(int idx=0 ; idx<str_vtr.size() ; idx++)
-     if( ntr->getText() == str_vtr[idx])
-       return true;
- }
- */
+  
+  RefAST tr=ntr->getFirstChild();
+  
+  if(ntr->getType()== VAR_ID || ntr->getType() == ATT_ID )
+    // see if ID is in vector
+    if( std::binary_search(str_vtr.begin(),str_vtr.end(),ntr->getText()))
+      return true;
+  
+  
+  /*  
+      if(ntr->getType()== VAR_ID || ntr->getType() == ATT_ID ){
+      for(int idx=0 ; idx<str_vtr.size() ; idx++)
+      if( ntr->getText() == str_vtr[idx])
+      return true;
+      }
+  */
   // examine all child nodes
   while(tr){
     if( ncap_mpi_srh_str(tr,str_vtr) )
       return true;
     tr=tr->getNextSibling();
   }  
-
+  
   return false;
 }
 
@@ -2558,40 +2524,40 @@ std::vector<std::string> &str_vtr
 // one list of strings from another
 bool
 ncap_sub_str_str(
-std::vector<std::string> &in_vtr,
-std::vector<std::string> &mb_vtr
-)
+		 std::vector<std::string> &in_vtr,
+		 std::vector<std::string> &mb_vtr
+		 )
 {
-unsigned int idx;
-unsigned int jdx;
-unsigned int nbr_mb=mb_vtr.size();
-
- std::vector<std::string> out_vtr;
-
+  unsigned int idx;
+  unsigned int jdx;
+  unsigned int nbr_mb=mb_vtr.size();
+  
+  std::vector<std::string> out_vtr;
+  
   if(mb_vtr.size()==0) 
     return false;
   
- for(idx=0 ; idx < in_vtr.size() ; idx++){
+  for(idx=0 ; idx < in_vtr.size() ; idx++){
     for(jdx=0 ; jdx < nbr_mb; jdx++)       
       if( in_vtr[idx]== mb_vtr[jdx])
 	break;
-      if(jdx==nbr_mb) 
-        out_vtr.push_back(in_vtr[idx]);
- }
- // no change
- if(in_vtr.size()==out_vtr.size())
-   return false;
-   
+    if(jdx==nbr_mb) 
+      out_vtr.push_back(in_vtr[idx]);
+  }
+  // no change
+  if(in_vtr.size()==out_vtr.size())
+    return false;
+  
   // some elements subtracted
- in_vtr.swap(out_vtr);
-
- return true;
- /*
- in_vtr.clear();
- for(idx=0 ; idx <out_vtr.size() ; idx++)
-   in_vtr.push_back(out_vtr[idx]);
+  in_vtr.swap(out_vtr);
+  
   return true;
- */
+  /*
+    in_vtr.clear();
+    for(idx=0 ; idx <out_vtr.size() ; idx++)
+    in_vtr.push_back(out_vtr[idx]);
+    return true;
+  */
 }
 
 
@@ -2599,16 +2565,16 @@ unsigned int nbr_mb=mb_vtr.size();
 
 //Extract all VAR_ID & ATT_ID from Expression
 void ncap_mpi_get_id(
-RefAST ntr,
-std::vector<std::string> &str_vtr
-)
+		     RefAST ntr,
+		     std::vector<std::string> &str_vtr
+		     )
 {
-
- RefAST tr=ntr->getFirstChild();
- 
- if(ntr->getType()== VAR_ID || ntr->getType() == ATT_ID )
+  
+  RefAST tr=ntr->getFirstChild();
+  
+  if(ntr->getType()== VAR_ID || ntr->getType() == ATT_ID )
     str_vtr.push_back(ntr->getText());
-
+  
   // examine all child nodes
   while(tr){
     (void)ncap_mpi_get_id(tr,str_vtr);
@@ -2619,217 +2585,211 @@ std::vector<std::string> &str_vtr
 
 //Extract all LValues from Expression
 void ncap_mpi_get_lvl(
-RefAST ntr,
-std::vector<std::string> &str_vtr
-)
+		      RefAST ntr,
+		      std::vector<std::string> &str_vtr
+		      )
 {
   RefAST tr=ntr->getFirstChild();
- 
+  
   switch(ntr->getType()){
-    case PLUS_ASSIGN:
-    case MINUS_ASSIGN:
-    case TIMES_ASSIGN:
-    case DIVIDE_ASSIGN:
-      str_vtr.push_back(tr->getText());        
-      (void)ncap_mpi_get_lvl(tr->getNextSibling(),str_vtr);
-      break;
-
-    case ASSIGN:
-      // Grab text from first element in assign ie. text for VAR_ID or ATT_ID
-      str_vtr.push_back(tr->getText());
-      // Check child for LValues in LMT_LIST
-      (void)ncap_mpi_get_lvl(tr,str_vtr);
-      // Process RHS of equal sign
-      (void)ncap_mpi_get_lvl(tr->getNextSibling(),str_vtr);
-      
-      break;
-
+  case PLUS_ASSIGN:
+  case MINUS_ASSIGN:
+  case TIMES_ASSIGN:
+  case DIVIDE_ASSIGN:
+    str_vtr.push_back(tr->getText());        
+    (void)ncap_mpi_get_lvl(tr->getNextSibling(),str_vtr);
+    break;
+    
+  case ASSIGN:
+    // Grab text from first element in assign ie. text for VAR_ID or ATT_ID
+    str_vtr.push_back(tr->getText());
+    // Check child for LValues in LMT_LIST
+    (void)ncap_mpi_get_lvl(tr,str_vtr);
+    // Process RHS of equal sign
+    (void)ncap_mpi_get_lvl(tr->getNextSibling(),str_vtr);
+    
+    break;
+    
     // All these unary ops are Gauranteed to only
     // contain VAR_ID or ATT_ID !! no need to error
     // check
-    case INC:
-    case DEC:
-    case POST_INC:
-    case POST_DEC:
-      str_vtr.push_back(tr->getText());
-      break;
-
-    default:
-        while(tr){
-	 (void)ncap_mpi_get_lvl(tr,str_vtr);
-         tr=tr->getNextSibling();
-        }  
-	break; 
+  case INC:
+  case DEC:
+  case POST_INC:
+  case POST_DEC:
+    str_vtr.push_back(tr->getText());
+    break;
+    
+  default:
+    while(tr){
+      (void)ncap_mpi_get_lvl(tr,str_vtr);
+      tr=tr->getNextSibling();
+    }  
+    break; 
   }
-     
+  
 } // ncap_mpi_get_lvl   
 
 
 
 bool
 ncap_evl_srp(
-std::vector<exp_sct_tmp**> &srp_vtr //self reverential pointer
-)
+	     std::vector<exp_sct_tmp**> &srp_vtr //self reverential pointer
+	     )
 {
   unsigned int idx;
-
+  
   if(srp_vtr.empty()) 
     return true;
-
+  
   for(idx=0 ; idx < srp_vtr.size() ; idx++)
     if( *srp_vtr[idx] != NULL_CEWI) 
       return false;
-
+  
   return true;
-
-
+  
+  
 }
 
 // Sort expressions for MPI optimization
 //ntr is a pointer to nbr_lst statements of type EXPR
 int ncap_mpi_srt(
-RefAST ntr,   
-int nbr_lst,
-std::vector< std::vector<RefAST> > &all_ast_vtr)
+		 RefAST ntr,   
+		 int nbr_lst,
+		 std::vector< std::vector<RefAST> > &all_ast_vtr)
 {
-const std::string fnc_nm("ncap_mpi_srt"); 
+  const std::string fnc_nm("ncap_mpi_srt"); 
   int idx;
   int jdx;
   RefAST tr;
-
+  
   exp_sct *exp_ptr;
-
+  
   std::vector<exp_sct*> exp_vtr;
-
-
- // populate exp_vtr;
-    if(dbg_lvl_get() > 0)
-      dbg_prn(fnc_nm,"Start");
-
-
-
-
-    idx=0;tr=ntr;
-
-      while(idx++<nbr_lst ) {
-
-         std::vector<std::string> cl_vtr;
-	 exp_ptr=new exp_sct();
-
-         // Initialise structure with AST and Lvalues
-	 //exp_ptr->etr=tr->getFirstChild();         
-	 exp_ptr->etr=tr;         
-         (void)ncap_mpi_get_lvl(tr->getFirstChild(),cl_vtr);
-         //Sort Lvalues for speed
-         std::sort(cl_vtr.begin(), cl_vtr.end());
-         // remove any duplicates
-         std::vector<std::string>::iterator we=std::unique(cl_vtr.begin(), cl_vtr.end());
-         if(we < cl_vtr.end())  
-           cl_vtr.erase(we,cl_vtr.end()); 
-
-         exp_ptr->lvl_vtr=cl_vtr;
-
-         exp_vtr.push_back(exp_ptr);
-         tr=tr->getNextSibling();
+  
+  
+  // populate exp_vtr;
+  if(dbg_lvl_get() > 0)
+    dbg_prn(fnc_nm,"Start");
+  
+  
+  
+  
+  idx=0;tr=ntr;
+  
+  while(idx++<nbr_lst ) {
+    
+    std::vector<std::string> cl_vtr;
+    exp_ptr=new exp_sct();
+    
+    // Initialise structure with AST and Lvalues
+    //exp_ptr->etr=tr->getFirstChild();         
+    exp_ptr->etr=tr;         
+    (void)ncap_mpi_get_lvl(tr->getFirstChild(),cl_vtr);
+    //Sort Lvalues for speed
+    std::sort(cl_vtr.begin(), cl_vtr.end());
+    // remove any duplicates
+    std::vector<std::string>::iterator we=std::unique(cl_vtr.begin(), cl_vtr.end());
+    if(we < cl_vtr.end())  
+      cl_vtr.erase(we,cl_vtr.end()); 
+    
+    exp_ptr->lvl_vtr=cl_vtr;
+    
+    exp_vtr.push_back(exp_ptr);
+    tr=tr->getNextSibling();
+  }
+  
+  
+  // Populate dependency vector
+  for(idx=0 ; idx < nbr_lst ;idx++) {
+    // initialize local vars
+    exp_ptr=exp_vtr[idx];
+    // need a local copy of Lvalues
+    // will subtract strings from this as we go through
+    // the inner loop
+    std::vector<std::string> out_lvl_vtr=exp_ptr->lvl_vtr; 	
+    // expression without Lvalues
+    if(out_lvl_vtr.empty()) 
+      continue;
+    
+    //Inner loop
+    for(jdx=(idx+1); jdx< nbr_lst ; jdx++){
+      // See if inner-loop exprssion depends
+      // on outer-loop expression 
+      if( ncap_mpi_srh_str(exp_ptr->etr, exp_vtr[jdx]->lvl_vtr) ||
+	  ncap_mpi_srh_str(exp_vtr[jdx]->etr,out_lvl_vtr)) {
+	
+	exp_vtr[jdx]->dpd_vtr.push_back(idx);
+	exp_vtr[jdx]->srp_vtr.push_back( &exp_vtr[idx]);
+	// subtract Lvalues as we go
+	(bool)ncap_sub_str_str(out_lvl_vtr, exp_vtr[jdx]->lvl_vtr);
       }
-
-
-      // Populate dependency vector
-      for(idx=0 ; idx < nbr_lst ;idx++) {
-	// initialize local vars
-        exp_ptr=exp_vtr[idx];
-        // need a local copy of Lvalues
-        // will subtract strings from this as we go through
-        // the inner loop
-        std::vector<std::string> out_lvl_vtr=exp_ptr->lvl_vtr; 	
-        // expression without Lvalues
-        if(out_lvl_vtr.empty()) 
-          continue;
+      // break out of inner loop if out_lvl_vtr empty
+      if(out_lvl_vtr.empty())
+	break ;
       
-	//Inner loop
-        for(jdx=(idx+1); jdx< nbr_lst ; jdx++){
-          // See if inner-loop exprssion depends
-          // on outer-loop expression 
-	  if( ncap_mpi_srh_str(exp_ptr->etr, exp_vtr[jdx]->lvl_vtr) ||
-              ncap_mpi_srh_str(exp_vtr[jdx]->etr,out_lvl_vtr)) {
- 
-	    exp_vtr[jdx]->dpd_vtr.push_back(idx);
-            exp_vtr[jdx]->srp_vtr.push_back( &exp_vtr[idx]);
-            // subtract Lvalues as we go
-            (bool)ncap_sub_str_str(out_lvl_vtr, exp_vtr[jdx]->lvl_vtr);
-	  }
-	  // break out of inner loop if out_lvl_vtr empty
-	  if(out_lvl_vtr.empty())
-            break ;
-
-	 }// loop jdx 
-      }// loop idx
-
-
-      // print out whole  structure
-      /*
-      for(idx=0; idx<nbr_lst ; idx++){
-	// dereference
-	exp_ptr=exp_vtr[idx];
-	std::cout << exp_ptr->etr->toStringTree();
-	std::cout <<"\n Lvalues  ";
-        for(int jdx=0 ; jdx < exp_ptr->lvl_vtr.size() ; jdx++)
-	  std::cout << exp_ptr->lvl_vtr[jdx] <<" ";
-
-     	std::cout <<"\n Dependency  ";
-        for(int jdx=0 ; jdx < exp_ptr->dpd_vtr.size() ; jdx++)
-	  std::cout << exp_ptr->dpd_vtr[jdx] <<" ";
-	std::cout<<"\n";
-
-
-      }
-      */
-
-
-       
-      int icnt=0;
-
-      while(icnt <nbr_lst){
-
-        // Store list of dependent structures
-        std::vector<RefAST> ast_vtr;
-	std::vector<int> grp_vtr;
-       
-        for(idx=0; idx <nbr_lst; idx++){
-          if( exp_vtr[idx]==NULL) 
-            continue;
-          if( ncap_evl_srp(exp_vtr[idx]->srp_vtr))
-	    grp_vtr.push_back(idx);
-	}// end idx
-
-        for(idx=0 ; idx <(int)grp_vtr.size(); idx++){
- 	  ast_vtr.push_back( exp_vtr[grp_vtr[idx]]->etr);
-          delete exp_vtr[grp_vtr[idx]];
-          exp_vtr[grp_vtr[idx]]=NULL;
-        } //end idx
-
-        // Save vector in another vector !! 
-        all_ast_vtr.push_back(ast_vtr);
-        icnt+=(int)grp_vtr.size();
-          
-
-      } // end while
-
-      //Print out vectors
-      if(dbg_lvl_get() >0) {
-        for(idx=0 ; idx<(int)all_ast_vtr.size(); idx++){
-          for(jdx=0 ; jdx<(int)all_ast_vtr[idx].size(); jdx++)
-	    std::cout << all_ast_vtr[idx][jdx]->toStringTree()<<std::endl;
-	  std::cout <<"-------------------------------\n";
-          } //end idx
-      }
-
-    if(dbg_lvl_get() > 0)
-      dbg_prn(fnc_nm,"End");       
-
-
-    return 0;
-
+    }// loop jdx 
+  }// loop idx
+  
+  
+  // print out whole  structure
+  /*
+    for(idx=0; idx<nbr_lst ; idx++){
+    // dereference
+    exp_ptr=exp_vtr[idx];
+    std::cout << exp_ptr->etr->toStringTree();
+    std::cout <<"\n Lvalues  ";
+    for(int jdx=0 ; jdx < exp_ptr->lvl_vtr.size() ; jdx++)
+    std::cout << exp_ptr->lvl_vtr[jdx] <<" ";
+    
+    std::cout <<"\n Dependency  ";
+    for(int jdx=0 ; jdx < exp_ptr->dpd_vtr.size() ; jdx++)
+    std::cout << exp_ptr->dpd_vtr[jdx] <<" ";
+    std::cout<<"\n";
+    
+    
+    }
+  */
+  
+  
+  
+  int icnt=0;
+  
+  while(icnt <nbr_lst){
+    
+    // Store list of dependent structures
+    std::vector<RefAST> ast_vtr;
+    std::vector<int> grp_vtr;
+    
+    for(idx=0; idx <nbr_lst; idx++){
+      if( exp_vtr[idx]==NULL) 
+	continue;
+      if( ncap_evl_srp(exp_vtr[idx]->srp_vtr))
+	grp_vtr.push_back(idx);
+    }// end idx
+    
+    for(idx=0 ; idx <(int)grp_vtr.size(); idx++){
+      ast_vtr.push_back( exp_vtr[grp_vtr[idx]]->etr);
+      delete exp_vtr[grp_vtr[idx]];
+      exp_vtr[grp_vtr[idx]]=NULL;
+    } //end idx
+    
+    // Save vector in another vector !! 
+    all_ast_vtr.push_back(ast_vtr);
+    icnt+=(int)grp_vtr.size();
+    
+    
+  } // end while
+  
+  //Print out vectors
+  if(dbg_lvl_get() >0) {
+    for(idx=0 ; idx<(int)all_ast_vtr.size(); idx++){
+      for(jdx=0 ; jdx<(int)all_ast_vtr[idx].size(); jdx++)
+	std::cout << all_ast_vtr[idx][jdx]->toStringTree()<<std::endl;
+      std::cout <<"-------------------------------\n";
+    } //end idx
+  }
+  if(dbg_lvl_get() > 0) dbg_prn(fnc_nm,"End");       
+  
+  return 0;
 }
-
-
