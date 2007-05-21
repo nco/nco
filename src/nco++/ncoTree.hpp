@@ -171,7 +171,7 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
 
          // convert result to type int
           var_out=nco_var_cnf_typ(NC_INT,var_out);    
-         (void)cast_void_nctype(NC_INT,&var_out->val);
+         (void)cast_void_nctype((nc_type)NC_INT,&var_out->val);
 
           // only interested in the first value.
          lcl_ind[jdx]=var_out->val.lp[0];

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.68 2007-05-21 01:26:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.69 2007-05-21 03:46:11 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2047,10 +2047,10 @@ ncap_sclr_var_mk(
 		 float val_float)
 {
   var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_FLOAT,true);
-  (void)cast_void_nctype(NC_FLOAT,&var->val);
+  var=ncap_sclr_var_mk(var_nm,(nc_type)NC_FLOAT,true);
+  (void)cast_void_nctype((nc_type)NC_FLOAT,&var->val);
   *var->val.fp=val_float;
-  (void)cast_nctype_void(NC_FLOAT,&var->val);
+  (void)cast_nctype_void((nc_type)NC_FLOAT,&var->val);
   return var;
 } // end ncap_sclr_var_mk<float>()
 
@@ -2060,10 +2060,10 @@ ncap_sclr_var_mk(
 		 double val_double)
 {
   var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_DOUBLE,true);
-  (void)cast_void_nctype(NC_DOUBLE,&var->val);
+  var=ncap_sclr_var_mk(var_nm,(nc_type)NC_DOUBLE,true);
+  (void)cast_void_nctype((nc_type)NC_DOUBLE,&var->val);
   *var->val.dp=val_double;
-  (void)cast_nctype_void(NC_DOUBLE,&var->val);
+  (void)cast_nctype_void((nc_type)NC_DOUBLE,&var->val);
   return var;
 }
 
@@ -2073,10 +2073,10 @@ ncap_sclr_var_mk(
 		 nco_int val_int)
 {
   var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_INT,true);
-  (void)cast_void_nctype(NC_INT,&var->val);
+  var=ncap_sclr_var_mk(var_nm,(nc_type)NC_INT,true);
+  (void)cast_void_nctype((nc_type)NC_INT,&var->val);
   *var->val.lp=val_int;
-  (void)cast_nctype_void(NC_INT,&var->val);
+  (void)cast_nctype_void((nc_type)NC_INT,&var->val);
   return var;
 }
 
@@ -2086,10 +2086,10 @@ ncap_sclr_var_mk(
 		 nco_short val_short)
 {
   var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_SHORT,true);
-  (void)cast_void_nctype(NC_SHORT,&var->val);
+  var=ncap_sclr_var_mk(var_nm,(nc_type)NC_SHORT,true);
+  (void)cast_void_nctype((nc_type)NC_SHORT,&var->val);
   *var->val.sp=val_short;
-  (void)cast_nctype_void(NC_SHORT,&var->val);
+  (void)cast_nctype_void((nc_type)NC_SHORT,&var->val);
   return var;
 }
 
@@ -2099,10 +2099,10 @@ ncap_sclr_var_mk(
 		 nco_char val_char)
 {
   var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_CHAR,true);
-  (void)cast_void_nctype(NC_CHAR,&var->val);
+  var=ncap_sclr_var_mk(var_nm,(nc_type)NC_CHAR,true);
+  (void)cast_void_nctype((nc_type)NC_CHAR,&var->val);
   *var->val.cp=val_char;
-  (void)cast_nctype_void(NC_CHAR,&var->val);
+  (void)cast_nctype_void((nc_type)NC_CHAR,&var->val);
   return var;
 }
 
@@ -2112,24 +2112,23 @@ ncap_sclr_var_mk(
 		 nco_byte val_byte)
 {
   var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_BYTE,true);
-  (void)cast_void_nctype(NC_BYTE,&var->val);
+  var=ncap_sclr_var_mk(var_nm,(nc_type)NC_BYTE,true);
+  (void)cast_void_nctype((nc_type)NC_BYTE,&var->val);
   *var->val.bp=val_byte;
-  (void)cast_nctype_void(NC_BYTE,&var->val);
+  (void)cast_nctype_void((nc_type)NC_BYTE,&var->val);
   return var;
 }
 
-#ifdef ENABLE_NETCDF4
 var_sct *
 ncap_sclr_var_mk(
 		 const std::string var_nm,
 		 nco_ubyte val_ubyte)
 {
   var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_UBYTE,true);
-  (void)cast_void_nctype(NC_UBYTE,&var->val);
+  var=ncap_sclr_var_mk(var_nm,(nc_type)NC_UBYTE,true);
+  (void)cast_void_nctype((nc_type)NC_UBYTE,&var->val);
   *var->val.ubp=val_ubyte;
-  (void)cast_nctype_void(NC_UBYTE,&var->val);
+  (void)cast_nctype_void((nc_type)NC_UBYTE,&var->val);
   return var;
 }
 
@@ -2139,10 +2138,10 @@ ncap_sclr_var_mk(
 		 nco_ushort val_ushort)
 {
   var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_USHORT,true);
-  (void)cast_void_nctype(NC_USHORT,&var->val);
+  var=ncap_sclr_var_mk(var_nm,(nc_type)NC_USHORT,true);
+  (void)cast_void_nctype((nc_type)NC_USHORT,&var->val);
   *var->val.usp=val_ushort;
-  (void)cast_nctype_void(NC_USHORT,&var->val);
+  (void)cast_nctype_void((nc_type)NC_USHORT,&var->val);
   return var;
 }
 
@@ -2152,10 +2151,10 @@ ncap_sclr_var_mk(
 		 nco_uint val_uint)
 {
   var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_UINT,true);
-  (void)cast_void_nctype(NC_UINT,&var->val);
+  var=ncap_sclr_var_mk(var_nm,(nc_type)NC_UINT,true);
+  (void)cast_void_nctype((nc_type)NC_UINT,&var->val);
   *var->val.uip=val_uint;
-  (void)cast_nctype_void(NC_UINT,&var->val);
+  (void)cast_nctype_void((nc_type)NC_UINT,&var->val);
   return var;
 }
 
@@ -2165,10 +2164,10 @@ ncap_sclr_var_mk(
 		 nco_int64 val_int64)
 {
   var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_INT64,true);
-  (void)cast_void_nctype(NC_INT64,&var->val);
+  var=ncap_sclr_var_mk(var_nm,(nc_type)NC_INT64,true);
+  (void)cast_void_nctype((nc_type)NC_INT64,&var->val);
   *var->val.i64p=val_int64;
-  (void)cast_nctype_void(NC_INT64,&var->val);
+  (void)cast_nctype_void((nc_type)NC_INT64,&var->val);
   return var;
 }
 
@@ -2178,10 +2177,10 @@ ncap_sclr_var_mk(
 		 nco_uint64 val_uint64)
 {
   var_sct *var;
-  var=ncap_sclr_var_mk(var_nm,NC_UINT64,true);
-  (void)cast_void_nctype(NC_UINT64,&var->val);
+  var=ncap_sclr_var_mk(var_nm,(nc_type)NC_UINT64,true);
+  (void)cast_void_nctype((nc_type)NC_UINT64,&var->val);
   *var->val.ui64p=val_uint64;
-  (void)cast_nctype_void(NC_UINT64,&var->val);
+  (void)cast_nctype_void((nc_type)NC_UINT64,&var->val);
   return var;
 }
 
@@ -2192,14 +2191,13 @@ ncap_sclr_var_mk(
    nco_string val_string)
    {
    var_sct *var;
-   var=ncap_sclr_var_mk(var_nm,NC_STRING,true);
-   (void)cast_void_nctype(NC_STRING,&var->val);
+   var=ncap_sclr_var_mk(var_nm,(nc_type)NC_STRING,true);
+   (void)cast_void_nctype((nc_type)NC_STRING,&var->val);
    *var->val.sngp=val_string;
-   (void)cast_nctype_void(NC_STRING,&var->val);
+   (void)cast_nctype_void((nc_type)NC_STRING,&var->val);
    return var;
    }
 */ 
-#endif /* !ENABLE_NETCDF4 */
 
 // define variables captured on first parse
 void ncap_def_ntl_scn(prs_sct *prs_arg)

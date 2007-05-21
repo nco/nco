@@ -1,5 +1,9 @@
 2007-05-20  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-3_2_1_beta1
+	netCDF3 build works again and tests fine. Huzzah.
+	Candidate is releasable except for ncap2 NC_UBYTE problem
+
 	* Add empty netCDF3 forward compatibility stubs for all netCDF4
 	new atomic type I/O functions 
 
