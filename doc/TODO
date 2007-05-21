@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.907 2007-05-21 05:58:41 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.908 2007-05-21 06:06:37 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -600,8 +600,9 @@ nco852. UBYTE does not work with ncap2:
 nco853. Enable arithmetic for NC_BYTE and NC_UBYTE everywhere?
 nco854. Use NC_BYTE instead of NC_SHORT for logical in ncap2?
 nco855. nco_netcdf.c netCDF4 forward compatibility stubs generate beaucoups 'unused parameter' warnings (only when compiled with netCDF3)
-nco856. AIX C++ does not have strtoll!: "ncoGrammer.g", line 1754.212: 1540-0130 (S) "std::strtoll" is not declared.
-nco857. 
+nco856. AIX xlC does not have strtoll!: "ncoGrammer.g", line 1754.212: 1540-0130 (S) "std::strtoll" is not declared.
+nco857. AIX nco_c++ build screwed up:
+nco858. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
