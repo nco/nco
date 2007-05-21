@@ -1,5 +1,8 @@
 2007-05-20  Charlie Zender  <zender@uci.edu>
 
+	* Add empty netCDF3 forward compatibility stubs for all netCDF4
+	new atomic type I/O functions 
+
 	* cvs tag -c nco-3_2_1_alpha4
 	netCDF4 works fine with all operators and regression tests.
 	Exceptions are that ncap2 does not work with ubyte and that
