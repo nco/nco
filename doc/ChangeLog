@@ -1,5 +1,11 @@
 2007-05-20  Charlie Zender  <zender@uci.edu>
 
+	* Cast all naked nc_type tokens being thrown around in ncap2 code
+	In addition to being bad programming style, these naked tokens 
+	trigger the netCDF3/netCDF4 nc_type incompatibility bug.
+	The bug is that the nc_type NC_TYPE tokens are enumerated (enums)
+	in netCDF3 and are simple pre-processor tokens in netCDF4.
+
 	* cvs tag -c nco-3_2_1_beta1
 	netCDF3 build works again and tests fine. Huzzah.
 	Candidate is releasable except for ncap2 NC_UBYTE problem
