@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.115 2007-05-19 00:02:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.116 2007-05-22 18:26:54 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -92,17 +92,17 @@ extern "C" {
 #define float_CEWI 0.0
 #define int_CEWI 0
 #define long_CEWI 0L
-#define long_long_CEWI 0LL
+#define long_long_CEWI ((long long)0LL)
 #define nco_bool_CEWI 0
-#define nco_byte_CEWI 0
+#define nco_byte_CEWI ((signed char)0)
 #define nco_char_CEWI '\0'
-#define nco_int_CEWI 0
-#define nco_short_CEWI 0
-#define nco_ubyte_CEWI 0
-#define nco_ushort_CEWI 0
-#define nco_uint_CEWI 0U
-#define nco_int64_CEWI 0LL
-#define nco_uint64_CEWI 0ULL
+#define nco_int_CEWI (0L)
+#define nco_short_CEWI ((short)0)
+#define nco_ubyte_CEWI ((unsigned char)0)
+#define nco_ushort_CEWI ((unsigned short)0)
+#define nco_uint_CEWI (0U)
+#define nco_int64_CEWI ((long long)0LL)
+#define nco_uint64_CEWI ((unsigned long long)0ULL)
 #define nco_string_CEWI NULL
 #define short_CEWI 0
 #define size_t_CEWI 0UL

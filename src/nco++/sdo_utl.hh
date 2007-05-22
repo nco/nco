@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco++/sdo_utl.hh,v 1.1 2006-08-24 19:59:13 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco++/sdo_utl.hh,v 1.2 2007-05-22 18:26:54 zender Exp $ 
 
 // Purpose: Description (definition) of SDO stand-alone utilities
 
@@ -91,5 +91,42 @@ std::string // [sng] Number stored as string
   // Need return value here to avoid compiler warnings
   return sng_srm_out.str(); // 
 } // end nbr2sng()
+
+template<class val_T>void sng2nbr(const std::string sng,val_T *nbr); // O [sng] String stored as number
+template<class val_T> // [obj] Object type
+void
+sng2nbr // [fnc] Convert string to number
+(const std::string sng, // I [frc] String to convert to number
+ val_T *nbr) // O [frc] Number that was converted from string
+{
+  /* Purpose: Convert string to number
+     Method inverse of nbr2sng() (see below)
+     This method suggested by Martin York in
+     comp.lang.c++.moderated on 20050522 in response to my thread on 
+     "Cross-platform strtoll() functionality" */
+  const std::string sbr_nm("sng2nbr"); // [sng] Subroutine name
+  std::stringstream sng_srm_in(sng); // [srm] Input string stream
+  if(!(sng_srm_in >> *nbr)) err_prn(sbr_nm,"Unable to convert string \""+sng+"\" to number");
+} // end sng2nbr()
+
+template<class val_T>val_T sng2nbr(const std::string sng,const val_T nbr); // O [sng] String stored as number
+template<class val_T> // [obj] Object type
+val_T // O [sng] String stored as number
+sng2nbr // [fnc] Convert string to number
+(const std::string sng, // I [frc] String to convert to number
+ const val_T nbr) // I [frc] Number of type to convert to (not touched)
+{
+  /* Purpose: Convert string to number
+     Method inverse of nbr2sng() (see below)
+     This method suggested by Martin York in
+     comp.lang.c++.moderated on 20050522 in response to my thread on 
+     "Cross-platform strtoll() functionality" */
+  val_T val_out; // O [nbr] String stored as number
+  const std::string sbr_nm("sng2nbr"); // [sng] Subroutine name
+  std::stringstream sng_srm_in(sng); // [srm] Input string stream
+  if(sng_srm_in >> val_out) return val_out; else err_prn(sbr_nm,"Unable to convert string \""+sng+"\" to number");
+  // Redundant return value here avoids two compiler warnings
+  return nbr; // O [nbr] String stored as number
+} // end sng2nbr()
 
 #endif // SDO_UTL_HH  

@@ -1,3 +1,9 @@
+2007-05-22  Charlie Zender  <zender@uci.edu>
+
+	* Typecast CEWI variables in nco.h for safety
+
+	* Added sng2nbr() from ~/c++/utl.hh to sdo_utl.hh
+
 2007-05-20  Charlie Zender  <zender@uci.edu>
 
 	* AIX xlC has ncap2 build problem: "std::strtoll" is not declared.
