@@ -1,5 +1,10 @@
 2007-05-22  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-3_2_1_beta2
+	Changes since last tag:
+	NCO builds and tests fine from both netCDF3 and netCDF4!
+	Candidate is releasable. ncap2 NC_UBYTE problem is not solved.
+
 	* Testing with ~/c++/ccc.cc shows that NC_UBYTE support is non-trivial 
 	No need to hold up release to finish this
 
@@ -26,6 +31,7 @@
 	in netCDF3 and are simple pre-processor tokens in netCDF4.
 
 	* cvs tag -c nco-3_2_1_beta1
+	Changes since last tag:
 	netCDF3 build works again and tests fine. Huzzah.
 	Candidate is releasable except for ncap2 NC_UBYTE problem
 
@@ -33,6 +39,7 @@
 	new atomic type I/O functions 
 
 	* cvs tag -c nco-3_2_1_alpha4
+	Changes since last tag:
 	netCDF4 works fine with all operators and regression tests.
 	Exceptions are that ncap2 does not work with ubyte and that
 	netCDF3 does not build because ncoGrammer.g lacks netcdf4 #ifdef's
@@ -51,6 +58,7 @@
 	counts as floats no longer necessary! 
 
 	* cvs tag -c nco-3_2_1_alpha3
+	Changes since last tag:
 	After netCDF4'ing most files. 
 	netCDF4 references in ncoGrammer.g break netCDF3 ncap2
 
@@ -87,6 +95,7 @@
 	* Introduce nco_short in nco_var_scv.c, nco_var_rth.c, nco_var_avg.c
 
 	* cvs tag -c nco-3_2_1_alpha2
+	Changes since last tag:
 	Prior to adding netCDF4 atomic types to:
 	nco_var_scv.c, nco_var_rth.c, nco_var_avg.c
 
@@ -103,6 +112,7 @@
 	* Add netCDF4 atomic types to nco_cnf_typ.c
 
 	* cvs tag -c nco-3_2_1_alpha1
+	Changes since last tag:
 	Working subset of netCDF4 atomic type features with no regressions
 
 	* Regression tests all fine except for known netCDF4/HDF defects
