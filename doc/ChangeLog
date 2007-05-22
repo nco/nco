@@ -1,5 +1,16 @@
 2007-05-22  Charlie Zender  <zender@uci.edu>
 
+	* Testing with ~/c++/ccc.cc shows that NC_UBYTE support is non-trivial 
+	No need to hold up release to finish this
+
+	* antlr 2.7.6 fails on mpc64.nacs.uci.edu with pgCC
+	This does not seem to be an NCO problem
+
+	* NCO builds and tests fine from both netCDF3 and netCDF4!
+
+	* Verified sng2nbr() handles cross-platform strtoll(), strtoull()
+	issues with AIX xlC and PGI pgCC compilers. 
+
 	* Typecast CEWI variables in nco.h for safety
 
 	* Added sng2nbr() from ~/c++/utl.hh to sdo_utl.hh
