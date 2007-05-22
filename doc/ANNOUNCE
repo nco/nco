@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.226 2007-05-21 01:26:27 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.227 2007-05-22 06:05:30 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.2.0 are ready. 
 
@@ -9,6 +9,28 @@ Release 3.2.1 contains functional (though limited) netCDF4 support,
 improved attribute copying, new documentation, new ncap2 features, 
 and better IRIX support.
 This release _requires_ netCDF 3.6.1 or newer to build correctly.
+
+First, a paragraph or three about netCDF4 support:
+Support for netCDF4 features will be incremental.
+You must build NCO with netCDF4 to see this support.
+There is no reason that we know of _not_ to build with netCDF4.
+The main netCDF4 features NCO currently supports are the new 
+atomic data types (ubyte, ushort, uint, int64, and uint64).
+The eight-byte integer support is especially helpful.
+All NCO operators support these types---ncks prints them,
+ncap2 scripts with them, and ncra averages them.
+
+netCDF4-enabled NCO handles netCDF3 files without change.
+In addition, it automagically handles netCDF4 (HDF) files:
+If you feed NCO netCDF4 files, it will produce netCDF4 output.
+If you feed NCO netCDF3 files, it will produce netCDF3 output.
+Use the handy-dandy -4 switch to convert netCDF3 to netCDF4.
+
+That said, netCDF4 is beta software so caveat emptor:
+Problems with the netCDF4 and HDF libraries are still being fixed.
+NCO support for netCDF4 atomic types is relatively untested.
+The binary distributions (RPMs and debs) still use netCDF3 for now.
+If you want the netCDF4 support, you'll have to build NCO yourself.
 
 A. ncks copying of variable and global metadata is configurable (-m, -M).
    Formerly there was no way to append a variable from in.nc to out.nc
@@ -25,16 +47,15 @@ A. ncks copying of variable and global metadata is configurable (-m, -M).
    ncks -A    -m -v one in.nc out.nc # Append data only, no attributes
    http://nco.sf.net/nco.html#prn has more details.
 
-B. GCC 4.2 compatibility: fxm
+B. GCC 4.2 compatibility: This is untested. However, we're eager to
+   whether the OpenMP works for those who build NCO with GCC 4.2.
 
 C. New Documentation:
-   Working with non-standar grids, e.g., 2D grids 
+   Working with non-standard grids, e.g., 2D grids 
    http://nco.sf.net/nco.html#grd
 
 D. ncks reports input file type (e.g., NC_FORMAT_CLASSIC,
    NC_FORMAT_NETCDF4) as part of global metadata
-
-E. ncks prints all netCDF4 atomic data types (NC_UBYTE, NC_INT64, etc.) 
 
 E. Fix ncap2 .total() method to correctly handle missing_values fxm
 

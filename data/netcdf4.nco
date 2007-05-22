@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.2 2007-05-21 05:58:40 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.3 2007-05-22 06:05:30 zender Exp $ -*-C++-*-
 
 // Purpose: Sample input script for netCDF4-enabled ncap2
 
@@ -28,3 +28,6 @@ var_uint64_sum_int64_int64=var_int64+var_int64;
 var_uint64_1=var_uint64_2=9223372036854775807ull;
 var_uint64_ttl=var_uint64_1+var_uint64_2; // 20070520: = 9223372036854775807ull Fails!
 var_uint64_prd=2ull*9223372036854775807ull; // 20070520: = 9223372036854775807ull Fails
+var_uint64_dff=9223372036854775807ull-1ull; // 20070520: = 9223372036854775806ull Works
+var_uint64_max=18446744073709551615ull; // 20070520: Fails
+
