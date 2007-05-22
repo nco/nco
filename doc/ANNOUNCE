@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.227 2007-05-22 06:05:30 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.228 2007-05-22 06:09:48 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.2.0 are ready. 
 
@@ -16,9 +16,9 @@ You must build NCO with netCDF4 to see this support.
 There is no reason that we know of _not_ to build with netCDF4.
 The main netCDF4 features NCO currently supports are the new 
 atomic data types (ubyte, ushort, uint, int64, and uint64).
-The eight-byte integer support is especially helpful.
-All NCO operators support these types---ncks prints them,
-ncap2 scripts with them, and ncra averages them.
+(The eight-byte integer support is especially helpful).
+All NCO operators support these types, e.g., ncks prints them,
+ncra averages them, and ncap2 scripts with them.
 
 netCDF4-enabled NCO handles netCDF3 files without change.
 In addition, it automagically handles netCDF4 (HDF) files:
