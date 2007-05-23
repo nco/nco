@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.232 2007-05-23 03:28:29 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.233 2007-05-23 03:58:38 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.0 are ready. 
 The version number jumped from 3.2.0 to 3.9.0 because of the addition
@@ -17,7 +17,10 @@ Because the netCDF4 support description is extensive its description
 appears at the end of this announcement. 
 The netCDF3 NCO improvements in 3.9.0 are:
 
-A. ncks copying of variable and global metadata is configurable (-m, -M).
+A. netCDF4 support (see end of announcement).
+   http://nco.sf.net/nco.html#nco4
+
+B. ncks copying of variable and global metadata is configurable (-m, -M).
    Formerly there was no way to append a variable from in.nc to out.nc
    without bringing its metadata and all global metadata with it. 
    ncks -A           in.nc out.nc # Append variable and global attributes
@@ -31,9 +34,6 @@ A. ncks copying of variable and global metadata is configurable (-m, -M).
    ncks -O -M -m -v one in.nc out.nc # Copy   data only, no attributes
    ncks -A    -m -v one in.nc out.nc # Append data only, no attributes
    http://nco.sf.net/nco.html#prn has more details.
-
-B. GCC 4.2 compatibility: This is untested. However, we're eager to
-   whether the OpenMP works for those who build NCO with GCC 4.2.
 
 C. New Documentation:
    Working with non-standard grids, e.g., 2D grids 
@@ -60,6 +60,9 @@ Support for netCDF4 features will be incremental, i.e.,
 we'll add one netCDF4 feature at a time to NCO.
 You must build NCO with netCDF4 to obtain this support.
 There is no reason that we know of _not_ to build with netCDF4 now. 
+NCO support for netCDF4 features will be tracked and updated at
+
+http://nco.sf.net/nco.html#nco4
 
 The main netCDF4 features that NCO currently supports are the new 
 atomic data types (ubyte, ushort, uint, int64, and uint64).

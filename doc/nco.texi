@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.419 2007-05-23 02:06:52 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.420 2007-05-23 03:59:54 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -943,6 +943,64 @@ between Unidata and @acronym{NCSA}.
 @acronym{NCO} version 3.0.3 added support for reading/writing
 netCDF4-formatted @acronym{HDF5} files in October, 2005.
 See @ref{Selecting Output File Format} for more details.
+
+@html
+<a name="nco4"></a> <!-- http://nco.sf.net/nco.html#nco4 -->
+@end html
+@acronym{NCO} version 3.9.0 added full support for all netCDF4
+atomic data types in May, 2007.
+Support for netCDF4 features will be incremental, i.e., 
+we will add one netCDF4 feature at a time.
+You must build @acronym{NCO} with netCDF4 to obtain this support.
+
+@cindex @code{NC_UBYTE}
+@cindex @code{NC_USHORT}
+@cindex @code{NC_UINT}
+@cindex @code{NC_INT64}
+@cindex @code{NC_UINT64}
+The main netCDF4 features that NCO currently supports are the new 
+atomic data types (@code{NC_UBYTE}, @code{NC_SHORT}, 
+@code{NC_UINT}, @code{NC_INT64}, and @code{NC_UINT64}).
+Eight-byte integer support is especially useful improvement from
+netCDF3. 
+All @acronym{NCO} operators support these types, e.g., @command{ncks}
+copies and prints them, @command{ncra} averages them, and
+@command{ncap2} processes algebraic scripts with them.
+
+@cindex @acronym{HDF5}
+@cindex @code{-4}
+netCDF4-enabled @acronym{NCO} handles netCDF3 files without change.
+In addition, it automagically handles netCDF4 (@acronym{HDF5}) files:
+If you feed @acronym{NCO} netCDF3 files, it produces netCDF3 output.
+If you feed @acronym{NCO} netCDF4 files, it produces netCDF4 output.
+Use the handy-dandy @samp{-4} switch to request netCDF4 output from 
+netCDF3 input, i.e., to convert netCDF3 to netCDF4.
+See @ref{Selecting Output File Format} for more details.
+
+@cindex @acronym{RPM}
+@cindex Debian
+Use appropriate caution while netCDF4 is beta software.
+Problems with netCDF4 and @acronym{HDF} libraries are still being fixed.
+@acronym{NCO} support for netCDF4 atomic types is relatively untested.
+Binary @acronym{NCO} distributions (@acronym{RPM}s and debs) still use
+netCDF3.
+
+@cindex @code{NETCDF4_ROOT}
+For now you must build @acronym{NCO} from source to get netCDF4 support.
+Typically, you will need to specify the root of the netCDF4-beta1 
+installation directory. Do this with the @code{NETCDF4_ROOT} variable.
+Then use your preferred @acronym{NCO} build mechanism, e.g.,
+@example
+export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
+cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
+cd ~/nco/bld;./make NETCDF4=Y allinone # Old Makefile mechanism
+@end example
+
+Our short term goal is to track the netCDF4-beta releases, keep the
+new netCDF4 atomic type support working, and iron out any problems.
+Our long term goal is to utilize more of the extensive new netCDF4
+feature set. The next major netCDF4 feature we are likely to utilize
+is parallel I/O. We will enable this in the @acronym{MPI} netCDF operators.
 
 @html
 <a name="help"></a> <!-- http://nco.sf.net/nco.html#help -->
@@ -2813,9 +2871,8 @@ Long options: @samp{--4}, @samp{--64bit}, @samp{--fl_fmt},
 @end cartouche
 All @acronym{NCO} operators support (read and write) all three (or four, 
 depending on how one counts) file formats supported by netCDF4.
-Most operators (those listed under ``Availability'' above) allow
-the user to specify the output file format independent of the input file  
-format. 
+The operators listed under ``Availability'' above allow the user to
+specify the output file format independent of the input file format. 
 These operators allow the user to convert between the various file
 formats. 
 The operators @command{ncatted} and @command{ncrename} always write the
