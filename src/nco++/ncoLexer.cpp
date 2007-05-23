@@ -1,4 +1,4 @@
-/* $ANTLR 2.7.6 (20070220): "ncoGrammer.g" -> "ncoLexer.cpp"$ */
+/* $ANTLR 2.7.6 (20060511): "ncoGrammer.g" -> "ncoLexer.cpp"$ */
 #include "ncoLexer.hpp"
 #include <antlr/CharBuffer.hpp>
 #include <antlr/TokenStreamException.hpp>
@@ -33,16 +33,16 @@ void ncoLexer::initLiterals()
 	literals["size"] = 43;
 	literals["<<"] = 83;
 	literals["min"] = 36;
-	literals["avgsqr"] = 34;
 	literals["rms"] = 37;
-	literals["total"] = 41;
+	literals["ndims"] = 45;
 	literals["sqravg"] = 85;
 	literals["avg"] = 33;
 	literals["type"] = 44;
 	literals["rmssdn"] = 38;
 	literals[">>"] = 84;
-	literals["ndims"] = 45;
+	literals["total"] = 41;
 	literals["max"] = 35;
+	literals["avgsqr"] = 34;
 	literals["if"] = 21;
 	literals["else"] = 24;
 	literals["defdim"] = 27;
