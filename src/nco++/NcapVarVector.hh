@@ -21,6 +21,7 @@ public:
   long     findi(std::string s_fnm);
   void    push_ow(NcapVar *Nvar);
   void    push(NcapVar *Nvar);
+  void    erase(long idx);
   NcapVar* pop();
 };
 
