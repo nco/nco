@@ -1,4 +1,10 @@
-nco (3.2.0-1) unstable; urgency=medium
+nco (3.9.0-1) unstable; urgency=low
+
+  * new upstream version (includes netCDF4 atomic types)
+
+ -- Charlie Zender <zender@uci.edu>  Tue, 22 May 2007 19:04:54 -0700
+
+nco (3.2.0-1) unstable; urgency=low
 
   * new upstream version (includes rmssdn arithmetic bugfix)
 

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.418 2007-05-18 03:57:47 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.419 2007-05-23 02:06:52 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -99,11 +99,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 3.2.0
-@set doc-edition 3.2.0
+@set nco-edition 3.9.0
+@set doc-edition 3.9.0
 @set copyright-years 1995--2007
 @set update-year 2007
-@set update-date 17 May 2007
+@set update-date 22 May 2007
 @set update-month May 2007
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide

@@ -1,17 +1,21 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.230 2007-05-23 01:42:52 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.231 2007-05-23 02:06:52 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.2.0 are ready. 
+The netCDF operators NCO version 3.9.0 are ready. 
+The version number jumped from 3.2.0 to 3.9.0 because of the addition
+of functional (though limited) netCDF4 support.
+NCO version 4.0 will be released soon after netCDF4.0.
+We want to avoid twisted versions like NCO3/netCDF4/HDF5.
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Release 3.2.1 contains functional (though limited) netCDF4 support,
+Release 3.9.0 contains functional (though limited) netCDF4 support,
 improved attribute copying, new documentation, new ncap2 features, 
 and better IRIX support.
 This release _requires_ netCDF 3.6.1 or newer to build correctly.
 Because the netCDF4 support description is extensive its description
 appears at the end of this announcement. 
-The netCDF3 NCO improvements in 3.2.1 are:
+The netCDF3 NCO improvements in 3.9.0 are:
 
 A. ncks copying of variable and global metadata is configurable (-m, -M).
    Formerly there was no way to append a variable from in.nc to out.nc
@@ -49,7 +53,7 @@ G. Pre-built, up-to-date, Debian Sid binary packages are available.
    "apt-get install nco" also retrieves these versions
 
 H. Pre-built, up-to-date, RPM packages are available, e.g.,
-   http://nco.sf.net/src/nco-3.2.0-1.i386.rpm
+   http://nco.sf.net/src/nco-3.9.0-1.i386.rpm
 
 Finally, what to expect with NCO support for netCDF4:
 Support for netCDF4 features will be incremental, i.e., 
