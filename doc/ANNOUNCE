@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.229 2007-05-22 19:46:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.230 2007-05-23 01:42:52 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.2.0 are ready. 
 
@@ -9,39 +9,9 @@ Release 3.2.1 contains functional (though limited) netCDF4 support,
 improved attribute copying, new documentation, new ncap2 features, 
 and better IRIX support.
 This release _requires_ netCDF 3.6.1 or newer to build correctly.
-
-First, a paragraph or three about netCDF4 support:
-Support for netCDF4 features will be incremental.
-You must build NCO with netCDF4 to see this support.
-There is no reason that we know of _not_ to build with netCDF4.
-The main netCDF4 features NCO currently supports are the new 
-atomic data types (ubyte, ushort, uint, int64, and uint64).
-(The eight-byte integer support is especially helpful).
-All NCO operators support these types, e.g., ncks prints them,
-ncra averages them, and ncap2 scripts with them.
-
-netCDF4-enabled NCO handles netCDF3 files without change.
-In addition, it automagically handles netCDF4 (HDF) files:
-If you feed NCO netCDF4 files, it will produce netCDF4 output.
-If you feed NCO netCDF3 files, it will produce netCDF3 output.
-Use the handy-dandy -4 switch to convert netCDF3 to netCDF4.
-
-That said, netCDF4 is beta software so caveat emptor:
-Problems with the netCDF4 and HDF libraries are still being fixed.
-NCO support for netCDF4 atomic types is relatively untested.
-The binary distributions (RPMs and debs) still use netCDF3 for now.
-If you want the netCDF4 support, you'll have to build NCO yourself:
-
-Make sure your library and include paths point to the netCDF4-beta1
-installation and use your preferred NCO build mechanism with either
- 
-configure --enable-netcdf4 
-
-or
-
-cd ~/nco/bld;make NETCDF4=Y allinone 
-
-Finally, here are the other NCO improvements in 3.2.1:
+Because the netCDF4 support description is extensive its description
+appears at the end of this announcement. 
+The netCDF3 NCO improvements in 3.2.1 are:
 
 A. ncks copying of variable and global metadata is configurable (-m, -M).
    Formerly there was no way to append a variable from in.nc to out.nc
@@ -80,6 +50,46 @@ G. Pre-built, up-to-date, Debian Sid binary packages are available.
 
 H. Pre-built, up-to-date, RPM packages are available, e.g.,
    http://nco.sf.net/src/nco-3.2.0-1.i386.rpm
+
+Finally, what to expect with NCO support for netCDF4:
+Support for netCDF4 features will be incremental, i.e., 
+we'll add one netCDF4 feature at a time to NCO.
+You must build NCO with netCDF4 to obtain this support.
+There is no reason that we know of _not_ to build with netCDF4 now. 
+
+The main netCDF4 features that NCO currently supports are the new 
+atomic data types (ubyte, ushort, uint, int64, and uint64).
+The eight-byte integer support may be especially helpful to you.
+All NCO operators support these types, e.g., ncks prints them,
+ncra averages them, and ncap2 scripts with them.
+
+netCDF4-enabled NCO handles netCDF3 files without change.
+In addition, it automagically handles netCDF4 (HDF) files:
+If you feed NCO netCDF3 files, it produces netCDF3 output.
+If you feed NCO netCDF4 files, it produces netCDF4 output.
+Use the handy-dandy -4 switch to request netCDF4 output from 
+netCDF3 input, i.e., to convert netCDF3 to netCDF4.
+
+netCDF4 is beta software:
+Problems with the netCDF4 and HDF libraries are still being fixed.
+NCO support for netCDF4 atomic types is relatively untested.
+The binary distributions (RPMs and debs) still use netCDF3 for now.
+If you want the netCDF4 support, you'll have to build NCO yourself:
+
+Make sure your library and include paths point to the netCDF4-beta1
+installation and use your preferred NCO build mechanism with either
+ 
+configure --enable-netcdf4 
+
+or
+
+cd ~/nco/bld;make NETCDF4=Y allinone 
+
+Our short term goal is to track the netCDF4-beta releases, keep the
+new netCDF4 atomic type support working, and iron out any problems.
+Our long term goal is to utilize more of the extensive new netCDF4
+feature set. The next major netCDF4 feature we are likely to utilize
+is parallel I/O. We will enable this in the MPI netCDF operators.
 
 Enjoy,
 Charlie
