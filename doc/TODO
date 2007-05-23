@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.910 2007-05-22 19:15:59 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.911 2007-05-23 02:16:41 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -600,7 +600,8 @@ nco852. UBYTE does not work with ncap2:
 nco853. Enable arithmetic for NC_BYTE and NC_UBYTE everywhere?
 nco854. Use NC_BYTE instead of NC_SHORT for logical in ncap2?
 nco855. nco_netcdf.c netCDF4 forward compatibility stubs generate beaucoups 'unused parameter' warnings (only when compiled with netCDF3)
-nco858. 
+nco858. Move netCDF4 stuff from ANNOUNCE to nco.texi
+nco859. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
