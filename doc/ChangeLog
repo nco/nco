@@ -1,5 +1,10 @@
 2007-05-22  Charlie Zender  <zender@uci.edu>
 
+	* cd ~/nco;cvs tag -d nco-3_9_0;cvs tag -d nco-3_9_0-1
+	  cd ~/nco;cvs commit -m "Preparing nco-3.9.0 release"
+	  cvs tag -c nco-3_9_0;cvs tag -c nco-3_9_0-1
+	Changes since nco-3_2_0: netCDF4 atomic type support, ncks attributes
+
 	* Added netCDF4 support section: http://nco.sf.net/nco.html#nco4 
 
 	* Decided to release as 3.9.0 rather than 3.2.1
