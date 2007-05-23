@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.231 2007-05-23 02:06:52 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.232 2007-05-23 03:28:29 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.0 are ready. 
 The version number jumped from 3.2.0 to 3.9.0 because of the addition
@@ -74,20 +74,21 @@ If you feed NCO netCDF4 files, it produces netCDF4 output.
 Use the handy-dandy -4 switch to request netCDF4 output from 
 netCDF3 input, i.e., to convert netCDF3 to netCDF4.
 
-netCDF4 is beta software:
+Use appropriate caution while netCDF4 is beta software.
 Problems with the netCDF4 and HDF libraries are still being fixed.
 NCO support for netCDF4 atomic types is relatively untested.
-The binary distributions (RPMs and debs) still use netCDF3 for now.
+Binary NCO distributions (RPMs and debs) still use netCDF3 for now.
+
 If you want the netCDF4 support, you'll have to build NCO yourself:
+Typically, you will need to specify the root of the netCDF4-beta1 
+installation directory. Do this with the NETCDF4_ROOT variable.
+Then use your preferred NCO build mechanism, e.g.,
 
-Make sure your library and include paths point to the netCDF4-beta1
-installation and use your preferred NCO build mechanism with either
- 
-configure --enable-netcdf4 
-
-or
-
-cd ~/nco/bld;make NETCDF4=Y allinone 
+export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
+# then
+cd ~/nco;./configure --enable-netcdf4  # Configure mechanism
+# or
+cd ~/nco/bld;./make NETCDF4=Y allinone # Old Makefile mechanism
 
 Our short term goal is to track the netCDF4-beta releases, keep the
 new netCDF4 atomic type support working, and iron out any problems.
