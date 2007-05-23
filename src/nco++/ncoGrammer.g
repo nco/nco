@@ -1264,9 +1264,12 @@ var=NULL_CEWI;
         // Deal with LHS casting 
         | (#(VAR_ID DMN_LIST ))=> #(vid1:VAR_ID dmn:DMN_LIST){   
 
+              long idx_mss;
               var_sct *var1;
               std::vector<std::string> str_vtr;
               RefAST  aRef;
+              NcapVar *Nmss;
+              
               
               if(dbg_lvl_get() > 0)
                 dbg_prn(fnc_nm,vid1->getText()+"[dims]");
@@ -1275,6 +1278,15 @@ var=NULL_CEWI;
               // set class wide variables
               bcst=true;  
               var_cst=NULL_CEWI;
+
+               // Check for missing value
+              idx_mss=prs_arg->ptr_var_vtr->findi(vid1->getText()+"@missing_value");
+              if(idx_mss >=0)
+                  Nmss=(*prs_arg->ptr_var_vtr)[idx_mss];
+              else 
+                  Nmss=NULL;                     
+              
+
 
               //aRef=vid->getFirstChild()->getFirstChild();
               aRef=dmn->getFirstChild();
@@ -1317,7 +1329,22 @@ var=NULL_CEWI;
 
               var1->nm =strdup(vid1->getText().c_str());
 
-              //Copy return variable<
+               // if no missing value then add one 
+               if(!var1->has_mss_val && Nmss){
+                 var_sct *var_mss;
+                 var_mss=Nmss->var;
+
+                 var_mss->has_mss_val=True;
+                 // swap values about 
+                 var_mss->mss_val.vp=var_mss->val.vp;
+
+                 (void)nco_mss_val_cp(var_mss,var1);
+                 var_mss->has_mss_val=False;
+                 var_mss->mss_val.vp=(void*)NULL;
+               }
+
+
+              //Copy return variable
               var=nco_var_dpl(var1);
               
               //call to nco_var_get() in ncap_var_init() uses this property
@@ -1327,13 +1354,20 @@ var=NULL_CEWI;
               bcst=false;
               var_cst=nco_var_free(var_cst); 
 
+               // erase redundant misssing value
+              if(idx_mss >=0)
+                (void)prs_arg->ptr_var_vtr->erase(idx_mss);
+
           } // end action
            
           | vid2:VAR_ID {   
                // Set class wide variables
+               long idx_mss;
 
                var_sct *var1;
                NcapVar *Nvar;
+               NcapVar *Nmss;
+               
 
               if(dbg_lvl_get() > 0)
                 dbg_prn(fnc_nm,vid2->getText());
@@ -1343,8 +1377,28 @@ var=NULL_CEWI;
                bcst=false;
                var_cst=NULL_CEWI; 
               
+               // Check for missing value
+               idx_mss=prs_arg->ptr_var_vtr->findi(vid2->getText()+"@missing_value");
+               if(idx_mss >=0)
+                    Nmss=(*prs_arg->ptr_var_vtr)[idx_mss];
+               else 
+                    Nmss=NULL;                     
               
                var1=out(vid2->getNextSibling());
+               
+               // if no missing value then add one 
+               if(!var1->has_mss_val && Nmss){
+                 var_sct *var_mss;
+                 var_mss=Nmss->var;
+
+                 var_mss->has_mss_val=True;
+                 // swap values about 
+                 var_mss->mss_val.vp=var_mss->val.vp;
+
+                 (void)nco_mss_val_cp(var_mss,var1);
+                 var_mss->has_mss_val=False;
+                 var_mss->mss_val.vp=(void*)NULL;
+               }
 
                // Save name 
                std::string s_var_rhs(var1->nm);
@@ -1366,6 +1420,10 @@ var=NULL_CEWI;
                var=nco_var_dpl(var1);
                // Write var to disk
                (void)ncap_var_write(var1,bram,prs_arg);
+
+               // erase redundant misssing value
+               if(idx_mss >=0)
+                 (void)prs_arg->ptr_var_vtr->erase(idx_mss);
                          
        } // end action
  
