@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.912 2007-05-23 03:58:38 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.913 2007-05-23 20:53:33 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -602,7 +602,9 @@ nco854. Use NC_BYTE instead of NC_SHORT for logical in ncap2?
 nco855. nco_netcdf.c netCDF4 forward compatibility stubs generate beaucoups 'unused parameter' warnings (only when compiled with netCDF3)
 nco858. Move netCDF4 stuff from ANNOUNCE to nco.texi
 nco859. Implement -3 switch for symmetry with -4
-nco860. 
+nco860. make nco_inq_format() function more backward compatible?
+nco861. schweitzer problem
+nco862. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
