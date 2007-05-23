@@ -67,3 +67,17 @@ void NcapVarVector::push(NcapVar *Nvar){
     (void)t_vector.push_back(Nvar);
 
 }
+
+
+
+// Delete an item
+void NcapVarVector::erase(long idx){
+  std::vector<NcapVar*>::iterator we=t_vector.begin();
+  
+  we+=idx;
+  delete t_vector[idx];
+  t_vector.erase(we);
+
+}
+
+
