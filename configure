@@ -23030,9 +23030,9 @@ echo "DEBUG: enable_netcdf4: ${enable_netcdf4} and enable_dap: ${enable_dap}"
 if test "${enable_netcdf4}" = 'yes'; then
     if test "${NETCDF4_ROOT}" != ""; then
 	if test -d "${NETCDF4_ROOT}"; then
-	    echo "NETCDF4_ROOT is set and exists - assuming it is real";\
-		CPPFLAGS="-I${NETCDF4_ROOT}/include ${CPPFLAGS}";\
-		LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
+	    echo "NETCDF4_ROOT is set and exists - assuming it is real";
+	    CPPFLAGS="-I${NETCDF4_ROOT}/include ${CPPFLAGS}";
+	    LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
 	    if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
 # Check libnetcdf for a netCDF4 function
 # fxm: netCDF4 alpha10 barfs with shared libs, check after final release
@@ -23110,20 +23110,20 @@ fi
 
 	    fi
 	else
-	    echo "NETCDF4_ROOT set but does not exist---skipping netCDF4 configuration";\
-		enable_netcdf4='no'
+	    echo "NETCDF4_ROOT set but does not exist---skipping netCDF4 configuration";
+	    enable_netcdf4='no'
 	fi
     else
-	echo "User set '--enable-netcdf4' but did not set NETCDF4_ROOT";\
-	    echo "Must set both to enable netCDF4.  Will try to configure netCDF anyway...";\
+	echo "User set '--enable-netcdf4' but did not set NETCDF4_ROOT";
+	echo "Must set both to enable netCDF4.  Will try to configure netCDF anyway...";
 
-{ echo "$as_me:$LINENO: checking for find_nc4_file in -lnetcdf4" >&5
-echo $ECHO_N "checking for find_nc4_file in -lnetcdf4... $ECHO_C" >&6; }
-if test "${ac_cv_lib_netcdf4_find_nc4_file+set}" = set; then
+{ echo "$as_me:$LINENO: checking for find_nc4_file in -lnetcdf" >&5
+echo $ECHO_N "checking for find_nc4_file in -lnetcdf... $ECHO_C" >&6; }
+if test "${ac_cv_lib_netcdf_find_nc4_file+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnetcdf4 -lhdf5 -lhdf5_hl $LIBS"
+LIBS="-lnetcdf -lhdf5 -lhdf5_hl $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -23164,26 +23164,26 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
 	 test ! -s conftest.err
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
-  ac_cv_lib_netcdf4_find_nc4_file=yes
+  ac_cv_lib_netcdf_find_nc4_file=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-	ac_cv_lib_netcdf4_find_nc4_file=no
+	ac_cv_lib_netcdf_find_nc4_file=no
 fi
 
 rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf4_find_nc4_file" >&5
-echo "${ECHO_T}$ac_cv_lib_netcdf4_find_nc4_file" >&6; }
-if test $ac_cv_lib_netcdf4_find_nc4_file = yes; then
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_find_nc4_file" >&5
+echo "${ECHO_T}$ac_cv_lib_netcdf_find_nc4_file" >&6; }
+if test $ac_cv_lib_netcdf_find_nc4_file = yes; then
   cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBNETCDF4 1
+#define HAVE_LIBNETCDF 1
 _ACEOF
 
-  LIBS="-lnetcdf4 $LIBS"
+  LIBS="-lnetcdf $LIBS"
 
 else
   enable_netcdf4=no
@@ -23960,6 +23960,108 @@ _ACEOF
   LIBS="-lsunmath $LIBS"
 
 fi
+
+
+
+
+
+	       for ac_func in nc_inq_format
+do
+as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
+{ echo "$as_me:$LINENO: checking for $ac_func" >&5
+echo $ECHO_N "checking for $ac_func... $ECHO_C" >&6; }
+if { as_var=$as_ac_var; eval "test \"\${$as_var+set}\" = set"; }; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+/* Define $ac_func to an innocuous variant, in case <limits.h> declares $ac_func.
+   For example, HP-UX 11i <limits.h> declares gettimeofday.  */
+#define $ac_func innocuous_$ac_func
+
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char $ac_func (); below.
+    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+    <limits.h> exists even on freestanding compilers.  */
+
+#ifdef __STDC__
+# include <limits.h>
+#else
+# include <assert.h>
+#endif
+
+#undef $ac_func
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char $ac_func ();
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined __stub_$ac_func || defined __stub___$ac_func
+choke me
+#endif
+
+int
+main ()
+{
+return $ac_func ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  eval "$as_ac_var=yes"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	eval "$as_ac_var=no"
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+fi
+ac_res=`eval echo '${'$as_ac_var'}'`
+	       { echo "$as_me:$LINENO: result: $ac_res" >&5
+echo "${ECHO_T}$ac_res" >&6; }
+if test `eval echo '${'$as_ac_var'}'` = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define `echo "HAVE_$ac_func" | $as_tr_cpp` 1
+_ACEOF
+
+else
+  cat >>confdefs.h <<_ACEOF
+#define `echo "NEED_$ac_func" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+done
 
 
 
@@ -25388,9 +25490,6 @@ if ((test "${enable_libnco}" = 'yes') && (test "${MACOSX}" != 1)); then
     LIBS="-lnco ${LIBS}"
 fi
 # End Library checks
-
-# OPeNDAP (aka DAP) support was here
-# I moved it up to precede netcdf library tests jhrg 05/26/05
 
 echo "DEBUG: After library checks LIBS=$LIBS"
 echo "DEBUG: enable_mpi = '${enable_mpi}'"

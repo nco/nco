@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.77 2007-05-21 03:19:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.78 2007-05-24 00:50:28 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -488,11 +488,15 @@ nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * cons
   rcd=nc_inq(nc_id,dmn_nbr_fl,var_nbr_fl,att_glb_nbr,rec_dmn_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq()");
   return rcd;
-} /* end nco_inq */
+} /* end nco_inq() */
 
 #if NEED_NC_INQ_FORMAT
-/* Stub for nc_inq_format(), which appeared in netCDF 3.6.1 */
-int nc_inq_format(int nc_id, int * const fl_fmt){return NC_NOERR;}
+int nc_inq_format(int nc_id, int * const fl_fmt)
+{
+  /* Purpose: Stub for nc_inq_format(), which appeared in netCDF 3.6.1 or 3.6.2 */
+  *fl_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
+  return NC_NOERR+0*nc_id; /* CEWI */
+} /* end nco_inq_format() */
 #endif /* !NEED_NC_INQ_FORMAT */
 
 int

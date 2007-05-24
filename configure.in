@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.228 2007-05-23 02:06:52 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.229 2007-05-24 00:50:28 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -273,9 +273,9 @@ AC_ARG_VAR([NETCDF4_ROOT],[Root of netCDF4 installation---must be separate from 
 if test "${enable_netcdf4}" = 'yes'; then
     if test "${NETCDF4_ROOT}" != ""; then
 	if test -d "${NETCDF4_ROOT}"; then
-	    echo "NETCDF4_ROOT is set and exists - assuming it is real";\
-		CPPFLAGS="-I${NETCDF4_ROOT}/include ${CPPFLAGS}";\
-		LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
+	    echo "NETCDF4_ROOT is set and exists - assuming it is real";
+	    CPPFLAGS="-I${NETCDF4_ROOT}/include ${CPPFLAGS}";
+	    LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
 	    if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
 # Check libnetcdf for a netCDF4 function
 # fxm: netCDF4 alpha10 barfs with shared libs, check after final release
@@ -283,13 +283,13 @@ if test "${enable_netcdf4}" = 'yes'; then
 		AC_CHECK_LIB([netcdf],[find_nc4_file],[LIBS="-lnetcdf -lhdf5 -lhdf5_hl ${LIBS}" AC_DEFINE(ENABLE_NETCDF4,1,Have included NETCDF4 support)],[enable_netcdf4=no],[-lhdf5 -lhdf5_hl])
 	    fi
 	else
-	    echo "NETCDF4_ROOT set but does not exist---skipping netCDF4 configuration";\
-		enable_netcdf4='no'
+	    echo "NETCDF4_ROOT set but does not exist---skipping netCDF4 configuration";
+	    enable_netcdf4='no'
 	fi
     else
-	echo "User set '--enable-netcdf4' but did not set NETCDF4_ROOT";\
-	    echo "Must set both to enable netCDF4.  Will try to configure netCDF anyway...";\
-	    AC_CHECK_LIB([netcdf4],[find_nc4_file],,enable_netcdf4=no,[-lhdf5 -lhdf5_hl])
+	echo "User set '--enable-netcdf4' but did not set NETCDF4_ROOT";
+	echo "Must set both to enable netCDF4.  Will try to configure netCDF anyway...";
+	AC_CHECK_LIB([netcdf],[find_nc4_file],,[enable_netcdf4=no],[-lhdf5 -lhdf5_hl])
     fi
 fi
 echo "DEBUG: LIBS = ${LIBS}"
@@ -428,6 +428,7 @@ echo "DEBUG: After enable_dap section LIBS = ${LIBS}"
 AC_CHECK_LIB([f95],[_g95_ac_array],,,[-lm])
 AC_CHECK_LIB([m],[sin])
 AC_CHECK_LIB([sunmath],[sinf])
+NCO_CHECK_FUNCS([nc_inq_format])
 NCO_CHECK_FUNCS([getopt getopt_long])
 AC_CHECK_FUNC(getopt_long,,[nco_need_getopt_long='yes'])
 AM_CONDITIONAL(NCO_NEED_GETOPT_LONG,test "${nco_need_getopt_long}" = 'yes')
@@ -456,9 +457,6 @@ if ((test "${enable_libnco}" = 'yes') && (test "${MACOSX}" != 1)); then
     LIBS="-lnco ${LIBS}"
 fi
 # End Library checks
-
-# OPeNDAP (aka DAP) support was here
-# I moved it up to precede netcdf library tests jhrg 05/26/05
 
 echo "DEBUG: After library checks LIBS=$LIBS"
 echo "DEBUG: enable_mpi = '${enable_mpi}'"
