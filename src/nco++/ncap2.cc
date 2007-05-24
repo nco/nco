@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.38 2007-05-18 21:27:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.39 2007-05-24 14:50:20 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.38 2007-05-18 21:27:35 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.38 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.39 2007-05-24 14:50:20 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.39 $";
   const char * const opt_sht_lst="4ACcD:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -486,6 +486,11 @@ main(int argc,char **argv)
   /* sym_vtr.push(ncap_sym_init("trunc",trunc,truncf)); *//* Round to nearest integer not larger in absolute value */
   /* sym_vtr.push(ncap_sym_init("rint",rint,rintf)); *//* Round to integer value in floating point format using current rounding direction, raise inexact exceptions */
 
+
+  /* add delete function for RAM variables --Temporary location */
+  /* function args are not used */
+    sym_vtr.push_back(ncap_sym_init("delete",tanh,tanhf));
+
   /* now sort sym_vtr */
   sym_vtr.sort(); 
    
@@ -707,7 +712,11 @@ main(int argc,char **argv)
 
     // Check if attrribute
     if( var_vtr[idx]->xpr_typ != ncap_att) continue;
-   
+  
+    // Skip misssing values for now !!!
+    if(var_vtr[idx]->getAtt() =="missing_value") continue;
+        
+ 
     att_item.att_nm=strdup(var_vtr[idx]->getAtt().c_str());
     att_item.var_nm=strdup(var_vtr[idx]->getVar().c_str());
     att_item.sz=var_vtr[idx]->var->sz;
@@ -803,7 +812,7 @@ main(int argc,char **argv)
     /* Free var_vtr */
     if(var_vtr.size() > 0) { 
       for(idx=0; idx < var_vtr.size(); idx++)
-	delete var_vtr[idx];
+            delete var_vtr[idx];
     }  
     
     /* Free variable lists */
