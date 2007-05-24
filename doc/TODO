@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.913 2007-05-23 20:53:33 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.914 2007-05-24 03:50:42 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -587,8 +587,6 @@ nco837. need single letter (preferably) abbreviations for netCDF4 atomic types t
 nco838. Document solution to nco837.
 nco839. What, if anything, should NC_FILL_STRING be?
 nco840. ncap: make sure methods (e.g., total()) respect missing values
-nco841. netCDF3/netCDF4 netcdf.h enum nc_type change generates beaucoup GCC warnings
-nco844. Link forward-compatibility stub for nc_inq_format() into configure.in
 nco845. Add -Wno-switch to quiet GCC enum warnings on netCDF4 case labels?
 nco846. netCDF4: switch to long long array offsets everywhere? 
         e.g., can long tally hold > 2 GB array?
@@ -600,10 +598,7 @@ nco852. UBYTE does not work with ncap2:
 nco853. Enable arithmetic for NC_BYTE and NC_UBYTE everywhere?
 nco854. Use NC_BYTE instead of NC_SHORT for logical in ncap2?
 nco855. nco_netcdf.c netCDF4 forward compatibility stubs generate beaucoups 'unused parameter' warnings (only when compiled with netCDF3)
-nco858. Move netCDF4 stuff from ANNOUNCE to nco.texi
 nco859. Implement -3 switch for symmetry with -4
-nco860. make nco_inq_format() function more backward compatible?
-nco861. schweitzer problem
 nco862. 
 ************************************************************************
 End ncoXXX TODOs
