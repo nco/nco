@@ -1355,8 +1355,10 @@ var=NULL_CEWI;
               var_cst=nco_var_free(var_cst); 
 
                // erase redundant misssing value
+              /*
               if(idx_mss >=0)
                 (void)prs_arg->ptr_var_vtr->erase(idx_mss);
+              */
 
           } // end action
            
@@ -1422,8 +1424,10 @@ var=NULL_CEWI;
                (void)ncap_var_write(var1,bram,prs_arg);
 
                // erase redundant misssing value
+               /*
                if(idx_mss >=0)
                  (void)prs_arg->ptr_var_vtr->erase(idx_mss);
+               */
                          
        } // end action
  
