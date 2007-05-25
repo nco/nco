@@ -1,9 +1,13 @@
-2007-05-24  Charlie Zender  <zender@uci.edu>
+2007-05-25  Charlie Zender  <zender@uci.edu>
 
 	* cd ~/nco;cvs tag -d nco-3_9_0;cvs tag -d nco-3_9_0-1
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.0 release"
 	  cvs tag -c nco-3_9_0;cvs tag -c nco-3_9_0-1
 	Changes since nco-3_2_0: netCDF4 atomic type support, ncks attributes
+
+	* Add netcdf4 atomic type functionality to ncatted nco837
+
+2007-05-24  Charlie Zender  <zender@uci.edu>
 
 	* Include NC_UBYTE and NC_STRING as funky variable types in var_lst_dvd()
 

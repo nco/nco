@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.74 2007-05-25 05:24:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.75 2007-05-25 07:11:55 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -601,18 +601,18 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       case 's':	aed_lst[idx].type=NC_SHORT; break;
       case 'c':	aed_lst[idx].type=NC_CHAR; break;
       case 'b':	aed_lst[idx].type=NC_BYTE; break;
-	/* fxm TODO nco837 */
-      case 'z':	aed_lst[idx].type=NC_UBYTE; break;
-      case 'y':	aed_lst[idx].type=NC_USHORT; break;
-      case 'x':	aed_lst[idx].type=NC_UINT; break;
-      case 'w':	aed_lst[idx].type=NC_INT64; break;
-      case 'v':	aed_lst[idx].type=NC_UINT64; break;
-      case 'u':	aed_lst[idx].type=NC_STRING; break;
       default: 
-	(void)fprintf(stderr,"%s: ERROR `%s' is not a supported netCDF data type\n",prg_nm_get(),arg_lst[3]);
-	(void)fprintf(stderr,"%s: HINT: Valid data types are `c' = char, `f' = float, `d' = double,`s' = short, 'l' = `i' = integer, `b' = byte",prg_nm_get());
-	nco_exit(EXIT_FAILURE);
-	break;
+	if(!strcasecmp(arg_lst[3],"ub")) aed_lst[idx].type=NC_UBYTE; 
+	else if(!strcasecmp(arg_lst[3],"us")) aed_lst[idx].type=NC_USHORT; 
+	else if(!strcasecmp(arg_lst[3],"u") || !strcasecmp(arg_lst[3],"ui") || !strcasecmp(arg_lst[3],"ul")) aed_lst[idx].type=NC_UINT; 
+	else if(!strcasecmp(arg_lst[3],"ll") || !strcasecmp(arg_lst[3],"int64")) aed_lst[idx].type=NC_INT64; 
+	else if(!strcasecmp(arg_lst[3],"ull") || !strcasecmp(arg_lst[3],"uint64")) aed_lst[idx].type=NC_UINT64; 
+	else if(!strcasecmp(arg_lst[3],"sng")) aed_lst[idx].type=NC_STRING; 
+	else{
+	  (void)fprintf(stderr,"%s: ERROR `%s' is not a supported netCDF data type\n",prg_nm_get(),arg_lst[3]);
+	  (void)fprintf(stderr,"%s: HINT: Valid data types are `c' = char, `f' = float, `d' = double,`s' = short, 'l' = `i' = integer, `b' = byte",prg_nm_get());
+	  nco_exit(EXIT_FAILURE);} /*  end if error */
+      break;
       } /* end switch */
       
       /* Re-assemble string list values which inadvertently contain delimiters */

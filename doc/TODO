@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.920 2007-05-25 06:02:19 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.921 2007-05-25 07:11:54 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -569,14 +569,13 @@ nco828. ncks: returns file ID = 65536 on netCDF4 files: why?
         ncks -m ~/nco/data/in_4.nc
 	od -An -c -N4 ~/nco/data/in_4.nc
 nco834. Add atomic type string NC_STRING to nco_c++ get/put var
-nco835. ncks uint64_var(ULLONG_MAX) = int64_var(LLONG_MAX)
+nco835. ncks uint64_var(ULLONG_MAX) = int64_var(LLONG_MAX) (problem in libnetcdf4?)
 	ccc
 	ncks -v '.?_var$' ~/c++/foo.nc
 nco836. Allow user to override format consanguinity with, e.g., -3 switch
 nco837. need single letter (preferably) abbreviations for netCDF4 atomic types to use as arguments to ncatted 'type'
 nco838. Document solution to nco837.
 nco839. What, if anything, should NC_FILL_STRING be?
-nco840. ncap: make sure methods (e.g., total()) respect missing values
 nco845. Add -Wno-switch to quiet GCC enum warnings on netCDF4 case labels?
 nco846. netCDF4: switch to long long array offsets everywhere? 
         e.g., can long tally hold > 2 GB array?
@@ -595,7 +594,8 @@ nco865. Re-cast output variable to original type in ncbo.c (like in ncflint.c)?
         ncks -O -C -d time,0,3 -v rec_var_dbl_mss_val_dbl_pck -p ~/nco/data in.nc
 	ncks ~/foo.nc
 nco866. Why don't ncra and ncwa make NC_BYTE etc. as fix var in var_lst_dvd()?
-nco867. 
+nco867. Finish nco837 and document it
+nco868. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

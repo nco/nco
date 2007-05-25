@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.105 2007-05-09 04:57:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.106 2007-05-25 07:11:55 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -49,6 +49,9 @@
 
    Create new float:
    ncatted -D 5 -O -a new_float_att,att_var,c,f,74 in.nc ~/foo.nc
+
+   Create new uint64:
+   ncatted -4 -D 5 -O -a new_uint64_att,att_var,c,ull,74 in.nc ~/foo.nc
 
    Delete attribute:
    ncatted -D 5 -O -a float_att,att_var,d,,, in.nc ~/foo.nc
@@ -144,8 +147,8 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.105 2007-05-09 04:57:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.105 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.106 2007-05-25 07:11:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.106 $";
   const char * const opt_sht_lst="4Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)

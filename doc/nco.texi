@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.421 2007-05-25 05:45:12 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.422 2007-05-25 07:11:54 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6263,9 +6263,10 @@ Write attribute @var{att_nm} with value @var{att_val} to variable
 This is the default mode.
 @end table
 
-The value of @var{att_type} is a single character abbreviation (@code{f},
-@code{d}, @code{l}, @code{i}, @code{s}, @code{c}, or @code{b}) standing
-for one of the seven primitive netCDF data types:@* 
+The value of @var{att_type} is a single character abbreviation 
+(@code{f}, @code{d}, @code{l}, @code{i}, @code{s}, @code{c}, 
+@code{b}, @code{u}) or a short string standing for one of the twelve
+primitive netCDF data types:@*  
 @table @code
 @item f
 @dfn{Float}.
@@ -6275,26 +6276,46 @@ type @code{NC_FLOAT}.
 @dfn{Double}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
 type @code{NC_DOUBLE}.
-@item i
-@dfn{Integer}.
+@item i, l
+@dfn{Integer} or @dfn{Long}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
 type @code{NC_INT}.
-@item l
-@dfn{Long}.
-Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
-type @code{NC_LONG}.
 @item s
 @dfn{Short}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
 type @code{NC_SHORT}.
 @item c
-@dfn{Char.} 
+@dfn{Char}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
 type @code{NC_CHAR}.
 @item b
 @dfn{Byte}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
 type @code{NC_BYTE}.
+@item ub
+@dfn{Unsigned Byte}.
+Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
+type @code{NC_UBYTE}.
+@item us
+@dfn{Unsigned Short}.
+Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
+type @code{NC_USHORT}.
+@item u, ui, ul
+@dfn{Unsigned Int}.
+Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
+type @code{NC_UINT}.
+@item ll, int64
+@dfn{Int64}.
+Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
+type @code{NC_INT64}.
+@item ull, uint64
+@dfn{Uint64}.
+Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
+type @code{NC_UINT64}.
+@item sng
+@dfn{String}.
+Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
+type @code{NC_STRING}.
 @end table
 @noindent
 The specification of @var{att_type} is optional (and is ignored) in
