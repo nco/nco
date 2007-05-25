@@ -5,7 +5,7 @@
 	  cvs tag -c nco-3_9_0;cvs tag -c nco-3_9_0-1
 	Changes since nco-3_2_0: netCDF4 atomic type support, ncks attributes
 
-	* Add ncdiff regression for packed subtraction
+	* Add better ncdiff regression for packed subtraction
 
 	* Change put_var(var_prc_out[idx]->type) to var_prc_out[idx]->typ_upk
 	in arithmetic operators to output inflated variables to disk.
@@ -16,7 +16,7 @@
 
 2007-05-23  Charlie Zender  <zender@uci.edu>
 
-	* Add nco_inq_format() compatibility stubs for pre-netCDF3.6.2 libraries
+	* Add nco_inq_format() compatibility stubs for pre-netCDF3.6.1 libraries
 
 2007-05-22  Charlie Zender  <zender@uci.edu>
 

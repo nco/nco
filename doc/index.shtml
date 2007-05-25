@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.418 2007-05-23 03:58:38 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.419 2007-05-25 05:45:12 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -100,7 +100,7 @@ Send it in!<br>
 
 <ul>
 
-<li>May&nbsp;26, 2007: NCO 3.9.0 released (netCDF4-beta1 support)</li>
+<li>May&nbsp;26, 2007: NCO 3.9.0 released (netCDF4 atomic types support)</li>
 
 <li>May&nbsp;2, 2007: 
 <a href="http://dust.ess.uci.edu/smn/smn_WZJ07_gpc_200705.pdf">Talk</a>
@@ -450,6 +450,7 @@ Instead, retrieve all recently tagged versions
 <li><b>NCO/SDO 3.9.0</b>: 
 <a href="http://nco.sf.net/nco.html#nco4">Support netCDF4</a> types (<b>ubyte</b>, <b>ushort</b>, <b>uint</b>, <b>int64</b>, and <b>uint64</b>);
 Control <tt>ncks</tt> metadata <a href="http://nco.sf.net/nco.html#prn">copying</a>; 
+Fix <b>ncbo</b> bug with packed values; 
 Build support for IRIX&nbsp;6.5; 
 <li><b>NCO/SDO 3.2.0</b>: More forgiving exclusion list (<tt>-x -v <i>var_nm</i></tt>) <a href="http://nco.sf.net/nco.html#xcl">handling</a>; Fix <tt>rmssdn</tt> normalization; Support Mac OS&nbsp;X on Intel; Documentation bugfixes;
 <li><b>NCO/SDO 3.1.9</b>: <tt>ncap2</tt> in RPM packages; Quieter output; AIX <tt>configure</tt> supports <tt>ncap2</tt>; Update to DAP for netCDF 3.6.2; Fix <tt>nc[erw]a</tt> for coordinate min/max/ttl; <tt>ncecat</tt> allows files to differ in record dimension size;
@@ -1147,6 +1148,12 @@ The
 affected. 
 We recommend that all <tt>ncap</tt> users upgrade.
 </li>
+
+<!-- http://nco.sf.net#bug_ncbo_pck -->
+<a name="bug_ncbo_pck"></a>
+<li><i>Incorrect <tt>ncbo</tt> output for packed input:</i>
+<tt>ncbo</tt> versions ???&mdash;3.2.0 incorrectly write differences
+of packed input. This only affects packed variables. 
 
 <!-- http://nco.sf.net#bug_ncflint_mss_val -->
 <a name="bug_ncflint_mss_val"></a>

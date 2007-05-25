@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.420 2007-05-23 03:59:54 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.421 2007-05-25 05:45:12 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,7 +103,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.9.0
 @set copyright-years 1995--2007
 @set update-year 2007
-@set update-date 22 May 2007
+@set update-date 24 May 2007
 @set update-month May 2007
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -9290,7 +9290,8 @@ Compatibility with large PIDs.
 @cindex Mike Page
 @cindex Martin Schmidt
 @cindex Michael Schulz
-@item Scott Capps, Martin Dix, Mark Flanner, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz
+@cindex Remik Ziemlinski
+@item Scott Capps, Martin Dix, Mark Flanner, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Remik Ziemlinski
 Excellent bug reports and feature requests.
 @end table
 

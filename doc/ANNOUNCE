@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.234 2007-05-23 20:53:32 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.235 2007-05-25 05:45:11 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.0 are ready. 
 The version number jumped from 3.2.0 to 3.9.0 because of the addition
@@ -33,7 +33,7 @@ B. ncks copying of variable and global metadata is configurable (-m, -M).
    ncks -O -m -v one in.nc out.nc # Copy   global not variable attributes
    ncks -O -M -m -v one in.nc out.nc # Copy   data only, no attributes
    ncks -A    -m -v one in.nc out.nc # Append data only, no attributes
-   http://nco.sf.net/nco.html#prn has more details.
+   http://nco.sf.net/nco.html#prn
 
 C. New Documentation:
    Working with non-standard grids, e.g., 2D grids 
@@ -41,19 +41,23 @@ C. New Documentation:
 
 D. ncks reports input file type (e.g., NC_FORMAT_CLASSIC,
    NC_FORMAT_NETCDF4) as part of global metadata
+   http://nco.sf.net/nco.html#ncks
 
-E. Fix ncap2 .total() method correctly handles missing_value's
+E. Fix ncap2 .total() method to correctly handle missing_value's
 
-F. ncap2 (http://nco.sf.net/nco.html#ncap2) grows more powerful.
-   Henry has ...
-   Once threading and for loops are done we'll document it all. 
+F. ncap2 grows more powerful.
+   New demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]
+   http://nco.sf.net/nco.html#ncap2 
 
-G. Pre-built, up-to-date, Debian Sid binary packages are available.
-   Debian/Ubuntu users may get them from http://nco.sf.net#debian
-   "apt-get install nco" also retrieves these versions
+G. Fix bug where ncbo output differenced packed variables incorrectly
+   Thanks to Remik Ziemlinski for his excellent bug reports!
+   http://nco.sf.net#bug_ncbo_pck
 
-H. Pre-built, up-to-date, RPM packages are available, e.g.,
-   http://nco.sf.net/src/nco-3.9.0-1.i386.rpm
+H. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
+   http://nco.sf.net#debian
+
+I. Pre-built, up-to-date, RPM packages are available.
+   http://nco.sf.net#rpm
 
 Finally, what to expect with NCO support for netCDF4:
 Support for netCDF4 features will be incremental, i.e., 
