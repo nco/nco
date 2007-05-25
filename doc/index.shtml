@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.420 2007-05-25 17:36:46 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.421 2007-05-25 18:03:24 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -448,9 +448,9 @@ Instead, retrieve all recently tagged versions
 <ul>
 <li><b>NCO/SDO 3.9.1</b>: GCC&nbsp;4.2 compatibility (<i>In progress</i>) 
 <li><b>NCO/SDO 3.9.0</b>: 
-<a href="http://nco.sf.net/nco.html#nco4">Support netCDF4</a> types (<b>ubyte</b>, <b>ushort</b>, <b>uint</b>, <b>int64</b>, and <b>uint64</b>);
+<a href="http://nco.sf.net/nco.html#nco4">Support netCDF4</a> types (<tt>ubyte</tt>, <tt>ushort</tt>, <tt>uint</tt>, <tt>int64</tt>, and <tt>uint64</tt>);
 Control <tt>ncks</tt> metadata <a href="http://nco.sf.net/nco.html#prn">copying</a>; 
-Fix <b>ncbo</b> packed valued <a href="#bug_ncbo_pck">bug</a>; 
+Fix <tt>ncbo</tt> packed valued <a href="#bug_ncbo_pck">bug</a> (<i>upgrade recommended</i>); 
 Improve IRIX&nbsp;6.5 support; 
 <li><b>NCO/SDO 3.2.0</b>: More forgiving exclusion list (<tt>-x -v <i>var_nm</i></tt>) <a href="http://nco.sf.net/nco.html#xcl">handling</a>; Fix <tt>rmssdn</tt> normalization; Support Mac OS&nbsp;X on Intel; Documentation bugfixes;
 <li><b>NCO/SDO 3.1.9</b>: <tt>ncap2</tt> in RPM packages; Quieter output; AIX <tt>configure</tt> supports <tt>ncap2</tt>; Update to DAP for netCDF 3.6.2; Fix <tt>nc[erw]a</tt> for coordinate min/max/ttl; <tt>ncecat</tt> allows files to differ in record dimension size;
@@ -481,7 +481,7 @@ Improve IRIX&nbsp;6.5 support;
 <li><b>NCO 2.8.7</b>: <tt>ncap</tt> packing works again (<a href="#bug_pck">broke in 2.8.4</a>); Cygwin builds work again
 <li><b>NCO 2.8.6</b>: AIX and IRIX builds work again; custom GCC builds with <tt>-Werror</tt>
 <li><b>NCO 2.8.5</b>: Solaris <tt>make install</tt> works; <tt>ncap</tt> changes attribute values correctly; <a href="#bld_DODS">Support DODS 3.4+, deprecate 3.3-</a>; add <tt>--enable-[optimize/debug]-custom</tt> options to <tt>./configure</tt>
-<li><b>NCO 2.8.4</b>: Index-based hyperslabs work again (<a href="#bug_idx_hyp">broke in 2.7.3</a>, <b><i>upgrade highly recommended</i></b>); <tt>ncap</tt> peak memory usage reduced still more; support for AMD Opteron x86_64 architecture
+<li><b>NCO 2.8.4</b>: Index-based hyperslabs work again (<a href="#bug_idx_hyp">broke in 2.7.3</a>, <i>upgrade highly recommended</i>); <tt>ncap</tt> peak memory usage reduced still more; support for AMD Opteron x86_64 architecture
 <li><b>NCO 2.8.3</b>: Fix big <tt>ncap</tt> memory leak; fix regressions; remove scary packing warnings</li>
 <li><b>NCO 2.8.2</b>: <tt>ncbo</tt> handles distinct <tt>missing_value</tt>s correctly; improve error diagnostics</li>
 <li><b>NCO 2.8.1</b>: <a href="./nco.html#rx">&ldquo;Variable wildcarding&rdquo;</a>&mdash;extended regular expressions in <tt>-v var,...</tt> lists&mdash;support in all operators</li>
