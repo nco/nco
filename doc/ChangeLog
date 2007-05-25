@@ -5,6 +5,11 @@
 	  cvs tag -c nco-3_9_0;cvs tag -c nco-3_9_0-1
 	Changes since nco-3_2_0: netCDF4 atomic type support, ncks attributes
 
+	* Change put_var(var_prc_out[idx]->type) to var_prc_out[idx]->typ_upk
+	in arithmetic operators to output inflated variables to disk.
+	This should fix TODO nco862, a regression introduced sometime 
+	between 2.7.9 and 3.2.1 and noticed by Remik Ziemlinski.
+
 	* Postpone 3.9.0 release until ncdiff/packing bug TODO nco862 is fixed
 
 2007-05-23  Charlie Zender  <zender@uci.edu>

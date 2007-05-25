@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.66 2007-04-18 17:06:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.67 2007-05-25 04:35:00 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -706,7 +706,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     default: nco_dfl_case_prg_id_err(); break;
     } /* end switch */
     
-    /* Previous case-statement does account for variables with no data */
+    /* Previous case-statement does not account for variables with no data */
     if(nco_is_rth_opr(prg_id))
       if(var[idx]->sz == 0L)
 	var_op_typ[idx]=fix;

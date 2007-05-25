@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.122 2007-05-16 01:12:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.123 2007-05-25 04:35:00 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -864,7 +864,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	  Currently, ncap only calls nco_var_dfn() for fixed variables
 	  ncap uses its own routine, ncap_var_write(), for RHS variable definitions
        4. All variables in non-arithmetic operators (except ncpdq) should remain un-altered
-       5. ncpdq is non-arithemetic operator
+       5. ncpdq is non-arithmetic operator
           However, ncpdq specially handles fine-grained control [un-]packing options */
     if(nco_is_rth_opr(prg_id)){
       /* Arithmetic operators store values as unpacked... */
