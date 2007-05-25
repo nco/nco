@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.914 2007-05-24 03:50:42 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.915 2007-05-25 00:58:30 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -451,7 +451,6 @@ nco685. Run static analysis tool on nco codebase
 nco689. Multislabs (multiple limits on same dimension) fail in arithmetic operators. Currently, arithmetic operators silently ignore all limit specifications after the first. Solution: Diagnose and fail with informative warning until nco690 implemented.
         ncwa -O -a lat,lon -w area -d lat,30.,90. -d lon,345.,360. -d lon,0.,195. isccpd_0112_clm_landmask.nc foo4.nc
 nco690. Implement multislabs in arithmetic operators (no reason not to!)
-nco692. Update to DAP 3.6
 nco693. ncks regression for offset past end of file test
 	ncks -h -O -C -d time,0,1 -v time ~/nco/data/in.nc ~/foo.nc
 	ncks -C -H -s '%g' -C -d time,2, ~/foo.nc
@@ -481,16 +480,7 @@ nco737. Add regression for regex'ing consecutive Q's?
 nco738. nco_cnv_cf_cll_mth_add() CF cell methods
 nco744. Add option to eliminate degenerate dimensions in ncra
 nco745. Add regression test for ncwa --rdd
-nco746. ncap2 array tests for bds/map:
-        ncap2 -v -O -s 'slon[lon]=0' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # works
-        ncap2 -v -O -s 'slon[$lon]=0' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # works
-        ncap2 -v -O -s 'slon[lon]=0' -s 'slon=lon_grd(0:$lon-1)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # fails
-        ncap2 -v -O -s 'slon[lon]=0' -s 'slon=lon_grd(0:3)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # fails (but does not crash)
-        ncap2 -v -O -s 'slon[lon]=0' -s 'slon(0:3)=lon_grd(0:3)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # works
-        ncap2 -v -O -s 'slon[lon]=lon_grd(0:3)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # fails
-        ncap2 -v -O -s 'slon=lon_grd(1:4)' -p ~/nco/data in.nc ~/foo.nc;ncks ~/foo.nc # fails
 nco747. Change lat to -45,45 and add lat_grd = -90,0,90 in in.cdl
-nco753. Remove warn-uninitialized warnings from nco_ddra()
 nco754. Make sure private/firstprivate aspects of ddra_info are correct
 nco755. Test timers on ESMF under openmp
 nco756. Make nco_ddra() thread-safe
@@ -599,7 +589,14 @@ nco853. Enable arithmetic for NC_BYTE and NC_UBYTE everywhere?
 nco854. Use NC_BYTE instead of NC_SHORT for logical in ncap2?
 nco855. nco_netcdf.c netCDF4 forward compatibility stubs generate beaucoups 'unused parameter' warnings (only when compiled with netCDF3)
 nco859. Implement -3 switch for symmetry with -4
-nco862. 
+nco862. remik.txt ncdiff bug: problem is reproducible on each platform,
+	manifests slightly differently between platforms, exists
+	ncdiff -O -v '.?pck.?' -p ~/nco/data in.nc in.nc ~/foo.nc
+	ncdiff -O -v rec_var_dbl_mss_val_dbl_pck -p ~/nco/data in.nc in.nc ~/foo.nc
+	ncdiff -O -C -d time,0,3 -v rec_var_dbl_mss_val_dbl_pck -p ~/nco/data in.nc in.nc ~/foo.nc
+	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncdiff --mmr_cln -O -C -d time,0,3 -v rec_var_dbl_mss_val_dbl_pck -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
+	ncks ~/foo.nc
+nco863. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

@@ -40,7 +40,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.85 2007-05-19 07:08:51 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.86 2007-05-25 00:58:30 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -539,6 +539,12 @@ variables:
         rec_var_dbl_mss_val_dbl_pck:scale_factor = -9.15541313801785e-05;
         rec_var_dbl_mss_val_dbl_pck:add_offset = 5. ;
 
+	short scl_dbl_pck;
+	scl_dbl_pck:long_name = "scalar variable, double, packed";
+	scl_dbl_pck:purpose = "Packed version of number with ncdiff subtraction bug";
+        scl_dbl_pck:scale_factor = -9.15541313801785e-05;
+        scl_dbl_pck:add_offset = 5. ;
+
 	float rec_var_flt_mss_val_flt(time);
 	rec_var_flt_mss_val_flt:long_name = "record variable, float, with float missing values";
 	rec_var_flt_mss_val_flt:missing_value = 1.0e36f;
@@ -890,6 +896,7 @@ data:
 	rec_var_int_mss_val_dbl=-999,2,3,4,5,6,7,8,-999,-999;
 	rlev=1000,500,100;
 	rz=0,5000,17000;
+	scl_dbl_pck=10922;
 	scalar_var=10.;
 	short_var=10;
 	three=3.;
