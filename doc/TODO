@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.915 2007-05-25 00:58:30 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.916 2007-05-25 01:13:25 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -591,10 +591,11 @@ nco855. nco_netcdf.c netCDF4 forward compatibility stubs generate beaucoups 'unu
 nco859. Implement -3 switch for symmetry with -4
 nco862. remik.txt ncdiff bug: problem is reproducible on each platform,
 	manifests slightly differently between platforms, exists
-	ncdiff -O -v '.?pck.?' -p ~/nco/data in.nc in.nc ~/foo.nc
-	ncdiff -O -v rec_var_dbl_mss_val_dbl_pck -p ~/nco/data in.nc in.nc ~/foo.nc
-	ncdiff -O -C -d time,0,3 -v rec_var_dbl_mss_val_dbl_pck -p ~/nco/data in.nc in.nc ~/foo.nc
-	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncdiff --mmr_cln -O -C -d time,0,3 -v rec_var_dbl_mss_val_dbl_pck -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
+	ncbo -O -v '.?pck.?' -p ~/nco/data in.nc in.nc ~/foo.nc
+	ncbo -O -v rec_var_dbl_mss_val_dbl_pck -p ~/nco/data in.nc in.nc ~/foo.nc
+	ncks -O -C -d time,0,3 -v rec_var_dbl_mss_val_dbl_pck -p ~/nco/data in.nc
+	ncbo -O -C -d time,0,3 -v rec_var_dbl_mss_val_dbl_pck -p ~/nco/data in.nc in.nc ~/foo.nc
+	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncbo --mmr_cln -O -C -d time,0,3 -v rec_var_dbl_mss_val_dbl_pck -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 	ncks ~/foo.nc
 nco863. 
 ************************************************************************
