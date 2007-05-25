@@ -5,6 +5,8 @@
 	  cvs tag -c nco-3_9_0;cvs tag -c nco-3_9_0-1
 	Changes since nco-3_2_0: netCDF4 atomic type support, ncks attributes
 
+	* Include NC_UBYTE and NC_STRING as funky variable types in var_lst_dvd()
+
 	* Add better ncdiff regression for packed subtraction
 
 	* Change put_var(var_prc_out[idx]->type) to var_prc_out[idx]->typ_upk

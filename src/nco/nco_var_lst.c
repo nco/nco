@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.67 2007-05-25 04:35:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.68 2007-05-25 06:02:20 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -612,6 +612,8 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   int idx_xcl;
   int var_op_typ[NC_MAX_VARS];
 
+  nco_bool var_typ_fnk; /* [flg] Variable type is too funky for arithmetic */
+
   nc_type var_type=NC_NAT; /* NC_NAT present in netcdf.h version netCDF 3.5+ */
 
   var_sct **var_fix;
@@ -635,6 +637,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     var_op_typ[idx]=prc;
     var_nm=var[idx]->nm;
     var_type=var[idx]->type;
+    if((var_type == NC_BYTE) || (var_type == NC_UBYTE) || (var_type == NC_CHAR) || (var_type == NC_STRING)) var_typ_fnk=True; else var_typ_fnk=False;
 
     /* Override operation type based depending on variable properties and program */
     switch(prg_id){
@@ -645,16 +648,16 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       /* Do nothing */
       break;
     case ncbo:
-      if((var[idx]->is_crd_var) || (var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_typ[idx]=fix;
+      if(var[idx]->is_crd_var || var_typ_fnk) var_op_typ[idx]=fix;
       break;
     case ncea:
-      if((var[idx]->is_crd_var) || (var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_typ[idx]=fix;
+      if(var[idx]->is_crd_var || var_typ_fnk) var_op_typ[idx]=fix;
       break;
     case ncecat:
       if(var[idx]->is_crd_var) var_op_typ[idx]=fix;
       break;
     case ncflint:
-      if((var_type == NC_CHAR) || (var_type == NC_BYTE) || (var[idx]->is_crd_var && !var[idx]->is_rec_var)) var_op_typ[idx]=fix;
+      if(var_typ_fnk || (var[idx]->is_crd_var && !var[idx]->is_rec_var)) var_op_typ[idx]=fix;
       break;
     case ncks:
       /* Do nothing */
@@ -732,7 +735,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       var_prc[*nbr_var_prc]=var[idx];
       var_prc_out[*nbr_var_prc]=var_out[idx];
       ++*nbr_var_prc;
-      if(((var[idx]->type == NC_CHAR) || (var[idx]->type == NC_BYTE)) && ((prg_id != ncecat) && (prg_id != ncpdq) && (prg_id != ncrcat))){
+      if(var_typ_fnk && ((prg_id != ncecat) && (prg_id != ncpdq) && (prg_id != ncrcat))){
 	if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var[idx]->nm,nco_typ_sng(var[idx]->type));
       } /* end if */
     } /* end else */
@@ -755,16 +758,16 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       /* Do nothing */
       break;
     case ncbo:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_CHAR or NC_BYTE in order to perform a binary operation (e.g., subtraction)\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_BYTE, NC_UBYTE, NC_CHAR, or NC_STRING in order to perform a binary operation (e.g., subtraction)\n",prg_nm_get());
       break;
     case ncea:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_CHAR or NC_BYTE\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_BYTE, NC_UBYTE, NC_CHAR, or NC_STRING\n",prg_nm_get());
       break;
     case ncecat:
       (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable\n",prg_nm_get());
       break;
     case ncflint:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that is not NC_CHAR or NC_BYTE\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that is not NC_BYTE, NC_UBYTE, NC_CHAR, or NC_STRING\n",prg_nm_get());
       break;
     case ncks:
       /* Do nothing */
@@ -773,7 +776,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that shares at least one dimension with the re-order list\n",prg_nm_get());
       break;
     case ncra:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable that is not NC_CHAR or NC_BYTE\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable that is not NC_BYTE, NC_UBYTE, NC_CHAR, or NC_STRING\n",prg_nm_get());
       break;
     case ncrcat:
       (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable which to concatenate\n",prg_nm_get());

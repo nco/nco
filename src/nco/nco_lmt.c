@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.56 2007-05-18 22:37:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.57 2007-05-25 06:05:29 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -308,7 +308,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     (void)nco_inq_vartype(nc_id,dim.cid,&dim.type);
     
     /* Warn when coordinate type is weird */
-    if(dim.type == NC_BYTE || dim.type == NC_CHAR) (void)fprintf(stderr,"\n%s: WARNING Coordinate %s is type %s. Dimension truncation is unpredictable.\n",prg_nm_get(),lmt.nm,nco_typ_sng(dim.type));
+    if(dim.type == NC_BYTE || dim.type == NC_UBYTE || dim.type == NC_CHAR || dim.type == NC_STRING) (void)fprintf(stderr,"\n%s: WARNING Coordinate %s is type %s. Dimension truncation is unpredictable.\n",prg_nm_get(),lmt.nm,nco_typ_sng(dim.type));
     
     /* Allocate enough space to hold coordinate */
     dim.val.vp=(void *)nco_malloc(dmn_sz*nco_typ_lng(dim.type));
