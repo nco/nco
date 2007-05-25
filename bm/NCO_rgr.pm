@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.64 2007-05-13 06:17:09 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.65 2007-05-25 05:05:08 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -220,6 +220,15 @@ sub tst_rgr {
     $opr_nm="ncbo";
 ####################
 #if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
+    $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_dbl_mss_val_dbl_pck $in_pth_arg in.nc in.nc %tempf_00%";;
+    $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg %tempf_00% %tempf_03%";;
+    $tst_cmd[2]="ncks -C -H -s '%g' -v rec_var_dbl_mss_val_dbl_pck %tempf_03%";
+    $dsc_sng="Difference a packed variable and be sure everything is zero or missing_value by average whole remainder and comparing to zero.)";
+    $tst_cmd[3] = "0.0";
+    $tst_cmd[4] = "SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0;  # Reset array - ok
+
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time $in_pth_arg in.nc %tempf_03%";;
     $tst_cmd[1]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth/in.nc %tempf_03% %tempf_00%";;
     $tst_cmd[2]="ncks -C -H -d time,9 -s '%g' -v rec_var_flt %tempf_00%";

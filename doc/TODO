@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.917 2007-05-25 04:35:00 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.918 2007-05-25 05:05:09 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -597,7 +597,10 @@ nco862. remik.txt ncdiff bug: problem is reproducible on each platform,
 	ncbo -O -C -d time,0,3 -v rec_var_dbl_mss_val_dbl_pck -p ~/nco/data in.nc in.nc ~/foo.nc
 	valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncbo --mmr_cln -O -C -d time,0,3 -v rec_var_dbl_mss_val_dbl_pck -p ~/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 	ncks ~/foo.nc
-nco863. 
+nco863. Add ncdiff regression for packed subtraction:
+        ncbo -O -v rec_var_dbl_mss_val_dbl_pck -p ~/nco/data in.nc in.nc ~/foo.nc
+nco864. Change ncdiff fix to prc_1->type not prc_out->typ_upk
+nco865. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
