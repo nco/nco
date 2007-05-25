@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.138 2007-05-15 18:37:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.139 2007-05-25 05:24:23 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -87,8 +87,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.138 2007-05-15 18:37:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.138 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.139 2007-05-25 05:24:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.139 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRt:v:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -546,7 +546,7 @@ main(int argc,char **argv)
       { /* begin OpenMP critical */
 	if(var_prc[idx]->nbr_dim == 0){
 	  (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc[idx]->type);
-	}else{ /* end if variable is a scalar */
+	}else{ /* end if variable is scalar */
 	  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc[idx]->type);
 	} /* end if variable is array */
 	/* Free current input buffer */

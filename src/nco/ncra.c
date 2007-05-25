@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.205 2007-05-25 04:35:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.206 2007-05-25 05:24:24 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.205 2007-05-25 04:35:00 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.205 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.206 2007-05-25 05:24:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.206 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -734,11 +734,11 @@ main(int argc,char **argv)
       /* Packing/Unpacking */
       if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(out_id,var_prc_out[idx],nco_pck_plc);
       if(var_prc_out[idx]->nbr_dim == 0){
-	(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->typ_upk);
-      }else{ /* end if variable is a scalar */
+	(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+      }else{ /* end if variable is scalar */
 	/* Size of record dimension is 1 in output file */
 	if(prg == ncra) var_prc_out[idx]->cnt[0]=1L;
-	(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->typ_upk);
+	(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
       } /* end if variable is an array */
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
     } /* end loop over idx */

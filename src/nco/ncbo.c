@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.108 2007-05-25 04:35:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.109 2007-05-25 05:24:23 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.108 2007-05-25 04:35:00 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.108 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.109 2007-05-25 05:24:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.109 $";
   const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -625,9 +625,9 @@ main(int argc,char **argv)
     { /* begin OpenMP critical */
       /* Copy result to output file and free workspace buffer */
       if(var_prc_1[idx]->nbr_dim == 0){
-	(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_1[idx]->val.vp,var_prc_out[idx]->typ_upk);
+	(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_1[idx]->val.vp,var_prc_1[idx]->type);
       }else{ /* end if variable is scalar */
-	(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_1[idx]->val.vp,var_prc_out[idx]->typ_upk);
+	(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_1[idx]->val.vp,var_prc_1[idx]->type);
       } /* end else */
     } /* end OpenMP critical */
     var_prc_1[idx]->val.vp=nco_free(var_prc_1[idx]->val.vp);

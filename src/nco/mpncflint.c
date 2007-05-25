@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.51 2007-05-15 18:37:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.52 2007-05-25 05:24:22 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.51 2007-05-15 18:37:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.51 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.52 2007-05-25 05:24:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.52 $";
   const char * const opt_sht_lst="4ACcD:d:Fhi:l:Oo:p:rRSt:v:xw:-:";
   
   dmn_sct **dim;
@@ -754,9 +754,9 @@ main(int argc,char **argv)
 	    { /* begin OpenMP critical */
 	      /* Copy interpolations to output file */
 	      if(var_prc_out[idx]->nbr_dim == 0){
-		(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_2[idx]->val.vp,var_prc_out[idx]->type);
-	      }else{ /* end if variable is a scalar */
-		(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp,var_prc_out[idx]->type);
+		(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type);
+	      }else{ /* end if variable is scalar */
+		(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type);
 	      } /* end else */
 	    } /* end OpenMP critical */
 	    

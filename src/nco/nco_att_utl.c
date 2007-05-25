@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.73 2007-05-16 00:06:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.74 2007-05-25 05:24:23 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -158,7 +158,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     /* Write to disk */
     if(var->nbr_dim == 0){
       (void)nco_put_var1(nc_id,var_id,var->srt,var->val.vp,var->type);
-    }else{ /* end if variable is a scalar */
+    }else{ /* end if variable is scalar */
       (void)nco_put_vara(nc_id,var_id,var->srt,var->cnt,var->val.vp,var->type);
     } /* end else */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.41 2007-05-15 06:31:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.42 2007-05-25 05:24:23 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -779,7 +779,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var.val.sngp[lmn],unit_sng); break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
-  } /* end if variable is a scalar, byte, or character */
+  } /* end if variable is scalar, byte, or character */
 
   if(var.nbr_dim > 0 && dlm_sng == NULL){
     long *mod_map_in;

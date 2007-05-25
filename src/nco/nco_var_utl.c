@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.123 2007-05-25 04:35:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.124 2007-05-25 05:24:23 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -239,7 +239,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   if(nbr_dim==0){
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
-  }else{ /* end if variable is a scalar */
+  }else{ /* end if variable is scalar */
     if(var_sz > 0){ /* Allow for zero-size record variables */
       nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_type);
       nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_type);
@@ -1039,7 +1039,7 @@ nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
     if(var[idx]->nbr_dim == 0){
       nco_get_var1(in_id,var[idx]->id,var[idx]->srt,var[idx]->val.vp,var[idx]->type);
       nco_put_var1(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->val.vp,var[idx]->type);
-    }else{ /* end if variable is a scalar */
+    }else{ /* end if variable is scalar */
       if(var[idx]->sz > 0){ /* Do nothing for zero-size record variables */
 
 	/* Is stride > 1? */

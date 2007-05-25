@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.39 2007-05-15 06:31:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.40 2007-05-25 05:24:23 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -257,7 +257,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     long var_sz=1L;
 
     (void)fprintf(stdout,"%s memory size is %ld*nco_typ_lng(%s) = %ld*%lu = %lu bytes\n",var_nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
-  } /* end if variable is a scalar */
+  } /* end if variable is scalar */
   (void)fflush(stdout);
   
   /* Free space allocated for dimension information */
@@ -481,7 +481,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
   } /* end if dlm_sng */
 
   if(var.nbr_dim == 0 && dlm_sng == NULL){ 
-    /* Variable is a scalar, byte, or character */
+    /* Variable is scalar, byte, or character */
     lmn=0;
     (void)sprintf(var_sng,"%%s = %s %%s\n",nco_typ_fmt_sng(var.type));
     switch(var.type){
@@ -502,7 +502,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
     case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var.val.sngp[lmn],unit_sng); break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
-  } /* end if variable is a scalar, byte, or character */
+  } /* end if variable is scalar, byte, or character */
 
   if(var.nbr_dim > 0 && dlm_sng == NULL){ 
     /* Generate nicely formatted output for multidimensional arrays */

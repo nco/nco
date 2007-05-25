@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.74 2007-05-25 04:35:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.75 2007-05-25 05:24:23 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.74 2007-05-25 04:35:00 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.74 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.75 2007-05-25 05:24:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.75 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -1094,9 +1094,9 @@ main(int argc,char **argv)
 	      { /* begin OpenMP critical */
 		/* Copy average to output file then free averaging buffer */
 		if(var_prc_out[idx]->nbr_dim == 0){
-		  (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->typ_upk);
+		  (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 		}else{ /* end if variable is scalar */
-		  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->typ_upk);
+		  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 		} /* end if variable is array */
 	      } /* end OpenMP critical */
 	      

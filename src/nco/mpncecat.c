@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.51 2007-05-15 18:37:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.52 2007-05-25 05:24:22 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.51 2007-05-15 18:37:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.51 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.52 2007-05-25 05:24:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.52 $";
   const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:rRSt:v:x-:";
   
   dmn_sct *rec_dmn;
@@ -715,7 +715,7 @@ main(int argc,char **argv)
 		/* Write variable into current record in output file */
 		if(var_prc[idx]->nbr_dim == 0){
 		  (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc[idx]->type);
-		}else{ /* end if variable is a scalar */
+		}else{ /* end if variable is scalar */
 		  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc[idx]->type);
 		} /* end if variable is array */
 		/* Free current input buffer */
