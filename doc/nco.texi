@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.422 2007-05-25 07:11:54 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.423 2007-05-25 17:36:46 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6219,6 +6219,10 @@ attempts to perform the editing operation on every variable in the file.
 This option may be convenient to use if you decide to change the
 conventions you use for describing the data.
 
+@html
+<a name="mode"></a> <!-- http://nco.sf.net/nco.html#mode -->
+<a name="att_mode"></a> <!-- http://nco.sf.net/nco.html#att_mode -->
+@end html
 The value of @var{mode} is a single character abbreviation (@code{a},
 @code{c}, @code{d}, @code{m}, or @code{o}) standing for one of
 five editing modes:@*
@@ -6263,6 +6267,9 @@ Write attribute @var{att_nm} with value @var{att_val} to variable
 This is the default mode.
 @end table
 
+@html
+<a name="att_typ"></a> <!-- http://nco.sf.net/nco.html#att_typ -->
+@end html
 The value of @var{att_type} is a single character abbreviation 
 (@code{f}, @code{d}, @code{l}, @code{i}, @code{s}, @code{c}, 
 @code{b}, @code{u}) or a short string standing for one of the twelve

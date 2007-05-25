@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.40 2007-05-25 05:24:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.41 2007-05-25 17:36:47 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -89,19 +89,21 @@ nco_prn_att /* [fnc] Print all attributes of single variable */
       for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.ubp[att_lmn]);
       break;
     case NC_USHORT:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,(long)att[idx].val.usp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.usp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
       break;
     case NC_UINT:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,(long)att[idx].val.uip[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.uip[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
       break;
     case NC_INT64:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,(long)att[idx].val.i64p[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.i64p[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
       break;
     case NC_UINT64:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,(long)att[idx].val.ui64p[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.ui64p[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      break;
     case NC_STRING:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,(long)att[idx].val.sngp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
-    default: nco_dfl_case_nc_type_err(); break;
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.sngp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      break;
+    default: nco_dfl_case_nc_type_err();
       break;
     } /* end switch */
     (void)fprintf(stdout,"\n");

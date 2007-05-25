@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.106 2007-05-25 07:11:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.107 2007-05-25 17:36:46 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -32,67 +32,64 @@
 /* Usage:
 
    Use C language escape sequences:
-   ncatted -D 3 -h -a history,global,o,c,"String\tformatting\tfor\nDennis" in.nc ; ncks -M in.nc
-   ncatted -D 3 -h -a history,global,o,c,'\a\b\f\n\r\t\v\\\?\0' in.nc ; ncks -M in.nc
-   ncatted -D 3 -h -a history,global,o,c,'Characters which require protection by backslash:\nDouble quote: \"\nTwo consecutive double quotes: \"\"\nSingle quote: Beyond my shell abilities!\nBackslash: \\\nTwo consecutive backslashes: \\\\\nQuestion mark: \?\n' in.nc ; ncks -M in.nc
-   ncatted -D 3 -h -a history,global,o,c,'Characters which do not require protection by backslash:\nSingle backquote: `\nDollarsign: $\nLeft brace: {\nRight brace: }\nPipe: |\nAmpersand: &\nAt sign: @\nPercent: %\n\n' in.nc ; ncks -M in.nc
+   ncatted -D 3 -h -a history,global,o,c,"String\tformatting\tfor\nDennis" ~/nco/data/in.nc ~/foo.nc
+   ncatted -D 3 -h -a history,global,o,c,'\a\b\f\n\r\t\v\\\?\0' ~/nco/data/in.nc ~/foo.nc
+   ncatted -D 3 -h -a history,global,o,c,'Characters which require protection by backslash:\nDouble quote: \"\nTwo consecutive double quotes: \"\"\nSingle quote: Beyond my shell abilities!\nBackslash: \\\nTwo consecutive backslashes: \\\\\nQuestion mark: \?\n' ~/nco/data/in.nc ~/foo.nc
+   ncatted -D 3 -h -a history,global,o,c,'Characters which do not require protection by backslash:\nSingle backquote: `\nDollarsign: $\nLeft brace: {\nRight brace: }\nPipe: |\nAmpersand: &\nAt sign: @\nPercent: %\n\n' ~/nco/data/in.nc ~/foo.nc
 
    Append to existing string:
-   ncatted -D 5 -O -a char_att,att_var,a,c,"and appended Sentence three." in.nc ~/foo.nc
+   ncatted -D 5 -O -a char_att,att_var,a,c,"and appended Sentence three." ~/nco/data/in.nc ~/foo.nc
 
    Append to existing string with internal delimiter characters (commas):
-   ncatted -D 5 -O -a char_att,att_var,a,c,"appended a comma, and three more commas,,," in.nc ~/foo.nc
+   ncatted -D 5 -O -a char_att,att_var,a,c,"appended a comma, and three more commas,,," ~/nco/data/in.nc ~/foo.nc
 
    Append to existing float:
-   ncatted -D 5 -O -a float_att,att_var,a,f,74 in.nc ~/foo.nc
-   ncatted -D 5 -O -a float_att,att_var,a,f,74,75,76 in.nc ~/foo.nc
+   ncatted -D 5 -O -a float_att,att_var,a,f,74 ~/nco/data/in.nc ~/foo.nc
+   ncatted -D 5 -O -a float_att,att_var,a,f,74,75,76 ~/nco/data/in.nc ~/foo.nc
 
    Create new float:
-   ncatted -D 5 -O -a new_float_att,att_var,c,f,74 in.nc ~/foo.nc
+   ncatted -D 5 -O -a new_float_att,att_var,c,f,74 ~/nco/data/in.nc ~/foo.nc
 
-   Create new uint64:
-   ncatted -4 -D 5 -O -a new_uint64_att,att_var,c,ull,74 in.nc ~/foo.nc
+   Create new netCDF4 atomic type attributes:
+   ncatted -D 5 -O -a new_ubyte_att,att_var,c,ub,0 -a new_ushort_att,att_var,c,us,74 -a new_uint_att,att_var,c,u,71,72,73,74 -a 'new_int64_att,att_var,c,ll,-74' -a new_uint64_att,att_var,c,ull,74,75 ~/nco/data/in_4.nc ~/foo.nc
 
    Delete attribute:
-   ncatted -D 5 -O -a float_att,att_var,d,,, in.nc ~/foo.nc
+   ncatted -D 5 -O -a float_att,att_var,d,,, ~/nco/data/in.nc ~/foo.nc
 
    Delete all attributes for given var:
-   ncatted -D 5 -O -a ,att_var,d,,, in.nc ~/foo.nc
+   ncatted -D 5 -O -a ,att_var,d,,, ~/nco/data/in.nc ~/foo.nc
 
    Modify existing float:
-   ncatted -D 5 -O -a float_att,att_var,m,f,74 in.nc ~/foo.nc
+   ncatted -D 5 -O -a float_att,att_var,m,f,74 ~/nco/data/in.nc ~/foo.nc
 
    Modify existing missing value attribute:
-   ncatted -D 5 -O -a missing_value,mss_val,m,f,74 in.nc ~/foo.nc
+   ncatted -D 5 -O -a missing_value,mss_val,m,f,74 ~/nco/data/in.nc ~/foo.nc
    
    Multiple attribute edits:
-   ncatted -D 5 -O -a char_att,att_var,a,c,"and appended Sentence three." -a short_att,att_var,c,s,37,38,39 -a float_att,att_var,d,,, -a long_att,att_var,o,l,37 -a new_att,att_var,o,d,73,74,75 in.nc ~/foo.nc
+   ncatted -D 5 -O -a char_att,att_var,a,c,"and appended Sentence three." -a short_att,att_var,c,s,37,38,39 -a float_att,att_var,d,,, -a long_att,att_var,o,l,37 -a new_att,att_var,o,d,73,74,75 ~/nco/data/in.nc ~/foo.nc
 
    Create global attribute:
-   ncatted -D 5 -O -a float_att,global,c,f,74 in.nc ~/foo.nc
-
-   Verify results:
-   ncks -C -H -v att_var foo.nc
+   ncatted -D 5 -O -a float_att,global,c,f,74 ~/nco/data/in.nc ~/foo.nc
 
    Test algorithm for all variables:
    Append to existing string for all variables:
-   ncatted -D 5 -O -a char_att,,a,c,"and appended Sentence three." in.nc ~/foo.nc
+   ncatted -D 5 -O -a char_att,,a,c,"and appended Sentence three." ~/nco/data/in.nc ~/foo.nc
 
    Append to existing float for all variables:
-   ncatted -D 5 -O -a float_att,,a,f,74 in.nc ~/foo.nc
-   ncatted -D 5 -O -a float_att,,a,f,74,75,76 in.nc ~/foo.nc
+   ncatted -D 5 -O -a float_att,,a,f,74 ~/nco/data/in.nc ~/foo.nc
+   ncatted -D 5 -O -a float_att,,a,f,74,75,76 ~/nco/data/in.nc ~/foo.nc
 
    Create new float for all variables:
-   ncatted -D 5 -O -a float_att,,c,f,74 in.nc ~/foo.nc
+   ncatted -D 5 -O -a float_att,,c,f,74 ~/nco/data/in.nc ~/foo.nc
 
    Delete attribute for all variables:
-   ncatted -D 5 -O -a float_att,,d,,, in.nc ~/foo.nc
+   ncatted -D 5 -O -a float_att,,d,,, ~/nco/data/in.nc ~/foo.nc
 
    Modify existing float for all variables:
-   ncatted -D 5 -O -a float_att,,m,f,74 in.nc ~/foo.nc
+   ncatted -D 5 -O -a float_att,,m,f,74 ~/nco/data/in.nc ~/foo.nc
 
    Verify results:
-   ncks -C -h foo.nc | m */
+   ncks -C -h ~/foo.nc | m */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h> /* Autotools tokens */
@@ -147,9 +144,9 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.106 2007-05-25 07:11:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.106 $";
-  const char * const opt_sht_lst="4Aa:D:hl:Oo:p:Rr-:";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.107 2007-05-25 17:36:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.107 $";
+  const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.75 2007-05-25 07:11:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.76 2007-05-25 17:36:46 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -646,34 +646,58 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	aed_lst[idx].val.cp=(nco_char *)strdup(arg_lst[idx_att_val_arg]);
       }else{
 	double *val_arg_dbl=NULL_CEWI;
+	long long *val_arg_lng_lng=NULL_CEWI;
+	unsigned long long *val_arg_ulng_lng=NULL_CEWI;
 	
 	long lmn;
 	
-	val_arg_dbl=(double *)nco_malloc(aed_lst[idx].sz*sizeof(double));
 	aed_lst[idx].val.vp=(void *)nco_malloc(aed_lst[idx].sz*nco_typ_lng(aed_lst[idx].type));
 	
-	for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) val_arg_dbl[lmn]=strtod(arg_lst[idx_att_val_arg+lmn],(char **)NULL);
+	/* Use type-appropriate conversion */
+	switch(aed_lst[idx].type){
+	case NC_FLOAT: 
+	case NC_DOUBLE: 
+	  val_arg_dbl=(double *)nco_malloc(aed_lst[idx].sz*sizeof(double));
+	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){val_arg_dbl[lmn]=strtod(arg_lst[idx_att_val_arg+lmn],(char **)NULL);} break; 
+	case NC_BYTE:
+	case NC_INT: 
+	case NC_SHORT: 
+	case NC_INT64: 
+	  val_arg_lng_lng=(long long *)nco_malloc(aed_lst[idx].sz*sizeof(long long));
+	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){val_arg_lng_lng[lmn]=strtoll(arg_lst[idx_att_val_arg+lmn],(char **)NULL,10);} break;
+	case NC_CHAR:
+	case NC_UBYTE: 
+	case NC_USHORT: 
+	case NC_UINT: 
+	case NC_UINT64: 
+	  val_arg_ulng_lng=(unsigned long long *)nco_malloc(aed_lst[idx].sz*sizeof(unsigned long long));
+	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){val_arg_ulng_lng[lmn]=strtoull(arg_lst[idx_att_val_arg+lmn],(char **)NULL,10);} break;
+	case NC_STRING: break;
+	default: nco_dfl_case_nc_type_err(); break;
+	} /* end switch */
 	
 	/* Copy and typecast entire array of values, using implicit coercion rules of C */
 	/* 20011001: Use explicit coercion rules to quiet C++ compiler warnings */
 	switch(aed_lst[idx].type){
 	case NC_FLOAT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.fp[lmn]=(float)val_arg_dbl[lmn];} break; 
 	case NC_DOUBLE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.dp[lmn]=(double)val_arg_dbl[lmn];} break; 
-	case NC_INT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.lp[lmn]=(nco_int)val_arg_dbl[lmn];} break; 
-	case NC_SHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.sp[lmn]=(short)val_arg_dbl[lmn];} break; 
-	case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=(nco_char)val_arg_dbl[lmn];} break; 
-	case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=(nco_byte)val_arg_dbl[lmn];} break; 
-	case NC_UBYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.ubp[lmn]=(nco_ubyte)val_arg_dbl[lmn];} break; 
-	case NC_USHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.usp[lmn]=(nco_ushort)val_arg_dbl[lmn];} break; 
-	case NC_UINT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.uip[lmn]=(nco_uint)val_arg_dbl[lmn];} break; 
-	case NC_INT64: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.i64p[lmn]=(nco_int64)val_arg_dbl[lmn];} break; 
-	case NC_UINT64: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.ui64p[lmn]=(nco_uint64)val_arg_dbl[lmn];} break; 
+	case NC_INT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.lp[lmn]=(nco_int)val_arg_lng_lng[lmn];} break; 
+	case NC_SHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.sp[lmn]=(nco_short)val_arg_lng_lng[lmn];} break; 
+	case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=(nco_char)val_arg_ulng_lng[lmn];} break; 
+	case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=(nco_byte)val_arg_lng_lng[lmn];} break; 
+	case NC_UBYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.ubp[lmn]=(nco_ubyte)val_arg_ulng_lng[lmn];} break; 
+	case NC_USHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.usp[lmn]=(nco_ushort)val_arg_ulng_lng[lmn];} break; 
+	case NC_UINT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.uip[lmn]=(nco_uint)val_arg_ulng_lng[lmn];} break; 
+	case NC_INT64: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.i64p[lmn]=(nco_int64)val_arg_lng_lng[lmn];} break; 
+	case NC_UINT64: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.ui64p[lmn]=(nco_uint64)val_arg_ulng_lng[lmn];} break; 
 	case NC_STRING: break;
 	default: nco_dfl_case_nc_type_err(); break;
 	} /* end switch */
 	
-	/* Free array used to hold double values */
-	val_arg_dbl=(double *)nco_free(val_arg_dbl);
+	/* Free array used to hold input values */
+	if(val_arg_dbl) val_arg_dbl=(double *)nco_free(val_arg_dbl);
+	if(val_arg_lng_lng) val_arg_lng_lng=(long long *)nco_free(val_arg_lng_lng);
+	if(val_arg_ulng_lng) val_arg_ulng_lng=(unsigned long long *)nco_free(val_arg_ulng_lng);
       } /* end else */
       /* Un-typecast pointer to values after access */
       (void)cast_nctype_void(aed_lst[idx].type,&aed_lst[idx].val);
