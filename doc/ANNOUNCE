@@ -1,18 +1,17 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.235 2007-05-25 05:45:11 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.236 2007-05-25 17:49:30 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.0 are ready. 
 The version number jumped from 3.2.0 to 3.9.0 because of the addition
 of functional (though limited) netCDF4 support.
-NCO version 4.0 will be released soon after netCDF4.0.
-We want to avoid twisted versions like NCO3/netCDF4/HDF5.
+NCO version 4.0 will be released after netCDF4.0 is final.
+We want to avoid twisted versions like NCO3/netCDF4/HDF5/Chicago7.
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 Release 3.9.0 contains functional (though limited) netCDF4 support,
-improved attribute copying, new documentation, new ncap2 features, 
-and better IRIX support.
-This release _requires_ netCDF 3.6.1 or newer to build correctly.
+improved attribute copying, new documentation, an ncbo/ncdiff fix
+for packed values, and better IRIX support.
 Because the netCDF4 support description is extensive its description
 appears at the end of this announcement. 
 The netCDF3 NCO improvements in 3.9.0 are:
@@ -87,14 +86,13 @@ NCO support for netCDF4 atomic types is relatively untested.
 Binary NCO distributions (RPMs and debs) still use netCDF3 for now.
 
 If you want the netCDF4 support, you'll have to build NCO yourself:
-Typically, you will need to specify the root of the netCDF4-beta1 
-installation directory. Do this with the NETCDF4_ROOT variable.
+You will need to specify the root of the netCDF4-beta1 installation
+directory if you are also maintaining a pure netCDF3 installation.
+Do this with the NETCDF4_ROOT variable. 
 Then use your preferred NCO build mechanism, e.g.,
 
 export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
-# then
-cd ~/nco;./configure --enable-netcdf4  # Configure mechanism
-# or
+cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
 cd ~/nco/bld;./make NETCDF4=Y allinone # Old Makefile mechanism
 
 Our short term goal is to track the netCDF4-beta releases, keep the
@@ -102,6 +100,7 @@ new netCDF4 atomic type support working, and iron out any problems.
 Our long term goal is to utilize more of the extensive new netCDF4
 feature set. The next major netCDF4 feature we are likely to utilize
 is parallel I/O. We will enable this in the MPI netCDF operators.
+Feedback is always welcome.
 
 Enjoy,
 Charlie

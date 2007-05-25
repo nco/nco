@@ -7,7 +7,7 @@
 
 	* Fix nco_prn_att() to handle netCDF4 atomic types
 
-	* Use type-appropriate conversion in readin ncatted attribute values
+	* Use type-appropriate conversion to read ncatted attribute values
 
 	* Document netcdf4 ncatted features
 
