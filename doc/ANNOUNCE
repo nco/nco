@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.236 2007-05-25 17:49:30 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.237 2007-05-26 00:38:19 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.0 are ready. 
 The version number jumped from 3.2.0 to 3.9.0 because of the addition
@@ -43,6 +43,7 @@ D. ncks reports input file type (e.g., NC_FORMAT_CLASSIC,
    http://nco.sf.net/nco.html#ncks
 
 E. Fix ncap2 .total() method to correctly handle missing_value's
+   Thanks to Scott Capps for reporting this problem.
 
 F. ncap2 grows more powerful.
    New demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]

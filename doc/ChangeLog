@@ -1,5 +1,9 @@
 2007-05-25  Charlie Zender  <zender@uci.edu>
 
+	* NC_64BIT_OFFSET patch in configure.in causes beaucoups de RPM warnings
+
+	* Fix version in nco.spec 
+
 	* cd ~/nco;cvs tag -d nco-3_9_0;cvs tag -d nco-3_9_0-1
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.0 release"
 	  cvs tag -c nco-3_9_0;cvs tag -c nco-3_9_0-1
