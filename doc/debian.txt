@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.92 2007-05-23 02:06:52 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.93 2007-05-26 01:09:09 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -91,6 +91,7 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
 # doc/index.shtml, doc/nco.texi, bld/nco_dst.pl, doc/VERSION 
    cd ~/nco/debian
    dch -v 3.9.0-1 # Update changelog
+   emacs ~/nco/bld/nco.spec # Update changelog
 # For unknown reason rules file may lose its executable bit
    chmod a+x ~/nco/debian/rules
 # Build Debs using Debian libraries and include
