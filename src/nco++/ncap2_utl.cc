@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.70 2007-05-28 10:45:56 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.71 2007-05-28 15:26:51 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -354,9 +354,7 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
 
   /* Define variable */   
   if(!bdef)(void)nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
-  /* Put missing value */  
-
-  /*
+  /* Put missing value 
   if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
   */
   
@@ -2431,7 +2429,7 @@ ncap_put_var_mem(
 void
 nco_put_var_mem(
 		var_sct *var_in,
-		var_sct *var_nw,
+		var_sct *var_out,
 		NcapVector<lmt_sct*> &dmn_vtr)
 {
   
@@ -2446,13 +2444,13 @@ nco_put_var_mem(
   std::vector<int> shp_vtr;
   
   
-  dmn_nbr=var_in->nbr_dim;
+  dmn_nbr=var_out->nbr_dim;
   
-  ncnt=nco_typ_lng(var_in->type); 
-  // Create shape vector for var_in
+  ncnt=nco_typ_lng(var_out->type); 
+  // Create shape vector for var_out
   shp_vtr.push_back(ncnt);
   for(idx=dmn_nbr-1 ; idx>0 ; idx--){
-    ncnt*=var_in->dim[idx]->cnt;  
+    ncnt*=var_out->dim[idx]->cnt;  
     shp_vtr.push_back(ncnt);
   }
   
@@ -2470,12 +2468,12 @@ nco_put_var_mem(
       break;
   */
 
-  cp_out=(char*)var_in->val.vp;
-  cp_in=(char*)var_nw->val.vp;
+  cp_in=(char*)var_in->val.vp;
+  cp_out=(char*)var_out->val.vp;
    
   
   // Call in-memory nco_put_var_mem (n.b is recursive of course!!)
-  (void)ncap_put_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,cp_out,cp_in);
+  (void)ncap_put_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,cp_in,cp_out);
   
   
 } /* end nco_put_var_mem() */
