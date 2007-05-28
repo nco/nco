@@ -81,3 +81,13 @@ void NcapVarVector::erase(long idx){
 }
 
 
+// Delete an item
+void NcapVarVector::erase(std::string s_fnm){
+  long idx;
+  idx=findi(s_fnm);
+  
+  if(idx >=0) erase(idx);
+
+}
+
+
