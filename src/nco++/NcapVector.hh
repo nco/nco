@@ -95,11 +95,14 @@ public:
 
   // search -- only on a sorted vector
   bool bsearch(T t1){
+
+     
       bool bret;
+      /*
       char *cpr;
       size_t snbr; 
        T t2;
-
+    */
        //snbr=sizeof(T);
        //std::cout<<"\n\nIndrection sizeof="<<snbr<<std::endl;
        
