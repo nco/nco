@@ -22,6 +22,7 @@ public:
   void    push_ow(NcapVar *Nvar);
   void    push(NcapVar *Nvar);
   void    erase(long idx);
+  void    erase(std::string s_fnm);
   NcapVar* pop();
 };
 
