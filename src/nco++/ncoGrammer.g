@@ -60,6 +60,7 @@ statement:
         | ram_delete
         | ram_write
         | set_miss
+        | ch_miss  
         //deal with empty statement
         | SEMI! { #statement = #([ NULL_NODE, "null_stmt"]); } 
    ;        
@@ -105,6 +106,9 @@ ram_write:  RAM_WRITE^ LPAREN! (VAR_ID) RPAREN! SEMI!
 
 set_miss:   SET_MISS^ LPAREN! VAR_ID COMMA! expr RPAREN! SEMI! 
      ;
+
+ch_miss:    CH_MISS^ LPAREN! VAR_ID COMMA! expr RPAREN! SEMI! 
+    ;
 
 arg_list: expr|dmn_arg_list|DIM_ID|DIM_MTD_ID
      ;
@@ -263,10 +267,10 @@ tokens {
     DEFDIM="defdim";
     SHIFTL="<<";
     SHIFTR=">>";
-    RAM_DELETE="delete";
+    RAM_DELETE="ram_delete";
     RAM_WRITE="ram_write";
     SET_MISS="set_miss";
-    NOTHING="ZZZZZZZZZZZ";
+    CH_MISS="change_miss";
 
 // Properties 
     PSIZE="size";
@@ -746,7 +750,7 @@ public:
      //Initial scan
      prs_arg->ntl_scn=True;
      while(idx++ < icnt){
-       if( ntr->getType()!= RAM_WRITE && ntr->getType()!=RAM_DELETE && ntr->getType()!=SET_MISS)
+       if( ntr->getType()!= RAM_WRITE && ntr->getType()!=RAM_DELETE && ntr->getType()!=SET_MISS && ntr->getType()!= CH_MISS)
          (void)statements(ntr);   
        ntr=ntr->getNextSibling();   
      }
@@ -828,7 +832,7 @@ public:
         (void)statements(ntr);      
        }
 
-       if(gtyp==EXPR || gtyp== NULL_NODE || gtyp==RAM_WRITE|| gtyp==RAM_DELETE ||gtyp==SET_MISS)
+       if(gtyp==EXPR || gtyp== NULL_NODE || gtyp==RAM_WRITE|| gtyp==RAM_DELETE ||gtyp==SET_MISS ||gtyp==CH_MISS)
         if(icnt++==0) etr=ntr;
         
        
@@ -1021,6 +1025,57 @@ const std::string fnc_nm("statements");
 
           nco_var_free(var);  
        end: ;       
+          
+      }
+
+    | #(CH_MISS ch_mss:VAR_ID var=out){
+
+          char *cp_out;
+          long slb_sz;
+          var_sct *var_in;
+          std::string va_nm;
+          NcapVar *Nvar;
+          
+          va_nm=ch_mss->getText();
+          
+          Nvar=prs_arg->ptr_var_vtr->find(va_nm);
+          if(!Nvar){
+             wrn_prn(fnc_nm,"Change missing value function unable to find :"+va_nm); 
+             goto end1; 
+          }
+         
+          // De-reference
+          var_in=Nvar->var;
+          
+          var=nco_var_cnf_typ(var_in->type,var);
+          
+          var->has_mss_val=True;
+          var->mss_val=nco_mss_val_mk(var->type);
+         
+          (void)memcpy(var->mss_val.vp, var->val.vp,nco_typ_lng(var->type));
+          
+          // if no missing add one then exit
+          if(!var_in->has_mss_val){
+             nco_mss_val_cp(var,var_in);
+          
+          }else{ 
+           
+           var_in=ncap_var_init(va_nm,prs_arg,true);
+             
+           cp_out=(char*)var_in->val.vp;
+           slb_sz=nco_typ_lng(var_in->type);
+
+           for(long idx=0 ;idx<var_in->sz;idx++){
+            if( !memcmp(cp_out,var_in->mss_val.vp,slb_sz))
+             (void)memcpy(cp_out,var->mss_val.vp,slb_sz);
+            cp_out+=(ptrdiff_t)slb_sz;
+           }   
+           // Copy new missing value 
+           nco_mss_val_cp(var,var_in);
+           (void)ncap_var_write(var_in,false,prs_arg);
+          }   
+           
+       end1: nco_var_free(var);         
           
       }
 
@@ -1554,42 +1609,6 @@ out returns [var_sct *var]
             var=ncap_var_var_inc(var1,NULL_CEWI,POST_DEC,false,prs_arg);
         }
 
-    //ternary Operator
-    |   #( qus:QUESTION var1=out) {
-           bool br;
-            
-           // if initial scan 
-           if(prs_arg->ntl_scn){
-               var1=nco_var_free(var1);
-               var=ncap_var_udf("~question"); 
-               return var;
-           }
-
-           br=ncap_var_lgcl(var1);
-           var1=nco_var_free(var1);
-           
-           if(br) 
-             var=out(qus->getFirstChild()->getNextSibling());
-           else
-             var=out(qus->getFirstChild()->getNextSibling()->getNextSibling());      
-         }   
-    
-
-    // math functions 
-    |  #(m:FUNC #(FUNC_ARG var1=out))      
-         { 
-          sym_sct * sym_ptr;
-            
-          sym_ptr= prs_arg->ptr_sym_vtr->find(m->getText());
-          if(sym_ptr ==NULL) { 
-              cout << "Function  " << m->getText() << " not found" << endl;
-              exit(1);
-           } 
-          var=ncap_var_fnc(var1,sym_ptr);
-
-          }
-
-
     // Logical Operators
     | #(LAND var1=out var2=out)  
             { var=ncap_var_var_op(var1,var2, LAND );}        
@@ -1664,6 +1683,42 @@ out returns [var_sct *var]
                var=assign(tr,bram);
                
             }  
+
+    //ternary Operator
+    |   #( qus:QUESTION var1=out) {
+           bool br;
+            
+           // if initial scan 
+           if(prs_arg->ntl_scn){
+               var1=nco_var_free(var1);
+               var=ncap_var_udf("~question"); 
+               return var;
+           }
+
+           br=ncap_var_lgcl(var1);
+           var1=nco_var_free(var1);
+           
+           if(br) 
+             var=out(qus->getFirstChild()->getNextSibling());
+           else
+             var=out(qus->getFirstChild()->getNextSibling()->getNextSibling());      
+         }   
+
+
+    // math functions 
+    |  #(m:FUNC #(FUNC_ARG var1=out))      
+         { 
+          sym_sct * sym_ptr;
+            
+          sym_ptr= prs_arg->ptr_sym_vtr->find(m->getText());
+          if(sym_ptr ==NULL) { 
+              cout << "Function  " << m->getText() << " not found" << endl;
+              exit(1);
+           } 
+          var=ncap_var_fnc(var1,sym_ptr);
+
+          }    
+
     // Deal with methods (var only)
     | #(DOT var=methods)
 
@@ -1750,8 +1805,147 @@ out returns [var_sct *var]
               
         }
 
-     // Value list -- stuff values into var which is attribute
+     // Value list -- stuff values into an attribute
      |   vlst:VALUE_LIST {
+          var=value_list(vlst);
+         }
+
+    |   str:NSTRING
+        {
+            char *tsng;
+            
+            tsng=strdup(str->getText().c_str());
+            (void)sng_ascii_trn(tsng);            
+            var=(var_sct *)nco_malloc(sizeof(var_sct));
+            /* Set defaults */
+            (void)var_dfl_set(var); 
+            /* Overwrite with attribute expression information */
+            var->nm=strdup("~zz@string");
+            var->nbr_dim=0;
+            var->sz=strlen(tsng);
+            var->type=NC_CHAR;
+            if(!prs_arg->ntl_scn){
+                var->val.vp=(void*)nco_malloc(var->sz*nco_typ_lng(NC_CHAR));
+                (void)cast_void_nctype((nc_type)NC_CHAR,&var->val);
+                strncpy(var->val.cp,tsng,(size_t)var->sz);  
+                (void)cast_nctype_void((nc_type)NC_CHAR,&var->val);
+            }
+            tsng=(char*)nco_free(tsng);      
+        }
+
+        // Naked numbers: Cast is not applied to these numbers
+    |   val_float:FLOAT        
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~float"),(nc_type)NC_FLOAT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~float"),static_cast<float>(std::strtod(val_float->getText().c_str(),(char **)NULL)));} // end FLOAT
+    |   val_double:DOUBLE        
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~double"),(nc_type)NC_DOUBLE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~double"),strtod(val_double->getText().c_str(),(char **)NULL));} // end DOUBLE
+	|	val_int:INT			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int"),(nc_type)NC_INT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int"),static_cast<nco_int>(std::strtol(val_int->getText().c_str(),(char **)NULL,10)));} // end INT
+	|	val_short:SHORT			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),(nc_type)NC_SHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<nco_short>(std::strtol(val_short->getText().c_str(),(char **)NULL,10)));} // end SHORT
+    |	val_byte:BYTE			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),(nc_type)NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),static_cast<nco_byte>(std::strtol(val_byte->getText().c_str(),(char **)NULL,10)));} // end BYTE
+// fxm TODO nco851: How to add ENABLE_NETCDF4 #ifdefs to ncoGrammer.g?
+// Workaround (permanent?) is to add stub netCDF4 forward compatibility prototypes to netCDF3 libnco
+// #ifdef ENABLE_NETCDF4
+	|	val_ubyte:UBYTE			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~ubyte"),(nc_type)NC_UBYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~ubyte"),static_cast<nco_ubyte>(std::strtoul(val_ubyte->getText().c_str(),(char **)NULL,10)));} // end UBYTE
+        // NB: sng2nbr converts "255" into nco_ubtye=2. This is not good.
+        //        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~ubyte"),(nc_type)NC_UBYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~ubyte"),sng2nbr(val_ubyte->getText(),nco_ubyte_CEWI));} // end UBYTE
+	|	val_ushort:USHORT			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~ushort"),(nc_type)NC_USHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~ushort"),static_cast<nco_ushort>(std::strtoul(val_ushort->getText().c_str(),(char **)NULL,10)));} // end USHORT
+	|	val_uint:UINT			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~uint"),(nc_type)NC_UINT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~uint"),static_cast<nco_uint>(std::strtoul(val_uint->getText().c_str(),(char **)NULL,10)));} // end UINT
+	|	val_int64:INT64			
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int64"),(nc_type)NC_INT64,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int64"),sng2nbr(val_int64->getText(),nco_int64_CEWI));} // end INT64
+        // std::strtoll() and std::strtoull() are not (yet) ISO C++ standard
+        //{if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int64"),(nc_type)NC_INT64,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int64"),static_cast<nco_int64>(std::strtoll(val_int64->getText().c_str(),(char **)NULL,10)));} // end INT64
+	|	val_uint64:UINT64
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~uint64"),(nc_type)NC_UINT64,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~uint64"),sng2nbr(val_uint64->getText(),nco_uint64_CEWI));} // end UINT64
+        // std::strtoll() and std::strtoull() are not (yet) ISO C++ standard
+        // {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~uint64"),(nc_type)NC_UINT64,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~uint64"),static_cast<nco_uint64>(std::strtoull(val_uint64->getText().c_str(),(char **)NULL,10)));} // end UINT64
+// #endif /* !ENABLE_NETCDF4 */
+
+;
+
+
+// Return a var or att WITHOUT applying a cast 
+// and checks that the operand is a valid Lvalue
+// ie that the var or att has NO children!!
+out_asn returns [var_sct *var]
+{
+const std::string fnc_nm("assign_asn");
+var=NULL_CEWI; 
+}
+
+   : #(TIMES vid1:VAR_ID)
+        { 
+          if(vid1->getFirstChild())
+               err_prn(fnc_nm,"Invalid Lvalue " +vid1->getText() );
+
+          var=ncap_var_init(vid1->getText(),prs_arg,true);
+          if(var== NULL_CEWI){
+               nco_exit(EXIT_FAILURE);
+          }
+
+        }
+	|   vid:VAR_ID       
+        { 
+          if(vid->getFirstChild())
+               err_prn(fnc_nm,"Invalid Lvalue " +vid->getText() );
+
+          var=ncap_var_init(vid->getText(),prs_arg,true);
+          if(var== NULL_CEWI){
+               nco_exit(EXIT_FAILURE);
+          }
+         
+
+
+        } /* end action */
+    // Plain attribute
+    |   att:ATT_ID { 
+            // check "output"
+            NcapVar *Nvar=NULL;
+         
+            if(att->getFirstChild())
+                err_prn(fnc_nm,"Invalid Lvalue " +att->getText() );
+
+
+            if(prs_arg->ntl_scn)
+              Nvar=prs_arg->ptr_int_vtr->find(att->getText());
+
+            if(Nvar==NULL) 
+              Nvar=prs_arg->ptr_var_vtr->find(att->getText());
+
+            var=NULL_CEWI;    
+            if(Nvar !=NULL)
+                var=nco_var_dpl(Nvar->var);
+            else    
+                var=ncap_att_init(att->getText(),prs_arg);
+
+
+            if(!prs_arg->ntl_scn && var==NULL_CEWI ){
+                err_prn(fnc_nm,"Unable to locate attribute " +att->getText()+ " in input or output files.");
+            }
+            
+            // if att not found return undefined
+            if(prs_arg->ntl_scn && var==NULL_CEWI )
+                var=ncap_var_udf(att->getText().c_str());
+            
+
+            if(prs_arg->ntl_scn && var->val.vp !=NULL)
+                var->val.vp=(void*)nco_free(var->val.vp);
+
+
+       }// end action    
+;
+
+
+value_list returns [var_sct *var]
+{
+const std::string fnc_nm("var_lmt");
+var=NULL_CEWI; 
+}
+ :(vlst:VALUE_LIST) {
 
          char *cp;
          int nbr_lst;
@@ -1838,141 +2032,14 @@ out returns [var_sct *var]
          }    
          
          // Free vector        
-end_val: for(idx=0 ; idx < nbr_lst ; idx++)
+        end_val: for(idx=0 ; idx < nbr_lst ; idx++)
            (void)nco_var_free(exp_vtr[idx]);    
 
          var=var_ret;
 
      }
 
-        
-        // Naked numbers: Cast is not applied to these numbers
-    |   val_float:FLOAT        
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~float"),(nc_type)NC_FLOAT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~float"),static_cast<float>(std::strtod(val_float->getText().c_str(),(char **)NULL)));} // end FLOAT
-    |   val_double:DOUBLE        
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~double"),(nc_type)NC_DOUBLE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~double"),strtod(val_double->getText().c_str(),(char **)NULL));} // end DOUBLE
-	|	val_int:INT			
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int"),(nc_type)NC_INT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int"),static_cast<nco_int>(std::strtol(val_int->getText().c_str(),(char **)NULL,10)));} // end INT
-	|	val_short:SHORT			
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),(nc_type)NC_SHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<nco_short>(std::strtol(val_short->getText().c_str(),(char **)NULL,10)));} // end SHORT
-    |	val_byte:BYTE			
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),(nc_type)NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),static_cast<nco_byte>(std::strtol(val_byte->getText().c_str(),(char **)NULL,10)));} // end BYTE
-// fxm TODO nco851: How to add ENABLE_NETCDF4 #ifdefs to ncoGrammer.g?
-// Workaround (permanent?) is to add stub netCDF4 forward compatibility prototypes to netCDF3 libnco
-// #ifdef ENABLE_NETCDF4
-	|	val_ubyte:UBYTE			
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~ubyte"),(nc_type)NC_UBYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~ubyte"),static_cast<nco_ubyte>(std::strtoul(val_ubyte->getText().c_str(),(char **)NULL,10)));} // end UBYTE
-        // NB: sng2nbr converts "255" into nco_ubtye=2. This is not good.
-        //        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~ubyte"),(nc_type)NC_UBYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~ubyte"),sng2nbr(val_ubyte->getText(),nco_ubyte_CEWI));} // end UBYTE
-	|	val_ushort:USHORT			
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~ushort"),(nc_type)NC_USHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~ushort"),static_cast<nco_ushort>(std::strtoul(val_ushort->getText().c_str(),(char **)NULL,10)));} // end USHORT
-	|	val_uint:UINT			
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~uint"),(nc_type)NC_UINT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~uint"),static_cast<nco_uint>(std::strtoul(val_uint->getText().c_str(),(char **)NULL,10)));} // end UINT
-	|	val_int64:INT64			
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int64"),(nc_type)NC_INT64,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int64"),sng2nbr(val_int64->getText(),nco_int64_CEWI));} // end INT64
-        // std::strtoll() and std::strtoull() are not (yet) ISO C++ standard
-        //{if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int64"),(nc_type)NC_INT64,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int64"),static_cast<nco_int64>(std::strtoll(val_int64->getText().c_str(),(char **)NULL,10)));} // end INT64
-	|	val_uint64:UINT64
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~uint64"),(nc_type)NC_UINT64,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~uint64"),sng2nbr(val_uint64->getText(),nco_uint64_CEWI));} // end UINT64
-        // std::strtoll() and std::strtoull() are not (yet) ISO C++ standard
-        // {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~uint64"),(nc_type)NC_UINT64,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~uint64"),static_cast<nco_uint64>(std::strtoull(val_uint64->getText().c_str(),(char **)NULL,10)));} // end UINT64
-// #endif /* !ENABLE_NETCDF4 */
-    |   str:NSTRING
-        {
-            char *tsng;
-            
-            tsng=strdup(str->getText().c_str());
-            (void)sng_ascii_trn(tsng);            
-            var=(var_sct *)nco_malloc(sizeof(var_sct));
-            /* Set defaults */
-            (void)var_dfl_set(var); 
-            /* Overwrite with attribute expression information */
-            var->nm=strdup("~zz@string");
-            var->nbr_dim=0;
-            var->sz=strlen(tsng);
-            var->type=NC_CHAR;
-            if(!prs_arg->ntl_scn){
-                var->val.vp=(void*)nco_malloc(var->sz*nco_typ_lng(NC_CHAR));
-                (void)cast_void_nctype((nc_type)NC_CHAR,&var->val);
-                strncpy(var->val.cp,tsng,(size_t)var->sz);  
-                (void)cast_nctype_void((nc_type)NC_CHAR,&var->val);
-            }
-            tsng=(char*)nco_free(tsng);      
-        }
 ;
-
-
-// Return a var or att WITHOUT applying a cast 
-// and checks that the operand is a valid Lvalue
-// ie that the var or att has NO children!!
-out_asn returns [var_sct *var]
-{
-const std::string fnc_nm("assign_asn");
-var=NULL_CEWI; 
-}
-
-   : #(TIMES vid1:VAR_ID)
-        { 
-          if(vid1->getFirstChild())
-               err_prn(fnc_nm,"Invalid Lvalue " +vid1->getText() );
-
-          var=ncap_var_init(vid1->getText(),prs_arg,true);
-          if(var== NULL_CEWI){
-               nco_exit(EXIT_FAILURE);
-          }
-
-        }
-	|   vid:VAR_ID       
-        { 
-          if(vid->getFirstChild())
-               err_prn(fnc_nm,"Invalid Lvalue " +vid->getText() );
-
-          var=ncap_var_init(vid->getText(),prs_arg,true);
-          if(var== NULL_CEWI){
-               nco_exit(EXIT_FAILURE);
-          }
-         
-
-
-        } /* end action */
-    // Plain attribute
-    |   att:ATT_ID { 
-            // check "output"
-            NcapVar *Nvar=NULL;
-         
-            if(att->getFirstChild())
-                err_prn(fnc_nm,"Invalid Lvalue " +att->getText() );
-
-
-            if(prs_arg->ntl_scn)
-              Nvar=prs_arg->ptr_int_vtr->find(att->getText());
-
-            if(Nvar==NULL) 
-              Nvar=prs_arg->ptr_var_vtr->find(att->getText());
-
-            var=NULL_CEWI;    
-            if(Nvar !=NULL)
-                var=nco_var_dpl(Nvar->var);
-            else    
-                var=ncap_att_init(att->getText(),prs_arg);
-
-
-            if(!prs_arg->ntl_scn && var==NULL_CEWI ){
-                err_prn(fnc_nm,"Unable to locate attribute " +att->getText()+ " in input or output files.");
-            }
-            
-            // if att not found return undefined
-            if(prs_arg->ntl_scn && var==NULL_CEWI )
-                var=ncap_var_udf(att->getText().c_str());
-            
-
-            if(prs_arg->ntl_scn && var->val.vp !=NULL)
-                var->val.vp=(void*)nco_free(var->val.vp);
-
-
-       }// end action    
-;
-
 
 
 //Calculate var with limits
@@ -2120,6 +2187,7 @@ var=NULL_CEWI;
 
     }
 ;
+
 property returns [var_sct *var]
 {
 const std::string fnc_nm("property");
