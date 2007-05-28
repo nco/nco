@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/bin_cnt.nco,v 1.8 2007-05-24 15:37:17 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/bin_cnt.nco,v 1.9 2007-05-28 17:35:51 hmb Exp $ -*-C++-*-
 
 // Purpose: Compute wind speed PDFs from annual input files
 
@@ -33,218 +33,175 @@ wnd_max[bin]=wnd_grd(1:bin_nbr); // [m s-1] Maximum speed
 
 
 
-// Respect missing values in flag and accumulation arrays
-// NB: missing_value must be set before arithmetic
-bin_cnt@missing_value=bin_flg@missing_value=wnd_spd@missing_value;
-
 // Initialize loop variables as RAM variables  
-*bin_cnt[lat,lon,bin]=0; // [nbr] Wind speeds in bin
+*bin_cnt[lat,lon,bin]=0s; // [nbr] Wind speeds in bin
 *bin_flg[time,lat,lon]=0s; // [flg] Wind speed within current bin
-*bin_mss[time,lat,lon]=0s; // [flg] Missing value mask
 *bin_idx=0; // [idx] Current bin index
+
+set_miss(bin_cnt,wnd_spd@missing_value);
 
 
 // fxm: Unroll loop until ncap2 supports loop syntax
 bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-*mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
 bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
 bin_idx++;
 
 bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
 bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
 bin_idx++;
 
 bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
 bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
 bin_idx++;
+
 
 // For production runs only
 if(flg_typ==flg_prd){
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  *mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++;
   
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
-  mss_msk=(bin_flg==bin_flg@missing_value);bin_flg=mss_msk*0.0+!mss_msk*bin_flg;
   bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   bin_idx++; // [idx] Current bin index
 } // !flg_prd
 
-// Write last value of RAM variables  
-bin_cnt_out=bin_cnt;
-bin_flg_out=bin_flg;
-bin_idx_out=bin_idx;
-//mss_msk_out=mss_msk;
+ram_write(bin_cnt);
+ram_write(bin_flg);
+ram_write(bin_idx);
