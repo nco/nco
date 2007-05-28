@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.69 2007-05-21 03:46:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.70 2007-05-28 10:45:56 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -244,59 +244,69 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
     // temporary fix make typ_dsk same as type
     Nvar->var->typ_dsk=Nvar->var->type;
     bdef=true;
+    //
+    if(var->has_mss_val)
+      (void)nco_mss_val_cp(var,Nvar->var);
+    // delete missing value
+    else if(Nvar->var->has_mss_val){
+      Nvar->var->has_mss_val=False;
+      Nvar->var->mss_val.vp=(void*)nco_free(Nvar->var->mss_val.vp);
+    }      
+
   } 
+
   
+  // Deal with a new RAM only variable
+  if(!bdef && bram){
+    NcapVar *NewNvar=new NcapVar(var,"");
+    NewNvar->flg_mem=bram;
+    NewNvar->flg_stt=2;
+    NewNvar->var->id=-1;
+    NewNvar->var->nc_id=-1;
+    prs_arg->ptr_var_vtr->push(NewNvar);
+    return True;
+  }
+
   
   // Deal with a RAM variable
   if(bdef && Nvar->flg_mem){
-    var_sct *var_inf;
-    ptr_unn ptr_swp;
+    var_sct *var_ref;
     
-    var_inf=Nvar->cpyVarNoData();
+    // De-reference
+    var_ref=Nvar->var;
+
+
     
-    
-    /* check sizes are the same */
-    if(var_inf->sz != var->sz) {
+    // check sizes are the same 
+    if(var_ref->sz != var->sz) {
       std::ostringstream os;
       os<< "RAM Variable "<< var->nm << " size=" << var->sz << " has aleady been saved in ";
-      os<< prs_arg->fl_out << " with size=" << var_inf->sz;
+      os<< prs_arg->fl_out << " with size=" << var_ref->sz;
       
       wrn_prn(fnc_nm,os.str());  
-      
       var = nco_var_free(var);
-      var_inf=nco_var_free(var_inf);
       return False;
     }
     
     /* convert type to disk type */
-    var=nco_var_cnf_typ(var_inf->type,var);    
+    var=nco_var_cnf_typ(var_ref->type,var);    
     
     //Swap values about  
-    
-    var_inf->val=var->val;
+    var_ref->val.vp=var->val.vp;
     var->val.vp=(void*)NULL;
     
-    
-    // Check for "new" missing value;
-    if(var->has_mss_val){
-      //Swap values about  
-      ptr_swp.vp=var_inf->mss_val.vp;
-      var_inf->mss_val.vp=var->mss_val.vp; 
-      var->mss_val.vp=ptr_swp.vp;
-      var_inf->has_mss_val=true; 
-    }     
-    (void)nco_var_free(Nvar->var);  
-    Nvar->var=var_inf;     
     Nvar->flg_stt=2;
     
-    assert(Nvar->var->val.vp !=NULL);
-    
+        
     (void)nco_var_free(var);
     
     return true;
   }
   
-  
+  // var is already defined but not populated 
+  if(bdef && !Nvar->flg_mem && Nvar->flg_stt==1){
+    ;
+  }
   
   // var is already defined & populated in output 
   if(bdef && !Nvar->flg_mem && Nvar->flg_stt==2){
@@ -319,7 +329,8 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
     }
     
     /* convert type to disk type */
-    var=nco_var_cnf_typ(var_inf->type,var);    
+    var=nco_var_cnf_typ(var_inf->type,var);
+    
     
     //Swap values about
     var_inf->val=var->val;var->val.vp=(void*)NULL;
@@ -331,27 +342,23 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
     
   } 
   
-  // Deal with a new RAM only variable
-  if(!bdef && bram){
-    NcapVar *NewNvar=new NcapVar(var,"");
-    NewNvar->flg_mem=bram;
-    NewNvar->flg_stt=2;
-    NewNvar->var->id=-1;
-    NewNvar->var->nc_id=-1;
-    prs_arg->ptr_var_vtr->push(NewNvar);
-    return True;
-  }
-  
   
   rcd=nco_inq_varid_flg(prs_arg->out_id,var->nm,&var_out_id);
   
-  /* Put file in define mode to allow metadata writing */
-  (void)nco_redef(prs_arg->out_id);
-  
+
+
+  // Only go into define mode if necessary
+  if(!bdef || var->pck_ram ){  
+
+     (void)nco_redef(prs_arg->out_id);
+
   /* Define variable */   
   if(!bdef)(void)nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
   /* Put missing value */  
+
+  /*
   if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
+  */
   
   /* Write/overwrite scale_factor and add_offset attributes */
   if(var->pck_ram){ /* Variable is packed in memory */
@@ -362,6 +369,8 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
   /* Take output file out of define mode */
   (void)nco_enddef(prs_arg->out_id);
   
+  } // end defines
+
   /* Write variable */ 
   if(var->nbr_dim == 0){
     (void)nco_put_var1(prs_arg->out_id,var_out_id,0L,var->val.vp,var->type);
@@ -382,7 +391,7 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
   
   // save variable to output vector if new
   if(!bdef) {
-    var_sct *var1;
+     var_sct *var1;
     var1=nco_var_dpl(var);
     var1->val.vp=(void*)nco_free(var1->val.vp);
     var1->id=var_out_id;
@@ -2307,7 +2316,7 @@ ncap_get_var_mem(
 } /* ncap_get_var_mem */
 
 
-var_sct*
+void
 nco_get_var_mem(
 		var_sct *var_in,
 		NcapVector<dmn_sct*> &dmn_vtr){
@@ -2321,7 +2330,6 @@ nco_get_var_mem(
   char *cp_out; 
   std::vector<int> shp_vtr;
   
-  var_sct* var_ret;  
   
   dmn_nbr=var_in->nbr_dim;
   
@@ -2358,13 +2366,12 @@ nco_get_var_mem(
   // Call in-memory nco_get_var() (n.b is recursive of course!!)
   (void)ncap_get_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,(char*)var_in->val.vp,cp_out);
   
-  var_ret=nco_var_dpl(var_in);
-  var_ret->sz=ncnt;
+
+  var_in->sz=ncnt;
   
-  (void)nco_free(var_ret->val.vp);
-  var_ret->val.vp=vp_out;  
+  (void)nco_free(var_in->val.vp);
+  var_in->val.vp=vp_out;  
   
-  return var_ret;
 } /* end nco_get_var_mem()  */
 
 
@@ -2376,8 +2383,8 @@ ncap_put_var_mem(
 		 int dpt_max,                   // Max depth ( same as number of dims) 
 		 std::vector<int> &shp_vtr,     // shape of input var (in bytes)
 		 NcapVector<lmt_sct*> &dmn_vtr, // New vectors
-		 char *cp_out,                  // Pointer to (char*)var_in->val.vp
-		 char *&cp_in)                  // Slab to be "put" 
+		 char *&cp_in,                   // Pointer to (char*)var_in->val.vp
+		 char *cp_out)                  // Slab to be "put" 
 {
   
   
@@ -2391,39 +2398,28 @@ ncap_put_var_mem(
   long srd=dmn_vtr[dpt]->srd;
   long slb_sz=shp_vtr[dpt];
   
-  char *cp_srt=cp_in;
   char *cp_end=cp_out+ptrdiff_t(srt*slb_sz);;
   
   
   if(dbg_lvl_get() > 2){
     std::ostringstream os;
-    os<<"Depth=" << dpt<<" "<<dmn_vtr[dpt]->nm<<" "<<srt<<" "<<end<<" "<<cnt<<" "<<srd;
+    os<<"Depth=" << dpt<<" "<<dmn_vtr[dpt]->nm<<" "<<srt<<" "<<end<<" "<<cnt<<" "<<srd<<" "<<slb_sz;
     dbg_prn(fnc_nm,os.str());
   }
-  
-  
+
   if(dpt == dpt_max){
     
-    
-    if(srd==1) 
-      (void)memcpy(cp_end, cp_srt, ptrdiff_t(cnt*shp_vtr[dpt]));
-    else { 
-      
       for(idx=0 ; idx<cnt ; idx++ ){
-        (void)memcpy(cp_end,cp_srt,slb_sz);
-        cp_srt+=slb_sz;
+        (void)memcpy(cp_end,cp_in,slb_sz);
+        cp_in+=(ptrdiff_t)slb_sz;
         cp_end+=(ptrdiff_t)(srd*slb_sz);
       }
-    } // end else
-    // increment input pointer 
-    cp_in+=ptrdiff_t(cnt*slb_sz);
-    
   }
   
   if(dpt < dpt_max){
     for(idx=0; idx <cnt ;idx++){
-      (void)ncap_put_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,cp_end,cp_in);
-      cp_srt+= ptrdiff_t(srd*slb_sz);
+      (void)ncap_put_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,cp_in,cp_end);
+      cp_end+= ptrdiff_t(srd*slb_sz);
     }
   }  
   
@@ -2444,7 +2440,9 @@ nco_put_var_mem(
   int dmn_nbr;
   int dpt_max;
   
+  char *cp_in;
   char *cp_out; 
+  
   std::vector<int> shp_vtr;
   
   
@@ -2463,17 +2461,21 @@ nco_put_var_mem(
   
   // Work out max depth we have to go to 
   dpt_max=dmn_nbr;
+
+  /*
   for(idx=dmn_nbr-1; idx>0 ; idx--)
     if( var_in->dim[idx]->cnt == dmn_vtr[idx]->cnt) 
       dpt_max--;
     else
       break;
-  
-  cp_out=(char*)var_nw->val.vp;
-  
+  */
+
+  cp_out=(char*)var_in->val.vp;
+  cp_in=(char*)var_nw->val.vp;
+   
   
   // Call in-memory nco_put_var_mem (n.b is recursive of course!!)
-  (void)ncap_put_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,(char*)var_in->val.vp,cp_out);
+  (void)ncap_put_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,cp_out,cp_in);
   
   
 } /* end nco_put_var_mem() */
