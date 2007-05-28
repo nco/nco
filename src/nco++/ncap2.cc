@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.39 2007-05-24 14:50:20 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.40 2007-05-28 10:49:11 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.39 2007-05-24 14:50:20 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.39 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.40 2007-05-28 10:49:11 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.40 $";
   const char * const opt_sht_lst="4ACcD:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -487,10 +487,6 @@ main(int argc,char **argv)
   /* sym_vtr.push(ncap_sym_init("rint",rint,rintf)); *//* Round to integer value in floating point format using current rounding direction, raise inexact exceptions */
 
 
-  /* add delete function for RAM variables --Temporary location */
-  /* function args are not used */
-    sym_vtr.push_back(ncap_sym_init("delete",tanh,tanhf));
-
   /* now sort sym_vtr */
   sym_vtr.sort(); 
    
@@ -710,9 +706,19 @@ main(int argc,char **argv)
   /* Write out new attributes possibly overwriting old ones */
   for(idx=0;idx<var_vtr.size();idx++){
 
-    // Check if attrribute
-    if( var_vtr[idx]->xpr_typ != ncap_att) continue;
-  
+    // write misssing value contained inside var
+    if( var_vtr[idx]->xpr_typ == ncap_var && !var_vtr[idx]->flg_mem) {
+      // dereference
+      var_sct *var_ref;
+      var_ref=var_vtr[idx]->var;
+      rcd=nco_inq_varid_flg(out_id,var_ref->nm,&var_id);
+
+      if(var_ref->has_mss_val && rcd==NC_NOERR) 
+        (void)nco_put_att(out_id,var_id,nco_mss_val_sng_get(),var_ref->type,1,var_ref->mss_val.vp);           
+      continue;
+    }
+    
+
     // Skip misssing values for now !!!
     if(var_vtr[idx]->getAtt() =="missing_value") continue;
         
