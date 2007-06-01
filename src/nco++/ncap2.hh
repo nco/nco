@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.42 2007-05-28 10:47:44 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.43 2007-06-01 21:23:48 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -23,7 +23,9 @@
 #include <string.h> /* strcmp. . . */
 #include <time.h> /* machine time */
 #include <unistd.h> /* POSIX stuff */
+#include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
 #include <string>
+
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for libnetcdf.a */

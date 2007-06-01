@@ -1,5 +1,8 @@
 2007-06-01  Charlie Zender  <zender@uci.edu>
 
+	* Include stdint.h where "long long" types are used
+	This should fix build problems with icpc
+
 	* Add nco_var_def_deflate() and stub to libnco
 
 2007-05-31  Charlie Zender  <zender@uci.edu>

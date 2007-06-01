@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.71 2007-05-28 15:26:51 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.72 2007-06-01 21:23:48 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -6,24 +6,28 @@
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
-#include <assert.h>
-#include <ctype.h>
+// Standard C++ headers
 #include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <string>
+
+// Standard C headers
+#include <assert.h>
+#include <ctype.h>
+
+// Personal headers
 #include "ncap2.hh" /* netCDF arithmetic processor */
 #include "NcapVar.hh"
 #include "sdo_utl.hh"
 
-/* have removed extern -- (not linking to ncap_lex.l */
-/*extern*/ char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in ncap_lex.l) */
+char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in ncap_lex.l) */
 
 var_sct *                  /* O [sct] initialized variable */
-ncap_var_init(
-	      const std::string &snm,    /* I [sng] variable name constant */
-	      prs_sct *prs_arg,          /* I/O  vectors of atts,vars,dims, filenames */
-	      bool bfll)                 /* if true fill var with data */ 
+ncap_var_init
+(const std::string &snm,    /* I [sng] variable name constant */
+ prs_sct *prs_arg,          /* I/O  vectors of atts,vars,dims, filenames */
+ bool bfll)                 /* if true fill var with data */ 
 {
   /* Purpose: Initialize variable structure, retrieve variable values from disk
      Parser calls ncap_var_init() when it encounters a new RHS variable */

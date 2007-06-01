@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.40 2007-05-28 10:49:11 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.41 2007-06-01 21:23:48 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -43,16 +43,18 @@
 #include "config.h" /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
-/* Standard C headers */
+// Standard C++ headers
+#include <string>
+
+// Standard C headers
 #include <assert.h>  /* assert() debugging macro */
+#include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strcmp. . . */
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
-#include <string>
-#include <math.h> /* sin cos cos sin 3.14159 */
 
 /* GNU getopt() is independent system header on FREEBSD, LINUX, LINUXALPHA, LINUXAMD, LINUXARM, WIN32
    AT&T getopt() is in unistd.h or stdlib.h on AIX, CRAY, NECSX, SUNMP, SUN4SOL2
@@ -126,8 +128,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.40 2007-05-28 10:49:11 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.40 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.41 2007-06-01 21:23:48 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.41 $";
   const char * const opt_sht_lst="4ACcD:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */

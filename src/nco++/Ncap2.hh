@@ -9,6 +9,4 @@ typedef enum { ncap_var,
 	       ncap_xpr_null
               } ncap_type;
 
-
-
 #endif // NCAP2_HH
