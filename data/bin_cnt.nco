@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/bin_cnt.nco,v 1.9 2007-05-28 17:35:51 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/bin_cnt.nco,v 1.10 2007-06-01 21:01:48 zender Exp $ -*-C++-*-
 
 // Purpose: Compute wind speed PDFs from annual input files
 
@@ -31,15 +31,13 @@ if(flg_typ==flg_tst){
 wnd_min[bin]=wnd_grd(0:bin_nbr-1); // [m s-1] Minimum speed
 wnd_max[bin]=wnd_grd(1:bin_nbr); // [m s-1] Maximum speed
 
-
-
 // Initialize loop variables as RAM variables  
 *bin_cnt[lat,lon,bin]=0s; // [nbr] Wind speeds in bin
 *bin_flg[time,lat,lon]=0s; // [flg] Wind speed within current bin
 *bin_idx=0; // [idx] Current bin index
 
+// bin_cnt is a RAM variable so use set_miss() to set missing value
 set_miss(bin_cnt,wnd_spd@missing_value);
-
 
 // fxm: Unroll loop until ncap2 supports loop syntax
 bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
@@ -53,7 +51,6 @@ bin_idx++;
 bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
 bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
 bin_idx++;
-
 
 // For production runs only
 if(flg_typ==flg_prd){
@@ -203,5 +200,6 @@ if(flg_typ==flg_prd){
 } // !flg_prd
 
 ram_write(bin_cnt);
-ram_write(bin_flg);
-ram_write(bin_idx);
+// Only want bin_flg and bin_idx if debugging
+ram_delete(bin_flg);
+ram_delete(bin_idx);

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.423 2007-06-01 06:11:41 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.424 2007-06-01 21:01:51 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -446,7 +446,9 @@ Instead, retrieve all recently tagged versions
 <a name="#Download">with CVS</a> or from    
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO/SDO 3.9.1</b>: GCC&nbsp;4.2 compatibility (<i>In progress</i>) 
+<li><b>NCO/SDO 3.9.1</b>: (<i>In progress</i>) GCC&nbsp;4.2 compatibility;
+Improve Intel compiler support; 
+<tt>ncpdq</tt> and <tt>ncks</tt> support netCDF4 compression;
 <li><b>NCO/SDO 3.9.0</b>: 
 <a href="http://nco.sf.net/nco.html#nco4">Support netCDF4</a> types (<tt>ubyte</tt>, <tt>ushort</tt>, <tt>uint</tt>, <tt>int64</tt>, and <tt>uint64</tt>);
 Control <tt>ncks</tt> metadata <a href="http://nco.sf.net/nco.html#prn">copying</a>; 

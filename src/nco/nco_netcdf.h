@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.40 2007-05-24 00:50:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.41 2007-06-01 21:01:51 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -155,6 +155,9 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
 /* End Attribute routines */
 
 /* Begin netCDF4 stubs */
+#ifndef ENABLE_NETCDF4
+  int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int deflate_level);
+#endif /* ENABLE_NETCDF4 */
 #ifndef ENABLE_NETCDF4
   int NCO_GET_VAR1_UBYTE(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *ubp);
   int NCO_GET_VAR1_USHORT(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *usp);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.78 2007-05-24 00:50:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.79 2007-06-01 21:01:51 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -490,7 +490,7 @@ nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * cons
   return rcd;
 } /* end nco_inq() */
 
-#if NEED_NC_INQ_FORMAT
+#ifdef NEED_NC_INQ_FORMAT
 int nc_inq_format(int nc_id, int * const fl_fmt)
 {
   /* Purpose: Stub for nc_inq_format(), which appeared in netCDF 3.6.1 or 3.6.2 */
@@ -651,6 +651,20 @@ nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,cons
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var()");
   return rcd;
 } /* end nco_def_var */
+
+int nco_def_var_deflate
+(const int nc_id, /* [ID] netCDF ID */
+ const int var_id, /* [ID] Variable ID */
+ const int shuffle, /* [flg] Turn on shuffle filter */
+ const int deflate, /* [flg] Turn on deflate filter */
+ const int deflate_level) /* [enm] Deflate level [0..9] */
+{
+  /* Purpose: Wrapper for nc_def_var_deflate() */
+  int rcd;
+  rcd=nc_def_var_deflate(nc_id,var_id,shuffle,deflate,deflate_level);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var_deflate()");
+  return rcd;
+} /* end nco_def_var_deflate() */
 
 int
 nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type *var_typ,int * const dmn_nbr,int * const dmn_id,int * const nbr_att)
@@ -1159,6 +1173,9 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
 /* End Attribute routines */
 
 /* Begin netCDF4 stubs */
+#ifndef ENABLE_NETCDF4
+int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int deflate_level){return 1;}
+#endif /* ENABLE_NETCDF4 */
 #ifndef ENABLE_NETCDF4
 int NCO_GET_VAR1_UBYTE(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *ubp){return 1;}
 int NCO_GET_VAR1_USHORT(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *usp){return 1;}
