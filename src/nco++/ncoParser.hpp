@@ -10,14 +10,15 @@
 
 #line 1 "ncoGrammer.g"
 
-    #include <math.h>
-    #include <malloc.h>
-    #include <assert.h>
-    #include <ctype.h>
+    #include <algorithm>
     #include <iostream>
     #include <sstream>
     #include <string>
-    #include <algorithm>
+    #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
+    #include <assert.h>
+    #include <ctype.h>
+    #include <malloc.h>
+    #include <math.h>
     #include "ncap2.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
@@ -27,11 +28,11 @@
     ANTLR_USING_NAMESPACE(antlr);
     
 
-#line 31 "ncoParser.hpp"
+#line 32 "ncoParser.hpp"
 class CUSTOM_API ncoParser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public ncoParserTokenTypes
 {
 #line 1 "ncoGrammer.g"
-#line 35 "ncoParser.hpp"
+#line 36 "ncoParser.hpp"
 public:
 	void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
 protected:
@@ -62,6 +63,10 @@ public:
 	public: void if_stmt();
 	public: void assign_statement();
 	public: void def_dim();
+	public: void ram_delete();
+	public: void ram_write();
+	public: void set_miss();
+	public: void ch_miss();
 	public: void expr();
 	public: void hyper_slb();
 	public: void lmt_list();
@@ -99,10 +104,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 103;
+	static const int NUM_TOKENS = 107;
 #else
 	enum {
-		NUM_TOKENS = 103
+		NUM_TOKENS = 107
 	};
 #endif
 	

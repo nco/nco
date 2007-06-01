@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.423 2007-05-25 17:36:46 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.424 2007-06-01 06:11:41 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3199,7 +3199,7 @@ Short options: @samp{-C}, @samp{-c}@*
 Long options: @samp{--no-coords}, @samp{--no-crd}, @samp{--crd}, @samp{--coords}@*
 @end cartouche
 By default, coordinates variables associated with any variable appearing
-in the @var{output-file} will also appear in the @var{output-file}, even
+in the @var{input-file} will also appear in the @var{output-file}, even
 if they are not explicitly specified, e.g., with the @samp{-v} switch.
 Thus variables with a latitude coordinate @code{lat} always carry the
 values of @code{lat} with them into the @var{output-file}.
@@ -9233,8 +9233,8 @@ contains more information on how to contribute.
 @cindex PayPal
 Financial contributions to @acronym{NCO} development may be made through  
 @uref{https://www.paypal.com/xclick/business=zender%40uci.edu&item_name=NCO+development&item_number=nco_dnt_dvl&no_note=1&tax=0&currency_code=USD, PayPal}.
-@acronym{NCO} has been shared for almost @w{10 years} yet no one has
-ever contributed any money to the developers
+@acronym{NCO} has been shared for over @w{10 years} yet only two 
+users have contributed any money to the developers
 @footnote{
 @cindex chocolate
 Happy users have sent me a few gifts, though.
@@ -9245,7 +9245,7 @@ Naturally, I'm too lazy to split and send gifts to the other developers.
 However, unlike some @acronym{NCO} developers, I have a steady "real job".
 My intent is to split monetary donations among the active developers
 and to send them their shares via PayPal.}. 
-So you could be the first!
+So you could be the third!
 
 @html
 <a name="dvl"></a> <!-- http://nco.sf.net/nco.html#dvl -->

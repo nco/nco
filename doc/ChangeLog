@@ -1,3 +1,7 @@
+2007-05-31  Charlie Zender  <zender@uci.edu>
+
+	* Fix typos spotted by donor Kevin Raeder
+
 2007-05-25  Charlie Zender  <zender@uci.edu>
 
 	* NC_64BIT_OFFSET patch in configure.in causes beaucoups de RPM warnings

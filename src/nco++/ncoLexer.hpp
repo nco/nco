@@ -10,14 +10,15 @@
 #include <antlr/CharScanner.hpp>
 #line 1 "ncoGrammer.g"
 
-    #include <math.h>
-    #include <malloc.h>
-    #include <assert.h>
-    #include <ctype.h>
+    #include <algorithm>
     #include <iostream>
     #include <sstream>
     #include <string>
-    #include <algorithm>
+    #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
+    #include <assert.h>
+    #include <ctype.h>
+    #include <malloc.h>
+    #include <math.h>
     #include "ncap2.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
@@ -27,10 +28,10 @@
     ANTLR_USING_NAMESPACE(antlr);
     
 
-#line 31 "ncoLexer.hpp"
+#line 32 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 271 "ncoGrammer.g"
+#line 292 "ncoGrammer.g"
 
 
 private:
@@ -48,7 +49,7 @@ public:
 
 
 
-#line 35 "ncoLexer.hpp"
+#line 36 "ncoLexer.hpp"
 private:
 	void initLiterals();
 public:

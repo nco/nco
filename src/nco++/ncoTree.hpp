@@ -8,14 +8,15 @@
 
 #line 1 "ncoGrammer.g"
 
-    #include <math.h>
-    #include <malloc.h>
-    #include <assert.h>
-    #include <ctype.h>
+    #include <algorithm>
     #include <iostream>
     #include <sstream>
     #include <string>
-    #include <algorithm>
+    #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
+    #include <assert.h>
+    #include <ctype.h>
+    #include <malloc.h>
+    #include <math.h>
     #include "ncap2.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
@@ -25,10 +26,10 @@
     ANTLR_USING_NAMESPACE(antlr);
     
 
-#line 29 "ncoTree.hpp"
+#line 30 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 506 "ncoGrammer.g"
+#line 527 "ncoGrammer.g"
 
 
 private:
@@ -236,7 +237,7 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
 } /* end lmt_mk */
 
 
-
+/* Legacy run -- will remove soon
 public:
     void run(RefAST tr){
         while(tr) {
@@ -244,7 +245,7 @@ public:
           tr=tr->getNextSibling();   
         }
     }
-
+*/
 public:
     void run_dbl(RefAST tr,int icnt){
      int idx=0;
@@ -256,7 +257,8 @@ public:
      //Initial scan
      prs_arg->ntl_scn=True;
      while(idx++ < icnt){
-       (void)statements(ntr);   
+       if( ntr->getType()!= RAM_WRITE && ntr->getType()!=RAM_DELETE && ntr->getType()!=SET_MISS && ntr->getType()!= CH_MISS)
+         (void)statements(ntr);   
        ntr=ntr->getNextSibling();   
      }
 
@@ -337,7 +339,7 @@ public:
         (void)statements(ntr);      
        }
 
-       if(gtyp==EXPR || gtyp== NULL_NODE) 
+       if(gtyp==EXPR || gtyp== NULL_NODE || gtyp==RAM_WRITE|| gtyp==RAM_DELETE ||gtyp==SET_MISS ||gtyp==CH_MISS)
         if(icnt++==0) etr=ntr;
         
        
@@ -354,7 +356,7 @@ exit: ;
     } // end run_exe
 
 
-#line 33 "ncoTree.hpp"
+#line 34 "ncoTree.hpp"
 public:
 	ncoTree();
 	static void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
@@ -373,14 +375,18 @@ public:
 	}
 	public: int  lmt_peek(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: void statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
+	public: var_sct * out(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 		bool bram
 	);
 	public: var_sct * assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 		bool bram
 	);
-	public: var_sct * out(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
+	public: var_sct * methods(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
+	public: var_sct * property(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
+	public: var_sct * value_list(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
+	public: var_sct * var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 public:
 	ANTLR_USE_NAMESPACE(antlr)RefAST getAST()
 	{
@@ -393,10 +399,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 103;
+	static const int NUM_TOKENS = 107;
 #else
 	enum {
-		NUM_TOKENS = 103
+		NUM_TOKENS = 107
 	};
 #endif
 	

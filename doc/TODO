@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.922 2007-05-25 17:50:43 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.923 2007-06-01 06:11:41 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -594,7 +594,8 @@ nco865. Re-cast output variable to original type in ncbo.c (like in ncflint.c)?
         ncks -O -C -d time,0,3 -v rec_var_dbl_mss_val_dbl_pck -p ~/nco/data in.nc
 	ncks ~/foo.nc
 nco866. Why don't ncra and ncwa make NC_BYTE etc. as fix var in var_lst_dvd()?
-nco868. 
+nco868. netCDF4: turn on per-variable compression
+nco869. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

@@ -1,12 +1,13 @@
 header {
-    #include <math.h>
-    #include <malloc.h>
-    #include <assert.h>
-    #include <ctype.h>
+    #include <algorithm>
     #include <iostream>
     #include <sstream>
     #include <string>
-    #include <algorithm>
+    #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
+    #include <assert.h>
+    #include <ctype.h>
+    #include <malloc.h>
+    #include <math.h>
     #include "ncap2.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"

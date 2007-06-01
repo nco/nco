@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.237 2007-05-26 00:38:19 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.238 2007-06-01 06:11:41 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.0 are ready. 
 The version number jumped from 3.2.0 to 3.9.0 because of the addition
@@ -15,6 +15,8 @@ for packed values, and better IRIX support.
 Because the netCDF4 support description is extensive its description
 appears at the end of this announcement. 
 The netCDF3 NCO improvements in 3.9.0 are:
+
+0. Thanks to KR for the $50 donation! 
 
 A. netCDF4 support (see end of announcement).
    http://nco.sf.net/nco.html#nco4

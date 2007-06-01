@@ -106,13 +106,41 @@ void ncoParser::statement() {
 		statement_AST = currentAST.root;
 		break;
 	}
+	case RAM_DELETE:
+	{
+		ram_delete();
+		astFactory->addASTChild( currentAST, returnAST );
+		statement_AST = currentAST.root;
+		break;
+	}
+	case RAM_WRITE:
+	{
+		ram_write();
+		astFactory->addASTChild( currentAST, returnAST );
+		statement_AST = currentAST.root;
+		break;
+	}
+	case SET_MISS:
+	{
+		set_miss();
+		astFactory->addASTChild( currentAST, returnAST );
+		statement_AST = currentAST.root;
+		break;
+	}
+	case CH_MISS:
+	{
+		ch_miss();
+		astFactory->addASTChild( currentAST, returnAST );
+		statement_AST = currentAST.root;
+		break;
+	}
 	case SEMI:
 	{
 		match(SEMI);
 		statement_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 61 "ncoGrammer.g"
+#line 66 "ncoGrammer.g"
 		statement_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(1))->add(astFactory->create(NULL_NODE,"null_stmt"))));
-#line 116 "ncoParser.cpp"
+#line 144 "ncoParser.cpp"
 		currentAST.root = statement_AST;
 		if ( statement_AST!=ANTLR_USE_NAMESPACE(antlr)nullAST &&
 			statement_AST->getFirstChild() != ANTLR_USE_NAMESPACE(antlr)nullAST )
@@ -152,9 +180,9 @@ void ncoParser::block() {
 	} // ( ... )*
 	match(RCURL);
 	block_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 68 "ncoGrammer.g"
+#line 73 "ncoGrammer.g"
 	block_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(BLOCK,"block"))->add(block_AST)));
-#line 158 "ncoParser.cpp"
+#line 186 "ncoParser.cpp"
 	currentAST.root = block_AST;
 	if ( block_AST!=ANTLR_USE_NAMESPACE(antlr)nullAST &&
 		block_AST->getFirstChild() != ANTLR_USE_NAMESPACE(antlr)nullAST )
@@ -210,9 +238,9 @@ void ncoParser::assign_statement() {
 	astFactory->addASTChild( currentAST, returnAST );
 	match(SEMI);
 	assign_statement_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 84 "ncoGrammer.g"
+#line 89 "ncoGrammer.g"
 	assign_statement_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(EXPR,"EXPR"))->add(assign_statement_AST)));
-#line 216 "ncoParser.cpp"
+#line 244 "ncoParser.cpp"
 	currentAST.root = assign_statement_AST;
 	if ( assign_statement_AST!=ANTLR_USE_NAMESPACE(antlr)nullAST &&
 		assign_statement_AST->getFirstChild() != ANTLR_USE_NAMESPACE(antlr)nullAST )
@@ -247,6 +275,114 @@ void ncoParser::def_dim() {
 	returnAST = def_dim_AST;
 }
 
+void ncoParser::ram_delete() {
+	returnAST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+	ANTLR_USE_NAMESPACE(antlr)ASTPair currentAST;
+	ANTLR_USE_NAMESPACE(antlr)RefAST ram_delete_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+	
+	ANTLR_USE_NAMESPACE(antlr)RefAST tmp15_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+	tmp15_AST = astFactory->create(LT(1));
+	astFactory->makeASTRoot(currentAST, tmp15_AST);
+	match(RAM_DELETE);
+	match(LPAREN);
+	{
+	switch ( LA(1)) {
+	case VAR_ID:
+	{
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp17_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp17_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp17_AST);
+		match(VAR_ID);
+		break;
+	}
+	case ATT_ID:
+	{
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp18_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp18_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp18_AST);
+		match(ATT_ID);
+		break;
+	}
+	default:
+	{
+		throw ANTLR_USE_NAMESPACE(antlr)NoViableAltException(LT(1), getFilename());
+	}
+	}
+	}
+	match(RPAREN);
+	match(SEMI);
+	ram_delete_AST = currentAST.root;
+	returnAST = ram_delete_AST;
+}
+
+void ncoParser::ram_write() {
+	returnAST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+	ANTLR_USE_NAMESPACE(antlr)ASTPair currentAST;
+	ANTLR_USE_NAMESPACE(antlr)RefAST ram_write_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+	
+	ANTLR_USE_NAMESPACE(antlr)RefAST tmp21_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+	tmp21_AST = astFactory->create(LT(1));
+	astFactory->makeASTRoot(currentAST, tmp21_AST);
+	match(RAM_WRITE);
+	match(LPAREN);
+	{
+	ANTLR_USE_NAMESPACE(antlr)RefAST tmp23_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+	tmp23_AST = astFactory->create(LT(1));
+	astFactory->addASTChild(currentAST, tmp23_AST);
+	match(VAR_ID);
+	}
+	match(RPAREN);
+	match(SEMI);
+	ram_write_AST = currentAST.root;
+	returnAST = ram_write_AST;
+}
+
+void ncoParser::set_miss() {
+	returnAST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+	ANTLR_USE_NAMESPACE(antlr)ASTPair currentAST;
+	ANTLR_USE_NAMESPACE(antlr)RefAST set_miss_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+	
+	ANTLR_USE_NAMESPACE(antlr)RefAST tmp26_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+	tmp26_AST = astFactory->create(LT(1));
+	astFactory->makeASTRoot(currentAST, tmp26_AST);
+	match(SET_MISS);
+	match(LPAREN);
+	ANTLR_USE_NAMESPACE(antlr)RefAST tmp28_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+	tmp28_AST = astFactory->create(LT(1));
+	astFactory->addASTChild(currentAST, tmp28_AST);
+	match(VAR_ID);
+	match(COMMA);
+	expr();
+	astFactory->addASTChild( currentAST, returnAST );
+	match(RPAREN);
+	match(SEMI);
+	set_miss_AST = currentAST.root;
+	returnAST = set_miss_AST;
+}
+
+void ncoParser::ch_miss() {
+	returnAST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+	ANTLR_USE_NAMESPACE(antlr)ASTPair currentAST;
+	ANTLR_USE_NAMESPACE(antlr)RefAST ch_miss_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+	
+	ANTLR_USE_NAMESPACE(antlr)RefAST tmp32_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+	tmp32_AST = astFactory->create(LT(1));
+	astFactory->makeASTRoot(currentAST, tmp32_AST);
+	match(CH_MISS);
+	match(LPAREN);
+	ANTLR_USE_NAMESPACE(antlr)RefAST tmp34_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+	tmp34_AST = astFactory->create(LT(1));
+	astFactory->addASTChild(currentAST, tmp34_AST);
+	match(VAR_ID);
+	match(COMMA);
+	expr();
+	astFactory->addASTChild( currentAST, returnAST );
+	match(RPAREN);
+	match(SEMI);
+	ch_miss_AST = currentAST.root;
+	returnAST = ch_miss_AST;
+}
+
 void ncoParser::expr() {
 	returnAST = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)ASTPair currentAST;
@@ -267,17 +403,17 @@ void ncoParser::hyper_slb() {
 	switch ( LA(1)) {
 	case VAR_ID:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp15_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp15_AST = astFactory->create(LT(1));
-		astFactory->makeASTRoot(currentAST, tmp15_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp38_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp38_AST = astFactory->create(LT(1));
+		astFactory->makeASTRoot(currentAST, tmp38_AST);
 		match(VAR_ID);
 		break;
 	}
 	case ATT_ID:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp16_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp16_AST = astFactory->create(LT(1));
-		astFactory->makeASTRoot(currentAST, tmp16_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp39_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp39_AST = astFactory->create(LT(1));
+		astFactory->makeASTRoot(currentAST, tmp39_AST);
 		match(ATT_ID);
 		break;
 	}
@@ -358,17 +494,17 @@ void ncoParser::lmt_list() {
 			astFactory->addASTChild( currentAST, returnAST );
 		}
 		else {
-			goto _loop72;
+			goto _loop78;
 		}
 		
 	}
-	_loop72:;
+	_loop78:;
 	} // ( ... )*
 	match(RPAREN);
 	lmt_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 195 "ncoGrammer.g"
+#line 212 "ncoGrammer.g"
 	lmt_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(LMT_LIST,"lmt_list"))->add(lmt_list_AST)));
-#line 372 "ncoParser.cpp"
+#line 508 "ncoParser.cpp"
 	currentAST.root = lmt_list_AST;
 	if ( lmt_list_AST!=ANTLR_USE_NAMESPACE(antlr)nullAST &&
 		lmt_list_AST->getFirstChild() != ANTLR_USE_NAMESPACE(antlr)nullAST )
@@ -390,17 +526,17 @@ void ncoParser::dmn_list() {
 	switch ( LA(1)) {
 	case VAR_ID:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp21_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp21_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp21_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp44_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp44_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp44_AST);
 		match(VAR_ID);
 		break;
 	}
 	case DIM_ID:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp22_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp22_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp22_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp45_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp45_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp45_AST);
 		match(DIM_ID);
 		break;
 	}
@@ -418,17 +554,17 @@ void ncoParser::dmn_list() {
 			switch ( LA(1)) {
 			case VAR_ID:
 			{
-				ANTLR_USE_NAMESPACE(antlr)RefAST tmp24_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-				tmp24_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp24_AST);
+				ANTLR_USE_NAMESPACE(antlr)RefAST tmp47_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+				tmp47_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp47_AST);
 				match(VAR_ID);
 				break;
 			}
 			case DIM_ID:
 			{
-				ANTLR_USE_NAMESPACE(antlr)RefAST tmp25_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-				tmp25_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp25_AST);
+				ANTLR_USE_NAMESPACE(antlr)RefAST tmp48_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+				tmp48_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp48_AST);
 				match(DIM_ID);
 				break;
 			}
@@ -440,17 +576,17 @@ void ncoParser::dmn_list() {
 			}
 		}
 		else {
-			goto _loop77;
+			goto _loop83;
 		}
 		
 	}
-	_loop77:;
+	_loop83:;
 	} // ( ... )*
 	match(RSQUARE);
 	dmn_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 202 "ncoGrammer.g"
+#line 219 "ncoGrammer.g"
 	dmn_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(DMN_LIST,"dmn_list"))->add(dmn_list_AST)));
-#line 454 "ncoParser.cpp"
+#line 590 "ncoParser.cpp"
 	currentAST.root = dmn_list_AST;
 	if ( dmn_list_AST!=ANTLR_USE_NAMESPACE(antlr)nullAST &&
 		dmn_list_AST->getFirstChild() != ANTLR_USE_NAMESPACE(antlr)nullAST )
@@ -504,18 +640,18 @@ void ncoParser::arg_list() {
 	}
 	case DIM_ID:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp27_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp27_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp27_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp50_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp50_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp50_AST);
 		match(DIM_ID);
 		arg_list_AST = currentAST.root;
 		break;
 	}
 	case DIM_MTD_ID:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp28_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp28_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp28_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp51_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp51_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp51_AST);
 		match(DIM_MTD_ID);
 		arg_list_AST = currentAST.root;
 		break;
@@ -538,17 +674,17 @@ void ncoParser::dmn_arg_list() {
 	switch ( LA(1)) {
 	case DIM_ID:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp30_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp30_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp30_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp53_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp53_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp53_AST);
 		match(DIM_ID);
 		break;
 	}
 	case DIM_MTD_ID:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp31_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp31_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp31_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp54_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp54_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp54_AST);
 		match(DIM_MTD_ID);
 		break;
 	}
@@ -566,17 +702,17 @@ void ncoParser::dmn_arg_list() {
 			switch ( LA(1)) {
 			case DIM_ID:
 			{
-				ANTLR_USE_NAMESPACE(antlr)RefAST tmp33_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-				tmp33_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp33_AST);
+				ANTLR_USE_NAMESPACE(antlr)RefAST tmp56_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+				tmp56_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp56_AST);
 				match(DIM_ID);
 				break;
 			}
 			case DIM_MTD_ID:
 			{
-				ANTLR_USE_NAMESPACE(antlr)RefAST tmp34_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-				tmp34_AST = astFactory->create(LT(1));
-				astFactory->addASTChild(currentAST, tmp34_AST);
+				ANTLR_USE_NAMESPACE(antlr)RefAST tmp57_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+				tmp57_AST = astFactory->create(LT(1));
+				astFactory->addASTChild(currentAST, tmp57_AST);
 				match(DIM_MTD_ID);
 				break;
 			}
@@ -588,17 +724,17 @@ void ncoParser::dmn_arg_list() {
 			}
 		}
 		else {
-			goto _loop82;
+			goto _loop88;
 		}
 		
 	}
-	_loop82:;
+	_loop88:;
 	} // ( ... )*
 	match(DIVIDE);
 	dmn_arg_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 208 "ncoGrammer.g"
+#line 225 "ncoGrammer.g"
 	dmn_arg_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(DMN_ARG_LIST,"dmn_arg_list"))->add(dmn_arg_list_AST)));
-#line 602 "ncoParser.cpp"
+#line 738 "ncoParser.cpp"
 	currentAST.root = dmn_arg_list_AST;
 	if ( dmn_arg_list_AST!=ANTLR_USE_NAMESPACE(antlr)nullAST &&
 		dmn_arg_list_AST->getFirstChild() != ANTLR_USE_NAMESPACE(antlr)nullAST )
@@ -666,17 +802,17 @@ void ncoParser::func_arg() {
 			astFactory->addASTChild( currentAST, returnAST );
 		}
 		else {
-			goto _loop19;
+			goto _loop25;
 		}
 		
 	}
-	_loop19:;
+	_loop25:;
 	} // ( ... )*
 	match(RPAREN);
 	func_arg_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 101 "ncoGrammer.g"
+#line 118 "ncoGrammer.g"
 	func_arg_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(FUNC_ARG,"func_arg"))->add(func_arg_AST)));
-#line 680 "ncoParser.cpp"
+#line 816 "ncoParser.cpp"
 	currentAST.root = func_arg_AST;
 	if ( func_arg_AST!=ANTLR_USE_NAMESPACE(antlr)nullAST &&
 		func_arg_AST->getFirstChild() != ANTLR_USE_NAMESPACE(antlr)nullAST )
@@ -717,9 +853,9 @@ void ncoParser::func_exp() {
 	case FUNC:
 	{
 		{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp39_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp39_AST = astFactory->create(LT(1));
-		astFactory->makeASTRoot(currentAST, tmp39_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp62_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp62_AST = astFactory->create(LT(1));
+		astFactory->makeASTRoot(currentAST, tmp62_AST);
 		match(FUNC);
 		func_arg();
 		astFactory->addASTChild( currentAST, returnAST );
@@ -754,99 +890,99 @@ void ncoParser::primary_exp() {
 	}
 	case FLOAT:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp42_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp42_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp42_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp65_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp65_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp65_AST);
 		match(FLOAT);
 		primary_exp_AST = currentAST.root;
 		break;
 	}
 	case DOUBLE:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp43_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp43_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp43_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp66_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp66_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp66_AST);
 		match(DOUBLE);
 		primary_exp_AST = currentAST.root;
 		break;
 	}
 	case INT:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp44_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp44_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp44_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp67_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp67_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp67_AST);
 		match(INT);
 		primary_exp_AST = currentAST.root;
 		break;
 	}
 	case BYTE:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp45_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp45_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp45_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp68_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp68_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp68_AST);
 		match(BYTE);
 		primary_exp_AST = currentAST.root;
 		break;
 	}
 	case SHORT:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp46_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp46_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp46_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp69_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp69_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp69_AST);
 		match(SHORT);
 		primary_exp_AST = currentAST.root;
 		break;
 	}
 	case USHORT:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp47_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp47_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp47_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp70_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp70_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp70_AST);
 		match(USHORT);
 		primary_exp_AST = currentAST.root;
 		break;
 	}
 	case UINT:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp48_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp48_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp48_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp71_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp71_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp71_AST);
 		match(UINT);
 		primary_exp_AST = currentAST.root;
 		break;
 	}
 	case INT64:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp49_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp49_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp49_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp72_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp72_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp72_AST);
 		match(INT64);
 		primary_exp_AST = currentAST.root;
 		break;
 	}
 	case UINT64:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp50_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp50_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp50_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp73_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp73_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp73_AST);
 		match(UINT64);
 		primary_exp_AST = currentAST.root;
 		break;
 	}
 	case NSTRING:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp51_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp51_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp51_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp74_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp74_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp74_AST);
 		match(NSTRING);
 		primary_exp_AST = currentAST.root;
 		break;
 	}
 	case DIM_ID_SIZE:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp52_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp52_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp52_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp75_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp75_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp75_AST);
 		match(DIM_ID_SIZE);
 		primary_exp_AST = currentAST.root;
 		break;
@@ -876,73 +1012,73 @@ void ncoParser::meth() {
 	switch ( LA(1)) {
 	case PAVG:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp53_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp53_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp53_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp76_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp76_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp76_AST);
 		match(PAVG);
 		break;
 	}
 	case PAVGSQR:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp54_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp54_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp54_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp77_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp77_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp77_AST);
 		match(PAVGSQR);
 		break;
 	}
 	case PMAX:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp55_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp55_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp55_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp78_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp78_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp78_AST);
 		match(PMAX);
 		break;
 	}
 	case PMIN:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp56_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp56_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp56_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp79_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp79_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp79_AST);
 		match(PMIN);
 		break;
 	}
 	case PRMS:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp57_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp57_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp57_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp80_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp80_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp80_AST);
 		match(PRMS);
 		break;
 	}
 	case PRMSSDN:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp58_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp58_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp58_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp81_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp81_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp81_AST);
 		match(PRMSSDN);
 		break;
 	}
 	case PSQR:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp59_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp59_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp59_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp82_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp82_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp82_AST);
 		match(PSQR);
 		break;
 	}
 	case ARVG:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp60_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp60_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp60_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp83_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp83_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp83_AST);
 		match(ARVG);
 		break;
 	}
 	case PTTL:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp61_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp61_AST = astFactory->create(LT(1));
-		astFactory->addASTChild(currentAST, tmp61_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp84_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp84_AST = astFactory->create(LT(1));
+		astFactory->addASTChild(currentAST, tmp84_AST);
 		match(PTTL);
 		break;
 	}
@@ -971,33 +1107,33 @@ void ncoParser::prop_exp() {
 		node_AST = astFactory->create(node);
 		astFactory->makeASTRoot(currentAST, node_AST);
 		match(DOT);
-#line 120 "ncoGrammer.g"
+#line 137 "ncoGrammer.g"
 		node_AST->setType(PROP);
 		node_AST->setText("property");
-#line 978 "ncoParser.cpp"
+#line 1114 "ncoParser.cpp"
 		{
 		switch ( LA(1)) {
 		case PSIZE:
 		{
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp62_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp62_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp62_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp85_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp85_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp85_AST);
 			match(PSIZE);
 			break;
 		}
 		case PTYPE:
 		{
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp63_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp63_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp63_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp86_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp86_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp86_AST);
 			match(PTYPE);
 			break;
 		}
 		case PNDIMS:
 		{
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp64_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp64_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp64_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp87_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp87_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp87_AST);
 			match(PNDIMS);
 			break;
 		}
@@ -1029,9 +1165,9 @@ void ncoParser::meth_exp() {
 	{ // ( ... )*
 	for (;;) {
 		if ((LA(1) == DOT)) {
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp65_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp65_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp65_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp88_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp88_AST = astFactory->create(LT(1));
+			astFactory->makeASTRoot(currentAST, tmp88_AST);
 			match(DOT);
 			meth();
 			astFactory->addASTChild( currentAST, returnAST );
@@ -1039,11 +1175,11 @@ void ncoParser::meth_exp() {
 			astFactory->addASTChild( currentAST, returnAST );
 		}
 		else {
-			goto _loop29;
+			goto _loop35;
 		}
 		
 	}
-	_loop29:;
+	_loop35:;
 	} // ( ... )*
 	meth_exp_AST = currentAST.root;
 	returnAST = meth_exp_AST;
@@ -1068,10 +1204,10 @@ void ncoParser::unaryleft_exp() {
 		in_AST = astFactory->create(in);
 		astFactory->makeASTRoot(currentAST, in_AST);
 		match(INC);
-#line 131 "ncoGrammer.g"
+#line 148 "ncoGrammer.g"
 		in_AST->setType(POST_INC);
 		in_AST->setText("POST_INC");
-#line 1075 "ncoParser.cpp"
+#line 1211 "ncoParser.cpp"
 		break;
 	}
 	case DEC:
@@ -1080,10 +1216,10 @@ void ncoParser::unaryleft_exp() {
 		de_AST = astFactory->create(de);
 		astFactory->makeASTRoot(currentAST, de_AST);
 		match(DEC);
-#line 133 "ncoGrammer.g"
+#line 150 "ncoGrammer.g"
 		de_AST->setType(POST_DEC);
 		de_AST->setText("POST_DEC");
-#line 1087 "ncoParser.cpp"
+#line 1223 "ncoParser.cpp"
 		break;
 	}
 	case SEMI:
@@ -1141,49 +1277,49 @@ void ncoParser::unary_exp() {
 		switch ( LA(1)) {
 		case LNOT:
 		{
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp66_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp66_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp66_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp89_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp89_AST = astFactory->create(LT(1));
+			astFactory->makeASTRoot(currentAST, tmp89_AST);
 			match(LNOT);
 			break;
 		}
 		case PLUS:
 		{
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp67_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp67_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp67_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp90_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp90_AST = astFactory->create(LT(1));
+			astFactory->makeASTRoot(currentAST, tmp90_AST);
 			match(PLUS);
 			break;
 		}
 		case MINUS:
 		{
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp68_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp68_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp68_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp91_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp91_AST = astFactory->create(LT(1));
+			astFactory->makeASTRoot(currentAST, tmp91_AST);
 			match(MINUS);
 			break;
 		}
 		case INC:
 		{
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp69_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp69_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp69_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp92_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp92_AST = astFactory->create(LT(1));
+			astFactory->makeASTRoot(currentAST, tmp92_AST);
 			match(INC);
 			break;
 		}
 		case DEC:
 		{
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp70_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp70_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp70_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp93_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp93_AST = astFactory->create(LT(1));
+			astFactory->makeASTRoot(currentAST, tmp93_AST);
 			match(DEC);
 			break;
 		}
 		case TIMES:
 		{
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp71_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp71_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp71_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp94_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp94_AST = astFactory->create(LT(1));
+			astFactory->makeASTRoot(currentAST, tmp94_AST);
 			match(TIMES);
 			break;
 		}
@@ -1238,9 +1374,9 @@ void ncoParser::pow_exp() {
 	switch ( LA(1)) {
 	case CARET:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp72_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp72_AST = astFactory->create(LT(1));
-		astFactory->makeASTRoot(currentAST, tmp72_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp95_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp95_AST = astFactory->create(LT(1));
+		astFactory->makeASTRoot(currentAST, tmp95_AST);
 		match(CARET);
 		pow_exp();
 		astFactory->addASTChild( currentAST, returnAST );
@@ -1297,25 +1433,25 @@ void ncoParser::mexpr() {
 			switch ( LA(1)) {
 			case TIMES:
 			{
-				ANTLR_USE_NAMESPACE(antlr)RefAST tmp73_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-				tmp73_AST = astFactory->create(LT(1));
-				astFactory->makeASTRoot(currentAST, tmp73_AST);
+				ANTLR_USE_NAMESPACE(antlr)RefAST tmp96_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+				tmp96_AST = astFactory->create(LT(1));
+				astFactory->makeASTRoot(currentAST, tmp96_AST);
 				match(TIMES);
 				break;
 			}
 			case DIVIDE:
 			{
-				ANTLR_USE_NAMESPACE(antlr)RefAST tmp74_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-				tmp74_AST = astFactory->create(LT(1));
-				astFactory->makeASTRoot(currentAST, tmp74_AST);
+				ANTLR_USE_NAMESPACE(antlr)RefAST tmp97_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+				tmp97_AST = astFactory->create(LT(1));
+				astFactory->makeASTRoot(currentAST, tmp97_AST);
 				match(DIVIDE);
 				break;
 			}
 			case MOD:
 			{
-				ANTLR_USE_NAMESPACE(antlr)RefAST tmp75_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-				tmp75_AST = astFactory->create(LT(1));
-				astFactory->makeASTRoot(currentAST, tmp75_AST);
+				ANTLR_USE_NAMESPACE(antlr)RefAST tmp98_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+				tmp98_AST = astFactory->create(LT(1));
+				astFactory->makeASTRoot(currentAST, tmp98_AST);
 				match(MOD);
 				break;
 			}
@@ -1329,11 +1465,11 @@ void ncoParser::mexpr() {
 			astFactory->addASTChild( currentAST, returnAST );
 		}
 		else {
-			goto _loop39;
+			goto _loop45;
 		}
 		
 	}
-	_loop39:;
+	_loop45:;
 	} // ( ... )*
 	mexpr_AST = currentAST.root;
 	returnAST = mexpr_AST;
@@ -1353,17 +1489,17 @@ void ncoParser::add_expr() {
 			switch ( LA(1)) {
 			case PLUS:
 			{
-				ANTLR_USE_NAMESPACE(antlr)RefAST tmp76_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-				tmp76_AST = astFactory->create(LT(1));
-				astFactory->makeASTRoot(currentAST, tmp76_AST);
+				ANTLR_USE_NAMESPACE(antlr)RefAST tmp99_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+				tmp99_AST = astFactory->create(LT(1));
+				astFactory->makeASTRoot(currentAST, tmp99_AST);
 				match(PLUS);
 				break;
 			}
 			case MINUS:
 			{
-				ANTLR_USE_NAMESPACE(antlr)RefAST tmp77_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-				tmp77_AST = astFactory->create(LT(1));
-				astFactory->makeASTRoot(currentAST, tmp77_AST);
+				ANTLR_USE_NAMESPACE(antlr)RefAST tmp100_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+				tmp100_AST = astFactory->create(LT(1));
+				astFactory->makeASTRoot(currentAST, tmp100_AST);
 				match(MINUS);
 				break;
 			}
@@ -1377,11 +1513,11 @@ void ncoParser::add_expr() {
 			astFactory->addASTChild( currentAST, returnAST );
 		}
 		else {
-			goto _loop43;
+			goto _loop49;
 		}
 		
 	}
-	_loop43:;
+	_loop49:;
 	} // ( ... )*
 	add_expr_AST = currentAST.root;
 	returnAST = add_expr_AST;
@@ -1401,33 +1537,33 @@ void ncoParser::rel_expr() {
 			switch ( LA(1)) {
 			case LTHAN:
 			{
-				ANTLR_USE_NAMESPACE(antlr)RefAST tmp78_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-				tmp78_AST = astFactory->create(LT(1));
-				astFactory->makeASTRoot(currentAST, tmp78_AST);
+				ANTLR_USE_NAMESPACE(antlr)RefAST tmp101_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+				tmp101_AST = astFactory->create(LT(1));
+				astFactory->makeASTRoot(currentAST, tmp101_AST);
 				match(LTHAN);
 				break;
 			}
 			case GTHAN:
 			{
-				ANTLR_USE_NAMESPACE(antlr)RefAST tmp79_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-				tmp79_AST = astFactory->create(LT(1));
-				astFactory->makeASTRoot(currentAST, tmp79_AST);
+				ANTLR_USE_NAMESPACE(antlr)RefAST tmp102_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+				tmp102_AST = astFactory->create(LT(1));
+				astFactory->makeASTRoot(currentAST, tmp102_AST);
 				match(GTHAN);
 				break;
 			}
 			case GEQ:
 			{
-				ANTLR_USE_NAMESPACE(antlr)RefAST tmp80_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-				tmp80_AST = astFactory->create(LT(1));
-				astFactory->makeASTRoot(currentAST, tmp80_AST);
+				ANTLR_USE_NAMESPACE(antlr)RefAST tmp103_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+				tmp103_AST = astFactory->create(LT(1));
+				astFactory->makeASTRoot(currentAST, tmp103_AST);
 				match(GEQ);
 				break;
 			}
 			case LEQ:
 			{
-				ANTLR_USE_NAMESPACE(antlr)RefAST tmp81_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-				tmp81_AST = astFactory->create(LT(1));
-				astFactory->makeASTRoot(currentAST, tmp81_AST);
+				ANTLR_USE_NAMESPACE(antlr)RefAST tmp104_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+				tmp104_AST = astFactory->create(LT(1));
+				astFactory->makeASTRoot(currentAST, tmp104_AST);
 				match(LEQ);
 				break;
 			}
@@ -1441,11 +1577,11 @@ void ncoParser::rel_expr() {
 			astFactory->addASTChild( currentAST, returnAST );
 		}
 		else {
-			goto _loop47;
+			goto _loop53;
 		}
 		
 	}
-	_loop47:;
+	_loop53:;
 	} // ( ... )*
 	rel_expr_AST = currentAST.root;
 	returnAST = rel_expr_AST;
@@ -1465,17 +1601,17 @@ void ncoParser::eq_expr() {
 			switch ( LA(1)) {
 			case EQ:
 			{
-				ANTLR_USE_NAMESPACE(antlr)RefAST tmp82_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-				tmp82_AST = astFactory->create(LT(1));
-				astFactory->makeASTRoot(currentAST, tmp82_AST);
+				ANTLR_USE_NAMESPACE(antlr)RefAST tmp105_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+				tmp105_AST = astFactory->create(LT(1));
+				astFactory->makeASTRoot(currentAST, tmp105_AST);
 				match(EQ);
 				break;
 			}
 			case NEQ:
 			{
-				ANTLR_USE_NAMESPACE(antlr)RefAST tmp83_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-				tmp83_AST = astFactory->create(LT(1));
-				astFactory->makeASTRoot(currentAST, tmp83_AST);
+				ANTLR_USE_NAMESPACE(antlr)RefAST tmp106_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+				tmp106_AST = astFactory->create(LT(1));
+				astFactory->makeASTRoot(currentAST, tmp106_AST);
 				match(NEQ);
 				break;
 			}
@@ -1489,11 +1625,11 @@ void ncoParser::eq_expr() {
 			astFactory->addASTChild( currentAST, returnAST );
 		}
 		else {
-			goto _loop51;
+			goto _loop57;
 		}
 		
 	}
-	_loop51:;
+	_loop57:;
 	} // ( ... )*
 	eq_expr_AST = currentAST.root;
 	returnAST = eq_expr_AST;
@@ -1509,19 +1645,19 @@ void ncoParser::lmul_expr() {
 	{ // ( ... )*
 	for (;;) {
 		if ((LA(1) == LAND)) {
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp84_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp84_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp84_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp107_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp107_AST = astFactory->create(LT(1));
+			astFactory->makeASTRoot(currentAST, tmp107_AST);
 			match(LAND);
 			eq_expr();
 			astFactory->addASTChild( currentAST, returnAST );
 		}
 		else {
-			goto _loop54;
+			goto _loop60;
 		}
 		
 	}
-	_loop54:;
+	_loop60:;
 	} // ( ... )*
 	lmul_expr_AST = currentAST.root;
 	returnAST = lmul_expr_AST;
@@ -1537,19 +1673,19 @@ void ncoParser::lor_expr() {
 	{ // ( ... )*
 	for (;;) {
 		if ((LA(1) == LOR)) {
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp85_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp85_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp85_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp108_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp108_AST = astFactory->create(LT(1));
+			astFactory->makeASTRoot(currentAST, tmp108_AST);
 			match(LOR);
 			lmul_expr();
 			astFactory->addASTChild( currentAST, returnAST );
 		}
 		else {
-			goto _loop57;
+			goto _loop63;
 		}
 		
 	}
-	_loop57:;
+	_loop63:;
 	} // ( ... )*
 	lor_expr_AST = currentAST.root;
 	returnAST = lor_expr_AST;
@@ -1566,9 +1702,9 @@ void ncoParser::cond_expr() {
 	switch ( LA(1)) {
 	case QUESTION:
 	{
-		ANTLR_USE_NAMESPACE(antlr)RefAST tmp86_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-		tmp86_AST = astFactory->create(LT(1));
-		astFactory->makeASTRoot(currentAST, tmp86_AST);
+		ANTLR_USE_NAMESPACE(antlr)RefAST tmp109_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+		tmp109_AST = astFactory->create(LT(1));
+		astFactory->makeASTRoot(currentAST, tmp109_AST);
 		match(QUESTION);
 		ass_expr();
 		astFactory->addASTChild( currentAST, returnAST );
@@ -1619,41 +1755,41 @@ void ncoParser::ass_expr() {
 		switch ( LA(1)) {
 		case ASSIGN:
 		{
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp88_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp88_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp88_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp111_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp111_AST = astFactory->create(LT(1));
+			astFactory->makeASTRoot(currentAST, tmp111_AST);
 			match(ASSIGN);
 			break;
 		}
 		case PLUS_ASSIGN:
 		{
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp89_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp89_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp89_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp112_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp112_AST = astFactory->create(LT(1));
+			astFactory->makeASTRoot(currentAST, tmp112_AST);
 			match(PLUS_ASSIGN);
 			break;
 		}
 		case MINUS_ASSIGN:
 		{
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp90_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp90_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp90_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp113_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp113_AST = astFactory->create(LT(1));
+			astFactory->makeASTRoot(currentAST, tmp113_AST);
 			match(MINUS_ASSIGN);
 			break;
 		}
 		case TIMES_ASSIGN:
 		{
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp91_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp91_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp91_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp114_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp114_AST = astFactory->create(LT(1));
+			astFactory->makeASTRoot(currentAST, tmp114_AST);
 			match(TIMES_ASSIGN);
 			break;
 		}
 		case DIVIDE_ASSIGN:
 		{
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp92_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp92_AST = astFactory->create(LT(1));
-			astFactory->makeASTRoot(currentAST, tmp92_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp115_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp115_AST = astFactory->create(LT(1));
+			astFactory->makeASTRoot(currentAST, tmp115_AST);
 			match(DIVIDE_ASSIGN);
 			break;
 		}
@@ -1739,17 +1875,17 @@ void ncoParser::value_list() {
 			astFactory->addASTChild( currentAST, returnAST );
 		}
 		else {
-			goto _loop85;
+			goto _loop91;
 		}
 		
 	}
-	_loop85:;
+	_loop91:;
 	} // ( ... )*
 	match(RCURL);
 	value_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 213 "ncoGrammer.g"
+#line 230 "ncoGrammer.g"
 	value_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(VALUE_LIST,"value_list"))->add(value_list_AST)));
-#line 1753 "ncoParser.cpp"
+#line 1889 "ncoParser.cpp"
 	currentAST.root = value_list_AST;
 	if ( value_list_AST!=ANTLR_USE_NAMESPACE(antlr)nullAST &&
 		value_list_AST->getFirstChild() != ANTLR_USE_NAMESPACE(antlr)nullAST )
@@ -1809,9 +1945,9 @@ void ncoParser::lmt() {
 	{ // ( ... )*
 	for (;;) {
 		if ((LA(1) == COLON)) {
-			ANTLR_USE_NAMESPACE(antlr)RefAST tmp96_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-			tmp96_AST = astFactory->create(LT(1));
-			astFactory->addASTChild(currentAST, tmp96_AST);
+			ANTLR_USE_NAMESPACE(antlr)RefAST tmp119_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+			tmp119_AST = astFactory->create(LT(1));
+			astFactory->addASTChild(currentAST, tmp119_AST);
 			match(COLON);
 			{
 			switch ( LA(1)) {
@@ -1855,16 +1991,16 @@ void ncoParser::lmt() {
 			}
 		}
 		else {
-			goto _loop69;
+			goto _loop75;
 		}
 		
 	}
-	_loop69:;
+	_loop75:;
 	} // ( ... )*
 	lmt_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 190 "ncoGrammer.g"
+#line 207 "ncoGrammer.g"
 	lmt_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(LMT,"lmt"))->add(lmt_AST)));
-#line 1868 "ncoParser.cpp"
+#line 2004 "ncoParser.cpp"
 	currentAST.root = lmt_AST;
 	if ( lmt_AST!=ANTLR_USE_NAMESPACE(antlr)nullAST &&
 		lmt_AST->getFirstChild() != ANTLR_USE_NAMESPACE(antlr)nullAST )
@@ -1881,9 +2017,9 @@ void ncoParser::imaginary_token() {
 	ANTLR_USE_NAMESPACE(antlr)ASTPair currentAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST imaginary_token_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	
-	ANTLR_USE_NAMESPACE(antlr)RefAST tmp97_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
-	tmp97_AST = astFactory->create(LT(1));
-	astFactory->addASTChild(currentAST, tmp97_AST);
+	ANTLR_USE_NAMESPACE(antlr)RefAST tmp120_AST = ANTLR_USE_NAMESPACE(antlr)nullAST;
+	tmp120_AST = astFactory->create(LT(1));
+	astFactory->addASTChild(currentAST, tmp120_AST);
 	match(NRootAST);
 	imaginary_token_AST = currentAST.root;
 	returnAST = imaginary_token_AST;
@@ -1891,7 +2027,7 @@ void ncoParser::imaginary_token() {
 
 void ncoParser::initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory )
 {
-	factory.setMaxNodeType(102);
+	factory.setMaxNodeType(106);
 }
 const char* ncoParser::tokenNames[] = {
 	"<0>",
@@ -1924,6 +2060,10 @@ const char* ncoParser::tokenNames[] = {
 	"\"defdim\"",
 	"a string",
 	",",
+	"\"ram_delete\"",
+	"\"ram_write\"",
+	"\"set_miss\"",
+	"\"change_miss\"",
 	"DIM_ID",
 	"dimension identifier",
 	"FUNC",
@@ -2000,43 +2140,46 @@ const char* ncoParser::tokenNames[] = {
 	0
 };
 
-const unsigned long ncoParser::_tokenSet_0_data_[] = { 510394368UL, 1032193UL, 261888UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// SEMI LCURL "if" LPAREN VAR_ID ATT_ID "defdim" NSTRING FUNC INC DEC LNOT 
+const unsigned long ncoParser::_tokenSet_0_data_[] = { 3731619840UL, 16515091UL, 4190208UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// SEMI LCURL "if" LPAREN VAR_ID ATT_ID "defdim" NSTRING "ram_delete" "ram_write" 
+// "set_miss" "change_miss" FUNC INC DEC LNOT PLUS MINUS TIMES FLOAT DOUBLE 
+// INT BYTE SHORT USHORT UINT INT64 UINT64 DIM_ID_SIZE 
+const ANTLR_USE_NAMESPACE(antlr)BitSet ncoParser::_tokenSet_0(_tokenSet_0_data_,8);
+const unsigned long ncoParser::_tokenSet_1_data_[] = { 3749445634UL, 4294721555UL, 4192239UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// EOF SEMI LCURL RCURL "if" LPAREN "else" VAR_ID ATT_ID "defdim" NSTRING 
+// "ram_delete" "ram_write" "set_miss" "change_miss" FUNC DOT INC DEC LNOT 
+// PLUS MINUS TIMES CARET DIVIDE MOD LTHAN GTHAN GEQ LEQ EQ NEQ LAND LOR 
+// QUESTION ASSIGN PLUS_ASSIGN MINUS_ASSIGN TIMES_ASSIGN DIVIDE_ASSIGN 
+// LSQUARE FLOAT DOUBLE INT BYTE SHORT USHORT UINT INT64 UINT64 DIM_ID_SIZE 
+const ANTLR_USE_NAMESPACE(antlr)BitSet ncoParser::_tokenSet_1(_tokenSet_1_data_,8);
+const unsigned long ncoParser::_tokenSet_2_data_[] = { 3749445634UL, 16515091UL, 4190208UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+// EOF SEMI LCURL RCURL "if" LPAREN "else" VAR_ID ATT_ID "defdim" NSTRING 
+// "ram_delete" "ram_write" "set_miss" "change_miss" FUNC INC DEC LNOT 
 // PLUS MINUS TIMES FLOAT DOUBLE INT BYTE SHORT USHORT UINT INT64 UINT64 
 // DIM_ID_SIZE 
-const ANTLR_USE_NAMESPACE(antlr)BitSet ncoParser::_tokenSet_0(_tokenSet_0_data_,8);
-const unsigned long ncoParser::_tokenSet_1_data_[] = { 528220162UL, 4294951937UL, 262014UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// EOF SEMI LCURL RCURL "if" LPAREN "else" VAR_ID ATT_ID "defdim" NSTRING 
-// FUNC DOT INC DEC LNOT PLUS MINUS TIMES CARET DIVIDE MOD LTHAN GTHAN 
-// GEQ LEQ EQ NEQ LAND LOR QUESTION ASSIGN PLUS_ASSIGN MINUS_ASSIGN TIMES_ASSIGN 
-// DIVIDE_ASSIGN LSQUARE FLOAT DOUBLE INT BYTE SHORT USHORT UINT INT64 
-// UINT64 DIM_ID_SIZE 
-const ANTLR_USE_NAMESPACE(antlr)BitSet ncoParser::_tokenSet_1(_tokenSet_1_data_,8);
-const unsigned long ncoParser::_tokenSet_2_data_[] = { 528220162UL, 1032193UL, 261888UL, 0UL, 0UL, 0UL, 0UL, 0UL };
-// EOF SEMI LCURL RCURL "if" LPAREN "else" VAR_ID ATT_ID "defdim" NSTRING 
-// FUNC INC DEC LNOT PLUS MINUS TIMES FLOAT DOUBLE INT BYTE SHORT USHORT 
-// UINT INT64 UINT64 DIM_ID_SIZE 
 const ANTLR_USE_NAMESPACE(antlr)BitSet ncoParser::_tokenSet_2(_tokenSet_2_data_,8);
-const unsigned long ncoParser::_tokenSet_3_data_[] = { 4294705154UL, 4294967295UL, 262015UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long ncoParser::_tokenSet_3_data_[] = { 4294705154UL, 4294967295UL, 4192255UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF SEMI LCURL RCURL "if" LPAREN RPAREN "else" VAR_ID ATT_ID "defdim" 
-// NSTRING COMMA DIM_ID DIM_MTD_ID FUNC "avg" "avgsqr" "max" "min" "rms" 
-// "rmssdn" PSQR ARVG "total" DOT "size" "type" "ndims" INC DEC LNOT PLUS 
-// MINUS TIMES CARET DIVIDE MOD LTHAN GTHAN GEQ LEQ EQ NEQ LAND LOR QUESTION 
-// COLON ASSIGN PLUS_ASSIGN MINUS_ASSIGN TIMES_ASSIGN DIVIDE_ASSIGN LSQUARE 
-// FLOAT DOUBLE INT BYTE SHORT USHORT UINT INT64 UINT64 DIM_ID_SIZE 
+// NSTRING COMMA "ram_delete" "ram_write" "set_miss" "change_miss" DIM_ID 
+// DIM_MTD_ID FUNC "avg" "avgsqr" "max" "min" "rms" "rmssdn" PSQR ARVG 
+// "total" DOT "size" "type" "ndims" INC DEC LNOT PLUS MINUS TIMES CARET 
+// DIVIDE MOD LTHAN GTHAN GEQ LEQ EQ NEQ LAND LOR QUESTION COLON ASSIGN 
+// PLUS_ASSIGN MINUS_ASSIGN TIMES_ASSIGN DIVIDE_ASSIGN LSQUARE FLOAT DOUBLE 
+// INT BYTE SHORT USHORT UINT INT64 UINT64 DIM_ID_SIZE 
 const ANTLR_USE_NAMESPACE(antlr)BitSet ncoParser::_tokenSet_3(_tokenSet_3_data_,8);
-const unsigned long ncoParser::_tokenSet_4_data_[] = { 546570240UL, 4294886400UL, 63UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long ncoParser::_tokenSet_4_data_[] = { 546570240UL, 4293672960UL, 1023UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // SEMI RCURL RPAREN COMMA DOT INC DEC PLUS MINUS TIMES CARET DIVIDE MOD 
 // LTHAN GTHAN GEQ LEQ EQ NEQ LAND LOR QUESTION COLON ASSIGN PLUS_ASSIGN 
 // MINUS_ASSIGN TIMES_ASSIGN DIVIDE_ASSIGN 
 const ANTLR_USE_NAMESPACE(antlr)BitSet ncoParser::_tokenSet_4(_tokenSet_4_data_,8);
-const unsigned long ncoParser::_tokenSet_5_data_[] = { 4294705154UL, 4294952959UL, 261951UL, 0UL, 0UL, 0UL, 0UL, 0UL };
+const unsigned long ncoParser::_tokenSet_5_data_[] = { 4294705154UL, 4294737919UL, 4191231UL, 0UL, 0UL, 0UL, 0UL, 0UL };
 // EOF SEMI LCURL RCURL "if" LPAREN RPAREN "else" VAR_ID ATT_ID "defdim" 
-// NSTRING COMMA DIM_ID DIM_MTD_ID FUNC "avg" "avgsqr" "max" "min" "rms" 
-// "rmssdn" PSQR ARVG "total" DOT INC DEC LNOT PLUS MINUS TIMES CARET DIVIDE 
-// MOD LTHAN GTHAN GEQ LEQ EQ NEQ LAND LOR QUESTION COLON ASSIGN PLUS_ASSIGN 
-// MINUS_ASSIGN TIMES_ASSIGN DIVIDE_ASSIGN FLOAT DOUBLE INT BYTE SHORT 
-// USHORT UINT INT64 UINT64 DIM_ID_SIZE 
+// NSTRING COMMA "ram_delete" "ram_write" "set_miss" "change_miss" DIM_ID 
+// DIM_MTD_ID FUNC "avg" "avgsqr" "max" "min" "rms" "rmssdn" PSQR ARVG 
+// "total" DOT INC DEC LNOT PLUS MINUS TIMES CARET DIVIDE MOD LTHAN GTHAN 
+// GEQ LEQ EQ NEQ LAND LOR QUESTION COLON ASSIGN PLUS_ASSIGN MINUS_ASSIGN 
+// TIMES_ASSIGN DIVIDE_ASSIGN FLOAT DOUBLE INT BYTE SHORT USHORT UINT INT64 
+// UINT64 DIM_ID_SIZE 
 const ANTLR_USE_NAMESPACE(antlr)BitSet ncoParser::_tokenSet_5(_tokenSet_5_data_,8);
 
 
