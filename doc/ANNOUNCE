@@ -1,57 +1,33 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.238 2007-06-01 06:11:41 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.239 2007-06-01 21:29:28 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.0 are ready. 
-The version number jumped from 3.2.0 to 3.9.0 because of the addition
-of functional (though limited) netCDF4 support.
-NCO version 4.0 will be released after netCDF4.0 is final.
-We want to avoid twisted versions like NCO3/netCDF4/HDF5/Chicago7.
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Release 3.9.0 contains functional (though limited) netCDF4 support,
-improved attribute copying, new documentation, an ncbo/ncdiff fix
+Release 3.9.0 contains 
+fix for building ncap2 with Intel compilers, 
 for packed values, and better IRIX support.
-Because the netCDF4 support description is extensive its description
-appears at the end of this announcement. 
-The netCDF3 NCO improvements in 3.9.0 are:
 
-0. Thanks to KR for the $50 donation! 
-
-A. netCDF4 support (see end of announcement).
+A. netCDF4 support now includes per-variable compression (fxm)
    http://nco.sf.net/nco.html#nco4
 
-B. ncks copying of variable and global metadata is configurable (-m, -M).
-   Formerly there was no way to append a variable from in.nc to out.nc
-   without bringing its metadata and all global metadata with it. 
-   ncks -A           in.nc out.nc # Append variable and global attributes
-   ncks -O           in.nc out.nc # Copy   variable and global attributes
-   ncks -v one       in.nc out.nc # Copy   variable and global attributes
-   ncks -O -v one    in.nc out.nc # Copy   variable and global attributes
-   ncks -A -v one    in.nc out.nc # Append variable not global attributes
-   ncks -A -M -v one in.nc out.nc # Append variable not global attributes
-   ncks -O -M -v one in.nc out.nc # Copy   variable not global attributes
-   ncks -O -m -v one in.nc out.nc # Copy   global not variable attributes
-   ncks -O -M -m -v one in.nc out.nc # Copy   data only, no attributes
-   ncks -A    -m -v one in.nc out.nc # Append data only, no attributes
-   http://nco.sf.net/nco.html#prn
+B. Thanks to KR for the $50 donation!
 
 C. New Documentation:
    Working with non-standard grids, e.g., 2D grids 
    http://nco.sf.net/nco.html#grd
 
-D. ncks reports input file type (e.g., NC_FORMAT_CLASSIC,
-   NC_FORMAT_NETCDF4) as part of global metadata
+D. ncks can downconvert netCDF4 classic to netCDF3 files (fxm)
    http://nco.sf.net/nco.html#ncks
 
-E. Fix ncap2 .total() method to correctly handle missing_value's
-   Thanks to Scott Capps for reporting this problem.
+E. Improve ncap2 missing_value handling and RAM variables (fxm)
 
 F. ncap2 grows more powerful.
    New demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]
    http://nco.sf.net/nco.html#ncap2 
 
-G. Fix bug where ncbo output differenced packed variables incorrectly
+G. Fix bug with ncks built with Intell compilers (fxm)
    Thanks to Remik Ziemlinski for his excellent bug reports!
    http://nco.sf.net#bug_ncbo_pck
 
@@ -61,49 +37,15 @@ H. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
 I. Pre-built, up-to-date, RPM packages are available.
    http://nco.sf.net#rpm
 
-Finally, what to expect with NCO support for netCDF4:
-Support for netCDF4 features will be incremental, i.e., 
-we'll add one netCDF4 feature at a time to NCO.
-You must build NCO with netCDF4 to obtain this support.
-There is no reason that we know of _not_ to build with netCDF4 now. 
-NCO support for netCDF4 features will be tracked and updated at
+J. Reminder: NCO support for netCDF4 features is tracked at
 
-http://nco.sf.net/nco.html#nco4
+   http://nco.sf.net/nco.html#nco4
 
-The main netCDF4 features that NCO currently supports are the new 
-atomic data types (ubyte, ushort, uint, int64, and uint64).
-The eight-byte integer support may be especially helpful to you.
-All NCO operators support these types, e.g., ncks prints them,
-ncra averages them, and ncap2 scripts with them.
+   To build NCO with netCDF4 support, use 
 
-netCDF4-enabled NCO handles netCDF3 files without change.
-In addition, it automagically handles netCDF4 (HDF) files:
-If you feed NCO netCDF3 files, it produces netCDF3 output.
-If you feed NCO netCDF4 files, it produces netCDF4 output.
-Use the handy-dandy -4 switch to request netCDF4 output from 
-netCDF3 input, i.e., to convert netCDF3 to netCDF4.
-
-Use appropriate caution while netCDF4 is beta software.
-Problems with the netCDF4 and HDF libraries are still being fixed.
-NCO support for netCDF4 atomic types is relatively untested.
-Binary NCO distributions (RPMs and debs) still use netCDF3 for now.
-
-If you want the netCDF4 support, you'll have to build NCO yourself:
-You will need to specify the root of the netCDF4-beta1 installation
-directory if you are also maintaining a pure netCDF3 installation.
-Do this with the NETCDF4_ROOT variable. 
-Then use your preferred NCO build mechanism, e.g.,
-
-export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
-cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
-cd ~/nco/bld;./make NETCDF4=Y allinone # Old Makefile mechanism
-
-Our short term goal is to track the netCDF4-beta releases, keep the
-new netCDF4 atomic type support working, and iron out any problems.
-Our long term goal is to utilize more of the extensive new netCDF4
-feature set. The next major netCDF4 feature we are likely to utilize
-is parallel I/O. We will enable this in the MPI netCDF operators.
-Feedback is always welcome.
+   export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
+   cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
+   cd ~/nco/bld;./make NETCDF4=Y allinone # Old Makefile mechanism
 
 Enjoy,
 Charlie
