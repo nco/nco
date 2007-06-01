@@ -1,4 +1,4 @@
-#$Id: swamp_config.py,v 1.2 2007-04-12 01:32:51 wangd Exp $
+#$Id: swamp_config.py,v 1.3 2007-06-01 00:56:14 wangd Exp $
 # swamp_config.py
 # Copyright (c) 2007 Daniel L. Wang
 import ConfigParser
@@ -17,7 +17,10 @@ class Config:
                "/home/wangd/opendap/iroot/ssdap.log"),
               ("logLevel", "log", "level", logging.DEBUG),
 
-
+              ("serverPort", "server", "port", 8081),
+              ("serverPath", "server", "path", "SOAP"),
+              ("serverFilePath", "server", "filePath", "datapath"),
+              
               ("execNco4", "exec", "nco4",
                "/home/wangd/opendap/iroot/nco_ncdf4_bin"),
               ("execNcoDap", "exec", "ncodap",

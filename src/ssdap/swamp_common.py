@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.24 2007-05-18 00:46:26 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.25 2007-06-01 00:56:14 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -513,7 +513,7 @@ class CommandFactory:
         self.logicalOutByScript = {}
         self.scriptOuts = set() # list of script-defined outputs
         # scriptOuts is logicalOutByScript.keys(), except in ordering
-        self.scrFileUseCount = {} 
+        self.scrFileUseCount = {}
         pass
 
     def mapInput(self, scriptFilename):
@@ -631,6 +631,17 @@ class CommandFactory:
         # not sure this needs to be done in the factory
         # -- maybe some fixup code though
         return pickle.loads(pickled)
+
+    def realOuts(self):
+        # technically, we should ask just for its keys,
+        #but random access to a dict is faster.
+        temps =  self.commandByLogicalIn
+        
+        # FIXME: confirm that commandByLogicalOut has the proper
+        # remapped-logical-out.
+        realouts = filter(lambda x: x not in temps,
+                          self.commandByLogicalOut.keys())
+        return realouts
 
     pass # end of CommandFactory class
 
@@ -769,6 +780,7 @@ class Scheduler:
         self.taskId = self.makeTaskId()
         self.executor = executor
         self.cmdList = []
+        self.fileLocations = {}
         pass
     def makeTaskId(self):
         # As SWAMP matures, we should rethink the purpose of a taskid
@@ -840,7 +852,7 @@ class Scheduler:
         if executors is None:
             executors = [self.executor]
         pd = ParallelDispatcher(self.config, executors)
-        pd.dispatchAll(self.cmdList)
+        self.fileLocations = pd.dispatchAll(self.cmdList)
         pass
     pass # end of class Scheduler
 
@@ -864,7 +876,6 @@ class ParallelDispatcher:
         self.executors = executorList
         self.finished = {}
         self.okayToReap = True
-        self.tempFiles = {} # logicalout -> (useCount, )
         # not okay to declare file death until everything is parsed.
         self.execLocation = {} # logicalout -> executor
         self.sleepTime = 0.100 # originally set at 0.200
@@ -1021,6 +1032,7 @@ class ParallelDispatcher:
             # than self.running
             r = e.pollAny()
             if r is not None:
+                log.debug("dispatcher pollany ok: "+str(r))
                 self._graduate((e, r[0]), r[1])
                 return ((e, r[0]), r[1])
         return None
@@ -1044,6 +1056,7 @@ class ParallelDispatcher:
         return None
 
     def dispatchAll(self, cmdList):
+        log.debug("dispatching cmdlist="+str(cmdList))
         self.running = {} # token -> cmd
         self.execPollRR = itertools.cycle(self.executors)
         self.execDispatchRR = itertools.cycle(self.executors)
@@ -1055,7 +1068,9 @@ class ParallelDispatcher:
             if self._allBusy() or not self.ready:
                 if not self.running: # done!
                     break
+                log.debug("waiting")
                 r = self._waitAnyExecutor()
+                log.debug("wakeup!")
                 #self._graduate(token, code)
             else:
                 # not busy + jobs to run, so 'make it so'
@@ -1068,6 +1083,27 @@ class ParallelDispatcher:
         # NOT FINISHED
         pass
     pass # end class ParallelDispatcher
+
+class SwampTask:
+    def __init__(self, defExec, remote, config, script):
+        self.config = config
+        self.parser = Parser()
+        self.scheduler = Scheduler(config, defExec)
+        self.parser.commandHandler(self.scheduler.schedule)
+        self.commandFactory = CommandFactory(self.config)
+        self.parser.parseScript(script, self.commandFactory)
+        self.scheduler.finish()
+        self.remoteExec = remote
+        self.realOuts = self.commandFactory.realOuts()
+
+        pass
+
+    def taskId(self):
+        return self.scheduler.taskId
+    def run(self):
+        self.scheduler.executeParallelAll(self.remoteExec)
+        pass
+        
         
 class SwampInterface:
 
@@ -1080,7 +1116,7 @@ class SwampInterface:
         log.setLevel(self.config.logLevel)
         log.info("Swamp master logging at "+self.config.logLocation)
         self.config.dumpSettings(log, logging.DEBUG)
-
+        
         if executor:
             self.executor = executor
         else:
@@ -1093,20 +1129,24 @@ class SwampInterface:
                 self.remote.append(RemoteExecutor(s[0], s[1]))
         else:
             self.remote = None
+        self.tasks = []
         pass
 
     def submit(self, script):
-        p = Parser()
-        sch = Scheduler(self.config, self.executor)
-        p.commandHandler(sch.schedule)
-        cf = CommandFactory(self.config)
-        p.parseScript(script, cf)
-        sch.finish()
+        t = SwampTask(self.executor, self.remote, self.config, script)
+        self.tasks.append(t)
+#         p = Parser()
+#         sch = Scheduler(self.config, self.executor)
+#         p.commandHandler(sch.schedule)
+#         cf = CommandFactory(self.config)
+#         p.parseScript(script, cf)
+#         sch.finish()
         log.info("after parse: " + time.ctime())
-        sch.executeParallelAll(self.remote)
-        task = sch.taskId
-        #print len(task)
-        return task
+        t.run()
+#        sch.executeParallelAll(self.remote)
+#        task = sch.taskId
+
+        return t
 
         
 
@@ -1150,7 +1190,7 @@ class FakeExecutor:
         self.running = []
         self.fakeToken = 0
         pass
-    def launch(self, cmd):
+    def launch(self, cmd, locations = []):
         cmdLine = cmd.makeCommandLine(lambda x: x, lambda y:y)
         print "fakeran",cmdLine
         self.fakeToken += 1
@@ -1177,14 +1217,23 @@ class LocalExecutor:
         self.fetchLock = threading.Lock()
         self.fetchFile = None
         self.rFetchedFiles = {}
-        
+        self.pollCache = []
+        self.actual = {}
         pass
+
+    @staticmethod
+    def newInstance(config):
+        return LocalExecutor(NcoBinaryFinder(config),
+                             FileMapper("swamp%d"%os.getpid(),
+                                        config.execSourcePath,
+                                        config.execScratchPath,
+                                        config.execBulkPath))
     def busy(self):
         # soon, we should put code here to check for process finishes and
         # cache their results.
         return len(self.running) >= self.slots
 
-    def launch(self, cmd):
+    def launch(self, cmd, locations=[]):
         self.tokenLock.acquire()
         self.token += 1
         token = self.token
@@ -1212,22 +1261,49 @@ class LocalExecutor:
         return token
 
     def poll(self, token):
+        if self.pollCache:
+            #for now, be a little wasteful
+            for i in range(len(self.pollCache)):
+                if token == t[i][0]:
+                    return self.pollCache.pop(t[i][1])
+        return self._poll(token)
+                    
+
+    def _poll(self, token):
         if token in self.finished:
             return self.finished[token]
         if token in self.running:
             pid = self.running[token]
             (pid2, status) = os.waitpid(pid,os.WNOHANG)
-            
             if (pid2 != 0) and os.WIFEXITED(status):
-                log.debug("poll pid %d (%d) -> %d"%(pid, pid2, status))
                 code = os.WEXITSTATUS(status)
-                self.finished[token] = code
-                self.running.pop(token)
+                self._graduate(token, code)
                 return code
             else:
                 return None
         else:
             raise StandardError("Tried to poll non-running job")
+
+    def pollAny(self):
+        if self.pollCache:
+            return self.pollCache.pop()
+        f = self.pollAll()
+        if f:
+            log.debug("pollall ok: "+str(f))
+            top = f.pop()
+            self.pollCache += f
+            return top
+        return None
+
+    def pollAll(self):
+        fins = []
+        for (token, pid) in self.running.items():
+            code = self._poll(token)
+            if code == 0:
+                fins.append((token,code))
+        if fins:
+            return fins
+        return None
 
     def join(self, token):
         if token in self.running:
@@ -1248,6 +1324,14 @@ class LocalExecutor:
 
     def fetchedSrcs(self,token):
         return self.rFetchedFiles[token]
+
+    def discardFile(self, file):
+        log.debug("req discard of %s on %s" %(file, self.url))
+        self.actual.pop(file)
+        self.rpc.discardFile(file)
+
+    def discardFilesIfHosted(self, files):
+        return self.clearFiles(files)
 
     def clearFiles(self, filelist):
         for f in filelist:
@@ -1319,6 +1403,16 @@ class LocalExecutor:
             if rc != 0:
                 raise StandardError("error fetching %s (curl code=%d)" %
                                     (url, rc))
+
+    def _graduate(self, token, retcode):
+        ## fix this! pulled from remoteexecutor (1/2 finish)
+        log.debug("finish token %d with code %d" %(token,retcode))
+        self.finished[token] = retcode
+        self.running.pop(token)
+        
+        outputs = self.cmds[token].actualOutputs
+        for x in outputs:
+            self.actual[x[0]] = x[1]
 
     def resistErrno513(self, option, binPath, arglist):
         pid = None
@@ -1444,7 +1538,7 @@ class RemoteExecutor:
     def _graduate(self, token, retcode):
         rToken = self.running.pop(token)
         self.finished[token] = retcode
-        outputs = self.rpc.pollOutputs(rToken)
+        outputs = self.rpc.actualOuts(rToken)
         log.debug("adding %s from %s" % (str(outputs), str(rToken)))
         for x in outputs:
             self._addFinishOutput(x[0],x[1])
@@ -1662,12 +1756,7 @@ def testSwampInterface():
     c = Config("swamp.conf")
     c.read()
     fe = FakeExecutor()
-    le = LocalExecutor(NcoBinaryFinder(c),
-                       FileMapper("swampTest%d"%os.getpid(),
-                                  c.execSourcePath,
-                                  c.execScratchPath,
-                                  c.execBulkPath))
-    
+    le = LocalExecutor.newInstance(c)
     #si = SwampInterface(fe)
     si = SwampInterface(c, le)
     log.info("after configread at " + time.ctime())
