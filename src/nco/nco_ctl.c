@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.181 2007-05-25 17:36:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.182 2007-06-02 06:23:23 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -825,6 +825,7 @@ nco_usg_prn(void)
 
   if(strstr(opt_sng,"-4")) (void)fprintf(stdout,"-4, --4, --netcdf4\tOutput file in netCDF4 storage format (HDF5)\n");
   if(strstr(opt_sng,"--64bit")) (void)fprintf(stdout,"\tOutput file in netCDF3 64-bit offset storage format\n");
+  if(strstr(opt_sng,"--dfl_lvl")) (void)fprintf(stdout,"--dfl_lvl, --deflate dfl_lvl\tApply Lempel-Ziv deflation to netCDF4 output file\n");
   if(strstr(opt_sng,"-A")) (void)fprintf(stdout,"-A, --apn, --append\tAppend to existing output file, if any\n");
   if(strstr(opt_sng,"-a")){
     if(prg_lcl == ncatted) (void)fprintf(stdout,"-a, --attribute att_nm,var_nm,mode,att_typ,att_val Attribute specification:\n\t\t\tmode = a,c,d,m,o and att_typ = f,d,l,s,c,b\n");

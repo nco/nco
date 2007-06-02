@@ -1,5 +1,7 @@
 2007-06-01  Charlie Zender  <zender@uci.edu>
 
+	* Unable to get compression working. Generates HDF5 errors.
+
 	* Implement --dfl_lvl to set HDF Lempel-Ziv deflation level
 	Always turn shuffle on, since it is inexpensive and improves compression
 	

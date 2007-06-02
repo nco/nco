@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.925 2007-06-02 06:15:40 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.926 2007-06-02 06:23:23 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -605,7 +605,8 @@ nco871. Add compression regression test
 	ls -l ~/foo.nc
 	ncks -O -4 --dfl_lvl=9 ~/nco/data/in.nc ~/foo.nc
 	ls -l ~/foo.nc
-nco872. 
+nco872. Add compression to nco.texi
+nco873. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
