@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.44 2007-02-23 21:59:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.45 2007-06-02 06:15:41 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -47,7 +47,8 @@ extern "C" {
   (const int in_id, /* I [id] netCDF input file ID */
    const int out_id, /* I [id] netCDF output file ID */
    const int rec_dmn_id, /* I [id] Input file record dimension ID  */
-   const char * const var_nm); /* I [sng] Input variable name */
+   const char * const var_nm, /* I [sng] Input variable name */
+   const int dfl_lvl); /* I [enm] Deflate level [0..9] */
 
   int /* O [id] Output file variable ID */
   nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
@@ -56,7 +57,8 @@ extern "C" {
    const int rec_dmn_id, /* I [id] Input file record dimension ID  */
    const char * const var_nm, /* I [sng] Input variable name */
    CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
-   const int lmt_all_lst_nbr); /* I [nbr] Number of hyperslab limits */
+   const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
+   const int dfl_lvl); /* I [enm] Deflate level [0..9] */
 
   void
   nco_cpy_var_val /* [fnc] Copy variable data from input to output file, no limits */
@@ -97,7 +99,8 @@ extern "C" {
    CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_ncl), /* I [sct] Dimensions included in output file */
    const int nbr_dmn_ncl, /* I [nbr] Number of dimensions in list */
    const int nco_pck_map, /* I [enm] Packing map */
-   const int nco_pck_plc); /* I [enm] Packing policy */
+   const int nco_pck_plc, /* I [enm] Packing policy */
+   const int dfl_lvl); /* I [enm] Deflate level [0..9] */
   
   var_sct * /* O [sct] Copy of input variable */
   nco_var_dpl /* [fnc] Duplicate input variable */

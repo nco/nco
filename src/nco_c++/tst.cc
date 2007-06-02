@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.24 2007-05-15 19:22:11 zender Exp $
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.25 2007-06-02 06:15:41 zender Exp $
 
 // Purpose: Test for C++ programs using libnco_c++ API
 
@@ -31,6 +31,7 @@
 #include <valarray> // STL valarray class template
 
 // Standard C headers
+#include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t
 
 // 3rd party vendors
 #include <netcdf.h> // netCDF C interface
@@ -55,10 +56,10 @@ int main(int argc,char **argv)
   long sz_nbr(1); // [nbr] Number of sizes
   register long idx; // [idx] Counting index
 
-  const std::string CVS_Date("$Date: 2007-05-15 19:22:11 $"); // [sng] CVS date string
-  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.24 2007-05-15 19:22:11 zender Exp $"); // [sng] CVS header string
-  const std::string CVS_Id("$Id: tst.cc,v 1.24 2007-05-15 19:22:11 zender Exp $"); // [sng] CVS identification string
-  const std::string CVS_Revision("$Revision: 1.24 $"); // [sng] CVS revision string
+  const std::string CVS_Date("$Date: 2007-06-02 06:15:41 $"); // [sng] CVS date string
+  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.25 2007-06-02 06:15:41 zender Exp $"); // [sng] CVS header string
+  const std::string CVS_Id("$Id: tst.cc,v 1.25 2007-06-02 06:15:41 zender Exp $"); // [sng] CVS identification string
+  const std::string CVS_Revision("$Revision: 1.25 $"); // [sng] CVS revision string
   const std::string date_cvs(CVS_Date.length() > 7 ? CVS_Date.substr(7,19) : static_cast<std::string>("Unknown")); // [sng] Date from CVS
   const std::string sbr_nm("main"); // [sng] Subroutine name
   const std::string prg_nm("libnco_c++"); // [sng] Program name

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.124 2007-05-25 05:24:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.125 2007-06-02 06:15:41 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -13,7 +13,8 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
 (const int in_id, /* I [id] netCDF input file ID */
  const int out_id, /* I [id] netCDF output file ID */
  const int rec_dmn_id, /* I [id] Input file record dimension ID  */
- const char * const var_nm) /* I [sng] Input variable name */
+ const char * const var_nm, /* I [sng] Input variable name */
+ const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
      Routine does not take into account any user-specified limits
@@ -75,6 +76,8 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   /* Define variable in output file */
   (void)nco_def_var(out_id,var_nm,var_type,nbr_dim,dmn_out_id,&var_out_id);
   
+  /* Set HDF Lempel-Ziv compression level, if requested */
+  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
   /* Free the space holding dimension IDs */
   dmn_in_id=(int *)nco_free(dmn_in_id);
   dmn_out_id=(int *)nco_free(dmn_out_id);
@@ -89,7 +92,8 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
  const int rec_dmn_id, /* I [id] Input file record dimension ID  */
  const char * const var_nm, /* I [sng] Input variable name */
  CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
- const int lmt_all_lst_nbr) /* I [nbr] Number of hyperslab limits */
+ const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
+ const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
      This routine truncates dimensions in variable definition in output file according to user-specified limits.
@@ -159,6 +163,9 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   /* Define variable in output file */
   (void)nco_def_var(out_id,var_nm,var_type,nbr_dim,dmn_out_id,&var_out_id);
   
+  /* Set HDF Lempel-Ziv compression level, if requested */
+  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
+
   /* Free space holding dimension IDs */
   dmn_in_id=(int *)nco_free(dmn_in_id);
   dmn_out_id=(int *)nco_free(dmn_out_id);
@@ -812,7 +819,8 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_ncl), /* I [sct] Dimensions included in output file */
  const int nbr_dmn_ncl, /* I [nbr] Number of dimensions in list */
  const int nco_pck_map, /* I [enm] Packing map */
- const int nco_pck_plc) /* I [enm] Packing policy */
+ const int nco_pck_plc, /* I [enm] Packing policy */
+ const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* Purpose: Define variables in output file, copy their attributes */
 
@@ -926,6 +934,9 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       /* The all-important variable definition call itself... */
       (void)nco_def_var(out_id,var[idx]->nm,typ_out,dmn_nbr,dmn_id_vec,&var[idx]->id);
       
+      /* Set HDF Lempel-Ziv compression level, if requested */
+      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var[idx]->id,(int)True,(int)True,dfl_lvl);
+
       if(dbg_lvl_get() > 3 && prg_id != ncwa){
 	/* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm
 	   contains _wrong name_ when variables will be averaged.

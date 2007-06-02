@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.247 2007-05-25 05:24:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.248 2007-06-02 06:15:41 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.247 2007-05-25 05:24:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.247 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.248 2007-06-02 06:15:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.248 $";
   const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -143,7 +143,8 @@ main(int argc,char **argv)
 
   int *in_id_arr;
 
-  int abb_arg_nbr=0; 
+  int abb_arg_nbr=0;
+  int dfl_lvl=0; /* [enm] Deflate level */
   int dmn_avg_nbr=0;
   int fl_idx=int_CEWI;
   int fl_nbr=0;
@@ -614,8 +615,8 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_prc;idx++) (void)fprintf(stderr,"var_prc[%d]->nm = %s, ->id=[%d]\n",idx,var_prc[idx]->nm,var_prc[idx]->id);
   } /* end if */
   
-  /* Make output and input files consanguinous fxm: TODO nco836 */
-  if(fl_in_fmt == NC_FORMAT_NETCDF4) fl_out_fmt=NC_FORMAT_NETCDF4;
+  /* Make output and input files consanguinous */
+  if(!fl_out_fmt) fl_out_fmt=fl_in_fmt;
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
@@ -633,7 +634,7 @@ main(int argc,char **argv)
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_out);
 
   /* Define variables in output file, copy their attributes */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,dmn_out,nbr_dmn_out,nco_pck_plc_nil,nco_pck_map_nil);
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,dmn_out,nbr_dmn_out,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
 
   /* Add new missing values to output file while in define mode */
   if(msk_nm != NULL){

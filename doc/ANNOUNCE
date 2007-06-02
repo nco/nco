@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.239 2007-06-01 21:29:28 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.240 2007-06-02 06:15:40 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.0 are ready. 
 
@@ -8,11 +8,17 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 Release 3.9.0 contains 
 fix for building ncap2 with Intel compilers, 
 for packed values, and better IRIX support.
+0. Thanks to KR for the $50 donation!
+
+0. --dfl_lvl=[0..9] deflates (i.e., compresses with GZIP Zempel-Liv)
+   all variables written to a netCDF4 file 
+   http://nco.sf.net/nco.html#dfl_lvl (fxm)
 
 A. netCDF4 support now includes per-variable compression (fxm)
    http://nco.sf.net/nco.html#nco4
 
-B. Thanks to KR for the $50 donation!
+B. --fl_fmt switch supports converting netCDF4->netCDF3
+   http://nco.sf.net/nco.html#fl_fmt
 
 C. New Documentation:
    Working with non-standard grids, e.g., 2D grids 

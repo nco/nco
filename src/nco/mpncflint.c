@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.52 2007-05-25 05:24:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.53 2007-06-02 06:15:40 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.52 2007-05-25 05:24:22 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.52 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.53 2007-06-02 06:15:40 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.53 $";
   const char * const opt_sht_lst="4ACcD:d:Fhi:l:Oo:p:rRSt:v:xw:-:";
   
   dmn_sct **dim;
@@ -127,6 +127,7 @@ main(int argc,char **argv)
   int *in_id_2_arr;
 
   int abb_arg_nbr=0;
+  int dfl_lvl=0; /* [enm] Deflate level */
   int fl_idx;
   int fl_nbr=0;
   int fl_in_fmt_1; /* [enm] Input file format */
@@ -497,8 +498,8 @@ main(int argc,char **argv)
 #ifdef ENABLE_MPI
   if(prc_rnk == rnk_mgr){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
-    /* Make output and input files consanguinous fxm: TODO nco836 */
-    if(fl_in_fmt_1 == NC_FORMAT_NETCDF4 || fl_in_fmt_2 == NC_FORMAT_NETCDF4) fl_out_fmt=NC_FORMAT_NETCDF4;
+    /* Make output and input files consanguinous */
+    if(!fl_out_fmt) fl_out_fmt=fl_in_fmt_1;
 
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
@@ -520,7 +521,7 @@ main(int argc,char **argv)
     (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
     
     /* Define variables in output file, copy their attributes */
-    (void)nco_var_dfn(in_id_1,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil);
+    (void)nco_var_dfn(in_id_1,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
     
     /* Turn off default filling behavior to enhance efficiency */
     rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);

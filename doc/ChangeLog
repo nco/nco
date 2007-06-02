@@ -1,5 +1,10 @@
 2007-06-01  Charlie Zender  <zender@uci.edu>
 
+	* Implement --dfl_lvl to set HDF Lempel-Ziv deflation level
+	Always turn shuffle on, since it is inexpensive and improves compression
+	
+	* Allow user-specified down-conversion of netCDF4->netCDF3
+
 	* Include stdint.h where "long long" types are used
 	This should fix build problems with icpc
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.79 2007-06-01 21:01:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.80 2007-06-02 06:15:41 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -657,11 +657,11 @@ int nco_def_var_deflate
  const int var_id, /* [ID] Variable ID */
  const int shuffle, /* [flg] Turn on shuffle filter */
  const int deflate, /* [flg] Turn on deflate filter */
- const int deflate_level) /* [enm] Deflate level [0..9] */
+ const int dfl_lvl) /* [enm] Deflate level [0..9] */
 {
   /* Purpose: Wrapper for nc_def_var_deflate() */
   int rcd;
-  rcd=nc_def_var_deflate(nc_id,var_id,shuffle,deflate,deflate_level);
+  rcd=nc_def_var_deflate(nc_id,var_id,shuffle,deflate,dfl_lvl);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var_deflate()");
   return rcd;
 } /* end nco_def_var_deflate() */
@@ -1174,7 +1174,7 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
 
 /* Begin netCDF4 stubs */
 #ifndef ENABLE_NETCDF4
-int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int deflate_level){return 1;}
+int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl){return 1;}
 #endif /* ENABLE_NETCDF4 */
 #ifndef ENABLE_NETCDF4
 int NCO_GET_VAR1_UBYTE(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *ubp){return 1;}
