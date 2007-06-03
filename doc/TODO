@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.926 2007-06-02 06:23:23 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.927 2007-06-03 16:56:49 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -57,11 +57,6 @@ nco86. Extend stride/wraparound capability to all operators possible
 nco92. ncrcat -O -v base_time,time_offset arm.cdf arm.cdf foo.nc;ncks -H -C -h foo.nc | m gives bad time_offset on LINUX not SUNMP (problem with LINUX adding record coordinate to open file?)
 nco99. Allow ncatted to dump file in ncatted format
 nco103. Implement trapezoidal rule option in ncra, ncea
-nco104. Investigate/Document reliability of -A operator when appending from large rank variables to small rank files. Add error message when variables are same size but one has a degenerate dimension.
-        In general, adding large rank variable to small rank file does work, e.g.,
-        ncks -C -O -v one_dmn_rec_var in.nc foo.nc
-        ncks -C -A -v three_dmn_rec_var in.nc foo.nc
-        ncdump foo.nc
 nco105. Add easy-to-read tabular display option for file contents for ncks, i.e, allow ncks -s to print multiple variables in column format
 nco106. Add switch to keep degenerate dimensions with ncwa, remove them from ncra
 nco111. Investigate whether using ncwa to average files where variables of type 
@@ -539,7 +534,6 @@ nco808. Dave Allured request on 20070213 for ncea to resolve hyperslab indices f
 	ncea -O -D 5 -d time,1.,5. -p ~/nco/data in.nc in.nc ~/foo.nc
 nco809. Implement --quiet option to suppress WARNINGs and INFOs
 nco812. Investigate make check errors on FC6
-nco813. Implement ncap2 in nco.spec on FC6
 nco814. Regression test for forgiving exclusion list handling
         ncks -O -D 2 -x -v not_present ~/nco/data/in.nc ~/foo.nc
 nco816. Add regression tests for rmssdn when N=0, N=1, N=2
@@ -572,8 +566,6 @@ nco834. Add atomic type string NC_STRING to nco_c++ get/put var
 nco835. ncks uint64_var(ULLONG_MAX) = int64_var(LLONG_MAX) (problem in libnetcdf4?)
 	ccc
 	ncks -v '.?_var$' ~/c++/foo.nc
-nco837. need single letter (preferably) abbreviations for netCDF4 atomic types to use as arguments to ncatted 'type'
-nco838. Document solution to nco837.
 nco839. What, if anything, should NC_FILL_STRING be?
 nco845. Add -Wno-switch to quiet GCC enum warnings on netCDF4 case labels?
 nco846. netCDF4: switch to long long array offsets everywhere? 
@@ -605,8 +597,15 @@ nco871. Add compression regression test
 	ls -l ~/foo.nc
 	ncks -O -4 --dfl_lvl=9 ~/nco/data/in.nc ~/foo.nc
 	ls -l ~/foo.nc
-nco872. Add compression to nco.texi
-nco873. 
+	ncks -O -4 --dfl_lvl=9 -v one ~/nco/data/in.nc ~/foo.nc
+nco872. Add HDF compression description to ncbo.texi
+nco873. ncks remik bug: ncks BUG: coords are zero after 2 var ext 
+	intel compiler only, possibly only ia64
+	"superficially injecting "nc_sync(out_id);"
+	into ncks.c:559 at the end of the "Copy variable data" for-loop 
+        the output is correct, although this isn't a solution we'd want.
+nco874. Implement CDL abbreviations for netCDF4 atomic types (when known)
+nco875. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
