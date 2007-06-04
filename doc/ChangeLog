@@ -1,3 +1,7 @@
+2007-06-03  Charlie Zender  <zender@uci.edu>
+
+	* Switch to daily snapshot 20070603 for development
+
 2007-06-01  Charlie Zender  <zender@uci.edu>
 
 	* Unable to get compression working. Generates HDF5 errors.
