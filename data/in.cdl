@@ -40,7 +40,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.86 2007-05-25 00:58:30 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.87 2007-06-04 05:45:47 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -261,6 +261,10 @@ variables:
 	double double_var2;
 	double_var2:long_name = "double";
 	double_var2:missing_value = 1.0e36;
+
+	double pi;
+	pi:long_name = "Pi";
+	pi:units = "fraction";
 
 	int int_var;
 	int_var:long_name = "int";
@@ -709,6 +713,7 @@ data:
 	fl_dmn="a","b","3";
 	fl_nm="/home/zender/nco/data/in.cdl";
 	float_var=10.;
+	four=4.;
 	g=9.8;
 	gw=10.,10.;
 	gw_T42=-87.863799,-85.096527,-82.312913,-79.525607,-76.736900,-73.947515,-71.157752,-68.367756,-65.577607,-62.787352,-59.997020,-57.206632,-54.416200,-51.625734,-48.835241,-46.044727,-43.254195,-40.463648,-37.673090,-34.882521,-32.091944,-29.301360,-26.510769,-23.720174,-20.929574,-18.138971,-15.348365,-12.557756,-9.767146,-6.976534,-4.185921,-1.395307,1.395307,4.185921,6.976534,9.767146,12.557756,15.348365,18.138971,20.929574,23.720174,26.510769,29.301360,32.091944,34.882521,37.673090,40.463648,43.254195,46.044727,48.835241,51.625734,54.416200,57.206632,59.997020,62.787352,65.577607,68.367756,71.157752,73.947515,76.736900,79.525607,82.312913,85.096527,87.863799;
@@ -762,7 +767,6 @@ data:
 	non_nul_trm_char_one_dmn='a','b';
 	non_nul_trm_char_two_dmn="abcd","efgh","ijkm";
 	one=1.;
-	four=4.;
 	one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;
 	one_dmn_rec_var_sng="Hello Wor";
 	one_dmn_var=1.,10.;
@@ -770,6 +774,7 @@ data:
 	one_dmn_int_val_two=2,2;
 	pck=1;
 	pck_arr=-32767,0,1,32767;
+	pi=3.1415926535897932384626433832795029;
 	upk=3.;
 	upk_arr=-32767.,0.,1.,32767.;
 	Q=1.0e36;
