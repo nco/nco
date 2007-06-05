@@ -3,7 +3,9 @@ header {
     #include <iostream>
     #include <sstream>
     #include <string>
+    #if !(defined __xlC__) && !(defined SGIMP64) // C++ compilers that do not allow stdint.h
     #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
+    #endif // C++ compilers that do not allow stdint.h
     #include <assert.h>
     #include <ctype.h>
     #include <malloc.h>

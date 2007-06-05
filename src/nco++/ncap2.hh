@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.43 2007-06-01 21:23:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.44 2007-06-05 16:51:09 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -17,14 +17,17 @@
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
+#include <string>
+
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strcmp. . . */
 #include <time.h> /* machine time */
 #include <unistd.h> /* POSIX stuff */
-#include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
-#include <string>
+#if !(defined __xlC__) && !(defined SGIMP64) // C++ compilers that do not allow stdint.h
+#include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t
+#endif // C++ compilers that do not allow stdint.h
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */

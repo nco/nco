@@ -1,3 +1,9 @@
+2007-06-05  Charlie Zender  <zender@uci.edu>
+
+	* Remove stdint.h from xlC and SGI builds of ncap2
+	stdint.h "helps" g++ builds (by defining [U]LLONG_MAX)
+	stdint.h is required by icpc builds (by defining int64_t)
+
 2007-06-03  Charlie Zender  <zender@uci.edu>
 
 	* Switch to daily snapshot 20070603 for development

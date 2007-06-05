@@ -14,7 +14,9 @@
     #include <iostream>
     #include <sstream>
     #include <string>
+    #if !(defined __xlC__) && !(defined SGIMP64) // C++ compilers that do not allow stdint.h
     #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
+    #endif // C++ compilers that do not allow stdint.h
     #include <assert.h>
     #include <ctype.h>
     #include <malloc.h>
@@ -28,11 +30,11 @@
     ANTLR_USING_NAMESPACE(antlr);
     
 
-#line 32 "ncoParser.hpp"
+#line 34 "ncoParser.hpp"
 class CUSTOM_API ncoParser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public ncoParserTokenTypes
 {
 #line 1 "ncoGrammer.g"
-#line 36 "ncoParser.hpp"
+#line 38 "ncoParser.hpp"
 public:
 	void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
 protected:

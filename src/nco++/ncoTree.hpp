@@ -12,7 +12,9 @@
     #include <iostream>
     #include <sstream>
     #include <string>
+    #if !(defined __xlC__) && !(defined SGIMP64) // C++ compilers that do not allow stdint.h
     #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
+    #endif // C++ compilers that do not allow stdint.h
     #include <assert.h>
     #include <ctype.h>
     #include <malloc.h>
@@ -26,10 +28,10 @@
     ANTLR_USING_NAMESPACE(antlr);
     
 
-#line 30 "ncoTree.hpp"
+#line 32 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 527 "ncoGrammer.g"
+#line 529 "ncoGrammer.g"
 
 
 private:
@@ -356,7 +358,7 @@ exit: ;
     } // end run_exe
 
 
-#line 34 "ncoTree.hpp"
+#line 36 "ncoTree.hpp"
 public:
 	ncoTree();
 	static void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );

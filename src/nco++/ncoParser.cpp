@@ -138,7 +138,7 @@ void ncoParser::statement() {
 	{
 		match(SEMI);
 		statement_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 66 "ncoGrammer.g"
+#line 68 "ncoGrammer.g"
 		statement_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(1))->add(astFactory->create(NULL_NODE,"null_stmt"))));
 #line 144 "ncoParser.cpp"
 		currentAST.root = statement_AST;
@@ -180,7 +180,7 @@ void ncoParser::block() {
 	} // ( ... )*
 	match(RCURL);
 	block_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 73 "ncoGrammer.g"
+#line 75 "ncoGrammer.g"
 	block_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(BLOCK,"block"))->add(block_AST)));
 #line 186 "ncoParser.cpp"
 	currentAST.root = block_AST;
@@ -238,7 +238,7 @@ void ncoParser::assign_statement() {
 	astFactory->addASTChild( currentAST, returnAST );
 	match(SEMI);
 	assign_statement_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 89 "ncoGrammer.g"
+#line 91 "ncoGrammer.g"
 	assign_statement_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(EXPR,"EXPR"))->add(assign_statement_AST)));
 #line 244 "ncoParser.cpp"
 	currentAST.root = assign_statement_AST;
@@ -502,7 +502,7 @@ void ncoParser::lmt_list() {
 	} // ( ... )*
 	match(RPAREN);
 	lmt_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 212 "ncoGrammer.g"
+#line 214 "ncoGrammer.g"
 	lmt_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(LMT_LIST,"lmt_list"))->add(lmt_list_AST)));
 #line 508 "ncoParser.cpp"
 	currentAST.root = lmt_list_AST;
@@ -584,7 +584,7 @@ void ncoParser::dmn_list() {
 	} // ( ... )*
 	match(RSQUARE);
 	dmn_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 219 "ncoGrammer.g"
+#line 221 "ncoGrammer.g"
 	dmn_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(DMN_LIST,"dmn_list"))->add(dmn_list_AST)));
 #line 590 "ncoParser.cpp"
 	currentAST.root = dmn_list_AST;
@@ -732,7 +732,7 @@ void ncoParser::dmn_arg_list() {
 	} // ( ... )*
 	match(DIVIDE);
 	dmn_arg_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 225 "ncoGrammer.g"
+#line 227 "ncoGrammer.g"
 	dmn_arg_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(DMN_ARG_LIST,"dmn_arg_list"))->add(dmn_arg_list_AST)));
 #line 738 "ncoParser.cpp"
 	currentAST.root = dmn_arg_list_AST;
@@ -810,7 +810,7 @@ void ncoParser::func_arg() {
 	} // ( ... )*
 	match(RPAREN);
 	func_arg_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 118 "ncoGrammer.g"
+#line 120 "ncoGrammer.g"
 	func_arg_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(FUNC_ARG,"func_arg"))->add(func_arg_AST)));
 #line 816 "ncoParser.cpp"
 	currentAST.root = func_arg_AST;
@@ -1107,7 +1107,7 @@ void ncoParser::prop_exp() {
 		node_AST = astFactory->create(node);
 		astFactory->makeASTRoot(currentAST, node_AST);
 		match(DOT);
-#line 137 "ncoGrammer.g"
+#line 139 "ncoGrammer.g"
 		node_AST->setType(PROP);
 		node_AST->setText("property");
 #line 1114 "ncoParser.cpp"
@@ -1204,7 +1204,7 @@ void ncoParser::unaryleft_exp() {
 		in_AST = astFactory->create(in);
 		astFactory->makeASTRoot(currentAST, in_AST);
 		match(INC);
-#line 148 "ncoGrammer.g"
+#line 150 "ncoGrammer.g"
 		in_AST->setType(POST_INC);
 		in_AST->setText("POST_INC");
 #line 1211 "ncoParser.cpp"
@@ -1216,7 +1216,7 @@ void ncoParser::unaryleft_exp() {
 		de_AST = astFactory->create(de);
 		astFactory->makeASTRoot(currentAST, de_AST);
 		match(DEC);
-#line 150 "ncoGrammer.g"
+#line 152 "ncoGrammer.g"
 		de_AST->setType(POST_DEC);
 		de_AST->setText("POST_DEC");
 #line 1223 "ncoParser.cpp"
@@ -1883,7 +1883,7 @@ void ncoParser::value_list() {
 	} // ( ... )*
 	match(RCURL);
 	value_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 230 "ncoGrammer.g"
+#line 232 "ncoGrammer.g"
 	value_list_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(VALUE_LIST,"value_list"))->add(value_list_AST)));
 #line 1889 "ncoParser.cpp"
 	currentAST.root = value_list_AST;
@@ -1998,7 +1998,7 @@ void ncoParser::lmt() {
 	_loop75:;
 	} // ( ... )*
 	lmt_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(currentAST.root);
-#line 207 "ncoGrammer.g"
+#line 209 "ncoGrammer.g"
 	lmt_AST = ANTLR_USE_NAMESPACE(antlr)RefAST(astFactory->make((new ANTLR_USE_NAMESPACE(antlr)ASTArray(2))->add(astFactory->create(LMT,"lmt"))->add(lmt_AST)));
 #line 2004 "ncoParser.cpp"
 	currentAST.root = lmt_AST;
