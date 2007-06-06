@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.424 2007-06-01 21:01:51 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.425 2007-06-06 01:04:24 wangd Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -360,6 +360,14 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 <dt><a name="Publications"></a><a name="pub"></a><a name="pubs"></a></dt>
 <h2>Publications and Presentations</h2>
 <ul>
+
+<li> <!-- WZJ07b --> <a name="WZJ07b"></a> <!--http://www.ess.uci.edu/~zender#WZJ07b -->
+Wang, D.&nbsp;L., C.&nbsp;S. Zender and S.&nbsp;F. Jenks: <i>Server-side Parallel Reduction and Analysis</i>.
+<it>Advances in Grid and Pervasive Computing: 2nd International Conference, GPC 2007</it>, LNCS 4459:744--750.
+<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ07b.bib">BibTeX</a>
+<a href="http://dust.ess.uci.edu/ppr/ppr_WZJ07b.pdf">PDF (DLW)</a>
+</li>
+
 
 <li><!-- WZJ07 --> <a name="WZJ07"></a> <!--http://www.ess.uci.edu/~zender#WZJ07 -->
 Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2007), 
