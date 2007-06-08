@@ -1,3 +1,7 @@
+2007-06-07  Charlie Zender  <zender@uci.edu>
+
+	* Add [put/get]_string functions now in netcdf4 daily snapshots
+	
 2007-06-05  Charlie Zender  <zender@uci.edu>
 
 	* Remove stdint.h from xlC and SGI builds of ncap2
