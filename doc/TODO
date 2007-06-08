@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.927 2007-06-03 16:56:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.928 2007-06-08 05:20:21 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -605,7 +605,11 @@ nco873. ncks remik bug: ncks BUG: coords are zero after 2 var ext
 	into ncks.c:559 at the end of the "Copy variable data" for-loop 
         the output is correct, although this isn't a solution we'd want.
 nco874. Implement CDL abbreviations for netCDF4 atomic types (when known)
-nco875. 
+nco875. Squelch compiler warnings like: 
+	../src/nco/nco_pck.c:819:39: warning: integer constant is so large that it is unsigned
+	which are triggered by OK statements like
+	case NC_UINT64: mss_val_dfl_dbl=NC_FILL_UINT64; break;
+nco876. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

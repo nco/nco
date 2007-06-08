@@ -1,6 +1,7 @@
 2007-06-07  Charlie Zender  <zender@uci.edu>
 
 	* Add [put/get]_string functions now in netcdf4 daily snapshots
+        In particular, synchronize with snapshot2007060701
 	
 2007-06-05  Charlie Zender  <zender@uci.edu>
 
