@@ -753,7 +753,6 @@ public:
      //Initial scan
      prs_arg->ntl_scn=True;
      while(idx++ < icnt){
-       if( ntr->getType()!= RAM_WRITE && ntr->getType()!=RAM_DELETE && ntr->getType()!=SET_MISS && ntr->getType()!= CH_MISS)
          (void)statements(ntr);   
        ntr=ntr->getNextSibling();   
      }
@@ -802,7 +801,7 @@ public:
     int nbr_stmt=0;
     int idx;
     int icnt=0;
-    int gtyp;
+    int ntyp;
     
     RefAST etr=ANTLR_USE_NAMESPACE(antlr)nullAST;
     RefAST ntr;
@@ -824,9 +823,9 @@ public:
     ntr=tr;
 
     for(idx=0 ; idx < nbr_stmt; idx++){
-      gtyp=ntr->getType();
+      ntyp=ntr->getType();
       // we have hit an IF or a code block
-      if(gtyp==BLOCK || gtyp==IF ||gtyp==DEFDIM ) {
+      if(ntyp==BLOCK || ntyp==IF ||ntyp==DEFDIM ) {
         if(icnt>0) 
          (void)run_dbl(etr,icnt);
         icnt=0;
@@ -835,8 +834,9 @@ public:
         (void)statements(ntr);      
        }
 
-       if(gtyp==EXPR || gtyp== NULL_NODE || gtyp==RAM_WRITE|| gtyp==RAM_DELETE ||gtyp==SET_MISS ||gtyp==CH_MISS)
-        if(icnt++==0) etr=ntr;
+       //if(ntyp==EXPR || ntyp== NULL_NODE || ntyp==RAM_WRITE|| ntyp==RAM_DELETE ||ntyp==SET_MISS ||ntyp==CH_MISS)
+        if( ntyp !=BLOCK && ntyp !=IF && ntyp !=DEFDIM)
+         if(icnt++==0) etr=ntr;
         
        
       ntr=ntr->getNextSibling();
@@ -949,7 +949,6 @@ const std::string fnc_nm("statements");
      }
 
 
-    // n.b Action taken on ONLY exe parse
      | #(RAM_WRITE vid:VAR_ID){     
 
           std::string va_nm;
@@ -957,6 +956,8 @@ const std::string fnc_nm("statements");
           
           va_nm=vid->getText();
           
+          if(prs_arg->ntl_scn) goto ed0;
+
           Nvar=prs_arg->ptr_var_vtr->find(va_nm);
 
           if(Nvar) {
@@ -973,13 +974,18 @@ const std::string fnc_nm("statements");
           
           if(!Nvar)
              wrn_prn(fnc_nm,"RAM write function unable to find variable: "+va_nm); 
+
+          ed0: ;
+
     } 
-    // n.b Action taken on ONLY exe parse
+
     | #(RAM_DELETE del:.){
           std::string va_nm;
           NcapVar *Nvar;
           
           va_nm=del->getText();
+
+          if(prs_arg->ntl_scn) goto ed1;
           
           Nvar=prs_arg->ptr_var_vtr->find(va_nm);
 
@@ -999,6 +1005,8 @@ const std::string fnc_nm("statements");
           if(!Nvar)
              wrn_prn(fnc_nm,"Delete function unable to find "+va_nm); 
 
+          ed1: ;
+
        }
 
     | #(SET_MISS mss:VAR_ID var=out){
@@ -1008,6 +1016,8 @@ const std::string fnc_nm("statements");
           
           va_nm=mss->getText();
           
+          if(prs_arg->ntl_scn) goto end;
+
           Nvar=prs_arg->ptr_var_vtr->find(va_nm);
           if(!Nvar){
              wrn_prn(fnc_nm,"Set missing value function unable to find :"+va_nm); 
@@ -1026,8 +1036,8 @@ const std::string fnc_nm("statements");
           
           nco_mss_val_cp(var,var_in);
 
-          nco_var_free(var);  
-       end: ;       
+          end: nco_var_free(var); 
+
           
       }
 
@@ -1038,6 +1048,8 @@ const std::string fnc_nm("statements");
           var_sct *var_in;
           std::string va_nm;
           NcapVar *Nvar;
+
+          if(prs_arg->ntl_scn) goto end1;
           
           va_nm=ch_mss->getText();
           
