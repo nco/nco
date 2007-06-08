@@ -82,7 +82,7 @@ if_stmt:
     options {
              warnWhenFollowAmbig = false;
                         } :
-   ELSE statement )?
+   ELSE! statement )?
      ;
 
 
@@ -835,11 +835,10 @@ public:
        }
 
        //if(ntyp==EXPR || ntyp== NULL_NODE || ntyp==RAM_WRITE|| ntyp==RAM_DELETE ||ntyp==SET_MISS ||ntyp==CH_MISS)
-        if( ntyp !=BLOCK && ntyp !=IF && ntyp !=DEFDIM)
+       if( ntyp !=BLOCK && ntyp !=IF && ntyp !=DEFDIM)
          if(icnt++==0) etr=ntr;
         
-       
-      ntr=ntr->getNextSibling();
+       ntr=ntr->getNextSibling();
       
     } // end for
     if(icnt >0)
@@ -890,38 +889,30 @@ const std::string fnc_nm("statements");
       }
               
 
-    | iff:IF {
-    //if can have only 3 or 5 parts  , 1 node and 2 or 4 siblings
-    // IFF LOGICAL_EXP STATEMENT1 ELSE STATEMENT2
+    | #(IF var=out iff:. ) {
+    //if can have only 3 or 4 parts  , 1 node and 2 or 3 siblings
+    // IF LOGICAL_EXP STATEMENT1 STATEMENT2
       bool br;
-      var_sct *var1;
-      RefAST dref;
 	  //Calculate logical expression
-	  var1= out( iff->getFirstChild());
-	  br=ncap_var_lgcl(var1);
-	  var1=nco_var_free(var1);
-      
-      dref=iff->getFirstChild()->getNextSibling();
+	  br=ncap_var_lgcl(var);
+	  var=nco_var_free(var);
 
       if(br){ 
-         // Execute 3rd sibling  
-         if(dref->getType()==BLOCK)
-           run_exe(dref->getFirstChild());
+         // Execute 2nd sibling  
+         if(iff->getType()==BLOCK)
+           run_exe(iff);
          else
-           statements(dref);     
-            
-	  }else{ 
-      // See if else exists (third sibling)
-         dref=iff->getFirstChild()->getNextSibling()->getNextSibling(); 
-         if(dref && dref->getType()==ELSE ){
-           // Execute 4th sibling
-           if(dref->getNextSibling()->getType()==BLOCK)
-             run_exe(dref->getNextSibling()->getFirstChild());
-           else
-             statements(dref->getNextSibling());     
+           statements(iff);     
+      }
+
+      // See if else stmt exists (3rd sibling)       
+	  if(!br && (iff=iff->getNextSibling()) ){
+         if(iff->getType()==BLOCK)
+           run_exe(iff);
+         else
+           statements(iff);     
              
-         }
-     }
+      }
  
       var=NULL_CEWI;
       
