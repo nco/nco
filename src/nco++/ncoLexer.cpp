@@ -33,21 +33,21 @@ void ncoLexer::initLiterals()
 	literals["size"] = 47;
 	literals["<<"] = 87;
 	literals["min"] = 40;
-	literals["ram_delete"] = 30;
-	literals["set_miss"] = 32;
+	literals["change_miss"] = 33;
+	literals["avgsqr"] = 38;
 	literals["rms"] = 41;
-	literals["ndims"] = 49;
+	literals["total"] = 45;
 	literals["sqravg"] = 89;
 	literals["avg"] = 37;
 	literals["type"] = 48;
 	literals["rmssdn"] = 42;
 	literals[">>"] = 88;
-	literals["total"] = 45;
+	literals["ndims"] = 49;
 	literals["ram_write"] = 31;
 	literals["max"] = 39;
-	literals["avgsqr"] = 38;
-	literals["change_miss"] = 33;
 	literals["if"] = 21;
+	literals["set_miss"] = 32;
+	literals["ram_delete"] = 30;
 	literals["else"] = 24;
 	literals["defdim"] = 27;
 }
