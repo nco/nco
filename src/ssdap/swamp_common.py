@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.25 2007-06-01 00:56:14 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.26 2007-06-12 02:56:48 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -59,6 +59,8 @@ def appendListMulKey(aDict, keys, val):
         l.append(val)
         aDict[k] = l
 
+def isRemote(filepath):
+    return filepath.startswith("http://")
 
 class VariableParser:
     """treats shell vars "a=b" and env vars "export a=b" as the same for now.
@@ -773,7 +775,7 @@ class Parser:
     pass
 
 class Scheduler:
-    def __init__(self, config, executor=None):
+    def __init__(self, config, executor=None, graduateHook=lambda x: None):
         self.config = config
         self.transaction = None
         self.env = {}
@@ -781,7 +783,9 @@ class Scheduler:
         self.executor = executor
         self.cmdList = []
         self.fileLocations = {}
+        self._graduateHook = graduateHook
         pass
+
     def makeTaskId(self):
         # As SWAMP matures, we should rethink the purpose of a taskid
         # It's used now to disambiguate different tasks in the database
@@ -831,10 +835,17 @@ class Scheduler:
         map(lambda f: insert(f, False), parserCommand.inputs)
         map(lambda f: insert(f, True), parserCommand.outputs)
         self.cmdList.append(parserCommand)
-        
         pass
+
     def finish(self):
         self.transaction.finish()
+        pass
+
+    def graduateHook(self, hook):
+        """hook is a unary void function that accepts a graduating command
+        as a parameter.  Invocation occurs sometime after the command
+        commits its output file to disk."""
+        self._graduateHook = hook
         pass
     def executeSerialAll(self):
         def run(cmd):
@@ -852,7 +863,7 @@ class Scheduler:
         if executors is None:
             executors = [self.executor]
         pd = ParallelDispatcher(self.config, executors)
-        self.fileLocations = pd.dispatchAll(self.cmdList)
+        self.fileLocations = pd.dispatchAll(self.cmdList, self._graduateHook)
         pass
     pass # end of class Scheduler
 
@@ -995,11 +1006,10 @@ class ParallelDispatcher:
 #        map(lambda f: map(lambda e: e.discardFile(f),
 #                          self.execLocation[f]),
 #            files)
+        pass
 
 
-
-
-    def _graduate(self, token, code):
+    def _graduate(self, token, code, hook):
         cmd = self.running.pop(token)
 
         if code != 0:
@@ -1011,7 +1021,7 @@ class ParallelDispatcher:
             # figure out which one finished, and graduate it.
             self.finished[cmd] = code
             log.debug("graduating %s %d" %(cmd.cmd,
-                                                  cmd.referenceLineNum))
+                                           cmd.referenceLineNum))
             # update the readylist
             newready = self.findMadeReady(cmd)
             map(lambda x: heappush(self.ready,x), newready)
@@ -1022,10 +1032,18 @@ class ParallelDispatcher:
             e = token[0] # token is (executor, etoken)
             map(lambda o: appendList(self.execLocation, o, e), cmd.outputs)
             execs = self.execLocation[cmd.outputs[0]]
-            execs[0].actual[cmd.outputs[0]]
+
+            #self._publishFiles(filter(lambda o: self.isOutput(o),
+            #                         cmd.outputs))
+            execs[0].actual[cmd.outputs[0]] # FIXME: can I delete this?
             # hardcoded for now.
 
-    def _pollAny(self):
+            # call this to migrate files to final resting places.
+            # Use a generic hook passed from above.
+            hook(cmd)
+            pass
+
+    def _pollAny(self, hook):
         for i in range(len(self.executors)):
             e = self.execPollRR.next()
             # should be faster to iterate over self.executors
@@ -1033,13 +1051,13 @@ class ParallelDispatcher:
             r = e.pollAny()
             if r is not None:
                 log.debug("dispatcher pollany ok: "+str(r))
-                self._graduate((e, r[0]), r[1])
+                self._graduate((e, r[0]), r[1], hook)
                 return ((e, r[0]), r[1])
         return None
 
-    def _waitAnyExecutor(self):
+    def _waitAnyExecutor(self, hook):
         while True:
-            r = self._pollAny()
+            r = self._pollAny(hook)
             if r is not None:
                 return r
             time.sleep(self.sleepTime)
@@ -1055,7 +1073,7 @@ class ParallelDispatcher:
                 return e
         return None
 
-    def dispatchAll(self, cmdList):
+    def dispatchAll(self, cmdList, hook=lambda f:None):
         log.debug("dispatching cmdlist="+str(cmdList))
         self.running = {} # token -> cmd
         self.execPollRR = itertools.cycle(self.executors)
@@ -1069,7 +1087,7 @@ class ParallelDispatcher:
                 if not self.running: # done!
                     break
                 log.debug("waiting")
-                r = self._waitAnyExecutor()
+                r = self._waitAnyExecutor(hook)
                 log.debug("wakeup!")
                 #self._graduate(token, code)
             else:
@@ -1085,19 +1103,57 @@ class ParallelDispatcher:
     pass # end class ParallelDispatcher
 
 class SwampTask:
-    def __init__(self, defExec, remote, config, script):
+    def __init__(self, defExec, remote, config, script, outMap):
         self.config = config
         self.parser = Parser()
-        self.scheduler = Scheduler(config, defExec)
+        #FIXME: need to define publishIfOutput
+        self.scheduler = Scheduler(config, defExec, self._publishIfOutput)
         self.parser.commandHandler(self.scheduler.schedule)
         self.commandFactory = CommandFactory(self.config)
         self.parser.parseScript(script, self.commandFactory)
         self.scheduler.finish()
         self.remoteExec = remote
         self.realOuts = self.commandFactory.realOuts()
-
+        log.debug("realouts are " + str(self.realOuts))
+        self.outMap = LinkedMap(outMap, self.taskId())
+        
         pass
+    
+    def _publishIfOutput(self, obj):
+        """object can be either a logical filename or a command,
+        or a list of either"""
+        if isinstance(obj, Command):
+            actfiles = obj.actualOutputs
+        else:
+            #don't know how to publish.
+            pass
+        log.debug("raw outs are %s" %(str(actfiles)))
+        files = filter(lambda f: f[0] in self.realOuts, actfiles)
+        log.debug("filtered is %s" %(str(files)))
+        targetfiles = map(lambda ft: (ft[0], ft[1],
+                                      self.outMap.mapWriteFile(ft[0])),
+                          files)        
+        # fork a thread for this in the future.
+        self._publishHelper(targetfiles)
 
+
+    def _publishHelper(self, filetuples):
+        for t in filetuples:
+            log.debug("publish " + str(t))
+            actual = t[1]
+            target = t[2]
+            if isRemote(actual):
+                #download, then add to local map (in db?)
+                log.debug("Error, not doing actual download right now.")
+            else: #it's local!
+                # this will break if we request a read on the file
+                #
+                # remove the file from the old mapping (discard)
+                log.debug("start file move")
+                shutil.move(actual, target)
+                # FIXME: ping the new mapper so that it's aware of the file.
+                log.debug("end file move.")
+        pass
     def taskId(self):
         return self.scheduler.taskId
     def run(self):
@@ -1132,8 +1188,9 @@ class SwampInterface:
         self.tasks = []
         pass
 
-    def submit(self, script):
-        t = SwampTask(self.executor, self.remote, self.config, script)
+    def submit(self, script, outputMapper):
+        t = SwampTask(self.executor, self.remote, self.config,
+                      script, outputMapper)
         self.tasks.append(t)
 #         p = Parser()
 #         sch = Scheduler(self.config, self.executor)
@@ -1635,8 +1692,100 @@ class FileMapper:
     def cleanPhysicals(self):
         physicals = self.logical.keys()
         map(self._cleanPhysical, physicals)
+
+class LinkedMap(FileMapper):
+    """LinkedMap is a filemap that is linked to a parent map.
+    This class exists for those cases where an additional context
+    is needed within the parent map that can be disambiguated.
+    """
+    def __init__(self, parent, pref):
+        self.parent = parent
+        self.pref = pref
+        self.private = set()
+        pass
         
+    def existsForRead(self, f):
+        if f in self.private:
+            return self.parent.existsForRead(self.pref + f)
+        else:
+            return self.parent.existsForRead(f)
+        pass
     
+    def mapReadFile(self, f):
+        if f in self.private:
+            return self.parent.mapReadFile(self.pref + f)
+        else:
+            return self.parent.mapReadFile(f)
+        pass
+    
+    def spaceLeft(self, fname):
+        return self.parent.spaceLeft(fname)
+        
+    def mapWriteFile(self, f, altPrefix=None):
+        self.private.add(f)
+        return self.parent.mapWriteFile(self.pref + f, altPrefix)
+
+    def mapBulkFile(self, f):
+        self.private.add(f)
+        return self.parent.mapBulkFile(self.pref + f)
+
+    def discardLogical(self, f):
+        if f in self.private:
+            self.private.remove(f)
+            return self.parent.discardLogical(self.pref + f)
+        else:
+            log.debug("tried to discard unmapped file " + f)
+        pass
+
+    def cleanPhysicals(self):
+        map(lambda f: self.parent.discardLogical(self.pref + f),
+            self.private)
+        #assume discard success.
+        self.private.clear()
+        pass
+
+
+
+class ActionBag:
+    """ActionBag contains Threads.  The bag's containment allows it
+        to peform cleanup routines as needed.  Threads are reclaimed
+        as soon as they are free-- do not expect thread.local data to
+        live after Thread.run terminates."""
+
+    class Thread(threading.Thread):
+        """ActionBag.Thread is a wrapper class to wrap up a function
+        call so that it can be executed in a non-blocking manner. A
+        callback is used to signify completion.
+        
+        An ActionThread is attached to an ActionBag, """
+        def __init__(self, action, callback):
+            self.action = action
+            self.callback = callback
+            pass
+
+        def run(self):
+            rv = self.action()
+            self.callback(rv)
+
+    def __init__(self):
+        self.running = []        
+        pass
+    
+    def executeAction(self, action, callback):
+        t = ActionBag.Thread(action, callback)
+        t.start()
+        self.running.append(t)
+        pass
+    
+    def houseclean(self):
+        # iterate through running threads and reclaim if done
+        # for now, this means getting rid of dead threads in the list
+        self.running = filter(lambda t: t.isAlive(), self.running)
+            
+    pass
+
+
+
 ######################################################################
 ######################################################################
 testScript4 = """!/usr/bin/env bash

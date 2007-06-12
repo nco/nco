@@ -1,4 +1,4 @@
-#$Id: swamp_config.py,v 1.3 2007-06-01 00:56:14 wangd Exp $
+#$Id: swamp_config.py,v 1.4 2007-06-12 02:56:48 wangd Exp $
 # swamp_config.py
 # Copyright (c) 2007 Daniel L. Wang
 import ConfigParser
@@ -17,6 +17,7 @@ class Config:
                "/home/wangd/opendap/iroot/ssdap.log"),
               ("logLevel", "log", "level", logging.DEBUG),
 
+              ("serverHostname", "server", "hostname", "localhost"),
               ("serverPort", "server", "port", 8081),
               ("serverPath", "server", "path", "SOAP"),
               ("serverFilePath", "server", "filePath", "datapath"),
@@ -77,7 +78,7 @@ class Config:
                 elif not isinstance(val, type(m[3])):
                     val = type(m[3])(val) # coerce type to match default
             setattr(self, m[0], val)
-            log.debug("set config %s to %s", m[0], str(val))
+            log.debug( "set config %s to %s"%(m[0], str(val)))
             pass
         self.postReadFixup()
         pass

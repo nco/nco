@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapinterface.py,v 1.1 2007-06-01 00:56:14 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapinterface.py,v 1.2 2007-06-12 02:56:48 wangd Exp $
 # Copyright (c) 2007 Daniel L. Wang
 from swamp_common import *
 from swamp_config import Config 
@@ -15,16 +15,17 @@ import twisted.web.static as tStatic
 log = logging.getLogger("SWAMP")
 
 class LaunchThread(threading.Thread):
-    def __init__(self, swampint, script, updateFunc):
+    def __init__(self, swampint, script, filemap, updateFunc):
         threading.Thread.__init__(self) 
         self.script = script
         self.swampInterface = swampint
         self.updateFunc = updateFunc
+        self.filemap = filemap
         pass
     def run(self):
         self.updateFunc(self) # put myself as placeholder
         log.info("Starting workflow execution")
-        task = self.swampInterface.submit(self.script)
+        task = self.swampInterface.submit(self.script, self.filemap)
         log.info("Finished workflow execution got id=%s" % task.taskId())
         # should update with an object that can be used to
         #query for task state.
@@ -39,14 +40,23 @@ class StandardJobManager:
         else:
             self.config = Config()
         self.config.read()
-
         le = LocalExecutor.newInstance(self.config)
-        self.swampInterface = SwampInterface(self.config, le)
+        self.filemap = FileMapper("f"+str(os.getpid()),
+                                  self.config.execSourcePath,
+                                  self.config.execResultPath,
+                                  self.config.execResultPath)
+        self.exportPrefix = "http://%s:%d/%s" % (self.config.serverHostname,
+                                                 self.config.serverPort,
+                                                 self.config.serverFilePath)
+        self.resultExportPref = self.exportPrefix + "/"
 
+        self.swampInterface = SwampInterface(self.config, le)
+        
         self.token = 0
         self.tokenLock = threading.Lock()
         self.jobs = {}
         pass
+
     def reset(self):
         # Clean up trash from before:
         # - For now, don't worry about checking jobs still in progress
@@ -55,20 +65,6 @@ class StandardJobManager:
         #self.fileMapper.cleanPhysicals()
         log.info("Reset finish")
         
-    def slaveExec(self, pickledCommand):
-        log.info("shouldn't be here...")
-        return 0
-        cf = CommandFactory(self.config)
-        p = cf.unpickleCommand(pickledCommand)
-        self.tokenLock.acquire()
-        self.token += 1
-        token = self.token + 0
-        self.tokenLock.release()
-        log.info("received cmd: %s %d token=%d outs=%s"
-                 % (p.cmd, p.referenceLineNum, token, str(p.outputs)))
-        self._threadedLaunch(p, token)
-        return token
-
     def newScriptedFlow(self, script):
         self.tokenLock.acquire()
         self.token += 1
@@ -97,6 +93,7 @@ class StandardJobManager:
         
     def _threadedLaunch(self, script, token):
         launchthread = LaunchThread(self.swampInterface, script,
+                                    self.filemap,
                                     lambda x: self._updateToken(token, x))
         launchthread.start()
         log.debug("started launch")
@@ -123,18 +120,26 @@ class StandardJobManager:
         return map(self.pollState, tokenList)
 
     def actualToPub(self, f):
-        relative = f.split(self.config.execScratchPath + os.sep, 1)
+        log.debug("++"+f +self.config.execResultPath)
+        relative = f.split(self.config.execResultPath + os.sep, 1)
         if len(relative) < 2:
-            relative = f.split(self.config.execBulkPath + os.sep, 1)
-            return self.bulkExportPref + relative[1]
+            log.info("Got request for %s which is not available")
+            return self.resultExportPref
         else:
-            return self.scratchExportPref + relative[1]
+            return self.resultExportPref + relative[1]
     
     def pollOutputs(self, token):
         assert token in self.jobs
-        outs = self.jobs[token].realOuts
-        # FIXME: need to figure out a good way to give stuff back to the user.
-        return outs
+        task = self.jobs[token]
+        outs = task.realOuts
+        log.debug(str(outs))
+        actualpaths = map(task.outMap.mapReadFile, outs)
+        log.debug(str(actualpaths)) #fixme, need to map filename to url
+        pubpaths = map(self.actualToPub, actualpaths)
+
+        log.debug(str(pubpaths)) #fixme, need to map filename to url
+
+        return actualpaths
 
     def discardFile(self, f):
         log.debug("Discarding "+str(f))
@@ -268,8 +273,11 @@ def clientTest():
     else:
         server.reset()
         tok = server.newScriptedFlow("""
-ncwa -a time camsom1pdf/camsom1pdf_10_clm.nc timeavg.nc
+ncwa -a time -dtime,0,3 camsom1pdf/camsom1pdf_10_clm.nc timeavg.nc
 ncwa -a lon timeavg.nc timelonavg.nc
+ncwa -a time -dtime,0,2 camsom1pdf/camsom1pdf_10_clm.nc timeavg.nc
+
+
     """)
         print "submitted, got token: ", tok
         while True:
@@ -286,7 +294,7 @@ def main():
     if (len(sys.argv) > 1) and (sys.argv[1] == "--"):
         clientTest()
     else:
-        jm = StandardJobManager("swampsoap.conf")
+        jm = StandardJobManager("swamp.conf")
         #jm.startSlaveServer()
         jm.startTwistedServer()
 
