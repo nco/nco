@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.425 2007-06-02 06:15:40 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.426 2007-06-12 02:49:47 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -8311,7 +8311,7 @@ and then @command{ncwa}:
 @example
 ncecat -O in.nc out.nc # Add degenerate record dimension named "record"
 ncpdq -O -a time,record out.nc out.nc # Switch "record" and "time"
-ncwa -O -a record out.nc out.nc # Average out degenerate "record"
+ncwa -O -a record out.nc out.nc # Remove (degenerate) "record"
 @end example
 @noindent
 The first step creates a degenerate (size equals one) record dimension.
