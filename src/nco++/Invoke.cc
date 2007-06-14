@@ -74,6 +74,7 @@ int parse_antlr(prs_sct *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
     parser->program();
     a = parser->getAST();
     t=a;
+
     // Print parser tree
     if(dbg_lvl_get() > 0){
       dbg_prn(fnc_nm,"Printing parser tree...");
@@ -128,7 +129,7 @@ int parse_antlr(prs_sct *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
     prs_arg->ntl_scn=False;
     */
 
-    walker.run_exe(t);
+    walker.run_exe(t,0);
 
 
     
