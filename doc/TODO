@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.929 2007-06-11 05:10:23 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.930 2007-06-14 22:16:25 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -608,7 +608,11 @@ nco875. Squelch compiler warnings like:
 	../src/nco/nco_pck.c:819:39: warning: integer constant is so large that it is unsigned
 	which are triggered by OK statements like
 	case NC_UINT64: mss_val_dfl_dbl=NC_FILL_UINT64; break;
-nco876. 
+nco876. ncks with %s prints extra data unless -C specified
+	needs extra carriage return between successive variables
+	ncks    -v DSTQ -s "%g, " /data/zender/dstmch90/dstmch90_clm_0112_Tmm_xy.nc # broke
+	ncks -C -v DSTQ -s "%g, " /data/zender/dstmch90/dstmch90_clm_0112_Tmm_xy.nc # fine
+nco877. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

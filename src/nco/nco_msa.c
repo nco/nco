@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.42 2007-05-25 05:24:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.43 2007-06-14 22:16:27 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -730,6 +730,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
     } /* end loop over element */
+    (void)fprintf(stdout,"\n");
 
   } /* end if dlm_sng */
 
@@ -831,7 +832,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	/* NB: nco_msa_rec_clc() with same nc_id contains OpenMP critical region */
 	dim[idx].val.vp=nco_msa_rec_clc(0,1,lmt,lmt_mult+idx,&var_crd);
 
-        /* typecast pointer before use */  
+        /* Typecast pointer before use */  
         (void)cast_void_nctype(dim[idx].type,&dim[idx].val);
       }/* end for */
     } /* end if */
@@ -910,7 +911,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         static long var_dsk_srt;
         static long var_dsk_end;
 
-        /* At beginning of Character array */
+        /* At beginning of character array */
 	if(dmn_sbs_ram[var.nbr_dim-1] == 0L) {
           dmn_sz=lmt_mult[var.nbr_dim-1]->dmn_cnt;
 	  prn_sng=(char *)nco_malloc((size_t)dmn_sz+1UL);
