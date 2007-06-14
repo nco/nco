@@ -48,7 +48,7 @@ tokens {
     POST_DEC;
     SQR2;
     PROP; // used to differenciate properties & methods
-    
+    FOR2;    
 }
 
 program:
@@ -56,16 +56,35 @@ program:
     ;
 
 statement:
-        block
-        | if_stmt
-        | assign_statement
-        | def_dim
+        // assign/expression_statement
+        expr SEMI! {#statement = #(#[EXPR,"EXPR"],#statement); }
+        
+        //Define Dim statement
+        | DEFDIM^ LPAREN! NSTRING COMMA! expr RPAREN! SEMI!
+        // while loop
+        | WHILE^ LPAREN! expr RPAREN! statement 
+        // for statement
+        | for_stmt 
+        // Jump Statements
+        | BREAK SEMI!
+        | CONTINUE SEMI!        
+        //deal with empty statement
+        | SEMI! { #statement = #([ NULL_NODE, "null_stmt"]); } 
+
+        // if statement
+        | IF^ LPAREN! expr RPAREN! statement 
+         ( //standard if-else ambiguity
+         options {warnWhenFollowAmbig = false;} 
+        : ELSE! statement )?
+
+        // Code block
+        | block
+     // fxm: temporary functions. Will be moved to method/function framework
         | ram_delete
         | ram_write
         | set_miss
         | ch_miss  
-        //deal with empty statement
-        | SEMI! { #statement = #([ NULL_NODE, "null_stmt"]); } 
+
    ;        
 
 
@@ -76,30 +95,20 @@ block:
     ;
 
 
-if_stmt:
-    IF^ LPAREN! expr RPAREN! statement 
-   ( //standard if-else ambiguity
-    options {
-             warnWhenFollowAmbig = false;
-                        } :
-   ELSE! statement )?
+for_stmt:
+     FOR^ LPAREN! (e1:expr)? SEMI! (e2:expr)? SEMI! (e3:expr)? RPAREN! st:statement
+    ;
+  
+ /*
+   
+         { if(#e1==NULL)  #e1 = #([ NULL_NODE, "null_stmt"]); 
+           if(#e2==NULL)  #e2 = #([ NULL_NODE, "null_stmt"]); 
+           if(#e3==NULL)  #e3 = #([ NULL_NODE, "null_stmt"]); 
+           #for_stmt=#(#[FOR,"for"],e1,e2,e3,st);
+         }
      ;
+ */
 
-
-assign_statement:
-         expr SEMI!
-       {#assign_statement = #(#[EXPR,"EXPR"],#assign_statement); }
-
-     ; 
-
-hyper_slb: (VAR_ID^ |ATT_ID ^) (lmt_list|dmn_list)?
-     ;
-
-//cast_slb:  (VAR_ID^ |ATT_ID^ ) dmn_list
-//     ;
-
-def_dim:   DEFDIM^ LPAREN! NSTRING COMMA! expr RPAREN! SEMI! 
-     ;        
 
 ram_delete: RAM_DELETE^ LPAREN! (VAR_ID|ATT_ID) RPAREN! SEMI! 
      ;
@@ -112,6 +121,10 @@ set_miss:   SET_MISS^ LPAREN! VAR_ID COMMA! expr RPAREN! SEMI!
 
 ch_miss:    CH_MISS^ LPAREN! VAR_ID COMMA! expr RPAREN! SEMI! 
     ;
+
+hyper_slb: (VAR_ID^ |ATT_ID ^) (lmt_list|dmn_list)?
+     ;
+
 
 arg_list: expr|dmn_arg_list|DIM_ID|DIM_MTD_ID
      ;
@@ -274,7 +287,10 @@ tokens {
     RAM_WRITE="ram_write";
     SET_MISS="set_miss";
     CH_MISS="change_miss";
-
+    BREAK="break";
+    CONTINUE="continue";
+    WHILE="while";    
+    FOR="for";
 // Properties 
     PSIZE="size";
     PTYPE="type";
@@ -742,6 +758,7 @@ public:
         }
     }
 */
+
 public:
     void run_dbl(RefAST tr,int icnt){
      int idx=0;
@@ -796,12 +813,13 @@ end: ;
    }
 
 public:
-    void run_exe(RefAST tr){
+    int run_exe(RefAST tr, int nbr_dpt){
     // number of statements in block
     int nbr_stmt=0;
     int idx;
     int icnt=0;
     int ntyp;
+    int iret;
     
     RefAST etr=ANTLR_USE_NAMESPACE(antlr)nullAST;
     RefAST ntr;
@@ -812,11 +830,15 @@ public:
             
      
     
-    if(nbr_stmt <4){
+    if(nbr_stmt <4 || nbr_dpt>0 ){
         prs_arg->ntl_scn=False;
         ntr=tr;
-        do (void)statements(ntr);   
-        while(ntr=ntr->getNextSibling());   
+        do{ 
+          iret=statements(ntr);
+          // break if jump statement   
+          if(iret==BREAK || iret==CONTINUE) 
+           break; 
+        } while(ntr=ntr->getNextSibling());   
         goto exit;
     }
   
@@ -824,28 +846,28 @@ public:
 
     for(idx=0 ; idx < nbr_stmt; idx++){
       ntyp=ntr->getType();
-      // we have hit an IF or a code block
-      if(ntyp==BLOCK || ntyp==IF ||ntyp==DEFDIM ) {
+      // we have hit an IF or a basic block
+      if(ntyp==BLOCK || ntyp==IF ||ntyp==DEFDIM || ntyp==WHILE ||ntyp==FOR) {
         if(icnt>0) 
          (void)run_dbl(etr,icnt);
         icnt=0;
         etr=ANTLR_USE_NAMESPACE(antlr)nullAST;; 
         prs_arg->ntl_scn=False;
-        (void)statements(ntr);      
-       }
+        iret=statements(ntr);      
+      }else{
+        if(icnt++==0) etr=ntr;
+       }        
 
-       //if(ntyp==EXPR || ntyp== NULL_NODE || ntyp==RAM_WRITE|| ntyp==RAM_DELETE ||ntyp==SET_MISS ||ntyp==CH_MISS)
-       if( ntyp !=BLOCK && ntyp !=IF && ntyp !=DEFDIM)
-         if(icnt++==0) etr=ntr;
-        
-       ntr=ntr->getNextSibling();
+     ntr=ntr->getNextSibling();
       
     } // end for
-    if(icnt >0)
-       (void)run_dbl(etr,icnt);      
 
+    if(icnt >0){
+       iret=0;
+       (void)run_dbl(etr,icnt);      
+    }
       
-exit: ;     
+exit: return iret;     
             
 
     } // end run_exe
@@ -872,20 +894,25 @@ lmt_peek returns [int nbr_dmn=0]
 
 
 
-statements 
+statements returns [int iret=0] 
 {
 var_sct *var;
-const std::string fnc_nm("statements"); 
+const std::string fnc_nm("statements");
+// list of while/for loops entered n.b depth is lpp_vtr.size()
+// Temporary fix so call run_exe only does a single parse in the
+// nested block
+static std::vector<std::string> lpp_vtr;
 }
     : blk:BLOCK { 
        //cout <<"Num of Children in block="<<blk->getNumberOfChildren()<<endl;
-       run_exe(blk->getFirstChild());
+       iret=run_exe(blk->getFirstChild(),lpp_vtr.size() );
             
                 }
 
     | exp:EXPR {
        var=out(exp->getFirstChild());
        var=nco_var_free(var);
+       iret=EXPR;
       }
               
 
@@ -900,17 +927,17 @@ const std::string fnc_nm("statements");
       if(br){ 
          // Execute 2nd sibling  
          if(iff->getType()==BLOCK)
-           run_exe(iff);
+           iret=run_exe(iff,lpp_vtr.size());
          else
-           statements(iff);     
+           iret=statements(iff);     
       }
 
       // See if else stmt exists (3rd sibling)       
 	  if(!br && (iff=iff->getNextSibling()) ){
          if(iff->getType()==BLOCK)
-           run_exe(iff);
+           iret=run_exe(iff,lpp_vtr.size());
          else
-           statements(iff);     
+           iret=statements(iff);     
              
       }
  
@@ -918,20 +945,107 @@ const std::string fnc_nm("statements");
       
     }// end action
 
+    | #(WHILE lgcl:. stmt:.){
 
-    | ELSE {
+      bool br;
+      var_sct *var_tf;  
+      
+      var_tf=out(lgcl);
+      br=ncap_var_lgcl(var_tf);
+      var_tf=nco_var_free(var_tf);
+       
+      lpp_vtr.push_back("while");
+
+      while(br){ 
+        if(stmt->getType()==BLOCK)
+          iret=run_exe(stmt,lpp_vtr.size());
+        else
+         iret=statements(stmt);     
+       
+        if(iret==BREAK) break;
+        var_tf=out(lgcl);
+        br=ncap_var_lgcl(var_tf); 
+        var_tf=nco_var_free(var_tf);       
 
       }
-    
-    | def:DEFDIM {
+      lpp_vtr.pop_back(); 
+      iret=WHILE;
+      var=NULL_CEWI; 
+
+    }
+   
+    |#(FOR e1:. e2:. e3:. stmt1:.) {
+      bool b1,b2,b3,br;
+      int iret;
+      var_sct *var_f1;
+      var_sct *var_f2;
+      var_sct *var_f3;
+
+      b1=(e1->getType()!=NULL_NODE ? true:false);
+      b2=(e2->getType()!=NULL_NODE ? true:false);
+      b3=(e3->getType()!=NULL_NODE ? true:false);
+
+      lpp_vtr.push_back("for");
+
+      if(b1){
+       var_f1=out(e1);
+       var_f1=nco_var_free(var_f1);
+      }          
+
+      if(b2){
+       var_f2=out(e2);
+       br=ncap_var_lgcl(var_f2);
+       var_f2=nco_var_free(var_f2);
+      } else br=true;
+
+      while(br){
+
+        if(stmt1->getType()==BLOCK)
+          iret=run_exe(stmt1,lpp_vtr.size());
+        else
+         iret=statements(stmt1);     
+       
+        if(iret==BREAK) break;
+
+
+        if(b3){
+          var_f3=out(e3);
+          var_f3=nco_var_free(var_f3);
+        }
+
+  
+        if(b2){
+         var_f2=out(e2);
+         br=ncap_var_lgcl(var_f2);
+         var_f2=nco_var_free(var_f2);
+        } 
+
+      } // end while
+
+      lpp_vtr.pop_back();
+      iret=FOR;
+      var=NULL_CEWI;                
+        
+    } // end  for action
+
+
+    | ELSE { iret=ELSE;}
+    | BREAK { iret=BREAK;}
+    | CONTINUE {iret=CONTINUE;} 
+    | NULL_NODE { iret=NULL_NODE; }
+
+
+    // All the following functions have iret=0
+   
+    |#(DEFDIM def:NSTRING  var=out){
             
         const char *dmn_nm;
         long sz;
             
-        dmn_nm=def->getFirstChild()->getText().c_str();
+        dmn_nm=def->getText().c_str();
             
-        var=out(def->getFirstChild()->getNextSibling());    
         var=nco_var_cnf_typ(NC_INT,var);
+        iret=DEFDIM;
 
         (void)cast_void_nctype((nc_type)NC_INT,&var->val);
         sz=*var->val.lp;
@@ -1084,10 +1198,6 @@ const std::string fnc_nm("statements");
        end1: nco_var_free(var);         
           
       }
-
-
-    | NULL_NODE {
-            }
     ;
 
 // Parse assign statement - Initial Scan
@@ -1691,25 +1801,23 @@ out returns [var_sct *var]
             }  
 
     //ternary Operator
-    |   #( qus:QUESTION var1=out) {
+    |   #(QUESTION var1=out qus:.) {
            bool br;
             
            // if initial scan 
            if(prs_arg->ntl_scn){
-               var1=nco_var_free(var1);
                var=ncap_var_udf("~question"); 
-               return var;
-           }
+           } else {
 
-           br=ncap_var_lgcl(var1);
+             br=ncap_var_lgcl(var1);
+             if(br) 
+               var=out(qus);
+             else
+               var=out(qus->getNextSibling());      
+           }   
            var1=nco_var_free(var1);
+    } 
            
-           if(br) 
-             var=out(qus->getFirstChild()->getNextSibling());
-           else
-             var=out(qus->getFirstChild()->getNextSibling()->getNextSibling());      
-         }   
-
 
     // math functions 
     |  #(m:FUNC #(FUNC_ARG var1=out))      
