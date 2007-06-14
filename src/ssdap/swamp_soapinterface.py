@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapinterface.py,v 1.2 2007-06-12 02:56:48 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapinterface.py,v 1.3 2007-06-14 01:44:50 wangd Exp $
 # Copyright (c) 2007 Daniel L. Wang
 from swamp_common import *
 from swamp_config import Config 
@@ -133,13 +133,13 @@ class StandardJobManager:
         task = self.jobs[token]
         outs = task.realOuts
         log.debug(str(outs))
-        actualpaths = map(task.outMap.mapReadFile, outs)
-        log.debug(str(actualpaths)) #fixme, need to map filename to url
-        pubpaths = map(self.actualToPub, actualpaths)
 
-        log.debug(str(pubpaths)) #fixme, need to map filename to url
+        outUrls = map(lambda f: (f, self.actualToPub( # make url from file
+            task.outMap.mapReadFile(f))), # find output localfile
+                       outs) #start from logical outs.
+        log.debug(str(outUrls))
 
-        return actualpaths
+        return outUrls
 
     def discardFile(self, f):
         log.debug("Discarding "+str(f))
@@ -286,7 +286,13 @@ ncwa -a time -dtime,0,2 camsom1pdf/camsom1pdf_10_clm.nc timeavg.nc
                 print "finish, code ", ret
                 break
             time.sleep(1)
-        print "actual outs are at", server.pollOutputs(tok)
+        outUrls = server.pollOutputs(tok)
+        print "actual outs are at", outUrls
+        for u in outUrls:
+            # simple fetch, since we are single-threaded.
+            urllib.urlretrieve(u[1], u[0])
+        
+
 
 
 def main():
