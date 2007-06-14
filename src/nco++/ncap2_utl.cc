@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.72 2007-06-01 21:23:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.73 2007-06-14 15:37:11 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2090,7 +2090,7 @@ ncap_sclr_var_mk(
   (void)cast_nctype_void((nc_type)NC_INT,&var->val);
   return var;
 }
-
+ 
 var_sct *
 ncap_sclr_var_mk(
 		 const std::string var_nm,
@@ -2221,6 +2221,10 @@ void ncap_def_ntl_scn(prs_sct *prs_arg)
   var_sct *var1;
   
   const std::string fnc_nm("ncap_def_ntl_scn"); 
+
+  if(dbg_lvl_get() > 0)
+    dbg_prn(fnc_nm, "Entered function");
+
   
   sz=prs_arg->ptr_int_vtr->size();
   
