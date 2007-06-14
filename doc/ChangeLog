@@ -1,9 +1,11 @@
+2007-06-14  Charlie Zender  <zender@uci.edu>
+
+	* Alter bin_cnt.nco to use loops
+
 2007-06-14   Henry Butowsky <henryb@ntlworld.com>
 	* Commited the first cut of while loops and for loops
-	  Can use "break" & "continue" in both. Can have
-	  any level of nesting.
-	  n.b These are vanilla unoptimized loops.
-          Optimization to come!!	 
+	Can use "break" & "continue" in both. Can have any level of nesting.
+	These are vanilla unoptimized loops. Optimization to come!!	 
 
 2007-06-07  Charlie Zender  <zender@uci.edu>
 

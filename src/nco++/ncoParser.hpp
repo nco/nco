@@ -61,15 +61,13 @@ public:
 	}
 	public: void program();
 	public: void statement();
+	public: void expr();
+	public: void for_stmt();
 	public: void block();
-	public: void if_stmt();
-	public: void assign_statement();
-	public: void def_dim();
 	public: void ram_delete();
 	public: void ram_write();
 	public: void set_miss();
 	public: void ch_miss();
-	public: void expr();
 	public: void hyper_slb();
 	public: void lmt_list();
 	public: void dmn_list();
@@ -106,10 +104,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 107;
+	static const int NUM_TOKENS = 112;
 #else
 	enum {
-		NUM_TOKENS = 107
+		NUM_TOKENS = 112
 	};
 #endif
 	

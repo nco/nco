@@ -31,7 +31,7 @@
 #line 32 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 529 "ncoGrammer.g"
+#line 545 "ncoGrammer.g"
 
 
 private:
@@ -248,6 +248,7 @@ public:
         }
     }
 */
+
 public:
     void run_dbl(RefAST tr,int icnt){
      int idx=0;
@@ -302,12 +303,13 @@ end: ;
    }
 
 public:
-    void run_exe(RefAST tr){
+    int run_exe(RefAST tr, int nbr_dpt){
     // number of statements in block
     int nbr_stmt=0;
     int idx;
     int icnt=0;
     int ntyp;
+    int iret;
     
     RefAST etr=ANTLR_USE_NAMESPACE(antlr)nullAST;
     RefAST ntr;
@@ -318,11 +320,15 @@ public:
             
      
     
-    if(nbr_stmt <4){
+    if(nbr_stmt <4 || nbr_dpt>0 ){
         prs_arg->ntl_scn=False;
         ntr=tr;
-        do (void)statements(ntr);   
-        while(ntr=ntr->getNextSibling());   
+        do{ 
+          iret=statements(ntr);
+          // break if jump statement   
+          if(iret==BREAK || iret==CONTINUE) 
+           break; 
+        } while(ntr=ntr->getNextSibling());   
         goto exit;
     }
   
@@ -330,28 +336,28 @@ public:
 
     for(idx=0 ; idx < nbr_stmt; idx++){
       ntyp=ntr->getType();
-      // we have hit an IF or a code block
-      if(ntyp==BLOCK || ntyp==IF ||ntyp==DEFDIM ) {
+      // we have hit an IF or a basic block
+      if(ntyp==BLOCK || ntyp==IF ||ntyp==DEFDIM || ntyp==WHILE ||ntyp==FOR) {
         if(icnt>0) 
          (void)run_dbl(etr,icnt);
         icnt=0;
         etr=ANTLR_USE_NAMESPACE(antlr)nullAST;; 
         prs_arg->ntl_scn=False;
-        (void)statements(ntr);      
-       }
+        iret=statements(ntr);      
+      }else{
+        if(icnt++==0) etr=ntr;
+       }        
 
-       //if(ntyp==EXPR || ntyp== NULL_NODE || ntyp==RAM_WRITE|| ntyp==RAM_DELETE ||ntyp==SET_MISS ||ntyp==CH_MISS)
-       if( ntyp !=BLOCK && ntyp !=IF && ntyp !=DEFDIM)
-         if(icnt++==0) etr=ntr;
-        
-       ntr=ntr->getNextSibling();
+     ntr=ntr->getNextSibling();
       
     } // end for
-    if(icnt >0)
-       (void)run_dbl(etr,icnt);      
 
+    if(icnt >0){
+       iret=0;
+       (void)run_dbl(etr,icnt);      
+    }
       
-exit: ;     
+exit: return iret;     
             
 
     } // end run_exe
@@ -375,7 +381,7 @@ public:
 		return ncoTree::tokenNames;
 	}
 	public: int  lmt_peek(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
-	public: void statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
+	public: int  statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * out(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 		bool bram
@@ -400,10 +406,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 107;
+	static const int NUM_TOKENS = 112;
 #else
 	enum {
-		NUM_TOKENS = 107
+		NUM_TOKENS = 112
 	};
 #endif
 	
