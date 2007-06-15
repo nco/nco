@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.240 2007-06-02 06:15:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.241 2007-06-15 23:43:21 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.0 are ready. 
 
@@ -29,11 +29,11 @@ D. ncks can downconvert netCDF4 classic to netCDF3 files (fxm)
 
 E. Improve ncap2 missing_value handling and RAM variables (fxm)
 
-F. ncap2 grows more powerful.
-   New demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]
+F. ncap2 grows more powerful: it supports loops!
+   Demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]
    http://nco.sf.net/nco.html#ncap2 
 
-G. Fix bug with ncks built with Intell compilers (fxm)
+G. Fix bug with ncks built with Intel compilers (fxm)
    Thanks to Remik Ziemlinski for his excellent bug reports!
    http://nco.sf.net#bug_ncbo_pck
 
