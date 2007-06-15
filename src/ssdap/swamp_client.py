@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# $Id: swamp_client.py,v 1.1 2007-06-14 01:44:50 wangd Exp $
+# $Id: swamp_client.py,v 1.2 2007-06-15 01:56:57 wangd Exp $
 # swamp_client.py
 # This is part of SWAMP, Copyright 2007 - Daniel L. Wang 
 
@@ -45,7 +45,11 @@ class local:
     --backdoor
            Start a backdoor interface to the server that's really useful
            for development debugging, but should definitely be disabled
-           for any servers open to the outside world.
+           for any servers open to the outside world. (Debug only)
+
+    --reset
+           Reset the state of the server.  This should also probably be
+           disabled. (Debug only)
 
     Operation:
         A_GREAT_NAME submits the analysis script to be run on the server
@@ -87,8 +91,12 @@ class SwampClient:
     
     def _testInterface(self):
         server = SOAPpy.SOAPProxy(self.serverUrl)
-        while True:
-            print server.pyInterface(raw_input())
+        print "Entering python debug console: (Ctrl-D/EOF exits)"
+        try:
+            while True:
+                print server.pyInterface(raw_input())
+        except EOFError: # catch the EOF error as normal exit
+            pass
     
     def _test(self):
         if not self.serverUrl:
@@ -134,7 +142,9 @@ ncwa -a time -dtime,0,2 camsom1pdf/camsom1pdf_10_clm.nc timeavg.nc
         opttuples = [("c:", "config=", self._handleConfigOption),
                      ("h", "help", self._handleHelpOption),
                      ("u:", "url=", self._handleUrlOption),
-                     ("t", "test", self._handleTestOption)]
+                     ("t", "test", self._handleTestOption),
+                     ("", "backdoor", self._handleBackdoorOption),
+                     ("", "reset", self._handleResetOption)]
 
         # build getopt structures
         sopts = "".join(map(lambda t: t[0], opttuples))
@@ -193,6 +203,19 @@ ncwa -a time -dtime,0,2 camsom1pdf/camsom1pdf_10_clm.nc timeavg.nc
 
     def _handleBackdoorOption(self, dummy=None):
         self._addOperation(self._testInterface)
+        pass
+
+    def _handleResetOption(self, dummy=None):
+        self._addOperation(self._sendReset)
+        pass
+
+    def _sendReset(self):
+        if not self._sanityTest():
+            print "Failed sanity check.  Bailing out."
+            return
+        server = SOAPpy.SOAPProxy(self.serverUrl)
+        result = server.reset()
+        print "Server.reset returned", result
         pass
 
     def _processScript(self, scriptfile):
