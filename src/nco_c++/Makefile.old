@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.59 2007-05-21 06:06:37 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.60 2007-06-15 15:45:04 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -91,11 +91,6 @@ endif # endif DBG
 ifndef GCC_RCH_ARG
  GCC_RCH_ARG :=
 endif # endif GCC_RCH_ARG
-ifdef GSL_LIB
- GSL_LIB := -L${GSL_LIB}
-else
- GSL_LIB := $(shell gsl-config --libs)
-endif # endif GSL_LIB
 ifndef I18N
  I18N := Y
  MY_SHR_DIR := ${HOME}/share
@@ -475,7 +470,7 @@ ifneq (${null},$(findstring xl,${CC}))
  CPP_TKN_OS += -I/usr/vacpp/include
 endif # xlC compilers
 # Add /usr/local/include for libintl.h explicitly until netCDF is moved there
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} ${GSL_INC} -I/usr/local/include
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I/usr/local/include
 FC := xlf95_r
 LD := ld
 LDFLAGS += -bh:5 ${TMP_LDFLAGS} ${TMP_LIBS}
