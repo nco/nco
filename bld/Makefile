@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.426 2007-06-05 16:47:05 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.427 2007-06-15 00:08:38 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -43,11 +43,11 @@
 # 64-bit ABI on UCI MPC systems:
 # cd ${HOME}/nco/bld;env ANTLR='/software/antlr/bin/antlr' ANTLR_ROOT='/software/antlr' UDUNITS_INC='/software/udunits/include' UDUNITS_LIB='/software/udunits/lib' make --jobs=1 ABI=64 allinone;cd -
 # 64-bit ABI on NCAR AIX systems:
-# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 UDUNITS_INC=~/udunits/include UDUNITS_LIB=~/udunits/lib make --jobs=1 allinone ABI=64;cd -
+# cd ~/nco/bld;NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='~/udunits/include' UDUNITS_LIB='~/udunits/lib' make --jobs=1 allinone ABI=64;cd -
 # 64-bit ABI on NCAR IRIX systems:
-# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 UDUNITS_INC=/contrib/udunits-1.12.4/include UDUNITS_LIB=/contrib/udunits-1.12.4/lib make --jobs=1 ABI=64 USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
+# cd ~/nco/bld;NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.4/include' UDUNITS_LIB='/contrib/udunits-1.12.4/lib' make --jobs=1 ABI=64 USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
 # 32-bit ABI on NCAR IRIX systems:
-# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib32/r4i4 UDUNITS_INC=/contrib/include UDUNITS_LIB=/contrib/lib make --jobs=1 ABI=32 USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
+# cd ~/nco/bld;NETCDF_LIB='/usr/local/lib32/r4i4' UDUNITS_INC='/contrib/include' UDUNITS_LIB='/contrib/lib' make --jobs=1 ABI=32 USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
 
 # Top-level tokens defining directory structure
 # These tokens may be over-ridden by environment variables or when invoking make, e.g., make DAP=Y

@@ -1,5 +1,7 @@
 2007-06-14  Charlie Zender  <zender@uci.edu>
 
+	* Fix flukey ncks %s printing
+
 	* Alter bin_cnt.nco to use loops
 
 2007-06-14   Henry Butowsky <henryb@ntlworld.com>
