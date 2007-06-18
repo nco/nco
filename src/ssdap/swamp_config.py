@@ -1,4 +1,4 @@
-#$Id: swamp_config.py,v 1.4 2007-06-12 02:56:48 wangd Exp $
+#$Id: swamp_config.py,v 1.5 2007-06-18 23:09:50 wangd Exp $
 # swamp_config.py
 # Copyright (c) 2007 Daniel L. Wang
 import ConfigParser
@@ -21,6 +21,7 @@ class Config:
               ("serverPort", "server", "port", 8081),
               ("serverPath", "server", "path", "SOAP"),
               ("serverFilePath", "server", "filePath", "datapath"),
+              ("serverMode", "server", "mode", "production"),
               
               ("execNco4", "exec", "nco4",
                "/home/wangd/opendap/iroot/nco_ncdf4_bin"),

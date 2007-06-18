@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapinterface.py,v 1.3 2007-06-14 01:44:50 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapinterface.py,v 1.4 2007-06-18 23:09:50 wangd Exp $
 # Copyright (c) 2007 Daniel L. Wang
 from swamp_common import *
 from swamp_config import Config 
@@ -61,6 +61,9 @@ class StandardJobManager:
         # Clean up trash from before:
         # - For now, don't worry about checking jobs still in progress
         # - Delete all the physical files we allocated in the file mapper
+        if self.config.serverMode == "production":
+            log.info("refusing to do hard reset: unsafe for production")
+            return
         log.info("Reset requested--disabled")
         #self.fileMapper.cleanPhysicals()
         log.info("Reset finish")
@@ -81,6 +84,10 @@ class StandardJobManager:
         should be disabled for live systems.
 
         It's very handy during development, though."""
+
+        if self.config.serverMode != "debug":
+            return "Error, debugging is disabled."
+
         try:
             return str(eval(cmdline))
         except Exception, e:
