@@ -1,10 +1,12 @@
-// $Header: /data/zender/nco_20150216/nco/data/ddra.nco,v 1.9 2007-05-19 08:06:56 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/ddra.nco,v 1.10 2007-06-18 21:03:22 zender Exp $ -*-C++-*-
 
 // Purpose: Compute DDRA statistics for use in ppr_ZeM06
 // Demonstrate ncap2 scripting
 
 // Usage:
 // ncap2 -4 -O -v -S ~/nco/data/ddra.nco ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
+
+// NB: Requires netCDF4 because of int64 usage
 
 // Compute mean dimension sizes
 dmnsz_stl_lat=2160;
@@ -50,11 +52,8 @@ dmnszavg_gcm_avg_wgt_lmnnbr=(lmnnbr_gcm_0D_ttl*dmnszavg_gcm_0D+lmnnbr_gcm_1D_ttl
 /* DDRA algorithm from nco_ctl.c:nco_ddra()
    NB: Many numbers in this script are integers by right, e.g., lmn_nbr
    Nearly every variable with _nbr in its name is in this category
-   However, they exceed ~2*10^9 GB and so require 64-bit integer types,
-   whereas netCDF3 only supports 32-bit integers
-   Hence, these numbers and counts are (temporarily) represented by floats
-   Once netCDF4 becomes default, should switch them to int64 type
-   For now, initialize these to int64_zero instead of 0L */
+   However, they exceed ~2*10^9 (~2 GB) and so require 64-bit integer types
+   whereas netCDF3 only supports 32-bit integers (< 2 GB). */
 int64_zero=0ll; /* [flg] Variable assigned to this should be type int64 */
 
 // Define constants normally in headers, e.g., enums
