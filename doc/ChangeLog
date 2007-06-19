@@ -1,5 +1,9 @@
 2007-06-18  Charlie Zender  <zender@uci.edu>
 
+	* Remove configure.in rule to add -DNC_64BIT_OFFSET even when DAP version > 3.6.1
+
+	* Add SWAMP test template ~/nco/data/swamp.sh 
+
 	* Place DAP netcdf.h path ahead of system netcdf.h path in configure.in
 
 2007-06-14  Charlie Zender  <zender@uci.edu>
@@ -9,6 +13,7 @@
 	* Alter bin_cnt.nco to use loops
 
 2007-06-14   Henry Butowsky <henryb@ntlworld.com>
+
 	* Commited the first cut of while loops and for loops
 	Can use "break" & "continue" in both. Can have any level of nesting.
 	These are vanilla unoptimized loops. Optimization to come!!	 
