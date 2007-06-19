@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# $Id: swamp_client.py,v 1.2 2007-06-15 01:56:57 wangd Exp $
+# $Id: swamp_client.py,v 1.3 2007-06-19 01:27:15 wangd Exp $
 # swamp_client.py
 # This is part of SWAMP, Copyright 2007 - Daniel L. Wang 
 
@@ -120,7 +120,7 @@ ncwa -a time -dtime,0,2 camsom1pdf/camsom1pdf_10_clm.nc timeavg.nc
             continue
         
         outUrls = server.pollOutputs(tok)
-        print "actual outs are at", outUrls
+        print "Debug: pollOutputs returned ", outUrls
         for u in outUrls:
             # simple fetch, since we are single-threaded.
             urllib.urlretrieve(u[1], u[0])
@@ -241,10 +241,10 @@ ncwa -a time -dtime,0,2 camsom1pdf/camsom1pdf_10_clm.nc timeavg.nc
             continue
         
         outUrls = server.pollOutputs(tok)
-        print "actual outs are at", outUrls
         for u in outUrls:
             # simple fetch, since we are single-threaded.
-            urllib.urlretrieve(u[1], u[0])
+            print "Fetching %s and writing to %s" % (u[1], u[0])
+            urllib.urlretrieve(u[1], os.path.expanduser(u[0]))
         pass
 
     def run(self):

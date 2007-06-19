@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.26 2007-06-12 02:56:48 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.27 2007-06-19 01:27:15 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -547,6 +547,7 @@ class CommandFactory:
         return s
                     
     def expandConcreteInput(self, inputFilename):
+        # WARN: this may not be threadsafe!
         save = os.getcwd()
         os.chdir(self.config.execSourcePath)
         res = glob.glob(inputFilename)
@@ -574,7 +575,7 @@ class CommandFactory:
 
         if m is not None:
             # increment the trailing digit(s)
-            return m.group(1) + str(1 + int(m.group(1)))
+            return m.group(1) + str(1 + int(m.group(2)))
         else:
             return logical + ".1"
 
@@ -635,15 +636,29 @@ class CommandFactory:
         return pickle.loads(pickled)
 
     def realOuts(self):
+        """return tuples of (scriptname, logname)
+        for each file that is a final output """
         # technically, we should ask just for its keys,
         #but random access to a dict is faster.
         temps =  self.commandByLogicalIn
-        
-        # FIXME: confirm that commandByLogicalOut has the proper
-        # remapped-logical-out.
-        realouts = filter(lambda x: x not in temps,
-                          self.commandByLogicalOut.keys())
-        return realouts
+
+        if False:
+            # original
+            # get the final set of logical outs
+            realouts = filter(lambda x: x not in temps,
+                              self.commandByLogicalOut.keys())
+            # then, take the final set and then find the script names
+            scriptByLogical = dict([[v,k] for k,v
+                                    in self.logicalOutByScript.items()])
+            # ? 
+        else: # new method:
+            # Get the script outs, and then map them to logical outs.
+            rawscriptouts = self.logicalOutByScript.items()
+            scriptAndLogicalOuts = filter(lambda x: x[1] not in temps,
+                              rawscriptouts)
+            
+
+        return scriptAndLogicalOuts
 
     pass # end of CommandFactory class
 
@@ -862,8 +877,9 @@ class Scheduler:
     def executeParallelAll(self, executors=None):
         if executors is None:
             executors = [self.executor]
-        pd = ParallelDispatcher(self.config, executors)
-        self.fileLocations = pd.dispatchAll(self.cmdList, self._graduateHook)
+        self.pd = ParallelDispatcher(self.config, executors)
+        self.fileLocations = self.pd.dispatchAll(self.cmdList,
+                                                 self._graduateHook)
         pass
     pass # end of class Scheduler
 
@@ -1113,8 +1129,9 @@ class SwampTask:
         self.parser.parseScript(script, self.commandFactory)
         self.scheduler.finish()
         self.remoteExec = remote
-        self.realOuts = self.commandFactory.realOuts()
-        log.debug("realouts are " + str(self.realOuts))
+        self.scrAndLogOuts = self.commandFactory.realOuts()
+        self.logOuts = map(lambda x: x[1], self.scrAndLogOuts)
+        log.debug("outs are " + str(self.scrAndLogOuts))
         self.outMap = LinkedMap(outMap, self.taskId())
         
         pass
@@ -1128,7 +1145,7 @@ class SwampTask:
             #don't know how to publish.
             pass
         log.debug("raw outs are %s" %(str(actfiles)))
-        files = filter(lambda f: f[0] in self.realOuts, actfiles)
+        files = filter(lambda f: f[0] in self.logOuts, actfiles)
         log.debug("filtered is %s" %(str(files)))
         targetfiles = map(lambda ft: (ft[0], ft[1],
                                       self.outMap.mapWriteFile(ft[0])),

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapinterface.py,v 1.4 2007-06-18 23:09:50 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapinterface.py,v 1.5 2007-06-19 01:27:15 wangd Exp $
 # Copyright (c) 2007 Daniel L. Wang
 from swamp_common import *
 from swamp_config import Config 
@@ -138,11 +138,11 @@ class StandardJobManager:
     def pollOutputs(self, token):
         assert token in self.jobs
         task = self.jobs[token]
-        outs = task.realOuts
+        outs = task.scrAndLogOuts
         log.debug(str(outs))
 
-        outUrls = map(lambda f: (f, self.actualToPub( # make url from file
-            task.outMap.mapReadFile(f))), # find output localfile
+        outUrls = map(lambda f: (f[0], self.actualToPub( # make url from file
+            task.outMap.mapReadFile(f[1]))), # find output localfile
                        outs) #start from logical outs.
         log.debug(str(outUrls))
 
