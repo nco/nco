@@ -49,6 +49,7 @@ tokens {
     SQR2;
     PROP; // used to differenciate properties & methods
     FOR2;    
+    NORET;
 }
 
 program:
@@ -97,18 +98,12 @@ block:
 
 for_stmt:
      FOR^ LPAREN! (e1:expr)? SEMI! (e2:expr)? SEMI! (e3:expr)? RPAREN! st:statement
-    ;
-  
- /*
-   
-         { if(#e1==NULL)  #e1 = #([ NULL_NODE, "null_stmt"]); 
+        /*  { if(#e1==NULL)  #e1 = #([ NULL_NODE, "null_stmt"]); 
            if(#e2==NULL)  #e2 = #([ NULL_NODE, "null_stmt"]); 
            if(#e3==NULL)  #e3 = #([ NULL_NODE, "null_stmt"]); 
-           #for_stmt=#(#[FOR,"for"],e1,e2,e3,st);
-         }
+           ##=#(FOR,e1,e2,e3,st);
+         } */ 
      ;
- */
-
 
 ram_delete: RAM_DELETE^ LPAREN! (VAR_ID|ATT_ID) RPAREN! SEMI! 
      ;
@@ -910,13 +905,16 @@ static std::vector<std::string> lpp_vtr;
                 }
 
     | exp:EXPR {
+       RefAST tr;
+
        var=out(exp->getFirstChild());
-       var=nco_var_free(var);
+       if(var != (var_sct*)NULL)
+         var=nco_var_free(var);
        iret=EXPR;
-      }
+     }
               
 
-    | #(IF var=out iff:. ) {
+    | #(IF var=out stmt:. ) {
     //if can have only 3 or 4 parts  , 1 node and 2 or 3 siblings
     // IF LOGICAL_EXP STATEMENT1 STATEMENT2
       bool br;
@@ -926,18 +924,18 @@ static std::vector<std::string> lpp_vtr;
 
       if(br){ 
          // Execute 2nd sibling  
-         if(iff->getType()==BLOCK)
-           iret=run_exe(iff,lpp_vtr.size());
+         if(stmt->getType()==BLOCK)
+           iret=run_exe(stmt,lpp_vtr.size());
          else
-           iret=statements(iff);     
+           iret=statements(stmt);     
       }
 
       // See if else stmt exists (3rd sibling)       
-	  if(!br && (iff=iff->getNextSibling()) ){
-         if(iff->getType()==BLOCK)
-           iret=run_exe(iff,lpp_vtr.size());
+	  if(!br && (stmt=stmt->getNextSibling()) ){
+         if(stmt->getType()==BLOCK)
+           iret=run_exe(stmt,lpp_vtr.size());
          else
-           iret=statements(iff);     
+           iret=statements(stmt);     
              
       }
  
@@ -945,7 +943,7 @@ static std::vector<std::string> lpp_vtr;
       
     }// end action
 
-    | #(WHILE lgcl:. stmt:.){
+    | #(WHILE lgcl:. stmt1:.){
 
       bool br;
       var_sct *var_tf;  
@@ -957,10 +955,10 @@ static std::vector<std::string> lpp_vtr;
       lpp_vtr.push_back("while");
 
       while(br){ 
-        if(stmt->getType()==BLOCK)
-          iret=run_exe(stmt,lpp_vtr.size());
+        if(stmt1->getType()==BLOCK)
+          iret=run_exe(stmt1,lpp_vtr.size());
         else
-         iret=statements(stmt);     
+         iret=statements(stmt1);     
        
         if(iret==BREAK) break;
         var_tf=out(lgcl);
@@ -974,7 +972,7 @@ static std::vector<std::string> lpp_vtr;
 
     }
    
-    |#(FOR e1:. e2:. e3:. stmt1:.) {
+    |#(FOR e1:. e2:. e3:. stmt2:.) {
       bool b1,b2,b3,br;
       int iret;
       var_sct *var_f1;
@@ -1000,10 +998,10 @@ static std::vector<std::string> lpp_vtr;
 
       while(br){
 
-        if(stmt1->getType()==BLOCK)
-          iret=run_exe(stmt1,lpp_vtr.size());
+        if(stmt2->getType()==BLOCK)
+          iret=run_exe(stmt2,lpp_vtr.size());
         else
-         iret=statements(stmt1);     
+         iret=statements(stmt2);     
        
         if(iret==BREAK) break;
 
@@ -1379,6 +1377,7 @@ var=NULL_CEWI;
                int idx;
                int nbr_dmn;
                int var_id; 
+               int slb_sz;
                const char *var_nm;
                
               if(dbg_lvl_get() > 0)
@@ -1405,43 +1404,92 @@ var=NULL_CEWI;
                lmt_Ref=lmt;               
 
                Nvar=prs_arg->ptr_var_vtr->find(var_nm);
-               //set ram flag to flag in var_vtr 
-               if(Nvar) bram=Nvar->flg_mem;
 
+              // Deal with RAM variables
+              if( Nvar==NULL && bram || Nvar && Nvar->flg_mem) {
+
+                  
+                  if(Nvar && Nvar->flg_mem && Nvar->flg_stt==1){
+                    var_sct *var_ini;
+                    var_ini=ncap_var_init(vid->getText(),prs_arg,true);       
+                    Nvar->var->val.vp=var_ini->val.vp;
+                    var_ini->val.vp=(void*)NULL;
+                    var_ini=nco_var_free(var_ini);
+                    Nvar->flg_stt=2; 
+                 }
+
+                 if(Nvar && Nvar->flg_mem && Nvar->flg_stt==2){ 
+                    var_lhs=Nvar->var;    
+                 }   
+                 
+                 if(Nvar==NULL && bram){
+                    var_lhs=ncap_var_init(vid->getText(),prs_arg,true);       
+                 }
+                    
+               nbr_dmn=var_lhs->nbr_dim;
+
+               // Now populate lmt_vtr;
+               if( lmt_mk(lmt_Ref,lmt_vtr) == 0){
+                  err_prn(fnc_nm,"Invalid hyperslab limits for variable "+ vid->getText());
+               }
+
+               if( lmt_vtr.size() != nbr_dmn){
+                  err_prn(fnc_nm,"Number of hyperslab limits for variable "+ vid->getText()+" doesn't match number of dimensions");
+               }
+
+                // add dim names to dimension list 
+               for(idx=0 ; idx < nbr_dmn;idx++) 
+                   lmt_vtr[idx]->nm=strdup(var_lhs->dim[idx]->nm);   
+        
+                
+                slb_sz=1;        
+                // fill out limit structure
+                for(idx=0 ; idx < nbr_dmn ;idx++){
+                   (void)nco_lmt_evl(prs_arg->out_id,lmt_vtr[idx],0L,prs_arg->FORTRAN_IDX_CNV);
+                    // Calculate size
+                   slb_sz *= lmt_vtr[idx]->cnt;
+                }
+               // Calculate RHS variable                  
+               var_rhs=out(vid->getNextSibling());         
+               // Convert to LHS type
+               var_rhs=nco_var_cnf_typ(var_lhs->type,var_rhs);             
+               
+               // deal with scalar on RHS first         
+               if(var_rhs->sz == 1)
+                 (void)ncap_att_stretch(var_rhs,slb_sz);
+
+
+               // make sure var_lhs and var_rhs are the same size
+               // and that they are the same shape (ie they conform!!)          
+               if(var_rhs->sz != slb_sz){
+                 err_prn(fnc_nm, "Hyperslab for "+vid->getText()+" - number of elements on LHS(" +nbr2sng(slb_sz) +  ") doesn't equal number of elements on RHS(" +nbr2sng(var_rhs->sz) +  ")");                                       
+                 }
+
+                (void)nco_put_var_mem(var_rhs,var_lhs,lmt_vtr);
+                if(Nvar==NULL)
+                   (void)ncap_var_write(var_lhs,true,prs_arg); 
+             
+
+
+              } else {                 
+              // deal with Regular Vars
 
               // if var undefined in O or defined but not populated
-               if(Nvar && !bram && Nvar->flg_stt==1){              
+               if(Nvar==NULL || ( Nvar && Nvar->flg_stt==1)){              
                   // if var isn't in ouptut then copy it there
+                 //rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
                  var_lhs=ncap_var_init(vid->getText(),prs_arg,true);
 
                  // copy atts to output
                  (void)ncap_att_cpy(vid->getText(),vid->getText(),prs_arg);
                  (void)ncap_var_write(var_lhs,false,prs_arg);
                }
-
-               if(Nvar==NULL && !bram){ 
-                 var_lhs=ncap_var_init(vid->getText(),prs_arg,true);
-                 // copy atts to output
-                 (void)ncap_att_cpy(vid->getText(),vid->getText(),prs_arg);
-                 (void)ncap_var_write(var_lhs,false,prs_arg);
-               }
-
-                if(Nvar==NULL && bram){
-                  std::cout<<"Nvar==NULL && bram)\n";
-                  var_lhs=ncap_var_init(vid->getText(),prs_arg,true);
-                  (void)ncap_var_write(var_lhs,true,prs_arg);
-                }
-               
-
+ 
                // Get "new" var_id   
-               if(!bram){
-                 (void)nco_inq_varid(prs_arg->out_id,var_nm,&var_id);
-                 var_lhs=ncap_var_init(vid->getText(),prs_arg,false);
-               }
+               (void)nco_inq_varid(prs_arg->out_id,var_nm,&var_id);
 
-               if(bram)
-                 var_lhs=ncap_var_init(vid->getText(),prs_arg,true);
-                   
+               var_lhs=ncap_var_init(vid->getText(),prs_arg,false);
+
                nbr_dmn=var_lhs->nbr_dim;
 
                // Now populate lmt_vtr;
@@ -1482,21 +1530,8 @@ var=NULL_CEWI;
                  err_prn(fnc_nm, "Hyperslab for "+vid->getText()+" - number of elements on LHS(" +nbr2sng(var_lhs->sz) +  ") doesn't equal number of elements on RHS(" +nbr2sng(var_rhs->sz) +  ")");                                       
                  }
 
-          
-              // Now ready to put values 
-              
-              
-             // Put RAM var
-              if(bram){
-                var_sct *var_tst;
-                var_tst=ncap_var_init(vid->getText(),prs_arg,true);
-                (void)nco_put_var_mem(var_rhs,var_tst,lmt_vtr);
-                (void)ncap_var_write(var_tst,true,prs_arg); 
-              }
-              
-
-              // Regular var
-              if(!bram){ 
+              //put block              
+              { 
                long mult_srd=1L;
                std::vector<long> dmn_srt_vtr;
                std::vector<long> dmn_cnt_vtr;
@@ -1517,13 +1552,19 @@ var=NULL_CEWI;
                
               } // end put block !!
 
-
-
+                 
               var_lhs=nco_var_free(var_lhs);
-              var_rhs=nco_var_free(var_rhs);
 
-              //get variable again from disk!! for return value
-              var=ncap_var_init(vid->getText(),prs_arg,true);
+             } // end else
+
+
+              var_rhs=nco_var_free(var_rhs);
+              
+              // See If we have to return something
+              if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORET)
+                var=NULL_CEWI;
+              else 
+                var=ncap_var_init(vid->getText(),prs_arg,true);
 
                
                // Empty and free vector 
@@ -1531,6 +1572,7 @@ var=NULL_CEWI;
                 (void)nco_lmt_free(lmt_vtr[idx]);
 
         } // end action
+
 
         // Deal with LHS casting 
         | (#(VAR_ID DMN_LIST ))=> #(vid1:VAR_ID dmn:DMN_LIST){   
@@ -1590,8 +1632,15 @@ var=NULL_CEWI;
 
               var1->nm =strdup(vid1->getText().c_str());
 
-              //Copy return variable
-              var=nco_var_dpl(var1);
+
+
+              // See If we have to return something
+              if(dmn->getNextSibling() && dmn->getNextSibling()->getType()==NORET)
+                var=NULL_CEWI;
+              else 
+                var=nco_var_dpl(var1);               ;
+
+
               
               //call to nco_var_get() in ncap_var_init() uses this property
               var1->typ_dsk=var1->type;
@@ -1600,11 +1649,6 @@ var=NULL_CEWI;
               bcst=false;
               var_cst=nco_var_free(var_cst); 
 
-               // erase redundant misssing value
-              /*
-              if(idx_mss >=0)
-                (void)prs_arg->ptr_var_vtr->erase(idx_mss);
-              */
 
           } // end action
            
@@ -1641,8 +1685,13 @@ var=NULL_CEWI;
                  (void)ncap_att_cpy(vid2->getText(),s_var_rhs,prs_arg);
                                
 
-               //Copy return variable
-               var=nco_var_dpl(var1);
+               // See If we have to return something
+               if(vid2->getFirstChild() && vid2->getFirstChild()->getType()==NORET)
+                 var=NULL_CEWI;
+               else 
+                 var=nco_var_dpl(var1);               ;
+
+
                // Write var to disk
                (void)ncap_var_write(var1,bram,prs_arg);
 
