@@ -1,11 +1,11 @@
-# $Header: /data/zender/nco_20150216/nco/data/swamp.sh,v 1.2 2007-06-18 22:55:33 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/data/swamp.sh,v 1.3 2007-06-19 00:46:22 zender Exp $
 
 # Purpose: Demonstrate SWAMP usage
 
 # Usage:
 # Using SWAMP requires two steps
 # First, identify the SWAMP server with access to your data, e.g.:
-# export SWAMPURL='http://pbs.ess.uci.edu:8081/SOAP'
+# export SWAMPURL='http://sand.ess.uci.edu:8081/SOAP'
 # Second, call your script as an argument to SWAMP's invocation:
 # python ~/nco/src/ssdap/swamp_client.py ~/nco/data/swamp.sh
 
