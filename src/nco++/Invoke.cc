@@ -46,6 +46,7 @@ int parse_antlr(prs_sct *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
   ncoParser *parser=NULL;
   
   RefAST t,a;
+  ASTFactory ast_factory;
   
   filename=strdup(fl_spt_usr);   
   
@@ -65,7 +66,7 @@ int parse_antlr(prs_sct *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
     parser= new ncoParser(*lexer);
     parser->setFilename(filename);
     
-    ASTFactory ast_factory;
+
     parser->initializeASTFactory(ast_factory);
     parser->setASTFactory(&ast_factory);
     
@@ -111,6 +112,9 @@ int parse_antlr(prs_sct *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
 
 
     ncoTree walker(prs_arg);
+    walker.initializeASTFactory(ast_factory);
+    walker.setASTFactory(&ast_factory);
+
     if(dbg_lvl_get() > 0) dbg_prn(fnc_nm,"Walker initialized");
   
 
