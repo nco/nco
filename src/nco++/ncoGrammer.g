@@ -543,6 +543,7 @@ private:
     prs_sct *prs_arg;
     bool bcst;
     var_sct* var_cst;
+    ASTFactory myFactory;
 public:
     void setTable(prs_sct *prs_in){
         prs_arg=prs_in;
@@ -553,7 +554,7 @@ public:
         // default is NO. Casting variable set to true 
         // causes casting in function out(). var_cst must 
         // then be defined 
-        bcst=false;  
+        bcst=false; 
         ncoTree();
     }
 
@@ -904,8 +905,21 @@ static std::vector<std::string> lpp_vtr;
             
                 }
 
-    | exp:EXPR {
+    | #(exp:EXPR ass:.) {
        RefAST tr;
+       RefAST ntr;  
+
+       if(ass->getType()==ASSIGN && !prs_arg->ntl_scn ){
+         ntr=ass->getFirstChild();
+         if(ntr->getType()==TIMES) 
+           ntr=ntr->getFirstChild();
+        
+         if(ntr->getType() == VAR_ID || ntr->getType() ==ATT_ID){
+           ntr->addChild( astFactory->create(NORET,"no_ret") );
+           // std::cout << "Modified assign "<<exp->toStringTree()<<std::endl;      
+         }
+       } 
+
 
        var=out(exp->getFirstChild());
        if(var != (var_sct*)NULL)
@@ -1720,8 +1734,12 @@ var=NULL_CEWI;
             NcapVar *Nvar=new NcapVar(var1,sa);
             prs_arg->ptr_var_vtr->push_ow(Nvar);       
 
-            // Copy return variable
-            var=nco_var_dpl(var1);    
+
+               // See If we have to return something
+            if(att2->getFirstChild() && att2->getFirstChild()->getType()==NORET)
+              var=NULL_CEWI;
+            else 
+              var=nco_var_dpl(var1);               ;
                   
        } // end action
    ;
