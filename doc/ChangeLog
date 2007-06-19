@@ -1,3 +1,7 @@
+2007-06-18  Charlie Zender  <zender@uci.edu>
+
+	* Place DAP netcdf.h path ahead of system netcdf.h path in configure.in
+
 2007-06-14  Charlie Zender  <zender@uci.edu>
 
 	* Fix flukey ncks %s printing
