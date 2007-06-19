@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.81 2007-06-08 05:13:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.82 2007-06-19 21:13:59 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -33,6 +33,22 @@
    To ensure this is the case, it is only safe to print diagnostics on
    variables which are supposed to be valid on input. */
 
+/* NB: nco_netcdf.c does not #include nco.h which #defines forward-compatibility tokens
+   This barrier helps segregate NCO from wrappers
+   Re-define minimal sub-set of tokens for nco_netcdf.c as necessary
+   This small exception to the barrier */
+#ifndef NC_FORMAT_CLASSIC
+# define NC_FORMAT_CLASSIC (1)
+#endif
+#ifndef NC_FORMAT_64BIT
+# define NC_FORMAT_64BIT   (2)
+#endif
+#ifndef NC_FORMAT_NETCDF4
+# define NC_FORMAT_NETCDF4 (3)
+#endif
+#ifndef NC_FORMAT_NETCDF4_CLASSIC
+# define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
+#endif
 
 /* Utility routines not defined by netCDF library, but useful in working with it */
 void
@@ -290,16 +306,6 @@ nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
     return "NC_FORMAT_CLASSIC";
   case NC_FORMAT_64BIT:
     return "NC_FORMAT_64BIT";
-    /* NB: nco_netcdf.c does not #include nco.h which #defines forward-compatibility tokens
-       This barrier helps segregate NCO from wrappers
-       Re-define minimal sub-set of tokens in nco_netcdf.c as necessary
-       This small exception to the barrier */
-#ifndef NC_FORMAT_NETCDF4
-# define NC_FORMAT_NETCDF4 (3)
-#endif
-#ifndef NC_FORMAT_NETCDF4_CLASSIC
-# define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
-#endif
   case NC_FORMAT_NETCDF4:
     return "NC_FORMAT_NETCDF4";
   case NC_FORMAT_NETCDF4_CLASSIC:

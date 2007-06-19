@@ -1,3 +1,10 @@
+2007-06-19  Charlie Zender  <zender@uci.edu>
+
+	* Define some netCDF tokens for really old versions of libnetcdf.a
+	still in use on enterprise distributions like RHEL/CentOS.
+	These tokens need are defined both in nco.h and nco_netcdf.c to 
+	enforce code firewall to keep netCDF wrappers separate from NCO.
+
 2007-06-18  Charlie Zender  <zender@uci.edu>
 
 	* Remove configure.in rule to add -DNC_64BIT_OFFSET even when DAP version > 3.6.1

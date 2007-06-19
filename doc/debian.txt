@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.94 2007-06-19 21:04:51 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.95 2007-06-19 21:13:58 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -209,8 +209,8 @@ ${rpm_root}/nco-3.9.0.tar.gz \
 ${rpm_root}/*/nco-3.9.0-?.*.rpm \
 ${rpm_root}/*/nco-debuginfo-3.9.0-?.*.rpm \
 ${rpm_root}/*/nco-devel-3.9.0-?.*.rpm
-cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-3_9_0-1 -d nco-3.9.0 nco # Export based on tag
-# cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -D "1 second ago" -d nco-3.9.0 nco # Export most recent
+# cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-3_9_0-1 -d nco-3.9.0 nco # Export based on tag
+cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -D "1 second ago" -dnco-3.9.0 nco # Export most recent and build as 3.9.0-1
 tar cvzf ./nco-3.9.0.tar.gz --exclude='nco-3.9.0/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-3.9.0 
 /bin/cp ${DATA}/nco-3.9.0.tar.gz ${rpm_root}
 ln -s ${HOME}/nco/bld/nco.spec ${rpm_root}/nco.spec
