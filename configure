@@ -22885,6 +22885,8 @@ if test "${enable_dap}" != 'no'; then
     if which ncdap-config > /dev/null; then
 # Place DAP netcdf.h path ahead of system netcdf.h path
 	CPPFLAGS="`ncdap-config --cflags` ${CPPFLAGS}"
+# Grab the libraries DAP requires
+	LIBS="`ncdap-config --libs` ${LIBS}"
 	nc_dap_vrs=`ncdap-config --version`
 	nc_dap_vrs_mjr=`echo ${nc_dap_vrs} | sed 's@^libnc-dap \([0-9]\)*\.\([0-9]*\)\.\([0-9]*\)$@\1@'`
 	nc_dap_vrs_mnr=`echo ${nc_dap_vrs} | sed 's@^libnc-dap \([0-9]\)*\.\([0-9]*\)\.\([0-9]*\)$@\2@'`
@@ -22893,7 +22895,6 @@ if test "${enable_dap}" != 'no'; then
 # OPeNDAP versions <= 3.6.1 do not support netCDF 3.6
 	    CPPFLAGS="${CPPFLAGS} -DNC_64BIT_OFFSET"
 	fi
-	LIBS="`ncdap-config --libs` ${LIBS}"
     fi
 
     ac_ext=cpp
