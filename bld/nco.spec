@@ -66,7 +66,6 @@ export CPPFLAGS=-I%{_includedir}/netcdf-3
 export LDFLAGS="-L%{_libdir}/netcdf-3 %( uname -m | egrep -q '_64$' && [ -d /usr/lib64 ] && echo '-L/usr/lib64' )"
 export CFLAGS="$RPM_OPT_FLAGS -fPIC"
 export CXXFLAGS="$RPM_OPT_FLAGS -fpermissive -fPIC"
-exit 0
 %configure --includedir=%{_includedir}/nco
 make %{?_smp_mflags}
 unset CPPFLAGS LDFLAGS CFLAGS CXXFLAGS
