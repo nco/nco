@@ -63,11 +63,10 @@ autoconf
 # Explicitly set system netCDF directories to override development netCDF
 # installations in, e.g., /usr/local
 export CPPFLAGS=-I%{_includedir}/netcdf-3
-# Required for 64-bit builds on hybrid 32/64-bit systems, e.g., RHEL, CentOS
-# export LDFLAGS="-L%{_libdir}/netcdf-3 -L/usr/lib64"
-export LDFLAGS=-L%{_libdir}/netcdf-3
+export LDFLAGS="-L%{_libdir}/netcdf-3 %( uname -m | egrep -q '_64$' && [ -d /usr/lib64 ] && echo '-L/usr/lib64' )"
 export CFLAGS="$RPM_OPT_FLAGS -fPIC"
 export CXXFLAGS="$RPM_OPT_FLAGS -fpermissive -fPIC"
+exit 0
 %configure --includedir=%{_includedir}/nco
 make %{?_smp_mflags}
 unset CPPFLAGS LDFLAGS CFLAGS CXXFLAGS
@@ -113,8 +112,8 @@ fi
 # %{_libdir}/libnco++.so
 
 %changelog
-* Fri May 25 2007 Charlie Zender <zender@uci.edu> - 3.9.0-1
-- new upstream 3.9.0 (includes netCDF4 atomic types)
+* Tue Jun 19 2007 Daniel L. Wang <wangd@uci.edu> - 3.9.0-1
+- fix LDFLAGS to detect lib64 usage (workaround buggy libtool)
 
 * Fri Apr 20 2007 Charlie Zender <zender@uci.edu> - 3.2.0-1
 - new upstream 3.2.0 (includes rmssdn arithmetic bugfix)
