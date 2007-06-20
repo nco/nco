@@ -63,6 +63,7 @@ autoconf
 # Explicitly set system netCDF directories to override development netCDF
 # installations in, e.g., /usr/local
 export CPPFLAGS=-I%{_includedir}/netcdf-3
+# Always put netcdf-3 on path and, for x86_64, add -L/usr/lib64, when present, to correctly resolve 32/64-bit libraries
 export LDFLAGS="-L%{_libdir}/netcdf-3 %( uname -m | egrep -q '_64$' && [ -d /usr/lib64 ] && echo '-L/usr/lib64' )"
 export CFLAGS="$RPM_OPT_FLAGS -fPIC"
 export CXXFLAGS="$RPM_OPT_FLAGS -fpermissive -fPIC"

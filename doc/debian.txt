@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.95 2007-06-19 21:13:58 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.96 2007-06-20 06:23:26 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -231,3 +231,6 @@ ${rpm_root}/nco-3.9.0-?.src.rpm \
 nco.sf.net:/home/groups/n/nc/nco/htdocs/src
 sudo yum remove nco
 sudo yum install ${rpm_root}/*/nco-3.9.0-?.*.rpm
+scp ${DATA}/nco-3.9.0-1.x86_64.rpm dust.ess.uci.edu:/var/www/html/nco/src
+scp ${DATA}/nco-3.9.0-1.x86_64.rpm nco.sf.net:/home/groups/n/nc/nco/htdocs/src
+/home/daniel/RPM/RPMS/x86_64/nco-3.9.0-1.x86_64.rpm 

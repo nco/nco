@@ -1,5 +1,9 @@
 2007-06-19  Charlie Zender  <zender@uci.edu>
 
+	* nco.spec patch by Daniel to always put netcdf-3 on path and, for
+	x86_64, add -L/usr/lib64, when present, to correctly resolve
+	32/64-bit libraries  
+
 	* Define some netCDF tokens for really old versions of libnetcdf.a
 	still in use on enterprise distributions like RHEL/CentOS.
 	These tokens need are defined both in nco.h and nco_netcdf.c to 
