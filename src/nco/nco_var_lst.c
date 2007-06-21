@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.68 2007-05-25 06:02:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.69 2007-06-21 00:25:07 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -612,7 +612,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   int idx_xcl;
   int var_op_typ[NC_MAX_VARS];
 
-  nco_bool var_typ_fnk; /* [flg] Variable type is too funky for arithmetic */
+  nco_bool var_typ_fnk=False; /* [flg] Variable type is too funky for arithmetic */ /* CEWI */
 
   nc_type var_type=NC_NAT; /* NC_NAT present in netcdf.h version netCDF 3.5+ */
 

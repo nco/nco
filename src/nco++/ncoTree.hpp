@@ -3,7 +3,7 @@
 
 #include <antlr/config.hpp>
 #include "ncoParserTokenTypes.hpp"
-/* $ANTLR 2.7.6 (20070220): "ncoGrammer.g" -> "ncoTree.hpp"$ */
+/* $ANTLR 2.7.6 (20060511): "ncoGrammer.g" -> "ncoTree.hpp"$ */
 #include <antlr/TreeParser.hpp>
 
 #line 1 "ncoGrammer.g"
@@ -31,13 +31,14 @@
 #line 32 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 545 "ncoGrammer.g"
+#line 540 "ncoGrammer.g"
 
 
 private:
     prs_sct *prs_arg;
     bool bcst;
     var_sct* var_cst;
+    ASTFactory myFactory;
 public:
     void setTable(prs_sct *prs_in){
         prs_arg=prs_in;
@@ -48,7 +49,7 @@ public:
         // default is NO. Casting variable set to true 
         // causes casting in function out(). var_cst must 
         // then be defined 
-        bcst=false;  
+        bcst=false; 
         ncoTree();
     }
 
@@ -406,10 +407,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 112;
+	static const int NUM_TOKENS = 113;
 #else
 	enum {
-		NUM_TOKENS = 112
+		NUM_TOKENS = 113
 	};
 #endif
 	
