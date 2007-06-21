@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.425 2007-06-06 01:04:24 wangd Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.426 2007-06-21 05:07:07 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -770,10 +770,10 @@ Otherwise, you are on your own.</li>
 <a name="NCAR"></a> <!-- http://nco.sf.net#NCAR -->
 <a name="ncar"></a> <!-- http://nco.sf.net#ncar -->
 <li><i>Does NCAR support NCO?</i>
-The NCAR SCD Technical Consulting Group (TCG) supports NCO like other
+The NCAR CISL Technical Consulting Group (TCG) supports NCO like other
 community software packages such as <tt>lapack</tt>. 
 No other NCAR division has coordinated NCO support.
-The NCAR SCD-suported executables are in <tt>/usr/local/bin</tt>.
+The NCAR CISL-suported executables are in <tt>/usr/local/bin</tt>.
 If you notice problems with the NCO installation on SCD machines,
 or if you would benefit from a more recent release or patch, then
 inform the relevant system administrators, e.g.,
