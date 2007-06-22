@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# $Id: swamp_client.py,v 1.3 2007-06-19 01:27:15 wangd Exp $
+# $Id: swamp_client.py,v 1.4 2007-06-22 02:41:15 wangd Exp $
 # swamp_client.py
 # This is part of SWAMP, Copyright 2007 - Daniel L. Wang 
 
@@ -231,20 +231,24 @@ ncwa -a time -dtime,0,2 camsom1pdf/camsom1pdf_10_clm.nc timeavg.nc
         script = open(scriptfile).read()
         tok = server.newScriptedFlow(script)
         print "submitted", scriptfile
-        
+
+        ret = None
         while True:
             ret = server.pollState(tok)
             if ret is not None:
-                print "finish, code ", ret
+                print "finish, code ", ret[0]
                 break
             time.sleep(1)
             continue
-        
+        if ret[0] != 0:
+            print "Execution error: ", ret[1]
+            return
         outUrls = server.pollOutputs(tok)
         for u in outUrls:
             # simple fetch, since we are single-threaded.
             print "Fetching %s and writing to %s" % (u[1], u[0])
             urllib.urlretrieve(u[1], os.path.expanduser(u[0]))
+        server.discardFlow(tok) # cleanup afterwards, discard published files.
         pass
 
     def run(self):

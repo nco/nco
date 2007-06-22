@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapinterface.py,v 1.5 2007-06-19 01:27:15 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapinterface.py,v 1.6 2007-06-22 02:41:15 wangd Exp $
 # Copyright (c) 2007 Daniel L. Wang
 from swamp_common import *
 from swamp_config import Config 
@@ -94,7 +94,15 @@ class StandardJobManager:
             import traceback, sys
             tb_list = traceback.format_exception(*sys.exc_info())
             return "".join(tb_list)
+        pass
         
+    def discardFlow(self, token):
+        task = self.jobs[token]
+        task.outMap.cleanPhysicals()
+        self.jobs.pop(token)
+        log.debug("discarding for token %d" %(token))
+        pass
+
     def _updateToken(self, token, etoken):
         self.jobs[token] = etoken
         
@@ -119,7 +127,12 @@ class StandardJobManager:
         # for now, if the interface is there,
         #things are complete/okay.
         if isinstance(self.jobs[token], SwampTask):
-            return 0
+            task = self.jobs[token]
+            r = task.result()
+            if r == True:
+                return [0,""]
+            elif r != None:
+                return [1, r]
         else:
             return None
 
@@ -222,6 +235,8 @@ class TwistedSoapSwampInterface(tSoap.SOAPPublisher):
         return self.jobManager.reset()
     def soap_newScriptedFlow(self, script):
         return self.jobManager.newScriptedFlow(script)
+    def soap_discardFlow(self, token):
+        return self.jobManager.discardFlow(token)
     def soap_pollState(self, token):
         return self.jobManager.pollState(token)
     def soap_pollOutputs(self, token):

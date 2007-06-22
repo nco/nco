@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.27 2007-06-19 01:27:15 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.28 2007-06-22 02:41:15 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -488,6 +488,8 @@ class Command:
         # don't forget to remove the '' entries
         # that got pulled in from the arglist
         return filter(lambda x: x != '', cmdLine)
+        #self.cmdLine = filter(lambda x: x != '', cmdLine)
+        #return self.cmdLine
 
     pass # end of Command class
         
@@ -799,6 +801,8 @@ class Scheduler:
         self.cmdList = []
         self.fileLocations = {}
         self._graduateHook = graduateHook
+        self.result = None # result is True on success, or a string/other-non-boolean on failure.
+        
         pass
 
     def makeTaskId(self):
@@ -873,6 +877,7 @@ class Scheduler:
             if ret != 0:
                 log.debug( "ret was "+str(ret))
                 log.error("error running command %s" % (c))
+                self.result = "ret was %s, error running %s" %(str(ret), c)
                 break
     def executeParallelAll(self, executors=None):
         if executors is None:
@@ -880,6 +885,7 @@ class Scheduler:
         self.pd = ParallelDispatcher(self.config, executors)
         self.fileLocations = self.pd.dispatchAll(self.cmdList,
                                                  self._graduateHook)
+        self.result = self.pd.result
         pass
     pass # end of class Scheduler
 
@@ -909,6 +915,7 @@ class ParallelDispatcher:
         self.running = {} # (e,etoken) -> cmd
         self.execPollRR = None
         self.execDispatchRR = None
+        self.result = None
         pass
 
     def fileLoc(self, file):
@@ -1027,12 +1034,21 @@ class ParallelDispatcher:
 
     def _graduate(self, token, code, hook):
         cmd = self.running.pop(token)
-
         if code != 0:
+            origline = ' '.join([cmd.cmd] + map(lambda t: ' '.join(t), cmd.argList) + cmd.leftover)
             s = "Bad return code %s from cmdline %s %d outs=%s" % (
-                code, cmd.cmd, cmd.referenceLineNum, str(cmd.outputs))
+                code, origline, cmd.referenceLineNum, str(cmd.outputs))
             log.error(s)
-            raise StandardError(s)
+            # For nicer handling, we should find the original command line
+            # and pass it back as the failing line (+ line number)
+            # It would be nice to trap the stderr for that command, but that
+            # can be done later, since it's a different set of pipes
+            # to connect.
+
+            self.result = "Error at line %d : %s" %(cmd.referenceLineNum,
+                                                    origline)
+            return
+            #raise StandardError(s)
         else:
             # figure out which one finished, and graduate it.
             self.finished[cmd] = code
@@ -1104,13 +1120,18 @@ class ParallelDispatcher:
                     break
                 log.debug("waiting")
                 r = self._waitAnyExecutor(hook)
-                log.debug("wakeup!")
+                log.debug("wakeup! %s" %(str(r)))
+                if r[1] != 0:
+                    # let self.result bubble up.
+                    return
                 #self._graduate(token, code)
             else:
                 # not busy + jobs to run, so 'make it so'
                 cmd = heappop(self.ready)
                 self.dispatch(cmd)
             continue # redundant, but safe
+        # If we got here, we're finished.
+        self.result = True
         pass # end def dispatchAll
 
     def earlyStart(self, cmdlist):
@@ -1176,6 +1197,11 @@ class SwampTask:
     def run(self):
         self.scheduler.executeParallelAll(self.remoteExec)
         pass
+    def result(self):
+        return self.scheduler.result
+
+    def selfDestruct(self):
+        log.debug("Task %d is self-destructing" %(str(self.scheduler.taskId)))
         
         
 class SwampInterface:
@@ -1375,6 +1401,10 @@ class LocalExecutor:
             code = self._poll(token)
             if code == 0:
                 fins.append((token,code))
+            elif isinstance(code, int):
+                log.debug("token %s gave: %s, what should I do?" %
+                          (str(token),str(code)))
+                fins.append((token,code)) # special handling for fail codes?
         if fins:
             return fins
         return None
@@ -1487,6 +1517,7 @@ class LocalExecutor:
         outputs = self.cmds[token].actualOutputs
         for x in outputs:
             self.actual[x[0]] = x[1]
+
 
     def resistErrno513(self, option, binPath, arglist):
         pid = None
