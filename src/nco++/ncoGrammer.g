@@ -101,8 +101,8 @@ for_stmt:
         /*  { if(#e1==NULL)  #e1 = #([ NULL_NODE, "null_stmt"]); 
            if(#e2==NULL)  #e2 = #([ NULL_NODE, "null_stmt"]); 
            if(#e3==NULL)  #e3 = #([ NULL_NODE, "null_stmt"]); 
-           ##=#(FOR,e1,e2,e3,st);
-         } */ 
+           #for_stmt=#(FOR,e1,e2,e3,st);
+         } */  
      ;
 
 ram_delete: RAM_DELETE^ LPAREN! (VAR_ID|ATT_ID) RPAREN! SEMI! 
@@ -1613,34 +1613,49 @@ var=NULL_CEWI;
                 str_vtr.push_back(aRef->getText());
                 aRef=aRef->getNextSibling();      
               }
+
               // Cast is applied in VAR_ID action in function out()
               var_cst=ncap_cst_mk(str_vtr,prs_arg);     
               var1=out(vid1->getNextSibling());
+
+              (void)nco_free(var_cst->val.vp);
+              var_cst->val.vp=(void*)NULL;
+
+              if(var_cst->sz >1 && var1->sz==1){
+                var_sct *var_nw;
+                void *vp_swp;
+
+                var_nw=nco_var_dpl(var_cst);
+                var_nw=nco_var_cnf_typ(var1->type,var_nw);
+                (void)ncap_att_stretch(var1,var_nw->sz);
+                 
+                vp_swp=var_nw->val.vp;
+                var_nw->val.vp=var1->val.vp;
+                var1->val.vp=vp_swp;
+
+                var1=nco_var_free(var1);
+                var1=var_nw;
+               
               
-              // deal with rhs attribute or rhs hyperslab              
-              if( ncap_var_is_att(var1)|| var1->has_dpl_dmn==-1) {
-                if(var1->sz ==1 )
-                  var1=ncap_cst_do(var1,var_cst,prs_arg->ntl_scn);
-                else if( var1->sz==var_cst->sz ) {
-                  ptr_unn val_swp;  // Used to swap values around       
-              
-                  var_cst=nco_var_cnf_typ(var1->type,var_cst);
-                  (void)ncap_att_stretch(var1,var_cst->sz);
- 
-                  val_swp=var_cst->val; 
-                  var_cst->val=var1->val;
-                  var1->val=val_swp;
-                  
-                  var1=nco_var_free(var1);
-                  var1=nco_var_dpl(var_cst);                  
-                  
-                  }                                       
-                else
-                  err_prn(fnc_nm, "LHS cast for "+vid1->getText()+" - cannot make RHS attribute "+ std::string(var1->nm) + " conform."); 
-              
-              // deal with rhs bare number && rhs hyperslab with single element
-              } else if(var1->sz ==1 )
-                  var1=ncap_cst_do(var1,var_cst,prs_arg->ntl_scn);
+              }else if(var_cst->sz==var1->sz &&  ( ncap_var_is_att(var1) ||var1->has_dpl_dmn==-1 )){
+                var_sct *var_nw;
+                void *vp_swp;
+
+                var_nw=nco_var_dpl(var_cst);
+                var_nw=nco_var_cnf_typ(var1->type,var_nw);
+                 
+                vp_swp=var_nw->val.vp;
+                var_nw->val.vp=var1->val.vp;
+                var1->val.vp=vp_swp;
+
+                var1=nco_var_free(var1);
+                var1=var_nw;
+
+             }
+               
+               //blow out if vars not the same size      
+             if(var1->sz != var_cst->sz) 
+                  err_prn(fnc_nm, "LHS cast for "+vid1->getText()+" - cannot make RHS "+ std::string(var1->nm) + " conform.");               
      
               var1->nm=(char*)nco_free(var1->nm);
 
