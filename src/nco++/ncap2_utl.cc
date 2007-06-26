@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.73 2007-06-14 15:37:11 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.74 2007-06-26 14:44:01 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -275,7 +275,8 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
   // Deal with a RAM variable
   if(bdef && Nvar->flg_mem){
     var_sct *var_ref;
-    
+    void *vp_swp;
+        
     // De-reference
     var_ref=Nvar->var;
 
@@ -296,15 +297,16 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
     var=nco_var_cnf_typ(var_ref->type,var);    
     
     //Swap values about  
+    vp_swp=var_ref->val.vp;
     var_ref->val.vp=var->val.vp;
-    var->val.vp=(void*)NULL;
+    var->val.vp=vp_swp;
     
     Nvar->flg_stt=2;
     
         
     (void)nco_var_free(var);
     
-    return true;
+    return True;
   }
   
   // var is already defined but not populated 
@@ -393,9 +395,11 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
   
   // save variable to output vector if new
   if(!bdef) {
-     var_sct *var1;
+    var_sct *var1;
+
+    var->val.vp=(void*)nco_free(var->val.vp);
     var1=nco_var_dpl(var);
-    var1->val.vp=(void*)nco_free(var1->val.vp);
+
     var1->id=var_out_id;
     var1->nc_id=prs_arg->out_id;
     //temporary fix .. make typ_dsk same as type
