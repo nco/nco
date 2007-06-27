@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.427 2007-06-27 06:03:00 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.428 2007-06-27 06:21:47 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,7 +103,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.9.0
 @set copyright-years 1995--2007
 @set update-year 2007
-@set update-date 1 June 2007
+@set update-date 26 June 2007
 @set update-month June 2007
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -3952,13 +3952,15 @@ Short options: None@*
 @end cartouche
 
 The phrase @dfn{packed data} refers to data which are stored in the
-standard netCDF packing format.
+standard netCDF3 packing format which employs a lossy algorithm.
+For a description of deflation, a lossless compression technique
+available with netCDF4 only, @xref{ncks netCDF Kitchen Sink}.
 
 @unnumberedsubsec Packing Algorithm
 @dfn{Packing}
-The packing algorithm is lossy, and produces data with the same dynamic
-range as the original but which requires no more than half the space
-to store.
+The standard netCDF packing algorithm is lossy, and produces data with
+the same dynamic range as the original but which requires no more than
+half the space to store.
 The packed variable is stored (usually) as type @code{NC_SHORT}
 with the two attributes required to unpack the variable,
 @code{scale_factor} and @code{add_offset}, stored at the original
@@ -7511,6 +7513,7 @@ For a complete description of the @var{stride} argument, @xref{Stride}.
 @cindex @code{--deflate}
 @cindex @code{--dfl_lvl}
 @cindex Lempel-Ziv deflation
+@cindex compression
 @cindex deflation
 @item --deflate @var{dfl_lvl}
 Apply Lempel-Ziv deflation to netCDF4 output file.
@@ -7518,6 +7521,8 @@ Deflation uses lossless techniques to compress data.
 Specify the deflation level @var{dfl_lvl} on a scale from 
 no deflation (@var{dfl_lvl = 0}) to maximum deflation (@var{dfl_lvl = 9}).
 Higher deflation levels require more time for compression.
+For a description of packing, a lossy compression technique,
+@xref{Packed data}. 
 
 @html
 <a name="prn"></a> <!-- http://nco.sf.net/nco.html#prn -->
