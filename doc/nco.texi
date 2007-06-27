@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.428 2007-06-27 06:21:47 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.429 2007-06-27 06:38:30 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -959,13 +959,17 @@ You must build @acronym{NCO} with netCDF4 to obtain this support.
 @cindex @code{NC_INT64}
 @cindex @code{NC_UINT64}
 The main netCDF4 features that NCO currently supports are the new 
-atomic data types (@code{NC_UBYTE}, @code{NC_SHORT}, 
-@code{NC_UINT}, @code{NC_INT64}, and @code{NC_UINT64}).
+atomic data types and Lempel-Ziv compression.
+The new atomic data types are @code{NC_UBYTE}, @code{NC_SHORT}, 
+@code{NC_UINT}, @code{NC_INT64}, and @code{NC_UINT64}.
 Eight-byte integer support is especially useful improvement from
 netCDF3. 
 All @acronym{NCO} operators support these types, e.g., @command{ncks}
 copies and prints them, @command{ncra} averages them, and
 @command{ncap2} processes algebraic scripts with them.
+
+Lempel-Ziv deflation is a lossless compression technique.
+See @ref{ncks netCDF Kitchen Sink} for more details.
 
 @cindex @acronym{HDF5}
 @cindex @code{-4}
@@ -7508,7 +7512,9 @@ For a complete description of the @var{stride} argument, @xref{Stride}.
 @html
 <a name="dfl_lvl"></a> <!-- http://nco.sf.net/nco.html#dfl_lvl -->
 <a name="dfl"></a> <!-- http://nco.sf.net/nco.html#dfl -->
+<a name="lz77"></a> <!-- http://nco.sf.net/nco.html#lz77 -->
 <a name="deflate"></a> <!-- http://nco.sf.net/nco.html#deflate -->
+<a name="deflation"></a> <!-- http://nco.sf.net/nco.html#deflation -->
 @end html
 @cindex @code{--deflate}
 @cindex @code{--dfl_lvl}

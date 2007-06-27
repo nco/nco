@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.242 2007-06-27 06:02:58 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.243 2007-06-27 06:38:30 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.0 are ready. 
 
@@ -12,7 +12,7 @@ for packed values, and better IRIX support.
 
 0. --dfl_lvl=[0..9] deflates (i.e., compresses with GZIP Lempel-Ziv)
    all variables written to a netCDF4 file 
-   http://nco.sf.net/nco.html#dfl_lvl (fxm)
+   http://nco.sf.net/nco.html#dfl_lvl
 
 A. netCDF4 support now includes per-variable compression (fxm)
    http://nco.sf.net/nco.html#nco4
