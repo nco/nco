@@ -1,6 +1,6 @@
 2007-06-26  Charlie Zender  <zender@uci.edu>
 
-	* Add deflation description to nco.texi
+	* Describe deflation in nco.texi
 
 	* Request variable deflation iff dmn_nbr > 0
 	This works around netCDF4/HDF5 limitation where deflating a scalar crashes
