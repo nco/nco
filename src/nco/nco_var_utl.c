@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.125 2007-06-02 06:15:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.126 2007-06-27 06:03:04 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -77,7 +77,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   (void)nco_def_var(out_id,var_nm,var_type,nbr_dim,dmn_out_id,&var_out_id);
   
   /* Set HDF Lempel-Ziv compression level, if requested */
-  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
+  if(dfl_lvl > 0 && nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
   /* Free the space holding dimension IDs */
   dmn_in_id=(int *)nco_free(dmn_in_id);
   dmn_out_id=(int *)nco_free(dmn_out_id);
@@ -164,7 +164,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   (void)nco_def_var(out_id,var_nm,var_type,nbr_dim,dmn_out_id,&var_out_id);
   
   /* Set HDF Lempel-Ziv compression level, if requested */
-  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
+  if(dfl_lvl > 0 && nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
 
   /* Free space holding dimension IDs */
   dmn_in_id=(int *)nco_free(dmn_in_id);
@@ -935,7 +935,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       (void)nco_def_var(out_id,var[idx]->nm,typ_out,dmn_nbr,dmn_id_vec,&var[idx]->id);
       
       /* Set HDF Lempel-Ziv compression level, if requested */
-      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var[idx]->id,(int)True,(int)True,dfl_lvl);
+      if(dfl_lvl > 0 && dmn_nbr > 0) (void)nco_def_var_deflate(out_id,var[idx]->id,(int)True,(int)True,dfl_lvl);
 
       if(dbg_lvl_get() > 3 && prg_id != ncwa){
 	/* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm

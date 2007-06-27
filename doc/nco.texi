@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.426 2007-06-12 02:49:47 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.427 2007-06-27 06:03:00 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7335,7 +7335,7 @@ ncatted -O -a units,prs_sfc,o,c,millibar out.nc
 SYNTAX
 @example
 ncks [-4] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
+[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [--deflate @var{dfl_lvl}]
 [-F] [-H] [-h] [--hdr_pad @var{nbr}] [-l @var{path}] [-M] [-m] 
 [-O] [-o @var{output-file}] 
 [-P] [-p @var{path}] [-Q] [-q] [-R] [-r] [-s @var{format}] [-u] 
@@ -7502,6 +7502,22 @@ Writing packed variables in binary format is not supported.
 @item -d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
 Add @dfn{stride} argument to hyperslabber. 
 For a complete description of the @var{stride} argument, @xref{Stride}.
+
+@html
+<a name="dfl_lvl"></a> <!-- http://nco.sf.net/nco.html#dfl_lvl -->
+<a name="dfl"></a> <!-- http://nco.sf.net/nco.html#dfl -->
+<a name="deflate"></a> <!-- http://nco.sf.net/nco.html#deflate -->
+@end html
+@cindex @code{--deflate}
+@cindex @code{--dfl_lvl}
+@cindex Lempel-Ziv deflation
+@cindex deflation
+@item --deflate @var{dfl_lvl}
+Apply Lempel-Ziv deflation to netCDF4 output file.
+Deflation uses lossless techniques to compress data.
+Specify the deflation level @var{dfl_lvl} on a scale from 
+no deflation (@var{dfl_lvl = 0}) to maximum deflation (@var{dfl_lvl = 9}).
+Higher deflation levels require more time for compression.
 
 @html
 <a name="prn"></a> <!-- http://nco.sf.net/nco.html#prn -->

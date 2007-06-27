@@ -1,4 +1,4 @@
-/* $ANTLR 2.7.6 (20060511): "ncoGrammer.g" -> "ncoLexer.cpp"$ */
+/* $ANTLR 2.7.6 (20070220): "ncoGrammer.g" -> "ncoLexer.cpp"$ */
 #include "ncoLexer.hpp"
 #include <antlr/CharBuffer.hpp>
 #include <antlr/TokenStreamException.hpp>
@@ -34,24 +34,24 @@ void ncoLexer::initLiterals()
 	literals["<<"] = 93;
 	literals["for"] = 33;
 	literals["min"] = 46;
-	literals["ram_delete"] = 34;
-	literals["set_miss"] = 38;
+	literals["change_miss"] = 39;
+	literals["avgsqr"] = 44;
 	literals["rms"] = 47;
-	literals["break"] = 27;
-	literals["ndims"] = 55;
-	literals["while"] = 26;
+	literals["total"] = 51;
 	literals["sqravg"] = 95;
 	literals["continue"] = 28;
 	literals["avg"] = 43;
 	literals["type"] = 54;
 	literals["rmssdn"] = 48;
+	literals["while"] = 26;
 	literals[">>"] = 94;
-	literals["total"] = 51;
+	literals["ndims"] = 55;
 	literals["ram_write"] = 37;
 	literals["max"] = 45;
-	literals["avgsqr"] = 44;
-	literals["change_miss"] = 39;
+	literals["break"] = 27;
 	literals["if"] = 29;
+	literals["set_miss"] = 38;
+	literals["ram_delete"] = 34;
 	literals["else"] = 30;
 	literals["defdim"] = 21;
 }

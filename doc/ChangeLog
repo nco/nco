@@ -1,3 +1,8 @@
+2007-06-26  Charlie Zender  <zender@uci.edu>
+
+	* Request variable deflation iff dmn_nbr > 0
+	This works around netCDF4/HDF5 limitation where deflating a scalar crashes
+
 2007-06-19  Charlie Zender  <zender@uci.edu>
 
 	* nco.spec patch by Daniel to always put netcdf-3 on path and, for

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.930 2007-06-14 22:16:25 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.931 2007-06-27 06:02:59 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -597,7 +597,7 @@ nco871. Add compression regression test
 	ncks -O -4 --dfl_lvl=9 ~/nco/data/in.nc ~/foo.nc
 	ls -l ~/foo.nc
 	ncks -O -4 --dfl_lvl=9 -v one ~/nco/data/in.nc ~/foo.nc
-nco872. Add HDF compression description to ncbo.texi
+nco872. Add HDF compression description to nco.texi
 nco873. ncks remik bug: ncks BUG: coords are zero after 2 var ext 
 	intel compiler only, possibly only ia64
 	"superficially injecting "nc_sync(out_id);"
@@ -606,12 +606,8 @@ nco873. ncks remik bug: ncks BUG: coords are zero after 2 var ext
 nco874. Implement CDL abbreviations for netCDF4 atomic types (when known)
 nco875. Squelch compiler warnings like: 
 	../src/nco/nco_pck.c:819:39: warning: integer constant is so large that it is unsigned
-	which are triggered by OK statements like
+	that are triggered by OK statements like
 	case NC_UINT64: mss_val_dfl_dbl=NC_FILL_UINT64; break;
-nco876. ncks with %s prints extra data unless -C specified
-	needs extra carriage return between successive variables
-	ncks    -v DSTQ -s "%g, " /data/zender/dstmch90/dstmch90_clm_0112_Tmm_xy.nc # broke
-	ncks -C -v DSTQ -s "%g, " /data/zender/dstmch90/dstmch90_clm_0112_Tmm_xy.nc # fine
 nco877. 
 ************************************************************************
 End ncoXXX TODOs
