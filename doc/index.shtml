@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.427 2007-06-27 00:30:11 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.428 2007-06-27 17:09:17 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -362,7 +362,7 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 <ul>
 
 <li> <!-- WZJ073 --> <a name="WZJ073"></a> <!--http://www.ess.uci.edu/~zender#WZJ073 -->
-Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2007), Server-side parallel data reduction and analysis, in <i>Advances in Grid and Pervasive Computing, Second International Conference, GPC 2007</i>, Paris, France, May 2&ndash;4, 2007, Proceedings. IEEE Lecture Notes in Computer Science, vol. 4459, edited by C.&nbsp;Cerin and K.-C. Li, pp. 744&ndash;750, Springer-Verlag, Berlin/Heidelberg.
+Wang, D.&nbsp;L., C.&nbsp;S. Zender, and S.&nbsp;F. Jenks (2007), Server-side parallel data reduction and analysis, in <i>Advances in Grid and Pervasive Computing, Second International Conference, GPC 2007</i>, Paris, France, May 2&ndash;4, 2007, Proceedings. IEEE Lecture Notes in Computer Science, vol. 4459, edited by C.&nbsp;C&eacute;rin and K.-C. Li, pp. 744&ndash;750, Springer-Verlag, Berlin/Heidelberg.
 <a href="http://dust.ess.uci.edu/ppr/ppr_WZJ073.bib">BibTeX</a>
 <a href="http://dust.ess.uci.edu/ppr/ppr_WZJ073.pdf">PDF (DLW)</a>
 </li>
