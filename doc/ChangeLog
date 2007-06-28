@@ -1,3 +1,8 @@
+2007-06-28  Charlie Zender  <zender@uci.edu>
+
+	* Allow ncbo to subtract files with more processed variables in file_2
+	This is done by excluding file_2 variables that are not in file_1
+
 2007-06-27  Charlie Zender  <zender@uci.edu>
 
 	* Polish deflate functionality and documentation

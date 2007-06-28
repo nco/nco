@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.69 2007-06-21 00:25:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.70 2007-06-28 19:46:05 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -805,11 +805,23 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
  int * const var_nbr_2) /* I/O [nbr] Number of variables in list 2 */
 {
   /* Purpose: Merge two variable lists into same order
-     NB: Routine design is open-ended with maximum flexibility
+
+     Routine design is open-ended with maximum flexibility
      Initial functionality will simply sort list two into list one order and
      destroy original (un-merged) list two on output
      Refinements could include changing number of variables in each list
-     This would allow symmetric list merges */
+     This would allow asymmetric list merges
+
+     Routine is only used by ncbo to synchronize processed variable list
+     Until 20070628, routine did not change var_nbr_2
+     As of 20070628 (NCO 3.9.1) routine shrinks var_nbr_2 to var_nbr_1
+     In effect this sets nbr_var_prc_2:=nbr_var_prc_1 in ncbo
+     This allows file_2 to contain variables not in file_1
+     Routine now warns about processed variable list "truncation" 
+     But "asymmetric" list processing should work
+
+     NB: Routine could be generalized to allow more variables in list one 
+     than list two. */
 
   const char fnc_nm[]="nco_var_lst_mrg()"; /* [sng] Function name */
 
@@ -841,6 +853,16 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
     /* ...otherwise assign variable to correct slot in output list */
     var_out[idx_1]=var_2[idx_2];
   } /* end loop over idx_1 */
+
+  /* Asymmetric lists */
+  if(*var_nbr_2 > *var_nbr_1){
+    (void)fprintf(stderr,"%s: WARNING %s detects that file two has more variables than file one. The following variables, present only in file two, will not be present in the output file: %s",prg_nm_get(),fnc_nm,var_2[*var_nbr_1]->nm);
+    for(idx_2=*var_nbr_1+1;idx_2<*var_nbr_2;idx_2++){
+      (void)fprintf(stderr,", %s",var_2[idx_2]->nm);
+    } /* end loop over idx_2 */
+    (void)fprintf(stderr,"\n");
+    *var_nbr_2=*var_nbr_1;
+  } /* end if asymmetric */
 
   /* Free un-merged list before overwriting with merged list */
   var_2=(var_sct **)nco_free(var_2);
