@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.245 2007-06-28 06:36:01 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.246 2007-06-28 16:43:26 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.0 are ready. 
 
@@ -6,20 +6,19 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 Release 3.9.0 supports Lempel-Ziv deflation for netCDF4, 
-and contains a fix for building ncap2 with Intel compilers.
+contains a fix for building ncap2 with Intel compilers,
+and fixes RPM-building on hybrid 32/64-bit systems.
 
+Compression/deflation with netCDF4:
 Our unscientific testing shows that maximum deflation compresses
-typical climate datasets by 30-40%. 
-Convert a netCDF3 dataset to a (deflated) netCDF4 dataset:
+typical climate datasets by 30-40%. Here's how to convert a netCDF3
+dataset to a (deflated) netCDF4 dataset: 
 
 ncks -O -4 -L 9 in.nc out.nc # Deflate file
 
-Pack then deflate files to save more space:
+Or, pack _and_ deflate files to save even more space:
 
 ncpdq -O -4 -L 9 in.nc out.nc # Pack and deflate file
-
-NB: netCDF4-enabled NCO 3.9.1 must be built with netCDF4
-snapshot2007060701 or newer.
 
 0. Thanks to KR for the $50 donation!
 
@@ -33,9 +32,12 @@ C. New Documentation:
    Working with non-standard grids, e.g., 2D grids 
    http://nco.sf.net/nco.html#grd
 
-E. Improve ncap2 missing_value handling and RAM variables (fxm)
+D. Build RPMs correctly for hybrid 32/64-bit OSs (e.g., RHEL, Rocks)
+   Thanks to Daniel Wang for this patch
 
-F. ncap2 grows more powerful: it supports loops!
+E. Improve ncap2 missing_value handling and RAM variables (Henry Butowsky) 
+
+F. ncap2 supports loops! (Henry Butowsky)
    Demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]
    http://nco.sf.net/nco.html#ncap2 
 
@@ -53,7 +55,8 @@ J. Reminder: NCO support for netCDF4 features is tracked at
 
    http://nco.sf.net/nco.html#nco4
 
-   To build NCO with netCDF4 support, use 
+   To build NCO with netCDF4 support, you must build with netCDF4
+   snapshot2007060701 or newer.
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
