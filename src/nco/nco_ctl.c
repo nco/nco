@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.184 2007-06-28 06:27:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.185 2007-06-28 06:36:02 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -825,7 +825,6 @@ nco_usg_prn(void)
 
   if(strstr(opt_sng,"-4")) (void)fprintf(stdout,"-4, --4, --netcdf4\tOutput file in netCDF4 storage format (HDF5)\n");
   if(strstr(opt_sng,"--64bit")) (void)fprintf(stdout,"\tOutput file in netCDF3 64-bit offset storage format\n");
-  if(strstr(opt_sng,"-L")) (void)fprintf(stdout,"-L, --dfl_lvl, --deflate dfl_lvl\tApply Lempel-Ziv deflation to netCDF4 output file\n");
   if(strstr(opt_sng,"-A")) (void)fprintf(stdout,"-A, --apn, --append\tAppend to existing output file, if any\n");
   if(strstr(opt_sng,"-a")){
     if(prg_lcl == ncatted) (void)fprintf(stdout,"-a, --attribute att_nm,var_nm,mode,att_typ,att_val Attribute specification:\n\t\t\tmode = a,c,d,m,o and att_typ = f,d,l,s,c,b\n");
@@ -866,6 +865,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[-h]")) (void)fprintf(stdout,"-h, --hst, --history\tDo not append to \"history\" global attribute\n");
   if(strstr(opt_sng,"-i")) (void)fprintf(stdout,"-i, --ntp, --interpolate var,val\tInterpolant and value\n");
   if(strstr(opt_sng,"-I")) (void)fprintf(stdout,"-I, --wgt_msk_crd_var \tDo not weight or mask coordinate variables\n");
+  if(strstr(opt_sng,"-L")) (void)fprintf(stdout,"-L, --dfl_lvl, --deflate dfl_lvl\tApply Lempel-Ziv deflation to netCDF4 output file\n");
   if(strstr(opt_sng,"-l")) (void)fprintf(stdout,"-l, --lcl, --local path\tLocal storage path for remotely-retrieved files\n");
   if(strstr(opt_sng,"-M")){
     if(prg_lcl == ncwa) (void)fprintf(stdout,"-M, --msk_val, --mask-value, --mask_value mask_val\tMasking value (default is 1.0)\n");

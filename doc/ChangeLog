@@ -1,3 +1,7 @@
+2007-06-27  Charlie Zender  <zender@uci.edu>
+
+	* Polish deflate functionality and documentation
+
 2007-06-26  Charlie Zender  <zender@uci.edu>
 
 	* Describe deflation in nco.texi

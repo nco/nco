@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.244 2007-06-28 06:26:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.245 2007-06-28 06:36:01 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.0 are ready. 
 
@@ -7,6 +7,7 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 Release 3.9.0 supports Lempel-Ziv deflation for netCDF4, 
 and contains a fix for building ncap2 with Intel compilers.
+
 Our unscientific testing shows that maximum deflation compresses
 typical climate datasets by 30-40%. 
 Convert a netCDF3 dataset to a (deflated) netCDF4 dataset:
@@ -16,6 +17,9 @@ ncks -O -4 -L 9 in.nc out.nc # Deflate file
 Pack then deflate files to save more space:
 
 ncpdq -O -4 -L 9 in.nc out.nc # Pack and deflate file
+
+NB: netCDF4-enabled NCO 3.9.1 must be built with netCDF4
+snapshot2007060701 or newer.
 
 0. Thanks to KR for the $50 donation!
 
@@ -29,16 +33,13 @@ C. New Documentation:
    Working with non-standard grids, e.g., 2D grids 
    http://nco.sf.net/nco.html#grd
 
-D. ncks can downconvert netCDF4 classic to netCDF3 files (fxm)
-   http://nco.sf.net/nco.html#ncks
-
 E. Improve ncap2 missing_value handling and RAM variables (fxm)
 
 F. ncap2 grows more powerful: it supports loops!
    Demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]
    http://nco.sf.net/nco.html#ncap2 
 
-G. Fix bug with ncks built with Intel compilers (fxm)
+G. Fix bug with ncap2 built with Intel compilers
    Thanks to Remik Ziemlinski for his excellent bug reports!
    http://nco.sf.net#bug_ncbo_pck
 
