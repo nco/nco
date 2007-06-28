@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.429 2007-06-27 06:38:30 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.430 2007-06-28 06:26:59 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3957,8 +3957,9 @@ Short options: None@*
 
 The phrase @dfn{packed data} refers to data which are stored in the
 standard netCDF3 packing format which employs a lossy algorithm.
-For a description of deflation, a lossless compression technique
-available with netCDF4 only, @xref{ncks netCDF Kitchen Sink}.
+See @ref{ncks netCDF Kitchen Sink} for a description of deflation, a 
+lossless compression technique available with netCDF4 only.
+Packed data may be deflated to save additional space.
 
 @unnumberedsubsec Packing Algorithm
 @dfn{Packing}
@@ -7341,8 +7342,8 @@ ncatted -O -a units,prs_sfc,o,c,millibar out.nc
 SYNTAX
 @example
 ncks [-4] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [--deflate @var{dfl_lvl}]
-[-F] [-H] [-h] [--hdr_pad @var{nbr}] [-l @var{path}] [-M] [-m] 
+[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] 
+[-F] [-H] [-h] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] 
 [-O] [-o @var{output-file}] 
 [-P] [-p @var{path}] [-Q] [-q] [-R] [-r] [-s @var{format}] [-u] 
 [-v @var{var}[,@dots{}]] [-x] @var{input-file} [[@var{output-file}]]
@@ -7516,19 +7517,31 @@ For a complete description of the @var{stride} argument, @xref{Stride}.
 <a name="deflate"></a> <!-- http://nco.sf.net/nco.html#deflate -->
 <a name="deflation"></a> <!-- http://nco.sf.net/nco.html#deflation -->
 @end html
+@cindex @code{-L}
 @cindex @code{--deflate}
 @cindex @code{--dfl_lvl}
 @cindex Lempel-Ziv deflation
 @cindex compression
 @cindex deflation
-@item --deflate @var{dfl_lvl}
+@item -L @var{dfl_lvl}
 Apply Lempel-Ziv deflation to netCDF4 output file.
+Also activated using @code{--dfl_lvl} or @code{--deflate}.
 Deflation uses lossless techniques to compress data.
 Specify the deflation level @var{dfl_lvl} on a scale from 
-no deflation (@var{dfl_lvl = 0}) to maximum deflation (@var{dfl_lvl = 9}).
+no deflation (@var{dfl_lvl = 0}) to maximum deflation 
+(@var{dfl_lvl = 9}).
 Higher deflation levels require more time for compression.
-For a description of packing, a lossy compression technique,
-@xref{Packed data}. 
+To compress an entire file using deflation, use
+@example
+ncks -O -4 --dfl_lvl=1 in.nc out.nc # Minimum deflation
+ncks -O -4 --dfl_lvl=9 in.nc out.nc # Maximum deflation
+@end example
+Unscientific testing shows that maximum deflation compresses typical
+climate datasets by 30-40%.
+
+See @ref{Packed data} for a description of packing, a lossy
+compression technique available for all netCDF files. 
+Packed data may be deflated to save additional space.
 
 @html
 <a name="prn"></a> <!-- http://nco.sf.net/nco.html#prn -->

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.185 2007-06-02 06:15:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.186 2007-06-28 06:27:02 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.185 2007-06-02 06:15:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.185 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.186 2007-06-28 06:27:02 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.186 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -166,7 +166,6 @@ main(int argc,char **argv)
       {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
       {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
       {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-      {"dfl_lvl",optional_argument,0,0}, /* [enm] Deflate level */
       {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
@@ -203,6 +202,8 @@ main(int argc,char **argv)
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
       {"hieronymus",no_argument,0,'H'}, /* fxm: need better mnemonic for -H */
+      {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
+      {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
       {"local",required_argument,0,'l'},
       {"lcl",required_argument,0,'l'},
       {"lcl",required_argument,0,'l'},
@@ -259,7 +260,6 @@ main(int argc,char **argv)
 	nco_exit(EXIT_SUCCESS);
       } /* endif "cmp" */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
-      if(!strcmp(opt_crr,"dfl_lvl") || !strcmp(opt_crr,"deflate")) dfl_lvl=(int)strtol(optarg,(char **)NULL,10); /* [enm] Deflate level */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")) hdr_pad=strtoul(optarg,(char **)NULL,10);
@@ -309,6 +309,9 @@ main(int argc,char **argv)
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
+      break;
+    case 'L': /* [enm] Deflate level. Default is 0. */
+      dfl_lvl=(int)strtol(optarg,(char **)NULL,10);
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=(char *)strdup(optarg);

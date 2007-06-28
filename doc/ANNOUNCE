@@ -1,21 +1,26 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.243 2007-06-27 06:38:30 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.244 2007-06-28 06:26:59 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Release 3.9.0 contains 
-fix for building ncap2 with Intel compilers, 
-for packed values, and better IRIX support.
+Release 3.9.0 supports Lempel-Ziv deflation for netCDF4, 
+and contains a fix for building ncap2 with Intel compilers.
+Our unscientific testing shows that maximum deflation compresses
+typical climate datasets by 30-40%. 
+Convert a netCDF3 dataset to a (deflated) netCDF4 dataset:
+
+ncks -O -4 -L 9 in.nc out.nc # Deflate file
+
+Pack then deflate files to save more space:
+
+ncpdq -O -4 -L 9 in.nc out.nc # Pack and deflate file
+
 0. Thanks to KR for the $50 donation!
 
-0. --dfl_lvl=[0..9] deflates (i.e., compresses with GZIP Lempel-Ziv)
-   all variables written to a netCDF4 file 
-   http://nco.sf.net/nco.html#dfl_lvl
-
-A. netCDF4 support now includes per-variable compression (fxm)
-   http://nco.sf.net/nco.html#nco4
+A. -L [0..9] deflates (Lempel-Ziv compresses) netCDF4 files 
+   http://nco.sf.net/nco.html#deflate
 
 B. --fl_fmt switch supports converting netCDF4->netCDF3
    http://nco.sf.net/nco.html#fl_fmt
