@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.43 2007-06-29 01:19:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.44 2007-06-29 12:51:26 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.43 2007-06-29 01:19:14 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.43 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.44 2007-06-29 12:51:26 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.44 $";
   const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -563,6 +563,7 @@ main(int argc,char **argv)
   prs_arg.ATT_PROPAGATE=ATT_PROPAGATE;      
   prs_arg.ATT_INHERIT=ATT_INHERIT;
   prs_arg.NCAP_MPI_SORT=EXCLUDE_INPUT_LIST;
+  prs_arg.dfl_lvl=dfl_lvl;
 
   if(fl_spt_usr == NULL_CEWI){
     /* No script file specified, look for command-line scripts */
