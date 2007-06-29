@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.44 2007-06-05 16:51:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.45 2007-06-29 12:50:35 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -102,8 +102,41 @@ public:
   bool ATT_INHERIT;                      //Var on LHS inherits attributtes from var of the same name
                                          // in the input file 
   bool NCAP_MPI_SORT;                    // sort exressions after second parse for MPI optimization
-                                              
+  int dfl_lvl;                           // Set Lempel-Ziv compression level                                              
 } prs_sct;
+
+
+
+typedef class{ /* prs_cls */
+public:
+  char *fl_in; /* [sng] Input data file */
+  int in_id; /* [id] Input data file ID */
+  char *fl_out; /* [sng] Output data file */
+  int out_id; /* [id] Output data file ID */
+
+  NcapVector<dmn_sct*> dmn_in_vtr;        //Vector of dimensions in input file nb doesn't change
+  NcapVector<dmn_sct*> dmn_out_vtr;       //Vector of dimensions in output file file
+  NcapVector<sym_sct*> &sym_vtr;          //Vector of functions nb doesn't change
+  NcapVarVector var_vtr;                  // list of attributes & variables
+  NcapVarVector int_vtr;                  // stores vars/atts in FIRST PARSE
+  bool ntl_scn;                          // [flg] Initial scan of script 
+  bool FORTRAN_IDX_CNV;                  //Use fortran convention with hyperslab indices
+  bool ATT_PROPAGATE;                    //Var on LHS gets attributtes from the leftermost var on the RHS
+  bool ATT_INHERIT;                      //Var on LHS inherits attributtes from var of the same name
+                                         // in the input file 
+  bool NCAP_MPI_SORT;                    // sort exressions after second parse for MPI optimization
+
+  // Constructor
+  void prs_cls(NcapVector<sym_sct*> &sym_in)  {
+    sym_vtr=sym_in;
+
+  }
+
+
+} prs_cls;
+
+
+
 
 
 /* Begin funtions in ncap_utl.c */
