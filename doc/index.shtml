@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.429 2007-06-29 18:47:19 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.430 2007-06-29 23:17:25 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -847,9 +847,8 @@ Commercial compilers which we have used include those from
 and the <a href="http://www.pgroup.com/">Portland Group</a>.
 <a href="http://www.intel.com/cd/software/products/asmo-na/eng/compilers/index.htm">Intel's Linux compiler</a> is free (beer).
 The MPI operators will run with most MPI implementations, including LAM, MPICH, and MPICH2.
-LAM installs easily with our testing environment Ubuntu distribution.
-Debs (by Zach Lowry) for MPICH2 are
-<a href="http://torvalds.cs.mtsu.edu/~zach/debian/current/">here</a>.</p>
+LAM installs easily with our own testing environment (latest Ubuntu).
+</p>
 <hr>
 
 <dt><a name="Rqr"></a><a name="rqr"></a></dt> <!-- http://nco.sf.net#rqr -->

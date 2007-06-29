@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.936 2007-06-29 06:08:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.937 2007-06-29 23:17:24 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -597,7 +597,6 @@ nco871. Add compression regression test
 	ncks -O -4 --dfl_lvl=9 ~/nco/data/in.nc ~/foo.nc
 	ls -l ~/foo.nc
 	ncks -O -4 --dfl_lvl=9 -v one ~/nco/data/in.nc ~/foo.nc
-nco872. Add HDF compression description to nco.texi
 nco873. ncks remik bug: ncks BUG: coords are zero after 2 var ext 
 	intel compiler only, possibly only ia64
 	"superficially injecting "nc_sync(out_id);"
@@ -613,9 +612,8 @@ nco880. ncpdq: netCDF4 problem _only_ with fll_val variable!:
 	ncpdq -O       -C -v fll_val -D 4 ~/nco/data/in.nc ~/foo.nc # works fine
 	ncpdq -O -4 -x    -v fll_val -D 4 ~/nco/data/in.nc ~/foo.nc # works fine
 	ncpdq -O -4    -C -v fll_val -D 4 ~/nco/data/in.nc ~/foo.nc # borken
-nco882. dfl: pass dfl_lvl through ncap tree
-nco883. dfl: pass dfl_lvl through ncap2 tree
-nco884. 
+nco884. Ask Ed to get to the bottom of nco880.
+nco885. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

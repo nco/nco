@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.100 2007-06-29 22:04:56 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.101 2007-06-29 23:17:25 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -219,6 +219,8 @@ ln -s ${HOME}/nco/bld/nco.spec ${rpm_root}/nco.spec
 cd ${rpm_root}
 rpmbuild -ba --sign nco.spec > ~/foo.nco 2>&1
 rpmlint ${rpm_root}/*/nco-3.9.1-?.*.rpm
+sudo yum remove nco
+sudo yum install ${rpm_root}/*/nco-3.9.1-?.*.rpm
 scp \
 ${rpm_root}/*/nco-3.9.1-?.*.rpm \
 ${rpm_root}/*/nco-debuginfo-3.9.1-?.*.rpm \
@@ -231,8 +233,3 @@ ${rpm_root}/*/nco-debuginfo-3.9.1-?.*.rpm \
 ${rpm_root}/*/nco-devel-3.9.1-?.*.rpm \
 ${rpm_root}/nco-3.9.1-?.src.rpm \
 nco.sf.net:/home/groups/n/nc/nco/htdocs/src
-sudo yum remove nco
-sudo yum install ${rpm_root}/*/nco-3.9.1-?.*.rpm
-scp ${DATA}/nco-3.9.1-1.x86_64.rpm dust.ess.uci.edu:/var/www/html/nco/src
-scp ${DATA}/nco-3.9.1-1.x86_64.rpm nco.sf.net:/home/groups/n/nc/nco/htdocs/src
-/home/daniel/RPM/RPMS/x86_64/nco-3.9.1-1.x86_64.rpm 

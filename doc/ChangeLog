@@ -1,6 +1,6 @@
 2007-06-29  Charlie Zender  <zender@uci.edu>
 
-	* cvs tag -c nco-3_9_1;cvs tag -c nco-3_9_1-2
+	* cvs tag -c nco-3_9_1-2
 	
 	* Define NC_64BIT_OFFSET no-matter-what so FC6 RPMs build with OPeNDAP
 
