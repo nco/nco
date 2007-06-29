@@ -1,3 +1,7 @@
+2007-06-29  Charlie Zender  <zender@uci.edu>
+
+	* Finish deflation in ncap and ncap2
+
 2007-06-28  Charlie Zender  <zender@uci.edu>
 
 	* Beef up deflation documentation

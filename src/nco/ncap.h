@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.80 2007-06-29 13:01:24 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.81 2007-06-29 15:00:50 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -95,7 +95,7 @@ typedef struct{ /* prs_sct */
   var_sct ***var_lst; /* list of variables to be defined in O */
   int *nbr_var;        /* [nbr] of variables in above list */ 
   int nco_op_typ; /* [enm] Operation type */
-  int dfl_lvl;
+  int dfl_lvl; /* [enm] Deflate level */
 } prs_sct;
 
 /* Begin funtions in ncap_lex.l */
