@@ -1,7 +1,7 @@
 2007-06-29  Charlie Zender  <zender@uci.edu>
 
 	* cd ~/nco;cvs tag -d nco-3_9_1;cvs tag -d nco-3_9_1-1
-	  cd ~/nco;cvs commit -m "Preparing nco-3.9.0 release"
+	  cd ~/nco;cvs commit -m "Preparing nco-3.9.1 release"
 	  cvs tag -c nco-3_9_1;cvs tag -c nco-3_9_1-1
 	Changes since nco-3_9_0: netCDF4 deflation support, ncap2 loops,
 	build improvements on many platforms

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.98 2007-06-29 18:48:52 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.99 2007-06-29 19:59:12 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -96,8 +96,6 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
    chmod a+x ~/nco/debian/rules
 # Rebuild autotools so new version # propagates
    cd ~/nco;aclocal;autoheader;automake --foreign;autoconf
-# Build Debs using Debian libraries and include
-   cd ~/nco;cvs commit -m "Preparing nco-3.9.1 release"
 # Save all files in emacs before tagging
 # Tag CVS code after changing files in ~/nco/debian
    cd ~/nco;cvs commit -m "Preparing nco-3.9.1 release";cvs tag -c nco-3_9_1
