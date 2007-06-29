@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.110 2007-06-02 06:15:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.111 2007-06-29 01:19:12 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -112,9 +112,9 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.110 2007-06-02 06:15:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.110 $";
-  const char * const opt_sht_lst="4ACcD:d:Fhl:Oo:p:rRt:v:xy:-:";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.111 2007-06-29 01:19:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.111 $";
+  const char * const opt_sht_lst="4ACcD:d:FhL:l:Oo:p:rRt:v:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -217,6 +217,8 @@ main(int argc,char **argv)
       {"ftn",no_argument,0,'F'},
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
+      {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
+      {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
       {"local",required_argument,0,'l'},
       {"lcl",required_argument,0,'l'},
       {"overwrite",no_argument,0,'O'},
@@ -290,6 +292,9 @@ main(int argc,char **argv)
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
+      break;
+    case 'L': /* [enm] Deflate level. Default is 0. */
+      dfl_lvl=(int)strtol(optarg,(char **)NULL,10);
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=(char *)strdup(optarg);

@@ -1,5 +1,8 @@
 2007-06-28  Charlie Zender  <zender@uci.edu>
 
+	* Implement deflate command-line switches in all applicable (i.e.,
+	variable-defining) operators
+
 	* Allow ncbo to subtract files with more processed variables in file_2
 	This is done by excluding file_2 variables that are not in file_1
 

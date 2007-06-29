@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.207 2007-06-02 06:15:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.208 2007-06-29 01:19:13 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -121,9 +121,9 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.207 2007-06-02 06:15:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.207 $";
-  const char * const opt_sht_lst="4ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
+  const char * const CVS_Id="$Id: ncra.c,v 1.208 2007-06-29 01:19:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.208 $";
+  const char * const opt_sht_lst="4ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:xY:y:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -221,6 +221,8 @@ main(int argc,char **argv)
       {"file_list",no_argument,0,'H'},
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
+      {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
+      {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
       {"local",required_argument,0,'l'},
       {"lcl",required_argument,0,'l'},
       {"nintap",required_argument,0,'n'},
@@ -311,6 +313,9 @@ main(int argc,char **argv)
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
+      break;
+    case 'L': /* [enm] Deflate level. Default is 0. */
+      dfl_lvl=(int)strtol(optarg,(char **)NULL,10);
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=(char *)strdup(optarg);

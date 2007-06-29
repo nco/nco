@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.186 2007-06-28 06:27:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.187 2007-06-29 01:19:13 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,9 +114,9 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.186 2007-06-28 06:27:02 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.186 $";
-  const char * const opt_sht_lst="4aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:x-:";
+  const char * const CVS_Id="$Id: ncks.c,v 1.187 2007-06-29 01:19:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.187 $";
+  const char * const opt_sht_lst="4aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -205,7 +205,6 @@ main(int argc,char **argv)
       {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
       {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
       {"local",required_argument,0,'l'},
-      {"lcl",required_argument,0,'l'},
       {"lcl",required_argument,0,'l'},
       {"metadata",no_argument,0,'m'},
       {"mtd",no_argument,0,'m'},

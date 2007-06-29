@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.142 2007-06-02 06:15:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.143 2007-06-29 01:19:13 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -101,9 +101,9 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.142 2007-06-02 06:15:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.142 $";
-  const char * const opt_sht_lst="4ACcD:d:Fhi:l:Oo:p:rRt:v:xw:-:";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.143 2007-06-29 01:19:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.143 $";
+  const char * const opt_sht_lst="4ACcD:d:Fhi:L:l:Oo:p:rRt:v:xw:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -206,6 +206,8 @@ main(int argc,char **argv)
       {"hst",no_argument,0,'h'},
       {"interpolate",required_argument,0,'i'},
       {"ntp",required_argument,0,'i'},
+      {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
+      {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
       {"local",required_argument,0,'l'},
       {"lcl",required_argument,0,'l'},
       {"overwrite",no_argument,0,'O'},
@@ -291,6 +293,9 @@ main(int argc,char **argv)
       ntp_val_out=strtod(ntp_lst_in[1],(char **)NULL);
       CMD_LN_NTP_VAR=True;
       CMD_LN_NTP_WGT=False;
+      break;
+    case 'L': /* [enm] Deflate level. Default is 0. */
+      dfl_lvl=(int)strtol(optarg,(char **)NULL,10);
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=(char *)strdup(optarg);

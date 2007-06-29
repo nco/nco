@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.76 2007-06-02 06:15:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.77 2007-06-29 01:19:12 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -121,9 +121,9 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.76 2007-06-02 06:15:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.76 $";
-  const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIl:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.77 2007-06-29 01:19:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.77 $";
+  const char * const opt_sht_lst="4Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -251,6 +251,8 @@ main(int argc,char **argv)
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
       {"wgt_msk_crd_var",no_argument,0,'I'},
+      {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
+      {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
       {"local",required_argument,0,'l'},
       {"lcl",required_argument,0,'l'},
       {"mask-variable",required_argument,0,'m'},
@@ -376,6 +378,9 @@ main(int argc,char **argv)
       break;
     case 'I': /* [flg] Weight and/or mask coordinate variables */
       WGT_MSK_CRD_VAR=!WGT_MSK_CRD_VAR;
+      break;
+    case 'L': /* [enm] Deflate level. Default is 0. */
+      dfl_lvl=(int)strtol(optarg,(char **)NULL,10);
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=(char *)strdup(optarg);
