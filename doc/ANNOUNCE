@@ -1,11 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.248 2007-06-29 18:21:53 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.249 2007-06-29 18:47:19 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.9.0 are ready. 
+The netCDF operators NCO version 3.9.1 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Release 3.9.0 supports netCDF4/HDF Lempel-Ziv deflation
+Release 3.9.1 supports netCDF4/HDF Lempel-Ziv deflation
 and contains multiple fixes for building NCO and ncap2 
 for various compilers (including Intel) and OSs.
 

@@ -1,3 +1,9 @@
+nco (3.9.1-1) feisty; urgency=low
+
+  * new upstream version (supports netCDF4/HDF deflation)
+
+ -- Charlie Zender <zender@uci.edu>  Fri, 29 Jun 2007 11:46:16 -0700
+
 nco (3.9.0-1) unstable; urgency=low
 
   * new upstream version (includes netCDF4 atomic types)
