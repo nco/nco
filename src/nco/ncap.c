@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.211 2007-06-29 06:08:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.212 2007-06-29 13:00:40 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.211 2007-06-29 06:08:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.211 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.212 2007-06-29 13:00:40 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.212 $";
   const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -563,7 +563,7 @@ main(int argc,char **argv)
   prs_arg.var_lst=&var_ycc; /* [sct] Variables to be defined after 1st parse */
   prs_arg.nbr_var=&nbr_var_ycc; /* [nbr] Number of vars to be defined after 1st parse */
   prs_arg.nco_op_typ=nco_op_nil; /* [enm] Operation type */
-
+  prs_arg.dfl_lvl=dfl_lvl;
   /* Timestamp end of metadata setup and disk layout */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
   ddra_info.tmr_flg=nco_tmr_rgl;
