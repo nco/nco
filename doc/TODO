@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.932 2007-06-28 06:26:59 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.933 2007-06-29 01:33:17 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -610,8 +610,15 @@ nco875. Squelch compiler warnings like:
 	case NC_UINT64: mss_val_dfl_dbl=NC_FILL_UINT64; break;
 nco877. deflate documentation in nco_ctl.c
 nco878. deflate documentation in nco.texi
-nco879. put deflate hook in all operators
-nco880. 
+nco880. ncpdq: netCDF4 problem
+        ncpdq -O    -D 1 ~/nco/data/in.nc ~/foo.nc # works fine
+        ncpdq -O -4 -D 1 ~/nco/data/in.nc ~/foo.nc # borken
+	nco_err_exit(): ERROR Short NCO-generated message (usually name of function that triggered error): nco_inq_copy_att()
+	nco_err_exit(): ERROR Error code is -36. Translation into English with nc_strerror(-36) is "NetCDF: Invalid argument"
+	nco_err_exit(): ERROR NCO will now exit with system call abort()
+	Aborted (core dumped)
+nco881. dfl: Ask Henry to implement -L deflation on ncap, ncap2
+nco882. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
