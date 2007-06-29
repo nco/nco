@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.933 2007-06-29 01:33:17 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.934 2007-06-29 01:34:45 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -608,7 +608,6 @@ nco875. Squelch compiler warnings like:
 	../src/nco/nco_pck.c:819:39: warning: integer constant is so large that it is unsigned
 	that are triggered by OK statements like
 	case NC_UINT64: mss_val_dfl_dbl=NC_FILL_UINT64; break;
-nco877. deflate documentation in nco_ctl.c
 nco878. deflate documentation in nco.texi
 nco880. ncpdq: netCDF4 problem
         ncpdq -O    -D 1 ~/nco/data/in.nc ~/foo.nc # works fine
