@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.136 2007-06-29 06:08:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.137 2007-06-29 13:03:14 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -219,15 +219,13 @@ ncap_var_write
   } /* endif DEF_VAR... */
   
   if(!DEF_VAR){
-    const int dfl_lvl=0; /* I [enm] Deflate level [0..9] */ /* fxm: TODO nco882 pass in from ncap.c */
-    
     /* Put file in define mode to allow metadata writing */
     (void)nco_redef(prs_arg->out_id);
     
     /* Define variable */   
     (void)nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
     /* Set HDF Lempel-Ziv compression level, if requested */
-    if(dfl_lvl > 0 && var->nbr_dim > 0) (void)nco_def_var_deflate(prs_arg->out_id,var_out_id,(int)True,(int)True,dfl_lvl);    
+    if(prs_arg->dfl_lvl > 0 && var->nbr_dim > 0) (void)nco_def_var_deflate(prs_arg->out_id,var_out_id,(int)True,(int)True,prs_arg->dfl_lvl);    
     
     /* Put missing value */  
     if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
