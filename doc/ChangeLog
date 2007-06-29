@@ -1,5 +1,7 @@
 2007-06-29  Charlie Zender  <zender@uci.edu>
 
+	* Define NC_64BIT_OFFSET no matter what so FC6 RPMs build with OPeNDAP
+
 	* cd ~/nco;cvs tag -d nco-3_9_1;cvs tag -d nco-3_9_1-1
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.1 release"
 	  cvs tag -c nco-3_9_1;cvs tag -c nco-3_9_1-1
