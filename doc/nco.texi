@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.432 2007-06-29 06:24:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.433 2007-06-29 18:21:53 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,7 +103,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 3.9.0
 @set copyright-years 1995--2007
 @set update-year 2007
-@set update-date 26 June 2007
+@set update-date 29 June 2007
 @set update-month June 2007
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -3990,6 +3990,7 @@ Packing, a lossy compression technique available for all netCDF files
 (see @ref{Packed data}), can easily compress files by 50%.
 Packed data may be deflated to squeeze datasets by about 80%.
 @example
+ncks  -O -4 -L 1 in.nc out.nc # Minimal deflation (~32% compression)
 ncks  -O -4 -L 9 in.nc out.nc # Maximal deflation (~33% compression)
 ncpdq -O         in.nc out.nc # Standard packing  (~50% compression)
 ncpdq -O -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)

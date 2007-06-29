@@ -1,15 +1,15 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.247 2007-06-29 06:08:25 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.248 2007-06-29 18:21:53 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Release 3.9.0 supports Lempel-Ziv deflation for netCDF4, 
-contains a fix for building ncap2 with Intel compilers,
-and fixes RPM-building on hybrid 32/64-bit systems.
+Release 3.9.0 supports netCDF4/HDF Lempel-Ziv deflation
+and contains multiple fixes for building NCO and ncap2 
+for various compilers (including Intel) and OSs.
 
-Compression/deflation with netCDF4:
+Compression/deflation with netCDF4-enabled NCO:
 Our unscientific testing shows that maximum deflation compresses
 typical climate datasets by 30-40%. Here's how to convert a netCDF3
 dataset to a (deflated) netCDF4 dataset: 
@@ -20,7 +20,7 @@ Or, pack files (with lossy algorithm) to compress ~50%:
 
 ncpdq -O in.nc out.nc # Pack file (fast)
 
-Or, pack _and_ deflate files to squeezes datasets by ~80%!:
+Or, pack _and_ deflate files to squeeze datasets by ~80%!:
 
 ncpdq -O -4 -L 9 in.nc out.nc # Pack and deflate (slower)
 
@@ -59,8 +59,8 @@ J. Reminder: NCO support for netCDF4 features is tracked at
 
    http://nco.sf.net/nco.html#nco4
 
-   To build NCO with netCDF4 support, you must build with netCDF4
-   snapshot2007060701 or newer.
+   To build NCO 3.9.1 with netCDF4 support, you must build with
+   netCDF4 snapshot2007060701 or newer.
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
