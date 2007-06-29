@@ -1,5 +1,11 @@
 2007-06-28  Charlie Zender  <zender@uci.edu>
 
+	* Beef up deflation documentation
+
+	* Add deflation to low-level ncap, ncap2 routines
+
+	* Put deflation in ARM convention routine
+
 	* Implement deflate command-line switches in all applicable (i.e.,
 	variable-defining) operators
 

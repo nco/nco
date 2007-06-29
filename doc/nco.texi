@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.431 2007-06-29 06:08:26 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.432 2007-06-29 06:24:38 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1972,6 +1972,7 @@ feature is automatic and cannot be controlled by the user.
 * Wrapped Coordinates::         
 * UDUnits Support::             
 * Missing Values::              
+* Deflation::                   
 * Packed data::                 
 * Operation Types::             
 * Type Conversion::             
@@ -2868,8 +2869,8 @@ when your other preferred methods are not available locally.
 @cindex @code{--64bit}
 @cartouche
 Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
-@command{ncecat}, @command{ncflint}, @command{ncpdq}, @command{ncra},
-@command{ncrcat}, @command{ncwa}@*
+@command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
+@command{ncra}, @command{ncrcat}, @command{ncwa}@*
 Short options: @samp{-4}@*
 Long options: @samp{--4}, @samp{--64bit}, @samp{--fl_fmt},
 @samp{--netcdf4}@*  
@@ -3307,8 +3308,9 @@ Long options:
 @end cartouche
 @w{A @dfn{hyperslab}} is a subset of a variable's data.
 The coordinates of a hyperslab are specified with the 
-@code{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]} short option (or with the 
-same arguments to the @samp{--dimension} or @samp{--dmn} long options).  
+@code{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]} short
+option (or with the same arguments to the @samp{--dimension} or
+@samp{--dmn} long options).   
 At least one hyperslab argument (@var{min}, @var{max}, or @var{stride})
 must be present. 
 The bounds of the hyperslab to be extracted are specified by the
@@ -3810,7 +3812,7 @@ esoteric units (e.g., furlongs, pounds per square inch, fortnights).
 <a name="mss_val"></a> <!-- http://nco.sf.net/nco.html#mss_val -->
 <a name="mss"></a> <!-- http://nco.sf.net/nco.html#mss -->
 @end html
-@node Missing Values, Packed data, UDUnits Support, Common features
+@node Missing Values, Deflation, UDUnits Support, Common features
 @section Missing values
 @cindex missing values
 @cindex data, missing 
@@ -3937,10 +3939,67 @@ important information from being lost.
 @end enumerate
 
 @html
+<a name="dfl_lvl"></a> <!-- http://nco.sf.net/nco.html#dfl_lvl -->
+<a name="dfl"></a> <!-- http://nco.sf.net/nco.html#dfl -->
+<a name="lz"></a> <!-- http://nco.sf.net/nco.html#lz -->
+<a name="lz77"></a> <!-- http://nco.sf.net/nco.html#lz77 -->
+<a name="deflate"></a> <!-- http://nco.sf.net/nco.html#deflate -->
+<a name="deflation"></a> <!-- http://nco.sf.net/nco.html#deflation -->
+@end html
+@node Deflation, Packed data, Missing Values, Common features
+@section Deflation
+@cindex @code{-L}
+@cindex @code{--deflate}
+@cindex @code{--dfl_lvl}
+@cindex Lempel-Ziv deflation
+@cindex compression
+@cindex deflation
+@cartouche
+Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
+@command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
+@command{ncra}, @command{ncrcat}, @command{ncwa}@*
+Short options: @samp{-L}@*
+Long options: @samp{--dfl_lvl}, @samp{--deflate}@*  
+@end cartouche
+
+All @acronym{NCO} operators that define variables support 
+the netCDF4 feature of storing variables compressed with Lempel-Ziv
+deflation. 
+Activate this deflation with the @code{-L @var{dfl_lvl}} short option
+(or with the same argument to the @samp{--dfl_lvl} or @samp{--deflate} 
+long options).
+Deflation uses lossless techniques to compress data.
+Specify the deflation level @var{dfl_lvl} on a scale from 
+no deflation (@var{dfl_lvl = 0}) to maximum deflation 
+(@var{dfl_lvl = 9}).
+Higher deflation levels require more time for compression.
+File sizes resulting from minimal (@var{dfl_lvl = 1}) and maximal   
+(@var{dfl_lvl = 9}) deflation levels typically differ by less than a 
+few percent.
+
+To compress an entire file using deflation, use
+@example
+ncks -O -4 -L 0 in.nc out.nc # No deflation (fast, no time penalty)
+ncks -O -4 -L 1 in.nc out.nc # Minimal deflation (slow)
+ncks -O -4 -L 9 in.nc out.nc # Maximal deflation (slower)
+@end example
+
+Unscientific testing shows that maximum deflation compresses typical
+climate datasets by 30-40%. 
+Packing, a lossy compression technique available for all netCDF files 
+(see @ref{Packed data}), can easily compress files by 50%.
+Packed data may be deflated to squeeze datasets by about 80%.
+@example
+ncks  -O -4 -L 9 in.nc out.nc # Maximal deflation (~33% compression)
+ncpdq -O         in.nc out.nc # Standard packing  (~50% compression)
+ncpdq -O -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
+@end example
+
+@html
 <a name="pck"></a> <!-- http://nco.sf.net/nco.html#pck -->
 <a name="pack"></a> <!-- http://nco.sf.net/nco.html#pack -->
 @end html
-@node Packed data, Operation Types, Missing Values, Common features
+@node Packed data, Operation Types, Deflation, Common features
 @section Packed data
 @cindex packing
 @cindex unpacking
@@ -7509,49 +7568,6 @@ Writing packed variables in binary format is not supported.
 @item -d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
 Add @dfn{stride} argument to hyperslabber. 
 For a complete description of the @var{stride} argument, @xref{Stride}.
-
-@html
-<a name="dfl_lvl"></a> <!-- http://nco.sf.net/nco.html#dfl_lvl -->
-<a name="dfl"></a> <!-- http://nco.sf.net/nco.html#dfl -->
-<a name="lz77"></a> <!-- http://nco.sf.net/nco.html#lz77 -->
-<a name="deflate"></a> <!-- http://nco.sf.net/nco.html#deflate -->
-<a name="deflation"></a> <!-- http://nco.sf.net/nco.html#deflation -->
-@end html
-@cindex @code{-L}
-@cindex @code{--deflate}
-@cindex @code{--dfl_lvl}
-@cindex Lempel-Ziv deflation
-@cindex compression
-@cindex deflation
-@item -L @var{dfl_lvl}
-Apply Lempel-Ziv deflation to netCDF4 output file.
-Also activated using @code{--dfl_lvl} or @code{--deflate}.
-Deflation uses lossless techniques to compress data.
-Specify the deflation level @var{dfl_lvl} on a scale from 
-no deflation (@var{dfl_lvl = 0}) to maximum deflation 
-(@var{dfl_lvl = 9}).
-Higher deflation levels require more time for compression.
-File sizes resulting from minimal (@var{dfl_lvl = 1}) and maximal   
-(@var{dfl_lvl = 9}) deflation levels typically differ by less than a 
-few percent.
-
-To compress an entire file using deflation, use
-@example
-ncks -O -4 -L 0 in.nc out.nc # No deflation (fast, no time penalty)
-ncks -O -4 -L 1 in.nc out.nc # Minimal deflation (slow)
-ncks -O -4 -L 9 in.nc out.nc # Maximal deflation (slower)
-@end example
-
-Unscientific testing shows that maximum deflation compresses typical
-climate datasets by 30-40%. 
-Packing, a lossy compression technique available for all netCDF files 
-(see @ref{Packed data}), can easily compress files by 50%.
-Packed data may be deflated to squeeze datasets by about 80%.
-@example
-ncks  -O -4 -L 9 in.nc out.nc # Maximal deflation (~33% compression)
-ncpdq -O         in.nc out.nc # Standard packing  (~50% compression)
-ncpdq -O -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
-@end example
 
 @html
 <a name="prn"></a> <!-- http://nco.sf.net/nco.html#prn -->
