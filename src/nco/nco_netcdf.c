@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.82 2007-06-19 21:13:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.83 2007-06-29 04:45:11 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1079,7 +1079,7 @@ nco_copy_att(const int nc_id_in,const int var_id_in,const char * const att_nm,co
   /* Purpose: Wrapper for nc_copy_att() */
   int rcd;
   rcd=nc_copy_att(nc_id_in,var_id_in,att_nm,nc_id_out,var_id_out);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_copy_att()");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_copy_att()");
   return rcd;
 }  /* end nco_copy_att */
 
