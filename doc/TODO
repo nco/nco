@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.935 2007-06-29 04:45:11 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.936 2007-06-29 06:08:26 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -608,12 +608,14 @@ nco875. Squelch compiler warnings like:
 	../src/nco/nco_pck.c:819:39: warning: integer constant is so large that it is unsigned
 	that are triggered by OK statements like
 	case NC_UINT64: mss_val_dfl_dbl=NC_FILL_UINT64; break;
-nco878. dfl: finish deflate documentation in nco.texi
-nco880. ncpdq: netCDF4 problem _only_ with fll_val variable:
-	ncpdq -O    -C -v fll_val -D 4 ~/nco/data/in.nc ~/foo.nc # works fine
-	ncpdq -O -4 -C -v fll_val -D 4 ~/nco/data/in.nc ~/foo.nc # borken
-nco881. dfl: Ask Henry to implement -L deflation on ncap, ncap2
-nco882. 
+nco880. ncpdq: netCDF4 problem _only_ with fll_val variable!:
+	ncpdq -O                     -D 4 ~/nco/data/in.nc ~/foo.nc # works fine
+	ncpdq -O       -C -v fll_val -D 4 ~/nco/data/in.nc ~/foo.nc # works fine
+	ncpdq -O -4 -x    -v fll_val -D 4 ~/nco/data/in.nc ~/foo.nc # works fine
+	ncpdq -O -4    -C -v fll_val -D 4 ~/nco/data/in.nc ~/foo.nc # borken
+nco882. dfl: pass dfl_lvl through ncap tree
+nco883. dfl: pass dfl_lvl through ncap2 tree
+nco884. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

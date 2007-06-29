@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.135 2007-05-20 19:44:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.136 2007-06-29 06:08:27 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -18,7 +18,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   /* Purpose: Initialize variable structure, retrieve variable values from disk
      Parser calls ncap_var_init() when it encounters a new RHS variable */
   /* const char fnc_nm[]="ncap_var_init()"; *//* [sng] Function name */
-
+  
   int idx;
   int jdx;
   int dmn_var_nbr;
@@ -26,25 +26,25 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   int var_id;
   int rcd;
   int fl_id;
-
+  
   nco_bool DEF_VAR=False;
-
+  
   dmn_sct *dmn_in; 
   dmn_sct **dim_new=NULL_CEWI;
   
   var_sct var_lkp;
   var_sct *var;
   var_sct *var_lst;  
-
+  
   /* Several possiblilties here:
      var NOT in I or O
      var in I
      var in O (defined and filled)
      var in 0 (defined but empty)
-
+     
      Must handle case var in I, var in O (defined & empty) with care
      This occurs when var is on LHS and RHS, e.g., two=two^6
-
+     
      INITIAL SCAN
      check var list for var -- 
      if present fill with nulls and return
@@ -55,20 +55,20 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
      if present & defined + filled return var from output
      if present & defined + unfilled reurn var from input if defined
      Not present check output then input */     
-     
+  
   var_lkp.nm=strdup(var_nm);
   var_lst=ncap_var_lookup(&var_lkp,((prs_sct*)prs_arg),False);
   (void)nco_free(var_lkp.nm);
-
+  
   if(prs_arg->ntl_scn && var_lst){
     var=nco_var_dpl(var_lst);
     var->val.vp=NULL;
     return var;	
   } /* endif */
-
+  
   /* Check if var in list has been defined but NOT filled */
   if(!prs_arg->ntl_scn && var_lst && var_lst->sz >0 ) DEF_VAR=True; 
-
+  
   /* Check output file for var */  
   rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
   if(rcd == NC_NOERR && !DEF_VAR){
@@ -118,13 +118,13 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: parser VAR action called ncap_var_init() to retrieve %s from disk\n",prg_nm_get(),var_nm);
   var=nco_var_fll(fl_id,var_id,var_nm,*(prs_arg->dmn_out),*(prs_arg->nbr_dmn_out));
   /*  var->nm=(char *)nco_malloc((strlen(var_nm)+1UL)*sizeof(char));
-  (void)strcpy(var->nm,var_nm); */
-
+      (void)strcpy(var->nm,var_nm); */
+  
   /* Tally is not required yet since ncap does not perform cross-file operations (yet) */
   /* var->tally=(long *)nco_malloc_dbg(var->sz*sizeof(long),"Unable to malloc() tally buffer in variable initialization",fnc_nm);
-      (void)nco_zero_long(var->sz,var->tally); */
+     (void)nco_zero_long(var->sz,var->tally); */
   var->tally=(long *)NULL;
-
+  
   /* Retrieve variable values from disk into memory */
   if(prs_arg->ntl_scn) {
     var->val.vp=(void*)NULL;
@@ -142,7 +142,7 @@ nco_dmn_out_grow
 (prs_sct * prs_arg)
 {
   /* Purpose: Expand dimension list by one and return pointer to newly created member */
-
+  
   int *sz;
   sz=prs_arg->nbr_dmn_out;
   
@@ -157,14 +157,14 @@ ncap_var_write
  prs_sct *prs_arg)
 {
   /* Purpose: Define variable in output file and write variable */
-
+  
   /*  const char mss_val_sng[]="missing_value"; *//* [sng] Unidata standard string for missing value */
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
-
+  
   int rcd; /* [rcd] Return code */
   int var_out_id;
-
+  
   var_sct *ptr_var;
   var_sct *var_dpl;
   nco_bool DEF_VAR; /* True if var has been defined in O in initial scan */
@@ -172,7 +172,7 @@ ncap_var_write
 #ifdef NCO_RUSAGE_DBG
   long maxrss; /* [B] Maximum resident set size */
 #endif /* !NCO_RUSAGE_DBG */
-
+  
   /* If inital scan duplicate then save in list, free val.vp */
   if(prs_arg->ntl_scn){
     var->val.vp=nco_free(var->val.vp);
@@ -183,59 +183,64 @@ ncap_var_write
     (void)nco_var_free(var);
     return True;
   } /* endif ntl_scn */
-
+  
   /* Check if var is in table AND has been defined
      NB: var and ptr_var are different */
   ptr_var=ncap_var_lookup(var,((prs_sct*)prs_arg),False);
   DEF_VAR=(ptr_var && ptr_var->sz > 0 ? True : False);
-
+  
   rcd=nco_inq_varid_flg(((prs_sct *)prs_arg)->out_id,var->nm,&var_out_id);
-
+  
   if(!DEF_VAR){ 
     /* Check to see if variable has already been defined and written */
     if(rcd == NC_NOERR){
-    (void)sprintf(ncap_err_sng,"Warning: Variable %s has aleady been saved in %s",var->nm,((prs_sct *)prs_arg)->fl_out);
-    (void)yyerror(prs_arg,ncap_err_sng);
-    var = nco_var_free(var);
-    return False;
+      (void)sprintf(ncap_err_sng,"Warning: Variable %s has aleady been saved in %s",var->nm,((prs_sct *)prs_arg)->fl_out);
+      (void)yyerror(prs_arg,ncap_err_sng);
+      var = nco_var_free(var);
+      return False;
     }
   } /* DEF_VAR */
   
   if(DEF_VAR && (var->pck_ram || var->has_mss_val)){
-       /* Put file in define mode to allow metadata writing */
-       (void)nco_redef(prs_arg->out_id);
-
-       /* Put missing value */  
-	if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
-  
-       /* Write/overwrite scale_factor and add_offset attributes */
-       if(var->pck_ram){ /* Variable is packed in memory */
-	 if(var->has_scl_fct) (void)nco_put_att(prs_arg->out_id,var_out_id,scl_fct_sng,var->typ_upk,1,var->scl_fct.vp);
-	  if(var->has_add_fst) (void)nco_put_att(prs_arg->out_id,var_out_id,add_fst_sng,var->typ_upk,1,var->add_fst.vp);
-	} /* endif pck_ram */
-	
-        /* Take output file out of define mode */
-       (void)nco_enddef(prs_arg->out_id);
+    /* Put file in define mode to allow metadata writing */
+    (void)nco_redef(prs_arg->out_id);
+    
+    /* Put missing value */  
+    if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
+    
+    /* Write/overwrite scale_factor and add_offset attributes */
+    if(var->pck_ram){ /* Variable is packed in memory */
+      if(var->has_scl_fct) (void)nco_put_att(prs_arg->out_id,var_out_id,scl_fct_sng,var->typ_upk,1,var->scl_fct.vp);
+      if(var->has_add_fst) (void)nco_put_att(prs_arg->out_id,var_out_id,add_fst_sng,var->typ_upk,1,var->add_fst.vp);
+    } /* endif pck_ram */
+    
+    /* Take output file out of define mode */
+    (void)nco_enddef(prs_arg->out_id);
   } /* endif DEF_VAR... */
-
+  
   if(!DEF_VAR){
-      /* Put file in define mode to allow metadata writing */
-      (void)nco_redef(prs_arg->out_id);
-  
-      /* Define variable */   
-      (void)nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
-      /* Put missing value */  
-      if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
-  
-      /* Write/overwrite scale_factor and add_offset attributes */
-      if(var->pck_ram){ /* Variable is packed in memory */
-	if(var->has_scl_fct) (void)nco_put_att(prs_arg->out_id,var_out_id,scl_fct_sng,var->typ_upk,1,var->scl_fct.vp);
-	if(var->has_add_fst) (void)nco_put_att(prs_arg->out_id,var_out_id,add_fst_sng,var->typ_upk,1,var->add_fst.vp);
-      } /* endif pck_ram */
-
+    const int dfl_lvl=0; /* I [enm] Deflate level [0..9] */ /* fxm: TODO nco882 pass in from ncap.c */
+    
+    /* Put file in define mode to allow metadata writing */
+    (void)nco_redef(prs_arg->out_id);
+    
+    /* Define variable */   
+    (void)nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
+    /* Set HDF Lempel-Ziv compression level, if requested */
+    if(dfl_lvl > 0 && var->nbr_dim > 0) (void)nco_def_var_deflate(prs_arg->out_id,var_out_id,(int)True,(int)True,dfl_lvl);    
+    
+    /* Put missing value */  
+    if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
+    
+    /* Write/overwrite scale_factor and add_offset attributes */
+    if(var->pck_ram){ /* Variable is packed in memory */
+      if(var->has_scl_fct) (void)nco_put_att(prs_arg->out_id,var_out_id,scl_fct_sng,var->typ_upk,1,var->scl_fct.vp);
+      if(var->has_add_fst) (void)nco_put_att(prs_arg->out_id,var_out_id,add_fst_sng,var->typ_upk,1,var->add_fst.vp);
+    } /* endif pck_ram */
+    
       /* Take output file out of define mode */
-      (void)nco_enddef(prs_arg->out_id);
-    } /* end if */
+    (void)nco_enddef(prs_arg->out_id);
+  } /* end if */
   
   /* Write variable */ 
   if(var->nbr_dim == 0){
@@ -250,16 +255,16 @@ ncap_var_write
   if(dbg_lvl_get() >= 0) (void)fprintf(stdout,"%s: INFO ncap_var_write() writing variable %s\n",prg_nm_get(),var->nm);
   maxrss=nco_mmr_rusage_prn((int)0);
 #endif /* !NCO_RUSAGE_DBG */
-
+  
   /* Free varible */
   var=nco_var_free(var);
-
+  
   /* Use sz to keep track of defined and written variables */
   if(DEF_VAR) ptr_var->sz=-1;
   
   return rcd;
 } /* end ncap_var_write() */
-  
+
 sym_sct *
 ncap_sym_init
 (const char * const sym_nm,
@@ -314,12 +319,12 @@ ncap_var_var_add /* [fnc] Add two variables */
   /* Purpose: Add two variables */
   /* Store result in var_2 */
   if(var_1->undefined) var_2->undefined=True;
-    if(var_2->undefined) {
+  if(var_2->undefined) {
     var_1=nco_var_free(var_1);
     return var_2;
   }
   (void)ncap_var_retype(var_1,var_2);
-   
+  
   /* Handle initial scan */
   if(var_1->val.vp==(void*)NULL ) {
     if(var_1->nbr_dim > var_2->nbr_dim) {
@@ -330,19 +335,19 @@ ncap_var_var_add /* [fnc] Add two variables */
       return var_2;
     }
   } 
-
+  
   (void)ncap_var_cnf_dmn(&var_1,&var_2);
   
   //  if(var_1 != var_chk1) var_chk1 = (var_sct*)nco_var_free(var_chk1);
   //if(var_2 != var_chk2) var_chk2 = (var_sct*)nco_var_free(var_chk2);
-
+  
   /* fxm: bug in nco_var_add()? missing_value is not carried over to var_2 in result when var_1->has_mss_val is true */
   if(var_1->has_mss_val){
     (void)nco_var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
   }else{
     (void)nco_var_add(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
   } /* end if */
-
+  
   var_1=nco_var_free(var_1);
   return var_2;
 } /* end ncap_var_var_add() */
@@ -353,16 +358,16 @@ ncap_var_var_dvd /* [fnc] Divide two variables (var_2/var_1) */
  var_sct *var_2) /* I [sct] Variable structure containing numerator */
 {
   /* Purpose: Divide two variables (var_2/var_1) */
-
+  
   /* Purpose: Divide two variables */
   /* Store result in var_2 */
   if(var_1->undefined) var_2->undefined=True;
-    if(var_2->undefined) {
+  if(var_2->undefined) {
     var_1=nco_var_free(var_1);
     return var_2;
   }
   (void)ncap_var_retype(var_1,var_2);
-   
+  
   /* Handle initial scan */
   if(var_1->val.vp==(void*)NULL ) {
     if(var_1->nbr_dim > var_2->nbr_dim) {
@@ -373,14 +378,14 @@ ncap_var_var_dvd /* [fnc] Divide two variables (var_2/var_1) */
       return var_2;
     }
   } 
-
+  
   (void)ncap_var_cnf_dmn(&var_1,&var_2);
   if(var_1->has_mss_val){
     (void)nco_var_dvd(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
   }else{
     (void)nco_var_dvd(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
   } /* end else */
-
+  
   var_1=nco_var_free(var_1);
   return var_2;
 } /* end ncap_var_var_dvd() */
@@ -390,16 +395,16 @@ ncap_var_var_mlt /* [fnc] Multiply two variables */
 (var_sct *var_1, /* I [sct] Variable structure containing first operand */
  var_sct *var_2) /* I [sct] Variable structure containing second operand */
 {
-
+  
   /* Purpose: Multiply two variables */
   /* Store result in var_2 */
   if(var_1->undefined) var_2->undefined=True;
-    if(var_2->undefined) {
+  if(var_2->undefined) {
     var_1=nco_var_free(var_1);
     return var_2;
   }
   (void)ncap_var_retype(var_1,var_2);
-   
+  
   /* Handle initial scan */
   if(var_1->val.vp==(void*)NULL ) {
     if(var_1->nbr_dim > var_2->nbr_dim) {
@@ -410,16 +415,16 @@ ncap_var_var_mlt /* [fnc] Multiply two variables */
       return var_2;
     }
   } 
-
+  
   (void)ncap_var_cnf_dmn(&var_1,&var_2);
   if(var_1->has_mss_val){
     (void)nco_var_mlt(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
   }else{
     (void)nco_var_mlt(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
   } /* end else */
-
+  
   var_1=nco_var_free(var_1);
-   return var_2;
+  return var_2;
 } /* end ncap_var_var_mlt() */
 
 var_sct * /* O [sct] Remainder of modulo operation of input variables (var_1%var_2) */
@@ -430,12 +435,12 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
   /* Purpose: Remainder (modulo) operation of two variables (var_1%var_2) */
   /* Store result in var_2 */
   if(var_1->undefined) var_2->undefined=True;
-    if(var_2->undefined) {
+  if(var_2->undefined) {
     var_1=nco_var_free(var_1);
     return var_2;
   }
   (void)ncap_var_retype(var_1,var_2);
-   
+  
   /* Handle initial scan */
   if(var_1->val.vp==(void*)NULL ) {
     if(var_1->nbr_dim > var_2->nbr_dim) {
@@ -446,16 +451,16 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
       return var_2;
     }
   } 
- 
+  
   (void)ncap_var_cnf_dmn(&var_1,&var_2);
   if(var_1->has_mss_val){
     (void)nco_var_mod(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
   }else{
     (void)nco_var_mod(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
   } /* end else */
-   
-   var_1=nco_var_free(var_1);
-   return var_2;
+  
+  var_1=nco_var_free(var_1);
+  return var_2;
 } /* end ncap_var_var_mod() */
 
 var_sct * /* O [sct] Empowerment of input variables (var_1^var_2) */
@@ -464,19 +469,19 @@ ncap_var_var_pwr /* [fnc] Empowerment of two variables */
  var_sct *var_2) /* I [sct] Variable structure containing exponent */
 {
   /* Purpose: Empower two variables (var_1^var_2) */
-
+  
   /* Purpose: Add two variables */
   /* Store result in var_2 */
   if(var_1->undefined) var_2->undefined=True;
-    if(var_2->undefined) {
+  if(var_2->undefined) {
     var_1=nco_var_free(var_1);
     return var_2;
   }
   /* Make sure vars are at least float precision */
   if(nco_rth_prc_rnk(var_1->type) < nco_rth_prc_rnk_float && nco_rth_prc_rnk(var_2->type < nco_rth_prc_rnk_float)) var_1=nco_var_cnf_typ((nc_type)NC_FLOAT,var_1);
-
+  
   (void)ncap_var_retype(var_1,var_2);   
-
+  
   /* Handle initial scan */
   if(var_1->val.vp==(void*)NULL ) {
     if(var_1->nbr_dim > var_2->nbr_dim) {
@@ -487,14 +492,14 @@ ncap_var_var_pwr /* [fnc] Empowerment of two variables */
       return var_2;
     }
   } 
-
+  
   (void)ncap_var_cnf_dmn(&var_1,&var_2);
   if(var_1->has_mss_val){
     (void)nco_var_pwr(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
   }else{
     (void)nco_var_pwr(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
   } /* end else */
-   return var_2;
+  return var_2;
 } /* end ncap_var_var_pwr() */
 
 var_sct * /* O [frc] Remainder of input variables (var_2-var_1) */
@@ -503,16 +508,16 @@ ncap_var_var_sub /* [fnc] Subtract two variables (var_2-var_1) */
  var_sct *var_1) /* I [sct] Variable structure containing first operand */
 {
   /* Purpose: Subtract a variable from another variable */
-
+  
   /* Purpose: Add two variables */
   /* Store result in var_2 */
   if(var_1->undefined) var_2->undefined=True;
-    if(var_2->undefined) {
+  if(var_2->undefined) {
     var_1=nco_var_free(var_1);
     return var_2;
   }
   (void)ncap_var_retype(var_1,var_2);
-   
+  
   /* Handle initial scan */
   if(var_1->val.vp==(void*)NULL ) {
     if(var_1->nbr_dim > var_2->nbr_dim) {
@@ -523,7 +528,7 @@ ncap_var_var_sub /* [fnc] Subtract two variables (var_2-var_1) */
       return var_2;
     }
   } 
-
+  
   (void)ncap_var_cnf_dmn(&var_1,&var_2);
   if(var_1->has_mss_val){
     (void)nco_var_sbt(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
@@ -542,13 +547,13 @@ ncap_var_fnc(var_sct *var_in,sym_sct *app)
   long idx;
   long sz;
   ptr_unn op1;
-
+  
   if(var_in->undefined) return var_in;
   
   
   /* Promote variable to NC_FLOAT */
   if(nco_rth_prc_rnk(var_in->type) < nco_rth_prc_rnk_float) var_in=nco_var_cnf_typ((nc_type)NC_FLOAT,var_in);
-
+  
   /* Handle initial scan differently */
   if(var_in->val.vp==NULL) return var_in; 
   
@@ -591,15 +596,15 @@ var_sct *
 ncap_var_scv_add(var_sct *var,scv_sct scv)
 {
   /* Purpose: add the value in scv to each element of var */
-
+  
   if(var->undefined) return var;
-
+  
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-
+  
   /* deal with inital scan */
   if(var->val.vp==NULL) return var; 
-
-
+  
+  
   (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   return var;
 } /* end ncap_var_scv_add() */
@@ -609,11 +614,11 @@ ncap_var_scv_sub(var_sct *var,scv_sct scv)
 {
   /* Purpose: Subtract value in scv from each element of var */
   if(var->undefined) return var;
-
+  
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   /* deal with inital scan */
   if(var->val.vp==NULL) return var; 
-
+  
   (void)ncap_scv_minus(&scv);
   (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   
@@ -626,12 +631,12 @@ ncap_var_scv_mlt(var_sct *var,scv_sct scv)
   /* Purpose: Multiply variable by value in scv */
   if(var->undefined) return var;
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-
+  
   /* deal with inital scan */
   if(var->val.vp==NULL) 
     return var; 
-
-
+  
+  
   (void)var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   return var;
 } /* end ncap_var_scv_mlt */
@@ -641,10 +646,10 @@ ncap_var_scv_dvd(var_sct *var,scv_sct scv)
 {
   /* Purpose: Divide each element of var by value in scv */
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-
+  
   /* deal with inital scan */
   if(var->val.vp==NULL) return var; 
-
+  
   (void)var_scv_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   return var;
 } /* end ncap_var_scv_dvd */
@@ -654,13 +659,13 @@ ncap_scv_var_dvd(scv_sct scv,var_sct *var)
 {
   /* Purpose: Divide scv by value of each element in var */
   if(var->undefined) return var;
-
+  
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-
+  
   /* deal with inital scan */
   if(var->val.vp==NULL) return var; 
-
-
+  
+  
   (void)scv_var_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
   return var;
 } /* end ncap_scv_var_dvd */
@@ -669,13 +674,13 @@ var_sct *
 ncap_var_scv_mod(var_sct *var,scv_sct scv)
 {
   /* Purpose: Modulus of each element of var with scv */
-   if(var->undefined) return var;
-
-
+  if(var->undefined) return var;
+  
+  
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   /* deal with inital scan */
   if(var->val.vp==NULL) return var; 
-
+  
   (void)var_scv_mod(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   return var;
 } /* ncap_var_scv_mod */
@@ -685,12 +690,12 @@ ncap_scv_var_mod(scv_sct scv,var_sct *var)
 {
   /* Purpose: Modulus of scv with each element of var */
   if(var->undefined) return var;
-
+  
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-
+  
   /* deal with inital scan */
   if(var->val.vp==NULL) return var; 
-
+  
   (void)scv_var_mod(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
   return var;
 } /* ncap_var_scv_mod */
@@ -703,10 +708,10 @@ ncap_var_scv_pwr(var_sct *var,scv_sct scv)
      This reduces type conversion warnings (it is not done to avoid overflow) */
   if(nco_rth_prc_rnk(var->type) < nco_rth_prc_rnk_float) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
   (void)nco_scv_cnf_typ(var->type,&scv);
-
+  
   /* deal with inital scan */
   if(var->val.vp==NULL) return var; 
-
+  
   (void)var_scv_pwr(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   return var;
 } /* end ncap_var_scv_pwr */
@@ -718,13 +723,13 @@ ncap_scv_var_pwr(scv_sct scv,var_sct *var)
   /* Promote scv and var to NC_FLOAT if necessary since C has no integer empowerment 
      This reduces type conversion warnings (it is not done to avoid overflow) */
   if(var->undefined) return var;
-
+  
   if(nco_rth_prc_rnk(var->type) < nco_rth_prc_rnk_float) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
   (void)nco_scv_cnf_typ(var->type,&scv);
-
+  
   /* deal with inital scan */
   if(var->val.vp==NULL) return var; 
-
+  
   (void)scv_var_pwr(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
   return var;
 } /* end ncap_var_scv_pwr */
@@ -734,10 +739,10 @@ ncap_var_abs(var_sct *var)
 {
   /* Purpose: Find absolute value of each element of var */
   if(var->undefined) return var;
-
+  
   /* deal with inital scan */
   if(var->val.vp==NULL) return var; 
-
+  
   (void)nco_var_abs(var->type,var->sz,var->has_mss_val,var->mss_val,var->val);
   return var;
 } /* end ncap_var_abs */
@@ -753,7 +758,7 @@ ncap_scv_clc
   /* http://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
      __GNUC__ : Defined by gcc 
      __GNUG__ : Defined by g++, equivalent to (__GNUC__ && __cplusplus) */
-
+  
 #ifndef __GNUG__ 
   extern float fmodf(float,float); /* Cannot insert fmodf in ncap_sym_init() because it takes two arguments TODO #20 */
   extern float fabsf(float); /* Sun math.h does not include fabsf() prototype */
@@ -761,12 +766,12 @@ ncap_scv_clc
   
   scv_sct scv_out;
   scv_out.type=scv_1.type;
-
+  
   /*
-  if(scv_1.undefined || scv_2.undefined ) {
+    if(scv_1.undefined || scv_2.undefined ) {
     scv_out.undefined=True;
     return scv_out;
-  }
+    }
   */
   switch(scv_out.type){ 
   case NC_FLOAT:
@@ -861,7 +866,7 @@ scv_sct
 ncap_scv_abs(scv_sct scv)
 {
   /* Purpose: Find the absolute value of a scalar value */
-
+  
 #ifndef __GNUG__ 
   extern float fabsf(float); /* Sun math.h does not include fabsf() prototype */
 #endif   
@@ -955,7 +960,7 @@ nco_var_lst_sub(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst
   xtr_new_lst=(nm_id_sct*)nco_realloc(xtr_new_lst,xtr_nbr_new*sizeof(nm_id_sct)); 
   /* free old list */
   xtr_lst=nco_nm_id_lst_free(xtr_lst,*nbr_xtr);
-
+  
   *nbr_xtr=xtr_nbr_new;
   return xtr_new_lst;     
 }/* end nco_var_lst_sub */
@@ -1244,7 +1249,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
     /* fxm: these should go away soon */
     var_lsr_out=nco_var_dpl(var_lsr);
     var_gtr_out=nco_var_dpl(var_gtr);
-
+    
     /* for(idx_dmn=0;idx_dmn<var_gtr->nbr_dim;idx_dmn++){;}
        if(var_lsr_var_gtr_dmn_shr_nbr == 0); else; */
     

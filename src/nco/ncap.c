@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.210 2007-06-29 01:19:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.211 2007-06-29 06:08:27 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.210 2007-06-29 01:19:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.210 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.211 2007-06-29 06:08:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.211 $";
   const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -622,8 +622,9 @@ main(int argc,char **argv)
 	var_ycc[idx]=nco_var_free(var_ycc[idx]); 
 	continue;
       } /* endif */
-      
       (void)nco_def_var(out_id,var_ycc[idx]->nm,var_ycc[idx]->type,var_ycc[idx]->nbr_dim,var_ycc[idx]->dmn_id,&var_id);
+      /* Set HDF Lempel-Ziv compression level, if requested */
+      if(dfl_lvl > 0 && var_ycc[idx]->nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_id,(int)True,(int)True,dfl_lvl);    
       var_ycc[idx]->val.vp=nco_free(var_ycc[idx]->val.vp);
     } /* end loop over idx */
     (void)nco_enddef(out_id);

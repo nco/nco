@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.246 2007-06-28 16:43:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.247 2007-06-29 06:08:25 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.0 are ready. 
 
@@ -14,11 +14,15 @@ Our unscientific testing shows that maximum deflation compresses
 typical climate datasets by 30-40%. Here's how to convert a netCDF3
 dataset to a (deflated) netCDF4 dataset: 
 
-ncks -O -4 -L 9 in.nc out.nc # Deflate file
+ncks  -O -4 -L 9 in.nc out.nc # Deflate file (slow)
 
-Or, pack _and_ deflate files to save even more space:
+Or, pack files (with lossy algorithm) to compress ~50%:
 
-ncpdq -O -4 -L 9 in.nc out.nc # Pack and deflate file
+ncpdq -O in.nc out.nc # Pack file (fast)
+
+Or, pack _and_ deflate files to squeezes datasets by ~80%!:
+
+ncpdq -O -4 -L 9 in.nc out.nc # Pack and deflate (slower)
 
 0. Thanks to KR for the $50 donation!
 

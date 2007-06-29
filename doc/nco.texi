@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.430 2007-06-28 06:26:59 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.431 2007-06-29 06:08:26 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7531,17 +7531,27 @@ Specify the deflation level @var{dfl_lvl} on a scale from
 no deflation (@var{dfl_lvl = 0}) to maximum deflation 
 (@var{dfl_lvl = 9}).
 Higher deflation levels require more time for compression.
+File sizes resulting from minimal (@var{dfl_lvl = 1}) and maximal   
+(@var{dfl_lvl = 9}) deflation levels typically differ by less than a 
+few percent.
+
 To compress an entire file using deflation, use
 @example
-ncks -O -4 --dfl_lvl=1 in.nc out.nc # Minimum deflation
-ncks -O -4 --dfl_lvl=9 in.nc out.nc # Maximum deflation
+ncks -O -4 -L 0 in.nc out.nc # No deflation (fast, no time penalty)
+ncks -O -4 -L 1 in.nc out.nc # Minimal deflation (slow)
+ncks -O -4 -L 9 in.nc out.nc # Maximal deflation (slower)
 @end example
-Unscientific testing shows that maximum deflation compresses typical
-climate datasets by 30-40%.
 
-See @ref{Packed data} for a description of packing, a lossy
-compression technique available for all netCDF files. 
-Packed data may be deflated to save additional space.
+Unscientific testing shows that maximum deflation compresses typical
+climate datasets by 30-40%. 
+Packing, a lossy compression technique available for all netCDF files 
+(see @ref{Packed data}), can easily compress files by 50%.
+Packed data may be deflated to squeeze datasets by about 80%.
+@example
+ncks  -O -4 -L 9 in.nc out.nc # Maximal deflation (~33% compression)
+ncpdq -O         in.nc out.nc # Standard packing  (~50% compression)
+ncpdq -O -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
+@end example
 
 @html
 <a name="prn"></a> <!-- http://nco.sf.net/nco.html#prn -->

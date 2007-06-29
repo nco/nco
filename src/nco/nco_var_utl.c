@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.126 2007-06-27 06:03:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.127 2007-06-29 06:08:28 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -78,6 +78,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   
   /* Set HDF Lempel-Ziv compression level, if requested */
   if(dfl_lvl > 0 && nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
+
   /* Free the space holding dimension IDs */
   dmn_in_id=(int *)nco_free(dmn_in_id);
   dmn_out_id=(int *)nco_free(dmn_out_id);
