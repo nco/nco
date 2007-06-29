@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.75 2007-06-29 06:08:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.76 2007-06-29 12:53:04 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -360,10 +360,9 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
 
   /* Define variable */   
   if(!bdef){
-    const int dfl_lvl=0; /* I [enm] Deflate level [0..9] */ /* fxm: TODO nco883 pass in from ncap2.cc */
     (void)nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
     /* Set HDF Lempel-Ziv compression level, if requested */
-    if(dfl_lvl > 0 && var->nbr_dim > 0) (void)nco_def_var_deflate(prs_arg->out_id,var_out_id,(int)True,(int)True,dfl_lvl);    
+    if(prs_arg->dfl_lvl > 0 && var->nbr_dim > 0) (void)nco_def_var_deflate(prs_arg->out_id,var_out_id,(int)True,(int)True,prs_arg->dfl_lvl);    
   } // bdef
   /* Put missing value 
   if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
@@ -2248,10 +2247,9 @@ void ncap_def_ntl_scn(prs_sct *prs_arg)
       
       // define variable
       if(!Nvar->flg_mem) {
-	const int dfl_lvl=0; /* I [enm] Deflate level [0..9] */ /* fxm: TODO nco883 pass in from ncap2.cc */
 	(void)nco_def_var(prs_arg->out_id,var1->nm,var1->type,var1->nbr_dim,var1->dmn_id,&var_id);
 	/* Set HDF Lempel-Ziv compression level, if requested */
-	if(dfl_lvl > 0 && var1->nbr_dim > 0) (void)nco_def_var_deflate(prs_arg->out_id,var_id,(int)True,(int)True,dfl_lvl);    
+	if(prs_arg->dfl_lvl > 0 && var1->nbr_dim > 0) (void)nco_def_var_deflate(prs_arg->out_id,var_id,(int)True,(int)True,prs_arg->dfl_lvl);    
 	Nvar->var->id=var_id;
 	Nvar->var->nc_id=prs_arg->out_id;
 	Nvar->flg_stt=1;
