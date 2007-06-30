@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.435 2007-06-30 00:19:33 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.436 2007-06-30 18:31:55 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -9330,23 +9330,22 @@ The primary contributors to @acronym{NCO} development are:
 @table @asis
 @cindex Charlie Zender
 @item Charlie Zender
-Concept, design and implementation of @acronym{NCO} from 1995-2000.
-Since then mainly autotools, bug-squashing, documentation, packing,
+Concept, design and implementation of operators from 1995-2000.
+Since then autotools, bug-squashing, documentation, packing,
 @acronym{NCO} library redesign, @command{ncap2} features, @command{ncbo}, 
-@command{ncpdq}, SMP threading and MPI parallelization, project
-coordination, and releases. 
+@command{ncpdq}, SMP threading and MPI parallelization, 
+netCDF4 integration, project coordination, and releases. 
 @cindex Henry Butowsky
 @item Henry Butowsky
 Non-linear operations and @code{min()}, @code{max()}, @code{total()}
 support in @command{ncra} and @command{ncwa}. 
 Type conversion for arithmetic.
 Migration to netCDF3 API.
-@cindex I/O
-@command{ncap2} parser, lexer, @w{and I/O}.
+@command{ncap} parser, lexer, @w{and I/O}.
 Multislabbing algorithm.
 Variable wildcarding.
 Various hacks.
-ANTLR-based parser for @command{ncap2}. 
+@command{ncap2} language.
 @cindex Rorik Peterson
 @item Rorik Peterson
 Autotool build support. 
@@ -9360,7 +9359,8 @@ Benchmarking.
 OPeNDAP configuration.
 @cindex Daniel Wang
 @item Daniel Wang
-Server side DAP support.
+Script Workflow Analysis for MultiProcessing (SWAMP).
+RPM support.
 @cindex Brian Mays
 @item Brian Mays
 Packaging for Debian GNU/Linux, @command{nroff} man pages.

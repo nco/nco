@@ -1,3 +1,7 @@
+2007-06-30  Charlie Zender  <zender@uci.edu>
+
+	* Add -4 and -L dfl_lvl to man pages
+
 2007-06-29  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-3_9_1-2
