@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.434 2007-06-29 18:47:19 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.435 2007-06-30 00:19:33 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5104,8 +5104,7 @@ described in any detail in the sections below.
 @noindent
 SYNTAX
 @example
-ncap2 [-4] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] [-D @var{dbg}] 
-[-F] [-f]
+ncap2 [-4] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] [-D @var{dbg}] [-F] [-f] [-L @var{dfl_lvl}] 
 [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-s @var{algebra}] [-S @var{fl.nco}] [-v]
 @var{input-file} [@var{output-file}]  
@@ -6585,7 +6584,7 @@ SYNTAX
 @example 
 ncbo [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h]
-[-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r]
+[-L @var{dfl_lvl}] [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
@@ -6922,7 +6921,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 SYNTAX
 @example
 ncea [-4] [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
+[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
@@ -7044,7 +7043,7 @@ Additionally, only data inside the tropics is included.
 SYNTAX
 @example
 ncecat [-4] [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
+[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] 
 [@var{input-files}] [@var{output-file}]
@@ -7168,7 +7167,7 @@ SYNTAX
 @example
 ncflint [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-i @var{var},@var{val3}]
-[-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] 
+[-L @var{dfl_lvl}] [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] 
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-x]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
@@ -7401,11 +7400,10 @@ ncatted -O -a units,prs_sfc,o,c,millibar out.nc
 @noindent
 SYNTAX
 @example
-ncks [-4] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] 
+ncks [-4] [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] 
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] 
 [-F] [-H] [-h] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] 
-[-O] [-o @var{output-file}] 
-[-P] [-p @var{path}] [-Q] [-q] [-R] [-r] [-s @var{format}] [-u] 
+[-O] [-o @var{output-file}] [-P] [-p @var{path}] [-Q] [-q] [-R] [-r] [-s @var{format}] [-u] 
 [-v @var{var}[,@dots{}]] [-x] @var{input-file} [[@var{output-file}]]
 @end example
 
@@ -7658,17 +7656,19 @@ The most confusing aspect of this is that @samp{-M} inhibits copying
 global metadata in overwrite mode and causes copying of global
 metadata in append mode.
 @example
-ncks -O              in.nc out.nc # Copy   all variable and global attributes
-ncks -O       -v one in.nc out.nc # Copy   all variable and global attributes
-ncks -O -M    -v one in.nc out.nc # Copy   variable but not global attributes
-ncks -O    -m -v one in.nc out.nc # Copy   global but not variable attributes
-ncks -O -M -m -v one in.nc out.nc # Copy   only data (no attributes)
-ncks -A              in.nc out.nc # Append all variable and global attributes
-ncks -A       -v one in.nc out.nc # Append variable but not global attributes
-ncks -A -M    -v one in.nc out.nc # Append all variable and global attributes
-ncks -A    -m -v one in.nc out.nc # Append only data (no attributes)
-ncks -A -M -m -v one in.nc out.nc # Append global but not variable attributes
+ncks -O              in.nc out.nc # Copy   VAs and GAs
+ncks -O       -v one in.nc out.nc # Copy   VAs and GAs
+ncks -O -M    -v one in.nc out.nc # Copy   VAs not GAs
+ncks -O    -m -v one in.nc out.nc # Copy   GAs not VAs
+ncks -O -M -m -v one in.nc out.nc # Copy   only data (no atts)
+ncks -A              in.nc out.nc # Append VAs and GAs
+ncks -A       -v one in.nc out.nc # Append VAs not GAs
+ncks -A -M    -v one in.nc out.nc # Append VAs and GAs
+ncks -A    -m -v one in.nc out.nc # Append only data (no atts)
+ncks -A -M -m -v one in.nc out.nc # Append GAs not VAs
 @end example
+where @code{VAs} and @code{GAs} denote variable and global attributes,
+respectively. 
 
 @cindex @command{ncdump}
 @cindex @code{-m}
@@ -7925,7 +7925,7 @@ For more details @xref{Wrapped Coordinates}.
 SYNTAX
 @example
 ncpdq [-4] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
+[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-M @var{pck_map}] [-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] 
 [-R] [-r] [-t @var{thr_nbr}] [-U] [-v @var{var}[,@dots{}]] [-x]
 @var{input-file} [@var{output-file}]
@@ -8410,7 +8410,7 @@ changing variable dimensionality, including the record dimension.
 SYNTAX
 @example
 ncra [-4] [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
+[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
@@ -8521,7 +8521,7 @@ ncra -d time,6.,54. ??.nc 8506_8906.nc
 SYNTAX
 @example
 ncrcat [-4] [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
+[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] 
 [@var{input-files}] [@var{output-file}]
@@ -8799,7 +8799,7 @@ The variable @code{prs_sfc} need not exist, and need not contain the
 SYNTAX
 @example
 ncwa [-4] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-I] [-l @var{path}] 
+[-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-I] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-M @var{mask_val}] [-m @var{mask_var}] [-N] [-n] [-O] 
 [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-T @var{mask_comp}]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-W] [-w @var{weight}] [-x] [-y @var{op_typ}]
