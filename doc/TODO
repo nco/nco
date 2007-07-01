@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.938 2007-07-01 05:43:33 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.939 2007-07-01 20:51:45 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -351,7 +351,6 @@ nco597. mpncea hangs on ncea regression test 4 (on sand with LAM)
 	Charlie finds that master exits but workers reproducibly hang on sand with:
         mpirun -np 2 valgrind -v /home/zender/bin/LINUXAMD64/mpncra -Y ncea -h -O -D 2 -C -v pck -p ../data in.nc ~/foo.nc > ~/foo 2>&1
 nco599. Allow targets to determine Makefile variables so, e.g., 'make mpi' automagically defines MPI=Y
-nco605. ncpdq: speed up end of program by padding metadata intially?
 nco607. mpnc*: Define structures (rather than int arrays) for MPI messages
 nco609. Tune (or remove?) sleep interval in MPI operators
 nco612. ncks ncdump-like features for netcdf4 files structures
@@ -610,8 +609,14 @@ nco880. ncpdq: netCDF4 problem _only_ with fll_val variable!:
 	ncpdq -O       -C -v fll_val -D 4 ~/nco/data/in.nc ~/foo.nc # works fine
 	ncpdq -O -4 -x    -v fll_val -D 4 ~/nco/data/in.nc ~/foo.nc # works fine
 	ncpdq -O -4    -C -v fll_val -D 4 ~/nco/data/in.nc ~/foo.nc # borken
-nco884. Ask Ed to get to the bottom of nco880.
-nco885. 
+	nco_err_exit(): ERROR Short NCO-generated message (usually name of function that triggered error): nco_copy_att()
+	nco_err_exit(): ERROR Error code is -36. Translation into English with nc_strerror(-36) is "NetCDF: Invalid argument"
+nco884. Ask Ed to get to the bottom of nco880, nco885.
+nco885. ncpdq: netCDF4 problem with CAM datasets variable AERASM_v. AERASM_v does have a _FillValue attribute---is this a clue?
+	ncpdq -D 6 -4 -v AERASM_v -O sncpd05_ts_ANN.nc -p $DATA/anl_sncpd05 ~/foo_5.nc
+	nco_err_exit(): ERROR Short NCO-generated message (usually name of function that triggered error): nco_copy_att()
+	nco_err_exit(): ERROR Error code is -36. Translation into English with nc_strerror(-36) is "NetCDF: Invalid argument"
+nco886. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.437 2007-07-01 05:43:34 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.438 2007-07-01 20:51:45 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1578,7 +1578,7 @@ to pass the filenames with the @acronym{UNIX} @dfn{standard input}
 feature, aka @code{stdin}: 
 @example
 # Pipe large numbers of filenames to stdin
-/bin/ls | grep $@{CASEID@}_'......'.nc | ncecat -O -o foo.nc
+/bin/ls | grep $@{CASEID@}_'......'.nc | ncecat -o foo.nc
 @end example
 This method avoids all constraints on command line size imposed by
 the operating system. 
@@ -1662,7 +1662,7 @@ If there are 999,999 netCDF files present, the links are named
 # Create enumerated symbolic links
 /bin/ls | grep \.nc | perl -e \
 '$idx=1;while(<STDIN>)@{chop;symlink $_,sprintf("%06d.nc",$idx++);@}'
-ncecat -O -n 999999,6,1 000001.nc foo.nc
+ncecat -n 999999,6,1 000001.nc foo.nc
 # Remove symbolic links when finished
 /bin/rm ??????.nc
 @end example
@@ -2725,7 +2725,7 @@ accessible by a @acronym{OPeNDAP} server.
 This command tests the basic functionality of @acronym{OPeNDAP}-enabled  
 @acronym{NCO} clients: 
 @example
-% ncks -o ~/foo.nc -O -C -H -v one -l /tmp \
+% ncks -o ~/foo.nc -C -H -v one -l /tmp \
   -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
 one = 1
 % ncks -H -v one ~/foo.nc
@@ -2743,7 +2743,7 @@ The @acronym{NOAA} @acronym{OPeNDAP} server (hopefully!) serves these data.
 The local @command{ncwa} client then computes and stores (locally) the
 regional mean surface pressure @w{(in Pa)}. 
 @example
-ncwa -O -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l /tmp -p \
+ncwa -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l /tmp -p \
 http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
   pres.sfc.1969.nc ~/foo.nc
 @end example
@@ -2927,10 +2927,10 @@ format until @w{netCDF 3.6} and @w{netCDF 4.0} are more widespread.
 These examples show how to convert a file from any netCDF format into
 any other netCDF format (subject to limits of the format): 
 @example
-ncks -O --fl_fmt=classic in.nc foo_3c.nc # netCDF3 classic
-ncks -O --fl_fmt=64bit in.nc foo_364.nc # netCDF3 64bit
-ncks -O --fl_fmt=netcdf4 in.nc foo_4.nc # netCDF4 
-ncks -O --fl_fmt=netcdf4_classic in.nc foo_4c.nc # netCDF4 classic
+ncks --fl_fmt=classic in.nc foo_3c.nc # netCDF3 classic
+ncks --fl_fmt=64bit in.nc foo_364.nc # netCDF3 64bit
+ncks --fl_fmt=netcdf4 in.nc foo_4.nc # netCDF4 
+ncks --fl_fmt=netcdf4_classic in.nc foo_4c.nc # netCDF4 classic
 @end example
 
 To discover whether a netCDF file is a classic (32-bit offset) or newer
@@ -3686,7 +3686,7 @@ In the following example, the user extracts all wavelengths
 in the visible portion of the spectrum in terms of the units
 very frequently used in visible spectroscopy, microns:
 @example
-% ncks -O -C -H -v wvl -d wvl,"0.4 micron","0.7 micron" in.nc
+% ncks -C -H -v wvl -d wvl,"0.4 micron","0.7 micron" in.nc
 wvl[0]=5e-07 meter
 @end example
 @noindent
@@ -3734,13 +3734,13 @@ requesting units conversion.
 
 @cindex @code{units}
 @cindex @code{time} 
-The translation and dimennterpretation of time coordinates shows a more
-powerful, and probably more common, application of the UDUnits feature. 
+The translation and dimensional innterpretation of time coordinates
+shows a more powerful, and probably more common, UDUnits application.
 In this example, the user prints all data between the eighth and ninth
 of December, 1999, from a variable whose time dimension is hours
 since the year 1900:
 @example
-% ncks -O -C -v time_udunits -d time_udunits,"1999-12-08 \
+% ncks -H -C -v time_udunits -d time_udunits,"1999-12-08 \
   12:00:0.0","1999-12-09 00:00:0.0",2 in.nc foo2.nc
 time_udunits[1]=876018 hours since 1900-01-01 00:00:0.0
 @end example
@@ -3756,7 +3756,7 @@ hyperslabbing.
 The following example shows how one might average data in a 
 time period spread across multiple input files
 @example
-ncra -O -d time,"1939-09-09 12:00:0.0","1945-05-08 00:00:0.0" \
+ncra -d time,"1939-09-09 12:00:0.0","1945-05-08 00:00:0.0" \
   in1.nc in2.nc in3.nc out.nc
 @end example
 @noindent
@@ -3974,26 +3974,26 @@ no deflation (@var{dfl_lvl = 0}) to maximum deflation
 (@var{dfl_lvl = 9}).
 Higher deflation levels require more time for compression.
 File sizes resulting from minimal (@var{dfl_lvl = 1}) and maximal   
-(@var{dfl_lvl = 9}) deflation levels typically differ by less than a 
-few percent.
+(@var{dfl_lvl = 9}) deflation levels typically differ by a few
+percent. 
 
 To compress an entire file using deflation, use
 @example
-ncks -O -4 -L 0 in.nc out.nc # No deflation (fast, no time penalty)
-ncks -O -4 -L 1 in.nc out.nc # Minimal deflation (slow)
-ncks -O -4 -L 9 in.nc out.nc # Maximal deflation (slower)
+ncks -4 -L 0 in.nc out.nc # No deflation (fast, no time penalty)
+ncks -4 -L 1 in.nc out.nc # Minimal deflation (little time penalty)
+ncks -4 -L 9 in.nc out.nc # Maximal deflation (much slower)
 @end example
 
-Unscientific testing shows that maximum deflation compresses typical
-climate datasets by 30-40%. 
+Unscientific testing shows that deflation compresses typical climate
+datasets by 30-60%.  
 Packing, a lossy compression technique available for all netCDF files 
 (see @ref{Packed data}), can easily compress files by 50%.
 Packed data may be deflated to squeeze datasets by about 80%.
 @example
-ncks  -O -4 -L 1 in.nc out.nc # Minimal deflation (~32% compression)
-ncks  -O -4 -L 9 in.nc out.nc # Maximal deflation (~33% compression)
-ncpdq -O         in.nc out.nc # Standard packing  (~50% compression)
-ncpdq -O -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
+ncks  -4 -L 1 in.nc out.nc # Minimal deflation (~30-60% compression)
+ncks  -4 -L 9 in.nc out.nc # Maximal deflation (~31-63% compression)
+ncpdq         in.nc out.nc # Standard packing  (~50% compression)
+ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
 @end example
 
 @html
@@ -4692,7 +4692,7 @@ This, for example, converts variable @code{tpt} to external type
 @code{NC_SHORT} (a C-type @code{short}), and variable @code{prs} to
 external type @code{NC_DOUBLE} (a C-type @code{double}). 
 @example
-ncap2 -O -s 'tpt=short(tpt);prs=double(prs)' in.nc out.nc
+ncap2 -s 'tpt=short(tpt);prs=double(prs)' in.nc out.nc
 @end example
 @xref{ncap2 netCDF Arithmetic Processor}, for more details.
 
@@ -5202,8 +5202,8 @@ This is called @dfn{left hand casting} because the user resolves the
 dimensional ordering of the @acronym{RHS} of the expression by
 specifying the desired ordering on the @acronym{LHS}.
 @example
-ncap2 -O -s 'lat_lon[lat,lon]=lat+lon' in.nc out.nc
-ncap2 -O -s 'lon_lat[lon,lat]=lat+lon' in.nc out.nc
+ncap2 -s 'lat_lon[lat,lon]=lat+lon' in.nc out.nc
+ncap2 -s 'lon_lat[lon,lat]=lat+lon' in.nc out.nc
 @end example
 The explicit list of dimensions on the @acronym{LHS}, @code{[lat,lon]}
 resolves the otherwise ambiguous ordering of dimensions in
@@ -5230,7 +5230,7 @@ constant elevation (also one spatial dimension).
 This command constructs a four-dimensional pressure @code{prs_mdp}
 from the four input variables of mixed rank and orthogonality:
 @example
-ncap2 -O -s 'prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm' in.nc out.nc
+ncap2 -s 'prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm' in.nc out.nc
 @end example
 Manipulating the four fields which define the pressure in a hybrid
 coordinate system is easy with left hand casting.
@@ -5378,17 +5378,17 @@ Let's demonstrate the recommended ncap2 analysis technique by
 constructing a region mask for an @var{R}=2 grid. We wish to find, say,
 the mean temperature within [lat_min,lat_max] and [lon_min,lon_max]:
 @example
-ncap2 -O -s 'mask= (lat >= lat_min && lat <= lat_max) && \
-                   (lon >= lon_min && lon <= lon_max);' in.nc out.nc
+ncap2 -s 'mask= (lat >= lat_min && lat <= lat_max) && \
+                (lon >= lon_min && lon <= lon_max);' in.nc out.nc
 @end example
 
 Once you have a mask, you can use it on specific variables:
 @example
-ncap2 -O -s 'temperature_avg=(temperature*mask).avg()' in.nc out.nc
+ncap2 -s 'temperature_avg=(temperature*mask).avg()' in.nc out.nc
 @end example
 and you can apply it to entire files:
 @example
-ncwa -O -a lat,lon -m mask -w area in.nc out.nc
+ncwa -a lat,lon -m mask -w area in.nc out.nc
 @end example
 
 You can put this altogether on the command line or in a script, e.g.,
@@ -5401,7 +5401,7 @@ if(mask.total() > 0)@{ // Check that mask contains some valid values
   temperature_max=(temperature*mask).max(); // Maximum temperature
 @}
 EOF
-ncap2 -O -S ncap2.in in.nc out.nc
+ncap2 -S ncap2.in in.nc out.nc
 @end example
 
 For the WRF file creating the mask looks like
@@ -5963,12 +5963,12 @@ Define new attribute @var{new} for existing variable @var{one}
 as twice the existing attribute @var{double_att} of variable
 @var{att_var}: 
 @example
-ncap2 -O -s 'one@@new=2*att_var@@double_att' in.nc out.nc
+ncap2 -s 'one@@new=2*att_var@@double_att' in.nc out.nc
 @end example
 
 Average variables of mixed types (result is of type @code{double}):
 @example
-ncap2 -O -s 'average=(var_float+var_double+var_int)/3' in.nc out.nc 
+ncap2 -s 'average=(var_float+var_double+var_int)/3' in.nc out.nc 
 @end example
 
 Multiple commands may be given to @command{ncap2} in three ways.
@@ -5982,9 +5982,9 @@ Assuming the file @file{tst.nco} contains the commands
 @code{a=3;b=4;c=sqrt(a^2+b^2);}, then the following @command{ncap2}
 invocations produce identical results:
 @example
-ncap2 -O -v -S tst.nco in.nc out.nc
-ncap2 -O -v -s 'a=3' -s 'b=4' -s 'c=sqrt(a^2+b^2)' in.nc out.nc
-ncap2 -O -v -s 'a=3;b=4;c=sqrt(a^2+b^2)' in.nc out.nc
+ncap2 -v -S tst.nco in.nc out.nc
+ncap2 -v -s 'a=3' -s 'b=4' -s 'c=sqrt(a^2+b^2)' in.nc out.nc
+ncap2 -v -s 'a=3;b=4;c=sqrt(a^2+b^2)' in.nc out.nc
 @end example
 The second and third examples show that @command{ncap2} does not require
 that a trailing semi-colon @samp{;} be placed at the end of a @samp{-s}
@@ -6013,7 +6013,7 @@ and @code{new_lon} in the output file follow a similar pattern.
 One would might store these commands in a script @file{grow.nco}
 and then execute the script with
 @example
-ncap2 -O -v -S grow.nco in.nc out.nc
+ncap2 -v -S grow.nco in.nc out.nc
 @end example
 
 @html
@@ -6027,7 +6027,7 @@ and @w{value 0.0} elsewhere.
 This example creates the binary flag @code{ORO_flg} in @file{out.nc}
 from the continuous array named @code{ORO} in @file{in.nc}.
 @example
-ncap2 -O -s 'ORO_flg=(ORO > 1.0)' in.nc out.nc
+ncap2 -s 'ORO_flg=(ORO > 1.0)' in.nc out.nc
 @end example
 Suppose your task is to change all values of @code{ORO} which 
 @w{equal 2.0} to the new @w{value 3.0}:
@@ -6101,8 +6101,8 @@ ncap2 -O -s 'uprmvprm=(u-uavg)*(v-vavg)' foo.nc foo.nc # Covariance
 As of @acronym{NCO} version 3.1.8 (December, 2006), @command{ncap2}
 can compute averages, and thus covariances, by itself:
 @example
-ncap2 -O -s 'uavg=u.avg($time);vavg=v.avg($time);uprmvprm=u*v-uavg*vavg' \
-         -s 'uprmvrpmavg=uprmvprm.avg($time)' in.nc foo.nc
+ncap2 -s 'uavg=u.avg($time);vavg=v.avg($time);uprmvprm=u*v-uavg*vavg' \
+      -s 'uprmvrpmavg=uprmvprm.avg($time)' in.nc foo.nc
 @end example
 We have not seen a simpler method to script and execute powerful
 arithmetic than @command{ncap2}.
@@ -6121,10 +6121,10 @@ The example above will fail with no quotes and with double quotes.
 This is because shell globbing tries to @dfn{interpolate} the value of
 @code{$time} from the shell environment unless it is quoted:
 @example
-ncap2 -O -s 'uavg=u.avg($time)'  in.nc foo.nc # Correct (recommended)
-ncap2 -O -s  uavg=u.avg('$time') in.nc foo.nc # Correct (and dangerous)
-ncap2 -O -s  uavg=u.avg($time)   in.nc foo.nc # Fails ($time = '')
-ncap2 -O -s "uavg=u.avg($time)"  in.nc foo.nc # Fails ($time = '')
+ncap2 -s 'uavg=u.avg($time)'  in.nc foo.nc # Correct (recommended)
+ncap2 -s  uavg=u.avg('$time') in.nc foo.nc # Correct (and dangerous)
+ncap2 -s  uavg=u.avg($time)   in.nc foo.nc # Fails ($time = '')
+ncap2 -s "uavg=u.avg($time)"  in.nc foo.nc # Fails ($time = '')
 @end example
 Without the single quotes, the shell replaces @code{$time} with an
 empty string.
@@ -6491,7 +6491,7 @@ EXAMPLES
 Append the string "Data version 2.0.\n" to the global attribute
 @code{history}: 
 @example
-ncatted -O -a history,global,a,c,"Data version 2.0\n" in.nc 
+ncatted -a history,global,a,c,"Data version 2.0\n" in.nc 
 @end example
 Note the use of embedded @w{C language} @code{printf()}-style escape 
 sequences. 
@@ -6499,12 +6499,12 @@ sequences.
 Change the value of the @code{long_name} attribute for variable @code{T}
 from whatever it currently is to "temperature":
 @example
-ncatted -O -a long_name,T,o,c,temperature in.nc
+ncatted -a long_name,T,o,c,temperature in.nc
 @end example
 
 Delete all existing @code{units} attributes:
 @example
-ncatted -O -a units,,d,, in.nc
+ncatted -a units,,d,, in.nc
 @end example
 @noindent
 The value of @var{var_nm} was left blank in order to select all
@@ -6516,7 +6516,7 @@ they are superfluous in @dfn{Delete} mode.
 @cindex attributes, global
 Delete all attributes associated with the @code{tpt} variable:
 @example
-ncatted -O -a ,tpt,d,, in.nc
+ncatted -a ,tpt,d,, in.nc
 @end example
 @noindent
 The value of @var{att_nm} was left blank in order to select all
@@ -6527,7 +6527,7 @@ To delete all global attributes, simply replace @code{tpt} with
 @cindex @code{units}
 Modify all existing @code{units} attributes to "meter second-1"
 @example
-ncatted -O -a units,,m,c,"meter second-1" in.nc
+ncatted -a units,,m,c,"meter second-1" in.nc
 @end example
 
 Overwrite the @code{quanta} attribute of variable
@@ -7381,8 +7381,8 @@ Thus the final two commands would produce identical results except that
 Rescale the dimensional units of the surface pressure @code{prs_sfc}
 from Pascals to hectopascals (millibars)
 @example
-ncflint -O -C -v prs_sfc -w 0.01,0.0 in.nc in.nc out.nc
-ncatted -O -a units,prs_sfc,o,c,millibar out.nc
+ncflint -C -v prs_sfc -w 0.01,0.0 in.nc in.nc out.nc
+ncatted -a units,prs_sfc,o,c,millibar out.nc
 @end example
 @noindent
 
@@ -7613,7 +7613,7 @@ However, if the hypserslab is saved to an output file and those values
 are printed, the indices will change:
 @c fxm: replace with new MSA output style
 @example
-% ncks -O -H -d lat,90.0 -d lev,1000.0 -v three_dmn_var in.nc out.nc
+% ncks -H -d lat,90.0 -d lev,1000.0 -v three_dmn_var in.nc out.nc
 ...
 lat[1]=90 lev[2]=1000 lon[0]=0 three_dmn_var[20]=20 
 lat[1]=90 lev[2]=1000 lon[1]=90 three_dmn_var[21]=21 
@@ -7749,7 +7749,7 @@ ncks -F in.nc
 
 Copy the netCDF file @file{in.nc} to file @file{out.nc}.
 @example
-ncks -O in.nc out.nc
+ncks in.nc out.nc
 @end example
 Now the file @file{out.nc} contains all the data from @file{in.nc}.
 There are, however, two differences between @file{in.nc} and
