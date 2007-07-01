@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.436 2007-06-30 18:31:55 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.437 2007-07-01 05:43:34 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1898,8 +1898,8 @@ interested in receiving a detailed bug report.
 @enumerate
 @item 
 @cindex buffering
-No date buffering is performed during @command{ncvarget} and
-@command{ncvarput} operations.  
+No data buffering is performed during @command{nc_get_var} and
+@command{nc_put_var} operations.  
 @cindex performance
 @cindex operator speed
 @cindex speed
