@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.76 2007-06-29 12:53:04 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.77 2007-07-02 15:39:04 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -248,7 +248,10 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
     // temporary fix make typ_dsk same as type
     Nvar->var->typ_dsk=Nvar->var->type;
     bdef=true;
-    //
+
+    //Possibly overwrite bram !!
+    bram=Nvar->flg_mem;
+      
     if(var->has_mss_val)
       (void)nco_mss_val_cp(var,Nvar->var);
     // delete missing value
@@ -272,8 +275,8 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
   }
 
   
-  // Deal with a RAM variable
-  if(bdef && Nvar->flg_mem){
+  // Deal with a an existing RAM variable
+  if(bdef && bram){
     var_sct *var_ref;
     void *vp_swp;
         
@@ -310,12 +313,12 @@ ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */
   }
   
   // var is already defined but not populated 
-  if(bdef && !Nvar->flg_mem && Nvar->flg_stt==1){
+  if(bdef && !bram && Nvar->flg_stt==1){
     ;
   }
   
   // var is already defined & populated in output 
-  if(bdef && !Nvar->flg_mem && Nvar->flg_stt==2){
+  if(bdef && !bram && Nvar->flg_stt==2){
     var_sct* var_swp;
     var_sct* var_inf;
     var_inf=Nvar->cpyVarNoData();
@@ -2424,12 +2427,16 @@ ncap_put_var_mem(
   }
 
   if(dpt == dpt_max){
-    
+    if(srd==1) {
+      (void)memcpy(cp_end,cp_in,cnt*slb_sz);
+        cp_in+=(ptrdiff_t)cnt*slb_sz;
+    }else{    
       for(idx=0 ; idx<cnt ; idx++ ){
         (void)memcpy(cp_end,cp_in,slb_sz);
         cp_in+=(ptrdiff_t)slb_sz;
         cp_end+=(ptrdiff_t)(srd*slb_sz);
       }
+    }
   }
   
   if(dpt < dpt_max){
