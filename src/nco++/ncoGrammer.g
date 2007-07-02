@@ -89,6 +89,7 @@ statement:
    ;        
 
 
+
 // a bracketed block
 block:
     LCURL! (statement)* RCURL!
@@ -1417,13 +1418,18 @@ var=NULL_CEWI;
 
                lmt_Ref=lmt;               
 
-               Nvar=prs_arg->ptr_var_vtr->find(var_nm);
+              Nvar=prs_arg->ptr_var_vtr->find(var_nm);
+ 
+              // Overwrite bram possibly 
+              if(Nvar && Nvar->flg_mem) 
+                bram=Nvar->flg_mem;
 
+               
               // Deal with RAM variables
-              if( Nvar==NULL && bram || Nvar && Nvar->flg_mem) {
+              if(bram) {
 
                   
-                  if(Nvar && Nvar->flg_mem && Nvar->flg_stt==1){
+                 if(Nvar && Nvar->flg_stt==1){
                     var_sct *var_ini;
                     var_ini=ncap_var_init(vid->getText(),prs_arg,true);       
                     Nvar->var->val.vp=var_ini->val.vp;
@@ -1432,51 +1438,51 @@ var=NULL_CEWI;
                     Nvar->flg_stt=2; 
                  }
 
-                 if(Nvar && Nvar->flg_mem && Nvar->flg_stt==2){ 
+                 if(Nvar && Nvar->flg_stt==2)
                     var_lhs=Nvar->var;    
-                 }   
+                   
                  
-                 if(Nvar==NULL && bram){
+                 if(!Nvar)
                     var_lhs=ncap_var_init(vid->getText(),prs_arg,true);       
-                 }
+                 
                     
-               nbr_dmn=var_lhs->nbr_dim;
+                  nbr_dmn=var_lhs->nbr_dim;
 
-               // Now populate lmt_vtr;
-               if( lmt_mk(lmt_Ref,lmt_vtr) == 0){
-                  err_prn(fnc_nm,"Invalid hyperslab limits for variable "+ vid->getText());
-               }
+                  // Now populate lmt_vtr;
+                  if( lmt_mk(lmt_Ref,lmt_vtr) == 0)
+                    err_prn(fnc_nm,"Invalid hyperslab limits for variable "+ vid->getText());
+                  
 
-               if( lmt_vtr.size() != nbr_dmn){
-                  err_prn(fnc_nm,"Number of hyperslab limits for variable "+ vid->getText()+" doesn't match number of dimensions");
-               }
+                 if( lmt_vtr.size() != nbr_dmn)
+                    err_prn(fnc_nm,"Number of hyperslab limits for variable "+ vid->getText()+" doesn't match number of dimensions");
+                 
 
-                // add dim names to dimension list 
-               for(idx=0 ; idx < nbr_dmn;idx++) 
-                   lmt_vtr[idx]->nm=strdup(var_lhs->dim[idx]->nm);   
+                 // add dim names to dimension list 
+                 for(idx=0 ; idx < nbr_dmn;idx++) 
+                    lmt_vtr[idx]->nm=strdup(var_lhs->dim[idx]->nm);   
         
                 
-                slb_sz=1;        
+                 slb_sz=1;        
                 // fill out limit structure
                 for(idx=0 ; idx < nbr_dmn ;idx++){
                    (void)nco_lmt_evl(prs_arg->out_id,lmt_vtr[idx],0L,prs_arg->FORTRAN_IDX_CNV);
                     // Calculate size
                    slb_sz *= lmt_vtr[idx]->cnt;
                 }
-               // Calculate RHS variable                  
-               var_rhs=out(vid->getNextSibling());         
-               // Convert to LHS type
-               var_rhs=nco_var_cnf_typ(var_lhs->type,var_rhs);             
+                 // Calculate RHS variable                  
+                 var_rhs=out(vid->getNextSibling());         
+                 // Convert to LHS type
+                 var_rhs=nco_var_cnf_typ(var_lhs->type,var_rhs);             
                
-               // deal with scalar on RHS first         
-               if(var_rhs->sz == 1)
-                 (void)ncap_att_stretch(var_rhs,slb_sz);
+                 // deal with scalar on RHS first         
+                 if(var_rhs->sz == 1)
+                   (void)ncap_att_stretch(var_rhs,slb_sz);
 
 
-               // make sure var_lhs and var_rhs are the same size
-               // and that they are the same shape (ie they conform!!)          
-               if(var_rhs->sz != slb_sz){
-                 err_prn(fnc_nm, "Hyperslab for "+vid->getText()+" - number of elements on LHS(" +nbr2sng(slb_sz) +  ") doesn't equal number of elements on RHS(" +nbr2sng(var_rhs->sz) +  ")");                                       
+                 // make sure var_lhs and var_rhs are the same size
+                 // and that they are the same shape (ie they conform!!)          
+                 if(var_rhs->sz != slb_sz){
+                   err_prn(fnc_nm, "Hyperslab for "+vid->getText()+" - number of elements on LHS(" +nbr2sng(slb_sz) +  ") doesn't equal number of elements on RHS(" +nbr2sng(var_rhs->sz) +  ")");                                       
                  }
 
                 (void)nco_put_var_mem(var_rhs,var_lhs,lmt_vtr);
@@ -1485,11 +1491,12 @@ var=NULL_CEWI;
              
 
 
-              } else {                 
               // deal with Regular Vars
+              } else {                 
+
 
               // if var undefined in O or defined but not populated
-               if(Nvar==NULL || ( Nvar && Nvar->flg_stt==1)){              
+               if(!Nvar || ( Nvar && Nvar->flg_stt==1)){              
                   // if var isn't in ouptut then copy it there
                  //rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
                  var_lhs=ncap_var_init(vid->getText(),prs_arg,true);
@@ -1507,13 +1514,13 @@ var=NULL_CEWI;
                nbr_dmn=var_lhs->nbr_dim;
 
                // Now populate lmt_vtr;
-               if( lmt_mk(lmt_Ref,lmt_vtr) == 0){
+               if( lmt_mk(lmt_Ref,lmt_vtr) == 0)
                   err_prn(fnc_nm,"Invalid hyperslab limits for variable "+ vid->getText());
-               }
+               
 
-               if( lmt_vtr.size() != nbr_dmn){
+               if( lmt_vtr.size() != nbr_dmn)
                   err_prn(fnc_nm,"Number of hyperslab limits for variable "+ vid->getText()+" doesn't match number of dimensions");
-               }
+               
 
                 // add dim names to dimension list 
                for(idx=0 ; idx < nbr_dmn;idx++) 
