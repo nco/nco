@@ -1421,7 +1421,7 @@ var=NULL_CEWI;
               Nvar=prs_arg->ptr_var_vtr->find(var_nm);
  
               // Overwrite bram possibly 
-              if(Nvar && Nvar->flg_mem) 
+              if(Nvar) 
                 bram=Nvar->flg_mem;
 
                
@@ -1628,28 +1628,18 @@ var=NULL_CEWI;
               (void)nco_free(var_cst->val.vp);
               var_cst->val.vp=(void*)NULL;
 
-              if(var_cst->sz >1 && var1->sz==1){
-                var_sct *var_nw;
-                void *vp_swp;
-
-                var_nw=nco_var_dpl(var_cst);
-                var_nw=nco_var_cnf_typ(var1->type,var_nw);
-                (void)ncap_att_stretch(var1,var_nw->sz);
-                 
-                vp_swp=var_nw->val.vp;
-                var_nw->val.vp=var1->val.vp;
-                var1->val.vp=vp_swp;
-
-                var1=nco_var_free(var1);
-                var1=var_nw;
-               
+              bool br1=(var_cst->sz >1 && var1->sz==1);
+              bool br2=(var_cst->sz==var1->sz &&  ( ncap_var_is_att(var1) ||var1->has_dpl_dmn==-1 ));
               
-              }else if(var_cst->sz==var1->sz &&  ( ncap_var_is_att(var1) ||var1->has_dpl_dmn==-1 )){
+               
+              if( br1 || br2){
                 var_sct *var_nw;
                 void *vp_swp;
 
                 var_nw=nco_var_dpl(var_cst);
                 var_nw=nco_var_cnf_typ(var1->type,var_nw);
+                if(br1)
+                   (void)ncap_att_stretch(var1,var_nw->sz);
                  
                 vp_swp=var_nw->val.vp;
                 var_nw->val.vp=var1->val.vp;
@@ -1657,7 +1647,6 @@ var=NULL_CEWI;
 
                 var1=nco_var_free(var1);
                 var1=var_nw;
-
              }
                
                //blow out if vars not the same size      
