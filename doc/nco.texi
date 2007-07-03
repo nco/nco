@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.438 2007-07-01 20:51:45 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.439 2007-07-03 16:53:37 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -433,8 +433,8 @@ Irvine, California@*
 @sp 2
 @acronym{NCO} owes much of its progress since 2004 to resources made
 available by the US National Science Foundation (NSF).
-These supported me to maintain core @acronym{NCO} code, while graduate
-students and programmers advanced @acronym{NCO} in new directions. 
+These supported me to maintain core @acronym{NCO} code, and others
+to advance @acronym{NCO} in new directions. 
 Gayathri Venkitachalam helped implement @acronym{MPI}.
 Harry Mangalam improved regression testing and benchmarking.
 Daniel Wang developed the server-side capability, @acronym{SWAMP}.
@@ -443,7 +443,7 @@ Henry Butowsky, a long-time contributor, developed @command{ncap2}.
 @sp 1
 @noindent
 Charlie Zender@*
-March 2007@*
+July 2007@*
 Irvine, California@*
 @end ignore
 
