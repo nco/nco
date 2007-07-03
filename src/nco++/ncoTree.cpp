@@ -13,7 +13,7 @@ ncoTree::ncoTree()
 }
 
 int  ncoTree::lmt_peek(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
-#line 878 "ncoGrammer.g"
+#line 879 "ncoGrammer.g"
 	int nbr_dmn=0;
 #line 19 "ncoTree.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefAST lmt_peek_AST_in = (_t == ANTLR_USE_NAMESPACE(antlr)RefAST(ASTNULL)) ? ANTLR_USE_NAMESPACE(antlr)nullAST : _t;
@@ -24,7 +24,7 @@ int  ncoTree::lmt_peek(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 		match(_t,LMT_LIST);
 		_t = _t->getNextSibling();
 		if ( inputState->guessing==0 ) {
-#line 880 "ncoGrammer.g"
+#line 881 "ncoGrammer.g"
 			
 			RefAST aRef;     
 			aRef=lmt->getFirstChild();
@@ -51,7 +51,7 @@ int  ncoTree::lmt_peek(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 }
 
 int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
-#line 893 "ncoGrammer.g"
+#line 894 "ncoGrammer.g"
 	int iret=0;
 #line 57 "ncoTree.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefAST statements_AST_in = (_t == ANTLR_USE_NAMESPACE(antlr)RefAST(ASTNULL)) ? ANTLR_USE_NAMESPACE(antlr)nullAST : _t;
@@ -70,7 +70,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 	ANTLR_USE_NAMESPACE(antlr)RefAST del = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST mss = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST ch_mss = ANTLR_USE_NAMESPACE(antlr)nullAST;
-#line 893 "ncoGrammer.g"
+#line 894 "ncoGrammer.g"
 	
 	var_sct *var;
 	const std::string fnc_nm("statements");
@@ -91,7 +91,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,BLOCK);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 902 "ncoGrammer.g"
+#line 903 "ncoGrammer.g"
 				
 				//cout <<"Num of Children in block="<<blk->getNumberOfChildren()<<endl;
 				iret=run_exe(blk->getFirstChild(),lpp_vtr.size() );
@@ -113,7 +113,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t223;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 908 "ncoGrammer.g"
+#line 909 "ncoGrammer.g"
 				
 				RefAST tr;
 				RefAST ntr;  
@@ -153,7 +153,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t224;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 931 "ncoGrammer.g"
+#line 932 "ncoGrammer.g"
 				
 				//if can have only 3 or 4 parts  , 1 node and 2 or 3 siblings
 				// IF LOGICAL_EXP STATEMENT1 STATEMENT2
@@ -201,7 +201,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t225;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 960 "ncoGrammer.g"
+#line 961 "ncoGrammer.g"
 				
 				
 				bool br;
@@ -255,7 +255,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t226;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 989 "ncoGrammer.g"
+#line 990 "ncoGrammer.g"
 				
 				bool b1,b2,b3,br;
 				int iret;
@@ -319,7 +319,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,ELSE);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1044 "ncoGrammer.g"
+#line 1045 "ncoGrammer.g"
 				iret=ELSE;
 #line 325 "ncoTree.cpp"
 			}
@@ -331,7 +331,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,BREAK);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1045 "ncoGrammer.g"
+#line 1046 "ncoGrammer.g"
 				iret=BREAK;
 #line 337 "ncoTree.cpp"
 			}
@@ -343,7 +343,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,CONTINUE);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1046 "ncoGrammer.g"
+#line 1047 "ncoGrammer.g"
 				iret=CONTINUE;
 #line 349 "ncoTree.cpp"
 			}
@@ -355,7 +355,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,NULL_NODE);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1047 "ncoGrammer.g"
+#line 1048 "ncoGrammer.g"
 				iret=NULL_NODE;
 #line 361 "ncoTree.cpp"
 			}
@@ -375,7 +375,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t227;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1052 "ncoGrammer.g"
+#line 1053 "ncoGrammer.g"
 				
 				
 				const char *dmn_nm;
@@ -407,7 +407,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t228;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1069 "ncoGrammer.g"
+#line 1070 "ncoGrammer.g"
 				
 				
 				std::string va_nm;
@@ -453,7 +453,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t229;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1099 "ncoGrammer.g"
+#line 1100 "ncoGrammer.g"
 				
 				std::string va_nm;
 				NcapVar *Nvar;
@@ -501,7 +501,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t230;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1129 "ncoGrammer.g"
+#line 1130 "ncoGrammer.g"
 				
 				var_sct *var_in;
 				std::string va_nm;
@@ -551,7 +551,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t231;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1161 "ncoGrammer.g"
+#line 1162 "ncoGrammer.g"
 				
 				
 				char *cp_out;
@@ -628,7 +628,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 }
 
 var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
-#line 1763 "ncoGrammer.g"
+#line 1759 "ncoGrammer.g"
 	var_sct *var;
 #line 634 "ncoTree.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefAST out_AST_in = (_t == ANTLR_USE_NAMESPACE(antlr)RefAST(ASTNULL)) ? ANTLR_USE_NAMESPACE(antlr)nullAST : _t;
@@ -655,7 +655,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 	ANTLR_USE_NAMESPACE(antlr)RefAST val_uint = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST val_int64 = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST val_uint64 = ANTLR_USE_NAMESPACE(antlr)nullAST;
-#line 1763 "ncoGrammer.g"
+#line 1759 "ncoGrammer.g"
 	
 	const std::string fnc_nm("out"); 
 		var_sct *var1;
@@ -681,7 +681,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t288;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1785 "ncoGrammer.g"
+#line 1781 "ncoGrammer.g"
 				var=ncap_var_var_op(var1,var2, DIVIDE );
 #line 687 "ncoTree.cpp"
 			}
@@ -700,7 +700,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t289;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1787 "ncoGrammer.g"
+#line 1783 "ncoGrammer.g"
 				var=ncap_var_var_op(var1,var2, MOD);
 #line 706 "ncoTree.cpp"
 			}
@@ -719,7 +719,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t290;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1789 "ncoGrammer.g"
+#line 1785 "ncoGrammer.g"
 				var=ncap_var_var_op(var1,var2, CARET);
 #line 725 "ncoTree.cpp"
 			}
@@ -736,7 +736,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t291;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1793 "ncoGrammer.g"
+#line 1789 "ncoGrammer.g"
 				var=ncap_var_var_op(var1,NULL_CEWI, LNOT );
 #line 742 "ncoTree.cpp"
 			}
@@ -753,7 +753,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t294;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1799 "ncoGrammer.g"
+#line 1795 "ncoGrammer.g"
 				var=ncap_var_var_inc(var1,NULL_CEWI,INC,false,prs_arg);
 #line 759 "ncoTree.cpp"
 			}
@@ -770,7 +770,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t295;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1801 "ncoGrammer.g"
+#line 1797 "ncoGrammer.g"
 				var=ncap_var_var_inc(var1,NULL_CEWI, DEC,false,prs_arg );
 #line 776 "ncoTree.cpp"
 			}
@@ -787,7 +787,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t296;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1803 "ncoGrammer.g"
+#line 1799 "ncoGrammer.g"
 				
 				var=ncap_var_var_inc(var1,NULL_CEWI,POST_INC,false,prs_arg);
 				
@@ -806,7 +806,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t297;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1806 "ncoGrammer.g"
+#line 1802 "ncoGrammer.g"
 				
 				var=ncap_var_var_inc(var1,NULL_CEWI,POST_DEC,false,prs_arg);
 				
@@ -827,7 +827,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t298;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1812 "ncoGrammer.g"
+#line 1808 "ncoGrammer.g"
 				var=ncap_var_var_op(var1,var2, LAND );
 #line 833 "ncoTree.cpp"
 			}
@@ -846,7 +846,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t299;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1814 "ncoGrammer.g"
+#line 1810 "ncoGrammer.g"
 				var=ncap_var_var_op(var1,var2, LOR );
 #line 852 "ncoTree.cpp"
 			}
@@ -865,7 +865,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t300;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1817 "ncoGrammer.g"
+#line 1813 "ncoGrammer.g"
 				var=ncap_var_var_op(var1,var2, LTHAN );
 #line 871 "ncoTree.cpp"
 			}
@@ -884,7 +884,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t301;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1819 "ncoGrammer.g"
+#line 1815 "ncoGrammer.g"
 				var=ncap_var_var_op(var1,var2, GTHAN );
 #line 890 "ncoTree.cpp"
 			}
@@ -903,7 +903,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t302;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1821 "ncoGrammer.g"
+#line 1817 "ncoGrammer.g"
 				var=ncap_var_var_op(var1,var2, GEQ );
 #line 909 "ncoTree.cpp"
 			}
@@ -922,7 +922,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t303;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1823 "ncoGrammer.g"
+#line 1819 "ncoGrammer.g"
 				var=ncap_var_var_op(var1,var2, LEQ );
 #line 928 "ncoTree.cpp"
 			}
@@ -941,7 +941,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t304;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1825 "ncoGrammer.g"
+#line 1821 "ncoGrammer.g"
 				var=ncap_var_var_op(var1,var2, EQ );
 #line 947 "ncoTree.cpp"
 			}
@@ -960,7 +960,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t305;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1827 "ncoGrammer.g"
+#line 1823 "ncoGrammer.g"
 				var=ncap_var_var_op(var1,var2, NEQ );
 #line 966 "ncoTree.cpp"
 			}
@@ -980,7 +980,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t306;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1830 "ncoGrammer.g"
+#line 1826 "ncoGrammer.g"
 				
 				var1=out_asn(pls_asn);
 				var=ncap_var_var_inc(var1,var2, PLUS_ASSIGN ,(pls_asn->getType()==TIMES), prs_arg);
@@ -1003,7 +1003,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t307;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1834 "ncoGrammer.g"
+#line 1830 "ncoGrammer.g"
 				
 				var1=out_asn(min_asn);
 				var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN ,(min_asn->getType()==TIMES), prs_arg);
@@ -1026,7 +1026,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t308;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1838 "ncoGrammer.g"
+#line 1834 "ncoGrammer.g"
 				
 				var1=out_asn(tim_asn);
 				var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN ,(tim_asn->getType()==TIMES), prs_arg);
@@ -1049,7 +1049,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t309;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1842 "ncoGrammer.g"
+#line 1838 "ncoGrammer.g"
 					
 				var1=out_asn(div_asn);
 				var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN ,(div_asn->getType()==TIMES), prs_arg);
@@ -1070,7 +1070,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t310;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1848 "ncoGrammer.g"
+#line 1844 "ncoGrammer.g"
 				
 				// Check for RAM variable - if present 
 				// change tree - for example from:
@@ -1125,7 +1125,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t311;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1886 "ncoGrammer.g"
+#line 1882 "ncoGrammer.g"
 				
 				bool br;
 				
@@ -1163,7 +1163,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t312;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1906 "ncoGrammer.g"
+#line 1902 "ncoGrammer.g"
 				
 				sym_sct * sym_ptr;
 				
@@ -1209,7 +1209,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,DIM_ID_SIZE);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1925 "ncoGrammer.g"
+#line 1921 "ncoGrammer.g"
 				
 				string sDim=dval->getText();
 				dmn_sct *dmn_fd;
@@ -1240,7 +1240,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,ATT_ID);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1973 "ncoGrammer.g"
+#line 1969 "ncoGrammer.g"
 				
 				
 				NcapVar *Nvar=NULL;
@@ -1281,7 +1281,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,VALUE_LIST);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 2005 "ncoGrammer.g"
+#line 2001 "ncoGrammer.g"
 				
 				var=value_list(vlst);
 				
@@ -1295,7 +1295,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,NSTRING);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 2010 "ncoGrammer.g"
+#line 2006 "ncoGrammer.g"
 				
 				char *tsng;
 				
@@ -1327,7 +1327,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,FLOAT);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 2034 "ncoGrammer.g"
+#line 2030 "ncoGrammer.g"
 				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~float"),(nc_type)NC_FLOAT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~float"),static_cast<float>(std::strtod(val_float->getText().c_str(),(char **)NULL)));
 #line 1333 "ncoTree.cpp"
 			}
@@ -1339,7 +1339,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,DOUBLE);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 2036 "ncoGrammer.g"
+#line 2032 "ncoGrammer.g"
 				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~double"),(nc_type)NC_DOUBLE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~double"),strtod(val_double->getText().c_str(),(char **)NULL));
 #line 1345 "ncoTree.cpp"
 			}
@@ -1351,7 +1351,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,INT);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 2038 "ncoGrammer.g"
+#line 2034 "ncoGrammer.g"
 				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int"),(nc_type)NC_INT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int"),static_cast<nco_int>(std::strtol(val_int->getText().c_str(),(char **)NULL,10)));
 #line 1357 "ncoTree.cpp"
 			}
@@ -1363,7 +1363,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,SHORT);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 2040 "ncoGrammer.g"
+#line 2036 "ncoGrammer.g"
 				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~short"),(nc_type)NC_SHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~short"),static_cast<nco_short>(std::strtol(val_short->getText().c_str(),(char **)NULL,10)));
 #line 1369 "ncoTree.cpp"
 			}
@@ -1375,7 +1375,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,BYTE);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 2042 "ncoGrammer.g"
+#line 2038 "ncoGrammer.g"
 				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),(nc_type)NC_BYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~byte"),static_cast<nco_byte>(std::strtol(val_byte->getText().c_str(),(char **)NULL,10)));
 #line 1381 "ncoTree.cpp"
 			}
@@ -1387,7 +1387,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,UBYTE);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 2047 "ncoGrammer.g"
+#line 2043 "ncoGrammer.g"
 				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~ubyte"),(nc_type)NC_UBYTE,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~ubyte"),static_cast<nco_ubyte>(std::strtoul(val_ubyte->getText().c_str(),(char **)NULL,10)));
 #line 1393 "ncoTree.cpp"
 			}
@@ -1399,7 +1399,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,USHORT);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 2051 "ncoGrammer.g"
+#line 2047 "ncoGrammer.g"
 				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~ushort"),(nc_type)NC_USHORT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~ushort"),static_cast<nco_ushort>(std::strtoul(val_ushort->getText().c_str(),(char **)NULL,10)));
 #line 1405 "ncoTree.cpp"
 			}
@@ -1411,7 +1411,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,UINT);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 2053 "ncoGrammer.g"
+#line 2049 "ncoGrammer.g"
 				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~uint"),(nc_type)NC_UINT,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~uint"),static_cast<nco_uint>(std::strtoul(val_uint->getText().c_str(),(char **)NULL,10)));
 #line 1417 "ncoTree.cpp"
 			}
@@ -1423,7 +1423,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,INT64);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 2055 "ncoGrammer.g"
+#line 2051 "ncoGrammer.g"
 				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~int64"),(nc_type)NC_INT64,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~int64"),sng2nbr(val_int64->getText(),nco_int64_CEWI));
 #line 1429 "ncoTree.cpp"
 			}
@@ -1435,7 +1435,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,UINT64);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 2059 "ncoGrammer.g"
+#line 2055 "ncoGrammer.g"
 				if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(static_cast<std::string>("~uint64"),(nc_type)NC_UINT64,false); else var=ncap_sclr_var_mk(static_cast<std::string>("~uint64"),sng2nbr(val_uint64->getText(),nco_uint64_CEWI));
 #line 1441 "ncoTree.cpp"
 			}
@@ -1479,7 +1479,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				_t = __t270;
 				_t = _t->getNextSibling();
 				if ( inputState->guessing==0 ) {
-#line 1773 "ncoGrammer.g"
+#line 1769 "ncoGrammer.g"
 					var=ncap_var_var_op(var1,var2, PLUS );
 #line 1485 "ncoTree.cpp"
 				}
@@ -1522,7 +1522,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 					_t = __t274;
 					_t = _t->getNextSibling();
 					if ( inputState->guessing==0 ) {
-#line 1775 "ncoGrammer.g"
+#line 1771 "ncoGrammer.g"
 						var=ncap_var_var_op(var1,var2, MINUS );
 #line 1528 "ncoTree.cpp"
 					}
@@ -1573,7 +1573,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 						_t = __t279;
 						_t = _t->getNextSibling();
 						if ( inputState->guessing==0 ) {
-#line 1776 "ncoGrammer.g"
+#line 1772 "ncoGrammer.g"
 							
 							var=ncap_var_var_inc(var1,NULL_CEWI,POST_INC,true,prs_arg);      
 							
@@ -1626,7 +1626,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 							_t = __t285;
 							_t = _t->getNextSibling();
 							if ( inputState->guessing==0 ) {
-#line 1779 "ncoGrammer.g"
+#line 1775 "ncoGrammer.g"
 								
 								var=ncap_var_var_inc(var1,NULL_CEWI,POST_DEC,true,prs_arg);      
 								
@@ -1645,7 +1645,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 							_t = __t287;
 							_t = _t->getNextSibling();
 							if ( inputState->guessing==0 ) {
-#line 1783 "ncoGrammer.g"
+#line 1779 "ncoGrammer.g"
 								var=ncap_var_var_op(var1,var2, TIMES );
 #line 1651 "ncoTree.cpp"
 							}
@@ -1660,7 +1660,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 							_t = __t292;
 							_t = _t->getNextSibling();
 							if ( inputState->guessing==0 ) {
-#line 1795 "ncoGrammer.g"
+#line 1791 "ncoGrammer.g"
 								var=ncap_var_var_op(var1,NULL_CEWI, MINUS );
 #line 1666 "ncoTree.cpp"
 							}
@@ -1711,7 +1711,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 								_t = __t319;
 								_t = _t->getNextSibling();
 								if ( inputState->guessing==0 ) {
-#line 1947 "ncoGrammer.g"
+#line 1943 "ncoGrammer.g"
 									
 									var=var_lmt(vid);
 									
@@ -1724,7 +1724,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 								match(_t,VAR_ID);
 								_t = _t->getNextSibling();
 								if ( inputState->guessing==0 ) {
-#line 1954 "ncoGrammer.g"
+#line 1950 "ncoGrammer.g"
 									
 									
 									var=ncap_var_init(v->getText(), prs_arg,true);
@@ -1766,7 +1766,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 var_sct * ncoTree::assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 	bool bram
 ) {
-#line 1216 "ncoGrammer.g"
+#line 1217 "ncoGrammer.g"
 	var_sct *var;
 #line 1772 "ncoTree.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefAST assign_ntl_AST_in = (_t == ANTLR_USE_NAMESPACE(antlr)RefAST(ASTNULL)) ? ANTLR_USE_NAMESPACE(antlr)nullAST : _t;
@@ -1778,7 +1778,7 @@ var_sct * ncoTree::assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 	ANTLR_USE_NAMESPACE(antlr)RefAST att = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST att1 = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST att2 = ANTLR_USE_NAMESPACE(antlr)nullAST;
-#line 1216 "ncoGrammer.g"
+#line 1217 "ncoGrammer.g"
 	
 	const std::string fnc_nm("assign_ntl"); 
 	var=NULL_CEWI;
@@ -1821,7 +1821,7 @@ var_sct * ncoTree::assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 			_t = __t236;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1221 "ncoGrammer.g"
+#line 1222 "ncoGrammer.g"
 				
 				
 				
@@ -1888,7 +1888,7 @@ var_sct * ncoTree::assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				_t = __t240;
 				_t = _t->getNextSibling();
 				if ( inputState->guessing==0 ) {
-#line 1249 "ncoGrammer.g"
+#line 1250 "ncoGrammer.g"
 					
 					
 					int idx;
@@ -1972,7 +1972,7 @@ var_sct * ncoTree::assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				match(_t,VAR_ID);
 				_t = _t->getNextSibling();
 				if ( inputState->guessing==0 ) {
-#line 1325 "ncoGrammer.g"
+#line 1326 "ncoGrammer.g"
 					
 					
 					
@@ -2040,7 +2040,7 @@ var_sct * ncoTree::assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 					_t = __t244;
 					_t = _t->getNextSibling();
 					if ( inputState->guessing==0 ) {
-#line 1354 "ncoGrammer.g"
+#line 1355 "ncoGrammer.g"
 						
 						;
 						
@@ -2083,7 +2083,7 @@ var_sct * ncoTree::assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 						_t = __t248;
 						_t = _t->getNextSibling();
 						if ( inputState->guessing==0 ) {
-#line 1357 "ncoGrammer.g"
+#line 1358 "ncoGrammer.g"
 							
 							;
 							
@@ -2095,7 +2095,7 @@ var_sct * ncoTree::assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 						match(_t,ATT_ID);
 						_t = _t->getNextSibling();
 						if ( inputState->guessing==0 ) {
-#line 1360 "ncoGrammer.g"
+#line 1361 "ncoGrammer.g"
 							
 							
 							//In Initial scan all newly defined atts are flagged as Undefined
@@ -2139,7 +2139,7 @@ var_sct * ncoTree::assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 	bool bram
 ) {
-#line 1383 "ncoGrammer.g"
+#line 1384 "ncoGrammer.g"
 	var_sct *var;
 #line 2145 "ncoTree.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefAST assign_AST_in = (_t == ANTLR_USE_NAMESPACE(antlr)RefAST(ASTNULL)) ? ANTLR_USE_NAMESPACE(antlr)nullAST : _t;
@@ -2151,7 +2151,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 	ANTLR_USE_NAMESPACE(antlr)RefAST att = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST att1 = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST att2 = ANTLR_USE_NAMESPACE(antlr)nullAST;
-#line 1383 "ncoGrammer.g"
+#line 1384 "ncoGrammer.g"
 	
 	const std::string fnc_nm("assign"); 
 	var=NULL_CEWI;
@@ -2194,7 +2194,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 			_t = __t253;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 1389 "ncoGrammer.g"
+#line 1390 "ncoGrammer.g"
 				
 				
 				int idx;
@@ -2228,11 +2228,16 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				
 				Nvar=prs_arg->ptr_var_vtr->find(var_nm);
 				
+				// Overwrite bram possibly 
+				if(Nvar) 
+				bram=Nvar->flg_mem;
+				
+				
 				// Deal with RAM variables
-				if( Nvar==NULL && bram || Nvar && Nvar->flg_mem) {
+				if(bram) {
 				
 				
-				if(Nvar && Nvar->flg_mem && Nvar->flg_stt==1){
+				if(Nvar && Nvar->flg_stt==1){
 				var_sct *var_ini;
 				var_ini=ncap_var_init(vid->getText(),prs_arg,true);       
 				Nvar->var->val.vp=var_ini->val.vp;
@@ -2241,24 +2246,24 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				Nvar->flg_stt=2; 
 				}
 				
-				if(Nvar && Nvar->flg_mem && Nvar->flg_stt==2){ 
+				if(Nvar && Nvar->flg_stt==2)
 				var_lhs=Nvar->var;    
-				}   
 				
-				if(Nvar==NULL && bram){
+				
+				if(!Nvar)
 				var_lhs=ncap_var_init(vid->getText(),prs_arg,true);       
-				}
+				
 				
 				nbr_dmn=var_lhs->nbr_dim;
 				
 				// Now populate lmt_vtr;
-				if( lmt_mk(lmt_Ref,lmt_vtr) == 0){
+				if( lmt_mk(lmt_Ref,lmt_vtr) == 0)
 				err_prn(fnc_nm,"Invalid hyperslab limits for variable "+ vid->getText());
-				}
 				
-				if( lmt_vtr.size() != nbr_dmn){
+				
+				if( lmt_vtr.size() != nbr_dmn)
 				err_prn(fnc_nm,"Number of hyperslab limits for variable "+ vid->getText()+" doesn't match number of dimensions");
-				}
+				
 				
 				// add dim names to dimension list 
 				for(idx=0 ; idx < nbr_dmn;idx++) 
@@ -2294,11 +2299,12 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				
 				
 				
-				} else {                 
 				// deal with Regular Vars
+				} else {                 
+				
 				
 				// if var undefined in O or defined but not populated
-				if(Nvar==NULL || ( Nvar && Nvar->flg_stt==1)){              
+				if(!Nvar || ( Nvar && Nvar->flg_stt==1)){              
 				// if var isn't in ouptut then copy it there
 				//rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
 				var_lhs=ncap_var_init(vid->getText(),prs_arg,true);
@@ -2316,13 +2322,13 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				nbr_dmn=var_lhs->nbr_dim;
 				
 				// Now populate lmt_vtr;
-				if( lmt_mk(lmt_Ref,lmt_vtr) == 0){
+				if( lmt_mk(lmt_Ref,lmt_vtr) == 0)
 				err_prn(fnc_nm,"Invalid hyperslab limits for variable "+ vid->getText());
-				}
 				
-				if( lmt_vtr.size() != nbr_dmn){
+				
+				if( lmt_vtr.size() != nbr_dmn)
 				err_prn(fnc_nm,"Number of hyperslab limits for variable "+ vid->getText()+" doesn't match number of dimensions");
-				}
+				
 				
 				// add dim names to dimension list 
 				for(idx=0 ; idx < nbr_dmn;idx++) 
@@ -2395,7 +2401,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				(void)nco_lmt_free(lmt_vtr[idx]);
 				
 				
-#line 2399 "ncoTree.cpp"
+#line 2405 "ncoTree.cpp"
 			}
 		}
 		else {
@@ -2434,7 +2440,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				_t = __t257;
 				_t = _t->getNextSibling();
 				if ( inputState->guessing==0 ) {
-#line 1592 "ncoGrammer.g"
+#line 1599 "ncoGrammer.g"
 					
 					
 					var_sct *var1;
@@ -2467,12 +2473,17 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 					(void)nco_free(var_cst->val.vp);
 					var_cst->val.vp=(void*)NULL;
 					
-					if(var_cst->sz >1 && var1->sz==1){
+					bool br1=(var_cst->sz >1 && var1->sz==1);
+					bool br2=(var_cst->sz==var1->sz &&  ( ncap_var_is_att(var1) ||var1->has_dpl_dmn==-1 ));
+					
+					
+					if( br1 || br2){
 					var_sct *var_nw;
 					void *vp_swp;
 					
 					var_nw=nco_var_dpl(var_cst);
 					var_nw=nco_var_cnf_typ(var1->type,var_nw);
+					if(br1)
 					(void)ncap_att_stretch(var1,var_nw->sz);
 					
 					vp_swp=var_nw->val.vp;
@@ -2481,22 +2492,6 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 					
 					var1=nco_var_free(var1);
 					var1=var_nw;
-					
-					
-					}else if(var_cst->sz==var1->sz &&  ( ncap_var_is_att(var1) ||var1->has_dpl_dmn==-1 )){
-					var_sct *var_nw;
-					void *vp_swp;
-					
-					var_nw=nco_var_dpl(var_cst);
-					var_nw=nco_var_cnf_typ(var1->type,var_nw);
-					
-					vp_swp=var_nw->val.vp;
-					var_nw->val.vp=var1->val.vp;
-					var1->val.vp=vp_swp;
-					
-					var1=nco_var_free(var1);
-					var1=var_nw;
-					
 					}
 					
 					//blow out if vars not the same size      
@@ -2526,7 +2521,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 					
 					
 					
-#line 2530 "ncoTree.cpp"
+#line 2525 "ncoTree.cpp"
 				}
 			}
 			else if ((_t->getType() == VAR_ID)) {
@@ -2534,7 +2529,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				match(_t,VAR_ID);
 				_t = _t->getNextSibling();
 				if ( inputState->guessing==0 ) {
-#line 1684 "ncoGrammer.g"
+#line 1680 "ncoGrammer.g"
 					
 					// Set class wide variables
 					var_sct *var1;
@@ -2580,7 +2575,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 					
 					
 					
-#line 2584 "ncoTree.cpp"
+#line 2579 "ncoTree.cpp"
 				}
 			}
 			else {
@@ -2619,11 +2614,11 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 					_t = __t261;
 					_t = _t->getNextSibling();
 					if ( inputState->guessing==0 ) {
-#line 1730 "ncoGrammer.g"
+#line 1726 "ncoGrammer.g"
 						
 						;
 						
-#line 2627 "ncoTree.cpp"
+#line 2622 "ncoTree.cpp"
 					}
 				}
 				else {
@@ -2662,11 +2657,11 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 						_t = __t265;
 						_t = _t->getNextSibling();
 						if ( inputState->guessing==0 ) {
-#line 1733 "ncoGrammer.g"
+#line 1729 "ncoGrammer.g"
 							
 							;
 							
-#line 2670 "ncoTree.cpp"
+#line 2665 "ncoTree.cpp"
 						}
 					}
 					else if ((_t->getType() == ATT_ID)) {
@@ -2674,7 +2669,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 						match(_t,ATT_ID);
 						_t = _t->getNextSibling();
 						if ( inputState->guessing==0 ) {
-#line 1736 "ncoGrammer.g"
+#line 1732 "ncoGrammer.g"
 							
 							
 							var_sct *var1;
@@ -2699,7 +2694,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 							var=nco_var_dpl(var1);               ;
 							
 							
-#line 2703 "ncoTree.cpp"
+#line 2698 "ncoTree.cpp"
 						}
 					}
 		else {
@@ -2721,19 +2716,19 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 }
 
 var_sct * ncoTree::out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
-#line 2070 "ncoGrammer.g"
+#line 2066 "ncoGrammer.g"
 	var_sct *var;
-#line 2727 "ncoTree.cpp"
+#line 2722 "ncoTree.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefAST out_asn_AST_in = (_t == ANTLR_USE_NAMESPACE(antlr)RefAST(ASTNULL)) ? ANTLR_USE_NAMESPACE(antlr)nullAST : _t;
 	ANTLR_USE_NAMESPACE(antlr)RefAST vid1 = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST vid = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST att = ANTLR_USE_NAMESPACE(antlr)nullAST;
-#line 2070 "ncoGrammer.g"
+#line 2066 "ncoGrammer.g"
 	
 	const std::string fnc_nm("assign_asn");
 	var=NULL_CEWI; 
 	
-#line 2737 "ncoTree.cpp"
+#line 2732 "ncoTree.cpp"
 	
 	try {      // for error handling
 		if (_t == ANTLR_USE_NAMESPACE(antlr)nullAST )
@@ -2751,7 +2746,7 @@ var_sct * ncoTree::out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			_t = __t321;
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 2077 "ncoGrammer.g"
+#line 2073 "ncoGrammer.g"
 				
 				if(vid1->getFirstChild())
 				err_prn(fnc_nm,"Invalid Lvalue " +vid1->getText() );
@@ -2762,7 +2757,7 @@ var_sct * ncoTree::out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				}
 				
 				
-#line 2766 "ncoTree.cpp"
+#line 2761 "ncoTree.cpp"
 			}
 			break;
 		}
@@ -2772,7 +2767,7 @@ var_sct * ncoTree::out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,VAR_ID);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 2088 "ncoGrammer.g"
+#line 2084 "ncoGrammer.g"
 				
 				if(vid->getFirstChild())
 				err_prn(fnc_nm,"Invalid Lvalue " +vid->getText() );
@@ -2785,7 +2780,7 @@ var_sct * ncoTree::out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				
 				
 				
-#line 2789 "ncoTree.cpp"
+#line 2784 "ncoTree.cpp"
 			}
 			break;
 		}
@@ -2795,7 +2790,7 @@ var_sct * ncoTree::out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			match(_t,ATT_ID);
 			_t = _t->getNextSibling();
 			if ( inputState->guessing==0 ) {
-#line 2101 "ncoGrammer.g"
+#line 2097 "ncoGrammer.g"
 				
 				// check "output"
 				NcapVar *Nvar=NULL;
@@ -2831,7 +2826,7 @@ var_sct * ncoTree::out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				
 				
 				
-#line 2835 "ncoTree.cpp"
+#line 2830 "ncoTree.cpp"
 			}
 			break;
 		}
@@ -2855,19 +2850,19 @@ var_sct * ncoTree::out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 }
 
 var_sct * ncoTree::methods(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
-#line 2420 "ncoGrammer.g"
+#line 2416 "ncoGrammer.g"
 	var_sct *var;
-#line 2861 "ncoTree.cpp"
+#line 2856 "ncoTree.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefAST methods_AST_in = (_t == ANTLR_USE_NAMESPACE(antlr)RefAST(ASTNULL)) ? ANTLR_USE_NAMESPACE(antlr)nullAST : _t;
 	ANTLR_USE_NAMESPACE(antlr)RefAST mtd = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST args = ANTLR_USE_NAMESPACE(antlr)nullAST;
-#line 2420 "ncoGrammer.g"
+#line 2416 "ncoGrammer.g"
 	
 	const std::string fnc_nm("methods");
 	var=NULL_CEWI; 
 	var_sct *var1;
 	
-#line 2871 "ncoTree.cpp"
+#line 2866 "ncoTree.cpp"
 	
 	try {      // for error handling
 		{
@@ -2881,7 +2876,7 @@ var_sct * ncoTree::methods(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 		_t = _t->getNextSibling();
 		}
 		if ( inputState->guessing==0 ) {
-#line 2428 "ncoGrammer.g"
+#line 2424 "ncoGrammer.g"
 			
 			int nbr_arg;
 			int idx;
@@ -3039,7 +3034,7 @@ var_sct * ncoTree::methods(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			end_dot: ;
 			
 			
-#line 3043 "ncoTree.cpp"
+#line 3038 "ncoTree.cpp"
 		}
 	}
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
@@ -3056,18 +3051,18 @@ var_sct * ncoTree::methods(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 }
 
 var_sct * ncoTree::property(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
-#line 2387 "ncoGrammer.g"
+#line 2383 "ncoGrammer.g"
 	var_sct *var;
-#line 3062 "ncoTree.cpp"
+#line 3057 "ncoTree.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefAST property_AST_in = (_t == ANTLR_USE_NAMESPACE(antlr)RefAST(ASTNULL)) ? ANTLR_USE_NAMESPACE(antlr)nullAST : _t;
 	ANTLR_USE_NAMESPACE(antlr)RefAST prp = ANTLR_USE_NAMESPACE(antlr)nullAST;
-#line 2387 "ncoGrammer.g"
+#line 2383 "ncoGrammer.g"
 	
 	const std::string fnc_nm("property");
 	var=NULL_CEWI; 
 	var_sct *var1;
 	
-#line 3071 "ncoTree.cpp"
+#line 3066 "ncoTree.cpp"
 	
 	try {      // for error handling
 		{
@@ -3078,7 +3073,7 @@ var_sct * ncoTree::property(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 		_t = _t->getNextSibling();
 		}
 		if ( inputState->guessing==0 ) {
-#line 2395 "ncoGrammer.g"
+#line 2391 "ncoGrammer.g"
 			
 			if(prs_arg->ntl_scn){
 			var1=nco_var_free(var1);
@@ -3099,7 +3094,7 @@ var_sct * ncoTree::property(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			var1=nco_var_free(var1); 
 			}
 			
-#line 3103 "ncoTree.cpp"
+#line 3098 "ncoTree.cpp"
 		}
 	}
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
@@ -3116,17 +3111,17 @@ var_sct * ncoTree::property(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 }
 
 var_sct * ncoTree::value_list(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
-#line 2139 "ncoGrammer.g"
+#line 2135 "ncoGrammer.g"
 	var_sct *var;
-#line 3122 "ncoTree.cpp"
+#line 3117 "ncoTree.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefAST value_list_AST_in = (_t == ANTLR_USE_NAMESPACE(antlr)RefAST(ASTNULL)) ? ANTLR_USE_NAMESPACE(antlr)nullAST : _t;
 	ANTLR_USE_NAMESPACE(antlr)RefAST vlst = ANTLR_USE_NAMESPACE(antlr)nullAST;
-#line 2139 "ncoGrammer.g"
+#line 2135 "ncoGrammer.g"
 	
 	const std::string fnc_nm("var_lmt");
 	var=NULL_CEWI; 
 	
-#line 3130 "ncoTree.cpp"
+#line 3125 "ncoTree.cpp"
 	
 	try {      // for error handling
 		{
@@ -3135,7 +3130,7 @@ var_sct * ncoTree::value_list(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 		_t = _t->getNextSibling();
 		}
 		if ( inputState->guessing==0 ) {
-#line 2144 "ncoGrammer.g"
+#line 2140 "ncoGrammer.g"
 			
 			
 			char *cp;
@@ -3229,7 +3224,7 @@ var_sct * ncoTree::value_list(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			var=var_ret;
 			
 			
-#line 3233 "ncoTree.cpp"
+#line 3228 "ncoTree.cpp"
 		}
 	}
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
@@ -3246,18 +3241,18 @@ var_sct * ncoTree::value_list(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 }
 
 var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
-#line 2242 "ncoGrammer.g"
+#line 2238 "ncoGrammer.g"
 	var_sct *var;
-#line 3252 "ncoTree.cpp"
+#line 3247 "ncoTree.cpp"
 	ANTLR_USE_NAMESPACE(antlr)RefAST var_lmt_AST_in = (_t == ANTLR_USE_NAMESPACE(antlr)RefAST(ASTNULL)) ? ANTLR_USE_NAMESPACE(antlr)nullAST : _t;
 	ANTLR_USE_NAMESPACE(antlr)RefAST vid = ANTLR_USE_NAMESPACE(antlr)nullAST;
 	ANTLR_USE_NAMESPACE(antlr)RefAST lmt = ANTLR_USE_NAMESPACE(antlr)nullAST;
-#line 2242 "ncoGrammer.g"
+#line 2238 "ncoGrammer.g"
 	
 	const std::string fnc_nm("var_lmt");
 	var=NULL_CEWI; 
 	
-#line 3261 "ncoTree.cpp"
+#line 3256 "ncoTree.cpp"
 	
 	try {      // for error handling
 		ANTLR_USE_NAMESPACE(antlr)RefAST __t325 = _t;
@@ -3270,7 +3265,7 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 		_t = __t325;
 		_t = _t->getNextSibling();
 		if ( inputState->guessing==0 ) {
-#line 2247 "ncoGrammer.g"
+#line 2243 "ncoGrammer.g"
 			
 			bool bram;   // Check for a RAM variable
 			int idx;
@@ -3409,7 +3404,7 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			end: ;
 			
 			
-#line 3413 "ncoTree.cpp"
+#line 3408 "ncoTree.cpp"
 		}
 	}
 	catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& ex) {
