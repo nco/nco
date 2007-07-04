@@ -1,53 +1,31 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.249 2007-06-29 18:47:19 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.250 2007-07-04 15:21:17 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.1 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Release 3.9.1 supports netCDF4/HDF Lempel-Ziv deflation
-and contains multiple fixes for building NCO and ncap2 
-for various compilers (including Intel) and OSs.
+Release 3.9.1 supports 
+ncap2 type conversion
 
-Compression/deflation with netCDF4-enabled NCO:
-Our unscientific testing shows that maximum deflation compresses
-typical climate datasets by 30-40%. Here's how to convert a netCDF3
-dataset to a (deflated) netCDF4 dataset: 
+A. 
 
-ncks  -O -4 -L 9 in.nc out.nc # Deflate file (slow)
-
-Or, pack files (with lossy algorithm) to compress ~50%:
-
-ncpdq -O in.nc out.nc # Pack file (fast)
-
-Or, pack _and_ deflate files to squeeze datasets by ~80%!:
-
-ncpdq -O -4 -L 9 in.nc out.nc # Pack and deflate (slower)
-
-0. Thanks to KR for the $50 donation!
-
-A. -L [0..9] deflates (Lempel-Ziv compresses) netCDF4 files 
-   http://nco.sf.net/nco.html#deflate
-
-B. --fl_fmt switch supports converting netCDF4->netCDF3
-   http://nco.sf.net/nco.html#fl_fmt
+B. 
 
 C. New Documentation:
-   Working with non-standard grids, e.g., 2D grids 
+   Working with non-standard grids, e.g., 2D grids fxm
    http://nco.sf.net/nco.html#grd
 
-D. Build RPMs correctly for hybrid 32/64-bit OSs (e.g., RHEL, Rocks)
-   Thanks to Daniel Wang for this patch
+D. 
 
-E. Improve ncap2 missing_value handling and RAM variables (Henry Butowsky) 
+E. ncap2 continues to grow more powerful (Henry Butowsky)
+   Demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]   
 
-F. ncap2 supports loops! (Henry Butowsky)
-   Demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]
+F. ncap2 supports type conversion (Henry Butowsky)
+   ncap2 -s 'big_int=uint64(small_int)+double(small_int);' in.nc out.nc
    http://nco.sf.net/nco.html#ncap2 
 
-G. Fix bug with ncap2 built with Intel compilers
-   Thanks to Remik Ziemlinski for his excellent bug reports!
-   http://nco.sf.net#bug_ncbo_pck
+G. 
 
 H. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
    http://nco.sf.net#debian

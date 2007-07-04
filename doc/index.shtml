@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.431 2007-07-03 22:39:10 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.432 2007-07-04 15:21:18 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -456,6 +456,7 @@ Instead, retrieve all recently tagged versions
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
 <li><b>NCO/SDO 3.9.2</b>: (<i>In progress</i>) GCC&nbsp;4.2 compatibility;
+<tt>ncap2</tt> type-conversion support;
 <li><b>NCO/SDO 3.9.1</b>: 
 <a href="http://nco.sf.net/nco.html#deflate">Support</a> lossless netCDF4/HDF deflation;
 Improve Intel compiler support; 

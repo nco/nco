@@ -1,3 +1,7 @@
+2007-07-04  Charlie Zender  <zender@uci.edu>
+
+	* Note ncap2 type-conversion support
+
 2007-06-30  Charlie Zender  <zender@uci.edu>
 
 	* Add -4 and -L dfl_lvl to man pages

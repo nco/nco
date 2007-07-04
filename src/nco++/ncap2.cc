@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.46 2007-07-04 14:41:38 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.47 2007-07-04 15:21:19 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.46 2007-07-04 14:41:38 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.46 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.47 2007-07-04 15:21:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.47 $";
   const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -493,9 +493,8 @@ main(int argc,char **argv)
   /* sym_vtr.push(ncap_sym_init("trunc",trunc,truncf)); *//* Round to nearest integer not larger in absolute value */
   /* sym_vtr.push(ncap_sym_init("rint",rint,rintf)); *//* Round to integer value in floating point format using current rounding direction, raise inexact exceptions */
 
-
-  /* now add convert functions nb this is only a temporary home 
-     untill function/method framework is up */
+  /* Add type conversion functions 
+     NB: Temporary home until function/method framework works */
   sym_vtr.push_back(ncap_sym_init("float",tanh,tanhf));
   sym_vtr.push_back(ncap_sym_init("double",tanh,tanhf));
   sym_vtr.push_back(ncap_sym_init("long",tanh,tanhf));
