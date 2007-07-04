@@ -1,4 +1,5 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.28 2007-06-22 02:41:15 wangd Exp $
+
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.29 2007-07-04 00:15:08 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -64,6 +65,12 @@ def isRemote(filepath):
 
 class VariableParser:
     """treats shell vars "a=b" and env vars "export a=b" as the same for now.
+
+    Bourne shell grammar at:
+    The Open Group Base Specifications Issue 6
+    IEEE Std 1003.1, 2004 Edition
+    http://www.opengroup.org/onlinepubs/009695399/toc.htm
+    http://www.opengroup.org/onlinepubs/007904975/toc.htm
     """
     ident = "[A-Za-z]\w*"
     quoteclass = "[\"\']"
@@ -73,8 +80,8 @@ class VariableParser:
     reference = protReference | unpReference
     backtickString = Literal("`") + CharsNotIn("`") + Literal("`")
     
-    def __init__(self):
-        self.varMap = {}
+    def __init__(self, varmap):
+        self.varMap = varmap ## varMap is exposed/public.
         reference = VariableParser.reference.copy()
         # lookup each substitution reference in the dictionary
         reference.setParseAction(lambda s,loc,toks: [self.varMap[t] for t in toks])
@@ -96,6 +103,7 @@ class VariableParser:
         def assign(lhs, rhs):
             self.varMap[lhs] = rhs
             logging.debug("assigning %s = %s" % (lhs,rhs))
+            return
         varDefinition.setParseAction(lambda s,loc,toks:
                                      assign(toks[0], toks[1]))
         self.arithExpr = self.makeCalcGrammar()
@@ -206,8 +214,11 @@ class VariableParser:
         if result:
             return # we consumed, so nothing left after applying
         return fragment
+    pass #End of class VariableParser
+
 def testExpand():
-    vp = VariableParser()
+    """testExpand() is a convenience tester for the VariableParser class"""
+    vp = VariableParser({})
     vp.varMap = {"sub" : "<SUB>", "sub3" : "-SUB3-", "sub2" : "Two"}
     test1 = "This is a simple $sub test with Joe$sub3 and ${sub2}blah"
     test2 = "export x=adf"
@@ -361,6 +372,7 @@ class NcoParser:
                                       (argDict, argList, leftover),
                                       (ins,outs), lineNumber)
         else:
+            print ":( no factory."
             return cmd
 
     @staticmethod
@@ -417,7 +429,24 @@ class NcoBinaryFinder:
         # for now, always pick one nco binary,
         # regardless of netcdf4 or opendap.
         return self.config.execNcoDap + os.sep + cmd.cmd
-    
+
+class LoopParser:
+    """LoopParser is a parser module to use with the main parser.
+    Handling loops require handling some state, so we need to plug
+    an *instance* into the Parser, and not the static class, as
+    with NcoParser.
+    """
+    def __init__(self):
+        pass
+
+    def parse(self, original, argv, lineNumber=0, factory=None):
+        pass
+
+    def accepts(self, argv):
+        if len(argv) < 1:
+            return False
+        else:
+            return (argv[0] in NcoParser.commands)    
         
 
 # Command and CommandFactory do not have dependencies on NCO things.
@@ -719,7 +748,9 @@ class Parser:
         self.handlerDefaults()
         self.handleFunc = None
         self.commands = []
-        self.variableParser = VariableParser()
+        # FIXME: should be able to push variableparser into the context.
+        self.variableParser = VariableParser(self.variables) 
+        self._context = Parser.BaseContext(self)
         pass
 
     def handlers(self, newHandlers):
@@ -738,7 +769,27 @@ class Parser:
         function: handle(ParserCommand)"""
         self.handleFunc = handle
         pass
+
+    def parseScriptLine2(self, line):
+        """factory should probably *not* change between calls-- it
+        doesn't seem to make sense to do so.  FIXME: make more sense
+        of this interface.
+
+        No return value.  To see what commands got constructed and
+        handled, wrap self.handleFunc .
+        """
+        self.lineNum += 1
+        (nextContext, result) = self._context.acceptStatefully(line)
+        if result is 3:
+            logging.debug("reject: " + line)
+        self._context = nextContext
+        return nextContext
+        pass
+    
     def parseScriptLine(self, factory, line):
+        """parse a single script line"""
+        # for now, force to test alternate parsing
+        return self.parseScriptLine2(line)
         def accept(obj, argv):
             for mod in obj.modules:
                 if mod[0].accepts(argv):
@@ -767,6 +818,7 @@ class Parser:
         if isinstance(command, types.InstanceType):
             command.referenceLineNum = self.lineNum
             command.original = original
+        
         if not command:
             logging.debug(" ".join(["reject:", str(len(argv)), str(argv)]))
         elif self.handleFunc is not None:
@@ -776,7 +828,8 @@ class Parser:
     def parseScript(self, script, factory):
         """Parse and accept/reject commands in a script, where the script
         is a single string containing script lines"""
-        vp = VariableParser()
+        self._factory = factory
+        self._context.setFactory(factory)
         lineCount = 0
         for line in script.splitlines():
             self.parseScriptLine(factory, line)
@@ -787,6 +840,199 @@ class Parser:
         #log.debug("factory cmd_By_log_in: " + str(factory.commandByLogicalIn))
         #log.debug("factory uselist " + str(factory.scrFileUseCount))
         
+        pass
+
+    ## a few helper classes for Parser.
+    class BaseContext:
+        class LoopExpr:
+            For = Literal('for')
+            In = Literal('in')
+            Do = Literal('do')
+            Done = Literal('done')
+            Semicolon = Literal(';')
+            Identifier = VariableParser.identifier.copy()
+            Identifier = Identifier.setResultsName("identifier")
+            Value = Word(alphanums).setResultsName("realValue")
+            CommandLine = OneOrMore(Word(alphanums + '_-'))
+            BacktickExpr = Literal('`') + CommandLine + Literal('`')
+            SubValue = BacktickExpr.copy().setResultsName("indValue")
+            
+            Range = OneOrMore(Value ^ SubValue).setResultsName("range")
+            ForHeading = For + Identifier + In + Range + Semicolon + Do
+            ForHeading2_1 = For + Identifier + In + Range
+            ForHeading2_2 = Do
+            ForClosing = Done
+
+        def __init__(self, parser):
+            """handler is a function that accepts a Command instance
+            as input (it's probably Scheduler.schedule)."""
+            self.canPop = False
+            self._parser = parser
+            self._loopExpr = self.LoopExpr
+            self._factory = None
+            pass
+
+        def setFactory(self, f):
+            self._factory = f
+            pass
+
+        def loopParse(self, line):
+            try:
+                parseResult = self._loopExpr.ForHeading.parseString(line)
+                print parseResult, parseResult.items()
+            except ParseException, e:
+                return None # didn't find a looping expression.
+            context = Parser.LoopContext(self, parseResult)
+            
+            
+            return context
+
+        def stdAccept(self, argv):
+            for mod in self._parser.modules:
+                if mod[0].accepts(argv):
+                    cmd = mod[0].parse(line, argv,
+                                       self._parser.lineNum, self._factory)
+                    return cmd
+            print "stdAccept reject", argv
+            return False
+
+        def stdParse(self, line):
+            print "stdparse", line
+            argv = shlex.split(line)
+            command = self.stdAccept(argv)
+            print "stdAccept results", command
+            if isinstance(command, types.InstanceType):
+                print "stdParse, insert", command
+                command.referenceLineNum = self._parser.lineNum
+                command.original = original
+                self._parser.handleFunc(command)
+            return (self, True)
+
+        def acceptSubParse(self, line):
+            line = self._parser.variableParser.apply(line)
+            return self.stdParse(line)
+        
+        def acceptStatefully(self, line):
+
+            # should be able to push this logic back to the Parser
+            original = line.strip()
+            comment = None
+            # for now, do not detect magic #! interpreter
+            linesp = original.split("#", 1) # chop up comments
+        
+            if len(linesp) > 1:
+                line, comment = linesp
+            else:
+                line = original
+            
+            if (len(line) < 1): # skip comment-only line
+                return (self, True)
+                
+            line = self._parser.variableParser.apply(line)
+            if line == None: # already parsed line.
+                return (self, True)
+            nextCon = self.loopParse(line)
+            if nextCon != None:
+                return (nextCon, True)
+                
+            if not isinstance(line, str):
+                return (self, True)
+
+            return self.stdParse(line)
+
+        def variableMap(self):
+            #possible to add a wrapper parser  here.
+            return self._parser.variables
+
+            
+        pass
+    class LoopContext:
+        # basically, a loopcontext is aware of loops, so that when the 'end loop' token is parsed, the loop body is replicated for each value of the looping variable.  Is this (having a class) the right way to do it?  Are we just a glorified stack?  I think more correctly, loopcontext functions as the parse node for a loop.  
+        def __init__(self, parentContext, parseResult):
+            self.canPop = True
+            self._parentContext = parentContext
+            self._savedLines = []
+            self._loopExpr = parentContext._loopExpr
+            self._loopHeading = parseResult
+            self._varMap = parentContext.variableMap()
+            self._factory = None
+            pass
+
+        def setFactory(self, f):
+            self._factory = f
+            pass
+
+        def acceptStatefully(self, line):
+            """acceptStatefully, in the context of a loop.
+            When in a loop context, variable substitutions and command
+            generations are deferred until the loop closure.  That way,
+            the entire loop can be unrolled at once.  So until the closing
+            statement, we save a list of the command lines."""
+            print "incontext accept ", line
+            # should be able to push this logic back to the Parser
+            original = line.strip()
+            comment = None
+            # for now, do not detect magic #! interpreter
+            linesp = original.split("#", 1) # chop up comments
+        
+            if len(linesp) > 1:
+                line, comment = linesp
+            else:
+                line = original
+            
+            if (len(line) < 1): # skip comment-only line
+                return (self, True)
+            # check if it's the end:
+            check = self._loopParse(line)
+            if check:
+                #unroll Loop
+                self._unroll()
+                return (self._parentContext, True)
+            else:
+                # if not the end, save the line
+                self._savedLines.append(line)
+                return (self, True)
+
+        def _unroll(self):
+            #print "loopvar:", self._loopHeading["identifier"]
+            #print "range:", self._loopHeading["range"]
+            # At this point, we may want to eval/expand
+            # subexpressions within the range.
+            varname = self._loopHeading["identifier"]
+            for val in self._loopHeading["range"]:
+                self._varMap[varname] = val
+                self._iterateLoop()
+            return
+
+        def _iterateLoop(self):
+            for l in self._savedLines:
+                r = self._parentContext.acceptSubParse(l)
+
+        def _loopParse(self, line):
+            try:
+                check = self._loopExpr.ForClosing.parseString(line)
+                return "End"
+            except ParseException, e:
+                return None
+            pass
+            
+            
+        def variableMap(self):
+            return self._varMap
+
+        def dummy(self):
+            line = self._parser.variableParser.apply(line)
+            if line == None: # already parsed line.
+                return (self, True)
+            nextCon = self.loopParse(line)
+            if nextCon != None:
+                return (nextCon, True)
+                
+            if not isinstance(line, str):
+                return (self, True)
+
+            return self.stdParse(line)
+
         pass
     
     pass
@@ -857,7 +1103,8 @@ class Scheduler:
         pass
 
     def finish(self):
-        self.transaction.finish()
+        if self.transaction != None:
+            self.transaction.finish()
         pass
 
     def graduateHook(self, hook):
@@ -1147,13 +1394,17 @@ class SwampTask:
         self.scheduler = Scheduler(config, defExec, self._publishIfOutput)
         self.parser.commandHandler(self.scheduler.schedule)
         self.commandFactory = CommandFactory(self.config)
-        self.parser.parseScript(script, self.commandFactory)
-        self.scheduler.finish()
-        self.remoteExec = remote
-        self.scrAndLogOuts = self.commandFactory.realOuts()
-        self.logOuts = map(lambda x: x[1], self.scrAndLogOuts)
-        log.debug("outs are " + str(self.scrAndLogOuts))
-        self.outMap = LinkedMap(outMap, self.taskId())
+        self.fail = None
+        try:
+            self.parser.parseScript(script, self.commandFactory)
+            self.scheduler.finish()
+            self.remoteExec = remote
+            self.scrAndLogOuts = self.commandFactory.realOuts()
+            self.logOuts = map(lambda x: x[1], self.scrAndLogOuts)
+            log.debug("outs are " + str(self.scrAndLogOuts))
+            self.outMap = LinkedMap(outMap, self.taskId())
+        except StandardError, e:
+            self.fail = str(e)
         
         pass
     
@@ -1195,10 +1446,16 @@ class SwampTask:
     def taskId(self):
         return self.scheduler.taskId
     def run(self):
-        self.scheduler.executeParallelAll(self.remoteExec)
+        if not self.result:
+            self.scheduler.executeParallelAll(self.remoteExec)
+        else: # refuse to run if we have a failure logged.
+            pass
         pass
     def result(self):
-        return self.scheduler.result
+        if self.fail:
+            return self.fail
+        else:
+            return self.scheduler.result
 
     def selfDestruct(self):
         log.debug("Task %d is self-destructing" %(str(self.scheduler.taskId)))

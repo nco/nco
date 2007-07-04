@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapinterface.py,v 1.6 2007-06-22 02:41:15 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_soapinterface.py,v 1.7 2007-07-04 00:15:09 wangd Exp $
 # Copyright (c) 2007 Daniel L. Wang
 from swamp_common import *
 from swamp_config import Config 
@@ -126,6 +126,7 @@ class StandardJobManager:
         #log.debug("trying exec poll" + str(self.jobs) + str(token))
         # for now, if the interface is there,
         #things are complete/okay.
+
         if isinstance(self.jobs[token], SwampTask):
             task = self.jobs[token]
             r = task.result()
