@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.111 2007-06-29 01:19:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.112 2007-07-04 15:35:35 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.111 2007-06-29 01:19:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.111 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.112 2007-07-04 15:35:35 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.112 $";
   const char * const opt_sht_lst="4ACcD:d:FhL:l:Oo:p:rRt:v:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -469,6 +469,12 @@ main(int argc,char **argv)
   xtr_lst_1=nco_nm_id_lst_free(xtr_lst_1,nbr_xtr_1);
   xtr_lst_2=nco_nm_id_lst_free(xtr_lst_2,nbr_xtr_2);
   
+  /* Die gracefully on unsupported features... */
+  if(nbr_xtr_1 < nbr_xtr_2){
+    (void)fprintf(fp_stdout,"%s: WARNING First file has fewer extracted variables than second file (%d < %d). This feature is TODO nco581.\n",prg_nm,nbr_xtr_1,nbr_xtr_2);
+      nco_exit(EXIT_FAILURE);
+  } /* endif */
+
   /* Divide variable lists into lists of fixed variables and variables to be processed
      Create lists from file_1 last so those values remain in *_out arrays */
   (void)nco_var_lst_dvd(var_2,var_out,nbr_xtr_2,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix_2,&var_fix_out,&nbr_var_fix_2,&var_prc_2,&var_prc_out,&nbr_var_prc_2);

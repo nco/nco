@@ -1,5 +1,7 @@
 2007-07-04  Charlie Zender  <zender@uci.edu>
 
+	* Warn when nbr_xtr_1 < nbr_xtr_2 in ncbo
+
 	* Note ncap2 type-conversion support
 
 2007-06-30  Charlie Zender  <zender@uci.edu>
