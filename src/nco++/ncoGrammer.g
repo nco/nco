@@ -1900,14 +1900,33 @@ out returns [var_sct *var]
     // math functions 
     |  #(m:FUNC #(FUNC_ARG var1=out))      
          { 
+          nc_type cnv_type=NC_NAT;
           sym_sct * sym_ptr;
+          std::string fnm(m->getText());
             
-          sym_ptr= prs_arg->ptr_sym_vtr->find(m->getText());
+          sym_ptr= prs_arg->ptr_sym_vtr->find(fnm);
           if(sym_ptr ==NULL) { 
-              cout << "Function  " << m->getText() << " not found" << endl;
+              cout << "Function  " << fnm << " not found" << endl;
               exit(1);
-           } 
-          var=ncap_var_fnc(var1,sym_ptr);
+           }
+          
+          if(fnm=="float") cnv_type=(nc_type)NC_FLOAT; 
+          if(fnm=="double") cnv_type=(nc_type)NC_DOUBLE; 
+          if(fnm=="long") cnv_type=(nc_type)NC_INT; 
+          if(fnm=="int") cnv_type=(nc_type)NC_INT; 
+          if(fnm=="short") cnv_type=(nc_type)NC_SHORT; 
+          if(fnm=="ushort") cnv_type=(nc_type)NC_USHORT; 
+          if(fnm=="uint") cnv_type=(nc_type)NC_UINT; 
+          if(fnm=="int64") cnv_type=(nc_type)NC_INT64; 
+          if(fnm=="uint64") cnv_type=(nc_type)NC_UINT64; 
+          if(fnm=="ubyte") cnv_type=(nc_type)NC_UBYTE; 
+          if(fnm=="byte") cnv_type=(nc_type)NC_BYTE; 
+          if(fnm=="char") cnv_type=(nc_type)NC_CHAR; 
+
+          if(cnv_type !=NC_NAT) 
+            var=nco_var_cnf_typ(cnv_type,var1);              
+          else
+            var=ncap_var_fnc(var1,sym_ptr);
 
           }    
 
