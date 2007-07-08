@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.70 2007-06-28 19:46:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.71 2007-07-08 17:38:20 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -818,10 +818,15 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
      In effect this sets nbr_var_prc_2:=nbr_var_prc_1 in ncbo
      This allows file_2 to contain variables not in file_1
      Routine now warns about processed variable list "truncation" 
-     But "asymmetric" list processing should work
+     "asymmetric" list processing should now work iff lst_2 is superset of lst_1
 
-     NB: Routine could be generalized to allow more variables in list one 
-     than list two. */
+     Until 20070707 lst_2 had to be superset of lst_1
+     Next desired functionality is to copy variables only in lst_1 or lst_2 as
+     fixed variables to output file, i.e., do not subtract them.
+     May only be possible with lst_1 variables
+     At minimum, want to print which variables are _only_ in which file
+     This would make it easier for user to give -x -v var_lst argument which
+     would make files subtractable */
 
   const char fnc_nm[]="nco_var_lst_mrg()"; /* [sng] Function name */
 
