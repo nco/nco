@@ -1,5 +1,5 @@
 
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.30 2007-07-07 00:34:15 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.31 2007-07-09 22:58:37 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -738,14 +738,18 @@ class Parser:
     # Modules are used to isolate logic pertaining to specific binaries.
     # A module *accepts* a command line and *parses* it.    
     
-# put in a sanity check
-#     if len(leftover) <= 1:
-#         # only one leftover...leave it to be captured by the inputter
-#         logger.warning("warning, unbound output for "
-#                        + self.original)
-# handle dep checking in scheduler, not parser.
-#        self.env.tinlist.update(map(lambda x:(x,1),leftover))
+    # put in a sanity check
+    #     if len(leftover) <= 1:
+    #         # only one leftover...leave it to be captured by the inputter
+    #         logger.warning("warning, unbound output for "
+    #                        + self.original)
+    # handle dep checking in scheduler, not parser.
+    #        self.env.tinlist.update(map(lambda x:(x,1),leftover))
 
+    loopStart = Parser.LoopContext.Expr.ForHeading
+    ifStart = Parser.BranchContext.Expr.IfHeading
+    ourFlowParsers = [(loopStart.parseString, Parser.LoopContext),
+                      (ifStart.parseString, Parser.BranchContext)]
     
     def __init__(self):
         self.handlers = {} # a lookup table for parse accept handlers
@@ -777,6 +781,22 @@ class Parser:
         self.handleFunc = handle
         pass
 
+    def stripComments(self, line):
+        original = line.strip()
+        comment = None
+        # for now, do not detect sh dialect 
+        linesp = original.split("#", 1) # chop up comments
+        
+        if len(linesp) > 1:
+            line, comment = linesp
+        else:
+            line = original
+            
+        if (len(line) < 1): # skip comment-only line
+            return ""
+        return line
+                
+        
     def parseScriptLine2(self, line):
         """factory should probably *not* change between calls-- it
         doesn't seem to make sense to do so.  FIXME: make more sense
@@ -786,6 +806,11 @@ class Parser:
         handled, wrap self.handleFunc .
         """
         self.lineNum += 1
+        line = self.stripComments(line)
+        #Try 1: match context-creating constructs
+        
+        #Try 2: pass to current context.
+        
         (nextContext, result) = self._context.acceptStatefully(line)
         if result is 3:
             logging.debug("reject: " + line)
@@ -804,19 +829,7 @@ class Parser:
                     return cmd
             return False
         self.lineNum += 1
-        original = line.strip()
-        comment = None
-        # for now, do not detect sh dialect 
-        linesp = original.split("#", 1) # chop up comments
-        
-        if len(linesp) > 1:
-            line, comment = linesp
-        else:
-            line = original
-            
-        if (len(line) < 1): # skip comment-only line
-            return
-                
+        line = self.stripComments(line)
         line = self.variableParser.apply(line)
         if not isinstance(line, str):
             return None
@@ -851,7 +864,11 @@ class Parser:
 
     ## a few helper classes for Parser.
     class BaseContext:
-
+        loopStart = Parser.LoopContext.Expr.ForHeading
+        ifStart = Parser.BranchContext.Expr.IfHeading
+        ourFlowParsers = [(loopStart.parseString, Parser.LoopContext),
+                          (ifStart.parseString, Parser.BranchContext)]
+        
         def __init__(self, parser):
             """handler is a function that accepts a Command instance
             as input (it's probably Scheduler.schedule)."""
@@ -861,27 +878,21 @@ class Parser:
             self._parser = parser 
             self._factory = None
 
-            loopStart = Parser.LoopContext.Expr.ForHeading
-            ifStart = Parser.BranchContext.Expr.IfHeading
-                        
-            self._shellExtParsers = [(loopStart.parseString,
-                                      Parser.LoopContext),
-                                     (ifStart.parseString,
-                                      Parser.BranchContext)]
             pass
 
         def setFactory(self, f):
             self._factory = f
             pass
 
-        def extParse(self, line):
-            for (test, newContext) in self._shellExtParsers:
+        @staticmethod
+        def extParse(context, line):
+            for (test, newContext) in BaseContext.ourFlowParsers:
                 try:
                     parseResult = test(line)
                 except ParseException, e:
                     continue # didn't find a looping expression.
-                context = newContext(self, parseResult)
-                return context
+                nextContext = newContext(context, parseResult)
+                return nextContext
             return None
                 
         def stdAccept(self, argv):
@@ -906,29 +917,8 @@ class Parser:
             return (self, True)
 
         def acceptSubParse(self, line):
+            print "subparse",line
             line = self._parser.variableParser.apply(line)
-            return self.stdParse(line)
-        
-        def acceptStatefully(self, line):
-
-            # should be able to push this logic back to the Parser
-            original = line.strip()
-            comment = None
-            # for now, do not detect magic #! interpreter
-            linesp = original.split("#", 1) # chop up comments
-        
-            if len(linesp) > 1:
-                line, comment = linesp
-            else:
-                line = original
-            
-            if (len(line) < 1): # skip comment-only line
-                return (self, True)
-
-            line = self._parser.variableParser.apply(line)
-            print "line after", line
-            if line == None: # already parsed line.
-                return (self, True)
             nextCon = self.extParse(line)
             if nextCon != None:
                 return (nextCon, True)
@@ -937,6 +927,14 @@ class Parser:
                 return (self, True)
 
             return self.stdParse(line)
+        
+        def acceptStatefully(self, line):
+
+            line = self._parser.variableParser.apply(line)
+            print "line after", line
+            if line == None: # already parsed line.
+                return (self, True)
+            return self.acceptSubParse(line)
 
         def variableMap(self):
             #possible to add a wrapper parser  here.
@@ -983,6 +981,7 @@ class Parser:
                                 2: self._state2Parse }
             self._taking = self._evaluateCondition(parseResult)
             self._took = False
+            print "new branch"
             pass
 
         def setFactory(self, f):
@@ -990,11 +989,8 @@ class Parser:
             pass
 
         def acceptStatefully(self, line):
-            """acceptStatefully, in the context of a loop.
-            When in a loop context, variable substitutions and command
-            generations are deferred until the loop closure.  That way,
-            the entire loop can be unrolled at once.  So until the closing
-            statement, we save a list of the command lines."""
+            """acceptStatefully, in the context of a branch.
+            we save a list of the command lines."""
             # should be able to push this logic back to the Parser
             original = line.strip()
             comment = None
@@ -1019,11 +1015,14 @@ class Parser:
         def _state1Parse(self, line):
             # In state 1, the last statement we saw was an if or elif,
             # so the only valid keywords are 'else' and 'elif' or 'fi'
+            print "state 1",line
             try:
                 subline = self._variableParser.apply(line)
                 return self._tryElif(subline) 
             except ParseException, e:
                 pass
+            except KeyError, e:
+                pass # passthrough variable lookup errors.
             try:
                 return self._tryElse(line)
             except ParseException, e:
@@ -1043,6 +1042,7 @@ class Parser:
         def _state2Parse(self, line):
             # In state 2, the last statement seen is 'else' so the only
             # valid keyword is 'fi'
+            print "state 2",line
             try:
                 assert (self._taking or self._took)
                 return self._tryFi(line)
@@ -1078,8 +1078,16 @@ class Parser:
 
         def _tryFi(self, line):
             check = self.Expr.IfClosing.parseString(line)
-            print "supposed to dump parent lines now", self._savedLines
-            rlist = map(self._parentContext.acceptSubParse, self._savedLines)
+            parent = self._parentContext #save my parent.
+            print "supposed to dump to", parent, "lines now", self._savedLines
+            for l in self._savedLines:
+                n = BaseContext.extParse(self, l)
+                if n:
+                    context = n
+                    parent = parent.acceptSubParse(l)
+                print parent
+            assert parent is self._parentContext # should return from any nesting.
+
             print "subdump results", rlist
             return self._parentContext
 
@@ -1146,15 +1154,16 @@ class Parser:
             ForHeading2_1 = For + Identifier + In + Range
             ForHeading2_2 = Do
             ForClosing = Done
+            pass
             
         def __init__(self, parentContext, parseResult):
             self.canPop = True
             self._parentContext = parentContext
             self._savedLines = []
-            self._loopExpr = parentContext._loopExpr
             self._loopHeading = parseResult
             self._varMap = parentContext.variableMap()
             self._factory = None
+            print "new loop"
             pass
 
         def setFactory(self, f):
@@ -1209,7 +1218,7 @@ class Parser:
 
         def _loopParse(self, line):
             try:
-                check = self._loopExpr.ForClosing.parseString(line)
+                check = self.Expr.ForClosing.parseString(line)
                 return "End"
             except ParseException, e:
                 return None
@@ -1591,7 +1600,7 @@ class SwampTask:
             log.debug("outs are " + str(self.scrAndLogOuts))
             self.outMap = LinkedMap(outMap, self.taskId())
         except StandardError, e:
-            self.fail = str(e)
+            self.fail = str((e,e.__doc__, str(e)))
         
         pass
     
