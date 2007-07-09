@@ -77,7 +77,8 @@ statement:
          ( //standard if-else ambiguity
          options {warnWhenFollowAmbig = false;} 
         : ELSE! statement )?
-
+        // print statement
+        | PRINT^ LPAREN! (VAR_ID|ATT_ID|NSTRING) (COMMA! NSTRING)?  RPAREN! SEMI! 
         // Code block
         | block
      // fxm: temporary functions. Will be moved to method/function framework
@@ -300,6 +301,9 @@ tokens {
     PRMSSDN="rmssdn";
     PSQRAVG="sqravg";
     PTTL="total";
+//
+    PRINT="print";  
+ 
 }
 
 
@@ -1046,9 +1050,6 @@ static std::vector<std::string> lpp_vtr;
     | BREAK { iret=BREAK;}
     | CONTINUE {iret=CONTINUE;} 
     | NULL_NODE { iret=NULL_NODE; }
-
-
-    // All the following functions have iret=0
    
     |#(DEFDIM def:NSTRING  var=out){
             
@@ -1211,6 +1212,70 @@ static std::vector<std::string> lpp_vtr;
        end1: nco_var_free(var);         
           
       }
+
+    // All the following functions have iret=0
+    | (#(PRINT VAR_ID))=> #(PRINT pvid:VAR_ID){
+
+          int var_id;
+          int fl_id=-1;
+          char *fmt_sng;
+          std::string va_nm(pvid->getText());
+          NcapVar *Nvar;
+          
+          
+          if(prs_arg->ntl_scn) goto end2;
+          Nvar=prs_arg->ptr_var_vtr->find(va_nm);
+
+          if(Nvar->flg_mem){ 
+            wrn_prn(fnc_nm,"Cannot print out RAM variables at the moment!");
+            goto end2;
+          }
+
+          if(pvid->getNextSibling() && pvid->getNextSibling()->getType()==NSTRING)
+            fmt_sng=strdup(pvid->getNextSibling()->getText().c_str());
+          else 
+            fmt_sng=(char*)NULL; 
+
+
+ 
+          if(Nvar)
+           fl_id=prs_arg->out_id;
+          else{
+           /* Check input file for var */  
+           if(NC_NOERR==nco_inq_varid_flg(prs_arg->in_id,va_nm.c_str(),&var_id))
+            fl_id=prs_arg->in_id;
+          }
+           
+   
+          if( fl_id >=0)
+           (void)nco_prn_var_val_lmt(fl_id,va_nm.c_str(),(lmt_sct*)NULL,0L,fmt_sng,prs_arg->FORTRAN_IDX_CNV,False,False);
+            
+
+          if(fmt_sng)
+            fmt_sng=(char*)nco_free(fmt_sng); 
+         
+
+        end2: ;
+
+    }
+    | (#(PRINT ATT_ID))=> #(PRINT patt:ATT_ID){
+             ;
+    }
+
+    | (#(PRINT NSTRING))=> #(PRINT pstr:NSTRING){
+       char *prn_sng;
+       
+       if(!prs_arg->ntl_scn){
+        prn_sng=strdup(pstr->getText().c_str());
+        (void)sng_ascii_trn(prn_sng);            
+
+        fprintf(stdout,prn_sng);
+        prn_sng=(char*)nco_free(prn_sng);
+      }    
+    }
+
+
+
     ;
 
 // Parse assign statement - Initial Scan
