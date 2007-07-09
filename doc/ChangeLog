@@ -1,3 +1,13 @@
+2007-07-09   Henry Butowsky <henryb@ntlworld.com>
+	First cut of print function can do the following
+	print(var_id),print(var_id,"format_string")
+	print(string);
+	eg
+	print(four,"%10.6f\n");
+	print(four); 
+	print("my script is wicked\n");
+	TO DO print(att_id);
+
 2007-07-04  Charlie Zender  <zender@uci.edu>
 
 	* Warn when nbr_xtr_1 < nbr_xtr_2 in ncbo
