@@ -23027,9 +23027,9 @@ echo "DEBUG: enable_netcdf4: ${enable_netcdf4} and enable_dap: ${enable_dap}"
 
 # Test if user set NETCDF4_ROOT and it exists
 if test "${enable_netcdf4}" = 'yes'; then
-    if test "${NETCDF4_ROOT}" != ""; then
+    if test "${NETCDF4_ROOT}" != ''; then
 	if test -d "${NETCDF4_ROOT}"; then
-	    echo "NETCDF4_ROOT is set and exists - assuming it is real";
+	    echo "NETCDF4_ROOT is set and exists---assuming it is real";
 	    CPPFLAGS="-I${NETCDF4_ROOT}/include ${CPPFLAGS}";
 	    LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
 	    if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
@@ -23042,7 +23042,7 @@ if test "${ac_cv_lib_netcdf_find_nc4_file+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnetcdf -lhdf5 -lhdf5_hl $LIBS"
+LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lz $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -23098,7 +23098,7 @@ fi
 { echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_find_nc4_file" >&5
 echo "${ECHO_T}$ac_cv_lib_netcdf_find_nc4_file" >&6; }
 if test $ac_cv_lib_netcdf_find_nc4_file = yes; then
-  LIBS="-lnetcdf -lhdf5 -lhdf5_hl ${LIBS}"
+  LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lz ${LIBS}"
 cat >>confdefs.h <<\_ACEOF
 #define ENABLE_NETCDF4 1
 _ACEOF
@@ -23122,7 +23122,7 @@ if test "${ac_cv_lib_netcdf_find_nc4_file+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnetcdf -lhdf5 -lhdf5_hl $LIBS"
+LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lz $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -23193,14 +23193,14 @@ fi
 echo "DEBUG: LIBS = ${LIBS}"
 
 # Begin HDF5 test
-# NB: netCDF4 requires libhdf5 and libhdf5_hl to link correctly
+# NB: netCDF4 requires libhdf5, libhdf5_hl, and libz to link correctly
 if test "${enable_dap}" = 'no'; then
     { echo "$as_me:$LINENO: WARNING: Did not request OPeNDAP; checking for version of libnetcdf to use" >&5
 echo "$as_me: WARNING: Did not request OPeNDAP; checking for version of libnetcdf to use" >&2;}
 fi
 
 echo "#############################################"
-echo "# Testing for HDF5 & HDF5_HL & netCDF4 libs #"
+echo "# Testing for HDF5 & netCDF4 libs           #"
 echo "#############################################"
 echo "DEBUG: LIBS = ${LIBS}"
 # Check for HDF5 libraries unless told otherwise
@@ -23284,10 +23284,7 @@ else
 fi
 
     if test "${nco_have_hdf5}" = 'yes'; then
-# Include HDF5 libraries in LIBS line
-	LIBS="-lhdf5 ${LIBS}"
-    fi
-    { echo "$as_me:$LINENO: checking for H5LTcreate_compound_type in -lhdf5_hl" >&5
+	{ echo "$as_me:$LINENO: checking for H5LTcreate_compound_type in -lhdf5_hl" >&5
 echo $ECHO_N "checking for H5LTcreate_compound_type in -lhdf5_hl... $ECHO_C" >&6; }
 if test "${ac_cv_lib_hdf5_hl_H5LTcreate_compound_type+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -23354,17 +23351,88 @@ else
   enable_netcdf4=no
 fi
 
-    if test "${nco_have_hdf5}" != 'yes'; then
-	{ echo "$as_me:$LINENO: WARNING: netCDF4 support disabled (missing HDF5 libraries)" >&5
-echo "$as_me: WARNING: netCDF4 support disabled (missing HDF5 libraries)" >&2;}
-    elif test "${nco_have_hdf5_hl}" = 'yes'; then
-		# Include HDF5_hl libs in LIBS line
-	LIBS="-lhdf5_hl ${LIBS}"
+	if test "${nco_have_hdf5_hl}" = 'yes'; then
+	    { echo "$as_me:$LINENO: checking for gz_open in -lz" >&5
+echo $ECHO_N "checking for gz_open in -lz... $ECHO_C" >&6; }
+if test "${ac_cv_lib_z_gz_open+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lz  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char gz_open ();
+int
+main ()
+{
+return gz_open ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_lib_z_gz_open=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_z_gz_open=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_z_gz_open" >&5
+echo "${ECHO_T}$ac_cv_lib_z_gz_open" >&6; }
+if test $ac_cv_lib_z_gz_open = yes; then
+  nco_have_libz=yes
+else
+  enable_netcdf4=no
+fi
+
+	    if test "${nco_have_libz}" = 'yes'; then
 
 cat >>confdefs.h <<\_ACEOF
 #define ENABLE_NETCDF4 1
 _ACEOF
 
+# Include HDF5 libraries in LIBS
+		LIBS="-lhdf5_hl -lhdf5 -lz ${LIBS}"
+	    fi # End test for libz
+	fi # End test for libhdf5_hl
+    fi # End test for libhdf5
+    if test "${enable_netcdf4}" != 'yes'; then
+	{ echo "$as_me:$LINENO: WARNING: netCDF4 support disabled (missing HDF5 libraries)" >&5
+echo "$as_me: WARNING: netCDF4 support disabled (missing HDF5 libraries)" >&2;}
     fi # End test for HDF5 libs
 
 elif (test "${enable_netcdf4}" = 'no' && test "${enable_dap}" = 'no'); then
@@ -23617,7 +23685,7 @@ if test $ac_cv_lib_netcdf_nc_open = yes; then
 	    { echo "$as_me:$LINENO: Good news: Simple program compiles and links to libnetcdf.a with default compiler flags" >&5
 echo "$as_me: Good news: Simple program compiles and links to libnetcdf.a with default compiler flags" >&6;}
 	    if (test "${have_hdf5}" = 'yes' && test "${have_hdf5_ul}" = 'yes') ; then
-		echo "Great!  This build will support some netCDF4 features."
+		echo "Great! This build will support some netCDF4 features."
 	    fi
 
 else

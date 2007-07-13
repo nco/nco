@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.232 2007-06-29 18:47:19 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.233 2007-07-13 21:55:14 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -270,16 +270,16 @@ echo "DEBUG: enable_netcdf4: ${enable_netcdf4} and enable_dap: ${enable_dap}"
 AC_ARG_VAR([NETCDF4_ROOT],[Root of netCDF4 installation---must be separate from netCDF3.x installation] (compile-time))
 # Test if user set NETCDF4_ROOT and it exists
 if test "${enable_netcdf4}" = 'yes'; then
-    if test "${NETCDF4_ROOT}" != ""; then
+    if test "${NETCDF4_ROOT}" != ''; then
 	if test -d "${NETCDF4_ROOT}"; then
-	    echo "NETCDF4_ROOT is set and exists - assuming it is real";
+	    echo "NETCDF4_ROOT is set and exists---assuming it is real";
 	    CPPFLAGS="-I${NETCDF4_ROOT}/include ${CPPFLAGS}";
 	    LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
 	    if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
 # Check libnetcdf for a netCDF4 function
 # fxm: netCDF4 alpha10 barfs with shared libs, check after final release
 		enable_shared='no'
-		AC_CHECK_LIB([netcdf],[find_nc4_file],[LIBS="-lnetcdf -lhdf5 -lhdf5_hl ${LIBS}" AC_DEFINE(ENABLE_NETCDF4,1,Have included NETCDF4 support)],[enable_netcdf4=no],[-lhdf5 -lhdf5_hl])
+		AC_CHECK_LIB([netcdf],[find_nc4_file],[LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lz ${LIBS}" AC_DEFINE(ENABLE_NETCDF4,1,Have included NETCDF4 support)],[enable_netcdf4=no],[-lhdf5_hl -lhdf5 -lz])
 	    fi
 	else
 	    echo "NETCDF4_ROOT set but does not exist---skipping netCDF4 configuration";
@@ -288,19 +288,19 @@ if test "${enable_netcdf4}" = 'yes'; then
     else
 	echo "User set '--enable-netcdf4' but did not set NETCDF4_ROOT";
 	echo "Must set both to enable netCDF4.  Will try to configure netCDF anyway...";
-	AC_CHECK_LIB([netcdf],[find_nc4_file],,[enable_netcdf4=no],[-lhdf5 -lhdf5_hl])
+	AC_CHECK_LIB([netcdf],[find_nc4_file],,[enable_netcdf4=no],[-lhdf5_hl -lhdf5 -lz])
     fi
 fi
 echo "DEBUG: LIBS = ${LIBS}"
 
 # Begin HDF5 test
-# NB: netCDF4 requires libhdf5 and libhdf5_hl to link correctly
+# NB: netCDF4 requires libhdf5, libhdf5_hl, and libz to link correctly
 if test "${enable_dap}" = 'no'; then
     AC_MSG_WARN([Did not request OPeNDAP; checking for version of libnetcdf to use])
 fi
 
 echo "#############################################"
-echo "# Testing for HDF5 & HDF5_HL & netCDF4 libs #"
+echo "# Testing for HDF5 & netCDF4 libs           #"
 echo "#############################################"
 echo "DEBUG: LIBS = ${LIBS}"
 # Check for HDF5 libraries unless told otherwise
@@ -318,18 +318,20 @@ if (test "${enable_netcdf4}" = 'yes' && test "${enable_dap}" = 'no'); then
 # If using netCDF4, require HDF5 libraries before nc_open() test
     AC_CHECK_LIB([hdf5],[H5Fcreate],[nco_have_hdf5='yes'],enable_netcdf4='no')
     if test "${nco_have_hdf5}" = 'yes'; then
-# Include HDF5 libraries in LIBS line
-	LIBS="-lhdf5 ${LIBS}"
-    fi
-    AC_CHECK_LIB([hdf5_hl],[H5LTcreate_compound_type],nco_have_hdf5_hl=yes,enable_netcdf4=no)
-    if test "${nco_have_hdf5}" != 'yes'; then
+	AC_CHECK_LIB([hdf5_hl],[H5LTcreate_compound_type],nco_have_hdf5_hl=yes,enable_netcdf4=no)
+	if test "${nco_have_hdf5_hl}" = 'yes'; then
+	    AC_CHECK_LIB([z],[gz_open],nco_have_libz=yes,enable_netcdf4=no)
+	    if test "${nco_have_libz}" = 'yes'; then
+		AC_DEFINE(ENABLE_NETCDF4,1,netCDF4 support enabled)
+# Include HDF5 libraries in LIBS
+		LIBS="-lhdf5_hl -lhdf5 -lz ${LIBS}"
+	    fi # End test for libz
+	fi # End test for libhdf5_hl
+    fi # End test for libhdf5
+    if test "${enable_netcdf4}" != 'yes'; then
 	AC_MSG_WARN([netCDF4 support disabled (missing HDF5 libraries)])
-    elif test "${nco_have_hdf5_hl}" = 'yes'; then
-		# Include HDF5_hl libs in LIBS line
-	LIBS="-lhdf5_hl ${LIBS}"
-	AC_DEFINE(ENABLE_NETCDF4,1,netCDF4 support enabled)
     fi # End test for HDF5 libs
-    
+
 elif (test "${enable_netcdf4}" = 'no' && test "${enable_dap}" = 'no'); then
 # Try next stanza iff enable-netcdf4=no
 # Look for real netCDF library iff enable_dap=no jhrg 05/26/05
@@ -368,7 +370,7 @@ if (test "${enable_dap}" = 'no' && test "${enable_netcdf4}" = 'no'); then
 	    LIBS="-lnetcdf ${LIBS}"
 	    AC_MSG_NOTICE([Good news: Simple program compiles and links to libnetcdf.a with default compiler flags])
 	    if (test "${have_hdf5}" = 'yes' && test "${have_hdf5_ul}" = 'yes') ; then
-		echo "Great!  This build will support some netCDF4 features."
+		echo "Great! This build will support some netCDF4 features."
 	    fi
 	    ],[
 # Linking failed, so add 64-bit compiler flags and try again
