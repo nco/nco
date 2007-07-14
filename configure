@@ -23033,7 +23033,7 @@ if test "${enable_netcdf4}" = 'yes'; then
 	    CPPFLAGS="-I${NETCDF4_ROOT}/include ${CPPFLAGS}";
 	    LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
 	    if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
-# Check libnetcdf for a netCDF4 function
+# Check libnetcdf for netCDF4 function
 # fxm: netCDF4 alpha10 barfs with shared libs, check after final release
 		enable_shared='no'
 		{ echo "$as_me:$LINENO: checking for find_nc4_file in -lnetcdf" >&5
@@ -23192,13 +23192,6 @@ fi
 fi
 echo "DEBUG: LIBS = ${LIBS}"
 
-# Begin HDF5 test
-# NB: netCDF4 requires libhdf5, libhdf5_hl, and libz to link correctly
-if test "${enable_dap}" = 'no'; then
-    { echo "$as_me:$LINENO: WARNING: Did not request OPeNDAP; checking for version of libnetcdf to use" >&5
-echo "$as_me: WARNING: Did not request OPeNDAP; checking for version of libnetcdf to use" >&2;}
-fi
-
 echo "#############################################"
 echo "# Testing for HDF5 & netCDF4 libs           #"
 echo "#############################################"
@@ -23284,9 +23277,9 @@ else
 fi
 
     if test "${nco_have_hdf5}" = 'yes'; then
-	{ echo "$as_me:$LINENO: checking for H5LTcreate_compound_type in -lhdf5_hl" >&5
-echo $ECHO_N "checking for H5LTcreate_compound_type in -lhdf5_hl... $ECHO_C" >&6; }
-if test "${ac_cv_lib_hdf5_hl_H5LTcreate_compound_type+set}" = set; then
+	{ echo "$as_me:$LINENO: checking for H5LT_open_id in -lhdf5_hl" >&5
+echo $ECHO_N "checking for H5LT_open_id in -lhdf5_hl... $ECHO_C" >&6; }
+if test "${ac_cv_lib_hdf5_hl_H5LT_open_id+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -23304,11 +23297,11 @@ cat >>conftest.$ac_ext <<_ACEOF
 #ifdef __cplusplus
 extern "C"
 #endif
-char H5LTcreate_compound_type ();
+char H5LT_open_id ();
 int
 main ()
 {
-return H5LTcreate_compound_type ();
+return H5LT_open_id ();
   ;
   return 0;
 }
@@ -23331,30 +23324,30 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
 	 test ! -s conftest.err
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
-  ac_cv_lib_hdf5_hl_H5LTcreate_compound_type=yes
+  ac_cv_lib_hdf5_hl_H5LT_open_id=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-	ac_cv_lib_hdf5_hl_H5LTcreate_compound_type=no
+	ac_cv_lib_hdf5_hl_H5LT_open_id=no
 fi
 
 rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ echo "$as_me:$LINENO: result: $ac_cv_lib_hdf5_hl_H5LTcreate_compound_type" >&5
-echo "${ECHO_T}$ac_cv_lib_hdf5_hl_H5LTcreate_compound_type" >&6; }
-if test $ac_cv_lib_hdf5_hl_H5LTcreate_compound_type = yes; then
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_hdf5_hl_H5LT_open_id" >&5
+echo "${ECHO_T}$ac_cv_lib_hdf5_hl_H5LT_open_id" >&6; }
+if test $ac_cv_lib_hdf5_hl_H5LT_open_id = yes; then
   nco_have_hdf5_hl=yes
 else
   enable_netcdf4=no
 fi
 
 	if test "${nco_have_hdf5_hl}" = 'yes'; then
-	    { echo "$as_me:$LINENO: checking for gz_open in -lz" >&5
-echo $ECHO_N "checking for gz_open in -lz... $ECHO_C" >&6; }
-if test "${ac_cv_lib_z_gz_open+set}" = set; then
+	    { echo "$as_me:$LINENO: checking for gzopen in -lz" >&5
+echo $ECHO_N "checking for gzopen in -lz... $ECHO_C" >&6; }
+if test "${ac_cv_lib_z_gzopen+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -23372,11 +23365,11 @@ cat >>conftest.$ac_ext <<_ACEOF
 #ifdef __cplusplus
 extern "C"
 #endif
-char gz_open ();
+char gzopen ();
 int
 main ()
 {
-return gz_open ();
+return gzopen ();
   ;
   return 0;
 }
@@ -23399,21 +23392,21 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
 	 test ! -s conftest.err
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
-  ac_cv_lib_z_gz_open=yes
+  ac_cv_lib_z_gzopen=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-	ac_cv_lib_z_gz_open=no
+	ac_cv_lib_z_gzopen=no
 fi
 
 rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ echo "$as_me:$LINENO: result: $ac_cv_lib_z_gz_open" >&5
-echo "${ECHO_T}$ac_cv_lib_z_gz_open" >&6; }
-if test $ac_cv_lib_z_gz_open = yes; then
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_z_gzopen" >&5
+echo "${ECHO_T}$ac_cv_lib_z_gzopen" >&6; }
+if test $ac_cv_lib_z_gzopen = yes; then
   nco_have_libz=yes
 else
   enable_netcdf4=no

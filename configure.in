@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.233 2007-07-13 21:55:14 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.234 2007-07-14 14:48:43 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -276,7 +276,7 @@ if test "${enable_netcdf4}" = 'yes'; then
 	    CPPFLAGS="-I${NETCDF4_ROOT}/include ${CPPFLAGS}";
 	    LDFLAGS="-L${NETCDF4_ROOT}/lib ${LDFLAGS}";
 	    if (test "${enable_netcdf4}" != 'yes' || test "${enable_dap}" = 'no'); then
-# Check libnetcdf for a netCDF4 function
+# Check libnetcdf for netCDF4 function
 # fxm: netCDF4 alpha10 barfs with shared libs, check after final release
 		enable_shared='no'
 		AC_CHECK_LIB([netcdf],[find_nc4_file],[LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lz ${LIBS}" AC_DEFINE(ENABLE_NETCDF4,1,Have included NETCDF4 support)],[enable_netcdf4=no],[-lhdf5_hl -lhdf5 -lz])
@@ -292,12 +292,6 @@ if test "${enable_netcdf4}" = 'yes'; then
     fi
 fi
 echo "DEBUG: LIBS = ${LIBS}"
-
-# Begin HDF5 test
-# NB: netCDF4 requires libhdf5, libhdf5_hl, and libz to link correctly
-if test "${enable_dap}" = 'no'; then
-    AC_MSG_WARN([Did not request OPeNDAP; checking for version of libnetcdf to use])
-fi
 
 echo "#############################################"
 echo "# Testing for HDF5 & netCDF4 libs           #"
@@ -318,9 +312,9 @@ if (test "${enable_netcdf4}" = 'yes' && test "${enable_dap}" = 'no'); then
 # If using netCDF4, require HDF5 libraries before nc_open() test
     AC_CHECK_LIB([hdf5],[H5Fcreate],[nco_have_hdf5='yes'],enable_netcdf4='no')
     if test "${nco_have_hdf5}" = 'yes'; then
-	AC_CHECK_LIB([hdf5_hl],[H5LTcreate_compound_type],nco_have_hdf5_hl=yes,enable_netcdf4=no)
+	AC_CHECK_LIB([hdf5_hl],[H5LT_open_id],nco_have_hdf5_hl=yes,enable_netcdf4=no)
 	if test "${nco_have_hdf5_hl}" = 'yes'; then
-	    AC_CHECK_LIB([z],[gz_open],nco_have_libz=yes,enable_netcdf4=no)
+	    AC_CHECK_LIB([z],[gzopen],nco_have_libz=yes,enable_netcdf4=no)
 	    if test "${nco_have_libz}" = 'yes'; then
 		AC_DEFINE(ENABLE_NETCDF4,1,netCDF4 support enabled)
 # Include HDF5 libraries in LIBS

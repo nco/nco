@@ -1,12 +1,12 @@
-2007-07-09   Henry Butowsky <henryb@ntlworld.com>
-	First cut of print function can do the following
-	print(var_id),print(var_id,"format_string")
-	print(string);
-	eg
-	print(four,"%10.6f\n");
-	print(four); 
-	print("my script is wicked\n");
-	TO DO print(att_id);
+2007-07-14  Charlie Zender  <zender@uci.edu>
+
+	* Add failsafe NC_FORMAT_CLASSIC definition so tst.cc builds with
+	OPeNDAP netcdf.h, which lacks pre-netCDF 3.6.1 tokens
+
+2007-07-09  Henry Butowsky <henryb@ntlworld.com>
+
+	* First cut of print function can do the following
+	  print(var_id),print(var_id,"format_string")
 
 2007-07-04  Charlie Zender  <zender@uci.edu>
 
