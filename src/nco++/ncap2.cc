@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.47 2007-07-04 15:21:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.48 2007-07-16 13:39:58 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.47 2007-07-04 15:21:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.47 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.48 2007-07-16 13:39:58 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.48 $";
   const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -235,8 +235,7 @@ main(int argc,char **argv)
 
   aed_sct att_item; //Used to convert atts in vector to normal form  
 
-  prs_sct prs_arg; /* [sct] Global information required in parser routines */
-  
+
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       /* Long options with no argument, no short option counterpart */
@@ -562,22 +561,21 @@ main(int argc,char **argv)
   (void)nco_enddef(out_id);
   
   /* Set arguments for  script execution */
+  prs_sct prs_arg(dmn_in_vtr,dmn_out_vtr,sym_vtr,var_vtr,int_vtr);
+
   prs_arg.fl_in=fl_in; /* [sng] Input data file */
   prs_arg.in_id=in_id; /* [id] Input data file ID */
   prs_arg.fl_out=fl_out; /* [sng] Output data file */
   prs_arg.out_id=out_id; /* [id] Output data file ID */
-  
-  prs_arg.ptr_dmn_in_vtr=&dmn_in_vtr;
-  prs_arg.ptr_dmn_out_vtr=&dmn_out_vtr;
-  prs_arg.ptr_sym_vtr=&sym_vtr;
-  prs_arg.ptr_var_vtr=&var_vtr;
-  prs_arg.ptr_int_vtr=&int_vtr;
-  prs_arg.ntl_scn=False;   //[flg] Initial scan of script */
+
   prs_arg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
   prs_arg.ATT_PROPAGATE=ATT_PROPAGATE;      
   prs_arg.ATT_INHERIT=ATT_INHERIT;
   prs_arg.NCAP_MPI_SORT=EXCLUDE_INPUT_LIST;
   prs_arg.dfl_lvl=dfl_lvl; /* [enm] Deflate level */
+
+
+
 
   if(fl_spt_usr == NULL_CEWI){
     /* No script file specified, look for command-line scripts */
