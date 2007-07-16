@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.45 2007-06-29 12:50:35 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.hh,v 1.46 2007-07-16 13:35:28 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -83,19 +83,18 @@ typedef struct{
 typedef struct exp_sct_tmp exp_sct;
 
 
-
-typedef struct{ /* prs_sct */
-public:
+ class prs_sct{ /* prs_cls */
+  public:
   char *fl_in; /* [sng] Input data file */
   int in_id; /* [id] Input data file ID */
   char *fl_out; /* [sng] Output data file */
   int out_id; /* [id] Output data file ID */
 
-  NcapVector<dmn_sct*> *ptr_dmn_in_vtr;  //Vector of dimensions in input file nb doesn't change
-  NcapVector<dmn_sct*> *ptr_dmn_out_vtr; //Vector of dimensions in output file file
-  NcapVector<sym_sct*> *ptr_sym_vtr;     //Vector of functions nb doesn't change
-  NcapVarVector *ptr_var_vtr;            // list of attributes & variables
-  NcapVarVector *ptr_int_vtr;            // stores vars/atts in FIRST PARSE
+  NcapVector<dmn_sct*> &dmn_in_vtr;        //Vector of dimensions in input file nb doesn't change
+  NcapVector<dmn_sct*> &dmn_out_vtr;       //Vector of dimensions in output file file
+  NcapVector<sym_sct*> &sym_vtr;          //Vector of functions nb doesn't change
+  NcapVarVector &var_vtr;                  // list of attributes & variables
+  NcapVarVector &int_vtr;                  // stores vars/atts in FIRST PARSE
   bool ntl_scn;                          // [flg] Initial scan of script 
   bool FORTRAN_IDX_CNV;                  //Use fortran convention with hyperslab indices
   bool ATT_PROPAGATE;                    //Var on LHS gets attributtes from the leftermost var on the RHS
@@ -103,55 +102,40 @@ public:
                                          // in the input file 
   bool NCAP_MPI_SORT;                    // sort exressions after second parse for MPI optimization
   int dfl_lvl;                           // Set Lempel-Ziv compression level                                              
-} prs_sct;
-
-
-
-typedef class{ /* prs_cls */
-public:
-  char *fl_in; /* [sng] Input data file */
-  int in_id; /* [id] Input data file ID */
-  char *fl_out; /* [sng] Output data file */
-  int out_id; /* [id] Output data file ID */
-
-  NcapVector<dmn_sct*> dmn_in_vtr;        //Vector of dimensions in input file nb doesn't change
-  NcapVector<dmn_sct*> dmn_out_vtr;       //Vector of dimensions in output file file
-  NcapVector<sym_sct*> &sym_vtr;          //Vector of functions nb doesn't change
-  NcapVarVector var_vtr;                  // list of attributes & variables
-  NcapVarVector int_vtr;                  // stores vars/atts in FIRST PARSE
-  bool ntl_scn;                          // [flg] Initial scan of script 
-  bool FORTRAN_IDX_CNV;                  //Use fortran convention with hyperslab indices
-  bool ATT_PROPAGATE;                    //Var on LHS gets attributtes from the leftermost var on the RHS
-  bool ATT_INHERIT;                      //Var on LHS inherits attributtes from var of the same name
-                                         // in the input file 
-  bool NCAP_MPI_SORT;                    // sort exressions after second parse for MPI optimization
-
   // Constructor
-  void prs_cls(NcapVector<sym_sct*> &sym_in)  {
-    sym_vtr=sym_in;
+  prs_sct( NcapVector<dmn_sct*> &p_dmn_in_vtr, 
+		NcapVector<dmn_sct*> &p_dmn_out_vtr, 
+                NcapVector<sym_sct*> &p_sym_vtr, 
+                NcapVarVector &p_var_vtr,
+	        NcapVarVector &p_int_vtr) :
+                
+                dmn_in_vtr(p_dmn_in_vtr)   ,
+                dmn_out_vtr(p_dmn_out_vtr) ,
+                sym_vtr(p_sym_vtr)         ,
+                var_vtr(p_var_vtr)         ,
+		int_vtr(p_int_vtr) {; }
 
-  }
+var_sct *                  /* O [sct] initialized variable */
+ncap_var_init(
+const std::string &snm,    /* I [sng] variable name constant */
+bool bfll);                /* if true fill var with data */ 
 
+int                        /* O  [bool] bool - true if sucessful */
+ncap_var_write             /*    [fnc] Write var to output file prs_arg->fl_out */ 
+(var_sct *var,             /* I  [sct] variable to be written - freed at end */  
+ bool bram);               /* I  [bool] true if a ram only variable */
 
-} prs_cls;
+void 
+ncap_def_ntl_scn           /* define variables captured on first parse */
+(void); 
+
+};
 
 
 
 
 
 /* Begin funtions in ncap_utl.c */
-
-var_sct *                  /* O [sct] initialized variable */
-ncap_var_init(
-const std::string &snm, /* I [sng] variable name constant */
-prs_sct *prs_arg,          /* I/O  vectors of atts,vars,dims, filenames */
-bool bfll);                /* if true fill var with data */ 
-
-int                /* O  [bool] bool - ture if sucessful */
-ncap_var_write     /*   [fnc] Write var to output file prs_arg->fl_out */ 
-(var_sct *var,     /* I  [sct] variable to be written - freed at end */  
- bool bram,        /* I  [bool] true if a ram only variable */
-prs_sct *prs_arg); /* I/O vectors of atts & vars & file names  */
 
 
 var_sct *                /* O [sct] variable containing attribute */
@@ -289,11 +273,6 @@ var_sct* var2);
 nco_bool        /* Reurns True if var has attribute style name */
 ncap_var_is_att( 
 var_sct *var);
-
-
-void            /* define variables captured on first parse */
-ncap_def_ntl_scn(
-prs_sct *prs_arg);
 
 int            /* Sort expressions for MPI Optimization */  
 ncap_mpi_srt(
