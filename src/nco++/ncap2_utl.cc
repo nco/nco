@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.78 2007-07-16 13:37:03 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.79 2007-07-16 13:51:08 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -52,9 +52,7 @@ bool bfll){
   dmn_sct *dmn_fd; 
   dmn_sct *dmn_nw;
   
-  dmn_sct **dmn_out;  // dereferencing
-  int nbr_dmn_out  ;  // dereferencing
-  
+   
   var_sct *var;
   
   NcapVar *Nvar;
@@ -181,12 +179,8 @@ bool bfll){
     dbg_prn(fnc_nm,os.str());  
   }
   
-  
-  
-  nbr_dmn_out=dmn_out_vtr.size();
-  dmn_out=&dmn_out_vtr[0];
-  
-  var=nco_var_fll(fl_id,var_id,var_nm,dmn_out,nbr_dmn_out);
+      
+  var=nco_var_fll(fl_id,var_id,var_nm,&dmn_out_vtr[0],dmn_out_vtr.size());
   /*  var->nm=(char *)nco_malloc((strlen(var_nm)+1UL)*sizeof(char));
       (void)strcpy(var->nm,var_nm); */
   /* Tally is not required yet since ncap does not perform cross-file operations (yet) */
