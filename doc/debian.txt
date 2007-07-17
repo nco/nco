@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.101 2007-06-29 23:17:25 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.102 2007-07-17 15:59:29 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -115,6 +115,8 @@ http://people.debian.org/~mpalmer/debian-mentors_FAQ.html
 
 Debian Acronyms & Abbreviations:
 BTS Bug Tracking System
+DD  Debian Developer
+DDPO Debian Developer's Packages Overview
 DNMG Debian New Maintainer's Guide
 FTBFS Fails to Build from Source
 ITA Intent to Adopt
