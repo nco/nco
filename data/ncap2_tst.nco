@@ -1,7 +1,9 @@
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.2 2007-07-20 05:07:05 zender Exp $ -*-C++-*-
+
 // Purpose: Test script for ncap2
 
 /* Usage: 
-   ncap2 -O -v -S ~/nco/data/ncapf.in ~/nco/data/in.nc ~/foo.nc
+   ncap2 -O -v -S ~/nco/data/ncap2_tst.nco ~/nco/data/in.nc ~/foo.nc
    ncks ~/foo.nc | /bin/more
 */
 

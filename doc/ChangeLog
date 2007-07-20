@@ -1,7 +1,11 @@
-2007-07-09  Henry Butowsky <henryb@ntlworld.com>
-	* turned prs_sct into class. It has 4 methods
-	contructor,ncap_var_init(), ncap_var_write(),
-	ncap_def_ntl_scn() 
+2007-07-19  Charlie Zender  <zender@uci.edu>
+
+	* Add ncap2_tst.nco, Henry's ncap2 test script, to distribution
+
+2007-07-18  Henry Butowsky <henryb@ntlworld.com>
+
+	* Turned prs_sct into class. It has four methods:
+	contructor, ncap_var_init(), ncap_var_write(), ncap_def_ntl_scn() 
 
 2007-07-14  Charlie Zender  <zender@uci.edu>
 
