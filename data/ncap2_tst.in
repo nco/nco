@@ -1,0 +1,446 @@
+// Purpose: Test script for ncap2
+
+/* Usage: 
+   ncap2 -O -v -S ~/nco/data/ncapf.in ~/nco/data/in.nc ~/foo.nc
+   ncks ~/foo.nc | /bin/more
+*/
+
+
+// Check methods first
+// scalar
+
+// Count number of errors
+nbr_err=0;
+nbr_err_ttl=0;
+
+{
+  a1=three_dmn_var_dbl.avg();
+  a2=three_dmn_var_dbl.avgsqr();
+  a3=three_dmn_var_dbl.max();
+  a4=three_dmn_var_dbl.min();
+  a5=three_dmn_var_dbl.rmssdn();
+  a6=three_dmn_var_dbl.total();
+   
+  // string operands together
+  b1=three_dmn_var_dbl.avg($0).total();
+  b2=three_dmn_var_dbl.avgsqr($1).rmssdn();
+  b3=three_dmn_var_dbl.max($2).min();
+  b4=three_dmn_var_dbl.min($0).max();
+  b5=three_dmn_var_dbl.rmssdn($1).avgsqr();
+  b6=three_dmn_var_dbl.total($2).avg();
+
+
+  if( fabs(a1-40.609d) >0.01) {
+    print("ERROR: a1:method test\n");
+    nbr_err++;
+  }
+
+  if( fabs(a1-40.609d) >0.01){ 
+    print("ERROR: a1:method test\n");
+    nbr_err++;
+  }
+
+
+  if( fabs(a2-2208.145d) >0.01){ 
+   print("ERROR: a2:method test\n");
+   nbr_err++;
+  }
+
+
+  if( a3 != 79L ){ 
+    print("ERROR: a3:method test\n");
+    nbr_err++;
+  }
+
+  if( a4 != 1L) {
+    print("ERROR: a4:method test\n");
+    nbr_err++;
+  }
+
+  if( fabs(a5-47.336d) >0.01) {
+    print("ERROR: a5:method test\n");
+    nbr_err++;
+  }
+
+  if( a6 !=2802L) {
+    print("ERROR: a6:method test\n");
+    nbr_err++;
+  }
+
+  if( fabs(b1-322.714d)>0.01) {
+    print("ERROR: b1:method test\n");
+    nbr_err++;
+  }
+
+
+  if( fabs(b2-3095.591d)>0.01) {
+    print("ERROR: b2:method test\n");
+    nbr_err++;
+  }
+
+  if( b3 !=4L) {
+    print("ERROR: b3:method test\n");
+    nbr_err++;
+  }
+
+
+  if( b4 !=8L) {
+    print("ERROR: b4:method test\n");
+    nbr_err++;
+  }
+
+
+  if( fabs(b5-4149.576d)>0.01) {
+   print("ERROR: b5:method test\n");
+   nbr_err++;
+  }
+
+  if( fabs(b6-155.667d)>0.01) {
+  print("ERROR: b6:method test\n");
+  nbr_err++;
+ }
+
+
+  print("RESULTS block a,b: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+
+} //End Method test
+
+
+
+// Scots wind speed test 
+{
+
+
+  bin_nbr=3;
+  defdim("bin",bin_nbr); // [nbr] Bin dimension
+  wnd_min[bin]={0,1,2}; // [m s-1] Minimum speed
+  wnd_max[bin]={1,2,3}; // [m s-1] Maximum speed
+
+  results[lat,lon,bin]={
+  7, 1, 1,
+  6, 2, 1,
+  5, 2, 2,
+  6, 2, 1,
+  7, 1, 1,
+  5, 2, 2,
+  7, 2, 0,
+  6, 2, 1 };
+
+
+  // Regular Vars
+  bin_cnt[lat,lon,bin]=0s; // [nbr] Wind speeds in bin
+  bin_flg[time,lat,lon]=0s; // [flg] Wind speed within current bin
+  set_miss(bin_cnt,wnd_spd@missing_value);
+
+
+  for(bin_idx=0;bin_idx<bin_nbr;bin_idx++){
+    bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+    bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
+  }
+
+
+  if( (bin_cnt-results).total() !=0 ){
+    print("ERROR: c1:Scotts test - regular vars\n");
+    nbr_err++;
+  }
+ 
+  // Repeat exercise with RAM vars 
+  *bin_ram_cnt[lat,lon,bin]=0s; 
+  *bin_ram_flg[time,lat,lon]=0s;
+  set_miss(bin_ram_cnt,wnd_spd@missing_value);
+
+
+  for(bin_idx=0;bin_idx<bin_nbr;bin_idx++){
+    bin_ram_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
+    bin_ram_cnt(:,:,bin_idx)=bin_ram_flg.total($time); 
+  }
+
+
+  if( (bin_ram_cnt-results).total() !=0 ){
+    print("ERROR: c2:Scotts test - ram vars\n");
+    nbr_err++;
+  }
+  
+ ram_delete(bin_ram_cnt);
+ ram_delete(bin_ram_flg);
+
+ print("RESULTS block c: Num errors="); print(nbr_err,"%d");
+ nbr_err_ttl+=nbr_err;
+ nbr_err=0;
+
+
+
+} //End Scotts Test
+
+
+// More RAM var Testing
+
+{
+  *d1[$time,$lat,$lon]=three_dmn_var_dbl;
+
+   // value list on RHS
+   d1(0,0,:)={10d,20d,30d,40d};
+
+   //Attribute on RHS
+   d1@n1={2d,4d,8d,16d};
+   d1(0,1,:)=d1@n1;
+    
+   //Scalar on RHS
+   d1(:,:,3)=88.0;
+
+   // RAM Var on RHS
+   *d2[$lon]={1d,4d,9d,16d};
+   d1(2,0,:)=d2;
+
+   ram_write(d1);
+
+   if( fabs(d1.total()-3800d)>0.01 ) {  
+    print("ERROR: d1:ram test\n");
+    nbr_err++;   
+  }
+ 
+   //Repeat exersise with ints;
+
+  *d3[$time,$lat,$lon]=three_dmn_var_int;
+
+   // value list on RHS
+   d3(0,0,:)={9,11,13,15};
+
+   //Attribute on RHS
+   d3@n1={2,4,8,16};
+   d3(0,1,:)=d1@n1;
+    
+   //Scalar on RHS
+   d3(:,:,3)=100L;
+
+   // RAM Var on RHS
+   *d4[$lon]={1,3,27,81};
+   d3(2,0,:)=d4;
+
+   //Regular var On RHS
+   d5[$lon]={1,2,3,4};
+   d3(8,1,:)=d5;
+
+   if(d3.total() !=3716L) {  
+    print("ERROR: d3:ram test\n");
+    nbr_err++;   
+   }
+
+
+   print("RESULTS block d: Num errors="); print(nbr_err,"%d");
+   nbr_err_ttl+=nbr_err;
+   nbr_err=0;
+   
+   ram_delete(d3);
+   ram_delete(d4);
+
+}
+
+// Test LHS casting - Regular var
+{
+   // Var on RHS 
+   e1[$time]=time;
+   
+   // Value list on RHS   
+   e2[$lon]={1,2s,3L,4f};
+	
+   //attribute on RHS
+   e3@tst={5,25,50,100};
+   e3[$lon]=e3@tst;   
+
+
+   //Bare number on RHS
+   e4[$lon]=99d;
+
+   //Real life casting
+   e5[time,lat,lon,lev]=P0*hyam+hybm*PS;
+
+   
+   if( fabs(e1.avg()-5.5d)>0.01) {
+    print("ERROR: e1: LHS cast test\n");
+    nbr_err++;
+  }
+
+
+   if( fabs(e2.avgsqr()-7.5f)>0.01 ) {
+    print("ERROR: e2: LHS cast test\n");
+    nbr_err++;
+  }
+
+
+   if( e3.rmssdn() !=66L) {
+    print("ERROR: e3: LHS cast test\n");
+    nbr_err++;
+  }
+   
+
+   if( fabs(e4.total()-396d)>0.01) {
+    print("ERROR: e4: LHS cast test\n");
+    nbr_err++;
+  }
+
+   if( fabs(e5.min()-9929.21f )>0.001f  || fabs(e5.avg()-53743.6f)>0.01f) {
+    print("ERROR: e5: LHS cast test\n");
+    nbr_err++;
+  }
+
+   print("RESULTS block e: Num errors="); print(nbr_err,"%d");
+   nbr_err_ttl+=nbr_err;
+   nbr_err=0;
+   
+}
+
+//check var/att/dim quoting
+{
+
+  '---u'=10L;
+  '...v'=20L;
+  '...w'='---u'*'...v';
+  '---u@kill'=10L;
+  '...v@.one'=30L;
+  f1='...v@.one' *100;
+  f2='---u'+40;
+
+  defdim("..t",5);
+  f3['$lon','$lat','$..t']=1.1d;
+  f4='$..t'.size;
+
+
+  if( f1 !=3000L) {
+    print("ERROR: f1: ID quoting\n");
+    nbr_err++;
+  }
+
+
+  if( f2 != 50L) {
+    print("ERROR: f2: ID quoting\n");
+    nbr_err++;
+  }
+
+  if( fabs(f3.total()- 44.0)>0.01 ) {
+    print("ERROR: f3: ID quoting\n");
+    nbr_err++;
+  }
+
+
+  if( f4 != 5L) {
+    print("ERROR: f4: ID quoting\n");
+    nbr_err++;
+  }
+
+
+  print("RESULTS block f: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+
+} //end ID quoting
+
+
+// Check Loops 
+{
+
+ *idx=0L;
+  *jdx=0L;
+  *g1=0;
+  *g2=0.0;
+
+  while(idx++ <20) {
+   jdx=0;
+   while(jdx++<10){
+    if(jdx>5) continue;
+    g1+=jdx;
+   }
+   if(idx==12) break;
+  }
+
+ 
+   if( g1 !=180L) {
+    print("ERROR: g1: LHS loop test\n");
+    nbr_err++;
+  }
+
+  for(idx=0 ; idx<10 ; idx++){ 
+   for(jdx=10.0 ; jdx<15.0; jdx++)
+     g2+=(idx+jdx); 
+  }
+
+  if( fabs(g2-825d)>0.01) {
+    print("ERROR: g2: LHS loop test\n");
+    nbr_err++;
+  }
+
+
+  ram_write(g2);
+
+  ram_delete(idx);
+  ram_delete(jdx);
+  ram_delete(g1);
+
+
+  print("RESULTS block g: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+
+
+
+
+}
+
+//Check missing value functions and masking
+{
+
+  h1=txyz;
+  //change all values less than 20 or greater than 80 to 2;
+  *hmask= h1<20 || h1>80;
+
+  h1=hmask*2 +!hmask*h1;
+
+  change_miss(h1,2f);
+
+  h2=h1.total($time,$2).max();
+  h3=h1.avgsqr($x,$3).min();
+
+  if( fabs(h2-315f)>0.01) {
+    print("ERROR: h2: masking test\n");
+    nbr_err++;
+  }
+
+
+  if( fabs(h3-420.5f)>0.01) {
+    print("ERROR: h3: masking test\n");
+    nbr_err++;
+  }
+ 
+  
+  ram_delete(hmask);
+
+
+  print("RESULTS block h: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+
+
+
+}
+
+// Results summany
+print("RESULTS SUMMARY: total errors=");print(nbr_err_ttl,"%d");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
