@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.2 2007-07-20 05:07:05 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.3 2007-07-21 03:11:31 zender Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -6,7 +6,6 @@
    ncap2 -O -v -S ~/nco/data/ncap2_tst.nco ~/nco/data/in.nc ~/foo.nc
    ncks ~/foo.nc | /bin/more
 */
-
 
 // Check methods first
 // scalar
@@ -429,20 +428,3 @@ nbr_err_ttl=0;
 
 // Results summany
 print("RESULTS SUMMARY: total errors=");print(nbr_err_ttl,"%d");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

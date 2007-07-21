@@ -267,7 +267,7 @@ public:
 
      //Define variables in output
     (void)nco_redef(prs_arg->out_id);  
-    (void)ncap_def_ntl_scn(prs_arg);
+    (void)prs_arg->ncap_def_ntl_scn();
     (void)nco_enddef(prs_arg->out_id);  
 
 

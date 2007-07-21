@@ -2068,7 +2068,7 @@ void ncoLexer::mVAR_ATT(bool _createToken) {
 	sym_sct *sym_srh;
 	sym_srh=ncap_sym_init(text.substr(_begin,text.length()-_begin).c_str(),cos,cosf); 
 	
-	if( prs_arg->ptr_sym_vtr->bsearch(sym_srh))
+	if( prs_arg->sym_vtr.bsearch(sym_srh))
 	_ttype = FUNC;             
 	else _ttype = VAR_ID; 
 	

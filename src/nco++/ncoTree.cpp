@@ -420,7 +420,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				
 				if(prs_arg->ntl_scn) goto ed0;
 				
-				Nvar=prs_arg->ptr_var_vtr->find(va_nm);
+				Nvar=prs_arg->var_vtr.find(va_nm);
 				
 				if(Nvar) {
 				if(Nvar->flg_mem==false)
@@ -428,8 +428,8 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				else{
 				var_sct *var_nw;
 				var_nw=nco_var_dpl(Nvar->var);          
-				prs_arg->ptr_var_vtr->erase(va_nm); 
-				ncap_var_write(var_nw,false,prs_arg);
+				prs_arg->var_vtr.erase(va_nm); 
+				prs_arg->ncap_var_write(var_nw,false);
 				}
 				
 				}
@@ -465,7 +465,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				
 				if(prs_arg->ntl_scn) goto ed1;
 				
-				Nvar=prs_arg->ptr_var_vtr->find(va_nm);
+				Nvar=prs_arg->var_vtr.find(va_nm);
 				
 				if(Nvar) {
 				// deal with var
@@ -473,11 +473,11 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				if(Nvar->flg_mem==false)
 				wrn_prn(fnc_nm,"Delete function cannot remove disk variable:\""+va_nm+ "\". Delete can only remove RAM variables.");
 				else
-				prs_arg->ptr_var_vtr->erase(va_nm); 
+				prs_arg->var_vtr.erase(va_nm); 
 				}
 				
 				if(del->getType()==ATT_ID) 
-				prs_arg->ptr_var_vtr->erase(va_nm); 
+				prs_arg->var_vtr.erase(va_nm); 
 				}
 				
 				if(!Nvar)
@@ -514,7 +514,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				
 				if(prs_arg->ntl_scn) goto end;
 				
-				Nvar=prs_arg->ptr_var_vtr->find(va_nm);
+				Nvar=prs_arg->var_vtr.find(va_nm);
 				if(!Nvar){
 				wrn_prn(fnc_nm,"Set missing value function unable to find :"+va_nm); 
 				goto end; 
@@ -567,7 +567,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				
 				va_nm=ch_mss->getText();
 				
-				Nvar=prs_arg->ptr_var_vtr->find(va_nm);
+				Nvar=prs_arg->var_vtr.find(va_nm);
 				if(!Nvar){
 				wrn_prn(fnc_nm,"Change missing value function unable to find :"+va_nm); 
 				goto end1; 
@@ -589,7 +589,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				
 				}else{ 
 				
-				var_in=ncap_var_init(va_nm,prs_arg,true);
+				var_in=prs_arg->ncap_var_init(va_nm,true);
 				
 				cp_out=(char*)var_in->val.vp;
 				slb_sz=nco_typ_lng(var_in->type);
@@ -601,7 +601,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				}   
 				// Copy new missing value 
 				nco_mss_val_cp(var,var_in);
-				(void)ncap_var_write(var_in,false,prs_arg);
+				(void)prs_arg->ncap_var_write(var_in,false);
 				}   
 				
 				end1: nco_var_free(var);         
@@ -658,7 +658,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 					
 					
 					if(prs_arg->ntl_scn) goto end2;
-					Nvar=prs_arg->ptr_var_vtr->find(va_nm);
+					Nvar=prs_arg->var_vtr.find(va_nm);
 					
 					if(Nvar->flg_mem){ 
 					wrn_prn(fnc_nm,"Cannot print out RAM variables at the moment!");
@@ -1271,7 +1271,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				
 				// Die if attempting to create a RAM var 
 				// from an existing disk var   
-				Nvar= prs_arg->ptr_var_vtr->find(tr->getText());
+				Nvar= prs_arg->var_vtr.find(tr->getText());
 				
 				if(bram && tr->getType()==VAR_ID && Nvar && Nvar->flg_mem==false){
 				std::string serr;
@@ -1349,7 +1349,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				sym_sct * sym_ptr;
 				std::string fnm(m->getText());
 				
-				sym_ptr= prs_arg->ptr_sym_vtr->find(fnm);
+				sym_ptr= prs_arg->sym_vtr.find(fnm);
 				if(sym_ptr ==NULL) { 
 				cout << "Function  " << fnm << " not found" << endl;
 				exit(1);
@@ -1418,10 +1418,10 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),(nc_type)NC_INT,false);
 				}else{ 
 				// Check output 
-				dmn_fd=prs_arg->ptr_dmn_out_vtr->find(sDim);
+				dmn_fd=prs_arg->dmn_out_vtr.find(sDim);
 				// Check input
 				if(dmn_fd==NULL_CEWI)
-				dmn_fd=prs_arg->ptr_dmn_in_vtr->find(sDim);
+				dmn_fd=prs_arg->dmn_in_vtr.find(sDim);
 				
 				if( dmn_fd==NULL_CEWI ){
 				err_prn(fnc_nm,"Unable to locate dimension " +dval->getText()+ " in input or output files ");
@@ -1445,10 +1445,10 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				NcapVar *Nvar=NULL;
 				
 				if(prs_arg->ntl_scn)
-				Nvar=prs_arg->ptr_int_vtr->find(att->getText());
+				Nvar=prs_arg->int_vtr.find(att->getText());
 				
 				if(Nvar==NULL) 
-				Nvar=prs_arg->ptr_var_vtr->find(att->getText());
+				Nvar=prs_arg->var_vtr.find(att->getText());
 				
 				var=NULL_CEWI;    
 				if(Nvar !=NULL)
@@ -1926,7 +1926,7 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 #line 2034 "ncoGrammer.g"
 									
 									
-									var=ncap_var_init(v->getText(), prs_arg,true);
+									var=prs_arg->ncap_var_init(v->getText(),true);
 									if(var== NULL){
 									if(prs_arg->ntl_scn){
 									var=ncap_var_udf(v->getText().c_str());
@@ -2034,10 +2034,10 @@ var_sct * ncoTree::assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				
 				var_nm=vid->getText().c_str();
 				
-				var_lhs=ncap_var_init(vid->getText(),prs_arg,false);
+				var_lhs=prs_arg->ncap_var_init(vid->getText(),false);
 				if(var_lhs){
 				var=nco_var_dpl(var_lhs);
-				(void)ncap_var_write(var_lhs,bram,prs_arg);
+				(void)prs_arg->ncap_var_write(var_lhs,bram);
 				} else {
 				
 				// set var to udf
@@ -2045,7 +2045,7 @@ var_sct * ncoTree::assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				var=nco_var_dpl(var_lhs);
 				
 				Nvar=new NcapVar(var_lhs);
-				(void)prs_arg->ptr_int_vtr->push_ow(Nvar);
+				(void)prs_arg->int_vtr.push_ow(Nvar);
 				}
 				
 #line 2052 "ncoTree.cpp"
@@ -2119,8 +2119,8 @@ var_sct * ncoTree::assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 					//Check that all dims exist
 					str_vtr_sz=str_vtr.size();
 					for(idx=0 ; idx < str_vtr_sz ; idx++)
-					if(   prs_arg->ptr_dmn_in_vtr->findi(str_vtr[idx]) ==-1             
-					&& prs_arg->ptr_dmn_out_vtr->findi(str_vtr[idx]) ==-1)      
+					if(   prs_arg->dmn_in_vtr.findi(str_vtr[idx]) ==-1             
+					&& prs_arg->dmn_out_vtr.findi(str_vtr[idx]) ==-1)      
 					break;
 					
 					// return undef if dim missing 
@@ -2148,13 +2148,13 @@ var_sct * ncoTree::assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 					if(!var){
 					var1=ncap_var_udf(var_nm);
 					Nvar=new NcapVar(var1);
-					(void)prs_arg->ptr_int_vtr->push_ow(Nvar);
+					(void)prs_arg->int_vtr.push_ow(Nvar);
 					var=nco_var_dpl(var1);
 					} else{
 					var->nm=(char*)nco_free(var->nm);
 					var->nm=strdup(var_nm);
 					var1=nco_var_dpl(var);
-					ncap_var_write(var1,bram,prs_arg);
+					prs_arg->ncap_var_write(var1,bram);
 					}
 					
 					if(var_cst)
@@ -2196,7 +2196,7 @@ var_sct * ncoTree::assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 					
 					// Write var to int_vtr
 					// if var already in int_vtr or var_vtr then write call does nothing
-					(void)ncap_var_write(var1,bram,prs_arg);
+					(void)prs_arg->ncap_var_write(var1,bram);
 					
 					
 					
@@ -2308,7 +2308,7 @@ var_sct * ncoTree::assign_ntl(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 							var1=ncap_var_udf(att2->getText().c_str());
 							
 							Nvar=new NcapVar(var1);
-							prs_arg->ptr_int_vtr->push_ow(Nvar);          
+							prs_arg->int_vtr.push_ow(Nvar);          
 							
 							// Copy return variable
 							var=nco_var_dpl(var1);    
@@ -2425,7 +2425,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				
 				lmt_Ref=lmt;               
 				
-				Nvar=prs_arg->ptr_var_vtr->find(var_nm);
+				Nvar=prs_arg->var_vtr.find(var_nm);
 				
 				// Overwrite bram possibly 
 				if(Nvar) 
@@ -2438,7 +2438,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				
 				if(Nvar && Nvar->flg_stt==1){
 				var_sct *var_ini;
-				var_ini=ncap_var_init(vid->getText(),prs_arg,true);       
+				var_ini=prs_arg->ncap_var_init(vid->getText(),true);       
 				Nvar->var->val.vp=var_ini->val.vp;
 				var_ini->val.vp=(void*)NULL;
 				var_ini=nco_var_free(var_ini);
@@ -2450,7 +2450,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				
 				
 				if(!Nvar)
-				var_lhs=ncap_var_init(vid->getText(),prs_arg,true);       
+				var_lhs=prs_arg->ncap_var_init(vid->getText(),true);       
 				
 				
 				nbr_dmn=var_lhs->nbr_dim;
@@ -2494,7 +2494,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				
 				(void)nco_put_var_mem(var_rhs,var_lhs,lmt_vtr);
 				if(Nvar==NULL)
-				(void)ncap_var_write(var_lhs,true,prs_arg); 
+				(void)prs_arg->ncap_var_write(var_lhs,true); 
 				
 				
 				
@@ -2506,17 +2506,17 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				if(!Nvar || ( Nvar && Nvar->flg_stt==1)){              
 				// if var isn't in ouptut then copy it there
 				//rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
-				var_lhs=ncap_var_init(vid->getText(),prs_arg,true);
+				var_lhs=prs_arg->ncap_var_init(vid->getText(),true);
 				
 				// copy atts to output
 				(void)ncap_att_cpy(vid->getText(),vid->getText(),prs_arg);
-				(void)ncap_var_write(var_lhs,false,prs_arg);
+				(void)prs_arg->ncap_var_write(var_lhs,false);
 				}
 				
 				// Get "new" var_id   
 				(void)nco_inq_varid(prs_arg->out_id,var_nm,&var_id);
 				
-				var_lhs=ncap_var_init(vid->getText(),prs_arg,false);
+				var_lhs=prs_arg->ncap_var_init(vid->getText(),false);
 				
 				nbr_dmn=var_lhs->nbr_dim;
 				
@@ -2592,7 +2592,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORET)
 				var=NULL_CEWI;
 				else 
-				var=ncap_var_init(vid->getText(),prs_arg,true);
+				var=prs_arg->ncap_var_init(vid->getText(),true);
 				
 				
 				// Empty and free vector 
@@ -2713,7 +2713,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 					
 					//call to nco_var_get() in ncap_var_init() uses this property
 					var1->typ_dsk=var1->type;
-					(void)ncap_var_write(var1,bram,prs_arg);
+					(void)prs_arg->ncap_var_write(var1,bram);
 					
 					bcst=false;
 					var_cst=nco_var_free(var_cst); 
@@ -2754,7 +2754,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 					// Do attribute propagation only if
 					// var doesn't already exist or is defined but NOT
 					// populated
-					Nvar=prs_arg->ptr_var_vtr->find(vid2->getText());
+					Nvar=prs_arg->var_vtr.find(vid2->getText());
 					//rcd=nco_inq_varid_flg(prs_arg->out_id,var1->nm ,&var_id);
 					
 					
@@ -2770,7 +2770,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 					
 					
 					// Write var to disk
-					(void)ncap_var_write(var1,bram,prs_arg);
+					(void)prs_arg->ncap_var_write(var1,bram);
 					
 					
 					
@@ -2883,7 +2883,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 							
 							//var_nw=nco_var_dpl(var);
 							NcapVar *Nvar=new NcapVar(var1,sa);
-							prs_arg->ptr_var_vtr->push_ow(Nvar);       
+							prs_arg->var_vtr.push_ow(Nvar);       
 							
 							
 							// See If we have to return something
@@ -2950,7 +2950,7 @@ var_sct * ncoTree::out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				if(vid1->getFirstChild())
 				err_prn(fnc_nm,"Invalid Lvalue " +vid1->getText() );
 				
-				var=ncap_var_init(vid1->getText(),prs_arg,true);
+				var=prs_arg->ncap_var_init(vid1->getText(),true);
 				if(var== NULL_CEWI){
 				nco_exit(EXIT_FAILURE);
 				}
@@ -2971,7 +2971,7 @@ var_sct * ncoTree::out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				if(vid->getFirstChild())
 				err_prn(fnc_nm,"Invalid Lvalue " +vid->getText() );
 				
-				var=ncap_var_init(vid->getText(),prs_arg,true);
+				var=prs_arg->ncap_var_init(vid->getText(),true);
 				if(var== NULL_CEWI){
 				nco_exit(EXIT_FAILURE);
 				}
@@ -2999,10 +2999,10 @@ var_sct * ncoTree::out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 				
 				
 				if(prs_arg->ntl_scn)
-				Nvar=prs_arg->ptr_int_vtr->find(att->getText());
+				Nvar=prs_arg->int_vtr.find(att->getText());
 				
 				if(Nvar==NULL) 
-				Nvar=prs_arg->ptr_var_vtr->find(att->getText());
+				Nvar=prs_arg->var_vtr.find(att->getText());
 				
 				var=NULL_CEWI;    
 				if(Nvar !=NULL)
@@ -3494,12 +3494,12 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			
 			
 			var_nm=vid->getText().c_str(); 
-			var_rhs=ncap_var_init(vid->getText(),prs_arg,false);            
+			var_rhs=prs_arg->ncap_var_init(vid->getText(),false);            
 			nbr_dmn=var_rhs->nbr_dim;          
 			lRef=lmt;
 			
 			// Check for RAM variable
-			Nvar=prs_arg->ptr_var_vtr->find(var_nm);
+			Nvar=prs_arg->var_vtr.find(var_nm);
 			if(Nvar && Nvar->flg_mem){ 
 			bram=true;
 			var_rhs=nco_var_free(var_rhs);
