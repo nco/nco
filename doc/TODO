@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.943 2007-07-13 21:55:15 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.944 2007-07-22 03:42:51 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -619,8 +619,6 @@ nco885. ncpdq: netCDF4 problem with CAM datasets variable AERASM_v. AERASM_v doe
 nco886. Decide next project: SWAMP? paper on...ncap2? SWAMP? IPCC benchmarks?
 nco887. GPLv3?
 nco888. ncap2: Make sure ncap2 type-conversion converts missing_value and _FillValue
-nco889. add libz.a test on gz_open() to configure.in fxm done
-nco890. test netcdf4 build with configure
 nco891. 
 ************************************************************************
 End ncoXXX TODOs
