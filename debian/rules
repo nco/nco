@@ -77,9 +77,9 @@ install-arch:
 	dh_testroot
 	dh_clean -a
 	dh_installdirs -a
-# Commands to install the arch part of the package into debian/tmp
+# Commands to install architecture part of package into debian/tmp
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/nco
-# NCO installs header files by default, which we do not want (yet)
+# NCO installs header files by default, which Debian does not want (yet)
 	dh_install -a --exclude="*.h *.hh"
 
 # Must not depend on anything 
