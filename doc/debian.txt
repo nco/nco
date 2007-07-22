@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.102 2007-07-17 15:59:29 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.103 2007-07-22 18:40:58 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -151,7 +151,8 @@ cd ${DATA};cvs -d zender@nco.cvs.sf.net:/cvsroot/nco export -kkv -r nco-3_9_1-1 
 tar cvzf ./nco_3.9.1.orig.tar.gz --exclude='nco-3.9.1/debian*' --exclude='.cvsignore' --exclude='ncap_lex.c' --exclude='ncap_yacc.[ch]' ./nco-3.9.1 
 /bin/rm -rf ${DATA}/nco-3.9.1 # Remove cvs-exported directory
 tar xvzf ./nco_3.9.1.orig.tar.gz # Untar to get directory without excluded files
-mkdir ${DATA}/nco-3.9.1/debian;cd ~/nco/debian;cp changelog compat control convert copyright doc-base files info rules ${DATA}/nco-3.9.1/debian # Replace debian directory with _CURRENT_ (main trunk) settings
+mkdir ${DATA}/nco-3.9.1/debian;cd ~/nco/debian;/bin/cp changelog compat control convert copyright doc-base files info rules ${DATA}/nco-3.9.1/debian # Replace debian directory with _CURRENT_ (main trunk) settings
+export NETCDF_INC='/usr/include';export NETCDF_LIB='/usr/lib';unset LD_LIBRARY_PATH # Guarantee that Debian packages take precedence over development libraries in, e.g., /usr/local. Indirectly inhibits libtool from using RPATH.
 #cd ${DATA}/nco-3.9.1;dpkg-buildpackage -rfakeroot -uc -us > ~/foo.nco 2>&1 # -uc -us: Do not sign changes or source files
 #cd ${DATA}/nco-3.9.1;dpkg-buildpackage -rfakeroot -sa > ~/foo.nco 2>&1 # -sa: Include _orig.tar.gz in .changes 
 cd ${DATA}/nco-3.9.1;dpkg-buildpackage -rfakeroot > ~/foo.nco 2>&1
@@ -166,6 +167,7 @@ scp ${DATA}/nco_3.9.1* nco.sf.net:/home/groups/n/nc/nco/htdocs/src
 # NB: Make sure RPMs build before uploading to debian, since changing
 # Debian versions is such a PITA
 cd ${DATA};dupload -t mentors nco_3.9.1-1_*.changes
+bsrc # Reset shell environment for regular development
 
 # RPM builds as root
 export rpm_root='/usr/src/redhat'

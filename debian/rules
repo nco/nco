@@ -1,11 +1,11 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
-# debian/rules file - for nco
-# Copyright 1999-2002 by Brian Mays
-# Copyright 2003-2006 by Charlie Zender
+# Purpose: debian/rules file for NCO
+# Copyright (C) 1999--2002 by Brian Mays
+# Copyright (C) 2003--2007 by Charlie Zender
 
-# Sample debian/rules that uses debhelper.
-# GNU copyright 1997 to 1999 by Joey Hess.
+# Sample debian/rules that uses debhelper
+# GNU copyright 1997 to 1999 by Joey Hess
 
 # Modified to make a template file for a multi-binary package with separated
 # build-arch and build-indep targets  by Bill Allombert 2001
@@ -38,12 +38,14 @@ config.status: configure
 	dh_testdir
 # Explicitly set Debian system netCDF directories to override development netCDF
 # installations in, e.g., /usr/local
-	NETCDF_INC='/usr/include' \
-	NETCDF_LIB='/usr/lib' \
+# 20070721: This may inadvertently cause libtool to set set rpath
+# In turn this generate linda warnings about hard-coded rpath
+#	NETCDF_INC='/usr/include' \
+#	NETCDF_LIB='/usr/lib' \
+#		    --libdir=/usr/lib/nco \
 	./configure $(confflags) \
 		    --prefix=/usr \
 		    --infodir=/usr/share/info \
-		    --libdir=/usr/lib/nco \
 		    --mandir=/usr/share/man \
 		    --disable-dap \
 		    --disable-nco_cplusplus \
