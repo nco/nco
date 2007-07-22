@@ -1,4 +1,4 @@
-// Purpose: CDL file to generate large netCDF test file for Large File Support (LFS) testing
+// Purpose: CDL file to generate large netCDF file for testing Large File Support (LFS)
 
 // Usage:
 // Create big.nc from big.cdl on a beefy 64-bit computer

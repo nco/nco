@@ -1,3 +1,7 @@
+nco (3.9.2-1) feisty; urgency=low
+
+  * new upstream version (ncap2 printing)
+
 nco (3.9.1-1) feisty; urgency=low
 
   * new upstream version (supports netCDF4/HDF deflation)

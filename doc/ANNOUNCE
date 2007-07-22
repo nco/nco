@@ -1,11 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.250 2007-07-04 15:21:17 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.251 2007-07-22 20:06:19 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.9.1 are ready. 
+The netCDF operators NCO version 3.9.2 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Release 3.9.1 supports 
+Release 3.9.2 supports 
 ncap2 type conversion
 
 A. 
@@ -25,7 +25,9 @@ F. ncap2 supports type conversion (Henry Butowsky)
    ncap2 -s 'big_int=uint64(small_int)+double(small_int);' in.nc out.nc
    http://nco.sf.net/nco.html#ncap2 
 
-G. 
+G. ncap2 now prints variables and metadata (Henry Butowsky)
+   ncap2 -s 'foo=1;print(foo)' in.nc out.nc
+   http://nco.sf.net/nco.html#ncap2 
 
 H. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
    http://nco.sf.net#debian
@@ -37,7 +39,7 @@ J. Reminder: NCO support for netCDF4 features is tracked at
 
    http://nco.sf.net/nco.html#nco4
 
-   To build NCO 3.9.1 with netCDF4 support, you must build with
+   To build NCO 3.9.2 with netCDF4 support, you must build with
    netCDF4 snapshot2007060701 or newer.
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
