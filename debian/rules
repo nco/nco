@@ -3,6 +3,8 @@
 # Purpose: debian/rules file for NCO
 # Copyright (C) 1999--2002 by Brian Mays
 # Copyright (C) 2003--2007 by Charlie Zender
+# Usage:
+# scp ~/nco/debian/rules virga.ess.uci.edu:nco/debian
 
 # Sample debian/rules that uses debhelper
 # GNU copyright 1997 to 1999 by Joey Hess
@@ -34,24 +36,28 @@ else
 	CFLAGS += -O2
 endif
 
-config.status: configure
-	dh_testdir
 # Explicitly set Debian system netCDF directories to override development netCDF
 # installations in, e.g., /usr/local
 # 20070721: This may inadvertently cause libtool to set set rpath
 # In turn this generate linda warnings about hard-coded rpath
 #	NETCDF_INC='/usr/include' \
 #	NETCDF_LIB='/usr/lib' \
-#		    --libdir=/usr/lib/nco \
+
+config.status: configure
+	dh_testdir
+	NETCDF_INC='/usr/include' \
+	NETCDF_LIB='/usr/lib' \
 	./configure $(confflags) \
-		    --prefix=/usr \
-		    --infodir=/usr/share/info \
-		    --mandir=/usr/share/man \
-		    --disable-dap \
-		    --disable-nco_cplusplus \
-		    --disable-netcdf4 \
-		    --disable-udunits \
-		    --disable-static
+		--prefix=/usr \
+		--infodir=/usr/share/info \
+		--libdir=/usr/lib/nco \
+		--mandir=/usr/share/man \
+		--disable-dap \
+		--disable-nco_cplusplus \
+		--disable-netcdf4 \
+		--disable-rpath \
+		--disable-udunits \
+		--disable-static
 
 # Architecture 
 build: build-arch

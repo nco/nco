@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.236 2007-07-23 00:31:13 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.237 2007-07-23 05:57:36 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -522,14 +522,14 @@ if test "${enable_mpi}" = 'yes'; then
     echo "#        (only works on Linux so far)            #"
     echo "##################################################"
 #	AC_ARG_VAR([BIN_MPI_PROGRAMS],[List of MPI NCOs - not user configurable])
-    AC_ARG_VAR([DEFS],[List of MPI NCOs - not user configurable])
-    AC_ARG_VAR([HAVE_MPI_H],[configure finds mpi.h - not user configurable])
-#	AC_ARG_VAR([ENABLE_MPI],[configure finds mpi.h - not user configurable])
+    AC_ARG_VAR([DEFS],[List of MPI NCOs: not user-configurable])
+    AC_ARG_VAR([HAVE_MPI_H],[configure finds mpi.h: not user-configurable])
+#	AC_ARG_VAR([ENABLE_MPI],[configure finds mpi.h: not user-configurable])
     
 # If MPI_CC is defined, include <mpi.h> and include mpnc* build targets for MPI_CC
 # Rest can be made with ${CC} as usual
-    AC_ARG_VAR([MPICH2_ROOT],[Root of non-std MPICH2 installation] (compile-time))
-    AC_ARG_VAR([LAM_ROOT],[Root of non-std LAM installation] (compile-time))
+    AC_ARG_VAR([MPICH2_ROOT],[Root of non-standard MPICH2 installation] (compile-time))
+    AC_ARG_VAR([LAM_ROOT],[Root of non-standard LAM installation] (compile-time))
 #	echo "before loop, MPICH2_ROOT = ${MPICH2_ROOT}"
     if test "${MPICH2_ROOT}" != ""; then
 #	echo "in loop, MPICH2_ROOT = ${MPICH2_ROOT}"
