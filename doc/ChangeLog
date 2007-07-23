@@ -5,6 +5,11 @@
 	  cvs tag -c nco-3_9_2;cvs tag -c nco-3_9_2-1
 	  Changes since nco-3_9_1: ncap2 printing, configure improvements
 	
+	* Add license text to nco++ source files
+
+	* Change licenses from GPL2 and FDL1.1 to GPL3 and FDL1.2 for code
+	and documentation, respectively
+
 	* Try to prevent debian rules configure/libtool from invoking RPATH 
 
 2007-07-19  Charlie Zender  <zender@uci.edu>

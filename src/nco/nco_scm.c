@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.32 2007-02-23 21:59:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.33 2007-07-23 00:31:40 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
 /* Copyright (C) 1995--2007 Charlie Zender
-   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_scm.h" /* Software configuration management */
@@ -193,7 +193,7 @@ copyright_prn /* [fnc] Print copyright notice */
   }else{
     (void)fprintf(stderr,"%s version %s\n",prg_nm_get(),vrs_cpp);
   } /* endif */
-  (void)fprintf(stdout,"NCO is free software and comes with ABSOLUTELY NO WARRANTY\nYou may copy, distribute, and/or modify NCO under the terms of the GNU General Public License (GPL) Version 2\n");
+  (void)fprintf(stdout,"NCO is free software and comes with ABSOLUTELY NO WARRANTY\nYou may copy, distribute, and/or modify NCO under the terms of the GNU General Public License (GPL) Version 3\n");
 
   date_cvs=(char *)nco_free(date_cvs);
   vrs_rcs=(char *)nco_free(vrs_rcs);

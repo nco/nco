@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.75 2007-06-29 01:19:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.76 2007-07-23 00:31:18 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -11,7 +11,7 @@
 
 /* Copyright (C) 1995--2007 Charlie Zender
 
-   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.75 2007-06-29 01:19:12 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.75 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.76 2007-07-23 00:31:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.76 $";
   const char * const opt_sht_lst="4ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;

@@ -1,9 +1,9 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.27 2007-07-14 14:48:45 zender Exp $
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.28 2007-07-23 00:31:50 zender Exp $
 
 // Purpose: Test for C++ programs using libnco_c++ API
 
-/* Copyright (C) 2001--2005 Charlie Zender
-   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+/* Copyright (C) 2001--2007 Charlie Zender
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 /* Compilation
@@ -58,10 +58,10 @@ int main(int argc,char **argv)
   long sz_nbr(1); // [nbr] Number of sizes
   register long idx; // [idx] Counting index
 
-  const std::string CVS_Date("$Date: 2007-07-14 14:48:45 $"); // [sng] CVS date string
-  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.27 2007-07-14 14:48:45 zender Exp $"); // [sng] CVS header string
-  const std::string CVS_Id("$Id: tst.cc,v 1.27 2007-07-14 14:48:45 zender Exp $"); // [sng] CVS identification string
-  const std::string CVS_Revision("$Revision: 1.27 $"); // [sng] CVS revision string
+  const std::string CVS_Date("$Date: 2007-07-23 00:31:50 $"); // [sng] CVS date string
+  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.28 2007-07-23 00:31:50 zender Exp $"); // [sng] CVS header string
+  const std::string CVS_Id("$Id: tst.cc,v 1.28 2007-07-23 00:31:50 zender Exp $"); // [sng] CVS identification string
+  const std::string CVS_Revision("$Revision: 1.28 $"); // [sng] CVS revision string
   const std::string date_cvs(CVS_Date.length() > 7 ? CVS_Date.substr(7,19) : static_cast<std::string>("Unknown")); // [sng] Date from CVS
   const std::string sbr_nm("main"); // [sng] Subroutine name
   const std::string prg_nm("libnco_c++"); // [sng] Program name

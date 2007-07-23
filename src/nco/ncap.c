@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.213 2007-06-29 15:00:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.214 2007-07-23 00:31:19 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -6,7 +6,7 @@
 
 /* Copyright (C) 1995--2007 Charlie Zender
 
-   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.213 2007-06-29 15:00:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.213 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.214 2007-07-23 00:31:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.214 $";
   const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
 #if defined(__cplusplus) || defined(PGI_CC)

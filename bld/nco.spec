@@ -3,7 +3,7 @@ Version:        3.9.2
 Release:        1%{?dist}
 Summary:        Suite of programs for manipulating netCDF files
 Group:          Applications/Engineering
-License:        GPL
+License:        GPL3
 URL:            http://nco.sourceforge.net/
 
 # Obtain NCO version 3.9.2-1 tar.gz from Sourceforge using CVS:

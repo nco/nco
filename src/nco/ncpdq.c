@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.123 2007-06-29 01:19:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.124 2007-07-23 00:31:43 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -6,7 +6,7 @@
 
 /* Copyright (C) 1995--2007 Charlie Zender
 
-   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.123 2007-06-29 01:19:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.123 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.124 2007-07-23 00:31:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.124 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)

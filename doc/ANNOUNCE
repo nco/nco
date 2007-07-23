@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.251 2007-07-22 20:06:19 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.252 2007-07-23 00:31:15 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.2 are ready. 
 
@@ -6,7 +6,10 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 Release 3.9.2 supports 
-ncap2 type conversion
+ncap2 printing
+
+The NCO licenses have changed from GPL2 (code) and FDL1.1
+(documentation) to GPL3 (code) and FDL1.2 (documentation).
 
 A. 
 

@@ -10,6 +10,14 @@
 #include <antlr/CharScanner.hpp>
 #line 1 "ncoGrammer.g"
 
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoLexer.hpp,v 1.43 2007-07-23 00:31:45 zender Exp $ */
+
+/* Purpose: ANTLR Grammar and support files for ncap2 */
+
+/* Copyright (C) 2005--2007 Charlie Zender
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
+   See http://www.gnu.org/copyleft/gpl.html for full license text */
+
     #include <algorithm>
     #include <iostream>
     #include <sstream>
@@ -30,10 +38,10 @@
     ANTLR_USING_NAMESPACE(antlr);
     
 
-#line 34 "ncoLexer.hpp"
+#line 42 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 310 "ncoGrammer.g"
+#line 318 "ncoGrammer.g"
 
 
 private:
@@ -51,7 +59,7 @@ public:
 
 
 
-#line 38 "ncoLexer.hpp"
+#line 46 "ncoLexer.hpp"
 private:
 	void initLiterals();
 public:

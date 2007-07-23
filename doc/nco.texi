@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.441 2007-07-22 21:06:15 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.442 2007-07-23 00:31:16 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -12,7 +12,7 @@ URL: http://nco.sf.net/nco.texi
 
 Copyright (C) 1995--2007 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.1
+under the terms of the GNU Free Documentation License, Version 1.2
 or any later version published by the Free Software Foundation;
 with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
 Texts. The license is available online at 
@@ -227,7 +227,7 @@ This is the first edition of the @cite{NCO User's Guide},@*
 and is consistent with @w{version 2} of @file{texinfo.tex}.
 
 Permission is granted to copy, distribute and/or modify this document 
-under the terms of the @acronym{GNU} Free Documentation License, @w{Version 1.1}
+under the terms of the @acronym{GNU} Free Documentation License, @w{Version 1.2}
 or any later version published by the Free Software Foundation;
 with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
 Texts. The license is available online at 
@@ -295,7 +295,7 @@ University of California, Irvine@*
 Irvine, CA 92697-3100 USA@*
 
 Permission is granted to copy, distribute and/or modify this document
-under the terms of the @acronym{GNU} Free Documentation License, @w{Version 1.1}
+under the terms of the @acronym{GNU} Free Documentation License, @w{Version 1.2}
 or any later version published by the Free Software Foundation;
 with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
 Texts. The license is available online at 

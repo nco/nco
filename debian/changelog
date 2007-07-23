@@ -1,6 +1,6 @@
 nco (3.9.2-1) feisty; urgency=low
 
-  * new upstream version (ncap2 printing)
+  * new upstream version (ncap2 printing, GPL3)
 
  -- Charlie Zender <zender@uci.edu>  Sun, 22 Jul 2007 16:48:11 -0700
 

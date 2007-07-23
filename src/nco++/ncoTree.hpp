@@ -8,6 +8,14 @@
 
 #line 1 "ncoGrammer.g"
 
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.50 2007-07-23 00:31:46 zender Exp $ */
+
+/* Purpose: ANTLR Grammar and support files for ncap2 */
+
+/* Copyright (C) 2005--2007 Charlie Zender
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
+   See http://www.gnu.org/copyleft/gpl.html for full license text */
+
     #include <algorithm>
     #include <iostream>
     #include <sstream>
@@ -28,10 +36,10 @@
     ANTLR_USING_NAMESPACE(antlr);
     
 
-#line 32 "ncoTree.hpp"
+#line 40 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 545 "ncoGrammer.g"
+#line 553 "ncoGrammer.g"
 
 
 private:
@@ -364,7 +372,7 @@ exit: return iret;
     } // end run_exe
 
 
-#line 36 "ncoTree.hpp"
+#line 44 "ncoTree.hpp"
 public:
 	ncoTree();
 	static void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );

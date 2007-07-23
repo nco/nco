@@ -1,9 +1,9 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.16 2007-02-23 21:59:32 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.17 2007-07-23 00:31:49 zender Exp $ 
 
 // Implementation (declaration) of C++ interface utilities for netCDF routines
 
-/* Copyright (C) 2001--2005 Charlie Zender
-   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+/* Copyright (C) 2001--2007 Charlie Zender
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include <nco_utl.hh> // C++ interface utilities for netCDF routines

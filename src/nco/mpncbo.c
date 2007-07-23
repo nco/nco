@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.72 2007-06-29 01:19:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.73 2007-07-23 00:31:17 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -7,7 +7,7 @@
 
 /* Copyright (C) 1995--2007 Charlie Zender
    
-   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 2
+   You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    The full license text is at http://www.gnu.org/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.72 2007-06-29 01:19:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.72 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.73 2007-07-23 00:31:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.73 $";
   const char * const opt_sht_lst="4ACcD:d:FhL:l:Oo:p:rRSt:v:xy:-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
