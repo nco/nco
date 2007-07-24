@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.28 2007-07-20 05:07:07 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.29 2007-07-24 03:00:17 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -55,6 +55,7 @@ nco/bm/nco_bm.sh            Script to run nco_bm.pl for various platforms
 Build directory:
 nco/bld/Makefile	Hand-crafted Makefile to create NCO executables
 nco/bld/nco_dst.pl	Perl script to build NCO distributions
+nco/bld/pbuilder-sid	Use pbuilder to build NCO in a chroot environment
 nco/bld/pvmgetarch	Script used by Makefile to determine native machine type
 nco/bld/libnco_c++_tst.cc Simplest front end to exercise libnco_c++.a
 nco/bld/libnco_tst.c	Simplest front end to exercise libnco.a

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.105 2007-07-23 05:57:38 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.106 2007-07-24 03:00:22 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -132,9 +132,11 @@ http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=273322
 # netCDF orphan/ITA bug
 http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=321336
 
-# Debian QA member who is de facto NCO maintainer
+# Debian QA member who was de-facto NCO maintainer
 Matej Vela <vela@debian.org>
-# Listed as wanting to adopt nco and netcdf packages
+# New NCO sponsor
+Oleksandr (Alex) Moskalenko <malex@debian.org> 
+# Former NCO mentor/sponsor
 Daniel Baumann <daniel.baumann@panthera-systems.net>
 Daniel Baumann <daniel@debian.org>
 # Created netCDF 3.6.1 package
@@ -168,6 +170,9 @@ scp ${DATA}/nco_3.9.2* nco.sf.net:/home/groups/n/nc/nco/htdocs/src
 # Debian versions is such a PITA
 cd ${DATA};dupload -t mentors nco_3.9.2-1_*.changes
 bsrc # Reset shell environment for regular development
+
+# Pbuilder/chroot system
+# Configuration in /etc/pbuilderrc
 
 # RPM builds as root
 export rpm_root='/usr/src/redhat'

@@ -1,10 +1,14 @@
-2007-07-22  Charlie Zender  <zender@uci.edu>
+2007-07-23  Charlie Zender  <zender@uci.edu>
 
 	* cd ~/nco;cvs tag -d nco-3_9_2;cvs tag -d nco-3_9_2-1
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.2 release"
 	  cvs tag -c nco-3_9_2;cvs tag -c nco-3_9_2-1
 	  Changes since nco-3_9_1: ncap2 printing, configure improvements
 	
+	* Add pbuilder-sid to build NCO in a chroot environment
+
+2007-07-22  Charlie Zender  <zender@uci.edu>
+
 	* Add license text to nco++ source files
 
 	* Change licenses from GPL2 and FDL1.1 to GPL3 and FDL1.2 for code
