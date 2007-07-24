@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# Purpose: Use pbuilder to build packages in a chroot environment
+
+# Script from Jamin W. Collins BTS: #255165
+# Name this script 'pbuilder-woody', 'pbuilder-sid', 'pbuilder-sarge', 'pbuilder-experimental' etc.
+
+OPERATION=$1
+DISTRIBUTION=`basename $0 | cut -f2 -d '-'`
+PROCEED=false
+BASE_DIR="/chroot/pbuilder"
+case $OPERATION in
+   create|update|build|clean|login|execute|dumpconfig )
+      PROCEED=true
+      ;;
+esac
+if ( $PROCEED == true ) then
+   shift
+   pbuilder $OPERATION --distribution $DISTRIBUTION --debootstrap debootstrap --basetgz $BASE_DIR/$DISTRIBUTION/$DISTRIBUTION-base.tgz --override-config --configfile $BASE_DIR/$DISTRIBUTION/pbuilderrc --buildresult $BASE_DIR/$DISTRIBUTION/result $@
+else
+   echo "Invalid command..."
+   echo "Valid commands are:"
+   echo "   create"
+   echo "   update"
+   echo "   build"
+   echo "   clean"
+   echo "   login"
+   echo "   execute"
+   echo "   dumpconfig"
+   exit 1
+fi
