@@ -1,4 +1,4 @@
-nco (3.9.2-1) feisty; urgency=low
+nco (3.9.2-1) sid; urgency=low
 
   * new upstream version (ncap2 printing, GPL3)
 

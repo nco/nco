@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.107 2007-07-24 04:08:03 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.108 2007-07-24 19:11:08 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -172,11 +172,16 @@ cd ${DATA};dupload -t mentors nco_3.9.2-1_*.changes
 bsrc # Reset shell environment for regular development
 
 # Pbuilder/chroot system
-# Configuration in /etc/pbuilderrc
-sudo pbuilder update # Update chroot before building package in it
-cd ${DATA}/tmp
-apt-get source nco
-sudo pbuilder build nco_2.9.9-3.dsc
+# Configuration in ~/.pbuilderrc or /etc/pbuilderrc
+# https://wiki.ubuntu.com/PbuilderHowto
+DIST=sid sudo pbuilder update # Update chroot before building package in it
+cd ${DATA}
+# dget http://ftp.debian.org/debian/pool/main/n/nco/nco_3.9.0-1.dsc
+# dget http://ftp.debian.org/debian/pool/main/n/netcdf/netcdf_3.6.1-1.dsc
+# apt-get source nco # Get package source
+DIST=sid sudo pbuilder build nco_3.9.2-1.dsc
+lintian /var/cache/pbuilder/sid/result/nco_3.9.2-1_*.deb
+linda /var/cache/pbuilder/sid/result/nco_3.9.2-1_*.deb
 
 # RPM builds as root
 export rpm_root='/usr/src/redhat'
