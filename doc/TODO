@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.947 2007-07-24 01:49:29 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.948 2007-07-25 20:28:25 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -621,8 +621,8 @@ nco888. ncap2: Make sure ncap2 type-conversion converts missing_value and _FillV
 nco891. dbn: fix lintian RPATH messages like
 	Binary /usr/bin/ncwa compiled with an RPATH of /usr/lib/nco
 	libtool error: libtool --finish /usr/lib
-nco892. dbn: pbuilder chroot https://wiki.ubuntu.com/PbuilderHowto
-nco893. 
+nco893. udunits2 beta-test new API http://www.unidata.ucar.edu/software/udunits
+nco894. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

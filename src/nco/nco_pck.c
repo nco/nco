@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.70 2007-07-23 00:31:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.71 2007-07-25 20:28:26 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -940,7 +940,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
     /* Dupe var_scv_sub() into subtracting missing values when all values are missing */
     if(PURE_MSS_VAL_FLD){
       has_mss_val_tmp=False;
-      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports variable %s is filled completely with missing_value = %g. Why do you store variables with no valid values?\n",prg_nm_get(),fnc_nm,var->nm,add_fst_dbl);
+      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports variable %s is filled completely with %s = %g. Why do you store variables with no valid values?\n",prg_nm_get(),fnc_nm,var->nm,nco_mss_val_sng_get(),add_fst_dbl);
     } /* !PURE_MSS_VAL_FLD */
     (void)var_scv_sub(var->type,var->sz,has_mss_val_tmp,var->mss_val,var->val,&add_fst_scv);
   } /* endif */
