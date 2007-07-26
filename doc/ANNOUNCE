@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.252 2007-07-23 00:31:15 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.253 2007-07-26 00:48:11 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.2 are ready. 
 
@@ -7,9 +7,33 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 Release 3.9.2 supports 
 ncap2 printing
+_FillValue fxm
 
 The NCO licenses have changed from GPL2 (code) and FDL1.1
 (documentation) to GPL3 (code) and FDL1.2 (documentation).
+
+The attribute, if any, specifying the value of data to ignore 
+has changed from "missing_value" to "_FillValue".
+Supporting both of these attributes simultaneously is not practical.
+Hence the behavior NCO used to apply to missing_value's now applies to
+_FillValue's---missing_value's are now treated as normal data. 
+
+It has been and remains most advisable to create both _FillValue
+and missing_value attributes with identical values in datasets.
+Nevertheless, many legacy datasets contain on "missing_value".
+Here are two commands that will help migrating datasets.
+
+# Rename all missing_value attributes to _FillValue
+ncrename -a .missing_value,_FillValue inout.nc
+
+# Add _FillValue attribute to all variables
+ncatted -O -a _FillValue,,o,f,1.0e36 inout.nc
+
+The old functionality, i.e., where the ignored values are indicated by
+"missing_value" not "_FillValue", may be selected _at build time_ by 
+compiling NCO with the token definition 
+
+CPPFLAGS='-DNCO_MSS_VAL_SNG=missing_value'
 
 A. 
 

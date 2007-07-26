@@ -679,11 +679,11 @@
 
 	* Make missing_value implementation generic and allow compile-time
 	override with Makefile variable
-	cd ~/nco/bld;make USR_TKN='-DNCO_MSS_VAL_SNG=_Fillvalue';cd -
+	cd ~/nco/bld;make USR_TKN='-DNCO_MSS_VAL_SNG=_FillValue';cd -
 
 2006-11-18  Charlie Zender  <zender@uci.edu>
 
-	* Warn when _Fillvalue defined and missing_value not. Fixes TODO nco682
+	* Warn when _FillValue defined and missing_value not. Fixes TODO nco682
 
 2006-11-16  Charlie Zender  <zender@uci.edu>
 
