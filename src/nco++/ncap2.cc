@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.48 2007-07-16 13:39:58 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.49 2007-07-26 10:42:11 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.48 2007-07-16 13:39:58 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.48 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.49 2007-07-26 10:42:11 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.49 $";
   const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -738,7 +738,7 @@ main(int argc,char **argv)
     
 
     // Skip misssing values for now !!!
-    if(var_vtr[idx]->getAtt() =="missing_value") continue;
+    if(var_vtr[idx]->getAtt() == nco_mss_val_sng_get()) continue;
         
  
     att_item.att_nm=strdup(var_vtr[idx]->getAtt().c_str());
