@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.189 2007-07-23 00:31:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.190 2007-07-26 20:35:54 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -932,7 +932,7 @@ nco_usg_prn(void)
   (void)fprintf(stdout,"5. NCO Homepage: http://nco.sf.net\n");
   (void)fprintf(stdout,"6. NCO FAQ: http://nco.sf.net#FAQ\n");
   (void)fprintf(stdout,"7. Browse NCO Help Forum: http://sf.net/forum/forum.php?forum_id=9830\n");
-  (void)fprintf(stdout,"8. Read our submitted manuscripts at http://nco.sf.net#pub\n");
+  (void)fprintf(stdout,"8. Read our papers at http://nco.sf.net#pub\n");
   (void)fprintf(stdout,"Post questions, suggestions, patches at http://sf.net/projects/nco\n");
 
 } /* end nco_usg_prn() */

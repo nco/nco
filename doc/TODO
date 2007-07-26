@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.948 2007-07-25 20:28:25 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.949 2007-07-26 20:35:53 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -617,7 +617,6 @@ nco885. ncpdq: netCDF4 problem with CAM datasets variable AERASM_v. AERASM_v doe
 	nco_err_exit(): ERROR Short NCO-generated message (usually name of function that triggered error): nco_copy_att()
 	nco_err_exit(): ERROR Error code is -36. Translation into English with nc_strerror(-36) is "NetCDF: Invalid argument"
 nco886. Decide next project: SWAMP? paper on...ncap2? SWAMP? IPCC benchmarks?
-nco888. ncap2: Make sure ncap2 type-conversion converts missing_value and _FillValue
 nco891. dbn: fix lintian RPATH messages like
 	Binary /usr/bin/ncwa compiled with an RPATH of /usr/lib/nco
 	libtool error: libtool --finish /usr/lib
