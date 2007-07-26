@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.79 2007-07-16 13:51:08 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.80 2007-07-26 10:44:03 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -679,7 +679,7 @@ ncap_att_gnrl
   for(idx=0 ; idx < att_vtr.size() ; idx++){
     std::string s_out(att_vtr[idx]->nm);
     // skip missing values
-    if( s_out.find("@missing_value") != std::string::npos){
+    if( s_out.find(nco_mss_val_sng_get()) != std::string::npos){
       (void)nco_var_free(att_vtr[idx]);
       continue;
     } 
