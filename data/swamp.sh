@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/data/swamp.sh,v 1.4 2007-07-03 02:51:35 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/data/swamp.sh,v 1.5 2007-07-28 20:59:33 zender Exp $
 
 # Purpose: Demonstrate SWAMP usage
 
@@ -35,6 +35,7 @@ elif [ "${flg_typ}" = "${flg_prd}" ] ; then
     ncra -O /data/zender/${caseid}/${caseid}.cam2.h0.????-11.nc ~/${caseid}_clm11.nc
     ncra -O /data/zender/${caseid}/${caseid}.cam2.h0.????-12.nc ~/${caseid}_clm12.nc
     ncra -O ~/${caseid}_clm??.nc ~/${caseid}_clm.nc
+    ncwa -O ~/${caseid}_clm.nc ~/${caseid}_clm_txy.nc
 fi # !prd
 
 

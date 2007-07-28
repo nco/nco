@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.949 2007-07-26 20:35:53 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.950 2007-07-28 20:59:34 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -621,7 +621,8 @@ nco891. dbn: fix lintian RPATH messages like
 	Binary /usr/bin/ncwa compiled with an RPATH of /usr/lib/nco
 	libtool error: libtool --finish /usr/lib
 nco893. udunits2 beta-test new API http://www.unidata.ucar.edu/software/udunits
-nco894. 
+nco894. netcdf4: install next daily snapshot
+nco895. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.253 2007-07-26 00:48:11 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.254 2007-07-28 20:59:34 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.2 are ready. 
 
@@ -66,8 +66,8 @@ J. Reminder: NCO support for netCDF4 features is tracked at
 
    http://nco.sf.net/nco.html#nco4
 
-   To build NCO 3.9.2 with netCDF4 support, you must build with
-   netCDF4 snapshot2007060701 or newer.
+   NCO 3.9.2 with netCDF4 support has only been built and tested 
+   with HDF5 1.8 beta2 and netCDF4 snapshot20070727 and newer.
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
