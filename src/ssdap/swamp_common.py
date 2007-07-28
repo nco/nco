@@ -1,5 +1,5 @@
 
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.32 2007-07-28 00:44:48 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.33 2007-07-28 01:35:21 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -762,7 +762,7 @@ class Parser:
         self.handlerDefaults()
         self.handleFunc = None
         self.commands = []
-        # FIXME: should be able to push variableparser into the context.
+
         self.variableParser = VariableParser(self.variables)
         self._context = Parser.BaseContext(self)
         self._rootContext = self._context
@@ -832,80 +832,13 @@ class Parser:
         print "stdAccept reject", argv
         return False
 
-    def parseScriptLine2(self, line):
-        """factory should probably *not* change between calls-- it
-        doesn't seem to make sense to do so.  FIXME: make more sense
-        of this interface.
-
-        No return value.  To see what commands got constructed and
-        handled, wrap self.handleFunc .
-        """
-        self.lineNum += 1
-        line = self.stripComments(line)
-        #Try 1: match context-creating constructs
-        ext = self.extParse(line)
-        if ext:
-            self._context = ext
-            return ext
-        
-        #Try 2: pass to current context.
-        (nextContext, result) = self._context.acceptStatefully(line)
-        if result is 3:
-            logging.debug("reject: " + line)
-        self._context = nextContext
-        return nextContext
-        pass
-    
-        # parseScriptLine3.
-        # This strategy uses an approach that involves even more
-        # hassle than the previous ones.
-        #  First: the line must always be sent to the current context
-        # for parsing.  No exceptions.  This happens because the
-        # for-context is replicating and will need to iterate through
-        # its block.  At this level, we have no idea what the context
-        # is, so we should let the current context handle it.
-        #  Second: We separate parsing from evaluating.  This is really
-        # important because we need to parse a block's contents in
-        # order to understand where the block boundaries are.  If
-        # you don't parse, then you may prematurely terminate
-        # blocks in nesting cases.  In C, nested multi-line comments
-        # are not allowed precisely because the compiler can't be
-        # bothered to do any parsing in the comment context aside
-        # from looking for the closing "*/"
-        #
-        # We want context.parseLine to return (nextContext, callback)
-        # where callback is f: line -> isEvaluated.
-        # The callback exists to prevent duplicate parsing.
-    def parseScriptLine3(self, line):
-        """ """        
-        self.lineNum += 1
-        line = self.stripComments(line)
-        # First, see if it is a block change for the current context.
-        evalFunc = self._context.parseLine(line)
-        if evalFunc:
-            self._context = next
-            return next
-        # If not, then see if a new context is created.
-        next = self.matchNewContext3(line)
-        if next:
-            self._context = next
-            return next
-        # Otherwise, signal evaluation in the current context.
-        r = self._context.evaluate(line)
-        if not r:
-            logging.debug("reject: " + line)            
-        return self._context
-
-    def matchNewContext3(self, line):
-        return self.extParse(line)
-
     def parseScriptLine4(self, line):
         """We're going to give-in and just build a parse tree,
         deferring all evaluation until later."""
 
         self.lineNum += 1
-        line = self.stripComments(line)
-        (r, nextContext) = self._context.addLine(line, self.lineNum)
+        cline = self.stripComments(line)
+        (r, nextContext) = self._context.addLine((cline, self.lineNum, line))
         self._context = nextContext
         if not r:
             logging.debug("parse error: " + line) 
@@ -943,7 +876,6 @@ class Parser:
         """Parse and accept/reject commands in a script, where the script
         is a single string containing script lines"""
         self._factory = factory
-        self._context.setFactory(factory)
         lineCount = 0
         for line in script.splitlines():
             self.parseScriptLine(factory, line)
@@ -959,9 +891,10 @@ class Parser:
         pass
 
     class LeafContext:
-        def __init__(self, line, lineNum):
-            self._line = line
-            self._lineNum = lineNum
+        def __init__(self, lineTup):
+            self._line = lineTup[0]
+            self._lineNum = lineTup[1]
+            self._original = lineTup[2]
 
         def __str__(self):
             return "%d : %s" %(self._lineNum, self._line)
@@ -980,7 +913,7 @@ class Parser:
             command = evalContext.stdAccept((line, self._lineNum))
             if isinstance(command, types.InstanceType):
                 command.referenceLineNum = self._lineNum
-                command.original = original
+                command.original = self._original
         
             if not command:
                 logging.debug("reject:"+ self._line)
@@ -1011,120 +944,26 @@ class Parser:
         def __str__(self):
             return "Base context with members: \n%s" % "\n".join(map(str,self._members))
         
-        
-        def setFactory(self, f):
-            self._factory = f
-            pass
-
-        @staticmethod
-        def extParseDisable(context, line):
-            for (test, newContext) in BaseContext.ourFlowParsers:
-                try:
-                    parseResult = test(line)
-                except ParseException, e:
-                    continue # didn't find a looping expression.
-                nextContext = newContext(context, parseResult)
-                return nextContext
-            return None
-                
-        def stdAccept(self, argv):
-            for mod in self._parser.modules:
-                if mod[0].accepts(argv):
-                    cmd = mod[0].parse(line, argv,
-                                       self._parser.lineNum, self._factory)
-                    return cmd
-            print "stdAccept reject", argv
-            return False
-
-        def stdParse(self, line):
-            argv = shlex.split(line)
-            command = self.stdAccept(argv)
-            if isinstance(command, types.InstanceType):
-                print "stdParse, insert", command
-                command.referenceLineNum = self._parser.lineNum
-                #command.original = original
-                command.original = line
-                print "not saving original, please fix"
-                self._parser.handleFunc(command)
-            return (self, True)
-
-        def acceptSubParse(self, line):
-            print "subparse",line
-            line = self._parser.variableParser.apply(line)
-
-            if False:
-                nextCon = self.extParse(line)
-                if nextCon != None:
-                    return (nextCon, True)
-                
-            if not isinstance(line, str):
-                return (self, True)
-
-            return self.stdParse(line)
-        
-        def acceptStatefully(self, line):
-            oo = line
-            line = self._parser.variableParser.apply(line)
-            print oo, "-----sub-->", line
-            if line == None: # already parsed line.
-                return (self, True)
-            return self.acceptSubParse(line)
-
-        def variableMap(self):
-            #possible to add a wrapper parser  here.
-            return self._parser.variables            
-
-        def parseLine(self, line):
-            """ Do a parse, but without evaluation.
-            All we need to do is see if we'll accept the line.
-            returns a new context -- if the line signals such
-            or None -- if no new context is signalled
-
-            The BaseContext version of parseLine will always return None,
-            since it doesn't open or close contexts.
-            """
-            return (None, self.evaluate)
-
-
-        def addLine(self, line, num):
+        def addLine(self, lineTup):
             # see if a child context is created:
+            line = lineTup[0]
+            num = lineTup[1]
+            orig = lineTup[2]
             next = Parser.matchNewContext(line, num, self)
             if next:
                 self._members.append(next)
                 return (True, next)
             else:
                 if len(line.strip()) > 0:
-                    self._members.append(Parser.LeafContext(line, num))
+                    self._members.append(Parser.LeafContext(lineTup))
                 return (True, self)
             
         def evaluateAll(self, evalContext):
             print "begin evaluation"
             for c in self._members:
                 c.evaluate(evalContext)
+            pass
 
-        def evaluate(self, line):
-            """Perform an 'evaluation' as much as appropriate by the
-            context, given current state.
-            return True if the line was accepted by the backend.
-                   False otherwise."""
-
-            line = self._parser.variableParser.apply(line)
-            if not line:
-                return True # base context accepts empties.
-            argv = shlex.split(line)
-            # is now the right place to apply variable definition?
-            command = self.stdAccept(argv)
-            if isinstance(command, types.InstanceType):
-                print "stdParse, insert", command
-                command.referenceLineNum = self._parser.lineNum
-                #command.original = original
-                command.original = line
-                print "not saving original, please fix"
-                self._parser.handleFunc(command)
-                return True
-            else:
-                return False
-            
         pass
 
 
@@ -1205,20 +1044,15 @@ class Parser:
             if isinstance(parseResult, tuple):
                 self.openLine = (parseResult[0], parseResult[1])
                 parseResult = parseResult[2]
-            self.canPop = True
             self._parentContext = parentContext
 
             self._savedLines = []
             self._branchHeading = parseResult
-            self._varMap = parentContext.variableMap()
-            self._variableParser = parentContext._parser.variableParser
-            self._factory = None
 
             self._state = 1 # startup in state 1 (seen an if statement)
             self._parseFunc = { 1: self._state1Parse,
                                 2: self._state2Parse }
-            self._taking = self._evaluateCondition(parseResult)
-            self._took = False
+
             self._currentBranch = self.Branch(self.openLine,
                                               self.Expr.IfHeading)
             self._members = [self._currentBranch]
@@ -1229,34 +1063,6 @@ class Parser:
 
         def __str__(self):
             return "branch block: %s BEND" %("\n".join(map(str, self._members)))
-
-        def setFactory(self, f):
-            self._factory = f
-            pass
-
-        def acceptStatefully(self, line):
-            """acceptStatefully, in the context of a branch.
-            we save a list of the command lines."""
-            # should be able to push this logic back to the Parser
-            original = line.strip()
-            comment = None
-            # for now, do not detect magic #! interpreter
-            linesp = original.split("#", 1) # chop up comments
-        
-            if len(linesp) > 1:
-                line, comment = linesp
-            else:
-                line = original
-            
-            if (len(line) < 1): # skip comment-only line
-                return (self, True)
-            # apply normal parse.
-            nextContext =  self._branchParse(line)
-            if nextContext:
-                return (nextContext, True)
-            else:
-                raise StandardError("Error while parsing if-else block")
-            pass
 
         def _state1Parse(self, lineTup):
             # In state 1, the last statement we saw was an if or elif,
@@ -1341,7 +1147,7 @@ class Parser:
             # 3: (pseudostate)Resolution: evalutate branch condition
             #  -> 0: return to parent context.
             return self._parseFunc[self._state](lineTup)
-            pass
+
             
         def _evaluateCondition(self, condition):
             parsed = condition
@@ -1362,23 +1168,10 @@ class Parser:
             # FIXME: Figure out what sort of errors are possible here.
             pass
             
-        def variableMap(self):
-            return self._varMap
 
-        def parseLine(self, line):
-            """ Do a parse, but without evaluation.
-            All we need to do is see if we'll accept the line.
-            returns a new context -- if the line signals such
-            or None -- if no new context is signalled
-
-            The BaseContext version of parseLine will always return None,
-            since it doesn't open or close contexts.
-            """
-            return self._branchParse(line, True)
-            return None
-
-        def addLine(self, line, num):
+        def addLine(self, lineTup):
             # see if a child context is created:
+            (line, num, orig) = lineTup
             next = Parser.matchNewContext(line, num, self)
             if next:
                 self._currentBranch.add(next)
@@ -1390,7 +1183,7 @@ class Parser:
                         return (True, r)
                 else: # if no parse results, then just add to current
                     if len(line.strip()) > 0:
-                        self._currentBranch.add(Parser.LeafContext(line, num))
+                        self._currentBranch.add(Parser.LeafContext(lineTup))
                 return (True, self)
             pass
             
@@ -1434,66 +1227,11 @@ class Parser:
                 self.openLine = (parseResult[0], parseResult[1])
                 parseResult = parseResult[2]
 
-            self.canPop = True
             self._parentContext = parentContext
-            self._savedLines = []
             self._loopHeading = parseResult
-            self._varMap = parentContext.variableMap()
-            self._factory = None
             self._members = []
             print "new loop"
             pass
-
-        def setFactory(self, f):
-            self._factory = f
-            pass
-
-        def acceptStatefully(self, line):
-            """acceptStatefully, in the context of a loop.
-            When in a loop context, variable substitutions and command
-            generations are deferred until the loop closure.  That way,
-            the entire loop can be unrolled at once.  So until the closing
-            statement, we save a list of the command lines."""
-            print "incontext accept ", line
-            # should be able to push this logic back to the Parser
-            original = line.strip()
-            comment = None
-            # for now, do not detect magic #! interpreter
-            linesp = original.split("#", 1) # chop up comments
-        
-            if len(linesp) > 1:
-                line, comment = linesp
-            else:
-                line = original
-            
-            if (len(line) < 1): # skip comment-only line
-                return (self, True)
-            # check if it's the end:
-            check = self._loopParse(line)
-            if check:
-                #unroll Loop
-                self._unroll()
-                return (self._parentContext, True)
-            else:
-                # if not the end, save the line
-                self._savedLines.append(line)
-                return (self, True)
-
-        def _unrollOld(self):
-            #print "loopvar:", self._loopHeading["identifier"]
-            #print "range:", self._loopHeading["range"]
-            # At this point, we may want to eval/expand
-            # subexpressions within the range.
-            varname = self._loopHeading["identifier"]
-            for val in self._loopHeading["range"]:
-                self._varMap[varname] = val
-                self._iterateLoop()
-            return
-    
-
-        def _iterateLoopOld(self):
-            for l in self._savedLines:
-                r = self._parentContext.acceptSubParse(l)
 
         def _loopParse(self, line):
             try:
@@ -1507,7 +1245,7 @@ class Parser:
             varname = self._loopHeading["identifier"]
             iterations = []
             for val in self._loopHeading["range"]:
-                self._varMap[varname] = val
+                evalContext.variableParser.varMap[varname] = val
                 iterations.extend(self._iterateLoop(evalContext))
             return iterations
 
@@ -1515,35 +1253,15 @@ class Parser:
             iterations = []
             for m in self._members:
                 iterations.extend(m.evaluate(evalContext))
-            return iterations
-            
+            return iterations        
 
-        def parseLine(self, line):
-            """ Do a parse, but without evaluation.
-            All we need to do is see if we'll accept the line.
-            returns a new context -- if the line signals such
-            or None -- if no new context is signalled
-            
-            returns parent context, if we match a loop closure
-            """
-            if self._loopParse(line):
-                return self._parentContext
-            return None
+        def _reparseHeading(self):
+            self._loopHeading = self.Expr.LoopHeading.parseString(self._openLine)
+            pass
 
-        def evaluateOld(self, line):
-            """Perform an 'evaluation' as much as appropriate by the
-            context, given current state.
-            return True if the line was accepted by the backend.
-                   False otherwise."""
-            if self._loopParse(line):
-                self._unroll()
-                return self._parentContext
-        
-        def variableMap(self):
-            return self._varMap
-
-        def addLine(self, line, num):
+        def addLine(self, lineTup):
             # see if a child context is created:
+            (line, num, orig) = lineTup
             next = Parser.matchNewContext(line, num, self)
             if next:
                 self._members.append(next)
@@ -1554,12 +1272,10 @@ class Parser:
                     return (True, r)
                 else: # if no parse results, then just add to current
                     if len(line.strip()) > 0:
-                        self._members.append(Parser.LeafContext(line, num))
+                        self._members.append(Parser.LeafContext(lineTup))
                 return (True, self)
             pass
 
-        def reparseHeading(self):
-            self._loopHeading = self.Expr.LoopHeading.parseString(self._openLine)
             
         def evaluate(self, evalContext):
             """Perform an 'evaluation' as much as appropriate by the
