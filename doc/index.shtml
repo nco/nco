@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.435 2007-07-23 00:31:16 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.436 2007-08-01 03:33:13 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -172,8 +172,7 @@ SWAMP at Fall AGU, San Francisco, California</li>
 
 <li>August&nbsp;21, 2004:
 <a href="http://www.nsf.gov">National Science Foundation (NSF)</a>
-funds the
-<a href="#prp_sei">NCO&rarr;SDO Project</a>!</li>
+funds the <a href="#prp_sei">NCO&rarr;SDO Project</a>!</li>
 
 <li>August&nbsp;7, 2004: NCO 2.9.8 debuts <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> operator&mdash;performs arbitrary dimension re-ordering and reversal</li>
 
@@ -281,11 +280,9 @@ donations on NCO development:
 <h2>NCO&rarr;SDO Project</h2>
 
 <p>
-The
-<a href="http://www.nsf.gov">National Science Foundation (NSF)</a>
-is
-<a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=0431203">funding</a>
-our
+The National Science Foundation
+<a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=0431203">NSF IIS-0431203</a>
+funds our
 <a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">NCO&rarr;SDO Project</a>.
 as part of the 
 <a href="http://www.cise.nsf.gov/funding/pgm_display.cfm?pub_id=9473&div=iis">Science and Engineering Informatics (SEI)</a> program.
