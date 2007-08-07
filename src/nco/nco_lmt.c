@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.58 2007-07-23 00:31:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.59 2007-08-07 22:44:47 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -933,17 +933,25 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
   char *usr_unt_sng; /* [sng] User-specified unit string */
   long att_sz; /* [nbr] "units" attribute size */
   nc_type att_typ; /* [enm] Atttribute type, probably NC_CHAR */
-  utUnit udu_sct_in; /* Unidata units structure */
-  utUnit udu_sct_out; /* Unidata units structure */
+#ifdef HAVE_UDUNITS2
+  fxm
+#else /* !HAVE_UDUNITS2 */
+  utUnit udu_sct_in; /* UDUnits structure, input units */
+  utUnit udu_sct_out; /* UDUnits structure, output units */
+#endif /* !HAVE_UDUNITS2 */
   
-#ifdef UDUNITS_PATH
+#ifdef HAVE_UDUNITS2
+  fxm
+#else /* !HAVE_UDUNITS2 */
+# ifdef UDUNITS_PATH
   /* UDUNITS_PATH macro expands to where autoconf found database file */
   rcd=utInit(UDUNITS_PATH);
-#else /* !UDUNITS_PATH */
+# else /* !UDUNITS_PATH */
   /* When empty, utInit() uses environment variable UDUNITS_PATH, if any
      Otherwise it uses default initial location hardcoded when library was built */
   rcd=utInit("");
-#endif /* !UDUNITS_PATH */
+# endif /* !UDUNITS_PATH */
+#endif /* !HAVE_UDUNITS2 */
   if(rcd != 0){
     (void)fprintf(stdout,"Failed to initialize UDUnits library\n");
     return 1;
@@ -959,6 +967,9 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
   } /* end if 'units' attribute */
   
   /* Convert 'units' attribute into utUnit structure */
+#ifdef HAVE_UDUNITS2
+  fxm
+#else /* !HAVE_UDUNITS2 */
   rcd=utScan(fl_unt_sng,&udu_sct_out); 
   if(rcd == UT_EINVALID){ /* 'units' attribute is absent*/
     (void)fprintf(stderr,"ERROR: no units attribute available for dimension %d\n",dmn_id);
@@ -969,9 +980,14 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
     (void)utTerm(); /* Free memory taken by UDUnits library */
     return 1;
   } /* endif unkown type */
+#endif /* !HAVE_UDUNITS2 */
   
   /* Assume if unit attribute is 'time since...', then user specified same */
+#ifdef HAVE_UDUNITS2
+  fxm
+#else /* !HAVE_UDUNITS2 */
   if(utIsTime(&udu_sct_out) && utHasOrigin(&udu_sct_out)){
+#endif /* !HAVE_UDUNITS2 */
     /* Parse limits into years, months, day, etc. */
     char **arg_lst; /* Array of date/time strings after parsing */
     int arg_nbr; /* [nbr] Number of arguments parsed */
@@ -1008,7 +1024,11 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
     } /* if arg_lst[2] == NULL */
     
       /* Convert dates into "time since ..." value */
+#ifdef HAVE_UDUNITS2
+    fxm
+#else /* !HAVE_UDUNITS2 */
     rcd=utInvCalendar(year,month,day,hour,min,sec,&udu_sct_out,crr_val);
+#endif /* !HAVE_UDUNITS2 */
     
   }else{ /* if utIsTime() && utHasOrigin */
     
@@ -1022,25 +1042,37 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
     /* Quick return if specified and supplied units are equal */
     if(strcmp(usr_unt_sng,fl_unt_sng) == 0){
       *lmt_val=strtod(lmt_sng,&usr_unt_sng); /* Convert to double */
+#ifdef HAVE_UDUNITS2
+      fxm
+#else /* !HAVE_UDUNITS2 */
       (void)utTerm();
+#endif /* !HAVE_UDUNITS2 */
       return 0; /* Success */
     } /* endif */
     
     /* Convert user-specified unit into utUnit structure */
+#ifdef HAVE_UDUNITS2
+    fxm
+#else /* !HAVE_UDUNITS2 */
     rcd=utScan(usr_unt_sng,&udu_sct_in);
     if(rcd == UT_EUNKNOWN){
       (void)fprintf(stderr,"ERROR: User-specified unit \"%s\" is not in UDUnits database.\n",usr_unt_sng);
       (void)utTerm();
       return 1;
     } /* endif */
+#endif /* !HAVE_UDUNITS2 */
     
     /* Get unit transformation information */
+#ifdef HAVE_UDUNITS2
+    fxm
+#else /* !HAVE_UDUNITS2 */
     rcd=utConvert(&udu_sct_in,&udu_sct_out,&slp,&incpt);
     if(rcd == UT_ECONVERT){
       (void)fprintf(stderr,"ERROR: user specified unit \"%s\" cannot be converted into file units \"%s\"\n",usr_unt_sng,fl_unt_sng);
       (void)utTerm();
       return 1; /* Failure */
     } /* endif */
+#endif /* !HAVE_UDUNITS2 */
     
     /* Convert to disk-based units */
     crr_val=strtod(lmt_sng,&usr_unt_sng);
@@ -1048,7 +1080,12 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
     *lmt_val=crr_val;
   } /* !utIsTime() ... */
   
+#ifdef HAVE_UDUNITS2
+  fxm
+#else /* !HAVE_UDUNITS2 */
   (void)utTerm(); /* Free memory taken by UDUnits library */
+#endif /* !HAVE_UDUNITS2 */
+
   return 0; /* Successful conversion */
 #else /* !ENABLE_UDUNITS */
   rcd=(int)(1+0*nc_id+0*dmn_id+0*(*lmt_val)); /* CEWI removes unused parameter warnings */

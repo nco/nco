@@ -1,3 +1,7 @@
+2007-08-07  Charlie Zender  <zender@uci.edu>
+
+	* Splice udunits2 functionality stubs inside HAVE_UDUNITS2 tokens
+
 2007-07-24  Charlie Zender  <zender@uci.edu>
 
 	* cd ~/nco;cvs tag -d nco-3_9_2;cvs tag -d nco-3_9_2-1
@@ -5,7 +9,7 @@
 	  cvs tag -c nco-3_9_2;cvs tag -c nco-3_9_2-1
 	  Changes since nco-3_9_1: ncap2 printing, configure improvements
 	
-	* pbuilder successfully built an nco deb in a sid chroot!
+	* pbuilder successfully built an NCO deb in a sid chroot!
 
 2007-07-23  Charlie Zender  <zender@uci.edu>
 
