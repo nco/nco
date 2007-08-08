@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.430 2007-08-07 22:12:20 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.431 2007-08-08 00:36:36 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on this make syntax
@@ -39,6 +39,7 @@
 # cd ~/nco/bld;make MPI=Y;cd -       # MPI support
 # cd ~/nco/bld;make MPI_FAKE=Y;cd -  # MPI spoof
 # cd ~/nco/bld;make UDUNITS=Y;cd -   # UDUnits support
+# cd ~/nco/bld;make UDUNITS2=Y;cd -  # UDUnits2 support
 # cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
 # 64-bit ABI on UCI MPC systems:
 # cd ${HOME}/nco/bld;env ANTLR='/software/antlr/bin/antlr' ANTLR_ROOT='/software/antlr' UDUNITS_INC='/software/udunits/include' UDUNITS_LIB='/software/udunits/lib' make --jobs=1 ABI=64 allinone;cd -
@@ -163,6 +164,10 @@ endif
 ifndef UDUNITS
 # Use UDUnits functionality
  UDUNITS := Y
+endif
+ifndef UDUNITS2
+# Use UDUnits2 functionality
+ UDUNITS2 := N
 endif
 ifndef UNAMES
  UNAMES := $(shell uname -s)
@@ -312,6 +317,9 @@ else
  BNR_SFX := ${null}
 endif 
 
+ifeq (${UDUNITS2},Y)
+ UDUNITS := Y
+endif # end if UDUNITS
 ifeq (${UDUNITS},Y)
 # Build UDUnits-enabled NCO 
 # Place UDUNITS block after DAP block for both to work together
@@ -327,7 +335,11 @@ endif # end
 ifneq (${UDUNITS_LIB},${NETCDF_LIB})
  NC_LDFLAGS += -L${UDUNITS_LIB}
 endif # end if
+ifeq (${UDUNITS2},Y)
+ NC_LIBS += -ludunits2
+else
  NC_LIBS += -ludunits
+endif # end if UDUNITS2
 endif # end if UDUNITS
 
 # TMP_* and NCO_* are required to play nicely with DAP flags
@@ -488,7 +500,6 @@ ifneq (${PVM_ARCH},CRAY)
 endif # CRAY
 ifneq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSXWIN32))
  CPP_TKN_OS += -DHAVE_GETOPT_H -DHAVE_GETOPT_LONG
-# UDUNITS_DAT OK to be empty for now
 endif # !LINUX
 ifneq (${null},$(findstring ${PVM_ARCH},AIXSGIMP64))
  CPP_TKN_OS += -DNEED_GETOPT_LONG
@@ -503,6 +514,9 @@ endif # MPI_FAKE
 endif # !MPI
 ifeq (${UDUNITS},Y)
  CPP_TKN_OS += -DENABLE_UDUNITS -DHAVE_UDUNITS_H
+ifeq (${UDUNITS2},Y)
+ CPP_TKN_OS += -DHAVE_UDUNITS2_H
+endif # !UDUNITS2
 endif # !UDUNITS
 # Assume strcasecmp() and strdup() routines are present (Comeau, Pathscale are exceptions)
 CPP_TKN_OS += 
@@ -1721,6 +1735,7 @@ dbg:
 	@printf "TMP_LDFLAGS = ${TMP_LDFLAGS}\n"
 	@printf "TMP_LIBS = ${TMP_LIBS}\n"
 	@printf "UDUNITS = $(UDUNITS)\n"
+	@printf "UDUNITS2 = $(UDUNITS2)\n"
 	@printf "UDUNITS_INC = $(UDUNITS_INC)\n"
 	@printf "UDUNITS_LIB = $(UDUNITS_LIB)\n"
 	@printf "VPATH = ${VPATH}\n"

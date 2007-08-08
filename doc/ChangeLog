@@ -1,5 +1,10 @@
 2007-08-07  Charlie Zender  <zender@uci.edu>
 
+	* Simply UDUnits2 test works with many TODOs for me, Unidata
+
+	* Complete compilable UDUnits2 implementation for all units except
+	(I think) time = time since ... units
+
 	* Splice udunits2 functionality stubs inside HAVE_UDUNITS2 tokens
 
 2007-07-24  Charlie Zender  <zender@uci.edu>
