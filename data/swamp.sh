@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/data/swamp.sh,v 1.5 2007-07-28 20:59:33 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/data/swamp.sh,v 1.6 2007-08-13 16:21:28 zender Exp $
 
 # Purpose: Demonstrate SWAMP usage
 
@@ -17,23 +17,14 @@ export caseid='cssnc2050_02b'
 flg_tst='1' # [flg] Test mode
 flg_prd='0' # [flg] Production mode
 
-flg_typ=${flg_tst} # [enm] Run type
+flg_typ=${flg_prd} # [enm] Run type
 
 if [ "${flg_typ}" = "${flg_tst}" ] ; then
     ncra -O ~/nco/data/in.nc ~/foo.nc
 elif [ "${flg_typ}" = "${flg_prd}" ] ; then 
-    ncra -O /data/zender/${caseid}/${caseid}.cam2.h0.????-01.nc ~/${caseid}_clm01.nc
-    ncra -O /data/zender/${caseid}/${caseid}.cam2.h0.????-02.nc ~/${caseid}_clm02.nc
-    ncra -O /data/zender/${caseid}/${caseid}.cam2.h0.????-03.nc ~/${caseid}_clm03.nc
-    ncra -O /data/zender/${caseid}/${caseid}.cam2.h0.????-04.nc ~/${caseid}_clm04.nc
-    ncra -O /data/zender/${caseid}/${caseid}.cam2.h0.????-05.nc ~/${caseid}_clm05.nc
-    ncra -O /data/zender/${caseid}/${caseid}.cam2.h0.????-06.nc ~/${caseid}_clm06.nc
-    ncra -O /data/zender/${caseid}/${caseid}.cam2.h0.????-07.nc ~/${caseid}_clm07.nc
-    ncra -O /data/zender/${caseid}/${caseid}.cam2.h0.????-08.nc ~/${caseid}_clm08.nc
-    ncra -O /data/zender/${caseid}/${caseid}.cam2.h0.????-09.nc ~/${caseid}_clm09.nc
-    ncra -O /data/zender/${caseid}/${caseid}.cam2.h0.????-10.nc ~/${caseid}_clm10.nc
-    ncra -O /data/zender/${caseid}/${caseid}.cam2.h0.????-11.nc ~/${caseid}_clm11.nc
-    ncra -O /data/zender/${caseid}/${caseid}.cam2.h0.????-12.nc ~/${caseid}_clm12.nc
+    for mm in 01 02 03 04 05 06 07 08 09 10 11 12; do
+	ncra -O /data/zender/${caseid}/${caseid}.cam2.h0.????-${mm}.nc ~/${caseid}_clm${mm}.nc
+    done # end loop over mm
     ncra -O ~/${caseid}_clm??.nc ~/${caseid}_clm.nc
     ncwa -O ~/${caseid}_clm.nc ~/${caseid}_clm_txy.nc
 fi # !prd
