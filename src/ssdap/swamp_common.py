@@ -1,5 +1,5 @@
 
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.33 2007-07-28 01:35:21 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.34 2007-08-13 16:50:24 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -588,6 +588,7 @@ class CommandFactory:
         # no absolute paths in input filename!
         s = inputFilename.lstrip("/")
         res = glob.glob(s)
+        res.sort() # sort the wildcard expansion.
         print "glob: ", res, s, self.config.execSourcePath
         #logging.error("globbing %s from %s"%(inputFilename,os.curdir))
         #logging.error("-- %s --%s"%(str(res),str(glob.glob("camsom1pdf/*"))))
