@@ -1,5 +1,5 @@
 
-# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.34 2007-08-13 16:50:24 wangd Exp $
+# $Header: /data/zender/nco_20150216/nco/src/ssdap/swamp_common.py,v 1.35 2007-08-13 17:07:11 wangd Exp $
 # swamp_common.py - a module containing the parser and scheduler for SWAMP
 #  not meant to be used standalone.
 # 
@@ -558,6 +558,7 @@ class CommandFactory:
         # FIXME: should really match against filemap, since
         # logicals may be renamed
         if temps:
+            temps.sort() # sort script wildcard expansion.
             # we need to convert script filenames to logicals
             # to handle real dependencies
             return map(lambda s: self.logicalOutByScript[s], temps)
