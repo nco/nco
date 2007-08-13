@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/data/swamp.sh,v 1.6 2007-08-13 16:21:28 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/data/swamp.sh,v 1.7 2007-08-13 20:40:48 zender Exp $
 
 # Purpose: Demonstrate SWAMP usage
 
@@ -11,6 +11,8 @@
 # python ~/nco/src/ssdap/swamp_client.py ~/nco/data/swamp.sh
 # Whitespace-separated list of directories in sand:${DATA}/swamp_include is exported
 # to PBS (pbs.ess.uci.edu) for processing by SWAMP server there.
+# Remember to set all environment variables locally within the script
+# SWAMP cannot read your environment on the server
 
 export caseid='cssnc2050_02b'
 
