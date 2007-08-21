@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.60 2007-08-08 00:36:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.61 2007-08-21 21:55:37 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -947,9 +947,7 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
 #ifdef HAVE_UDUNITS2_H
   /* When empty, ut_read_xml() uses environment variable UDUNITS2_XML_PATH, if any
      Otherwise it uses default initial location hardcoded when library was built */
-  /* fxm: TODO nco897 UDUnits2 requires hard-coded path to ut_read_xml() */
-  /*  ut_sys=ut_read_xml("");*/
-  ut_sys=ut_read_xml("/usr/local/share/udunits2.xml");
+    ut_sys=ut_read_xml(NULL);
   if(ut_sys == NULL){
     (void)fprintf(stdout,"%s: nco_udu_lmt_cnv() failed to initialize UDUnits2 library\n",prg_nm_get());
     return 1;

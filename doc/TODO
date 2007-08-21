@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.954 2007-08-09 00:29:07 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.955 2007-08-21 21:55:37 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -625,8 +625,6 @@ nco895. udunits2 implement new API http://www.unidata.ucar.edu/software/udunits/
   	export UDUNITS2_XML_PATH='/usr/local/share/udunits2.xml'
 	/bin/rm ~/obj/LINUX/nco_lmt.o;cd ~/nco/bld;make OPTS=D UDUNITS2=Y NETCDF4=Y allinone
 	ncks -O -D 0 -C -H -v wvl -d wvl,'0.4 micron','0.7 micron' -s '%3.1e' ~/nco/data/in.nc
-nco896. Get UDUnits2 to install databases in configurable location
-nco897. UDUnits2 requires hard-coded path to ut_read_xml()
 nco898. UDUnits2 is noisy when it does work:
 	zender@virga:~/nco/bld$ ncks -O -D 0 -C -H -v wvl -d wvl,'0.4 micron','0.7 micron' -s '%3.1e' ~/nco/data/in.nc
 	Definition of "kt" in "/usr/local/share/udunits2-common.xml", line 80, overrides prefixed-unit "1000000 kilogram"

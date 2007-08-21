@@ -1,6 +1,10 @@
+2007-08-21  Charlie Zender  <zender@uci.edu>
+
+	* UDUnits2 finds default database, obeys UDUNITS2_XML_PATH
+
 2007-08-07  Charlie Zender  <zender@uci.edu>
 
-	* Simply UDUnits2 test works with many TODOs for me, Unidata
+	* Simple UDUnits2 test works with many TODOs for me, Unidata
 
 	* Complete compilable UDUnits2 implementation for all units except
 	(I think) time = time since ... units
