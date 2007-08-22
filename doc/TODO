@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.956 2007-08-22 10:12:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.957 2007-08-22 21:19:05 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -626,7 +626,9 @@ nco895. udunits2 implement new API http://www.unidata.ucar.edu/software/udunits/
 	/bin/rm ~/obj/LINUX/nco_lmt.o;cd ~/nco/bld;make OPTS=D UDUNITS2=Y NETCDF4=Y allinone
 	ncks -O -D 0 -C -H -v wvl -d wvl,'0.4 micron','0.7 micron' -s '%3.1e' ~/nco/data/in.nc
 nco899. Release 3.9.2
-nco900. 
+nco900. Get UDUnits2 working with time coordinates:
+        ncks -O -D 0 -C -d time_udunits,'1999-12-08 12:00:0.0','1999-12-09 00:00:0.0' -p ~/nco/data in.nc ~/foo.nc
+nco901. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

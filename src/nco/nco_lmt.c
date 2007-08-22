@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.62 2007-08-22 10:12:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.63 2007-08-22 21:19:06 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -982,8 +982,8 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
   ut_sct_out=ut_get_unit_by_name(ut_sys,fl_unt_sng);
   if(ut_sct_out == NULL){ /* Problem with 'units' attribute */
     ut_rcd=ut_get_status(); /* [enm] UDUnits2 status */
-    if(ut_rcd == UT_SUCCESS) (void)fprintf(stderr,"ERROR: units attribute %s for dimension %d is not listed in UDUnits2 SI system database\n",fl_unt_sng,dmn_id);
-    if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"ERROR: empty attribute or units system for dimension %d\n",dmn_id);
+    if(ut_rcd == UT_SUCCESS) (void)fprintf(stderr,"ERROR: units attribute %s for dimension ID %d is not listed in UDUnits2 SI system database\n",fl_unt_sng,dmn_id);
+    if(ut_rcd == UT_BAD_ARG) (void)fprintf(stderr,"ERROR: empty attribute or units system for dimension ID %d\n",dmn_id);
     return 1; 
   } /* endif coordinate on disk has no units attribute */
 #else /* !HAVE_UDUNITS2_H */
