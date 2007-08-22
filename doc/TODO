@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.955 2007-08-21 21:55:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.956 2007-08-22 10:12:37 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -625,25 +625,6 @@ nco895. udunits2 implement new API http://www.unidata.ucar.edu/software/udunits/
   	export UDUNITS2_XML_PATH='/usr/local/share/udunits2.xml'
 	/bin/rm ~/obj/LINUX/nco_lmt.o;cd ~/nco/bld;make OPTS=D UDUNITS2=Y NETCDF4=Y allinone
 	ncks -O -D 0 -C -H -v wvl -d wvl,'0.4 micron','0.7 micron' -s '%3.1e' ~/nco/data/in.nc
-nco898. UDUnits2 is noisy when it does work:
-	zender@virga:~/nco/bld$ ncks -O -D 0 -C -H -v wvl -d wvl,'0.4 micron','0.7 micron' -s '%3.1e' ~/nco/data/in.nc
-	Definition of "kt" in "/usr/local/share/udunits2-common.xml", line 80, overrides prefixed-unit "1000000 kilogram"
-	Definition of "microns" in "/usr/local/share/udunits2-common.xml", line 290, overrides prefixed-unit "1e-15 second"
-	Definition of "ft" in "/usr/local/share/udunits2-common.xml", line 387, overrides prefixed-unit "1e-12 kilogram"
-	Definition of "yd" in "/usr/local/share/udunits2-common.xml", line 395, overrides prefixed-unit "8.64e-20 second"
-	Definition of "pt" in "/usr/local/share/udunits2-common.xml", line 616, overrides prefixed-unit "1e-09 kilogram"
-	Definition of "at" in "/usr/local/share/udunits2-common.xml", line 1013, overrides prefixed-unit "1e-15 kilogram"
-	Definition of "ph" in "/usr/local/share/udunits2-common.xml", line 1531, overrides prefixed-unit "3.6e-09 second"
-	Definition of "nt" in "/usr/local/share/udunits2-common.xml", line 1538, overrides prefixed-unit "1e-06 kilogram"
-	Definition of "kt" in "/usr/local/share/udunits2-common.xml", line 80, overrides prefixed-unit "1000000 kilogram"
-	Definition of "microns" in "/usr/local/share/udunits2-common.xml", line 290, overrides prefixed-unit "1e-15 second"
-	Definition of "ft" in "/usr/local/share/udunits2-common.xml", line 387, overrides prefixed-unit "1e-12 kilogram"
-	Definition of "yd" in "/usr/local/share/udunits2-common.xml", line 395, overrides prefixed-unit "8.64e-20 second"
-	Definition of "pt" in "/usr/local/share/udunits2-common.xml", line 616, overrides prefixed-unit "1e-09 kilogram"
-	Definition of "at" in "/usr/local/share/udunits2-common.xml", line 1013, overrides prefixed-unit "1e-15 kilogram"
-	Definition of "ph" in "/usr/local/share/udunits2-common.xml", line 1531, overrides prefixed-unit "3.6e-09 second"
-	Definition of "nt" in "/usr/local/share/udunits2-common.xml", line 1538, overrides prefixed-unit "1e-06 kilogram"
-	5.0e-07
 nco899. Release 3.9.2
 nco900. 
 ************************************************************************

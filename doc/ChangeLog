@@ -1,3 +1,7 @@
+2007-08-22  Charlie Zender  <zender@uci.edu>
+
+	* Quiet UDUnits "override" messages to stderr unless dbg_lvl >= 9
+
 2007-08-21  Charlie Zender  <zender@uci.edu>
 
 	* UDUnits2 finds default database, obeys UDUNITS2_XML_PATH

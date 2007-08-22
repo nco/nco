@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.61 2007-08-21 21:55:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.62 2007-08-22 10:12:39 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -392,7 +392,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       if(lmt.max_sng == NULL) lmt.max_val=dmn_val_dp[max_idx]; else lmt.max_val=strtod(lmt.max_sng,(char **)NULL);
     }
     /* Warn when min_val > max_val (i.e., wrapped coordinate)*/
-    if(dbg_lvl_get() > 0 && lmt.min_val > lmt.max_val) (void)fprintf(stderr,"%s: INFO Interpreting hyperslab specifications as wrapped coordinates [%s <= %g] and [%s >= %g]\n",prg_nm_get(),lmt.nm,lmt.max_val,lmt.nm,lmt.min_val);
+    if(dbg_lvl_get() > nco_dbg_std && lmt.min_val > lmt.max_val) (void)fprintf(stderr,"%s: INFO Interpreting hyperslab specifications as wrapped coordinates [%s <= %g] and [%s >= %g]\n",prg_nm_get(),lmt.nm,lmt.max_val,lmt.nm,lmt.min_val);
     
     /* Fail when... */
     if(
@@ -806,7 +806,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   /* Place contents of working structure in location of returned structure */
   *lmt_ptr=lmt;
   
-  if(dbg_lvl_get() == 5){
+  if(dbg_lvl_get() >= nco_dbg_io){
     (void)fprintf(stderr,"Dimension hyperslabber nco_lmt_evl() diagnostics:\n");
     (void)fprintf(stderr,"Dimension name = %s\n",lmt.nm);
     (void)fprintf(stderr,"Limit type is %s\n",(min_lmt_typ == lmt_crd_val) ? "coordinate value" : "zero-based dimension index");
@@ -947,7 +947,8 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
 #ifdef HAVE_UDUNITS2_H
   /* When empty, ut_read_xml() uses environment variable UDUNITS2_XML_PATH, if any
      Otherwise it uses default initial location hardcoded when library was built */
-    ut_sys=ut_read_xml(NULL);
+  if(dbg_lvl_get() >= nco_dbg_vrb) ut_set_error_message_handler(ut_write_to_stderr); else ut_set_error_message_handler(ut_ignore);
+  ut_sys=ut_read_xml(NULL);
   if(ut_sys == NULL){
     (void)fprintf(stdout,"%s: nco_udu_lmt_cnv() failed to initialize UDUnits2 library\n",prg_nm_get());
     return 1;
