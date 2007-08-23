@@ -1,3 +1,7 @@
+2007-08-23  Charlie Zender  <zender@uci.edu>
+
+	* Implemented Henry's new ncap2 files, smaller ncoGrammer.g
+
 2007-08-22  Charlie Zender  <zender@uci.edu>
 
 	* Quiet UDUnits "override" messages to stderr unless dbg_lvl >= 9
