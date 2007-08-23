@@ -8,7 +8,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.50 2007-07-23 00:31:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.51 2007-08-23 15:36:50 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -27,7 +27,7 @@
     #if !(defined __xlC__) && !(defined SGIMP64) // C++ compilers that do not allow stdint.h
     #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
     #endif // C++ compilers that do not allow stdint.h
-    #include "ncap2.hh"
+    #include "libnco++.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
     #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
@@ -39,20 +39,27 @@
 #line 40 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 553 "ncoGrammer.g"
+#line 509 "ncoGrammer.g"
 
 
 private:
-    prs_sct *prs_arg;
+    //prs_cls *prs_arg;
     bool bcst;
     var_sct* var_cst;
     ASTFactory myFactory;
 public:
-    void setTable(prs_sct *prs_in){
+    prs_cls *prs_arg;
+
+     //Structure to hold AST pointers to indices in hyperslabs -only temporary 
+     typedef struct{
+        ANTLR_USE_NAMESPACE(antlr)RefAST ind[3];
+     } ast_lmt_sct;   
+
+    void setTable(prs_cls *prs_in){
         prs_arg=prs_in;
     }
     // Customized Constructor
-    ncoTree(prs_sct *prs_in){
+    ncoTree(prs_cls *prs_in){
         prs_arg=prs_in;
         // default is NO. Casting variable set to true 
         // causes casting in function out(). var_cst must 
@@ -318,7 +325,7 @@ public:
     int idx;
     int icnt=0;
     int ntyp;
-    int iret;
+    int iret=0;
     
     RefAST etr=ANTLR_USE_NAMESPACE(antlr)nullAST;
     RefAST ntr;
@@ -399,8 +406,6 @@ public:
 		bool bram
 	);
 	public: var_sct * out_asn(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
-	public: var_sct * methods(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
-	public: var_sct * property(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * value_list(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 	public: var_sct * var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t);
 public:
@@ -415,10 +420,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 114;
+	static const int NUM_TOKENS = 97;
 #else
 	enum {
-		NUM_TOKENS = 114
+		NUM_TOKENS = 97
 	};
 #endif
 	

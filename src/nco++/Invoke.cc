@@ -14,12 +14,12 @@
 #include <sstream>
 #include <antlr/AST.hpp>
 #include "ncoParserTokenTypes.hpp"
+#include "libnco++.hh"
 #include "ncoLexer.hpp"
 #include "ncoParser.hpp"
 #include "ncoTree.hpp"
 #include <antlr/CharStreamException.hpp>
 #include <antlr/TokenStreamException.hpp>
-#include "ncap2.hh"
 #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
 
 
@@ -27,9 +27,8 @@
 
 
 //forward declaration
-void ncap_def_ntl_scn(prs_sct*);
 
-int parse_antlr(prs_sct *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
+int parse_antlr(prs_cls *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
 {
   
   ANTLR_USING_NAMESPACE(std);

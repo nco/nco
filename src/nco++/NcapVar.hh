@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 #include "nco.h"
-#include "Ncap2.hh"
+#include "ncap2.hh"
 #include "nco_var_utl.h"  // nco_var_free()
 #include <antlr/AST.hpp>
 #include <antlr/AST.hpp>

@@ -1,8 +1,11 @@
-#include <math.h>
-#include "ncap.h"
+#ifndef INC_VAR_OP_hh_
+#define INC_VAR_OP_hh_
 
+
+#include "nco.h"
+#include "ncoParserTokenTypes.hpp"
 template<class T>
-class VarOp {
+class VarOp : public ncoParserTokenTypes {
 
 public:
   VarOp() {;}
@@ -287,3 +290,4 @@ var_sct*  VarOp<T>::var_op(var_sct* var1, int op) {
   } // end var_op
 
 
+#endif

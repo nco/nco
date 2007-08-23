@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.49 2007-07-26 10:42:11 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.50 2007-08-23 15:36:46 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -74,7 +74,6 @@
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
-#include "ncap2.hh" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
 #include "libnco++.hh" /* netCDF Operator (NCO) C++ library */
 #include "libnco.h"    /* netCDF Operator (NCO) library */
 #include "sdo_utl.hh"  /* error messages etc */
@@ -84,12 +83,17 @@ size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremente
 size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap_lex.l) */
 char **ncap_fl_spt_glb=NULL_CEWI; /* [fl] Script file */
 
+/* Forward Declaration */
+void pop_fmc_vtr(std::vector<fmc_cls> &fmc_vtr, vtl_cls *vfnc);
+
+
+
 int 
 main(int argc,char **argv)
 {
   const char fnc_nm[]="main"; 
   FILE *yyin; /* file handle used to check file existance */
-  int parse_antlr(prs_sct*,char*,char*);
+  int parse_antlr(prs_cls*,char*,char*);
 
   /* fxm TODO nco652 */
   double rnd_nbr(double);
@@ -127,8 +131,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.49 2007-07-26 10:42:11 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.49 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.50 2007-08-23 15:36:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.50 $";
   const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -136,8 +140,7 @@ main(int argc,char **argv)
   dmn_sct *dmn_item;
 
   // template lists
-  NcapVector<sym_sct*> sym_vtr;
-  NcapVector<dmn_sct*> dmn_in_vtr;  
+    NcapVector<dmn_sct*> dmn_in_vtr;  
   NcapVector<dmn_sct*> dmn_out_vtr;  
   
   // Holder for attributtes and vectors
@@ -145,52 +148,12 @@ main(int argc,char **argv)
   
   // Holder for attributtes and vectors in FIRST PARSE
   NcapVarVector int_vtr;
-
+  
+  //Method/function holder
+  std::vector<fmc_cls> fmc_vtr;
 
   extern char *optarg;
   extern int optind;
-
-  /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX */
-  /* Basic math: acos, asin, atan, cos, exp, fabs, log, log10, sin, sqrt, tan */
-  
-  /* GNU g++ barfs at these float declartions -- remove if g++ used */
-#ifndef __GNUG__
-  extern float acosf(float);
-  extern float asinf(float);
-  extern float atanf(float);
-  extern float cosf(float);
-  extern float expf(float);
-  extern float fabsf(float); /* 20040629: Only AIX may need this */
-  extern float logf(float);
-  extern float log10f(float);
-  extern float rnd_nbrf(float);
-  extern float sinf(float);
-  extern float sqrtf(float);
-  extern float tanf(float);
-  
-  /* Advanced math: erf, erfc, gamma */
-  extern float erff(float);
-  extern float erfcf(float);
-  extern float gammaf(float);
-
-  /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
-  extern float acoshf(float);
-  extern float asinhf(float);
-  extern float atanhf(float);
-  extern float coshf(float);
-  extern float sinhf(float);
-  extern float tanhf(float);
-  
-  /* Basic Rounding: ceil, floor */
-  extern float ceilf(float);
-  extern float floorf(float);
-  
-  /* Advanced Rounding: nearbyint, rint, round, trunc */
-  extern float nearbyintf(float);
-  extern float rintf(float);
-  extern float roundf(float);
-  extern float truncf(float);
-#endif
 
   int abb_arg_nbr=0;
   int dfl_lvl=0; /* [enm] Deflate level */
@@ -214,8 +177,6 @@ main(int argc,char **argv)
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
   int var_id;
-  
-  int sym_tbl_nbr; /* [nbr] Size of symbol table */
   
   lmt_sct **lmt=NULL_CEWI;
   
@@ -425,100 +386,18 @@ main(int argc,char **argv)
     } /* end else */
   } /* end if */    
   
-  /* Create function table */
-  sym_tbl_nbr= /* fxm: Make this dynamic */
-    +12 /* Basic math: acos, asin, atan, cos, exp, fabs, log, log10, rnd_nbr, sin, sqrt, tan */
-    +1 /* Basic math synonyms: ln */
-    +6 /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
-    +2 /* Basic Rounding: ceil, floor */
-    +4 /* Advanced Rounding: nearbyint, rint, round, trunc */
-    +3 /* Advanced math: erf, erfc, gamma */
-    ;
-  /* Basic math: acos, asin, atan, cos, exp, log, log10, rnd_nbr, sin, sqrt, tan */
-
-  sym_vtr.push_back(ncap_sym_init("acos",acos,acosf));  
-  sym_vtr.push_back(ncap_sym_init("asin",asin,asinf));
-  sym_vtr.push_back(ncap_sym_init("atan",atan,atanf));
-  sym_vtr.push_back(ncap_sym_init("cos",cos,cosf));  
-  sym_vtr.push_back(ncap_sym_init("exp",exp,expf));
-  sym_vtr.push_back(ncap_sym_init("fabs",fabs,fabsf));
-  sym_vtr.push_back(ncap_sym_init("log",log,logf));
-  sym_vtr.push_back(ncap_sym_init("log10",log10,log10f));
-  //sym_vtr.push_back(ncap_sym_init("rnd_nbr",rnd_nbr,rnd_nbrf));
-  sym_vtr.push_back(ncap_sym_init("sin",sin,sinf));
-  sym_vtr.push_back(ncap_sym_init("sqrt",sqrt,sqrtf));
-  sym_vtr.push_back(ncap_sym_init("tan",tan,tanf));
-
-  /* Basic math synonyms: ln */
-  sym_vtr.push_back(ncap_sym_init("ln",log,logf)); /* ln() is synonym for log() */
-  
-  /* Basic Rounding: ceil, fl<oor */
-  sym_vtr.push_back(ncap_sym_init("ceil",ceil,ceilf)); /* Round up to nearest integer */
-  sym_vtr.push_back(ncap_sym_init("floor",floor,floorf)); /* Round down to nearest integer */
-  
-  /* fxm: Change whole function symbol table section to autotools format #if HAVE_ERF ... */
-
-  /* Advanced math: erf, erfc, gamma
-     LINUX*, MACOSX*, and SUN* provide these functions with C89
-     20020122 and 20020422: AIX, CRAY, SGI*, WIN32 do not define erff(), erfcf(), gammaf() with C89
-     20050610: C99 mandates support for erf(), erfc(), tgamma()
-     Eventually users without C99 will forego ncap */
-#if defined(LINUX) || defined(LINUXAMD64)  || defined(MACOSX)
-  sym_vtr.push_back(ncap_sym_init("erf",erf,erff));
-  sym_vtr.push_back(ncap_sym_init("erfc",erfc,erfcf));
-  sym_vtr.push_back(ncap_sym_init("gamma",tgamma,tgammaf));
-#endif /* !LINUX */
-
-  /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh
-     20020703: AIX, SGI*, WIN32 do not define acoshf, asinhf, atanhf
-     20050610: C99 mandates support for acosh(), asinh(), atanh(), cosh(), sinh(), tanh()
-     Eventually users without C99 will forego ncap */
-#if defined(LINUX) || defined(LINUXAMD64)
-  sym_vtr.push_back(ncap_sym_init("acosh",acosh,acoshf));
-  sym_vtr.push_back(ncap_sym_init("asinh",asinh,asinhf));
-  sym_vtr.push_back(ncap_sym_init("atanh",atanh,atanhf));
-  sym_vtr.push_back(ncap_sym_init("cosh",cosh,coshf));
-  sym_vtr.push_back(ncap_sym_init("sinh",sinh,sinhf));
-  sym_vtr.push_back(ncap_sym_init("tanh",tanh,tanhf));
-#endif /* !LINUX */
-  
-  /* 20020703: AIX, MACOSX, SGI*, WIN32 do not define rintf
-     Only LINUX* supplies all of these and I do not care about them enough
-     to activate them on LINUX* but not on MACOSX* and SUN* */
- /* Advanced Rounding: nearbyint, rint, round, trunc */
-  /* Advanced Rounding: nearbyint, round, trunc */
-  /* sym_vtr.push(ncap_sym_init("nearbyint",nearbyint,nearbyintf)); *//* Round to integer value in floating point format using current rounding direction, do not raise inexact exceptions */
-  /* sym_vtr.push(ncap_sym_init("round",round,roundf)); *//* Round to nearest integer away from zero */
-  /* sym_vtr.push(ncap_sym_init("trunc",trunc,truncf)); *//* Round to nearest integer not larger in absolute value */
-  /* sym_vtr.push(ncap_sym_init("rint",rint,rintf)); *//* Round to integer value in floating point format using current rounding direction, raise inexact exceptions */
-
-  /* Add type conversion functions 
-     NB: Temporary home until function/method framework works */
-  sym_vtr.push_back(ncap_sym_init("float",tanh,tanhf));
-  sym_vtr.push_back(ncap_sym_init("double",tanh,tanhf));
-  sym_vtr.push_back(ncap_sym_init("long",tanh,tanhf));
-  sym_vtr.push_back(ncap_sym_init("int",tanh,tanhf));
-  sym_vtr.push_back(ncap_sym_init("short",tanh,tanhf));
-  sym_vtr.push_back(ncap_sym_init("ushort",tanh,tanhf));
-  sym_vtr.push_back(ncap_sym_init("uint",tanh,tanhf));
-  sym_vtr.push_back(ncap_sym_init("int64",tanh,tanhf));
-  sym_vtr.push_back(ncap_sym_init("uint64",tanh,tanhf));
-  sym_vtr.push_back(ncap_sym_init("ubyte",tanh,tanhf));
-  sym_vtr.push_back(ncap_sym_init("byte",tanh,tanhf));
-  sym_vtr.push_back(ncap_sym_init("char",tanh,tanhf));
-
-  /* now sort sym_vtr */
-  sym_vtr.sort(); 
-   
+  /* 
   if(PRN_FNC_TBL){
-    /* ncap TODO #43: alphabetize this list */ 
     (void)fprintf(stdout,"Maths functions available in %s:\n",prg_nm_get());
     (void)fprintf(stdout,"Name\tFloat\tDouble\n"); 
     for(idx=0;idx<sym_vtr.size();idx++)
       (void)fprintf(stdout,"%s\t%c\t%c\n",sym_vtr[idx]->nm, (sym_vtr[idx]->fnc_flt ? 'y' : 'n'),(sym_vtr[idx]->fnc_dbl ? 'y' : 'n'));
     nco_exit(EXIT_SUCCESS);
-  } /* end if PRN_FNC_TBL */
+  }
   
+  */
+
+
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
@@ -560,8 +439,33 @@ main(int argc,char **argv)
   
   (void)nco_enddef(out_id);
   
-  /* Set arguments for  script execution */
-  prs_sct prs_arg(dmn_in_vtr,dmn_out_vtr,sym_vtr,var_vtr,int_vtr);
+  /* create function/method vector */
+
+  // Conversion functions
+  cnv_cls cnv_obj(true);
+  // Aggregate functions
+  agg_cls agg_obj(true);
+  // Utility Functions 
+  utl_cls utl_obj(true);
+  // Maths Functions
+  mth_cls mth_obj(true);
+  // Basic Functions
+  bsc_cls bsc_obj(true);
+   
+  //populate vector
+  (void)pop_fmc_vtr(fmc_vtr,&cnv_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&agg_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&utl_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&mth_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&bsc_obj);
+  
+  //Sort Vector 
+  std::sort(fmc_vtr.begin(),fmc_vtr.end());
+  
+  
+  
+  /* Set arguments for  script execution nb all these are use as references  */
+  prs_cls prs_arg(dmn_in_vtr,dmn_out_vtr,fmc_vtr,var_vtr,int_vtr);
 
   prs_arg.fl_in=fl_in; /* [sng] Input data file */
   prs_arg.in_id=in_id; /* [id] Input data file ID */
@@ -788,14 +692,7 @@ main(int argc,char **argv)
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
     /* ncap-specific memory */
-    int sz;
-    sz=sym_vtr.size();
-    for(idx=0; idx<sym_vtr.size() ;idx++){
-      sym_vtr[idx]->nm=(char*)nco_free(sym_vtr[idx]->nm);
-      (void)nco_free(sym_vtr[idx]);
-    } 
-    
-    
+  
     if(fl_spt_usr != NULL_CEWI) fl_spt_usr=(char *)nco_free(fl_spt_usr);
     
     /* Free extraction lists */ 
@@ -851,3 +748,27 @@ main(int argc,char **argv)
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
+
+
+//Copy vector elements
+void 
+pop_fmc_vtr(             
+std::vector<fmc_cls> &fmc_vtr, vtl_cls *vfnc)
+{
+   // de-reference
+  std::vector<fmc_cls> &lcl_vtr=*vfnc->lst_vtr();
+  std::copy(lcl_vtr.begin(),lcl_vtr.end(),inserter(fmc_vtr,fmc_vtr.end())  );
+  
+ }
+
+
+
+
+
+
+
+
+
+
+
+

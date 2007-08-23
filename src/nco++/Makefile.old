@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.44 2007-08-08 00:36:36 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.45 2007-08-23 15:36:43 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -365,7 +365,7 @@ NCAP2_ANTLR_GENERATED_CPP := $(addsuffix .cpp, $(basename ${NCAP2_ANTLR_GENERATE
 NCAP2_ANTLR_GENERATED_HH := $(addsuffix .hh, $(basename ${NCAP2_ANTLR_GENERATED_HH_STB})) 
 NCAP2_ANTLR_GENERATED_HPP := $(addsuffix .hpp, $(basename ${NCAP2_ANTLR_GENERATED_HH_STB})) 
 NCAP2_ANTLR_GENERATED_OBJ := $(addprefix ${MY_OBJ_DIR}/,$(addsuffix .o, $(basename ${NCAP2_ANTLR_GENERATED_CC_STB})))
-NCAP2_ANTLR_GENERATED_TXT := ncoParserTokenTypes.txt
+NCAP2_ANTLR_GENERATED_TXT := 
 
 # Directories to search for source files
 MDL_PTH := ./ ${MY_SRC_DIR}
@@ -1276,13 +1276,15 @@ inc_cln :
 # Targets in lib
 lib : inc $(libnco++).a
 	-cd ../../bld; ${MAKE} $@ # Rebuild libnco if necessary
-$(libnco++).a : inc $(libnco++).a(${MY_OBJ_DIR}/ncap2_utl.o) \
-	$(libnco++).a(${MY_OBJ_DIR}/sdo_utl.o) \
+$(libnco++).a : inc $(libnco++).a(${MY_OBJ_DIR}/fmc_cls.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/Invoke.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/NcapVarVector.o) \
+	$(libnco++).a(${MY_OBJ_DIR}/ncap2_utl.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/ncoLexer.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/ncoParser.o) \
-	$(libnco++).a(${MY_OBJ_DIR}/ncoTree.o)
+	$(libnco++).a(${MY_OBJ_DIR}/ncoTree.o) \
+	$(libnco++).a(${MY_OBJ_DIR}/prs_cls.o) \
+	$(libnco++).a(${MY_OBJ_DIR}/sdo_utl.o)
 # NB: Do not place comments in the middle of a rule, or have \ at the end
 lib_cln :
 	rm -f $(libnco++).a $(libnco++).la $(libnco++).so*

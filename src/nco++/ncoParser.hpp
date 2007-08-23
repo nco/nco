@@ -10,7 +10,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.41 2007-07-23 00:31:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.42 2007-08-23 15:36:48 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -29,7 +29,7 @@
     #if !(defined __xlC__) && !(defined SGIMP64) // C++ compilers that do not allow stdint.h
     #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
     #endif // C++ compilers that do not allow stdint.h
-    #include "ncap2.hh"
+    #include "libnco++.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
     #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
@@ -72,21 +72,16 @@ public:
 	public: void expr();
 	public: void for_stmt();
 	public: void block();
-	public: void ram_delete();
-	public: void ram_write();
-	public: void set_miss();
-	public: void ch_miss();
-	public: void hyper_slb();
 	public: void lmt_list();
+	public: void lmt();
 	public: void dmn_list();
-	public: void arg_list();
 	public: void dmn_arg_list();
+	public: void value_list();
+	public: void hyper_slb();
+	public: void arg_list();
 	public: void func_arg();
-	public: void func_exp();
-	public: void primary_exp();
-	public: void meth();
-	public: void prop_exp();
 	public: void meth_exp();
+	public: void primary_exp();
 	public: void unaryleft_exp();
 	public: void unary_exp();
 	public: void pow_exp();
@@ -98,8 +93,6 @@ public:
 	public: void lor_expr();
 	public: void cond_expr();
 	public: void ass_expr();
-	public: void value_list();
-	public: void lmt();
 	public: void imaginary_token();
 public:
 	ANTLR_USE_NAMESPACE(antlr)RefAST getAST()
@@ -112,10 +105,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 114;
+	static const int NUM_TOKENS = 97;
 #else
 	enum {
-		NUM_TOKENS = 114
+		NUM_TOKENS = 97
 	};
 #endif
 	
@@ -127,10 +120,6 @@ private:
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_2;
 	static const unsigned long _tokenSet_3_data_[];
 	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_3;
-	static const unsigned long _tokenSet_4_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_4;
-	static const unsigned long _tokenSet_5_data_[];
-	static const ANTLR_USE_NAMESPACE(antlr)BitSet _tokenSet_5;
 };
 
 #endif /*INC_ncoParser_hpp_*/

@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.111 2007-07-23 00:31:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.112 2007-08-23 15:36:47 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -18,7 +18,7 @@ header {
     #if !(defined __xlC__) && !(defined SGIMP64) // C++ compilers that do not allow stdint.h
     #include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t    
     #endif // C++ compilers that do not allow stdint.h
-    #include "ncap2.hh"
+    #include "libnco++.hh"
     #include "NcapVar.hh"
     #include "NcapVarVector.hh"
     #include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
@@ -89,11 +89,6 @@ statement:
         | PRINT^ LPAREN! (VAR_ID|ATT_ID|NSTRING) (COMMA! NSTRING)?  RPAREN! SEMI! 
         // Code block
         | block
-     // fxm: temporary functions. Will be moved to method/function framework
-        | ram_delete
-        | ram_write
-        | set_miss
-        | ch_miss  
 
    ;        
 
@@ -115,17 +110,28 @@ for_stmt:
          } */  
      ;
 
-ram_delete: RAM_DELETE^ LPAREN! (VAR_ID|ATT_ID) RPAREN! SEMI! 
-     ;
 
-ram_write:  RAM_WRITE^ LPAREN! (VAR_ID) RPAREN! SEMI! 
-     ;
-
-set_miss:   SET_MISS^ LPAREN! VAR_ID COMMA! expr RPAREN! SEMI! 
-     ;
-
-ch_miss:    CH_MISS^ LPAREN! VAR_ID COMMA! expr RPAREN! SEMI! 
+lmt_list: LPAREN! lmt (COMMA! lmt)*  RPAREN!
+          { #lmt_list = #( [LMT_LIST, "lmt_list"], #lmt_list ); }
+  ;
+// Use vars in dimension list so dims in [] can
+// be used with or with out $ prefix. ie "$lon" or "lon" 
+// So parser is compatible with ncap1
+dmn_list:
+   LSQUARE! (VAR_ID|DIM_ID) (COMMA! (VAR_ID|DIM_ID))* RSQUARE!
+      { #dmn_list = #( [DMN_LIST, "dmn_list"], #dmn_list ); }
     ;
+
+// list of dims eg /$Lat,$time,$0,$1/
+dmn_arg_list:
+    DIVIDE! (DIM_ID|DIM_MTD_ID) (COMMA! (DIM_ID|DIM_MTD_ID))*  DIVIDE!
+      { #dmn_arg_list = #( [DMN_ARG_LIST, "dmn_arg_list"], #dmn_arg_list ); }
+    ;        
+
+value_list:
+      LCURL! expr (COMMA! expr)* RCURL!  
+      { #value_list = #( [VALUE_LIST, "value_list"], #value_list ); }
+    ;        
 
 hyper_slb: (VAR_ID^ |ATT_ID ^) (lmt_list|dmn_list)?
      ;
@@ -139,29 +145,12 @@ func_arg:  LPAREN! (arg_list)? (COMMA! arg_list)*   RPAREN!
      ;   
 
 
-// left association
-//func_exp: primary_exp | ( FUNC^ LPAREN!  expr RPAREN! )
-//    ;
 
-func_exp: primary_exp | ( FUNC^ func_arg )
-      ;
+//Start intrinsic expressions
 
 
-
-// dot operator -- properties
-// not sure this is best place for this rule
-meth: ( PAVG|PAVGSQR|PMAX|PMIN|PRMS|PRMSSDN|PSQR|ARVG|PTTL)
-    ;
-
-
-prop_exp: func_exp (node:DOT^ {#node->setType(PROP);
-                               #node->setText("property");}(PSIZE|PTYPE|PNDIMS))?
-    ;
-
-// Method call all methods must in include () otherwise
-// they will be treated as a property 
-meth_exp: prop_exp ( DOT^ meth func_arg )*
-    ;
+meth_exp: primary_exp (DOT^ FUNC func_arg)*
+     ;
 
 // unary left association   
 unaryleft_exp: meth_exp (
@@ -219,6 +208,7 @@ ass_expr: cond_expr ( ( ASSIGN^
                     ) (ass_expr|value_list) )?
     ;
 
+// The mother of all expressions !!
 expr:   ass_expr
     ;    
 
@@ -227,32 +217,9 @@ lmt:    (expr)? (COLON (expr)?)*
         { #lmt = #( [LMT, "lmt"], #lmt ); }
    ;
         
-
-lmt_list: LPAREN! lmt (COMMA! lmt)*  RPAREN!
-          { #lmt_list = #( [LMT_LIST, "lmt_list"], #lmt_list ); }
-  ;
-// Use vars in dimension list so dims in [] can
-// be used with or with out $ prefix. ie "$lon" or "lon" 
-// So parser is compatible with ncap1
-dmn_list:
-   LSQUARE! (VAR_ID|DIM_ID) (COMMA! (VAR_ID|DIM_ID))* RSQUARE!
-      { #dmn_list = #( [DMN_LIST, "dmn_list"], #dmn_list ); }
-    ;
-
-// list of dims eg /$Lat,$time,$0,$1/
-dmn_arg_list:
-    DIVIDE! (DIM_ID|DIM_MTD_ID) (COMMA! (DIM_ID|DIM_MTD_ID))*  DIVIDE!
-      { #dmn_arg_list = #( [DMN_ARG_LIST, "dmn_arg_list"], #dmn_arg_list ); }
-    ;        
-
-value_list:
-      LCURL! expr (COMMA! expr)* RCURL!  
-      { #value_list = #( [VALUE_LIST, "value_list"], #value_list ); }
-    ;        
     
 primary_exp
-    : (LPAREN! expr RPAREN! ) 
-    | FLOAT    
+    : FLOAT    
     | DOUBLE
     | INT
     | BYTE
@@ -263,10 +230,12 @@ primary_exp
     | UINT64
     | NSTRING    
     | DIM_ID_SIZE
+    |(LPAREN! expr RPAREN! ) 
+    |(FUNC^ func_arg)  
     | hyper_slb  //remember this includes VAR_ID & ATT_ID
   ;
 
-
+// end intrinsic expressions
 	  
 imaginary_token
 	: NRootAST
@@ -288,40 +257,31 @@ tokens {
     DEFDIM="defdim";
     SHIFTL="<<";
     SHIFTR=">>";
-    RAM_DELETE="ram_delete";
-    RAM_WRITE="ram_write";
-    SET_MISS="set_miss";
-    CH_MISS="change_miss";
+
     BREAK="break";
     CONTINUE="continue";
     WHILE="while";    
     FOR="for";
-// Properties 
-    PSIZE="size";
-    PTYPE="type";
-    PNDIMS="ndims";
-// Methods
-    PAVG="avg";
-    PAVGSQR="avgsqr";
-    PMAX="max";
-    PMIN="min";
-    PRMS="rms";
-    PRMSSDN="rmssdn";
-    PSQRAVG="sqravg";
-    PTTL="total";
-//
+
     PRINT="print";  
  
+    /*
+    RAM_DELETE="ram_delete";
+    RAM_WRITE="ram_write";
+    SET_MISS="set_miss";
+    CH_MISS="change_miss";
+    */
+
 }
 
 
 {
 
 private:
-    prs_sct *prs_arg;
+    prs_cls *prs_arg;
 public:
     // Customized constructor !!
-   ncoLexer(ANTLR_USE_NAMESPACE(std)istream& in, prs_sct *prs_in )
+   ncoLexer(ANTLR_USE_NAMESPACE(std)istream& in, prs_cls *prs_in )
    : ANTLR_USE_NAMESPACE(antlr)CharScanner(new ANTLR_USE_NAMESPACE(antlr)CharBuffer(in),true)
    {
         prs_arg=prs_in;
@@ -498,16 +458,12 @@ NUMBER:
 // Return var or att (var_nm@att_nm)
 VAR_ATT options {testLiterals=true; paraphrase="variable or attribute identifier"; } 
         :  (LPH)(LPH|DGT)*   
-            {// check function table
-            sym_sct *sym_srh;
-            sym_srh=ncap_sym_init($getText.c_str(),cos,cosf); 
-
-            if( prs_arg->sym_vtr.bsearch(sym_srh))
+            {
+            // check function/method vector
+            if( std::binary_search(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls($getText)))
                $setType(FUNC);             
-             else $setType(VAR_ID); 
-             
-            (void)nco_free(sym_srh->nm);
-           (void)nco_free(sym_srh);
+            else 
+               $setType(VAR_ID); 
 
            }   
            ('@'(LPH)(LPH|DGT)*  {$setType(ATT_ID); })?
@@ -553,16 +509,23 @@ class ncoTree extends TreeParser;
 {
 
 private:
-    prs_sct *prs_arg;
+    //prs_cls *prs_arg;
     bool bcst;
     var_sct* var_cst;
     ASTFactory myFactory;
 public:
-    void setTable(prs_sct *prs_in){
+    prs_cls *prs_arg;
+
+     //Structure to hold AST pointers to indices in hyperslabs -only temporary 
+     typedef struct{
+        ANTLR_USE_NAMESPACE(antlr)RefAST ind[3];
+     } ast_lmt_sct;   
+
+    void setTable(prs_cls *prs_in){
         prs_arg=prs_in;
     }
     // Customized Constructor
-    ncoTree(prs_sct *prs_in){
+    ncoTree(prs_cls *prs_in){
         prs_arg=prs_in;
         // default is NO. Casting variable set to true 
         // causes casting in function out(). var_cst must 
@@ -828,7 +791,7 @@ public:
     int idx;
     int icnt=0;
     int ntyp;
-    int iret;
+    int iret=0;
     
     RefAST etr=ANTLR_USE_NAMESPACE(antlr)nullAST;
     RefAST ntr;
@@ -1001,7 +964,6 @@ static std::vector<std::string> lpp_vtr;
    
     |#(FOR e1:. e2:. e3:. stmt2:.) {
       bool b1,b2,b3,br;
-      int iret;
       var_sct *var_f1;
       var_sct *var_f2;
       var_sct *var_f3;
@@ -1075,151 +1037,6 @@ static std::vector<std::string> lpp_vtr;
         (void)ncap_def_dim(dmn_nm,sz,prs_arg);
      }
 
-
-     | #(RAM_WRITE vid:VAR_ID){     
-
-          std::string va_nm;
-          NcapVar *Nvar;
-          
-          va_nm=vid->getText();
-          
-          if(prs_arg->ntl_scn) goto ed0;
-
-          Nvar=prs_arg->var_vtr.find(va_nm);
-
-          if(Nvar) {
-            if(Nvar->flg_mem==false)
-                 wrn_prn(fnc_nm,"RAM write function called with:"+va_nm+ " .This variable is already on disk");
-            else{
-              var_sct *var_nw;
-              var_nw=nco_var_dpl(Nvar->var);          
-              prs_arg->var_vtr.erase(va_nm); 
-              prs_arg->ncap_var_write(var_nw,false);
-             }
-
-          }
-          
-          if(!Nvar)
-             wrn_prn(fnc_nm,"RAM write function unable to find variable: "+va_nm); 
-
-          ed0: ;
-
-    } 
-
-    | #(RAM_DELETE del:.){
-          std::string va_nm;
-          NcapVar *Nvar;
-          
-          va_nm=del->getText();
-
-          if(prs_arg->ntl_scn) goto ed1;
-          
-          Nvar=prs_arg->var_vtr.find(va_nm);
-
-          if(Nvar) {
-             // deal with var
-             if(del->getType()==VAR_ID){
-               if(Nvar->flg_mem==false)
-                 wrn_prn(fnc_nm,"Delete function cannot remove disk variable:\""+va_nm+ "\". Delete can only remove RAM variables.");
-               else
-                 prs_arg->var_vtr.erase(va_nm); 
-             }
-
-             if(del->getType()==ATT_ID) 
-               prs_arg->var_vtr.erase(va_nm); 
-          }
-          
-          if(!Nvar)
-             wrn_prn(fnc_nm,"Delete function unable to find "+va_nm); 
-
-          ed1: ;
-
-       }
-
-    | #(SET_MISS mss:VAR_ID var=out){
-          var_sct *var_in;
-          std::string va_nm;
-          NcapVar *Nvar;
-          
-          va_nm=mss->getText();
-          
-          if(prs_arg->ntl_scn) goto end;
-
-          Nvar=prs_arg->var_vtr.find(va_nm);
-          if(!Nvar){
-             wrn_prn(fnc_nm,"Set missing value function unable to find :"+va_nm); 
-             goto end; 
-          }
-         
-          // De-reference
-          var_in=Nvar->var;
-          
-          var=nco_var_cnf_typ(var_in->type,var);
-          
-          var->has_mss_val=True;
-          var->mss_val=nco_mss_val_mk(var->type);
-         
-          (void)memcpy(var->mss_val.vp, var->val.vp,nco_typ_lng(var->type));
-          
-          nco_mss_val_cp(var,var_in);
-
-          end: nco_var_free(var); 
-
-          
-      }
-
-    | #(CH_MISS ch_mss:VAR_ID var=out){
-
-          char *cp_out;
-          long slb_sz;
-          var_sct *var_in;
-          std::string va_nm;
-          NcapVar *Nvar;
-
-          if(prs_arg->ntl_scn) goto end1;
-          
-          va_nm=ch_mss->getText();
-          
-          Nvar=prs_arg->var_vtr.find(va_nm);
-          if(!Nvar){
-             wrn_prn(fnc_nm,"Change missing value function unable to find :"+va_nm); 
-             goto end1; 
-          }
-         
-          // De-reference
-          var_in=Nvar->var;
-          
-          var=nco_var_cnf_typ(var_in->type,var);
-          
-          var->has_mss_val=True;
-          var->mss_val=nco_mss_val_mk(var->type);
-         
-          (void)memcpy(var->mss_val.vp, var->val.vp,nco_typ_lng(var->type));
-          
-          // if no missing add one then exit
-          if(!var_in->has_mss_val){
-             nco_mss_val_cp(var,var_in);
-          
-          }else{ 
-           
-           var_in=prs_arg->ncap_var_init(va_nm,true);
-             
-           cp_out=(char*)var_in->val.vp;
-           slb_sz=nco_typ_lng(var_in->type);
-
-           for(long idx=0 ;idx<var_in->sz;idx++){
-            if( !memcmp(cp_out,var_in->mss_val.vp,slb_sz))
-             (void)memcpy(cp_out,var->mss_val.vp,slb_sz);
-            cp_out+=(ptrdiff_t)slb_sz;
-           }   
-           // Copy new missing value 
-           nco_mss_val_cp(var,var_in);
-           (void)prs_arg->ncap_var_write(var_in,false);
-          }   
-           
-       end1: nco_var_free(var);         
-          
-      }
 
     // All the following functions have iret=0
     | (#(PRINT VAR_ID))=> #(PRINT pvid:VAR_ID){
@@ -1473,8 +1290,8 @@ var=NULL_CEWI;
 
 
                RefAST lmt_Ref;
-               var_sct *var_lhs;
-               var_sct *var_rhs;
+               var_sct *var_lhs=NULL_CEWI;
+               var_sct *var_rhs=NULL_CEWI;
                NcapVector<lmt_sct*> lmt_vtr;          
                
                lmt_Ref=vid->getFirstChild();
@@ -1782,7 +1599,7 @@ var=NULL_CEWI;
                if(!Nvar || Nvar && Nvar->flg_stt==1)
                  (void)ncap_att_cpy(vid2->getText(),s_var_rhs,prs_arg);
                                
-
+ 
                // See If we have to return something
                if(vid2->getFirstChild() && vid2->getFirstChild()->getType()==NORET)
                  var=NULL_CEWI;
@@ -1970,44 +1787,38 @@ out returns [var_sct *var]
     } 
            
 
-    // math functions 
-    |  #(m:FUNC #(FUNC_ARG var1=out))      
-         { 
-          nc_type cnv_type=NC_NAT;
-          sym_sct * sym_ptr;
-          std::string fnm(m->getText());
-            
-          sym_ptr= prs_arg->sym_vtr.find(fnm);
-          if(sym_ptr ==NULL) { 
-              cout << "Function  " << fnm << " not found" << endl;
+    // Functions 
+    |  #(m:FUNC args:FUNC_ARG) {
+          RefAST tr;
+          std::string sfnm(m->getText());
+          std::vector<fmc_cls>::iterator we=std::lower_bound(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls(sfnm));
+          // see if string found
+          if( we->fnm() == sfnm){
+            //Call function
+            var=we->vfnc()->fnd(tr ,args, *we,*this); 
+          } else { 
+              cout << "Function  " << sfnm << " not found" << endl;
               exit(1);
-           }
-          
-          if(fnm=="float") cnv_type=(nc_type)NC_FLOAT; 
-          if(fnm=="double") cnv_type=(nc_type)NC_DOUBLE; 
-          if(fnm=="long") cnv_type=(nc_type)NC_INT; 
-          if(fnm=="int") cnv_type=(nc_type)NC_INT; 
-          if(fnm=="short") cnv_type=(nc_type)NC_SHORT; 
-          if(fnm=="ushort") cnv_type=(nc_type)NC_USHORT; 
-          if(fnm=="uint") cnv_type=(nc_type)NC_UINT; 
-          if(fnm=="int64") cnv_type=(nc_type)NC_INT64; 
-          if(fnm=="uint64") cnv_type=(nc_type)NC_UINT64; 
-          if(fnm=="ubyte") cnv_type=(nc_type)NC_UBYTE; 
-          if(fnm=="byte") cnv_type=(nc_type)NC_BYTE; 
-          if(fnm=="char") cnv_type=(nc_type)NC_CHAR; 
+          }
+     }
 
-          if(cnv_type !=NC_NAT) 
-            var=nco_var_cnf_typ(cnv_type,var1);              
-          else
-            var=ncap_var_fnc(var1,sym_ptr);
-
-          }    
-
-    // Deal with methods (var only)
-    | #(DOT var=methods)
-
+    // Deal with methods 
+    | #(DOT mtd:. mfnc:FUNC  margs:FUNC_ARG ){
+          std::string sfnm(mfnc->getText());
+          std::vector<fmc_cls>::iterator we=std::lower_bound(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls(sfnm));
+          // see if string found
+          if( we->fnm() == sfnm){
+            //Call function
+            var=we->vfnc()->fnd(mtd ,margs, *we,*this); 
+          } else { 
+              cout << "Method  " << sfnm << " not found" << endl;
+              exit(1);
+          }
+     }
     // The following properties are shared by vars & atts
-    | #(PROP var=property) 
+    //| #(PROP var=property) 
+
+
 
     |   dval:DIM_ID_SIZE
         {
@@ -2338,8 +2149,8 @@ var=NULL_CEWI;
             int nbr_dmn;
             const char *var_nm;
             var_sct *var_rhs;
-          var_sct *var_nw;
-          var_sct *var1;
+          var_sct *var_nw=NULL_CEWI;
+          var_sct *var1=NULL_CEWI;
           dmn_sct *dmn_nw;
  
           
@@ -2471,206 +2282,3 @@ var=NULL_CEWI;
 
     }
 ;
-
-property returns [var_sct *var]
-{
-const std::string fnc_nm("property");
-var=NULL_CEWI; 
-var_sct *var1;
-}
-
-    // The following properties are shared by vars & atts
-    :(var1=out prp:.) {
-       if(prs_arg->ntl_scn){
-         var1=nco_var_free(var1);
-         var=ncap_sclr_var_mk(static_cast<std::string>("~property"),(nc_type)NC_INT,false);        
-       } else { 
-
-         switch(prp->getType()){ 
-           case PSIZE:
-             var=ncap_sclr_var_mk(static_cast<std::string>("~property"),(nco_int)var1->sz);
-             break;
-           case PTYPE:
-             var=ncap_sclr_var_mk(static_cast<std::string>("~property"),(nco_int)var1->type);
-             break;
-           case PNDIMS:
-             var=ncap_sclr_var_mk(static_cast<std::string>("~property"),(nco_int)var1->nbr_dim);            
-
-          } // end switch
-         var1=nco_var_free(var1); 
-      }
-    }
-
-;
-
-
-//Deal with var methods
-methods returns [var_sct *var]
-{
-const std::string fnc_nm("methods");
-var=NULL_CEWI; 
-var_sct *var1;
-}
-
-   : (var1=out mtd:. args:FUNC_ARG)
-        { 
-            int nbr_arg;
-            int idx;
-            int nbr_dim;
-            dmn_sct **dim;
-           
-            RefAST aRef;
-            std::vector<std::string> str_vtr;
-            NcapVector<dmn_sct*> dmn_vtr;
-            // de-reference 
-            ddra_info_sct ddra_info;        
-            
-            // blow out if unrecognized method
-            if(mtd->getType()==VAR_ID){
-              std::string serr;
-              std::string sva(ncap_var_is_att(var1)?"Attribute" :"Variable");
-              serr= sva+" " + std::string(var1->nm)+ " has unrecognized method "+ "\""+mtd->getText()+"\"";
-              err_prn(fnc_nm,serr );
-            }
-            
-            // Process method arguments if any exist !! 
-            if(args && (nbr_arg=args->getNumberOfChildren()) >0){  
-                aRef=args->getFirstChild();
-                while(aRef){
-                    
-                    switch(aRef->getType()){
-                    case DIM_ID: 
-                    case DIM_MTD_ID:{  
-                            str_vtr.push_back(aRef->getText());
-                            break;    
-                        }
-                        
-                        // This is garanteed to contain at least one DIM_ID or DIM_MTD  
-                        // and NOTHING else --no need to type check!!
-                    case DMN_ARG_LIST: 
-                        { RefAST bRef=aRef->getFirstChild();
-                            while(bRef){
-                                str_vtr.push_back(bRef->getText());
-                                bRef=bRef->getNextSibling();
-                            }  
-                            break;
-                        } 
-                        
-                        // ignore expr type argument
-                    default:
-                        std::string serr;
-                        serr="Argument \""+aRef->getText()+"\" to method "+mtd->getText()+" is not a dimension";      
-                        wrn_prn(fnc_nm,serr);
-                        break;
-                        
-                    } // end switch
-                    aRef=aRef->getNextSibling();
-                } // end while
-                
-                dmn_vtr=ncap_dmn_mtd(var1, str_vtr);
-            }           
-            
-            // Initial scan 
-            if(prs_arg->ntl_scn){
-                nbr_dim=var1->nbr_dim;
-                
-                if(var1->undefined)
-                var=ncap_var_udf("~dot_methods");  
-                // deal with average over all dims or scalar var
-                else if( nbr_dim==0 || dmn_vtr.size()== 0 || dmn_vtr.size()==nbr_dim)  
-                var=ncap_sclr_var_mk(static_cast<std::string>("~dot_methods"),var1->type,false);    
-                else {
-                    // cast a variable with the correct dims in the correct order
-                    dim=var1->dim;
-                    std::vector<std::string> cst_vtr;              
-                    
-                    for(idx=0 ; idx < nbr_dim ; idx++){
-                        std::string sdm(dim[idx]->nm);    
-                        if( dmn_vtr.findi(sdm) == -1)
-                        cst_vtr.push_back(sdm);       
-                    }                
-                    
-                    var=ncap_cst_mk(cst_vtr,prs_arg);
-                    var=nco_var_cnf_typ(var1->type,var);
-                }
-                
-                var1=nco_var_free(var1);
-                // NB: cannot use return -- as this results with
-                // problems with automagically generated code 
-                goto end_dot;
-            }
-            
-            if(dmn_vtr.size() >0){
-                dim=&dmn_vtr[0];
-                nbr_dim=dmn_vtr.size();                           
-            } else {
-                dim=var1->dim;
-                nbr_dim=var1->nbr_dim; 
-            }    
-            
-            // Final scan
-            if(!prs_arg->ntl_scn){
-                
-                switch(mtd->getType()){
-                    
-                case PAVG:
-                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_avg,False,&ddra_info);
-                    // Use tally to normalize
-                    (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
-                    break;
-                    
-                case PAVGSQR:
-                    var1=ncap_var_var_op(var1, NULL_CEWI,SQR2);
-                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_avgsqr,False,&ddra_info);
-                    // Normalize
-                    (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
-                    break;
-                    
-                case PMAX:
-                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_max,False,&ddra_info);
-                    break;
-                    
-                case PMIN:
-                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_min,False,&ddra_info);
-                    break; 
-                    
-                case PRMS:
-                    var1=ncap_var_var_op(var1, NULL_CEWI,SQR2);
-                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_rms,False,&ddra_info);
-                    // Normalize
-                    (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
-                    // Take root
-                    (void)nco_var_sqrt(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val,var->val);  
-                    break;
-                    
-                case PRMSSDN:
-                    var1=ncap_var_var_op(var1, NULL_CEWI,SQR2);
-                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_rmssdn,False,&ddra_info);
-                    // Normalize
-                    (void)nco_var_nrm_sdn(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
-                    // Take root
-                    (void)nco_var_sqrt(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val,var->val);  
-                    break;
-                    
-                case PSQRAVG:
-                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_sqravg,False,&ddra_info);
-                    // Normalize 
-                    (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
-                    // Square mean
-                    (void)nco_var_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,var->val);
-                    break;
-                    
-                case PTTL:
-                    var=nco_var_avg(var1,dim,nbr_dim,nco_op_ttl,False,&ddra_info);
-                    break;
-                } 
-                // var1 is freed in nco_var_avg()
-            }
-            
-            end_dot: ;
-            
-        } // end action
-
-;
-
-

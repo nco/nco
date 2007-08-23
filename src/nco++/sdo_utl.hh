@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco++/sdo_utl.hh,v 1.2 2007-05-22 18:26:54 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco++/sdo_utl.hh,v 1.3 2007-08-23 15:36:53 zender Exp $ 
 
 // Purpose: Description (definition) of SDO stand-alone utilities
 
