@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco++/libnco++.hh,v 1.7 2007-08-23 15:36:45 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco++/libnco++.hh,v 1.8 2007-08-23 15:40:57 zender Exp $ 
 
 // Purpose: Prototypes, typedefs, and global variables for libnco++
 
@@ -20,11 +20,11 @@
 #include "ncap2_utl.hh"
 #include "fmc_cls.hh"
 #include "prs_cls.hh"
-#include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
 
 //#include "ncoLexer.hpp" // 
 //#include "ncoParser.hpp" //
 //#include "ncoTree.hpp" // 
 //#include "NcapVarVector.hh" // 
+//#include "sdo_utl.hh" // SDO stand-alone utilities: dbg/err/wrn_prn()
 
 #endif // LIBNCOXX_HH  

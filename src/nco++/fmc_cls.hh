@@ -94,7 +94,6 @@ private:
    bool _flg_dbg;
 public:
   utl_cls(bool flg_dbg);
-  /*  utl_cls::utl_cls(bool flg_dbg); csz*/
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 
 };
@@ -106,7 +105,6 @@ private:
    bool _flg_dbg;
 public:
   bsc_cls(bool flg_dbg);
-  /*  bsc_cls::bsc_cls(bool flg_dbg);csz*/
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 
 };
@@ -138,7 +136,6 @@ private:
   std::vector<sym_cls> sym_vtr;
 public:
   mth_cls(bool flg_dbg);
-  /*  mth_cls::mth_cls(bool flg_dbg);csz*/
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 };
 
