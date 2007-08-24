@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.63 2007-08-22 21:19:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.64 2007-08-24 18:19:05 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -926,6 +926,7 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
  char *lmt_sng, /* I [ptr] Limit string */
  double *lmt_val) /* O [val] Limit coordinate value */ 
 {
+  int rcd; /* [enm] Return code */
 #ifdef ENABLE_UDUNITS
   static const char* att_nm="units";
   char *fl_unt_sng=NULL;  /* [sng] Unit string in file */
@@ -939,7 +940,6 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
   ut_unit *ut_sct_in; /* UDUnits structure, input units */
   ut_unit *ut_sct_out; /* UDUnits structure, output units */
 #else /* !HAVE_UDUNITS2_H */
-  int rcd; /* Return code */
   utUnit udu_sct_in; /* UDUnits structure, input units */
   utUnit udu_sct_out; /* UDUnits structure, output units */
 #endif /* !HAVE_UDUNITS2_H */
@@ -1130,6 +1130,7 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
   
 #ifdef HAVE_UDUNITS2_H
   ut_free_system(ut_sys); /* Free memory taken by UDUnits library */
+  rcd=(int)(1+0*nc_id+0*dmn_id+0*(*lmt_val)); /* CEWI removes unused parameter warnings */
 #else /* !HAVE_UDUNITS2_H */
   (void)utTerm(); /* Free memory taken by UDUnits library */
 #endif /* !HAVE_UDUNITS2_H */
