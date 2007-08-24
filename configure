@@ -1588,10 +1588,10 @@ Some influential environment variables:
               installation (compile-time)
   HDF5_LIB_DIR
               Location of HDF5 libraries (compile-time)
-  DEFS        List of MPI NCOs - not user configurable
-  HAVE_MPI_H  configure finds mpi.h - not user configurable
-  MPICH2_ROOT Root of non-std MPICH2 installation (compile-time)
-  LAM_ROOT    Root of non-std LAM installation (compile-time)
+  DEFS        List of MPI NCOs: not user-configurable
+  HAVE_MPI_H  configure finds mpi.h: not user-configurable
+  MPICH2_ROOT Root of non-standard MPICH2 installation (compile-time)
+  LAM_ROOT    Root of non-standard LAM installation (compile-time)
   I18N_SHARE  Root of internationalization (i18n) locale directories
               (run-time)
   UDUNITS_PATH
@@ -25848,7 +25848,7 @@ if test "${enable_mpi}" = 'yes'; then
 #	AC_ARG_VAR([BIN_MPI_PROGRAMS],[List of MPI NCOs - not user configurable])
 
 
-#	AC_ARG_VAR([ENABLE_MPI],[configure finds mpi.h - not user configurable])
+#	AC_ARG_VAR([ENABLE_MPI],[configure finds mpi.h: not user-configurable])
 
 # If MPI_CC is defined, include <mpi.h> and include mpnc* build targets for MPI_CC
 # Rest can be made with ${CC} as usual
