@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.63 2007-07-23 00:31:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.64 2007-08-27 15:43:26 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -589,10 +589,10 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
      However, var_out->dmn_id,cnt,srt,end,srd refer still duplicate var_in members
      They refer to old dimension ordering in input file
      nco_cnf_dmn_rdr_mtd() implicitly assumes that only nco_cnf_dmn_rdr_mtd() modifies var_out 
-     The call to nco_cnf_dmn_rdr_val() for this variable performs the actual re-ordering
+     Call to nco_cnf_dmn_rdr_val() for this variable performs actual re-ordering
      The interim inconsistent state is required for dimension IDs because 
-     output dimension IDs are not known until nco_dmn_dfn() which cannot (or, at least, should not)
-     occur until output record dimension is known
+     output dimension IDs are not known until nco_dmn_dfn() which cannot 
+     (or, at least, should not) occur until output record dimension is known.
      Interim modifications of var_out by any other routine are dangerous! */
 
   /* This is clear at date written (20040727), but memories are short
@@ -600,10 +600,10 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
      This makes it safer to var_out->dmn_id,cnt,srt,end,srd before second call to nco_cnf_dmn_rdr()
      If dmn_out->id does depend on record dimension identity, then this update will do no good
      Hence, we must re-update dmn_out->id after nco_dmn_dfn() in nco_cnf_dmn_rdr_val()
-     Structures should be completely consisten at that point
+     Structures should be completely consistent at that point
      Not updating these structures (at least dmn_out->id) is equivalent to assuming that
      dmn_out->id does not depend on record dimension identity, which is an ASSUMPTION
-     that may currently be true, but is not guaranteed by the netCDF API to always be true. */
+     that may currently be true, but netCDF API does not guarantee as always true. */
   for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++){
     /* NB: Change dmn_id,cnt,srt,end,srd together to minimize chances of forgetting one */
     var_out->dmn_id[dmn_out_idx]=dmn_out[dmn_out_idx]->id;

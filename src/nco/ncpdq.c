@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.124 2007-07-23 00:31:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.125 2007-08-27 15:43:27 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.124 2007-07-23 00:31:43 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.124 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.125 2007-08-27 15:43:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.125 $";
   const char * const opt_sht_lst="4Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -475,7 +475,7 @@ main(int argc,char **argv)
     /* Dimension list in name-ID format is no longer needed */
     dmn_rdr_lst=nco_nm_id_lst_free(dmn_rdr_lst,dmn_rdr_nbr);
 
-    /* Make sure no re-ordering dimension is specified more than once */
+    /* Make sure re-ordering dimensions are specified no more than once */
     for(idx=0;idx<dmn_rdr_nbr;idx++){
       for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
 	if(idx_rdr != idx){
@@ -563,7 +563,7 @@ main(int argc,char **argv)
 	  /* ...and current output record dimension already differs from input record dimension... */
 	  if(REDEFINED_RECORD_DIMENSION){
 	    /* ...then requested re-order requires multiple record dimensions... */
-	    if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: WARNING Re-order requests multiple record dimensions\n. Only first request will be honored (netCDF allows only one record dimension). Record dimensions involved [original,first change request (honored),latest change request (made by variable %s)]=[%s,%s,%s]\n",prg_nm,var_prc[idx]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
+	    if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: WARNING Re-order requests multiple record dimensions\n. Only first request will be honored (netCDF3 allows only one record dimension). Record dimensions involved [original,first change request (honored),latest change request (made by variable %s)]=[%s,%s,%s]\n",prg_nm,var_prc[idx]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
 	    break;
 	  }else{ /* !REDEFINED_RECORD_DIMENSION */
 	    /* ...otherwise, update output record dimension name... */
@@ -580,7 +580,7 @@ main(int argc,char **argv)
   } /* endif dmn_rdr_nbr > 0 */
   
   /* NB: Much of following logic is required by netCDF constraint that only
-     one record variable is allowed per file. netCDF4 will relax this constraint.
+     one record variable is allowed per file. netCDF4 relaxes this constraint.
      Hence making following logic prettier or funcionalizing is not high priority.
      Logic may need to be simplified/re-written once netCDF4 is released. */
   if(REDEFINED_RECORD_DIMENSION){
