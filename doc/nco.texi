@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.445 2007-08-29 15:13:27 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.446 2007-08-29 15:43:51 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -991,7 +991,7 @@ netCDF3.
 
 @cindex @code{NETCDF4_ROOT}
 For now you must build @acronym{NCO} from source to get netCDF4 support.
-Typically, you will need to specify the root of the netCDF4-beta1 
+Typically, one specifies the root of the netCDF4-beta 
 installation directory. Do this with the @code{NETCDF4_ROOT} variable.
 Then use your preferred @acronym{NCO} build mechanism, e.g.,
 @example
@@ -3648,6 +3648,7 @@ values (@pxref{Hyperslabs}).
 
 @html
 <a name="UDUnits"></a> <!-- http://nco.sf.net/nco.html#UDUnits -->
+<a name="UDUnits2"></a> <!-- http://nco.sf.net/nco.html#UDUnits2 -->
 @end html
 @node UDUnits Support, Missing Values, Wrapped Coordinates, Common features
 @section UDUnits Support 
@@ -3667,7 +3668,7 @@ Long options:
 @samp{--dimension @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]},@* 
 @samp{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}@*
 @end cartouche
-There is more than one way to hyperslab a cat.
+There is more than one way to hyperskin a cat.
 The @uref{http://www.unidata.ucar.edu/packages/udunits, UDUnits} package 
 provides a library which, if present, @acronym{NCO} uses to translate
 user-specified physical dimensions into the physical dimensions of data
@@ -3772,6 +3773,12 @@ When unquoted whitespace is present between these elements, the shell
 passes @acronym{NCO} arugment fragments which will not parse as
 intended. 
 
+@acronym{NCO} implemented support for the UDUnits2 library with version  
+3.9.2 (August, 2007).
+The @uref{http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2.html, UDUnits2} package supports non-ASCII characters and logarithmic units.
+We are interested in user-feedback on these features, 
+which are un-tested with @acronym{NCO}.
+
 @cindex Climate and Forecast Metadata Convention
 @cindex CF conventions
 The @uref{http://www.unidata.ucar.edu/packages/udunits, UDUnits}
@@ -3809,6 +3816,9 @@ The feature is not intended to encourage writers to store data in
 esoteric units (e.g., furlongs, pounds per square inch, fortnights). 
 
 @html
+<a name="missing_value"></a> <!-- http://nco.sf.net/nco.html#missing_value -->
+<a name="_FillValue"></a> <!-- http://nco.sf.net/nco.html#_FillValue -->
+<a name="fll_val"></a> <!-- http://nco.sf.net/nco.html#fll_val -->
 <a name="mss_val"></a> <!-- http://nco.sf.net/nco.html#mss_val -->
 <a name="mss"></a> <!-- http://nco.sf.net/nco.html#mss -->
 @end html

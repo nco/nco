@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.438 2007-08-29 10:55:20 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.439 2007-08-29 15:43:51 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -457,9 +457,11 @@ Instead, retrieve all recently tagged versions
 <li><b>NCO/SDO 3.9.3</b>: (<i>In progress</i>) 
 SWAMP homepage/howto;
 GCC&nbsp;4.2 compatibility;
-<li><b>NCO/SDO 3.9.2</b>: <tt>ncap2</tt> type-conversion support and printing;
-netCDF4 <tt>configure</tt> fixes;
+<li><b>NCO/SDO 3.9.2</b>: 
+<tt>_FillValue</tt> supplants <tt>missing_value</tt>;
 <tt>UDUnits2 support</tt>;
+<tt>ncap2</tt> type-conversion support and printing;
+netCDF4 <tt>configure</tt> fixes;
 Change licenses to GPL3 and FDL1.2;
 <li><b>NCO/SDO 3.9.1</b>: 
 <a href="http://nco.sf.net/nco.html#deflate">Support</a> lossless netCDF4/HDF deflation;

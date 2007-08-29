@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.255 2007-08-29 10:55:20 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.256 2007-08-29 15:43:50 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.2 are ready. 
 
@@ -8,8 +8,8 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 First, the NCO licenses have changed from GPL2 (code) and FDL1.1
 (documentation) to GPL3 (code) and FDL1.2 (documentation).
 
-Second, 3.9.2 also introduces support for UDUnits2 and 
-ncap2 printing and type-conversion. As usual the latest build
+Second, 3.9.2 also introduces ncap2 printing and type-conversion 
+and beta-support for UDUnits2. As usual the latest build
 and compile tweaks have been made to improve portability.
 
 Finally, the major user-visible change is that the default attribute  
@@ -36,15 +36,17 @@ compiling NCO with the token definition
 
 CPPFLAGS='-DNCO_MSS_VAL_SNG=missing_value'
 
-A. 
+A. Change from GPL2 to GPL3
 
-B. 
+B. UDUnits2 beta-support. Compile with 'UDUNITS2=Y' and send us 
+   feedback. Binary distributions (RPMs, Debs) still use UDUnits1.
 
-C. New Documentation:
+C. Use _FillValue rather than missing_value attribute
+   http://nco.sf.net/nco.html#_FillValue
+
+D. Improved Documentation:
    Working with non-standard grids, e.g., 2D grids fxm
    http://nco.sf.net/nco.html#grd
-
-D. 
 
 E. ncap2 continues to grow more powerful (Henry Butowsky)
    Demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]   
@@ -67,12 +69,16 @@ J. Reminder: NCO support for netCDF4 features is tracked at
 
    http://nco.sf.net/nco.html#nco4
 
-   NCO 3.9.2 with netCDF4 support has only been built and tested 
+   NCO currently supports netCDF4 atomic data types and compression.
+   NCO 3.9.2 with netCDF4 support has been built and tested 
    with HDF5 1.8 beta2 and netCDF4 snapshot20070727 and newer.
 
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;./make NETCDF4=Y allinone # Old Makefile mechanism
+
+Our next release will debut a user-friendly version of SWAMP, our
+server-side processing system (http://dust.ess.uci.edu/ppr/ppr_WZJ073.pdf).   
 
 Enjoy,
 Charlie
