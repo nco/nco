@@ -3,7 +3,8 @@
 	* cd ~/nco;cvs tag -d nco-3_9_2;cvs tag -d nco-3_9_2-1
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.2 release"
 	  cvs tag -c nco-3_9_2;cvs tag -c nco-3_9_2-1
-	  Changes since nco-3_9_1: ncap2 printing, configure improvements
+	  Changes since nco-3_9_1: GPL3, UDUnits2, _FillValue, 
+	  ncap2 printing
 	
 	* Supplant missing_value with _FillValue in documentation
 

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.256 2007-08-29 15:43:50 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.257 2007-08-29 15:51:30 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.2 are ready. 
 
@@ -18,30 +18,17 @@ from "missing_value" to "_FillValue".
 Supporting both of these attributes simultaneously is not practical.
 Hence the behavior NCO used to apply to missing_value's now applies to
 _FillValue's---missing_value's are now treated as normal data. 
-
-It has been and remains most advisable to create both _FillValue
-and missing_value attributes with identical values in datasets.
-Nevertheless, many legacy datasets contain on "missing_value".
-Here are two commands that will help migrating datasets.
-
-# Rename all missing_value attributes to _FillValue
-ncrename -a .missing_value,_FillValue inout.nc
-
-# Add _FillValue attribute to all variables
-ncatted -O -a _FillValue,,o,f,1.0e36 inout.nc
-
-The old functionality, i.e., where the ignored values are indicated by
-"missing_value" not "_FillValue", may be selected _at build time_ by 
-compiling NCO with the token definition 
-
-CPPFLAGS='-DNCO_MSS_VAL_SNG=missing_value'
+The NCO user's guide shows how to ease migration to this new behavior.
 
 A. Change from GPL2 to GPL3
+   http://www.gnu.org/copyleft/gpl.html
 
 B. UDUnits2 beta-support. Compile with 'UDUNITS2=Y' and send us 
    feedback. Binary distributions (RPMs, Debs) still use UDUnits1.
+   http://nco.sf.net/nco.html#UDUnits2
 
-C. Use _FillValue rather than missing_value attribute
+C. Ignore data equal to _FillValue (rather than missing_value)
+   Hints and examples to handle new or to revert to old behavior:
    http://nco.sf.net/nco.html#_FillValue
 
 D. Improved Documentation:
@@ -49,6 +36,8 @@ D. Improved Documentation:
    http://nco.sf.net/nco.html#grd
 
 E. ncap2 continues to grow more powerful (Henry Butowsky)
+   All functions (e.g., cos(), avg()) are now available as methods
+   (e.g., var.cos(), var.avg(x,y))  
    Demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]   
 
 F. ncap2 supports type conversion (Henry Butowsky)
