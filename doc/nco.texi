@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.444 2007-08-29 14:53:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.445 2007-08-29 15:13:27 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3834,40 +3834,26 @@ an intelligent fashion.
 There are four steps in the @acronym{NCO} treatment of missing data:
 @enumerate
 @item 
-Identifying variables which may contain missing data. 
+Identifying variables that may contain missing data. 
+
 @acronym{NCO} follows the convention that missing data should be stored
-with the @var{_FillValue} specified in the variable's
-@code{_FillValue} attribute
-fxm
-@footnote{
-Beginning with @acronym{NCO} version 3.9.2 (August, 2007) the default 
-attribute name, if any, assumed to specify the value of data to ignore 
-is @code{_FillValue}.
+with the @var{_FillValue} specified in the variable's @code{_FillValue} 
+attributes. 
+The @emph{only} way @acronym{NCO} recognizes that a variable @emph{may}
+contain missing data is if the variable has a @code{_FillValue}
+attribute. 
+In this case, any elements of the variable which are numerically equal
+to the @var{_FillValue} are treated as missing data.
+
+@acronym{NCO} adopted the behavior that the default attribute name, if 
+any, assumed to specify the value of data to ignore is @code{_FillValue} 
+with version 3.9.2 (August, 2007).
 Prior to that, the @code{missing_value} attribute, if any, was assumed to  
 specify the value of data to ignore.
 Supporting both of these attributes simultaneously is not practical.
 Hence the behavior NCO once applied to @var{missing_value} it now applies 
-to @var{_FillValue}'s. 
-@acronym{NCO} now treats @var{missing_value}'s as normal data. 
-
-@findex ncrename
-@findex ncatted
-It has been and remains most advisable to create both @code{_FillValue}
-and @code{missing_value} attributes with identical values in datasets.
-Many legacy datasets contain only @code{missing_value} attributes.
-@acronym{NCO} can help migrating datasets between these conventions.
-One may use @command{ncrename} @xref{ncrename netCDF Renamer} to
-rename all @code{missing_value} attributes to @code{_FillValue}:
-@example
-ncrename -a .missing_value,_FillValue inout.nc
-@end example
-Alternatively, one may use
-@command{ncatted} @xref{ncatted netCDF Attribute Editor} to
-add a @code{_FillValue} attribute to all variables
-@example
-ncatted -O -a _FillValue,,o,f,1.0e36 inout.nc
-@end example
-
+to any @var{_FillValue}. 
+@acronym{NCO} now treats any @var{missing_value} as normal data 
 @footnote{
 The old functionality, i.e., where the ignored values are indicated by
 @code{missing_value} not @code{_FillValue}, may still be selected 
@@ -3875,38 +3861,51 @@ The old functionality, i.e., where the ignored values are indicated by
 with the token definition 
 @kbd{CPPFLAGS='-DNCO_MSS_VAL_SNG=missing_value'}.
 }.
-The @emph{only} way @acronym{NCO} recognizes that a variable @emph{may}
-contain missing data is if the variable has a @code{missing_value}
-attribute. 
-In this case, any elements of the variable which are numerically equal
-to the @var{missing_value} are treated as missing data.
+
+@findex ncrename
+@findex ncatted
+It has been and remains most advisable to create both @code{_FillValue}
+and @code{missing_value} attributes with identical values in datasets.
+Many legacy datasets contain only @code{missing_value} attributes.
+@acronym{NCO} can help migrating datasets between these conventions.
+One may use @command{ncrename} (@pxref{ncrename netCDF Renamer}) to
+rename all @code{missing_value} attributes to @code{_FillValue}:
+@example
+ncrename -a .missing_value,_FillValue inout.nc
+@end example
+Alternatively, one may use
+@command{ncatted} (@pxref{ncatted netCDF Attribute Editor}) to
+add a @code{_FillValue} attribute to all variables
+@example
+ncatted -O -a _FillValue,,o,f,1.0e36 inout.nc
+@end example
 
 @item 
-Converting the @var{missing_value} to the type of the variable, if
+Converting the @var{_FillValue} to the type of the variable, if
 neccessary. 
 
 Consider a variable @var{var} of type @var{var_type} with a
-@code{missing_value} attribute of type @var{att_type} containing the
-value @var{missing_value}.  
-As a guideline, the type of the @code{missing_value} attribute should be
+@code{_FillValue} attribute of type @var{att_type} containing the
+value @var{_FillValue}.  
+As a guideline, the type of the @code{_FillValue} attribute should be
 the same as the type of the variable it is attached to.
 If @var{var_type} equals @var{att_type} then @acronym{NCO}
 straightforwardly compares each value of @var{var} to
-@var{missing_value} to determine which elements of @var{var} are to be
+@var{_FillValue} to determine which elements of @var{var} are to be
 treated as missing data. 
 @cindex C language
-If not, then @acronym{NCO} converts @var{missing_value} from
+If not, then @acronym{NCO} converts @var{_FillValue} from
 @var{att_type} to @var{var_type} by using the implicit conversion rules
 @w{of C}, or, if @var{att_type} is @code{NC_CHAR}
 @footnote{For example, the @acronym{DOE} @acronym{ARM} program often
-uses @var{att_type} = @code{NC_CHAR} and @var{missing_value} =
+uses @var{att_type} = @code{NC_CHAR} and @var{_FillValue} =
 @samp{-99999.}. 
 }, by typecasting the results of the @w{C function}
-@code{strtod(@var{missing_value})}. 
+@code{strtod(@var{_FillValue})}. 
 @cindex @command{ncatted}
 You may use the @acronym{NCO} operator @command{ncatted} to change the
-@code{missing_value} attribute and all data whose data is
-@var{missing_value} to a new value
+@code{_FillValue} attribute and all data whose data is
+@var{_FillValue} to a new value
 (@pxref{ncatted netCDF Attribute Editor}).
 
 @item 
@@ -3918,16 +3917,16 @@ Identifying missing data during arithmetic operations.
 @cindex execution time
 @cindex arithmetic operators
 When an @acronym{NCO} arithmetic operator processes a variable @var{var}
-with a @code{missing_value} attribute, it compares each value of
-@var{var} to @var{missing_value} before performing an operation.
-Note the @var{missing_value} comparison inflicts a performance penalty
+with a @code{_FillValue} attribute, it compares each value of
+@var{var} to @var{_FillValue} before performing an operation.
+Note the @var{_FillValue} comparison imposes a performance penalty
 on the operator.
 Arithmetic processing of variables which contain the
-@code{missing_value} attribute always incurs this penalty, even when
+@code{_FillValue} attribute always incurs this penalty, even when
 none of the data are missing.
 Conversely, arithmetic processing of variables which do not contain the
-@code{missing_value} attribute never incurs this penalty.
-In other words, do not attach a @code{missing_value} attribute to a
+@code{_FillValue} attribute never incurs this penalty.
+In other words, do not attach a @code{_FillValue} attribute to a
 variable which does not contain missing data.
 This exhortation can usually be obeyed for model generated data, but it
 may be harder to know in advance whether all observational data will be
@@ -3942,14 +3941,14 @@ Treatment of any data identified as missing in arithmetic operators.
 @cindex @command{ncbo}
 @cindex @command{ncflint}
 @acronym{NCO} averagers (@command{ncra}, @command{ncea}, @command{ncwa})
-do not count any element with the value @var{missing_value} towards the
+do not count any element with the value @var{_FillValue} towards the
 average. 
-@command{ncbo} and @command{ncflint} define a @var{missing_value} result  
-when either of the input values is a @var{missing_value}.
-Sometimes the @var{missing_value} may change from file to file in a
+@command{ncbo} and @command{ncflint} define a @var{_FillValue} result  
+when either of the input values is a @var{_FillValue}.
+Sometimes the @var{_FillValue} may change from file to file in a
 multi-file operator, e.g., @command{ncra}.
 @acronym{NCO} is written to account for this (it always compares a
-variable to the @var{missing_value} assigned to that variable in the
+variable to the @var{_FillValue} assigned to that variable in the
 current file). 
 Suffice it to say that, in all known cases, @acronym{NCO} does ``the
 right thing''. 
@@ -3957,21 +3956,21 @@ right thing''.
 It is impossible to determine and store the correct result of a binary  
 operation in a single variable.
 One such corner case occurs when both operands have differing
-@var{missing_value} attributes, i.e., attributes with different
+@var{_FillValue} attributes, i.e., attributes with different
 numerical values.
 Since the output (result) of the operation can only have one
-@var{missing_value}, some information may be lost.
+@var{_FillValue}, some information may be lost.
 In this case, @acronym{NCO} always defines the output variable to have
-the same @var{missing_value} as the first input variable.
+the same @var{_FillValue} as the first input variable.
 Prior to performing the arithmetic operation, all values of the second
-operand equal to the second @var{missing_value} are replaced with the
-first @var{missing_value}.
+operand equal to the second @var{_FillValue} are replaced with the
+first @var{_FillValue}.
 Then the arithmetic operation proceeds as normal, comparing each element 
-of each operand to a single @var{missing_value}.
-Comparing each element to two distinct @var{missing_value}'s would be
+of each operand to a single @var{_FillValue}.
+Comparing each element to two distinct @var{_FillValue}'s would be
 much slower and would be no likelier to yield a more satisfactory
 answer. 
-In practice, judicious choice of @var{missing_value} values prevents any
+In practice, judicious choice of @var{_FillValue} values prevents any
 important information from being lost.
 @end enumerate
 
@@ -4044,6 +4043,7 @@ ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
 @cindex @code{add_offset}
 @cindex @code{scale_factor}
 @cindex @code{missing_value}
+@cindex @code{_FillValue}
 @cindex @command{pack(x)}
 @cindex @command{unpack(x)}
 @cartouche
@@ -4068,7 +4068,7 @@ with the two attributes required to unpack the variable,
 @code{scale_factor} and @code{add_offset}, stored at the original
 (unpacked) precision of the variable
 @footnote{Although not a part of the standard, @acronym{NCO} enforces
-the policy that the @code{missing_value} attribute, if any, of a packed
+the policy that the @code{_FillValue} attribute, if any, of a packed
 variable is also stored at the original precision.}.
 Let @var{min} and @var{max} be the minimum and maximum values 
 @w{of @var{x}.} 
@@ -4134,7 +4134,7 @@ associated variable (containing the packed data) is typically of type
 @code{byte} or @code{short}, whereas the unpacked values are intended to
 be of type @code{int}, @code{float}, or @code{double}. 
 An attribute's @code{scale_factor} and @code{add_offset} and
-@code{missing_value}, if any, should all be of the type intended for the
+@code{_FillValue}, if any, should all be of the type intended for the
 unpacked data, i.e., @code{int}, @code{float} or @code{double}. 
 
 @unnumberedsubsec Default Handling of Packed Data
@@ -4312,7 +4312,7 @@ Each~$\xxx_{\idx}$ has an associated Boolean weight~$\mssflg_{\idx}$
 whose value is~0 or~1 (false or true). 
 The value of~$\mssflg_{\idx}$ is~1 (true) unless $\xxx_{\idx}$ equals
 the @var{missing value} (@pxref{Missing Values}) for the variable. 
-Thus, for a variable with no @code{missing_value} attribute,
+Thus, for a variable with no @code{_FillValue} attribute,
 $\mssflg_{\idx}$~is always~1.
 All @acronym{NCO} arithmetic operators (@command{ncbo},
 @command{ncra}, @command{ncea}, @command{ncflint}, @command{ncwa}) treat  
@@ -6252,8 +6252,8 @@ command to the @code{history} global attribute in the @var{output-file}.
 
 @cindex missing values
 @cindex data, missing 
-@cindex @code{missing_value}
-When @command{ncatted} is used to change the @code{missing_value} attribute,
+@cindex @code{_FillValue}
+When @command{ncatted} is used to change the @code{_FillValue} attribute,
 it changes the associated missing data self-consistently.
 If the internal floating point representation of a missing value, 
 e.g., 1.0e36, differs between two machines then netCDF files produced 
@@ -7310,7 +7310,7 @@ and @code{NC_BYTE}.
 This behavior is hardcoded.
 
 @cindex missing values
-@cindex @code{missing_value}
+@cindex @code{_FillValue}
 Depending on your intuition, @command{ncflint} may treat missing values
 unexpectedly.
 Consider a point where the value in one input file, say @var{val1},
@@ -8121,19 +8121,19 @@ file size by @w{about 50%.}
 @samp{flt_byt} packing reduces an @code{NC_DOUBLE}-dominated file by
 @w{about 87%.} 
 
-@cindex @var{missing_value}
-@cindex @code{missing_value}
+@cindex @var{_FillValue}
+@cindex @code{_FillValue}
 @cindex @code{NUL}
 The netCDF packing algorithm (@pxref{Intrinsic functions}) is
 lossy---once packed, the exact original data cannot be recovered without
 a full backup. 
 Hence users should be aware of some packing caveats:
 First, the interaction of packing and data equal to the
-@var{missing_value} is complex.
-Test the @code{missing_value} behavior by performing a pack/unpack cycle 
+@var{_FillValue} is complex.
+Test the @code{_FillValue} behavior by performing a pack/unpack cycle 
 to ensure data that are missing @emph{stay} missing and data that are
 not misssing do not join the Air National Guard and go missing.
-This may lead you to elect a new @var{missing_value}.
+This may lead you to elect a new @var{_FillValue}.
 Second, @code{ncpdq} actually allows packing into @code{NC_CHAR} (with,
 e.g., @samp{flt_chr}).
 However, the intrinsic conversion of @code{signed char} to higher
@@ -8875,7 +8875,7 @@ As with all arithmetic operators, the operation may be restricted to
 an arbitrary hypserslab by employing the @samp{-d} option
 (@pxref{Hyperslabs}). 
 @command{ncwa} also handles values matching the variable's
-@code{missing_value} attribute correctly. 
+@code{_FillValue} attribute correctly. 
 Moreover, @command{ncwa} understands how to manipulate user-specified
 weights, masks, and normalization options.
 With these options, @command{ncwa} can compute sophisticated averages
@@ -9083,7 +9083,7 @@ Whether an element contributes to the output, and thus increments
 $\tllnbr$ by one, has more to do with the above two criteria (missing
 value and masking) than with the numeric value of the element per se.
 For example, $\xxx_{\idx}=0.0$ does contribute to $\xxx_{\jjj}$
-(assuming the @code{missing_value} attribute is not~0.0 and location
+(assuming the @code{_FillValue} attribute is not~0.0 and location
 $\idx$ is not masked). 
 The value $\xxx_{\idx}=0.0$ will not change the numerator of the generic 
 averaging expression, but it will change the denominator (unless its
@@ -9305,7 +9305,7 @@ correctly integrate the cell areas into a total regional area.
 
 @cindex mask condition
 @cindex truth condition
-Mask a file to contain @var{missing_value} everywhere except where
+Mask a file to contain @var{_FillValue} everywhere except where
 @math{@var{thr_min} <= @var{msk_var} <= @var{thr_max}}:
 @example
 # Set masking variable and its scalar thresholds
@@ -9318,7 +9318,7 @@ ncecat -O out.nc out.nc # Wrap out.nc in degenerate "record" dimension
 ncwa -O -a record -B "$@{msk_var@} >= $@{thr_min@}" out.nc out.nc
 @end example
 After the first use of @command{ncwa}, @file{out.nc} contains
-@var{missing_value} where @code{$@{msk_var@} >= $@{thr_max@}}.
+@var{_FillValue} where @code{$@{msk_var@} >= $@{thr_max@}}.
 The process is then repeated on the remaining data to filter out 
 points where @code{$@{msk_var@} <= $@{thr_min@}}.
 The resulting @file{out.nc} contains valid data only
