@@ -762,3 +762,183 @@
     return var;      
 
   }
+
+
+
+//PDQ Functions /******************************************/
+
+  pdq_cls::pdq_cls(bool flg_dbg){
+    //Populate only on first constructor call
+    if(fmc_vtr.empty()){
+      fmc_vtr.push_back( fmc_cls("reverse",this,(int)PREVERSE));
+      fmc_vtr.push_back( fmc_cls("permute",this,(int)PPERMUTE));
+
+    }
+  }
+
+  var_sct *pdq_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("pdq_cls::fnd");
+            int idx;       
+            int jdx;
+            int fdx;
+            int nbr_fargs;
+            int nbr_dim;
+            var_sct *var_in=NULL_CEWI;
+            var_sct *var_out=NULL_CEWI;
+           
+	    std::string sfnm;
+            std::string serr;
+
+            RefAST tr;
+	
+            std::vector<std::string> str_vtr;
+            NcapVector<dmn_sct*> dmn_vtr;
+            // de-reference 
+            prs_cls *prs_arg=walker.prs_arg;
+
+            fdx=fmc_obj.fdx();
+
+            nbr_fargs=fargs->getNumberOfChildren();
+
+            sfnm= (expr ? " method ": " function ") + fmc_obj.fnm();  
+
+            // no arguments - bomb out
+            if(!expr && nbr_fargs==0){    
+              std::string serr;
+	      serr=sfnm + " has been called without an argument";
+              err_prn(fnc_nm,serr);
+            }
+
+
+            if(expr) 
+	      tr=expr; 
+	    else 
+              tr=fargs->getFirstChild();
+
+            var_in=walker.out(tr);
+            nbr_dim=var_in->nbr_dim;  
+                        
+            //Process dim args
+            if(expr) 
+              tr=fargs->getFirstChild();
+            else
+              tr=tr->getNextSibling();
+
+            while(tr) {
+              switch(tr->getType()){
+                     
+                    case DIM_ID: 
+                    case DIM_MTD_ID:  
+                          str_vtr.push_back(tr->getText());
+                          break;    
+                        // ignore expr type arguments
+                    default:
+                          serr="Argument \""+tr->getText()+"\" to"+sfnm +" is not a dimension";      
+                          wrn_prn(fnc_nm,serr);
+                          break;
+                    } // end switch
+                    tr=tr->getNextSibling();
+             } // end while
+        
+            if(prs_arg->ntl_scn)
+              dmn_vtr=ncap_dmn_mtd(var_in,str_vtr);
+            else{
+              var_out=nco_var_dpl(var_in);
+              dmn_vtr=ncap_dmn_mtd(var_out,str_vtr);
+            }
+
+            if(fdx==PPERMUTE){
+
+              if(dmn_vtr.size() < str_vtr.size())
+	        wrn_prn(fnc_nm, "Unrecognized dimension arguments in" +sfnm);
+
+	      if(dmn_vtr.size() < nbr_dim ) {
+                ostringstream os; 
+	        os<<"You have only specified "<< dmn_vtr.size()<< " dimension  args " << "in"+sfnm+". You need to specify  "<< nbr_dim<<". All of the variables dimensions must be specfifed in the arguments."; 
+              err_prn(fnc_nm,os.str());
+                }
+
+              // Check location of record dimension
+              for(idx=0 ; idx<nbr_dim ; idx++)
+		if( idx>0 && dmn_vtr[idx]->is_rec_dmn){
+                  ostringstream os; 
+		  os<<"You must specify the record dimension "<< dmn_vtr[idx]->nm <<" as the first dimension in the list." << sfnm; 
+                  err_prn(fnc_nm,os.str());  
+	        }
+
+	    }
+            
+  
+            //Initial scan 
+            if(prs_arg->ntl_scn ) {
+
+              if(fdx==PREVERSE || var_in->undefined ) 
+                return var_in; 
+             
+              // deal with PPERMUTE
+              if(fdx==PPERMUTE){
+		std::vector<std::string> cst_vtr;
+
+                for(idx=0 ; idx<nbr_dim ; idx++)
+                  cst_vtr.push_back( static_cast<std::string>((dmn_vtr[idx]->nm)));
+
+
+                var_out=ncap_cst_mk(cst_vtr,prs_arg);
+                var_out=nco_var_cnf_typ(var_in->type,var_out);
+                var_in=nco_var_free(var_in);
+                return var_out;
+		  }
+
+            }
+
+           
+            std::vector<nco_bool>  bool_vtr(nbr_dim,False);           
+	    std::vector<int> dmn_idx_in_out(nbr_dim,0);
+	    std::vector<int> dmn_idx_out_in(nbr_dim,0);
+             
+
+	     switch(fdx) {
+
+               case PREVERSE: 
+
+                 for(idx=0 ; idx < nbr_dim ; idx++){
+                   std::string sdm(var_out->dim[idx]->nm);    
+                 if( dmn_vtr.findi(sdm) >=0)
+		   bool_vtr[idx]=True;
+                 else
+                   bool_vtr[idx]=False;
+                   //straight mapping !!
+                   dmn_idx_out_in[idx]=idx; 
+                  }                
+                break;
+          
+	     case PPERMUTE:{ 
+               
+              
+	       for(idx=0 ; idx<nbr_dim; idx++){
+                   std::string sdm(var_in->dim[idx]->nm);    
+	           dmn_idx_in_out[idx]=dmn_vtr.findi(sdm);
+		   var_out->dim[idx]=dmn_vtr[idx];
+                   var_out->dmn_id[idx]=dmn_vtr[idx]->id;
+	       }
+
+               // create "out_in" mapping from "in_out" mapping
+               for(idx=0 ; idx <nbr_dim ; idx++)
+		 for(jdx=0 ; jdx<nbr_dim; jdx++)
+		   if( idx==dmn_idx_in_out[jdx]){
+                     dmn_idx_out_in[idx]=jdx;
+                     break;
+                   }  
+	       } 
+               break;
+
+	     }// end switch
+
+             //do operation
+             (void)nco_var_dmn_rdr_val(var_in,var_out,&dmn_idx_out_in[0],&bool_vtr[0]);
+             var_in=(var_sct*)nco_var_free(var_in);
+             return var_out; 
+    }     
+             
+            
+	     
