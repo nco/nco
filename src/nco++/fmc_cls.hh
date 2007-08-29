@@ -1,3 +1,4 @@
+
 /* Purpose: netCDF arithmetic processor -  */
 /* class methods - */
 
@@ -5,9 +6,12 @@
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
+
+
 // Standard C++ headers
 #ifndef INC_FMC_CLS_hh_
 #define INC_FMC_CLS_hh_
+
 
 #include <algorithm>
 #include <iostream>
@@ -66,6 +70,7 @@ public:
   }
 };
 
+
 //Conversion Functions **************************************/
 class cnv_cls: public vtl_cls {
 private:
@@ -75,6 +80,7 @@ public:
     var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 
 };
+
 
 //Aggregate Functions /***************************************/
 class agg_cls: public vtl_cls {
@@ -87,6 +93,7 @@ public:
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 };
 
+
 //Utility Functions /****************************************/
 class utl_cls: public vtl_cls {
 private:
@@ -98,6 +105,8 @@ public:
 
 };
 
+
+
 //Basic Functions /****************************************/
 class bsc_cls: public vtl_cls {
 private:
@@ -108,6 +117,8 @@ public:
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 
 };
+
+
 
 //Maths functions holder (for mth_cls) ********************/
 class sym_cls{ /* sym_sct */
@@ -129,6 +140,9 @@ class sym_cls{ /* sym_sct */
   std::string fnm() { return _fnm;} 
 }; 
 
+
+
+
 //Maths Functions /****************************************/
 class mth_cls: public vtl_cls {
 private:
@@ -138,5 +152,20 @@ public:
   mth_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 };
+
+
+
+//PDQ Functions /****************************************/
+class pdq_cls: public vtl_cls {
+private:
+   enum {PREVERSE,PPERMUTE };
+   bool _flg_dbg;
+public:
+  pdq_cls(bool flg_dbg);
+  var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+
+};
+
+
 
 #endif
