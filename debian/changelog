@@ -1,8 +1,8 @@
 nco (3.9.2-1) sid; urgency=low
 
-  * new upstream version (ncap2 printing, GPL3)
+  * new upstream version (GPL3, _FillValue, UDUnits2, ncap2 printing)
 
- -- Charlie Zender <zender@uci.edu>  Sun, 22 Jul 2007 16:48:11 -0700
+ -- Charlie Zender <zender@uci.edu>  Wed, 29 Aug 2007 09:01:52 -0700
 
 nco (3.9.1-1) feisty; urgency=low
 
