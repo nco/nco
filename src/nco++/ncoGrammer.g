@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.112 2007-08-23 15:36:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.113 2007-08-29 16:15:51 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -111,9 +111,17 @@ for_stmt:
      ;
 
 
+lmt:    (expr)? (COLON (expr)?)*
+        { #lmt = #( [LMT, "lmt"], #lmt ); }
+   ;
+
+
+
 lmt_list: LPAREN! lmt (COMMA! lmt)*  RPAREN!
           { #lmt_list = #( [LMT_LIST, "lmt_list"], #lmt_list ); }
   ;
+
+
 // Use vars in dimension list so dims in [] can
 // be used with or with out $ prefix. ie "$lon" or "lon" 
 // So parser is compatible with ncap1
@@ -133,10 +141,6 @@ value_list:
       { #value_list = #( [VALUE_LIST, "value_list"], #value_list ); }
     ;        
 
-hyper_slb: (VAR_ID^ |ATT_ID ^) (lmt_list|dmn_list)?
-     ;
-
-
 arg_list: expr|dmn_arg_list|DIM_ID|DIM_MTD_ID
      ;
 
@@ -144,9 +148,12 @@ func_arg:  LPAREN! (arg_list)? (COMMA! arg_list)*   RPAREN!
       { #func_arg = #( [FUNC_ARG, "func_arg"], #func_arg ); }
      ;   
 
+hyper_slb: (VAR_ID^ |ATT_ID ^) (lmt_list|dmn_list)?
+     ;
 
 
-//Start intrinsic expressions
+/*************************************************************/
+/* start  expressions */
 
 
 meth_exp: primary_exp (DOT^ FUNC func_arg)*
@@ -211,11 +218,6 @@ ass_expr: cond_expr ( ( ASSIGN^
 // The mother of all expressions !!
 expr:   ass_expr
     ;    
-
-
-lmt:    (expr)? (COLON (expr)?)*
-        { #lmt = #( [LMT, "lmt"], #lmt ); }
-   ;
         
     
 primary_exp
@@ -235,7 +237,10 @@ primary_exp
     | hyper_slb  //remember this includes VAR_ID & ATT_ID
   ;
 
-// end intrinsic expressions
+
+/* End  expressions */
+/*************************************************************/
+
 	  
 imaginary_token
 	: NRootAST
@@ -1815,10 +1820,6 @@ out returns [var_sct *var]
               exit(1);
           }
      }
-    // The following properties are shared by vars & atts
-    //| #(PROP var=property) 
-
-
 
     |   dval:DIM_ID_SIZE
         {
