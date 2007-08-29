@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2.in,v 1.27 2007-05-22 19:15:59 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2.in,v 1.28 2007-08-29 14:33:30 hmb Exp $ -*-C++-*-
 
 // Purpose: Sample input script for ncap2
 
@@ -13,6 +13,7 @@ if(a2 > 0.99) a3=1.00;
 a4[$time,$lat,$lon]=time*2;
 a1@one=four;
 a5=a1@one;
+
 // check if thens
 if( 0 ) a6=0; else {{ a7=1; a8=2; }}
 if(1) {a9=1; a10=2;}
@@ -21,6 +22,8 @@ if( 0.0 ) a6=0; else if(0) {a11=1; a12=2;} else if( 3>2) a13=3;
 if(1) if(0) a14=1; else a15=1; 
 a20[$time]=666;
 a21[$time,$lat]=a1@one;
+//Check casting
+a22[time,lat,lon,lev]=P0*hyam+hybm*PS; // Works because prs_mdp in LHS cast
 b2=999;
 b2@one=2222.0d; 
 b2@zero=three_dmn_var_dbl@missing_value;
@@ -194,7 +197,7 @@ k1(0,0,0:($z.size-3))=2.01d;
 k2=4.0;
 k3=k2+=10;
 //
-// quoting of vars/atts/dim ie names which contain '.' or '-'
+// quoting of vars/atts/dims ie names which contain '.' or '-'
 defdim("--list.A",10);
 '..m1'['$--list.A']=100.1;
 '..m1'(0)=90.1;
@@ -213,4 +216,14 @@ var_ushort=1us;
 var_uint=1u;
 var_int64=1ll;
 var_uint64=1llu; */
+// function reverse 
+m1=three_dmn_var_sht;
+// reverse the data -- can specify positional args as well 
+m2=m1.reverse($0,$2);
+m3=m1.reverse($lon);
+// permute dims --nb for permute MUST specify all dims
+// record dim must be the first dim in list
+m4=m1.permute($0,$2,$1);
+m5=a22.permute($time,$lev,$lon,$lat);
+
 
