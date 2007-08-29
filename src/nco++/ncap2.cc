@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.50 2007-08-23 15:36:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.51 2007-08-29 14:26:00 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.50 2007-08-23 15:36:46 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.50 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.51 2007-08-29 14:26:00 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.51 $";
   const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -451,6 +451,9 @@ main(int argc,char **argv)
   mth_cls mth_obj(true);
   // Basic Functions
   bsc_cls bsc_obj(true);
+
+  //PDQ functions
+  pdq_cls pdq_obj(true);
    
   //populate vector
   (void)pop_fmc_vtr(fmc_vtr,&cnv_obj);
@@ -458,6 +461,7 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&utl_obj);
   (void)pop_fmc_vtr(fmc_vtr,&mth_obj);
   (void)pop_fmc_vtr(fmc_vtr,&bsc_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&pdq_obj);
   
   //Sort Vector 
   std::sort(fmc_vtr.begin(),fmc_vtr.end());
