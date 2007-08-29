@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.958 2007-08-29 20:45:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.959 2007-08-29 21:14:44 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -630,7 +630,9 @@ nco900. Get UDUnits2 working with time coordinates:
         ncks -O -D 0 -C -d time_udunits,'1999-12-08 12:00:0.0','1999-12-09 00:00:0.0' -p ~/nco/data in.nc ~/foo.nc
 nco901. mss_val in code now refers to _FillValue except in nco_mss_val.c
 nco902. ncatted -O -D 1 -a _FillValue,val_one_mss,m,f,0.0 ~/nco/data/in.nc ~/foo.nc;ncks -C -H -s '%g' -d lat,1 -v val_one_mss ~/foo.nc
-nco903. 
+nco903. ncap2.in script dies with "NetCDF: Name contains illegal characters"
+	ncap2 -O -D 5 -v -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
+nco904. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
