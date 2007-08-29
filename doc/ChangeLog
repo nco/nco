@@ -1,5 +1,7 @@
 2007-08-29  Charlie Zender  <zender@uci.edu>
 
+	* Regressions with _FillValue<->missing_value switch
+
 	* cd ~/nco;cvs tag -d nco-3_9_2;cvs tag -d nco-3_9_2-1
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.2 release"
 	  cvs tag -c nco-3_9_2;cvs tag -c nco-3_9_2-1

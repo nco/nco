@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.36 2005-07-05 14:20:55 hmb Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.37 2007-08-29 20:45:46 zender Exp $ -*-C-*-
 
 // Purpose: ncap netCDF Arithmetic Processor Demonstration/Test Script
 
@@ -115,7 +115,7 @@ one@one=23/4;
 one@two=one@one+one@two;
 one@eight=25.0%4.99;
 one@nine=1.e10;
-one@ten=val_half_half@missing_value%1000;
+one@ten=val_half_half@_FillValue%1000;
 /* Standard netCDF postfix operators are used to typecast attributes/numbers
    floats and doubles must include decimal point or exponent to be recognized */
 one@byte=10b;
@@ -129,7 +129,7 @@ one@add=one@byte+one@short/one@float;
 nine=10000e2f;
 one=10;
 two=4;
-val_half_half@missing_value=21;
+val_half_half@_FillValue=21;
 // Can use modulus operator with attributes and variables 
 twenty=four_dmn_rec_var % 8; 
 twentyone=sin(twenty)^2+cos(twenty)^2;

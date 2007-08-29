@@ -21,7 +21,7 @@
 // WARNING: Changing values of variables below, especially coordinate variables, affects outcome of nco_tst.pl test script
 // Other programs, e.g., ~/f/fff.F90, ~/c++/ccc.cc, ~/c/c.c may also break
 // In particular, do not change number of elements in record coordinate, time, without simultaneously changing number of data in all record variables
-// My convention is that the missing_value, if any, of any packed variable should be of the same type as the expanded variable. Hence missing_value, add_offset, and scale_factor should all be of the same type. Variables that do not adhere to this convention are not supported.
+// My convention is that the _FillValue, if any, of any packed variable should be of the same type as the expanded variable. Hence _FillValue, add_offset, and scale_factor should all be of the same type. Variables that do not adhere to this convention are not supported.
 
 // Data constants in CDL:
 // byte: 'a'
@@ -43,7 +43,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.3 2007-05-19 07:08:51 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.4 2007-08-29 20:45:45 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -169,19 +169,19 @@ variables:
 
 	float msk_prt_mss_prt(lon);
 	msk_prt_mss_prt:long_name = "partial mask, partial missing value example";
-	msk_prt_mss_prt:missing_value = 1.0e36f;
+	msk_prt_mss_prt:_FillValue = 1.0e36f;
 
 	float mss_val(lon);
 	mss_val:long_name = "partial missing value example";
-	mss_val:missing_value = 1.0e36f;
+	mss_val:_FillValue = 1.0e36f;
 
 	float mss_val_scl;
 	mss_val_scl:long_name = "scalar missing value";
-	mss_val_scl:missing_value = 1.0e36f;
+	mss_val_scl:_FillValue = 1.0e36f;
 
 	float mss_val_fst(lon);
 	mss_val_fst:long_name = "offset partial missing value example";
-	mss_val_fst:missing_value = -999.0f;
+	mss_val_fst:_FillValue = -999.0f;
 
 	float fll_val(lon);
 	fll_val:long_name = "_FillValue example";
@@ -198,7 +198,7 @@ variables:
 
 	float val_one_mss(lat);
 	val_one_mss:long_name = "one regular value, one missing value";
-	val_one_mss:missing_value = 1.0e36f;
+	val_one_mss:_FillValue = 1.0e36f;
 
 	short pck;
 	pck:long_name = "Packed scalar variable";
@@ -222,34 +222,34 @@ variables:
 
 	int val_one_int;
 	val_one_int:long_name = "scalar equal to 1";
-	val_one_int:missing_value = -99l;
+	val_one_int:_FillValue = -99l;
 
 	int val_one_one_int(lat);
 	val_one_one_int:long_name = "1, 1";
-	val_one_one_int:missing_value = -99l;
+	val_one_one_int:_FillValue = -99l;
 
 	short val_max_max_sht(lat);
 	val_max_max_sht:long_name = "17000, 17000";
-	val_max_max_sht:missing_value = -99s;
+	val_max_max_sht:_FillValue = -99s;
 
 	int val_one_mss_int(lat);
 	val_one_mss_int:long_name = "1, mss_val";
-	val_one_mss_int:missing_value = -99l;
+	val_one_mss_int:_FillValue = -99l;
 
 	float val_half;
 	val_half:long_name = "Scalar with value 0.5";
-	val_half:missing_value = 1.0e36f;
+	val_half:_FillValue = 1.0e36f;
 
 	float val_half_half(lat);
 	val_half_half:long_name = "0.5,0.5";
-	val_half_half:missing_value = 1.0e36f;
+	val_half_half:_FillValue = 1.0e36f;
 
 	float wgt_one(lat);
 	wgt_one:long_name = "all values are one";
 
 	float mss_val_all(lon);
 	mss_val_all:long_name = "all missing values example";
-	mss_val_all:missing_value = 1.0e36f;
+	mss_val_all:_FillValue = 1.0e36f;
 
 	float scalar_var;
 	scalar_var:long_name = "scalar variable";
@@ -263,7 +263,7 @@ variables:
 
 	double double_var2;
 	double_var2:long_name = "double";
-	double_var2:missing_value = 1.0e36;
+	double_var2:_FillValue = 1.0e36;
 
 	int int_var;
 	int_var:long_name = "int";
@@ -535,31 +535,32 @@ variables:
 
 	double rec_var_dbl_mss_val_dbl_upk(time);
 	rec_var_dbl_mss_val_dbl_upk:long_name = "record variable, double, with double missing values";
-	rec_var_dbl_mss_val_dbl_upk:purpose = "This variable is used to generate the packed variable rec_var_dbl_mss_val_dbl_pck, so its missing_value should not be too far out of range, i.e., it should be representable by a short. However, the missing_value should itself be the same type as the unpacked variable, NC_DOUBLE in this case.";
-	rec_var_dbl_mss_val_dbl_upk:missing_value = -999.;
+	rec_var_dbl_mss_val_dbl_upk:purpose = "This variable is used to generate the packed variable rec_var_dbl_mss_val_dbl_pck, so its _FillValue should not be too far out of range, i.e., it should be representable by a short. However, the _FillValue should itself be the same type as the unpacked variable, NC_DOUBLE in this case.";
+	rec_var_dbl_mss_val_dbl_upk:_FillValue = -999.;
 
 	short rec_var_dbl_mss_val_dbl_pck(time);
 	rec_var_dbl_mss_val_dbl_pck:long_name = "record variable, double, with double missing values, packed";
 	rec_var_dbl_mss_val_dbl_pck:purpose = "Packed version of rec_var_dbl_mss_val_dbl_upk";
+	rec_var_dbl_mss_val_dbl_pck:_FillValue = -999s;
 	rec_var_dbl_mss_val_dbl_pck:missing_value = -999.;
         rec_var_dbl_mss_val_dbl_pck:scale_factor = -9.15541313801785e-05;
         rec_var_dbl_mss_val_dbl_pck:add_offset = 5. ;
 
 	float rec_var_flt_mss_val_flt(time);
 	rec_var_flt_mss_val_flt:long_name = "record variable, float, with float missing values";
-	rec_var_flt_mss_val_flt:missing_value = 1.0e36f;
+	rec_var_flt_mss_val_flt:_FillValue = 1.0e36f;
 
 	float rec_var_flt_mss_val_flt_all(time);
 	rec_var_flt_mss_val_flt_all:long_name = "record variable, float, with float missing values in every position";
-	rec_var_flt_mss_val_flt_all:missing_value = 1.0e36f;
+	rec_var_flt_mss_val_flt_all:_FillValue = 1.0e36f;
 
 	float rec_var_flt_mss_val_flt_all_but_one(time);
 	rec_var_flt_mss_val_flt_all_but_one:long_name = "record variable, float, with float missing values in every position but one";
-	rec_var_flt_mss_val_flt_all_but_one:missing_value = 1.0e36f;
+	rec_var_flt_mss_val_flt_all_but_one:_FillValue = 1.0e36f;
 
 	float rec_var_flt_mss_val_flt_all_but_two(time);
 	rec_var_flt_mss_val_flt_all_but_two:long_name = "record variable, float, with float missing values in every position but two";
-	rec_var_flt_mss_val_flt_all_but_two:missing_value = 1.0e36f;
+	rec_var_flt_mss_val_flt_all_but_two:_FillValue = 1.0e36f;
 
 	short rec_var_flt_pck(time);
 	rec_var_flt_pck:long_name = "record variable, float, packed";
@@ -575,28 +576,33 @@ variables:
 
 	float rec_var_flt_mss_val_dbl(time);
 	rec_var_flt_mss_val_dbl:long_name = "record variable, float, with double missing values";
-	rec_var_flt_mss_val_dbl:missing_value = 1.0e36d;
+	rec_var_flt_mss_val_dbl:_FillValue = 1.0e36f;
+	rec_var_flt_mss_val_dbl:missing_value = 1.0e36;
 	rec_var_flt_mss_val_dbl:note = "The correct average of this variable is 5.0";
 
 	float rec_var_flt_mss_val_int(time);
 	rec_var_flt_mss_val_int:long_name = "record variable, float, with integer missing values";
+	rec_var_flt_mss_val_int:_FillValue = -999.0f;
 	rec_var_flt_mss_val_int:missing_value = -999;
 
 	int rec_var_int_mss_val_int(time);
 	rec_var_int_mss_val_int:long_name = "record variable, integer, with integer missing values";
-	rec_var_int_mss_val_int:missing_value = -999;
+	rec_var_int_mss_val_int:_FillValue = -999;
 
 	int rec_var_int_mss_val_flt(time);
 	rec_var_int_mss_val_flt:long_name = "record variable, integer, with float missing values";
+	rec_var_int_mss_val_flt:_FillValue = -999;
 	rec_var_int_mss_val_flt:missing_value = -999.0f;
 
 	int rec_var_int_mss_val_dbl(time);
 	rec_var_int_mss_val_dbl:long_name = "record variable, integer, with double missing values";
+	rec_var_int_mss_val_dbl:_FillValue = -999;
 	rec_var_int_mss_val_dbl:missing_value = -999.0;
 
 	int rec_var_dbl_mss_val_dbl_pck_lng(time);
 	rec_var_dbl_mss_val_dbl_pck_lng:long_name = "record variable, double packed as long, with double missing values";
 	rec_var_dbl_mss_val_dbl_pck_lng:purpose = "although not usual, packing doubles into longs (rather than shorts) is still a considerable cost savings";
+	rec_var_dbl_mss_val_dbl_pck_lng:_FillValue = -999;
 	rec_var_dbl_mss_val_dbl_pck_lng:missing_value = -999.0;
         rec_var_dbl_mss_val_dbl_pck_lng:scale_factor = -9.15541313801785e-05 ;
         rec_var_dbl_mss_val_dbl_pck_lng:add_offset = 5. ;
@@ -621,17 +627,17 @@ variables:
 	double three_dmn_var_dbl(time,lat,lon);
 	three_dmn_var_dbl:long_name = "three dimensional record variable of type double";
 	three_dmn_var_dbl:units = "watt meter-2";
-	three_dmn_var_dbl:missing_value = -99. ;
+	three_dmn_var_dbl:_FillValue = -99. ;
 
 	int three_dmn_var_int(time,lat,lon);
 	three_dmn_var_int:long_name = "three dimensional record variable of type int";
 	three_dmn_var_int:units = "watt meter-2";
-	three_dmn_var_int:missing_value = -99 ;
+	three_dmn_var_int:_FillValue = -99 ;
 	
 	short three_dmn_var_sht(time,lat,lon);
 	three_dmn_var_sht:long_name = "three dimensional record variable";
 	three_dmn_var_sht:units = "watt meter-2";
-	three_dmn_var_sht:missing_value = -99s ;
+	three_dmn_var_sht:_FillValue = -99s ;
 
 	float td(time,dgn);
 	td:long_name = "two dimensional record variable stored in td (time,dgn) order (dgn means degenerate, i.e., of size 1)";

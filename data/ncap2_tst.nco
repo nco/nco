@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.3 2007-07-21 03:11:31 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.4 2007-08-29 20:45:46 zender Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -133,7 +133,7 @@ nbr_err_ttl=0;
   // Regular Vars
   bin_cnt[lat,lon,bin]=0s; // [nbr] Wind speeds in bin
   bin_flg[time,lat,lon]=0s; // [flg] Wind speed within current bin
-  set_miss(bin_cnt,wnd_spd@missing_value);
+  set_miss(bin_cnt,wnd_spd@_FillValue);
 
 
   for(bin_idx=0;bin_idx<bin_nbr;bin_idx++){
@@ -150,7 +150,7 @@ nbr_err_ttl=0;
   // Repeat exercise with RAM vars 
   *bin_ram_cnt[lat,lon,bin]=0s; 
   *bin_ram_flg[time,lat,lon]=0s;
-  set_miss(bin_ram_cnt,wnd_spd@missing_value);
+  set_miss(bin_ram_cnt,wnd_spd@_FillValue);
 
 
   for(bin_idx=0;bin_idx<bin_nbr;bin_idx++){

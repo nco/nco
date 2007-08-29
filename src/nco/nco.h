@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.118 2007-07-23 00:31:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.119 2007-08-29 20:45:49 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -138,10 +138,10 @@ extern "C" {
   unsigned short dbg_lvl_get(void){return dbg_lvl;} /* [enm] Debugging level */
   
   /* NCO_MSS_VAL_SNG contains the name of the attribute whose value is treated as
-     "missing" during arithmetic. Choose either missing_value of _FillValue. */
+     "missing" during arithmetic. Choose either missing_value or _FillValue. */
 #ifndef NCO_MSS_VAL_SNG
-# define NCO_MSS_VAL_SNG missing_value
-  /* # define NCO_MSS_VAL_SNG _FillValue */
+  /*# define NCO_MSS_VAL_SNG missing_value */
+# define NCO_MSS_VAL_SNG _FillValue 
 #endif /* NCO_MSS_VAL_SNG */
 
   /* Unidata standard string for missing values */

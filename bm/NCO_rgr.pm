@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.65 2007-05-25 05:05:08 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.66 2007-08-29 20:45:45 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -192,9 +192,9 @@ sub tst_rgr {
 	
 #printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
 	
-	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tempf_00%";
+	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a _FillValue,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tempf_00%";
 	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v val_one_mss %tempf_00%";
-	$dsc_sng="Change missing_value attribute from 1.0e36 to 0.0";
+	$dsc_sng="Change _FillValue attribute from 1.0e36 to 0.0";
 	$tst_cmd[2] = "0";
 	$tst_cmd[3] = "SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
@@ -223,7 +223,7 @@ sub tst_rgr {
     $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_dbl_mss_val_dbl_pck $in_pth_arg in.nc in.nc %tempf_00%";;
     $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg %tempf_00% %tempf_03%";;
     $tst_cmd[2]="ncks -C -H -s '%g' -v rec_var_dbl_mss_val_dbl_pck %tempf_03%";
-    $dsc_sng="Difference a packed variable and be sure everything is zero or missing_value by average whole remainder and comparing to zero.)";
+    $dsc_sng="Difference a packed variable and be sure everything is zero or _FillValue by average whole remainder and comparing to zero.)";
     $tst_cmd[3] = "0.0";
     $tst_cmd[4] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -266,7 +266,7 @@ sub tst_rgr {
     $tst_cmd[1]="ncrename -h -O $nco_D_flg -v mss_val_fst,mss_val %tempf_00%";
     $tst_cmd[2]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg -y '-' -v mss_val %tempf_00% ../data/in.nc %tempf_01% 2> %tempf_02%";
     $tst_cmd[3]="ncks -C -H -s '%f,' -v mss_val %tempf_01%";
-    $dsc_sng="missing_values differ between files";
+    $dsc_sng="_FillValues differ between files";
     $tst_cmd[4] = "-999.000000,-999.000000,-999.000000,-999.000000";
     $tst_cmd[5] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -276,7 +276,7 @@ sub tst_rgr {
     $tst_cmd[1]="ncrename -h $nco_D_flg -O -v mss_val,one_dmn_arr_with_and_without_mss_val $in_pth_arg in.nc %tempf_01%";
     $tst_cmd[2]="ncbo $omp_flg  -h -O $fl_fmt $nco_D_flg -y '-' -v one_dmn_arr_with_and_without_mss_val %tempf_00% %tempf_01% %tempf_02% 2> %tempf_03%";
     $tst_cmd[3]="ncks -C -H -d lon,0 -s '%f' -v one_dmn_arr_with_and_without_mss_val %tempf_02%";
-    $dsc_sng="missing_value in one variable (not both variables)";
+    $dsc_sng="_FillValue in one variable (not both variables)";
     $tst_cmd[4] = 0.0;
     $tst_cmd[5] = "SS_OK";
     NCO_bm::tst_run(\@tst_cmd);

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/bin_cnt.nco,v 1.11 2007-06-14 16:14:27 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/bin_cnt.nco,v 1.12 2007-08-29 20:45:45 zender Exp $ -*-C++-*-
 
 // Purpose: Compute wind speed PDFs from annual input files
 
@@ -36,7 +36,7 @@ wnd_max[bin]=wnd_grd(1:bin_nbr); // [m s-1] Maximum speed
 *bin_flg[time,lat,lon]=0s; // [flg] Wind speed within current bin
 
 // bin_cnt is a RAM variable so use set_miss() to set missing value
-set_miss(bin_cnt,wnd_spd@missing_value);
+set_miss(bin_cnt,wnd_spd@_FillValue);
 
 for(*bin_idx=0;bin_idx<bin_nbr;bin_idx++){
   bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
