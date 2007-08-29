@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.437 2007-08-09 00:29:07 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.438 2007-08-29 10:55:20 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -100,7 +100,7 @@ Send it in!<br>
 
 <ul>
 
-<li>July&nbsp;29, 2007: NCO 3.9.2 released (ncap2 print support)</li>
+<li>August&nbsp;29, 2007: NCO 3.9.2 released (ncap2 print support)</li>
 
 <li>June&nbsp;29, 2007: NCO 3.9.1 released (netCDF4 deflation support)</li>
 
@@ -454,9 +454,12 @@ Instead, retrieve all recently tagged versions
 <a name="#Download">with CVS</a> or from    
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO/SDO 3.9.3</b>: (<i>In progress</i>) GCC&nbsp;4.2 compatibility;
+<li><b>NCO/SDO 3.9.3</b>: (<i>In progress</i>) 
+SWAMP homepage/howto;
+GCC&nbsp;4.2 compatibility;
 <li><b>NCO/SDO 3.9.2</b>: <tt>ncap2</tt> type-conversion support and printing;
 netCDF4 <tt>configure</tt> fixes;
+<tt>UDUnits2 support</tt>;
 Change licenses to GPL3 and FDL1.2;
 <li><b>NCO/SDO 3.9.1</b>: 
 <a href="http://nco.sf.net/nco.html#deflate">Support</a> lossless netCDF4/HDF deflation;

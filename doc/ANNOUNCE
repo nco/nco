@@ -1,19 +1,20 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.254 2007-07-28 20:59:34 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.255 2007-08-29 10:55:20 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.2 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Release 3.9.2 supports 
-ncap2 printing
-_FillValue fxm
-
-The NCO licenses have changed from GPL2 (code) and FDL1.1
+First, the NCO licenses have changed from GPL2 (code) and FDL1.1
 (documentation) to GPL3 (code) and FDL1.2 (documentation).
 
-The attribute, if any, specifying the value of data to ignore 
-has changed from "missing_value" to "_FillValue".
+Second, 3.9.2 also introduces support for UDUnits2 and 
+ncap2 printing and type-conversion. As usual the latest build
+and compile tweaks have been made to improve portability.
+
+Finally, the major user-visible change is that the default attribute  
+if any, specifying the value of data to ignore has (finally) changed 
+from "missing_value" to "_FillValue".
 Supporting both of these attributes simultaneously is not practical.
 Hence the behavior NCO used to apply to missing_value's now applies to
 _FillValue's---missing_value's are now treated as normal data. 

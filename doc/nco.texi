@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.442 2007-07-23 00:31:16 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.443 2007-08-29 10:55:21 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3818,6 +3818,7 @@ esoteric units (e.g., furlongs, pounds per square inch, fortnights).
 @cindex data, missing 
 @cindex averaging data
 @cindex @code{missing_value}
+@cindex @code{_FillValue}
 @cartouche
 Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
 @command{ncflint}, @command{ncpdq}, @command{ncra}, @command{ncwa}@* 
@@ -3837,7 +3838,43 @@ Identifying variables which may contain missing data.
 
 @acronym{NCO} follows the convention that missing data should be stored
 with the @var{missing_value} specified in the variable's
-@code{missing_value} attribute.
+@code{missing_value} attribute
+@footnote{
+Beginning with @acronym{NCO} version 3.9.2 (August, 2007) the default 
+attribute name, if any, assumed to specify the value of data to ignore 
+is @code{_FillValue}.
+Prior to that, the @code{missing_value} attribute, if any, was assumed to  
+specify the value of data to ignore.
+Supporting both of these attributes simultaneously is not practical.
+Hence the behavior NCO once applied to @var{missing_value} it now applies 
+to @var{_FillValue}'s. 
+@acronym{NCO} now treats @var{missing_value}'s as normal data. 
+
+@findex ncrename
+@findex ncatted
+It has been and remains most advisable to create both @code{_FillValue}
+and @code{missing_value} attributes with identical values in datasets.
+Many legacy datasets contain only @code{missing_value} attributes.
+@acronym{NCO} can help migrating datasets between these conventions.
+One may use @command{ncrename} @xref{ncrename netCDF Renamer} to
+rename all @code{missing_value} attributes to @code{_FillValue}:
+@example
+ncrename -a .missing_value,_FillValue inout.nc
+@end example
+Alternatively, one may use
+@command{ncatted} @xref{ncatted netCDF Attribute Editor} to
+add a @code{_FillValue} attribute to all variables
+@example
+ncatted -O -a _FillValue,,o,f,1.0e36 inout.nc
+@end example
+
+@footnote{
+The old functionality, i.e., where the ignored values are indicated by
+@code{missing_value} not @code{_FillValue}, may still be selected 
+@emph{at @acronym{NCO} build time} by compiling @acronym{NCO} 
+with the token definition 
+@kbd{CPPFLAGS='-DNCO_MSS_VAL_SNG=missing_value'}.
+}.
 The @emph{only} way @acronym{NCO} recognizes that a variable @emph{may}
 contain missing data is if the variable has a @code{missing_value}
 attribute. 
