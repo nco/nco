@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.71 2007-07-25 20:28:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.72 2007-08-31 14:33:50 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -876,7 +876,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
 
     if(max_mns_min_dbl > max_mns_min_dbl_wrn){
       if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s reports data range of variable %s is = %g. The linear data packing technique defined by netCDF's packing convention and implemented by NCO result in significant precision loss over such a great range.\n",prg_nm_get(),fnc_nm,var->nm,max_mns_min_dbl);
-      if(dbg_lvl_get() >= nco_dbg_std) if(var->has_mss_val) (void)fprintf(stdout,"%s: HINT variable %s has NCO_MSS_VAL_SNG = %g. Consider specifying new NCO_MSS_VAL_SNG to reduce range of data needing packing. See http://nco.sf.net/nco.html#ncatted for examples of how to change the NCO_MSS_VAL_SNG attribute.\n",prg_nm_get(),fnc_nm,ptr_unn_mss_val_dbl.dp[0]);
+      if(dbg_lvl_get() >= nco_dbg_std) if(var->has_mss_val) (void)fprintf(stdout,"%s: HINT variable %s has %s = %g. Consider specifying new %s to reduce range of data needing packing. See http://nco.sf.net/nco.html#ncatted for examples of how to change the %s attribute.\n",prg_nm_get(),var->nm,nco_mss_val_sng_get(),ptr_unn_mss_val_dbl.dp[0],nco_mss_val_sng_get(),nco_mss_val_sng_get());
     } /* endif large data range */
 
     /* Free minimum and maximum values */

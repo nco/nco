@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.108 2007-07-23 00:31:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.109 2007-08-31 14:33:50 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.108 2007-07-23 00:31:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.108 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.109 2007-08-31 14:33:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.109 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -289,6 +289,8 @@ main(int argc,char **argv)
     nco_usg_prn();
     nco_exit(EXIT_FAILURE);
   } /* end if */ 
+
+  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG attribute assumed to hold missing data is named \"%s\"\n",prg_nm_get(),nco_mss_val_sng_get());
 
   /* Make uniform list of user-specified attribute edit structures */
   if(nbr_aed > 0) aed_lst=nco_prs_aed_lst(nbr_aed,aed_arg);

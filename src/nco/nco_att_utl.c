@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.78 2007-08-31 11:57:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.79 2007-08-31 14:33:50 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -41,8 +41,6 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 
   /* Query attribute metadata when attribute name was specified */
   if(aed.att_nm) rcd=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
-
-  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG nco_aed_prc() reports attribute assumed to hold missing data is named \"%s\"\n",prg_nm_get(),nco_mss_val_sng_get());
 
   /* Before changing metadata, change missing values to new missing value if warranted 
      This capability is add-on feature not implemented too cleanly or efficiently
@@ -116,7 +114,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 
     /* Sanity check */
     if(var->has_mss_val == False){
-      (void)fprintf(stdout,"%s: ERROR \"NCO_MSS_VAL_SNG\" attribute does not exist in nco_aed_prc()\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR variable %s does not have \"%s\" attribute in nco_aed_prc()\n",prg_nm_get(),var_nm,nco_mss_val_sng_get());
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
