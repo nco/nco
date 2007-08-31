@@ -10,7 +10,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.42 2007-08-23 15:36:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.43 2007-08-31 11:57:11 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -72,14 +72,14 @@ public:
 	public: void expr();
 	public: void for_stmt();
 	public: void block();
-	public: void lmt_list();
 	public: void lmt();
+	public: void lmt_list();
 	public: void dmn_list();
 	public: void dmn_arg_list();
 	public: void value_list();
-	public: void hyper_slb();
 	public: void arg_list();
 	public: void func_arg();
+	public: void hyper_slb();
 	public: void meth_exp();
 	public: void primary_exp();
 	public: void unaryleft_exp();

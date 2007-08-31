@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.119 2007-08-29 20:45:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.120 2007-08-31 11:57:10 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -116,7 +116,7 @@ extern "C" {
   /* Debugging level that quiets all non-requested informational messages
      This value is compared against user-selected dbg_lvl 
      Running operators with --quiet automatically sets dbg_lvl=NCO_DBG_QUIET */
-#define NCO_DBG_QUIET 6
+#define NCO_DBG_QUIET 0
 
   /* Prototype global functions before defining them in next block */
   char *nco_mss_val_sng_get(void); /* [sng] Missing value attribute name */
@@ -141,7 +141,7 @@ extern "C" {
      "missing" during arithmetic. Choose either missing_value or _FillValue. */
 #ifndef NCO_MSS_VAL_SNG
   /*# define NCO_MSS_VAL_SNG missing_value */
-# define NCO_MSS_VAL_SNG _FillValue 
+# define NCO_MSS_VAL_SNG _FillValue
 #endif /* NCO_MSS_VAL_SNG */
 
   /* Unidata standard string for missing values */
@@ -220,18 +220,18 @@ extern "C" {
   
   enum nco_dbg_typ_enm{ /* [enm] Debugging levels */
     /* List in increasing levels of verbosity */
-    nco_dbg_quiet, /* Quiet all non-error messages. */
-    nco_dbg_std, /* Standard mode. Minimal, but some, messages. */
-    nco_dbg_fl, /* Filenames */
-    nco_dbg_scl, /* Scalars, other per-file information  */
-    nco_dbg_var, /* Variables, highest level per-file loop information */
-    nco_dbg_crr, /* Current task */
-    nco_dbg_sbr, /* Subroutine names on entry and exit */
-    nco_dbg_io, /* Subroutine I/O */
-    nco_dbg_vec, /* Entire vectors */
-    nco_dbg_vrb, /* Verbose, print everything possible */
-    nco_dbg_old, /* Old debugging blocks not used anymore */
-    nco_dbg_nbr /* Number of debugging types. Should be last enumerated value. */
+    nco_dbg_quiet, /* 0 [enm] Quiet all non-error messages. */
+    nco_dbg_std, /* 1 [enm] Standard mode. Minimal, but some, messages. */
+    nco_dbg_fl, /* 2 [enm] Filenames */
+    nco_dbg_scl, /* 3 [enm] Scalars, other per-file information  */
+    nco_dbg_var, /* 4 [enm] Variables, highest level per-file loop information */
+    nco_dbg_crr, /* 5 [enm] Current task */
+    nco_dbg_sbr, /* 6 [enm] Subroutine names on entry and exit */
+    nco_dbg_io, /* 7 [enm] Subroutine I/O */
+    nco_dbg_vec, /* 8 [enm] Entire vectors */
+    nco_dbg_vrb, /* 9 [enm] Verbose, print everything possible */
+    nco_dbg_old, /* 10 [enm] Old debugging blocks not used anymore */
+    nco_dbg_nbr /* 10 [enm] Number of debugging types (equals last enumerated value) */
   }; /* end nco_dbg_typ_enm */
 
   typedef enum { /* [enm] Memory allocation type */

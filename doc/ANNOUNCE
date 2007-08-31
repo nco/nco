@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.257 2007-08-29 15:51:30 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.258 2007-08-31 11:57:10 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.2 are ready. 
 
@@ -23,8 +23,8 @@ The NCO user's guide shows how to ease migration to this new behavior.
 A. Change from GPL2 to GPL3
    http://www.gnu.org/copyleft/gpl.html
 
-B. UDUnits2 beta-support. Compile with 'UDUNITS2=Y' and send us 
-   feedback. Binary distributions (RPMs, Debs) still use UDUnits1.
+B. UDUnits2 beta-support. Compile with 'UDUNITS2=Y', send us feedback.  
+   Binaries (RPMs, Debs) still use UDUnits1. Thanks to Steve Emmerson.
    http://nco.sf.net/nco.html#UDUnits2
 
 C. Ignore data equal to _FillValue (rather than missing_value)
@@ -66,8 +66,8 @@ J. Reminder: NCO support for netCDF4 features is tracked at
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;./make NETCDF4=Y allinone # Old Makefile mechanism
 
-Our next release will debut a user-friendly version of SWAMP, our
-server-side processing system (http://dust.ess.uci.edu/ppr/ppr_WZJ073.pdf).   
+The next release will debut a user-friendly version of SWAMP, the NCO 
+server-side processor (http://dust.ess.uci.edu/ppr/ppr_WZJ073.pdf).
 
 Enjoy,
 Charlie

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.77 2007-07-23 00:31:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.78 2007-08-31 11:57:10 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -42,21 +42,23 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   /* Query attribute metadata when attribute name was specified */
   if(aed.att_nm) rcd=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
 
+  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG nco_aed_prc() reports attribute assumed to hold missing data is named \"%s\"\n",prg_nm_get(),nco_mss_val_sng_get());
+
   /* Before changing metadata, change missing values to new missing value if warranted 
      This capability is add-on feature not implemented too cleanly or efficiently
-     If every variable has "missing_value" attribute and "missing_value" is changed
+     If every variable has "_FillValue" attribute and "_FillValue" is changed
      globally, then algorithm goes into and out of define mode for each variable,
      rather than collecting all information in first pass and replacing all data in second pass.
      This is because ncatted was originally designed to change only metadata and so was
      architected differently from other NCO operators. */
   if(
      aed.att_nm /* Linux strcmp() dumps core if attribute name is blank */
-     && strcmp(aed.att_nm,nco_mss_val_sng_get()) == 0 /* Current attribute is "missing_value" */
+     && strcmp(aed.att_nm,nco_mss_val_sng_get()) == 0 /* Current attribute is "_FillValue" */
      && var_id != NC_GLOBAL /* Current attribute is not global */
      && (aed.mode == aed_modify || aed.mode == aed_overwrite)  /* Modifying or overwriting existing value */
-     && rcd == NC_NOERR /* Only when existing missing_value attribute is modified */
-     && att_sz == 1L /* Old missing_value attribute must be of size 1 */
-     && aed.sz == 1L /* New missing_value attribute must be of size 1 */
+     && rcd == NC_NOERR /* Only when existing _FillValue attribute is modified */
+     && att_sz == 1L /* Old _FillValue attribute must be of size 1 */
+     && aed.sz == 1L /* New _FillValue attribute must be of size 1 */
      ){
 
     int *dmn_id;
@@ -177,7 +179,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     (void)nco_redef(nc_id);
   } /* end if replacing missing value data */
 
-  /* Change metadata (as written, this must be done after missing_value data is replaced) */
+  /* Change metadata (as written, this must be done after _FillValue data is replaced) */
   switch(aed.mode){
   case aed_append:	
     if(rcd == NC_NOERR){
@@ -280,11 +282,11 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
     } /* end if dbg */
 
     if(PCK_ATT_CPY || strcmp(att_nm,nco_mss_val_sng_get())){
-      /* Copy all attributes except missing_value with fast library routine */
+      /* Copy all attributes except _FillValue with fast library routine */
       (void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
     }else{
-      /* Convert "missing_value" attribute to unpacked type then copy 
-	 This imposes NCO convention that missing_value is same type as variable,
+      /* Convert "_FillValue" attribute to unpacked type then copy 
+	 This imposes NCO convention that _FillValue is same type as variable,
 	 whether variable is packed or not */
       aed_sct aed;
       
@@ -303,7 +305,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
 	nco_exit(EXIT_FAILURE); 
       } /* end if */
       
-      /* Convert "missing_value" to unpacked type before copying */
+      /* Convert "_FillValue" to unpacked type before copying */
       aed.att_nm=att_nm; /* Name of attribute */
       if(var_out_id == NC_GLOBAL){
 	aed.var_nm=NULL;
