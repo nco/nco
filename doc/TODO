@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.961 2007-08-31 21:21:31 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.962 2007-08-31 21:33:55 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -395,7 +395,7 @@ nco652. Polish/finish ncap random number generator
 nco653. Segregate MPI from non-MPI builds completely in bld/Makefile on AIX
 nco655. Incorporate BLAS if possible?
 nco657. Add new netCDF4 types to arithmetic code
-nco658. netcdf4 regression in ncks test #1: Regression re-verified 20060924
+nco658. netcdf4 regression in ncks test #1: Regression re-verified 20060924, 20070831
         make NETCDF4=Y FL_FMT=netcdf4 tst 
         ncks -O --fl_fmt=netcdf4 -v lat_T42 ~/nco/data/in.nc ~/foo.nc;od -An -c -N4 ~/foo.nc
         ncrename -O -d lat_T42,lat -v lat_T42,lat ~/foo.nc
@@ -520,8 +520,7 @@ nco784. Build NCO on NMI test lab http://nmi.cs.wisc.edu/
 nco789. Add regression test for behavior when _FillValue defined and missing_value not	      
 	ncwa -O -a lon -v fll_val,mss_val ~/nco/data/in.nc ~/foo.nc
         ncks -H -C ~/foo.nc
-nco792. Improve compile-ability of _FillValue behavior
-nco794. Automagically use _FillValue when missing missing_value not present
+nco794. Automagically use missing_value when _FillValue not present
 nco796. pgCC does not support exception handling with codes compiled with OpenMP (-mp) switch so ncap2/antlr files must be built serially
 nco799. Extend -n 3,4,1 NINTAP switch to handle regular expressions
 nco800. Extend -n 3,4,1 NINTAP switch to -n 3,4,1,offset to work with CCSM patterns
@@ -628,11 +627,7 @@ nco895. udunits2 implement new API http://www.unidata.ucar.edu/software/udunits/
 nco899. Release 3.9.2
 nco900. Get UDUnits2 working with time coordinates:
         ncks -O -D 0 -C -d time_udunits,'1999-12-08 12:00:0.0','1999-12-09 00:00:0.0' -p ~/nco/data in.nc ~/foo.nc
-nco901. mss_val in code now refers to _FillValue except in nco_mss_val.c
-nco902. ncatted -O -D 4 -a _FillValue,val_one_mss,m,f,0.0 ~/nco/data/in.nc ~/foo.nc;ncks -C -H -s '%g' -d lat,1 -v val_one_mss ~/foo.nc
-nco903. ncap2.in script dies with "NetCDF: Name contains illegal characters"
-	ncap2 -O -D 5 -v -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
-nco904. "_FillValue" has quotes for some strange reason!
+nco901. mss_val in code and comments now (usually) refers to _FillValue (except in nco_mss_val.c). Change mss_val to fll_val?
 nco905. TKN2SNG technique for "_FillValue" adds extra quotes in nco.h but not c.c
 nco906. 
 ************************************************************************
