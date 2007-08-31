@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.960 2007-08-31 11:57:10 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.961 2007-08-31 21:21:31 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -633,7 +633,8 @@ nco902. ncatted -O -D 4 -a _FillValue,val_one_mss,m,f,0.0 ~/nco/data/in.nc ~/foo
 nco903. ncap2.in script dies with "NetCDF: Name contains illegal characters"
 	ncap2 -O -D 5 -v -S ~/nco/data/ncap2.in ~/nco/data/in.nc ~/foo.nc
 nco904. "_FillValue" has quotes for some strange reason!
-nco905. 
+nco905. TKN2SNG technique for "_FillValue" adds extra quotes in nco.h but not c.c
+nco906. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

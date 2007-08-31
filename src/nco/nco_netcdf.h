@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.44 2007-07-23 00:31:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.45 2007-08-31 21:21:32 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -230,9 +230,7 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
   int NCO_PUT_ATT_UINT(const int nc_id,const int var_id,const char *att_nm,const nc_type att_typ,size_t att_len,const nco_uint *uip);
   int NCO_PUT_ATT_INT64(const int nc_id,const int var_id,const char *att_nm,const nc_type att_typ,size_t att_len,const nco_int64 *i64p);
   int NCO_PUT_ATT_UINT64(const int nc_id,const int var_id,const char *att_nm,const nc_type att_typ,size_t att_len,const nco_uint64 *ui64p);
-#if 0
   int NCO_PUT_ATT_STRING(const int nc_id,const int var_id,const char *att_nm,const nc_type att_typ,size_t att_len,const nco_string *sngp);
-#endif /* !0 */
 #endif /* ENABLE_NETCDF4 */
 #ifndef ENABLE_NETCDF4
   /* 20051119: netcdf4 library did not support these until alpha10, still does not support nco_put/get_att_ubyte() */
@@ -241,9 +239,7 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
   int NCO_GET_ATT_UINT(const int nc_id,const int var_id,const char *att_nm,nco_uint *uip);
   int NCO_GET_ATT_INT64(const int nc_id,const int var_id,const char *att_nm,nco_int64 *i64p);
   int NCO_GET_ATT_UINT64(const int nc_id,const int var_id,const char *att_nm,nco_uint64 *ui64p);
-#if 0
   int NCO_GET_ATT_STRING(const int nc_id,const int var_id,const char *att_nm,nco_string *sngp);
-#endif /* !0 */
 #endif /* ENABLE_NETCDF4 */
 /* End netCDF4 stubs */
 

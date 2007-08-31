@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.120 2007-08-31 11:57:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.121 2007-08-31 21:21:32 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -144,8 +144,10 @@ extern "C" {
 # define NCO_MSS_VAL_SNG _FillValue
 #endif /* NCO_MSS_VAL_SNG */
 
-  /* Unidata standard string for missing values */
-  char nco_mss_val_sng[]=TKN2SNG(NCO_MSS_VAL_SNG); /* [sng] Missing value attribute name */
+  /* 20070831: For some bizarre reason the TKN2SNG technique inserts quotes into string 
+     even though the same test code in c.c does not produce extra quotes. TODO nco905. */
+  /*char nco_mss_val_sng[]=TKN2SNG(NCO_MSS_VAL_SNG);*/ /* [sng] Missing value attribute name */
+  char nco_mss_val_sng[]="_FillValue"; /* [sng] Missing value attribute name */
   char *nco_mss_val_sng_get(void){return nco_mss_val_sng;} /* [sng] Missing value attribute name */
 
 #else /* MAIN_PROGRAM_FILE is NOT defined, i.e., current file does not contain main() */

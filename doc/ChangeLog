@@ -1,3 +1,13 @@
+2007-08-31  Charlie Zender  <zender@uci.edu>
+
+	* Support nco_put/get_att_string/ubyte() now in netCDF4
+
+	* Update to netCDF4 daily snapshot 20070822
+
+	* Abandon TKN2SNG(x) method for nco_mss_val_sng
+	  Use direct global variable to get rid of superfluous double quotes
+	  This fixes all regressions with _FillValue<->missing_value switch
+	
 2007-08-29  Charlie Zender  <zender@uci.edu>
 
 	* Regressions with _FillValue<->missing_value switch
