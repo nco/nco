@@ -1,3 +1,8 @@
+2007-09-01  Charlie Zender  <zender@uci.edu>
+
+	* Fix #ifdef NEED_NC_INQ_FORMAT to have else so NCO/netCDF3
+	  build with OPeNDAP DAP=Y option so long as NEED_NCO
+
 2007-08-31  Charlie Zender  <zender@uci.edu>
 
 	* cd ~/nco;cvs tag -d nco-3_9_2;cvs tag -d nco-3_9_2-1

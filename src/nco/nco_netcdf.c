@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.86 2007-09-01 09:39:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.87 2007-09-01 21:04:35 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -499,11 +499,13 @@ nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * cons
 #ifdef NEED_NC_INQ_FORMAT
 int nc_inq_format(int nc_id, int * const fl_fmt)
 {
-  /* Purpose: Stub for nc_inq_format(), which appeared in netCDF 3.6.1 or 3.6.2 */
+  /* Purpose: Stub for nc_inq_format(), which appeared in netCDF 3.6.1 or 3.6.2
+     20070901 Current OPeNDAP does not have nc_inq_format() and thus requires this stub */
   *fl_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   return NC_NOERR+0*nc_id; /* CEWI */
 } /* end nco_inq_format() */
-#else /* !NEED_NC_INQ_FORMAT */
+#endif /* !NEED_NC_INQ_FORMAT */
+
 int
 nco_inq_format(const int nc_id,int * const fl_fmt)
 {
@@ -515,7 +517,6 @@ nco_inq_format(const int nc_id,int * const fl_fmt)
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_format()");
   return rcd;
 } /* end nco_inq_format */
-#endif /* !NEED_NC_INQ_FORMAT */
 
 int
 nco_inq_ndims(const int nc_id,int * const dmn_nbr_fl)

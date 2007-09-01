@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.237 2007-07-23 05:57:36 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.238 2007-09-01 21:04:35 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -189,15 +189,15 @@ echo "########################################"
 # Begin DAP (aka DODS) support
 # Store pre-DAP LIBS value to restore from later
 nco_LIBS_no_DAP="${LIBS}"
-# Find OPeNDAP netcdf library before real netCDF library. jhrg 05/26/05
+# Find OPeNDAP netcdf library before real netCDF library. jhrg 20050526
 
 # DAP_ROOT is value of "${prefix}" set when building/installing OPeNDAP code
 # Scripts dap-config and ncdap-config are in ${prefix}/bin
-# Use them to find how to link for this particular build. jhrg 5/25/05
+# Use them to find how to link for this particular build. jhrg 20050525
 
 # libnc-dap 3.5.1 uses netcdf 3.5; use Charlie's hack of supplying
 # definition for NC_64BIT_OFFSET here. This should be fixed in nc-dap 3.6.
-# Sorry about version numbers being confusing... jhrg 6/3/05
+# Sorry about version numbers being confusing... jhrg 20050603
 
 # fxm: is DAP_ROOT (or DODS_ROOT) an obsolete variable in DAP 3.5+?
 # Eliminate these 3 lines after running the dap tests with it disabled.
@@ -214,7 +214,7 @@ echo "DEBUG: enable_netcdf4 = ${enable_netcdf4} and enable_dap = ${enable_dap}"
 if (test "${enable_netcdf4}" != 'no' && test "${enable_dap}" != 'no'); then
 # Override netCDF4 request
     echo ""
-    echo "WARNING: Requested both netCDF4 and DAP support---overriding netcdf4"
+    echo "WARNING: Requested both netCDF4 and DAP support---overriding netCDF4"
     echo "NCO will be built with DAP support and without netCDF4/HDF5 support"
     echo ""
     enable_netcdf4='no'

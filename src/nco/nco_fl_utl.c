@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.89 2007-07-23 00:31:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.90 2007-09-01 21:04:35 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -409,7 +409,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
   }else if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl){
 
-    /* If file indicates http protocol then pass unadulterated file name and let DAP deal with it */
+    /* If filename indicates http protocol then pass unadulterated to DAP
+       If DAP cannot open HTTP files, then wget should copy to local system */
 
   }else if((cln_ptr=strchr(fl_nm_lcl,':'))){
     /* 19990804
@@ -436,7 +437,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   /* Does file exist on local system? */
   rcd=stat(fl_nm_lcl,&stat_sct);
 
-  /* One exception: let DAP try to access remote HTTP protocol files as local files */
+  /* One exception: DAP treats HTTP protocol files as local files */
   if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl) rcd=0;
 
   /* If not, check if file exists on local system under same path interpreted relative to current working directory */
@@ -447,10 +448,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     if(rcd == 0){
       char *fl_nm_lcl_tmp;
 
-      /* NB: simply adding one to filename pointer is like deleting
-	 the initial slash on the filename. Without copying the new name
-	 into its own memory space, free(fl_nm_lcl) would not be able to free
-	 the initial byte. */
+      /* NB: Adding one to filename pointer is like deleting initial slash on filename
+	 Then free(fl_nm_lcl) would miss this initial byte (memory is lost)
+	 Hence must copy new name into its own memory space */
       fl_nm_lcl_tmp=(char *)strdup(fl_nm_lcl+1UL);
       fl_nm_lcl=(char *)nco_free(fl_nm_lcl);
       fl_nm_lcl=fl_nm_lcl_tmp;
@@ -458,13 +458,14 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     } /* end if */
   } /* end if */
 
-  /* Finally, check to see if file exists on local system in directory specified for storage of remotely retrieved files
-     This would be the case if some files had already been retrieved in a previous invocation of the program */
+  /* Finally, check if file exists locally in directory for remotely retrieved files
+     This occurs when previous program invocations have already retrieved some files */
   if(rcd == -1){
-    /* Where does filename stub begin? NB: Assume local filename has a slash (because remote file system always has a slash) */
+    /* Where does filename stub begin? 
+       NB: Assume local filename has a slash (because remote file system always has a slash) */
     fl_nm_stub=strrchr(fl_nm_lcl,'/')+1UL;
 
-    /* Construct local filename from user-supplied local file path along with existing file stub */
+    /* Construct local filename from user-supplied local file path and existing file stub */
     if(fl_pth_lcl != NULL){
       char *fl_nm_lcl_tmp;
 
@@ -474,16 +475,16 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       (void)strcpy(fl_nm_lcl,fl_pth_lcl);
       (void)strcat(fl_nm_lcl,"/");
       (void)strcat(fl_nm_lcl,fl_nm_stub);
-      /* Free the old filename space */
+      /* Free old filename space */
       fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
     } /* end if */
 
-    /* At last, check for file in the local storage directory */
+    /* At last, check for file in local storage directory */
     rcd=stat(fl_nm_lcl,&stat_sct);
     if (rcd != -1) (void)fprintf(stderr,"%s: WARNING not searching for %s on remote filesystem, using local file %s instead\n",prg_nm_get(),fl_nm,fl_nm_lcl);
   } /* end if */
 
-  /* File was not found locally, try to fetch it from remote file system */
+  /* File was not found locally, try to fetch file from remote file system */
   if(rcd == -1){
 
     typedef struct{ /* [enm] Remote fetch command structure */
