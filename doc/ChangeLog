@@ -1,5 +1,10 @@
 2007-09-02  Charlie Zender  <zender@uci.edu>
 
+	* Implement nco_close() to pair with nco_open() in DAP probe.
+	  Not doing this previously probably means that NCO via DAP
+	  left lots of open files dangling on the DAP server.
+	  This may have caused noticeable drag on large jobs.
+
 	* Finish wget draft code, introduce nco_open_flg() for DAP attempts
 
 	* Add stubs to retrieve non-DAP HTTP files with wget
