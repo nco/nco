@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.94 2007-09-02 20:12:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.95 2007-09-02 20:13:06 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -459,7 +459,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       } /* end switch */
       
       /* Close file to prevent accumulating dangling open files on DAP server */
-      rcd=nco_close(nc_id);
+      rcd=nco_close(in_id);
 
       /* Great! DAP worked and operator supports DAP
 	 DAP treats HTTP protocol files as local files
