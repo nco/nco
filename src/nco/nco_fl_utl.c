@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.91 2007-09-02 11:31:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.92 2007-09-02 20:03:52 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -99,10 +99,10 @@ nco_fl_cp /* [fnc] Copy first file to second */
   const char cp_cmd_fmt[]="cp %s %s";
 
   int rcd;
-  const int nbr_fmt_char=4;
+  const int fmt_chr_nbr=4;
 
   /* Construct and execute copy command */
-  cp_cmd=(char *)nco_malloc((strlen(cp_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1UL)*sizeof(char));
+  cp_cmd=(char *)nco_malloc((strlen(cp_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-fmt_chr_nbr+1UL)*sizeof(char));
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Copying %s to %s...",fl_src,fl_dst);
   (void)sprintf(cp_cmd,cp_cmd_fmt,fl_src,fl_dst);
   rcd=system(cp_cmd);
@@ -410,8 +410,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
   }else if(strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl){
 
-    /* If filename indicates http protocol then pass unadulterated to DAP
-       If DAP cannot open HTTP files, then wget should copy to local system */
+    /* If filename has http:// prefix then try DAP access to unadulterated filename */
     DAP_URL=True; 
 
   }else if((cln_ptr=strchr(fl_nm_lcl,':'))){
@@ -439,8 +438,57 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   /* Does file exist on local system? */
   rcd=stat(fl_nm_lcl,&stat_sct);
 
-  /* One exception: DAP treats HTTP protocol files as local files */
-  if(strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl) rcd=0;
+  if(DAP_URL){
+    /* File is tentatively identified as DAP because of http:// prefix */
+    int in_id; /* [id] Temporary input file ID */
+
+    /* Attempt nc_open() on HTTP protocol files. Success means DAP found file. */
+    rcd=nco_open(fl_nm_lcl,NC_NOWRITE,&in_id);
+    
+    if(rcd == NC_NOERR){
+      /* Fail gracefully if ncatted or ncrename try to use DAP */
+      switch(prg_id){
+      case ncatted:
+      case ncrename:
+	(void)fprintf(stderr,"%s: ERROR nco_fl_mk_lcl() reminds you that ncatted and ncrename must process truly local files so DAP does not help for these operators (fxm TODO nco664)\n",prg_nm_get());
+	nco_exit(EXIT_FAILURE);
+	break;
+      default:
+	/* All other operators work with DAP correctly */
+	break;
+      } /* end switch */
+      
+      /* Great! DAP worked and operator supports DAP
+	 DAP treats HTTP protocol files as local files
+	 Make sure rcd=0 (redundant but safer than assuming NC_NOERR == 0)
+	 Rest of function will now assume file is local */
+      rcd=0;
+
+    }else{ /* DAP access did not work */
+      /* fxm: TODO nco580 Attempt to retrieve URLs directly when DAP does not work
+	 Test with:
+	 ncks -D 1 -M http://dust.ess.uci.edu/nco/in.nc # wget
+	 ncks -D 1 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP
+      */
+
+      /* DAP cannot open file so set DAP_URL=FALSE and HTTP_URL=True
+	 Later we will attempt to wget file to local system */
+      DAP_URL=False;
+      HTTP_URL=True;
+
+      /* Change return code back to stat() failure rather than nc_open() failure code
+	 OPeNDAP return codes, e.g., are non-standard (currently 1000 < rcd < 1010
+	 Hence, there is no telling what nc_open() failures will return */
+      rcd=-1;
+
+      (void)fprintf(stderr,"%s: WARNING DAP access to %s failed: Server does not respond, file does not exist, or user does not have read permission\n",prg_nm_get(),fl_nm_lcl);
+      if(dbg_lvl_get() >= nco_dbg_std){
+	(void)fprintf(stderr,"%s: DEBUG Will attempt to retrieve file to local client using wget\n",prg_nm_get());
+	(void)fprintf(stderr,"%s: INFO This feature may not work (TODO nco580)\n",prg_nm_get());
+      } /* endif dbg */
+      
+    } /* !DAP_URL, HTTP_URL */
+  } /* !DAP_URL */
 
   /* If not, check if file exists on local system under same path interpreted relative to current working directory */
   if(rcd == -1){
@@ -486,12 +534,12 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     if (rcd != -1) (void)fprintf(stderr,"%s: WARNING not searching for %s on remote filesystem, using local file %s instead\n",prg_nm_get(),fl_nm,fl_nm_lcl);
   } /* end if */
 
-  /* File was not found locally, try to fetch file from remote file system */
+  /* File was not found locally and is not DAP, try to fetch file from remote filesystem */
   if(rcd == -1){
 
     typedef struct{ /* [enm] Remote fetch command structure */
       const char *fmt; /* [] Format */
-      const int nbr_fmt_char; /* [nbr] Number of formatting characters */
+      const int fmt_chr_nbr; /* [nbr] Number of formatting characters */
       const int transfer_mode; /* [enm] Transfer mode */
       const int file_order; /* [enm] File order */
     } rmt_fch_cmd_sct;
@@ -524,7 +572,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     rmt_fch_cmd_sct msrcp={"msrcp mss:%s %s",4,synchronous,rmt_lcl};
     rmt_fch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,lcl_rmt};
     /* rmt_fch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,rmt_lcl};*/
-    rmt_fch_cmd_sct wget={"wget --output-document=%s %s",4,synchronous,lcl_rmt};
+    rmt_fch_cmd_sct http={"wget --output-document=%s %s",4,synchronous,lcl_rmt};
     rmt_fch_cmd_sct scp={"scp -p %s %s",4,synchronous,rmt_lcl};
     rmt_fch_cmd_sct sftp={"sftp %s %s",4,synchronous,rmt_lcl};
     /* Fill in ftp structure fmt element dynamically later */
@@ -680,6 +728,13 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       } /* end if SFTP */
     } /* end if rmt_cmd */
 
+    /* Attempt wget on files that contain http:// prefix and are not accessible via DAP */
+    if(rmt_cmd == NULL){
+      if(HTTP_URL){
+	rmt_cmd=&http;
+      } /* end if HTTP */
+    } /* end if rmt_cmd */
+
     /* Otherwise, single colon preceded by period in filename unambiguously signals to use rcp or scp
        Determining whether to try scp instead of rcp is difficult
        Ideally, NCO would test remote machine for rcp/scp priveleges with system command like, e.g., "ssh echo ok"
@@ -764,7 +819,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     fl_pth_lcl_tmp=(char *)nco_free(fl_pth_lcl_tmp);
 
     /* Allocate enough room for joining space ' ' and terminating NUL */
-    cmd_sys=(char *)nco_malloc((strlen(rmt_cmd->fmt)-rmt_cmd->nbr_fmt_char+strlen(fl_nm_lcl)+strlen(fl_nm_rmt)+2)*sizeof(char));
+    cmd_sys=(char *)nco_malloc((strlen(rmt_cmd->fmt)-rmt_cmd->fmt_chr_nbr+strlen(fl_nm_lcl)+strlen(fl_nm_rmt)+2)*sizeof(char));
     if(rmt_cmd->file_order == lcl_rmt){
       (void)sprintf(cmd_sys,rmt_cmd->fmt,fl_nm_lcl,fl_nm_rmt);
     }else{
@@ -825,59 +880,26 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     *FILE_RETRIEVED_FROM_REMOTE_LOCATION=False;
   } /* end if file was already on the local system */
 
-  /* Make sure we have read permission on local file */
-  if(strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl){
-    /* Attempt nc_open() on HTTP protocol files. Success means DAP found file. */
-    int in_id; /* [id] Temporary input file ID */
-
-    /* Fail gracefully if ncatted or ncrename try to use DAP */
-    switch(prg_id){
-    case ncatted:
-    case ncrename:
-      (void)fprintf(stderr,"%s: ERROR nco_fl_mk_lcl() reminds you that ncatted and ncrename cannot currently retrieve entire files via DAP or HTTP fxm TODO nco664\n",prg_nm_get());
-      nco_exit(EXIT_FAILURE);
-      break;
-    default:
-      /* All other operators work with DAP correctly */
-      break;
-    } /* end switch */
-
-    rcd=nco_open(fl_nm_lcl,NC_NOWRITE,&in_id);
-
-    if(rcd != NC_NOERR){
-      /* fxm: TODO nco580 Attempt to retrieve URLs directly when DAP does not work
-	 Test with:
-	 ncks -D 1 -M http://dust.ess.uci.edu/nco/in.nc # wget
-	 ncks -D 1 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP
-      */
-      (void)fprintf(stderr,"%s: WARNING DAP access to %s failed: Server does not respond, file does not exist, or user does not have read permission\n",prg_nm_get(),fl_nm_lcl);
-      if(dbg_lvl_get() >= nco_dbg_std){
-	(void)fprintf(stderr,"%s: DEBUG Will attempt to retrieve file to local client using wget\n",prg_nm_get());
-	(void)fprintf(stderr,"%s: INFO This feature may not work (TODO nco580)\n",prg_nm_get());
-      } /* endif dbg */
-      nco_exit(EXIT_FAILURE);
-    } /* end if err */
-
-  }else{
-    /* File is local---try to open it */
+  if(!DAP_URL){
+    /* File is truly local---does local system have read permission? */
     if((fp_in=fopen(fl_nm_lcl,"r")) == NULL){
       (void)fprintf(stderr,"%s: ERROR User does not have read permission for %s, or file does not exist\n",prg_nm_get(),fl_nm_lcl);
       nco_exit(EXIT_FAILURE);
     }else{
       (void)fclose(fp_in);
     } /* end else */
-
-    /* For local files, perform optional file diagnostics */
+    
+      /* For local files, perform optional file diagnostics */
     if(dbg_lvl_get() > 0){
       char *fl_nm_cnc=NULL; /* [sng] Canonical file name */
       /* Determine canonical filename and properties */
       fl_nm_cnc=nco_fl_info_get(fl_nm_lcl);
       if(fl_nm_cnc != NULL) fl_nm_cnc=(char *)nco_free(fl_nm_cnc);
     } /* endif dbg */
-
-  } /* end if file is local */
-
-  /* Free input filename space */
+    
+  } /* end if file is truly local */
+  
+    /* Free input filename space */
   fl_nm=(char *)nco_free(fl_nm);
 
   /* Return local filename */
@@ -895,10 +917,10 @@ nco_fl_mv /* [fnc] Move first file to second */
   const char mv_cmd_fmt[]="mv -f %s %s";
 
   int rcd;
-  const int nbr_fmt_char=4;
+  const int fmt_chr_nbr=4;
 
   /* Construct and execute copy command */
-  mv_cmd=(char *)nco_malloc((strlen(mv_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1UL)*sizeof(char));
+  mv_cmd=(char *)nco_malloc((strlen(mv_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-fmt_chr_nbr+1UL)*sizeof(char));
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",prg_nm_get(),fl_src,fl_dst);
   (void)sprintf(mv_cmd,mv_cmd_fmt,fl_src,fl_dst);
   rcd=system(mv_cmd);

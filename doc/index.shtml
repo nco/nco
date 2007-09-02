@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.440 2007-09-01 09:39:37 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.441 2007-09-02 20:03:52 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -100,7 +100,7 @@ Send it in!<br>
 
 <ul>
 
-<li>August&nbsp;29, 2007: NCO 3.9.2 released (ncap2 print support)</li>
+<li>August&nbsp;29, 2007: NCO 3.9.2 released (_FillValue support)</li>
 
 <li>June&nbsp;29, 2007: NCO 3.9.1 released (netCDF4 deflation support)</li>
 

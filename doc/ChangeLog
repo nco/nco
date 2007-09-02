@@ -1,5 +1,7 @@
 2007-09-02  Charlie Zender  <zender@uci.edu>
 
+	* Finish wget draft code, introduce nco_open_flg() for DAP attempts
+
 	* Add stubs to retrieve non-DAP HTTP files with wget
 
 2007-09-01  Charlie Zender  <zender@uci.edu>
