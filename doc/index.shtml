@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.441 2007-09-02 20:03:52 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.442 2007-09-02 21:46:02 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -457,6 +457,7 @@ Instead, retrieve all recently tagged versions
 <li><b>NCO/SDO 3.9.3</b>: (<i>In progress</i>) 
 SWAMP homepage/howto;
 GCC&nbsp;4.2 compatibility;
+file retrieval via <tt>wget</tt>;
 <li><b>NCO/SDO 3.9.2</b>: 
 <tt>_FillValue</tt> supplants <tt>missing_value</tt>;
 <tt>UDUnits2 support</tt>;
