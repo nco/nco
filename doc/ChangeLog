@@ -1,5 +1,9 @@
 2007-09-02  Charlie Zender  <zender@uci.edu>
 
+	* wget retrieval works iff -l used, regardless of -p use
+
+	* More exhaustive debugging and local file searches prior to wget attempt
+
 	* Implement nco_close() to pair with nco_open() in DAP probe.
 	  Not doing this previously probably means that NCO via DAP
 	  left lots of open files dangling on the DAP server.

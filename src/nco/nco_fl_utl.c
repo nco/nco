@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.96 2007-09-02 21:06:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.97 2007-09-02 21:20:18 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -441,7 +441,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     }else{ /* DAP access to http:// file failed */
       /* fxm: TODO nco580 Attempt to retrieve URLs directly when DAP does not work
 	 Test with:
-	 ncks -D 2 -M http://dust.ess.uci.edu/nco/in.nc # wget
+	 ncks -D 2 -M http://dust.ess.uci.edu/nco/in.nc # wget fails
+	 ncks -D 2 -M -l . http://dust.ess.uci.edu/nco/in.nc # wget works
+	 ncks -D 2 -M -l . -p http://dust.ess.uci.edu/nco in.nc # wget works
 	 ncks -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP
       */
 
