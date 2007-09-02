@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.95 2007-09-02 20:13:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.96 2007-09-02 21:06:18 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -400,8 +400,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     char *fl_nm_lcl_tmp;
     char *fl_pth_lcl_tmp;
 
-    /* If FTP rearrange fl_nm_lcl to get rid of ftp://hostname part, and
-       if SFTP rearrange fl_nm_lcl to get rid of sftp://hostname: part,
+    /* If FTP rearrange fl_nm_lcl to remove ftp://hostname part, and
+       if SFTP rearrange fl_nm_lcl to remove sftp://hostname: part,
        before searching for file on local disk */
     fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
     fl_nm_lcl_tmp=fl_nm_lcl;
@@ -409,37 +409,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
   }else if(strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl){
-
-    /* If filename has http:// prefix then try DAP access to unadulterated filename */
-    DAP_URL=True; 
-
-  }else if((cln_ptr=strchr(fl_nm_lcl,':'))){
-    /* 19990804
-       Colon separates machine name from filename in rcp, scp, and sftp requests
-       However, colon is also legal in _any_ UNIX filename
-       Thus whether colon signifies rcp or scp request is somewhat ambiguous
-       NCO treats names with more than one colon as regular filenames
-       In order for colon to be interpreted as machine name delimiter,
-       it must be preceded by period within three or four spaces, e.g., uci.edu: */
-    if(((cln_ptr-4 >= fl_nm_lcl) && *(cln_ptr-4) == '.') ||
-       ((cln_ptr-3 >= fl_nm_lcl) && *(cln_ptr-3) == '.')){
-      char *fl_nm_lcl_tmp;
-      char *fl_pth_lcl_tmp;
-
-      /* Rearrange fl_nm_lcl to get rid of hostname: part */
-      fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
-      fl_nm_lcl_tmp=fl_nm_lcl;
-      fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
-      (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
-      fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
-    } /* endif period is three or four characters from colon */
-  } /* end if */
-
-  /* Does file exist on local system? */
-  rcd=stat(fl_nm_lcl,&stat_sct);
-
-  if(DAP_URL){
-    /* File is tentatively identified as DAP because of http:// prefix */
+    /* Filename has http:// prefix so try DAP access to unadulterated filename */
     int in_id; /* [id] Temporary input file ID */
 
     /* Attempt nc_open() on HTTP protocol files. Success means DAP found file. */
@@ -461,42 +431,75 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       /* Close file to prevent accumulating dangling open files on DAP server */
       rcd=nco_close(in_id);
 
-      /* Great! DAP worked and operator supports DAP
-	 DAP treats HTTP protocol files as local files
-	 Make sure rcd=0 (redundant but safer than assuming NC_NOERR == 0)
-	 Rest of function will now assume file is local */
+      /* Great! DAP worked and operator supports DAP so file has earned DAP identification */
+      DAP_URL=True; 
+
+      /* Set rcd=0 to agree with sucessful stat() so rest of function treats file as local
+	 (DAP treats HTTP protocol files as local files) */
       rcd=0;
 
-    }else{ /* DAP access did not work */
+    }else{ /* DAP access to http:// file failed */
       /* fxm: TODO nco580 Attempt to retrieve URLs directly when DAP does not work
 	 Test with:
-	 ncks -D 1 -M http://dust.ess.uci.edu/nco/in.nc # wget
-	 ncks -D 1 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP
+	 ncks -D 2 -M http://dust.ess.uci.edu/nco/in.nc # wget
+	 ncks -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP
       */
 
-      /* DAP cannot open file so set DAP_URL=FALSE and HTTP_URL=True
-	 Later we will attempt to wget file to local system */
-      DAP_URL=False;
-      HTTP_URL=True;
-
-      /* Change return code back to stat() failure rather than nc_open() failure code
-	 OPeNDAP return codes, e.g., are non-standard (currently 1000 < rcd < 1010
-	 Hence, there is no telling what nc_open() failures will return */
-      rcd=-1;
-
-      (void)fprintf(stderr,"%s: WARNING DAP access to %s failed: Server does not respond, file does not exist, or user does not have read permission\n",prg_nm_get(),fl_nm_lcl);
+      char *fl_nm_lcl_tmp;
+      char *fl_pth_lcl_tmp;
+      
+      (void)fprintf(stderr,"%s: INFO DAP access to %s failed: Server does not respond, file does not exist, or user does not have read permission\n",prg_nm_get(),fl_nm_lcl);
       if(dbg_lvl_get() >= nco_dbg_std){
-	(void)fprintf(stderr,"%s: DEBUG Will attempt to retrieve file to local client using wget\n",prg_nm_get());
-	(void)fprintf(stderr,"%s: INFO This feature may not work (TODO nco580)\n",prg_nm_get());
+	(void)fprintf(stderr,"%s: INFO Will first attempt to find on local disk and, if unsuccessful, will then attempt retrieve remote file to local client using wget\n",prg_nm_get());
+	(void)fprintf(stderr,"%s: DEBUG This feature may not work (TODO nco580)\n",prg_nm_get());
       } /* endif dbg */
       
+      /* DAP cannot open file so leave DAP_URL=FALSE and set HTTP_URL=True
+	 Later we will attempt to wget file to local system */
+      HTTP_URL=True;
+      url_sng_lng=strlen(http_url_sng);
+
+      /* If HTTP then rearrange fl_nm_lcl to remove http://hostname part
+	 before searching for file on local disk */
+      fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
+      fl_nm_lcl_tmp=fl_nm_lcl;
+      fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
+      (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
+      fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
+
     } /* !DAP_URL, HTTP_URL */
-  } /* !DAP_URL */
+
+  }else if((cln_ptr=strchr(fl_nm_lcl,':'))){
+    /* 19990804
+       Colon separates machine name from filename in rcp, scp, and sftp requests
+       However, colon is also legal in _any_ UNIX filename
+       Thus whether colon signifies rcp or scp request is somewhat ambiguous
+       NCO treats names with more than one colon as regular filenames
+       In order for colon to be interpreted as machine name delimiter,
+       it must be preceded by period within three or four spaces, e.g., uci.edu: */
+    if(((cln_ptr-4 >= fl_nm_lcl) && *(cln_ptr-4) == '.') ||
+       ((cln_ptr-3 >= fl_nm_lcl) && *(cln_ptr-3) == '.')){
+      char *fl_nm_lcl_tmp;
+      char *fl_pth_lcl_tmp;
+
+      /* Rearrange fl_nm_lcl to remove hostname: part */
+      fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
+      fl_nm_lcl_tmp=fl_nm_lcl;
+      fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
+      (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
+      fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
+    } /* endif period is three or four characters from colon */
+  } /* end if */
+
+  /* Does file exist on local system? */
+  if(!DAP_URL) rcd=stat(fl_nm_lcl,&stat_sct);
+  if(rcd == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() for %s on local filesystem as %s failed\n",prg_nm_get(),fl_nm,fl_nm_lcl);
 
   /* If not, check if file exists on local system under same path interpreted relative to current working directory */
   if(rcd == -1){
     if(fl_nm_lcl[0] == '/'){
       rcd=stat(fl_nm_lcl+1UL,&stat_sct);
+      if(rcd == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() for %s on local filesystem as %s failed\n",prg_nm_get(),fl_nm,fl_nm_lcl+1UL);
     } /* end if */
     if(rcd == 0){
       char *fl_nm_lcl_tmp;
@@ -534,7 +537,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
     /* At last, check for file in local storage directory */
     rcd=stat(fl_nm_lcl,&stat_sct);
-    if (rcd != -1) (void)fprintf(stderr,"%s: WARNING not searching for %s on remote filesystem, using local file %s instead\n",prg_nm_get(),fl_nm,fl_nm_lcl);
+    if(rcd != -1) (void)fprintf(stderr,"%s: WARNING not searching for %s on remote filesystem, using local file %s instead\n",prg_nm_get(),fl_nm,fl_nm_lcl);
+    if(rcd == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() for %s on local filesystem as %s failed\n",prg_nm_get(),fl_nm,fl_nm_lcl);
   } /* end if */
 
   /* File was not found locally and is not DAP, try to fetch file from remote filesystem */
