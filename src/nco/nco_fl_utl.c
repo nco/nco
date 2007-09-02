@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.90 2007-09-01 21:04:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.91 2007-09-02 11:31:56 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -364,15 +364,18 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
      return name of file on local system */
 
   FILE *fp_in;
-  nco_bool FTP_URL=False;
-  nco_bool FTP_NETRC=False;
-  nco_bool SFTP_URL=False;
-  nco_bool FTP_OR_SFTP_URL;
+  nco_bool DAP_URL=False; /* DAP handles netCDF API, no retrieval necessary */
+  nco_bool FTP_URL=False; /* Retrieve remote file via FTP */
+  nco_bool FTP_NETRC=False; /* Retrieve remote file via FTP with .netrc file */
+  nco_bool FTP_OR_SFTP_URL; /* FTP or SFTP */
+  nco_bool HTTP_URL=False; /* Retrieve remote file via wget */
+  nco_bool SFTP_URL=False; /* Retrieve remote file via SFTP */
   char *cln_ptr; /* [ptr] Colon pointer */
   char *fl_nm_lcl;
   char *fl_nm_stub;
   const char fnc_nm[]="nco_fl_mk_lcl"; /* [sng] Function name */
   const char ftp_url_sng[]="ftp://";
+  const char http_url_sng[]="http://";
   const char sftp_url_sng[]="sftp://";
   int rcd;
   size_t url_sng_lng=0L; /* CEWI */
@@ -393,8 +396,6 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   } /* !ftp */
   FTP_OR_SFTP_URL=FTP_URL || SFTP_URL;
 
-//printf("\n\nprg_id=%d and ncatted=%d!\n", prg_id, ncatted);
-
   if(FTP_OR_SFTP_URL){
     char *fl_nm_lcl_tmp;
     char *fl_pth_lcl_tmp;
@@ -407,10 +408,11 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
-  }else if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl){
+  }else if(strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl){
 
     /* If filename indicates http protocol then pass unadulterated to DAP
        If DAP cannot open HTTP files, then wget should copy to local system */
+    DAP_URL=True; 
 
   }else if((cln_ptr=strchr(fl_nm_lcl,':'))){
     /* 19990804
@@ -438,7 +440,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   rcd=stat(fl_nm_lcl,&stat_sct);
 
   /* One exception: DAP treats HTTP protocol files as local files */
-  if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl) rcd=0;
+  if(strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl) rcd=0;
 
   /* If not, check if file exists on local system under same path interpreted relative to current working directory */
   if(rcd == -1){
@@ -522,6 +524,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     rmt_fch_cmd_sct msrcp={"msrcp mss:%s %s",4,synchronous,rmt_lcl};
     rmt_fch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,lcl_rmt};
     /* rmt_fch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,rmt_lcl};*/
+    rmt_fch_cmd_sct wget={"wget --output-document=%s %s",4,synchronous,lcl_rmt};
     rmt_fch_cmd_sct scp={"scp -p %s %s",4,synchronous,rmt_lcl};
     rmt_fch_cmd_sct sftp={"sftp %s %s",4,synchronous,rmt_lcl};
     /* Fill in ftp structure fmt element dynamically later */
@@ -823,29 +826,40 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   } /* end if file was already on the local system */
 
   /* Make sure we have read permission on local file */
-  if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl){
+  if(strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl){
     /* Attempt nc_open() on HTTP protocol files. Success means DAP found file. */
     int in_id; /* [id] Temporary input file ID */
 
-    /* Following is the graceful failure if ncatted or ncrename try to use DAP to retrieve a file. */
-  switch(prg_id){
-    case ncatted:  case ncrename:
-    (void)fprintf(stderr,"%s: ERROR - in nco_fl_mk_lcl(), ncatted and ncrename cannot currently retrieve entire files via DAP or http.\n",prg_nm_get());
-    nco_exit(EXIT_FAILURE);
-    break;
+    /* Fail gracefully if ncatted or ncrename try to use DAP */
+    switch(prg_id){
+    case ncatted:
+    case ncrename:
+      (void)fprintf(stderr,"%s: ERROR nco_fl_mk_lcl() reminds you that ncatted and ncrename cannot currently retrieve entire files via DAP or HTTP fxm TODO nco664\n",prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+      break;
     default:
-      /* ALl the others work with DAP correctly */
-    break;
-  }
+      /* All other operators work with DAP correctly */
+      break;
+    } /* end switch */
 
     rcd=nco_open(fl_nm_lcl,NC_NOWRITE,&in_id);
 
     if(rcd != NC_NOERR){
-      (void)fprintf(stderr,"%s: ERROR Attempted HTTP access protocol failed: DAP server is not responding, %s does not exist, or user does not have read permission\n",prg_nm_get(),fl_nm_lcl);
+      /* fxm: TODO nco580 Attempt to retrieve URLs directly when DAP does not work
+	 Test with:
+	 ncks -D 1 -M http://dust.ess.uci.edu/nco/in.nc # wget
+	 ncks -D 1 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP
+      */
+      (void)fprintf(stderr,"%s: WARNING DAP access to %s failed: Server does not respond, file does not exist, or user does not have read permission\n",prg_nm_get(),fl_nm_lcl);
+      if(dbg_lvl_get() >= nco_dbg_std){
+	(void)fprintf(stderr,"%s: DEBUG Will attempt to retrieve file to local client using wget\n",prg_nm_get());
+	(void)fprintf(stderr,"%s: INFO This feature may not work (TODO nco580)\n",prg_nm_get());
+      } /* endif dbg */
       nco_exit(EXIT_FAILURE);
     } /* end if err */
 
   }else{
+    /* File is local---try to open it */
     if((fp_in=fopen(fl_nm_lcl,"r")) == NULL){
       (void)fprintf(stderr,"%s: ERROR User does not have read permission for %s, or file does not exist\n",prg_nm_get(),fl_nm_lcl);
       nco_exit(EXIT_FAILURE);
@@ -861,7 +875,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       if(fl_nm_cnc != NULL) fl_nm_cnc=(char *)nco_free(fl_nm_cnc);
     } /* endif dbg */
 
-  } /* end if really a local file */
+  } /* end if file is local */
 
   /* Free input filename space */
   fl_nm=(char *)nco_free(fl_nm);

@@ -1,3 +1,7 @@
+2007-09-02  Charlie Zender  <zender@uci.edu>
+
+	* Add stubs to retrieve non-DAP HTTP files with wget
+
 2007-09-01  Charlie Zender  <zender@uci.edu>
 
 	* Fix #ifdef NEED_NC_INQ_FORMAT to have else so NCO/netCDF3

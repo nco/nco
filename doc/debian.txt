@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.108 2007-07-24 19:11:08 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.109 2007-09-02 11:31:56 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -62,8 +62,8 @@ dh_make -e zender@uci.edu -f ../nco-3.9.2.tar.gz
 4. Find out which packages new package needs for building
    From Rod02 p. 14
 
-   strace -f -o /tmp/log ./configure
-   for x in `dpkg -S ${grep open /tmp/log | perl -pe 's!.* open\(\"([^\"]*).*!$1}
+   strace -f -o /tmp/strace_log ./configure
+   for x in `dpkg -S ${grep open /tmp/strace_log | perl -pe 's!.* open\(\"([^\"]*).*!$1}
 
 5. Going backwards: How to create the Debian tarball source given
 the distributed Debian files, nco_X.Y.Z-3.dsc nco_X.Y.Z-3.orig.tar.gz,
