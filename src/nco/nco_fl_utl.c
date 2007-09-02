@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.92 2007-09-02 20:03:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.93 2007-09-02 20:05:22 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -443,7 +443,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     int in_id; /* [id] Temporary input file ID */
 
     /* Attempt nc_open() on HTTP protocol files. Success means DAP found file. */
-    rcd=nco_open(fl_nm_lcl,NC_NOWRITE,&in_id);
+    rcd=nco_open_flg(fl_nm_lcl,NC_NOWRITE,&in_id);
     
     if(rcd == NC_NOERR){
       /* Fail gracefully if ncatted or ncrename try to use DAP */

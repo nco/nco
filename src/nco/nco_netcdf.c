@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.87 2007-09-01 21:04:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.88 2007-09-02 20:03:52 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -377,6 +377,17 @@ nco_open(const char * const fl_nm,const int mode,int * const nc_id)
   return rcd;
 } /* end nco_open */
 
+int
+nco_open_flg(const char * const fl_nm,const int mode,int * const nc_id)
+{
+  /* Purpose: Wrapper for nc_open() that does not require success
+     Currently used only by nco_fl_mk_lcl() to test readability of files via DAP */
+  const char fnc_nm[]="nco_open_flg()";
+  int rcd;
+  rcd=nc_open(fl_nm,mode,nc_id);
+  return rcd;
+} /* end nco_open */
+
 #if 0
 #ifdef ENABLE_NETCDF4
 /* netCDF4 routines defined by Unidata netCDF4 Library libnetcdf.a 
@@ -588,7 +599,7 @@ nco_inq_dimid(const int nc_id,const char * const dmn_nm,int * const dmn_id)
 int
 nco_inq_dimid_flg(const int nc_id,const char * const dmn_nm,int * const dmn_id)
 {
-  /* Purpose: Wrapper for nc_inq_dimid() which does not require success */
+  /* Purpose: Wrapper for nc_inq_dimid() that does not require success */
   int rcd;
   rcd=nc_inq_dimid(nc_id,dmn_nm,dmn_id);
   if(rcd == NC_EBADDIM) return rcd;
@@ -609,7 +620,7 @@ nco_inq_dim(const int nc_id,const int dmn_id,char *dmn_nm,long *dmn_sz)
 int
 nco_inq_dim_flg(const int nc_id,const int dmn_id,char *dmn_nm,long *dmn_sz)
 {
-  /* Purpose: Wrapper for nc_inq_dim_flg() which does not require success */
+  /* Purpose: Wrapper for nc_inq_dim_flg() that does not require success */
   int rcd;
   rcd=nc_inq_dim(nc_id,dmn_id,dmn_nm,(size_t *)dmn_sz);
   if(rcd == NC_EBADDIM) return rcd;
@@ -698,7 +709,7 @@ nco_inq_varid(const int nc_id,const char * const var_nm,int * const var_id)
 int
 nco_inq_varid_flg(const int nc_id,const char * const var_nm,int * const var_id)
 {
-  /* Purpose: Wrapper for nc_inq_varid_flg() which does not require success */
+  /* Purpose: Wrapper for nc_inq_varid_flg() that does not require success */
   int rcd;
   rcd=nc_inq_varid(nc_id,var_nm,var_id);
   if(rcd == NC_ENOTVAR) return rcd;
