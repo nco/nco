@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.97 2007-09-02 21:20:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.98 2007-09-03 14:53:31 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -317,7 +317,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	} /* endif err */
 
 	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Read %d filenames in %li characters from stdin\n",prg_nm_get(),*fl_nbr,(long)fl_lst_in_lng);
-	if(*fl_nbr > 0) *FL_LST_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING Tried but failed to get input filenames from stdin\n",prg_nm_get());
+	if(*fl_nbr > 0) *FL_LST_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING Tried and failed to get input filenames from stdin\n",prg_nm_get());
 
       } /* endif multi-file operator without positional arguments for fl_in */
 
@@ -370,9 +370,13 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   nco_bool FTP_OR_SFTP_URL; /* FTP or SFTP */
   nco_bool HTTP_URL=False; /* Retrieve remote file via wget */
   nco_bool SFTP_URL=False; /* Retrieve remote file via SFTP */
+  nco_bool PTH_LCL_DRV=False; /* Local path was derived (not user-specified) */
   char *cln_ptr; /* [ptr] Colon pointer */
   char *fl_nm_lcl;
+  char *fl_nm_lcl_tmp;
   char *fl_nm_stub;
+  char *fl_pth_lcl_tmp=NULL;
+
   const char fnc_nm[]="nco_fl_mk_lcl"; /* [sng] Function name */
   const char ftp_url_sng[]="ftp://";
   const char http_url_sng[]="http://";
@@ -397,9 +401,6 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   FTP_OR_SFTP_URL=FTP_URL || SFTP_URL;
 
   if(FTP_OR_SFTP_URL){
-    char *fl_nm_lcl_tmp;
-    char *fl_pth_lcl_tmp;
-
     /* If FTP rearrange fl_nm_lcl to remove ftp://hostname part, and
        if SFTP rearrange fl_nm_lcl to remove sftp://hostname: part,
        before searching for file on local disk */
@@ -434,7 +435,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       /* Great! DAP worked and operator supports DAP so file has earned DAP identification */
       DAP_URL=True; 
 
-      /* Set rcd=0 to agree with sucessful stat() so rest of function treats file as local
+      /* Set rcd=0 to agree with successful stat() so rest of function treats file as local
 	 (DAP treats HTTP protocol files as local files) */
       rcd=0;
 
@@ -447,9 +448,6 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	 ncks -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP
       */
 
-      char *fl_nm_lcl_tmp;
-      char *fl_pth_lcl_tmp;
-      
       (void)fprintf(stderr,"%s: INFO DAP access to %s failed: Server does not respond, file does not exist, or user does not have read permission\n",prg_nm_get(),fl_nm_lcl);
       if(dbg_lvl_get() >= nco_dbg_std){
 	(void)fprintf(stderr,"%s: INFO Will first attempt to find on local disk and, if unsuccessful, will then attempt retrieve remote file to local client using wget\n",prg_nm_get());
@@ -481,9 +479,6 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
        it must be preceded by period within three or four spaces, e.g., uci.edu: */
     if(((cln_ptr-4 >= fl_nm_lcl) && *(cln_ptr-4) == '.') ||
        ((cln_ptr-3 >= fl_nm_lcl) && *(cln_ptr-3) == '.')){
-      char *fl_nm_lcl_tmp;
-      char *fl_pth_lcl_tmp;
-
       /* Rearrange fl_nm_lcl to remove hostname: part */
       fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
       fl_nm_lcl_tmp=fl_nm_lcl;
@@ -495,17 +490,15 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
   /* Does file exist on local system? */
   if(!DAP_URL) rcd=stat(fl_nm_lcl,&stat_sct);
-  if(rcd == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() for %s on local filesystem as %s failed\n",prg_nm_get(),fl_nm,fl_nm_lcl);
+  if(rcd == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #1 failed: %s does not exist\n",prg_nm_get(),fl_nm_lcl);
 
   /* If not, check if file exists on local system under same path interpreted relative to current working directory */
   if(rcd == -1){
     if(fl_nm_lcl[0] == '/'){
       rcd=stat(fl_nm_lcl+1UL,&stat_sct);
-      if(rcd == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() for %s on local filesystem as %s failed\n",prg_nm_get(),fl_nm,fl_nm_lcl+1UL);
+      if(rcd == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #2 failed: %s does not exist\n",prg_nm_get(),fl_nm_lcl+1UL);
     } /* end if */
     if(rcd == 0){
-      char *fl_nm_lcl_tmp;
-
       /* NB: Adding one to filename pointer is like deleting initial slash on filename
 	 Then free(fl_nm_lcl) would miss this initial byte (memory is lost)
 	 Hence must copy new name into its own memory space */
@@ -525,8 +518,6 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
     /* Construct local filename from user-supplied local file path and existing file stub */
     if(fl_pth_lcl != NULL){
-      char *fl_nm_lcl_tmp;
-
       fl_nm_lcl_tmp=fl_nm_lcl;
       /* Allocate enough room for the joining slash '/' and the terminating NUL */
       fl_nm_lcl=(char *)nco_malloc((strlen(fl_pth_lcl)+strlen(fl_nm_stub)+2)*sizeof(char));
@@ -540,10 +531,10 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     /* At last, check for file in local storage directory */
     rcd=stat(fl_nm_lcl,&stat_sct);
     if(rcd != -1) (void)fprintf(stderr,"%s: WARNING not searching for %s on remote filesystem, using local file %s instead\n",prg_nm_get(),fl_nm,fl_nm_lcl);
-    if(rcd == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() for %s on local filesystem as %s failed\n",prg_nm_get(),fl_nm,fl_nm_lcl);
+    if(rcd == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #3 failed: %s does not exist\n",prg_nm_get(),fl_nm_lcl);
   } /* end if */
 
-  /* File was not found locally and is not DAP, try to fetch file from remote filesystem */
+  /* File was not found locally and is not DAP-accessible, try to fetch file from remote filesystem */
   if(rcd == -1){
 
     typedef struct{ /* [enm] Remote fetch command structure */
@@ -555,10 +546,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
     char *cmd_sys;
     char *fl_nm_rmt;
-    char *fl_pth_lcl_tmp=NULL;
     char *fmt_ftp=NULL; /* [sng] Declare outside FTP block scope for easier freeing */
 
-    /* fxm: autoconf this */
+    /* fxm: use autoconf HAVE_MKDIR_M rather than SUN4 token TODO nco293 */
 #ifndef SUN4
     const char cmd_mkdir[]="mkdir -m 777 -p";
 #else /* SUN4 */
@@ -581,7 +571,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     rmt_fch_cmd_sct msrcp={"msrcp mss:%s %s",4,synchronous,rmt_lcl};
     rmt_fch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,lcl_rmt};
     /* rmt_fch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,rmt_lcl};*/
-    rmt_fch_cmd_sct http={"wget --output-document=%s %s",4,synchronous,lcl_rmt};
+    /* wget -r: re-download file (clobber existing file of same name, if any) */
+    rmt_fch_cmd_sct http={"wget -r --output-document=%s %s",4,synchronous,lcl_rmt};
     rmt_fch_cmd_sct scp={"scp -p %s %s",4,synchronous,rmt_lcl};
     rmt_fch_cmd_sct sftp={"sftp %s %s",4,synchronous,rmt_lcl};
     /* Fill in ftp structure fmt element dynamically later */
@@ -596,7 +587,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     /* URL specifier in filename unambiguously signals to use FTP */
     if(rmt_cmd == NULL){
       if(FTP_URL){
-	/* fxm: use autoconf HAVE_XXX rather than WIN32 to handle this */
+	/* fxm: use autoconf HAVE_XXX rather than WIN32 token TODO nco292 */
 #ifdef WIN32
 /* #ifndef HAVE_NETWORK fxm */
 	/* I have no idea how networking calls work in MS Windows, so just exit */
@@ -744,10 +735,10 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       } /* end if HTTP */
     } /* end if rmt_cmd */
 
-    /* Otherwise, single colon preceded by period in filename unambiguously signals to use rcp or scp
+    /* Otherwise, single colon preceded by period in filename signals rcp or scp
        Determining whether to try scp instead of rcp is difficult
        Ideally, NCO would test remote machine for rcp/scp priveleges with system command like, e.g., "ssh echo ok"
-       To start with, we use scp which has its own fall through to rcp */
+       To start we use scp which has its own fall-through to rcp */
     if(rmt_cmd == NULL){
       if((cln_ptr=strchr(fl_nm_rmt,':'))){
 	if(((cln_ptr-4 >= fl_nm_rmt) && *(cln_ptr-4) == '.') ||
@@ -794,17 +785,27 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
     /* Find path for storing local file */
     fl_nm_stub=strrchr(fl_nm_lcl,'/')+1UL;
+    /* Strip leading slash from fl_nm_lcl for HTTP files */
+    if(HTTP_URL){
+      fl_nm_lcl_tmp=(char *)strdup(fl_nm_lcl+1UL);
+      fl_nm_lcl=(char *)nco_free(fl_nm_lcl);
+      fl_nm_lcl=fl_nm_lcl_tmp;
+    } /* !HTTP_URL */
     /* Construct local storage filepath name */
     fl_pth_lcl_lng=strlen(fl_nm_lcl)-strlen(fl_nm_stub)-1UL;
     /* Allocate enough room for terminating NUL */
     fl_pth_lcl_tmp=(char *)nco_malloc((fl_pth_lcl_lng+1UL)*sizeof(char));
     (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl,fl_pth_lcl_lng);
+    if(HTTP_URL) (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl+1UL,fl_pth_lcl_lng);
     fl_pth_lcl_tmp[fl_pth_lcl_lng]='\0';
 
     /* Warn user when local filepath was machine-derived from remote name */
-    if(fl_pth_lcl == NULL) (void)fprintf(stderr,"%s: WARNING deriving local filepath from remote filename, using %s\n",prg_nm_get(),fl_pth_lcl_tmp);
+    if(fl_pth_lcl == NULL) (void)fprintf(stderr,"%s: INFO deriving local filepath from remote filename, retrieved files will be stored in directory ./%s\n",prg_nm_get(),fl_pth_lcl_tmp);
 
-    /* Does local filepath already exist on local system? */
+    /* fxm: got to here */
+    /* PTH_LCL_DRV=True; *//* Local path was derived (not user-specified) */
+
+    /* Does local filepath exist already on local system? */
     rcd=stat(fl_pth_lcl_tmp,&stat_sct);
     /* If not, then create local filepath */
     if(rcd != 0){
@@ -813,13 +814,13 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       (void)strcpy(cmd_sys,cmd_mkdir);
       (void)strcat(cmd_sys," ");
       (void)strcat(cmd_sys,fl_pth_lcl_tmp);
-      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: Creating local directory %s with %s\n",prg_nm_get(),fl_pth_lcl_tmp,cmd_sys);
       rcd=system(cmd_sys);
       if(rcd != 0){
 	(void)fprintf(stderr,"%s: ERROR Unable to create local directory %s\n",prg_nm_get(),fl_pth_lcl_tmp);
 	if(fl_pth_lcl == NULL) (void)fprintf(stderr,"%s: HINT Use -l option\n",prg_nm_get());
 	nco_exit(EXIT_FAILURE);
       } /* end if */
+      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Created local directory ./%s\n",prg_nm_get(),fl_pth_lcl_tmp);
       /* Free local command space */
       cmd_sys=(char *)nco_free(cmd_sys);
     } /* end if */
@@ -834,7 +835,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     }else{
       (void)sprintf(cmd_sys,rmt_cmd->fmt,fl_nm_rmt,fl_nm_lcl);
     } /* end else */
-    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: Retrieving file from remote location:\n%s",prg_nm_get(),cmd_sys);
+    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: Retrieving file from remote location with command:\n%s\n",prg_nm_get(),cmd_sys);
     (void)fflush(stderr);
     /* Fetch file from remote file system */
     rcd=system(cmd_sys);
@@ -845,7 +846,6 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     if(rmt_cmd == &ftp) fmt_ftp=(char *)nco_free(fmt_ftp);
 
     if(rmt_cmd->transfer_mode == synchronous){
-      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"\n");
       if(rcd != 0){
 	(void)fprintf(stderr,"%s: ERROR Synchronous fetch command failed\n",prg_nm_get());
 	nco_exit(EXIT_FAILURE);
