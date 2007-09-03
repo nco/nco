@@ -1,5 +1,7 @@
 2007-09-03  Charlie Zender  <zender@uci.edu>
 
+	* Finish implementing and testing wget capability. Looks good.
+
 	* Use wget -r: re-download file (clobber existing file of same name, if any)
 
 	* Remove leading slash from derived local path for HTTP_URL retrievals

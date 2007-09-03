@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.192 2007-08-31 11:57:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.193 2007-09-03 20:28:14 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -697,7 +697,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Ruby doobie deux!\n";
+  return "RIP Grandpa Max Coakley (1917--2007), Athlete, Farmer, Father\n";
   /*  return nco_mss_val_sng_get();*/
 } /* end nco_nmn_get() */
 

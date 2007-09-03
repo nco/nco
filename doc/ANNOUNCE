@@ -1,35 +1,20 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.259 2007-08-31 21:21:31 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.260 2007-09-03 20:26:31 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.2 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-First, the NCO licenses have changed from GPL2 (code) and FDL1.1
-(documentation) to GPL3 (code) and FDL1.2 (documentation).
-
-Second, 3.9.2 also introduces ncap2 printing and type-conversion 
-and beta-support for UDUnits2. As usual the latest build
-and compile tweaks have been made to improve portability.
-
-Finally, the major user-visible change is that the default attribute  
-if any, specifying the value of data to ignore has (finally) changed 
-from "missing_value" to "_FillValue".
-Supporting both of these attributes simultaneously is not practical.
-Hence the behavior NCO used to apply to missing_value's now applies to
-_FillValue's---missing_value's are now treated as normal data. 
-The NCO user's guide shows how to ease migration to this new behavior.
-
-A. Change from GPL2 to GPL3
-   http://www.gnu.org/copyleft/gpl.html
+A. Support URL retrieval via wget. Previously files specified with
+   HTTP URLs had to be accessible via a DAP server. Now NCO uses 
+   files, if any, accessible by a DAP server and, if not, attempts to
+   retrieve the entire file to the local machine with wget (which 
+   uses the HTTP protocol).
+   http://nco.sf.net/nco.html#wget
 
 B. UDUnits2 beta-support. Compile with 'UDUNITS2=Y', send us feedback.  
    Binaries (RPMs, Debs) still use UDUnits1. Thanks to Steve Emmerson.
    http://nco.sf.net/nco.html#UDUnits2
-
-C. Ignore data equal to _FillValue (rather than missing_value)
-   Hints and examples to handle new or to revert to old behavior:
-   http://nco.sf.net/nco.html#_FillValue
 
 D. Improved Documentation:
    Working with non-standard grids, e.g., 2D grids fxm
@@ -40,12 +25,8 @@ E. ncap2 continues to grow more powerful (Henry Butowsky)
    (e.g., var.cos(), var.avg(x,y))  
    Demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]   
 
-F. ncap2 supports type conversion (Henry Butowsky)
+F. ncap2 supports fxm (Henry Butowsky)
    ncap2 -s 'big_int=uint64(small_int)+double(small_int);' in.nc out.nc
-   http://nco.sf.net/nco.html#ncap2 
-
-G. ncap2 now prints variables and metadata (Henry Butowsky)
-   ncap2 -s 'foo=1;print(foo)' in.nc out.nc
    http://nco.sf.net/nco.html#ncap2 
 
 H. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.

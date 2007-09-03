@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.98 2007-09-03 14:53:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.99 2007-09-03 20:26:32 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -421,7 +421,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       switch(prg_id){
       case ncatted:
       case ncrename:
-	(void)fprintf(stderr,"%s: ERROR nco_fl_mk_lcl() reminds you that ncatted and ncrename must process truly local files so DAP does not help for these operators (fxm TODO nco664)\n",prg_nm_get());
+	(void)fprintf(stderr,"%s: ERROR nco_fl_mk_lcl() reminds you that ncatted and ncrename must process truly local (i.e., not read via DAP) files (fxm TODO nco664)\n",prg_nm_get());
 	nco_exit(EXIT_FAILURE);
 	break;
       default:
@@ -440,19 +440,16 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       rcd=0;
 
     }else{ /* DAP access to http:// file failed */
-      /* fxm: TODO nco580 Attempt to retrieve URLs directly when DAP does not work
+      /* Attempt to retrieve URLs directly when DAP access to file fails
 	 Test with:
-	 ncks -D 2 -M http://dust.ess.uci.edu/nco/in.nc # wget fails
-	 ncks -D 2 -M -l . http://dust.ess.uci.edu/nco/in.nc # wget works
-	 ncks -D 2 -M -l . -p http://dust.ess.uci.edu/nco in.nc # wget works
+	 ncks -D 2 -M http://dust.ess.uci.edu/nco/in.nc # wget
+	 ncks -D 2 -M -l . http://dust.ess.uci.edu/nco/in.nc # wget
+	 ncks -D 2 -M -l . -p http://dust.ess.uci.edu/nco in.nc # wget
 	 ncks -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP
       */
 
       (void)fprintf(stderr,"%s: INFO DAP access to %s failed: Server does not respond, file does not exist, or user does not have read permission\n",prg_nm_get(),fl_nm_lcl);
-      if(dbg_lvl_get() >= nco_dbg_std){
-	(void)fprintf(stderr,"%s: INFO Will first attempt to find on local disk and, if unsuccessful, will then attempt retrieve remote file to local client using wget\n",prg_nm_get());
-	(void)fprintf(stderr,"%s: DEBUG This feature may not work (TODO nco580)\n",prg_nm_get());
-      } /* endif dbg */
+      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will first attempt to find on local disk and, if unsuccessful, will then attempt retrieve remote file to local client using wget\n",prg_nm_get());
       
       /* DAP cannot open file so leave DAP_URL=FALSE and set HTTP_URL=True
 	 Later we will attempt to wget file to local system */
@@ -563,7 +560,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       lcl_rmt, /* Local file argument before remote file argument */
       rmt_lcl}; /* Remote file argument before local file argument */
 
-    size_t fl_pth_lcl_lng;
+    size_t fl_pth_lcl_lng=size_t_CEWI; /* CEWI */
 
     rmt_fch_cmd_sct *rmt_cmd=NULL;
     /* fxm: Initialize structure contents as const */
@@ -783,28 +780,31 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
-    /* Find path for storing local file */
-    fl_nm_stub=strrchr(fl_nm_lcl,'/')+1UL;
-    /* Strip leading slash from fl_nm_lcl for HTTP files */
-    if(HTTP_URL){
-      fl_nm_lcl_tmp=(char *)strdup(fl_nm_lcl+1UL);
-      fl_nm_lcl=(char *)nco_free(fl_nm_lcl);
-      fl_nm_lcl=fl_nm_lcl_tmp;
-    } /* !HTTP_URL */
-    /* Construct local storage filepath name */
-    fl_pth_lcl_lng=strlen(fl_nm_lcl)-strlen(fl_nm_stub)-1UL;
-    /* Allocate enough room for terminating NUL */
-    fl_pth_lcl_tmp=(char *)nco_malloc((fl_pth_lcl_lng+1UL)*sizeof(char));
-    (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl,fl_pth_lcl_lng);
-    if(HTTP_URL) (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl+1UL,fl_pth_lcl_lng);
-    fl_pth_lcl_tmp[fl_pth_lcl_lng]='\0';
-
-    /* Warn user when local filepath was machine-derived from remote name */
-    if(fl_pth_lcl == NULL) (void)fprintf(stderr,"%s: INFO deriving local filepath from remote filename, retrieved files will be stored in directory ./%s\n",prg_nm_get(),fl_pth_lcl_tmp);
-
-    /* fxm: got to here */
-    /* PTH_LCL_DRV=True; *//* Local path was derived (not user-specified) */
-
+    if(fl_pth_lcl == NULL){
+      /* Derive path for storing local file from remote filename */
+      (void)fprintf(stderr,"%s: INFO deriving local filepath from remote filename\n",prg_nm_get());
+      fl_nm_stub=strrchr(fl_nm_lcl,'/')+1UL;
+      if(HTTP_URL){
+	/* Strip leading slash from fl_nm_lcl for HTTP files so, e.g., 
+	   http://dust.ess.uci.edu/nco/in.nc produces local path "nco" not "/nco" */
+	fl_nm_lcl_tmp=(char *)strdup(fl_nm_lcl+1UL);
+	fl_nm_lcl=(char *)nco_free(fl_nm_lcl);
+	fl_nm_lcl=fl_nm_lcl_tmp;
+      } /* !HTTP_URL */
+      /* Construct local storage filepath name */
+      fl_pth_lcl_lng=strlen(fl_nm_lcl)-strlen(fl_nm_stub)-1UL;
+      /* Allocate enough room for terminating NUL */
+      fl_pth_lcl_tmp=(char *)nco_malloc((fl_pth_lcl_lng+1UL)*sizeof(char));
+      (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl,fl_pth_lcl_lng);
+      fl_pth_lcl_tmp[fl_pth_lcl_lng]='\0';
+      PTH_LCL_DRV=True; /* Local path was derived (not user-specified) */
+      /* Tell user what local filepath was derived */
+      (void)fprintf(stderr,"%s: INFO Retrieved files will be stored in directory ./%s\n",prg_nm_get(),fl_pth_lcl_tmp);
+    }else{
+      /* Copy user-specified local path to unite following code in terms of fl_pth_lcl_tmp */
+      fl_pth_lcl_tmp=(char *)strdup(fl_pth_lcl);
+    } /* fl_pth_lcl */
+    
     /* Does local filepath exist already on local system? */
     rcd=stat(fl_pth_lcl_tmp,&stat_sct);
     /* If not, then create local filepath */
