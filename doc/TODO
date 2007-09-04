@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.965 2007-09-03 20:26:31 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.966 2007-09-04 07:24:09 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -104,9 +104,6 @@ nco162. Add GiNaC (Computer Algebra System) support to ncap www.ginac.de (maybe?
 nco166. Document 'make test' so people know it exists and use it
 nco173. Add switch to ncra which allows user to remove degenerate time dimension from result
 nco174. Setup ncra,ncea,ncwa to do standard deviations sdn with one call
-nco176. Replace Bison, Flex components of ncap with smaller C++ parser?
-nco177. Make RPM production allowable by non-root, since building RPMs as sudo root screws up permissions in obj/bin directories of user
-onco179. Add netCDF to required packages list in RPM build?
 nco182. Add -L, --license switch to print license terms (as suggested by GNU coding style)
 nco190. Make typ_pck et al. use nc_type enum or something sane for default
 nco192. ncdiff will sometimes subtract files of incommensurate sizes without complaint
@@ -119,7 +116,6 @@ nco193. Convert dimension sizes from type "long int" to type "size_t"?
 nco195. Itanium builds!
 nco199. Internationalize (i18n) NCO with gettext()
 nco203. Perform benchmarking tests to quantify arithmetic performance improvements, I/O bottlenecks, etc.
-nco206. Add sample NCO script, such as dst.sh, to doc directory
 nco209. Add rules to automagically make MANIFEST and update Sourceforge download area
 nco215. nco_var_cnf_dmn() does not abort when variables do not conform because dimension list of one is subset of other but ORDER of dimensions differs, e.g., a(lat,lev,lon) !~ b(lon,lev). Attempting this will return incorrect answers!
 nco222. Warn when ncea/ncra/ncrcat/ncecat operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
@@ -133,7 +129,6 @@ nco237. Break down nco.texi into bite-size chunks, e.g., one file per section
 nco238. Replace y=(typ *)nco_malloc(nbr*sizeof(typ)) with y=(typ *)nco_malloc(nbr*sizeof(*y))?
 nco239. Create one global compatibility file (nco_xpf.[ch]?) activated by HAVE_ or NEED_ actions so do not have multiple platform dependent #includes as is case now with HAVE_STRCASECMP, HAVE_STRDUP requiring nco_sng_utl.h
 nco241. Add run-time switch which requests that output be missing_value where ANY input field is missing_value. NCO discussion forum 20021212.
-nco244. Get builds working on testdrive.hp.com
 nco245. Eliminate all instances of passing naked constants
 nco246. Deprecate USE_FORTRAN_ARITHMETIC from Makefile
 nco250. ncks -s should refuse to print strings formatted with %s unless they contain NUL-terminator. This will avoid segfaults like
@@ -141,7 +136,6 @@ nco250. ncks -s should refuse to print strings formatted with %s unless they con
 nco251. Does ncks -B correctly write packed variables in binary format?
 nco255. Desktop icon for NCO gui interface
 nco256. Turn udunits into .deb
-nco257. Put hybrid_sigma_pressure etc. definitions into in.cdl
 nco258. Develop syntax/procedure for specifying lists of hyperslabs for single pass, low memory consumption MSA jobs like Martin Schultz's in Discussion forum on 20030506
 nco259. Variadic function extension to nco_malloc() to support printing debugging messages?
 nco260. Warn (but work) when coordinate variable has more than two dimensions

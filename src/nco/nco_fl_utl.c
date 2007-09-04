@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.99 2007-09-03 20:26:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.100 2007-09-04 07:24:09 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -440,13 +440,11 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       rcd=0;
 
     }else{ /* DAP access to http:// file failed */
-      /* Attempt to retrieve URLs directly when DAP access to file fails
-	 Test with:
+      /* Attempt to retrieve URLs directly when DAP access fails. Tests:
 	 ncks -D 2 -M http://dust.ess.uci.edu/nco/in.nc # wget
 	 ncks -D 2 -M -l . http://dust.ess.uci.edu/nco/in.nc # wget
 	 ncks -D 2 -M -l . -p http://dust.ess.uci.edu/nco in.nc # wget
-	 ncks -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP
-      */
+	 ncks -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP */
 
       (void)fprintf(stderr,"%s: INFO DAP access to %s failed: Server does not respond, file does not exist, or user does not have read permission\n",prg_nm_get(),fl_nm_lcl);
       if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will first attempt to find on local disk and, if unsuccessful, will then attempt retrieve remote file to local client using wget\n",prg_nm_get());

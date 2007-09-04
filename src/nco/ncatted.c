@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.109 2007-08-31 14:33:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.110 2007-09-04 07:24:09 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -144,8 +144,8 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.109 2007-08-31 14:33:50 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.109 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.110 2007-09-04 07:24:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.110 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
   
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -314,6 +314,7 @@ main(int argc,char **argv)
       if(rcd_lcl != -1){
         char usr_reply;
         
+	/* fxm TODO nco199: Internationalize (i18n) NCO with gettext() */
         usr_reply='z';
         while(usr_reply != 'n' && usr_reply != 'y'){
           (void)fprintf(stdout,"%s: overwrite %s (y/n)? ",prg_nm_get(),fl_out);
