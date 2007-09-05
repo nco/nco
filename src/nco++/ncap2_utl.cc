@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.81 2007-08-23 15:36:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.82 2007-09-05 12:06:52 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1994,12 +1994,14 @@ nco_get_var_mem(
 
 void
 ncap_put_var_mem(
-		 int dpt,                       // Current depth
-		 int dpt_max,                   // Max depth ( same as number of dims) 
-		 std::vector<int> &shp_vtr,     // shape of input var (in bytes)
-		 NcapVector<lmt_sct*> &dmn_vtr, // New vectors
-		 char *&cp_in,                   // Pointer to (char*)var_in->val.vp
-		 char *cp_out)                  // Slab to be "put" 
+int dpt,                        // Current 
+int dpt_max,                    // Max depth ( same as number of dims) 
+std::vector<int> &shp_vtr,      // shape of input var (in bytes)
+NcapVector<lmt_sct*> &dmn_vtr,  // New vectors
+var_sct* var_out,               // needed 
+int nbr_lpp,                    // number of iterations
+char *&cp_in,                   // Pointer to (char*)var_in->val.vp
+char *cp_out)                   // Slab to be "put" 
 {
   
   
@@ -2007,51 +2009,92 @@ ncap_put_var_mem(
   
   
   long idx;      
+  long jdx;
   long srt=dmn_vtr[dpt]->srt;
   long end=dmn_vtr[dpt]->end;
   long cnt=dmn_vtr[dpt]->cnt;
   long srd=dmn_vtr[dpt]->srd;
   long slb_sz=shp_vtr[dpt];
+  long dpt_out=var_out->dim[dpt]->cnt;
   
-  char *cp_end=cp_out+ptrdiff_t(srt*slb_sz);;
+  //char *cp_end=cp_out+ptrdiff_t(srt*slb_sz);;
+  char *cp_end;
   
-  
+    
   if(dbg_lvl_get() > 2){
     std::ostringstream os;
-    os<<"Depth=" << dpt<<" "<<dmn_vtr[dpt]->nm<<" "<<srt<<" "<<end<<" "<<cnt<<" "<<srd<<" "<<slb_sz;
+    os<<"Depth=" << dpt<<" "<<dmn_vtr[dpt]->nm<<" "<<srt<<" "<<end<<" "<<cnt<<" "<<srd<<" "<<slb_sz<<" nbr_lpp="<<nbr_lpp;
     dbg_prn(fnc_nm,os.str());
   }
-
-  if(dpt == dpt_max){
-    if(srd==1) {
-      (void)memcpy(cp_end,cp_in,cnt*slb_sz);
-        cp_in+=(ptrdiff_t)cnt*slb_sz;
-    }else{    
-      for(idx=0 ; idx<cnt ; idx++ ){
-        (void)memcpy(cp_end,cp_in,slb_sz);
-        cp_in+=(ptrdiff_t)slb_sz;
-        cp_end+=(ptrdiff_t)(srd*slb_sz);
-      }
-    }
-  }
   
+
+  
+  if(dpt == dpt_max){
+    cp_end=cp_out+ptrdiff_t(srt*slb_sz);
+    for(idx=0; idx<nbr_lpp; idx++){
+    
+      if(srd==1) {
+        (void)memcpy(cp_end,cp_in,cnt*slb_sz);
+        cp_in+=(ptrdiff_t)cnt*slb_sz;
+      }
+      if(srd >1) {
+        char* cp_lcl=cp_end;
+        for(jdx=0 ; jdx<cnt ; jdx++ ){
+          (void)memcpy(cp_lcl,cp_in,slb_sz);
+          cp_in+=(ptrdiff_t)slb_sz;
+          cp_lcl+=(ptrdiff_t)(srd*slb_sz);
+        } //loop jdx
+      }
+      cp_end+=(ptrdiff_t)(dpt_out*slb_sz);
+
+    }//loop idx
+  } 
+
   if(dpt < dpt_max){
-    for(idx=0; idx <cnt ;idx++){
-      (void)ncap_put_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,cp_in,cp_end);
-      cp_end+= ptrdiff_t(srd*slb_sz);
+   
+
+    // Slab the whole lot 
+    if( srd==1 && cnt == dpt_out) {
+      cp_end=cp_out;
+      (void)ncap_put_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,var_out,nbr_lpp*cnt,cp_in,cp_end);
+    } 
+
+    // Slab single or contiguous block
+    if(srd==1 && cnt < dpt_out){
+      cp_end=cp_out+ptrdiff_t(srt*slb_sz);
+      for(idx=0; idx<nbr_lpp; idx++){
+        (void)ncap_put_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,var_out,cnt,cp_in,cp_end);
+        cp_end+= ptrdiff_t(dpt_out*slb_sz);
+      } //loop idx
     }
-  }  
+
+    // Slab discontinuous
+    if(srd > 1) { 
+      for(idx=0; idx<nbr_lpp; idx++){
+        cp_end=cp_out+ptrdiff_t(srt*slb_sz);;
+        for(jdx=0; jdx <cnt ;jdx++){
+          (void)ncap_put_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,var_out,1,cp_in,cp_end);
+          cp_end+= ptrdiff_t(srd*slb_sz);
+        } //loop jdx
+        cp_out+=ptrdiff_t(dpt_out*slb_sz);
+      } //loop idx
+
+    }
+    
+  }
+
   
 }
+
 
 
 
 // Do an in memory nco_put_var()  
 void
 nco_put_var_mem(
-		var_sct *var_in,
-		var_sct *var_out,
-		NcapVector<lmt_sct*> &dmn_vtr)
+var_sct *var_in,
+var_sct *var_out,
+NcapVector<lmt_sct*> &dmn_vtr)
 {
   
   int idx;
@@ -2081,21 +2124,24 @@ nco_put_var_mem(
   // Work out max depth we have to go to 
   dpt_max=dmn_nbr;
 
-  /*
+    
   for(idx=dmn_nbr-1; idx>0 ; idx--)
-    if( var_in->dim[idx]->cnt == dmn_vtr[idx]->cnt) 
+    if( var_out->dim[idx]->cnt == dmn_vtr[idx]->cnt) 
       dpt_max--;
     else
       break;
-  */
 
   cp_in=(char*)var_in->val.vp;
   cp_out=(char*)var_out->val.vp;
    
-  
+  // user has specified  the whole hyperslab
+  if(var_in->sz==var_out->sz){
+    (void)memcpy(cp_out,cp_in, var_in->sz*nco_typ_lng(var_in->type)); 
+  }
+  else
   // Call in-memory nco_put_var_mem (n.b is recursive of course!!)
-  (void)ncap_put_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,cp_in,cp_out);
-  
+    (void)ncap_put_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,var_out,1,cp_in,cp_out);
+
   
 } /* end nco_put_var_mem() */
 
