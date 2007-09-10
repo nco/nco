@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.966 2007-09-04 07:24:09 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.967 2007-09-10 14:22:42 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -612,7 +612,6 @@ nco891. dbn: fix lintian RPATH messages like
 	Binary /usr/bin/ncwa compiled with an RPATH of /usr/lib/nco
 	libtool error: libtool --finish /usr/lib
 nco895. udunits2 implement new API http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2lib.html
-  	export UDUNITS2_XML_PATH='/usr/local/share/udunits2.xml'
 	/bin/rm ~/obj/LINUX/nco_lmt.o;cd ~/nco/bld;make OPTS=D UDUNITS2=Y NETCDF4=Y allinone
 	ncks -O -D 0 -C -H -v wvl -d wvl,'0.4 micron','0.7 micron' -s '%3.1e' ~/nco/data/in.nc
 nco900. Get UDUnits2 working with time coordinates:
