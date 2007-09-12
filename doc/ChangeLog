@@ -1,3 +1,7 @@
+2007-09-12  Charlie Zender  <zender@uci.edu>
+
+	* Add helpful hint for DAP -l mis-users
+
 2007-09-03  Charlie Zender  <zender@uci.edu>
 
 	* Finish implementing and testing wget capability. Looks good.

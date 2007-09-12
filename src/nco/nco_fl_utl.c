@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.101 2007-09-12 12:27:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.102 2007-09-12 19:24:13 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -888,7 +888,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   } /* end if file was already on the local system */
 
   if(dbg_lvl_get() >= nco_dbg_fl)
-    if(DAP_URL && !fl_pth_lcl)
+    if(DAP_URL && fl_pth_lcl)
       (void)fprintf(stderr,"%s: INFO User-specified option \"-l %s\" was not used since input file was not retrieved from remote location\n",prg_nm_get(),fl_pth_lcl);
 
   if(!DAP_URL){

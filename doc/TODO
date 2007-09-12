@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.967 2007-09-10 14:22:42 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.968 2007-09-12 19:24:13 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -262,7 +262,6 @@ nco542. Put batch scripts, executables in ${DATA}/nco_bm/CASEID? Where to put cr
 nco546. Use makeatletter command in CCSM example in nco.texi?
 nco547. Format CCSM example in nco.texi
 nco548. Hyper-link all switches to explanatory sections?
-nco549. Automagically generate opaque-type I/O symbols in nco_typ.h: Pending deluge of new types in netCDF4 makes this highly desirable
 nco552. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 1: allow smaller variables to be in file_1 (pre-compute broadcast size and place in var_out before var_def(out_id,var_out))
 nco560. Change FTP access script to facilitate mget *?
 	NCO cannot process files obtained this way unless mget feeds
@@ -346,7 +345,6 @@ nco599. Allow targets to determine Makefile variables so, e.g., 'make mpi' autom
 nco607. mpnc*: Define structures (rather than int arrays) for MPI messages
 nco609. Tune (or remove?) sleep interval in MPI operators
 nco612. ncks ncdump-like features for netcdf4 files structures
-nco616. Remove ncap assumption that type_id is proxy for precision (breaks in netCDF4)
 nco618. XML data discovery on NCAR CDP via Luca Cinquini protocol?
 nco622. NULL'ify opt_crr unless opt_lng detected?
 nco624. Document MPI in users guide/manual
@@ -386,7 +384,6 @@ nco652. Polish/finish ncap random number generator
         ncap -O -v -s 'x=rnd_nbr(one)' ~/nco/data/in.nc ~/foo.nc;ncks ~/foo.nc
 nco653. Segregate MPI from non-MPI builds completely in bld/Makefile on AIX
 nco655. Incorporate BLAS if possible?
-nco657. Add new netCDF4 types to arithmetic code
 nco658. netcdf4 regression in ncks test #1: Regression re-verified 20060924, 20070831
         make NETCDF4=Y FL_FMT=netcdf4 tst 
         ncks -O --fl_fmt=netcdf4 -v lat_T42 ~/nco/data/in.nc ~/foo.nc;od -An -c -N4 ~/foo.nc
@@ -433,7 +430,7 @@ nco681. Rename nco++:
 	ncoTree.cpp		sdo_tree.cc
 	ncoTree.hpp		sdo_tree.hh
 nco683. Convert to subversion http://sf.net/docs/E09/
-nco685. Run static analysis tool on nco codebase
+nco685. Run static analysis tool on NCO codebase
 nco689. Multislabs (multiple limits on same dimension) fail in arithmetic operators. Currently, arithmetic operators silently ignore all limit specifications after the first. Solution: Diagnose and fail with informative warning until nco690 implemented.
         ncwa -O -a lat,lon -w area -d lat,30.,90. -d lon,345.,360. -d lon,0.,195. isccpd_0112_clm_landmask.nc foo4.nc
 nco690. Implement multislabs in arithmetic operators (no reason not to!)
@@ -457,7 +454,7 @@ nco717. Averaging empty record variable creates an element in output!:
 	Hence averaging the file increases the data storage.
 	What to do?  Nothing.
 nco722. mpncwa: DDRA diagnostics should work in MPI mode, not just SMP mode
-nco725. attribute propagation: regression test
+nco725. Add attribute propagation regression test
         ncap2 -v -O -s "cnv_CF_crd2=cnv_CF_crd" -s "lon2=lon(0)" -p ~/nco/data in.nc ~/foo.nc
 nco726. attribute propagation: document
 nco737. Add regression for regex'ing consecutive Q's?
@@ -523,8 +520,7 @@ nco808. Dave Allured request on 20070213 for ncea to resolve hyperslab indices f
         ncea -O -d time,"2010-1-1 0:0:0","2020-12-31 0:0:0" ~/giss*.nc ~/output.nc
 	ncea -O -D 5 -d time,1.,5. -p ~/nco/data in.nc in.nc ~/foo.nc
 nco809. Implement --quiet option to suppress WARNINGs and INFOs
-nco812. Investigate make check errors on FC6
-nco814. Regression test for forgiving exclusion list handling
+nco814. Add regression test for forgiving exclusion list handling
         ncks -O -D 2 -x -v not_present ~/nco/data/in.nc ~/foo.nc
 nco816. Add regression tests for rmssdn when N=0, N=1, N=2
 	ncra -O -y rmssdn -v '^rec_var_flt_mss_val_flt_all.?' ~/nco/data/in.nc ~/foo.nc
@@ -619,7 +615,7 @@ nco900. Get UDUnits2 working with time coordinates:
 nco901. mss_val in code and comments now (usually) refers to _FillValue (except in nco_mss_val.c). Change mss_val to fll_val?
 nco905. TKN2SNG technique for "_FillValue" adds extra quotes in nco.h but not c.c
 nco906. DAP test via THREDDS server:
-	ncks -l . -m http://eclipse.ncdc.noaa.gov:8080/thredds/nfdownload/isccp-d1/2001/ISCCP.D1.1.GLOBAL.2001.01.01.0000.GPC
+	ncks -l . -m http://eclipse.ncdc.noaa.gov:8080/thredds/dodsC/isccp-d1/2001/ISCCP.D1.1.GLOBAL.2001.01.01.0000.GPC
 nco907. document new wget capabilities
 nco908. 
 ************************************************************************
