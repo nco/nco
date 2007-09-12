@@ -1,4 +1,10 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.968 2007-09-12 19:24:13 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.969 2007-09-12 19:39:33 zender Exp $ 
+
+# Purpose: TODO items for NCO
+
+# Usage: Upload to homepage:
+/usr/bin/scp ~/nco/doc/TODO nco.sf.net:/home/groups/n/nc/nco/htdocs
+/usr/bin/scp ~/nco/doc/TODO dust.ess.uci.edu:/var/www/html/nco
 
 ******************************************************************************
 NCO Wish list:
@@ -122,13 +128,13 @@ nco222. Warn when ncea/ncra/ncrcat/ncecat operate on scaled variables ("Results 
 nco225. Pass aed by reference in nco_aed_prc()
 nco226. Is xrf in nco_var_cnf_dmn() is really necessary? If not, remove it and make wgt arg const var_sct * const
 nco228. g++ linking requiring #ifndef GNUC++ around fabsf,fmodf defs in nco_var_scv.c
-nco230. Keep track of type of missing_value field in variable structure for reasons described in nco_cnf_var_typ()/nco_cnv_mss_val_typ()
+nco230. Keep track of type of _FillValue field in variable structure for reasons described in nco_cnf_var_typ()/nco_cnv_mss_val_typ()
 nco232. Warn when arithmetic operators encounter packed variables?
 nco233. Makefile.old rule for make tst appears broken for long FTP rule
 nco237. Break down nco.texi into bite-size chunks, e.g., one file per section
 nco238. Replace y=(typ *)nco_malloc(nbr*sizeof(typ)) with y=(typ *)nco_malloc(nbr*sizeof(*y))?
 nco239. Create one global compatibility file (nco_xpf.[ch]?) activated by HAVE_ or NEED_ actions so do not have multiple platform dependent #includes as is case now with HAVE_STRCASECMP, HAVE_STRDUP requiring nco_sng_utl.h
-nco241. Add run-time switch which requests that output be missing_value where ANY input field is missing_value. NCO discussion forum 20021212.
+nco241. Add run-time switch which requests that output be _FillValue where ANY input field is _FillValue. NCO discussion forum 20021212.
 nco245. Eliminate all instances of passing naked constants
 nco246. Deprecate USE_FORTRAN_ARITHMETIC from Makefile
 nco250. ncks -s should refuse to print strings formatted with %s unless they contain NUL-terminator. This will avoid segfaults like
@@ -217,30 +223,25 @@ nco441. Packing NC_DOUBLE->NC_CHAR, NC_INT->NC_CHAR, or
         ncks -m -H -v three_dmn_var_dbl ~/foo_upk.nc
 nco453. Re-think handling of dangling pointers in nco_pck_val()?
 nco454. ncpdq: Combine nco_pck_map,nco_pck_typ into new nco_pck_sct to avoid proliferation of argument passing
-nco457. ncpdq: missing_value is not converted to variable type when variable is not packed three_dmn_var_dbl. How to reconcile with nco427?
+nco457. ncpdq: _FillValue is not converted to variable type when variable is not packed three_dmn_var_dbl. How to reconcile with nco427?
 nco461. Always plenty of great ideas for new NCO functionality in http://tinyurl.com/6pzqd
-nco462. ncpdq: pack/unpack missing_data just like variable data? The reason I did not do this originally is because I did not want the missing_value to contribute to the dynamic range of values which need packing. Since my missing_values are always huge (1.0e36), packing missing_values would greatly diminish the precision of the valid packed data. Best solution appears to be to check if missing_value distorts valid_range, and, if so, pack missing_value to default value of packed type.
+nco462. ncpdq: pack/unpack missing_data just like variable data? The reason I did not do this originally is because I did not want the _FillValue to contribute to the dynamic range of values which need packing. Since my _FillValues are always huge (1.0e36), packing _FillValues would greatly diminish the precision of the valid packed data. Best solution appears to be to check if _FillValue distorts valid_range, and, if so, pack _FillValue to default value of packed type.
 nco463. add optional scale_factor, add_offset arguments to ncap pack()?
-nco464. ncpdq: convert missing_value to packed type
+nco464. ncpdq: convert _FillValue to packed type
         ncpdq -O -D 4 -C -P all_new -v mss_val ~/nco/data/in.nc ~/foo.nc
         ncpdq -O -C -U -v mss_val ~/foo.nc ~/foo_upk.nc
         ncks -C -m -H ~/foo_upk.nc
 nco467. Keep track of CDO "Climate Data Operators" http://www.mpimet.mpg.de/~cdo/
 nco469. Use default _FillValue e.g., NC_FILL_FLOAT, or values from <limits.h>, <float.h>?
 nco474. Incorporate alternative "chunking" for ncrcat when data are one-dimensional, to avoid high disk/network access incurred by retrieving one float at a time
-nco477. Make default to copy but not to print associated coordinate variables
+nco477. Make default to copy but not to print associated coordinate variables?
 nco479. netCDF/L from Loci: http://loci.cs.utk.edu/modules.php?name=News&file=article&sid=40
 nco480. Add boxcar averaging option (average in groups of n records) to ncra
 nco482. Remove return's from void functions dated 20050109 once gcc-3.4.2 behavior fixed or gcc upgraded on i386 platforms
 nco483. Compiling with ABORT_ON_ERROR and calling without an option dumps core
         Fix so inputting 0 filenames merely prints usage, does not abort?
 nco485. Add md5sum hash functionality to ncks
-nco486. Make sure ncks -q/-Q behaves as intended
 nco487. Add ncks option to suppress over-writing attributes in output file by attributes of source file#1
-nco488. ncatted: Deleting global attributes doesn't work unless 'global' specified
-        ncatted -O -a Conventions,,d,, ~/nco/data/in.nc ~/foo.nc (fails)
-        ncks ~/foo.nc | m
-        ncatted -O -a Conventions,global,d,, ~/nco/data/in.nc ~/foo.nc (works)
 nco494. Implement gzip library wrapper library build option for znetCDF?
 nco514. MPI builds call superfluous linker steps:
         make MPI=Y > foo 2>&1
@@ -289,9 +290,6 @@ nco569. bm: Add SRB test
         Sget nco/data/in.nc
 nco570. Merge ncatted/ncrename file opens into nco_fl_out_open()
 nco573. Consolidate -4, --64bit into one option a la ncks --fl_fmt
-nco575. Add --hdr/--header options to syntax in nco_ctl.c and nco.texi
-        How to do this for options without short counterparts?
-        Also --cmp/--compiler for ncks
 nco576. Re-order arguments so var_sbt computes op2:=op1-op2 rather than op2:=op2-op1
 nco577. ncbo: get rid of dangling pointers in var_1, var_2 after ncap_var_cnf_dmn()
 nco578. ncbo: Use ncbo.c as template for [mp]ncflint re-write
@@ -376,8 +374,7 @@ nco646. pnetCDF builds on elnino, not ashes. Why?
                  from mpinetcdf.c:8:
 	/usr/lib/gcc/i486-linux-gnu/4.0.2/include/stddef.h:152: error: two or more data types in declaration specifiers
 	/usr/lib/gcc/i486-linux-gnu/4.0.2/include/stddef.h:214: error: duplicate unsignednco
-nco647. Replicate Daniel's dangling free valgrind error
-nco648. Determine whether mpncra creates dangling points when it packs/unpacks variables
+nco648. Does mpncra create dangling pointers when it packs/unpacks variables?
 nco649. Add ncks --prn_cln switch to print coords/vars naked (no names, indices)
 nco651. Use hdr_pad standard to add documentation for long switches without short counterparts, e.g., --cmp, --mpi 
 nco652. Polish/finish ncap random number generator
