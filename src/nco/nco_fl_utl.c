@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.100 2007-09-04 07:24:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.101 2007-09-12 12:27:06 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -103,7 +103,7 @@ nco_fl_cp /* [fnc] Copy first file to second */
 
   /* Construct and execute copy command */
   cp_cmd=(char *)nco_malloc((strlen(cp_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-fmt_chr_nbr+1UL)*sizeof(char));
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Copying %s to %s...",fl_src,fl_dst);
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"Copying %s to %s...",fl_src,fl_dst);
   (void)sprintf(cp_cmd,cp_cmd_fmt,fl_src,fl_dst);
   rcd=system(cp_cmd);
   if(rcd == -1){
@@ -111,7 +111,7 @@ nco_fl_cp /* [fnc] Copy first file to second */
     nco_exit(EXIT_FAILURE);
   } /* end if */
   cp_cmd=(char *)nco_free(cp_cmd);
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
 } /* end nco_fl_cp() */
 
 char * /* O [sng] Canonical file name*/
@@ -659,7 +659,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	  host_nm_rmt_psn=strstr(fl_netrc_bfr,host_nm_rmt);
 	  if(host_nm_rmt_psn){
 	    FTP_NETRC=True;
-	    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s() will use .netrc file at %s instead of anonymous FTP\n",prg_nm_get(),fnc_nm,fl_nm_netrc);
+	    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s() will use .netrc file at %s instead of anonymous FTP\n",prg_nm_get(),fnc_nm,fl_nm_netrc);
 	  } /* endif host_nm_rmt_psn */
 	  fl_netrc_bfr=(char *)nco_free(fl_netrc_bfr);
 	} /* endif rcd */
@@ -818,7 +818,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	if(fl_pth_lcl == NULL) (void)fprintf(stderr,"%s: HINT Use -l option\n",prg_nm_get());
 	nco_exit(EXIT_FAILURE);
       } /* end if */
-      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Created local directory ./%s\n",prg_nm_get(),fl_pth_lcl_tmp);
+      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Created local directory ./%s\n",prg_nm_get(),fl_pth_lcl_tmp);
       /* Free local command space */
       cmd_sys=(char *)nco_free(cmd_sys);
     } /* end if */
@@ -833,7 +833,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     }else{
       (void)sprintf(cmd_sys,rmt_cmd->fmt,fl_nm_rmt,fl_nm_lcl);
     } /* end else */
-    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: Retrieving file from remote location with command:\n%s\n",prg_nm_get(),cmd_sys);
+    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: Retrieving file from remote location with command:\n%s\n",prg_nm_get(),cmd_sys);
     (void)fflush(stderr);
     /* Fetch file from remote file system */
     rcd=system(cmd_sys);
@@ -873,22 +873,26 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	} /* end if */
 	/* Sleep for specified time */
 	(void)sleep((unsigned)tm_sleep_scn);
-	if(dbg_lvl_get() > 0) (void)fprintf(stderr,".");
+	if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,".");
 	(void)fflush(stderr);
       } /* end for */
       if(tm_idx == tm_nbr){
 	(void)fprintf(stderr,"%s: ERROR Maximum time (%d seconds = %.1f minutes) for asynchronous file retrieval exceeded.\n",prg_nm_get(),tm_nbr*tm_sleep_scn,tm_nbr*tm_sleep_scn/60.0);
 	nco_exit(EXIT_FAILURE);
       } /* end if */
-      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"\n%s Retrieval successful after %d sleeps of %d seconds each = %.1f minutes\n",prg_nm_get(),tm_idx,tm_sleep_scn,tm_idx*tm_sleep_scn/60.0);
+      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"\n%s Retrieval successful after %d sleeps of %d seconds each = %.1f minutes\n",prg_nm_get(),tm_idx,tm_sleep_scn,tm_idx*tm_sleep_scn/60.0);
     } /* end else transfer mode is asynchronous */
     *FILE_RETRIEVED_FROM_REMOTE_LOCATION=True;
   }else{ /* end if input file did not exist locally */
     *FILE_RETRIEVED_FROM_REMOTE_LOCATION=False;
   } /* end if file was already on the local system */
 
+  if(dbg_lvl_get() >= nco_dbg_fl)
+    if(DAP_URL && !fl_pth_lcl)
+      (void)fprintf(stderr,"%s: INFO User-specified option \"-l %s\" was not used since input file was not retrieved from remote location\n",prg_nm_get(),fl_pth_lcl);
+
   if(!DAP_URL){
-    /* File is truly local---does local system have read permission? */
+    /* File is (now, anyway) truly local---does local system have read permission? */
     if((fp_in=fopen(fl_nm_lcl,"r")) == NULL){
       (void)fprintf(stderr,"%s: ERROR User does not have read permission for %s, or file does not exist\n",prg_nm_get(),fl_nm_lcl);
       nco_exit(EXIT_FAILURE);
@@ -897,7 +901,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     } /* end else */
     
       /* For local files, perform optional file diagnostics */
-    if(dbg_lvl_get() > 0){
+    if(dbg_lvl_get() >= nco_dbg_std){
       char *fl_nm_cnc=NULL; /* [sng] Canonical file name */
       /* Determine canonical filename and properties */
       fl_nm_cnc=nco_fl_info_get(fl_nm_lcl);
@@ -928,7 +932,7 @@ nco_fl_mv /* [fnc] Move first file to second */
 
   /* Construct and execute copy command */
   mv_cmd=(char *)nco_malloc((strlen(mv_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-fmt_chr_nbr+1UL)*sizeof(char));
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",prg_nm_get(),fl_src,fl_dst);
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",prg_nm_get(),fl_src,fl_dst);
   (void)sprintf(mv_cmd,mv_cmd_fmt,fl_src,fl_dst);
   rcd=system(mv_cmd);
   if(rcd == -1){
@@ -936,7 +940,7 @@ nco_fl_mv /* [fnc] Move first file to second */
     nco_exit(EXIT_FAILURE);
   } /* end if */
   mv_cmd=(char *)nco_free(mv_cmd);
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
 } /* end nco_fl_mv() */
 
 char * /* O [sng] Name of file to retrieve */
@@ -1298,7 +1302,7 @@ nco_fl_rm /* [fnc] Remove file */
   rm_cmd=(char *)nco_malloc((strlen(rm_cmd_sys_dep)+1UL+strlen(fl_nm)+1UL)*sizeof(char));
   (void)sprintf(rm_cmd,"%s %s",rm_cmd_sys_dep,fl_nm);
 
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG Removing %s with %s\n",prg_nm_get(),fl_nm,rm_cmd);
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG Removing %s with %s\n",prg_nm_get(),fl_nm,rm_cmd);
   rcd=system(rm_cmd);
   if(rcd == -1) (void)fprintf(stderr,"%s: WARNING unable to remove %s, continuing anyway...\n",prg_nm_get(),fl_nm);
 
