@@ -1,6 +1,6 @@
 2007-09-18  Charlie Zender  <zender@uci.edu>
 
-	* xlC SGI CC no longer search for <stdint.h> in nco_var.hh
+	* xlC and SGI CC no longer search for <stdint.h> in nco_var.hh
 
 2007-09-17  Charlie Zender  <zender@uci.edu>
 
