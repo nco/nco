@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.22 2007-07-23 00:31:50 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.23 2007-09-18 12:47:19 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface to netCDF variable routines
 
@@ -18,7 +18,9 @@
 #include <valarray> // STL valarray class template
 
 // Standard C headers
-#include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t
+#if !(defined __xlC__) && !(defined SGIMP64) // C++ compilers that do not allow stdint.h
+# include <stdint.h> // Required by g++ for LLONG_MAX, ULLONG_MAX, by icpc for int64_t
+#endif // C++ compilers that do not allow stdint.h
 
 // 3rd party vendors
 #include <netcdf.h> // netCDF C interface
