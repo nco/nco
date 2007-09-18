@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.260 2007-09-03 20:26:31 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.261 2007-09-18 15:46:30 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.2 are ready. 
 
@@ -15,6 +15,8 @@ A. Support URL retrieval via wget. Previously files specified with
 B. UDUnits2 beta-support. Compile with 'UDUNITS2=Y', send us feedback.  
    Binaries (RPMs, Debs) still use UDUnits1. Thanks to Steve Emmerson.
    http://nco.sf.net/nco.html#UDUnits2
+
+C. Fix for AIX and SGI builds of libnco_c++
 
 D. Improved Documentation:
    Working with non-standard grids, e.g., 2D grids fxm

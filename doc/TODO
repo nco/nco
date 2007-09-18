@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.971 2007-09-17 22:28:41 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.972 2007-09-18 15:46:31 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -614,7 +614,8 @@ nco905. TKN2SNG technique for "_FillValue" adds extra quotes in nco.h but not c.
 nco906. Add regression test for DAP via THREDDS server:
 	ncks -m http://eclipse.ncdc.noaa.gov:8080/thredds/dodsC/isccp-d1/2001/ISCCP.D1.1.GLOBAL.2001.01.01.0000.GPC
 nco907. document new wget capabilities
-nco909. 
+nco909. Does autoconf for netCDF4-enabled NCO require additional -lm flag?
+nco910. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
