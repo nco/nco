@@ -1,7 +1,7 @@
 #ifndef INC_ncoParserTokenTypes_hpp_
 #define INC_ncoParserTokenTypes_hpp_
 
-/* $ANTLR 2.7.6 (20060511): "ncoGrammer.g" -> "ncoParserTokenTypes.hpp"$ */
+/* $ANTLR 2.7.6 (20070220): "ncoGrammer.g" -> "ncoParserTokenTypes.hpp"$ */
 
 #ifndef CUSTOM_API
 # define CUSTOM_API
@@ -79,32 +79,32 @@ struct CUSTOM_API ncoParserTokenTypes {
 		DOUBLE = 68,
 		INT = 69,
 		BYTE = 70,
-		SHORT = 71,
-		USHORT = 72,
-		UINT = 73,
-		INT64 = 74,
-		UINT64 = 75,
-		DIM_ID_SIZE = 76,
-		NRootAST = 77,
-		SHIFTL = 78,
-		SHIFTR = 79,
-		QUOTE = 80,
-		DGT = 81,
-		LPH = 82,
-		LPHDGT = 83,
-		XPN = 84,
-		BLASTOUT = 85,
-		UNUSED_OPS = 86,
-		Whitespace = 87,
-		CXX_COMMENT = 88,
-		C_COMMENT = 89,
-		NUMBER_DOT = 90,
-		NUMBER = 91,
-		VAR_ATT = 92,
-		VAR_ATT_QT = 93,
-		DIM_VAL = 94,
-		LMT_DMN = 95,
-		UBYTE = 96,
+		UBYTE = 71,
+		SHORT = 72,
+		USHORT = 73,
+		UINT = 74,
+		INT64 = 75,
+		UINT64 = 76,
+		DIM_ID_SIZE = 77,
+		NRootAST = 78,
+		SHIFTL = 79,
+		SHIFTR = 80,
+		QUOTE = 81,
+		DGT = 82,
+		LPH = 83,
+		LPHDGT = 84,
+		XPN = 85,
+		BLASTOUT = 86,
+		UNUSED_OPS = 87,
+		Whitespace = 88,
+		CXX_COMMENT = 89,
+		C_COMMENT = 90,
+		NUMBER_DOT = 91,
+		NUMBER = 92,
+		VAR_ATT = 93,
+		VAR_ATT_QT = 94,
+		DIM_VAL = 95,
+		LMT_DMN = 96,
 		NULL_TREE_LOOKAHEAD = 3
 	};
 #ifdef __cplusplus
