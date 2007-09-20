@@ -453,7 +453,7 @@
        var=nco_var_free(var);
       return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nc_type)NC_INT,false);        
     }
-
+ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nc_type)NC_INT,false);
   
     int rval=0;
     var_sct *var_in=NULL_CEWI;     
@@ -468,7 +468,7 @@
     if(!Nvar){
        wrn_prn(fnc_nm,sfnm+" unable to find variable: "+va_nm); 
        // 
-       return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nc_type)NC_INT,rval);        
+       return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nco_int)rval);        
     }
    
     //De-reference
@@ -562,7 +562,7 @@
 
     }// end switch
 
-    return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nc_type)NC_INT,rval);        
+    return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nco_int)rval);        
 
   }// end function
 
@@ -903,32 +903,28 @@
 
                  for(idx=0 ; idx < nbr_dim ; idx++){
                    std::string sdm(var_out->dim[idx]->nm);    
-                 if( dmn_vtr.findi(sdm) >=0)
-		   bool_vtr[idx]=True;
-                 else
-                   bool_vtr[idx]=False;
+                   bool_vtr[idx]= (dmn_vtr.findi(sdm) >=0 ? True:False);
+
                    //straight mapping !!
                    dmn_idx_out_in[idx]=idx; 
                   }                
-                break;
+                 break;
           
-	     case PPERMUTE:{ 
-               
-              
-	       for(idx=0 ; idx<nbr_dim; idx++){
+	       case PPERMUTE:{ 
+	         for(idx=0 ; idx<nbr_dim; idx++){
                    std::string sdm(var_in->dim[idx]->nm);    
 	           dmn_idx_in_out[idx]=dmn_vtr.findi(sdm);
 		   var_out->dim[idx]=dmn_vtr[idx];
                    var_out->dmn_id[idx]=dmn_vtr[idx]->id;
-	       }
+	         }
 
-               // create "out_in" mapping from "in_out" mapping
-               for(idx=0 ; idx <nbr_dim ; idx++)
-		 for(jdx=0 ; jdx<nbr_dim; jdx++)
-		   if( idx==dmn_idx_in_out[jdx]){
-                     dmn_idx_out_in[idx]=jdx;
-                     break;
-                   }  
+                 // create "out_in" mapping from "in_out" mapping
+                 for(idx=0 ; idx <nbr_dim ; idx++)
+		   for(jdx=0 ; jdx<nbr_dim; jdx++)
+		     if( idx==dmn_idx_in_out[jdx]){
+                       dmn_idx_out_in[idx]=jdx;
+                       break;
+                     }  
 	       } 
                break;
 
