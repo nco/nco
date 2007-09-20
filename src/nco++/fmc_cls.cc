@@ -453,7 +453,6 @@
        var=nco_var_free(var);
       return ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nc_type)NC_INT,false);        
     }
-ncap_sclr_var_mk(static_cast<std::string>("~utility_function"),(nc_type)NC_INT,false);
   
     int rval=0;
     var_sct *var_in=NULL_CEWI;     
