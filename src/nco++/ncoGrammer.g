@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.113 2007-08-29 16:15:51 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.114 2007-09-20 10:58:51 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -103,11 +103,11 @@ block:
 
 for_stmt:
      FOR^ LPAREN! (e1:expr)? SEMI! (e2:expr)? SEMI! (e3:expr)? RPAREN! st:statement
-        /*  { if(#e1==NULL)  #e1 = #([ NULL_NODE, "null_stmt"]); 
+      /*   { if(#e1==NULL)  #e1 = #([ NULL_NODE, "null_stmt"]); 
            if(#e2==NULL)  #e2 = #([ NULL_NODE, "null_stmt"]); 
            if(#e3==NULL)  #e3 = #([ NULL_NODE, "null_stmt"]); 
            #for_stmt=#(FOR,e1,e2,e3,st);
-         } */  
+         }  */
      ;
 
 
@@ -225,6 +225,7 @@ primary_exp
     | DOUBLE
     | INT
     | BYTE
+    | UBYTE    
     | SHORT
     | USHORT
     | UINT
@@ -459,6 +460,8 @@ NUMBER:
        | ('D'|'d')!    { $setType(DOUBLE);} // 3D, 3d
     )?        
 ;
+
+
 
 // Return var or att (var_nm@att_nm)
 VAR_ATT options {testLiterals=true; paraphrase="variable or attribute identifier"; } 
