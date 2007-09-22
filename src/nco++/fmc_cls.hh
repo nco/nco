@@ -22,27 +22,12 @@
 #include "ncoTree.hpp"
 
 //forward declarations
-class fmc_cls;
+class vtl_cls;
 class ncoTree;
 
 //local enum used to classify expressions 
 enum vtl_typ { VVAR,VLVAR,VDVAR, VATT,VLATT,VDATT,VDIM, VDIM_SIZE,VEXPR };
 
-
-//Virtual Class      /******************************************/
-class vtl_cls: public ncoParserTokenTypes {
-public:
-  // expression types,
-
-  std::vector<fmc_cls> fmc_vtr;
-
-  virtual void fnc(int){;}
-  virtual int size(void) { return fmc_vtr.size(); }
-  virtual std::vector<fmc_cls> *lst_vtr(void){ return &fmc_vtr;}
-  virtual var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker)=0;
-  virtual ~vtl_cls(){;}
-  virtual vtl_typ expr_typ(RefAST expr);
-};
 
 
 // function/method class  ****************************************/
@@ -69,6 +54,23 @@ public:
     return ( _fnm < right._fnm);
   }
 };
+
+
+//Virtual Class      /******************************************/
+class vtl_cls: public ncoParserTokenTypes {
+public:
+  // expression types,
+
+  std::vector<fmc_cls> fmc_vtr;
+
+  virtual void fnc(int){;}
+  virtual int size(void) { return fmc_vtr.size(); }
+  virtual std::vector<fmc_cls> *lst_vtr(void){ return &fmc_vtr;}
+  virtual var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker)=0;
+  virtual ~vtl_cls(){;}
+  virtual vtl_typ expr_typ(RefAST expr);
+};
+
 
 
 //Conversion Functions **************************************/
