@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.444 2007-09-17 22:28:41 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.445 2007-09-23 20:32:34 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -670,9 +670,9 @@ Peterson, and Matej Vela for packaging NCO for Debian over the years.
 <a name="centos"></a><a name="cnt"></a><a name="rhel"></a>
 <h3><a href="http://fedora.redhat.com">Fedora</a> and <a href="http://www.centos.org">CentOS</a> GNU/Linux</h3>
 <ul>
-<dt>Our most recent NCO RPMs (install with, e.g., &lsquo;<tt>yum install nco-3.9.2-1.i386.rpm</tt>&rsquo;):</dt>
-<li><a href="src/nco-3.9.2-1.i386.rpm">nco-3.9.2-1.i386.rpm</a> (<!--#fsize file="src/nco-3.9.2-1.i386.rpm"-->): Executables for i386/Fedora Core&nbsp;6-compatible environments (last updated <!--#flastmod file="src/nco-3.9.2-1.i386.rpm"-->)</li>
-<li><a href="src/nco-3.9.2-1.src.rpm">nco-3.9.2-1.src.rpm</a> (<!--#fsize file="src/nco-3.9.2-1.src.rpm"-->): Source (last updated <!--#flastmod file="src/nco-3.9.2-1.src.rpm"-->)</li>
+<dt>Our most recent NCO RPMs (install with, e.g., &lsquo;<tt>yum install nco-3.9.2-1.fc7.i386.rpm</tt>&rsquo;):</dt>
+<li><a href="src/nco-3.9.2-1.fc7.i386.rpm">nco-3.9.2-1.fc7.i386.rpm</a> (<!--#fsize file="src/nco-3.9.2-1.fc7.i386.rpm"-->): Executables for i386/Fedora Core&nbsp;7-compatible environments (last updated <!--#flastmod file="src/nco-3.9.2-1.fc7.i386.rpm"-->)</li>
+<li><a href="src/nco-3.9.2-1.fc7.src.rpm">nco-3.9.2-1.fc7.src.rpm</a> (<!--#fsize file="src/nco-3.9.2-1.fc7.src.rpm"-->): Source (last updated <!--#flastmod file="src/nco-3.9.2-1.fc7.src.rpm"-->)</li>
 <li><a href="src/nco-3.9.2-1.x86_64.rpm">nco-3.9.2-1.x86_64.rpm</a> (<!--#fsize file="src/nco-3.9.2-1.x86_64.rpm"-->): Executables for x86_64/CentOS&nbsp;4-compatible environments (last updated <!--#flastmod file="src/nco-3.9.2-1.x86_64.rpm"-->)</li>
 <li>More information on x86_64 RPMs available <a href="http://dust.ess.uci.edu/~wangd/s9y">here</a></li>
 
