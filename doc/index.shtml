@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.445 2007-09-23 20:32:34 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.446 2007-09-24 15:03:03 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -665,9 +665,9 @@ Thanks to Daniel Baumann, Francesco Lovergine, Brian Mays, Rorik
 Peterson, and Matej Vela for packaging NCO for Debian over the years.
 </ul>
 
-<a name="redhat"></a><a name="rhl"></a><a name="rpm"></a>
-<a name="fedora"></a><a name="fdr"></a><a name="fc"></a>
-<a name="centos"></a><a name="cnt"></a><a name="rhel"></a>
+<a name="redhat"></a><a name="rhl"></a><a name="rpm"></a> <!-- http://nco.sf.net#redhat --> <!-- http://nco.sf.net#rhl --> <!-- http://nco.sf.net#rpm -->
+<a name="fedora"></a><a name="fdr"></a><a name="fc"></a> <!-- http://nco.sf.net#fedora --> <!-- http://nco.sf.net#fdr --> <!-- http://nco.sf.net#fc -->
+<a name="centos"></a><a name="cnt"></a><a name="rhel"></a> <!-- http://nco.sf.net#centos --> <!-- http://nco.sf.net#cnt --> <!-- http://nco.sf.net#rhel -->
 <h3><a href="http://fedora.redhat.com">Fedora</a> and <a href="http://www.centos.org">CentOS</a> GNU/Linux</h3>
 <ul>
 <dt>Our most recent NCO RPMs (install with, e.g., &lsquo;<tt>yum install nco-3.9.2-1.fc7.i386.rpm</tt>&rsquo;):</dt>
