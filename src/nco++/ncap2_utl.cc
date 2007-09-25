@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.82 2007-09-05 12:06:52 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.83 2007-09-25 11:41:12 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1694,6 +1694,7 @@ ncap_sclr_var_mk(
   var=ncap_sclr_var_mk(var_nm,(nc_type)NC_INT,true);
   (void)cast_void_nctype((nc_type)NC_INT,&var->val);
   *var->val.lp=val_int;
+
   (void)cast_nctype_void((nc_type)NC_INT,&var->val);
   return var;
 }
@@ -1873,6 +1874,7 @@ void ncap_def_ntl_scn(prs_cls *prs_arg)
   
 }
 
+
 // Do an in-memory hyperslab !!
 void 
 ncap_get_var_mem( 
@@ -1880,6 +1882,8 @@ ncap_get_var_mem(
 		 int dpt_max,                   // Max depth ( same as number of dims) 
 		 std::vector<int> &shp_vtr,     // shape of input var (in bytes)
 		 NcapVector<dmn_sct*> &dmn_vtr, // New vectors
+                 var_sct* var_in,
+                 long nbr_lpp,
 		 char *cp_in,                   // Pointer to (char*)var_in->val.vp
 		 char *&cp_out){                // Reference pointer to space for new var values
   
@@ -1887,14 +1891,17 @@ ncap_get_var_mem(
   
   
   long idx;      
+  long jdx;
   long srt=dmn_vtr[dpt]->srt;
   long end=dmn_vtr[dpt]->end;
   long cnt=dmn_vtr[dpt]->cnt;
   long srd=dmn_vtr[dpt]->srd;
   long slb_sz=shp_vtr[dpt];
+  long dpt_cnt=var_in->dim[dpt]->cnt;;
   
   char *cp_srt=cp_in+ptrdiff_t(srt*slb_sz);
   char *cp_end=cp_out;
+  char *cp_lcl;
   
   
   if(dbg_lvl_get() > 2){
@@ -1907,28 +1914,63 @@ ncap_get_var_mem(
   if(dpt == dpt_max){
     
     
-    if(srd==1) 
-      (void)memcpy(cp_end, cp_srt, ptrdiff_t(cnt*shp_vtr[dpt]));
-    else { 
-      
-      for(idx=0 ; idx<cnt ; idx++ ){
-        (void)memcpy(cp_end,cp_srt,slb_sz);
-        cp_end+=slb_sz;
-        cp_srt+=(ptrdiff_t)(srd*slb_sz);
+    if(srd==1) {
+        
+      for(jdx=0 ; jdx <nbr_lpp ; jdx++){  
+        (void)memcpy(cp_out, cp_srt, ptrdiff_t(cnt*slb_sz));
+        cp_out+=ptrdiff_t(cnt*slb_sz);
+        cp_srt+=ptrdiff_t(dpt_cnt*slb_sz); 
       }
-    } // end else
-    // increment output pointer (n.b space already alloc-ed)
-    cp_out+=ptrdiff_t(cnt*slb_sz);
+    }
+    if(srd>1) {  
+      
+      for(jdx=0 ; jdx<nbr_lpp ;jdx++){ 
+        cp_lcl=cp_srt;
+        for(idx=0 ; idx<cnt ; idx++ ){
+          
+          (void)memcpy(cp_out,cp_lcl,slb_sz);
+          cp_out+=slb_sz;
+          cp_lcl+=(ptrdiff_t)(srd*slb_sz);
+        }
+        cp_srt+=ptrdiff_t(dpt_cnt*slb_sz); 
+      }
+
+    }
     
   }
   
   if(dpt < dpt_max ){
-    for(idx=0; idx <cnt ;idx++){
-      (void)ncap_get_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,cp_srt,cp_out);
-      cp_srt+= ptrdiff_t(srd*slb_sz);
+
+    // The whole slab
+    if( srd==1 && cnt==dpt_cnt) {
+      (void)ncap_get_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,var_in, nbr_lpp*cnt,cp_srt,cp_out);
+    }  
+
+    //Single slab or contiguous block
+    if(srd==1 && cnt<dpt_cnt){
+      for(idx=0; idx<nbr_lpp;idx++){
+        (void)ncap_get_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,var_in,cnt,cp_srt,cp_out);
+	 cp_srt+=dpt_cnt*slb_sz; 
+      }
     }
-  }  
+    // Discontinuous slab i.e srd > 1
+    if(srd>1) {
+
+      for(jdx=0; jdx<nbr_lpp;jdx++){
+        cp_lcl=cp_srt; 
+        for(idx=0; idx <cnt ;idx++){
+          (void)ncap_get_var_mem(dpt+1,dpt_max,shp_vtr,dmn_vtr,var_in,1,cp_lcl,cp_out);
+          cp_lcl+= ptrdiff_t(srd*slb_sz);
+        }
+        cp_srt+=dpt_cnt*slb_sz;
+      }  
+    }
+
+  }
+   
 } /* ncap_get_var_mem */
+
+
 
 
 void
@@ -1943,6 +1985,7 @@ nco_get_var_mem(
   
   void  *vp_out;
   char *cp_out; 
+  char *cp_in;
   std::vector<int> shp_vtr;
   
   
@@ -1964,11 +2007,16 @@ nco_get_var_mem(
   ncnt=1;
   for(idx=0 ;idx < dmn_nbr ; idx++)
     ncnt*=dmn_vtr[idx]->cnt; 
+
+  // Do nothing if whole slab is specified
+  if(var_in->sz == ncnt)
+    return;
   
   // Alloc space for output variables value
   vp_out=(void*)nco_malloc(ncnt*nco_typ_lng(var_in->type));
   
   cp_out=(char*)vp_out;
+  cp_in=(char*)var_in->val.vp;
   
   // Work out max depth we have to go to 
   dpt_max=dmn_nbr;
@@ -1979,7 +2027,7 @@ nco_get_var_mem(
       break;
   
   // Call in-memory nco_get_var() (n.b is recursive of course!!)
-  (void)ncap_get_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,(char*)var_in->val.vp,cp_out);
+  (void)ncap_get_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,var_in,1L,cp_in,cp_out);
   
 
   var_in->sz=ncnt;
@@ -1999,7 +2047,7 @@ int dpt_max,                    // Max depth ( same as number of dims)
 std::vector<int> &shp_vtr,      // shape of input var (in bytes)
 NcapVector<lmt_sct*> &dmn_vtr,  // New vectors
 var_sct* var_out,               // needed 
-int nbr_lpp,                    // number of iterations
+long nbr_lpp,                    // number of iterations
 char *&cp_in,                   // Pointer to (char*)var_in->val.vp
 char *cp_out)                   // Slab to be "put" 
 {
@@ -2140,7 +2188,7 @@ NcapVector<lmt_sct*> &dmn_vtr)
   }
   else
   // Call in-memory nco_put_var_mem (n.b is recursive of course!!)
-    (void)ncap_put_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,var_out,1,cp_in,cp_out);
+    (void)ncap_put_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,var_out,1L,cp_in,cp_out);
 
   
 } /* end nco_put_var_mem() */
