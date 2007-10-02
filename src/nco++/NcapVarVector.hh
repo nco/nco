@@ -3,28 +3,35 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 #include "ncap2.hh"
 #include "NcapVar.hh"
 
-class NcapVarVector {
-
-protected:
-  std::vector<NcapVar*> t_vector;
+class NcapVarVector : public std::vector<NcapVar*>  {
 
 public:
-  NcapVar* operator [](long idx)const {
-   return t_vector[idx];
-  }
-  long    size(){ return t_vector.size();}
+
+  long    size();
   NcapVar* find(const char*nm);
   NcapVar* find(std::string s_fnm);
   long     findi(std::string s_fnm);
   void    push_ow(NcapVar *Nvar);
   void    push(NcapVar *Nvar);
-  void    erase(long idx);
   void    erase(std::string s_fnm);
-  NcapVar* pop();
-};
+  void    erase(long idx); 
+  void    sort();
+
+  //Use for sorting
+  struct less_mag
+   {
+       bool operator()( NcapVar* v1, NcapVar* v2) { 
+         return ( v1->getFll() < v2->getFll()) ; 
+       }
+  };
+
+ 
+
+ };
 
 #endif
 
