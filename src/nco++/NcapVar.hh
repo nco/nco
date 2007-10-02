@@ -46,7 +46,12 @@ public:
     //flg_mem=_flg_mem;  
 
     rfr_ast=ANTLR_USE_NAMESPACE(antlr)nullAST; 
-    flg_udf=(var_in->undefined==True);
+
+    if(var !=(var_sct*)NULL) 
+      flg_udf=(var_in->undefined==True);
+    else
+      flg_udf=False;
+ 
     flg_mem=false;
     flg_stt=0;
     xpr_typ_rfr=ncap_xpr_null;
@@ -64,7 +69,7 @@ public:
     }
 
     //make sure var->nm is the same as var_nm@att_nm 
-    if( fll_nm != std::string(var->nm) ){ 
+    if( var!=(var_sct*)NULL && fll_nm != std::string(var->nm) ){ 
     var->nm=(char*)nco_free(var->nm);
     var->nm=strdup(fll_nm.c_str()); 
     }
