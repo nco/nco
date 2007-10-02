@@ -1,0 +1,61 @@
+// $Header: /data/zender/nco_20150216/nco/data/rgr.nco,v 1.1 2007-10-02 11:12:31 zender Exp $ -*-C++-*-
+
+// Purpose: ncap script for linear and non-linear data regressions
+
+/* Usage:
+   ncap2 -v -O -D 1 -S ${HOME}/nco/data/rgr.nco ${HOME}/nco/data/in.nc ~/foo_rgr.nc
+   ncks -C -H -F -u -v slp,fst ~/foo_rgr.nc */
+
+/* Ancillary simulations:
+ncap2 -v -D 1 -O \
+-s 'abc_nbr=5' \
+-s 'defdim("sgn",abc_nbr)' \
+-s 'sgn_mV[sgn]={4.52,8.90,15.66,22.41,37.86}' \
+-s 'rfl[sgn]={9.43,25.68,46.67,65.23,98.5}' \
+-s 'abc=sgn_mV;ord=rfl'
+-s ''
+-s 'defdim("x",6);flx_mss_vrt_dst_nrm_trc[$x]=flx_mss_vrt_dst_nrm(0:5)' \
+-s 'flx_mss_vrt_dst_nrm_trc_nrm=flx_mss_vrt_dst_nrm_trc*(1.0-(0.17+0.67))/flx_mss_vrt_dst_nrm_trc.total()' \
+-s 'flx_mss_vrt_dst_nrm_crc=flx_mss_vrt_dst_nrm' \
+-s 'flx_mss_vrt_dst_nrm_crc(0:5)=flx_mss_vrt_dst_nrm_trc_nrm' \
+-s 'flx_mss_vrt_dst_nrm_crc(6)=0.17' \
+-s 'flx_mss_vrt_dst_nrm_crc(7)=0.67' \
+-s 'flx_mss_vrt_dst_nrm_crc_ttl=flx_mss_vrt_dst_nrm_crc.total()' \
+~/foo.nc ~/foo_rgr.nc # Normalize mass fractions
+ncks -C -F -v slp,fst ~/foo_rgr.nc # Answers
+ncks -C -F -s "%8.3e, " -v slp,fst ~/foo_rgr.nc # Answers formatted */
+
+pi=3.1415926535897932384626433832795029L; // (3.1415926535897932384626433832795029L) [frc] 3
+pi@long_name="Pi";
+pi@units="fraction";
+
+rgr_qdr=0s; // [flg] Quadratic fit
+rgr_lnr=1s; // [flg] Linear fit
+
+// Choose PSD
+rgr_typ=rgr_lnr; // [enm] Regression type
+
+if(rgr_typ==rgr_lnr){
+  abc_nbr=5; // [nbr] Number of abscissae
+  defdim("sgn",abc_nbr); // [nbr] Measurement dimension
+  sgn_mV[sgn]={4.52,8.90,15.66,22.41,37.86}; // [mV] Signal
+  rfl[sgn]={9.43,25.68,46.67,65.23,98.5}; // [frc] Reflection
+
+  // Assign generic names for mathematics
+  abc=sgn_mV;
+  ord=rfl;
+}else if(rgr_typ==rgr_qdr){
+  abc_nbr=5; // [nbr] Number of abscissae
+} // !rgr_typ
+
+rfl@long_name="Reflectance";
+rfl@units="fraction";
+
+sgn_mV@long_name="Signal in millivolts";
+sgn_mV@units="millivolt";
+
+sgn=1.0e-3*sgn_mV; // [V] Signal
+sgn@long_name="Signal";
+sgn@units="volt";
+
+
