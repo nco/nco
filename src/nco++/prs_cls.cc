@@ -478,10 +478,8 @@ void prs_cls::ncap_def_ntl_scn(void)
     delete Nvar;  
   }
   
-  // empty int_vtr
-  for(idx=0 ; idx <sz ; idx++)
-    (void)int_vtr.pop();
-  
+  // empty int_vtr n.b pointers have all been deleted
+   int_vtr.clear();
 }
 
 
