@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.83 2007-09-25 11:41:12 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.84 2007-10-02 12:56:15 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1817,62 +1817,6 @@ ncap_sclr_var_mk(
    return var;
    }
 */ 
-
-// define variables captured on first parse
-void ncap_def_ntl_scn(prs_cls *prs_arg)
-{
-  int idx;
-  int sz;
-  int var_id;
-  NcapVar *Nvar;
-  NcapVar *Cvar;
-  var_sct *var1;
-  
-  const std::string fnc_nm("ncap_def_ntl_scn"); 
-
-  if(dbg_lvl_get() > 0)
-    dbg_prn(fnc_nm, "Entered function");
-
-  
-  sz=prs_arg->int_vtr.size();
-  
-  for(idx=0; idx < sz ; idx++){
-    // de-reference
-    Nvar=prs_arg->int_vtr[idx];
-    var1=Nvar->var;
-    if( !Nvar->flg_udf && Nvar->xpr_typ==ncap_var) {
-      
-      if(dbg_lvl_get() > 0)
-	dbg_prn(fnc_nm, Nvar->getFll()+ ( !Nvar->flg_mem ? " - defined in output.": " - RAM variable") );
-      
-      // define variable
-      if(!Nvar->flg_mem) {
-	(void)nco_def_var(prs_arg->out_id,var1->nm,var1->type,var1->nbr_dim,var1->dmn_id,&var_id);
-	/* Set HDF Lempel-Ziv compression level, if requested */
-	if(prs_arg->dfl_lvl > 0 && var1->nbr_dim > 0) (void)nco_def_var_deflate(prs_arg->out_id,var_id,(int)True,(int)True,prs_arg->dfl_lvl);    
-	Nvar->var->id=var_id;
-	Nvar->var->nc_id=prs_arg->out_id;
-	Nvar->flg_stt=1;
-      } else { 
-	//deal with RAM only var        
-	Nvar->var->id=-1;
-	Nvar->var->nc_id=-1;
-	Nvar->flg_stt=1;
-      }
-      // save newly defined var in output vector
-      
-      Cvar=new NcapVar(*Nvar);
-      prs_arg->var_vtr.push(Cvar);
-      
-    } 
-    delete Nvar;  
-  }
-  
-  // empty int_vtr
-  for(idx=0 ; idx <sz ; idx++)
-    (void)prs_arg->int_vtr.pop();
-  
-}
 
 
 // Do an in-memory hyperslab !!
