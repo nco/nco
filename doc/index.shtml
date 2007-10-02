@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.446 2007-09-24 15:03:03 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.447 2007-10-02 14:54:53 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -54,6 +54,7 @@ Try to disable Spammers' machines:
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/netcdf/netcdf-4">netCDF4</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
+[<a href="http://code.google.com/p/swamp">SWAMP</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 
 </td></tr></table>
 
@@ -80,6 +81,7 @@ Try to disable Spammers' machines:
 <li><a href="#BM">Benchmarks</a></li>
 <li><a href="#bld">Building from Source</a></li>
 <li><a href="#bug">Known Problems</a></li>
+<li><a href="#People">People</a></li>
 <li><a href="#Contact">Contacting us</a></li>
 </ul>
 </td>
@@ -1247,7 +1249,72 @@ Version&nbsp;2.8.7 fixes this problem.
 
 </ul>
 <p><hr></p>
+<!-- End Bugs -->
 
+<!-- Begin People -->
+<a name="ppl"></a> <!-- http://nco.sf.net#ppl -->
+<a name="people"></a> <!-- http://nco.sf.net#people -->
+<dt><a name="People"></a></dt> <!-- http://nco.sf.net#People -->
+<h2>People:</h2>
+<p>The following people contribute to NCO/SDO development:
+
+<ul>
+
+<li>
+<a name="zender"></a><a name="Zender"></a> <!-- http://nco.sf.net#zender -->
+<a href="http://www.ess.uci.edu/~zender">Charlie Zender</a>, 
+Associate Professor of <a href="http://www.ess.uci.edu">Earth System Science</a> and
+Director, <a href="http://www.ess.uci.edu/esmf">UCI Earth System Modeling Facility</a>.
+<i>Roles</i>: Project PI, Thesis Advisor, and NCO creator/maintainer.
+<i>Current Project Tasks</i>: 
+1.&nbsp;Extending the empirically verified analytic model for
+terascale data reduction of gridded datasets to account for cluster-
+and network- effects. 
+2.&nbsp;Threading the <tt>ncap2</tt> interpreter.
+3.&nbsp;Enabling netCDF4/HDF5 parallel filesystem features.
+<i>Other Interests</i>: Atmospheric Physics, Climate Change.
+</li>
+
+<li>
+<a name="jenks"></a><a name="Jenks"></a> <!-- http://nco.sf.net#jenks -->
+<a href="http://spds.ece.uci.edu/~sjenks">Steve Jenks</a>,
+Assistant Professor of 
+<a href="http://www.eecs.uci.edu">Electrical Engineering and Computer Science </a> and
+Director, <a href="http://spds.ece.uci.edu">Scalable Parallel and Distributed Systems Lab</a>.
+<i>Roles</i>: Collborator, Thesis Advisor.
+<i>Current Project Tasks</i>: 
+</li>
+
+<li><dt>
+<a name="butowsky"></a><a name="Butowsky"></a> <!-- http://nco.sf.net#butowsky -->
+Henry Butowsky, software engineer.
+<a href="#prj_sei">Efficient Data Analysis with Storage-Layer Constraints</a>
+<i>Current Project Tasks</i>: 
+<i>Other Interests</i>: 
+</li>
+
+<li>
+<a name="capps"></a><a name="Capps"></a> <!-- http://nco.sf.net#capps -->
+<a href="http://dust.ess.uci.edu/scapps/web">Scott Capps</a>, 
+Ph.D. Candidate, Earth System Science. 
+<i>Current Project Tasks</i>: 
+<i>Other Interests</i>: Wind Speed Variability and Drag Partitioning
+</li>
+
+<li>
+<a name="wang"></a><a name="Wang"></a> <!-- http://nco.sf.net#wang -->
+<a href="http://dust.ess.uci.edu/~wangd">Daniel Wang</a>:
+Ph.D. Candidate, Electrical Engineering and Computer Science
+<a href="#prj_sei">Distributed Data Reduction and Analysis</a>
+<i>Current Project Tasks</i>: 
+<i>Other Interests</i>: 
+</li>
+
+</ul>
+<hr></p>
+<!-- End People -->
+
+<!-- Begin Contacts -->
 <!-- http://nco.sf.net#Contact -->
 <!-- http://nco.sf.net#help -->
 <a name="hlp"></a><a name="help"></a><a name="Help"></a>
@@ -1272,6 +1339,7 @@ At the <a href="http://sf.net/forum/forum.php?forum_id=9831">Developer</a>
 site.</li>
 </ul>
 <hr></p>
+<!-- End Contacts -->
 
 <a href="http://sf.net"><img src="http://sf.net/sflogo.php?group_id=3331&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo"></a>
 
@@ -1291,6 +1359,7 @@ site.</li>
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/netcdf/netcdf-4">netCDF4</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
+[<a href="http://code.google.com/p/swamp">SWAMP</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 
 </td></tr></table>
 
