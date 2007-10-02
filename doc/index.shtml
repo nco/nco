@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.447 2007-10-02 14:54:53 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.448 2007-10-02 21:31:16 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -35,6 +35,7 @@ Try to disable Spammers' machines:
    <meta name="author" content="csz">
    <meta name="Keywords" content="NCO Homepage, netCDF, netCDF operator, GCM, HDF, scientific data">
    <link rel="icon" href="./nco.png" type="image/png">
+   <link rel="icon" href="./nsf.jpeg" type="image/jpeg">
 </head>
 <body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
 
@@ -87,6 +88,7 @@ Try to disable Spammers' machines:
 </td>
 
 <td>
+<img src="nsf.jpg" height=180 width=180 align=right>
 <img src="nco.png" height=180 width=180 align=right>
 The temporary NCO logo&hellip;<br>
 Have a better one?<br>
@@ -285,10 +287,11 @@ donations on NCO development:
 The National Science Foundation
 <a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=0431203">NSF IIS-0431203</a>
 funds our
-<a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">NCO&rarr;SDO Project</a>.
+<a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">NCO&rarr;SDO Project</a>,
+&ldquo;SEI(GEO): Scientific Data Operators Optimized for Efficient Distributed Interactive and Batch Analysis of Tera-Scale Geophysical Data&rdquo;
 as part of the 
 <a href="http://www.cise.nsf.gov/funding/pgm_display.cfm?pub_id=9473&div=iis">Science and Engineering Informatics (SEI)</a> program.
-Thanks to the wise, generous, and, need I add, good-looking, proposal reviewers and staff of the Divisions of
+We appreciate the proposal reviewers for and staff of the Divisions of
 <a href="http://www.cise.nsf.gov/div/index.cfm?div=iis">Information and Intelligent Systems (IIS)</a>
 and
 <a href="http://www.cise.nsf.gov/div/index.cfm?div=sci">Shared Cyberinfrastructure (SC)</a>
@@ -296,32 +299,33 @@ in the
 <a href="http://www.nsf.gov/home/cise">Directorate for Computer and Information Science and Engineering (CISE)</a>.
 NCO development was completely voluntary and without institutional
 support from its inception until September 2004.
-Hence this NSF support will dramatically change the scale and pace of
-NCO/SDO development&mdash;stay tuned.
-We will soon implement a better mechanism to update users on our plans and progress towards the proposal's objectives.
-The URL 
-<a href="http://nco.sf.net#prp_sei"><tt>http://nco.sf.net#prp_sei</tt></a> 
+Hence this NSF support has dramatically changed the scale and pace of 
+NCO/SDO development.
+This URL,
+<a href="http://nco.sf.net#prp_sei"><tt>http://nco.sf.net#prp_sei</tt></a>,
 points to the most up-to-date information on the NCO/SDO proposal.</p> 
 
-<p>The project provides the human and technical resources to analyze,
+<p>The NSF project provides the human and technical resources to analyze, 
 design, and implement novel advanced methods for distributed 
 data analysis and reduction (DDRA) of geophysical data.
 These powerful methods will be &ldquo;grid-enabled&rdquo;, and we will
 demonstrate their efficacy with analyses of distributed climate
 prediction and observation datasets.
-On the human side, we are recruiting talent to work full-time on
-specific areas of SDO, alongside our current and future volunteers.
+On the human side, recruited full-time help for specific areas of SDO,
+alongside our current and future volunteers. 
 We have a
 <a href="http://dust.ess.uci.edu/hire/prg_anl_03_adv.pdf">full-time programmer</a> 
 to help design, implement, and release major code changes.
-We seek a
+We have a
 <a href="http://dust.ess.uci.edu/hire/sdn_grd_02_adv.pdf">graduate student researcher</a> 
-to pursue innovative Ph.D. research in using 
+pursuing innovative Ph.D. research in using 
 <a href="http://www3.niu.edu/mpi">&ldquo;grid-aware&rdquo;</a>
 <a href="http://www.mpi-forum.org">distributed memory</a>, 
 <a href="http://www.openmp.org">shared memory</a>, and 
 <a href="http://opendap.org">client-server</a> software
 technologies to improve DDRA of climate datasets.
+Another graduate student helps us design, implement, and release major
+code changes. 
 Contact us if you are seriously interested in tackling these
 problems on a full-time, part-time, or pay-per-feature basis.</p>
 
@@ -1265,13 +1269,14 @@ Version&nbsp;2.8.7 fixes this problem.
 <a href="http://www.ess.uci.edu/~zender">Charlie Zender</a>, 
 Associate Professor of <a href="http://www.ess.uci.edu">Earth System Science</a> and
 Director, <a href="http://www.ess.uci.edu/esmf">UCI Earth System Modeling Facility</a>.
-<i>Roles</i>: Project PI, Thesis Advisor, and NCO creator/maintainer.
-<i>Current Project Tasks</i>: 
-1.&nbsp;Extending the empirically verified analytic model for
-terascale data reduction of gridded datasets to account for cluster-
-and network- effects. 
-2.&nbsp;Threading the <tt>ncap2</tt> interpreter.
-3.&nbsp;Enabling netCDF4/HDF5 parallel filesystem features.
+<i>Role</i>: Project PI.
+<i>Contributions</i>: NCO core library, porting, release manager
+<i>Current Research</i>: 
+1.&nbsp;Extend empirically verified analytic model for terascale data 
+reduction of gridded datasets to account for cluster- and network-
+effects.  
+2.&nbsp;Enable and optimize NCO for intra-file-level parallelism using  
+netCDF4/HDF5 parallel filesystem features.
 <i>Other Interests</i>: Atmospheric Physics, Climate Change.
 </li>
 
@@ -1281,33 +1286,48 @@ and network- effects.
 Assistant Professor of 
 <a href="http://www.eecs.uci.edu">Electrical Engineering and Computer Science </a> and
 Director, <a href="http://spds.ece.uci.edu">Scalable Parallel and Distributed Systems Lab</a>.
-<i>Roles</i>: Collborator, Thesis Advisor.
-<i>Current Project Tasks</i>: 
-</li>
-
-<li><dt>
-<a name="butowsky"></a><a name="Butowsky"></a> <!-- http://nco.sf.net#butowsky -->
-Henry Butowsky, software engineer.
-<a href="#prj_sei">Efficient Data Analysis with Storage-Layer Constraints</a>
-<i>Current Project Tasks</i>: 
-<i>Other Interests</i>: 
-</li>
-
-<li>
-<a name="capps"></a><a name="Capps"></a> <!-- http://nco.sf.net#capps -->
-<a href="http://dust.ess.uci.edu/scapps/web">Scott Capps</a>, 
-Ph.D. Candidate, Earth System Science. 
-<i>Current Project Tasks</i>: 
-<i>Other Interests</i>: Wind Speed Variability and Drag Partitioning
+<i>Roles</i>: Collaborator. Thesis advisor.
+<i>Current Research</i>: 
+1.&nbsp;Consulting on SWAMP design and implementation.
+<i>Other Interests</i>: Cache memory usage
 </li>
 
 <li>
 <a name="wang"></a><a name="Wang"></a> <!-- http://nco.sf.net#wang -->
 <a href="http://dust.ess.uci.edu/~wangd">Daniel Wang</a>:
 Ph.D. Candidate, Electrical Engineering and Computer Science
-<a href="#prj_sei">Distributed Data Reduction and Analysis</a>
-<i>Current Project Tasks</i>: 
+<i>Role</i>: Architect distributed data reduction and analysis
+solutions for geoscience workflows
+<i>Current Research</i>: 
+1.&nbsp;Use of compiler techniques and whole program analysis to 
+discover and exploit parallelism in scripted workflows.
+2.&nbsp;Design and implement 
+<a href="http://code.google.com/p/swamp">SWAMP</a> to provide these 
+automated server-side data analysis capabilities to the geoscience
+community. 
 <i>Other Interests</i>: 
+</li>
+
+<li><dt>
+<a name="butowsky"></a><a name="Butowsky"></a> <!-- http://nco.sf.net#butowsky -->
+Henry Butowsky, software engineer.
+<i>Roles</i>: Scientific programmer
+<i>Current Research</i>: 
+1.&nbsp;Efficient complex data analysis with storage-layer constraints.
+2.&nbsp;Develop and thread the <tt>ncap2</tt> interpreter.
+<i>Other Interests</i>: Web design
+</li>
+
+<li>
+<a name="capps"></a><a name="Capps"></a> <!-- http://nco.sf.net#capps -->
+<a href="http://dust.ess.uci.edu/scapps/web">Scott Capps</a>, 
+Ph.D. Candidate, Earth System Science. 
+<i>Current Research</i>: 
+1.&nbsp;Test NCO and especially <tt>ncap2</tt> on real terascale
+geoscience analysis problems.
+2.&nbsp;Role of satellite-observed sub-gridscale wind variability 
+on air-surface exchange
+<i>Other Interests</i>: Weather, climate
 </li>
 
 </ul>
@@ -1359,7 +1379,7 @@ site.</li>
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/netcdf/netcdf-4">netCDF4</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
-[<a href="http://code.google.com/p/swamp">SWAMP</a>] 
+[<a href="http://code.google.com/p/swamp">SWAMP</a>]
 [<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 
 </td></tr></table>
 

@@ -1,3 +1,8 @@
+2007-10-02  Charlie Zender  <zender@uci.edu>
+
+	* Periods in attribute names choke OPeNDAP.
+	Temporarily removed att_nm.dot from var_nm.dot in in.nc
+
 2007-09-18  Charlie Zender  <zender@uci.edu>
 
 	* xlC and SGI CC no longer search for <stdint.h> in nco_var.hh
