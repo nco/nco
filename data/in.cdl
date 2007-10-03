@@ -42,7 +42,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.92 2007-10-03 19:17:23 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.93 2007-10-03 20:39:52 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -702,7 +702,7 @@ variables:
 	float var_nm.dot;
 	var_nm.dot:long_name = "Variable and attribute names include dot characters";
 //	200701002: Periods in attribute names choke OPeNDAP from FC7 RPM TODO nco911
-	var_nm.dot:att_nm.dot = 1.0e36f;
+//	var_nm.dot:att_nm.dot = 1.0e36f;
 
 	float wnd_spd(time,lat,lon);
 	wnd_spd:long_name = "wind speed";

@@ -1,10 +1,10 @@
-// $Header: /data/zender/nco_20150216/nco/data/rgr.nco,v 1.3 2007-10-03 19:17:23 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/rgr.nco,v 1.4 2007-10-03 20:39:52 zender Exp $ -*-C++-*-
 
 // Purpose: ncap script for linear and non-linear data regressions
 
 /* Usage:
    ncap2 -v -O -D 1 -S ${HOME}/nco/data/rgr.nco ${HOME}/nco/data/in.nc ~/foo_rgr.nc
-   ncks -C -H -F -u -v slp,fst ~/foo_rgr.nc */
+   ncks -C -H -F -u -v slp,fst,crr_cff ~/foo_rgr.nc */
 
 /* Helpful discussion at:
    http://mathworld.wolfram.com/LeastSquaresFitting.html */
