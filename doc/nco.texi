@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.448 2007-10-03 12:30:56 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.449 2007-10-03 19:17:25 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1865,7 +1865,7 @@ number of threads.
 @cindex left hand casting
 @command{ncap2} has unique memory requirements due its ability to process
 arbitrarily long scripts of any complexity.
-All script acceptable to @command{ncap2} are ultimately processed as a
+All scripts acceptable to @command{ncap2} are ultimately processed as a
 sequence of binary or unary operations.
 @command{ncap2} requires @math{MS <= 2VT} under most conditions.
 An exception to this is when left hand casting (@pxref{Left hand

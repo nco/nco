@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.449 2007-10-03 12:30:56 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.450 2007-10-03 19:17:25 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -1260,7 +1260,7 @@ Version&nbsp;2.8.7 fixes this problem.
 <a name="people"></a> <!-- http://nco.sf.net#people -->
 <dt><a name="People"></a></dt> <!-- http://nco.sf.net#People -->
 <h2>People:</h2>
-<p>The following people contribute to NCO/SDO development:
+<p>The following people currently contribute to NCO/SDO development:
 
 <ul>
 
@@ -1324,12 +1324,15 @@ Henry Butowsky, software engineer.
 <a href="http://dust.ess.uci.edu/scapps/web">Scott Capps</a>, 
 Ph.D. Candidate, Earth System Science. 
 <i>Current Research</i>: 
-1.&nbsp;Test NCO and especially <tt>ncap2</tt> on real terascale
-geoscience analysis problems.
+1.&nbsp;Test NCO on real tera-scale geoscience analysis problems and
+identify necessary improvements in <tt>ncap2</tt> and in SWAMP.
 2.&nbsp;Role of satellite-observed sub-gridscale wind variability 
-on air-surface exchange
+on air-surface exchange.
 <i>Other Interests</i>: Weather, climate
 </li>
+
+<p>Thanks also to past NCO contributors and research team members
+  including Harry Mangalam and Rorik Peterson! 
 
 </ul>
 <hr></p>

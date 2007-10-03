@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.973 2007-10-02 21:31:16 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.974 2007-10-03 19:17:24 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -617,8 +617,8 @@ nco907. document new wget capabilities
 nco909. Does autoconf for netCDF4-enabled NCO require additional -lm flag?
 nco910. ncks/netCDF4: print whether variable is deflated and dfl_lvl
 nco911. Periods in attribute names choke OPeNDAP (had to remove att_nm.dot):
-	ncks -O -D 7 -v var_nm.dot -p ~/nco/data in.nc ~/foo.nc # works fine
-	ncks -O -D 7 -v var_nm.dot -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc ~/foo.nc # borken
+	ncks -O -D 7 -v var_nm.dot -p ~/nco/data dap_dot_bug.nc ~/foo.nc # works fine
+	ncks -O -D 7 -v var_nm.dot -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata dap_dot_bug.nc ~/foo.nc # borken
 	nco_err_exit(): ERROR Short NCO-generated message (usually name of function that triggered error): nco_copy_att()
 	nco_err_exit(): ERROR Error code is -43. Translation into English with nc_strerror(-43) is "Attribute not found"
 nco912. ncks: print '_' or '_FillValue' instead of numeric values a la ncdump?
