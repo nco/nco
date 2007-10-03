@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.448 2007-10-02 21:31:16 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.449 2007-10-03 12:30:56 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -1301,11 +1301,12 @@ solutions for geoscience workflows
 <i>Current Research</i>: 
 1.&nbsp;Use of compiler techniques and whole program analysis to 
 discover and exploit parallelism in scripted workflows.
-2.&nbsp;Design and implement 
-<a href="http://code.google.com/p/swamp">SWAMP</a> to provide these 
-automated server-side data analysis capabilities to the geoscience
+2.&nbsp;Resource management in combined computation-data service environments.
+3.&nbsp;Design and implement 
+<a href="http://code.google.com/p/swamp">SWAMP</a> to provide
+automated server-side data analysis capabilities to the geoscience 
 community. 
-<i>Other Interests</i>: 
+<i>Other Interests</i>: Large data, data management, programming languages and practice.
 </li>
 
 <li><dt>

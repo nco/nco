@@ -42,7 +42,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.90 2007-10-02 21:31:16 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.91 2007-10-03 12:30:54 zender Exp $";
 
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
@@ -134,6 +134,10 @@ variables:
 	float wvl(wvl);
 	wvl:long_name = "Wavelength";
 	wvl:units = "meter";
+
+	float area(lat);
+	area:long_name = "area";
+	area:units = "meter2";
 
 	float hyam(lev);
 	hyam:long_name = "hybrid A coefficient at layer midpoints";
@@ -707,6 +711,7 @@ variables:
 
 data:
 	att_var=10.;
+	area=10.,10.;
 	bnd_var=1,2,3,4,5,6;
 	byte_var='z';
 	byte_var_neg=-122;

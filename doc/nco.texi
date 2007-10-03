@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.447 2007-08-29 15:56:43 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.448 2007-10-03 12:30:56 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4485,6 +4485,7 @@ ncea -y max -v prs_sfc jan.nc feb.nc march.nc out.nc
 @html
 <a name="stddvn"></a> <!-- http://nco.sf.net/nco.html#stddvn -->
 <a name="sdn"></a> <!-- http://nco.sf.net/nco.html#sdn -->
+<a name="xmp_sdn"></a> <!-- http://nco.sf.net/nco.html#xmp_sdn -->
 @end html
 @noindent
 It is possible to use a combination of these operations to compute

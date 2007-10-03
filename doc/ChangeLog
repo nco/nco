@@ -9,8 +9,8 @@
 
 2007-09-17  Charlie Zender  <zender@uci.edu>
 
-	* Add big.nc to CLEANFILES to fix Debian FTBFS problem with two
-	consecutive builds
+	* Add big.nc to CLEANFILES to (hopefully) fix Debian FTBFS problem 
+	with two consecutive builds
 
 2007-09-12  Charlie Zender  <zender@uci.edu>
 
