@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.452 2007-10-04 14:37:46 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.453 2007-10-04 15:00:46 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -35,7 +35,7 @@ Try to disable Spammers' machines:
    <meta name="author" content="csz">
    <meta name="Keywords" content="NCO Homepage, netCDF, netCDF operator, GCM, HDF, scientific data">
    <link rel="icon" href="./nco.png" type="image/png">
-   <link rel="icon" href="./nsf.png" type="image/jpeg">
+   <link rel="icon" href="./nsf.png" type="image/png">
 </head>
 <body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
 
@@ -88,7 +88,6 @@ Try to disable Spammers' machines:
 </td>
 
 <td>
-<img src="nsf.png" height=180 width=180 align=right>
 <img src="nco.png" height=180 width=180 align=right>
 The temporary NCO logo&hellip;<br>
 Have a better one?<br>
@@ -279,10 +278,12 @@ donations on NCO development:
 <dt>NCO features "incentivized" by these donations: None.</dt>
 <hr></p>
 
-<!-- http://nco.sf.net#prp_sei -->
-<dt><a name="prp_sei"></a></dt>
+<a name="nsf"></a> <!-- http://nco.sf.net#nsf -->
+<a name="sdo"></a> <!-- http://nco.sf.net#sdo -->
+<a name="sei"></a> <!-- http://nco.sf.net#sei -->
+<dt><a name="prp_sei"></a></dt> <!-- http://nco.sf.net#prp_sei -->
 <h2>NCO&rarr;SDO Project</h2>
-
+<img src="nsf.png" height=180 width=180 align=right>
 <p>
 The National Science Foundation
 <a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=0431203">NSF IIS-0431203</a>

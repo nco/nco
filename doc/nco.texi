@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.449 2007-10-03 19:17:25 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.450 2007-10-04 15:00:47 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -9365,6 +9365,8 @@ So you could be the third!
 
 @html
 <a name="dvl"></a> <!-- http://nco.sf.net/nco.html#dvl -->
+<a name="cnt"></a> <!-- http://nco.sf.net/nco.html#cnt -->
+<a name="ppl"></a> <!-- http://nco.sf.net/nco.html#ppl -->
 @end html
 @menu
 * Contributors::                
