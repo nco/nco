@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.450 2007-10-04 15:00:47 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.451 2007-10-04 15:13:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -9376,7 +9376,7 @@ So you could be the third!
 @node Contributors, Proposals for Institutional Funding, Contributing, Contributing
 @section Contributors
 @cindex contributors
-The primary contributors to @acronym{NCO} development are:
+The primary contributors to @acronym{NCO} development have been:
 @table @asis
 @cindex Charlie Zender
 @item Charlie Zender
@@ -9403,14 +9403,14 @@ Long command-line options.
 UDUnits support.
 Debianization.
 Numerous bug-fixes.
-@cindex Harry Mangalam
-@item Harry Mangalam
-Benchmarking.
-OPeNDAP configuration.
 @cindex Daniel Wang
 @item Daniel Wang
 Script Workflow Analysis for MultiProcessing (SWAMP).
 RPM support.
+@cindex Harry Mangalam
+@item Harry Mangalam
+Benchmarking.
+OPeNDAP configuration.
 @cindex Brian Mays
 @item Brian Mays
 Packaging for Debian GNU/Linux, @command{nroff} man pages.
@@ -9429,7 +9429,12 @@ AIX architecture support.
 @cindex Juliana Rew
 @item Juliana Rew
 Compatibility with large PIDs.
+@cindex Gayathri Venkitachalam
+@item Gayathri Venkitachalam
+@acronym{MPI} implementation.
 @cindex Scott Capps
+@item Scott Capps
+Large work-load testing
 @cindex Mark Flanner
 @cindex Keith Lindsay
 @cindex Martin Dix
@@ -9437,7 +9442,7 @@ Compatibility with large PIDs.
 @cindex Martin Schmidt
 @cindex Michael Schulz
 @cindex Remik Ziemlinski
-@item Scott Capps, Martin Dix, Mark Flanner, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Remik Ziemlinski
+@item Martin Dix, Mark Flanner, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Remik Ziemlinski
 Excellent bug reports and feature requests.
 @end table
 

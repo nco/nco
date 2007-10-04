@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.453 2007-10-04 15:00:46 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.454 2007-10-04 15:13:49 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -1333,8 +1333,8 @@ on air-surface exchange.
 <i>Other Interests</i>: Weather, climate
 </li>
 
-<p>Thanks also to past NCO contributors and research team members
-  including Harry Mangalam and Rorik Peterson! 
+<p>Thanks also to 
+<a href="http://nco.sf.net/nco.html#ppl">past NCO/SDO contributors</a>.
 
 </ul>
 <hr></p>
