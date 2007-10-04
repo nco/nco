@@ -1,12 +1,12 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.450 2007-10-03 19:17:25 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.451 2007-10-04 14:37:04 zender Exp $
 Purpose: NCO homepage
 
 Usage:
 http://dust.ess.uci.edu/nco/index.shtml
 file:///home/zender/nco/doc/index.shtml
 
-/usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/nco.png nco.sf.net:/home/groups/n/nc/nco/htdocs
-scp -p ~/nco/doc/index.shtml ~/nco/doc/nco.png dust.ess.uci.edu:/var/www/html/nco
+/usr/bin/scp ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/nsf.jpg nco.sf.net:/home/groups/n/nc/nco/htdocs
+scp -p ~/nco/doc/index.shtml ~/nco/doc/nco.png ~/nco/doc/nsf.jpg dust.ess.uci.edu:/var/www/html/nco
 -->
 
 <!--
@@ -35,7 +35,7 @@ Try to disable Spammers' machines:
    <meta name="author" content="csz">
    <meta name="Keywords" content="NCO Homepage, netCDF, netCDF operator, GCM, HDF, scientific data">
    <link rel="icon" href="./nco.png" type="image/png">
-   <link rel="icon" href="./nsf.jpeg" type="image/jpeg">
+   <link rel="icon" href="./nsf.jpg" type="image/jpeg">
 </head>
 <body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
 
@@ -1311,12 +1311,13 @@ community.
 
 <li><dt>
 <a name="butowsky"></a><a name="Butowsky"></a> <!-- http://nco.sf.net#butowsky -->
+<a href="http://dust.ess.uci.edu/hbutowsk">Henry Butowsky</a>, 
 Henry Butowsky, software engineer.
 <i>Roles</i>: Scientific programmer
 <i>Current Research</i>: 
 1.&nbsp;Efficient complex data analysis with storage-layer constraints.
 2.&nbsp;Develop and thread the <tt>ncap2</tt> interpreter.
-<i>Other Interests</i>: Web design
+<i>Other Interests</i>: Compilers and interpreters.
 </li>
 
 <li>
