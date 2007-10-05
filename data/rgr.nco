@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/rgr.nco,v 1.6 2007-10-04 15:00:45 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/rgr.nco,v 1.7 2007-10-05 12:54:34 zender Exp $ -*-C++-*-
 
 // Purpose: ncap script for linear and non-linear data regressions
 
@@ -43,22 +43,28 @@ rgr_typ=rgr_lnr; // [enm] Regression type
 
 // Choose channel
 //chn_typ=chn_vsb; // [enm] Channel
-chn_typ=chn_vsb; // [enm] Channel
+chn_typ=chn_nir; // [enm] Channel
 
 if(rgr_typ==rgr_lnr){
-  abc_nbr=5; // [nbr] Number of abscissae
+  abc_nbr=6; // [nbr] Number of abscissae
   defdim("sgn_mV",abc_nbr); // [nbr] Measurement dimension
   if(chn_typ==chn_vsb){
     // Visible Channel 635 nm
-    print("Regressing VSB 635 nm channel measurements...\n");
-    sgn_mV[sgn_mV]={0.715,2.12,3.91,5.71,9.45}; // [mV] Signal
-    rfl_pct[sgn_mV]={10.875,30.885,52.12,70.12,98.7}; // [pct] Reflectance
+   print("Regressing VSB 635 nm channel measurements...\n");
+   rfl_pct[sgn_mV]={0.28,10.875,30.885,52.12,70.12,98.7}; // [pct] Reflectance
+   // 20071004: Cold room calibration at -15C
+   sgn_mV[sgn_mV]={0.067,0.086,0.140,0.205,0.266,0.388}; // [mV] Signal
+   // 20071001: Lab calibratiom at room temperature
+   //    sgn_mV[sgn_mV]={1.0e36,0.715,2.12,3.91,5.71,9.45}; // [mV] Signal
   }
   if(chn_typ==chn_nir){
     // NIR Channel 1310 nm
     print("Regressing NIR 1310 nm channel measurements...\n");
-    sgn_mV[sgn_mV]={4.52,8.90,15.66,22.41,37.86}; // [mV] Signal
-    rfl_pct[sgn_mV]={9.43,25.68,46.67,65.23,98.5}; // [pct] Reflectance
+    rfl_pct[sgn_mV]={1.0e36,9.43,25.68,46.67,65.23,98.5}; // [pct] Reflectance
+    // 20071004: Cold room calibration at -15C
+    sgn_mV[sgn_mV]={4.68,7.12,13.83,24.19,34.6,1.0e36}; // [mV] Signal
+    // 20071001: Lab calibratiom at room temperature
+    // sgn_mV[sgn_mV]={2.95,4.52,8.90,15.66,22.41,37.86}; // [mV] Signal
   }
   //    print("ERROR: Invalid channel\n");
   // Assign generic names for mathematics
