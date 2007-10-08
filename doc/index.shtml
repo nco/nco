@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.454 2007-10-04 15:13:49 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.455 2007-10-08 15:48:16 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -104,6 +104,8 @@ Send it in!<br>
 <ul>
 
 <li>August&nbsp;29, 2007: NCO 3.9.2 released (_FillValue support)</li>
+
+<li>August&nbsp;27, 2007: <a href="http://code.google.com/p/swamp">SWAMP site</a> spins-off from NCO</li>
 
 <li>June&nbsp;29, 2007: NCO 3.9.1 released (netCDF4 deflation support)</li>
 
@@ -1291,6 +1293,18 @@ Director, <a href="http://spds.ece.uci.edu">Scalable Parallel and Distributed Sy
 <i>Current Research</i>: 
 1.&nbsp;Consulting on SWAMP design and implementation.
 <i>Other Interests</i>: Cache memory usage
+</li>
+
+<li>
+<a name="papadopoulos"></a><a name="Papadopoulos"></a> <!-- http://nco.sf.net#papadopoulos -->
+<a href="http://users.sdsc.edu/~phil/homepage.html">Phil Papadopoulos</a>,
+Program Director, Grid and Cluster Computing, 
+<a href="http://sdsc.ucsd.edu">SDSC</a>, and
+Adjunct Associate Professor of 
+<a href="http://www.cse.ucsd.edu">Computer Science</a>, UCSD.
+<i>Role</i>: Co-PI.
+1.&nbsp;Coordinates UCSD-end of NCO/SDO benchmark machines.
+<i>Other Interests</i>: NPACI Rocks
 </li>
 
 <li>
