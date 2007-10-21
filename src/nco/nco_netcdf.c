@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.88 2007-09-02 20:03:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.89 2007-10-21 14:08:22 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -381,8 +381,7 @@ int
 nco_open_flg(const char * const fl_nm,const int mode,int * const nc_id)
 {
   /* Purpose: Wrapper for nc_open() that does not require success
-     Currently used only by nco_fl_mk_lcl() to test readability of files via DAP */
-  const char fnc_nm[]="nco_open_flg()";
+     Currently used only by nco_fl_mk_lcl() to test file accessibility via DAP */
   int rcd;
   rcd=nc_open(fl_nm,mode,nc_id);
   return rcd;

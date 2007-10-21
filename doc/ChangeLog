@@ -1,6 +1,10 @@
+2007-10-21  Charlie Zender  <zender@uci.edu>
+
+	* Tweak nco_cmp_get() to work with GCC on AIX
+
 2007-10-02  Charlie Zender  <zender@uci.edu>
 
-	* Periods in attribute names choke OPeNDAP.
+	* Periods in attribute names choke OPeNDAP
 	Temporarily removed att_nm.dot from var_nm.dot in in.nc
 
 2007-09-18  Charlie Zender  <zender@uci.edu>

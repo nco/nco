@@ -1,24 +1,23 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.261 2007-09-18 15:46:30 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.262 2007-10-21 14:08:21 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 3.9.2 are ready. 
+The netCDF operators NCO version 3.9.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-A. Support URL retrieval via wget. Previously files specified with
-   HTTP URLs had to be accessible via a DAP server. Now NCO uses 
-   files, if any, accessible by a DAP server and, if not, attempts to
-   retrieve the entire file to the local machine with wget (which 
-   uses the HTTP protocol).
-   http://nco.sf.net/nco.html#wget
+This release coincides with a user-friendly version of SWAMP, the NCO 
+server-side processor (http://dust.ess.uci.edu/ppr/ppr_WZJ073.pdf).
+
+A. SWAMP fxm
+   http://nco.sf.net/nco.html#swamp
 
 B. UDUnits2 beta-support. Compile with 'UDUNITS2=Y', send us feedback.  
    Binaries (RPMs, Debs) still use UDUnits1. Thanks to Steve Emmerson.
    http://nco.sf.net/nco.html#UDUnits2
 
-C. Fix for AIX and SGI builds of libnco_c++
+C. Fix for autoconf builds using GCC on AIX 
 
-D. Improved Documentation:
+D. Improved Documentation: fxm
    Working with non-standard grids, e.g., 2D grids fxm
    http://nco.sf.net/nco.html#grd
 
@@ -27,8 +26,8 @@ E. ncap2 continues to grow more powerful (Henry Butowsky)
    (e.g., var.cos(), var.avg(x,y))  
    Demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]   
 
-F. ncap2 supports fxm (Henry Butowsky)
-   ncap2 -s 'big_int=uint64(small_int)+double(small_int);' in.nc out.nc
+F. ncap2 optimizations: ~50% speedup on some array-oriented syntax
+   ncap2 -s '' in.nc out.nc
    http://nco.sf.net/nco.html#ncap2 
 
 H. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
@@ -48,9 +47,6 @@ J. Reminder: NCO support for netCDF4 features is tracked at
    export NETCDF4_ROOT=/usr/local/netcdf4 # Set netCDF4 location
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;./make NETCDF4=Y allinone # Old Makefile mechanism
-
-The next release will debut a user-friendly version of SWAMP, the NCO 
-server-side processor (http://dust.ess.uci.edu/ppr/ppr_WZJ073.pdf).
 
 Enjoy,
 Charlie
