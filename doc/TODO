@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.975 2007-10-21 14:08:21 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.976 2007-10-22 21:38:40 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -623,7 +623,10 @@ nco911. Periods in attribute names choke OPeNDAP (had to remove att_nm.dot):
 	nco_err_exit(): ERROR Error code is -43. Translation into English with nc_strerror(-43) is "Attribute not found"
 nco912. ncks: print '_' or '_FillValue' instead of numeric values a la ncdump?
 nco913. nco_cmp_get() fails on _AIX with different compiler
-nco914. 
+nco914. GCC OpenMP fp_stdout problems
+nco915. GCC OpenMP support in configure.in
+nco916. Announce/release 3.9.3
+nco917. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
