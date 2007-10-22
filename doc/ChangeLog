@@ -1,3 +1,7 @@
+2007-10-22  Charlie Zender  <zender@uci.edu>
+
+	* Add Makefile support for GCC OpenMP
+
 2007-10-21  Charlie Zender  <zender@uci.edu>
 
 	* Tweak nco_cmp_get() to work with GCC on AIX
