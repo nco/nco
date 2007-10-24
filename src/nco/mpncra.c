@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.76 2007-07-23 00:31:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.77 2007-10-24 15:56:09 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncra.c,v 1.76 2007-07-23 00:31:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.76 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.77 2007-10-24 15:56:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.77 $";
   const char * const opt_sht_lst="4ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -966,7 +966,7 @@ main(int argc,char **argv)
 #endif /* !0 */
 #ifndef ENABLE_MPI
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,in_id_arr,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_rec,idx_rec_out,in_id_arr,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
 #endif /* !_OPENMP */
 	    /* UP and SMP codes main loop over variables */
 	    for(idx=0;idx<nbr_var_prc;idx++){
@@ -1080,7 +1080,7 @@ main(int argc,char **argv)
 	    idx=lcl_idx_lst[jdx];
 #else /* !ENABLE_MPI */
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_idx,fp_stderr,in_id_arr,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_idx,in_id_arr,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out)
 #endif /* !_OPENMP */
 	    for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 #endif /* !ENABLE_MPI */	

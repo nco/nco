@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.36 2007-07-23 00:31:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.37 2007-10-24 15:56:10 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -161,7 +161,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
   if(dbg_lvl_get() > 2) (void)fprintf(fp_stderr,"%s: INFO After using omp_set_num_threads() to adjust for any user requests/NCO optimizations, omp_get_max_threads() reports that a parallel construct here/now would spawn %d threads\n",prg_nm_get(),thr_nbr_act);
 #ifdef _OPENMP
   if(dbg_lvl_get() > 2){
-#pragma omp parallel default(none) shared(fp_stderr,thr_nbr_act)
+#pragma omp parallel default(none) shared(thr_nbr_act)
     { /* begin OpenMP parallel */
 #pragma omp single nowait
       { /* begin OpenMP single */

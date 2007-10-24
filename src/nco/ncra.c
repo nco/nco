@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.210 2007-07-23 00:31:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.211 2007-10-24 15:56:10 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.210 2007-07-23 00:31:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.210 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.211 2007-10-24 15:56:10 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.211 $";
   const char * const opt_sht_lst="4ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:xY:y:-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -578,7 +578,7 @@ main(int argc,char **argv)
 	/* Process all variables in current record */
 	if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,in_id_arr,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_rec,idx_rec_out,in_id_arr,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
 #endif /* !_OPENMP */
 	  for(idx=0;idx<nbr_var_prc;idx++){
 	    in_id=in_id_arr[omp_get_thread_num()];
@@ -640,7 +640,7 @@ main(int argc,char **argv)
 	/* End of ncra, ncrcat section */
       }else{ /* ncea */
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_idx,fp_stderr,in_id_arr,lmt_rec,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_idx,in_id_arr,lmt_rec,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out)
 #endif /* !_OPENMP */
 	for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 	  in_id=in_id_arr[omp_get_thread_num()];

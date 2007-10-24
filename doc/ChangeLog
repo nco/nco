@@ -1,3 +1,11 @@
+2007-10-24  Charlie Zender  <zender@uci.edu>
+
+	* OpenMP-enabled, gcc-compiled NCO passes regression test
+
+	* Enable OpenMP with gcc, g++, gfortran
+
+	* Change MUST_CONFORM from private() to shared() in ncflint
+
 2007-10-22  Charlie Zender  <zender@uci.edu>
 
 	* Add Makefile support for GCC OpenMP

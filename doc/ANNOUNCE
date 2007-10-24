@@ -1,11 +1,13 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.262 2007-10-21 14:08:21 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.263 2007-10-24 15:56:09 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release coincides with a user-friendly version of SWAMP, the NCO 
+This release coincides with a user-friendly version of SWAMP, the 
+Script Workflow Analysis for MultiProcessing. SWAMP is a framework
+which efficiently schedules and executes NCO 
 server-side processor (http://dust.ess.uci.edu/ppr/ppr_WZJ073.pdf).
 
 A. SWAMP fxm
@@ -29,6 +31,9 @@ E. ncap2 continues to grow more powerful (Henry Butowsky)
 F. ncap2 optimizations: ~50% speedup on some array-oriented syntax
    ncap2 -s '' in.nc out.nc
    http://nco.sf.net/nco.html#ncap2 
+
+G. Support OpenMP on GCC 4.2. Supported in bld/Makefile, not configure.
+   http://nco.sf.net/nco.html#openmp
 
 H. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
    http://nco.sf.net#debian

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.45 2007-08-23 15:36:43 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.46 2007-10-24 15:56:10 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -766,6 +766,11 @@ ifeq (${CXX},g++)
 # -Wtraditional: Warn if constructs differ between traditional and ANSI C. C only?
 # -Dinline=: inline is not an ANSI keyword, must undefine inline to work with -ansi
 # -fshort-enums: Make enums as short as possible, ususally non-int. Do not ever invoke this! This breaks ABI and causes subtle problems
+ifeq (${OMP},Y)
+ OMP_FLG_C := -fopenmp
+ OMP_FLG_F := -fopenmp
+ LDFLAGS += -lgomp -lpthread
+endif # endif OMP
 ifeq (${OPTS},O)
  CFLAGS += -O -g ${GCC_RCH_ARG}
 endif

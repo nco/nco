@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.55 2007-07-23 00:31:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.56 2007-10-24 15:56:09 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.55 2007-07-23 00:31:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.55 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.56 2007-10-24 15:56:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.56 $";
   const char * const opt_sht_lst="4ACcD:d:Fhi:L:l:Oo:p:rRSt:v:xw:-:";
   
   dmn_sct **dim;
@@ -693,7 +693,7 @@ main(int argc,char **argv)
 	/* OpenMP notes:
 	   shared(): msk and wgt are not altered within loop
 	   private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,MUST_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
+#pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out)
 #endif /* !_OPENMP */
 	/* UP and SMP codes main loop over variables */
 	for(idx=0;idx<nbr_var_prc;idx++){
