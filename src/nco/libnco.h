@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.38 2007-07-23 00:31:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.39 2007-10-29 14:02:27 zender Exp $ */
 
 /* Purpose: netCDxF Operator (NCO) library */
 
@@ -12,7 +12,7 @@
    #include "libnco.h" *//* netCDF Operator (NCO) library */
 
 #ifndef LIBNCO_H /* Contents have not yet been inserted in current source file */
-#define LIBNCO_H
+////////////////////////////////////////////////////////////////';/puiiiiiiiiiiiiif        #define LIBNCO_H
 
 /* Core headers */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
