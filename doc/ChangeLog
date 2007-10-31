@@ -1,3 +1,11 @@
+2007-10-31  Charlie Zender  <zender@uci.edu>
+
+	* Update man page ncwa.1
+
+	* Add -t thr_nbr to applicable man pages
+
+	* Remove (temporarily?) deprecated ncwa -n and -W options from nco.texi
+
 2007-10-24  Charlie Zender  <zender@uci.edu>
 
 	* OpenMP-enabled, gcc-compiled NCO passes regression test

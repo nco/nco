@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.455 2007-10-08 15:48:16 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.456 2007-10-31 12:51:06 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -35,7 +35,6 @@ Try to disable Spammers' machines:
    <meta name="author" content="csz">
    <meta name="Keywords" content="NCO Homepage, netCDF, netCDF operator, GCM, HDF, scientific data">
    <link rel="icon" href="./nco.png" type="image/png">
-   <link rel="icon" href="./nsf.png" type="image/png">
 </head>
 <body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
 
@@ -83,7 +82,7 @@ Try to disable Spammers' machines:
 <li><a href="#bld">Building from Source</a></li>
 <li><a href="#bug">Known Problems</a></li>
 <li><a href="#People">People</a></li>
-<li><a href="#Contact">Contacting us</a></li>
+<li><a href="#Contact">Contacting the Project</a></li>
 </ul>
 </td>
 
@@ -890,7 +889,8 @@ match compilers, this is often difficult in practice and is not recommended.
 The exception is <tt>ncap2</tt> which is written in&nbsp;C++.
 ANTLR, OPeNDAP, and NCO must be built with the same C++ compiler
 to properly resolve the C++ name-mangling.
-NCO does not yet support newer ANTLR versions (3.0+).
+NCO does not yet support newer ANTLR versions because the
+ANTLR&nbsp;3.x C++ interface is incomplete.
 </li>
 
 </ul>
@@ -1263,8 +1263,7 @@ Version&nbsp;2.8.7 fixes this problem.
 <a name="people"></a> <!-- http://nco.sf.net#people -->
 <dt><a name="People"></a></dt> <!-- http://nco.sf.net#People -->
 <h2>People:</h2>
-<p>The following people currently contribute to NCO/SDO development:
-
+<p>(Please <a href="#Contact">communicate</a> with us using the project forums rather than contacting us individually)
 <ul>
 
 <li>
@@ -1355,11 +1354,14 @@ on air-surface exchange.
 <!-- End People -->
 
 <!-- Begin Contacts -->
-<!-- http://nco.sf.net#Contact -->
-<!-- http://nco.sf.net#help -->
-<a name="hlp"></a><a name="help"></a><a name="Help"></a>
-<dt><a name="Contact"></a></dt>
-<h2>Contacting Us:</h2>
+
+<!-- http://nco.sf.net#Help -->
+<a name="hlp"></a> <!-- http://nco.sf.net#hlp -->
+<a name="help"></a> <!-- http://nco.sf.net#help -->
+<a name="Help"></a> <!-- http://nco.sf.net#Help -->
+<a name="contact"></a> <!-- http://nco.sf.net#contact -->
+<dt><a name="Contact"></a></dt> <!-- http://nco.sf.net#Contact -->
+<h2>Contacting the Project:</h2>
 <p>Contact us through the Project Forums (rather than personal e-mail)
 so other users can benefit from and contribute to our exchange.
 Let us know how NCO is working for you&mdash;we'd like to hear.

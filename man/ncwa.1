@@ -4,7 +4,9 @@ ncwa \- netCDF Weighted Averager
 .SH SYNTAX
 ncwa [-4] [-A] [-a 
 .IR dim [,...]]
-[-C] [-c] [-D 
+[-B 
+.IR mask_cond] 
+[-b] [-C] [-c] [-D
 .IR dbg ]
 [-d 
 .IR dim ,[
@@ -18,13 +20,17 @@ ncwa [-4] [-A] [-a
 .IR val ]
 [-m 
 .IR mask ]
-[-N] [-n] [-O] [-o 
-.IR condition ]
+[-N] [-O] [-o 
+.IR output-file ]
 [-p 
 .IR path ]
-[-R] [-r] [-v 
+[-R] [-r] [-T
+.IR mask_comp ]
+[-t
+.IR thr_nbr ]
+[-v 
 .IR var [,...]]
-[-W] [-w 
+[-w 
 .IR weight ]
 [-x] [-y 
 .IR op_typ ]
@@ -178,7 +184,7 @@ The mathematical definition of operations involving rank reduction
 is given above.
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncwa.1,v 1.8 2007-08-29 15:43:52 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncwa.1,v 1.9 2007-10-31 12:51:10 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

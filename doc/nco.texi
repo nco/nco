@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.451 2007-10-04 15:13:49 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.452 2007-10-31 12:51:06 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -8848,9 +8848,9 @@ SYNTAX
 @example
 ncwa [-4] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-I] [-L @var{dfl_lvl}] [-l @var{path}] 
-[-M @var{mask_val}] [-m @var{mask_var}] [-N] [-n] [-O] 
+[-M @var{mask_val}] [-m @var{mask_var}] [-N] [-O] 
 [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-T @var{mask_comp}]
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-W] [-w @var{weight}] [-x] [-y @var{op_typ}]
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-w @var{weight}] [-x] [-y @var{op_typ}]
 @var{input-file} [@var{output-file}]
 @end example
 
