@@ -25,18 +25,98 @@
 
 
 
-
 //forward declaration
 
-int parse_antlr(prs_cls *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
+int           /* Evaluate expressions -execute nb - contains static members*/
+ncap_mpi_exe(
+std::vector< std::vector<RefAST> > &all_ast_vtr,
+ncoTree** wlk_ptr_in,
+int nbr_wlk_in)
+{
+
+int idx;
+int jdx;
+int kdx;
+int nbr_sz;
+
+static int nbr_wlk; //same as number of threads
+static ncoTree** wlk_ptr;
+
+ ncoTree* wlk_lcl;
+
+ std::vector<RefAST> inn_vtr;
+
+// Initialize statics then exit
+ if( nbr_wlk_in > 0) {
+   nbr_wlk=nbr_wlk_in;
+   wlk_ptr=wlk_ptr_in;
+   return 2;
+ }
+
+ //Set all symbol table refs to ntl_scn=false;
+ for(idx=0 ; idx< nbr_wlk ; idx++)
+   wlk_ptr[idx]->prs_arg->ntl_scn=False;
+  
+
+
+ // Each block has two lists
+ // The first list is of the expressions that contain Lvalues which 
+ // are NOT defined in Output (nb this also applies to RAM vars)
+ // The second list if of expressions that have all Lvalues defined in
+ // output.
+
+
+        
+ for(idx=0 ; idx<(int)all_ast_vtr.size();idx+=2){
+
+   // even block 
+   for(jdx=0 ; jdx< (int)all_ast_vtr[idx].size();jdx++)
+      (void)wlk_ptr[0]->statements(all_ast_vtr[idx][jdx]); 
+
+   nbr_sz=(int)all_ast_vtr[idx+1].size(); 
+   // odd block
+   if(nbr_sz==0) continue;
+   if(nbr_sz==1) {
+     (void)wlk_ptr[0]->statements(all_ast_vtr[idx+1][0]);  
+     continue; 
+   } 
+
+   inn_vtr=all_ast_vtr[idx+1];
+
+
+#ifdef _OPENMP
+#pragma omp parallel for default(none) private(kdx,wlk_lcl) shared(wlk_ptr,idx,nbr_sz,inn_vtr) 
+#endif
+   for(kdx=0 ;kdx< nbr_sz; kdx++) {      
+     wlk_lcl= wlk_ptr[omp_get_thread_num()];
+     wlk_lcl->statements(inn_vtr[kdx]);
+     //(void)wlk_ptr[omp_get_thread_num()]->statements(inn_vtr[kdx]);
+
+   } //end OPENMP parallel loop
+
+ } 
+ // end for idx
+
+ return 1;
+}
+
+
+
+
+
+int parse_antlr(std::vector<prs_cls> &prs_vtr,char* fl_spt_usr,char *cmd_ln_sng)
 {
   
   ANTLR_USING_NAMESPACE(std);
   ANTLR_USING_NAMESPACE(antlr);
   
   const std::string fnc_nm("parse_antlr"); // [sng] Function name
-  
+
+  int idx;  
   char *filename;
+  
+  prs_cls *prs_arg;
+
 
   istringstream *sin=NULL;
   ifstream *in=NULL;
@@ -46,9 +126,16 @@ int parse_antlr(prs_cls *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
   
   RefAST t,a;
   ASTFactory ast_factory;
+
+  prs_arg=&prs_vtr[0]; 
   
+  std::vector<ncoTree*> wlk_vtr;
+ 
   filename=strdup(fl_spt_usr);   
   
+  std::vector< std::vector<RefAST> > all_ast_vtr(0);
+
+
   try {
     
     if( cmd_ln_sng ){
@@ -108,31 +195,20 @@ int parse_antlr(prs_cls *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
   t=a;
   
   try {   
+    ncoTree* wlk_obj;    
+    for(idx=0 ; idx< (int)prs_vtr.size(); idx++){
+      wlk_obj=new ncoTree(&prs_vtr[idx]);  
+      wlk_obj->initializeASTFactory(ast_factory);
+      wlk_obj->setASTFactory(&ast_factory);
+      wlk_vtr.push_back(wlk_obj); 
+    }      
 
+    // initialize static members 
+    (void)ncap_mpi_exe(all_ast_vtr,&wlk_vtr[0],(int)wlk_vtr.size());
 
-    ncoTree walker(prs_arg);
-    walker.initializeASTFactory(ast_factory);
-    walker.setASTFactory(&ast_factory);
-
-    if(dbg_lvl_get() > 0) dbg_prn(fnc_nm,"Walker initialized");
+    if(dbg_lvl_get() > 0) dbg_prn(fnc_nm,"Walkers initialized");
   
-
-    // Run script Initial scan
-    /* 
-      
-    cout<<"INITAL SCAN\n";
-    prs_arg->ntl_scn=True;
-    walker.run(t);
-  
-    (void)nco_redef(prs_arg->out_id);  
-    (void)ncap_def_ntl_scn(prs_arg);
-    (void)nco_enddef(prs_arg->out_id);  
- 
-    cout<<"FINAL SCAN\n"; 
-    prs_arg->ntl_scn=False;
-    */
-
-    walker.run_exe(t,0);
+    wlk_vtr[0]->run_exe(t,0);
 
 
     
@@ -140,8 +216,15 @@ int parse_antlr(prs_cls *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
     cerr << "exception: " << e.what() << endl;
   }	
   
-  if(dbg_lvl_get() > 0) dbg_prn(fnc_nm,"Walker completed");
+  if(dbg_lvl_get() > 0) dbg_prn(fnc_nm,"Walkers completed");
   
+   
+  
+  // delete walker pointers
+  for(idx=0 ; idx<(int)wlk_vtr.size() ; idx++)
+    delete wlk_vtr[idx];
+
+
   delete lexer;
   delete parser;        
   if(sin) delete sin;
@@ -151,4 +234,6 @@ int parse_antlr(prs_cls *prs_arg,char* fl_spt_usr,char *cmd_ln_sng)
   
   return 1;
 }
+
+
 
