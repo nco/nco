@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.51 2007-08-29 14:26:00 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.52 2007-11-09 10:25:30 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -93,7 +93,8 @@ main(int argc,char **argv)
 {
   const char fnc_nm[]="main"; 
   FILE *yyin; /* file handle used to check file existance */
-  int parse_antlr(prs_cls*,char*,char*);
+  int parse_antlr(std::vector<prs_cls> &prs_vtr ,char*,char*);
+
 
   /* fxm TODO nco652 */
   double rnd_nbr(double);
@@ -131,8 +132,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.51 2007-08-29 14:26:00 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.51 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.52 2007-11-09 10:25:30 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.52 $";
   const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -151,6 +152,9 @@ main(int argc,char **argv)
   
   //Method/function holder
   std::vector<fmc_cls> fmc_vtr;
+
+  //Holder for prs_cls --nb used for OPENMP
+  std::vector<prs_cls> prs_vtr;
 
   extern char *optarg;
   extern int optind;
@@ -177,6 +181,8 @@ main(int argc,char **argv)
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
   int var_id;
+  int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
+
   
   lmt_sct **lmt=NULL_CEWI;
   
@@ -245,6 +251,7 @@ main(int argc,char **argv)
       {"fl_spt",required_argument,0,'S'},
       {"spt",required_argument,0,'s'},
       {"script",required_argument,0,'s'},
+      {"thr_nbr",required_argument,0,'t'},
       {"units",no_argument,0,'u'},
       {"variable",no_argument,0,'v'},
       {"version",no_argument,0,'r'},
@@ -344,6 +351,9 @@ main(int argc,char **argv)
     case 'S': /* Read command script from file rather than from command line */
       fl_spt_usr=(char *)strdup(optarg);
       break;
+    case 't': /* Thread number */
+      thr_nbr=(int)strtol(optarg,(char **)NULL,10);
+      break;
     case 'v': /* Variables to extract/exclude */
       PROCESS_ALL_VARS=False;
       nbr_xtr=0;
@@ -396,7 +406,9 @@ main(int argc,char **argv)
   }
   
   */
-
+    
+  /* Initialize thread information */
+  thr_nbr=nco_openmp_ini(thr_nbr);
 
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
@@ -479,11 +491,25 @@ main(int argc,char **argv)
   prs_arg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
   prs_arg.ATT_PROPAGATE=ATT_PROPAGATE;      
   prs_arg.ATT_INHERIT=ATT_INHERIT;
-  prs_arg.NCAP_MPI_SORT=EXCLUDE_INPUT_LIST;
+  prs_arg.NCAP_MPI_SORT= (thr_nbr>1 ? true :false );
   prs_arg.dfl_lvl=dfl_lvl; /* [enm] Deflate level */
 
+  prs_vtr.push_back(prs_arg); 
 
+  for(idx=1 ; idx < thr_nbr ;idx++) {
+    prs_cls prs_tmp(prs_arg);
 
+    // open files for each thread
+    rcd=nco_open(fl_in,NC_NOWRITE,&prs_tmp.in_id);
+    //rcd=nco_open(fl_out_tmp, NC_WRITE|NC_SHARE,&prs_tmp.out_id);
+    prs_tmp.out_id=out_id;
+
+    prs_vtr.push_back(prs_tmp);
+  }
+
+  std::cout<< "File in IDS "<<in_id <<" "<<prs_vtr[1].in_id<<std::endl;
+ std::cout<< "File out IDS "<<out_id <<" "<<prs_vtr[1].out_id<<std::endl;
+ 
 
   if(fl_spt_usr == NULL_CEWI){
     /* No script file specified, look for command-line scripts */
@@ -506,7 +532,7 @@ main(int argc,char **argv)
     } /* end else script file */
     
   /* Invoke ANTLR parser */
-  rcd=parse_antlr(&prs_arg,fl_spt_usr,spt_arg_cat);
+  rcd=parse_antlr(prs_vtr,fl_spt_usr,spt_arg_cat);
     
   /* Get number of variables in output file */
   rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int*)NULL);
@@ -646,8 +672,8 @@ main(int argc,char **argv)
     
 
     // Skip misssing values for now !!!
-    if(var_vtr[idx]->getAtt() == nco_mss_val_sng_get()) continue;
-        
+    if(var_vtr[idx]->getAtt() == nco_mss_val_sng_get()) 
+      continue;     
  
     att_item.att_nm=strdup(var_vtr[idx]->getAtt().c_str());
     att_item.var_nm=strdup(var_vtr[idx]->getVar().c_str());
@@ -671,6 +697,7 @@ main(int argc,char **argv)
 
 
     (void)nco_aed_prc(out_id,var_id,att_item);
+
      att_item.var_nm=(char*)nco_free(att_item.var_nm);
      att_item.att_nm=(char*)nco_free(att_item.att_nm);
    }/* end for */
@@ -687,6 +714,13 @@ main(int argc,char **argv)
   /* Close input netCDF file */
   rcd=nco_close(in_id);
   
+  /* Close all files in threads --except main thread */
+  for( idx=1; idx<thr_nbr; idx++){
+    rcd=nco_close(prs_vtr[idx].in_id);
+    //rcd=nco_close(prs_vtr[idx].out_id);
+  }
+
+
   /* Remove local copy of file */
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
   
@@ -733,12 +767,18 @@ main(int argc,char **argv)
       for(idx=0; idx < dmn_out_vtr.size(); idx++)
 	(void)nco_dmn_free(dmn_out_vtr[idx]);
     }
-    
+
     /* Free var_vtr */
     if(var_vtr.size() > 0) { 
       for(idx=0; idx < var_vtr.size(); idx++)
             delete var_vtr[idx];
     }  
+
+    /* clear vectors 
+    fmc_vtr.clear();
+    cnv_obj.fmc_vtr.clear();
+    mth_obj.fmc_vtr.clear();
+    */
     
     /* Free variable lists */
     if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
