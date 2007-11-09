@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.1 2007-08-23 15:40:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.2 2007-11-09 10:22:53 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -48,8 +48,6 @@
 #include "ncoParserTokenTypes.hpp"
 
 #include "prs_cls.hh"
-
-
 
 /* Don't know what Charlies done to the bools */
 /* Temporary fix for now !!*/
@@ -215,7 +213,9 @@ int            /* Sort expressions for MPI Optimization */
 ncap_mpi_srt(
 RefAST ntr,
 int icnt,
-std::vector< std::vector<RefAST> > &all_ast_vtr); // Return a Vector of Vectors
+std::vector< std::vector<RefAST> > &all_ast_vtr, // Return a Vector of Vectors
+prs_cls *prs_arg);
+
 
 NcapVector<dmn_sct*>                /* O [sct] list of new dims to limit over */ 
 ncap_dmn_mtd(
@@ -301,7 +301,7 @@ NcapVector<lmt_sct*> &lmt_vtr);
 
 
 
-#endif /* NCAP_H */
+#endif  /* INC_NCAP2_UTL_hh_ */
 
 
 
