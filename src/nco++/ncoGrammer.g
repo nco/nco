@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.114 2007-09-20 10:58:51 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.115 2007-11-09 10:10:45 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -25,6 +25,7 @@ header {
     #include "NcapVector.hh"
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
+
     
 }
 options {
@@ -233,8 +234,8 @@ primary_exp
     | UINT64
     | NSTRING    
     | DIM_ID_SIZE
-    |(LPAREN! expr RPAREN! ) 
-    |(FUNC^ func_arg)  
+    | LPAREN! expr RPAREN!  
+    | FUNC^ func_arg
     | hyper_slb  //remember this includes VAR_ID & ATT_ID
   ;
 
@@ -520,9 +521,12 @@ private:
     //prs_cls *prs_arg;
     bool bcst;
     var_sct* var_cst;
-    ASTFactory myFactory;
 public:
     prs_cls *prs_arg;
+    ASTFactory myFactory;
+
+
+
 
      //Structure to hold AST pointers to indices in hyperslabs -only temporary 
      typedef struct{
@@ -530,9 +534,10 @@ public:
      } ast_lmt_sct;   
 
     void setTable(prs_cls *prs_in){
-        prs_arg=prs_in;
+        prs_arg=prs_in; 
+
     }
-    // Customized Constructor
+   // Customized Constructor
     ncoTree(prs_cls *prs_in){
         prs_arg=prs_in;
         // default is NO. Casting variable set to true 
@@ -541,7 +546,6 @@ public:
         bcst=false; 
         ncoTree();
     }
-
 
 int 
 lmt_init(
@@ -743,6 +747,14 @@ public:
     void run_dbl(RefAST tr,int icnt){
      int idx=0;
      RefAST ntr=tr;
+
+     extern int      
+     ncap_mpi_exe(
+     std::vector< std::vector<RefAST> > &all_ast_vtr,
+     ncoTree** wlk_ptr,
+     int nbr_wlk);
+
+
       
      //small list dont bother with double parsing     
      if(icnt <4) goto small;
@@ -765,15 +777,20 @@ public:
        prs_arg->ntl_scn=False;
       // nb A vector of vectors
       std::vector< std::vector<RefAST> > all_ast_vtr;
+      ncoTree **wlk_vtr=(ncoTree**)NULL; 
 
-      // Populate  vector 
-      (void)ncap_mpi_srt(tr,icnt,all_ast_vtr);
-
-      // Evaluate expressions
+      // Populate and sort  vector 
+      (void)ncap_mpi_srt(tr,icnt,all_ast_vtr,prs_arg);
+       
+      // Evaluate expressions (execute)
+      (void)ncap_mpi_exe(all_ast_vtr,wlk_vtr,0);  
+      
+      /*  
       for(unsigned vtr_idx=0 ; vtr_idx<all_ast_vtr.size(); vtr_idx++)
         for(unsigned jdx=0 ; jdx<all_ast_vtr[vtr_idx].size(); jdx++)
 	     (void)statements(all_ast_vtr[vtr_idx][jdx]);
-        
+      */
+      
     goto end;
     } //end if
 
@@ -1246,7 +1263,7 @@ var=NULL_CEWI;
                // Write var to int_vtr
                // if var already in int_vtr or var_vtr then write call does nothing
                (void)prs_arg->ncap_var_write(var1,bram);
-               
+               //(void)ncap_var_write_omp(var1,bram,prs_arg);
         
            } // end action
        
@@ -1603,10 +1620,11 @@ var=NULL_CEWI;
                Nvar=prs_arg->var_vtr.find(vid2->getText());
                //rcd=nco_inq_varid_flg(prs_arg->out_id,var1->nm ,&var_id);
 
-              
+               /*
                if(!Nvar || Nvar && Nvar->flg_stt==1)
                  (void)ncap_att_cpy(vid2->getText(),s_var_rhs,prs_arg);
-                               
+                 
+               */             
  
                // See If we have to return something
                if(vid2->getFirstChild() && vid2->getFirstChild()->getType()==NORET)
@@ -1617,6 +1635,7 @@ var=NULL_CEWI;
 
                // Write var to disk
                (void)prs_arg->ncap_var_write(var1,bram);
+               //(void)ncap_var_write_omp(var1,bram,prs_arg);
 
                          
        } // end action
