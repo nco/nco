@@ -55,6 +55,68 @@ class fmc_cls;
                 var_vtr(p_var_vtr)         ,
 		int_vtr(p_int_vtr) {; }
 
+   // Copy Constructor 
+   prs_cls( const prs_cls &prs_cpy) : 
+         dmn_in_vtr(prs_cpy.dmn_in_vtr), 
+         dmn_out_vtr(prs_cpy.dmn_out_vtr),  
+         fmc_vtr(prs_cpy.fmc_vtr),       
+         var_vtr(prs_cpy.var_vtr),            
+         int_vtr(prs_cpy.int_vtr) {       
+
+
+     fl_in=prs_cpy.fl_in;
+     in_id=prs_cpy.in_id;
+     fl_out=prs_cpy.fl_out;
+     out_id=prs_cpy.out_id;         
+
+     ntl_scn=prs_cpy.ntl_scn;
+     FORTRAN_IDX_CNV=prs_cpy.FORTRAN_IDX_CNV;
+     ATT_PROPAGATE=prs_cpy.ATT_PROPAGATE; 
+     ATT_INHERIT=prs_cpy.ATT_INHERIT; 
+     NCAP_MPI_SORT=prs_cpy.NCAP_MPI_SORT;
+     dfl_lvl=prs_cpy.dfl_lvl;      
+
+   }
+
+   // = operator
+   prs_cls& operator= (const prs_cls &prs_cpy) {
+
+     
+     *this=prs_cpy;
+     return *this;  
+     
+     /*
+     // check for self-assignment    
+     if( &prs_cpy == this) 
+       return *this;
+     
+     
+  
+     dmn_in_vtr=prs_cpy.dmn_in_vtr;
+     dmn_out_vtr=prs_cpy.dmn_out_vtr;  
+     fmc_vtr=prs_cpy.fmc_vtr;      
+     var_vtr=prs_cpy.var_vtr;            
+     int_vtr=prs_cpy.int_vtr;       
+
+     */
+     
+
+     fl_in=prs_cpy.fl_in;
+     in_id=prs_cpy.in_id;
+     fl_out=prs_cpy.fl_out;
+     out_id=prs_cpy.out_id;         
+
+     ntl_scn=prs_cpy.ntl_scn;
+     FORTRAN_IDX_CNV=prs_cpy.FORTRAN_IDX_CNV;
+     ATT_PROPAGATE=prs_cpy.ATT_PROPAGATE; 
+     ATT_INHERIT=prs_cpy.ATT_INHERIT; 
+     NCAP_MPI_SORT=prs_cpy.NCAP_MPI_SORT;
+     dfl_lvl=prs_cpy.dfl_lvl;      
+
+     return *this;
+
+   }
+
 var_sct *                  /* O [sct] initialized variable */
 ncap_var_init(
 const std::string &snm,    /* I [sng] variable name constant */
@@ -64,6 +126,13 @@ int                        /* O  [bool] bool - true if sucessful */
 ncap_var_write             /*    [fnc] Write var to output file prs_arg->fl_out */ 
 (var_sct *var,             /* I  [sct] variable to be written - freed at end */  
  bool bram);               /* I  [bool] true if a ram only variable */
+
+
+int 
+ncap_var_write_omp(
+var_sct *var,
+bool bram);
+
 
 void 
 ncap_def_ntl_scn           /* define variables captured on first parse */
