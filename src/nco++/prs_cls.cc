@@ -50,6 +50,7 @@ bool bfll){
   int fl_id;
   
   bool bskp_npt=false;
+  bool def_mde=false; // flag -true if in def mode
   
   char dmn_nm[NC_MAX_NAME];
   const char *var_nm;
@@ -136,7 +137,7 @@ bool bfll){
     /* Find dimensions used in var
        Learn which are not already in output list dmn_out and output file
        Add these to output list and output file */
-    (void)nco_redef(out_id);
+    //(void)nco_redef(out_id);
     fl_id=in_id;
     
     (void)nco_inq_varndims(fl_id,var_id,&dmn_var_nbr);
@@ -160,6 +161,9 @@ bool bfll){
 	
         dmn_nw=nco_dmn_dpl(dmn_fd);
 	(void)nco_dmn_xrf(dmn_nw,dmn_fd);
+
+        // Change mode
+        if(!def_mde) { (void)nco_redef(out_id); def_mde=true;}
 	// write dim to output
 	(void)nco_dmn_dfn(fl_out,out_id,&dmn_nw,1);          
 	// Add new dim to output list
@@ -175,7 +179,9 @@ bool bfll){
       }
       (void)nco_free(dim_id);
     }
-    (void)nco_enddef(out_id); 
+    // Switch back to data mode 
+    if(def_mde) 
+      (void)nco_enddef(out_id); 
   } // end else  
   
   if(dbg_lvl_get() > 2) {
@@ -203,9 +209,24 @@ bool bfll){
 
 }            
 
+int 
+prs_cls::ncap_var_write( 
+var_sct *var,
+bool bram){
+
+int bret;
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+{
+    bret= ncap_var_write_omp(var,bram); 
+}
+
+ return bret;
+}
 
 int 
-prs_cls::ncap_var_write(
+prs_cls::ncap_var_write_omp(
 var_sct *var,
 bool bram){ 
 
@@ -224,6 +245,7 @@ bool bram){
 #ifdef NCO_RUSAGE_DBG
   long maxrss; /* [B] Maximum resident set size */
 #endif /* !NCO_RUSAGE_DBG */
+
   
   // INITIAL SCAN
   if(ntl_scn){
@@ -358,7 +380,6 @@ bool bram){
   rcd=nco_inq_varid_flg(out_id,var->nm,&var_out_id);
   
 
-
   // Only go into define mode if necessary
   if(!bdef || var->pck_ram ){  
 
@@ -424,9 +445,8 @@ bool bram){
   Nvar->flg_stt=2;
   
   return True;
-
-
-}
+ 
+ }
 
 
 void prs_cls::ncap_def_ntl_scn(void)
