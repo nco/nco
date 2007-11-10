@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.263 2007-10-24 15:56:09 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.264 2007-11-10 19:49:10 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.3 are ready. 
 
@@ -6,9 +6,15 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release coincides with a user-friendly version of SWAMP, the 
-Script Workflow Analysis for MultiProcessing. SWAMP is a framework
-which efficiently schedules and executes NCO 
-server-side processor (http://dust.ess.uci.edu/ppr/ppr_WZJ073.pdf).
+Script Workflow Analysis for MultiProcessing. SWAMP efficiently
+schedules and executes NCO scripts on a server-side processor:
+
+http://code.google.com/p/swamp
+
+SWAMP can work with with any command-line operator analysis scripts-- 
+not just NCO. If you must transfer lots of data from a server to your
+client before you can analyze it, then SWAMP may speed things up.
+Give it a try and give us some feedback.
 
 A. SWAMP fxm
    http://nco.sf.net/nco.html#swamp
@@ -23,16 +29,14 @@ D. Improved Documentation: fxm
    Working with non-standard grids, e.g., 2D grids fxm
    http://nco.sf.net/nco.html#grd
 
-E. ncap2 continues to grow more powerful (Henry Butowsky)
-   All functions (e.g., cos(), avg()) are now available as methods
-   (e.g., var.cos(), var.avg(x,y))  
-   Demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]   
+E. ncap2 supports OpenMP one some independent code (Henry Butowsky)
+   Demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]
 
 F. ncap2 optimizations: ~50% speedup on some array-oriented syntax
    ncap2 -s '' in.nc out.nc
    http://nco.sf.net/nco.html#ncap2 
 
-G. Support OpenMP on GCC 4.2. Supported in bld/Makefile, not configure.
+G. Support GCC 4.2 OpenMP (GOMP) in bld/Makefile (not yet configure)
    http://nco.sf.net/nco.html#openmp
 
 H. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.

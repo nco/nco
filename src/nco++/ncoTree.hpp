@@ -3,12 +3,12 @@
 
 #include <antlr/config.hpp>
 #include "ncoParserTokenTypes.hpp"
-/* $ANTLR 2.7.6 (20070220): "ncoGrammer.g" -> "ncoTree.hpp"$ */
+/* $ANTLR 2.7.6 (20070910): "ncoGrammer.g" -> "ncoTree.hpp"$ */
 #include <antlr/TreeParser.hpp>
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.54 2007-09-20 15:55:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.55 2007-11-10 19:49:11 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -34,21 +34,25 @@
     #include "NcapVector.hh"
     ANTLR_USING_NAMESPACE(std);
     ANTLR_USING_NAMESPACE(antlr);
+
     
 
-#line 40 "ncoTree.hpp"
+#line 41 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 517 "ncoGrammer.g"
+#line 518 "ncoGrammer.g"
 
 
 private:
     //prs_cls *prs_arg;
     bool bcst;
     var_sct* var_cst;
-    ASTFactory myFactory;
 public:
     prs_cls *prs_arg;
+    ASTFactory myFactory;
+
+
+
 
      //Structure to hold AST pointers to indices in hyperslabs -only temporary 
      typedef struct{
@@ -56,9 +60,10 @@ public:
      } ast_lmt_sct;   
 
     void setTable(prs_cls *prs_in){
-        prs_arg=prs_in;
+        prs_arg=prs_in; 
+
     }
-    // Customized Constructor
+   // Customized Constructor
     ncoTree(prs_cls *prs_in){
         prs_arg=prs_in;
         // default is NO. Casting variable set to true 
@@ -67,7 +72,6 @@ public:
         bcst=false; 
         ncoTree();
     }
-
 
 int 
 lmt_init(
@@ -269,6 +273,14 @@ public:
     void run_dbl(RefAST tr,int icnt){
      int idx=0;
      RefAST ntr=tr;
+
+     extern int      
+     ncap_mpi_exe(
+     std::vector< std::vector<RefAST> > &all_ast_vtr,
+     ncoTree** wlk_ptr,
+     int nbr_wlk);
+
+
       
      //small list dont bother with double parsing     
      if(icnt <4) goto small;
@@ -291,15 +303,20 @@ public:
        prs_arg->ntl_scn=False;
       // nb A vector of vectors
       std::vector< std::vector<RefAST> > all_ast_vtr;
+      ncoTree **wlk_vtr=(ncoTree**)NULL; 
 
-      // Populate  vector 
-      (void)ncap_mpi_srt(tr,icnt,all_ast_vtr);
-
-      // Evaluate expressions
+      // Populate and sort  vector 
+      (void)ncap_mpi_srt(tr,icnt,all_ast_vtr,prs_arg);
+       
+      // Evaluate expressions (execute)
+      (void)ncap_mpi_exe(all_ast_vtr,wlk_vtr,0);  
+      
+      /*  
       for(unsigned vtr_idx=0 ; vtr_idx<all_ast_vtr.size(); vtr_idx++)
         for(unsigned jdx=0 ; jdx<all_ast_vtr[vtr_idx].size(); jdx++)
 	     (void)statements(all_ast_vtr[vtr_idx][jdx]);
-        
+      */
+      
     goto end;
     } //end if
 
@@ -379,7 +396,7 @@ exit: return iret;
     } // end run_exe
 
 
-#line 44 "ncoTree.hpp"
+#line 45 "ncoTree.hpp"
 public:
 	ncoTree();
 	static void initializeASTFactory( ANTLR_USE_NAMESPACE(antlr)ASTFactory& factory );
