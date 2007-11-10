@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.436 2007-10-25 08:35:19 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.437 2007-11-10 22:40:44 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -14,9 +14,10 @@
 # scp ~/nco/bld/Makefile soot.ess.uci.edu:nco/bld
 
 # Development machines default configuration:
-# netCDF4, UDUnits2: ashes, virga
+# netCDF4, UDUnits2: ashes, elnino, virga
 # netCDF3: sand
 # netCDF3, DAP: soot
+# netCDF3, configure: clay
 
 # Usage (testing):
 # make tst                           # Vanilla regression test
