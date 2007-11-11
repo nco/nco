@@ -1,3 +1,7 @@
+2007-11-11  Charlie Zender  <zender@uci.edu>
+
+	* Add packing caveat to ncrcat and ncecat documentation
+
 2007-10-31  Charlie Zender  <zender@uci.edu>
 
 	* Update man page ncwa.1

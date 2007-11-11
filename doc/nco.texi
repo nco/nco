@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.452 2007-10-31 12:51:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.453 2007-11-11 20:14:21 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7149,6 +7149,27 @@ processed variables must be the same from file to file.
 Normally this means all the input files are the same size, and contain 
 data on different realizations of the same variables.
 
+@findex ncpdq
+@cindex packing
+@cindex unpacking
+@cindex @code{add_offset}
+@cindex @code{scale_factor}
+Concatenating a variable packed with different scales multiple datasets  
+is beyond the capabilities of @command{ncecat} (and @command{ncrcat},
+the other concatenator (@ref{Concatenation}).
+@command{ncecat} does not unpack data, it simply @emph{copies} the data
+from the @var{input-files}, and the metadata from the @emph{first}
+@var{input-file}, to the @var{output-file}. 
+This means that data compressed with a packing convention must use
+the identical packing parameters (e.g., @code{scale_factor} and
+@code{add_offset}) for a given variable across @emph{all} input files.
+Otherwise the concatenated dataset will not unpack correctly.
+The workaround for cases where the packing parameters differ across
+@var{input-files} requires three steps:
+First, unpack the data using @command{ncpdq}.
+Second, concatenate the unpacked data using @command{ncecat}, 
+Third, re-pack the result with @command{ncpdq}.
+
 @noindent
 @html
 <a name="xmp_ncecat"></a> <!-- http://nco.sf.net/nco.html#xmp_ncecat -->
@@ -8597,12 +8618,33 @@ Input files may vary in size, but each must have a record dimension.
 The record coordinate, if any, should be monotonic (or else non-fatal
 warnings may be generated).
 @cindex hyperslab
-Hyperslabs of the record dimension which include more than one file are 
+Hyperslabs along the record dimension that span more than one file are  
 handled correctly.
 @cindex stride
 @command{ncra} supports the @var{stride} argument to the @samp{-d}
 hyperslab option for the record dimension only, @var{stride} is not
 supported for non-record dimensions.
+
+@findex ncpdq
+@cindex packing
+@cindex unpacking
+@cindex @code{add_offset}
+@cindex @code{scale_factor}
+Concatenating a variable packed with different scales multiple datasets  
+is beyond the capabilities of @command{ncrcat} (and @command{ncecat},
+the other concatenator (@ref{Concatenation}).
+@command{ncrcat} does not unpack data, it simply @emph{copies} the data
+from the @var{input-files}, and the metadata from the @emph{first}
+@var{input-file}, to the @var{output-file}. 
+This means that data compressed with a packing convention must use
+the identical packing parameters (e.g., @code{scale_factor} and
+@code{add_offset}) for a given variable across @emph{all} input files.
+Otherwise the concatenated dataset will not unpack correctly.
+The workaround for cases where the packing parameters differ across
+@var{input-files} requires three steps:
+First, unpack the data using @command{ncpdq}.
+Second, concatenate the unpacked data using @command{ncrcat}, 
+Third, re-pack the result with @command{ncpdq}.
 
 @cindex ARM conventions
 @command{ncrcat} applies special rules to @acronym{ARM} convention time
