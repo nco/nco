@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.188 2007-07-23 00:31:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.189 2007-11-12 14:32:52 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -39,6 +39,7 @@
    ncks -p /ZENDER/tmp -l /data/zender/tmp h0001.nc ~/foo.nc
    ncks -s "%+16.10f\n" -H -C -v three_dmn_var in.nc
    ncks -H -v fl_nm,fl_nm_arr ~/nco/data/in.nc
+   ncks -H -C -u -d wvl,'0.4 micron','0.7 micron' -v wvl ~/nco/data/in.nc
    ncks -H -d fl_dim,1 -d char_dim,6,12 -v fl_nm,fl_nm_arr ~/nco/data/in.nc
    ncks -H -m -v char_var_nul,char_var_space,char_var_multinul ~/nco/data/in.nc
    ncks -H -C -v three_dmn_rec_var -d time,,,2 in.nc
@@ -114,8 +115,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.188 2007-07-23 00:31:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.188 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.189 2007-11-12 14:32:52 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.189 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
