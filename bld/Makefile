@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.437 2007-11-10 22:40:44 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.438 2007-11-13 10:11:37 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -50,6 +50,7 @@
 # Normal (Linux) developer systems:
 # cd ${HOME}/nco/bld;make OMP=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd -
 # cd ${HOME}/nco/bld;make OMP=N OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd -
+# cd ${HOME}/nco/bld;make OMP=N OPTS=D NETCDF4=Y UDUNITS2=N allinone;cd -
 # cd ${HOME}/nco/bld;make OPTS=D DAP=Y USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
 # 64-bit ABI on UCI MPC systems:
 # cd ${HOME}/nco/bld;env ANTLR='/software/antlr/bin/antlr' ANTLR_ROOT='/software/antlr' UDUNITS_INC='/software/udunits/include' UDUNITS_LIB='/software/udunits/lib' make --jobs=1 ABI=64 allinone;cd -
@@ -1381,9 +1382,9 @@ obj_dir:
 	-mkdir -p ${MY_OBJ_DIR}
 # The whole shebang
 nco_c++: 
-	-cd ../src/nco_c++; ${MAKE} -f Makefile.old lib dat all
+	-cd ../src/nco_c++; ${MAKE} -f Makefile.old OPTS=${OPTS} lib dat all
 nco++: 
-	-cd ../src/nco++; ${MAKE} -f Makefile.old lib all
+	-cd ../src/nco++; ${MAKE} -f Makefile.old OPTS=${OPTS} lib all
 allinone: all nco_c++ nco++
 # Targets in bin
 mpi:   mpi_nco
@@ -1668,7 +1669,7 @@ src_cln:
 	rm -f ${MDL_NCAP}
 # Targets in /usr/local
 sys: ${MDL_BIN_TRG}
-	- cd ${MY_BIN_DIR};sudo /bin/cp -f ${MDL_BIN_TRG} /usr/local/bin; cd /usr/local/bin; sudo rm -f ncdiff ncea ncrcat ncunpack; sudo ln -s -f ncbo ncdiff; sudo ln -s -f ncra ncea; sudo ln -s -f ncra ncrcat; sudo ln -s -f ncpdq ncunpack; sudo ln -s -f ncpdq ncpack; cd ${HOME}/nco/src/nco++; ${MAKE} -f Makefile.old $@
+	- cd ${MY_BIN_DIR};sudo /bin/cp -f ${MDL_BIN_TRG} /usr/local/bin; cd /usr/local/bin; sudo rm -f ncdiff ncea ncrcat ncunpack; sudo ln -s -f ncbo ncdiff; sudo ln -s -f ncra ncea; sudo ln -s -f ncra ncrcat; sudo ln -s -f ncpdq ncunpack; sudo ln -s -f ncpdq ncpack; cd ${HOME}/nco/src/nco++; ${MAKE} -f Makefile.old OPTS=${OPTS} $@
 sys_cln:
 	- cd /usr/local/bin;rm -f ${MDL_BIN_TRG}
 
@@ -1809,7 +1810,7 @@ else
 endif
 	chmod 755 ${MY_BIN_DIR}/$@${BNR_SFX}
 ncap2 :
-	-cd ../src/nco++; ${MAKE} -f Makefile.old $@
+	-cd ../src/nco++; ${MAKE} -f Makefile.old OPTS=${OPTS} $@
 
 #	/bin/rm -f ${MDL_NCAP} ${MY_OBJ_DIR}/$@_lex.o ${MY_OBJ_DIR}/ncap_yacc.h ${MY_OBJ_DIR}/ncap_yacc.c
 

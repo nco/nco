@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.977 2007-10-24 15:56:09 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.978 2007-11-13 10:11:39 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -626,7 +626,7 @@ nco913. nco_cmp_get() fails on _AIX with different compiler
 nco915. GCC OpenMP support in configure.in
 nco916. Announce/release 3.9.3
 nco917. GCC OpenMP with autoconf
-nco918. 
+nco918. Add ncecat -u mods to mpncecat
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************

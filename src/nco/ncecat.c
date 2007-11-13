@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.142 2007-07-23 00:31:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.143 2007-11-13 10:11:39 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -86,10 +86,11 @@ main(int argc,char **argv)
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
+  char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.142 2007-07-23 00:31:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.142 $";
-  const char * const opt_sht_lst="4ACcD:d:FHhL:l:n:Oo:p:rRt:v:x-:";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.143 2007-11-13 10:11:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.143 $";
+  const char * const opt_sht_lst="4ACcD:d:FHhL:l:n:Oo:p:rRt:u:v:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -139,9 +140,7 @@ main(int argc,char **argv)
   long idx_rec_out=0L; /* idx_rec_out gets incremented */
   
   nm_id_sct *dmn_lst;
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
-  
-  
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */  
   var_sct **var;
   var_sct **var_fix;
   var_sct **var_fix_out;
@@ -196,6 +195,8 @@ main(int argc,char **argv)
       {"thr_nbr",required_argument,0,'t'},
       {"threads",required_argument,0,'t'},
       {"omp_num_threads",required_argument,0,'t'},
+      {"ulm_nm",required_argument,0,'u'},
+      {"rcd_nm",required_argument,0,'u'},
       {"variable",required_argument,0,'v'},
       {"version",no_argument,0,'r'},
       {"vrs",no_argument,0,'r'},
@@ -294,6 +295,9 @@ main(int argc,char **argv)
       break;
     case 't': /* Thread number */
       thr_nbr=(int)strtol(optarg,(char **)NULL,10);
+      break;
+    case 'u': /* New record dimension name */
+      rec_dmn_nm=(char *)strdup(optarg);
       break;
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */
@@ -421,7 +425,7 @@ main(int argc,char **argv)
 
     /* Always construct new "record" dimension from scratch */
     rec_dmn=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
-    rec_dmn->nm=(char *)strdup("record");
+    if(rec_dmn_nm == NULL) rec_dmn->nm=rec_dmn_nm=(char *)strdup("record"); else rec_dmn->nm=rec_dmn_nm;
     rec_dmn->id=-1;
     rec_dmn->nc_id=-1;
     rec_dmn->xrf=NULL;
@@ -578,6 +582,7 @@ main(int argc,char **argv)
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
     /* ncecat-specific memory cleanup */
+    if(rec_dmn_nm != NULL) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
     
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */

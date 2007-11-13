@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.194 2007-10-21 14:08:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.195 2007-11-13 10:11:40 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -814,8 +814,10 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-4] [-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-L lvl] [-l path] [-n ...] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-x] [-y op_typ] in.nc [...] [out.nc]\n");
     break;
   case ncrcat:
-  case ncecat:
     opt_sng=(char *)strdup("[-4] [-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-L lvl] [-l path] [-n ...] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-x] in.nc [...] [out.nc]\n");
+    break;
+  case ncecat:
+    opt_sng=(char *)strdup("[-4] [-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-L lvl] [-l path] [-n ...] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-u ulm_nm] [-v ...] [-x] in.nc [...] [out.nc]\n");
     break;
   case ncrename:
     opt_sng=(char *)strdup("[-a ...] [-D dbg_lvl] [-d ...] [-h] [--hdr_pad nbr] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-v ...] in.nc [[out.nc]]\n");
@@ -906,7 +908,10 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-S")) (void)fprintf(stdout,"-S, --fl_spt, --script-file fl.nco\tScript file containing multiple algebraic commands\n");
   if(strstr(opt_sng,"-T")) (void)fprintf(stdout,"-T, --mask_comparator, --msk_cmp_typ, --op_rlt comparator\tComparator for mask condition: eq,ne,ge,le,gt,lt\n");
   if(strstr(opt_sng,"-t")) (void)fprintf(stdout,"-t, --thr_nbr, --threads, --omp_num_threads thr_nbr\tThread number for OpenMP\n");
-  if(strstr(opt_sng,"-u")) (void)fprintf(stdout,"-u, --units\t\tToggle printing units of variables, if any\n");
+  if(strstr(opt_sng,"-u")){
+    if(prg_lcl == ncks) (void)fprintf(stdout,"-u, --units\t\tToggle printing units of variables, if any\n");
+    if(prg_lcl == ncecat) (void)fprintf(stdout,"-u, --ulm_nm --rcd_nm\t\tNew unlimited (record) dimension name\n");
+  } /* end if */
   if(strstr(opt_sng,"-U")) (void)fprintf(stdout,"-U, --upk, --unpack\tUnpack input file\n");
   if(strstr(opt_sng,"-v")){
     if(prg_lcl == ncrename) (void)fprintf(stdout,"-v, --variable old_var,new_var Variable's old and new names\n");
