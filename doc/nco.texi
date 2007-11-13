@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.453 2007-11-11 20:14:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.454 2007-11-13 12:06:29 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7093,7 +7093,7 @@ SYNTAX
 ncecat [-4] [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [-L @var{dfl_lvl}] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] 
+[-t @var{thr_nbr}] [-u @var{ulm_nm}] [-v @var{var}[,@dots{}]] [-x] 
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -7102,15 +7102,23 @@ DESCRIPTION
 
 @command{ncecat} concatenates an arbitrary number of input files into a 
 single output file.
-@cindex record dimension
-A new record dimension acts as the glue to bind the input file data
-together.
-Each variable in each input file becomes one record in the same variable
-in the output file. 
 The @var{input-files} are stored consecutively as records in 
 @var{output-file}.
+Each variable in each input file becomes one record in the same variable
+in the output file. 
 All @var{input-files} must contain all extracted variables (or else
 there would be "gaps" in the output file).
+
+A new record dimension is the glue which binds the input file data
+together. 
+The new record dimension name is, by default, ``record''.
+@cindex unlimited dimension
+@cindex record dimension
+@cindex @code{-u @var{ulm_nm}}
+@cindex @code{--ulm_nm @var{ulm_nm}}
+@cindex @code{--rcd_nm @var{ulm_nm}}
+Its name can be specified with the @code{-u @var{ulm_nm}} short
+option (or the @samp{--ulm_nm} or @samp{rcd_nm} long options).
 
 Each extracted variable must be constant in size and rank across all
 @var{input-files}. 
@@ -7142,8 +7150,8 @@ model.
 Then @code{ncecat 85?.nc 85_ens.nc} glues the individual realizations 
 together into the single file, @file{85_ens.nc}. 
 If an input variable was dimensioned [@code{lat},@code{lon}], it will
-have dimensions [@code{record},@code{lat},@code{lon}] in the output
-file. 
+by default have dimensions [@code{record},@code{lat},@code{lon}] in
+the output file. 
 @w{A restriction} of @command{ncecat} is that the hyperslabs of the
 processed variables must be the same from file to file.
 Normally this means all the input files are the same size, and contain 
