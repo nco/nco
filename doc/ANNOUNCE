@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.264 2007-11-10 19:49:10 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.265 2007-11-13 12:56:33 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.3 are ready. 
 
@@ -19,9 +19,8 @@ Give it a try and give us some feedback.
 A. SWAMP fxm
    http://nco.sf.net/nco.html#swamp
 
-B. UDUnits2 beta-support. Compile with 'UDUNITS2=Y', send us feedback.  
-   Binaries (RPMs, Debs) still use UDUnits1. Thanks to Steve Emmerson.
-   http://nco.sf.net/nco.html#UDUnits2
+B. Use ncecat -u ulm_nm to specify the new record dimension name
+   http://nco.sf.net/nco.html#ncecat
 
 C. Fix for autoconf builds using GCC on AIX 
 
@@ -29,7 +28,7 @@ D. Improved Documentation: fxm
    Working with non-standard grids, e.g., 2D grids fxm
    http://nco.sf.net/nco.html#grd
 
-E. ncap2 supports OpenMP one some independent code (Henry Butowsky)
+E. ncap2 supports OpenMP on some independent branches (Henry Butowsky)
    Demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]
 
 F. ncap2 optimizations: ~50% speedup on some array-oriented syntax
