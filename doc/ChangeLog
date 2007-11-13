@@ -20,7 +20,7 @@
 
 	* OpenMP-enabled, gcc-compiled NCO passes regression test
 
-	* Enable OpenMP with gcc, g++, gfortran
+	* Enable OpenMP with GCC 4.2 gcc, g++, gfortran
 
 	* Change MUST_CONFORM from private() to shared() in ncflint
 
