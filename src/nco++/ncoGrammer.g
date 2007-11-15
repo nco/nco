@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.115 2007-11-09 10:10:45 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.116 2007-11-15 14:47:10 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -55,6 +55,7 @@ tokens {
     EXPR;
     POST_INC;
     POST_DEC;
+    UTIMES;
     SQR2;
     PROP; // used to differenciate properties & methods
     FOR2;    
@@ -171,9 +172,17 @@ unaryleft_exp: meth_exp (
 
 
 // unary right association   
+/*
 unary_exp:  ( LNOT^| PLUS^| MINUS^ |INC^ | DEC^ | TIMES^ ) unary_exp
             | unaryleft_exp
 	;
+*/
+
+unary_exp:  ( LNOT^| PLUS^| MINUS^ |INC^ | DEC^ 
+             | ur:TIMES^ {#ur->setType(UTIMES);#ur->setText("UTIMES");} ) unary_exp
+             | unaryleft_exp
+    ;    
+
 
 
 // right association
@@ -1686,14 +1695,22 @@ out returns [var_sct *var]
            { var=ncap_var_var_op(var1,var2, PLUS );}
 	|  (#(MINUS out out)) => #( MINUS var1=out var2=out)
             { var=ncap_var_var_op(var1,var2, MINUS );}
-    |  (#(TIMES #(POST_INC out)))=> #( TIMES #(POST_INC var1=out_asn)){
+    |  (#(UTIMES #(POST_INC out)))=> #( UTIMES #(POST_INC var1=out_asn)){
              var=ncap_var_var_inc(var1,NULL_CEWI,POST_INC,true,prs_arg);      
        } 
-    |  (#(TIMES #(POST_DEC out)))=> #( TIMES #(POST_DEC var1=out_asn)){
+    |  (#(UTIMES #(POST_DEC out)))=> #( UTIMES #(POST_DEC var1=out_asn)){
              var=ncap_var_var_inc(var1,NULL_CEWI,POST_DEC,true,prs_arg);      
        } 
+    |  (#(UTIMES #(INC out)))=> #( UTIMES #(INC var1=out_asn)){
+             var=ncap_var_var_inc(var1,NULL_CEWI,INC,true,prs_arg);      
+       } 
+    |  (#(UTIMES #(DEC out)))=> #( UTIMES #(DEC var1=out_asn)){
+             var=ncap_var_var_inc(var1,NULL_CEWI,DEC,true,prs_arg);      
+       } 
+
 	|	#(TIMES var1=out var2=out)
             { var=ncap_var_var_op(var1,var2, TIMES );}	
+
 	|	#(DIVIDE var1=out var2=out)	
             { var=ncap_var_var_op(var1,var2, DIVIDE );}
 	|	#(MOD var1=out var2=out)
@@ -1742,19 +1759,19 @@ out returns [var_sct *var]
     // Assign Operators 
     | #(PLUS_ASSIGN pls_asn:. var2=out) {
        var1=out_asn(pls_asn);
-       var=ncap_var_var_inc(var1,var2, PLUS_ASSIGN ,(pls_asn->getType()==TIMES), prs_arg);
+       var=ncap_var_var_inc(var1,var2, PLUS_ASSIGN ,(pls_asn->getType()==UTIMES), prs_arg);
        }
 	| #(MINUS_ASSIGN min_asn:. var2=out){
        var1=out_asn(min_asn);
-       var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN ,(min_asn->getType()==TIMES), prs_arg);
+       var=ncap_var_var_inc(var1,var2, MINUS_ASSIGN ,(min_asn->getType()==UTIMES), prs_arg);
        }
 	| #(TIMES_ASSIGN tim_asn:. var2=out){       
        var1=out_asn(tim_asn);
-       var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN ,(tim_asn->getType()==TIMES), prs_arg);
+       var=ncap_var_var_inc(var1,var2, TIMES_ASSIGN ,(tim_asn->getType()==UTIMES), prs_arg);
        }
 	| #(DIVIDE_ASSIGN div_asn:. var2=out){	
        var1=out_asn(div_asn);
-       var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN ,(div_asn->getType()==TIMES), prs_arg);
+       var=ncap_var_var_inc(var1,var2, DIVIDE_ASSIGN ,(div_asn->getType()==UTIMES), prs_arg);
        }
 
     | #(ASSIGN asn:. ) 
@@ -1767,7 +1784,7 @@ out returns [var_sct *var]
              bool bram;
              NcapVar *Nvar;
 
-             if(asn->getType()==TIMES){
+             if(asn->getType()==UTIMES){
                tr=asn->getFirstChild();
                tr->setNextSibling(asn->getNextSibling());
                bram=true;
@@ -1995,7 +2012,7 @@ const std::string fnc_nm("assign_asn");
 var=NULL_CEWI; 
 }
 
-   : #(TIMES vid1:VAR_ID)
+   : #(UTIMES vid1:VAR_ID)
         { 
           if(vid1->getFirstChild())
                err_prn(fnc_nm,"Invalid Lvalue " +vid1->getText() );
