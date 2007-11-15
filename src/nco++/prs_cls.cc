@@ -261,7 +261,8 @@ bool bram){
       return True;
     }  
     
-    Nvar=new NcapVar(var,"");
+    //Nvar=new NcapVar(var,"");
+    Nvar=new NcapVar(var);
     Nvar->flg_mem=bram;
     int_vtr.push(Nvar);
     return True;
@@ -290,7 +291,8 @@ bool bram){
   
   // Deal with a new RAM only variable
   if(!bdef && bram){
-    NcapVar *NewNvar=new NcapVar(var,"");
+    //NcapVar *NewNvar=new NcapVar(var,"");
+    NcapVar *NewNvar=new NcapVar(var);
     NewNvar->flg_mem=bram;
     NewNvar->flg_stt=2;
     NewNvar->var->id=-1;
