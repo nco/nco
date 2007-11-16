@@ -50,7 +50,6 @@ bool bfll){
   int fl_id;
   
   bool bskp_npt=false;
-  bool def_mde=false; // flag -true if in def mode
   
   char dmn_nm[NC_MAX_NAME];
   const char *var_nm;
@@ -64,6 +63,8 @@ bool bfll){
   NcapVar *Nvar;
   
   var_nm=snm.c_str();
+
+  std::vector<dmn_sct*> dmn_tp_out;
   
   
   // INITIAL SCAN
@@ -159,9 +160,40 @@ bool bfll){
           err_prn(fnc_nm,os.str());
 	}
 	
+        dmn_tp_out.push_back(dmn_fd);
+        
+      }
+      if(dmn_tp_out.size() >0){
+
+#ifdef _OPENMP
+#pragma omp critical 
+#endif
+        {
+
+        (void)nco_redef(out_id);
+	for(idx=0; idx< dmn_tp_out.size();idx++){
+	  dmn_nw=nco_dmn_dpl(dmn_tp_out[idx]);
+          (void)nco_dmn_xrf(dmn_nw,dmn_tp_out[idx]);
+	  (void)nco_dmn_dfn(fl_out,out_id,&dmn_nw,1);          
+	  (void)dmn_out_vtr.push_back(dmn_nw);
+
+	  if(dbg_lvl_get() > 2) {
+            std::ostringstream os;
+            os << "Found new dimension " << dmn_nm << " in input variable " << var_nm <<" in file " <<fl_in;
+            os << ". Defining dimension " << dmn_nm << " in output file " << fl_out;
+            dbg_prn(fnc_nm,os.str());
+	  
+	  }
+	}// end idx
+          (void)nco_enddef(out_id);
+          dmn_tp_out.clear(); 
+        } // end omp critical
+      } // end if 
+
+      /*
+ 
         dmn_nw=nco_dmn_dpl(dmn_fd);
 	(void)nco_dmn_xrf(dmn_nw,dmn_fd);
-
         // Change mode
         if(!def_mde) { (void)nco_redef(out_id); def_mde=true;}
 	// write dim to output
@@ -175,15 +207,12 @@ bool bfll){
           os << ". Defining dimension " << dmn_nm << " in output file " << fl_out;
           dbg_prn(fnc_nm,os.str());
 	  
-	}
-      }
-      (void)nco_free(dim_id);
+	  } */
     }
-    // Switch back to data mode 
-    if(def_mde) 
-      (void)nco_enddef(out_id); 
-  } // end else  
-  
+      (void)nco_free(dim_id);
+  }
+   
+   
   if(dbg_lvl_get() > 2) {
     std::ostringstream os;
     os<< "Parser VAR action called ncap_var_init() to retrieve " <<var_nm <<" from disk";
@@ -214,15 +243,21 @@ prs_cls::ncap_var_write(
 var_sct *var,
 bool bram){
 
-int bret;
+  int bret;
 #ifdef _OPENMP
 #pragma omp critical
 #endif
-{
-    bret= ncap_var_write_omp(var,bram); 
-}
+    {
+
+ bret=ncap_var_write_omp(var,bram);
+
+    } // end pragma
 
  return bret;
+ 
+
+
+
 }
 
 int 
@@ -406,7 +441,7 @@ bool bram){
   /* Take output file out of define mode */
   (void)nco_enddef(out_id);
   
-  } // end defines
+  } // end if
 
   /* Write variable */ 
   if(var->nbr_dim == 0){
