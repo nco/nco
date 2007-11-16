@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.116 2007-11-15 14:47:10 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.117 2007-11-16 12:11:13 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -1629,11 +1629,11 @@ var=NULL_CEWI;
                Nvar=prs_arg->var_vtr.find(vid2->getText());
                //rcd=nco_inq_varid_flg(prs_arg->out_id,var1->nm ,&var_id);
 
-               /*
+              
                if(!Nvar || Nvar && Nvar->flg_stt==1)
                  (void)ncap_att_cpy(vid2->getText(),s_var_rhs,prs_arg);
                  
-               */             
+                           
  
                // See If we have to return something
                if(vid2->getFirstChild() && vid2->getFirstChild()->getType()==NORET)
