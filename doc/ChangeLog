@@ -1,3 +1,7 @@
+2007-11-16  Charlie Zender  <zender@uci.edu>
+
+	* Add NcapVar.cc to distribution to fix native AIX ncap2 bug
+
 2007-11-13  Charlie Zender  <zender@uci.edu>
 
 	* Propagate Makefile OPTS argument to children

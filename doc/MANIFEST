@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.29 2007-07-24 03:00:17 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.30 2007-11-16 11:33:50 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -269,6 +269,7 @@ nco/src/nco++/ncap2.cc		ncap2 main()
 nco/src/nco++/ncap2.hh
 nco/src/nco++/Ncap2.hh
 nco/src/nco++/ncap2_utl.cc
+nco/src/nco++/NcapVar.cc
 nco/src/nco++/NcapVar.hh
 nco/src/nco++/NcapVarVector.cc
 nco/src/nco++/NcapVarVector.hh
