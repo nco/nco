@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.46 2007-10-24 15:56:10 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.47 2007-11-16 11:32:23 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make. AT&T Make will not process this file
@@ -1283,6 +1283,7 @@ lib : inc $(libnco++).a
 	-cd ../../bld; ${MAKE} $@ # Rebuild libnco if necessary
 $(libnco++).a : inc $(libnco++).a(${MY_OBJ_DIR}/fmc_cls.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/Invoke.o) \
+	$(libnco++).a(${MY_OBJ_DIR}/NcapVar.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/NcapVarVector.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/ncap2_utl.o) \
 	$(libnco++).a(${MY_OBJ_DIR}/ncoLexer.o) \
