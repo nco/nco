@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.53 2007-11-10 19:49:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.54 2007-11-22 10:48:53 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -79,6 +79,9 @@
 #include "libnco.h"    /* netCDF Operator (NCO) library */
 #include "sdo_utl.hh"  /* error messages etc */
 
+
+#include "nco_mpi.h"
+
 /* Global variables */
 size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap_lex.l) */
 size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap_lex.l) */
@@ -133,8 +136,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.53 2007-11-10 19:49:10 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.53 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.54 2007-11-22 10:48:53 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.54 $";
   const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -182,7 +185,7 @@ main(int argc,char **argv)
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
   int var_id;
-  int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
+  int thr_nbr=1; /* [nbr] Thread number Option t */
 
   
   lmt_sct **lmt=NULL_CEWI;
@@ -249,6 +252,7 @@ main(int argc,char **argv)
       {"revision",no_argument,0,'r'},
       {"file",required_argument,0,'S'},
       {"script-file",required_argument,0,'S'},
+      {"signal",no_argument,0,'z'},
       {"fl_spt",required_argument,0,'S'},
       {"spt",required_argument,0,'s'},
       {"script",required_argument,0,'s'},
@@ -366,7 +370,15 @@ main(int argc,char **argv)
         err_prn(fnc_nm,std::string(prg_nm_get())+ " does not currently implement -x option\n");
       */
       break;
-    case '?': /* Print proper usage */
+#ifdef _OPENMP
+    case 'z': /* Suspend with signal handler to facilitate debugging */
+      if(signal(SIGUSR1,nco_cnt_run) == SIG_ERR) (void)printf("%s: ERROR Could not install suspend handler.\n",prg_nm);
+      while(!nco_spn_lck_brk) usleep(nco_spn_lck_us); /* Spinlock. fxm: should probably insert a sched_yield */
+      break;
+#endif /* _OPEN_MP */ 
+
+
+   case '?': /* Print proper usage */
       (void)nco_usg_prn();
       nco_exit(EXIT_SUCCESS);
       break;
@@ -502,7 +514,7 @@ main(int argc,char **argv)
 
     // open files for each thread
     rcd=nco_open(fl_in,NC_NOWRITE,&prs_tmp.in_id);
-    //rcd=nco_open(fl_out_tmp, NC_WRITE|NC_SHARE,&prs_tmp.out_id);
+    // rcd=nco_open(fl_out_tmp, NC_WRITE|NC_SHARE,&prs_tmp.out_id);
     prs_tmp.out_id=out_id;
 
     prs_vtr.push_back(prs_tmp);
