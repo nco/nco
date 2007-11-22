@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.85 2007-11-09 10:14:48 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.86 2007-11-22 10:50:13 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -71,7 +71,7 @@ prs_cls *prs_arg)
       return True;
     }  
     
-    Nvar=new NcapVar(var,"");
+    Nvar=new NcapVar(var);
     Nvar->flg_mem=bram;
     prs_arg->int_vtr.push(Nvar);
     return True;
@@ -100,7 +100,7 @@ prs_cls *prs_arg)
   
   // Deal with a new RAM only variable
   if(!bdef && bram){
-    NcapVar *NewNvar=new NcapVar(var,"");
+    NcapVar *NewNvar=new NcapVar(var);
     NewNvar->flg_mem=bram;
     NewNvar->flg_stt=2;
     NewNvar->var->id=-1;
@@ -512,7 +512,11 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
  var_sct *var2) /* I [sct] Variable structure containing divisor */
 {
   ptr_unn op_swp;
-  
+  const char fnc_nm[]="ncap_var_var_mod"; 
+
+ if(dbg_lvl_get() >= 2) 
+   dbg_prn(fnc_nm,"Entered");
+
   if(var1->has_mss_val){
     (void)nco_var_mod(var1->type,var1->sz,var1->has_mss_val,var1->mss_val,var1->val,var2->val);
   }else{
@@ -524,6 +528,11 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
   op_swp=var1->val;var1->val=var2->val;var2->val=op_swp;
   
   var2=nco_var_free(var2);
+
+
+ if(dbg_lvl_get() >= 2) 
+   dbg_prn(fnc_nm,"Leaving");
+
   return var1;
 } /* end ncap_var_var_mod() */
 
@@ -602,6 +611,12 @@ ncap_var_var_pwr  /* [fnc] Empowerment of two variables */
 {
   
   ptr_unn op_swp;
+
+  const char fnc_nm[]="ncap_var_var_pwr"; 
+
+ if(dbg_lvl_get() >= 2) 
+   dbg_prn(fnc_nm,"Entered");
+
   
   if(var1->has_mss_val){
     (void)nco_var_pwr(var1->type,var1->sz,var1->has_mss_val,var1->mss_val,var1->val,var2->val);
@@ -615,6 +630,11 @@ ncap_var_var_pwr  /* [fnc] Empowerment of two variables */
   op_swp=var1->val;var1->val=var2->val;var2->val=op_swp;
   
   var2=nco_var_free(var2);
+
+ if(dbg_lvl_get() >= 2) 
+   dbg_prn(fnc_nm,"Leaving");
+
+
   return var1;
   
 } /* end ncap_var_var_pwr() */
@@ -627,10 +647,15 @@ float(*fnc_flt)(float))
 {
   /* Purpose: Evaluate fnc_dbl(var) or fnc_flt(var) for each value in variable
      Float and double functions are in app */
+  const char fnc_nm[]="ncap_var_fnc"; 
   long idx;
   long sz;
   ptr_unn op1;
   
+ if(dbg_lvl_get() >= 2) 
+   dbg_prn(fnc_nm,"Entered");
+
+
   if(var_in->undefined) return var_in;
   
   /* Promote variable to NC_FLOAT */
@@ -671,6 +696,12 @@ float(*fnc_flt)(float))
   }/* end switch */
   
   if(var_in->has_mss_val) (void)cast_nctype_void(var_in->type,&(var_in->mss_val));
+
+  
+ if(dbg_lvl_get() >= 2) 
+   dbg_prn(fnc_nm,"Leaving");
+
+
   return var_in;
 } /* end ncap_var_fnc() */
 
@@ -868,8 +899,8 @@ ncap_var_stretch /* [fnc] Stretch variables */
      var_lsr_out=var_lsr only if variables already conform
      var_gtr_out is required since both variables may change
      var_gtr_out=var_gtr unless convolution is required */
-  
-  const char fnc_nm[]="ncap_var_stretch"; 
+ 
+   const char fnc_nm[]="ncap_var_stretch"; 
   
   nco_bool CONFORMABLE=False; /* [flg] Whether var_lsr can be made to conform to var_gtr */
   nco_bool CONVOLVE=False; /* [flg] var_1 and var_2 had to be convolved */
