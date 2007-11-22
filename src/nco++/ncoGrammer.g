@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.118 2007-11-22 10:47:35 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.119 2007-11-22 12:45:18 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -1146,24 +1146,26 @@ var=NULL_CEWI;
    : (#(VAR_ID LMT_LIST ))=> #(vid:VAR_ID lmt:LMT_LIST){
 
 
-              if(dbg_lvl_get() > 0)
-                dbg_prn(fnc_nm,vid->getText()+"(limits)");
-
-
-               const char *var_nm; 
+               std::string var_nm; 
                var_sct *var_lhs;
                NcapVar *Nvar;              
 
-               var_nm=vid->getText().c_str();
+               var_nm=vid->getText();
 
-               var_lhs=prs_arg->ncap_var_init(vid->getText(),false);
+
+
+              if(dbg_lvl_get() > 0)
+                dbg_prn(fnc_nm,var_nm+"(limits)");
+
+
+               var_lhs=prs_arg->ncap_var_init(var_nm,false);
                if(var_lhs){
                  var=nco_var_dpl(var_lhs);
                  (void)prs_arg->ncap_var_write(var_lhs,bram);
                } else {
 
                  // set var to udf
-                 var_lhs=ncap_var_udf(var_nm);
+                 var_lhs=ncap_var_udf(var_nm.c_str());
                  var=nco_var_dpl(var_lhs);
  
                  Nvar=new NcapVar(var_lhs);
@@ -1180,12 +1182,13 @@ var=NULL_CEWI;
               RefAST  aRef;
               NcapVar *Nvar;
               int str_vtr_sz;
-              
+
+              var_nm=vid1->getText();               
 
               if(dbg_lvl_get() > 0)
-                dbg_prn(fnc_nm,vid1->getText()+"[dims]");
+                dbg_prn(fnc_nm,var_nm+"[dims]");
 
-              var_nm=vid1->getText(); 
+
 
               // set class wide variables
               bcst=true;  
@@ -1249,9 +1252,13 @@ var=NULL_CEWI;
 
           | vid2:VAR_ID {   
               
+              std::string var_nm;
+              
+              var_nm=vid2->getText();
+
 
               if(dbg_lvl_get() > 0)
-                dbg_prn(fnc_nm,vid2->getText());
+                dbg_prn(fnc_nm,var_nm);
              
 
                var_sct *var1;
@@ -1264,7 +1271,7 @@ var=NULL_CEWI;
                // get shape from RHS
                var1=out(vid2->getNextSibling());
                (void)nco_free(var1->nm);                
-               var1->nm =strdup(vid2->getText().c_str());
+               var1->nm =strdup(var_nm.c_str());
 
                //Copy return variable
                var=nco_var_dpl(var1);
@@ -1317,11 +1324,7 @@ var=NULL_CEWI;
                int nbr_dmn;
                int var_id; 
                int slb_sz;
-               const char *var_nm;
-               
-              if(dbg_lvl_get() > 0)
-                dbg_prn(fnc_nm,vid->getText()+"(limits)");
-
+               std::string var_nm;
 
                RefAST lmt_Ref;
                var_sct *var_lhs=NULL_CEWI;
@@ -1335,11 +1338,13 @@ var=NULL_CEWI;
                var=NULL_CEWI;
                NcapVar *Nvar; 
                
-              
 
-              
-               var_nm=vid->getText().c_str();
 
+               var_nm=vid->getText();
+               
+               if(dbg_lvl_get() > 0)
+                 dbg_prn(fnc_nm,var_nm+"(limits)");
+              
                lmt_Ref=lmt;               
 
               Nvar=prs_arg->var_vtr.find(var_nm);
@@ -1355,7 +1360,7 @@ var=NULL_CEWI;
                   
                  if(Nvar && Nvar->flg_stt==1){
                     var_sct *var_ini;
-                    var_ini=prs_arg->ncap_var_init(vid->getText(),true);       
+                    var_ini=prs_arg->ncap_var_init(var_nm,true);       
                     Nvar->var->val.vp=var_ini->val.vp;
                     var_ini->val.vp=(void*)NULL;
                     var_ini=nco_var_free(var_ini);
@@ -1367,18 +1372,18 @@ var=NULL_CEWI;
                    
                  
                  if(!Nvar)
-                    var_lhs=prs_arg->ncap_var_init(vid->getText(),true);       
+                    var_lhs=prs_arg->ncap_var_init(var_nm,true);       
                  
                     
                   nbr_dmn=var_lhs->nbr_dim;
 
                   // Now populate lmt_vtr;
                   if( lmt_mk(lmt_Ref,lmt_vtr) == 0)
-                    err_prn(fnc_nm,"Invalid hyperslab limits for variable "+ vid->getText());
+                    err_prn(fnc_nm,"Invalid hyperslab limits for variable "+ var_nm);
                   
 
                  if( lmt_vtr.size() != nbr_dmn)
-                    err_prn(fnc_nm,"Number of hyperslab limits for variable "+ vid->getText()+" doesn't match number of dimensions");
+                    err_prn(fnc_nm,"Number of hyperslab limits for variable "+ var_nm+" doesn't match number of dimensions");
                  
 
                  // add dim names to dimension list 
@@ -1406,7 +1411,7 @@ var=NULL_CEWI;
                  // make sure var_lhs and var_rhs are the same size
                  // and that they are the same shape (ie they conform!!)          
                  if(var_rhs->sz != slb_sz){
-                   err_prn(fnc_nm, "Hyperslab for "+vid->getText()+" - number of elements on LHS(" +nbr2sng(slb_sz) +  ") doesn't equal number of elements on RHS(" +nbr2sng(var_rhs->sz) +  ")");                                       
+                   err_prn(fnc_nm, "Hyperslab for "+var_nm+" - number of elements on LHS(" +nbr2sng(slb_sz) +  ") doesn't equal number of elements on RHS(" +nbr2sng(var_rhs->sz) +  ")");                                       
                  }
 
                 (void)nco_put_var_mem(var_rhs,var_lhs,lmt_vtr);
@@ -1423,27 +1428,27 @@ var=NULL_CEWI;
                if(!Nvar || ( Nvar && Nvar->flg_stt==1)){              
                   // if var isn't in ouptut then copy it there
                  //rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
-                 var_lhs=prs_arg->ncap_var_init(vid->getText(),true);
+                 var_lhs=prs_arg->ncap_var_init(var_nm,true);
 
                  // copy atts to output
-                 (void)ncap_att_cpy(vid->getText(),vid->getText(),prs_arg);
+                 (void)ncap_att_cpy(var_nm,var_nm,prs_arg);
                  (void)prs_arg->ncap_var_write(var_lhs,false);
                }
  
                // Get "new" var_id   
-               (void)nco_inq_varid(prs_arg->out_id,var_nm,&var_id);
+               (void)nco_inq_varid(prs_arg->out_id,var_nm.c_str(),&var_id);
 
-               var_lhs=prs_arg->ncap_var_init(vid->getText(),false);
+               var_lhs=prs_arg->ncap_var_init(var_nm,false);
 
                nbr_dmn=var_lhs->nbr_dim;
 
                // Now populate lmt_vtr;
                if( lmt_mk(lmt_Ref,lmt_vtr) == 0)
-                  err_prn(fnc_nm,"Invalid hyperslab limits for variable "+ vid->getText());
+                  err_prn(fnc_nm,"Invalid hyperslab limits for variable "+ var_nm);
                
 
                if( lmt_vtr.size() != nbr_dmn)
-                  err_prn(fnc_nm,"Number of hyperslab limits for variable "+ vid->getText()+" doesn't match number of dimensions");
+                  err_prn(fnc_nm,"Number of hyperslab limits for variable "+ var_nm+" doesn't match number of dimensions");
                
 
                 // add dim names to dimension list 
@@ -1472,7 +1477,7 @@ var=NULL_CEWI;
                // make sure var_lhs and var_rhs are the same size
                // and that they are the same shape (ie they conform!!)          
                if(var_rhs->sz != var_lhs->sz){
-                 err_prn(fnc_nm, "Hyperslab for "+vid->getText()+" - number of elements on LHS(" +nbr2sng(var_lhs->sz) +  ") doesn't equal number of elements on RHS(" +nbr2sng(var_rhs->sz) +  ")");                                       
+                 err_prn(fnc_nm, "Hyperslab for "+var_nm+" - number of elements on LHS(" +nbr2sng(var_lhs->sz) +  ") doesn't equal number of elements on RHS(" +nbr2sng(var_rhs->sz) +  ")");                                       
                  }
 
               //put block              
@@ -1509,7 +1514,7 @@ var=NULL_CEWI;
               if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORET)
                 var=NULL_CEWI;
               else 
-                var=prs_arg->ncap_var_init(vid->getText(),true);
+                var=prs_arg->ncap_var_init(var_nm,true);
 
                
                // Empty and free vector 
@@ -1525,10 +1530,12 @@ var=NULL_CEWI;
               var_sct *var1;
               std::vector<std::string> str_vtr;
               RefAST  aRef;
-              
+              std::string var_nm;              
+
+              var_nm=vid1->getText();
               
               if(dbg_lvl_get() > 0)
-                dbg_prn(fnc_nm,vid1->getText()+"[dims]");
+                dbg_prn(fnc_nm,var_nm+"[dims]");
 
 
               // set class wide variables
@@ -1575,11 +1582,11 @@ var=NULL_CEWI;
                
                //blow out if vars not the same size      
              if(var1->sz != var_cst->sz) 
-                  err_prn(fnc_nm, "LHS cast for "+vid1->getText()+" - cannot make RHS "+ std::string(var1->nm) + " conform.");               
+                  err_prn(fnc_nm, "LHS cast for "+var_nm+" - cannot make RHS "+ std::string(var1->nm) + " conform.");               
      
               var1->nm=(char*)nco_free(var1->nm);
 
-              var1->nm =strdup(vid1->getText().c_str());
+              var1->nm =strdup(var_nm.c_str());
 
 
 
@@ -1587,7 +1594,7 @@ var=NULL_CEWI;
               if(dmn->getNextSibling() && dmn->getNextSibling()->getType()==NORET)
                 var=NULL_CEWI;
               else 
-                var=nco_var_dpl(var1);               ;
+                var=nco_var_dpl(var1);     
 
 
               
@@ -1605,10 +1612,12 @@ var=NULL_CEWI;
                // Set class wide variables
                var_sct *var1;
                NcapVar *Nvar;
-                      
+               std::string var_nm;
+ 
+               var_nm=vid2->getText();       
 
               if(dbg_lvl_get() > 0)
-                dbg_prn(fnc_nm,vid2->getText());
+                dbg_prn(fnc_nm,var_nm);
 
 
                
@@ -1621,7 +1630,7 @@ var=NULL_CEWI;
                // Save name 
                std::string s_var_rhs(var1->nm);
                (void)nco_free(var1->nm);                
-               var1->nm =strdup(vid2->getText().c_str());
+               var1->nm =strdup(var_nm.c_str());
 
                // Do attribute propagation only if
                // var doesn't already exist or is defined but NOT
@@ -1631,7 +1640,7 @@ var=NULL_CEWI;
 
               
                if(!Nvar || Nvar && Nvar->flg_stt==1)
-                 (void)ncap_att_cpy(vid2->getText(),s_var_rhs,prs_arg);
+                 (void)ncap_att_cpy(var_nm,s_var_rhs,prs_arg);
                  
                            
  
