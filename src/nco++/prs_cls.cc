@@ -60,7 +60,7 @@ bool bfll){
    
   var_sct *var;
   
-  NcapVar *Nvar;
+ NcapVar *Nvar;
   
   var_nm=snm.c_str();
 
@@ -179,8 +179,8 @@ bool bfll){
 
 	  if(dbg_lvl_get() > 2) {
             std::ostringstream os;
-            os << "Found new dimension " << dmn_nm << " in input variable " << var_nm <<" in file " <<fl_in;
-            os << ". Defining dimension " << dmn_nm << " in output file " << fl_out;
+            os << "Found new dimension " << dmn_nw->nm << " in input variable " << var_nm <<" in file " <<fl_in;
+            os << ". Defining dimension " << dmn_nw->nm << " in output file " << fl_out;
             dbg_prn(fnc_nm,os.str());
 	  
 	  }
