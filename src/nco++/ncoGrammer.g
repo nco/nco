@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.117 2007-11-16 12:11:13 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.118 2007-11-22 10:47:35 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -1174,7 +1174,7 @@ var=NULL_CEWI;
         | (#(VAR_ID DMN_LIST ))=> #(vid1:VAR_ID dmn:DMN_LIST){   
                                
               int idx;
-              const char *var_nm;
+              std::string var_nm;
               var_sct *var1;
               std::vector<std::string> str_vtr;
               RefAST  aRef;
@@ -1185,7 +1185,7 @@ var=NULL_CEWI;
               if(dbg_lvl_get() > 0)
                 dbg_prn(fnc_nm,vid1->getText()+"[dims]");
 
-              var_nm=vid1->getText().c_str(); 
+              var_nm=vid1->getText(); 
 
               // set class wide variables
               bcst=true;  
@@ -1229,13 +1229,13 @@ var=NULL_CEWI;
               
 
               if(!var){
-                var1=ncap_var_udf(var_nm);
+                var1=ncap_var_udf(var_nm.c_str());
                 Nvar=new NcapVar(var1);
                 (void)prs_arg->int_vtr.push_ow(Nvar);
                 var=nco_var_dpl(var1);
               } else{
                 var->nm=(char*)nco_free(var->nm);
-                var->nm=strdup(var_nm);
+                var->nm=strdup(var_nm.c_str());
                 var1=nco_var_dpl(var);
                 prs_arg->ncap_var_write(var1,bram);
              }
