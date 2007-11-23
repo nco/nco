@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.119 2007-11-22 12:45:18 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.120 2007-11-23 11:35:05 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -1057,10 +1057,7 @@ static std::vector<std::string> lpp_vtr;
    
     |#(DEFDIM def:NSTRING  var=out){
             
-        const char *dmn_nm;
         long sz;
-            
-        dmn_nm=def->getText().c_str();
             
         var=nco_var_cnf_typ(NC_INT,var);
         iret=DEFDIM;
@@ -1068,7 +1065,7 @@ static std::vector<std::string> lpp_vtr;
         (void)cast_void_nctype((nc_type)NC_INT,&var->val);
         sz=*var->val.lp;
         var=(var_sct*)nco_var_free(var);
-        (void)ncap_def_dim(dmn_nm,sz,prs_arg);
+        (void)ncap_def_dim(def->getText(),sz,prs_arg);
      }
 
 
@@ -2086,7 +2083,7 @@ var=NULL_CEWI;
 
 value_list returns [var_sct *var]
 {
-const std::string fnc_nm("var_lmt");
+const std::string fnc_nm("value_list");
 var=NULL_CEWI; 
 }
  :(vlst:VALUE_LIST) {
@@ -2196,7 +2193,7 @@ var=NULL_CEWI;
             bool bram;   // Check for a RAM variable
             int idx;
             int nbr_dmn;
-            const char *var_nm;
+            std::string var_nm;
             var_sct *var_rhs;
           var_sct *var_nw=NULL_CEWI;
           var_sct *var1=NULL_CEWI;
@@ -2220,8 +2217,8 @@ var=NULL_CEWI;
 
      
 
-          var_nm=vid->getText().c_str(); 
-          var_rhs=prs_arg->ncap_var_init(vid->getText(),false);            
+          var_nm=vid->getText(); 
+          var_rhs=prs_arg->ncap_var_init(var_nm,false);            
           nbr_dmn=var_rhs->nbr_dim;          
           lRef=lmt;
 
@@ -2276,7 +2273,7 @@ var=NULL_CEWI;
            if(!bram){
             // Fudge -- fill out var again -but using dims defined in dmn_vtr
             // We need data in var so that LHS logic in assign can access var shape 
-            var_nw=nco_var_fll(var_rhs->nc_id,var_rhs->id,var_nm, &dmn_vtr[0],dmn_vtr.size());
+            var_nw=nco_var_fll(var_rhs->nc_id,var_rhs->id,var_nm.c_str(), &dmn_vtr[0],dmn_vtr.size());
 
             // Now get data from disk - use nco_var_get() 
             (void)nco_var_get(var_nw->nc_id,var_nw); 
