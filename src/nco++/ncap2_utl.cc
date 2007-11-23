@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.86 2007-11-22 10:50:13 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.87 2007-11-23 11:33:39 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1179,7 +1179,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
 
 nco_bool
 ncap_def_dim(
-	     const char *dmn_nm,
+	     std::string dmn_nm,
 	     long sz,
 	     prs_cls *prs_arg){
   const char fnc_nm[]="ncap_def_dim"; 
@@ -1194,12 +1194,12 @@ ncap_def_dim(
   
   
   
-  len=strlen(dmn_nm);
+  len=dmn_nm.length();
   // Ckeck for a valid name 
   for(idx=0 ; idx < len ; idx++){ 
     ch=dmn_nm[idx];
     if( !( isalpha(ch) || ch=='.' || ch=='_' ||ch=='-') ){ 
-      wrn_prn(fnc_nm,"dim \""+ std::string(dmn_nm) + "\" - Invalid dimension name.");
+      wrn_prn(fnc_nm,"dim \""+ dmn_nm + "\" - Invalid dimension name.");
       return False;;
     }
   }         
@@ -1208,7 +1208,7 @@ ncap_def_dim(
   dmn_out_e=prs_arg->dmn_out_vtr.find(dmn_nm);
   
   if(dmn_in_e !=NULL_CEWI || dmn_out_e !=NULL_CEWI  ){ 
-    wrn_prn(fnc_nm,"dim \""+ std::string(dmn_nm) + "\" - already exists in input/output."); 
+    wrn_prn(fnc_nm,"dim \""+ dmn_nm + "\" - already exists in input/output."); 
     return False;
   }
   
@@ -1221,7 +1221,7 @@ ncap_def_dim(
   
   dmn_nw=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
   
-  dmn_nw->nm=(char *)strdup(dmn_nm);
+  dmn_nw->nm=(char *)strdup(dmn_nm.c_str());
   //dmn_nw->id=dmn_id;
   dmn_nw->nc_id=prs_arg->out_id;
   dmn_nw->xrf=NULL_CEWI;
