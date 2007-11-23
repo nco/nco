@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.87 2007-11-23 11:33:39 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.88 2007-11-23 14:15:10 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2641,9 +2641,9 @@ int ncap_mpi_srt(
     //Sort Lvalues for speed
     std::sort(cl_vtr.begin(), cl_vtr.end());
     // remove any duplicates
-    std::vector<std::string>::iterator we=std::unique(cl_vtr.begin(), cl_vtr.end());
-    if(we < cl_vtr.end())  
-      cl_vtr.erase(we,cl_vtr.end()); 
+    //std::vector<std::string>::iterator we=std::unique(cl_vtr.begin(), cl_vtr.end());
+    //if(we < cl_vtr.end())  
+    cl_vtr.erase( std::unique(cl_vtr.begin(), cl_vtr.end() ) ,cl_vtr.end()); 
     
     exp_ptr->lvl_vtr=cl_vtr;
     
@@ -2659,9 +2659,9 @@ int ncap_mpi_srt(
     // need a local copy of Lvalues
     // will subtract strings from this as we go through
     // the inner loop
-    std::vector<std::string> out_lvl_vtr=exp_ptr->lvl_vtr; 	
+    std::vector<std::string> out_vtr=exp_ptr->lvl_vtr; 	
     // expression without Lvalues
-    if(out_lvl_vtr.empty()) 
+    if(out_vtr.empty()) 
       continue;
     
     //Inner loop
@@ -2669,15 +2669,24 @@ int ncap_mpi_srt(
       // See if inner-loop exprssion depends
       // on outer-loop expression 
       if( ncap_mpi_srh_str(exp_ptr->etr, exp_vtr[jdx]->lvl_vtr) ||
-	  ncap_mpi_srh_str(exp_vtr[jdx]->etr,out_lvl_vtr)) {
+	  ncap_mpi_srh_str(exp_vtr[jdx]->etr,out_vtr)) {
 	
 	exp_vtr[jdx]->dpd_vtr.push_back(idx);
 	exp_vtr[jdx]->srp_vtr.push_back( &exp_vtr[idx]);
-	// subtract Lvalues as we go
-	(bool)ncap_sub_str_str(out_lvl_vtr, exp_vtr[jdx]->lvl_vtr);
+	// subtract Lvalues from out_vtr that are are also in exp_vtr[jdx]->lvl_vtr 
+        out_vtr.erase(
+          std::set_difference(
+                    out_vtr.begin(),out_vtr.end(),
+                    exp_vtr[jdx]->lvl_vtr.begin(),exp_vtr[jdx]->lvl_vtr.end(), 
+                    out_vtr.begin()
+                             )
+              ,out_vtr.end()
+                     );
+
+
       }
       // break out of inner loop if out_lvl_vtr empty
-      if(out_lvl_vtr.empty())
+      if(out_vtr.empty())
 	break ;
       
     }// loop jdx 
