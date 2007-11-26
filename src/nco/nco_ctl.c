@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.195 2007-11-13 10:11:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.196 2007-11-26 12:19:25 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -86,7 +86,7 @@ nco_mpi_get(void) /* [fnc] Return MPI implementation */
 #else /* MPI_VERSION */
   /* Unknown MPI implementation */
   static const char mpi_nm[]="unknown"; /* [sng] MPI name */
-  static const char mpi_sng[]="Unknown MPI tokens found in nco_mpi_get(), MPI environment is present but of unknown pedigree"; /* [sng] MPI string */
+  static const char mpi_sng[]="Unknown MPI tokens found in nco_mpi_get(), MPI environment is present and of unknown pedigree"; /* [sng] MPI string */
 #endif /* MPI_VERSION */
 #endif /* !unknown */
 
@@ -701,8 +701,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "RIP Grandpa Max Coakley (1917--2007), Athlete, Farmer, Father\n";
-  /*  return nco_mss_val_sng_get();*/
+  return "To Mary Ellen Simoni and Florent Domine, our guardian angels in France\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 

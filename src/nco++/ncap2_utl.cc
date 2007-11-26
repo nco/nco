@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.88 2007-11-23 14:15:10 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.89 2007-11-26 12:19:25 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1406,12 +1406,12 @@ ncap_var_var_op   /* [fnc] Add two variables */
     if( (var1->has_dpl_dmn ==-1 || var2->has_dpl_dmn==-1) && var1->sz >1 && var2->sz>1){  
       if(var1->sz != var2->sz) {
 	std::ostringstream os;
-	os<<"Hyperslabbed variable:"<<var1->nm <<" and variable:"<<var2->nm <<"have differnet number of elements,so connot perform arithmetic operation.";
+	os<<"Hyperslabbed variable:"<<var1->nm <<" and variable:"<<var2->nm <<" have differnet number of elements, so cannot perform arithmetic operation.";
 	err_prn(fnc_nm,os.str());
       }
       if( nco_shp_chk(var1,var2)==False){ 
 	std::ostringstream os;
-        os<<"Hyperslabbed variable:"<<var1->nm <<" and variable:"<<var2->nm <<"have same  number of elements, but different shapes.";
+        os<<"Hyperslabbed variable:"<<var1->nm <<" and variable:"<<var2->nm <<" have same  number of elements, but different shapes.";
 	wrn_prn(fnc_nm,os.str());
       }
     }else{   
@@ -1432,7 +1432,7 @@ ncap_var_var_op   /* [fnc] Add two variables */
     
     if(var1->sz != var2->sz) {
       std::ostringstream os;
-      os<<"Cannot make variable:"<<var1->nm <<" and attribute:"<<var2->nm <<" conform. So connot perform arithmetic operation.";
+      os<<"Cannot make variable:"<<var1->nm <<" and attribute:"<<var2->nm <<" conform. So cannot perform arithmetic operation.";
       err_prn(fnc_nm,os.str()); 
     }
     
@@ -1446,7 +1446,7 @@ ncap_var_var_op   /* [fnc] Add two variables */
     
     if(var1->sz != var2->sz){
       std::ostringstream os;
-      os<<"Cannot make attribute:"<<var1->nm <<" and variable:"<<var2->nm <<" conform. So connot perform arithmetic operation.";
+      os<<"Cannot make attribute:"<<var1->nm <<" and variable:"<<var2->nm <<" conform. So cannot perform arithmetic operation.";
       err_prn(fnc_nm,os.str()); 
     }
     // Swap values around in var1 and var2;   
@@ -1470,7 +1470,7 @@ ncap_var_var_op   /* [fnc] Add two variables */
     // Crash out if atts not equal size
     if(var1->sz != var2->sz) {
       std::ostringstream os;
-      os<<"Cannot make attribute:"<<var1->nm <<" and attribute:"<<var2->nm <<" conform. So connot perform arithmetic operation.";
+      os<<"Cannot make attribute:"<<var1->nm <<" and attribute:"<<var2->nm <<" conform. So cannot perform arithmetic operation.";
       err_prn(fnc_nm,os.str()); 
     }
   }
@@ -1634,7 +1634,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
     
     if(DO_CONFORM==False) {
       std::ostringstream os;
-      os<<"Cannot make variable:"<<var1->nm <<" and variable:"<<var2->nm <<" conform. So connot perform arithmetic operation.";
+      os<<"Cannot make variable:"<<var1->nm <<" and variable:"<<var2->nm <<" conform. So cannot perform arithmetic operation.";
       err_prn(fnc_nm,os.str()); 
     }
     // att & var ,att & att  
@@ -1646,7 +1646,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
   
   if(var1->sz != var2->sz) {
     std::ostringstream os;
-    os<<"Cannot make " << cvar1<<":"<<var1->nm <<" and " <<cvar2 <<":"<<var2->nm <<" conform. So connot perform arithmetic operation.";
+    os<<"Cannot make " << cvar1<<":"<<var1->nm <<" and " <<cvar2 <<":"<<var2->nm <<" conform. So cannot perform arithmetic operation.";
     err_prn(fnc_nm,os.str()); 
   }
   
