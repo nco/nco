@@ -1,3 +1,6 @@
+2008-11-27 Henry Butowsky <henryb@ntlworld.com>
+	* Added "hyperslab normalization" to the parser
+
 2007-11-16  Charlie Zender  <zender@uci.edu>
 
 	* Add NcapVar.cc to distribution to fix native AIX ncap2 bug
