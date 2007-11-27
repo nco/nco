@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.121 2007-11-27 15:01:54 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.122 2007-11-27 15:38:14 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -921,7 +921,7 @@ static std::vector<std::string> lpp_vtr;
 
        if(ass->getType()==ASSIGN && !prs_arg->ntl_scn ){
          ntr=ass->getFirstChild();
-         if(ntr->getType()==TIMES) 
+         if(ntr->getType()==UTIMES) 
            ntr=ntr->getFirstChild();
         
          if(ntr->getType() == VAR_ID || ntr->getType() ==ATT_ID){
