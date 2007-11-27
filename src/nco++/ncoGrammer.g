@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.120 2007-11-23 11:35:05 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.121 2007-11-27 15:01:54 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2191,6 +2191,7 @@ var=NULL_CEWI;
 }
   :#(vid:VAR_ID lmt:LMT_LIST) {
             bool bram;   // Check for a RAM variable
+            bool bnrm;
             int idx;
             int nbr_dmn;
             std::string var_nm;
@@ -2205,16 +2206,7 @@ var=NULL_CEWI;
 
           NcapVector<lmt_sct*> lmt_vtr;
           NcapVector<dmn_sct*> dmn_vtr;
-
-
-          //if initial scan return undef
-          if(prs_arg->ntl_scn){  
-            //var=ncap_var_udf(vid->getText().c_str());       
-              var=ncap_var_udf("~rhs_undefined");       
-              goto end;  // cannot use return var!!
-            
-          }
-
+          NcapVector<std::string> dmn_nrm_vtr;  // list of normalized vectors    
      
 
           var_nm=vid->getText(); 
@@ -2234,15 +2226,27 @@ var=NULL_CEWI;
              bram=false;
            }
 
-          // Now populate lmt_vtr                  
-          if( lmt_mk(lRef,lmt_vtr) == 0){
-            printf("zero return for lmt_vtr\n");
-            nco_exit(EXIT_FAILURE);
-          }
 
-         if( lmt_vtr.size() != nbr_dmn){
+          if(prs_arg->ntl_scn){
+            // check limit only contain numbers or dim_id.size()
+            std::vector<std::string> str_vtr;
+            (void)ncap_mpi_get_id(lRef,str_vtr);
+            if(str_vtr.size()>0){
+              var=ncap_var_udf("~rhs_undefined");       
+              goto end2;  // cannot use return var!!
+            }
+            // Temporarily change mode 
+            prs_arg->ntl_scn=False;
+            lmt_mk(lRef,lmt_vtr);
+            prs_arg->ntl_scn=True; 
+
+          }else{
+            lmt_mk(lRef,lmt_vtr);
+           }
+
+         if( lmt_vtr.size() != nbr_dmn)
             err_prn(fnc_nm,"Number of hyperslab limits for variable "+ vid->getText()+" doesn't match number of dimensions");
-         }
+         
 
           // add dim names to dimension list 
           for(idx=0 ; idx < nbr_dmn;idx++)
@@ -2251,6 +2255,37 @@ var=NULL_CEWI;
           // fill out limit structure
            for(idx=0 ; idx < nbr_dmn ;idx++)
             (void)nco_lmt_evl(var_rhs->nc_id,lmt_vtr[idx],0L,prs_arg->FORTRAN_IDX_CNV);
+
+          // See if var can be normalized
+           for(idx=0; idx<nbr_dmn ; idx++){
+             if(lmt_vtr[idx]->cnt==1) 
+               continue;
+             if(lmt_vtr[idx]->cnt != var_rhs->dim[idx]->cnt) 
+               break;
+             dmn_nrm_vtr.push_back(std::string(lmt_vtr[idx]->nm));
+           } 
+            bnrm= (idx==nbr_dmn ? true:false);       
+
+           // Blow out 
+           if(!bnrm && prs_arg->ntl_scn){ 
+              var=ncap_var_udf("~rhs_undefined");       
+              goto end1;
+           }     
+           // Create var with normalized dims
+           if(bnrm){
+               var=ncap_cst_mk(dmn_nrm_vtr,prs_arg);
+               (void)nco_free(var->nm);
+               var->nm=strdup(var_nm.c_str());
+               var=nco_var_cnf_typ(var_rhs->type,var);
+           }
+
+           if(bnrm && prs_arg->ntl_scn) {
+               // apply LHS cast if necessary 
+               if(var->sz >1 && bcst)
+                 var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
+               goto end1;
+           }
+            
            
            // copy lmt_sct to dmn_sct;
            for(idx=0 ;idx <nbr_dmn ; idx++){
@@ -2264,16 +2299,15 @@ var=NULL_CEWI;
               //dmn_nw->id=lmt_vtr[idx]->id;
               dmn_nw->cnt=lmt_vtr[idx]->cnt;  
               dmn_nw->srt=lmt_vtr[idx]->srt;  
-              dmn_nw->end=lmt_vtr[idx]->end;  
+               dmn_nw->end=lmt_vtr[idx]->end;  
               dmn_nw->srd=lmt_vtr[idx]->srd;  
               dmn_vtr.push_back(dmn_nw);
-           }  
- 
-
+           }
+          
            if(!bram){
             // Fudge -- fill out var again -but using dims defined in dmn_vtr
             // We need data in var so that LHS logic in assign can access var shape 
-            var_nw=nco_var_fll(var_rhs->nc_id,var_rhs->id,var_nm.c_str(), &dmn_vtr[0],dmn_vtr.size());
+            var_nw=nco_var_fll(var_rhs->nc_id,var_rhs->id,var_nm.c_str(), &dmn_vtr[0],dmn_vtr.size()); 
 
             // Now get data from disk - use nco_var_get() 
             (void)nco_var_get(var_nw->nc_id,var_nw); 
@@ -2309,22 +2343,38 @@ var=NULL_CEWI;
              var_nw=nco_var_free(var_nw);
              var=var1;
             }else{
-             var=var_nw;
+
+             if(!bnrm)
+               var=var_nw;
+             else{
+               // swap values about in var_nm & var (the var cast earlier)
+               (void)nco_free(var->val.vp);
+               var->val.vp=var_nw->val.vp;
+               var_nw->val.vp=(void*)NULL;       
+               (void)nco_var_free(var_nw);    
+             }
+
             }   
             
-          /* Casting a hyperslab --this makes my brain  hurt!!! 
-          if(bcst && var->sz >1)
+          /* Casting a hyperslab --this makes my brain  hurt!!! */
+          if(bnrm && bcst && var->sz >1)
             var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
-          */
           
-          var_rhs=nco_var_free(var_rhs);
-
+          
+          
           //free vectors
-          for(idx=0 ; idx < nbr_dmn ; idx++){
-            (void)nco_lmt_free(lmt_vtr[idx]);
+          end0: ;
+          for(idx=0 ; idx < nbr_dmn ; idx++)
             (void)nco_dmn_free(dmn_vtr[idx]);
-          }    
-          end: ;
+          
+          end1: ;
+          for(idx=0 ; idx < nbr_dmn ; idx++)
+            (void)nco_lmt_free(lmt_vtr[idx]);
+          
+          
+          end2: var_rhs=nco_var_free(var_rhs); 
+    
+          end3: ;
 
     }
 ;
