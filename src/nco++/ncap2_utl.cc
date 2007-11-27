@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.89 2007-11-26 12:19:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.90 2007-11-27 15:02:56 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2641,9 +2641,9 @@ int ncap_mpi_srt(
     //Sort Lvalues for speed
     std::sort(cl_vtr.begin(), cl_vtr.end());
     // remove any duplicates
-    //std::vector<std::string>::iterator we=std::unique(cl_vtr.begin(), cl_vtr.end());
-    //if(we < cl_vtr.end())  
-    cl_vtr.erase( std::unique(cl_vtr.begin(), cl_vtr.end() ) ,cl_vtr.end()); 
+    cl_vtr.erase(  std::unique(cl_vtr.begin(), cl_vtr.end()), 
+                   cl_vtr.end()
+                ); 
     
     exp_ptr->lvl_vtr=cl_vtr;
     
@@ -2673,14 +2673,14 @@ int ncap_mpi_srt(
 	
 	exp_vtr[jdx]->dpd_vtr.push_back(idx);
 	exp_vtr[jdx]->srp_vtr.push_back( &exp_vtr[idx]);
-	// subtract Lvalues from out_vtr that are are also in exp_vtr[jdx]->lvl_vtr 
+	// Subtract strings  from out_vtr that are are also in exp_vtr[jdx]->lvl_vtr 
         out_vtr.erase(
           std::set_difference(
                     out_vtr.begin(),out_vtr.end(),
                     exp_vtr[jdx]->lvl_vtr.begin(),exp_vtr[jdx]->lvl_vtr.end(), 
                     out_vtr.begin()
-                             )
-              ,out_vtr.end()
+		              ),
+                    out_vtr.end()
                      );
 
 
