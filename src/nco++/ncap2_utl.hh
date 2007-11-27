@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.3 2007-11-23 11:34:15 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.4 2007-11-27 15:03:49 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -214,9 +214,19 @@ nco_shp_chk(
 var_sct* var1, 
 var_sct* var2); 
 
+
+
+
 nco_bool        /* Reurns True if var has attribute style name */
 ncap_var_is_att( 
 var_sct *var);
+
+
+void ncap_mpi_get_id  /* Extract all VAR_ID & ATT_ID from an Expression */
+(
+RefAST ntr,
+std::vector<std::string> &str_vtr);
+
 
 int            /* Sort expressions for MPI Optimization */  
 ncap_mpi_srt(
