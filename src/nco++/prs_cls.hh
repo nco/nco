@@ -29,13 +29,13 @@ class fmc_cls;
   char *fl_in; /* [sng] Input data file */
   int in_id; /* [id] Input data file ID */
   char *fl_out; /* [sng] Output data file */
-  int out_id; /* [id] Output data file ID */
-
+  int out_id;   /* [id] Output data file ID */
   NcapVector<dmn_sct*> &dmn_in_vtr;        //Vector of dimensions in input file nb doesn't change
   NcapVector<dmn_sct*> &dmn_out_vtr;       //Vector of dimensions in output file file
   std::vector<fmc_cls> &fmc_vtr;         //List of functions/methods nb doesn't change 
   NcapVarVector &var_vtr;                  // list of attributes & variables
-  NcapVarVector &int_vtr;                  // stores vars/atts in FIRST PARSE
+  NcapVarVector &int_vtr;                // stores vars/atts in FIRST PARSE
+  NcapVarVector thr_vtr;                 // Temp store for atts in a parallel run  
   bool ntl_scn;                          // [flg] Initial scan of script 
   bool FORTRAN_IDX_CNV;                  //Use fortran convention with hyperslab indices
   bool ATT_PROPAGATE;                    //Var on LHS gets attributtes from the leftermost var on the RHS
@@ -63,7 +63,7 @@ class fmc_cls;
          var_vtr(prs_cpy.var_vtr),            
          int_vtr(prs_cpy.int_vtr) {       
 
-
+     thr_vtr=prs_cpy.thr_vtr;  
      fl_in=prs_cpy.fl_in;
      in_id=prs_cpy.in_id;
      fl_out=prs_cpy.fl_out;
