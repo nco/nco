@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.90 2007-11-27 15:02:56 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.91 2007-11-28 17:55:43 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -430,12 +430,12 @@ ncap_att_gnrl
   std::string s_fll;
   
   NcapVar *Nvar;
-  NcapVarVector var_vtr;   
+
+  // De-reference 
+  NcapVarVector &var_vtr=prs_arg->var_vtr;
   NcapVector <var_sct*> att_vtr; //hold new attributtes.
   
-  // De-reference 
-  var_vtr= prs_arg->var_vtr;
-  
+
   // get var_id
   rcd=nco_inq_varid_flg(prs_arg->in_id,s_src.c_str(),&var_id);
   
@@ -477,9 +477,18 @@ ncap_att_gnrl
       continue;
     } 
     
-    Nvar=new NcapVar(nco_var_dpl(att_vtr[idx]),s_out ); 
-    prs_arg->var_vtr.push_ow(Nvar);
-    (void)nco_var_free(att_vtr[idx]);
+      Nvar=new NcapVar(att_vtr[idx],s_out ); 
+      
+
+#ifdef _OPENMP
+    if( omp_in_parallel())
+      prs_arg->thr_vtr.push_back(Nvar);
+    else
+      var_vtr.push_ow(Nvar);         
+#else
+      var_vtr.push_ow(Nvar);         
+#endif
+
   }
   
   return att_vtr.size();
@@ -514,9 +523,6 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
   ptr_unn op_swp;
   const char fnc_nm[]="ncap_var_var_mod"; 
 
- if(dbg_lvl_get() >= 2) 
-   dbg_prn(fnc_nm,"Entered");
-
   if(var1->has_mss_val){
     (void)nco_var_mod(var1->type,var1->sz,var1->has_mss_val,var1->mss_val,var1->val,var2->val);
   }else{
@@ -529,9 +535,6 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
   
   var2=nco_var_free(var2);
 
-
- if(dbg_lvl_get() >= 2) 
-   dbg_prn(fnc_nm,"Leaving");
 
   return var1;
 } /* end ncap_var_var_mod() */
@@ -614,10 +617,6 @@ ncap_var_var_pwr  /* [fnc] Empowerment of two variables */
 
   const char fnc_nm[]="ncap_var_var_pwr"; 
 
- if(dbg_lvl_get() >= 2) 
-   dbg_prn(fnc_nm,"Entered");
-
-  
   if(var1->has_mss_val){
     (void)nco_var_pwr(var1->type,var1->sz,var1->has_mss_val,var1->mss_val,var1->val,var2->val);
   }else{
@@ -630,10 +629,6 @@ ncap_var_var_pwr  /* [fnc] Empowerment of two variables */
   op_swp=var1->val;var1->val=var2->val;var2->val=op_swp;
   
   var2=nco_var_free(var2);
-
- if(dbg_lvl_get() >= 2) 
-   dbg_prn(fnc_nm,"Leaving");
-
 
   return var1;
   
@@ -652,10 +647,6 @@ float(*fnc_flt)(float))
   long sz;
   ptr_unn op1;
   
- if(dbg_lvl_get() >= 2) 
-   dbg_prn(fnc_nm,"Entered");
-
-
   if(var_in->undefined) return var_in;
   
   /* Promote variable to NC_FLOAT */
@@ -696,10 +687,6 @@ float(*fnc_flt)(float))
   }/* end switch */
   
   if(var_in->has_mss_val) (void)cast_nctype_void(var_in->type,&(var_in->mss_val));
-
-  
- if(dbg_lvl_get() >= 2) 
-   dbg_prn(fnc_nm,"Leaving");
 
 
   return var_in;
@@ -1711,6 +1698,7 @@ ncap_cst_mk( /* [fnc] create casting var from a list of dims */
   const char fnc_nm[]="ncap_cst_mk"; 
   static const char * const tpl_nm="Internally generated template";
   
+  bool bdef=false;  //  
   int dmn_nbr; /* [nbr] Number of dimensions */
   int idx; /* [idx] Counter */
   
@@ -1728,7 +1716,6 @@ ncap_cst_mk( /* [fnc] create casting var from a list of dims */
   //  sbs_lst=nco_lst_prs_2D(sbs_sng,sbs_dlm,&dmn_nbr); 
   
   dmn=(dmn_sct **)nco_malloc(dmn_nbr*sizeof(dmn_sct *));
-  (void)nco_redef(prs_arg->out_id);
   for(idx=0;idx<dmn_nbr;idx++){
     lst_nm=str_vtr[idx].c_str();
     // Search dmn_out_vtr for dimension
@@ -1742,7 +1729,12 @@ ncap_cst_mk( /* [fnc] create casting var from a list of dims */
     // die if not in list
     if(dmn_item == NULL_CEWI) {
       err_prn(fnc_nm,"Unrecognized dimension \""+std::string(lst_nm)+ "\"in LHS subscripts");
-    }  
+    }
+    if(!bdef) { 
+       bdef=true;  
+       (void)nco_redef(prs_arg->out_id);
+    }
+
     dmn_new=nco_dmn_dpl(dmn_item);
     // Define in output file 
     (void)nco_dmn_dfn(prs_arg->fl_out,prs_arg->out_id,&dmn_new,1);
@@ -1751,7 +1743,8 @@ ncap_cst_mk( /* [fnc] create casting var from a list of dims */
     (void)nco_dmn_xrf(dmn_new,dmn_item);
     dmn[idx]=dmn_new;
   }
-  (void)nco_enddef(prs_arg->out_id);
+  if(bdef)
+    (void)nco_enddef(prs_arg->out_id);
   
   /* Check that un-limited dimension is first dimension */
   for(idx=1;idx<dmn_nbr;idx++)
