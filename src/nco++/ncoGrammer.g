@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.122 2007-11-27 15:38:14 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.123 2007-11-29 11:51:04 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -758,7 +758,7 @@ public:
      RefAST ntr=tr;
 
      extern int      
-     ncap_mpi_exe(
+     ncap_omp_exe(
      std::vector< std::vector<RefAST> > &all_ast_vtr,
      ncoTree** wlk_ptr,
      int nbr_wlk);
@@ -792,7 +792,7 @@ public:
       (void)ncap_mpi_srt(tr,icnt,all_ast_vtr,prs_arg);
        
       // Evaluate expressions (execute)
-      (void)ncap_mpi_exe(all_ast_vtr,wlk_vtr,0);  
+      (void)ncap_omp_exe(all_ast_vtr,wlk_vtr,0);  
       
       /*  
       for(unsigned vtr_idx=0 ; vtr_idx<all_ast_vtr.size(); vtr_idx++)
@@ -1145,6 +1145,7 @@ var=NULL_CEWI;
 
                std::string var_nm; 
                var_sct *var_lhs;
+               var_sct *var_rhs;
                NcapVar *Nvar;              
 
                var_nm=vid->getText();
@@ -1153,6 +1154,10 @@ var=NULL_CEWI;
 
               if(dbg_lvl_get() > 0)
                 dbg_prn(fnc_nm,var_nm+"(limits)");
+
+              // evaluate rhs for side effects eg new dims or lvalues 
+               var_rhs=out(vid->getNextSibling());         
+               var_rhs=nco_var_free(var_rhs);               
 
 
                var_lhs=prs_arg->ncap_var_init(var_nm,false);
