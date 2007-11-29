@@ -1,3 +1,7 @@
+2008-11-29 Henry Butowsky <henryb@ntlworld.com>
+	first cut of openmp for ncap2
+	can process ncap2.in in parallel on LINUX & AIX
+	platforms 
 2008-11-27 Henry Butowsky <henryb@ntlworld.com>
 	* Added "hyperslab normalization" to the parser
 
