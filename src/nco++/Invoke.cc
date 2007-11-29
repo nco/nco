@@ -28,7 +28,7 @@
 //forward declaration
 
 int           /* Evaluate expressions -execute nb - contains static members*/
-ncap_mpi_exe(
+ncap_omp_exe(
 std::vector< std::vector<RefAST> > &all_ast_vtr,
 ncoTree** wlk_ptr_in,
 int nbr_wlk_in)
@@ -38,7 +38,7 @@ int idx;
 int jdx;
 int kdx;
 int mdx;
-int sz;
+int lcl_sz;
 int nbr_sz;
 
 static int nbr_wlk; //same as number of threads
@@ -92,16 +92,16 @@ static ncoTree** wlk_ptr;
    for(kdx=0 ;kdx< nbr_sz; kdx++) {      
      wlk_lcl= wlk_ptr[omp_get_thread_num()];
      wlk_lcl->statements(inn_vtr[kdx]);
-     //(void)wlk_ptr[omp_get_thread_num()]->statements(inn_vtr[kdx]);
-
    } //end OPENMP parallel loop
 
    // Copy all atts defined in thread in to var_vtr
    for(kdx=0; kdx<nbr_wlk; kdx++){
+     //dereference
      NcapVarVector &lcl_vtr=wlk_ptr[kdx]->prs_arg->thr_vtr;
      if(lcl_vtr.empty())
        continue;   
-     for(mdx=0 ; mdx<lcl_vtr.size() ;mdx++)
+     lcl_sz=(int)lcl_vtr.size();
+      for(mdx=0 ; mdx<lcl_sz ; mdx++)
        wlk_ptr[0]->prs_arg->var_vtr.push_ow(lcl_vtr[mdx]); 
      lcl_vtr.clear();   
    }
@@ -219,9 +219,7 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char* fl_spt_usr,char *cmd_ln_sng)
     }      
 
     // initialize static members 
-    (void)ncap_mpi_exe(all_ast_vtr,&wlk_vtr[0],(int)wlk_vtr.size());
-    
-    std::cout<<"Num Threads="<<prs_vtr.size()<<std::endl;
+    (void)ncap_omp_exe(all_ast_vtr,&wlk_vtr[0],(int)wlk_vtr.size());
     if(dbg_lvl_get() > 0) dbg_prn(fnc_nm,"Walkers initialized");
   
     wlk_vtr[0]->run_exe(t,0);
