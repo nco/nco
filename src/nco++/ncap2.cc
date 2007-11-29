@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.55 2007-11-23 11:32:26 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.56 2007-11-29 11:49:28 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.55 2007-11-23 11:32:26 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.55 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.56 2007-11-29 11:49:28 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.56 $";
   const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -511,11 +511,7 @@ main(int argc,char **argv)
     prs_vtr.push_back(prs_tmp);
   }
 
-  std::cout<< "File in IDS "<<in_id <<" "<<prs_vtr[1].in_id<<std::endl;
- std::cout<< "File out IDS "<<out_id <<" "<<prs_vtr[1].out_id<<std::endl;
- 
-
-  if(fl_spt_usr == NULL_CEWI){
+   if(fl_spt_usr == NULL_CEWI){
     /* No script file specified, look for command-line scripts */
     if(nbr_spt == 0)
       err_prn(fnc_nm,"No script file or command line scripts specified\nHINT Use, e.g., -s \"foo=bar\"\n");
