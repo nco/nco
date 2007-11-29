@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.91 2007-11-28 17:55:43 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.92 2007-11-29 11:52:24 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1731,6 +1731,13 @@ ncap_cst_mk( /* [fnc] create casting var from a list of dims */
       err_prn(fnc_nm,"Unrecognized dimension \""+std::string(lst_nm)+ "\"in LHS subscripts");
     }
     if(!bdef) { 
+
+#ifdef _OPENMP
+       if( omp_in_parallel())
+	 err_prn(fnc_nm,"Attempt to go into netcdf define mode while in OPENMP parallel mode");
+      
+#endif
+
        bdef=true;  
        (void)nco_redef(prs_arg->out_id);
     }
@@ -2690,20 +2697,19 @@ int ncap_mpi_srt(
   /*
     for(idx=0; idx<nbr_lst ; idx++){
     // dereference
-    exp_ptr=exp_vtr[idx];
-    std::cout << exp_ptr->etr->toStringTree();
-    std::cout <<"\n Lvalues  ";
-    for(int jdx=0 ; jdx < exp_ptr->lvl_vtr.size() ; jdx++)
-    std::cout << exp_ptr->lvl_vtr[jdx] <<" ";
+      exp_ptr=exp_vtr[idx];
+      std::cout << exp_ptr->etr->toStringTree();
+      std::cout <<"\n Lvalues  ";
+      for(int jdx=0 ; jdx < exp_ptr->lvl_vtr.size() ; jdx++)
+      std::cout << exp_ptr->lvl_vtr[jdx] <<" ";
     
-    std::cout <<"\n Dependency  ";
-    for(int jdx=0 ; jdx < exp_ptr->dpd_vtr.size() ; jdx++)
-    std::cout << exp_ptr->dpd_vtr[jdx] <<" ";
-    std::cout<<"\n";
-    
-    
+      std::cout <<"\n Dependency  ";
+      for(int jdx=0 ; jdx < exp_ptr->dpd_vtr.size() ; jdx++)
+      std::cout << exp_ptr->dpd_vtr[jdx] <<" ";
+      std::cout<<"\n";
     }
-  */
+    
+  */ 
   
   
   
