@@ -166,9 +166,10 @@ bool bfll){
       if(dmn_tp_out.size() >0){
 
 #ifdef _OPENMP
-#pragma omp critical 
+	if( omp_in_parallel())
+	  err_prn(fnc_nm,"Attempt to go into netcdf define mode while in OPENMP parallel mode");
+      
 #endif
-        {
 
         (void)nco_redef(out_id);
 	for(idx=0; idx< dmn_tp_out.size();idx++){
@@ -187,27 +188,9 @@ bool bfll){
 	}// end idx
           (void)nco_enddef(out_id);
           dmn_tp_out.clear(); 
-        } // end omp critical
       } // end if 
 
-      /*
- 
-        dmn_nw=nco_dmn_dpl(dmn_fd);
-	(void)nco_dmn_xrf(dmn_nw,dmn_fd);
-        // Change mode
-        if(!def_mde) { (void)nco_redef(out_id); def_mde=true;}
-	// write dim to output
-	(void)nco_dmn_dfn(fl_out,out_id,&dmn_nw,1);          
-	// Add new dim to output list
-	(void)dmn_out_vtr.push_back(dmn_nw);
-	
-	if(dbg_lvl_get() > 2) {
-          std::ostringstream os;
-          os << "Found new dimension " << dmn_nm << " in input variable " << var_nm <<" in file " <<fl_in;
-          os << ". Defining dimension " << dmn_nm << " in output file " << fl_out;
-          dbg_prn(fnc_nm,os.str());
-	  
-	  } */
+
     }
       (void)nco_free(dim_id);
   }
@@ -419,6 +402,13 @@ bool bram){
 
   // Only go into define mode if necessary
   if(!bdef || var->pck_ram ){  
+
+#ifdef _OPENMP
+	if( omp_in_parallel())
+	  err_prn(fnc_nm, "Attempt to go into netcdf define mode while in OPENMP parallel mode");
+      
+#endif
+
 
      (void)nco_redef(out_id);
 
