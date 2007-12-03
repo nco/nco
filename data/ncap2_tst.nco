@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.4 2007-08-29 20:45:46 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.5 2007-12-03 15:03:48 hmb Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -417,7 +417,6 @@ nbr_err_ttl=0;
   
   ram_delete(hmask);
 
-
   print("RESULTS block h: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
   nbr_err=0;
@@ -425,6 +424,54 @@ nbr_err_ttl=0;
 
 
 }
+
+// Check hyperslab normalization
+// n.b This is where a limit in a hyperslab collapses to a single index 
+// or the slab specified is equal to all the indixes in the dimension
+// e.g three_dmn_var_dbl(1,:,:), 
+//     three_dmn_var_dbl(0:9,:,1);
+//     three_dmn_var_dbl(:,0,:);
+{
+
+  i1=three_dmn_var_int(0,:,:) + three_dmn_var_int(1,:,:).reverse($lat,$lon);
+
+
+  i2=three_dmn_var_int(0,0,0)+three_dmn_var_int(1,1,3);
+
+    // nb RHS is cast correctly  
+  i3[$time,$lat,$lon]=three_dmn_var_int(1,:,:);
+    
+  i4=i3.avg($time); //nb i4 has dims $lat,$lon   
+
+  if( fabs( i1.avg() -17L)>0.001 ){
+        print("ERROR: i1: hyperslab normalization test \n");
+        nbr_err++;
+  }
+
+  if( i2 != 17L ){
+        print("ERROR: i2: hyperslab normalization test \n");
+        nbr_err++;
+  }
+      
+  if( i4.min()!=9 || i4.max()!=16 ){
+        print("ERROR: i3: hyperslab normalization test \n");
+        nbr_err++;
+    } 
+
+    
+
+
+  print("RESULTS block i: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+
+      
+
+}
+
+
+
+
 
 // Results summany
 print("RESULTS SUMMARY: total errors=");print(nbr_err_ttl,"%d");
