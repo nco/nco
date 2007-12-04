@@ -8,7 +8,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.57 2007-11-26 12:19:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.58 2007-12-04 21:03:22 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -275,7 +275,7 @@ public:
      RefAST ntr=tr;
 
      extern int      
-     ncap_mpi_exe(
+     ncap_omp_exe(
      std::vector< std::vector<RefAST> > &all_ast_vtr,
      ncoTree** wlk_ptr,
      int nbr_wlk);
@@ -309,7 +309,7 @@ public:
       (void)ncap_mpi_srt(tr,icnt,all_ast_vtr,prs_arg);
        
       // Evaluate expressions (execute)
-      (void)ncap_mpi_exe(all_ast_vtr,wlk_vtr,0);  
+      (void)ncap_omp_exe(all_ast_vtr,wlk_vtr,0);  
       
       /*  
       for(unsigned vtr_idx=0 ; vtr_idx<all_ast_vtr.size(); vtr_idx++)

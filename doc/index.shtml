@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.456 2007-10-31 12:51:06 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.457 2007-12-04 21:03:21 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -101,6 +101,8 @@ Send it in!<br>
 <h2>NCO News &amp; Announcements</h2>
 
 <ul>
+
+<li>December&nbsp;7, 2007: NCO 3.9.3 released (wget support)</li>
 
 <li>August&nbsp;29, 2007: NCO 3.9.2 released (_FillValue support)</li>
 
@@ -463,9 +465,10 @@ Instead, retrieve all recently tagged versions
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
 <li><b>NCO/SDO 3.9.3</b>: (<i>In progress</i>) 
-SWAMP homepage/howto;
+SWAMP release;
 GCC&nbsp;4.2 compatibility;
 support <tt>wget</tt> URL retrieval;
+<tt>ncap2</tt> OpenMP support;
 <li><b>NCO/SDO 3.9.2</b>: 
 <tt>_FillValue</tt> supplants <tt>missing_value</tt>;
 <tt>UDUnits2 support</tt>;

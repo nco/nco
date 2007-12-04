@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.265 2007-11-13 12:56:33 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.266 2007-12-04 21:03:21 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.3 are ready. 
 
@@ -16,7 +16,7 @@ not just NCO. If you must transfer lots of data from a server to your
 client before you can analyze it, then SWAMP may speed things up.
 Give it a try and give us some feedback.
 
-A. SWAMP fxm
+A. SWAMP released!
    http://nco.sf.net/nco.html#swamp
 
 B. Use ncecat -u ulm_nm to specify the new record dimension name
