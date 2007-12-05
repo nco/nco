@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.979 2007-12-04 23:14:42 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.980 2007-12-05 20:50:21 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -628,7 +628,8 @@ nco916. Announce/release 3.9.3
 nco917. GCC OpenMP with autoconf
 nco918. Add ncecat -u mods to mpncecat
 nco919. 'make check' (i.e., nco_bm.pl) breaks when ncap2 disabled (i.e., --disable-nco++) reported by Tim Hoar
-nco920.
+nco920. Add ncks capability to remove all degenerate dimensions (ncl-talk 12/5/07)
+nco921. 
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
