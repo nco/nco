@@ -172,7 +172,7 @@ bool bfll){
 #endif
 
         (void)nco_redef(out_id);
-	for(idx=0; idx< dmn_tp_out.size();idx++){
+	for(idx=0; idx< (int)dmn_tp_out.size();idx++){
 	  dmn_nw=nco_dmn_dpl(dmn_tp_out[idx]);
           (void)nco_dmn_xrf(dmn_nw,dmn_tp_out[idx]);
 	  (void)nco_dmn_dfn(fl_out,out_id,&dmn_nw,1);          

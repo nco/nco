@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.92 2007-11-29 11:52:24 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.93 2007-12-06 11:13:38 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -523,6 +523,10 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
   ptr_unn op_swp;
   const char fnc_nm[]="ncap_var_var_mod"; 
 
+  if(dbg_lvl_get() >= 4) 
+      dbg_prn(fnc_nm,"Entered function");
+  
+
   if(var1->has_mss_val){
     (void)nco_var_mod(var1->type,var1->sz,var1->has_mss_val,var1->mss_val,var1->val,var2->val);
   }else{
@@ -615,7 +619,11 @@ ncap_var_var_pwr  /* [fnc] Empowerment of two variables */
   
   ptr_unn op_swp;
 
-  const char fnc_nm[]="ncap_var_var_pwr"; 
+  const char fnc_nm[]="ncap_var_var_pwr";
+   
+  if(dbg_lvl_get() >= 4) 
+      dbg_prn(fnc_nm,"Entered function");
+
 
   if(var1->has_mss_val){
     (void)nco_var_pwr(var1->type,var1->sz,var1->has_mss_val,var1->mss_val,var1->val,var2->val);
@@ -646,6 +654,10 @@ float(*fnc_flt)(float))
   long idx;
   long sz;
   ptr_unn op1;
+
+
+  if(dbg_lvl_get() >= 4) 
+      dbg_prn(fnc_nm,"Entered function");
   
   if(var_in->undefined) return var_in;
   
@@ -2132,7 +2144,6 @@ ncap_get_var_mem(
   long dpt_cnt=var_in->dim[dpt]->cnt;;
   
   char *cp_srt=cp_in+ptrdiff_t(srt*slb_sz);
-  char *cp_end=cp_out;
   char *cp_lcl;
   
   
@@ -2283,7 +2294,6 @@ long nbr_lpp,                    // number of iterations
 char *&cp_in,                   // Pointer to (char*)var_in->val.vp
 char *cp_out)                   // Slab to be "put" 
 {
-  
   
   const std::string fnc_nm("ncap_put_var_mem"); 
   
