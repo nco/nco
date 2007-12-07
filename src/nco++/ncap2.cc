@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.56 2007-11-29 11:49:28 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.57 2007-12-07 10:48:24 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -134,9 +134,9 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.56 2007-11-29 11:49:28 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.56 $";
-  const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.57 2007-12-07 10:48:24 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.57 $";
+  const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
   dmn_sct *dmn_new;
@@ -183,7 +183,7 @@ main(int argc,char **argv)
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
   int var_id;
-  int thr_nbr=1; /* [nbr] Thread number Option t */
+  int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
 
   
   lmt_sct **lmt=NULL_CEWI;
