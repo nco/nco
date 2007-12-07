@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/rgr.nco,v 1.9 2007-10-05 13:46:47 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/rgr.nco,v 1.10 2007-12-07 14:18:28 zender Exp $ -*-C++-*-
 
 // Purpose: Linear and non-linear data regressions
 
@@ -9,7 +9,9 @@
    ncap2 -v -O -S ${HOME}/nco/data/rgr.nco ${HOME}/nco/data/in.nc ~/foo_rgr.nc
    /bin/mv ~/foo_rgr.nc ~/rgr_vsb.nc
    /bin/mv ~/foo_rgr.nc ~/rgr_nir.nc
-   ncap2 -O -s 'measurement=8.36;prediction=fst+slp*measurement;' ~/rgr_vsb.nc ~/rgr_vsb.nc
+   ncap2 -O -s 'measurement=1.515;prediction=fst+slp*measurement;' ~/rgr_vsb.nc ~/rgr_vsb.nc # 20071207b
+   ncap2 -O -s 'measurement=1.545;prediction=fst+slp*measurement;' ~/rgr_vsb.nc ~/rgr_vsb.nc # 20071206c2
+   ncap2 -O -s 'measurement=8.36;prediction=fst+slp*measurement;' ~/rgr_vsb.nc ~/rgr_vsb.nc # 
    ncap2 -O -s 'measurement=2.95;prediction=fst+slp*measurement;' ~/rgr_nir.nc ~/rgr_nir.nc
    ncks -C -H -F -v slp,fst,crr_cff ~/rgr_vsb.nc
    ncks -C -H -F -v slp,fst,crr_cff,measurement,prediction ~/rgr_vsb.nc */
@@ -43,8 +45,8 @@ chn_nir=0s; // [flg] NIR channel
 rgr_typ=rgr_lnr; // [enm] Regression type
 
 // Choose channel
-//chn_typ=chn_vsb; // [enm] Channel
-chn_typ=chn_nir; // [enm] Channel
+chn_typ=chn_vsb; // [enm] Channel
+//chn_typ=chn_nir; // [enm] Channel
 
 if(rgr_typ==rgr_lnr){
   abc_nbr=6; // [nbr] Number of abscissae
@@ -53,19 +55,19 @@ if(rgr_typ==rgr_lnr){
     // Visible Channel 635 nm
    print("Regressing VSB 635 nm channel measurements...\n");
    rfl_pct[sgn_mV]={0.28,10.875,30.885,52.12,70.12,98.7}; // [pct] Reflectance
-   // 20071004: Cold room calibration at -15C
-   sgn_mV[sgn_mV]={0.067,0.086,0.140,0.205,0.266,0.388}; // [mV] Signal
-   // 20071001: Lab calibratiom at room temperature
-   //    sgn_mV[sgn_mV]={mss_val,0.715,2.12,3.91,5.71,9.45}; // [mV] Signal
+   // 
+   sgn_mV[sgn_mV]={0.449,1.002,2.664,4.783,6.878,11.257}; // [mV] Signal 20071206a: pre-dirty snow
+   //   sgn_mV[sgn_mV]={0.412,0.955,2.563,4.655,6.675,10.875}; // [mV] Signal 20071206a: pre-dirty snow
+   // sgn_mV[sgn_mV]={0.067,0.086,0.140,0.205,0.266,0.388}; // [mV] Signal for 20071004a (chambre froid -15C)
+   //    sgn_mV[sgn_mV]={mss_val,0.715,2.12,3.91,5.71,9.45}; // [mV] Signal for 20071001a (warm lab)
   }
   if(chn_typ==chn_nir){
     // NIR Channel 1310 nm
     print("Regressing NIR 1310 nm channel measurements...\n");
     rfl_pct[sgn_mV]={mss_val,9.43,25.68,46.67,65.23,98.5}; // [pct] Reflectance
-    // 20071004: Cold room calibration at -15C
-    sgn_mV[sgn_mV]={4.68,7.12,13.83,24.19,34.6,mss_val}; // [mV] Signal
-    // 20071001: Lab calibratiom at room temperature
-    // sgn_mV[sgn_mV]={2.95,4.52,8.90,15.66,22.41,37.86}; // [mV] Signal
+    sgn_mV[sgn_mV]={4.551,7.070,13.82,24.18,34.60,58.27}; // [mV] Signal 20071207c (chambre froid -15C)
+    // sgn_mV[sgn_mV]={4.68,7.12,13.83,24.19,34.6,mss_val}; // [mV] Signal 20071004 (chambre froid -15C)
+    // sgn_mV[sgn_mV]={2.95,4.52,8.90,15.66,22.41,37.86}; // [mV] Signal 20071001 (warm lab)
   }
   //    print("ERROR: Invalid channel\n");
   set_miss(sgn_mV,mss_val); // Missing value
