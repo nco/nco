@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.266 2007-12-04 21:03:21 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.267 2007-12-07 11:35:10 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.3 are ready. 
 
@@ -7,44 +7,38 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release coincides with a user-friendly version of SWAMP, the 
 Script Workflow Analysis for MultiProcessing. SWAMP efficiently
-schedules and executes NCO scripts on a server-side processor:
+schedules and executes NCO scripts on remote data servers:
 
-http://code.google.com/p/swamp
+http://swamp.googlecode.com
 
 SWAMP can work with with any command-line operator analysis scripts-- 
 not just NCO. If you must transfer lots of data from a server to your
 client before you can analyze it, then SWAMP may speed things up.
 Give it a try and give us some feedback.
 
-A. SWAMP released!
-   http://nco.sf.net/nco.html#swamp
+A. SWAMP released! Visit Daniel at Fall AGU poster IN11B-0469
 
 B. Use ncecat -u ulm_nm to specify the new record dimension name
    http://nco.sf.net/nco.html#ncecat
 
 C. Fix for autoconf builds using GCC on AIX 
 
-D. Improved Documentation: fxm
-   Working with non-standard grids, e.g., 2D grids fxm
-   http://nco.sf.net/nco.html#grd
-
-E. ncap2 supports OpenMP on some independent branches (Henry Butowsky)
+D. ncap2 supports OpenMP on most independent branches (Henry Butowsky)
    Demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]
 
-F. ncap2 optimizations: ~50% speedup on some array-oriented syntax
-   ncap2 -s '' in.nc out.nc
-   http://nco.sf.net/nco.html#ncap2 
-
-G. Support GCC 4.2 OpenMP (GOMP) in bld/Makefile (not yet configure)
+E. Support GCC 4.2 OpenMP (GOMP) in bld/Makefile (not yet configure)
    http://nco.sf.net/nco.html#openmp
 
-H. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
+F. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
    http://nco.sf.net#debian
 
-I. Pre-built, up-to-date, RPM packages are available.
+G. Pre-built, up-to-date, RPM packages are available.
    http://nco.sf.net#rpm
 
-J. Reminder: NCO support for netCDF4 features is tracked at
+H. The NCO scaling paper is out in IJHPCA:
+   http://dust.ess.uci.edu/ppr/ppr_ZeM07_ijhpca.pdf
+
+I. Reminder: NCO support for netCDF4 features is tracked at
 
    http://nco.sf.net/nco.html#nco4
 

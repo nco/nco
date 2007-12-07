@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.457 2007-12-04 21:03:21 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.458 2007-12-07 11:35:11 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -54,7 +54,7 @@ Try to disable Spammers' machines:
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/netcdf/netcdf-4">netCDF4</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
-[<a href="http://code.google.com/p/swamp">SWAMP</a>] 
+[<a href="http://swamp.googlecode.com">SWAMP</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 
 </td></tr></table>
 
@@ -100,13 +100,15 @@ Send it in!<br>
 <dt><a name="News"></a><a name="news"></a></dt>
 <h2>NCO News &amp; Announcements</h2>
 
-<ul>
+<ul>December&nbsp;7, 2007: SWAMP Poster IN11B-0469 at Fall AGU</li>
 
-<li>December&nbsp;7, 2007: NCO 3.9.3 released (wget support)</li>
+<li>December&nbsp;7, 2007: NCO 3.9.3 released (SWAMP, wget support)</li>
+
+<li>December&nbsp;4, 2007: NCO <a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07_ijhpca.pdf">scaling paper</a> is out in IJHPCA</li>
 
 <li>August&nbsp;29, 2007: NCO 3.9.2 released (_FillValue support)</li>
 
-<li>August&nbsp;27, 2007: <a href="http://code.google.com/p/swamp">SWAMP site</a> spins-off from NCO</li>
+<li>August&nbsp;27, 2007: <a href="http://swamp.googlecode.com">SWAMP site</a> spins-off from NCO</li>
 
 <li>June&nbsp;29, 2007: NCO 3.9.1 released (netCDF4 deflation support)</li>
 
@@ -447,9 +449,10 @@ Zender, C.&nbsp;S. (2006), netCDF Operators (NCO) for Analysis of Self-describin
 <a href="http://dust.ess.uci.edu/ppr/ppr_Zen07.pdf">PDF (CSZ)</a></li>
 
 <li><!-- ZeM07 --> <a name="ZeM07"></a> <!--http://www.ess.uci.edu/~zender#ZeM07 -->
-Zender, C.&nbsp;S., and H.&nbsp;J. Mangalam (2007), Scaling Properties of Common Statistical Operators for Gridded Datasets, <i>In Press in Int.&nbsp;J.&nbsp;High Perform. Comput. Appl.</i>.
+Zender, C.&nbsp;S., and H.&nbsp;J. Mangalam (2007), Scaling Properties of Common Statistical Operators for Gridded Datasets, <i>Int.&nbsp;J.&nbsp;High Perform. Comput. Appl, <b>21</b>(4), 485&ndash;498, doi:10.1177/1094342007083802.</i>.
 <a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07.bib">BibTeX</a>
-<a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07.pdf">PDF (CSZ)</a></li>
+<a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07.pdf">PDF (CSZ)</a>
+<a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07_ijhpca.pdf">PDF (IJHPCA) (&copy;&nbsp;2007 by SAGE Publications)</a></li>
 </ul>
 <hr></p>
 
@@ -1320,7 +1323,7 @@ solutions for geoscience workflows
 discover and exploit parallelism in scripted workflows.
 2.&nbsp;Resource management in combined computation-data service environments.
 3.&nbsp;Design and implement 
-<a href="http://code.google.com/p/swamp">SWAMP</a> to provide
+<a href="http://swamp.googlecode.com">SWAMP</a> to provide
 automated server-side data analysis capabilities to the geoscience 
 community. 
 <i>Other Interests</i>: Large data, data management, programming languages and practice.
@@ -1404,7 +1407,7 @@ site.</li>
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/netcdf/netcdf-4">netCDF4</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
-[<a href="http://code.google.com/p/swamp">SWAMP</a>]
+[<a href="http://swamp.googlecode.com">SWAMP</a>]
 [<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 
 </td></tr></table>
 
