@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/rgr.nco,v 1.11 2007-12-07 15:00:30 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/rgr.nco,v 1.12 2007-12-07 15:57:19 zender Exp $ -*-C++-*-
 
 // Purpose: Linear and non-linear data regressions
 
@@ -55,25 +55,27 @@ if(rgr_typ==rgr_lnr){
   defdim("sgn_mV",abc_nbr); // [nbr] Measurement dimension
   if(chn_typ==chn_vsb){
     // Visible Channel 635 nm
-   print("Regressing VSB 635 nm channel measurements...\n");
-   rfl_pct[sgn_mV]={0.28,10.875,30.885,52.12,70.12,98.7}; // [pct] Reflectance
-   sgn_mV[sgn_mV]={0.449,1.002,2.664,4.783,6.878,11.257}; // [mV] Signal 20071207a: pre-dirty snow
-   sgn_mV[sgn_mV]={0.455,0.996,2.653,4.785,mss_val,mss_val}; // [mV] Signal 20071206f: pre-dirty snow
-   // sgn_mV[sgn_mV]={0.412,0.955,2.563,4.655,6.675,10.875}; // [mV] Signal 20071206a: pre-dirty snow
-   // sgn_mV[sgn_mV]={0.067,0.086,0.140,0.205,0.266,0.388}; // [mV] Signal for 20071004a (chambre froid -15C)
-   //    sgn_mV[sgn_mV]={mss_val,0.715,2.12,3.91,5.71,9.45}; // [mV] Signal for 20071001a (warm lab)
+    print("Regressing VSB 635 nm channel calibration measurements...\n");
+    rfl_pct[sgn_mV]={0.28,10.875,30.885,52.12,70.12,98.7}; // [pct] Reflectance
+   // Signal in mV
+   // sgn_mV[sgn_mV]={0.449,1.002,2.664,4.783,6.878,11.257};global@caseid="20071207a: pre-dirty snow";
+    sgn_mV[sgn_mV]={0.455,0.996,2.653,4.785,mss_val,mss_val};global@caseid="20071206f: post-dirty snow";
+   // sgn_mV[sgn_mV]={0.412,0.955,2.563,4.655,6.675,10.875};global@caseid="20071206a: pre-dirty snow";
+   // sgn_mV[sgn_mV]={0.067,0.086,0.140,0.205,0.266,0.388};global@caseid="20071004a: chambre froid -15C";
+   //    sgn_mV[sgn_mV]={mss_val,0.715,2.12,3.91,5.71,9.45};global@caseid="20071001a: warm lab";
   }
   if(chn_typ==chn_nir){
     // NIR Channel 1310 nm
-    print("Regressing NIR 1310 nm channel measurements...\n");
+    print("Regressing NIR 1310 nm channel calibration measurements...\n");
     rfl_pct[sgn_mV]={mss_val,9.43,25.68,46.67,65.23,98.5}; // [pct] Reflectance
-    sgn_mV[sgn_mV]={4.551,7.070,13.82,24.18,34.60,58.27}; // [mV] Signal 20071207c (chambre froid -15C)
-    // sgn_mV[sgn_mV]={4.68,7.12,13.83,24.19,34.6,mss_val}; // [mV] Signal 20071004 (chambre froid -15C)
-    // sgn_mV[sgn_mV]={2.95,4.52,8.90,15.66,22.41,37.86}; // [mV] Signal 20071001 (warm lab)
+    sgn_mV[sgn_mV]={4.551,7.070,13.82,24.18,34.60,58.27};global@caseid="20071207c: NIR calibration for dirty snow";
+    // sgn_mV[sgn_mV]={4.68,7.12,13.83,24.19,34.6,mss_val};global@caseid="20071004: chambre froid -15C";
+    // sgn_mV[sgn_mV]={2.95,4.52,8.90,15.66,22.41,37.86};global@caseid="20071001: warm lab";
   }
   //    print("ERROR: Invalid channel\n");
   set_miss(sgn_mV,mss_val); // Missing value
   set_miss(rfl_pct,mss_val); // Missing value
+  print(global@caseid);
   // Assign generic names for mathematics
   abc=sgn_mV;
   ord=rfl_pct;
