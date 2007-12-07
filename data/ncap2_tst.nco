@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.5 2007-12-03 15:03:48 hmb Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap2_tst.nco,v 1.6 2007-12-07 15:00:30 zender Exp $ -*-C++-*-
 
 // Purpose: Test script for ncap2
 
@@ -110,10 +110,8 @@ nbr_err_ttl=0;
 
 
 
-// Scots wind speed test 
+// Scott's wind speed test 
 {
-
-
   bin_nbr=3;
   defdim("bin",bin_nbr); // [nbr] Bin dimension
   wnd_min[bin]={0,1,2}; // [m s-1] Minimum speed
@@ -129,18 +127,15 @@ nbr_err_ttl=0;
   7, 2, 0,
   6, 2, 1 };
 
-
   // Regular Vars
   bin_cnt[lat,lon,bin]=0s; // [nbr] Wind speeds in bin
   bin_flg[time,lat,lon]=0s; // [flg] Wind speed within current bin
   set_miss(bin_cnt,wnd_spd@_FillValue);
 
-
   for(bin_idx=0;bin_idx<bin_nbr;bin_idx++){
     bin_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
     bin_cnt(:,:,bin_idx)=bin_flg.total($time); // [nbr] Wind speeds in bin
   }
-
 
   if( (bin_cnt-results).total() !=0 ){
     print("ERROR: c1:Scotts test - regular vars\n");
@@ -152,12 +147,10 @@ nbr_err_ttl=0;
   *bin_ram_flg[time,lat,lon]=0s;
   set_miss(bin_ram_cnt,wnd_spd@_FillValue);
 
-
   for(bin_idx=0;bin_idx<bin_nbr;bin_idx++){
     bin_ram_flg=(wnd_spd >= wnd_min(bin_idx) && wnd_spd < wnd_max(bin_idx));
     bin_ram_cnt(:,:,bin_idx)=bin_ram_flg.total($time); 
   }
-
 
   if( (bin_ram_cnt-results).total() !=0 ){
     print("ERROR: c2:Scotts test - ram vars\n");
@@ -170,14 +163,10 @@ nbr_err_ttl=0;
  print("RESULTS block c: Num errors="); print(nbr_err,"%d");
  nbr_err_ttl+=nbr_err;
  nbr_err=0;
-
-
-
-} //End Scotts Test
+} // End Scott's Test
 
 
 // More RAM var Testing
-
 {
   *d1[$time,$lat,$lon]=three_dmn_var_dbl;
 
@@ -229,7 +218,6 @@ nbr_err_ttl=0;
     nbr_err++;   
    }
 
-
    print("RESULTS block d: Num errors="); print(nbr_err,"%d");
    nbr_err_ttl+=nbr_err;
    nbr_err=0;
@@ -251,32 +239,27 @@ nbr_err_ttl=0;
    e3@tst={5,25,50,100};
    e3[$lon]=e3@tst;   
 
-
    //Bare number on RHS
    e4[$lon]=99d;
 
    //Real life casting
    e5[time,lat,lon,lev]=P0*hyam+hybm*PS;
 
-   
    if( fabs(e1.avg()-5.5d)>0.01) {
     print("ERROR: e1: LHS cast test\n");
     nbr_err++;
   }
-
 
    if( fabs(e2.avgsqr()-7.5f)>0.01 ) {
     print("ERROR: e2: LHS cast test\n");
     nbr_err++;
   }
 
-
    if( e3.rmssdn() !=66L) {
     print("ERROR: e3: LHS cast test\n");
     nbr_err++;
   }
    
-
    if( fabs(e4.total()-396d)>0.01) {
     print("ERROR: e4: LHS cast test\n");
     nbr_err++;
@@ -290,7 +273,6 @@ nbr_err_ttl=0;
    print("RESULTS block e: Num errors="); print(nbr_err,"%d");
    nbr_err_ttl+=nbr_err;
    nbr_err=0;
-   
 }
 
 //check var/att/dim quoting
@@ -383,10 +365,6 @@ nbr_err_ttl=0;
   print("RESULTS block g: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
   nbr_err=0;
-
-
-
-
 }
 
 //Check missing value functions and masking
@@ -458,20 +436,10 @@ nbr_err_ttl=0;
         nbr_err++;
     } 
 
-    
-
-
   print("RESULTS block i: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
   nbr_err=0;
-
-      
-
 }
-
-
-
-
 
 // Results summany
 print("RESULTS SUMMARY: total errors=");print(nbr_err_ttl,"%d");
