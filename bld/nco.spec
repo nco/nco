@@ -1,15 +1,15 @@
 Name:           nco
-Version:        3.9.2
+Version:        3.9.3
 Release:        1%{?dist}
 Summary:        Suite of programs for manipulating netCDF files
 Group:          Applications/Engineering
 License:        GPL3
 URL:            http://nco.sourceforge.net/
 
-# Obtain NCO version 3.9.2-1 tar.gz from Sourceforge using CVS:
+# Obtain NCO version 3.9.3-1 tar.gz from Sourceforge using CVS:
 # cvs -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco login
 # cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-3_9_2-1 -d nco-%{version} nco
-# tar czf nco-%{version}.tar.gz --exclude='nco-3.9.2/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude='ncap_yacc.[ch]' ./nco-%{version}
+# tar czf nco-%{version}.tar.gz --exclude='nco-3.9.3/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude='ncap_yacc.[ch]' ./nco-%{version}
 Source0:        nco-%{version}.tar.gz
 #Patch0:		nco_install_C_headers.patch
 #Patch1:         nco_find_udunits-dat.patch
@@ -112,6 +112,9 @@ fi
 # %{_libdir}/libnco++.so
 
 %changelog
+* Sat Dec 08 2007 Charlie Zender <zender@uci.edu> - 3.9.3-1
+- new upstream 3.9.3
+
 * Wed Aug 29 2007 Charlie Zender <zender@uci.edu> - 3.9.2-1
 - new upstream 3.9.2
 

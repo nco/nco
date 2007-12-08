@@ -3,7 +3,7 @@
 	* cd ~/nco;cvs tag -d nco-3_9_3;cvs tag -d nco-3_9_3-1
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.3 release"
 	  cvs tag -c nco-3_9_3;cvs tag -c nco-3_9_3-1
-	  Changes since nco-3_9_2: SWAMP, ncecat -u, wget, ncap OpenMP, GCC 4.2
+	  Changes since nco-3_9_2: SWAMP, ncecat -u, wget, ncap2 OpenMP, GCC 4.2
 	
 	* Update documentation for SWAMP, AGU, and IJHPCA
 
