@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.442 2007-12-08 14:21:41 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.443 2007-12-08 16:14:30 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -48,11 +48,13 @@
 # cd ~/nco/bld;make UDUNITS2=Y;cd -  # UDUnits2 support
 # cd ~/nco/bld;make --jobs=4;cd -    # Parallel make
 # Normal (Linux) developer systems:
-# cd ${HOME}/nco/bld;make OMP=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # virga
-# cd ${HOME}/nco/bld;make OMP=N OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # ashes
-# cd ${HOME}/nco/bld;make OMP=N OPTS=D NETCDF4=Y UDUNITS2=N allinone;cd - # elnino
-# cd ${HOME}/nco/bld;make OMP=N OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # sand
-# cd ${HOME}/nco/bld;make OMP=Y OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # esmf
+# cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # virga
+# cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd - # ashes
+# cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=Y UDUNITS2=N allinone;cd - # elnino
+# cd ${HOME}/nco/bld;make DAP=N OMP=Y OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # esmf
+# cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # sand
+# cd ${HOME}/nco/bld;make DAP=N OMP=N OPTS=D NETCDF4=N UDUNITS2=N allinone;cd - # soot
+# cd ${HOME}/nco/bld;make DAP=Y OMP=N OPTS=D NETCDF4=N UDUNITS2=N USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd - # soot w/DAP
 # cd ${HOME}/nco/bld;make OPTS=D DAP=Y USR_TKN='-DNEED_NC_INQ_FORMAT' allinone;cd -
 # 64-bit ABI on UCI MPC systems:
 # cd ${HOME}/nco/bld;env ANTLR='/software/antlr/bin/antlr' ANTLR_ROOT='/software/antlr' UDUNITS_INC='/software/udunits/include' UDUNITS_LIB='/software/udunits/lib' make --jobs=1 ABI=64 allinone;cd -
