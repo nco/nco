@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.460 2007-12-08 14:00:14 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.461 2007-12-08 14:17:50 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -609,19 +609,19 @@ Hit <tt>return</tt> when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>3.9.2</tt> (which is
-tagged as <tt>nco-3_9_2</tt> due to CVS rules) into local directory
-<tt>nco-3.9.2</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-3_9_2 -d nco-3.9.2 nco</tt></p>
+This command retrieves and places NCO version <tt>3.9.3</tt> (which is
+tagged as <tt>nco-3_9_3</tt> due to CVS rules) into local directory
+<tt>nco-3.9.3</tt>:   
+<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-3_9_3 -d nco-3.9.3 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-3_9_2</tt>) and the development version is that the
+(e.g., <tt>nco-3_9_3</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>3.9.2</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>3.9.3</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -665,19 +665,19 @@ and porting of NCO to other platforms.
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-3.9.2</a></li>
+<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-3.9.3</a></li>
 -->
 <a href="http://packages.debian.org/unstable/math/nco.html">Debian</a> and 
 <a href="http://packages.ubuntulinux.org/gutsy/source/nco">Ubuntu</a>
 GNU/Linux homepages for NCO. 
 &lsquo;<tt>apt-get install nco</tt>&rsquo; installs the standard NCO for your Debian-compatible&nbsp;OS.
-<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_3.9.2-1_i386.deb</tt>&rsquo;):</dt>
-<li><a href="src/nco_3.9.2-1_amd64.deb">nco_3.9.2-1_amd64.deb</a> (<!--#fsize file="src/nco_3.9.2-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_3.9.2-1_amd64.deb"-->)</li>
-<li><a href="src/nco_3.9.2-1_i386.deb">nco_3.9.2-1_i386.deb</a> (<!--#fsize file="src/nco_3.9.2-1_i386.deb"-->): Executables i386-compatible (last updated <!--#flastmod file="src/nco_3.9.2-1_i386.deb"-->)</li>
-<li><a href="src/nco_3.9.2-1.dsc">nco_3.9.2-1.dsc</a> (<!--#fsize file="src/nco_3.9.2-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_3.9.2-1.dsc"-->)</li>
-<li><a href="src/nco_3.9.2-1_i386.changes">nco_3.9.2-1_i386.changes</a> (<!--#fsize file="src/nco_3.9.2-1_i386.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_3.9.2-1_i386.changes"-->)</li>
-<li><a href="src/nco_3.9.2.orig.tar.gz">nco_3.9.2.orig.tar.gz</a> (<!--#fsize file="src/nco_3.9.2.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_3.9.2.orig.tar.gz"-->)</li>
-<li><a href="src/nco_3.9.2-1.diff.gz">nco_3.9.2-1.diff.gz</a> (<!--#fsize file="src/nco_3.9.2-1_i386.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_3.9.2-1_i386.changes"-->)</li>
+<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_3.9.3-1_i386.deb</tt>&rsquo;):</dt>
+<li><a href="src/nco_3.9.3-1_amd64.deb">nco_3.9.3-1_amd64.deb</a> (<!--#fsize file="src/nco_3.9.3-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_3.9.3-1_amd64.deb"-->)</li>
+<li><a href="src/nco_3.9.3-1_i386.deb">nco_3.9.3-1_i386.deb</a> (<!--#fsize file="src/nco_3.9.3-1_i386.deb"-->): Executables i386-compatible (last updated <!--#flastmod file="src/nco_3.9.3-1_i386.deb"-->)</li>
+<li><a href="src/nco_3.9.3-1.dsc">nco_3.9.3-1.dsc</a> (<!--#fsize file="src/nco_3.9.3-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_3.9.3-1.dsc"-->)</li>
+<li><a href="src/nco_3.9.3-1_i386.changes">nco_3.9.3-1_i386.changes</a> (<!--#fsize file="src/nco_3.9.3-1_i386.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_3.9.3-1_i386.changes"-->)</li>
+<li><a href="src/nco_3.9.3.orig.tar.gz">nco_3.9.3.orig.tar.gz</a> (<!--#fsize file="src/nco_3.9.3.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_3.9.3.orig.tar.gz"-->)</li>
+<li><a href="src/nco_3.9.3-1.diff.gz">nco_3.9.3-1.diff.gz</a> (<!--#fsize file="src/nco_3.9.3-1_i386.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_3.9.3-1_i386.changes"-->)</li>
 Thanks to Daniel Baumann, Francesco Lovergine, Brian Mays, Rorik
 Peterson, and Matej Vela for packaging NCO for Debian over the years.
 </ul>
@@ -687,10 +687,10 @@ Peterson, and Matej Vela for packaging NCO for Debian over the years.
 <a name="centos"></a><a name="cnt"></a><a name="rhel"></a> <!-- http://nco.sf.net#centos --> <!-- http://nco.sf.net#cnt --> <!-- http://nco.sf.net#rhel -->
 <h3><a href="http://fedora.redhat.com">Fedora</a> and <a href="http://www.centos.org">CentOS</a> GNU/Linux</h3>
 <ul>
-<dt>Our most recent NCO RPMs (install with, e.g., &lsquo;<tt>yum install nco-3.9.2-1.fc7.i386.rpm</tt>&rsquo;):</dt>
-<li><a href="src/nco-3.9.2-1.fc7.i386.rpm">nco-3.9.2-1.fc7.i386.rpm</a> (<!--#fsize file="src/nco-3.9.2-1.fc7.i386.rpm"-->): Executables for i386/Fedora Core&nbsp;7-compatible environments (last updated <!--#flastmod file="src/nco-3.9.2-1.fc7.i386.rpm"-->)</li>
-<li><a href="src/nco-3.9.2-1.fc7.src.rpm">nco-3.9.2-1.fc7.src.rpm</a> (<!--#fsize file="src/nco-3.9.2-1.fc7.src.rpm"-->): Source (last updated <!--#flastmod file="src/nco-3.9.2-1.fc7.src.rpm"-->)</li>
-<li><a href="src/nco-3.9.2-1.x86_64.rpm">nco-3.9.2-1.x86_64.rpm</a> (<!--#fsize file="src/nco-3.9.2-1.x86_64.rpm"-->): Executables for x86_64/CentOS&nbsp;4-compatible environments (last updated <!--#flastmod file="src/nco-3.9.2-1.x86_64.rpm"-->)</li>
+<dt>Our most recent NCO RPMs (install with, e.g., &lsquo;<tt>yum install nco-3.9.3-1.fc7.i386.rpm</tt>&rsquo;):</dt>
+<li><a href="src/nco-3.9.3-1.fc7.i386.rpm">nco-3.9.3-1.fc7.i386.rpm</a> (<!--#fsize file="src/nco-3.9.3-1.fc7.i386.rpm"-->): Executables for i386/Fedora Core&nbsp;7-compatible environments (last updated <!--#flastmod file="src/nco-3.9.3-1.fc7.i386.rpm"-->)</li>
+<li><a href="src/nco-3.9.3-1.fc7.src.rpm">nco-3.9.3-1.fc7.src.rpm</a> (<!--#fsize file="src/nco-3.9.3-1.fc7.src.rpm"-->): Source (last updated <!--#flastmod file="src/nco-3.9.3-1.fc7.src.rpm"-->)</li>
+<li><a href="src/nco-3.9.3-1.x86_64.rpm">nco-3.9.3-1.x86_64.rpm</a> (<!--#fsize file="src/nco-3.9.3-1.x86_64.rpm"-->): Executables for x86_64/CentOS&nbsp;4-compatible environments (last updated <!--#flastmod file="src/nco-3.9.3-1.x86_64.rpm"-->)</li>
 <li>More information on x86_64 RPMs available <a href="http://dust.ess.uci.edu/~wangd/s9y">here</a></li>
 
 NCO is part of the Fedora Extras distribution (thanks to Ed Hill).
@@ -1119,7 +1119,7 @@ Problems with current release:
 <ul><b>Platform-specific Run-time Problems:</b>
 <a name="bug_ncap_flt_fnc_aix"></a>
 <li><i>Float-valued intrinsic arithmetic functions in <tt>ncap</tt> on AIX:</i>
-<tt>ncap</tt> versions through 3.9.2 have a bug that causes all float-valued
+<tt>ncap</tt> versions through 3.9.3 have a bug that causes all float-valued
 intrinsic math functions to fail under AIX.
 Float-valued math functions are the ISO&nbsp;C99 functions, e.g.,
 <tt>cosf()</tt>, <tt>fabsf()</tt>, <tt>logf()</tt>.
