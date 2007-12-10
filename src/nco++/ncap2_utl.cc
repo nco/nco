@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.93 2007-12-06 11:13:38 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.94 2007-12-10 10:22:38 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -651,6 +651,7 @@ float(*fnc_flt)(float))
   /* Purpose: Evaluate fnc_dbl(var) or fnc_flt(var) for each value in variable
      Float and double functions are in app */
   const char fnc_nm[]="ncap_var_fnc"; 
+
   long idx;
   long sz;
   ptr_unn op1;
@@ -703,6 +704,118 @@ float(*fnc_flt)(float))
 
   return var_in;
 } /* end ncap_var_fnc() */
+
+
+
+void ncap_lmt_evl( 
+int nc_id,
+lmt_sct* lmt_ptr,
+prs_cls *prs_arg){
+
+long cnt_dmn;
+long srt;
+long end;
+long cnt;
+long srd;
+dmn_sct *dmn_ptr;
+
+//Dereference
+NcapVector<dmn_sct*> dmn_vtr;
+
+const char fnc_nm[]="ncap_lmt_evl"; 
+
+dmn_vtr=(nc_id==prs_arg->in_id ? prs_arg->dmn_in_vtr: prs_arg->dmn_out_vtr);
+
+   
+
+  dmn_ptr=dmn_vtr.find(lmt_ptr->nm);
+
+  if(dmn_ptr==NULL)
+    err_prn(fnc_nm,"Dimension "+ std::string(lmt_ptr->nm)+" in limits not found");
+
+  cnt_dmn=dmn_ptr->sz;
+
+  //fill out defaults
+  srt=( lmt_ptr->is_usr_spc_min ? lmt_ptr->srt:0L);
+  end=( lmt_ptr->is_usr_spc_max ? lmt_ptr->end:cnt_dmn-1);
+  srd=( lmt_ptr->srd_sng!=NULL_CEWI  ? lmt_ptr->srd:1L);  
+
+  
+ 
+  // do error checking 
+  if(prs_arg->FORTRAN_IDX_CNV){ 
+    std::ostringstream os;
+  
+    if(lmt_ptr->is_usr_spc_min && (srt<1 || srt>cnt_dmn)) {
+
+      os<<"Lower limit " <<srt<<" for dim "<<lmt_ptr->nm<<" is outside range "<<1L<<"-"<<cnt_dmn;
+      err_prn(fnc_nm,os.str());
+    }
+
+    if(lmt_ptr->is_usr_spc_max && (end<1 || end>cnt_dmn)) {
+      os<<"Upper limit " <<end<<" for dim "<<lmt_ptr->nm<<" is outside range "<<1L<<"-"<<cnt_dmn;
+      err_prn(fnc_nm,os.str());
+    }
+   
+    if(srt>end){	 
+      os<<"Lower limit " <<srt<<" for dim "<<lmt_ptr->nm<<" is greater than upper limit "<<end;  
+      err_prn(fnc_nm,os.str());  
+    }	 	
+
+    if(srd<1){	 
+      os<<"Sride " <<srd<<" for dim "<<lmt_ptr->nm<<" is less than 1"<<end;  
+      err_prn(fnc_nm,os.str());  
+    }	 	
+      
+
+    if(lmt_ptr->is_usr_spc_min) srt--;
+    if(lmt_ptr->is_usr_spc_max) end--;
+  }
+
+  // do error checking 
+  if(!prs_arg->FORTRAN_IDX_CNV){ 
+    std::ostringstream os;
+  
+    if(lmt_ptr->is_usr_spc_min && (srt<0 || srt>cnt_dmn-1)) {
+
+      os<<"Lower limit " <<srt<<" for dim "<<lmt_ptr->nm<<" is outside range "<<0L<<"-"<<cnt_dmn-1;
+      err_prn(fnc_nm,os.str());
+    }
+
+    if(lmt_ptr->is_usr_spc_max && (end<0 || end>cnt_dmn-1)) {
+      os<<"Upper limit " <<end<<" for dim "<<lmt_ptr->nm<<" is outside range "<<0L<<"-"<<cnt_dmn-1;
+      err_prn(fnc_nm,os.str());
+    }
+   
+    if(srt>end){	 
+      os<<"Lower limit " <<srt<<" for dim "<<lmt_ptr->nm<<" is greater than upper limit "<<end;  
+      err_prn(fnc_nm,os.str());  
+    }	 	
+
+    if(srd<1){	 
+      os<<"Sride " <<srd<<" for dim "<<lmt_ptr->nm<<" is less than 1"<<end;  
+      err_prn(fnc_nm,os.str());  
+    }	 	
+      
+  }
+
+
+  cnt=1+ (end-srt)/srd;
+
+  lmt_ptr->srt=srt;
+  lmt_ptr->end=end;
+  lmt_ptr->cnt=cnt;
+  lmt_ptr->srd=srd;
+
+
+  
+  return;
+
+} /* end ncap_lmt_evl() */
+
+
+
+
 
 nm_id_sct *            /* O [sct] new copy of xtr_lst */
 nco_var_lst_copy(      /*   [fnc] Purpose: Copy xtr_lst and return new list */
