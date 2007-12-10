@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.123 2007-11-29 11:51:04 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.124 2007-12-10 10:25:44 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -696,41 +696,38 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
      lmt_ptr->min_sng=NULL;
      lmt_ptr->max_sng=NULL;
      lmt_ptr->srd_sng=NULL;
+     lmt_ptr->is_usr_spc_min=False;
+     lmt_ptr->is_usr_spc_max=False;
+
      /* rec_skp_nsh_spf is used for record dimension in multi-file operators */
      lmt_ptr->rec_skp_nsh_spf=0L; /* Number of records skipped in initial superfluous files */
     
     
     /* Fill in structure */
-    if( lcl_ind[0] >= 0) {
-          buff=(char*)nco_malloc(20*sizeof(char));
-          (void)sprintf(buff, "%ld",lcl_ind[0]);
-           lmt_ptr->min_sng=buff; 
+    if( lcl_ind[0] >= 0){ 
+           lmt_ptr->is_usr_spc_min=True;
+           lmt_ptr->srt=lcl_ind[0]; 
     }    
+
 
     /* Fill in structure */
     if( lcl_ind[1] >= 0) {
-          buff=(char*)nco_malloc(20*sizeof(char));
-          (void)sprintf(buff, "%ld",lcl_ind[1]);
-           lmt_ptr->max_sng=buff;
+           lmt_ptr->is_usr_spc_max=True;
+           lmt_ptr->end=lcl_ind[1];
     }    
 
     /* Fill in structure */
     if( lcl_ind[2] > 0) {
-          buff=(char*)nco_malloc(20*sizeof(char));
-          (void)sprintf(buff, "%ld",lcl_ind[2]);
-           lmt_ptr->srd_sng=buff;
+           lmt_ptr->srd_sng=strdup("~fill_in");
+           lmt_ptr->srd=lcl_ind[2];
     }    
 
     /* need to deal with situation where only start is defined -- ie picking only a single value */
     if(lcl_ind[0] >=0 && lcl_ind[1]==-2){
-          buff=(char*)nco_malloc(20*sizeof(char));
-          (void)sprintf(buff, "%ld",lcl_ind[0]);
-          lmt_ptr->max_sng=buff; 
+          lmt_ptr->is_usr_spc_max=True;
+          lmt_ptr->end=lcl_ind[0]; 
     }    
 
-
-    if(lmt_ptr->max_sng == NULL) lmt_ptr->is_usr_spc_max=False; else lmt_ptr->is_usr_spc_max=True;
-    if(lmt_ptr->min_sng == NULL) lmt_ptr->is_usr_spc_min=False; else lmt_ptr->is_usr_spc_min=True;
 
     lmt_vtr.push_back(lmt_ptr);
 
@@ -1396,7 +1393,7 @@ var=NULL_CEWI;
                  slb_sz=1;        
                 // fill out limit structure
                 for(idx=0 ; idx < nbr_dmn ;idx++){
-                   (void)nco_lmt_evl(prs_arg->out_id,lmt_vtr[idx],0L,prs_arg->FORTRAN_IDX_CNV);
+                   (void)ncap_lmt_evl(prs_arg->out_id,lmt_vtr[idx],prs_arg);
                     // Calculate size
                    slb_sz *= lmt_vtr[idx]->cnt;
                 }
@@ -1461,7 +1458,7 @@ var=NULL_CEWI;
                 var_lhs->sz=1;        
                 // fill out limit structure
                 for(idx=0 ; idx < nbr_dmn ;idx++){
-                   (void)nco_lmt_evl(prs_arg->out_id,lmt_vtr[idx],0L,prs_arg->FORTRAN_IDX_CNV);
+                   (void)ncap_lmt_evl(prs_arg->out_id,lmt_vtr[idx],prs_arg);
                     // Calculate size
                    var_lhs->sz *= lmt_vtr[idx]->cnt;
                 }
@@ -2259,7 +2256,7 @@ var=NULL_CEWI;
                         
           // fill out limit structure
            for(idx=0 ; idx < nbr_dmn ;idx++)
-            (void)nco_lmt_evl(var_rhs->nc_id,lmt_vtr[idx],0L,prs_arg->FORTRAN_IDX_CNV);
+            (void)ncap_lmt_evl(var_rhs->nc_id,lmt_vtr[idx],prs_arg);
 
           // See if var can be normalized
            for(idx=0; idx<nbr_dmn ; idx++){
@@ -2280,6 +2277,9 @@ var=NULL_CEWI;
            if(bnrm){
                var=ncap_cst_mk(dmn_nrm_vtr,prs_arg);
                (void)nco_free(var->nm);
+               if(var->val.vp)
+                 var->val.vp=nco_free(var->val.vp); 
+
                var->nm=strdup(var_nm.c_str());
                var=nco_var_cnf_typ(var_rhs->type,var);
            }
@@ -2346,14 +2346,21 @@ var=NULL_CEWI;
              var1->val.vp=(void*)nco_malloc(nco_typ_lng(var1->type));
              (void)memcpy( (void*)var1->val.vp,var_nw->val.vp,nco_typ_lng(var1->type));
              var_nw=nco_var_free(var_nw);
+             
+             // free casting variable
+             if(bnrm)
+                var=nco_var_free(var);
+
              var=var1;
+              
+
             }else{
 
              if(!bnrm)
                var=var_nw;
              else{
                // swap values about in var_nm & var (the var cast earlier)
-               (void)nco_free(var->val.vp);
+               //(void)nco_free(var->val.vp);
                var->val.vp=var_nw->val.vp;
                var_nw->val.vp=(void*)NULL;       
                (void)nco_var_free(var_nw);    
