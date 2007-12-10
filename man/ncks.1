@@ -511,25 +511,25 @@ Restrict the dimensions of these variables to a hyperslab.
 Print (with 
 .BR -H )
 the hyperslabs to the screen for good measure.  
-The specified hyperslab is: the fifth value in dimension 
+The specified hyperslab is: the sixth value in dimension 
 .BR time ;
 the
 half-open range 
 .I lat
-> 0. in coordinate 
+<= 0.0 in coordinate 
 .BR lat ;
 the
 half-open range
 .I lon
-< 330. in coordinate 
+>= 330.0 in coordinate 
 .BR lon ;
 the
-closed interval .3 < 
+closed interval 0.3 <=
 .I band
-< .5 in coordinate 
+<= 0.5 in coordinate 
 .BR band ;
 and
-cross-section closest to 1000. in coordinate 
+cross-section closest to 1000.0 in coordinate 
 .BR lev .
 Note that limits applied to coordinate values are specified with a
 decimal point, and limits applied to dimension indices do not have a
@@ -559,7 +559,7 @@ ncks -d lon,260.,45. in.nc out.nc
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.6 2007-06-30 18:31:58 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.7 2007-12-10 20:17:41 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

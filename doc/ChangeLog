@@ -1,6 +1,12 @@
+2007-12-10  Charlie Zender  <zender@uci.edu>
+
+	* Fix ncks.1 typos reported by Rich Signell
+
 2008-12-09 Henry Butowsky <henryb@ntlworld.com>
-	ncap2 now uses ncap_lmt_evl() instead of nco_lmt_ev().
-	This fixes problems with record dimension in limits
+
+	* ncap2 now uses ncap_lmt_evl() instead of nco_lmt_evl()
+	  This fixes problems with record dimension in limits
+
 2007-12-08  Charlie Zender  <zender@uci.edu>
 
 	* Add hooks to nco_prn_var_dfn() to print compression state
