@@ -1,5 +1,7 @@
 2007-12-08  Charlie Zender  <zender@uci.edu>
 
+	* Add hooks to nco_prn_var_dfn() to print compression state
+
 	* cd ~/nco;cvs tag -d nco-3_9_3;cvs tag -d nco-3_9_3-1
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.3 release"
 	  cvs tag -c nco-3_9_3;cvs tag -c nco-3_9_3-1
@@ -9,9 +11,9 @@
 
 2008-11-29 Henry Butowsky <henryb@ntlworld.com>
 
-	* first cut of openmp for ncap2
+	* First cut of OpenMP for ncap2
 
-	* can process ncap2.in in parallel on LINUX & AIX platforms 
+	* ncap2 processes ncap2.in in parallel on LINUX & AIX platforms 
 
 2007-11-27 Henry Butowsky <henryb@ntlworld.com>
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.46 2007-09-02 20:03:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.47 2007-12-10 07:33:49 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -120,6 +120,7 @@ int nco_rename_dim(const int nc_id,const int dmn_id,const char * const dmn_nm);
 int nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,const int dmn_nbr,const int * const dmn_id,int * const var_id);
 int nco_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl);
 int nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type * const var_typ,int * const dmn_nbr,int * const dmn_id,int * const nbr_att);
+int nco_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle,int * const deflate,int * const dfl_lvl);
 int nco_inq_varid(const int nc_id,const char * const var_nm,int * const var_id);
 int nco_inq_varid_flg(const int nc_id,const char * const var_nm,int * const var_id);
 int nco_inq_varname(const int nc_id,const int var_id,char * const var_nm);
@@ -158,7 +159,9 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
 
 /* Begin netCDF4 stubs */
 #ifndef ENABLE_NETCDF4
+  /* Stubs so netCDF4 functions will work without protection in netCDF3 environments */
   int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl);
+  int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl);
 #endif /* ENABLE_NETCDF4 */
 #ifndef ENABLE_NETCDF4
   int NCO_GET_VAR1_UBYTE(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *ubp);

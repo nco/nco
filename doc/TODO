@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.980 2007-12-05 20:50:21 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.981 2007-12-10 07:33:49 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -613,7 +613,7 @@ nco901. mss_val in code and comments now (usually) refers to _FillValue (except 
 nco905. TKN2SNG technique for "_FillValue" adds extra quotes in nco.h but not c.c!
 nco906. Add regression test for DAP via THREDDS server:
 	ncks -m http://eclipse.ncdc.noaa.gov:8080/thredds/dodsC/isccp-d1/2001/ISCCP.D1.1.GLOBAL.2001.01.01.0000.GPC
-nco907. document new wget capabilities
+nco907. doc: document new wget capabilities
 nco909. Does autoconf for netCDF4-enabled NCO require additional -lm flag?
 nco910. ncks/netCDF4: print whether variable is deflated and dfl_lvl
 nco911. Periods in attribute names choke OPeNDAP (had to remove att_nm.dot):
@@ -624,7 +624,6 @@ nco911. Periods in attribute names choke OPeNDAP (had to remove att_nm.dot):
 nco912. ncks: print '_' or '_FillValue' instead of numeric values a la ncdump?
 nco913. nco_cmp_get() fails on _AIX with different compiler
 nco915. GCC OpenMP support in configure.in
-nco916. Announce/release 3.9.3
 nco917. GCC OpenMP with autoconf
 nco918. Add ncecat -u mods to mpncecat
 nco919. 'make check' (i.e., nco_bm.pl) breaks when ncap2 disabled (i.e., --disable-nco++) reported by Tim Hoar

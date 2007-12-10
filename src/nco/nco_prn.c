@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.42 2007-07-23 00:31:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.43 2007-12-10 07:33:49 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -254,6 +254,15 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     } /* end loop over dim */
     (void)sprintf(sng_foo,"%li*nco_typ_lng(%s)",dim[idx].sz,nco_typ_sng(var_typ));
     (void)strcat(sz_sng,sng_foo);
+#ifdef ENABLE_NETCDF4
+    {
+      int shuffle; /* [flg] Shuffling is on */
+      int deflate; /* [flg] Deflation is on */
+      int dfl_lvl; /* [enm] Deflate level [0..9] */
+      rcd=nc_inq_var_deflate(in_id,var_id,&shuffle,&deflate,&dfl_lvl);
+    }
+#else /* !ENABLE_NETCDF4 */
+#endif /* !ENABLE_NETCDF4 */
     (void)fprintf(stdout,"%s memory size is %s = %li*%lu = %lu bytes\n",var_nm,sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
   }else{
     long var_sz=1L;

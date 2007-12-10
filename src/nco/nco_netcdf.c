@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.89 2007-10-21 14:08:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.90 2007-12-10 07:33:49 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -515,6 +515,21 @@ int nc_inq_format(int nc_id, int * const fl_fmt)
   return NC_NOERR+0*nc_id; /* CEWI */
 } /* end nco_inq_format() */
 #endif /* !NEED_NC_INQ_FORMAT */
+
+int
+nco_inq_var_deflate
+(const int nc_id, /* I [ID] netCDF ID */
+ const int var_id, /* I [ID] Variable ID */
+ int * const shuffle, /* O [flg] Turn on shuffle filter */
+ int * const deflate, /* O [flg] Turn on deflate filter */
+ int * const dfl_lvl) /* O [enm] Deflate level [0..9] */
+{
+  /* Purpose: Wrapper for nc_inq_var_deflate() */
+  int rcd;
+  rcd=nc_inq_var_deflate(nc_id,var_id,shuffle,deflate,dfl_lvl);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_deflate()");
+  return rcd;
+} /* end nco_inq_var_deflate */
 
 int
 nco_inq_format(const int nc_id,int * const fl_fmt)
@@ -1172,6 +1187,7 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
 /* Begin netCDF4 stubs */
 #ifndef ENABLE_NETCDF4
 int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl){return 1;}
+int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl){return 1;}
 #endif /* ENABLE_NETCDF4 */
 #ifndef ENABLE_NETCDF4
 int NCO_GET_VAR1_UBYTE(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *ubp){return 1;}
