@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.981 2007-12-10 07:33:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.982 2007-12-11 22:23:06 zender Exp $ 
 
 # Purpose: TODO items for NCO
 
@@ -615,7 +615,6 @@ nco906. Add regression test for DAP via THREDDS server:
 	ncks -m http://eclipse.ncdc.noaa.gov:8080/thredds/dodsC/isccp-d1/2001/ISCCP.D1.1.GLOBAL.2001.01.01.0000.GPC
 nco907. doc: document new wget capabilities
 nco909. Does autoconf for netCDF4-enabled NCO require additional -lm flag?
-nco910. ncks/netCDF4: print whether variable is deflated and dfl_lvl
 nco911. Periods in attribute names choke OPeNDAP (had to remove att_nm.dot):
 	ncks -O -D 7 -v var_nm.dot -p ~/nco/data dap_dot_bug.nc ~/foo.nc # works fine
 	ncks -O -D 7 -v var_nm.dot -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata dap_dot_bug.nc ~/foo.nc # borken

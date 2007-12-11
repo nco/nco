@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.269 2007-12-11 18:35:53 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.270 2007-12-11 22:23:06 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.3 are ready. 
 
@@ -20,7 +20,8 @@ A. fxm
 
 B. fxm
 
-C. fxm
+C. ncks prints netCDF4 LZ compression information to stdout
+   http://nco.sf.net/nco.html#ncks
 
 D. All ncap2 functions now OpenMP-safe (Henry Butowsky)
    http://nco.sf.net/nco.html#openmp

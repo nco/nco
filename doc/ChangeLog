@@ -1,6 +1,6 @@
 2007-12-11  Charlie Zender  <zender@uci.edu>
 
-	* ncks prints netCDF4 LZ compression information to stdout
+	* ncks prints netCDF4 LZ compression information to stdout TODO910
 
 	* ncap2 calls nco_thr_att_cat() to archive nco_openmp_thread_number
 

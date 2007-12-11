@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.462 2007-12-11 18:35:53 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.463 2007-12-11 22:23:06 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -468,7 +468,8 @@ Instead, retrieve all recently tagged versions
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
 <li><b>NCO/SDO 3.9.4</b>: (<i>In progress</i>) 
-<tt>ncap2</tt>: arbitrary hyperslabs, prints attributes, fully OpenMP-safe
+<tt>ncap2</tt>: arbitrary hyperslabs, prints attributes, fully OpenMP-safe,
+<tt>ncks</tt>: prints LZ compression
 <li><b>NCO/SDO 3.9.3</b>: 
 SWAMP release;
 <tt>ncecat -u</tt>;
