@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.94 2007-12-10 10:22:38 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.95 2007-12-11 15:19:32 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -512,6 +512,85 @@ ncap_att_cpy
   
   return nbr_att;
 }
+
+
+
+void 
+ncap_att_prn   /* [fnc] Print a single attribute*/
+(var_sct *var, /* I Variable containing att */
+prs_cls *prs_arg) /*Maybe used a some point */
+{
+  char dlm_sng[3];
+  char att_sng[NCO_MAX_LEN_FMT_SNG];
+
+  long att_lmn;
+  long att_sz;
+  
+    /* Copy value to avoid indirection in loop over att_sz */
+    att_sz=var->sz;
+
+
+    (void)fprintf(stdout,"%s, size = %li %s, value = ",var->nm,att_sz,nco_typ_sng(var->type));
+    
+    /* Typecast pointer to values before access */
+    (void)cast_void_nctype(var->type,&var->val);
+
+    (void)strcpy(dlm_sng,", ");
+    (void)sprintf(att_sng,"%s%%s",nco_typ_fmt_sng(var->type));
+    switch(var->type){
+    case NC_FLOAT:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,var->val.fp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      break;
+    case NC_DOUBLE:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,var->val.dp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      break;
+    case NC_SHORT:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,var->val.sp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      break;
+    case NC_INT:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,(long)var->val.lp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      break;
+    case NC_CHAR:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++){
+        char char_foo;
+	/* Assume \0 is string terminator and do not print it */
+	if((char_foo=var->val.cp[att_lmn]) != '\0') (void)fprintf(stdout,"%c",char_foo);
+      } /* end loop over element */
+      break;
+    case NC_BYTE:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,var->val.bp[att_lmn]);
+      break;
+    case NC_UBYTE:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,var->val.ubp[att_lmn]);
+      break;
+    case NC_USHORT:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,var->val.usp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      break;
+    case NC_UINT:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,var->val.uip[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      break;
+    case NC_INT64:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,var->val.i64p[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      break;
+    case NC_UINT64:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,var->val.ui64p[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      break;
+    case NC_STRING:
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,var->val.sngp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      break;
+    default: nco_dfl_case_nc_type_err();
+      break;
+    } /* end switch */
+    (void)fprintf(stdout,"\n");
+    
+ (void)cast_nctype_void(var->type,&var->val);
+
+  (void)fflush(stdout);
+
+} /* end ncap_att_prn() */
+
+
+
 
 
 
@@ -2547,6 +2626,37 @@ NcapVector<lmt_sct*> &dmn_vtr)
 
   
 } /* end nco_put_var_mem() */
+
+
+
+
+// See if node contains any utility fuctions
+// if so return true
+bool 
+ncap_fnc_srh(
+RefAST tr
+)
+{
+ std::string fnm;
+  
+  if(tr->getType()==FUNC){
+    fnm=tr->getText();
+    if(fnm=="set_miss" || fnm=="change_miss" || fnm=="ram_write" || fnm=="ram_delete") 
+      return true;
+  }
+ 
+  
+  tr=tr->getFirstChild();
+ // examine all child nodes
+  while(tr){
+    if( ncap_fnc_srh(tr) )
+      return true;
+    tr=tr->getNextSibling();
+  }
+ 
+ return false;
+
+}
 
 
 
