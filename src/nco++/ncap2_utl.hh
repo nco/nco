@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.5 2007-12-10 10:21:53 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.6 2007-12-11 15:18:36 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -103,6 +103,12 @@ ncap_att_cpy
 (std::string s_dst,
  std::string s_src,
  prs_cls  *prs_arg);
+
+
+void 
+ncap_att_prn   
+(var_sct *var, 
+prs_cls *prs_arg);
 
 
 var_sct *   /* O [sct] Remainder of modulo operation of input variables (var_1%var_2) */
@@ -226,6 +232,13 @@ var_sct* var2);
 nco_bool        /* Reurns True if var has attribute style name */
 ncap_var_is_att( 
 var_sct *var);
+
+
+bool           /* Returns true if expression contains a utility fuction */ 
+ncap_fnc_srh(
+RefAST ntr
+);
+
 
 
 void ncap_mpi_get_id  /* Extract all VAR_ID & ATT_ID from an Expression */
