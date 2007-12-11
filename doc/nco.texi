@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.456 2007-12-08 14:17:50 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.457 2007-12-11 19:27:36 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -967,9 +967,10 @@ netCDF3.
 All @acronym{NCO} operators support these types, e.g., @command{ncks}
 copies and prints them, @command{ncra} averages them, and
 @command{ncap2} processes algebraic scripts with them.
+@command{ncks} prints compression information, if any, to screen.
 
 Lempel-Ziv deflation is a lossless compression technique.
-See @ref{ncks netCDF Kitchen Sink} for more details.
+See @ref{Deflation} for more details.
 
 @cindex @acronym{HDF5}
 @cindex @code{-4}
@@ -4041,6 +4042,8 @@ ncks  -4 -L 9 in.nc out.nc # Maximal deflation (~31-63% compression)
 ncpdq         in.nc out.nc # Standard packing  (~50% compression)
 ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
 @end example
+@findex ncks
+@command{ncks} prints compression information, if any, to screen.
 
 @html
 <a name="pck"></a> <!-- http://nco.sf.net/nco.html#pck -->
@@ -7756,7 +7759,11 @@ respectively.
 Print variable metadata to screen (similar to @kbd{ncdump -h}). 
 This displays all metadata pertaining to each variable, one variable
 at a time.
-Also @samp{--mtd} and @samp{--metadata}.
+@cindex compression
+@cindex deflation
+This includes information on the compression level, if any
+@xref{Deflation}.
+Also activated using @samp{--mtd} and @samp{--metadata}.
 The @command{ncks} default behavior is to print variable metadata to
 screen if no netCDF output file is specified.
 Use @samp{-m} to print variable metadata to screen if a netCDF output is 

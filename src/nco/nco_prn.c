@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.43 2007-12-10 07:33:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.44 2007-12-11 19:27:37 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -260,6 +260,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
       int deflate; /* [flg] Deflation is on */
       int dfl_lvl; /* [enm] Deflate level [0..9] */
       rcd=nc_inq_var_deflate(in_id,var_id,&shuffle,&deflate,&dfl_lvl);
+      if(deflate) (void)fprintf(stdout,"%s is compressed (Lempel-Ziv %s shuffling) on disk at level = %i\n",var_nm,(shuffle) ? "with" : "without",dfl_lvl);
     }
 #else /* !ENABLE_NETCDF4 */
 #endif /* !ENABLE_NETCDF4 */
