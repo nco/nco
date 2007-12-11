@@ -1,3 +1,8 @@
+2008-12-11 Henry Butowsky <henryb@ntlworld.com>
+	
+	Added print attributes function 
+	Usage e.g print(global@history);
+
 2007-12-10  Charlie Zender  <zender@uci.edu>
 
 	* Fix ncks.1 typos reported by Rich Signell
