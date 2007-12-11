@@ -10,7 +10,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.48 2007-11-26 12:19:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.49 2007-12-11 18:35:53 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -106,10 +106,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 98;
+	static const int NUM_TOKENS = 99;
 #else
 	enum {
-		NUM_TOKENS = 98
+		NUM_TOKENS = 99
 	};
 #endif
 	

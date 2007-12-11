@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.268 2007-12-08 14:17:49 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.269 2007-12-11 18:35:53 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.3 are ready. 
 
@@ -16,18 +16,17 @@ not just NCO. If you must transfer lots of data from a server to your
 client before you can analyze it, then SWAMP may speed things up.
 Give it a try and give us some feedback.
 
-A. SWAMP released! Visit Daniel at Fall AGU poster IN11B-0469
+A. fxm
 
-B. Use ncecat -u ulm_nm to specify the new record dimension name
-   http://nco.sf.net/nco.html#ncecat
+B. fxm
 
-C. Fix for autoconf builds using GCC on AIX 
+C. fxm
 
-D. ncap2 supports OpenMP on most independent branches (Henry Butowsky)
-   Demonstration scripts ~/nco/data/[bin_cnt.nco,psd_wrf.nco]
-
-E. Support GCC 4.2 OpenMP (GOMP) in bld/Makefile (not yet configure)
+D. All ncap2 functions now OpenMP-safe (Henry Butowsky)
    http://nco.sf.net/nco.html#openmp
+
+E. ncap2 prints attributes (Henry Butowsky)
+   Demonstration scripts ~/nco/data/ncap2_tst.nco
 
 F. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
    http://nco.sf.net#debian
@@ -35,8 +34,7 @@ F. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
 G. Pre-built, up-to-date, RPM packages are available.
    http://nco.sf.net#rpm
 
-H. The NCO scaling paper is out in IJHPCA:
-   http://dust.ess.uci.edu/ppr/ppr_ZeM07_ijhpca.pdf
+H. fxm
 
 I. Reminder: NCO support for netCDF4 features is tracked at
 

@@ -1,4 +1,8 @@
-2008-12-11 Henry Butowsky <henryb@ntlworld.com>
+2007-12-11  Charlie Zender  <zender@uci.edu>
+
+	* ncap2 calls nco_thr_att_cat() to archive nco_openmp_thread_number
+
+2007-12-11 Henry Butowsky <henryb@ntlworld.com>
 	
 	Added print attributes function 
 	Usage e.g print(global@history);
@@ -7,7 +11,7 @@
 
 	* Fix ncks.1 typos reported by Rich Signell
 
-2008-12-09 Henry Butowsky <henryb@ntlworld.com>
+2007-12-09 Henry Butowsky <henryb@ntlworld.com>
 
 	* ncap2 now uses ncap_lmt_evl() instead of nco_lmt_evl()
 	  This fixes problems with record dimension in limits
@@ -23,7 +27,7 @@
 	
 	* Update documentation for SWAMP, AGU, and IJHPCA
 
-2008-11-29 Henry Butowsky <henryb@ntlworld.com>
+2007-11-29 Henry Butowsky <henryb@ntlworld.com>
 
 	* First cut of OpenMP for ncap2
 

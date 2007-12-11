@@ -8,7 +8,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.58 2007-12-04 21:03:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.59 2007-12-11 18:35:54 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -40,7 +40,7 @@
 #line 41 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 527 "ncoGrammer.g"
+#line 533 "ncoGrammer.g"
 
 
 private:
@@ -163,7 +163,6 @@ int nbr_dmn;
 int idx;
 int jdx;
 long lcl_ind[3];
-char *buff;
 
 var_sct *var_out;
 lmt_sct *lmt_ptr;
@@ -213,41 +212,38 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
      lmt_ptr->min_sng=NULL;
      lmt_ptr->max_sng=NULL;
      lmt_ptr->srd_sng=NULL;
+     lmt_ptr->is_usr_spc_min=False;
+     lmt_ptr->is_usr_spc_max=False;
+
      /* rec_skp_nsh_spf is used for record dimension in multi-file operators */
      lmt_ptr->rec_skp_nsh_spf=0L; /* Number of records skipped in initial superfluous files */
     
     
     /* Fill in structure */
-    if( lcl_ind[0] >= 0) {
-          buff=(char*)nco_malloc(20*sizeof(char));
-          (void)sprintf(buff, "%ld",lcl_ind[0]);
-           lmt_ptr->min_sng=buff; 
+    if( lcl_ind[0] >= 0){ 
+           lmt_ptr->is_usr_spc_min=True;
+           lmt_ptr->srt=lcl_ind[0]; 
     }    
+
 
     /* Fill in structure */
     if( lcl_ind[1] >= 0) {
-          buff=(char*)nco_malloc(20*sizeof(char));
-          (void)sprintf(buff, "%ld",lcl_ind[1]);
-           lmt_ptr->max_sng=buff;
+           lmt_ptr->is_usr_spc_max=True;
+           lmt_ptr->end=lcl_ind[1];
     }    
 
     /* Fill in structure */
     if( lcl_ind[2] > 0) {
-          buff=(char*)nco_malloc(20*sizeof(char));
-          (void)sprintf(buff, "%ld",lcl_ind[2]);
-           lmt_ptr->srd_sng=buff;
+           lmt_ptr->srd_sng=strdup("~fill_in");
+           lmt_ptr->srd=lcl_ind[2];
     }    
 
     /* need to deal with situation where only start is defined -- ie picking only a single value */
     if(lcl_ind[0] >=0 && lcl_ind[1]==-2){
-          buff=(char*)nco_malloc(20*sizeof(char));
-          (void)sprintf(buff, "%ld",lcl_ind[0]);
-          lmt_ptr->max_sng=buff; 
+          lmt_ptr->is_usr_spc_max=True;
+          lmt_ptr->end=lcl_ind[0]; 
     }    
 
-
-    if(lmt_ptr->max_sng == NULL) lmt_ptr->is_usr_spc_max=False; else lmt_ptr->is_usr_spc_max=True;
-    if(lmt_ptr->min_sng == NULL) lmt_ptr->is_usr_spc_min=False; else lmt_ptr->is_usr_spc_min=True;
 
     lmt_vtr.push_back(lmt_ptr);
 
@@ -370,7 +366,7 @@ public:
     for(idx=0 ; idx < nbr_stmt; idx++){
       ntyp=ntr->getType();
       // we have hit an IF or a basic block
-      if(ntyp==BLOCK || ntyp==IF ||ntyp==DEFDIM || ntyp==WHILE ||ntyp==FOR) {
+      if(ntyp==BLOCK || ntyp==IF ||ntyp==DEFDIM || ntyp==WHILE ||ntyp==FOR || ntyp==FEXPR) {
         if(icnt>0) 
          (void)run_dbl(etr,icnt);
         icnt=0;
@@ -437,10 +433,10 @@ protected:
 private:
 	static const char* tokenNames[];
 #ifndef NO_STATIC_CONSTS
-	static const int NUM_TOKENS = 98;
+	static const int NUM_TOKENS = 99;
 #else
 	enum {
-		NUM_TOKENS = 98
+		NUM_TOKENS = 99
 	};
 #endif
 	
