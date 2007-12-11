@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.124 2007-12-10 10:25:44 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.125 2007-12-11 15:17:07 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -53,6 +53,7 @@ tokens {
     FUNC_ARG;
     LMT;
     EXPR;
+    FEXPR;
     POST_INC;
     POST_DEC;
     UTIMES;
@@ -68,7 +69,12 @@ program:
 
 statement:
         // assign/expression_statement
-        expr SEMI! {#statement = #(#[EXPR,"EXPR"],#statement); }
+        e1:expr SEMI! { 
+          if( ncap_fnc_srh(#e1))  
+            #statement = #(#[FEXPR,"FEXPR"],#statement); 
+          else
+            #statement = #(#[EXPR,"EXPR"],#statement); 
+        }
         
         //Define Dim statement
         | DEFDIM^ LPAREN! NSTRING COMMA! expr RPAREN! SEMI!
@@ -646,7 +652,6 @@ int nbr_dmn;
 int idx;
 int jdx;
 long lcl_ind[3];
-char *buff;
 
 var_sct *var_out;
 lmt_sct *lmt_ptr;
@@ -850,7 +855,7 @@ public:
     for(idx=0 ; idx < nbr_stmt; idx++){
       ntyp=ntr->getType();
       // we have hit an IF or a basic block
-      if(ntyp==BLOCK || ntyp==IF ||ntyp==DEFDIM || ntyp==WHILE ||ntyp==FOR) {
+      if(ntyp==BLOCK || ntyp==IF ||ntyp==DEFDIM || ntyp==WHILE ||ntyp==FOR || ntyp==FEXPR) {
         if(icnt>0) 
          (void)run_dbl(etr,icnt);
         icnt=0;
@@ -933,7 +938,17 @@ static std::vector<std::string> lpp_vtr;
          var=nco_var_free(var);
        iret=EXPR;
      }
-              
+
+    // These expressions excute in their own basic blocks
+    // Any expressions  which use the utility functions
+    // are flagged as FEXPR by the parser.
+    | #(FEXPR fss:.) {
+
+       var=out(fss);
+       if(var != (var_sct*)NULL)
+         var=nco_var_free(var);
+       iret=FEXPR;
+     }
 
     | #(IF var=out stmt:. ) {
     //if can have only 3 or 4 parts  , 1 node and 2 or 3 siblings
@@ -1102,7 +1117,7 @@ static std::vector<std::string> lpp_vtr;
    
           if( fl_id >=0)
            (void)nco_prn_var_val_lmt(fl_id,va_nm.c_str(),(lmt_sct*)NULL,0L,fmt_sng,prs_arg->FORTRAN_IDX_CNV,False,False);
-            
+             
 
           if(fmt_sng)
             fmt_sng=(char*)nco_free(fmt_sng); 
@@ -1112,7 +1127,51 @@ static std::vector<std::string> lpp_vtr;
 
     }
     | (#(PRINT ATT_ID))=> #(PRINT patt:ATT_ID){
-             ;
+
+          int apsn;
+          var_sct *var1;
+          std::string fl_nm;
+          std::string att_nm;
+          std::string var_nm;
+          NcapVar *Nvar;
+          
+          var=NULL_CEWI;
+
+          // print only on second parse
+          if(prs_arg->ntl_scn) goto end3;
+
+          fl_nm=patt->getText();
+          apsn=fl_nm.find("@");
+          var_nm=fl_nm.substr(0,apsn);
+          att_nm=fl_nm.substr(apsn+1);            
+          
+          Nvar=prs_arg->var_vtr.find(var_nm);
+          if( Nvar && att_nm==std::string(nco_mss_val_sng_get()) ){         
+              if(Nvar->var->has_mss_val==True){
+                var1=ncap_sclr_var_mk(fl_nm,Nvar->var->type,true);
+                (void)memcpy(var1->val.vp,Nvar->var->mss_val.vp, nco_typ_lng(Nvar->var->type));
+                var=var1;
+              }else{
+                wrn_prn(fnc_nm,"Cannot print missing value \""+ fl_nm+ "\" for variable \""+ var_nm +"\" as it is undefined");
+                goto end3;    
+              }
+          }else{   
+             Nvar=prs_arg->var_vtr.find(fl_nm);
+             if(Nvar==NULL_CEWI) 
+                var=ncap_att_init(fl_nm,prs_arg);
+             else
+                var=nco_var_dpl(Nvar->var); 
+          }
+
+          if(var==NULL_CEWI ){
+            wrn_prn(fnc_nm,"Cannot print  attribute \"" +fl_nm+ "\". Not present in input or output files.");
+            goto end3;    
+           }
+
+          (void)ncap_att_prn(var,prs_arg);
+          var=nco_var_free(var); 
+
+          end3:   ;
     }
 
     | (#(PRINT NSTRING))=> #(PRINT pstr:NSTRING){
