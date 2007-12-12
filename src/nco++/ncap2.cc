@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.58 2007-12-11 18:35:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.59 2007-12-12 16:33:54 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.58 2007-12-11 18:35:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.58 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.59 2007-12-12 16:33:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.59 $";
   const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -165,7 +165,7 @@ main(int argc,char **argv)
   int dfl_lvl=0; /* [enm] Deflate level */
   int fl_nbr=0;
   int fl_in_fmt; /* [enm] Input file format */
-  int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
+  int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
   int in_id;  
@@ -442,7 +442,7 @@ main(int argc,char **argv)
   if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dmn_in,nbr_dmn_in,lmt,lmt_nbr);
   
   /* Make output and input files consanguinous */
-  if(!fl_out_fmt) fl_out_fmt=fl_in_fmt;
+  if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.121 2007-08-31 21:21:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.122 2007-12-12 16:33:54 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -112,6 +112,13 @@ extern "C" {
      Normally using -1 for this ID is fine, but token makes meaning clearer
      NB: nc_inq() family is defined to return -1 for missing record dimensions */
 #define NCO_REC_DMN_UNDEFINED -1
+
+  /* netcdf.h defines four NC_FORMAT tokens: NC_FORMAT_CLASSIC, ...
+     The values are (currently) enumerated from one to four
+     Operators need to check if fl_out_fmt has been user-specified
+     Saftest way is to compare current value of fl_out_fmt to initial value 
+     Initial value should be a number that will never be a true netCDF format */
+#define NCO_FORMAT_UNDEFINED 0
   
   /* Debugging level that quiets all non-requested informational messages
      This value is compared against user-selected dbg_lvl 

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.443 2007-12-08 16:14:30 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.444 2007-12-12 16:33:53 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -439,7 +439,7 @@ MDL_MAN := $(addprefix ${MY_MAN_DIR}/,${MDL_MAN}) # distclean removes these file
 MDL_BLD_SRC := $(addprefix ${MY_BLD_DIR}/,libnco_tst.c libnco_c++_tst.cc Makefile nco.spec nco_dst.pl) # `make tags' includes these files
 MDL_BLD_SRC += $(addprefix ${MY_BM_DIR}/,NCO_bm.pm NCO_benchmarks.pm NCO_rgr.pm nco_bm.pl nco_bm.sh mk_bm_plots.pl) # `make tags' includes these files
 # Files, if any, to exclude from tags
-TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc
+TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc .//lex.yy.c
 
 # Variables having to do with ncap
 MDL_NCAP_SRC := $(addprefix ${MY_SRC_DIR}/,ncap_yacc.y ncap_lex.l ncap.h) # `make tags' includes these files
@@ -1775,7 +1775,7 @@ tags:
 
 # It is safest to do both YACC and LEX after either file changes
 # Otherwise only changing one and then switching, e.g., from bison to yacc, can cause problems
-# NB: Bison has a problem when bison.simple declares yyparse() as int yyparse (void);
+# NB: Bison has problem when bison.simple declares yyparse() as int yyparse (void);
 # Solution is to comment out that definition in bison.simple
 ifeq (${YACC},bison)
 ${MY_SRC_DIR}/%_yacc.c ${MY_SRC_DIR}/%_yacc.h : ${MY_SRC_DIR}/%_yacc.y

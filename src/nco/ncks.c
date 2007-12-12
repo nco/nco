@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.189 2007-11-12 14:32:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.190 2007-12-12 16:33:54 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.189 2007-11-12 14:32:52 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.189 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.190 2007-12-12 16:33:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.190 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -134,7 +134,7 @@ main(int argc,char **argv)
   int dfl_lvl=0; /* [enm] Deflate level */
   int fl_nbr=0;
   int fl_in_fmt; /* [enm] Input file format */
-  int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
+  int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int glb_att_nbr;
   int idx;
@@ -532,7 +532,7 @@ main(int argc,char **argv)
     
     /* Allow user to override format consanguinity with, e.g., -3 switch */
     /* Make output and input files consanguinous */
-    if(!fl_out_fmt) fl_out_fmt=fl_in_fmt;
+    if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
 
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.55 2007-07-23 00:31:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.56 2007-12-12 16:33:54 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.55 2007-07-23 00:31:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.55 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.56 2007-12-12 16:33:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.56 $";
   const char * const opt_sht_lst="4ACcD:d:FHhL:l:n:Oo:p:rRSt:v:x-:";
   
   dmn_sct *rec_dmn;
@@ -114,7 +114,7 @@ main(int argc,char **argv)
   int fl_idx;
   int fl_nbr=0;
   int fl_in_fmt; /* [enm] Input file format */
-  int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
+  int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
   int in_id;  
@@ -441,7 +441,7 @@ main(int argc,char **argv)
   if(prc_rnk == rnk_mgr){ /* MPI manager code */
 #endif /* !ENABLE_MPI */
     /* Make output and input files consanguinous */
-  if(!fl_out_fmt) fl_out_fmt=fl_in_fmt;
+  if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
 
   /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);

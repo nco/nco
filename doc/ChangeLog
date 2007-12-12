@@ -1,3 +1,7 @@
+2007-12-12  Charlie Zender  <zender@uci.edu>
+
+	* Fix output/input file consanguinity (TODO nco836)
+
 2007-12-11  Charlie Zender  <zender@uci.edu>
 
 	* ncks prints netCDF4 LZ compression information to stdout TODO910
@@ -6,8 +10,7 @@
 
 2007-12-11 Henry Butowsky <henryb@ntlworld.com>
 	
-	Added print attributes function 
-	Usage e.g print(global@history);
+	* Added print attributes function e.g., print(global@history)
 
 2007-12-10  Charlie Zender  <zender@uci.edu>
 

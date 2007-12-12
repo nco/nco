@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.143 2007-11-13 10:11:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.144 2007-12-12 16:33:54 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -88,8 +88,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.143 2007-11-13 10:11:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.143 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.144 2007-12-12 16:33:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.144 $";
   const char * const opt_sht_lst="4ACcD:d:FHhL:l:n:Oo:p:rRt:u:v:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -116,7 +116,7 @@ main(int argc,char **argv)
   int fl_idx;
   int fl_nbr=0;
   int fl_in_fmt; /* [enm] Input file format */
-  int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
+  int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
   int in_id;  
@@ -406,7 +406,7 @@ main(int argc,char **argv)
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* Make output and input files consanguinous */
-  if(!fl_out_fmt) fl_out_fmt=fl_in_fmt;
+  if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&out_id);
