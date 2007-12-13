@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.45 2007-12-13 15:35:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.46 2007-12-13 15:37:54 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -193,11 +193,9 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id;
   int var_id;
-#ifdef ENABLE_NETCDF4
   int shuffle; /* [flg] Shuffling is on */
   int deflate; /* [flg] Deflation is on */
   int dfl_lvl; /* [enm] Deflate level [0..9] */
-#endif /* !ENABLE_NETCDF4 */
   
   nc_type var_typ;
   
