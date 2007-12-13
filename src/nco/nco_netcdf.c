@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.90 2007-12-10 07:33:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.91 2007-12-13 15:35:14 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -525,8 +525,18 @@ nco_inq_var_deflate
  int * const dfl_lvl) /* O [enm] Deflate level [0..9] */
 {
   /* Purpose: Wrapper for nc_inq_var_deflate() */
+  /* NB: netCDF inquire function only works on netCDF4 files
+     NCO stub works on netCDF3 and netCDF4 files */
   int rcd;
-  rcd=nc_inq_var_deflate(nc_id,var_id,shuffle,deflate,dfl_lvl);
+  int fl_fmt; /* [enm] Input file format */
+  rcd=nco_inq_format(nc_id,&fl_fmt);
+  if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+    rcd=nc_inq_var_deflate(nc_id,var_id,shuffle,deflate,dfl_lvl);
+  }else{ /* !netCDF4 */
+    *shuffle=0;
+    *deflate=0;
+    *dfl_lvl=0;
+  } /* !netCDF4 */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_deflate()");
   return rcd;
 } /* end nco_inq_var_deflate */
@@ -1187,7 +1197,9 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
 /* Begin netCDF4 stubs */
 #ifndef ENABLE_NETCDF4
 int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl){return 1;}
-int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl){return 1;}
+/* NB: netCDF inquire function only works on netCDF4 files
+   NCO stub works on netCDF3 and netCDF4 files */
+int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl){*shuffle=0;*deflate=0;*dfl_lvl=0;return 1;}
 #endif /* ENABLE_NETCDF4 */
 #ifndef ENABLE_NETCDF4
 int NCO_GET_VAR1_UBYTE(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *ubp){return 1;}

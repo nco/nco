@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.44 2007-12-11 19:27:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.45 2007-12-13 15:35:15 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -193,6 +193,11 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id;
   int var_id;
+#ifdef ENABLE_NETCDF4
+  int shuffle; /* [flg] Shuffling is on */
+  int deflate; /* [flg] Deflation is on */
+  int dfl_lvl; /* [enm] Deflate level [0..9] */
+#endif /* !ENABLE_NETCDF4 */
   
   nc_type var_typ;
   
@@ -254,16 +259,10 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     } /* end loop over dim */
     (void)sprintf(sng_foo,"%li*nco_typ_lng(%s)",dim[idx].sz,nco_typ_sng(var_typ));
     (void)strcat(sz_sng,sng_foo);
-#ifdef ENABLE_NETCDF4
-    {
-      int shuffle; /* [flg] Shuffling is on */
-      int deflate; /* [flg] Deflation is on */
-      int dfl_lvl; /* [enm] Deflate level [0..9] */
-      rcd=nc_inq_var_deflate(in_id,var_id,&shuffle,&deflate,&dfl_lvl);
-      if(deflate) (void)fprintf(stdout,"%s is compressed (Lempel-Ziv %s shuffling) on disk at level = %i\n",var_nm,(shuffle) ? "with" : "without",dfl_lvl);
-    }
-#else /* !ENABLE_NETCDF4 */
-#endif /* !ENABLE_NETCDF4 */
+    /* NB: netCDF inquire function only works on netCDF4 files
+       NCO stub works on netCDF3 and netCDF4 files */
+    rcd=nco_inq_var_deflate(in_id,var_id,&shuffle,&deflate,&dfl_lvl);
+    if(deflate) (void)fprintf(stdout,"%s is compressed (Lempel-Ziv %s shuffling) on disk at level = %d\n",var_nm,(shuffle) ? "with" : "without",dfl_lvl);
     (void)fprintf(stdout,"%s memory size is %s = %li*%lu = %lu bytes\n",var_nm,sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
   }else{
     long var_sz=1L;

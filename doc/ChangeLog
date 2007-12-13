@@ -1,3 +1,7 @@
+2007-12-13  Charlie Zender  <zender@uci.edu>
+
+	* Make nco_inq_var_deflate() wrapper support netCDF3 and netCDF4
+
 2007-12-12  Charlie Zender  <zender@uci.edu>
 
 	* Fix output/input file consanguinity (TODO nco836)
@@ -15,6 +19,8 @@
 2007-12-10  Charlie Zender  <zender@uci.edu>
 
 	* Fix ncks.1 typos reported by Rich Signell
+
+	* CVS rm ssdap
 
 2007-12-09 Henry Butowsky <henryb@ntlworld.com>
 
