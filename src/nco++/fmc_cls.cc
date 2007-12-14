@@ -683,9 +683,6 @@
       sym_vtr.push_back(sym_cls("ceil",ceil,ceilf)); /* Round up to nearest integer */
       sym_vtr.push_back(sym_cls("floor",floor,floorf)); /* Round down to nearest integer */
   
-      /* atan2 note this function takes two args delt with as a special case */
-      sym_vtr.push_back(sym_cls("atan2",atan,atanf));
-
      /* Advanced math: erf, erfc, gamma
        LINUX*, MACOSX*, and SUN* provide these functions with C89
        20020122 and 20020422: AIX, CRAY, SGI*, WIN32 do not define erff(), erfcf(), gammaf() with C89
