@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.59 2007-12-12 16:33:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.60 2007-12-14 12:54:19 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.59 2007-12-12 16:33:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.59 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.60 2007-12-14 12:54:19 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.60 $";
   const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -467,6 +467,8 @@ main(int argc,char **argv)
   utl_cls utl_obj(true);
   // Maths Functions
   mth_cls mth_obj(true);
+  // Maths2 Functions
+  mth2_cls mth2_obj(true);
   // Basic Functions
   bsc_cls bsc_obj(true);
 
@@ -478,6 +480,7 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&agg_obj);
   (void)pop_fmc_vtr(fmc_vtr,&utl_obj);
   (void)pop_fmc_vtr(fmc_vtr,&mth_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&mth2_obj);
   (void)pop_fmc_vtr(fmc_vtr,&bsc_obj);
   (void)pop_fmc_vtr(fmc_vtr,&pdq_obj);
   
