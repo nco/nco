@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.458 2007-12-14 13:26:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.459 2007-12-14 15:27:02 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7117,10 +7117,10 @@ together.
 The new record dimension name is, by default, ``record''.
 @cindex unlimited dimension
 @cindex record dimension
-@cindex @code{-u @var{ulm_nm}}
-@cindex @code{--ulm_nm @var{ulm_nm}}
-@cindex @code{--rcd_nm @var{ulm_nm}}
-Its name can be specified with the @code{-u @var{ulm_nm}} short
+@cindex @samp{-u @var{ulm_nm}}
+@cindex @samp{--ulm_nm @var{ulm_nm}}
+@cindex @samp{--rcd_nm @var{ulm_nm}}
+Its name can be specified with the @samp{-u @var{ulm_nm}} short
 option (or the @samp{--ulm_nm} or @samp{rcd_nm} long options).
 
 Each extracted variable must be constant in size and rank across all
@@ -7207,8 +7207,17 @@ These three commands produce identical answers.
 between these methods.
 The output file, @file{85.nc}, is five times the size as a single
 @var{input-file}. 
-It contains @w{60 months} of data (which might or might not be stored in
-the record dimension, depending on the input files).
+It contains @w{60 months} of data.
+
+One often prefers that the (new) record dimension have a more
+descriptive, context-based name than simply ``record''. 
+This is easily accomplished with the @samp{-u @var{ulm_nm}} switch:
+@example
+ncecat -u realization 85_0[1-5].nc 85.nc
+@end example
+@noindent
+Users are more likely to understand the data processing history when
+such descriptive coordinates are used. 
 
 @html
 <a name="dmn_rcd_rm"></a> <!-- http://nco.sf.net/nco.html#dmn_rcd_rm -->
