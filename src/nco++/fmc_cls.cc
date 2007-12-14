@@ -683,6 +683,8 @@
       sym_vtr.push_back(sym_cls("ceil",ceil,ceilf)); /* Round up to nearest integer */
       sym_vtr.push_back(sym_cls("floor",floor,floorf)); /* Round down to nearest integer */
   
+      /* atan2 note this function takes two args delt with as a special case */
+      sym_vtr.push_back(sym_cls("atan2",atan,atanf));
 
      /* Advanced math: erf, erfc, gamma
        LINUX*, MACOSX*, and SUN* provide these functions with C89
@@ -735,33 +737,104 @@
     int nbr_fargs;
     var_sct *var1;
     var_sct *var;   
-
     fdx=fmc_obj.fdx(); 
+    std::string styp;
 
     std::string sfnm =fmc_obj.fnm(); 
 
     //n.b fargs is an imaginary node -and is ALWAYS present
     nbr_fargs=fargs->getNumberOfChildren();
     
-    // no arguments - bomb out
-    if(!expr && nbr_fargs==0){    
-        std::string serr;
-	serr="Function "+sfnm + " has been called without an argument";               
-        err_prn(fnc_nm,serr);
-    }
-    
+    styp=(expr ? "method":"function");
 
+    if(expr)
+      nbr_fargs++;
+
+   
+    if(nbr_fargs >1) 
+      wrn_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too many arguments"); 
+  
+    if(nbr_fargs<1)
+      err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with no arguments"); 
+     
     if(expr) 
       var1=walker.out(expr);
     else
       var1=walker.out(fargs->getFirstChild());   
 
-      var=ncap_var_fnc(var1, sym_vtr[fdx]._fnc_dbl,sym_vtr[fdx]._fnc_flt);
+    var=ncap_var_fnc(var1, sym_vtr[fdx]._fnc_dbl,sym_vtr[fdx]._fnc_flt);
 
     return var;      
 
   }
 
+
+
+//Maths2 - Maths functions that take 2 args /*********/
+  mth2_cls::mth2_cls(bool flg_dbg){
+    //Populate only on first constructor call
+    if(fmc_vtr.empty()){
+      fmc_vtr.push_back( fmc_cls("pow",this,(int)PPOW));
+      fmc_vtr.push_back( fmc_cls("atan2",this,(int)PATAN2));
+
+    }
+  }
+
+
+  var_sct *mth2_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("mth2_cls::fnd");
+
+    int fdx=fmc_obj.fdx();   //index
+    int nbr_fargs;
+    prs_cls* prs_arg=walker.prs_arg;
+    var_sct *var=NULL_CEWI;
+    var_sct *var1=NULL_CEWI;
+    var_sct *var2=NULL_CEWI;
+    std::string styp;
+    RefAST tr;
+    vtl_typ lcl_typ;
+
+    std::string sfnm =fmc_obj.fnm(); //method name
+
+    styp=(expr ? "method":"function");
+
+    //n.b fargs is an imaginary node -and is ALWAYS present
+    nbr_fargs=fargs->getNumberOfChildren();
+   
+    if(expr)
+      nbr_fargs++;
+
+   
+    if(nbr_fargs >2) 
+      wrn_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too many arguments"); 
+  
+    if(nbr_fargs<2)
+      err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with too few arguments"); 
+    
+     
+
+    if(expr){ 
+      var1=walker.out(expr);
+      var2=walker.out(fargs->getFirstChild());
+    }else{
+      var1=walker.out(fargs->getFirstChild());   
+      var2=walker.out(fargs->getFirstChild()->getNextSibling());
+    }
+
+    switch(fdx){
+
+      case PPOW: 
+        var=ncap_var_var_op(var1,var2,CARET);
+        break;
+
+      case PATAN2: 
+      var=ncap_var_var_op(var1,var2,ATAN2);
+        break;
+    }
+      
+    return var; 
+
+  }
 
 
 //PDQ Functions /******************************************/
@@ -803,7 +876,6 @@
 
             // no arguments - bomb out
             if(!expr && nbr_fargs==0){    
-              std::string serr;
 	      serr=sfnm + " has been called without an argument";
               err_prn(fnc_nm,serr);
             }
@@ -848,7 +920,7 @@
 
             if(fdx==PPERMUTE){
 
-              if(dmn_vtr.size() < str_vtr.size())
+              if((size_t)dmn_vtr.size() < str_vtr.size())
 	        wrn_prn(fnc_nm, "Unrecognized dimension arguments in" +sfnm);
 
 	      if(dmn_vtr.size() < nbr_dim ) {
