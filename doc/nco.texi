@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.457 2007-12-11 19:27:36 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.458 2007-12-14 13:26:57 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3778,7 +3778,7 @@ intended.
 3.9.2 (August, 2007).
 The @uref{http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2.html, UDUnits2} package supports non-ASCII characters and logarithmic units.
 We are interested in user-feedback on these features, 
-which are un-tested with @acronym{NCO}.
+which are relatively un-tested with @acronym{NCO}.
 
 @cindex Climate and Forecast Metadata Convention
 @cindex CF conventions
