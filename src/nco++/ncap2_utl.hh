@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.6 2007-12-11 15:18:36 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.7 2007-12-14 12:53:03 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -121,6 +121,12 @@ ncap_var_var_pwr  /* [fnc] Empowerment of two variables */
 (var_sct *var_1,  /* I [sct] Variable structure containing base */
  var_sct *var_2); /* I [sct] Variable structure containing exponent */
 
+
+
+var_sct *           /* O [sct] Calculate atan2(Y,X) for each element */
+ncap_var_var_atan2  
+(var_sct *var1,     /* I [sct] Variable structure containing Y  */
+ var_sct *var2);    /* I [sct] Variable structure containing X  */
 
 void ncap_lmt_evl( 
 int nc_id,
