@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.459 2007-12-14 15:27:02 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.460 2007-12-14 15:34:39 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -99,11 +99,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 3.9.3
-@set doc-edition 3.9.3
+@set nco-edition 3.9.4
+@set doc-edition 3.9.4
 @set copyright-years 1995--2007
 @set update-year 2007
-@set update-date 8 December 2007
+@set update-date 14 December 2007
 @set update-month December 2007
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -7209,6 +7209,9 @@ The output file, @file{85.nc}, is five times the size as a single
 @var{input-file}. 
 It contains @w{60 months} of data.
 
+@html
+<a name="ncecat_rnm"></a> <!-- http://nco.sf.net/nco.html#ncecat_rnm -->
+@end html
 One often prefers that the (new) record dimension have a more
 descriptive, context-based name than simply ``record''. 
 This is easily accomplished with the @samp{-u @var{ulm_nm}} switch:
