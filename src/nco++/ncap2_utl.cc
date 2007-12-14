@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.95 2007-12-11 15:19:32 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.96 2007-12-14 12:45:56 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -516,9 +516,9 @@ ncap_att_cpy
 
 
 void 
-ncap_att_prn   /* [fnc] Print a single attribute*/
-(var_sct *var, /* I Variable containing att */
-prs_cls *prs_arg) /*Maybe used a some point */
+ncap_att_prn     /* [fnc] Print a single attribute*/
+(var_sct *var,   /* I Variable containing att */
+prs_cls *prs_arg) /*Maybe used at some point */
 {
   char dlm_sng[3];
   char att_sng[NCO_MAX_LEN_FMT_SNG];
@@ -621,6 +621,65 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
 
   return var1;
 } /* end ncap_var_var_mod() */
+
+
+
+var_sct *           /* O [sct] Calculate atan2 for each element */
+ncap_var_var_atan2  
+(var_sct *var1,     /* I [sc,t] Variable structure containing field  */
+ var_sct *var2)     /* I [sct] Variable structure containing divisor */
+{
+  long idx;
+  long sz;
+  bool has_mss_val=false;
+  double mss_val_dbl;
+  ptr_unn op1,op2,mss_val;
+
+  const char fnc_nm[]="ncap_var_var_atan2"; 
+  if(dbg_lvl_get() >= 4) 
+      dbg_prn(fnc_nm,"Entered function");
+
+  sz=var1->sz;
+
+  //Dereference
+  op1=var1->val;
+  op2=var2->val; 
+  
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(NC_DOUBLE,&op1);
+  (void)cast_void_nctype(NC_DOUBLE,&op2);
+
+  if(var1->has_mss_val){
+     has_mss_val=true; 
+     (void)cast_void_nctype(NC_DOUBLE,&var1->mss_val);
+     mss_val_dbl=*var1->mss_val.dp;
+  } else if(var2->has_mss_val){
+     has_mss_val=true; 
+     (void)cast_void_nctype(NC_DOUBLE,&var2->mss_val);
+     mss_val_dbl=*var2->mss_val.dp;
+  }
+
+ if(!has_mss_val){
+    for(idx=0;idx<sz;idx++) op1.dp[idx]=atan2(op1.dp[idx],op2.dp[idx]);
+ }else{
+    for(idx=0;idx<sz;idx++){
+    if((op1.dp[idx] != mss_val_dbl) && (op2.dp[idx] != mss_val_dbl)) op1.dp[idx]=atan2(op1.dp[idx],op2.dp[idx]); else op2.dp[idx]=mss_val_dbl;
+      } /* end for */
+  
+ } /* end else */
+ 
+
+ // cast misssing value back to void
+ if(var1->has_mss_val)
+   (void)cast_nctype_void(NC_DOUBLE,&var1->mss_val);  
+ else if(var2->has_mss_val)
+   (void)cast_nctype_void(NC_DOUBLE,&var2->mss_val);  
+
+
+ var2=nco_var_free(var2); 
+
+  return var1;
+} /* end ncap_var_var_atan2 */
 
 
 
@@ -1584,6 +1643,12 @@ ncap_var_var_op   /* [fnc] Add two variables */
   
   // Deal with pwr fuction
   if(op == CARET && nco_rth_prc_rnk(var1->type) < nco_rth_prc_rnk_float &&  nco_rth_prc_rnk(var2->type) < nco_rth_prc_rnk_float) var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
+ 
+  //Deal with atan2 function
+  if(op==ATAN2 ){
+    var1=nco_var_cnf_typ((nc_type)NC_DOUBLE,var1);
+    var2=nco_var_cnf_typ((nc_type)NC_DOUBLE,var2);
+  }  
   
   vb1 = ncap_var_is_att(var1);
   vb2 = ncap_var_is_att(var2);
@@ -1676,6 +1741,11 @@ ncap_var_var_op   /* [fnc] Add two variables */
     var_ret=ncap_var_var_mod(var1,var2);
     return var_ret;     
   }
+
+  if(op==ATAN2){
+    var_ret=ncap_var_var_atan2(var1,var2);
+    return var_ret;
+  }
   
   var_ret=ncap_var_var_stc(var1,var2,op);
   var2=nco_var_free(var2);
@@ -1697,6 +1767,13 @@ ncap_var_var_op_ntl   /* [fnc] Add two variables */
   
   // deal with pwr fuction
   if(op == CARET && nco_rth_prc_rnk(var1->type) < nco_rth_prc_rnk_float && nco_rth_prc_rnk(var2->type) < nco_rth_prc_rnk_float) var1=nco_var_cnf_typ((nc_type)NC_FLOAT,var1);
+
+  //Deal with atan2 function
+  if(op==ATAN2 ){
+    var1=nco_var_cnf_typ((nc_type)NC_DOUBLE,var1);
+    var2=nco_var_cnf_typ((nc_type)NC_DOUBLE,var2);
+  }  
+
   
   vb1 = ncap_var_is_att(var1);
   vb2 = ncap_var_is_att(var2);
