@@ -1,20 +1,22 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.271 2007-12-12 16:33:54 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.272 2007-12-14 14:23:06 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release coincides with a user-friendly version of SWAMP, the 
-Script Workflow Analysis for MultiProcessing. SWAMP efficiently
-schedules and executes NCO scripts on remote data servers:
+This release supplies numerous minor fixes and improvements to netCDF4
+capability, and adds more polish to ncap2.
+
+Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
+SWAMP efficiently schedules and executes NCO scripts on remote servers: 
 
 http://swamp.googlecode.com
 
 SWAMP can work with with any command-line operator analysis scripts-- 
 not just NCO. If you must transfer lots of data from a server to your
-client before you can analyze it, then SWAMP may speed things up.
-Give it a try and give us some feedback.
+client before you analyze it, then SWAMP may speed things up.
+Try SWAMP give us your feedback.
 
 A. fxm
 
@@ -23,10 +25,10 @@ B. Fix file "consanguinity": output file format defaults to input format
 C. ncks prints netCDF4 LZ compression information to stdout
    http://nco.sf.net/nco.html#ncks
 
-D. All ncap2 functions now OpenMP-safe (Henry Butowsky)
+D. ncap2 uses OpenMP more, writes nco_openmp_thread_number (Henry Butowsky)
    http://nco.sf.net/nco.html#openmp
 
-E. ncap2 prints attributes (Henry Butowsky)
+E. ncap2 prints attributes, supports atan2() and pow() (Henry Butowsky)
    Demonstration scripts ~/nco/data/ncap2_tst.nco
 
 F. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
