@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.125 2007-12-11 15:17:07 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.126 2007-12-14 12:55:31 hmb Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -61,6 +61,7 @@ tokens {
     PROP; // used to differenciate properties & methods
     FOR2;    
     NORET;
+    ATAN2;  //Used indirectly 
 }
 
 program:
@@ -927,7 +928,7 @@ static std::vector<std::string> lpp_vtr;
            ntr=ntr->getFirstChild();
         
          if(ntr->getType() == VAR_ID || ntr->getType() ==ATT_ID){
-           ntr->addChild( astFactory->create(NORET,"no_ret") );
+            ntr->addChild( astFactory->create(NORET,"no_ret") );
            // std::cout << "Modified assign "<<exp->toStringTree()<<std::endl;      
          }
        } 
@@ -1880,7 +1881,7 @@ out returns [var_sct *var]
             }  
 
     //ternary Operator
-    |   #(QUESTION var1=out qus:.) {
+     |   #(QUESTION var1=out qus:.) {
            bool br;
             
            // if initial scan 
