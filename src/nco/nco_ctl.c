@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.198 2007-12-14 13:26:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.199 2007-12-18 14:58:05 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -706,7 +706,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Frostbite or CTS? I'm gettin' too old for this\n";
+  return "Minor frostbite, really dirty snow, then Switzerland\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
