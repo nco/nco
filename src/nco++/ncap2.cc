@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.60 2007-12-14 12:54:19 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.61 2007-12-18 16:40:40 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
 
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.60 2007-12-14 12:54:19 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.60 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.61 2007-12-18 16:40:40 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.61 $";
   const char * const opt_sht_lst="4ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -679,7 +679,7 @@ main(int argc,char **argv)
     // Skip misssing values for now !!!
     if(var_vtr[idx]->getAtt() == nco_mss_val_sng_get()) 
       continue;     
- 
+  
     att_item.att_nm=strdup(var_vtr[idx]->getAtt().c_str());
     att_item.var_nm=strdup(var_vtr[idx]->getVar().c_str());
     att_item.sz=var_vtr[idx]->var->sz;
@@ -691,20 +691,20 @@ main(int argc,char **argv)
        var_id=NC_GLOBAL;
     else {
        rcd=nco_inq_varid_flg(out_id,att_item.var_nm,&var_id);
-       if(rcd != NC_NOERR)  continue;
+       if(rcd != NC_NOERR)  goto cln_up;
     }
     // Check size;
       if(att_item.sz > NC_MAX_ATTRS ){ 
 	(void)fprintf(stdout,"%s: Attribute %s size %ld excceeds maximium %d\n",prg_nm_get(),att_item.att_nm,att_item.sz, NC_MAX_ATTRS );
-	continue;
+	goto cln_up;
       }
     /* NB: These attributes should probably be written prior to last data mode */
 
 
     (void)nco_aed_prc(out_id,var_id,att_item);
 
-     att_item.var_nm=(char*)nco_free(att_item.var_nm);
-     att_item.att_nm=(char*)nco_free(att_item.att_nm);
+    cln_up: att_item.var_nm=(char*)nco_free(att_item.var_nm);
+            att_item.att_nm=(char*)nco_free(att_item.att_nm);
    }/* end for */
   
   /* Turn off default filling behavior to enhance efficiency */
@@ -779,11 +779,11 @@ main(int argc,char **argv)
             delete var_vtr[idx];
     }  
 
-    /* clear vectors 
+    /* clear vectors */
     fmc_vtr.clear();
     cnv_obj.fmc_vtr.clear();
     mth_obj.fmc_vtr.clear();
-    */
+ 
     
     /* Free variable lists */
     if(nbr_xtr > 0) var=nco_var_lst_free(var,nbr_xtr);
@@ -807,6 +807,7 @@ std::vector<fmc_cls> &fmc_vtr, vtl_cls *vfnc)
    // de-reference
   std::vector<fmc_cls> &lcl_vtr=*vfnc->lst_vtr();
   std::copy(lcl_vtr.begin(),lcl_vtr.end(),inserter(fmc_vtr,fmc_vtr.end())  );
+
   
  }
 
