@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.272 2007-12-14 14:23:06 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.273 2007-12-19 09:40:55 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.3 are ready. 
 
@@ -18,7 +18,7 @@ not just NCO. If you must transfer lots of data from a server to your
 client before you analyze it, then SWAMP may speed things up.
 Try SWAMP give us your feedback.
 
-A. fxm
+A. Fix mpncrcat to work with netCDF4 (thanks to Takeshi Enomoto)
 
 B. Fix file "consanguinity": output file format defaults to input format
 
@@ -36,8 +36,6 @@ F. Pre-built, up-to-date, Debian Sid & Ubuntu binaries are available.
 
 G. Pre-built, up-to-date, RPM packages are available.
    http://nco.sf.net#rpm
-
-H. fxm
 
 I. Reminder: NCO support for netCDF4 features is tracked at
 

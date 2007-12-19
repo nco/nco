@@ -1,3 +1,7 @@
+2007-12-19  Charlie Zender  <zender@uci.edu>
+
+	* Fix mpncrcat to work with netCDF4 (thanks to Takeshi Enomoto)
+
 2007-12-16  Charlie Zender  <zender@uci.edu>
 
 	* Add ncecat -u mods to mpncecat TODO nco918
@@ -6,7 +10,7 @@
 
 	* Add ncecat -u example to manual
 
-2007-12-14 Henry Butowsky <henryb@ntlworld.com>
+2007-12-14  Henry Butowsky  <henryb@ntlworld.com>
 
 	* Added new functions atan2(y,x) and pow()
 
@@ -26,7 +30,7 @@
 
 	* ncap2 calls nco_thr_att_cat() to archive nco_openmp_thread_number
 
-2007-12-11 Henry Butowsky <henryb@ntlworld.com>
+2007-12-11  Henry Butowsky  <henryb@ntlworld.com>
 	
 	* Added print attributes function e.g., print(global@history)
 
@@ -36,7 +40,7 @@
 
 	* CVS rm ssdap
 
-2007-12-09 Henry Butowsky <henryb@ntlworld.com>
+2007-12-09  Henry Butowsky  <henryb@ntlworld.com>
 
 	* ncap2 now uses ncap_lmt_evl() instead of nco_lmt_evl()
 	  This fixes problems with record dimension in limits
@@ -52,13 +56,13 @@
 	
 	* Update documentation for SWAMP, AGU, and IJHPCA
 
-2007-11-29 Henry Butowsky <henryb@ntlworld.com>
+2007-11-29  Henry Butowsky  <henryb@ntlworld.com>
 
 	* First cut of OpenMP for ncap2
 
 	* ncap2 processes ncap2.in in parallel on LINUX & AIX platforms 
 
-2007-11-27 Henry Butowsky <henryb@ntlworld.com>
+2007-11-27  Henry Butowsky  <henryb@ntlworld.com>
 
 	* Added "hyperslab normalization" to the parser
 
@@ -168,7 +172,7 @@
 
 	* Supplant missing_value with _FillValue in documentation
 
-2007-08-29 Henry Butowsky <henryb@ntlworld.com>
+2007-08-29  Henry Butowsky  <henryb@ntlworld.com>
 
 	* First cut of  user functions permute() & reverse()
 	  see examples in ncap2.in.
@@ -215,7 +219,7 @@
 
 	* Add ncap2_tst.nco, Henry's ncap2 test script, to distribution
 
-2007-07-18  Henry Butowsky <henryb@ntlworld.com>
+2007-07-18  Henry Butowsky  <henryb@ntlworld.com>
 
 	* Turned prs_sct into class. It has four methods:
 	contructor, ncap_var_init(), ncap_var_write(), ncap_def_ntl_scn() 
@@ -225,7 +229,7 @@
 	* Add failsafe NC_FORMAT_CLASSIC definition so tst.cc builds with
 	OPeNDAP netcdf.h, which lacks pre-netCDF 3.6.1 tokens
 
-2007-07-09  Henry Butowsky <henryb@ntlworld.com>
+2007-07-09  Henry Butowsky  <henryb@ntlworld.com>
 
 	* First cut of print function can do the following
 	  print(var_id),print(var_id,"format_string")
@@ -304,7 +308,7 @@
 
 	* Alter bin_cnt.nco to use loops
 
-2007-06-14   Henry Butowsky <henryb@ntlworld.com>
+2007-06-14   Henry Butowsky  <henryb@ntlworld.com>
 
 	* Commited the first cut of while loops and for loops
 	Can use "break" & "continue" in both. Can have any level of nesting.
@@ -602,7 +606,7 @@
 
 	* Allow absent variables with EXCLUDE_INPUT_LIST in nco_var_lst_mk()
 
-2007-04-18   Henry Butowsky <henryb@hush.com>
+2007-04-18   Henry Butowsky  <henryb@hush.com>
 
 	* Tested nco_put_var_mem() & nco_get_var_mem()
 	  Can now hyperslab RAM variables on the RHS
@@ -635,7 +639,7 @@
 	* Fold in Daniel's nco.spec change required for 64-bit builds on
 	hybrid 32/64-bit systems, e.g., RHEL, CentOS 
 
-2007-03-29  Henry Butowsky <henryb@hush.com>
+2007-03-29  Henry Butowsky  <henryb@hush.com>
 	 
 	* first cut of RAM variables new syntax works
 	with assign operators (=,-=,+=,/=, *=) and post increment &
