@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.191 2007-12-19 13:05:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.192 2007-12-19 21:55:10 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.191 2007-12-19 13:05:43 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.191 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.192 2007-12-19 21:55:10 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.192 $";
   const char * const opt_sht_lst="4aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -230,7 +230,7 @@ main(int argc,char **argv)
       {"string",required_argument,0,'s'},
       {"units",no_argument,0,'u'},
       {"variable",required_argument,0,'v'},
-      {"auxillary",required_argument,0,'X'},
+      {"auxiliary",required_argument,0,'X'},
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
       {"help",no_argument,0,'?'},

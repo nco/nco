@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.199 2007-12-18 14:58:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.200 2007-12-19 21:55:10 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -808,7 +808,7 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-4] [-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-i var,val] [-L lvl] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-x] [-w wgt_1[,wgt_2]] in_1.nc in_2.nc [out.nc]\n");
     break;
   case ncks:
-    opt_sng=(char *)strdup("[-4] [-A] [-a] [-B] [-b fl_bnr] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [-m] [-M] [-O] [-o out.nc] [-P] [-p path] [-Q] [-q] [-R] [-r] [-s format] [-u] [-v ...] [-x] in.nc [[out.nc]]\n");
+    opt_sng=(char *)strdup("[-4] [-A] [-a] [-B] [-b fl_bnr] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [-m] [-M] [-O] [-o out.nc] [-P] [-p path] [-Q] [-q] [-R] [-r] [-s format] [-u] [-v ...] [-X ...] [-x] in.nc [[out.nc]]\n");
     break;
   case ncpdq:
     opt_sng=(char *)strdup("[-4] [-A] [-a ...] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-L lvl] [-l path] [-M pck_map][-O] [-o out.nc] [-P pck_plc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-U] [-x] in.nc [out.nc]\n");
@@ -927,6 +927,9 @@ nco_usg_prn(void)
     if(prg_lcl == ncwa) (void)fprintf(stdout,"-w, --wgt_var, --weight wgt\tWeighting variable name\n");
     if(prg_lcl == ncflint) (void)fprintf(stdout,"-w, --wgt_var, --weight wgt_1[,wgt_2] Weight(s) of file(s)\n");
   } /* end if */
+  if(strstr(opt_sng,"-X")){
+    if(prg_lcl == ncks) (void)fprintf(stdout,"-X, --auxiliary lon_min,lat_min,lon_max,lat_max\tAuxiliary coordinate hyperslab specification (CF format)\n");
+  } /* end if -X */
   if(strstr(opt_sng,"-x")) (void)fprintf(stdout,"-x, --xcl, --exclude\tExtract all variables EXCEPT those specified with -v\n");
   if(strstr(opt_sng,"-y")){
     if(prg_lcl == ncbo)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tBinary arithmetic operation: add,sbt,mlt,dvd (+,-,*,/)\n");
