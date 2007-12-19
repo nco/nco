@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.92 2007-12-13 15:48:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.93 2007-12-19 13:05:44 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -381,7 +381,7 @@ nco_open(const char * const fl_nm,const int mode,int * const nc_id)
 int
 nco_open_flg(const char * const fl_nm,const int mode,int * const nc_id)
 {
-  /* Purpose: Wrapper for nc_open() that does not require success
+  /* Purpose: Error-tolerant wrapper for nc_open(). Tolerates all errors.
      Currently used only by nco_fl_mk_lcl() to test file accessibility via DAP */
   int rcd;
   rcd=nc_open(fl_nm,mode,nc_id);
@@ -624,7 +624,7 @@ nco_inq_dimid(const int nc_id,const char * const dmn_nm,int * const dmn_id)
 int
 nco_inq_dimid_flg(const int nc_id,const char * const dmn_nm,int * const dmn_id)
 {
-  /* Purpose: Wrapper for nc_inq_dimid() that does not require success */
+  /* Purpose: Error-tolerant wrapper for nc_inq_dimid(). Tolerates NC_EBADDIM. */
   int rcd;
   rcd=nc_inq_dimid(nc_id,dmn_nm,dmn_id);
   if(rcd == NC_EBADDIM) return rcd;
@@ -645,7 +645,7 @@ nco_inq_dim(const int nc_id,const int dmn_id,char *dmn_nm,long *dmn_sz)
 int
 nco_inq_dim_flg(const int nc_id,const int dmn_id,char *dmn_nm,long *dmn_sz)
 {
-  /* Purpose: Wrapper for nc_inq_dim_flg() that does not require success */
+  /* Purpose: Error-tolerant wrapper for nc_inq_dim_flg(). Tolerates NC_EBADDIM. */
   int rcd;
   rcd=nc_inq_dim(nc_id,dmn_id,dmn_nm,(size_t *)dmn_sz);
   if(rcd == NC_EBADDIM) return rcd;
@@ -734,7 +734,7 @@ nco_inq_varid(const int nc_id,const char * const var_nm,int * const var_id)
 int
 nco_inq_varid_flg(const int nc_id,const char * const var_nm,int * const var_id)
 {
-  /* Purpose: Wrapper for nc_inq_varid_flg() that does not require success */
+  /* Purpose: Error-tolerant wrapper for nc_inq_varid_flg(). Tolerates NC_ENOTVAR. */
   int rcd;
   rcd=nc_inq_varid(nc_id,var_nm,var_id);
   if(rcd == NC_ENOTVAR) return rcd;
@@ -1043,7 +1043,7 @@ nco_inq_att(const int nc_id,const int var_id,const char * const att_nm,nc_type *
 int
 nco_inq_att_flg(const int nc_id,const int var_id,const char * const att_nm,nc_type * const att_typ,long * const att_sz)
 {
-  /* Purpose: Wrapper for nc_inq_att() */
+  /* Purpose: Error-tolerant wrapper for nc_inq_att(). Tolerates ENOTATT. */
   const char fnc_nm[]="nco_inq_att_flg()";
   int rcd;
   rcd=nc_inq_att(nc_id,var_id,att_nm,att_typ,(size_t *)att_sz);
@@ -1068,7 +1068,7 @@ nco_inq_attid(const int nc_id,const int var_id,const char * const att_nm,int * c
 int
 nco_inq_attid_flg(const int nc_id,const int var_id,const char * const att_nm,int * const att_id)
 {
-  /* Purpose: Wrapper for nc_inq_attid() */
+  /* Purpose: Error-tolerant wrapper for nc_inq_attid(): Tolerates NC_ENOTATT. */
   const char fnc_nm[]="nco_inq_attid_flg()";
   int rcd;
   rcd=nc_inq_attid(nc_id,var_id,att_nm,att_id);
@@ -1096,6 +1096,18 @@ nco_inq_attlen(const int nc_id,const int var_id,const char * const att_nm,long *
   /* Purpose: Wrapper for nc_inq_attlen() */
   int rcd;
   rcd=nc_inq_attlen(nc_id,var_id,att_nm,(size_t *)att_sz);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_attlen()");
+  return rcd;
+} /* end nco_inq_attlen */
+
+int
+nco_inq_attlen_flg(const int nc_id,const int var_id,const char * const att_nm,long * const att_sz)
+{
+  /* Purpose: Error-tolerant wrapper for nc_inq_attlen(). Tolerates NC_ENOTATT. */
+  const char fnc_nm[]="nco_inq_attlen_flg()";
+  int rcd;
+  rcd=nc_inq_attlen(nc_id,var_id,att_nm,(size_t *)att_sz);
+  if(rcd == NC_ENOTATT) return rcd;
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_attlen()");
   return rcd;
 } /* end nco_inq_attlen */

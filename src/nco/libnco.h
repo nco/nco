@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.39 2007-10-29 14:02:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.40 2007-12-19 13:05:43 zender Exp $ */
 
 /* Purpose: netCDxF Operator (NCO) library */
 
@@ -20,6 +20,7 @@
 
 /* Library headers */
 #include "nco_att_utl.h" /* Attribute utilities */
+#include "nco_aux.h" /* Auxiliary coordinates */
 #include "nco_bnr.h" /* Binary write utilities */
 #include "nco_cln_utl.h" /* Calendar utilities */
 #include "nco_cnf_dmn.h" /* Conform dimensions */

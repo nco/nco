@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/Makefile.in,v 1.83 2007-12-08 14:36:38 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/Makefile.in,v 1.84 2007-12-19 13:05:39 zender Exp $ -*-makefile-*-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -157,7 +157,6 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 PATH_TO_NCGEN = @PATH_TO_NCGEN@
 POW_LIB = @POW_LIB@
 RANLIB = @RANLIB@
-SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@

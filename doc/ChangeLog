@@ -1,5 +1,9 @@
 2007-12-19  Charlie Zender  <zender@uci.edu>
 
+	* Verified no new regressions
+
+	* Merged nco_aux patch by Karen Schuchardt
+
 	* Tagged nco-20071219_pre_nco_aux_patch prior to adding nco_aux.c
 
 	* Fix mpncrcat to work with netCDF4 (thanks to Takeshi Enomoto)

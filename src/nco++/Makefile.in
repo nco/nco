@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.27 2007-12-08 14:36:40 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.in,v 1.28 2007-12-19 13:05:44 zender Exp $ -*-makefile-*-
 
 # Purpose: Template builds for nco++ directory
 # Process this file with automake to produce Makefile.in
@@ -158,7 +158,6 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 PATH_TO_NCGEN = @PATH_TO_NCGEN@
 POW_LIB = @POW_LIB@
 RANLIB = @RANLIB@
-SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@

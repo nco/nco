@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.47 2007-12-10 07:33:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.48 2007-12-19 13:05:44 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -149,6 +149,7 @@ int nco_inq_attid(const int nc_id,const int var_id,const char * const att_nm,int
 int nco_inq_attid_flg(const int nc_id,const int var_id,const char * const att_nm,int * const att_id); 
 int nco_inq_atttype(const int nc_id,const int var_id,const char * const att_nm,nc_type * const att_typ); 
 int nco_inq_attlen(const int nc_id,const int var_id,const char * const att_nm,long * const att_sz); 
+int nco_inq_attlen_flg(const int nc_id,const int var_id,const char * const att_nm,long * const att_sz); 
 int nco_inq_attname(const int nc_id,const int var_id,const int att_id,char * const att_nm); 
 int nco_copy_att(const int nc_id_in,const int var_id_in,const char * const att_nm,const int nc_id_out,const int var_id_out);
 int nco_rename_att(const int nc_id,const int var_id,const char * const att_nm,const char * const att_new_nm); 

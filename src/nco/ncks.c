@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.190 2007-12-12 16:33:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.191 2007-12-19 13:05:43 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -111,13 +111,14 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
+  char *aux_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char dmn_nm[NC_MAX_NAME];
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.190 2007-12-12 16:33:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.190 $";
-  const char * const opt_sht_lst="4aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:x-:";
+  const char * const CVS_Id="$Id: ncks.c,v 1.191 2007-12-19 13:05:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.191 $";
+  const char * const opt_sht_lst="4aABb:CcD:d:FHhL:l:MmOo:Pp:qQrRs:uv:X:x-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -141,6 +142,7 @@ main(int argc,char **argv)
   int in_id;  
   int jdx;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
+  int aux_nbr=0; /* Option X */
   int nbr_dmn_fl;
   int nbr_var_fl;
   int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
@@ -228,6 +230,7 @@ main(int argc,char **argv)
       {"string",required_argument,0,'s'},
       {"units",no_argument,0,'u'},
       {"variable",required_argument,0,'v'},
+      {"auxillary",required_argument,0,'X'},
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
       {"help",no_argument,0,'?'},
@@ -363,6 +366,10 @@ main(int argc,char **argv)
       optarg_lcl=(char *)nco_free(optarg_lcl);
       nbr_xtr=var_lst_in_nbr;
        break;
+    case 'X': /* Copy argument for later processing */
+      aux_arg[aux_nbr]=(char *)strdup(optarg);
+      aux_nbr++;
+      break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
@@ -394,6 +401,22 @@ main(int argc,char **argv)
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
+
+  /* Process auxiliary coordinates */
+  if(aux_nbr > 0){
+     int aux_idx_nbr;
+
+     lmt_sct **aux;
+     aux=nco_aux_evl(in_id,aux_nbr,aux_arg,&aux_idx_nbr);
+     if(aux_idx_nbr > 0){
+        lmt=nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct*));
+        int lmt_nbr_new=lmt_nbr+aux_idx_nbr;
+        int lmt_idx;
+        int aux_idx=0;
+        for(lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx] = aux[aux_idx++];
+        lmt_nbr=lmt_nbr_new;
+     } /* endif aux */
+  } /* endif aux_nbr */
   
   /* Get number of variables, dimensions, and global attributes in file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&glb_att_nbr,&rec_dmn_id);
