@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.2 2007-12-20 09:30:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.3 2007-12-20 09:31:26 zender Exp $ */
 
 /* Copyright (C) 1995--2007 Charlie Zender and Karen Schuchardt
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
@@ -50,7 +50,7 @@ find_lat_lon
    long lenp;
    char value[NC_MAX_NAME+1];
    for (int idx=0; idx<nvars && ret<2; idx++) {
-      nc_inq_var(ncid, idx, name, &rh_type, &rh_ndims, rh_dimids,
+      nco_inq_var(ncid, idx, name, &rh_type, &rh_ndims, rh_dimids,
                                 &rh_natts);
       lenp = 0;
       if(!nco_inq_attlen_flg(ncid, idx,"standard_name",&lenp)){
@@ -95,7 +95,7 @@ int getdmninfo
    int rh_ndims;                      /* number of dims */
    int rh_dimids[NC_MAX_VAR_DIMS];    /* dimension ids */
    int rh_natts;                       /* number of attributes */
-   nc_inq_var (ncid, varid, 0, &rh_type, &rh_ndims, rh_dimids,
+   nco_inq_var (ncid, varid, 0, &rh_type, &rh_ndims, rh_dimids,
          &rh_natts);
    *dimid = rh_dimids[0];
    (void)nco_inq_dimlen(ncid,rh_dimids[0],dmnsz);
