@@ -1,3 +1,9 @@
+2007-12-20  Charlie Zender  <zender@uci.edu>
+
+	* Use NCO_GET_ATT_CHAR() instead of nc_get_att_text()
+
+	* Change lenp from size_t to long in nco_aux.c
+
 2007-12-19  Charlie Zender  <zender@uci.edu>
 
 	* Verified no new regressions

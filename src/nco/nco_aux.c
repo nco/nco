@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.1 2007-12-19 13:05:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.2 2007-12-20 09:30:34 zender Exp $ */
 
 /* Copyright (C) 1995--2007 Charlie Zender and Karen Schuchardt
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
@@ -47,22 +47,22 @@ find_lat_lon
    int rh_dimids[NC_MAX_VAR_DIMS];    /* dimension ids */
    int rh_natts;                       /* number of attributes */
    char name[NC_MAX_NAME+1];
-   size_t lenp;
+   long lenp;
    char value[NC_MAX_NAME+1];
    for (int idx=0; idx<nvars && ret<2; idx++) {
       nc_inq_var(ncid, idx, name, &rh_type, &rh_ndims, rh_dimids,
                                 &rh_natts);
       lenp = 0;
-      if(!nco_inq_attlen(ncid, idx,"standard_name",&lenp)){
-         nc_get_att_text(ncid, idx,"standard_name",value);
+      if(!nco_inq_attlen_flg(ncid, idx,"standard_name",&lenp)){
+         NCO_GET_ATT_CHAR(ncid, idx,"standard_name",value);
          value[lenp] = '\0';
          if (strcmp(value,"latitude") == 0) {
             strcpy(latvar,name);
             *latid = idx;
 
             // Get units; assume same for both lat and lon
-            nc_inq_attlen  (ncid, idx, "units", &lenp);
-            nc_get_att_text(ncid, idx,"units",units);
+            nco_inq_attlen(ncid, idx, "units", &lenp);
+            NCO_GET_ATT_CHAR(ncid, idx,"units",units);
             units[lenp] = '\0';
 
             *coordtype = rh_type;

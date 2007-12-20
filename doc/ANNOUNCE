@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.273 2007-12-19 09:40:55 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.274 2007-12-20 09:30:34 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.3 are ready. 
 
@@ -17,6 +17,9 @@ SWAMP can work with with any command-line operator analysis scripts--
 not just NCO. If you must transfer lots of data from a server to your
 client before you analyze it, then SWAMP may speed things up.
 Try SWAMP give us your feedback.
+
+   ncks supports hyperslab specification with CF auxiliary coordinates
+   http://nco.sf.net/nco.html#aux
 
 A. Fix mpncrcat to work with netCDF4 (thanks to Takeshi Enomoto)
 
