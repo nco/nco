@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.200 2007-12-19 21:55:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.201 2007-12-29 11:08:14 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -946,12 +946,12 @@ nco_usg_prn(void)
   (void)fprintf(stdout,"\nEight ways to find more help on %s and/or NCO:\n",prg_nm_get());
   (void)fprintf(stdout,"1. Concrete %s examples: http://nco.sf.net/nco.html#xmp_%s\n",prg_nm_get(),prg_nm_get());
   (void)fprintf(stdout,"2. Reference manual for %s: http://nco.sf.net/nco.html#%s\n",prg_nm_get(),prg_nm_get());
-  (void)fprintf(stdout,"3. Download PDF-format NCO User's Guide: http://nco.sf.net#RTFM\n");
-  (void)fprintf(stdout,"4. UNIX man pages: \'man %s\', \'man nco\'\n",prg_nm_get());
-  (void)fprintf(stdout,"5. NCO Homepage: http://nco.sf.net\n");
-  (void)fprintf(stdout,"6. NCO FAQ: http://nco.sf.net#FAQ\n");
-  (void)fprintf(stdout,"7. Browse NCO Help Forum: http://sf.net/forum/forum.php?forum_id=9830\n");
-  (void)fprintf(stdout,"8. Read our papers at http://nco.sf.net#pub\n");
+  (void)fprintf(stdout,"3. User's Guide: http://nco.sf.net#RTFM\n");
+  (void)fprintf(stdout,"4. Man pages: \'man %s\', \'man nco\'\n",prg_nm_get());
+  (void)fprintf(stdout,"5. Homepage: http://nco.sf.net\n");
+  (void)fprintf(stdout,"6. FAQ: http://nco.sf.net#FAQ\n");
+  (void)fprintf(stdout,"7. Help Forum: http://sf.net/forum/forum.php?forum_id=9830\n");
+  (void)fprintf(stdout,"8. NCO-related publications: http://nco.sf.net#pub\n");
   (void)fprintf(stdout,"Post questions, suggestions, patches at http://sf.net/projects/nco\n");
 
 } /* end nco_usg_prn() */
