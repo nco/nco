@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.274 2007-12-20 09:30:34 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.275 2007-12-29 23:37:38 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 3.9.3 are ready. 
 
@@ -20,6 +20,8 @@ Try SWAMP give us your feedback.
 
    ncks supports hyperslab specification with CF auxiliary coordinates
    http://nco.sf.net/nco.html#aux
+
+   Cleanup cygwin builds for WIN32
 
 A. Fix mpncrcat to work with netCDF4 (thanks to Takeshi Enomoto)
 
