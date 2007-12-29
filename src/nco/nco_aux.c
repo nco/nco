@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.3 2007-12-20 09:31:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.4 2007-12-29 22:47:22 zender Exp $ */
 
 /* Copyright (C) 1995--2007 Charlie Zender and Karen Schuchardt
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
@@ -152,12 +152,12 @@ int *lmt_nbr
    *lmt_nbr = 0;
 
    lmt_sct base;
-   base.nm = strdup(dmnname);
+   base.nm = (char *)strdup(dmnname);
    base.lmt_typ = lmt_dmn_idx;
    base.is_usr_spc_lmt = 1; 
    base.is_usr_spc_min = 1; 
    base.is_usr_spc_max = 1;
-   base.srd_sng = strdup("1");
+   base.srd_sng = (char *)strdup("1");
    base.is_rec_dmn = 0;
    base.id = dmnid;
    base.min_idx = 0;
@@ -204,10 +204,10 @@ int *lmt_nbr
             char buf[100];
             //printf("XXX have a pairing %d %d\n",mincell, mincell+consec-1);
             sprintf(buf,"%d",mincell);
-            base.min_sng = strdup(buf);
+            base.min_sng = (char *)strdup(buf);
             base.min_idx = base.srt = mincell;
             sprintf(buf,"%d",mincell+consec-1);
-            base.max_sng = strdup(buf);
+            base.max_sng = (char *)strdup(buf);
             base.max_idx = base.end = mincell+consec-1;
             base.cnt = consec;
             // OHOH what about min and max val??
@@ -242,6 +242,10 @@ float *urlat)
    <min_lon,min_lat,max_lon,max_lat> */
    sscanf(args,"%f,%f,%f,%f",lllon,lllat,urlon,urlat);
    if (strcmp(units,"radians") == 0) {
+     /* WIN32 math.h does not define M_PI */
+#ifndef M_PI
+# define M_PI		3.14159265358979323846
+#endif /* M_PI */
       *lllon *= M_PI / 180.0;
       *lllat *= M_PI / 180.0;
       *urlon *= M_PI / 180.0;

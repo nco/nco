@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.36 2007-07-23 00:31:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.37 2007-12-29 22:47:23 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -40,6 +40,7 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
+#include "nco_sng_utl.h" /* String utilities */
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.1 2007-12-19 13:05:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.2 2007-12-29 22:47:22 zender Exp $ */
 
 /* Purpose: Sub-set cell-based grids using auxillary coordinate variable */
 
@@ -13,6 +13,7 @@
 #define NCO_AUX_H
 
 /* Standard header files */
+#include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 
 /* 3rd party vendors */
@@ -22,6 +23,7 @@
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_lmt.h" /* Hyperslab limits */
+#include "nco_sng_utl.h" /* String utilities */
 
 #ifdef __cplusplus
 extern "C" {

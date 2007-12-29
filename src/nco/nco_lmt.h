@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.31 2007-08-08 00:36:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.32 2007-12-29 22:47:23 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -39,6 +39,7 @@
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_lst_utl.h" /* List utilities */
 #include "nco_mmr.h" /* Memory management */
+#include "nco_sng_utl.h" /* String utilities */
 
 #ifdef __cplusplus
 extern "C" {

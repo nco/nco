@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.h,v 1.13 2007-07-23 00:31:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.h,v 1.14 2007-12-29 22:47:23 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -24,6 +24,7 @@
 
 /* Personal headers */
 #include "nco_mmr.h" /* Memory management */
+#include "nco_sng_utl.h" /* String utilities */
 
 #ifdef __cplusplus
 extern "C" {

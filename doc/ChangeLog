@@ -1,3 +1,13 @@
+2007-12-29  Charlie Zender  <zender@neige>
+
+	* Put nco_sng_utl.h in headers that may reference strdup() compatibility function
+
+	* Add math.h definitions to nco_aux.c to resolve M_PI on WIN32
+
+	* Fix strdup()-compatibility function prototype
+
+	* Cleanup some WIN32 warnings
+
 2007-12-20  Charlie Zender  <zender@uci.edu>
 
 	* Use NCO_GET_ATT_CHAR() instead of nc_get_att_text()

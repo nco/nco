@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.62 2007-10-24 15:56:10 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.63 2007-12-29 22:47:24 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1140,12 +1140,13 @@ endif
 # endif SunOS=SUN4SOL2,SUNMP
 
 ifeq (${PVM_ARCH},WIN32)
-CXX := g++-2
-CC := gcc-2 -ansi
-CPP := cpp-2
-# NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -Di386 ${CPP_PTH} -I${NETCDF_INC}
-FC := g77-2
+CXX := g++
+CC := gcc -ansi
+CPP := cpp
+# NB: nameser.h needs -Di386, but gcc sends -Di586 (on pentiums)
+CPP_TKN_OS += -Di386 -DNEED_STRCASECMP -DNEED_STRDUP -I/usr/include
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+FC := g77
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 LEX := flex

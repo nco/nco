@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.23 2007-07-23 00:31:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.24 2007-12-29 22:47:23 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -43,7 +43,7 @@ strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
 #ifdef NEED_STRDUP
 char * /* [sng] Copy of input string */
 strdup /* [fnc] Duplicate string */
-(char *sng_in) /* [sng] String to duplicate */
+(const char *sng_in) /* [sng] String to duplicate */
 {
   /* Purpose: Provide strdup() for broken systems 
      Input string must be NUL-terminated */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.23 2007-07-23 00:31:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.24 2007-12-29 22:47:22 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -28,6 +28,7 @@
 #include "nco_cln_utl.h" /* Calendar utilities */
 #include "nco_lst_utl.h" /* List utilities */
 #include "nco_mmr.h" /* Memory management */
+#include "nco_sng_utl.h" /* String utilities */
 
 #ifdef __cplusplus
 extern "C" {

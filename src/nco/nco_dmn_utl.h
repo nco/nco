@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.22 2007-07-23 00:31:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.23 2007-12-29 22:47:22 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -27,6 +27,7 @@
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_mmr.h" /* Memory management */
+#include "nco_sng_utl.h" /* String utilities */
 
 #ifdef __cplusplus
 extern "C" {
