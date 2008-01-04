@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.4 2007-12-29 22:47:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.5 2008-01-04 17:33:12 karkn Exp $ */
 
 /* Copyright (C) 1995--2007 Charlie Zender and Karen Schuchardt
    You may copy, distribute, and/or modify this software under the terms of the GNU General Public License (GPL) Version 3
@@ -17,7 +17,7 @@
 #include "nco_aux.h" /* Auxiliary coordinates */
 
 int 
-find_lat_lon
+nco_find_lat_lon
 (int ncid, 
  char latvar[], 
  char lonvar[], 
@@ -30,7 +30,7 @@ find_lat_lon
    by looking through the data set. 
    Returns true if both latitude and longitude standard names are found.
    Also returns needed information about the variables.
-   It is ASSUMED that the dimensions/types for lat/lon are identical.
+   It is ASSUMED that the units and types for lat/lon are identical.
    Caller responsible for allocating enough memory for variable names and unit
    strings. */
 
@@ -60,11 +60,12 @@ find_lat_lon
             strcpy(latvar,name);
             *latid = idx;
 
-            // Get units; assume same for both lat and lon
-            nco_inq_attlen(ncid, idx, "units", &lenp);
-            NCO_GET_ATT_CHAR(ncid, idx,"units",units);
+            /* Get units; assume same for both lat and lon */
+            nc_inq_attlen  (ncid, idx, "units", &lenp);
+            nc_get_att_text(ncid, idx,"units",units);
             units[lenp] = '\0';
 
+            /* Assign type; assumed same for both lat and lon */
             *coordtype = rh_type;
 
             ret++;
@@ -79,24 +80,31 @@ find_lat_lon
    return ret == 2;  // true if both found
 }
 
-int getdmninfo
+int 
+nco_getdmninfo
 (int ncid,
  int varid,
  char dimname[],
  int *dimid,
  long *dmnsz
 ){
-   //NOTE: Currently no error handling
+   /* Purpose: Get dimension information associated with the specified variable.
+      In our case, this will be either lat or lon - they are presumed to be
+      identical.
+    */
+
+
+   /*   Note: currently no error handling on calls. */
    int ret = 1; 
 
-   // Get information about the dimension
-   // Here we assume one dimension
+   /* Get information about the dimension */
    nc_type rh_type;                   /* variable type */
    int rh_ndims;                      /* number of dims */
    int rh_dimids[NC_MAX_VAR_DIMS];    /* dimension ids */
    int rh_natts;                       /* number of attributes */
    nco_inq_var (ncid, varid, 0, &rh_type, &rh_ndims, rh_dimids,
          &rh_natts);
+
    *dimid = rh_dimids[0];
    (void)nco_inq_dimlen(ncid,rh_dimids[0],dmnsz);
    (void)nco_inq_dimname(ncid,rh_dimids[0],dimname);
@@ -121,23 +129,22 @@ int *lmt_nbr
    long dmnsz = 0;
    int dmnid;
    nc_type coordtype;
-   if (!find_lat_lon(in_id, latvar, lonvar, units, &latid, &lonid, &coordtype)) {
+   if (!nco_find_lat_lon(in_id, latvar, lonvar, units, &latid, &lonid, &coordtype)) {
       printf("Unable to indentify lat/lon auxillary coordinate variables.");
       exit(-1);
    }
-   if (!getdmninfo(in_id, latid, dmnname, &dmnid, &dmnsz)) {
+   if (!nco_getdmninfo(in_id, latid, dmnname, &dmnid, &dmnsz)) {
       printf("Unable to get dimension inforamtion\n.");
       exit(-1);
    }
-//   printf("coords are: %s %s; units are: %s; %s %ld\n",latvar,lonvar,units,dmnname,dmnsz);
+/*   printf("coords are: %s %s; units are: %s; %s %ld\n",latvar,lonvar,units,dmnname,dmnsz); */
 
    dmn_sct lat;
    dmn_sct lon;
    float *latvp;
    float *lonvp;
 
-   // load up the lat and lon vars that we need to search through for
-   // region matches. 
+   /* load the lat/lon vars needed to search for region matches. */
    lat.type = coordtype;
    lat.sz = dmnsz;
    lat.srt = 0;
@@ -167,10 +174,12 @@ int *lmt_nbr
    base.cnt = 0;
    base.srd = 1;
 
-   // malloc the return lmt structure
-   // No way to know the right size but...
-   // Absolute max is something like dimsz/2 - not sure what the formula is
-   // but this should work most/all of the time
+   /*
+      malloc the return lmt structure
+      No way to know the right size but...
+      Absolute max is something like dimsz/2 - not sure what the formula is
+      but this should work most/all of the time
+   */
    int MAXDMN = dmnsz/4;
 
    if(aux_nbr > 0) lmts=(lmt_sct **)nco_malloc(MAXDMN*sizeof(lmt_sct *));
@@ -180,19 +189,19 @@ int *lmt_nbr
    float clat, clon;
    int cell;
    for (cur=0; cur<aux_nbr; cur++) {
-      // Parse into lllong,lllat,urlon,urlon, accounting for units
+      /* Parse into lllong,lllat,urlon,urlon, accounting for units */
       nco_aux_prs(aux_arg[cur],units, &lllon, &lllat, &urlon, &urlat);
-      //printf("Box is %f %f %f %f\n",lllon, lllat, urlon, urlat);
+      /* printf("Box is %f %f %f %f\n",lllon, lllat, urlon, urlat); */
 
       int mincell = -1;
       int consec = 0;
       for (cell=0; cell<dmnsz; cell++) {
          clat = latvp[cell];
          clon = lonvp[cell];
-         //printf("looking at coord %f %f\n",clat,clon);
+         /* printf("looking at coord %f %f\n",clat,clon); */
          if (clon >= lllon && clon <= urlon &&
                clat >= lllat && clat <= urlat ) {
-            //printf("**matched a cell %d \n",cell);
+            /* printf("**matched a cell %d \n",cell); */
             if (mincell == -1) {
                mincell = cell;
                consec = 1;
@@ -202,7 +211,7 @@ int *lmt_nbr
             }
          } else if (mincell != -1) {
             char buf[100];
-            //printf("XXX have a pairing %d %d\n",mincell, mincell+consec-1);
+            /* printf("Have a pairing %d %d\n",mincell, mincell+consec-1); */
             sprintf(buf,"%d",mincell);
             base.min_sng = (char *)strdup(buf);
             base.min_idx = base.srt = mincell;
@@ -210,7 +219,6 @@ int *lmt_nbr
             base.max_sng = (char *)strdup(buf);
             base.max_idx = base.end = mincell+consec-1;
             base.cnt = consec;
-            // OHOH what about min and max val??
             (*lmt_nbr)++;
             if (*lmt_nbr > MAXDMN) {
                printf("Number of slabs exceeds allocated mamory %d\n",MAXDMN);
@@ -222,10 +230,12 @@ int *lmt_nbr
          }
       }
    }
-//   printf ("returning structure %d\n",*lmt_nbr);
-//   for (cur=0; cur<(*lmt_nbr); cur++) {
-//      printf("LIMIT %ld %ld \n",lmts[cur]->min_idx,lmts[cur]->max_idx);
-//   }
+/*
+     printf ("returning structure %d\n",*lmt_nbr);
+     for (cur=0; cur<(*lmt_nbr); cur++) {
+        printf("LIMIT %ld %ld \n",lmts[cur]->min_idx,lmts[cur]->max_idx);
+     }
+*/
    return lmts;
 }
 
